@@ -304,4 +304,4 @@ Must be one of:
 **Description:** Assembly format of the instruction. Can use decode variables
 
 ----------------------------------------------------------------------------------------------------------------------------
-Generated using [json-schema-for-humans](https://github.com/coveooss/json-schema-for-humans) on 2024-06-11 at 14:42:21 -0700
+Generated using [json-schema-for-humans](https://github.com/coveooss/json-schema-for-humans) on 2024-06-11 at 15:03:08 -0700

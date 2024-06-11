@@ -759,4 +759,4 @@ Must be one of:
 **Description:** Function that returns the value of the CSR when read by software (i.e., a Zicsr instruction). If not specified, the value last written (through hw_write) is returned.
 
 ----------------------------------------------------------------------------------------------------------------------------
-Generated using [json-schema-for-humans](https://github.com/coveooss/json-schema-for-humans) on 2024-06-11 at 14:42:21 -0700
+Generated using [json-schema-for-humans](https://github.com/coveooss/json-schema-for-humans) on 2024-06-11 at 15:03:08 -0700

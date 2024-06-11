@@ -72,7 +72,7 @@ file ".venv/lib/python3.12/site-packages/json_schema_for_humans/__init__.py" => 
   sh "#{$root}/.venv/bin/pip install json-schema-for-humans"
 end
 
-file "arch/doc/schema/arch_schema.md" => Rake::FileList[
+file "docs/schema/arch_schema.md" => Rake::FileList[
   ".venv/lib/python3.12/site-packages/json_schema_for_humans/__init__.py",
   "arch/**/*.json",
   "arch/*.json"
@@ -80,7 +80,7 @@ file "arch/doc/schema/arch_schema.md" => Rake::FileList[
   sh ".venv/bin/generate-schema-doc --config template_name=md arch/*.json,arch/**/*.json #{File.dirname(t.name)}"
 end
 
-file "arch/doc/schema/arch_schema.html" => Rake::FileList[
+file "docs/schema/arch_schema.html" => Rake::FileList[
   ".venv/lib/python3.12/site-packages/json_schema_for_humans/__init__.py",
   "arch/**/*.json",
   "arch/*.json"
@@ -90,5 +90,5 @@ end
 
 namespace :doc do
   desc "Generate documentation for the architecture spec format"
-  task arch_format: ["arch/doc/schema/arch_schema.md", "arch/doc/schema/arch_schema.html"]
+  task arch_format: ["docs/schema/arch_schema.md", "docs/schema/arch_schema.html"]
 end
