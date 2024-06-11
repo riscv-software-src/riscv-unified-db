@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
 
   "type": "object",
-  "title": "configuration",
+  "title": "Unified Architecture Specification",
   "required": ["extensions", "csrs", "params", "instructions", "exception_codes"],
   "properties": {
     "params": {
@@ -40,9 +40,12 @@
       }
     },
     "instructions": {
-      "type": "array",
-      "items": {
-        "$ref": "inst/inst_schema.json"
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "$ref": "inst/inst_schema.json#/$defs/inst_data"
+        },
+        "additionalProperties": false
       }
     }
   },

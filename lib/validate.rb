@@ -69,10 +69,12 @@ class Validator
   # @raise [SchemaError] if a schema is ill-formed
   def initialize
     @schemas = {}
-    ref_resolver = proc do |pattern|
-      JSON.load_file("#{$root}/#{pattern}")
-    end
     SCHEMA_PATHS.each do |type, path|
+      # resolve refs as a relative path from the schema file
+      ref_resolver = proc do |pattern|
+        JSON.load_file("#{path.dirname}/#{pattern}")
+      end
+
       @schemas[type] = JSONSchemer.schema(path.read, regexp_resolver: "ecma", ref_resolver: ref_resolver, insert_property_defaults: true)
       raise SchemaError, @schemas[type].validate_schema unless @schemas[type].valid_schema?
     end

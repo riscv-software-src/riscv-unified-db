@@ -128,13 +128,11 @@ class ArchGen
 
     @arch_def = {
       "params" => params,
-      "instructions" => instructions,
+      "instructions" => instructions.map { |inst| [inst["name"], inst] }.to_h,
       "extensions" => extensions,
       "csrs" => csrs.map { |csr| [csr["name"], csr] }.to_h,
       "exception_codes" => exception_codes
     }
-
-    return @arch_def
 
     # make sure it passes validation
     begin
