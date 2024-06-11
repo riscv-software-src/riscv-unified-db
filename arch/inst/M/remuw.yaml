@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+remuw:
+  long_name: Unsigned 32-bit remainder
+  description: |
+    Calculate the remainder of unsigned division of the 32-bit values in rs1 by rs2,
+    and store the sign-extended result in rd.
+
+    If the value in rs2 is zero, rd gets the sign-extended value in rs1.
+  definedBy: M
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    Bits<32> src1 = X[rs1][31:0];
+    Bits<32> src2 = X[rs2][31:0];
+
+    if (src2 == 0) {
+      # division by zero. Since RISC-V does not have arithmetic exceptions, the result is defined
+      # to be the dividend
+      Bits<1> sign_bit = src1[31];
+      X[rd] = {{32{sign_bit}}, src1};
+
+    } else {
+      # no special case
+
+      Bits<32> result = src1 % src2;
+
+      Bits<1> sign_bit = result[31];
+
+      X[rd] = {{32{sign_bit}}, result};
+    }

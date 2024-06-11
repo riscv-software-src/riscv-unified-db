@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=extension_schema.json
+
+Sv57:
+  description: 57-bit virtual address translation (5 level)
+  type: privileged
+  requires: sv48
+  versions:
+  - version: 1.12
+    ratification_date: unknown
+    url: https://github.com/riscv/riscv-isa-manual/releases/download/Priv-v1.12/riscv-privileged-20211203.pdf

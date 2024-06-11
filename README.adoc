@@ -1,0 +1,48 @@
+# RVI Spec Generator
+
+## Prerequisites
+
+The only requirement is the `Singularity CE` or `Apptainer` container system. Either one will work (they are forks).
+
+If it is not installed, either as your IT admin or:
+
+ * For Apptainer, see https://apptainer.org/docs/admin/main/installation.html[Apptainer Installation].
+ * For Singularity CE, see https://docs.sylabs.io/guides/latest/admin-guide/installation.html[Singularity CE Installation].
+
+## Setup
+
+Do once:
+
+[source,bash]
+----
+./bin/setup
+
+# or, if you also want development tools installed
+# DEVELOPMENT=1 ./bin/setup
+
+# or, if you also want to automatically install recommended VS Code extensions
+# and you are running natively (not via a remote) VS Code
+# VSCODE=1 ./bin/setup
+----
+
+If using Visual Studio Code and want to use development tools, you will need to restart the editor
+after setup.
+
+Helpful extensions are
+
+ * https://marketplace.visualstudio.com/items?itemName=asciidoctor.asciidoctor-vscode[AsciiDoc]
+ * https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml[YAML]
+ * https://marketplace.visualstudio.com/items?itemName=castwide.solargraph[Solargraph] (for a Ruby Language Server)
+ * https://marketplace.visualstudio.com/items?itemName=onnovalkering.vscode-singularity[Singularity] (if you plan on working on the container)
+
+## Tasks
+
+Quick start:
+
+[source,bash]
+----
+./do --tasks   # list all tasks
+
+./do gen:doc:html  # generate HTML documentation
+./do validate      # validate against the schema
+----

@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+wfi:
+  long_name: Wait for interrupt
+  description: |
+    Can causes the processor to enter a low-power state until the next interrupt occurs.
+
+    The behavior of `wfi` is affected by the `mstatus.TW`
+    and `hstatus.VTW` bits, as summarized below.
+
+    The `wfi` instruction is also affected by `mstatus.TW`, as shown below:
+
+    [%autowidth,%footer]
+    |===
+    .2+| [.rotate]#`mstatus.TW`# .2+| [.rotate]#`hstatus.VTW`# 4+^.>| `wfi` behavior
+    h| HS-mode h| U-mode h| VS-mode h| in VU-mode
+
+    | 0 | 0 | Wait | Trap (I) | Wait | Trap (V) 
+    | 0 | 1 | Wait | Trap (I) | Trap (V) | Trap (V)
+    | 1 | - | Trap (I) | Trap (I) | Trap (I) | Trap (I)
+
+    6+| Trap (I) - Trap with `Illegal Instruction` code +
+    Trap (V) - Trap with `Virtual Instruction` code
+    |===
+
+    When `wfi` is marked as causing a trap above, the implementation is allowed to wait
+    for an unspecified period of time to see if an interrupt occurs before raising the trap.
+    That period of time can be zero (_i.e._, `wfi` always causes a trap in the cases identified
+    above).
+  definedBy: I
+  assembly: ""
+  access:
+    s: sometimes
+    u: sometimes
+    vs: sometimes
+    vu: sometimes

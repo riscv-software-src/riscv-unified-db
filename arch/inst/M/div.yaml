@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+div:
+  long_name: Signed division
+  description: |
+    Divide rs1 by rs2, and store the result in rd. The remainder is discarded.
+
+    Division by zero will put -1 into rd.
+    
+    Division resulting in signed overflow (when most negative number is divided by -1)
+    will put the most negative number into rd;
+  definedBy: M
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    XReg src1 = X[rs1];
+    XReg src2 = X[rs2];
+
+    if (src2 == 0) {
+      # division by zero. Since RISC-V does not have arithmetic exceptions, the result is defined
+      # to be -1
+      X[rd] = {XLEN{1'b1}};
+
+    } else if ((src1 == {1'b1, {XLEN-1{1'b0}}}) && (src2 == {XLEN{1'b1}})) {
+      # signed overflow. Since RISC-V does not have arithmetic exceptions, the result is defined
+      # to be the most negative number (-2^(XLEN-1))
+      X[rd] = {1'b1, {XLEN-1{1'b0}}};
+
+    } else {
+      # no special case, just divide
+      X[rd] = $signed(src1) / $signed(src2);
+    }

@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+sraw:
+  long_name: Shift right arithmetic word
+  description: |
+    Arithmetic shift the 32-bit value in `rs1` right by the value in the lower 5 bits of `rs2`, and store the sign-extended result in `rd`.
+  definedBy: I
+  base: 64
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    XReg operand1 = sext(X[rs1], 31);
+
+    X[rd] = sext(operand1 >>> X[rs2][4:0], 31);

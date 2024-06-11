@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+lh:
+  long_name: Load halfword
+  description: |
+    Load 16 bits of data into register `rd` from an
+    address formed by adding `rs1` to a signed offset.
+    Sign extend the result.
+  definedBy: I
+  assembly: xd, imm(rs1)
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    XReg virtual_address = X[rs1] + imm;
+
+    X[rd] = sext(read_memory<16>(virtual_address), 16);

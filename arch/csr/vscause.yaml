@@ -1,0 +1,122 @@
+# yaml-language-server: $schema=csr_schema.json
+
+<%-
+  max_code = [
+    architectural_interrupt_codes.max { |a, b| a[0] <=> b[0] }[0],
+    architectural_exception_codes.max { |a, b| a[0] <=> b[0] }[0],
+    custom_interrupt_codes.empty? ? 0 : custom_interrupt_codes.max { |a, b| a[0] <=> b[0] }[0],
+    custom_exception_codes.empty? ? 0 : custom_exception_codes.max { |a, b| a[0] <=> b[0] }[0],
+  ].max
+-%>
+
+vscause:
+  long_name: Virtual Supervisor Cause
+  address: 0x242
+  virtual_address: 0x142
+  priv_mode: VS
+  length: 64
+  description: Reports the cause of the latest exception taken in VS-mode.
+  definedBy: H
+  fields:
+    INT:
+      location: 63
+      description: |
+        Written by hardware when a trap is taken into VS-mode.
+        
+        When set, the last exception was caused by an asynchronous Interrupt.
+
+        `vscause.INT` is writeable.
+        <%- if TRAP_ON_ILLEGAL_WLRL -%>
+        If `vscause` is written with an undefined cause (combination of `vscause.INT` and `vscause.CODE`), an `Illegal Instruction` exception occurs.
+        <%- else -%>
+        If `vscause` is written with an undefined cause (combination of `vscause.INT` and `vscause.CODE`), neither `vscause.INT` nor `vscause.CODE` are modified.
+        <%- end -%>
+      type: RW-RH
+      write(value): |
+        if (value.INT == 1) {
+          <%- architectural_interrupt_codes.each do |code| -%>
+          if (value.CODE == <%= code[0] %>) {
+            return 1;
+          }
+          <%- end -%>
+          <%- custom_interrupt_codes.each do |code| -%>
+          if (value.CODE == <%= code[0] %>) {
+            return 1;
+          }
+          <%- end -%>
+          return CSR[vscause].INT;
+        } else {
+          <%- architectural_exception_codes.each do |code| -%>
+          if (value.CODE == <%= code[0] %>) {
+            return 0;
+          }
+          <%- end -%>
+          <%- custom_exception_codes.each do |code| -%>
+          if (value.CODE == <%= code[0] %>) {
+            return 0;
+          }
+          <%- end -%>
+          return CSR[vscause].INT;
+        }
+      reset_value: 0
+    CODE:
+      location: <%= max_code.bit_length - 1 %>-0
+      description: |
+        Written by hardware when a trap is taken into VS-mode.
+
+        Holds the interrupt or exception code for the last taken trap.
+
+        `vscause.CODE` is writeable.
+        <%- if TRAP_ON_ILLEGAL_WLRL -%>
+        If `vscause` is written with an undefined cause (combination of `vscause.INT` and `vscause.CODE`), an `Illegal Instruction` exception occurs.
+        <%- else -%>
+        If `vscause` is written with an undefined cause (combination of `vscause.INT` and `vscause.CODE`), neither `vscause.INT` nor `vscause.CODE` are modified.
+        <%- end -%>
+
+        Valid interrupt codes are:
+        !===
+        <%- architectural_interrupt_codes.each do |c| -%>
+        ! <%= c[0] %> ! <%= c[1] %>
+        <%- end -%>
+        <%- custom_interrupt_codes.each do |c| -%>
+        ! <%= c[0] %> ! <%= c[1] %>
+        <%- end -%>
+        !===
+
+        Valid exception codes are:
+        !===
+        <%- architectural_exception_codes.each do |c| -%>
+        ! <%= c[0] %> ! <%= c[1] %>
+        <%- end -%>
+        <%- custom_exception_codes.each do |c| -%>
+        ! <%= c[0] %> ! <%= c[1] %>
+        <%- end -%>
+        !===
+      type: RW-RH
+      write(value): |
+        if (value.INT == 1) {
+          <%- architectural_interrupt_codes.each do |code| -%>
+          if (value.CODE == <%= code[0] %>) {
+            return <%= code[0] %>;
+          }
+          <%- end -%>
+          <%- custom_interrupt_codes.each do |code| -%>
+          if (value.CODE == <%= code[0] %>) {
+            return <%= code[0] %>;
+          }
+          <%- end -%>
+          return CSR[vscause].CODE;
+        } else {
+          <%- architectural_exception_codes.each do |code| -%>
+          if (value.CODE == <%= code[0] %>) {
+            return <%= code[0] %>;
+          }
+          <%- end -%>
+          <%- custom_exception_codes.each do |code| -%>
+          if (value.CODE == <%= code[0] %>) {
+            return <%= code[0] %>;
+          }
+          <%- end -%>
+          return CSR[vscause].CODE;
+        }
+      reset_value: 0

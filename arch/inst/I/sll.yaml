@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+sll:
+  long_name: Shift left logical
+  description: |
+    Shift the value in `rs1` left by the value in the lower 6 bits of `rs2`, and store the result in `rd`.
+  definedBy: I
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    if (XLEN == 64) {
+      X[rd] = X[rs1] << X[rs2][5:0];
+    } else {
+      X[rd] = X[rs1] << X[rs2][4:0];
+    }

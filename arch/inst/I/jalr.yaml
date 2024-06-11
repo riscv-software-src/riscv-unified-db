@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+jalr:
+  long_name: Jump and link register
+  description: |
+    Jump to an address formed by adding rs1
+    to a signed offset, and store the return address in rd.
+  definedBy: I
+  assembly: xd, imm(rs1)
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    XReg returnaddr;
+    returnaddr = PC + 4;
+
+    jump(X[rs1] + imm);
+    X[rd] = returnaddr;

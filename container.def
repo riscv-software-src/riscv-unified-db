@@ -1,0 +1,33 @@
+Bootstrap: docker
+From: ubuntu:24.04
+
+# %files
+
+#   Gemfile $HOME/
+#   package.json $HOME/
+
+%post
+  export DEBIAN_FRONTEND=noninteractive 
+
+  apt-get update
+
+  apt-get install -y --no-install-recommends python3
+  apt-get install -y --no-install-recommends python3.12-venv python3-pip
+
+  apt-get install -y --no-install-recommends build-essential
+  apt-get install -y --no-install-recommends ruby ruby-dev
+  apt-get install -y --no-install-recommends bundler
+  apt-get install -y --no-install-recommends nodejs
+  apt-get install -y --no-install-recommends npm
+
+  # cleanup
+  apt-get clean autoclean
+  apt-get autoremove -y
+  rm -rf /var/lib/{apt, dpkg, cache, log}
+
+  # cd $HOME
+  # bundle install
+
+  # npm i wavedrom-cli
+  # npm i i -E  @antora/cli@3.1 @antora/site-generator@3.1 @antora/lunr-extension asciidoctor-kroki
+

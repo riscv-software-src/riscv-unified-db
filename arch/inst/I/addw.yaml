@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+addw:
+  long_name: Add word
+  description: |
+    Add the 32-bit values in rs1 to rs2, and store the sign-extended result in rd.
+    Any overflow is thrown away.
+  definedBy: I
+  base: 64
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    XReg operand1 = sext(X[rs1], 31);
+    XReg operand2 = sext(X[rs2], 31);
+    X[rd] = sext(operand1 + operand2, 31);

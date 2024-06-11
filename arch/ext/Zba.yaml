@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=extension_schema.json
+
+Zba:
+  description: Address generation instructions
+  type: unprivileged
+  versions:
+  - version: 1.0
+    ratification_date: 2021-06

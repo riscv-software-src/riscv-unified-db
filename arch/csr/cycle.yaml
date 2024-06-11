@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=csr_schema.json
+
+cycle:
+  long_name: Cycle counter for RDCYCLE Instruction
+  address: 0xC00
+  description: |
+    Alias for M-mode CSR `mcycle`.
+
+    Privilege mode access is controlled with `mcounteren.CY`, `scounteren.CY`, and `hcounteren.CY` as follows:
+
+    [%autowidth,cols="1,1,1,1,1,1,1",separator="!"]
+    !===
+    .2+h![.rotate]#`mcounteren.CY`# .2+h! [.rotate]#`scounteren.CY`# .2+h! [.rotate]#`scounteren.CY`#
+    4+^.>h! `time` behavior
+    .^h! S-mode .^h! U-mode .^h! VS-mode .^h! VU-mode
+
+    ! 0 ! - ! - ! `Illegal Instruction` ! `Illegal Instruction` ! `Illegal Instruction` ! `Illegal Instruction` 
+    ! 1 ! 0 ! 0 ! read-only ! `Illegal Instruction` ! `Illegal Instruction` ! `Illegal Instruction` 
+    ! 1 ! 1 ! 0 ! read-only ! read-only ! `Illegal Instruction` ! `Illegal Instruction` 
+    ! 1 ! 0 ! 1 ! read-only ! `Illegal Instruction` ! read-only ! `Illegal Instruction` 
+    ! 1 ! 1 ! 1 ! read-only ! read-only ! read-only ! read-only
+    !===
+  priv_mode: U
+  length: 64
+  definedBy: I
+  fields:
+    COUNT:
+      location: 63-0
+      description: Alias of `mcycle.COUNT`.
+      type: RO-H
+      reset_value: 0

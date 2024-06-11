@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=csr_schema.json
+
+mscratch:
+  long_name: Machine Scratch Register
+  address: 0x340
+  priv_mode: M
+  length: 64
+  description: Scratch register for software use. Bits are not interpreted by hardware.
+  definedBy: U # actually, defined by RV64, but must implement U-mode for this CSR to exist
+  fields:
+    SCRATCH:
+      location: 63-0
+      description: Scratch value
+      type: RW
+      reset_value: 0

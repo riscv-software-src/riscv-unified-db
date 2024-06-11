@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+csrrw:
+  long_name: Atomic Read/Write CSR
+  description: |
+    Atomically swap values in the CSRs and integer registers.
+
+    Read the old value of the CSR, zero-extends the value to `XLEN` bits,
+    and then write it to integer register rd.
+    The initial value in rs1 is written to the CSR.
+    If `rd=x0`, then the instruction shall not read the CSR and shall not
+    cause any of the side effects that might occur on a CSR read.
+  definedBy: Zicsr
+  assembly: xd, xs1, csr
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    if (rd != 0) {
+      X[rd] = CSR[csr].sw_read();
+    } 
+
+    # writes the value in X[rs1] to the CSR,
+    # performing any WARL transformations first
+    CSR[csr].sw_write(X[rs1]);

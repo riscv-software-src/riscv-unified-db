@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=csr_schema.json
+
+mconfigptr:
+  long_name: Machine Configuration Pointer
+  address: 0xF15
+  description: Holds a physical address pointer to the unified discovery data structure in memory
+  priv_mode: M
+  length: 64
+  definedBy: I
+  fields:
+    ADDRESS:
+      location: <%= CONFIG_PTR_ADDRESS.bit_length-1 %>-0
+      description: Pointer to physical address of the Unified Discovery configuration data structure.
+      type: RO
+      value: 0x<%= CONFIG_PTR_ADDRESS.to_s(16) %>

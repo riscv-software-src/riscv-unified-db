@@ -1,0 +1,64 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+sret:
+  long_name: Supervisor Exception Return
+  description: |
+    Returns from an exception.
+
+    When `sret` is allowed to execute, its behavior depends on whether or not the current privilege
+    mode is virtualized.
+
+    *When the current privlege mode is (H)S-mode or M-mode*
+
+    `sret` sets  `hstatus.HPV` = 0, `mstatus.SPP` = 0,
+    `mstatus.SIE` = `mstatus.SPIE`, and `mstatus.SPIE` = 1,
+    changes the privlege mode according to the table below,
+    and then jumps to the address in `sepc`.
+
+    .Next privilege mode following an `sret` in (H)S-mode or M-mode
+    [%autowidth]
+    |===
+    | [.rotate]#`mstatus.SPP`# | [.rotate]#`hstatus.SPV`# .>| Mode after `sret`
+
+    | 0 | 0 | U-mode
+    | 0 | 1 | VU-mode
+    | 1 | 0 | (H)S-mode
+    | 1 | 1 | VS-mode
+    |===
+
+    *When the current privlege mode is VS-mode*
+    
+    `sret` sets
+    `vsstatus.SPP` = 0, `vsstatus.SIE` = `vstatus.SPIE`, and `vsstatus.SPIE` = 1,
+    changes the privlege mode according to the table below,
+    and then jumps to the address in `vsepc`.
+
+    .Next privilege mode following an `sret` in (H)S-mode or M-mode
+    [%autowidth]
+    |===
+    | [.rotate]#`vsstatus.SPP`# .>| Mode after `sret`
+
+    | 0 | VU-mode
+    | 1 | VS-mode
+    |===
+
+  definedBy: S
+  assembly: ""
+  access:
+    s: sometimes
+    u: never
+    vs: sometimes
+    vu: never
+  access_detail: |
+    Access is determined as follows: 
+
+    [%autowidth]
+    |===
+    .2+| [.rotate]#`mstatus.TSR`# .2+| [.rotate]#`hstatus.VTSR`# 5+^.>| Behavior when executed from:
+    h| M-mode h| U-mode h| (H)S-mode h| VU-mode h| VS-mode
+
+    | 0 | 0 | executes | `Illegal Instruction` | executes | `Virtual Instruction` | executes
+    | 0 | 1 | executes | `Illegal Instruction` | executes | `Virtual Instruction` | `Virtual Instruction`
+    | 1 | 0 | executes | `Illegal Instruction` | `Illegal Instruction` | `Virtual Instruction` | executes
+    | 1 | 1 | executes | `Illegal Instruction` | `Illegal Instruction` | `Virtual Instruction` | `Virtual Instruction`
+    |===

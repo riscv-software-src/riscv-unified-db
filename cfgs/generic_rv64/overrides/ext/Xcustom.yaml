@@ -1,0 +1,7 @@
+---
+Xcustom:
+  type: unprivileged
+  versions:
+  - version: 0.1
+  description: |
+    A new custom extension!

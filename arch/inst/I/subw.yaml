@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+subw:
+  long_name: Subtract word
+  description: Subtract the 32-bit values in rs2 from rs1, and store the sign-extended result in rd
+  definedBy: I
+  base: 64
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    Bits<32> t0 = X[rs1][31:0];
+    Bits<32> t1 = X[rs2][31:0];
+    X[rd] = sext(t0 - t1, 31);

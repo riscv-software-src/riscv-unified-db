@@ -1,0 +1,105 @@
+# yaml-language-server: $schema=csr_schema.json
+
+satp:
+  address: 0x180
+  long_name: Supervisor Address Translation and Protection
+  description: Controls the translation mode in (H)S-mode and U-mode, and holds the current ASID and page table base pointer.
+  priv_mode: S
+  length: 64
+  definedBy: S
+  access_check: |
+    # satp traps when mstatus.TVM (Trap Virtual Memory) is set
+    if (CSR[mstatus].TVM == 1) {
+      return false;
+    } else {
+      return true;
+    }
+  fields:
+    MODE:
+      location: 63-60
+      type: RW-R
+      description: |
+        *Translation Mode*
+
+        Controls the current translation mode according to the table below.
+
+        [%autowidth]
+        !===
+        ! Value ! Name ! Description
+
+        ! 0 ! Bare a! No translation -> virtual address == physical address
+        <%- if ext?(:Sv39) -%>
+        ! 8 ! Sv39 ! 39-bit virtual address translation
+        <%- end -%>
+        <%- if ext?(:Sv48) -%>
+        ! 9 ! Sv48 ! 48-bit virtual address translation
+        <%- end -%>
+        <%- if ext?(:Sv57) -%>
+        ! 10 ! Sv57 ! 57-bit virtual address translation
+        <%- end -%>
+        !===
+
+        Any other value shall be ignored on a write.
+      reset_value: 0
+      write(value): |
+        if (value.MODE == 0) {
+          # In Bare, ASID and PPN must be zero, else the entire write is ignored
+          if (value.ASID == 0 && value.PPN == 0) {
+            return value.MODE;
+          } else {
+            # else, value is unchanged
+            return CSR[satp].MODE;
+          }
+        }
+        else if (implemented?(ExtensionName::Sv39) && value.MODE == 8) { return value.MODE; }
+        else if (implemented?(ExtensionName::Sv48) && value.MODE == 9) { return value.MODE; }
+        else if (implemented?(ExtensionName::Sv57) && value.MODE == 10) { return value.MODE; }
+        else {
+          # fall-through: retain old value if new value is invalid
+          return CSR[satp].MODE;
+        }
+    ASID:
+      location: <%= ASID_WIDTH + 43 %>-44
+      description: |
+        *Address Space ID*
+      type: RW-R
+      write(value): |
+        if (value.MODE == 0) {
+          # when MODE == Bare, PPN and ASID must be zero
+          if (value.ASID == 0 && value.PPN == 0) {
+            return value.ASID;
+          } else {
+            # otherwise, the value is unchanged
+            return CSR[satp].ASID;
+          }
+        } else {
+          # unrestricted
+          return value.ASID;
+        }
+      reset_value: 0
+    PPN:
+      location: 43-0
+      description: |
+        *Physical Page Number*
+
+        The physical address of the active root page table is PPN << 12.
+
+        Can only hold values that correspond to a valid page table base, which
+        will be implementation-dependent.
+      type: RW-R
+      reset_value: 0
+      write(value): |
+        if (value.MODE == 0) {
+          # when MODE == Bare, PPN and ASID must be zero
+          if (value.ASID == 0 && value.PPN == 0) {
+            return value.PPN;
+          } else {
+            # otherwise, the value is unchanged
+            return CSR[satp].PPN;
+          }
+        } else {
+          # unrestricted
+          return value.PPN;
+        }
+
+

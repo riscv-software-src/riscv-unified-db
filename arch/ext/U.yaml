@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=extension_schema.json
+
+U:
+  description: User-level privilege mode
+  type: privileged
+  versions:
+  - version: 1.12
+    ratification_date: 2019-12

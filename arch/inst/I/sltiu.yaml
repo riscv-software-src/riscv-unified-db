@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+sltiu:
+  long_name: Set on less than immediate unsigned
+  description: |
+    Places the value 1 in register `rd` if register `rs1` is less than the sign-extended immediate
+    when both are treated as unsigned numbers (_i.e._, the immediate is first sign-extended to
+    XLEN bits then treated as an unsigned number), else 0 is written to `rd`.
+
+    NOTE: `sltiu rd, rs1, 1` sets `rd` to 1 if `rs1` equals zero, otherwise sets `rd` to 0
+    (assembler pseudoinstruction `SEQZ rd, rs`).
+  definedBy: I
+  assembly: xd, xs1, imm
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    X[rd] = (X[rs1] < imm) ? 1 : 0;

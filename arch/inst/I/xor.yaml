@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+xor:
+  long_name: Exclusive Or
+  description: Exclusive or rs1 with rs2, and store the result in rd
+  definedBy: I
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: X[rd] = X[rs1] ^ X[rs2];

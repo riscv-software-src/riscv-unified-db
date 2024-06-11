@@ -1,0 +1,255 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+
+  "$defs": {
+    "write(value)": {
+      "type": "string",
+      "description": "Given a 'value', return either the value to be written in the field or false if the write would be illegal. 'value' is the value of the entire CSR, which is sometimes needed to detect illegal writes"
+    },
+    "csr_field": {
+      "type": "object",
+      "required": ["location", "type", "description"],
+      "properties": {
+        "location": {
+          "oneOf": [
+            {"type": "number"},
+            {"type": "string", "pattern": "^[0-9]+-[0-9]+$"}
+          ]
+        },
+        "description": {
+          "type": "string",
+          "description": "Function of the field"
+        },
+        "type": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^<%=.*%>$"
+            },
+            {
+              "type": "string",
+              "enum": ["RO", "RO-H", "RW", "RW-R", "RW-H", "RW-RH"]
+            }
+          ]
+        },
+        "alias": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-z]+\\.[A-Z0-9]+$"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z]+\\.[A-Z0-9]+$"
+              }
+            }
+          ]
+        },
+        "definedBy": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^(RV64)|([A-WY]|(Z[a-z]+)|(S[a-z]+))$"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(RV64)|([A-WY]|(Z[a-z]+)|(S[a-z]+))$"
+              }
+            }
+          ],
+          "description": "Where this field is defined: either in the base spec (RV64) or an extension (Z...). If definedBy is not given, defaults to the requires field of the parent CSR"
+        },
+        "affectedBy": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^(RV64)|([A-WY]|(Z[a-z]+)|(S[a-z]+))$"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(RV64)|([A-WY]|(Z[a-z]+)|(S[a-z]+))$"
+              }
+            }
+          ],
+          "description": "Extension(s) that affect the definition of the field beyond the extension (or base) the field is originally defined in"
+        },
+        "reset_value": true,
+        "value": true,
+        "write(value)": true
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "RO" } },
+            "required": ["type"]
+          },
+          "then": {
+            "properties": { "value": {
+              "oneOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^<%=.*%>$"
+                }
+              ]
+            } },
+            "required": ["value"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "RO-H" } },
+            "required": ["type"]
+          },
+          "then": {
+            "properties": { "reset_value": { "type": "integer" } },
+            "required": ["reset_value"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "RW" } },
+            "required": ["type"]
+          },
+          "then": {
+            "properties": { "reset_value": { "type": "integer" } },
+            "required": ["reset_value"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "RW-H" } },
+            "required": ["type"]
+          },
+          "then": {
+            "properties": { "reset_value": { "type": "integer" } },
+            "required": ["reset_value"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "RW-R" } },
+            "required": ["type"]
+          },
+          "then": {
+            "properties": {
+              "write(value)": {
+                "$ref": "#/$defs/write(value)"
+              },
+              "reset_value": { "type": "integer" }
+            },
+            "required": ["reset_value", "write(value)"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "RW-RH" } },
+            "required": ["type"]
+          },
+          "then": {
+            "properties": {
+              "write(value)": {
+                "$ref": "#/$defs/write(value)"
+              },
+              "reset_value": { "type": "integer" }
+            },
+            "required": ["reset_value", "write(value)"]
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "csr_register": {
+      "type": "object",
+      "required": ["long_name", "description", "address", "priv_mode", "definedBy", "length"],
+
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Optional name (name is extracted from object key of parent), so information is redundant"
+        },
+        "long_name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "definedBy": {
+          "type": "string",
+          "pattern": "^([A-WY]|([SXZ][a-z]+))$"
+        },
+        "address": {
+          "type": "integer",
+          "description": "CSR address"
+        },
+        "virtual_address": true, "$comment": "Conditionally required; see below",
+        "priv_mode": {
+          "enum": ["M", "S", "U", "VS"]
+        },
+        "length": {
+          "description": "Length, in bits, of the CSR. Can either be a 32, 64, or XLEN",
+          "enum": [32, 64, "XLEN"]
+        },
+        "requires": {
+          "type": "string",
+          "description": "Extension that must be implemented for this CSR to exist"
+        },
+        "fields": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z].*$": {
+              "$ref": "#/$defs/csr_field"
+            }
+          },
+          "additionalProperties": false
+        },
+        "access_check": {
+          "type": "string",
+          "description": "Optional function called to handle special-case checks for access permission."
+        },
+        "sw_read": {
+          "type": "string",
+          "description": "Function that returns the value of the CSR when read by software (i.e., a Zicsr instruction). If not specified, the value last written (through hw_write) is returned."
+        }
+      },
+      "additionalProperties": false,
+
+      "$comment": "If mode is VS, then there must be a virtual_address field",
+      "if": {
+        "properties": {
+          "priv_mode": { "const": "VS" }
+        }
+      },
+      "then": {
+        "properties": {
+          "virtual_address": {
+            "type": "number",
+            "description": "Address of the CSR viewed from VS-mode"
+          }
+        },
+        "required": ["virtual_address"]
+      }
+    }
+  },
+
+  "type": "object",
+  "title": "CSR description",
+  "patternProperties": {
+    "^[a-z][a-z0-9A-Z]+$": {
+        "$ref": "#/$defs/csr_register"
+    }
+  },
+
+  "$comment": "We are using a key as the CSR name, so there should only be one property",
+  "maxProperties": 1,
+
+  "additionalProperties": false
+}

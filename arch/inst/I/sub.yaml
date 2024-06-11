@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+sub:
+  long_name: Subtract
+  description: Subtract the value in rs2 from rs1, and store the result in rd
+  definedBy: I
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    XReg t0 = X[rs1];
+    XReg t1 = X[rs2];
+    X[rd] = t0 - t1;

@@ -1,0 +1,115 @@
+# yaml-language-server: $schema=extension_schema.json
+
+H:
+  type: privileged
+  requires: S
+  versions:
+  - version: 1.0
+    ratification_date: 2019-12
+  description: |
+    This chapter describes the RISC-V hypervisor extension, which
+    virtualizes the supervisor-level architecture to support the efficient
+    hosting of guest operating systems atop a type-1 or type-2 hypervisor.
+    The hypervisor extension changes supervisor mode into
+    _hypervisor-extended supervisor mode_ (HS-mode, or _hypervisor mode_ for
+    short), where a hypervisor or a hosting-capable operating system runs.
+    The hypervisor extension also adds another stage of address translation,
+    from _guest physical addresses_ to supervisor physical addresses, to
+    virtualize the memory and memory-mapped I/O subsystems for a guest
+    operating system. HS-mode acts the same as S-mode, but with additional
+    instructions and CSRs that control the new stage of address translation
+    and support hosting a guest OS in virtual S-mode (VS-mode). Regular
+    S-mode operating systems can execute without modification either in
+    HS-mode or as VS-mode guests.
+
+    In HS-mode, an OS or hypervisor interacts with the machine through the
+    same SBI as an OS normally does from S-mode. An HS-mode hypervisor is
+    expected to implement the SBI for its VS-mode guest.
+
+    The hypervisor extension depends on an "I" base integer ISA with 32
+    `x` registers (RV32I or RV64I), not RV32E or RV64E, which have only 16 `x`
+    registers. CSR `mtval` must not be read-only zero, and standard
+    page-based address translation must be supported, either Sv32 for RV32,
+    or a minimum of Sv39 for RV64.
+
+    The hypervisor extension is enabled by setting bit 7 in the `misa` CSR,
+    which corresponds to the letter H. RISC-V harts that implement the
+    hypervisor extension are encouraged not to hardwire `misa`[7], so that
+    the extension may be disabled.
+
+    [NOTE]
+    ====
+    The baseline privileged architecture is designed to simplify the use of
+    classic virtualization techniques, where a guest OS is run at
+    user-level, as the few privileged instructions can be easily detected
+    and trapped. The hypervisor extension improves virtualization
+    performance by reducing the frequency of these traps.
+
+    The hypervisor extension has been designed to be efficiently emulable on
+    platforms that do not implement the extension, by running the hypervisor
+    in S-mode and trapping into M-mode for hypervisor CSR accesses and to
+    maintain shadow page tables. The majority of CSR accesses for type-2
+    hypervisors are valid S-mode accesses so need not be trapped.
+    Hypervisors can support nested virtualization analogously.
+    ====
+
+    === Privilege Modes
+
+    The current _virtualization mode_, denoted V, indicates whether the hart
+    is currently executing in a guest. When V=1, the hart is either in
+    virtual S-mode (VS-mode), or in virtual U-mode (VU-mode) atop a guest OS
+    running in VS-mode. When V=0, the hart is either in M-mode, in HS-mode,
+    or in U-mode atop an OS running in HS-mode. The virtualization mode also
+    indicates whether two-stage address translation is active (V=1) or
+    inactive (V=0). <<HPrivModes>> lists the
+    possible privilege modes of a RISC-V hart with the hypervisor extension.
+
+    <<<
+
+    [[HPrivModes]]
+    .Privilege modes with the hypervisor extension.
+    [float="center",align="center",cols="~,~,~,~,~"]
+    |===
+    ^|Virtualization +
+    Mode (V) ^|Nominal Privilege |Abbreviation |Name |Two-Stage Translation
+
+    ^|0 +
+    0 +
+    0
+    ^| U +
+    S +
+    M
+    |U-mode +
+    HS-mode +
+    M-mode
+    |User mode +
+    Hypervisor-extended supervisor mode +
+    Machine mode
+    |Off +
+    Off +
+    Off
+    ^|1 +
+    1
+    ^|U +
+    S
+    |VU-mode +
+    VS-mode
+    |Virtual user mode +
+    Virtual supervisor mode
+    |On +
+    On
+    |===
+
+    For privilege modes U and VU, the _nominal privilege mode_ is U, and for
+    privilege modes HS and VS, the nominal privilege mode is S.
+
+    HS-mode is more privileged than VS-mode, and VS-mode is more privileged
+    than VU-mode. VS-mode interrupts are globally disabled when executing in
+    U-mode.
+
+    [NOTE]
+    ====
+    This description does not consider the possibility of U-mode or VU-mode
+    interrupts and will be revised if an extension for user-level interrupts
+    is adopted.
+    ====

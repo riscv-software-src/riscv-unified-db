@@ -1,0 +1,121 @@
+# yaml-language-server: $schema=csr_schema.json
+
+<%-
+  max_code = [
+    architectural_interrupt_codes.max { |a, b| a[0] <=> b[0] }[0],
+    architectural_exception_codes.max { |a, b| a[0] <=> b[0] }[0],
+    custom_interrupt_codes.empty? ? 0 : custom_interrupt_codes.max { |a, b| a[0] <=> b[0] }[0],
+    custom_exception_codes.empty? ? 0 : custom_exception_codes.max { |a, b| a[0] <=> b[0] }[0],
+  ].max
+-%>
+
+scause:
+  long_name: Supervisor Cause
+  address: 0x142
+  priv_mode: S
+  length: 64
+  description: Reports the cause of the latest exception.
+  definedBy: S
+  fields:
+    INT:
+      location: 63
+      description: |
+        Written by hardware when a trap is taken into S-mode.
+        
+        When set, the last exception was caused by an asynchronous Interrupt.
+
+        `scause.INT` is writeable.
+        <%- if TRAP_ON_ILLEGAL_WLRL -%>
+        If `scause` is written with an undefined cause (combination of `scause.INT` and `scause.CODE`), an `Illegal Instruction` exception occurs.
+        <%- else -%>
+        If `scause` is written with an undefined cause (combination of `scause.INT` and `scause.CODE`), neither `scause.INT` nor `scause.CODE` are modified.
+        <%- end -%>
+      type: RW-RH
+      write(value): |
+        if (value.INT == 1) {
+          <%- architectural_interrupt_codes.each do |code| -%>
+          if (value.CODE == <%= code[0] %>) {
+            return 1;
+          }
+          <%- end -%>
+          <%- custom_interrupt_codes.each do |code| -%>
+          if (value.CODE == <%= code[0] %>) {
+            return 1;
+          }
+          <%- end -%>
+          return CSR[scause].INT;
+        } else {
+          <%- architectural_exception_codes.each do |code| -%>
+          if (value.CODE == <%= code[0] %>) {
+            return 0;
+          }
+          <%- end -%>
+          <%- custom_exception_codes.each do |code| -%>
+          if (value.CODE == <%= code[0] %>) {
+            return 0;
+          }
+          <%- end -%>
+          return CSR[scause].INT;
+        }
+      reset_value: 0
+    CODE:
+      location: <%= max_code.bit_length - 1 %>-0
+      description: |
+        Written by hardware when a trap is taken into S-mode.
+
+        Holds the interrupt or exception code for the last taken trap.
+
+        `scause.CODE` is writeable.
+        <%- if TRAP_ON_ILLEGAL_WLRL -%>
+        If `scause` is written with an undefined cause (combination of `scause.INT` and `scause.CODE`), an `Illegal Instruction` exception occurs.
+        <%- else -%>
+        If `scause` is written with an undefined cause (combination of `scause.INT` and `scause.CODE`), neither `scause.INT` nor `scause.CODE` are modified.
+        <%- end -%>
+
+        Valid interrupt codes are:
+        !===
+        <%- architectural_interrupt_codes.each do |c| -%>
+        ! <%= c[0] %> ! <%= c[1] %>
+        <%- end -%>
+        <%- custom_interrupt_codes.each do |c| -%>
+        ! <%= c[0] %> ! <%= c[1] %>
+        <%- end -%>
+        !===
+
+        Valid exception codes are:
+        !===
+        <%- architectural_exception_codes.each do |c| -%>
+        ! <%= c[0] %> ! <%= c[1] %>
+        <%- end -%>
+        <%- custom_exception_codes.each do |c| -%>
+        ! <%= c[0] %> ! <%= c[1] %>
+        <%- end -%>
+        !===
+      type: RW-RH
+      write(value): |
+        if (value.INT == 1) {
+          <%- architectural_interrupt_codes.each do |code| -%>
+          if (value.CODE == <%= code[0] %>) {
+            return <%= code[0] %>;
+          }
+          <%- end -%>
+          <%- custom_interrupt_codes.each do |code| -%>
+          if (value.CODE == <%= code[0] %>) {
+            return <%= code[0] %>;
+          }
+          <%- end -%>
+          return CSR[scause].CODE;
+        } else {
+          <%- architectural_exception_codes.each do |code| -%>
+          if (value.CODE == <%= code[0] %>) {
+            return <%= code[0] %>;
+          }
+          <%- end -%>
+          <%- custom_exception_codes.each do |code| -%>
+          if (value.CODE == <%= code[0] %>) {
+            return <%= code[0] %>;
+          }
+          <%- end -%>
+          return CSR[scause].CODE;
+        }
+      reset_value: 0

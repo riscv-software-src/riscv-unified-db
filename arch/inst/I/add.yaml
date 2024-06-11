@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+add:
+  long_name: Add
+  description: |
+    Add the value in rs1 to rs2, and store the result in rd.
+    Any overflow is thrown away.
+  definedBy: I
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: X[rd] = X[rs1] + X[rs2];

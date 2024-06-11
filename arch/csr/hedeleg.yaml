@@ -1,0 +1,210 @@
+# yaml-language-server: $schema=csr_schema.json
+
+hedeleg:
+  long_name: Hypervisor Exception Delegation
+  address: 0x602
+  priv_mode: S
+  length: 64
+  description: Controls exception delegation from HS-mode to VS-mode
+  definedBy: H
+  fields:
+    IAM:
+      location: 0
+      description: |
+        *Instruction Address Misaligned*
+
+        Controls delegation of Instruction Address Misaligned exceptions to VS-mode.
+
+        See `medeleg.IAM` for details.
+      type: RW
+      reset_value: 0
+    IAF:
+      location: 1
+      description: |
+        *Instruction Access Fault*
+
+        Controls delegation of Instruction Access Fault exceptions to VS-mode.
+
+        See `medeleg.IAF` for details.
+
+      type: RW
+      reset_value: 0
+    II:
+      location: 2
+      description: |
+        *Illegal Instruction*
+
+        Controls delegation of Illegal Instruction exceptions to VS-mode.
+
+        See `medeleg.II` for details.
+
+      type: RW
+      reset_value: 0
+    B:
+      location: 3
+      description: |
+        *Breakpoint*
+
+        Controls delegation of Breakpoint exceptions to VS-mode.
+
+        See `medeleg.B` for details.
+      type: RW
+      reset_value: 0
+    LAM:
+      location: 4
+      description: |
+        *Load Address Misaligned*
+
+        Controls delegation of Load Address Misaligned exceptions to VS-mode.
+
+        See `medeleg.LAM` for details.
+      type: RW
+      reset_value: 0
+    LAF:
+      location: 5
+      description: |
+        *Load Access Fault*
+
+        Controls delegation of Load Access Fault exceptions to VS-mode.
+
+        See `medeleg.LAF` for details.
+      type: RW
+      reset_value: 0
+    SAM:
+      location: 6
+      description: |
+        *Store/AMO Address Misaligned*
+
+        Controls delegation of Store/AMO Address Misaligned exceptions to VS-mode.
+
+        See `medeleg.SAM` for details.
+      type: RW
+      reset_value: 0
+    SAF:
+      location: 7
+      description: |
+        *Store/AMO Access Fault*
+
+        Controls delegation of Store/AMO Access Fault exceptions to VS-mode.
+
+        See `medeleg.SAF` for details.
+      type: RW
+      reset_value: 0
+    EU:
+      location: 8
+      description: |
+        *Environment Call from VU-mode*
+
+        Controls delegation of Enviornment Call from VU-mode exceptions to VS-mode.
+
+        See `medeleg.EU` for details.
+
+      type: RW
+      reset_value: 0
+    ES:
+      location: 9
+      description: |
+        *Environment Call from HS-mode*
+
+        Enviornment Call from HS-mode exceptions _cannot be delegated to VS-mode_,
+        so this field is read-only 0.
+
+        See `medeleg.ES` for details.
+      type: RO
+      value: 0
+    EVS:
+      location: 10
+      description: |
+        *Environment Call from VS-mode*
+
+        Enviornment Call from VS-mode exceptions _cannot be delegated to VS-mode_,
+        so this field is read-only 0.
+
+        See `medeleg.EVS` for details.
+      type: RO
+      value: 0
+    EM:
+      location: 11
+      description: |
+        *Environment Call from M-mode*
+
+        Enviornment Call from M-mode exceptions _cannot be delegated to VS-mode_,
+        so this field is read-only 0.
+
+        See `medeleg.EM` for details.
+      type: RO
+      value: 0
+    IPF:
+      location: 12
+      description: |
+        *Instruction Page Fault*
+
+        Controls delegation of Instruction Page Fault exceptions to VS-mode.
+
+        See `medeleg.IPF` for details.
+      type: RW
+      reset_value: 0
+    LPF:
+      location: 13
+      description: |
+        *Load Page Fault*
+
+        Controls delegation of Load Page Fault exceptions to VS-mode.
+
+        See `medeleg.LPF` for details.
+      type: RW
+      reset_value: 0
+    SPF:
+      location: 15
+      description: |
+        *Store/AMO Page Fault*
+
+        Controls delegation of Store/AMO Page Fault exceptions to VS-mode.
+
+        See `medeleg.SPF` for details.
+      type: RW
+      reset_value: 0
+    IGPF:
+      location: 20
+      description: |
+        *Instruction Guest Page Fault*
+
+        Instruction Guest Page Fault exceptions _cannot be delegated to VS-mode_,
+        so this field is read-only 0.
+
+        See `medeleg.IGPF` for details.
+      type: RO
+      value: 0
+    LGPF:
+      location: 21
+      description: |
+        *Load Guest Page Fault*
+
+        Load Guest Page Fault exceptions _cannot be delegated to VS-mode_,
+        so this field is read-only 0.
+
+        See `medeleg.LGPF` for details.
+      type: RO
+      value: 0
+    VI:
+      location: 22
+      description: |
+        *Virtual Instruction*
+
+        Virtual Instruction exceptions _cannot be delegated to VS-mode_,
+        so this field is read-only 0.
+
+        See `medeleg.VI` for details.
+      type: RO
+      value: 0
+    SGPF:
+      location: 23
+      description: |
+        *Store/AMO Guest Page Fault*
+
+        Store/AMO Guest Page Fault exceptions _cannot be delegated to VS-mode_,
+        so this field is read-only 0.
+
+        See `medeleg.SGPF` for details.
+      type: RO
+      value: 0

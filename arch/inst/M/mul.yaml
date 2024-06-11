@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+mul:
+  long_name: Signed multiply
+  description: |
+    MUL performs an XLEN-bitxXLEN-bit multiplication of `rs1` by `rs2` and places the lower
+    XLEN bits in the destination register.
+    Any overflow is thrown away.
+
+    [NOTE]
+    If both the high and low bits of the same product are required, then the recommended code
+    sequence is:
+    MULH[[S]U] rdh, rs1, rs2; MUL rdl, rs1, rs2
+    (source register specifiers must be in same order and rdh cannot be the same as rs1 or rs2).
+    Microarchitectures can then fuse these into a single multiply operation instead of
+    performing two separate multiplies.
+
+  definedBy: [M, Zmmul]
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    XReg src1 = X[rs1];
+    XReg src2 = X[rs2];
+
+    X[rd] = (src1 * src2)[XLEN-1:0];

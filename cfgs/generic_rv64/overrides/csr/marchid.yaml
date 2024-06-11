@@ -1,0 +1,6 @@
+---
+# Overrides the value of marchid.Architecture to 0xcafebabe
+marchid:
+  fields:
+    Architecture:
+      value: 0xcafebabe

@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+jal:
+  long_name: Jump and link
+  description: |
+    Jump to a PC-relative offset and store the return
+    address in rd.
+  definedBy: I
+  assembly: xd, imm
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    XReg retrun_addr = PC + 4;
+
+    jump(PC + imm);
+    X[rd] = retrun_addr;

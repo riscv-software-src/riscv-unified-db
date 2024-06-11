@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+slti:
+  long_name: Set on less than immediate
+  description: |
+    Places the value 1 in register `rd` if register `rs1` is less than the sign-extended immediate
+    when both are treated as signed numbers, else 0 is written to `rd`.
+  definedBy: I
+  assembly: xd, xs1, imm
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    X[rd] = ($signed(X[rs1]) < $signed(imm)) ? '1 : '0;

@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=csr_schema.json
+
+mepc:
+  long_name: Machine Exception Program Counter
+  address: 0x341
+  priv_mode: M
+  length: 64
+  description: |
+    Written with the PC of an instruction on an exception or interrupt taken in M-mode.
+
+    Also controls where the hart jumps on an exception return from M-mode.
+  definedBy: I
+  fields:
+    PC:
+      location: 63-0
+      description: |
+        When a trap is taken into M-mode, `mepc.PC` is written with the virtual address of the
+        instruction that was interrupted or that encountered the exception.
+        Otherwise, `mepc.PC` is never written by the implementation, though it may be explicitly written
+        by software.
+
+        On an exception retun from M-mode (from the MRET instruction),
+        control transfers to the virtual address read out of `mepc.PC`.
+
+        Because PCs are always <% if ext?(:C) %>halfword<% else %>word<% end %>-aligned,
+        <% if ext?(:C) %>bit 0<% else %>bits 1:0<% end %> of `mepc.PC` are always
+        read-only 0.
+
+        <% if ext?(:C) && MUTABLE_MISA_C %>
+        When `misa.C` is clear, bit 1 is masked to zero. Writes to bit 1 are still captured, and
+        may be visible on the next read with `misa.C` is set.
+        <% end %>
+      type: RW-RH
+      write(value): |
+        return value & ~64'b1;
+      reset_value: 0
+  sw_read: |
+    if (implemented?(C) && CSR[misa].Extensions[2] == 1'b1) {
+      return CSR[mepc] & ~64'b3;
+    } else {
+      return CSR[mepc];
+    }

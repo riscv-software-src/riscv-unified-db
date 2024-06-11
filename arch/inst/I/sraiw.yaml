@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+sraiw:
+  long_name: Shift right arithmetic immediate word
+  description: |
+    Arithmetic shift (the original sign bit is copied into the vacated upper bits) the
+    32-bit value in rs1 right by shamt, and store the sign-extended result in rd.
+  definedBy: I
+  base: 64
+  assembly: xd, xs1, shamt
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    # shamt is between 0-32
+    XReg operand = sext(X[rs1], 31);
+    X[rd] = sext(operand >>> shamt, 31);

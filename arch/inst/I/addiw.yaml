@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+addiw:
+  long_name: Add immediate word
+  description: Add an immediate to the 32-bit value in rs1, and store the sign extended result in rd
+  definedBy: I
+  base: 64
+  assembly: xd, xs1, imm
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    XReg operand = sext(X[rs1], 31);
+    X[rd] = sext(operand + imm, 31);

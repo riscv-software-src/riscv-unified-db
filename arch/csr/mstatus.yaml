@@ -1,0 +1,305 @@
+# yaml-language-server: $schema=csr_schema.json
+
+mstatus:
+  long_name: Machine Status
+  address: 0x300
+  priv_mode: M
+  length: 64
+  description: The mstatus register tracks and controls the hart's current operating state.
+  definedBy: I
+  fields:
+    SD:
+      location: 63
+      description: |
+        State Dirty.
+        
+        Read-only bit that summarizes whether either the FS, XS, or VS
+        fields signal the presence of some dirty state.
+      type: RO-H
+      reset_value: 0
+      affectedBy: [F, D, V]
+    MPV:
+      location: 39
+      description: |
+        Machine Previous Virtualization mode.
+
+        Written with the prior virtualization mode when entering M-mode from an exception/interrupt.
+        When returning via an MRET instruction, the virtualization mode becomes the value of MPV unless MPP=3, in which case the virtualization mode is always 0.
+        Can also be written by software.
+      type: RW-H
+      reset_value: 0
+      definedBy: H
+    GVA:
+      location: 38
+      description: |
+        Guest Virtual Address.
+
+        When a trap is taken and a guest virtual address is written into mtval, GVA is set.
+        When a trap is taken and a guest virtual address is written into mtval, GVA is cleared.
+      type: RW-H
+      reset_value: 0
+      definedBy: H
+    MBE:
+      location: 37
+      description: |
+        M-mode Big Endian.
+        
+        Controls the endianness of M-mode (0 = little, 1 = big).
+        Since the CPU does not support big endian, this is hardwired to 0.
+      type: RO
+      value: 0
+    SBE:
+      location: 36
+      description: |
+        S-mode Big Endian.
+        
+        Controls the endianness of S-mode (0 = little, 1 = big).
+        Since the CPU does not support big endian, this is hardware to 0.
+      type: RO
+      value: 0
+    SXL:
+      location: 35-34
+      description: |
+        S-mode XLEN.
+        
+        Sets the effective XLEN for S-mode (0 = 32-bit, 1 = 64-bit, 2 = 128-bit).
+        Since the CPU only supports XLEN==64, this is hardwired to 1.
+      type: RO
+      value: 1
+    UXL:
+      location: 33-32
+      description: |
+        U-mode XLEN.
+        
+        Sets the effective XLEN for U-mode (0 = 32-bit, 1 = 64-bit, 2 = 128-bit).
+        Since the CPU only supports XLEN==64, this is hardwired to 1.
+      type: RO
+      value: 1
+    TSR:
+      location: 22
+      description: |
+        Trap SRET.
+
+        When 1, attempts to execute the `sret` instruction while executing in HS/S-mode
+        will raise an Illegal Instruction exception.
+
+        <%- if ext?(:H) -%>
+        Does not affect the behavior of `sret` in VS_mode (see `hstatus.VTSR`).
+        <%- end -%>
+      type: RW
+      definedBy: S
+      reset_value: 0
+    TW:
+      location: 21
+      description: |
+        Timeout Wait.
+
+        When 1, the WFI instruction will raise an Illegal Instruction trap after an
+        implementaion-defined wait period when executed in a mode other than M-mode.
+
+        When 0, the `wfi` instruction is permitted to wait forever in (H)S-mode but must
+        trap after an implementation-defined wait period in U-mode.
+      type: RW
+      definedBy: S
+      reset_value: 0
+    TVM:
+      location: 20
+      description: |
+        Trap Virtual Memory.
+
+        When 1, an `Illegal Instruction` trap occurs when
+
+        * writing the `satp` CSR, executing an `sfence.vma`, or executing an `sinval.vma` while in (H)S-mode (but not VS-mode)
+        * writing the `hgtap` CSR, executing an `hfence.gvma`, or executing an `hinval.gvma` while in HS-mode
+
+        Notably, `mstatus.TVM` does *not* cause
+        
+        *`hfence.vvma`, `sfence.w.inval`, or `sfence.inval.ir` to trap.
+        * Any additional traps in VS-mode (controlled via `hstatus.VTVM` instead).
+
+      type: RW
+      definedBy: S
+      reset_value: 0
+    MXR:
+      location: 19
+      description: |
+        Make eXecutable Readable.
+        
+        When 1, loads from pages marked readable *or executable* are allowed.
+        When 0, loads from pages marked executable raise a Page Fault exception.
+      type: RW
+      definedBy: S
+      reset_value: 0
+    SUM:
+      location: 18
+      description: |
+        permit Supervisor Memory Access.
+        
+        When 0, an S-mode read or an M-mode read with mstatus.MPRV=1 and mstatus.MPP=01
+        to a 'U' (user) page will cause an ILLEGAL INSTRUCTION exception.
+      type: RW
+      definedBy: S
+      reset_value: 0
+    MPRV:
+      location: 17
+      description: |
+        Modify PRiVilege.
+        
+        When 1, loads and stores behave as if the current virutalization mode:privilege level was
+        `mstatus.MPV`:`mstatus.MPP`.
+
+        `mstatus.MPRV` is cleared on any exception return (`mret` or `sret` instruction, regardless of the trap handler privilege mode).
+      type: RW-H
+      reset_value: 0
+    XS:
+      location: 16-15
+      description: |
+        Custom (X) extension context Status.
+        
+        Summarizes the current state of any custom extension state.
+        Either 0 - Off, 1 - Initial, 2 - Clean, 3 - Dirty.
+        Since there are no custom extensions, this field is read-only 0.
+      type: RO
+      value: 0
+    FS:
+      location: 14-13
+      description: |
+        Floating point context status.
+        
+        When 0, floating point instructions (from F and D extensions) are disabled,
+        and cause ILLEGAL INSTRUCTION exceptions.
+        When a floating point register, or the fCSR register is written, FS obtains the value 3.
+        Values 1 and 2 are valid write values for software, but are not interpreted by hardware
+        other than to possibly enable a previously-disabled floating point unit. 
+      type: RW-H
+      definedBy: F
+      reset_value: 0
+    MPP:
+      location: 12-11
+      description: |
+        M-mode Previous Privilege.
+
+        Written by hardware in two cases:
+
+        * Written with the prior nominal privilege level when entering M-mode from an exception/interrupt.
+        * Written with 0 when executing an `mret` instruction to return from an exception in M-mode.
+
+        Can also be written by software without immediate side-effect.
+
+        Affects execution in two cases:
+
+        * On a return from an exception from M-mode, the machine will
+        enter the privilege level stored in MPP before clearing the field.
+        * When `mstatus.MPRV` is set, loads and stores behave as if the current privlege level were MPP.
+      type: RW-H
+      reset_value: 0
+    VS:
+      location: 10-9
+      description: |
+        Vector context status.
+        
+        When 0, vector instructions (from the V extension) are disabled, and cause ILLEGAL INSTRUCTION exceptions.
+        When a vector register or vector CSR is written, VS obtains the value 3.
+        Values 1 and 2 are valid write values for software, but are not interpreted by hardware
+        other than to possibly enable a previously-disabled vector unit.
+      type: RW-H
+      reset_value: 0 
+      definedBy: V
+    SPP:
+      location: 8
+      description: |
+        *S-mode Previous Privilege*
+        
+        Written by hardware in two cases:
+
+        * Written with the prior nominal privilege level when entering (H)S-mode from an exception/interrupt.
+        * Written with 0 when executing an `sret` instruction to return from an exception in (H)S-mode or (unlikely) M-mode.
+
+        Can also be written by software without immediate side-effect.
+
+        Affects execution in one case:
+
+        * On a return from an exception using the `sret` instruction in (H)S-mode or (unlikely) M-mode,
+          the machine will enter the privilege level stored in SPP before clearing the field.
+
+        Notably, `mstatus.SPP` does not affect exception return in VS-mode (see `vsstatus.SPP`).
+
+      type: RW-H
+      definedBy: S
+      reset_value: 0
+    MPIE:
+      location: 7
+      description: |
+        *M-mode Previous Interrupt Enable*
+        
+        Written by hardware in two cases:
+
+        * Written with prior value of `mstatus.MIE` when entering M-mode from an exception/interrupt.
+        * Writen with the value 1 when returning from an exception in M-mode (via the `mret` instruction).
+
+        Can also be written by software without immediate side effect.
+
+        Other than serving as a record of nested traps as described above, `mstatus.MPIE` does not affect execution.
+        
+      type: RW-H
+      reset_value: 0
+    UBE:
+      location: 6
+      description: |
+        U-mode Big Endian
+        
+        Controls the endianness of U-mode (0 = little, 1 = big).
+        Since the CPU does not support big endian, this is hardwired to 0.
+      type: RO
+      definedBy: S
+      value: 0
+    SPIE:
+      location: 5
+      description: |
+        *S-mode Previous Interrupt Enable*
+
+        Written by hardware in two cases:
+
+        * Written with prior value of `mstatus.SIE` when entering (H)S-mode from an exception/interrupt.
+        * Writen with the value 1 when returning from an exception via the `sret` instruction in (H)S-mode or (unlikely) M-mode.
+
+        Can also be written by software without immediate side effect.
+
+        Other than serving as a record of nested traps as described above, `mstatus.SPIE` does not affect execution.
+      type: RW-H
+      definedBy: S
+      reset_value: 0
+    MIE:
+      location: 3
+      description: |
+        *M-mode Interrupt Enable*
+        
+        Written by hardware in two cases:
+
+        * Written with the value 0 when entering M-mode from an exception/interrupt.
+        * Written with the prior value of `mstatus.MPIE` when returning from an exeception in M-mode (via `mret`).
+
+        Affects execution by:
+
+        * When 0, all interrupts are disabled when the current privilege level is M.
+        * When 1, interrupts that are not otherwise disabled with a field in `mie` are enabled.
+        
+      type: RW-H
+      reset_value: 0
+    SIE:
+      location: 1
+      description: |
+        *S-mode Interrupt Enable*
+        
+        Written by hardware in two cases:
+
+        * Written with the value 0 when entering (H)S-mode from an exception/interrupt.
+        * Written with the prior value of `mstatus.SPIE` when returning from an exeception via `sret` in (H)S-mode or (unlikely) M-mode.
+
+        Affects execution by:
+
+        * When 0, all (H)S-mode interrupts are disabled when the current privilege level is (H)S (M-mode interrupts are still enabled).
+        * When 1, (H)S-mode interrupts that are not otherwise disabled with a field in `sie` are enabled.
+
+      type: RW-H
+      reset_value: 0

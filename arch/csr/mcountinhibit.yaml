@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=csr_schema.json
+
+mcountinhibit:
+  long_name: Machine Counter Inhibit
+  address: 0x320
+  priv_mode: M
+  length: 32
+  description: Bits to inhibit (stops counting) performance counters.
+  definedBy: I
+  fields:
+    CY:
+      location: 0
+      description: When set, `mcycle.COUNT` stops counting in all privilege modes.
+      type: RW
+      reset_value: 0
+    IR:
+      location: 2
+      description: When set, `minstret.COUNT` stops counting in all privilege modes.
+      type: RW
+      reset_value: 0
+    <%- NUM_HPM_COUNTERS.times do |hpm_num| -%>
+    HPM<%= hpm_num + 3 %>:
+      location: <%= 3 + hpm_num %>
+      description: When set, `hpmcounter<%= 3 + hpm_num %>.COUNT` stops counting in all privilege modes.
+      type: RW
+      reset_value: 0
+    <%- end -%>

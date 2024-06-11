@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+lui:
+  long_name: Load upper immediate
+  description: Load the zero-extended imm into rd.
+  definedBy: I
+  assembly: xd, imm
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: X[rd] = imm;

@@ -1,0 +1,3 @@
+[submodule "ext/riscv-opcodes"]
+	path = ext/riscv-opcodes
+	url = https://github.com/riscv/riscv-opcodes.git

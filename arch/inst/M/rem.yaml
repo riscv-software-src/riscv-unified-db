@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+rem:
+  long_name: Signed remainder
+  description: |
+    Calculate the remainder of signed division of rs1 by rs2, and store the result in rd.
+
+    If the value in register rs2 is zero, write the value in rs1 into rd;
+
+    If the result of the division overflows, write zero into rd;
+  definedBy: M
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    XReg src1 = X[rs1];
+    XReg src2 = X[rs2];
+
+    if (src2 == 0) {
+      # division by zero. Since RISC-V does not have arithmetic exceptions, the result is defined
+      # to be the dividend
+      X[rd] = src1;
+    
+    } else if ((src1 == {1'b1, {XLEN-1{1'b0}}}) && (src2 == {XLEN{1'b1}})) {
+      # signed overflow. Since RISC-V does not have arithmetic exceptions, the result is defined
+      # to be zero
+      X[rd] = 0;
+
+    } else {
+      X[rd] = $signed(src1) % $signed(src2);
+    }

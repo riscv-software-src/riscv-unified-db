@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=csr_schema.json
+
+marchid:
+  long_name: Machine Architecture ID
+  address: 0xf12
+  priv_mode: M
+  length: 64
+  description: Reports the vendor-specific microarchitecture. Must have '1' in bit 63 to indicate a commercial design.
+  definedBy: I
+  fields:
+    Architecture:
+      location: 63-0
+      type: RO
+      description: Vendor-specific microarchitecture ID.
+      value: <%= ARCH_ID %>

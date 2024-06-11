@@ -1,0 +1,131 @@
+# yaml-language-server: $schema=csr_schema.json
+
+menvcfg:
+  address: 0x30A
+  long_name: Machine Environment Configuration
+  description: Contains bits to enable/disable extensions
+  priv_mode: M
+  length: 64
+  definedBy: I
+  fields:
+    STCE:
+      location: 63
+      description: |
+        *STimecmp Enable*
+
+        When set, `stimecmp` is operational.
+
+        When clear, `stimecmp` access in a mode other than M-mode raises an `Illegal Instruction` trap.
+        S-mode timer interrupts will not be generated when clear, and `mip` and `sip` revert to their prior behavior without `Sstc`.
+      definedBy: Sstc
+      type: RW
+      reset_value: 0
+    PBMTE:
+      location: 62
+      description: |
+        *Page Based Memory Type Enable*
+
+        The PBMTE bit controls whether the Svpbmt extension is available for use in S-mode<% if ext?(:H) %>and G-stage<% end %>
+        address translation (i.e., for page tables pointed to by satp<% if ext?(:H) %> or hgatp<% end %>). When PBMTE=1, Svpbmt is
+        available for S-mode <% if ext?(:H) %> and G-stage <% end %> address translation. When PBMTE=0, the implementation behaves
+        as though Svpbmt were not implemented. If Svpbmt is not implemented, PBMTE is read-only zero.
+
+        <% if ext?(:H) %>
+        Furthermore, henvcfg.PBMTE is read-only zero if
+        menvcfg.PBMTE is zero.
+        <% end %>
+
+      definedBy: Svpbmt
+      type: RW
+      reset_value: 0
+    CBZE:
+      location: 7
+      description: |
+        *Cache Block Zero instruction Enable*
+
+        Enables the execution of the cache block zero instruction, `CBO.ZERO`,
+        <% if ext?(:S) %>
+        in S-mode
+        <% elsif ext?(:U) %>
+        in U-mode
+        <% end %>.
+
+          * `0`: The instruction raises an illegal instruction or virtual instruction exception
+          * `1`: The instruction is executed
+
+      definedBy: Zicboz
+      type: RW
+      reset_value: 0
+    CBCFE:
+      location: 6
+      description: |
+        *Cache Block Clean and Flush instruction Enable*
+
+        Enables the execution of the cache block clean instruction, `CBO.CLEAN`, and the
+        cache block flush instruction, `CBO.FLUSH`,
+        <% if ext?(:S) %>
+        in S-mode
+        <% elsif ext?(:U) %>
+        in U-mode
+        <% end %>.
+
+          * `0`: The instruction raises an illegal instruction or virtual instruction exception
+          * `1`: The instruction is executed
+
+      definedBy: Zicbom
+      type: RW
+      reset_value: 0
+    CBIE:
+      location: 5-4
+      description: |
+        *Cache Block Invalidate instruction Enable*
+
+        Enables the execution of the cache block invalidate instruction, `CBO.INVAL`,
+        <% if ext?(:S) %>
+        in S-mode
+        <% elsif ext?(:U) %>
+        in U-mode
+        <% end %>.
+
+          * `00`: The instruction raises an illegal instruction or virtual instruction exception
+          * `01`: The instruction is executed and performs a flush operation
+          * `10`: _Reserved_
+          * `11`: The instruction is executed and performs an invalidate operation
+      definedBy: Zicbom
+      type: RW-R
+      write(value): |
+        if (value.CBIE == 0 || value.CBIE == 1 || value.CBIE == 3) {
+          return value.CBIE;
+        } else {
+          return CSR[menvcfg].CBIE;
+        }
+      reset_value: 0
+    FIOM:
+      location: 0
+      description: |
+        *Fence of I/O implies Memory*
+
+        When `menvcfg.FIOM` is set,
+        FENCE instructions ordering I/O regions also implicitly order memory regions when executed
+        in any mode less privileged than M-mode.
+
+        [%autowidth,float="center",align="center",cols="^,<",options="header"]
+        !===
+        !Instruction bit !Meaning when set
+        !PI +
+        PO
+        !Predecessor device input and memory reads (PR implied) +
+        Predecessor device output and memory writes (PW implied)
+        !SI +
+        SO
+        !Successor device input and memory reads (SR implied) +
+        Successor device output and memory writes (SW implied)
+        !===
+
+        Similarly, for modes less privileged than M when FIOM=1, if an atomic
+        instruction that accesses a region ordered as device I/O has its _aq_
+        and/or _rl_ bit set, then that instruction is ordered as though it
+        accesses both device I/O and memory.
+
+      type: RW
+      reset_value: 0

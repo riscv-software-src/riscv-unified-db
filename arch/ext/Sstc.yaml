@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=extension_schema.json
+
+Sstc:
+  description: Superivisor mode timer interrupts
+  type: privileged
+  versions:
+  - version: 0.9
+    ratification_date: null
+    url: https://drive.google.com/file/d/1m84Re2yK8m_vbW7TspvevCDR82MOBaSX/view?usp=drive_link

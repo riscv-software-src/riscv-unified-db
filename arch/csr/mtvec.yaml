@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=csr_schema.json
+
+mtvec:
+  long_name: Machine Trap Vector Control
+  address: 0x305
+  priv_mode: M
+  length: 64
+  description: Controls where traps jump.
+  definedBy: I
+  fields:
+    BASE:
+      location: 63-2
+      description: |
+        Bits [63:2] of the exception vector physical address for any trap taken in M-mode.
+
+        The implementation physical memory map may resitrict which values are legal in this field.
+      type: RW-R
+      write(value): |
+        # Base spec says that BASE must be 4-byte aligned, which will always be the case
+        # implementations may put further constraints on BASE when MODE != Direct
+        # If that is the case, stvec should have an override for the implementation
+        return write_value.BASE;
+      reset_value: 0
+    MODE:
+      location: 1-0
+      description: |
+        Vectoring mode for asynchronous interrupts.
+        
+        0 - Direct, 1 - Vectored
+
+        When Direct, all synchronous exceptions and asynchronous interrupts jump to (`mtvec.BASE` << 2).
+
+        When Vectored, asynchronous interrupts jump to (`mtvec.BASE` << 2 + `mcause.CAUSE`*4) while synchronous exceptions continue to jump to (`mtvec.BASE` << 2).
+      type: RW-R
+      write(value): |
+        if (write_value.MODE == 0 || write_value.MODE == 1) {
+          return write_value.MODE;
+        } else {
+          return CSR[mtvec].MODE;
+        }
+      reset_value: 0

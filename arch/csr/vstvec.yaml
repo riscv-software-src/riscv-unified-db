@@ -1,0 +1,55 @@
+# yaml-language-server: $schema=csr_schema.json
+
+<%-
+  va_size =
+    if ext?(:Sv57)
+      57
+    elsif ext?(:Sv48)
+      49
+    else
+      39
+    end
+-%>
+
+vstvec:
+  long_name: Supervisor Trap Vector
+  address: 0x205
+  virtual_address: 0x105
+  priv_mode: S
+  length: 64
+  description: Controls where traps jump.
+  definedBy: H
+  fields:
+    BASE:
+      location: 63-2
+      description: |
+        Bit 63:0 of the virtual address of the exception vector for any trap taken into VS-mode.
+
+        If the base address is written with a non-cannonical address (_i.e._, bits 63:<%= va_size %> do not match bit <%= va_size-1 %>),
+        the write should be ignored.
+
+      type: RW-R
+      write(value): |
+        # Base spec says that BASE must be 4-byte aligned, which will always be the case
+        # implementations may put further constraints on BASE when MODE != Direct
+        # If that is the case, stvec should have an override for the implementation
+        return value.BASE;
+      reset_value: 0
+    MODE:
+      location: 1-0
+      description: |
+        Vectoring mode for asynchronous interrupts taken into VS-mode.
+        
+        0 - Direct, 1 - Vectored
+
+        When Direct, all synchronous exceptions and asynchronous interrupts jump to (`vstvec.BASE` << 2).
+
+        When Vectored, asynchronous interrupts jump to (`vstvec.BASE` << 2 + `vscause.CAUSE`*4) while synchronous exceptions continue to jump to (`vstvec.BASE` << 2).
+      type: RW-R
+      write(value): |
+        if (value.MODE == 0 || value.MODE == 1) {
+          return value.MODE;
+        } else {
+          return CSR[vstvec].MODE;
+        }
+      reset_value: 0

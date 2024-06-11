@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+divu:
+  long_name: Unsigned division
+  description: |
+    Divide unsigned values in rs1 by rs2, and store the result in rd.
+    
+    The remainder is discarded.
+
+    If the value in rs2 is zero, rd gets the largest unsigned value.
+  definedBy: M
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    XReg src1 = X[rs1];
+    XReg src2 = X[rs2];
+
+    if (src2 == 0) {
+      # division by zero. Since RISC-V does not have arithmetic exceptions, the result is defined
+      # to be -1
+      X[rd] = {XLEN{1'b1}};
+    } else {
+      X[rd] = src1 / src2;
+    }

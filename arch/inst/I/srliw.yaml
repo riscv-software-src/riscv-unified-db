@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+srliw:
+  long_name: Shift right logical immediate word
+  description: Shift the 32-bit value in rs1 right by shamt, and store the sign-extended result in rd
+  definedBy: I
+  base: 64
+  assembly: xd, xs1, shamt
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    # shamt is between 0-31
+    XReg operand = X[rs1][31:0];
+
+    X[rd] = sext(operand >> shamt, 31);

@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+slli:
+  long_name: Shift left logical immediate
+  description: Shift the value in rs1 left by shamt, and store the result in rd
+  definedBy: I
+  assembly: xd, xs1, shamt
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    # shamt is between 0-(XLEN-1)
+    X[rd] = X[rs1] << shamt;

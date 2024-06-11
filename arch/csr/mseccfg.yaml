@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=csr_schema.json
+
+mseccfg:
+  long_name: Machine Security Configuration
+  address: 0x747
+  priv_mode: M
+  length: 64
+  description: Machine Security Configuration
+  definedBy: M
+  fields: {}
+  

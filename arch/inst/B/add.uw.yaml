@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+add.uw:
+  long_name: Add unsigned word
+  description: |
+    This instruction performs an XLEN-wide addition between rs2 and the
+    zero-extended least-significant word of rs1.
+  definedBy: [B, Zba]
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    X[rd] = X[rs2] + X[rs1][31:0];

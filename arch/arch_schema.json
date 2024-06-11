@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+
+  "type": "object",
+  "title": "configuration",
+  "required": ["extensions", "csrs", "params", "instructions", "exception_codes"],
+  "properties": {
+    "params": {
+      "$ref": "../cfgs/config_schema.json#/$defs/params"
+    },
+    "exception_codes": {
+      "$ref": "misc/exception_code_schema.json"
+    },
+    "extensions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "oneOf": [
+              { "type": "number" },
+              {
+                "type": "string",
+                "pattern": "^[0-9]+(\\.[0-9]+(\\.[0-9]+(-[a-fA-F0-9]+)?)?)?$"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "csrs": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "$ref": "csr/csr_schema.json#/$defs/csr_register"
+        }
+      }
+    },
+    "instructions": {
+      "type": "array",
+      "items": {
+        "$ref": "inst/inst_schema.json"
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+sd:
+  long_name: Store doubleword
+  description: |
+    Store 64 bits of data from register `rs2` to an
+    address formed by adding `rs1` to a signed offset.
+  definedBy: I
+  base: 64
+  assembly: xs2, imm(xs1)
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    XReg virtual_address = X[rs1] + imm;
+
+    write_memory<64>(virtual_address, X[rs2]);

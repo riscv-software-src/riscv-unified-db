@@ -1,0 +1,121 @@
+# yaml-language-server: $schema=../config_schema.json
+
+---
+params:
+  XLEN: 64
+
+  # name of the configuration
+  NAME: generic_rv64
+
+  # vendor-specific architecture ID in marchid
+  ARCH_ID: 0x1000000000000000
+
+  # vendor-specific implementation ID in mimpid
+  IMP_ID: 0x0
+
+  # whether or not the implementation supports misaligned loads and stores in main memory (not including atomics)
+  # must be true when Zicclsm is supported
+  MISALIGNED_LDST: true
+
+  # whether or not the implementation supports misaligned atomics
+  MISALIGNED_AMO: false
+
+  # number of implemented programmable hardware performance counters
+  NUM_HPM_COUNTERS: 8
+
+  # when true, writing an illegal value to a WLRL CSR field raises an Illegal Instruction exception
+  # when false, writing an illegal value to a WLRL CSR field is ignored
+  TRAP_ON_ILLEGAL_WLRL: true
+
+  # when true, *tval is written with the virtual PC of the EBREAK instruction (same information as *epc)
+  # when false, *tval is written with 0 on an EBREAK instruction
+  #
+  # regardless, *tval is always written with a virtual PC when an external breakpoint is generated
+  REPORT_EBREAK_PC_IN_TVAL: false
+
+  # address of the unified discovery configuration data structure
+  # this address is reported in the mconfigptr CSR
+  CONFIG_PTR_ADDRESS: 0x1000
+
+  # number of implemented PMP entries. Can be any value between 0-64, inclusive.
+  #
+  # the number of implemented PMP registers must be 0, 16, or 64.
+  #
+  # Therefore, whether or not a pmpaddrN or pmpcfgN register exists depends on
+  # NUM_PMP_ENTRIES as follows:
+  # |===
+  # | NUM_PMP_ENTRIES | pmpaddr<0-15> / pmpcfg<0-3> | pmpaddr<16-63> / pmpcfg<4-15>
+  # | 0               | N                           | N
+  # | 1-16            | Y                           | N
+  # | 17-64           | Y                           | Y
+  # |===
+  # ** pmpcfgN for an odd N never exist when XLEN == 64
+  #
+  # when NUM_PMP_ENTRIES is not exactly 0, 16, or 64, some extant pmp registers,
+  # and associated pmpNcfg, will be read-only zero (but will not cause an exception).
+  NUM_PMP_ENTRIES: 14
+
+  # log2 of the smallest supported PMP region
+  # generally, for systems with an MMU, should not be smaller than 12,
+  # as that would preclude caching PMP results in the TLB along with
+  # virtual memory translations
+  #
+  # Note that PMP_GRANULARITY is equal to G+2 (not G) as described in
+  # the privileged architecture
+  PMP_GRANULARITY: 12
+
+  # log2 of the smallest supported PMA region
+  # generally, for systems with an MMU, should not be smaller than 12,
+  # as that would preclude caching PMP results in the TLB along with
+  # virtual memory translations
+  PMA_GRANULARITY: 12
+
+  # number of bits in the physical address space
+  PHYS_ADDR_WIDTH: 56
+
+  # number of implemented ASID bits
+  # maximum value is 16
+  ASID_WIDTH: 12
+
+  # when the C extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.C` bit.
+  MUTABLE_MISA_C: false
+
+  # size of a cache block, in bytes
+  CACHE_BLOCK_SIZE: 64
+
+  # number of supported virtualized guest interrupts
+  # corresponds to the `GEILEN` parameter in the RVI specs
+  NUM_EXTERNAL_GUEST_INTERRUPTS: 4
+
+  hpm_events:
+    - 'L1_ICACHE_MISS'
+    - 'L2_CACHE_MISS'
+
+  custom_interrupt_codes: []
+  custom_exception_codes: []
+
+extensions:
+  - [A, 2.1]
+  - [D, 2.2]
+  - [Zba, 1.0]
+  # - [F, 2.2]
+  - [I, 2.1]
+  - [H, 1.0]
+  - [M, 2.0]
+  - [S, 1.12]
+  - [U, 1.12]
+  - [Zicntr, 2.0]
+  - [Zicsr, 2.0]
+  - [Zihpm, 2.0]
+  - [Smaia, 1.0]
+  - [Smcdeleg, 0]
+  - [Smcntrpmf, 1.0]
+  - [Sscofpmf, 1.0]
+  - [Ssaia, 1.0]
+  - [Ssccfg, 0]
+  - [Sstc, 0.9]
+  - [Sv39, 1.12]
+  - [Sv48, 1.12]
+  - [Zicboz, "1.0.1-b34ea8a"]
+  - [Zicbom, "1.0.1-b34ea8a"]

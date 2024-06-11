@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=extension_schema.json
+
+Sv32:
+  description: 32-bit virtual address translation (3 level)
+  type: privileged
+  versions:
+  - version: 1.12
+    ratification_date: unknown
+    url: https://github.com/riscv/riscv-isa-manual/releases/download/Priv-v1.12/riscv-privileged-20211203.pdf

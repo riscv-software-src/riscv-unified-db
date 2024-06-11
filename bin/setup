@@ -1,0 +1,78 @@
+#!/bin/bash
+
+ROOT=$(dirname $(dirname $(realpath $BASH_SOURCE[0])))
+OLDWD=$PWD
+cd $ROOT
+
+CONTAINER_TAG=0.1
+
+if [ ! -d $ROOT/.home ]; then
+  mkdir $ROOT/.home
+fi
+
+if [ ! -f $ROOT/.singularity/image.sif ]; then
+ echo "Fetching container..."
+  if [ ! -d "${ROOT}/.singularity" ]; then
+    mkdir -p ${ROOT}/.singularity
+  fi
+  singularity pull --disable-cache ${ROOT}/.singularity/image.sif oras://docker.io/riscvintl/spec-generator:$CONTAINER_TAG
+fi
+
+if [ ! -f $ROOT/.bundle/config ]; then
+  OLDDIR=$PWD
+  cd $ROOT
+  singularity run --home ${ROOT}/.home .singularity/image.sif bundle config set --local path ${ROOT}/.home/.gems
+  singularity run --home ${ROOT}/.home .singularity/image.sif bundle config set --local cache_path ${ROOT}/.home/.cache
+  cd $OLDDIR
+fi
+
+if [ ! -d $ROOT/.home/.gems ]; then
+  OLDDIR=$PWD
+  cd $ROOT
+  singularity run --home ${ROOT}/.home .singularity/image.sif bundle install
+  cd $OLDDIR
+fi
+
+if [ ! -f $ROOT/ext/riscv-opcodes/README.md ]; then
+  git submodule init --update ext/riscv-opcodes
+fi
+
+if [[ ! -z "$DEVELOPMENT" && $DEVELOPMENT -eq 1 ]]; then
+  if [ ! -d "${ROOT}/.home/.yard/gem_index"]; then
+    singularity run --home ${ROOT}/.home .singularity/image.sif bundle exec --gemfile ${ROOT}/Gemfile yard config --gem-install-yri
+    singularity run --home ${ROOT}/.home .singularity/image.sif bundle exec --gemfile ${ROOT}/Gemfile yard gems
+    touch ${ROOT}/.stamps/dev_gems
+  fi
+fi
+
+if [[ ! -z "$VSCODE" && $VSCODE -eq 1 ]]; then
+  declare -a exts=(
+    castwide.solargraph,
+    redhat.vscode-yaml,
+    onnovalkering.vscode-singularity,
+    asciidoctor.asciidoctor-vscode
+  )
+  for ext in "${exts[@]}"; do
+    ignore=`code --list-extensions | grep "${ext}"`
+    if [ $? -eq 1 ]; then
+      echo "Installing VS Code extension ${ext}"
+      code --install-extension ${ext}
+    else
+      echo "Extension ${ext} already installed"
+    fi
+  done
+fi
+
+if [ ! -d $ROOT/.home/.npm ]; then
+  singularity run --home ${PWD}/.home .singularity/image.sif npm --location user config set prefix ${PWD}/.home
+fi
+
+if [ ! -d ${ROOT}/.home/lib/node_modules ]; then
+  singularity run --home ${PWD}/.home .singularity/image.sif npm --global true i
+fi
+
+BUNDLE="singularity run --home ${PWD}/.home .singularity/image.sif bundle"
+RUBY="singularity run --home ${PWD}/.home .singularity/image.sif bundle exec ruby"
+RAKE="singularity run --home ${PWD}/.home .singularity/image.sif bundle exec rake"
+NPM="singularity run --home ${PWD}/.home .singularity/image.sif npm"
+NPX="singularity run --home ${PWD}/.home .singularity/image.sif npx"

@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+bge:
+  long_name: Branch if greater than or equal
+  description: |
+    Branch to PC + imm if
+    the signed value in register rs1 is greater than or equal to the signed value in register rs2.
+
+    Raise a `MisalignedAddress` exception if PC + imm is misaligned.
+  definedBy: I
+  assembly: xs1, xs2, imm
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  raises:
+  - MisalignedAddress
+  operation: |
+    XReg lhs = X[rs1];
+    XReg rhs = X[rs2];
+
+    if ($signed(lhs) >= $signed(rhs)) {
+      jump(PC + imm);
+    }
+    

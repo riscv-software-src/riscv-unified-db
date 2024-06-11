@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+mulhsu:
+  long_name: Signed/unsigned multiply high
+  description: |
+    Multiply the signed value in rs1 by the unsigned value in rs2, and store the upper half of the result in rd.
+    The lower half is thrown away.
+
+    If both the upper and lower halves are needed, it suggested to use the sequence:
+
+    ---
+      mulhsu rdh, rs1, rs2
+      mul    rdl, rs1, rs2
+    ---
+
+    Microarchitectures may look for that sequence and fuse the operations.
+  definedBy: [M, Zmmul]
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: |
+    # enlarge and extend the sources
+    Bits<1> rs1_sign_bit = X[rs1][XLEN-1];
+    Bits<XLEN*2> src1 = {{XLEN{rs1_sign_bit}}, X[rs1]};
+    Bits<XLEN*2> src2 = {{XLEN{1'b0}}, X[rs2]};
+
+    X[rd] = (src1 * src2)[(XLEN*2)-1:XLEN];

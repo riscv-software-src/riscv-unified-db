@@ -1,0 +1,38 @@
+Style/CommentedKeyword:
+  Enabled: false
+
+Style/GlobalVars:
+  Enabled: false
+
+Style/WordArray:
+  Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: 'double_quotes'
+
+Style/SymbolArray:
+  Enabled: false
+
+Metrics/BlockNesting:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
+
+Metrics/ClassLength:
+  CountAsOne: ['array', 'heredoc', 'method_call']
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+Security/Eval:
+  Enabled: false

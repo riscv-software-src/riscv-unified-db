@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=extension_schema.json
+
+Ssaia:
+  description: Advanced Interrupt Architecture, S-mode extension
+  type: privileged
+  requires: S
+  versions:
+  - version: 1.0
+    ratification_date: 2023-06
+    url: https://github.com/riscv/riscv-aia/releases/download/1.0/riscv-interrupts-1.0.pdf

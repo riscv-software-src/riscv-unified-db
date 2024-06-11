@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=csr_schema.json
+
+mimpid:
+  long_name: Machine Implementation ID
+  address: 0xf13
+  priv_mode: M
+  length: 64
+  description: Reports the vendor-specific implementation ID.
+  definedBy: I
+  fields:
+    Implementation:
+      location: 63-0
+      type: RO
+      description: Vendor-specific implementation ID.
+      value: <%= IMP_ID %>

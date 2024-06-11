@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=csr_schema.json
+
+time:
+  long_name: Timer for RDTIME Instruction
+  address: 0xC01
+  description: |
+    Alias for the memory-mapped M-mode CSR `mtime`.
+
+    Privilege mode access is controlled with `mcounteren.TM`, `scounteren.TM`, and `hcounteren.TM` as follows:
+
+    [%autowidth,cols="1,1,1,1,1,1,1",separator="!"]
+    !===
+    .2+h![.rotate]#`mcounteren.TM`# .2+h! [.rotate]#`scounteren.TM`# .2+h! [.rotate]#`scounteren.TM`#
+    4+^.>h! `time` behavior
+    .^h! S-mode .^h! U-mode .^h! VS-mode .^h! VU-mode
+
+    ! 0 ! - ! - ! `Illegal Instruction` ! `Illegal Instruction` ! `Illegal Instruction` ! `Illegal Instruction` 
+    ! 1 ! 0 ! 0 ! read-only ! `Illegal Instruction` ! `Illegal Instruction` ! `Illegal Instruction` 
+    ! 1 ! 1 ! 0 ! read-only ! read-only ! `Illegal Instruction` ! `Illegal Instruction` 
+    ! 1 ! 0 ! 1 ! read-only ! `Illegal Instruction` ! read-only ! `Illegal Instruction` 
+    ! 1 ! 1 ! 1 ! read-only ! read-only ! read-only ! read-only
+    !===
+  priv_mode: U
+  length: 64
+  definedBy: I
+  fields:
+    COUNT:
+      location: 63-0
+      description: |
+        Alias of the memory-mapped M-mode CSR `mtime`.
+
+        Reports the current wall-clock time from the timer device.
+      type: RO-H
+      reset_value: 0

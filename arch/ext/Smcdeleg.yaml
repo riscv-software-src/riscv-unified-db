@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=extension_schema.json
+
+Smcdeleg:
+  description: Performance counter delegation
+  type: privileged
+  versions:
+  - version: 0
+    ratification_date: null
+    url: https://docs.google.com/document/d/1s-GeH5XpHBLzbQZucA8DPA7vvF7Xvf_nrPbrU2YLBcE/edit#heading=h.yyrgtolcaczx

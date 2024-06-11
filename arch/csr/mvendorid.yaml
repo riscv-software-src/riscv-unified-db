@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=csr_schema.json
+
+mvendorid:
+  long_name: Machine Vendor ID
+  address: 0xf11
+  priv_mode: M
+  length: 32
+  description: Reports the JEDEC manufacturer ID of the core.
+  fields:
+    Bank:
+      description: JEDEC manufacturer ID bank minus 1
+      location: 31-7
+      type: RO
+      value: 0
+    Offset:
+      description: JEDEC manufacturer ID offset
+      location: 6-0
+      type: RO
+      value: 0x70
+  definedBy: I

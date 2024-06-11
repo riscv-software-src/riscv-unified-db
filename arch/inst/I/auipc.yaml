@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=../inst_schema.json
+
+auipc:
+  long_name: Add upper immediate to pc
+  description: Add an immediate to the current PC.
+  definedBy: I
+  assembly: xd, imm
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation: X[rd] = PC + imm;

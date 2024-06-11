@@ -1,0 +1,8 @@
+.bundle
+.python
+.singularity
+.antora
+.home
+.yardoc
+.stamps
+gen
