@@ -4,33 +4,27 @@
   "$defs": {
     "write(value)": {
       "type": "string",
-      "description": "Given a 'value', return either the value to be written in the field or false if the write would be illegal. 'value' is the value of the entire CSR, which is sometimes needed to detect illegal writes"
+      "description": "Function implementing custom write behavior for the CSR. Given a 'value', return either the value to be written in the field or false if the write would be illegal. 'value' is the value of the entire CSR, which is sometimes needed to detect illegal writes"
     },
     "csr_field": {
       "type": "object",
+      "description": "Field in a CSR register",
       "required": ["location", "type", "description"],
       "properties": {
         "location": {
           "oneOf": [
-            {"type": "number"},
-            {"type": "string", "pattern": "^[0-9]+-[0-9]+$"}
-          ]
+            {"type": "number", "description": "Location of a single bit"},
+            {"type": "string", "pattern": "^[0-9]+-[0-9]+$", "description": "Location range of a multibit field"}
+          ],
+          "description": "Location of the field within the CSR register"
         },
         "description": {
           "type": "string",
           "description": "Function of the field"
         },
         "type": {
-          "oneOf": [
-            {
-              "type": "string",
-              "pattern": "^<%=.*%>$"
-            },
-            {
-              "type": "string",
-              "enum": ["RO", "RO-H", "RW", "RW-R", "RW-H", "RW-RH"]
-            }
-          ]
+          "enum": ["RO", "RO-H", "RW", "RW-R", "RW-H", "RW-RH"],
+          "description": "Type of the field. One of:\n * RO: Read-only immutable\n * RO-H: Read-only, updated by hardware\n * RW: Read-write, not updated by hardware\n * RW-R: Read-write, but values are restricted. write(value) must be provided\n * RW-H: Read-write, with hardware updates\n * RW-RH: Read-write, with hardware updates, but values are restricted. write(value) must be provded"
         },
         "alias": {
           "oneOf": [
@@ -45,7 +39,8 @@
                 "pattern": "^[a-z]+\\.[A-Z0-9]+$"
               }
             }
-          ]
+          ],
+          "description": "Other CSR fields that alias with this field"
         },
         "definedBy": {
           "oneOf": [
@@ -61,7 +56,7 @@
               }
             }
           ],
-          "description": "Where this field is defined: either in the base spec (RV64) or an extension (Z...). If definedBy is not given, defaults to the requires field of the parent CSR"
+          "description": "Where this field is defined: indicates that the field is only present if the extension(s) are implemented. If definedBy is not given, defaults to the definedBy field of the parent CSR"
         },
         "affectedBy": {
           "oneOf": [
@@ -242,9 +237,14 @@
 
   "type": "object",
   "title": "CSR description",
+  "description": "A CSR register specification",
+  "examples": [
+    "misa:\n  long_name: Machine ISA Control\n  address: 0x301\n  priv_mode: M\n  length: 64\n  description: Reports the XLEN and \"major\" extensions supported by the ISA.\n  definedBy: I\n  fields:\n    MXL:\n      location: 63-62\n      description: XLEN in M-mode.\n      type: RO\n      value: 2\n    Extensions:      location: 25-0\n      description: |\n        Indicates support for major (single letter) ISA extensions.\n\n        Value corresponds to A, D, F, H, I, M, S, U\n      type: RO\n      value: 0x1411A9"
+  ],
   "patternProperties": {
     "^[a-z][a-z0-9A-Z]+$": {
-        "$ref": "#/$defs/csr_register"
+      "description": "CSR name",
+      "$ref": "#/$defs/csr_register"
     }
   },
 
