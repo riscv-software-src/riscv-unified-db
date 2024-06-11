@@ -1,0 +1,25 @@
+= Architecture Specification
+
+== Flow
+
+[mermaid]
+....
+----
+title: Configuration generator flow
+----
+flowchart LR
+  arch[(RISC-V Specification [arch/])]
+  params(Configuration parametrs [cfgs/NAME/params.yaml])
+  overrides(Configuration overrides [cfgs/NAME/overrides/*])
+
+  arch & params & overrides ==> comb([Combine])
+
+  comb ==> unified_arch[(Configuration-specific RISC-V Specification)]
+
+  adoc_spec[[Asciidoc spec]]
+  pdf_spec[[PDF Spec]]
+  html_spec[[HTML Spec]]
+  ISS[[Instruction Set Simulator]]
+  unified_arch ==> adoc_spec & ISS
+  adoc_spec ==> pdf_spec & html_spec
+....

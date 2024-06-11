@@ -9,6 +9,10 @@ If it is not installed, either as your IT admin or:
  * For Apptainer, see https://apptainer.org/docs/admin/main/installation.html[Apptainer Installation].
  * For Singularity CE, see https://docs.sylabs.io/guides/latest/admin-guide/installation.html[Singularity CE Installation].
 
+[NOTE]
+You do *not* need root privileges to download or use the container. However, to modify/build the container,
+you will need either root privileges or the ability to run in `fakeroot` mode. See https://docs.sylabs.io/guides/4.1/user-guide/fakeroot.html[Singularity Fakeroot Documentation] for more information.
+
 ## Setup
 
 Do once:
@@ -17,12 +21,8 @@ Do once:
 ----
 ./bin/setup
 
-# or, if you also want development tools installed
+# or, if you also want development tools (:development group in Gemfile) installed
 # DEVELOPMENT=1 ./bin/setup
-
-# or, if you also want to automatically install recommended VS Code extensions
-# and you are running natively (not via a remote) VS Code
-# VSCODE=1 ./bin/setup
 ----
 
 If using Visual Studio Code and want to use development tools, you will need to restart the editor
@@ -41,8 +41,13 @@ Quick start:
 
 [source,bash]
 ----
-./do --tasks   # list all tasks
+./do --tasks                 # list all documented tasks
 
-./do gen:doc:html  # generate HTML documentation
-./do validate      # validate against the schema
+# examples
+./do gen:arch[generic_rv64]  # generate arch spec for the 'generic_rv64' config
+./do validate                # validate against the schema
 ----
+
+## More info
+
+ * xref:arch/README.adoc[Architecture specification format]

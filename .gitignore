@@ -5,4 +5,5 @@
 .home
 .yardoc
 .stamps
+.venv
 gen

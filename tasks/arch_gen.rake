@@ -1,4 +1,6 @@
 # frozen_string_literal: true
+#
+# This file contains tasks related to the generation of a configured architecture specification
 
 require_relative File.join("..", "lib", "arch_gen.rb")
 
@@ -58,4 +60,35 @@ namespace :gen do
 
     Rake::Task["#{$root}/.stamps/arch-gen-#{args[:config_name]}.stamp"].invoke(args[:config_name])
   end
+end
+
+file ".venv/bin/pip" do
+  Dir.chdir $root do
+    sh "python3 -m venv #{$root}/.venv"
+  end
+end
+
+file ".venv/lib/python3.12/site-packages/json_schema_for_humans/__init__.py" => ".venv/bin/pip" do
+  sh "#{$root}/.venv/bin/pip install json-schema-for-humans"
+end
+
+file "arch/doc/schema/arch_schema.md" => Rake::FileList[
+  ".venv/lib/python3.12/site-packages/json_schema_for_humans/__init__.py",
+  "arch/**/*.json",
+  "arch/*.json"
+] do |t|
+  sh ".venv/bin/generate-schema-doc --config template_name=md arch/*.json,arch/**/*.json #{File.dirname(t.name)}"
+end
+
+file "arch/doc/schema/arch_schema.html" => Rake::FileList[
+  ".venv/lib/python3.12/site-packages/json_schema_for_humans/__init__.py",
+  "arch/**/*.json",
+  "arch/*.json"
+] do |t|
+  sh ".venv/bin/generate-schema-doc --config template_name=js arch/*.json,arch/**/*.json #{File.dirname(t.name)}"
+end
+
+namespace :doc do
+  desc "Generate documentation for the architecture spec format"
+  task arch_format: ["arch/doc/schema/arch_schema.md", "arch/doc/schema/arch_schema.html"]
 end
