@@ -5,19 +5,27 @@
 # this single template is used to generate all of the pmpNcfg csrs
 
 <%-
-  entries_this_register = [NUM_PMP_ENTRIES - (pmpcfg_num/2)*8, 8].min
-  starting_entry = (pmpcfg_num/2)*8
+  entries_this_register_32 = [NUM_PMP_ENTRIES - pmpcfg_num*4, 4].min
+  entries_this_register_64 = [NUM_PMP_ENTRIES - (pmpcfg_num/2)*8, 8].min
+  entries_this_register = [XLEN == 32 ? entries_this_register_32 : entries_this_register_64, 0].max
+
+  starting_entry_32 = pmpcfg_num*4
+  starting_entry_64 = (pmpcfg_num/2)*8
+  starting_entry = XLEN == 32 ? starting_entry_32 : starting_entry_64
 -%>
 
 <%= "pmpcfg#{pmpcfg_num}" %>:
+  <%- if pmpcfg_num.odd? -%>
+  base: 32 # odd numbered pmpcfg registers do not exist in RV64
+  <%- end -%>
   long_name: PMP Configuration Register <%= pmpcfg_num %>
   address: <%= "0x" + (0x3A0 + pmpcfg_num).to_s(16).upcase %>
   priv_mode: M
-  length: 64
+  length: <%= XLEN %>
   description: PMP entry configuration
   definedBy: I
   <%- if entries_this_register <= 0 -%>
-  fields: []
+  fields: {}
   <%- else -%>
   fields:
   <%- entries_this_register.times do |i| -%>

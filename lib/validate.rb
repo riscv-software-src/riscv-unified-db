@@ -9,13 +9,13 @@ $root = Pathname.new(__FILE__).dirname.dirname.realpath if $root.nil?
 
 # class used to validate schmeas and objects
 class Validator
+  # map of type to schema filesystem path
   SCHEMA_PATHS = {
     config: $root / "cfgs" / "config_schema.json",
     arch: $root / "arch" / "arch_schema.json",
     inst: $root / "arch" / "inst" / "inst_schema.json",
-    extension: $root / "arch" / "ext" / "extension_schema.json",
-    csr: $root / "arch" / "csr" / "csr_schema.json",
-    exception_codes: $root / "arch" / "misc" / "exception_code_schema.json"
+    ext: $root / "arch" / "ext" / "extension_schema.json",
+    csr: $root / "arch" / "csr" / "csr_schema.json"
   }.freeze
 
   # types of objects that can be validated
@@ -27,7 +27,11 @@ class Validator
     attr_reader :result
 
     def initialize(result)
-      super(result["error"])
+      if result.is_a?(Enumerator)
+        super(result.to_a.map { |e| "At #{e['schema_pointer']}: #{e['type']}" })
+      else
+        super(result["error"])
+      end
       @result = result
     end
   end
@@ -37,6 +41,9 @@ class Validator
     # result from JsonSchemer.validate
     attr_reader :result
 
+    # create a new ValidationError
+    #
+    # @param result [JsonSchemer::Result] JsonSchemer result
     def initialize(result)
       nerrors = result.count
       pp result.to_a[0].keys
@@ -122,7 +129,7 @@ class Validator
       when %r{.*arch/inst/.*/.*\.yaml$}
         type = :instruction
       when %r{.*arch/ext/.*/.*\.yaml$}
-        type = :extension
+        type = :ext
       when %r{.*arch/csr/.*/.*\.yaml$}
         type = :csr
       else
@@ -136,12 +143,4 @@ class Validator
       raise e
     end
   end
-end
-
-if $PROGRAM_NAME == __FILE__
-  schema = ARGV[0]
-  config = ARGV[1]
-
-  v = Validator.new(schema)
-  puts "Valid" if v.validate(config)
 end

@@ -1,0 +1,6 @@
+# yaml-language-server: $schema=csr_schema.json
+
+# this single template is used to generate all 29 of the mhpmcounter csrs
+# <% hpm_num = 30 %>
+
+<%= ERB.new(File.read("#{File.dirname(__FILE__)}/mhpmcounterN.layout"), trim_mode: "-").result(binding) %>

@@ -3,5 +3,6 @@ Xcustom:
   type: unprivileged
   versions:
   - version: 0.1
+    ratification_date: null
   description: |
     A new custom extension!

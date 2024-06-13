@@ -43,6 +43,38 @@
             },
             "additionalProperties": false
           }
+        },
+        "exception_codes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "description": "Exceptions defined by this extension",
+            "properties": {
+              "num": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "interrupt_codes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "description": "Interrupts defined by this extension",
+            "properties": {
+              "num": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
         }
       },
       "additionalProperties": false

@@ -2,10 +2,8 @@
 
 <%-
   max_code = [
-    architectural_interrupt_codes.max { |a, b| a[0] <=> b[0] }[0],
-    architectural_exception_codes.max { |a, b| a[0] <=> b[0] }[0],
-    custom_interrupt_codes.empty? ? 0 : custom_interrupt_codes.max { |a, b| a[0] <=> b[0] }[0],
-    custom_exception_codes.empty? ? 0 : custom_exception_codes.max { |a, b| a[0] <=> b[0] }[0],
+    interrupt_codes.keys.max,
+    exception_codes.keys.max
   ].max
 -%>
 
@@ -32,26 +30,18 @@ scause:
         <%- end -%>
       type: RW-RH
       write(value): |
+        # the write only holds if the INT/CODE combination is valid
+        # otherwise, the old value is retained
         if (value.INT == 1) {
-          <%- architectural_interrupt_codes.each do |code| -%>
-          if (value.CODE == <%= code[0] %>) {
-            return 1;
-          }
-          <%- end -%>
-          <%- custom_interrupt_codes.each do |code| -%>
-          if (value.CODE == <%= code[0] %>) {
+          <%- interrupt_codes.each do |num, _name| -%>
+          if (value.CODE == <%= num %>) {
             return 1;
           }
           <%- end -%>
           return CSR[scause].INT;
         } else {
-          <%- architectural_exception_codes.each do |code| -%>
-          if (value.CODE == <%= code[0] %>) {
-            return 0;
-          }
-          <%- end -%>
-          <%- custom_exception_codes.each do |code| -%>
-          if (value.CODE == <%= code[0] %>) {
+          <%- exception_codes.each do |num, _name| -%>
+          if (value.CODE == <%= num %>) {
             return 0;
           }
           <%- end -%>
@@ -74,46 +64,32 @@ scause:
 
         Valid interrupt codes are:
         !===
-        <%- architectural_interrupt_codes.each do |c| -%>
-        ! <%= c[0] %> ! <%= c[1] %>
-        <%- end -%>
-        <%- custom_interrupt_codes.each do |c| -%>
-        ! <%= c[0] %> ! <%= c[1] %>
+        <%- Hash[interrupt_codes.sort_by { |num, _name| num }].each do |num, name| -%>
+        ! <%= num %> ! <%= name %>
         <%- end -%>
         !===
 
         Valid exception codes are:
         !===
-        <%- architectural_exception_codes.each do |c| -%>
-        ! <%= c[0] %> ! <%= c[1] %>
-        <%- end -%>
-        <%- custom_exception_codes.each do |c| -%>
-        ! <%= c[0] %> ! <%= c[1] %>
+        <%- Hash[exception_codes.sort_by { |num, _name| num }].each do |num, name| -%>
+        ! <%= num %> ! <%= name %>
         <%- end -%>
         !===
       type: RW-RH
       write(value): |
+        # the write only holds if the INT/CODE combination is valid
+        # otherwise, the old value is retained
         if (value.INT == 1) {
-          <%- architectural_interrupt_codes.each do |code| -%>
-          if (value.CODE == <%= code[0] %>) {
-            return <%= code[0] %>;
-          }
-          <%- end -%>
-          <%- custom_interrupt_codes.each do |code| -%>
-          if (value.CODE == <%= code[0] %>) {
-            return <%= code[0] %>;
+          <%- interrupt_codes.each do |num, _name| -%>
+          if (value.CODE == <%= num %>) {
+            return <%= num %>;
           }
           <%- end -%>
           return CSR[scause].CODE;
         } else {
-          <%- architectural_exception_codes.each do |code| -%>
-          if (value.CODE == <%= code[0] %>) {
-            return <%= code[0] %>;
-          }
-          <%- end -%>
-          <%- custom_exception_codes.each do |code| -%>
-          if (value.CODE == <%= code[0] %>) {
-            return <%= code[0] %>;
+          <%- exception_codes.each do |num, _name| -%>
+          if (value.CODE == <%= num %>) {
+            return <%= num %>;
           }
           <%- end -%>
           return CSR[scause].CODE;

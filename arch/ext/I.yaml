@@ -8,3 +8,45 @@ I:
     changes: atified RVWMO memory model and exclusion of FENCE.I, counters, and CSR instructions that were in previous base ISA
   description: |
     Base integer instructions -- TODO
+  interrupt_codes:
+  - num: 1
+    name: Supervisor software interrupt
+  - num: 3
+    name: Machine software interrupt
+  - num: 5
+    name: Supervisor timer interrupt
+  - num: 7
+    name: Machine timer interrupt
+  - num: 9
+    name: Supervisor external interrupt
+  - num: 11
+    name: Machine external interrupt
+  exception_codes:
+  - num: 0
+    name: Instruction address misaligned
+  - num: 1
+    name: Instruction access fault
+  - num: 2
+    name: Illegal instruction
+  - num: 3
+    name: Breakpoint
+  - num: 4
+    name: Load address misaligned
+  - num: 5
+    name: Load access fault
+  - num: 6
+    name: Store/AMO address misaligned
+  - num: 7
+    name: Store/AMO access fault
+  - num: 8
+    name: Environment call from <%- if ext?(:H) -%>V<%- end -%>U-mode
+  - num: 9
+    name: Environment call from <%- if ext?(:H) -%>H<%- end -%>S-mode
+  - num: 11
+    name: Environment call from M-mode
+  - num: 12
+    name: Instruction page fault
+  - num: 13
+    name: Load page fault
+  - num: 15
+    name: Store/AMO page fault

@@ -6,6 +6,26 @@ H:
   versions:
   - version: 1.0
     ratification_date: 2019-12
+  interrupt_codes:
+  - num: 2
+    name: Virtual supervisor software interrupt
+  - num: 6
+    name: Virtual supervisor timer interrupt
+  - num: 10
+    name: Virtual supervisor external interrupt
+  - num: 12
+    name: Supervisor guest external interrupt
+  exception_codes:
+  - num: 10
+    name: Environment call from VS-mode
+  - num: 20
+    name: Instruction guest page fault
+  - num: 21
+    name: Load guest page fault
+  - num: 22
+    name: Virtual instruction
+  - num: 23
+    name: Store/AMO guest page fault
   description: |
     This chapter describes the RISC-V hypervisor extension, which
     virtualizes the supervisor-level architecture to support the efficient

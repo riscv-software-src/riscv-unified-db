@@ -46,9 +46,6 @@ rule %r{#{$root}/.stamps/arch-gen-.*\.stamp} => proc { |tname|
   arch_gen = ArchGen.new(config_name)
   puts "Generating architecture definition in #{arch_gen.gen_dir.relative_path_from($root)}"
 
-  # remove anything old
-  FileUtils.rm_rf arch_gen.gen_dir
-
   arch_gen.generate
   FileUtils.touch t.name
 end

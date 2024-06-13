@@ -1,0 +1,5 @@
+# yaml-language-server: $schema=csr_schema.json
+
+# <%- pmpaddr_num = 3 -%>
+
+<%= ERB.new(File.read("#{File.dirname(__FILE__)}/pmpaddrN.layout"), trim_mode: "-").result(binding) %>

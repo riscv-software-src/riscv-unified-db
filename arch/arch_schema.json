@@ -3,7 +3,15 @@
 
   "type": "object",
   "title": "Unified Architecture Specification",
-  "required": ["extensions", "csrs", "params", "instructions", "exception_codes"],
+  "required": [
+    "extensions",
+    "implemented_extensions",
+    "csrs",
+    "implemented_csrs",
+    "params",
+    "instructions",
+    "implemented_instructions"
+  ],
   "properties": {
     "params": {
       "$ref": "../cfgs/config_schema.json#/$defs/params"
@@ -11,23 +19,38 @@
     "exception_codes": {
       "$ref": "misc/exception_code_schema.json"
     },
-    "extensions": {
+    "implemented_extensions": {
+      "description": "Extensions implemented by this architecture",
       "type": "array",
       "items": {
         "type": "object",
+        "required": ["name", "version"],
         "properties": {
           "name": {
-            "type": "string"
+            "type": "string",
+            "pattern": "^([A-WY]|([SXZ][a-z0-9]+))$",
+            "description": "Extension name"
           },
           "version": {
             "oneOf": [
-              { "type": "number" },
               {
                 "type": "string",
-                "pattern": "^[0-9]+(\\.[0-9]+(\\.[0-9]+(-[a-fA-F0-9]+)?)?)?$"
+                "description": "Extension version"
+              },
+              {
+                "type": "number"
               }
             ]
           }
+        },
+        "additionalProperties": false
+      }
+    },
+    "extensions": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "$ref": "ext/extension_schema.json#/$defs/ext_data"
         }
       }
     },
@@ -39,6 +62,15 @@
         }
       }
     },
+    "implemented_csrs": {
+      "description": "CSRs implemented by this architecture",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-zA-Z0-9]+$",
+        "description": "CSR name"
+      }
+    },
     "instructions": {
       "type": "object",
       "patternProperties": {
@@ -46,6 +78,15 @@
           "$ref": "inst/inst_schema.json#/$defs/inst_data"
         },
         "additionalProperties": false
+      }
+    },
+    "implemented_instructions": {
+      "description": "Instructions implemented by this architecture",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-zA-Z0-9.]+$",
+        "description": "Instruction name"
       }
     }
   },
