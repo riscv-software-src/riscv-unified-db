@@ -22,9 +22,8 @@ task :validate do
 end
 
 directory "#{$root}/.stamps"
-task stamps: "#{$root}/.stamps"
 
-file "#{$root}/.stamps/dev_gems" => :stamps do
+file "#{$root}/.stamps/dev_gems" => "#{$root}/.stamps" do
   Dir.chdir($root) do
     sh "bundle config set --local with development"
     sh "bundle install"
@@ -36,7 +35,7 @@ namespace :gen do
   desc "Generate documentation for the generator tool"
   task tool_doc: "#{$root}/.stamps/dev_gems" do
     Dir.chdir($root) do
-      sh "bundle exec yard doc 'lib/*.rb'"
+      sh "bundle exec yard doc -o docs/ruby 'lib/*.rb'"
     end
   end
 end
