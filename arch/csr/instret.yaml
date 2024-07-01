@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
 instret:
   long_name: Instructions retired counter for RDINSTRET Instruction
@@ -26,6 +26,7 @@ instret:
   fields:
     COUNT:
       location: 63-0
+      alias: minstret.COUNT
       description: Alias of `minstret.COUNT`.
       type: RO-H
       reset_value: 0

@@ -1,10 +1,11 @@
-# yaml-language-server: $schema=extension_schema.json
+# yaml-language-server: $schema=../../schemas/ext_schema.json
 
 A:
   type: unprivileged
   versions:
   - version: 2.1
     ratification_date: 2019-12
+  implies: [Zaamo, Zalrsc]
   description: |
 
     The atomic-instruction extension, named `A`, contains

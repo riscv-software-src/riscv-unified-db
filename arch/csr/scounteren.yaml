@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
 scounteren:
   long_name: Supervisor Counter Enable
@@ -27,7 +27,7 @@ scounteren:
         ! 1 ! writeable
         !===
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     TM:
       location: 1
       description: |
@@ -46,7 +46,7 @@ scounteren:
         !===
 
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     IR:
       location: 2
       description: |
@@ -66,7 +66,7 @@ scounteren:
 
 
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     <%- NUM_HPM_COUNTERS.times do |hpm_num| -%>
     HPM<%= hpm_num + 3 %>:
       location: <%= 3 + hpm_num %>
@@ -88,5 +88,5 @@ scounteren:
         !===
 
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     <%- end -%>

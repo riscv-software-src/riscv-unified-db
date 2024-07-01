@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 add.uw:
   long_name: Add unsigned word
@@ -12,5 +12,5 @@ add.uw:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     X[rd] = X[rs2] + X[rs1][31:0];

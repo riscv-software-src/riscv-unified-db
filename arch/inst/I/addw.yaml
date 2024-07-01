@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 addw:
   long_name: Add word
@@ -13,7 +13,7 @@ addw:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     XReg operand1 = sext(X[rs1], 31);
     XReg operand2 = sext(X[rs2], 31);
     X[rd] = sext(operand1 + operand2, 31);

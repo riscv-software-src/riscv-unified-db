@@ -63,12 +63,8 @@ if [[ ! -z "$VSCODE" && $VSCODE -eq 1 ]]; then
   done
 fi
 
-if [ ! -d $ROOT/.home/.npm ]; then
-  singularity run --home ${PWD}/.home .singularity/image.sif npm --location user config set prefix ${PWD}/.home
-fi
-
-if [ ! -d ${ROOT}/.home/lib/node_modules ]; then
-  singularity run --home ${PWD}/.home .singularity/image.sif npm --global true i
+if [ ! -d ${ROOT}/node_modules ]; then
+  singularity run --home ${PWD}/.home .singularity/image.sif npm i
 fi
 
 BUNDLE="singularity run --home ${PWD}/.home .singularity/image.sif bundle"

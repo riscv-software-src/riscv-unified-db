@@ -1,0 +1,33 @@
+[ext:$<%= ext.name %>-def]
+= <%= ext.name %>
+
+<%- if ext.respond_to?(:implies) && !ext.implies.empty? -%>
+This extension implies the following extension(s):
+
+<%= ext.implies.map { |e| arch_def.find_replace_links "`#{e}`" }.join(",") %>
+<%- end -%>
+
+== Versions
+
+|===
+| Version | Ratification Date
+<%- ext.versions.each do |v| -%>
+| <%= v["version"] %> | <%= v["ratification_date"] %>
+<%- end -%>
+|===
+
+== Synopsys
+
+<%- insts = arch_def.instructions.select { |i| i.definedBy == ext.name } -%>
+<%- unless insts.empty? -%>
+== Instructions
+
+The following instructions are added by this extension:
+
+<%- insts.each do |inst| -%>
+ * <%= arch_def.find_replace_links("`#{inst.name}`") %>
+<%- end -%>
+
+<%- end -%>
+
+<%= ext.description %>

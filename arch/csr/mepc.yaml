@@ -1,10 +1,10 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
 mepc:
   long_name: Machine Exception Program Counter
   address: 0x341
   priv_mode: M
-  length: 64
+  length(): return XLEN;
   description: |
     Written with the PC of an instruction on an exception or interrupt taken in M-mode.
 
@@ -12,7 +12,8 @@ mepc:
   definedBy: I
   fields:
     PC:
-      location: 63-0
+      location(): |
+        return [XLEN-1,0];
       description: |
         When a trap is taken into M-mode, `mepc.PC` is written with the virtual address of the
         instruction that was interrupted or that encountered the exception.
@@ -31,10 +32,10 @@ mepc:
         may be visible on the next read with `misa.C` is set.
         <% end %>
       type: RW-RH
-      write(value): |
-        return value & ~64'b1;
+      write(csr_value): |
+        return csr_value.PC & ~64'b1;
       reset_value: 0
-  sw_read: |
+  sw_read(): |
     if (implemented?(C) && CSR[misa].Extensions[2] == 1'b1) {
       return CSR[mepc] & ~64'b3;
     } else {

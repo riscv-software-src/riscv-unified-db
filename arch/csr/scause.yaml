@@ -1,11 +1,6 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
-<%-
-  max_code = [
-    interrupt_codes.keys.max,
-    exception_codes.keys.max
-  ].max
--%>
+# <%-max_code = [interrupt_codes.keys.max, exception_codes.keys.max].max -%>
 
 scause:
   long_name: Supervisor Cause
@@ -29,27 +24,27 @@ scause:
         If `scause` is written with an undefined cause (combination of `scause.INT` and `scause.CODE`), neither `scause.INT` nor `scause.CODE` are modified.
         <%- end -%>
       type: RW-RH
-      write(value): |
+      write(csr_value): |
         # the write only holds if the INT/CODE combination is valid
         # otherwise, the old value is retained
-        if (value.INT == 1) {
+        if (csr_value.INT == 1) {
           <%- interrupt_codes.each do |num, _name| -%>
-          if (value.CODE == <%= num %>) {
+          if (csr_value.CODE == <%= num %>) {
             return 1;
           }
           <%- end -%>
-          return CSR[scause].INT;
+          return ILLEGAL_WLRL;
         } else {
           <%- exception_codes.each do |num, _name| -%>
-          if (value.CODE == <%= num %>) {
+          if (csr_value.CODE == <%= num %>) {
             return 0;
           }
           <%- end -%>
-          return CSR[scause].INT;
+          return ILLEGAL_WLRL;
         }
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     CODE:
-      location: <%= max_code.bit_length - 1 %>-0
+      location:  <%= max_code.bit_length - 1 %>-0
       description: |
         Written by hardware when a trap is taken into S-mode.
 
@@ -76,22 +71,22 @@ scause:
         <%- end -%>
         !===
       type: RW-RH
-      write(value): |
+      write(csr_value): |
         # the write only holds if the INT/CODE combination is valid
         # otherwise, the old value is retained
-        if (value.INT == 1) {
+        if (csr_value.INT == 1) {
           <%- interrupt_codes.each do |num, _name| -%>
-          if (value.CODE == <%= num %>) {
+          if (csr_value.CODE == <%= num %>) {
             return <%= num %>;
           }
           <%- end -%>
-          return CSR[scause].CODE;
+          return ILLEGAL_WLRL;
         } else {
           <%- exception_codes.each do |num, _name| -%>
-          if (value.CODE == <%= num %>) {
+          if (csr_value.CODE == <%= num %>) {
             return <%= num %>;
           }
           <%- end -%>
-          return CSR[scause].CODE;
+          return ILLEGAL_WLRL;
         }
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL

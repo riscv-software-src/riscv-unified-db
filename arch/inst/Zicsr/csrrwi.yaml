@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 csrrwi:
   long_name: Atomic Read/Write CSR Immediate
@@ -17,7 +17,7 @@ csrrwi:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     if (rd != 0) {
       X[rd] = CSR[csr].sw_read();
     } 

@@ -1,25 +1,64 @@
 = Architecture Specification
 
+RISC-V is a highly configurable standard. Numerous unnamed implementation options exist, and the presence/absence of hundreds of named optional extensions alter the behavior of the architecture. Additionally, implementations are free to add custom, non-standard extensions on top of those ratified by https://riscv.org[RISC-V International (RVI)]. As a result, two equally valid implementations of RISC-V can have wildly different specifications.
+
+This makes creating generic RISC-V specifications a daunting task. A few challenging issues that arise include:
+
+ * The RISC-V standard actually specifies two different architectures, namely RV32 and RV64.
+ * The presence/absence of standard instructions and CSRs is affected by both unnamed implementation options (_e.g._, the number of implemented PMP registers) and named extensions.
+ * The behavior of architecturally-visible state is dependent on the set of implemented extensions. For example, the legal values of `satp.MODE` depend on whether or not the `Sv32`, `Sv39`, `Sv48`, and/or `Sv57` extensions are implemented.
+
+To tame this challenge, this specification generator takes the following approach:
+
+ * The generic architecture (in the `arch/` folder) is described as a _template_, which can be affected by implementation parameters (in the `cfgs/` folder).
+ * The resulting generated specification is specific to the implementation. Behaviors that are not relevant are left out, and behaviors that are affected by multiple extensions are merged into a single description.
+
+The architecture is specified in a series of https://en.wikipedia.org/wiki/YAML[YAML]
+files for _Extensions_, _Instructions_, and _Control and Status Registers (CSRs)_.
+Each extension/instruction/CSR has its own file. 
+
 == Flow
 
-[mermaid]
+[ditaa]
 ....
-----
-title: Configuration generator flow
-----
-flowchart LR
-  arch[(RISC-V Specification [arch/])]
-  params(Configuration parametrs [cfgs/NAME/params.yaml])
-  overrides(Configuration overrides [cfgs/NAME/overrides/*])
-
-  arch & params & overrides ==> comb([Combine])
-
-  comb ==> unified_arch[(Configuration-specific RISC-V Specification)]
-
-  adoc_spec[[Asciidoc spec]]
-  pdf_spec[[PDF Spec]]
-  html_spec[[HTML Spec]]
-  ISS[[Instruction Set Simulator]]
-  unified_arch ==> adoc_spec & ISS
-  adoc_spec ==> pdf_spec & html_spec
++----------------------------------------------------------------------------------------------+
+| Config (cfgs/NAME)                                                                           |
+| +-------------------------+ +-------------------------+ +---------------------------------+  |
+| | Implementation Options  | | Extension List          | | Implementation Overlay          |  |
+| | (cfgs/NAME/params.yaml) | | (cfgs/NAME/exts.yaml)   | | (cfgs/NAME/arch_overlay/*.yaml) |  |
+| +-------------------------+ +-------------------------+ +---------------------------------+  |
++------------------------|-----|--------------------------------|------------------------------+
+                         |     |                                |
+ +----------------+      v     v                                |
+ |{s} Templated   |   /----------\                              |
+ |    Arch Spec   |-->|  Render  |                              |
+ | (arch)         |   |  (ERB)   :                              |
+ +----------------+   \----------/                              |
+                           |                                    |
+                           v                                    |
+              +-----------------------------+                   |
+              | {s} Redered Arch Spec       |                   |
+              | (gen/NAME/.rendered_arch)   |                   |
+              +-----------------------------+                   |
+                           |                                    |
+                           v                                    |
+                      /----------\                              |
+                      |  Overlay |<-----------------------------+
+                      |          :
+                      \----------/
+                           |
+                           v
+              +-----------------------------+
+              | {s} Implementation-specific |
+              |     Archiecture Spec        |
+              | (cfgs/NAME/arch)            |
+              +-----------------------------+
 ....
+
+== Artifacts
+
+=== Generic Architecture Specification (`arch/`)
+
+The generic architecture template is in the `arch/` directory. 
+
+=== Implementation Options

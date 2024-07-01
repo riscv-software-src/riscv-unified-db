@@ -3,4 +3,4 @@
 marchid:
   fields:
     Architecture:
-      value: 0xcafebabe
+      reset_value: 0xcafebabe

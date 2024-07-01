@@ -1,10 +1,10 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 sfence.vma:
   long_name: Supervisor memory-management fence
   definedBy: S
   description: |
-    The supervisor memory-management fence instruction SFENCE.VMA is used to
+    The supervisor memory-management fence instruction `SFENCE.VMA` is used to
     synchronize updates to in-memory memory-management data structures with
     current execution. Instruction execution causes implicit reads and
     writes to these data structures; however, these implicit references are
@@ -211,7 +211,7 @@ sfence.vma:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     XReg vaddr = X[rs1];
     Bits<ASID_WIDTH> asid = X[rs2][ASID_WIDTH-1:0];
 

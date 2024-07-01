@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 cbo.clean:
   long_name: Cache Block Clean
@@ -6,7 +6,7 @@ cbo.clean:
     Cleans an entire cache block globally throughout the system. 
 
     Exactly what happens is coherence protocol-dependent, but in general it is expected that after this
-    operation:
+    operation():
 
       * The cache block will be in the clean (not dirty) state in any coherent cache holding a valid copy of the line.
       * The data will be cleaned to a point such that an incoherent load can observe the cleaed data.
@@ -58,17 +58,8 @@ cbo.clean:
     ! 1 ! 0 ! 1 ! executes ! `Illegal Instruction` ! executes ! `Virtual Instruction` 
     ! 1 ! 1 ! 1 ! executes ! executes ! executes ! executes
     !===
-  # operation: |
+  # operation(): |
   #   let cache_block_address = X[rs1] & ~(CACHE_BLOCK_SIZE-1);
 
   #   CACHE_BLOCK_CLEAN(cache_block_address);
-  raises:
-    - Store/AMO Page Fault
-    <%- if ext?(:H) -%>
-    - Store/AMO Guest-Page Fault
-    <%- end -%>
-    - Store Access Fault
-    - Illegal Instruction
-    <%- if ext?(:H) -%>
-    - Virtual Instruction
-    <%- end -%>
+

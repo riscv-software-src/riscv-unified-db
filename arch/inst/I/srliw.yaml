@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 srliw:
   long_name: Shift right logical immediate word
@@ -11,7 +11,7 @@ srliw:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     # shamt is between 0-31
     XReg operand = X[rs1][31:0];
 

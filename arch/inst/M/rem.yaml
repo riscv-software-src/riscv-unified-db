@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 rem:
   long_name: Signed remainder
@@ -15,7 +15,7 @@ rem:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     XReg src1 = X[rs1];
     XReg src2 = X[rs2];
 

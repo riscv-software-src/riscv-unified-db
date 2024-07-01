@@ -1,0 +1,1284 @@
+%version: 1.0
+
+# global state
+
+# general purpose register file
+# is BUILTIN storage.
+# This is to accommodate the zero register (x0) without
+# needed ISL language support or hard-to-read function calls
+# on any x register read/write
+# Bits<XLEN> X[31];
+
+# # custom operator overload for the x register file
+# # to ensure that x[0] is never written
+# function X {
+#  arguments Bits<XLEN> index
+#  description {
+#    Get value of x register.
+#  }
+#  body {
+#    assert (index <= 31);
+#    return x[index - 1];
+#  }
+#}
+#function X= {
+#  arguments Bits<XLEN> index, Bits<XLEN> value
+#  description {
+#    Overload assignment for values in x so that writes
+#    to x0 can be elided.
+#  }
+#  body {
+#    assert (index <= 31);
+#    if (index != 0) {
+#      x[index - 1] = value;
+#    }
+#  }
+#}
+# operator[]= x(U64 index, Bits<XLEN> value) {
+#   if (index != 0) {
+#     x[index] = value;
+#   }
+# }
+
+# floating point register file
+U32 FLEN = implemented?(ExtensionName::D) ? 64 : 32;
+Bits<FLEN> f[32];
+
+// encoded as defined in the privilege spec
+enum PrivilegeMode {
+  M  0b011
+  S  0b001
+  HS 0b001 // alias for S when H extension is used
+  U  0b000
+  VS 0b101
+  VU 0b100
+}
+
+enum MemoryOperation {
+  Read
+  Write
+  ReadModifyWrite
+  Fetch
+}
+
+enum PmaAttribute {
+  RsrvEventual
+}
+
+# do not change these values!! the compiler assumes them
+enum CsrFieldType {
+  RO   0
+  ROH  1
+  RW   2
+  RWR  3
+  RWH  4
+  RWRH 5
+}
+
+// generated from extension information in arch defintion
+builtin enum ExtensionName;
+
+// XLEN encoding, as defined in CSR[mstatus].mxl, etc.
+enum XRegWidth {
+  XLEN32 0
+  XLEN64 1
+}
+
+enum ExceptionCode {
+  None 0xffff
+  InstructionAddressMisaligned 0
+  InstructionAccessFault 1
+  IllegalInstruction 2
+  Breakpoint 3
+  LoadAddressMisaligned 4
+  LoadAccessFault 5
+  StoreAmoAddressMisaligned 6
+  StoreAmoAccessFault 7
+  Ucall 8
+  Scall 9
+  // reserved 10
+  Mcall 11
+  InstructionPageFault 12
+  LoadPageFault 13
+  // reserved 14
+  StoreAmoPageFault 15
+  // reserved 16-19
+  InstructionGuestPageFault 20
+  LoadGuestPageFault 21
+  VirtualInstruction 22
+  StoreAmoGuestPageFault 23
+}
+
+enum RoundingMode {
+  RNE 0  // Round to nearest, ties to even
+  RTZ 1  // Round toward zero
+  RDN 2  // Round down (towards -inf)
+  RUP 3  // Round up (towards +inf)
+  RMM 4  // Round to nearest, ties to Max Magnitude
+}
+
+enum SatpMode {
+  Bare 0
+  Sv32 1
+  Sv39 8
+  Sv48 9
+  Sv57 10
+}
+
+bitfield (64) Sv39PageTableEntry {
+  N 63
+  PBMT 62-61
+  Reserved 60-54
+  PPN2 53-28
+  PPN1 27-19
+  PPN0 18-10
+  PPN 53-10 // in addition to the components, we define the entire PPN
+  RSW  9-8
+  D 7
+  A 6
+  G 5
+  U 4
+  X 3
+  W 2
+  R 1
+  V 0
+}
+
+builtin function implemented? {
+  returns Boolean
+  arguments ExtensionName extension
+  description {
+    Return true if the implementation supports `extension`.
+  }
+}
+
+builtin function mode {
+  returns PrivilegeMode
+  description {
+    Returns the current active privilege mode.
+  }
+}
+
+builtin function assert {
+  arguments Boolean test
+  description {
+    Assert that a condition is true. Failure represents a specification error.
+  }
+}
+
+builtin function set_mode {
+  arguments PrivilegeMode new_mode
+  description {
+    Set the current privilege mode to `new_mode`
+  }
+}
+
+builtin function abort_current_instruction {
+  description {
+    Abort the current instruction, and start refetching from PC
+  }
+}
+
+function power_of_2? {
+  template U32 N
+  returns Boolean
+  arguments Bits<N> value
+  description {
+    Returns true if value is a power of two, false otherwise
+  }
+  body {
+    return (value != 0) && ((value & (value - 1)) == 0);
+  }
+}
+
+function exception_handling_mode {
+  returns PrivilegeMode
+  arguments ExceptionCode exception_code
+  description {
+    Returns the target privilege mode that will handle synchronous exception `exception_code`
+  }
+  body {
+    if (mode() == PrivilegeMode::M) {
+      // exceptions can never be taken in a less-privileged mode, so if the current
+      // mode is M, the value of medeleg is irrelevant
+      return PrivilegeMode::M;
+    } else if (implemented?(ExtensionName::S) && ((mode() == PrivilegeMode::HS) || (mode() == PrivilegeMode::U))) {
+      if ((CSR[medeleg] & (1 << exception_code.value)) != 0) {
+        return PrivilegeMode::HS;
+      } else {
+        return PrivilegeMode::M;
+      }
+    } else {
+      assert(implemented?(ExtensionName::H) && ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)));
+      if ((CSR[medeleg] &  (1 << exception_code.value)) != 0) {
+        if ((CSR[hedeleg] & (1 << exception_code.value)) != 0) {
+          return PrivilegeMode::VS;
+        } else {
+          return PrivilegeMode::HS;
+        }
+      } else {
+        // if an exception is not delegated to HS-mode, it can't be delegated to VS-mode
+        return PrivilegeMode::M;
+      }
+    }
+  }
+}
+
+function raise {
+  arguments ExceptionCode exception_code
+  description {
+    Raise synchronous exception number `exception_code`.
+  }
+  body {
+    PrivilegeMode handling_mode = exception_handling_mode(exception_code);
+
+    if (handling_mode == PrivilegeMode::M) {
+      CSR[mepc] = PC;
+      PC = {CSR[mtvec].BASE, 2'b00};
+      CSR[mcause] = exception_code.value;
+      // note that mtval is set elsewhere
+    } else if (implemented?(ExtensionName::S) && (handling_mode == PrivilegeMode::HS)) {
+      CSR[sepc] = PC;
+      PC = {CSR[stvec].BASE, 2'b00};
+      CSR[scause] = exception_code.value;
+      // note that stval is set elsewhere
+    } else {
+      assert(implemented?(ExtensionName::H) && handling_mode == PrivilegeMode::VS);
+      CSR[vsepc] = PC;
+      PC = {CSR[vstvec].BASE, 2'b00};
+      CSR[vscause] = exception_code.value;
+    }
+
+    // abort the current instruction, and start to refetch from PC
+    set_mode(handling_mode);
+    abort_current_instruction();
+  }
+}
+
+function jump {
+  arguments XReg target_addr
+  description {
+    Jump to virtual address `target_addr`.
+
+    If target address is misaligned, raise a `MisalignedAddress` exception.
+  }
+  body {
+    # raise a misaligned exception if address is not aligned to IALIGN
+    if (implemented?(ExtensionName::C) &&         # C is implemented
+        ((CSR[misa].Extensions & 0x4) == 0x4) &&  # and C is enabled dynamically
+        ((target_addr & 0x1) != 0)) {             # and the target PC is odd
+      raise(ExceptionCode::InstructionAddressMisaligned);
+    } else if ((target_addr & 0x3) != 0) {
+      raise(ExceptionCode::InstructionAddressMisaligned);
+    }
+
+    PC = target_addr;
+  }
+}
+
+builtin function xlen {
+  returns XRegWidth
+  description {
+    Returns the effective XLEN for the current privilege mode.
+  }
+}
+
+function virtual_mode? {
+  returns Boolean
+  description {
+    Returns True if the current mode is virtual (VS or VU).
+  }
+  body {
+    return (mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU);
+  }
+}
+
+builtin function sext {
+  returns XReg
+  arguments XReg value, XReg first_extended_bit
+  description {
+    Sign extend `value` starting at `first_extended_bit`.
+
+    Bits [`XLEN-1`:`first_extended_bit`] of the return value
+    should get the value of bit (`first_extended bit - 1`).
+  }
+}
+
+builtin function zext {
+  returns XReg
+  arguments XReg value, XReg first_extended_bit
+  description {
+    Zero extend `value` starting at `first_extended_bit`.
+
+    Bits [`XLEN-1`:`first_extended_bit`] of the return value
+    should get the value `0`;
+  }
+}
+
+builtin function ebreak {
+  description {
+    Raise an `Environment Break` exception, returning control to the debug environment.
+  }
+}
+
+builtin function ecall {
+  description {
+    Raise an `Environment Call` exception, returning control to another privilege mode.
+  }
+}
+
+builtin function saturate {
+  returns XReg
+  arguments XReg value, XReg max_value
+  description {
+    If unsigned `value` is less than `max_value`, return `value`.
+    Otherwise, return `max_value`.
+  }
+}
+
+builtin function fence {
+  arguments Boolean PI, Boolean PR, Boolean PO, Boolean PW, Boolean SI, Boolean SR, Boolean SO, Boolean SW
+  description {
+    Execute a memory ordering fence.(according to the FENCE instruction).
+  }
+}
+
+builtin function ifence {
+  description {
+    Execute a memory ordering instruction fence (according to FENCE.I).
+  }
+}
+
+builtin function pow {
+  returns XReg
+  arguments XReg value, XReg exponent
+  description {
+    Return `value` to the power `exponent`.
+  }
+}
+
+function mask_eaddr {
+  returns XReg
+  arguments XReg eaddr
+  description {
+    Mask upper N bits of an effective address if pointer masking is enabled
+  }
+  body {
+    #if (implemented?(ExtensionName::Zjpm)) {
+    #  if (mode() == PrivilegeMode::M) {
+    #    if (CSR[mpm].menable) {
+    #      # ignore upper mbits of effective address
+    #      return sext(xlen() - CSR[mpm].mbits, eaddr);
+    #    }
+    #  } else if (mode() == PrivilegeMode::S) { # also applies to HS mode
+    #    if (CSR[spm].senable) {
+    #      # ignore upper sbits of effective address
+    #      return sext(xlen() - CSR[spm].sbits, eaddr);
+    #    }
+    #  } else if (mode() == PrivilegeMode::U || mode() == PrivilegeMode::VU) {
+    #    if (CSR[upm].uenable) {
+    #      # ignore upper ubits of effective address
+    #      return sext(xlen() - CSR[upm].ubits, eaddr);
+    #    }
+    #  }
+    #}
+
+    # by default, eaddr == vaddr
+    return eaddr;
+  }
+}
+
+// builtin function maybe_cache_translation {
+//   arguments TranslationResult result
+//   description {
+//     Given a translation result, potentially cache the result for later use. This function models
+//     a TLB fill operation. A valid implementation does nothing.
+//   }
+// }
+
+builtin function invalidate_all_translations {
+  description {
+    Locally invalidate all cached address translations, from all address ranges
+    and all ASIDs, including global mappings.
+
+    A valid implementation does nothing if address caching is not used.
+  }
+}
+
+builtin function sfence_all {
+  description {
+    Ensure all loads and stores after this operation see any previous address cache invalidations.
+  }
+}
+
+builtin function sfence_asid {
+  arguments Bits<ASID_WIDTH> asid
+  description {
+    Ensure all reads and writes using address space 'asid' see any previous address space invalidations.
+
+    Does not have to (but may, if conservative) order any global mappings.
+  }
+}
+
+builtin function sfence_vaddr {
+  arguments XReg vaddr
+  description {
+    Ensure all reads and writes using a leaf page table that contains 'vaddr' see any previous address space invalidations.
+
+    Must also order any global mappings containing 'vaddr'.
+  }
+}
+
+builtin function sfence_asid_vaddr {
+  arguments Bits<ASID_WIDTH> asid, XReg vaddr
+  description {
+    Ensure all reads and writes using address space 'asid' and a leaf page table that contains 'vaddr' see any previous address space invalidations.
+
+    Does not have to (but may, if conservative) order any global mappings.
+  }
+}
+
+builtin function invalidate_asid_translations {
+  arguments Bits<ASID_WIDTH> asid
+  description {
+    Locally invalidate all cached address translations for address space 'asid'.
+    Does not affect global mappings.
+
+    A valid implementation does nothing if address caching is not used.
+  }
+}
+
+builtin function invalidate_vaddr_translations {
+  arguments XReg vaddr
+  description {
+    Locally invalidate all cached address translations representing 'vaddr', for all address spaces.
+    Equally affects global mappings.
+
+    A valid implementation does nothing if address caching is not used.
+  }
+}
+
+builtin function invalidate_asid_vaddr_translations {
+  arguments Bits<ASID_WIDTH> asid, XReg vaddr
+  description {
+    Locally invalidate all cached address translations for address space 'asid' that represent 'vaddr'.
+    Does not affect global mappings.
+
+    A valid implementation does nothing if address caching is not used.
+  }
+}
+
+bitfield (8) PmpCfg {
+  L 7
+  Rsvd 6-5
+  A 4-3
+  X 2
+  W 1
+  R 0
+}
+
+enum PmpCfg_A {
+  OFF 0
+  TOR 1
+  NA4 2
+  NAPOT 3
+}
+
+enum PmpMatchResult {
+  NoMatch 0
+  FullMatch 1
+  PartialMatch 2
+}
+
+function pmp_match_64 {
+  template U32 access_size
+  returns PmpMatchResult, PmpCfg
+  arguments Bits<PHYS_ADDR_WIDTH> paddr
+  description {
+    Given a physical address, see if any PMP entry matches.
+    
+    If there is a complete match, return the PmpCfg that guards the region.
+    If there is no match or a partial match, report that result.
+  }
+  body {
+    Bits<12> pmpcfg0_addr = 0x3a0;
+    Bits<12> pmpaddr0_addr = 0x3b0;
+
+    for (U32 i=0; i<NUM_PMP_ENTRIES; i++) {
+      # get the registers for this PMP entry
+      Bits<12> pmpcfg_idx = pmpcfg0_addr + (i/8)*2;
+      Bits<6> shamt = (i % 8)*8;
+      PmpCfg cfg = ($bits(CSR[pmpcfg0_addr]) >> shamt)[7:0];
+      Bits<12> pmpaddr_idx = pmpaddr0_addr + i;
+
+      # set up the default range limits, which will result in NoMatch when
+      # compared to the access
+      Bits<PHYS_ADDR_WIDTH> range_hi = 0;
+      Bits<PHYS_ADDR_WIDTH> range_lo = 0;
+
+      if (cfg.A == $bits(PmpCfg_A::TOR)) {
+        if (i == 0) {
+          # when entry zero is TOR, zero is the lower address bound
+          range_lo = 0;
+        } else {
+          # otherwise, it's the address in the next lowest pmpaddr register
+          range_lo = (CSR[pmpaddr_idx - 1] << 2)[PHYS_ADDR_WIDTH-1:0];
+        }
+        range_hi = (CSR[pmpaddr_idx] << 2)[PHYS_ADDR_WIDTH-1:0];
+
+      } else if (cfg.A == $bits(PmpCfg_A::NAPOT)) {
+        # Example pmpaddr: 0b00010101111
+        #                          ^--- last 0 dictates region size & alignment
+        # pmpaddr + 1:     0b00010110000
+        # mask:            0b00000011111
+        # ~mask:           0b11111100000
+        # len = mask + 1:  0b00000100000
+        Bits<PHYS_ADDR_WIDTH-2> pmpaddr_value = CSR[pmpaddr_idx].sw_read()[PHYS_ADDR_WIDTH-3:0];
+        Bits<PHYS_ADDR_WIDTH-2> mask = pmpaddr_value ^ (pmpaddr_value + 1);
+        range_lo = (pmpaddr_value & ~mask) << 2;
+        Bits<PHYS_ADDR_WIDTH-2> len = mask + 1;
+        range_hi = ((pmpaddr_value & ~mask) + len) << 2;
+
+      } else if (cfg.A == $bits(PmpCfg_A::NA4)) {
+        range_lo = (CSR[pmpaddr_idx] << 2)[PHYS_ADDR_WIDTH-1:0];
+        range_hi = range_lo + 4;
+      }
+
+      if ((paddr >= range_lo) && ((paddr + (access_size/8)) < range_hi)) {
+        # full match
+        return PmpMatchResult::FullMatch, cfg;
+      } else if (!(((paddr + (access_size/8) - 1) < range_lo) || (paddr >= range_hi))) {
+        # this is a partial match. By definition, the access must fail, regardless
+        # of the pmp cfg settings
+        return PmpMatchResult::PartialMatch, -;
+      }
+    }
+    # fall-through: there was no match
+    return PmpMatchResult::NoMatch, -;
+  }
+}
+
+function pmp_match_32 {
+  template U32 access_size
+  returns PmpMatchResult, PmpCfg
+  arguments Bits<PHYS_ADDR_WIDTH> paddr
+  description {
+    Given a physical address, see if any PMP entry matches.
+    
+    If there is a complete match, return the PmpCfg that guards the region.
+    If there is no match or a partial match, report that result.
+  }
+  body {
+    Bits<12> pmpcfg0_addr = 0x3a0;
+    Bits<12> pmpaddr0_addr = 0x3b0;
+
+    for (U32 i=0; i<NUM_PMP_ENTRIES; i++) {
+      # get the registers for this PMP entry
+      Bits<12> pmpcfg_idx = pmpcfg0_addr + (i/4);
+      Bits<6> shamt = (i % 4)*8;
+      PmpCfg cfg = ($bits(CSR[pmpcfg0_addr]) >> shamt)[7:0];
+      Bits<12> pmpaddr_idx = pmpaddr0_addr + i;
+
+      # set up the default range limits, which will result in NoMatch when
+      # compared to the access
+      Bits<PHYS_ADDR_WIDTH> range_hi = 0;
+      Bits<PHYS_ADDR_WIDTH> range_lo = 0;
+
+      if (cfg.A == $bits(PmpCfg_A::TOR)) {
+        if (i == 0) {
+          # when entry zero is TOR, zero is the lower address bound
+          range_lo = 0;
+        } else {
+          # otherwise, it's the address in the next lowest pmpaddr register
+          range_lo = (CSR[pmpaddr_idx - 1] << 2)[PHYS_ADDR_WIDTH-1:0];
+        }
+        range_hi = (CSR[pmpaddr_idx] << 2)[PHYS_ADDR_WIDTH-1:0];
+
+      } else if (cfg.A == $bits(PmpCfg_A::NAPOT)) {
+        # Example pmpaddr: 0b00010101111
+        #                          ^--- last 0 dictates region size & alignment
+        # pmpaddr + 1:     0b00010110000
+        # mask:            0b00000011111
+        # ~mask:           0b11111100000
+        # len = mask + 1:  0b00000100000
+        Bits<PHYS_ADDR_WIDTH-2> pmpaddr_value = CSR[pmpaddr_idx].sw_read()[PHYS_ADDR_WIDTH-3:0];
+        Bits<PHYS_ADDR_WIDTH-2> mask = pmpaddr_value ^ (pmpaddr_value + 1);
+        range_lo = (pmpaddr_value & ~mask) << 2;
+        Bits<PHYS_ADDR_WIDTH-2> len = mask + 1;
+        range_hi = ((pmpaddr_value & ~mask) + len) << 2;
+
+      } else if (cfg.A == $bits(PmpCfg_A::NA4)) {
+        range_lo = ($bits(CSR[pmpaddr_idx]) << 2)[PHYS_ADDR_WIDTH-1:0];
+        range_hi = range_lo + 4;
+      }
+
+      if ((paddr >= range_lo) && ((paddr + (access_size/8)) < range_hi)) {
+        # full match
+        return PmpMatchResult::FullMatch, cfg;
+      } else if (!(((paddr + (access_size/8) - 1) < range_lo) || (paddr >= range_hi))) {
+        # this is a partial match. By definition, the access must fail, regardless
+        # of the pmp cfg settings
+        return PmpMatchResult::PartialMatch, -;
+      }
+    }
+    # fall-through: there was no match
+    return PmpMatchResult::NoMatch, -;
+  }
+}
+
+function pmp_match {
+  template U32 access_size
+  returns PmpMatchResult, PmpCfg
+  arguments Bits<PHYS_ADDR_WIDTH> paddr
+  description {
+    Given a physical address, see if any PMP entry matches.
+    
+    If there is a complete match, return the PmpCfg that guards the region.
+    If there is no match or a partial match, report that result.
+  }
+  body {
+    if (XLEN == 64) {
+      return pmp_match_64<access_size>(paddr);
+    } else {
+      return pmp_match_32<access_size>(paddr);
+    }
+  }
+}
+
+
+function effective_ldst_mode {
+  returns PrivilegeMode
+  description {
+    Returns the effective privilege mode for normal explicit loads and stores, taking into account
+    the current actual privilege mode and modifications from `mstatus.MPRV`.
+  }
+  body {
+
+    // when the mode is M, loads and stores can be executed as if they were done from any other mode
+    // with the use of mstatus.MPRV
+    if (mode() == PrivilegeMode::M) {
+      if (CSR[mstatus].MPRV == 1) {
+        if (CSR[mstatus].MPP == 0b00) {
+          if (implemented?(ExtensionName::H) && CSR[mstatus].MPV == 0b1) {
+            return PrivilegeMode::VU;
+          } else {
+            return PrivilegeMode::U;
+          }
+        } else if (CSR[mstatus].MPP == 0b01) {
+          if (implemented?(ExtensionName::H) && CSR[mstatus].MPV == 0b1) {
+            return PrivilegeMode::VS;
+          } else {
+            return PrivilegeMode::S;
+          }
+        }
+      }
+    }
+
+    // no modifiers were found, return actual mode
+    return mode();
+  }
+}
+
+
+function pmp_check {
+  template U32 access_size
+  returns Boolean
+  arguments Bits<PHYS_ADDR_WIDTH> paddr, MemoryOperation type
+  description {
+    Given a physical address and operation type, return whether or not the access is allowed by PMP.
+  }
+  body {
+    PrivilegeMode mode = effective_ldst_mode();
+    PmpMatchResult match_result;
+    PmpCfg cfg;
+
+    (match_result, cfg) = pmp_match<access_size>(paddr);
+
+    if (match_result == PmpMatchResult::FullMatch) {
+      if (mode == PrivilegeMode::M && (cfg.L == 0)) {
+        # when the region is not locked, all M-mode access pass
+        return true;
+      }
+
+      # this is either an HS, VS, VU, or U mode access, or an M mode access with cfg.L set
+      # the RWX settings in cfg apply
+      if (type == MemoryOperation::Write && (cfg.W == 0)) {
+        return false;
+      } else if (type == MemoryOperation::Read && (cfg.R == 0)) {
+        return false;
+      } else if (type == MemoryOperation::Fetch && (cfg.X == 0)) {
+        return false;
+      }
+    } else if (match_result == PmpMatchResult::NoMatch) {
+      # with no matched, M-mode passes and everything else fails
+      if (mode == PrivilegeMode::M) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      assert(match_result == PmpMatchResult::PartialMatch);
+
+      # by defintion, any partial match fails the access, regardless of the config settings
+      return false;
+    }
+
+    # fall-through passes
+    return true;
+  }
+}
+
+function access_check {
+  template U32 access_size
+  returns Boolean, ExceptionCode
+  arguments XReg paddr, MemoryOperation type
+  description {
+    Returns True if the current privilege mode cannot access the physical address paddr.
+  }
+  body {
+    # check if this is a valid physical address
+    if (paddr[XLEN-1:PHYS_ADDR_WIDTH] != 0) {
+      if (type == MemoryOperation::Write) {
+        raise (ExceptionCode::StoreAmoAccessFault);
+      } else if (type == MemoryOperation::Read) {
+        raise (ExceptionCode::LoadAccessFault);
+      } else if (type == MemoryOperation::Fetch) {
+        raise (ExceptionCode::InstructionAccessFault);
+      }
+    }
+
+    # check PMP
+    # can return either AccessFault or AddressMisalignedException
+    if (!pmp_check<access_size>(paddr[PHYS_ADDR_WIDTH-1:0], type)) {
+      if (type == MemoryOperation::Write) {
+        raise (ExceptionCode::StoreAmoAccessFault);
+      } else if (type == MemoryOperation::Read) {
+        raise (ExceptionCode::LoadAccessFault);
+      } else if (type == MemoryOperation::Fetch) {
+        raise (ExceptionCode::InstructionAccessFault);
+      }
+    }
+    return false, -;
+  }
+}
+
+builtin function check_pma {
+  returns Boolean
+  arguments XReg paddr, PmaAttribute attr
+  description {
+    Returns True if the address at paddr has PMA Attribute 'attr'
+  }
+}
+
+builtin function read_physical_memory {
+  template U32 len
+  returns Bits<len>
+  arguments XReg paddr
+  description {
+    Read from physical memory.
+  }
+}
+
+function is_naturally_aligned {
+  template U32 M, U32 N
+  returns Boolean
+  arguments Bits<M> value
+  description {
+    Checks if M-bit value is naturally aligned to N bits.
+  }
+  body {
+    Bits<M> mask = (N/8) - 1;
+    return (value & ~mask) == value;
+  }
+}
+
+builtin function write_physical_memory {
+  template U32 len
+  arguments XReg paddr, Bits<len> value
+  description {
+    Write to physical memory.
+  }
+}
+
+function base32? {
+  returns Boolean
+  description {
+    return True iff current effective XLEN == 32
+  }
+  body {
+    XRegWidth xlen32 = XRegWidth::XLEN32;
+    if (mode() == PrivilegeMode::M) {
+      return CSR[misa].MXL == xlen32.value;
+    } else if (implemented?(ExtensionName::S) && mode() == PrivilegeMode::S) {
+      return CSR[mstatus].SXL == xlen32.value;
+    } else if (implemented?(ExtensionName::U) && mode() == PrivilegeMode::U) {
+      return CSR[mstatus].UXL == xlen32.value;
+    } else if (implemented?(ExtensionName::H) && mode() == PrivilegeMode::VS) {
+      return CSR[hstatus].VSXL == xlen32.value;
+    } else {
+      assert(implemented?(ExtensionName::H) && mode() == PrivilegeMode::VU);
+      return CSR[vsstatus].UXL == xlen32.value;
+    }
+  }
+}
+
+function base64? {
+  returns Boolean
+  description {
+    return True iff current effective XLEN == 64
+  }
+  body {
+    XRegWidth xlen64 = XRegWidth::XLEN64;
+
+    if (mode() == PrivilegeMode::M) {
+      return CSR[misa].MXL == xlen64.value;
+    } else if (mode() == PrivilegeMode::S) {
+      return CSR[mstatus].SXL == xlen64.value;
+    } else if (mode() == PrivilegeMode::U) {
+      return CSR[mstatus].UXL == xlen64.value;
+    } else if (mode() == PrivilegeMode::VS) {
+      return CSR[hstatus].VSXL == xlen64.value;
+    } else {
+      assert(mode() == PrivilegeMode::VU);
+      return CSR[vsstatus].UXL == xlen64.value;
+    }
+  }
+}
+
+function translate_load_gstage {
+  returns Bits<PHYS_ADDR_WIDTH>
+  arguments XReg gpaddr
+  description {
+    Tranlate guest physical address into host physical address.
+  }
+  body {
+    XReg ppn;
+    if (base32?()) {
+      return 0;
+    } else {
+      return 0;
+    }
+  }
+}
+
+function translate_load_sv32 {
+  returns Bits<34>
+  arguments XReg vaddr, XReg satp
+  description {
+    Translate virtual address using Sv32
+  }
+  body {
+    return 0;
+  }
+}
+
+function current_translation_mode {
+  returns SatpMode
+  description {
+    Returns the current translation mode for a load or store
+    given the machine state (e.g., value of `satp` csr).
+  }
+  body {
+    PrivilegeMode effective_mode = effective_ldst_mode();
+
+    SatpMode translation_mode;
+
+    if (effective_mode == PrivilegeMode::M) {
+      return SatpMode::Bare;
+    } else {
+      # if (implemented?(ExtensionName::H) && virtual_mode?()) {
+        # return CSR[vsatp].MODE;
+      # } else {
+        return CSR[satp].MODE;
+      # }
+    }
+  }
+}
+
+function valid_vaddr? {
+  returns Boolean
+  arguments XReg vaddr
+  description {
+    Checks whether 'vaddr' is a valid virtual address for the given machine state (e.g., translation mode). 
+  }
+  body {
+    SatpMode translation_mode = current_translation_mode();
+
+    if (translation_mode == SatpMode::Bare) {
+      if (vaddr[XLEN-1:PHYS_ADDR_WIDTH] != 0) {
+        # virtual address is larger than physical address
+        return false;
+      }
+
+    } else if (translation_mode == SatpMode::Sv32) {
+      # sv32 uses 32-bit virtual addresses, so all vaddrs are valid
+      return true;
+
+    } else if (implemented?(ExtensionName::Sv39) && translation_mode == SatpMode::Sv39) {
+      if (vaddr[63:39] != {25{vaddr[38]}}) {
+        # non-canonical virtual address
+        return false;
+      }
+
+    } else if (implemented?(ExtensionName::Sv48) && translation_mode == SatpMode::Sv48) {
+      if (vaddr[63:48] != {16{vaddr[47]}}) {
+        # non-canonical virtual address
+        return false;
+      }
+
+    } else if (implemented?(ExtensionName::Sv57) && translation_mode == SatpMode::Sv57) {
+      if (vaddr[63:57] != {7{vaddr[56]}}) {
+        # non-canonical virtual address
+        return false;
+      }
+    }
+
+    # fall through: virtual address is valid
+    return true;
+  }
+}
+
+function translate_sv39 {
+  returns Bits<56>
+  arguments XReg vaddr, XReg satp, MemoryOperation op
+  description {
+    Translate virtual address using Sv39.
+
+    Return physical address, which is not accessed checked (e.g., for PMP, PMA)
+  }
+  body {
+    XReg ppn;
+    ExceptionCode ecode =
+      op == MemoryOperation::Read ?
+        ExceptionCode::LoadPageFault :
+        ( op == MemoryOperation::Fetch ?
+            ExceptionCode::InstructionPageFault :
+            ExceptionCode::StoreAmoPageFault );
+
+#    if (virtual_mode?()) {
+#      ppn = CSR[vsatp].ppn;
+#    } else {
+      ppn = CSR[satp].PPN;
+#    }
+
+    if (vaddr[63:39] != {25{vaddr[38]}}) {
+      # non-canonical virtual address raises a page fault
+      # note that if pointer masking is enabled, vaddr has already been transformed before reaching here
+      raise (ExceptionCode::LoadPageFault);
+    }
+
+    for (U32 i = 2; i >= 0; i--) {
+      XReg pte_addr = (ppn << 12) + ((vaddr >> (12 + 9*i)) & 0x1ff);
+
+      # perform access check on the physical address of pte before it's used
+      access_check<64>(pte_addr, op);
+
+      Sv39PageTableEntry pte = read_physical_memory<XLEN>(pte_addr);
+      if (pte.V == 0  // invalid
+          || (pte.R == 0 && pte.W == 1) // write permission must also have read permission
+          || pte.Reserved != 0) {   // reserved bits
+          // || (!implemented?(ExtensionName::Svnapot) && pte.N != 0)
+          // || (!implemented?(ExtensionName::Svpbmt) && pte.PBMT != 0)) {
+        # found invalid PTE
+        raise (ecode);
+      } else if (pte.R == 1 || pte.X == 1) {
+        # found a leaf PTE
+
+        if (op == MemoryOperation::Read) {
+          if ((CSR[mstatus].MXR == 0 && pte.R == 0)
+              || (CSR[mstatus].MXR == 1 && pte.X == 0 && pte.R == 0)) {
+            # no read permission
+            raise (ExceptionCode::LoadPageFault);
+          }
+          if ((mode() == PrivilegeMode::U && pte.U == 0)
+            || (mode() == PrivilegeMode::M && CSR[mstatus].MPRV == 1 && CSR[mstatus].MPP == $bits(PrivilegeMode::HS) && pte.U == 1 && CSR[mstatus].SUM == 0)
+            || (mode() == PrivilegeMode::S && pte.U == 1 && CSR[mstatus].SUM == 0)) {
+          # supervisor cannot read U unless mstatus.SUM = 1
+          raise (ExceptionCode::LoadPageFault);
+        }
+        } else if ((op == MemoryOperation::Write) && (pte.W == 0)) {
+          # no write permission
+          raise (ExceptionCode::StoreAmoPageFault);
+        } else if ((op == MemoryOperation::Fetch) && (pte.X == 0)) {
+          # no execute permission
+          raise (ExceptionCode::InstructionPageFault);
+        }
+
+        if (pte.U == 0) {
+          # supervisor page
+          if (mode() == PrivilegeMode::U) {
+            # user access to supervisor page is never allowed
+            raise (ecode);
+          }
+        } else {
+          # user page
+          if (mode() == PrivilegeMode::HS || (mode() == PrivilegeMode::M && CSR[mstatus].MPRV == 1 && CSR[mstatus].MPP == $bits(PrivilegeMode::HS))) {
+            # effective S-mode access
+            if (op == MemoryOperation::Read) {
+              if (CSR[mstatus].SUM == 0) {
+                # supervisor can only read user pages when mstatus.SUM == 1
+                raise (ExceptionCode::LoadPageFault);
+              }
+            } else {
+              # supervisor can never write or execute a user page
+              raise (ecode);
+            }
+          }
+        }
+
+        # ensure remaining PPN bits are zero, otherwise there is a misaligned super page
+        raise (ecode) if (i >= 1 && pte.PPN0 != 0);
+        raise (ecode) if (i == 2 && pte.PPN1 != 0);
+
+        if (false) { // implemented?(ExtensionName::Svadu)) {
+          # svadu requires page tables to be located in memory with hardware page-table write access
+          # and RsrvEventual PMA
+          if (!check_pma(pte_addr, PmaAttribute::RsrvEventual)) {
+            raise (ExceptionCode::LoadAccessFault);
+          }
+          access_check<64>(pte_addr, MemoryOperation::Write);
+#          if (implemented?(ExtensionName::H) && CSR[henvcfg].ADUE == 0b1) {
+            # update the A bit
+            # this should be atomic with the translation
+#            write_physical_memory(pte_addr, pte & (1 << 6));
+#          } else if (CSR[menvcfg].ADUE == 0b1) {
+            # update the A bit
+            # this should be atomic with the translation
+#            write_physical_memory(pte_addr, pte & (1 << 6));
+#          }
+        }
+        if (//implemented?(ExtensionName::Svade) &&
+            pte.A == 0) {
+          # trap on access with A == 0
+          raise (ecode);
+        }
+
+        # translation succeeded
+        return {pte.PPN2, pte.PPN1, pte.PPN0, vaddr[11:0]};
+      } else {
+        # found a pointer to the next level
+
+        if (i == 0) {
+          # a pointer can't exist on the last level
+          raise (ecode);
+        }
+
+        if (pte.D == 1 || pte.A == 1 || pte.U == 1) {
+          # D, A, and U are reserved in non-leaf PTEs
+          raise (ecode);
+        }
+
+        ppn = pte.PPN << 12;
+        # fall through to next level
+      }
+    }
+  }
+}
+
+function translate_load_sv48 {
+  returns Bits<56>
+  arguments XReg vaddr, XReg satp
+  description {
+    Translate virtual address using Sv48
+  }
+  body {
+    return 0;
+  }
+}
+
+function translate_load_sv57 {
+  returns Bits<56>
+  arguments XReg vaddr, XReg satp
+  description {
+    Translate virtual address using Sv57
+  }
+  body {
+    return 0;
+  }
+}
+
+function translate {
+  returns Bits<PHYS_ADDR_WIDTH>
+  arguments XReg vaddr, MemoryOperation op
+  description {
+    Translate a virtual address for a load, returning a physical address.
+    May raise a Page Fault or Access Fault.
+
+    The final physical address is *not* access checked (for PMP, PMA, etc., violations).
+  }
+  body {
+    SatpMode translation_mode = current_translation_mode();
+
+    PrivilegeMode effective_mode = effective_ldst_mode();
+
+    if (implemented?(ExtensionName::H) && virtual_mode?()) {
+      return -;
+#      if (translation_mode == SatpMode::Bare) {
+#        # bare == no translation
+#        return translate_gstage(vaddr, op);
+#
+#      } else if (implemented?(Sv32) && translation_mode == SatpMode::Sv32) {
+#        XReg gpaddr = translate_sv32(vaddr, CSR[satp], op);
+#        return translate_gstage(gpaddr, op);
+#
+#      } else if (implemented?(Sv39) && translation_mode == SatpMode::Sv39) {
+#        XReg gpaddr = translate_sv39(vaddr, CSR[satp], op);
+#        return translate_gstage(gpaddr, op);
+#
+#      } else if (implemented?(Sv48) && translation_mode == SatpMode::Sv48) {
+#        XReg gpaddr = translation_sv48(vaddr, CSR[satp], op);
+#        return translate_gstage(gpaddr, op);
+#
+#      } else if (implemented?(Sv57) && translation_mode == SatpMode::Sv57) {
+#        XReg gpaddr = translate_sv57(vaddr, CSR[satp], op);
+#        return translate_gstage(gpaddr, op);
+#      }
+    } else {
+      if (translation_mode == SatpMode::Bare) {
+        # bare == no translation
+        if (vaddr[XLEN-1:PHYS_ADDR_WIDTH] != 0) {
+          if (op == MemoryOperation::Read) {
+            raise (ExceptionCode::LoadAccessFault);
+          } else if (op == MemoryOperation::Write) {
+            raise (ExceptionCode::StoreAmoAccessFault);
+          } else {
+            assert(op == MemoryOperation::Fetch);
+            raise (ExceptionCode::InstructionAccessFault);
+          }
+        }
+        return vaddr[PHYS_ADDR_WIDTH-1:0];
+
+#      } else if (implemented?(ExtensionName::Sv32) && translation_mode == SatpMode::Sv32) {
+#        return translate_sv32(vaddr, CSR[satp], op);
+
+      } else if (implemented?(ExtensionName::Sv39) && translation_mode == SatpMode::Sv39) {
+        return translate_sv39(vaddr, CSR[satp], op);
+
+#      } else if (implemented?(ExtensionName::Sv48) && translation_mode == SatpMode::Sv48) {
+#        return translation_sv48(vaddr, CSR[satp], op);
+
+#      } else if (implemented?(ExtensionName::Sv57) && translation_mode == SatpMode::Sv57) {
+#        return translate_sv57(vaddr, CSR[satp], op);
+      }
+    }
+  }
+}
+
+function read_memory_aligned {
+  template U32 len
+  returns Bits<len>
+  arguments XReg virtual_address
+  description {
+    Read from virtual memory using a known aligned address.
+  }
+  body {
+    XReg physical_address;
+
+    physical_address = translate(virtual_address, MemoryOperation::Read);
+
+    # may raise an exception
+    access_check<len>(physical_address, MemoryOperation::Read);
+
+    return read_physical_memory<len>(physical_address);
+  }
+}
+
+function read_memory {
+  template U32 len
+  returns Bits<len>
+  arguments XReg virtual_address
+  description {
+    Read from virtual memory
+  }
+  body {
+    Boolean aligned = is_naturally_aligned<XLEN, len>(virtual_address);
+
+    if (aligned) {
+      return read_memory_aligned<len>(virtual_address);
+    } else if (!aligned && !MISALIGNED_LDST) {
+      raise (ExceptionCode::LoadAddressMisaligned);
+    } else {
+      # misaligned, must break into multiple reads
+      Bits<len> result = 0;
+      for (U32 i = 0; i <= len; i++) {
+        result = result | (read_memory_aligned<8>(virtual_address + i) << (8*i));
+      }
+      return result;
+    }
+  }
+}
+
+
+
+
+function write_memory_aligned {
+  template U32 len
+  arguments XReg virtual_address, Bits<len> value
+  description {
+    Write to virtual memory using a known aligned address.
+  }
+  body {
+    XReg physical_address;
+
+    physical_address = translate(virtual_address, MemoryOperation::Write);
+
+    # may raise an exception
+    access_check<len>(physical_address, MemoryOperation::Write);
+
+    write_physical_memory<len>(physical_address, value);
+  }
+}
+
+function write_memory {
+  template U32 len
+  arguments XReg virtual_address, Bits<len> value
+  description {
+    Write to virtual memory
+  }
+  body {
+    Boolean aligned = is_naturally_aligned<XLEN, len>(virtual_address);
+
+    if (aligned) {
+      write_memory_aligned<len>(virtual_address, value);
+    } else if (!aligned && !MISALIGNED_LDST) {
+      raise (ExceptionCode::StoreAmoAddressMisaligned);
+    } else {
+      # misaligned, must break into multiple writes
+      for (U32 i = 0; i <= len; i++) {
+        write_memory_aligned<8>(virtual_address + i, (value >> (8*i))[7:0]);
+      }
+    }
+  }
+}
+
+// function Mem {
+//   template U32 len
+//   returns XReg
+//   arguments XReg eaddr
+//   description {
+//     Read memory.
+//   }
+//   body {
+//     XReg vaddr, paddr;
+//     Boolean has_fault;
+//     ExceptionCode ecode;
+//
+//     # by default, vaddr = eaddr
+//     vaddr = mask_eaddr(eaddr);
+//
+//     (paddr, ecode) = translate_load(vaddr);
+//     raise (ExceptionCode::LoadPageFault) if (ecode == ExceptionCode::LoadPageFault);
+//     raise (ExceptionCode::LoadGuestPageFault) if (ecode == ExceptionCode::LoadGuestPageFault);
+//     raise (ExceptionCode::LoadAccessFault) if (ecode == ExceptionCode::LoadAccessFault);
+//
+//     (has_fault, ecode) = access_check(paddr, MemoryOperation::Read);
+//
+//     # Load Address Misaligned is a lower-priority exception than Page Fault
+//     # it is higher-priority than access fault if Zihpme (High-Priority Misaligned Exception) is implemented
+//     raise (ExceptionCode::LoadAddressMisaligned) if implemented?(ExtensionName::Zihpme) && has_fault && (ecode == ExceptionCode::LoadAddressMisaligned);
+//     raise (ExceptionCode::LoadAccessFault) if has_fault && (ecode == ExceptionCode::LoadAccessFault);
+//     raise (ExceptionCode::LoadAddressMisaligned) if !implemented?(ExtensionName::Zihpme) && has_fault && (ecode == ExceptionCode::LoadAddressMisaligned);
+//
+//     return read_physical_memory<len>(paddr);
+//   }
+// }

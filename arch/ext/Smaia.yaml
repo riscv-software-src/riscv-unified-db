@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=extension_schema.json
+# yaml-language-server: $schema=../../schemas/ext_schema.json
 
 Smaia:
   description: Advanced Interrupt Architecture, M-mode extension

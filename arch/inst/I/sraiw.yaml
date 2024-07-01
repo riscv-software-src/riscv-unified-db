@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 sraiw:
   long_name: Shift right arithmetic immediate word
@@ -13,7 +13,7 @@ sraiw:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     # shamt is between 0-32
     XReg operand = sext(X[rs1], 31);
     X[rd] = sext(operand >>> shamt, 31);

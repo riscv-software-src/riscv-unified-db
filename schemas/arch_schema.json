@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+
+  "type": "object",
+  "title": "Unified Architecture Specification",
+  "required": [
+    "extensions",
+    "implemented_extensions",
+    "csrs",
+    "implemented_csrs",
+    "params",
+    "instructions",
+    "implemented_instructions"
+  ],
+  "properties": {
+    "params": {
+      "$ref": "config_schema.json#/$defs/params"
+    },
+    "implemented_extensions": {
+      "description": "Extensions implemented by this architecture",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "version"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^([A-WY]|([SXZ][a-z0-9]+))$",
+            "description": "Extension name"
+          },
+          "version": {
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Extension version"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "extensions": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "$ref": "ext_schema.json#/$defs/ext_data"
+        }
+      }
+    },
+    "csrs": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "$ref": "csr_schema.json#/$defs/csr_register"
+        }
+      }
+    },
+    "implemented_csrs": {
+      "description": "CSRs implemented by this architecture",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-zA-Z0-9]+$",
+        "description": "CSR name"
+      }
+    },
+    "instructions": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "$ref": "inst_schema.json#/$defs/inst_data"
+        },
+        "additionalProperties": false
+      }
+    },
+    "implemented_instructions": {
+      "description": "Instructions implemented by this architecture",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-zA-Z0-9.]+$",
+        "description": "Instruction name"
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -7,3 +7,4 @@
 .stamps
 .venv
 gen
+node_modules

@@ -1,11 +1,36 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
 hedeleg:
   long_name: Hypervisor Exception Delegation
   address: 0x602
   priv_mode: S
   length: 64
-  description: Controls exception delegation from HS-mode to VS-mode
+  description: |
+    Controls exception delegation from HS-mode to VS-mode.
+
+    By default, all traps at any privilege level are handled in M-mode, though M-mode usually uses
+    the `medeleg` and `mideleg` CSRs to delegate some traps to HS-mode. The `hedeleg` and `hideleg`
+    CSRs allow these traps to be further delegated to a VS-mode guest; their layout is the same as
+    `medeleg` and `mideleg`.
+
+    A synchronous trap that has been delegated to HS-mode (using `medeleg`)
+    is further delegated to VS-mode if V=1 before the trap and the
+    corresponding `hedeleg` bit is set. Each bit of `hedeleg` shall be
+    either writable or read-only zero. Many bits of `hedeleg` are required
+    specifically to be writable or zero. Bit 0, corresponding to
+    instruction address misaligned exceptions, must be writable if
+    IALIGN=32.
+
+    [NOTE]
+    ====
+    Requiring that certain bits of `hedeleg` be writable reduces some of the
+    burden on a hypervisor to handle variations of implementation.
+    ====
+
+    When XLEN=32, `hedelegh` is a 32-bit read/write register
+    that aliases bits 63:32 of `hedeleg`.
+    Register `hedelegh` does not exist when XLEN=64.
+
   definedBy: H
   fields:
     IAM:
@@ -17,7 +42,7 @@ hedeleg:
 
         See `medeleg.IAM` for details.
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     IAF:
       location: 1
       description: |
@@ -28,7 +53,7 @@ hedeleg:
         See `medeleg.IAF` for details.
 
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     II:
       location: 2
       description: |
@@ -39,7 +64,7 @@ hedeleg:
         See `medeleg.II` for details.
 
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     B:
       location: 3
       description: |
@@ -49,7 +74,7 @@ hedeleg:
 
         See `medeleg.B` for details.
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     LAM:
       location: 4
       description: |
@@ -59,7 +84,7 @@ hedeleg:
 
         See `medeleg.LAM` for details.
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     LAF:
       location: 5
       description: |
@@ -69,7 +94,7 @@ hedeleg:
 
         See `medeleg.LAF` for details.
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     SAM:
       location: 6
       description: |
@@ -79,7 +104,7 @@ hedeleg:
 
         See `medeleg.SAM` for details.
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     SAF:
       location: 7
       description: |
@@ -89,7 +114,7 @@ hedeleg:
 
         See `medeleg.SAF` for details.
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     EU:
       location: 8
       description: |
@@ -100,7 +125,7 @@ hedeleg:
         See `medeleg.EU` for details.
 
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     ES:
       location: 9
       description: |
@@ -111,7 +136,7 @@ hedeleg:
 
         See `medeleg.ES` for details.
       type: RO
-      value: 0
+      reset_value: 0
     EVS:
       location: 10
       description: |
@@ -122,7 +147,7 @@ hedeleg:
 
         See `medeleg.EVS` for details.
       type: RO
-      value: 0
+      reset_value: 0
     EM:
       location: 11
       description: |
@@ -133,7 +158,7 @@ hedeleg:
 
         See `medeleg.EM` for details.
       type: RO
-      value: 0
+      reset_value: 0
     IPF:
       location: 12
       description: |
@@ -143,7 +168,7 @@ hedeleg:
 
         See `medeleg.IPF` for details.
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     LPF:
       location: 13
       description: |
@@ -153,7 +178,7 @@ hedeleg:
 
         See `medeleg.LPF` for details.
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     SPF:
       location: 15
       description: |
@@ -163,7 +188,7 @@ hedeleg:
 
         See `medeleg.SPF` for details.
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     IGPF:
       location: 20
       description: |
@@ -174,7 +199,7 @@ hedeleg:
 
         See `medeleg.IGPF` for details.
       type: RO
-      value: 0
+      reset_value: 0
     LGPF:
       location: 21
       description: |
@@ -185,7 +210,7 @@ hedeleg:
 
         See `medeleg.LGPF` for details.
       type: RO
-      value: 0
+      reset_value: 0
     VI:
       location: 22
       description: |
@@ -196,7 +221,7 @@ hedeleg:
 
         See `medeleg.VI` for details.
       type: RO
-      value: 0
+      reset_value: 0
     SGPF:
       location: 23
       description: |
@@ -207,4 +232,4 @@ hedeleg:
 
         See `medeleg.SGPF` for details.
       type: RO
-      value: 0
+      reset_value: 0

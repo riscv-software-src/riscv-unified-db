@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+
+  "$defs": {
+    "extension": {
+      "type": "string",
+      "pattern": "^[A-W,Y]|([XZ][a-z]+)$",
+      "description": "RISC-V Extension"
+    },
+    "inst_data": {
+      "type": "object",
+      "required": ["long_name", "description", "definedBy", "access", "assembly"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9.]+$",
+          "desription": "Instruction mnemonic (must be lowercase)"
+        },
+        "long_name": {
+          "type": "string",
+          "description": "Short descrption of the instruction"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the instruction"
+        },
+        "definedBy": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/extension"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/extension"
+              }
+            }
+          ],
+          "description": "Extension(s) that defines the instruction"
+        },
+        "base": {
+          "enum": [32, 64],
+          "description": "When present, instruction is only defined for RV32 or RV64 base"
+        },
+        "access": {
+          "type": "object",
+          "required": ["s", "u", "vs", "vu"],
+          "properties": {
+            "m": {
+              "enum": ["always", "sometimes", "never"],
+              "default": "always"
+            },
+            "s": {
+              "enum": ["always", "sometimes", "never"],
+              "default": "always"
+            },
+            "u": {
+              "enum": ["always", "sometimes", "never"],
+              "default": "always"
+            },
+            "vs": {
+              "enum": ["always", "sometimes", "never"],
+              "default": "always"
+            },
+            "vu": {
+              "enum": ["always", "sometimes", "never"],
+              "default": "always"
+            }
+          }
+        },
+        "access_detail": {
+          "type": "string",
+          "description": "Extra detail about access when at least one mode is 'sometimes'"
+        },
+        "operation()": {
+          "type": "string",
+          "description": "Functional description of the instruction using ISA language"
+        },
+        "assembly": {
+          "type": "string",
+          "description": "Assembly format of the instruction. Can use decode variables"
+        }
+      }
+    }
+  },
+
+  "type": "object",
+  "title": "Instruction description",
+  "patternProperties": {
+    ".*": {
+      "$ref": "#/$defs/inst_data"
+    }
+  },
+  "additionalProperties": false,
+  "maxProperties": 1
+}

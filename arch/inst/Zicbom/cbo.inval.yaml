@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 cbo.inval:
   long_name: Cache Block Invalidate
@@ -94,20 +94,10 @@ cbo.inval:
     ! 01/11 ! 00 ! 01/11 ! executes ! `Illegal Instruction` ! executes ! `Virtual Instruction` 
     ! 01/11 ! 01/11 ! 01/11 ! executes ! executes ! executes ! executes
     !===
-  # operation: |
+  # operation(): |
   #   let cache_block_address = X[RS1] & ~(CACHE_BLOCK_SIZE-1);
 
   #   // zeroing operation can occur in any number of independent stores
   #   for (i=0; i<CACHE_BLOCK_SIZE; i++) {
   #     MEM[cache_block_address + i, 8] = 0;
   #   }
-  raises:
-    - Store/AMO Page Fault
-    <%- if ext?(:H) -%>
-    - Store/AMO Guest-Page Fault
-    <%- end -%>
-    - Store Access Fault
-    - Illegal Instruction
-    <%- if ext?(:H) -%>
-    - Virtual Instruction
-    <%- end -%>

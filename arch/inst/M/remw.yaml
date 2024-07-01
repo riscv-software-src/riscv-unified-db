@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 remw:
   long_name: Signed 32-bit remainder
@@ -16,7 +16,7 @@ remw:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     Bits<32> src1 = X[rs1][31:0];
     Bits<32> src2 = X[rs2][31:0];
 

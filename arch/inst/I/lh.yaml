@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 lh:
   long_name: Load halfword
@@ -13,7 +13,7 @@ lh:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     XReg virtual_address = X[rs1] + imm;
 
     X[rd] = sext(read_memory<16>(virtual_address), 16);

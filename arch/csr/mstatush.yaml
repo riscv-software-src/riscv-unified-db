@@ -1,0 +1,64 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+mstatush:
+  long_name: Machine Status High
+  address: 0x310
+  priv_mode: M
+  base: 32
+  length: 32
+  description: The mstatus register tracks and controls the hart's current operating state.
+  definedBy: I
+  fields:
+    MPV:
+      location: 7
+      description: |
+        *Machine Previous Virtualization mode*
+
+        Written with the prior virtualization mode when entering M-mode from an exception/interrupt.
+        When returning via an MRET instruction, the virtualization mode becomes the value of MPV unless MPP=3, in which case the virtualization mode is always 0.
+        Can also be written by software.
+      type: RW-H
+      reset_value: UNDEFINED_LEGAL
+      definedBy: H
+    GVA:
+      location: 6
+      description: |
+        *Guest Virtual Address*
+
+        When a trap is taken and a guest virtual address is written into mtval, GVA is set.
+        When a trap is taken and a guest virtual address is written into mtval, GVA is cleared.
+      type: RW-H
+      reset_value: 0
+      definedBy: H
+    MBE:
+      location: 5
+      description: |
+        *M-mode Big Endian*
+        
+        Controls the endianness of data M-mode (0 = little, 1 = big).
+        Instructions are always little endian, regardless of the data setting.
+
+        <%- if M_MODE_ENDIANESS == 0 -%>
+        Since the CPU does not support big endian, this is hardwired to 0.
+        <%- elsif M_MODE_ENDIANESS == 1 -%>
+        Since the CPU does not support litte endian, this is hardwired to 1.
+        <%- end -%><%# M_MODE_ENDIANESS == 2 -%>
+      type(): 'return (M_MODE_ENDIANESS == 2) ? CsrFieldType::RW : CsrFieldType::RO;'
+      reset_value(): 'return (M_MODE_ENDIANESS == 1) ? 1 : 0;'
+
+    SBE:
+      location: 4
+      definedBy: S
+      description: |
+        *S-mode Big Endian*
+        
+        Controls the endianness of S-mode (0 = little, 1 = big).
+        Instructions are always little endian, regardless of the data setting.
+
+        <%- if S_MODE_ENDIANESS == 0 -%>
+        Since the CPU does not support big endian, this is hardwired to 0.
+        <%- elsif S_MODE_ENDIANESS == 1 -%>
+        Since the CPU does not support litte endian, this is hardwired to 1.
+        <%- end -%><%# S_MODE_ENDIANESS == 2 -%>
+      type(): 'return (S_MODE_ENDIANESS == 2) ? CsrFieldType::RW : CsrFieldType::RO;'
+      reset_value(): 'return (S_MODE_ENDIANESS == 1) ? 1 : UNDEFINED_LEGAL;'

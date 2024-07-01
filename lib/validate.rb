@@ -3,19 +3,22 @@
 require "json"
 require "json_schemer"
 require "pathname"
+require "singleton"
 require "yaml"
 
 $root = Pathname.new(__FILE__).dirname.dirname.realpath if $root.nil?
 
 # class used to validate schmeas and objects
 class Validator
+  include Singleton
+
   # map of type to schema filesystem path
   SCHEMA_PATHS = {
-    config: $root / "cfgs" / "config_schema.json",
-    arch: $root / "arch" / "arch_schema.json",
-    inst: $root / "arch" / "inst" / "inst_schema.json",
-    ext: $root / "arch" / "ext" / "extension_schema.json",
-    csr: $root / "arch" / "csr" / "csr_schema.json"
+    config: $root / "schemas" / "config_schema.json",
+    arch: $root / "schemas" / "arch_schema.json",
+    inst: $root / "schemas" / "inst_schema.json",
+    ext: $root / "schemas" / "ext_schema.json",
+    csr: $root / "schemas" / "csr_schema.json"
   }.freeze
 
   # types of objects that can be validated
@@ -38,6 +41,7 @@ class Validator
 
   # exception raised when an object does not validate against its schema
   class ValidationError < ::StandardError
+
     # result from JsonSchemer.validate
     attr_reader :result
 
@@ -51,15 +55,21 @@ class Validator
       result.to_a.each do |r|
         msg <<
           if r["type"] == "required" && !r.dig("details", "missing_keys").nil?
-            "    Missing required parameter(s) '#{r['details']['missing_keys']}' at '#{r['data_pointer']}'\n"
+            "    At '#{r['data_pointer']}': Missing required parameter(s) '#{r['details']['missing_keys']}'\n"
           elsif r["type"] == "schema"
-            "    At #{r['data_pointer']}, '#{r['data']}' is invalid\n"
+            "    At #{r['data_pointer']}, endpoint is an invalid key\n"
           elsif r["type"] == "enum"
             "    At #{r['data_pointer']}, '#{r['data']}' is not a valid enum value (#{r['schema']['enum']})\n"
           elsif r["type"] == "maxProperties"
             "    Maximum number of properties exceeded\n"
           elsif r["type"] == "object"
             "    At #{r['data_pointer']}, Expecting object, got #{r['data']}\n"
+          elsif r["type"] == "pattern"
+            "    At #{r['data_pointer']}, RegEx validation failed; '#{r['data']}' does not match '#{r['schema']['pattern']}'\n"
+          elsif r["type"] == "integer"
+            "    At #{r['data_pointer']}, '#{r['data']}' is not a integer\n"
+          elsif r["type"] == "array"
+            "    At #{r['data_pointer']}, '#{r['data']}' is not a array\n"
           else
             "    #{r}\n\n"
           end
@@ -79,7 +89,7 @@ class Validator
     SCHEMA_PATHS.each do |type, path|
       # resolve refs as a relative path from the schema file
       ref_resolver = proc do |pattern|
-        JSON.load_file("#{path.dirname}/#{pattern}")
+        JSON.load_file($root / "schemas" / pattern.to_s)
       end
 
       @schemas[type] = JSONSchemer.schema(path.read, regexp_resolver: "ecma", ref_resolver: ref_resolver, insert_property_defaults: true)

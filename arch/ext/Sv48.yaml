@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=extension_schema.json
+# yaml-language-server: $schema=../../schemas/ext_schema.json
 
 Sv48:
   description: 48-bit virtual address translation (4 level)

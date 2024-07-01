@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 sub:
   long_name: Subtract
@@ -10,7 +10,7 @@ sub:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     XReg t0 = X[rs1];
     XReg t1 = X[rs2];
     X[rd] = t0 - t1;

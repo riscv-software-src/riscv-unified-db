@@ -1,18 +1,33 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
 mcycle:
   long_name: Machine Cycle Counter
   definedBy: I
   address: 0xB00
-  description: Cycle counter
+  description: |
+    Counts the number of clock cycles executed by the processor core on which
+    the hart is running.
+    The counter has 64-bit precision on all RV32 and RV64 harts.
+
+    The `mcycle` CSR may be shared between harts on the same core, in which case
+    writes to `mcycle` will be visible to those harts. The platform should provide
+    a mechanism to indicate which harts share an `mcycle` CSR.
   priv_mode: M
   length: 64
+  sw_read(): |
+    # since the counter may be shared among harts, reads must be handled
+    # as a special case
+    return read_mcycle();
   fields:
     COUNT:
       alias:
         - cycle.COUNT
       location: 63-0
-      type: RW-H
+      type: RW-RH
+      write(csr_value): |
+        # since writes to this register may not be hart-local, it must be handled
+        # as a special case
+        return write_mcycle(csr_value.COUNT);
       description: |
         Cycle counter.
 
@@ -36,5 +51,5 @@ mcycle:
           * `mcyclecfg.VUINH` <%- if ext?(:Ssccfg) -%>or its alias `instretcfg.SINH`<%- end -%> is set and the current privilege level is VU
           <%- end -%>
           <%- end -%>
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
       affectedBy: [Zicntr, Smcntrpmf, Smcdeleg, Ssccfg]

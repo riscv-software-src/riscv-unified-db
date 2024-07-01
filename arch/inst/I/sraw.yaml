@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 sraw:
   long_name: Shift right arithmetic word
@@ -12,7 +12,7 @@ sraw:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     XReg operand1 = sext(X[rs1], 31);
 
     X[rd] = sext(operand1 >>> X[rs2][4:0], 31);

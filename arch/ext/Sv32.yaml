@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=extension_schema.json
+# yaml-language-server: $schema=../../schemas/ext_schema.json
 
 Sv32:
   description: 32-bit virtual address translation (3 level)

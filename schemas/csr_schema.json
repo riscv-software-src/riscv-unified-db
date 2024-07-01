@@ -1,0 +1,284 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CSR description",
+  "description": "A CSR register specification",
+
+  "$defs": {
+    "csr_field": {
+      "type": "object",
+      "description": "Field in a CSR register",
+      "required": ["description"],
+
+      "allOf": [
+        {
+          "$comment": "Location is required, but it can either be a static value or a function",
+          "oneOf": [
+            {
+              "required": ["location"]
+            },
+            {
+              "required": ["location()"]
+            }
+          ]
+        },
+        {
+          "$comment": "type is required, but it can either be a static value or a function",
+          "oneOf": [
+            {
+              "required": ["type"]
+            },
+            {
+              "required": ["type()"]
+            }
+          ]
+        },
+        {
+          "$comment": "reset_value is required, but it can either be a static value or a function",
+          "oneOf": [
+            {
+              "required": ["reset_value"]
+            },
+            {
+              "required": ["reset_value()"]
+            }
+          ]
+        }
+      ],
+
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the field. Optional because it is implied by the object key of the CSR object holding the field"
+        },
+        "location": {
+          "oneOf": [
+            {"type": "number", "description": "Location of a single bit"},
+            {"type": "string", "pattern": "^[0-9]+-[0-9]+$", "description": "Location range of a multibit field"}
+          ],
+          "description": "Location of the field within the CSR register"
+        },
+        "location()": {
+          "description": "Function that returns the location when the location is mutable (e.g., sstatus.SD)",
+          "type": "string"
+        },
+        "reset_value": {
+          "description": "Value of the state after reset. Can be UNDEFINED_LEGAL for the generic architecture spec, but must have an integer value for the implementation spec",
+          "oneOf": [
+            {
+              "type": "integer",
+              "description": "A precise reset value"
+            },
+            {
+              "type": "string",
+              "const": "UNDEFINED_LEGAL",
+              "description": "State is undefined, though it must be a legal value for the state."
+            }
+          ]
+        },
+        "reset_value()": {
+          "description": "Configuration-dependent value of the state after reset. Can be UNDEFINED_LEGAL for the generic architecture spec, but must have an integer value for the implementation spec.",
+          "type": "string"
+        },
+        "write(csr_value)": {
+          "type": "string",
+          "description": "Function implementing custom write behavior for the CSR. Given a 'value', return either the value to be written in the field or false if the write would be illegal. 'value' is the value of the entire CSR, which is sometimes needed to detect illegal writes"
+        },
+        "legal?(csr_value)": {
+          "type": "string",
+          "description": "Function that returns whether or not an attempted value for the field is legal. The csr_value parameter is the *entire* attempted CSR write value. Fields within the attempted write value can be accessed with a dot operator (e.g., csr_value.SXL, csr_value.VGEIN, ...)"
+        },
+        "base": {
+          "type": "integer",
+          "enum": [32, 64],
+          "description": "When a CSR field is only defined in RV32, or RV64, the base that defines it. When defined in both, this field should be absent."
+        },
+        "description": {
+          "type": "string",
+          "description": "Function of the field"
+        },
+        "type": {
+          "enum": ["RO", "RO-H", "RW", "RW-R", "RW-H", "RW-RH"],
+          "description": "Type of the field. One of:\n * RO: Read-only immutable\n * RO-H: Read-only, updated by hardware\n * RW: Read-write, not updated by hardware\n * RW-R: Read-write, but values are restricted. write(value) must be provided\n * RW-H: Read-write, with hardware updates\n * RW-RH: Read-write, with hardware updates, but values are restricted. write(value) must be provded"
+        },
+        "type()": {
+          "type": "string",
+          "description": "Function that returns a configuratin-depenent type. The return value should be a CsrFieldType enum, and must be compile-time-known."
+        },
+        "alias": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9]+\\.[A-Z0-9]+(\\[[0-9]+(:[0-9]+)?\\])?$"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9]+\\.[A-Z0-9]+(\\[[0-9]+(:[0-9]+)?\\])?$"
+              }
+            }
+          ],
+          "description": "When specified, indicates that this field aliases (a portion of) another CSR field"
+        },
+        "definedBy": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^([A-WY]|([SXZ][a-z]+))$",
+              "description": "An extension name"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^([A-WY]|([SXZ][a-z]+))$",
+                "description": "An extension name"
+              }
+            }
+          ],
+          "description": "Where this field is defined: indicates that the field is only present if the extension(s) are implemented. If definedBy is not given, defaults to the definedBy field of the parent CSR"
+        },
+        "affectedBy": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^(RV64)|([A-WY]|(Z[a-z]+)|(S[a-z]+))$"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(RV64)|([A-WY]|(Z[a-z]+)|(S[a-z]+))$"
+              }
+            }
+          ],
+          "description": "Extension(s) that affect the definition of the field beyond the extension (or base) the field is originally defined in"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "anyOf": [
+              {
+                "properties": { "type": { "const": "RW-R" } },
+                "required": ["type"]
+              },
+              {
+                "properties": { "type": { "const": "RW-RH" } },
+                "required": ["type"]
+              }
+            ]
+          },
+          "then": {
+            "required": ["write(csr_value)"]
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "csr_register": {
+      "type": "object",
+      "required": ["long_name", "description", "address", "priv_mode", "definedBy"],
+
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Optional name (name is extracted from object key of parent), so information is redundant"
+        },
+        "base": {
+          "type": "integer",
+          "enum": [32, 64],
+          "description": "When a CSR is only defined in RV32, or RV64, the base that defines it. When defined in both, this field should be absent."
+        },
+        "long_name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "definedBy": {
+          "type": "string",
+          "pattern": "^([A-WY]|([SXZ][a-z]+))$"
+        },
+        "address": {
+          "type": "integer",
+          "description": "CSR address"
+        },
+        "virtual_address": true, "$comment": "Conditionally required; see below",
+        "priv_mode": {
+          "enum": ["M", "S", "U", "VS"]
+        },
+        "length": {
+          "description": "Length, in bits, of the CSR. Can either be a 32, 64",
+          "enum": [32, 64]
+        },
+        "length()": {
+          "description": "Function that returns the CSR length, when the length is dynamic or dependent on a config param",
+          "type": "string"
+        },
+        "oneOf": [
+          {
+            "required": ["location"]
+          },
+          {
+            "required": ["location()"]
+          }
+        ],
+        "requires": {
+          "type": "string",
+          "description": "Extension that must be implemented for this CSR to exist"
+        },
+        "fields": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-zA-Z].*$": {
+              "$ref": "#/$defs/csr_field"
+            }
+          },
+          "additionalProperties": false
+        },
+        "access_check": {
+          "type": "string",
+          "description": "Optional function called to handle special-case checks for access permission."
+        },
+        "sw_read()": {
+          "type": "string",
+          "description": "Function that returns the value of the CSR when read by software (i.e., a Zicsr instruction). If not specified, the value last written (through hw_write) is returned."
+        }
+      },
+      "additionalProperties": false,
+
+      "$comment": "If mode is VS, then there must be a virtual_address field",
+      "if": {
+        "properties": {
+          "priv_mode": { "const": "VS" }
+        }
+      },
+      "then": {
+        "properties": {
+          "virtual_address": {
+            "type": "number",
+            "description": "Address of the CSR viewed from VS-mode"
+          }
+        },
+        "required": ["virtual_address"]
+      }
+    }
+  },
+
+  "type": "object",
+  "examples": [
+    "misa:\\n  long_name: Machine ISA Control\\n  address: 0x301\\n  priv_mode: M\\n  length: 64\\n  description: Reports the XLEN and 'major' extensions supported by the ISA.\\n  definedBy: I\\n  fields:\\n    MXL:\\n      location: 63-62\\n      description: XLEN in M-mode.\\n      type: RO\\n      value: 2\\n    Extensions:      location: 25-0\\n      description: |\\n        Indicates support for major (single letter) ISA extensions.\\n\\n        Value corresponds to A, D, F, H, I, M, S, U\\n      type: RO\\n      value: 0x1411A9"
+  ],
+  "patternProperties": {
+    "^[a-z][a-z0-9A-Z]+$": {
+      "description": "CSR name",
+      "$ref": "#/$defs/csr_register"
+    }
+  },
+
+  "$comment": "We are using a key as the CSR name, so there should only be one property",
+  "maxProperties": 1,
+
+  "additionalProperties": false
+}

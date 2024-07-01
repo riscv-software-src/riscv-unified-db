@@ -106,15 +106,6 @@
 
 <p>ArchGen is initialized with a config name, which <strong>must</strong> be the name of a directory under cfgs/</p>
 
-<p>The unified config is returned from arch_def.</p>
-
-<p>You can also get:</p>
-
-<pre class="code ruby"><code class="ruby">* An array of CSR definitions from {ArchGen.csrs}
-* An array of Instruction definitions from {ArchGen.instructions}
-* An array of Extension definitions from {ArchGen.extensions}
-</code></pre>
-
 
   </div>
 </div>
@@ -226,6 +217,28 @@
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#check_extension_dependencies-instance_method" title="#check_extension_dependencies (instance method)">#<strong>check_extension_dependencies</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#exception_codes-instance_method" title="#exception_codes (instance method)">#<strong>exception_codes</strong>  &#x21d2; Hash&lt;Integer, String&gt; </a>
     
 
@@ -250,78 +263,6 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#gen_arch_def-instance_method" title="#gen_arch_def (instance method)">#<strong>gen_arch_def</strong>  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>Generate the config-specific, unified architecture spec data structure.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#gen_csr_def-instance_method" title="#gen_csr_def (instance method)">#<strong>gen_csr_def</strong>  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>generate all CSR definitions for the config.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#gen_ext_def-instance_method" title="#gen_ext_def (instance method)">#<strong>gen_ext_def</strong>  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>generate parsed and merged definitions for all extensions.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
       <a href="#generate-instance_method" title="#generate (instance method)">#<strong>generate</strong>  &#x21d2; Object </a>
     
 
@@ -338,6 +279,78 @@
   
     <span class="summary_desc"><div class='inline'>
 <p>generate the architecture definition into the gen directory.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#implemented_csrs-instance_method" title="#implemented_csrs (instance method)">#<strong>implemented_csrs</strong>  &#x21d2; Array&lt;String&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>List of all implemented CSRs.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#implemented_extensions-instance_method" title="#implemented_extensions (instance method)">#<strong>implemented_extensions</strong>  &#x21d2; Array&lt;String&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>List of all implemented extensions.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#implemented_instructions-instance_method" title="#implemented_instructions (instance method)">#<strong>implemented_instructions</strong>  &#x21d2; Array&lt;String&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>List of all implemented instructions.</p>
 </div></span>
   
 </li>
@@ -417,6 +430,30 @@
 </li>
 
       
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#validate_config-instance_method" title="#validate_config (instance method)">#<strong>validate_config</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>validates the configuration using cfgs/config_validation.rb.</p>
+</div></span>
+  
+</li>
+
+      
     </ul>
   
 
@@ -469,6 +506,13 @@
       <pre class="lines">
 
 
+36
+37
+38
+39
+40
+41
+42
 43
 44
 45
@@ -483,18 +527,13 @@
 54
 55
 56
-57
-58
-59
-60
-61
-62</pre>
+57</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 43</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 36</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_config_name'>config_name</span><span class='rparen'>)</span>
-  <span class='ivar'>@validator</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Validator.html" title="Validator (class)">Validator</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Validator.html#initialize-instance_method" title="Validator#initialize (method)">new</a></span></span>
+  <span class='ivar'>@validator</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Validator.html" title="Validator (class)">Validator</a></span></span><span class='period'>.</span><span class='id identifier rubyid_instance'>instance</span>
 
   <span class='ivar'>@name</span> <span class='op'>=</span> <span class='id identifier rubyid_config_name'>config_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
   <span class='ivar'>@cfg_dir</span> <span class='op'>=</span> <span class='gvar'>$root</span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>cfgs</span><span class='tstring_end'>&quot;</span></span> <span class='op'>/</span> <span class='ivar'>@name</span>
@@ -512,6 +551,8 @@
 
   <span class='ivar'>@opcode_data</span> <span class='op'>=</span> <span class='const'>YAML</span><span class='period'>.</span><span class='id identifier rubyid_load_file'>load_file</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='gvar'>$root</span><span class='embexpr_end'>}</span><span class='tstring_content'>/ext/riscv-opcodes/instr_dict.yaml</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
   <span class='ivar'>@ext_gen_complete</span> <span class='op'>=</span> <span class='kw'>false</span>
+
+  <span class='id identifier rubyid_validate_config'>validate_config</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -551,12 +592,12 @@
       <pre class="lines">
 
 
-32
-33
-34</pre>
+25
+26
+27</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 32</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 25</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_gen_dir'>gen_dir</span>
   <span class='ivar'>@gen_dir</span>
@@ -594,12 +635,12 @@
       <pre class="lines">
 
 
-29
-30
-31</pre>
+22
+23
+24</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 29</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 22</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_name'>name</span>
   <span class='ivar'>@name</span>
@@ -660,17 +701,17 @@
       <pre class="lines">
 
 
-469
-470
-471
-472
-473
-474
-475
-476</pre>
+575
+576
+577
+578
+579
+580
+581
+582</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 469</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 575</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_all_known_exts'>all_known_exts</span>
   <span class='lparen'>(</span>
@@ -678,6 +719,60 @@
 </span>    <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_glob'>glob</span><span class='lparen'>(</span><span class='ivar'>@cfg_dir</span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>arch_overlay</span><span class='tstring_end'>&quot;</span></span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ext</span><span class='tstring_end'>&quot;</span></span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>**</span><span class='tstring_end'>&quot;</span></span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>*.yaml</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='comment'># exts in cfg/arch_overlay/
 </span>  <span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_f'>f</span><span class='op'>|</span>
     <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_basename'>basename</span><span class='lparen'>(</span><span class='id identifier rubyid_f'>f</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>.yaml</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="check_extension_dependencies-instance_method">
+  
+    #<strong>check_extension_dependencies</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 110</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_check_extension_dependencies'>check_extension_dependencies</span>
+  <span class='ivar'>@implemented_extensions</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ext'>ext</span><span class='op'>|</span>
+    <span class='id identifier rubyid_requirements'>requirements</span> <span class='op'>=</span> <span class='ivar'>@required_ext_map</span><span class='lbracket'>[</span><span class='id identifier rubyid_ext'>ext</span><span class='rbracket'>]</span>
+    <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_requirements'>requirements</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+    <span class='comment'># turn into an array, if needed
+</span>    <span class='id identifier rubyid_requirements'>requirements</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_requirements'>requirements</span><span class='rbracket'>]</span> <span class='kw'>unless</span> <span class='id identifier rubyid_requirements'>requirements</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Array</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_requirements'>requirements</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_requirement'>requirement</span><span class='op'>|</span>
+      <span class='kw'>unless</span> <span class='ivar'>@implemented_extensions</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_requirement'>requirement</span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_warn'>warn</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Extension &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ext'>ext</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39; requires extension &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_requirement'>requirement</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39; also be implemented</span><span class='tstring_end'>&quot;</span></span>
+        <span class='id identifier rubyid_exit'>exit</span> <span class='int'>1</span>
+      <span class='kw'>end</span>
+    <span class='kw'>end</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -729,26 +824,26 @@
       <pre class="lines">
 
 
-523
-524
-525
-526
-527
-528
-529
-530
-531
-532
-533
-534
-535
-536
-537
-538
-539</pre>
+641
+642
+643
+644
+645
+646
+647
+648
+649
+650
+651
+652
+653
+654
+655
+656
+657</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 523</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 641</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_exception_codes'>exception_codes</span>
   <span class='kw'>return</span> <span class='ivar'>@exception_codes</span> <span class='kw'>unless</span> <span class='ivar'>@exception_codes</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -766,233 +861,6 @@
     <span class='kw'>end</span>
   <span class='kw'>end</span>
   <span class='ivar'>@exception_codes</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="gen_arch_def-instance_method">
-  
-    #<strong>gen_arch_def</strong>  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>Generate the config-specific, unified architecture spec data structure</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-79
-80
-81
-82
-83
-84
-85
-86
-87
-88
-89
-90
-91
-92
-93
-94
-95
-96
-97
-98
-99
-100
-101
-102
-103
-104
-105
-106
-107
-108
-109
-110
-111
-112
-113
-114
-115
-116
-117
-118
-119
-120
-121
-122
-123</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 79</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_gen_arch_def'>gen_arch_def</span>
-  <span class='id identifier rubyid_csr_hash'>csr_hash</span> <span class='op'>=</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_glob'>glob</span><span class='lparen'>(</span><span class='ivar'>@gen_dir</span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>arch</span><span class='tstring_end'>&quot;</span></span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>csr</span><span class='tstring_end'>&quot;</span></span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>**</span><span class='tstring_end'>&quot;</span></span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>*.yaml</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_f'>f</span><span class='op'>|</span>
-    <span class='id identifier rubyid_csr_obj'>csr_obj</span> <span class='op'>=</span> <span class='const'>YAML</span><span class='period'>.</span><span class='id identifier rubyid_load_file'>load_file</span><span class='lparen'>(</span><span class='id identifier rubyid_f'>f</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_csr_name'>csr_name</span> <span class='op'>=</span> <span class='id identifier rubyid_csr_obj'>csr_obj</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
-    <span class='lbracket'>[</span><span class='id identifier rubyid_csr_name'>csr_name</span><span class='comma'>,</span> <span class='id identifier rubyid_csr_obj'>csr_obj</span><span class='lbracket'>[</span><span class='id identifier rubyid_csr_name'>csr_name</span><span class='rbracket'>]</span><span class='rbracket'>]</span>
-  <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_to_h'>to_h</span>
-  <span class='id identifier rubyid_inst_hash'>inst_hash</span> <span class='op'>=</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_glob'>glob</span><span class='lparen'>(</span><span class='ivar'>@gen_dir</span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>arch</span><span class='tstring_end'>&quot;</span></span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>inst</span><span class='tstring_end'>&quot;</span></span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>**</span><span class='tstring_end'>&quot;</span></span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>*.yaml</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_f'>f</span><span class='op'>|</span>
-    <span class='id identifier rubyid_inst_obj'>inst_obj</span> <span class='op'>=</span> <span class='const'>YAML</span><span class='period'>.</span><span class='id identifier rubyid_load_file'>load_file</span><span class='lparen'>(</span><span class='id identifier rubyid_f'>f</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_inst_name'>inst_name</span> <span class='op'>=</span> <span class='id identifier rubyid_inst_obj'>inst_obj</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
-    <span class='lbracket'>[</span><span class='id identifier rubyid_inst_name'>inst_name</span><span class='comma'>,</span> <span class='id identifier rubyid_inst_obj'>inst_obj</span><span class='lbracket'>[</span><span class='id identifier rubyid_inst_name'>inst_name</span><span class='rbracket'>]</span><span class='rbracket'>]</span>
-  <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_to_h'>to_h</span>
-  <span class='id identifier rubyid_ext_hash'>ext_hash</span> <span class='op'>=</span> <span class='const'>Dir</span><span class='period'>.</span><span class='id identifier rubyid_glob'>glob</span><span class='lparen'>(</span><span class='ivar'>@gen_dir</span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>arch</span><span class='tstring_end'>&quot;</span></span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ext</span><span class='tstring_end'>&quot;</span></span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>**</span><span class='tstring_end'>&quot;</span></span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>*.yaml</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_f'>f</span><span class='op'>|</span>
-    <span class='id identifier rubyid_ext_obj'>ext_obj</span> <span class='op'>=</span> <span class='const'>YAML</span><span class='period'>.</span><span class='id identifier rubyid_load_file'>load_file</span><span class='lparen'>(</span><span class='id identifier rubyid_f'>f</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_ext_name'>ext_name</span> <span class='op'>=</span> <span class='id identifier rubyid_ext_obj'>ext_obj</span><span class='period'>.</span><span class='id identifier rubyid_keys'>keys</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
-    <span class='lbracket'>[</span><span class='id identifier rubyid_ext_name'>ext_name</span><span class='comma'>,</span> <span class='id identifier rubyid_ext_obj'>ext_obj</span><span class='lbracket'>[</span><span class='id identifier rubyid_ext_name'>ext_name</span><span class='rbracket'>]</span><span class='rbracket'>]</span>
-  <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_to_h'>to_h</span>
-
-  <span class='id identifier rubyid_arch_def'>arch_def</span> <span class='op'>=</span> <span class='lbrace'>{</span>
-    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>params</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_params'>params</span><span class='comma'>,</span>
-    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>instructions</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_inst_hash'>inst_hash</span><span class='comma'>,</span>
-    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>implemented_instructions</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='ivar'>@implemented_instructions</span><span class='comma'>,</span>
-    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>extensions</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_ext_hash'>ext_hash</span><span class='comma'>,</span>
-    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>implemented_extensions</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='ivar'>@implemented_extensions</span><span class='comma'>,</span>
-    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>csrs</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_csr_hash'>csr_hash</span><span class='comma'>,</span>
-    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>implemented_csrs</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='ivar'>@implemented_csrs</span>
-  <span class='rbrace'>}</span>
-
-  <span class='id identifier rubyid_pp'>pp</span> <span class='ivar'>@implemented_csrs</span>
-  <span class='id identifier rubyid_yaml'>yaml</span> <span class='op'>=</span> <span class='const'>YAML</span><span class='period'>.</span><span class='id identifier rubyid_dump'>dump</span><span class='lparen'>(</span><span class='id identifier rubyid_arch_def'>arch_def</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_arch_def_yaml'>arch_def_yaml</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'># yaml-language-server: $schema=../../../arch/arch_schema.json\n\n</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_yaml'>yaml</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
-  <span class='id identifier rubyid_abs_arch_def_path'>abs_arch_def_path</span> <span class='op'>=</span> <span class='ivar'>@gen_dir</span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>arch</span><span class='tstring_end'>&quot;</span></span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>arch_def.yaml</span><span class='tstring_end'>&quot;</span></span>
-
-  <span class='comment'># return early if this arch_def hasn&#39;t changed
-</span>  <span class='comment'># return if abs_arch_def_path.exist? &amp;&amp; (abs_arch_def_path.read == arch_def_yaml)
-</span>
-  <span class='const'>File</span><span class='period'>.</span><span class='id identifier rubyid_write'>write</span><span class='lparen'>(</span><span class='id identifier rubyid_abs_arch_def_path'>abs_arch_def_path</span><span class='comma'>,</span> <span class='id identifier rubyid_arch_def_yaml'>arch_def_yaml</span><span class='rparen'>)</span>
-
-  <span class='comment'># make sure it passes validation
-</span>  <span class='kw'>begin</span>
-    <span class='ivar'>@validator</span><span class='period'>.</span><span class='id identifier rubyid_validate_str'>validate_str</span><span class='lparen'>(</span><span class='const'>YAML</span><span class='period'>.</span><span class='id identifier rubyid_dump'>dump</span><span class='lparen'>(</span><span class='id identifier rubyid_arch_def'>arch_def</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='label'>type:</span> <span class='symbol'>:arch</span><span class='rparen'>)</span>
-  <span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="Validator.html" title="Validator (class)">Validator</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Validator/ValidationError.html" title="Validator::ValidationError (class)">ValidationError</a></span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
-    <span class='id identifier rubyid_warn'>warn</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>While validating the unified architecture defintion at </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_abs_arch_def_path'>abs_arch_def_path</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
-    <span class='id identifier rubyid_raise'>raise</span> <span class='id identifier rubyid_e'>e</span>
-  <span class='kw'>end</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="gen_csr_def-instance_method">
-  
-    #<strong>gen_csr_def</strong>  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>generate all CSR definitions for the config</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-457
-458
-459
-460
-461
-462
-463</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 457</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_gen_csr_def'>gen_csr_def</span>
-  <span class='id identifier rubyid_csr_list'>csr_list</span> <span class='op'>=</span> <span class='id identifier rubyid_all_known_csrs'>all_known_csrs</span>
-
-  <span class='id identifier rubyid_csr_list'>csr_list</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_csr_name'>csr_name</span><span class='op'>|</span>
-    <span class='id identifier rubyid_maybe_add_csr'>maybe_add_csr</span><span class='lparen'>(</span><span class='id identifier rubyid_csr_name'>csr_name</span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="gen_ext_def-instance_method">
-  
-    #<strong>gen_ext_def</strong>  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>generate parsed and merged definitions for all extensions</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-510
-511
-512
-513
-514
-515
-516
-517
-518</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 510</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_gen_ext_def'>gen_ext_def</span>
-  <span class='id identifier rubyid_ext_list'>ext_list</span> <span class='op'>=</span> <span class='id identifier rubyid_all_known_exts'>all_known_exts</span>
-
-  <span class='id identifier rubyid_ext_list'>ext_list</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ext_name'>ext_name</span><span class='op'>|</span>
-    <span class='id identifier rubyid_maybe_add_ext'>maybe_add_ext</span><span class='lparen'>(</span><span class='id identifier rubyid_ext_name'>ext_name</span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
-
-  <span class='ivar'>@ext_gen_complete</span> <span class='op'>=</span> <span class='kw'>true</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1027,25 +895,220 @@
       <pre class="lines">
 
 
-68
-69
-70
-71
-72
-73
-74
-75</pre>
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 68</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 95</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_generate'>generate</span>
   <span class='comment'># extensions need to be parsed first since we pull, e.g., exception codes from them
 </span>  <span class='id identifier rubyid_gen_ext_def'>gen_ext_def</span>
+  <span class='id identifier rubyid_add_implied_extensions'>add_implied_extensions</span>
+  <span class='id identifier rubyid_check_extension_dependencies'>check_extension_dependencies</span>
+
   <span class='id identifier rubyid_gen_csr_def'>gen_csr_def</span>
+
   <span class='id identifier rubyid_gen_inst_def'>gen_inst_def</span>
 
   <span class='id identifier rubyid_gen_arch_def'>gen_arch_def</span>
+
+  <span class='ivar'>@generate_done</span> <span class='op'>=</span> <span class='kw'>true</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="implemented_csrs-instance_method">
+  
+    #<strong>implemented_csrs</strong>  &#x21d2; <tt>Array&lt;String&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns List of all implemented CSRs.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;String&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>List of all implemented CSRs</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+146
+147
+148
+149</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 146</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_implemented_csrs'>implemented_csrs</span>
+  <span class='id identifier rubyid_generate'>generate</span> <span class='kw'>unless</span> <span class='ivar'>@generate_done</span>
+  <span class='ivar'>@implemented_csrs</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="implemented_extensions-instance_method">
+  
+    #<strong>implemented_extensions</strong>  &#x21d2; <tt>Array&lt;String&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns List of all implemented extensions.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;String&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>List of all implemented extensions</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+158
+159
+160
+161</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 158</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_implemented_extensions'>implemented_extensions</span>
+  <span class='id identifier rubyid_generate'>generate</span> <span class='kw'>unless</span> <span class='ivar'>@generate_done</span>
+  <span class='ivar'>@implemented_extensions</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="implemented_instructions-instance_method">
+  
+    #<strong>implemented_instructions</strong>  &#x21d2; <tt>Array&lt;String&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns List of all implemented instructions.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;String&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>List of all implemented instructions</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+152
+153
+154
+155</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 152</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_implemented_instructions'>implemented_instructions</span>
+  <span class='id identifier rubyid_generate'>generate</span> <span class='kw'>unless</span> <span class='ivar'>@generate_done</span>
+  <span class='ivar'>@implemented_instructions</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1096,26 +1159,26 @@
       <pre class="lines">
 
 
-544
-545
-546
-547
-548
-549
-550
-551
-552
-553
-554
-555
-556
-557
-558
-559
-560</pre>
+662
+663
+664
+665
+666
+667
+668
+669
+670
+671
+672
+673
+674
+675
+676
+677
+678</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 544</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 662</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_interrupt_codes'>interrupt_codes</span>
   <span class='kw'>return</span> <span class='ivar'>@interrupt_codes</span> <span class='kw'>unless</span> <span class='ivar'>@interrupt_codes</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1183,15 +1246,106 @@
       <pre class="lines">
 
 
-640
-641
-642</pre>
+758</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 640</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 758</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_params'>params</span>
-  <span class='ivar'>@params</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='comma'>,</span> <span class='id identifier rubyid__v'>_v</span><span class='op'>|</span> <span class='id identifier rubyid_k'>k</span><span class='period'>.</span><span class='id identifier rubyid_upcase'>upcase</span> <span class='op'>==</span> <span class='id identifier rubyid_k'>k</span> <span class='rbrace'>}</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_params'>params</span> <span class='op'>=</span> <span class='ivar'>@params</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='comma'>,</span> <span class='id identifier rubyid__v'>_v</span><span class='op'>|</span> <span class='id identifier rubyid_k'>k</span><span class='period'>.</span><span class='id identifier rubyid_upcase'>upcase</span> <span class='op'>==</span> <span class='id identifier rubyid_k'>k</span> <span class='rbrace'>}</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="validate_config-instance_method">
+  
+    #<strong>validate_config</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>validates the configuration using cfgs/config_validation.rb</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 60</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_validate_config'>validate_config</span>
+  <span class='id identifier rubyid_fork'>fork</span> <span class='kw'>do</span>
+    <span class='id identifier rubyid_validation_file'>validation_file</span> <span class='op'>=</span> <span class='gvar'>$root</span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>cfgs</span><span class='tstring_end'>&quot;</span></span> <span class='op'>/</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>config_validation.rb</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_validation_env'>validation_env</span> <span class='op'>=</span> <span class='id identifier rubyid_env'>env</span><span class='period'>.</span><span class='id identifier rubyid_clone'>clone</span>
+    <span class='id identifier rubyid_validation_env'>validation_env</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_define_method'>define_method</span><span class='lparen'>(</span><span class='symbol'>:require_param</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_param_name'>param_name</span><span class='op'>|</span>
+      <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_constants'>constants</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_param_name'>param_name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span>
+
+      <span class='id identifier rubyid_warn'>warn</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>At </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_caller'>caller</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_warn'>warn</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Configuration is missing required parameter </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_param_name'>param_name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+      <span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_exit!'>exit!</span> <span class='int'>1</span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_validation_env'>validation_env</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_define_method'>define_method</span><span class='lparen'>(</span><span class='symbol'>:require_ext</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ext_name'>ext_name</span><span class='op'>|</span>
+      <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_ext?'>ext?</span><span class='lparen'>(</span><span class='id identifier rubyid_ext_name'>ext_name</span><span class='period'>.</span><span class='id identifier rubyid_to_sym'>to_sym</span><span class='rparen'>)</span>
+
+      <span class='id identifier rubyid_warn'>warn</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>At </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_caller'>caller</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_warn'>warn</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Configuration is missing required extension </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ext_name'>ext_name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+      <span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_exit!'>exit!</span> <span class='int'>1</span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_validation_env'>validation_env</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_define_method'>define_method</span><span class='lparen'>(</span><span class='symbol'>:assert</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_condition'>condition</span><span class='op'>|</span>
+      <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_condition'>condition</span>
+
+      <span class='id identifier rubyid_warn'>warn</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>At </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_caller'>caller</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span>
+      <span class='id identifier rubyid_warn'>warn</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Configuration is missing required extension </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_ext_name'>ext_name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+      <span class='const'>Kernel</span><span class='period'>.</span><span class='id identifier rubyid_exit!'>exit!</span> <span class='int'>1</span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_env'>env</span><span class='period'>.</span><span class='id identifier rubyid_clone'>clone</span><span class='period'>.</span><span class='id identifier rubyid_class_eval'>class_eval</span> <span class='id identifier rubyid_validation_file'>validation_file</span><span class='period'>.</span><span class='id identifier rubyid_read'>read</span><span class='comma'>,</span> <span class='id identifier rubyid_validation_file'>validation_file</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='comma'>,</span> <span class='int'>1</span>
+  <span class='kw'>end</span>
+  <span class='const'>Process</span><span class='period'>.</span><span class='id identifier rubyid_wait'>wait</span>
+  <span class='id identifier rubyid_exit'>exit</span> <span class='int'>1</span> <span class='kw'>unless</span> <span class='gvar'>$CHILD_STATUS</span><span class='period'>.</span><span class='id identifier rubyid_success?'>success?</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1203,7 +1357,7 @@
 </div>
 
       <div id="footer">
-  Generated on Wed Jun 12 20:16:39 2024 by
+  Generated on Mon Jul  1 07:25:24 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

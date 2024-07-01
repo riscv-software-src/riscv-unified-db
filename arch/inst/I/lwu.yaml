@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 lwu:
   long_name: Load word unsigned
@@ -14,7 +14,7 @@ lwu:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     XReg virtual_address = X[rs1] + imm;
 
     X[rd] = read_memory<32>(virtual_address);

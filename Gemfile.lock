@@ -89,6 +89,7 @@ GEM
     treetop (1.6.12)
       polyglot (~> 0.3)
     unicode-display_width (2.5.0)
+    webrick (1.8.1)
     yard (0.9.36)
 
 PLATFORMS
@@ -104,7 +105,11 @@ DEPENDENCIES
   slim (~> 5.1)
   solargraph
   treetop (= 1.6.12)
+  webrick
   yard
+
+RUBY VERSION
+   ruby 3.2.3p157
 
 BUNDLED WITH
    2.4.20

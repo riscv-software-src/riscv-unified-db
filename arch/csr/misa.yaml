@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
 misa:
   long_name: Machine ISA Control
@@ -12,7 +12,7 @@ misa:
       location: 63-62
       description: XLEN in M-mode.
       type: RO
-      value: 2
+      reset_value: 2
     Extensions:
       location: 25-0
       description: |
@@ -20,4 +20,4 @@ misa:
       
         Value corresponds to A, D, F, H, I, M, S, U
       type: RO
-      value: 0x1411A9
+      reset_value: UNDEFINED_LEGAL

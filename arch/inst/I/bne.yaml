@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 bne:
   long_name: Branch if not equal
@@ -14,9 +14,7 @@ bne:
     u: always
     vs: always
     vu: always
-  raises:
-  - MisalignedAddress
-  operation: |
+  operation(): |
     XReg lhs = X[rs1];
     XReg rhs = X[rs2];
 

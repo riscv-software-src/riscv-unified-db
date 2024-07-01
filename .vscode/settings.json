@@ -8,5 +8,6 @@
   },
   "files.watcherExclude": {
     "**/.home": true
-  }
+  },
+  "asciidoc.antora.enableAntoraSupport": true
 }

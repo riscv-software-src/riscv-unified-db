@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 subw:
   long_name: Subtract word
@@ -11,7 +11,7 @@ subw:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     Bits<32> t0 = X[rs1][31:0];
     Bits<32> t1 = X[rs2][31:0];
     X[rd] = sext(t0 - t1, 31);

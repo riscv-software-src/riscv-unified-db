@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 jal:
   long_name: Jump and link
@@ -12,7 +12,7 @@ jal:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     XReg retrun_addr = PC + 4;
 
     jump(PC + imm);

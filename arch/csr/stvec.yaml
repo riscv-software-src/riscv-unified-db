@@ -1,15 +1,6 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
-<%-
-  va_size =
-    if ext?(:Sv57)
-      57
-    elsif ext?(:Sv48)
-      49
-    else
-      39
-    end
--%>
+# <%- va_size = ext?(:Sv57) ? 57 : (ext?(:Sv48) ? 49 :39) -%>
 
 stvec:
   long_name: Supervisor Trap Vector
@@ -28,12 +19,12 @@ stvec:
         the write should be ignored.
 
       type: RW-R
-      write(value): |
+      write(csr_value): |
         # Base spec says that BASE must be 4-byte aligned, which will always be the case
         # implementations may put further constraints on BASE when MODE != Direct
         # If that is the case, stvec should have an override for the implementation
-        return value.BASE;
-      reset_value: 0
+        return csr_value.BASE;
+      reset_value: UNDEFINED_LEGAL
     MODE:
       location: 1-0
       description: |
@@ -45,10 +36,10 @@ stvec:
 
         When Vectored, asynchronous interrupts jump to (`stvec.BASE` << 2 + `scause.CAUSE`*4) while synchronous exceptions continue to jump to (`stvec.BASE` << 2).
       type: RW-R
-      write(value): |
-        if (value.MODE == 0 || value.MODE == 1) {
+      write(csr_value): |
+        if (csr_value.MODE == 0 || csr_value.MODE == 1) {
           return value.MODE;
         } else {
-          return CSR[stvec].MODE;
+          return UNDEFINED_LEGAL_DETERMINISTIC;
         }
       reset_value: 0

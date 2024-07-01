@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 srai:
   long_name: Shift right arithmetic immediate
@@ -12,6 +12,6 @@ srai:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     # shamt is between 0-63
     X[rd] = X[rs1] >>> shamt;

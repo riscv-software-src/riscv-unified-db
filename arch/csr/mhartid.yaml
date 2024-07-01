@@ -1,15 +1,16 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
 mhartid:
   long_name: Machine Hart ID
   address: 0xf14
   priv_mode: M
-  length: 64
+  length(): return XLEN;
   description: Reports the unique hart-specific ID in the system.
   definedBy: I
   fields:
     ID:
-      location: 63-0
+      location(): |
+        return [XLEN-1, 0];
       type: RO
       description: hart-specific ID.
-      value: 0
+      reset_value: UNDEFINED_LEGAL

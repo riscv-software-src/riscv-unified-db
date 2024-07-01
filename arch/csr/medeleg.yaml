@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
 medeleg:
   long_name: Machine Exception Delegation
@@ -29,7 +29,9 @@ medeleg:
     <%- end -%>
 
     Otherwise, an exception cause is handled by M-mode.
-  definedBy: I
+
+    See xref:prose:interrupts.adoc[interrupt documentation] for more details.
+  definedBy: S # medeleg does not exist whe S-mode is not implemented
   fields:
     IAM:
       location: 0
@@ -67,7 +69,7 @@ medeleg:
         !===
         <%- end -%>
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     IAF:
       location: 1
       description: |
@@ -105,7 +107,7 @@ medeleg:
         <%- end -%>
 
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     II:
       location: 2
       description: |
@@ -142,7 +144,7 @@ medeleg:
         !===
         <%- end -%>
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     B:
       location: 3
       description: |
@@ -179,7 +181,7 @@ medeleg:
         !===
         <%- end -%>
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     LAM:
       location: 4
       description: |
@@ -222,7 +224,7 @@ medeleg:
         <%- end -%>
 
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     LAF:
       location: 5
       description: |
@@ -260,7 +262,7 @@ medeleg:
         <%- end -%> 
 
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     SAM:
       location: 6
       description: |
@@ -303,7 +305,7 @@ medeleg:
         <%- end -%> 
 
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     SAF:
       location: 7
       description: |
@@ -340,7 +342,7 @@ medeleg:
         !===
         <%- end -%> 
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     EU:
       location: 8
       description: |
@@ -378,7 +380,7 @@ medeleg:
         <%- end -%> 
 
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     ES:
       location: 9
       description: |
@@ -402,7 +404,7 @@ medeleg:
         ! 1 ! M ! (H)S 
         !===
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     EVS:
       location: 10
       description: |
@@ -426,7 +428,7 @@ medeleg:
         ! 1 ! M ! (H)S 
         !===
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
       definedBy: H
     EM:
       location: 11
@@ -437,7 +439,7 @@ medeleg:
 
         All Enviornment Call from M-mode exceptions are taken by M-mode.
       type: RO
-      value: 0
+      reset_value: 0
     IPF:
       location: 12
       description: |
@@ -474,7 +476,7 @@ medeleg:
         !===
         <%- end -%> 
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     LPF:
       location: 13
       description: |
@@ -512,7 +514,7 @@ medeleg:
         <%- end -%> 
 
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     SPF:
       location: 15
       description: |
@@ -549,7 +551,7 @@ medeleg:
         !===
         <%- end -%> 
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     IGPF:
       location: 20
       description: |
@@ -573,7 +575,7 @@ medeleg:
         ! 1 ! M ! HS 
         !===
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
       definedBy: H
     LGPF:
       location: 21
@@ -599,7 +601,7 @@ medeleg:
         !===
 
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
       definedBy: H
     VI:
       location: 22
@@ -625,7 +627,7 @@ medeleg:
         !===
 
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
       definedBy: H
     SGPF:
       location: 23
@@ -650,5 +652,5 @@ medeleg:
         ! 1 ! M ! HS 
         !===
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
       definedBy: H

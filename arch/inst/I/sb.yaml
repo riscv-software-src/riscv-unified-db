@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 sb:
   long_name: Store byte
@@ -12,7 +12,7 @@ sb:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     XReg virtual_address = X[rs1] + imm;
 
     write_memory<8>(virtual_address, X[rs2][7:0]);

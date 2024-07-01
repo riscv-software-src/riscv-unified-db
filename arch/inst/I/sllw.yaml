@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 sllw:
   long_name: Shift left logical word
@@ -12,4 +12,4 @@ sllw:
     u: always
     vs: always
     vu: always
-  operation: X[rd] = sext(X[rs1] << X[rs2][4:0], 31);
+  operation(): X[rd] = sext(X[rs1] << X[rs2][4:0], 31);

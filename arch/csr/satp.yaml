@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
 satp:
   address: 0x180
@@ -40,43 +40,40 @@ satp:
         !===
 
         Any other value shall be ignored on a write.
-      reset_value: 0
-      write(value): |
-        if (value.MODE == 0) {
+      reset_value: UNDEFINED_LEGAL
+      write(csr_value): |
+        if (csr_value.MODE == 0) {
           # In Bare, ASID and PPN must be zero, else the entire write is ignored
-          if (value.ASID == 0 && value.PPN == 0) {
-            return value.MODE;
+          if (csr_value.ASID == 0 && csr_value.PPN == 0) {
+            return csr_value.MODE;
           } else {
-            # else, value is unchanged
-            return CSR[satp].MODE;
+            return UNDEFINED_LEGAL_DETERMINISTIC;
           }
         }
-        else if (implemented?(ExtensionName::Sv39) && value.MODE == 8) { return value.MODE; }
-        else if (implemented?(ExtensionName::Sv48) && value.MODE == 9) { return value.MODE; }
-        else if (implemented?(ExtensionName::Sv57) && value.MODE == 10) { return value.MODE; }
+        else if (implemented?(ExtensionName::Sv39) && csr_value.MODE == 8) { return csr_value.MODE; }
+        else if (implemented?(ExtensionName::Sv48) && csr_value.MODE == 9) { return csr_value.MODE; }
+        else if (implemented?(ExtensionName::Sv57) && csr_value.MODE == 10) { return csr_value.MODE; }
         else {
-          # fall-through: retain old value if new value is invalid
-          return CSR[satp].MODE;
+          return UNDEFINED_LEGAL_DETERMINISTIC;
         }
     ASID:
-      location: <%= ASID_WIDTH + 43 %>-44
+      location(): return [ASID_WIDTH + 43, 44];
       description: |
         *Address Space ID*
       type: RW-R
-      write(value): |
-        if (value.MODE == 0) {
+      write(csr_value): |
+        if (csr_value.MODE == 0) {
           # when MODE == Bare, PPN and ASID must be zero
-          if (value.ASID == 0 && value.PPN == 0) {
-            return value.ASID;
+          if (csr_value.ASID == 0 && csr_value.PPN == 0) {
+            return csr_value.ASID;
           } else {
-            # otherwise, the value is unchanged
-            return CSR[satp].ASID;
+            return UNDEFINED_LEGAL_DETERMINISTIC;
           }
         } else {
           # unrestricted
-          return value.ASID;
+          return csr_value.ASID;
         }
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     PPN:
       location: 43-0
       description: |
@@ -87,19 +84,16 @@ satp:
         Can only hold values that correspond to a valid page table base, which
         will be implementation-dependent.
       type: RW-R
-      reset_value: 0
-      write(value): |
-        if (value.MODE == 0) {
+      reset_value: UNDEFINED_LEGAL
+      write(csr_value): |
+        if (csr_value.MODE == 0) {
           # when MODE == Bare, PPN and ASID must be zero
-          if (value.ASID == 0 && value.PPN == 0) {
-            return value.PPN;
+          if (csr_value.ASID == 0 && csr_value.PPN == 0) {
+            return csr_value.PPN;
           } else {
-            # otherwise, the value is unchanged
-            return CSR[satp].PPN;
+            return UNDEFINED_LEGAL_DETERMINISTIC;
           }
         } else {
           # unrestricted
-          return value.PPN;
+          return csr_value.PPN;
         }
-
-

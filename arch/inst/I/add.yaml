@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 add:
   long_name: Add
@@ -12,4 +12,4 @@ add:
     u: always
     vs: always
     vu: always
-  operation: X[rd] = X[rs1] + X[rs2];
+  operation(): X[rd] = X[rs1] + X[rs2];

@@ -18,7 +18,7 @@
       location: 63-0
       description: Event selector is not implemented. Entire CSR reads as 0.
       type: RO
-      value: 0
+      reset_value: 0
     <%- else -%>
     OF:
       location: 63

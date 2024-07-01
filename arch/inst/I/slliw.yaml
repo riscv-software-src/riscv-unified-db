@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 slliw:
   long_name: Shift left logical immediate word
@@ -11,6 +11,6 @@ slliw:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     # shamt is between 0-32
     X[rd] = sext(X[rs1] << shamt, 31);

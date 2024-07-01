@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 mulhu:
   long_name: Unsigned multiply high
@@ -21,7 +21,7 @@ mulhu:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     # enlarge and zero-extend the sources
     Bits<XLEN*2> src1 = {{XLEN{1'b0}}, X[rs1]};
     Bits<XLEN*2> src2 = {{XLEN{1'b0}}, X[rs2]};

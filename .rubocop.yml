@@ -1,3 +1,10 @@
+AllCops:
+  TargetRubyVersion: 3.2.3
+
+Lint/UnusedMethodArgument:
+  IgnoreEmptyMethods: true
+  IgnoreNotImplementedMethods: true
+
 Style/CommentedKeyword:
   Enabled: false
 
@@ -8,7 +15,7 @@ Style/WordArray:
   Enabled: false
 
 Style/StringLiterals:
-  EnforcedStyle: 'double_quotes'
+  EnforcedStyle: "double_quotes"
 
 Style/SymbolArray:
   Enabled: false
@@ -20,7 +27,7 @@ Metrics/BlockLength:
   Enabled: false
 
 Metrics/ClassLength:
-  CountAsOne: ['array', 'heredoc', 'method_call']
+  CountAsOne: ["array", "heredoc", "hash", "method_call"]
 
 Metrics/MethodLength:
   Enabled: false

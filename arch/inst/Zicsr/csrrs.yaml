@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 csrrs:
   long_name: Atomic Read and Set Bits in CSR
@@ -18,7 +18,7 @@ csrrs:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     XReg initial_csr_value = CSR[csr].sw_read();
     XReg mask = X[rs1];
 

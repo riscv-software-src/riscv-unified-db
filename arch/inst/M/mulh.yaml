@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 mulh:
   long_name: Signed multiply high
@@ -21,7 +21,7 @@ mulh:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     # enlarge and sign extend the sources
     Bits<1> rs1_sign_bit = X[rs1][XLEN-1];
     Bits<XLEN*2> src1 = {{XLEN{rs1_sign_bit}}, X[rs1]};

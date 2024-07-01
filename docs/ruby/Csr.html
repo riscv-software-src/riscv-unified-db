@@ -1,0 +1,1912 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  Class: Csr
+  
+    &mdash; Documentation by YARD 0.9.36
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "Csr";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="class_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index (C)</a> &raquo;
+    
+    
+    <span class="title">Csr</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><h1>Class: Csr
+  
+  
+  
+</h1>
+<div class="box_info">
+  
+  <dl>
+    <dt>Inherits:</dt>
+    <dd>
+      <span class="inheritName"><span class='object_link'><a href="ArchDefObject.html" title="ArchDefObject (class)">ArchDefObject</a></span></span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next"><span class='object_link'><a href="ArchDefObject.html" title="ArchDefObject (class)">ArchDefObject</a></span></li>
+          
+            <li class="next">Csr</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+    </dd>
+  </dl>
+  
+
+  
+  
+  
+  
+  
+
+  
+
+  
+  <dl>
+    <dt>Defined in:</dt>
+    <dd>lib/arch_def.rb</dd>
+  </dl>
+  
+</div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>CSR definition</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
+
+
+
+  <h2>Instance Attribute Summary <small><a href="#" class="summary_toggle">collapse</a></small></h2>
+  <ul class="summary">
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#arch_def-instance_method" title="#arch_def (instance method)">#<strong>arch_def</strong>  &#x21d2; ArchDef </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>The owning ArchDef.</p>
+</div></span>
+  
+</li>
+
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#sym_table-instance_method" title="#sym_table (instance method)">#<strong>sym_table</strong>  &#x21d2; ArchDef </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>The owning ArchDef.</p>
+</div></span>
+  
+</li>
+
+    
+  </ul>
+
+
+
+
+  
+    <h2>
+      Instance Method Summary
+      <small><a href="#" class="summary_toggle">collapse</a></small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#computed_length-instance_method" title="#computed_length (instance method)">#<strong>computed_length</strong>(effective_xlen = nil)  &#x21d2; Integer </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>return the length of the field as an Integer In some cases, the length is dynamic (e.g., depending on SXLEN).</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#description_html-instance_method" title="#description_html (instance method)">#<strong>description_html</strong>  &#x21d2; String </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>parse description field with asciidoctor, and retur the HTML result.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#dynamic_length%3F-instance_method" title="#dynamic_length? (instance method)">#<strong>dynamic_length?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Whether or not the length of the CSR depends on a runtime value (e.g., mstatus.SXL).</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#field-instance_method" title="#field (instance method)">#<strong>field</strong>(field_name)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>returns [CsrField,nil] field named ‘field_name’ if it exists, and nil otherwise.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#field%3F-instance_method" title="#field? (instance method)">#<strong>field?</strong>(field_name)  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>True if a field named ‘field_name’ is defined in the csr, and false otherwise.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#field_hash-instance_method" title="#field_hash (instance method)">#<strong>field_hash</strong>  &#x21d2; Hash&lt;String,CsrField&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Hash of fields, indexed by field name.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#fields-instance_method" title="#fields (instance method)">#<strong>fields</strong>  &#x21d2; Array&lt;CsrField&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>All fields for this CSR, sorted by location (smallest location first).</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#gen_html-instance_method" title="#gen_html (instance method)">#<strong>gen_html</strong>(scope)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#has_custom_sw_read%3F-instance_method" title="#has_custom_sw_read? (instance method)">#<strong>has_custom_sw_read?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>True if the CSR has a custom sw_read function.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(csr_data, sym_table, arch_def)  &#x21d2; Csr </a>
+    
+
+    
+  </span>
+  
+  
+    <span class="note title constructor">constructor</span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>A new instance of Csr.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#length-instance_method" title="#length (instance method)">#<strong>length</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#length_ast-instance_method" title="#length_ast (instance method)">#<strong>length_ast</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#lengths-instance_method" title="#lengths (instance method)">#<strong>lengths</strong>  &#x21d2; Array&lt;Hash&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>when the length is determined dynamically, there are multiple valid lengths this function returns the set of valid lengths, along with the condition under which that length is used.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#sw_read_ast-instance_method" title="#sw_read_ast (instance method)">#<strong>sw_read_ast</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#sw_read_source-instance_method" title="#sw_read_source (instance method)">#<strong>sw_read_source</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#wavedrom_desc-instance_method" title="#wavedrom_desc (instance method)">#<strong>wavedrom_desc</strong>(effective_length = nil)  &#x21d2; String </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>A JSON representation of the WaveDrom drawing for the CSR.</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  
+  
+  <div id="constructor_details" class="method_details_list">
+  <h2>Constructor Details</h2>
+  
+    <div class="method_details first">
+  <h3 class="signature first" id="initialize-instance_method">
+  
+    #<strong>initialize</strong>(csr_data, sym_table, arch_def)  &#x21d2; <tt><span class='object_link'><a href="" title="Csr (class)">Csr</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns a new instance of Csr.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+369
+370
+371
+372
+373
+374</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 369</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_csr_data'>csr_data</span><span class='comma'>,</span> <span class='id identifier rubyid_sym_table'>sym_table</span><span class='comma'>,</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='rparen'>)</span>
+  <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_csr_data'>csr_data</span><span class='rparen'>)</span>
+
+  <span class='ivar'>@arch_def</span> <span class='op'>=</span> <span class='id identifier rubyid_arch_def'>arch_def</span>
+  <span class='ivar'>@sym_table</span> <span class='op'>=</span> <span class='id identifier rubyid_sym_table'>sym_table</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+  
+</div>
+<div id="method_missing_details" class="method_details_list">
+  <h2>Dynamic Method Handling</h2>
+  <p class="notice super">
+    This class handles dynamic methods through the <tt>method_missing</tt> method
+    
+      in the class <span class='object_link'><a href="ArchDefObject.html#method_missing-instance_method" title="ArchDefObject#method_missing (method)">ArchDefObject</a></span>
+    
+  </p>
+  
+</div>
+
+  <div id="instance_attr_details" class="attr_details">
+    <h2>Instance Attribute Details</h2>
+    
+      
+      <span id=""></span>
+      <div class="method_details first">
+  <h3 class="signature first" id="arch_def-instance_method">
+  
+    #<strong>arch_def</strong>  &#x21d2; <tt><span class='object_link'><a href="ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns The owning ArchDef.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The owning ArchDef</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+367
+368
+369</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 367</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_arch_def'>arch_def</span>
+  <span class='ivar'>@arch_def</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      
+      <span id=""></span>
+      <div class="method_details ">
+  <h3 class="signature " id="sym_table-instance_method">
+  
+    #<strong>sym_table</strong>  &#x21d2; <tt><span class='object_link'><a href="ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns The owning ArchDef.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The owning ArchDef</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+367
+368
+369</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 367</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_sym_table'>sym_table</span>
+  <span class='ivar'>@sym_table</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+
+  <div id="instance_method_details" class="method_details_list">
+    <h2>Instance Method Details</h2>
+
+    
+      <div class="method_details first">
+  <h3 class="signature first" id="computed_length-instance_method">
+  
+    #<strong>computed_length</strong>(effective_xlen = nil)  &#x21d2; <tt>Integer</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>return the length of the field as an Integer In some cases, the length is dynamic (e.g., depending on SXLEN). When the length is dynamic, a specific value for the mode must be given</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <p class="tag_title">Examples:</p>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>Compute length when length is 32</p>
+</div></p>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_computed_length'>computed_length</span><span class='lparen'>(</span><span class='rparen'>)</span> <span class='op'>=&gt;</span> <span class='int'>32</span></code></pre>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>Compute length when length is ‘SXLEN’ and ‘SXLEN’ parameter is 32</p>
+</div></p>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_computed_length'>computed_length</span><span class='lparen'>(</span><span class='rparen'>)</span> <span class='op'>=&gt;</span> <span class='int'>32</span></code></pre>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>Compute length when length is ‘SXLEN’. and ‘SXLEN’ parameter is 3264</p>
+</div></p>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_computed_length'>computed_length</span><span class='lparen'>(</span><span class='int'>64</span><span class='rparen'>)</span> <span class='op'>=&gt;</span> <span class='int'>64</span></code></pre>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>Compute length when length is ‘SXLEN’, and ‘SXLEN’ parameter is [32, 64]</p>
+</div></p>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_computed_length'>computed_length</span><span class='lparen'>(</span><span class='rparen'>)</span> <span class='op'>=&gt;</span> <span class='const'>ArgumentError</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>effective_xlen</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>, <tt>nil</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Value to use when length is dynamic (e.g., ‘SXLEN’)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Length of the CSR, in bits</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+462
+463
+464
+465
+466
+467
+468
+469
+470
+471
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 462</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_computed_length'>computed_length</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_dynamic_length?'>dynamic_length?</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+      <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='heredoc_beg'>&lt;&lt;~MSG</span>
+<span class='tstring_content'>        Length of </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> depends on </span><span class='embexpr_beg'>#{</span><span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>length</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>;
+</span><span class='tstring_content'>          it must be supplied to length() to get a value
+</span><span class='heredoc_end'>      MSG
+</span>    <span class='kw'>end</span>
+
+    <span class='kw'>unless</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='id identifier rubyid_length'>length</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='embexpr_end'>}</span><span class='tstring_content'> is not a valid value of </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_length'>length</span><span class='embexpr_end'>}</span><span class='tstring_content'> (</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='id identifier rubyid_length'>length</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>end</span>
+
+    <span class='id identifier rubyid_effective_xlen'>effective_xlen</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Length is not dynamic; effective_xlen should not be provided</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+    <span class='comment'># length isn&#39;t dynamic, but it still might be parameterized
+</span>    <span class='kw'>if</span> <span class='id identifier rubyid_length'>length</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>String</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='id identifier rubyid_length'>length</span><span class='rbracket'>]</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_length'>length</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="description_html-instance_method">
+  
+    #<strong>description_html</strong>  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>parse description field with asciidoctor, and retur the HTML result</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Parsed description in HTML</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+529
+530
+531</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 529</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_description_html'>description_html</span>
+  <span class='const'>Asciidoctor</span><span class='period'>.</span><span class='id identifier rubyid_convert'>convert</span> <span class='id identifier rubyid_description'>description</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="dynamic_length?-instance_method">
+  
+    #<strong>dynamic_length?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns Whether or not the length of the CSR depends on a runtime value (e.g., mstatus.SXL).</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Whether or not the length of the CSR depends on a runtime value (e.g., mstatus.SXL)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+378
+379
+380
+381
+382
+383
+384</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 378</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_dynamic_length?'>dynamic_length?</span>
+  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='ivar'>@data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length()</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> is dynamic?    </span><span class='embexpr_beg'>#{</span><span class='op'>!</span><span class='id identifier rubyid_length_ast'>length_ast</span><span class='period'>.</span><span class='id identifier rubyid_constexpr_returns?'>constexpr_returns?</span><span class='lparen'>(</span><span class='ivar'>@sym_table</span><span class='comma'>,</span> <span class='ivar'>@arch_def</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+
+  <span class='op'>!</span><span class='id identifier rubyid_length_ast'>length_ast</span><span class='period'>.</span><span class='id identifier rubyid_constexpr_returns?'>constexpr_returns?</span><span class='lparen'>(</span><span class='ivar'>@sym_table</span><span class='comma'>,</span> <span class='ivar'>@arch_def</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="field-instance_method">
+  
+    #<strong>field</strong>(field_name)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>returns [CsrField,nil] field named ‘field_name’ if it exists, and nil otherwise</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+571
+572
+573</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 571</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_field'>field</span><span class='lparen'>(</span><span class='id identifier rubyid_field_name'>field_name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_field_hash'>field_hash</span><span class='lbracket'>[</span><span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="field?-instance_method">
+  
+    #<strong>field?</strong>(field_name)  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns true if a field named ‘field_name’ is defined in the csr, and false otherwise.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>true if a field named ‘field_name’ is defined in the csr, and false otherwise</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+566
+567
+568</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 566</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_field?'>field?</span><span class='lparen'>(</span><span class='id identifier rubyid_field_name'>field_name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_field_hash'>field_hash</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="field_hash-instance_method">
+  
+    #<strong>field_hash</strong>  &#x21d2; <tt>Hash&lt;String,<span class='object_link'><a href="CsrField.html" title="CsrField (class)">CsrField</a></span>&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns Hash of fields, indexed by field name.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash&lt;String,<span class='object_link'><a href="CsrField.html" title="CsrField (class)">CsrField</a></span>&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Hash of fields, indexed by field name</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+554
+555
+556
+557
+558
+559
+560
+561
+562
+563</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 554</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_field_hash'>field_hash</span>
+  <span class='ivar'>@field_hash</span> <span class='kw'>unless</span> <span class='ivar'>@field_hash</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+  <span class='ivar'>@field_hash</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+  <span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_field'>field</span><span class='op'>|</span>
+    <span class='ivar'>@field_hash</span><span class='lbracket'>[</span><span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_field'>field</span>
+  <span class='kw'>end</span>
+
+  <span class='ivar'>@field_hash</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="fields-instance_method">
+  
+    #<strong>fields</strong>  &#x21d2; <tt>Array&lt;<span class='object_link'><a href="CsrField.html" title="CsrField (class)">CsrField</a></span>&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns All fields for this CSR, sorted by location (smallest location first).</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;<span class='object_link'><a href="CsrField.html" title="CsrField (class)">CsrField</a></span>&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>All fields for this CSR, sorted by location (smallest location first)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 534</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_fields'>fields</span>
+  <span class='kw'>return</span> <span class='ivar'>@fields</span> <span class='kw'>unless</span> <span class='ivar'>@fields</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+  <span class='ivar'>@fields</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>fields</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_each_value'>each_value</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_field_data'>field_data</span><span class='op'>|</span>
+    <span class='ivar'>@fields</span> <span class='op'>&lt;&lt;</span> <span class='const'><span class='object_link'><a href="CsrField.html" title="CsrField (class)">CsrField</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="CsrField.html#initialize-instance_method" title="CsrField#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_field_data'>field_data</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+  <span class='ivar'>@fields</span><span class='period'>.</span><span class='id identifier rubyid_sort!'>sort!</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_a'>a</span><span class='comma'>,</span> <span class='id identifier rubyid_b'>b</span><span class='op'>|</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_dynamic_location?'>dynamic_location?</span>
+      <span class='int'>1</span>
+    <span class='kw'>elsif</span> <span class='id identifier rubyid_b'>b</span><span class='period'>.</span><span class='id identifier rubyid_dynamic_location?'>dynamic_location?</span>
+      <span class='op'>-</span><span class='int'>1</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='period'>.</span><span class='id identifier rubyid_max'>max</span> <span class='op'>&lt;=&gt;</span> <span class='id identifier rubyid_b'>b</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='period'>.</span><span class='id identifier rubyid_max'>max</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+  <span class='ivar'>@fields</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="gen_html-instance_method">
+  
+    #<strong>gen_html</strong>(scope)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+627
+628
+629
+630
+631
+632
+633
+634
+635
+636</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 627</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_gen_html'>gen_html</span><span class='lparen'>(</span><span class='id identifier rubyid_scope'>scope</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_scope'>scope</span> <span class='op'>=</span> <span class='id identifier rubyid_scope'>scope</span><span class='period'>.</span><span class='id identifier rubyid_clone'>clone</span>
+  <span class='id identifier rubyid_scope'>scope</span><span class='period'>.</span><span class='id identifier rubyid_csr'>csr</span> <span class='op'>=</span> <span class='kw'>self</span>
+  <span class='id identifier rubyid_scope'>scope</span><span class='period'>.</span><span class='id identifier rubyid_current_url'>current_url</span> <span class='op'>=</span> <span class='const'>Class</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_extend'>extend</span> <span class='const'>AssetMap</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_csr_url'>csr_url</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>.html</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+  <span class='const'>Slim</span><span class='op'>::</span><span class='const'>Template</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span>
+    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='const'>ROOT</span><span class='embexpr_end'>}</span><span class='tstring_content'>/lib/views/csr.slim</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+    <span class='label'>pretty:</span> <span class='kw'>true</span>
+  <span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_render'>render</span><span class='lparen'>(</span><span class='id identifier rubyid_scope'>scope</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="has_custom_sw_read?-instance_method">
+  
+    #<strong>has_custom_sw_read?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns true if the CSR has a custom sw_read function.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>true if the CSR has a custom sw_read function</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+576
+577
+578</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 576</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_has_custom_sw_read?'>has_custom_sw_read?</span>
+  <span class='ivar'>@data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>sw_read</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_sw_read'>sw_read</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="length-instance_method">
+  
+    #<strong>length</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+386
+387
+388
+389
+390
+391
+392</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 386</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_length'>length</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length is dynamic</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_dynamic_length?'>dynamic_length?</span>
+
+  <span class='kw'>return</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='kw'>if</span> <span class='ivar'>@data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_length_ast'>length_ast</span><span class='period'>.</span><span class='id identifier rubyid_return_value'>return_value</span><span class='lparen'>(</span><span class='ivar'>@sym_table</span><span class='comma'>,</span> <span class='ivar'>@arch_def</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="length_ast-instance_method">
+  
+    #<strong>length_ast</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 394</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_length_ast'>length_ast</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Not an IDL length</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='ivar'>@data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length()</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+  <span class='kw'>return</span> <span class='ivar'>@length_ast</span> <span class='kw'>unless</span> <span class='ivar'>@length_ast</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+  <span class='ivar'>@length_ast</span> <span class='op'>=</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_idl_compiler'>idl_compiler</span><span class='period'>.</span><span class='id identifier rubyid_compile_func_body'>compile_func_body</span><span class='lparen'>(</span>
+    <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length()</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+    <span class='label'>return_type:</span> <span class='const'><span class='object_link'><a href="Idl.html" title="Idl (module)">Idl</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Idl/Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Idl/Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>width:</span> <span class='int'>7</span><span class='rparen'>)</span><span class='comma'>,</span>
+    <span class='label'>symtab:</span> <span class='ivar'>@sym_table</span><span class='comma'>,</span>
+    <span class='label'>name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+    <span class='label'>parent:</span> <span class='id identifier rubyid_name'>name</span>
+  <span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="lengths-instance_method">
+  
+    #<strong>lengths</strong>  &#x21d2; <tt>Array&lt;Hash&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>when the length is determined dynamically, there are multiple valid lengths this function returns the set of valid lengths, along with the condition under which that length is used</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;Hash&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Length, as a hash of =&gt; value</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+413
+414
+415
+416
+417
+418
+419
+420
+421
+422
+423
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433
+434
+435
+436
+437
+438
+439
+440
+441
+442</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 413</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_lengths'>lengths</span>
+  <span class='kw'>return</span> <span class='ivar'>@lengths</span> <span class='kw'>unless</span> <span class='ivar'>@lengths</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+  <span class='kw'>return</span> <span class='const'>TypeError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> is static; use length</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_dynamic_length?'>dynamic_length?</span>
+
+  <span class='id identifier rubyid_ast'>ast</span> <span class='op'>=</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_idl_compiler'>idl_compiler</span><span class='period'>.</span><span class='id identifier rubyid_compile_func_body'>compile_func_body</span><span class='lparen'>(</span>
+    <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length()</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
+    <span class='label'>return_type:</span> <span class='const'><span class='object_link'><a href="Idl.html" title="Idl (module)">Idl</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Idl/Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Idl/Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>width:</span> <span class='int'>6</span><span class='rparen'>)</span><span class='comma'>,</span>
+    <span class='label'>symtab:</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_sym_table'>sym_table</span><span class='comma'>,</span>
+    <span class='label'>name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
+    <span class='label'>parent:</span> <span class='id identifier rubyid_name'>name</span>
+  <span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_possible_values'>possible_values</span> <span class='op'>=</span> <span class='id identifier rubyid_ast'>ast</span><span class='period'>.</span><span class='id identifier rubyid_pass_find_return_values'>pass_find_return_values</span><span class='lparen'>(</span><span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_sym_table'>sym_table</span><span class='comma'>,</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='rparen'>)</span>
+
+  <span class='ivar'>@lengths</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_possible_values'>possible_values</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_v'>v</span><span class='op'>|</span>
+    <span class='id identifier rubyid_value'>value</span> <span class='op'>=</span> <span class='id identifier rubyid_v'>v</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Expecting constexpr length</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span><span class='lparen'>(</span><span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_sym_table'>sym_table</span><span class='comma'>,</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='rparen'>)</span>
+
+    <span class='id identifier rubyid_conditions'>conditions</span> <span class='op'>=</span> <span class='id identifier rubyid_v'>v</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span>
+
+    <span class='ivar'>@lengths</span> <span class='op'>&lt;&lt;</span> <span class='lbrace'>{</span>
+      <span class='label'>value:</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_sym_table'>sym_table</span><span class='comma'>,</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='rparen'>)</span><span class='comma'>,</span>
+      <span class='label'>when:</span> <span class='id identifier rubyid_conditions'>conditions</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:to_idl</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'> &amp;&amp; </span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+    <span class='rbrace'>}</span>
+  <span class='kw'>end</span>
+
+  <span class='ivar'>@lengths</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="sw_read_ast-instance_method">
+  
+    #<strong>sw_read_ast</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 488</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_sw_read_ast'>sw_read_ast</span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TODO: add sw_read_ast back</span><span class='tstring_end'>&quot;</span></span>
+  <span class='comment'># return @sw_read_ast unless @sw_read_ast.nil?
+</span>
+  <span class='comment'># return if @data[&quot;sw_read&quot;].nil?
+</span>
+  <span class='comment'># @@parser.set_input_file(&quot;CSR #{name}&quot;)
+</span>  <span class='comment'># m = @@parser.parse(@data[&quot;sw_read&quot;], root: :function_statements)
+</span>  <span class='comment'># if m.nil?
+</span>  <span class='comment'>#   warn &quot;While parsing sw_read for CSR &#39;#{name}&#39;&quot;
+</span>  <span class='comment'>#   warn &quot;Parsing error at #{@@parser.failure_line}:#{@@parser.failure_column}&quot;
+</span>  <span class='comment'>#   warn @@parser.failure_reason
+</span>  <span class='comment'>#   raise &quot;Parse failed&quot;
+</span>  <span class='comment'># end
+</span>
+  <span class='comment'># m.make_left
+</span>
+  <span class='comment'># @sym_table.push
+</span>  <span class='comment'># @sym_table.add!(&quot;__expected_return_type&quot;, Type.new(:bits, width: length))
+</span>  <span class='comment'># begin
+</span>  <span class='comment'>#   m.func_stmt_list.elements.each do |e|
+</span>  <span class='comment'>#     e.choice.type_check(@sym_table, @arch_def)
+</span>  <span class='comment'>#   end
+</span>  <span class='comment'># rescue Ast::TypeError =&gt; e
+</span>  <span class='comment'>#   warn &quot;In the sw_read of CSR #{name}:&quot;
+</span>  <span class='comment'>#   warn e.what
+</span>  <span class='comment'>#   exit 1
+</span>  <span class='comment'># rescue Ast::InternalError =&gt; e
+</span>  <span class='comment'>#   warn &quot;In the sw_read of CSR #{name}:&quot;
+</span>  <span class='comment'>#   warn e.what
+</span>  <span class='comment'>#   warn e.backtrace
+</span>  <span class='comment'>#   exit 1
+</span>  <span class='comment'># end
+</span>  <span class='comment'># @sym_table.pop
+</span>
+  <span class='comment'># @sw_read_ast = m
+</span><span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="sw_read_source-instance_method">
+  
+    #<strong>sw_read_source</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+580
+581
+582
+583
+584</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 580</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_sw_read_source'>sw_read_source</span>
+  <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_has_custom_sw_read?'>has_custom_sw_read?</span>
+
+  <span class='id identifier rubyid_sw_read_ast'>sw_read_ast</span><span class='period'>.</span><span class='id identifier rubyid_gen_adoc'>gen_adoc</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>((</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>\((</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="wavedrom_desc-instance_method">
+  
+    #<strong>wavedrom_desc</strong>(effective_length = nil)  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns A JSON representation of the WaveDrom drawing for the CSR.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <p class="tag_title">Examples:</p>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>Result for an I-type instruction</p>
+</div></p>
+      
+      <pre class="example code"><code>{reg: [
+  {bits: 7,  name: &#39;OP-IMM&#39;,    attr: [&#39;{op_major_name}&#39;], type: 8},
+  {bits: 5,  name: &#39;rd&#39;,        attr: [&#39;&#39;], type: 2},
+  {bits: 3,  name: {funct3},    attr: [&#39;{mnemonic}&#39;], type: 8},
+  {bits: 5,  name: &#39;rs1&#39;,       attr: [&#39;&#39;], type: 4},
+  {bits: 12, name: &#39;imm12&#39;,     attr: [&#39;&#39;], type: 6}
+]}</code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>effective_xlen</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Effective XLEN to use when CSR length is dynamic</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>A JSON representation of the WaveDrom drawing for the CSR</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+597
+598
+599
+600
+601
+602
+603
+604
+605
+606
+607
+608
+609
+610
+611
+612
+613
+614
+615
+616
+617
+618
+619
+620
+621
+622
+623
+624
+625</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 597</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_wavedrom_desc'>wavedrom_desc</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_length'>effective_length</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_effective_length'>effective_length</span> <span class='op'>=</span> <span class='id identifier rubyid_length'>length</span> <span class='kw'>if</span> <span class='id identifier rubyid_effective_length'>effective_length</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bad length</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_effective_length'>effective_length</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Integer</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_desc'>desc</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>reg</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='rbrace'>}</span>
+  <span class='id identifier rubyid_last_idx'>last_idx</span> <span class='op'>=</span> <span class='op'>-</span><span class='int'>1</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:dynamic_location?</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:locations</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_field'>field</span><span class='op'>|</span>
+    <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_dynamic_location?'>dynamic_location?</span>
+
+    <span class='kw'>if</span> <span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='period'>.</span><span class='id identifier rubyid_min'>min</span> <span class='op'>!=</span> <span class='id identifier rubyid_last_idx'>last_idx</span> <span class='op'>+</span> <span class='int'>1</span>
+      <span class='comment'># have some reserved space
+</span>      <span class='id identifier rubyid_desc'>desc</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>reg</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>&lt;&lt;</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bits</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='lparen'>(</span><span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='period'>.</span><span class='id identifier rubyid_min'>min</span> <span class='op'>-</span> <span class='id identifier rubyid_last_idx'>last_idx</span> <span class='op'>-</span> <span class='int'>1</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='label'>type:</span> <span class='int'>1</span> <span class='rbrace'>}</span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_desc'>desc</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>reg</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>&lt;&lt;</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bits</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='label'>type:</span> <span class='int'>2</span> <span class='rbrace'>}</span>
+    <span class='id identifier rubyid_last_idx'>last_idx</span> <span class='op'>=</span> <span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='period'>.</span><span class='id identifier rubyid_max'>max</span>
+  <span class='kw'>end</span>
+  <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>&amp;&amp;</span> <span class='lparen'>(</span><span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span><span class='period'>.</span><span class='id identifier rubyid_dynamic_location?'>dynamic_location?</span> <span class='op'>||</span> <span class='lparen'>(</span><span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='period'>.</span><span class='id identifier rubyid_max'>max</span> <span class='op'>!=</span> <span class='lparen'>(</span><span class='id identifier rubyid_effective_length'>effective_length</span> <span class='op'>-</span> <span class='int'>1</span><span class='rparen'>)</span><span class='rparen'>)</span><span class='rparen'>)</span>
+    <span class='comment'># reserved space at the end
+</span>    <span class='id identifier rubyid_desc'>desc</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>reg</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>&lt;&lt;</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bits</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='lparen'>(</span><span class='id identifier rubyid_effective_length'>effective_length</span> <span class='op'>-</span> <span class='int'>1</span> <span class='op'>-</span> <span class='id identifier rubyid_last_idx'>last_idx</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='label'>type:</span> <span class='int'>1</span> <span class='rbrace'>}</span>
+    <span class='comment'># desc[&#39;reg&#39;] &lt;&lt; { &#39;bits&#39; =&gt; 1, type: 1 }
+</span>  <span class='kw'>end</span>
+  <span class='id identifier rubyid_desc'>desc</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>config</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bits</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_effective_length'>effective_length</span> <span class='rbrace'>}</span>
+  <span class='id identifier rubyid_desc'>desc</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>config</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>lanes</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_effective_length'>effective_length</span> <span class='op'>/</span> <span class='int'>16</span>
+  <span class='id identifier rubyid_desc'>desc</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+
+      <div id="footer">
+  Generated on Mon Jul  1 07:25:24 2024 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.36 (ruby-3.2.3).
+</div>
+
+    </div>
+  </body>
+</html>

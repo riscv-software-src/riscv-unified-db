@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
 mip:
   long_name: Machine Interrupt Pending
@@ -74,7 +74,7 @@ mip:
         unused and hardwired to 0.
         <%- end -%>
       type: RO
-      value: 0
+      reset_value: 0
     STIP:
       location: 5
       alias:

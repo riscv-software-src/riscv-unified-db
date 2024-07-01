@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 auipc:
   long_name: Add upper immediate to pc
@@ -10,4 +10,4 @@ auipc:
     u: always
     vs: always
     vu: always
-  operation: X[rd] = PC + imm;
+  operation(): X[rd] = PC + imm;

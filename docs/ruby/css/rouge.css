@@ -1,0 +1,35 @@
+pre.code.cpp table td { padding: 5px; }
+pre.code.cpp table pre { margin: 0; }
+pre.code.cpp, pre.code.cpp .w {
+  color: #444444;
+}
+pre.code.cpp .cp {
+  color: #CC00A3;
+}
+pre.code.cpp .cs {
+  color: #CC00A3;
+}
+pre.code.cpp .c, pre.code.cpp .ch, pre.code.cpp .cd, pre.code.cpp .cm, pre.code.cpp .cpf, pre.code.cpp .c1 {
+  color: #FF0000;
+}
+pre.code.cpp .kc {
+  color: #C34E00;
+}
+pre.code.cpp .kd {
+  color: #0000FF;
+}
+pre.code.cpp .kr {
+  color: #007575;
+}
+pre.code.cpp .k, pre.code.cpp .kn, pre.code.cpp .kp, pre.code.cpp .kt, pre.code.cpp .kv {
+  color: #0000FF;
+}
+pre.code.cpp .s, pre.code.cpp .sb, pre.code.cpp .sc, pre.code.cpp .dl, pre.code.cpp .sd, pre.code.cpp .s2, pre.code.cpp .se, pre.code.cpp .sh, pre.code.cpp .si, pre.code.cpp .sx, pre.code.cpp .sr, pre.code.cpp .s1, pre.code.cpp .ss {
+  color: #009C00;
+}
+pre.code.cpp .sa {
+  color: #0000FF;
+}
+pre.code.cpp .nb, pre.code.cpp .bp {
+  color: #C34E00;
+}

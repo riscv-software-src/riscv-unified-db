@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 ori:
   long_name: Or immediate
@@ -10,4 +10,4 @@ ori:
     u: always
     vs: always
     vu: always
-  operation: X[rd] = X[rs1] | imm;
+  operation(): X[rd] = X[rs1] | imm;

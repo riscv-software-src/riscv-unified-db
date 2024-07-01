@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 sh:
   long_name: Store halfword
@@ -12,7 +12,7 @@ sh:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     XReg virtual_address = X[rs1] + imm;
 
     write_memory<16>(virtual_address, X[rs2][15:0]);

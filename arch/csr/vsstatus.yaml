@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
 vsstatus:
   long_name: Virtual Supervisor Status
@@ -30,17 +30,23 @@ vsstatus:
         it only reflects the state visible to VS-mode
         (_e.g._, `status.FS` does not affect `vsstatus.SD`).
       type: RO-H
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
       affectedBy: [F, D, V]
     UXL:
       location: 33-32
       description: |
         *VU-mode XLEN*
 
-        Sets the effective XLEN for U-mode (0 = 32-bit, 1 = 64-bit, 2 = 128-bit).
-        Since the CPU only supports XLEN==64, this is hardwired to 1.
-      type: RO
-      value: 1
+        Sets the effective XLEN for VU-mode (0 = 32-bit, 1 = 64-bit, 2 = 128-bit).
+        <% if VUXLEN == 32 -%>
+        Since the hart only supports VUXLEN==32, this is hardwired to 0.
+        <% elsif VUXLEN == 64 -%>
+        Since the hart only supports VUXLEN==64, this is hardwired to 1.
+        <%- end -%><%# VUXLEN == 3264 -%>
+      type(): |
+        return (VUXLEN == 3264) ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return (VUXLEN == 3264) ? UNDEFINED_LEGAL : VUXLEN;
     MXR:
       alias: mstatus.MXR
       location: 19
@@ -65,7 +71,7 @@ vsstatus:
 
       type: RW
       definedBy: S
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     SUM:
       location: 18
       description: |
@@ -86,7 +92,7 @@ vsstatus:
 
       type: RW
       definedBy: S
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     XS:
       alias: mstatus.XS
       location: 16-15
@@ -97,7 +103,7 @@ vsstatus:
         Either 0 - Off, 1 - Initial, 2 - Clean, 3 - Dirty.
         Since there are no custom extensions, this field is read-only 0.
       type: RO
-      value: 0
+      reset_value: 0
     FS:
       location: 14-13
       description: |
@@ -115,7 +121,7 @@ vsstatus:
         other than to possibly enable a previously-disabled floating point unit. 
       type: RW-H
       definedBy: F
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     VS:
       location: 10-9
       description: |
@@ -126,7 +132,7 @@ vsstatus:
         Values 1 and 2 are valid write values for software, but are not interpreted by hardware
         other than to possibly enable a previously-disabled vector unit.
       type: RW-H
-      reset_value: 0 
+      reset_value: UNDEFINED_LEGAL 
       definedBy: V
     SPP:
       location: 8
@@ -140,17 +146,23 @@ vsstatus:
         On a return from an exception from VS-mode, the machine will enter the nominal privilege level
         stored in `vsstatus.SPP`.
       type: RW-H
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     UBE:
       location: 6
       description: |
         *VU-mode Big Endian*
 
-        Controls the endianness of U-mode (0 = little, 1 = big).
+        Controls the endianness of VU-mode (0 = little, 1 = big).
+        <%- if VU_MODE_ENDIANESS == 0 -%>
         Since the CPU does not support big endian, this is hardwired to 0.
-      type: RO
+        <%- elsif VU_MODE_ENDIANESS == 1 -%>
+        Since the CPU does not support big endian, this is hardwired to 1.
+        <%- end -%><%# VU_MODE_ENDIANESS == 2 -%>
+      type(): |
+        return (VU_MODE_ENDIANESS == 2) ? CsrFieldType::RW : CsrFieldType::RO;
       definedBy: S
-      value: 0
+      reset_value(): |
+        return (VU_MODE_ENDIANESS == 2) ? UNDEFINED_LEGAL : VU_MODE_ENDIANESS;
     SPIE:
       location: 5
       description: |
@@ -166,7 +178,7 @@ vsstatus:
         Other than serving as a record of nested traps as described above, `vsstatus.SPIE` does not affect execution.
       type: RW-H
       definedBy: S
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     SIE:
       location: 1
       description: |
@@ -182,4 +194,4 @@ vsstatus:
         * When 0, all VS-mode interrupts are disabled when the current privilege level is VS ((H)S-mode and M-mode interrupts are still enabled).
         * When 1, VS-mode interrupts that are not otherwise disabled with a field in `vsie` are enabled.
       type: RW-H
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL

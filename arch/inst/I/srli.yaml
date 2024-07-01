@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 srli:
   long_name: Shift right logical immediate
   description: Shift the value in rs1 right by shamt, and store the result in rd
@@ -9,6 +9,6 @@ srli:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     # shamt is between 0-63
     X[rd] = X[rs1] >> shamt;

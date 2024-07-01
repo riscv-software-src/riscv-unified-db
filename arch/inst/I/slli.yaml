@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 slli:
   long_name: Shift left logical immediate
@@ -10,6 +10,6 @@ slli:
     u: always
     vs: always
     vu: always
-  operation: |
+  operation(): |
     # shamt is between 0-(XLEN-1)
     X[rd] = X[rs1] << shamt;

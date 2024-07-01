@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
 senvcfg:
   address: 0x10A
@@ -35,7 +35,7 @@ senvcfg:
 
       definedBy: Zicboz
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     CBCFE:
       location: 6
       description: |
@@ -66,7 +66,7 @@ senvcfg:
 
       definedBy: Zicbom
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     CBIE:
       location: 5-4
       description: |
@@ -99,13 +99,13 @@ senvcfg:
         See `cbo.inval` for more details.
       definedBy: Zicbom
       type: RW-R
-      write(value): |
-        if (value.CBIE == 0 || value.CBIE == 1 || value.CBIE == 3) {
-          return value.CBIE;
+      write(csr_value): |
+        if (csr_value.CBIE == 0 || csr_value.CBIE == 1 || csr_value.CBIE == 3) {
+          return csr_value.CBIE;
         } else {
-          return CSR[senvcfg].CBIE;
+          return UNDEFINED_LEGAL_DETERMINISTIC;
         }
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     FIOM:
       location: 0
       description: |

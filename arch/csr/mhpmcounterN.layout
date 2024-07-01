@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
 # <% raise "'hpm_num' must be defined" if hpm_num.nil? %>
 
@@ -37,6 +37,10 @@
         <%- end -%>
 
         ..
-      type: "<%= (NUM_HPM_COUNTERS > (hpm_num - 3)) ? 'RW' : 'RO' %>"
-      reset_value: 0 # used when type is RW
-      value: 0       # used when type is RO
+      <%- if (NUM_HPM_COUNTERS > (hpm_num - 3)) -%>
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+      <%- else -%>
+      type: RO
+      reset_value: 0
+      <%- end -%>

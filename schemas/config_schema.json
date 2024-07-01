@@ -1,0 +1,231 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$defs": {
+    "params": {
+      "type": "object",
+      "required": [
+        "NAME",
+        "XLEN",
+        "M_MODE_ENDIANESS",
+        "NUM_PMP_ENTRIES",
+        "ARCH_ID",
+        "IMP_ID",
+        "MISALIGNED_LDST",
+        "NUM_HPM_COUNTERS",
+        "TRAP_ON_ILLEGAL_WLRL",
+        "REPORT_EBREAK_PC_IN_TVAL",
+        "CONFIG_PTR_ADDRESS",
+        "PHYS_ADDR_WIDTH",
+        "CACHE_BLOCK_SIZE"
+      ],
+      "properties": {
+        "XLEN": {
+          "type": "integer",
+          "enum": [
+            32,
+            64
+          ],
+          "description": "Base instruction set datapath width (e.g., RV32 or RV64)\n"
+        },
+        "NAME": {
+          "type": "string",
+          "description": "Name of the configuration.\n*Must* match the directory name under cfgs/ where params.yaml is stored.\n"
+        },
+        "M_MODE_ENDIANESS": {
+          "type": "integer",
+          "enum": [ 0, 1, 2],
+          "description": "Endianess of data in M-mode. Can be one of:\n\n  * 0: M-mode data is always little endian\n  * 1: M-mode data is always big endian\n  * 2: M-mode data can be either little or big endian, depending on the RW CSR field mstatus.MBE\n"
+        },
+        "S_MODE_ENDIANESS": {
+          "type": "integer",
+          "enum": [0, 1, 2],
+          "description": "Endianess of data in S-mode. Can be one of:\n\n  * 0: S-mode data is always little endian\n  * 1: S-mode data is always big endian\n  * 2: S-mode data can be either little or big endian, depending on the RW CSR field mstatus.SBE\n"
+        },
+        "U_MODE_ENDIANESS": {
+          "type": "integer",
+          "enum": [0, 1, 2],
+          "description": "Endianess of data in U-mode. Can be one of:\n\n  * 0: U-mode data is always little endian\n  * 1: U-mode data is always big endian\n  * 2: U-mode data can be either little or big endian, depending on the RW CSR field mstatus.UBE\n"
+        },
+        "VS_MODE_ENDIANESS": {
+          "type": "integer",
+          "enum": [0, 1, 2],
+          "description": "Endianess of data in VS-mode. Can be one of:\n\n  * 0: VS-mode data is always little endian\n  * 1: VS-mode data is always big endian\n  * 2: VS-mode data can be either little or big endian, depending on the RW CSR field hstatus.VSBE\n"
+        },
+        "VU_MODE_ENDIANESS": {
+          "type": "integer",
+          "enum": [0, 1, 2],
+          "description": "Endianess of data in VU-mode. Can be one of:\n\n  * 0: VU-mode data is always little endian\n  * 1: VU-mode data is always big endian\n  * 2: VU-mode data can be either little or big endian, depending on the RW CSR field vsstatus.UBE\n"
+        },
+        "SXLEN": {
+          "description": "XLENs supported in S-mode. Can be one of:\n\n * 32:       SXLEN is always 32\n * 64:       SXLEN is always 64 * 3264: SXLEN can be changed (via mstatus.SXL) between 32 and 64",
+          "type": "integer",
+          "enum": [32, 64, 3264]
+        },
+        "UXLEN": {
+          "description": "XLENs supported in U-mode. Can be one of:\n\n * 32:       UXLEN is always 32\n * 64:       UXLEN is always 64 * 3264: UXLEN can be changed (via mstatus.UXL) between 32 and 64",
+          "type": "integer",
+          "enum": [32, 64, 3264]
+        },
+        "VSXLEN": {
+          "description": "XLENs supported in VS-mode. Can be one of:\n\n * 32:       VSXLEN is always 32\n * 64:       VSXLEN is always 64 * 3264: VSXLEN can be changed (via hstatus.VSXL) between 32 and 64",
+          "type": "integer",
+          "enum": [32, 64, 3264]
+        },
+        "VUXLEN": {
+          "description": "XLENs supported in VU-mode. Can be one of:\n\n * 32:       UXLEN is always 32\n * 64:       VUXLEN is always 64 * 3264: VUXLEN can be changed (via vsstatus.SXL) between 32 and 64",
+          "type": "integer",
+          "enum": [32, 64, 3264]
+        },
+        "ASID_WIDTH": {
+          "type": "integer",
+          "maximum": 16,
+          "manimum": 0,
+          "description": "Number of implemented ASID bits"
+        },
+        "NUM_PMP_ENTRIES": {
+          "type": "integer",
+          "maximum": 64,
+          "minimum": 0,
+          "description": "Number of implemented PMP entries"
+        },
+        "ARCH_ID": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615,
+          "description": "Vendor-specific architecture ID presented in `marchid`"
+        },
+        "IMP_ID": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615,
+          "description": "Vendor-specific implementation ID present in `mimpid`"
+        },
+        "MISALIGNED_LDST": {
+          "type": "boolean",
+          "description": " whether or not the implementation supports misaligned loads and stores in main memory (not including atomics). Must be true when extension Zicclsm is implemented."
+        },
+        "MISALIGNED_AMO": {
+          "type": "boolean",
+          "description": " whether or not the implementation supports misaligned atomics.",
+          "default": false
+        },
+        "NUM_HPM_COUNTERS": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 29,
+          "description": "Number of implemented programmable hardware counters (not including cycle, time, and instret)"
+        },
+        "COUNTINHIBIT_EN": {
+          "type": "array",
+          "description": "Indicates which counters can be disabled from mcountinhibit\n\n Formatted as a one-hot enable vector so that, for example, COUNTINHIBIT_EN[0] is for CY and COUNTINHIBIT_EN[3] is for HPM3",
+          "items": [
+            {
+              "type": "boolean"
+            },
+            {
+              "const": false,
+              "$comment": "There is no counter at index 1"
+            }
+          ],
+          "additionalItems": {
+            "type": "boolean"
+          },
+          "minItems": 32,
+          "maxItems": 32
+        },
+        "TRAP_ON_ILLEGAL_WLRL": {
+          "type": "boolean",
+          "default": true,
+          "description": "When true, writing an illegal value to a WLRL CSR field raises an Illegal Instruction exception.\nWhen false, writing an illegal value to a WLRL CSR field is ignored."
+        },
+        "REPORT_EBREAK_PC_IN_TVAL": {
+          "type": "boolean",
+          "description": "When true, *tval is written with the virtual PC of the EBREAK instruction (same information as *epc).\nWhen false, *tval is written with 0 on an EBREAK instruction\n\nregardless, *tval is always written with a virtual PC when an external breakpoint is generated."
+        },
+        "CONFIG_PTR_ADDRESS": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615,
+          "description": "Physical address of the unified discovery configuration data structure (reported in `mconfigptr`)."
+        },
+        "PMP_GRANULARITY": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 66,
+          "description": "log2 of the smallest supported PMP region."
+        },
+        "PMA_GRANULARITY": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 66,
+          "description": "log2 of the smallest supported PMA region."
+        },
+        "PHYS_ADDR_WIDTH": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 36028797018963968,
+          "description": "Number of bits in the physical address space"
+        },
+        "MUTABLE_MISA_C": {
+          "type": "boolean",
+          "default": "false",
+          "description": "When C extension is supported, wether or not it can be dynamically disabled by writing the `misa.C` bit."
+        },
+        "CACHE_BLOCK_SIZE": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65536,
+          "description": "Size, in bytes of a cache block (as seen by cache maintence operations)"
+        },
+        "NUM_EXTERNAL_GUEST_INTERRUPTS": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 63,
+          "description": "Number of supported virtualized guest external interrupts.\nCorresponds to the GEILEN parameter in RISC-V specifications."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "params",
+    "extensions"
+  ],
+  "properties": {
+    "params": {
+      "$ref": "#/$defs/params"
+    },
+    "extensions": {
+      "type": "array",
+      "description": "Extension names and versions",
+      "items": {
+        "type": "array",
+        "prefixItems": [
+          {
+            "type": "string"
+          },
+          {
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string",
+                "pattern": "^[0-9]+(\\.[0-9]+(\\.[0-9]+(-[a-fA-F0-9]+)?)?)?$"
+              }
+            ]
+          }
+        ],
+        "additionalItems": false
+      }
+    },
+    "hpm_events": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "Event name"
+      }
+    }
+  }
+}

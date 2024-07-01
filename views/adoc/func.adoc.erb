@@ -1,0 +1,23 @@
+// defintions and helper functions for ISA definitions
+
+= Functions
+
+<%- isa_def.functions.each do |f| -%>
+[#<%= f.name %>-func-def]
+== <%= f.name %><%- if f.builtin? -%> (builtin)<%- end -%>
+
+<%= f.description %>
+
+|===
+h| Return Type l| <%= f.return_type_list_str.join(', ') %>
+h| Arguments   l| <%= f.arguments_list_str.join (', ') %>
+|===
+
+<%- if f.respond_to?(:body_block) -%>
+[subs="specialchars,macros"]
+----
+<%= f.unindent(f.body_block.function_body.gen_adoc.gsub('(', 'pass:[(]')) %>
+----
+<%- end -%>
+
+<%- end -%>

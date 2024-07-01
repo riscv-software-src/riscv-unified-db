@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "English"
 require "erb"
 require "pathname"
 require "rake/application"
@@ -15,14 +16,6 @@ $root = Pathname.new(__FILE__).dirname.dirname.realpath if $root.nil?
 #
 # ArchGen is initialized with a config name, which *must* be the name of a
 # directory under cfgs/
-#
-# The unified config is returned from {ArchGen.arch_def}.
-#
-# You can also get:
-#
-#  * An array of CSR definitions from {ArchGen.csrs}
-#  * An array of Instruction definitions from {ArchGen.instructions}
-#  * An array of Extension definitions from {ArchGen.extensions}
 #
 class ArchGen
   # configuration name
@@ -41,7 +34,7 @@ class ArchGen
   #
   # @param config_name [#to_s] The name of config located in the cfgs/ directory,
   def initialize(config_name)
-    @validator = Validator.new
+    @validator = Validator.instance
 
     @name = config_name.to_s
     @cfg_dir = $root / "cfgs" / @name
@@ -59,6 +52,40 @@ class ArchGen
 
     @opcode_data = YAML.load_file("#{$root}/ext/riscv-opcodes/instr_dict.yaml")
     @ext_gen_complete = false
+
+    validate_config
+  end
+
+  # validates the configuration using cfgs/config_validation.rb
+  def validate_config
+    fork do
+      validation_file = $root / "cfgs" / "config_validation.rb"
+      validation_env = env.clone
+      validation_env.class.define_method(:require_param) do |param_name|
+        return if constants.include?(param_name.to_sym)
+
+        warn "At #{caller[0]}:"
+        warn "Configuration is missing required parameter #{param_name}"
+        Kernel.exit! 1
+      end
+      validation_env.class.define_method(:require_ext) do |ext_name|
+        return if ext?(ext_name.to_sym)
+
+        warn "At #{caller[0]}:"
+        warn "Configuration is missing required extension #{ext_name}"
+        Kernel.exit! 1
+      end
+      validation_env.class.define_method(:assert) do |condition|
+        return if condition
+
+        warn "At #{caller[0]}:"
+        warn "Configuration is missing required extension #{ext_name}"
+        Kernel.exit! 1
+      end
+      env.clone.class_eval validation_file.read, validation_file.to_s, 1
+    end
+    Process.wait
+    exit 1 unless $CHILD_STATUS.success?
   end
 
   # generate the architecture definition into the gen directory
@@ -68,30 +95,89 @@ class ArchGen
   def generate
     # extensions need to be parsed first since we pull, e.g., exception codes from them
     gen_ext_def
+    add_implied_extensions
+    check_extension_dependencies
+
     gen_csr_def
+
     gen_inst_def
 
     gen_arch_def
+
+    @generate_done = true
+  end
+
+  def check_extension_dependencies
+    @implemented_extensions.each do |ext|
+      requirements = @required_ext_map[ext]
+      next if requirements.nil?
+
+      # turn into an array, if needed
+      requirements = [requirements] unless requirements.is_a?(Array)
+      requirements.each do |requirement|
+        unless @implemented_extensions.include?(requirement)
+          warn "Extension '#{ext}' requires extension '#{requirement}' also be implemented"
+          exit 1
+        end
+      end
+    end
+  end
+
+  # transitively adds any implied extensions to the @implemented_extensions list
+  def add_implied_extensions
+    @implemented_extensions.each do |ext_name|
+      extras = @implied_ext_map[ext_name]
+      next if extras.nil?
+
+      # turn it into an array if it isn't already
+      extras = [extras] unless extras.is_a?(Array)
+      extras.each do |extra_ext|
+        unless @implemented_extensions.include?(extra_ext)
+          raise "Implied extension '#{extra_ext}' for '#{ext_name}' is not defined"
+        end
+
+        @implemented_extensions << extra_ext unless @implemented_extensions.include?(extra_ext)
+      end
+    end
+  end
+  private :add_implied_extensions
+
+  # @return [Array<String>] List of all implemented CSRs
+  def implemented_csrs
+    generate unless @generate_done
+    @implemented_csrs
+  end
+
+  # @return [Array<String>] List of all implemented instructions
+  def implemented_instructions
+    generate unless @generate_done
+    @implemented_instructions
+  end
+
+  # @return [Array<String>] List of all implemented extensions
+  def implemented_extensions
+    generate unless @generate_done
+    @implemented_extensions
   end
 
   # Generate the config-specific, unified architecture spec data structure
   #
   def gen_arch_def
-    csr_hash = Dir.glob(@gen_dir / "arch" / "csr" / "**" / "*.yaml").map { |f|
+    csr_hash = Dir.glob(@gen_dir / "arch" / "csr" / "**" / "*.yaml").map do |f|
       csr_obj = YAML.load_file(f)
       csr_name = csr_obj.keys[0]
       [csr_name, csr_obj[csr_name]]
-    }.to_h
-    inst_hash = Dir.glob(@gen_dir / "arch" / "inst" / "**" / "*.yaml").map { |f|
+    end.to_h
+    inst_hash = Dir.glob(@gen_dir / "arch" / "inst" / "**" / "*.yaml").map do |f|
       inst_obj = YAML.load_file(f)
       inst_name = inst_obj.keys[0]
       [inst_name, inst_obj[inst_name]]
-    }.to_h
-    ext_hash = Dir.glob(@gen_dir / "arch" / "ext" / "**" / "*.yaml").map { |f|
+    end.to_h
+    ext_hash = Dir.glob(@gen_dir / "arch" / "ext" / "**" / "*.yaml").map do |f|
       ext_obj = YAML.load_file(f)
       ext_name = ext_obj.keys[0]
       [ext_name, ext_obj[ext_name]]
-    }.to_h
+    end.to_h
 
     arch_def = {
       "params" => params,
@@ -103,7 +189,6 @@ class ArchGen
       "implemented_csrs" => @implemented_csrs
     }
 
-    pp @implemented_csrs
     yaml = YAML.dump(arch_def)
     arch_def_yaml = "# yaml-language-server: $schema=../../../arch/arch_schema.json\n\n#{yaml}"
     abs_arch_def_path = @gen_dir / "arch" / "arch_def.yaml"
@@ -121,6 +206,7 @@ class ArchGen
       raise e
     end
   end
+  private :gen_arch_def
 
   # @return [Object] An object that has a method (lowercase) or constant (uppercase) for every config option
   #                  so that obj.param_name or obj.PARAM_NAME gets you the value
@@ -133,6 +219,16 @@ class ArchGen
 
     # add each parameter, either as a method (lowercase) or constant (uppercase)
     @params.each do |key, value|
+      if key[0].upcase == key[0]
+        @env.const_set(key, value)
+      else
+        @env.class.define_method(key) { value }
+      end
+    end
+
+    @cfg.each do |key, value|
+      next if key == "params"
+
       if key[0].upcase == key[0]
         @env.const_set(key, value)
       else
@@ -162,9 +258,19 @@ class ArchGen
         else
           requirement = Gem::Requirement.create(ext_version)
           @cfg["extensions"].any? do |e|
-            e[0] == ext_name.to_s && requirement.satisfied_by?(e[1])
+            e[0] == ext_name.to_s && requirement.satisfied_by?(Gem::Version.new(e[1]))
           end
         end
+      end
+
+      # insert a hyperlink to an object
+      # At this point, we insert a placeholder since it will be up
+      # to the backend to create a specific link
+      #
+      # @params type [Symbol] Type (:section, :csr, :inst, :ext)
+      # @params name [#to_s] Name of the object
+      def link_to(type, name)
+        "%%LINK[#{type};#{name}]%%"
       end
 
       # info on interrupt and exception codes
@@ -208,9 +314,7 @@ class ArchGen
   # @param base_obj [Hash] Base object
   # @param updates [Hash] Object with overlays
   # @return [Hash] Updated object
-  def merge(base_obj, updates)
-    merge_helper(base_obj, updates, [])
-  end
+  def merge(base_obj, updates) = merge_helper(base_obj, updates, [])
   private :merge
 
   # @param type [Symbol] Type of the object (@see Validator::SCHEMA_PATHS)
@@ -239,9 +343,7 @@ class ArchGen
 
   # @param type [Symbol] Type of the object (@see Validator::SCHEMA_PATHS)
   # @return [Pathname,nil] Path to schema for type
-  def schema_path_for(type)
-    Validator::SCHEMA_PATHS[type]
-  end
+  def schema_path_for(type) = Validator::SCHEMA_PATHS[type]
   private :schema_path_for
 
   # Render a architecture definition file and save it to gen_dir / .rendered_arch
@@ -266,7 +368,7 @@ class ArchGen
       return gen_path if gen_path.mtime >= dep_mtime # no update needed
     end
 
-    trace "Rendering architecture file for #{type}:#{name}" # #{[File.mtime(__FILE__), source_path.mtime, schema_path.mtime].max} #{gen_path.mtime}"
+    trace "Rendering architecture file for #{type}:#{name}"
 
     # render the source template
     current_env = env.clone
@@ -276,9 +378,13 @@ class ArchGen
     # see if the rendering was empty, meaning that the def isn't valid in this config
     return nil if rendered_def.nil?
 
+    # write the object
+    FileUtils.mkdir_p gen_path.dirname
+    File.write(gen_path, rendered_def)
+
     # verify
     begin
-      @validator.validate_str(rendered_def, type: type)
+      @validator.validate_str(rendered_def, type:)
     rescue Validator::ValidationError => e
       warn "#{type} definition in #{source_path} did not validate"
       raise e
@@ -286,11 +392,7 @@ class ArchGen
 
     def_obj = YAML.safe_load(rendered_def)
 
-    raise "#{type} name must match key in defintion" if name.to_s != def_obj.keys[0]
-
-    # write the object
-    FileUtils.mkdir_p gen_path.dirname
-    File.write(gen_path, YAML.dump(def_obj))
+    raise "#{type} name ('#{name}') must match key in defintion ('#{def_obj.keys[0]}')" if name.to_s != def_obj.keys[0]
 
     # return path to generated file
     gen_path
@@ -348,7 +450,7 @@ class ArchGen
   def gen_merged_def(type, arch_path, overlay_path)
     raise "Must have at least one of arch_path or overlay_path" if arch_path.nil? && overlay_path.nil?
 
-    name = arch_path.nil? ? overlay_path.basename('.yaml') : arch_path.basename('.yaml')
+    name = arch_path.nil? ? overlay_path.basename(".yaml") : arch_path.basename(".yaml")
 
     merged_path = @gen_dir / ".merged_arch" / type.to_s / "#{name}.yaml"
 
@@ -378,7 +480,7 @@ class ArchGen
     end
 
     begin
-      @validator.validate_str(merged_path.read, type: type)
+      @validator.validate_str(merged_path.read, type:)
     rescue Validator::ValidationError => e
       warn "Merged #{type} definition in #{merged_path} did not validate"
       raise e
@@ -406,8 +508,10 @@ class ArchGen
     csr_obj = YAML.load_file(merged_path)[csr_name]
 
     # filter fields to exclude any definedBy an extension not supported in this config
-    csr_obj["fields"].select! do |_field_name, field_data|
+    csr_obj["fields"].select! do |field_name, field_data|
+      field_data["name"] = field_name
       break true if field_data["definedBy"].nil?
+      break false if !field_data["base"].nil? && field_data["base"] != @params["XLEN"]
 
       field_defined_by = field_data["definedBy"]
       field_defined_by = [field_defined_by] unless field_defined_by.is_a?(Array)
@@ -417,6 +521,7 @@ class ArchGen
       end
       false
     end
+    csr_obj["fields"].each { |n, f| f["name"] = n }
 
     # add the CSR, unless it is from an extension not supported in this config
     csr_defined_by = csr_obj["definedBy"]
@@ -435,7 +540,7 @@ class ArchGen
 
     gen_csr_path = @gen_dir / "arch" / "csr" / csr_obj["definedBy"] / "#{csr_name}.yaml"
     FileUtils.mkdir_p gen_csr_path.dirname
-    gen_csr_path.write YAML.dump({ csr_name => csr_obj})
+    gen_csr_path.write YAML.dump({ csr_name => csr_obj })
   end
   private :maybe_add_csr
 
@@ -447,9 +552,9 @@ class ArchGen
     (
       Dir.glob($root / "arch" / "csr" / "**" / "*.yaml") +          # CSRs in arch/
       Dir.glob(@cfg_dir / "arch_overlay" / "csr" / "**" / "*.yaml") # CSRs in cfg/arch_overlay/
-    ).map { |f|
+    ).map do |f|
       File.basename(f, ".yaml")
-    }
+    end
   end
   private :all_known_csrs
 
@@ -461,6 +566,7 @@ class ArchGen
       maybe_add_csr(csr_name)
     end
   end
+  private :gen_csr_def
 
   # return list of all known extension names, even those not part of this config
   # Includes both extensions defined in arch/ and those added through an overlay of the config
@@ -485,11 +591,22 @@ class ArchGen
     merged_path = gen_merged_def(:ext, arch_path, arch_overlay_path)
 
     ext_obj = YAML.load_file(merged_path)[ext_name]
+    ext_obj["name"] = ext_name
+
+    @implied_ext_map ||= {}
+    @implied_ext_map[ext_name] = ext_obj["implies"]
+    @required_ext_map ||= {}
+    @required_ext_map[ext_name] = ext_obj["requires"]
 
     belongs =
       @cfg["extensions"].any? { |e| e[0] == ext_name }
     @implemented_extensions ||= []
-    @implemented_extensions << { "name" => ext_name, "version" => @cfg["extensions"].select { |e| e[0] == ext_name }[0][1]} if belongs
+    if belongs
+      @implemented_extensions << {
+        "name" => ext_name,
+        "version" => @cfg["extensions"].select { |e| e[0] == ext_name }[0][1]
+      }
+    end
 
     if belongs
       # check that the version number exists, too
@@ -502,7 +619,7 @@ class ArchGen
 
     gen_ext_path = @gen_dir / "arch" / "ext" / "#{ext_name}.yaml"
     FileUtils.mkdir_p gen_ext_path.dirname
-    FileUtils.cp merged_path, gen_ext_path
+    gen_ext_path.write YAML.dump({ ext_name => ext_obj })
   end
   private :maybe_add_ext
 
@@ -516,6 +633,7 @@ class ArchGen
 
     @ext_gen_complete = true
   end
+  private :gen_ext_def
 
   # Returns mapping of exception codes to text name.
   #
@@ -597,7 +715,7 @@ class ArchGen
 
     gen_inst_path = @gen_dir / "arch" / "inst" / inst_obj["definedBy"] / "#{inst_name}.yaml"
     FileUtils.mkdir_p gen_inst_path.dirname
-    gen_inst_path.write YAML.dump({ inst_name => inst_obj})
+    gen_inst_path.write YAML.dump({ inst_name => inst_obj })
 
     begin
       @validator.validate_str(File.read(gen_inst_path), type: :inst)
@@ -620,9 +738,9 @@ class ArchGen
     (
       Dir.glob($root / "arch" / "inst" / "**" / "*.yaml") +          # instructions in arch/
       Dir.glob(@cfg_dir / "arch_overlay" / "inst" / "**" / "*.yaml") # instructions in cfg/arch_overlay/
-    ).map { |f|
+    ).map do |f|
       File.basename(f, ".yaml")
-    }
+    end
   end
   private :all_known_insts
 
@@ -637,7 +755,5 @@ class ArchGen
   private :gen_inst_def
 
   # @return [Hash<String, Object>] Hash of parameters for the config
-  def params
-    @params.select { |k, _v| k.upcase == k }
-  end
+  def params = @params.select { |k, _v| k.upcase == k }
 end

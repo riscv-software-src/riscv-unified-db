@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-#
+
 # This file contains tasks related to the generation of a configured architecture specification
 
 require_relative File.join("..", "lib", "arch_gen.rb")
@@ -31,10 +31,12 @@ file "ext/riscv-opcodes/instr_dict.yaml" => "ext/riscv-opcodes/.venv/lib/python3
 end
 
 # stamp to indicate completion of Arch Gen for a given config
-rule %r{#{$root}/.stamps/arch-gen-.*\.stamp} => proc { |tname|
+rule %r{#{$root}/\.stamps/arch-gen-.*\.stamp} => proc { |tname|
   config_name = Pathname.new(tname).basename(".stamp").sub("arch-gen-", "")
   arch_files = Dir.glob($root / "arch" / "**" / "*.yaml")
-  config_files = Dir.glob($root / config_name / "overrides" / "**" / "*.yaml") + [$root / "cfgs" / config_name / "params.yaml"]
+  config_files =
+    Dir.glob($root / config_name / "overrides" / "**" / "*.yaml") +
+    [$root / "cfgs" / config_name / "params.yaml"]
   [
     "#{$root}/lib/arch_gen.rb",
     "#{$root}/tasks/arch_gen.rake",
@@ -47,6 +49,11 @@ rule %r{#{$root}/.stamps/arch-gen-.*\.stamp} => proc { |tname|
   puts "Generating architecture definition in #{arch_gen.gen_dir.relative_path_from($root)}"
 
   arch_gen.generate
+
+  puts "  Found #{arch_gen.implemented_csrs.size} CSRs"
+  puts "  Found #{arch_gen.implemented_extensions.size} Extensions"
+  puts "  Found #{arch_gen.implemented_instructions.size} Instructions"
+
   FileUtils.touch t.name
 end
 

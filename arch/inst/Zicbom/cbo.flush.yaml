@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../inst_schema.json
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 cbo.flush:
   long_name: Cache Block Flush
@@ -51,7 +51,7 @@ cbo.flush:
     ! 1 ! 0 ! 1 ! executes ! `Illegal Instruction` ! executes ! `Virtual Instruction` 
     ! 1 ! 1 ! 1 ! executes ! executes ! executes ! executes
     !===
-  # operation: |
+  # operation(): |
   #   XReg cache_block_address = X[rs1] & ~(CACHE_BLOCK_SIZE-1);
   #   Boolean has_fault?;
   #   ExceptionCode code;
@@ -61,13 +61,3 @@ cbo.flush:
   #     raise(code);
   #   }
 
-  raises:
-    - Store/AMO Page Fault
-    <%- if ext?(:H) -%>
-    - Store/AMO Guest-Page Fault
-    <%- end -%>
-    - Store Access Fault
-    - Illegal Instruction
-    <%- if ext?(:H) -%>
-    - Virtual Instruction
-    <%- end -%>

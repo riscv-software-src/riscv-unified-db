@@ -1,0 +1,52 @@
+[[inst:<%=inst.name.gsub('.', '_')%>-def]]
+= <%= inst.name %>
+
+*<%= inst.long_name %>*
+
+== Encoding
+
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....  
+<%= JSON.dump inst.wavedrom_desc %>
+....
+
+== Synopsis
+
+<%= arch_def.find_replace_links(inst.description) %>
+
+== Access
+<%- if arch_def.ext?(:H) -%>
+[cols="^,^,^,^,^"]
+<%- else -%>
+[cols="^,^,^"]
+<%- end -%>
+|===
+| M | <%- if arch_def.ext?(:H) -%>HS<%- else -%>S<%- end -%> | U <%- if arch_def.ext?(:H) -%> | VS | VU <%- end -%>
+
+| [.access-always]#Always#
+| [.access-<%=inst.access['s']%>]#<%= inst.access['s'].capitalize %>#
+| [.access-<%=inst.access['u']%>]#<%= inst.access['u'].capitalize %>#
+<% if arch_def.ext?(:H) %>
+| [.access-<%=inst.access['vs']%>]#<%= inst.access['vs'].capitalize %>#
+| [.access-<%=inst.access['vu']%>]#<%= inst.access['vu'].capitalize %>#
+<% end %>
+|===
+
+<%- if inst.access_detail? -%>
+<%= arch_def.find_replace_links(inst.access_detail) %>
+<%- end -%>
+
+== Decode Variables
+
+----
+<%- inst.decode_variables.each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<%- end -%>
+----
+
+== Execution
+
+[subs="specialchars,macros"]
+----
+<%= inst.operation_source %>
+----

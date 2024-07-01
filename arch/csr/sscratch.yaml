@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
 sscratch:
   long_name: Supervisor Scratch Register
@@ -12,4 +12,4 @@ sscratch:
       location: 63-0
       description: Scratch value
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL

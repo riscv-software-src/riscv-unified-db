@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
 mcounteren:
   long_name: Machine Counter Enable
@@ -24,7 +24,7 @@ mcounteren:
         When `scounteren.CY` is also set, `cycle` is futher accessible to U-mode.
         <%- end -%>
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     TM:
       location: 1
       description: |
@@ -39,7 +39,7 @@ mcounteren:
         When `scounteren.TM` is also set, `time` is futher accessible to U-mode.
         <%- end -%>
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     IR:
       location: 2
       description: |
@@ -54,7 +54,7 @@ mcounteren:
         When `scounteren.IR` is also set, `instret` is futher accessible to U-mode.
         <%- end -%>
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     <%- NUM_HPM_COUNTERS.times do |hpm_num| -%>
     HPM<%= hpm_num + 3 %>:
       location: <%= 3 + hpm_num %>
@@ -70,5 +70,5 @@ mcounteren:
         When `scounteren.HPM<%= hpm_num + 3 %>` is also set, `hpmcounter<%= 3 + hpm_num %>` is futher accessible to U-mode.
         <%- end -%>
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     <%- end -%>

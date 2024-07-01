@@ -1,10 +1,19 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
 hstatus:
   long_name: Hypervisor Status
   address: 0x600
   priv_mode: S
-  length: 64
+
+  # hstatus length is defined to be SXLEN-bit
+  #
+  # When SXLEN is immutable, then the length is known at compile time, and the generated
+  # configuration-dependent spec will be an integer in the length (no parens) field.
+  # When SXLEN is mutable, then the function will live on in the configuration-dependent
+  # spec, and downstream tools will use it appropriately.
+  length(): |
+    return (CSR[mstatus].SXL == 0) ? 7'd32 : 7'd64;
+
   description: |
     The hstatus register tracks and controls a VS-mode guest.
 
@@ -17,9 +26,49 @@ hstatus:
       description: |
         *VS-mode XLen*
 
-        Because the implementation only supports a single XLEN, this field is read-only 0.
-      type: RO
-      value: 0
+        <%- if VSXLEN == 3264 -%>
+
+        Determines the effective XLEN in VS-mode. Valid values are:
+
+        !===
+        ! Value ! VSXLEN
+
+        ! 0     ! 32
+        ! 1     ! 64
+        !===
+
+        <%- else -%>
+
+        Because the implementation only supports a single VSXLEN, this field is read-only <%= VSXLEN == 32 ? 0 : 1 %>.
+
+        <%- end -%>
+      type(): |
+        if ((VSXLEN == 32) || (VSXLEN == 64)) {
+          return CsrFieldType::RO;
+        } else {
+          return CsrFieldType::RW;
+        }
+      reset_value(): |
+        if (VSXLEN == 32) {
+          # immutable, always 0
+          return 0;
+        } else if (VSXLEN == 64) {
+          # immutable, always 1
+          return 1;
+        } else {
+          # mutable, undefined reset state
+          return UNDEFINED_LEGAL;
+        }
+      write(csr_value): |
+        if (CSR[mstatus].SXL < csr_value.VSXL) {
+          # cannot set VSXLEN less than SXLEN
+          return UNDEFINED_LEGAL_DETERMINISTIC;
+        } else if ((csr_value.VSXL & 0b10) != 0) {
+          # MSB of VSXL represents XLEN > 64, which isn't legal
+          return UNDEFINED_LEGAL_DETERMINISTIC;
+        } else {
+          return csr_value.VSXL;
+        }
     VTSR:
       location: 22
       description: |
@@ -31,7 +80,7 @@ hstatus:
         When `hstatus.VTSR` is clear, an `sret` instruction in VS-mode returns control
         to the mode stored in `vsstatus.SPP`.
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     VTW:
       location: 21
       description: |
@@ -59,7 +108,7 @@ hstatus:
         Trap (V) - Trap with `Virtual Instruction` code
         !===
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     VTVM:
       location: 20
       description: |
@@ -74,9 +123,9 @@ hstatus:
 
         `mstatus.TVM` does not affect the VS-mode instructions controlled by `hstatus.TVTM`.
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     VGEIN:
-      location: <%= NUM_EXTERNAL_GUEST_INTERRUPTS.bit_length + 11 %>-12
+      location: 17-12
       description: |
         *Virtual Guest External Interrupt Number*
 
@@ -86,20 +135,24 @@ hstatus:
 
         When `hstatus.VGEIN` != 0, it selects which bit of `hgeip` is currently active in VS-mode.
 
-      <%- if (NUM_EXTERNAL_GUEST_INTERRUPTS+1) == 2**(NUM_EXTERNAL_GUEST_INTERRUPTS).bit_length -%>
-      type: RW
-      reset_value: 0
-      <%- else -%>
-      type: RW-R
-      write(value): |
-        if (value.VGEIN <= NUM_EXTERNAL_GUEST_INTERRUPTS) {
-          return value.VGEIN;
+      type(): |
+        # if NUM_EXTERNAL_GUEST_INTERRUPTS+1 is a power of two (beacuse indexing in `hgeip` starts at 1),
+        # then the field accepts any value.
+        # Otherwise, it accepts a restricted set of values
+        if (power_of_2?<6>(NUM_EXTERNAL_GUEST_INTERRUPTS + 1)) {
+          return CsrFieldType::RW;
         } else {
-          # retain the old value
-          return CSR[hstatus].VGEIN;
+          return CsrFieldType::RWR;
         }
-      reset_value: 0
-      <%- end -%>
+      reset_value: UNDEFINED_LEGAL
+      legal?(csr_value): |
+        return csr_value.VGEIN <= NUM_EXTERNAL_GUEST_INTERRUPTS;
+      write(csr_value): |
+        if (csr_value.VGEIN <= NUM_EXTERNAL_GUEST_INTERRUPTS) {
+          return csr_value.VGEIN;
+        } else {
+          return ILLEGAL_WLRL;
+        }
     HU:
       location: 9
       description: |
@@ -110,7 +163,7 @@ hstatus:
 
         When clear, the hypervisor load/store instructions cause an `Illegal Instruction` trap.
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     SPVP:
       location: 8
       description: |
@@ -128,7 +181,7 @@ hstatus:
 
         * Controls the effective privilege level applied to the hypervisor load/store instructions, `hlv`, `hlvx`, and `hsv`.
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     SPV:
       location: 7
       description: |
@@ -146,7 +199,7 @@ hstatus:
           control returns to VS-mode or VU-mode (as selected by `mstatus.SPP`) when
           `hstatus.SPV` is 1 and to HS-mode or U-mode otherwise.
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     GVA:
       location: 6
       description: |
@@ -159,12 +212,36 @@ hstatus:
 
         Does not affect execution.
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     VSBE:
       location: 5
       description: |
         *VS-mode Big Endian*
 
-        Hardwired to 0.
-      type: RO
-      value: 0
+        Controls the endianness of data VS-mode (0 = little, 1 = big).
+        Instructions are always little endian, regardless of the data setting.
+
+        <%- if VS_MODE_ENDIANESS == 'little' -%>
+        Since the CPU does not support big endian in VS-mode, this is hardwired to 0.
+        <%- elsif VS_MODE_ENDIANESS == 'big' -%>
+        Since the CPU does not support litte endian in VS-mode, this is hardwired to 1.
+        <%- end -%><%# VS_MODE_ENDIANESS == 'flex' -%>
+      type(): |
+        if (VS_MODE_ENDIANESS < 2) {
+          # mode is fixed as either little or big endian
+          return CsrFieldType::RO;
+        } else {
+          # mode is mutable
+          return CsrFieldType::RW;
+        }
+      reset_value(): |
+        if (VS_MODE_ENDIANESS == 0) {
+          # little endian
+          return 0;
+        if (VS_MODE_ENDIANESS == 1) {
+          # big endian
+          return 1;
+        } else {
+          # mutable
+          return UNDEFINED_LEGAL;
+        }

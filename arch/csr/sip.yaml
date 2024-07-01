@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
 sip:
   long_name: Supervisor Interrupt Pending
@@ -52,7 +52,7 @@ sip:
         ! 1 ! writeable alias of `mip.SSIP` <% if ext?(:Smaia) %>and `mvip.SSIP`<% end %>
         !===
       type: RW
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
       definedBy: S
       affectedBy: Smaia
     STIP:
@@ -85,7 +85,7 @@ sip:
         ! 1 ! read-only alias of `mip.STIP` <% if ext?(:Smaia) %>(and `mvip.STIP` when `menvcfg.STCE` is clear)<% end %>
         !===
       type: RO-H
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
       definedBy: S
       affectedBy: Sstc
     SEIP:
@@ -113,7 +113,7 @@ sip:
       type: RO-H
       definedBy: S
       affectedBy: Smaia
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     LCOFIP:
       location: 13
       alias:
@@ -140,5 +140,5 @@ sip:
         a! writeable alias of `mip.LCOFIP` (and `vsip.LCOFIP` when `hideleg.LCOFI` is set)
         !===
       type: RW-H
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
       definedBy: Sscofpmf

@@ -1,22 +1,17 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
-<%-
-  max_code = [
-    interrupt_codes.keys.max,
-    exception_codes.keys.max
-  ].max
--%>
+# <%- max_code = [interrupt_codes.keys.max, exception_codes.keys.max].max -%>
 
 mcause:
   long_name: Machine Cause
   address: 0x342
   priv_mode: M
-  length: 64
+  length(): return XLEN;
   description: Reports the cause of the latest exception.
   definedBy: I
   fields:
     INT:
-      location: 63
+      location(): return XLEN - 1;
       description: |
         Written by hardware when a trap is taken into M-mode.
         
@@ -30,26 +25,25 @@ mcause:
         <%- end -%>
       type: RW-RH
       reset_value: 0
-      write(value): |
+      write(csr_value): |
         # the write only holds if the INT/CODE combination is valid
-        # otherwise, the old value is retained
-        if (value.INT == 1) {
+        if (csr_value.INT == 1) {
           <%- interrupt_codes.each do |num, name| -%>
-          if (_value.CODE == <%= num %>) {
+          if (csr_value.CODE == <%= num %>) {
             return 1;
           }
           <%- end -%>
-          return CSR[mcause].INT;
+          return ILLEGAL_WLRL;
         } else {
           <%- exception_codes.each do |num, name| -%>
-          if (value.CODE == <%= num %>) {
+          if (csr_value.CODE == <%= num %>) {
             return 0;
           }
           <%- end -%>
-          return CSR[mcause].INT;
+          return ILLEGAL_WLRL;
         }
     CODE:
-      location: <%= max_code.bit_length - 1 %>-0
+      location(): return <%= max_code.bit_length - 1 %>,0;
       description: |
         Written by hardware when a trap is taken into M-mode.
 
@@ -77,21 +71,20 @@ mcause:
         !===
       type: RW-RH
       reset_value: 0
-      write(value): |
+      write(csr_value): |
         # the write only holds if the INT/CODE combination is valid
-        # otherwise, the old value is retained
-        if (write_value.INT == 1) {
+        if (csr_value.INT == 1) {
           <%- interrupt_codes.each do |num, name| -%>
-          if (value.CODE == <%= num %>) {
+          if (csr_value.CODE == <%= num %>) {
             return <%= num %>;
           }
           <%- end -%>
-          return CSR[mcause].CODE;
+          return ILLEGAL_WLRL;
         } else {
           <%- exception_codes.each do |num, name| -%>
-          if (value.CODE == <%= num %>) {
+          if (csr_value.CODE == <%= num %>) {
             return <%= num %>;
           }
           <%- end -%>
-          return CSR[mcause].CODE;
+          return ILLEGAL_WLRL;
         }

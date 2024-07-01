@@ -1,18 +1,25 @@
-# yaml-language-server: $schema=csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
 sstatus:
   long_name: Supervisor Status
   address: 0x100
   priv_mode: S
-  length: 64
+  length(): | # length changes dynamically with SXLEN
+    return (CSR[mstatus].SXL == 0) ? 7'd32 : 7'd64;
   description: |
     The sstatus register tracks and controls the hart's current operating state.
 
     All fields in sstatus are aliases of the same field in mstatus.
-  definedBy: I
+  definedBy: S
   fields:
     SD:
-      location: 63
+      # The *position* of SD changes when SXLEN changes (yuck^[TM])
+      location(): |
+        if (CSR[mstatus].SXL == 0) {
+          return 6'd31;
+        } else {
+          return 6'd63;
+        }
       alias: mstatus.SD
       description: |
         *State Dirty*
@@ -20,17 +27,19 @@ sstatus:
         Alias of `mstatus.SD`.
         
       type: RO-H
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
       affectedBy: [F, D, V]
     UXL:
       location: 33-32
+      base: 64
+      alias: mstatus.MXR
       description: |
         *U-mode XLEN*
 
         Alias of `mstatus.UXL`.
         
       type: RO
-      value: 1
+      reset_value: UNDEFINED_LEGAL
     MXR:
       alias: mstatus.MXR
       location: 19
@@ -40,8 +49,7 @@ sstatus:
         Alias of `mstatus.MXR`.
         
       type: RW
-      definedBy: S
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     SUM:
       alias: mstatus.SUM
       location: 18
@@ -51,8 +59,7 @@ sstatus:
         Alias of `mstatus.SUM`.
         
       type: RW
-      definedBy: S
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     XS:
       alias: mstatus.XS
       location: 16-15
@@ -62,7 +69,7 @@ sstatus:
         Alias of `mstatus.XS`.
         
       type: RO
-      value: 0
+      reset_value: UNDEFINED_LEGAL
     FS:
       alias: mstatus.FS
       location: 14-13
@@ -73,7 +80,7 @@ sstatus:
 
       type: RW-H
       definedBy: F
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     VS:
       alias: mstatus.VS
       location: 10-9
@@ -83,7 +90,7 @@ sstatus:
         Alias of `mstatus.VS`.
 
       type: RW-H
-      reset_value: 0 
+      reset_value: UNDEFINED_LEGAL 
       definedBy: V
     SPP:
       alias: mstatus.SPP
@@ -94,7 +101,7 @@ sstatus:
         Alias of `mstatus.SPP`.
       type: RW-H
       definedBy: S
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     UBE:
       alias: mstatus.UBE
       location: 6
@@ -104,7 +111,7 @@ sstatus:
         Alias of `mstatus.UBE`.
       type: RO
       definedBy: S
-      value: 0
+      reset_value: UNDEFINED_LEGAL
     SPIE:
       alias: mstatus.SPIE
       location: 5
@@ -115,7 +122,7 @@ sstatus:
         
       type: RW-H
       definedBy: S
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL
     SIE:
       alias: mstatus.SIE
       location: 1
@@ -125,4 +132,4 @@ sstatus:
         Alias of `mstatus.SIE`.
         
       type: RW-H
-      reset_value: 0
+      reset_value: UNDEFINED_LEGAL

@@ -1,0 +1,1 @@
+This directory contains templates for constructing HTML documentation using Antora.
