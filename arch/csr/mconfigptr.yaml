@@ -41,7 +41,7 @@ mconfigptr:
   fields:
     ADDRESS:
       location(): |
-        return [bit_length(CONFIG_PTR_ADDRESS) - 1:0];
+        return bit_length(CONFIG_PTR_ADDRESS) - 1,0;
       description: Pointer to physical address of the Unified Discovery configuration data structure.
       type: RO
       reset_value(): |

@@ -63,11 +63,11 @@ mstatus:
         <%- end -%><%# M_MODE_ENDIANESS == 2 -%>
 
       type(): |
-        (M_MODE_ENDIANESS < 2) ? CsrFieldType::RO : CsrFieldType::RW
+        return (M_MODE_ENDIANESS < 2) ? CsrFieldType::RO : CsrFieldType::RW;
 
       # if endianess is mutable, MBE comes out of reset in little-endian mode
       reset_value(): |
-        (M_MODE_ENDIANESS == 1) ? 1 : 0
+        return (M_MODE_ENDIANESS == 1) ? 1 : 0;
 
     SBE:
       location: 36
@@ -86,11 +86,11 @@ mstatus:
         <%- end -%><%# S_MODE_ENDIANESS == 2 -%>
 
       type(): |
-        (S_MODE_ENDIANESS < 2) ? CsrFieldType::RO : CsrFieldType::RW
+        return (S_MODE_ENDIANESS < 2) ? CsrFieldType::RO : CsrFieldType::RW;
 
       # if endianess is mutable, MBE comes out of reset in little-endian mode
       reset_value(): |
-        (S_MODE_ENDIANESS == 1) ? 1 : 0
+        return (S_MODE_ENDIANESS == 1) ? 1 : 0;
     SXL:
       location: 35-34
       base: 64

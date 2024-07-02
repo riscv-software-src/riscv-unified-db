@@ -13,7 +13,7 @@ mepc:
   fields:
     PC:
       location(): |
-        return [XLEN-1,0];
+        return XLEN-1,0;
       description: |
         When a trap is taken into M-mode, `mepc.PC` is written with the virtual address of the
         instruction that was interrupted or that encountered the exception.

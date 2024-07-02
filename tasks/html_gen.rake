@@ -123,6 +123,8 @@ rule %r{#{$root}/\.stamps/html-gen-prose-.*\.stamp} => FileList[$root / "arch" /
   FileUtils.mkdir_p $root / "gen" / config_name / "antora" / "modules" / "prose"
   FileUtils.cp_r $root / "arch" / "prose", $root / "gen" / config_name / "antora" / "modules" / "prose" / "pages"
 
+  Rake::Task["#{$root}/.stamps"].invoke
+
   FileUtils.touch t.name
 end
 
@@ -134,7 +136,8 @@ rule %r{#{$root}/\.stamps/html-gen-.*\.stamp} => proc { |tname|
     "#{$root}/.stamps/adoc-gen-exts-#{config_name}.stamp",
     "#{$root}/.stamps/adoc-gen-funcs-#{config_name}.stamp",
     "#{$root}/.stamps/html-gen-prose-#{config_name}.stamp",
-    __FILE__
+    __FILE__,
+    "#{$root}/.stamps"
   ]
 } do |t|
   config_name = Pathname.new(t.name).basename(".stamp").sub("html-gen-", "")

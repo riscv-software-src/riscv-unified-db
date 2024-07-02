@@ -40,9 +40,12 @@
 #   }
 # }
 
-# floating point register file
-U32 FLEN = implemented?(ExtensionName::D) ? 64 : 32;
-Bits<FLEN> f[32];
+############################################################
+# constants used to indicate special values
+############################################################
+
+# CSR field value is undefined, but whatever it is, it must be legal for the field
+Bits<65> UNDEFINED_LEGAL = 65'h10000000000000000;
 
 // encoded as defined in the privilege spec
 enum PrivilegeMode {
@@ -151,6 +154,10 @@ builtin function implemented? {
     Return true if the implementation supports `extension`.
   }
 }
+
+# floating point register file
+U32 FLEN = implemented?(ExtensionName::D) ? 7'd64 : 7'd32;
+Bits<FLEN> f[32];
 
 builtin function mode {
   returns PrivilegeMode
@@ -354,6 +361,28 @@ builtin function pow {
   arguments XReg value, XReg exponent
   description {
     Return `value` to the power `exponent`.
+  }
+}
+
+function bit_length {
+  returns XReg
+  arguments XReg value
+  description {
+    Returns the minimum number of bits needed to represent value.
+
+    Only works on unsigned values.
+
+    The value 0 returns 1.
+  }
+  body {
+    for (XReg i = 63; i > 0; i--) {
+      if (value[i] == 1) {
+        return i;
+      }
+    }
+
+    # if we get here, the value is 0 or 1. either way, say we need one bit
+    return 1;
   }
 }
 

@@ -19,7 +19,6 @@ module Idl
     ].freeze
     QUALIFIERS = [
       :const,
-      :constexpr, # i.e., known at instruction decode time
       :signed
     ].freeze
 
@@ -58,6 +57,8 @@ module Idl
       end
       @qualifiers = qualifiers
       # raise "#{width.class.name}" if (kind == :bits && !width.is_a?(Integer))
+
+      raise "Should be a FunctionType" if kind == :function && !self.is_a?(FunctionType)
 
       raise "Width must be an Integer, is a #{width.class}" unless width.nil? || width.is_a?(Integer)
       @width = width
@@ -101,7 +102,7 @@ module Idl
         arguments: @arguments&.map(&:clone),
         enum_class: @enum_class&.clone,
         csr: @csr
-        )
+      )
     end
 
     # returns true if 'type' can be compared (e.g., >=, <, etc) to self
@@ -314,22 +315,8 @@ module Idl
       @qualifiers.include?(:const)
     end
 
-    def constexpr?
-      @qualifiers.include?(:constexpr)
-    end
-
     def mutable?
-      return !const? && !constexpr?
-    end
-
-    def make_constexpr
-      @qualifiers.append(:constexpr).uniq!
-      self
-    end
-
-    def remove_constexpr
-      @qualifiers.delete_if { |q| q == :constexpr }
-      self
+      return !const?
     end
 
     def signed?
@@ -338,6 +325,11 @@ module Idl
 
     def make_signed
       @qualifiers.append(:signed).uniq!
+      self
+    end
+
+    def make_const
+      @qualifiers.append(:const).uniq!
       self
     end
   end
@@ -417,14 +409,19 @@ module Idl
   end
 
   class FunctionType < Type
-    def initialize(func_name, func_def_ast, symtab, archdef)
+    def initialize(func_name, func_def_ast, symtab)
       super(:function, name: func_name)
       @func_def_ast = func_def_ast
       @symtab = symtab.deep_clone
-      @archdef = archdef
 
       raise "symtab should be at level 1" unless symtab.levels == 1
     end
+
+    def clone
+      FunctionType.new(name, @func_def_ast, @symtab)
+    end
+
+    def builtin? = @func_def_ast.builtin?
 
     def num_args = @func_def_ast.num_args
 
@@ -433,7 +430,7 @@ module Idl
 
       symtab = apply_template_values(template_values)
 
-      @func_def_ast.type_check_template_instance(symtab, @archdef)
+      @func_def_ast.type_check_template_instance(symtab)
     end
 
     def template_names = @func_def_ast.template_names
@@ -457,45 +454,61 @@ module Idl
       symtab
     end
 
-    def return_type(template_values = [])
-      symtab = apply_template_values(template_values)
+    # apply the arguments as Vars.
+    # then add the value to the Var
+    def apply_arguments(symtab, argument_nodes, call_site_symtab)
+      idx = 0
+      @func_def_ast.arguments(symtab).each do |atype, aname|
+        begin
+          symtab.add!(aname, Var.new(aname, atype, argument_nodes[idx].value(call_site_symtab)))
+        rescue AstNode::ValueError
+          symtab.add!(aname, Var.new(aname, atype))
+        end
+        idx += 1
+      end
+    end
 
-      @func_def_ast.return_type(symtab, @archdef)
+    # @param template_values [Array<Integer>] Template values for the call, in declaration order
+    # @param argument_nodes [Array<Ast::Node>] Arguments at the call site
+    # @param call_site_symtab [SymbolTable] Symbol table at the call site
+    # return [Type] type of the call return
+    def return_type(template_values, argument_nodes, call_site_symtab)
+      symtab = apply_template_values(template_values)
+      apply_arguments(symtab, argument_nodes, call_site_symtab)
+
+      @func_def_ast.return_type(symtab).clone
     end
 
     # @param template_values [Array<Integer>] Template values to apply, required if {#templated?}
     # @return [Array<Type>] return types
-    def return_types(template_values = [])
+    def return_types(template_values, argument_nodes, call_site_symtab)
       symtab = apply_template_values(template_values)
+      apply_arguments(symtab, argument_nodes, call_site_symtab)
 
-      @func_def_ast.return_types(symtab, @archdef)
+      @func_def_ast.return_types(symtab).map(&:clone)
     end
 
-    def argument_type(index, template_values = [])
+    def argument_type(index, template_values, argument_nodes, call_site_symtab)
       return nil if index >= @func_def_ast.num_args
 
       symtab = apply_template_values(template_values)
+      apply_arguments(symtab, argument_nodes, call_site_symtab)
 
-      arguments = @func_def_ast.arguments(symtab, @archdef)
-      arguments[index][0]
+      arguments = @func_def_ast.arguments(symtab)
+      arguments[index][0].clone
     end
 
     def argument_name(index, template_values = [])
       return nil if index >= @func_def_ast.num_args
 
       symtab = apply_template_values(template_values)
+      # apply_arguments(symtab, argument_nodes, call_site_symtab)
 
-      arguments = @func_def_ast.arguments(symtab, @archdef)
+      arguments = @func_def_ast.arguments(symtab)
       arguments[index][1]
     end
 
-    def constexpr?(template_values = [])
-      symtab = apply_template_values(template_values)
-
-      @func_def_ast.constexpr?(symtab, @archdef)
-    end
-
-    def body = @func_def_ast.body_block.function_body
+    def body = @func_def_ast.body
   end
 
   # a function that is templated, and hasn't been fully typed checked yet

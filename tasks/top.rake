@@ -7,6 +7,8 @@ require "yard"
 
 require_relative $root / "lib" / "validate"
 
+directory "#{$root}/.stamps"
+
 load "#{$root}/tasks/arch_gen.rake"
 load "#{$root}/tasks/adoc_gen.rake"
 load "#{$root}/tasks/html_gen.rake"

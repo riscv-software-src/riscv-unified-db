@@ -18,12 +18,17 @@ module Idl
       @decode_var = decode_var
     end
 
-    def const?
-      @type.const?
+    def clone
+      Var.new(
+        name,
+        type.clone,
+        value&.clone,
+        decode_var: @decode_var
+      )
     end
 
-    def constexpr?
-      @type.constexpr?
+    def const?
+      @type.const?
     end
 
     def decode_var?
@@ -33,10 +38,16 @@ module Idl
     def to_cxx
       @name
     end
+
+    def value=(new_value)
+      @value = new_value
+    end
   end
 
   # scoped symbol table holding known symbols at a current point in parsing
   class SymbolTable
+    attr_reader :archdef
+
     class DuplicateSymError < StandardError
     end
 
@@ -77,26 +88,25 @@ module Idl
       }]
       arch_def.config_params.each do |name, value|
         if value.is_a?(Integer)
-          qualifiers = [:constexpr]
           width = value.bit_length
           width = 1 if width.zero? # happens if value is 0
-          add!(name, Var.new(name, Type.new(:bits, width: width, qualifiers: qualifiers), value))
+          add!(name, Var.new(name, Type.new(:bits, width:), value))
         elsif value.is_a?(TrueClass) || value.is_a?(FalseClass)
-          qualifiers = [:constexpr]
-          add!(name, Var.new(name, Type.new(:boolean, qualifiers: qualifiers), value))
+          add!(name, Var.new(name, Type.new(:boolean), value))
         elsif value.is_a?(String)
           # just make sure this isn't something we think we need
           expected_names = ["NAME", "M_MODE_ENDIANESS", "S_MODE_ENDIANESS", "U_MODE_ENDIANESS", "VS_MODE_ENDIANESS", "VU_MODE_ENDIANESS"]
           raise "Unexpected String type for '#{name}'" unless expected_names.include?(name)
         elsif value.is_a?(Array)
-          qualifiers = [:constexpr]
-          raise "For param #{name}: Can only handle arrays of ints or bools" unless value.all? { |v| v.is_a?(Integer) || v.is_a?(TrueClass) || v.is_a?(FalseClass) }
+          unless value.all? { |v| v.is_a?(Integer) || v.is_a?(TrueClass) || v.is_a?(FalseClass) }
+            raise "For param #{name}: Can only handle arrays of ints or bools"
+          end
 
           ary = []
           element_type =
             if value[0].is_a?(Integer)
               max_bit_width = value.reduce(0) { |v, max| v > max ? v : max }
-              Type.new(:bits, width: max_bit_width, qualifiers:)
+              Type.new(:bits, width: max_bit_width)
             else
               Type.new(:boolean)
             end
@@ -104,7 +114,7 @@ module Idl
           value.each_with_index do |v, idx|
             ary << Var.new("#{name}[#{idx}]", element_type, v)
           end
-          add!(name, Var.new(name, ary_type, value))
+          add!(name, Var.new(name, ary_type, ary))
         else
           raise "Unhandled config param type '#{value.class.name}' for '#{name}'"
         end
@@ -178,7 +188,7 @@ module Idl
     end
 
     # return a deep clone of this SymbolTable
-    def deep_clone
+    def deep_clone(clone_values: false)
       copy = SymbolTable.new(@archdef)
       copy.instance_variable_set(:@scopes, [])
       c_scopes = copy.instance_variable_get(:@scopes)
@@ -186,7 +196,11 @@ module Idl
       @scopes.each do |scope|
         c_scopes << {}
         scope.each do |k, v|
-          c_scopes.last[k] = v
+          if clone_values
+            c_scopes.last[k] = v.clone
+          else
+            c_scopes.last[k] = v
+          end
         end
       end
       copy

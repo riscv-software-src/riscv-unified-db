@@ -57,7 +57,7 @@ satp:
           return UNDEFINED_LEGAL_DETERMINISTIC;
         }
     ASID:
-      location(): return [ASID_WIDTH + 43, 44];
+      location(): return ASID_WIDTH + 43, 44;
       description: |
         *Address Space ID*
       type: RW-R

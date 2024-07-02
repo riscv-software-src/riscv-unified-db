@@ -238,7 +238,7 @@ hstatus:
         if (VS_MODE_ENDIANESS == 0) {
           # little endian
           return 0;
-        if (VS_MODE_ENDIANESS == 1) {
+        } else if (VS_MODE_ENDIANESS == 1) {
           # big endian
           return 1;
         } else {

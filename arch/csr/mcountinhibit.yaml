@@ -43,22 +43,22 @@ mcountinhibit:
       location: 0
       description: When set, `mcycle.COUNT` stops counting in all privilege modes.
       type(): |
-        return COUNTINHIBIT_EN[0] == 1 ? CsrFieldType::RW : CsrFieldType::RO;
+        return COUNTINHIBIT_EN[0] ? CsrFieldType::RW : CsrFieldType::RO;
       reset_value(): |
-        return COUNTINHIBIT_EN[0] == 1 ? UNDEFINED_LEGAL : 0;
+        return COUNTINHIBIT_EN[0] ? UNDEFINED_LEGAL : 0;
     IR:
       location: 2
       description: When set, `minstret.COUNT` stops counting in all privilege modes.
       type(): |
-        return COUNTINHIBIT_EN[2] == 1 ? CsrFieldType::RW : CsrFieldType::RO;
+        return COUNTINHIBIT_EN[2] ? CsrFieldType::RW : CsrFieldType::RO;
       reset_value(): |
-        return COUNTINHIBIT_EN[2] == 1 ? UNDEFINED_LEGAL : 0;
+        return COUNTINHIBIT_EN[2] ? UNDEFINED_LEGAL : 0;
     <%- NUM_HPM_COUNTERS.times do |hpm_num| -%>
     HPM<%= hpm_num + 3 %>:
       location: <%= 3 + hpm_num %>
       description: When set, `hpmcounter<%= 3 + hpm_num %>.COUNT` stops counting in all privilege modes.
       type(): |
-        return COUNTINHIBIT_EN[<%= hpm_num %>] == 1 ? CsrFieldType::RW : CsrFieldType::RO;
+        return COUNTINHIBIT_EN[<%= hpm_num %>] ? CsrFieldType::RW : CsrFieldType::RO;
       reset_value(): |
-        return COUNTINHIBIT_EN[<%= hpm_num %>] == 1 ? UNDEFINED_LEGAL : 0;
+        return COUNTINHIBIT_EN[<%= hpm_num %>] ? UNDEFINED_LEGAL : 0;
     <%- end -%>

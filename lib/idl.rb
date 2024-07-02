@@ -60,7 +60,7 @@ module Idl
 
       m.set_input_file(path.to_s)
       begin
-        m.type_check(symtab, @arch_def)
+        m.type_check(symtab)
       rescue AstNode::TypeError, AstNode::InternalError => e
         warn e.what
         warn e.bt
@@ -101,11 +101,10 @@ module Idl
 
       begin
         ast.func_stmt_list.elements.each do |e|
-          e.choice.type_check(symtab, @arch_def)
+          e.choice.type_check(symtab)
         end
       rescue AstNode::TypeError => e
-        symtab.pop
-        raise if no_rescue
+        raise e if no_rescue
 
         if name && parent
           warn "In function #{name} of #{parent}:"
@@ -115,7 +114,6 @@ module Idl
         warn e.what
         exit 1
       rescue AstNode::InternalError => e
-        symtab.pop
         raise if no_rescue
 
         if name && parent
@@ -126,8 +124,9 @@ module Idl
         warn e.what
         warn e.backtrace
         exit 1
+      ensure
+        symtab.pop
       end
-      symtab.pop
 
       ast
     end
@@ -160,7 +159,7 @@ module Idl
       symtab.push
 
       begin
-        ast.type_check(symtab, @arch_def)
+        ast.type_check(symtab)
       rescue AstNode::TypeError => e
         if name && parent
           warn "In function #{name} of #{parent}:"

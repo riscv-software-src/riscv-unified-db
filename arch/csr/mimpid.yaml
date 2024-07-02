@@ -26,7 +26,7 @@ mimpid:
   definedBy: I
   fields:
     Implementation:
-      location(): return [XLEN - 1, 0];
+      location(): return XLEN - 1, 0;
       type: RO
       description: Vendor-specific implementation ID.
       reset_value(): return IMP_ID;

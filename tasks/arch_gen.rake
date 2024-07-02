@@ -38,6 +38,7 @@ rule %r{#{$root}/\.stamps/arch-gen-.*\.stamp} => proc { |tname|
     Dir.glob($root / config_name / "overrides" / "**" / "*.yaml") +
     [$root / "cfgs" / config_name / "params.yaml"]
   [
+    "#{$root}/.stamps",
     "#{$root}/lib/arch_gen.rb",
     "#{$root}/tasks/arch_gen.rake",
     "ext/riscv-opcodes/instr_dict.yaml"

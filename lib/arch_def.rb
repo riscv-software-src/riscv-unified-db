@@ -109,21 +109,27 @@ class CsrField < ArchDefObject
           name: "type",
           parent: "#{csr.name}.#{name}"
         )
-        case ast.value(csr.sym_table, arch_def)
-        when 0
-          "RO"
-        when 1
-          "RO-H"
-        when 2
-          "RW"
-        when 3
-          "RW-R"
-        when 4
-          "RW-H"
-        when 5
-          "RW-RH"
-        else
-          raise "Unhandled CsrFieldType value"
+        begin
+          case ast.return_value(csr.sym_table)
+          when 0
+            "RO"
+          when 1
+            "RO-H"
+          when 2
+            "RW"
+          when 3
+            "RW-R"
+          when 4
+            "RW-H"
+          when 5
+            "RW-RH"
+          else
+            raise "Unhandled CsrFieldType value"
+          end
+        rescue Idl::AstNode::ValueError => e
+          warn "In parsing #{csr.name}.#{name}::type()"
+          warn "  Return of type() function cannot be evaluated at compile time"
+          raise e
         end
       end
   end
@@ -169,9 +175,13 @@ class CsrField < ArchDefObject
   def dynamic_location?
     return false unless @data.key?("location()")
 
-    puts "#{csr.name}.#{name} is dynamic?    #{!location_func.constexpr_returns?(csr.sym_table, csr.arch_def)}"
-
-    !location_func.constexpr_returns?(csr.sym_table, csr.arch_def)
+    begin
+      eval_symtab = csr.sym_table.deep_clone(clone_values: true)
+      location_func.return_value(eval_symtab)
+      return false
+    rescue Idl::AstNode::ValueError
+      return true
+    end
   end
 
   def location_func
@@ -190,11 +200,11 @@ class CsrField < ArchDefObject
         no_rescue: true
       )
     rescue Idl::AstNode::TypeError => e
-      # maybe the failure was because we got an array back. try again
+      # maybe the failure was because we got a tuple back. try again
       begin
         @length_func = arch_def.idl_compiler.compile_func_body(
           @data["location()"],
-          return_type: Idl::Type.new(:array, width: 2, sub_type: Idl::Type.new(:bits, width: 6)),
+          return_type: Idl::Type.new(:tuple, tuple_types: Array.new(2, Idl::Type.new(:bits, width: 6))),
           symtab: csr.sym_table,
           name: "location 2",
           parent: "CSR[#{parent.name}].#{name}",
@@ -235,7 +245,8 @@ class CsrField < ArchDefObject
       if @data.key?("reset_value")
         @data["reset_value"]
       else
-        reset_value_func.return_value(arch_def.sym_table, arch_def)
+        puts "evaluating #{name}"
+        reset_value_func.return_value(arch_def.sym_table)
       end
   end
 
@@ -250,17 +261,16 @@ class CsrField < ArchDefObject
       parent: "#{parent.name}:#{name}"
     )
 
-    possible_values = ast.pass_find_return_values(arch_def.sym_table, arch_def)
+    possible_values = ast.pass_find_return_values(arch_def.sym_table)
 
     locs = []
     possible_values.each do |v|
       value = v[0]
-      raise "Expecting constexpr location" unless value.constexpr_returns?(arch_def.sym_table, arch_def)
 
       conditions = v[1]
 
       locs << {
-        value: value.return_value(arch_def.sym_table, arch_def),
+        value: value.return_value(arch_def.sym_table),
         when: conditions.map(&:to_idl).join(' && ')
       }
     end
@@ -283,7 +293,7 @@ class CsrField < ArchDefObject
 
       s..e
     elsif @data.key? "location()"
-      loc = location_func.return_value(csr.sym_table, csr.arch_def)
+      loc = location_func.return_value(csr.sym_table)
       if loc.is_a?(Integer)
         loc..loc
       else
@@ -304,11 +314,11 @@ class CsrField < ArchDefObject
   # @return [String] Pretty-printed location string
   def location_pretty
     if dynamic_location?
-      possible_values = location_func.pass_find_return_values(csr.sym_table, arch_def)
+      possible_values = location_func.pass_find_return_values(csr.sym_table)
 
       result = ""
       possible_values.each do |h|
-        result += "#{h[0].return_value(csr.sym_table, arch_def)} when #{h[1].map(&:to_idl).join(' && ')}\n\n"
+        result += "#{h[0].return_value(csr.sym_table)} when #{h[1].map(&:to_idl).join(' && ')}\n\n"
       end
       result
     else
@@ -352,11 +362,6 @@ class CsrField < ArchDefObject
   def type_desc
     TYPE_DESC_MAP[type]
   end
-
-  # @return [Integer,String] Reset value
-  def reset_value
-    type == "RO" ? @data["value"] : @data["reset_value"]
-  end
 end
 
 # CSR definition
@@ -378,9 +383,12 @@ class Csr < ArchDefObject
   def dynamic_length?
     return false unless @data.key?("length()")
 
-    puts "#{name} is dynamic?    #{!length_ast.constexpr_returns?(@sym_table, @arch_def)}"
-
-    !length_ast.constexpr_returns?(@sym_table, @arch_def)
+    begin
+      length_ast.return_value(@sym_table)
+      return false
+    rescue Idl::AstNode::ValueError
+      return true
+    end
   end
 
   def length
@@ -388,7 +396,7 @@ class Csr < ArchDefObject
 
     return @data["length"] if @data.key?("length")
 
-    length_ast.return_value(@sym_table, @arch_def)
+    length_ast.return_value(@sym_table)
   end
 
   def length_ast
@@ -423,17 +431,16 @@ class Csr < ArchDefObject
       parent: name
     )
 
-    possible_values = ast.pass_find_return_values(arch_def.sym_table, arch_def)
+    possible_values = ast.pass_find_return_values(arch_def.sym_table)
 
     @lengths = []
     possible_values.each do |v|
       value = v[0]
-      raise "Expecting constexpr length" unless value.constexpr?(arch_def.sym_table, arch_def)
 
       conditions = v[1]
 
       @lengths << {
-        value: value.value(arch_def.sym_table, arch_def),
+        value: value.value(arch_def.sym_table),
         when: conditions.map(&:to_idl).join(' && ')
       }
     end

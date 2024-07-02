@@ -9,7 +9,8 @@ require_relative "../lib/arch_def"
       "#{$root}/.stamps/arch-gen-#{config_name}.stamp",
       ($root / "views" / "adoc" / "#{type}.adoc.erb").to_s,
       "lib/arch_def.rb",
-      "tasks/adoc_gen.rake"
+      "tasks/adoc_gen.rake",
+      "#{$root}/.stamps"
     ]
   } do |t|
     config_name = Pathname.new(t.name).basename(".stamp").sub("adoc-gen-#{type}s-", "")

@@ -168,7 +168,7 @@ params:
   #  * 32:   SXLEN is always 32
   #  * 64:   SXLEN is always 64
   #  * 3264: SXLEN can be changed (via mstatus.SXL) between 32 and 64
-  SXLEN: 64
+  SXLEN: 3264
 
   # XLENs supported in U-mode. Can be one of:
   #

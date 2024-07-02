@@ -10,7 +10,7 @@ mhartid:
   fields:
     ID:
       location(): |
-        return [XLEN-1, 0];
+        return XLEN-1, 0;
       type: RO
       description: hart-specific ID.
       reset_value: UNDEFINED_LEGAL
