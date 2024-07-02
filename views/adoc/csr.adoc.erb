@@ -13,7 +13,7 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <%- end -%>
 <%- if csr.dynamic_length? -%>
-h| Length         | <%= csr["length"] %>
+h| Length         | <%= csr.length_pretty %>
 <%- else -%>
 h| Length         | <%= csr.length %>-bit
 <%- end -%>

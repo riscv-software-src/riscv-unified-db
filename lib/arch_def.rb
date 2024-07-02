@@ -448,6 +448,21 @@ class Csr < ArchDefObject
     @lengths
   end
 
+  # @return [String] Pretty-printed length string
+  def length_pretty
+    if dynamic_length?
+      possible_values = length_ast.pass_find_return_values(sym_table)
+
+      result = ""
+      possible_values.each do |h|
+        result += "#{h[0].value(sym_table)}-bit when #{h[1].map(&:to_idl).join(' && ')}\n\n"
+      end
+      result
+    else
+      "#{length}-bit"
+    end
+  end
+
   # return the length of the field as an Integer
   # In some cases, the length is dynamic (e.g., depending on SXLEN).
   # When the length is dynamic, a specific value for the mode must be given
@@ -1357,7 +1372,7 @@ class ArchDef
   def csrs
     return @csrs unless @csrs.nil?
 
-    @csrs = @arch_def["csrs"].map do |_csr_name, csr_data|
+    @csrs = @arch_def["csrs"].select{ |csr_name, _csr_data| @arch_def["implemented_csrs"].include?(csr_name)}.map do |_csr_name, csr_data|
       Csr.new(csr_data, @sym_table, self)
     end
   end

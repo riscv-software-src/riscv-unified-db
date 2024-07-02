@@ -8,6 +8,7 @@
   address: <%= "0x" + (0x720 + hpm_num).to_s(16).upcase %>
   priv_mode: M
   length: 32
+  base: 32
   description: |
     Alias of `mhpmevent<%= hpm_num %>`[63:32].
   definedBy: I
