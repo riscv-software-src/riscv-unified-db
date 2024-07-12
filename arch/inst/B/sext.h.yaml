@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+sext.h:
+  long_name: Sign-extend halfword
+  description: |
+    This instruction sign-extends the least-significant halfword in the source to XLEN by copying the
+    most-significant bit in the halfword (i.e., bit 15) to all of the more-significant bits.
+  definedBy: [B, Zbb]
+  assembly: xd, xs1
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    if (xlen() == 32) {
+      X[rd] = {{16{X[rs1][15]}}, X[rs1][15:0]};
+    } else if (xlen() == 64) {
+      X[rd] = {{48{X[rs1][15]}}, X[rs1][15:0]};
+    }

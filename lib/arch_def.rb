@@ -100,17 +100,22 @@ class CsrField < ArchDefObject
       else
         # the type is config-specific...
         idl = @data["type()"]
+        raise "type() is nil for #{csr.name}.#{name} #{@data}?" if idl.nil?
+
         expected_return_type =
           Idl::Type.new(:enum_ref, enum_class: csr.sym_table.get("CsrFieldType"))
+        sym_table = csr.sym_table
+
         ast = arch_def.idl_compiler.compile_func_body(
           idl,
-          symtab: csr.sym_table,
+          symtab: sym_table,
           return_type: expected_return_type,
           name: "type",
           parent: "#{csr.name}.#{name}"
         )
+
         begin
-          case ast.return_value(csr.sym_table)
+          case ast.return_value(sym_table)
           when 0
             "RO"
           when 1
@@ -149,7 +154,7 @@ class CsrField < ArchDefObject
 
       csr_field = arch_def.csr(csr_name).field(csr_field)
       range =
-        if  range.nil?
+        if range.nil?
           field.location
         elsif range_end.nil?
           (range_start.to_i..range_start.to_i)
@@ -173,53 +178,9 @@ class CsrField < ArchDefObject
   # @return [Boolean] Whether or not the location of the field changes dynamically
   #                   (e.g., based on mstatus.SXL)
   def dynamic_location?
-    return false unless @data.key?("location()")
+    return false if @data.key?("location")
 
-    begin
-      eval_symtab = csr.sym_table.deep_clone(clone_values: true)
-      location_func.return_value(eval_symtab)
-      return false
-    rescue Idl::AstNode::ValueError
-      return true
-    end
-  end
-
-  def location_func
-    raise "Not an IDL location" unless @data.key?("location()")
-
-    return @length_func unless @length_func.nil?
-
-    begin
-      @length_func = arch_def.idl_compiler.compile_func_body(
-        @data["location()"],
-        return_type: Idl::Type.new(:bits, width: 6),
-        symtab: csr.sym_table,
-        name: "location 1",
-        parent: "CSR[#{parent.name}].#{name}",
-        input_file: "CSR[#{parent.name}].#{name}",
-        no_rescue: true
-      )
-    rescue Idl::AstNode::TypeError => e
-      # maybe the failure was because we got a tuple back. try again
-      begin
-        @length_func = arch_def.idl_compiler.compile_func_body(
-          @data["location()"],
-          return_type: Idl::Type.new(:tuple, tuple_types: Array.new(2, Idl::Type.new(:bits, width: 6))),
-          symtab: csr.sym_table,
-          name: "location 2",
-          parent: "CSR[#{parent.name}].#{name}",
-          input_file: "CSR[#{parent.name}].#{name}",
-          no_rescue: true
-        )
-      rescue Idl::AstNode::TypeError => e2
-        puts "While compiling #{csr.name}.#{name}.location(), got type error for both an expected int and array return"
-        puts e
-        puts e2
-        exit 1
-      end
-    end
-
-    @length_func
+    return csr.dynamic_length?
   end
 
   def reset_value_func
@@ -231,7 +192,7 @@ class CsrField < ArchDefObject
       @data["reset_value()"],
       return_type: Idl::Type.new(:bits, width: 64),
       symtab: csr.sym_table,
-      name: "location",
+      name: "reset_value",
       parent: "CSR[#{parent.name}].#{name}",
       input_file: "CSR[#{parent.name}].#{name}",
       no_rescue: true
@@ -250,81 +211,73 @@ class CsrField < ArchDefObject
       end
   end
 
-  def locations
-    return TypeError, "location for #{name} is static; use location()" unless dynamic_location?
-
-    ast = arch_def.idl_compiler.compile_func_body(
-      @data["location()"],
-      return_type: Idl::Type.new(:bits, width: 6),
-      symtab: arch_def.sym_table,
-      name: "location",
-      parent: "#{parent.name}:#{name}"
-    )
-
-    possible_values = ast.pass_find_return_values(arch_def.sym_table)
-
-    locs = []
-    possible_values.each do |v|
-      value = v[0]
-
-      conditions = v[1]
-
-      locs << {
-        value: value.return_value(arch_def.sym_table),
-        when: conditions.map(&:to_idl).join(' && ')
-      }
-    end
-
-    locs
-  end
-
+  # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN
   # @return [Range] the location within the CSR as a range (single bit fields will be a range of size 1)
-  # @raise [TypeError] if the location is dynamic
-  def location
-    raise TypeError, "location for #{name} is dynamic; use locations() get options" if dynamic_location?
+  def location(effective_xlen = nil)
+    key =
+      if @data.key?("location")
+        "location"
+      else
+        raise ArgumentError, "Expecting 32 or 64" unless [32, 64].include?(effective_xlen)
 
-    if @data["location"].is_a?(Integer)
-      raise "Location is past XLEN" if @data["location"] > arch_def.config_params["XLEN"]
+        "location_rv#{effective_xlen}"
+      end
 
-      @data["location"]..@data["location"]
-    elsif @data["location"].is_a?(String)
-      e, s = @data["location"].split("-").map(&:to_i)
+    raise "Missing location for #{csr.name}.#{name} (#{key})?" unless @data.key?(key)
+
+    if @data[key].is_a?(Integer)
+      if @data[key] > csr.length(effective_xlen || @data["base"])
+        raise "Location (#{@data[key]}) is past the csr length (#{csr.length(effective_xlen)}) in #{csr.name}.#{name}"
+      end
+
+      @data[key]..@data[key]
+    elsif @data[key].is_a?(String)
+      e, s = @data[key].split("-").map(&:to_i)
       raise "Invalid location" if s > e
 
-      s..e
-    elsif @data.key? "location()"
-      loc = location_func.return_value(csr.sym_table)
-      if loc.is_a?(Integer)
-        loc..loc
-      else
-        raise "location() returned a range in the wrong order (should be [MSB, LSB])" if loc[0] < loc[1]
-
-        loc[1]..loc[0]
+      if e > csr.length(effective_xlen)
+        raise "Location (#{@data[key]}) is past the csr length (#{csr.length(effective_xlen)}) in #{csr.name}.#{name}"
       end
-    else
-      raise "Bad location"
+
+      s..e
     end
   end
 
+  def base64_only? = @data.key?("base") && @data["base"] == 64
+
+  def base32_only? = @data.key?("base") && @data["base"] == 32
+
+  def defined_in_all_bases? = @data["base"].nil?
+
   # @return [Integer] Number of bits in the field
-  def width
-    location.size
+  def width(effective_xlen)
+    location(effective_xlen).size
   end
 
   # @return [String] Pretty-printed location string
   def location_pretty
+    derangeify = proc { |loc|
+      return loc.min.to_s if loc.size == 1
+
+      "#{loc.max}:#{loc.min}"
+    }
     if dynamic_location?
-      possible_values = location_func.pass_find_return_values(csr.sym_table)
+      condition =
+        case csr.priv_mode
+        when "S"
+          "CSR[mstatus].SXL == %%"
+        when "VS"
+          "CSR[hstatus].VSXL == %%"
+        else
+          raise "Unexpected priv mode"
+        end
 
-      result = ""
-      possible_values.each do |h|
-        result += "#{h[0].return_value(csr.sym_table)} when #{h[1].map(&:to_idl).join(' && ')}\n\n"
-      end
-      result
+      <<~LOC
+        #{derangeify.call(location(32))} when #{condition.sub('%%', '0')}
+        #{derangeify.call(location(64))} when #{condition.sub('%%', '1')}
+      LOC
     else
-      return location.min.to_s if location.size == 1
-
-      "#{location.max}:#{location.min}"
+      derangeify.call(location(csr.arch_def.config_params["XLEN"]))
     end
   end
 
@@ -381,83 +334,93 @@ class Csr < ArchDefObject
   # @return [Boolean] Whether or not the length of the CSR depends on a runtime value
   #                   (e.g., mstatus.SXL)
   def dynamic_length?
-    return false unless @data.key?("length()")
+    return false if @data["length"].is_a?(Integer)
 
-    begin
-      length_ast.return_value(@sym_table)
-      return false
-    rescue Idl::AstNode::ValueError
-      return true
+    case @data["length"]
+    when "MXLEN"
+      false # mxlen can never change
+    when "SXLEN"
+      arch_def.config_params["SXLEN"] == 3264
+    when "VSXLEN"
+      arch_def.config_params["VSXLEN"] == 3264
+    else
+      raise "Unexpected length"
+    end
+    !@data["length"].is_a?(Integer) && (@data["length"] != "MXLEN")
+  end
+
+  def length(effective_xlen = nil)
+    case @data["length"]
+    when "MXLEN"
+      arch_def.config_params["XLEN"]
+    when "SXLEN"
+      if arch_def.config_params["SXLEN"] == 3264
+        raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
+
+        effective_xlen
+      else
+        puts arch_def.implemented_csrs.map { |c| c.name }
+        raise "CSR #{name} is not implemented" if arch_def.implemented_csrs.none? { |c| c.name == name }
+        raise "CSR #{name} is not implemented" if arch_def.config_params["SXLEN"].nil?
+
+        arch_def.config_params["SXLEN"]
+      end
+    when "VSXLEN"
+      if arch_def.config_params["VSXLEN"] == 3264
+        raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
+
+        effective_xlen
+      else
+        raise "CSR #{name} is not implemented" if arch_def.config_params["VSXLEN"].nil?
+
+        arch_def.config_params["VSXLEN"]
+      end
+    when Integer
+      @data["length"]
+    else
+      raise "Unexpected length field for #{csr.name}"
     end
   end
 
-  def length
-    raise "length is dynamic" if dynamic_length?
-
-    return @data["length"] if @data.key?("length")
-
-    length_ast.return_value(@sym_table)
-  end
-
-  def length_ast
-    raise "Not an IDL length" unless @data.key?("length()")
-
-    return @length_ast unless @length_ast.nil?
-
-    @length_ast = arch_def.idl_compiler.compile_func_body(
-      @data["length()"],
-      return_type: Idl::Type.new(:bits, width: 7),
-      symtab: @sym_table,
-      name: "length",
-      parent: name
-    )
-  end
-
-  # when the length is determined dynamically, there are multiple valid lengths
-  # this function returns the set of valid lengths, along with the condition
-  # under which that length is used
-  #
-  # @return [Array<Hash>] Length, as a hash of {when => value}
-  def lengths
-    return @lengths unless @lengths.nil?
-
-    return TypeError, "length for #{name} is static; use length" unless dynamic_length?
-
-    ast = arch_def.idl_compiler.compile_func_body(
-      @data["length()"],
-      return_type: Idl::Type.new(:bits, width: 6),
-      symtab: arch_def.sym_table,
-      name: "length",
-      parent: name
-    )
-
-    possible_values = ast.pass_find_return_values(arch_def.sym_table)
-
-    @lengths = []
-    possible_values.each do |v|
-      value = v[0]
-
-      conditions = v[1]
-
-      @lengths << {
-        value: value.value(arch_def.sym_table),
-        when: conditions.map(&:to_idl).join(' && ')
-      }
+  def length_cond32
+    case @data["length"]
+    when "SXLEN"
+      "CSR[mstatus].SXL == 0"
+    when "VSXLEN"
+      "CSR[hstatus].VSXL == 0"
+    else
+      raise "Unexpected length #{@data['length']} for #{name}"
     end
+  end
 
-    @lengths
+  def length_cond64
+    case @data["length"]
+    when "SXLEN"
+      "CSR[mstatus].SXL == 1"
+    when "VSXLEN"
+      "CSR[hstatus].VSXL == 1"
+    else
+      raise "Unexpected length"
+    end
   end
 
   # @return [String] Pretty-printed length string
   def length_pretty
     if dynamic_length?
-      possible_values = length_ast.pass_find_return_values(sym_table)
+      cond = 
+        case @data["length"]
+        when "SXLEN"
+          "CSR[mstatus].SXL == %%"
+        when "VSXLEN"
+          "CSR[hstatus].VSXL == %%"
+        else
+          raise "Unexpected length"
+        end
 
-      result = ""
-      possible_values.each do |h|
-        result += "#{h[0].value(sym_table)}-bit when #{h[1].map(&:to_idl).join(' && ')}\n\n"
-      end
-      result
+      <<~LENGTH
+        #{length(32)} when #{cond.sub('%%', '0')}
+        #{length(64)} when #{cond.sub('%%', '1')}
+      LENGTH
     else
       "#{length}-bit"
     end
@@ -552,7 +515,7 @@ class Csr < ArchDefObject
     Asciidoctor.convert description
   end
 
-  # @return [Array<CsrField>] All fields for this CSR, sorted by location (smallest location first)
+  # @return [Array<CsrField>] All fields for this CSR, regardless of whether or not they are implemented
   def fields
     return @fields unless @fields.nil?
 
@@ -560,16 +523,61 @@ class Csr < ArchDefObject
     @data["fields"].each_value do |field_data|
       @fields << CsrField.new(self, field_data)
     end
-    @fields.sort! do |a, b|
-      if a.dynamic_location?
-        1
-      elsif b.dynamic_location?
-        -1
-      else
-        a.location.max <=> b.location.max
+    @fields
+  end
+
+  # @return [Array<CsrField>] All implemented fields for this CSR at the given effective XLEN, sorted by location (smallest location first)
+  #                           Excluded any fields that are defined by unimplemented extensions or a base that is not effective_xlen
+  def implemented_fields_for(effective_xlen)
+    @implemented_fields_for ||= {}
+    return @implemented_fields_for[effective_xlen] unless @implemented_fields_for[effective_xlen].nil?
+
+    @implemented_fields_for[effective_xlen] = []
+    @data["fields"].each_value do |field_data|
+      next if field_data.key?("base") && (field_data["base"] != effective_xlen)
+
+      defined_by = []
+      defined_by << field_data["definedBy"] if field_data.key?("definedBy") && field_data["definedBy"].is_a?(String)
+      defined_by += field_data["definedBy"] if field_data.key?("definedBy") && field_data["definedBy"].is_a?(Array)
+      if !field_data.key?("definedBy") || (defined_by.any? { |ext_name| arch_def.ext?(ext_name) })
+        @implemented_fields_for[effective_xlen] << CsrField.new(self, field_data)
       end
     end
-    @fields
+    @implemented_fields_for[effective_xlen].sort! do |a, b|
+      a.location(effective_xlen).max <=> b.location(effective_xlen).max
+    end
+
+    @implemented_fields_for[effective_xlen]
+  end
+
+  # @return [Array<CsrField>] All implemented fields for this CSR
+  #                           Excluded any fields that are defined by unimplemented extensions
+  def implemented_fields
+    return @implemented_fields unless @implemented_fields.nil?
+
+    implemented_bases =
+      if arch_def.config_params["SXLEN"] == 3264 ||
+         arch_def.config_params["UXLEN"] == 3264 ||
+         arch_def.config_params["VSXLEN"] == 3264 ||
+         arch_def.config_params["VUXLEN"] == 3264
+        [32,64]
+      else
+        [arch_def.config_params["XLEN"]]
+      end
+
+    @implemented_fields = []
+    @data["fields"].each_value do |field_data|
+      next if field_data.key?("base") && implemented_bases.none?(field_data["base"])
+
+      defined_by = []
+      defined_by << field_data["definedBy"] if field_data.key?("definedBy") && field_data["definedBy"].is_a?(String)
+      defined_by += field_data["definedBy"] if field_data.key?("definedBy") && field_data["definedBy"].is_a?(Array)
+      if !field_data.key?("definedBy") || (defined_by.any? { |ext_name| arch_def.ext?(ext_name) })
+        @implemented_fields << CsrField.new(self, field_data)
+      end
+    end
+
+    @implemented_fields
   end
 
   # @return [Hash<String,CsrField>] Hash of fields, indexed by field name
@@ -616,33 +624,27 @@ class Csr < ArchDefObject
   #
   # @param effective_xlen [Integer,nil] Effective XLEN to use when CSR length is dynamic
   # @return [String] A JSON representation of the WaveDrom drawing for the CSR
-  def wavedrom_desc(effective_length = nil)
-    effective_length = length if effective_length.nil?
-    raise "bad length" unless effective_length.is_a?(Integer)
+  def wavedrom_desc(effective_xlen)
     desc = {
       "reg" => []
     }
     last_idx = -1
-    if fields.any?(&:dynamic_location?)
-      fields.each(&:locations)
-    end
-    fields.each do |field|
-      next if field.dynamic_location?
+    implemented_fields_for(effective_xlen).each do |field|
 
-      if field.location.min != last_idx + 1
+      if field.location(effective_xlen).min != last_idx + 1
         # have some reserved space
-        desc["reg"] << { "bits" => (field.location.min - last_idx - 1), type: 1 }
+        desc["reg"] << { "bits" => (field.location(effective_xlen).min - last_idx - 1), type: 1 }
       end
-      desc["reg"] << { "bits" => field.location.size, "name" => field.name, type: 2 }
-      last_idx = field.location.max
+      desc["reg"] << { "bits" => field.location(effective_xlen).size, "name" => field.name, type: 2 }
+      last_idx = field.location(effective_xlen).max
     end
-    if !fields.empty? && (fields.last.dynamic_location? || (fields.last.location.max != (effective_length - 1)))
+    if !implemented_fields_for(effective_xlen).empty? && (fields.last.location(effective_xlen).max != (length(effective_xlen) - 1))
       # reserved space at the end
-      desc["reg"] << { "bits" => (effective_length - 1 - last_idx), type: 1 }
+      desc["reg"] << { "bits" => (length(effective_xlen) - 1 - last_idx), type: 1 }
       # desc['reg'] << { 'bits' => 1, type: 1 }
     end
-    desc["config"] = { "bits" => effective_length }
-    desc["config"]["lanes"] = effective_length / 16
+    desc["config"] = { "bits" => length(effective_xlen) }
+    desc["config"]["lanes"] = length(effective_xlen) / 16
     desc
   end
 
@@ -1060,105 +1062,189 @@ end
 #   end
 # end
 
+# model of a specific instruction in a specific base (RV32/RV64)
 class Instruction < ArchDefObject
 
-  attr_reader :encoding_fields, :decode_variables, :operation_ast
+  def operation_ast
+    parse_operation(@sym_table) if @operation_ast.nil?
+
+    @operation_ast
+  end
 
   attr_reader :arch_def
 
+  class Encoding
+    # @return [String] format, as a string of 0,1 and -,
+    # @example Format of `sd`
+    #      sd.format #=> '-----------------011-----0100011'
+    attr_reader :format
+
+    # @return [Array<Field>] List of fields containing opcodes
+    # @example opcode_fields of `sd`
+    #      sd.opcode_fields #=> [Field('011', ...), Field('0100011', ...)]
+    attr_reader :opcode_fields
+
+    # @return [Array<DecodeVariable>] List of decode variables
+    attr_reader :decode_variables
+
+    class Field
+      # @return [String] Either string of 0's ans 1's or a bunch of dashses
+      attr_reader :name
+
+      # @return [Range] Range of bits in the parent corresponding to this field
+      attr_reader :range
+      def initialize(name, range)
+        @name = name
+        @range = range
+      end
+
+      def opcode?
+        name.match?(/^[01]+$/)
+      end
+    end
+
+    def initialize(format, decode_vars)
+      @format = format
+
+      @opcode_fields = []
+      msb = @format.size
+      @format.split("-").each do |e|
+        if e.empty?
+          msb -= 1
+        else
+          @opcode_fields << Field.new(e, (msb - e.size + 1)..msb)
+          msb -= e.size
+        end
+      end
+
+      @decode_variables = []
+      decode_vars.each do |var|
+        @decode_variables << DecodeVariable.new(self, var)
+      end
+    end
+
+    # @return [Integer] Size, in bits, of the encoding
+    def size
+      @format.size
+    end
+  end
+
+  def load_encoding
+    @encodings = {}
+    if @data["encoding"].key?("RV32")
+      # there are different encodings for RV32/RV64
+      @encodings[32] = Encoding.new(@data["encoding"]["RV32"]["mask"], @data["encoding"]["RV32"]["fields"])
+      @encodings[64] = Encoding.new(@data["encoding"]["RV64"]["mask"], @data["encoding"]["RV64"]["fields"])
+    elsif @data.key("base")
+      @encodings[@data["base"]] = Encoding.new(@data["encoding"]["mask"], @data["encoding"]["fields"])
+    else
+      @encodings[32] = Encoding.new(@data["encoding"]["mask"], @data["encoding"]["fields"])
+      @encodings[64] = Encoding.new(@data["encoding"]["mask"], @data["encoding"]["fields"])
+    end
+  end
+  private :load_encoding
+
   def initialize(inst_data, full_opcode_data, sym_table, arch_def)
     @arch_def = arch_def
+    @sym_table = sym_table.deep_clone
+
     super(inst_data)
 
-    opcode_data_key = name.downcase.gsub(".", "_")
-    raise "opcode data not found for #{name}" unless full_opcode_data.key?(opcode_data_key)
+    if inst_data.key?("encoding")
+      load_encoding
+    else
+      opcode_data_key = name.downcase.gsub(".", "_")
+      raise "opcode data not found for #{name}" unless full_opcode_data.key?(opcode_data_key)
 
-    @opcode_data = full_opcode_data[opcode_data_key]
+      opcode_data = full_opcode_data[opcode_data_key]
+      encoding_mask = opcode_data["encoding"]
 
-    @encoding_fields = []
-    msb = encoding.size
-    encoding.split("-").each do |e|
-      if e.empty?
-        msb -= 1
-      else
-        @encoding_fields << EncodingField.new(e, (msb - e.size + 1)..msb)
-        msb -= e.size
-      end
-    end
-
-    @decode_variables = []
-    @opcode_data["variable_fields"].to_a.each do |f|
-      decode_field_data = RiscvOpcodes::VARIABLE_FIELDS.to_a.select do |d|
-        d[0] == f || (d[0].is_a?(Array) && d[0].any?(f))
-      end
-      raise "didn't find '#{f}' in DECODER_RING" if decode_field_data.empty?
-
-      raise "Found multiple matches for '#{f}' in DECODER_RING" if decode_field_data.size > 1
-
-      data = decode_field_data[0][1]
-      names = []
-      if data.key?(:decode_variable)
-        if data[:decode_variable].is_a?(String)
-          names << data[:decode_variable]
+      opcode_fields = []
+      msb = encoding_mask.size
+      encoding_mask.split("-").each do |e|
+        if e.empty?
+          msb -= 1
         else
-          raise "unexpected" unless data[:decode_variable].is_a?(Array)
-
-          names = data[:decode_variable]
+          opcode_fields << Encoding::Field.new(e, (msb - e.size + 1)..msb)
+          msb -= e.size
         end
-      else
-        raise "?" unless decode_field_data[0][0].is_a?(String)
-
-        names = [decode_field_data[0][0]]
       end
 
-      names.each do |name|
-        @decode_variables << DecodeField.new(self, name, decode_field_data[0][0], decode_field_data[0][1])
+
+      decode_variables = []
+      opcode_data["variable_fields"].to_a.each do |f|
+        decode_field_data = RiscvOpcodes::VARIABLE_FIELDS.to_a.select do |d|
+          d[0] == f || (d[0].is_a?(Array) && d[0].any?(f))
+        end
+        raise "didn't find '#{f}' in DECODER_RING" if decode_field_data.empty?
+
+        raise "Found multiple matches for '#{f}' in DECODER_RING" if decode_field_data.size > 1
+
+        data = decode_field_data[0][1]
+        names = []
+        if data.key?(:decode_variable)
+          if data[:decode_variable].is_a?(String)
+            names << data[:decode_variable]
+          else
+            raise "unexpected" unless data[:decode_variable].is_a?(Array)
+
+            names = data[:decode_variable]
+          end
+        else
+          raise "?" unless decode_field_data[0][0].is_a?(String)
+
+          names = [decode_field_data[0][0]]
+        end
+
+        names.each do |name|
+          decode_variables << DecodeField.new(self, name, decode_field_data[0][0], decode_field_data[0][1])
+        end
       end
+      decode_variables.uniq!
+
+      @encodings ||= {}
+      klass = Struct.new(:opcode_fields, :decode_variables)
+      @encodings[32] = klass.new(opcode_fields, decode_variables)
+      @encodings[64] = klass.new(opcode_fields, decode_variables)
     end
-    @decode_variables.uniq!
+  end
 
-    @decode_variables.each do |v|
-      v.encoding_fields.each do |e|
-        @encoding_fields << e unless @encoding_fields.any?(e)
-      end
-    end
-
-    @encoding_fields.uniq!
-    @encoding_fields.sort! { |a, b| b.range.end <=> a.range.end }
-
-    parse_operation(sym_table)
+  def multi_encoding?
+    @data.key?("encoding") && @data["encoding"].key?("RV32")
   end
 
   def operation_source
-    return "" if @operation_ast.nil?
+    return "" if @data["operation()"].nil?
 
-    @operation_ast.gen_adoc.gsub("{{", '\((')
+    operation_ast.gen_adoc.gsub("{{", '\((')
     # @data['operation']
   end
 
   def parse_operation(sym_table)
     # now, parse the operation
-    return if @data["operation()"].nil?
+    return if @data["operation()"].nil? || !@operation_ast.nil?
 
-    sym_table.push
-    @decode_variables.each do |d|
+    cloned_symtab = sym_table.deep_clone
+
+    cloned_symtab.push
+    @encodings[@arch_def.config_params["XLEN"]].decode_variables.each do |d|
       qualifiers = []
       qualifiers << :signed if d.sext?
       width = d.size
 
       var = Idl::Var.new(d.name, Idl::Type.new(:bits, qualifiers:, width:), decode_var: true)
-      sym_table.add(d.name, var)
+      cloned_symtab.add(d.name, var)
     end
 
     m = arch_def.idl_compiler.compile_inst_operation(
       @data["operation()"],
-      symtab: sym_table,
-      name: name,
+      symtab: cloned_symtab,
+      name:,
       parent: nil,
       input_file: "Instruction #{name}"
     )
 
-    sym_table.pop
+    cloned_symtab.pop
 
     raise "unexpected #{m.class}" unless m.is_a?(Idl::InstructionOperationAst)
 
@@ -1169,22 +1255,28 @@ class Instruction < ArchDefObject
 
   # returns the encoding as, e.g.,:
   #   0000101----------001-----0110011
-  def encoding
-    @opcode_data["encoding"]
+  def encoding(base)
+    @encodings[base].format
   end
 
-  def encoding_variable_fields
-    @opcode_data["variable_fields"]
+  def decode_variables(base)
+    @encodings[base].decode_variables
   end
 
-  # returns the extension(s) that define this instruction
+  # def encoding_variable_fields
+  #   @decode_variables.map(&:decode_variable).flatten
+  # end
+
+  # @return [String] the extension that defines this instruction
+  # @return [Array<String>] the extensions that define this instruction
   def extension
-    parts = @opcode_data["extension"][0].split("_")
-    if parts.size == 2
-      parts[1].capitalize
-    else
-      parts[1..].map(&:capitalize)
-    end
+    @data["definedBy"]
+    # parts = @data["extension"][0].split("_")
+    # if @data["definedBy"].is_a?(String)
+    #   parts[1].capitalize
+    # else
+    #   parts[1..].map(&:capitalize)
+    # end
   end
 
   # @return [Boolean] true if the instruction has an 'access_detail' field
@@ -1192,57 +1284,16 @@ class Instruction < ArchDefObject
     @data.key?("access_detail")
   end
 
-  def wavedrom_desc
-    fields = []
-
-    starting_index = encoding.size - 1
-    encoding.split("-").each do |field|
-      if field.empty?
-        starting_index -= 1
-      else
-        fields << [field, ((starting_index - (field.size - 1))..starting_index)]
-        starting_index -= field.size
-      end
-    end
-
-    encoding_variable_fields.each do |field|
-      fields <<
-        case field
-        when "rd" then ["rd", (7..11)]
-        when "rs1" then ["rs1", (15..19)]
-        when "rs2" then ["rs2", (20..24)]
-        when "imm12" then ["imm[11:0]", (20..31)]
-        when "imm20" then ["imm[31:12]", (12..31)]
-        when "bimm12hi" then ["imm[12|10:5]", (25..31)]
-        when "bimm12lo" then ["imm[4:1|11]", (7..11)]
-        when "imm12hi" then ["imm[11:5]", (25..31)]
-        when "imm12lo" then ["imm[4:0]", (7..11)]
-        when "fm" then ["fm", (28..31)]
-        when "pred" then ["pred", (24..27)]
-        when "succ" then ["succ", (20..23)]
-        when "jimm20" then ["imm[20|10:1|11|19:12]", (12..31)]
-        when "shamtd" then ["shamt", (20..25)]
-        when "shamtw" then ["shamt", (20..24)]
-        when "csr" then ["csr", (20..31)]
-        when "zimm" then ["zimm", (15..19)]
-        else raise "Unknown variable field '#{field}' for #{name}"
-        end
-    end
-
-    raise "Fields don't add up to 32" unless fields.reduce(0) { |sum, field| sum + field[1].size } == 32
-
+  def wavedrom_desc(base)
     desc = {
       "reg" => []
     }
 
-    fields.sort! { |a, b| a[1].begin <=> b[1].begin }
+    display_fields = @encodings[base].opcode_fields
+    display_fields += @encodings[base].decode_variables.map(&:grouped_encoding_fields).flatten
 
-    # fields.each do |field|
-    #   desc['reg'] << { 'bits' => field[1].size, 'name' => field[0], type: 2 }
-    # end
-
-    @encoding_fields.reverse.each do |e|
-      desc["reg"] << { "bits" => e.range.size, "name" => e.pretty_to_s, "type" => (e.opcode? ? 2 : 4) }
+    display_fields.sort { |a, b| b.range.last <=> a.range.last }.reverse.each do |e|
+      desc["reg"] << { "bits" => e.range.size, "name" => e.name, "type" => (e.opcode? ? 2 : 4) }
     end
 
     desc
@@ -1251,9 +1302,24 @@ end
 
 # Extension definition
 class Extension < ArchDefObject
+  # @return [ArchDef] The architecture defintion
+  attr_reader :arch_def
+
   def initialize(ext_data, arch_def)
     super(ext_data)
     @arch_def = arch_def
+  end
+
+  # @return [Array<String>] Array of extensions implied by this one
+  def implies
+    case @data["implies"]
+    when nil
+      []
+    when Array
+      @data["implies"]
+    else
+      [@data["implies"]]
+    end
   end
 end
 
@@ -1276,6 +1342,32 @@ class ExtensionVersion
     @version = Gem::Version.new(version)
     @arch_def = arch_def
     @extension = @arch_def.extension(name)
+  end
+
+  def ==(other)
+    case other
+    when String
+      @name == other
+    when ExtensionVersion
+      @name == other.name && @version == other.version
+    else
+      raise "Unexpected comparison"
+    end
+  end
+
+  def satisfies?(ext_name, ext_version_requirement)
+    @name == ext_name && Gem::Requirement.new(ext_version_requirement).satisfied_by?(@version)
+  end
+
+  # sorts extension by name, then by version
+  def <=>(other)
+    raise ArgumentError, "ExtensionVersions are only comparable to other extension versions" unless other.is_a?(ExtensionVersion)
+
+    if other.name != @name
+      @name <=> other.name
+    else
+      @version <=> other.version
+    end
   end
 end
 
@@ -1314,6 +1406,12 @@ class ArchDef
     )
   end
 
+  # returns true if this configuration can execute in multiple xlen environments
+  # (i.e., that in some mode the effective xlen can be either 32 or 64, depending on CSR values)
+  def multi_xlen?
+    ["SXLEN", "UXLEN", "VSXLEN", "VUXLEN"].any? { |key| @config_params[key] == 3264 }
+  end
+
   # @return [Array<ExtensionVersion>] List of all extensions that are implemented
   def implemented_extensions
     return @implemented_extensions unless @implemented_extensions.nil?
@@ -1323,6 +1421,11 @@ class ArchDef
       @implemented_extensions << ExtensionVersion.new(e["name"], e["version"], self)
     end
     @implemented_extensions
+
+    pp @implemented_extensions.map { |ev| [ev.name, ev.version] }
+
+    @implemented_extensions
+
   end
 
   # @return [Array<Extesions>] List of all extensions, even those that are't implemented
@@ -1369,12 +1472,37 @@ class ArchDef
   end
 
   # @return [Array<Csr>] List of all implemented CSRs
+  def implemented_csrs
+    return @implemented_csrs unless @implemented_csrs.nil?
+
+    @implemented_csrs = @arch_def["csrs"].select{ |csr_name, _csr_data| @arch_def["implemented_csrs"].include?(csr_name)}.map do |_csr_name, csr_data|
+      Csr.new(csr_data, @sym_table, self)
+    end
+  end
+
   def csrs
     return @csrs unless @csrs.nil?
 
-    @csrs = @arch_def["csrs"].select{ |csr_name, _csr_data| @arch_def["implemented_csrs"].include?(csr_name)}.map do |_csr_name, csr_data|
+    @csrs = @arch_def["csrs"].map do |_csr_name, csr_data|
       Csr.new(csr_data, @sym_table, self)
     end
+  end
+
+  # @return [Array<String>] List of all known CSRs, even those not implemented by
+  #                         this config
+  def all_known_csr_names
+    @arch_def["csrs"].map { |csr| csr[0] }
+  end
+
+  # @return [Hash<String, Csr>] Implemented csrs, indexed by CSR name
+  def implemented_csr_hash
+    return @implemented_csr_hash unless @implemented_csr_hash.nil?
+
+    @implemented_csr_hash = {}
+    implemented_csrs.each do |csr|
+      @implemented_csr_hash[csr.name] = csr
+    end
+    @implemented_csr_hash
   end
 
   # @return [Hash<String, Csr>] All csrs, indexed by CSR name
@@ -1389,12 +1517,18 @@ class ArchDef
   end
 
   # @param csr_name [#to_s] CSR name
+  # @return [Csr,nil] a specific csr, or nil if it doesn't exist or isn't implemented
+  def implemented_csr(csr_name)
+    implemented_csr_hash[csr_name]
+  end
+
+  # @param csr_name [#to_s] CSR name
   # @return [Csr,nil] a specific csr, or nil if it doesn't exist
   def csr(csr_name)
     csr_hash[csr_name]
   end
 
-  # @return [Array<Instruction>] List of all implemented instructions
+  # @return [Array<Instruction>] List of all instructions, whether or not they are implemented
   def instructions
     return @instructions unless @instructions.nil?
 
@@ -1403,6 +1537,7 @@ class ArchDef
     @instructions = @arch_def["instructions"].map do |_inst_name, inst_data|
       Instruction.new(inst_data, opcode_data, @sym_table, self)
     end
+
     @instructions
   end
 
@@ -1416,6 +1551,20 @@ class ArchDef
     end
     @instruction_hash
   end
+
+  # @return [Array<Instruction>] List of all implemented instructions
+  def implemented_instructions
+    return @implemented_instructions unless @implemented_instructions.nil?
+
+    opcode_data = YAML.load_file("#{$root}/ext/riscv-opcodes/instr_dict.yaml")
+
+    @implemented_instructions = @arch_def["implemented_instructions"].map do |inst_name|
+      instruction_hash[inst_name]
+    end
+
+    @implemented_instructions
+  end
+
 
   # @param inst_name [#to_s] Instruction name
   # @return [Instruction,nil] An instruction named 'inst_name', or nil if it doesn't exist

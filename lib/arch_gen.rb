@@ -79,7 +79,7 @@ class ArchGen
         return if condition
 
         warn "At #{caller[0]}:"
-        warn "Configuration is missing required extension #{ext_name}"
+        warn "Configuration check failed"
         Kernel.exit! 1
       end
       env.clone.class_eval validation_file.read, validation_file.to_s, 1
@@ -109,34 +109,45 @@ class ArchGen
 
   def check_extension_dependencies
     @implemented_extensions.each do |ext|
-      requirements = @required_ext_map[ext]
-      next if requirements.nil?
+      requirements = @required_ext_map[[ext["name"], ext["version"]]]
+      next if requirements.nil? || requirements.empty?
 
       # turn into an array, if needed
-      requirements = [requirements] unless requirements.is_a?(Array)
-      requirements.each do |requirement|
-        unless @implemented_extensions.include?(requirement)
-          warn "Extension '#{ext}' requires extension '#{requirement}' also be implemented"
-          exit 1
+      requirements = [requirements] unless requirements[0].is_a?(Array)
+      requirements.each do |r|
+        next if @implemented_extensions.any? do |e|
+          e["name"] == r[0] &&
+          Gem::Requirement.new(r[1]).satisfied_by?(Gem::Version.new(e["version"]))
         end
+
+        warn "Extension '#{ext}' requires extension '#{r}'; it must also be implemented"
+        exit 1
       end
     end
   end
 
   # transitively adds any implied extensions to the @implemented_extensions list
   def add_implied_extensions
-    @implemented_extensions.each do |ext_name|
-      extras = @implied_ext_map[ext_name]
-      next if extras.nil?
+    @implemented_extensions.each do |ext|
+      extras = @implied_ext_map[[ext["name"], ext["version"]]]
+      next if extras.nil? || extras.empty?
 
       # turn it into an array if it isn't already
-      extras = [extras] unless extras.is_a?(Array)
+      extras = [extras] unless extras[0].is_a?(Array)
       extras.each do |extra_ext|
-        unless @implemented_extensions.include?(extra_ext)
-          raise "Implied extension '#{extra_ext}' for '#{ext_name}' is not defined"
+        unless all_known_exts.include?(extra_ext[0])
+          raise "Implied extension '#{extra_ext}' for '#{ext}' is not defined"
         end
 
-        @implemented_extensions << extra_ext unless @implemented_extensions.include?(extra_ext)
+        next if @implemented_extensions.include?({
+          "name" => extra_ext[0],
+          "version" => extra_ext[1]
+        })
+
+        @implemented_extensions << {
+          "name" => extra_ext[0],
+          "version" => extra_ext[1]
+        }
       end
     end
   end
@@ -428,7 +439,7 @@ class ArchGen
 
     def_obj = YAML.safe_load(rendered_def)
 
-    raise "#{type} name must match key in defintion" if name.to_s != def_obj.keys[0]
+    raise "#{type} name (#{name}) must match key in defintion (#{def_obj.keys[0]})" if name.to_s != def_obj.keys[0]
 
     # write the object
     FileUtils.mkdir_p gen_path.dirname
@@ -508,19 +519,19 @@ class ArchGen
     csr_obj = YAML.load_file(merged_path)[csr_name]
 
     # filter fields to exclude any definedBy an extension not supported in this config
-    csr_obj["fields"].select! do |field_name, field_data|
-      field_data["name"] = field_name
-      break true if field_data["definedBy"].nil?
-      break false if !field_data["base"].nil? && field_data["base"] != @params["XLEN"]
+    # csr_obj["fields"].select! do |field_name, field_data|
+    #   field_data["name"] = field_name
+    #   break true if field_data["definedBy"].nil?
+    #   break false if !field_data["base"].nil? && field_data["base"] != @params["XLEN"]
 
-      field_defined_by = field_data["definedBy"]
-      field_defined_by = [field_defined_by] unless field_defined_by.is_a?(Array)
+    #   field_defined_by = field_data["definedBy"]
+    #   field_defined_by = [field_defined_by] unless field_defined_by.is_a?(Array)
 
-      field_defined_by.each do |ext_name|
-        break true if @cfg["extensions"].any? { |ext| ext[0] == ext_name }
-      end
-      false
-    end
+    #   field_defined_by.each do |ext_name|
+    #     break true if @cfg["extensions"].any? { |ext| ext[0] == ext_name }
+    #   end
+    #   false
+    # end
     csr_obj["fields"].each { |n, f| f["name"] = n }
 
     # add the CSR, unless it is from an extension not supported in this config
@@ -585,7 +596,7 @@ class ArchGen
     arch_path         = gen_rendered_arch_def(:ext, ext_name)
     arch_overlay_path = gen_rendered_arch_overlay_def(:ext, ext_name)
 
-    # return immediately if this CSR isn't defined in this config
+    # return immediately if this ext isn't defined
     return if arch_path.nil? && arch_overlay_path.nil?
 
     merged_path = gen_merged_def(:ext, arch_path, arch_overlay_path)
@@ -594,9 +605,24 @@ class ArchGen
     ext_obj["name"] = ext_name
 
     @implied_ext_map ||= {}
-    @implied_ext_map[ext_name] = ext_obj["implies"]
     @required_ext_map ||= {}
-    @required_ext_map[ext_name] = ext_obj["requires"]
+
+    ext_obj["versions"].each do |v|
+      implies = case v["implies"]
+                when nil
+                  []
+                when Array
+                  v["implies"][0].is_a?(Array) ? v["implies"] : [v["implies"]]
+                end
+      requires = case v["requires"]
+                 when nil
+                   []
+                 when Array
+                   v["requires"][0].is_a?(Array) ? v["requires"] : [v["requires"]]
+                 end
+      @implied_ext_map[[ext_name, v["version"].to_s]] = implies.map { |i| [i[0], i[1].to_s] }
+      @required_ext_map[[ext_name, v["version"].to_s]] = requires.map { |i| [i[0], i[1].to_s] }
+    end
 
     belongs =
       @cfg["extensions"].any? { |e| e[0] == ext_name }
@@ -604,7 +630,7 @@ class ArchGen
     if belongs
       @implemented_extensions << {
         "name" => ext_name,
-        "version" => @cfg["extensions"].select { |e| e[0] == ext_name }[0][1]
+        "version" => @cfg["extensions"].select { |e| e[0] == ext_name }[0][1].to_s
       }
     end
 
@@ -694,26 +720,36 @@ class ArchGen
     inst_obj = YAML.load_file(merged_path)[inst_name]
     inst_obj["name"] = inst_name
 
-    raise "no riscv-opcode data for #{inst_obj['name']}" unless @opcode_data.key?(inst_obj["name"].tr(".", "_"))
+    defined_in = inst_obj["definedBy"]
+    defined_in = [defined_in] unless defined_in.is_a?(Array)
 
-    opcode_str = @opcode_data[inst_obj["name"].tr(".", "_")]["extension"][0]
+    excluded_by = inst_obj.key?("excluded_by") ? inst_obj["excluded_by"] : []
+    excluded_by = [excluded_by] unless excluded_by.is_a?(Array)
 
-    raise "Bad opcode string" unless opcode_str =~ /rv((32)|(64))?_([a-zA-Z0-9]+)/
 
-    base = ::Regexp.last_match(1)
-    defined_in = ::Regexp.last_match(4)
+    unless inst_obj.key?("encoding")
+      raise "no riscv-opcode data for #{inst_obj['name']}" unless @opcode_data.key?(inst_obj["name"].tr(".", "_"))
 
-    inst_obj["definedBy"] = defined_in.capitalize
+      opcode_str = @opcode_data[inst_obj["name"].tr(".", "_")]["extension"][0]
+
+      raise "Bad opcode string" unless opcode_str =~ /rv((32)|(64))?_([a-zA-Z0-9]+)/
+
+      base = ::Regexp.last_match(1)
+      riscv_opcodes_extension = ::Regexp.last_match(4)
+      warn "Found #{inst_obj['name']} in unexpected extension (#{riscv_opcodes_extension})" unless defined_in.include?(riscv_opcodes_extension.capitalize)
+    end
+
     inst_obj["base"] = base.to_i unless base.nil?
 
     # add the instruction, unless it is from an extension not supported in this config
     belongs =
       (base.nil? || (base.to_i == @params["XLEN"])) &&
-      @cfg["extensions"].any? { |e| e[0].downcase == defined_in }
+      @cfg["extensions"].any? { |e| defined_in.map(&:downcase).include?(e[0].downcase) } &&
+      @cfg["extensions"].none? { |e| excluded_by.map(&:downcase).include?(e[0].downcase) }
     @implemented_instructions ||= []
     @implemented_instructions << inst_name if belongs
 
-    gen_inst_path = @gen_dir / "arch" / "inst" / inst_obj["definedBy"] / "#{inst_name}.yaml"
+    gen_inst_path = @gen_dir / "arch" / "inst" / defined_in[0] / "#{inst_name}.yaml"
     FileUtils.mkdir_p gen_inst_path.dirname
     gen_inst_path.write YAML.dump({ inst_name => inst_obj })
 

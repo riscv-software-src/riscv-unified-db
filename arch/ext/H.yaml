@@ -2,10 +2,10 @@
 
 H:
   type: privileged
-  requires: S
   versions:
   - version: 1.0
     ratification_date: 2019-12
+    requires: [S, '>= 1.12']
   interrupt_codes:
   - num: 2
     name: Virtual supervisor software interrupt

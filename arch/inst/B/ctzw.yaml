@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+ctzw:
+  long_name: Count trailing zero bits in word
+  description: |
+    This instruction counts the number of 0's before the first 1,
+    starting at the least-significant bit (i.e., 0) and progressing
+    to the most-significant bit of the least-significant word (i.e., 31). Accordingly, if the
+    least-significant word is 0, the output is 32, and if the least-significant bit
+    of the input is a 1, the output is 0.
+  definedBy: [B, Zbb]
+  base: 64
+  assembly: xd, xs1
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    X[rd] = (xlen() - 1) - $signed(lowest_set_bit(X[rs1][31:0]));

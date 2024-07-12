@@ -70,6 +70,8 @@ class Validator
             "    At #{r['data_pointer']}, '#{r['data']}' is not a integer\n"
           elsif r["type"] == "array"
             "    At #{r['data_pointer']}, '#{r['data']}' is not a array\n"
+          elsif r["type"] == "oneOf"
+            "    At #{r['data_pointer']}, '#{r['data']}' matches more than one of #{r['schema']['oneOf']}\n"
           else
             "    #{r}\n\n"
           end
@@ -118,7 +120,7 @@ class Validator
     jsonified_obj = JSON.parse(JSON.generate(obj))
     raise ValidationError, @schemas[type].validate(jsonified_obj) unless @schemas[type].valid?(jsonified_obj)
 
-    obj
+    jsonified_obj
   end
 
   # validate a YAML file
@@ -147,7 +149,7 @@ class Validator
       end
     end
     begin
-      validate_str(File.read(path.to_s), type: type)
+      validate_str(File.read(path.to_s), type:)
     rescue Psych::SyntaxError => e
       warn "While parsing #{path}"
       raise e

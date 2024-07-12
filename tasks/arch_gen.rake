@@ -35,7 +35,7 @@ rule %r{#{$root}/\.stamps/arch-gen-.*\.stamp} => proc { |tname|
   config_name = Pathname.new(tname).basename(".stamp").sub("arch-gen-", "")
   arch_files = Dir.glob($root / "arch" / "**" / "*.yaml")
   config_files =
-    Dir.glob($root / config_name / "overrides" / "**" / "*.yaml") +
+    Dir.glob($root / "cfgs" / config_name / "arch_overlay" / "**" / "*.yaml") +
     [$root / "cfgs" / config_name / "params.yaml"]
   [
     "#{$root}/.stamps",

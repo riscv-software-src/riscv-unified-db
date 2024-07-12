@@ -6,12 +6,13 @@ mcause:
   long_name: Machine Cause
   address: 0x342
   priv_mode: M
-  length(): return XLEN;
+  length: MXLEN
   description: Reports the cause of the latest exception.
   definedBy: I
   fields:
     INT:
-      location(): return XLEN - 1;
+      location_rv32: 31
+      location_rv64: 63
       description: |
         Written by hardware when a trap is taken into M-mode.
         
@@ -43,7 +44,8 @@ mcause:
           return ILLEGAL_WLRL;
         }
     CODE:
-      location(): return <%= max_code.bit_length - 1 %>,0;
+      location_rv32: 30-0
+      location_rv64: 62-0
       description: |
         Written by hardware when a trap is taken into M-mode.
 

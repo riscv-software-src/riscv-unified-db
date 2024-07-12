@@ -55,12 +55,12 @@ rule %r{#{$root}/gen/.*/antora/modules/nav.adoc} => proc { |tname|
   config_name = Pathname.new(tname).relative_path_from("#{$root}/gen").to_s.split("/")[0]
   Dir.glob("#{$root}/gen/#{config_name}/antora/modules/csrs/**/*.adoc") +
     Dir.glob("#{$root}/gen/#{config_name}/antora/modules/insts/**/*.adoc") +
-      Dir.glob("#{$root}/gen/#{config_name}/antora/modules/exts/**/*.adoc") +
-      [
-        "#{$root}/views/adoc/toc.adoc.erb",
-        "#{$root}/.stamps/arch-gen-#{config_name}.stamp",
-        __FILE__
-      ]
+    Dir.glob("#{$root}/gen/#{config_name}/antora/modules/exts/**/*.adoc") +
+    [
+      "#{$root}/views/adoc/toc.adoc.erb",
+      "#{$root}/.stamps/arch-gen-#{config_name}.stamp",
+      __FILE__
+    ]
 } do |t|
   config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen").to_s.split("/")[0]
 
@@ -69,6 +69,25 @@ rule %r{#{$root}/gen/.*/antora/modules/nav.adoc} => proc { |tname|
   erb.filename = toc_path.to_s
 
   arch_def = ArchDef.new(config_name)
+  File.write t.name, AntoraUtils.resolve_links(erb.result(binding))
+end
+
+rule %r{#{$root}/gen/.*/antora/modules/ROOT/pages/config.adoc} => proc { |tname|
+  config_name = Pathname.new(tname).relative_path_from("#{$root}/gen").to_s.split("/")[0]
+  [
+    "#{$root}/views/adoc/config.adoc.erb",
+    "#{$root}/.stamps/arch-gen-#{config_name}.stamp",
+    __FILE__
+  ]
+} do |t|
+  config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen").to_s.split("/")[0]
+
+  config_path = $root / "views" / "adoc" / "config.adoc.erb"
+  erb = ERB.new(config_path.read, trim_mode: "-")
+  erb.filename = config_path.to_s
+
+  arch_def = ArchDef.new(config_name)
+  FileUtils.mkdir_p File.dirname(t.name)
   File.write t.name, AntoraUtils.resolve_links(erb.result(binding))
 end
 
@@ -107,13 +126,31 @@ rule %r{#{$root}/gen/.*/antora/playbook.yaml} => proc { |tname|
     antora:
       extensions:
       - '@antora/lunr-extension'
+    asciidoc:
+      extensions:
+      - 'asciidoctor-kroki'
+      - '@asciidoctor/tabs'
     ui:
       bundle:
         url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
         snapshot: true
-    asciidoc:
-      extensions:
-      - 'asciidoctor-kroki'
+      supplemental_files:
+      - path: css/vendor/tabs.css
+        contents: #{$root}/node_modules/@asciidoctor/tabs/dist/css/tabs.css
+      - path: js/vendor/tabs.js
+        contents: #{$root}/node_modules/@asciidoctor/tabs/dist/js/tabs.js
+      - path: partials/footer-scripts.hbs
+        contents: |
+          <script id="site-script" src="{{{uiRootPath}}}/js/site.js" data-ui-root-path="{{{uiRootPath}}}"></script>
+          <script async src="{{{uiRootPath}}}/js/vendor/highlight.js"></script>
+          <script async src="{{{uiRootPath}}}/js/vendor/tabs.js"></script>
+          {{#if env.SITE_SEARCH_PROVIDER}}
+          {{> search-scripts}}
+          {{/if}}
+      - path: partials/head-styles.hbs
+        contents: |
+          <link rel="stylesheet" href="{{{uiRootPath}}}/css/site.css">
+          <link rel="stylesheet" href="{{{uiRootPath}}}/css/vendor/tabs.css">
   PLAYBOOK
 end
 
@@ -153,6 +190,7 @@ rule %r{#{$root}/\.stamps/html-gen-.*\.stamp} => proc { |tname|
   end
 
   Rake::Task[$root / "gen" / config_name / "antora" / "modules" / "nav.adoc"].invoke
+  Rake::Task[$root / "gen" / config_name / "antora" / "modules" / "ROOT" / "pages" / "config.adoc"].invoke
   playbook_path = $root / "gen" / config_name / "antora" / "playbook.yaml"
   Rake::Task[playbook_path].invoke
 

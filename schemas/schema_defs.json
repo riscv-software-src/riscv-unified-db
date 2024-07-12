@@ -7,6 +7,52 @@
     "extension_name": {
       "type": "string",
       "pattern": "^([A-WY])|([SXZ][a-z]+)$"
+    },
+    "extension_version": {
+      "oneOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "string",
+          "pattern": "^[0-9]+(\\.[0-9]+(\\.[0-9]+(-[a-fA-F0-9]+)?)?)?$"
+        }
+      ]
+    },
+    "extension_version_requirement": {
+      "oneOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "string",
+          "pattern": "^((>=)|(>)|(~>)|(<)|(<=)|(==))?\\s*[0-9]+(\\.[0-9]+(\\.[0-9]+(-[a-fA-F0-9]+)?)?)?$"
+        }
+      ]
+    },
+    "extension_name_and_version": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/$defs/extension_name"
+        },
+        {
+          "$ref": "#/$defs/extension_version"
+        }
+      ],
+      "additionalItems": false
+    },
+    "extension_requirement": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/$defs/extension_name"
+        },
+        {
+          "$ref": "#/$defs/extension_version_requirement"
+        }
+      ],
+      "additionalItems": false
     }
   }
 }

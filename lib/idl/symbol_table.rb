@@ -126,10 +126,15 @@ module Idl
     end
 
     def push
+      # puts "push #{caller[0]}"
+      # @scope_caller ||= []
+      # @scope_caller.push caller[0]
       @scopes << {}
     end
 
     def pop
+      # puts "pop #{caller[0]}"
+      # puts "    from #{@scope_caller.pop}"
       raise 'Error: popping the symbol table would remove global scope' if @scopes.size == 1
 
       @scopes.pop
@@ -166,14 +171,14 @@ module Idl
       @scopes[-2][name] = var
     end
 
-      # add to the scope at level, and make sure name is unique at that scope
-      def add_at!(level, name, var)
-        raise "Level #{level} is too large #{@scopes.size}" if  level >= @scopes.size
+    # add to the scope at level, and make sure name is unique at that scope
+    def add_at!(level, name, var)
+      raise "Level #{level} is too large #{@scopes.size}" if  level >= @scopes.size
 
-        raise "Symbol #{name} already defined" unless @scopes[0...level].select { |h| h.key? name }.empty?
-    
-        @scopes[level][name] = var
-      end
+      raise "Symbol #{name} already defined" unless @scopes[0...level].select { |h| h.key? name }.empty?
+  
+      @scopes[level][name] = var
+    end
 
     def levels
       @scopes.size

@@ -5,18 +5,12 @@ satp:
   long_name: Supervisor Address Translation and Protection
   description: Controls the translation mode in (H)S-mode and U-mode, and holds the current ASID and page table base pointer.
   priv_mode: S
-  length: 64
+  length: SXLEN
   definedBy: S
-  access_check: |
-    # satp traps when mstatus.TVM (Trap Virtual Memory) is set
-    if (CSR[mstatus].TVM == 1) {
-      return false;
-    } else {
-      return true;
-    }
   fields:
     MODE:
-      location: 63-60
+      location_rv64: 63-60
+      location_rv32: 31
       type: RW-R
       description: |
         *Translation Mode*
@@ -57,7 +51,8 @@ satp:
           return UNDEFINED_LEGAL_DETERMINISTIC;
         }
     ASID:
-      location(): return ASID_WIDTH + 43, 44;
+      location_rv32: 30-22
+      location_rv64: 59-44
       description: |
         *Address Space ID*
       type: RW-R
@@ -70,12 +65,26 @@ satp:
             return UNDEFINED_LEGAL_DETERMINISTIC;
           }
         } else {
-          # unrestricted
-          return csr_value.ASID;
+          XReg shamt = (CSR[mstatus].SXL == $bits(XRegWidth::XLEN64)) ? 16 : 9;
+          XReg all_ones = ((1 << shamt) - 1);
+          XReg largest_allowed_asid = (1 << shamt) - 1;
+
+          if (csr_value.ASID == all_ones) {
+            # the specification states that if all 1's are written to the ASID field, then
+            # you must return the largest asid
+            return largest_allowed_asid;
+          } else if (csr_value.ASID > largest_allowed_asid) {
+            # ... but is silent on what happens on any other illegal value
+            return UNDEFINED_LEGAL_DETERMINISTIC;
+          } else {
+            # unrestricted
+            return csr_value.ASID;
+          }
         }
       reset_value: UNDEFINED_LEGAL
     PPN:
-      location: 43-0
+      location_rv32: 21-0
+      location_rv64: 43-0
       description: |
         *Physical Page Number*
 

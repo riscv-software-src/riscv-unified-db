@@ -39,12 +39,186 @@ class EncodingField
   end
 end
 
+# decode field constructions from YAML file, rather than riscv-opcodes
+# eventually, we will move so that all instructions use the YAML file,
+class DecodeVariable
+  # the name of the field
+  attr_reader :name
+
+  # alias of this field, or nil if none
+  #
+  # used, e.g., when a field reprsents more than one variable (like rs1/rd for destructive instructions)
+  attr_reader :alias
+
+  # amount the field is left shifted before use, or nil is there is no left shift
+  #
+  # For example, if the field is offset[5:3], left_shift is 3
+  attr_reader :left_shift
+
+  def extract_location(location_string)
+    parts = location_string.split("|")
+    @encoding_fields = []
+    parts.each do |part|
+      if part =~ /^([0-9]+)$/
+        bit = ::Regexp.last_match(1)
+        @encoding_fields << EncodingField.new("", bit.to_i..bit.to_i)
+      elsif part =~ /^([0-9]+)-([0-9]+)$/
+        msb = ::Regexp.last_match(1)
+        lsb = ::Regexp.last_match(2)
+        raise "range must be specified 'msb-lsb'" unless msb.to_i >= lsb.to_i
+
+        @encoding_fields << EncodingField.new("", lsb.to_i..msb.to_i)
+      else
+        raise "location format error"
+      end
+    end
+  end
+
+  def inst_pos_to_var_pos
+    s = size
+    map = Array.new(32, nil)
+    @encoding_fields.sort { |a, b| b.range.last <=> a.range.last }.each do |ef|
+      ef.range.to_a.reverse.each do |ef_i|
+        raise "unexpected" if s <= 0
+
+        map[ef_i] = s - 1
+        s -= 1
+      end
+    end
+    map
+  end
+
+  # given a range of the instruction, return a string representing the bits of the field the range
+  # represents
+  def inst_range_to_var_range(r)
+    var_bits = inst_pos_to_var_pos
+
+    raise "?" if var_bits[r.last].nil?
+    parts = [var_bits[r.last]..var_bits[r.last]]
+    r.to_a.reverse[1..].each do |i|
+      if var_bits[i] == (parts.last.first - 1)
+        raise "??" if parts.last.last.nil?
+        parts[-1] = var_bits[i]..parts.last.last
+      else
+        parts << Range.new(var_bits[i], var_bits[i])
+      end
+    end
+
+    parts.map { |p| p.size == 1 ? p.first.to_s : "#{p.last}:#{p.first}"}.join("|")
+  end
+  private :inst_range_to_var_range
+
+  # array of constituent encoding fields
+  def grouped_encoding_fields
+    sorted_encoding_fields = @encoding_fields.sort { |a, b| b.range.last <=> a.range.last }
+    # need to group encoding_fields if they are consecutive
+    grouped_fields = [sorted_encoding_fields[0].range]
+    sorted_encoding_fields[1..].each do |ef|
+      if (ef.range.last + 1) == grouped_fields.last.first
+        grouped_fields[-1] = (ef.range.first..grouped_fields.last.last)
+      else
+        grouped_fields << ef.range
+      end
+    end
+    if grouped_fields.size == 1
+      if grouped_fields.last.size == size
+        [EncodingField.new(name, grouped_fields[0])]
+      else
+        [EncodingField.new("#{name}[#{inst_range_to_var_range(grouped_fields[0])}]", grouped_fields[0])]
+      end
+    else
+      grouped_fields.map do |f|
+        EncodingField.new("#{name}[#{inst_range_to_var_range(f)}]", f)
+      end
+    end
+  end
+
+  def initialize(inst, field_data)
+    @inst = inst
+    @name = field_data["name"]
+    @left_shift = field_data["left_shift"].nil? ? 0 : field_data["left_shift"]
+    @sext = field_data["sign_extend"].nil? ? false : field_data["sign_extend"]
+    @alias = field_data["alias"].nil? ? nil : field_data["alias"]
+    extract_location(field_data["location"])
+    @decode_variable =
+      if @alias.nil?
+        name
+      else
+        @decode_variable = [name, @alias]
+      end
+  end
+
+  def eql?(other)
+    @name.eql?(other.name)
+  end
+
+  def hash
+    @name.hash
+  end
+
+  # returns true if the field is encoded across more than one groups of bits
+  def split?
+    @encoding_fields.size > 1
+  end
+
+  # returns bits of the encoding that make up the field, as an array
+  #   Each item of the array is either:
+  #     - A number, to represent a single bit
+  #     - A range, to represent a continugous range of bits
+  #
+  #  The array is ordered from encoding MSB (at index 0) to LSB (at index n-1)
+  def bits
+    @encoding_fields.map do |ef|
+      ef.range.size == 1 ? ef.range.first : ef.range
+    end
+  end
+
+  # the number of bits in the field, _including any implicit ones_
+  def size
+    size_in_encoding + @left_shift
+  end
+
+  # the number of bits in the field, _not including any implicit ones_
+  def size_in_encoding
+    bits.reduce(0) { |sum, f| sum + (f.is_a?(Integer) ? 1 : f.size) }
+  end
+
+  # true if the field should be sign extended
+  def sext?
+    @sext
+  end
+
+  # return code to extract the field
+  def extract
+    ops = []
+    so_far = 0
+    bits.each do |b|
+      if b.is_a?(Integer)
+        op = "encoding[#{b}]"
+        ops << op
+        so_far += 1
+      elsif b.is_a?(Range)
+        op = "encoding[#{b.end}:#{b.begin}]"
+        ops << op
+        so_far += b.size
+      end
+    end
+    ops << "#{@left_shift}'d0" unless @left_shift.zero?
+    ops =
+      if ops.size > 1
+        "{#{ops.join(', ')}}"
+      else
+        ops[0]
+      end
+    ops = "sext(#{ops})" if sext?
+    ops
+  end
+end
+
 class DecodeField
   # the name of the field
   attr_reader :name
 
-  # array of constituent encoding fields
-  attr_reader :encoding_fields
 
   # aliases of this field.
   #  if there is one alias, a String
@@ -127,6 +301,10 @@ class DecodeField
   #  The array is ordered from encoding MSB (at index 0) to LSB (at index n-1)
   def bits
     @field_data[:bits].is_a?(Range) ? [@field_data[:bits]] : @field_data[:bits]
+  end
+
+  def grouped_encoding_fields
+    @encoding_fields
   end
 
   # the number of bits in the field, _including any implicit ones_

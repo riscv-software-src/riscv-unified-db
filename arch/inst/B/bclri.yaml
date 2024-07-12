@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+bclri:
+  long_name: Single-Bit clear (Immediate)
+  description: |
+    This instruction returns rs1 with a single bit cleared at the index specified in shamt. The
+    index is read from the lower log2(XLEN) bits of shamt. For RV32, the encodings corresponding
+    to shamt[5]=1 are reserved.
+  definedBy: [B, Zbs]
+  assembly: xd, xs1, shamt
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg index = shamt & (xlen() - 1);
+    X[rd] = X[rs1] & ~(1 << index);

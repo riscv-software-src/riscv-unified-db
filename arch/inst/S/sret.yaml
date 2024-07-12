@@ -62,3 +62,62 @@ sret:
     | 1 | 0 | executes | `Illegal Instruction` | `Illegal Instruction` | `Virtual Instruction` | executes
     | 1 | 1 | executes | `Illegal Instruction` | `Illegal Instruction` | `Virtual Instruction` | `Virtual Instruction`
     |===
+  operation(): |
+    # first, check access requirements
+    if (implemented?(ExtensionName::H)) {
+      if (CSR[mstatus].TSR == 1'b0 && CSR[hstatus].VTSR == 1'b0) {
+        if (mode() == PrivilegeMode::U) {
+          raise (ExceptionCode::IllegalInstruction);
+        } else if (mode() == PrivilegeMode::VU) {
+          raise (ExceptionCode::VirtualInstruction);
+        }
+      } else if (CSR[mstatus].TSR == 1'b0 && CSR[hstatus].VTSR == 1'b1) {
+        if (mode() == PrivilegeMode::U) {
+          raise (ExceptionCode::IllegalInstruction);
+        } else if (mode() == PrivilegeMode::VU || mode() == PrivilegeMode::VS) {
+          raise (ExceptionCode::VirtualInstruction);
+        }
+      } else if (CSR[mstatus].TSR == 1'b1 && CSR[hstatus].VTSR == 1'b0) {
+        if (mode() == PrivilegeMode::U || mode() == PrivilegeMode::S) {
+          raise (ExceptionCode::IllegalInstruction);
+        } else if (mode() == PrivilegeMode::VU) {
+          raise (ExceptionCode::VirtualInstruction);
+        }
+      } else if (CSR[mstatus].TSR == 1'b1 && CSR[hstatus].VTSR == 1'b1) {
+        if (mode() == PrivilegeMode::U || mode() == PrivilegeMode::S) {
+          raise (ExceptionCode::IllegalInstruction);
+        } else if (mode() == PrivilegeMode::VU || mode() == PrivilegeMode::VS) {
+          raise (ExceptionCode::VirtualInstruction);
+        }      
+      }
+    } else {
+      if (mode() != PrivilegeMode::U) {
+        raise (ExceptionCode::IllegalInstruction);
+      }
+    }
+
+    # now pop the interrupt stack and change modes
+    if (!virtual_mode?()) {
+      if (implemented?(ExtensionName::H)) {
+        if (CSR[hstatus].SPV == 1'b1) {
+          if (CSR[mstatus].SPP == 2'b01) {
+            set_mode(PrivilegeMode::VS);
+          } else if (CSR[mstatus].SPP == 2'b00) {
+            set_mode(PrivilegeMode::VU);
+          }
+        }
+        CSR[hstatus].SPV = 0;
+      }
+      CSR[mstatus].SIE = CSR[mstatus].SPIE;
+      CSR[mstatus].SPIE = 1;
+      CSR[mstatus].SPP = 2'b00;
+      PC = $bits(CSR[sepc]);
+    } else {
+      if (CSR[mstatus].TSR == 1'b1) {
+        raise (ExceptionCode::IllegalInstruction);
+      }
+      CSR[vsstatus].SPP = 0;
+      CSR[vsstatus].SIE = CSR[vsstatus].SPIE;
+      CSR[vsstatus].SPIE = 1;
+      PC = $bits(CSR[vsepc]);
+    }

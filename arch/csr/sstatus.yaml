@@ -4,8 +4,7 @@ sstatus:
   long_name: Supervisor Status
   address: 0x100
   priv_mode: S
-  length(): | # length changes dynamically with SXLEN
-    return (CSR[mstatus].SXL == 0) ? 7'd32 : 7'd64;
+  length: SXLEN
   description: |
     The sstatus register tracks and controls the hart's current operating state.
 
@@ -14,12 +13,8 @@ sstatus:
   fields:
     SD:
       # The *position* of SD changes when SXLEN changes (yuck^[TM])
-      location(): |
-        if (CSR[mstatus].SXL == 0) {
-          return 6'd31;
-        } else {
-          return 6'd63;
-        }
+      location_rv32: 31
+      location_rv64: 63
       alias: mstatus.SD
       description: |
         *State Dirty*

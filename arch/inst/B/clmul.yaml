@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+clmul:
+  long_name: Carry-less multiply (low-part)
+  description: |
+    `clmul` produces the lower half of the 2*XLEN carry-less product
+  definedBy: [B, Zbc]
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg rs1_val = X[rs1];
+    XReg rs2_val = X[rs2];
+    XReg output = 0;
+
+    for (U32 i=0; i < xlen(); i++) {
+      output = (((rs2_val >> i) & 1) == 1)
+        ? output ^ (rs1_val << i)
+        : output;
+    }
+
+    X[rd] = output;

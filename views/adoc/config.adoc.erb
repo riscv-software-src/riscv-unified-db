@@ -1,0 +1,22 @@
+= Configuration of <%= arch_def.name %>
+
+== Parameters
+
+<%- config_schema = JSON.load_file($root / "schemas" / "config_schema.json") -%>
+[cols="1,2,4"]
+|===
+| Name | Value | Description
+
+<%- arch_def.config_params.each do |pname, pvalue| -%>
+| *<%= pname %>* | <%= pvalue %> | <%= config_schema["$defs"]["params"]["properties"][pname]["description"] %>
+<%- end -%>
+|===
+
+== Extensions
+
+|===
+| Name | Version
+<%- arch_def.implemented_extensions.sort{ |a,b| a.name <=> b.name }.each do |e| -%>
+| `<%= e.name %>` | <%= e.version.to_s %>
+<%- end -%>
+|===

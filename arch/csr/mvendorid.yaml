@@ -11,10 +11,10 @@ mvendorid:
       description: JEDEC manufacturer ID bank minus 1
       location: 31-7
       type: RO
-      reset_value: UNDEFINED_LEGAL
+      reset_value(): return VENDOR_ID_BANK;
     Offset:
       description: JEDEC manufacturer ID offset
       location: 6-0
       type: RO
-      reset_value: UNDEFINED_LEGAL
+      reset_value(): return VENDOR_ID_OFFSET;
   definedBy: I

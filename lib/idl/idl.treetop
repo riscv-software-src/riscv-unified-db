@@ -158,9 +158,13 @@ grammar Idl
   end
 
   rule p3_binary_expression
-    l:p2_binary_expression !{ |seq| @parsing_template } r:(space* op:p3_binary_operator space* r:p3_binary_expression)+ <Idl::BinaryExpressionRightAst>
+    l:p2_binary_expression r:(space* op:p3_binary_operator space* r:p3_binary_expression)+ <Idl::BinaryExpressionRightAst>
     /
-    l:p2_binary_expression &{ |seq| @parsing_template } r:(space* op:p3_template_binary_operator space* r:p3_binary_expression)+ <Idl::BinaryExpressionRightAst>
+    p2_binary_expression
+  end
+
+  rule template_safe_p3_binary_expression
+    l:p2_binary_expression r:(space* op:p3_template_binary_operator space* r:p3_binary_expression)+ <Idl::BinaryExpressionRightAst>
     /
     p2_binary_expression
   end
@@ -171,10 +175,22 @@ grammar Idl
     p3_binary_expression
   end
 
+  rule template_safe_p4_binary_expression
+    l:template_safe_p3_binary_expression r:(space* op:p4_binary_operator space* r:p4_binary_expression)+ <Idl::BinaryExpressionRightAst>
+    /
+    template_safe_p3_binary_expression
+  end
+
   rule p5_binary_expression
     l:p4_binary_expression r:(space* op:p5_binary_operator space* r:p5_binary_expression)+ <Idl::BinaryExpressionRightAst>
     /
     p4_binary_expression
+  end
+
+  rule template_safe_p5_binary_expression
+    l:template_safe_p4_binary_expression r:(space* op:p5_binary_operator space* r:p5_binary_expression)+ <Idl::BinaryExpressionRightAst>
+    /
+    template_safe_p4_binary_expression
   end
 
   rule p6_binary_expression
@@ -183,10 +199,22 @@ grammar Idl
     p5_binary_expression
   end
 
+  rule template_safe_p6_binary_expression
+    l:template_safe_p5_binary_expression r:(space* op:p6_binary_operator space* r:p6_binary_expression)+ <Idl::BinaryExpressionRightAst>
+    /
+    template_safe_p5_binary_expression
+  end
+
   rule p7_binary_expression
     l:p6_binary_expression r:(space* op:p7_binary_operator space* r:p7_binary_expression)+ <Idl::BinaryExpressionRightAst>
     /
     p6_binary_expression
+  end
+
+  rule template_safe_p7_binary_expression
+    l:template_safe_p6_binary_expression r:(space* op:p7_binary_operator space* r:p7_binary_expression)+ <Idl::BinaryExpressionRightAst>
+    /
+    template_safe_p6_binary_expression
   end
 
   rule p8_binary_expression
@@ -195,14 +223,26 @@ grammar Idl
     p7_binary_expression
   end
 
+  rule template_safe_p8_binary_expression
+    l:template_safe_p7_binary_expression r:(space* op:p8_binary_operator space* r:p8_binary_expression)+ <Idl::BinaryExpressionRightAst>
+    /
+    template_safe_p7_binary_expression
+  end
+
   rule p9_binary_expression
     l:p8_binary_expression r:(space* op:p9_binary_operator space* r:p9_binary_expression)+ <Idl::BinaryExpressionRightAst>
     /
     p8_binary_expression
   end
 
+  rule template_safe_p9_binary_expression
+    l:template_safe_p8_binary_expression r:(space* op:p9_binary_operator space* r:p9_binary_expression)+ <Idl::BinaryExpressionRightAst>
+    /
+    template_safe_p8_binary_expression
+  end
+
   rule paren_expression
-    '(' space* &{ |seq| @parsing_template_stack ||= []; @parsing_template_stack.push @parsing_template; @parsing_template = false; true } e:expression &{ |seq| @parsing_template = @parsing_template_stack.pop; true } space* ')' <Idl::ParenExpressionAst>
+    '(' space* e:expression space* ')' <Idl::ParenExpressionAst>
   end
 
   rule replication_expression
@@ -251,6 +291,14 @@ grammar Idl
     a:ary_eligible_expression space* brackets:('[' space* msb:(expression space* ':' space*)? lsb:expression space* ']' space*)+ <Idl::AryAccess>
   end
 
+  rule post_dec
+    rval space* '--' <Idl::PostDecrementExpressionAst>
+  end
+
+  rule post_inc
+    rval space* '++' <Idl::PostIncrementExpressionAst>
+  end
+
   rule unary_expression
     '[' space* first:expression rest:(space* ',' space* expression)* space* ']' <Idl::ArrayLiteralAst>
     /
@@ -264,9 +312,9 @@ grammar Idl
     /
     o:unary_operator space* e:expression <Idl::UnaryOperatorExpressionAst>
     /
-    rval space* '--' <Idl::PostDecrementExpressionAst>
+    post_dec
     /
-    rval space* '++' <Idl::PostIncrementExpressionAst>
+    post_inc
     /
     replication_expression
     /
@@ -282,11 +330,15 @@ grammar Idl
     /
     enum_ref
     /
-    rval
+    rval # must come last
   end
 
   rule ternary_expression
     p9_binary_expression space* '?' space* t:expression space* ':' space* f:expression <Idl::TernaryOperatorExpressionAst>
+  end
+
+  rule template_safe_ternary_expression
+    template_safe_p9_binary_expression space* '?' space* t:expression space* ':' space* f:expression <Idl::TernaryOperatorExpressionAst>
   end
 
   rule expression
@@ -297,8 +349,17 @@ grammar Idl
     )
   end
 
+
+  rule template_safe_expression
+    (
+     template_safe_ternary_expression
+     /
+     template_safe_p9_binary_expression
+    )
+  end
+
   rule function_call_template_arguments
-    &{ |seq| @parsing_template = true; true } first:(int / rval) rest:(space* ',' space* arg:(int / rval))* &{ |seq| @parsing_template = false; true }
+    first:(int / rval) rest:(space* ',' space* arg:(int / rval))*
   end
 
   rule function_call
@@ -310,7 +371,9 @@ grammar Idl
   end
 
   rule function_name
-    !reserved [a-zA-Z] [a-zA-Z0-9_]* '?'?
+    !reserved [a-zA-Z] [a-zA-Z0-9_]* '?'? {
+      def is_function_name? = true
+    }
   end
 
   rule function_arg_list
@@ -375,7 +438,8 @@ grammar Idl
     single_declaration_with_initialization /
     var:var_write space* '=' space* rval:expression <Idl::VariableAssignmentAst> /
     var:var_write '.' field_name space* '=' space* rval:expression <Idl::FieldAssignmentAst> /
-    var:var_write space* '[' idx:expression ']' space* '=' space* rval:expression <Idl::AryElementAssignmentAst>
+    var:var_write space* '[' space* msb:expression space* ':' space* lsb:expression space* ']' space* '=' space* rval:expression <Idl::AryRangeAssignmentAst> /
+    var:var_write space* '[' space* idx:expression space* ']' space* '=' space* rval:expression <Idl::AryElementAssignmentAst>
   end
 
   rule ary_size_decl
@@ -449,7 +513,7 @@ grammar Idl
   end
 
   rule for_loop
-    'for' space* '(' space* single_declaration_with_initialization space* ';' space* condition:expression space* ';' space* action:expression space*  ')' space* '{' space*
+    'for' space* '(' space* single_declaration_with_initialization space* ';' space* condition:expression space* ';' space* action:(assignment / post_inc / post_dec) space*  ')' space* '{' space*
       stmts:(s:(statement / return_statement / function_if_block / for_loop) space*)+
     '}' <Idl::ForLoopAst>
   end
@@ -462,7 +526,7 @@ grammar Idl
     # alias for Bits<XLEN>
     'XReg' ![A-Za-z0-9] <Idl::BuiltinTypeNameAst> /
 
-    'Bits' space* '<' space* &{ |seq| @parsing_template = true; true } i:expression &{ |seq| @parsing_template = false; true } space* '>' ![A-Za-z0-9] <Idl::BitsTypeAst> /
+    'Bits' space* '<' space* i:template_safe_expression space* '>' ![A-Za-z0-9] <Idl::BitsTypeAst> /
 
     'Boolean' ![A-Za-z0-9] <Idl::BuiltinTypeNameAst> /
 

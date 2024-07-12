@@ -1,3 +1,5 @@
+:tabs-sync-option:
+
 [[inst:<%=inst.name.gsub('.', '_')%>-def]]
 = <%= inst.name %>
 
@@ -5,10 +7,32 @@
 
 == Encoding
 
+<%- if inst.arch_def.multi_xlen? && inst.multi_encoding? -%>
+[NOTE]
+This instruction has different encodings in RV32 and RV64.
+
+[tabs]
+====
+RV32::
++
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....  
-<%= JSON.dump inst.wavedrom_desc %>
+<%= JSON.dump inst.wavedrom_desc(32) %>
 ....
+
+RV64::
++
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....  
+<%= JSON.dump inst.wavedrom_desc(64) %>
+....
+====
+<%- else -%>
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....  
+<%= JSON.dump inst.wavedrom_desc(inst.arch_def.config_params["XLEN"]) %>
+....
+<%- end -%>
 
 == Synopsis
 
@@ -38,11 +62,32 @@
 
 == Decode Variables
 
+<%- if inst.arch_def.multi_xlen? && inst.multi_encoding? -%>
+[tabs]
+====
+RV32::
++
 ----
-<%- inst.decode_variables.each do |d| -%>
+<%- inst.decode_variables(32).each do |d| -%>
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
 <%- end -%>
 ----
+
+RV64::
++
+----
+<%- inst.decode_variables(64).each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<%- end -%>
+----
+====
+<%- else -%>
+----
+<%- inst.decode_variables(inst.arch_def.config_params["XLEN"]).each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<%- end -%>
+----
+<%- end -%>
 
 == Execution
 

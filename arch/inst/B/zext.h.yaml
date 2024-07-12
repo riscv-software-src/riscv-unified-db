@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+zext.h:
+  long_name: Zero-extend halfword
+  description: |
+    This instruction zero-extends the least-significant halfword of the source to XLEN by inserting
+    0's into all of the bits more significant than 15.
+
+    [NOTE]
+    The *zext.h* instruction is a pseudo-op for `pack` when `Zbkb` is implemented and XLEN == 32.
+
+    [NOTE]
+    The *zext.h* instruction is a pseduo-op for `packw` when `Zbkb` is implmeneted and XLEN == 64.
+  definedBy: [B, Zbb]
+  encoding:
+    RV32:
+      mask: 000010000000-----100-----0110011
+      fields:
+      - name: rs1
+        location: 19-15
+      - name: rd
+        location: 11-7
+    RV64:
+      mask: 000010000000-----100-----0111011
+      fields:
+      - name: rs1
+        location: 19-15
+      - name: rd
+        location: 11-7
+  excludedBy: Zbkb  # zext.h is a pseduo-op for pack/packw when Zbkb is implemented 
+  assembly: xd, xs1
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    X[rd] = X[rs1][15:0];

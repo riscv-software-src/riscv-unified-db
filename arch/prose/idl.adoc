@@ -50,7 +50,7 @@ function jump {
   body { <3>
     # raise a misaligned exception if address is not aligned to IALIGN
     if (implemented?(ExtensionName::C) &&         # C is implemented
-        ((CSR[misa].Extensions & 0x4) == 0x4) &&  # and C is enabled dynamically
+        (CSR[misa].C == 0x1) &&                   # and C is enabled dynamically
         ((target_addr & 0x1) != 0)) {             # and the target PC is odd
       raise(ExceptionCode::InstructionAddressMisaligned); <4>
     } else if ((target_addr & 0x3) != 0) {
@@ -387,7 +387,11 @@ Bits<8> pmp_cfg_0;              # declare pmp_cfg_0, initialized to 8'd0
 # Bits<8> d$_line;  # compilation error: '$' is not a valid variable name character
 ----
 
-The general-purpose RISC-V x registers are builtin state for IDL (rather than being declared state). This is to accommodate the zero (x0) register without needing special language support (e.g., operator overloading) or ugly function calls on every X register access (_e.g._, set_xreg(index, value)).
+The general-purpose RISC-V x registers are builtin state for IDL (rather than being declared state). This is to accommodate special-cases regarding the x registers without without needing special language support (e.g., operator overloading) or ugly function calls on every X register access (_e.g._, set_xreg(index, value)):
+
+ . The x0 register is hardwired to 0
+ . All writes to an x register when MXLEN != the current XLEN are sign-extended to MXLEN.
+ . All reads from an x register when MXLEN != the current XLEN ignore the upper bits of the register.
 
 [NOTE]
 To help identify that the x registers are special, they use the variable name `X` (upper case X), which would be an invalid variable name if declared in IDL.
@@ -437,7 +441,9 @@ Bitfields can be converted to a `Bits<N>` type, where N is the width of the bitf
 
 == Casting
 
-Unsigned values may be cast to signed values using the `$signed` cast operator.
+There are two explicit cast operators in IDL: `$isgned` and `$bits`.
+
+Unsigned Bits<N> values may be cast to signed values using the `$signed` cast operator.
 
 [source,idl]
 ----
@@ -446,6 +452,26 @@ XReg src2 = 0;
 
 XReg cmp1 = (src1 < src2) ? 1 : 0;                    # cmp = 0
 XReg cmp1 = ($signed(src1) < $signed(src2)) ? 1 : 0;  # cmp = 1
+----
+
+The '$bits' cast can convert Enumeration references and CSRs into a Bits<N> type.
+When the casted value is an enumeration reference, the resulting type will be large enough to hold the largest value in the enumeration type, regardless of the specific reference value.
+When the casted value is a CSR, the resulting type will the width of the CSR, or the maximum width when a CSR width is dynamic.
+
+[source,idl]
+----
+# assuming:
+# enum RoundingMode {
+#   RNE 0  # Round to nearest, ties to even
+#   RTZ 1  # Round toward zero
+#   RDN 2  # Round down (towards -inf)
+#   RUP 3  # Round up (towards +inf)
+#   RMM 4  # Round to nearest, ties to Max Magnitude
+# }
+$bits(RoundingMode::RNE)  # => 3'd0
+$bits(RoundingMode::RUP)  # => 3'd3
+
+$bits(CSR[mstatus])  # => XLEN'd?? 
 ----
 
 == Control flow

@@ -4,25 +4,17 @@ hstatus:
   long_name: Hypervisor Status
   address: 0x600
   priv_mode: S
-
-  # hstatus length is defined to be SXLEN-bit
-  #
-  # When SXLEN is immutable, then the length is known at compile time, and the generated
-  # configuration-dependent spec will be an integer in the length (no parens) field.
-  # When SXLEN is mutable, then the function will live on in the configuration-dependent
-  # spec, and downstream tools will use it appropriately.
-  length(): |
-    return (CSR[mstatus].SXL == 0) ? 7'd32 : 7'd64;
-
+  length: SXLEN
   description: |
     The hstatus register tracks and controls a VS-mode guest.
 
     Unlike fields in `sstatus`, which are all aliases of fields `mstatus`,
     bits in `hstatus` are independent bits and do not have aliases.
-  definedBy: I
+  definedBy: H
   fields:
     VSXL:
       location: 33-32
+      base: 64
       description: |
         *VS-mode XLen*
 

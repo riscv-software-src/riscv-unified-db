@@ -36,12 +36,12 @@ mconfigptr:
 
 
   priv_mode: M
-  length(): return XLEN;
+  length: MXLEN
   definedBy: I
   fields:
     ADDRESS:
-      location(): |
-        return bit_length(CONFIG_PTR_ADDRESS) - 1,0;
+      location_rv32: 31-0
+      location_rv64: 63-0
       description: Pointer to physical address of the Unified Discovery configuration data structure.
       type: RO
       reset_value(): |

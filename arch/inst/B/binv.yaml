@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+binv:
+  long_name: Single-Bit invert (Register)
+  description: |
+    This instruction returns rs1 with a single bit inverted at the index specified in rs2.
+    The index is read from the lower log2(XLEN) bits of rs2.
+  definedBy: [B, Zbs]
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg index = X[rs2] & (xlen() - 1);
+    X[rd] = X[rs1] ^ (1 << index);

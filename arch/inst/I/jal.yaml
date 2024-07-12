@@ -7,6 +7,15 @@ jal:
     address in rd.
   definedBy: I
   assembly: xd, imm
+  encoding:
+    mask: -------------------------1101111
+    fields:
+    - name: imm
+      location: 31|19-12|20|30-21
+      left_shift: 1
+      sign_extend: true
+    - name: rd
+      location: 11-7
   access:
     s: always
     u: always

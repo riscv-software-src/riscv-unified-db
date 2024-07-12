@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+max:
+  long_name: Maximum
+  description: |
+    This instruction returns the larger of two signed integers.
+
+    .Software Hint
+    [NOTE]
+    Calculating the absolute value of a signed integer can be performed using the
+    following sequence: `neg rD,rS` followed by `max rD,rS,rD. When using this
+    common sequence, it is suggested that they are scheduled with no intervening
+    instructions so that implementations that are so optimized can fuse them
+    together.
+  definedBy: [B, Zbb]
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    X[rd] = ($signed(X[rs1]) > $signed(X[rs2])) ? X[rs1] : X[rs2];

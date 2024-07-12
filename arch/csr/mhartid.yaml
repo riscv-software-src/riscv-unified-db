@@ -4,13 +4,13 @@ mhartid:
   long_name: Machine Hart ID
   address: 0xf14
   priv_mode: M
-  length(): return XLEN;
+  length: MXLEN
   description: Reports the unique hart-specific ID in the system.
   definedBy: I
   fields:
     ID:
-      location(): |
-        return XLEN-1, 0;
+      location_rv32: 31-0
+      location_rv64: 63-0
       type: RO
       description: hart-specific ID.
       reset_value: UNDEFINED_LEGAL

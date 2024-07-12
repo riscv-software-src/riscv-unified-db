@@ -5,7 +5,9 @@ A:
   versions:
   - version: 2.1
     ratification_date: 2019-12
-  implies: [Zaamo, Zalrsc]
+    implies:
+    - [Zaamo, 1.0]
+    - [Zalrsc, 1.0]
   description: |
 
     The atomic-instruction extension, named `A`, contains

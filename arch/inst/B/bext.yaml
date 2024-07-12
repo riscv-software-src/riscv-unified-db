@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+bext:
+  long_name: Single-Bit extract (Register)
+  description: |
+    This instruction returns a single bit extracted from rs1 at the index specified in rs2.
+    The index is read from the lower log2(XLEN) bits of rs2.
+  definedBy: [B, Zbs]
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg index = X[rs2] & (xlen() - 1);
+    X[rd] = (X[rs1] >> index) & 1;

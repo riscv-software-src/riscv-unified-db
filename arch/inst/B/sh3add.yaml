@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+sh3add:
+  long_name: Shift left by 3 and add
+  description: |
+    This instruction shifts `rs1` to the left by 3 places and adds it to `rs2`.
+  definedBy: [B, Zba]
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    X[rd] = X[rs2] + (X[rs1] << 3);

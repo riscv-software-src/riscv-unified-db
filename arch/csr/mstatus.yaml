@@ -8,14 +8,15 @@ mstatus:
   # length is MXLEN-bit
   #
   # MXLEN cannot change dynamically, so this will be converted to an integer
-  # in the length: (not parens) in the genrated, configuration-dependent spec
-  length(): return XLEN;
+  # in the genrated, configuration-dependent spec
+  length: MXLEN
 
   description: The mstatus register tracks and controls the hart's current operating state.
   definedBy: I
   fields:
     SD:
-      location(): return XLEN - 1;
+      location_rv32: 31-0
+      location_rv64: 63-0
       description: |
         State Dirty.
         
@@ -100,11 +101,12 @@ mstatus:
         
         Sets the effective XLEN for S-mode (0 = 32-bit, 1 = 64-bit, 2 = 128-bit [reserved]).
 
+        <%- if ext?(:S) -%>
         <%- if SXLEN == 32 -%>
 
         Since the CPU only supports SXLEN==32, this is hardwired to 0.
 
-        <%- elsif SXLEN == 64 -%>
+        <%- SXLEN == 64 -%>
 
         Since the CPU only supports SXLEN==64, this is hardwired to 1.
 
@@ -117,8 +119,9 @@ mstatus:
         It is UNDEFINED_LEGAL to set the MSB of SXL.
 
         <%- end -%>
+        <%- end -%>
       type(): |
-        return (SXLEN == 3264) ? CsrFieldType::RW : CsrFieldType::RO;
+        return (implemented?(ExtensionName::S) && SXLEN == 3264) ? CsrFieldType::RW : CsrFieldType::RO;
 
       legal?(csr_value): |
         if (SXLEN == 32) {
@@ -253,8 +256,8 @@ mstatus:
         
         When 1, loads from pages marked readable *or executable* are allowed.
         When 0, loads from pages marked executable raise a Page Fault exception.
-      type: RW
       definedBy: S
+      type: RW
       reset_value: UNDEFINED_LEGAL
     SUM:
       location: 18
@@ -263,9 +266,32 @@ mstatus:
         
         When 0, an S-mode read or an M-mode read with mstatus.MPRV=1 and mstatus.MPP=01
         to a 'U' (user) page will cause an ILLEGAL INSTRUCTION exception.
-      type: RW
       definedBy: S
-      reset_value: UNDEFINED_LEGAL
+      type(): |
+        Boolean has_vm =
+          implemented?(ExtensionName::Sv32) ||
+          implemented?(ExtensionName::Sv39) ||
+          implemented?(ExtensionName::Sv48) ||
+          implemented?(ExtensionName::Sv57);
+        # note that has_vm implies S extension is implemented
+        if (!has_vm) {
+          return CsrFieldType::RO;
+        } else {
+          return CsrFieldType::RW;
+        }
+      reset_value(): |
+        Boolean has_vm =
+          implemented?(ExtensionName::Sv32) ||
+          implemented?(ExtensionName::Sv39) ||
+          implemented?(ExtensionName::Sv48) ||
+          implemented?(ExtensionName::Sv57);
+        # note that has_vm implies S extension is implemented
+        if (!has_vm) {
+          # read-only zero when there is no virtual memory
+          return 0;
+        } else {
+          return UNDEFINED_LEGAL;
+        }
     MPRV:
       location: 17
       description: |
@@ -275,6 +301,7 @@ mstatus:
         `mstatus.MPV`:`mstatus.MPP`.
 
         `mstatus.MPRV` is cleared on any exception return (`mret` or `sret` instruction, regardless of the trap handler privilege mode).
+      definedBy: U
       type: RW-H
       reset_value: 0
     XS:
@@ -319,6 +346,28 @@ mstatus:
         * When `mstatus.MPRV` is set, loads and stores behave as if the current privlege level were MPP.
       type: RW-H
       reset_value: UNDEFINED_LEGAL
+      write(csr_value): |
+        if (csr_value.MPP == 2'b01 && !implemented?(ExtensionName::S)) {
+          return UNDEFINED_LEGAL_DETERMINISTIC;
+        } else if (csr_value.MPP == 2'b00 && !implemented?(ExtensionName::U)) {
+          return UNDEFINED_LEGAL_DETERMINISTIC;
+        } else if (csr_value.MPP == 2'b10) {
+          # never a valid value
+          return UNDEFINED_LEGAL_DETERMINISTIC;
+        } else {
+          return csr_value.MPP;
+        }
+      legal?(csr_value): |
+        if (csr_value.MPP == 2'b01 && !implemented?(ExtensionName::S)) {
+          return false;
+        } else if (csr_value.MPP == 2'b00 && !implemented?(ExtensionName::U)) {
+          return false;
+        } else if (csr_value.MPP == 2'b10) {
+          # never a valid value
+          return flase;
+        } else {
+          return true;
+        }
     VS:
       location: 10-9
       description: |
@@ -353,6 +402,14 @@ mstatus:
       type: RW-H
       definedBy: S
       reset_value: UNDEFINED_LEGAL
+      write(csr_value): |
+        if (csr_value.SPP == 2'b10) {
+          return UNDEFINED_LEGAL_DETERMINISTIC;
+        } else {
+          return csr_value.SPP;
+        }
+      legal?(csr_value): |
+        return csr_value.SPP != 2'b10;
     MPIE:
       location: 7
       description: |

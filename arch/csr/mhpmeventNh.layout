@@ -11,7 +11,10 @@
   base: 32
   description: |
     Alias of `mhpmevent<%= hpm_num %>`[63:32].
-  definedBy: I
+
+    Introduced with the `Sscofpmf` extension. Prior to that, there was no way to access the upper
+    32-bits of `mhpmevent#{hpm_num}`.
+  definedBy: Sscofpmf
   fields:
     <%- if NUM_HPM_COUNTERS <= (hpm_num - 3) -%>
     UNUSED:

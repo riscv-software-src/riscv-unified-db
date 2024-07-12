@@ -43,6 +43,7 @@ vsstatus:
         <% elsif VUXLEN == 64 -%>
         Since the hart only supports VUXLEN==64, this is hardwired to 1.
         <%- end -%><%# VUXLEN == 3264 -%>
+
       type(): |
         return (VUXLEN == 3264) ? CsrFieldType::RW : CsrFieldType::RO;
       reset_value(): |

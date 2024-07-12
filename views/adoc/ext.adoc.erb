@@ -1,33 +1,55 @@
 [ext:$<%= ext.name %>-def]
-= <%= ext.name %>
+= <%= ext.name %> Extension
+
+<%- unless ext.arch_def.implemented_extensions.any? { |e| e.name == ext.name } -%>
+[WARNING]
+This extension not implemented by the <%= ext.arch_def.name %> configuration.
+<%- end -%>
 
 <%- if ext.respond_to?(:implies) && !ext.implies.empty? -%>
 This extension implies the following extension(s):
 
-<%= ext.implies.map { |e| arch_def.find_replace_links "`#{e}`" }.join(",") %>
+`<%= ext.name %>` => <%= ext.implies.map { |e| arch_def.find_replace_links "`#{e}`" }.join(", ") %>
 <%- end -%>
 
 == Versions
 
-|===
-| Version | Ratification Date
 <%- ext.versions.each do |v| -%>
-| <%= v["version"] %> | <%= v["ratification_date"] %>
+<%- implemented = ext.arch_def.implemented_extensions.include?(ExtensionVersion.new(ext.name, v["version"], ext.arch_def)) -%>
+<%= v["version"] %>::
+  Ratification date:::
+    <%= v["ratification_date"] %>
+  <%- if v.key?("changes") -%>
+  Changes:::
+    <%= v["changes"] %>
+  <%- end -%>
+  <%- if v.key?("url") -%>
+  Ratification document:::
+    <%= v["url"] %>
+  <%- end -%>
+  <%- if v.key?("implies") -%>
+  Implies:::
+    <%- implications = v["implies"][0].is_a?(Array) ? v["implies"] : [v["implies"]] -%>
+    <%- implications.each do |i| -%>
+    * `<%= i[0] %>` version <%= i[1] %>
+    <%- end -%>
+  <%- end -%>
 <%- end -%>
-|===
 
 == Synopsys
 
-<%- insts = arch_def.instructions.select { |i| i.definedBy == ext.name } -%>
+<%= ext.description %>
+
+<%- insts = arch_def.implemented_instructions.select { |i| i.definedBy == ext.name || i.definedBy.include?(ext.name) } -%>
 <%- unless insts.empty? -%>
 == Instructions
 
-The following instructions are added by this extension:
+The following instructions are added by this extension in the <%= ext.arch_def.name %> configuration:
 
+[cols="1,3"]
+|===
 <%- insts.each do |inst| -%>
- * <%= arch_def.find_replace_links("`#{inst.name}`") %>
+ | <%= arch_def.find_replace_links("`#{inst.name}`") %> | *<%= inst.long_name %>*
 <%- end -%>
-
+|===
 <%- end -%>
-
-<%= ext.description %>

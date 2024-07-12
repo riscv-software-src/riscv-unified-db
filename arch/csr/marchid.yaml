@@ -4,7 +4,7 @@ marchid:
   long_name: Machine Architecture ID
   address: 0xf12
   priv_mode: M
-  length(): return XLEN;
+  length: MXLEN
   description: |
     The `marchid` CSR is an MXLEN-bit read-only register encoding the base
     microarchitecture of the hart. This register must be readable in any
@@ -43,7 +43,8 @@ marchid:
   definedBy: I
   fields:
     Architecture:
-      location(): return XLEN-1,0;
+      location_rv32: 31-0
+      location_rv64: 63-0
       type: RO
       description: Vendor-specific microarchitecture ID.
       reset_value(): return ARCH_ID;

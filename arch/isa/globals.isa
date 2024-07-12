@@ -157,12 +157,26 @@ builtin function implemented? {
 
 # floating point register file
 U32 FLEN = implemented?(ExtensionName::D) ? 7'd64 : 7'd32;
-Bits<FLEN> f[32];
+Bits<FLEN> f[32] = [0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0];
 
-builtin function mode {
+PrivilegeMode current_mode = PrivilegeMode::M;
+
+function mode {
   returns PrivilegeMode
   description {
     Returns the current active privilege mode.
+  }
+  body {
+    if (!implemented?(ExtensionName::S) &&
+        !implemented?(ExtensionName::U) &&
+        !implemented?(ExtensionName::H)) {
+      return PrivilegeMode::M;
+    } else {
+      return current_mode;
+    }
   }
 }
 
@@ -173,10 +187,23 @@ builtin function assert {
   }
 }
 
-builtin function set_mode {
+builtin function mode_change_notifier {
+  arguments PrivilegeMode new_mode, PrivilegeMode old_mode
+  description {
+    Called whenever the privilege mode changes. Downstream tools can use this to hook events.
+  }
+}
+
+function set_mode {
   arguments PrivilegeMode new_mode
   description {
     Set the current privilege mode to `new_mode`
+  }
+  body {
+    if (new_mode != current_mode) {
+      mode_change_notifier(new_mode, current_mode);
+      current_mode = new_mode;
+    }
   }
 }
 
@@ -249,8 +276,7 @@ function raise {
       PC = {CSR[stvec].BASE, 2'b00};
       CSR[scause] = exception_code.value;
       // note that stval is set elsewhere
-    } else {
-      assert(implemented?(ExtensionName::H) && handling_mode == PrivilegeMode::VS);
+    } else if (implemented?(ExtensionName::H) && (handling_mode == PrivilegeMode::VS)) {
       CSR[vsepc] = PC;
       PC = {CSR[vstvec].BASE, 2'b00};
       CSR[vscause] = exception_code.value;
@@ -272,7 +298,7 @@ function jump {
   body {
     # raise a misaligned exception if address is not aligned to IALIGN
     if (implemented?(ExtensionName::C) &&         # C is implemented
-        ((CSR[misa].Extensions & 0x4) == 0x4) &&  # and C is enabled dynamically
+        (CSR[misa].C == 0x1) &&                   # and C is enabled dynamically
         ((target_addr & 0x1) != 0)) {             # and the target PC is odd
       raise(ExceptionCode::InstructionAddressMisaligned);
     } else if ((target_addr & 0x3) != 0) {
@@ -283,10 +309,85 @@ function jump {
   }
 }
 
-builtin function xlen {
-  returns XRegWidth
+function xlen {
+  returns Bits<8>
   description {
     Returns the effective XLEN for the current privilege mode.
+  }
+  body {
+    if (XLEN == 32) {
+      return 32;
+    }
+
+    if (mode() == PrivilegeMode::M) {
+      if (CSR[misa].MXL == $bits(XRegWidth::XLEN32)) {
+        return 32;
+      } else if (CSR[misa].MXL == $bits(XRegWidth::XLEN64)) {
+        return 64;
+      }
+    } else if (implemented?(ExtensionName::S) && mode() == PrivilegeMode::S) {
+      if (CSR[mstatus].SXL == $bits(XRegWidth::XLEN32)) {
+        return 32;
+      } else if (CSR[mstatus].SXL == $bits(XRegWidth::XLEN64)) {
+        return 64;
+      }
+    } else if (implemented?(ExtensionName::U) && mode() == PrivilegeMode::U) {
+      if (CSR[mstatus].UXL == $bits(XRegWidth::XLEN32)) {
+        return 32;
+      } else if (CSR[mstatus].UXL == $bits(XRegWidth::XLEN64)) {
+        return 64;
+      }
+    } else if (implemented?(ExtensionName::H) && mode() == PrivilegeMode::VS) {
+      if (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)) {
+        return 32;
+      } else if (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN64)) {
+        return 64;
+      }
+    } else if (implemented?(ExtensionName::H) && mode() == PrivilegeMode::VU) {
+      if (CSR[vsstatus].UXL == $bits(XRegWidth::XLEN32)) {
+        return 32;
+      } else if (CSR[vsstatus].UXL == $bits(XRegWidth::XLEN64)) {
+        return 64;
+      }
+    }
+  }
+}
+
+function highest_set_bit {
+  returns XReg
+  arguments XReg value
+  description {
+    Returns the position of the highest (nearest MSB) bit that is '1',
+    or -1 if value is zero.
+  }
+  body {
+    for (U32 i=xlen()-1; i >= 0; i--) {
+      if (value[i] == 1) {
+        return i;
+      }
+    }
+
+    # fall-through; value must be zero
+    return -'sd1;
+  }
+}
+
+function lowest_set_bit {
+  returns XReg
+  arguments XReg value
+  description {
+    Returns the position of the lowest (nearest LSB) bit that is '1',
+    or XLEN if value is zero.
+  }
+  body {
+    for (U32 i=0; i < xlen(); i++) {
+      if (value[i] == 1) {
+        return i;
+      }
+    }
+
+    # fall-through; value must be zero
+    return xlen();
   }
 }
 
@@ -300,7 +401,7 @@ function virtual_mode? {
   }
 }
 
-builtin function sext {
+function sext {
   returns XReg
   arguments XReg value, XReg first_extended_bit
   description {
@@ -308,6 +409,20 @@ builtin function sext {
 
     Bits [`XLEN-1`:`first_extended_bit`] of the return value
     should get the value of bit (`first_extended bit - 1`).
+  }
+  body {
+    # in a common case, first_extended_bit is xlen(), which is compile-time-known unless
+    # the effective xlen is different than XLEN in some mode
+    # In that common case, this function will be eliminated by the compiler
+    if (first_extended_bit == XLEN) {
+      return value;
+    } else {
+      Bits<1> sign = value[first_extended_bit-1];
+      for (U32 i = XLEN-1; i >= first_extended_bit; i--) {
+        value[i] = sign;
+      }
+      return value;
+    }
   }
 }
 
@@ -325,12 +440,6 @@ builtin function zext {
 builtin function ebreak {
   description {
     Raise an `Environment Break` exception, returning control to the debug environment.
-  }
-}
-
-builtin function ecall {
-  description {
-    Raise an `Environment Call` exception, returning control to another privilege mode.
   }
 }
 
@@ -674,6 +783,20 @@ function pmp_match {
   }
 }
 
+function mpv {
+  returns Bits<1>
+  description {
+    Returns the current value of CSR[mstatus].MPV (when MXLEN == 64) of CSR[mstatush].MPV (when MXLEN == 32)
+  }
+  body {
+    if (implemented?(ExtensionName::H)) {
+      return (XLEN == 32) ? CSR[mstatush].MPV : CSR[mstatus].MPV;
+    } else {
+      assert(false);
+    }
+  }
+}
+
 
 function effective_ldst_mode {
   returns PrivilegeMode
@@ -682,19 +805,18 @@ function effective_ldst_mode {
     the current actual privilege mode and modifications from `mstatus.MPRV`.
   }
   body {
-
     // when the mode is M, loads and stores can be executed as if they were done from any other mode
     // with the use of mstatus.MPRV
     if (mode() == PrivilegeMode::M) {
-      if (CSR[mstatus].MPRV == 1) {
+      if (implemented?(ExtensionName::U) && CSR[mstatus].MPRV == 1) {
         if (CSR[mstatus].MPP == 0b00) {
-          if (implemented?(ExtensionName::H) && CSR[mstatus].MPV == 0b1) {
+          if (implemented?(ExtensionName::H) && mpv() == 0b1) {
             return PrivilegeMode::VU;
           } else {
             return PrivilegeMode::U;
           }
-        } else if (CSR[mstatus].MPP == 0b01) {
-          if (implemented?(ExtensionName::H) && CSR[mstatus].MPV == 0b1) {
+        } else if (implemented?(ExtensionName::S) && CSR[mstatus].MPP == 0b01) {
+          if (implemented?(ExtensionName::H) && mpv() == 0b1) {
             return PrivilegeMode::VS;
           } else {
             return PrivilegeMode::S;
@@ -760,13 +882,13 @@ function pmp_check {
 function access_check {
   template U32 access_size
   returns Boolean, ExceptionCode
-  arguments XReg paddr, MemoryOperation type
+  arguments Bits<PHYS_ADDR_WIDTH> paddr, MemoryOperation type
   description {
     Returns True if the current privilege mode cannot access the physical address paddr.
   }
   body {
     # check if this is a valid physical address
-    if (paddr[XLEN-1:PHYS_ADDR_WIDTH] != 0) {
+    if (paddr > ((1 << PHYS_ADDR_WIDTH) - access_size)) {
       if (type == MemoryOperation::Write) {
         raise (ExceptionCode::StoreAmoAccessFault);
       } else if (type == MemoryOperation::Read) {
@@ -857,20 +979,7 @@ function base64? {
     return True iff current effective XLEN == 64
   }
   body {
-    XRegWidth xlen64 = XRegWidth::XLEN64;
-
-    if (mode() == PrivilegeMode::M) {
-      return CSR[misa].MXL == xlen64.value;
-    } else if (mode() == PrivilegeMode::S) {
-      return CSR[mstatus].SXL == xlen64.value;
-    } else if (mode() == PrivilegeMode::U) {
-      return CSR[mstatus].UXL == xlen64.value;
-    } else if (mode() == PrivilegeMode::VS) {
-      return CSR[hstatus].VSXL == xlen64.value;
-    } else {
-      assert(mode() == PrivilegeMode::VU);
-      return CSR[vsstatus].UXL == xlen64.value;
-    }
+    return xlen() == 64;
   }
 }
 
@@ -924,6 +1033,16 @@ function current_translation_mode {
   }
 }
 
+builtin function wfi {
+  description {
+    Wait-for-interrupt.
+
+    A valid implementation is a no-op.
+
+    The model will advance the PC; this function does not need to.
+  }
+}
+
 function valid_vaddr? {
   returns Boolean
   arguments XReg vaddr
@@ -931,10 +1050,14 @@ function valid_vaddr? {
     Checks whether 'vaddr' is a valid virtual address for the given machine state (e.g., translation mode). 
   }
   body {
+    if (CSR[misa].S == 0) {
+      return true;
+    }
+
     SatpMode translation_mode = current_translation_mode();
 
     if (translation_mode == SatpMode::Bare) {
-      if (vaddr[XLEN-1:PHYS_ADDR_WIDTH] != 0) {
+      if (vaddr >= (1 << PHYS_ADDR_WIDTH)) {
         # virtual address is larger than physical address
         return false;
       }
@@ -969,14 +1092,16 @@ function valid_vaddr? {
 
 function translate_sv39 {
   returns Bits<56>
-  arguments XReg vaddr, XReg satp, MemoryOperation op
+  arguments Bits<64> vaddr, XReg satp, MemoryOperation op
   description {
     Translate virtual address using Sv39.
 
-    Return physical address, which is not accessed checked (e.g., for PMP, PMA)
+    Return physical address, which is not accessed checked (e.g., for PMP, PMA).
   }
   body {
     XReg ppn;
+
+    # if there is an exception, set up the correct type
     ExceptionCode ecode =
       op == MemoryOperation::Read ?
         ExceptionCode::LoadPageFault :
@@ -992,8 +1117,9 @@ function translate_sv39 {
 
     if (vaddr[63:39] != {25{vaddr[38]}}) {
       # non-canonical virtual address raises a page fault
-      # note that if pointer masking is enabled, vaddr has already been transformed before reaching here
-      raise (ExceptionCode::LoadPageFault);
+      # note that if pointer masking is enabled,
+      # vaddr has already been transformed before reaching here
+      raise (ecode);
     }
 
     for (U32 i = 2; i >= 0; i--) {
@@ -1002,12 +1128,12 @@ function translate_sv39 {
       # perform access check on the physical address of pte before it's used
       access_check<64>(pte_addr, op);
 
-      Sv39PageTableEntry pte = read_physical_memory<XLEN>(pte_addr);
-      if (pte.V == 0  // invalid
-          || (pte.R == 0 && pte.W == 1) // write permission must also have read permission
-          || pte.Reserved != 0) {   // reserved bits
-          // || (!implemented?(ExtensionName::Svnapot) && pte.N != 0)
-          // || (!implemented?(ExtensionName::Svpbmt) && pte.PBMT != 0)) {
+      Sv39PageTableEntry pte = read_physical_memory<64>(pte_addr);
+      if (pte.V == 0                    # invalid entry
+          || (pte.R == 0 && pte.W == 1) # write permission must also have read permission
+          || pte.Reserved != 0) {          # reserved bits
+#          || (!implemented?(ExtensionName::Svnapot) && pte.N != 0)
+#          || (!implemented?(ExtensionName::Svpbmt) && pte.PBMT != 0)) {
         # found invalid PTE
         raise (ecode);
       } else if (pte.R == 1 || pte.X == 1) {
@@ -1022,9 +1148,9 @@ function translate_sv39 {
           if ((mode() == PrivilegeMode::U && pte.U == 0)
             || (mode() == PrivilegeMode::M && CSR[mstatus].MPRV == 1 && CSR[mstatus].MPP == $bits(PrivilegeMode::HS) && pte.U == 1 && CSR[mstatus].SUM == 0)
             || (mode() == PrivilegeMode::S && pte.U == 1 && CSR[mstatus].SUM == 0)) {
-          # supervisor cannot read U unless mstatus.SUM = 1
-          raise (ExceptionCode::LoadPageFault);
-        }
+            # supervisor cannot read U unless mstatus.SUM = 1
+            raise (ExceptionCode::LoadPageFault);
+          }
         } else if ((op == MemoryOperation::Write) && (pte.W == 0)) {
           # no write permission
           raise (ExceptionCode::StoreAmoPageFault);
@@ -1165,7 +1291,7 @@ function translate {
     } else {
       if (translation_mode == SatpMode::Bare) {
         # bare == no translation
-        if (vaddr[XLEN-1:PHYS_ADDR_WIDTH] != 0) {
+        if (vaddr > ((1 << PHYS_ADDR_WIDTH) - 1)) {
           if (op == MemoryOperation::Read) {
             raise (ExceptionCode::LoadAccessFault);
           } else if (op == MemoryOperation::Write) {
@@ -1175,13 +1301,14 @@ function translate {
             raise (ExceptionCode::InstructionAccessFault);
           }
         }
-        return vaddr[PHYS_ADDR_WIDTH-1:0];
+        return vaddr;
 
 #      } else if (implemented?(ExtensionName::Sv32) && translation_mode == SatpMode::Sv32) {
 #        return translate_sv32(vaddr, CSR[satp], op);
 
       } else if (implemented?(ExtensionName::Sv39) && translation_mode == SatpMode::Sv39) {
-        return translate_sv39(vaddr, CSR[satp], op);
+        return 0;
+#        return translate_sv39(vaddr, CSR[satp], op);
 
 #      } else if (implemented?(ExtensionName::Sv48) && translation_mode == SatpMode::Sv48) {
 #        return translation_sv48(vaddr, CSR[satp], op);
@@ -1203,7 +1330,9 @@ function read_memory_aligned {
   body {
     XReg physical_address;
 
-    physical_address = translate(virtual_address, MemoryOperation::Read);
+    physical_address = (CSR[misa].S == 1)
+      ? translate(virtual_address, MemoryOperation::Read)
+      : virtual_address;
 
     # may raise an exception
     access_check<len>(physical_address, MemoryOperation::Read);
@@ -1249,7 +1378,9 @@ function write_memory_aligned {
   body {
     XReg physical_address;
 
-    physical_address = translate(virtual_address, MemoryOperation::Write);
+    physical_address = (CSR[misa].S == 1)
+      ? translate(virtual_address, MemoryOperation::Read)
+      : virtual_address;
 
     # may raise an exception
     access_check<len>(physical_address, MemoryOperation::Write);

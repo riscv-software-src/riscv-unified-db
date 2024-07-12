@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+orc.b:
+  long_name: Bitware OR-combine, byte granule
+  description: |
+    Combines the bits within each byte using bitwise logical OR. This sets the bits
+    of each byte in the result rd to all zeros if no bit within the respective byte
+    of rs is set, or to all ones if any bit within the respective byte of rs is set.
+  definedBy: [B, Zbb]
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg input = X[rs1];
+    XReg output = 0;
+
+    for (U32 i=0; i<(xlen() - 8); i = i+8) {
+      output[(i+7):i] = (input[(i+7):i] == 0) ? 8'd0 : ~8'd0;
+    }
+
+    X[rd] = output;

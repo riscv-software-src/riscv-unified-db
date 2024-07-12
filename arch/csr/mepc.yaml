@@ -4,7 +4,7 @@ mepc:
   long_name: Machine Exception Program Counter
   address: 0x341
   priv_mode: M
-  length(): return XLEN;
+  length: MXLEN
   description: |
     Written with the PC of an instruction on an exception or interrupt taken in M-mode.
 
@@ -12,8 +12,8 @@ mepc:
   definedBy: I
   fields:
     PC:
-      location(): |
-        return XLEN-1,0;
+      location_rv32: 31-0
+      location_rv64: 63-0
       description: |
         When a trap is taken into M-mode, `mepc.PC` is written with the virtual address of the
         instruction that was interrupted or that encountered the exception.
@@ -36,7 +36,7 @@ mepc:
         return csr_value.PC & ~64'b1;
       reset_value: 0
   sw_read(): |
-    if (implemented?(C) && CSR[misa].Extensions[2] == 1'b1) {
+    if (implemented?(C) && CSR[misa].C == 1'b1) {
       return CSR[mepc] & ~64'b3;
     } else {
       return CSR[mepc];

@@ -86,7 +86,12 @@ module Idl
 
         raise 'CSR types get width from csr argument; width should not be specified' unless width.nil? || width == csr.length
 
-        @width = csr.length
+        @width =
+          if csr.dynamic_length?
+            nil
+          else
+            csr.length
+          end
       end
     end
 
@@ -355,6 +360,10 @@ module Idl
   #    end
     end
 
+    def clone
+      EnumerationType.new(@name, @element_names, @element_values)
+    end
+
     def value(element_name)
       i = @element_names.index(element_name)
       raise "Could not find #{element_name} in enumeration #{@name}" if i.nil?
@@ -426,11 +435,15 @@ module Idl
     def num_args = @func_def_ast.num_args
 
     def type_check_call(template_values = [])
-      return unless templated?
+      raise "Missing template values" if templated? and template_values.empty?
 
-      symtab = apply_template_values(template_values)
+      if templated?
+        symtab = apply_template_values(template_values)
 
-      @func_def_ast.type_check_template_instance(symtab)
+        @func_def_ast.type_check_template_instance(symtab)
+      else
+        @func_def_ast.type_check_from_call(@symtab)
+      end
     end
 
     def template_names = @func_def_ast.template_names

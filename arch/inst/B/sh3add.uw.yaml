@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+sh3add.uw:
+  long_name: Shift unsigend word left by 3 and add
+  description: |
+    This instruction performs an XLEN-wide addition of two addends. The first addend is rs2.
+    The second addend is the unsigned value formed by extracting the least-significant word of rs1
+    and shifting it left by 3 places.
+  definedBy: [B, Zba]
+  base: 64
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    X[rd] = X[rs2] + (X[rs1][31:0] << 3);

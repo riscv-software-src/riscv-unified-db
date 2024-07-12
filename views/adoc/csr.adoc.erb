@@ -26,7 +26,7 @@ h| Privilege Mode | <%= csr.priv_mode %>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc %>
+<%= JSON.dump csr.wavedrom_desc(csr.arch_def.config_params["XLEN"]) %>
 ....
 <%- else -%>
 <%# CSR has a dynamic length, or a field has a dynamic location,
@@ -34,15 +34,19 @@ h| Privilege Mode | <%= csr.priv_mode %>
 <%- puts "CSR #{csr.name} changes dynamically" -%>
 This CSR format changes dynamically.
 
-<%- csr.lengths.each do |h| cond = h[:when]; value = h[:value] -%>
-.<%= csr.name %> Format when <%= cond %>
+.<%= csr.name %> Format when <%= csr.length_cond32 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%- raise cond.to_s if value.nil? -%>
-<%= JSON.dump csr.wavedrom_desc(value) %>
+<%= JSON.dump csr.wavedrom_desc(32) %>
 ....
 
-<%- end -%>
+.<%= csr.name %> Format when <%= csr.length_cond64 %>
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump csr.wavedrom_desc(64) %>
+....
+
+
 <%- end -%>
 
 == Fields
@@ -54,7 +58,7 @@ This CSR has no fields. However, it must still exist (not cause an `Illegal Inst
 |====
 |Name | Location | Type | Reset Value | Description
 
-<%- csr.fields.each do |field| -%>
+<%- csr.implemented_fields.each do |field| -%>
 m| anchor:<%=csr.name%>-<%=field.name%>-def[] <%= field.name %>
 | <%= field.location_pretty %>
 | <%= field.type %>

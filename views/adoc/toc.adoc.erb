@@ -1,15 +1,17 @@
+* xref:ROOT:config.adoc[Configuration]
+
 .Extensions
-<%- arch_def.extensions.sort { |a, b| a.name <=> b.name }.each do |ext| -%>
+<%- arch_def.implemented_extensions.sort { |a, b| a.name <=> b.name }.each do |ext| -%>
 * %%LINK[ext;<%= ext.name %>;<%= ext.name %>]%%
 <%- end -%>
 
 .Control and Status Registers
-<%- arch_def.csrs.sort { |a, b| a.name <=> b.name }.each do |csr| -%>
+<%- arch_def.implemented_csrs.sort { |a, b| a.name <=> b.name }.each do |csr| -%>
 * %%LINK[csr;<%= csr.name %>;<%= csr.name %>]%%
 <%- end -%>
 
 .Instructions
-<%- arch_def.instructions.sort { |a, b| a.name <=> b.name }.each do |inst| -%>
+<%- arch_def.implemented_instructions.sort { |a, b| a.name <=> b.name }.each do |inst| -%>
 * %%LINK[inst;<%= inst.name %>;<%= inst.name %>]%%
 <%- end -%>
 

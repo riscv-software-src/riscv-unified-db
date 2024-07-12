@@ -9,6 +9,8 @@
         "M_MODE_ENDIANESS",
         "NUM_PMP_ENTRIES",
         "ARCH_ID",
+        "VENDOR_ID_BANK",
+        "VENDOR_ID_OFFSET",
         "IMP_ID",
         "MISALIGNED_LDST",
         "NUM_HPM_COUNTERS",
@@ -94,6 +96,18 @@
           "maximum": 18446744073709551615,
           "description": "Vendor-specific architecture ID presented in `marchid`"
         },
+        "VENDOR_ID_BANK": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 33554431,
+          "description": "Vendor JEDEC code, bank"
+        },
+        "VENDOR_ID_OFFSET": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 127,
+          "description": "Vendor JEDEC code, offset"
+        },
         "IMP_ID": {
           "type": "integer",
           "minimum": 0,
@@ -166,10 +180,55 @@
           "maximum": 36028797018963968,
           "description": "Number of bits in the physical address space"
         },
+        "MUTABLE_MISA_A": {
+          "type": "boolean",
+          "default": false,
+          "description": "When A extension is supported, wether or not it can be dynamically disabled by writing the `misa.A` bit."
+        },
+        "MUTABLE_MISA_B": {
+          "type": "boolean",
+          "default": false,
+          "description": "When B extension is supported, wether or not it can be dynamically disabled by writing the `misa.B` bit."
+        },
         "MUTABLE_MISA_C": {
           "type": "boolean",
-          "default": "false",
+          "default": false,
           "description": "When C extension is supported, wether or not it can be dynamically disabled by writing the `misa.C` bit."
+        },
+        "MUTABLE_MISA_D": {
+          "type": "boolean",
+          "default": false,
+          "description": "When D extension is supported, wether or not it can be dynamically disabled by writing the `misa.D` bit."
+        },
+        "MUTABLE_MISA_F": {
+          "type": "boolean",
+          "default": false,
+          "description": "When F extension is supported, wether or not it can be dynamically disabled by writing the `misa.F` bit."
+        },
+        "MUTABLE_MISA_H": {
+          "type": "boolean",
+          "default": false,
+          "description": "When H extension is supported, wether or not it can be dynamically disabled by writing the `misa.H` bit."
+        },
+        "MUTABLE_MISA_M": {
+          "type": "boolean",
+          "default": false,
+          "description": "When M extension is supported, wether or not it can be dynamically disabled by writing the `misa.M` bit."
+        },
+        "MUTABLE_MISA_S": {
+          "type": "boolean",
+          "default": false,
+          "description": "When S extension is supported, wether or not it can be dynamically disabled by writing the `misa.S` bit."
+        },
+        "MUTABLE_MISA_U": {
+          "type": "boolean",
+          "default": false,
+          "description": "When U extension is supported, wether or not it can be dynamically disabled by writing the `misa.U` bit."
+        },
+        "MUTABLE_MISA_V": {
+          "type": "boolean",
+          "default": false,
+          "description": "When V extension is supported, wether or not it can be dynamically disabled by writing the `misa.V` bit."
         },
         "CACHE_BLOCK_SIZE": {
           "type": "integer",

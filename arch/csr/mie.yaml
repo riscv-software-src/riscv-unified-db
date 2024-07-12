@@ -4,7 +4,7 @@ mie:
   long_name: Machine Interrupt Enable
   address: 0x304
   priv_mode: M
-  length(): return XLEN;
+  length: MXLEN
   definedBy: I
   description: |
     Per-type interrupt enables.

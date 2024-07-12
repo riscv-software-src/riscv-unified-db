@@ -9,42 +9,6 @@
       "description": "Field in a CSR register",
       "required": ["description"],
 
-      "allOf": [
-        {
-          "$comment": "Location is required, but it can either be a static value or a function",
-          "oneOf": [
-            {
-              "required": ["location"]
-            },
-            {
-              "required": ["location()"]
-            }
-          ]
-        },
-        {
-          "$comment": "type is required, but it can either be a static value or a function",
-          "oneOf": [
-            {
-              "required": ["type"]
-            },
-            {
-              "required": ["type()"]
-            }
-          ]
-        },
-        {
-          "$comment": "reset_value is required, but it can either be a static value or a function",
-          "oneOf": [
-            {
-              "required": ["reset_value"]
-            },
-            {
-              "required": ["reset_value()"]
-            }
-          ]
-        }
-      ],
-
       "properties": {
         "name": {
           "type": "string",
@@ -57,9 +21,19 @@
           ],
           "description": "Location of the field within the CSR register"
         },
-        "location()": {
-          "description": "Function that returns the location when the location is mutable (e.g., sstatus.SD)",
-          "type": "string"
+        "location_rv32": {
+          "description": "Location of the field within the CSR register when the effective XLEN of the current mode is 32",
+          "oneOf": [
+            {"type": "number", "description": "Location of a single bit"},
+            {"type": "string", "pattern": "^[0-9]+-[0-9]+$", "description": "Location range of a multibit field"}
+          ]
+        },
+        "location_rv64": {
+          "description": "Location of the field within the CSR register when the effective XLEN of the current mode is 64",
+          "oneOf": [
+            {"type": "number", "description": "Location of a single bit"},
+            {"type": "string", "pattern": "^[0-9]+-[0-9]+$", "description": "Location range of a multibit field"}
+          ]
         },
         "reset_value": {
           "description": "Value of the state after reset. Can be UNDEFINED_LEGAL for the generic architecture spec, but must have an integer value for the implementation spec",
@@ -155,7 +129,41 @@
           "description": "Extension(s) that affect the definition of the field beyond the extension (or base) the field is originally defined in"
         }
       },
+
       "allOf": [
+        {
+          "$comment": "Location is required, but it can either be a static value or a function",
+          "oneOf": [
+            {
+              "required": ["location"]
+            },
+            {
+              "required": ["location_rv32", "location_rv64"]
+            }
+          ]
+        },
+        {
+          "$comment": "type is required, but it can either be a static value or a function",
+          "oneOf": [
+            {
+              "required": ["type"]
+            },
+            {
+              "required": ["type()"]
+            }
+          ]
+        },
+        {
+          "$comment": "reset_value is required, but it can either be a static value or a function",
+          "oneOf": [
+            {
+              "required": ["reset_value"]
+            },
+            {
+              "required": ["reset_value()"]
+            }
+          ]
+        },
         {
           "if": {
             "anyOf": [
@@ -209,21 +217,9 @@
           "enum": ["M", "S", "U", "VS"]
         },
         "length": {
-          "description": "Length, in bits, of the CSR. Can either be a 32, 64",
-          "enum": [32, 64]
+          "description": "Length, in bits, of the CSR. Can either be a 32, 64 or MXLEN, SXLEN, VSXLEN to indicate that is is dependent on the effective XLEN for a given mode",
+          "enum": [32, 64, "MXLEN", "SXLEN", "VSXLEN"]
         },
-        "length()": {
-          "description": "Function that returns the CSR length, when the length is dynamic or dependent on a config param",
-          "type": "string"
-        },
-        "oneOf": [
-          {
-            "required": ["location"]
-          },
-          {
-            "required": ["location()"]
-          }
-        ],
         "requires": {
           "type": "string",
           "description": "Extension that must be implemented for this CSR to exist"
@@ -236,10 +232,6 @@
             }
           },
           "additionalProperties": false
-        },
-        "access_check": {
-          "type": "string",
-          "description": "Optional function called to handle special-case checks for access permission."
         },
         "sw_read()": {
           "type": "string",

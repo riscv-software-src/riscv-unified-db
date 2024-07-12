@@ -36,7 +36,7 @@ sepc:
         return csr_value & ~64'b1;
       reset_value: UNDEFINED_LEGAL
   sw_read(): |
-    if (implemented?(C) && CSR[misa].Extensions[2] == 1'b1) {
+    if (implemented?(C) && CSR[misa].C == 1'b1) {
       return CSR[sepc] & ~64'b3;
     } else {
       return CSR[sepc];

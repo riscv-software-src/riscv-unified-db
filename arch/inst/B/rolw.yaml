@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+rolw:
+  long_name: Rotate left word (Register)
+  description: |
+    This instruction performs a rotate left of the least-significant word of rs1 by the amount in least-significant 5 bits of rs2.
+    The resulting word value is sign-extended by copying bit 31 to all of the more-significant bits.
+  definedBy: [B, Zbb, Zbkb]
+  assembly: xd, xs1, xs2
+  base: 64
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg rs1_word = X[rs1][31:0];
+    XReg shamt = X[rs2][4:0];
+
+    XReg unextended_result = (rs1_word << shamt) | (rs1_word >> (32 - shamt));
+
+    X[rd] = {{32{unextended_result[31]}}, unextended_result};

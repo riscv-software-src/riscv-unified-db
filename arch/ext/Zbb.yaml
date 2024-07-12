@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+Zbb:
+  description: |
+    Basic bit manipulation
+  type: unprivileged
+  versions:
+  - version: 1.0
+    ratification_date: 2021-06

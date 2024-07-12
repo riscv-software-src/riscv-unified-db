@@ -6,11 +6,12 @@ D:
   - version: 2.2
     ratification_date: 2019-12
     changes: Define NaN-boxing scheme, changed definition of FMAX and FMIN
+    implies: [F, 2.2]
   description: |
     The `D` extension adds
     double-precision floating-point computational instructions compliant
-    with the IEEE 754-2008 arithmetic standard. The D extension depends on
-    the base single-precision instruction subset F.
+    with the https://ieeexplore.ieee.org/document/4610935[IEEE 754-2008] arithmetic standard. The D extension depends on
+    the base single-precision instruction subset `F`.
     (((double-precision, floating point)))
     (((floating point, double precision)))
 

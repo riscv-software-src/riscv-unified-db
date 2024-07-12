@@ -13,6 +13,12 @@ params:
   # vendor-specific implementation ID in mimpid
   IMP_ID: 0x0
 
+  # JEDEC Vendor ID bank
+  VENDOR_ID_BANK: 0x0
+
+  # JEDEC Vendor ID offset
+  VENDOR_ID_OFFSET: 0x0
+
   # whether or not the implementation supports misaligned loads and stores in main memory (not including atomics)
   # must be true when Zicclsm is supported
   MISALIGNED_LDST: true
@@ -168,7 +174,7 @@ params:
   #  * 32:   SXLEN is always 32
   #  * 64:   SXLEN is always 64
   #  * 3264: SXLEN can be changed (via mstatus.SXL) between 32 and 64
-  SXLEN: 3264
+  SXLEN: 64
 
   # XLENs supported in U-mode. Can be one of:
   #
@@ -200,8 +206,8 @@ custom_exception_codes: []
 
 extensions:
   - [A, 2.1]
+  - [B, 1.0]
   - [D, 2.2]
-  - [Zba, 1.0]
   # - [F, 2.2]
   - [I, 2.1]
   - [H, 1.0]

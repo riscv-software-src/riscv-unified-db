@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+ecall:
+  long_name: Environment call
+  description: |
+    The ECALL instruction is used to make a request to the supporting execution environment.
+    When executed in U-mode, S-mode, or M-mode, it generates an environment-call-from-U-mode
+    exception, environment-call-from-S-mode exception, or environment-call-from-M-mode
+    exception, respectively, and performs no other operation.
+
+    [NOTE]
+    ECALL generates a different exception for each originating privilege mode so that
+    environment call exceptions can be selectively delegated.
+    A typical use case for Unix-like operating systems is to delegate to S-mode
+    the environment-call-from-U-mode exception but not the others.
+
+    ECALL causes the receiving privilege mode's epc register to be set to the address of
+    the ECALL instruction itself, not the address of the following instruction.
+    As ECALL causes a synchronous exception, it is not considered to retire,
+    and should not increment the `minstret` CSR.
+  definedBy: I
+  assembly: ''
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    if (mode() == PrivilegeMode::M) {
+      raise(ExceptionCode::Mcall);
+    } else if (mode() == PrivilegeMode::S) {
+      raise (ExceptionCode::Scall);
+    } else if (mode() == PrivilegeMode::U) {
+      raise (ExceptionCode::Ucall);
+    }

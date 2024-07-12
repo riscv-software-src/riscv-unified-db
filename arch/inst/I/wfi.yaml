@@ -5,10 +5,9 @@ wfi:
   description: |
     Can causes the processor to enter a low-power state until the next interrupt occurs.
 
+    <%- if ext?(:H) -%>
     The behavior of `wfi` is affected by the `mstatus.TW`
     and `hstatus.VTW` bits, as summarized below.
-
-    The `wfi` instruction is also affected by `mstatus.TW`, as shown below:
 
     [%autowidth,%footer]
     |===
@@ -23,6 +22,22 @@ wfi:
     Trap (V) - Trap with `Virtual Instruction` code
     |===
 
+    <%- else -%>
+    The `wfi` instruction is also affected by `mstatus.TW`, as shown below:
+
+    [%autowidth,%footer]
+    |===
+    .2+| [.rotate]#`mstatus.TW`# 4+^.>| `wfi` behavior
+    h| S-mode h| U-mode
+
+    | 0 | Wait | Trap (I)
+    | 1 | Trap (I) | Trap (I)
+
+    6+| Trap (I) - Trap with `Illegal Instruction` code
+    |===
+
+    <%- end -%>
+
     When `wfi` is marked as causing a trap above, the implementation is allowed to wait
     for an unspecified period of time to see if an interrupt occurs before raising the trap.
     That period of time can be zero (_i.e._, `wfi` always causes a trap in the cases identified
@@ -34,3 +49,60 @@ wfi:
     u: sometimes
     vs: sometimes
     vu: sometimes
+  access_detail: |
+    <%- if ext?(:H) -%>
+    The behavior of `wfi` is affected by the `mstatus.TW`
+    and `hstatus.VTW` bits, as summarized below.
+
+    [%autowidth,%footer]
+    |===
+    .2+| [.rotate]#`mstatus.TW`# .2+| [.rotate]#`hstatus.VTW`# 4+^.>| `wfi` behavior
+    h| HS-mode h| U-mode h| VS-mode h| in VU-mode
+
+    | 0 | 0 | Wait | Trap (I) | Wait | Trap (V) 
+    | 0 | 1 | Wait | Trap (I) | Trap (V) | Trap (V)
+    | 1 | - | Trap (I) | Trap (I) | Trap (I) | Trap (I)
+
+    6+| Trap (I) - Trap with `Illegal Instruction` code +
+    Trap (V) - Trap with `Virtual Instruction` code
+    |===
+
+    <%- else -%>
+    The `wfi` instruction is also affected by `mstatus.TW`, as shown below:
+
+    [%autowidth,%footer]
+    |===
+    .2+| [.rotate]#`mstatus.TW`# 4+^.>| `wfi` behavior
+    h| S-mode h| U-mode
+
+    | 0 | Wait | Trap (I)
+    | 1 | Trap (I) | Trap (I)
+
+    6+| Trap (I) - Trap with `Illegal Instruction` code
+    |===
+
+    <%- end -%>
+  operation(): |
+    # first, perform all the access checks
+    if (mode() == PrivilegeMode::U) {
+      raise (ExceptionCode::IllegalInstruction);
+    }
+    if ((CSR[misa].S == 1) && (CSR[mstatus].TW == 1'b1)) {
+      if (mode() != PrivilegeMode::M) {
+        raise (ExceptionCode::IllegalInstruction);
+      }
+    }
+    if (CSR[misa].H == 1) {
+      if (CSR[hstatus].VTW == 1'b0) {
+        if (mode() == PrivilegeMode::VU) {
+          raise (ExceptionCode::VirtualInstruction);
+        }
+      } else if (CSR[hstatus].VTW == 1'b1) {
+        if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
+          raise (ExceptionCode::VirtualInstruction);
+        }
+      }
+    }
+
+    # passed, so now do the wait
+    wfi();

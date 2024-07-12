@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+cpop:
+  long_name: Count set bits
+  description: |
+    This instructions counts the number of 1's (i.e., set bits) in the source register.
+
+    .Software Hint
+    [NOTE]
+    ----
+    This operations is known as population count, popcount, sideways sum,
+    bit summation, or Hamming weight.
+
+    The GCC builtin function `__builtin_popcount (unsigned int x)` is
+    implemented by cpop on RV32 and by cpopw on RV64. The GCC builtin
+    function `__builtin_popcountl (unsigned long x)` for LP64 is
+    implemented by cpop on RV64.
+    ----
+  definedBy: [B, Zbb]
+  assembly: xd, xs1
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg bitcount = 0;
+    XReg rs1_val = X[rs1];
+
+    for (U32 i=0; i < xlen(); i++) {
+      if (rs1_val[i] == 1'b1) {
+        bitcount = bitcount + 1;
+      }
+    }
+
+    X[rd] = bitcount;

@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+Zbc:
+  description: |
+    Carry-less multiplication is the multiplication in the polynomial ring over GF(2).
+  type: unprivileged
+  versions:
+  - version: 1.0
+    ratification_date: 2021-06

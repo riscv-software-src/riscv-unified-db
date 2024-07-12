@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+rev8:
+  long_name: Byte-reverse register (RV64 encoding)
+  description: |
+    This instruction reverses the order of the bytes in rs1.
+
+    [NOTE]
+    The rev8 mnemonic corresponds to different instruction encodings in RV32 and RV64.
+
+    [NOTE]
+    The byte-reverse operation is only available for the full register width. To emulate word-sized
+    and halfword-sized byte-reversal, perform a `rev8 rd,rs` followed by a `srai rd,rd,K`, where K
+    is XLEN-32 and XLEN-16, respectively.
+  definedBy: [B, Zbb, Zbkb]
+  assembly: xd, xs1
+  # TODO: this instruction has different encodings in RV32 / RV64
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg input = X[rs1];
+    XReg output = 0;
+
+    XReg j = xlen() - 1;
+
+    for (U32 i=0; i<(xlen()-8); i = i+8) {
+      output[i:(i+7)] = input[(j-7):j];
+      j = j - 8;
+    }
+
+    X[rd] = output;

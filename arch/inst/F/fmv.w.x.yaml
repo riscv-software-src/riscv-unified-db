@@ -7,7 +7,7 @@ fmv.w.x:
     from the lower 32 bits of integer register `rs1` to the floating-point
     register `rd`. The bits are not modified in the transfer, and in particular,
     the payloads of non-canonical NaNs are preserved.
-  definedBy: I
+  definedBy: F
   assembly: fd, xs1
   access:
     s: always

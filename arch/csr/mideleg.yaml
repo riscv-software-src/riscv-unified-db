@@ -4,7 +4,7 @@ mideleg:
   long_name: Machine Interrupt Delegation
   address: 0x303
   priv_mode: M
-  length(): return XLEN;
+  length: MXLEN
   <%- if ext?(:S, "> 1.9.1") -%>
   definedBy: S # after 1.9.1, mideleg does not exist whe S-mode is not implemented
   <%- else -%>

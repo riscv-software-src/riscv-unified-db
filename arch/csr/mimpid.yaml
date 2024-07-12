@@ -4,7 +4,7 @@ mimpid:
   long_name: Machine Implementation ID
   address: 0xf13
   priv_mode: M
-  length(): return XLEN;
+  length: MXLEN
   description: |
     Reports the vendor-specific implementation ID.
 
@@ -26,7 +26,8 @@ mimpid:
   definedBy: I
   fields:
     Implementation:
-      location(): return XLEN - 1, 0;
+      location_rv32: 31-0
+      location_rv64: 63-0
       type: RO
       description: Vendor-specific implementation ID.
       reset_value(): return IMP_ID;

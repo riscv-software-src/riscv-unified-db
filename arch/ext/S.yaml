@@ -5,7 +5,7 @@ S:
   versions:
   - version: 1.12
     ratification_date: 2019-12
-  requires: U
+    requires: [U, 1.12]
   description: |
     This chapter describes the RISC-V supervisor-level architecture, which
     contains a common core that is used with various supervisor-level

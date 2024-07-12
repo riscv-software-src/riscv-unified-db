@@ -83,6 +83,11 @@ module Idl
     def compile_func_body(body, return_type: nil, symtab: SymbolTable.new, name: nil, parent: nil, input_file: nil, input_line: 0, no_rescue: false)
       @parser.set_input_file(input_file, input_line)
 
+      cloned_symtab = symtab.deep_clone
+      while cloned_symtab.levels != 1
+        cloned_symtab.pop
+      end
+
       ast = @parser.parse(body, root: :function_body)
       if ast.nil?
         raise SyntaxError, <<~MSG
@@ -96,12 +101,12 @@ module Idl
       ast.make_left
 
       # type check
-      symtab.push
-      symtab.add!("__expected_return_type", return_type) unless return_type.nil?
+      cloned_symtab.push
+      cloned_symtab.add("__expected_return_type", return_type) unless return_type.nil?
 
       begin
         ast.func_stmt_list.elements.each do |e|
-          e.choice.type_check(symtab)
+          e.choice.type_check(cloned_symtab)
         end
       rescue AstNode::TypeError => e
         raise e if no_rescue
@@ -125,7 +130,7 @@ module Idl
         warn e.backtrace
         exit 1
       ensure
-        symtab.pop
+        cloned_symtab.pop
       end
 
       ast
@@ -133,7 +138,7 @@ module Idl
 
     # compile an instruction operation, and return the abstract syntax tree
     #
-    # @param body [String] Instruction operation source code
+    # @param operation [String] Instruction operation source code
     # @param symtab [SymbolTable] Symbol table to use for type checking
     # @param name [String] Function name, used for error messages
     # @param parent [String] Parent class of the function, used for error messages
@@ -167,6 +172,7 @@ module Idl
           warn "In function #{name}:"
         end
         warn e.what
+        warn e.backtrace
         exit 1
       rescue AstNode::InternalError => e
         if name && parent

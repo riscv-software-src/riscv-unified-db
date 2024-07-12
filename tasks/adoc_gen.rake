@@ -26,17 +26,18 @@ require_relative "../lib/arch_def"
 
     case type
     when "csr"
-      arch_def.csrs.each do |csr|
+      arch_def.implemented_csrs.each do |csr|
         path = dir_path / "#{csr.name}.adoc"
         File.write(path, erb.result(binding))
       end
     when "inst"
-      arch_def.instructions.each do |inst|
+      arch_def.implemented_instructions.each do |inst|
         path = dir_path / "#{inst.name}.adoc"
         File.write(path, erb.result(binding))
       end
     when "ext"
-      arch_def.extensions.each do |ext|
+      arch_def.implemented_extensions.each do |ext|
+        ext = arch_def.extension(ext.name)
         path = dir_path / "#{ext.name}.adoc"
         File.write(path, erb.result(binding))
       end

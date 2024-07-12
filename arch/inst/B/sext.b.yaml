@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+sext.b:
+  long_name: Sign-extend byte
+  description: |
+    This instruction sign-extends the least-significant byte in the source to XLEN by copying the
+    most-significant bit in the byte (i.e., bit 7) to all of the more-significant bits.
+  definedBy: [B, Zbb]
+  assembly: xd, xs1
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    if (xlen() == 32) {
+      X[rd] = {{24{X[rs1][7]}}, X[rs1][7:0]};
+    } else if (xlen() == 64) {
+      X[rd] = {{56{X[rs1][7]}}, X[rs1][7:0]};
+    }

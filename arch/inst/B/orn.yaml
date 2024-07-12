@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+orn:
+  long_name: OR with inverted operand
+  description: |
+    This instruction performs the bitwise logical OR operation between rs1 and the bitwise inversion of rs2.
+  definedBy: [B, Zbb, Zbkb]
+  assembly: xd, xs1, xs2
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    X[rd] = X[rs1] | ~X[rs2];

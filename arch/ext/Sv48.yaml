@@ -3,8 +3,8 @@
 Sv48:
   description: 48-bit virtual address translation (4 level)
   type: privileged
-  requires: sv39
   versions:
   - version: 1.12
     ratification_date: unknown
     url: https://github.com/riscv/riscv-isa-manual/releases/download/Priv-v1.12/riscv-privileged-20211203.pdf
+    requires: [Sv39, ">= 1.12"]

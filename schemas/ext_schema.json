@@ -6,23 +6,9 @@
       "type": "object",
       "required": ["description", "versions"],
       "properties": {
-        "name": { "type": "string" },
+        "name": { "$ref": "schema_defs.json#/$defs/extension_name" },
         "description": { "type": "string" },
         "type": { "enum": ["unprivileged", "privileged"] },
-        "requires": {
-          "description": "Extension(s) required by this extension",
-          "oneOf": [
-            { "type": "string" },
-            { "type": "array", "items": { "type": "string" }}
-          ]
-        },
-        "implies": {
-          "description": "Extension(s) implied by this extension (i.e., any subextesions)",
-          "oneOf": [
-            { "$ref": "schema_defs.json#/$defs/extension_name" },
-            { "type": "array", "items": { "$ref": "schema_defs.json#/$defs/extension_name" }}
-          ]
-        },
         "versions": {
           "type": "array",
           "items": {
@@ -30,13 +16,7 @@
             "required": ["version", "ratification_date"],
             "properties": {
               "version": {
-                "oneOf": [
-                  {"type": "number"},
-                  {
-                    "type": "string",
-                    "pattern": "^[0-9]+(\\.[0-9]+(\\.[0-9]+(-[a-fA-F0-9]+)?)?)?$"
-                  }
-                ]
+                "$ref": "schema_defs.json#/$defs/extension_version"
               },
               "ratification_date": { 
                 "oneOf": [
@@ -46,7 +26,21 @@
                 ]
               },
               "changes": { "type": "string", "description": "Changes since last version" },
-              "url": { "type": "string", "format": "uri", "description": "Link to ratified document" }
+              "url": { "type": "string", "format": "uri", "description": "Link to ratified document" },
+              "implies": {
+                "description": "Extension(s) implied by this extension (i.e., any subextesions)",
+                "oneOf": [
+                  { "$ref": "schema_defs.json#/$defs/extension_name_and_version" },
+                  { "type": "array", "items": { "$ref": "schema_defs.json#/$defs/extension_name_and_version" }}
+                ]
+              },
+              "requires": {
+                "description": "Extension(s) required by this extension",
+                "oneOf": [
+                  { "$ref": "schema_defs.json#/$defs/extension_requirement" },
+                  { "type": "array", "items": { "$ref": "schema_defs.json#/$defs/extension_requirement" }}
+                ]
+              }
             },
             "additionalProperties": false
           }
