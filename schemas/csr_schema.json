@@ -186,7 +186,7 @@
     },
     "csr_register": {
       "type": "object",
-      "required": ["long_name", "description", "address", "priv_mode", "definedBy"],
+      "required": ["long_name", "length", "description", "priv_mode", "definedBy"],
 
       "properties": {
         "name": {
@@ -199,18 +199,31 @@
           "description": "When a CSR is only defined in RV32, or RV64, the base that defines it. When defined in both, this field should be absent."
         },
         "long_name": {
-          "type": "string"
+          "type": "string",
+          "description": "Descriptive name for the CSR"
         },
         "description": {
-          "type": "string"
+          "type": "string",
+          "description": "A full Asciidoc description of the CSR, indended to be used as documentation."
         },
         "definedBy": {
-          "type": "string",
-          "pattern": "^([A-WY]|([SXZ][a-z]+))$"
+          "$ref": "schema_defs.json#/$defs/extension_name",
+          "description": "The extension that defines this CSR."
         },
         "address": {
           "type": "integer",
-          "description": "CSR address"
+          "minValue": 0,
+          "maxValue": 4095,
+          "description": "Address of the CSR, as given to the CSR access instructions of the `Zicsr` extension"
+        },
+        "indirect_address": {
+          "type": "integer",
+          "description": "Indirect sddress of the CSR, as given to the indirect CSRs of the `Smcsrind`/`Sscdrind` extensions"
+        },
+        "indirect": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether or not the CSR is accessible via an indirect address"
         },
         "virtual_address": true, "$comment": "Conditionally required; see below",
         "priv_mode": {
@@ -231,6 +244,7 @@
               "$ref": "#/$defs/csr_field"
             }
           },
+          "description": "fields of this CSR",
           "additionalProperties": false
         },
         "sw_read()": {
@@ -241,20 +255,40 @@
       "additionalProperties": false,
 
       "$comment": "If mode is VS, then there must be a virtual_address field",
-      "if": {
-        "properties": {
-          "priv_mode": { "const": "VS" }
-        }
-      },
-      "then": {
-        "properties": {
-          "virtual_address": {
-            "type": "number",
-            "description": "Address of the CSR viewed from VS-mode"
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "priv_mode": { "const": "VS" }
+            }
+          },
+          "then": {
+            "properties": {
+              "virtual_address": {
+                "type": "number",
+                "description": "Address of the CSR viewed from VS-mode"
+              }
+            },
+            "required": ["virtual_address"]
           }
         },
-        "required": ["virtual_address"]
-      }
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "indirect": { "const": false }
+              },
+              "required": ["address"]
+            },
+            {
+              "properties": {
+                "indirect": { "const": true }
+              },
+              "required": ["indirect_address"]
+            }
+          ]
+        }
+      ]
     }
   },
 
