@@ -124,6 +124,40 @@
 
 
 
+  <h2>Instance Attribute Summary <small><a href="#" class="summary_toggle">collapse</a></small></h2>
+  <ul class="summary">
+    
+      <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#archdef-instance_method" title="#archdef (instance method)">#<strong>archdef</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+    
+      <span class="note title readonly">readonly</span>
+    
+    
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Returns the value of attribute archdef.</p>
+</div></span>
+  
+</li>
+
+    
+  </ul>
+
 
 
 
@@ -232,7 +266,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#deep_clone-instance_method" title="#deep_clone (instance method)">#<strong>deep_clone</strong>  &#x21d2; Object </a>
+      <a href="#deep_clone-instance_method" title="#deep_clone (instance method)">#<strong>deep_clone</strong>(clone_values: false)  &#x21d2; Object </a>
     
 
     
@@ -443,17 +477,6 @@
       <pre class="lines">
 
 
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
 54
 55
 56
@@ -516,10 +539,20 @@
 113
 114
 115
-116</pre>
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 43</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 54</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_arch_def'>arch_def</span><span class='rparen'>)</span>
   <span class='ivar'>@archdef</span> <span class='op'>=</span> <span class='id identifier rubyid_arch_def'>arch_def</span>
@@ -558,26 +591,25 @@
   <span class='rbrace'>}</span><span class='rbracket'>]</span>
   <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='op'>|</span>
     <span class='kw'>if</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Integer</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_qualifiers'>qualifiers</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='symbol'>:constexpr</span><span class='rbracket'>]</span>
       <span class='id identifier rubyid_width'>width</span> <span class='op'>=</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_bit_length'>bit_length</span>
       <span class='id identifier rubyid_width'>width</span> <span class='op'>=</span> <span class='int'>1</span> <span class='kw'>if</span> <span class='id identifier rubyid_width'>width</span><span class='period'>.</span><span class='id identifier rubyid_zero?'>zero?</span> <span class='comment'># happens if value is 0
-</span>      <span class='id identifier rubyid_add!'>add!</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="Var.html" title="Idl::Var (class)">Var</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Var.html#initialize-instance_method" title="Idl::Var#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>width:</span> <span class='id identifier rubyid_width'>width</span><span class='comma'>,</span> <span class='label'>qualifiers:</span> <span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span><span class='rparen'>)</span>
+</span>      <span class='id identifier rubyid_add!'>add!</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="Var.html" title="Idl::Var (class)">Var</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Var.html#initialize-instance_method" title="Idl::Var#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>width:</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span><span class='rparen'>)</span>
     <span class='kw'>elsif</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>TrueClass</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>FalseClass</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_qualifiers'>qualifiers</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='symbol'>:constexpr</span><span class='rbracket'>]</span>
-      <span class='id identifier rubyid_add!'>add!</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="Var.html" title="Idl::Var (class)">Var</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Var.html#initialize-instance_method" title="Idl::Var#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:boolean</span><span class='comma'>,</span> <span class='label'>qualifiers:</span> <span class='id identifier rubyid_qualifiers'>qualifiers</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_add!'>add!</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="Var.html" title="Idl::Var (class)">Var</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Var.html#initialize-instance_method" title="Idl::Var#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:boolean</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span><span class='rparen'>)</span>
     <span class='kw'>elsif</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>String</span><span class='rparen'>)</span>
       <span class='comment'># just make sure this isn&#39;t something we think we need
 </span>      <span class='id identifier rubyid_expected_names'>expected_names</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>NAME</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>M_MODE_ENDIANESS</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>S_MODE_ENDIANESS</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>U_MODE_ENDIANESS</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>VS_MODE_ENDIANESS</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>VU_MODE_ENDIANESS</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
       <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Unexpected String type for &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39;</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_expected_names'>expected_names</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
     <span class='kw'>elsif</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Array</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_qualifiers'>qualifiers</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='symbol'>:constexpr</span><span class='rbracket'>]</span>
-      <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>For param </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>: Can only handle arrays of ints or bools</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_all?'>all?</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_v'>v</span><span class='op'>|</span> <span class='id identifier rubyid_v'>v</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Integer</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_v'>v</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>TrueClass</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_v'>v</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>FalseClass</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
+      <span class='kw'>unless</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_all?'>all?</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_v'>v</span><span class='op'>|</span> <span class='id identifier rubyid_v'>v</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Integer</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_v'>v</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>TrueClass</span><span class='rparen'>)</span> <span class='op'>||</span> <span class='id identifier rubyid_v'>v</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>FalseClass</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
+        <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>For param </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>: Can only handle arrays of ints or bools</span><span class='tstring_end'>&quot;</span></span>
+      <span class='kw'>end</span>
 
       <span class='id identifier rubyid_ary'>ary</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
       <span class='id identifier rubyid_element_type'>element_type</span> <span class='op'>=</span>
         <span class='kw'>if</span> <span class='id identifier rubyid_value'>value</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Integer</span><span class='rparen'>)</span>
           <span class='id identifier rubyid_max_bit_width'>max_bit_width</span> <span class='op'>=</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_reduce'>reduce</span><span class='lparen'>(</span><span class='int'>0</span><span class='rparen'>)</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_v'>v</span><span class='comma'>,</span> <span class='id identifier rubyid_max'>max</span><span class='op'>|</span> <span class='id identifier rubyid_v'>v</span> <span class='op'>&gt;</span> <span class='id identifier rubyid_max'>max</span> <span class='op'>?</span> <span class='id identifier rubyid_v'>v</span> <span class='op'>:</span> <span class='id identifier rubyid_max'>max</span> <span class='rbrace'>}</span>
-          <span class='const'><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>width:</span> <span class='id identifier rubyid_max_bit_width'>max_bit_width</span><span class='comma'>,</span> <span class='label'>qualifiers:</span><span class='rparen'>)</span>
+          <span class='const'><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>width:</span> <span class='id identifier rubyid_max_bit_width'>max_bit_width</span><span class='rparen'>)</span>
         <span class='kw'>else</span>
           <span class='const'><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:boolean</span><span class='rparen'>)</span>
         <span class='kw'>end</span>
@@ -585,7 +617,7 @@
       <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_each_with_index'>each_with_index</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_v'>v</span><span class='comma'>,</span> <span class='id identifier rubyid_idx'>idx</span><span class='op'>|</span>
         <span class='id identifier rubyid_ary'>ary</span> <span class='op'>&lt;&lt;</span> <span class='const'><span class='object_link'><a href="Var.html" title="Idl::Var (class)">Var</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Var.html#initialize-instance_method" title="Idl::Var#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>[</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_idx'>idx</span><span class='embexpr_end'>}</span><span class='tstring_content'>]</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='id identifier rubyid_element_type'>element_type</span><span class='comma'>,</span> <span class='id identifier rubyid_v'>v</span><span class='rparen'>)</span>
       <span class='kw'>end</span>
-      <span class='id identifier rubyid_add!'>add!</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="Var.html" title="Idl::Var (class)">Var</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Var.html#initialize-instance_method" title="Idl::Var#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_ary_type'>ary_type</span><span class='comma'>,</span> <span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_add!'>add!</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="Var.html" title="Idl::Var (class)">Var</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Var.html#initialize-instance_method" title="Idl::Var#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_ary_type'>ary_type</span><span class='comma'>,</span> <span class='id identifier rubyid_ary'>ary</span><span class='rparen'>)</span><span class='rparen'>)</span>
     <span class='kw'>else</span>
       <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Unhandled config param type &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39; for &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39;</span><span class='tstring_end'>&quot;</span></span>
     <span class='kw'>end</span>
@@ -601,6 +633,54 @@
 </div>
   
 </div>
+
+  <div id="instance_attr_details" class="attr_details">
+    <h2>Instance Attribute Details</h2>
+    
+      
+      <span id=""></span>
+      <div class="method_details first">
+  <h3 class="signature first" id="archdef-instance_method">
+  
+    #<strong>archdef</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the value of attribute archdef.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+49
+50
+51</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 49</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_archdef'>archdef</span>
+  <span class='ivar'>@archdef</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
 
 
   <div id="instance_method_details" class="method_details_list">
@@ -622,12 +702,12 @@
       <pre class="lines">
 
 
-139
-140
-141</pre>
+154
+155
+156</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 139</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 154</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_add'>add</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_var'>var</span><span class='rparen'>)</span>
   <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span><span class='lbracket'>[</span><span class='id identifier rubyid_name'>name</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_var'>var</span>
@@ -676,14 +756,14 @@
       <pre class="lines">
 
 
-144
-145
-146
-147
-148</pre>
+159
+160
+161
+162
+163</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 144</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 159</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_add!'>add!</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_var'>var</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="SymbolTable/DuplicateSymError.html" title="Idl::SymbolTable::DuplicateSymError (class)">DuplicateSymError</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Symbol </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> already defined as </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_h'>h</span><span class='op'>|</span> <span class='id identifier rubyid_h'>h</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span> <span class='id identifier rubyid_name'>name</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -721,16 +801,16 @@
       <pre class="lines">
 
 
-151
-152
-153
-154
-155
-156
-157</pre>
+166
+167
+168
+169
+170
+171
+172</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 151</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 166</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_add_above!'>add_above!</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_var'>var</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>There is only one scope</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span> <span class='op'>&lt;=</span> <span class='int'>1</span>
@@ -770,22 +850,22 @@
       <pre class="lines">
 
 
-160
-161
-162
-163
-164
-165
-166</pre>
+175
+176
+177
+178
+179
+180
+181</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 160</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 175</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_add_at!'>add_at!</span><span class='lparen'>(</span><span class='id identifier rubyid_level'>level</span><span class='comma'>,</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_var'>var</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Level </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_level'>level</span><span class='embexpr_end'>}</span><span class='tstring_content'> is too large </span><span class='embexpr_beg'>#{</span><span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span>  <span class='id identifier rubyid_level'>level</span> <span class='op'>&gt;=</span> <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span>
 
   <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Symbol </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> already defined</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='ivar'>@scopes</span><span class='lbracket'>[</span><span class='int'>0</span><span class='op'>...</span><span class='id identifier rubyid_level'>level</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_h'>h</span><span class='op'>|</span> <span class='id identifier rubyid_h'>h</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span> <span class='id identifier rubyid_name'>name</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
-    
+  
   <span class='ivar'>@scopes</span><span class='lbracket'>[</span><span class='id identifier rubyid_level'>level</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='id identifier rubyid_name'>name</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_var'>var</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -796,7 +876,7 @@
       <div class="method_details ">
   <h3 class="signature " id="deep_clone-instance_method">
   
-    #<strong>deep_clone</strong>  &#x21d2; <tt>Object</tt> 
+    #<strong>deep_clone</strong>(clone_values: false)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -819,24 +899,28 @@
       <pre class="lines">
 
 
-181
-182
-183
-184
-185
-186
-187
-188
-189
-190
-191
-192
-193</pre>
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 181</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 196</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_deep_clone'>deep_clone</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_deep_clone'>deep_clone</span><span class='lparen'>(</span><span class='label'>clone_values:</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_copy'>copy</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="" title="Idl::SymbolTable (class)">SymbolTable</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="Idl::SymbolTable#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='ivar'>@archdef</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_copy'>copy</span><span class='period'>.</span><span class='id identifier rubyid_instance_variable_set'>instance_variable_set</span><span class='lparen'>(</span><span class='symbol'>:@scopes</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_c_scopes'>c_scopes</span> <span class='op'>=</span> <span class='id identifier rubyid_copy'>copy</span><span class='period'>.</span><span class='id identifier rubyid_instance_variable_get'>instance_variable_get</span><span class='lparen'>(</span><span class='symbol'>:@scopes</span><span class='rparen'>)</span>
@@ -844,7 +928,11 @@
   <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_scope'>scope</span><span class='op'>|</span>
     <span class='id identifier rubyid_c_scopes'>c_scopes</span> <span class='op'>&lt;&lt;</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
     <span class='id identifier rubyid_scope'>scope</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='comma'>,</span> <span class='id identifier rubyid_v'>v</span><span class='op'>|</span>
-      <span class='id identifier rubyid_c_scopes'>c_scopes</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span><span class='lbracket'>[</span><span class='id identifier rubyid_k'>k</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_v'>v</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_clone_values'>clone_values</span>
+        <span class='id identifier rubyid_c_scopes'>c_scopes</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span><span class='lbracket'>[</span><span class='id identifier rubyid_k'>k</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_v'>v</span><span class='period'>.</span><span class='id identifier rubyid_clone'>clone</span>
+      <span class='kw'>else</span>
+        <span class='id identifier rubyid_c_scopes'>c_scopes</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span><span class='lbracket'>[</span><span class='id identifier rubyid_k'>k</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_v'>v</span>
+      <span class='kw'>end</span>
     <span class='kw'>end</span>
   <span class='kw'>end</span>
   <span class='id identifier rubyid_copy'>copy</span>
@@ -869,15 +957,15 @@
       <pre class="lines">
 
 
-132
-133
-134
-135
-136
-137</pre>
+147
+148
+149
+150
+151
+152</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 132</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 147</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_reverse_each'>reverse_each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
@@ -927,12 +1015,12 @@
       <pre class="lines">
 
 
-128
-129
-130</pre>
+143
+144
+145</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 128</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 143</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span> <span class='kw'>return</span> <span class='kw'>true</span> <span class='kw'>if</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
@@ -957,12 +1045,12 @@
       <pre class="lines">
 
 
-168
-169
-170</pre>
+183
+184
+185</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 168</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 183</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_levels'>levels</span>
   <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span>
@@ -987,17 +1075,21 @@
       <pre class="lines">
 
 
-122
-123
-124
-125
-126</pre>
+135
+136
+137
+138
+139
+140
+141</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 122</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 135</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_pop'>pop</span>
-  <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Error: popping the symbol table would remove global scope</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>if</span> <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span> <span class='op'>==</span> <span class='int'>1</span>
+  <span class='comment'># puts &quot;pop #{caller[0]}&quot;
+</span>  <span class='comment'># puts &quot;    from #{@scope_caller.pop}&quot;
+</span>  <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Error: popping the symbol table would remove global scope</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>if</span> <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span> <span class='op'>==</span> <span class='int'>1</span>
 
   <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_pop'>pop</span>
 <span class='kw'>end</span></pre>
@@ -1021,16 +1113,16 @@
       <pre class="lines">
 
 
-172
-173
-174
-175
-176
-177
-178</pre>
+187
+188
+189
+190
+191
+192
+193</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 172</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 187</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_print'>print</span>
   <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
@@ -1059,15 +1151,21 @@
       <pre class="lines">
 
 
-118
-119
-120</pre>
+128
+129
+130
+131
+132
+133</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 118</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 128</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_push'>push</span>
-  <span class='ivar'>@scopes</span> <span class='op'>&lt;&lt;</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+  <span class='comment'># puts &quot;push #{caller[0]}&quot;
+</span>  <span class='comment'># @scope_caller ||= []
+</span>  <span class='comment'># @scope_caller.push caller[0]
+</span>  <span class='ivar'>@scopes</span> <span class='op'>&lt;&lt;</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1079,7 +1177,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Jul  1 07:25:24 2024 by
+  Generated on Fri Jul 12 05:52:19 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

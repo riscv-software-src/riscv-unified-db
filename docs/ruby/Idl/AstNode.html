@@ -129,7 +129,7 @@
     
   
     
-      <strong class="classes">Classes:</strong> <span class='object_link'><a href="AstNode/InternalError.html" title="Idl::AstNode::InternalError (class)">InternalError</a></span>, <span class='object_link'><a href="AstNode/TypeError.html" title="Idl::AstNode::TypeError (class)">TypeError</a></span>
+      <strong class="classes">Classes:</strong> <span class='object_link'><a href="AstNode/InternalError.html" title="Idl::AstNode::InternalError (class)">InternalError</a></span>, <span class='object_link'><a href="AstNode/TypeError.html" title="Idl::AstNode::TypeError (class)">TypeError</a></span>, <span class='object_link'><a href="AstNode/ValueError.html" title="Idl::AstNode::ValueError (class)">ValueError</a></span>
     
   
 </p>
@@ -296,7 +296,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#type_check-instance_method" title="#type_check (instance method)">#<strong>type_check</strong>(symtab, archdef)  &#x21d2; void </a>
+      <a href="#type_check-instance_method" title="#type_check (instance method)">#<strong>type_check</strong>(symtab)  &#x21d2; void </a>
     
 
     
@@ -316,7 +316,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>type check this node and all children, and memoize any symtab- or archdef-dependent type.</p>
+<p>type check this node and all children.</p>
 </div></span>
   
 </li>
@@ -375,6 +375,35 @@
   
     <span class="summary_desc"><div class='inline'>
 <p>unindent a multiline string, getting rid of all common leading whitespace (like &lt;&lt;~ heredocs).</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#value_error-instance_method" title="#value_error (instance method)">#<strong>value_error</strong>(reason)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+    <span class="note title not_defined_here">
+      included
+      from <span class='object_link'><a href="AstNodeFuncs.html#value_error-instance_method" title="Idl::AstNodeFuncs#value_error (method)">AstNodeFuncs</a></span>
+    </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>raise a value error, indicating that the value is not known at compile time.</p>
 </div></span>
   
 </li>
@@ -489,7 +518,7 @@
     <li>
       
       
-        <span class='type'>(<tt>Ast::TypeError</tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="AstNode/TypeError.html" title="Idl::AstNode::TypeError (class)">AstNode::TypeError</a></span></tt>)</span>
       
       
       
@@ -703,7 +732,7 @@
       <div class="method_details ">
   <h3 class="signature " id="type_check-instance_method">
   
-    #<strong>type_check</strong>(symtab, archdef)  &#x21d2; <tt>void</tt> 
+    #<strong>type_check</strong>(symtab)  &#x21d2; <tt>void</tt> 
   
 
   
@@ -721,9 +750,9 @@
   <div class='inline'></div>
 </div>
 <p class="note returns_void">This method returns an undefined value.</p>
-<p>type check this node and all children, and memoize any symtab- or archdef-dependent type</p>
+<p>type check this node and all children</p>
 
-<p>Calls to #type, #constexpr?, and/or #value may depend on type_check being called first with the same symtab and archdef. If not, those functions may raise an AstNode::InternalError</p>
+<p>Calls to #type and/or #value may depend on type_check being called first with the same symtab. If not, those functions may raise an AstNode::InternalError</p>
 
 
   </div>
@@ -744,22 +773,6 @@
         &mdash;
         <div class='inline'>
 <p>Symbol table for lookup</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>archdef</span>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="../ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>Configured architecture definition</p>
 </div>
       
     </li>
@@ -852,7 +865,7 @@
     <li>
       
       
-        <span class='type'>(<tt>Ast::TypeError</tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="AstNode/TypeError.html" title="Idl::AstNode::TypeError (class)">AstNode::TypeError</a></span></tt>)</span>
       
       
       
@@ -936,12 +949,78 @@
 </div>
 </div>
     
+      <div class="method_details ">
+  <h3 class="signature " id="value_error-instance_method">
+  
+    #<strong>value_error</strong>(reason)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+    <span class="not_defined_here">
+      Originally defined in module
+        <span class='object_link'><a href="AstNodeFuncs.html#value_error-instance_method" title="Idl::AstNodeFuncs#value_error (method)">AstNodeFuncs</a></span>
+    </span>
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>raise a value error, indicating that the value is not known at compile time</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>reason</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Error message</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="AstNode/ValueError.html" title="Idl::AstNode::ValueError (class)">AstNode::ValueError</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>always</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div>
+</div>
+    
   </div>
 
 </div>
 
       <div id="footer">
-  Generated on Mon Jul  1 07:25:22 2024 by
+  Generated on Fri Jul 12 05:52:16 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

@@ -91,6 +91,11 @@
   
   
   
+  <dl>
+      <dt>Includes:</dt>
+      <dd><span class='object_link'><a href="Rvalue.html" title="Idl::Rvalue (module)">Rvalue</a></span></dd>
+  </dl>
+  
   
 
   
@@ -121,30 +126,6 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#constexpr%3F-instance_method" title="#constexpr? (instance method)">#<strong>constexpr?</strong>(symtab, archdef)  &#x21d2; Boolean </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>Whether or not the <strong>value</strong> of this node can be determined at compile time, given a specific symbol table and architecture definition.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
       <a href="#to_idl-instance_method" title="#to_idl (instance method)">#<strong>to_idl</strong>  &#x21d2; String </a>
     
 
@@ -169,7 +150,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#type-instance_method" title="#type (instance method)">#<strong>type</strong>(symtab, archdef)  &#x21d2; Type </a>
+      <a href="#type-instance_method" title="#type (instance method)">#<strong>type</strong>(symtab)  &#x21d2; Type </a>
     
 
     
@@ -184,7 +165,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>Given a specific symbol table and arch def, return the type of this node.</p>
+<p>Given a specific symbol table, return the type of this node.</p>
 </div></span>
   
 </li>
@@ -193,7 +174,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#type_check-instance_method" title="#type_check (instance method)">#<strong>type_check</strong>(syms, archdef)  &#x21d2; void </a>
+      <a href="#type_check-instance_method" title="#type_check (instance method)">#<strong>type_check</strong>(symtab)  &#x21d2; void </a>
     
 
     
@@ -208,7 +189,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>type check this node and all children, and memoize any symtab- or archdef-dependent type.</p>
+<p>type check this node and all children.</p>
 </div></span>
   
 </li>
@@ -217,7 +198,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#value-instance_method" title="#value (instance method)">#<strong>value</strong>(symtab, archdef)  &#x21d2; Object </a>
+      <a href="#value-instance_method" title="#value (instance method)">#<strong>value</strong>(symtab)  &#x21d2; Object </a>
     
 
     
@@ -248,63 +229,15 @@
   
   
   
+  
+  
 
   <div id="instance_method_details" class="method_details_list">
     <h2>Instance Method Details</h2>
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="constexpr?-instance_method">
-  
-    #<strong>constexpr?</strong>(symtab, archdef)  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>Whether or not the <strong>value</strong> of this node can be determined at compile time, given a specific symbol table and architecture definition</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-1298</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1298</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_constexpr?'>constexpr?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span> <span class='op'>=</span> <span class='id identifier rubyid_expression'>expression</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="to_idl-instance_method">
+  <h3 class="signature first" id="to_idl-instance_method">
   
     #<strong>to_idl</strong>  &#x21d2; <tt>String</tt> 
   
@@ -347,10 +280,10 @@
       <pre class="lines">
 
 
-1315</pre>
+1477</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1315</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1477</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_idl'>to_idl</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>$signed(</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_expression'>expression</span><span class='period'>.</span><span class='id identifier rubyid_to_idl'>to_idl</span><span class='embexpr_end'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span></pre>
     </td>
@@ -361,7 +294,7 @@
       <div class="method_details ">
   <h3 class="signature " id="type-instance_method">
   
-    #<strong>type</strong>(symtab, archdef)  &#x21d2; <tt><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></tt> 
+    #<strong>type</strong>(symtab)  &#x21d2; <tt><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></tt> 
   
 
   
@@ -370,7 +303,7 @@
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Given a specific symbol table and arch def, return the type of this node.</p>
+<p>Given a specific symbol table, return the type of this node.</p>
 
 <p>Should not be called until <span class='object_link'><a href="#type_check-instance_method" title="Idl::SignCastAst#type_check (method)">#type_check</a></span> is called with the same arguments</p>
 
@@ -393,22 +326,6 @@
         &mdash;
         <div class='inline'>
 <p>Symbol table for lookup</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>archdef</span>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="../ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>Configured architecture definition</p>
 </div>
       
     </li>
@@ -445,7 +362,7 @@
       
         &mdash;
         <div class='inline'>
-<p>if the type is dependent on symtab and/or archdef, and type_check was not called first</p>
+<p>if the type is dependent on symtab, and type_check was not called first</p>
 </div>
       
     </li>
@@ -458,12 +375,12 @@
       <pre class="lines">
 
 
-1295</pre>
+1460</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1295</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1460</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span> <span class='op'>=</span> <span class='id identifier rubyid_expression'>expression</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_clone'>clone</span><span class='period'>.</span><span class='id identifier rubyid_make_signed'>make_signed</span></pre>
+<span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span> <span class='op'>=</span> <span class='id identifier rubyid_expression'>expression</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_clone'>clone</span><span class='period'>.</span><span class='id identifier rubyid_make_signed'>make_signed</span></pre>
     </td>
   </tr>
 </table>
@@ -472,7 +389,7 @@
       <div class="method_details ">
   <h3 class="signature " id="type_check-instance_method">
   
-    #<strong>type_check</strong>(syms, archdef)  &#x21d2; <tt>void</tt> 
+    #<strong>type_check</strong>(symtab)  &#x21d2; <tt>void</tt> 
   
 
   
@@ -481,9 +398,9 @@
 </h3><div class="docstring">
   <div class="discussion">
     <p class="note returns_void">This method returns an undefined value.</p>
-<p>type check this node and all children, and memoize any symtab- or archdef-dependent type</p>
+<p>type check this node and all children</p>
 
-<p>Calls to <span class='object_link'><a href="#type-instance_method" title="Idl::SignCastAst#type (method)">#type</a></span>, <span class='object_link'><a href="#constexpr%3F-instance_method" title="Idl::SignCastAst#constexpr? (method)">#constexpr?</a></span>, and/or <span class='object_link'><a href="#value-instance_method" title="Idl::SignCastAst#value (method)">#value</a></span> may depend on type_check being called first with the same symtab and archdef. If not, those functions may raise an AstNode::InternalError</p>
+<p>Calls to <span class='object_link'><a href="#type-instance_method" title="Idl::SignCastAst#type (method)">#type</a></span> and/or <span class='object_link'><a href="#value-instance_method" title="Idl::SignCastAst#value (method)">#value</a></span> may depend on type_check being called first with the same symtab. If not, those functions may raise an AstNode::InternalError</p>
 
 
   </div>
@@ -504,22 +421,6 @@
         &mdash;
         <div class='inline'>
 <p>Symbol table for lookup</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>archdef</span>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="../ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>Configured architecture definition</p>
 </div>
       
     </li>
@@ -565,15 +466,15 @@
       <pre class="lines">
 
 
-1290
-1291
-1292</pre>
+1455
+1456
+1457</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1290</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1455</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_expression'>expression</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_expression'>expression</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -583,7 +484,7 @@
       <div class="method_details ">
   <h3 class="signature " id="value-instance_method">
   
-    #<strong>value</strong>(symtab, archdef)  &#x21d2; <tt>Object</tt> 
+    #<strong>value</strong>(symtab)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -606,26 +507,26 @@
       <pre class="lines">
 
 
-1301
-1302
-1303
-1304
-1305
-1306
-1307
-1308
-1309
-1310
-1311
-1312</pre>
+1463
+1464
+1465
+1466
+1467
+1468
+1469
+1470
+1471
+1472
+1473
+1474</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1301</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1463</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_t'>t</span> <span class='op'>=</span> <span class='id identifier rubyid_expression'>expression</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_t'>t</span> <span class='op'>=</span> <span class='id identifier rubyid_expression'>expression</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Expecting a bits type</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_t'>t</span><span class='period'>.</span><span class='id identifier rubyid_kind'>kind</span> <span class='op'>==</span> <span class='symbol'>:bits</span>
-  <span class='id identifier rubyid_v'>v</span> <span class='op'>=</span> <span class='id identifier rubyid_expression'>expression</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_v'>v</span> <span class='op'>=</span> <span class='id identifier rubyid_expression'>expression</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
 
   <span class='kw'>if</span> <span class='lparen'>(</span><span class='lparen'>(</span><span class='id identifier rubyid_v'>v</span> <span class='op'>&gt;&gt;</span> <span class='lparen'>(</span><span class='id identifier rubyid_t'>t</span><span class='period'>.</span><span class='id identifier rubyid_width'>width</span> <span class='op'>-</span> <span class='int'>1</span><span class='rparen'>)</span><span class='rparen'>)</span> <span class='op'>&amp;</span> <span class='int'>1</span><span class='rparen'>)</span> <span class='op'>==</span> <span class='int'>1</span>
     <span class='comment'># twos compliment negate the value
@@ -644,7 +545,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Jul  1 07:25:22 2024 by
+  Generated on Fri Jul 12 05:52:17 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

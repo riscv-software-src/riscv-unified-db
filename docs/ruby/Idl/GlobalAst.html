@@ -91,6 +91,11 @@
   
   
   
+  <dl>
+      <dt>Includes:</dt>
+      <dd><span class='object_link'><a href="Executable.html" title="Idl::Executable (module)">Executable</a></span></dd>
+  </dl>
+  
   
 
   
@@ -121,7 +126,36 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#type-instance_method" title="#type (instance method)">#<strong>type</strong>(syms, archdef)  &#x21d2; Object </a>
+      <a href="#execute-instance_method" title="#execute (instance method)">#<strong>execute</strong>(symtab)  &#x21d2; void </a>
+    
+
+    
+  </span>
+  
+    <span class="note title not_defined_here">
+      included
+      from <span class='object_link'><a href="Executable.html#execute-instance_method" title="Idl::Executable#execute (method)">Executable</a></span>
+    </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>“execute” the statement by updating the variables in the symbol table.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#type-instance_method" title="#type (instance method)">#<strong>type</strong>(symtab)  &#x21d2; Object </a>
     
 
     
@@ -143,7 +177,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#type_check-instance_method" title="#type_check (instance method)">#<strong>type_check</strong>(syms, archdef)  &#x21d2; Object </a>
+      <a href="#type_check-instance_method" title="#type_check (instance method)">#<strong>type_check</strong>(symtab)  &#x21d2; Object </a>
     
 
     
@@ -172,15 +206,83 @@
   
   
   
+  
+  
 
   <div id="instance_method_details" class="method_details_list">
     <h2>Instance Method Details</h2>
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="type-instance_method">
+  <h3 class="signature first" id="execute-instance_method">
   
-    #<strong>type</strong>(syms, archdef)  &#x21d2; <tt>Object</tt> 
+    #<strong>execute</strong>(symtab)  &#x21d2; <tt>void</tt> 
+  
+
+  
+
+  
+    <span class="not_defined_here">
+      Originally defined in module
+        <span class='object_link'><a href="Executable.html#execute-instance_method" title="Idl::Executable#execute (method)">Executable</a></span>
+    </span>
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p>
+<p>“execute” the statement by updating the variables in the symbol table</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>symtab</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="SymbolTable.html" title="Idl::SymbolTable (class)">SymbolTable</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The symbol table for the context</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>ValueError if some part of the statement cannot be executed at compile time</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="type-instance_method">
+  
+    #<strong>type</strong>(symtab)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -192,14 +294,14 @@
       <pre class="lines">
 
 
-461
-462
-463</pre>
+469
+470
+471</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 461</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 469</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_declaration'>declaration</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -210,7 +312,7 @@
       <div class="method_details ">
   <h3 class="signature " id="type_check-instance_method">
   
-    #<strong>type_check</strong>(syms, archdef)  &#x21d2; <tt>Object</tt> 
+    #<strong>type_check</strong>(symtab)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -222,15 +324,15 @@
       <pre class="lines">
 
 
-457
-458
-459</pre>
+465
+466
+467</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 457</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 465</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_declaration'>declaration</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_declaration'>declaration</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -242,7 +344,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Jul  1 07:25:22 2024 by
+  Generated on Fri Jul 12 05:52:17 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

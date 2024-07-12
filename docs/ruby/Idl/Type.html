@@ -146,8 +146,7 @@
         </dt>
         <dd><pre class="code"><span class='lbracket'>[</span>
   <span class='symbol'>:const</span><span class='comma'>,</span>
-  <span class='symbol'>:constexpr</span><span class='comma'>,</span> <span class='comment'># i.e., known at instruction decode time
-</span>  <span class='symbol'>:signed</span>
+  <span class='symbol'>:signed</span>
 <span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_freeze'>freeze</span></pre></dd>
       
     </dl>
@@ -552,28 +551,6 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#constexpr%3F-instance_method" title="#constexpr? (instance method)">#<strong>constexpr?</strong>  &#x21d2; Boolean </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'></div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
       <a href="#convertable_to%3F-instance_method" title="#convertable_to? (instance method)">#<strong>convertable_to?</strong>(type)  &#x21d2; Boolean </a>
     
 
@@ -672,7 +649,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#make_constexpr-instance_method" title="#make_constexpr (instance method)">#<strong>make_constexpr</strong>  &#x21d2; Object </a>
+      <a href="#make_const-instance_method" title="#make_const (instance method)">#<strong>make_const</strong>  &#x21d2; Object </a>
     
 
     
@@ -761,28 +738,6 @@
   <span class="summary_signature">
     
       <a href="#qualify-instance_method" title="#qualify (instance method)">#<strong>qualify</strong>(qualifier)  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'></div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#remove_constexpr-instance_method" title="#remove_constexpr (instance method)">#<strong>remove_constexpr</strong>  &#x21d2; Object </a>
     
 
     
@@ -923,6 +878,7 @@
       <pre class="lines">
 
 
+51
 52
 53
 54
@@ -961,10 +917,16 @@
 87
 88
 89
-90</pre>
+90
+91
+92
+93
+94
+95
+96</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 52</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 51</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_kind'>kind</span><span class='comma'>,</span> <span class='label'>qualifiers:</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='label'>width:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>sub_type:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>name:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>tuple_types:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>return_type:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>arguments:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>enum_class:</span> <span class='kw'>nil</span><span class='comma'>,</span> <span class='label'>csr:</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Invalid kind &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_kind'>kind</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39;</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='const'><span class='object_link'><a href="#KINDS-constant" title="Idl::Type::KINDS (constant)">KINDS</a></span></span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_kind'>kind</span><span class='rparen'>)</span>
@@ -976,6 +938,8 @@
   <span class='ivar'>@qualifiers</span> <span class='op'>=</span> <span class='id identifier rubyid_qualifiers'>qualifiers</span>
   <span class='comment'># raise &quot;#{width.class.name}&quot; if (kind == :bits &amp;&amp; !width.is_a?(Integer))
 </span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Should be a FunctionType</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_kind'>kind</span> <span class='op'>==</span> <span class='symbol'>:function</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="FunctionType.html" title="Idl::FunctionType (class)">FunctionType</a></span></span><span class='rparen'>)</span>
+
   <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Width must be an Integer, is a </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_width'>width</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_width'>width</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='id identifier rubyid_width'>width</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Integer</span><span class='rparen'>)</span>
   <span class='ivar'>@width</span> <span class='op'>=</span> <span class='id identifier rubyid_width'>width</span>
   <span class='ivar'>@sub_type</span> <span class='op'>=</span> <span class='id identifier rubyid_sub_type'>sub_type</span>
@@ -1002,7 +966,12 @@
 
     <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>CSR types get width from csr argument; width should not be specified</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_width'>width</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='id identifier rubyid_width'>width</span> <span class='op'>==</span> <span class='id identifier rubyid_csr'>csr</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span>
 
-    <span class='ivar'>@width</span> <span class='op'>=</span> <span class='id identifier rubyid_csr'>csr</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span>
+    <span class='ivar'>@width</span> <span class='op'>=</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_csr'>csr</span><span class='period'>.</span><span class='id identifier rubyid_dynamic_length?'>dynamic_length?</span>
+        <span class='kw'>nil</span>
+      <span class='kw'>else</span>
+        <span class='id identifier rubyid_csr'>csr</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span>
+      <span class='kw'>end</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -1043,12 +1012,12 @@
       <pre class="lines">
 
 
+30
 31
-32
-33</pre>
+32</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 31</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 30</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_arguments'>arguments</span>
   <span class='ivar'>@arguments</span>
@@ -1086,12 +1055,12 @@
       <pre class="lines">
 
 
+30
 31
-32
-33</pre>
+32</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 31</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 30</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_enum_class'>enum_class</span>
   <span class='ivar'>@enum_class</span>
@@ -1129,12 +1098,12 @@
       <pre class="lines">
 
 
+30
 31
-32
-33</pre>
+32</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 31</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 30</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_kind'>kind</span>
   <span class='ivar'>@kind</span>
@@ -1172,12 +1141,12 @@
       <pre class="lines">
 
 
+30
 31
-32
-33</pre>
+32</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 31</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 30</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_qualifiers'>qualifiers</span>
   <span class='ivar'>@qualifiers</span>
@@ -1215,12 +1184,12 @@
       <pre class="lines">
 
 
+30
 31
-32
-33</pre>
+32</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 31</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 30</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_return_type'>return_type</span>
   <span class='ivar'>@return_type</span>
@@ -1258,12 +1227,12 @@
       <pre class="lines">
 
 
+30
 31
-32
-33</pre>
+32</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 31</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 30</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sub_type'>sub_type</span>
   <span class='ivar'>@sub_type</span>
@@ -1301,12 +1270,12 @@
       <pre class="lines">
 
 
+30
 31
-32
-33</pre>
+32</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 31</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 30</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_tuple_types'>tuple_types</span>
   <span class='ivar'>@tuple_types</span>
@@ -1344,12 +1313,12 @@
       <pre class="lines">
 
 
+30
 31
-32
-33</pre>
+32</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 31</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 30</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_width'>width</span>
   <span class='ivar'>@width</span>
@@ -1381,6 +1350,7 @@
       <pre class="lines">
 
 
+38
 39
 40
 41
@@ -1391,11 +1361,10 @@
 46
 47
 48
-49
-50</pre>
+49</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 39</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 38</span>
 
 <span class='kw'>def</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_from_typename'>from_typename</span><span class='lparen'>(</span><span class='id identifier rubyid_type_name'>type_name</span><span class='comma'>,</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='rparen'>)</span>
   <span class='kw'>case</span> <span class='id identifier rubyid_type_name'>type_name</span>
@@ -1457,12 +1426,12 @@
       <pre class="lines">
 
 
-309
-310
-311</pre>
+315
+316
+317</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 309</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 315</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ary?'>ary?</span>
   <span class='ivar'>@kind</span> <span class='op'>==</span> <span class='symbol'>:array</span>
@@ -1498,16 +1467,16 @@
       <pre class="lines">
 
 
-161
-162
-163
-164
-165
-166
-167</pre>
+167
+168
+169
+170
+171
+172
+173</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 161</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 167</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ary_type'>ary_type</span><span class='lparen'>(</span><span class='id identifier rubyid_ary'>ary</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_ary'>ary</span><span class='period'>.</span><span class='id identifier rubyid_sub_type'>sub_type</span> <span class='op'>==</span> <span class='symbol'>:array</span>
@@ -1536,12 +1505,6 @@
       <pre class="lines">
 
 
-92
-93
-94
-95
-96
-97
 98
 99
 100
@@ -1549,10 +1512,16 @@
 102
 103
 104
-105</pre>
+105
+106
+107
+108
+109
+110
+111</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 92</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 98</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_clone'>clone</span>
   <span class='const'><span class='object_link'><a href="" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span>
@@ -1566,7 +1535,7 @@
     <span class='label'>arguments:</span> <span class='ivar'>@arguments</span><span class='op'>&amp;.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:clone</span><span class='rparen'>)</span><span class='comma'>,</span>
     <span class='label'>enum_class:</span> <span class='ivar'>@enum_class</span><span class='op'>&amp;.</span><span class='id identifier rubyid_clone'>clone</span><span class='comma'>,</span>
     <span class='label'>csr:</span> <span class='ivar'>@csr</span>
-    <span class='rparen'>)</span>
+  <span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1612,12 +1581,6 @@
       <pre class="lines">
 
 
-109
-110
-111
-112
-113
-114
 115
 116
 117
@@ -1639,10 +1602,16 @@
 133
 134
 135
-136</pre>
+136
+137
+138
+139
+140
+141
+142</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 109</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 115</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_comparable_to?'>comparable_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_type'>type</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Symbol</span><span class='rparen'>)</span>
@@ -1714,67 +1683,15 @@
       <pre class="lines">
 
 
-313
-314
-315</pre>
+319
+320
+321</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 313</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 319</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_const?'>const?</span>
   <span class='ivar'>@qualifiers</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:const</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="constexpr?-instance_method">
-  
-    #<strong>constexpr?</strong>  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-317
-318
-319</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 317</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_constexpr?'>constexpr?</span>
-  <span class='ivar'>@qualifiers</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:constexpr</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1820,12 +1737,6 @@
       <pre class="lines">
 
 
-171
-172
-173
-174
-175
-176
 177
 178
 179
@@ -1876,10 +1787,16 @@
 224
 225
 226
-227</pre>
+227
+228
+229
+230
+231
+232
+233</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 171</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 177</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_convertable_to?'>convertable_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_type'>type</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Symbol</span><span class='rparen'>)</span>
@@ -1982,12 +1899,6 @@
       <pre class="lines">
 
 
-139
-140
-141
-142
-143
-144
 145
 146
 147
@@ -2001,10 +1912,16 @@
 155
 156
 157
-158</pre>
+158
+159
+160
+161
+162
+163
+164</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 139</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 145</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_equal_to?'>equal_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_type'>type</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Symbol</span><span class='rparen'>)</span>
@@ -2070,12 +1987,12 @@
       <pre class="lines">
 
 
+26
 27
-28
-29</pre>
+28</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 27</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 26</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_integral?'>integral?</span>
   <span class='ivar'>@kind</span> <span class='op'>==</span> <span class='symbol'>:bits</span>
@@ -2086,9 +2003,9 @@
 </div>
     
       <div class="method_details ">
-  <h3 class="signature " id="make_constexpr-instance_method">
+  <h3 class="signature " id="make_const-instance_method">
   
-    #<strong>make_constexpr</strong>  &#x21d2; <tt>Object</tt> 
+    #<strong>make_const</strong>  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -2100,16 +2017,16 @@
       <pre class="lines">
 
 
-325
-326
-327
-328</pre>
+336
+337
+338
+339</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 325</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 336</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_make_constexpr'>make_constexpr</span>
-  <span class='ivar'>@qualifiers</span><span class='period'>.</span><span class='id identifier rubyid_append'>append</span><span class='lparen'>(</span><span class='symbol'>:constexpr</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_uniq!'>uniq!</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_make_const'>make_const</span>
+  <span class='ivar'>@qualifiers</span><span class='period'>.</span><span class='id identifier rubyid_append'>append</span><span class='lparen'>(</span><span class='symbol'>:const</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_uniq!'>uniq!</span>
   <span class='kw'>self</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -2132,13 +2049,13 @@
       <pre class="lines">
 
 
-339
-340
-341
-342</pre>
+331
+332
+333
+334</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 339</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 331</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_make_signed'>make_signed</span>
   <span class='ivar'>@qualifiers</span><span class='period'>.</span><span class='id identifier rubyid_append'>append</span><span class='lparen'>(</span><span class='symbol'>:signed</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_uniq!'>uniq!</span>
@@ -2186,15 +2103,15 @@
       <pre class="lines">
 
 
-321
-322
-323</pre>
+323
+324
+325</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 321</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 323</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_mutable?'>mutable?</span>
-  <span class='kw'>return</span> <span class='op'>!</span><span class='id identifier rubyid_const?'>const?</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_constexpr?'>constexpr?</span>
+  <span class='kw'>return</span> <span class='op'>!</span><span class='id identifier rubyid_const?'>const?</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -2216,12 +2133,6 @@
       <pre class="lines">
 
 
-291
-292
-293
-294
-295
-296
 297
 298
 299
@@ -2232,10 +2143,16 @@
 304
 305
 306
-307</pre>
+307
+308
+309
+310
+311
+312
+313</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 291</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 297</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_name'>name</span>
   <span class='kw'>if</span> <span class='ivar'>@kind</span> <span class='op'>==</span> <span class='symbol'>:bits</span>
@@ -2274,50 +2191,18 @@
       <pre class="lines">
 
 
+32
 33
 34
 35
-36
-37</pre>
+36</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 33</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 32</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_qualify'>qualify</span><span class='lparen'>(</span><span class='id identifier rubyid_qualifier'>qualifier</span><span class='rparen'>)</span>
   <span class='ivar'>@qualifiers</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_qualifier'>qualifier</span>
   <span class='ivar'>@qualifiers</span><span class='period'>.</span><span class='id identifier rubyid_uniq!'>uniq!</span>
-  <span class='kw'>self</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="remove_constexpr-instance_method">
-  
-    #<strong>remove_constexpr</strong>  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-330
-331
-332
-333</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 330</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_remove_constexpr'>remove_constexpr</span>
-  <span class='ivar'>@qualifiers</span><span class='period'>.</span><span class='id identifier rubyid_delete_if'>delete_if</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_q'>q</span><span class='op'>|</span> <span class='id identifier rubyid_q'>q</span> <span class='op'>==</span> <span class='symbol'>:constexpr</span> <span class='rbrace'>}</span>
   <span class='kw'>self</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -2362,12 +2247,12 @@
       <pre class="lines">
 
 
-335
-336
-337</pre>
+327
+328
+329</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 335</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 327</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_signed?'>signed?</span>
   <span class='ivar'>@qualifiers</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:signed</span><span class='rparen'>)</span>
@@ -2392,13 +2277,13 @@
       <pre class="lines">
 
 
-286
-287
-288
-289</pre>
+292
+293
+294
+295</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 286</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 292</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_cxx'>to_cxx</span>
   <span class='lparen'>(</span><span class='lparen'>(</span><span class='ivar'>@qualifiers</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='ivar'>@qualifiers</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='ivar'>@qualifiers</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='symbol'>:const</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>const</span><span class='tstring_end'>&#39;</span></span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span><span class='embexpr_end'>}</span><span class='tstring_content'> </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>+</span> \
@@ -2424,12 +2309,6 @@
       <pre class="lines">
 
 
-257
-258
-259
-260
-261
-262
 263
 264
 265
@@ -2451,10 +2330,16 @@
 281
 282
 283
-284</pre>
+284
+285
+286
+287
+288
+289
+290</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 257</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 263</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_cxx_no_qualifiers'>to_cxx_no_qualifiers</span>
     <span class='kw'>if</span> <span class='ivar'>@kind</span> <span class='op'>==</span> <span class='symbol'>:bits</span>
@@ -2508,12 +2393,6 @@
       <pre class="lines">
 
 
-229
-230
-231
-232
-233
-234
 235
 236
 237
@@ -2533,10 +2412,16 @@
 251
 252
 253
-254</pre>
+254
+255
+256
+257
+258
+259
+260</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 229</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 235</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_s'>to_s</span>
   <span class='lparen'>(</span><span class='lparen'>(</span><span class='ivar'>@qualifiers</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='ivar'>@qualifiers</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span> <span class='op'>:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='ivar'>@qualifiers</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:to_s</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'> </span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'> </span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>+</span> \
@@ -2574,7 +2459,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Jul  1 07:25:24 2024 by
+  Generated on Fri Jul 12 05:52:19 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

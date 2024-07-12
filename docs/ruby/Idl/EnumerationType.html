@@ -211,6 +211,28 @@
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#clone-instance_method" title="#clone (instance method)">#<strong>clone</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(type_name, element_names, element_values)  &#x21d2; EnumerationType </a>
     
 
@@ -290,6 +312,9 @@
       <pre class="lines">
 
 
+346
+347
+348
 349
 350
 351
@@ -302,13 +327,10 @@
 358
 359
 360
-361
-362
-363
-364</pre>
+361</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 349</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 346</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_type_name'>type_name</span><span class='comma'>,</span> <span class='id identifier rubyid_element_names'>element_names</span><span class='comma'>,</span> <span class='id identifier rubyid_element_values'>element_values</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_width'>width</span> <span class='op'>=</span> <span class='id identifier rubyid_element_values'>element_values</span><span class='period'>.</span><span class='id identifier rubyid_max'>max</span><span class='period'>.</span><span class='id identifier rubyid_bit_length'>bit_length</span>
@@ -364,12 +386,12 @@
       <pre class="lines">
 
 
-347
-348
-349</pre>
+344
+345
+346</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 347</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 344</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_element_names'>element_names</span>
   <span class='ivar'>@element_names</span>
@@ -407,12 +429,12 @@
       <pre class="lines">
 
 
-347
-348
-349</pre>
+344
+345
+346</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 347</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 344</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_element_values'>element_values</span>
   <span class='ivar'>@element_values</span>
@@ -450,12 +472,12 @@
       <pre class="lines">
 
 
-347
-348
-349</pre>
+344
+345
+346</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 347</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 344</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_width'>width</span>
   <span class='ivar'>@width</span>
@@ -473,7 +495,37 @@
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="value-instance_method">
+  <h3 class="signature first" id="clone-instance_method">
+  
+    #<strong>clone</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+363
+364
+365</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 363</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_clone'>clone</span>
+  <span class='const'><span class='object_link'><a href="" title="Idl::EnumerationType (class)">EnumerationType</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="Idl::EnumerationType#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='ivar'>@name</span><span class='comma'>,</span> <span class='ivar'>@element_names</span><span class='comma'>,</span> <span class='ivar'>@element_values</span><span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="value-instance_method">
   
     #<strong>value</strong>(element_name)  &#x21d2; <tt>Object</tt> 
   
@@ -487,15 +539,15 @@
       <pre class="lines">
 
 
-366
 367
 368
 369
 370
-371</pre>
+371
+372</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 366</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 367</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_element_name'>element_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_i'>i</span> <span class='op'>=</span> <span class='ivar'>@element_names</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span><span class='lparen'>(</span><span class='id identifier rubyid_element_name'>element_name</span><span class='rparen'>)</span>
@@ -513,7 +565,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Jul  1 07:25:24 2024 by
+  Generated on Fri Jul 12 05:52:19 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

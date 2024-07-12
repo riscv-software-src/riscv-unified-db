@@ -91,6 +91,11 @@
   
   
   
+  <dl>
+      <dt>Includes:</dt>
+      <dd><span class='object_link'><a href="Executable.html" title="Idl::Executable (module)">Executable</a></span>, <span class='object_link'><a href="Returns.html" title="Idl::Returns (module)">Returns</a></span></dd>
+  </dl>
+  
   
 
   
@@ -123,53 +128,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#constexpr%3F-instance_method" title="#constexpr? (instance method)">#<strong>constexpr?</strong>(symtab, archdef)  &#x21d2; Boolean </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>considered constexpr if everything on the path to a constexpr return is constexpr, or if all statements are constexpr.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#constexpr_returns%3F-instance_method" title="#constexpr_returns? (instance method)">#<strong>constexpr_returns?</strong>(symtab, archdef)  &#x21d2; Boolean </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'></div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#pass_find_return_values-instance_method" title="#pass_find_return_values (instance method)">#<strong>pass_find_return_values</strong>(symtab, archdef)  &#x21d2; Array&lt;Ast, Array&lt;Ast&gt;&gt; </a>
+      <a href="#pass_find_return_values-instance_method" title="#pass_find_return_values (instance method)">#<strong>pass_find_return_values</strong>(symtab)  &#x21d2; Array&lt;Ast, Array&lt;Ast&gt;&gt; </a>
     
 
     
@@ -193,7 +152,31 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#return_value-instance_method" title="#return_value (instance method)">#<strong>return_value</strong>(symtab, archdef)  &#x21d2; Object </a>
+      <a href="#return_value-instance_method" title="#return_value (instance method)">#<strong>return_value</strong>(symtab)  &#x21d2; Object </a>
+    
+
+    
+      (also: #execute)
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#return_values-instance_method" title="#return_values (instance method)">#<strong>return_values</strong>(symtab)  &#x21d2; Array </a>
     
 
     
@@ -207,7 +190,9 @@
   
 
   
-    <span class="summary_desc"><div class='inline'></div></span>
+    <span class="summary_desc"><div class='inline'>
+<p>An array of all possible return values.</p>
+</div></span>
   
 </li>
 
@@ -259,7 +244,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#type_check-instance_method" title="#type_check (instance method)">#<strong>type_check</strong>(symtab, archdef)  &#x21d2; void </a>
+      <a href="#type_check-instance_method" title="#type_check (instance method)">#<strong>type_check</strong>(symtab)  &#x21d2; void </a>
     
 
     
@@ -274,31 +259,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>type check this node and all children, and memoize any symtab- or archdef-dependent type.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#value-instance_method" title="#value (instance method)">#<strong>value</strong>(symtab, archdef)  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>Return the compile-time-known value of the node.</p>
+<p>type check this node and all children.</p>
 </div></span>
   
 </li>
@@ -314,172 +275,19 @@
   
   
   
+  
+  
+  
+  
 
   <div id="instance_method_details" class="method_details_list">
     <h2>Instance Method Details</h2>
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="constexpr?-instance_method">
+  <h3 class="signature first" id="pass_find_return_values-instance_method">
   
-    #<strong>constexpr?</strong>(symtab, archdef)  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>considered constexpr if everything on the path to a constexpr return is constexpr, or if all statements are constexpr</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  <p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>symtab</span>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="SymbolTable.html" title="Idl::SymbolTable (class)">SymbolTable</a></span></tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>symbol table to use</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>archdef</span>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="../ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>Architecture defintion</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>whether or not the function body is constexpr</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-2585
-2586
-2587
-2588
-2589
-2590
-2591
-2592
-2593
-2594</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2585</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_constexpr?'>constexpr?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='comment'># see if there is a short-circuit path to a constexpr return
-</span>  <span class='id identifier rubyid_statements'>statements</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
-    <span class='kw'>return</span> <span class='kw'>true</span> <span class='kw'>if</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_constexpr_returns?'>constexpr_returns?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-    <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_constexpr_compatible?'>constexpr_compatible?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
-
-  <span class='comment'># if we get here, we didn&#39;t return a constexpr, but everything along the way was idempotent
-</span>  <span class='kw'>true</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="constexpr_returns?-instance_method">
-  
-    #<strong>constexpr_returns?</strong>(symtab, archdef)  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-2596</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2596</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_constexpr_returns?'>constexpr_returns?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span> <span class='op'>=</span> <span class='id identifier rubyid_constexpr?'>constexpr?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="pass_find_return_values-instance_method">
-  
-    #<strong>pass_find_return_values</strong>(symtab, archdef)  &#x21d2; <tt>Array&lt;Ast, Array&lt;Ast&gt;&gt;</tt> 
+    #<strong>pass_find_return_values</strong>(symtab)  &#x21d2; <tt>Array&lt;Ast, Array&lt;Ast&gt;&gt;</tt> 
   
 
   
@@ -532,11 +340,11 @@
     <td>
       <pre class="code"><span class="info file"># File 'lib/idl/passes/find_return_values.rb', line 67</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_pass_find_return_values'>pass_find_return_values</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_pass_find_return_values'>pass_find_return_values</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_values'>values</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
   <span class='id identifier rubyid_current_conditions'>current_conditions</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
   <span class='id identifier rubyid_statements'>statements</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
-    <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_pass_find_return_values'>pass_find_return_values</span><span class='lparen'>(</span><span class='id identifier rubyid_values'>values</span><span class='comma'>,</span> <span class='id identifier rubyid_current_conditions'>current_conditions</span><span class='comma'>,</span> <span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_pass_find_return_values'>pass_find_return_values</span><span class='lparen'>(</span><span class='id identifier rubyid_values'>values</span><span class='comma'>,</span> <span class='id identifier rubyid_current_conditions'>current_conditions</span><span class='comma'>,</span> <span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
   <span class='id identifier rubyid_values'>values</span>
 <span class='kw'>end</span></pre>
@@ -548,24 +356,156 @@
       <div class="method_details ">
   <h3 class="signature " id="return_value-instance_method">
   
-    #<strong>return_value</strong>(symtab, archdef)  &#x21d2; <tt>Object</tt> 
+    #<strong>return_value</strong>(symtab)  &#x21d2; <tt>Object</tt> 
   
 
   
+    <span class="aliases">Also known as:
+    <span class="names"><span id='execute-instance_method'>execute</span></span>
+    </span>
+  
 
   
-</h3><table class="source_code">
+</h3><div class="docstring">
+  <div class="discussion">
+    
+  <div class="note notetag">
+    <strong>Note:</strong>
+    <div class='inline'>
+<p>arguments and template arguments must be put on the symtab before calling</p>
+</div>
+  </div>
+
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-2613</pre>
+2773
+2774
+2775
+2776
+2777
+2778
+2779
+2780
+2781
+2782
+2783
+2784
+2785</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2613</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2773</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_return_value'>return_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span> <span class='op'>=</span> <span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span></pre>
+<span class='kw'>def</span> <span class='id identifier rubyid_return_value'>return_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='comment'># go through the statements, and return the first one that has a return value
+</span>  <span class='id identifier rubyid_statements'>statements</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="Returns.html" title="Idl::Returns (module)">Returns</a></span></span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_v'>v</span> <span class='op'>=</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_return_value'>return_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+      <span class='kw'>return</span> <span class='id identifier rubyid_v'>v</span> <span class='kw'>unless</span> <span class='id identifier rubyid_v'>v</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>No function body statement returned a value</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="return_values-instance_method">
+  
+    #<strong>return_values</strong>(symtab)  &#x21d2; <tt>Array</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+  <div class="note notetag">
+    <strong>Note:</strong>
+    <div class='inline'>
+<p>arguments and template arguments must be put on the symtab before calling</p>
+</div>
+  </div>
+
+
+<p>Returns An array of all possible return values.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>An array of all possible return values</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+2791
+2792
+2793
+2794
+2795
+2796
+2797
+2798
+2799
+2800
+2801
+2802
+2803</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2791</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_return_values'>return_values</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='comment'># go through the statements, and find all return values
+</span>  <span class='id identifier rubyid_rts'>rts</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_statements'>statements</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="Returns.html" title="Idl::Returns (module)">Returns</a></span></span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_rts'>rts</span> <span class='op'>+=</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_return_values'>return_values</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='id identifier rubyid_rts'>rts</span>
+<span class='kw'>end</span></pre>
     </td>
   </tr>
 </table>
@@ -586,12 +526,12 @@
       <pre class="lines">
 
 
-2568
-2569
-2570</pre>
+2744
+2745
+2746</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2568</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2744</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_statements'>statements</span>
   <span class='id identifier rubyid_func_stmt_list'>func_stmt_list</span><span class='period'>.</span><span class='id identifier rubyid_elements'>elements</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:choice</span><span class='rparen'>)</span>
@@ -616,17 +556,17 @@
       <pre class="lines">
 
 
-2615
-2616
-2617
-2618
-2619
-2620
-2621
-2622</pre>
+2805
+2806
+2807
+2808
+2809
+2810
+2811
+2812</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2615</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2805</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_idl'>to_idl</span>
   <span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span>
@@ -644,7 +584,7 @@
       <div class="method_details ">
   <h3 class="signature " id="type_check-instance_method">
   
-    #<strong>type_check</strong>(symtab, archdef)  &#x21d2; <tt>void</tt> 
+    #<strong>type_check</strong>(symtab)  &#x21d2; <tt>void</tt> 
   
 
   
@@ -653,9 +593,9 @@
 </h3><div class="docstring">
   <div class="discussion">
     <p class="note returns_void">This method returns an undefined value.</p>
-<p>type check this node and all children, and memoize any symtab- or archdef-dependent type</p>
+<p>type check this node and all children</p>
 
-<p>Calls to #type, <span class='object_link'><a href="#constexpr%3F-instance_method" title="Idl::FunctionBodyAst#constexpr? (method)">#constexpr?</a></span>, and/or <span class='object_link'><a href="#value-instance_method" title="Idl::FunctionBodyAst#value (method)">#value</a></span> may depend on type_check being called first with the same symtab and archdef. If not, those functions may raise an AstNode::InternalError</p>
+<p>Calls to #type and/or #value may depend on type_check being called first with the same symtab. If not, those functions may raise an AstNode::InternalError</p>
 
 
   </div>
@@ -676,22 +616,6 @@
         &mdash;
         <div class='inline'>
 <p>Symbol table for lookup</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>archdef</span>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="../ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>Configured architecture definition</p>
 </div>
       
     </li>
@@ -737,84 +661,49 @@
       <pre class="lines">
 
 
-2573
-2574
-2575
-2576
-2577</pre>
+2749
+2750
+2751
+2752
+2753
+2754
+2755
+2756
+2757
+2758
+2759
+2760
+2761
+2762
+2763
+2764
+2765
+2766
+2767
+2768</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2573</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2749</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_func_stmt_list'>func_stmt_list</span><span class='period'>.</span><span class='id identifier rubyid_elements'>elements</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_e'>e</span><span class='op'>|</span>
-    <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_choice'>choice</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_return_value_might_be_known'>return_value_might_be_known</span> <span class='op'>=</span> <span class='kw'>true</span>
+
+  <span class='id identifier rubyid_statements'>statements</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
+    <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+    <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_return_value_might_be_known'>return_value_might_be_known</span>
+
+    <span class='kw'>begin</span>
+      <span class='kw'>if</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="Returns.html" title="Idl::Returns (module)">Returns</a></span></span><span class='rparen'>)</span>
+        <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_return_value'>return_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+        <span class='comment'># if we reach here, the return value is known, so we don&#39;t have to go futher
+</span>        <span class='kw'>return</span>
+      <span class='kw'>else</span>
+        <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+      <span class='kw'>end</span>
+    <span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="AstNode/ValueError.html" title="Idl::AstNode::ValueError (class)">ValueError</a></span></span>
+      <span class='id identifier rubyid_return_value_might_be_known'>return_value_might_be_known</span> <span class='op'>=</span> <span class='kw'>false</span>
+    <span class='kw'>end</span>
   <span class='kw'>end</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="value-instance_method">
-  
-    #<strong>value</strong>(symtab, archdef)  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-  <div class="note notetag">
-    <strong>Note:</strong>
-    <div class='inline'>
-<p>arguments and template arguments must be put on the symtab before calling</p>
-</div>
-  </div>
-
-
-<p>Return the compile-time-known value of the node</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-2601
-2602
-2603
-2604
-2605
-2606
-2607
-2608
-2609
-2610
-2611</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2601</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Function body is not constexpr</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_constexpr?'>constexpr?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-
-  <span class='comment'># go through the statements, and return the first one that has a return value
-</span>  <span class='id identifier rubyid_statements'>statements</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
-    <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_update_value'>update_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span> <span class='comment'># update the symbol table with any constexpr updates
-</span>    <span class='kw'>return</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_return_value'>return_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_constexpr_returns?'>constexpr_returns?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
-
-  <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>No function body statement returned a value</span><span class='tstring_end'>&quot;</span></span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -826,7 +715,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Jul  1 07:25:23 2024 by
+  Generated on Fri Jul 12 05:52:18 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

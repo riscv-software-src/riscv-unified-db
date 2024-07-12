@@ -13,8 +13,6 @@ GEM
       asciidoctor-diagram-batik (~> 1.17)
     asciidoctor-multipage (0.0.19)
       asciidoctor (>= 2.0.11, < 2.1)
-    asciidoctor-tabs (1.0.0.beta.6)
-      asciidoctor (>= 2.0.0, < 3.0.0)
     ast (2.4.2)
     backport (1.2.0)
     base64 (0.2.0)
@@ -100,7 +98,6 @@ PLATFORMS
 DEPENDENCIES
   asciidoctor-diagram (~> 2.2)
   asciidoctor-multipage
-  asciidoctor-tabs
   base64
   bigdecimal
   json_schemer (~> 1.0)

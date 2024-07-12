@@ -142,7 +142,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#bf_type-instance_method" title="#bf_type (instance method)">#<strong>bf_type</strong>(symtab, archdef)  &#x21d2; BitfieldType </a>
+      <a href="#bf_type-instance_method" title="#bf_type (instance method)">#<strong>bf_type</strong>(symtab)  &#x21d2; BitfieldType </a>
     
 
     
@@ -166,7 +166,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#constexpr_compatible%3F-instance_method" title="#constexpr_compatible? (instance method)">#<strong>constexpr_compatible?</strong>(symtab, archdef)  &#x21d2; Boolean </a>
+      <a href="#execute-instance_method" title="#execute (instance method)">#<strong>execute</strong>(symtab)  &#x21d2; Object </a>
     
 
     
@@ -188,7 +188,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#field-instance_method" title="#field (instance method)">#<strong>field</strong>(symtab, archdef)  &#x21d2; CsrField </a>
+      <a href="#field-instance_method" title="#field (instance method)">#<strong>field</strong>(symtab)  &#x21d2; CsrField </a>
     
 
     
@@ -212,7 +212,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#kind-instance_method" title="#kind (instance method)">#<strong>kind</strong>(symtab, archdef)  &#x21d2; Symbol </a>
+      <a href="#kind-instance_method" title="#kind (instance method)">#<strong>kind</strong>(symtab)  &#x21d2; Symbol </a>
     
 
     
@@ -260,7 +260,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#type-instance_method" title="#type (instance method)">#<strong>type</strong>(symtab, archdef)  &#x21d2; Type </a>
+      <a href="#type-instance_method" title="#type (instance method)">#<strong>type</strong>(symtab)  &#x21d2; Type </a>
     
 
     
@@ -275,7 +275,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>Given a specific symbol table and arch def, return the type of this node.</p>
+<p>Given a specific symbol table, return the type of this node.</p>
 </div></span>
   
 </li>
@@ -284,7 +284,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#type_check-instance_method" title="#type_check (instance method)">#<strong>type_check</strong>(symtab, archdef)  &#x21d2; void </a>
+      <a href="#type_check-instance_method" title="#type_check (instance method)">#<strong>type_check</strong>(symtab)  &#x21d2; void </a>
     
 
     
@@ -299,7 +299,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>type check this node and all children, and memoize any symtab- or archdef-dependent type.</p>
+<p>type check this node and all children.</p>
 </div></span>
   
 </li>
@@ -317,6 +317,8 @@
   
   
   
+  
+  
 
   <div id="instance_method_details" class="method_details_list">
     <h2>Instance Method Details</h2>
@@ -325,7 +327,7 @@
       <div class="method_details first">
   <h3 class="signature first" id="bf_type-instance_method">
   
-    #<strong>bf_type</strong>(symtab, archdef)  &#x21d2; <tt><span class='object_link'><a href="BitfieldType.html" title="Idl::BitfieldType (class)">BitfieldType</a></span></tt> 
+    #<strong>bf_type</strong>(symtab)  &#x21d2; <tt><span class='object_link'><a href="BitfieldType.html" title="Idl::BitfieldType (class)">BitfieldType</a></span></tt> 
   
 
   
@@ -384,19 +386,19 @@
       <pre class="lines">
 
 
-982
-983
-984
-985
-986</pre>
+1099
+1100
+1101
+1102
+1103</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 982</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1099</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_bf_type'>bf_type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Not a bitfield variable</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_kind'>kind</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span> <span class='op'>==</span> <span class='symbol'>:bitfield</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_bf_type'>bf_type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Not a bitfield variable</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_kind'>kind</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span> <span class='op'>==</span> <span class='symbol'>:bitfield</span>
 
-  <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -404,48 +406,30 @@
 </div>
     
       <div class="method_details ">
-  <h3 class="signature " id="constexpr_compatible?-instance_method">
+  <h3 class="signature " id="execute-instance_method">
   
-    #<strong>constexpr_compatible?</strong>(symtab, archdef)  &#x21d2; <tt>Boolean</tt> 
-  
-
+    #<strong>execute</strong>(symtab)  &#x21d2; <tt>Object</tt> 
   
 
   
-</h3><div class="docstring">
-  <div class="discussion">
-    
 
-  </div>
-</div>
-<div class="tags">
   
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
+</h3><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-1034</pre>
+1158
+1159
+1160</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1034</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1158</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_constexpr_compatible?'>constexpr_compatible?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span> <span class='op'>=</span> <span class='id identifier rubyid_rval'>rval</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span></pre>
+<span class='kw'>def</span> <span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_value_error'>value_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TODO: Field assignement execution</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>end</span></pre>
     </td>
   </tr>
 </table>
@@ -454,7 +438,7 @@
       <div class="method_details ">
   <h3 class="signature " id="field-instance_method">
   
-    #<strong>field</strong>(symtab, archdef)  &#x21d2; <tt><span class='object_link'><a href="../CsrField.html" title="CsrField (class)">CsrField</a></span></tt> 
+    #<strong>field</strong>(symtab)  &#x21d2; <tt><span class='object_link'><a href="../CsrField.html" title="CsrField (class)">CsrField</a></span></tt> 
   
 
   
@@ -513,17 +497,17 @@
       <pre class="lines">
 
 
-990
-991
-992
-993</pre>
+1107
+1108
+1109
+1110</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 990</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1107</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_field'>field</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Not a CSR field type</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_kind'>kind</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span> <span class='op'>==</span> <span class='symbol'>:csr</span>
-  <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_csr'>csr</span><span class='period'>.</span><span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_f'>f</span><span class='op'>|</span> <span class='id identifier rubyid_f'>f</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>==</span> <span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span> <span class='rbrace'>}</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_field'>field</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Not a CSR field type</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_kind'>kind</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span> <span class='op'>==</span> <span class='symbol'>:csr</span>
+  <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_csr'>csr</span><span class='period'>.</span><span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_f'>f</span><span class='op'>|</span> <span class='id identifier rubyid_f'>f</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>==</span> <span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span> <span class='rbrace'>}</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -533,7 +517,7 @@
       <div class="method_details ">
   <h3 class="signature " id="kind-instance_method">
   
-    #<strong>kind</strong>(symtab, archdef)  &#x21d2; <tt>Symbol</tt> 
+    #<strong>kind</strong>(symtab)  &#x21d2; <tt>Symbol</tt> 
   
 
   
@@ -574,15 +558,15 @@
       <pre class="lines">
 
 
-976
-977
-978</pre>
+1093
+1094
+1095</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 976</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1093</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_kind'>kind</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_kind'>kind</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_kind'>kind</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_kind'>kind</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -633,10 +617,10 @@
       <pre class="lines">
 
 
-1037</pre>
+1163</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1037</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1163</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_idl'>to_idl</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_to_idl'>to_idl</span><span class='embexpr_end'>}</span><span class='tstring_content'>.</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_to_idl'>to_idl</span><span class='embexpr_end'>}</span><span class='tstring_content'> = </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_rval'>rval</span><span class='period'>.</span><span class='id identifier rubyid_to_idl'>to_idl</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span></pre>
     </td>
@@ -647,7 +631,7 @@
       <div class="method_details ">
   <h3 class="signature " id="type-instance_method">
   
-    #<strong>type</strong>(symtab, archdef)  &#x21d2; <tt><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></tt> 
+    #<strong>type</strong>(symtab)  &#x21d2; <tt><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></tt> 
   
 
   
@@ -656,7 +640,7 @@
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Given a specific symbol table and arch def, return the type of this node.</p>
+<p>Given a specific symbol table, return the type of this node.</p>
 
 <p>Should not be called until <span class='object_link'><a href="#type_check-instance_method" title="Idl::FieldAssignmentAst#type_check (method)">#type_check</a></span> is called with the same arguments</p>
 
@@ -679,22 +663,6 @@
         &mdash;
         <div class='inline'>
 <p>Symbol table for lookup</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>archdef</span>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="../ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>Configured architecture definition</p>
 </div>
       
     </li>
@@ -731,7 +699,7 @@
       
         &mdash;
         <div class='inline'>
-<p>if the type is dependent on symtab and/or archdef, and type_check was not called first</p>
+<p>if the type is dependent on symtab, and type_check was not called first</p>
 </div>
       
     </li>
@@ -744,26 +712,42 @@
       <pre class="lines">
 
 
-996
-997
-998
-999
-1000
-1001
-1002
-1003
-1004
-1005</pre>
+1113
+1114
+1115
+1116
+1117
+1118
+1119
+1120
+1121
+1122
+1123
+1124
+1125
+1126
+1127
+1128
+1129
+1130</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 996</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1113</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='kw'>case</span> <span class='id identifier rubyid_kind'>kind</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='kw'>case</span> <span class='id identifier rubyid_kind'>kind</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='kw'>when</span> <span class='symbol'>:bitfield</span>
-    <span class='const'><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>width:</span> <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_range'>range</span><span class='lparen'>(</span><span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='rparen'>)</span>
+    <span class='const'><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>width:</span> <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_range'>range</span><span class='lparen'>(</span><span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='rparen'>)</span>
   <span class='kw'>when</span> <span class='symbol'>:csr</span>
-    <span class='const'><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>width:</span> <span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='rparen'>)</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_field'>field</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_defined_in_all_bases?'>defined_in_all_bases?</span>
+      <span class='const'><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>width:</span> <span class='lbracket'>[</span><span class='id identifier rubyid_field'>field</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='lparen'>(</span><span class='int'>32</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='comma'>,</span> <span class='id identifier rubyid_field'>field</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='lparen'>(</span><span class='int'>64</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_max'>max</span><span class='rparen'>)</span>
+    <span class='kw'>elsif</span> <span class='id identifier rubyid_field'>field</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_base64_only?'>base64_only?</span>
+      <span class='const'><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>width:</span> <span class='id identifier rubyid_field'>field</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='lparen'>(</span><span class='int'>64</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='rparen'>)</span>
+    <span class='kw'>elsif</span> <span class='id identifier rubyid_field'>field</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_base32_only?'>base32_only?</span>
+      <span class='const'><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>width:</span> <span class='id identifier rubyid_field'>field</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='lparen'>(</span><span class='int'>32</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='rparen'>)</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Unexpected base for field</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>end</span>
   <span class='kw'>else</span>
     <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Unhandled kind</span><span class='tstring_end'>&quot;</span></span>
   <span class='kw'>end</span>
@@ -776,7 +760,7 @@
       <div class="method_details ">
   <h3 class="signature " id="type_check-instance_method">
   
-    #<strong>type_check</strong>(symtab, archdef)  &#x21d2; <tt>void</tt> 
+    #<strong>type_check</strong>(symtab)  &#x21d2; <tt>void</tt> 
   
 
   
@@ -785,9 +769,9 @@
 </h3><div class="docstring">
   <div class="discussion">
     <p class="note returns_void">This method returns an undefined value.</p>
-<p>type check this node and all children, and memoize any symtab- or archdef-dependent type</p>
+<p>type check this node and all children</p>
 
-<p>Calls to <span class='object_link'><a href="#type-instance_method" title="Idl::FieldAssignmentAst#type (method)">#type</a></span>, #constexpr?, and/or #value may depend on type_check being called first with the same symtab and archdef. If not, those functions may raise an AstNode::InternalError</p>
+<p>Calls to <span class='object_link'><a href="#type-instance_method" title="Idl::FieldAssignmentAst#type (method)">#type</a></span> and/or #value may depend on type_check being called first with the same symtab. If not, those functions may raise an AstNode::InternalError</p>
 
 
   </div>
@@ -808,22 +792,6 @@
         &mdash;
         <div class='inline'>
 <p>Symbol table for lookup</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>archdef</span>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="../ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>Configured architecture definition</p>
 </div>
       
     </li>
@@ -869,59 +837,57 @@
       <pre class="lines">
 
 
-1008
-1009
-1010
-1011
-1012
-1013
-1014
-1015
-1016
-1017
-1018
-1019
-1020
-1021
-1022
-1023
-1024
-1025
-1026
-1027
-1028
-1029
-1030
-1031
-1032</pre>
+1133
+1134
+1135
+1136
+1137
+1138
+1139
+1140
+1141
+1142
+1143
+1144
+1145
+1146
+1147
+1148
+1149
+1150
+1151
+1152
+1153
+1154
+1155
+1156</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1008</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1133</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
 
-  <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Cannot write constexpr variable</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Cannot write const variable</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_const?'>const?</span>
+  <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Cannot write const variable</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_const?'>const?</span>
 
-  <span class='kw'>if</span> <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_kind'>kind</span> <span class='op'>==</span> <span class='symbol'>:bitfield</span>
-    <span class='kw'>unless</span> <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_field_names'>field_names</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span><span class='embexpr_end'>}</span><span class='tstring_content'> is not a member of </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'> on line </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_lineno'>lineno</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_kind'>kind</span> <span class='op'>==</span> <span class='symbol'>:bitfield</span>
+    <span class='kw'>unless</span> <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_field_names'>field_names</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span><span class='embexpr_end'>}</span><span class='tstring_content'> is not a member of </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'> on line </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_lineno'>lineno</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
     <span class='kw'>end</span>
 
-  <span class='kw'>elsif</span> <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_kind'>kind</span> <span class='op'>==</span> <span class='symbol'>:csr</span>
-    <span class='id identifier rubyid_fields'>fields</span> <span class='op'>=</span> <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_csr'>csr</span><span class='period'>.</span><span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_f'>f</span><span class='op'>|</span> <span class='id identifier rubyid_f'>f</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>==</span> <span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span> <span class='rbrace'>}</span>
-    <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span><span class='embexpr_end'>}</span><span class='tstring_content'> is not a field of CSR </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_rval'>rval</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_csr'>csr</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span> <span class='op'>==</span> <span class='int'>1</span>
+  <span class='kw'>elsif</span> <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_kind'>kind</span> <span class='op'>==</span> <span class='symbol'>:csr</span>
+    <span class='id identifier rubyid_fields'>fields</span> <span class='op'>=</span> <span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_csr'>csr</span><span class='period'>.</span><span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_f'>f</span><span class='op'>|</span> <span class='id identifier rubyid_f'>f</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>==</span> <span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span> <span class='rbrace'>}</span>
+    <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span><span class='embexpr_end'>}</span><span class='tstring_content'> is not a field of CSR </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_rval'>rval</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_csr'>csr</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span> <span class='op'>==</span> <span class='int'>1</span>
 
-    <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Cannot write to read-only CSR field</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>RO</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>RO-H</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span><span class='lparen'>(</span><span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Cannot write to read-only CSR field</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>RO</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>RO-H</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span><span class='lparen'>(</span><span class='id identifier rubyid_field'>field</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='rparen'>)</span>
   <span class='kw'>else</span>
-    <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Field assignment on type that is not a bitfield or csr (</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Field assignment on type that is not a bitfield or csr (</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span>
   <span class='kw'>end</span>
 
-  <span class='id identifier rubyid_rval'>rval</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_rval'>rval</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_convertable_to?'>convertable_to?</span><span class='lparen'>(</span><span class='ivar'>@type</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_rval'>rval</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_rval'>rval</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_convertable_to?'>convertable_to?</span><span class='lparen'>(</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='rparen'>)</span>
 
-  <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Incompatible type in assignment (</span><span class='embexpr_beg'>#{</span><span class='ivar'>@type</span><span class='embexpr_end'>}</span><span class='tstring_content'>, </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_rval'>rval</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>) on line </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_lineno'>lineno</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+  <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Incompatible type in assignment (</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>, </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_rval'>rval</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -933,7 +899,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Jul  1 07:25:22 2024 by
+  Generated on Fri Jul 12 05:52:17 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

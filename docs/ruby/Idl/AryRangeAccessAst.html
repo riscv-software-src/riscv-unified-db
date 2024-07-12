@@ -93,7 +93,7 @@
   
   <dl>
       <dt>Includes:</dt>
-      <dd><span class='object_link'><a href="Lvalue.html" title="Idl::Lvalue (module)">Lvalue</a></span></dd>
+      <dd><span class='object_link'><a href="Rvalue.html" title="Idl::Rvalue (module)">Rvalue</a></span></dd>
   </dl>
   
   
@@ -220,35 +220,6 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#constexpr%3F-instance_method" title="#constexpr? (instance method)">#<strong>constexpr?</strong>(symtab, archdef)  &#x21d2; Boolean </a>
-    
-
-    
-  </span>
-  
-    <span class="note title not_defined_here">
-      included
-      from <span class='object_link'><a href="Lvalue.html#constexpr%3F-instance_method" title="Idl::Lvalue#constexpr? (method)">Lvalue</a></span>
-    </span>
-  
-  
-  
-  
-  <span class="abstract note title">abstract</span>
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>Whether or not the <strong>value</strong> of this node can be determined at compile time, given a specific symbol table and architecture definition.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
       <a href="#gen_adoc-instance_method" title="#gen_adoc (instance method)">#<strong>gen_adoc</strong>(indent = 0, indent_spaces: 2)  &#x21d2; Object </a>
     
 
@@ -297,7 +268,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#type-instance_method" title="#type (instance method)">#<strong>type</strong>(syms, archdef)  &#x21d2; Object </a>
+      <a href="#type-instance_method" title="#type (instance method)">#<strong>type</strong>(symtab)  &#x21d2; Object </a>
     
 
     
@@ -319,7 +290,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#type_check-instance_method" title="#type_check (instance method)">#<strong>type_check</strong>(syms, archdef)  &#x21d2; Object </a>
+      <a href="#type_check-instance_method" title="#type_check (instance method)">#<strong>type_check</strong>(symtab)  &#x21d2; Object </a>
     
 
     
@@ -341,7 +312,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#value-instance_method" title="#value (instance method)">#<strong>value</strong>(syms, archdef)  &#x21d2; Object </a>
+      <a href="#value-instance_method" title="#value (instance method)">#<strong>value</strong>(symtab)  &#x21d2; Object </a>
     
 
     
@@ -400,15 +371,15 @@
       <pre class="lines">
 
 
-842
-843
-844
-845
-846
-847</pre>
+855
+856
+857
+858
+859
+860</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 842</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 855</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_input'>input</span><span class='comma'>,</span> <span class='id identifier rubyid_interval'>interval</span><span class='comma'>,</span> <span class='id identifier rubyid_var'>var</span><span class='comma'>,</span> <span class='id identifier rubyid_msb'>msb</span><span class='comma'>,</span> <span class='id identifier rubyid_lsb'>lsb</span><span class='rparen'>)</span>
   <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_input'>input</span><span class='comma'>,</span> <span class='id identifier rubyid_interval'>interval</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='id identifier rubyid_var'>var</span><span class='comma'>,</span> <span class='id identifier rubyid_msb'>msb</span><span class='comma'>,</span> <span class='id identifier rubyid_lsb'>lsb</span><span class='rbracket'>]</span><span class='rparen'>)</span>
@@ -454,12 +425,12 @@
       <pre class="lines">
 
 
-840
-841
-842</pre>
+853
+854
+855</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 840</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 853</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_lsb'>lsb</span>
   <span class='ivar'>@lsb</span>
@@ -497,12 +468,12 @@
       <pre class="lines">
 
 
-840
-841
-842</pre>
+853
+854
+855</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 840</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 853</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_msb'>msb</span>
   <span class='ivar'>@msb</span>
@@ -540,12 +511,12 @@
       <pre class="lines">
 
 
-840
-841
-842</pre>
+853
+854
+855</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 840</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 853</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_var'>var</span>
   <span class='ivar'>@var</span>
@@ -563,52 +534,7 @@
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="constexpr?-instance_method">
-  
-    #<strong>constexpr?</strong>(symtab, archdef)  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-    <span class="not_defined_here">
-      Originally defined in module
-        <span class='object_link'><a href="Lvalue.html#constexpr%3F-instance_method" title="Idl::Lvalue#constexpr? (method)">Lvalue</a></span>
-    </span>
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    <div class="note abstract">
-  <strong>This method is abstract.</strong>
-  <div class='inline'></div>
-</div>
-
-<p>Whether or not the <strong>value</strong> of this node can be determined at compile time, given a specific symbol table and architecture definition</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="gen_adoc-instance_method">
+  <h3 class="signature first" id="gen_adoc-instance_method">
   
     #<strong>gen_adoc</strong>(indent = 0, indent_spaces: 2)  &#x21d2; <tt>Object</tt> 
   
@@ -660,7 +586,7 @@
       <div class="method_details ">
   <h3 class="signature " id="type-instance_method">
   
-    #<strong>type</strong>(syms, archdef)  &#x21d2; <tt>Object</tt> 
+    #<strong>type</strong>(symtab)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -672,19 +598,31 @@
       <pre class="lines">
 
 
-872
-873
-874
-875
-876</pre>
+887
+888
+889
+890
+891
+892
+893
+894
+895
+896
+897</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 872</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 887</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>must call type_check</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>if</span> <span class='ivar'>@type</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
-
-  <span class='ivar'>@type</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_msb_value'>msb_value</span> <span class='op'>=</span> <span class='ivar'>@msb</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_lsb_value'>lsb_value</span> <span class='op'>=</span> <span class='ivar'>@lsb</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_range_size'>range_size</span> <span class='op'>=</span> <span class='id identifier rubyid_msb_value'>msb_value</span> <span class='op'>-</span> <span class='id identifier rubyid_lsb_value'>lsb_value</span> <span class='op'>+</span> <span class='int'>1</span>
+    <span class='const'><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>width:</span> <span class='id identifier rubyid_range_size'>range_size</span><span class='rparen'>)</span>
+  <span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="AstNode/ValueError.html" title="Idl::AstNode::ValueError (class)">ValueError</a></span></span>
+    <span class='comment'># don&#39;t know the width at compile time....assume the worst
+</span>    <span class='ivar'>@var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -694,7 +632,7 @@
       <div class="method_details ">
   <h3 class="signature " id="type_check-instance_method">
   
-    #<strong>type_check</strong>(syms, archdef)  &#x21d2; <tt>Object</tt> 
+    #<strong>type_check</strong>(symtab)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -706,19 +644,6 @@
       <pre class="lines">
 
 
-849
-850
-851
-852
-853
-854
-855
-856
-857
-858
-859
-860
-861
 862
 863
 864
@@ -727,32 +652,49 @@
 867
 868
 869
-870</pre>
+870
+871
+872
+873
+874
+875
+876
+877
+878
+879
+880
+881
+882
+883
+884
+885</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 849</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 862</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='ivar'>@var</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='ivar'>@msb</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='ivar'>@lsb</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='ivar'>@var</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='ivar'>@msb</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='ivar'>@lsb</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
 
-  <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Range operator only defined for integral types (found </span><span class='embexpr_beg'>#{</span><span class='ivar'>@var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='ivar'>@var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_integral?'>integral?</span>
+  <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Range operator only defined for integral types (found </span><span class='embexpr_beg'>#{</span><span class='ivar'>@var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='ivar'>@var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_integral?'>integral?</span>
 
-  <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Range MSB must be an integral type</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>unless</span> <span class='ivar'>@msb</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_integral?'>integral?</span>
-  <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Range LSB must be an integral type</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>unless</span> <span class='ivar'>@lsb</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_integral?'>integral?</span>
+  <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Range MSB must be an integral type</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='ivar'>@msb</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_integral?'>integral?</span>
+  <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Range LSB must be an integral type</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='ivar'>@lsb</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_integral?'>integral?</span>
 
-  <span class='comment'># could relax this later...
-</span>  <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Range operator only defined for constexpr indicies</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>unless</span> <span class='ivar'>@msb</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='ivar'>@lsb</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_msb_value'>msb_value</span> <span class='op'>=</span> <span class='ivar'>@msb</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_lsb_value'>lsb_value</span> <span class='op'>=</span> <span class='ivar'>@lsb</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
 
-  <span class='kw'>if</span> <span class='ivar'>@var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_kind'>kind</span> <span class='op'>==</span> <span class='symbol'>:bits</span>
-    <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Range too large for bits (range top = </span><span class='embexpr_beg'>#{</span><span class='ivar'>@msb</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>, range width = </span><span class='embexpr_beg'>#{</span><span class='ivar'>@var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_width'>width</span><span class='embexpr_end'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='ivar'>@msb</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span> <span class='op'>&gt;=</span> <span class='ivar'>@var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_width'>width</span>
-  <span class='kw'>end</span>
-  <span class='id identifier rubyid_range_size'>range_size</span> <span class='op'>=</span> <span class='ivar'>@msb</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span> <span class='op'>-</span> <span class='ivar'>@lsb</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span> <span class='op'>+</span> <span class='int'>1</span>
-  <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>zero/negative range</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_range_size'>range_size</span> <span class='op'>&lt;=</span> <span class='int'>0</span>
+    <span class='kw'>if</span> <span class='ivar'>@var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_kind'>kind</span> <span class='op'>==</span> <span class='symbol'>:bits</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_msb_value'>msb_value</span> <span class='op'>&gt;=</span> <span class='ivar'>@var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_width'>width</span>
+      <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Range too large for bits (range top = </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_msb_value'>msb_value</span><span class='embexpr_end'>}</span><span class='tstring_content'>, range width = </span><span class='embexpr_beg'>#{</span><span class='ivar'>@var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_width'>width</span><span class='embexpr_end'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>end</span>  
 
-  <span class='ivar'>@type</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>width:</span> <span class='id identifier rubyid_range_size'>range_size</span><span class='rparen'>)</span>
-  <span class='ivar'>@type</span><span class='period'>.</span><span class='id identifier rubyid_make_constexpr'>make_constexpr</span> <span class='kw'>if</span> <span class='ivar'>@var</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='ivar'>@msb</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='ivar'>@lsb</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_range_size'>range_size</span> <span class='op'>=</span> <span class='id identifier rubyid_msb_value'>msb_value</span> <span class='op'>-</span> <span class='id identifier rubyid_lsb_value'>lsb_value</span> <span class='op'>+</span> <span class='int'>1</span>
+    <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>zero/negative range (</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_msb_value'>msb_value</span><span class='embexpr_end'>}</span><span class='tstring_content'>:</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_lsb_value'>lsb_value</span><span class='embexpr_end'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_range_size'>range_size</span> <span class='op'>&lt;=</span> <span class='int'>0</span>
+  <span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="AstNode/ValueError.html" title="Idl::AstNode::ValueError (class)">ValueError</a></span></span>
+    <span class='comment'># OK, don&#39;t have to know
+</span>  <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -762,7 +704,7 @@
       <div class="method_details ">
   <h3 class="signature " id="value-instance_method">
   
-    #<strong>value</strong>(syms, archdef)  &#x21d2; <tt>Object</tt> 
+    #<strong>value</strong>(symtab)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -774,21 +716,17 @@
       <pre class="lines">
 
 
-878
-879
-880
-881
-882
-883</pre>
+899
+900
+901
+902</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 878</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 899</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_syms'>syms</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>array access is not constexpr</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>unless</span> <span class='ivar'>@var</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span> <span class='op'>&amp;&amp;</span> <span class='ivar'>@msb</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span> <span class='op'>&amp;&amp;</span> <span class='ivar'>@lsb</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span>
-
-  <span class='id identifier rubyid_mask'>mask</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='lparen'>(</span><span class='ivar'>@msb</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span> <span class='op'>-</span> <span class='ivar'>@lsb</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span> <span class='op'>+</span> <span class='int'>1</span><span class='rparen'>)</span><span class='rparen'>)</span> <span class='op'>-</span> <span class='int'>1</span>
-  <span class='lparen'>(</span><span class='ivar'>@var</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span> <span class='op'>&gt;&gt;</span> <span class='ivar'>@lsb</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='rparen'>)</span> <span class='op'>&amp;</span> <span class='id identifier rubyid_mask'>mask</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_mask'>mask</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='lparen'>(</span><span class='ivar'>@msb</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span> <span class='op'>-</span> <span class='ivar'>@lsb</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span> <span class='op'>+</span> <span class='int'>1</span><span class='rparen'>)</span><span class='rparen'>)</span> <span class='op'>-</span> <span class='int'>1</span>
+  <span class='lparen'>(</span><span class='ivar'>@var</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span> <span class='op'>&gt;&gt;</span> <span class='ivar'>@lsb</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='rparen'>)</span> <span class='op'>&amp;</span> <span class='id identifier rubyid_mask'>mask</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -800,7 +738,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Jul  1 07:25:22 2024 by
+  Generated on Fri Jul 12 05:52:17 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

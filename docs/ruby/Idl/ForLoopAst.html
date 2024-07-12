@@ -91,6 +91,11 @@
   
   
   
+  <dl>
+      <dt>Includes:</dt>
+      <dd><span class='object_link'><a href="Executable.html" title="Idl::Executable (module)">Executable</a></span>, <span class='object_link'><a href="Returns.html" title="Idl::Returns (module)">Returns</a></span></dd>
+  </dl>
+  
   
 
   
@@ -121,31 +126,11 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#constexpr_compatible%3F-instance_method" title="#constexpr_compatible? (instance method)">#<strong>constexpr_compatible?</strong>(symtab, archdef)  &#x21d2; Boolean </a>
+      <a href="#return_value-instance_method" title="#return_value (instance method)">#<strong>return_value</strong>(symtab)  &#x21d2; Object </a>
     
 
     
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'></div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#constexpr_return%3F-instance_method" title="#constexpr_return? (instance method)">#<strong>constexpr_return?</strong>(symtab, archdef)  &#x21d2; Boolean </a>
-    
-
+      (also: #execute)
     
   </span>
   
@@ -165,29 +150,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#return_value-instance_method" title="#return_value (instance method)">#<strong>return_value</strong>(symtab, archdef)  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'></div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#type_check-instance_method" title="#type_check (instance method)">#<strong>type_check</strong>(symtab, archdef)  &#x21d2; void </a>
+      <a href="#type_check-instance_method" title="#type_check (instance method)">#<strong>type_check</strong>(symtab)  &#x21d2; void </a>
     
 
     
@@ -202,30 +165,8 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>type check this node and all children, and memoize any symtab- or archdef-dependent type.</p>
+<p>type check this node and all children.</p>
 </div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#update_value-instance_method" title="#update_value (instance method)">#<strong>update_value</strong>(symtab, archdef)  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'></div></span>
   
 </li>
 
@@ -240,213 +181,25 @@
   
   
   
+  
+  
+  
+  
 
   <div id="instance_method_details" class="method_details_list">
     <h2>Instance Method Details</h2>
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="constexpr_compatible?-instance_method">
+  <h3 class="signature first" id="return_value-instance_method">
   
-    #<strong>constexpr_compatible?</strong>(symtab, archdef)  &#x21d2; <tt>Boolean</tt> 
-  
-
+    #<strong>return_value</strong>(symtab)  &#x21d2; <tt>Object</tt> 
   
 
   
-</h3><div class="docstring">
-  <div class="discussion">
-    
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-2908
-2909
-2910
-2911
-2912
-2913
-2914
-2915
-2916
-2917
-2918
-2919
-2920
-2921
-2922
-2923
-2924
-2925
-2926
-2927
-2928
-2929
-2930
-2931
-2932
-2933
-2934
-2935
-2936
-2937
-2938</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2908</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_constexpr_compatible?'>constexpr_compatible?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_syms'>syms</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span>
-
-  <span class='id identifier rubyid_compat'>compat</span> <span class='op'>=</span> <span class='id identifier rubyid_single_declaration_with_initialization'>single_declaration_with_initialization</span><span class='period'>.</span><span class='id identifier rubyid_constexpr_compatible?'>constexpr_compatible?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-
-  <span class='kw'>unless</span> <span class='id identifier rubyid_compat'>compat</span>
-    <span class='id identifier rubyid_syms'>syms</span><span class='period'>.</span><span class='id identifier rubyid_pop'>pop</span>
-    <span class='kw'>return</span> <span class='kw'>false</span>
-  <span class='kw'>end</span>
-
-  <span class='id identifier rubyid_single_declaration_with_initialization'>single_declaration_with_initialization</span><span class='period'>.</span><span class='id identifier rubyid_update_value'>update_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-
-  <span class='id identifier rubyid_compat'>compat</span> <span class='op'>=</span> <span class='id identifier rubyid_condition'>condition</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_found_return'>found_return</span> <span class='op'>=</span> <span class='kw'>false</span>
-  <span class='kw'>while</span> <span class='id identifier rubyid_compat'>compat</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_condition'>condition</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_stmts'>stmts</span><span class='period'>.</span><span class='id identifier rubyid_elements'>elements</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
-      <span class='id identifier rubyid_compat'>compat</span> <span class='op'>=</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_constexpr_compatible?'>constexpr_compatible?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-      <span class='kw'>break</span> <span class='kw'>unless</span> <span class='id identifier rubyid_compat'>compat</span>
-      <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_update_value'>update_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_found_return'>found_return</span> <span class='op'>=</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_contexpr_return?'>contexpr_return?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-      <span class='kw'>break</span> <span class='kw'>if</span> <span class='id identifier rubyid_found_return'>found_return</span>
-    <span class='kw'>end</span>
-    <span class='kw'>break</span> <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_compat'>compat</span> <span class='op'>||</span> <span class='id identifier rubyid_found_return'>found_return</span>
-    <span class='id identifier rubyid_compat'>compat</span> <span class='op'>=</span> <span class='id identifier rubyid_action'>action</span><span class='period'>.</span><span class='id identifier rubyid_constexpr_compatible?'>constexpr_compatible?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-    <span class='kw'>break</span> <span class='kw'>unless</span> <span class='id identifier rubyid_compat'>compat</span>
-    <span class='id identifier rubyid_action'>action</span><span class='period'>.</span><span class='id identifier rubyid_update_value'>update_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
-
-  <span class='id identifier rubyid_syms'>syms</span><span class='period'>.</span><span class='id identifier rubyid_pop'>pop</span>
-  <span class='id identifier rubyid_compat'>compat</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="constexpr_return?-instance_method">
-  
-    #<strong>constexpr_return?</strong>(symtab, archdef)  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-2940
-2941
-2942
-2943
-2944
-2945
-2946
-2947
-2948
-2949
-2950
-2951
-2952
-2953
-2954
-2955
-2956
-2957
-2958
-2959
-2960</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2940</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_constexpr_return?'>constexpr_return?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_constexpr_compatible?'>constexpr_compatible?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-
-  <span class='id identifier rubyid_syms'>syms</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span>
-
-  <span class='id identifier rubyid_single_declaration_with_initialization'>single_declaration_with_initialization</span><span class='period'>.</span><span class='id identifier rubyid_update_value'>update_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-
-  <span class='kw'>while</span> <span class='id identifier rubyid_condition'>condition</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_stmts'>stmts</span><span class='period'>.</span><span class='id identifier rubyid_elements'>elements</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
-      <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_update_value'>update_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-      <span class='kw'>if</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_contexpr_return?'>contexpr_return?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-        <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_pop'>pop</span>
-        <span class='kw'>return</span> <span class='kw'>true</span>
-      <span class='kw'>end</span>
-    <span class='kw'>end</span>
-    <span class='id identifier rubyid_action'>action</span><span class='period'>.</span><span class='id identifier rubyid_update_value'>update_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
-
-  <span class='id identifier rubyid_syms'>syms</span><span class='period'>.</span><span class='id identifier rubyid_pop'>pop</span>
-  <span class='kw'>return</span> <span class='kw'>false</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="return_value-instance_method">
-  
-    #<strong>return_value</strong>(symtab, archdef)  &#x21d2; <tt>Object</tt> 
-  
-
+    <span class="aliases">Also known as:
+    <span class="names"><span id='execute-instance_method'>execute</span></span>
+    </span>
   
 
   
@@ -456,51 +209,67 @@
       <pre class="lines">
 
 
-2962
-2963
-2964
-2965
-2966
-2967
-2968
-2969
-2970
-2971
-2972
-2973
-2974
-2975
-2976
-2977
-2978
-2979
-2980
-2981
-2982</pre>
+3095
+3096
+3097
+3098
+3099
+3100
+3101
+3102
+3103
+3104
+3105
+3106
+3107
+3108
+3109
+3110
+3111
+3112
+3113
+3114
+3115
+3116
+3117
+3118
+3119
+3120
+3121
+3122
+3123</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2962</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3095</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_return_value'>return_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Not constexpr_return</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_constexpr_return?'>constexpr_return?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_return_value'>return_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span>
 
-  <span class='id identifier rubyid_syms'>syms</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span>
+  <span class='kw'>begin</span>
+    <span class='id identifier rubyid_single_declaration_with_initialization'>single_declaration_with_initialization</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
 
-  <span class='id identifier rubyid_single_declaration_with_initialization'>single_declaration_with_initialization</span><span class='period'>.</span><span class='id identifier rubyid_update_value'>update_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-
-  <span class='kw'>while</span> <span class='id identifier rubyid_condition'>condition</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_stmts'>stmts</span><span class='period'>.</span><span class='id identifier rubyid_elements'>elements</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
-      <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_update_value'>update_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-      <span class='kw'>if</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_contexpr_return?'>contexpr_return?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-        <span class='id identifier rubyid_v'>v</span> <span class='op'>=</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_return_value'>return_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-        <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_pop'>pop</span>
-        <span class='kw'>return</span> <span class='id identifier rubyid_v'>v</span>
+    <span class='kw'>while</span> <span class='id identifier rubyid_condition'>condition</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_stmts'>stmts</span><span class='period'>.</span><span class='id identifier rubyid_elements'>elements</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
+        <span class='kw'>if</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="Returns.html" title="Idl::Returns (module)">Returns</a></span></span><span class='rparen'>)</span>
+          <span class='id identifier rubyid_v'>v</span> <span class='op'>=</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_return_value'>return_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+          <span class='kw'>unless</span> <span class='id identifier rubyid_v'>v</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+            <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_pop'>pop</span>
+            <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>value = </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_v'>v</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+            <span class='kw'>return</span> <span class='id identifier rubyid_v'>v</span>
+          <span class='kw'>end</span>
+        <span class='kw'>else</span>
+          <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+        <span class='kw'>end</span>
       <span class='kw'>end</span>
+      <span class='id identifier rubyid_action'>action</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
     <span class='kw'>end</span>
-    <span class='id identifier rubyid_action'>action</span><span class='period'>.</span><span class='id identifier rubyid_update_value'>update_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+  <span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="AstNode/ValueError.html" title="Idl::AstNode::ValueError (class)">ValueError</a></span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_e'>e</span>
+    <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_pop'>pop</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='id identifier rubyid_e'>e</span>
   <span class='kw'>end</span>
 
-  <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Didn&#39;t find return?</span><span class='tstring_end'>&quot;</span></span>
+  <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_pop'>pop</span>
+  <span class='kw'>nil</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -510,7 +279,7 @@
       <div class="method_details ">
   <h3 class="signature " id="type_check-instance_method">
   
-    #<strong>type_check</strong>(symtab, archdef)  &#x21d2; <tt>void</tt> 
+    #<strong>type_check</strong>(symtab)  &#x21d2; <tt>void</tt> 
   
 
   
@@ -519,9 +288,9 @@
 </h3><div class="docstring">
   <div class="discussion">
     <p class="note returns_void">This method returns an undefined value.</p>
-<p>type check this node and all children, and memoize any symtab- or archdef-dependent type</p>
+<p>type check this node and all children</p>
 
-<p>Calls to #type, #constexpr?, and/or #value may depend on type_check being called first with the same symtab and archdef. If not, those functions may raise an AstNode::InternalError</p>
+<p>Calls to #type and/or #value may depend on type_check being called first with the same symtab. If not, those functions may raise an AstNode::InternalError</p>
 
 
   </div>
@@ -542,22 +311,6 @@
         &mdash;
         <div class='inline'>
 <p>Symbol table for lookup</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>archdef</span>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="../ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>Configured architecture definition</p>
 </div>
       
     </li>
@@ -603,93 +356,31 @@
       <pre class="lines">
 
 
-2896
-2897
-2898
-2899
-2900
-2901
-2902
-2903
-2904
-2905
-2906</pre>
+3083
+3084
+3085
+3086
+3087
+3088
+3089
+3090
+3091
+3092
+3093</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2896</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3083</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span>
-  <span class='id identifier rubyid_single_declaration_with_initialization'>single_declaration_with_initialization</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_condition'>condition</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_action'>action</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_single_declaration_with_initialization'>single_declaration_with_initialization</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_condition'>condition</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_action'>action</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
 
   <span class='id identifier rubyid_stmts'>stmts</span><span class='period'>.</span><span class='id identifier rubyid_elements'>elements</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
-    <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
   <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_pop'>pop</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="update_value-instance_method">
-  
-    #<strong>update_value</strong>(symtab, archdef)  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-2984
-2985
-2986
-2987
-2988
-2989
-2990
-2991
-2992
-2993
-2994
-2995
-2996
-2997
-2998
-2999
-3000
-3001
-3002</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2984</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_update_value'>update_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Not constexpr_compatible</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_constexpr_compatible?'>constexpr_compatible?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-
-  <span class='id identifier rubyid_syms'>syms</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span>
-
-  <span class='id identifier rubyid_single_declaration_with_initialization'>single_declaration_with_initialization</span><span class='period'>.</span><span class='id identifier rubyid_update_value'>update_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_found_return'>found_return</span> <span class='op'>=</span> <span class='kw'>false</span>
-  <span class='kw'>while</span> <span class='id identifier rubyid_condition'>condition</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_stmts'>stmts</span><span class='period'>.</span><span class='id identifier rubyid_elements'>elements</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
-      <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_update_value'>update_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_found_return'>found_return</span> <span class='op'>=</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_constexpr_return?'>constexpr_return?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-      <span class='kw'>break</span> <span class='kw'>if</span> <span class='id identifier rubyid_found_return'>found_return</span>
-    <span class='kw'>end</span>
-    <span class='kw'>break</span> <span class='kw'>if</span> <span class='id identifier rubyid_found_return'>found_return</span>
-    <span class='id identifier rubyid_action'>action</span><span class='period'>.</span><span class='id identifier rubyid_update_value'>update_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
-
-  <span class='id identifier rubyid_syms'>syms</span><span class='period'>.</span><span class='id identifier rubyid_pop'>pop</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -701,7 +392,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Jul  1 07:25:23 2024 by
+  Generated on Fri Jul 12 05:52:18 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

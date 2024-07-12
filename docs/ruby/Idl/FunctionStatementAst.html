@@ -73,7 +73,7 @@
   
   <dl>
       <dt>Includes:</dt>
-      <dd><span class='object_link'><a href="AstNodeFuncs.html" title="Idl::AstNodeFuncs (module)">AstNodeFuncs</a></span></dd>
+      <dd><span class='object_link'><a href="AstNodeFuncs.html" title="Idl::AstNodeFuncs (module)">AstNodeFuncs</a></span>, <span class='object_link'><a href="Executable.html" title="Idl::Executable (module)">Executable</a></span></dd>
   </dl>
   
   
@@ -135,7 +135,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#constexpr%3F-instance_method" title="#constexpr? (instance method)">#<strong>constexpr?</strong>  &#x21d2; Boolean </a>
+      <a href="#execute-instance_method" title="#execute (instance method)">#<strong>execute</strong>(symtab)  &#x21d2; Object </a>
     
 
     
@@ -149,33 +149,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>true if the statement is constexpr.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#constexpr_returns%3F-instance_method" title="#constexpr_returns? (instance method)">#<strong>constexpr_returns?</strong>(symtab, archdef)  &#x21d2; Boolean </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>true if the statement is constexpr <strong>and</strong> it returns from the function.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'></div></span>
   
 </li>
 
@@ -299,7 +273,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#type_check-instance_method" title="#type_check (instance method)">#<strong>type_check</strong>(symtab, archdef)  &#x21d2; void </a>
+      <a href="#type_check-instance_method" title="#type_check (instance method)">#<strong>type_check</strong>(symtab)  &#x21d2; void </a>
     
 
     
@@ -319,7 +293,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>type check this node and all children, and memoize any symtab- or archdef-dependent type.</p>
+<p>type check this node and all children.</p>
 </div></span>
   
 </li>
@@ -383,10 +357,41 @@
 </li>
 
       
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#value_error-instance_method" title="#value_error (instance method)">#<strong>value_error</strong>(reason)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+    <span class="note title not_defined_here">
+      included
+      from <span class='object_link'><a href="AstNodeFuncs.html#value_error-instance_method" title="Idl::AstNodeFuncs#value_error (method)">AstNodeFuncs</a></span>
+    </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>raise a value error, indicating that the value is not known at compile time.</p>
+</div></span>
+  
+</li>
+
+      
     </ul>
   
 
 
+  
+  
   
   
 
@@ -441,117 +446,30 @@
 </div>
     
       <div class="method_details ">
-  <h3 class="signature " id="constexpr?-instance_method">
+  <h3 class="signature " id="execute-instance_method">
   
-    #<strong>constexpr?</strong>  &#x21d2; <tt>Boolean</tt> 
-  
-
+    #<strong>execute</strong>(symtab)  &#x21d2; <tt>Object</tt> 
   
 
   
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>true if the statement is constexpr</p>
 
-
-  </div>
-</div>
-<div class="tags">
   
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
+</h3><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-2549
-2550
-2551</pre>
+2718
+2719
+2720</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2549</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2718</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_constexpr?'>constexpr?</span>
-  <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>FunctionStatementAst type must implement constexpr?</span><span class='tstring_end'>&quot;</span></span>
+<span class='kw'>def</span> <span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>WHere is this AST?</span><span class='tstring_end'>&quot;</span></span>
 <span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="constexpr_returns?-instance_method">
-  
-    #<strong>constexpr_returns?</strong>(symtab, archdef)  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>true if the statement is constexpr <strong>and</strong> it returns from the function</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-<p class="tag_title">Raises:</p>
-<ul class="raise">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>NotImplementedError</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-2554</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2554</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_constexpr_returns?'>constexpr_returns?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span> <span class='op'>=</span> <span class='id identifier rubyid_raise'>raise</span> <span class='const'>NotImplementedError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> needs to implement constexpr_returns?</span><span class='tstring_end'>&quot;</span></span></pre>
     </td>
   </tr>
 </table>
@@ -607,7 +525,7 @@
     <li>
       
       
-        <span class='type'>(<tt>Ast::TypeError</tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="AstNode/TypeError.html" title="Idl::AstNode::TypeError (class)">AstNode::TypeError</a></span></tt>)</span>
       
       
       
@@ -821,7 +739,7 @@
       <div class="method_details ">
   <h3 class="signature " id="type_check-instance_method">
   
-    #<strong>type_check</strong>(symtab, archdef)  &#x21d2; <tt>void</tt> 
+    #<strong>type_check</strong>(symtab)  &#x21d2; <tt>void</tt> 
   
 
   
@@ -839,9 +757,9 @@
   <div class='inline'></div>
 </div>
 <p class="note returns_void">This method returns an undefined value.</p>
-<p>type check this node and all children, and memoize any symtab- or archdef-dependent type</p>
+<p>type check this node and all children</p>
 
-<p>Calls to #type, #constexpr?, and/or #value may depend on type_check being called first with the same symtab and archdef. If not, those functions may raise an AstNode::InternalError</p>
+<p>Calls to #type and/or #value may depend on type_check being called first with the same symtab. If not, those functions may raise an AstNode::InternalError</p>
 
 
   </div>
@@ -862,22 +780,6 @@
         &mdash;
         <div class='inline'>
 <p>Symbol table for lookup</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>archdef</span>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="../ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>Configured architecture definition</p>
 </div>
       
     </li>
@@ -970,7 +872,7 @@
     <li>
       
       
-        <span class='type'>(<tt>Ast::TypeError</tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="AstNode/TypeError.html" title="Idl::AstNode::TypeError (class)">AstNode::TypeError</a></span></tt>)</span>
       
       
       
@@ -1054,12 +956,78 @@
 </div>
 </div>
     
+      <div class="method_details ">
+  <h3 class="signature " id="value_error-instance_method">
+  
+    #<strong>value_error</strong>(reason)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+    <span class="not_defined_here">
+      Originally defined in module
+        <span class='object_link'><a href="AstNodeFuncs.html#value_error-instance_method" title="Idl::AstNodeFuncs#value_error (method)">AstNodeFuncs</a></span>
+    </span>
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>raise a value error, indicating that the value is not known at compile time</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>reason</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Error message</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="AstNode/ValueError.html" title="Idl::AstNode::ValueError (class)">AstNode::ValueError</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>always</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div>
+</div>
+    
   </div>
 
 </div>
 
       <div id="footer">
-  Generated on Mon Jul  1 07:25:22 2024 by
+  Generated on Fri Jul 12 05:52:16 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

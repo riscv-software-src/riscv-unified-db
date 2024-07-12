@@ -278,6 +278,30 @@
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#all_known_csr_names-instance_method" title="#all_known_csr_names (instance method)">#<strong>all_known_csr_names</strong>  &#x21d2; Array&lt;String&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>List of all known CSRs, even those not implemented by this config.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#csr-instance_method" title="#csr (instance method)">#<strong>csr</strong>(csr_name)  &#x21d2; Csr<sup>?</sup> </a>
     
 
@@ -326,7 +350,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#csrs-instance_method" title="#csrs (instance method)">#<strong>csrs</strong>  &#x21d2; Array&lt;Csr&gt; </a>
+      <a href="#csrs-instance_method" title="#csrs (instance method)">#<strong>csrs</strong>  &#x21d2; Object </a>
     
 
     
@@ -340,9 +364,7 @@
   
 
   
-    <span class="summary_desc"><div class='inline'>
-<p>List of all implemented CSRs.</p>
-</div></span>
+    <span class="summary_desc"><div class='inline'></div></span>
   
 </li>
 
@@ -490,6 +512,78 @@
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#implemented_csr-instance_method" title="#implemented_csr (instance method)">#<strong>implemented_csr</strong>(csr_name)  &#x21d2; Csr<sup>?</sup> </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>A specific csr, or nil if it doesn’t exist or isn’t implemented.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#implemented_csr_hash-instance_method" title="#implemented_csr_hash (instance method)">#<strong>implemented_csr_hash</strong>  &#x21d2; Hash&lt;String, Csr&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Implemented csrs, indexed by CSR name.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#implemented_csrs-instance_method" title="#implemented_csrs (instance method)">#<strong>implemented_csrs</strong>  &#x21d2; Array&lt;Csr&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>List of all implemented CSRs.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#implemented_extensions-instance_method" title="#implemented_extensions (instance method)">#<strong>implemented_extensions</strong>  &#x21d2; Array&lt;ExtensionVersion&gt; </a>
     
 
@@ -506,6 +600,30 @@
   
     <span class="summary_desc"><div class='inline'>
 <p>List of all extensions that are implemented.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#implemented_instructions-instance_method" title="#implemented_instructions (instance method)">#<strong>implemented_instructions</strong>  &#x21d2; Array&lt;Instruction&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>List of all implemented instructions.</p>
 </div></span>
   
 </li>
@@ -603,7 +721,31 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>List of all implemented instructions.</p>
+<p>List of all instructions, whether or not they are implemented.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#multi_xlen%3F-instance_method" title="#multi_xlen? (instance method)">#<strong>multi_xlen?</strong>  &#x21d2; Boolean </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>returns true if this configuration can execute in multiple xlen environments (i.e., that in some mode the effective xlen can be either 32 or 64, depending on CSR values).</p>
 </div></span>
   
 </li>
@@ -641,34 +783,34 @@
       <pre class="lines">
 
 
-1269
-1270
-1271
-1272
-1273
-1274
-1275
-1276
-1277
-1278
-1279
-1280
-1281
-1282
-1283
-1284
-1285
-1286
-1287
-1288
-1289
-1290
-1291
-1292
-1293</pre>
+1383
+1384
+1385
+1386
+1387
+1388
+1389
+1390
+1391
+1392
+1393
+1394
+1395
+1396
+1397
+1398
+1399
+1400
+1401
+1402
+1403
+1404
+1405
+1406
+1407</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1269</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1383</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_config_name'>config_name</span><span class='rparen'>)</span>
   <span class='ivar'>@name</span> <span class='op'>=</span> <span class='id identifier rubyid_config_name'>config_name</span>
@@ -733,12 +875,12 @@
       <pre class="lines">
 
 
-1265
-1266
-1267</pre>
+1379
+1380
+1381</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1265</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1379</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_config_params'>config_params</span>
   <span class='ivar'>@config_params</span>
@@ -776,12 +918,12 @@
       <pre class="lines">
 
 
-1267
-1268
-1269</pre>
+1381
+1382
+1383</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1267</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1381</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_idl_compiler'>idl_compiler</span>
   <span class='ivar'>@idl_compiler</span>
@@ -819,12 +961,12 @@
       <pre class="lines">
 
 
-1265
-1266
-1267</pre>
+1379
+1380
+1381</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1265</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1379</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_isa_def'>isa_def</span>
   <span class='ivar'>@isa_def</span>
@@ -880,12 +1022,12 @@
       <pre class="lines">
 
 
-1263
-1264
-1265</pre>
+1377
+1378
+1379</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1263</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1377</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_name'>name</span>
   <span class='ivar'>@name</span>
@@ -923,12 +1065,12 @@
       <pre class="lines">
 
 
-1265
-1266
-1267</pre>
+1379
+1380
+1381</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1265</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1379</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sym_table'>sym_table</span>
   <span class='ivar'>@sym_table</span>
@@ -946,7 +1088,66 @@
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="csr-instance_method">
+  <h3 class="signature first" id="all_known_csr_names-instance_method">
+  
+    #<strong>all_known_csr_names</strong>  &#x21d2; <tt>Array&lt;String&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns List of all known CSRs, even those not implemented by this config.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;String&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>List of all known CSRs, even those not implemented by this config</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+1493
+1494
+1495</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1493</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_all_known_csr_names'>all_known_csr_names</span>
+  <span class='ivar'>@arch_def</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>csrs</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_csr'>csr</span><span class='op'>|</span> <span class='id identifier rubyid_csr'>csr</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="csr-instance_method">
   
     #<strong>csr</strong>(csr_name)  &#x21d2; <tt><span class='object_link'><a href="Csr.html" title="Csr (class)">Csr</a></span></tt><sup>?</sup> 
   
@@ -1009,12 +1210,12 @@
       <pre class="lines">
 
 
-1371
-1372
-1373</pre>
+1527
+1528
+1529</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1371</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1527</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_csr'>csr</span><span class='lparen'>(</span><span class='id identifier rubyid_csr_name'>csr_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_csr_hash'>csr_hash</span><span class='lbracket'>[</span><span class='id identifier rubyid_csr_name'>csr_name</span><span class='rbracket'>]</span>
@@ -1068,18 +1269,18 @@
       <pre class="lines">
 
 
-1359
-1360
-1361
-1362
-1363
-1364
-1365
-1366
-1367</pre>
+1509
+1510
+1511
+1512
+1513
+1514
+1515
+1516
+1517</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1359</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1509</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_csr_hash'>csr_hash</span>
   <span class='kw'>return</span> <span class='ivar'>@csr_hash</span> <span class='kw'>unless</span> <span class='ivar'>@csr_hash</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1098,57 +1299,28 @@
       <div class="method_details ">
   <h3 class="signature " id="csrs-instance_method">
   
-    #<strong>csrs</strong>  &#x21d2; <tt>Array&lt;<span class='object_link'><a href="Csr.html" title="Csr (class)">Csr</a></span>&gt;</tt> 
+    #<strong>csrs</strong>  &#x21d2; <tt>Object</tt> 
   
 
   
 
   
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>Returns List of all implemented CSRs.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Array&lt;<span class='object_link'><a href="Csr.html" title="Csr (class)">Csr</a></span>&gt;</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>List of all implemented CSRs</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
+</h3><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-1350
-1351
-1352
-1353
-1354
-1355
-1356</pre>
+1483
+1484
+1485
+1486
+1487
+1488
+1489</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1350</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1483</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_csrs'>csrs</span>
   <span class='kw'>return</span> <span class='ivar'>@csrs</span> <span class='kw'>unless</span> <span class='ivar'>@csrs</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1188,12 +1360,12 @@
       <pre class="lines">
 
 
-1345
-1346
-1347</pre>
+1470
+1471
+1472</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1345</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1470</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_data'>data</span>
   <span class='ivar'>@arch_def</span>
@@ -1240,19 +1412,19 @@
       <pre class="lines">
 
 
-1333
-1334
-1335
-1336
-1337
-1338
-1339
-1340
-1341
-1342</pre>
+1458
+1459
+1460
+1461
+1462
+1463
+1464
+1465
+1466
+1467</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1333</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1458</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_ext?'>ext?</span><span class='lparen'>(</span><span class='id identifier rubyid_ext_name'>ext_name</span><span class='comma'>,</span> <span class='id identifier rubyid_ext_version'>ext_version</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_implemented_extensions'>implemented_extensions</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_e'>e</span><span class='op'>|</span>
@@ -1333,12 +1505,12 @@
       <pre class="lines">
 
 
-1329
-1330
-1331</pre>
+1454
+1455
+1456</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1329</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1454</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_extension'>extension</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_extension_hash'>extension_hash</span><span class='lbracket'>[</span><span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rbracket'>]</span>
@@ -1363,18 +1535,18 @@
       <pre class="lines">
 
 
-1317
-1318
-1319
-1320
-1321
-1322
-1323
-1324
-1325</pre>
+1442
+1443
+1444
+1445
+1446
+1447
+1448
+1449
+1450</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1317</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1442</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_extension_hash'>extension_hash</span>
   <span class='kw'>return</span> <span class='ivar'>@extension_hash</span> <span class='kw'>unless</span> <span class='ivar'>@extension_hash</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1434,18 +1606,18 @@
       <pre class="lines">
 
 
-1307
-1308
-1309
-1310
-1311
-1312
-1313
-1314
-1315</pre>
+1432
+1433
+1434
+1435
+1436
+1437
+1438
+1439
+1440</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1307</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1432</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_extensions'>extensions</span>
   <span class='kw'>return</span> <span class='ivar'>@extensions</span> <span class='kw'>unless</span> <span class='ivar'>@extensions</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1525,30 +1697,30 @@
       <pre class="lines">
 
 
-1409
-1410
-1411
-1412
-1413
-1414
-1415
-1416
-1417
-1418
-1419
-1420
-1421
-1422
-1423
-1424
-1425
-1426
-1427
-1428
-1429</pre>
+1580
+1581
+1582
+1583
+1584
+1585
+1586
+1587
+1588
+1589
+1590
+1591
+1592
+1593
+1594
+1595
+1596
+1597
+1598
+1599
+1600</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1409</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1580</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_find_replace_links'>find_replace_links</span><span class='lparen'>(</span><span class='id identifier rubyid_adoc'>adoc</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_adoc'>adoc</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>`([\w.]+)`</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_match'>match</span><span class='op'>|</span>
@@ -1569,6 +1741,223 @@
     <span class='kw'>else</span>
       <span class='id identifier rubyid_match'>match</span>
     <span class='kw'>end</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="implemented_csr-instance_method">
+  
+    #<strong>implemented_csr</strong>(csr_name)  &#x21d2; <tt><span class='object_link'><a href="Csr.html" title="Csr (class)">Csr</a></span></tt><sup>?</sup> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns a specific csr, or nil if it doesn’t exist or isn’t implemented.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>csr_name</span>
+      
+      
+        <span class='type'>(<tt>#to_s</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>CSR name</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Csr.html" title="Csr (class)">Csr</a></span></tt>, <tt>nil</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>a specific csr, or nil if it doesn’t exist or isn’t implemented</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+1521
+1522
+1523</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1521</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_implemented_csr'>implemented_csr</span><span class='lparen'>(</span><span class='id identifier rubyid_csr_name'>csr_name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_implemented_csr_hash'>implemented_csr_hash</span><span class='lbracket'>[</span><span class='id identifier rubyid_csr_name'>csr_name</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="implemented_csr_hash-instance_method">
+  
+    #<strong>implemented_csr_hash</strong>  &#x21d2; <tt>Hash&lt;String, <span class='object_link'><a href="Csr.html" title="Csr (class)">Csr</a></span>&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns Implemented csrs, indexed by CSR name.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Hash&lt;String, <span class='object_link'><a href="Csr.html" title="Csr (class)">Csr</a></span>&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Implemented csrs, indexed by CSR name</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+1498
+1499
+1500
+1501
+1502
+1503
+1504
+1505
+1506</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1498</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_implemented_csr_hash'>implemented_csr_hash</span>
+  <span class='kw'>return</span> <span class='ivar'>@implemented_csr_hash</span> <span class='kw'>unless</span> <span class='ivar'>@implemented_csr_hash</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+  <span class='ivar'>@implemented_csr_hash</span> <span class='op'>=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+  <span class='id identifier rubyid_implemented_csrs'>implemented_csrs</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_csr'>csr</span><span class='op'>|</span>
+    <span class='ivar'>@implemented_csr_hash</span><span class='lbracket'>[</span><span class='id identifier rubyid_csr'>csr</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_csr'>csr</span>
+  <span class='kw'>end</span>
+  <span class='ivar'>@implemented_csr_hash</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="implemented_csrs-instance_method">
+  
+    #<strong>implemented_csrs</strong>  &#x21d2; <tt>Array&lt;<span class='object_link'><a href="Csr.html" title="Csr (class)">Csr</a></span>&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns List of all implemented CSRs.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;<span class='object_link'><a href="Csr.html" title="Csr (class)">Csr</a></span>&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>List of all implemented CSRs</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+1475
+1476
+1477
+1478
+1479
+1480
+1481</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1475</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_implemented_csrs'>implemented_csrs</span>
+  <span class='kw'>return</span> <span class='ivar'>@implemented_csrs</span> <span class='kw'>unless</span> <span class='ivar'>@implemented_csrs</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+  <span class='ivar'>@implemented_csrs</span> <span class='op'>=</span> <span class='ivar'>@arch_def</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>csrs</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_csr_name'>csr_name</span><span class='comma'>,</span> <span class='id identifier rubyid__csr_data'>_csr_data</span><span class='op'>|</span> <span class='ivar'>@arch_def</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>implemented_csrs</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_csr_name'>csr_name</span><span class='rparen'>)</span><span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid__csr_name'>_csr_name</span><span class='comma'>,</span> <span class='id identifier rubyid_csr_data'>csr_data</span><span class='op'>|</span>
+    <span class='const'><span class='object_link'><a href="Csr.html" title="Csr (class)">Csr</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Csr.html#initialize-instance_method" title="Csr#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_csr_data'>csr_data</span><span class='comma'>,</span> <span class='ivar'>@sym_table</span><span class='comma'>,</span> <span class='kw'>self</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -1620,18 +2009,23 @@
       <pre class="lines">
 
 
-1296
-1297
-1298
-1299
-1300
-1301
-1302
-1303
-1304</pre>
+1416
+1417
+1418
+1419
+1420
+1421
+1422
+1423
+1424
+1425
+1426
+1427
+1428
+1429</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1296</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1416</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_implemented_extensions'>implemented_extensions</span>
   <span class='kw'>return</span> <span class='ivar'>@implemented_extensions</span> <span class='kw'>unless</span> <span class='ivar'>@implemented_extensions</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1641,6 +2035,86 @@
     <span class='ivar'>@implemented_extensions</span> <span class='op'>&lt;&lt;</span> <span class='const'><span class='object_link'><a href="ExtensionVersion.html" title="ExtensionVersion (class)">ExtensionVersion</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="ExtensionVersion.html#initialize-instance_method" title="ExtensionVersion#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_e'>e</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_e'>e</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>version</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='kw'>self</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
   <span class='ivar'>@implemented_extensions</span>
+
+  <span class='id identifier rubyid_pp'>pp</span> <span class='ivar'>@implemented_extensions</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_ev'>ev</span><span class='op'>|</span> <span class='lbracket'>[</span><span class='id identifier rubyid_ev'>ev</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_ev'>ev</span><span class='period'>.</span><span class='id identifier rubyid_version'>version</span><span class='rbracket'>]</span> <span class='rbrace'>}</span>
+
+  <span class='ivar'>@implemented_extensions</span>
+
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="implemented_instructions-instance_method">
+  
+    #<strong>implemented_instructions</strong>  &#x21d2; <tt>Array&lt;<span class='object_link'><a href="Instruction.html" title="Instruction (class)">Instruction</a></span>&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns List of all implemented instructions.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;<span class='object_link'><a href="Instruction.html" title="Instruction (class)">Instruction</a></span>&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>List of all implemented instructions</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+1556
+1557
+1558
+1559
+1560
+1561
+1562
+1563
+1564
+1565
+1566</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1556</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_implemented_instructions'>implemented_instructions</span>
+  <span class='kw'>return</span> <span class='ivar'>@implemented_instructions</span> <span class='kw'>unless</span> <span class='ivar'>@implemented_instructions</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+  <span class='id identifier rubyid_opcode_data'>opcode_data</span> <span class='op'>=</span> <span class='const'>YAML</span><span class='period'>.</span><span class='id identifier rubyid_load_file'>load_file</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='gvar'>$root</span><span class='embexpr_end'>}</span><span class='tstring_content'>/ext/riscv-opcodes/instr_dict.yaml</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+  <span class='ivar'>@implemented_instructions</span> <span class='op'>=</span> <span class='ivar'>@arch_def</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>implemented_instructions</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_inst_name'>inst_name</span><span class='op'>|</span>
+    <span class='id identifier rubyid_instruction_hash'>instruction_hash</span><span class='lbracket'>[</span><span class='id identifier rubyid_inst_name'>inst_name</span><span class='rbracket'>]</span>
+  <span class='kw'>end</span>
+
+  <span class='ivar'>@implemented_instructions</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1711,12 +2185,12 @@
       <pre class="lines">
 
 
-1400
-1401
-1402</pre>
+1571
+1572
+1573</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1400</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1571</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_inst'>inst</span><span class='lparen'>(</span><span class='id identifier rubyid_inst_name'>inst_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_instruction_hash'>instruction_hash</span><span class='lbracket'>[</span><span class='id identifier rubyid_inst_name'>inst_name</span><span class='rbracket'>]</span>
@@ -1770,18 +2244,18 @@
       <pre class="lines">
 
 
-1388
-1389
-1390
-1391
-1392
-1393
-1394
-1395
-1396</pre>
+1545
+1546
+1547
+1548
+1549
+1550
+1551
+1552
+1553</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1388</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1545</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_instruction_hash'>instruction_hash</span>
   <span class='kw'>return</span> <span class='ivar'>@instruction_hash</span> <span class='kw'>unless</span> <span class='ivar'>@instruction_hash</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1809,7 +2283,7 @@
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Returns List of all implemented instructions.</p>
+<p>Returns List of all instructions, whether or not they are implemented.</p>
 
 
   </div>
@@ -1828,7 +2302,7 @@
       
         &mdash;
         <div class='inline'>
-<p>List of all implemented instructions</p>
+<p>List of all instructions, whether or not they are implemented</p>
 </div>
       
     </li>
@@ -1841,19 +2315,20 @@
       <pre class="lines">
 
 
-1376
-1377
-1378
-1379
-1380
-1381
-1382
-1383
-1384
-1385</pre>
+1532
+1533
+1534
+1535
+1536
+1537
+1538
+1539
+1540
+1541
+1542</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1376</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1532</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_instructions'>instructions</span>
   <span class='kw'>return</span> <span class='ivar'>@instructions</span> <span class='kw'>unless</span> <span class='ivar'>@instructions</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1863,7 +2338,62 @@
   <span class='ivar'>@instructions</span> <span class='op'>=</span> <span class='ivar'>@arch_def</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>instructions</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid__inst_name'>_inst_name</span><span class='comma'>,</span> <span class='id identifier rubyid_inst_data'>inst_data</span><span class='op'>|</span>
     <span class='const'><span class='object_link'><a href="Instruction.html" title="Instruction (class)">Instruction</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Instruction.html#initialize-instance_method" title="Instruction#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_inst_data'>inst_data</span><span class='comma'>,</span> <span class='id identifier rubyid_opcode_data'>opcode_data</span><span class='comma'>,</span> <span class='ivar'>@sym_table</span><span class='comma'>,</span> <span class='kw'>self</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
+
   <span class='ivar'>@instructions</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="multi_xlen?-instance_method">
+  
+    #<strong>multi_xlen?</strong>  &#x21d2; <tt>Boolean</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>returns true if this configuration can execute in multiple xlen environments (i.e., that in some mode the effective xlen can be either 32 or 64, depending on CSR values)</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+1411
+1412
+1413</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1411</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_multi_xlen?'>multi_xlen?</span>
+  <span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SXLEN</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>UXLEN</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>VSXLEN</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>VUXLEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_key'>key</span><span class='op'>|</span> <span class='ivar'>@config_params</span><span class='lbracket'>[</span><span class='id identifier rubyid_key'>key</span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='int'>3264</span> <span class='rbrace'>}</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1875,7 +2405,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Jul  1 07:25:24 2024 by
+  Generated on Fri Jul 12 05:52:19 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

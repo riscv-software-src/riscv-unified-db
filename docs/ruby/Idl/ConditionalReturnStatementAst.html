@@ -93,6 +93,11 @@
   
   
   
+  <dl>
+      <dt>Includes:</dt>
+      <dd><span class='object_link'><a href="Returns.html" title="Idl::Returns (module)">Returns</a></span></dd>
+  </dl>
+  
   
 
   
@@ -145,29 +150,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#constexpr_compatible%3F-instance_method" title="#constexpr_compatible? (instance method)">#<strong>constexpr_compatible?</strong>  &#x21d2; Boolean </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'></div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#constexpr_returns%3F-instance_method" title="#constexpr_returns? (instance method)">#<strong>constexpr_returns?</strong>  &#x21d2; Boolean </a>
+      <a href="#return_value-instance_method" title="#return_value (instance method)">#<strong>return_value</strong>(symtab)  &#x21d2; Object </a>
     
 
     
@@ -198,6 +181,8 @@
   
   
   
+  
+  
 
   <div id="instance_method_details" class="method_details_list">
     <h2>Instance Method Details</h2>
@@ -218,12 +203,12 @@
       <pre class="lines">
 
 
-2240
-2241
-2242</pre>
+2395
+2396
+2397</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2240</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2395</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_condition'>condition</span>
   <span class='id identifier rubyid_expression'>expression</span>
@@ -234,115 +219,45 @@
 </div>
     
       <div class="method_details ">
-  <h3 class="signature " id="constexpr_compatible?-instance_method">
+  <h3 class="signature " id="return_value-instance_method">
   
-    #<strong>constexpr_compatible?</strong>  &#x21d2; <tt>Boolean</tt> 
-  
-
+    #<strong>return_value</strong>(symtab)  &#x21d2; <tt>Object</tt> 
   
 
   
-</h3><div class="docstring">
-  <div class="discussion">
-    
 
-  </div>
-</div>
-<div class="tags">
   
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
+</h3><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-2244
-2245
-2246
-2247
-2248
-2249
-2250
-2251
-2252</pre>
+2399
+2400
+2401
+2402
+2403
+2404
+2405
+2406
+2407
+2408
+2409</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2244</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2399</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_constexpr_compatible?'>constexpr_compatible?</span>
-  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='id identifier rubyid_condition'>condition</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_return_value'>return_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_cond'>cond</span> <span class='op'>=</span> <span class='id identifier rubyid_condition'>condition</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
 
-  <span class='kw'>if</span> <span class='id identifier rubyid_condition'>condition</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span> <span class='op'>==</span> <span class='kw'>false</span>
-    <span class='kw'>true</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_cond'>cond</span>
+    <span class='id identifier rubyid_return_value_nodes'>return_value_nodes</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='op'>|</span>
+      <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
   <span class='kw'>else</span>
-    <span class='id identifier rubyid_values'>values</span><span class='period'>.</span><span class='id identifier rubyid_all?'>all?</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_v'>v</span><span class='op'>|</span> <span class='id identifier rubyid_v'>v</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span> <span class='rbrace'>}</span>
+    <span class='kw'>nil</span>
   <span class='kw'>end</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="constexpr_returns?-instance_method">
-  
-    #<strong>constexpr_returns?</strong>  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-2254
-2255
-2256</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2254</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_constexpr_returns?'>constexpr_returns?</span>
-  <span class='id identifier rubyid_condition'>condition</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_condition'>condition</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_values'>values</span><span class='period'>.</span><span class='id identifier rubyid_all?'>all?</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_v'>v</span><span class='op'>|</span> <span class='id identifier rubyid_v'>v</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span> <span class='rbrace'>}</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -354,7 +269,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Jul  1 07:25:23 2024 by
+  Generated on Fri Jul 12 05:52:18 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

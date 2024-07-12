@@ -187,8 +187,6 @@
   
   
     
-      <span class="note title readonly">readonly</span>
-    
     
   
   
@@ -220,7 +218,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#const%3F-instance_method" title="#const? (instance method)">#<strong>const?</strong>  &#x21d2; Boolean </a>
+      <a href="#clone-instance_method" title="#clone (instance method)">#<strong>clone</strong>  &#x21d2; Object </a>
     
 
     
@@ -242,7 +240,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#constexpr%3F-instance_method" title="#constexpr? (instance method)">#<strong>constexpr?</strong>  &#x21d2; Boolean </a>
+      <a href="#const%3F-instance_method" title="#const? (instance method)">#<strong>const?</strong>  &#x21d2; Boolean </a>
     
 
     
@@ -484,11 +482,11 @@
 </div>
     
       
-      <span id=""></span>
+      <span id="value=-instance_method"></span>
       <div class="method_details ">
   <h3 class="signature " id="value-instance_method">
   
-    #<strong>value</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
+    #<strong>value</strong>  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -534,7 +532,47 @@
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="const?-instance_method">
+  <h3 class="signature first" id="clone-instance_method">
+  
+    #<strong>clone</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+21
+22
+23
+24
+25
+26
+27
+28</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 21</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_clone'>clone</span>
+  <span class='const'><span class='object_link'><a href="" title="Idl::Var (class)">Var</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="Idl::Var#initialize (method)">new</a></span></span><span class='lparen'>(</span>
+    <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span>
+    <span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_clone'>clone</span><span class='comma'>,</span>
+    <span class='id identifier rubyid_value'>value</span><span class='op'>&amp;.</span><span class='id identifier rubyid_clone'>clone</span><span class='comma'>,</span>
+    <span class='label'>decode_var:</span> <span class='ivar'>@decode_var</span>
+  <span class='rparen'>)</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="const?-instance_method">
   
     #<strong>const?</strong>  &#x21d2; <tt>Boolean</tt> 
   
@@ -570,67 +608,15 @@
       <pre class="lines">
 
 
-21
-22
-23</pre>
+30
+31
+32</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 21</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 30</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_const?'>const?</span>
   <span class='ivar'>@type</span><span class='period'>.</span><span class='id identifier rubyid_const?'>const?</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="constexpr?-instance_method">
-  
-    #<strong>constexpr?</strong>  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-25
-26
-27</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 25</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_constexpr?'>constexpr?</span>
-  <span class='ivar'>@type</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -674,12 +660,12 @@
       <pre class="lines">
 
 
-29
-30
-31</pre>
+34
+35
+36</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 29</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 34</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_decode_var?'>decode_var?</span>
   <span class='ivar'>@decode_var</span>
@@ -704,12 +690,12 @@
       <pre class="lines">
 
 
-33
-34
-35</pre>
+38
+39
+40</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 33</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 38</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_cxx'>to_cxx</span>
   <span class='ivar'>@name</span>
@@ -724,7 +710,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Jul  1 07:25:24 2024 by
+  Generated on Fri Jul 12 05:52:19 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

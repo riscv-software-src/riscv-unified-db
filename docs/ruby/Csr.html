@@ -352,7 +352,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>All fields for this CSR, sorted by location (smallest location first).</p>
+<p>All fields for this CSR, regardless of whether or not they are implemented.</p>
 </div></span>
   
 </li>
@@ -407,6 +407,54 @@
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#implemented_fields-instance_method" title="#implemented_fields (instance method)">#<strong>implemented_fields</strong>  &#x21d2; Array&lt;CsrField&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>All implemented fields for this CSR Excluded any fields that are defined by unimplemented extensions.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#implemented_fields_for-instance_method" title="#implemented_fields_for (instance method)">#<strong>implemented_fields_for</strong>(effective_xlen)  &#x21d2; Array&lt;CsrField&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>All implemented fields for this CSR at the given effective XLEN, sorted by location (smallest location first) Excluded any fields that are defined by unimplemented extensions or a base that is not effective_xlen.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(csr_data, sym_table, arch_def)  &#x21d2; Csr </a>
     
 
@@ -433,7 +481,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#length-instance_method" title="#length (instance method)">#<strong>length</strong>  &#x21d2; Object </a>
+      <a href="#length-instance_method" title="#length (instance method)">#<strong>length</strong>(effective_xlen = nil)  &#x21d2; Object </a>
     
 
     
@@ -455,7 +503,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#length_ast-instance_method" title="#length_ast (instance method)">#<strong>length_ast</strong>  &#x21d2; Object </a>
+      <a href="#length_cond32-instance_method" title="#length_cond32 (instance method)">#<strong>length_cond32</strong>  &#x21d2; Object </a>
     
 
     
@@ -477,7 +525,29 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#lengths-instance_method" title="#lengths (instance method)">#<strong>lengths</strong>  &#x21d2; Array&lt;Hash&gt; </a>
+      <a href="#length_cond64-instance_method" title="#length_cond64 (instance method)">#<strong>length_cond64</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#length_pretty-instance_method" title="#length_pretty (instance method)">#<strong>length_pretty</strong>  &#x21d2; String </a>
     
 
     
@@ -492,7 +562,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>when the length is determined dynamically, there are multiple valid lengths this function returns the set of valid lengths, along with the condition under which that length is used.</p>
+<p>Pretty-printed length string.</p>
 </div></span>
   
 </li>
@@ -545,7 +615,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#wavedrom_desc-instance_method" title="#wavedrom_desc (instance method)">#<strong>wavedrom_desc</strong>(effective_length = nil)  &#x21d2; String </a>
+      <a href="#wavedrom_desc-instance_method" title="#wavedrom_desc (instance method)">#<strong>wavedrom_desc</strong>(effective_xlen)  &#x21d2; String </a>
     
 
     
@@ -601,15 +671,15 @@
       <pre class="lines">
 
 
-369
-370
-371
-372
-373
-374</pre>
+327
+328
+329
+330
+331
+332</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 369</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 327</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_csr_data'>csr_data</span><span class='comma'>,</span> <span class='id identifier rubyid_sym_table'>sym_table</span><span class='comma'>,</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='rparen'>)</span>
   <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_csr_data'>csr_data</span><span class='rparen'>)</span>
@@ -683,12 +753,12 @@
       <pre class="lines">
 
 
-367
-368
-369</pre>
+325
+326
+327</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 367</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 325</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_arch_def'>arch_def</span>
   <span class='ivar'>@arch_def</span>
@@ -744,12 +814,12 @@
       <pre class="lines">
 
 
-367
-368
-369</pre>
+325
+326
+327</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 367</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 325</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sym_table'>sym_table</span>
   <span class='ivar'>@sym_table</span>
@@ -865,6 +935,21 @@
       <pre class="lines">
 
 
+447
+448
+449
+450
+451
+452
+453
+454
+455
+456
+457
+458
+459
+460
+461
 462
 463
 464
@@ -874,25 +959,10 @@
 468
 469
 470
-471
-472
-473
-474
-475
-476
-477
-478
-479
-480
-481
-482
-483
-484
-485
-486</pre>
+471</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 462</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 447</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_computed_length'>computed_length</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_dynamic_length?'>dynamic_length?</span>
@@ -968,12 +1038,12 @@
       <pre class="lines">
 
 
-529
-530
-531</pre>
+514
+515
+516</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 529</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 514</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_description_html'>description_html</span>
   <span class='const'>Asciidoctor</span><span class='period'>.</span><span class='id identifier rubyid_convert'>convert</span> <span class='id identifier rubyid_description'>description</span>
@@ -1027,23 +1097,39 @@
       <pre class="lines">
 
 
-378
-379
-380
-381
-382
-383
-384</pre>
+336
+337
+338
+339
+340
+341
+342
+343
+344
+345
+346
+347
+348
+349
+350</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 378</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 336</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_dynamic_length?'>dynamic_length?</span>
-  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>unless</span> <span class='ivar'>@data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length()</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+  <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Integer</span><span class='rparen'>)</span>
 
-  <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> is dynamic?    </span><span class='embexpr_beg'>#{</span><span class='op'>!</span><span class='id identifier rubyid_length_ast'>length_ast</span><span class='period'>.</span><span class='id identifier rubyid_constexpr_returns?'>constexpr_returns?</span><span class='lparen'>(</span><span class='ivar'>@sym_table</span><span class='comma'>,</span> <span class='ivar'>@arch_def</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
-
-  <span class='op'>!</span><span class='id identifier rubyid_length_ast'>length_ast</span><span class='period'>.</span><span class='id identifier rubyid_constexpr_returns?'>constexpr_returns?</span><span class='lparen'>(</span><span class='ivar'>@sym_table</span><span class='comma'>,</span> <span class='ivar'>@arch_def</span><span class='rparen'>)</span>
+  <span class='kw'>case</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+  <span class='kw'>when</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>MXLEN</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>false</span> <span class='comment'># mxlen can never change
+</span>  <span class='kw'>when</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SXLEN</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SXLEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='int'>3264</span>
+  <span class='kw'>when</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>VSXLEN</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>VSXLEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='int'>3264</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Unexpected length</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+  <span class='op'>!</span><span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Integer</span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='lparen'>(</span><span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>!=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>MXLEN</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1076,12 +1162,12 @@
       <pre class="lines">
 
 
-571
-572
-573</pre>
+601
+602
+603</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 571</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 601</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_field'>field</span><span class='lparen'>(</span><span class='id identifier rubyid_field_name'>field_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_field_hash'>field_hash</span><span class='lbracket'>[</span><span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rbracket'>]</span>
@@ -1135,12 +1221,12 @@
       <pre class="lines">
 
 
-566
-567
-568</pre>
+596
+597
+598</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 566</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 596</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_field?'>field?</span><span class='lparen'>(</span><span class='id identifier rubyid_field_name'>field_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_field_hash'>field_hash</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
@@ -1194,19 +1280,19 @@
       <pre class="lines">
 
 
-554
-555
-556
-557
-558
-559
-560
-561
-562
-563</pre>
+584
+585
+586
+587
+588
+589
+590
+591
+592
+593</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 554</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 584</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_field_hash'>field_hash</span>
   <span class='ivar'>@field_hash</span> <span class='kw'>unless</span> <span class='ivar'>@field_hash</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1235,7 +1321,7 @@
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Returns All fields for this CSR, sorted by location (smallest location first).</p>
+<p>Returns All fields for this CSR, regardless of whether or not they are implemented.</p>
 
 
   </div>
@@ -1254,7 +1340,7 @@
       
         &mdash;
         <div class='inline'>
-<p>All fields for this CSR, sorted by location (smallest location first)</p>
+<p>All fields for this CSR, regardless of whether or not they are implemented</p>
 </div>
       
     </li>
@@ -1267,27 +1353,18 @@
       <pre class="lines">
 
 
-534
-535
-536
-537
-538
-539
-540
-541
-542
-543
-544
-545
-546
-547
-548
-549
-550
-551</pre>
+519
+520
+521
+522
+523
+524
+525
+526
+527</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 534</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 519</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_fields'>fields</span>
   <span class='kw'>return</span> <span class='ivar'>@fields</span> <span class='kw'>unless</span> <span class='ivar'>@fields</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1295,15 +1372,6 @@
   <span class='ivar'>@fields</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
   <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>fields</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_each_value'>each_value</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_field_data'>field_data</span><span class='op'>|</span>
     <span class='ivar'>@fields</span> <span class='op'>&lt;&lt;</span> <span class='const'><span class='object_link'><a href="CsrField.html" title="CsrField (class)">CsrField</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="CsrField.html#initialize-instance_method" title="CsrField#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_field_data'>field_data</span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
-  <span class='ivar'>@fields</span><span class='period'>.</span><span class='id identifier rubyid_sort!'>sort!</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_a'>a</span><span class='comma'>,</span> <span class='id identifier rubyid_b'>b</span><span class='op'>|</span>
-    <span class='kw'>if</span> <span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_dynamic_location?'>dynamic_location?</span>
-      <span class='int'>1</span>
-    <span class='kw'>elsif</span> <span class='id identifier rubyid_b'>b</span><span class='period'>.</span><span class='id identifier rubyid_dynamic_location?'>dynamic_location?</span>
-      <span class='op'>-</span><span class='int'>1</span>
-    <span class='kw'>else</span>
-      <span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='period'>.</span><span class='id identifier rubyid_max'>max</span> <span class='op'>&lt;=&gt;</span> <span class='id identifier rubyid_b'>b</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='period'>.</span><span class='id identifier rubyid_max'>max</span>
-    <span class='kw'>end</span>
   <span class='kw'>end</span>
   <span class='ivar'>@fields</span>
 <span class='kw'>end</span></pre>
@@ -1327,19 +1395,19 @@
       <pre class="lines">
 
 
-627
-628
-629
-630
-631
-632
-633
-634
-635
-636</pre>
+651
+652
+653
+654
+655
+656
+657
+658
+659
+660</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 627</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 651</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_gen_html'>gen_html</span><span class='lparen'>(</span><span class='id identifier rubyid_scope'>scope</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_scope'>scope</span> <span class='op'>=</span> <span class='id identifier rubyid_scope'>scope</span><span class='period'>.</span><span class='id identifier rubyid_clone'>clone</span>
@@ -1400,12 +1468,12 @@
       <pre class="lines">
 
 
-576
-577
-578</pre>
+606
+607
+608</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 576</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 606</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_has_custom_sw_read?'>has_custom_sw_read?</span>
   <span class='ivar'>@data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>sw_read</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_sw_read'>sw_read</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -1416,97 +1484,9 @@
 </div>
     
       <div class="method_details ">
-  <h3 class="signature " id="length-instance_method">
+  <h3 class="signature " id="implemented_fields-instance_method">
   
-    #<strong>length</strong>  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-386
-387
-388
-389
-390
-391
-392</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 386</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_length'>length</span>
-  <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length is dynamic</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_dynamic_length?'>dynamic_length?</span>
-
-  <span class='kw'>return</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='kw'>if</span> <span class='ivar'>@data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-
-  <span class='id identifier rubyid_length_ast'>length_ast</span><span class='period'>.</span><span class='id identifier rubyid_return_value'>return_value</span><span class='lparen'>(</span><span class='ivar'>@sym_table</span><span class='comma'>,</span> <span class='ivar'>@arch_def</span><span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="length_ast-instance_method">
-  
-    #<strong>length_ast</strong>  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-394
-395
-396
-397
-398
-399
-400
-401
-402
-403
-404
-405
-406</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 394</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_length_ast'>length_ast</span>
-  <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Not an IDL length</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='ivar'>@data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length()</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-
-  <span class='kw'>return</span> <span class='ivar'>@length_ast</span> <span class='kw'>unless</span> <span class='ivar'>@length_ast</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
-
-  <span class='ivar'>@length_ast</span> <span class='op'>=</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_idl_compiler'>idl_compiler</span><span class='period'>.</span><span class='id identifier rubyid_compile_func_body'>compile_func_body</span><span class='lparen'>(</span>
-    <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length()</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
-    <span class='label'>return_type:</span> <span class='const'><span class='object_link'><a href="Idl.html" title="Idl (module)">Idl</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Idl/Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Idl/Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>width:</span> <span class='int'>7</span><span class='rparen'>)</span><span class='comma'>,</span>
-    <span class='label'>symtab:</span> <span class='ivar'>@sym_table</span><span class='comma'>,</span>
-    <span class='label'>name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
-    <span class='label'>parent:</span> <span class='id identifier rubyid_name'>name</span>
-  <span class='rparen'>)</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="lengths-instance_method">
-  
-    #<strong>lengths</strong>  &#x21d2; <tt>Array&lt;Hash&gt;</tt> 
+    #<strong>implemented_fields</strong>  &#x21d2; <tt>Array&lt;<span class='object_link'><a href="CsrField.html" title="CsrField (class)">CsrField</a></span>&gt;</tt> 
   
 
   
@@ -1515,7 +1495,7 @@
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>when the length is determined dynamically, there are multiple valid lengths this function returns the set of valid lengths, along with the condition under which that length is used</p>
+<p>Returns All implemented fields for this CSR Excluded any fields that are defined by unimplemented extensions.</p>
 
 
   </div>
@@ -1528,13 +1508,13 @@
     <li>
       
       
-        <span class='type'>(<tt>Array&lt;Hash&gt;</tt>)</span>
+        <span class='type'>(<tt>Array&lt;<span class='object_link'><a href="CsrField.html" title="CsrField (class)">CsrField</a></span>&gt;</tt>)</span>
       
       
       
         &mdash;
         <div class='inline'>
-<p>Length, as a hash of =&gt; value</p>
+<p>All implemented fields for this CSR Excluded any fields that are defined by unimplemented extensions</p>
 </div>
       
     </li>
@@ -1547,6 +1527,389 @@
       <pre class="lines">
 
 
+555
+556
+557
+558
+559
+560
+561
+562
+563
+564
+565
+566
+567
+568
+569
+570
+571
+572
+573
+574
+575
+576
+577
+578
+579
+580
+581</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 555</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_implemented_fields'>implemented_fields</span>
+  <span class='kw'>return</span> <span class='ivar'>@implemented_fields</span> <span class='kw'>unless</span> <span class='ivar'>@implemented_fields</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+  <span class='id identifier rubyid_implemented_bases'>implemented_bases</span> <span class='op'>=</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SXLEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='int'>3264</span> <span class='op'>||</span>
+       <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>UXLEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='int'>3264</span> <span class='op'>||</span>
+       <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>VSXLEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='int'>3264</span> <span class='op'>||</span>
+       <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>VUXLEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='int'>3264</span>
+      <span class='lbracket'>[</span><span class='int'>32</span><span class='comma'>,</span><span class='int'>64</span><span class='rbracket'>]</span>
+    <span class='kw'>else</span>
+      <span class='lbracket'>[</span><span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>XLEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rbracket'>]</span>
+    <span class='kw'>end</span>
+
+  <span class='ivar'>@implemented_fields</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>fields</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_each_value'>each_value</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_field_data'>field_data</span><span class='op'>|</span>
+    <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_field_data'>field_data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>base</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_implemented_bases'>implemented_bases</span><span class='period'>.</span><span class='id identifier rubyid_none?'>none?</span><span class='lparen'>(</span><span class='id identifier rubyid_field_data'>field_data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>base</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rparen'>)</span>
+
+    <span class='id identifier rubyid_defined_by'>defined_by</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+    <span class='id identifier rubyid_defined_by'>defined_by</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_field_data'>field_data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>definedBy</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='kw'>if</span> <span class='id identifier rubyid_field_data'>field_data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>definedBy</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_field_data'>field_data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>definedBy</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>String</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_defined_by'>defined_by</span> <span class='op'>+=</span> <span class='id identifier rubyid_field_data'>field_data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>definedBy</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='kw'>if</span> <span class='id identifier rubyid_field_data'>field_data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>definedBy</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_field_data'>field_data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>definedBy</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Array</span><span class='rparen'>)</span>
+    <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_field_data'>field_data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>definedBy</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>||</span> <span class='lparen'>(</span><span class='id identifier rubyid_defined_by'>defined_by</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_ext_name'>ext_name</span><span class='op'>|</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_ext?'>ext?</span><span class='lparen'>(</span><span class='id identifier rubyid_ext_name'>ext_name</span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='rparen'>)</span>
+      <span class='ivar'>@implemented_fields</span> <span class='op'>&lt;&lt;</span> <span class='const'><span class='object_link'><a href="CsrField.html" title="CsrField (class)">CsrField</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="CsrField.html#initialize-instance_method" title="CsrField#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_field_data'>field_data</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+
+  <span class='ivar'>@implemented_fields</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="implemented_fields_for-instance_method">
+  
+    #<strong>implemented_fields_for</strong>(effective_xlen)  &#x21d2; <tt>Array&lt;<span class='object_link'><a href="CsrField.html" title="CsrField (class)">CsrField</a></span>&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns All implemented fields for this CSR at the given effective XLEN, sorted by location (smallest location first) Excluded any fields that are defined by unimplemented extensions or a base that is not effective_xlen.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;<span class='object_link'><a href="CsrField.html" title="CsrField (class)">CsrField</a></span>&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>All implemented fields for this CSR at the given effective XLEN, sorted by location (smallest location first) Excluded any fields that are defined by unimplemented extensions or a base that is not effective_xlen</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+531
+532
+533
+534
+535
+536
+537
+538
+539
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 531</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_implemented_fields_for'>implemented_fields_for</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span>
+  <span class='ivar'>@implemented_fields_for</span> <span class='op'>||=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
+  <span class='kw'>return</span> <span class='ivar'>@implemented_fields_for</span><span class='lbracket'>[</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rbracket'>]</span> <span class='kw'>unless</span> <span class='ivar'>@implemented_fields_for</span><span class='lbracket'>[</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+  <span class='ivar'>@implemented_fields_for</span><span class='lbracket'>[</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+  <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>fields</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_each_value'>each_value</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_field_data'>field_data</span><span class='op'>|</span>
+    <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_field_data'>field_data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>base</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='lparen'>(</span><span class='id identifier rubyid_field_data'>field_data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>base</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>!=</span> <span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span>
+
+    <span class='id identifier rubyid_defined_by'>defined_by</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+    <span class='id identifier rubyid_defined_by'>defined_by</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_field_data'>field_data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>definedBy</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='kw'>if</span> <span class='id identifier rubyid_field_data'>field_data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>definedBy</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_field_data'>field_data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>definedBy</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>String</span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_defined_by'>defined_by</span> <span class='op'>+=</span> <span class='id identifier rubyid_field_data'>field_data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>definedBy</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='kw'>if</span> <span class='id identifier rubyid_field_data'>field_data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>definedBy</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_field_data'>field_data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>definedBy</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Array</span><span class='rparen'>)</span>
+    <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_field_data'>field_data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>definedBy</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>||</span> <span class='lparen'>(</span><span class='id identifier rubyid_defined_by'>defined_by</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_ext_name'>ext_name</span><span class='op'>|</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_ext?'>ext?</span><span class='lparen'>(</span><span class='id identifier rubyid_ext_name'>ext_name</span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='rparen'>)</span>
+      <span class='ivar'>@implemented_fields_for</span><span class='lbracket'>[</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rbracket'>]</span> <span class='op'>&lt;&lt;</span> <span class='const'><span class='object_link'><a href="CsrField.html" title="CsrField (class)">CsrField</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="CsrField.html#initialize-instance_method" title="CsrField#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_field_data'>field_data</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+  <span class='kw'>end</span>
+  <span class='ivar'>@implemented_fields_for</span><span class='lbracket'>[</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_sort!'>sort!</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_a'>a</span><span class='comma'>,</span> <span class='id identifier rubyid_b'>b</span><span class='op'>|</span>
+    <span class='id identifier rubyid_a'>a</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_max'>max</span> <span class='op'>&lt;=&gt;</span> <span class='id identifier rubyid_b'>b</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_max'>max</span>
+  <span class='kw'>end</span>
+
+  <span class='ivar'>@implemented_fields_for</span><span class='lbracket'>[</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rbracket'>]</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="length-instance_method">
+  
+    #<strong>length</strong>(effective_xlen = nil)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+352
+353
+354
+355
+356
+357
+358
+359
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374
+375
+376
+377
+378
+379
+380
+381
+382
+383</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 352</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_length'>length</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
+  <span class='kw'>case</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+  <span class='kw'>when</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>MXLEN</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>XLEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+  <span class='kw'>when</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SXLEN</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SXLEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='int'>3264</span>
+      <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>effective_xlen is required when length is dynamic (</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+      <span class='id identifier rubyid_effective_xlen'>effective_xlen</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_implemented_csrs'>implemented_csrs</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='rbrace'>}</span>
+      <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CSR </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> is not implemented</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_implemented_csrs'>implemented_csrs</span><span class='period'>.</span><span class='id identifier rubyid_none?'>none?</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>==</span> <span class='id identifier rubyid_name'>name</span> <span class='rbrace'>}</span>
+      <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CSR </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> is not implemented</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SXLEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+      <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SXLEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+    <span class='kw'>end</span>
+  <span class='kw'>when</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>VSXLEN</span><span class='tstring_end'>&quot;</span></span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>VSXLEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='int'>3264</span>
+      <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>effective_xlen is required when length is dynamic (</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+      <span class='id identifier rubyid_effective_xlen'>effective_xlen</span>
+    <span class='kw'>else</span>
+      <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CSR </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> is not implemented</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>VSXLEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+
+      <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>VSXLEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+    <span class='kw'>end</span>
+  <span class='kw'>when</span> <span class='const'>Integer</span>
+    <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Unexpected length field for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_csr'>csr</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="length_cond32-instance_method">
+  
+    #<strong>length_cond32</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 385</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_length_cond32'>length_cond32</span>
+  <span class='kw'>case</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+  <span class='kw'>when</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SXLEN</span><span class='tstring_end'>&quot;</span></span>
+    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CSR[mstatus].SXL == 0</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>when</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>VSXLEN</span><span class='tstring_end'>&quot;</span></span>
+    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CSR[hstatus].VSXL == 0</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Unexpected length </span><span class='embexpr_beg'>#{</span><span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>length</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'> for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="length_cond64-instance_method">
+  
+    #<strong>length_cond64</strong>  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 396</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_length_cond64'>length_cond64</span>
+  <span class='kw'>case</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+  <span class='kw'>when</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SXLEN</span><span class='tstring_end'>&quot;</span></span>
+    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CSR[mstatus].SXL == 1</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>when</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>VSXLEN</span><span class='tstring_end'>&quot;</span></span>
+    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CSR[hstatus].VSXL == 1</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Unexpected length</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="length_pretty-instance_method">
+  
+    #<strong>length_pretty</strong>  &#x21d2; <tt>String</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns Pretty-printed length string.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Pretty-printed length string</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+408
+409
+410
+411
+412
 413
 414
 415
@@ -1561,55 +1924,30 @@
 424
 425
 426
-427
-428
-429
-430
-431
-432
-433
-434
-435
-436
-437
-438
-439
-440
-441
-442</pre>
+427</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 413</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 408</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_lengths'>lengths</span>
-  <span class='kw'>return</span> <span class='ivar'>@lengths</span> <span class='kw'>unless</span> <span class='ivar'>@lengths</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_length_pretty'>length_pretty</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_dynamic_length?'>dynamic_length?</span>
+    <span class='id identifier rubyid_cond'>cond</span> <span class='op'>=</span> 
+      <span class='kw'>case</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+      <span class='kw'>when</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SXLEN</span><span class='tstring_end'>&quot;</span></span>
+        <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CSR[mstatus].SXL == %%</span><span class='tstring_end'>&quot;</span></span>
+      <span class='kw'>when</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>VSXLEN</span><span class='tstring_end'>&quot;</span></span>
+        <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CSR[hstatus].VSXL == %%</span><span class='tstring_end'>&quot;</span></span>
+      <span class='kw'>else</span>
+        <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Unexpected length</span><span class='tstring_end'>&quot;</span></span>
+      <span class='kw'>end</span>
 
-  <span class='kw'>return</span> <span class='const'>TypeError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length for </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> is static; use length</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_dynamic_length?'>dynamic_length?</span>
-
-  <span class='id identifier rubyid_ast'>ast</span> <span class='op'>=</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_idl_compiler'>idl_compiler</span><span class='period'>.</span><span class='id identifier rubyid_compile_func_body'>compile_func_body</span><span class='lparen'>(</span>
-    <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length()</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
-    <span class='label'>return_type:</span> <span class='const'><span class='object_link'><a href="Idl.html" title="Idl (module)">Idl</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Idl/Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Idl/Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>width:</span> <span class='int'>6</span><span class='rparen'>)</span><span class='comma'>,</span>
-    <span class='label'>symtab:</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_sym_table'>sym_table</span><span class='comma'>,</span>
-    <span class='label'>name:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
-    <span class='label'>parent:</span> <span class='id identifier rubyid_name'>name</span>
-  <span class='rparen'>)</span>
-
-  <span class='id identifier rubyid_possible_values'>possible_values</span> <span class='op'>=</span> <span class='id identifier rubyid_ast'>ast</span><span class='period'>.</span><span class='id identifier rubyid_pass_find_return_values'>pass_find_return_values</span><span class='lparen'>(</span><span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_sym_table'>sym_table</span><span class='comma'>,</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='rparen'>)</span>
-
-  <span class='ivar'>@lengths</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
-  <span class='id identifier rubyid_possible_values'>possible_values</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_v'>v</span><span class='op'>|</span>
-    <span class='id identifier rubyid_value'>value</span> <span class='op'>=</span> <span class='id identifier rubyid_v'>v</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
-    <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Expecting constexpr length</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span><span class='lparen'>(</span><span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_sym_table'>sym_table</span><span class='comma'>,</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='rparen'>)</span>
-
-    <span class='id identifier rubyid_conditions'>conditions</span> <span class='op'>=</span> <span class='id identifier rubyid_v'>v</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span>
-
-    <span class='ivar'>@lengths</span> <span class='op'>&lt;&lt;</span> <span class='lbrace'>{</span>
-      <span class='label'>value:</span> <span class='id identifier rubyid_value'>value</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_sym_table'>sym_table</span><span class='comma'>,</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='rparen'>)</span><span class='comma'>,</span>
-      <span class='label'>when:</span> <span class='id identifier rubyid_conditions'>conditions</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:to_idl</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'> &amp;&amp; </span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
-    <span class='rbrace'>}</span>
+    <span class='heredoc_beg'>&lt;&lt;~LENGTH</span>
+<span class='tstring_content'>      </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_length'>length</span><span class='lparen'>(</span><span class='int'>32</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'> when </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_cond'>cond</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>%%</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>0</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>
+</span><span class='tstring_content'>      </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_length'>length</span><span class='lparen'>(</span><span class='int'>64</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'> when </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_cond'>cond</span><span class='period'>.</span><span class='id identifier rubyid_sub'>sub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>%%</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>1</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>
+</span><span class='heredoc_end'>    LENGTH
+</span>  <span class='kw'>else</span>
+    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_length'>length</span><span class='embexpr_end'>}</span><span class='tstring_content'>-bit</span><span class='tstring_end'>&quot;</span></span>
   <span class='kw'>end</span>
-
-  <span class='ivar'>@lengths</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1631,6 +1969,21 @@
       <pre class="lines">
 
 
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
 488
 489
 490
@@ -1652,25 +2005,10 @@
 506
 507
 508
-509
-510
-511
-512
-513
-514
-515
-516
-517
-518
-519
-520
-521
-522
-523
-524</pre>
+509</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 488</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 473</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sw_read_ast'>sw_read_ast</span>
   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TODO: add sw_read_ast back</span><span class='tstring_end'>&quot;</span></span>
@@ -1729,14 +2067,14 @@
       <pre class="lines">
 
 
-580
-581
-582
-583
-584</pre>
+610
+611
+612
+613
+614</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 580</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 610</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sw_read_source'>sw_read_source</span>
   <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_has_custom_sw_read?'>has_custom_sw_read?</span>
@@ -1751,7 +2089,7 @@
       <div class="method_details ">
   <h3 class="signature " id="wavedrom_desc-instance_method">
   
-    #<strong>wavedrom_desc</strong>(effective_length = nil)  &#x21d2; <tt>String</tt> 
+    #<strong>wavedrom_desc</strong>(effective_xlen)  &#x21d2; <tt>String</tt> 
   
 
   
@@ -1830,66 +2168,54 @@
       <pre class="lines">
 
 
-597
-598
-599
-600
-601
-602
-603
-604
-605
-606
-607
-608
-609
-610
-611
-612
-613
-614
-615
-616
-617
-618
-619
-620
-621
-622
-623
-624
-625</pre>
+627
+628
+629
+630
+631
+632
+633
+634
+635
+636
+637
+638
+639
+640
+641
+642
+643
+644
+645
+646
+647
+648
+649</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 597</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 627</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_wavedrom_desc'>wavedrom_desc</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_length'>effective_length</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_effective_length'>effective_length</span> <span class='op'>=</span> <span class='id identifier rubyid_length'>length</span> <span class='kw'>if</span> <span class='id identifier rubyid_effective_length'>effective_length</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
-  <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bad length</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_effective_length'>effective_length</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Integer</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_wavedrom_desc'>wavedrom_desc</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_desc'>desc</span> <span class='op'>=</span> <span class='lbrace'>{</span>
     <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>reg</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
   <span class='rbrace'>}</span>
   <span class='id identifier rubyid_last_idx'>last_idx</span> <span class='op'>=</span> <span class='op'>-</span><span class='int'>1</span>
-  <span class='kw'>if</span> <span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_any?'>any?</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:dynamic_location?</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:locations</span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
-  <span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_field'>field</span><span class='op'>|</span>
-    <span class='kw'>next</span> <span class='kw'>if</span> <span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_dynamic_location?'>dynamic_location?</span>
+  <span class='id identifier rubyid_implemented_fields_for'>implemented_fields_for</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_field'>field</span><span class='op'>|</span>
 
-    <span class='kw'>if</span> <span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='period'>.</span><span class='id identifier rubyid_min'>min</span> <span class='op'>!=</span> <span class='id identifier rubyid_last_idx'>last_idx</span> <span class='op'>+</span> <span class='int'>1</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_min'>min</span> <span class='op'>!=</span> <span class='id identifier rubyid_last_idx'>last_idx</span> <span class='op'>+</span> <span class='int'>1</span>
       <span class='comment'># have some reserved space
-</span>      <span class='id identifier rubyid_desc'>desc</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>reg</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>&lt;&lt;</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bits</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='lparen'>(</span><span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='period'>.</span><span class='id identifier rubyid_min'>min</span> <span class='op'>-</span> <span class='id identifier rubyid_last_idx'>last_idx</span> <span class='op'>-</span> <span class='int'>1</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='label'>type:</span> <span class='int'>1</span> <span class='rbrace'>}</span>
+</span>      <span class='id identifier rubyid_desc'>desc</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>reg</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>&lt;&lt;</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bits</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='lparen'>(</span><span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_min'>min</span> <span class='op'>-</span> <span class='id identifier rubyid_last_idx'>last_idx</span> <span class='op'>-</span> <span class='int'>1</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='label'>type:</span> <span class='int'>1</span> <span class='rbrace'>}</span>
     <span class='kw'>end</span>
-    <span class='id identifier rubyid_desc'>desc</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>reg</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>&lt;&lt;</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bits</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='label'>type:</span> <span class='int'>2</span> <span class='rbrace'>}</span>
-    <span class='id identifier rubyid_last_idx'>last_idx</span> <span class='op'>=</span> <span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='period'>.</span><span class='id identifier rubyid_max'>max</span>
+    <span class='id identifier rubyid_desc'>desc</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>reg</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>&lt;&lt;</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bits</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>name</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='label'>type:</span> <span class='int'>2</span> <span class='rbrace'>}</span>
+    <span class='id identifier rubyid_last_idx'>last_idx</span> <span class='op'>=</span> <span class='id identifier rubyid_field'>field</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_max'>max</span>
   <span class='kw'>end</span>
-  <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>&amp;&amp;</span> <span class='lparen'>(</span><span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span><span class='period'>.</span><span class='id identifier rubyid_dynamic_location?'>dynamic_location?</span> <span class='op'>||</span> <span class='lparen'>(</span><span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='period'>.</span><span class='id identifier rubyid_max'>max</span> <span class='op'>!=</span> <span class='lparen'>(</span><span class='id identifier rubyid_effective_length'>effective_length</span> <span class='op'>-</span> <span class='int'>1</span><span class='rparen'>)</span><span class='rparen'>)</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='op'>!</span><span class='id identifier rubyid_implemented_fields_for'>implemented_fields_for</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span> <span class='op'>&amp;&amp;</span> <span class='lparen'>(</span><span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span><span class='period'>.</span><span class='id identifier rubyid_location'>location</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_max'>max</span> <span class='op'>!=</span> <span class='lparen'>(</span><span class='id identifier rubyid_length'>length</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span> <span class='op'>-</span> <span class='int'>1</span><span class='rparen'>)</span><span class='rparen'>)</span>
     <span class='comment'># reserved space at the end
-</span>    <span class='id identifier rubyid_desc'>desc</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>reg</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>&lt;&lt;</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bits</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='lparen'>(</span><span class='id identifier rubyid_effective_length'>effective_length</span> <span class='op'>-</span> <span class='int'>1</span> <span class='op'>-</span> <span class='id identifier rubyid_last_idx'>last_idx</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='label'>type:</span> <span class='int'>1</span> <span class='rbrace'>}</span>
+</span>    <span class='id identifier rubyid_desc'>desc</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>reg</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>&lt;&lt;</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bits</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='lparen'>(</span><span class='id identifier rubyid_length'>length</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span> <span class='op'>-</span> <span class='int'>1</span> <span class='op'>-</span> <span class='id identifier rubyid_last_idx'>last_idx</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='label'>type:</span> <span class='int'>1</span> <span class='rbrace'>}</span>
     <span class='comment'># desc[&#39;reg&#39;] &lt;&lt; { &#39;bits&#39; =&gt; 1, type: 1 }
 </span>  <span class='kw'>end</span>
-  <span class='id identifier rubyid_desc'>desc</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>config</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bits</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_effective_length'>effective_length</span> <span class='rbrace'>}</span>
-  <span class='id identifier rubyid_desc'>desc</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>config</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>lanes</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_effective_length'>effective_length</span> <span class='op'>/</span> <span class='int'>16</span>
+  <span class='id identifier rubyid_desc'>desc</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>config</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='lbrace'>{</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bits</span><span class='tstring_end'>&quot;</span></span> <span class='op'>=&gt;</span> <span class='id identifier rubyid_length'>length</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
+  <span class='id identifier rubyid_desc'>desc</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>config</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>lanes</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_length'>length</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span> <span class='op'>/</span> <span class='int'>16</span>
   <span class='id identifier rubyid_desc'>desc</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -1902,7 +2228,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Jul  1 07:25:24 2024 by
+  Generated on Fri Jul 12 05:52:19 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

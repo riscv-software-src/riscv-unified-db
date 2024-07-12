@@ -119,6 +119,30 @@
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#apply_arguments-instance_method" title="#apply_arguments (instance method)">#<strong>apply_arguments</strong>(symtab, argument_nodes, call_site_symtab)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>apply the arguments as Vars.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#apply_template_values-instance_method" title="#apply_template_values (instance method)">#<strong>apply_template_values</strong>(template_values = [])  &#x21d2; Object </a>
     
 
@@ -163,7 +187,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#argument_type-instance_method" title="#argument_type (instance method)">#<strong>argument_type</strong>(index, template_values = [])  &#x21d2; Object </a>
+      <a href="#argument_type-instance_method" title="#argument_type (instance method)">#<strong>argument_type</strong>(index, template_values, argument_nodes, call_site_symtab)  &#x21d2; Object </a>
     
 
     
@@ -207,7 +231,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#constexpr%3F-instance_method" title="#constexpr? (instance method)">#<strong>constexpr?</strong>(template_values = [])  &#x21d2; Boolean </a>
+      <a href="#builtin%3F-instance_method" title="#builtin? (instance method)">#<strong>builtin?</strong>  &#x21d2; Boolean </a>
     
 
     
@@ -229,7 +253,29 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(func_name, func_def_ast, symtab, archdef)  &#x21d2; FunctionType </a>
+      <a href="#clone-instance_method" title="#clone (instance method)">#<strong>clone</strong>  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(func_name, func_def_ast, symtab)  &#x21d2; FunctionType </a>
     
 
     
@@ -277,7 +323,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#return_type-instance_method" title="#return_type (instance method)">#<strong>return_type</strong>(template_values = [])  &#x21d2; Object </a>
+      <a href="#return_type-instance_method" title="#return_type (instance method)">#<strong>return_type</strong>(template_values, argument_nodes, call_site_symtab)  &#x21d2; Object </a>
     
 
     
@@ -291,7 +337,9 @@
   
 
   
-    <span class="summary_desc"><div class='inline'></div></span>
+    <span class="summary_desc"><div class='inline'>
+<p>return [Type] type of the call return.</p>
+</div></span>
   
 </li>
 
@@ -299,7 +347,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#return_types-instance_method" title="#return_types (instance method)">#<strong>return_types</strong>(template_values = [])  &#x21d2; Array&lt;Type&gt; </a>
+      <a href="#return_types-instance_method" title="#return_types (instance method)">#<strong>return_types</strong>(template_values, argument_nodes, call_site_symtab)  &#x21d2; Array&lt;Type&gt; </a>
     
 
     
@@ -419,7 +467,7 @@
     <div class="method_details first">
   <h3 class="signature first" id="initialize-instance_method">
   
-    #<strong>initialize</strong>(func_name, func_def_ast, symtab, archdef)  &#x21d2; <tt><span class='object_link'><a href="" title="Idl::FunctionType (class)">FunctionType</a></span></tt> 
+    #<strong>initialize</strong>(func_name, func_def_ast, symtab)  &#x21d2; <tt><span class='object_link'><a href="" title="Idl::FunctionType (class)">FunctionType</a></span></tt> 
   
 
   
@@ -442,7 +490,6 @@
       <pre class="lines">
 
 
-420
 421
 422
 423
@@ -452,13 +499,12 @@
 427</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 420</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 421</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_func_name'>func_name</span><span class='comma'>,</span> <span class='id identifier rubyid_func_def_ast'>func_def_ast</span><span class='comma'>,</span> <span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_func_name'>func_name</span><span class='comma'>,</span> <span class='id identifier rubyid_func_def_ast'>func_def_ast</span><span class='comma'>,</span> <span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='kw'>super</span><span class='lparen'>(</span><span class='symbol'>:function</span><span class='comma'>,</span> <span class='label'>name:</span> <span class='id identifier rubyid_func_name'>func_name</span><span class='rparen'>)</span>
   <span class='ivar'>@func_def_ast</span> <span class='op'>=</span> <span class='id identifier rubyid_func_def_ast'>func_def_ast</span>
   <span class='ivar'>@symtab</span> <span class='op'>=</span> <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_deep_clone'>deep_clone</span>
-  <span class='ivar'>@archdef</span> <span class='op'>=</span> <span class='id identifier rubyid_archdef'>archdef</span>
 
   <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>symtab should be at level 1</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_levels'>levels</span> <span class='op'>==</span> <span class='int'>1</span>
 <span class='kw'>end</span></pre>
@@ -475,7 +521,64 @@
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="apply_template_values-instance_method">
+  <h3 class="signature first" id="apply_arguments-instance_method">
+  
+    #<strong>apply_arguments</strong>(symtab, argument_nodes, call_site_symtab)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>apply the arguments as Vars. then add the value to the Var</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+472
+473
+474
+475
+476
+477
+478
+479
+480
+481
+482</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 472</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_apply_arguments'>apply_arguments</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_argument_nodes'>argument_nodes</span><span class='comma'>,</span> <span class='id identifier rubyid_call_site_symtab'>call_site_symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_idx'>idx</span> <span class='op'>=</span> <span class='int'>0</span>
+  <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_arguments'>arguments</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_atype'>atype</span><span class='comma'>,</span> <span class='id identifier rubyid_aname'>aname</span><span class='op'>|</span>
+    <span class='kw'>begin</span>
+      <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_add!'>add!</span><span class='lparen'>(</span><span class='id identifier rubyid_aname'>aname</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="Var.html" title="Idl::Var (class)">Var</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Var.html#initialize-instance_method" title="Idl::Var#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_aname'>aname</span><span class='comma'>,</span> <span class='id identifier rubyid_atype'>atype</span><span class='comma'>,</span> <span class='id identifier rubyid_argument_nodes'>argument_nodes</span><span class='lbracket'>[</span><span class='id identifier rubyid_idx'>idx</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_call_site_symtab'>call_site_symtab</span><span class='rparen'>)</span><span class='rparen'>)</span><span class='rparen'>)</span>
+    <span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="AstNode.html" title="Idl::AstNode (class)">AstNode</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="AstNode/ValueError.html" title="Idl::AstNode::ValueError (class)">ValueError</a></span></span>
+      <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_add!'>add!</span><span class='lparen'>(</span><span class='id identifier rubyid_aname'>aname</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="Var.html" title="Idl::Var (class)">Var</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Var.html#initialize-instance_method" title="Idl::Var#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_aname'>aname</span><span class='comma'>,</span> <span class='id identifier rubyid_atype'>atype</span><span class='rparen'>)</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_idx'>idx</span> <span class='op'>+=</span> <span class='int'>1</span>
+  <span class='kw'>end</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="apply_template_values-instance_method">
   
     #<strong>apply_template_values</strong>(template_values = [])  &#x21d2; <tt>Object</tt> 
   
@@ -489,23 +592,23 @@
       <pre class="lines">
 
 
-445
-446
-447
-448
-449
-450
-451
-452
-453
-454
 455
 456
 457
-458</pre>
+458
+459
+460
+461
+462
+463
+464
+465
+466
+467
+468</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 445</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 455</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_apply_template_values'>apply_template_values</span><span class='lparen'>(</span><span class='id identifier rubyid_template_values'>template_values</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Missing template values</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_templated?'>templated?</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_template_values'>template_values</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -541,24 +644,26 @@
       <pre class="lines">
 
 
-483
-484
-485
-486
-487
-488
-489
-490</pre>
+514
+515
+516
+517
+518
+519
+520
+521
+522</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 483</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 514</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_argument_name'>argument_name</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='comma'>,</span> <span class='id identifier rubyid_template_values'>template_values</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>nil</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&gt;=</span> <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_num_args'>num_args</span>
 
   <span class='id identifier rubyid_symtab'>symtab</span> <span class='op'>=</span> <span class='id identifier rubyid_apply_template_values'>apply_template_values</span><span class='lparen'>(</span><span class='id identifier rubyid_template_values'>template_values</span><span class='rparen'>)</span>
-
-  <span class='id identifier rubyid_arguments'>arguments</span> <span class='op'>=</span> <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_arguments'>arguments</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='ivar'>@archdef</span><span class='rparen'>)</span>
+  <span class='comment'># apply_arguments(symtab, argument_nodes, call_site_symtab)
+</span>
+  <span class='id identifier rubyid_arguments'>arguments</span> <span class='op'>=</span> <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_arguments'>arguments</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_arguments'>arguments</span><span class='lbracket'>[</span><span class='id identifier rubyid_index'>index</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -569,7 +674,7 @@
       <div class="method_details ">
   <h3 class="signature " id="argument_type-instance_method">
   
-    #<strong>argument_type</strong>(index, template_values = [])  &#x21d2; <tt>Object</tt> 
+    #<strong>argument_type</strong>(index, template_values, argument_nodes, call_site_symtab)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -581,25 +686,27 @@
       <pre class="lines">
 
 
-474
-475
-476
-477
-478
-479
-480
-481</pre>
+504
+505
+506
+507
+508
+509
+510
+511
+512</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 474</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 504</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_argument_type'>argument_type</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='comma'>,</span> <span class='id identifier rubyid_template_values'>template_values</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_argument_type'>argument_type</span><span class='lparen'>(</span><span class='id identifier rubyid_index'>index</span><span class='comma'>,</span> <span class='id identifier rubyid_template_values'>template_values</span><span class='comma'>,</span> <span class='id identifier rubyid_argument_nodes'>argument_nodes</span><span class='comma'>,</span> <span class='id identifier rubyid_call_site_symtab'>call_site_symtab</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>nil</span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span> <span class='op'>&gt;=</span> <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_num_args'>num_args</span>
 
   <span class='id identifier rubyid_symtab'>symtab</span> <span class='op'>=</span> <span class='id identifier rubyid_apply_template_values'>apply_template_values</span><span class='lparen'>(</span><span class='id identifier rubyid_template_values'>template_values</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_apply_arguments'>apply_arguments</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_argument_nodes'>argument_nodes</span><span class='comma'>,</span> <span class='id identifier rubyid_call_site_symtab'>call_site_symtab</span><span class='rparen'>)</span>
 
-  <span class='id identifier rubyid_arguments'>arguments</span> <span class='op'>=</span> <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_arguments'>arguments</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='ivar'>@archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_arguments'>arguments</span><span class='lbracket'>[</span><span class='id identifier rubyid_index'>index</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span>
+  <span class='id identifier rubyid_arguments'>arguments</span> <span class='op'>=</span> <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_arguments'>arguments</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_arguments'>arguments</span><span class='lbracket'>[</span><span class='id identifier rubyid_index'>index</span><span class='rbracket'>]</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_clone'>clone</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -621,21 +728,21 @@
       <pre class="lines">
 
 
-498</pre>
+524</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 498</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 524</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_body'>body</span> <span class='op'>=</span> <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_body_block'>body_block</span><span class='period'>.</span><span class='id identifier rubyid_function_body'>function_body</span></pre>
+<span class='kw'>def</span> <span class='id identifier rubyid_body'>body</span> <span class='op'>=</span> <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_body'>body</span></pre>
     </td>
   </tr>
 </table>
 </div>
     
       <div class="method_details ">
-  <h3 class="signature " id="constexpr?-instance_method">
+  <h3 class="signature " id="builtin?-instance_method">
   
-    #<strong>constexpr?</strong>(template_values = [])  &#x21d2; <tt>Boolean</tt> 
+    #<strong>builtin?</strong>  &#x21d2; <tt>Boolean</tt> 
   
 
   
@@ -669,19 +776,41 @@
       <pre class="lines">
 
 
-492
-493
-494
-495
-496</pre>
+433</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 492</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 433</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_constexpr?'>constexpr?</span><span class='lparen'>(</span><span class='id identifier rubyid_template_values'>template_values</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_symtab'>symtab</span> <span class='op'>=</span> <span class='id identifier rubyid_apply_template_values'>apply_template_values</span><span class='lparen'>(</span><span class='id identifier rubyid_template_values'>template_values</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_builtin?'>builtin?</span> <span class='op'>=</span> <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_builtin?'>builtin?</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="clone-instance_method">
+  
+    #<strong>clone</strong>  &#x21d2; <tt>Object</tt> 
+  
 
-  <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_constexpr?'>constexpr?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='ivar'>@archdef</span><span class='rparen'>)</span>
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+429
+430
+431</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 429</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_clone'>clone</span>
+  <span class='const'><span class='object_link'><a href="" title="Idl::FunctionType (class)">FunctionType</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="Idl::FunctionType#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='ivar'>@func_def_ast</span><span class='comma'>,</span> <span class='ivar'>@symtab</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -703,10 +832,10 @@
       <pre class="lines">
 
 
-429</pre>
+435</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 429</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 435</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_num_args'>num_args</span> <span class='op'>=</span> <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_num_args'>num_args</span></pre>
     </td>
@@ -717,31 +846,96 @@
       <div class="method_details ">
   <h3 class="signature " id="return_type-instance_method">
   
-    #<strong>return_type</strong>(template_values = [])  &#x21d2; <tt>Object</tt> 
+    #<strong>return_type</strong>(template_values, argument_nodes, call_site_symtab)  &#x21d2; <tt>Object</tt> 
   
 
   
 
   
-</h3><table class="source_code">
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>return [Type] type of the call return</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>template_values</span>
+      
+      
+        <span class='type'>(<tt>Array&lt;Integer&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Template values for the call, in declaration order</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>argument_nodes</span>
+      
+      
+        <span class='type'>(<tt>Array&lt;Ast::Node&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Arguments at the call site</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>call_site_symtab</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="SymbolTable.html" title="Idl::SymbolTable (class)">SymbolTable</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Symbol table at the call site</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-460
-461
-462
-463
-464</pre>
+488
+489
+490
+491
+492
+493</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 460</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 488</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_return_type'>return_type</span><span class='lparen'>(</span><span class='id identifier rubyid_template_values'>template_values</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_return_type'>return_type</span><span class='lparen'>(</span><span class='id identifier rubyid_template_values'>template_values</span><span class='comma'>,</span> <span class='id identifier rubyid_argument_nodes'>argument_nodes</span><span class='comma'>,</span> <span class='id identifier rubyid_call_site_symtab'>call_site_symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_symtab'>symtab</span> <span class='op'>=</span> <span class='id identifier rubyid_apply_template_values'>apply_template_values</span><span class='lparen'>(</span><span class='id identifier rubyid_template_values'>template_values</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_apply_arguments'>apply_arguments</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_argument_nodes'>argument_nodes</span><span class='comma'>,</span> <span class='id identifier rubyid_call_site_symtab'>call_site_symtab</span><span class='rparen'>)</span>
 
-  <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_return_type'>return_type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='ivar'>@archdef</span><span class='rparen'>)</span>
+  <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_return_type'>return_type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_clone'>clone</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -751,7 +945,7 @@
       <div class="method_details ">
   <h3 class="signature " id="return_types-instance_method">
   
-    #<strong>return_types</strong>(template_values = [])  &#x21d2; <tt>Array&lt;<span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span>&gt;</tt> 
+    #<strong>return_types</strong>(template_values, argument_nodes, call_site_symtab)  &#x21d2; <tt>Array&lt;<span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span>&gt;</tt> 
   
 
   
@@ -776,8 +970,6 @@
       
         <span class='type'>(<tt>Array&lt;Integer&gt;</tt>)</span>
       
-      
-        <em class="default">(defaults to: <tt>[]</tt>)</em>
       
       
         &mdash;
@@ -814,19 +1006,21 @@
       <pre class="lines">
 
 
-468
-469
-470
-471
-472</pre>
+497
+498
+499
+500
+501
+502</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 468</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 497</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_return_types'>return_types</span><span class='lparen'>(</span><span class='id identifier rubyid_template_values'>template_values</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_return_types'>return_types</span><span class='lparen'>(</span><span class='id identifier rubyid_template_values'>template_values</span><span class='comma'>,</span> <span class='id identifier rubyid_argument_nodes'>argument_nodes</span><span class='comma'>,</span> <span class='id identifier rubyid_call_site_symtab'>call_site_symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_symtab'>symtab</span> <span class='op'>=</span> <span class='id identifier rubyid_apply_template_values'>apply_template_values</span><span class='lparen'>(</span><span class='id identifier rubyid_template_values'>template_values</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_apply_arguments'>apply_arguments</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_argument_nodes'>argument_nodes</span><span class='comma'>,</span> <span class='id identifier rubyid_call_site_symtab'>call_site_symtab</span><span class='rparen'>)</span>
 
-  <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_return_types'>return_types</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='ivar'>@archdef</span><span class='rparen'>)</span>
+  <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_return_types'>return_types</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:clone</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -848,10 +1042,10 @@
       <pre class="lines">
 
 
-439</pre>
+449</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 439</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 449</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_template_names'>template_names</span> <span class='op'>=</span> <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_template_names'>template_names</span></pre>
     </td>
@@ -874,10 +1068,10 @@
       <pre class="lines">
 
 
-441</pre>
+451</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 441</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 451</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_template_types'>template_types</span> <span class='op'>=</span> <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_template_types'>template_types</span></pre>
     </td>
@@ -922,10 +1116,10 @@
       <pre class="lines">
 
 
-443</pre>
+453</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 443</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 453</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_templated?'>templated?</span> <span class='op'>=</span> <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_templated?'>templated?</span></pre>
     </td>
@@ -948,23 +1142,31 @@
       <pre class="lines">
 
 
-431
-432
-433
-434
-435
-436
-437</pre>
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 431</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/type.rb', line 437</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_check_call'>type_check_call</span><span class='lparen'>(</span><span class='id identifier rubyid_template_values'>template_values</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span>
-  <span class='kw'>return</span> <span class='kw'>unless</span> <span class='id identifier rubyid_templated?'>templated?</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Missing template values</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_templated?'>templated?</span> <span class='kw'>and</span> <span class='id identifier rubyid_template_values'>template_values</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
 
-  <span class='id identifier rubyid_symtab'>symtab</span> <span class='op'>=</span> <span class='id identifier rubyid_apply_template_values'>apply_template_values</span><span class='lparen'>(</span><span class='id identifier rubyid_template_values'>template_values</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_templated?'>templated?</span>
+    <span class='id identifier rubyid_symtab'>symtab</span> <span class='op'>=</span> <span class='id identifier rubyid_apply_template_values'>apply_template_values</span><span class='lparen'>(</span><span class='id identifier rubyid_template_values'>template_values</span><span class='rparen'>)</span>
 
-  <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_type_check_template_instance'>type_check_template_instance</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='ivar'>@archdef</span><span class='rparen'>)</span>
+    <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_type_check_template_instance'>type_check_template_instance</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='kw'>else</span>
+    <span class='ivar'>@func_def_ast</span><span class='period'>.</span><span class='id identifier rubyid_type_check_from_call'>type_check_from_call</span><span class='lparen'>(</span><span class='ivar'>@symtab</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -976,7 +1178,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Jul  1 07:25:24 2024 by
+  Generated on Fri Jul 12 05:52:19 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

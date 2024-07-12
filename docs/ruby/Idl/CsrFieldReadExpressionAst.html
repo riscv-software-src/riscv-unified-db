@@ -93,7 +93,7 @@
   
   <dl>
       <dt>Includes:</dt>
-      <dd><span class='object_link'><a href="Lvalue.html" title="Idl::Lvalue (module)">Lvalue</a></span></dd>
+      <dd><span class='object_link'><a href="Rvalue.html" title="Idl::Rvalue (module)">Rvalue</a></span></dd>
   </dl>
   
   
@@ -126,31 +126,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#constexpr%3F-instance_method" title="#constexpr? (instance method)">#<strong>constexpr?</strong>(symtab, archdef)  &#x21d2; Boolean </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>Whether or not the <strong>value</strong> of this node can be determined at compile time, given a specific symbol table and architecture definition.</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#csr_def-instance_method" title="#csr_def (instance method)">#<strong>csr_def</strong>(symtab, archdef)  &#x21d2; Object </a>
+      <a href="#csr_def-instance_method" title="#csr_def (instance method)">#<strong>csr_def</strong>(symtab)  &#x21d2; Object </a>
     
 
     
@@ -172,7 +148,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#csr_name-instance_method" title="#csr_name (instance method)">#<strong>csr_name</strong>(symtab, archdef)  &#x21d2; Object </a>
+      <a href="#csr_name-instance_method" title="#csr_name (instance method)">#<strong>csr_name</strong>(symtab)  &#x21d2; Object </a>
     
 
     
@@ -194,7 +170,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#field_def-instance_method" title="#field_def (instance method)">#<strong>field_def</strong>(symtab, archdef)  &#x21d2; Object </a>
+      <a href="#field_def-instance_method" title="#field_def (instance method)">#<strong>field_def</strong>(symtab)  &#x21d2; Object </a>
     
 
     
@@ -216,7 +192,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#field_name-instance_method" title="#field_name (instance method)">#<strong>field_name</strong>(symtab, archdef)  &#x21d2; Object </a>
+      <a href="#field_name-instance_method" title="#field_name (instance method)">#<strong>field_name</strong>(symtab)  &#x21d2; Object </a>
     
 
     
@@ -262,7 +238,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#type-instance_method" title="#type (instance method)">#<strong>type</strong>(symtab, archdef)  &#x21d2; Type </a>
+      <a href="#type-instance_method" title="#type (instance method)">#<strong>type</strong>(symtab)  &#x21d2; Type </a>
     
 
     
@@ -277,7 +253,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>Given a specific symbol table and arch def, return the type of this node.</p>
+<p>Given a specific symbol table, return the type of this node.</p>
 </div></span>
   
 </li>
@@ -286,7 +262,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#type_check-instance_method" title="#type_check (instance method)">#<strong>type_check</strong>(symtab, archdef)  &#x21d2; void </a>
+      <a href="#type_check-instance_method" title="#type_check (instance method)">#<strong>type_check</strong>(symtab)  &#x21d2; void </a>
     
 
     
@@ -301,7 +277,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>type check this node and all children, and memoize any symtab- or archdef-dependent type.</p>
+<p>type check this node and all children.</p>
 </div></span>
   
 </li>
@@ -310,7 +286,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#value-instance_method" title="#value (instance method)">#<strong>value</strong>(symtab, archdef)  &#x21d2; Object </a>
+      <a href="#value-instance_method" title="#value (instance method)">#<strong>value</strong>(symtab)  &#x21d2; Object </a>
     
 
     
@@ -349,63 +325,9 @@
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="constexpr?-instance_method">
+  <h3 class="signature first" id="csr_def-instance_method">
   
-    #<strong>constexpr?</strong>(symtab, archdef)  &#x21d2; <tt>Boolean</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>Whether or not the <strong>value</strong> of this node can be determined at compile time, given a specific symbol table and architecture definition</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Boolean</tt>)</span>
-      
-      
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-3235
-3236
-3237</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3235</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_constexpr?'>constexpr?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_field_def'>field_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>RO</span><span class='tstring_end'>&quot;</span></span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="csr_def-instance_method">
-  
-    #<strong>csr_def</strong>(symtab, archdef)  &#x21d2; <tt>Object</tt> 
+    #<strong>csr_def</strong>(symtab)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -417,22 +339,26 @@
       <pre class="lines">
 
 
-3198
-3199
-3200
-3201
-3202
-3203
-3204</pre>
+3290
+3291
+3292
+3293
+3294
+3295
+3296
+3297
+3298</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3198</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3290</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_csr_def'>csr_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_csr_def'>csr_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_archdef'>archdef</span> <span class='op'>=</span> <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_archdef'>archdef</span>
+
   <span class='kw'>if</span> <span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="IntAst.html" title="Idl::IntAst (module)">IntAst</a></span></span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_archdef'>archdef</span><span class='period'>.</span><span class='id identifier rubyid_csrs'>csrs</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span> <span class='op'>==</span> <span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
+    <span class='id identifier rubyid_archdef'>archdef</span><span class='period'>.</span><span class='id identifier rubyid_implemented_csrs'>implemented_csrs</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span> <span class='op'>==</span> <span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
   <span class='kw'>else</span>
-    <span class='id identifier rubyid_archdef'>archdef</span><span class='period'>.</span><span class='id identifier rubyid_csrs'>csrs</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>==</span> <span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span> <span class='rbrace'>}</span>
+    <span class='id identifier rubyid_archdef'>archdef</span><span class='period'>.</span><span class='id identifier rubyid_implemented_csrs'>implemented_csrs</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>==</span> <span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span> <span class='rbrace'>}</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -443,7 +369,7 @@
       <div class="method_details ">
   <h3 class="signature " id="csr_name-instance_method">
   
-    #<strong>csr_name</strong>(symtab, archdef)  &#x21d2; <tt>Object</tt> 
+    #<strong>csr_name</strong>(symtab)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -455,15 +381,15 @@
       <pre class="lines">
 
 
-3206
-3207
-3208</pre>
+3300
+3301
+3302</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3206</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3300</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_csr_name'>csr_name</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_csr_def'>csr_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_csr_name'>csr_name</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_csr_def'>csr_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -473,7 +399,7 @@
       <div class="method_details ">
   <h3 class="signature " id="field_def-instance_method">
   
-    #<strong>field_def</strong>(symtab, archdef)  &#x21d2; <tt>Object</tt> 
+    #<strong>field_def</strong>(symtab)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -485,15 +411,15 @@
       <pre class="lines">
 
 
-3210
-3211
-3212</pre>
+3304
+3305
+3306</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3210</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3304</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_field_def'>field_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_csr_def'>csr_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_f'>f</span><span class='op'>|</span> <span class='id identifier rubyid_f'>f</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>==</span> <span class='id identifier rubyid_csr_field_name'>csr_field_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span> <span class='rbrace'>}</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_field_def'>field_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_csr_def'>csr_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_implemented_fields'>implemented_fields</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_f'>f</span><span class='op'>|</span> <span class='id identifier rubyid_f'>f</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>==</span> <span class='id identifier rubyid_csr_field_name'>csr_field_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span> <span class='rbrace'>}</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -503,7 +429,7 @@
       <div class="method_details ">
   <h3 class="signature " id="field_name-instance_method">
   
-    #<strong>field_name</strong>(symtab, archdef)  &#x21d2; <tt>Object</tt> 
+    #<strong>field_name</strong>(symtab)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -515,15 +441,15 @@
       <pre class="lines">
 
 
-3214
-3215
-3216</pre>
+3308
+3309
+3310</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3214</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3308</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_field_name'>field_name</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_field_def'>field_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_field_name'>field_name</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_field_def'>field_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -574,16 +500,16 @@
       <pre class="lines">
 
 
-3219
-3220
-3221
-3222
-3223
-3224
-3225</pre>
+3313
+3314
+3315
+3316
+3317
+3318
+3319</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3219</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3313</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_idl'>to_idl</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="IntAst.html" title="Idl::IntAst (module)">IntAst</a></span></span><span class='rparen'>)</span>
@@ -600,7 +526,7 @@
       <div class="method_details ">
   <h3 class="signature " id="type-instance_method">
   
-    #<strong>type</strong>(symtab, archdef)  &#x21d2; <tt><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></tt> 
+    #<strong>type</strong>(symtab)  &#x21d2; <tt><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></tt> 
   
 
   
@@ -609,7 +535,7 @@
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Given a specific symbol table and arch def, return the type of this node.</p>
+<p>Given a specific symbol table, return the type of this node.</p>
 
 <p>Should not be called until <span class='object_link'><a href="#type_check-instance_method" title="Idl::CsrFieldReadExpressionAst#type_check (method)">#type_check</a></span> is called with the same arguments</p>
 
@@ -632,22 +558,6 @@
         &mdash;
         <div class='inline'>
 <p>Symbol table for lookup</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>archdef</span>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="../ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>Configured architecture definition</p>
 </div>
       
     </li>
@@ -684,7 +594,7 @@
       
         &mdash;
         <div class='inline'>
-<p>if the type is dependent on symtab and/or archdef, and type_check was not called first</p>
+<p>if the type is dependent on symtab, and type_check was not called first</p>
 </div>
       
     </li>
@@ -697,19 +607,33 @@
       <pre class="lines">
 
 
-3228
-3229
-3230
-3231
-3232</pre>
+3322
+3323
+3324
+3325
+3326
+3327
+3328
+3329
+3330
+3331
+3332
+3333</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3228</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3322</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_fd'>fd</span> <span class='op'>=</span> <span class='id identifier rubyid_field_def'>field_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_qualifiers'>qualifiers</span> <span class='op'>=</span> <span class='id identifier rubyid_fd'>fd</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>RO</span><span class='tstring_end'>&quot;</span></span> <span class='op'>?</span> <span class='lbracket'>[</span><span class='symbol'>:constexpr</span><span class='rbracket'>]</span> <span class='op'>:</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
-  <span class='const'><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>width:</span> <span class='id identifier rubyid_fd'>fd</span><span class='period'>.</span><span class='id identifier rubyid_width'>width</span><span class='comma'>,</span> <span class='label'>qualifiers:</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_fd'>fd</span> <span class='op'>=</span> <span class='id identifier rubyid_field_def'>field_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_fd'>fd</span><span class='period'>.</span><span class='id identifier rubyid_defined_in_all_bases?'>defined_in_all_bases?</span>
+    <span class='const'><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>width:</span> <span class='lbracket'>[</span><span class='id identifier rubyid_fd'>fd</span><span class='period'>.</span><span class='id identifier rubyid_width'>width</span><span class='lparen'>(</span><span class='int'>32</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='id identifier rubyid_fd'>fd</span><span class='period'>.</span><span class='id identifier rubyid_width'>width</span><span class='lparen'>(</span><span class='int'>64</span><span class='rparen'>)</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_max'>max</span><span class='rparen'>)</span>
+  <span class='kw'>elsif</span> <span class='id identifier rubyid_fd'>fd</span><span class='period'>.</span><span class='id identifier rubyid_base64_only?'>base64_only?</span>
+    <span class='const'><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>width:</span> <span class='id identifier rubyid_fd'>fd</span><span class='period'>.</span><span class='id identifier rubyid_width'>width</span><span class='lparen'>(</span><span class='int'>64</span><span class='rparen'>)</span><span class='rparen'>)</span>
+  <span class='kw'>elsif</span> <span class='id identifier rubyid_fd'>fd</span><span class='period'>.</span><span class='id identifier rubyid_base32_only?'>base32_only?</span>
+    <span class='const'><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>width:</span> <span class='id identifier rubyid_fd'>fd</span><span class='period'>.</span><span class='id identifier rubyid_width'>width</span><span class='lparen'>(</span><span class='int'>32</span><span class='rparen'>)</span><span class='rparen'>)</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>unexpected field base</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -719,7 +643,7 @@
       <div class="method_details ">
   <h3 class="signature " id="type_check-instance_method">
   
-    #<strong>type_check</strong>(symtab, archdef)  &#x21d2; <tt>void</tt> 
+    #<strong>type_check</strong>(symtab)  &#x21d2; <tt>void</tt> 
   
 
   
@@ -728,9 +652,9 @@
 </h3><div class="docstring">
   <div class="discussion">
     <p class="note returns_void">This method returns an undefined value.</p>
-<p>type check this node and all children, and memoize any symtab- or archdef-dependent type</p>
+<p>type check this node and all children</p>
 
-<p>Calls to <span class='object_link'><a href="#type-instance_method" title="Idl::CsrFieldReadExpressionAst#type (method)">#type</a></span>, <span class='object_link'><a href="#constexpr%3F-instance_method" title="Idl::CsrFieldReadExpressionAst#constexpr? (method)">#constexpr?</a></span>, and/or <span class='object_link'><a href="#value-instance_method" title="Idl::CsrFieldReadExpressionAst#value (method)">#value</a></span> may depend on type_check being called first with the same symtab and archdef. If not, those functions may raise an AstNode::InternalError</p>
+<p>Calls to <span class='object_link'><a href="#type-instance_method" title="Idl::CsrFieldReadExpressionAst#type (method)">#type</a></span> and/or <span class='object_link'><a href="#value-instance_method" title="Idl::CsrFieldReadExpressionAst#value (method)">#value</a></span> may depend on type_check being called first with the same symtab. If not, those functions may raise an AstNode::InternalError</p>
 
 
   </div>
@@ -751,22 +675,6 @@
         &mdash;
         <div class='inline'>
 <p>Symbol table for lookup</p>
-</div>
-      
-    </li>
-  
-    <li>
-      
-        <span class='name'>archdef</span>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="../ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>Configured architecture definition</p>
 </div>
       
     </li>
@@ -812,53 +720,37 @@
       <pre class="lines">
 
 
-3175
-3176
-3177
-3178
-3179
-3180
-3181
-3182
-3183
-3184
-3185
-3186
-3187
-3188
-3189
-3190
-3191
-3192
-3193
-3194
-3195
-3196</pre>
+3275
+3276
+3277
+3278
+3279
+3280
+3281
+3282
+3283
+3284
+3285
+3286
+3287
+3288</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3175</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3275</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_archdef'>archdef</span> <span class='op'>=</span> <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_archdef'>archdef</span>
+
+
+
   <span class='kw'>if</span> <span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="IntAst.html" title="Idl::IntAst (module)">IntAst</a></span></span><span class='rparen'>)</span>
-    <span class='comment'># make sure this value is a defined CSR
-</span>    <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>No CSR at address </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='period'>.</span><span class='id identifier rubyid_csrs'>csrs</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span>
-                                                         <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span> <span class='op'>==</span> <span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-                                                       <span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
-
-    <span class='id identifier rubyid_csr'>csr</span> <span class='op'>=</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='period'>.</span><span class='id identifier rubyid_csrs'>csrs</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span> <span class='op'>==</span> <span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
-    <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CSR[</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_csr_name'>csr_name</span><span class='embexpr_end'>}</span><span class='tstring_content'>] has no field named </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_csr_field_name'>csr_field_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_csr'>csr</span><span class='period'>.</span><span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_f'>f</span><span class='op'>|</span>
-                                                                                  <span class='id identifier rubyid_f'>f</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>==</span> <span class='id identifier rubyid_csr_field_name'>csr_field_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span>
-                                                                                <span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+    <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>No CSR at address </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_csr_def'>csr_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
   <span class='kw'>else</span>
     <span class='comment'># idx is a csr name
 </span>    <span class='id identifier rubyid_csr_name'>csr_name</span> <span class='op'>=</span> <span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span>
-    <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>no CSR named </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_csr_name'>csr_name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='period'>.</span><span class='id identifier rubyid_csrs'>csrs</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>==</span> <span class='id identifier rubyid_csr_name'>csr_name</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
-
-    <span class='id identifier rubyid_csr'>csr</span> <span class='op'>=</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='period'>.</span><span class='id identifier rubyid_csrs'>csrs</span><span class='period'>.</span><span class='id identifier rubyid_find'>find</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>==</span> <span class='id identifier rubyid_csr_name'>csr_name</span> <span class='rbrace'>}</span>
-    <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CSR[</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_csr_name'>csr_name</span><span class='embexpr_end'>}</span><span class='tstring_content'>] has no field named </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_csr_field_name'>csr_field_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span><span class='embexpr_end'>}</span><span class='tstring_content'> on line </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_lineno'>lineno</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_csr'>csr</span><span class='period'>.</span><span class='id identifier rubyid_fields'>fields</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_f'>f</span><span class='op'>|</span>
-                                                                                                    <span class='id identifier rubyid_f'>f</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>==</span> <span class='id identifier rubyid_csr_field_name'>csr_field_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span>
-                                                                                                  <span class='kw'>end</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
+    <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>No CSR named </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_csr_name'>csr_name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_csr_def'>csr_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
   <span class='kw'>end</span>
+  <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CSR[</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_csr_name'>csr_name</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>] has no field named </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_csr_field_name'>csr_field_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span><span class='embexpr_end'>}</span><span class='tstring_content'> on line </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_lineno'>lineno</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_field_def'>field_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -868,7 +760,7 @@
       <div class="method_details ">
   <h3 class="signature " id="value-instance_method">
   
-    #<strong>value</strong>(symtab, archdef)  &#x21d2; <tt>Object</tt> 
+    #<strong>value</strong>(symtab)  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -891,19 +783,17 @@
       <pre class="lines">
 
 
-3240
-3241
-3242
-3243
-3244</pre>
+3336
+3337
+3338
+3339</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3240</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3336</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Not constexpr</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_constexpr?'>constexpr?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span>
-
-  <span class='id identifier rubyid_field_def'>field_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='comma'>,</span> <span class='id identifier rubyid_archdef'>archdef</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_reset_value'>reset_value</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_value_error'>value_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>&#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_csr_name'>csr_name</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>.</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_field_name'>field_name</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39; is not RO</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_field_def'>field_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span> <span class='op'>==</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>RO</span><span class='tstring_end'>&quot;</span></span>
+  <span class='id identifier rubyid_field_def'>field_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_reset_value'>reset_value</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -915,7 +805,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Jul  1 07:25:23 2024 by
+  Generated on Fri Jul 12 05:52:18 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

@@ -91,6 +91,11 @@
   
   
   
+  <dl>
+      <dt>Includes:</dt>
+      <dd><span class='object_link'><a href="Executable.html" title="Idl::Executable (module)">Executable</a></span></dd>
+  </dl>
+  
   
 
   
@@ -120,7 +125,7 @@
 
 </div><div id="subclasses">
   <h2>Direct Known Subclasses</h2>
-  <p class="children"><span class='object_link'><a href="AryElementAssignmentAst.html" title="Idl::AryElementAssignmentAst (class)">AryElementAssignmentAst</a></span>, <span class='object_link'><a href="FieldAssignmentAst.html" title="Idl::FieldAssignmentAst (class)">FieldAssignmentAst</a></span>, <span class='object_link'><a href="MultiVariableAssignmentAst.html" title="Idl::MultiVariableAssignmentAst (class)">MultiVariableAssignmentAst</a></span>, <span class='object_link'><a href="MultiVariableDeclarationAst.html" title="Idl::MultiVariableDeclarationAst (class)">MultiVariableDeclarationAst</a></span>, <span class='object_link'><a href="VariableAssignmentAst.html" title="Idl::VariableAssignmentAst (class)">VariableAssignmentAst</a></span>, <span class='object_link'><a href="VariableDeclarationWithInitializationAst.html" title="Idl::VariableDeclarationWithInitializationAst (class)">VariableDeclarationWithInitializationAst</a></span></p>
+  <p class="children"><span class='object_link'><a href="AryElementAssignmentAst.html" title="Idl::AryElementAssignmentAst (class)">AryElementAssignmentAst</a></span>, <span class='object_link'><a href="AryRangeAssignmentAst.html" title="Idl::AryRangeAssignmentAst (class)">AryRangeAssignmentAst</a></span>, <span class='object_link'><a href="FieldAssignmentAst.html" title="Idl::FieldAssignmentAst (class)">FieldAssignmentAst</a></span>, <span class='object_link'><a href="MultiVariableAssignmentAst.html" title="Idl::MultiVariableAssignmentAst (class)">MultiVariableAssignmentAst</a></span>, <span class='object_link'><a href="MultiVariableDeclarationAst.html" title="Idl::MultiVariableDeclarationAst (class)">MultiVariableDeclarationAst</a></span>, <span class='object_link'><a href="VariableAssignmentAst.html" title="Idl::VariableAssignmentAst (class)">VariableAssignmentAst</a></span>, <span class='object_link'><a href="VariableDeclarationWithInitializationAst.html" title="Idl::VariableDeclarationWithInitializationAst (class)">VariableDeclarationWithInitializationAst</a></span></p>
 </div>
 
 
@@ -136,6 +141,35 @@
     </h2>
 
     <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#execute-instance_method" title="#execute (instance method)">#<strong>execute</strong>(symtab)  &#x21d2; void </a>
+    
+
+    
+  </span>
+  
+    <span class="note title not_defined_here">
+      included
+      from <span class='object_link'><a href="Executable.html#execute-instance_method" title="Idl::Executable#execute (method)">Executable</a></span>
+    </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>“execute” the statement by updating the variables in the symbol table.</p>
+</div></span>
+  
+</li>
+
       
         <li class="public ">
   <span class="summary_signature">
@@ -195,13 +229,81 @@
   
   
   
+  
+  
 
   <div id="instance_method_details" class="method_details_list">
     <h2>Instance Method Details</h2>
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="lhs-instance_method">
+  <h3 class="signature first" id="execute-instance_method">
+  
+    #<strong>execute</strong>(symtab)  &#x21d2; <tt>void</tt> 
+  
+
+  
+
+  
+    <span class="not_defined_here">
+      Originally defined in module
+        <span class='object_link'><a href="Executable.html#execute-instance_method" title="Idl::Executable#execute (method)">Executable</a></span>
+    </span>
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    <p class="note returns_void">This method returns an undefined value.</p>
+<p>“execute” the statement by updating the variables in the symbol table</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>symtab</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="SymbolTable.html" title="Idl::SymbolTable (class)">SymbolTable</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The symbol table for the context</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'></span>
+      
+      
+      
+        
+        <div class='inline'>
+<p>ValueError if some part of the statement cannot be executed at compile time</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="lhs-instance_method">
   
     #<strong>lhs</strong>  &#x21d2; <tt>Object</tt> 
   
@@ -226,12 +328,12 @@
       <pre class="lines">
 
 
-890
-891
-892</pre>
+911
+912
+913</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 890</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 911</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_lhs'>lhs</span>
   <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_content'> must implement lhs</span><span class='tstring_end'>&quot;</span></span>
@@ -267,12 +369,12 @@
       <pre class="lines">
 
 
-895
-896
-897</pre>
+916
+917
+918</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 895</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 916</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_rhs'>rhs</span>
   <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_calss'>calss</span><span class='embexpr_end'>}</span><span class='tstring_content'> must implement rhs</span><span class='tstring_end'>&quot;</span></span>
@@ -287,7 +389,7 @@
 </div>
 
       <div id="footer">
-  Generated on Mon Jul  1 07:25:22 2024 by
+  Generated on Fri Jul 12 05:52:17 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>
