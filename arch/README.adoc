@@ -35,23 +35,28 @@ Each extension/instruction/CSR has its own file.
 | +-------------------------+ +-------------------------+ +---------------------------------+  |
 +------------------------|-----|--------------------------------|------------------------------+
                          |     |                                |
- +----------------+      v     v                                |
- |{s} Generic     |   /----------\                              |
- |    Arch Spec   |-->|  Render  |                              |
- | (arch)         |   |  (ERB)   :                              |
- +----------------+   \----------/                              |
+ +----------------+      v     v                                v
+ |{s} Generic     |   /----------\                        /----------\
+ |    Arch Spec   |-->|  Render  |                        |  Render  |
+ | (arch)         |   |  (ERB)   :                        |  (ERB)   :
+ +----------------+   \----------/                        \----------/
                            |                                    |
-                           v                                    |
-              +-----------------------------+                   |
-              | {s} Redered Arch Spec       |                   |
-              | (gen/NAME/.rendered_arch)   |                   |
-              +-----------------------------+                   |
+                           v                                    v
+              +-----------------------------+     +-----------------------------------+
+              | {s} Redered Arch Spec       |     | {s} Redered Overlay               |
+              | (gen/NAME/.rendered_arch)   |     | (gen/NAME/.rendered_overlay_arch) |
+              +-----------------------------+     +------------------------------------+
                            |                                    |
                            v                                    |
                  /-------------------------\                    |
                  |  Overlay                |<-------------------+
                  | (gen/NAME/.merged_arch) :
                  \-------------------------/
+                           |
+                           |
+                     /-----------\
+                     | Normalize |
+                     \-----------/
                            |
                            v
               +-----------------------------+
@@ -61,10 +66,127 @@ Each extension/instruction/CSR has its own file.
               +-----------------------------+
 ....
 
-== Artifacts
+The normalization step transitively determines all extensions/instructions/csrs that are implemented
+(_e.g._, because some extensions have implied dependencies) and ensures that missing fields are
+filled in with their defaults.
 
-=== Generic Architecture Specification (`arch/`)
+== Data Format
 
-The generic architecture template is in the `arch/` directory. 
+All specification data is written in YAML. The data for Extensions, Instructions, and CSRs follow
+their own schemas, documented below. The files are checked for validity using
+https://json-schema.org/[Json Schema], and the precise schemas are located in the `schemas/` directory.
 
-=== Implementation Options
+=== Extensions
+
+.Example extension specification
+[source,yaml]
+----
+H: # <1>
+  type: privileged # <2>
+  versions: # <3>
+  - version: 1.0
+    ratification_date: 2019-12
+    requires: [S, '>= 1.12'] # <4>
+  interrupt_codes: # <5>
+  - num: 2
+    name: Virtual supervisor software interrupt
+  - num: 6
+    name: Virtual supervisor timer interrupt
+  - num: 10
+    name: Virtual supervisor external interrupt
+  - num: 12
+    name: Supervisor guest external interrupt
+  exception_codes: # <6>
+  - num: 10
+    name: Environment call from VS-mode
+  - num: 20
+    name: Instruction guest page fault
+  - num: 21
+    name: Load guest page fault
+  - num: 22
+    name: Virtual instruction
+  - num: 23
+    name: Store/AMO guest page fault
+  description: | # <7>
+    An Asciidoc description... <6>
+----
+<1> Name of the extension, which must follow the https://wiki.riscv.org/display/CSC/Extension+Naming+Convention[RVI naming scheme].
+<2> Extension type: privileged or unprivileged
+<3> List of versions
+<4> [Optional] Declares a dependency on another extension (may be a list if there is more than one dependency).
+<5> [Optional] List of asynchronous interrupts added by this extension
+<6> [Optional] List of synchronous exceptions added by this extension
+<7> A description of the extension, as Asciidoc source
+
+=== Instructions
+
+[source,yaml]
+----
+add: # <1>
+  long_name: Add
+  description: | # <2>
+    Add the value in rs1 to rs2, and store the result in rd.
+    Any overflow is thrown away.
+  encoding: # <3>
+    mask: 0000000----------000-----0110011
+    fields:
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
+  definedBy: I # <4>
+  assembly: xd, xs1, xs2 # <5>
+  access: # <6>
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): X[rd] = X[rs1] + X[rs2]; # <7>
+----
+<1> The instruction mnemonic, in lowercase
+<2> Asciidoc description of the instruction
+<3> Encoding of the instruction. 'mask' specifies the values and position of opcode fields, and 'fields' specifies the locations of decode variables.
+<4> Extension that defines this instruction. May be a list if the instruction is defined by multiple extensions.
+<5> Assembly format, to be used by ISS/disassembler/compiler/etc.
+<6> Per-mode access rights (always, sometimes, or none). When 'sometimes', a field 'access-detail' should also be provided.
+<7> Formal definition of the instruction operation, in IDL
+
+Some instructions have decode fields that cannot take a certain value. This is especially common in the `C` extension where, for example, some register specifier fields can be anything but x0. That can be represented by adding a `not_mask` key to the encoding:
+
+.encoding for `c.addi`
+[source,yaml]
+----
+encoding:
+  mask:     000-----------01
+  not_mask: ----00000------- # rs1/rd cannot be 0
+  fields:
+  - name: imm
+    location: 12|6-2
+  - name: rs1_rd
+    location: 11-7
+----
+
+Not mask can also be a list when more than one value is prohibited (_e.g._, `c.lui` prohibits both x0 and x2 for `rd`).
+
+Some fields are shifted before use, and can be represented using the `left_shift` key:
+
+.encoding for `jal`
+[source,yaml]
+----
+  encoding:
+    mask: -------------------------1101111
+    fields:
+    - name: imm
+      # lsb of the immediate is always zero, so it isn't encoded in the instruction
+      # this is also an example of representing decode variables that are split in the
+      # encoding
+      location: 31|19-12|20|30-21
+      left_shift: 1
+    - name: rd
+      location: 11-7
+----
+
+=== CSRs
+
