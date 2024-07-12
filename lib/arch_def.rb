@@ -37,6 +37,7 @@ require_relative "idl/passes/gen_adoc"
 # is warranted, e.g., the CSR Field 'alias' returns a CsrFieldAlias object
 # instead of a simple string
 class ArchDefObject
+  # @param data [Hash<String,Object>] Hash with fields to be added
   def initialize(data)
     raise "Bad data" unless data.is_a?(Hash)
 
@@ -51,6 +52,7 @@ class ArchDefObject
   extend Forwardable
   def_delegator :@data, :[]
 
+  # @return [Array<String>] List of keys added by this ArchDefObject
   def keys = @data.keys
 
   # adds accessor functions for any properties in the data
@@ -73,6 +75,7 @@ end
 
 # A CSR field object
 class CsrField < ArchDefObject
+  # @return [Csr] The Csr that defines this field
   attr_reader :parent
 
   # @!attribute field
@@ -81,6 +84,8 @@ class CsrField < ArchDefObject
   #  @return [Range] Range of the aliased field that is being pointed to
   Alias = Struct.new(:field, :range)
 
+  # @param parent_csr [Csr] The Csr that defined this field
+  # @param field_data [Hash<String,Object>] Field data from the arch spec
   def initialize(parent_csr, field_data)
     super(field_data)
     @parent = parent_csr
@@ -91,6 +96,14 @@ class CsrField < ArchDefObject
     @parent.arch_def
   end
 
+  # @return [String]
+  #    The type of the field. One of:
+  #      'RO'    => Read-only
+  #      'RO-H'  => Read-only, with hardware update
+  #      'RW'    => Read-write
+  #      'RW-R'  => Read-write, with a restricted set of legal values
+  #      'RW-H'  => Read-write, with a hardware update
+  #      'RW-RH' => Read-write, with a hardware update and a restricted set of legal values
   def type
     return @type unless @type.nil?
 
@@ -166,23 +179,24 @@ class CsrField < ArchDefObject
     @alias
   end
 
+  # @return [Boolean] True if the field has a custom write function (i.e., `write(csr_value)` exists in the spec)
   def has_custom_write?
-    @data.key?("write(value)") && !@data["write(value)"].empty?
+    @data.key?("write(csr_value)") && !@data["write(csr_value)"].empty?
   end
 
   # @return [Csr] Parent CSR for this field
-  def csr
-    @parent
-  end
+  alias csr parent
 
   # @return [Boolean] Whether or not the location of the field changes dynamically
   #                   (e.g., based on mstatus.SXL)
   def dynamic_location?
     return false if @data.key?("location")
 
-    return csr.dynamic_length?
+    csr.dynamic_length?
   end
 
+  # @return [Idl::AstNode] Abstract syntax tree of the reset_value function
+  # @raise StandardError if there is no reset_value function (i.e., the reset value is static)
   def reset_value_func
     raise "Not an IDL value" unless @data.key?("reset_value()")
 
@@ -199,6 +213,8 @@ class CsrField < ArchDefObject
     )
   end
 
+  # @return [Integer] The reset value of this field
+  # @return [String]  The string 'UNDEFINED_LEGAL' if, for this config, there is no defined reset value
   def reset_value
     return @reset_value unless @reset_value.nil?
 
@@ -211,7 +227,7 @@ class CsrField < ArchDefObject
       end
   end
 
-  # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN
+  # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
   # @return [Range] the location within the CSR as a range (single bit fields will be a range of size 1)
   def location(effective_xlen = nil)
     key =
@@ -243,12 +259,16 @@ class CsrField < ArchDefObject
     end
   end
 
+  # @return [Boolean] Whether or not this field only exists when XLEN == 64
   def base64_only? = @data.key?("base") && @data["base"] == 64
 
+  # @return [Boolean] Whether or not this field only exists when XLEN == 32
   def base32_only? = @data.key?("base") && @data["base"] == 32
 
+  # @return [Boolean] Whether or not this field exists for any XLEN
   def defined_in_all_bases? = @data["base"].nil?
 
+  # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
   # @return [Integer] Number of bits in the field
   def width(effective_xlen)
     location(effective_xlen).size
@@ -319,11 +339,15 @@ end
 
 # CSR definition
 class Csr < ArchDefObject
-  # @@parser = IsaDefParser.new
-
   # @return [ArchDef] The owning ArchDef
-  attr_reader :arch_def, :sym_table
+  attr_reader :arch_def
+  
+  # @return [Idl::SymbolTable] The symbol table holding global names
+  attr_reader :sym_table
 
+  # @param csr_data [Hash<String,Object>] Hash of data from the specification
+  # @param sym_table [Idl::SymbolTable] The symbol table holding global names
+  # @param arch_def [ArchDef] The architecture definition
   def initialize(csr_data, sym_table, arch_def)
     super(csr_data)
 
@@ -349,6 +373,8 @@ class Csr < ArchDefObject
     !@data["length"].is_a?(Integer) && (@data["length"] != "MXLEN")
   end
 
+  # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
+  # @return [Integer] Length, in bits, of the CSR
   def length(effective_xlen = nil)
     case @data["length"]
     when "MXLEN"
@@ -382,6 +408,7 @@ class Csr < ArchDefObject
     end
   end
 
+  # @return [String] IDL condition of when the effective xlen is 32
   def length_cond32
     case @data["length"]
     when "SXLEN"
@@ -393,6 +420,7 @@ class Csr < ArchDefObject
     end
   end
 
+  # @return [String] IDL condition of when the effective xlen is 64
   def length_cond64
     case @data["length"]
     when "SXLEN"
@@ -426,89 +454,7 @@ class Csr < ArchDefObject
     end
   end
 
-  # return the length of the field as an Integer
-  # In some cases, the length is dynamic (e.g., depending on SXLEN).
-  # When the length is dynamic, a specific value for the mode must be given
-  #
-  # @example Compute length when length is 32
-  #   computed_length() => 32
-  #
-  # @example Compute length when length is 'SXLEN' and 'SXLEN' parameter is 32
-  #   computed_length() => 32
-  #
-  # @example Compute length when length is 'SXLEN'. and 'SXLEN' parameter is 3264
-  #   computed_length(64) => 64
-  #
-  # @example Compute length when length is 'SXLEN', and 'SXLEN' parameter is [32, 64]
-  #   computed_length() => ArgumentError
-  #
-  # @param effective_xlen [Integer,nil] Value to use when length is dynamic (e.g., 'SXLEN')
-  # @return [Integer] Length of the CSR, in bits
-  def computed_length(effective_xlen = nil)
-    if dynamic_length?
-      if effective_xlen.nil?
-        raise ArgumentError, <<~MSG
-          Length of #{name} depends on #{@data['length']};
-            it must be supplied to length() to get a value
-        MSG
-      end
-
-      unless arch_def.config_params[length].include?(effective_xlen)
-        raise ArgumentError, "#{effective_xlen} is not a valid value of #{length} (#{arch_def.config_params[length]})"
-      end
-
-      effective_xlen
-    else
-      raise ArgumentError, "Length is not dynamic; effective_xlen should not be provided" unless effective_xlen.nil?
-
-      # length isn't dynamic, but it still might be parameterized
-      if length.is_a?(String)
-        arch_def.config_params[length]
-      else
-        length
-      end
-    end
-  end
-
-  def sw_read_ast
-    "TODO: add sw_read_ast back"
-    # return @sw_read_ast unless @sw_read_ast.nil?
-
-    # return if @data["sw_read"].nil?
-
-    # @@parser.set_input_file("CSR #{name}")
-    # m = @@parser.parse(@data["sw_read"], root: :function_statements)
-    # if m.nil?
-    #   warn "While parsing sw_read for CSR '#{name}'"
-    #   warn "Parsing error at #{@@parser.failure_line}:#{@@parser.failure_column}"
-    #   warn @@parser.failure_reason
-    #   raise "Parse failed"
-    # end
-
-    # m.make_left
-
-    # @sym_table.push
-    # @sym_table.add!("__expected_return_type", Type.new(:bits, width: length))
-    # begin
-    #   m.func_stmt_list.elements.each do |e|
-    #     e.choice.type_check(@sym_table, @arch_def)
-    #   end
-    # rescue Ast::TypeError => e
-    #   warn "In the sw_read of CSR #{name}:"
-    #   warn e.what
-    #   exit 1
-    # rescue Ast::InternalError => e
-    #   warn "In the sw_read of CSR #{name}:"
-    #   warn e.what
-    #   warn e.backtrace
-    #   exit 1
-    # end
-    # @sym_table.pop
-
-    # @sw_read_ast = m
-  end
-
-  # parse description field with asciidoctor, and retur the HTML result
+  # parse description field with asciidoctor, and return the HTML result
   #
   # @return [String] Parsed description in HTML
   def description_html
@@ -607,11 +553,11 @@ class Csr < ArchDefObject
     @data.key?("sw_read") && !sw_read.empty?
   end
 
-  def sw_read_source
-    return "" unless has_custom_sw_read?
+  # def sw_read_source
+  #   return "" unless has_custom_sw_read?
 
-    sw_read_ast.gen_adoc.gsub("((", '\((')
-  end
+  #   sw_read_ast.gen_adoc.gsub("((", '\((')
+  # end
 
   # @example Result for an I-type instruction
   #   {reg: [
@@ -646,17 +592,6 @@ class Csr < ArchDefObject
     desc["config"] = { "bits" => length(effective_xlen) }
     desc["config"]["lanes"] = length(effective_xlen) / 16
     desc
-  end
-
-  def gen_html(scope)
-    scope = scope.clone
-    scope.csr = self
-    scope.current_url = Class.new { extend AssetMap }.csr_url("#{name}.html")
-
-    Slim::Template.new(
-      "#{ROOT}/lib/views/csr.slim",
-      pretty: true
-    ).render(scope)
   end
 end
 
@@ -914,165 +849,20 @@ module RiscvOpcodes
   }.freeze
 end
 
-# represents a single contiguous instruction encoding field
-# Multiple EncodingFields may make up a single DecodeField, e.g., when an immediate
-# is split across multiple locations
-# class EncodingField
-#   # name, which corresponds either:
-#   #   * to a name used in riscv_opcodes
-#   #   * to a binary value, as a String, for a fixed opcode
-#   attr_reader :name
-
-#   # range in the encoding
-#   attr_reader :range
-
-#   def initialize(name, range, pretty = nil)
-#     @name = name
-#     @range = range
-#     @pretty = pretty
-#   end
-
-#   # is this encoding field part of a variable?
-#   def variable?
-#     !opcode?
-#   end
-
-#   # is this encoding field a fixed opcode?
-#   def opcode?
-#     name.match?(/^[01]+$/)
-#   end
-
-#   def eql?(other)
-#     @name == other.name && @range == other.range
-#   end
-
-#   def hash
-#     [@name, @range].hash
-#   end
-
-#   def pretty_to_s
-#     return @pretty unless @pretty.nil?
-
-#     @name
-#   end
-
-#   def size
-#     @range.size
-#   end
-# end
-
-# class DecodeField
-#   # the name of the field
-#   attr_reader :name
-
-#   # array of constituent encoding fields
-#   attr_reader :encoding_fields
-
-#   # aliases of this field.
-#   #  if there is one alias, a String
-#   #  if there is more than one alias, an Array
-#   #  if there are no aliases, nil
-#   attr_reader :decode_variable
-
-#   def initialize(inst, name, decode_ring_key, field_data)
-#     raise "No field '#{name}', needed by #{inst.name}, in Opcodes module" unless RiscvOpcodes::VARIABLE_FIELDS.key?(decode_ring_key)
-
-#     @encoding_fields = []
-#     if decode_ring_key.is_a?(Array)
-#       raise "Split fields '#{decode_ring_key}' must have an alias" unless field_data.key?(:decode_variable)
-
-#       raise "Split fields '#{decode_ring_key}' must have a group_by field" unless field_data.key?(:group_by)
-
-#       decode_ring_key.each_index do |i|
-#         range = field_data[:group_by][i].is_a?(Integer) ? (field_data[:group_by][i]..field_data[:group_by][i]) : field_data[:group_by][i]
-#         raise "expecting a range" unless range.is_a?(Range)
-
-#         display =
-#           if field_data[:display].nil?
-#             nil
-#           elsif field_data[:display].is_a?(Array)
-#             field_data[:display][i]
-#           else
-#             field_data[:display]
-#           end
-#         @encoding_fields << EncodingField.new(decode_ring_key[i], range, display)
-#       end
-#     else
-#       raise 'decode_ring_key must be an Array or a String' unless decode_ring_key.is_a?(String)
-
-#       range = field_data[:bits].is_a?(Range) ? field_data[:bits] : field_data[:group_by]
-#       raise 'expecting a range' unless range.is_a?(Range)
-
-#       @encoding_fields << EncodingField.new(decode_ring_key, range, field_data[:display])
-#     end
-
-#     @name = name
-#     if field_data.key?(:decode_variable) && field_data[:decode_variable] != name
-#       if field_data[:decode_variable].is_a?(String)
-#         @alias = field_data[:decode_variable]
-#       else
-#         raise "unexpected" unless field_data[:decode_variable].is_a?(Array)
-
-#         other_aliases = field_data[:decode_variable].reject { |a| a == @name }
-#         if other_aliases.size == 1
-#           @alias = other_aliases[0]
-#         else
-#           @laias = other_aliases
-#         end
-#       end
-#     end
-#     raise "unexpected: #{name}" unless @name.is_a?(String)
-
-#     @data = field_data
-#   end
-
-#   def eql?(other)
-#     @name.eql?(other.name)
-#   end
-
-#   def hash
-#     @name.hash
-#   end
-
-#   def sext?
-#     @data[:sext] == true
-#   end
-
-#   def lshift?
-#     @data[:lshift].is_a?(Integer)
-#   end
-
-#   def lshift
-#     @data[:lshift]
-#   end
-
-#   # returns true if the field is encoded across more than one groups of bits
-#   def split?
-#     encoding_fields.size > 1
-#   end
-
-#   # returns bits of the encoding that make up the field, as an array
-#   #   Each item of the array is either:
-#   #     - A number, to represent a single bit
-#   #     - A range, to represent a continugous range of bits
-#   #
-#   #  The array is ordered from encoding MSB (at index 0) to LSB (at index n-1)
-#   def bits
-#     @data[:bits].is_a?(Range) ? [@data[:bits]] : @data[:bits]
-#   end
-# end
-
 # model of a specific instruction in a specific base (RV32/RV64)
 class Instruction < ArchDefObject
 
+  # @return [Idl::AstNode] Abstract syntax tree of the instruction operation()
   def operation_ast
     parse_operation(@sym_table) if @operation_ast.nil?
 
     @operation_ast
   end
 
+  # @return [ArchDef] The architecture definition
   attr_reader :arch_def
 
+  # represents an instruction encoding
   class Encoding
     # @return [String] format, as a string of 0,1 and -,
     # @example Format of `sd`
@@ -1087,22 +877,33 @@ class Instruction < ArchDefObject
     # @return [Array<DecodeVariable>] List of decode variables
     attr_reader :decode_variables
 
+    # represents an encoding field (contiguous set of bits that form an opcode or decode variable slot)
     class Field
       # @return [String] Either string of 0's ans 1's or a bunch of dashses
+      # @example Field of a decode variable
+      #   encoding.opcode_fields[0] #=> '-----' (for imm5)
+      # @example Field of an opcode
+      #   encoding.opcode_fields[1] #=> '0010011' (for funct7)
       attr_reader :name
 
       # @return [Range] Range of bits in the parent corresponding to this field
       attr_reader :range
+
+      # @param name [#to_s] Either string of 0's ans 1's or a bunch of dashses
+      # @param range [Range] Range of the field in the parent CSR
       def initialize(name, range)
-        @name = name
+        @name = name.to_s
         @range = range
       end
 
+      # @return [Boolean] whether or not the field represents part of the opcode (i.e., not a decode variable)
       def opcode?
         name.match?(/^[01]+$/)
       end
     end
 
+    # @param format [String] Format of the encoding, as 0's, 1's and -'s (for decode variables)
+    # @param decode_vars [Array<Hash<String,Object>>] List of decode variable defintions from the arch spec
     def initialize(format, decode_vars)
       @format = format
 
@@ -1144,6 +945,10 @@ class Instruction < ArchDefObject
   end
   private :load_encoding
 
+  # @params inst_data [Hash<String, Object>] Instruction data from the architecture spec
+  # @params full_opcode_data [Hash] Opcode data to interpret riscv-opcodes -- this will be deprecated
+  # @params sym_table [Idl::SymbolTable] Symbol table with global names
+  # @params arch_def [ArchDef] The architecture definition
   def initialize(inst_data, full_opcode_data, sym_table, arch_def)
     @arch_def = arch_def
     @sym_table = sym_table.deep_clone
@@ -1209,10 +1014,12 @@ class Instruction < ArchDefObject
     end
   end
 
+  # @return [Boolean] whether or not this instruction has different encodings depending on XLEN
   def multi_encoding?
     @data.key?("encoding") && @data["encoding"].key?("RV32")
   end
 
+  # @return [String] The operation() IDL code
   def operation_source
     return "" if @data["operation()"].nil?
 
@@ -1252,13 +1059,15 @@ class Instruction < ArchDefObject
 
     @operation_ast = m
   end
+  private :parse_operation
 
-  # returns the encoding as, e.g.,:
+  # @return [String] the encoding as, e.g.,:
   #   0000101----------001-----0110011
   def encoding(base)
     @encodings[base].format
   end
 
+  # @return [Array<DecodeVariable>] The decode variables
   def decode_variables(base)
     @encodings[base].decode_variables
   end
@@ -1284,6 +1093,10 @@ class Instruction < ArchDefObject
     @data.key?("access_detail")
   end
 
+  # Generates a wavedrom description of the instruction encoding
+  #
+  # @param base [Integer] The XLEN (32 or 64), needed if the instruction is {#multi_encoding?}
+  # @return [String] The wavedrom JSON description
   def wavedrom_desc(base)
     desc = {
       "reg" => []
@@ -1305,6 +1118,8 @@ class Extension < ArchDefObject
   # @return [ArchDef] The architecture defintion
   attr_reader :arch_def
 
+  # @param ext_data [Hash<String, Object>] The extension data from the architecture spec
+  # @param arch_def [ArchDef] The architecture defintion
   def initialize(ext_data, arch_def)
     super(ext_data)
     @arch_def = arch_def
@@ -1337,13 +1152,22 @@ class ExtensionVersion
   # @return [Extension] The full definition of the extension (all versions)
   attr_reader :extension
 
+  # @param name [#to_s] The extension name
+  # @param version [Integer,String] The version specifier
+  # @param arch_def [ArchDef] The architecture definition
   def initialize(name, version, arch_def)
-    @name = name
+    @name = name.to_s
     @version = Gem::Version.new(version)
     @arch_def = arch_def
-    @extension = @arch_def.extension(name)
+    @extension = @arch_def.extension(@name)
   end
 
+  # @override ==(other)
+  #   @param other [String] An extension name
+  #   @return [Boolean] whether or not this ExtensionVersion is named 'other'
+  # @override ==(other)
+  #   @param other [ExtensionVersion] An extension name and version
+  #   @return [Boolean] whether or not this ExtensionVersion has the exact same name and version as other
   def ==(other)
     case other
     when String
@@ -1355,8 +1179,12 @@ class ExtensionVersion
     end
   end
 
-  def satisfies?(ext_name, ext_version_requirement)
-    @name == ext_name && Gem::Requirement.new(ext_version_requirement).satisfied_by?(@version)
+  # @param ext_name [String] Extension name
+  # @param ext_version_requirements [Number,String,Array] Extension version requirements, taking the same inputs as Gem::Requirement
+  # @see https://docs.ruby-lang.org/en/3.0/Gem/Requirement.html#method-c-new Gem::Requirement#new
+  # @return [Boolean] whether or not this ExtensionVersion is named `ext_name` and satifies the version requirements
+  def satisfies?(ext_name, *ext_version_requirements)
+    @name == ext_name && Gem::Requirement.new(ext_version_requirements).satisfied_by?(@version)
   end
 
   # sorts extension by name, then by version
@@ -1371,18 +1199,27 @@ class ExtensionVersion
   end
 end
 
-# interface to the unified architecture defintion
+# Object model for a configured architecture definition
 class ArchDef
   # @return [String] Name of the architecture configuration
   attr_reader :name
 
-  attr_reader :isa_def, :sym_table, :config_params
+  # @return [SymbolTable] The symbol table containing global definitions
+  attr_reader :sym_table
+  
+  # @return [Hash] The configuration parameters
+  attr_reader :config_params
 
+  # @return [Idl::Compiler] The IDL compiler
   attr_reader :idl_compiler
 
+  # Initialize a new configured architecture defintiion
+  #
+  # @params config_name [#to_s] The name of a configuration, which must correspond
+  #                             to a folder under $root/cfgs
   def initialize(config_name)
-    @name = config_name
-    arch_def_file = $root / "gen" / config_name / "arch" / "arch_def.yaml"
+    @name = config_name.to_s
+    arch_def_file = $root / "gen" / @name / "arch" / "arch_def.yaml"
 
     validator = Validator.instance
     begin
@@ -1399,20 +1236,20 @@ class ArchDef
     @sym_table = Idl::SymbolTable.new(self)
     @idl_compiler = Idl::Compiler.new(self)
 
-    # load the globals
-    @isa_def = @idl_compiler.compile_file(
+    # load the globals into the symbol table
+    @idl_compiler.compile_file(
       $root / "arch" / "isa" / "globals.isa",
       @sym_table
     )
   end
 
-  # returns true if this configuration can execute in multiple xlen environments
+  # @return [Boolean] true if this configuration can execute in multiple xlen environments
   # (i.e., that in some mode the effective xlen can be either 32 or 64, depending on CSR values)
   def multi_xlen?
     ["SXLEN", "UXLEN", "VSXLEN", "VUXLEN"].any? { |key| @config_params[key] == 3264 }
   end
 
-  # @return [Array<ExtensionVersion>] List of all extensions that are implemented
+  # @return [Array<ExtensionVersion>] List of all extensions, with specific versions, that are implemented
   def implemented_extensions
     return @implemented_extensions unless @implemented_extensions.nil?
 
@@ -1420,15 +1257,11 @@ class ArchDef
     @arch_def["implemented_extensions"].each do |e|
       @implemented_extensions << ExtensionVersion.new(e["name"], e["version"], self)
     end
-    @implemented_extensions
-
-    pp @implemented_extensions.map { |ev| [ev.name, ev.version] }
 
     @implemented_extensions
-
   end
 
-  # @return [Array<Extesions>] List of all extensions, even those that are't implemented
+  # @return [Array<Extesion>] List of all extensions, even those that are't implemented
   def extensions
     return @extensions unless @extensions.nil?
 
@@ -1439,6 +1272,7 @@ class ArchDef
     @extensions
   end
 
+  # @retuns [Hash<String, Extension>] Hash of all extensions, even those that aren't implemented, indexed by extension name
   def extension_hash
     return @extension_hash unless @extension_hash.nil?
 
@@ -1450,23 +1284,38 @@ class ArchDef
   end
 
   # @param name [#to_s] Extension name
-  # @return [Extension,nil] Extension named 'name', or nil if none exists
+  # @return [Extension] Extension named `name`
+  # @return [nil] if no extension `name` exists
   def extension(name)
     extension_hash[name.to_s]
   end
 
-  def ext?(ext_name, ext_version = nil)
+  # @overload ext?(ext_name)
+  #   @param ext_name [#to_s] Extension name (case sensitive)
+  #   @return [Boolean] True if the extension `name` is implemented
+  # @overload ext?(ext_name, ext_version_requirements)
+  #   @param ext_name [#to_s] Extension name (case sensitive)
+  #   @param ext_version_requirements [Number,String,Array] Extension version requirements, taking the same inputs as Gem::Requirement
+  #   @see https://docs.ruby-lang.org/en/3.0/Gem/Requirement.html#method-c-new Gem::Requirement#new
+  #   @return [Boolean] True if the extension `name` meeting `ext_version_requirements` is implemented
+  #   @example Checking extension presence with a version requirement
+  #     arch_def.ext?(:S, ">= 1.12")
+  #   @example Checking extension presence with multiple version requirements
+  #     arch_def.ext?(:S, ">= 1.12", "< 1.15")
+  #   @example Checking extension precsence with a precise version requirement
+  #     arch_def.ext?(:S, 1.12)
+  def ext?(ext_name, *ext_version_requirements)
     implemented_extensions.any? do |e|
-      if ext_version.nil?
+      if ext_version_requirements.empty?
         e.name == ext_name.to_s
       else
-        requirement = Gem::Requirement.new(ext_version)
+        requirement = Gem::Requirement.new(ext_version_requirements)
         (e.name == ext_name.to_s) && requirement.satisfied_by?(e.version)
       end
     end
   end
 
-  # return the raw data
+  # @return [Hash] The raw architecture defintion data structure
   def data
     @arch_def
   end
@@ -1480,6 +1329,7 @@ class ArchDef
     end
   end
 
+  # @return [Array<Csr>] List of all CSRs defined by RISC-V, whether or not they are implemented
   def csrs
     return @csrs unless @csrs.nil?
 
@@ -1505,7 +1355,7 @@ class ArchDef
     @implemented_csr_hash
   end
 
-  # @return [Hash<String, Csr>] All csrs, indexed by CSR name
+  # @return [Hash<String, Csr>] All csrs, even unimplemented ones, indexed by CSR name
   def csr_hash
     return @csr_hash unless @csr_hash.nil?
 
@@ -1565,15 +1415,14 @@ class ArchDef
     @implemented_instructions
   end
 
-
   # @param inst_name [#to_s] Instruction name
   # @return [Instruction,nil] An instruction named 'inst_name', or nil if it doesn't exist
   def inst(inst_name)
-    instruction_hash[inst_name]
+    instruction_hash[inst_name.to_s]
   end
 
-  # given an adoc string, find instances of `CSR/Instruction/Extension`
-  # and replace them with links to the relevant object
+  # given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`
+  # and replace them with links to the relevant object page
   #
   # @param adoc [String] Asciidoc source
   # @return [String] Asciidoc source, with link placeholders
@@ -1584,13 +1433,10 @@ class ArchDef
       csr = csr(csr_name)
       if !field_name.nil? && !csr.nil? && csr.field?(field_name)
         "%%LINK[csr_field;#{csr_name}.#{field_name};#{csr_name}.#{field_name}]%%"
-        # "xref:csrs:#{name}.adoc##{name}-#{field_name}-def[#{match}]"
       elsif !csr.nil?
         "%%LINK[csr;#{csr_name};#{csr_name}]%%"
-        # "xref:csrs:#{name}.adoc##{name}-def[#{match}]"
       elsif inst(name.downcase)
         "%%LINK[inst;#{name};#{name}]%%"
-        # "xref:insts:#{name}.adoc##{name.gsub('.', '_')}-def[#{match}]"
       elsif extension(name)
         "%%LINK[ext;#{name};#{name}]%%"
       else

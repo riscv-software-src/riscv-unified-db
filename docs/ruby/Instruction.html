@@ -132,7 +132,7 @@
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#arch_def-instance_method" title="#arch_def (instance method)">#<strong>arch_def</strong>  &#x21d2; Object </a>
+      <a href="#arch_def-instance_method" title="#arch_def (instance method)">#<strong>arch_def</strong>  &#x21d2; ArchDef </a>
     
 
     
@@ -152,7 +152,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>Returns the value of attribute arch_def.</p>
+<p>The architecture definition.</p>
 </div></span>
   
 </li>
@@ -198,29 +198,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#decode_variables-instance_method" title="#decode_variables (instance method)">#<strong>decode_variables</strong>(base)  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'></div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#encoding-instance_method" title="#encoding (instance method)">#<strong>encoding</strong>(base)  &#x21d2; Object </a>
+      <a href="#decode_variables-instance_method" title="#decode_variables (instance method)">#<strong>decode_variables</strong>(base)  &#x21d2; Array&lt;DecodeVariable&gt; </a>
     
 
     
@@ -235,7 +213,31 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>returns the encoding as, e.g.,:   0000101———-001—–0110011.</p>
+<p>The decode variables.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#encoding-instance_method" title="#encoding (instance method)">#<strong>encoding</strong>(base)  &#x21d2; String </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>The encoding as, e.g.,: 0000101———-001—–0110011.</p>
 </div></span>
   
 </li>
@@ -306,7 +308,9 @@
   
 
   
-    <span class="summary_desc"><div class='inline'></div></span>
+    <span class="summary_desc"><div class='inline'>
+<p>Whether or not this instruction has different encodings depending on XLEN.</p>
+</div></span>
   
 </li>
 
@@ -314,7 +318,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#operation_ast-instance_method" title="#operation_ast (instance method)">#<strong>operation_ast</strong>  &#x21d2; Object </a>
+      <a href="#operation_ast-instance_method" title="#operation_ast (instance method)">#<strong>operation_ast</strong>  &#x21d2; Idl::AstNode </a>
     
 
     
@@ -328,7 +332,9 @@
   
 
   
-    <span class="summary_desc"><div class='inline'></div></span>
+    <span class="summary_desc"><div class='inline'>
+<p>Abstract syntax tree of the instruction operation().</p>
+</div></span>
   
 </li>
 
@@ -336,7 +342,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#operation_source-instance_method" title="#operation_source (instance method)">#<strong>operation_source</strong>  &#x21d2; Object </a>
+      <a href="#operation_source-instance_method" title="#operation_source (instance method)">#<strong>operation_source</strong>  &#x21d2; String </a>
     
 
     
@@ -350,7 +356,9 @@
   
 
   
-    <span class="summary_desc"><div class='inline'></div></span>
+    <span class="summary_desc"><div class='inline'>
+<p>The operation() IDL code.</p>
+</div></span>
   
 </li>
 
@@ -358,7 +366,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#parse_operation-instance_method" title="#parse_operation (instance method)">#<strong>parse_operation</strong>(sym_table)  &#x21d2; Object </a>
+      <a href="#wavedrom_desc-instance_method" title="#wavedrom_desc (instance method)">#<strong>wavedrom_desc</strong>(base)  &#x21d2; String </a>
     
 
     
@@ -372,29 +380,9 @@
   
 
   
-    <span class="summary_desc"><div class='inline'></div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#wavedrom_desc-instance_method" title="#wavedrom_desc (instance method)">#<strong>wavedrom_desc</strong>(base)  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'></div></span>
+    <span class="summary_desc"><div class='inline'>
+<p>Generates a wavedrom description of the instruction encoding.</p>
+</div></span>
   
 </li>
 
@@ -434,73 +422,73 @@
       <pre class="lines">
 
 
-1147
-1148
-1149
-1150
-1151
-1152
-1153
-1154
-1155
-1156
-1157
-1158
-1159
-1160
-1161
-1162
-1163
-1164
-1165
-1166
-1167
-1168
-1169
-1170
-1171
-1172
-1173
-1174
-1175
-1176
-1177
-1178
-1179
-1180
-1181
-1182
-1183
-1184
-1185
-1186
-1187
-1188
-1189
-1190
-1191
-1192
-1193
-1194
-1195
-1196
-1197
-1198
-1199
-1200
-1201
-1202
-1203
-1204
-1205
-1206
-1207
-1208
-1209
-1210</pre>
+952
+953
+954
+955
+956
+957
+958
+959
+960
+961
+962
+963
+964
+965
+966
+967
+968
+969
+970
+971
+972
+973
+974
+975
+976
+977
+978
+979
+980
+981
+982
+983
+984
+985
+986
+987
+988
+989
+990
+991
+992
+993
+994
+995
+996
+997
+998
+999
+1000
+1001
+1002
+1003
+1004
+1005
+1006
+1007
+1008
+1009
+1010
+1011
+1012
+1013
+1014
+1015</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1147</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 952</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_inst_data'>inst_data</span><span class='comma'>,</span> <span class='id identifier rubyid_full_opcode_data'>full_opcode_data</span><span class='comma'>,</span> <span class='id identifier rubyid_sym_table'>sym_table</span><span class='comma'>,</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='rparen'>)</span>
   <span class='ivar'>@arch_def</span> <span class='op'>=</span> <span class='id identifier rubyid_arch_def'>arch_def</span>
@@ -591,7 +579,7 @@
       <div class="method_details first">
   <h3 class="signature first" id="arch_def-instance_method">
   
-    #<strong>arch_def</strong>  &#x21d2; <tt>Object</tt>  <span class="extras">(readonly)</span>
+    #<strong>arch_def</strong>  &#x21d2; <tt><span class='object_link'><a href="ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>  <span class="extras">(readonly)</span>
   
 
   
@@ -600,13 +588,31 @@
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Returns the value of attribute arch_def.</p>
+<p>Returns The architecture definition.</p>
 
 
   </div>
 </div>
 <div class="tags">
   
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The architecture definition</p>
+</div>
+      
+    </li>
+  
+</ul>
 
 </div><table class="source_code">
   <tr>
@@ -614,12 +620,12 @@
       <pre class="lines">
 
 
-1074
-1075
-1076</pre>
+863
+864
+865</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1074</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 863</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_arch_def'>arch_def</span>
   <span class='ivar'>@arch_def</span>
@@ -680,12 +686,12 @@
       <pre class="lines">
 
 
-1283
-1284
-1285</pre>
+1092
+1093
+1094</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1283</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1092</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_access_detail?'>access_detail?</span>
   <span class='ivar'>@data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>access_detail</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -698,24 +704,53 @@
       <div class="method_details ">
   <h3 class="signature " id="decode_variables-instance_method">
   
-    #<strong>decode_variables</strong>(base)  &#x21d2; <tt>Object</tt> 
+    #<strong>decode_variables</strong>(base)  &#x21d2; <tt>Array&lt;<span class='object_link'><a href="DecodeVariable.html" title="DecodeVariable (class)">DecodeVariable</a></span>&gt;</tt> 
   
 
   
 
   
-</h3><table class="source_code">
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns The decode variables.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;<span class='object_link'><a href="DecodeVariable.html" title="DecodeVariable (class)">DecodeVariable</a></span>&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The decode variables</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-1262
-1263
-1264</pre>
+1071
+1072
+1073</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1262</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1071</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_decode_variables'>decode_variables</span><span class='lparen'>(</span><span class='id identifier rubyid_base'>base</span><span class='rparen'>)</span>
   <span class='ivar'>@encodings</span><span class='lbracket'>[</span><span class='id identifier rubyid_base'>base</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_decode_variables'>decode_variables</span>
@@ -728,7 +763,7 @@
       <div class="method_details ">
   <h3 class="signature " id="encoding-instance_method">
   
-    #<strong>encoding</strong>(base)  &#x21d2; <tt>Object</tt> 
+    #<strong>encoding</strong>(base)  &#x21d2; <tt>String</tt> 
   
 
   
@@ -737,16 +772,31 @@
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>returns the encoding as, e.g.,:</p>
-
-<pre class="code ruby"><code class="ruby"><span class='int'>0000101</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='int'>001</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='op'>-</span><span class='int'>0110011</span>
-</code></pre>
+<p>Returns the encoding as, e.g.,: 0000101———-001—–0110011.</p>
 
 
   </div>
 </div>
 <div class="tags">
   
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the encoding as, e.g.,: 0000101———-001—–0110011</p>
+</div>
+      
+    </li>
+  
+</ul>
 
 </div><table class="source_code">
   <tr>
@@ -754,12 +804,12 @@
       <pre class="lines">
 
 
-1258
-1259
-1260</pre>
+1066
+1067
+1068</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1258</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1066</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_encoding'>encoding</span><span class='lparen'>(</span><span class='id identifier rubyid_base'>base</span><span class='rparen'>)</span>
   <span class='ivar'>@encodings</span><span class='lbracket'>[</span><span class='id identifier rubyid_base'>base</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_format'>format</span>
@@ -825,18 +875,18 @@
       <pre class="lines">
 
 
-1272
-1273
-1274
-1275
-1276
-1277
-1278
-1279
-1280</pre>
+1081
+1082
+1083
+1084
+1085
+1086
+1087
+1088
+1089</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1272</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1081</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_extension'>extension</span>
   <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>definedBy</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
@@ -864,6 +914,8 @@
 </h3><div class="docstring">
   <div class="discussion">
     
+<p>Returns whether or not this instruction has different encodings depending on XLEN.</p>
+
 
   </div>
 </div>
@@ -879,6 +931,11 @@
       
       
       
+        &mdash;
+        <div class='inline'>
+<p>whether or not this instruction has different encodings depending on XLEN</p>
+</div>
+      
     </li>
   
 </ul>
@@ -889,12 +946,12 @@
       <pre class="lines">
 
 
-1212
-1213
-1214</pre>
+1018
+1019
+1020</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1212</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1018</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_multi_encoding?'>multi_encoding?</span>
   <span class='ivar'>@data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>encoding</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>encoding</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>RV32</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -907,26 +964,55 @@
       <div class="method_details ">
   <h3 class="signature " id="operation_ast-instance_method">
   
-    #<strong>operation_ast</strong>  &#x21d2; <tt>Object</tt> 
+    #<strong>operation_ast</strong>  &#x21d2; <tt><span class='object_link'><a href="Idl/AstNode.html" title="Idl::AstNode (class)">Idl::AstNode</a></span></tt> 
   
 
   
 
   
-</h3><table class="source_code">
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns Abstract syntax tree of the instruction operation().</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Idl/AstNode.html" title="Idl::AstNode (class)">Idl::AstNode</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Abstract syntax tree of the instruction operation()</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-1068
-1069
-1070
-1071
-1072</pre>
+856
+857
+858
+859
+860</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1068</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 856</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_operation_ast'>operation_ast</span>
   <span class='id identifier rubyid_parse_operation'>parse_operation</span><span class='lparen'>(</span><span class='ivar'>@sym_table</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='ivar'>@operation_ast</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -941,27 +1027,56 @@
       <div class="method_details ">
   <h3 class="signature " id="operation_source-instance_method">
   
-    #<strong>operation_source</strong>  &#x21d2; <tt>Object</tt> 
+    #<strong>operation_source</strong>  &#x21d2; <tt>String</tt> 
   
 
   
 
   
-</h3><table class="source_code">
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns The operation() IDL code.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The operation() IDL code</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-1216
-1217
-1218
-1219
-1220
-1221</pre>
+1023
+1024
+1025
+1026
+1027
+1028</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1216</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1023</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_operation_source'>operation_source</span>
   <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>operation()</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -975,125 +1090,86 @@
 </div>
     
       <div class="method_details ">
-  <h3 class="signature " id="parse_operation-instance_method">
-  
-    #<strong>parse_operation</strong>(sym_table)  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-1223
-1224
-1225
-1226
-1227
-1228
-1229
-1230
-1231
-1232
-1233
-1234
-1235
-1236
-1237
-1238
-1239
-1240
-1241
-1242
-1243
-1244
-1245
-1246
-1247
-1248
-1249
-1250
-1251
-1252
-1253
-1254</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1223</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_parse_operation'>parse_operation</span><span class='lparen'>(</span><span class='id identifier rubyid_sym_table'>sym_table</span><span class='rparen'>)</span>
-  <span class='comment'># now, parse the operation
-</span>  <span class='kw'>return</span> <span class='kw'>if</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>operation()</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='op'>!</span><span class='ivar'>@operation_ast</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
-
-  <span class='id identifier rubyid_cloned_symtab'>cloned_symtab</span> <span class='op'>=</span> <span class='id identifier rubyid_sym_table'>sym_table</span><span class='period'>.</span><span class='id identifier rubyid_deep_clone'>deep_clone</span>
-
-  <span class='id identifier rubyid_cloned_symtab'>cloned_symtab</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span>
-  <span class='ivar'>@encodings</span><span class='lbracket'>[</span><span class='ivar'>@arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>XLEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_decode_variables'>decode_variables</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_d'>d</span><span class='op'>|</span>
-    <span class='id identifier rubyid_qualifiers'>qualifiers</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
-    <span class='id identifier rubyid_qualifiers'>qualifiers</span> <span class='op'>&lt;&lt;</span> <span class='symbol'>:signed</span> <span class='kw'>if</span> <span class='id identifier rubyid_d'>d</span><span class='period'>.</span><span class='id identifier rubyid_sext?'>sext?</span>
-    <span class='id identifier rubyid_width'>width</span> <span class='op'>=</span> <span class='id identifier rubyid_d'>d</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span>
-
-    <span class='id identifier rubyid_var'>var</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Idl.html" title="Idl (module)">Idl</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Idl/Var.html" title="Idl::Var (class)">Var</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Idl/Var.html#initialize-instance_method" title="Idl::Var#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_d'>d</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="Idl.html" title="Idl (module)">Idl</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Idl/Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Idl/Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:bits</span><span class='comma'>,</span> <span class='label'>qualifiers:</span><span class='comma'>,</span> <span class='label'>width:</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='label'>decode_var:</span> <span class='kw'>true</span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_cloned_symtab'>cloned_symtab</span><span class='period'>.</span><span class='id identifier rubyid_add'>add</span><span class='lparen'>(</span><span class='id identifier rubyid_d'>d</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_var'>var</span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
-
-  <span class='id identifier rubyid_m'>m</span> <span class='op'>=</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_idl_compiler'>idl_compiler</span><span class='period'>.</span><span class='id identifier rubyid_compile_inst_operation'>compile_inst_operation</span><span class='lparen'>(</span>
-    <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>operation()</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='comma'>,</span>
-    <span class='label'>symtab:</span> <span class='id identifier rubyid_cloned_symtab'>cloned_symtab</span><span class='comma'>,</span>
-    <span class='label'>name:</span><span class='comma'>,</span>
-    <span class='label'>parent:</span> <span class='kw'>nil</span><span class='comma'>,</span>
-    <span class='label'>input_file:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Instruction </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
-  <span class='rparen'>)</span>
-
-  <span class='id identifier rubyid_cloned_symtab'>cloned_symtab</span><span class='period'>.</span><span class='id identifier rubyid_pop'>pop</span>
-
-  <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>unexpected </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_m'>m</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_m'>m</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="Idl.html" title="Idl (module)">Idl</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="Idl/InstructionOperationAst.html" title="Idl::InstructionOperationAst (class)">InstructionOperationAst</a></span></span><span class='rparen'>)</span>
-
-  <span class='id identifier rubyid_m'>m</span><span class='period'>.</span><span class='id identifier rubyid_make_left'>make_left</span> <span class='comment'># fix up right recursion
-</span>
-  <span class='ivar'>@operation_ast</span> <span class='op'>=</span> <span class='id identifier rubyid_m'>m</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
   <h3 class="signature " id="wavedrom_desc-instance_method">
   
-    #<strong>wavedrom_desc</strong>(base)  &#x21d2; <tt>Object</tt> 
+    #<strong>wavedrom_desc</strong>(base)  &#x21d2; <tt>String</tt> 
   
 
   
 
   
-</h3><table class="source_code">
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Generates a wavedrom description of the instruction encoding</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>base</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The XLEN (32 or 64), needed if the instruction is <span class='object_link'><a href="#multi_encoding%3F-instance_method" title="Instruction#multi_encoding? (method)">#multi_encoding?</a></span></p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The wavedrom JSON description</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-1287
-1288
-1289
-1290
-1291
-1292
-1293
-1294
-1295
-1296
-1297
-1298
-1299
-1300</pre>
+1100
+1101
+1102
+1103
+1104
+1105
+1106
+1107
+1108
+1109
+1110
+1111
+1112
+1113</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1287</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1100</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_wavedrom_desc'>wavedrom_desc</span><span class='lparen'>(</span><span class='id identifier rubyid_base'>base</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_desc'>desc</span> <span class='op'>=</span> <span class='lbrace'>{</span>
@@ -1119,7 +1195,7 @@
 </div>
 
       <div id="footer">
-  Generated on Fri Jul 12 05:52:19 2024 by
+  Generated on Fri Jul 12 07:33:12 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

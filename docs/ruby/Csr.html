@@ -151,7 +151,7 @@
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#sym_table-instance_method" title="#sym_table (instance method)">#<strong>sym_table</strong>  &#x21d2; ArchDef </a>
+      <a href="#sym_table-instance_method" title="#sym_table (instance method)">#<strong>sym_table</strong>  &#x21d2; Idl::SymbolTable </a>
     
 
     
@@ -171,7 +171,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>The owning ArchDef.</p>
+<p>The symbol table holding global names.</p>
 </div></span>
   
 </li>
@@ -193,30 +193,6 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#computed_length-instance_method" title="#computed_length (instance method)">#<strong>computed_length</strong>(effective_xlen = nil)  &#x21d2; Integer </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>return the length of the field as an Integer In some cases, the length is dynamic (e.g., depending on SXLEN).</p>
-</div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
       <a href="#description_html-instance_method" title="#description_html (instance method)">#<strong>description_html</strong>  &#x21d2; String </a>
     
 
@@ -232,7 +208,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>parse description field with asciidoctor, and retur the HTML result.</p>
+<p>parse description field with asciidoctor, and return the HTML result.</p>
 </div></span>
   
 </li>
@@ -361,28 +337,6 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#gen_html-instance_method" title="#gen_html (instance method)">#<strong>gen_html</strong>(scope)  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'></div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
       <a href="#has_custom_sw_read%3F-instance_method" title="#has_custom_sw_read? (instance method)">#<strong>has_custom_sw_read?</strong>  &#x21d2; Boolean </a>
     
 
@@ -481,7 +435,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#length-instance_method" title="#length (instance method)">#<strong>length</strong>(effective_xlen = nil)  &#x21d2; Object </a>
+      <a href="#length-instance_method" title="#length (instance method)">#<strong>length</strong>(effective_xlen = nil)  &#x21d2; Integer </a>
     
 
     
@@ -495,7 +449,9 @@
   
 
   
-    <span class="summary_desc"><div class='inline'></div></span>
+    <span class="summary_desc"><div class='inline'>
+<p>Length, in bits, of the CSR.</p>
+</div></span>
   
 </li>
 
@@ -503,7 +459,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#length_cond32-instance_method" title="#length_cond32 (instance method)">#<strong>length_cond32</strong>  &#x21d2; Object </a>
+      <a href="#length_cond32-instance_method" title="#length_cond32 (instance method)">#<strong>length_cond32</strong>  &#x21d2; String </a>
     
 
     
@@ -517,7 +473,9 @@
   
 
   
-    <span class="summary_desc"><div class='inline'></div></span>
+    <span class="summary_desc"><div class='inline'>
+<p>IDL condition of when the effective xlen is 32.</p>
+</div></span>
   
 </li>
 
@@ -525,7 +483,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#length_cond64-instance_method" title="#length_cond64 (instance method)">#<strong>length_cond64</strong>  &#x21d2; Object </a>
+      <a href="#length_cond64-instance_method" title="#length_cond64 (instance method)">#<strong>length_cond64</strong>  &#x21d2; String </a>
     
 
     
@@ -539,7 +497,9 @@
   
 
   
-    <span class="summary_desc"><div class='inline'></div></span>
+    <span class="summary_desc"><div class='inline'>
+<p>IDL condition of when the effective xlen is 64.</p>
+</div></span>
   
 </li>
 
@@ -564,50 +524,6 @@
     <span class="summary_desc"><div class='inline'>
 <p>Pretty-printed length string.</p>
 </div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#sw_read_ast-instance_method" title="#sw_read_ast (instance method)">#<strong>sw_read_ast</strong>  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'></div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#sw_read_source-instance_method" title="#sw_read_source (instance method)">#<strong>sw_read_source</strong>  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'></div></span>
   
 </li>
 
@@ -663,7 +579,59 @@
   </div>
 </div>
 <div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
   
+    <li>
+      
+        <span class='name'>csr_data</span>
+      
+      
+        <span class='type'>(<tt>Hash&lt;String,Object&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Hash of data from the specification</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>sym_table</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="Idl/SymbolTable.html" title="Idl::SymbolTable (class)">Idl::SymbolTable</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The symbol table holding global names</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>arch_def</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The architecture definition</p>
+</div>
+      
+    </li>
+  
+</ul>
+
 
 </div><table class="source_code">
   <tr>
@@ -671,15 +639,15 @@
       <pre class="lines">
 
 
-327
-328
-329
-330
-331
-332</pre>
+351
+352
+353
+354
+355
+356</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 327</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 351</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_csr_data'>csr_data</span><span class='comma'>,</span> <span class='id identifier rubyid_sym_table'>sym_table</span><span class='comma'>,</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='rparen'>)</span>
   <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_csr_data'>csr_data</span><span class='rparen'>)</span>
@@ -753,12 +721,12 @@
       <pre class="lines">
 
 
-325
-326
-327</pre>
+343
+344
+345</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 325</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 343</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_arch_def'>arch_def</span>
   <span class='ivar'>@arch_def</span>
@@ -773,7 +741,7 @@
       <div class="method_details ">
   <h3 class="signature " id="sym_table-instance_method">
   
-    #<strong>sym_table</strong>  &#x21d2; <tt><span class='object_link'><a href="ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>  <span class="extras">(readonly)</span>
+    #<strong>sym_table</strong>  &#x21d2; <tt><span class='object_link'><a href="Idl/SymbolTable.html" title="Idl::SymbolTable (class)">Idl::SymbolTable</a></span></tt>  <span class="extras">(readonly)</span>
   
 
   
@@ -782,7 +750,7 @@
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>Returns The owning ArchDef.</p>
+<p>Returns The symbol table holding global names.</p>
 
 
   </div>
@@ -795,13 +763,13 @@
     <li>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>)</span>
+        <span class='type'>(<tt><span class='object_link'><a href="Idl/SymbolTable.html" title="Idl::SymbolTable (class)">Idl::SymbolTable</a></span></tt>)</span>
       
       
       
         &mdash;
         <div class='inline'>
-<p>The owning ArchDef</p>
+<p>The symbol table holding global names</p>
 </div>
       
     </li>
@@ -814,12 +782,12 @@
       <pre class="lines">
 
 
-325
-326
-327</pre>
+346
+347
+348</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 325</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 346</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sym_table'>sym_table</span>
   <span class='ivar'>@sym_table</span>
@@ -837,165 +805,7 @@
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="computed_length-instance_method">
-  
-    #<strong>computed_length</strong>(effective_xlen = nil)  &#x21d2; <tt>Integer</tt> 
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>return the length of the field as an Integer In some cases, the length is dynamic (e.g., depending on SXLEN). When the length is dynamic, a specific value for the mode must be given</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-  <div class="examples">
-    <p class="tag_title">Examples:</p>
-    
-      
-        <p class="example_title"><div class='inline'>
-<p>Compute length when length is 32</p>
-</div></p>
-      
-      <pre class="example code"><code><span class='id identifier rubyid_computed_length'>computed_length</span><span class='lparen'>(</span><span class='rparen'>)</span> <span class='op'>=&gt;</span> <span class='int'>32</span></code></pre>
-    
-      
-        <p class="example_title"><div class='inline'>
-<p>Compute length when length is ‘SXLEN’ and ‘SXLEN’ parameter is 32</p>
-</div></p>
-      
-      <pre class="example code"><code><span class='id identifier rubyid_computed_length'>computed_length</span><span class='lparen'>(</span><span class='rparen'>)</span> <span class='op'>=&gt;</span> <span class='int'>32</span></code></pre>
-    
-      
-        <p class="example_title"><div class='inline'>
-<p>Compute length when length is ‘SXLEN’. and ‘SXLEN’ parameter is 3264</p>
-</div></p>
-      
-      <pre class="example code"><code><span class='id identifier rubyid_computed_length'>computed_length</span><span class='lparen'>(</span><span class='int'>64</span><span class='rparen'>)</span> <span class='op'>=&gt;</span> <span class='int'>64</span></code></pre>
-    
-      
-        <p class="example_title"><div class='inline'>
-<p>Compute length when length is ‘SXLEN’, and ‘SXLEN’ parameter is [32, 64]</p>
-</div></p>
-      
-      <pre class="example code"><code><span class='id identifier rubyid_computed_length'>computed_length</span><span class='lparen'>(</span><span class='rparen'>)</span> <span class='op'>=&gt;</span> <span class='const'>ArgumentError</span></code></pre>
-    
-  </div>
-<p class="tag_title">Parameters:</p>
-<ul class="param">
-  
-    <li>
-      
-        <span class='name'>effective_xlen</span>
-      
-      
-        <span class='type'>(<tt>Integer</tt>, <tt>nil</tt>)</span>
-      
-      
-        <em class="default">(defaults to: <tt>nil</tt>)</em>
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>Value to use when length is dynamic (e.g., ‘SXLEN’)</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt>Integer</tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>Length of the CSR, in bits</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-447
-448
-449
-450
-451
-452
-453
-454
-455
-456
-457
-458
-459
-460
-461
-462
-463
-464
-465
-466
-467
-468
-469
-470
-471</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 447</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_computed_length'>computed_length</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
-  <span class='kw'>if</span> <span class='id identifier rubyid_dynamic_length?'>dynamic_length?</span>
-    <span class='kw'>if</span> <span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
-      <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='heredoc_beg'>&lt;&lt;~MSG</span>
-<span class='tstring_content'>        Length of </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> depends on </span><span class='embexpr_beg'>#{</span><span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>length</span><span class='tstring_end'>&#39;</span></span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>;
-</span><span class='tstring_content'>          it must be supplied to length() to get a value
-</span><span class='heredoc_end'>      MSG
-</span>    <span class='kw'>end</span>
-
-    <span class='kw'>unless</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='id identifier rubyid_length'>length</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='embexpr_end'>}</span><span class='tstring_content'> is not a valid value of </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_length'>length</span><span class='embexpr_end'>}</span><span class='tstring_content'> (</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='id identifier rubyid_length'>length</span><span class='rbracket'>]</span><span class='embexpr_end'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span>
-    <span class='kw'>end</span>
-
-    <span class='id identifier rubyid_effective_xlen'>effective_xlen</span>
-  <span class='kw'>else</span>
-    <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Length is not dynamic; effective_xlen should not be provided</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
-
-    <span class='comment'># length isn&#39;t dynamic, but it still might be parameterized
-</span>    <span class='kw'>if</span> <span class='id identifier rubyid_length'>length</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>String</span><span class='rparen'>)</span>
-      <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='id identifier rubyid_length'>length</span><span class='rbracket'>]</span>
-    <span class='kw'>else</span>
-      <span class='id identifier rubyid_length'>length</span>
-    <span class='kw'>end</span>
-  <span class='kw'>end</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="description_html-instance_method">
+  <h3 class="signature first" id="description_html-instance_method">
   
     #<strong>description_html</strong>  &#x21d2; <tt>String</tt> 
   
@@ -1006,7 +816,7 @@
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>parse description field with asciidoctor, and retur the HTML result</p>
+<p>parse description field with asciidoctor, and return the HTML result</p>
 
 
   </div>
@@ -1038,12 +848,12 @@
       <pre class="lines">
 
 
-514
-515
-516</pre>
+460
+461
+462</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 514</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 460</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_description_html'>description_html</span>
   <span class='const'>Asciidoctor</span><span class='period'>.</span><span class='id identifier rubyid_convert'>convert</span> <span class='id identifier rubyid_description'>description</span>
@@ -1097,24 +907,24 @@
       <pre class="lines">
 
 
-336
-337
-338
-339
-340
-341
-342
-343
-344
-345
-346
-347
-348
-349
-350</pre>
+360
+361
+362
+363
+364
+365
+366
+367
+368
+369
+370
+371
+372
+373
+374</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 336</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 360</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_dynamic_length?'>dynamic_length?</span>
   <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Integer</span><span class='rparen'>)</span>
@@ -1162,12 +972,12 @@
       <pre class="lines">
 
 
-601
-602
-603</pre>
+547
+548
+549</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 601</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 547</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_field'>field</span><span class='lparen'>(</span><span class='id identifier rubyid_field_name'>field_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_field_hash'>field_hash</span><span class='lbracket'>[</span><span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rbracket'>]</span>
@@ -1221,12 +1031,12 @@
       <pre class="lines">
 
 
-596
-597
-598</pre>
+542
+543
+544</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 596</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 542</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_field?'>field?</span><span class='lparen'>(</span><span class='id identifier rubyid_field_name'>field_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_field_hash'>field_hash</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
@@ -1280,19 +1090,19 @@
       <pre class="lines">
 
 
-584
-585
-586
-587
-588
-589
-590
-591
-592
-593</pre>
+530
+531
+532
+533
+534
+535
+536
+537
+538
+539</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 584</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 530</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_field_hash'>field_hash</span>
   <span class='ivar'>@field_hash</span> <span class='kw'>unless</span> <span class='ivar'>@field_hash</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1353,18 +1163,18 @@
       <pre class="lines">
 
 
-519
-520
-521
-522
-523
-524
-525
-526
-527</pre>
+465
+466
+467
+468
+469
+470
+471
+472
+473</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 519</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 465</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_fields'>fields</span>
   <span class='kw'>return</span> <span class='ivar'>@fields</span> <span class='kw'>unless</span> <span class='ivar'>@fields</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1374,50 +1184,6 @@
     <span class='ivar'>@fields</span> <span class='op'>&lt;&lt;</span> <span class='const'><span class='object_link'><a href="CsrField.html" title="CsrField (class)">CsrField</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="CsrField.html#initialize-instance_method" title="CsrField#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_field_data'>field_data</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
   <span class='ivar'>@fields</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="gen_html-instance_method">
-  
-    #<strong>gen_html</strong>(scope)  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-651
-652
-653
-654
-655
-656
-657
-658
-659
-660</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 651</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_gen_html'>gen_html</span><span class='lparen'>(</span><span class='id identifier rubyid_scope'>scope</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_scope'>scope</span> <span class='op'>=</span> <span class='id identifier rubyid_scope'>scope</span><span class='period'>.</span><span class='id identifier rubyid_clone'>clone</span>
-  <span class='id identifier rubyid_scope'>scope</span><span class='period'>.</span><span class='id identifier rubyid_csr'>csr</span> <span class='op'>=</span> <span class='kw'>self</span>
-  <span class='id identifier rubyid_scope'>scope</span><span class='period'>.</span><span class='id identifier rubyid_current_url'>current_url</span> <span class='op'>=</span> <span class='const'>Class</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='lbrace'>{</span> <span class='id identifier rubyid_extend'>extend</span> <span class='const'>AssetMap</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_csr_url'>csr_url</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>.html</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-
-  <span class='const'>Slim</span><span class='op'>::</span><span class='const'>Template</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span>
-    <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='const'>ROOT</span><span class='embexpr_end'>}</span><span class='tstring_content'>/lib/views/csr.slim</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span>
-    <span class='label'>pretty:</span> <span class='kw'>true</span>
-  <span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_render'>render</span><span class='lparen'>(</span><span class='id identifier rubyid_scope'>scope</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1468,12 +1234,12 @@
       <pre class="lines">
 
 
-606
-607
-608</pre>
+552
+553
+554</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 606</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 552</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_has_custom_sw_read?'>has_custom_sw_read?</span>
   <span class='ivar'>@data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>sw_read</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_sw_read'>sw_read</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -1527,36 +1293,36 @@
       <pre class="lines">
 
 
-555
-556
-557
-558
-559
-560
-561
-562
-563
-564
-565
-566
-567
-568
-569
-570
-571
-572
-573
-574
-575
-576
-577
-578
-579
-580
-581</pre>
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520
+521
+522
+523
+524
+525
+526
+527</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 555</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 501</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_implemented_fields'>implemented_fields</span>
   <span class='kw'>return</span> <span class='ivar'>@implemented_fields</span> <span class='kw'>unless</span> <span class='ivar'>@implemented_fields</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1634,30 +1400,30 @@
       <pre class="lines">
 
 
-531
-532
-533
-534
-535
-536
-537
-538
-539
-540
-541
-542
-543
-544
-545
-546
-547
-548
-549
-550
-551</pre>
+477
+478
+479
+480
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 531</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 477</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_implemented_fields_for'>implemented_fields_for</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span>
   <span class='ivar'>@implemented_fields_for</span> <span class='op'>||=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
@@ -1688,53 +1454,104 @@
       <div class="method_details ">
   <h3 class="signature " id="length-instance_method">
   
-    #<strong>length</strong>(effective_xlen = nil)  &#x21d2; <tt>Object</tt> 
+    #<strong>length</strong>(effective_xlen = nil)  &#x21d2; <tt>Integer</tt> 
   
 
   
 
   
-</h3><table class="source_code">
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns Length, in bits, of the CSR.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>effective_xlen</span>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>nil</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Length, in bits, of the CSR</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-352
-353
-354
-355
-356
-357
-358
-359
-360
-361
-362
-363
-364
-365
-366
-367
-368
-369
-370
-371
-372
-373
-374
-375
-376
-377
 378
 379
 380
 381
 382
-383</pre>
+383
+384
+385
+386
+387
+388
+389
+390
+391
+392
+393
+394
+395
+396
+397
+398
+399
+400
+401
+402
+403
+404
+405
+406
+407
+408
+409</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 352</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 378</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_length'>length</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='kw'>case</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
@@ -1776,31 +1593,60 @@
       <div class="method_details ">
   <h3 class="signature " id="length_cond32-instance_method">
   
-    #<strong>length_cond32</strong>  &#x21d2; <tt>Object</tt> 
+    #<strong>length_cond32</strong>  &#x21d2; <tt>String</tt> 
   
 
   
 
   
-</h3><table class="source_code">
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns IDL condition of when the effective xlen is 32.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>IDL condition of when the effective xlen is 32</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-385
-386
-387
-388
-389
-390
-391
-392
-393
-394</pre>
+412
+413
+414
+415
+416
+417
+418
+419
+420
+421</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 385</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 412</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_length_cond32'>length_cond32</span>
   <span class='kw'>case</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
@@ -1820,31 +1666,60 @@
       <div class="method_details ">
   <h3 class="signature " id="length_cond64-instance_method">
   
-    #<strong>length_cond64</strong>  &#x21d2; <tt>Object</tt> 
+    #<strong>length_cond64</strong>  &#x21d2; <tt>String</tt> 
   
 
   
 
   
-</h3><table class="source_code">
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns IDL condition of when the effective xlen is 64.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>IDL condition of when the effective xlen is 64</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-396
-397
-398
-399
-400
-401
-402
-403
-404
-405</pre>
+424
+425
+426
+427
+428
+429
+430
+431
+432
+433</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 396</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 424</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_length_cond64'>length_cond64</span>
   <span class='kw'>case</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
@@ -1905,29 +1780,29 @@
       <pre class="lines">
 
 
-408
-409
-410
-411
-412
-413
-414
-415
-416
-417
-418
-419
-420
-421
-422
-423
-424
-425
-426
-427</pre>
+436
+437
+438
+439
+440
+441
+442
+443
+444
+445
+446
+447
+448
+449
+450
+451
+452
+453
+454
+455</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 408</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 436</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_length_pretty'>length_pretty</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_dynamic_length?'>dynamic_length?</span>
@@ -1948,138 +1823,6 @@
 </span>  <span class='kw'>else</span>
     <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_length'>length</span><span class='embexpr_end'>}</span><span class='tstring_content'>-bit</span><span class='tstring_end'>&quot;</span></span>
   <span class='kw'>end</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="sw_read_ast-instance_method">
-  
-    #<strong>sw_read_ast</strong>  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-473
-474
-475
-476
-477
-478
-479
-480
-481
-482
-483
-484
-485
-486
-487
-488
-489
-490
-491
-492
-493
-494
-495
-496
-497
-498
-499
-500
-501
-502
-503
-504
-505
-506
-507
-508
-509</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 473</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_sw_read_ast'>sw_read_ast</span>
-  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>TODO: add sw_read_ast back</span><span class='tstring_end'>&quot;</span></span>
-  <span class='comment'># return @sw_read_ast unless @sw_read_ast.nil?
-</span>
-  <span class='comment'># return if @data[&quot;sw_read&quot;].nil?
-</span>
-  <span class='comment'># @@parser.set_input_file(&quot;CSR #{name}&quot;)
-</span>  <span class='comment'># m = @@parser.parse(@data[&quot;sw_read&quot;], root: :function_statements)
-</span>  <span class='comment'># if m.nil?
-</span>  <span class='comment'>#   warn &quot;While parsing sw_read for CSR &#39;#{name}&#39;&quot;
-</span>  <span class='comment'>#   warn &quot;Parsing error at #{@@parser.failure_line}:#{@@parser.failure_column}&quot;
-</span>  <span class='comment'>#   warn @@parser.failure_reason
-</span>  <span class='comment'>#   raise &quot;Parse failed&quot;
-</span>  <span class='comment'># end
-</span>
-  <span class='comment'># m.make_left
-</span>
-  <span class='comment'># @sym_table.push
-</span>  <span class='comment'># @sym_table.add!(&quot;__expected_return_type&quot;, Type.new(:bits, width: length))
-</span>  <span class='comment'># begin
-</span>  <span class='comment'>#   m.func_stmt_list.elements.each do |e|
-</span>  <span class='comment'>#     e.choice.type_check(@sym_table, @arch_def)
-</span>  <span class='comment'>#   end
-</span>  <span class='comment'># rescue Ast::TypeError =&gt; e
-</span>  <span class='comment'>#   warn &quot;In the sw_read of CSR #{name}:&quot;
-</span>  <span class='comment'>#   warn e.what
-</span>  <span class='comment'>#   exit 1
-</span>  <span class='comment'># rescue Ast::InternalError =&gt; e
-</span>  <span class='comment'>#   warn &quot;In the sw_read of CSR #{name}:&quot;
-</span>  <span class='comment'>#   warn e.what
-</span>  <span class='comment'>#   warn e.backtrace
-</span>  <span class='comment'>#   exit 1
-</span>  <span class='comment'># end
-</span>  <span class='comment'># @sym_table.pop
-</span>
-  <span class='comment'># @sw_read_ast = m
-</span><span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="sw_read_source-instance_method">
-  
-    #<strong>sw_read_source</strong>  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-610
-611
-612
-613
-614</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 610</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_sw_read_source'>sw_read_source</span>
-  <span class='kw'>return</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_has_custom_sw_read?'>has_custom_sw_read?</span>
-
-  <span class='id identifier rubyid_sw_read_ast'>sw_read_ast</span><span class='period'>.</span><span class='id identifier rubyid_gen_adoc'>gen_adoc</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>((</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>\((</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -2168,32 +1911,32 @@
       <pre class="lines">
 
 
-627
-628
-629
-630
-631
-632
-633
-634
-635
-636
-637
-638
-639
-640
-641
-642
-643
-644
-645
-646
-647
-648
-649</pre>
+573
+574
+575
+576
+577
+578
+579
+580
+581
+582
+583
+584
+585
+586
+587
+588
+589
+590
+591
+592
+593
+594
+595</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 627</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 573</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_wavedrom_desc'>wavedrom_desc</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_desc'>desc</span> <span class='op'>=</span> <span class='lbrace'>{</span>
@@ -2228,7 +1971,7 @@
 </div>
 
       <div id="footer">
-  Generated on Fri Jul 12 05:52:19 2024 by
+  Generated on Fri Jul 12 07:33:12 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

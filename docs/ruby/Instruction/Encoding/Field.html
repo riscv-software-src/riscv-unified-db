@@ -99,7 +99,18 @@
   
 </div>
 
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>represents an encoding field (contiguous set of bits that form an opcode or decode variable slot)</p>
 
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div>
 
 
 
@@ -220,7 +231,9 @@
   
 
   
-    <span class="summary_desc"><div class='inline'></div></span>
+    <span class="summary_desc"><div class='inline'>
+<p>Whether or not the field represents part of the opcode (i.e., not a decode variable).</p>
+</div></span>
   
 </li>
 
@@ -249,7 +262,43 @@
   </div>
 </div>
 <div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
   
+    <li>
+      
+        <span class='name'>name</span>
+      
+      
+        <span class='type'>(<tt>#to_s</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Either string of 0’s ans 1’s or a bunch of dashses</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>range</span>
+      
+      
+        <span class='type'>(<tt>Range</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Range of the field in the parent CSR</p>
+</div>
+      
+    </li>
+  
+</ul>
+
 
 </div><table class="source_code">
   <tr>
@@ -257,16 +306,16 @@
       <pre class="lines">
 
 
-1096
-1097
-1098
-1099</pre>
+894
+895
+896
+897</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1096</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 894</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_range'>range</span><span class='rparen'>)</span>
-  <span class='ivar'>@name</span> <span class='op'>=</span> <span class='id identifier rubyid_name'>name</span>
+  <span class='ivar'>@name</span> <span class='op'>=</span> <span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
   <span class='ivar'>@range</span> <span class='op'>=</span> <span class='id identifier rubyid_range'>range</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -300,6 +349,25 @@
 </div>
 <div class="tags">
   
+  <div class="examples">
+    <p class="tag_title">Examples:</p>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>Field of a decode variable</p>
+</div></p>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_encoding'>encoding</span><span class='period'>.</span><span class='id identifier rubyid_opcode_fields'>opcode_fields</span><span class='lbracket'>[</span><span class='int'>0</span><span class='rbracket'>]</span> <span class='comment'>#=&gt; &#39;-----&#39; (for imm5)</span></code></pre>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>Field of an opcode</p>
+</div></p>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_encoding'>encoding</span><span class='period'>.</span><span class='id identifier rubyid_opcode_fields'>opcode_fields</span><span class='lbracket'>[</span><span class='int'>1</span><span class='rbracket'>]</span> <span class='comment'>#=&gt; &#39;0010011&#39; (for funct7)</span></code></pre>
+    
+  </div>
+
 <p class="tag_title">Returns:</p>
 <ul class="return">
   
@@ -325,12 +393,12 @@
       <pre class="lines">
 
 
-1092
-1093
-1094</pre>
+887
+888
+889</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1092</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 887</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_name'>name</span>
   <span class='ivar'>@name</span>
@@ -386,12 +454,12 @@
       <pre class="lines">
 
 
-1095
-1096
-1097</pre>
+890
+891
+892</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1095</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 890</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_range'>range</span>
   <span class='ivar'>@range</span>
@@ -420,6 +488,8 @@
 </h3><div class="docstring">
   <div class="discussion">
     
+<p>Returns whether or not the field represents part of the opcode (i.e., not a decode variable).</p>
+
 
   </div>
 </div>
@@ -435,6 +505,11 @@
       
       
       
+        &mdash;
+        <div class='inline'>
+<p>whether or not the field represents part of the opcode (i.e., not a decode variable)</p>
+</div>
+      
     </li>
   
 </ul>
@@ -445,12 +520,12 @@
       <pre class="lines">
 
 
-1101
-1102
-1103</pre>
+900
+901
+902</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1101</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 900</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_opcode?'>opcode?</span>
   <span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_match?'>match?</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^[01]+$</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span>
@@ -465,7 +540,7 @@
 </div>
 
       <div id="footer">
-  Generated on Fri Jul 12 05:52:19 2024 by
+  Generated on Fri Jul 12 07:33:12 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

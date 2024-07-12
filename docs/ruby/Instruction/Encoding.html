@@ -99,7 +99,18 @@
   
 </div>
 
-<h2>Defined Under Namespace</h2>
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    
+<p>represents an instruction encoding</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><h2>Defined Under Namespace</h2>
 <p class="children">
   
     
@@ -290,7 +301,43 @@
   </div>
 </div>
 <div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
   
+    <li>
+      
+        <span class='name'>format</span>
+      
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Format of the encoding, as 0’s, 1’s and -‘s (for decode variables)</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>decode_vars</span>
+      
+      
+        <span class='type'>(<tt>Array&lt;Hash&lt;String,Object&gt;&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>List of decode variable defintions from the arch spec</p>
+</div>
+      
+    </li>
+  
+</ul>
+
 
 </div><table class="source_code">
   <tr>
@@ -298,28 +345,28 @@
       <pre class="lines">
 
 
-1106
-1107
-1108
-1109
-1110
-1111
-1112
-1113
-1114
-1115
-1116
-1117
-1118
-1119
-1120
-1121
-1122
-1123
-1124</pre>
+907
+908
+909
+910
+911
+912
+913
+914
+915
+916
+917
+918
+919
+920
+921
+922
+923
+924
+925</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1106</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 907</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_format'>format</span><span class='comma'>,</span> <span class='id identifier rubyid_decode_vars'>decode_vars</span><span class='rparen'>)</span>
   <span class='ivar'>@format</span> <span class='op'>=</span> <span class='id identifier rubyid_format'>format</span>
@@ -396,12 +443,12 @@
       <pre class="lines">
 
 
-1088
-1089
-1090</pre>
+878
+879
+880</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1088</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 878</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_decode_variables'>decode_variables</span>
   <span class='ivar'>@decode_variables</span>
@@ -469,12 +516,12 @@
       <pre class="lines">
 
 
-1080
-1081
-1082</pre>
+870
+871
+872</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1080</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 870</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_format'>format</span>
   <span class='ivar'>@format</span>
@@ -542,12 +589,12 @@
       <pre class="lines">
 
 
-1085
-1086
-1087</pre>
+875
+876
+877</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1085</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 875</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_opcode_fields'>opcode_fields</span>
   <span class='ivar'>@opcode_fields</span>
@@ -608,12 +655,12 @@
       <pre class="lines">
 
 
-1127
-1128
-1129</pre>
+928
+929
+930</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1127</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 928</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_size'>size</span>
   <span class='ivar'>@format</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span>
@@ -628,7 +675,7 @@
 </div>
 
       <div id="footer">
-  Generated on Fri Jul 12 05:52:19 2024 by
+  Generated on Fri Jul 12 07:33:12 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>
