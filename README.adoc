@@ -1,4 +1,15 @@
-# RVI Spec Generator
+# RISC-V Unified Database
+
+The RISC-V Unified Database is intended to hold *all* the information needed to describe RISC-V,
+including a list of extensions, instruction specifications, CSR specifications, and documentation prose. The vision is that anything one would need for RISC-V can be generated from the information in this repository.
+
+This repository contains:
+
+ * A (eventually complete) description of the RISC-V specification in a machine-readable format.
+ * A tool to generate multiple views of that spec, including:
+ ** A configuration-specific, human-readable documentation webpage
+ ** [COMING SOON] A configuration-specific Instruction Set Simulator
+ ** More backends are planned
 
 ## Prerequisites
 
@@ -25,6 +36,11 @@ Do once:
 # DEVELOPMENT=1 ./bin/setup
 ----
 
+[NOTE]
+If you forget, don't worry. Setup will be invoked by any program in bin/ if necessary.
+
+### VSCode
+
 If using Visual Studio Code and want to use development tools, you will need to restart the editor
 after setup.
 
@@ -34,6 +50,9 @@ Helpful extensions are
  * https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml[YAML]
  * https://marketplace.visualstudio.com/items?itemName=castwide.solargraph[Solargraph] (for a Ruby Language Server)
  * https://marketplace.visualstudio.com/items?itemName=onnovalkering.vscode-singularity[Singularity] (if you plan on working on the container)
+
+The `.vscode/settings.json` file in the repo will ensure that Solargraph works without any additional
+configuration (assuming you've already run ./bin/setup).
 
 ## Tasks
 
@@ -51,3 +70,4 @@ Quick start:
 ## More info
 
  * xref:arch/README.adoc[Architecture specification format]
+ * xref:arch/README.adoc[Documentation for the generator tool and IDL]

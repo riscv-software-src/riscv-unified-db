@@ -1,8 +1,13 @@
 = Architecture Specification
 
-RISC-V is a highly configurable standard. Numerous unnamed implementation options exist, and the presence/absence of hundreds of named optional extensions alter the behavior of the architecture. Additionally, implementations are free to add custom, non-standard extensions on top of those ratified by https://riscv.org[RISC-V International (RVI)]. As a result, two equally valid implementations of RISC-V can have wildly different specifications.
+RISC-V is a highly configurable standard. Numerous unnamed implementation options exist, and
+the presence/absence of hundreds of named optional extensions alter the behavior of the
+architecture. Additionally, implementations are free to add custom, non-standard extensions
+on top of those ratified by https://riscv.org[RISC-V International (RVI)]. As a result, two
+equally valid implementations of RISC-V can have wildly different specifications.
 
-This makes creating generic RISC-V specifications a daunting task. A few challenging issues that arise include:
+This makes creating and maintaining generic RISC-V specifications a daunting task.
+A few challenging issues that arise include:
 
  * The RISC-V standard actually specifies two different architectures, namely RV32 and RV64.
  * The presence/absence of standard instructions and CSRs is affected by both unnamed implementation options (_e.g._, the number of implemented PMP registers) and named extensions.
@@ -10,8 +15,9 @@ This makes creating generic RISC-V specifications a daunting task. A few challen
 
 To tame this challenge, this specification generator takes the following approach:
 
- * The generic architecture (in the `arch/` folder) is described as a _template_, which can be affected by implementation parameters (in the `cfgs/` folder).
- * The resulting generated specification is specific to the implementation. Behaviors that are not relevant are left out, and behaviors that are affected by multiple extensions are merged into a single description.
+ * The generic architecture (in the `arch/` folder) is described in a way that covers all implementation options. As much as possible, the architecture is defined in a structured way that can be easily parsed using any programming language with a https://en.wikipedia.org/wiki/YAML[YAML] library. Complex behavior (_e.g._, instruction operation) and some configuration-dependent metadata is specified in an architecture definition language (xref:prose/idl.adoc[IDL]) that can formally define the architecture in arbitrary ways.
+ * An implementation of RISC-V is specified as a _configuration_ containing all unnamed parameters and list of named supported extensions (in the `cfgs/` folder).
+ * A tool, included in this repository, can generate an implmentation-specific specification by applying the configuration to the generic spec. Behaviors that are not relevant are left out, and behaviors that are affected by multiple extensions are merged into a single description.
 
 The architecture is specified in a series of https://en.wikipedia.org/wiki/YAML[YAML]
 files for _Extensions_, _Instructions_, and _Control and Status Registers (CSRs)_.
@@ -25,12 +31,12 @@ Each extension/instruction/CSR has its own file.
 | Config (cfgs/NAME)                                                                           |
 | +-------------------------+ +-------------------------+ +---------------------------------+  |
 | | Implementation Options  | | Extension List          | | Implementation Overlay          |  |
-| | (cfgs/NAME/params.yaml) | | (cfgs/NAME/exts.yaml)   | | (cfgs/NAME/arch_overlay/*.yaml) |  |
+| | (cfgs/NAME/params.yaml) | | (cfgs/NAME/params.yaml) | | (cfgs/NAME/arch_overlay/*.yaml) |  |
 | +-------------------------+ +-------------------------+ +---------------------------------+  |
 +------------------------|-----|--------------------------------|------------------------------+
                          |     |                                |
  +----------------+      v     v                                |
- |{s} Templated   |   /----------\                              |
+ |{s} Generic     |   /----------\                              |
  |    Arch Spec   |-->|  Render  |                              |
  | (arch)         |   |  (ERB)   :                              |
  +----------------+   \----------/                              |
@@ -42,16 +48,16 @@ Each extension/instruction/CSR has its own file.
               +-----------------------------+                   |
                            |                                    |
                            v                                    |
-                      /----------\                              |
-                      |  Overlay |<-----------------------------+
-                      |          :
-                      \----------/
+                 /-------------------------\                    |
+                 |  Overlay                |<-------------------+
+                 | (gen/NAME/.merged_arch) :
+                 \-------------------------/
                            |
                            v
               +-----------------------------+
               | {s} Implementation-specific |
               |     Archiecture Spec        |
-              | (cfgs/NAME/arch)            |
+              | (gen/NAME/arch)             |
               +-----------------------------+
 ....
 
