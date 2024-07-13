@@ -1,0 +1,20 @@
+name: Regression test
+on:
+  pull_request:
+    branches:
+    - main
+jobs:
+  regress:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Clone Github Repo Action
+      uses: GuillaumeFalourd/clone-github-repo-action@v2.3
+      with:
+        depth: 1
+        branch: 'main'
+    - name: Setup apptainer
+      uses: eWaterCycle/setup-apptainer@v2.0.0
+    - name: Setup project
+      run: apptainer run --home ${{ github.workspace }}/.home oras://docker.io/riscvintl/spec-generator:0.1 ./bin/setup
+    - name: Build html documentation for generic_rv64
+      run: apptainer run --home ${{ github.workspace }}/.home oras://docker.io/riscvintl/spec-generator:0.1 bundle exec rake gen:html[generic_rv64]
