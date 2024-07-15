@@ -22,6 +22,6 @@ jobs:
       name: Build container
       run: ./bin/build_container
     - name: Setup project
-      run: apptainer run --home ${{ github.workspace }}/.home .singularity/image.sif ./bin/setup
+      run: ./bin/setup
     - name: Build html documentation for generic_rv64
       run: apptainer run --home ${{ github.workspace }}/.home .singularity/image.sif bundle exec rake gen:html[generic_rv64]
