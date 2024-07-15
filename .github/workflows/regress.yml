@@ -12,8 +12,6 @@ jobs:
       uses: actions/checkout@v4
     - name: Setup apptainer
       uses: eWaterCycle/setup-apptainer@v2.0.0
-    - name: Setup oras
-      uses: oras-project/setup-oras@v1
     - name: Get container from cache
       id: cache-sif
       uses: actions/cache@v3
@@ -21,8 +19,8 @@ jobs:
         path: .singularity/image.sif
         key: oras://docker.io/riscvintl/spec-generator:0.1
     - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
-      name: Download container
-      run: oras blob fetch --output .singularity/image.sif docker.io/riscvintl/spec-generator:0.1
+      name: Build container
+      run: ./do/build_container
     - name: Setup project
       run: apptainer run --home ${{ github.workspace }}/.home .singularity/image.sif ./bin/setup
     - name: Build html documentation for generic_rv64
