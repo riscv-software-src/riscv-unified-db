@@ -25,7 +25,7 @@ jobs:
         path: |
           .home/.gems
           node_modules
-        key: ${{ hashFiles('Gemfile.lock') }}-${{ 'package-lock.json' }}
+        key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
     - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
       name: Build container
       run: ./bin/build_container
