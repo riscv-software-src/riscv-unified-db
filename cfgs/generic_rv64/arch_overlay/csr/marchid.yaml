@@ -3,4 +3,4 @@
 marchid:
   fields:
     Architecture:
-      description: My custom description.
+      description: Custom overlay description

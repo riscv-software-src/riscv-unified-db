@@ -12,7 +12,24 @@ jobs:
       uses: actions/checkout@v4
     - name: Setup apptainer
       uses: eWaterCycle/setup-apptainer@v2.0.0
+    - name: Get container from cache
+      id: cache-sif
+      uses: actions/cache@v3
+      with:
+        path: .singularity/image.sif
+        key: ${{ hashFiles('container.def') }}
+    - name: Get gems and node files from cache
+      id: cache-bundle-npm
+      uses: actions/cache@v3
+      with:
+        path: |
+          .home/.gems
+          node_modules
+        key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
+    - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
+      name: Build container
+      run: ./bin/build_container
     - name: Setup project
-      run: apptainer run --home ${{ github.workspace }}/.home oras://docker.io/riscvintl/spec-generator:0.1 ./bin/setup
+      run: ./bin/setup
     - name: Build html documentation for generic_rv64
-      run: apptainer run --home ${{ github.workspace }}/.home oras://docker.io/riscvintl/spec-generator:0.1 bundle exec rake gen:html[generic_rv64]
+      run: ./do gen:html[generic_rv64]
