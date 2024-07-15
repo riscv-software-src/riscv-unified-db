@@ -9,10 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Clone Github Repo Action
-      uses: GuillaumeFalourd/clone-github-repo-action@v2.3
-      with:
-        depth: 1
-        branch: 'main'
     - name: Setup apptainer
       uses: eWaterCycle/setup-apptainer@v2.0.0
     - name: Setup project
