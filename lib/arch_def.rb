@@ -127,6 +127,8 @@ class CsrField < ArchDefObject
           parent: "#{csr.name}.#{name}"
         )
 
+        sym_table.push # for consistency with template functions
+
         begin
           case ast.return_value(sym_table)
           when 0
@@ -148,6 +150,8 @@ class CsrField < ArchDefObject
           warn "In parsing #{csr.name}.#{name}::type()"
           warn "  Return of type() function cannot be evaluated at compile time"
           raise e
+        ensure
+          sym_table.pop
         end
       end
   end
@@ -218,13 +222,20 @@ class CsrField < ArchDefObject
   def reset_value
     return @reset_value unless @reset_value.nil?
 
-    @reset_value =
-      if @data.key?("reset_value")
-        @data["reset_value"]
-      else
-        puts "evaluating #{name}"
-        reset_value_func.return_value(arch_def.sym_table)
-      end
+    symtab = arch_def.sym_table
+
+    symtab.push # for consistency with template functions
+
+    begin
+      @reset_value =
+        if @data.key?("reset_value")
+          @data["reset_value"]
+        else
+          reset_value_func.return_value(arch_def.sym_table)
+        end
+    ensure
+      symtab.pop
+    end
   end
 
   # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
@@ -385,7 +396,6 @@ class Csr < ArchDefObject
 
         effective_xlen
       else
-        puts arch_def.implemented_csrs.map { |c| c.name }
         raise "CSR #{name} is not implemented" if arch_def.implemented_csrs.none? { |c| c.name == name }
         raise "CSR #{name} is not implemented" if arch_def.config_params["SXLEN"].nil?
 
@@ -1213,6 +1223,9 @@ class ArchDef
   # @return [Idl::Compiler] The IDL compiler
   attr_reader :idl_compiler
 
+  # @return [Idl::AstNode] Abstract syntax tree of global scope
+  attr_reader :global_ast
+
   # Initialize a new configured architecture defintiion
   #
   # @params config_name [#to_s] The name of a configuration, which must correspond
@@ -1237,7 +1250,7 @@ class ArchDef
     @idl_compiler = Idl::Compiler.new(self)
 
     # load the globals into the symbol table
-    @idl_compiler.compile_file(
+    @global_ast = @idl_compiler.compile_file(
       $root / "arch" / "isa" / "globals.isa",
       @sym_table
     )

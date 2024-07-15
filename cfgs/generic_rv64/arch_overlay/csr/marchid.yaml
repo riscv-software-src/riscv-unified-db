@@ -3,4 +3,4 @@
 marchid:
   fields:
     Architecture:
-      reset_value: 0xcafebabe
+      description: My custom description.

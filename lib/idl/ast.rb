@@ -27,26 +27,6 @@ module Treetop
       # @return [Boolean] whether or not this SyntaxNode represents a function name (overriden in the parser)
       def is_function_name? = false
 
-      # @return [Boolean] whether or not this SyntaxNode is being parsed as a template argument
-      #                   without being enclosed in parenthesis
-      def parsing_in_template?
-        # since this is called in the middle of parsing, the parent pointer hasn't been set up yet
-        puts self.class.ancestors
-        puts "text = #{text_value}"
-        puts parent.class.name
-        exit
-        if parent.nil?
-          nil
-        elsif parent.is_a?(ParenExpressionAst)
-          false # once we hit a paren expression, we are cleared
-        elsif parent.is_a?(BitsTypeAst)
-          puts "FOund bits!!"
-          true # must be the expression on the BitsType
-        else
-          parent.parsing_in_template?
-        end
-      end
-
       # Fix up left recursion for the PEG
       #
       # This is the default for anything that isn't a left-recursive binary op
@@ -442,7 +422,6 @@ module Idl
     include Executable
 
     def type_check(symtab)
-      puts "global #{text_value}"
       single_declaration_with_initialization.type_check(symtab)
     end
 
@@ -942,11 +921,15 @@ module Idl
     end
 
     def execute(symtab)
-      var = symtab.get(var.text_value)
+      if var.is_a?(CsrWriteAst)
+        value_error "CSR writes are never compile-time-known"
+      else
+        variable = symtab.get(var.text_value)
 
-      internal_error "Call type check first" if var.nil?
+        internal_error "No variable #{var.text_value}" if variable.nil?
 
-      var.value = rval.value(symtab)
+        variable.value = rval.value(symtab)
+      end
     end
 
     # @!macro to_idl
@@ -1209,7 +1192,7 @@ module Idl
     end
 
     def execute(symtab)
-      values = functin_call.execute(symtab)
+      values = function_call.execute(symtab)
 
       i = 0
       vars.each do |v|
@@ -1520,7 +1503,9 @@ module Idl
         element_name = expression.text_value.split(":")[2]
         etype.enum_class.value(element_name)
       when :csr
-        internal_error "TODO"
+        expression.value(symtab)
+      else
+        internal_error "TODO: Bits cast for #{etype.kind}"
       end
     end
 
@@ -2334,7 +2319,21 @@ module Idl
 
         symtab.get("__expected_return_type")
       else
-        func_def.return_type(symtab)
+        # need to find the type to get the right symbol table
+        func_type = symtab.get_global(func_def.name)
+        internal_error "Couldn't find function type for '#{func_def.name}' #{symtab.keys} " if func_type.nil?
+
+        # to get the return type, we need to find the template values in case this is
+        # a templated function definition
+        #
+        # that information should be up the stack in the symbol table
+        template_values = symtab.find_all(single_scope: true) do |o|
+          o.is_a?(Var) && o.template_value_for?(func_def.name)
+        end
+        unless template_values.size == func_type.template_names.size
+          internal_error "Did not find correct number of template arguments (found #{template_values.size}, need #{func_type.template_names.size}) #{symtab.keys_pretty}"
+        end
+        func_type.return_type(template_values.sort { |a, b| a.template_index <=> b.template_index }.map(&:value))
       end
     end
 
@@ -2622,7 +2621,7 @@ module Idl
         end
       end
 
-      if func_def_type.return_type(template_values(symtab), arg_nodes, symtab).nil?
+      if func_def_type.return_type(template_values(symtab)).nil?
         internal_error "No type determined for function"
       end
 
@@ -2632,12 +2631,13 @@ module Idl
     # @!macro type
     def type(symtab)
       func_def_type = symtab.get(name)
-      func_def_type.return_type(template_values(symtab), arg_nodes, symtab)
+      func_def_type.return_type(template_values(symtab))
     end
 
     # @!macro value
     def value(symtab)
       func_def_type = symtab.get(name)
+      type_error "not a function" unless func_def_type.is_a?(FunctionType)
       if func_def_type.builtin?
         if name == "implemented?"
           extname = arg_nodes[0].text_value
@@ -2647,38 +2647,20 @@ module Idl
         end
       end
 
-      symtab.push
-
-      begin
-        template_arg_nodes.each_with_index do |targ, idx|
-          targ_name = func_def_type.template_names[idx]
-          targ_type = func_def_type.template_types[idx]
-          symtab.add(targ_name, Var.new(targ_name, targ_type, targ.value(symtab)))
-        end
-
-        arg_nodes.each_with_index do |arg, idx|
-          arg_name = func_def_type.argument_name(idx, template_values(symtab))
-          arg_type = func_def_type.argument_type(idx, template_values(symtab), arg_nodes, symtab)
-          begin
-            symtab.add!(arg_name, Var.new(arg_name, arg_type, arg.value(symtab)))
-          rescue SymbolTable::DuplicateSymError
-            type_error "Argument '#{arg_name}' shadows another symbol (level = #{symtab.levels})"
-          end
-        end
-
-        v = func_def_type.body.return_value(symtab)
-      ensure
-        symtab.pop
+      template_values = []
+      template_arg_nodes.each_with_index do |targ, idx|
+        # targ_name = func_def_type.template_names[idx]
+        # targ_type = func_def_type.template_types[idx]
+        template_values << targ.value(symtab)
       end
 
-      v
+      func_def_type.return_value(template_values, arg_nodes, symtab)
     end
     alias execute value
 
     def name
       function_name.text_value
     end
-
   end
 
   # class ExecutionAst < AstNode
@@ -2747,11 +2729,13 @@ module Idl
 
     # @!macro type_check
     def type_check(symtab)
+      internal_error "Function bodies should be at global + 1 scope" unless symtab.levels == 2
+
       return_value_might_be_known = true
 
       statements.each do |s|
         s.type_check(symtab)
-        next if return_value_might_be_known
+        next unless return_value_might_be_known
 
         begin
           if s.is_a?(Returns)
@@ -2771,6 +2755,8 @@ module Idl
     #
     # @note arguments and template arguments must be put on the symtab before calling
     def return_value(symtab)
+      internal_error "Function bodies should be at global + 1 scope" unless symtab.levels == 2
+
       # go through the statements, and return the first one that has a return value
       statements.each do |s|
         if s.is_a?(Returns)
@@ -2781,26 +2767,9 @@ module Idl
         end
       end
 
-      internal_error "No function body statement returned a value"
+      value_error "No function body statement returned a value"
     end
     alias execute return_value
-
-    # @return [Array] An array of all possible return values
-    #
-    # @note arguments and template arguments must be put on the symtab before calling
-    def return_values(symtab)
-      # go through the statements, and find all return values
-      rts = []
-      statements.each do |s|
-        if s.is_a?(Returns)
-          rts += s.return_values(symtab)
-        else
-          s.execute(symtab)
-        end
-      end
-
-      rts
-    end
 
     def to_idl
       result = ""
@@ -2866,21 +2835,12 @@ module Idl
       list
     end
 
-    # return an array of all the return types, in order
-    # function (or template instance) must be resolved
-    def return_types(symtab)
-      t = return_type(symtab)
-      if t.kind == :tuple
-        t.tuple_types
-      elsif t.kind == :void
-        []
-      else
-        [t]
-      end
-    end
-
     # return the return type, which may be a tuple of multiple types
     def return_type(symtab)
+      unless symtab.levels == 2
+        internal_error "Function bodies should be at global + 1 scope (at global + #{symtab.levels - 1})"
+      end
+
       if templated?
         template_names.each do |tname|
           internal_error "Template values missing" unless symtab.get(tname)
@@ -2930,6 +2890,8 @@ module Idl
 
     # @param [Array<Integer>] template values to apply
     def type_check_template_instance(symtab)
+      internal_error "Function definitions should be at global + 1 scope" unless symtab.levels == 2
+
       internal_error "Not a template function" unless templated?
 
       template_names.each do |tname|
@@ -2945,6 +2907,8 @@ module Idl
     # uncalled functions, which avoids dealing with mentions of CSRs that
     # may not exist in a given implmentation
     def type_check_from_call(symtab)
+      internal_error "Function definitions should be at global + 1 scope" unless symtab.levels == 2
+
       global_scope = symtab.deep_clone
       global_scope.pop while global_scope.levels != 1
 
@@ -2965,7 +2929,7 @@ module Idl
       def_type = FunctionType.new(
           name,
           self,
-          symtab.deep_clone
+          symtab
         )
 
       # recursion isn't supported (doesn't map well to hardware), so we can add the function after type checking the body
@@ -3104,7 +3068,6 @@ module Idl
               v = s.s.return_value(symtab)
               unless v.nil?
                 symtab.pop
-                puts "value = #{v}"
                 return v
               end
             else
