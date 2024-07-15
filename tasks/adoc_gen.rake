@@ -42,7 +42,7 @@ require_relative "../lib/arch_def"
         File.write(path, erb.result(binding))
       end
     when "func"
-      isa_def = arch_def.isa_def
+      isa_def = arch_def.global_ast
       path = dir_path / "funcs.adoc"
       File.write(path, erb.result(binding))
     else

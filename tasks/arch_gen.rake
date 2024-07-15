@@ -40,6 +40,7 @@ rule %r{#{$root}/\.stamps/arch-gen-.*\.stamp} => proc { |tname|
   [
     "#{$root}/.stamps",
     "#{$root}/lib/arch_gen.rb",
+    "#{$root}/lib/idl/ast.rb",
     "#{$root}/tasks/arch_gen.rake",
     "ext/riscv-opcodes/instr_dict.yaml"
   ] + arch_files + config_files

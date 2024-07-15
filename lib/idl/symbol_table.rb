@@ -7,7 +7,7 @@ module Idl
   class Var
     attr_reader :name, :type, :value
 
-    def initialize(name, type, value = nil, decode_var: false)
+    def initialize(name, type, value = nil, decode_var: false, template_index: nil, function_name: nil)
       @name = name
       raise 'unexpected' unless type.is_a?(Type)
 
@@ -16,6 +16,8 @@ module Idl
       raise 'unexpected' unless decode_var.is_a?(TrueClass) || decode_var.is_a?(FalseClass)
 
       @decode_var = decode_var
+      @template_index = template_index
+      @function_name = function_name
     end
 
     def clone
@@ -33,6 +35,24 @@ module Idl
 
     def decode_var?
       @decode_var
+    end
+
+    # @param function_name [#to_s] A function name
+    # @return [Boolean] whether or not this variable is a function template argument from a call site for the function 'function_name'
+    def template_value_for?(function_name)
+      !@template_index.nil? && (function_name.to_s == @function_name)
+    end
+
+    # @return [Integer] the template value position
+    # @raise if Var is not a template value
+    def template_index
+      raise "Not a template value" if @template_index.nil?
+
+      @template_index
+    end
+
+    def template_val?
+      !@template_index.nil?
     end
 
     def to_cxx
@@ -125,6 +145,7 @@ module Idl
       add!('ExtensionName', EnumerationType.new('ExtensionName', arch_def.extensions.map(&:name), Array.new(arch_def.extensions.size) { |i| i + 1 }))
     end
 
+    # pushes a new scope
     def push
       # puts "push #{caller[0]}"
       # @scope_caller ||= []
@@ -132,18 +153,27 @@ module Idl
       @scopes << {}
     end
 
+    # pops the top of the scope stack
     def pop
       # puts "pop #{caller[0]}"
       # puts "    from #{@scope_caller.pop}"
-      raise 'Error: popping the symbol table would remove global scope' if @scopes.size == 1
+      raise "Error: popping the symbol table would remove global scope" if @scopes.size == 1
 
       @scopes.pop
     end
 
+    # @return [Boolean] whether or not any symbol 'name' is defined at any level in the symbol table
     def key?(name)
       @scopes.each { |s| return true if s.key?(name) }
     end
 
+    def keys_pretty
+      @scopes.map { |s| s.map { |k, v| v.is_a?(Var) && v.template_val? ? "#{k} (template)" : k }}
+    end
+
+    # searches the symbol table scope-by-scope to find 'name'
+    #
+    # @return [Object] A symbol named 'name', or nil if not found
     def get(name)
       @scopes.reverse_each do |s|
         return s[name] if s.key?(name)
@@ -151,11 +181,57 @@ module Idl
       nil
     end
 
+    def get_from(name, level)
+      raise ArgumentError, "level must be positive" unless level.positive?
+
+      raise "There is no level #{level}" unless level < levels
+
+      @scopes[0..level - 1].reverse_each do |s|
+        return s[name] if s.key?(name)
+      end
+      nil
+    end
+
+    # @return [Object] the symbol named 'name' from global scope, or nil if not found
+    def get_global(name)
+      get_from(name, 1)
+    end
+
+    # searches the symbol table scope-by-scope to find all entries for which the block returns true
+    #
+    # @param single_scope [Boolean] If true, stop searching more scope as soon as there are matches
+    # @yieldparam obj [Object] A object stored in the symbol table
+    # @yieldreturn [Boolean] Whether or not the object is the one you are looking for
+    # @return [Array<Object>] All matches
+    def find_all(single_scope: false, &block)
+      raise ArgumentError, "Block needed" unless block_given?
+
+      raise ArgumentError, "Find block takes one argument" unless block.arity == 1
+
+      matches = []
+
+      @scopes.reverse_each do |s|
+        s.each_value do |v|
+          matches << v if yield v
+        end
+        break if single_scope && !matches.empty?
+      end
+      matches
+    end
+
+    # add a new symbol at the outermost scope
+    #
+    # @param name [#to_s] Symbol name
+    # @param var [Object] Symbol object (usually a Var or a Type)
     def add(name, var)
       @scopes.last[name] = var
     end
 
-    # add, and make sure name is unique
+    # add a new symbol at the outermost scope, unless that symbol is already defined
+    #
+    # @param name [#to_s] Symbol name
+    # @param var [Object] Symbol object (usually a Var or a Type)
+    # @raise [DuplicationSymError] if 'name' is already in the symbol table
     def add!(name, var)
       raise DuplicateSymError, "Symbol #{name} already defined as #{get(name)}" unless @scopes.select { |h| h.key? name }.empty?
 
@@ -180,10 +256,12 @@ module Idl
       @scopes[level][name] = var
     end
 
+    # @return [Integer] Number of scopes on the symbol table (global at 1)
     def levels
       @scopes.size
     end
 
+    # pretty-print the symbol table contents
     def print
       @scopes.each do |s|
         s.each do |name, obj|
@@ -192,7 +270,7 @@ module Idl
       end
     end
 
-    # return a deep clone of this SymbolTable
+    # @return [SymbolTable] a deep clone of this SymbolTable
     def deep_clone(clone_values: false)
       copy = SymbolTable.new(@archdef)
       copy.instance_variable_set(:@scopes, [])

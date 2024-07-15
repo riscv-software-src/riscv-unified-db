@@ -421,7 +421,7 @@ module Idl
     def initialize(func_name, func_def_ast, symtab)
       super(:function, name: func_name)
       @func_def_ast = func_def_ast
-      @symtab = symtab.deep_clone
+      @symtab = symtab
 
       raise "symtab should be at level 1" unless symtab.levels == 1
     end
@@ -435,14 +435,19 @@ module Idl
     def num_args = @func_def_ast.num_args
 
     def type_check_call(template_values = [])
-      raise "Missing template values" if templated? and template_values.empty?
+      raise "Missing template values" if templated? && template_values.empty?
 
       if templated?
         symtab = apply_template_values(template_values)
 
         @func_def_ast.type_check_template_instance(symtab)
       else
-        @func_def_ast.type_check_from_call(@symtab)
+        symtab = @symtab.deep_clone
+        symtab.pop while symtab.levels != 1
+
+        symtab.push # to keep things consistent with template functions, push a scope
+
+        @func_def_ast.type_check_from_call(symtab)
       end
     end
 
@@ -458,11 +463,16 @@ module Idl
       raise "wrong number of template values" unless template_names.size == template_values.size
 
       symtab = @symtab.deep_clone
+      symtab.pop while symtab.levels != 1
+
+      raise "Symbol table should be at global scope" unless symtab.levels == 1
 
       symtab.push
 
       template_values.each_with_index do |value, idx|
-        symtab.add!(template_names[idx], Var.new(template_names[idx], template_types[idx], value))
+        raise "template value should be an Integer" unless value.is_a?(Integer)
+
+        symtab.add!(template_names[idx], Var.new(template_names[idx], template_types[idx], value, template_index: idx, function_name: @func_def_ast.name))
       end
       symtab
     end
@@ -482,14 +492,20 @@ module Idl
     end
 
     # @param template_values [Array<Integer>] Template values for the call, in declaration order
-    # @param argument_nodes [Array<Ast::Node>] Arguments at the call site
     # @param call_site_symtab [SymbolTable] Symbol table at the call site
     # return [Type] type of the call return
-    def return_type(template_values, argument_nodes, call_site_symtab)
+    def return_type(template_values)
+      symtab = apply_template_values(template_values)
+      # apply_arguments(symtab, argument_nodes, call_site_symtab)
+
+      @func_def_ast.return_type(symtab).clone
+    end
+
+    def return_value(template_values, argument_nodes, call_site_symtab)
       symtab = apply_template_values(template_values)
       apply_arguments(symtab, argument_nodes, call_site_symtab)
 
-      @func_def_ast.return_type(symtab).clone
+      @func_def_ast.body.return_value(symtab)
     end
 
     # @param template_values [Array<Integer>] Template values to apply, required if {#templated?}
