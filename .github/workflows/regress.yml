@@ -17,11 +17,19 @@ jobs:
       uses: actions/cache@v3
       with:
         path: .singularity/image.sif
-        key: oras://docker.io/riscvintl/spec-generator:0.1
+        key: ${{ hashFiles('container.def') }}
+    - name: Get gems and node files from cache
+      id: cache-bundle-npm
+      uses: actions/cache@v3
+      with:
+        path: |
+          .home/.gems
+          node_modules
+        key: ${{ hashFiles('Gemfile.lock') }}-${{ 'package-lock.json' }}
     - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
       name: Build container
       run: ./bin/build_container
     - name: Setup project
       run: ./bin/setup
     - name: Build html documentation for generic_rv64
-      run: apptainer run --home ${{ github.workspace }}/.home .singularity/image.sif bundle exec rake gen:html[generic_rv64]
+      run: ./do gen:html[generic_rv64]
