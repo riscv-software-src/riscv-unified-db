@@ -22,7 +22,7 @@ jobs:
         key: oras://docker.io/riscvintl/spec-generator:0.1
     - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
       name: Download container
-      run: oras blob fetch --output .singularity/image.sif oras://docker.io/riscvintl/spec-generator:0.1
+      run: oras blob fetch --output .singularity/image.sif docker.io/riscvintl/spec-generator:0.1
     - name: Setup project
       run: apptainer run --home ${{ github.workspace }}/.home .singularity/image.sif ./bin/setup
     - name: Build html documentation for generic_rv64
