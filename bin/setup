@@ -34,7 +34,7 @@ if [ ! -d $ROOT/.home/.gems ]; then
 fi
 
 if [ ! -f $ROOT/ext/riscv-opcodes/README.md ]; then
-  git submodule init --update ext/riscv-opcodes
+  git submodule update --init ext/riscv-opcodes
 fi
 
 if [[ ! -z "$DEVELOPMENT" && $DEVELOPMENT -eq 1 ]]; then
