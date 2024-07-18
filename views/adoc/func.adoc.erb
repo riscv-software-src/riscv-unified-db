@@ -1,3 +1,5 @@
+:tabs-sync-option:
+
 // defintions and helper functions for ISA definitions
 
 = Functions
@@ -13,11 +15,24 @@ h| Return Type l| <%= f.return_type_list_str.join(', ') %>
 h| Arguments   l| <%= f.arguments_list_str.join (', ') %>
 |===
 
-<%- if f.respond_to?(:body_block) -%>
+<%- unless f.builtin? -%>
+<%- body_ast = f.body_block.function_body -%>
+[tabs]
+====
+Original::
++
 [subs="specialchars,macros"]
 ----
-<%= f.unindent(f.body_block.function_body.gen_adoc.gsub('(', 'pass:[(]')) %>
+<%= body_ast.gen_adoc.gsub('(', 'pass:[(]') %>
 ----
+
+Pruned::
++
+[subs="specialchars,macros"]
+----
+<%= body_ast.prune(global_symtab.deep_clone).gen_adoc.gsub('(', 'pass:[(]') %>
+----
+====
 <%- end -%>
 
 <%- end -%>

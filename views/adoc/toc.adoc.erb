@@ -2,17 +2,17 @@
 
 .Extensions
 <%- arch_def.implemented_extensions.sort { |a, b| a.name <=> b.name }.each do |ext| -%>
-* %%LINK[ext;<%= ext.name %>;<%= ext.name %>]%%
+* %%LINK%ext;<%= ext.name %>;<%= ext.name %>%%
 <%- end -%>
 
 .Control and Status Registers
 <%- arch_def.implemented_csrs.sort { |a, b| a.name <=> b.name }.each do |csr| -%>
-* %%LINK[csr;<%= csr.name %>;<%= csr.name %>]%%
+* %%LINK%csr;<%= csr.name %>;<%= csr.name %>%%
 <%- end -%>
 
 .Instructions
 <%- arch_def.implemented_instructions.sort { |a, b| a.name <=> b.name }.each do |inst| -%>
-* %%LINK[inst;<%= inst.name %>;<%= inst.name %>]%%
+* %%LINK%inst;<%= inst.name %>;<%= inst.name %>%%
 <%- end -%>
 
 .IDL functions

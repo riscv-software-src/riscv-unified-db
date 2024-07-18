@@ -9,8 +9,8 @@ sd:
   base: 64
   assembly: xs2, imm(xs1)
   encoding:
-    mask: -----------------011-----0100011
-    fields:
+    match: -----------------011-----0100011
+    variables:
     - name: imm
       location: 31-25|11-7
       sign_extend: true

@@ -253,6 +253,35 @@
 </li>
 
       
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#values-instance_method" title="#values (instance method)">#<strong>values</strong>(symtab)  &#x21d2; Array&lt;Integer&gt;, ... </a>
+    
+
+    
+  </span>
+  
+    <span class="note title not_defined_here">
+      included
+      from <span class='object_link'><a href="Rvalue.html#values-instance_method" title="Idl::Rvalue#values (method)">Rvalue</a></span>
+    </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Return a complete list of possible compile-time-known values of the node, or raise a ValueError if the full list cannot be determined.</p>
+</div></span>
+  
+</li>
+
+      
     </ul>
   
 
@@ -285,12 +314,12 @@
       <pre class="lines">
 
 
-2270
-2271
-2272</pre>
+2469
+2470
+2471</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2270</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2469</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_set_expected_type'>set_expected_type</span><span class='lparen'>(</span><span class='id identifier rubyid_t'>t</span><span class='rparen'>)</span>
   <span class='ivar'>@expected_type</span> <span class='op'>=</span> <span class='id identifier rubyid_t'>t</span>
@@ -315,10 +344,10 @@
       <pre class="lines">
 
 
-2274</pre>
+2473</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2274</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2473</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_idl'>to_idl</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>-</span><span class='tstring_end'>&quot;</span></span></pre>
     </td>
@@ -390,12 +419,12 @@
       <pre class="lines">
 
 
-2252
-2253
-2254</pre>
+2451
+2452
+2453</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2252</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2451</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid__symtab'>_symtab</span><span class='rparen'>)</span>
   <span class='const'><span class='object_link'><a href="Type.html" title="Idl::Type (class)">Type</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Type.html#initialize-instance_method" title="Idl::Type#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='symbol'>:dontcare</span><span class='rparen'>)</span>
@@ -420,12 +449,12 @@
       <pre class="lines">
 
 
-2247
-2248
-2249</pre>
+2446
+2447
+2448</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2247</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2446</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid__symtab'>_symtab</span><span class='rparen'>)</span>
   <span class='comment'># nothing to do!
@@ -531,21 +560,21 @@
       <pre class="lines">
 
 
-2257
-2258
-2259
-2260
-2261
-2262
-2263
-2264
-2265
-2266
-2267
-2268</pre>
+2456
+2457
+2458
+2459
+2460
+2461
+2462
+2463
+2464
+2465
+2466
+2467</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2257</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2456</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid__symtab'>_symtab</span><span class='comma'>,</span> <span class='id identifier rubyid__archdef'>_archdef</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Must call set_expected_type first</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='ivar'>@expected_type</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -564,12 +593,108 @@
 </table>
 </div>
     
+      <div class="method_details ">
+  <h3 class="signature " id="values-instance_method">
+  
+    #<strong>values</strong>(symtab)  &#x21d2; <tt>Array&lt;Integer&gt;</tt>, ... 
+  
+
+  
+
+  
+    <span class="not_defined_here">
+      Originally defined in module
+        <span class='object_link'><a href="Rvalue.html#values-instance_method" title="Idl::Rvalue#values (method)">Rvalue</a></span>
+    </span>
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Return a complete list of possible compile-time-known values of the node, or raise a ValueError if the full list cannot be determined</p>
+
+<p>For most AstNodes, this will just be a single-entry array</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>symtab</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="SymbolTable.html" title="Idl::SymbolTable (class)">SymbolTable</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The context for the evaulation</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;Integer&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The complete list of compile-time-known values, when they are integral</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;Boolean&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>The complete list of compile-time-known values, when they are booleans</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="AstNode/ValueError.html" title="Idl::AstNode::ValueError (class)">AstNode::ValueError</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>if the list of values is not knowable at compile time</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div>
+</div>
+    
   </div>
 
 </div>
 
       <div id="footer">
-  Generated on Fri Jul 12 07:33:11 2024 by
+  Generated on Tue Jul 16 12:06:47 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

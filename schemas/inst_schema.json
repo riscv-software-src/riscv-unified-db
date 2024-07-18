@@ -2,15 +2,19 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
 
   "$defs": {
-    "extension": {
-      "type": "string",
-      "pattern": "^[A-W,Y]|([XZ][a-z]+)$",
-      "description": "RISC-V Extension"
-    },
     "field_location": {
       "description": "Location specifier for a field",
-      "type": "string",
-      "pattern": "^(([0-9]+)|([0-9]+-[0-9]+))(\\|(([0-9]+)|([0-9]+-[0-9]+)))*$"
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^(([0-9]+)|([0-9]+-[0-9]+))(\\|(([0-9]+)|([0-9]+-[0-9]+)))*$"
+        },
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 31
+        }
+      ]
     },
     "field": {
       "description": "Decode field",
@@ -42,7 +46,7 @@
     "encoding": {
       "type": "object",
       "properties": {
-        "mask": {
+        "match": {
           "oneOf": [
             {
               "type": "string",
@@ -56,7 +60,7 @@
             }
           ]
         },
-        "not_mask": {
+        "not_match": {
           "description": "Bit values that cannot match for the instruction. Used to exclude encodings where all but one value are valid (e.g., common with the C encodings)",
           "oneOf": [
             {
@@ -71,7 +75,7 @@
             }
           ]
         },
-        "fields": {
+        "variables": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/field"
@@ -102,12 +106,12 @@
         "definedBy": {
           "oneOf": [
             {
-              "$ref": "#/$defs/extension"
+              "$ref": "schema_defs.json#/$defs/extension_requirement"
             },
             {
               "type": "array",
               "items": {
-                "$ref": "#/$defs/extension"
+                "$ref": "schema_defs.json#/$defs/extension_requirement"
               }
             }
           ],
@@ -116,12 +120,12 @@
         "excludedBy": {
           "oneOf": [
             {
-              "$ref": "#/$defs/extension"
+              "$ref": "schema_defs.json#/$defs/extension_requirement"
             },
             {
               "type": "array",
               "items": {
-                "$ref": "#/$defs/extension"
+                "$ref": "schema_defs.json#/$defs/extension_requirement"
               }
             }
           ],
@@ -189,6 +193,21 @@
         "assembly": {
           "type": "string",
           "description": "Assembly format of the instruction. Can use decode variables"
+        },
+        "pseudoinstructions": {
+          "description": "Variations of this instruction that form a pseudoinstruction",
+          "type": "object",
+          "properties": {
+            "when": {
+              "type": "string",
+              "description": "Condition when the instruction has an alias"
+            },
+            "to": {
+              "type": "string",
+              "description": "pseduoinstruction format"
+            }
+          },
+          "additionalProperties": false
         }
       }
     }

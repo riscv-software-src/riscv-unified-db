@@ -426,15 +426,15 @@
       <pre class="lines">
 
 
-1158
-1159
-1160
-1161
-1162
-1163</pre>
+1186
+1187
+1188
+1189
+1190
+1191</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1158</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1186</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_version'>version</span><span class='comma'>,</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='rparen'>)</span>
   <span class='ivar'>@name</span> <span class='op'>=</span> <span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
@@ -498,12 +498,12 @@
       <pre class="lines">
 
 
-1150
-1151
-1152</pre>
+1178
+1179
+1180</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1150</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1178</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_arch_def'>arch_def</span>
   <span class='ivar'>@arch_def</span>
@@ -559,12 +559,12 @@
       <pre class="lines">
 
 
-1153
-1154
-1155</pre>
+1181
+1182
+1183</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1153</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1181</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_extension'>extension</span>
   <span class='ivar'>@extension</span>
@@ -620,12 +620,12 @@
       <pre class="lines">
 
 
-1144
-1145
-1146</pre>
+1172
+1173
+1174</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1144</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1172</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_name'>name</span>
   <span class='ivar'>@name</span>
@@ -681,12 +681,12 @@
       <pre class="lines">
 
 
-1147
-1148
-1149</pre>
+1175
+1176
+1177</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1147</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1175</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_version'>version</span>
   <span class='ivar'>@version</span>
@@ -742,18 +742,18 @@
       <pre class="lines">
 
 
-1191
-1192
-1193
-1194
-1195
-1196
-1197
-1198
-1199</pre>
+1219
+1220
+1221
+1222
+1223
+1224
+1225
+1226
+1227</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1191</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1219</span>
 
 <span class='kw'>def</span> <span class='op'>&lt;=&gt;</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ExtensionVersions are only comparable to other extension versions</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="" title="ExtensionVersion (class)">ExtensionVersion</a></span></span><span class='rparen'>)</span>
@@ -784,19 +784,19 @@
       <pre class="lines">
 
 
-1171
-1172
-1173
-1174
-1175
-1176
-1177
-1178
-1179
-1180</pre>
+1199
+1200
+1201
+1202
+1203
+1204
+1205
+1206
+1207
+1208</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1171</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1199</span>
 
 <span class='kw'>def</span> <span class='op'>==</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
   <span class='kw'>case</span> <span class='id identifier rubyid_other'>other</span>
@@ -900,12 +900,12 @@
       <pre class="lines">
 
 
-1186
-1187
-1188</pre>
+1214
+1215
+1216</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1186</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1214</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_satisfies?'>satisfies?</span><span class='lparen'>(</span><span class='id identifier rubyid_ext_name'>ext_name</span><span class='comma'>,</span> <span class='op'>*</span><span class='id identifier rubyid_ext_version_requirements'>ext_version_requirements</span><span class='rparen'>)</span>
   <span class='ivar'>@name</span> <span class='op'>==</span> <span class='id identifier rubyid_ext_name'>ext_name</span> <span class='op'>&amp;&amp;</span> <span class='const'>Gem</span><span class='op'>::</span><span class='const'>Requirement</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_ext_version_requirements'>ext_version_requirements</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_satisfied_by?'>satisfied_by?</span><span class='lparen'>(</span><span class='ivar'>@version</span><span class='rparen'>)</span>
@@ -920,7 +920,7 @@
 </div>
 
       <div id="footer">
-  Generated on Fri Jul 12 07:33:12 2024 by
+  Generated on Tue Jul 16 12:06:48 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

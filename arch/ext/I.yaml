@@ -4,6 +4,7 @@ I:
   type: unprivileged
   versions:
   - version: 2.1
+    state: ratified
     ratification_date: 2019-06
     changes: atified RVWMO memory model and exclusion of FENCE.I, counters, and CSR instructions that were in previous base ISA
   description: |

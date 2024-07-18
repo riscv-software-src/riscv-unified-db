@@ -10,12 +10,25 @@ divuw:
     If the value in rs2 is zero, rd is written with all 1s.
   definedBy: M
   assembly: xd, xs1, xs2
+  encoding:
+    match: 0000001----------101-----0111011
+    variables:
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
   access:
     s: always
     u: always
     vs: always
     vu: always
   operation(): |
+    if (implemented?(ExtensionName::M) && (CSR[misa].M == 1'b0)) {
+      raise (ExceptionCode::IllegalInstruction, $encoding);
+    }
+
     Bits<32> src1 = X[rs1][31:0];
     Bits<32> src2 = X[rs2][31:0];
 

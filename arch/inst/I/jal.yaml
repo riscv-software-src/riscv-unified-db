@@ -8,8 +8,8 @@ jal:
   definedBy: I
   assembly: xd, imm
   encoding:
-    mask: -------------------------1101111
-    fields:
+    match: -------------------------1101111
+    variables:
     - name: imm
       location: 31|19-12|20|30-21
       left_shift: 1

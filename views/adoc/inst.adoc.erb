@@ -7,7 +7,7 @@
 
 == Encoding
 
-<%- if inst.arch_def.multi_xlen? && inst.multi_encoding? -%>
+<%- if arch_def.multi_xlen? && inst.multi_encoding? -%>
 [NOTE]
 This instruction has different encodings in RV32 and RV64.
 
@@ -30,7 +30,7 @@ RV64::
 <%- else -%>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....  
-<%= JSON.dump inst.wavedrom_desc(inst.arch_def.config_params["XLEN"]) %>
+<%= JSON.dump inst.wavedrom_desc(arch_def.config_params["XLEN"]) %>
 ....
 <%- end -%>
 
@@ -62,7 +62,7 @@ RV64::
 
 == Decode Variables
 
-<%- if inst.arch_def.multi_xlen? && inst.multi_encoding? -%>
+<%- if arch_def.multi_xlen? && inst.multi_encoding? -%>
 [tabs]
 ====
 RV32::
@@ -83,7 +83,7 @@ RV64::
 ====
 <%- else -%>
 ----
-<%- inst.decode_variables(inst.arch_def.config_params["XLEN"]).each do |d| -%>
+<%- inst.decode_variables(arch_def.config_params["XLEN"]).each do |d| -%>
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
 <%- end -%>
 ----
@@ -91,7 +91,23 @@ RV64::
 
 == Execution
 
+<%- if inst.operation_ast(arch_def.idl_compiler).nil? -%>
+
+<%- else -%>
+[tabs]
+====
+Pruned::
++
 [subs="specialchars,macros"]
 ----
-<%= inst.operation_source %>
+<%= inst.pruned_operation_ast(arch_def.sym_table).gen_adoc %>
 ----
+
+Original::
++
+[subs="specialchars,macros"]
+----
+<%= inst.operation_ast(arch_def.idl_compiler).gen_adoc %>
+----
+====
+<%- end -%>

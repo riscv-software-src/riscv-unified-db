@@ -4,6 +4,7 @@ H:
   type: privileged
   versions:
   - version: 1.0
+    state: ratified
     ratification_date: 2019-12
     requires: [S, '>= 1.12']
   interrupt_codes:

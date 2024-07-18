@@ -9,7 +9,7 @@ module Idl
 
     def initialize(name, type, value = nil, decode_var: false, template_index: nil, function_name: nil)
       @name = name
-      raise 'unexpected' unless type.is_a?(Type)
+      raise ArgumentError, "Expecting a Type, got #{type.class.name}" unless type.is_a?(Type)
 
       @type = type
       @value = value

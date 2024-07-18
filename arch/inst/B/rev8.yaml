@@ -14,20 +14,38 @@ rev8:
     is XLEN-32 and XLEN-16, respectively.
   definedBy: [B, Zbb, Zbkb]
   assembly: xd, xs1
-  # TODO: this instruction has different encodings in RV32 / RV64
+  encoding:
+    RV32:
+      match: 011010011000-----101-----0010011
+      variables:
+      - name: rs1
+        location: 19-15
+      - name: rd
+        location: 11-7
+    RV64:
+      match: 011010111000-----101-----0010011
+      variables:
+      - name: rs1
+        location: 19-15
+      - name: rd
+        location: 11-7
   access:
     s: always
     u: always
     vs: always
     vu: always
   operation(): |
+    if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
+      raise (ExceptionCode::IllegalInstruction, $encoding);
+    }
+
     XReg input = X[rs1];
     XReg output = 0;
 
     XReg j = xlen() - 1;
 
     for (U32 i=0; i<(xlen()-8); i = i+8) {
-      output[i:(i+7)] = input[(j-7):j];
+      output[(i+7):i] = input[j:(j-7)];
       j = j - 8;
     }
 

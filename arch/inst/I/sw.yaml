@@ -7,6 +7,15 @@ sw:
     address formed by adding `rs1` to a signed offset.
   definedBy: I
   assembly: xs2, imm(xs1)
+  encoding:
+    match: -----------------010-----0100011
+    variables:
+    - name: imm
+      location: 31-25|11-7
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
   access:
     s: always
     u: always

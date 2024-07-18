@@ -105,7 +105,9 @@ enum ExceptionCode {
   LoadPageFault 13
   // reserved 14
   StoreAmoPageFault 15
-  // reserved 16-19
+  // reserved 16-17
+  SoftwareCheck 18
+  HardwareError 19
   InstructionGuestPageFault 20
   LoadGuestPageFault 21
   VirtualInstruction 22
@@ -258,8 +260,203 @@ function exception_handling_mode {
   }
 }
 
+function mtval_readonly? {
+  returns Boolean
+  description {
+    Returns whether or not CSR[mtval] is read-only based on implementation options
+  }
+  body {
+    return !(
+      REPORT_VA_IN_MTVAL_ON_BREAKPOINT ||
+      REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED ||
+      REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED ||
+      REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED ||
+      REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT ||
+      REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT ||
+      REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT ||
+      REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT ||
+      REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT ||
+      REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT ||
+      REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ||
+      REPORT_CAUSE_IN_MTVAL_ON_SOFTWARE_CHECK ||
+      implemented?(ExtensionName::Sdext)
+    );
+  }
+}
+
+function stval_readonly? {
+  returns Boolean
+  description {
+    Returns whether or not CSR[stval] is read-only based on implementation options
+  }
+  body {
+    if (implemented?(ExtensionName::S)) {
+      return !(
+        REPORT_VA_IN_STVAL_ON_BREAKPOINT ||
+        REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED ||
+        REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED ||
+        REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED ||
+        REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT ||
+        REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT ||
+        REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT ||
+        REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT ||
+        REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT ||
+        REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT ||
+        REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION ||
+        REPORT_CAUSE_IN_STVAL_ON_SOFTWARE_CHECK ||
+        implemented?(ExtensionName::Sdext)
+      );
+    } else {
+      return true;
+    }
+  }
+}
+
+function vstval_readonly? {
+  returns Boolean
+  description {
+    Returns whether or not CSR[vstval] is read-only based on implementation options
+  }
+  body {
+    if (implemented?(ExtensionName::H)) {
+      return !(
+        REPORT_VA_IN_VSTVAL_ON_BREAKPOINT ||
+        REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED ||
+        REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED ||
+        REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED ||
+        REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT ||
+        REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT ||
+        REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT ||
+        REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT ||
+        REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT ||
+        REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT ||
+        REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION ||
+        REPORT_CAUSE_IN_VSTVAL_ON_SOFTWARE_CHECK ||
+        implemented?(ExtensionName::Sdext)
+      );
+    } else {
+      return true;
+    }
+  }
+}
+
+function mtval_for {
+  returns XReg
+  arguments ExceptionCode exception_code, XReg tval
+  description {
+    Given an exception code and a *legal* non-zero value for mtval,
+    returns the value to be written in mtval considering implementation options
+  }
+  body {
+    if (exception_code == ExceptionCode::Breakpoint) {
+      return REPORT_VA_IN_MTVAL_ON_BREAKPOINT ? tval : 0;
+    } else if (exception_code == ExceptionCode::LoadAddressMisaligned) {
+      return REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED ? tval : 0;
+    } else if (exception_code == ExceptionCode::StoreAmoAddressMisaligned) {
+      return REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED ? tval : 0;
+    } else if (exception_code == ExceptionCode::InstructionAddressMisaligned) {
+      return REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED ? tval : 0;
+    } else if (exception_code == ExceptionCode::LoadAccessFault) {
+      return REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT ? tval : 0;
+    } else if (exception_code == ExceptionCode::StoreAmoAccessFault) {
+      return REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT ? tval : 0;
+    } else if (exception_code == ExceptionCode::InstructionAccessFault) {
+      return REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT ? tval : 0;
+    } else if (exception_code == ExceptionCode::LoadPageFault) {
+      return REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT ? tval : 0;
+    } else if (exception_code == ExceptionCode::StoreAmoPageFault) {
+      return REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT ? tval : 0;
+    } else if (exception_code == ExceptionCode::InstructionPageFault) {
+      return REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT ? tval : 0;
+    } else if (exception_code == ExceptionCode::IllegalInstruction) {
+      return REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ? tval : 0;
+    } else if (exception_code == ExceptionCode::SoftwareCheck) {
+      return REPORT_CAUSE_IN_MTVAL_ON_SOFTWARE_CHECK ? tval : 0;
+    } else {
+      return 0;
+    }
+  }
+}
+
+function stval_for {
+  returns XReg
+  arguments ExceptionCode exception_code, XReg tval
+  description {
+    Given an exception code and a *legal* non-zero value for stval,
+    returns the value to be written in stval considering implementation options
+  }
+  body {
+    if (exception_code == ExceptionCode::Breakpoint) {
+      return REPORT_VA_IN_STVAL_ON_BREAKPOINT ? tval : 0;
+    } else if (exception_code == ExceptionCode::LoadAddressMisaligned) {
+      return REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED ? tval : 0;
+    } else if (exception_code == ExceptionCode::StoreAmoAddressMisaligned) {
+      return REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED ? tval : 0;
+    } else if (exception_code == ExceptionCode::InstructionAddressMisaligned) {
+      return REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED ? tval : 0;
+    } else if (exception_code == ExceptionCode::LoadAccessFault) {
+      return REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT ? tval : 0;
+    } else if (exception_code == ExceptionCode::StoreAmoAccessFault) {
+      return REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT ? tval : 0;
+    } else if (exception_code == ExceptionCode::InstructionAccessFault) {
+      return REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT ? tval : 0;
+    } else if (exception_code == ExceptionCode::LoadPageFault) {
+      return REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT ? tval : 0;
+    } else if (exception_code == ExceptionCode::StoreAmoPageFault) {
+      return REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT ? tval : 0;
+    } else if (exception_code == ExceptionCode::InstructionPageFault) {
+      return REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT ? tval : 0;
+    } else if (exception_code == ExceptionCode::IllegalInstruction) {
+      return REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION ? tval : 0;
+    } else if (exception_code == ExceptionCode::SoftwareCheck) {
+      return REPORT_CAUSE_IN_STVAL_ON_SOFTWARE_CHECK ? tval : 0;
+    } else {
+      return 0;
+    }
+  }
+}
+
+
+function vstval_for {
+  returns XReg
+  arguments ExceptionCode exception_code, XReg tval
+  description {
+    Given an exception code and a *legal* non-zero value for vstval,
+    returns the value to be written in vstval considering implementation options
+  }
+  body {
+    if (exception_code == ExceptionCode::Breakpoint) {
+      return REPORT_VA_IN_VSTVAL_ON_BREAKPOINT ? tval : 0;
+    } else if (exception_code == ExceptionCode::LoadAddressMisaligned) {
+      return REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED ? tval : 0;
+    } else if (exception_code == ExceptionCode::StoreAmoAddressMisaligned) {
+      return REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED ? tval : 0;
+    } else if (exception_code == ExceptionCode::InstructionAddressMisaligned) {
+      return REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED ? tval : 0;
+    } else if (exception_code == ExceptionCode::LoadAccessFault) {
+      return REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT ? tval : 0;
+    } else if (exception_code == ExceptionCode::StoreAmoAccessFault) {
+      return REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT ? tval : 0;
+    } else if (exception_code == ExceptionCode::InstructionAccessFault) {
+      return REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT ? tval : 0;
+    } else if (exception_code == ExceptionCode::LoadPageFault) {
+      return REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT ? tval : 0;
+    } else if (exception_code == ExceptionCode::StoreAmoPageFault) {
+      return REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT ? tval : 0;
+    } else if (exception_code == ExceptionCode::InstructionPageFault) {
+      return REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT ? tval : 0;
+    } else if (exception_code == ExceptionCode::IllegalInstruction) {
+      return REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION ? tval : 0;
+    } else if (exception_code == ExceptionCode::SoftwareCheck) {
+      return REPORT_CAUSE_IN_VSTVAL_ON_SOFTWARE_CHECK ? tval : 0;
+    } else {
+      return 0;
+    }
+  }
+}
+
 function raise {
-  arguments ExceptionCode exception_code
+  arguments ExceptionCode exception_code, XReg tval
   description {
     Raise synchronous exception number `exception_code`.
   }
@@ -268,16 +465,24 @@ function raise {
 
     if (handling_mode == PrivilegeMode::M) {
       CSR[mepc] = PC;
+      if (!mtval_readonly?()) {
+        CSR[mtval] = mtval_for(exception_code, tval);
+      }
       PC = {CSR[mtvec].BASE, 2'b00};
       CSR[mcause] = exception_code.value;
-      // note that mtval is set elsewhere
     } else if (implemented?(ExtensionName::S) && (handling_mode == PrivilegeMode::HS)) {
       CSR[sepc] = PC;
+      if (!stval_readonly?()) {
+        CSR[stval] = stval_for(exception_code, tval);
+      }
       PC = {CSR[stvec].BASE, 2'b00};
       CSR[scause] = exception_code.value;
       // note that stval is set elsewhere
     } else if (implemented?(ExtensionName::H) && (handling_mode == PrivilegeMode::VS)) {
       CSR[vsepc] = PC;
+      if (!vstval_readonly?()) {
+        CSR[vstval] = vstval_for(exception_code, tval);
+      }
       PC = {CSR[vstvec].BASE, 2'b00};
       CSR[vscause] = exception_code.value;
     }
@@ -300,9 +505,9 @@ function jump {
     if (implemented?(ExtensionName::C) &&         # C is implemented
         (CSR[misa].C == 0x1) &&                   # and C is enabled dynamically
         ((target_addr & 0x1) != 0)) {             # and the target PC is odd
-      raise(ExceptionCode::InstructionAddressMisaligned);
+      raise(ExceptionCode::InstructionAddressMisaligned, target_addr);
     } else if ((target_addr & 0x3) != 0) {
-      raise(ExceptionCode::InstructionAddressMisaligned);
+      raise(ExceptionCode::InstructionAddressMisaligned, target_addr);
     }
 
     PC = target_addr;
@@ -882,7 +1087,7 @@ function pmp_check {
 function access_check {
   template U32 access_size
   returns Boolean, ExceptionCode
-  arguments Bits<PHYS_ADDR_WIDTH> paddr, MemoryOperation type
+  arguments Bits<PHYS_ADDR_WIDTH> paddr, XReg vaddr, MemoryOperation type
   description {
     Returns True if the current privilege mode cannot access the physical address paddr.
   }
@@ -890,11 +1095,11 @@ function access_check {
     # check if this is a valid physical address
     if (paddr > ((1 << PHYS_ADDR_WIDTH) - access_size)) {
       if (type == MemoryOperation::Write) {
-        raise (ExceptionCode::StoreAmoAccessFault);
+        raise (ExceptionCode::StoreAmoAccessFault, vaddr);
       } else if (type == MemoryOperation::Read) {
-        raise (ExceptionCode::LoadAccessFault);
+        raise (ExceptionCode::LoadAccessFault, vaddr);
       } else if (type == MemoryOperation::Fetch) {
-        raise (ExceptionCode::InstructionAccessFault);
+        raise (ExceptionCode::InstructionAccessFault, vaddr);
       }
     }
 
@@ -902,11 +1107,11 @@ function access_check {
     # can return either AccessFault or AddressMisalignedException
     if (!pmp_check<access_size>(paddr[PHYS_ADDR_WIDTH-1:0], type)) {
       if (type == MemoryOperation::Write) {
-        raise (ExceptionCode::StoreAmoAccessFault);
+        raise (ExceptionCode::StoreAmoAccessFault, vaddr);
       } else if (type == MemoryOperation::Read) {
-        raise (ExceptionCode::LoadAccessFault);
+        raise (ExceptionCode::LoadAccessFault, vaddr);
       } else if (type == MemoryOperation::Fetch) {
-        raise (ExceptionCode::InstructionAccessFault);
+        raise (ExceptionCode::InstructionAccessFault, vaddr);
       }
     }
     return false, -;
@@ -1119,14 +1324,14 @@ function translate_sv39 {
       # non-canonical virtual address raises a page fault
       # note that if pointer masking is enabled,
       # vaddr has already been transformed before reaching here
-      raise (ecode);
+      raise (ecode, vaddr);
     }
 
     for (U32 i = 2; i >= 0; i--) {
       XReg pte_addr = (ppn << 12) + ((vaddr >> (12 + 9*i)) & 0x1ff);
 
       # perform access check on the physical address of pte before it's used
-      access_check<64>(pte_addr, op);
+      access_check<64>(pte_addr, vaddr, op);
 
       Sv39PageTableEntry pte = read_physical_memory<64>(pte_addr);
       if (pte.V == 0                    # invalid entry
@@ -1135,7 +1340,7 @@ function translate_sv39 {
 #          || (!implemented?(ExtensionName::Svnapot) && pte.N != 0)
 #          || (!implemented?(ExtensionName::Svpbmt) && pte.PBMT != 0)) {
         # found invalid PTE
-        raise (ecode);
+        raise (ecode, vaddr);
       } else if (pte.R == 1 || pte.X == 1) {
         # found a leaf PTE
 
@@ -1143,27 +1348,27 @@ function translate_sv39 {
           if ((CSR[mstatus].MXR == 0 && pte.R == 0)
               || (CSR[mstatus].MXR == 1 && pte.X == 0 && pte.R == 0)) {
             # no read permission
-            raise (ExceptionCode::LoadPageFault);
+            raise (ExceptionCode::LoadPageFault, vaddr);
           }
           if ((mode() == PrivilegeMode::U && pte.U == 0)
             || (mode() == PrivilegeMode::M && CSR[mstatus].MPRV == 1 && CSR[mstatus].MPP == $bits(PrivilegeMode::HS) && pte.U == 1 && CSR[mstatus].SUM == 0)
             || (mode() == PrivilegeMode::S && pte.U == 1 && CSR[mstatus].SUM == 0)) {
             # supervisor cannot read U unless mstatus.SUM = 1
-            raise (ExceptionCode::LoadPageFault);
+            raise (ExceptionCode::LoadPageFault, vaddr);
           }
         } else if ((op == MemoryOperation::Write) && (pte.W == 0)) {
           # no write permission
-          raise (ExceptionCode::StoreAmoPageFault);
+          raise (ExceptionCode::StoreAmoPageFault, vaddr);
         } else if ((op == MemoryOperation::Fetch) && (pte.X == 0)) {
           # no execute permission
-          raise (ExceptionCode::InstructionPageFault);
+          raise (ExceptionCode::InstructionPageFault, vaddr);
         }
 
         if (pte.U == 0) {
           # supervisor page
           if (mode() == PrivilegeMode::U) {
             # user access to supervisor page is never allowed
-            raise (ecode);
+            raise (ecode, vaddr);
           }
         } else {
           # user page
@@ -1172,26 +1377,26 @@ function translate_sv39 {
             if (op == MemoryOperation::Read) {
               if (CSR[mstatus].SUM == 0) {
                 # supervisor can only read user pages when mstatus.SUM == 1
-                raise (ExceptionCode::LoadPageFault);
+                raise (ExceptionCode::LoadPageFault, vaddr);
               }
             } else {
               # supervisor can never write or execute a user page
-              raise (ecode);
+              raise (ecode, vaddr);
             }
           }
         }
 
         # ensure remaining PPN bits are zero, otherwise there is a misaligned super page
-        raise (ecode) if (i >= 1 && pte.PPN0 != 0);
-        raise (ecode) if (i == 2 && pte.PPN1 != 0);
+        raise (ecode, vaddr) if (i >= 1 && pte.PPN0 != 0);
+        raise (ecode, vaddr) if (i == 2 && pte.PPN1 != 0);
 
         if (false) { // implemented?(ExtensionName::Svadu)) {
           # svadu requires page tables to be located in memory with hardware page-table write access
           # and RsrvEventual PMA
           if (!check_pma(pte_addr, PmaAttribute::RsrvEventual)) {
-            raise (ExceptionCode::LoadAccessFault);
+            raise (ExceptionCode::LoadAccessFault, vaddr);
           }
-          access_check<64>(pte_addr, MemoryOperation::Write);
+          access_check<64>(pte_addr, vaddr, MemoryOperation::Write);
 #          if (implemented?(ExtensionName::H) && CSR[henvcfg].ADUE == 0b1) {
             # update the A bit
             # this should be atomic with the translation
@@ -1205,7 +1410,7 @@ function translate_sv39 {
         if (//implemented?(ExtensionName::Svade) &&
             pte.A == 0) {
           # trap on access with A == 0
-          raise (ecode);
+          raise (ecode, vaddr);
         }
 
         # translation succeeded
@@ -1215,12 +1420,12 @@ function translate_sv39 {
 
         if (i == 0) {
           # a pointer can't exist on the last level
-          raise (ecode);
+          raise (ecode, vaddr);
         }
 
         if (pte.D == 1 || pte.A == 1 || pte.U == 1) {
           # D, A, and U are reserved in non-leaf PTEs
-          raise (ecode);
+          raise (ecode, vaddr);
         }
 
         ppn = pte.PPN << 12;
@@ -1293,12 +1498,12 @@ function translate {
         # bare == no translation
         if (vaddr > ((1 << PHYS_ADDR_WIDTH) - 1)) {
           if (op == MemoryOperation::Read) {
-            raise (ExceptionCode::LoadAccessFault);
+            raise (ExceptionCode::LoadAccessFault, vaddr);
           } else if (op == MemoryOperation::Write) {
-            raise (ExceptionCode::StoreAmoAccessFault);
+            raise (ExceptionCode::StoreAmoAccessFault, vaddr);
           } else {
             assert(op == MemoryOperation::Fetch);
-            raise (ExceptionCode::InstructionAccessFault);
+            raise (ExceptionCode::InstructionAccessFault, vaddr);
           }
         }
         return vaddr;
@@ -1335,7 +1540,7 @@ function read_memory_aligned {
       : virtual_address;
 
     # may raise an exception
-    access_check<len>(physical_address, MemoryOperation::Read);
+    access_check<len>(physical_address, virtual_address, MemoryOperation::Read);
 
     return read_physical_memory<len>(physical_address);
   }
@@ -1354,7 +1559,7 @@ function read_memory {
     if (aligned) {
       return read_memory_aligned<len>(virtual_address);
     } else if (!aligned && !MISALIGNED_LDST) {
-      raise (ExceptionCode::LoadAddressMisaligned);
+      raise (ExceptionCode::LoadAddressMisaligned, virtual_address);
     } else {
       # misaligned, must break into multiple reads
       Bits<len> result = 0;
@@ -1365,6 +1570,10 @@ function read_memory {
     }
   }
 }
+
+//function load_reserved {
+//
+//}
 
 
 
@@ -1383,7 +1592,7 @@ function write_memory_aligned {
       : virtual_address;
 
     # may raise an exception
-    access_check<len>(physical_address, MemoryOperation::Write);
+    access_check<len>(physical_address, virtual_address, MemoryOperation::Write);
 
     write_physical_memory<len>(physical_address, value);
   }
@@ -1401,7 +1610,7 @@ function write_memory {
     if (aligned) {
       write_memory_aligned<len>(virtual_address, value);
     } else if (!aligned && !MISALIGNED_LDST) {
-      raise (ExceptionCode::StoreAmoAddressMisaligned);
+      raise (ExceptionCode::StoreAmoAddressMisaligned, virtual_address);
     } else {
       # misaligned, must break into multiple writes
       for (U32 i = 0; i <= len; i++) {
@@ -1411,34 +1620,3 @@ function write_memory {
   }
 }
 
-// function Mem {
-//   template U32 len
-//   returns XReg
-//   arguments XReg eaddr
-//   description {
-//     Read memory.
-//   }
-//   body {
-//     XReg vaddr, paddr;
-//     Boolean has_fault;
-//     ExceptionCode ecode;
-//
-//     # by default, vaddr = eaddr
-//     vaddr = mask_eaddr(eaddr);
-//
-//     (paddr, ecode) = translate_load(vaddr);
-//     raise (ExceptionCode::LoadPageFault) if (ecode == ExceptionCode::LoadPageFault);
-//     raise (ExceptionCode::LoadGuestPageFault) if (ecode == ExceptionCode::LoadGuestPageFault);
-//     raise (ExceptionCode::LoadAccessFault) if (ecode == ExceptionCode::LoadAccessFault);
-//
-//     (has_fault, ecode) = access_check(paddr, MemoryOperation::Read);
-//
-//     # Load Address Misaligned is a lower-priority exception than Page Fault
-//     # it is higher-priority than access fault if Zihpme (High-Priority Misaligned Exception) is implemented
-//     raise (ExceptionCode::LoadAddressMisaligned) if implemented?(ExtensionName::Zihpme) && has_fault && (ecode == ExceptionCode::LoadAddressMisaligned);
-//     raise (ExceptionCode::LoadAccessFault) if has_fault && (ecode == ExceptionCode::LoadAccessFault);
-//     raise (ExceptionCode::LoadAddressMisaligned) if !implemented?(ExtensionName::Zihpme) && has_fault && (ecode == ExceptionCode::LoadAddressMisaligned);
-//
-//     return read_physical_memory<len>(paddr);
-//   }
-// }

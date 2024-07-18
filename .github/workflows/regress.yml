@@ -14,5 +14,7 @@ jobs:
       uses: eWaterCycle/setup-apptainer@v2.0.0
     - name: Setup project
       run: apptainer run --home ${{ github.workspace }}/.home oras://docker.io/riscvintl/spec-generator:0.1 ./bin/setup
+    - name: Run IDL tests
+      run: ./do idl_test
     - name: Build html documentation for generic_rv64
       run: apptainer run --home ${{ github.workspace }}/.home oras://docker.io/riscvintl/spec-generator:0.1 bundle exec rake gen:html[generic_rv64]

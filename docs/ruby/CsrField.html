@@ -648,13 +648,13 @@
       <pre class="lines">
 
 
-89
 90
 91
-92</pre>
+92
+93</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 89</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 90</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_parent_csr'>parent_csr</span><span class='comma'>,</span> <span class='id identifier rubyid_field_data'>field_data</span><span class='rparen'>)</span>
   <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_field_data'>field_data</span><span class='rparen'>)</span>
@@ -730,12 +730,12 @@
       <pre class="lines">
 
 
-79
 80
-81</pre>
+81
+82</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 79</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 80</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_parent'>parent</span>
   <span class='ivar'>@parent</span>
@@ -796,11 +796,6 @@
       <pre class="lines">
 
 
-156
-157
-158
-159
-160
 161
 162
 163
@@ -820,10 +815,15 @@
 177
 178
 179
-180</pre>
+180
+181
+182
+183
+184
+185</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 156</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 161</span>
 
 <span class='kw'>def</span> <span class='kw'>alias</span>
   <span class='kw'>return</span> <span class='ivar'>@alias</span> <span class='kw'>unless</span> <span class='ivar'>@alias</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -899,12 +899,12 @@
       <pre class="lines">
 
 
-95
 96
-97</pre>
+97
+98</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 95</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 96</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_arch_def'>arch_def</span>
   <span class='ivar'>@parent</span><span class='period'>.</span><span class='id identifier rubyid_arch_def'>arch_def</span>
@@ -958,10 +958,10 @@
       <pre class="lines">
 
 
-266</pre>
+278</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 266</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 278</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_base32_only?'>base32_only?</span> <span class='op'>=</span> <span class='ivar'>@data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>base</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>base</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='int'>32</span></pre>
     </td>
@@ -1013,10 +1013,10 @@
       <pre class="lines">
 
 
-263</pre>
+275</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 263</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 275</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_base64_only?'>base64_only?</span> <span class='op'>=</span> <span class='ivar'>@data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>base</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>base</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span> <span class='op'>==</span> <span class='int'>64</span></pre>
     </td>
@@ -1068,10 +1068,10 @@
       <pre class="lines">
 
 
-269</pre>
+281</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 269</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 281</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_defined_in_all_bases?'>defined_in_all_bases?</span> <span class='op'>=</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>base</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span></pre>
     </td>
@@ -1123,14 +1123,14 @@
       <pre class="lines">
 
 
-192
-193
-194
-195
-196</pre>
+197
+198
+199
+200
+201</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 192</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 197</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_dynamic_location?'>dynamic_location?</span>
   <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='ivar'>@data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>location</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -1186,12 +1186,12 @@
       <pre class="lines">
 
 
-183
-184
-185</pre>
+188
+189
+190</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 183</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 188</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_has_custom_write?'>has_custom_write?</span>
   <span class='ivar'>@data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>write(csr_value)</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>write(csr_value)</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -1267,18 +1267,6 @@
       <pre class="lines">
 
 
-232
-233
-234
-235
-236
-237
-238
-239
-240
-241
-242
-243
 244
 245
 246
@@ -1295,10 +1283,22 @@
 257
 258
 259
-260</pre>
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 232</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 244</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_location'>location</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_key'>key</span> <span class='op'>=</span>
@@ -1378,18 +1378,6 @@
       <pre class="lines">
 
 
-278
-279
-280
-281
-282
-283
-284
-285
-286
-287
-288
-289
 290
 291
 292
@@ -1402,10 +1390,22 @@
 299
 300
 301
-302</pre>
+302
+303
+304
+305
+306
+307
+308
+309
+310
+311
+312
+313
+314</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 278</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 290</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_location_pretty'>location_pretty</span>
   <span class='id identifier rubyid_derangeify'>derangeify</span> <span class='op'>=</span> <span class='id identifier rubyid_proc'>proc</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_loc'>loc</span><span class='op'>|</span>
@@ -1493,31 +1493,45 @@
       <pre class="lines">
 
 
-218
-219
-220
-221
-222
 223
 224
 225
 226
 227
-228</pre>
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 218</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 223</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset_value'>reset_value</span>
   <span class='kw'>return</span> <span class='ivar'>@reset_value</span> <span class='kw'>unless</span> <span class='ivar'>@reset_value</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
 
-  <span class='ivar'>@reset_value</span> <span class='op'>=</span>
-    <span class='kw'>if</span> <span class='ivar'>@data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>reset_value</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-      <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>reset_value</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
-    <span class='kw'>else</span>
-      <span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>evaluating </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
-      <span class='id identifier rubyid_reset_value_func'>reset_value_func</span><span class='period'>.</span><span class='id identifier rubyid_return_value'>return_value</span><span class='lparen'>(</span><span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_sym_table'>sym_table</span><span class='rparen'>)</span>
-    <span class='kw'>end</span>
+  <span class='id identifier rubyid_symtab'>symtab</span> <span class='op'>=</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_sym_table'>sym_table</span>
+
+  <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span> <span class='comment'># for consistency with template functions
+</span>
+  <span class='kw'>begin</span>
+    <span class='ivar'>@reset_value</span> <span class='op'>=</span>
+      <span class='kw'>if</span> <span class='ivar'>@data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>reset_value</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+        <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>reset_value</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+      <span class='kw'>else</span>
+        <span class='id identifier rubyid_reset_value_func'>reset_value_func</span><span class='period'>.</span><span class='id identifier rubyid_return_value'>return_value</span><span class='lparen'>(</span><span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_sym_table'>sym_table</span><span class='rparen'>)</span>
+      <span class='kw'>end</span>
+  <span class='kw'>ensure</span>
+    <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_pop'>pop</span>
+  <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -1586,11 +1600,6 @@
       <pre class="lines">
 
 
-200
-201
-202
-203
-204
 205
 206
 207
@@ -1600,10 +1609,15 @@
 211
 212
 213
-214</pre>
+214
+215
+216
+217
+218
+219</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 200</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 205</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_reset_value_func'>reset_value_func</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Not an IDL value</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='ivar'>@data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>reset_value()</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -1685,7 +1699,6 @@
       <pre class="lines">
 
 
-107
 108
 109
 110
@@ -1731,10 +1744,15 @@
 150
 151
 152
-153</pre>
+153
+154
+155
+156
+157
+158</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 107</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 108</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span>
   <span class='kw'>return</span> <span class='ivar'>@type</span> <span class='kw'>unless</span> <span class='ivar'>@type</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1759,6 +1777,8 @@
         <span class='label'>parent:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_csr'>csr</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>.</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span>
       <span class='rparen'>)</span>
 
+      <span class='id identifier rubyid_sym_table'>sym_table</span><span class='period'>.</span><span class='id identifier rubyid_push'>push</span> <span class='comment'># for consistency with template functions
+</span>
       <span class='kw'>begin</span>
         <span class='kw'>case</span> <span class='id identifier rubyid_ast'>ast</span><span class='period'>.</span><span class='id identifier rubyid_return_value'>return_value</span><span class='lparen'>(</span><span class='id identifier rubyid_sym_table'>sym_table</span><span class='rparen'>)</span>
         <span class='kw'>when</span> <span class='int'>0</span>
@@ -1780,6 +1800,8 @@
         <span class='id identifier rubyid_warn'>warn</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>In parsing </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_csr'>csr</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>.</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>::type()</span><span class='tstring_end'>&quot;</span></span>
         <span class='id identifier rubyid_warn'>warn</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>  Return of type() function cannot be evaluated at compile time</span><span class='tstring_end'>&quot;</span></span>
         <span class='id identifier rubyid_raise'>raise</span> <span class='id identifier rubyid_e'>e</span>
+      <span class='kw'>ensure</span>
+        <span class='id identifier rubyid_sym_table'>sym_table</span><span class='period'>.</span><span class='id identifier rubyid_pop'>pop</span>
       <span class='kw'>end</span>
     <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
@@ -1832,12 +1854,12 @@
       <pre class="lines">
 
 
-335
-336
-337</pre>
+347
+348
+349</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 335</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 347</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_desc'>type_desc</span>
   <span class='const'><span class='object_link'><a href="#TYPE_DESC_MAP-constant" title="CsrField::TYPE_DESC_MAP (constant)">TYPE_DESC_MAP</a></span></span><span class='lbracket'>[</span><span class='id identifier rubyid_type'>type</span><span class='rbracket'>]</span>
@@ -1911,12 +1933,12 @@
       <pre class="lines">
 
 
-273
-274
-275</pre>
+285
+286
+287</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 273</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 285</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_width'>width</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_location'>location</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span>
@@ -1931,7 +1953,7 @@
 </div>
 
       <div id="footer">
-  Generated on Fri Jul 12 07:33:12 2024 by
+  Generated on Tue Jul 16 12:06:48 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

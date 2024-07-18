@@ -55,9 +55,16 @@ class DecodeVariable
   # For example, if the field is offset[5:3], left_shift is 3
   attr_reader :left_shift
 
-  def extract_location(location_string)
-    parts = location_string.split("|")
+  def extract_location(location)
     @encoding_fields = []
+
+    if location.is_a?(Integer)
+      @encoding_fields << EncodingField.new("", location..location)
+      return
+    end
+
+    location_string = location
+    parts = location_string.split("|")
     parts.each do |part|
       if part =~ /^([0-9]+)$/
         bit = ::Regexp.last_match(1)

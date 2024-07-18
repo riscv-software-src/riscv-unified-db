@@ -14,8 +14,18 @@
         "IMP_ID",
         "MISALIGNED_LDST",
         "NUM_HPM_COUNTERS",
+        "REPORT_VA_IN_MTVAL_ON_BREAKPOINT",
+        "REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED",
+        "REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED",
+        "REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED",
+        "REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT",
+        "REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT",
+        "REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT",
+        "REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT",
+        "REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT",
+        "REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT",
+        "REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION",
         "TRAP_ON_ILLEGAL_WLRL",
-        "REPORT_EBREAK_PC_IN_TVAL",
         "CONFIG_PTR_ADDRESS",
         "PHYS_ADDR_WIDTH",
         "CACHE_BLOCK_SIZE"
@@ -152,10 +162,202 @@
           "default": true,
           "description": "When true, writing an illegal value to a WLRL CSR field raises an Illegal Instruction exception.\nWhen false, writing an illegal value to a WLRL CSR field is ignored."
         },
-        "REPORT_EBREAK_PC_IN_TVAL": {
+
+        "REPORT_VA_IN_MTVAL_ON_BREAKPOINT": {
           "type": "boolean",
-          "description": "When true, *tval is written with the virtual PC of the EBREAK instruction (same information as *epc).\nWhen false, *tval is written with 0 on an EBREAK instruction\n\nregardless, *tval is always written with a virtual PC when an external breakpoint is generated."
+          "default": false,
+          "description": "When true, mtval is written with the virtual PC of the EBREAK instruction (same information as mepc).\nWhen false, mtval is written with 0 on an EBREAK instruction\n\nregardless, mtval is always written with a virtual PC when an external breakpoint is generated."
         },
+        "REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, mtval is written with the virtual address when a misaligned load causes a LoadAddressMisaligned exception.\nWhen false, mtval is written with 0"
+        },
+        "REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, mtval is written with the virtual address when a misaligned store or atomic causes a StoreAmoAddressMisaligned exception.\nWhen false, mtval is written with 0"
+        },
+        "REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, mtval is written with the virtual address when a misaligned store or atomic causes a StoreAmoAddressMisaligned exception.\nWhen false, mtval is written with 0"
+        },
+        "REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, mtval is written with the virtual address when a load causes a LoadAccessFault exception.\nWhen false, mtval is written with 0"
+        },
+        "REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, mtval is written with the virtual address when a store or atomic causes a StoreAmoAccessFault exception.\nWhen false, mtval is written with 0"
+        },
+        "REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, mtval is written with the virtual address when a store or atomic causes a StoreAmoAccessFault exception.\nWhen false, mtval is written with 0"
+        },
+        "REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, mtval is written with the virtual address when a load causes a LoadPageFault exception.\nWhen false, mtval is written with 0"
+        },
+        "REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, mtval is written with the virtual address when a store or atomic causes a StoreAmoPageFault exception.\nWhen false, mtval is written with 0"
+        },
+        "REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, mtval is written with the virtual address when a store or atomic causes a StoreAmoPageFault exception.\nWhen false, mtval is written with 0"
+        },
+        "REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, mtval is written with the faulting instruciton encoding when a IllegalInstruction exception occurs.\nWhen false, mtval is written with 0"
+        },
+        "REPORT_CAUSE_IN_MTVAL_ON_SOFTWARE_CHECK": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, mtval is written with the casue when a SoftwareCheck exception occurs.\nWhen false, mtval is written with 0"
+        },
+        "MTVAL_WIDTH": {
+          "type": "integer",
+          "maximum": 64,
+          "description": "Number of implemented bits in MTVAL. Must be >= largest virtual address size if a VA is ever written to mtval by hardware or if Sdext is implemented. Must also be able to hold the minimum of MXLEN or ILEN if encodings are reported on IllegalInstruction exceptions"
+        },
+
+        "REPORT_VA_IN_STVAL_ON_BREAKPOINT": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, stval is written with the virtual PC of the EBREAK instruction (same information as mepc).\nWhen false, stval is written with 0 on an EBREAK instruction\n\nregardless, stval is always written with a virtual PC when an external breakpoint is generated."
+        },
+        "REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, stval is written with the virtual address when a misaligned load causes a LoadAddressMisaligned exception.\nWhen false, stval is written with 0"
+        },
+        "REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, stval is written with the virtual address when a misaligned store or atomic causes a StoreAmoAddressMisaligned exception.\nWhen false, stval is written with 0"
+        },
+        "REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, stval is written with the virtual address when a misaligned store or atomic causes a StoreAmoAddressMisaligned exception.\nWhen false, stval is written with 0"
+        },
+        "REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, stval is written with the virtual address when a load causes a LoadAccessFault exception.\nWhen false, stval is written with 0"
+        },
+        "REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, stval is written with the virtual address when a store or atomic causes a StoreAmoAccessFault exception.\nWhen false, stval is written with 0"
+        },
+        "REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, stval is written with the virtual address when a store or atomic causes a StoreAmoAccessFault exception.\nWhen false, stval is written with 0"
+        },
+        "REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, stval is written with the virtual address when a load causes a LoadPageFault exception.\nWhen false, stval is written with 0"
+        },
+        "REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, stval is written with the virtual address when a store or atomic causes a StoreAmoPageFault exception.\nWhen false, stval is written with 0"
+        },
+        "REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, stval is written with the virtual address when a store or atomic causes a StoreAmoPageFault exception.\nWhen false, stval is written with 0"
+        },
+        "REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, stval is written with the faulting instruciton encoding when a IllegalInstruction exception occurs.\nWhen false, stval is written with 0"
+        },
+        "REPORT_CAUSE_IN_STVAL_ON_SOFTWARE_CHECK": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, stval is written with the casue when a SoftwareCheck exception occurs.\nWhen false, stval is written with 0"
+        },
+        "STVAL_WIDTH": {
+          "type": "integer",
+          "maximum": 64,
+          "description": "Number of implemented bits in STVAL. Must be >= largest virtual address size if a VA is ever written to stval by hardware or if Sdext is implemented. Must also be able to hold the minimum of SXLEN or ILEN if encodings are reported on IllegalInstruction exceptions"
+        },
+
+        "REPORT_VA_IN_VSTVAL_ON_BREAKPOINT": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, vstval is written with the virtual PC of the EBREAK instruction (same information as mepc).\nWhen false, vstval is written with 0 on an EBREAK instruction\n\nregardless, vstval is always written with a virtual PC when an external breakpoint is generated."
+        },
+        "REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, vstval is written with the virtual address when a misaligned load causes a LoadAddressMisaligned exception.\nWhen false, vstval is written with 0"
+        },
+        "REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, vstval is written with the virtual address when a misaligned store or atomic causes a StoreAmoAddressMisaligned exception.\nWhen false, vstval is written with 0"
+        },
+        "REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, vstval is written with the virtual address when a misaligned store or atomic causes a StoreAmoAddressMisaligned exception.\nWhen false, vstval is written with 0"
+        },
+        "REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, vstval is written with the virtual address when a load causes a LoadAccessFault exception.\nWhen false, vstval is written with 0"
+        },
+        "REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, vstval is written with the virtual address when a store or atomic causes a StoreAmoAccessFault exception.\nWhen false, vstval is written with 0"
+        },
+        "REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, vstval is written with the virtual address when a store or atomic causes a StoreAmoAccessFault exception.\nWhen false, vstval is written with 0"
+        },
+        "REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, vstval is written with the virtual address when a load causes a LoadPageFault exception.\nWhen false, vstval is written with 0"
+        },
+        "REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, vstval is written with the virtual address when a store or atomic causes a StoreAmoPageFault exception.\nWhen false, vstval is written with 0"
+        },
+        "REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, vstval is written with the virtual address when a store or atomic causes a StoreAmoPageFault exception.\nWhen false, vstval is written with 0"
+        },
+        "REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, vstval is written with the faulting instruciton encoding when a IllegalInstruction exception occurs.\nWhen false, vstval is written with 0"
+        },
+        "REPORT_CAUSE_IN_VSTVAL_ON_SOFTWARE_CHECK": {
+          "type": "boolean",
+          "default": false,
+          "description": "When true, vstval is written with the casue when a SoftwareCheck exception occurs.\nWhen false, vstval is written with 0"
+        },
+
+
+
         "CONFIG_PTR_ADDRESS": {
           "type": "integer",
           "minimum": 0,

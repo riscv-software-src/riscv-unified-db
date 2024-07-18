@@ -8,6 +8,15 @@ sh1add.uw:
     and shifting it left by 1 place.
   definedBy: [B, Zba]
   base: 64
+  encoding:
+    match: 0010000----------010-----0111011
+    variables:
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
   assembly: xd, xs1, xs2
   access:
     s: always
@@ -15,4 +24,8 @@ sh1add.uw:
     vs: always
     vu: always
   operation(): |
+    if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
+      raise (ExceptionCode::IllegalInstruction, $encoding);
+    }
+
     X[rd] = X[rs2] + (X[rs1][31:0] << 1);

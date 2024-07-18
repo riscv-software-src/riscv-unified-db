@@ -6,4 +6,5 @@ Zbb:
   type: unprivileged
   versions:
   - version: 1.0
+    state: ratified
     ratification_date: 2021-06

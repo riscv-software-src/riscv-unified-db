@@ -5,5 +5,6 @@ Sscofpmf:
   type: privileged
   versions:
   - version: 1.0
+    state: ratified
     ratification_date: 2023-08
     url: https://drive.google.com/file/d/1KcjgbLM5L1ZKY8934aJl8aQwGlMz6Cbo/view?usp=drive_link

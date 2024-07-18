@@ -4,6 +4,7 @@ B:
   type: unprivileged
   versions:
   - version: 1.0
+    state: ratified
     ratification_date: 2024-04
     url: https://drive.google.com/file/d/1SgLoasaBjs5WboQMaU3wpHkjUwV71UZn/view
     implies:

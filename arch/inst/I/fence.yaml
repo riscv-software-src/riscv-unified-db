@@ -120,6 +120,19 @@ fence:
 
   definedBy: I
   assembly: "TODO"
+  encoding:
+    match: -----------------000-----0001111
+    variables:
+    - name: fm
+      location: 31-28
+    - name: pred
+      location: 27-24
+    - name: succ
+      location: 23-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
   access:
     s: always
     u: always

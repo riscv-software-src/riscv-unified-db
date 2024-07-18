@@ -57,7 +57,41 @@
         <div class="clear"></div>
       </div>
 
-      <div id="content"><div id='filecontents'><div class="sect1">
+      <div id="content"><div id='filecontents'><div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>The RISC-V Unified Database is intended to hold <strong>all</strong> the information needed to describe RISC-V,
+including a list of extensions, instruction specifications, CSR specifications, and documentation prose. The vision is that anything one would need for RISC-V can be generated from the information in this repository.</p>
+</div>
+<div class="paragraph">
+<p>This repository contains:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A (eventually complete) description of the RISC-V specification in a machine-readable format.</p>
+</li>
+<li>
+<p>A tool to generate multiple views of that spec, including:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>A configuration-specific, human-readable documentation webpage</p>
+</li>
+<li>
+<p>[COMING SOON] A configuration-specific Instruction Set Simulator</p>
+</li>
+<li>
+<p>More backends are planned</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_prerequisites">Prerequisites</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -105,6 +139,20 @@ you will need either root privileges or the ability to run in <code>fakeroot</co
 # DEVELOPMENT=1 ./bin/setup</code></pre>
 </div>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+If you forget, don&#8217;t worry. Setup will be invoked by any program in bin/ if necessary.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_vscode">VSCode</h3>
 <div class="paragraph">
 <p>If using Visual Studio Code and want to use development tools, you will need to restart the editor
 after setup.</p>
@@ -127,6 +175,11 @@ after setup.</p>
 <p><a href="https://marketplace.visualstudio.com/items?itemName=onnovalkering.vscode-singularity">Singularity</a> (if you plan on working on the container)</p>
 </li>
 </ul>
+</div>
+<div class="paragraph">
+<p>The <code>.vscode/settings.json</code> file in the repo will ensure that Solargraph works without any additional
+configuration (assuming you&#8217;ve already run ./bin/setup).</p>
+</div>
 </div>
 </div>
 </div>
@@ -155,13 +208,23 @@ after setup.</p>
 <li>
 <p><a href="arch/README.html">Architecture specification format</a></p>
 </li>
+<li>
+<p><a href="arch/README.html">Documentation for the generator tool and IDL</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://riscv-software-src.github.io/riscv-unified-db/ruby/index.html">YARD docs for the generator tool and IDL</a></p>
+</li>
+</ul>
+</div>
+</li>
 </ul>
 </div>
 </div>
 </div></div></div>
 
       <div id="footer">
-  Generated on Fri Jul 12 07:33:10 2024 by
+  Generated on Tue Jul 16 12:06:45 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

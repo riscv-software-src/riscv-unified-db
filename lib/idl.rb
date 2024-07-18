@@ -56,17 +56,17 @@ module Idl
 
       raise "unexpected type #{m.class.name}" unless m.is_a?(IsaAst)
 
-      m.make_left
+      ast = m.to_ast
 
-      m.set_input_file(path.to_s)
+      ast.set_input_file(path.to_s)
       begin
-        m.type_check(symtab)
+        ast.type_check(symtab)
       rescue AstNode::TypeError, AstNode::InternalError => e
         warn e.what
         warn e.bt
         exit 1
       end
-      m
+      ast
     end
 
     # compile a function body, and return the abstract syntax tree
@@ -88,8 +88,8 @@ module Idl
         cloned_symtab.pop
       end
 
-      ast = @parser.parse(body, root: :function_body)
-      if ast.nil?
+      m = @parser.parse(body, root: :function_body)
+      if m.nil?
         raise SyntaxError, <<~MSG
           While parsing #{parent}::#{name} #{@parser.failure_line}:#{@parser.failure_column}
 
@@ -98,15 +98,15 @@ module Idl
       end
 
       # fix up left recursion
-      ast.make_left
+      ast = m.to_ast
 
       # type check
       cloned_symtab.push
       cloned_symtab.add("__expected_return_type", return_type) unless return_type.nil?
 
       begin
-        ast.func_stmt_list.elements.each do |e|
-          e.choice.type_check(cloned_symtab)
+        ast.statements.each do |s|
+          s.type_check(cloned_symtab)
         end
       rescue AstNode::TypeError => e
         raise e if no_rescue
@@ -138,18 +138,17 @@ module Idl
 
     # compile an instruction operation, and return the abstract syntax tree
     #
-    # @param operation [String] Instruction operation source code
+    # @param inst [Instruction] Instruction object
     # @param symtab [SymbolTable] Symbol table to use for type checking
-    # @param name [String] Function name, used for error messages
-    # @param parent [String] Parent class of the function, used for error messages
     # @param input_file [Pathname] Path to the input file this source comes from
     # @param input_line [Integer] Starting line in the input file that this source comes from
     # @return [Ast] The root of the abstract syntax tree
-    def compile_inst_operation(operation, symtab: SymbolTable.new, name: nil, parent: nil, input_file: nil, input_line: 0)
+    def compile_inst_operation(inst, input_file: nil, input_line: 0)
+      operation = inst["operation()"]
       @parser.set_input_file(input_file, input_line)
 
-      ast = @parser.parse(operation, root: :instruction_operation)
-      if ast.nil?
+      m = @parser.parse(operation, root: :instruction_operation)
+      if m.nil?
         raise SyntaxError, <<~MSG
           While parsing #{input_file}:#{@parser.failure_line}:#{@parser.failure_column}
 
@@ -158,33 +157,63 @@ module Idl
       end
 
       # fix up left recursion
-      ast.make_left
+      ast = m.to_ast
+      ast.set_input_file("Inst #{inst.name} (#{input_file})", input_line)
+      ast
+    end
 
+    # Type check an abstract syntax tree
+    #
+    # @param ast [AstNode] An abstract syntax tree
+    # @param symtab [SymbolTable] The compilation context
+    # @param what [String] A description of what you are type checking (for error messages)
+    # @raise AstNode::TypeError if a type error is found
+    def type_check(ast, symtab, what)
       # type check
-      symtab.push
-
       begin
         ast.type_check(symtab)
       rescue AstNode::TypeError => e
-        if name && parent
-          warn "In function #{name} of #{parent}:"
-        elsif name && parent.nil?
-          warn "In function #{name}:"
-        end
+        warn "While type checking #{what}:"
         warn e.what
-        warn e.backtrace
         exit 1
       rescue AstNode::InternalError => e
-        if name && parent
-          warn "In function #{name} of #{parent}:"
-        elsif name && parent.nil?
-          warn "In function #{name}:"
-        end
+        warn "While type checking #{what}:"
         warn e.what
         warn e.backtrace
         exit 1
       end
-      symtab.pop
+
+      ast
+    end
+
+    def compile_expression(expression, symtab, pass_error: false)
+      m = @parser.parse(expression, root: :expression)
+      if m.nil?
+        raise SyntaxError, <<~MSG
+          While parsing #{expression}:#{@parser.failure_line}:#{@parser.failure_column}
+
+          #{@parser.failure_reason}
+        MSG
+      end
+
+      ast = m.to_ast
+      begin
+        ast.type_check(symtab)
+      rescue AstNode::TypeError => e
+        raise e if pass_error
+
+        warn "Compiling #{expression}"
+        warn e.what
+        warn e.backtrace
+        exit 1
+      rescue AstNode::InternalError => e
+        raise e if pass_error
+
+        warn "Compiling #{expression}"
+        warn e.what
+        warn e.backtrace
+        exit 1
+      end
 
       ast
     end

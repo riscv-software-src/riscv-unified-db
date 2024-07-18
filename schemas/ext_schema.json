@@ -7,16 +7,82 @@
       "required": ["description", "versions"],
       "properties": {
         "name": { "$ref": "schema_defs.json#/$defs/extension_name" },
-        "description": { "type": "string" },
+        "long_name": {
+          "type": "string",
+          "description": "One line description for the extension"
+        },
+        "description": {
+          "type": "string",
+          "description": "Full documentation of the extension"
+        },
+        "company": {
+          "description": "The company that developed this extension",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the company that developed this extension. Should be \"RISC-V International\" for standard extensions"
+            },
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "description": "Website of the company that developed this extension. Should be \"https://riscv.org\" for standard extensions"
+            }
+          }
+        },
+        "doc_license": {
+          "description": "License that applies to the textual documantation for this extension",
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "License name"
+            },
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "description": "Link to license text"
+            }
+          },
+          "additionalProperties": false
+        },
         "type": { "enum": ["unprivileged", "privileged"] },
         "versions": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["version", "ratification_date"],
+            "required": ["version", "state"],
             "properties": {
               "version": {
                 "$ref": "schema_defs.json#/$defs/extension_version"
+              },
+              "state": {
+                "description": "Current state of this version",
+                "enum": [
+                  "development",
+                  "frozen",
+                  "public-review",
+                  "ratified",
+                  "nonstandard-released"
+                ]
+              },
+              "repositories": {
+                "description": "Repositories associated with this extension",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    "branch": {
+                      "type": "string",
+                      "description": "Branch/tag where the work is done"
+                    }
+                  },
+                  "additionalProperties": false
+                }
               },
               "ratification_date": { 
                 "oneOf": [
@@ -40,6 +106,28 @@
                   { "$ref": "schema_defs.json#/$defs/extension_requirement" },
                   { "type": "array", "items": { "$ref": "schema_defs.json#/$defs/extension_requirement" }}
                 ]
+              },
+              "contributors": {
+                "description": "List of contributors to this version of the extension",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Contributor name, in 'GIVEN_NAME SURNAME' format"
+                    },
+                    "company": {
+                      "type": "string",
+                      "description": "Company the contributor worked for, or 'Individual'"
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "description": "E-mail address for the contributor"
+                    }
+                  }
+                }
               }
             },
             "additionalProperties": false

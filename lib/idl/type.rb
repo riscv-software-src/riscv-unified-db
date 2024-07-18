@@ -27,6 +27,17 @@ module Idl
       @kind == :bits
     end
 
+    def default
+      case @kind
+      when :bits, :enum_ref, :bitfield
+        0
+      when :boolean
+        false
+      else
+        raise "No default for #{@kind}"
+      end
+    end
+
     attr_reader :kind, :qualifiers, :width, :sub_type, :tuple_types, :return_type, :arguments, :enum_class
 
     def qualify(qualifier)
@@ -366,9 +377,9 @@ module Idl
 
     def value(element_name)
       i = @element_names.index(element_name)
-      raise "Could not find #{element_name} in enumeration #{@name}" if i.nil?
+      return nil if i.nil?
 
-      return @element_values[i]
+      @element_values[i]
     end
   end
 
@@ -453,7 +464,7 @@ module Idl
 
     def template_names = @func_def_ast.template_names
 
-    def template_types = @func_def_ast.template_types
+    def template_types(symtab) = @func_def_ast.template_types(symtab)
 
     def templated? = @func_def_ast.templated?
 
@@ -472,7 +483,7 @@ module Idl
       template_values.each_with_index do |value, idx|
         raise "template value should be an Integer" unless value.is_a?(Integer)
 
-        symtab.add!(template_names[idx], Var.new(template_names[idx], template_types[idx], value, template_index: idx, function_name: @func_def_ast.name))
+        symtab.add!(template_names[idx], Var.new(template_names[idx], template_types(symtab)[idx], value, template_index: idx, function_name: @func_def_ast.name))
       end
       symtab
     end
@@ -540,17 +551,17 @@ module Idl
     def body = @func_def_ast.body
   end
 
-  # a function that is templated, and hasn't been fully typed checked yet
-  # because it needs to have template arguments resolved
-  class TemplateFunctionType < Type
-    attr_reader :template_types, :ast
+  # # a function that is templated, and hasn't been fully typed checked yet
+  # # because it needs to have template arguments resolved
+  # class TemplateFunctionType < Type
+  #   attr_reader :template_types, :ast
 
-    def initialize(func_name, template_types, ast)
-      super(:template_function, name: func_name, arguments: arguments)
-      @template_types = template_types
-      @ast = ast
-    end
-  end
+  #   def initialize(func_name, template_types, ast)
+  #     super(:template_function, name: func_name, arguments: arguments)
+  #     @template_types = template_types
+  #     @ast = ast
+  #   end
+  # end
 
   # XReg is really a Bits<> type, so we override it just to get
   # prettier prints
