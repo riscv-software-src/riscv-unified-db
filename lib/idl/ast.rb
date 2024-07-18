@@ -2337,7 +2337,7 @@ module Idl
     # @!macro value
     def value(symtab)
       val = val_trunc = eval("#{op}#{exp.value(symtab)}", binding, __FILE__, __LINE__)
-      if type(symtab).integral? && val != val_trunc
+      if type(symtab).integral?
         val_trunc = val & ((1 << type(symtab).width) - 1)
         if type(symtab).signed? && ((((val_trunc >> (type(symtab).width - 1))) & 1) == 1)
           # need to make this negative!
@@ -2981,7 +2981,7 @@ module Idl
 
         memoize = true
         if width.nil?
-          width = archdef.config_params["XLEN"]
+          width = symtab.archdef.config_params["XLEN"]
           memoize = false
         end
 
@@ -3007,7 +3007,6 @@ module Idl
       case text_value.delete("_")
       when /([0-9]+)?'(s?)([bodh]?)(.*)/
         # verilog-style literal
-        signed = ::Regexp.last_match(2)
         radix_id = ::Regexp.last_match(3)
         value = ::Regexp.last_match(4)
 
