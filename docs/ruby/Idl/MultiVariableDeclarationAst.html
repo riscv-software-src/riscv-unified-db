@@ -69,7 +69,7 @@
   <dl>
     <dt>Inherits:</dt>
     <dd>
-      <span class="inheritName"><span class='object_link'><a href="AssignmentAst.html" title="Idl::AssignmentAst (class)">AssignmentAst</a></span></span>
+      <span class="inheritName"><span class='object_link'><a href="AstNode.html" title="Idl::AstNode (class)">AstNode</a></span></span>
       
         <ul class="fullTree">
           <li>Object</li>
@@ -77,8 +77,6 @@
             <li class="next"><span class='object_link'><a href="../Treetop/Runtime/SyntaxNode.html" title="Treetop::Runtime::SyntaxNode (class)">Treetop::Runtime::SyntaxNode</a></span></li>
           
             <li class="next"><span class='object_link'><a href="AstNode.html" title="Idl::AstNode (class)">AstNode</a></span></li>
-          
-            <li class="next"><span class='object_link'><a href="AssignmentAst.html" title="Idl::AssignmentAst (class)">AssignmentAst</a></span></li>
           
             <li class="next">Idl::MultiVariableDeclarationAst</li>
           
@@ -92,6 +90,11 @@
   
   
   
+  
+  <dl>
+      <dt>Includes:</dt>
+      <dd><span class='object_link'><a href="Declaration.html" title="Idl::Declaration (module)">Declaration</a></span></dd>
+  </dl>
   
   
 
@@ -140,7 +143,7 @@ Bits&lt;64&gt; a, b, c, d;
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#execute-instance_method" title="#execute (instance method)">#<strong>execute</strong>(symtab)  &#x21d2; Object </a>
+      <a href="#add_symbol-instance_method" title="#add_symbol (instance method)">#<strong>add_symbol</strong>(symtab)  &#x21d2; Object </a>
     
 
     
@@ -154,7 +157,9 @@ Bits&lt;64&gt; a, b, c, d;
   
 
   
-    <span class="summary_desc"><div class='inline'></div></span>
+    <span class="summary_desc"><div class='inline'>
+<p>Add symbol(s) at the outermost scope of the symbol table.</p>
+</div></span>
   
 </li>
 
@@ -243,40 +248,69 @@ Bits&lt;64&gt; a, b, c, d;
   
   
   
-  
-  
 
   <div id="instance_method_details" class="method_details_list">
     <h2>Instance Method Details</h2>
 
     
       <div class="method_details first">
-  <h3 class="signature first" id="execute-instance_method">
+  <h3 class="signature first" id="add_symbol-instance_method">
   
-    #<strong>execute</strong>(symtab)  &#x21d2; <tt>Object</tt> 
-  
-
+    #<strong>add_symbol</strong>(symtab)  &#x21d2; <tt>Object</tt> 
   
 
   
-</h3><table class="source_code">
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Add symbol(s) at the outermost scope of the symbol table</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>symtab</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="SymbolTable.html" title="Idl::SymbolTable (class)">SymbolTable</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Symbol table at the scope that the symbol(s) will be inserted</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-1277
-1278
-1279
-1280
-1281</pre>
+1347
+1348
+1349
+1350
+1351</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1277</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1347</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_var_names'>var_names</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_name'>name</span><span class='op'>|</span>
-    <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_add'>add</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="Var.html" title="Idl::Var (class)">Var</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Var.html#initialize-instance_method" title="Idl::Var#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_clone'>clone</span><span class='rparen'>)</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_add_symbol'>add_symbol</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_var_names'>var_names</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_vname'>vname</span><span class='op'>|</span>
+    <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_add'>add</span><span class='lparen'>(</span><span class='id identifier rubyid_vname'>vname</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="Var.html" title="Idl::Var (class)">Var</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Var.html#initialize-instance_method" title="Idl::Var#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_vname'>vname</span><span class='comma'>,</span> <span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_clone'>clone</span><span class='comma'>,</span> <span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_default'>default</span><span class='rparen'>)</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -328,10 +362,10 @@ Bits&lt;64&gt; a, b, c, d;
       <pre class="lines">
 
 
-1284</pre>
+1354</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1284</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1354</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_idl'>to_idl</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_to_idl'>to_idl</span><span class='embexpr_end'>}</span><span class='tstring_content'> </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_var_names'>var_names</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:to_idl</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>, </span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span></pre>
     </td>
@@ -419,27 +453,23 @@ Bits&lt;64&gt; a, b, c, d;
       <pre class="lines">
 
 
-1267
-1268
-1269
-1270
-1271
-1272
-1273
-1274
-1275</pre>
+1338
+1339
+1340
+1341
+1342
+1343
+1344</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1267</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1338</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>No type named &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_type_name'>type_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39; on line </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_lineno'>lineno</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
 
   <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Attempt to write read-only/constant variable </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_text_value'>text_value</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_const?'>const?</span>
 
-  <span class='id identifier rubyid_var_names'>var_names</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_vname'>vname</span><span class='op'>|</span>
-    <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_add'>add</span><span class='lparen'>(</span><span class='id identifier rubyid_vname'>vname</span><span class='comma'>,</span> <span class='const'><span class='object_link'><a href="Var.html" title="Idl::Var (class)">Var</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Var.html#initialize-instance_method" title="Idl::Var#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_vname'>vname</span><span class='comma'>,</span> <span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_clone'>clone</span><span class='rparen'>)</span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
+  <span class='id identifier rubyid_add_symbol'>add_symbol</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -490,19 +520,19 @@ Bits&lt;64&gt; a, b, c, d;
       <pre class="lines">
 
 
-1255
-1256
-1257
-1258
-1259
-1260
-1261
-1262
-1263
-1264</pre>
+1326
+1327
+1328
+1329
+1330
+1331
+1332
+1333
+1334
+1335</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1255</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1326</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_var_names'>var_names</span>
   <span class='kw'>return</span> <span class='ivar'>@var_names</span> <span class='kw'>unless</span> <span class='ivar'>@var_names</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -524,7 +554,7 @@ Bits&lt;64&gt; a, b, c, d;
 </div>
 
       <div id="footer">
-  Generated on Fri Jul 12 07:33:11 2024 by
+  Generated on Thu Jul 18 13:55:45 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

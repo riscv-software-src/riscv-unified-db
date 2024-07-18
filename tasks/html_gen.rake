@@ -10,22 +10,23 @@ module AntoraUtils
         else
           path_or_str
         end
-      str.gsub(/%%LINK\[([^;\]%]+)\s*;\s*([^;\]%]+)\s*;\s*([^\]%]+)\]%%/) do
+      str.gsub(/%%LINK%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
         type = Regexp.last_match[1]
         name = Regexp.last_match[2]
         link_text = Regexp.last_match[3]
 
-
         case type
         when "inst"
-          "xref:insts:#{name}.adoc##{name}-def[#{link_text}]"
+          "xref:insts:#{name}.adoc##{name}-def[#{link_text.gsub(']', '\]')}]"
         when "csr"
-          "xref:csrs:#{name}.adoc##{name}-def[#{link_text}]"
+          "xref:csrs:#{name}.adoc##{name}-def[#{link_text.gsub(']', '\]')}]"
         when "csr_field"
-          csr_name, field_name = name.split(".")
-          "xref:csrs:#{csr_name}.adoc##{csr_name}-#{field_name}-def[#{link_text}]"
+          csr_name, field_name = name.split('.')
+          "xref:csrs:#{csr_name}.adoc##{csr_name}-#{field_name}-def[#{link_text.gsub(']', '\]')}]"
         when "ext"
-          "xref:exts:#{name}.adoc##{name}-def[#{link_text}]"
+          "xref:exts:#{name}.adoc##{name}-def[#{link_text.gsub(']', '\]')}]"
+        when "func"
+          "xref:funcs:funcs.adoc##{name}-func-def[#{link_text.gsub(']', '\]')}]"
         else
           raise "Unhandled link type '#{type}' for '#{name}' #{match.captures}"
         end
@@ -39,7 +40,6 @@ end
     config_name = Pathname.new(tname).relative_path_from("#{$root}/gen").to_s.split("/")[0]
     [
       "#{$root}/\.stamps/adoc-gen-#{type}s-#{config_name}\.stamp",
-      # "#{$root}/gen/#{config_name}/adoc/#{type}s/#{rest}",
       __FILE__
     ]
   } do |t|

@@ -4,6 +4,25 @@ srli:
   description: Shift the value in rs1 right by shamt, and store the result in rd
   definedBy: I
   assembly: xd, xs1, shamt
+  encoding:
+    RV32:
+      match: 0000000----------101-----0010011
+      variables:
+      - name: shamt
+        location: 24-20
+      - name: rs1
+        location: 19-15
+      - name: rd
+        location: 11-7
+    RV64:
+      match: 000000-----------101-----0010011
+      variables:
+      - name: shamt
+        location: 25-20
+      - name: rs1
+        location: 19-15
+      - name: rd
+        location: 11-7
   access:
     s: always
     u: always

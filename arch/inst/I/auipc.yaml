@@ -5,6 +5,14 @@ auipc:
   description: Add an immediate to the current PC.
   definedBy: I
   assembly: xd, imm
+  encoding:
+    match: --------------------------001011
+    variables:
+    - name: imm
+      location: 31-12
+      left_shift: 12
+    - name: rd
+      location: 11-7
   access:
     s: always
     u: always

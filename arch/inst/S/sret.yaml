@@ -44,6 +44,8 @@ sret:
 
   definedBy: S
   assembly: ""
+  encoding:
+    match: '00010000001000000000000001110011'
   access:
     s: sometimes
     u: never
@@ -67,32 +69,32 @@ sret:
     if (implemented?(ExtensionName::H)) {
       if (CSR[mstatus].TSR == 1'b0 && CSR[hstatus].VTSR == 1'b0) {
         if (mode() == PrivilegeMode::U) {
-          raise (ExceptionCode::IllegalInstruction);
+          raise (ExceptionCode::IllegalInstruction, $encoding);
         } else if (mode() == PrivilegeMode::VU) {
-          raise (ExceptionCode::VirtualInstruction);
+          raise (ExceptionCode::VirtualInstruction, $encoding);
         }
       } else if (CSR[mstatus].TSR == 1'b0 && CSR[hstatus].VTSR == 1'b1) {
         if (mode() == PrivilegeMode::U) {
-          raise (ExceptionCode::IllegalInstruction);
+          raise (ExceptionCode::IllegalInstruction, $encoding);
         } else if (mode() == PrivilegeMode::VU || mode() == PrivilegeMode::VS) {
-          raise (ExceptionCode::VirtualInstruction);
+          raise (ExceptionCode::VirtualInstruction, $encoding);
         }
       } else if (CSR[mstatus].TSR == 1'b1 && CSR[hstatus].VTSR == 1'b0) {
         if (mode() == PrivilegeMode::U || mode() == PrivilegeMode::S) {
-          raise (ExceptionCode::IllegalInstruction);
+          raise (ExceptionCode::IllegalInstruction, $encoding);
         } else if (mode() == PrivilegeMode::VU) {
-          raise (ExceptionCode::VirtualInstruction);
+          raise (ExceptionCode::VirtualInstruction, $encoding);
         }
       } else if (CSR[mstatus].TSR == 1'b1 && CSR[hstatus].VTSR == 1'b1) {
         if (mode() == PrivilegeMode::U || mode() == PrivilegeMode::S) {
-          raise (ExceptionCode::IllegalInstruction);
+          raise (ExceptionCode::IllegalInstruction, $encoding);
         } else if (mode() == PrivilegeMode::VU || mode() == PrivilegeMode::VS) {
-          raise (ExceptionCode::VirtualInstruction);
+          raise (ExceptionCode::VirtualInstruction, $encoding);
         }      
       }
     } else {
       if (mode() != PrivilegeMode::U) {
-        raise (ExceptionCode::IllegalInstruction);
+        raise (ExceptionCode::IllegalInstruction, $encoding);
       }
     }
 
@@ -114,7 +116,7 @@ sret:
       PC = $bits(CSR[sepc]);
     } else {
       if (CSR[mstatus].TSR == 1'b1) {
-        raise (ExceptionCode::IllegalInstruction);
+        raise (ExceptionCode::IllegalInstruction, $encoding);
       }
       CSR[vsstatus].SPP = 0;
       CSR[vsstatus].SIE = CSR[vsstatus].SPIE;

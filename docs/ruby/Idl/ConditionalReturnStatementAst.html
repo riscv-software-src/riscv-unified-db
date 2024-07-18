@@ -169,6 +169,28 @@
 </li>
 
       
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#return_values-instance_method" title="#return_values (instance method)">#<strong>return_values</strong>(symtab)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
     </ul>
   
 
@@ -203,12 +225,12 @@
       <pre class="lines">
 
 
-2395
-2396
-2397</pre>
+2775
+2776
+2777</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2395</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2775</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_condition'>condition</span>
   <span class='id identifier rubyid_expression'>expression</span>
@@ -233,20 +255,20 @@
       <pre class="lines">
 
 
-2399
-2400
-2401
-2402
-2403
-2404
-2405
-2406
-2407
-2408
-2409</pre>
+2780
+2781
+2782
+2783
+2784
+2785
+2786
+2787
+2788
+2789
+2790</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2399</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2780</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_return_value'>return_value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_cond'>cond</span> <span class='op'>=</span> <span class='id identifier rubyid_condition'>condition</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
@@ -264,12 +286,54 @@
 </table>
 </div>
     
+      <div class="method_details ">
+  <h3 class="signature " id="return_values-instance_method">
+  
+    #<strong>return_values</strong>(symtab)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+2793
+2794
+2795
+2796
+2797
+2798
+2799
+2800
+2801</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2793</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_return_values'>return_values</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_cond'>cond</span> <span class='op'>=</span> <span class='id identifier rubyid_condition'>condition</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+
+  <span class='id identifier rubyid_cond'>cond</span> <span class='op'>?</span> <span class='id identifier rubyid_return_value_nodes'>return_value_nodes</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='op'>|</span> <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_values'>values</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_flatten'>flatten</span><span class='period'>.</span><span class='id identifier rubyid_uniq'>uniq</span> <span class='op'>:</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+
+<span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="AstNode/ValueError.html" title="Idl::AstNode::ValueError (class)">ValueError</a></span></span>
+  <span class='comment'># condition isn&#39;t known, so the return value is always possible
+</span>  <span class='id identifier rubyid_return_value_nodes'>return_value_nodes</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_n'>n</span><span class='op'>|</span> <span class='id identifier rubyid_n'>n</span><span class='period'>.</span><span class='id identifier rubyid_values'>values</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_flatten'>flatten</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
   </div>
 
 </div>
 
       <div id="footer">
-  Generated on Fri Jul 12 07:33:11 2024 by
+  Generated on Thu Jul 18 13:55:46 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

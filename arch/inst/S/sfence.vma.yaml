@@ -206,6 +206,13 @@ sfence.vma:
     attempts to execute an SFENCE.VMA instruction might raise an
     illegal-instruction exception.
   assembly: xs1, xs2
+  encoding:
+    match: 0001001----------000000001110011
+    variables:
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
   access:
     s: always
     u: always

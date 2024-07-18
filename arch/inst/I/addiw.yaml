@@ -6,6 +6,15 @@ addiw:
   definedBy: I
   base: 64
   assembly: xd, xs1, imm
+  encoding:
+    match: -----------------000-----0001011
+    variables:
+    - name: imm
+      location: 31-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
   access:
     s: always
     u: always

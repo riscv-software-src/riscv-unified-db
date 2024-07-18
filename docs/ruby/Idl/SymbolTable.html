@@ -186,7 +186,9 @@
   
 
   
-    <span class="summary_desc"><div class='inline'></div></span>
+    <span class="summary_desc"><div class='inline'>
+<p>add a new symbol at the outermost scope.</p>
+</div></span>
   
 </li>
 
@@ -209,7 +211,7 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>add, and make sure name is unique.</p>
+<p>add a new symbol at the outermost scope, unless that symbol is already defined.</p>
 </div></span>
   
 </li>
@@ -266,7 +268,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#deep_clone-instance_method" title="#deep_clone (instance method)">#<strong>deep_clone</strong>(clone_values: false)  &#x21d2; Object </a>
+      <a href="#deep_clone-instance_method" title="#deep_clone (instance method)">#<strong>deep_clone</strong>(clone_values: false)  &#x21d2; SymbolTable </a>
     
 
     
@@ -281,7 +283,31 @@
 
   
     <span class="summary_desc"><div class='inline'>
-<p>return a deep clone of this SymbolTable.</p>
+<p>A deep clone of this SymbolTable.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#find_all-instance_method" title="#find_all (instance method)">#<strong>find_all</strong>(single_scope: false) {|obj| ... } &#x21d2; Array&lt;Object&gt; </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>searches the symbol table scope-by-scope to find all entries for which the block returns true.</p>
 </div></span>
   
 </li>
@@ -304,7 +330,55 @@
   
 
   
+    <span class="summary_desc"><div class='inline'>
+<p>searches the symbol table scope-by-scope to find ‘name’.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#get_from-instance_method" title="#get_from (instance method)">#<strong>get_from</strong>(name, level)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
     <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#get_global-instance_method" title="#get_global (instance method)">#<strong>get_global</strong>(name)  &#x21d2; Object </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>The symbol named ‘name’ from global scope, or nil if not found.</p>
+</div></span>
   
 </li>
 
@@ -352,7 +426,9 @@
   
 
   
-    <span class="summary_desc"><div class='inline'></div></span>
+    <span class="summary_desc"><div class='inline'>
+<p>Whether or not any symbol ‘name’ is defined at any level in the symbol table.</p>
+</div></span>
   
 </li>
 
@@ -360,7 +436,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#levels-instance_method" title="#levels (instance method)">#<strong>levels</strong>  &#x21d2; Object </a>
+      <a href="#keys_pretty-instance_method" title="#keys_pretty (instance method)">#<strong>keys_pretty</strong>  &#x21d2; Object </a>
     
 
     
@@ -375,6 +451,30 @@
 
   
     <span class="summary_desc"><div class='inline'></div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#levels-instance_method" title="#levels (instance method)">#<strong>levels</strong>  &#x21d2; Integer </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Number of scopes on the symbol table (global at 1).</p>
+</div></span>
   
 </li>
 
@@ -396,7 +496,9 @@
   
 
   
-    <span class="summary_desc"><div class='inline'></div></span>
+    <span class="summary_desc"><div class='inline'>
+<p>pops the top of the scope stack.</p>
+</div></span>
   
 </li>
 
@@ -418,7 +520,9 @@
   
 
   
-    <span class="summary_desc"><div class='inline'></div></span>
+    <span class="summary_desc"><div class='inline'>
+<p>pretty-print the symbol table contents.</p>
+</div></span>
   
 </li>
 
@@ -440,7 +544,9 @@
   
 
   
-    <span class="summary_desc"><div class='inline'></div></span>
+    <span class="summary_desc"><div class='inline'>
+<p>pushes a new scope.</p>
+</div></span>
   
 </li>
 
@@ -477,26 +583,6 @@
       <pre class="lines">
 
 
-54
-55
-56
-57
-58
-59
-60
-61
-62
-63
-64
-65
-66
-67
-68
-69
-70
-71
-72
-73
 74
 75
 76
@@ -549,10 +635,30 @@
 123
 124
 125
-126</pre>
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 54</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 74</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_arch_def'>arch_def</span><span class='rparen'>)</span>
   <span class='ivar'>@archdef</span> <span class='op'>=</span> <span class='id identifier rubyid_arch_def'>arch_def</span>
@@ -665,12 +771,12 @@
       <pre class="lines">
 
 
-49
-50
-51</pre>
+69
+70
+71</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 49</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 69</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_archdef'>archdef</span>
   <span class='ivar'>@archdef</span>
@@ -696,18 +802,65 @@
   
 
   
-</h3><table class="source_code">
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>add a new symbol at the outermost scope</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>name</span>
+      
+      
+        <span class='type'>(<tt>#to_s</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Symbol name</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>var</span>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Symbol object (usually a Var or a Type)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+
+</div><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-154
-155
-156</pre>
+226
+227
+228</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 154</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 226</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_add'>add</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_var'>var</span><span class='rparen'>)</span>
   <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_last'>last</span><span class='lbracket'>[</span><span class='id identifier rubyid_name'>name</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_var'>var</span>
@@ -729,22 +882,63 @@
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>add, and make sure name is unique</p>
+<p>add a new symbol at the outermost scope, unless that symbol is already defined</p>
 
 
   </div>
 </div>
 <div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
   
+    <li>
+      
+        <span class='name'>name</span>
+      
+      
+        <span class='type'>(<tt>#to_s</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Symbol name</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>var</span>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Symbol object (usually a Var or a Type)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
 <p class="tag_title">Raises:</p>
 <ul class="raise">
   
     <li>
       
       
-        <span class='type'>(<tt><span class='object_link'><a href="SymbolTable/DuplicateSymError.html" title="Idl::SymbolTable::DuplicateSymError (class)">DuplicateSymError</a></span></tt>)</span>
+        <span class='type'>(<tt>DuplicationSymError</tt>)</span>
       
       
+      
+        &mdash;
+        <div class='inline'>
+<p>if ‘name’ is already in the symbol table</p>
+</div>
       
     </li>
   
@@ -756,14 +950,14 @@
       <pre class="lines">
 
 
-159
-160
-161
-162
-163</pre>
+235
+236
+237
+238
+239</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 159</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 235</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_add!'>add!</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_var'>var</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="SymbolTable/DuplicateSymError.html" title="Idl::SymbolTable::DuplicateSymError (class)">DuplicateSymError</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Symbol </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> already defined as </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_h'>h</span><span class='op'>|</span> <span class='id identifier rubyid_h'>h</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span> <span class='id identifier rubyid_name'>name</span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -801,16 +995,16 @@
       <pre class="lines">
 
 
-166
-167
-168
-169
-170
-171
-172</pre>
+242
+243
+244
+245
+246
+247
+248</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 166</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 242</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_add_above!'>add_above!</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_var'>var</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>There is only one scope</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span> <span class='op'>&lt;=</span> <span class='int'>1</span>
@@ -850,16 +1044,16 @@
       <pre class="lines">
 
 
-175
-176
-177
-178
-179
-180
-181</pre>
+251
+252
+253
+254
+255
+256
+257</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 175</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 251</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_add_at!'>add_at!</span><span class='lparen'>(</span><span class='id identifier rubyid_level'>level</span><span class='comma'>,</span> <span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_var'>var</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Level </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_level'>level</span><span class='embexpr_end'>}</span><span class='tstring_content'> is too large </span><span class='embexpr_beg'>#{</span><span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span>  <span class='id identifier rubyid_level'>level</span> <span class='op'>&gt;=</span> <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span>
@@ -876,7 +1070,7 @@
       <div class="method_details ">
   <h3 class="signature " id="deep_clone-instance_method">
   
-    #<strong>deep_clone</strong>(clone_values: false)  &#x21d2; <tt>Object</tt> 
+    #<strong>deep_clone</strong>(clone_values: false)  &#x21d2; <tt><span class='object_link'><a href="" title="Idl::SymbolTable (class)">SymbolTable</a></span></tt> 
   
 
   
@@ -885,13 +1079,31 @@
 </h3><div class="docstring">
   <div class="discussion">
     
-<p>return a deep clone of this SymbolTable</p>
+<p>Returns a deep clone of this SymbolTable.</p>
 
 
   </div>
 </div>
 <div class="tags">
   
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="Idl::SymbolTable (class)">SymbolTable</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>a deep clone of this SymbolTable</p>
+</div>
+      
+    </li>
+  
+</ul>
 
 </div><table class="source_code">
   <tr>
@@ -899,26 +1111,26 @@
       <pre class="lines">
 
 
-196
-197
-198
-199
-200
-201
-202
-203
-204
-205
-206
-207
-208
-209
-210
-211
-212</pre>
+274
+275
+276
+277
+278
+279
+280
+281
+282
+283
+284
+285
+286
+287
+288
+289
+290</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 196</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 274</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_deep_clone'>deep_clone</span><span class='lparen'>(</span><span class='label'>clone_values:</span> <span class='kw'>false</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_copy'>copy</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="" title="Idl::SymbolTable (class)">SymbolTable</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="Idl::SymbolTable#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='ivar'>@archdef</span><span class='rparen'>)</span>
@@ -943,6 +1155,162 @@
 </div>
     
       <div class="method_details ">
+  <h3 class="signature " id="find_all-instance_method">
+  
+    #<strong>find_all</strong>(single_scope: false) {|obj| ... } &#x21d2; <tt>Array&lt;Object&gt;</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>searches the symbol table scope-by-scope to find all entries for which the block returns true</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>single_scope</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>false</tt>)</em>
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>If true, stop searching more scope as soon as there are matches</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Yield Parameters:</p>
+<ul class="yieldparam">
+  
+    <li>
+      
+        <span class='name'>obj</span>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>A object stored in the symbol table</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Yield Returns:</p>
+<ul class="yieldreturn">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Whether or not the object is the one you are looking for</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Array&lt;Object&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>All matches</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>ArgumentError</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 206</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_find_all'>find_all</span><span class='lparen'>(</span><span class='label'>single_scope:</span> <span class='kw'>false</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Block needed</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
+
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Find block takes one argument</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_block'>block</span><span class='period'>.</span><span class='id identifier rubyid_arity'>arity</span> <span class='op'>==</span> <span class='int'>1</span>
+
+  <span class='id identifier rubyid_matches'>matches</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
+
+  <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_reverse_each'>reverse_each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
+    <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_each_value'>each_value</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_v'>v</span><span class='op'>|</span>
+      <span class='id identifier rubyid_matches'>matches</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_v'>v</span> <span class='kw'>if</span> <span class='kw'>yield</span> <span class='id identifier rubyid_v'>v</span>
+    <span class='kw'>end</span>
+    <span class='kw'>break</span> <span class='kw'>if</span> <span class='id identifier rubyid_single_scope'>single_scope</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_matches'>matches</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+  <span class='kw'>end</span>
+  <span class='id identifier rubyid_matches'>matches</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
   <h3 class="signature " id="get-instance_method">
   
     #<strong>get</strong>(name)  &#x21d2; <tt>Object</tt> 
@@ -951,27 +1319,181 @@
   
 
   
-</h3><table class="source_code">
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>searches the symbol table scope-by-scope to find ‘name’</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>A symbol named ‘name’, or nil if not found</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-147
-148
-149
-150
-151
-152</pre>
+177
+178
+179
+180
+181
+182</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 147</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 177</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_get'>get</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_reverse_each'>reverse_each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
     <span class='kw'>return</span> <span class='id identifier rubyid_s'>s</span><span class='lbracket'>[</span><span class='id identifier rubyid_name'>name</span><span class='rbracket'>]</span> <span class='kw'>if</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
   <span class='kw'>nil</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="get_from-instance_method">
+  
+    #<strong>get_from</strong>(name, level)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Raises:</p>
+<ul class="raise">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>ArgumentError</tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 184</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_get_from'>get_from</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_level'>level</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>level must be positive</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_level'>level</span><span class='period'>.</span><span class='id identifier rubyid_positive?'>positive?</span>
+
+  <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>There is no level </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_level'>level</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_level'>level</span> <span class='op'>&lt;</span> <span class='id identifier rubyid_levels'>levels</span>
+
+  <span class='ivar'>@scopes</span><span class='lbracket'>[</span><span class='int'>0</span><span class='op'>..</span><span class='id identifier rubyid_level'>level</span> <span class='op'>-</span> <span class='int'>1</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_reverse_each'>reverse_each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
+    <span class='kw'>return</span> <span class='id identifier rubyid_s'>s</span><span class='lbracket'>[</span><span class='id identifier rubyid_name'>name</span><span class='rbracket'>]</span> <span class='kw'>if</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
+  <span class='kw'>nil</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="get_global-instance_method">
+  
+    #<strong>get_global</strong>(name)  &#x21d2; <tt>Object</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns the symbol named ‘name’ from global scope, or nil if not found.</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Object</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>the symbol named ‘name’ from global scope, or nil if not found</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+196
+197
+198</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 196</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_get_global'>get_global</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_get_from'>get_from</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='int'>1</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -990,6 +1512,8 @@
 </h3><div class="docstring">
   <div class="discussion">
     
+<p>Returns whether or not any symbol ‘name’ is defined at any level in the symbol table.</p>
+
 
   </div>
 </div>
@@ -1005,6 +1529,11 @@
       
       
       
+        &mdash;
+        <div class='inline'>
+<p>whether or not any symbol ‘name’ is defined at any level in the symbol table</p>
+</div>
+      
     </li>
   
 </ul>
@@ -1015,12 +1544,12 @@
       <pre class="lines">
 
 
-143
-144
-145</pre>
+166
+167
+168</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 143</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 166</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span>
   <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span> <span class='kw'>return</span> <span class='kw'>true</span> <span class='kw'>if</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
@@ -1031,9 +1560,9 @@
 </div>
     
       <div class="method_details ">
-  <h3 class="signature " id="levels-instance_method">
+  <h3 class="signature " id="keys_pretty-instance_method">
   
-    #<strong>levels</strong>  &#x21d2; <tt>Object</tt> 
+    #<strong>keys_pretty</strong>  &#x21d2; <tt>Object</tt> 
   
 
   
@@ -1045,12 +1574,71 @@
       <pre class="lines">
 
 
-183
-184
-185</pre>
+170
+171
+172</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 183</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 170</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_keys_pretty'>keys_pretty</span>
+  <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_k'>k</span><span class='comma'>,</span> <span class='id identifier rubyid_v'>v</span><span class='op'>|</span> <span class='id identifier rubyid_v'>v</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="Var.html" title="Idl::Var (class)">Var</a></span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='id identifier rubyid_v'>v</span><span class='period'>.</span><span class='id identifier rubyid_template_val?'>template_val?</span> <span class='op'>?</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_k'>k</span><span class='embexpr_end'>}</span><span class='tstring_content'> (template)</span><span class='tstring_end'>&quot;</span></span> <span class='op'>:</span> <span class='id identifier rubyid_k'>k</span> <span class='rbrace'>}</span><span class='rbrace'>}</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
+  <h3 class="signature " id="levels-instance_method">
+  
+    #<strong>levels</strong>  &#x21d2; <tt>Integer</tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Returns Number of scopes on the symbol table (global at 1).</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt>Integer</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Number of scopes on the symbol table (global at 1)</p>
+</div>
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+260
+261
+262</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 260</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_levels'>levels</span>
   <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span>
@@ -1069,27 +1657,38 @@
   
 
   
-</h3><table class="source_code">
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>pops the top of the scope stack</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-135
-136
-137
-138
-139
-140
-141</pre>
+157
+158
+159
+160
+161
+162
+163</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 135</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 157</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_pop'>pop</span>
   <span class='comment'># puts &quot;pop #{caller[0]}&quot;
 </span>  <span class='comment'># puts &quot;    from #{@scope_caller.pop}&quot;
-</span>  <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>Error: popping the symbol table would remove global scope</span><span class='tstring_end'>&#39;</span></span> <span class='kw'>if</span> <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span> <span class='op'>==</span> <span class='int'>1</span>
+</span>  <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Error: popping the symbol table would remove global scope</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span> <span class='op'>==</span> <span class='int'>1</span>
 
   <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_pop'>pop</span>
 <span class='kw'>end</span></pre>
@@ -1107,22 +1706,33 @@
   
 
   
-</h3><table class="source_code">
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>pretty-print the symbol table contents</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-187
-188
-189
-190
-191
-192
-193</pre>
+265
+266
+267
+268
+269
+270
+271</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 187</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 265</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_print'>print</span>
   <span class='ivar'>@scopes</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_s'>s</span><span class='op'>|</span>
@@ -1145,21 +1755,32 @@
   
 
   
-</h3><table class="source_code">
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>pushes a new scope</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+
+</div><table class="source_code">
   <tr>
     <td>
       <pre class="lines">
 
 
-128
-129
-130
-131
-132
-133</pre>
+149
+150
+151
+152
+153
+154</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 128</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/symbol_table.rb', line 149</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_push'>push</span>
   <span class='comment'># puts &quot;push #{caller[0]}&quot;
@@ -1177,7 +1798,7 @@
 </div>
 
       <div id="footer">
-  Generated on Fri Jul 12 07:33:13 2024 by
+  Generated on Thu Jul 18 13:55:48 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

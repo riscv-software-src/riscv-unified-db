@@ -5,6 +5,15 @@ and:
   description: And rs1 with rs2, and store the result in rd
   definedBy: I
   assembly: xd, xs1, xs2
+  encoding:
+    match: 0000000----------111-----0110011
+    variables:
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
   access:
     s: always
     u: always

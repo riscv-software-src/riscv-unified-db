@@ -639,15 +639,15 @@
       <pre class="lines">
 
 
-351
-352
-353
-354
-355
-356</pre>
+359
+360
+361
+362
+363
+364</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 351</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 359</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_csr_data'>csr_data</span><span class='comma'>,</span> <span class='id identifier rubyid_sym_table'>sym_table</span><span class='comma'>,</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='rparen'>)</span>
   <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_csr_data'>csr_data</span><span class='rparen'>)</span>
@@ -721,12 +721,12 @@
       <pre class="lines">
 
 
-343
-344
-345</pre>
+351
+352
+353</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 343</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 351</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_arch_def'>arch_def</span>
   <span class='ivar'>@arch_def</span>
@@ -782,12 +782,12 @@
       <pre class="lines">
 
 
-346
-347
-348</pre>
+354
+355
+356</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 346</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 354</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_sym_table'>sym_table</span>
   <span class='ivar'>@sym_table</span>
@@ -848,12 +848,12 @@
       <pre class="lines">
 
 
-460
-461
-462</pre>
+467
+468
+469</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 460</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 467</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_description_html'>description_html</span>
   <span class='const'>Asciidoctor</span><span class='period'>.</span><span class='id identifier rubyid_convert'>convert</span> <span class='id identifier rubyid_description'>description</span>
@@ -907,24 +907,24 @@
       <pre class="lines">
 
 
-360
-361
-362
-363
-364
-365
-366
-367
 368
 369
 370
 371
 372
 373
-374</pre>
+374
+375
+376
+377
+378
+379
+380
+381
+382</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 360</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 368</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_dynamic_length?'>dynamic_length?</span>
   <span class='kw'>return</span> <span class='kw'>false</span> <span class='kw'>if</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Integer</span><span class='rparen'>)</span>
@@ -972,12 +972,12 @@
       <pre class="lines">
 
 
-547
-548
-549</pre>
+554
+555
+556</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 547</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 554</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_field'>field</span><span class='lparen'>(</span><span class='id identifier rubyid_field_name'>field_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_field_hash'>field_hash</span><span class='lbracket'>[</span><span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rbracket'>]</span>
@@ -1031,12 +1031,12 @@
       <pre class="lines">
 
 
-542
-543
-544</pre>
+549
+550
+551</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 542</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 549</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_field?'>field?</span><span class='lparen'>(</span><span class='id identifier rubyid_field_name'>field_name</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_field_hash'>field_hash</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='id identifier rubyid_field_name'>field_name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
@@ -1090,19 +1090,19 @@
       <pre class="lines">
 
 
-530
-531
-532
-533
-534
-535
-536
 537
 538
-539</pre>
+539
+540
+541
+542
+543
+544
+545
+546</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 530</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 537</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_field_hash'>field_hash</span>
   <span class='ivar'>@field_hash</span> <span class='kw'>unless</span> <span class='ivar'>@field_hash</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1163,18 +1163,18 @@
       <pre class="lines">
 
 
-465
-466
-467
-468
-469
-470
-471
 472
-473</pre>
+473
+474
+475
+476
+477
+478
+479
+480</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 465</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 472</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_fields'>fields</span>
   <span class='kw'>return</span> <span class='ivar'>@fields</span> <span class='kw'>unless</span> <span class='ivar'>@fields</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1234,12 +1234,12 @@
       <pre class="lines">
 
 
-552
-553
-554</pre>
+559
+560
+561</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 552</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 559</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_has_custom_sw_read?'>has_custom_sw_read?</span>
   <span class='ivar'>@data</span><span class='period'>.</span><span class='id identifier rubyid_key?'>key?</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>sw_read</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='id identifier rubyid_sw_read'>sw_read</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -1293,13 +1293,6 @@
       <pre class="lines">
 
 
-501
-502
-503
-504
-505
-506
-507
 508
 509
 510
@@ -1319,10 +1312,17 @@
 524
 525
 526
-527</pre>
+527
+528
+529
+530
+531
+532
+533
+534</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 501</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 508</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_implemented_fields'>implemented_fields</span>
   <span class='kw'>return</span> <span class='ivar'>@implemented_fields</span> <span class='kw'>unless</span> <span class='ivar'>@implemented_fields</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1400,13 +1400,6 @@
       <pre class="lines">
 
 
-477
-478
-479
-480
-481
-482
-483
 484
 485
 486
@@ -1420,10 +1413,17 @@
 494
 495
 496
-497</pre>
+497
+498
+499
+500
+501
+502
+503
+504</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 477</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 484</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_implemented_fields_for'>implemented_fields_for</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span>
   <span class='ivar'>@implemented_fields_for</span> <span class='op'>||=</span> <span class='lbrace'>{</span><span class='rbrace'>}</span>
@@ -1517,14 +1517,6 @@
       <pre class="lines">
 
 
-378
-379
-380
-381
-382
-383
-384
-385
 386
 387
 388
@@ -1548,10 +1540,17 @@
 406
 407
 408
-409</pre>
+409
+410
+411
+412
+413
+414
+415
+416</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 378</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 386</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_length'>length</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span> <span class='op'>=</span> <span class='kw'>nil</span><span class='rparen'>)</span>
   <span class='kw'>case</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
@@ -1563,7 +1562,6 @@
 
       <span class='id identifier rubyid_effective_xlen'>effective_xlen</span>
     <span class='kw'>else</span>
-      <span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_implemented_csrs'>implemented_csrs</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='rbrace'>}</span>
       <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CSR </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> is not implemented</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_implemented_csrs'>implemented_csrs</span><span class='period'>.</span><span class='id identifier rubyid_none?'>none?</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_c'>c</span><span class='op'>|</span> <span class='id identifier rubyid_c'>c</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span> <span class='op'>==</span> <span class='id identifier rubyid_name'>name</span> <span class='rbrace'>}</span>
       <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CSR </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> is not implemented</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='period'>.</span><span class='id identifier rubyid_config_params'>config_params</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>SXLEN</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
 
@@ -1634,19 +1632,19 @@
       <pre class="lines">
 
 
-412
-413
-414
-415
-416
-417
-418
 419
 420
-421</pre>
+421
+422
+423
+424
+425
+426
+427
+428</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 412</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 419</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_length_cond32'>length_cond32</span>
   <span class='kw'>case</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
@@ -1707,19 +1705,19 @@
       <pre class="lines">
 
 
-424
-425
-426
-427
-428
-429
-430
 431
 432
-433</pre>
+433
+434
+435
+436
+437
+438
+439
+440</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 424</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 431</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_length_cond64'>length_cond64</span>
   <span class='kw'>case</span> <span class='ivar'>@data</span><span class='lbracket'>[</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>length</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
@@ -1780,13 +1778,6 @@
       <pre class="lines">
 
 
-436
-437
-438
-439
-440
-441
-442
 443
 444
 445
@@ -1799,10 +1790,17 @@
 452
 453
 454
-455</pre>
+455
+456
+457
+458
+459
+460
+461
+462</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 436</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 443</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_length_pretty'>length_pretty</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_dynamic_length?'>dynamic_length?</span>
@@ -1911,13 +1909,6 @@
       <pre class="lines">
 
 
-573
-574
-575
-576
-577
-578
-579
 580
 581
 582
@@ -1933,10 +1924,17 @@
 592
 593
 594
-595</pre>
+595
+596
+597
+598
+599
+600
+601
+602</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 573</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 580</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_wavedrom_desc'>wavedrom_desc</span><span class='lparen'>(</span><span class='id identifier rubyid_effective_xlen'>effective_xlen</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_desc'>desc</span> <span class='op'>=</span> <span class='lbrace'>{</span>
@@ -1971,7 +1969,7 @@
 </div>
 
       <div id="footer">
-  Generated on Fri Jul 12 07:33:12 2024 by
+  Generated on Thu Jul 18 13:55:47 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

@@ -1,12 +1,21 @@
 # yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 add:
-  long_name: Add
+  long_name: Integer add
   description: |
     Add the value in rs1 to rs2, and store the result in rd.
     Any overflow is thrown away.
   definedBy: I
   assembly: xd, xs1, xs2
+  encoding:
+    match: 0000000----------000-----0110011
+    variables:
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
   access:
     s: always
     u: always

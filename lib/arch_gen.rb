@@ -9,6 +9,7 @@ require "tilt"
 require "yaml"
 
 require_relative "validate"
+require_relative "arch_def"
 
 $root = Pathname.new(__FILE__).dirname.dirname.realpath if $root.nil?
 
@@ -281,7 +282,7 @@ class ArchGen
       # @params type [Symbol] Type (:section, :csr, :inst, :ext)
       # @params name [#to_s] Name of the object
       def link_to(type, name)
-        "%%LINK[#{type};#{name}]%%"
+        "%%LINK%#{type};#{name}%%"
       end
 
       # info on interrupt and exception codes
@@ -717,48 +718,47 @@ class ArchGen
     merged_path = gen_merged_def(:inst, arch_path, arch_overlay_path)
 
     # get the inst data (not including the name key), which is redundant at this point
-    inst_obj = YAML.load_file(merged_path)[inst_name]
-    inst_obj["name"] = inst_name
+    inst_data = YAML.load_file(merged_path)[inst_name]
+    inst_data["name"] = inst_name
 
-    defined_in = inst_obj["definedBy"]
-    defined_in = [defined_in] unless defined_in.is_a?(Array)
-
-    excluded_by = inst_obj.key?("excluded_by") ? inst_obj["excluded_by"] : []
-    excluded_by = [excluded_by] unless excluded_by.is_a?(Array)
-
-
-    unless inst_obj.key?("encoding")
-      raise "no riscv-opcode data for #{inst_obj['name']}" unless @opcode_data.key?(inst_obj["name"].tr(".", "_"))
-
-      opcode_str = @opcode_data[inst_obj["name"].tr(".", "_")]["extension"][0]
-
-      raise "Bad opcode string" unless opcode_str =~ /rv((32)|(64))?_([a-zA-Z0-9]+)/
-
-      base = ::Regexp.last_match(1)
-      riscv_opcodes_extension = ::Regexp.last_match(4)
-      warn "Found #{inst_obj['name']} in unexpected extension (#{riscv_opcodes_extension})" unless defined_in.include?(riscv_opcodes_extension.capitalize)
-    end
-
-    inst_obj["base"] = base.to_i unless base.nil?
-
-    # add the instruction, unless it is from an extension not supported in this config
-    belongs =
-      (base.nil? || (base.to_i == @params["XLEN"])) &&
-      @cfg["extensions"].any? { |e| defined_in.map(&:downcase).include?(e[0].downcase) } &&
-      @cfg["extensions"].none? { |e| excluded_by.map(&:downcase).include?(e[0].downcase) }
-    @implemented_instructions ||= []
-    @implemented_instructions << inst_name if belongs
-
-    gen_inst_path = @gen_dir / "arch" / "inst" / defined_in[0] / "#{inst_name}.yaml"
-    FileUtils.mkdir_p gen_inst_path.dirname
-    gen_inst_path.write YAML.dump({ inst_name => inst_obj })
-
+    inst_yaml = YAML.dump({ inst_name => inst_data})
     begin
-      @validator.validate_str(File.read(gen_inst_path), type: :inst)
+      inst_data = @validator.validate_str(inst_yaml, type: :inst)
     rescue Validator::ValidationError => e
       warn "Instruction definition in #{gen_inst_path} did not validate"
       raise e
     end
+
+    inst_obj = Instruction.new(inst_data[inst_name])
+    possible_xlens = [@params["XLEN"]]
+    if @cfg["extensions"].any? { |e| e[0] == "S" }
+      possible_xlens << 32 if [32, 3264].include?(@params["SXLEN"])
+      possible_xlens << 64 if [64, 3264].include?(@params["SXLEN"])
+    end
+    if @cfg["extensions"].any? { |e| e[0] == "U" }
+      possible_xlens << 32 if [32, 3264].include?(@params["UXLEN"])
+      possible_xlens << 64 if [64, 3264].include?(@params["UXLEN"])
+    end
+    if @cfg["extensions"].any? { |e| e[0] == "H" }
+      possible_xlens << 32 if [32, 3264].include?(@params["VSXLEN"])
+      possible_xlens << 32 if [32, 3264].include?(@params["VUXLEN"])
+      possible_xlens << 64 if [64, 3264].include?(@params["VSXLEN"])
+      possible_xlens << 64 if [64, 3264].include?(@params["VUXLEN"])
+    end
+    belongs =
+      inst_obj.exists_in_cfg?(
+        possible_xlens.uniq,
+        @cfg["extensions"].map { |e| ExtensionVersion.new(e[0], e[1]) }
+      )
+
+    @implemented_instructions ||= []
+    @implemented_instructions << inst_name if belongs
+
+    raise "?" if inst_obj.extension_requirements[0].name.nil?
+    gen_inst_path = @gen_dir / "arch" / "inst" / inst_obj.extension_requirements[0].name / "#{inst_name}.yaml"
+    FileUtils.mkdir_p gen_inst_path.dirname
+    gen_inst_path.write inst_yaml
+
 
     # @instructions << inst_def
     # @inst_hash ||= {}

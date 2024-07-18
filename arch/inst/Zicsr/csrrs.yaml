@@ -13,6 +13,15 @@ csrrs:
     Other bits in the CSR are not explicitly written.
   definedBy: Zicsr
   assembly: xd, xs1, csr
+  encoding:
+    match: -----------------000-----0010011
+    variables:
+    - name: csr
+      location: 31-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
   access:
     s: always
     u: always

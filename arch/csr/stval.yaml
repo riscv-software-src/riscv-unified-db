@@ -22,7 +22,7 @@ stval:
         ! [1] Instruction access fault ! The <% if ext?(:C) %> portion of the <% end %> virtual PC causing the access fault <%- unless ext?(:C) -%>(same as the value written to `mepc`)<%- end -%>.
         ! [2] Illegal Instruction ! The encoding of the illegal instruction.
         ! [3] Breakpoint
-        ! <%- if REPORT_EBREAK_PC_IN_TVAL -%>
+        ! <%- if REPORT_VA_IN_STVAL_ON_BREAKPOINT -%>
           When caused by an EBREAK instruction, the virtual PC of the breakpoint instruction.
           <%- else -%>
           When caused by an EBREAK instruction, zero.

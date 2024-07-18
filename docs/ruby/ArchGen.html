@@ -506,7 +506,6 @@
       <pre class="lines">
 
 
-36
 37
 38
 39
@@ -527,10 +526,11 @@
 54
 55
 56
-57</pre>
+57
+58</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 36</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 37</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_config_name'>config_name</span><span class='rparen'>)</span>
   <span class='ivar'>@validator</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="Validator.html" title="Validator (class)">Validator</a></span></span><span class='period'>.</span><span class='id identifier rubyid_instance'>instance</span>
@@ -592,12 +592,12 @@
       <pre class="lines">
 
 
-25
 26
-27</pre>
+27
+28</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 25</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 26</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_gen_dir'>gen_dir</span>
   <span class='ivar'>@gen_dir</span>
@@ -635,12 +635,12 @@
       <pre class="lines">
 
 
-22
 23
-24</pre>
+24
+25</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 22</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 23</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_name'>name</span>
   <span class='ivar'>@name</span>
@@ -701,17 +701,17 @@
       <pre class="lines">
 
 
-586
 587
 588
 589
 590
 591
 592
-593</pre>
+593
+594</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 586</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 587</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_all_known_exts'>all_known_exts</span>
   <span class='lparen'>(</span>
@@ -741,7 +741,6 @@
       <pre class="lines">
 
 
-110
 111
 112
 113
@@ -758,10 +757,11 @@
 124
 125
 126
-127</pre>
+127
+128</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 110</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 111</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_check_extension_dependencies'>check_extension_dependencies</span>
   <span class='ivar'>@implemented_extensions</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_ext'>ext</span><span class='op'>|</span>
@@ -830,7 +830,6 @@
       <pre class="lines">
 
 
-667
 668
 669
 670
@@ -846,10 +845,11 @@
 680
 681
 682
-683</pre>
+683
+684</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 667</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 668</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_exception_codes'>exception_codes</span>
   <span class='kw'>return</span> <span class='ivar'>@exception_codes</span> <span class='kw'>unless</span> <span class='ivar'>@exception_codes</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -901,7 +901,6 @@
       <pre class="lines">
 
 
-95
 96
 97
 98
@@ -914,10 +913,11 @@
 105
 106
 107
-108</pre>
+108
+109</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 95</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 96</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_generate'>generate</span>
   <span class='comment'># extensions need to be parsed first since we pull, e.g., exception codes from them
@@ -982,13 +982,13 @@
       <pre class="lines">
 
 
-157
 158
 159
-160</pre>
+160
+161</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 157</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 158</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_implemented_csrs'>implemented_csrs</span>
   <span class='id identifier rubyid_generate'>generate</span> <span class='kw'>unless</span> <span class='ivar'>@generate_done</span>
@@ -1043,13 +1043,13 @@
       <pre class="lines">
 
 
-169
 170
 171
-172</pre>
+172
+173</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 169</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 170</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_implemented_extensions'>implemented_extensions</span>
   <span class='id identifier rubyid_generate'>generate</span> <span class='kw'>unless</span> <span class='ivar'>@generate_done</span>
@@ -1104,13 +1104,13 @@
       <pre class="lines">
 
 
-163
 164
 165
-166</pre>
+166
+167</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 163</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 164</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_implemented_instructions'>implemented_instructions</span>
   <span class='id identifier rubyid_generate'>generate</span> <span class='kw'>unless</span> <span class='ivar'>@generate_done</span>
@@ -1165,7 +1165,6 @@
       <pre class="lines">
 
 
-688
 689
 690
 691
@@ -1181,10 +1180,11 @@
 701
 702
 703
-704</pre>
+704
+705</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 688</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 689</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_interrupt_codes'>interrupt_codes</span>
   <span class='kw'>return</span> <span class='ivar'>@interrupt_codes</span> <span class='kw'>unless</span> <span class='ivar'>@interrupt_codes</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -1289,7 +1289,6 @@
       <pre class="lines">
 
 
-60
 61
 62
 63
@@ -1318,10 +1317,11 @@
 86
 87
 88
-89</pre>
+89
+90</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 60</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_gen.rb', line 61</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_validate_config'>validate_config</span>
   <span class='id identifier rubyid_fork'>fork</span> <span class='kw'>do</span>
@@ -1363,7 +1363,7 @@
 </div>
 
       <div id="footer">
-  Generated on Fri Jul 12 07:33:12 2024 by
+  Generated on Thu Jul 18 13:55:48 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

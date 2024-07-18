@@ -4,6 +4,7 @@ $root = Pathname.new(__FILE__).dirname.dirname.realpath
 $lib = $root / "lib"
 
 require "yard"
+require "minitest/test_task"
 
 require_relative $root / "lib" / "validate"
 
@@ -12,6 +13,7 @@ directory "#{$root}/.stamps"
 load "#{$root}/tasks/arch_gen.rake"
 load "#{$root}/tasks/adoc_gen.rake"
 load "#{$root}/tasks/html_gen.rake"
+load "#{$root}/tasks/ext_pdf_gen.rake"
 
 namespace :gen do
   task :html
@@ -60,4 +62,8 @@ namespace :serve do
     MSG
     sh "yard server -p #{args[:port]} --reload"
   end
+end
+
+Minitest::TestTask.create :idl_test do |t|
+  t.test_globs = ["#{$root}/lib/idl/tests/test_*.rb"]
 end

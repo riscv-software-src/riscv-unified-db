@@ -1,0 +1,193 @@
+= <%= ext.long_name %>
+
+:description: <%= ext.long_name %>
+:company: <%= ext.company %>
+:url-riscv: https://riscv.org
+:doctype: book
+:preface-title: Licensing and Acknowledgements
+:colophon:
+:appendix-caption: Appendix
+:title-logo-image: image:RISC-V-logo.svg[pdfwidth=3.25in,align=center]
+:back-cover-image: image:circuit.png[opacity=25%]
+// Settings
+:experimental:
+:reproducible:
+:wavedrom: <%= $root %>/node_modules/.bin/wavedrom-cli
+// needs to be changed
+:imagesoutdir: images
+:icons: font
+:lang: en
+:listing-caption: Listing
+:sectnums:
+:toc: left
+:toclevels: 4
+:source-highlighter: pygments
+ifdef::backend-pdf[]
+:source-highlighter: coderay
+endif::[]
+:data-uri:
+:hide-uri-scheme:
+:stem:
+:footnote:
+:xrefstyle: short
+
+
+
+<<<
+[colophon]
+== Colophon
+
+This document is released under the <%= ext.doc_license["url"] %>[<%= ext.doc_license["name"] %>].
+
+<<<
+[acknowledgements]
+== Acknowledgements
+
+<%- ext.versions.each do |version| -%>
+Contributors to version <%= version["version"] %> of the specification (in alphabetical order) include: +
+
+<%- version["contributors"].sort { |a, b| a["name"].split(" ").last <=> b["name"].split(" ").last }.each do |c| -%>
+ * <%= c["name"] %> <<%= c["email"] %>> (<%= c["company"] %>)
+<%- end -%>
+<%- end -%>
+
+We express our gratitude to everyone that contributed to, reviewed or
+improved this specification through their comments and questions.
+
+<<<
+== Versions
+
+The following versions have been defined:
+
+<%- ext.versions.each do |version| -%>
+--
+Version:: <%= version["version"] %>
+State:: <%= version["state"] %>
+<%- if version.key?("ratification_date") -%>
+Ratification Date:: <%= version["ratification_date"] %>
+<%- end -%>
+<%- if version.key?("url") -%>
+Design document:: <%= version["url"] %>
+<%- end -%>
+<%- if version.key?("change") -%>
+Changes::
+<%= version["changes"] %>
+<%- end -%>
+--
+<%- end -%>
+
+<<<
+== Extension description
+
+<%= ext.description %>
+
+<%- unless ext.implies.nil? -%>
+<%- ext.implies.each do |e| -%>
+<%- end -%>
+<%- end -%>
+
+<<<
+== Instruction summary
+
+The following instructions are added by this extension:
+
+[%autowidth]
+|===
+| RV32 | RV64 | Mnemonic | Instruction | <%= ext.versions.map { |v| "v#{v["version"]}" }.join(" | ") %>
+
+<%- ext.instructions.each do |i| -%>
+| <%= i.rv32? ? "X" : "" %>
+| <%= i.rv64? ? "X" : "" %>
+| `<%= i.name %> <%= i.assembly.gsub("x", "r") %>`
+| xref:insns-<%= i.name.gsub('.', '_') %>[<%= i.long_name %>]
+| <%= ext.versions.map { |v| i.defined_by?(ext.name, v["version"]) ? "X" : "" }.join(" | ") %>
+<%- end -%>
+|===
+
+<<<
+[#insns,reftext="Instructions (in alphabetical order)"]
+== Instructions (in alphabetical order)
+
+<%- ext.instructions.each do |i| -%>
+[#insns-<%= i.name.gsub('.', '_') %>,reftext=<%= i.long_name %>]
+=== <%= i.name %>
+
+Synopsis::
+<%= i.long_name %>
+
+Mnemoic::
+----
+<%= i.name %><%= i.assembly.gsub('x', 'r') %>
+----
+
+Encoding::
+<%- if arch_def.multi_xlen? && i.multi_encoding? -%>
+[NOTE]
+This instruction has different encodings in RV32 and RV64
+
+RV32::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump i.wavedrom_desc(32) %>
+....
+
+RV64::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump i.wavedrom_desc(64) %>
+....
+<%- else -%>
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump i.wavedrom_desc(arch_def.config_params["XLEN"]) %>
+....
+<%- end -%>
+
+Description::
+<%= i.description %>
+
+Decode Variables::
+
+<%- if i.arch_def.multi_xlen? && i.multi_encoding? -%>
+RV32::
++
+----
+<%- i.decode_variables(32).each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<%- end -%>
+----
+
+RV64::
++
+----
+<%- i.decode_variables(64).each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<%- end -%>
+----
+<%- else -%>
+----
+<%- i.decode_variables(i.arch_def.config_params["XLEN"]).each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<%- end -%>
+----
+<%- end -%>
+
+Operation::
+[souce,idl]
+----
+<%= i.operation_ast.gen_adoc %>
+----
+
+Included in::
+[%header,cols="4,2,2"]
+|===
+|Extension
+|Minimum version
+|Lifecycle state
+
+|Zba (<<#zba>>)
+|0.93
+|Frozen
+|===
+<<<
+<%- end -%>

@@ -76,7 +76,7 @@
   
   <dl>
     <dt>Included in:</dt>
-    <dd><span class='object_link'><a href="AstNode.html" title="Idl::AstNode (class)">AstNode</a></span>, <span class='object_link'><a href="FunctionStatementAst.html" title="Idl::FunctionStatementAst (module)">FunctionStatementAst</a></span>, <span class='object_link'><a href="IntAst.html" title="Idl::IntAst (module)">IntAst</a></span></dd>
+    <dd><span class='object_link'><a href="AstNode.html" title="Idl::AstNode (class)">AstNode</a></span>, <span class='object_link'><a href="IntLiteralAst.html" title="Idl::IntLiteralAst (class)">IntLiteralAst</a></span></dd>
   </dl>
   
 
@@ -383,17 +383,17 @@
       <pre class="lines">
 
 
-241
-242
-243
-244
-245
-246
-247
-248</pre>
+226
+227
+228
+229
+230
+231
+232
+233</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 241</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 226</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_children'>children</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_terminal?'>terminal?</span>
@@ -472,18 +472,18 @@
       <pre class="lines">
 
 
-206
-207
-208
-209
-210
-211
-212
-213
-214</pre>
+191
+192
+193
+194
+195
+196
+197
+198
+199</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 206</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 191</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_internal_error'>internal_error</span><span class='lparen'>(</span><span class='id identifier rubyid_reason'>reason</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_msg'>msg</span> <span class='op'>=</span> <span class='heredoc_beg'>&lt;&lt;~WHAT</span>
@@ -543,24 +543,24 @@
       <pre class="lines">
 
 
-265
-266
-267
-268
-269
-270
-271
-272
-273
-274
-275
-276
-277
-278
-279</pre>
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 265</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 250</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_nodes'>nodes</span>
   <span class='kw'>return</span> <span class='ivar'>@nodes</span> <span class='kw'>unless</span> <span class='ivar'>@nodes</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -666,15 +666,15 @@
       <pre class="lines">
 
 
-286
-287
-288
-289
-290
-291</pre>
+271
+272
+273
+274
+275
+276</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 286</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 271</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_print_ast'>print_ast</span><span class='lparen'>(</span><span class='id identifier rubyid_indent'>indent</span> <span class='op'>=</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>indent_size:</span> <span class='int'>2</span><span class='comma'>,</span> <span class='label'>io:</span> <span class='gvar'>$stdout</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_io'>io</span><span class='period'>.</span><span class='id identifier rubyid_puts'>puts</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'> </span><span class='tstring_end'>&#39;</span></span> <span class='op'>*</span> <span class='id identifier rubyid_indent'>indent</span><span class='embexpr_end'>}</span><span class='embexpr_beg'>#{</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'>:</span><span class='tstring_end'>&quot;</span></span>
@@ -748,10 +748,10 @@
       <pre class="lines">
 
 
-315</pre>
+300</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 315</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 300</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_idl'>to_idl</span> <span class='op'>=</span> <span class='id identifier rubyid_raise'>raise</span> <span class='const'>NotImplementedError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> must implement to_idl</span><span class='tstring_end'>&quot;</span></span></pre>
     </td>
@@ -843,12 +843,12 @@
       <pre class="lines">
 
 
-306</pre>
+291</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 306</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 291</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span> <span class='op'>=</span> <span class='id identifier rubyid_raise'>raise</span> <span class='const'>NotImplementedError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Subclass of AstNode must implement type_check</span><span class='tstring_end'>&quot;</span></span></pre>
+<span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span> <span class='op'>=</span> <span class='id identifier rubyid_raise'>raise</span> <span class='const'>NotImplementedError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> must implement type_check</span><span class='tstring_end'>&quot;</span></span></pre>
     </td>
   </tr>
 </table>
@@ -918,18 +918,18 @@
       <pre class="lines">
 
 
-192
-193
-194
-195
-196
-197
-198
-199
-200</pre>
+177
+178
+179
+180
+181
+182
+183
+184
+185</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 192</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 177</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_error'>type_error</span><span class='lparen'>(</span><span class='id identifier rubyid_reason'>reason</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_msg'>msg</span> <span class='op'>=</span> <span class='heredoc_beg'>&lt;&lt;~WHAT</span>
@@ -1011,12 +1011,12 @@
       <pre class="lines">
 
 
-236
-237
-238</pre>
+221
+222
+223</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 236</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 221</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_unindent'>unindent</span><span class='lparen'>(</span><span class='id identifier rubyid_s'>s</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_gsub'>gsub</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_scan'>scan</span><span class='lparen'>(</span><span class='tstring'><span class='regexp_beg'>/</span><span class='tstring_content'>^[ \t]+(?=\S)</span><span class='regexp_end'>/</span></span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_min'>min</span><span class='embexpr_end'>}</span><span class='regexp_end'>/</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -1090,18 +1090,18 @@
       <pre class="lines">
 
 
-220
-221
-222
-223
-224
-225
-226
-227
-228</pre>
+205
+206
+207
+208
+209
+210
+211
+212
+213</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 220</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 205</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_value_error'>value_error</span><span class='lparen'>(</span><span class='id identifier rubyid_reason'>reason</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_msg'>msg</span> <span class='op'>=</span> <span class='heredoc_beg'>&lt;&lt;~WHAT</span>
@@ -1122,7 +1122,7 @@
 </div>
 
       <div id="footer">
-  Generated on Fri Jul 12 07:33:10 2024 by
+  Generated on Thu Jul 18 13:55:44 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

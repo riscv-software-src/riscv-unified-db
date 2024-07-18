@@ -120,64 +120,6 @@
       <li class="public ">
   <span class="summary_signature">
     
-      <a href="#arch_def-instance_method" title="#arch_def (instance method)">#<strong>arch_def</strong>  &#x21d2; ArchDef </a>
-    
-
-    
-  </span>
-  
-  
-  
-    
-      <span class="note title readonly">readonly</span>
-    
-    
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>Owning ArchDef.</p>
-</div></span>
-  
-</li>
-
-    
-      <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#extension-instance_method" title="#extension (instance method)">#<strong>extension</strong>  &#x21d2; Extension </a>
-    
-
-    
-  </span>
-  
-  
-  
-    
-      <span class="note title readonly">readonly</span>
-    
-    
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'>
-<p>The full definition of the extension (all versions).</p>
-</div></span>
-  
-</li>
-
-    
-      <li class="public ">
-  <span class="summary_signature">
-    
       <a href="#name-instance_method" title="#name (instance method)">#<strong>name</strong>  &#x21d2; String </a>
     
 
@@ -295,7 +237,7 @@
         <li class="public ">
   <span class="summary_signature">
     
-      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(name, version, arch_def)  &#x21d2; ExtensionVersion </a>
+      <a href="#initialize-instance_method" title="#initialize (instance method)">#<strong>initialize</strong>(name, version)  &#x21d2; ExtensionVersion </a>
     
 
     
@@ -351,7 +293,7 @@
     <div class="method_details first">
   <h3 class="signature first" id="initialize-instance_method">
   
-    #<strong>initialize</strong>(name, version, arch_def)  &#x21d2; <tt><span class='object_link'><a href="" title="ExtensionVersion (class)">ExtensionVersion</a></span></tt> 
+    #<strong>initialize</strong>(name, version)  &#x21d2; <tt><span class='object_link'><a href="" title="ExtensionVersion (class)">ExtensionVersion</a></span></tt> 
   
 
   
@@ -426,21 +368,17 @@
       <pre class="lines">
 
 
-1158
-1159
-1160
-1161
-1162
-1163</pre>
+1236
+1237
+1238
+1239</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1158</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1236</span>
 
-<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_version'>version</span><span class='comma'>,</span> <span class='id identifier rubyid_arch_def'>arch_def</span><span class='rparen'>)</span>
+<span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_version'>version</span><span class='rparen'>)</span>
   <span class='ivar'>@name</span> <span class='op'>=</span> <span class='id identifier rubyid_name'>name</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span>
   <span class='ivar'>@version</span> <span class='op'>=</span> <span class='const'>Gem</span><span class='op'>::</span><span class='const'>Version</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_version'>version</span><span class='rparen'>)</span>
-  <span class='ivar'>@arch_def</span> <span class='op'>=</span> <span class='id identifier rubyid_arch_def'>arch_def</span>
-  <span class='ivar'>@extension</span> <span class='op'>=</span> <span class='ivar'>@arch_def</span><span class='period'>.</span><span class='id identifier rubyid_extension'>extension</span><span class='lparen'>(</span><span class='ivar'>@name</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -455,129 +393,7 @@
       
       <span id=""></span>
       <div class="method_details first">
-  <h3 class="signature first" id="arch_def-instance_method">
-  
-    #<strong>arch_def</strong>  &#x21d2; <tt><span class='object_link'><a href="ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>  <span class="extras">(readonly)</span>
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>Returns Owning ArchDef.</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="ArchDef.html" title="ArchDef (class)">ArchDef</a></span></tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>Owning ArchDef</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-1150
-1151
-1152</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1150</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_arch_def'>arch_def</span>
-  <span class='ivar'>@arch_def</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      
-      <span id=""></span>
-      <div class="method_details ">
-  <h3 class="signature " id="extension-instance_method">
-  
-    #<strong>extension</strong>  &#x21d2; <tt><span class='object_link'><a href="Extension.html" title="Extension (class)">Extension</a></span></tt>  <span class="extras">(readonly)</span>
-  
-
-  
-
-  
-</h3><div class="docstring">
-  <div class="discussion">
-    
-<p>Returns The full definition of the extension (all versions).</p>
-
-
-  </div>
-</div>
-<div class="tags">
-  
-<p class="tag_title">Returns:</p>
-<ul class="return">
-  
-    <li>
-      
-      
-        <span class='type'>(<tt><span class='object_link'><a href="Extension.html" title="Extension (class)">Extension</a></span></tt>)</span>
-      
-      
-      
-        &mdash;
-        <div class='inline'>
-<p>The full definition of the extension (all versions)</p>
-</div>
-      
-    </li>
-  
-</ul>
-
-</div><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-1153
-1154
-1155</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1153</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_extension'>extension</span>
-  <span class='ivar'>@extension</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      
-      <span id=""></span>
-      <div class="method_details ">
-  <h3 class="signature " id="name-instance_method">
+  <h3 class="signature first" id="name-instance_method">
   
     #<strong>name</strong>  &#x21d2; <tt>String</tt>  <span class="extras">(readonly)</span>
   
@@ -620,12 +436,12 @@
       <pre class="lines">
 
 
-1144
-1145
-1146</pre>
+1227
+1228
+1229</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1144</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1227</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_name'>name</span>
   <span class='ivar'>@name</span>
@@ -681,12 +497,12 @@
       <pre class="lines">
 
 
-1147
-1148
-1149</pre>
+1230
+1231
+1232</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1147</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1230</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_version'>version</span>
   <span class='ivar'>@version</span>
@@ -742,18 +558,18 @@
       <pre class="lines">
 
 
-1191
-1192
-1193
-1194
-1195
-1196
-1197
-1198
-1199</pre>
+1267
+1268
+1269
+1270
+1271
+1272
+1273
+1274
+1275</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1191</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1267</span>
 
 <span class='kw'>def</span> <span class='op'>&lt;=&gt;</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ExtensionVersions are only comparable to other extension versions</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_other'>other</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="" title="ExtensionVersion (class)">ExtensionVersion</a></span></span><span class='rparen'>)</span>
@@ -784,19 +600,19 @@
       <pre class="lines">
 
 
-1171
-1172
-1173
-1174
-1175
-1176
-1177
-1178
-1179
-1180</pre>
+1247
+1248
+1249
+1250
+1251
+1252
+1253
+1254
+1255
+1256</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1171</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1247</span>
 
 <span class='kw'>def</span> <span class='op'>==</span><span class='lparen'>(</span><span class='id identifier rubyid_other'>other</span><span class='rparen'>)</span>
   <span class='kw'>case</span> <span class='id identifier rubyid_other'>other</span>
@@ -900,12 +716,12 @@
       <pre class="lines">
 
 
-1186
-1187
-1188</pre>
+1262
+1263
+1264</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1186</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 1262</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_satisfies?'>satisfies?</span><span class='lparen'>(</span><span class='id identifier rubyid_ext_name'>ext_name</span><span class='comma'>,</span> <span class='op'>*</span><span class='id identifier rubyid_ext_version_requirements'>ext_version_requirements</span><span class='rparen'>)</span>
   <span class='ivar'>@name</span> <span class='op'>==</span> <span class='id identifier rubyid_ext_name'>ext_name</span> <span class='op'>&amp;&amp;</span> <span class='const'>Gem</span><span class='op'>::</span><span class='const'>Requirement</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_ext_version_requirements'>ext_version_requirements</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_satisfied_by?'>satisfied_by?</span><span class='lparen'>(</span><span class='ivar'>@version</span><span class='rparen'>)</span>
@@ -920,7 +736,7 @@
 </div>
 
       <div id="footer">
-  Generated on Fri Jul 12 07:33:12 2024 by
+  Generated on Thu Jul 18 13:55:47 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

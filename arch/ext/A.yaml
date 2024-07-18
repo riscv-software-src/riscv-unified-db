@@ -4,6 +4,7 @@ A:
   type: unprivileged
   versions:
   - version: 2.1
+    state: ratified
     ratification_date: 2019-12
     implies:
     - [Zaamo, 1.0]

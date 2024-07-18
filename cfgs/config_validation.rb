@@ -21,6 +21,36 @@ assert [nil, 32].include?(UXLEN) if ext?(:U) && XLEN == 32
 # is SXLEN is fixed to 32, then UXLEN cannot be > 32
 assert [nil, 32].include?(UXLEN) if ext?(:S) && ext?(:U) && SXLEN == 32
 
+max_va_width =
+  if ext?(:Sv57) 
+    57
+  elsif ext?(:Sv48)
+    48
+  elsif ext?(:Sv39)
+    39
+  elsif ext?(:Sv32)
+    32
+  else
+    PHYS_ADDR_WIDTH
+  end
+mtval_holds_va =
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT ||
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED ||
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED ||
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED ||
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT ||
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT ||
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT ||
+  REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT ||
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT ||
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT ||
+  ext?(:Sdext)
+
+assert(MTVAL_WIDTH >= max_va_width) if mtval_holds_va
+
+# 32 stands for ILEN below. Update this if/when instructions become longer than 32
+assert(MTVAL_WIDTH >= [XLEN, 32].min) if REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION
+
 # check for conditionally required params
 require_param :MUTABLE_MISA_A    if ext?(:A)
 require_param :MUTABLE_MISA_B    if ext?(:B)

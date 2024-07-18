@@ -19,14 +19,21 @@
         }
       ]
     },
-    "extension_version_requirement": {
+    "requirement_string": {
+      "type": "string",
+      "pattern": "^((>=)|(>)|(~>)|(<)|(<=)|(=))?\\s*[0-9]+(\\.[0-9]+(\\.[0-9]+(-[a-fA-F0-9]+)?)?)?$"
+    },
+    "version_requirements": {
+      "description": "A (set of) version requirments",
       "oneOf": [
         {
-          "type": "number"
+          "$ref": "#/$defs/requirement_string"
         },
         {
-          "type": "string",
-          "pattern": "^((>=)|(>)|(~>)|(<)|(<=)|(==))?\\s*[0-9]+(\\.[0-9]+(\\.[0-9]+(-[a-fA-F0-9]+)?)?)?$"
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/requirement_string"
+          }
         }
       ]
     },
@@ -43,16 +50,25 @@
       "additionalItems": false
     },
     "extension_requirement": {
-      "type": "array",
-      "items": [
+      "description": "A requirement on an extension. Can either specify just an extension name, in which case version '>= 0' is implied, or both a name and a requirement",
+      "oneOf": [
         {
           "$ref": "#/$defs/extension_name"
         },
         {
-          "$ref": "#/$defs/extension_version_requirement"
+          "type": "array",
+          "items": [
+            {
+              "$ref": "#/$defs/extension_name"
+            },
+            {
+              "$ref": "#/$defs/version_requirements"
+            }
+          ],
+          "additionalItems": false
         }
-      ],
-      "additionalItems": false
+      ]
+
     }
   }
 }

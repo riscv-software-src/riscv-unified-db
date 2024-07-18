@@ -67,6 +67,11 @@ cbo.inval:
     CBO operations never raise a misaligned address fault.
   definedBy: Zicbom
   assembly: "TODO"
+  encoding:
+    match: 000000000000-----010000000001111
+    variables:
+    - name: rs1
+      location: 19-15
   access:
     m: always
     s: sometimes

@@ -5,4 +5,5 @@ U:
   type: privileged
   versions:
   - version: 1.12
+    state: ratified
     ratification_date: 2019-12

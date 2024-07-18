@@ -219,7 +219,8 @@ Literals may contain any number of underscores after the initial digit for clari
 -8'sd13       # -13 decimal, signed, 8-bit wide
 -16'shd       # -13 decimal, signed, 16-bit wide
 -12'so15      # -13 decimal, signed, 12-bit wide
--4'sb1101     # -13 decimal, signed, 4-bit wide
+4'sb1101      # -3 decimal, signed, 4-bit wide
+-4'sb1101     #  3 decimal, signed, 4-bit wide
 
 32'h80000000  # 0x8000000, unsigned, 32-bit wide
 32'h8000_0000 # same as above (underscores ignored)
@@ -228,11 +229,12 @@ Literals may contain any number of underscores after the initial digit for clari
 
 '13           # 13 decimal, unsigned XLEN-bit wide
 's13          # 13 decimal, signed XLEN-bit wide
+# 'h100000000 # compilation error when XLEN == 32; does not fit in XLEN bits
 
 -4'd13        # 3 decimal: the literal is 13, unsigned, in 4-bits. when negated, the sign bit is lost
 # -8'sd200    # compilation error: -200 does not fit in 8 bits
 # 0'15        # compilation error: cannot have integer with 0 length
-# 4'xff       # compilation error: value does not fit in 4 bits
+# 4'hff       # compilation error: value does not fit in 4 bits
 ----
 
 .C style literals

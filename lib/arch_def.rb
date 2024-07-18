@@ -1,16 +1,13 @@
 # frozen_string_literal: true
 
 require "forwardable"
-# require "treetop"
-require_relative "opcodes"
+
 require_relative "validate"
 require_relative "idl"
 require_relative "idl/passes/find_return_values"
 require_relative "idl/passes/gen_adoc"
-# require_relative "ast/ast"
-# require_relative "ast/gen_adoc"
+require_relative "idl/passes/prune"
 
-# Treetop.load("arch/isa/isa")
 
 # base for any object representation of the Architecture Definition
 # does two things:
@@ -862,11 +859,44 @@ end
 # model of a specific instruction in a specific base (RV32/RV64)
 class Instruction < ArchDefObject
 
-  # @return [Idl::AstNode] Abstract syntax tree of the instruction operation()
-  def operation_ast
-    parse_operation(@sym_table) if @operation_ast.nil?
+  def fill_symtab(global_symtab)
+    symtab = global_symtab.deep_clone(clone_values: true)
+    symtab.push
+    symtab.add(
+      "__instruction_encoding_size",
+      Idl::Var.new("__instruction_encoding_size", Idl::Type.new(:bits, width:encoding_width.bit_length), encoding_width)
+    )
+    @encodings[symtab.archdef.config_params["XLEN"]].decode_variables.each do |d|
+      qualifiers = []
+      qualifiers << :signed if d.sext?
+      width = d.size
 
-    @operation_ast
+      var = Idl::Var.new(d.name, Idl::Type.new(:bits, qualifiers:, width:), decode_var: true)
+      symtab.add(d.name, var)
+    end
+
+    symtab
+  end
+  private :fill_symtab
+
+  # type check the instruction operation in the context of symtab
+  #
+  # @param global_symtab [Idl::SymbolTable] A symbol table with global scope populated
+  # @raise Idl::AstNode::TypeError if there is a type problem
+  def type_check_operation(global_symtab)
+    global_symtab.archdef.idl_compiler.type_check(
+      operation_ast(global_symtab.archdef.idl_compiler),
+      fill_symtab(global_symtab),
+      "#{name}.operation()"
+    )
+  end
+
+  # @param global_symtab [Idl::SymbolTable] Symbol table with global scope populated and a configuration loaded
+  # @return [Idl::FunctionBodyAst] A pruned abstract syntax tree
+  def pruned_operation_ast(global_symtab)
+    type_check_operation(global_symtab)
+    puts "PRUNING        #{name}"
+    operation_ast(global_symtab.archdef.idl_compiler).prune(fill_symtab(global_symtab))
   end
 
   # @return [ArchDef] The architecture definition
@@ -929,7 +959,7 @@ class Instruction < ArchDefObject
       end
 
       @decode_variables = []
-      decode_vars.each do |var|
+      decode_vars&.each do |var|
         @decode_variables << DecodeVariable.new(self, var)
       end
     end
@@ -944,158 +974,57 @@ class Instruction < ArchDefObject
     @encodings = {}
     if @data["encoding"].key?("RV32")
       # there are different encodings for RV32/RV64
-      @encodings[32] = Encoding.new(@data["encoding"]["RV32"]["mask"], @data["encoding"]["RV32"]["fields"])
-      @encodings[64] = Encoding.new(@data["encoding"]["RV64"]["mask"], @data["encoding"]["RV64"]["fields"])
+      @encodings[32] = Encoding.new(@data["encoding"]["RV32"]["match"], @data["encoding"]["RV32"]["variables"])
+      @encodings[64] = Encoding.new(@data["encoding"]["RV64"]["match"], @data["encoding"]["RV64"]["variables"])
     elsif @data.key("base")
-      @encodings[@data["base"]] = Encoding.new(@data["encoding"]["mask"], @data["encoding"]["fields"])
+      @encodings[@data["base"]] = Encoding.new(@data["encoding"]["match"], @data["encoding"]["variables"])
     else
-      @encodings[32] = Encoding.new(@data["encoding"]["mask"], @data["encoding"]["fields"])
-      @encodings[64] = Encoding.new(@data["encoding"]["mask"], @data["encoding"]["fields"])
+      @encodings[32] = Encoding.new(@data["encoding"]["match"], @data["encoding"]["variables"])
+      @encodings[64] = Encoding.new(@data["encoding"]["match"], @data["encoding"]["variables"])
     end
   end
   private :load_encoding
-
-  # @params inst_data [Hash<String, Object>] Instruction data from the architecture spec
-  # @params full_opcode_data [Hash] Opcode data to interpret riscv-opcodes -- this will be deprecated
-  # @params sym_table [Idl::SymbolTable] Symbol table with global names
-  # @params arch_def [ArchDef] The architecture definition
-  def initialize(inst_data, full_opcode_data, sym_table, arch_def)
-    @arch_def = arch_def
-    @sym_table = sym_table.deep_clone
-
-    super(inst_data)
-
-    if inst_data.key?("encoding")
-      load_encoding
-    else
-      opcode_data_key = name.downcase.gsub(".", "_")
-      raise "opcode data not found for #{name}" unless full_opcode_data.key?(opcode_data_key)
-
-      opcode_data = full_opcode_data[opcode_data_key]
-      encoding_mask = opcode_data["encoding"]
-
-      opcode_fields = []
-      msb = encoding_mask.size
-      encoding_mask.split("-").each do |e|
-        if e.empty?
-          msb -= 1
-        else
-          opcode_fields << Encoding::Field.new(e, (msb - e.size + 1)..msb)
-          msb -= e.size
-        end
-      end
-
-
-      decode_variables = []
-      opcode_data["variable_fields"].to_a.each do |f|
-        decode_field_data = RiscvOpcodes::VARIABLE_FIELDS.to_a.select do |d|
-          d[0] == f || (d[0].is_a?(Array) && d[0].any?(f))
-        end
-        raise "didn't find '#{f}' in DECODER_RING" if decode_field_data.empty?
-
-        raise "Found multiple matches for '#{f}' in DECODER_RING" if decode_field_data.size > 1
-
-        data = decode_field_data[0][1]
-        names = []
-        if data.key?(:decode_variable)
-          if data[:decode_variable].is_a?(String)
-            names << data[:decode_variable]
-          else
-            raise "unexpected" unless data[:decode_variable].is_a?(Array)
-
-            names = data[:decode_variable]
-          end
-        else
-          raise "?" unless decode_field_data[0][0].is_a?(String)
-
-          names = [decode_field_data[0][0]]
-        end
-
-        names.each do |name|
-          decode_variables << DecodeField.new(self, name, decode_field_data[0][0], decode_field_data[0][1])
-        end
-      end
-      decode_variables.uniq!
-
-      @encodings ||= {}
-      klass = Struct.new(:opcode_fields, :decode_variables)
-      @encodings[32] = klass.new(opcode_fields, decode_variables)
-      @encodings[64] = klass.new(opcode_fields, decode_variables)
-    end
-  end
 
   # @return [Boolean] whether or not this instruction has different encodings depending on XLEN
   def multi_encoding?
     @data.key?("encoding") && @data["encoding"].key?("RV32")
   end
 
-  # @return [String] The operation() IDL code
-  def operation_source
-    return "" if @data["operation()"].nil?
+  # @return [FunctionBodyAst] The abstract syntax tree of the instruction operation
+  def operation_ast(idl_compiler)
+    return @operation_ast unless @operation_ast.nil?
+    return nil if @data["operation()"].nil?
 
-    operation_ast.gen_adoc.gsub("{{", '\((')
-    # @data['operation']
-  end
-
-  def parse_operation(sym_table)
     # now, parse the operation
-    return if @data["operation()"].nil? || !@operation_ast.nil?
 
-    cloned_symtab = sym_table.deep_clone
-
-    cloned_symtab.push
-    @encodings[@arch_def.config_params["XLEN"]].decode_variables.each do |d|
-      qualifiers = []
-      qualifiers << :signed if d.sext?
-      width = d.size
-
-      var = Idl::Var.new(d.name, Idl::Type.new(:bits, qualifiers:, width:), decode_var: true)
-      cloned_symtab.add(d.name, var)
-    end
-
-    m = arch_def.idl_compiler.compile_inst_operation(
-      @data["operation()"],
-      symtab: cloned_symtab,
-      name:,
-      parent: nil,
+    @operation_ast = idl_compiler.compile_inst_operation(
+      self,
       input_file: "Instruction #{name}"
     )
 
-    cloned_symtab.pop
+    raise "unexpected #{@operation_ast.class}" unless @operation_ast.is_a?(Idl::FunctionBodyAst)
 
-    raise "unexpected #{m.class}" unless m.is_a?(Idl::InstructionOperationAst)
-
-    m.make_left # fix up right recursion
-
-    @operation_ast = m
+    @operation_ast
   end
-  private :parse_operation
 
-  # @return [String] the encoding as, e.g.,:
-  #   0000101----------001-----0110011
+  # @param base [Integer] 32 or 64
+  # @return [Encoding] the encoding
   def encoding(base)
-    @encodings[base].format
+    load_encoding if @encodings.nil?
+
+    @encodings[base]
+  end
+
+  # @return [Integer] the width of the encoding
+  def encoding_width
+    raise "unexpected: encodings are different sizes" unless encoding(32).size == encoding(64).size
+
+    encoding(64).size
   end
 
   # @return [Array<DecodeVariable>] The decode variables
   def decode_variables(base)
-    @encodings[base].decode_variables
-  end
-
-  # def encoding_variable_fields
-  #   @decode_variables.map(&:decode_variable).flatten
-  # end
-
-  # @return [String] the extension that defines this instruction
-  # @return [Array<String>] the extensions that define this instruction
-  def extension
-    @data["definedBy"]
-    # parts = @data["extension"][0].split("_")
-    # if @data["definedBy"].is_a?(String)
-    #   parts[1].capitalize
-    # else
-    #   parts[1..].map(&:capitalize)
-    # end
+    encoding(base).decode_variables
   end
 
   # @return [Boolean] true if the instruction has an 'access_detail' field
@@ -1112,14 +1041,144 @@ class Instruction < ArchDefObject
       "reg" => []
     }
 
-    display_fields = @encodings[base].opcode_fields
-    display_fields += @encodings[base].decode_variables.map(&:grouped_encoding_fields).flatten
+    display_fields = encoding(base).opcode_fields
+    display_fields += encoding(base).decode_variables.map(&:grouped_encoding_fields).flatten
 
     display_fields.sort { |a, b| b.range.last <=> a.range.last }.reverse.each do |e|
       desc["reg"] << { "bits" => e.range.size, "name" => e.name, "type" => (e.opcode? ? 2 : 4) }
     end
 
     desc
+  end
+
+  # @return [Boolean] whether or not this instruction is defined for RV32
+  def rv32?
+    !@data.key?("base") || base == 32
+  end
+
+  # @return [Boolean] whether or not this instruction is defined for RV64
+  def rv64?
+    !@data.key?("base") || base == 64
+  end
+
+  def extension_requirement?(obj)
+    obj.is_a?(String) && obj =~ /^([A-WY])|([SXZ][a-z]+)$/ ||
+      obj.is_a?(Array) && obj[0] =~ /^([A-WY])|([SXZ][a-z]+)$/
+  end
+  private :extension_requirement?
+
+  def to_extension_requirement(obj)
+    if obj.is_a?(String)
+      ExtensionRequirement.new(obj, ">= 0")
+    else
+      ExtensionRequirement.new(*obj)
+    end
+  end
+  private :to_extension_requirement
+
+  # @return [Array<ExtensionRequirement>] Extension requirements for the instruction. If *any* requirement is met, the instruction is defined
+  def extension_requirements
+    return @extension_requirements unless @extension_requirements.nil?
+
+    @extension_requirements = []
+    if @data["definedBy"].is_a?(Array)
+      # could be either a single extension with requirement, or a list of requirements
+      if extension_requirement?(@data["definedBy"][0])
+        @extension_requirements << to_extension_requirement(@data["definedBy"][0])
+      else
+        # this is a list
+        @data["definedBy"].each do |r|
+          @extension_requirements << to_extension_requirement(r)
+        end
+      end
+    else
+      @extension_requirements << to_extension_requirement(@data["definedBy"])
+    end
+
+    raise "empty requirements" if @extension_requirements.empty?
+
+    @extension_requirements
+  end
+
+  # @return [Array<ExtensionRequirement>] Extension exclusions for the instruction. If *any* exclusion is met, the instruction is not defined
+  def extension_exclusions
+    return @extension_exclusions unless @extension_excludions.nil?
+
+    @extension_exclusions = []
+    if @data.key?("excludedBy")
+      if @data["exludedBy"].is_a?(Array)
+        # could be either a single extension with exclusion, or a list of exclusions
+        if extension_exclusion?(@data["definedBy"][0])
+          @extension_exclusions << to_extension_requirement(@data["excludedBy"][0])
+        else
+          # this is a list
+          @data["excludeddBy"].each do |r|
+            @extension_exclusions << to_extension_exclusion(r)
+          end
+        end
+      else
+        @extension_exclusions << to_extension_requirement(@data["excludedBy"])
+      end
+    end
+
+    @extension_exclusions
+  end
+
+  # @overload defined_by?(ext_name, ext_version)
+  #   @param ext_name [#to_s] An extension name
+  #   @param ext_version [#to_s] A specific extension version
+  #   @return [Boolean] Whether or not the instruction is defined by extesion `ext`, version `version`
+  # @overload defined_by?(ext_version)
+  #   @param ext_version [ExtensionVersion] An extension version
+  #   @return [Boolean] Whether or not the instruction is defined by ext_version
+  def defined_by?(*args)
+    if args.size == 1
+      raise ArgumentError, "Parameter must be an ExtensionVersion" unless args[0].is_a?(ExtensionVersion)
+
+      extension_requirements.any? do |r|
+        r.satisfied_by?(args[0])
+      end
+    elsif args.size == 2
+      raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
+      raise ArgumentError, "Second parameter must be an extension version" unless args[0].respond_to?(:to_s)
+
+      extension_requirements.any? do |r|
+        r.satisfied_by?(args[0].to_s, args[1].to_s)
+      end
+    end
+  end
+
+  # @overload excluded_by?(ext_name, ext_version)
+  #   @param ext_name [#to_s] An extension name
+  #   @param ext_version [#to_s] A specific extension version
+  #   @return [Boolean] Whether or not the instruction is excluded by extesion `ext`, version `version`
+  # @overload excluded_by?(ext_version)
+  #   @param ext_version [ExtensionVersion] An extension version
+  #   @return [Boolean] Whether or not the instruction is excluded by ext_version
+  def excluded_by?(*args)
+    if args.size == 1
+      raise ArgumentError, "Parameter must be an ExtensionVersion" unless args[0].is_a?(ExtensionVersion)
+
+      extension_exclusions.any? do |r|
+        r.satisfied_by?(args[0])
+      end
+    elsif args.size == 2
+      raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
+      raise ArgumentError, "Second parameter must be an extension version" unless args[0].respond_to?(:to_s)
+
+      extension_exclusions.any? do |r|
+        r.satisfied_by?(args[0].to_s, args[1].to_s)
+      end
+    end
+  end
+
+  # @param possible_xlens [Array<Integer>] List of xlens that be used in any implemented mode
+  # @param extensions [Array<ExtensionVersion>] List of extensions implemented
+  # @return [Boolean] whether or not the instruction is implemented given the supplies config options
+  def exists_in_cfg?(possible_xlens, extensions)
+    (@data["base"].nil? || (possible_xlens.include?(@data["base"]))) &&
+      extensions.any? { |e| defined_by?(e) } &&
+      extensions.none? { |e| excluded_by?(e) }
   end
 end
 
@@ -1135,16 +1194,30 @@ class Extension < ArchDefObject
     @arch_def = arch_def
   end
 
-  # @return [Array<String>] Array of extensions implied by this one
-  def implies
-    case @data["implies"]
-    when nil
-      []
-    when Array
-      @data["implies"]
-    else
-      [@data["implies"]]
+  # @param version_requirement [String] Version requirement
+  # @return [Array<ExtensionVersion>] Array of extensions implied by any version of this extension meeting version_requirement
+  def implies(version_requirement = ">= 0")
+    implications = []
+    @data["versions"].each do |v|
+      next unless Gem::Requirement.new(version_requirement).satisfied_by?(Gem::Version.new(v["version"]))
+
+      case v["implies"]
+      when nil
+        next
+      when Array
+        if v["implies"][0].is_a?(Array)
+          implications += v["implies"].map { |e| ExtensionVersion.new(e[0], e[1])}
+        else
+          implications << ExtensionVersion.new(v["implies"][0], v["implies"][1])
+        end
+      end
     end
+    implications
+  end
+
+  # returns the list of instructions implemented by this extension
+  def instructions
+    arch_def.instructions.select { |i| i.definedBy == name || (i.definedBy.is_a?(Array) && i.definedBy.include?(name)) }
   end
 end
 
@@ -1156,20 +1229,13 @@ class ExtensionVersion
   # @return [Gem::Version] Version of the extension
   attr_reader :version
 
-  # @return [ArchDef] Owning ArchDef
-  attr_reader :arch_def
-
-  # @return [Extension] The full definition of the extension (all versions)
-  attr_reader :extension
 
   # @param name [#to_s] The extension name
   # @param version [Integer,String] The version specifier
   # @param arch_def [ArchDef] The architecture definition
-  def initialize(name, version, arch_def)
+  def initialize(name, version)
     @name = name.to_s
     @version = Gem::Version.new(version)
-    @arch_def = arch_def
-    @extension = @arch_def.extension(@name)
   end
 
   # @override ==(other)
@@ -1205,6 +1271,52 @@ class ExtensionVersion
       @name <=> other.name
     else
       @version <=> other.version
+    end
+  end
+end
+
+# represents an extension requirement, that is an extension name paired with version requirement(s)
+class ExtensionRequirement
+  # @return [String] Extension name
+  attr_reader :name
+
+  # @return [Gem::Requirement] Version requirement
+  def version_requirement
+    @requirement
+  end
+
+  def initialize(name, *requirements)
+    @name = name
+    requirements =
+      if requirements.empty?
+        [">= 0"]
+      else
+        requirements
+      end
+    @requirement = Gem::Requirement.new(requirements)
+  end
+
+  # @overload
+  #   @param extension_version [ExtensionVersion] A specific extension version
+  #   @return [Boolean] whether or not the extension_version meets this requirement
+  # @overload
+  #   @param extension_name [#to_s] An extension name
+  #   @param extension_name [#to_s] An extension version
+  #   @return [Boolean] whether or not the extension_version meets this requirement
+  def satisfied_by?(*args)
+    if args.size == 1
+      raise ArgumentError, "Single argument must be an ExtensionVersion" unless args[0].is_a?(ExtensionVersion)
+
+      args[0].name == @name &&
+        @requirement.satisfied_by?(Gem::Version.new(args[0].version))
+    elsif args.size == 2
+      raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
+      raise ArgumentError, "First parameter must be an extension version" unless args[1].respond_to?(:to_s)
+
+      args[0] == @name &&
+        @requirement.satisfied_by?(Gem::Version.new(args[1]))
+    else
+      raise ArgumentError, "Wrong number of args (expecting 1 or 2)"
     end
   end
 end
@@ -1268,8 +1380,8 @@ class ArchDef
 
     @implemented_extensions = []
     @arch_def["implemented_extensions"].each do |e|
-      @implemented_extensions << ExtensionVersion.new(e["name"], e["version"], self)
-    end
+      @implemented_extensions << ExtensionVersion.new(e["name"], e["version"])
+2    end
 
     @implemented_extensions
   end
@@ -1395,10 +1507,8 @@ class ArchDef
   def instructions
     return @instructions unless @instructions.nil?
 
-    opcode_data = YAML.load_file("#{$root}/ext/riscv-opcodes/instr_dict.yaml")
-
     @instructions = @arch_def["instructions"].map do |_inst_name, inst_data|
-      Instruction.new(inst_data, opcode_data, @sym_table, self)
+      Instruction.new(inst_data)
     end
 
     @instructions
@@ -1445,13 +1555,13 @@ class ArchDef
       csr_name, field_name = name.split(".")
       csr = csr(csr_name)
       if !field_name.nil? && !csr.nil? && csr.field?(field_name)
-        "%%LINK[csr_field;#{csr_name}.#{field_name};#{csr_name}.#{field_name}]%%"
+        "%%LINK%csr_field;#{csr_name}.#{field_name};#{csr_name}.#{field_name}%%"
       elsif !csr.nil?
-        "%%LINK[csr;#{csr_name};#{csr_name}]%%"
+        "%%LINK%csr;#{csr_name};#{csr_name}%%"
       elsif inst(name.downcase)
-        "%%LINK[inst;#{name};#{name}]%%"
+        "%%LINK%inst;#{name};#{name}%%"
       elsif extension(name)
-        "%%LINK[ext;#{name};#{name}]%%"
+        "%%LINK%ext;#{name};#{name}%%"
       else
         match
       end

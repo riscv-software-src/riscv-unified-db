@@ -5,5 +5,6 @@ Zicntr:
   type: unprivileged
   versions:
   - version: 2.0
+    state: ratified
     ratification_date: 2019-12
     requires: [Zicsr, ">= 2.0"]

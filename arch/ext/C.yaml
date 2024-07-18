@@ -4,6 +4,7 @@ C:
   type: unprivileged
   versions:
   - version: 2.2
+    state: ratified
     ratification_date: 2019-12
   description: |
     The `C` extension reduces static and dynamic code size by

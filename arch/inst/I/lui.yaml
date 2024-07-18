@@ -5,6 +5,14 @@ lui:
   description: Load the zero-extended imm into rd.
   definedBy: I
   assembly: xd, imm
+  encoding:
+    match: -------------------------0000111
+    variables:
+    - name: imm
+      location: 31-12
+      left_shift: 12
+    - name: rd
+      location: 11-7
   access:
     s: always
     u: always

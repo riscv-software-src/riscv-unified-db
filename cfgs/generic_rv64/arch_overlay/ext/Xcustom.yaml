@@ -4,5 +4,6 @@ Xcustom:
   versions:
   - version: 0.1
     ratification_date: null
+    state: development
   description: |
     A new custom extension!

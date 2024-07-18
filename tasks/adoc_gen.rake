@@ -9,6 +9,7 @@ require_relative "../lib/arch_def"
       "#{$root}/.stamps/arch-gen-#{config_name}.stamp",
       ($root / "views" / "adoc" / "#{type}.adoc.erb").to_s,
       "lib/arch_def.rb",
+      "lib/idl/passes/gen_adoc.rb",
       "tasks/adoc_gen.rake",
       "#{$root}/.stamps"
     ]
@@ -43,6 +44,7 @@ require_relative "../lib/arch_def"
       end
     when "func"
       isa_def = arch_def.global_ast
+      global_symtab = arch_def.sym_table
       path = dir_path / "funcs.adoc"
       File.write(path, erb.result(binding))
     else

@@ -9,6 +9,16 @@ bgeu:
     Raise a `MisalignedAddress` exception if PC + imm is misaligned.
   definedBy: I
   assembly: xs1, xs2, imm
+  encoding:
+    match: -----------------111-----1100011
+    variables:
+    - name: imm
+      location: 31|7|30-25|11-8
+      left_shift: 1
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
   access:
     s: always
     u: always

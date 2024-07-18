@@ -16,18 +16,31 @@ mulh:
     Microarchitectures may look for that sequence and fuse the operations.
   definedBy: [M, Zmmul]
   assembly: xd, xs1, xs2
+  encoding:
+    match: 0000001----------001-----0110011
+    variables:
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
   access:
     s: always
     u: always
     vs: always
     vu: always
   operation(): |
+    if (implemented?(ExtensionName::M) && (CSR[misa].M == 1'b0)) {
+      raise (ExceptionCode::IllegalInstruction, $encoding);
+    }
+
     # enlarge and sign extend the sources
     Bits<1> rs1_sign_bit = X[rs1][XLEN-1];
-    Bits<XLEN*2> src1 = {{XLEN{rs1_sign_bit}}, X[rs1]};
+    Bits<XLEN << 1> src1 = {{XLEN{rs1_sign_bit}}, X[rs1]};
 
     Bits<1> rs2_sign_bit = X[rs2][XLEN-1];
-    Bits<XLEN*2> src2 = {{XLEN{rs2_sign_bit}}, X[rs2]};
+    Bits<XLEN << 1> src2 = {{XLEN{rs2_sign_bit}}, X[rs2]};
 
     # grab the high half of the result, and put it in rd
-    X[rd] = (src1 * src2)[(XLEN*2)-1:XLEN];
+    X[rd] = (src1 * src2)[(XLEN*8'd2)-1:XLEN];

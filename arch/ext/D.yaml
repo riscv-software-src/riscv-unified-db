@@ -4,6 +4,7 @@ D:
   type: unprivileged
   versions:
   - version: 2.2
+    state: ratified
     ratification_date: 2019-12
     changes: Define NaN-boxing scheme, changed definition of FMAX and FMIN
     implies: [F, 2.2]

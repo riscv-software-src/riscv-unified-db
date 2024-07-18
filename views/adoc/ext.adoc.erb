@@ -6,16 +6,16 @@
 This extension not implemented by the <%= ext.arch_def.name %> configuration.
 <%- end -%>
 
-<%- if ext.respond_to?(:implies) && !ext.implies.empty? -%>
+<%- if !ext.implies.empty? -%>
 This extension implies the following extension(s):
 
-`<%= ext.name %>` => <%= ext.implies.map { |e| arch_def.find_replace_links "`#{e}`" }.join(", ") %>
+`<%= ext.name %>` => <%= ext.implies.map { |e| arch_def.find_replace_links "`#{e.name}`, version #{e.version}" }.join(", ") %>
 <%- end -%>
 
 == Versions
 
 <%- ext.versions.each do |v| -%>
-<%- implemented = ext.arch_def.implemented_extensions.include?(ExtensionVersion.new(ext.name, v["version"], ext.arch_def)) -%>
+<%- implemented = arch_def.implemented_extensions.include?(ExtensionVersion.new(ext.name, v["version"])) -%>
 <%= v["version"] %>::
   Ratification date:::
     <%= v["ratification_date"] %>

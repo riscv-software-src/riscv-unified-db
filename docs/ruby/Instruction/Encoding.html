@@ -345,28 +345,28 @@
       <pre class="lines">
 
 
-907
-908
-909
-910
-911
-912
-913
-914
-915
-916
-917
-918
-919
-920
-921
-922
-923
-924
-925</pre>
+947
+948
+949
+950
+951
+952
+953
+954
+955
+956
+957
+958
+959
+960
+961
+962
+963
+964
+965</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 907</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 947</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_format'>format</span><span class='comma'>,</span> <span class='id identifier rubyid_decode_vars'>decode_vars</span><span class='rparen'>)</span>
   <span class='ivar'>@format</span> <span class='op'>=</span> <span class='id identifier rubyid_format'>format</span>
@@ -383,7 +383,7 @@
   <span class='kw'>end</span>
 
   <span class='ivar'>@decode_variables</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
-  <span class='id identifier rubyid_decode_vars'>decode_vars</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_var'>var</span><span class='op'>|</span>
+  <span class='id identifier rubyid_decode_vars'>decode_vars</span><span class='op'>&amp;.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_var'>var</span><span class='op'>|</span>
     <span class='ivar'>@decode_variables</span> <span class='op'>&lt;&lt;</span> <span class='const'><span class='object_link'><a href="../DecodeVariable.html" title="DecodeVariable (class)">DecodeVariable</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="../DecodeVariable.html#initialize-instance_method" title="DecodeVariable#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='kw'>self</span><span class='comma'>,</span> <span class='id identifier rubyid_var'>var</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
@@ -443,12 +443,12 @@
       <pre class="lines">
 
 
-878
-879
-880</pre>
+918
+919
+920</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 878</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 918</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_decode_variables'>decode_variables</span>
   <span class='ivar'>@decode_variables</span>
@@ -516,12 +516,12 @@
       <pre class="lines">
 
 
-870
-871
-872</pre>
+910
+911
+912</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 870</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 910</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_format'>format</span>
   <span class='ivar'>@format</span>
@@ -589,12 +589,12 @@
       <pre class="lines">
 
 
-875
-876
-877</pre>
+915
+916
+917</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 875</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 915</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_opcode_fields'>opcode_fields</span>
   <span class='ivar'>@opcode_fields</span>
@@ -655,12 +655,12 @@
       <pre class="lines">
 
 
-928
-929
-930</pre>
+968
+969
+970</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 928</span>
+      <pre class="code"><span class="info file"># File 'lib/arch_def.rb', line 968</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_size'>size</span>
   <span class='ivar'>@format</span><span class='period'>.</span><span class='id identifier rubyid_size'>size</span>
@@ -675,7 +675,7 @@
 </div>
 
       <div id="footer">
-  Generated on Fri Jul 12 07:33:12 2024 by
+  Generated on Thu Jul 18 13:55:47 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>
