@@ -370,29 +370,29 @@
       <pre class="lines">
 
 
-4011
-4012
-4013
-4014
-4015
-4016
-4017
-4018
-4019
-4020
-4021
-4022
-4023
-4024
-4025
-4026
-4027
-4028
-4029
-4030</pre>
+4202
+4203
+4204
+4205
+4206
+4207
+4208
+4209
+4210
+4211
+4212
+4213
+4214
+4215
+4216
+4217
+4218
+4219
+4220
+4221</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4011</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4202</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_csr_def'>csr_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_archdef'>archdef</span> <span class='op'>=</span> <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_archdef'>archdef</span>
@@ -456,12 +456,12 @@
       <pre class="lines">
 
 
-4032
-4033
-4034</pre>
+4223
+4224
+4225</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4032</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4223</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_csr_known?'>csr_known?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='op'>!</span><span class='id identifier rubyid_csr_def'>csr_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -486,14 +486,14 @@
       <pre class="lines">
 
 
-4036
-4037
-4038
-4039
-4040</pre>
+4227
+4228
+4229
+4230
+4231</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4036</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4227</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_csr_name'>csr_name</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>No CSR</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_csr_known?'>csr_known?</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
@@ -520,17 +520,17 @@
       <pre class="lines">
 
 
-109
-110
-111
-112
-113
-114
-115
-116</pre>
+204
+205
+206
+207
+208
+209
+210
+211</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/passes/gen_adoc.rb', line 109</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/passes/gen_adoc.rb', line 204</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_gen_adoc'>gen_adoc</span><span class='lparen'>(</span><span class='id identifier rubyid_indent'>indent</span> <span class='op'>=</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>indent_spaces:</span> <span class='int'>2</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_csr_text'>csr_text</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CSR[</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span><span class='embexpr_end'>}</span><span class='tstring_content'>]</span><span class='tstring_end'>&quot;</span></span>
@@ -589,10 +589,10 @@
       <pre class="lines">
 
 
-4053</pre>
+4244</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4053</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4244</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_idl'>to_idl</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CSR[</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span><span class='embexpr_end'>}</span><span class='tstring_content'>]</span><span class='tstring_end'>&quot;</span></span></pre>
     </td>
@@ -684,21 +684,21 @@
       <pre class="lines">
 
 
-3975
-3976
-3977
-3978
-3979
-3980
-3981
-3982
-3983
-3984
-3985
-3986</pre>
+4166
+4167
+4168
+4169
+4170
+4171
+4172
+4173
+4174
+4175
+4176
+4177</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3975</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4166</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_archdef'>archdef</span> <span class='op'>=</span> <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_archdef'>archdef</span>
@@ -797,30 +797,30 @@
       <pre class="lines">
 
 
-3989
-3990
-3991
-3992
-3993
-3994
-3995
-3996
-3997
-3998
-3999
-4000
-4001
-4002
-4003
-4004
-4005
-4006
-4007
-4008
-4009</pre>
+4180
+4181
+4182
+4183
+4184
+4185
+4186
+4187
+4188
+4189
+4190
+4191
+4192
+4193
+4194
+4195
+4196
+4197
+4198
+4199
+4200</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3989</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4180</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_archdef'>archdef</span> <span class='op'>=</span> <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_archdef'>archdef</span>
@@ -874,17 +874,17 @@
       <pre class="lines">
 
 
-4043
-4044
-4045
-4046
-4047
-4048
-4049
-4050</pre>
+4234
+4235
+4236
+4237
+4238
+4239
+4240
+4241</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4043</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4234</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_cd'>cd</span> <span class='op'>=</span> <span class='id identifier rubyid_csr_def'>csr_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
@@ -1000,7 +1000,7 @@
 </div>
 
       <div id="footer">
-  Generated on Tue Jul 16 12:06:48 2024 by
+  Generated on Thu Jul 18 13:55:47 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

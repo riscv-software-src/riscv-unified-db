@@ -295,24 +295,24 @@
       <pre class="lines">
 
 
-4149
-4150
-4151
-4152
-4153
-4154
-4155
-4156
-4157
-4158
-4159</pre>
+4340
+4341
+4342
+4343
+4344
+4345
+4346
+4347
+4348
+4349
+4350</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4149</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4340</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_csr_def'>csr_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_index'>index</span> <span class='op'>=</span>
-    <span class='kw'>if</span> <span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="IntAst.html" title="Idl::IntAst (module)">IntAst</a></span></span><span class='rparen'>)</span>
+    <span class='kw'>if</span> <span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="IntLiteralAst.html" title="Idl::IntLiteralAst (class)">IntLiteralAst</a></span></span><span class='rparen'>)</span>
       <span class='comment'># make sure this value is a defined CSR
 </span>      <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_archdef'>archdef</span><span class='period'>.</span><span class='id identifier rubyid_csrs'>csrs</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_csr'>csr</span><span class='op'>|</span> <span class='id identifier rubyid_csr'>csr</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span> <span class='op'>==</span> <span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span> <span class='rbrace'>}</span>
     <span class='kw'>else</span>
@@ -390,12 +390,12 @@
       <pre class="lines">
 
 
-4171
-4172
-4173</pre>
+4362
+4363
+4364</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4171</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4362</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_value_error'>value_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CSR write</span><span class='tstring_end'>&quot;</span></span>
@@ -420,12 +420,12 @@
       <pre class="lines">
 
 
-4166
-4167
-4168</pre>
+4357
+4358
+4359</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4166</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4357</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_name'>name</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_csr_def'>csr_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span>
@@ -479,10 +479,10 @@
       <pre class="lines">
 
 
-4176</pre>
+4367</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4176</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4367</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_idl'>to_idl</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>CSR[</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span><span class='embexpr_end'>}</span><span class='tstring_content'>]</span><span class='tstring_end'>&quot;</span></span></pre>
     </td>
@@ -574,12 +574,12 @@
       <pre class="lines">
 
 
-4162
-4163
-4164</pre>
+4353
+4354
+4355</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4162</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4353</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='const'><span class='object_link'><a href="CsrType.html" title="Idl::CsrType (class)">CsrType</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="CsrType.html#initialize-instance_method" title="Idl::CsrType#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_csr_def'>csr_def</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='rparen'>)</span>
@@ -669,24 +669,24 @@
       <pre class="lines">
 
 
-4136
-4137
-4138
-4139
-4140
-4141
-4142
-4143
-4144
-4145
-4146
-4147</pre>
+4327
+4328
+4329
+4330
+4331
+4332
+4333
+4334
+4335
+4336
+4337
+4338</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4136</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 4327</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
-  <span class='kw'>if</span> <span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="IntAst.html" title="Idl::IntAst (module)">IntAst</a></span></span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="IntLiteralAst.html" title="Idl::IntLiteralAst (class)">IntLiteralAst</a></span></span><span class='rparen'>)</span>
     <span class='comment'># make sure this value is a defined CSR
 </span>    <span class='id identifier rubyid_index'>index</span> <span class='op'>=</span> <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_archdef'>archdef</span><span class='period'>.</span><span class='id identifier rubyid_csrs'>csrs</span><span class='period'>.</span><span class='id identifier rubyid_index'>index</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_csr'>csr</span><span class='op'>|</span> <span class='id identifier rubyid_csr'>csr</span><span class='period'>.</span><span class='id identifier rubyid_address'>address</span> <span class='op'>==</span> <span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
     <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>No csr number &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_idx'>idx</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39; was found</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_index'>index</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -707,7 +707,7 @@
 </div>
 
       <div id="footer">
-  Generated on Tue Jul 16 12:06:48 2024 by
+  Generated on Thu Jul 18 13:55:47 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

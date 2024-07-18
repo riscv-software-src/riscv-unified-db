@@ -359,13 +359,13 @@
       <pre class="lines">
 
 
-2373
-2374
-2375
-2376</pre>
+2521
+2522
+2523
+2524</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2373</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2521</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_action'>action</span><span class='rparen'>)</span>
   <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_action'>action</span><span class='period'>.</span><span class='id identifier rubyid_input'>input</span><span class='comma'>,</span> <span class='id identifier rubyid_action'>action</span><span class='period'>.</span><span class='id identifier rubyid_interval'>interval</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='id identifier rubyid_action'>action</span><span class='rbracket'>]</span><span class='rparen'>)</span>
@@ -409,12 +409,12 @@
       <pre class="lines">
 
 
-2371
-2372
-2373</pre>
+2519
+2520
+2521</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2371</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2519</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_action'>action</span>
   <span class='ivar'>@action</span>
@@ -495,17 +495,17 @@
       <pre class="lines">
 
 
-2384
-2385
-2386
-2387
-2388
-2389
-2390
-2391</pre>
+2532
+2533
+2534
+2535
+2536
+2537
+2538
+2539</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2384</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2532</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='ivar'>@action</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="Declaration.html" title="Idl::Declaration (module)">Declaration</a></span></span><span class='rparen'>)</span>
@@ -535,12 +535,12 @@
       <pre class="lines">
 
 
-66
-67
-68</pre>
+146
+147
+148</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/passes/gen_adoc.rb', line 66</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/passes/gen_adoc.rb', line 146</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_gen_adoc'>gen_adoc</span><span class='lparen'>(</span><span class='id identifier rubyid_indent'>indent</span> <span class='op'>=</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>indent_spaces:</span> <span class='int'>2</span><span class='rparen'>)</span>
   <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'> </span><span class='tstring_end'>&#39;</span></span> <span class='op'>*</span> <span class='id identifier rubyid_indent'>indent</span><span class='embexpr_end'>}</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_action'>action</span><span class='period'>.</span><span class='id identifier rubyid_gen_adoc'>gen_adoc</span><span class='lparen'>(</span><span class='int'>0</span><span class='comma'>,</span> <span class='label'>indent_spaces:</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>;</span><span class='tstring_end'>&quot;</span></span>
@@ -565,37 +565,37 @@
       <pre class="lines">
 
 
-75
-76
-77
-78
-79
-80
-81
-82
-83
-84
-85
-86
-87
-88</pre>
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/passes/prune.rb', line 75</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/passes/prune.rb', line 90</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_prune'>prune</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_s'>s</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="" title="Idl::StatementAst (class)">StatementAst</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="Idl::StatementAst#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_action'>action</span><span class='period'>.</span><span class='id identifier rubyid_prune'>prune</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='rparen'>)</span>
-  <span class='kw'>if</span> <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_action'>action</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="Declaration.html" title="Idl::Declaration (module)">Declaration</a></span></span><span class='rparen'>)</span>
-    <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_action'>action</span><span class='period'>.</span><span class='id identifier rubyid_add_symbol'>add_symbol</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_pruned_action'>pruned_action</span> <span class='op'>=</span> <span class='id identifier rubyid_action'>action</span><span class='period'>.</span><span class='id identifier rubyid_prune'>prune</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_pruned_action'>pruned_action</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="Declaration.html" title="Idl::Declaration (module)">Declaration</a></span></span><span class='rparen'>)</span>
+    <span class='id identifier rubyid_pruned_action'>pruned_action</span><span class='period'>.</span><span class='id identifier rubyid_add_symbol'>add_symbol</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='kw'>end</span>
-  <span class='kw'>if</span> <span class='lparen'>(</span><span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_action'>action</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="Executable.html" title="Idl::Executable (module)">Executable</a></span></span><span class='rparen'>)</span><span class='rparen'>)</span>
+  <span class='kw'>if</span> <span class='id identifier rubyid_pruned_action'>pruned_action</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="Executable.html" title="Idl::Executable (module)">Executable</a></span></span><span class='rparen'>)</span>
     <span class='kw'>begin</span>
-      <span class='id identifier rubyid_s'>s</span><span class='period'>.</span><span class='id identifier rubyid_action'>action</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
+      <span class='id identifier rubyid_pruned_action'>pruned_action</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
     <span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="AstNode/ValueError.html" title="Idl::AstNode::ValueError (class)">ValueError</a></span></span>
       <span class='comment'># ok
 </span>    <span class='kw'>end</span>
   <span class='kw'>end</span>
-  <span class='id identifier rubyid_s'>s</span>
+  <span class='const'><span class='object_link'><a href="" title="Idl::StatementAst (class)">StatementAst</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="Idl::StatementAst#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_pruned_action'>pruned_action</span><span class='rparen'>)</span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -646,10 +646,10 @@
       <pre class="lines">
 
 
-2394</pre>
+2542</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2394</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2542</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_idl'>to_idl</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='ivar'>@action</span><span class='period'>.</span><span class='id identifier rubyid_to_idl'>to_idl</span><span class='embexpr_end'>}</span><span class='tstring_content'>;</span><span class='tstring_end'>&quot;</span></span></pre>
     </td>
@@ -737,12 +737,12 @@
       <pre class="lines">
 
 
-2379
-2380
-2381</pre>
+2527
+2528
+2529</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2379</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 2527</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='ivar'>@action</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
@@ -757,7 +757,7 @@
 </div>
 
       <div id="footer">
-  Generated on Tue Jul 16 12:06:47 2024 by
+  Generated on Thu Jul 18 13:55:46 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

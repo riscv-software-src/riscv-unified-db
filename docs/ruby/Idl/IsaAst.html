@@ -315,18 +315,18 @@
       <pre class="lines">
 
 
-522
-523
-524
-525
-526
-527
-528
-529
-530</pre>
+534
+535
+536
+537
+538
+539
+540
+541
+542</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 522</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 534</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_bitfields'>bitfields</span>
   <span class='kw'>return</span> <span class='ivar'>@bitfields</span> <span class='kw'>unless</span> <span class='ivar'>@bitfields</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -357,12 +357,12 @@
       <pre class="lines">
 
 
-495
-496
-497</pre>
+507
+508
+509</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 495</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 507</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_children'>children</span>
   <span class='id identifier rubyid_enums'>enums</span> <span class='op'>+</span> <span class='id identifier rubyid_bitfields'>bitfields</span> <span class='op'>+</span> <span class='id identifier rubyid_functions'>functions</span> <span class='op'>+</span> <span class='id identifier rubyid_globals'>globals</span>
@@ -398,19 +398,19 @@
       <pre class="lines">
 
 
-511
-512
-513
-514
-515
-516
-517
-518
-519
-520</pre>
+523
+524
+525
+526
+527
+528
+529
+530
+531
+532</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 511</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 523</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_enums'>enums</span>
   <span class='kw'>return</span> <span class='ivar'>@enums</span> <span class='kw'>unless</span> <span class='ivar'>@enums</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -442,19 +442,19 @@
       <pre class="lines">
 
 
-532
-533
-534
-535
-536
-537
-538
-539
-540
-541</pre>
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 532</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 544</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_functions'>functions</span>
   <span class='kw'>return</span> <span class='ivar'>@functions</span> <span class='kw'>unless</span> <span class='ivar'>@functions</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -486,19 +486,19 @@
       <pre class="lines">
 
 
-499
-500
-501
-502
-503
-504
-505
-506
-507
-508</pre>
+511
+512
+513
+514
+515
+516
+517
+518
+519
+520</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 499</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 511</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_globals'>globals</span>
   <span class='kw'>return</span> <span class='ivar'>@globals</span> <span class='kw'>unless</span> <span class='ivar'>@globals</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -530,18 +530,18 @@
       <pre class="lines">
 
 
-552
-553
-554
-555
-556
-557
-558
-559
-560</pre>
+564
+565
+566
+567
+568
+569
+570
+571
+572</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 552</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 564</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_instructions'>instructions</span>
   <span class='kw'>return</span> <span class='ivar'>@instructions</span> <span class='kw'>unless</span> <span class='ivar'>@instructions</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -572,17 +572,17 @@
       <pre class="lines">
 
 
-543
-544
-545
-546
-547
-548
-549
-550</pre>
+555
+556
+557
+558
+559
+560
+561
+562</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 543</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 555</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_definitions'>definitions</span><span class='period'>.</span><span class='id identifier rubyid_elements'>elements</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_e'>e</span><span class='op'>|</span>
@@ -602,7 +602,7 @@
 </div>
 
       <div id="footer">
-  Generated on Tue Jul 16 12:06:46 2024 by
+  Generated on Thu Jul 18 13:55:45 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

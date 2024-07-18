@@ -299,14 +299,14 @@ Bits&lt;64&gt; a, b, c, d;
       <pre class="lines">
 
 
-1321
-1322
-1323
-1324
-1325</pre>
+1347
+1348
+1349
+1350
+1351</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1321</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1347</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_add_symbol'>add_symbol</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_var_names'>var_names</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_vname'>vname</span><span class='op'>|</span>
@@ -362,10 +362,10 @@ Bits&lt;64&gt; a, b, c, d;
       <pre class="lines">
 
 
-1328</pre>
+1354</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1328</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1354</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_idl'>to_idl</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_to_idl'>to_idl</span><span class='embexpr_end'>}</span><span class='tstring_content'> </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_var_names'>var_names</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='symbol'>:to_idl</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>, </span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span></pre>
     </td>
@@ -453,16 +453,16 @@ Bits&lt;64&gt; a, b, c, d;
       <pre class="lines">
 
 
-1312
-1313
-1314
-1315
-1316
-1317
-1318</pre>
+1338
+1339
+1340
+1341
+1342
+1343
+1344</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1312</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1338</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_type_error'>type_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>No type named &#39;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_type_name'>type_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span><span class='embexpr_end'>}</span><span class='tstring_content'>&#39; on line </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_lineno'>lineno</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_type'>type</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -520,19 +520,19 @@ Bits&lt;64&gt; a, b, c, d;
       <pre class="lines">
 
 
-1300
-1301
-1302
-1303
-1304
-1305
-1306
-1307
-1308
-1309</pre>
+1326
+1327
+1328
+1329
+1330
+1331
+1332
+1333
+1334
+1335</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1300</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 1326</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_var_names'>var_names</span>
   <span class='kw'>return</span> <span class='ivar'>@var_names</span> <span class='kw'>unless</span> <span class='ivar'>@var_names</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -554,7 +554,7 @@ Bits&lt;64&gt; a, b, c, d;
 </div>
 
       <div id="footer">
-  Generated on Tue Jul 16 12:06:46 2024 by
+  Generated on Thu Jul 18 13:55:45 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

@@ -452,15 +452,15 @@
       <pre class="lines">
 
 
-887
-888
-889
-890
-891
-892</pre>
+899
+900
+901
+902
+903
+904</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 887</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 899</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_initialize'>initialize</span><span class='lparen'>(</span><span class='id identifier rubyid_input'>input</span><span class='comma'>,</span> <span class='id identifier rubyid_interval'>interval</span><span class='comma'>,</span> <span class='id identifier rubyid_var'>var</span><span class='comma'>,</span> <span class='id identifier rubyid_msb'>msb</span><span class='comma'>,</span> <span class='id identifier rubyid_lsb'>lsb</span><span class='rparen'>)</span>
   <span class='kw'>super</span><span class='lparen'>(</span><span class='id identifier rubyid_input'>input</span><span class='comma'>,</span> <span class='id identifier rubyid_interval'>interval</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='id identifier rubyid_var'>var</span><span class='comma'>,</span> <span class='id identifier rubyid_msb'>msb</span><span class='comma'>,</span> <span class='id identifier rubyid_lsb'>lsb</span><span class='rbracket'>]</span><span class='rparen'>)</span>
@@ -506,12 +506,12 @@
       <pre class="lines">
 
 
-885
-886
-887</pre>
+897
+898
+899</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 885</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 897</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_lsb'>lsb</span>
   <span class='ivar'>@lsb</span>
@@ -549,12 +549,12 @@
       <pre class="lines">
 
 
-885
-886
-887</pre>
+897
+898
+899</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 885</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 897</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_msb'>msb</span>
   <span class='ivar'>@msb</span>
@@ -592,12 +592,12 @@
       <pre class="lines">
 
 
-885
-886
-887</pre>
+897
+898
+899</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 885</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 897</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_var'>var</span>
   <span class='ivar'>@var</span>
@@ -629,15 +629,15 @@
       <pre class="lines">
 
 
-42
-43
-44</pre>
+67
+68
+69</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/passes/gen_adoc.rb', line 42</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/passes/gen_adoc.rb', line 67</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_gen_adoc'>gen_adoc</span><span class='lparen'>(</span><span class='id identifier rubyid_indent'>indent</span> <span class='op'>=</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>indent_spaces:</span> <span class='int'>2</span><span class='rparen'>)</span>
-  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_gen_adoc'>gen_adoc</span><span class='lparen'>(</span><span class='id identifier rubyid_indent'>indent</span><span class='comma'>,</span> <span class='label'>indent_spaces:</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>[</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_msb'>msb</span><span class='period'>.</span><span class='id identifier rubyid_gen_adoc'>gen_adoc</span><span class='lparen'>(</span><span class='int'>0</span><span class='comma'>,</span> <span class='label'>indent_spaces:</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>:</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_msb'>msb</span><span class='period'>.</span><span class='id identifier rubyid_gen_adoc'>gen_adoc</span><span class='lparen'>(</span><span class='int'>0</span><span class='comma'>,</span> <span class='label'>indent_spaces:</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>]</span><span class='tstring_end'>&quot;</span></span>
+  <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_var'>var</span><span class='period'>.</span><span class='id identifier rubyid_gen_adoc'>gen_adoc</span><span class='lparen'>(</span><span class='id identifier rubyid_indent'>indent</span><span class='comma'>,</span> <span class='label'>indent_spaces:</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>[</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_msb'>msb</span><span class='period'>.</span><span class='id identifier rubyid_gen_adoc'>gen_adoc</span><span class='lparen'>(</span><span class='int'>0</span><span class='comma'>,</span> <span class='label'>indent_spaces:</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>:</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_lsb'>lsb</span><span class='period'>.</span><span class='id identifier rubyid_gen_adoc'>gen_adoc</span><span class='lparen'>(</span><span class='int'>0</span><span class='comma'>,</span> <span class='label'>indent_spaces:</span><span class='rparen'>)</span><span class='embexpr_end'>}</span><span class='tstring_content'>]</span><span class='tstring_end'>&quot;</span></span>
 <span class='kw'>end</span></pre>
     </td>
   </tr>
@@ -659,12 +659,12 @@
       <pre class="lines">
 
 
-96
-97
-98</pre>
+111
+112
+113</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/passes/prune.rb', line 96</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/passes/prune.rb', line 111</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_prune'>prune</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='const'><span class='object_link'><a href="" title="Idl::AryRangeAccessAst (class)">AryRangeAccessAst</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="#initialize-instance_method" title="Idl::AryRangeAccessAst#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_input'>input</span><span class='comma'>,</span> <span class='id identifier rubyid_interval'>interval</span><span class='comma'>,</span> <span class='ivar'>@var</span><span class='period'>.</span><span class='id identifier rubyid_prune'>prune</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='ivar'>@msb</span><span class='period'>.</span><span class='id identifier rubyid_prune'>prune</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='ivar'>@lsb</span><span class='period'>.</span><span class='id identifier rubyid_prune'>prune</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='rparen'>)</span>
@@ -718,10 +718,10 @@
       <pre class="lines">
 
 
-940</pre>
+952</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 940</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 952</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_idl'>to_idl</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='ivar'>@var</span><span class='period'>.</span><span class='id identifier rubyid_to_idl'>to_idl</span><span class='embexpr_end'>}</span><span class='tstring_content'>[</span><span class='embexpr_beg'>#{</span><span class='ivar'>@msb</span><span class='period'>.</span><span class='id identifier rubyid_to_idl'>to_idl</span><span class='embexpr_end'>}</span><span class='tstring_content'>:</span><span class='embexpr_beg'>#{</span><span class='ivar'>@lsb</span><span class='period'>.</span><span class='id identifier rubyid_to_idl'>to_idl</span><span class='embexpr_end'>}</span><span class='tstring_content'>]</span><span class='tstring_end'>&quot;</span></span></pre>
     </td>
@@ -813,20 +813,20 @@
       <pre class="lines">
 
 
-921
-922
-923
-924
-925
-926
-927
-928
-929
-930
-931</pre>
+933
+934
+935
+936
+937
+938
+939
+940
+941
+942
+943</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 921</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 933</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='kw'>begin</span>
@@ -924,18 +924,6 @@
       <pre class="lines">
 
 
-895
-896
-897
-898
-899
-900
-901
-902
-903
-904
-905
-906
 907
 908
 909
@@ -947,10 +935,22 @@
 915
 916
 917
-918</pre>
+918
+919
+920
+921
+922
+923
+924
+925
+926
+927
+928
+929
+930</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 895</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 907</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='ivar'>@var</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
@@ -1007,13 +1007,13 @@
       <pre class="lines">
 
 
-934
-935
-936
-937</pre>
+946
+947
+948
+949</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 934</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 946</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_mask'>mask</span> <span class='op'>=</span> <span class='lparen'>(</span><span class='int'>1</span> <span class='op'>&lt;&lt;</span> <span class='lparen'>(</span><span class='ivar'>@msb</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span> <span class='op'>-</span> <span class='ivar'>@lsb</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span> <span class='op'>+</span> <span class='int'>1</span><span class='rparen'>)</span><span class='rparen'>)</span> <span class='op'>-</span> <span class='int'>1</span>
@@ -1125,7 +1125,7 @@
 </div>
 
       <div id="footer">
-  Generated on Tue Jul 16 12:06:46 2024 by
+  Generated on Thu Jul 18 13:55:45 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

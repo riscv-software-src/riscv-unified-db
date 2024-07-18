@@ -95,7 +95,7 @@
   <dl>
     <dt>Defined in:</dt>
     <dd>lib/idl/ast.rb<span class="defines">,<br />
-  lib/idl/passes/prune.rb,<br /> lib/idl/passes/gen_adoc.rb,<br /> lib/idl/passes/find_return_values.rb</span>
+  lib/idl/passes/prune.rb,<br /> lib/idl/passes/find_return_values.rb</span>
 </dd>
   </dl>
   
@@ -114,7 +114,7 @@
 
 </div><div id="subclasses">
   <h2>Direct Known Subclasses</h2>
-  <p class="children"><span class='object_link'><a href="../../Idl/AryAccessSyntaxNode.html" title="Idl::AryAccessSyntaxNode (class)">Idl::AryAccessSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/AstNode.html" title="Idl::AstNode (class)">Idl::AstNode</a></span>, <span class='object_link'><a href="../../Idl/BinaryExpressionRightSyntaxNode.html" title="Idl::BinaryExpressionRightSyntaxNode (class)">Idl::BinaryExpressionRightSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/ConditionalStatementSyntaxNode.html" title="Idl::ConditionalStatementSyntaxNode (class)">Idl::ConditionalStatementSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/FunctionBodySyntaxNode.html" title="Idl::FunctionBodySyntaxNode (class)">Idl::FunctionBodySyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/IfSyntaxNode.html" title="Idl::IfSyntaxNode (class)">Idl::IfSyntaxNode</a></span></p>
+  <p class="children"><span class='object_link'><a href="../../Idl/AryAccessSyntaxNode.html" title="Idl::AryAccessSyntaxNode (class)">Idl::AryAccessSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/AryElementAssignmentSyntaxNode.html" title="Idl::AryElementAssignmentSyntaxNode (class)">Idl::AryElementAssignmentSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/AstNode.html" title="Idl::AstNode (class)">Idl::AstNode</a></span>, <span class='object_link'><a href="../../Idl/BinaryExpressionRightSyntaxNode.html" title="Idl::BinaryExpressionRightSyntaxNode (class)">Idl::BinaryExpressionRightSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/BuiltinTypeNameSyntaxNode.html" title="Idl::BuiltinTypeNameSyntaxNode (class)">Idl::BuiltinTypeNameSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/BuiltinVariableSyntaxNode.html" title="Idl::BuiltinVariableSyntaxNode (class)">Idl::BuiltinVariableSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/ConditionalStatementSyntaxNode.html" title="Idl::ConditionalStatementSyntaxNode (class)">Idl::ConditionalStatementSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/DontCareReturnSyntaxNode.html" title="Idl::DontCareReturnSyntaxNode (class)">Idl::DontCareReturnSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/EnumRefSyntaxNode.html" title="Idl::EnumRefSyntaxNode (class)">Idl::EnumRefSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/ForLoopSyntaxNode.html" title="Idl::ForLoopSyntaxNode (class)">Idl::ForLoopSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/FunctionBodySyntaxNode.html" title="Idl::FunctionBodySyntaxNode (class)">Idl::FunctionBodySyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/FunctionCallExpressionSyntaxNode.html" title="Idl::FunctionCallExpressionSyntaxNode (class)">Idl::FunctionCallExpressionSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/IdSyntaxNode.html" title="Idl::IdSyntaxNode (class)">Idl::IdSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/IfSyntaxNode.html" title="Idl::IfSyntaxNode (class)">Idl::IfSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/InstructionOperationSyntaxNode.html" title="Idl::InstructionOperationSyntaxNode (class)">Idl::InstructionOperationSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/ParenExpressionSyntaxNode.html" title="Idl::ParenExpressionSyntaxNode (class)">Idl::ParenExpressionSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/ReplicationExpressionSyntaxNode.html" title="Idl::ReplicationExpressionSyntaxNode (class)">Idl::ReplicationExpressionSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/SignCastSyntaxNode.html" title="Idl::SignCastSyntaxNode (class)">Idl::SignCastSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/TernaryOperatorExpressionSyntaxNode.html" title="Idl::TernaryOperatorExpressionSyntaxNode (class)">Idl::TernaryOperatorExpressionSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/VariableAssignmentSyntaxNode.html" title="Idl::VariableAssignmentSyntaxNode (class)">Idl::VariableAssignmentSyntaxNode</a></span>, <span class='object_link'><a href="../../Idl/VariableDeclarationWithInitializationSyntaxNode.html" title="Idl::VariableDeclarationWithInitializationSyntaxNode (class)">Idl::VariableDeclarationWithInitializationSyntaxNode</a></span></p>
 </div>
 
 
@@ -209,28 +209,6 @@
     <span class="summary_desc"><div class='inline'>
 <p>The first ancestor that is_a?(klass), or nil if none is found.</p>
 </div></span>
-  
-</li>
-
-      
-        <li class="public ">
-  <span class="summary_signature">
-    
-      <a href="#gen_adoc-instance_method" title="#gen_adoc (instance method)">#<strong>gen_adoc</strong>(indent = 0, indent_spaces: 2)  &#x21d2; Object </a>
-    
-
-    
-  </span>
-  
-  
-  
-  
-  
-  
-  
-
-  
-    <span class="summary_desc"><div class='inline'></div></span>
   
 </li>
 
@@ -502,9 +480,6 @@
       <pre class="lines">
 
 
-75
-76
-77
 78
 79
 80
@@ -524,10 +499,13 @@
 94
 95
 96
-97</pre>
+97
+98
+99
+100</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 75</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 78</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_clone'>clone</span>
   <span class='id identifier rubyid_new_elements'>new_elements</span> <span class='op'>=</span> <span class='kw'>nil</span>
@@ -601,18 +579,18 @@
       <pre class="lines">
 
 
-64
-65
-66
 67
 68
 69
 70
 71
-72</pre>
+72
+73
+74
+75</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 64</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 67</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_find_ancestor'>find_ancestor</span><span class='lparen'>(</span><span class='id identifier rubyid_klass'>klass</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_parent'>parent</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -621,52 +599,6 @@
     <span class='id identifier rubyid_parent'>parent</span>
   <span class='kw'>else</span>
     <span class='id identifier rubyid_parent'>parent</span><span class='period'>.</span><span class='id identifier rubyid_find_ancestor'>find_ancestor</span><span class='lparen'>(</span><span class='id identifier rubyid_klass'>klass</span><span class='rparen'>)</span>
-  <span class='kw'>end</span>
-<span class='kw'>end</span></pre>
-    </td>
-  </tr>
-</table>
-</div>
-    
-      <div class="method_details ">
-  <h3 class="signature " id="gen_adoc-instance_method">
-  
-    #<strong>gen_adoc</strong>(indent = 0, indent_spaces: 2)  &#x21d2; <tt>Object</tt> 
-  
-
-  
-
-  
-</h3><table class="source_code">
-  <tr>
-    <td>
-      <pre class="lines">
-
-
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14</pre>
-    </td>
-    <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/passes/gen_adoc.rb', line 4</span>
-
-<span class='kw'>def</span> <span class='id identifier rubyid_gen_adoc'>gen_adoc</span><span class='lparen'>(</span><span class='id identifier rubyid_indent'>indent</span> <span class='op'>=</span> <span class='int'>0</span><span class='comma'>,</span> <span class='label'>indent_spaces:</span> <span class='int'>2</span><span class='rparen'>)</span>
-  <span class='kw'>if</span> <span class='id identifier rubyid_terminal?'>terminal?</span>
-    <span class='id identifier rubyid_text_value'>text_value</span>
-  <span class='kw'>else</span>
-    <span class='id identifier rubyid_adoc'>adoc</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
-    <span class='id identifier rubyid_elements'>elements</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_e'>e</span><span class='op'>|</span>
-      <span class='id identifier rubyid_adoc'>adoc</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_gen_adoc'>gen_adoc</span><span class='lparen'>(</span><span class='id identifier rubyid_indent'>indent</span><span class='comma'>,</span> <span class='label'>indent_spaces:</span><span class='rparen'>)</span>
-    <span class='kw'>end</span>
-    <span class='id identifier rubyid_adoc'>adoc</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span><span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_a'>a</span><span class='op'>|</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='embexpr_beg'>#{</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'> </span><span class='tstring_end'>&#39;</span></span><span class='op'>*</span><span class='id identifier rubyid_indent'>indent</span><span class='embexpr_end'>}</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_a'>a</span><span class='embexpr_end'>}</span><span class='tstring_end'>&quot;</span></span> <span class='rbrace'>}</span><span class='period'>.</span><span class='id identifier rubyid_join'>join</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span>
   <span class='kw'>end</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -848,12 +780,12 @@
       <pre class="lines">
 
 
-59
-60
-61</pre>
+62
+63
+64</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 59</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 62</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_lineno'>lineno</span>
   <span class='id identifier rubyid_input'>input</span><span class='lbracket'>[</span><span class='int'>0</span><span class='op'>..</span><span class='id identifier rubyid_interval'>interval</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_count'>count</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>\n</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span> <span class='op'>+</span> <span class='int'>1</span> <span class='op'>+</span> <span class='lparen'>(</span><span class='ivar'>@starting_line</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>?</span> <span class='int'>0</span> <span class='op'>:</span> <span class='ivar'>@starting_line</span><span class='rparen'>)</span>
@@ -983,19 +915,23 @@
 30
 31
 32
-33</pre>
+33
+34
+35</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/idl/passes/prune.rb', line 11</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_prune'>prune</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
-
   <span class='id identifier rubyid_new_elements'>new_elements</span> <span class='op'>=</span> <span class='id identifier rubyid_elements'>elements</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>?</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='op'>:</span> <span class='id identifier rubyid_elements'>elements</span><span class='period'>.</span><span class='id identifier rubyid_map'>map</span> <span class='lbrace'>{</span> <span class='op'>|</span><span class='id identifier rubyid_e'>e</span><span class='op'>|</span> <span class='id identifier rubyid_e'>e</span><span class='period'>.</span><span class='id identifier rubyid_prune'>prune</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span> <span class='rbrace'>}</span>
-  <span class='id identifier rubyid_new_node'>new_node</span> <span class='op'>=</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_input'>input</span><span class='comma'>,</span> <span class='id identifier rubyid_interval'>interval</span><span class='comma'>,</span> <span class='id identifier rubyid_new_elements'>new_elements</span><span class='rparen'>)</span>
-  <span class='id identifier rubyid_extension_modules'>extension_modules</span><span class='period'>.</span><span class='id identifier rubyid_each'>each</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_m'>m</span><span class='op'>|</span>
-    <span class='id identifier rubyid_new_node'>new_node</span><span class='period'>.</span><span class='id identifier rubyid_extend'>extend</span> <span class='id identifier rubyid_m'>m</span>
-  <span class='kw'>end</span>
+  <span class='id identifier rubyid_new_node'>new_node</span> <span class='op'>=</span> <span class='id identifier rubyid_clone'>clone</span> <span class='comment'># self.class.new(input, interval, new_elements)
+</span>  <span class='id identifier rubyid_new_node'>new_node</span><span class='period'>.</span><span class='id identifier rubyid_elements'>elements</span><span class='period'>.</span><span class='id identifier rubyid_clear'>clear</span>
+  <span class='id identifier rubyid_new_node'>new_node</span><span class='period'>.</span><span class='id identifier rubyid_elements'>elements</span><span class='period'>.</span><span class='id identifier rubyid_concat'>concat</span><span class='lparen'>(</span><span class='id identifier rubyid_new_elements'>new_elements</span><span class='rparen'>)</span>
 
+  <span class='comment'># extension_modules.each do |m|
+</span>    <span class='comment'># new_node.extend m
+</span>  <span class='comment'># end
+</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../Idl.html" title="Idl (module)">Idl</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Idl/AstNode.html" title="Idl::AstNode (class)">AstNode</a></span></span><span class='rparen'>)</span>
     <span class='kw'>begin</span>
       <span class='kw'>if</span> <span class='id identifier rubyid_new_node'>new_node</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../Idl.html" title="Idl (module)">Idl</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Idl/Declaration.html" title="Idl::Declaration (module)">Declaration</a></span></span><span class='rparen'>)</span>
@@ -1005,8 +941,8 @@
         <span class='id identifier rubyid_new_node'>new_node</span><span class='period'>.</span><span class='id identifier rubyid_execute'>execute</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span> <span class='comment'># to update values
 </span>      <span class='kw'>end</span>
     <span class='kw'>rescue</span> <span class='const'><span class='object_link'><a href="../../Idl.html" title="Idl (module)">Idl</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Idl/AstNode.html" title="Idl::AstNode (class)">AstNode</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../../Idl/AstNode/ValueError.html" title="Idl::AstNode::ValueError (class)">ValueError</a></span></span>
-      <span class='id identifier rubyid_new_node'>new_node</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
-    <span class='kw'>end</span>
+      <span class='comment'># new_node.type_check(symtab)
+</span>    <span class='kw'>end</span>
   <span class='kw'>end</span>
 
   <span class='id identifier rubyid_new_node'>new_node</span>
@@ -1084,7 +1020,10 @@
 53
 54
 55
-56</pre>
+56
+57
+58
+59</pre>
     </td>
     <td>
       <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 52</span>
@@ -1092,6 +1031,9 @@
 <span class='kw'>def</span> <span class='id identifier rubyid_set_input_file'>set_input_file</span><span class='lparen'>(</span><span class='id identifier rubyid_filename'>filename</span><span class='comma'>,</span> <span class='id identifier rubyid_starting_line'>starting_line</span> <span class='op'>=</span> <span class='int'>0</span><span class='rparen'>)</span>
   <span class='ivar'>@input_file</span> <span class='op'>=</span> <span class='id identifier rubyid_filename'>filename</span>
   <span class='ivar'>@starting_line</span> <span class='op'>=</span> <span class='id identifier rubyid_starting_line'>starting_line</span>
+  <span class='id identifier rubyid_elements'>elements</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span> <span class='op'>||</span> <span class='id identifier rubyid_elements'>elements</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span><span class='period'>.</span><span class='id identifier rubyid_times'>times</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_i'>i</span><span class='op'>|</span>
+    <span class='id identifier rubyid_elements'>elements</span><span class='lbracket'>[</span><span class='id identifier rubyid_i'>i</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_set_input_file'>set_input_file</span><span class='lparen'>(</span><span class='id identifier rubyid_filename'>filename</span><span class='comma'>,</span> <span class='id identifier rubyid_starting_line'>starting_line</span><span class='rparen'>)</span>
+  <span class='kw'>end</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>?</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='ivar'>@starting_line</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
 <span class='kw'>end</span></pre>
     </td>
@@ -1185,7 +1127,7 @@
 </div>
 
       <div id="footer">
-  Generated on Tue Jul 16 12:06:46 2024 by
+  Generated on Thu Jul 18 13:55:44 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

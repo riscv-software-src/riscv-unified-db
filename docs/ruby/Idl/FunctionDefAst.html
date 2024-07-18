@@ -639,19 +639,19 @@
       <pre class="lines">
 
 
-3356
-3357
-3358
-3359
-3360
-3361
-3362
-3363
-3364
-3365</pre>
+3524
+3525
+3526
+3527
+3528
+3529
+3530
+3531
+3532
+3533</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3356</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3524</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_add_symbol'>add_symbol</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='comment'># now add the function in global scope
@@ -712,33 +712,33 @@
       <pre class="lines">
 
 
-3223
-3224
-3225
-3226
-3227
-3228
-3229
-3230
-3231
-3232
-3233
-3234
-3235
-3236
-3237
-3238
-3239
-3240
-3241
-3242
-3243
-3244
-3245
-3246</pre>
+3391
+3392
+3393
+3394
+3395
+3396
+3397
+3398
+3399
+3400
+3401
+3402
+3403
+3404
+3405
+3406
+3407
+3408
+3409
+3410
+3411
+3412
+3413
+3414</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3223</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3391</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_arguments'>arguments</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='kw'>if</span> <span class='id identifier rubyid_templated?'>templated?</span>
@@ -795,19 +795,19 @@
       <pre class="lines">
 
 
-3250
-3251
-3252
-3253
-3254
-3255
-3256
-3257
-3258
-3259</pre>
+3418
+3419
+3420
+3421
+3422
+3423
+3424
+3425
+3426
+3427</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3250</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3418</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_arguments_list_str'>arguments_list_str</span>
   <span class='id identifier rubyid_list'>list</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
@@ -839,14 +839,14 @@
       <pre class="lines">
 
 
-3474
-3475
-3476
-3477
-3478</pre>
+3642
+3643
+3644
+3645
+3646</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3474</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3642</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_body'>body</span>
   <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Function has no body</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_builtin?'>builtin?</span>
@@ -908,12 +908,12 @@
       <pre class="lines">
 
 
-3490
-3491
-3492</pre>
+3658
+3659
+3660</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3490</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3658</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_builtin?'>builtin?</span>
   <span class='op'>!</span><span class='id identifier rubyid_respond_to?'>respond_to?</span><span class='lparen'>(</span><span class='symbol'>:body_block</span><span class='rparen'>)</span>
@@ -938,12 +938,12 @@
       <pre class="lines">
 
 
-3208
-3209
-3210</pre>
+3376
+3377
+3378</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3208</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3376</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_description'>description</span>
   <span class='id identifier rubyid_unindent'>unindent</span><span class='lparen'>(</span><span class='id identifier rubyid_desc'>desc</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span><span class='rparen'>)</span>
@@ -968,12 +968,12 @@
       <pre class="lines">
 
 
-3310
-3311
-3312</pre>
+3478
+3479
+3480</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3310</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3478</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_name'>name</span>
   <span class='id identifier rubyid_function_name'>function_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span>
@@ -998,14 +998,14 @@
       <pre class="lines">
 
 
-3216
-3217
-3218
-3219
-3220</pre>
+3384
+3385
+3386
+3387
+3388</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3216</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3384</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_num_args'>num_args</span>
   <span class='kw'>return</span> <span class='int'>0</span> <span class='kw'>if</span> <span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -1043,41 +1043,41 @@
       <pre class="lines">
 
 
-3262
-3263
-3264
-3265
-3266
-3267
-3268
-3269
-3270
-3271
-3272
-3273
-3274
-3275
-3276
-3277
-3278
-3279
-3280
-3281
-3282
-3283
-3284
-3285
-3286
-3287
-3288
-3289
-3290
-3291
-3292
-3293</pre>
+3430
+3431
+3432
+3433
+3434
+3435
+3436
+3437
+3438
+3439
+3440
+3441
+3442
+3443
+3444
+3445
+3446
+3447
+3448
+3449
+3450
+3451
+3452
+3453
+3454
+3455
+3456
+3457
+3458
+3459
+3460
+3461</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3262</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3430</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_return_type'>return_type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='kw'>unless</span> <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_levels'>levels</span> <span class='op'>==</span> <span class='int'>2</span>
@@ -1142,21 +1142,21 @@
       <pre class="lines">
 
 
-3297
-3298
-3299
-3300
-3301
-3302
-3303
-3304
-3305
-3306
-3307
-3308</pre>
+3465
+3466
+3467
+3468
+3469
+3470
+3471
+3472
+3473
+3474
+3475
+3476</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3297</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3465</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_return_type_list_str'>return_type_list_str</span>
   <span class='id identifier rubyid_list'>list</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
@@ -1219,18 +1219,18 @@
       <pre class="lines">
 
 
-3368
-3369
-3370
-3371
-3372
-3373
-3374
-3375
-3376</pre>
+3536
+3537
+3538
+3539
+3540
+3541
+3542
+3543
+3544</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3368</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3536</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_template_names'>template_names</span>
   <span class='kw'>return</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='kw'>unless</span> <span class='id identifier rubyid_templated?'>templated?</span>
@@ -1310,23 +1310,23 @@
       <pre class="lines">
 
 
-3380
-3381
-3382
-3383
-3384
-3385
-3386
-3387
-3388
-3389
-3390
-3391
-3392
-3393</pre>
+3548
+3549
+3550
+3551
+3552
+3553
+3554
+3555
+3556
+3557
+3558
+3559
+3560
+3561</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3380</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3548</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_template_types'>template_types</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='lbracket'>[</span><span class='rbracket'>]</span> <span class='kw'>unless</span> <span class='id identifier rubyid_templated?'>templated?</span>
@@ -1384,12 +1384,12 @@
       <pre class="lines">
 
 
-3212
-3213
-3214</pre>
+3380
+3381
+3382</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3212</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3380</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_templated?'>templated?</span>
   <span class='op'>!</span><span class='id identifier rubyid_targs'>targs</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -1479,17 +1479,17 @@
       <pre class="lines">
 
 
-3346
-3347
-3348
-3349
-3350
-3351
-3352
-3353</pre>
+3514
+3515
+3516
+3517
+3518
+3519
+3520
+3521</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3346</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3514</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Functions must be declared at global scope (at </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_levels'>levels</span><span class='embexpr_end'>}</span><span class='tstring_content'>)</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_levels'>levels</span> <span class='op'>==</span> <span class='int'>1</span>
@@ -1519,32 +1519,32 @@
       <pre class="lines">
 
 
-3439
-3440
-3441
-3442
-3443
-3444
-3445
-3446
-3447
-3448
-3449
-3450
-3451
-3452
-3453
-3454
-3455
-3456
-3457
-3458
-3459
-3460
-3461</pre>
+3607
+3608
+3609
+3610
+3611
+3612
+3613
+3614
+3615
+3616
+3617
+3618
+3619
+3620
+3621
+3622
+3623
+3624
+3625
+3626
+3627
+3628
+3629</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3439</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3607</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_check_args'>type_check_args</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='ivar'>@arguments</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
@@ -1589,19 +1589,19 @@
       <pre class="lines">
 
 
-3463
-3464
-3465
-3466
-3467
-3468
-3469
-3470
-3471
-3472</pre>
+3631
+3632
+3633
+3634
+3635
+3636
+3637
+3638
+3639
+3640</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3463</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3631</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_check_body'>type_check_body</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
 
@@ -1644,21 +1644,21 @@
       <pre class="lines">
 
 
-3332
-3333
-3334
-3335
-3336
-3337
-3338
-3339
-3340
-3341
-3342
-3343</pre>
+3500
+3501
+3502
+3503
+3504
+3505
+3506
+3507
+3508
+3509
+3510
+3511</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3332</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3500</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_check_from_call'>type_check_from_call</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Function definitions should be at global + 1 scope</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_levels'>levels</span> <span class='op'>==</span> <span class='int'>2</span>
@@ -1692,25 +1692,25 @@
       <pre class="lines">
 
 
-3422
-3423
-3424
-3425
-3426
-3427
-3428
-3429
-3430
-3431
-3432
-3433
-3434
-3435
-3436
-3437</pre>
+3590
+3591
+3592
+3593
+3594
+3595
+3596
+3597
+3598
+3599
+3600
+3601
+3602
+3603
+3604
+3605</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3422</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3590</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_check_return'>type_check_return</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='kw'>if</span> <span class='id identifier rubyid_ret'>ret</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -1748,35 +1748,35 @@
       <pre class="lines">
 
 
-3395
-3396
-3397
-3398
-3399
-3400
-3401
-3402
-3403
-3404
-3405
-3406
-3407
-3408
-3409
-3410
-3411
-3412
-3413
-3414
-3415
-3416
-3417
-3418
-3419
-3420</pre>
+3563
+3564
+3565
+3566
+3567
+3568
+3569
+3570
+3571
+3572
+3573
+3574
+3575
+3576
+3577
+3578
+3579
+3580
+3581
+3582
+3583
+3584
+3585
+3586
+3587
+3588</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3395</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3563</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_check_targs'>type_check_targs</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='ivar'>@template_names</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
@@ -1853,22 +1853,22 @@
       <pre class="lines">
 
 
-3315
-3316
-3317
-3318
-3319
-3320
-3321
-3322
-3323
-3324
-3325
-3326
-3327</pre>
+3483
+3484
+3485
+3486
+3487
+3488
+3489
+3490
+3491
+3492
+3493
+3494
+3495</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3315</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 3483</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_check_template_instance'>type_check_template_instance</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_internal_error'>internal_error</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Function definitions should be at global + 1 scope</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_symtab'>symtab</span><span class='period'>.</span><span class='id identifier rubyid_levels'>levels</span> <span class='op'>==</span> <span class='int'>2</span>
@@ -1893,7 +1893,7 @@
 </div>
 
       <div id="footer">
-  Generated on Tue Jul 16 12:06:47 2024 by
+  Generated on Thu Jul 18 13:55:46 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>

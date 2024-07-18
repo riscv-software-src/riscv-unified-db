@@ -403,13 +403,13 @@ bitfield (64) Sv39PageTableEntry {
       <pre class="lines">
 
 
-725
-726
-727
-728</pre>
+737
+738
+739
+740</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 725</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 737</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_add_symbol'>add_symbol</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_t'>t</span> <span class='op'>=</span> <span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
@@ -464,14 +464,14 @@ bitfield (64) Sv39PageTableEntry {
       <pre class="lines">
 
 
-686
-687
-688
-689
-690</pre>
+698
+699
+700
+701
+702</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 686</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 698</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_element_names'>element_names</span>
   <span class='kw'>return</span> <span class='ivar'>@element_names</span> <span class='kw'>unless</span> <span class='ivar'>@element_names</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -527,22 +527,22 @@ bitfield (64) Sv39PageTableEntry {
       <pre class="lines">
 
 
-694
-695
-696
-697
-698
-699
-700
-701
-702
-703
-704
-705
-706</pre>
+706
+707
+708
+709
+710
+711
+712
+713
+714
+715
+716
+717
+718</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 694</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 706</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_element_ranges'>element_ranges</span>
   <span class='kw'>return</span> <span class='ivar'>@element_ranges</span> <span class='kw'>unless</span> <span class='ivar'>@element_ranges</span><span class='period'>.</span><span class='id identifier rubyid_nil?'>nil?</span>
@@ -606,10 +606,10 @@ bitfield (64) Sv39PageTableEntry {
       <pre class="lines">
 
 
-734</pre>
+746</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 734</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 746</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_name'>name</span> <span class='op'>=</span> <span class='id identifier rubyid_user_type_name'>user_type_name</span><span class='period'>.</span><span class='id identifier rubyid_text_value'>text_value</span></pre>
     </td>
@@ -661,17 +661,17 @@ bitfield (64) Sv39PageTableEntry {
       <pre class="lines">
 
 
-740
-741
-742
-743
-744
-745
-746
-747</pre>
+752
+753
+754
+755
+756
+757
+758
+759</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 740</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 752</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_idl'>to_idl</span>
   <span class='id identifier rubyid_idl'>idl</span> <span class='op'>=</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>bitfield (</span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_bf_size'>bf_size</span><span class='embexpr_end'>}</span><span class='tstring_content'>) </span><span class='embexpr_beg'>#{</span><span class='id identifier rubyid_name'>name</span><span class='embexpr_end'>}</span><span class='tstring_content'> { </span><span class='tstring_end'>&quot;</span></span>
@@ -750,10 +750,10 @@ bitfield (64) Sv39PageTableEntry {
       <pre class="lines">
 
 
-731</pre>
+743</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 731</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 743</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type'>type</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="BitfieldType.html" title="Idl::BitfieldType (class)">BitfieldType</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="BitfieldType.html#initialize-instance_method" title="Idl::BitfieldType#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid_int'>int</span><span class='period'>.</span><span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span><span class='comma'>,</span> <span class='id identifier rubyid_element_names'>element_names</span><span class='comma'>,</span> <span class='id identifier rubyid_element_ranges'>element_ranges</span><span class='rparen'>)</span></pre>
     </td>
@@ -841,23 +841,23 @@ bitfield (64) Sv39PageTableEntry {
       <pre class="lines">
 
 
-709
-710
-711
-712
-713
-714
-715
-716
-717
-718
-719
-720
 721
-722</pre>
+722
+723
+724
+725
+726
+727
+728
+729
+730
+731
+732
+733
+734</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 709</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 721</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_int'>int</span><span class='period'>.</span><span class='id identifier rubyid_type_check'>type_check</span><span class='lparen'>(</span><span class='id identifier rubyid_symtab'>symtab</span><span class='rparen'>)</span>
@@ -974,10 +974,10 @@ bitfield (64) Sv39PageTableEntry {
       <pre class="lines">
 
 
-737</pre>
+749</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 737</span>
+      <pre class="code"><span class="info file"># File 'lib/idl/ast.rb', line 749</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_value'>value</span><span class='lparen'>(</span><span class='id identifier rubyid__symtab'>_symtab</span><span class='comma'>,</span> <span class='id identifier rubyid__archdef'>_archdef</span><span class='rparen'>)</span> <span class='op'>=</span> <span class='id identifier rubyid_raise'>raise</span> <span class='const'><span class='object_link'><a href="AstNode.html" title="Idl::AstNode (class)">AstNode</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="AstNode/InternalError.html" title="Idl::AstNode::InternalError (class)">InternalError</a></span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Bitfield defintions have no value</span><span class='tstring_end'>&quot;</span></span></pre>
     </td>
@@ -990,7 +990,7 @@ bitfield (64) Sv39PageTableEntry {
 </div>
 
       <div id="footer">
-  Generated on Tue Jul 16 12:06:46 2024 by
+  Generated on Thu Jul 18 13:55:45 2024 by
   <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
   0.9.36 (ruby-3.2.3).
 </div>
