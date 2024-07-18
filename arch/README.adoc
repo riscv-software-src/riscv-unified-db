@@ -234,6 +234,6 @@ CSR fields are given a type, which _does not_ necessarily correspond to the WARL
 | *RW-RH* | Read-write, only a restricted set of values are allowed, and hardware updates the field
 |===
 
-In many cases, the values of CSR and/or CSR field data are configuration dependent. Some of that is covered directly by the data model (_e.g._, with `location_rv32`, `location_rv64`), but some cases are too complex to express with YAML. For this reason, many of the keys can be specified as IDL functions. See the schema documentation and examples in the `arch/csr` folder for more information.
+In many cases, the values of CSR and/or CSR field data are configuration dependent. Some of that is covered directly by the data model (_e.g._, with `location_rv32`, `location_rv64`), but some cases are too complex to express with YAML. For this reason, many of the keys can be specified as IDL functions. See the xref:csr/schema.adoc[schema] documentation and examples in the `arch/csr` folder for more information.
 
 Some keys that only apply to certain CSRs are not shown above.
