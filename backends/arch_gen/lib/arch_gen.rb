@@ -749,12 +749,26 @@ class ArchGen
     begin
       inst_data = @validator.validate_str(inst_yaml, type: :inst)
     rescue Validator::ValidationError => e
-      warn "Instruction definition in #{merged_path} did not validate"
+      warn "Instruction definition in #{gen_inst_path} did not validate"
       raise e
     end
 
     inst_obj = Instruction.new(inst_data[inst_name])
-
+    possible_xlens = [@params["XLEN"]]
+    if @cfg["extensions"].any? { |e| e[0] == "S" }
+      possible_xlens << 32 if [32, 3264].include?(@params["SXLEN"])
+      possible_xlens << 64 if [64, 3264].include?(@params["SXLEN"])
+    end
+    if @cfg["extensions"].any? { |e| e[0] == "U" }
+      possible_xlens << 32 if [32, 3264].include?(@params["UXLEN"])
+      possible_xlens << 64 if [64, 3264].include?(@params["UXLEN"])
+    end
+    if @cfg["extensions"].any? { |e| e[0] == "H" }
+      possible_xlens << 32 if [32, 3264].include?(@params["VSXLEN"])
+      possible_xlens << 32 if [32, 3264].include?(@params["VUXLEN"])
+      possible_xlens << 64 if [64, 3264].include?(@params["VSXLEN"])
+      possible_xlens << 64 if [64, 3264].include?(@params["VUXLEN"])
+    end
     belongs =
       inst_obj.exists_in_cfg?(
         possible_xlens.uniq,

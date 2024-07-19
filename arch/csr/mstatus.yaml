@@ -10,7 +10,7 @@ mstatus:
   # MXLEN cannot change dynamically, so this will be converted to an integer
   # in the genrated, configuration-dependent spec
   length: MXLEN
-
+ 
   description: The mstatus register tracks and controls the hart's current operating state.
   definedBy: I
   fields:
