@@ -1,6 +1,0 @@
-
-# this single template is used to generate all 29 of the mhpmevent csrs
-
-# <% hpm_num = 29 %>
-
-<%= ERB.new(File.read("#{File.dirname(__FILE__)}/mhpmeventN.layout"), trim_mode: "-").result(binding) %>

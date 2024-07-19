@@ -1,0 +1,406 @@
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+# WARNING: This file is auto-generated from arch/csr/Zicntr/mcountinhibit.layout
+
+
+mcountinhibit:
+  long_name: Machine Counter Inhibit
+  address: 0x320
+  priv_mode: M
+  length: 32
+  description: |
+    Bits to inhibit (stops counting) performance counters.
+
+    The counter-inhibit register `mcountinhibit` is a *WARL* register that
+    controls which of the hardware performance-monitoring counters
+    increment. The settings in this register only control whether the
+    counters increment; their accessibility is not affected by the setting
+    of this register.
+
+    When the CY, IR, or HPM__n__ bit in the `mcountinhibit` register is clear,
+    the `mcycle`, `minstret`, or `mhpmcountern` register increments as usual.
+    When the CY, IR, or HPM_n_ bit is set, the corresponding counter does
+    not increment.
+
+    The `mcycle` CSR may be shared between harts on the same core, in which
+    case the `mcountinhibit.CY` field is also shared between those harts,
+    and so writes to `mcountinhibit.CY` will be visible to those harts.
+
+    If the `mcountinhibit` register is not implemented, the implementation
+    behaves as though the register were set to zero.
+
+    [NOTE]
+    ====
+    When the `mcycle` and `minstret` counters are not needed, it is desirable
+    to conditionally inhibit them to reduce energy consumption. Providing a
+    single CSR to inhibit all counters also allows the counters to be
+    atomically sampled.
+
+    Because the `mtime` counter can be shared between multiple cores, it
+    cannot be inhibited with the `mcountinhibit` mechanism.
+    ====
+
+  definedBy: [Zicntr, Zihpm]
+  fields:
+    CY:
+      location: 0
+      description: When set, `mcycle.COUNT` stops counting in all privilege modes.
+      type(): |
+        return COUNTINHIBIT_EN[0] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[0] ? UNDEFINED_LEGAL : 0;
+    IR:
+      location: 2
+      description: When set, `minstret.COUNT` stops counting in all privilege modes.
+      type(): |
+        return COUNTINHIBIT_EN[2] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[2] ? UNDEFINED_LEGAL : 0;
+    HPM3:
+      location: 3
+      description: |
+        <%- if NUM_HPM_COUNTERS > 0 -%>
+        When set, `hpmcounter3.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter3 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[3] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[3] ? UNDEFINED_LEGAL : 0;
+    HPM4:
+      location: 4
+      description: |
+        <%- if NUM_HPM_COUNTERS > 1 -%>
+        When set, `hpmcounter4.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter4 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[4] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[4] ? UNDEFINED_LEGAL : 0;
+    HPM5:
+      location: 5
+      description: |
+        <%- if NUM_HPM_COUNTERS > 2 -%>
+        When set, `hpmcounter5.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter5 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[5] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[5] ? UNDEFINED_LEGAL : 0;
+    HPM6:
+      location: 6
+      description: |
+        <%- if NUM_HPM_COUNTERS > 3 -%>
+        When set, `hpmcounter6.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter6 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[6] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[6] ? UNDEFINED_LEGAL : 0;
+    HPM7:
+      location: 7
+      description: |
+        <%- if NUM_HPM_COUNTERS > 4 -%>
+        When set, `hpmcounter7.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter7 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[7] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[7] ? UNDEFINED_LEGAL : 0;
+    HPM8:
+      location: 8
+      description: |
+        <%- if NUM_HPM_COUNTERS > 5 -%>
+        When set, `hpmcounter8.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter8 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[8] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[8] ? UNDEFINED_LEGAL : 0;
+    HPM9:
+      location: 9
+      description: |
+        <%- if NUM_HPM_COUNTERS > 6 -%>
+        When set, `hpmcounter9.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter9 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[9] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[9] ? UNDEFINED_LEGAL : 0;
+    HPM10:
+      location: 10
+      description: |
+        <%- if NUM_HPM_COUNTERS > 7 -%>
+        When set, `hpmcounter10.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter10 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[10] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[10] ? UNDEFINED_LEGAL : 0;
+    HPM11:
+      location: 11
+      description: |
+        <%- if NUM_HPM_COUNTERS > 8 -%>
+        When set, `hpmcounter11.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter11 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[11] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[11] ? UNDEFINED_LEGAL : 0;
+    HPM12:
+      location: 12
+      description: |
+        <%- if NUM_HPM_COUNTERS > 9 -%>
+        When set, `hpmcounter12.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter12 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[12] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[12] ? UNDEFINED_LEGAL : 0;
+    HPM13:
+      location: 13
+      description: |
+        <%- if NUM_HPM_COUNTERS > 10 -%>
+        When set, `hpmcounter13.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter13 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[13] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[13] ? UNDEFINED_LEGAL : 0;
+    HPM14:
+      location: 14
+      description: |
+        <%- if NUM_HPM_COUNTERS > 11 -%>
+        When set, `hpmcounter14.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter14 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[14] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[14] ? UNDEFINED_LEGAL : 0;
+    HPM15:
+      location: 15
+      description: |
+        <%- if NUM_HPM_COUNTERS > 12 -%>
+        When set, `hpmcounter15.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter15 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[15] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[15] ? UNDEFINED_LEGAL : 0;
+    HPM16:
+      location: 16
+      description: |
+        <%- if NUM_HPM_COUNTERS > 13 -%>
+        When set, `hpmcounter16.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter16 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[16] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[16] ? UNDEFINED_LEGAL : 0;
+    HPM17:
+      location: 17
+      description: |
+        <%- if NUM_HPM_COUNTERS > 14 -%>
+        When set, `hpmcounter17.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter17 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[17] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[17] ? UNDEFINED_LEGAL : 0;
+    HPM18:
+      location: 18
+      description: |
+        <%- if NUM_HPM_COUNTERS > 15 -%>
+        When set, `hpmcounter18.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter18 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[18] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[18] ? UNDEFINED_LEGAL : 0;
+    HPM19:
+      location: 19
+      description: |
+        <%- if NUM_HPM_COUNTERS > 16 -%>
+        When set, `hpmcounter19.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter19 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[19] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[19] ? UNDEFINED_LEGAL : 0;
+    HPM20:
+      location: 20
+      description: |
+        <%- if NUM_HPM_COUNTERS > 17 -%>
+        When set, `hpmcounter20.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter20 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[20] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[20] ? UNDEFINED_LEGAL : 0;
+    HPM21:
+      location: 21
+      description: |
+        <%- if NUM_HPM_COUNTERS > 18 -%>
+        When set, `hpmcounter21.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter21 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[21] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[21] ? UNDEFINED_LEGAL : 0;
+    HPM22:
+      location: 22
+      description: |
+        <%- if NUM_HPM_COUNTERS > 19 -%>
+        When set, `hpmcounter22.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter22 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[22] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[22] ? UNDEFINED_LEGAL : 0;
+    HPM23:
+      location: 23
+      description: |
+        <%- if NUM_HPM_COUNTERS > 20 -%>
+        When set, `hpmcounter23.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter23 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[23] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[23] ? UNDEFINED_LEGAL : 0;
+    HPM24:
+      location: 24
+      description: |
+        <%- if NUM_HPM_COUNTERS > 21 -%>
+        When set, `hpmcounter24.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter24 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[24] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[24] ? UNDEFINED_LEGAL : 0;
+    HPM25:
+      location: 25
+      description: |
+        <%- if NUM_HPM_COUNTERS > 22 -%>
+        When set, `hpmcounter25.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter25 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[25] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[25] ? UNDEFINED_LEGAL : 0;
+    HPM26:
+      location: 26
+      description: |
+        <%- if NUM_HPM_COUNTERS > 23 -%>
+        When set, `hpmcounter26.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter26 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[26] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[26] ? UNDEFINED_LEGAL : 0;
+    HPM27:
+      location: 27
+      description: |
+        <%- if NUM_HPM_COUNTERS > 24 -%>
+        When set, `hpmcounter27.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter27 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[27] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[27] ? UNDEFINED_LEGAL : 0;
+    HPM28:
+      location: 28
+      description: |
+        <%- if NUM_HPM_COUNTERS > 25 -%>
+        When set, `hpmcounter28.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter28 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[28] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[28] ? UNDEFINED_LEGAL : 0;
+    HPM29:
+      location: 29
+      description: |
+        <%- if NUM_HPM_COUNTERS > 26 -%>
+        When set, `hpmcounter29.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter29 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[29] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[29] ? UNDEFINED_LEGAL : 0;
+    HPM30:
+      location: 30
+      description: |
+        <%- if NUM_HPM_COUNTERS > 27 -%>
+        When set, `hpmcounter30.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter30 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[30] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[30] ? UNDEFINED_LEGAL : 0;
+    HPM31:
+      location: 31
+      description: |
+        <%- if NUM_HPM_COUNTERS > 28 -%>
+        When set, `hpmcounter31.COUNT` stops counting in all privilege modes.
+        <%- else -%>
+        Since hpmcounter31 is not implemented, this field is read-only zero.
+        <%- end -%>
+      type(): |
+        return COUNTINHIBIT_EN[31] ? CsrFieldType::RW : CsrFieldType::RO;
+      reset_value(): |
+        return COUNTINHIBIT_EN[31] ? UNDEFINED_LEGAL : 0;

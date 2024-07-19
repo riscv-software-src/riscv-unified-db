@@ -1,0 +1,642 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+# WARNING: This file is auto-generated from arch/csr/S/scounteren.layout
+
+
+scounteren:
+  long_name: Supervisor Counter Enable
+  address: 0x106
+  priv_mode: M
+  length: 32
+  description: |
+    Delegates control of the hardware performance-monitoring counters
+    to U-mode
+  definedBy: S
+  fields:
+    CY:
+      location: 0
+      description: |
+        When both `scounteren.CY` and `mcounteren.CY` are set, the `cycle` CSR (an alias of `mcycle`) is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.CY`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.CY` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.CY` ! `scounteren.CY` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+      definedBy: Zicntr
+      type: RW-H
+      reset_value: UNDEFINED_LEGAL
+    IR:
+      location: 2
+      description: |
+        When both `scounteren.IR` and `mcounteren.IR` are set, the `instret` CSR (an alias of memory-mapped `minstret`) is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.IR`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.IR` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.IR` ! `scounteren.IR` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+
+      type: RW-H
+      reset_value: UNDEFINED_LEGAL
+    HPM3:
+      location: 3
+      description: |
+        When both `scounteren.HPM3` and `mcounteren.HPM3` are set, the `hpmcounter3` CSR (an alias of `mhpmcounter3`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM3`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM3` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM3` ! `scounteren.HPM3` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM4:
+      location: 4
+      description: |
+        When both `scounteren.HPM4` and `mcounteren.HPM4` are set, the `hpmcounter4` CSR (an alias of `mhpmcounter4`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM4`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM4` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM4` ! `scounteren.HPM4` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM5:
+      location: 5
+      description: |
+        When both `scounteren.HPM5` and `mcounteren.HPM5` are set, the `hpmcounter5` CSR (an alias of `mhpmcounter5`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM5`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM5` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM5` ! `scounteren.HPM5` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM6:
+      location: 6
+      description: |
+        When both `scounteren.HPM6` and `mcounteren.HPM6` are set, the `hpmcounter6` CSR (an alias of `mhpmcounter6`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM6`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM6` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM6` ! `scounteren.HPM6` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM7:
+      location: 7
+      description: |
+        When both `scounteren.HPM7` and `mcounteren.HPM7` are set, the `hpmcounter7` CSR (an alias of `mhpmcounter7`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM7`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM7` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM7` ! `scounteren.HPM7` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM8:
+      location: 8
+      description: |
+        When both `scounteren.HPM8` and `mcounteren.HPM8` are set, the `hpmcounter8` CSR (an alias of `mhpmcounter8`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM8`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM8` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM8` ! `scounteren.HPM8` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM9:
+      location: 9
+      description: |
+        When both `scounteren.HPM9` and `mcounteren.HPM9` are set, the `hpmcounter9` CSR (an alias of `mhpmcounter9`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM9`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM9` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM9` ! `scounteren.HPM9` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM10:
+      location: 10
+      description: |
+        When both `scounteren.HPM10` and `mcounteren.HPM10` are set, the `hpmcounter10` CSR (an alias of `mhpmcounter10`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM10`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM10` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM10` ! `scounteren.HPM10` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM11:
+      location: 11
+      description: |
+        When both `scounteren.HPM11` and `mcounteren.HPM11` are set, the `hpmcounter11` CSR (an alias of `mhpmcounter11`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM11`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM11` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM11` ! `scounteren.HPM11` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM12:
+      location: 12
+      description: |
+        When both `scounteren.HPM12` and `mcounteren.HPM12` are set, the `hpmcounter12` CSR (an alias of `mhpmcounter12`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM12`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM12` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM12` ! `scounteren.HPM12` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM13:
+      location: 13
+      description: |
+        When both `scounteren.HPM13` and `mcounteren.HPM13` are set, the `hpmcounter13` CSR (an alias of `mhpmcounter13`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM13`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM13` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM13` ! `scounteren.HPM13` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM14:
+      location: 14
+      description: |
+        When both `scounteren.HPM14` and `mcounteren.HPM14` are set, the `hpmcounter14` CSR (an alias of `mhpmcounter14`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM14`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM14` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM14` ! `scounteren.HPM14` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM15:
+      location: 15
+      description: |
+        When both `scounteren.HPM15` and `mcounteren.HPM15` are set, the `hpmcounter15` CSR (an alias of `mhpmcounter15`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM15`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM15` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM15` ! `scounteren.HPM15` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM16:
+      location: 16
+      description: |
+        When both `scounteren.HPM16` and `mcounteren.HPM16` are set, the `hpmcounter16` CSR (an alias of `mhpmcounter16`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM16`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM16` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM16` ! `scounteren.HPM16` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM17:
+      location: 17
+      description: |
+        When both `scounteren.HPM17` and `mcounteren.HPM17` are set, the `hpmcounter17` CSR (an alias of `mhpmcounter17`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM17`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM17` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM17` ! `scounteren.HPM17` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM18:
+      location: 18
+      description: |
+        When both `scounteren.HPM18` and `mcounteren.HPM18` are set, the `hpmcounter18` CSR (an alias of `mhpmcounter18`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM18`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM18` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM18` ! `scounteren.HPM18` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM19:
+      location: 19
+      description: |
+        When both `scounteren.HPM19` and `mcounteren.HPM19` are set, the `hpmcounter19` CSR (an alias of `mhpmcounter19`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM19`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM19` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM19` ! `scounteren.HPM19` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM20:
+      location: 20
+      description: |
+        When both `scounteren.HPM20` and `mcounteren.HPM20` are set, the `hpmcounter20` CSR (an alias of `mhpmcounter20`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM20`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM20` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM20` ! `scounteren.HPM20` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM21:
+      location: 21
+      description: |
+        When both `scounteren.HPM21` and `mcounteren.HPM21` are set, the `hpmcounter21` CSR (an alias of `mhpmcounter21`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM21`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM21` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM21` ! `scounteren.HPM21` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM22:
+      location: 22
+      description: |
+        When both `scounteren.HPM22` and `mcounteren.HPM22` are set, the `hpmcounter22` CSR (an alias of `mhpmcounter22`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM22`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM22` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM22` ! `scounteren.HPM22` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM23:
+      location: 23
+      description: |
+        When both `scounteren.HPM23` and `mcounteren.HPM23` are set, the `hpmcounter23` CSR (an alias of `mhpmcounter23`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM23`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM23` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM23` ! `scounteren.HPM23` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM24:
+      location: 24
+      description: |
+        When both `scounteren.HPM24` and `mcounteren.HPM24` are set, the `hpmcounter24` CSR (an alias of `mhpmcounter24`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM24`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM24` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM24` ! `scounteren.HPM24` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM25:
+      location: 25
+      description: |
+        When both `scounteren.HPM25` and `mcounteren.HPM25` are set, the `hpmcounter25` CSR (an alias of `mhpmcounter25`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM25`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM25` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM25` ! `scounteren.HPM25` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM26:
+      location: 26
+      description: |
+        When both `scounteren.HPM26` and `mcounteren.HPM26` are set, the `hpmcounter26` CSR (an alias of `mhpmcounter26`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM26`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM26` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM26` ! `scounteren.HPM26` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM27:
+      location: 27
+      description: |
+        When both `scounteren.HPM27` and `mcounteren.HPM27` are set, the `hpmcounter27` CSR (an alias of `mhpmcounter27`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM27`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM27` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM27` ! `scounteren.HPM27` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM28:
+      location: 28
+      description: |
+        When both `scounteren.HPM28` and `mcounteren.HPM28` are set, the `hpmcounter28` CSR (an alias of `mhpmcounter28`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM28`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM28` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM28` ! `scounteren.HPM28` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM29:
+      location: 29
+      description: |
+        When both `scounteren.HPM29` and `mcounteren.HPM29` are set, the `hpmcounter29` CSR (an alias of `mhpmcounter29`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM29`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM29` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM29` ! `scounteren.HPM29` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM30:
+      location: 30
+      description: |
+        When both `scounteren.HPM30` and `mcounteren.HPM30` are set, the `hpmcounter30` CSR (an alias of `mhpmcounter30`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM30`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM30` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM30` ! `scounteren.HPM30` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM31:
+      location: 31
+      description: |
+        When both `scounteren.HPM31` and `mcounteren.HPM31` are set, the `hpmcounter31` CSR (an alias of `mhpmcounter31`)
+        is accessible to U-mode
+        <% if ext?(:H) %>(delegation to VS/VU mode is further handled by `hcounteren.HPM31`)<% end %>.
+
+        This bit is read-only 0 when `mcounteren.HPM31` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM31` ! `scounteren.HPM31` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+  sw_read(): |
+    if (!implemented?(ExtensionName::Zicntr) && !implemented?(ExtensionName::Zihpm)) {
+      # this CSR isn't supposed to exist when Zicntr and Zihpm are not implemented
+      raise(ExceptionCode::IllegalInstruction, $encoding);
+    }
+
+    # any bit of mcounteren that is zero forces that same bit of scounteren to 0
+    return $bits(CSR[scountern]) & $bits(CSR[mcounteren]);

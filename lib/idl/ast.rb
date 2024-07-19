@@ -303,6 +303,8 @@ module Idl
   # reopen AstNode, and add functions
   class AstNode < Treetop::Runtime::SyntaxNode
     include AstNodeFuncs
+
+    def inspect = self.class.name.to_s
   end
 
   # interface for nodes that can be executed, but don't have a value (e.g., statements)
@@ -1185,11 +1187,11 @@ module Idl
         Type.new(:bits, width: var.type(symtab).range(field_name.text_value).size)
       when :csr
         if field(symtab).defined_in_all_bases?
-          Type.new(:bits, width: [field(symtab).location(32).size, field(symtab).location(64).size].max)
+          Type.new(:bits, width: [field(symtab).location(symtab.archdef, 32).size, field(symtab).location(symtab.archdef, 64).size].max)
         elsif field(symtab).base64_only?
-          Type.new(:bits, width: field(symtab).location(64).size)
+          Type.new(:bits, width: field(symtab).location(symtab.archdef, 64).size)
         elsif field(symtab).base32_only?
-          Type.new(:bits, width: field(symtab).location(32).size)
+          Type.new(:bits, width: field(symtab).location(symtab.archdef, 32).size)
         else
           internal_error "Unexpected base for field"
         end
@@ -1213,7 +1215,7 @@ module Idl
         fields = var.type(symtab).csr.fields.select { |f| f.name == field_name.text_value }
         type_error "#{field_name.text_value} is not a field of CSR #{rval.type(symtab).csr.name}" unless fields.size == 1
 
-        type_error "Cannot write to read-only CSR field" if ["RO", "RO-H"].any?(field(symtab).type)
+        type_error "Cannot write to read-only CSR field" if ["RO", "RO-H"].any?(field(symtab).type(symtab.archdef))
       else
         type_error "Field assignment on type that is not a bitfield or csr (#{var.type(symtab)})"
       end
@@ -1630,8 +1632,8 @@ module Idl
       when :enum_ref
         Type.new(:bits, width: etype.enum_class.width)
       when :csr
-        type_error "Cannot $bits cast CSR #{etype.csr.name} because its length is dynamic" if etype.csr.dynamic_length?
-        Type.new(:bits, width: etype.csr.length)
+        type_error "Cannot $bits cast CSR #{etype.csr.name} because its length is dynamic" if etype.csr.dynamic_length?(symtab.archdef)
+        Type.new(:bits, width: etype.csr.length(symtab.archdef))
       end
     end
 
@@ -4122,7 +4124,7 @@ module Idl
     end
 
     def field_def(symtab)
-      csr_def(symtab).implemented_fields.find { |f| f.name == csr_field_name.text_value }
+      csr_def(symtab).implemented_fields(symtab.archdef).find { |f| f.name == csr_field_name.text_value }
     end
 
     def field_name(symtab)
@@ -4142,11 +4144,11 @@ module Idl
     def type(symtab)
       fd = field_def(symtab)
       if fd.defined_in_all_bases?
-        Type.new(:bits, width: [fd.width(32), fd.width(64)].max)
+        Type.new(:bits, width: [fd.width(symtab.archdef, 32), fd.width(symtab.archdef, 64)].max)
       elsif fd.base64_only?
-        Type.new(:bits, width: fd.width(64))
+        Type.new(:bits, width: fd.width(symtab.archdef, 64))
       elsif fd.base32_only?
-        Type.new(:bits, width: fd.width(32))
+        Type.new(:bits, width: fd.width(symtab.archdef, 32))
       else
         internal_error "unexpected field base"
       end
@@ -4154,8 +4156,8 @@ module Idl
 
     # @!macro value
     def value(symtab)
-      value_error "'#{csr_name(symtab)}.#{field_name(symtab)}' is not RO" unless field_def(symtab).type == "RO"
-      field_def(symtab).reset_value
+      value_error "'#{csr_name(symtab)}.#{field_name(symtab)}' is not RO" unless field_def(symtab).type(symtab.archdef) == "RO"
+      field_def(symtab).reset_value(symtab.archdef)
     end
   end
 
@@ -4172,7 +4174,7 @@ module Idl
         # treat this as a generic
         Type.new(:bits, width: archdef.config_params["XLEN"])
       else
-        CsrType.new(cd)
+        CsrType.new(cd, archdef)
       end
     end
 
@@ -4235,7 +4237,7 @@ module Idl
       cd = csr_def(symtab)
       value_error "CSR number not knowable" if cd.nil?
       value_error "CSR is not implemented" unless symtab.archdef.implemented_csrs.any? { |icsr| icsr.name == cd.name }
-      cd.fields.each { |f| value_error "#{csr_name(symtab)}.#{f.name} not RO" unless f.type == "RO" }
+      cd.fields.each { |f| value_error "#{csr_name(symtab)}.#{f.name} not RO" unless f.type(symtab.archdef) == "RO" }
 
       csr_def(symtab).fields.reduce(0) { |val, f| val | (f.value << f.location.begin) }
     end
@@ -4351,7 +4353,7 @@ module Idl
 
     # @!macro type
     def type(symtab)
-      CsrType.new(csr_def(symtab))
+      CsrType.new(csr_def(symtab), symtab.archdef)
     end
 
     def name(symtab)

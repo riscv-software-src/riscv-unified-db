@@ -34,6 +34,8 @@ require_relative "idl/passes/prune"
 # is warranted, e.g., the CSR Field 'alias' returns a CsrFieldAlias object
 # instead of a simple string
 class ArchDefObject
+  attr_reader :data
+
   # @param data [Hash<String,Object>] Hash with fields to be added
   def initialize(data)
     raise "Bad data" unless data.is_a?(Hash)
@@ -51,6 +53,10 @@ class ArchDefObject
 
   # @return [Array<String>] List of keys added by this ArchDefObject
   def keys = @data.keys
+  
+  # @param k (see Hash#key?)
+  # @return (see Hash#key?)
+  def key?(k) = @data.key?(k)
 
   # adds accessor functions for any properties in the data
   def method_missing(method_name, *args, &block)
@@ -67,6 +73,69 @@ class ArchDefObject
 
   def respond_to_missing?(method_name, include_private = false)
     @data.key?(method_name.to_s) || super
+  end
+
+  # @overload defined_by?(ext_name, ext_version)
+  #   @param ext_name [#to_s] An extension name
+  #   @param ext_version [#to_s] A specific extension version
+  #   @return [Boolean] Whether or not the instruction is defined by extesion `ext`, version `version`
+  # @overload defined_by?(ext_version)
+  #   @param ext_version [ExtensionVersion] An extension version
+  #   @return [Boolean] Whether or not the instruction is defined by ext_version
+  def defined_by?(*args)
+    if args.size == 1
+      raise ArgumentError, "Parameter must be an ExtensionVersion" unless args[0].is_a?(ExtensionVersion)
+
+      extension_requirements.any? do |r|
+        r.satisfied_by?(args[0])
+      end
+    elsif args.size == 2
+      raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
+      raise ArgumentError, "Second parameter must be an extension version" unless args[0].respond_to?(:to_s)
+
+      extension_requirements.any? do |r|
+        r.satisfied_by?(args[0].to_s, args[1].to_s)
+      end
+    end
+  end
+
+  def to_extension_requirement(obj)
+    if obj.is_a?(String)
+      ExtensionRequirement.new(obj, ">= 0")
+    else
+      ExtensionRequirement.new(*obj)
+    end
+  end
+  private :to_extension_requirement
+
+  def extension_requirement?(obj)
+    obj.is_a?(String) && obj =~ /^([A-WY])|([SXZ][a-z]+)$/ ||
+      obj.is_a?(Array) && obj[0] =~ /^([A-WY])|([SXZ][a-z]+)$/
+  end
+  private :extension_requirement?
+
+  # @return [Array<ExtensionRequirement>] Extension requirements for the instruction. If *any* requirement is met, the instruction is defined
+  def extension_requirements
+    return @extension_requirements unless @extension_requirements.nil?
+
+    @extension_requirements = []
+    if @data["definedBy"].is_a?(Array)
+      # could be either a single extension with requirement, or a list of requirements
+      if extension_requirement?(@data["definedBy"][0])
+        @extension_requirements << to_extension_requirement(@data["definedBy"][0])
+      else
+        # this is a list
+        @data["definedBy"].each do |r|
+          @extension_requirements << to_extension_requirement(r)
+        end
+      end
+    else
+      @extension_requirements << to_extension_requirement(@data["definedBy"])
+    end
+
+    raise "empty requirements" if @extension_requirements.empty?
+
+    @extension_requirements
   end
 end
 
@@ -88,11 +157,15 @@ class CsrField < ArchDefObject
     @parent = parent_csr
   end
 
-  # @return [ArchDef] The owning ArchDef
-  def arch_def
-    @parent.arch_def
+  # @param possible_xlens [Array<Integer>] List of xlens that be used in any implemented mode
+  # @param extensions [Array<ExtensionVersion>] List of extensions implemented
+  # @return [Boolean] whether or not the instruction is implemented given the supplies config options
+  def exists_in_cfg?(possible_xlens, extensions)
+    parent.exists_in_cfg?(possible_xlens, extensions) &&
+      (@data["definedBy"].nil? || extensions.any? { |e| defined_by?(e) } )
   end
 
+  # @param arch_def [ArchDef] A config
   # @return [String]
   #    The type of the field. One of:
   #      'RO'    => Read-only
@@ -101,7 +174,7 @@ class CsrField < ArchDefObject
   #      'RW-R'  => Read-write, with a restricted set of legal values
   #      'RW-H'  => Read-write, with a hardware update
   #      'RW-RH' => Read-write, with a hardware update and a restricted set of legal values
-  def type
+  def type(arch_def)
     return @type unless @type.nil?
 
     @type =
@@ -113,8 +186,8 @@ class CsrField < ArchDefObject
         raise "type() is nil for #{csr.name}.#{name} #{@data}?" if idl.nil?
 
         expected_return_type =
-          Idl::Type.new(:enum_ref, enum_class: csr.sym_table.get("CsrFieldType"))
-        sym_table = csr.sym_table
+          Idl::Type.new(:enum_ref, enum_class: arch_def.sym_table.get("CsrFieldType"))
+        sym_table = arch_def.sym_table
 
         ast = arch_def.idl_compiler.compile_func_body(
           idl,
@@ -124,6 +197,7 @@ class CsrField < ArchDefObject
           parent: "#{csr.name}.#{name}"
         )
 
+        sym_table = sym_table.deep_clone(clone_values: true)
         sym_table.push # for consistency with template functions
 
         begin
@@ -188,17 +262,22 @@ class CsrField < ArchDefObject
   # @return [Csr] Parent CSR for this field
   alias csr parent
 
+  # @param arch_def [ArchDef] A configuration
   # @return [Boolean] Whether or not the location of the field changes dynamically
-  #                   (e.g., based on mstatus.SXL)
-  def dynamic_location?
-    return false if @data.key?("location")
-
-    csr.dynamic_length?
+  #                   (e.g., based on mstatus.SXL) in the configuration
+  def dynamic_location?(arch_def)
+    if @data.key?("location_rv32")
+      csr.modes_with_access.each do |mode|
+        return true if arch_def.multi_xlen_in_mode?(mode)
+      end
+    end
+    false
   end
 
+  # @param arch_def [ArchDef] A config
   # @return [Idl::AstNode] Abstract syntax tree of the reset_value function
   # @raise StandardError if there is no reset_value function (i.e., the reset value is static)
-  def reset_value_func
+  def reset_value_func(arch_def)
     raise "Not an IDL value" unless @data.key?("reset_value()")
 
     return @reset_value_func unless @reset_value_func.nil?
@@ -206,7 +285,7 @@ class CsrField < ArchDefObject
     @reset_value_func = arch_def.idl_compiler.compile_func_body(
       @data["reset_value()"],
       return_type: Idl::Type.new(:bits, width: 64),
-      symtab: csr.sym_table,
+      symtab: arch_def.sym_table,
       name: "reset_value",
       parent: "CSR[#{parent.name}].#{name}",
       input_file: "CSR[#{parent.name}].#{name}",
@@ -214,12 +293,14 @@ class CsrField < ArchDefObject
     )
   end
 
+  # @param arch_def [ArchDef] A config
   # @return [Integer] The reset value of this field
   # @return [String]  The string 'UNDEFINED_LEGAL' if, for this config, there is no defined reset value
-  def reset_value
+  def reset_value(arch_def)
     return @reset_value unless @reset_value.nil?
 
-    symtab = arch_def.sym_table
+    symtab = arch_def.sym_table.deep_clone(clone_values: true)
+    raise "not at global scope" unless symtab.levels == 1
 
     symtab.push # for consistency with template functions
 
@@ -228,16 +309,17 @@ class CsrField < ArchDefObject
         if @data.key?("reset_value")
           @data["reset_value"]
         else
-          reset_value_func.return_value(arch_def.sym_table)
+          reset_value_func(arch_def).return_value(symtab)
         end
     ensure
       symtab.pop
     end
   end
 
+  # @param arch_def [ArchDef] A config. May be nil if the locaiton is not configturation-dependent
   # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
   # @return [Range] the location within the CSR as a range (single bit fields will be a range of size 1)
-  def location(effective_xlen = nil)
+  def location(arch_def, effective_xlen = nil)
     key =
       if @data.key?("location")
         "location"
@@ -250,8 +332,8 @@ class CsrField < ArchDefObject
     raise "Missing location for #{csr.name}.#{name} (#{key})?" unless @data.key?(key)
 
     if @data[key].is_a?(Integer)
-      if @data[key] > csr.length(effective_xlen || @data["base"])
-        raise "Location (#{@data[key]}) is past the csr length (#{csr.length(effective_xlen)}) in #{csr.name}.#{name}"
+      if @data[key] > csr.length(arch_def, effective_xlen || @data["base"])
+        raise "Location (#{@data[key]}) is past the csr length (#{csr.length(arch_def, effective_xlen)}) in #{csr.name}.#{name}"
       end
 
       @data[key]..@data[key]
@@ -259,8 +341,8 @@ class CsrField < ArchDefObject
       e, s = @data[key].split("-").map(&:to_i)
       raise "Invalid location" if s > e
 
-      if e > csr.length(effective_xlen)
-        raise "Location (#{@data[key]}) is past the csr length (#{csr.length(effective_xlen)}) in #{csr.name}.#{name}"
+      if e > csr.length(arch_def, effective_xlen)
+        raise "Location (#{@data[key]}) is past the csr length (#{csr.length(arch_def, effective_xlen)}) in #{csr.name}.#{name}"
       end
 
       s..e
@@ -276,20 +358,21 @@ class CsrField < ArchDefObject
   # @return [Boolean] Whether or not this field exists for any XLEN
   def defined_in_all_bases? = @data["base"].nil?
 
+  # @param arch_def [ArchDef] A config. May be nil if the width of the field is not configuration-dependent
   # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
   # @return [Integer] Number of bits in the field
-  def width(effective_xlen)
-    location(effective_xlen).size
+  def width(arch_def, effective_xlen)
+    location(arch_def, effective_xlen).size
   end
 
   # @return [String] Pretty-printed location string
-  def location_pretty
+  def location_pretty(arch_def)
     derangeify = proc { |loc|
       return loc.min.to_s if loc.size == 1
 
       "#{loc.max}:#{loc.min}"
     }
-    if dynamic_location?
+    if dynamic_location?(arch_def)
       condition =
         case csr.priv_mode
         when "S"
@@ -301,11 +384,11 @@ class CsrField < ArchDefObject
         end
 
       <<~LOC
-        #{derangeify.call(location(32))} when #{condition.sub('%%', '0')}
-        #{derangeify.call(location(64))} when #{condition.sub('%%', '1')}
+        #{derangeify.call(location(arch_def, 32))} when #{condition.sub('%%', '0')}
+        #{derangeify.call(location(arch_def, 64))} when #{condition.sub('%%', '1')}
       LOC
     else
-      derangeify.call(location(csr.arch_def.config_params["XLEN"]))
+      derangeify.call(location(arch_def, arch_def.config_params["XLEN"]))
     end
   end
 
@@ -347,25 +430,11 @@ end
 
 # CSR definition
 class Csr < ArchDefObject
-  # @return [ArchDef] The owning ArchDef
-  attr_reader :arch_def
-  
-  # @return [Idl::SymbolTable] The symbol table holding global names
-  attr_reader :sym_table
 
-  # @param csr_data [Hash<String,Object>] Hash of data from the specification
-  # @param sym_table [Idl::SymbolTable] The symbol table holding global names
-  # @param arch_def [ArchDef] The architecture definition
-  def initialize(csr_data, sym_table, arch_def)
-    super(csr_data)
-
-    @arch_def = arch_def
-    @sym_table = sym_table
-  end
-
+  # @param arch_def [ArchDef] A configuration
   # @return [Boolean] Whether or not the length of the CSR depends on a runtime value
   #                   (e.g., mstatus.SXL)
-  def dynamic_length?
+  def dynamic_length?(arch_def)
     return false if @data["length"].is_a?(Integer)
 
     case @data["length"]
@@ -381,9 +450,10 @@ class Csr < ArchDefObject
     !@data["length"].is_a?(Integer) && (@data["length"] != "MXLEN")
   end
 
+  # @param arch_def [ArchDef] A configuration (can be nil if the lenth is not dependent on a config parameter)
   # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
   # @return [Integer] Length, in bits, of the CSR
-  def length(effective_xlen = nil)
+  def length(arch_def, effective_xlen = nil)
     case @data["length"]
     when "MXLEN"
       arch_def.config_params["XLEN"]
@@ -403,6 +473,39 @@ class Csr < ArchDefObject
         raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
 
         effective_xlen
+      else
+        raise "CSR #{name} is not implemented" if arch_def.config_params["VSXLEN"].nil?
+
+        arch_def.config_params["VSXLEN"]
+      end
+    when Integer
+      @data["length"]
+    else
+      raise "Unexpected length field for #{csr.name}"
+    end
+  end
+
+  # @return [Integer] The largest length of this CSR in any valid mode/xlen for the config
+  def max_length(arch_def)
+    case @data["length"]
+    when "MXLEN"
+      arch_def.config_params["XLEN"]
+    when "SXLEN"
+      if arch_def.config_params["SXLEN"] == 3264
+        raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
+
+        64
+      else
+        raise "CSR #{name} is not implemented" if arch_def.implemented_csrs.none? { |c| c.name == name }
+        raise "CSR #{name} is not implemented" if arch_def.config_params["SXLEN"].nil?
+
+        arch_def.config_params["SXLEN"]
+      end
+    when "VSXLEN"
+      if arch_def.config_params["VSXLEN"] == 3264
+        raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
+
+        64
       else
         raise "CSR #{name} is not implemented" if arch_def.config_params["VSXLEN"].nil?
 
@@ -439,9 +542,10 @@ class Csr < ArchDefObject
     end
   end
 
+  # @param arch_def [ArchDef] A configuration
   # @return [String] Pretty-printed length string
-  def length_pretty
-    if dynamic_length?
+  def length_pretty(arch_def)
+    if dynamic_length?(arch_def)
       cond = 
         case @data["length"]
         when "SXLEN"
@@ -453,11 +557,27 @@ class Csr < ArchDefObject
         end
 
       <<~LENGTH
-        #{length(32)} when #{cond.sub('%%', '0')}
-        #{length(64)} when #{cond.sub('%%', '1')}
+        #{length(arch_def, 32)} when #{cond.sub('%%', '0')}
+        #{length(arch_def, 64)} when #{cond.sub('%%', '1')}
       LENGTH
     else
-      "#{length}-bit"
+      "#{length(arch_def)}-bit"
+    end
+  end
+
+  # list of modes that can potentially access the field
+  def modes_with_access
+    case @data["priv_mode"]
+    when "M"
+      ["M"]
+    when "S"
+      ["M", "S", "VS"]
+    when "U"
+      ["M", "S", "U", "VS", "VU"]
+    when "VS"
+      ["M", "S", "VS"]
+    else
+      raise "unexpected priv mode"
     end
   end
 
@@ -468,44 +588,25 @@ class Csr < ArchDefObject
     Asciidoctor.convert description
   end
 
-  # @return [Array<CsrField>] All fields for this CSR, regardless of whether or not they are implemented
-  def fields
-    return @fields unless @fields.nil?
-
-    @fields = []
-    @data["fields"].each_value do |field_data|
-      @fields << CsrField.new(self, field_data)
-    end
-    @fields
-  end
-
+  # @param arch_Def [ArchDef] A configuration
   # @return [Array<CsrField>] All implemented fields for this CSR at the given effective XLEN, sorted by location (smallest location first)
   #                           Excluded any fields that are defined by unimplemented extensions or a base that is not effective_xlen
-  def implemented_fields_for(effective_xlen)
+  def implemented_fields_for(arch_def, effective_xlen)
     @implemented_fields_for ||= {}
-    return @implemented_fields_for[effective_xlen] unless @implemented_fields_for[effective_xlen].nil?
+    key = [arch_def.name, effective_xlen].hash
 
-    @implemented_fields_for[effective_xlen] = []
-    @data["fields"].each_value do |field_data|
-      next if field_data.key?("base") && (field_data["base"] != effective_xlen)
+    return @implemented_fields_for[key] unless @implemented_fields_for[key].nil?
 
-      defined_by = []
-      defined_by << field_data["definedBy"] if field_data.key?("definedBy") && field_data["definedBy"].is_a?(String)
-      defined_by += field_data["definedBy"] if field_data.key?("definedBy") && field_data["definedBy"].is_a?(Array)
-      if !field_data.key?("definedBy") || (defined_by.any? { |ext_name| arch_def.ext?(ext_name) })
-        @implemented_fields_for[effective_xlen] << CsrField.new(self, field_data)
+    @implemented_fields_for[key] =
+      implemented_fields(arch_def).select do |f|
+        !f.key?("base") || f.base == effective_xlen
       end
-    end
-    @implemented_fields_for[effective_xlen].sort! do |a, b|
-      a.location(effective_xlen).max <=> b.location(effective_xlen).max
-    end
-
-    @implemented_fields_for[effective_xlen]
   end
 
+  # @param arch_def [ArchDef] A configuration
   # @return [Array<CsrField>] All implemented fields for this CSR
   #                           Excluded any fields that are defined by unimplemented extensions
-  def implemented_fields
+  def implemented_fields(arch_def)
     return @implemented_fields unless @implemented_fields.nil?
 
     implemented_bases =
@@ -513,24 +614,21 @@ class Csr < ArchDefObject
          arch_def.config_params["UXLEN"] == 3264 ||
          arch_def.config_params["VSXLEN"] == 3264 ||
          arch_def.config_params["VUXLEN"] == 3264
-        [32,64]
+        [32, 64]
       else
         [arch_def.config_params["XLEN"]]
       end
 
-    @implemented_fields = []
-    @data["fields"].each_value do |field_data|
-      next if field_data.key?("base") && implemented_bases.none?(field_data["base"])
-
-      defined_by = []
-      defined_by << field_data["definedBy"] if field_data.key?("definedBy") && field_data["definedBy"].is_a?(String)
-      defined_by += field_data["definedBy"] if field_data.key?("definedBy") && field_data["definedBy"].is_a?(Array)
-      if !field_data.key?("definedBy") || (defined_by.any? { |ext_name| arch_def.ext?(ext_name) })
-        @implemented_fields << CsrField.new(self, field_data)
-      end
+    @implemented_fields = fields.select do |f|
+      f.exists_in_cfg?(implemented_bases, arch_def.implemented_extensions)
     end
+  end
 
-    @implemented_fields
+  # @return [Array<CsrField>] All known fields of this CSR
+  def fields
+    return @fields unless @fields.nil?
+
+    @fields = @data["fields"].map { |_field_name, field_data| CsrField.new(self, field_data) }
   end
 
   # @return [Hash<String,CsrField>] Hash of fields, indexed by field name
@@ -557,14 +655,27 @@ class Csr < ArchDefObject
 
   # @return [Boolean] true if the CSR has a custom sw_read function
   def has_custom_sw_read?
-    @data.key?("sw_read") && !sw_read.empty?
+    @data.key?("sw_read()") && !@data["sw_read()"].empty?
   end
 
-  # def sw_read_source
-  #   return "" unless has_custom_sw_read?
+  def sw_read_ast(arch_def)
+    return @sw_read_ast unless @sw_read_ast.nil?
+    return nil if @data["sw_read()"].nil?
 
-  #   sw_read_ast.gen_adoc.gsub("((", '\((')
-  # end
+    # now, parse the function
+
+    @sw_read_ast = arch_def.idl_compiler.compile_func_body(
+      @data["sw_read()"],
+      return_type: Idl::Type.new(:bits, width: 128), # big int to hold special return values
+      symtab: arch_def.sym_table,
+      name: "CSR[#{name}].sw_read()",
+      input_file: "CSR #{name}"
+    )
+
+    raise "unexpected #{@sw_read_ast.class}" unless @sw_read_ast.is_a?(Idl::FunctionBodyAst)
+
+    @sw_read_ast
+  end
 
   # @example Result for an I-type instruction
   #   {reg: [
@@ -575,285 +686,40 @@ class Csr < ArchDefObject
   #     {bits: 12, name: 'imm12',     attr: [''], type: 6}
   #   ]}
   #
+  # @param arch_def [ArchDef] A configuration
   # @param effective_xlen [Integer,nil] Effective XLEN to use when CSR length is dynamic
-  # @return [String] A JSON representation of the WaveDrom drawing for the CSR
-  def wavedrom_desc(effective_xlen)
+  # @return [Hash] A representation of the WaveDrom drawing for the CSR (should be turned into JSON for wavedrom)
+  def wavedrom_desc(arch_def, effective_xlen)
     desc = {
       "reg" => []
     }
     last_idx = -1
-    implemented_fields_for(effective_xlen).each do |field|
+    implemented_fields_for(arch_def, effective_xlen).each do |field|
 
-      if field.location(effective_xlen).min != last_idx + 1
+      if field.location(arch_def, effective_xlen).min != last_idx + 1
         # have some reserved space
-        desc["reg"] << { "bits" => (field.location(effective_xlen).min - last_idx - 1), type: 1 }
+        desc["reg"] << { "bits" => (field.location(arch_def, effective_xlen).min - last_idx - 1), type: 1 }
       end
-      desc["reg"] << { "bits" => field.location(effective_xlen).size, "name" => field.name, type: 2 }
-      last_idx = field.location(effective_xlen).max
+      desc["reg"] << { "bits" => field.location(arch_def, effective_xlen).size, "name" => field.name, type: 2 }
+      last_idx = field.location(arch_def, effective_xlen).max
     end
-    if !implemented_fields_for(effective_xlen).empty? && (fields.last.location(effective_xlen).max != (length(effective_xlen) - 1))
+    if !implemented_fields_for(arch_def, effective_xlen).empty? && (fields.last.location(arch_def, effective_xlen).max != (length(arch_def, effective_xlen) - 1))
       # reserved space at the end
-      desc["reg"] << { "bits" => (length(effective_xlen) - 1 - last_idx), type: 1 }
+      desc["reg"] << { "bits" => (length(arch_def, effective_xlen) - 1 - last_idx), type: 1 }
       # desc['reg'] << { 'bits' => 1, type: 1 }
     end
-    desc["config"] = { "bits" => length(effective_xlen) }
-    desc["config"]["lanes"] = length(effective_xlen) / 16
+    desc["config"] = { "bits" => length(arch_def, effective_xlen) }
+    desc["config"]["lanes"] = length(arch_def, effective_xlen) / 16
     desc
   end
-end
 
-# really ugly way to generate fields out of riscv-opcodes
-# hopefully this goes away soon
-module RiscvOpcodes
-  VARIABLE_FIELDS = {
-    "rd" => {
-      bits: (7..11)
-    },
-    "rd_p" => {
-      bits: (2..4),
-      lshift: 2,
-      display: "rd'",
-      decode_variable: "rd"
-    },
-    "rd_n0" => {
-      bits: (7..11),
-      display: "rd != 0",
-      decode_variable: "rd"
-    },
-    "rd_n2" => {
-      bits: (7..11),
-      display: "rd != {0,2}",
-      decode_variable: "rd"
-    },
-    "rs1" => {
-      bits: (15..19)
-    },
-    "rs1_p" => {
-      bits: (7..9),
-      lshift: 2,
-      display: "rs1'",
-      decode_variable: "rs1"
-    },
-    "c_rs1_n0" => {
-      bits: (7..11),
-      display: "rs1 != 0",
-      decode_variable: "rs1"
-    },
-
-    "rs2" => {
-      bits: (20..24)
-    },
-    "c_rs2" => {
-      bits: (2..6),
-      display: "rs2"
-    },
-    "rs2_p" => {
-      bits: (2..4),
-      lshift: 2,
-      display: "rs2'",
-      decode_variable: "rs2"
-    },
-    "c_rs2_n0" => {
-      bits: (2..6),
-      display: "rs2 != 0",
-      decode_variable: "rs2"
-    },
-    "rd_rs1" => {
-      bits: (7..11),
-      display: "rs1/rd != 0",
-      decode_variable: ["rd", "rs1"]
-    },
-    "rd_rs1_p" => {
-      bits: (7..9),
-      lshift: 2,
-      display: "rd'/rs1'",
-      decode_variable: ["rd", "rs1"]
-    },
-    "rd_rs1_n0" => {
-      bits: (7..11),
-      display: "rd/rs1 != 0",
-      decode_variable: ["rd", "rs1"]
-    },
-    "rs1_n0" => {
-      bits: (7..11),
-      display: "rs1 != 0",
-      decode_variable: "rs1"
-    },
-    "shamtd" => {
-      bits: 20..25,
-      display: "shamt",
-      decode_variable: "shamt"
-    },
-    "shamtw" => {
-      bits: 20..24,
-      display: "shamt",
-      decode_variable: "shamt"
-    },
-    "csr" => {
-      bits: 20..31
-    },
-    "zimm" => {
-      bits: 15..19
-    },
-    "imm12" => {
-      bits: (20..31),
-      sext: true,
-      display: "imm[11:0]",
-      decode_variable: "imm"
-    },
-    "imm20" => {
-      bits: (12..31),
-      lshift: 12,
-      sext: true,
-      display: "imm[31:20]",
-      decode_variable: "imm"
-    },
-    "jimm20" => {
-      bits: [31, (12..19), 20, (21..30)],
-      group_by: 12..31,
-      lshift: 1,
-      sext: true,
-      display: "imm[20|10:1|11|19:12]",
-      decode_variable: "imm"
-    },
-    ["bimm12hi", "bimm12lo"] => {
-      bits: [31, 7, (25..30), (8..11)],
-      group_by: [(25..31), (7..11)],
-      sext: true,
-      lshift: 1,
-      display: ["imm[12|10:5]", "imm[4:1|11]"],
-      decode_variable: "imm"
-    },
-    ["imm12hi", "imm12lo"] => {
-      bits: [(25..31), (7..11)],
-      group_by: [(25..31), (7..11)],
-      sext: true,
-      display: ["imm[11:5]", "imm[4:0]"],
-      decode_variable: "imm"
-    },
-    "pred" => {
-      bits: (24..27)
-    },
-    "succ" => {
-      bits: (20..23)
-    },
-    "fm" => {
-      bits: (28..31)
-    },
-
-    "c_nzuimm10" => {
-      bits: [(7..10), (11..12), 5, 6],
-      group_by: 5..12,
-      lshift: 2,
-      display: "nzuimm[5:4|9:6|2|3]",
-      decode_variable: "imm"
-    },
-    ["c_uimm8lo", "c_uimm8hi"] => {
-      bits: [(5..6), (10..12)],
-      group_by: [(5..6), (10..12)],
-      lshift: 3,
-      display: ["uimm[7:6]", "uimm[5:3]"],
-      decode_variable: "imm"
-    },
-    ["c_uimm7lo", "c_uimm7hi"] => {
-      bits: [5, (10..12), 6],
-      group_by: [(10..12), (5..6)],
-      lshift: 2,
-      display: ["uimm[5:3]", "uimm[2|6]"],
-      decode_variable: "imm"
-    },
-    ["c_nzimm6hi", "c_nzimm6lo"] => {
-      bits: [12, (2..6)],
-      group_by: [12, (2..6)],
-      sext: true,
-      display: ["nzimm[5]", "nzimm[4:0]"],
-      decode_variable: "imm"
-    },
-    ["c_nzuimm6hi", "c_nzuimm6lo"] => {
-      bits: [12, (2..6)],
-      group_by: [12, (2..6)],
-      display: ["nzuimm[5]", "nzuimm[4:0]"],
-      decode_variable: "imm"
-    },
-    ["c_imm6hi", "c_imm6lo"] => {
-      bits: [12, (2..6)],
-      group_by: [12, (2..6)],
-      sext: true,
-      display: ["nzimm[5]", "nzimm[4:0]"],
-      decode_variable: "imm"
-    },
-    ["c_nzimm10hi", "c_nzimm10lo"] => {
-      bits: [12, (3..4), 5, 2, 6],
-      group_by: [12, (2..6)],
-      lshift: 4,
-      sext: true,
-      display: ["nzimm[9]", "nzimm[4|6|8:7|5]"],
-      decode_variable: "imm"
-    },
-    ["c_nzimm18hi", "c_nzimm18lo"] => {
-      bits: [12, (2..6)],
-      group_by: [12, (2..6)],
-      lshift: 12,
-      sext: true,
-      display: ["nzimm[17]", "nzimm[16:12]"],
-      decode_variable: "imm"
-    },
-    "c_imm12" => {
-      bits: [12, 8, (9..10), 6, 7, 2, 11, (3..5)],
-      group_by: 2..12,
-      lshift: 1,
-      sext: true,
-      display: "imm[11|4|9:8|10|6|7|3:1|5]",
-      decode_variable: "imm"
-    },
-    ["c_bimm9hi", "c_bimm9lo"] => {
-      bits: [12, (5..6), 2, (10..11), (3..4)],
-      group_by: [(10..12), (2..6)],
-      lshift: 1,
-      sext: true,
-      display: ["imm[8|4:3]", "imm[7:6|2:1|5]"],
-      decode_variable: "imm"
-    },
-    ["c_uimm8sphi", "c_uimm8splo"] => {
-      bits: [(2..3), 12, (4..6)],
-      group_by: [12, (2..6)],
-      lshift: 2,
-      display: ["uimm5", "uimm[4:2|7:6]"],
-      decode_variable: "imm"
-    },
-    "cuimm8sp_s" => {
-      bits: [(7..8), (9..12)],
-      group_by: (7..12),
-      lshift: 2,
-      display: "uimm[5:2|7:6]",
-      decode_variable: "imm"
-    },
-    ["c_uimm9sphi", "c_uimm9splo"] => {
-      bits: [(2..3), 12, (4..6)],
-      group_by: [12, (2..6)],
-      lshift: 3,
-      display: ["uimm[5]", "uimm[4:3|8:6]"],
-      decode_variable: "imm"
-    },
-    "c_uimm8sp_s" => {
-      bits: [(7..8), (9..12)],
-      group_by: 7..12,
-      lshift: 2,
-      display: "uimm[5:2|7:6]",
-      decode_variable: "imm"
-    },
-    "c_uimm9sp_s" => {
-      bits: [(7..9), (10..12)],
-      group_by: 7..12,
-      lshift: 3,
-      display: "uimm[5:3|8:6]",
-      decode_variable: "imm"
-    },
-    "rm" => {
-      bits: (12..14)
-    }
-
-  }.freeze
+  # @param possible_xlens [Array<Integer>] List of xlens that be used in any implemented mode
+  # @param extensions [Array<ExtensionVersion>] List of extensions implemented
+  # @return [Boolean] whether or not the instruction is implemented given the supplies config options
+  def exists_in_cfg?(possible_xlens, extensions)
+    (@data["base"].nil? || (possible_xlens.include? @data["base"])) &&
+      extensions.any? { |e| defined_by?(e) }
+  end
 end
 
 # model of a specific instruction in a specific base (RV32/RV64)
@@ -1061,21 +927,6 @@ class Instruction < ArchDefObject
     !@data.key?("base") || base == 64
   end
 
-  def extension_requirement?(obj)
-    obj.is_a?(String) && obj =~ /^([A-WY])|([SXZ][a-z]+)$/ ||
-      obj.is_a?(Array) && obj[0] =~ /^([A-WY])|([SXZ][a-z]+)$/
-  end
-  private :extension_requirement?
-
-  def to_extension_requirement(obj)
-    if obj.is_a?(String)
-      ExtensionRequirement.new(obj, ">= 0")
-    else
-      ExtensionRequirement.new(*obj)
-    end
-  end
-  private :to_extension_requirement
-
   # @return [Array<ExtensionRequirement>] Extension requirements for the instruction. If *any* requirement is met, the instruction is defined
   def extension_requirements
     return @extension_requirements unless @extension_requirements.nil?
@@ -1124,30 +975,6 @@ class Instruction < ArchDefObject
     @extension_exclusions
   end
 
-  # @overload defined_by?(ext_name, ext_version)
-  #   @param ext_name [#to_s] An extension name
-  #   @param ext_version [#to_s] A specific extension version
-  #   @return [Boolean] Whether or not the instruction is defined by extesion `ext`, version `version`
-  # @overload defined_by?(ext_version)
-  #   @param ext_version [ExtensionVersion] An extension version
-  #   @return [Boolean] Whether or not the instruction is defined by ext_version
-  def defined_by?(*args)
-    if args.size == 1
-      raise ArgumentError, "Parameter must be an ExtensionVersion" unless args[0].is_a?(ExtensionVersion)
-
-      extension_requirements.any? do |r|
-        r.satisfied_by?(args[0])
-      end
-    elsif args.size == 2
-      raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
-      raise ArgumentError, "Second parameter must be an extension version" unless args[0].respond_to?(:to_s)
-
-      extension_requirements.any? do |r|
-        r.satisfied_by?(args[0].to_s, args[1].to_s)
-      end
-    end
-  end
-
   # @overload excluded_by?(ext_name, ext_version)
   #   @param ext_name [#to_s] An extension name
   #   @param ext_version [#to_s] A specific extension version
@@ -1176,7 +1003,7 @@ class Instruction < ArchDefObject
   # @param extensions [Array<ExtensionVersion>] List of extensions implemented
   # @return [Boolean] whether or not the instruction is implemented given the supplies config options
   def exists_in_cfg?(possible_xlens, extensions)
-    (@data["base"].nil? || (possible_xlens.include?(@data["base"]))) &&
+    (@data["base"].nil? || (possible_xlens.include? @data["base"])) &&
       extensions.any? { |e| defined_by?(e) } &&
       extensions.none? { |e| excluded_by?(e) }
   end
@@ -1366,12 +1193,35 @@ class ArchDef
       $root / "arch" / "isa" / "globals.isa",
       @sym_table
     )
+
+    @sym_table.deep_freeze
   end
+
+  def inspect = "ArchDef##{name}"
 
   # @return [Boolean] true if this configuration can execute in multiple xlen environments
   # (i.e., that in some mode the effective xlen can be either 32 or 64, depending on CSR values)
   def multi_xlen?
     ["SXLEN", "UXLEN", "VSXLEN", "VUXLEN"].any? { |key| @config_params[key] == 3264 }
+  end
+
+  # @param mode [String] One of ['M', 'S', 'U', 'VS', 'VU']
+  # @return [Boolean] whether or not XLEN can change in the mode
+  def multi_xlen_in_mode?(mode)
+    case mode
+    when "M"
+      false
+    when "S"
+      @config_params["SXLEN"] == 3264
+    when "U"
+      @config_params["UXLEN"] == 3264
+    when "VS"
+      @config_params["VSXLEN"] == 3264
+    when "VU"
+      @config_params["VUXLEN"] == 3264
+    else
+      raise ArgumentError, "Bad mode"
+    end
   end
 
   # @return [Array<ExtensionVersion>] List of all extensions, with specific versions, that are implemented
@@ -1449,9 +1299,7 @@ class ArchDef
   def implemented_csrs
     return @implemented_csrs unless @implemented_csrs.nil?
 
-    @implemented_csrs = @arch_def["csrs"].select{ |csr_name, _csr_data| @arch_def["implemented_csrs"].include?(csr_name)}.map do |_csr_name, csr_data|
-      Csr.new(csr_data, @sym_table, self)
-    end
+    @implemented_csrs = csrs.select { |c| @arch_def["implemented_csrs"].include?(c.name) }
   end
 
   # @return [Array<Csr>] List of all CSRs defined by RISC-V, whether or not they are implemented
@@ -1459,7 +1307,7 @@ class ArchDef
     return @csrs unless @csrs.nil?
 
     @csrs = @arch_def["csrs"].map do |_csr_name, csr_data|
-      Csr.new(csr_data, @sym_table, self)
+      Csr.new(csr_data)
     end
   end
 
@@ -1528,8 +1376,6 @@ class ArchDef
   # @return [Array<Instruction>] List of all implemented instructions
   def implemented_instructions
     return @implemented_instructions unless @implemented_instructions.nil?
-
-    opcode_data = YAML.load_file("#{$root}/ext/riscv-opcodes/instr_dict.yaml")
 
     @implemented_instructions = @arch_def["implemented_instructions"].map do |inst_name|
       instruction_hash[inst_name]

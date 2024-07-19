@@ -7,7 +7,7 @@ vscause:
   address: 0x242
   virtual_address: 0x142
   priv_mode: VS
-  length: 64
+  length: VSXLEN
   description: Reports the cause of the latest exception taken in VS-mode.
   definedBy: H
   fields:
@@ -45,7 +45,8 @@ vscause:
         }
       reset_value: UNDEFINED_LEGAL
     CODE:
-      location: <%= max_code.bit_length - 1 %>-0
+      location_rv32: 30-0
+      location_rv64: 62-0
       description: |
         Written by hardware when a trap is taken into VS-mode.
 

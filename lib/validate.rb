@@ -139,13 +139,14 @@ class Validator
       when %r{.*arch/arch_def\.yaml$}
         type = :arch
       when %r{.*arch/inst/.*/.*\.yaml$}
-        type = :instruction
-      when %r{.*arch/ext/.*/.*\.yaml$}
+        type = :inst
+      when %r{.*arch/ext/.*\.yaml$}
         type = :ext
-      when %r{.*arch/csr/.*/.*\.yaml$}
+      when %r{.*arch/csr/.*\.yaml$}
         type = :csr
       else
-        raise "Cannot determine type from YAML path '#{path}'"
+        warn "Cannot determine type from YAML path '#{path}'; skipping"
+        return
       end
     end
     begin

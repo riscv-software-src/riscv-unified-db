@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+# WARNING: This file is auto-generated from arch/csr/Zihpm/mhpmcounterN.layout
+
+
+
+mhpmcounter7:
+  long_name: Machine Hardware Performance Counter 7
+  address: 0xB07
+  priv_mode: M
+  length: 64
+  description: Programmable hardware performance counter.
+  definedBy: Zihpm
+  fields:
+    COUNT:
+      location: 63-0
+      description: |
+        <%- if NUM_HPM_COUNTERS > 4 -%>
+        Performance counter for event selected in `mhpmevent7.EVENT`.
+
+        Increments every time event occurs unless:
+
+          * `mcountinhibit.HPM7` <%- if ext?(:Smcdeleg) -%>or its alias `scountinhibit.HPM7`<%- end -%> is set
+          <%- if ext?(:Sscofpmf) -%>
+          * `mhpmevent7.MINH` is set and the current privilege level is M
+          <%- if ext?(:S) -%>
+          * `mhpmevent7.SINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent7..SINH`<%- end -%> is set and the current privilege level is (H)S
+          <%- end -%>
+          <%- if ext?(:U) -%>
+          * `mhpmevent7.UINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent7.SINH`<%- end -%> is set and the current privilege level is U
+          <%- end -%>
+          <%- if ext?(:H) -%>
+          * `mhpmevent7.VSINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent7.SINH`<%- end -%> is set and the current privilege level is VS
+          * `mhpmevent7.VUINH` <%- if ext?(:Ssccfg) -%>or its alias `hpmevent7.SINH`<%- end -%> is set and the current privilege level is VU
+          <%- end -%>
+          <%- end -%>
+        <%- else -%>
+        Unimplemented performance counter. Must be read-only 0 (access does not cause trap).
+        <%- end -%>
+
+      type(): 'return (NUM_HPM_COUNTERS > 4) ? CsrFieldType::RWH : CsrFieldType::RO;'
+      reset_value(): 'return (NUM_HPM_COUNTERS > 4) ? UNDEFINED_LEGAL : 0;'
+  sw_read(): |
+    if (NUM_HPM_COUNTERS <= 4) {
+      return read_hpm_counter(7);
+    } else {
+      return 0;
+    }

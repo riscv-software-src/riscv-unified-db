@@ -1,5 +1,0 @@
-# yaml-language-server: $schema=../../schemas/csr_schema.json
-
-# <%- pmpcfg_num = 1 -%>
-
-<%= ERB.new(File.read("#{File.dirname(__FILE__)}/pmpcfgN.layout"), trim_mode: "-").result(binding) %>

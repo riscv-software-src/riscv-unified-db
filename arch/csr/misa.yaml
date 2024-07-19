@@ -137,23 +137,26 @@ misa:
       location: 19
       description: |
         Indicates support for the `S` (supervisor mode) extension.
-      type: RO
+      type(): |
+        return MUTABLE_MISA_S ? CsrFieldType::RW : CsrFieldType::RO;
       reset_value(): |
         return implemented?(ExtensionName::S) ? 1 : 0;
     U:
       location: 21
       description: |
         Indicates support for the `U` (user mode) extension.
-      type: RO
+      type(): |
+        return MUTABLE_MISA_U ? CsrFieldType::RW : CsrFieldType::RO;
       reset_value(): |
         return implemented?(ExtensionName::U) ? 1 : 0;
-    # V:
-    #   location: 22
-    #   description: |
-    #     Indicates support for the `V` (vector) extension.
-    #   type: RO
-    #   reset_value(): |
-    #     return implemented?(ExtensionName::V) ? 1 : 0;
+    V:
+      location: 22
+      description: |
+        Indicates support for the `V` (vector) extension.
+      type: RO
+      reset_value: 0 # TODO
+      # reset_value(): |
+      #   return implemented?(ExtensionName::V) ? 1 : 0;
   sw_read(): |
     return (
       (CSR[misa].MXL << 62) |
@@ -163,7 +166,7 @@ misa:
       (CSR[misa].M << 12) |
       (CSR[misa].I << 7) |
       (CSR[misa].H << 6) |
-      ((CSR[misa].A & CSR[misa].M & CSR[misa].F & CSR[misa].D;) << 5) | # 'G'
+      ((CSR[misa].A & CSR[misa].M & CSR[misa].F & CSR[misa].D) << 5) | # 'G'
       (CSR[misa].F << 4) |
       (CSR[misa].D << 3) |
       (CSR[misa].C << 2) |

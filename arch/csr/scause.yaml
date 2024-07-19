@@ -6,12 +6,13 @@ scause:
   long_name: Supervisor Cause
   address: 0x142
   priv_mode: S
-  length: 64
+  length: SXLEN
   description: Reports the cause of the latest exception.
   definedBy: S
   fields:
     INT:
-      location: 63
+      location_rv32: 31
+      location_rv64: 63
       description: |
         Written by hardware when a trap is taken into S-mode.
         
@@ -44,7 +45,8 @@ scause:
         }
       reset_value: UNDEFINED_LEGAL
     CODE:
-      location:  <%= max_code.bit_length - 1 %>-0
+      location_rv32: 30-0
+      location_rv64: 62-0
       description: |
         Written by hardware when a trap is taken into S-mode.
 

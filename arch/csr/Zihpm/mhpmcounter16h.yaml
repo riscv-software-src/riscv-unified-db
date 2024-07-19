@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+# WARNING: This file is auto-generated from arch/csr/Zihpm/mhpmcounterNh.layout
+
+
+
+mhpmcounter16h:
+  long_name: Machine Hardware Performance Counter 16, Upper half
+  address: 0xB90
+  priv_mode: M
+  length: 32
+  base: 32
+  description: |
+    Upper half of mhpmcounter16.
+  definedBy: Zihpm
+  fields:
+    COUNT:
+      location: 32-0
+      alias: mhpmcounter.COUNT16[63:32]
+      description: |
+        Upper bits of counter.
+      type(): 'return (NUM_HPM_COUNTERS > 13) ? CsrFieldType::RWH : CsrFieldType::RO;'
+      reset_value(): 'return (NUM_HPM_COUNTERS > 13) ? UNDEFINED_LEGAL : 0;'
+  sw_read(): |
+    if (NUM_HPM_COUNTERS <= 13) {
+      return read_hpm_counter(16)[63:32];
+    } else {
+      return 0;
+    }

@@ -51,6 +51,18 @@ assert(MTVAL_WIDTH >= max_va_width) if mtval_holds_va
 # 32 stands for ILEN below. Update this if/when instructions become longer than 32
 assert(MTVAL_WIDTH >= [XLEN, 32].min) if REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION
 
+assert(COUNTENABLE_EN[0] == false) unless ext?(:Zicntr)
+assert(COUNTENABLE_EN[2] == false) unless ext?(:Zicntr)
+(3..31).each do |hpm_num|
+  assert(COUNTENABLE_EN[hpm_num] == false) unless ext?(:Zihpm) && (NUM_HPM_COUNTERS > (hpm_num - 3))
+end
+
+assert(COUNTINHIBIT_EN[0] == false) unless ext?(:Zicntr)
+assert(COUNTINHIBIT_EN[2] == false) unless ext?(:Zicntr)
+(3..31).each do |hpm_num|
+  assert(COUNTINHIBIT_EN[hpm_num] == false) unless ext?(:Zihpm) && (NUM_HPM_COUNTERS > (hpm_num - 3))
+end
+
 # check for conditionally required params
 require_param :MUTABLE_MISA_A    if ext?(:A)
 require_param :MUTABLE_MISA_B    if ext?(:B)
