@@ -84,9 +84,7 @@ module Idl
       @parser.set_input_file(input_file, input_line)
 
       cloned_symtab = symtab.deep_clone
-      while cloned_symtab.levels != 1
-        cloned_symtab.pop
-      end
+      raise "supplied symbol table is not at gloabl scope" unless cloned_symtab.levels == 1
 
       m = @parser.parse(body, root: :function_body)
       if m.nil?

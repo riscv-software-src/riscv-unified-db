@@ -145,6 +145,16 @@ module Idl
       add!('ExtensionName', EnumerationType.new('ExtensionName', arch_def.extensions.map(&:name), Array.new(arch_def.extensions.size) { |i| i + 1 }))
     end
 
+    # do a deep freeze to protect the sym table and all its entries from modification
+    def deep_freeze
+      @scopes.each do |k, v|
+        k.freeze
+        v.freeze
+      end
+      @scopes.freeze
+      freeze
+    end
+
     # pushes a new scope
     def push
       # puts "push #{caller[0]}"

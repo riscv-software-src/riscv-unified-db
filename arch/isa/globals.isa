@@ -157,6 +157,18 @@ builtin function implemented? {
   }
 }
 
+builtin function read_hpm_counter {
+  returns Bits<64>
+  arguments Bits<5> N
+  description {
+    Returns the value of hpmcounterN.
+
+    N must be between 3..31.
+
+    hpmcounterN must be implemented.
+  }
+}
+
 # floating point register file
 U32 FLEN = implemented?(ExtensionName::D) ? 7'd64 : 7'd32;
 Bits<FLEN> f[32] = [0, 0, 0, 0, 0, 0, 0, 0,

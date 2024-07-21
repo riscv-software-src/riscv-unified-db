@@ -157,6 +157,24 @@
           "minItems": 32,
           "maxItems": 32
         },
+        "COUNTENABLE_EN": {
+          "type": "array",
+          "description": "Indicates which counters can be delegate from mcounteren\n\n Formatted as a one-hot enable vector so that, for example, COUNTENABLE_EN[0] is for CY and COUNTENABLE_EN[3] is for HPM3",
+          "items": [
+            {
+              "type": "boolean"
+            },
+            {
+              "const": false,
+              "$comment": "There is no counter at index 1"
+            }
+          ],
+          "additionalItems": {
+            "type": "boolean"
+          },
+          "minItems": 32,
+          "maxItems": 32
+        },
         "TRAP_ON_ILLEGAL_WLRL": {
           "type": "boolean",
           "default": true,

@@ -39,35 +39,75 @@ params:
   - true  # CY
   - false # empty
   - true  # IR
-  - true  # HPME3
-  - true  # HPME4
-  - true  # HPME5
-  - true  # HPME6
-  - true  # HPME7
-  - true  # HPME8
-  - true  # HPME9
-  - true  # HPME10
-  - false # HPME11
-  - false # HPME12
-  - false # HPME13
-  - false # HPME14
-  - false # HPME15
-  - false # HPME16
-  - false # HPME17
-  - false # HPME18
-  - false # HPME19
-  - false # HPME20
-  - false # HPME21
-  - false # HPME22
-  - false # HPME23
-  - false # HPME24
-  - false # HPME25
-  - false # HPME26
-  - false # HPME27
-  - false # HPME28
-  - false # HPME29
-  - false # HPME30
-  - false # HPME31
+  - true  # HPM3
+  - true  # HPM4
+  - true  # HPM5
+  - true  # HPM6
+  - true  # HPM7
+  - true  # HPM8
+  - true  # HPM9
+  - true  # HPM10
+  - false # HPM11
+  - false # HPM12
+  - false # HPM13
+  - false # HPM14
+  - false # HPM15
+  - false # HPM16
+  - false # HPM17
+  - false # HPM18
+  - false # HPM19
+  - false # HPM20
+  - false # HPM21
+  - false # HPM22
+  - false # HPM23
+  - false # HPM24
+  - false # HPM25
+  - false # HPM26
+  - false # HPM27
+  - false # HPM28
+  - false # HPM29
+  - false # HPM30
+  - false # HPM31
+
+ # Indicates which counters can delegated via mcounteren
+  #
+  # An unimplemented counter cannot be specified, i.e., if
+  # NUM_HPM_COUNTERS == 8, it would be illegal to add index
+  # 11 in COUNTEN_EN since the highest implemented counter
+  # would be at bit 10
+  COUNTENABLE_EN:
+  - true  # CY
+  - false # empty
+  - true  # IR
+  - true  # HPM3
+  - true  # HPM4
+  - true  # HPM5
+  - true  # HPM6
+  - true  # HPM7
+  - true  # HPM8
+  - true  # HPM9
+  - true  # HPM10
+  - false # HPM11
+  - false # HPM12
+  - false # HPM13
+  - false # HPM14
+  - false # HPM15
+  - false # HPM16
+  - false # HPM17
+  - false # HPM18
+  - false # HPM19
+  - false # HPM20
+  - false # HPM21
+  - false # HPM22
+  - false # HPM23
+  - false # HPM24
+  - false # HPM25
+  - false # HPM26
+  - false # HPM27
+  - false # HPM28
+  - false # HPM29
+  - false # HPM30
+  - false # HPM31
 
   # when true, writing an illegal value to a WLRL CSR field raises an Illegal Instruction exception
   # when false, writing an illegal value to a WLRL CSR field is ignored

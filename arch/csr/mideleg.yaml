@@ -5,11 +5,10 @@ mideleg:
   address: 0x303
   priv_mode: M
   length: MXLEN
-  <%- if ext?(:S, "> 1.9.1") -%>
-  definedBy: S # after 1.9.1, mideleg does not exist whe S-mode is not implemented
-  <%- else -%>
-  definedBy: M
-  <%- end -%>
+  definedBy:
+  # after 1.9.1, mideleg does not exist whe S-mode is not implemented
+  - [S, "> 1.9.1"]
+  - [M, "< 1.0"]
   description: |
     Controls exception delegation from M-mode to HS/S-mode
 

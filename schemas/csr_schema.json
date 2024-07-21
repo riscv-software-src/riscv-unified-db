@@ -97,16 +97,12 @@
         "definedBy": {
           "oneOf": [
             {
-              "type": "string",
-              "pattern": "^([A-WY]|([SXZ][a-z]+))$",
-              "description": "An extension name"
+              "$ref": "schema_defs.json#/$defs/extension_requirement"
             },
             {
               "type": "array",
               "items": {
-                "type": "string",
-                "pattern": "^([A-WY]|([SXZ][a-z]+))$",
-                "description": "An extension name"
+                "$ref": "schema_defs.json#/$defs/extension_requirement"
               }
             }
           ],
@@ -207,8 +203,18 @@
           "description": "A full Asciidoc description of the CSR, indended to be used as documentation."
         },
         "definedBy": {
-          "$ref": "schema_defs.json#/$defs/extension_name",
-          "description": "The extension that defines this CSR."
+          "oneOf": [
+            {
+              "$ref": "schema_defs.json#/$defs/extension_requirement"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "schema_defs.json#/$defs/extension_requirement"
+              }
+            }
+          ],
+          "description": "Extension(s) that define the CSR"
         },
         "address": {
           "type": "integer",

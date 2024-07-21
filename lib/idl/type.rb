@@ -94,15 +94,9 @@ module Idl
         raise 'CSR type must have a csr argument' if csr.nil?
 
         @csr = csr
+        raise "CSR types must have a width" if width.nil?
 
-        raise 'CSR types get width from csr argument; width should not be specified' unless width.nil? || width == csr.length
-
-        @width =
-          if csr.dynamic_length?
-            nil
-          else
-            csr.length
-          end
+        @width = width
       end
     end
 
@@ -226,7 +220,7 @@ module Idl
           return false
         end
       when :csr
-        return (type.kind == :csr && type.csr.name == @csr.name) || type.convertable_to?(Type.new(:bits, width: @csr.length))
+        return (type.kind == :csr && type.csr.name == @csr.name) || type.convertable_to?(Type.new(:bits, width:))
       when :bitfield
         if (type.kind == :bitfield && name == type.name)
           return true
@@ -419,8 +413,8 @@ module Idl
   class CsrType < Type
     attr_reader :csr
 
-    def initialize(csr, qualifiers: [])
-      super(:csr, name: csr.name, csr: csr, qualifiers: qualifiers)
+    def initialize(csr, arch_def, qualifiers: [])
+      super(:csr, name: csr.name, csr: csr, width: csr.max_length(arch_def), qualifiers: qualifiers)
     end
 
     def fields
