@@ -51,7 +51,6 @@ class ArchGen
       raise "Config name (#{@params['NAME']}) in params.yaml does not match directory path (#{@name})"
     end
 
-    @opcode_data = YAML.load_file("#{$root}/ext/riscv-opcodes/instr_dict.yaml")
     @ext_gen_complete = false
 
     validate_config
