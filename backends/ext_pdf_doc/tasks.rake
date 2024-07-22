@@ -79,7 +79,7 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
   arch_def = ArchDef.new(config_name)
   ext = arch_def.extension(ext_name)
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AsciidocUtils.resolve_links(erb.result(binding))
+  File.write t.name, AsciidocUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
 end
 
 

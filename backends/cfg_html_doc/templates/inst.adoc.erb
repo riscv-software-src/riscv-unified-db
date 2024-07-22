@@ -36,7 +36,7 @@ RV64::
 
 == Synopsis
 
-<%= arch_def.find_replace_links(inst.description) %>
+<%= inst.description %>
 
 == Access
 <%- if arch_def.ext?(:H) -%>
@@ -57,7 +57,7 @@ RV64::
 |===
 
 <%- if inst.access_detail? -%>
-<%= arch_def.find_replace_links(inst.access_detail) %>
+<%= inst.access_detail %>
 <%- end -%>
 
 == Decode Variables

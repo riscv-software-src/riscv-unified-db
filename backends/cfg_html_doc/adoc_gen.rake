@@ -28,24 +28,24 @@
     when "csr"
       arch_def.implemented_csrs.each do |csr|
         path = dir_path / "#{csr.name}.adoc"
-        File.write(path, erb.result(binding))
+        File.write(path, arch_def.find_replace_links(erb.result(binding)))
       end
     when "inst"
       arch_def.implemented_instructions.each do |inst|
         path = dir_path / "#{inst.name}.adoc"
-        File.write(path, erb.result(binding))
+        File.write(path, arch_def.find_replace_links(erb.result(binding)))
       end
     when "ext"
       arch_def.implemented_extensions.each do |ext|
         ext = arch_def.extension(ext.name)
         path = dir_path / "#{ext.name}.adoc"
-        File.write(path, erb.result(binding))
+        File.write(path, arch_def.find_replace_links(erb.result(binding)))
       end
     when "func"
       isa_def = arch_def.global_ast
       global_symtab = arch_def.sym_table
       path = dir_path / "funcs.adoc"
-      File.write(path, erb.result(binding))
+      File.write(path, arch_def.find_replace_links(erb.result(binding)))
     else
       raise "todo"
     end

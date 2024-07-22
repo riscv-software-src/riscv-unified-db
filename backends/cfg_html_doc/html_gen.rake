@@ -88,7 +88,7 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/ROOT/pages/config.adoc} => p
 
   arch_def = ArchDef.new(config_name)
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AntoraUtils.resolve_links(erb.result(binding))
+  File.write t.name, AntoraUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
 end
 
 rule %r{#{$root}/gen/cfg_html_doc/.*/antora/antora.yml} => proc { |tname|
@@ -204,24 +204,25 @@ rule %r{#{$root}/\.stamps/html-gen-.*\.stamp} => proc { |tname|
     "--fetch",
     playbook_path
   ].join(" ")
+  FileUtils.touch t.name
 end
 
-    namespace :gen do
-      desc <<~DESC
-        Generate HTML documentation for config(s).
+namespace :gen do
+  desc <<~DESC
+    Generate HTML documentation for config(s).
 
-        Multiple configs may be specified as a comman-separated list.
-        Note, the list cannot contain spaces.
-      DESC
-      task :html, [:config_name] => "gen:adoc" do |_t, args|
-        configs = [args[:config_name]]
-        configs += args.extras unless args.extras.empty?
+    Multiple configs may be specified as a comman-separated list.
+    Note, the list cannot contain spaces.
+  DESC
+  task :html, [:config_name] => "gen:adoc" do |_t, args|
+    configs = [args[:config_name]]
+    configs += args.extras unless args.extras.empty?
 
-        configs.each do |config|
-          Rake::Task[($root / ".stamps" / "html-gen-#{config}.stamp")].invoke
-        end
-      end
+    configs.each do |config|
+      Rake::Task[($root / ".stamps" / "html-gen-#{config}.stamp")].invoke
     end
+  end
+end
 
 namespace :serve do
   desc <<~DESC

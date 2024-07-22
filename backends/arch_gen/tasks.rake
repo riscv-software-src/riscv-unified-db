@@ -17,8 +17,7 @@ rule %r{#{$root}/\.stamps/arch-gen-.*\.stamp} => proc { |tname|
     "#{$root}/.stamps",
     "#{ARCH_GEN_DIR}/lib/arch_gen.rb",
     "#{$root}/lib/idl/ast.rb",
-    "#{ARCH_GEN_DIR}/tasks.rake",
-    "gen:arch"
+    "#{ARCH_GEN_DIR}/tasks.rake"
   ] + arch_files + config_files
 } do |t|
   config_name = Pathname.new(t.name).basename(".stamp").sub("arch-gen-", "")
