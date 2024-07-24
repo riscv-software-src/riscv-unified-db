@@ -100,39 +100,70 @@ enum          bitfield
 
 == Data Types
 
+IDL has the following types:
+
+ * Primitive
+ ** Arbitrary length bit vectors
+ ** Booleans
+ * Composite
+ ** Enumerations
+ ** Bitfields
+ ** Arrays
+ * Other
+ ** Strings (with limited operators, mostly for configuration parameter checking)
+
 === Primitive Types
 
 IDL has two primitive types: `Bits<N>` and `Boolean`.
 
-The `Bits<N>` type is an array of N bits that is treated like an integer for arithmetic and logical operators. `Bits<N>` are unsigned by default, but can be cast to a signed version when it would make a difference (_e.g._, for signed comparison). See Section <<Casting>>. `N` must be a value known at compile time: either a literal, a constant (_e.g._, a configuration parameter), or an expression where every component is known at compile time.
+==== `Bits<N>`
+
+The `Bits<N>` type is a vector of N bits that is treated like an integer for arithmetic and logical operators. `Bits<N>` are unsigned by default, but can be cast to a signed version when it would make a difference (_e.g._, for signed comparison). See Section <<Casting>>. `N` must be a value known at compile time: either a literal, a constant (_e.g._, a configuration parameter), or an expression where every component is known at compile time.
 
 .Examples of Bits<N> declarations
 [source,idl]
 ----
 Bits<1>       sign_bit;              # 1-bit unsigned variable
 Bits<XLEN>    virtual_address;       # XLEN-bit unsigned variable
-Bits<XLEN*2>  multiplication_result; # unsigned variable twice as wide as XLEN
+Bits<{XLEN, 1'b0}> multiplication_result # unsigned variable twice as wide as XLEN
 
-# Bits<sign_bit> invalid;              # compile error: N must be known at compile time
+# Careful!
+# Bits<XLEN*2>  multiplication_result; # compilation error; XLEN only has enough bits to
+                                       # represent itself, so XLEN*2 is truncated to zero
+                                       # (see <<Operators>>)
+
+# Bits<sign_bit> invalid;              # compilation error: N must be known at compile time
 ----
 
-The `Boolean` type is either true or false, and cannot be mixed with `Bits<N>`.
+===== Aliases
 
-There are several aliases available, as shown below.
+There are several aliases of Bits<N> available, as shown below.
 
 .Primitive type aliases
 [%autowidth]
 |===
 | Alias | Type
 
-| `XReg`  | `Bits<XLEN>`
+| `XReg`  | `Bits<XLEN>`, where XLEN is configuratin-dependent
 | `U64`   | `Bits<64>`
 | `U32`   | `Bits<32>`
 |===
 
-=== User-defined Types
+==== Boolean
 
-IDL also supports two user-defined types: enumerations and bitfields.
+The `Boolean` type is either true or false, and cannot be mixed with `Bits<N>`.
+
+==== Character strings
+
+IDL also has fixed-length character strings, though they are limited to comparison with other strings and cannot be converted into Bits<N>. They exist mostly to facilitate configuration parameter checking.
+
+All strings must be compile-time-known values.
+
+=== Composite Types
+
+IDL also supports three composite types: enumerations, bitfields, and arrays.
+
+==== Enumerations
 
 An enumeration is a set of named integer values. Unlike C/C++ enums, enumeration members are not promoted to the surrounding scope. To reference a member, it must be fully qualified using the scope operator `::`.
 
@@ -157,12 +188,22 @@ enum MemoryOperation {
   Fetch           # will get value 3
 }
 
+# careful!
+enum DuplicateValueEnum {
+  First  1
+  Second 2
+  Zero   0
+  Third    # value is 1 (0 + 1), not 3
+}
+
 # references
 SatpMode cur_mode = SatpMode::Sv39;
-Bits<2> op = MemoryOperation::Fetch; # ok, op gets 2'd3
+Bits<2> op = $bits(MemoryOperation::Fetch); # op gets 2'd3, see <<Casting>>
 ----
 
-Bitfields represent named ranges within a contiguous array of bits. They are useful, for example, to describe the fields in a page table entry. Bitfield names and members must begin with a capital letter. Bitfields are explictly declared with a bit width. Bitfield members specify the range they occupy in the bitfield. Members may overlap, which enables aliasing. Gaps may exist in a bitfield (where no member exists); such gaps are read-only zero bits.
+==== Bitfields
+
+Bitfields represent named ranges within a contiguous vector of bits. They are useful, for example, to describe the fields in a page table entry. Bitfield names and members must begin with a capital letter. Bitfields are explictly declared with a compile-time-known bit width. Bitfield members specify the range they occupy in the bitfield. Members may overlap, which enables aliasing. Gaps may exist in a bitfield (where no member exists); such gaps are read-only zero bits.
 
 [source,idl]
 ----
@@ -174,7 +215,7 @@ bitfield (64) Sv39PageTableEntry {
   PPN2 53-28
   PPN1 27-19
   PPN0 18-10
-  PPN 53-10 # in addition to the components, we define the entire PPN
+  PPN 53-10 # Note, this overlaps with PPN0/1/2
   RSW  9-8
   D 7
   A 6
@@ -197,9 +238,53 @@ Sv39PageTableEntry pte = pte_data;
 Bits<2> pbmt = pte.PBMT;
 ----
 
-Technically, IDL also has a tuple type that is used to return multiple values from a function. However, they cannot be instantiated outside of a function call, and must be immediately decomposed into individual variables (_i.e._, you cannot create a tuple variable). Thus, tuples will not be discussed further.
+==== Arrays
 
-== Integer literals
+Fixed-size arrays of other data types may also be created in IDL. The size of the array must be known at compile time (_i.e._, there are no unbounded arrays like in C/C++).
+
+Arrays are declared by appending the size of the array in brackets after the variable name.
+
+.Array declarations
+[source,idl]
+----
+Bitx<32> array_of_words[10];      # array of ten words
+Boolean  array_of_bools[12];      # array of twelve booleans
+Bits<32> matrix_of_words[32][32]; # array of arrays of 32 words
+----
+
+Array elements are refenced using the bracket operator:
+
+.Array element references
+[source,idl]
+----
+array_of_words[2]      # Bits<32> type; the second word in array_of_words
+array_of_bools[3]      # Boolean type; the third word in array_of_bools
+matrix_of_words[3][4]  # Bits<32> type; the fourth word in the third array of matrix_of_words
+----
+
+Arrays cannot be casted to Bits<N> type, so the storage order is irrelant and unspecified.
+
+==== Tuples
+
+Technically, IDL also has a tuple type that is used to return multiple values from a function. However, they cannot be instantiated outside of a function call, and must be immediately decomposed into individual variables (_i.e._, you cannot create a tuple variable).
+
+.Multiple value function return
+[source,idl]
+----
+(quot,remainder) = divmod(32, 5);
+----
+
+When one or more values in a tuple is not needed, it can be assigned to the don't-care symbol (`-`).
+
+.Don't care return value
+[source,idl]
+----
+(-, remainder) = divmod(value); # quotient is discarded
+----
+
+== Literals
+
+=== Integer literals
 
 Integer literal values can be expressed using either C style or Verilog style. When using Verilog style, the literal bit width can be specified. If the width is omitted using the verilog style, the bit width will be XLEN. When using C style, the bitwidth is the minimum number of bits needed to represent the value.
 
@@ -264,6 +349,43 @@ Literals may contain any number of underscores after the initial digit for clari
 -17         # 15 decimal: the literal is 17, unsigned, in 5-bits. when negated, the sign bit lost
 -13         # 3 decimal: the literal is 13, unsigned, in 4-bits. when negated, the sign bit is lost 
 
+----
+
+=== Array literals
+
+Array literals are composed of a list of comma-separated values in brackets, similar to C/C++/Verilog.
+
+.Array literals
+[source,idl]
+----
+Bitx<32> array_of_words[10] = [0,1,2,3,4,5,6,7,8,9];
+Boolean  array_of_bools[12] =
+  [
+    true,true,true,true,true,true,
+    false,false,false,false,false
+  ];
+Bits<32> matrix_of_words[32][32] =
+  [
+    [0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6,7,7,7,7],
+    [0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6,7,7,7,7],
+    ...
+    [0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6,7,7,7,7],
+    [0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6,7,7,7,7],
+  ]
+----
+
+== String literals
+
+String literals are enclosed in double quotes. There is no escape charater; as such, it is impossible to represent a double quote, newline, etc. in a string literal.
+
+[source,idl]
+----
+"The cow jumped over the moon"
+""  # empty string
+
+# careful!
+# "The dog said "woof"" # compilation error: woof is not in the string
+# "not\na\nmulti\nline\string" # OK, but \n is two characters, not a newline
 ----
 
 == Operators
@@ -353,8 +475,10 @@ The result of a binary operation is signed if both operands are signed; otherwis
                 | `i \<= j`   | Boolean                    | Less than or equal. +
                                                              `i` and `j` must be integral.
 
-| 10            | `i == j`   | Boolean                     | Equality. +
-                                                             `i` and `j` must be integral or boolean.
+.2+| 10         | `i == j`   | Boolean                     | Equality. +
+                                                             `i` and `j` must both be the same type, and be one of integral, boolean, or string.
+                | `i != j`   | Boolean                     | Inequality. +
+                                                             `i` and `j` must both be the same type, and be one of integral, boolean, or string.
 
 | 11            | `i & j`    | `Bits<max(L(i), L(j))>`     | Bitwise and. +
                                                              `i` and `j` must be integral
@@ -373,6 +497,8 @@ The result of a binary operation is signed if both operands are signed; otherwis
 
 == Variables and constants
 
+=== Mutable variables
+
 Variables must be declared with a type. Variable names must begin with a lowercase letter and can be followed by any number of letters (any case), numbers, or an underscore. 
 
 Variables may be optionally initialized when they are declared using the assignment operator. Variables that are not explicitly initialized are implicitly initialized to zero (for Bits<N>) or false (for Boolean).
@@ -384,6 +510,7 @@ Boolean condition;              # declare condition, initialized to false
 XReg    address = 0x8000_0000;  # declare address, initialized to 0x800000000
 Bits<8> pmpCfg0;                # declare pmpCfg0, initialized to 8'd0
 Bits<8> pmp_cfg_0;              # declare pmp_cfg_0, initialized to 8'd0
+Bits<8> ary[2];                 # declare ary, initialized to [8'd0, 8'd0]
 
 # Bits<8> PmpCfg;   # mutable variable names must start with a lowercase letter. PmpCfg would be a constant
 # Bits<8> d$_line;  # compilation error: '$' is not a valid variable name character
@@ -398,6 +525,21 @@ The general-purpose RISC-V x registers are builtin state for IDL (rather than be
 [NOTE]
 To help identify that the x registers are special, they use the variable name `X` (upper case X), which would be an invalid variable name if declared in IDL.
 
+==== Builtin variables
+
+Two builtin variables exist:
+
+|===
+| Name | Type | Scope | Description
+
+| `$pc` | `Bits<XLEN>` | Global | The current program counter of the hart
+| `$encoding` | `Bits<VARIABLE>`, where VARIABLE is the length of the last fetched insruction | Instruction, Csr | The encoding of the last fetched instruction. Only accessible in Instruction scope and Csr scope (cannot be used in functions). 
+|===
+
+=== Constants
+
+Constants are declared like mutable variables, execpt that their name starts with an uppercase letter.
+
 Constant names must start with an uppercase letter and can be followed by any number of letters (any case), numbers, or an underscore. Constants must be initialized when declared, and cannot be assigned after declaration. Constants must be initialized with a value known at compile time (_i.e._, initialization cannot reference variables).
 
 Note that many global constants, such are configuration parameters, are implicitly added before parsing (_e.g._, XLEN).
@@ -407,6 +549,7 @@ Note that many global constants, such are configuration parameters, are implicit
 ----
 Boolean I_LIKE_CHEESE = true;   # declare I_LIKE_CHEESE, initialized to true
 XReg    Address = 0x8000_0000;  # declare Address, initialized to 0x800000000
+XReg    AddressAlias = Address; # declare AddressAlias, initialized to 0x800000000
 
 # Bits<8> pmpCfg;  # constant names must start with a lowercase letter. pmpCfg would be a variable
 
@@ -420,6 +563,10 @@ XReg    Address = 0x8000_0000;  # declare Address, initialized to 0x800000000
 # Bits<8> PmpCfg0;
 
 ----
+
+==== Builtin constants
+
+All configuration parameters are added to Global scope for compilation.
 
 == Type conversions
 
@@ -437,9 +584,9 @@ Type conversions occur when dissimilar types are used in some binary operators o
 
 When expansion occurs, the value is zero extended when the type is unsigned and sign extended when the type is signed.
 
-Enumeration members can converted to a `Bits<N>` type, where N is the bit width required to represent all values in the enumeration.
+Enumeration members can converted to a `Bits<N>` type, where N is the bit width required to represent all values in the enumeration, via the `$bits` cast operator (see <<Casting>>).
 
-Bitfields can be converted to a `Bits<N>` type, where N is the width of the bitfield. The type of any bitfield member access is `Bits<N>`, where N is the width of the member.
+Bitfields can be converted to a `Bits<N>` type, where N is the width of the bitfield, using the `$bits` cast operator (see <<Casting>>). The type of any bitfield member access is `Bits<N>`, where N is the width of the member.
 
 == Casting
 
@@ -456,9 +603,10 @@ XReg cmp1 = (src1 < src2) ? 1 : 0;                    # cmp = 0
 XReg cmp1 = ($signed(src1) < $signed(src2)) ? 1 : 0;  # cmp = 1
 ----
 
-The '$bits' cast can convert Enumeration references and CSRs into a Bits<N> type.
+The '$bits' cast can convert Enumeration references, Bitfields, and CSRs into a Bits<N> type.
 When the casted value is an enumeration reference, the resulting type will be large enough to hold the largest value in the enumeration type, regardless of the specific reference value.
 When the casted value is a CSR, the resulting type will the width of the CSR, or the maximum width when a CSR width is dynamic.
+When the casted value is a bitfield, the resulting type will be the width of the bitfield.
 
 [source,idl]
 ----
@@ -473,7 +621,11 @@ When the casted value is a CSR, the resulting type will the width of the CSR, or
 $bits(RoundingMode::RNE)  # => 3'd0
 $bits(RoundingMode::RUP)  # => 3'd3
 
-$bits(CSR[mstatus])  # => XLEN'd?? 
+$bits(CSR[mstatus])  # => XLEN'd??
+
+# assuming:
+#   bitfield (64) Sv39PageTableEntry { ... }
+$bits(Sv39PageTableEntry) # => 64'd??
 ----
 
 == Control flow
@@ -495,7 +647,7 @@ if (src == 0) {
 }
 
 # compilation error: conditions must be boolean
-# if (src) {
+# if (src1) {
 #   ...
 # }
 ----
@@ -544,15 +696,15 @@ function NAME { <1>
 
 Functions must be given a textual description; this is to promote IDL as an executable documentation source.
 
-All arguments and return values are passed by value. There are no references in IDL.
+All arguments and return values are passed by value. There are no references or variable addresses in IDL.
 
-Functions must live in global scope. Functions cannot be nested, and cannot be defined in an instruction or csr scope (see <<Scopes>>). 
+Functions must live in global scope. Functions cannot be nested. 
 
 A function may return zero or more values of any valid type. A function may accept zero or more arguments of any valid type.
 
-Functions have no address. They can only be called, and function objects cannot be assigned to a variable.
+Functions have no address. They can only be called, and function objects cannot be assigned to a variable (no functin pointers).
 
-Recursive functions are not allowed.
+As IDL is intended to represent hardware implementations, recursive functions are not allowed.
 
 === Templated functions
 
@@ -619,10 +771,19 @@ builtin function sfence_asid {
 
 == Scope
 
-Variables and/or constants are defined in the scope of the declaration. IDL has 6 scopes: global, function, instruction, csr, if, and for. Name shadowing, where a variable name is the same as an existing variable in an outer scope, is prohibited and will result in a compilation error.
+Variables and/or constants are defined in the scope of the declaration.
 
-Global scope is the upper-most scope of any .idl file. IDL representing an instruction execution (Section QQQ) or CSR read/write (Section QQQ) starts in function scope; it is not possible to declare a global in those contexts. Note that many global constants are declared implictly by the compiler (_e.g._, all configuration parameters).
+Variables and constants in Global scope can be accessed anywhere. Many global constants and variables are automatically populated, such as configuration parameters and CSRs. User-defined globals are declared in the outer-most scope of any .idl file. Global variable and constant names must be unique; it is a compilation error if two globals have the same name.
 
+Function scope is created by declaring a function in an .idl file. Function scope includes the template variables, arguments, and body of a function. Variables and constants declared in function scope can only be accessed within the function body.
+
+Instruction execution, specified in an instruction's `operation()`, occurs in Instruction scope. Decode variables are automatically added from the encoding before the `operation()` body begins. Variables and constants declared `operation()` are not available outside the body. The `$encoding` builtin variable is available in Instruction scope.
+
+When a CSR defines custom behavior for software reads and/or writes via the `sw_read()` and `sw_write(csr_value)` bodies, the execution occurs in Csr scope. Variables and constants declaraed in Csr scope can only be accessed in the body. The `$encoding` builtin variable is available in the Csr scope, and corresponds to the encoding the `Zicsr` instruction that caused the read and/or write.
+
+`if` and `for` create a nested scope within their containing scope. Variables and constants declared within the nested scope are accessible within that nested scope or any more deeply nested scope. Variables and constants created in nested scope are not available once the nested scope ends. Variables and constants in nested scope may shadow a variable or constant outside the nested scope.
+
+.Nested scopes
 [source,idl]
 ----
 Bits<64> x[32]; # global constant (when this is an .idl file)
@@ -637,7 +798,7 @@ function example {
     Bits<XLEN> result;  # result is in function scope
 
     if (a > b) {
-      # Bits<XLEN> result = a + b; # compilation error: result shadows variable above
+      Bits<XLEN> result = a + b; # result shadows variable above
       Bits<XLEN> sum = a + b;  # ok
       result = sum;
     } else {
@@ -645,8 +806,140 @@ function example {
       result = difference;
     }
 
-    # result = sum; compilation error: sum is not in scope
-    return result;
+    # result = sum; # compilation error: sum is not in scope
+    return result; # either 0 (not sum), if a > b, or difference, if a <= b
   }
 }
+----
+
+== Sources
+
+In the context of riscv-unified-db, IDL source comes from multiple sources:
+
+ * .idl files
+ * Instruction definitions
+ * CSR definitions
+
+=== .idl files
+
+Global variables, constants, and functions are declared in .idl files under the `arch/isa` folder.
+The file `globals.idl` is implicitly treated as the top-level source file. Other files may be included from there.
+
+=== Instruction definitions
+
+Instruction defintions in `arch/inst` use IDL to formally specify the execution behavior via the "operation()" key. The IDL executes at Instruction scope when the instruction executes on a hart.
+
+"operation()" has no arguments (though decode variables are populated prior to execution) and no return value.
+
+.Example instruction operation
+[source,yaml]
+----
+add:
+  # ...
+  encoding:
+    # ...
+    variables:
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
+  operation(): |
+    X[rd] = X[rs1] + X[rs1];
+----
+
+=== CSR definitions
+
+IDL is used in several places of a CSR defintion in `arch/csr`:
+
+sw_read()::
+
+The "sw_read()" function executes when a software read (via a `Zicsr` instruction) occurs. It executes in Csr scope, takes no arguments, and must return a `Bits<N>` value, where N is the width of the CSR. If a CSR does not specify a "sw_read()", then the value of CSR is formed directly from it's field values.
+
+.Example sw_read()
+[source,yaml]
+----
+instret:
+  # ...
+  sw_read(): |
+    # ..bunch of permission checks...
+
+    return CSR[minstret].COUNT;
+----
+
+field.sw_write(csr_value)::
+
+The "sw_write(csr_value)" function of a CSR field executes when a software write (via a `Zicsr` instruction) occurs. It takes a single value, `csr_value`, that is an implicitly-defined bitfield of the CSR populated with the values software is trying to write. It returns a Bits<N> value repsenting what hardware is actually going to write into the field, where N is the width of the field. sw_write may also return the special value `UNDEFINED_LEGAL_DETERMINISTIC` to indicate that the written value is undefined, but it will be a legal value for the field and is deterministically determined based on the sequence of instructions leading to the write. 
+
+[NOTE]
+Note that the sw_read is specified for the entire CSR and the sw_write is specified for a CSR field.
+
+.Example field.sw_write(csr_value)
+[source,yaml]
+----
+mepc:
+  # ...
+  fields:
+    PC:
+      # ...
+      sw_write(csr_value): |
+        # csr_value is:
+        #    a 'bitfield (64) { PC 63-0 }' when XLEN == 64
+        #    a 'bitfield (32) { PC 31-0 }' when XLEN == 32
+        return csr_value.PC & ~64'b1;
+----
+
+field.type()::
+
+THe "type()" function is used to specify the type of a CSR field when the type is configuration-dependent. It takes no arguments and returns a CsrFieldType (defined in globals.idl) enumeration value.
+
+.Example field.type()
+[source,yaml]
+----
+mstatus:
+  # ...
+  fields:
+    # ...
+    MBE:
+      # ...
+      type(): |
+        return (M_MODE_ENDIANESS < 2) ? CsrFieldType::RO : CsrFieldType::RW;
+----
+
+field.reset_value()::
+
+The "reset_value()" function is used to specify the reset value of a CSR field when the value is configuration-dependent. It takes not arguments and returns a Bits<N> type, where N is the width of field. It may also return the special value `UNDEFINED_LEGAL` to indica       te that the reset value is unpredictable, but is gauranteed to be a legal value for the field.
+
+.Example field.reset_value()
+[source,yaml]
+----
+mstatus:
+  # ...
+  fields:
+    # ...
+    MBE:
+      # ...
+      # if endianess is mutable, MBE comes out of reset in little-endian mode
+      reset_value(): |
+        return (M_MODE_ENDIANESS == 1) ? 1 : 0;
+----
+
+== Compilation order
+
+The order of declaration is important in IDL (like C/C++, unlike Verilog). A variable, constant, or function must be declared *before* it is used.
+
+.Compilation order
+[source,idl]
+----
+function mod {
+  ...
+  body {
+    # (-, remainder) = divmod(value); # compilation error: divmod not defined
+    # return remainder;
+  }
+}
+
+function divmod { ... }
+
 ----
