@@ -111,3 +111,16 @@ Original::
 ----
 ====
 <%- end -%>
+
+<%- exception_list = inst.reachable_exceptions_str(arch_def.sym_table) -%>
+<%- unless exception_list.empty? -%>
+== Exceptions
+
+This instruction may result in the following synchronous exceptions:
+
+  <%- exception_list.each do |etype| -%>
+  * <%= etype %>
+  <%- end -%>
+
+<%- end -%>
+

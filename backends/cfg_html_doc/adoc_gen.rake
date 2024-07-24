@@ -15,7 +15,7 @@
   } do |t|
     config_name = Pathname.new(t.name).basename(".stamp").sub("adoc-gen-#{type}s-", "")
 
-    arch_def = ArchDef.new(config_name)
+    arch_def = arch_def_for(config_name)
     adoc_template_path = CFG_HTML_DOC_DIR / "templates" / "#{type}.adoc.erb"
     adoc_template = adoc_template_path.read
     erb = ERB.new(adoc_template, trim_mode: "-")
@@ -36,8 +36,8 @@
         File.write(path, arch_def.find_replace_links(erb.result(binding)))
       end
     when "ext"
-      arch_def.implemented_extensions.each do |ext|
-        ext = arch_def.extension(ext.name)
+      arch_def.implemented_extensions.each do |ext_version|
+        ext = arch_def.extension(ext_version.name)
         path = dir_path / "#{ext.name}.adoc"
         File.write(path, arch_def.find_replace_links(erb.result(binding)))
       end
@@ -52,16 +52,83 @@
 
     FileUtils.touch(t.name)
   end
+
+  rule %r{#{$root}/gen/cfg_html_doc/.*/adoc/#{type}s/all_#{type}s.adoc} => proc { |tname|
+    config_name = Pathname.new(tname).relative_path_from("#{$root}/gen/cfg_html_doc").to_s.split("/")[0]
+    ["#{$root}/.stamps/adoc-gen-#{type}s-#{config_name}.stamp"]
+  } do |t|
+    to_long = {
+      "csr" => "CSRs",
+      "inst" => "Instructions",
+      "ext" => "Extensions",
+      "func" => "Functions"
+    }
+
+    config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen/cfg_html_doc").to_s.split("/")[0]
+
+    arch_def = arch_def_for(config_name)
+
+    lines = [
+      "= Implemented #{to_long[type]}",
+      "",
+      "The following are implemented by the #{arch_def.name} configuration:",
+      ""
+    ]
+
+    case type
+    when "csr"
+      arch_def.implemented_csrs.each do |csr|
+        lines << " * `#{csr.name}` #{csr.long_name}"
+      end
+    when "ext"
+      arch_def.implemented_extensions.each do |ext_version|
+        lines << " * `#{ext_version.name}` #{ext_version.ext(arch_def).long_name}"
+      end
+    when "inst"
+      arch_def.implemented_instructions.each do |inst|
+        lines << " * `#{inst.name}` #{inst.long_name}"
+      end
+    when "func"
+      arch_def.implemented_functions.each do |func|
+        lines << " * `#{func.name}`"
+      end
+    else
+      raise "Unsupported type"
+    end
+
+    File.write t.name, arch_def.find_replace_links(lines.join("\n"))
+  end
 end
+
+rule %r{#{$root}/gen/cfg_html_doc/.*/adoc/ROOT/landing.adoc} => proc { |tname|
+  config_name = Pathname.new(tname).relative_path_from("#{$root}/gen/cfg_html_doc").to_s.split("/")[0]
+  [
+    "#{$root}/\.stamps/arch-gen-#{config_name}\.stamp",
+    "#{CFG_HTML_DOC_DIR}/templates/landing.adoc.erb",
+    __FILE__
+  ]
+} do |t|
+  config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen/cfg_html_doc").to_s.split("/")[0]
+
+  arch_def = arch_def_for(config_name)
+
+  erb = ERB.new(File.read("#{CFG_HTML_DOC_DIR}/templates/landing.adoc.erb"), trim_mode: "-")
+
+  FileUtils.mkdir_p File.dirname(t.name)
+  File.write t.name, erb.result(binding)
+end
+
 
 namespace :gen do
   desc "Generate Asciidoc source for config into gen/CONFIG_NAME/adoc"
   task :adoc, [:config_name] do |_t, args|
     raise "No config named #{args[:config_name]}" unless File.directory?($root / "cfgs" / args[:config_name])
 
-    Rake::Task["#{$root}/.stamps/adoc-gen-insts-#{args[:config_name]}.stamp"].invoke
-    Rake::Task["#{$root}/.stamps/adoc-gen-csrs-#{args[:config_name]}.stamp"].invoke
-    Rake::Task["#{$root}/.stamps/adoc-gen-exts-#{args[:config_name]}.stamp"].invoke
-    Rake::Task["#{$root}/.stamps/adoc-gen-funcs-#{args[:config_name]}.stamp"].invoke
+    ["inst", "csr", "ext", "func"].each do |type|
+      Rake::Task["#{$root}/.stamps/adoc-gen-#{type}s-#{args[:config_name]}.stamp"].invoke
+      Rake::Task["#{$root}/gen/cfg_html_doc/#{args[:config_name]}/adoc/#{type}s/all_#{type}s.adoc"].invoke
+    end
+
+    Rake::Task["#{$root}/gen/cfg_html_doc/#{args[:config_name]}/adoc/ROOT/landing.adoc"].invoke
   end
 end

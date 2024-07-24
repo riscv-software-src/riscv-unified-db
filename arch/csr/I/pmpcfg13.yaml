@@ -120,12 +120,12 @@ pmpcfg13:
       write(csr_value): |
         if ((CSR[pmpcfg13].pmp53cfg & 0x80) == 0) {
           # entry is not locked
-          if (!(((csr_value.pmp54cfg & 0x1) == 0) && ((csr_value.pmp54cfg & 0x2) == 0x2))) {
+          if (!(((csr_value.pmp53cfg & 0x1) == 0) && ((csr_value.pmp53cfg & 0x2) == 0x2))) {
             # not R = 0, W =1, which is reserved
             if ((PMP_GRANULARITY < 2) ||
-                ((csr_value.pmp54cfg & 0x18) != 0x10)) {
+                ((csr_value.pmp53cfg & 0x18) != 0x10)) {
               # NA4 is not allowed when PMP granularity is larger than 4 bytes
-              return csr_value.pmp54cfg;
+              return csr_value.pmp53cfg;
             }
           }
         }
@@ -179,12 +179,12 @@ pmpcfg13:
       write(csr_value): |
         if ((CSR[pmpcfg13].pmp54cfg & 0x80) == 0) {
           # entry is not locked
-          if (!(((csr_value.pmp56cfg & 0x1) == 0) && ((csr_value.pmp56cfg & 0x2) == 0x2))) {
+          if (!(((csr_value.pmp54cfg & 0x1) == 0) && ((csr_value.pmp54cfg & 0x2) == 0x2))) {
             # not R = 0, W =1, which is reserved
             if ((PMP_GRANULARITY < 2) ||
-                ((csr_value.pmp56cfg & 0x18) != 0x10)) {
+                ((csr_value.pmp54cfg & 0x18) != 0x10)) {
               # NA4 is not allowed when PMP granularity is larger than 4 bytes
-              return csr_value.pmp56cfg;
+              return csr_value.pmp54cfg;
             }
           }
         }
@@ -238,12 +238,12 @@ pmpcfg13:
       write(csr_value): |
         if ((CSR[pmpcfg13].pmp55cfg & 0x80) == 0) {
           # entry is not locked
-          if (!(((csr_value.pmp58cfg & 0x1) == 0) && ((csr_value.pmp58cfg & 0x2) == 0x2))) {
+          if (!(((csr_value.pmp55cfg & 0x1) == 0) && ((csr_value.pmp55cfg & 0x2) == 0x2))) {
             # not R = 0, W =1, which is reserved
             if ((PMP_GRANULARITY < 2) ||
-                ((csr_value.pmp58cfg & 0x18) != 0x10)) {
+                ((csr_value.pmp55cfg & 0x18) != 0x10)) {
               # NA4 is not allowed when PMP granularity is larger than 4 bytes
-              return csr_value.pmp58cfg;
+              return csr_value.pmp55cfg;
             }
           }
         }

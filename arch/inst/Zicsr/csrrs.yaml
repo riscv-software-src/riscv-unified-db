@@ -28,6 +28,8 @@ csrrs:
     vs: always
     vu: always
   operation(): |
+    # TODO: permission checks
+
     XReg initial_csr_value = CSR[csr].sw_read();
     XReg mask = X[rs1];
 

@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../../schemas/ext_schema.json
 
 Zicboz:
+  long_name: Cache block zero instruction
   description: Cache block zero instruction
   type: unprivileged
   versions:

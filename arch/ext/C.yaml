@@ -2,6 +2,7 @@
 
 C:
   type: unprivileged
+  long_name: Compressed instructions
   versions:
   - version: 2.2
     state: ratified

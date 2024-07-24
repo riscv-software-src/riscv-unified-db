@@ -2,14 +2,10 @@
 
 # pass to find all the possible return values from a function body
 
-module Treetop
-  module Runtime
-    class SyntaxNode
-      def pass_find_return_values(values, current_conditions)
-        children.each do |c|
-          c.pass_find_return_values(values, current_conditions)
-        end
-      end
+class AstNode
+  def pass_find_return_values(values, current_conditions)
+    children.each do |c|
+      c.pass_find_return_values(values, current_conditions)
     end
   end
 end

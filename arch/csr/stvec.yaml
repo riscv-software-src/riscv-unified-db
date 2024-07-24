@@ -38,7 +38,7 @@ stvec:
       type: RW-R
       write(csr_value): |
         if (csr_value.MODE == 0 || csr_value.MODE == 1) {
-          return value.MODE;
+          return csr_value.MODE;
         } else {
           return UNDEFINED_LEGAL_DETERMINISTIC;
         }

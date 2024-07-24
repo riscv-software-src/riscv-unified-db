@@ -2,6 +2,7 @@
 
 I:
   type: unprivileged
+  long_name: Base integer ISA
   versions:
   - version: 2.1
     state: ratified

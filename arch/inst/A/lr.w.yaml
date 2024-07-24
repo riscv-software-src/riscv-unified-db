@@ -1,0 +1,74 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+lr.w:
+  long_name: Load reserved word
+  description: |
+     Loads a word from the address in rs1, places the sign-extended value in rd,
+     and registers a _reservation set_  -- a set of bytes that subsumes the bytes in the
+     addressed word.
+
+     <%- if XLEN == 64 -%>
+     The 32-bit load result is sign-extended to 64-bits.
+     <%- end -%>
+
+     The address in rs1 must be naturally aligned to the size of the operand
+     (_i.e._, eight-byte aligned for doublewords and four-byte aligned for words).
+
+     If the address is not naturally aligned, a `LoadAddressMisaligned` exception or an
+     `LoadAccessFault` exception will be generated. The access-fault exception can be generated
+     for a memory access that would otherwise be able to complete except for the misalignment,
+     if the misaligned access should not be emulated.
+
+     An implementation can register an arbitrarily large reservation set on each LR, provided the
+     reservation set includes all bytes of the addressed data word or doubleword.
+     An SC can only pair with the most recent LR in program order.
+     An SC may succeed only if no store from another hart to the reservation set can be
+     observed to have occurred between the LR and the SC, and if there is no other SC between the
+     LR and itself in program order.
+     An SC may succeed only if no write from a device other than a hart to the bytes accessed by
+     the LR instruction can be observed to have occurred between the LR and SC. Note this LR
+     might have had a different effective address and data size, but reserved the SC's
+     address as part of the reservation set.
+
+     [NOTE]
+     ----
+     Following this model, in systems with memory translation, an SC is allowed to succeed if the
+     earlier LR reserved the same location using an alias with a different virtual address, but is
+     also allowed to fail if the virtual address is different.
+
+     To accommodate legacy devices and buses, writes from devices other than RISC-V harts are only
+     required to invalidate reservations when they overlap the bytes accessed by the LR.
+     These writes are not required to invalidate the reservation when they access other bytes in
+     the reservation set.
+     ----
+
+     Software should not set the _rl_ bit on an LR instruction unless the _aq_ bit is also set.
+     LR.rl and SC.aq instructions are not guaranteed to provide any stronger ordering than those
+     with both bits clear, but may result in lower performance.
+  definedBy: A
+  assembly: xd, xs1
+  encoding:
+    match: 00010--00000-----010-----0101111
+    variables:
+    - name: aq
+      location: 26
+    - name: rl
+      location: 27
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    if (implemented?(ExtensionName::A) && (CSR[misa].A == 1'b0)) {
+      raise (ExceptionCode::IllegalInstruction, $encoding);
+    }
+
+    XReg virtual_address = X[rs1];
+
+    #X[rd] = load_reserved<32>(virtual_address);
+    X[rd] = read_memory<32>(virtual_address);

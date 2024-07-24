@@ -68,7 +68,7 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/nav.adoc} => proc { |tname|
   erb = ERB.new(toc_path.read, trim_mode: "-")
   erb.filename = toc_path.to_s
 
-  arch_def = ArchDef.new(config_name)
+  arch_def = arch_def_for(config_name)
   File.write t.name, AntoraUtils.resolve_links(erb.result(binding))
 end
 
@@ -86,9 +86,23 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/ROOT/pages/config.adoc} => p
   erb = ERB.new(config_path.read, trim_mode: "-")
   erb.filename = config_path.to_s
 
-  arch_def = ArchDef.new(config_name)
+  arch_def = arch_def_for(config_name)
   FileUtils.mkdir_p File.dirname(t.name)
   File.write t.name, AntoraUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
+end
+
+rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/ROOT/pages/landing.adoc} => proc { |tname|
+  config_name = Pathname.new(tname).relative_path_from("#{$root}/gen/cfg_html_doc").to_s.split("/")[0]
+  [
+    "#{$root}/gen/cfg_html_doc/#{config_name}/adoc/ROOT/landing.adoc",
+    __FILE__
+  ]
+} do |t|
+  config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen/cfg_html_doc").to_s.split("/")[0]
+  arch_def = arch_def_for(config_name)
+
+  FileUtils.mkdir_p File.dirname(t.name)
+  File.write t.name, AntoraUtils.resolve_links(arch_def.find_replace_links(File.read(t.prerequisites[0])))
 end
 
 rule %r{#{$root}/gen/cfg_html_doc/.*/antora/antora.yml} => proc { |tname|
@@ -119,6 +133,7 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/playbook.yaml} => proc { |tname|
   File.write t.name, <<~PLAYBOOK
     site:
       title: RISC-V Specification for #{config_name}
+      start_page: #{config_name}:ROOT:landing.adoc
     content:
       sources:
       - url: #{$root}
@@ -173,6 +188,8 @@ rule %r{#{$root}/\.stamps/html-gen-.*\.stamp} => proc { |tname|
     "#{$root}/.stamps/adoc-gen-exts-#{config_name}.stamp",
     "#{$root}/.stamps/adoc-gen-funcs-#{config_name}.stamp",
     "#{$root}/.stamps/html-gen-prose-#{config_name}.stamp",
+    "#{$root}/gen/cfg_html_doc/#{config_name}/antora/modules/ROOT/pages/config.adoc",
+    "#{$root}/gen/cfg_html_doc/#{config_name}/antora/modules/ROOT/pages/landing.adoc",
     __FILE__,
     "#{$root}/.stamps"
   ]

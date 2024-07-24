@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../../schemas/ext_schema.json
 
 Zaamo:
+  long_name: Load-acquire/Store-release atomic instructions
   type: unprivileged
   versions:
   - version: 1.0

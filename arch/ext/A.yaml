@@ -2,6 +2,7 @@
 
 A:
   type: unprivileged
+  long_name: Atomic instructions
   versions:
   - version: 2.1
     state: ratified

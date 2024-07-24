@@ -2,6 +2,7 @@
 
 H:
   type: privileged
+  long_name: Hypervisor
   versions:
   - version: 1.0
     state: ratified

@@ -1,10 +1,8 @@
 [ext:$<%= ext.name %>-def]
 = <%= ext.name %> Extension
+<%= ext.long_name %>
 
-<%- unless ext.arch_def.implemented_extensions.any? { |e| e.name == ext.name } -%>
-[WARNING]
-This extension not implemented by the <%= ext.arch_def.name %> configuration.
-<%- end -%>
+Implemented Version:: <%= ext_version.version %>
 
 <%- if !ext.implies.empty? -%>
 This extension implies the following extension(s):

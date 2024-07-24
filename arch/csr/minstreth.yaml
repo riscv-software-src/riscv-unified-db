@@ -22,7 +22,8 @@ minstreth:
       reset_value: UNDEFINED_LEGAL
       affectedBy: [Zicntr, Smcntrpmf, Smcdeleg, Ssccfg]
       write(csr_value): |
-        CSR[minstret] = {csr_value.COUNT[31:0], CSR[minstret][31:0];
+        CSR[mcycle].COUNT = {csr_value.COUNT[31:0], CSR[minstret].COUNT[31:0]};
+        return csr_value.COUNT;
   definedBy: Zicntr
   sw_read(): |
-    return CSR[minstret][63:32];
+    return CSR[minstret].COUNT[63:32];

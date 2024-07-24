@@ -18,7 +18,7 @@ module Treetop
       alias orig_instantiate_node instantiate_node
 
       # override instatiate_node so we can set the input file
-      def instantiate_node(node_type,*args)
+      def instantiate_node(node_type, *args)
         node = orig_instantiate_node(node_type, *args)
         node.set_input_file(input_file, @starting_line.nil? ? 0 : @starting_line)
         node
@@ -54,7 +54,7 @@ module Idl
         MSG
       end
 
-      raise "unexpected type #{m.class.name}" unless m.is_a?(IsaAst)
+      raise "unexpected type #{m.class.name}" unless m.is_a?(IsaSyntaxNode)
 
       ast = m.to_ast
 
@@ -66,6 +66,8 @@ module Idl
         warn e.bt
         exit 1
       end
+      ast.freeze_tree
+
       ast
     end
 
@@ -80,11 +82,10 @@ module Idl
     # @param input_line [Integer] Starting line in the input file that this source comes from
     # @param no_rescue [Boolean] Whether or not to automatically catch any errors
     # @return [Ast] The root of the abstract syntax tree
-    def compile_func_body(body, return_type: nil, symtab: SymbolTable.new, name: nil, parent: nil, input_file: nil, input_line: 0, no_rescue: false)
+    def compile_func_body(body, return_type: nil, symtab: SymbolTable.new, name: nil, parent: nil, input_file: nil, input_line: 0, no_rescue: false, extra_syms: {})
       @parser.set_input_file(input_file, input_line)
 
       cloned_symtab = symtab.deep_clone
-      raise "supplied symbol table is not at gloabl scope" unless cloned_symtab.levels == 1
 
       m = @parser.parse(body, root: :function_body)
       if m.nil?
@@ -101,6 +102,10 @@ module Idl
       # type check
       cloned_symtab.push
       cloned_symtab.add("__expected_return_type", return_type) unless return_type.nil?
+
+      extra_syms.each { |k, v|
+        cloned_symtab.add(k, v)
+      }
 
       begin
         ast.statements.each do |s|
@@ -131,6 +136,8 @@ module Idl
         cloned_symtab.pop
       end
 
+      ast.freeze_tree
+
       ast
     end
 
@@ -157,6 +164,8 @@ module Idl
       # fix up left recursion
       ast = m.to_ast
       ast.set_input_file("Inst #{inst.name} (#{input_file})", input_line)
+      ast.freeze_tree
+
       ast
     end
 
@@ -180,6 +189,8 @@ module Idl
         warn e.backtrace
         exit 1
       end
+
+      ast.freeze_tree
 
       ast
     end
@@ -212,6 +223,8 @@ module Idl
         warn e.backtrace
         exit 1
       end
+
+      ast.freeze_tree
 
       ast
     end

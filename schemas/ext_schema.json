@@ -4,7 +4,7 @@
   "$defs": {
     "ext_data": {
       "type": "object",
-      "required": ["description", "versions"],
+      "required": ["description", "long_name", "versions"],
       "properties": {
         "name": { "$ref": "schema_defs.json#/$defs/extension_name" },
         "long_name": {

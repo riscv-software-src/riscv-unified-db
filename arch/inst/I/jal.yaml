@@ -24,5 +24,5 @@ jal:
   operation(): |
     XReg retrun_addr = PC + 4;
 
-    jump(PC + imm);
+    jump_halfword(PC + imm);
     X[rd] = retrun_addr;

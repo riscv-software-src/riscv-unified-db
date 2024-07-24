@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../../schemas/ext_schema.json
 
 Ssccfg:
+  long_name: Supervisor-mode counter configuration
   description: Supervisor-mode counter configuration
   type: privileged
   versions:

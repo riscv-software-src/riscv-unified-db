@@ -136,13 +136,13 @@ mstatus:
         }
 
       write(csr_value): |
-        if (csr_value.SXL < value.UXL) {
+        if (csr_value.SXL < csr_value.UXL) {
           return UNDEFINED_LEGAL_DETERMINISTIC;
         } else if (csr_value.SXL > 1) {
           # SXL != [0, 1] is not defined (2 reserved for RV128, but that isn't ratified)
           return UNDEFINED_LEGAL_DETERMINISTIC;
         } else {
-          return value.SXL;
+          return csr_value.SXL;
         }
       reset_value: UNDEFINED_LEGAL
 

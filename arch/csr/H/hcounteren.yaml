@@ -1,0 +1,708 @@
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+# WARNING: This file is auto-generated from arch/csr/H/hcounteren.layout
+
+
+hcounteren:
+  long_name: Hypervisor Counter Enable
+  address: 0x606
+  priv_mode: S
+  length: 32
+  description: |
+    Together with `scounteren`, delegates control of the hardware performance-monitoring counters
+    to VS/VU-mode
+
+    See `cycle` for a table describing how exceptions occur.
+  definedBy: H
+  fields:
+    CY:
+      location: 0
+      description: |
+        When all of `scounteren.CY`, `mcounteren.CY`, and `hcounteren.CY` are set,
+        the `cycle` CSR (an alias of `mcycle`) is accessible to VU-mode.
+
+        When `mcounteren.CY` and `hcounteren.CY` are set,
+        the `cycle` CSR (an alias of `mcycle`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.CY` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.CY` ! `hcounteren.CY` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+      definedBy: Zicntr
+      type: RW-H
+      reset_value: UNDEFINED_LEGAL
+    IR:
+      location: 2
+      description: |
+        When all of `scounteren.IR`, `mcounteren.IR`, and `hcounteren.IR` are set,
+        the `instret` CSR (an alias of `minstret`) is accessible to VU-mode.
+
+        When `mcounteren.IR` and `hcounteren.IR` are set,
+        the `instret` CSR (an alias of `minstret`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.IR` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.IR` ! `hcounteren.IR` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+
+      type: RW-H
+      reset_value: UNDEFINED_LEGAL
+    HPM3:
+      location: 3
+      description: |
+        When all of `scounteren.HPM3`, `mcounteren.HPM3`, and `hcounteren.HPM3` are set,
+        the `hpmcounter3` CSR (an alias of `mhpmcounter3`) is accessible to VU-mode.
+
+        When `mcounteren.HPM3` and `hcounteren.HPM3` are set,
+        the `hpmcounter3` CSR (an alias of `mhpmconuter3`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM3` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM3` ! `hcounteren.HPM3` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM4:
+      location: 4
+      description: |
+        When all of `scounteren.HPM4`, `mcounteren.HPM4`, and `hcounteren.HPM4` are set,
+        the `hpmcounter4` CSR (an alias of `mhpmcounter4`) is accessible to VU-mode.
+
+        When `mcounteren.HPM4` and `hcounteren.HPM4` are set,
+        the `hpmcounter4` CSR (an alias of `mhpmconuter4`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM4` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM4` ! `hcounteren.HPM4` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM5:
+      location: 5
+      description: |
+        When all of `scounteren.HPM5`, `mcounteren.HPM5`, and `hcounteren.HPM5` are set,
+        the `hpmcounter5` CSR (an alias of `mhpmcounter5`) is accessible to VU-mode.
+
+        When `mcounteren.HPM5` and `hcounteren.HPM5` are set,
+        the `hpmcounter5` CSR (an alias of `mhpmconuter5`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM5` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM5` ! `hcounteren.HPM5` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM6:
+      location: 6
+      description: |
+        When all of `scounteren.HPM6`, `mcounteren.HPM6`, and `hcounteren.HPM6` are set,
+        the `hpmcounter6` CSR (an alias of `mhpmcounter6`) is accessible to VU-mode.
+
+        When `mcounteren.HPM6` and `hcounteren.HPM6` are set,
+        the `hpmcounter6` CSR (an alias of `mhpmconuter6`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM6` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM6` ! `hcounteren.HPM6` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM7:
+      location: 7
+      description: |
+        When all of `scounteren.HPM7`, `mcounteren.HPM7`, and `hcounteren.HPM7` are set,
+        the `hpmcounter7` CSR (an alias of `mhpmcounter7`) is accessible to VU-mode.
+
+        When `mcounteren.HPM7` and `hcounteren.HPM7` are set,
+        the `hpmcounter7` CSR (an alias of `mhpmconuter7`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM7` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM7` ! `hcounteren.HPM7` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM8:
+      location: 8
+      description: |
+        When all of `scounteren.HPM8`, `mcounteren.HPM8`, and `hcounteren.HPM8` are set,
+        the `hpmcounter8` CSR (an alias of `mhpmcounter8`) is accessible to VU-mode.
+
+        When `mcounteren.HPM8` and `hcounteren.HPM8` are set,
+        the `hpmcounter8` CSR (an alias of `mhpmconuter8`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM8` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM8` ! `hcounteren.HPM8` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM9:
+      location: 9
+      description: |
+        When all of `scounteren.HPM9`, `mcounteren.HPM9`, and `hcounteren.HPM9` are set,
+        the `hpmcounter9` CSR (an alias of `mhpmcounter9`) is accessible to VU-mode.
+
+        When `mcounteren.HPM9` and `hcounteren.HPM9` are set,
+        the `hpmcounter9` CSR (an alias of `mhpmconuter9`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM9` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM9` ! `hcounteren.HPM9` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM10:
+      location: 10
+      description: |
+        When all of `scounteren.HPM10`, `mcounteren.HPM10`, and `hcounteren.HPM10` are set,
+        the `hpmcounter10` CSR (an alias of `mhpmcounter10`) is accessible to VU-mode.
+
+        When `mcounteren.HPM10` and `hcounteren.HPM10` are set,
+        the `hpmcounter10` CSR (an alias of `mhpmconuter10`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM10` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM10` ! `hcounteren.HPM10` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM11:
+      location: 11
+      description: |
+        When all of `scounteren.HPM11`, `mcounteren.HPM11`, and `hcounteren.HPM11` are set,
+        the `hpmcounter11` CSR (an alias of `mhpmcounter11`) is accessible to VU-mode.
+
+        When `mcounteren.HPM11` and `hcounteren.HPM11` are set,
+        the `hpmcounter11` CSR (an alias of `mhpmconuter11`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM11` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM11` ! `hcounteren.HPM11` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM12:
+      location: 12
+      description: |
+        When all of `scounteren.HPM12`, `mcounteren.HPM12`, and `hcounteren.HPM12` are set,
+        the `hpmcounter12` CSR (an alias of `mhpmcounter12`) is accessible to VU-mode.
+
+        When `mcounteren.HPM12` and `hcounteren.HPM12` are set,
+        the `hpmcounter12` CSR (an alias of `mhpmconuter12`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM12` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM12` ! `hcounteren.HPM12` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM13:
+      location: 13
+      description: |
+        When all of `scounteren.HPM13`, `mcounteren.HPM13`, and `hcounteren.HPM13` are set,
+        the `hpmcounter13` CSR (an alias of `mhpmcounter13`) is accessible to VU-mode.
+
+        When `mcounteren.HPM13` and `hcounteren.HPM13` are set,
+        the `hpmcounter13` CSR (an alias of `mhpmconuter13`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM13` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM13` ! `hcounteren.HPM13` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM14:
+      location: 14
+      description: |
+        When all of `scounteren.HPM14`, `mcounteren.HPM14`, and `hcounteren.HPM14` are set,
+        the `hpmcounter14` CSR (an alias of `mhpmcounter14`) is accessible to VU-mode.
+
+        When `mcounteren.HPM14` and `hcounteren.HPM14` are set,
+        the `hpmcounter14` CSR (an alias of `mhpmconuter14`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM14` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM14` ! `hcounteren.HPM14` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM15:
+      location: 15
+      description: |
+        When all of `scounteren.HPM15`, `mcounteren.HPM15`, and `hcounteren.HPM15` are set,
+        the `hpmcounter15` CSR (an alias of `mhpmcounter15`) is accessible to VU-mode.
+
+        When `mcounteren.HPM15` and `hcounteren.HPM15` are set,
+        the `hpmcounter15` CSR (an alias of `mhpmconuter15`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM15` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM15` ! `hcounteren.HPM15` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM16:
+      location: 16
+      description: |
+        When all of `scounteren.HPM16`, `mcounteren.HPM16`, and `hcounteren.HPM16` are set,
+        the `hpmcounter16` CSR (an alias of `mhpmcounter16`) is accessible to VU-mode.
+
+        When `mcounteren.HPM16` and `hcounteren.HPM16` are set,
+        the `hpmcounter16` CSR (an alias of `mhpmconuter16`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM16` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM16` ! `hcounteren.HPM16` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM17:
+      location: 17
+      description: |
+        When all of `scounteren.HPM17`, `mcounteren.HPM17`, and `hcounteren.HPM17` are set,
+        the `hpmcounter17` CSR (an alias of `mhpmcounter17`) is accessible to VU-mode.
+
+        When `mcounteren.HPM17` and `hcounteren.HPM17` are set,
+        the `hpmcounter17` CSR (an alias of `mhpmconuter17`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM17` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM17` ! `hcounteren.HPM17` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM18:
+      location: 18
+      description: |
+        When all of `scounteren.HPM18`, `mcounteren.HPM18`, and `hcounteren.HPM18` are set,
+        the `hpmcounter18` CSR (an alias of `mhpmcounter18`) is accessible to VU-mode.
+
+        When `mcounteren.HPM18` and `hcounteren.HPM18` are set,
+        the `hpmcounter18` CSR (an alias of `mhpmconuter18`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM18` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM18` ! `hcounteren.HPM18` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM19:
+      location: 19
+      description: |
+        When all of `scounteren.HPM19`, `mcounteren.HPM19`, and `hcounteren.HPM19` are set,
+        the `hpmcounter19` CSR (an alias of `mhpmcounter19`) is accessible to VU-mode.
+
+        When `mcounteren.HPM19` and `hcounteren.HPM19` are set,
+        the `hpmcounter19` CSR (an alias of `mhpmconuter19`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM19` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM19` ! `hcounteren.HPM19` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM20:
+      location: 20
+      description: |
+        When all of `scounteren.HPM20`, `mcounteren.HPM20`, and `hcounteren.HPM20` are set,
+        the `hpmcounter20` CSR (an alias of `mhpmcounter20`) is accessible to VU-mode.
+
+        When `mcounteren.HPM20` and `hcounteren.HPM20` are set,
+        the `hpmcounter20` CSR (an alias of `mhpmconuter20`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM20` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM20` ! `hcounteren.HPM20` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM21:
+      location: 21
+      description: |
+        When all of `scounteren.HPM21`, `mcounteren.HPM21`, and `hcounteren.HPM21` are set,
+        the `hpmcounter21` CSR (an alias of `mhpmcounter21`) is accessible to VU-mode.
+
+        When `mcounteren.HPM21` and `hcounteren.HPM21` are set,
+        the `hpmcounter21` CSR (an alias of `mhpmconuter21`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM21` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM21` ! `hcounteren.HPM21` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM22:
+      location: 22
+      description: |
+        When all of `scounteren.HPM22`, `mcounteren.HPM22`, and `hcounteren.HPM22` are set,
+        the `hpmcounter22` CSR (an alias of `mhpmcounter22`) is accessible to VU-mode.
+
+        When `mcounteren.HPM22` and `hcounteren.HPM22` are set,
+        the `hpmcounter22` CSR (an alias of `mhpmconuter22`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM22` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM22` ! `hcounteren.HPM22` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM23:
+      location: 23
+      description: |
+        When all of `scounteren.HPM23`, `mcounteren.HPM23`, and `hcounteren.HPM23` are set,
+        the `hpmcounter23` CSR (an alias of `mhpmcounter23`) is accessible to VU-mode.
+
+        When `mcounteren.HPM23` and `hcounteren.HPM23` are set,
+        the `hpmcounter23` CSR (an alias of `mhpmconuter23`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM23` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM23` ! `hcounteren.HPM23` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM24:
+      location: 24
+      description: |
+        When all of `scounteren.HPM24`, `mcounteren.HPM24`, and `hcounteren.HPM24` are set,
+        the `hpmcounter24` CSR (an alias of `mhpmcounter24`) is accessible to VU-mode.
+
+        When `mcounteren.HPM24` and `hcounteren.HPM24` are set,
+        the `hpmcounter24` CSR (an alias of `mhpmconuter24`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM24` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM24` ! `hcounteren.HPM24` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM25:
+      location: 25
+      description: |
+        When all of `scounteren.HPM25`, `mcounteren.HPM25`, and `hcounteren.HPM25` are set,
+        the `hpmcounter25` CSR (an alias of `mhpmcounter25`) is accessible to VU-mode.
+
+        When `mcounteren.HPM25` and `hcounteren.HPM25` are set,
+        the `hpmcounter25` CSR (an alias of `mhpmconuter25`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM25` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM25` ! `hcounteren.HPM25` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM26:
+      location: 26
+      description: |
+        When all of `scounteren.HPM26`, `mcounteren.HPM26`, and `hcounteren.HPM26` are set,
+        the `hpmcounter26` CSR (an alias of `mhpmcounter26`) is accessible to VU-mode.
+
+        When `mcounteren.HPM26` and `hcounteren.HPM26` are set,
+        the `hpmcounter26` CSR (an alias of `mhpmconuter26`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM26` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM26` ! `hcounteren.HPM26` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM27:
+      location: 27
+      description: |
+        When all of `scounteren.HPM27`, `mcounteren.HPM27`, and `hcounteren.HPM27` are set,
+        the `hpmcounter27` CSR (an alias of `mhpmcounter27`) is accessible to VU-mode.
+
+        When `mcounteren.HPM27` and `hcounteren.HPM27` are set,
+        the `hpmcounter27` CSR (an alias of `mhpmconuter27`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM27` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM27` ! `hcounteren.HPM27` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM28:
+      location: 28
+      description: |
+        When all of `scounteren.HPM28`, `mcounteren.HPM28`, and `hcounteren.HPM28` are set,
+        the `hpmcounter28` CSR (an alias of `mhpmcounter28`) is accessible to VU-mode.
+
+        When `mcounteren.HPM28` and `hcounteren.HPM28` are set,
+        the `hpmcounter28` CSR (an alias of `mhpmconuter28`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM28` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM28` ! `hcounteren.HPM28` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM29:
+      location: 29
+      description: |
+        When all of `scounteren.HPM29`, `mcounteren.HPM29`, and `hcounteren.HPM29` are set,
+        the `hpmcounter29` CSR (an alias of `mhpmcounter29`) is accessible to VU-mode.
+
+        When `mcounteren.HPM29` and `hcounteren.HPM29` are set,
+        the `hpmcounter29` CSR (an alias of `mhpmconuter29`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM29` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM29` ! `hcounteren.HPM29` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM30:
+      location: 30
+      description: |
+        When all of `scounteren.HPM30`, `mcounteren.HPM30`, and `hcounteren.HPM30` are set,
+        the `hpmcounter30` CSR (an alias of `mhpmcounter30`) is accessible to VU-mode.
+
+        When `mcounteren.HPM30` and `hcounteren.HPM30` are set,
+        the `hpmcounter30` CSR (an alias of `mhpmconuter30`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM30` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM30` ! `hcounteren.HPM30` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    HPM31:
+      location: 31
+      description: |
+        When all of `scounteren.HPM31`, `mcounteren.HPM31`, and `hcounteren.HPM31` are set,
+        the `hpmcounter31` CSR (an alias of `mhpmcounter31`) is accessible to VU-mode.
+
+        When `mcounteren.HPM31` and `hcounteren.HPM31` are set,
+        the `hpmcounter31` CSR (an alias of `mhpmconuter31`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM31` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM31` ! `hcounteren.HPM31` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+  sw_read(): |
+    if (!implemented?(ExtensionName::Zicntr) && !implemented?(ExtensionName::Zihpm)) {
+      # this CSR isn't supposed to exist when Zicntr and Zihpm are not implemented
+      raise(ExceptionCode::IllegalInstruction, $encoding);
+    }
+
+    # any bit of mcounteren that is zero forces that same bit of hcounteren to 0
+    return $bits(CSR[hcounteren]) & $bits(CSR[mcounteren]);

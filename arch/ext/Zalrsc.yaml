@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../../schemas/ext_schema.json
 
 Zalrsc:
+  long_name: Atomic read-modify-write instructions
   type: unprivileged
   versions:
   - version: 1.0

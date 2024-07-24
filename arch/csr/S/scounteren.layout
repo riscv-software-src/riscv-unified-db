@@ -3,7 +3,7 @@
 scounteren:
   long_name: Supervisor Counter Enable
   address: 0x106
-  priv_mode: M
+  priv_mode: S
   length: 32
   description: |
     Delegates control of the hardware performance-monitoring counters
@@ -78,4 +78,4 @@ scounteren:
     }
 
     # any bit of mcounteren that is zero forces that same bit of scounteren to 0
-    return $bits(CSR[scountern]) & $bits(CSR[mcounteren]);
+    return $bits(CSR[scounteren]) & $bits(CSR[mcounteren]);

@@ -6,6 +6,13 @@ require_relative "lib/arch_gen"
 
 ARCH_GEN_DIR = Pathname.new(__FILE__).dirname
 
+def arch_def_for(config_name)
+  @arch_defs ||= {}
+  return @arch_defs[config_name] if @arch_defs.key?(config_name)
+
+  @arch_defs[config_name] = ArchDef.new(config_name)
+end
+
 # stamp to indicate completion of Arch Gen for a given config
 rule %r{#{$root}/\.stamps/arch-gen-.*\.stamp} => proc { |tname|
   config_name = Pathname.new(tname).basename(".stamp").sub("arch-gen-", "")

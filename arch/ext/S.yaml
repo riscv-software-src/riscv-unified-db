@@ -2,6 +2,7 @@
 
 S:
   type: privileged
+  long_name: Supervisor mode
   versions:
   - version: 1.12
     state: ratified

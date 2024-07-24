@@ -1,0 +1,91 @@
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+hcounteren:
+  long_name: Hypervisor Counter Enable
+  address: 0x606
+  priv_mode: S
+  length: 32
+  description: |
+    Together with `scounteren`, delegates control of the hardware performance-monitoring counters
+    to VS/VU-mode
+
+    See `cycle` for a table describing how exceptions occur.
+  definedBy: H
+  fields:
+    CY:
+      location: 0
+      description: |
+        When all of `scounteren.CY`, `mcounteren.CY`, and `hcounteren.CY` are set,
+        the `cycle` CSR (an alias of `mcycle`) is accessible to VU-mode.
+
+        When `mcounteren.CY` and `hcounteren.CY` are set,
+        the `cycle` CSR (an alias of `mcycle`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.CY` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.CY` ! `hcounteren.CY` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+      definedBy: Zicntr
+      type: RW-H
+      reset_value: UNDEFINED_LEGAL
+    IR:
+      location: 2
+      description: |
+        When all of `scounteren.IR`, `mcounteren.IR`, and `hcounteren.IR` are set,
+        the `instret` CSR (an alias of `minstret`) is accessible to VU-mode.
+
+        When `mcounteren.IR` and `hcounteren.IR` are set,
+        the `instret` CSR (an alias of `minstret`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.IR` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.IR` ! `hcounteren.IR` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+
+      type: RW-H
+      reset_value: UNDEFINED_LEGAL
+    <%- (3..31).each do |hpm_num| -%>
+    HPM<%= hpm_num %>:
+      location: <%= hpm_num %>
+      description: |
+        When all of `scounteren.HPM<%= hpm_num %>`, `mcounteren.HPM<%= hpm_num %>`, and `hcounteren.HPM<%= hpm_num %>` are set,
+        the `hpmcounter<%= hpm_num %>` CSR (an alias of `mhpmcounter<%= hpm_num %>`) is accessible to VU-mode.
+
+        When `mcounteren.HPM<%= hpm_num %>` and `hcounteren.HPM<%= hpm_num %>` are set,
+        the `hpmcounter<%= hpm_num %>` CSR (an alias of `mhpmconuter<%= hpm_num %>`) is accessible to VS-mode.
+
+        This bit is read-only 0 when `mcounteren.HPM<%= hpm_num %>` is clear.
+
+        Summary:
+
+        !===
+        ! `mcounteren.HPM<%= hpm_num %>` ! `hcounteren.HPM<%= hpm_num %>` behavior
+
+        ! 0 ! read-only 0
+        ! 1 ! writeable
+        !===
+
+      type: RW
+      reset_value: UNDEFINED_LEGAL
+    <%- end -%>
+  sw_read(): |
+    if (!implemented?(ExtensionName::Zicntr) && !implemented?(ExtensionName::Zihpm)) {
+      # this CSR isn't supposed to exist when Zicntr and Zihpm are not implemented
+      raise(ExceptionCode::IllegalInstruction, $encoding);
+    }
+
+    # any bit of mcounteren that is zero forces that same bit of hcounteren to 0
+    return $bits(CSR[hcounteren]) & $bits(CSR[mcounteren]);

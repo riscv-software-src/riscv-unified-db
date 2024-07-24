@@ -3,37 +3,11 @@ require_relative "../ast"
 class Idl::AstNode
   def gen_adoc(indent = 0, indent_spaces: 2)
     adoc = []
-    puts self.class.name if elements.nil?
-    elements.each do |e|
-      next unless e.is_a?(Idl::AstNode)
-
+    children.each do |e|
       adoc << e.gen_adoc(indent, indent_spaces:)
     end
     adoc.map{ |a| "#{' '*indent}#{a}" }.join('')
   end
-  # def gen_adoc(indent = 0, indent_spaces: 2)
-  #   if terminal?
-  #     text_value
-  #   else
-  #     adoc = ''
-  #     next_pos = interval.begin
-  #     elements.each do |e|
-  #       if e.interval.size > 0 &&  e.interval.begin != next_pos
-  #         adoc << input[next_pos..(e.interval.begin - 1)]
-  #       end
-  #       adoc << e.gen_adoc(indent+2, indent_spaces: 2)
-  #       next_pos = e.interval.exclude_end? ? e.interval.end : (e.interval.end + 1)
-  #     end
-  #     if next_pos != (interval.exclude_end? ? interval.end : (interval.end + 1))
-  #       end_pos = interval.exclude_end? ? interval.end - 1 : interval.end
-  #       adoc << input[next_pos..end_pos]
-  #     end
-  #     if adoc != text_value && !text_value.index('xref').nil?
-  #       raise
-  #     end
-  #     adoc
-  #   end
-  # end
 end
 
 module Idl
@@ -71,7 +45,7 @@ module Idl
 
   class VariableDeclarationAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      "#{' ' * indent}#{type_name.gen_adoc(0, indent_spaces:)} #{var_write.gen_adoc(0, indent_spaces:)};"
+      "#{' ' * indent}#{@type_name.gen_adoc(0, indent_spaces:)} #{@id.gen_adoc(0, indent_spaces:)};"
     end
   end
 
@@ -156,8 +130,7 @@ module Idl
 
   class ReturnStatementAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      values = [first.gen_adoc(0, indent_spaces:)] + rest.elements.each { |e| e.e.gen_adoc(0, indent_spaces: )}
-      "#{' ' * indent}return #{values.join(', ')};"
+      "#{' ' * indent}return #{return_value_nodes.map { |v| v.gen_adoc(0, indent_spaces:) }.join(', ')};"
     end
   end
 
@@ -191,22 +164,36 @@ module Idl
 
   class CsrFieldReadExpressionAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      csr_text = "CSR[#{idx.text_value}].#{csr_field_name.text_value}"
-      if idx.text_value =~ /[0-9]+/
+      idx_text =
+        if @idx.is_a?(AstNode)
+          @idx.text_value
+        else
+          @idx
+        end
+      csr_text = "CSR[#{idx_text}].#{@field_name}"
+      if idx_text =~ /[0-9]+/
         csr_text
       else
-        "%%LINK%csr_field;#{idx.text_value}.#{csr_field_name.text_value};#{csr_text}%%"
+        "%%LINK%csr_field;#{idx_text}.#{@field_name};#{csr_text}%%"
       end
     end
   end
 
   class CsrReadExpressionAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      csr_text = "CSR[#{idx.text_value}]"
-      if idx.text_value =~ /[0-9]+/
+      idx_text =
+        if @idx.is_a?(AstNode)
+          @idx.text_value
+        else
+          @idx
+        end
+
+      csr_text = "CSR[#{idx_text}]"
+      if idx_text =~ /[0-9]+/
+        # we don't have the symtab to map this to a csr name
         csr_text
       else
-        "%%LINK%csr;#{idx.text_value};#{csr_text}%%"
+        "%%LINK%csr;#{idx_text};#{csr_text}%%"
       end
     end
   end

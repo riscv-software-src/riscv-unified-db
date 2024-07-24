@@ -9,43 +9,19 @@
 # on any x register read/write
 # Bits<XLEN> X[31];
 
-# # custom operator overload for the x register file
-# # to ensure that x[0] is never written
-# function X {
-#  arguments Bits<XLEN> index
-#  description {
-#    Get value of x register.
-#  }
-#  body {
-#    assert (index <= 31);
-#    return x[index - 1];
-#  }
-#}
-#function X= {
-#  arguments Bits<XLEN> index, Bits<XLEN> value
-#  description {
-#    Overload assignment for values in x so that writes
-#    to x0 can be elided.
-#  }
-#  body {
-#    assert (index <= 31);
-#    if (index != 0) {
-#      x[index - 1] = value;
-#    }
-#  }
-#}
-# operator[]= x(U64 index, Bits<XLEN> value) {
-#   if (index != 0) {
-#     x[index] = value;
-#   }
-# }
-
 ############################################################
 # constants used to indicate special values
 ############################################################
 
 # CSR field value is undefined, but whatever it is, it must be legal for the field
 Bits<65> UNDEFINED_LEGAL = 65'h10000000000000000;
+
+# CSR field value is undefined, but whateer it is, it must be legal for the field and it
+# must be the same value if the same sequence of instructions leading to the read is executed
+Bits<66> UNDEFINED_LEGAL_DETERMINISTIC = 66'h20000000000000000;
+
+# Signals an illegal write of a WLRL field
+Bits<67> ILLEGAL_WLRL = 67'h40000000000000000;
 
 // encoded as defined in the privilege spec
 enum PrivilegeMode {
@@ -159,13 +135,29 @@ builtin function implemented? {
 
 builtin function read_hpm_counter {
   returns Bits<64>
-  arguments Bits<5> N
+  arguments Bits<5> n
   description {
     Returns the value of hpmcounterN.
 
     N must be between 3..31.
 
     hpmcounterN must be implemented.
+  }
+}
+
+builtin function read_mcycle {
+  returns Bits<64>
+  description {
+    Return the current value of the cycle counter.
+  }
+}
+
+builtin function sw_write_mcycle {
+  returns Bits<64>
+  arguments Bits<64> value
+  description {
+    Given a _value_ that software is trying to write into mcycle,
+    return the value that will actually be written.
   }
 }
 
@@ -239,6 +231,23 @@ function power_of_2? {
   }
 }
 
+function ary_includes? {
+  template U32 ARY_SIZE, U32 ELEMENT_SIZE
+  returns Boolean
+  arguments Bits<ELEMENT_SIZE> ary[ARY_SIZE], Bits<ELEMENT_SIZE> value
+  description {
+    Returns true if _value_ is an element of ary, and false otherwise
+  }
+  body {
+    for (U32 i = 0; i < ARY_SIZE; i++) {
+      if (ary[i] == value) {
+        return true;
+      }
+    }
+    return false;
+  }
+}
+
 function exception_handling_mode {
   returns PrivilegeMode
   arguments ExceptionCode exception_code
@@ -251,15 +260,15 @@ function exception_handling_mode {
       // mode is M, the value of medeleg is irrelevant
       return PrivilegeMode::M;
     } else if (implemented?(ExtensionName::S) && ((mode() == PrivilegeMode::HS) || (mode() == PrivilegeMode::U))) {
-      if ((CSR[medeleg] & (1 << exception_code.value)) != 0) {
+      if ((CSR[medeleg] & (1 << $bits(exception_code))) != 0) {
         return PrivilegeMode::HS;
       } else {
         return PrivilegeMode::M;
       }
     } else {
       assert(implemented?(ExtensionName::H) && ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)));
-      if ((CSR[medeleg] &  (1 << exception_code.value)) != 0) {
-        if ((CSR[hedeleg] & (1 << exception_code.value)) != 0) {
+      if ((CSR[medeleg] &  (1 << $bits(exception_code))) != 0) {
+        if ((CSR[hedeleg] & (1 << $bits(exception_code))) != 0) {
           return PrivilegeMode::VS;
         } else {
           return PrivilegeMode::HS;
@@ -476,32 +485,49 @@ function raise {
     PrivilegeMode handling_mode = exception_handling_mode(exception_code);
 
     if (handling_mode == PrivilegeMode::M) {
-      CSR[mepc] = PC;
+      CSR[mepc].PC = PC;
       if (!mtval_readonly?()) {
-        CSR[mtval] = mtval_for(exception_code, tval);
+        CSR[mtval].VALUE = mtval_for(exception_code, tval);
       }
       PC = {CSR[mtvec].BASE, 2'b00};
-      CSR[mcause] = exception_code.value;
+      CSR[mcause].INT = 1'b0;
+      CSR[mcause].CAUSE = $bits(exception_code);
     } else if (implemented?(ExtensionName::S) && (handling_mode == PrivilegeMode::HS)) {
-      CSR[sepc] = PC;
+      CSR[sepc].PC = PC;
       if (!stval_readonly?()) {
-        CSR[stval] = stval_for(exception_code, tval);
+        CSR[stval].VALUE = stval_for(exception_code, tval);
       }
       PC = {CSR[stvec].BASE, 2'b00};
-      CSR[scause] = exception_code.value;
+      CSR[scause].INT = 1'b0;
+      CSR[scause].CODE = $bits(exception_code);
       // note that stval is set elsewhere
     } else if (implemented?(ExtensionName::H) && (handling_mode == PrivilegeMode::VS)) {
-      CSR[vsepc] = PC;
+      CSR[vsepc].PC = PC;
       if (!vstval_readonly?()) {
-        CSR[vstval] = vstval_for(exception_code, tval);
+        CSR[vstval].VALUE = vstval_for(exception_code, tval);
       }
       PC = {CSR[vstvec].BASE, 2'b00};
-      CSR[vscause] = exception_code.value;
+      CSR[vscause].INT = 1'b0;
+      CSR[vscause].CODE = $bits(exception_code);
     }
 
     // abort the current instruction, and start to refetch from PC
     set_mode(handling_mode);
     abort_current_instruction();
+  }
+}
+
+function ialign {
+  returns Bits<6>
+  description {
+    Returns IALIGN, the smallest instruction encoding size, in bits.
+  }
+  body {
+    if (implemented?(ExtensionName::C) && (CSR[misa].C == 0x1)) {
+      return 16;
+    } else {
+      return 32;
+    }
   }
 }
 
@@ -514,17 +540,40 @@ function jump {
   }
   body {
     # raise a misaligned exception if address is not aligned to IALIGN
-    if (implemented?(ExtensionName::C) &&         # C is implemented
-        (CSR[misa].C == 0x1) &&                   # and C is enabled dynamically
-        ((target_addr & 0x1) != 0)) {             # and the target PC is odd
+    if ((ialign() == 16) && ((target_addr & 0x1) != 0)) {
+      # the target PC is not halfword-aligned
       raise(ExceptionCode::InstructionAddressMisaligned, target_addr);
     } else if ((target_addr & 0x3) != 0) {
+      # the target PC is not word-aligned
       raise(ExceptionCode::InstructionAddressMisaligned, target_addr);
     }
 
     PC = target_addr;
   }
 }
+
+function jump_halfword {
+  arguments XReg target_hw_addr
+  description {
+    Jump to virtual halfword address `target_hw_addr`.
+
+    If target address is misaligned, raise a `MisalignedAddress` exception.
+  }
+  body {
+    # ensure that the target address is really a halfword address
+    assert((target_hw_addr & 0x1) == 0x0);
+
+    if (ialign() != 16) {
+      if ((target_hw_addr & 0x3) != 0) {
+        # the target PC is not word-aligned
+        raise(ExceptionCode::InstructionAddressMisaligned, target_hw_addr);
+      }
+    }
+
+    PC = target_hw_addr;
+  }
+}
+
 
 function xlen {
   returns Bits<8>
@@ -1155,6 +1204,8 @@ function is_naturally_aligned {
     Checks if M-bit value is naturally aligned to N bits.
   }
   body {
+    return true if N == 8; # everything is byte aligned
+
     Bits<M> mask = (N/8) - 1;
     return (value & ~mask) == value;
   }
@@ -1176,16 +1227,16 @@ function base32? {
   body {
     XRegWidth xlen32 = XRegWidth::XLEN32;
     if (mode() == PrivilegeMode::M) {
-      return CSR[misa].MXL == xlen32.value;
+      return CSR[misa].MXL == $bits(xlen32);
     } else if (implemented?(ExtensionName::S) && mode() == PrivilegeMode::S) {
-      return CSR[mstatus].SXL == xlen32.value;
+      return CSR[mstatus].SXL == $bits(xlen32);
     } else if (implemented?(ExtensionName::U) && mode() == PrivilegeMode::U) {
-      return CSR[mstatus].UXL == xlen32.value;
+      return CSR[mstatus].UXL == $bits(xlen32);
     } else if (implemented?(ExtensionName::H) && mode() == PrivilegeMode::VS) {
-      return CSR[hstatus].VSXL == xlen32.value;
+      return CSR[hstatus].VSXL == $bits(xlen32);
     } else {
       assert(implemented?(ExtensionName::H) && mode() == PrivilegeMode::VU);
-      return CSR[vsstatus].UXL == xlen32.value;
+      return CSR[vsstatus].UXL == $bits(xlen32);
     }
   }
 }
@@ -1524,8 +1575,8 @@ function translate {
 #        return translate_sv32(vaddr, CSR[satp], op);
 
       } else if (implemented?(ExtensionName::Sv39) && translation_mode == SatpMode::Sv39) {
-        return 0;
-#        return translate_sv39(vaddr, CSR[satp], op);
+#        return 0;
+        return translate_sv39(vaddr, CSR[satp], op);
 
 #      } else if (implemented?(ExtensionName::Sv48) && translation_mode == SatpMode::Sv48) {
 #        return translation_sv48(vaddr, CSR[satp], op);
@@ -1574,11 +1625,13 @@ function read_memory {
       raise (ExceptionCode::LoadAddressMisaligned, virtual_address);
     } else {
       # misaligned, must break into multiple reads
-      Bits<len> result = 0;
-      for (U32 i = 0; i <= len; i++) {
-        result = result | (read_memory_aligned<8>(virtual_address + i) << (8*i));
+      if (MISALIGNED_SPLIT_STRATEGY == "by_byte") {
+        Bits<len> result = 0;
+        for (U32 i = 0; i <= len; i++) {
+          result = result | (read_memory_aligned<8>(virtual_address + i) << (8*i));
+        }
+        return result;
       }
-      return result;
     }
   }
 }
