@@ -1,4 +1,4 @@
-# RISC-V Unified Database
+= RISC-V Unified Database
 
 The RISC-V Unified Database is intended to hold *all* the information needed to describe RISC-V,
 including a list of extensions, instruction specifications, CSR specifications, and documentation prose. The vision is that anything one would need for RISC-V can be generated from the information in this repository.
@@ -11,24 +11,24 @@ This repository contains:
  ** [COMING SOON] A configuration-specific Instruction Set Simulator
  ** More backends are planned
 
-## What can it do?
+== What can it do?
 
-Working examples:
+=== Working examples:
 
- * Generate configuration-specific documentation taylored to the set of implemented extensions and unnamed implementation options.
+ * Generate configuration-specific documentation taylored to the set of implemented extensions and unnamed implementation options (_e.g._, `./do gen:html[generic_rv64]`).
  ** Only implemented extensions/instructions/CSRs are included
- ** Unreachable (unimplmented) parts of the formal specification are pruned away
+ ** Unreachable/unimplmented parts of the formal specification are pruned away
  ** A dedicated documentation page for every implemented instruction, including its encoding, pruned execution behavior, and what types of exceptions it may cause.
  ** A dedication documentation page for every implemented CSR, including its (possibly runtime-changing) encoding, fields, and pruned behavior on reads and writes
  ** Clickable links to all mentions of instructions, extensions, CSRs, CSR fields, and glossary terms.
- * Generate documentation for specific extensions that
+ * Generate documentation for specific extensions (_e.g._, `./do gen:ext_pdf[B]`)
  ** Automatically include a complete list of added instructions and CSRs
  ** Per-instruction documentation
  ** Per-CSR documentation
  ** Formal specification
- * Generate a single YAML file containing *everything* knowable about a configuration.
+ * Generate a single YAML file containing *everything* knowable about a configuration (_e.g._, `./do gen:cfg_arch[generic_rv64]`).
 
- Possibilities:
+=== Possibilities:
 
   * Generate binutils files for an extension
   * Generate instruction tables for compilers
@@ -36,7 +36,7 @@ Working examples:
   * Generate the full RISC-V specification, along with an appendix of instructions and CSRs
   * ...
 
-## Prerequisites
+== Prerequisites
 
 The only requirement is the `Singularity CE` or `Apptainer` container system. Either one will work (they are forks).
 
@@ -49,7 +49,7 @@ If it is not installed, either as your IT admin or:
 You do *not* need root privileges to download or use the container. However, to modify/build the container,
 you will need either root privileges or the ability to run in `fakeroot` mode. See https://docs.sylabs.io/guides/4.1/user-guide/fakeroot.html[Singularity Fakeroot Documentation] for more information.
 
-## Setup
+== Setup
 
 Do once:
 
@@ -64,7 +64,7 @@ Do once:
 [NOTE]
 If you forget, don't worry. Setup will be invoked by any program in bin/ if necessary.
 
-### VSCode
+=== VSCode
 
 If using Visual Studio Code and want to use development tools, you will need to restart the editor
 after setup.
@@ -79,7 +79,7 @@ Helpful extensions are
 The `.vscode/settings.json` file in the repo will ensure that Solargraph works without any additional
 configuration (assuming you've already run ./bin/setup).
 
-## Tasks
+== Tasks
 
 Quick start:
 
@@ -92,7 +92,7 @@ Quick start:
 ./do validate                # validate against the schema
 ----
 
-## More info
+== More info
 
  * xref:arch/README.adoc[Architecture specification format]
  * xref:arch/README.adoc[Documentation for the generator tool and IDL]
