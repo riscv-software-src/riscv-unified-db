@@ -1212,10 +1212,10 @@ class ExtensionVersion
     arch_def.extension(name)
   end
 
-  # @override ==(other)
+  # @overload ==(other)
   #   @param other [String] An extension name
   #   @return [Boolean] whether or not this ExtensionVersion is named 'other'
-  # @override ==(other)
+  # @overload ==(other)
   #   @param other [ExtensionVersion] An extension name and version
   #   @return [Boolean] whether or not this ExtensionVersion has the exact same name and version as other
   def ==(other)
@@ -1320,8 +1320,8 @@ class ArchDef
 
   # Initialize a new configured architecture defintiion
   #
-  # @params config_name [#to_s] The name of a configuration, which must correspond
-  #                             to a folder under $root/cfgs
+  # @param config_name [#to_s] The name of a configuration, which must correspond
+  #                            to a folder under $root/cfgs
   def initialize(config_name)
     @name = config_name.to_s
     arch_def_file = $root / "gen" / @name / "arch" / "arch_def.yaml"
@@ -1401,7 +1401,7 @@ class ArchDef
     @extensions
   end
 
-  # @retuns [Hash<String, Extension>] Hash of all extensions, even those that aren't implemented, indexed by extension name
+  # @returns [Hash<String, Extension>] Hash of all extensions, even those that aren't implemented, indexed by extension name
   def extension_hash
     return @extension_hash unless @extension_hash.nil?
 
