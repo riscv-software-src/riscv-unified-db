@@ -8,9 +8,9 @@ permissions:
   contents: read
   pages: write
   id-token: write
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+# concurrency:
+  # group: "pages"
+  # cancel-in-progress: false
 jobs:
   regress:
     runs-on: ubuntu-latest
