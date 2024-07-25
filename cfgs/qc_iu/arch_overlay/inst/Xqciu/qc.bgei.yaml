@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+qc.bgei:
+  long_name: Branch on greater than or equal (immediate)
+  description: |
+    Branches to PC + offset if the value in rs1 is greater than or equal to the immediate.
+  definedBy: Xqciu
+  encoding:
+    match:     -----------------101-----1111011
+    variables:
+    - name: offset
+      location: 31|7|30-25|11-8
+      left_shift: 1
+    - name: imm
+      location: 24-20
+      not: 0
+    - name: rs1
+      location: 19-15
+      not: 0
+  assembly: xs1, imm, offset
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    if ($signed(X[rs1]) >= $signed(imm)) {
+      jump(PC + $signed(offset));
+    }
