@@ -121,7 +121,7 @@ Mnemoic::
 ----
 
 Encoding::
-<%- if arch_def.multi_xlen? && i.multi_encoding? -%>
+<%- if i.multi_encoding? -%>
 [NOTE]
 This instruction has different encodings in RV32 and RV64
 
@@ -139,7 +139,7 @@ RV64::
 <%- else -%>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump i.wavedrom_desc(arch_def.config_params["XLEN"]) %>
+<%= JSON.dump i.wavedrom_desc(i.respond_to?(:base) ? i.base : 64) %>
 ....
 <%- end -%>
 
@@ -148,7 +148,7 @@ Description::
 
 Decode Variables::
 
-<%- if i.arch_def.multi_xlen? && i.multi_encoding? -%>
+<%- if i.multi_encoding? -%>
 RV32::
 +
 ----
@@ -166,7 +166,7 @@ RV64::
 ----
 <%- else -%>
 ----
-<%- i.decode_variables(i.arch_def.config_params["XLEN"]).each do |d| -%>
+<%- i.decode_variables(i.respond_to?(:base) ? i.base : 64).each do |d| -%>
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
 <%- end -%>
 ----
@@ -175,7 +175,7 @@ RV64::
 Operation::
 [souce,idl]
 ----
-<%= i.operation_ast.gen_adoc %>
+<%= i.operation_ast(arch_def.idl_compiler).gen_adoc %>
 ----
 
 Included in::

@@ -7,6 +7,8 @@ require "asciidoctor-diagram"
 
 require_relative "#{$lib}/idl/passes/gen_adoc"
 
+EXT_PDF_DOC_DIR = Pathname.new "#{$root}/backends/ext_pdf_doc"
+
 # Utilities for generating an Antora site out of an architecture def
 module AsciidocUtils
   class << self
@@ -47,50 +49,84 @@ module AsciidocUtils
 end
 
 rule %r{#{$root}/gen/ext_pdf_doc/.*/pdf/.*_extension\.pdf} => proc { |tname|
-  config_name = Pathname.new(tname).relative_path_from($root / "gen" / "ext_pdf_doc").to_s.split("/")[0]
+  config_name = Pathname.new(tname).relative_path_from("#{$root}/gen/ext_pdf_doc").to_s.split("/")[0]
   ext_name = Pathname.new(tname).basename(".pdf").to_s.split("_")[0..-2].join("_")
   [
     "#{$root}/gen/ext_pdf_doc/#{config_name}/adoc/#{ext_name}_extension.adoc"
   ]
 } do |t|
-  config_name = Pathname.new(t.name).relative_path_from($root / "gen" / "ext_pdf_doc").to_s.split("/")[0]
   ext_name = Pathname.new(t.name).basename(".pdf").to_s.split("_")[0..-2].join("_")
+  config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen/ext_pdf_doc").to_s.split("/")[0]
   adoc_file = "#{$root}/gen/ext_pdf_doc/#{config_name}/adoc/#{ext_name}_extension.adoc"
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, Asciidoctor.convert_file(adoc_file, backend: "pdf", safe: :safe)
+  Asciidoctor.convert_file(adoc_file, backend: "pdf", safe: :safe, to_file: t.name)
+
+  puts
+  puts "Success!! File written to #{t.name}"
 end
 
 rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
-  config_name = Pathname.new(tname).relative_path_from($root / "gen" / "ext_pdf_doc").to_s.split("/")[0]
+  config_name = Pathname.new(tname).relative_path_from("#{$root}/gen/ext_pdf_doc").to_s.split("/")[0]
+  ext_name = Pathname.new(tname).basename(".adoc").to_s.split("_")[0..-2].join("_")
+  arch_yaml_paths =
+    if File.exist?("#{$root}/arch/ext/#{ext_name}.yaml")
+      ["#{$root}/arch/ext/#{ext_name}.yaml"] + Dir.glob("#{$root}/cfgs/*/arch_overlay/ext/#{ext_name}.yaml")
+    else
+      Dir.glob("#{$root}/cfgs/*/arch_overlay/ext/#{ext_name}.yaml")
+    end
+  raise "Can't find extension '#{ext_name}'" if arch_yaml_paths.empty?
+
+  stamp = config_name == "_" ? "#{$root}/.stamps/arch-gen.stamp" : "#{$root}/.stamps/arch-gen-#{config_name}.stamp"
+
   [
-    "#{$root}/.stamps/arch-gen-#{config_name}.stamp",
+    stamp,
     (EXT_PDF_DOC_DIR / "templates" / "ext_pdf.adoc.erb").to_s,
+    arch_yaml_paths,
     __FILE__
-  ]
+  ].flatten
 } do |t|
   config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen/ext_pdf_doc").to_s.split("/")[0]
-  ext_name = Pathname.new(t.name).basename(".pdf").to_s.split("_")[0..-2].join("_")
+
+  arch_def =
+    if config_name == "_"
+      arch_def_for(nil)
+    else
+      arch_def_for(config_name)
+    end
+
+  ext_name = Pathname.new(t.name).basename(".adoc").to_s.split("_")[0..-2].join("_")
 
   template_path = EXT_PDF_DOC_DIR / "templates" / "ext_pdf.adoc.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")
   erb.filename = template_path.to_s
 
-  arch_def = arch_def_for(config_name)
   ext = arch_def.extension(ext_name)
   FileUtils.mkdir_p File.dirname(t.name)
   File.write t.name, AsciidocUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
 end
 
-
 namespace :gen do
   desc <<~DESC
-    Generate PDF documentation for :extension using configuration :config_name
+    Generate PDF documentation for :extension
+
+    If the extension is custom (from an arch_overlay), also give the config name
   DESC
-  task :ext_pdf, [:extension, :config_name] do |_t, args|
-    config = args[:config_name]
+  task :ext_pdf, [:extension] do |_t, args|
     extension = args[:extension]
 
-    Rake::Task[$root / "gen" / "ext_pdf_doc" / config.to_s / "pdf" / "#{extension}_extension.pdf"].invoke
+    Rake::Task[$root / "gen" / "ext_pdf_doc" / "_" / "pdf" / "#{extension}_extension.pdf"].invoke
+  end
+
+  desc <<~DESC
+    Generate PDF documentation for :extension that is defined or overlayed in :cfg
+  DESC
+  task :cfg_ext_pdf, [:extension, :cfg] do |_t, args|
+    raise ArgumentError, "Missing required argument :extension" if args[:extension].nil?
+    raise ArgumentError, "Missing required argument :cfg" if args[:cfg].nil?
+
+    extension = args[:extension]
+
+    Rake::Task[$root / "gen" / "ext_pdf_doc" / args[:cfg] / "pdf" / "#{extension}_extension.pdf"].invoke(args)
   end
 end

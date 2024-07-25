@@ -7,10 +7,60 @@ require_relative "lib/arch_gen"
 ARCH_GEN_DIR = Pathname.new(__FILE__).dirname
 
 def arch_def_for(config_name)
+  config_name = "_" if config_name.nil?
   @arch_defs ||= {}
   return @arch_defs[config_name] if @arch_defs.key?(config_name)
 
-  @arch_defs[config_name] = ArchDef.new(config_name)
+  if config_name == "_"
+    @arch_defs[config_name] = ArchDef.new
+  else
+    @arch_defs[config_name] = ImplArchDef.new(config_name)
+  end
+end
+
+file "#{$root}/.stamps/arch-gen.stamp" => (
+  [
+    "#{$root}/.stamps",
+    "#{ARCH_GEN_DIR}/lib/arch_gen.rb",
+    "#{$root}/lib/idl/ast.rb",
+    "#{ARCH_GEN_DIR}/tasks.rake",
+    __FILE__
+  ] + Dir.glob($root / "arch" / "**" / "*.yaml")
+) do |t|
+  csr_hash = Dir.glob($root / "arch" / "csr" / "**" / "*.yaml").map do |f|
+    csr_obj = YAML.load_file(f)
+    csr_name = csr_obj.keys[0]
+    csr_obj[csr_name]["name"] = csr_name
+    csr_obj[csr_name]["fields"].map do |k, v|
+      v["name"] = k
+      [k, v]
+    end
+    [csr_name, csr_obj[csr_name]]
+  end.to_h
+  inst_hash = Dir.glob($root / "arch" / "inst" / "**" / "*.yaml").map do |f|
+    inst_obj = YAML.load_file(f)
+    inst_name = inst_obj.keys[0]
+    inst_obj[inst_name]["name"] = inst_name
+    [inst_name, inst_obj[inst_name]]
+  end.to_h
+  ext_hash = Dir.glob($root / "arch" / "ext" / "**" / "*.yaml").map do |f|
+    ext_obj = YAML.load_file(f)
+    ext_name = ext_obj.keys[0]
+    ext_obj[ext_name]["name"] = ext_name
+    [ext_name, ext_obj[ext_name]]
+  end.to_h
+
+  arch_def = {
+    "instructions" => inst_hash,
+    "extensions" => ext_hash,
+    "csrs" => csr_hash,
+  }
+
+  dest = "#{$root}/gen/_/arch/arch_def.yaml"
+  FileUtils.mkdir_p File.dirname(dest)
+  File.write(dest, YAML.dump(arch_def))
+
+  FileUtils.touch(t.name)
 end
 
 # stamp to indicate completion of Arch Gen for a given config
@@ -47,5 +97,10 @@ namespace :gen do
     raise "No config '#{args[:config_name]}' found in cfgs/" unless ($root / "cfgs" / args[:config_name]).directory?
 
     Rake::Task["#{$root}/.stamps/arch-gen-#{args[:config_name]}.stamp"].invoke(args[:config_name])
+  end
+
+  desc "Generate a unified architecture file (configuration independent)"
+  task :arch do
+    Rake::Task["#{$root}/.stamps/arch-gen.stamp"].invoke
   end
 end

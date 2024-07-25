@@ -41,7 +41,7 @@ module Idl
       @arch_def = arch_def
     end
 
-    def compile_file(path, symtab)
+    def compile_file(path, symtab: nil, type_check: true)
       @parser.set_input_file(path.to_s)
 
       m = @parser.parse path.read
@@ -59,14 +59,16 @@ module Idl
       ast = m.to_ast
 
       ast.set_input_file(path.to_s)
-      begin
-        ast.type_check(symtab)
-      rescue AstNode::TypeError, AstNode::InternalError => e
-        warn e.what
-        warn e.bt
-        exit 1
+      if type_check
+        begin
+          ast.type_check(symtab)
+        rescue AstNode::TypeError, AstNode::InternalError => e
+          warn e.what
+          warn e.bt
+          exit 1
+        end
+        ast.freeze_tree
       end
-      ast.freeze_tree
 
       ast
     end

@@ -8,3 +8,4 @@
 .venv
 gen
 node_modules
+_site

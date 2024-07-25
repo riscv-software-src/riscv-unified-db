@@ -1558,8 +1558,151 @@ class ExtensionRequirement
   end
 end
 
-# Object model for a configured architecture definition
 class ArchDef
+  # @return [Idl::Compiler] The IDL compiler
+  attr_reader :idl_compiler
+
+  # @return [Idl::AstNode] Abstract syntax tree of global scope
+  attr_reader :global_ast
+
+  # Initialize a new configured architecture defintiion
+  #
+  # @param config_name [#to_s] The name of a configuration, which must correspond
+  #                            to a folder under $root/cfgs
+  def initialize(from_child: false)
+    @idl_compiler = Idl::Compiler.new(self)
+
+    unless from_child
+      arch_def_file = $root / "gen" / "_" / "arch" / "arch_def.yaml"
+
+      @arch_def = YAML.load_file(arch_def_file)
+
+      # load the globals into the symbol table
+      @global_ast = @idl_compiler.compile_file(
+        $root / "arch" / "isa" / "globals.isa",
+        type_check: false
+      )
+    end
+  end
+
+  def inspect = "ArchDef"
+
+  # @return [Array<Extesion>] List of all extensions, even those that are't implemented
+  def extensions
+    return @extensions unless @extensions.nil?
+
+    @extensions = []
+    @arch_def["extensions"].each_value do |ext_data|
+      @extensions << Extension.new(ext_data, self)
+    end
+    @extensions
+  end
+
+  # @returns [Hash<String, Extension>] Hash of all extensions, even those that aren't implemented, indexed by extension name
+  def extension_hash
+    return @extension_hash unless @extension_hash.nil?
+
+    @extension_hash = {}
+    extensions.each do |ext|
+      @extension_hash[ext.name] = ext
+    end
+    @extension_hash
+  end
+
+  # @param name [#to_s] Extension name
+  # @return [Extension] Extension named `name`
+  # @return [nil] if no extension `name` exists
+  def extension(name)
+    extension_hash[name.to_s]
+  end
+
+  # @return [Array<Csr>] List of all CSRs defined by RISC-V, whether or not they are implemented
+  def csrs
+    return @csrs unless @csrs.nil?
+
+    @csrs = @arch_def["csrs"].map do |_csr_name, csr_data|
+      Csr.new(csr_data)
+    end
+  end
+
+  # @return [Array<String>] List of all known CSRs, even those not implemented by
+  #                         this config
+  def all_known_csr_names
+    @arch_def["csrs"].map { |csr| csr[0] }
+  end
+
+  # @return [Hash<String, Csr>] All csrs, even unimplemented ones, indexed by CSR name
+  def csr_hash
+    return @csr_hash unless @csr_hash.nil?
+
+    @csr_hash = {}
+    csrs.each do |csr|
+      @csr_hash[csr.name] = csr
+    end
+    @csr_hash
+  end
+
+  # @param csr_name [#to_s] CSR name
+  # @return [Csr,nil] a specific csr, or nil if it doesn't exist
+  def csr(csr_name)
+    csr_hash[csr_name]
+  end
+
+  # @return [Array<Instruction>] List of all instructions, whether or not they are implemented
+  def instructions
+    return @instructions unless @instructions.nil?
+
+    @instructions = @arch_def["instructions"].map do |_inst_name, inst_data|
+      Instruction.new(inst_data)
+    end
+
+    @instructions
+  end
+
+  # @return [Hash<String, Instruction>] All instructions, indexed by name
+  def instruction_hash
+    return @instruction_hash unless @instruction_hash.nil?
+
+    @instruction_hash = {}
+    instructions.each do |inst|
+      @instruction_hash[inst.name] = inst
+    end
+    @instruction_hash
+  end
+
+  # @param inst_name [#to_s] Instruction name
+  # @return [Instruction,nil] An instruction named 'inst_name', or nil if it doesn't exist
+  def inst(inst_name)
+    instruction_hash[inst_name.to_s]
+  end
+
+  # given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`
+  # and replace them with links to the relevant object page
+  #
+  # @param adoc [String] Asciidoc source
+  # @return [String] Asciidoc source, with link placeholders
+  def find_replace_links(adoc)
+    adoc.gsub(/`([\w.]+)`/) do |match|
+      name = Regexp.last_match(1)
+      csr_name, field_name = name.split(".")
+      csr = csr(csr_name)
+      if !field_name.nil? && !csr.nil? && csr.field?(field_name)
+        "%%LINK%csr_field;#{csr_name}.#{field_name};#{csr_name}.#{field_name}%%"
+      elsif !csr.nil?
+        "%%LINK%csr;#{csr_name};#{csr_name}%%"
+      elsif inst(name.downcase)
+        "%%LINK%inst;#{name};#{name}%%"
+      elsif extension(name)
+        "%%LINK%ext;#{name};#{name}%%"
+      else
+        match
+      end
+    end
+  end
+end
+
+# Object model for a configured architecture definition
+class ImplArchDef < ArchDef
   # @return [String] Name of the architecture configuration
   attr_reader :name
 
@@ -1568,12 +1711,6 @@ class ArchDef
   
   # @return [Hash] The configuration parameters
   attr_reader :config_params
-
-  # @return [Idl::Compiler] The IDL compiler
-  attr_reader :idl_compiler
-
-  # @return [Idl::AstNode] Abstract syntax tree of global scope
-  attr_reader :global_ast
 
   # @return [Integer] 32 or 64, the XLEN in m-mode
   attr_reader :mxlen
@@ -1586,6 +1723,8 @@ class ArchDef
   # @param config_name [#to_s] The name of a configuration, which must correspond
   #                            to a folder under $root/cfgs
   def initialize(config_name)
+    super(from_child: true)
+
     @name = config_name.to_s
     arch_def_file = $root / "gen" / @name / "arch" / "arch_def.yaml"
 
@@ -1603,12 +1742,11 @@ class ArchDef
     @mxlen = @arch_def["params"]["XLEN"]
 
     @sym_table = Idl::SymbolTable.new(self)
-    @idl_compiler = Idl::Compiler.new(self)
 
     # load the globals into the symbol table
     @global_ast = @idl_compiler.compile_file(
       $root / "arch" / "isa" / "globals.isa",
-      @sym_table
+      symtab: @sym_table
     )
 
     @sym_table.deep_freeze
@@ -1653,38 +1791,9 @@ class ArchDef
     @implemented_extensions = []
     @arch_def["implemented_extensions"].each do |e|
       @implemented_extensions << ExtensionVersion.new(e["name"], e["version"])
-2    end
+    end
 
     @implemented_extensions
-  end
-
-  # @return [Array<Extesion>] List of all extensions, even those that are't implemented
-  def extensions
-    return @extensions unless @extensions.nil?
-
-    @extensions = []
-    @arch_def["extensions"].each_value do |ext_data|
-      @extensions << Extension.new(ext_data, self)
-    end
-    @extensions
-  end
-
-  # @returns [Hash<String, Extension>] Hash of all extensions, even those that aren't implemented, indexed by extension name
-  def extension_hash
-    return @extension_hash unless @extension_hash.nil?
-
-    @extension_hash = {}
-    extensions.each do |ext|
-      @extension_hash[ext.name] = ext
-    end
-    @extension_hash
-  end
-
-  # @param name [#to_s] Extension name
-  # @return [Extension] Extension named `name`
-  # @return [nil] if no extension `name` exists
-  def extension(name)
-    extension_hash[name.to_s]
   end
 
   # @overload ext?(ext_name)
@@ -1724,21 +1833,6 @@ class ArchDef
     @implemented_csrs = csrs.select { |c| @arch_def["implemented_csrs"].include?(c.name) }
   end
 
-  # @return [Array<Csr>] List of all CSRs defined by RISC-V, whether or not they are implemented
-  def csrs
-    return @csrs unless @csrs.nil?
-
-    @csrs = @arch_def["csrs"].map do |_csr_name, csr_data|
-      Csr.new(csr_data)
-    end
-  end
-
-  # @return [Array<String>] List of all known CSRs, even those not implemented by
-  #                         this config
-  def all_known_csr_names
-    @arch_def["csrs"].map { |csr| csr[0] }
-  end
-
   # @return [Hash<String, Csr>] Implemented csrs, indexed by CSR name
   def implemented_csr_hash
     return @implemented_csr_hash unless @implemented_csr_hash.nil?
@@ -1750,49 +1844,12 @@ class ArchDef
     @implemented_csr_hash
   end
 
-  # @return [Hash<String, Csr>] All csrs, even unimplemented ones, indexed by CSR name
-  def csr_hash
-    return @csr_hash unless @csr_hash.nil?
 
-    @csr_hash = {}
-    csrs.each do |csr|
-      @csr_hash[csr.name] = csr
-    end
-    @csr_hash
-  end
 
   # @param csr_name [#to_s] CSR name
   # @return [Csr,nil] a specific csr, or nil if it doesn't exist or isn't implemented
   def implemented_csr(csr_name)
     implemented_csr_hash[csr_name]
-  end
-
-  # @param csr_name [#to_s] CSR name
-  # @return [Csr,nil] a specific csr, or nil if it doesn't exist
-  def csr(csr_name)
-    csr_hash[csr_name]
-  end
-
-  # @return [Array<Instruction>] List of all instructions, whether or not they are implemented
-  def instructions
-    return @instructions unless @instructions.nil?
-
-    @instructions = @arch_def["instructions"].map do |_inst_name, inst_data|
-      Instruction.new(inst_data)
-    end
-
-    @instructions
-  end
-
-  # @return [Hash<String, Instruction>] All instructions, indexed by name
-  def instruction_hash
-    return @instruction_hash unless @instruction_hash.nil?
-
-    @instruction_hash = {}
-    instructions.each do |inst|
-      @instruction_hash[inst.name] = inst
-    end
-    @instruction_hash
   end
 
   # @return [Array<Instruction>] List of all implemented instructions
@@ -1804,12 +1861,6 @@ class ArchDef
     end
 
     @implemented_instructions
-  end
-
-  # @param inst_name [#to_s] Instruction name
-  # @return [Instruction,nil] An instruction named 'inst_name', or nil if it doesn't exist
-  def inst(inst_name)
-    instruction_hash[inst_name.to_s]
   end
 
   # @return [Array<FuncDefAst>] List of all reachable IDL functions for the config
@@ -1837,29 +1888,5 @@ class ArchDef
     end
 
     @implemented_functions
-  end
-
-  # given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`
-  # and replace them with links to the relevant object page
-  #
-  # @param adoc [String] Asciidoc source
-  # @return [String] Asciidoc source, with link placeholders
-  def find_replace_links(adoc)
-    adoc.gsub(/`([\w.]+)`/) do |match|
-      name = Regexp.last_match(1)
-      csr_name, field_name = name.split(".")
-      csr = csr(csr_name)
-      if !field_name.nil? && !csr.nil? && csr.field?(field_name)
-        "%%LINK%csr_field;#{csr_name}.#{field_name};#{csr_name}.#{field_name}%%"
-      elsif !csr.nil?
-        "%%LINK%csr;#{csr_name};#{csr_name}%%"
-      elsif inst(name.downcase)
-        "%%LINK%inst;#{name};#{name}%%"
-      elsif extension(name)
-        "%%LINK%ext;#{name};#{name}%%"
-      else
-        match
-      end
-    end
   end
 end
