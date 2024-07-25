@@ -13,7 +13,8 @@ pmpaddr42:
   definedBy: I
   fields:
     ADDR:
-      location: 63-0
+      location_rv32: 31-0
+      location_rv64: 63-0
       description: |
         Bits <%= PHYS_ADDR_WIDTH-1 %>:2 of the address specifier for PMP entry 42
         (or, if `pmp43cfg.A` == TOR, for PMP entry 43).

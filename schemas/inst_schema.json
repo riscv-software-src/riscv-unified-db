@@ -39,6 +39,20 @@
         "alias": {
           "type": "string",
           "description": "Alias of the field. Used when a field can represent multiple things, e.g., when a source register is also the destination register"
+        },
+        "not": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          ],
+          "description": "Specific value(s) that are not permitted for this field."
         }
       },
       "required": ["name", "location"]
@@ -56,21 +70,6 @@
             {
               "type": "string",
               "pattern": "^[01-]{14}((00)|(01)|(10))$",
-              "description": "16-bit encoding"
-            }
-          ]
-        },
-        "not_match": {
-          "description": "Bit values that cannot match for the instruction. Used to exclude encodings where all but one value are valid (e.g., common with the C encodings)",
-          "oneOf": [
-            {
-              "type": "string",
-              "pattern": "^[01-]{30}--$",
-              "description": "32-bit encoding"
-            },
-            {
-              "type": "string",
-              "pattern": "^[01-]{14}--$",
               "description": "16-bit encoding"
             }
           ]

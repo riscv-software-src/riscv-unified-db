@@ -15,7 +15,8 @@ pmpaddr<%= pmpaddr_num %>:
   definedBy: I
   fields:
     ADDR:
-      location: 63-0
+      location_rv32: 31-0
+      location_rv64: 63-0
       description: |
         Bits <%%= PHYS_ADDR_WIDTH-1 %>:2 of the address specifier for PMP entry <%= pmpaddr_num %>
         (or, if `pmp<%= pmpaddr_num+1 %>cfg.A` == TOR, for PMP entry <%= pmpaddr_num + 1 %>).

@@ -164,6 +164,7 @@ class CsrField < ArchDefObject
   # @return [Boolean] whether or not the instruction is implemented given the supplies config options
   def exists_in_cfg?(possible_xlens, extensions)
     parent.exists_in_cfg?(possible_xlens, extensions) &&
+      (@data["base"].nil? || possible_xlens.include?(@data["base"])) &&
       (@data["definedBy"].nil? || extensions.any? { |e| defined_by?(e) } )
   end
 
@@ -383,7 +384,7 @@ class CsrField < ArchDefObject
 
     if @data[key].is_a?(Integer)
       if @data[key] > csr.length(arch_def, effective_xlen || @data["base"])
-        raise "Location (#{@data[key]}) is past the csr length (#{csr.length(arch_def, effective_xlen)}) in #{csr.name}.#{name}"
+        raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr.length(arch_def, effective_xlen)}) in #{csr.name}.#{name}"
       end
 
       @data[key]..@data[key]
@@ -392,7 +393,7 @@ class CsrField < ArchDefObject
       raise "Invalid location" if s > e
 
       if e > csr.length(arch_def, effective_xlen)
-        raise "Location (#{@data[key]}) is past the csr length (#{csr.length(arch_def, effective_xlen)}) in #{csr.name}.#{name}"
+        raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr.length(arch_def, effective_xlen)}) in #{csr.name}.#{name}"
       end
 
       s..e
@@ -502,12 +503,16 @@ class Csr < ArchDefObject
       fns.concat(ast.reachable_functions(symtab))
     end
 
-    implemented_fields(arch_def).each do |field|
-      if arch_def.multi_xlen? && format_changes_with_xlen?
+    if arch_def.multi_xlen?
+      implemented_fields_for(arch_def, 32).each do |field|
         fns.concat(field.reachable_functions(arch_def.sym_table, 32))
+      end
+      implemented_fields_for(arch_def, 64).each do |field|
         fns.concat(field.reachable_functions(arch_def.sym_table, 64))
-      else
-        fns.concat(field.reachable_functions(arch_def.sym_table, arch_def.config_params["XLEN"]))
+      end
+    else
+      implemented_fields_for(arch_def, arch_def.mxlen).each do |field|
+        fns.concat(field.reachable_functions(arch_def.sym_table, arch_def.mxlen))
       end
     end
 
@@ -678,7 +683,7 @@ class Csr < ArchDefObject
     @implemented_fields_for ||= {}
     key = [arch_def.name, effective_xlen].hash
 
-    return @implemented_fields_for[key] unless @implemented_fields_for[key].nil?
+    return @implemented_fields_for[key] if @implemented_fields_for.key?(key)
 
     @implemented_fields_for[key] =
       implemented_fields(arch_def).select do |f|
@@ -714,6 +719,12 @@ class Csr < ArchDefObject
     @fields = @data["fields"].map { |_field_name, field_data| CsrField.new(self, field_data) }
   end
 
+  # @return [Array<CsrField>] All known fields of this CSR when XLEN == +effective_xlen+
+  # equivalent to {#fields} if +effective_xlen+ is nil
+  def fields_for(effective_xlen)
+    fields.select { |f| effective_xlen.nil? || !f.key?("base") || f.base == effective_xlen }
+  end
+
   # @return [Hash<String,CsrField>] Hash of fields, indexed by field name
   def field_hash
     @field_hash unless @field_hash.nil?
@@ -743,8 +754,8 @@ class Csr < ArchDefObject
     Idl::BitfieldType.new(
       "Csr#{name.capitalize}Bitfield",
       length(arch_def, effective_xlen),
-      fields.map(&:name),
-      fields.map { |f| f.location(arch_def, effective_xlen) }
+      fields_for(effective_xlen).map(&:name),
+      fields_for(effective_xlen).map { |f| f.location(arch_def, effective_xlen) }
     )
   end
 
@@ -800,7 +811,8 @@ class Csr < ArchDefObject
       "reg" => []
     }
     last_idx = -1
-    implemented_fields_for(arch_def, effective_xlen).each do |field|
+    field_list = implemented_fields_for(arch_def, effective_xlen)
+    field_list.each do |field|
 
       if field.location(arch_def, effective_xlen).min != last_idx + 1
         # have some reserved space
@@ -809,7 +821,7 @@ class Csr < ArchDefObject
       desc["reg"] << { "bits" => field.location(arch_def, effective_xlen).size, "name" => field.name, type: 2 }
       last_idx = field.location(arch_def, effective_xlen).max
     end
-    if !implemented_fields_for(arch_def, effective_xlen).empty? && (fields.last.location(arch_def, effective_xlen).max != (length(arch_def, effective_xlen) - 1))
+    if !field_list.empty? && (field_list.last.location(arch_def, effective_xlen).max != (length(arch_def, effective_xlen) - 1))
       # reserved space at the end
       desc["reg"] << { "bits" => (length(arch_def, effective_xlen) - 1 - last_idx), type: 1 }
       # desc['reg'] << { 'bits' => 1, type: 1 }
@@ -909,6 +921,257 @@ class Instruction < ArchDefObject
 
   # @return [ArchDef] The architecture definition
   attr_reader :arch_def
+
+  # represents a single contiguous instruction encoding field
+  # Multiple EncodingFields may make up a single DecodeField, e.g., when an immediate
+  # is split across multiple locations
+  class EncodingField
+    # name, which corresponds to a name used in riscv_opcodes
+    attr_reader :name
+
+    # range in the encoding
+    attr_reader :range
+
+    def initialize(name, range, pretty = nil)
+      @name = name
+      @range = range
+      @pretty = pretty
+    end
+
+    # is this encoding field a fixed opcode?
+    def opcode?
+      name.match?(/^[01]+$/)
+    end
+
+
+    def eql?(other)
+      @name == other.name && @range == other.range
+    end
+
+    def hash
+      [@name, @range].hash
+    end
+
+    def pretty_to_s
+      return @pretty unless @pretty.nil?
+
+      @name
+    end
+
+    def size
+      @range.size
+    end
+  end
+  
+  # decode field constructions from YAML file, rather than riscv-opcodes
+  # eventually, we will move so that all instructions use the YAML file,
+  class DecodeVariable
+    # the name of the field
+    attr_reader :name
+
+    # alias of this field, or nil if none
+    #
+    # used, e.g., when a field reprsents more than one variable (like rs1/rd for destructive instructions)
+    attr_reader :alias
+
+    # amount the field is left shifted before use, or nil is there is no left shift
+    #
+    # For example, if the field is offset[5:3], left_shift is 3
+    attr_reader :left_shift
+
+    # @return [Array<Integer>] Specific values that are prohibited for this variable
+    attr_reader :excludes
+
+    # @return [String] Name, along with any != constraints,
+    # @example
+    #   pretty_name #=> "rd != 0"
+    #   pretty_name #=> "rd != {0,2}"
+    def pretty_name
+      if excludes.empty?
+        name
+      elsif excludes.size == 1
+        "#{name} != #{excludes[0]}"
+      else
+        "#{name} != {#{excludes[0].join(',')}}"
+      end
+    end
+
+    def extract_location(location)
+      @encoding_fields = []
+
+      if location.is_a?(Integer)
+        @encoding_fields << EncodingField.new("", location..location)
+        return
+      end
+
+      location_string = location
+      parts = location_string.split("|")
+      parts.each do |part|
+        if part =~ /^([0-9]+)$/
+          bit = ::Regexp.last_match(1)
+          @encoding_fields << EncodingField.new("", bit.to_i..bit.to_i)
+        elsif part =~ /^([0-9]+)-([0-9]+)$/
+          msb = ::Regexp.last_match(1)
+          lsb = ::Regexp.last_match(2)
+          raise "range must be specified 'msb-lsb'" unless msb.to_i >= lsb.to_i
+
+          @encoding_fields << EncodingField.new("", lsb.to_i..msb.to_i)
+        else
+          raise "location format error"
+        end
+      end
+    end
+
+    def inst_pos_to_var_pos
+      s = size
+      map = Array.new(32, nil)
+      @encoding_fields.sort { |a, b| b.range.last <=> a.range.last }.each do |ef|
+        ef.range.to_a.reverse.each do |ef_i|
+          raise "unexpected" if s <= 0
+
+          map[ef_i] = s - 1
+          s -= 1
+        end
+      end
+      map
+    end
+
+    # given a range of the instruction, return a string representing the bits of the field the range
+    # represents
+    def inst_range_to_var_range(r)
+      var_bits = inst_pos_to_var_pos
+
+      raise "?" if var_bits[r.last].nil?
+      parts = [var_bits[r.last]..var_bits[r.last]]
+      r.to_a.reverse[1..].each do |i|
+        if var_bits[i] == (parts.last.first - 1)
+          raise "??" if parts.last.last.nil?
+          parts[-1] = var_bits[i]..parts.last.last
+        else
+          parts << Range.new(var_bits[i], var_bits[i])
+        end
+      end
+
+      parts.map { |p| p.size == 1 ? p.first.to_s : "#{p.last}:#{p.first}"}.join("|")
+    end
+    private :inst_range_to_var_range
+
+    # array of constituent encoding fields
+    def grouped_encoding_fields
+      sorted_encoding_fields = @encoding_fields.sort { |a, b| b.range.last <=> a.range.last }
+      # need to group encoding_fields if they are consecutive
+      grouped_fields = [sorted_encoding_fields[0].range]
+      sorted_encoding_fields[1..].each do |ef|
+        if (ef.range.last + 1) == grouped_fields.last.first
+          grouped_fields[-1] = (ef.range.first..grouped_fields.last.last)
+        else
+          grouped_fields << ef.range
+        end
+      end
+      if grouped_fields.size == 1
+        if grouped_fields.last.size == size
+          [EncodingField.new(pretty_name, grouped_fields[0])]
+        else
+          [EncodingField.new("#{pretty_name}[#{inst_range_to_var_range(grouped_fields[0])}]", grouped_fields[0])]
+        end
+      else
+        grouped_fields.map do |f|
+          EncodingField.new("#{pretty_name}[#{inst_range_to_var_range(f)}]", f)
+        end
+      end
+    end
+
+    def initialize(inst, field_data)
+      @inst = inst
+      @name = field_data["name"]
+      @left_shift = field_data["left_shift"].nil? ? 0 : field_data["left_shift"]
+      @sext = field_data["sign_extend"].nil? ? false : field_data["sign_extend"]
+      @alias = field_data["alias"].nil? ? nil : field_data["alias"]
+      extract_location(field_data["location"])
+      @excludes =
+        if field_data.key?("not")
+          if field_data["not"].is_a?(Array)
+            field_data["not"]
+          else
+            [field_data["not"]]
+          end
+        else
+          []
+        end
+      @decode_variable =
+        if @alias.nil?
+          name
+        else
+          @decode_variable = [name, @alias]
+        end
+    end
+
+    def eql?(other)
+      @name.eql?(other.name)
+    end
+
+    def hash
+      @name.hash
+    end
+
+    # returns true if the field is encoded across more than one groups of bits
+    def split?
+      @encoding_fields.size > 1
+    end
+
+    # returns bits of the encoding that make up the field, as an array
+    #   Each item of the array is either:
+    #     - A number, to represent a single bit
+    #     - A range, to represent a continugous range of bits
+    #
+    #  The array is ordered from encoding MSB (at index 0) to LSB (at index n-1)
+    def bits
+      @encoding_fields.map do |ef|
+        ef.range.size == 1 ? ef.range.first : ef.range
+      end
+    end
+
+    # the number of bits in the field, _including any implicit ones_
+    def size
+      size_in_encoding + @left_shift
+    end
+
+    # the number of bits in the field, _not including any implicit ones_
+    def size_in_encoding
+      bits.reduce(0) { |sum, f| sum + (f.is_a?(Integer) ? 1 : f.size) }
+    end
+
+    # true if the field should be sign extended
+    def sext?
+      @sext
+    end
+
+    # return code to extract the field
+    def extract
+      ops = []
+      so_far = 0
+      bits.each do |b|
+        if b.is_a?(Integer)
+          op = "encoding[#{b}]"
+          ops << op
+          so_far += 1
+        elsif b.is_a?(Range)
+          op = "encoding[#{b.end}:#{b.begin}]"
+          ops << op
+          so_far += b.size
+        end
+      end
+      ops << "#{@left_shift}'d0" unless @left_shift.zero?
+      ops =
+        if ops.size > 1
+          "{#{ops.join(', ')}}"
+        else
+          ops[0]
+        end
+      ops = "sext(#{ops})" if sext?
+      ops
+    end
+  end
 
   # represents an instruction encoding
   class Encoding
@@ -1357,6 +1620,11 @@ class ArchDef
   # (i.e., that in some mode the effective xlen can be either 32 or 64, depending on CSR values)
   def multi_xlen?
     ["SXLEN", "UXLEN", "VSXLEN", "VUXLEN"].any? { |key| @config_params[key] == 3264 }
+  end
+
+  # @return [Array<Integer>] List of possible XLENs in any mode for this config
+  def possible_xlens
+    multi_xlen? ? [32, 64] : [mxlen]
   end
 
   # @param mode [String] One of ['M', 'S', 'U', 'VS', 'VU']

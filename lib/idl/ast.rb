@@ -5,8 +5,6 @@ require 'benchmark'
 require_relative "type"
 require_relative "symbol_table"
 
-require_relative "../opcodes"
-
 module Treetop
   module Runtime
     class SyntaxNode
@@ -2505,6 +2503,8 @@ module Idl
         var = symtab.get(rval.text_value)
         internal_error "No symbol named '#{rval.text_value}'" if var.nil?
 
+        value_error "#{rval.text_value} is not compile-time-known" if var.value.nil?
+
         var.value = var.value + 1
       rescue ValueError
         var.value = nil
@@ -2965,7 +2965,7 @@ module Idl
     end
 
     # @!macro value_no_args
-    def value(_symtab, _archdef)
+    def value(_symtab)
       internal_error "Must call set_expected_type first" if @expected_type.nil?
 
       case @expected_type.kind
@@ -4634,7 +4634,7 @@ module Idl
         end
       end
       if fd.defined_in_all_bases?
-        Type.new(:bits, width: [fd.width(symtab.archdef, 32), fd.width(symtab.archdef, 64)].max)
+        Type.new(:bits, width: symtab.archdef.possible_xlens.map{ |xlen| fd.width(symtab.archdef, xlen) }.max)
       elsif fd.base64_only?
         Type.new(:bits, width: fd.width(symtab.archdef, 64))
       elsif fd.base32_only?

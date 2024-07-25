@@ -43,7 +43,7 @@ instreth:
       if (CSR[misa].S == 1'b1) {
         # S-mode is present ->
         #   mcounteren and scounteren together determine access in U-mode
-        if ((CSR[mcounteren].IR & CSR[scounteren].IR) == 1'b0)) {
+        if ((CSR[mcounteren].IR & CSR[scounteren].IR) == 1'b0) {
           raise(ExceptionCode::IllegalInstruction, $encoding);
         }
       } else if (CSR[mcounteren].IR == 1'b0) {
@@ -62,7 +62,7 @@ instreth:
       # access in VU mode
       if (((CSR[hcounteren].IR & CSR[scounteren].IR) == 1'b0) && (CSR[mcounteren].IR == 1'b1)) {
         raise(ExceptionCode::VirtualInstruction, $encoding);
-      } else if ((CSR[mcounteren].IR == 1'b0) {
+      } else if (CSR[mcounteren].IR == 1'b0) {
         raise(ExceptionCode::IllegalInstruction, $encoding);
       }
     }
