@@ -81,11 +81,11 @@ module Idl
   class ForLoopAst
     def reachable_functions(symtab)
       symtab.push
-      symtab.add(@init.lhs.name, Var.new(@init.lhs.name, @init.lhs_type(symtab)))
-      fns = @init.reachable_functions(symtab)
-      fns.concat(@condition.reachable_functions(symtab))
-      fns.concat(@update.reachable_functions(symtab))
-      @stmts.each do |stmt|
+      symtab.add(init.lhs.name, Var.new(init.lhs.name, init.lhs_type(symtab)))
+      fns = init.reachable_functions(symtab)
+      fns.concat(condition.reachable_functions(symtab))
+      fns.concat(update.reachable_functions(symtab))
+      stmts.each do |stmt|
         fns.concat(stmt.reachable_functions(symtab))
       end
       symtab.pop

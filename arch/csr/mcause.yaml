@@ -26,7 +26,7 @@ mcause:
         <%- end -%>
       type: RW-RH
       reset_value: 0
-      write(csr_value): |
+      sw_write(csr_value): |
         # the write only holds if the INT/CODE combination is valid
         if (csr_value.INT == 1) {
           <%- interrupt_codes.each do |num, name| -%>
@@ -73,7 +73,7 @@ mcause:
         !===
       type: RW-RH
       reset_value: 0
-      write(csr_value): |
+      sw_write(csr_value): |
         # the write only holds if the INT/CODE combination is valid
         if (csr_value.INT == 1) {
           <%- interrupt_codes.each do |num, name| -%>

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "forwardable"
+require "ruby-prof"
 
 require_relative "validate"
 require_relative "idl"
@@ -176,9 +177,13 @@ class CsrField < ArchDefObject
   #      'RW-H'  => Read-write, with a hardware update
   #      'RW-RH' => Read-write, with a hardware update and a restricted set of legal values
   def type(arch_def)
-    return @type unless @type.nil?
+    if !@type_cache.nil? && @type_cache.key?(arch_def)
+      return @type_cache[arch_def]
+    end
 
-    @type =
+    @type_cache ||= {}
+
+    type =
       if @data.key?("type")
         @data["type"]
       else
@@ -190,6 +195,7 @@ class CsrField < ArchDefObject
           Idl::Type.new(:enum_ref, enum_class: arch_def.sym_table.get("CsrFieldType"))
         sym_table = arch_def.sym_table
 
+        puts "Compiling CSR[#{csr.name}].#{name} type()"
         ast = arch_def.idl_compiler.compile_func_body(
           idl,
           symtab: sym_table,
@@ -226,6 +232,8 @@ class CsrField < ArchDefObject
           sym_table.pop
         end
       end
+    @type_cache[arch_def] = type
+    type
   end
 
   # @return [Alias,nil] The aliased field, or nil if there is no alias
@@ -255,14 +263,14 @@ class CsrField < ArchDefObject
     @alias
   end
 
-  # @return [Boolean] True if the field has a custom write function (i.e., `write(csr_value)` exists in the spec)
+  # @return [Boolean] True if the field has a custom write function (i.e., `sw_write(csr_value)` exists in the spec)
   def has_custom_write?
-    @data.key?("write(csr_value)") && !@data["write(csr_value)"].empty?
+    @data.key?("sw_write(csr_value)") && !@data["sw_write(csr_value)"].empty?
   end
 
   def sw_write_ast(arch_def, effective_xlen = nil)
     return @sw_write_ast unless @sw_write_ast.nil?
-    return nil if @data["write(csr_value)"].nil?
+    return nil if @data["sw_write(csr_value)"].nil?
 
     # now, parse the function
 
@@ -272,8 +280,9 @@ class CsrField < ArchDefObject
     symtab.push
     symtab.add("csr_value", Idl::Var.new("csr_value", csr.bitfield_type(arch_def, effective_xlen)))
 
+    puts "Compiling CSR[#{csr.name}].#{name} sw_write"
     @sw_write_ast = arch_def.idl_compiler.compile_func_body(
-      @data["write(csr_value)"],
+      @data["sw_write(csr_value)"],
       return_type: Idl::Type.new(:bits, width: 128), # big int to hold special return values
       symtab:,
       name: "CSR[#{csr.name}].#{name}.sw_write(csr_value)",
@@ -319,6 +328,7 @@ class CsrField < ArchDefObject
 
     return @reset_value_func unless @reset_value_func.nil?
 
+    puts "Compiling CSR[#{csr.name}].#{name} reset_value()"
     @reset_value_func = arch_def.idl_compiler.compile_func_body(
       @data["reset_value()"],
       return_type: Idl::Type.new(:bits, width: 64),
@@ -334,7 +344,11 @@ class CsrField < ArchDefObject
   # @return [Integer] The reset value of this field
   # @return [String]  The string 'UNDEFINED_LEGAL' if, for this config, there is no defined reset value
   def reset_value(arch_def)
-    return @reset_value unless @reset_value.nil?
+    if !@reset_value_cache.nil? && @reset_value_cache.key?(arch_def)
+      return @reset_value_cache[arch_def]
+    end
+
+    @reset_value_cache ||= {}
 
     symtab = arch_def.sym_table.deep_clone(clone_values: true)
     raise "not at global scope" unless symtab.levels == 1
@@ -342,12 +356,14 @@ class CsrField < ArchDefObject
     symtab.push # for consistency with template functions
 
     begin
-      @reset_value =
+      reset_value =
         if @data.key?("reset_value")
           @data["reset_value"]
         else
           reset_value_func(arch_def).return_value(symtab)
         end
+      @reset_value_cache[arch_def] = reset_value
+      reset_value
     ensure
       symtab.pop
     end
@@ -751,6 +767,7 @@ class Csr < ArchDefObject
         Idl::Var.new("__instruction_encoding_size", Idl::Type.new(:bits, width: 6), 32)
     }
 
+    puts "Compiling CSR[#{name}] sw_read"
     @sw_read_ast = arch_def.idl_compiler.compile_func_body(
       @data["sw_read()"],
       return_type: Idl::Type.new(:bits, width: 128), # big int to hold special return values
@@ -760,9 +777,18 @@ class Csr < ArchDefObject
       extra_syms:
     )
 
+    puts "done compiling"
+
     raise "unexpected #{@sw_read_ast.class}" unless @sw_read_ast.is_a?(Idl::FunctionBodyAst)
 
     @sw_read_ast
+  end
+
+  def pruned_sw_read_ast(symtab)
+    puts "PRUNING #{name}.sw_read()"
+    ast = sw_read_ast(symtab.archdef).prune(symtab)
+    puts "done"
+    ast
   end
 
   # @example Result for an I-type instruction
@@ -848,6 +874,7 @@ class Instruction < ArchDefObject
   # @param global_symtab [Idl::SymbolTable] Symbol table with global scope populated and a configuration loaded
   # @return [Idl::FunctionBodyAst] A pruned abstract syntax tree
   def pruned_operation_ast(global_symtab)
+
     type_check_operation(global_symtab)
     puts "PRUNING        #{name}"
     operation_ast(global_symtab.archdef.idl_compiler).prune(fill_symtab(global_symtab))
@@ -869,6 +896,7 @@ class Instruction < ArchDefObject
     if @data["operation()"].nil?
       []
     else
+      puts "Calculating reachable exceptions"
       pruned_operation_ast(symtab).reachable_exceptions(fill_symtab(symtab)).uniq
     end
   end
@@ -879,10 +907,15 @@ class Instruction < ArchDefObject
     if @data["operation()"].nil?
       []
     else
+      puts "Calculating reachable exceptions"
+
+      # RubyProf.start
       etype = symtab.get("ExceptionCode")
       pruned_operation_ast(symtab).reachable_exceptions(fill_symtab(symtab)).uniq.map { |code|
         etype.element_name(code)
       }
+      # result = RubyProf.stop
+      # RubyProf::FlatPrinter.new(result).print(STDOUT)
     end
   end
 
@@ -984,6 +1017,7 @@ class Instruction < ArchDefObject
 
     # now, parse the operation
 
+    puts "compiling #{name} operation"
     @operation_ast = idl_compiler.compile_inst_operation(
       self,
       input_file: "Instruction #{name}"
@@ -1291,6 +1325,12 @@ class ArchDef
   # @return [Idl::AstNode] Abstract syntax tree of global scope
   attr_reader :global_ast
 
+  # @return [Integer] 32 or 64, the XLEN in m-mode
+  attr_reader :mxlen
+
+  # hash for Hash lookup
+  def hash = @name.hash
+
   # Initialize a new configured architecture defintiion
   #
   # @params config_name [#to_s] The name of a configuration, which must correspond
@@ -1310,11 +1350,13 @@ class ArchDef
     @arch_def = YAML.load_file(arch_def_file)
 
     @config_params = @arch_def["params"]
+    @mxlen = @arch_def["params"]["XLEN"]
 
     @sym_table = Idl::SymbolTable.new(self)
     @idl_compiler = Idl::Compiler.new(self)
 
     # load the globals into the symbol table
+    puts "Compiling globals"
     @global_ast = @idl_compiler.compile_file(
       $root / "arch" / "isa" / "globals.isa",
       @sym_table

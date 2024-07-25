@@ -53,7 +53,7 @@
           "description": "Configuration-dependent value of the state after reset. Can be UNDEFINED_LEGAL for the generic architecture spec, but must have an integer value for the implementation spec.",
           "type": "string"
         },
-        "write(csr_value)": {
+        "sw_write(csr_value)": {
           "type": "string",
           "description": "Function implementing custom write behavior for the CSR. Given a 'value', return either the value to be written in the field or false if the write would be illegal. 'value' is the value of the entire CSR, which is sometimes needed to detect illegal writes"
         },
@@ -72,7 +72,7 @@
         },
         "type": {
           "enum": ["RO", "RO-H", "RW", "RW-R", "RW-H", "RW-RH"],
-          "description": "Type of the field. One of:\n * RO: Read-only immutable\n * RO-H: Read-only, updated by hardware\n * RW: Read-write, not updated by hardware\n * RW-R: Read-write, but values are restricted. write(value) must be provided\n * RW-H: Read-write, with hardware updates\n * RW-RH: Read-write, with hardware updates, but values are restricted. write(value) must be provded"
+          "description": "Type of the field. One of:\n * RO: Read-only immutable\n * RO-H: Read-only, updated by hardware\n * RW: Read-write, not updated by hardware\n * RW-R: Read-write, but values are restricted. sw_write(value) must be provided\n * RW-H: Read-write, with hardware updates\n * RW-RH: Read-write, with hardware updates, but values are restricted. sw_write(value) must be provded"
         },
         "type()": {
           "type": "string",
@@ -174,7 +174,7 @@
             ]
           },
           "then": {
-            "required": ["write(csr_value)"]
+            "required": ["sw_write(csr_value)"]
           }
         }
       ],

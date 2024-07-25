@@ -11,6 +11,31 @@ This repository contains:
  ** [COMING SOON] A configuration-specific Instruction Set Simulator
  ** More backends are planned
 
+## What can it do?
+
+Working examples:
+
+ * Generate configuration-specific documentation taylored to the set of implemented extensions and unnamed implementation options.
+ ** Only implemented extensions/instructions/CSRs are included
+ ** Unreachable (unimplmented) parts of the formal specification are pruned away
+ ** A dedicated documentation page for every implemented instruction, including its encoding, pruned execution behavior, and what types of exceptions it may cause.
+ ** A dedication documentation page for every implemented CSR, including its (possibly runtime-changing) encoding, fields, and pruned behavior on reads and writes
+ ** Clickable links to all mentions of instructions, extensions, CSRs, CSR fields, and glossary terms.
+ * Generate documentation for specific extensions that
+ ** Automatically include a complete list of added instructions and CSRs
+ ** Per-instruction documentation
+ ** Per-CSR documentation
+ ** Formal specification
+ * Generate a single YAML file containing *everything* knowable about a configuration.
+
+ Possibilities:
+
+  * Generate binutils files for an extension
+  * Generate instruction tables for compilers
+  * Generate https://github.com/riscv/riscv-opcodes[riscv-opcodes]
+  * Generate the full RISC-V specification, along with an appendix of instructions and CSRs
+  * ...
+
 ## Prerequisites
 
 The only requirement is the `Singularity CE` or `Apptainer` container system. Either one will work (they are forks).

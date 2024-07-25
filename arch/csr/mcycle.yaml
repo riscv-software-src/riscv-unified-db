@@ -20,7 +20,7 @@ mcycle:
         - cycle.COUNT
       location: 63-0
       type: RW-RH
-      write(csr_value): |
+      sw_write(csr_value): |
         # since writes to this register may not be hart-local, it must be handled
         # as a special case
         if (xlen() == 32) {

@@ -22,24 +22,24 @@ module Idl
     def prune(symtab)
       VariableDeclarationWithInitializationAst.new(
         input, interval,
-        @type_name.dup,
-        @lhs.dup,
-        @ary_size&.prune(symtab),
-        @rhs.prune(symtab)
+        type_name.dup,
+        lhs.dup,
+        ary_size&.prune(symtab),
+        rhs.prune(symtab)
       )
     end
   end
   class ForLoopAst
     def prune(symtab)
       symtab.push
-      symtab.add(@init.lhs.name, Var.new(@init.lhs.name, @init.lhs_type(symtab)))
+      symtab.add(init.lhs.name, Var.new(init.lhs.name, init.lhs_type(symtab)))
       new_loop =
         ForLoopAst.new(
           input, interval,
-          @init.prune(symtab),
-          @condition.prune(symtab),
-          @update.prune(symtab),
-          @stmts.map { |s| s.prune(symtab) }
+          init.prune(symtab),
+          condition.prune(symtab),
+          update.prune(symtab),
+          stmts.map { |s| s.prune(symtab) }
         )
       symtab.pop
       new_loop
@@ -67,11 +67,21 @@ module Idl
       end
 
       begin
-        # go through the statements, and stop if we find one that retuns
+        # go through the statements, and stop if we find one that retuns or raises an exception
         statements.each_with_index do |s, idx|
-          if s.is_a?(Returns)
-            v = s.return_value(symtab)
-            return FunctionBodyAst.new(input, interval, statements[0..idx].map { |s| s.prune(symtab) }) unless v.nil?
+          if s.is_a?(ReturnStatementAst)
+            return FunctionBodyAst.new(input, interval, statements[0..idx].map { |s| s.prune(symtab) })
+          elsif s.is_a?(ConditionalReturnStatementAst)
+            begin
+              v = s.return_value(symtab)
+
+              # conditional return, condition not taken if v.nil?
+              return FunctionBodyAst.new(input, interval, statements[0..idx].map { |s| s.prune(symtab) }) unless v.nil?
+            rescue ValueError
+              # conditional return, condition not known; keep going
+            end
+          elsif s.is_a?(StatementAst) && s.action.is_a?(FunctionCallExpressionAst) && s.action.name == "raise"
+            return FunctionBodyAst.new(input, interval, statements[0..idx].map { |s| s.prune(symtab) })
           else
             s.execute(symtab)
           end
@@ -98,16 +108,6 @@ module Idl
       StatementAst.new(input, interval, pruned_action)
     end
   end
-  class AryElementAccessAst
-    def prune(symtab)
-      AryElementAccessAst.new(input, interval, @var.prune(symtab), @index.prune(symtab))
-    end
-  end
-  class AryRangeAccessAst
-    def prune(symtab)
-      AryRangeAccessAst.new(input, interval, @var.prune(symtab), @msb.prune(symtab), @lsb.prune(symtab))
-    end
-  end
   class BinaryExpressionAst
     # @!macro prune
     def prune(symtab)
@@ -116,136 +116,82 @@ module Idl
         if val
           if type(symtab).kind == :boolean
             if val == false
-              IdAst.new(input, interval, "false")
+              str = "false"
+              return IdAst.new(str, 0...str.size)
             else
-              IdAst.new(input, interval, "true")
+              str = "true"
+              return IdAst.new(str, 0...str.size)
             end
           else
-            val_str = val.to_s
-            IntLiteralAst.new(val_str, 0...val_str.length)
+            val_str = "0x#{val.to_s(16)}"
+            return IntLiteralAst.new(val_str, 0...val_str.length)
           end
         end
       rescue ValueError
         # fall through
       end
 
+      begin
+        lhs_value = lhs.value(symtab)
+      rescue ValueError
+        lhs_value = nil
+      end
+      begin
+        rhs_value = rhs.value(symtab)
+      rescue ValueError
+        rhs_value = nil
+      end
+
       if op == "&&"
-        begin
-          if @lhs.value(symtab) == false
-            @rhs.prune(symtab)
-          else
-            BinaryExpressionAst.new(input, interval, @lhs.prune(symtab), @op, @rhs.prune(symtab))
-          end
-        rescue ValueError
-          BinaryExpressionAst.new(input, interval, @lhs.prune(symtab), @op, @rhs.prune(symtab))
+        if lhs_value == false
+          rhs.prune(symtab)
+        else
+          BinaryExpressionAst.new(input, interval, lhs.prune(symtab), @op, rhs.prune(symtab))
         end
       elsif op == "||"
-        begin
-          if @lhs.value(symtab) == true
-            @rhs.prune(symtab)
-          else
-            BinaryExpressionAst.new(input, interval, @lhs.prune(symtab), @op, @rhs.prune(symtab))
-          end
-        rescue ValueError
-          BinaryExpressionAst.new(input, interval, @lhs.prune(symtab), @op, @rhs.prune(symtab))
+        if lhs_value == true
+          rhs.prune(symtab)
+        else
+          BinaryExpressionAst.new(input, interval, lhs.prune(symtab), @op, rhs.prune(symtab))
         end
       elsif op == "&"
-        begin
-          lhs_value = @lhs.value(symtab)
-          if lhs_value.zero?
-            # 0 & anything == 0
-            IntLiteralAst.new("0", 0..0)
-          elsif lhs_value == ((1 << @rhs.type(symtab).width) - 1)
-            # rhs idenntity
-            @rhs.prune(symtab)
-          else
-            begin
-              rhs_value = @rhs.value(symtab)
-              if rhs_value.zero?
-                # anything & 0 == 0
-                IntLiteralAst.new("0", 0..0)
-              elsif rhs_value == (1 << @lhs.type(symtab).width - 1)
-                # lhs identity
-                @lhs.prune(symtab)
-              else
-                # neither lhs nor rhs were prunable
-                BinaryExpressionAst.new(input, interval, @lhs.prune(symtab), @op, @rhs.prune(symtab))
-              end
-            rescue ValueError
-              # lhs wasn't prunable and don't know rhs
-              BinaryExpressionAst.new(input, interval, @lhs.prune(symtab), @op, @rhs.prune(symtab))
-            end
-          end
-        rescue ValueError
-          # don't know lhs
-          begin
-            rhs_value = @rhs.value(symtab)
-            if rhs_value == 0
-              # anything & 0 == 0
-              IntLiteralAst.new("0", 0..0)
-            elsif rhs_value == (1 << @lhs.type(symtab).width - 1)
-              # lhs identity
-              @lhs.prune(symtab)
-            else
-              # don't know lhs and rhs wasn't prunable
-              BinaryExpressionAst.new(input, interval, @lhs.prune(symtab), @op, @rhs.prune(symtab))
-            end
-          rescue ValueError
-            # don't know either lhs or rhs
-            BinaryExpressionAst.new(input, interval, @lhs.prune(symtab), @op, @rhs.prune(symtab))
-          end
+        if lhs_value == 0
+          # 0 & anything == 0
+          IntLiteralAst.new("0", 0..0)
+        elsif lhs_value == ((1 << rhs.type(symtab).width) - 1)
+          # rhs idenntity
+          rhs.prune(symtab)
+        elsif rhs_value == 0
+          # anything & 0 == 0
+          IntLiteralAst.new("0", 0..0)
+        elsif rhs_value == (1 << lhs.type(symtab).width - 1)
+          # lhs identity
+          lhs.prune(symtab)
+        else
+          # neither lhs nor rhs were prunable
+          BinaryExpressionAst.new(input, interval, lhs.prune(symtab), @op, rhs.prune(symtab))
         end
       elsif op == "|"
-        begin
-          lhs_value = @lhs.value(symtab)
-          if lhs_value.zero?
-            # rhs idenntity
-            @rhs.prune(symtab)
-          elsif lhs_value == ((1 << @rhs.type(symtab).width) - 1)
-            # ~0 | anything == ~0
-            lhs_val_str = lhs_value.to_s
-            IntLiteralAst.new(lhs_val_str, 0...lhs_val_str.size)
-          else
-            begin
-              rhs_value = @rhs.value(symtab)
-              if rhs_value.zero?
-                # lhs identity
-                @lhs.prune(symtab)
-              elsif rhs_value == (1 << @lhs.type(symtab).width - 1)
-                # anything | ~0 == ~0
-                rhs_val_str = rhs_value.to_s
-                IntLiteralAst.new(rhs_val_str, 0...rhs_val_str.size)
-              else
-                # neither lhs nor rhs were prunable
-                BinaryExpressionAst.new(input, interval, @lhs.prune(symtab), @op, @rhs.prune(symtab))
-              end
-            rescue ValueError
-              # lhs wasn't prunable and don't know rhs
-              BinaryExpressionAst.new(input, interval, @lhs.prune(symtab), @op, @rhs.prune(symtab))
-            end
-          end
-        rescue ValueError
-          # don't know lhs
-          begin
-            rhs_value = @rhs.value(symtab)
-            if rhs_value.zero?
-              # lhs identity
-              @lhs.prune(symtab)
-            elsif rhs_value == (1 << @lhs.type(symtab).width - 1)
-              # anything | ~0 == ~0
-              rhs_val_str = rhs_value.to_s
-              IntLiteralAst.new(rhs_val_str, 0...rhs_val_str.size)
-            else
-              # don't know lhs and rhs wasn't prunable
-              BinaryExpressionAst.new(input, interval, @lhs.prune(symtab), @op, @rhs.prune(symtab))
-            end
-          rescue ValueError
-            # don't know either lhs or rhs
-            BinaryExpressionAst.new(input, interval, @lhs.prune(symtab), @op, @rhs.prune(symtab))
-          end
+        if lhs_value == 0
+          # rhs idenntity
+          rhs.prune(symtab)
+        elsif lhs_value == ((1 << rhs.type(symtab).width) - 1)
+          # ~0 | anything == ~0
+          lhs_val_str = lhs_value.to_s
+          IntLiteralAst.new(lhs_val_str, 0...lhs_val_str.size)
+        elsif rhs_value == 0
+          # lhs identity
+          lhs.prune(symtab)
+        elsif rhs_value == (1 << lhs.type(symtab).width - 1)
+          # anything | ~0 == ~0
+          rhs_val_str = rhs_value.to_s
+          IntLiteralAst.new(rhs_val_str, 0...rhs_val_str.size)
+        else
+          # neither lhs nor rhs were prunable
+          BinaryExpressionAst.new(input, interval, lhs.prune(symtab), @op, rhs.prune(symtab))
         end
       else
-        BinaryExpressionAst.new(input, interval, @lhs.prune(symtab), @op, @rhs.prune(symtab))
+        BinaryExpressionAst.new(input, interval, lhs.prune(symtab), @op, rhs.prune(symtab))
       end
     end
   end
@@ -255,6 +201,8 @@ module Idl
       pruned_stmts = []
       stmts.each do |s|
         pruned_stmts << s.prune(symtab)
+
+        break if pruned_stmts.last.is_a?(StatementAst) && pruned_stmts.last.action.is_a?(FunctionCallExpressionAst) && pruned_stmts.last.action.name == "raise"
       end
       IfBodyAst.new(input, interval, pruned_stmts)
     end

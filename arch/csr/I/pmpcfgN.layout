@@ -62,7 +62,7 @@ pmpcfg<%= pmpcfg_num %>:
         } else {
           return 0;
         }
-      write(csr_value): |
+      sw_write(csr_value): |
         if ((CSR[<%= "pmpcfg#{pmpcfg_num}" %>].pmp<%= pmpcfg_num*4 + i %>cfg & 0x80) == 0) {
           # entry is not locked
           if (!(((csr_value.pmp<%= pmpcfg_num*4 + i %>cfg & 0x1) == 0) && ((csr_value.pmp<%= pmpcfg_num*4 + i %>cfg & 0x2) == 0x2))) {

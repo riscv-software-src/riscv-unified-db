@@ -80,9 +80,9 @@ written value:
 ----
 <%- csr.fields.each do |field| -%>
 <%- if field.has_custom_write? -%>
-<%= field.name %> = <%= field["write(value)"] %>
+<%= field.name %> = <%= field["sw_write(csr_value)"] %>
 <%- else -%>
-<%= field.name %> = value.<%= field.name %>
+<%= field.name %> = csr_value.<%= field.name %>
 <%- end -%>
 <%- end -%>
 ----
@@ -95,7 +95,7 @@ This CSR may return a value that is different from what is stored in hardware.
 
 [subs="specialchars,macros"]
 ----
-<%# csr.sw_read_ast(arch_def).prune(arch_def.sym_table.deep_clone).gen_adoc %>
+<%= csr.pruned_sw_read_ast(arch_def.sym_table.deep_clone).gen_adoc %>
 ----
 
 <%- end -%>

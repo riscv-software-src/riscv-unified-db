@@ -78,7 +78,7 @@ misa:
         return MUTABLE_MISA_F ? CsrFieldType::RW : CsrFieldType::RO;
       reset_value(): |
         return implemented?(ExtensionName::F) ? 1 : 0;
-      write(csr_value): |
+      sw_write(csr_value): |
         if (csr_value.F == 0 && csr_value.D == 1) {
           return UNDEFINED_LEGAL_DETERMINISTIC;
         }

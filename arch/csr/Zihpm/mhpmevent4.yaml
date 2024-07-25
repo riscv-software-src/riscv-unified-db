@@ -136,7 +136,7 @@ mhpmevent4:
         } else {
           return 0;
         }
-      write(csr_value): |
+      sw_write(csr_value): |
         if (ary_includes?<HPM_EVENTS_SIZE, 58>(HPM_EVENTS, csr_value.EVENT)) {
           return csr_value.EVENT;
         } else {

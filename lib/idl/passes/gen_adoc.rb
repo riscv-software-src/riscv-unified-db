@@ -45,7 +45,7 @@ module Idl
 
   class VariableDeclarationAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      "#{' ' * indent}#{@type_name.gen_adoc(0, indent_spaces:)} #{@id.gen_adoc(0, indent_spaces:)};"
+      "#{' ' * indent}#{type_name.gen_adoc(0, indent_spaces:)} #{id.gen_adoc(0, indent_spaces:)};"
     end
   end
 
@@ -58,7 +58,7 @@ module Idl
   class BuiltinTypeNameAst
     def gen_adoc(indent = 0, indent_spaces: 2)
       if @type_name == "Bits"
-        "Bits<#{@bits_expression.gen_adoc(0, indent_spaces:)}>"
+        "Bits<#{bits_expression.gen_adoc(0, indent_spaces:)}>"
       else
         to_idl
       end
@@ -84,10 +84,10 @@ module Idl
 
   class VariableDeclarationWithInitializationAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      if @ary_size.nil?
+      if ary_size.nil?
         "#{' ' * indent}#{type_name.gen_adoc(0, indent_spaces:)} #{lhs.gen_adoc(0, indent_spaces:)} = #{rhs.gen_adoc(0, indent_spaces:)};"
       else
-        "#{' ' * indent}#{type_name.gen_adoc(0, indent_spaces:)} #{lhs.gen_adoc(0, indent_spaces:)}[#{@ary_size.gen_adoc(0, indent_spaces:)}] = #{rhs.gen_adoc(0, indent_spaces:)};"
+        "#{' ' * indent}#{type_name.gen_adoc(0, indent_spaces:)} #{lhs.gen_adoc(0, indent_spaces:)}[#{ary_size.gen_adoc(0, indent_spaces:)}] = #{rhs.gen_adoc(0, indent_spaces:)};"
       end
     end
   end
@@ -112,7 +112,7 @@ module Idl
 
   class AryElementAssignmentAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      "#{lhs.gen_adoc(0, indent_spaces:)}[#{@idx.gen_adoc(0, indent_spaces:)}] = #{@rhs.gen_adoc(0, indent_spaces:)}"
+      "#{lhs.gen_adoc(0, indent_spaces:)}[#{idx.gen_adoc(0, indent_spaces:)}] = #{rhs.gen_adoc(0, indent_spaces:)}"
     end
   end
 

@@ -12,6 +12,7 @@ module Idl
       raise ArgumentError, "Expecting a Type, got #{type.class.name}" unless type.is_a?(Type)
 
       @type = type
+      @type.freeze
       @value = value
       raise 'unexpected' unless decode_var.is_a?(TrueClass) || decode_var.is_a?(FalseClass)
 
@@ -19,6 +20,7 @@ module Idl
       @template_index = template_index
       @function_name = function_name
     end
+
 
     def clone
       Var.new(
@@ -140,16 +142,8 @@ module Idl
           raise "Unhandled config param type '#{value.class.name}' for '#{name}'"
         end
       end
-      arch_def.extensions.each do |ext|
-
-      end
       add!('ExtensionName', EnumerationType.new('ExtensionName', arch_def.extensions.map(&:name), Array.new(arch_def.extensions.size) { |i| i + 1 }))
-    end
 
-    # @return [Integer] Hash of the symbol table, used for identifying the same symbol table for caching
-    #                   Gauranteed to be the same for two tables that have identical contents
-    def hash
-      @scopes.hash
     end
 
     # do a deep freeze to protect the sym table and all its entries from modification
@@ -168,6 +162,7 @@ module Idl
       # @scope_caller ||= []
       # @scope_caller.push caller[0]
       @scopes << {}
+
     end
 
     # pops the top of the scope stack
@@ -177,6 +172,7 @@ module Idl
       raise "Error: popping the symbol table would remove global scope" if @scopes.size == 1
 
       @scopes.pop
+
     end
 
     # @return [Boolean] whether or not any symbol 'name' is defined at any level in the symbol table
@@ -289,6 +285,14 @@ module Idl
 
     # @return [SymbolTable] a deep clone of this SymbolTable
     def deep_clone(clone_values: false, freeze_global: true)
+      # globals are frozen, so we can just return a shallow clone
+      # if we are in global scope
+      if levels == 1
+        copy = dup
+        copy.instance_variable_set(:@scopes, copy.instance_variable_get(:@scopes).dup)
+        return copy
+      end
+
       copy = SymbolTable.new(@archdef)
       copy.instance_variable_set(:@scopes, [])
       c_scopes = copy.instance_variable_get(:@scopes)

@@ -57,7 +57,7 @@ pmpcfg2:
         } else {
           return 0;
         }
-      write(csr_value): |
+      sw_write(csr_value): |
         if ((CSR[pmpcfg2].pmp8cfg & 0x80) == 0) {
           # entry is not locked
           if (!(((csr_value.pmp8cfg & 0x1) == 0) && ((csr_value.pmp8cfg & 0x2) == 0x2))) {
@@ -116,7 +116,7 @@ pmpcfg2:
         } else {
           return 0;
         }
-      write(csr_value): |
+      sw_write(csr_value): |
         if ((CSR[pmpcfg2].pmp9cfg & 0x80) == 0) {
           # entry is not locked
           if (!(((csr_value.pmp9cfg & 0x1) == 0) && ((csr_value.pmp9cfg & 0x2) == 0x2))) {
@@ -175,7 +175,7 @@ pmpcfg2:
         } else {
           return 0;
         }
-      write(csr_value): |
+      sw_write(csr_value): |
         if ((CSR[pmpcfg2].pmp10cfg & 0x80) == 0) {
           # entry is not locked
           if (!(((csr_value.pmp10cfg & 0x1) == 0) && ((csr_value.pmp10cfg & 0x2) == 0x2))) {
@@ -234,7 +234,7 @@ pmpcfg2:
         } else {
           return 0;
         }
-      write(csr_value): |
+      sw_write(csr_value): |
         if ((CSR[pmpcfg2].pmp11cfg & 0x80) == 0) {
           # entry is not locked
           if (!(((csr_value.pmp11cfg & 0x1) == 0) && ((csr_value.pmp11cfg & 0x2) == 0x2))) {
@@ -294,7 +294,7 @@ pmpcfg2:
         } else {
           return 0;
         }
-      write(csr_value): |
+      sw_write(csr_value): |
         if ((CSR[pmpcfg2].pmp12cfg & 0x80) == 0) {
           # entry is not locked
           if (!(((csr_value.pmp12cfg & 0x1) == 0) && ((csr_value.pmp12cfg & 0x2) == 0x2))) {
@@ -354,7 +354,7 @@ pmpcfg2:
         } else {
           return 0;
         }
-      write(csr_value): |
+      sw_write(csr_value): |
         if ((CSR[pmpcfg2].pmp13cfg & 0x80) == 0) {
           # entry is not locked
           if (!(((csr_value.pmp13cfg & 0x1) == 0) && ((csr_value.pmp13cfg & 0x2) == 0x2))) {
@@ -414,7 +414,7 @@ pmpcfg2:
         } else {
           return 0;
         }
-      write(csr_value): |
+      sw_write(csr_value): |
         if ((CSR[pmpcfg2].pmp14cfg & 0x80) == 0) {
           # entry is not locked
           if (!(((csr_value.pmp14cfg & 0x1) == 0) && ((csr_value.pmp14cfg & 0x2) == 0x2))) {
@@ -474,7 +474,7 @@ pmpcfg2:
         } else {
           return 0;
         }
-      write(csr_value): |
+      sw_write(csr_value): |
         if ((CSR[pmpcfg2].pmp15cfg & 0x80) == 0) {
           # entry is not locked
           if (!(((csr_value.pmp15cfg & 0x1) == 0) && ((csr_value.pmp15cfg & 0x2) == 0x2))) {

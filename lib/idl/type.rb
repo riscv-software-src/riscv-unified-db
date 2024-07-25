@@ -67,9 +67,8 @@ module Idl
       raise "Invalid kind '#{kind}'" unless KINDS.include?(kind)
 
       @kind = kind
-      qualifiers.each do |q|
-        raise 'Invalid qualifier' unless QUALIFIERS.include?(q)
-      end
+      raise "Invalid qualifier" unless qualifiers.intersection(QUALIFIERS) == qualifiers
+
       @qualifiers = qualifiers
       # raise "#{width.class.name}" if (kind == :bits && !width.is_a?(Integer))
 
@@ -371,7 +370,7 @@ module Idl
 
 
   class EnumerationType < Type
-    attr_reader :element_names, :element_values, :width
+    attr_reader :element_names, :element_values, :width, :ref_type
 
     def initialize(type_name, element_names, element_values)
       width = element_values.max.bit_length
@@ -388,6 +387,7 @@ module Idl
   #    element_names.each_index do |idx|
   #      syms.add!(element_names[idx], Var.new(element_names[idx], self, element_values[idx]))
   #    end
+       @ref_type = Type.new(:enum_ref, enum_class: self)
     end
 
     def clone

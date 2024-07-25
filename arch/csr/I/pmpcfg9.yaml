@@ -58,7 +58,7 @@ pmpcfg9:
         } else {
           return 0;
         }
-      write(csr_value): |
+      sw_write(csr_value): |
         if ((CSR[pmpcfg9].pmp36cfg & 0x80) == 0) {
           # entry is not locked
           if (!(((csr_value.pmp36cfg & 0x1) == 0) && ((csr_value.pmp36cfg & 0x2) == 0x2))) {
@@ -117,7 +117,7 @@ pmpcfg9:
         } else {
           return 0;
         }
-      write(csr_value): |
+      sw_write(csr_value): |
         if ((CSR[pmpcfg9].pmp37cfg & 0x80) == 0) {
           # entry is not locked
           if (!(((csr_value.pmp37cfg & 0x1) == 0) && ((csr_value.pmp37cfg & 0x2) == 0x2))) {
@@ -176,7 +176,7 @@ pmpcfg9:
         } else {
           return 0;
         }
-      write(csr_value): |
+      sw_write(csr_value): |
         if ((CSR[pmpcfg9].pmp38cfg & 0x80) == 0) {
           # entry is not locked
           if (!(((csr_value.pmp38cfg & 0x1) == 0) && ((csr_value.pmp38cfg & 0x2) == 0x2))) {
@@ -235,7 +235,7 @@ pmpcfg9:
         } else {
           return 0;
         }
-      write(csr_value): |
+      sw_write(csr_value): |
         if ((CSR[pmpcfg9].pmp39cfg & 0x80) == 0) {
           # entry is not locked
           if (!(((csr_value.pmp39cfg & 0x1) == 0) && ((csr_value.pmp39cfg & 0x2) == 0x2))) {

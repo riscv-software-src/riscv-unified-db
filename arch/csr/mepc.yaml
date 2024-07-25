@@ -32,7 +32,7 @@ mepc:
         may be visible on the next read with `misa.C` is set.
         <% end %>
       type: RW-RH
-      write(csr_value): |
+      sw_write(csr_value): |
         return csr_value.PC & ~64'b1;
       reset_value: 0
   sw_read(): |

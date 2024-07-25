@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "ruby-prof"
+
 # fill out templates for every csr, inst, ext, and func
 ["csr", "inst", "ext", "func"].each do |type|
   rule %r{#{$root}/\.stamps/adoc-gen-#{type}s-.*\.stamp} => proc { |tname|
@@ -28,23 +30,30 @@
     when "csr"
       arch_def.implemented_csrs.each do |csr|
         path = dir_path / "#{csr.name}.adoc"
+        puts "Generating #{path}"
         File.write(path, arch_def.find_replace_links(erb.result(binding)))
       end
     when "inst"
       arch_def.implemented_instructions.each do |inst|
         path = dir_path / "#{inst.name}.adoc"
+        puts "Generating #{path}"
+        # RubyProf.start
         File.write(path, arch_def.find_replace_links(erb.result(binding)))
+        # result = RubyProf.stop
+        # RubyProf::FlatPrinter.new(result).print(STDOUT)
       end
     when "ext"
       arch_def.implemented_extensions.each do |ext_version|
         ext = arch_def.extension(ext_version.name)
         path = dir_path / "#{ext.name}.adoc"
+        puts "Generating #{path}"
         File.write(path, arch_def.find_replace_links(erb.result(binding)))
       end
     when "func"
       isa_def = arch_def.global_ast
       global_symtab = arch_def.sym_table
       path = dir_path / "funcs.adoc"
+      puts "Generating #{path}"
       File.write(path, arch_def.find_replace_links(erb.result(binding)))
     else
       raise "todo"

@@ -20,4 +20,5 @@ gem "yard"
 group :development do
   gem "solargraph"
   gem 'rubocop-minitest'
+  gem 'ruby-prof'
 end

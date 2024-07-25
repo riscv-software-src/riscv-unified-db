@@ -15,7 +15,7 @@ htimedeltah:
       description: Signed delta
       type: RW
       reset_value: UNDEFINED_LEGAL
-      write(csr_value): |
+      sw_write(csr_value): |
         CSR[htimedelta].DELTA = {csr_value.DELTA, CSR[htimedelta].DELTA[31:0]};
         return csr_value.DELTA;
   sw_read(): |
