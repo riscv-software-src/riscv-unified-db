@@ -14,6 +14,9 @@ concurrency:
 jobs:
   regress:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
     - name: Clone Github Repo Action
       uses: actions/checkout@v4
@@ -42,30 +45,18 @@ jobs:
       run: ./do idl_test
     - name: Build html documentation for generic_rv64
       run: ./do gen:html[generic_rv64]
-  ruby_doc:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Generate YARD docs
-        run: ./do gen:tool_doc
-  pages:
-    needs:
-    - ruby_doc
-    - regress
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create _site
-        run: mkdir -p _site
-      - name: Link cfg html
-        run: ln -s gen/cfg_html_doc/generic_rv64/html _site
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '_site'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+    - name: Generate YARD docs
+      run: ./do gen:tool_doc
+    - name: Create _site
+      run: mkdir -p _site
+    - name: Link cfg html
+      run: ln -s gen/cfg_html_doc/generic_rv64/html _site
+    - name: Setup Pages
+      uses: actions/configure-pages@v5
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: '_site'
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
