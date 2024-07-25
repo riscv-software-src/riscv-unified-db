@@ -30,13 +30,13 @@ require "ruby-prof"
     when "csr"
       arch_def.implemented_csrs.each do |csr|
         path = dir_path / "#{csr.name}.adoc"
-        puts "Generating #{path}"
+        puts "  Generating #{path}"
         File.write(path, arch_def.find_replace_links(erb.result(binding)))
       end
     when "inst"
       arch_def.implemented_instructions.each do |inst|
         path = dir_path / "#{inst.name}.adoc"
-        puts "Generating #{path}"
+        puts "  Generating #{path}"
         # RubyProf.start
         File.write(path, arch_def.find_replace_links(erb.result(binding)))
         # result = RubyProf.stop
@@ -46,14 +46,14 @@ require "ruby-prof"
       arch_def.implemented_extensions.each do |ext_version|
         ext = arch_def.extension(ext_version.name)
         path = dir_path / "#{ext.name}.adoc"
-        puts "Generating #{path}"
+        puts "  Generating #{path}"
         File.write(path, arch_def.find_replace_links(erb.result(binding)))
       end
     when "func"
       isa_def = arch_def.global_ast
       global_symtab = arch_def.sym_table
       path = dir_path / "funcs.adoc"
-      puts "Generating #{path}"
+      puts "  Generating #{path}"
       File.write(path, arch_def.find_replace_links(erb.result(binding)))
     else
       raise "todo"
@@ -86,18 +86,22 @@ require "ruby-prof"
 
     case type
     when "csr"
+      puts "Generting full CSR list"
       arch_def.implemented_csrs.each do |csr|
         lines << " * `#{csr.name}` #{csr.long_name}"
       end
     when "ext"
+      puts "Generting full extension list"
       arch_def.implemented_extensions.each do |ext_version|
         lines << " * `#{ext_version.name}` #{ext_version.ext(arch_def).long_name}"
       end
     when "inst"
+      puts "Generting full instruction list"
       arch_def.implemented_instructions.each do |inst|
         lines << " * `#{inst.name}` #{inst.long_name}"
       end
     when "func"
+      puts "Generting functino list"
       arch_def.implemented_functions.each do |func|
         lines << " * `#{func.name}`"
       end
@@ -121,6 +125,7 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/adoc/ROOT/landing.adoc} => proc { |tname|
 
   arch_def = arch_def_for(config_name)
 
+  puts "Generating landing page for #{config_name}"
   erb = ERB.new(File.read("#{CFG_HTML_DOC_DIR}/templates/landing.adoc.erb"), trim_mode: "-")
 
   FileUtils.mkdir_p File.dirname(t.name)

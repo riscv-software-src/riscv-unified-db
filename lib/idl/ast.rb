@@ -4646,9 +4646,6 @@ module Idl
 
     # @!macro value
     def value(symtab)
-      if field_name(symtab) == "MXL"
-        internal_error "MXL isn't right" unless field_def(symtab).reset_value(symtab.archdef) == 2
-      end
       value_error "'#{csr_name(symtab)}.#{field_name(symtab)}' is not RO" unless field_def(symtab).type(symtab.archdef) == "RO"
       field_def(symtab).reset_value(symtab.archdef)
     end

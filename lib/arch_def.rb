@@ -195,7 +195,6 @@ class CsrField < ArchDefObject
           Idl::Type.new(:enum_ref, enum_class: arch_def.sym_table.get("CsrFieldType"))
         sym_table = arch_def.sym_table
 
-        puts "Compiling CSR[#{csr.name}].#{name} type()"
         ast = arch_def.idl_compiler.compile_func_body(
           idl,
           symtab: sym_table,
@@ -280,7 +279,6 @@ class CsrField < ArchDefObject
     symtab.push
     symtab.add("csr_value", Idl::Var.new("csr_value", csr.bitfield_type(arch_def, effective_xlen)))
 
-    puts "Compiling CSR[#{csr.name}].#{name} sw_write"
     @sw_write_ast = arch_def.idl_compiler.compile_func_body(
       @data["sw_write(csr_value)"],
       return_type: Idl::Type.new(:bits, width: 128), # big int to hold special return values
@@ -328,7 +326,6 @@ class CsrField < ArchDefObject
 
     return @reset_value_func unless @reset_value_func.nil?
 
-    puts "Compiling CSR[#{csr.name}].#{name} reset_value()"
     @reset_value_func = arch_def.idl_compiler.compile_func_body(
       @data["reset_value()"],
       return_type: Idl::Type.new(:bits, width: 64),
@@ -767,7 +764,6 @@ class Csr < ArchDefObject
         Idl::Var.new("__instruction_encoding_size", Idl::Type.new(:bits, width: 6), 32)
     }
 
-    puts "Compiling CSR[#{name}] sw_read"
     @sw_read_ast = arch_def.idl_compiler.compile_func_body(
       @data["sw_read()"],
       return_type: Idl::Type.new(:bits, width: 128), # big int to hold special return values
@@ -777,7 +773,6 @@ class Csr < ArchDefObject
       extra_syms:
     )
 
-    puts "done compiling"
 
     raise "unexpected #{@sw_read_ast.class}" unless @sw_read_ast.is_a?(Idl::FunctionBodyAst)
 
@@ -785,10 +780,7 @@ class Csr < ArchDefObject
   end
 
   def pruned_sw_read_ast(symtab)
-    puts "PRUNING #{name}.sw_read()"
-    ast = sw_read_ast(symtab.archdef).prune(symtab)
-    puts "done"
-    ast
+    sw_read_ast(symtab.archdef).prune(symtab)
   end
 
   # @example Result for an I-type instruction
@@ -876,7 +868,6 @@ class Instruction < ArchDefObject
   def pruned_operation_ast(global_symtab)
 
     type_check_operation(global_symtab)
-    puts "PRUNING        #{name}"
     operation_ast(global_symtab.archdef.idl_compiler).prune(fill_symtab(global_symtab))
   end
 
@@ -896,7 +887,6 @@ class Instruction < ArchDefObject
     if @data["operation()"].nil?
       []
     else
-      puts "Calculating reachable exceptions"
       pruned_operation_ast(symtab).reachable_exceptions(fill_symtab(symtab)).uniq
     end
   end
@@ -907,8 +897,6 @@ class Instruction < ArchDefObject
     if @data["operation()"].nil?
       []
     else
-      puts "Calculating reachable exceptions"
-
       # RubyProf.start
       etype = symtab.get("ExceptionCode")
       pruned_operation_ast(symtab).reachable_exceptions(fill_symtab(symtab)).uniq.map { |code|
@@ -1017,7 +1005,6 @@ class Instruction < ArchDefObject
 
     # now, parse the operation
 
-    puts "compiling #{name} operation"
     @operation_ast = idl_compiler.compile_inst_operation(
       self,
       input_file: "Instruction #{name}"
@@ -1356,7 +1343,6 @@ class ArchDef
     @idl_compiler = Idl::Compiler.new(self)
 
     # load the globals into the symbol table
-    puts "Compiling globals"
     @global_ast = @idl_compiler.compile_file(
       $root / "arch" / "isa" / "globals.isa",
       @sym_table
@@ -1564,12 +1550,16 @@ class ArchDef
 
     @implemented_functions = []
 
+    puts "  Finding all reachable functions from instruction operations"
+
     implemented_instructions.each do |inst|
       inst_funcs = inst.reachable_functions(sym_table)
       inst_funcs.each do |f|
         @implemented_functions << f unless @implemented_functions.any? { |i| i.name == f.name }
       end
     end
+
+    puts "  Finding all reachable functions from CSR operations"
 
     implemented_csrs.each do |csr|
       csr_funcs = csr.reachable_functions(self)
