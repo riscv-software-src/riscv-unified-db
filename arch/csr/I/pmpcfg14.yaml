@@ -250,7 +250,7 @@ pmpcfg14:
         return CSR[pmpcfg14].pmp59cfg;
     pmp60cfg:
       location: 39-32
-      base: 32 # upper half doesn't exist in RV32
+      base: 64 # upper half doesn't exist in RV32
       description: |
           *PMP configuration for entry 60*
 
@@ -310,7 +310,7 @@ pmpcfg14:
         return CSR[pmpcfg14].pmp60cfg;
     pmp61cfg:
       location: 47-40
-      base: 32 # upper half doesn't exist in RV32
+      base: 64 # upper half doesn't exist in RV32
       description: |
           *PMP configuration for entry 61*
 
@@ -370,7 +370,7 @@ pmpcfg14:
         return CSR[pmpcfg14].pmp61cfg;
     pmp62cfg:
       location: 55-48
-      base: 32 # upper half doesn't exist in RV32
+      base: 64 # upper half doesn't exist in RV32
       description: |
           *PMP configuration for entry 62*
 
@@ -430,7 +430,7 @@ pmpcfg14:
         return CSR[pmpcfg14].pmp62cfg;
     pmp63cfg:
       location: 63-56
-      base: 32 # upper half doesn't exist in RV32
+      base: 64 # upper half doesn't exist in RV32
       description: |
           *PMP configuration for entry 63*
 

@@ -2,6 +2,29 @@
 
 require_relative "../ast"
 
+def create_int_literal(value)
+  str = value <= 512 ? value.to_s : "0x#{value.to_s(16)}"
+  Idl::IntLiteralAst.new(str, 0...str.size)
+end
+
+def create_bool_literal(value)
+  if value
+    Idl::IdAst.new("true", 0..4)
+  else
+    Idl::IdAst.new("false", 0..5)
+  end
+end
+
+def create_literal(value)
+  if value.is_a?(Integer)
+    create_int_literal(value)
+  elsif value.is_a?(TrueClass) || value.is_a?(FalseClass)
+    create_bool_literal(value)
+  else
+    raise "TODO"
+  end
+end
+
 module Idl
   # set up a default
   class AstNode
@@ -10,12 +33,27 @@ module Idl
 
       new_node = dup
       new_node.instance_variable_set(:@children, new_children)
+
+      if is_a?(Executable)
+        begin
+          execute(symtab)
+        rescue ValueError
+          execute_unknown(symtab)
+        end
+      end
+      add_symbol(symtab) if is_a?(Declaration)
+
       new_node
     end
   end
   class FunctionCallExpressionAst
     def prune(symtab)
-      FunctionCallExpressionAst.new(input, interval, name, @targs.map { |t| t.prune(symtab) }, @args.map { |a| a.prune(symtab)} )
+      begin
+        v = value(symtab)
+        create_literal(v)
+      rescue ValueError
+        FunctionCallExpressionAst.new(input, interval, name, @targs.map { |t| t.prune(symtab) }, @args.map { |a| a.prune(symtab)} )
+      end
     end
   end
   class VariableDeclarationWithInitializationAst
@@ -113,20 +151,7 @@ module Idl
     def prune(symtab)
       begin
         val = value(symtab)
-        if val
-          if type(symtab).kind == :boolean
-            if val == false
-              str = "false"
-              return IdAst.new(str, 0...str.size)
-            else
-              str = "true"
-              return IdAst.new(str, 0...str.size)
-            end
-          else
-            val_str = "0x#{val.to_s(16)}"
-            return IntLiteralAst.new(val_str, 0...val_str.length)
-          end
-        end
+        return create_literal(val)
       rescue ValueError
         # fall through
       end
@@ -157,13 +182,13 @@ module Idl
       elsif op == "&"
         if lhs_value == 0
           # 0 & anything == 0
-          IntLiteralAst.new("0", 0..0)
+          create_literal(0)
         elsif lhs_value == ((1 << rhs.type(symtab).width) - 1)
           # rhs idenntity
           rhs.prune(symtab)
         elsif rhs_value == 0
           # anything & 0 == 0
-          IntLiteralAst.new("0", 0..0)
+          create_literal(0)
         elsif rhs_value == (1 << lhs.type(symtab).width - 1)
           # lhs identity
           lhs.prune(symtab)
@@ -177,15 +202,13 @@ module Idl
           rhs.prune(symtab)
         elsif lhs_value == ((1 << rhs.type(symtab).width) - 1)
           # ~0 | anything == ~0
-          lhs_val_str = lhs_value.to_s
-          IntLiteralAst.new(lhs_val_str, 0...lhs_val_str.size)
+          create_literal(lhs_value)
         elsif rhs_value == 0
           # lhs identity
           lhs.prune(symtab)
         elsif rhs_value == (1 << lhs.type(symtab).width - 1)
           # anything | ~0 == ~0
-          rhs_val_str = rhs_value.to_s
-          IntLiteralAst.new(rhs_val_str, 0...rhs_val_str.size)
+          create_literal(rhs_value)
         else
           # neither lhs nor rhs were prunable
           BinaryExpressionAst.new(input, interval, lhs.prune(symtab), @op, rhs.prune(symtab))

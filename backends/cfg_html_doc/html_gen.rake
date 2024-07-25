@@ -166,6 +166,8 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/playbook.yaml} => proc { |tname|
         contents: |
           <link rel="stylesheet" href="{{{uiRootPath}}}/css/site.css">
           <link rel="stylesheet" href="{{{uiRootPath}}}/css/vendor/tabs.css">
+      - path: js/vendor/highlight.js
+        contents: #{$root}/backends/cfg_html_doc/ui/highlight.js
   PLAYBOOK
 end
 

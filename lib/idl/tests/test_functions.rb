@@ -69,7 +69,7 @@ class TestVariables < Minitest::Test
 
     path = Pathname.new(t.path)
 
-    ast = @compiler.compile_file(path, @symtab)
+    ast = @compiler.compile_file(path, symtab: @symtab)
 
     test_ast = ast.functions.select { |f| f.name == "test" }[0]
     assert_equal [1], test_ast.body.reachable_exceptions(@symtab)
@@ -129,7 +129,7 @@ class TestVariables < Minitest::Test
 
     path = Pathname.new(t.path)
 
-    ast = @compiler.compile_file(path, @symtab)
+    ast = @compiler.compile_file(path, symtab: @symtab)
 
     test_ast = ast.functions.select { |f| f.name == "test" }[0]
     assert_equal [1], test_ast.body.reachable_exceptions(@symtab)

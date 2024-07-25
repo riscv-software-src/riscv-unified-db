@@ -129,7 +129,7 @@ module Idl
 
   class VariableDeclarationAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      "#{' ' * indent}#{type_name.gen_adoc(0, indent_spaces:)} #{id.gen_adoc(0, indent_spaces:)};"
+      "#{' ' * indent}#{type_name.gen_adoc(0, indent_spaces:)} #{id.gen_adoc(0, indent_spaces:)}"
     end
   end
 
@@ -169,9 +169,9 @@ module Idl
   class VariableDeclarationWithInitializationAst
     def gen_adoc(indent = 0, indent_spaces: 2)
       if ary_size.nil?
-        "#{' ' * indent}#{type_name.gen_adoc(0, indent_spaces:)} #{lhs.gen_adoc(0, indent_spaces:)} = #{rhs.gen_adoc(0, indent_spaces:)};"
+        "#{' ' * indent}#{type_name.gen_adoc(0, indent_spaces:)} #{lhs.gen_adoc(0, indent_spaces:)} = #{rhs.gen_adoc(0, indent_spaces:)}"
       else
-        "#{' ' * indent}#{type_name.gen_adoc(0, indent_spaces:)} #{lhs.gen_adoc(0, indent_spaces:)}[#{ary_size.gen_adoc(0, indent_spaces:)}] = #{rhs.gen_adoc(0, indent_spaces:)};"
+        "#{' ' * indent}#{type_name.gen_adoc(0, indent_spaces:)} #{lhs.gen_adoc(0, indent_spaces:)}[#{ary_size.gen_adoc(0, indent_spaces:)}] = #{rhs.gen_adoc(0, indent_spaces:)}"
       end
     end
   end

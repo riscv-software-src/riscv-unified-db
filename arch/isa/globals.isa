@@ -1147,10 +1147,10 @@ function pmp_check {
 
 function access_check {
   template U32 access_size
-  returns Boolean, ExceptionCode
   arguments Bits<PHYS_ADDR_WIDTH> paddr, XReg vaddr, MemoryOperation type
   description {
-    Returns True if the current privilege mode cannot access the physical address paddr.
+    Checks if the physical address paddr is able to access memory, and raises
+    the appropriate exception if not.
   }
   body {
     # check if this is a valid physical address
@@ -1175,7 +1175,6 @@ function access_check {
         raise (ExceptionCode::InstructionAccessFault, vaddr);
       }
     }
-    return false, -;
   }
 }
 
@@ -1535,7 +1534,7 @@ function translate {
     PrivilegeMode effective_mode = effective_ldst_mode();
 
     if (implemented?(ExtensionName::H) && virtual_mode?()) {
-      return -;
+      return 0;
 #      if (translation_mode == SatpMode::Bare) {
 #        # bare == no translation
 #        return translate_gstage(vaddr, op);

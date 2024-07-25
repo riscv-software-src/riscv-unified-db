@@ -17,7 +17,7 @@ pmpcfg<%= pmpcfg_num %>:
     pmp<%= pmpcfg_num*4 + i %>cfg:
       location: <%= ((i+1)*8)-1 %>-<%= i*8 %>
       <%- if i >= 4 -%>
-      base: 32 # upper half doesn't exist in RV32
+      base: 64 # upper half doesn't exist in RV32
       <%- end -%>
       description: |
           *PMP configuration for entry <%= pmpcfg_num*4 + i %>*
