@@ -213,7 +213,7 @@ menvcfg:
           * `11`: The instruction is executed and performs an invalidate operation
       definedBy: Zicbom
       type: RW-R
-      write(csr_value): |
+      sw_write(csr_value): |
         if (csr_value.CBIE == 0 || csr_value.CBIE == 1 || csr_value.CBIE == 3) {
           return csr_value.CBIE;
         } else {

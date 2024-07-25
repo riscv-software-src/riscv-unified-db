@@ -103,7 +103,7 @@ Custom Software Read::
 |===
 | *key*         | sw_read()
 | *value type*  | String of IDL code that returns a read value
-| *description* | Function that returns the value of the CSR when read by software (i.e., a Zicsr instruction). If not specified, the value last written (possibly filtered through field `write(csr_value)` functions) is returned.
+| *description* | Function that returns the value of the CSR when read by software (i.e., a Zicsr instruction). If not specified, the value last written (possibly filtered through field `sw_write(csr_value)` functions) is returned.
 |===
 
 Fields::
@@ -113,7 +113,7 @@ Fields::
 |===
 | *key*         | fields
 | *value type*  | Mapping of field name (String) to field data (Object)
-| *description* | Function that returns the value of the CSR when read by software (i.e., a Zicsr instruction). If not specified, the value last written (possibly filtered through field `write(csr_value)` functions) is returned.
+| *description* | Function that returns the value of the CSR when read by software (i.e., a Zicsr instruction). If not specified, the value last written (possibly filtered through field `sw_write(csr_value)` functions) is returned.
 |===
 
 == Schema for CSR fields
@@ -201,10 +201,10 @@ Each field specifies a type as one of:
 
 Custom Write Function::
 
-[IMPORTANT] `write(csr_value)` is required when the type of the field is restricted ("RW-R" or "RW-RH")
+[IMPORTANT] `sw_write(csr_value)` is required when the type of the field is restricted ("RW-R" or "RW-RH")
 
 |===
-| *key*         | write(csr_value)
+| *key*         | sw_write(csr_value)
 | *value type*  | String of IDL code that is run when the software writes the field
 | *description* | Function implementing custom write behavior for the CSR. The csr_value parameter is the *entire* attempted CSR write value. Fields within the attempted write value can be accessed with a dot operator (e.g., csr_value.SXL, csr_value.VGEIN, ...)
 |===

@@ -13,22 +13,22 @@ grammar Idl
         function_definition
         / 
         space+
-      )+ <Idl::IsaAst>
+      )+ <Idl::IsaSyntaxNode>
   end
 
   # declaring a global variable or constant
   rule global_definition
-    single_declaration_with_initialization space* ';' <Idl::GlobalWithInitializationAst>
+    single_declaration_with_initialization space* ';' <Idl::GlobalWithInitializationSyntaxNode>
     /
-    declaration space* ';' <GlobalAst>
+    declaration space* ';' <GlobalSyntaxNode>
   end
 
   rule enum_definition
-    'builtin' space+ 'enum' space+ user_type_name space* ';' <Idl::BuiltinEnumDefinitionAst>
+    'builtin' space+ 'enum' space+ user_type_name space* ';' <Idl::BuiltinEnumDefinitionSyntaxNode>
     /
     'enum' space+ user_type_name space+ '{' space*
       e:(user_type_name space+ i:(int space+)?)+ space*
-    '}' <Idl::EnumDefinitionAst>
+    '}' <Idl::EnumDefinitionSyntaxNode>
   end
 
   rule enum_ref
@@ -38,7 +38,7 @@ grammar Idl
   rule bitfield_definition
     'bitfield' space* '(' space* int space* ')' space* user_type_name space* '{' space*
       e:(field_name space+ range:(int lsb:(space* '-' space* int)?) space+)+ space*
-    '}' <Idl::BitfieldDefinitionAst>
+    '}' <Idl::BitfieldDefinitionSyntaxNode>
   end
 
   rule version_string
@@ -252,21 +252,21 @@ grammar Idl
 
   rule concatenation_expression
     # verilog-style concatenation
-    '{' space* first:expression rest:(space* ',' space* expression)* space* '}' <Idl::ConcatenationExpressionAst>
+    '{' space* first:expression rest:(space* ',' space* expression)* space* '}' <Idl::ConcatenationExpressionSyntaxNode>
   end
 
   rule csr_field_access_expression
     # CSR field access
-    'CSR' space* '[' space* idx:(csr_name / int) space* ']' space* '.' space* csr_field_name <Idl::CsrFieldReadExpressionAst>
+    'CSR' space* '[' space* idx:(csr_name / int) space* ']' space* '.' space* csr_field_name <Idl::CsrFieldReadExpressionSyntaxNode>
   end
 
   rule csr_register_access_expression
     # CSR register access
-    'CSR' space* '[' space* idx:expression space* ']' <Idl::CsrReadExpressionAst>
+    'CSR' space* '[' space* idx:expression space* ']' <Idl::CsrReadExpressionSyntaxNode>
   end
 
   rule bitfield_access_expression
-    rval space* '.' space* field_name <Idl::BitfieldAccessExpressionAst>
+    rval space* '.' space* field_name <Idl::BitfieldAccessExpressionSyntaxNode>
   end
 
   rule ary_eligible_expression
@@ -292,25 +292,25 @@ grammar Idl
   end
 
   rule post_dec
-    rval space* '--' <Idl::PostDecrementExpressionAst>
+    rval space* '--' <Idl::PostDecrementExpressionSyntaxNode>
   end
 
   rule post_inc
-    rval space* '++' <Idl::PostIncrementExpressionAst>
+    rval space* '++' <Idl::PostIncrementExpressionSyntaxNode>
   end
 
   rule unary_expression
-    '[' space* first:expression rest:(space* ',' space* expression)* space* ']' <Idl::ArrayLiteralAst>
+    '[' space* first:expression rest:(space* ',' space* expression)* space* ']' <Idl::ArrayLiteralSyntaxNode>
     /
     ary_access
     /
     '$signed' space* '(' space* expression space* ')' <Idl::SignCastSyntaxNode>
     /
-    '$bits' space* '(' space* expression space* ')' <Idl::BitsCastAst>
+    '$bits' space* '(' space* expression space* ')' <Idl::BitsCastSyntaxNode>
     /
     paren_expression
     /
-    o:unary_operator space* e:expression <Idl::UnaryOperatorExpressionAst>
+    o:unary_operator space* e:expression <Idl::UnaryOperatorExpressionSyntaxNode>
     /
     post_dec
     /
@@ -334,11 +334,11 @@ grammar Idl
   end
 
   rule ternary_expression
-    p9_binary_expression space* '?' space* t:expression space* ':' space* f:expression <Idl::TernaryOperatorExpressionSyntaxNode>
+    e:p9_binary_expression space* '?' space* t:expression space* ':' space* f:expression <Idl::TernaryOperatorExpressionSyntaxNode>
   end
 
   rule template_safe_ternary_expression
-    template_safe_p9_binary_expression space* '?' space* t:expression space* ':' space* f:expression <Idl::TernaryOperatorExpressionAst>
+    e:template_safe_p9_binary_expression space* '?' space* t:expression space* ':' space* f:expression <Idl::TernaryOperatorExpressionSyntaxNode>
   end
 
   rule expression
@@ -363,17 +363,15 @@ grammar Idl
   end
 
   rule function_call
-    csr:csr_register_access_expression space* '.' space* 'sw_write' space* '(' space* expression space* ')' <Idl::CsrSoftwareWriteAst>
+    csr:csr_register_access_expression space* '.' space* 'sw_write' space* '(' space* expression space* ')' <Idl::CsrSoftwareWriteSyntaxNode>
     /
-    csr:csr_register_access_expression space* '.' space* 'sw_read' space* '(' space* ')' <Idl::CsrSoftwareReadAst>
+    csr:csr_register_access_expression space* '.' space* 'sw_read' space* '(' space* ')' <Idl::CsrSoftwareReadSyntaxNode>
     /
     function_name t:(space* '<' space* targs:function_call_template_arguments space* '>')? space* '(' space* function_arg_list space* ')' <Idl::FunctionCallExpressionSyntaxNode>
   end
 
   rule function_name
-    !reserved [a-zA-Z] [a-zA-Z0-9_]* '?'? {
-      def is_function_name? = true
-    }
+    !reserved [a-zA-Z] [a-zA-Z0-9_]* '?'?
   end
 
   rule function_arg_list
@@ -382,12 +380,12 @@ grammar Idl
 
   rule body_function_definition
     'function' space+ function_name space* '{' space*
-      targs:('template' space+ first:function_argument_definition rest:(space* ',' space* function_argument_definition)* space+)?
+      targs:('template' space+ first:single_declaration rest:(space* ',' space* single_declaration)* space+)?
       ret:('returns' space+ first:type_name rest:(space* ',' space* type_name)* space+)?
       args:(
         'arguments' space+
-        first:function_argument_definition
-        rest:(space* ',' space* function_argument_definition)*
+        first:single_declaration
+        rest:(space* ',' space* single_declaration)*
         space+
       )?
       'description' space* '{' space*
@@ -398,43 +396,41 @@ grammar Idl
           function_body space*
         '}' space*
       )
-    '}' <Idl::FunctionDefAst>
+    '}' <Idl::FunctionDefSyntaxNode>
   end
 
   rule builtin_function_definition
     'builtin' space+ 'function' space+ function_name space* '{' space*
-      targs:('template' space+ first:function_argument_definition rest:(space* ',' space* function_argument_definition)* space+)?
+      targs:('template' space+ first:single_declaration rest:(space* ',' space* single_declaration)* space+)?
       ret:('returns' space+ first:type_name rest:(space* ',' space* type_name)* space+)?
       args:(
         'arguments' space+
-        first:function_argument_definition
-        rest:(space* ',' space* function_argument_definition)*
+        first:single_declaration
+        rest:(space* ',' space* single_declaration)*
         space+
       )?
       'description' space* '{' space*
         desc:([^}] / "\n")+
       '}' space*
-    '}' <Idl::FunctionDefAst>
+    '}' <Idl::FunctionDefSyntaxNode>
   end
 
   rule function_definition
     builtin_function_definition / body_function_definition
   end
 
-  rule function_argument_definition
-    type_name space+ id
-  end
-
   rule rval
-    (id / int / builtin_read_only_var / builtin_read_write_var)
+    (id / int / builtin_read_only_var / builtin_read_write_var / string)
   end
 
   rule assignment
-    '(' first:(var_write / dontcare_lvalue) space* rest:(',' space* var:(var_write / dontcare_lvalue) space*)+ ')' space* '=' space* function_call <Idl::MultiVariableAssignmentAst> /
+    '(' first:(id / dontcare_lvalue) space* rest:(',' space* var:(id / dontcare_lvalue) space*)+ ')' space* '=' space* function_call <Idl::MultiVariableAssignmentSyntaxNode> /
     single_declaration_with_initialization /
-    var:var_write space* '=' space* rval:expression <Idl::VariableAssignmentSyntaxNode> /
-    var:var_write '.' field_name space* '=' space* rval:expression <Idl::FieldAssignmentAst> /
-    var:var_write space* '[' space* msb:expression space* ':' space* lsb:expression space* ']' space* '=' space* rval:expression <Idl::AryRangeAssignmentAst> /
+    var:id space* '=' space* rval:expression <Idl::VariableAssignmentSyntaxNode> /
+    # note: there is no full CSR assignment (must assign fields)
+    csr_field_access_expression space* '=' space* rval:expression <Idl::CsrFieldAssignmentSyntaxNode> /
+    bitfield_access_expression space* '=' space* rval:expression <Idl::FieldAssignmentSyntaxNode> /
+    var:var_write space* '[' space* msb:expression space* ':' space* lsb:expression space* ']' space* '=' space* rval:expression <Idl::AryRangeAssignmentSyntaxNode> /
     var:var_write space* '[' space* idx:expression space* ']' space* '=' space* rval:expression <Idl::AryElementAssignmentSyntaxNode>
   end
 
@@ -443,17 +439,17 @@ grammar Idl
   end
 
   rule single_declaration_with_initialization
-    q:type_qualifier? space* type_name space+ var_write space* ary_size:ary_size_decl? space* '=' space* rval:expression <Idl::VariableDeclarationWithInitializationSyntaxNode>
+    q:type_qualifier? space* type_name space+ id space* ary_size:ary_size_decl? space* '=' space* rval:expression <Idl::VariableDeclarationWithInitializationSyntaxNode>
   end
 
   rule declaration
-    q:type_qualifier? space* type_name space+ first:var_write space* rest:(space* ',' space* var_write)+ space* <Idl::MultiVariableDeclarationAst>
+    q:type_qualifier? space* type_name space+ first:id space* rest:(space* ',' space* id)+ space* <Idl::MultiVariableDeclarationSyntaxNode>
     /
     single_declaration
   end
 
   rule single_declaration
-    q:type_qualifier? space* type_name space+ var_write space* ary_size:ary_size_decl? space* <Idl::VariableDeclarationAst>
+    q:type_qualifier? space* type_name space+ id ary_size:(space* ary_size_decl)? <Idl::VariableDeclarationSyntaxNode>
   end
 
   rule statement
@@ -463,17 +459,21 @@ grammar Idl
   end
 
   rule dontcare_lvalue
-    '-' <Idl::DontCareLvalueAst>
+    '-' <Idl::DontCareLvalueSyntaxNode>
   end
 
   rule dontcare_return
     '-' <Idl::DontCareReturnSyntaxNode>
   end
 
+  rule return_expression
+    'return' space+ first:(expression/dontcare_return) rest:(space* ',' space* e:(expression/dontcare_return))* <Idl::ReturnExpressionSyntaxNode>
+  end
+
   rule return_statement
-    'return' space+ first:(expression/dontcare_return) rest:(space* ',' space* e:(expression/dontcare_return))* space* 'if' space* expression space* ';' <Idl::ConditionalReturnStatementAst>
+    return_expression space* 'if' space* expression space* ';' <Idl::ConditionalReturnStatementSyntaxNode>
     /
-    'return' space+ first:(expression/dontcare_return) rest:(space* ',' space* e:(expression/dontcare_return))* space* ';' <Idl::ReturnStatementAst>
+    return_expression space* ';' <Idl::ReturnStatementSyntaxNode>
   end
 
   rule function_if_block
@@ -549,11 +549,11 @@ grammar Idl
   end
 
   rule user_type_name
-    !reserved [A-Z] [A-Za-z0-9_]* <Idl::UserTypeNameAst>
+    !reserved [A-Z] [A-Za-z0-9_]* <Idl::UserTypeNameSyntaxNode>
   end
 
   rule field_name
-    [a-zA-Z] [a-zA-Z0-9]* <Idl::FieldNameAst>
+    [a-zA-Z] [a-zA-Z0-9]*
   end
 
   rule type_name
@@ -565,7 +565,7 @@ grammar Idl
   end
 
   rule execution_comment
-    '#' content:(!"\n" .)* "\n" <Idl::ExecutionCommentAst>
+    '#' content:(!"\n" .)* "\n" # <Idl::ExecutionCommentAst>
   end
 
   rule function_statement
@@ -603,13 +603,20 @@ grammar Idl
   end
 
   rule var_write
-    'CSR' space* '[' space* idx:(csr_name / int) space* ']' <Idl::CsrWriteAst>
+    'CSR' space* '[' space* idx:(csr_name / int) space* ']' <Idl::CsrWriteSyntaxNode>
     /
     id
   end
 
+  rule string
+    # doesn't handle any escaping of quotes; if we ever need it, that can change later
+    '"' (!'"' .)* '"' <Idl::StringLiteralSyntaxNode>
+  end
+
   rule space
-    [ \n] / single_line_comment / block_comment / execution_comment
+    ([ \n] / single_line_comment / block_comment / execution_comment) {
+      def space? = true
+    }
   end
 
   rule block_comment

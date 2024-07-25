@@ -28,7 +28,8 @@
         "TRAP_ON_ILLEGAL_WLRL",
         "CONFIG_PTR_ADDRESS",
         "PHYS_ADDR_WIDTH",
-        "CACHE_BLOCK_SIZE"
+        "CACHE_BLOCK_SIZE",
+        "MISALIGNED_SPLIT_STRATEGY"
       ],
       "properties": {
         "XLEN": {
@@ -42,6 +43,11 @@
         "NAME": {
           "type": "string",
           "description": "Name of the configuration.\n*Must* match the directory name under cfgs/ where params.yaml is stored.\n"
+        },
+        "MISALIGNED_SPLIT_STRATEGY": {
+          "type": "string",
+          "enum": ["by_byte"],
+          "description": "How the implementation splits misaligned loads/stores."
         },
         "M_MODE_ENDIANESS": {
           "type": "integer",
@@ -138,6 +144,15 @@
           "minimum": 0,
           "maximum": 29,
           "description": "Number of implemented programmable hardware counters (not including cycle, time, and instret)"
+        },
+        "HPM_EVENTS": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "uniqueItems": true,
+          "description": "List of defined HPM events that can be programmed into CSR[mhpmevent*]"
         },
         "COUNTINHIBIT_EN": {
           "type": "array",

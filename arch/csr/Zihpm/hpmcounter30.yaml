@@ -46,7 +46,7 @@ hpmcounter30:
       if (CSR[misa].S == 1'b1) {
         # S-mode is present ->
         #   mcounteren and scounteren together determine access in U-mode
-        if ((CSR[mcounteren].HPM30 & CSR[scounteren].HPM30) == 1'b0)) {
+        if ((CSR[mcounteren].HPM30 & CSR[scounteren].HPM30) == 1'b0) {
           raise(ExceptionCode::IllegalInstruction, $encoding);
         }
       } else if (CSR[mcounteren].HPM30 == 1'b0) {
@@ -65,7 +65,7 @@ hpmcounter30:
       # access in VU mode
       if (((CSR[hcounteren].HPM30 & CSR[scounteren].HPM30) == 1'b0) && (CSR[mcounteren].HPM30 == 1'b1)) {
         raise(ExceptionCode::VirtualInstruction, $encoding);
-      } else if ((CSR[mcounteren].HPM30 == 1'b0) {
+      } else if (CSR[mcounteren].HPM30 == 1'b0) {
         raise(ExceptionCode::IllegalInstruction, $encoding);
       }
     }

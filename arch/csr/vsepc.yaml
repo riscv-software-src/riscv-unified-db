@@ -33,12 +33,12 @@ vsepc:
         <% end %>
         Holds bits 63:<%= ext?(:C) ? 2 : 1 %> of the virtual address associated with an exception.
       type: RW-RH
-      write(csr_value): |
-        return csr_value & ~64'b1;
+      sw_write(csr_value): |
+        return csr_value.PC & ~64'b1;
       reset_value: UNDEFINED_LEGAL
   sw_read(): |
     if (implemented?(ExtensionName::C) && CSR[misa].C == 1'b1) {
-      return CSR[sepc] & ~64'b1;
+      return CSR[sepc].PC & ~64'b1;
     } else {
-      return CSR[sepc];
+      return CSR[sepc].PC;
     }

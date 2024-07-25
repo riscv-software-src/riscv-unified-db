@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../../schemas/ext_schema.json
 
 Sstc:
+  long_name: Superivisor mode timer interrupts
   description: Superivisor mode timer interrupts
   type: privileged
   versions:

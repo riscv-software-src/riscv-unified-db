@@ -29,5 +29,5 @@ beq:
     XReg rhs = X[rs2];
 
     if (lhs == rhs) {
-      jump(PC + imm);
+      jump_halfword(PC + imm);
     }

@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../../schemas/ext_schema.json
 
 Zbb:
+  long_name: Basic bit manipulation
   description: |
     Basic bit manipulation
   type: unprivileged

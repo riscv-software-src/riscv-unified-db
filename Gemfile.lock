@@ -107,6 +107,7 @@ GEM
     rubocop-minitest (0.35.1)
       rubocop (>= 1.61, < 2.0)
       rubocop-ast (>= 1.31.1, < 2.0)
+    ruby-prof (1.7.0)
     ruby-progressbar (1.13.0)
     ruby-rc4 (0.1.5)
     simpleidn (0.2.3)
@@ -154,6 +155,7 @@ DEPENDENCIES
   minitest
   rake (~> 13.0)
   rubocop-minitest
+  ruby-prof
   slim (~> 5.1)
   solargraph
   treetop (= 1.6.12)

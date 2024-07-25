@@ -51,7 +51,7 @@ hstatus:
           # mutable, undefined reset state
           return UNDEFINED_LEGAL;
         }
-      write(csr_value): |
+      sw_write(csr_value): |
         if (CSR[mstatus].SXL < csr_value.VSXL) {
           # cannot set VSXLEN less than SXLEN
           return UNDEFINED_LEGAL_DETERMINISTIC;
@@ -139,7 +139,7 @@ hstatus:
       reset_value: UNDEFINED_LEGAL
       legal?(csr_value): |
         return csr_value.VGEIN <= NUM_EXTERNAL_GUEST_INTERRUPTS;
-      write(csr_value): |
+      sw_write(csr_value): |
         if (csr_value.VGEIN <= NUM_EXTERNAL_GUEST_INTERRUPTS) {
           return csr_value.VGEIN;
         } else {

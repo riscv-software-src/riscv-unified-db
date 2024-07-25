@@ -8,7 +8,7 @@
 | Name | Value | Description
 
 <%- arch_def.config_params.each do |pname, pvalue| -%>
-| *<%= pname %>* | <%= pvalue %> | <%= config_schema["$defs"]["params"]["properties"][pname]["description"] %>
+| *<%= pname %>* | <%= pvalue %> a| <%= config_schema["$defs"]["params"]["properties"][pname]["description"] %>
 <%- end -%>
 |===
 

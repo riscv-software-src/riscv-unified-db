@@ -35,7 +35,7 @@ satp:
 
         Any other value shall be ignored on a write.
       reset_value: UNDEFINED_LEGAL
-      write(csr_value): |
+      sw_write(csr_value): |
         if (csr_value.MODE == 0) {
           # In Bare, ASID and PPN must be zero, else the entire write is ignored
           if (csr_value.ASID == 0 && csr_value.PPN == 0) {
@@ -56,7 +56,7 @@ satp:
       description: |
         *Address Space ID*
       type: RW-R
-      write(csr_value): |
+      sw_write(csr_value): |
         if (csr_value.MODE == 0) {
           # when MODE == Bare, PPN and ASID must be zero
           if (csr_value.ASID == 0 && csr_value.PPN == 0) {
@@ -94,7 +94,7 @@ satp:
         will be implementation-dependent.
       type: RW-R
       reset_value: UNDEFINED_LEGAL
-      write(csr_value): |
+      sw_write(csr_value): |
         if (csr_value.MODE == 0) {
           # when MODE == Bare, PPN and ASID must be zero
           if (csr_value.ASID == 0 && csr_value.PPN == 0) {

@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
 require "forwardable"
+require "ruby-prof"
 
 require_relative "validate"
 require_relative "idl"
 require_relative "idl/passes/find_return_values"
 require_relative "idl/passes/gen_adoc"
 require_relative "idl/passes/prune"
-
+require_relative "idl/passes/reachable_functions"
+require_relative "idl/passes/reachable_exceptions"
 
 # base for any object representation of the Architecture Definition
 # does two things:
@@ -175,9 +177,13 @@ class CsrField < ArchDefObject
   #      'RW-H'  => Read-write, with a hardware update
   #      'RW-RH' => Read-write, with a hardware update and a restricted set of legal values
   def type(arch_def)
-    return @type unless @type.nil?
+    if !@type_cache.nil? && @type_cache.key?(arch_def)
+      return @type_cache[arch_def]
+    end
 
-    @type =
+    @type_cache ||= {}
+
+    type =
       if @data.key?("type")
         @data["type"]
       else
@@ -225,6 +231,8 @@ class CsrField < ArchDefObject
           sym_table.pop
         end
       end
+    @type_cache[arch_def] = type
+    type
   end
 
   # @return [Alias,nil] The aliased field, or nil if there is no alias
@@ -254,9 +262,45 @@ class CsrField < ArchDefObject
     @alias
   end
 
-  # @return [Boolean] True if the field has a custom write function (i.e., `write(csr_value)` exists in the spec)
+  # @return [Boolean] True if the field has a custom write function (i.e., `sw_write(csr_value)` exists in the spec)
   def has_custom_write?
-    @data.key?("write(csr_value)") && !@data["write(csr_value)"].empty?
+    @data.key?("sw_write(csr_value)") && !@data["sw_write(csr_value)"].empty?
+  end
+
+  def sw_write_ast(arch_def, effective_xlen = nil)
+    return @sw_write_ast unless @sw_write_ast.nil?
+    return nil if @data["sw_write(csr_value)"].nil?
+
+    # now, parse the function
+
+    symtab = arch_def.sym_table.deep_clone
+
+    # push the csr_value
+    symtab.push
+    symtab.add("csr_value", Idl::Var.new("csr_value", csr.bitfield_type(arch_def, effective_xlen)))
+
+    @sw_write_ast = arch_def.idl_compiler.compile_func_body(
+      @data["sw_write(csr_value)"],
+      return_type: Idl::Type.new(:bits, width: 128), # big int to hold special return values
+      symtab:,
+      name: "CSR[#{csr.name}].#{name}.sw_write(csr_value)",
+      input_file: "CSR #{name}, field #{name}"
+    )
+
+    raise "unexpected #{@sw_write_ast.class}" unless @sw_write_ast.is_a?(Idl::FunctionBodyAst)
+
+    @sw_write_ast
+  end
+
+  def reachable_functions(symtab, effective_xlen = nil)
+    ast = sw_write_ast(symtab.archdef, effective_xlen)
+    return [] if ast.nil?
+
+    symtab = symtab.deep_clone
+    symtab.push
+    symtab.add("csr_value", Idl::Var.new("csr_value", csr.bitfield_type(symtab.archdef, effective_xlen)))
+
+    ast.reachable_functions(symtab)
   end
 
   # @return [Csr] Parent CSR for this field
@@ -297,7 +341,11 @@ class CsrField < ArchDefObject
   # @return [Integer] The reset value of this field
   # @return [String]  The string 'UNDEFINED_LEGAL' if, for this config, there is no defined reset value
   def reset_value(arch_def)
-    return @reset_value unless @reset_value.nil?
+    if !@reset_value_cache.nil? && @reset_value_cache.key?(arch_def)
+      return @reset_value_cache[arch_def]
+    end
+
+    @reset_value_cache ||= {}
 
     symtab = arch_def.sym_table.deep_clone(clone_values: true)
     raise "not at global scope" unless symtab.levels == 1
@@ -305,12 +353,14 @@ class CsrField < ArchDefObject
     symtab.push # for consistency with template functions
 
     begin
-      @reset_value =
+      reset_value =
         if @data.key?("reset_value")
           @data["reset_value"]
         else
           reset_value_func(arch_def).return_value(symtab)
         end
+      @reset_value_cache[arch_def] = reset_value
+      reset_value
     ensure
       symtab.pop
     end
@@ -430,6 +480,39 @@ end
 
 # CSR definition
 class Csr < ArchDefObject
+
+  # @param arch_def [ArchDef] A configuration
+  # @return [Boolean] Whether or not the format of this CSR changes when the effective XLEN changes in some mode
+  def format_changes_with_xlen?(arch_def)
+    dynamic_length?(arch_def) ||
+      implemented_fields(arch_def).any? do |f|
+        f.dynamic_location?(arch_def)
+      end
+  end
+
+  # @param arch_def [ArchDef] A configuration
+  # @return [Array<Idl::FunctionDefAst>] List of functions reachable from this CSR's sw_read or a field's sw_wirte function
+  def reachable_functions(arch_def)
+    fns = []
+
+    if has_custom_sw_read?
+      ast = sw_read_ast(arch_def)
+      symtab = arch_def.sym_table.deep_clone
+      symtab.push
+      fns.concat(ast.reachable_functions(symtab))
+    end
+
+    implemented_fields(arch_def).each do |field|
+      if arch_def.multi_xlen? && format_changes_with_xlen?
+        fns.concat(field.reachable_functions(arch_def.sym_table, 32))
+        fns.concat(field.reachable_functions(arch_def.sym_table, 64))
+      else
+        fns.concat(field.reachable_functions(arch_def.sym_table, arch_def.config_params["XLEN"]))
+      end
+    end
+
+    fns.uniq
+  end
 
   # @param arch_def [ArchDef] A configuration
   # @return [Boolean] Whether or not the length of the CSR depends on a runtime value
@@ -653,6 +736,18 @@ class Csr < ArchDefObject
     field_hash[field_name.to_s]
   end
 
+  # @param arch_def [ArchDef] A configuration
+  # @param effective_xlen [Integer] The effective XLEN to apply, needed when field locations change with XLEN in some mode
+  # @return [Idl::BitfieldType] A bitfield type that can represent all fields of the CSR
+  def bitfield_type(arch_def, effective_xlen = nil)
+    Idl::BitfieldType.new(
+      "Csr#{name.capitalize}Bitfield",
+      length(arch_def, effective_xlen),
+      fields.map(&:name),
+      fields.map { |f| f.location(arch_def, effective_xlen) }
+    )
+  end
+
   # @return [Boolean] true if the CSR has a custom sw_read function
   def has_custom_sw_read?
     @data.key?("sw_read()") && !@data["sw_read()"].empty?
@@ -663,18 +758,29 @@ class Csr < ArchDefObject
     return nil if @data["sw_read()"].nil?
 
     # now, parse the function
+    extra_syms = {
+      # all CSR instructions are 32-bit
+      "__instruction_encoding_size" =>
+        Idl::Var.new("__instruction_encoding_size", Idl::Type.new(:bits, width: 6), 32)
+    }
 
     @sw_read_ast = arch_def.idl_compiler.compile_func_body(
       @data["sw_read()"],
       return_type: Idl::Type.new(:bits, width: 128), # big int to hold special return values
       symtab: arch_def.sym_table,
       name: "CSR[#{name}].sw_read()",
-      input_file: "CSR #{name}"
+      input_file: "CSR #{name}",
+      extra_syms:
     )
+
 
     raise "unexpected #{@sw_read_ast.class}" unless @sw_read_ast.is_a?(Idl::FunctionBodyAst)
 
     @sw_read_ast
+  end
+
+  def pruned_sw_read_ast(symtab)
+    sw_read_ast(symtab.archdef).prune(symtab)
   end
 
   # @example Result for an I-type instruction
@@ -760,9 +866,45 @@ class Instruction < ArchDefObject
   # @param global_symtab [Idl::SymbolTable] Symbol table with global scope populated and a configuration loaded
   # @return [Idl::FunctionBodyAst] A pruned abstract syntax tree
   def pruned_operation_ast(global_symtab)
+
     type_check_operation(global_symtab)
-    puts "PRUNING        #{name}"
     operation_ast(global_symtab.archdef.idl_compiler).prune(fill_symtab(global_symtab))
+  end
+
+  # @param symtab [Idl::SymbolTable] Symbol table with global scope populated
+  # @return [Array<Idl::FunctionBodyAst>] List of all functions that can be reached from operation()
+  def reachable_functions(symtab)
+    if @data["operation()"].nil?
+      []
+    else
+      pruned_operation_ast(symtab).reachable_functions(fill_symtab(symtab))
+    end
+  end
+
+  # @param symtab [Idl::SymbolTable] Symbol table with global scope populated
+  # @return [Array<Integer>] List of all exceptions that can be reached from operation()
+  def reachable_exceptions(symtab)
+    if @data["operation()"].nil?
+      []
+    else
+      pruned_operation_ast(symtab).reachable_exceptions(fill_symtab(symtab)).uniq
+    end
+  end
+
+  # @param symtab [Idl::SymbolTable] Symbol table with global scope populated
+  # @return [Array<Integer>] List of all exceptions that can be reached from operation()
+  def reachable_exceptions_str(symtab)
+    if @data["operation()"].nil?
+      []
+    else
+      # RubyProf.start
+      etype = symtab.get("ExceptionCode")
+      pruned_operation_ast(symtab).reachable_exceptions(fill_symtab(symtab)).uniq.map { |code|
+        etype.element_name(code)
+      }
+      # result = RubyProf.stop
+      # RubyProf::FlatPrinter.new(result).print(STDOUT)
+    end
   end
 
   # @return [ArchDef] The architecture definition
@@ -1065,10 +1207,15 @@ class ExtensionVersion
     @version = Gem::Version.new(version)
   end
 
-  # @override ==(other)
+  # @return Extension the extension object
+  def ext(arch_def)
+    arch_def.extension(name)
+  end
+
+  # @overload ==(other)
   #   @param other [String] An extension name
   #   @return [Boolean] whether or not this ExtensionVersion is named 'other'
-  # @override ==(other)
+  # @overload ==(other)
   #   @param other [ExtensionVersion] An extension name and version
   #   @return [Boolean] whether or not this ExtensionVersion has the exact same name and version as other
   def ==(other)
@@ -1165,10 +1312,16 @@ class ArchDef
   # @return [Idl::AstNode] Abstract syntax tree of global scope
   attr_reader :global_ast
 
+  # @return [Integer] 32 or 64, the XLEN in m-mode
+  attr_reader :mxlen
+
+  # hash for Hash lookup
+  def hash = @name.hash
+
   # Initialize a new configured architecture defintiion
   #
-  # @params config_name [#to_s] The name of a configuration, which must correspond
-  #                             to a folder under $root/cfgs
+  # @param config_name [#to_s] The name of a configuration, which must correspond
+  #                            to a folder under $root/cfgs
   def initialize(config_name)
     @name = config_name.to_s
     arch_def_file = $root / "gen" / @name / "arch" / "arch_def.yaml"
@@ -1184,6 +1337,7 @@ class ArchDef
     @arch_def = YAML.load_file(arch_def_file)
 
     @config_params = @arch_def["params"]
+    @mxlen = @arch_def["params"]["XLEN"]
 
     @sym_table = Idl::SymbolTable.new(self)
     @idl_compiler = Idl::Compiler.new(self)
@@ -1247,7 +1401,7 @@ class ArchDef
     @extensions
   end
 
-  # @retuns [Hash<String, Extension>] Hash of all extensions, even those that aren't implemented, indexed by extension name
+  # @returns [Hash<String, Extension>] Hash of all extensions, even those that aren't implemented, indexed by extension name
   def extension_hash
     return @extension_hash unless @extension_hash.nil?
 
@@ -1388,6 +1542,33 @@ class ArchDef
   # @return [Instruction,nil] An instruction named 'inst_name', or nil if it doesn't exist
   def inst(inst_name)
     instruction_hash[inst_name.to_s]
+  end
+
+  # @return [Array<FuncDefAst>] List of all reachable IDL functions for the config
+  def implemented_functions
+    return @implemented_functions unless @implemented_functions.nil?
+
+    @implemented_functions = []
+
+    puts "  Finding all reachable functions from instruction operations"
+
+    implemented_instructions.each do |inst|
+      inst_funcs = inst.reachable_functions(sym_table)
+      inst_funcs.each do |f|
+        @implemented_functions << f unless @implemented_functions.any? { |i| i.name == f.name }
+      end
+    end
+
+    puts "  Finding all reachable functions from CSR operations"
+
+    implemented_csrs.each do |csr|
+      csr_funcs = csr.reachable_functions(self)
+      csr_funcs.each do |f|
+        @implemented_functions << f unless @implemented_functions.any? { |i| i.name == f.name }
+      end
+    end
+
+    @implemented_functions
   end
 
   # given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`

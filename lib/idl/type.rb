@@ -15,11 +15,13 @@ module Idl
       :function, # function
       :template_function, # template function, where the template arguments are known but template values need to be applied to become a full function
       :csr,      # a CSR register type
-      :dontcare  # matches everything
+      :dontcare, # matches everything
+      :string    # fixed-length character string
     ].freeze
     QUALIFIERS = [
       :const,
-      :signed
+      :signed,
+      :global
     ].freeze
 
     # true for any type that can generally be treated as a scalar integer
@@ -33,6 +35,8 @@ module Idl
         0
       when :boolean
         false
+      when :array
+        Array.new(@width, sub_type.default)
       else
         raise "No default for #{@kind}"
       end
@@ -63,9 +67,8 @@ module Idl
       raise "Invalid kind '#{kind}'" unless KINDS.include?(kind)
 
       @kind = kind
-      qualifiers.each do |q|
-        raise 'Invalid qualifier' unless QUALIFIERS.include?(q)
-      end
+      raise "Invalid qualifier" unless qualifiers.intersection(QUALIFIERS) == qualifiers
+
       @qualifiers = qualifiers
       # raise "#{width.class.name}" if (kind == :bits && !width.is_a?(Integer))
 
@@ -141,6 +144,8 @@ module Idl
       when :csr
         return ((type.kind == :csr) && (type.csr.name == @csr.name)) ||
               type.convertable_to?(Type.new(:bits, width: type.csr.width))
+      when :string
+        return type.kind == :string
       else
         raise "unimplemented #{@kind}"
       end
@@ -163,6 +168,8 @@ module Idl
         return true
       when :bits
         return type.kind == :bits && type.width == @width
+      when :string
+        return type.kind == :string && type.width == @width
       else
         raise "unimplemented type '#{@kind}'"
       end
@@ -232,6 +239,10 @@ module Idl
         end
       when :array
         return type.kind == :array && type.sub_type.convertable_to?(sub_type) && type.width == @width
+      when :string
+        return type.kind == :string
+      when :void
+        return false
       else
         raise "unimplemented type '#{@kind}'"
       end
@@ -259,6 +270,8 @@ module Idl
           "CSR[#{@csr.name}]"
         elsif @kind == :void
           "void"
+        elsif @kind == :string
+          "string"
         else
           raise @kind.to_s
         end
@@ -289,6 +302,8 @@ module Idl
           "#{@sub_type}[]"
         elsif @kind == :csr
           "#{@csr.downcase.capitalize}Csr"
+        elsif @kind == :string
+          "std::string"
         else
           raise @kind.to_s
         end
@@ -326,11 +341,15 @@ module Idl
     end
 
     def mutable?
-      return !const?
+      !const?
     end
 
     def signed?
       @qualifiers.include?(:signed)
+    end
+
+    def global?
+      @qualifiers.include?(:global)
     end
 
     def make_signed
@@ -342,11 +361,16 @@ module Idl
       @qualifiers.append(:const).uniq!
       self
     end
+
+    def make_global
+      @qualifiers.append(:global).uniq!
+      self
+    end
   end
 
 
   class EnumerationType < Type
-    attr_reader :element_names, :element_values, :width
+    attr_reader :element_names, :element_values, :width, :ref_type
 
     def initialize(type_name, element_names, element_values)
       width = element_values.max.bit_length
@@ -363,6 +387,7 @@ module Idl
   #    element_names.each_index do |idx|
   #      syms.add!(element_names[idx], Var.new(element_names[idx], self, element_values[idx]))
   #    end
+       @ref_type = Type.new(:enum_ref, enum_class: self)
     end
 
     def clone
@@ -375,11 +400,19 @@ module Idl
 
       @element_values[i]
     end
+
+    def element_name(element_value)
+      i = @element_values.index(element_value)
+      raise "? #{element_value}" if i.nil?
+      return nil if i.nil?
+
+      @element_names[i]
+    end
   end
 
   class BitfieldType < Type
     def initialize(type_name, width, field_names, field_ranges)
-      super(:bitfield, name: type_name, width: width)
+      super(:bitfield, name: type_name, width:)
 
       @field_names = field_names
       @field_ranges = field_ranges
@@ -423,6 +456,8 @@ module Idl
   end
 
   class FunctionType < Type
+    attr_reader :func_def_ast
+
     def initialize(func_name, func_def_ast, symtab)
       super(:function, name: func_name)
       @func_def_ast = func_def_ast

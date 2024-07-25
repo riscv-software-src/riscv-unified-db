@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../../schemas/ext_schema.json
 
 Sv48:
+  long_name: 48-bit virtual address translation (4 level)
   description: 48-bit virtual address translation (4 level)
   type: privileged
   versions:

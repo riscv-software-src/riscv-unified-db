@@ -58,7 +58,7 @@ pmpcfg11:
         } else {
           return 0;
         }
-      write(csr_value): |
+      sw_write(csr_value): |
         if ((CSR[pmpcfg11].pmp44cfg & 0x80) == 0) {
           # entry is not locked
           if (!(((csr_value.pmp44cfg & 0x1) == 0) && ((csr_value.pmp44cfg & 0x2) == 0x2))) {
@@ -117,15 +117,15 @@ pmpcfg11:
         } else {
           return 0;
         }
-      write(csr_value): |
+      sw_write(csr_value): |
         if ((CSR[pmpcfg11].pmp45cfg & 0x80) == 0) {
           # entry is not locked
-          if (!(((csr_value.pmp46cfg & 0x1) == 0) && ((csr_value.pmp46cfg & 0x2) == 0x2))) {
+          if (!(((csr_value.pmp45cfg & 0x1) == 0) && ((csr_value.pmp45cfg & 0x2) == 0x2))) {
             # not R = 0, W =1, which is reserved
             if ((PMP_GRANULARITY < 2) ||
-                ((csr_value.pmp46cfg & 0x18) != 0x10)) {
+                ((csr_value.pmp45cfg & 0x18) != 0x10)) {
               # NA4 is not allowed when PMP granularity is larger than 4 bytes
-              return csr_value.pmp46cfg;
+              return csr_value.pmp45cfg;
             }
           }
         }
@@ -176,15 +176,15 @@ pmpcfg11:
         } else {
           return 0;
         }
-      write(csr_value): |
+      sw_write(csr_value): |
         if ((CSR[pmpcfg11].pmp46cfg & 0x80) == 0) {
           # entry is not locked
-          if (!(((csr_value.pmp48cfg & 0x1) == 0) && ((csr_value.pmp48cfg & 0x2) == 0x2))) {
+          if (!(((csr_value.pmp46cfg & 0x1) == 0) && ((csr_value.pmp46cfg & 0x2) == 0x2))) {
             # not R = 0, W =1, which is reserved
             if ((PMP_GRANULARITY < 2) ||
-                ((csr_value.pmp48cfg & 0x18) != 0x10)) {
+                ((csr_value.pmp46cfg & 0x18) != 0x10)) {
               # NA4 is not allowed when PMP granularity is larger than 4 bytes
-              return csr_value.pmp48cfg;
+              return csr_value.pmp46cfg;
             }
           }
         }
@@ -235,15 +235,15 @@ pmpcfg11:
         } else {
           return 0;
         }
-      write(csr_value): |
+      sw_write(csr_value): |
         if ((CSR[pmpcfg11].pmp47cfg & 0x80) == 0) {
           # entry is not locked
-          if (!(((csr_value.pmp50cfg & 0x1) == 0) && ((csr_value.pmp50cfg & 0x2) == 0x2))) {
+          if (!(((csr_value.pmp47cfg & 0x1) == 0) && ((csr_value.pmp47cfg & 0x2) == 0x2))) {
             # not R = 0, W =1, which is reserved
             if ((PMP_GRANULARITY < 2) ||
-                ((csr_value.pmp50cfg & 0x18) != 0x10)) {
+                ((csr_value.pmp47cfg & 0x18) != 0x10)) {
               # NA4 is not allowed when PMP granularity is larger than 4 bytes
-              return csr_value.pmp50cfg;
+              return csr_value.pmp47cfg;
             }
           }
         }

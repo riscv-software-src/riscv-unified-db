@@ -2,41 +2,99 @@ require_relative "../ast"
 
 class Idl::AstNode
   def gen_adoc(indent = 0, indent_spaces: 2)
-    adoc = []
-    puts self.class.name if elements.nil?
-    elements.each do |e|
-      next unless e.is_a?(Idl::AstNode)
-
-      adoc << e.gen_adoc(indent, indent_spaces:)
-    end
-    adoc.map{ |a| "#{' '*indent}#{a}" }.join('')
+    internal_error "must implement gen_adoc for #{self.class.name}"
   end
-  # def gen_adoc(indent = 0, indent_spaces: 2)
-  #   if terminal?
-  #     text_value
-  #   else
-  #     adoc = ''
-  #     next_pos = interval.begin
-  #     elements.each do |e|
-  #       if e.interval.size > 0 &&  e.interval.begin != next_pos
-  #         adoc << input[next_pos..(e.interval.begin - 1)]
-  #       end
-  #       adoc << e.gen_adoc(indent+2, indent_spaces: 2)
-  #       next_pos = e.interval.exclude_end? ? e.interval.end : (e.interval.end + 1)
-  #     end
-  #     if next_pos != (interval.exclude_end? ? interval.end : (interval.end + 1))
-  #       end_pos = interval.exclude_end? ? interval.end - 1 : interval.end
-  #       adoc << input[next_pos..end_pos]
-  #     end
-  #     if adoc != text_value && !text_value.index('xref').nil?
-  #       raise
-  #     end
-  #     adoc
-  #   end
-  # end
 end
 
 module Idl
+  class NoopAst
+    def gen_adoc(indent = 0, indent_spaces: 2) = ""
+  end
+  class AryRangeAssignmentAst
+    def gen_adoc(indent = 0, indent_spaces: 2)
+      "#{variable.gen_adoc(indent, indent_spaces: )}[#{msb.gen_adoc(0, indent_spaces:)}:#{lsb.gen_adoc(0, indent_spaces:)}] = #{write_value.gen_adoc(0, indent_spaces:)}"
+    end
+  end
+  class ConditionalReturnStatementAst
+    def gen_adoc(indent = 0, indent_spaces: 2)
+      "#{return_expression.gen_adoc(indent, indent_spaces: )} if (#{condition.gen_adoc(0, indent_spaces:)});"
+    end
+  end
+  class ReturnExpressionAst
+    def gen_adoc(indent = 0, indent_spaces: 2)
+      "return #{return_value_nodes.map{ |r| r.gen_adoc(0, indent_spaces: )}.join(', ')}"
+    end
+  end
+  class IfBodyAst
+    def gen_adoc(indent = 0, indent_spaces: 2)
+      adoc = []
+      children.each do |e|
+        adoc << e.gen_adoc(indent, indent_spaces:)
+      end
+      adoc.map{ |a| "#{' '*indent}#{a}" }.join("")
+    end
+  end
+
+  class PostIncrementExpressionAst
+    def gen_adoc(indent, indent_spaces: 2)
+      "#{rval.gen_adoc(indent, indent_spaces: )}++"
+    end
+  end
+  class PostDecrementExpressionAst
+    def gen_adoc(indent, indent_spaces: 2)
+      "#{rval.gen_adoc(indent, indent_spaces: )}--"
+    end
+  end
+  class StringLiteralAst
+    def gen_adoc(indent, indent_spaces: 2)
+      "\"#{text_value}\""
+    end
+  end
+  class DontCareReturnAst
+    def gen_adoc(indent, indent_spaces: 2)
+      "-"
+    end
+  end
+  class UserTypeNameAst
+    def gen_adoc(indent, indent_spaces: 2)
+      text_value
+    end
+  end
+  class MultiVariableAssignmentAst
+    def gen_adoc(indent, indent_spaces: 2)
+      "(#{variables.map { |v| v.gen_adoc(0, indent_spaces: )}.join(', ')} = #{function_call.gen_adoc(0, indent_spaces:)})"
+    end
+  end
+  class CsrSoftwareReadAst
+    def gen_adoc(indent, indent_spaces: 2)
+      "#{csr.gen_adoc(indent, indent_spaces:)}.sw_read()"
+    end
+  end
+  class CsrSoftwareWriteAst
+    def gen_adoc(indent, indent_spaces: 2)
+      "#{csr.gen_adoc(indent, indent_spaces:)}.sw_write(#{expression.gen_adoc(0, indent_spaces:)})"
+    end
+  end
+  class BitfieldAccessExpressionAst
+    def gen_adoc(indent, indent_spaces: 2)
+      "#{bitfield.gen_adoc(indent, indent_spaces: )}.#{@field_name}"
+    end
+  end
+  class ConcatenationExpressionAst
+    def gen_adoc(indent, indent_spaces: 2)
+      "{#{expressions.map { |e| e.gen_adoc(0, indent_spaces: )}.join(', ')}}"
+    end
+  end
+  class BitsCastAst
+    def gen_adoc(indent, indent_spaces: 2)
+      "$bits(#{expression.gen_adoc(0, indent_spaces: )})"
+    end
+  end
+  class CsrFieldAssignmentAst
+    def gen_adoc(indent, indent_spaces: 2)
+      "#{csr_field.gen_adoc(indent, indent_spaces:)} = #{write_value.gen_adoc(0, indent_spaces:)}"
+    end
+  end
   class EnumRefAst
     def gen_adoc(indent, indent_spaces: 2)
       "#{class_name}::#{member_name}"
@@ -71,7 +129,7 @@ module Idl
 
   class VariableDeclarationAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      "#{' ' * indent}#{type_name.gen_adoc(0, indent_spaces:)} #{var_write.gen_adoc(0, indent_spaces:)};"
+      "#{' ' * indent}#{type_name.gen_adoc(0, indent_spaces:)} #{id.gen_adoc(0, indent_spaces:)};"
     end
   end
 
@@ -84,7 +142,7 @@ module Idl
   class BuiltinTypeNameAst
     def gen_adoc(indent = 0, indent_spaces: 2)
       if @type_name == "Bits"
-        "Bits<#{@bits_expression.gen_adoc(0, indent_spaces:)}>"
+        "Bits<#{bits_expression.gen_adoc(0, indent_spaces:)}>"
       else
         to_idl
       end
@@ -110,10 +168,10 @@ module Idl
 
   class VariableDeclarationWithInitializationAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      if @ary_size.nil?
+      if ary_size.nil?
         "#{' ' * indent}#{type_name.gen_adoc(0, indent_spaces:)} #{lhs.gen_adoc(0, indent_spaces:)} = #{rhs.gen_adoc(0, indent_spaces:)};"
       else
-        "#{' ' * indent}#{type_name.gen_adoc(0, indent_spaces:)} #{lhs.gen_adoc(0, indent_spaces:)}[#{@ary_size.gen_adoc(0, indent_spaces:)}] = #{rhs.gen_adoc(0, indent_spaces:)};"
+        "#{' ' * indent}#{type_name.gen_adoc(0, indent_spaces:)} #{lhs.gen_adoc(0, indent_spaces:)}[#{ary_size.gen_adoc(0, indent_spaces:)}] = #{rhs.gen_adoc(0, indent_spaces:)};"
       end
     end
   end
@@ -138,7 +196,7 @@ module Idl
 
   class AryElementAssignmentAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      "#{lhs.gen_adoc(0, indent_spaces:)}[#{@idx.gen_adoc(0, indent_spaces:)}] = #{@rhs.gen_adoc(0, indent_spaces:)}"
+      "#{lhs.gen_adoc(0, indent_spaces:)}[#{idx.gen_adoc(0, indent_spaces:)}] = #{rhs.gen_adoc(0, indent_spaces:)}"
     end
   end
 
@@ -156,14 +214,12 @@ module Idl
 
   class ReturnStatementAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      values = [first.gen_adoc(0, indent_spaces:)] + rest.elements.each { |e| e.e.gen_adoc(0, indent_spaces: )}
-      "#{' ' * indent}return #{values.join(', ')};"
+      "#{' ' * indent}return #{return_value_nodes.map { |v| v.gen_adoc(0, indent_spaces:) }.join(', ')};"
     end
   end
 
   class ReplicationExpressionAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      puts v.class.name
       "{#{n.gen_adoc(indent, indent_spaces:)}{#{v.gen_adoc(indent, indent_spaces:)}}}"
     end
   end
@@ -191,22 +247,36 @@ module Idl
 
   class CsrFieldReadExpressionAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      csr_text = "CSR[#{idx.text_value}].#{csr_field_name.text_value}"
-      if idx.text_value =~ /[0-9]+/
+      idx_text =
+        if @idx.is_a?(AstNode)
+          @idx.text_value
+        else
+          @idx
+        end
+      csr_text = "CSR[#{idx_text}].#{@field_name}"
+      if idx_text =~ /[0-9]+/
         csr_text
       else
-        "%%LINK%csr_field;#{idx.text_value}.#{csr_field_name.text_value};#{csr_text}%%"
+        "%%LINK%csr_field;#{idx_text}.#{@field_name};#{csr_text}%%"
       end
     end
   end
 
   class CsrReadExpressionAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      csr_text = "CSR[#{idx.text_value}]"
-      if idx.text_value =~ /[0-9]+/
+      idx_text =
+        if @idx.is_a?(AstNode)
+          @idx.text_value
+        else
+          @idx
+        end
+
+      csr_text = "CSR[#{idx_text}]"
+      if idx_text =~ /[0-9]+/
+        # we don't have the symtab to map this to a csr name
         csr_text
       else
-        "%%LINK%csr;#{idx.text_value};#{csr_text}%%"
+        "%%LINK%csr;#{idx_text};#{csr_text}%%"
       end
     end
   end

@@ -13,7 +13,7 @@ slli.uw:
   encoding:
     match: 0000010----------001-----0011011
     variables:
-    - name: rs2
+    - name: shamt
       location: 24-20
     - name: rs1
       location: 19-15

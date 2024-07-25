@@ -16,7 +16,7 @@ h| Arguments   l| <%= f.arguments_list_str.join (', ') %>
 |===
 
 <%- unless f.builtin? -%>
-<%- body_ast = f.body_block.function_body -%>
+<%- body_ast = f.body -%>
 [tabs]
 ====
 Original::

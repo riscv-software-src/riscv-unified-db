@@ -23,11 +23,18 @@ params:
   # must be true when Zicclsm is supported
   MISALIGNED_LDST: true
 
+  MISALIGNED_SPLIT_STRATEGY: by_byte
+
   # whether or not the implementation supports misaligned atomics
   MISALIGNED_AMO: false
 
   # number of implemented programmable hardware performance counters
   NUM_HPM_COUNTERS: 8
+
+  # list of defined HPM events
+  HPM_EVENTS:
+  - 0
+  - 3
 
   # Indicates which counters can be disabled from mcountinhibit
   #

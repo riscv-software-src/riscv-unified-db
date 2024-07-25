@@ -136,8 +136,8 @@ mhpmevent28:
         } else {
           return 0;
         }
-      write(csr_value): |
-        if (csr_value.EVENT <= MAX_HPM_EVENT) {
+      sw_write(csr_value): |
+        if (ary_includes?<HPM_EVENTS_SIZE, 58>(HPM_EVENTS, csr_value.EVENT)) {
           return csr_value.EVENT;
         } else {
           return UNDEFINED_LEGAL_DETERMINISTIC;

@@ -178,6 +178,16 @@ file "#{$root}/arch/csr/S/scounteren.yaml" => [
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
 end
 
+file "#{$root}/arch/csr/H/hcounteren.yaml" => [
+  "#{$root}/arch/csr/H/hcounteren.layout",
+  __FILE__
+] do |t|
+  puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
+  erb = ERB.new(File.read($root / "arch/csr/H/hcounteren.layout"), trim_mode: "-")
+  erb.filename = "#{$root}/arch/csr/H/hcounteren.layout"
+  File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
+end
+
 file "#{$root}/arch/csr/Zicntr/mcountinhibit.yaml" => [
   "#{$root}/arch/csr/Zicntr/mcountinhibit.layout",
   __FILE__
@@ -203,6 +213,7 @@ namespace :gen do
 
     Rake::Task["#{$root}/arch/csr/I/mcounteren.yaml"].invoke
     Rake::Task["#{$root}/arch/csr/S/scounteren.yaml"].invoke
+    Rake::Task["#{$root}/arch/csr/H/hcounteren.yaml"].invoke
     Rake::Task["#{$root}/arch/csr/Zicntr/mcountinhibit.yaml"].invoke
 
     (0..63).each do |pmpaddr_num|

@@ -19,7 +19,7 @@ stvec:
         the write should be ignored.
 
       type: RW-R
-      write(csr_value): |
+      sw_write(csr_value): |
         # Base spec says that BASE must be 4-byte aligned, which will always be the case
         # implementations may put further constraints on BASE when MODE != Direct
         # If that is the case, stvec should have an override for the implementation
@@ -36,9 +36,9 @@ stvec:
 
         When Vectored, asynchronous interrupts jump to (`stvec.BASE` << 2 + `scause.CAUSE`*4) while synchronous exceptions continue to jump to (`stvec.BASE` << 2).
       type: RW-R
-      write(csr_value): |
+      sw_write(csr_value): |
         if (csr_value.MODE == 0 || csr_value.MODE == 1) {
-          return value.MODE;
+          return csr_value.MODE;
         } else {
           return UNDEFINED_LEGAL_DETERMINISTIC;
         }

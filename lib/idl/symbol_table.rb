@@ -12,6 +12,7 @@ module Idl
       raise ArgumentError, "Expecting a Type, got #{type.class.name}" unless type.is_a?(Type)
 
       @type = type
+      @type.freeze
       @value = value
       raise 'unexpected' unless decode_var.is_a?(TrueClass) || decode_var.is_a?(FalseClass)
 
@@ -19,6 +20,7 @@ module Idl
       @template_index = template_index
       @function_name = function_name
     end
+
 
     def clone
       Var.new(
@@ -76,7 +78,7 @@ module Idl
       @scopes = [{
         'X' => Var.new(
           'X',
-          Type.new(:array, sub_type: XregType.new(arch_def.config_params['XLEN']), width: 32)
+          Type.new(:array, sub_type: XregType.new(arch_def.config_params['XLEN']), width: 32, qualifiers: [:global])
         ),
         'XReg' => XregType.new(arch_def.config_params['XLEN']),
         'PC' => Var.new(
@@ -102,7 +104,7 @@ module Idl
         'false' => Var.new(
           'false',
           Type.new(:boolean),
-          true
+          false
         )
 
       }]
@@ -110,13 +112,11 @@ module Idl
         if value.is_a?(Integer)
           width = value.bit_length
           width = 1 if width.zero? # happens if value is 0
-          add!(name, Var.new(name, Type.new(:bits, width:), value))
+          add!(name, Var.new(name, Type.new(:bits, width:, qualifiers: [:const]), value))
         elsif value.is_a?(TrueClass) || value.is_a?(FalseClass)
-          add!(name, Var.new(name, Type.new(:boolean), value))
+          add!(name, Var.new(name, Type.new(:boolean, qualifiers: [:const]), value))
         elsif value.is_a?(String)
-          # just make sure this isn't something we think we need
-          expected_names = ["NAME", "M_MODE_ENDIANESS", "S_MODE_ENDIANESS", "U_MODE_ENDIANESS", "VS_MODE_ENDIANESS", "VU_MODE_ENDIANESS"]
-          raise "Unexpected String type for '#{name}'" unless expected_names.include?(name)
+          add!(name, Var.new(name, Type.new(:string, width: value.length, qualifiers: [:const]), value))
         elsif value.is_a?(Array)
           unless value.all? { |v| v.is_a?(Integer) || v.is_a?(TrueClass) || v.is_a?(FalseClass) }
             raise "For param #{name}: Can only handle arrays of ints or bools"
@@ -135,14 +135,15 @@ module Idl
             ary << Var.new("#{name}[#{idx}]", element_type, v)
           end
           add!(name, Var.new(name, ary_type, ary))
+          # also add the array size
+          ary_size_bits = ary.size.zero? ? 1 : ary.size.bit_length
+          add!("#{name}_SIZE", Var.new("#{name}_SIZE", Type.new(:bits, width: ary_size_bits), ary.size))
         else
           raise "Unhandled config param type '#{value.class.name}' for '#{name}'"
         end
       end
-      arch_def.extensions.each do |ext|
-
-      end
       add!('ExtensionName', EnumerationType.new('ExtensionName', arch_def.extensions.map(&:name), Array.new(arch_def.extensions.size) { |i| i + 1 }))
+
     end
 
     # do a deep freeze to protect the sym table and all its entries from modification
@@ -161,6 +162,7 @@ module Idl
       # @scope_caller ||= []
       # @scope_caller.push caller[0]
       @scopes << {}
+
     end
 
     # pops the top of the scope stack
@@ -170,6 +172,7 @@ module Idl
       raise "Error: popping the symbol table would remove global scope" if @scopes.size == 1
 
       @scopes.pop
+
     end
 
     # @return [Boolean] whether or not any symbol 'name' is defined at any level in the symbol table
@@ -281,20 +284,36 @@ module Idl
     end
 
     # @return [SymbolTable] a deep clone of this SymbolTable
-    def deep_clone(clone_values: false)
+    def deep_clone(clone_values: false, freeze_global: true)
+      # globals are frozen, so we can just return a shallow clone
+      # if we are in global scope
+      if levels == 1
+        copy = dup
+        copy.instance_variable_set(:@scopes, copy.instance_variable_get(:@scopes).dup)
+        return copy
+      end
+
       copy = SymbolTable.new(@archdef)
       copy.instance_variable_set(:@scopes, [])
       c_scopes = copy.instance_variable_get(:@scopes)
 
+      in_global = true
       @scopes.each do |scope|
         c_scopes << {}
         scope.each do |k, v|
           if clone_values
-            c_scopes.last[k] = v.clone
+            c_scopes.last[k] = v.dup
           else
             c_scopes.last[k] = v
           end
+          if freeze_global && in_global
+            c_scopes.last[k].freeze
+          end
         end
+        in_global = false
+      end
+      if freeze_global
+        copy.instance_variable_get(:@scopes).first.freeze
       end
       copy
     end

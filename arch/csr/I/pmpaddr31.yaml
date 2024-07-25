@@ -29,7 +29,7 @@ pmpaddr31:
         } else {
           return 0;
         }
-      write(csr_value): |
+      sw_write(csr_value): |
         if (csr_value.ADDR >= (PHYS_ADDR_WIDTH >> 2)) {
           return UNDEFINED_LEGAL_DETERMINISTIC;
         } else if (NUM_PMP_ENTRIES > 31) {
