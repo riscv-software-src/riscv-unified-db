@@ -12,6 +12,7 @@ end
 class MockArchDef
   def config_params = { "XLEN" => 32 }
   def extensions = [MockExtension.new("I")]
+  def mxlen = 64
 end
 
 module TestMixin
