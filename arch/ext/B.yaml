@@ -4,7 +4,7 @@ B:
   type: unprivileged
   long_name: Bitmanipulation instructions
   company:
-  - name: RISC-V International
+    name: RISC-V International
     url: https://riscv.org
   doc_license:
     name: Creative Commons Attribution 4.0 International License
