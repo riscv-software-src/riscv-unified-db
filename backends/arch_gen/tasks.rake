@@ -35,18 +35,21 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
       v["name"] = k
       [k, v]
     end
+    csr_obj[csr_name]["__source"] = f
     [csr_name, csr_obj[csr_name]]
   end.to_h
   inst_hash = Dir.glob($root / "arch" / "inst" / "**" / "*.yaml").map do |f|
     inst_obj = YAML.load_file(f)
     inst_name = inst_obj.keys[0]
     inst_obj[inst_name]["name"] = inst_name
+    inst_obj[inst_name]["__source"] = f
     [inst_name, inst_obj[inst_name]]
   end.to_h
   ext_hash = Dir.glob($root / "arch" / "ext" / "**" / "*.yaml").map do |f|
     ext_obj = YAML.load_file(f)
     ext_name = ext_obj.keys[0]
     ext_obj[ext_name]["name"] = ext_name
+    ext_obj[ext_name]["__source"] = f
     [ext_name, ext_obj[ext_name]]
   end.to_h
 

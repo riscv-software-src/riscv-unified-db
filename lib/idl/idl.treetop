@@ -4,6 +4,8 @@ grammar Idl
     space*
       '%version:' space+ version_string space+
       definitions:(
+        include_statement
+        /
         global_definition
         /
         enum_definition
@@ -14,6 +16,10 @@ grammar Idl
         / 
         space+
       )+ <Idl::IsaSyntaxNode>
+  end
+
+  rule include_statement
+    'include' space+ string space+ <Idl::IncludeStatementSyntaxNode>
   end
 
   # declaring a global variable or constant
@@ -47,16 +53,16 @@ grammar Idl
 
   rule int
     # verilog style: explicit bit width
-    ([0-9]+)? "'" 'b' [0-1] [0-1_]* <Idl::IntLiteralSyntaxNode> /
-    ([0-9]+)? "'" 'o' [0-7] [0-7_]* <Idl::IntLiteralSyntaxNode> /
-    ([0-9]+)? "'" 'd'? [0-9] [0-9_]* <Idl::IntLiteralSyntaxNode> /
-    ([0-9]+)? "'" 'h' [0-9a-fA-F] [0-9a-fA-F_]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'XLEN')? "'" 'b' [0-1] [0-1_]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'XLEN')? "'" 'o' [0-7] [0-7_]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'XLEN')? "'" 'd'? [0-9] [0-9_]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'XLEN')? "'" 'h' [0-9a-fA-F] [0-9a-fA-F_]* <Idl::IntLiteralSyntaxNode> /
 
     # verilog style: explicit bit width, signed
-    ([0-9]+)? "'" 'sb' [0-1] [0-1_]* <Idl::IntLiteralSyntaxNode> /
-    ([0-9]+)? "'" 'so' [0-7] [0-7_]* <Idl::IntLiteralSyntaxNode> /
-    ([0-9]+)? "'" 's' 'd'? [0-9] [0-9_]* <Idl::IntLiteralSyntaxNode> /
-    ([0-9]+)? "'" 'sh' [0-9a-fA-F] [0-9a-fA-F_]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'XLEN')? "'" 'sb' [0-1] [0-1_]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'XLEN')? "'" 'so' [0-7] [0-7_]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'XLEN')? "'" 's' 'd'? [0-9] [0-9_]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'XLEN')? "'" 'sh' [0-9a-fA-F] [0-9a-fA-F_]* <Idl::IntLiteralSyntaxNode> /
 
     # c++ style: signed
     '0b' [0-1] [0-1_]* 's' <Idl::IntLiteralSyntaxNode> /
@@ -359,7 +365,7 @@ grammar Idl
   end
 
   rule function_call_template_arguments
-    first:(int / rval) rest:(space* ',' space* arg:(int / rval))*
+    first:(rval) rest:(space* ',' space* arg:(rval))*
   end
 
   rule function_call
@@ -420,7 +426,7 @@ grammar Idl
   end
 
   rule rval
-    (id / int / builtin_read_only_var / builtin_read_write_var / string)
+    (int / builtin_read_only_var / builtin_read_write_var / string / id)
   end
 
   rule assignment
@@ -526,10 +532,12 @@ grammar Idl
 
     'Boolean' ![A-Za-z0-9] <Idl::BuiltinTypeNameSyntaxNode> /
 
-    # 64-bit unsigned integer
+    'String' ![A-Za-z0-9] <Idl::BuiltinTypeNameSyntaxNode> /
+
+    # alias for Bits<64>
     'U64' ![A-Za-z0-9] <Idl::BuiltinTypeNameSyntaxNode> /
 
-    # 32-bit unsigned integer
+    # alias for Bits<32>
     'U32' ![A-Za-z0-9] <Idl::BuiltinTypeNameSyntaxNode>
   end
 
@@ -564,8 +572,8 @@ grammar Idl
     builtin_type_name / keyword
   end
 
-  rule execution_comment
-    '#' content:(!"\n" .)* "\n" # <Idl::ExecutionCommentAst>
+  rule comment
+    '#' content:(!"\n" .)* "\n" # <Idl::CommentSyntaxNode>
   end
 
   rule function_statement
@@ -614,22 +622,9 @@ grammar Idl
   end
 
   rule space
-    ([ \n] / single_line_comment / block_comment / execution_comment) {
+    ([ \n] / comment) {
       def space? = true
     }
-  end
-
-  rule block_comment
-    '/*'
-    (
-      !'*/'
-      (. / "\n")
-    )*
-    '*/'
-  end
-
-  rule single_line_comment
-    '//' (!"\n" .)* "\n"
   end
 
 end

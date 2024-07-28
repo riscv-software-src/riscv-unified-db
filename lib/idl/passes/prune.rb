@@ -52,7 +52,7 @@ module Idl
         v = value(symtab)
         create_literal(v)
       rescue ValueError
-        FunctionCallExpressionAst.new(input, interval, name, @targs.map { |t| t.prune(symtab) }, @args.map { |a| a.prune(symtab)} )
+        FunctionCallExpressionAst.new(input, interval, name, targs.map { |t| t.prune(symtab) }, args.map { |a| a.prune(symtab)} )
       end
     end
   end
@@ -294,6 +294,20 @@ module Idl
         elseifs.map { |eif| eif.prune(symtab) },
         final_else_body.prune(symtab)
       )
+    end
+  end
+
+  class ConditionalReturnStatementAst
+    def prune(symtab)
+      begin
+        if condition.value(symtab)
+          return return_expression.prune(symtab)
+        else
+          return NoopAst.new
+        end
+      rescue ValueError
+        ConditionalReturnStatementAst.new(input, interval, return_expression.prune(symtab), condition.prune(symtab))
+      end
     end
   end
 

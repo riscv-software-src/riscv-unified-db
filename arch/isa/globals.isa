@@ -1,5 +1,8 @@
 %version: 1.0
 
+include "builtin_functions.idl"
+include "util.idl"
+
 # global state
 
 # general purpose register file
@@ -23,11 +26,11 @@ Bits<66> UNDEFINED_LEGAL_DETERMINISTIC = 66'h20000000000000000;
 # Signals an illegal write of a WLRL field
 Bits<67> ILLEGAL_WLRL = 67'h40000000000000000;
 
-// encoded as defined in the privilege spec
+# encoded as defined in the privilege spec
 enum PrivilegeMode {
   M  0b011
   S  0b001
-  HS 0b001 // alias for S when H extension is used
+  HS 0b001 # alias for S when H extension is used
   U  0b000
   VS 0b101
   VU 0b100
@@ -41,7 +44,13 @@ enum MemoryOperation {
 }
 
 enum PmaAttribute {
-  RsrvEventual
+  RsrvNone         # LR/SC not allowed
+  RsrvNonEventual  # LR/SC allowed, but no gaurantee it will ever succeed
+  RsrvEventual     # LR/SC with forward-progress gaurantees
+
+  # page walk permissions
+  HardwarePageTableRead
+  HardwarePageTableWrite
 }
 
 # do not change these values!! the compiler assumes them
@@ -54,10 +63,10 @@ enum CsrFieldType {
   RWRH 5
 }
 
-// generated from extension information in arch defintion
+# generated from extension information in arch defintion
 builtin enum ExtensionName;
 
-// XLEN encoding, as defined in CSR[mstatus].mxl, etc.
+# XLEN encoding, as defined in CSR[mstatus].mxl, etc.
 enum XRegWidth {
   XLEN32 0
   XLEN64 1
@@ -75,13 +84,13 @@ enum ExceptionCode {
   StoreAmoAccessFault 7
   Ucall 8
   Scall 9
-  // reserved 10
+  # reserved 10
   Mcall 11
   InstructionPageFault 12
   LoadPageFault 13
-  // reserved 14
+  # reserved 14
   StoreAmoPageFault 15
-  // reserved 16-17
+  # reserved 16-17
   SoftwareCheck 18
   HardwareError 19
   InstructionGuestPageFault 20
@@ -91,11 +100,11 @@ enum ExceptionCode {
 }
 
 enum RoundingMode {
-  RNE 0  // Round to nearest, ties to even
-  RTZ 1  // Round toward zero
-  RDN 2  // Round down (towards -inf)
-  RUP 3  // Round up (towards +inf)
-  RMM 4  // Round to nearest, ties to Max Magnitude
+  RNE 0  # Round to nearest, ties to even
+  RTZ 1  # Round toward zero
+  RDN 2  # Round down (towards -inf)
+  RUP 3  # Round up (towards +inf)
+  RMM 4  # Round to nearest, ties to Max Magnitude
 }
 
 enum SatpMode {
@@ -106,6 +115,18 @@ enum SatpMode {
   Sv57 10
 }
 
+bitfield (10) PteFlags {
+  RSW  9-8 # reserved
+  D 7 # dirty
+  A 6 # access
+  G 5 # global
+  U 4 # userspace permission
+  X 3 # execute permission
+  W 2 # write permission
+  R 1 # read permission
+  V 0 # valid
+}
+
 bitfield (64) Sv39PageTableEntry {
   N 63
   PBMT 62-61
@@ -113,7 +134,7 @@ bitfield (64) Sv39PageTableEntry {
   PPN2 53-28
   PPN1 27-19
   PPN0 18-10
-  PPN 53-10 // in addition to the components, we define the entire PPN
+  PPN 53-10 # in addition to the components, we define the entire PPN
   RSW  9-8
   D 7
   A 6
@@ -123,42 +144,6 @@ bitfield (64) Sv39PageTableEntry {
   W 2
   R 1
   V 0
-}
-
-builtin function implemented? {
-  returns Boolean
-  arguments ExtensionName extension
-  description {
-    Return true if the implementation supports `extension`.
-  }
-}
-
-builtin function read_hpm_counter {
-  returns Bits<64>
-  arguments Bits<5> n
-  description {
-    Returns the value of hpmcounterN.
-
-    N must be between 3..31.
-
-    hpmcounterN must be implemented.
-  }
-}
-
-builtin function read_mcycle {
-  returns Bits<64>
-  description {
-    Return the current value of the cycle counter.
-  }
-}
-
-builtin function sw_write_mcycle {
-  returns Bits<64>
-  arguments Bits<64> value
-  description {
-    Given a _value_ that software is trying to write into mcycle,
-    return the value that will actually be written.
-  }
 }
 
 # floating point register file
@@ -186,19 +171,6 @@ function mode {
   }
 }
 
-builtin function assert {
-  arguments Boolean test
-  description {
-    Assert that a condition is true. Failure represents a specification error.
-  }
-}
-
-builtin function mode_change_notifier {
-  arguments PrivilegeMode new_mode, PrivilegeMode old_mode
-  description {
-    Called whenever the privilege mode changes. Downstream tools can use this to hook events.
-  }
-}
 
 function set_mode {
   arguments PrivilegeMode new_mode
@@ -207,44 +179,9 @@ function set_mode {
   }
   body {
     if (new_mode != current_mode) {
-      mode_change_notifier(new_mode, current_mode);
+      notify_mode_change(new_mode, current_mode);
       current_mode = new_mode;
     }
-  }
-}
-
-builtin function abort_current_instruction {
-  description {
-    Abort the current instruction, and start refetching from PC
-  }
-}
-
-function power_of_2? {
-  template U32 N
-  returns Boolean
-  arguments Bits<N> value
-  description {
-    Returns true if value is a power of two, false otherwise
-  }
-  body {
-    return (value != 0) && ((value & (value - 1)) == 0);
-  }
-}
-
-function ary_includes? {
-  template U32 ARY_SIZE, U32 ELEMENT_SIZE
-  returns Boolean
-  arguments Bits<ELEMENT_SIZE> ary[ARY_SIZE], Bits<ELEMENT_SIZE> value
-  description {
-    Returns true if _value_ is an element of ary, and false otherwise
-  }
-  body {
-    for (U32 i = 0; i < ARY_SIZE; i++) {
-      if (ary[i] == value) {
-        return true;
-      }
-    }
-    return false;
   }
 }
 
@@ -256,8 +193,8 @@ function exception_handling_mode {
   }
   body {
     if (mode() == PrivilegeMode::M) {
-      // exceptions can never be taken in a less-privileged mode, so if the current
-      // mode is M, the value of medeleg is irrelevant
+      # exceptions can never be taken in a less-privileged mode, so if the current
+      # mode is M, the value of medeleg is irrelevant
       return PrivilegeMode::M;
     } else if (implemented?(ExtensionName::S) && ((mode() == PrivilegeMode::HS) || (mode() == PrivilegeMode::U))) {
       if ((CSR[medeleg] & (1 << $bits(exception_code))) != 0) {
@@ -266,7 +203,7 @@ function exception_handling_mode {
         return PrivilegeMode::M;
       }
     } else {
-      assert(implemented?(ExtensionName::H) && ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)));
+      assert(implemented?(ExtensionName::H) && ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)), "Unexpected mode");
       if ((CSR[medeleg] &  (1 << $bits(exception_code))) != 0) {
         if ((CSR[hedeleg] & (1 << $bits(exception_code))) != 0) {
           return PrivilegeMode::VS;
@@ -274,7 +211,7 @@ function exception_handling_mode {
           return PrivilegeMode::HS;
         }
       } else {
-        // if an exception is not delegated to HS-mode, it can't be delegated to VS-mode
+        # if an exception is not delegated to HS-mode, it can't be delegated to VS-mode
         return PrivilegeMode::M;
       }
     }
@@ -500,7 +437,6 @@ function raise {
       PC = {CSR[stvec].BASE, 2'b00};
       CSR[scause].INT = 1'b0;
       CSR[scause].CODE = $bits(exception_code);
-      // note that stval is set elsewhere
     } else if (implemented?(ExtensionName::H) && (handling_mode == PrivilegeMode::VS)) {
       CSR[vsepc].PC = PC;
       if (!vstval_readonly?()) {
@@ -511,7 +447,7 @@ function raise {
       CSR[vscause].CODE = $bits(exception_code);
     }
 
-    // abort the current instruction, and start to refetch from PC
+    # abort the current instruction, and start to refetch from PC
     set_mode(handling_mode);
     abort_current_instruction();
   }
@@ -561,7 +497,7 @@ function jump_halfword {
   }
   body {
     # ensure that the target address is really a halfword address
-    assert((target_hw_addr & 0x1) == 0x0);
+    assert((target_hw_addr & 0x1) == 0x0, "Expected halfword-aligned address in jump_halfword");
 
     if (ialign() != 16) {
       if ((target_hw_addr & 0x3) != 0) {
@@ -619,44 +555,6 @@ function xlen {
   }
 }
 
-function highest_set_bit {
-  returns XReg
-  arguments XReg value
-  description {
-    Returns the position of the highest (nearest MSB) bit that is '1',
-    or -1 if value is zero.
-  }
-  body {
-    for (U32 i=xlen()-1; i >= 0; i--) {
-      if (value[i] == 1) {
-        return i;
-      }
-    }
-
-    # fall-through; value must be zero
-    return -'sd1;
-  }
-}
-
-function lowest_set_bit {
-  returns XReg
-  arguments XReg value
-  description {
-    Returns the position of the lowest (nearest LSB) bit that is '1',
-    or XLEN if value is zero.
-  }
-  body {
-    for (U32 i=0; i < xlen(); i++) {
-      if (value[i] == 1) {
-        return i;
-      }
-    }
-
-    # fall-through; value must be zero
-    return xlen();
-  }
-}
-
 function virtual_mode? {
   returns Boolean
   description {
@@ -664,100 +562,6 @@ function virtual_mode? {
   }
   body {
     return (mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU);
-  }
-}
-
-function sext {
-  returns XReg
-  arguments XReg value, XReg first_extended_bit
-  description {
-    Sign extend `value` starting at `first_extended_bit`.
-
-    Bits [`XLEN-1`:`first_extended_bit`] of the return value
-    should get the value of bit (`first_extended bit - 1`).
-  }
-  body {
-    # in a common case, first_extended_bit is xlen(), which is compile-time-known unless
-    # the effective xlen is different than XLEN in some mode
-    # In that common case, this function will be eliminated by the compiler
-    if (first_extended_bit == XLEN) {
-      return value;
-    } else {
-      Bits<1> sign = value[first_extended_bit-1];
-      for (U32 i = XLEN-1; i >= first_extended_bit; i--) {
-        value[i] = sign;
-      }
-      return value;
-    }
-  }
-}
-
-builtin function zext {
-  returns XReg
-  arguments XReg value, XReg first_extended_bit
-  description {
-    Zero extend `value` starting at `first_extended_bit`.
-
-    Bits [`XLEN-1`:`first_extended_bit`] of the return value
-    should get the value `0`;
-  }
-}
-
-builtin function ebreak {
-  description {
-    Raise an `Environment Break` exception, returning control to the debug environment.
-  }
-}
-
-builtin function saturate {
-  returns XReg
-  arguments XReg value, XReg max_value
-  description {
-    If unsigned `value` is less than `max_value`, return `value`.
-    Otherwise, return `max_value`.
-  }
-}
-
-builtin function fence {
-  arguments Boolean PI, Boolean PR, Boolean PO, Boolean PW, Boolean SI, Boolean SR, Boolean SO, Boolean SW
-  description {
-    Execute a memory ordering fence.(according to the FENCE instruction).
-  }
-}
-
-builtin function ifence {
-  description {
-    Execute a memory ordering instruction fence (according to FENCE.I).
-  }
-}
-
-builtin function pow {
-  returns XReg
-  arguments XReg value, XReg exponent
-  description {
-    Return `value` to the power `exponent`.
-  }
-}
-
-function bit_length {
-  returns XReg
-  arguments XReg value
-  description {
-    Returns the minimum number of bits needed to represent value.
-
-    Only works on unsigned values.
-
-    The value 0 returns 1.
-  }
-  body {
-    for (XReg i = 63; i > 0; i--) {
-      if (value[i] == 1) {
-        return i;
-      }
-    }
-
-    # if we get here, the value is 0 or 1. either way, say we need one bit
-    return 1;
   }
 }
 
@@ -792,85 +596,6 @@ function mask_eaddr {
   }
 }
 
-// builtin function maybe_cache_translation {
-//   arguments TranslationResult result
-//   description {
-//     Given a translation result, potentially cache the result for later use. This function models
-//     a TLB fill operation. A valid implementation does nothing.
-//   }
-// }
-
-builtin function invalidate_all_translations {
-  description {
-    Locally invalidate all cached address translations, from all address ranges
-    and all ASIDs, including global mappings.
-
-    A valid implementation does nothing if address caching is not used.
-  }
-}
-
-builtin function sfence_all {
-  description {
-    Ensure all loads and stores after this operation see any previous address cache invalidations.
-  }
-}
-
-builtin function sfence_asid {
-  arguments Bits<ASID_WIDTH> asid
-  description {
-    Ensure all reads and writes using address space 'asid' see any previous address space invalidations.
-
-    Does not have to (but may, if conservative) order any global mappings.
-  }
-}
-
-builtin function sfence_vaddr {
-  arguments XReg vaddr
-  description {
-    Ensure all reads and writes using a leaf page table that contains 'vaddr' see any previous address space invalidations.
-
-    Must also order any global mappings containing 'vaddr'.
-  }
-}
-
-builtin function sfence_asid_vaddr {
-  arguments Bits<ASID_WIDTH> asid, XReg vaddr
-  description {
-    Ensure all reads and writes using address space 'asid' and a leaf page table that contains 'vaddr' see any previous address space invalidations.
-
-    Does not have to (but may, if conservative) order any global mappings.
-  }
-}
-
-builtin function invalidate_asid_translations {
-  arguments Bits<ASID_WIDTH> asid
-  description {
-    Locally invalidate all cached address translations for address space 'asid'.
-    Does not affect global mappings.
-
-    A valid implementation does nothing if address caching is not used.
-  }
-}
-
-builtin function invalidate_vaddr_translations {
-  arguments XReg vaddr
-  description {
-    Locally invalidate all cached address translations representing 'vaddr', for all address spaces.
-    Equally affects global mappings.
-
-    A valid implementation does nothing if address caching is not used.
-  }
-}
-
-builtin function invalidate_asid_vaddr_translations {
-  arguments Bits<ASID_WIDTH> asid, XReg vaddr
-  description {
-    Locally invalidate all cached address translations for address space 'asid' that represent 'vaddr'.
-    Does not affect global mappings.
-
-    A valid implementation does nothing if address caching is not used.
-  }
-}
 
 bitfield (8) PmpCfg {
   L 7
@@ -1049,6 +774,18 @@ function pmp_match {
   }
 }
 
+function nan_box {
+  returns Bits<64>
+  arguments Bits<32> sp_value
+  description {
+    Produces a properly NaN-boxed double-precision value from a single-precision value
+    by adding all 1's to the upper bits.
+  }
+  body {
+    return {{32,{1'b1}}, sp_value};
+  }
+}
+
 function mpv {
   returns Bits<1>
   description {
@@ -1058,7 +795,7 @@ function mpv {
     if (implemented?(ExtensionName::H)) {
       return (XLEN == 32) ? CSR[mstatush].MPV : CSR[mstatus].MPV;
     } else {
-      assert(false);
+      assert(false, "TODO");
     }
   }
 }
@@ -1071,8 +808,8 @@ function effective_ldst_mode {
     the current actual privilege mode and modifications from `mstatus.MPRV`.
   }
   body {
-    // when the mode is M, loads and stores can be executed as if they were done from any other mode
-    // with the use of mstatus.MPRV
+    # when the mode is M, loads and stores can be executed as if they were done from any other mode
+    # with the use of mstatus.MPRV
     if (mode() == PrivilegeMode::M) {
       if (implemented?(ExtensionName::U) && CSR[mstatus].MPRV == 1) {
         if (CSR[mstatus].MPP == 0b00) {
@@ -1091,7 +828,7 @@ function effective_ldst_mode {
       }
     }
 
-    // no modifiers were found, return actual mode
+    # no modifiers were found, return actual mode
     return mode();
   }
 }
@@ -1134,7 +871,7 @@ function pmp_check {
         return false;
       }
     } else {
-      assert(match_result == PmpMatchResult::PartialMatch);
+      assert(match_result == PmpMatchResult::PartialMatch, "PMP matching logic error");
 
       # by defintion, any partial match fails the access, regardless of the config settings
       return false;
@@ -1147,7 +884,7 @@ function pmp_check {
 
 function access_check {
   template U32 access_size
-  arguments Bits<PHYS_ADDR_WIDTH> paddr, XReg vaddr, MemoryOperation type
+  arguments Bits<PHYS_ADDR_WIDTH> paddr, XReg vaddr, MemoryOperation type, ExceptionCode fault_type
   description {
     Checks if the physical address paddr is able to access memory, and raises
     the appropriate exception if not.
@@ -1155,66 +892,13 @@ function access_check {
   body {
     # check if this is a valid physical address
     if (paddr > ((1 << PHYS_ADDR_WIDTH) - access_size)) {
-      if (type == MemoryOperation::Write) {
-        raise (ExceptionCode::StoreAmoAccessFault, vaddr);
-      } else if (type == MemoryOperation::Read) {
-        raise (ExceptionCode::LoadAccessFault, vaddr);
-      } else if (type == MemoryOperation::Fetch) {
-        raise (ExceptionCode::InstructionAccessFault, vaddr);
-      }
+      raise(fault_type, vaddr);
     }
 
     # check PMP
-    # can return either AccessFault or AddressMisalignedException
     if (!pmp_check<access_size>(paddr[PHYS_ADDR_WIDTH-1:0], type)) {
-      if (type == MemoryOperation::Write) {
-        raise (ExceptionCode::StoreAmoAccessFault, vaddr);
-      } else if (type == MemoryOperation::Read) {
-        raise (ExceptionCode::LoadAccessFault, vaddr);
-      } else if (type == MemoryOperation::Fetch) {
-        raise (ExceptionCode::InstructionAccessFault, vaddr);
-      }
+      raise(fault_type, vaddr);
     }
-  }
-}
-
-builtin function check_pma {
-  returns Boolean
-  arguments XReg paddr, PmaAttribute attr
-  description {
-    Returns True if the address at paddr has PMA Attribute 'attr'
-  }
-}
-
-builtin function read_physical_memory {
-  template U32 len
-  returns Bits<len>
-  arguments XReg paddr
-  description {
-    Read from physical memory.
-  }
-}
-
-function is_naturally_aligned {
-  template U32 M, U32 N
-  returns Boolean
-  arguments Bits<M> value
-  description {
-    Checks if M-bit value is naturally aligned to N bits.
-  }
-  body {
-    return true if N == 8; # everything is byte aligned
-
-    Bits<M> mask = (N/8) - 1;
-    return (value & ~mask) == value;
-  }
-}
-
-builtin function write_physical_memory {
-  template U32 len
-  arguments XReg paddr, Bits<len> value
-  description {
-    Write to physical memory.
   }
 }
 
@@ -1234,7 +918,7 @@ function base32? {
     } else if (implemented?(ExtensionName::H) && mode() == PrivilegeMode::VS) {
       return CSR[hstatus].VSXL == $bits(xlen32);
     } else {
-      assert(implemented?(ExtensionName::H) && mode() == PrivilegeMode::VU);
+      assert(implemented?(ExtensionName::H) && mode() == PrivilegeMode::VU, "Unexpected mode");
       return CSR[vsstatus].UXL == $bits(xlen32);
     }
   }
@@ -1290,86 +974,56 @@ function current_translation_mode {
 
     if (effective_mode == PrivilegeMode::M) {
       return SatpMode::Bare;
-    } else {
+    } else if (CSR[misa].S == 1'b1) {
       # if (implemented?(ExtensionName::H) && virtual_mode?()) {
         # return CSR[vsatp].MODE;
       # } else {
         return CSR[satp].MODE;
       # }
+    } else {
+      # there is no S mode, and so there is no translation in what must be U-mode
+      return SatpMode::Bare;
     }
   }
 }
 
-builtin function wfi {
+function page_walk {
+  template
+    U32 VA_SIZE,     # virtual address size  (Sv32 = 32, Sv39 = 39, Sv48 = 48, Sv57 = 57)
+    U32 PA_SIZE,     # physical address size (Sv32 = 34, Sv39 = 56, Sv48 = 56, Sv57 = 56)
+    U32 PTESIZE,     # length, in bits, of a Page Table Entry (Sv32 = 4, others = 8)
+    U32 LEVELS       # levels in the page tabl (Sv32 = 2, Sv39 = 3, Sv48 = 4, Sv57 = 5)
+  returns Bits<PA_SIZE> # the translated address
+  arguments
+    Bits<XLEN> vaddr,  # the virtual address to translate
+    MemoryOperation op # the operation type
   description {
-    Wait-for-interrupt.
+    Translate virtual address through a page walk.
 
-    A valid implementation is a no-op.
+    May raise a Page Fault if an error involving the page table structure occurs along the walk.
 
-    The model will advance the PC; this function does not need to.
-  }
-}
+    Implicit reads of the page table are accessed check, and may raise Access Faults.
+    Implicit writes (updates of A/D) are also accessed checked, and may raise Access Faults
 
-function valid_vaddr? {
-  returns Boolean
-  arguments XReg vaddr
-  description {
-    Checks whether 'vaddr' is a valid virtual address for the given machine state (e.g., translation mode). 
+    The translated address _is not_ accessed checked.
+
+    Returns the translated physical address.
   }
   body {
-    if (CSR[misa].S == 0) {
-      return true;
-    }
+    Bits<PA_SIZE> ppn;
 
-    SatpMode translation_mode = current_translation_mode();
-
-    if (translation_mode == SatpMode::Bare) {
-      if (vaddr >= (1 << PHYS_ADDR_WIDTH)) {
-        # virtual address is larger than physical address
-        return false;
-      }
-
-    } else if (translation_mode == SatpMode::Sv32) {
-      # sv32 uses 32-bit virtual addresses, so all vaddrs are valid
-      return true;
-
-    } else if (implemented?(ExtensionName::Sv39) && translation_mode == SatpMode::Sv39) {
-      if (vaddr[63:39] != {25{vaddr[38]}}) {
-        # non-canonical virtual address
-        return false;
-      }
-
-    } else if (implemented?(ExtensionName::Sv48) && translation_mode == SatpMode::Sv48) {
-      if (vaddr[63:48] != {16{vaddr[47]}}) {
-        # non-canonical virtual address
-        return false;
-      }
-
-    } else if (implemented?(ExtensionName::Sv57) && translation_mode == SatpMode::Sv57) {
-      if (vaddr[63:57] != {7{vaddr[56]}}) {
-        # non-canonical virtual address
-        return false;
-      }
-    }
-
-    # fall through: virtual address is valid
-    return true;
-  }
-}
-
-function translate_sv39 {
-  returns Bits<56>
-  arguments Bits<64> vaddr, XReg satp, MemoryOperation op
-  description {
-    Translate virtual address using Sv39.
-
-    Return physical address, which is not accessed checked (e.g., for PMP, PMA).
-  }
-  body {
-    XReg ppn;
+    # the VPN size is 10 bits in Sv32, and 9 bits in all others
+    U32 VPN_SIZE = (LEVELS == 2) ? 10 : 9;
 
     # if there is an exception, set up the correct type
-    ExceptionCode ecode =
+    ExceptionCode access_fault_code =
+      op == MemoryOperation::Read ?
+        ExceptionCode::LoadAccessFault :
+        ( op == MemoryOperation::Fetch ?
+            ExceptionCode::InstructionAccessFault :
+            ExceptionCode::StoreAmoAccessFault );
+
+    ExceptionCode page_fault_code =
       op == MemoryOperation::Read ?
         ExceptionCode::LoadPageFault :
         ( op == MemoryOperation::Fetch ?
@@ -1382,140 +1036,163 @@ function translate_sv39 {
       ppn = CSR[satp].PPN;
 #    }
 
-    if (vaddr[63:39] != {25{vaddr[38]}}) {
+    if (vaddr[xlen()-1:VA_SIZE] != {xlen()-VA_SIZE{vaddr[VA_SIZE - 1]}}) {
       # non-canonical virtual address raises a page fault
       # note that if pointer masking is enabled,
       # vaddr has already been transformed before reaching here
-      raise (ecode, vaddr);
+      raise (page_fault_code, vaddr);
     }
 
-    for (U32 i = 2; i >= 0; i--) {
-      XReg pte_addr = (ppn << 12) + ((vaddr >> (12 + 9*i)) & 0x1ff);
+    for (U32 i = (LEVELS - 1); i >= 0; i--) {
+      U32 vpn = (vaddr >> (12 + VPN_SIZE*i)) & ((1 << VPN_SIZE) - 1);
+
+      Bits<PA_SIZE> pte_addr = (ppn << 12) + (vpn * (PTESIZE/8));
 
       # perform access check on the physical address of pte before it's used
-      access_check<64>(pte_addr, vaddr, op);
+      access_check<PTESIZE>(pte_addr, vaddr, MemoryOperation::Read, access_fault_code);
 
-      Sv39PageTableEntry pte = read_physical_memory<64>(pte_addr);
-      if (pte.V == 0                    # invalid entry
-          || (pte.R == 0 && pte.W == 1) # write permission must also have read permission
-          || pte.Reserved != 0) {          # reserved bits
+      if (!pma_applies?(PmaAttribute::HardwarePageTableRead, pte_addr, PTESIZE)) {
+        raise(access_fault_code, vaddr);
+      }
+
+      Bits<PTESIZE> pte = read_physical_memory<PTESIZE>(pte_addr);
+      PteFlags pte_flags = pte[9:0];
+
+      # check if any reserved bits are set
+      # Sv39 has no reserved bits, and Sv39/48/57 all have reserved bits at 60:54
+      if ((VA_SIZE != 32) && (pte[60:54] != 0)) {
+        raise(page_fault_code, vaddr);
+      }
+
+      if (pte_flags.V == 0 ||                    # invalid entry
+         (pte_flags.R == 0 && pte_flags.W == 1)) { # write permission must also have read permission
 #          || (!implemented?(ExtensionName::Svnapot) && pte.N != 0)
 #          || (!implemented?(ExtensionName::Svpbmt) && pte.PBMT != 0)) {
         # found invalid PTE
-        raise (ecode, vaddr);
-      } else if (pte.R == 1 || pte.X == 1) {
+        raise (page_fault_code, vaddr);
+      } else if (pte_flags.R == 1 || pte_flags.X == 1) {
         # found a leaf PTE
 
-        if (op == MemoryOperation::Read) {
-          if ((CSR[mstatus].MXR == 0 && pte.R == 0)
-              || (CSR[mstatus].MXR == 1 && pte.X == 0 && pte.R == 0)) {
+        # see if there is permission to perform the access
+        if (op == MemoryOperation::Read || op == MemoryOperation::ReadModifyWrite) {
+          if ((CSR[mstatus].MXR == 0 && pte_flags.R == 0)
+              || (CSR[mstatus].MXR == 1 && pte_flags.X == 0 && pte_flags.R == 0)) {
             # no read permission
-            raise (ExceptionCode::LoadPageFault, vaddr);
+            raise (page_fault_code, vaddr);
           }
-          if ((mode() == PrivilegeMode::U && pte.U == 0)
-            || (mode() == PrivilegeMode::M && CSR[mstatus].MPRV == 1 && CSR[mstatus].MPP == $bits(PrivilegeMode::HS) && pte.U == 1 && CSR[mstatus].SUM == 0)
-            || (mode() == PrivilegeMode::S && pte.U == 1 && CSR[mstatus].SUM == 0)) {
+          if ((mode() == PrivilegeMode::U && pte_flags.U == 0)
+            || (mode() == PrivilegeMode::M && CSR[mstatus].MPRV == 1 && CSR[mstatus].MPP == $bits(PrivilegeMode::HS) && pte_flags.U == 1 && CSR[mstatus].SUM == 0)
+            || (mode() == PrivilegeMode::S && pte_flags.U == 1 && CSR[mstatus].SUM == 0)) {
             # supervisor cannot read U unless mstatus.SUM = 1
-            raise (ExceptionCode::LoadPageFault, vaddr);
+            raise (page_fault_code, vaddr);
           }
-        } else if ((op == MemoryOperation::Write) && (pte.W == 0)) {
+        }
+        if (((op == MemoryOperation::Write) || (op == MemoryOperation::ReadModifyWrite))
+             && (pte_flags.W == 0)) {
           # no write permission
-          raise (ExceptionCode::StoreAmoPageFault, vaddr);
-        } else if ((op == MemoryOperation::Fetch) && (pte.X == 0)) {
+          raise (page_fault_code, vaddr);
+        } else if ((op == MemoryOperation::Fetch) && (pte_flags.X == 0)) {
           # no execute permission
-          raise (ExceptionCode::InstructionPageFault, vaddr);
+          raise (page_fault_code, vaddr);
         }
 
-        if (pte.U == 0) {
+        if (pte_flags.U == 0) {
           # supervisor page
           if (mode() == PrivilegeMode::U) {
             # user access to supervisor page is never allowed
-            raise (ecode, vaddr);
+            raise (page_fault_code, vaddr);
           }
         } else {
           # user page
-          if (mode() == PrivilegeMode::HS || (mode() == PrivilegeMode::M && CSR[mstatus].MPRV == 1 && CSR[mstatus].MPP == $bits(PrivilegeMode::HS))) {
+          if (mode() == PrivilegeMode::S || (mode() == PrivilegeMode::M && CSR[mstatus].MPRV == 1 && CSR[mstatus].MPP == $bits(PrivilegeMode::S))) {
             # effective S-mode access
-            if (op == MemoryOperation::Read) {
+            if (op == MemoryOperation::Read || op == MemoryOperation::ReadModifyWrite) {
               if (CSR[mstatus].SUM == 0) {
                 # supervisor can only read user pages when mstatus.SUM == 1
-                raise (ExceptionCode::LoadPageFault, vaddr);
+                raise (page_fault_code, vaddr);
               }
             } else {
               # supervisor can never write or execute a user page
-              raise (ecode, vaddr);
+              raise (page_fault_code, vaddr);
             }
           }
         }
 
         # ensure remaining PPN bits are zero, otherwise there is a misaligned super page
-        raise (ecode, vaddr) if (i >= 1 && pte.PPN0 != 0);
-        raise (ecode, vaddr) if (i == 2 && pte.PPN1 != 0);
+        raise (page_fault_code, vaddr) if ((i > 0) && (pte[(i-1)*VPN_SIZE:10] != 0));
 
-        if (false) { // implemented?(ExtensionName::Svadu)) {
-          # svadu requires page tables to be located in memory with hardware page-table write access
-          # and RsrvEventual PMA
-          if (!check_pma(pte_addr, PmaAttribute::RsrvEventual)) {
-            raise (ExceptionCode::LoadAccessFault, vaddr);
+        # check access and dirty bits
+        if ((pte_flags.A == 0)         # access is clear
+             || ((pte_flags.D == 0)    # or dirty is clear and this is a (read-modify-)write
+                 && ((op == MemoryOperation::Write)
+                     || (op == MemoryOperation::ReadModifyWrite)))) {
+
+          # check for hardware update of A/D bits
+          if (CSR[menvcfg].ADUE == 1'b1) {
+            # Svadu requires page tables to be located in memory with hardware page-table write access
+            # and RsrvEventual PMA
+            if (!pma_applies?(PmaAttribute::RsrvEventual, pte_addr, PTESIZE)) {
+              raise (access_fault_code, vaddr);
+            }
+            if (!pma_applies?(PmaAttribute::HardwarePageTableWrite, pte_addr, PTESIZE)) {
+              raise (access_fault_code, vaddr);
+            }
+
+            access_check<PTESIZE>(pte_addr, vaddr, MemoryOperation::Write, access_fault_code);
+
+            Boolean success;
+            Bits<PTESIZE> updated_pte;
+            if (pte_flags.D == 0 && op == MemoryOperation::Write) {
+              # try to set both A and D bits
+              updated_pte = pte | 0b11000000;
+            } else {
+              # try to set the A bit
+              updated_pte = pte | 0b01000000;
+            }
+
+            if (PTESIZE == 32) {
+              success = atomic_check_then_write_32(pte_addr, pte, updated_pte);
+            } else if (PTESIZE == 64) {
+              success = atomic_check_then_write_64(pte_addr, pte, updated_pte);
+            } else {
+              assert(false, "Unexpected PTESIZE");
+            }
+
+
+            if (!success) {
+              # the PTE changed between the read during the walk and the attempted atomic update
+              # roll back, and try this level again
+              i = i + 1;
+            } else {
+              # successful translation and update
+              return {(pte[PA_SIZE-3:(i*VPN_SIZE) + 10] << 2), vaddr[11:0]};
+            }
           }
-          access_check<64>(pte_addr, vaddr, MemoryOperation::Write);
-#          if (implemented?(ExtensionName::H) && CSR[henvcfg].ADUE == 0b1) {
-            # update the A bit
-            # this should be atomic with the translation
-#            write_physical_memory(pte_addr, pte & (1 << 6));
-#          } else if (CSR[menvcfg].ADUE == 0b1) {
-            # update the A bit
-            # this should be atomic with the translation
-#            write_physical_memory(pte_addr, pte & (1 << 6));
-#          }
-        }
-        if (//implemented?(ExtensionName::Svade) &&
-            pte.A == 0) {
-          # trap on access with A == 0
-          raise (ecode, vaddr);
+
+          if ((CSR[menvcfg].ADUE == 1'b0) && implemented?(ExtensionName::Svade)) {
+            raise(page_fault_code, vaddr);
+          }
         }
 
         # translation succeeded
-        return {pte.PPN2, pte.PPN1, pte.PPN0, vaddr[11:0]};
+        return {(pte[PA_SIZE-3:(i*VPN_SIZE) + 10] << 2), vaddr[11:0]};
       } else {
         # found a pointer to the next level
 
         if (i == 0) {
           # a pointer can't exist on the last level
-          raise (ecode, vaddr);
+          raise (page_fault_code, vaddr);
         }
 
-        if (pte.D == 1 || pte.A == 1 || pte.U == 1) {
+        if (pte_flags.D == 1 || pte_flags.A == 1 || pte_flags.U == 1) {
           # D, A, and U are reserved in non-leaf PTEs
-          raise (ecode, vaddr);
+          raise (page_fault_code, vaddr);
         }
 
-        ppn = pte.PPN << 12;
         # fall through to next level
+        ppn = pte[PA_SIZE-3:10] << 12;
       }
     }
-  }
-}
-
-function translate_load_sv48 {
-  returns Bits<56>
-  arguments XReg vaddr, XReg satp
-  description {
-    Translate virtual address using Sv48
-  }
-  body {
-    return 0;
-  }
-}
-
-function translate_load_sv57 {
-  returns Bits<56>
-  arguments XReg vaddr, XReg satp
-  description {
-    Translate virtual address using Sv57
-  }
-  body {
-    return 0;
   }
 }
 
@@ -1531,7 +1208,7 @@ function translate {
   body {
     SatpMode translation_mode = current_translation_mode();
 
-    PrivilegeMode effective_mode = effective_ldst_mode();
+    XReg paddr;
 
     if (implemented?(ExtensionName::H) && virtual_mode?()) {
       return 0;
@@ -1558,31 +1235,62 @@ function translate {
     } else {
       if (translation_mode == SatpMode::Bare) {
         # bare == no translation
-        if (vaddr > ((1 << PHYS_ADDR_WIDTH) - 1)) {
-          if (op == MemoryOperation::Read) {
-            raise (ExceptionCode::LoadAccessFault, vaddr);
-          } else if (op == MemoryOperation::Write) {
-            raise (ExceptionCode::StoreAmoAccessFault, vaddr);
-          } else {
-            assert(op == MemoryOperation::Fetch);
-            raise (ExceptionCode::InstructionAccessFault, vaddr);
-          }
-        }
-        return vaddr;
-
-#      } else if (implemented?(ExtensionName::Sv32) && translation_mode == SatpMode::Sv32) {
-#        return translate_sv32(vaddr, CSR[satp], op);
-
+        paddr = vaddr;
+      } else if (implemented?(ExtensionName::Sv32) && translation_mode == SatpMode::Sv32) {
+        # Sv32 page table walk
+        paddr = page_walk<32, 34, 32, 2>(vaddr, op);
       } else if (implemented?(ExtensionName::Sv39) && translation_mode == SatpMode::Sv39) {
-#        return 0;
-        return translate_sv39(vaddr, CSR[satp], op);
-
-#      } else if (implemented?(ExtensionName::Sv48) && translation_mode == SatpMode::Sv48) {
-#        return translation_sv48(vaddr, CSR[satp], op);
-
-#      } else if (implemented?(ExtensionName::Sv57) && translation_mode == SatpMode::Sv57) {
-#        return translate_sv57(vaddr, CSR[satp], op);
+        # Sv39 page table walk
+        paddr = page_walk<39, 56, 64, 3>(vaddr, op);
+      } else if (implemented?(ExtensionName::Sv48) && translation_mode == SatpMode::Sv48) {
+        # Sv48 page table walk
+        paddr = page_walk<48, 56, 64, 4>(vaddr, op);
+      } else if (implemented?(ExtensionName::Sv57) && translation_mode == SatpMode::Sv57) {
+        # Sv57 page table walk
+        paddr = page_walk<57, 56, 64, 5>(vaddr, op);
       }
+    }
+    return paddr;
+  }
+}
+
+function canonical_vaddr? {
+  returns Boolean
+  arguments XReg vaddr
+  description {
+    Returns whether or not _vaddr_ is a valid (_i.e._, canonical) virtual address.
+
+    If pointer masking (S**pm) is enabled, then vaddr will be masked before checking
+    the canonical address.
+  }
+  body {
+    if (CSR[misa].S == 1'b0) {
+      # there is no translation, any address is canonical
+      return true;
+    }
+
+    # canonical depends on the virtual address size in the current translation mode
+    SatpMode satp_mode;
+    if (virtual_mode?()) {
+      satp_mode = CSR[vsatp];
+    } else {
+      satp_mode = CSR[satp];
+    }
+
+    # calculate the effective address after pointer masking
+    XReg eaddr = mask_eaddr(vaddr);
+
+    if (satp_mode == SatpMode::Bare) {
+      return true;
+    } else if (satp_mode == SatpMode::Sv32) {
+      # Sv32 uses all 32 bits of the VA
+      return true; 
+    } else if (satp_mode == SatpMode::Sv39) {
+      return eaddr[63:39] == {25{eaddr[38]}};
+    } else if (satp_mode == SatpMode::Sv48) {
+      return eaddr[63:48] == {16{eaddr[47]}};
+    } else if (satp_mode == SatpMode::Sv57) {
+      return eaddr[63:57] == {6{eaddr[56]}};
     }
   }
 }
@@ -1602,7 +1310,7 @@ function read_memory_aligned {
       : virtual_address;
 
     # may raise an exception
-    access_check<len>(physical_address, virtual_address, MemoryOperation::Read);
+    access_check<len>(physical_address, virtual_address, MemoryOperation::Read, ExceptionCode::LoadAccessFault);
 
     return read_physical_memory<len>(physical_address);
   }
@@ -1630,15 +1338,184 @@ function read_memory {
           result = result | (read_memory_aligned<8>(virtual_address + i) << (8*i));
         }
         return result;
+      } else if (MISALIGNED_SPLIT_STRATEGY == "custom") {
+        unpredictable("An implementation is free to break a misaligned access any way, leading to unpredictable behavior when any part of the misaligned access causes an exception");
       }
     }
   }
 }
 
-//function load_reserved {
-//
-//}
+# hart-global state to track the local reservation set
+Boolean    reservation_set_valid = false;
+Bits<XLEN> reservation_set_address;
+Bits<XLEN> reservation_set_size;
+Bits<XLEN> reservation_physical_address;  # The exact address used by the LR.W/LR.D
+Bits<XLEN> reservation_virtual_address;   # The exact address used by the LR.W/LR.D
+Bits<XLEN> reservation_size;              # the size of the LR operation (32 or 64)
 
+function invalidate_reservation_set {
+  description {
+    Invalidates any currently held reservation set.
+
+    [NOTE]
+    --
+    This function may be called by the platform, independent of any actions
+    occurring in the local hart, for any or no reason.
+
+    The platorm *must* call this function if an external hart or device accesses
+    part of this reservation set while reservation_set_valid could be true.
+    --
+  }
+  body {
+    reservation_set_valid = false;
+  }
+}
+
+function register_reservation_set {
+  arguments
+    Bits<XLEN> physical_address,   # The (always aligned) physical address to reserve.
+    Bits<XLEN> length              # mimimum length of the reservation. actual reservation may be larger
+  description {
+    Register a reservation for a physical address range that subsumes
+    [physical_address, physical_address + N).
+  }
+  body {
+    reservation_set_valid = true;
+    reservation_address = physical_address;
+
+    if (LRSC_RESERVATION_STRATEGY == "reserve naturally-aligned 64-byte region") {
+      reservation_set_address = physical_address & ~XLEN'h3f;
+      reservation_set_size = 64;
+    } else if (LRSC_RESERVATION_STRATEGY == "reserve naturally-aligned 128-byte region") {
+      reservation_set_address = physical_address & ~XLEN'h7f;
+      reservation_set_size = 128;
+    } else if (LRSC_RESERVATION_STRATEGY == "reserve exactly enough to cover the access") {
+      reservation_set_address = physical_address;
+      reservation_set_size = length;
+    } else if (LRSC_RESERVATION_STRATEGY == "custom") {
+      unpredictable("Implementations may set reservation sets of any size, as long as they cover the reserved accessed");
+    } else {
+      assert(false, "Unexpected LRSC_RESERVATION_STRATEGY");
+    }
+  }
+}
+
+function load_reserved {
+  template U32 N                # the number of bits being loaded
+  returns Bits<N>               # the value of memory at virtual_address
+  arguments
+    Bits<XLEN> virtual_address, # the virtual address to load
+    Bits<1>    aq,              # acquire semantics? 0=no, 1=yes
+    Bits<1>    rl               # release semantics? 0=no, 1=yes
+  description {
+    Register a reservation for virtual_address at least N bits long
+    and read the value from memory.
+
+    If aq is set, then also perform a memory model acquire.
+
+    If rl is set, then also perform a memory model release (software is discouraged from doing so).
+
+    This function assumes alignment checks have already occurred.
+  }
+  body {
+    Bits<PHYS_ADDR_WIDTH> physical_address =
+      (CSR[misa].S == 1)
+        ? translate(virtual_address, MemoryOperation::Read)
+        : virtual_address;
+
+    if (pma_applies?(PmaAttribute::RsrvNone, physical_address, N)) {
+      raise(ExceptionCode::LoadAccessFault, virtual_address);
+    }
+
+    if (aq == 1) {
+      memory_model_acquire();
+    }
+    if (rl == 1) {
+      memory_model_release();
+    }
+
+    register_reservation_set(physical_address, N);
+
+    if (CSR[misa].S ==1 && LRSC_FAIL_ON_VA_SYNONYM) {
+      # also need to remember the virtual address
+      reservation_virtual_address = virtual_address;
+    }
+
+    return read_memory_aligned<N>(physical_address);
+  }
+}
+
+function store_conditional {
+  template U32 N                # number of bits being stored
+  returns Boolean               # whether or not the store conditional succeeded
+  arguments
+    Bits<XLEN> virtual_address, # the virtual address to store to
+    Bits<XLEN> value,           # the value to store
+    Bits<1>    aq,              # acquire semantics? 0=no, 1=yes
+    Bits<1>    rl               # release semantics? 0=no, 1=yes
+  description {
+    Atomically check the reservation set to ensure:
+
+     * it is valid
+     * it covers the region addressed by this store
+     * the address setting the reservation set matches virtual address
+
+    If the preceeding are met, perform the store and return 0.
+    Otherwise, return 1.
+  }
+  body {
+    Bits<PHYS_ADDR_WIDTH> physical_address =
+      (CSR[misa].S == 1)
+        ? translate(virtual_address, MemoryOperation::Write)
+        : virtual_address;
+
+    if (pma_applies?(PmaAttribute::RsrvNone, physical_address, N)) {
+      raise(ExceptionCode::StoreAmoAccessFault, virtual_address);
+    }
+
+    # failed SC still looks like a store to memory protection
+    access_check<N>(physical_address, virtual_address, MemoryOperation::Write, ExceptionCode::StoreAmoAccessFault);
+
+    # acquire/release occur regardless of whether or not the SC succeeds
+    if (aq == 1) {
+      memory_model_acquire();
+    }
+    if (rl == 1) {
+      memory_model_release();
+    }
+
+    if (reservation_set_valid == false) {
+      return false;
+    }
+
+    if (!contains?(reservation_set_address, reservation_set_size, physical_address, N)) {
+      # this access is not in the reservation set
+      invalidate_reservation_set();
+      return false;
+    }
+
+    if (LRSC_FAIL_ON_NON_EXACT_LRSC) {
+      if (reservation_physical_address != physical_address || reservation_size != N) {
+        # this access does not match the most recent LR
+        invalidate_reservation_set();
+        return false;
+      }
+    }
+
+    if (LRSC_FAIL_ON_VA_SYNONYM) {
+      if (reservation_virtual_address != virtual_address || reservation_size != N) {
+        # this access does not match the most recent LR
+        invalidate_reservation_set();
+        return false;
+      }
+    }
+
+    # success. perform the store
+    write_physical_memory<N>(physical_address, value);
+
+    return true;
+  }
+}
 
 
 
@@ -1652,11 +1529,11 @@ function write_memory_aligned {
     XReg physical_address;
 
     physical_address = (CSR[misa].S == 1)
-      ? translate(virtual_address, MemoryOperation::Read)
+      ? translate(virtual_address, MemoryOperation::Write)
       : virtual_address;
 
     # may raise an exception
-    access_check<len>(physical_address, virtual_address, MemoryOperation::Write);
+    access_check<len>(physical_address, virtual_address, MemoryOperation::Write, ExceptionCode::StoreAmoAccessFault);
 
     write_physical_memory<len>(physical_address, value);
   }

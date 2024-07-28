@@ -5,6 +5,21 @@
 
 *<%= inst.long_name %>*
 
+This instruction is defined by<%- if inst.defined_by.size > 1 -%> any of the following<%- end -%>:
+
+  <%- inst.defined_by.each do |ext| -%>
+  * `<%= ext.name %>`, `<%= ext.version_requirement %>`
+  <%- end -%>
+
+<%- unless inst.extension_requirements.empty? -%>
+Additionally, this instruction is only defined if the following <%- if inst.extension_requirements.size == 1 -%>extension is<%- else -%>extensions are<%- end -%> also present and active:
+
+  <%- inst.extension_requirements.each do |ext| -%>
+  * `<%= ext.name %>`, `<%= ext.version_requirement %>`
+  <%- end -%>
+
+<%- end -%>
+
 == Encoding
 
 <%- if arch_def.multi_xlen? && inst.multi_encoding? -%>
@@ -67,6 +82,7 @@ RV64::
 ====
 RV32::
 +
+[source.idl]
 ----
 <%- inst.decode_variables(32).each do |d| -%>
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
@@ -75,6 +91,7 @@ RV32::
 
 RV64::
 +
+[source,idl]
 ----
 <%- inst.decode_variables(64).each do |d| -%>
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
@@ -82,6 +99,7 @@ RV64::
 ----
 ====
 <%- else -%>
+[source,idl]
 ----
 <%- inst.decode_variables(arch_def.config_params["XLEN"]).each do |d| -%>
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
@@ -91,17 +109,19 @@ RV64::
 
 == Execution
 
-<%- if inst.operation_ast(arch_def.idl_compiler).nil? -%>
+<%- xlens = inst.base.nil? ? (arch_def.multi_xlen? ? [32, 64] : [arch_def.mxlen]) : [inst.base] -%>
 
-<%- else -%>
+<%- if inst.key?("operation()") -%>
 [tabs]
 ====
-Pruned::
+<%- xlens.each do |effective_xlen| -%>
+Pruned, XLEN == <%= effective_xlen %>::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.pruned_operation_ast(arch_def.sym_table).gen_adoc %>
+<%= inst.pruned_operation_ast(arch_def.sym_table, effective_xlen).gen_adoc %>
 ----
+<%- end -%>
 
 Original::
 +
@@ -118,7 +138,7 @@ Original::
 
 This instruction may result in the following synchronous exceptions:
 
-  <%- exception_list.each do |etype| -%>
+  <%- exception_list.sort.each do |etype| -%>
   * <%= etype %>
   <%- end -%>
 

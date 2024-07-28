@@ -284,6 +284,30 @@ params:
   #  * 3264: VSXLEN can be changed (via hstatus.VSXL) between 32 and 64
   VUXLEN: 64
 
+  # Strategy used to handle reservation sets
+  #
+  #  * "reserve naturally-aligned 64-byte region": Always reserve the 64-byte block containing the LR/SC address 
+  #  * "reserve naturally-aligned 128-byte region": Always reserve the 128-byte block containing the LR/SC address 
+  #  * "reserve exactly enough to cover the access": Always reserve exactly the LR/SC access, and no more
+  #  * "custom": Custom behavior, leading to an 'unpredictable' call on any LR/SC
+  LRSC_RESERVATION_STRATEGY: reserve naturally-aligned 64-byte region
+
+  # whether or not an SC will fail if its VA does not match the VA of the prior LR,
+  # even if the physical address of the SC and LR are the same
+  LRSC_FAIL_ON_VA_SYNONYM: false
+
+  # what to do when an LR/SC address is misaligned:
+  #
+  #  * 'always raise misaligned exception': self-explainitory
+  #  * 'always raise access fault': self-explainitory
+  #  * 'custom': Custom behavior; misaligned LR/SC may sometimes raise a misaligned exception and sometimes raise a access fault. Will lead to an 'unpredictable' call on any misaligned LR/SC access
+  LRSC_MISALIGNED_BEHAVIOR: always raise misaligned exception
+
+  # whether or not a Store Conditional fails if its physical address and size do not
+  # exactly match the physical address and size of the last Load Reserved in program order
+  # (independent of whether or not the SC is in the current reservation set)
+  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+
 hpm_events:
   - 'L1_ICACHE_MISS'
   - 'L2_CACHE_MISS'
@@ -294,6 +318,7 @@ custom_exception_codes: []
 extensions:
   - [A, 2.1]
   - [B, 1.0]
+  - [C, 2.2]
   - [D, 2.2]
   # - [F, 2.2]
   - [I, 2.1]

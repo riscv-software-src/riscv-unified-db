@@ -139,7 +139,7 @@ RV64::
 <%- else -%>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump i.wavedrom_desc(i.respond_to?(:base) ? i.base : 64) %>
+<%= JSON.dump i.wavedrom_desc(i.base.nil? ? 64 : i.base) %>
 ....
 <%- end -%>
 
@@ -166,7 +166,7 @@ RV64::
 ----
 <%- else -%>
 ----
-<%- i.decode_variables(i.respond_to?(:base) ? i.base : 64).each do |d| -%>
+<%- i.decode_variables(i.base.nil? ? 64 : i.base).each do |d| -%>
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
 <%- end -%>
 ----
