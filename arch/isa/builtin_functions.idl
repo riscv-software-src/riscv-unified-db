@@ -1,0 +1,331 @@
+%version: 1.0
+
+builtin function implemented? {
+  returns Boolean
+  arguments ExtensionName extension
+  description {
+    Return true if the implementation supports `extension`.
+  }
+}
+
+builtin function unpredictable {
+  arguments String why
+  description {
+    Indicate that the hart has reached a state that is unpredictable because the
+    RISC-V spec allows multiple behaviors. Generally, this will be a fatal condition
+    to any emulation, since it is unclear what to do next.
+
+    The single argument _why_ is a string describing why the hart entered an
+    unpredictable state.
+  }
+}
+
+builtin function read_hpm_counter {
+  returns Bits<64>
+  arguments Bits<5> n
+  description {
+    Returns the value of hpmcounterN.
+
+    N must be between 3..31.
+
+    hpmcounterN must be implemented.
+  }
+}
+
+builtin function read_mcycle {
+  returns Bits<64>
+  description {
+    Return the current value of the cycle counter.
+  }
+}
+
+builtin function sw_write_mcycle {
+  returns Bits<64>
+  arguments Bits<64> value
+  description {
+    Given a _value_ that software is trying to write into mcycle,
+    return the value that will actually be written.
+  }
+}
+
+builtin function memory_model_acquire {
+  description {
+    Perform an acquire; that is, ensure that no subsequent
+    operation in program order appears to an external observer
+    to occur after the operation calling this function.
+  }
+}
+
+builtin function memory_model_release {
+  description {
+    Perform a release; that is, ensure that no prior store
+    in program order can be observed external to this hart
+    after this function returns.
+  }
+}
+
+builtin function assert {
+  arguments
+    Boolean test,   # the result of a test
+    String message  # a helpful message explaining what was expected
+  description {
+    Assert that a condition is true. Failure represents an error in the IDL model.
+  }
+}
+
+builtin function notify_mode_change {
+  arguments PrivilegeMode new_mode, PrivilegeMode old_mode
+  description {
+    Called whenever the privilege mode changes. Downstream tools can use this to hook events.
+  }
+}
+
+builtin function abort_current_instruction {
+  description {
+    Abort the current instruction, and start refetching from $pc.
+  }
+}
+
+
+builtin function zext {
+  returns XReg
+  arguments XReg value, XReg first_extended_bit
+  description {
+    Zero extend `value` starting at `first_extended_bit`.
+
+    Bits [`XLEN-1`:`first_extended_bit`] of the return value
+    should get the value `0`;
+  }
+}
+
+builtin function ebreak {
+  description {
+    Raise an `Environment Break` exception, returning control to the debug environment.
+  }
+}
+
+builtin function saturate {
+  returns XReg
+  arguments XReg value, XReg max_value
+  description {
+    If unsigned `value` is less than `max_value`, return `value`.
+    Otherwise, return `max_value`.
+  }
+}
+
+builtin function fence {
+  arguments Boolean PI, Boolean PR, Boolean PO, Boolean PW, Boolean SI, Boolean SR, Boolean SO, Boolean SW
+  description {
+    Execute a memory ordering fence.(according to the FENCE instruction).
+  }
+}
+
+builtin function ifence {
+  description {
+    Execute a memory ordering instruction fence (according to FENCE.I).
+  }
+}
+
+builtin function pow {
+  returns XReg
+  arguments XReg value, XReg exponent
+  description {
+    Return `value` to the power `exponent`.
+  }
+}
+
+
+builtin function maybe_cache_translation {
+  arguments TranslationResult result
+  description {
+    Given a translation result, potentially cache the result for later use. This function models
+    a TLB fill operation. A valid implementation does nothing.
+  }
+}
+
+builtin function invalidate_all_translations {
+  description {
+    Locally invalidate all cached address translations, from all address ranges
+    and all ASIDs, including global mappings.
+
+    A valid implementation does nothing if address caching is not used.
+  }
+}
+
+builtin function sfence_all {
+  description {
+    Ensure all loads and stores after this operation see any previous address cache invalidations.
+  }
+}
+
+builtin function sfence_asid {
+  arguments Bits<ASID_WIDTH> asid
+  description {
+    Ensure all reads and writes using address space 'asid' see any previous address space invalidations.
+
+    Does not have to (but may, if conservative) order any global mappings.
+  }
+}
+
+builtin function sfence_vaddr {
+  arguments XReg vaddr
+  description {
+    Ensure all reads and writes using a leaf page table that contains 'vaddr' see any previous address space invalidations.
+
+    Must also order any global mappings containing 'vaddr'.
+  }
+}
+
+builtin function sfence_asid_vaddr {
+  arguments Bits<ASID_WIDTH> asid, XReg vaddr
+  description {
+    Ensure all reads and writes using address space 'asid' and a leaf page table that contains 'vaddr' see any previous address space invalidations.
+
+    Does not have to (but may, if conservative) order any global mappings.
+  }
+}
+
+builtin function invalidate_asid_translations {
+  arguments Bits<ASID_WIDTH> asid
+  description {
+    Locally invalidate all cached address translations for address space 'asid'.
+    Does not affect global mappings.
+
+    A valid implementation does nothing if address caching is not used.
+  }
+}
+
+builtin function invalidate_vaddr_translations {
+  arguments XReg vaddr
+  description {
+    Locally invalidate all cached address translations representing 'vaddr', for all address spaces.
+    Equally affects global mappings.
+
+    A valid implementation does nothing if address caching is not used.
+  }
+}
+
+builtin function invalidate_asid_vaddr_translations {
+  arguments Bits<ASID_WIDTH> asid, XReg vaddr
+  description {
+    Locally invalidate all cached address translations for address space 'asid' that represent 'vaddr'.
+    Does not affect global mappings.
+
+    A valid implementation does nothing if address caching is not used.
+  }
+}
+
+builtin function read_physical_memory {
+  template U32 len
+  returns Bits<len>
+  arguments XReg paddr
+  description {
+    Read from physical memory.
+  }
+}
+
+builtin function write_physical_memory {
+  template U32 len
+  arguments XReg paddr, Bits<len> value
+  description {
+    Write to physical memory.
+  }
+}
+
+builtin function wfi {
+  description {
+    Wait-for-interrupt: hint that the processor
+    should enter a low power state until the next interrupt.
+
+    A valid implementation is a no-op.
+
+    The model will advance the PC; this function does not need to.
+  }
+}
+
+builtin function pma_applies? {
+  returns Boolean
+  arguments
+    PmaAttribute          attr,   #< PMA attribute to check
+    Bits<PHYS_ADDR_WIDTH> paddr,  #< Start of the region
+    U32                   len     #< Size of the region, in bits
+  description {
+    Checks if _attr_ is applied to the entire physical address region
+    between [paddr, paddr + len).
+  }
+}
+
+builtin function atomic_check_then_write_32 {
+  returns Boolean
+  arguments
+    Bits<PHYS_ADDR_WIDTH> paddr,          # the physical address
+    Bits<32>              compare_value,  # the comparison value
+    Bits<32>              write_value     # the value to be written if the value in memory matches compare_value
+  description {
+    Atomically:
+
+     * Reads 32-bits from paddr
+     * Compares the read value to compare_value
+     * Writes write_value to paddr **if** the comparison was bitwise-equal
+
+    returns true if the write occurs, and false otherwise
+
+    Preconditions:
+
+     * paddr must be aligned to 32-bits
+
+  }
+}
+
+builtin function atomic_check_then_write_64 {
+  returns Boolean
+  arguments
+    Bits<PHYS_ADDR_WIDTH> paddr,          # the physical address
+    Bits<64>              compare_value,  # the comparison value
+    Bits<64>              write_value     # the value to be written if the value in memory matches compare_value
+  description {
+    Atomically:
+
+     * Reads 64-bits from paddr
+     * Compares the read value to compare_value
+     * Writes write_value to paddr **if** the comparison was bitwise-equal
+
+    returns true if the write occurs, and false otherwise
+
+    Preconditions:
+
+     * paddr must be aligned to 64-bits
+  }
+}
+
+builtin function atomically_set_pte_a {
+  returns Boolean
+  arguments
+    Bits<PHYS_ADDR_WIDTH> pte_addr,
+    Bits<XLEN>            pte_value,
+    U32                   pte_len
+  description {
+    Atomically:
+    
+      * Reads the _pte_len_ value at _pte_addr_
+      ** If the read value does not exactly equal pte_value, returns false
+      * Sets the 'A' bit and writes the result to _pte_addr_
+      * return true    
+  }
+}
+
+builtin function atomically_set_pte_a_d {
+  returns Boolean
+  arguments
+    Bits<PHYS_ADDR_WIDTH> pte_addr,
+    Bits<XLEN>            pte_value,
+    U32                   pte_len
+  description {
+    Atomically:
+    
+      * Reads the _pte_len_ value at _pte_addr_
+      ** If the read value does not exactly equal pte_value, returns false
+      * Sets the 'A' and 'D' bits and writes the result to _pte_addr_
+      * return true    
+  }
+}

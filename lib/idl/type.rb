@@ -474,11 +474,11 @@ module Idl
 
     def num_args = @func_def_ast.num_args
 
-    def type_check_call(template_values = [])
+    def type_check_call(template_values, func_call_ast)
       raise "Missing template values" if templated? && template_values.empty?
 
       if templated?
-        symtab = apply_template_values(template_values)
+        symtab = apply_template_values(template_values, func_call_ast)
 
         @func_def_ast.type_check_template_instance(symtab)
       else
@@ -497,20 +497,20 @@ module Idl
 
     def templated? = @func_def_ast.templated?
 
-    def apply_template_values(template_values = [])
-      raise "Missing template values" if templated? && template_values.empty?
+    def apply_template_values(template_values = [], func_call_ast)
+      func_call_ast.type_error "Missing template values" if templated? && template_values.empty?
 
-      raise "wrong number of template values" unless template_names.size == template_values.size
+      func_call_ast.type_error "wrong number of template values in call to #{name}" unless template_names.size == template_values.size
 
       symtab = @symtab.deep_clone
       symtab.pop while symtab.levels != 1
 
-      raise "Symbol table should be at global scope" unless symtab.levels == 1
+      func_call_ast.type_error "Symbol table should be at global scope" unless symtab.levels == 1
 
       symtab.push
 
       template_values.each_with_index do |value, idx|
-        raise "template value should be an Integer" unless value.is_a?(Integer)
+        func_call_ast.type_error "template value should be an Integer" unless value.is_a?(Integer)
 
         symtab.add!(template_names[idx], Var.new(template_names[idx], template_types(symtab)[idx], value, template_index: idx, function_name: @func_def_ast.name))
       end
@@ -519,58 +519,76 @@ module Idl
 
     # apply the arguments as Vars.
     # then add the value to the Var
-    def apply_arguments(symtab, argument_nodes, call_site_symtab)
+    def apply_arguments(symtab, argument_nodes, call_site_symtab, func_call_ast)
       idx = 0
       @func_def_ast.arguments(symtab).each do |atype, aname|
+        func_call_ast.type_error "Missing argument #{idx}" if idx >= argument_nodes.size
         begin
           symtab.add!(aname, Var.new(aname, atype, argument_nodes[idx].value(call_site_symtab)))
-        rescue AstNode::ValueError
+        rescue AstNode::ValueError => e
           symtab.add!(aname, Var.new(aname, atype))
         end
         idx += 1
       end
     end
 
+    # @return [Array<Integer,Boolean>] Array of argument values, if known
+    # @return [nil] if at least one argument value is not known
+    def argument_values(symtab, argument_nodes, call_site_symtab, func_call_ast)
+      idx = 0
+      values = []
+      @func_def_ast.arguments(symtab).each do |atype, aname|
+        func_call_ast.type_error "Missing argument #{idx}" if idx >= argument_nodes.size
+        begin
+          values << argument_nodes[idx].value(call_site_symtab)
+        rescue AstNode::ValueError => e
+          return nil
+        end
+        idx += 1
+      end
+      values
+    end
+
     # @param template_values [Array<Integer>] Template values for the call, in declaration order
-    # @param call_site_symtab [SymbolTable] Symbol table at the call site
+    # @param func_call_ast [FunctionCallExpressionAst] The function call interested in the return type
     # return [Type] type of the call return
-    def return_type(template_values)
-      symtab = apply_template_values(template_values)
+    def return_type(template_values, func_call_ast)
+      symtab = apply_template_values(template_values, func_call_ast)
       # apply_arguments(symtab, argument_nodes, call_site_symtab)
 
       @func_def_ast.return_type(symtab).clone
     end
 
-    def return_value(template_values, argument_nodes, call_site_symtab)
-      symtab = apply_template_values(template_values)
-      apply_arguments(symtab, argument_nodes, call_site_symtab)
+    def return_value(template_values, argument_nodes, call_site_symtab, func_call_ast)
+      symtab = apply_template_values(template_values, func_call_ast)
+      apply_arguments(symtab, argument_nodes, call_site_symtab, func_call_ast)
 
       @func_def_ast.body.return_value(symtab)
     end
 
     # @param template_values [Array<Integer>] Template values to apply, required if {#templated?}
     # @return [Array<Type>] return types
-    def return_types(template_values, argument_nodes, call_site_symtab)
-      symtab = apply_template_values(template_values)
-      apply_arguments(symtab, argument_nodes, call_site_symtab)
+    def return_types(template_values, argument_nodes, call_site_symtab, func_call_ast)
+      symtab = apply_template_values(template_values, func_call_ast)
+      apply_arguments(symtab, argument_nodes, call_site_symtab, func_call_ast)
 
       @func_def_ast.return_types(symtab).map(&:clone)
     end
 
-    def argument_type(index, template_values, argument_nodes, call_site_symtab)
+    def argument_type(index, template_values, argument_nodes, call_site_symtab, func_call_ast)
       return nil if index >= @func_def_ast.num_args
 
-      symtab = apply_template_values(template_values)
-      apply_arguments(symtab, argument_nodes, call_site_symtab)
+      symtab = apply_template_values(template_values, func_call_ast)
+      apply_arguments(symtab, argument_nodes, call_site_symtab, func_call_ast)
 
       arguments = @func_def_ast.arguments(symtab)
       arguments[index][0].clone
     end
 
-    def argument_name(index, template_values = [])
+    def argument_name(index, template_values = [], func_call_ast)
       return nil if index >= @func_def_ast.num_args
 
-      symtab = apply_template_values(template_values)
+      symtab = apply_template_values(template_values, func_call_ast)
       # apply_arguments(symtab, argument_nodes, call_site_symtab)
 
       arguments = @func_def_ast.arguments(symtab)

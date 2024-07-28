@@ -68,7 +68,7 @@ a| <%= field.description %>
 |====
 <%- end -%>
 
-<%- if csr.fields.map(&:has_custom_write?).any? -%>
+<%- if csr.fields.map(&:has_custom_sw_write?).any? -%>
 == Software write
 
 This CSR may store a value that is different from what software attempts to write.
@@ -79,7 +79,7 @@ written value:
 [idl]
 ----
 <%- csr.fields.each do |field| -%>
-<%- if field.has_custom_write? -%>
+<%- if field.has_custom_sw_write? -%>
 <%= field.name %> = <%= field["sw_write(csr_value)"] %>
 <%- else -%>
 <%= field.name %> = csr_value.<%= field.name %>
@@ -95,7 +95,7 @@ This CSR may return a value that is different from what is stored in hardware.
 
 [subs="specialchars,macros"]
 ----
-<%= csr.pruned_sw_read_ast(arch_def.sym_table.deep_clone).gen_adoc %>
+<%= csr.pruned_sw_read_ast(arch_def).gen_adoc %>
 ----
 
 <%- end -%>

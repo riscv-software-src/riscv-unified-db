@@ -476,6 +476,33 @@
           "minimum": 1,
           "maximum": 63,
           "description": "Number of supported virtualized guest external interrupts.\nCorresponds to the GEILEN parameter in RISC-V specifications."
+        },
+        "LRSC_RESERVATION_STRATEGY": {
+          "type": "string",
+          "enum": [
+            "reserve naturally-aligned 64-byte region",
+            "reserve naturally-aligned 128-byte region",
+            "reserve exactly enough to cover the access",
+            "custom"
+          ],
+          "description": "Strategy used to handle reservation sets\n\n  * 'reserve naturally-aligned 64-byte region': Always reserve the 64-byte block containing the LR/SC address\n  * 'reserve naturally-aligned 128-byte region': Always reserve the 128-byte block containing the LR/SC address\n  * 'reserve exactly enough to cover the access': Always reserve exactly the LR/SC access, and no more\n  * 'custom': Custom behavior, leading to an 'unpredictable' call on any LR/SC"
+        },
+        "LRSC_FAIL_ON_VA_SYNONYM": {
+          "type": "boolean",
+          "description": "whether or not an SC will fail if its VA does not match the VA of the prior LR, even if the physical address of the SC and LR are the same"
+        },
+        "LRSC_FAIL_ON_NON_EXACT_LRSC": {
+          "type": "boolean",
+          "description": "whether or not a Store Conditional fails if its physical address and size do not\nexactly match the physical address and size of the last Load Reserved in program order\n(independent of whether or not the SC is in the current reservation set)\n"
+        },
+        "LRSC_MISALIGNED_BEHAVIOR": {
+          "type": "string",
+          "enum": [
+            "always raise misaligned exception",
+            "always raise access fault",
+            "custom"
+          ],
+          "description": "what to do when an LR/SC address is misaligned:\n\n  * 'always raise misaligned exception': self-explainitory\n  * 'always raise access fault': self-explainitory\n  * 'custom': Custom behavior; misaligned LR/SC may sometimes raise a misaligned exception and sometimes raise a access fault. Will lead to an 'unpredictable' call on any misaligned LR/SC access"
         }
       },
       "additionalProperties": false

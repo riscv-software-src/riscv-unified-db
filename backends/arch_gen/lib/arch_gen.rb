@@ -530,10 +530,28 @@ class ArchGen
 
     merged_path = gen_merged_def(:csr, arch_path, arch_overlay_path)
 
+    merged_content = File.read(merged_path)
+    arch_content = arch_path.nil? ? "" : File.read(arch_path)
+    arch_overlay_content = arch_path.nil? ? "" : File.read(arch_path)
+
+    # figure out where the original file can be found:
+    #   * arch_path if there is no contribution from arch_overlay
+    #   * arch_overlay_path if there is no contribution from arch (i.e., a custom instruction)
+    #   * merged_path if there are contributions from both
+    og_path =
+      if arch_content == merged_content
+        arch_path_for(:csr, csr_name)
+      elsif arch_overlay_content == merged_content
+        arch_overlay_path_for(:csr, csr_name)
+      else
+        merged_path
+      end
+
     # get the csr data (not including the name key), which is redundant at this point
     csr_data = YAML.load_file(merged_path)[csr_name]
     csr_data["name"] = csr_name
     csr_data["fields"].each { |n, f| f["name"] = n }
+    csr_data["__source"] = og_path.to_s
 
     csr_yaml = YAML.dump({ csr_name => csr_data})
     begin
@@ -553,7 +571,7 @@ class ArchGen
     @implemented_csrs ||= []
     @implemented_csrs << csr_name if belongs
 
-    gen_csr_path = @gen_dir / "arch" / "csr" / csr_obj.extension_requirements[0].name / "#{csr_name}.yaml"
+    gen_csr_path = @gen_dir / "arch" / "csr" / csr_obj.defined_by[0].name / "#{csr_name}.yaml"
     FileUtils.mkdir_p gen_csr_path.dirname
     gen_csr_path.write csr_yaml
   end
@@ -740,9 +758,27 @@ class ArchGen
 
     merged_path = gen_merged_def(:inst, arch_path, arch_overlay_path)
 
+    merged_content = File.read(merged_path)
+    arch_content = arch_path.nil? ? "" : File.read(arch_path)
+    arch_overlay_content = arch_path.nil? ? "" : File.read(arch_path)
+
+    # figure out where the original file can be found:
+    #   * arch_path if there is no contribution from arch_overlay
+    #   * arch_overlay_path if there is no contribution from arch (i.e., a custom instruction)
+    #   * merged_path if there are contributions from both
+    og_path =
+      if arch_content == merged_content
+        arch_path_for(:inst, inst_name)
+      elsif arch_overlay_content == merged_content
+        arch_overlay_path_for(:inst, inst_name)
+      else
+        merged_path
+      end
+
     # get the inst data (not including the name key), which is redundant at this point
     inst_data = YAML.load_file(merged_path)[inst_name]
     inst_data["name"] = inst_name
+    inst_data["__source"] = og_path.to_s
 
     inst_yaml = YAML.dump({ inst_name => inst_data})
     begin
@@ -777,8 +813,8 @@ class ArchGen
     @implemented_instructions ||= []
     @implemented_instructions << inst_name if belongs
 
-    raise "?" if inst_obj.extension_requirements[0].name.nil?
-    gen_inst_path = @gen_dir / "arch" / "inst" / inst_obj.extension_requirements[0].name / "#{inst_name}.yaml"
+    raise "?" if inst_obj.defined_by[0].name.nil?
+    gen_inst_path = @gen_dir / "arch" / "inst" / inst_obj.defined_by[0].name / "#{inst_name}.yaml"
     FileUtils.mkdir_p gen_inst_path.dirname
     gen_inst_path.write inst_yaml
 

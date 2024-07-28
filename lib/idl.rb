@@ -58,11 +58,49 @@ module Idl
 
       ast = m.to_ast
 
+      ast.children.each do |child|
+        next unless child.is_a?(IncludeStatementAst)
+
+        if child.filename.empty?
+          raise SyntaxError, <<~MSG
+            While parsing #{path}:#{child.lineno}:
+
+            Empty include statement
+          MSG
+        end
+
+        include_path =
+          if child.filename[0] == "/"
+            Pathname.new(child.filename)
+          else
+            (path.dirname / child.filename)
+          end
+
+        unless include_path.exist?
+          raise SyntaxError, <<~MSG
+            While parsing #{path}:#{child.lineno}:
+
+            Path #{include_path} does not exist
+          MSG
+        end
+        unless include_path.readable?
+          raise SyntaxError, <<~MSG
+            While parsing #{path}:#{child.lineno}:
+
+            Path #{include_path} cannot be read
+          MSG
+        end
+
+        include_ast = compile_file(include_path, symtab: nil, type_check: false)
+        ast.replace_include!(child, include_ast)
+      end
+
       ast.set_input_file(path.to_s)
       if type_check
         begin
           ast.type_check(symtab)
         rescue AstNode::TypeError, AstNode::InternalError => e
+          warn "\n"
           warn e.what
           warn e.bt
           exit 1
@@ -79,20 +117,17 @@ module Idl
     # @param return_type [Type] Expected return type, if known
     # @param symtab [SymbolTable] Symbol table to use for type checking
     # @param name [String] Function name, used for error messages
-    # @param parent [String] Parent class of the function, used for error messages
     # @param input_file [Pathname] Path to the input file this source comes from
     # @param input_line [Integer] Starting line in the input file that this source comes from
     # @param no_rescue [Boolean] Whether or not to automatically catch any errors
     # @return [Ast] The root of the abstract syntax tree
-    def compile_func_body(body, return_type: nil, symtab: SymbolTable.new, name: nil, parent: nil, input_file: nil, input_line: 0, no_rescue: false, extra_syms: {})
+    def compile_func_body(body, return_type: nil, symtab: nil, name: nil, input_file: nil, input_line: 0, no_rescue: false, extra_syms: {}, type_check: true)
       @parser.set_input_file(input_file, input_line)
-
-      cloned_symtab = symtab.deep_clone
 
       m = @parser.parse(body, root: :function_body)
       if m.nil?
         raise SyntaxError, <<~MSG
-          While parsing #{parent}::#{name} #{@parser.failure_line}:#{@parser.failure_column}
+          While parsing #{name} at #{input_file}:#{input_line + @parser.failure_line}
 
           #{@parser.failure_reason}
         MSG
@@ -100,45 +135,50 @@ module Idl
 
       # fix up left recursion
       ast = m.to_ast
+      ast.set_input_file(input_file, input_line)
 
       # type check
-      cloned_symtab.push
-      cloned_symtab.add("__expected_return_type", return_type) unless return_type.nil?
+      unless type_check == false
+        cloned_symtab = symtab.deep_clone
 
-      extra_syms.each { |k, v|
-        cloned_symtab.add(k, v)
-      }
+        cloned_symtab.push
+        cloned_symtab.add("__expected_return_type", return_type) unless return_type.nil?
 
-      begin
-        ast.statements.each do |s|
-          s.type_check(cloned_symtab)
+        extra_syms.each { |k, v|
+          cloned_symtab.add(k, v)
+        }
+
+        begin
+          ast.statements.each do |s|
+            s.type_check(cloned_symtab)
+          end
+        rescue AstNode::TypeError => e
+          raise e if no_rescue
+
+          if name && parent
+            warn "In function #{name} of #{parent}:"
+          elsif name && parent.nil?
+            warn "In function #{name}:"
+          end
+          warn e.what
+          exit 1
+        rescue AstNode::InternalError => e
+          raise if no_rescue
+
+          if name && parent
+            warn "In function #{name} of #{parent}:"
+          elsif name && parent.nil?
+            warn "In function #{name}:"
+          end
+          warn e.what
+          warn e.backtrace
+          exit 1
+        ensure
+          cloned_symtab.pop
         end
-      rescue AstNode::TypeError => e
-        raise e if no_rescue
 
-        if name && parent
-          warn "In function #{name} of #{parent}:"
-        elsif name && parent.nil?
-          warn "In function #{name}:"
-        end
-        warn e.what
-        exit 1
-      rescue AstNode::InternalError => e
-        raise if no_rescue
-
-        if name && parent
-          warn "In function #{name} of #{parent}:"
-        elsif name && parent.nil?
-          warn "In function #{name}:"
-        end
-        warn e.what
-        warn e.backtrace
-        exit 1
-      ensure
-        cloned_symtab.pop
+        ast.freeze_tree
       end
-
-      ast.freeze_tree
 
       ast
     end
@@ -157,7 +197,7 @@ module Idl
       m = @parser.parse(operation, root: :instruction_operation)
       if m.nil?
         raise SyntaxError, <<~MSG
-          While parsing #{input_file}:#{@parser.failure_line}:#{@parser.failure_column}
+          While parsing #{input_file}:#{input_line + @parser.failure_line}
 
           #{@parser.failure_reason}
         MSG
@@ -165,7 +205,7 @@ module Idl
 
       # fix up left recursion
       ast = m.to_ast
-      ast.set_input_file("Inst #{inst.name} (#{input_file})", input_line)
+      ast.set_input_file(input_file, input_line)
       ast.freeze_tree
 
       ast
@@ -184,6 +224,7 @@ module Idl
       rescue AstNode::TypeError => e
         warn "While type checking #{what}:"
         warn e.what
+        warn e.backtrace
         exit 1
       rescue AstNode::InternalError => e
         warn "While type checking #{what}:"
@@ -208,6 +249,7 @@ module Idl
       end
 
       ast = m.to_ast
+      ast.set_input_file("[EXPRESSION]", 0)
       begin
         ast.type_check(symtab)
       rescue AstNode::TypeError => e

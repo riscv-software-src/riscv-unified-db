@@ -50,7 +50,6 @@ class Validator
     # @param result [JsonSchemer::Result] JsonSchemer result
     def initialize(result)
       nerrors = result.count
-      pp result.to_a[0].keys
       msg = +"#{nerrors} error(s) during validations\n\n"
       result.to_a.each do |r|
         msg <<
