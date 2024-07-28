@@ -37,7 +37,7 @@ mepc:
       reset_value: 0
   sw_read(): |
     if (implemented?(ExtensionName::C) && CSR[misa].C == 1'b1) {
-      return CSR[mepc] & ~64'b1;
+      return CSR[mepc].PC & ~64'b1;
     } else {
-      return CSR[mepc];
+      return CSR[mepc].PC;
     }

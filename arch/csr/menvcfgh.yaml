@@ -28,3 +28,13 @@ menvcfgh:
       definedBy: Svpbmt
       type: RW
       reset_value: UNDEFINED_LEGAL
+    ADUE:
+      location: 29
+      alias: menvcfg.ADUE
+      description: |
+        Alias of `menvcfg.ADUE`
+      definedBy: Svadu
+      type(): |
+        return (implemented?(ExtensionName::Svadu)) ? CsrFieldType::RO : CsrFieldType::RW;
+      reset_value(): |
+        return (implemented?(ExtensionName::Svadu)) ? UNDEFINED_LEGAL : 0;

@@ -38,7 +38,7 @@ This repository contains:
 
 == Prerequisites
 
-The only requirement is the `Singularity CE` or `Apptainer` container system. Either one will work (they are forks).
+The only requirement is the `Singularity CE` (>= 3.3) or `Apptainer` (>= 1.0) container system. Either one will work (they are forks).
 
 If it is not installed, either as your IT admin or:
 

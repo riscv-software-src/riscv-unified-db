@@ -241,7 +241,7 @@ sfence.vma:
     } else if ((rs1 != 0) && (rs2 == 0)) {
         # invalidate all translations from leaf page tables containing 'vaddr'
         # does not affect global mappings
-        if (valid_vaddr?(vaddr)) {
+        if (canonical_vaddr?(vaddr)) {
           invalidate_vaddr_translations(vaddr);
 
           # then order subsequent loads and stores after the invalidation
@@ -252,7 +252,7 @@ sfence.vma:
     } else {
         # invalidate all translations from leaf page tables for address space 'asid' containing 'vaddr'
         # does not affect global mappings
-        if (valid_vaddr?(vaddr)) {
+        if (canonical_vaddr?(vaddr)) {
           invalidate_asid_vaddr_translations(asid, vaddr);
 
           # then order subsequent loads and stores after the invalidation

@@ -63,7 +63,7 @@ class TestVariables < Minitest::Test
 
     IDL
 
-    t = Tempfile.new('idl')
+    t = Tempfile.new("idl")
     t.write idl
     t.close
 
@@ -72,11 +72,10 @@ class TestVariables < Minitest::Test
     ast = @compiler.compile_file(path, symtab: @symtab)
 
     test_ast = ast.functions.select { |f| f.name == "test" }[0]
-    assert_equal [1], test_ast.body.reachable_exceptions(@symtab)
+    assert_equal [1], test_ast.body.prune(@symtab).reachable_exceptions(@symtab)
   end
 
-
-  def test_that_reachable_raise_analysis_respects_known_paths_down_an_unkn0wn_path
+  def test_that_reachable_raise_analysis_respects_known_paths_down_an_unknown_path
     idl = <<~IDL.strip
       %version: 1.0
       enum Choice {
@@ -123,7 +122,7 @@ class TestVariables < Minitest::Test
 
     IDL
 
-    t = Tempfile.new('idl')
+    t = Tempfile.new("idl")
     t.write idl
     t.close
 
@@ -132,6 +131,7 @@ class TestVariables < Minitest::Test
     ast = @compiler.compile_file(path, symtab: @symtab)
 
     test_ast = ast.functions.select { |f| f.name == "test" }[0]
-    assert_equal [1], test_ast.body.reachable_exceptions(@symtab)
+    pruned_test_ast = test_ast.body.prune(@symtab)
+    assert_equal [1], pruned_test_ast.reachable_exceptions(@symtab)
   end
 end

@@ -3,13 +3,26 @@
 A:
   type: unprivileged
   long_name: Atomic instructions
+  company:
+    name: RISC-V International
+    url: https://riscv.org
   versions:
   - version: 2.1
     state: ratified
     ratification_date: 2019-12
+    contributors:
+    - name: Unknown
+      email: unknown@void.segfault
+      company: Unknown
     implies:
     - [Zaamo, 1.0]
     - [Zalrsc, 1.0]
+    required_parameters:
+    - MUTABLE_MISA_A
+    - LRSC_RESERVATION_STRATEGY
+    - LRSC_FAIL_ON_VA_SYNONYM
+    - LRSC_FAIL_ON_NON_EXACT_LRSC
+    - LRSC_MISALIGNED_BEHAVIOR
   description: |
 
     The atomic-instruction extension, named `A`, contains

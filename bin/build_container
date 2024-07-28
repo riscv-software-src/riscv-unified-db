@@ -2,6 +2,8 @@
 
 ROOT=$(realpath $(dirname $(dirname $BASH_SOURCE[0])))
 
+CONTAINER_TAG=`cat ${ROOT}/bin/.container-tag`
+
 # uncomment below if you have sudo permission and don't have fakeroot permission
 NEED_SUDO=0
 cat /etc/subgid | grep "^$(id -u):"
@@ -58,7 +60,7 @@ fi
 
 $SUDO singularity build --force \
   $FAKEROOT \
-  ${ROOT}/.singularity/image.sif \
+  ${ROOT}/.singularity/image-${CONTAINER_TAG}.sif \
   ${ROOT}/container.def
 if [ $? -ne 0 ]; then
   echo "Container build failed." 2>&1
