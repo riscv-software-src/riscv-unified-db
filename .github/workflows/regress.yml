@@ -12,6 +12,8 @@ jobs:
       uses: actions/checkout@v4
     - name: Setup apptainer
       uses: eWaterCycle/setup-apptainer@v2.0.0
+    - name: Read container tag
+      run: echo "CONTAINER_TAG=$(cat bin/.container-tag)" >> $GITHUB_ENV
     - name: Get container from cache
       id: cache-sif
       uses: actions/cache@v3
