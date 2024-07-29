@@ -17,7 +17,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: .singularity/image.sif
-        key: ${{ hashFiles('container.def') }}
+        key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
     - name: Get gems and node files from cache
       id: cache-bundle-npm
       uses: actions/cache@v3

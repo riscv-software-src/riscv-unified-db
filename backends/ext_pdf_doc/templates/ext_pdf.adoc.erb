@@ -1,14 +1,47 @@
-= <%= ext.long_name %>
+[[header]]
+:description: <%= ext.long_name %> (<%= ext.name %>)
+:revdate: <%= ext_version.key?("ratification_date") ? ext_version["ratification_date"] : Date.today %>
+:revnumber: <%= ext_version["version"] %>
+:revmark: <%=
+  case ext_version["state"]
+  when "ratified"
+    <<~STATE
+      This document is in the http://riscv.org/spec-state[Ratified state] + \\
+      + \\
+      No changes are allowed. + \\
+      Any desired or needed changes can be the subject of a follow-on new extension. + \\
+      Ratified extensions are never revised. + \\
+    STATE
+  when "frozen"
+    <<~FROZEN_STATE
+      This document is in the http://riscv.org/spec-state[Frozen state].
 
-:description: <%= ext.long_name %>
-:company: <%= ext.company %>
+      Change is extremely unlikely.
+      A high threshold will be used, and a change will only occur because of some truly
+      critical issue being identified during the public review cycle.
+      Any other desired or needed changes can be the subject of a follow-on new extension.
+    FROZEN_STATE
+  when "development"
+    <<~DEV_STATE
+      This document is in the http://riscv.org/spec-state[Development state].
+      
+      Change should be expected
+    DEV_STATE
+  else
+    raise "TODO: #{ext_version["state"]} description"
+  end
+%>
+:company: <%= ext.company["name"] %>
 :url-riscv: https://riscv.org
 :doctype: book
 :preface-title: Licensing and Acknowledgements
 :colophon:
 :appendix-caption: Appendix
-:title-logo-image: image:RISC-V-logo.svg[pdfwidth=3.25in,align=center]
-:back-cover-image: image:circuit.png[opacity=25%]
+:title-logo-image: image:risc-v_logo.png["RISC-V International Logo",pdfwidth=3.25in,align=center]
+<%- unless ext_version["state"] == "ratified" -%>
+:page-background-image: image:draft.png[opacity=20%]
+<%- end -%>
+:back-cover-image: image:riscv-horizontal-color.svg[opacity=25%]
 // Settings
 :experimental:
 :reproducible:
@@ -17,30 +50,80 @@
 :imagesoutdir: images
 :icons: font
 :lang: en
+:example-caption: Example
 :listing-caption: Listing
+:table-caption: Table
+:figure-caption: Figure
+:xrefstyle: short
+:chapter-refsig: Chapter
+:section-refsig: Section
+:appendix-refsig: Appendix
 :sectnums:
 :toc: left
-:toclevels: 4
+:toclevels: 5
 :source-highlighter: pygments
 ifdef::backend-pdf[]
-:source-highlighter: coderay
+:source-highlighter: rouge
 endif::[]
 :data-uri:
 :hide-uri-scheme:
 :stem:
 :footnote:
-:xrefstyle: short
+:stem: latexmath
+:footnote:
+:le: &#8804;
+:ge: &#8805;
+:ne: &#8800;
+:approx: &#8776;
+:inf: &#8734;
+:csrname: envcfg
+:imagesdir: images
 
+= <%= ext.long_name %>
 
+// Preamble
+<%=
+  case ext_version["state"]
+  when "ratified"
+    <<~RATIFIED_STATE
+      [WARNING]
+      .This document is in the link:http://riscv.org/spec-state[Ratified state]
+      ====
+      No changes are allowed. Any desired or needed changes can be the subject of a
+      follow-on new extension. Ratified extensions are never revised
+      ====
+    RATIFIED_STATE
+  when "frozen"
+    <<~FROZEN_STATE
+      [WARNING]
+      This document is in the http://riscv.org/spec-state[Frozen state].
+      ====
+      Change is extremely unlikely.
+      A high threshold will be used, and a change will only occur because of some truly
+      critical issue being identified during the public review cycle.
+      Any other desired or needed changes can be the subject of a follow-on new extension.
+      ====
+    FROZEN_STATE
+  when "development"
+    <<~DEV_STATE
+      [WARNING]
+      This document is in the http://riscv.org/spec-state[Development state].
+      ====
+      Change should be expected
+      ====
+    DEV_STATE
+  else
+    raise "TODO: #{ext_version["state"]} description"
+  end
+%>
 
-<<<
-[colophon]
-== Colophon
-
+[preface]
+== Copyright and license information
 This document is released under the <%= ext.doc_license["url"] %>[<%= ext.doc_license["name"] %>].
 
-<<<
-[acknowledgements]
+Copyright <%= ext_version["ratification_date"].split("-")[0] %> by <%= ext.company["name"] %>.
+
+[preface]
 == Acknowledgements
 
 <%- ext.versions.each do |version| -%>
@@ -54,7 +137,7 @@ Contributors to version <%= version["version"] %> of the specification (in alpha
 We express our gratitude to everyone that contributed to, reviewed or
 improved this specification through their comments and questions.
 
-<<<
+[preface]
 == Versions
 
 The following versions have been defined:
@@ -139,7 +222,7 @@ RV64::
 <%- else -%>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump i.wavedrom_desc(i.respond_to?(:base) ? i.base : 64) %>
+<%= JSON.dump i.wavedrom_desc(i.base.nil? ? 64 : i.base) %>
 ....
 <%- end -%>
 
@@ -151,6 +234,7 @@ Decode Variables::
 <%- if i.multi_encoding? -%>
 RV32::
 +
+[source,idl]
 ----
 <%- i.decode_variables(32).each do |d| -%>
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
@@ -159,35 +243,37 @@ RV32::
 
 RV64::
 +
+[source,idl]
 ----
 <%- i.decode_variables(64).each do |d| -%>
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
 <%- end -%>
 ----
 <%- else -%>
+[source,idl]
 ----
-<%- i.decode_variables(i.respond_to?(:base) ? i.base : 64).each do |d| -%>
+<%- i.decode_variables(i.base.nil? ? 64 : i.base).each do |d| -%>
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
 <%- end -%>
 ----
 <%- end -%>
 
 Operation::
-[souce,idl]
+[source,idl]
 ----
 <%= i.operation_ast(arch_def.idl_compiler).gen_adoc %>
 ----
 
 Included in::
-[%header,cols="4,2,2"]
+[%header,cols="4,2"]
 |===
 |Extension
 |Minimum version
-|Lifecycle state
 
-|Zba (<<#zba>>)
-|0.93
-|Frozen
+<%- i.defined_by.each do |ext_req| -%>
+|<%= ext_req.name %>
+|<%= ext_req.version_requirement %>
+<%- end -%>
 |===
 <<<
 <%- end -%>

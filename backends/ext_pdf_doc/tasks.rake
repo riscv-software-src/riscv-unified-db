@@ -48,10 +48,15 @@ module AsciidocUtils
   end
 end
 
+file "#{$root}/ext/docs-resources/themes/riscv-pdf.yml" => "#{$root}/.gitmodules" do |t|
+  system "git submodule update --init ext/docs-resources"
+end
+
 rule %r{#{$root}/gen/ext_pdf_doc/.*/pdf/.*_extension\.pdf} => proc { |tname|
   config_name = Pathname.new(tname).relative_path_from("#{$root}/gen/ext_pdf_doc").to_s.split("/")[0]
   ext_name = Pathname.new(tname).basename(".pdf").to_s.split("_")[0..-2].join("_")
   [
+    "#{$root}/ext/docs-resources/themes/riscv-pdf.yml",
     "#{$root}/gen/ext_pdf_doc/#{config_name}/adoc/#{ext_name}_extension.adoc"
   ]
 } do |t|
@@ -60,7 +65,20 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/pdf/.*_extension\.pdf} => proc { |tname|
   adoc_file = "#{$root}/gen/ext_pdf_doc/#{config_name}/adoc/#{ext_name}_extension.adoc"
 
   FileUtils.mkdir_p File.dirname(t.name)
-  Asciidoctor.convert_file(adoc_file, backend: "pdf", safe: :safe, to_file: t.name)
+  sh [
+    "asciidoctor-pdf",
+    "-w",
+    "-v",
+    "-a toc",
+    "-a compress",
+    "-a pdf-theme=#{$root}/ext/docs-resources/themes/riscv-pdf.yml",
+    "-a pdf-fontsdir=#{$root}/ext/docs-resources/fonts",
+    "-a imagesdir=#{$root}/ext/docs-resources/images",
+    "-r asciidoctor-diagram",
+    "-r #{$root}/backends/ext_pdf_doc/idl_lexer",
+    "-o #{t.name}",
+    adoc_file
+  ].join(" ")
 
   puts
   puts "Success!! File written to #{t.name}"
@@ -102,6 +120,8 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
   erb.filename = template_path.to_s
 
   ext = arch_def.extension(ext_name)
+  version_num = ENV.key?("EXT_VERSION") ? ENV["EXT_VERSION"] : ext.versions.sort { |v| Gem::Version.new(v["version"]) }.last["version"]
+  ext_version = ext.versions.find { |v| v["version"] == version_num }
   FileUtils.mkdir_p File.dirname(t.name)
   File.write t.name, AsciidocUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
 end
@@ -120,6 +140,8 @@ namespace :gen do
 
   desc <<~DESC
     Generate PDF documentation for :extension that is defined or overlayed in :cfg
+
+    The latest version will be used, but can be overloaded by setting the EXT_VERSION environment variable.
   DESC
   task :cfg_ext_pdf, [:extension, :cfg] do |_t, args|
     raise ArgumentError, "Missing required argument :extension" if args[:extension].nil?

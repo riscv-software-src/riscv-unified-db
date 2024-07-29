@@ -4,32 +4,45 @@ ROOT=$(dirname $(dirname $(realpath $BASH_SOURCE[0])))
 OLDWD=$PWD
 cd $ROOT
 
-CONTAINER_TAG=0.1
+CONTAINER_TAG=`cat ${ROOT}/bin/.container-tag`
+
+if [ -v GITHUB_ACTIONS ]; then
+  echo "ACTIONS"
+  CONTAINER_PATH=${ROOT}/.singularity/image.sif
+  HOME_PATH=${GITHUB_WORKSPACE}
+  HOME_OPT="--home ${ROOT}/.home"
+  SINGULARITY_CACHE=--disable-cache
+else
+  CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
+  HOME_PATH=${HOME}
+  HOME_OPT="--bind ${ROOT}/.home:${HOME_PATH}"
+  SINGULARITY_CACHE=
+fi
 
 if [ ! -d $ROOT/.home ]; then
   mkdir $ROOT/.home
 fi
 
-if [ ! -f $ROOT/.singularity/image.sif ]; then
+if [ ! -f ${CONTAINER_PATH} ]; then
  echo "Fetching container..."
   if [ ! -d "${ROOT}/.singularity" ]; then
     mkdir -p ${ROOT}/.singularity
   fi
-  singularity pull --disable-cache ${ROOT}/.singularity/image.sif oras://docker.io/riscvintl/spec-generator:$CONTAINER_TAG
+  singularity pull ${SINGULARITY_CACHE} ${CONTAINER_PATH} oras://docker.io/riscvintl/spec-generator:$CONTAINER_TAG
 fi
 
 if [ ! -f $ROOT/.bundle/config ]; then
   OLDDIR=$PWD
   cd $ROOT
-  singularity run --home ${ROOT}/.home .singularity/image.sif bundle config set --local path ${ROOT}/.home/.gems
-  singularity run --home ${ROOT}/.home .singularity/image.sif bundle config set --local cache_path ${ROOT}/.home/.cache
+  singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle config set --local path ${ROOT}/.home/.gems
+  singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle config set --local cache_path ${ROOT}/.home/.cache
   cd $OLDDIR
 fi
 
 if [ ! -d $ROOT/.home/.gems ]; then
   OLDDIR=$PWD
   cd $ROOT
-  singularity run --home ${ROOT}/.home .singularity/image.sif bundle install
+  singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle install
   cd $OLDDIR
 fi
 
@@ -39,8 +52,8 @@ fi
 
 if [[ ! -z "$DEVELOPMENT" && $DEVELOPMENT -eq 1 ]]; then
   if [ ! -d "${ROOT}/.home/.yard/gem_index"]; then
-    singularity run --home ${ROOT}/.home .singularity/image.sif bundle exec --gemfile ${ROOT}/Gemfile yard config --gem-install-yri
-    singularity run --home ${ROOT}/.home .singularity/image.sif bundle exec --gemfile ${ROOT}/Gemfile yard gems
+    singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle exec --gemfile ${ROOT}/Gemfile yard config --gem-install-yri
+    singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle exec --gemfile ${ROOT}/Gemfile yard gems
     touch ${ROOT}/.stamps/dev_gems
   fi
 fi
@@ -64,11 +77,11 @@ if [[ ! -z "$VSCODE" && $VSCODE -eq 1 ]]; then
 fi
 
 if [ ! -d ${ROOT}/node_modules ]; then
-  singularity run --home ${PWD}/.home .singularity/image.sif npm i
+  singularity run ${HOME_OPT} ${CONTAINER_PATH} npm i
 fi
 
-BUNDLE="singularity run --home ${PWD}/.home .singularity/image.sif bundle"
-RUBY="singularity run --home ${PWD}/.home .singularity/image.sif bundle exec ruby"
-RAKE="singularity run --home ${PWD}/.home .singularity/image.sif bundle exec rake"
-NPM="singularity run --home ${PWD}/.home .singularity/image.sif npm"
-NPX="singularity run --home ${PWD}/.home .singularity/image.sif npx"
+BUNDLE="singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle"
+RUBY="singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle exec ruby"
+RAKE="singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle exec rake"
+NPM="singularity run ${HOME_OPT} ${CONTAINER_PATH} npm"
+NPX="singularity run ${HOME_OPT} ${CONTAINER_PATH} npx"

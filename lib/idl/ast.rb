@@ -36,6 +36,7 @@ module Idl
     ConstBoolType = Type.new(:boolean, qualifiers: [:const]).freeze
     BoolType = Type.new(:boolean).freeze
     VoidType = Type.new(:void).freeze
+    StringType = Type.new(:string).freeze
 
     # @return [String] Source input file
     attr_reader :input_file
@@ -105,12 +106,22 @@ module Idl
     # exception type raised when the value of IDL code is requested (via node.value(...)) but
     # cannot be provided because some part the code isn't known at compile time
     class ValueError < StandardError
-      attr_reader :lineno, :file
+      attr_reader :lineno, :file, :reason
 
-      def initialize(what, lineno, file)
-        super(what)
+      def initialize(lineno, file, reason)
+        super(reason)
         @lineno = lineno
         @file = file
+        @reason = reason
+      end
+
+      def message
+        <<~WHAT
+          In file #{input_file}
+          On line #{lineno}
+            A value error occured
+            #{reason}
+        WHAT
       end
     end
 
@@ -161,16 +172,74 @@ module Idl
       input[interval]
     end
 
+    # @return [String] returns +-2 lines around the current interval
+    def lines_around
+      cnt = 0
+      interval_start = interval.min
+      while cnt < 2
+        cnt += 1 if input[interval_start] == "\n"
+        break if interval_start.zero?
+
+        interval_start -= 1
+      end
+
+      cnt = 0
+      interval_end = interval.max
+      while cnt < 3
+        cnt += 1 if input[interval_end] == "\n"
+        break if interval_end >= (input.size - 1)
+
+        interval_end += 1
+      end
+
+      [
+        input[interval_start..interval_end],
+        (interval.min - interval_start..interval.max - interval_start),
+        (interval_start + 1)..interval_end
+      ]
+    end
+
     # raise a type error
     #
     # @param reason [String] Error message
     # @raise [AstNode::TypeError] always
     def type_error(reason)
+      lines, problem_interval, lines_interval = lines_around
+
+      lines =
+        if $stdout.isatty
+          [
+            lines[0...problem_interval.min],
+            "\u001b[31m",
+            lines[problem_interval],
+            "\u001b[0m",
+            lines[(problem_interval.max + 1)..]
+          ].join("")
+        else
+          [
+            lines[0...problem_interval.min],
+            "**HERE** >> ",
+            lines[problem_interval],
+            " << **HERE**",
+            lines[(problem_interval.max + 1)..]
+          ].join("")
+        end
+
+      starting_lineno = input[0..lines_interval.min].count("\n")
+      lines = lines.lines.map do |line|
+        starting_lineno += 1
+        "#{@starting_line + starting_lineno - 1}: #{line}"
+      end.join("")
+
       msg = <<~WHAT
         In file #{input_file}
         On line #{lineno}
-          A type error occured
-          #{reason}
+        In the code:
+
+          #{lines.gsub("\n", "\n  ")}
+
+        A type error occured
+          #{$stdout.isatty ? "\u001b[31m#{reason}\u001b[0m" : reason}
       WHAT
       raise AstNode::TypeError, msg
     end
@@ -194,13 +263,7 @@ module Idl
     # @param reason [String] Error message
     # @raise [AstNode::ValueError] always
     def value_error(reason)
-      msg = <<~WHAT
-        In file #{input_file}
-        On line #{lineno}
-          A value error occured
-          #{reason}
-      WHAT
-      raise AstNode::ValueError.new(msg, lineno, input_file)
+      raise AstNode::ValueError.new(lineno, input_file, reason)
     end
 
     # unindent a multiline string, getting rid of all common leading whitespace (like <<~ heredocs)
@@ -229,6 +292,15 @@ module Idl
     def freeze_tree
       @children.each { |child| child.freeze_tree }
       freeze
+    end
+
+    # @return [String] A string representing the path to this node in the tree
+    def path
+      if parent.nil?
+        self.class.name
+      else
+        "#{parent.path}.#{self.class.name}"
+      end
     end
 
     # @!macro [new] type_check
@@ -378,6 +450,19 @@ module Idl
     #
     #  @param symtab [SymbolTable] Symbol table at the scope that the symbol(s) will be inserted
     def add_symbol(symtab) = raise NotImplementedError, "#{self.class.name} must implment add_symbol"
+  end
+
+  class IncludeStatementSyntaxNode < Treetop::Runtime::SyntaxNode
+    def to_ast = IncludeStatementAst.new(input, interval, string.to_ast)
+  end
+
+  class IncludeStatementAst < AstNode
+    # @return [String] filename to include
+    def filename = @children[0].text_value[1..-2]
+
+    def initialize(input, interval, filename)
+      super(input, interval, [filename])
+    end
   end
 
   class IdSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -540,6 +625,20 @@ module Idl
 
     # @return {Array<AstNode>] List of all function definitions
     def functions = definitions.select { |e| e.is_a?(FunctionDefAst) }
+
+    # replaces an include statement with the ast in that file, making
+    # it a direct child of this IsaAst
+    #
+    # @param include_ast [IncludeStatementAst] The include, which must be a child of this IsaAst
+    # @Param isa_ast [IsaAst] The result of compiling the include
+    def replace_include!(include_ast, isa_ast)
+      # find the index of the child
+      idx = children.index(include_ast)
+      internal_error "Can't find include ast in children" if idx.nil?
+
+      @children[idx] = isa_ast.children
+      @children.flatten!
+    end
 
     # @!macro type_check
     def type_check(symtab)
@@ -803,7 +902,7 @@ module Idl
       @fields.each do |f|
         f.type_check(symtab)
         r = f.range(symtab)
-        type_error "Field position (#{r}) is larger than the bitfield width (#{@size.value(symtab)})" if r.first >= @size.value(symtab)
+        type_error "Field position (#{r}) is larger than the bitfield width (#{@size.value(symtab)} #{@size.text_value})" if r.first >= @size.value(symtab)
       end
 
       add_symbol(symtab)
@@ -991,7 +1090,7 @@ module Idl
         lsb_value = lsb.value(symtab)
 
         if var.type(symtab).kind == :bits && msb_value >= var.type(symtab).width
-          type_error "Range too large for bits (range top = #{msb_value}, range width = #{var.type(symtab).width})"
+          type_error "Range too large for bits (msb = #{msb_value}, range size = #{var.type(symtab).width})"
         end  
 
         range_size = msb_value - lsb_value + 1
@@ -2087,7 +2186,11 @@ module Idl
           elsif (op == "||") && lhs_value == true
             true
           else
-            eval "lhs_value #{op} rhs.value(symtab)", binding, __FILE__, __LINE__
+            if op == "&&"
+              lhs_value && rhs.value(symtab)
+            else
+              lhs_value || rhs.value(symtab)
+            end
           end
         elsif op == "=="
           begin
@@ -2192,7 +2295,31 @@ module Idl
           lhs.value(symtab) | rhs.value(symtab)
 
         else
-          v = eval "lhs.value(symtab) #{op} rhs.value(symtab)", binding, __FILE__, __LINE__
+          v =
+            case op
+            when "+"
+              lhs.value(symtab) + rhs.value(symtab)
+            when "-"
+              lhs.value(symtab) - rhs.value(symtab)
+            when "*"
+              lhs.value(symtab) * rhs.value(symtab)
+            when "/"
+              lhs.value(symtab) / rhs.value(symtab)
+            when "%"
+              lhs.value(symtab) % rhs.value(symtab)
+            when "^"
+              lhs.value(symtab) ^ rhs.value(symtab)
+            when "|"
+              lhs.value(symtab) | rhs.value(symtab)
+            when "&"
+              lhs.value(symtab) & rhs.value(symtab)
+            when ">>"
+              lhs.value(symtab) >> rhs.value(symtab)
+            when "<<"
+              lhs.value(symtab) << rhs.value(symtab)
+            else
+              internal_error "Unhandled binary op #{op}"
+            end
           v_trunc = v & ((1 << type(symtab).width) - 1)
           warn "WARNING: The value of '#{text_value}' is truncated from #{v} to #{v_trunc} because the result is only #{type(symtab).width} bits" if v != v_trunc
           v_trunc
@@ -2579,7 +2706,7 @@ module Idl
         range = bitfield.type(symtab).range(@field_name)
         (bitfield.value(symtab) >> range.first) & ((1 << range.size) - 1)
       else
-        internal_error "TODO"
+        type_error "#{bitfield.text_value} is Not a bitfield."
       end
     end
 
@@ -2703,7 +2830,17 @@ module Idl
 
     # @!macro value
     def value(symtab)
-      val = val_trunc = eval("#{op}#{exp.value(symtab)}", binding, __FILE__, __LINE__)
+      val = val_trunc =
+        case op
+        when "-"
+          -exp.value(symtab)
+        when "~"
+          ~exp.value(symtab)
+        when "!"
+          !exp.value(symtab)
+        else
+          internal_error "Unhandled unary op #{op}"
+        end
       if type(symtab).integral?
         val_trunc = val & ((1 << type(symtab).width) - 1)
         if type(symtab).signed? && ((((val_trunc >> (type(symtab).width - 1))) & 1) == 1)
@@ -3230,10 +3367,27 @@ module Idl
     def to_idl = "#{return_expression.to_idl} if (#{condition.to_idl});"
   end
 
-  class ExecutionCommentAst < AstNode
-    def type_check(_symtab, _global); end
+  # @api private
+  class CommentSyntaxNode < Treetop::Runtime::SyntaxNode
+    def to_ast = CommentAst(input, interval)
   end
 
+  # represents a comment
+  class CommentAst < AstNode
+    def initialize(input, interval)
+      super(input, interval, [])
+    end
+
+    # @!macro type_check
+    def type_check(symtab); end
+
+    # @return [String] The comment text, with the leading hash and any leading space removed
+    # @example
+    #    # This is a comment     #=> "This is a comment"
+    def content = text_value[1..].strip
+  end
+
+  # @api private
   class BuiltinTypeNameSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
       if !respond_to?(:i)
@@ -3244,6 +3398,17 @@ module Idl
     end
   end
 
+  # represents a type name of one of the builtin types:
+  #
+  #  * Bits<N>
+  #  * Boolean
+  #  * String
+  #
+  # And their aliases:
+  #
+  #  * XReg (Bits<XLEN>)
+  #  * U32 (Bits<32>)
+  #  * U64 (Bits<64>)
   class BuiltinTypeNameAst < AstNode
 
     def bits_expression = @children[0]
@@ -3263,7 +3428,7 @@ module Idl
         bits_expression.type_check(symtab)
         type_error "Bits width (#{bits_expression.value(symtab)}) must be positive" unless bits_expression.value(symtab).positive?
       end
-      unless ["Bits", "XReg", "Boolean", "U32", "U64"].include?(@type_name)
+      unless ["Bits", "String", "XReg", "Boolean", "U32", "U64"].include?(@type_name)
         type_error "Unimplemented builtin type #{text_value}"
       end
     end
@@ -3284,6 +3449,8 @@ module Idl
         Bits32Type
       when "U64"
         Bits64Type
+      when "String"
+        StringType
       when "Bits"
         Type.new(:bits, width: bits_expression.value(symtab))
       else
@@ -3324,13 +3491,15 @@ module Idl
     def type_check(_symtab); end
 
     def type(symtab)
-      @type      
+      @type
     end
 
     # @!macro value
     def value(_symtab)
       text_value.gsub('"', "")
     end
+
+    def to_idl = text_value
   end
 
   module IntLiteralSyntaxNode
@@ -3350,12 +3519,12 @@ module Idl
 
     # @!macro type_check
     def type_check(symtab)
-      if text_value.delete("_") =~ /([0-9]+)?'(s?)([bodh]?)(.*)/
+      if text_value.delete("_") =~ /^((XLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
         # verilog-style literal
         width = ::Regexp.last_match(1)
-        value_text = ::Regexp.last_match(4)
+        value_text = ::Regexp.last_match(6)
 
-        if width.nil?
+        if width.nil? || width == "XLEN"
           width = symtab.archdef.config_params["XLEN"]
           memoize = false
         end
@@ -3371,13 +3540,13 @@ module Idl
       return @types[cache_idx] unless @types[cache_idx].nil?
 
       case text_value.delete("_")
-      when /([0-9]+)?'(s?)([bodh]?)(.*)/
+      when /^((XLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
         # verilog-style literal
         width = ::Regexp.last_match(1)
-        signed = ::Regexp.last_match(2)
+        signed = ::Regexp.last_match(4)
 
         memoize = true
-        if width.nil?
+        if width.nil? || width == "XLEN"
           width = symtab.archdef.config_params["XLEN"]
           memoize = false
         end
@@ -3386,7 +3555,7 @@ module Idl
         t = Type.new(:bits, width: width.to_i, qualifiers:)
         @types[cache_idx] = t if memoize
         t
-      when /0([bdx]?)([0-9a-fA-F]*)(s?)/
+      when /^0([bdx]?)([0-9a-fA-F]*)(s?)$/
         # C++-style literal
         signed = ::Regexp.last_match(3)
 
@@ -3394,7 +3563,7 @@ module Idl
         type = Type.new(:bits, width: width(symtab), qualifiers:)
         @types[cache_idx] = type
         type
-      when /([0-9]*)(s?)/
+      when /^([0-9]*)(s?)$/
         # basic decimal
         signed = ::Regexp.last_match(2)
 
@@ -3413,17 +3582,17 @@ module Idl
       text_value_no_underscores = text_value.delete("_")
 
       case text_value_no_underscores
-      when /([0-9]+)?'(s?)([bodh]?)(.*)/
+      when /^((XLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
         # verilog-style literal
         width = ::Regexp.last_match(1)
         memoize = true
-        if width.nil?
+        if width.nil? || width == "XLEN"
           width = archdef.config_params["XLEN"]
           memoize = false
         end
         # @width = width if memoize
         width
-      when /0([bdx]?)([0-9a-fA-F]*)(s?)/
+      when /^0([bdx]?)([0-9a-fA-F]*)(s?)$/
         signed = ::Regexp.last_match(3)
 
         width = signed == "s" ? value(symtab).bit_length + 1 : value(symtab).bit_length
@@ -3431,7 +3600,7 @@ module Idl
 
         # @width = width
         width
-      when /([0-9]*)(s?)/
+      when /^([0-9]*)(s?)$/
         signed = ::Regexp.last_match(3)
 
         width = signed == "s" ? value(symtab).bit_length + 1 : value(symtab).bit_length
@@ -3448,20 +3617,20 @@ module Idl
     def value(symtab)
       # return @value unless @value.nil?
 
-      if text_value.delete("_") =~ /([0-9]+)?'(s?)([bodh]?)(.*)/
+      if text_value.delete("_") =~ /^((XLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
         # verilog-style literal
         width = ::Regexp.last_match(1)
-        signed = ::Regexp.last_match(2)
+        signed = ::Regexp.last_match(4)
 
         memoize = true
-        if width.nil?
+        if width.nil? || width == "XLEN"
           width = symtab.archdef.config_params["XLEN"]
           memoize = false
         end
 
         v =
           if !signed.empty? && ((unsigned_value >> (width.to_i - 1)) == 1)
-            -(2**width.to_i - unsigned_value) 
+            -(2**width.to_i - unsigned_value)
           else
             unsigned_value
           end
@@ -3480,26 +3649,24 @@ module Idl
       # return @unsigned_value unless @unsigned_value.nil?
 
       case text_value.delete("_")
-      when /([0-9]+)?'(s?)([bodh]?)(.*)/
+      when /^((XLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
         # verilog-style literal
-        radix_id = ::Regexp.last_match(3)
-        value = ::Regexp.last_match(4)
+        radix_id = ::Regexp.last_match(5)
+        value = ::Regexp.last_match(6)
 
         radix_id = "d" if radix_id.empty?
 
-        # ensure we actually have enough bits to represent the value
-        # @unsigned_value =
-          case radix_id
-          when "b"
-            value.to_i(2)
-          when "o"
-            value.to_i(8)
-          when "d"
-            value.to_i(10)
-          when "h"
-            value.to_i(16)
-          end
-      when /0([bdx]?)([0-9a-fA-F]*)(s?)/
+        case radix_id
+        when "b"
+          value.to_i(2)
+        when "o"
+          value.to_i(8)
+        when "d"
+          value.to_i(10)
+        when "h"
+          value.to_i(16)
+        end
+      when /^0([bdx]?)([0-9a-fA-F]*)(s?)$/
         # C++-style literal
         radix_id = ::Regexp.last_match(1)
         value = ::Regexp.last_match(2)
@@ -3517,14 +3684,15 @@ module Idl
           when "x"
             value.to_i(16)
           end
-      when /([0-9]*)(s?)/
+
+      when /^([0-9]*)(s?)$/
         # basic decimal
         value = ::Regexp.last_match(1)
 
         # @unsigned_value = value.to_i(10)
         value.to_i(10)
       else
-        internal_error "Unhandled int value"
+        internal_error "Unhandled int value '#{text_value}'"
       end
     end
 
@@ -3547,25 +3715,27 @@ module Idl
     include Rvalue
     include Executable
 
+    def targs = children[0...@num_targs]
+    def args = children[@num_targs..]
+
     def initialize(input, interval, function_name, targs, args)
       raise ArgumentError, "targs shoudl be an array" unless targs.is_a?(Array)
       raise ArgumentError, "args shoudl be an array" unless args.is_a?(Array)
 
       super(input, interval, targs + args)
+      @num_targs = targs.size
 
       @name = function_name
-      @targs = targs
-      @args = args
     end
 
     # @return [Boolean] whether or not the function call has a template argument
     def template?
-      !@targs.empty?
+      !targs.empty?
     end
 
     # @return [Array<AstNode>] Template argument nodes
     def template_arg_nodes
-      @targs
+      targs
     end
 
     def template_values(symtab)
@@ -3576,7 +3746,7 @@ module Idl
 
     # @return [Array<AstNode>] Function argument nodes
     def arg_nodes
-      @args
+      args
     end
 
     def func_type(symtab)
@@ -3613,9 +3783,9 @@ module Idl
           end
         end
 
-        func_def_type.type_check_call(template_values(symtab))
+        func_def_type.type_check_call(template_values(symtab), self)
       else
-        func_def_type.type_check_call
+        func_def_type.type_check_call([], self)
       end
 
       num_args = arg_nodes.size
@@ -3626,12 +3796,12 @@ module Idl
         a.type_check(symtab)
       end
       arg_nodes.each_with_index do |a, idx|
-        unless a.type(symtab).convertable_to?(func_def_type.argument_type(idx, template_values(symtab), arg_nodes, symtab))
-          type_error "Wrong type for argument number #{idx + 1}. Expecting #{func_def_type.argument_type(idx, template_values(symtab))}, got #{a.type(symtab)}"
+        unless a.type(symtab).convertable_to?(func_def_type.argument_type(idx, template_values(symtab), arg_nodes, symtab, self))
+          type_error "Wrong type for argument number #{idx + 1}. Expecting #{func_def_type.argument_type(idx, template_values(symtab), self)}, got #{a.type(symtab)}"
         end
       end
 
-      if func_def_type.return_type(template_values(symtab)).nil?
+      if func_def_type.return_type(template_values(symtab), self).nil?
         internal_error "No type determined for function"
       end
 
@@ -3641,13 +3811,18 @@ module Idl
     # @!macro type
     def type(symtab)
       func_def_type = symtab.get(name)
-      func_def_type.return_type(template_values(symtab))
+      func_def_type.return_type(template_values(symtab), self)
     end
 
     # @!macro value
     def value(symtab)
+      # sometimes we want to evaluate for a specific XLEN
+      if name == "xlen" && !symtab.get("__effective_xlen").nil?
+        return symtab.get("__effective_xlen").value
+      end
+
       func_def_type = symtab.get(name)
-      type_error "not a function" unless func_def_type.is_a?(FunctionType)
+      type_error "#{name} is not a function" unless func_def_type.is_a?(FunctionType)
       if func_def_type.builtin?
         if name == "implemented?"
           extname_ref = arg_nodes[0]
@@ -3664,7 +3839,7 @@ module Idl
         template_values << targ.value(symtab)
       end
 
-      func_def_type.return_value(template_values, arg_nodes, symtab)
+      func_def_type.return_value(template_values, arg_nodes, symtab, self)
     end
     alias execute value
 
@@ -3850,7 +4025,11 @@ module Idl
       @argument_nodes = arguments
       @desc = desc
       @body = body
+
+      @reachable_functions_cache ||= {}
     end
+
+    attr_reader :reachable_functions_cache
 
     def description
       unindent(@desc)
@@ -4707,7 +4886,7 @@ module Idl
       archdef = symtab.archdef
 
       idx_text = @idx.is_a?(String) ? @idx : @idx.text_value
-      if !archdef.all_known_csr_names.index { |csr_name| csr_name == idx_text }.nil?
+      if !archdef.csr(idx_text).nil?
         # this is a known csr name
         # nothing else to check
 
@@ -4729,18 +4908,15 @@ module Idl
     def csr_def(symtab)
       archdef = symtab.archdef
       idx_text = @idx.is_a?(String) ? @idx : @idx.text_value
-      if !archdef.all_known_csr_names.index { |csr_name| csr_name == idx_text }.nil?
+      csr = archdef.csr(idx_text)
+      if !csr.nil?
         # this is a known csr name
-        csr_index = archdef.csrs.index { |csr| csr.name == idx_text }
-
-        archdef.csrs[csr_index]
+        csr
       else
         # this is an expression
         begin
           idx_value = @idx.value(symtab)
-          csr_index = archdef.csrs.index { |csr| csr.address == idx_value }
-
-          archdef.csrs[csr_index]
+          csr_index = archdef.csrs.find { |csr| csr.address == idx_value }
         rescue ValueError
           # we don't know at compile time which CSR this is...
           nil
@@ -4769,7 +4945,7 @@ module Idl
     end
 
     # @!macro to_idl
-    def to_idl = "CSR[#{idx.to_idl}]"
+    def to_idl = "CSR[#{@idx.to_idl}]"
   end
 
   class CsrSoftwareWriteSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -4896,23 +5072,18 @@ module Idl
         index = symtab.archdef.csrs.index { |csr| csr.address == idx.value(symtab) }
         type_error "No csr number '#{idx.value(symtab)}' was found" if index.nil?
       else
-        index = symtab.archdef.csrs.index { |csr| csr.name == idx.text_value }
-        type_error "No csr named '#{idx.text_value}' was found" if index.nil?
+        csr = symtab.archdef.csr(idx.text_value)
+        type_error "No csr named '#{idx.text_value}' was found" if csr.nil?
       end
-
-      symtab.archdef.csrs[index]
     end
 
     def csr_def(symtab)
-      index =
-        if idx.is_a?(IntLiteralAst)
-          # make sure this value is a defined CSR
-          symtab.archdef.csrs.index { |csr| csr.address == idx.text_value.to_i }
-        else
-          symtab.archdef.csrs.index { |csr| csr.name == idx.text_value }
-        end
-
-      symtab.archdef.csrs[index]
+      if idx.is_a?(IntLiteralAst)
+        # make sure this value is a defined CSR
+        symtab.archdef.csrs.find { |csr| csr.address == idx.text_value.to_i }
+      else
+        symtab.archdef.csr(idx.text_value)
+      end
     end
 
     # @!macro type

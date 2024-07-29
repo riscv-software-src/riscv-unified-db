@@ -1,0 +1,151 @@
+%version: 1.0
+
+# generic utility functions
+
+function power_of_2? {
+  template U32 N
+  returns Boolean
+  arguments Bits<N> value
+  description {
+    Returns true if value is a power of two, false otherwise
+  }
+  body {
+    return (value != 0) && ((value & (value - 1)) == 0);
+  }
+}
+
+function ary_includes? {
+  template U32 ARY_SIZE, U32 ELEMENT_SIZE
+  returns Boolean
+  arguments Bits<ELEMENT_SIZE> ary[ARY_SIZE], Bits<ELEMENT_SIZE> value
+  description {
+    Returns true if _value_ is an element of ary, and false otherwise
+  }
+  body {
+    for (U32 i = 0; i < ARY_SIZE; i++) {
+      if (ary[i] == value) {
+        return true;
+      }
+    }
+    return false;
+  }
+}
+
+function highest_set_bit {
+  returns XReg
+  arguments XReg value
+  description {
+    Returns the position of the highest (nearest MSB) bit that is '1',
+    or -1 if value is zero.
+  }
+  body {
+    for (U32 i=xlen()-1; i >= 0; i--) {
+      if (value[i] == 1) {
+        return i;
+      }
+    }
+
+    # fall-through; value must be zero
+    return -'sd1;
+  }
+}
+
+function lowest_set_bit {
+  returns XReg
+  arguments XReg value
+  description {
+    Returns the position of the lowest (nearest LSB) bit that is '1',
+    or XLEN if value is zero.
+  }
+  body {
+    for (U32 i=0; i < xlen(); i++) {
+      if (value[i] == 1) {
+        return i;
+      }
+    }
+
+    # fall-through; value must be zero
+    return xlen();
+  }
+}
+
+function sext {
+  returns XReg
+  arguments XReg value, XReg first_extended_bit
+  description {
+    Sign extend `value` starting at `first_extended_bit`.
+
+    Bits [`XLEN-1`:`first_extended_bit`] of the return value
+    should get the value of bit (`first_extended bit - 1`).
+  }
+  body {
+    # in a common case, first_extended_bit is xlen(), which is compile-time-known unless
+    # the effective xlen is different than XLEN in some mode
+    # In that common case, this function will be eliminated by the compiler
+    if (first_extended_bit == XLEN) {
+      return value;
+    } else {
+      Bits<1> sign = value[first_extended_bit-1];
+      for (U32 i = XLEN-1; i >= first_extended_bit; i--) {
+        value[i] = sign;
+      }
+      return value;
+    }
+  }
+}
+
+function bit_length {
+  returns XReg
+  arguments XReg value
+  description {
+    Returns the minimum number of bits needed to represent value.
+
+    Only works on unsigned values.
+
+    The value 0 returns 1.
+  }
+  body {
+    for (XReg i = 63; i > 0; i--) {
+      if (value[i] == 1) {
+        return i;
+      }
+    }
+
+    # if we get here, the value is 0 or 1. either way, say we need one bit
+    return 1;
+  }
+}
+
+function is_naturally_aligned {
+  template U32 M, U32 N
+  returns Boolean
+  arguments Bits<M> value
+  description {
+    Checks if M-bit value is naturally aligned to N bits.
+  }
+  body {
+    return true if N == 8; # everything is byte aligned
+
+    Bits<M> mask = (N/8) - 1;
+    return (value & ~mask) == value;
+  }
+}
+
+function contains? {
+  returns Boolean
+  arguments
+    XReg region_start,
+    U32  region_size,
+    XReg target_start,
+    U32  target_size
+  description {
+    Given a _region_ defined by region_start, region_size,
+    determine if a _target_ defined by target_start, target_size
+    is completely contained with the region.
+  }
+  body {
+    return
+      target_start >= region_start &&
+      (target_start + target_size) <= (region_start + region_size);
+  }
+}

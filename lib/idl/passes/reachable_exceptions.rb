@@ -8,13 +8,15 @@ module Idl
   class AstNode
     # @return [Array<FunctionBodyAst>] List of all functions that can be reached (via function calls) from this node
     def reachable_exceptions(symtab)
-      children.reduce([]) { |list, e| list.concat e.prune(symtab).reachable_exceptions(symtab) }.uniq
+      children.reduce([]) do |list, e|
+        list.concat e.reachable_exceptions(symtab)
+      end.uniq
     end
   end
 
   class FunctionCallExpressionAst
     def reachable_exceptions(symtab)
-      if (name == "raise")
+      if name == "raise"
         # first argument is the exception
         code_ast = arg_nodes[0]
         begin
@@ -31,18 +33,18 @@ module Idl
       fns = []
       if template?
         template_arg_nodes.each do |t|
-          fns.concat(t.prune(symtab).reachable_exceptions(symtab))
+          fns.concat(t.reachable_exceptions(symtab))
         end
       end
 
       arg_nodes.each do |a|
-        fns.concat(a.prune(symtab).reachable_exceptions(symtab))
+        fns.concat(a.reachable_exceptions(symtab))
       end
 
-      body_symtab = func_def_type.apply_template_values(template_values(symtab))
-      func_def_type.apply_arguments(body_symtab, arg_nodes, symtab)
-
       unless func_def_type.builtin?
+        body_symtab = func_def_type.apply_template_values(template_values(symtab), self)
+        func_def_type.apply_arguments(body_symtab, arg_nodes, symtab, self)
+
         fns.concat(func_def_type.body.prune(body_symtab, args_already_applied: true).reachable_exceptions(body_symtab))
       end
 
@@ -60,6 +62,23 @@ module Idl
         # ok
       end
       fns
+    end
+  end
+
+  class ConditionalReturnStatementAst
+    def reachable_functions(symtab)
+      fns = condition.reachable_exceptions(symtab)
+      if condition.value(symtab)
+        fns.concat return_expression.reachable_exceptions(symtab)
+        begin
+          return_expression.execute(symtab)
+        rescue ValueError
+          # ok
+        end
+        fns
+      else
+        []
+      end
     end
   end
 

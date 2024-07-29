@@ -21,6 +21,9 @@ module Idl
       @function_name = function_name
     end
 
+    def to_s
+      "VAR: #{type} #{name} #{value.nil? ? 'NO VALUE' : value}"
+    end
 
     def clone
       Var.new(
@@ -157,12 +160,13 @@ module Idl
     end
 
     # pushes a new scope
+    # @return [SymbolTable] self
     def push
       # puts "push #{caller[0]}"
       # @scope_caller ||= []
       # @scope_caller.push caller[0]
       @scopes << {}
-
+      self
     end
 
     # pops the top of the scope stack
@@ -285,6 +289,8 @@ module Idl
 
     # @return [SymbolTable] a deep clone of this SymbolTable
     def deep_clone(clone_values: false, freeze_global: true)
+      raise "don't do this" unless freeze_global
+
       # globals are frozen, so we can just return a shallow clone
       # if we are in global scope
       if levels == 1
@@ -293,12 +299,13 @@ module Idl
         return copy
       end
 
-      copy = SymbolTable.new(@archdef)
+      copy = dup
+      # back up the table to global scope
       copy.instance_variable_set(:@scopes, [])
       c_scopes = copy.instance_variable_get(:@scopes)
+      c_scopes.push(@scopes[0])
 
-      in_global = true
-      @scopes.each do |scope|
+      @scopes[1..].each do |scope|
         c_scopes << {}
         scope.each do |k, v|
           if clone_values
@@ -306,14 +313,7 @@ module Idl
           else
             c_scopes.last[k] = v
           end
-          if freeze_global && in_global
-            c_scopes.last[k].freeze
-          end
         end
-        in_global = false
-      end
-      if freeze_global
-        copy.instance_variable_get(:@scopes).first.freeze
       end
       copy
     end
