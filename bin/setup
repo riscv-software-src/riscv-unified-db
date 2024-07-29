@@ -7,10 +7,13 @@ cd $ROOT
 CONTAINER_TAG=`cat ${ROOT}/bin/.container-tag`
 
 if [ -v GITHUB_ACTIONS ]; then
-  CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
+  echo "ACTIONS"
+  CONTAINER_PATH=${ROOT}/.singularity/image.sif
+  HOME_PATH=${GITHUB_WORKSPACE}
   SINGULARITY_CACHE=--disable-cache
 else
-  CONTAINER_PATH=${ROOT}/.singularity/image.sif
+  CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
+  HOME_PATH=${HOME}
   SINGULARITY_CACHE=
 fi
 
@@ -29,15 +32,15 @@ fi
 if [ ! -f $ROOT/.bundle/config ]; then
   OLDDIR=$PWD
   cd $ROOT
-  singularity run --bind ${ROOT}/.home:${HOME} ${CONTAINER_PATH} bundle config set --local path ${ROOT}/.home/.gems
-  singularity run --bind ${ROOT}/.home:${HOME} ${CONTAINER_PATH} bundle config set --local cache_path ${ROOT}/.home/.cache
+  singularity run --bind ${ROOT}/.home:${HOME_PATH} ${CONTAINER_PATH} bundle config set --local path ${ROOT}/.home/.gems
+  singularity run --bind ${ROOT}/.home:${HOME_PATH} ${CONTAINER_PATH} bundle config set --local cache_path ${ROOT}/.home/.cache
   cd $OLDDIR
 fi
 
 if [ ! -d $ROOT/.home/.gems ]; then
   OLDDIR=$PWD
   cd $ROOT
-  singularity run --bind ${ROOT}/.home:${HOME} ${CONTAINER_PATH} bundle install
+  singularity run --bind ${ROOT}/.home:${HOME_PATH} ${CONTAINER_PATH} bundle install
   cd $OLDDIR
 fi
 
@@ -47,8 +50,8 @@ fi
 
 if [[ ! -z "$DEVELOPMENT" && $DEVELOPMENT -eq 1 ]]; then
   if [ ! -d "${ROOT}/.home/.yard/gem_index"]; then
-    singularity run --bind ${ROOT}/.home:${HOME} ${CONTAINER_PATH} bundle exec --gemfile ${ROOT}/Gemfile yard config --gem-install-yri
-    singularity run --bind ${ROOT}/.home:${HOME} ${CONTAINER_PATH} bundle exec --gemfile ${ROOT}/Gemfile yard gems
+    singularity run --bind ${ROOT}/.home:${HOME_PATH} ${CONTAINER_PATH} bundle exec --gemfile ${ROOT}/Gemfile yard config --gem-install-yri
+    singularity run --bind ${ROOT}/.home:${HOME_PATH} ${CONTAINER_PATH} bundle exec --gemfile ${ROOT}/Gemfile yard gems
     touch ${ROOT}/.stamps/dev_gems
   fi
 fi
@@ -72,11 +75,11 @@ if [[ ! -z "$VSCODE" && $VSCODE -eq 1 ]]; then
 fi
 
 if [ ! -d ${ROOT}/node_modules ]; then
-  singularity run --bind ${ROOT}/.home:${HOME} ${CONTAINER_PATH} npm i
+  singularity run --bind ${ROOT}/.home:${HOME_PATH} ${CONTAINER_PATH} npm i
 fi
 
-BUNDLE="singularity run --bind ${ROOT}/.home:${HOME} ${CONTAINER_PATH} bundle"
-RUBY="singularity run --bind ${ROOT}/.home:${HOME} ${CONTAINER_PATH} bundle exec ruby"
-RAKE="singularity run --bind ${ROOT}/.home:${HOME} ${CONTAINER_PATH} bundle exec rake"
-NPM="singularity run --bind ${ROOT}/.home:${HOME} ${CONTAINER_PATH} npm"
-NPX="singularity run --bind ${ROOT}/.home:${HOME} ${CONTAINER_PATH} npx"
+BUNDLE="singularity run --bind ${ROOT}/.home:${HOME_PATH} ${CONTAINER_PATH} bundle"
+RUBY="singularity run --bind ${ROOT}/.home:${HOME_PATH} ${CONTAINER_PATH} bundle exec ruby"
+RAKE="singularity run --bind ${ROOT}/.home:${HOME_PATH} ${CONTAINER_PATH} bundle exec rake"
+NPM="singularity run --bind ${ROOT}/.home:${HOME_PATH} ${CONTAINER_PATH} npm"
+NPX="singularity run --bind ${ROOT}/.home:${HOME_PATH} ${CONTAINER_PATH} npx"
