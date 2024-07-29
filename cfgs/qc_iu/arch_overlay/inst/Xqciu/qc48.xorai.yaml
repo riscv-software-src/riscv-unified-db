@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+qc48.xorai:
+  long_name: Exclusive Or immediate
+  description: |
+    Exclusive or a 32-bit immediate to the value in `rd`, and store the result back in `rd`.
+  definedBy: Xqciu
+  encoding:
+    match:     --------------------------------0001-----0011111
+    variables:
+    - name: imm
+      location: 47-16
+    - name: rd
+      location: 11-7
+      not: 0
+  assembly: " xd, imm"
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    X[rd] = X[rd] ^ imm;

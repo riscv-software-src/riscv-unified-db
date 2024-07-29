@@ -1,7 +1,8 @@
----
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
 Xqciu:
-  long_name: Qualcomm DSP extensions
   type: unprivileged
+  long_name: Qualcomm uC extensions
   versions:
   - version: 0.1
     state: development

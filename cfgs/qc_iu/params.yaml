@@ -21,13 +21,13 @@ params:
 
   # whether or not the implementation supports misaligned loads and stores in main memory (not including atomics)
   # must be true when Zicclsm is supported
-  MISALIGNED_LDST: true
+  MISALIGNED_LDST: false
 
   # whether or not the implementation supports misaligned atomics
   MISALIGNED_AMO: false
 
   # number of implemented programmable hardware performance counters
-  NUM_HPM_COUNTERS: 8
+  NUM_HPM_COUNTERS: 0
 
   # Indicates which counters can be disabled from mcountinhibit
   #
@@ -39,14 +39,14 @@ params:
   - true  # CY
   - false # empty
   - true  # IR
-  - true  # HPME3
-  - true  # HPME4
-  - true  # HPME5
-  - true  # HPME6
-  - true  # HPME7
-  - true  # HPME8
-  - true  # HPME9
-  - true  # HPME10
+  - false # HPME3
+  - false # HPME4
+  - false # HPME5
+  - false # HPME6
+  - false # HPME7
+  - false # HPME8
+  - false # HPME9
+  - false # HPME10
   - false # HPME11
   - false # HPME12
   - false # HPME13
@@ -86,14 +86,14 @@ params:
   - true  # CY
   - false # empty
   - true  # IR
-  - true  # HPME3
-  - true  # HPME4
-  - true  # HPME5
-  - true  # HPME6
-  - true  # HPME7
-  - true  # HPME8
-  - true  # HPME9
-  - true  # HPME10
+  - false # HPME3
+  - false # HPME4
+  - false # HPME5
+  - false # HPME6
+  - false # HPME7
+  - false # HPME8
+  - false # HPME9
+  - false # HPME10
   - false # HPME11
   - false # HPME12
   - false # HPME13
@@ -185,7 +185,7 @@ params:
   #
   # when NUM_PMP_ENTRIES is not exactly 0, 16, or 64, some extant pmp registers,
   # and associated pmpNcfg, will be read-only zero (but will not cause an exception).
-  NUM_PMP_ENTRIES: 14
+  NUM_PMP_ENTRIES: 0
 
   # log2 of the smallest supported PMP region
   # generally, for systems with an MMU, should not be smaller than 12,
@@ -301,15 +301,23 @@ hpm_events:
   - 'L2_CACHE_MISS'
 
 extensions:
-  - [A, 2.1]
-  - [B, 1.0]
-  - [D, 2.2]
+  # - [A, 2.1]
+  # - [B, 1.0]
+  # - [D, 2.2]
   # - [F, 2.2]
   - [I, 2.1]
   - [M, 2.0]
   - [Zicntr, 2.0]
   - [Zicsr, 2.0]
-  - [Zihpm, 2.0]
-  - [Zicboz, "1.0.1-b34ea8a"]
-  - [Zicbom, "1.0.1-b34ea8a"]
+  # - [Zihpm, 2.0]
+  # - [Zicboz, "1.0.1-b34ea8a"]
+  # - [Zicbom, "1.0.1-b34ea8a"]
+  - [Zba, 1.0]
+  - [Zbb, 1.0]
+  - [Zbs, 1.0]
+  - [Zca, 1.0]
+  - [Zcb, 1.0]
+  - [Zcmp, 1.0]
+  - [Zilsd, 0.9]
+  - [Zcmlsd, 0.9]
   - [Xqciu, 0.1]

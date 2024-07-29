@@ -64,6 +64,11 @@
           "oneOf": [
             {
               "type": "string",
+              "pattern": "^[01-]{43}11111$",
+              "description": "48-bit encoding"
+            },
+            {
+              "type": "string",
               "pattern": "^[01-]{30}11$",
               "description": "32-bit encoding"
             },

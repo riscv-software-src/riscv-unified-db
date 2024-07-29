@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+qc32.insb:
+  long_name: Insert bits (register)
+  description: |
+    Insertion of a subset of bits from rs1 into rd.
+
+    The width of the subset is determined by (width_minus1[4:0] + 1) (1..32),
+    and the offset of the subset is determined by shamt[4:0].
+  definedBy: Xqciu
+  base: 32
+  encoding:
+    match:     01---------------001-----0001011
+    variables:
+    - name: width_minus1
+      location: 29-25
+    - name: shamt
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
+      not: 0
+  assembly: " xd, xs1, width, shamt"
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg width = width_minus1 + 1;
+    XReg mask = ((1 << width) - 1) << shamt;
+    XReg orig_val = X[rd]; 
+    X[rd] = (orig_val & ~mask) | ((X[rs1] << shamt) & mask);
