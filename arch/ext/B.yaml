@@ -21,7 +21,7 @@ B:
     implies:
     - [Zba, 1.0]
     - [Zbb, 1.0]
-    - [Zbc, 1.0]
+    - [Zbs, 1.0]
   description: |
     The B standard extension comprises instructions provided by the `Zba`, `Zbb`, and `Zbs` extensions.
 
