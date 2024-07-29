@@ -8,8 +8,10 @@ CONTAINER_TAG=`cat ${ROOT}/bin/.container-tag`
 
 if [ -z ${GITHUB_ACTIONS+x} ]; then
   CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
+  SINGULARITY_CACHE=--disable-cache
 else
   CONTAINER_PATH=${ROOT}/.singularity/image.sif
+  SINGULARITY_CACHE=
 fi
 
 if [ ! -d $ROOT/.home ]; then
@@ -21,7 +23,7 @@ if [ ! -f ${CONTAINER_PATH} ]; then
   if [ ! -d "${ROOT}/.singularity" ]; then
     mkdir -p ${ROOT}/.singularity
   fi
-  singularity pull ${CONTAINER_PATH} oras://docker.io/riscvintl/spec-generator:$CONTAINER_TAG
+  singularity pull ${SINGULARITY_CACHE} ${CONTAINER_PATH} oras://docker.io/riscvintl/spec-generator:$CONTAINER_TAG
 fi
 
 if [ ! -f $ROOT/.bundle/config ]; then
