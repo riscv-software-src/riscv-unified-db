@@ -646,6 +646,108 @@ module Idl
     end
   end
 
+  class EnumSizeSyntaxNode < Treetop::Runtime::SyntaxNode
+    def to_ast
+      EnumSizeAst.new(input, interval, user_type_name.to_ast)
+    end
+  end
+
+  # represents the builtin that returns the nymber of elements in an enum class
+  #
+  #  $enum_size(XRegWidth) #=> 2
+  class EnumSizeAst < AstNode
+    def enum_class = children[0]
+
+    def initialize(input, interval, enum_class_name)
+      super(input, interval, [enum_class_name])
+    end
+
+    def type_check(symtab)
+      enum_class.type_check(symtab)
+    end
+
+    def type(symtab)
+      Type.new(
+        :bits,
+        width: enum_class.type(symtab).element_names.size.bit_length,
+        qualifiers: [:const]
+      )
+    end
+
+    def value(symtab)
+      enum_class.type(symtab).element_names.size
+    end
+
+    def to_idl = "$enum_size(#{enum_class.to_idl})"
+  end
+
+  class EnumElementSizeSyntaxNode < Treetop::Runtime::SyntaxNode
+    def to_ast
+      EnumElementSizeAst.new(input, interval, user_type_name.to_ast)
+    end
+  end
+
+  # represents the builtin that returns the bitwidth of an element in an enum class
+  #
+  #  $enum_element_size(PrivilegeMode) #=> 3
+  class EnumElementSizeAst < AstNode
+    def enum_class = children[0]
+
+    def initialize(input, interval, enum_class_name)
+      super(input, interval, [enum_class_name])
+    end
+
+    def type_check(symtab)
+      enum_class.type_check(symtab)
+    end
+
+    def type(symtab)
+      Type.new(:bits, width: enum_class.type(symtab).width, qualifiers: [:const])
+    end
+
+    def value(symtab)
+      enum_class.type(symtab).width
+    end
+
+    def to_idl = "$enum_element_size(#{enum_class.to_idl})"
+  end
+
+  class EnumArrayCastSyntaxNode < Treetop::Runtime::SyntaxNode
+    def to_ast
+      EnumArrayCastAst.new(input, interval, user_type_name.to_ast)
+    end
+  end
+
+  # represents the builtin that returns an array with all elements of an Enum type
+  #
+  #  $enum_to_a(PrivilegeMode) #=> [3, 1, 1, 0, 5, 4]
+  class EnumArrayCastAst < AstNode
+    def enum_class = children[0]
+
+    def initialize(input, interval, enum_class_name)
+      super(input, interval, [enum_class_name])
+    end
+
+    def type_check(symtab)
+      enum_class.type_check(symtab)
+    end
+
+    def type(symtab)
+      Type.new(
+        :array,
+        width: enum_class.type(symtab).element_values.size,
+        sub_type: Type.new(:bits, width: enum_class.type(symtab).width),
+        qualifiers: [:const]
+      )
+    end
+
+    def value(symtab)
+      enum_class.type(symtab).element_values
+    end
+
+    def to_idl = "$enum_to_a(#{enum_class.to_idl})"
+  end
+
   class EnumDefinitionSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
       values = []
@@ -777,7 +879,10 @@ module Idl
 
     # @!macro type_check_no_args
     def type_check(_symtab)
-      unless @user_type.text_value == "ExtensionName"
+      case @user_type.text_value
+      when "ExtensionName", "ExceptionCode", "InterruptCode"
+        # OK
+      else
         type_error "Unsupported builtin enum type '#{@user_type.text_value}'"
       end
     end
@@ -1047,15 +1152,15 @@ module Idl
       else
         value_error "X registers are not compile-time-known" if var.text_value == "X"
 
-        ary = symtab.get(var.text_value)
-        internal_error "Not an array" unless ary.type.kind == :array
+        ary = var.value(symtab)
+        # internal_error "Not an array" unless ary.type.kind == :array
 
-        internal_error "Not an array (is a #{ary.value.class.name})" unless ary.value.is_a?(Array)
+        internal_error "Not an array (is a #{ary.class.name})" unless ary.is_a?(Array)
 
         idx = index.value(symtab)
-        internal_error "Index out of range; make sure type_check is called" if idx >= ary.value.size
+        internal_error "Index out of range; make sure type_check is called" if idx >= ary.size
 
-        ary.value[idx].value
+        ary[idx]
       end
     end
 
@@ -2063,10 +2168,19 @@ module Idl
     # @!macro type
     def type(symtab)
       lhs_type = lhs.type(symtab)
-      rhs_type = rhs.type(symtab)
+      short_circuit = false
+      begin
+        lhs_value = lhs.value(symtab)
+        if (lhs_value == true && op == "||") || (lhs_value == false && op == "&&")
+          short_circuit = true
+        end
+      rescue ValueError
+        short_circuit = false
+      end
+      rhs_type = rhs.type(symtab) unless short_circuit
 
       qualifiers = []
-      qualifiers << :const if lhs_type.const? && rhs_type.const?
+      qualifiers << :const if lhs_type.const? && (short_circuit || rhs_type.const?)
 
       if LOGICAL_OPS.include?(op)
         if qualifiers.include?(:const)
@@ -3525,7 +3639,7 @@ module Idl
         value_text = ::Regexp.last_match(6)
 
         if width.nil? || width == "XLEN"
-          width = symtab.archdef.config_params["XLEN"]
+          width = symtab.archdef.param_values["XLEN"]
           memoize = false
         end
 
@@ -3547,7 +3661,7 @@ module Idl
 
         memoize = true
         if width.nil? || width == "XLEN"
-          width = symtab.archdef.config_params["XLEN"]
+          width = symtab.archdef.param_values["XLEN"]
           memoize = false
         end
 
@@ -3587,7 +3701,7 @@ module Idl
         width = ::Regexp.last_match(1)
         memoize = true
         if width.nil? || width == "XLEN"
-          width = archdef.config_params["XLEN"]
+          width = archdef.param_values["XLEN"]
           memoize = false
         end
         # @width = width if memoize
@@ -3624,7 +3738,7 @@ module Idl
 
         memoize = true
         if width.nil? || width == "XLEN"
-          width = symtab.archdef.config_params["XLEN"]
+          width = symtab.archdef.param_values["XLEN"]
           memoize = false
         end
 
@@ -4970,7 +5084,7 @@ module Idl
       csr.type_check(symtab)
       expression.type_check(symtab)
 
-      return if expression.type(symtab).kind == :bits && expression.type(symtab).width == archdef.config_params["XLEN"]
+      return if expression.type(symtab).kind == :bits && expression.type(symtab).width == archdef.param_values["XLEN"]
 
       type_error "CSR value must be an XReg"
     end
@@ -5023,7 +5137,7 @@ module Idl
       if csr_known?(symtab)
         Type.new(:bits, width: archdef.csr(csr.csr_name(symtab)).length)
       else
-        Type.new(:bits, width: archdef.config_params["XLEN"])
+        Type.new(:bits, width: archdef.param_values["XLEN"])
       end
     end
 

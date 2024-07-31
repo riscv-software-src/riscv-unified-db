@@ -166,8 +166,54 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/playbook.yaml} => proc { |tname|
         contents: |
           <link rel="stylesheet" href="{{{uiRootPath}}}/css/site.css">
           <link rel="stylesheet" href="{{{uiRootPath}}}/css/vendor/tabs.css">
+          <link rel="stylesheet" href="{{{uiRootPath}}}/css/vendor/custom.css">
       - path: js/vendor/highlight.js
         contents: #{$root}/backends/cfg_html_doc/ui/highlight.js
+      - path: css/vendor/custom.css
+        contents: |
+          .small {
+            font-size: 50%;
+            font-weight: normal;
+          }
+
+          code.language-idl > a {
+            text-decoration: none;
+          }
+
+          /* rotate text vertically */
+          span.rotate {
+            writing-mode: vertical-lr;
+          }
+
+          span.access-always {
+            background-color: green;
+            display: block;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+          }
+
+          span.access-sometimes {
+            background-color: rgb(255, 193, 7);
+            display: block;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            color: black;
+            font-weight: bold;
+          }
+
+          span.access-never {
+            background-color: #e71324;
+            display: block;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+          }
   PLAYBOOK
 end
 

@@ -314,6 +314,12 @@ grammar Idl
     /
     '$bits' space* '(' space* expression space* ')' <Idl::BitsCastSyntaxNode>
     /
+    '$enum_size' space* '(' space* user_type_name ')' <Idl::EnumSizeSyntaxNode>
+    /
+    '$enum_element_size' space* '(' space* user_type_name ')' <Idl::EnumElementSizeSyntaxNode>
+    /
+    '$enum_to_a' space* '(' space* user_type_name ')' <Idl::EnumArrayCastSyntaxNode>
+    /
     paren_expression
     /
     o:unary_operator space* e:expression <Idl::UnaryOperatorExpressionSyntaxNode>
@@ -365,7 +371,7 @@ grammar Idl
   end
 
   rule function_call_template_arguments
-    first:(rval) rest:(space* ',' space* arg:(rval))*
+    first:(template_safe_expression) rest:(space* ',' space* arg:(template_safe_expression))*
   end
 
   rule function_call

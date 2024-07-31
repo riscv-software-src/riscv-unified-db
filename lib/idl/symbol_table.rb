@@ -81,12 +81,12 @@ module Idl
       @scopes = [{
         'X' => Var.new(
           'X',
-          Type.new(:array, sub_type: XregType.new(arch_def.config_params['XLEN']), width: 32, qualifiers: [:global])
+          Type.new(:array, sub_type: XregType.new(arch_def.param_values['XLEN']), width: 32, qualifiers: [:global])
         ),
-        'XReg' => XregType.new(arch_def.config_params['XLEN']),
+        'XReg' => XregType.new(arch_def.param_values['XLEN']),
         'PC' => Var.new(
           'PC',
-          XregType.new(arch_def.config_params['XLEN'])
+          XregType.new(arch_def.param_values['XLEN'])
         ),
         'Boolean' => Type.new(:boolean),
         'True' => Var.new(
@@ -111,7 +111,7 @@ module Idl
         )
 
       }]
-      arch_def.config_params.each do |name, value|
+      arch_def.param_values.each do |name, value|
         if value.is_a?(Integer)
           width = value.bit_length
           width = 1 if width.zero? # happens if value is 0
@@ -135,7 +135,7 @@ module Idl
             end
           ary_type = Type.new(:array, width: value.size, sub_type: element_type)
           value.each_with_index do |v, idx|
-            ary << Var.new("#{name}[#{idx}]", element_type, v)
+            ary << v #Var.new("#{name}[#{idx}]", element_type, v)
           end
           add!(name, Var.new(name, ary_type, ary))
           # also add the array size
@@ -145,8 +145,32 @@ module Idl
           raise "Unhandled config param type '#{value.class.name}' for '#{name}'"
         end
       end
-      add!('ExtensionName', EnumerationType.new('ExtensionName', arch_def.extensions.map(&:name), Array.new(arch_def.extensions.size) { |i| i + 1 }))
 
+      # add the builtin extensions
+      add!(
+        "ExtensionName",
+        EnumerationType.new(
+          "ExtensionName",
+          arch_def.extensions.map(&:name),
+          Array.new(arch_def.extensions.size) { |i| i + 1 }
+        )
+      )
+      add!(
+        "ExceptionCode",
+        EnumerationType.new(
+          "ExceptionCode",
+          arch_def.exception_codes.map(&:var),
+          arch_def.exception_codes.map(&:num)
+        )
+      )
+      add!(
+        "InterruptCode",
+        EnumerationType.new(
+          "InterruptCode",
+          arch_def.interrupt_codes.map(&:var),
+          arch_def.interrupt_codes.map(&:num)
+        )
+      )
     end
 
     # do a deep freeze to protect the sym table and all its entries from modification

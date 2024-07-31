@@ -252,10 +252,10 @@ module Idl
         # as the starting point and try again
         IfAst.new(
           input, interval,
-          elseifs[0].cond.prune(symtab),
-          elseifs[0].body.prune(symtab),
-          elseifs[1..].map { |e| e.prune(symtab) },
-          final_else_body.prune(symtab))
+          elseifs[0].cond.dup,
+          elseifs[0].body.dup,
+          elseifs[1..].map(&:dup),
+          final_else_body.dup).prune(symtab)
       elsif !final_else_body.stmts.empty?
         # the if is false, and there are no else ifs, so the result of the prune is just the pruned else body
         final_else_body.prune(symtab)
@@ -273,11 +273,11 @@ module Idl
             # this elseif is true, so turn it into an else and then we are done
             return IfAst.new(
               input, interval,
-              if_cond.prune(symtab),
-              if_body.prune(symtab),
-              unknown_elsifs.map { |u| u.prune(symtab) },
-              eif.body.prune(symtab)
-            )
+              if_cond.dup,
+              if_body.dup,
+              unknown_elsifs.map(&:dup),
+              eif.body.dup
+            ).prune(symtab)
           else
             # this elseif is false, so we can remove it
             next
