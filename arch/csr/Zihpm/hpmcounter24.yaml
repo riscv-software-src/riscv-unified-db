@@ -10,8 +10,16 @@ hpmcounter24:
   description: |
     Alias for M-mode CSR `mhpmcounter24`.
 
-    Privilege mode access is controlled with `mcounteren.HPM24`, `scounteren.HPM24`, and `hcounteren.HPM24` as follows:
+    Privilege mode access is controlled with `mcounteren.HPM24`
+    <%- if ext?(:S) -%>
+    , `scounteren.HPM24`
+    <%- if ext?(:H) -%>
+    , and `hcounteren.HPM24`
+    <%- end -%>
+    <%- end -%>
+    as follows:
 
+    <%- if ext?(:H) -%>
     [%autowidth,cols="1,1,1,1,1,1,1",separator="!"]
     !===
     .2+h![.rotate]#`mcounteren.HPM24`# .2+h! [.rotate]#`scounteren.HPM24`# .2+h! [.rotate]#`hcounteren.HPM24`#
@@ -24,6 +32,28 @@ hpmcounter24:
     ! 1 ! 0 ! 1 ! read-only ! `IllegalInstruction` ! read-only ! `VirtualInstruction` 
     ! 1 ! 1 ! 1 ! read-only ! read-only ! read-only ! read-only
     !===
+    <%- elsif ext?(:S) -%>
+    [%autowidth,cols="1,1,1,1",separator="!"]
+    !===
+    .2+h![.rotate]#`mcounteren.HPM24`# .2+h! [.rotate]#`scounteren.HPM24`#
+    2+^.>h! `hpmcounter24` behavior
+    .^h! S-mode .^h! U-mode
+
+    ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+    ! 1 ! 0 ! read-only ! `IllegalInstruction`
+    ! 1 ! 1 ! read-only ! read-only
+    !===
+    <%- else -%>
+    [%autowidth,cols="1,1",separator="!"]
+    !===
+    .2+h![.rotate]#`mcounteren.HPM24`#
+    ^.>h! `hpmcounter24` behavior  
+    .^h! U-mode
+
+    ! 0 ! `IllegalInstruction`
+    ! 1 ! read-only
+    !===
+    <%- end -%>
   priv_mode: U
   length: 64
   definedBy: Zihpm

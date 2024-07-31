@@ -14,11 +14,11 @@ class Validator
 
   # map of type to schema filesystem path
   SCHEMA_PATHS = {
-    config: $root / "schemas" / "config_schema.json",
     arch: $root / "schemas" / "arch_schema.json",
     inst: $root / "schemas" / "inst_schema.json",
     ext: $root / "schemas" / "ext_schema.json",
-    csr: $root / "schemas" / "csr_schema.json"
+    csr: $root / "schemas" / "csr_schema.json",
+    cfg_impl_ext: $root / "schemas" / "implemented_exts_schema.json"
   }.freeze
 
   # types of objects that can be validated
@@ -56,7 +56,11 @@ class Validator
           if r["type"] == "required" && !r.dig("details", "missing_keys").nil?
             "    At '#{r['data_pointer']}': Missing required parameter(s) '#{r['details']['missing_keys']}'\n"
           elsif r["type"] == "schema"
-            "    At #{r['data_pointer']}, endpoint is an invalid key\n"
+            if r["schema_pointer"] == "/additionalProperties"
+              "    At #{r['data_pointer']}, there is an unallowed additional key\n"
+            else
+              "    At #{r['data_pointer']}, endpoint is an invalid key\n"
+            end
           elsif r["type"] == "enum"
             "    At #{r['data_pointer']}, '#{r['data']}' is not a valid enum value (#{r['schema']['enum']})\n"
           elsif r["type"] == "maxProperties"
@@ -90,10 +94,20 @@ class Validator
     SCHEMA_PATHS.each do |type, path|
       # resolve refs as a relative path from the schema file
       ref_resolver = proc do |pattern|
-        JSON.load_file($root / "schemas" / pattern.to_s)
+        if pattern.to_s =~ /^http/
+          JSON.parse(Net::HTTP.get(pattern))
+        else
+          JSON.load_file($root / "schemas" / pattern.to_s)
+        end
       end
 
-      @schemas[type] = JSONSchemer.schema(path.read, regexp_resolver: "ecma", ref_resolver: ref_resolver, insert_property_defaults: true)
+      @schemas[type] =
+        JSONSchemer.schema(
+          path.read,
+          regexp_resolver: "ecma",
+          ref_resolver:,
+          insert_property_defaults: true
+        )
       raise SchemaError, @schemas[type].validate_schema unless @schemas[type].valid_schema?
     end
   end
@@ -105,8 +119,8 @@ class Validator
   # @param type [Symbol] Type of the object (One of TYPES)
   # @raise [ValidationError] if the str is not valid against the type schema
   # @see TYPES
-  def validate_str(str, type: nil)
-    raise "Invalid type #{type}" unless TYPES.any?(type)
+  def validate_str(str, type: nil, schema_path: nil)
+    raise "Invalid type #{type}" unless TYPES.any?(type) || !schema_path.nil?
 
     begin
       obj = YAML.safe_load(str, permitted_classes: [Symbol])
@@ -117,7 +131,26 @@ class Validator
     # convert through JSON to handle anything supported in YAML but not JSON
     # (e.g., integer object keys will be coverted to strings)
     jsonified_obj = JSON.parse(JSON.generate(obj))
-    raise ValidationError, @schemas[type].validate(jsonified_obj) unless @schemas[type].valid?(jsonified_obj)
+
+    raise "Nothing there?" if jsonified_obj.nil?
+
+    schema =
+      if schema_path.nil?
+        @schemas[type]
+      else
+        # resolve refs as a relative path from the schema file
+        ref_resolver = proc do |pattern|
+          JSON.load_file(schema_path.dirname / pattern.to_s)
+        end
+        JSONSchemer.schema(
+          schema_path.read,
+          regexp_resolver: "ecma",
+          ref_resolver:,
+          insert_property_defaults: true
+        )
+      end
+
+    raise ValidationError, schema.validate(jsonified_obj) unless schema.valid?(jsonified_obj)
 
     jsonified_obj
   end
@@ -131,10 +164,15 @@ class Validator
   # @raise [ValidationError] if the str is not valid against the type schema
   # @see TYPES
   def validate(path, type: nil)
+    schema_path = nil
     if type.nil?
       case path.to_s
-      when %r{.*cfgs/params\.yaml$}
-        type = :config
+      when %r{.*cfgs/([^/]+)/params\.yaml}
+        cfg_name = $1.to_s
+        type = :cfg_params
+        schema_path = $root / "gen" / cfg_name / "schemas" / "params_schema.json"
+      when %r{.*cfgs/[^/]+/implemented_exts\.yaml$}
+        type = :cfg_impl_ext
       when %r{.*arch/arch_def\.yaml$}
         type = :arch
       when %r{.*arch/inst/.*/.*\.yaml$}
@@ -149,7 +187,7 @@ class Validator
       end
     end
     begin
-      validate_str(File.read(path.to_s), type:)
+      validate_str(File.read(path.to_s), type:, schema_path:)
     rescue Psych::SyntaxError => e
       warn "While parsing #{path}"
       raise e

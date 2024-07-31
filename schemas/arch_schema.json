@@ -14,7 +14,7 @@
   ],
   "properties": {
     "params": {
-      "$ref": "config_schema.json#/$defs/params"
+      "type": "object"
     },
     "implemented_extensions": {
       "description": "Extensions implemented by this architecture",

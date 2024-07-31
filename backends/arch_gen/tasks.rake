@@ -107,3 +107,14 @@ namespace :gen do
     Rake::Task["#{$root}/.stamps/arch-gen.stamp"].invoke
   end
 end
+
+namespace :validate do
+  desc "Validate that a configuration folder valid for the list of extensions it claims to implement"
+  task :cfg, [:config_name] do |_t, args|
+    raise "No config '#{args[:config_name]}' found in cfgs/" unless ($root / "cfgs" / args[:config_name]).directory?
+
+    ArchGen.new(args[:config_name]).validate_params
+
+    puts "Success! The '#{args[:config_name]}' configuration passes validation checks"
+  end
+end

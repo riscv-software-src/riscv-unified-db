@@ -1,17 +1,5 @@
 = Configuration of <%= arch_def.name %>
 
-== Parameters
-
-<%- config_schema = JSON.load_file($root / "schemas" / "config_schema.json") -%>
-[cols="1,2,4"]
-|===
-| Name | Value | Description
-
-<%- arch_def.config_params.each do |pname, pvalue| -%>
-| *<%= pname %>* | <%= pvalue %> a| <%= config_schema["$defs"]["params"]["properties"][pname]["description"] %>
-<%- end -%>
-|===
-
 == Extensions
 
 |===
@@ -20,3 +8,19 @@
 | `<%= e.name %>` | <%= e.version.to_s %>
 <%- end -%>
 |===
+
+== Parameters
+
+<%- arch_def.params.each do |param| -%>
+=== *<%= param.name %>*
+
+[cols="1,4,1"]
+|===
+| Value | Description | From Exension
+
+| <%= param.value %>
+a| <%= param.desc %>
+a| `<%= param.ext.name %>`
+|===
+
+<%- end -%>

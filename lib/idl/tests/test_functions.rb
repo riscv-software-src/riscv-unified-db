@@ -18,14 +18,9 @@ class TestVariables < Minitest::Test
         B 1
       }
 
-      enum ExceptionCode {
-        ACode 0
-        BCode 1
-      }
-
       builtin function raise {
         arguments ExceptionCode code
-        description { raise and exception}
+        description { raise an exception}
       }
 
       function nested_choose {
@@ -81,11 +76,6 @@ class TestVariables < Minitest::Test
       enum Choice {
         A 0
         B 1
-      }
-
-      enum ExceptionCode {
-        ACode 0
-        BCode 1
       }
 
       Bits<64> unknown;

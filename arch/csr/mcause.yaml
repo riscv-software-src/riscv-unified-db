@@ -29,18 +29,14 @@ mcause:
       sw_write(csr_value): |
         # the write only holds if the INT/CODE combination is valid
         if (csr_value.INT == 1) {
-          <%- interrupt_codes.each do |num, name| -%>
-          if (csr_value.CODE == <%= num %>) {
+          if (valid_interrupt_code?(csr_value.CODE)) {
             return 1;
           }
-          <%- end -%>
           return ILLEGAL_WLRL;
         } else {
-          <%- exception_codes.each do |num, name| -%>
-          if (csr_value.CODE == <%= num %>) {
-            return 0;
+          if (valid_exception_code?(csr_value.CODE)) {
+            return 1;
           }
-          <%- end -%>
           return ILLEGAL_WLRL;
         }
     CODE:
@@ -76,17 +72,13 @@ mcause:
       sw_write(csr_value): |
         # the write only holds if the INT/CODE combination is valid
         if (csr_value.INT == 1) {
-          <%- interrupt_codes.each do |num, name| -%>
-          if (csr_value.CODE == <%= num %>) {
-            return <%= num %>;
+          if (valid_interrupt_code?(csr_value.CODE)) {
+            return csr_value.CODE;
           }
-          <%- end -%>
           return ILLEGAL_WLRL;
         } else {
-          <%- exception_codes.each do |num, name| -%>
-          if (csr_value.CODE == <%= num %>) {
-            return <%= num %>;
+          if (valid_exception_code?(csr_value.CODE)) {
+            return csr_value.CODE;
           }
-          <%- end -%>
           return ILLEGAL_WLRL;
         }

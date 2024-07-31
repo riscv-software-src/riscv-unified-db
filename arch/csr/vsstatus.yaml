@@ -14,7 +14,7 @@ vsstatus:
 
     Unlike the relationship between `sstatus` and `mstatus`, none of the bits in `vsstatus` are
     aliases of another field.
-  definedBy: I
+  definedBy: H
   fields:
     SD:
       location: 63
@@ -154,16 +154,25 @@ vsstatus:
         *VU-mode Big Endian*
 
         Controls the endianness of VU-mode (0 = little, 1 = big).
-        <%- if VU_MODE_ENDIANESS == 0 -%>
+        <%- if VU_MODE_ENDIANESS == "little" -%>
         Since the CPU does not support big endian, this is hardwired to 0.
-        <%- elsif VU_MODE_ENDIANESS == 1 -%>
+        <%- elsif VU_MODE_ENDIANESS == "big" -%>
         Since the CPU does not support big endian, this is hardwired to 1.
-        <%- end -%><%# VU_MODE_ENDIANESS == 2 -%>
+        <%- end -%><%# VU_MODE_ENDIANESS == "dynamic" -%>
       type(): |
-        return (VU_MODE_ENDIANESS == 2) ? CsrFieldType::RW : CsrFieldType::RO;
+        return (VU_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
       definedBy: S
       reset_value(): |
-        return (VU_MODE_ENDIANESS == 2) ? UNDEFINED_LEGAL : VU_MODE_ENDIANESS;
+        if (VU_MODE_ENDIANESS == "little") {
+          # little endian
+          return 0;
+        } else if (VU_MODE_ENDIANESS == "big") {
+          # big endian
+          return 1;
+        } else {
+          # mutable
+          return UNDEFINED_LEGAL;
+        }
     SPIE:
       location: 5
       description: |

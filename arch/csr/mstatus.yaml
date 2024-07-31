@@ -57,18 +57,18 @@ mstatus:
         Controls the endianness of data M-mode (0 = little, 1 = big).
         Instructions are always little endian, regardless of the data setting.
 
-        <%- if M_MODE_ENDIANESS == 0 -%>
+        <%- if M_MODE_ENDIANESS == "little" -%>
         Since the CPU does not support big endian, this is hardwired to 0.
-        <%- elsif M_MODE_ENDIANESS == 1 -%>
+        <%- elsif M_MODE_ENDIANESS == "bit" -%>
         Since the CPU does not support litte endian, this is hardwired to 1.
-        <%- end -%><%# M_MODE_ENDIANESS == 2 -%>
+        <%- end -%><%# M_MODE_ENDIANESS == "dynamic" -%>
 
       type(): |
-        return (M_MODE_ENDIANESS < 2) ? CsrFieldType::RO : CsrFieldType::RW;
+        return (M_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
 
       # if endianess is mutable, MBE comes out of reset in little-endian mode
       reset_value(): |
-        return (M_MODE_ENDIANESS == 1) ? 1 : 0;
+        return (M_MODE_ENDIANESS == "big") ? 1 : 0;
 
     SBE:
       location: 36
@@ -80,18 +80,24 @@ mstatus:
         Controls the endianness of S-mode (0 = little, 1 = big).
         Instructions are always little endian, regardless of the data setting.
 
-        <%- if S_MODE_ENDIANESS == 0 -%>
+        <%- if S_MODE_ENDIANESS == "little" -%>
         Since the CPU does not support big endian, this is hardwired to 0.
-        <%- elsif S_MODE_ENDIANESS == 1 -%>
+        <%- elsif S_MODE_ENDIANESS == "big" -%>
         Since the CPU does not support litte endian, this is hardwired to 1.
-        <%- end -%><%# S_MODE_ENDIANESS == 2 -%>
+        <%- end -%><%# S_MODE_ENDIANESS == "dynamic" -%>
 
       type(): |
-        return (S_MODE_ENDIANESS < 2) ? CsrFieldType::RO : CsrFieldType::RW;
+        return (S_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
 
       # if endianess is mutable, MBE comes out of reset in little-endian mode
       reset_value(): |
-        return (S_MODE_ENDIANESS == 1) ? 1 : 0;
+        if (S_MODE_ENDIANESS == "little") {
+          return 0;
+        } else if (S_MODE_ENDIANESS == "big") {
+          return 1;
+        } else {
+          return UNDEFINED_LEGAL;
+        }
     SXL:
       location: 35-34
       base: 64
@@ -435,18 +441,23 @@ mstatus:
         Controls the endianness of U-mode (0 = little, 1 = big).
         Instructions are always little endian, regardless of the data setting.
 
-        <%- if U_MODE_ENDIANESS == 0 -%>
+        <%- if U_MODE_ENDIANESS == "little" -%>
         Since the CPU does not support big endian in U-mode, this is hardwired to 0.
-        <%- elsif U_MODE_ENDIANESS == 1 -%>
+        <%- elsif U_MODE_ENDIANESS == "big" -%>
         Since the CPU does not support litte endian in U-mode, this is hardwired to 1.
-        <%- end -%><%# U_MODE_ENDIANESS == 2 -%>
+        <%- end -%><%# U_MODE_ENDIANESS == "dynamic" -%>
       
       type(): |
-        return (U_MODE_ENDIANESS == 3264) ? CsrFieldType::RW : CsrFieldType::RO;
+        return (U_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
 
-      # if UXL is dynamic, then reset value is undefined
       reset_value(): |
-        return (U_MODE_ENDIANESS == 2) ? UNDEFINED_LEGAL : 0;
+        if (U_MODE_ENDIANESS == "little") {
+          return 0;
+        } else if (U_MODE_ENDIANESS == "big") {
+          return 1;
+        } else {
+          return UNDEFINED_LEGAL;
+        }
 
     SPIE:
       location: 5

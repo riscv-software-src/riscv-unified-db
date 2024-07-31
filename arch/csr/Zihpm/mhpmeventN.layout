@@ -27,13 +27,13 @@
         A Local Counter Overflow Interrupt (LCOFI) is generated when OF is clear and
         mhpmcounter<%= hpm_num %> overflows.
       type(): |
-        if (NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) {
+        if (HPM_COUNTER_EN[<%= hpm_num %>]) {
           return CsrFieldType::RWH;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if (NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) {
+        if (HPM_COUNTER_EN[<%= hpm_num %>]) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -43,13 +43,13 @@
       location: 62
       description: When set, mhpmcounter<%= hpm_num %> does not increment while the hart in operating in M-mode.
       type(): |
-        if (NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) {
+        if (HPM_COUNTER_EN[<%= hpm_num %>]) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if (NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) {
+        if (HPM_COUNTER_EN[<%= hpm_num %>]) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -59,13 +59,13 @@
       location: 61
       description: When set, mhpmcounter<%= hpm_num %> does not increment while the hart in operating in (H)S-mode.
       type(): |
-        if ((NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) && implemented?(ExtensionName::S) && (CSR[misa].S == 1'b1)) {
+        if (HPM_COUNTER_EN[<%= hpm_num %>] && implemented?(ExtensionName::S) && (CSR[misa].S == 1'b1)) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if ((NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) && implemented?(ExtensionName::S)) {
+        if (HPM_COUNTER_EN[<%= hpm_num %>] && implemented?(ExtensionName::S)) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -75,13 +75,13 @@
       location: 60
       description: When set, mhpmcounter<%= hpm_num %> does not increment while the hart in operating in U-mode.
       type(): |
-        if ((NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) && implemented?(ExtensionName::U) && (CSR[misa].U == 1'b1)) {
+        if (HPM_COUNTER_EN[<%= hpm_num %>] && implemented?(ExtensionName::U) && (CSR[misa].U == 1'b1)) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if ((NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) && implemented?(ExtensionName::U)) {
+        if (HPM_COUNTER_EN[<%= hpm_num %>] && implemented?(ExtensionName::U)) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -91,13 +91,13 @@
       location: 59
       description: When set, mhpmcounter<%= hpm_num %> does not increment while the hart in operating in VS-mode.
       type(): |
-        if ((NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) && implemented?(ExtensionName::H) && (CSR[misa].H == 1'b1)) {
+        if ((HPM_COUNTER_EN[<%= hpm_num %>]) && implemented?(ExtensionName::H) && (CSR[misa].H == 1'b1)) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if ((NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) && implemented?(ExtensionName::H)) {
+        if (HPM_COUNTER_EN[<%= hpm_num %>] && implemented?(ExtensionName::H)) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -107,13 +107,13 @@
       location: 58
       description: When set, mhpmcounter<%= hpm_num %> does not increment while the hart in operating in VU-mode.
       type(): |
-        if ((NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) && implemented?(ExtensionName::H) && (CSR[misa].H == 1'b1)) {
+        if (HPM_COUNTER_EN[<%= hpm_num %>] && implemented?(ExtensionName::H) && (CSR[misa].H == 1'b1)) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if ((NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) && implemented?(ExtensionName::H)) {
+        if ((HPM_COUNTER_EN[<%= hpm_num %>]) && implemented?(ExtensionName::H)) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -123,13 +123,13 @@
       location: 57-0
       description: Event selector for performance counter `mhpmcounter<%= hpm_num %>`.
       type(): |
-        if (NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) {
+        if (HPM_COUNTER_EN[<%= hpm_num %>]) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if (NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) {
+        if (HPM_COUNTER_EN[<%= hpm_num %>]) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;

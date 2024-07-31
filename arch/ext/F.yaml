@@ -232,3 +232,9 @@ F:
     Detecting tininess after rounding results in fewer spurious underflow
     signals.
     ====
+  params:
+    MUTABLE_MISA_F:
+      description: |
+        Indicates whether or not the `F` extension can be disabled with the `misa.F` bit.
+      schema:
+        type: boolean

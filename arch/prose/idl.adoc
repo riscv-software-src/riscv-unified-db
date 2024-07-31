@@ -904,7 +904,7 @@ mstatus:
     MBE:
       # ...
       type(): |
-        return (M_MODE_ENDIANESS < 2) ? CsrFieldType::RO : CsrFieldType::RW;
+        return (M_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
 ----
 
 field.reset_value()::
@@ -922,7 +922,7 @@ mstatus:
       # ...
       # if endianess is mutable, MBE comes out of reset in little-endian mode
       reset_value(): |
-        return (M_MODE_ENDIANESS == 1) ? 1 : 0;
+        return (M_MODE_ENDIANESS == "big") ? 1 : 0;
 ----
 
 == Compilation order

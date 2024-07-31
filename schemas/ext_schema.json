@@ -2,6 +2,24 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
 
   "$defs": {
+    "param_data": {
+      "type": "object",
+      "required": ["description", "schema"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Parameter description, including list of valid values"
+        },
+        "schema": {
+          "$ref": "https://json-schema.org/draft-07/schema#"
+        },
+        "extra_validation": {
+          "description": "Ruby code to perform extra validation, when it is not easily expressed with JSON Schema (_e.g._, because it depends on the value of another parameter)",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
     "ext_data": {
       "type": "object",
       "required": ["description", "long_name", "versions"],
@@ -156,7 +174,12 @@
                 "type": "integer"
               },
               "name": {
-                "type": "string"
+                "type": "string",
+                "description": "Long-form name (can have special characters)"
+              },
+              "var": {
+                "type": "string",
+                "description": "Field name for the InterruptCode enum in IDL"
               }
             },
             "additionalProperties": false
@@ -172,11 +195,25 @@
                 "type": "integer"
               },
               "name": {
-                "type": "string"
+                "type": "string",
+                "description": "Long-form name (can have special characters)"
+              },
+              "var": {
+                "type": "string",
+                "description": "Field name for the InterruptCode enum in IDL"
               }
             },
             "additionalProperties": false
           }
+        },
+        "params": {
+          "type": "object",
+          "patternProperties": {
+            "^[A-Z][A-Z_0-9]*$": {
+              "$ref": "#/$defs/param_data"
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false

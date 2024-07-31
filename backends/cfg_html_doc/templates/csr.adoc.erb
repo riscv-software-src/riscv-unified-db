@@ -1,9 +1,11 @@
+:tabs-sync-option:
+
 [csr:#<%= csr.name %>-def]
 = <%= csr.name %>
 
 *<%= csr.long_name %>*
 
-<%= csr.description %>
+<%= arch_def.render_erb(csr.description) %>
 
 == Attributes
 [%autowidth]
@@ -26,12 +28,11 @@ h| Privilege Mode | <%= csr.priv_mode %>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(arch_def, arch_def.config_params["XLEN"]) %>
+<%= JSON.dump csr.wavedrom_desc(arch_def, arch_def.param_values["XLEN"]) %>
 ....
 <%- else -%>
 <%# CSR has a dynamic length, or a field has a dynamic location,
     so there is more than one format to display -%>
-<%- puts "CSR #{csr.name} changes dynamically" -%>
 This CSR format changes dynamically.
 
 .<%= csr.name %> Format when <%= csr.length_cond32 %>
@@ -49,23 +50,52 @@ This CSR format changes dynamically.
 
 <%- end -%>
 
+== Field Summary
+
+[%autowidth,float="center",align="center",cols="^,<,<,<",options="header",role="stretch"]
+|===
+|Name | Location | Type | Reset Value
+
+<%- csr.implemented_fields(arch_def).each do |field| -%>
+| xref:<%=csr.name%>-<%=field.name%>-def[`<%= field.name %>`]
+| <%= field.location_pretty(arch_def) %>
+| <%= field.type(arch_def) %>
+| <%= field.reset_value(arch_def) %>
+
+<%- end -%>
+|===
+
 == Fields
 
 <%- if csr.implemented_fields(arch_def).empty? -%>
 This CSR has no fields. However, it must still exist (not cause an `Illegal Instruction` trap) and always return zero on a read.
 <%- else -%>
-[%autowidth,float="center",align="center",cols="^,<,<,<,<",options="header",role="stretch"]
-|====
-|Name | Location | Type | Reset Value | Description
 
 <%- csr.implemented_fields(arch_def).each do |field| -%>
-m| anchor:<%=csr.name%>-<%=field.name%>-def[] <%= field.name %>
-| <%= field.location_pretty(arch_def) %>
-| <%= field.type(arch_def) %>
-| <%= field.reset_value(arch_def) %>
-a| <%= field.description %>
+[[<%=csr.name%>-<%=field.name%>-def]]
+=== `<%= field.name %>`
+
+[example]
+****
+Location::
+<%= field.location_pretty(arch_def) %>
+
+Description::
+<%= field.description %>
+
+Type::
+[%autowidth]
+|===
+
+| <%= field.type(arch_def) %> | <%= field.type_desc(arch_def) %>
+|===
+
+Reset value::
+<%= field.reset_value(arch_def) %>
+
+****
+
 <%- end -%>
-|====
 <%- end -%>
 
 <%- if csr.fields.map(&:has_custom_sw_write?).any? -%>
@@ -93,11 +123,20 @@ written value:
 
 This CSR may return a value that is different from what is stored in hardware.
 
-[subs="specialchars,macros"]
+[tabs]
+====
+Pruned::
++
+[source,idl,subs="specialchars,macros"]
 ----
 <%= csr.pruned_sw_read_ast(arch_def).gen_adoc %>
 ----
 
+Original::
++
+[source,idl,subs="specialchars,macros"]
+----
+<%= csr.type_checked_sw_read_ast(arch_def).gen_adoc %>
+----
+====
 <%- end -%>
-
-<%- -%>

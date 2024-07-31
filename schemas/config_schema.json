@@ -540,13 +540,6 @@
         ],
         "additionalItems": false
       }
-    },
-    "hpm_events": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "description": "Event name"
-      }
     }
   }
 }

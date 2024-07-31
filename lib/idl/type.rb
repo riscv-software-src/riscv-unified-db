@@ -53,7 +53,7 @@ module Idl
     def self.from_typename(type_name, arch_def)
       case type_name
       when 'XReg'
-        return Type.new(:bits, width: arch_def.config_params['XLEN'])
+        return Type.new(:bits, width: arch_def.param_values['XLEN'])
       when 'FReg'
         return Type.new(:freg, width: 32)
       when 'DReg'
@@ -367,7 +367,6 @@ module Idl
       self
     end
   end
-
 
   class EnumerationType < Type
     attr_reader :element_names, :element_values, :width, :ref_type
