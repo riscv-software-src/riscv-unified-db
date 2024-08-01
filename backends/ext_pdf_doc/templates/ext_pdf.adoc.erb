@@ -23,9 +23,9 @@
     FROZEN_STATE
   when "development"
     <<~DEV_STATE
-      This document is in the http://riscv.org/spec-state[Development state].
-      
-      Change should be expected
+      This document is in the http://riscv.org/spec-state[Development state]. + \\
+      + \\
+      Change should be expected + \\
     DEV_STATE
   else
     raise "TODO: #{ext_version["state"]} description"
@@ -37,11 +37,13 @@
 :preface-title: Licensing and Acknowledgements
 :colophon:
 :appendix-caption: Appendix
+<%- if ext.company["name"] =~ /RISCV/ -%>
 :title-logo-image: image:risc-v_logo.png["RISC-V International Logo",pdfwidth=3.25in,align=center]
+:back-cover-image: image:riscv-horizontal-color.svg[opacity=25%]
+<%- end -%>
 <%- unless ext_version["state"] == "ratified" -%>
 :page-background-image: image:draft.png[opacity=20%]
 <%- end -%>
-:back-cover-image: image:riscv-horizontal-color.svg[opacity=25%]
 // Settings
 :experimental:
 :reproducible:
