@@ -33,32 +33,22 @@ mstatush:
     MBE:
       location: 5
       description: |
-        *M-mode Big Endian*
-        
-        Controls the endianness of data M-mode (0 = little, 1 = big).
-        Instructions are always little endian, regardless of the data setting.
-
-        <%- if M_MODE_ENDIANESS == 0 -%>
-        Since the CPU does not support big endian, this is hardwired to 0.
-        <%- elsif M_MODE_ENDIANESS == 1 -%>
-        Since the CPU does not support litte endian, this is hardwired to 1.
-        <%- end -%><%# M_MODE_ENDIANESS == 2 -%>
-      type(): 'return (M_MODE_ENDIANESS == 2) ? CsrFieldType::RW : CsrFieldType::RO;'
-      reset_value(): 'return (M_MODE_ENDIANESS == 1) ? 1 : 0;'
-
+        see `mstatus.MBE`
+      type(): 'return (M_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;'
+      reset_value(): 'return (M_MODE_ENDIANESS == "big") ? 1 : 0;'
+      alias: mstatus.MBE
     SBE:
       location: 4
       definedBy: S
       description: |
-        *S-mode Big Endian*
-        
-        Controls the endianness of S-mode (0 = little, 1 = big).
-        Instructions are always little endian, regardless of the data setting.
+        see `mstatus.SBE`
+      type(): 'return (S_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;'
+      reset_value(): |
+        if (S_MODE_ENDIANESS == "little") {
+          return 0;
+        } else if (S_MODE_ENDIANESS == "big") {
+          return 1;
+        } else {
+          return UNDEFINED_LEGAL;
+        }
 
-        <%- if S_MODE_ENDIANESS == 0 -%>
-        Since the CPU does not support big endian, this is hardwired to 0.
-        <%- elsif S_MODE_ENDIANESS == 1 -%>
-        Since the CPU does not support litte endian, this is hardwired to 1.
-        <%- end -%><%# S_MODE_ENDIANESS == 2 -%>
-      type(): 'return (S_MODE_ENDIANESS == 2) ? CsrFieldType::RW : CsrFieldType::RO;'
-      reset_value(): 'return (S_MODE_ENDIANESS == 1) ? 1 : UNDEFINED_LEGAL;'

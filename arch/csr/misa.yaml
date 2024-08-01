@@ -22,7 +22,7 @@ misa:
         Writing 0 to this field will cause all atomic instructions to raise an `IllegalInstruction` exception.
         <%- end -%>
       type(): |
-        return MUTABLE_MISA_A ? CsrFieldType::RW : CsrFieldType::RO;
+        return (implemented?(ExtensionName::A) && MUTABLE_MISA_A) ? CsrFieldType::RW : CsrFieldType::RO;
       reset_value(): |
         return implemented?(ExtensionName::A) ? 1 : 0;
     B:
@@ -34,7 +34,7 @@ misa:
         Writing 0 to this field will cause all bitmanip instructions to raise an `IllegalInstruction` exception.
         <%- end -%>
       type(): |
-        return MUTABLE_MISA_B ? CsrFieldType::RW : CsrFieldType::RO;
+        return (implemented?(ExtensionName::B) && MUTABLE_MISA_B) ? CsrFieldType::RW : CsrFieldType::RO;
       reset_value(): |
         return implemented?(ExtensionName::B) ? 1 : 0;
     C:
@@ -47,7 +47,7 @@ misa:
         Additionally, IALIGN becomes 32.
         <%- end -%>
       type(): |
-        return MUTABLE_MISA_C ? CsrFieldType::RW : CsrFieldType::RO;
+        return (implemented?(ExtensionName::C) && MUTABLE_MISA_C) ? CsrFieldType::RW : CsrFieldType::RO;
       reset_value(): |
         return implemented?(ExtensionName::C) ? 1 : 0;
     D:
@@ -61,7 +61,7 @@ misa:
         Additionally, the upper 32-bits of the f registers will read as zero.
         <%- end -%>
       type(): |
-        return MUTABLE_MISA_D ? CsrFieldType::RW : CsrFieldType::RO;
+        return (implemented?(ExtensionName::D) && MUTABLE_MISA_D) ? CsrFieldType::RW : CsrFieldType::RO;
       reset_value(): |
         return implemented?(ExtensionName::D) ? 1 : 0;
     F:
@@ -75,7 +75,7 @@ misa:
         Writing 0 to this field with `misa.D` set will result in UNDEFINED behavior.
         <%- end -%>
       type(): |
-        return MUTABLE_MISA_F ? CsrFieldType::RW : CsrFieldType::RO;
+        return (implemented?(ExtensionName::F) && MUTABLE_MISA_F) ? CsrFieldType::RW : CsrFieldType::RO;
       reset_value(): |
         return implemented?(ExtensionName::F) ? 1 : 0;
       sw_write(csr_value): |
@@ -92,7 +92,10 @@ misa:
       description: |
         Indicates support for all of the following extensions: `I`, `A`, `M`, `F`, 'D'.
       type(): |
-        if (MUTABLE_MISA_A || MUTABLE_MISA_M || MUTABLE_MISA_F || MUTABLE_MISA_D) {
+        if ((implemented?(ExtensionName::A) && MUTABLE_MISA_A) ||
+            (implemented?(ExtensionName::M) && MUTABLE_MISA_M) ||
+            (implemented?(ExtensionName::F) && MUTABLE_MISA_F) ||
+            (implemented?(ExtensionName::D) && MUTABLE_MISA_D)) {
           return CsrFieldType::ROH;
         } else {
           return CsrFieldType::RO;
@@ -112,7 +115,7 @@ misa:
         Writing 0 to this field will cause all attempts to enter VS- or VU- mode, execute a hypervisor instruction, or access a hypervisor CSR to raise an `IllegalInstruction` fault.
         <%- end -%>
       type(): |
-        return MUTABLE_MISA_H ? CsrFieldType::RW : CsrFieldType::RO;
+        return (implemented?(ExtensionName::H) && MUTABLE_MISA_H) ? CsrFieldType::RW : CsrFieldType::RO;
       reset_value(): |
         return implemented?(ExtensionName::H) ? 1 : 0;
     I:
@@ -130,7 +133,7 @@ misa:
         Writing 0 to this field will cause all attempts to execute an integer multiply or divide instruction to raise an `IllegalInstruction` exception.
         <%- end -%>
       type(): |
-        return MUTABLE_MISA_M ? CsrFieldType::RW : CsrFieldType::RO;
+        return (implemented?(ExtensionName::M) && MUTABLE_MISA_M) ? CsrFieldType::RW : CsrFieldType::RO;
       reset_value(): |
         return implemented?(ExtensionName::M) ? 1 : 0;
     S:
@@ -138,7 +141,7 @@ misa:
       description: |
         Indicates support for the `S` (supervisor mode) extension.
       type(): |
-        return MUTABLE_MISA_S ? CsrFieldType::RW : CsrFieldType::RO;
+        return (implemented?(ExtensionName::S) && MUTABLE_MISA_S) ? CsrFieldType::RW : CsrFieldType::RO;
       reset_value(): |
         return implemented?(ExtensionName::S) ? 1 : 0;
     U:
@@ -146,7 +149,7 @@ misa:
       description: |
         Indicates support for the `U` (user mode) extension.
       type(): |
-        return MUTABLE_MISA_U ? CsrFieldType::RW : CsrFieldType::RO;
+        return (implemented?(ExtensionName::U) && MUTABLE_MISA_U) ? CsrFieldType::RW : CsrFieldType::RO;
       reset_value(): |
         return implemented?(ExtensionName::U) ? 1 : 0;
     V:

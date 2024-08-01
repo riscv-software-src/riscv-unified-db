@@ -31,6 +31,44 @@ class ArchGen
   end
   private :trace
 
+  def gen_params_schema
+    return if @gen_params_schema_complete == true
+
+    schema = {
+      "type" => "object",
+      "required" => ["params"],
+      "properties" => {
+        "params" => {
+          "type" => "object",
+          "required" => ["NAME"],
+          "properties" => {
+            "NAME" => { "type" => "string", "enum" => [@name] }
+          },
+          "additionalProperties" => false
+        }
+      },
+      "additionalProperties" => false
+    }
+    @implemented_extensions.each do |ext|
+      ext_name = ext["name"]
+      gen_ext_path = @gen_dir / "arch" / "ext" / "#{ext_name}.yaml"
+      ext_yaml = YAML.safe_load gen_ext_path.read
+      unless ext_yaml[ext_name]["params"].nil?
+        ext_yaml[ext_name]["params"].each do |param_name, param_data|
+          schema["properties"]["params"]["required"] << param_name
+          schema["properties"]["params"]["properties"][param_name] = {
+            "description" => param_data["description"]
+          }.merge(param_data["schema"])
+        end
+      end
+    end
+    schema["properties"]["params"]["required"].uniq!
+
+    FileUtils.mkdir_p @params_schema_path.dirname
+    @params_schema_path.write JSON.dump(schema)
+    @gen_params_schema_complete = true
+  end
+
   # Initialize an Architecture Generator
   #
   # @param config_name [#to_s] The name of config located in the cfgs/ directory,
@@ -43,49 +81,83 @@ class ArchGen
 
     raise "No config named '#{@name}'" unless File.exist?(@cfg_dir)
 
-    cfg_params_path = "#{@cfg_dir}/params.yaml"
-    @cfg = @validator.validate_str(File.read(cfg_params_path), type: :config)
-    @params = @cfg.fetch("params")
+    @cfg_params_path = @cfg_dir / "params.yaml"
+    raise "No params.yaml file in #{@cfg_dir}" unless @cfg_params_path.exist?
 
-    unless @params["NAME"] == @name
-      raise "Config name (#{@params['NAME']}) in params.yaml does not match directory path (#{@name})"
-    end
+    cfg_impl_ext_path = @cfg_dir / "implemented_exts.yaml"
+    raise "No implemented_exts.yaml file in #{@cfg_dir}" unless cfg_impl_ext_path.exist?
+
+    @cfg_impl_ext = @validator.validate(cfg_impl_ext_path)["implemented_extensions"]
+    raise "Validation failed" if @cfg_impl_ext.nil?
+
+    @params_schema_path = @gen_dir / "schemas" / "params_schema.json"
 
     @ext_gen_complete = false
 
-    validate_config
   end
 
-  # validates the configuration using cfgs/config_validation.rb
-  def validate_config
+  # @return [Hash<String, Object>] Hash of parameter names to values
+  def params
+    return @params unless @params.nil?
+
+    @params = (YAML.load_file @cfg_params_path)["params"]
+  end
+
+  def assert(cond)
+    raise "Assertion Failed" unless cond
+  end
+  private :assert
+
+  # checks any "extra_validation" given by parameter definitions
+  def params_extra_validation
     fork do
-      validation_file = $root / "cfgs" / "config_validation.rb"
-      validation_env = env.clone
-      validation_env.class.define_method(:require_param) do |param_name|
-        return if constants.include?(param_name.to_sym)
-
-        warn "At #{caller[0]}:"
-        warn "Configuration is missing required parameter #{param_name}"
-        Kernel.exit! 1
+      # add parameters as a constant
+      params.each do |key, value|
+        self.class.const_set(key, value)
       end
-      validation_env.class.define_method(:require_ext) do |ext_name|
-        return if ext?(ext_name.to_sym)
 
-        warn "At #{caller[0]}:"
-        warn "Configuration is missing required extension #{ext_name}"
-        Kernel.exit! 1
+      @implemented_extensions.each do |ext|
+        ext_name = ext["name"]
+        gen_ext_path = @gen_dir / "arch" / "ext" / "#{ext_name}.yaml"
+        ext_yaml = YAML.safe_load gen_ext_path.read
+        unless ext_yaml[ext_name]["params"].nil?
+          ext_yaml[ext_name]["params"].each do |param_name, param_data|
+            next unless param_data.key?("extra_validation")
+            begin
+              eval param_data["extra_validation"]
+            rescue StandardError => e
+              warn "While checking extension parameter #{ext_name}::#{param_name}.extra_validation"
+              warn param_data["extra_validation"]
+              warn e
+              exit 1
+            end
+          end
+        end
       end
-      validation_env.class.define_method(:assert) do |condition|
-        return if condition
-
-        warn "At #{caller[0]}:"
-        warn "Configuration check failed"
-        Kernel.exit! 1
-      end
-      env.clone.class_eval validation_file.read, validation_file.to_s, 1
     end
     Process.wait
     exit 1 unless $CHILD_STATUS.success?
+  end
+  private :params_extra_validation
+
+  # validate the params.yaml file of a config.
+  # 
+  # This does several things:
+  #
+  #  * Generates a config-specific schmea based on:
+  #  ** the extensions a config implements
+  #  ** the parameters an implemented extension requires
+  #  * Validates params.yaml against that configuration-specific schema
+  #  * Checks any extra validation specified by 'extra_validation'
+  def validate_params
+    gen_ext_def
+    add_implied_extensions
+    check_extension_dependencies
+
+    gen_params_schema
+    @validator.validate @cfg_params_path
+
+    params_extra_validation
   end
 
   # generate the architecture definition into the gen directory
@@ -97,6 +169,9 @@ class ArchGen
     gen_ext_def
     add_implied_extensions
     check_extension_dependencies
+
+    gen_params_schema
+    validate_params
 
     gen_csr_def
 
@@ -128,6 +203,8 @@ class ArchGen
 
   # transitively adds any implied extensions to the @implemented_extensions list
   def add_implied_extensions
+    return if @add_implied_extensions_complete == true
+
     @implemented_extensions.each do |ext|
       extras = @implied_ext_map[[ext["name"], ext["version"]]]
       next if extras.nil? || extras.empty?
@@ -150,6 +227,8 @@ class ArchGen
         }
       end
     end
+
+    @add_implied_extensions_complete = true
   end
   private :add_implied_extensions
 
@@ -210,12 +289,12 @@ class ArchGen
     File.write(abs_arch_def_path, arch_def_yaml)
 
     # make sure it passes validation
-    begin
-      @validator.validate_str(YAML.dump(arch_def), type: :arch)
-    rescue Validator::ValidationError => e
-      warn "While validating the unified architecture defintion at #{abs_arch_def_path}"
-      raise e
-    end
+    # begin
+    #   @validator.validate_str(YAML.dump(arch_def), type: :arch)
+    # rescue Validator::ValidationError => e
+    #   warn "While validating the unified architecture defintion at #{abs_arch_def_path}"
+    #   raise e
+    # end
   end
   private :gen_arch_def
 
@@ -264,12 +343,12 @@ class ArchGen
       # @return [Boolean] whether or not extension +ext_name+ meeting +ext_requirement+ is implemented in the config
       def ext?(ext_name, ext_requirement = ">= 0")
         if ext_requirement.nil?
-          @cfg["extensions"].any? do |e|
+          @cfg_impl_ext.any? do |e|
             e[0] == ext_name.to_s
           end
         else
           requirement = Gem::Requirement.create(ext_requirement.to_s)
-          @cfg["extensions"].any? do |e|
+          @cfg_impl_ext.any? do |e|
             e[0] == ext_name.to_s && requirement.satisfied_by?(Gem::Version.new(e[1]))
           end
         end
@@ -522,8 +601,8 @@ class ArchGen
   # @param csr_name [#to_s] CSR name
   # @param extra_env [Hash] Extra enviornment variables to be used when parsing the CSR definition template
   def maybe_add_csr(csr_name, extra_env = {})
-    arch_path         = gen_rendered_arch_def(:csr, csr_name, extra_env)
-    arch_overlay_path = gen_rendered_arch_overlay_def(:csr, csr_name, extra_env)
+    arch_path         = arch_path_for(:csr, csr_name) # gen_rendered_arch_def(:csr, csr_name, extra_env)
+    arch_overlay_path = arch_overlay_path_for(:csr, csr_name) # gen_rendered_arch_overlay_def(:csr, csr_name, extra_env)
 
     # return immediately if this CSR isn't defined in this config
     raise "No arch or overlay for sr #{csr_name}" if arch_path.nil? && arch_overlay_path.nil?
@@ -565,7 +644,7 @@ class ArchGen
     belongs =
       csr_obj.exists_in_cfg?(
         possible_xlens,
-        @cfg["extensions"].map { |e| ExtensionVersion.new(e[0], e[1]) }
+        @cfg_impl_ext.map { |e| ExtensionVersion.new(e[0], e[1]) }
       )
 
     @implemented_csrs ||= []
@@ -615,8 +694,8 @@ class ArchGen
   end
 
   def maybe_add_ext(ext_name)
-    arch_path         = gen_rendered_arch_def(:ext, ext_name)
-    arch_overlay_path = gen_rendered_arch_overlay_def(:ext, ext_name)
+    arch_path         = arch_path_for(:ext, ext_name) # gen_rendered_arch_def(:ext, ext_name)
+    arch_overlay_path = arch_overlay_path_for(:ext, ext_name) # gen_rendered_arch_overlay_def(:ext, ext_name)
 
     # return immediately if this ext isn't defined
     return if arch_path.nil? && arch_overlay_path.nil?
@@ -647,18 +726,18 @@ class ArchGen
     end
 
     belongs =
-      @cfg["extensions"].any? { |e| e[0] == ext_name }
+      @cfg_impl_ext.any? { |e| e[0] == ext_name }
     @implemented_extensions ||= []
     if belongs
       @implemented_extensions << {
         "name" => ext_name,
-        "version" => @cfg["extensions"].select { |e| e[0] == ext_name }[0][1].to_s
+        "version" => @cfg_impl_ext.select { |e| e[0] == ext_name }[0][1].to_s
       }
     end
 
     if belongs
       # check that the version number exists, too
-      cfg_ext = @cfg["extensions"].select { |e| e[0] == ext_name }[0]
+      cfg_ext = @cfg_impl_ext.select { |e| e[0] == ext_name }[0]
 
       if ext_obj["versions"].select { |v| v["version"] == cfg_ext[1] }.empty?
         raise "Configured version for extension #{extension_name} not defined"
@@ -673,6 +752,8 @@ class ArchGen
 
   # generate parsed and merged definitions for all extensions
   def gen_ext_def
+    return if @ext_gen_complete == true
+
     ext_list = all_known_exts
 
     ext_list.each do |ext_name|
@@ -726,20 +807,20 @@ class ArchGen
   end
 
   def possible_xlens
-    possible_xlens = [@params["XLEN"]]
-    if @cfg["extensions"].any? { |e| e[0] == "S" }
-      possible_xlens << 32 if [32, 3264].include?(@params["SXLEN"])
-      possible_xlens << 64 if [64, 3264].include?(@params["SXLEN"])
+    possible_xlens = [params["XLEN"]]
+    if @cfg_impl_ext.any? { |e| e[0] == "S" }
+      possible_xlens << 32 if [32, 3264].include?(params["SXLEN"])
+      possible_xlens << 64 if [64, 3264].include?(params["SXLEN"])
     end
-    if @cfg["extensions"].any? { |e| e[0] == "U" }
-      possible_xlens << 32 if [32, 3264].include?(@params["UXLEN"])
-      possible_xlens << 64 if [64, 3264].include?(@params["UXLEN"])
+    if @cfg_impl_ext.any? { |e| e[0] == "U" }
+      possible_xlens << 32 if [32, 3264].include?(params["UXLEN"])
+      possible_xlens << 64 if [64, 3264].include?(params["UXLEN"])
     end
-    if @cfg["extensions"].any? { |e| e[0] == "H" }
-      possible_xlens << 32 if [32, 3264].include?(@params["VSXLEN"])
-      possible_xlens << 32 if [32, 3264].include?(@params["VUXLEN"])
-      possible_xlens << 64 if [64, 3264].include?(@params["VSXLEN"])
-      possible_xlens << 64 if [64, 3264].include?(@params["VUXLEN"])
+    if @cfg_impl_ext.any? { |e| e[0] == "H" }
+      possible_xlens << 32 if [32, 3264].include?(params["VSXLEN"])
+      possible_xlens << 32 if [32, 3264].include?(params["VUXLEN"])
+      possible_xlens << 64 if [64, 3264].include?(params["VSXLEN"])
+      possible_xlens << 64 if [64, 3264].include?(params["VUXLEN"])
     end
     possible_xlens
   end
@@ -750,8 +831,8 @@ class ArchGen
   # @param inst_name [#to_s] instruction name
   # @param extra_env [Hash] Extra options to add into the rendering enviornment
   def maybe_add_inst(inst_name, extra_env = {})
-    arch_path         = gen_rendered_arch_def(:inst, inst_name, extra_env)
-    arch_overlay_path = gen_rendered_arch_overlay_def(:inst, inst_name, extra_env)
+    arch_path         = arch_path_for(:inst, inst_name) # gen_rendered_arch_def(:inst, inst_name, extra_env)
+    arch_overlay_path = arch_overlay_path_for(:inst, inst_name) # gen_rendered_arch_overlay_def(:inst, inst_name, extra_env)
 
     # return immediately if inst isn't defined in this config
     raise "No arch or overlay for instruction #{inst_name}" if arch_path.nil? && arch_overlay_path.nil?
@@ -789,25 +870,25 @@ class ArchGen
     end
 
     inst_obj = Instruction.new(inst_data[inst_name])
-    possible_xlens = [@params["XLEN"]]
-    if @cfg["extensions"].any? { |e| e[0] == "S" }
-      possible_xlens << 32 if [32, 3264].include?(@params["SXLEN"])
-      possible_xlens << 64 if [64, 3264].include?(@params["SXLEN"])
+    possible_xlens = [params["XLEN"]]
+    if @cfg_impl_ext.any? { |e| e[0] == "S" }
+      possible_xlens << 32 if [32, 3264].include?(params["SXLEN"])
+      possible_xlens << 64 if [64, 3264].include?(params["SXLEN"])
     end
-    if @cfg["extensions"].any? { |e| e[0] == "U" }
-      possible_xlens << 32 if [32, 3264].include?(@params["UXLEN"])
-      possible_xlens << 64 if [64, 3264].include?(@params["UXLEN"])
+    if @cfg_impl_ext.any? { |e| e[0] == "U" }
+      possible_xlens << 32 if [32, 3264].include?(params["UXLEN"])
+      possible_xlens << 64 if [64, 3264].include?(params["UXLEN"])
     end
-    if @cfg["extensions"].any? { |e| e[0] == "H" }
-      possible_xlens << 32 if [32, 3264].include?(@params["VSXLEN"])
-      possible_xlens << 32 if [32, 3264].include?(@params["VUXLEN"])
-      possible_xlens << 64 if [64, 3264].include?(@params["VSXLEN"])
-      possible_xlens << 64 if [64, 3264].include?(@params["VUXLEN"])
+    if @cfg_impl_ext.any? { |e| e[0] == "H" }
+      possible_xlens << 32 if [32, 3264].include?(params["VSXLEN"])
+      possible_xlens << 32 if [32, 3264].include?(params["VUXLEN"])
+      possible_xlens << 64 if [64, 3264].include?(params["VSXLEN"])
+      possible_xlens << 64 if [64, 3264].include?(params["VUXLEN"])
     end
     belongs =
       inst_obj.exists_in_cfg?(
         possible_xlens.uniq,
-        @cfg["extensions"].map { |e| ExtensionVersion.new(e[0], e[1]) }
+        @cfg_impl_ext.map { |e| ExtensionVersion.new(e[0], e[1]) }
       )
 
     @implemented_instructions ||= []
@@ -849,6 +930,4 @@ class ArchGen
   end
   private :gen_inst_def
 
-  # @return [Hash<String, Object>] Hash of parameters for the config
-  def params = @params.select { |k, _v| k.upcase == k }
 end

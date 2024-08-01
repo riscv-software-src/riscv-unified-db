@@ -217,20 +217,20 @@ hstatus:
         Since the CPU does not support big endian in VS-mode, this is hardwired to 0.
         <%- elsif VS_MODE_ENDIANESS == 'big' -%>
         Since the CPU does not support litte endian in VS-mode, this is hardwired to 1.
-        <%- end -%><%# VS_MODE_ENDIANESS == 'flex' -%>
+        <%- end -%><%# VS_MODE_ENDIANESS == 'dynamic' -%>
       type(): |
-        if (VS_MODE_ENDIANESS < 2) {
-          # mode is fixed as either little or big endian
-          return CsrFieldType::RO;
-        } else {
+        if (VS_MODE_ENDIANESS == "dynamic") {
           # mode is mutable
           return CsrFieldType::RW;
+        } else {
+          # mode is fixed as either little or big endian
+          return CsrFieldType::RO;
         }
       reset_value(): |
-        if (VS_MODE_ENDIANESS == 0) {
+        if (VS_MODE_ENDIANESS == "little") {
           # little endian
           return 0;
-        } else if (VS_MODE_ENDIANESS == 1) {
+        } else if (VS_MODE_ENDIANESS == "big") {
           # big endian
           return 1;
         } else {

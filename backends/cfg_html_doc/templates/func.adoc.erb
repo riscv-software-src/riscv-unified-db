@@ -4,7 +4,7 @@
 
 = Functions
 
-<%- isa_def.functions.each do |f| -%>
+<%- arch_def.implemented_functions.each do |f| -%>
 [#<%= f.name %>-func-def]
 == <%= f.name %><%- if f.builtin? -%> (builtin)<%- end -%>
 

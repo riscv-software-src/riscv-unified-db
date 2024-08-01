@@ -29,18 +29,14 @@ vscause:
         # the write only holds if the INT/CODE combination is valid
         # otherwise, the old value is retained
         if (csr_value.INT == 1) {
-          <%- interrupt_codes.each do |num, _name| -%>
-          if (csr_value.CODE == <%= num %>) {
+          if (valid_interrupt_code?(csr_value.CODE)) {
             return 1;
           }
-          <%- end -%>
           return ILLEGAL_WLRL;
         } else {
-          <%- exception_codes.each do |num, _name| -%>
-          if (csr_value.CODE == <%= num %>) {
-            return 0;
+          if (valid_exception_code?(csr_value.CODE)) {
+            return 1;
           }
-          <%- end -%>
           return ILLEGAL_WLRL;
         }
       reset_value: UNDEFINED_LEGAL
@@ -77,18 +73,14 @@ vscause:
         # the write only holds if the INT/CODE combination is valid
         # otherwise, the old value is retained
         if (csr_value.INT == 1) {
-          <%- interrupt_codes.each do |num, _name| -%>
-          if (csr_value.CODE == <%= num %>) {
-            return <%= num %>;
+          if (valid_interrupt_code?(csr_value.CODE)) {
+            return csr_value.CODE;
           }
-          <%- end -%>
           return ILLEGAL_WLRL;
         } else {
-          <%- exception_codes.each do |num, _name| -%>
-          if (csr_value.CODE == <%= num %>) {
-            return <%= num %>;
+          if (valid_exception_code?(csr_value.CODE)) {
+            return csr_value.CODE;
           }
-          <%- end -%>
           return ILLEGAL_WLRL;
         }
       reset_value: UNDEFINED_LEGAL

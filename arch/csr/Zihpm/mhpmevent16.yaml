@@ -29,13 +29,13 @@ mhpmevent16:
         A Local Counter Overflow Interrupt (LCOFI) is generated when OF is clear and
         mhpmcounter16 overflows.
       type(): |
-        if (NUM_HPM_COUNTERS > 13) {
+        if (HPM_COUNTER_EN[16]) {
           return CsrFieldType::RWH;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if (NUM_HPM_COUNTERS > 13) {
+        if (HPM_COUNTER_EN[16]) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -45,13 +45,13 @@ mhpmevent16:
       location: 62
       description: When set, mhpmcounter16 does not increment while the hart in operating in M-mode.
       type(): |
-        if (NUM_HPM_COUNTERS > 13) {
+        if (HPM_COUNTER_EN[16]) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if (NUM_HPM_COUNTERS > 13) {
+        if (HPM_COUNTER_EN[16]) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -61,13 +61,13 @@ mhpmevent16:
       location: 61
       description: When set, mhpmcounter16 does not increment while the hart in operating in (H)S-mode.
       type(): |
-        if ((NUM_HPM_COUNTERS > 13) && implemented?(ExtensionName::S) && (CSR[misa].S == 1'b1)) {
+        if (HPM_COUNTER_EN[16] && implemented?(ExtensionName::S) && (CSR[misa].S == 1'b1)) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if ((NUM_HPM_COUNTERS > 13) && implemented?(ExtensionName::S)) {
+        if (HPM_COUNTER_EN[16] && implemented?(ExtensionName::S)) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -77,13 +77,13 @@ mhpmevent16:
       location: 60
       description: When set, mhpmcounter16 does not increment while the hart in operating in U-mode.
       type(): |
-        if ((NUM_HPM_COUNTERS > 13) && implemented?(ExtensionName::U) && (CSR[misa].U == 1'b1)) {
+        if (HPM_COUNTER_EN[16] && implemented?(ExtensionName::U) && (CSR[misa].U == 1'b1)) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if ((NUM_HPM_COUNTERS > 13) && implemented?(ExtensionName::U)) {
+        if (HPM_COUNTER_EN[16] && implemented?(ExtensionName::U)) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -93,13 +93,13 @@ mhpmevent16:
       location: 59
       description: When set, mhpmcounter16 does not increment while the hart in operating in VS-mode.
       type(): |
-        if ((NUM_HPM_COUNTERS > 13) && implemented?(ExtensionName::H) && (CSR[misa].H == 1'b1)) {
+        if ((HPM_COUNTER_EN[16]) && implemented?(ExtensionName::H) && (CSR[misa].H == 1'b1)) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if ((NUM_HPM_COUNTERS > 13) && implemented?(ExtensionName::H)) {
+        if (HPM_COUNTER_EN[16] && implemented?(ExtensionName::H)) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -109,13 +109,13 @@ mhpmevent16:
       location: 58
       description: When set, mhpmcounter16 does not increment while the hart in operating in VU-mode.
       type(): |
-        if ((NUM_HPM_COUNTERS > 13) && implemented?(ExtensionName::H) && (CSR[misa].H == 1'b1)) {
+        if (HPM_COUNTER_EN[16] && implemented?(ExtensionName::H) && (CSR[misa].H == 1'b1)) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if ((NUM_HPM_COUNTERS > 13) && implemented?(ExtensionName::H)) {
+        if ((HPM_COUNTER_EN[16]) && implemented?(ExtensionName::H)) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -125,13 +125,13 @@ mhpmevent16:
       location: 57-0
       description: Event selector for performance counter `mhpmcounter16`.
       type(): |
-        if (NUM_HPM_COUNTERS > 13) {
+        if (HPM_COUNTER_EN[16]) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if (NUM_HPM_COUNTERS > 13) {
+        if (HPM_COUNTER_EN[16]) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;

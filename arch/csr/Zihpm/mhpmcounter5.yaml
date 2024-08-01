@@ -15,7 +15,7 @@ mhpmcounter5:
     COUNT:
       location: 63-0
       description: |
-        <%- if NUM_HPM_COUNTERS > 2 -%>
+        <%- if HPM_COUNTER_EN[5] -%>
         Performance counter for event selected in `mhpmevent5.EVENT`.
 
         Increments every time event occurs unless:
@@ -38,10 +38,10 @@ mhpmcounter5:
         Unimplemented performance counter. Must be read-only 0 (access does not cause trap).
         <%- end -%>
 
-      type(): 'return (NUM_HPM_COUNTERS > 2) ? CsrFieldType::RWH : CsrFieldType::RO;'
-      reset_value(): 'return (NUM_HPM_COUNTERS > 2) ? UNDEFINED_LEGAL : 0;'
+      type(): 'return (HPM_COUNTER_EN[5]) ? CsrFieldType::RWH : CsrFieldType::RO;'
+      reset_value(): 'return (HPM_COUNTER_EN[5]) ? UNDEFINED_LEGAL : 0;'
   sw_read(): |
-    if (NUM_HPM_COUNTERS <= 2) {
+    if (HPM_COUNTER_EN[5]) {
       return read_hpm_counter(5);
     } else {
       return 0;

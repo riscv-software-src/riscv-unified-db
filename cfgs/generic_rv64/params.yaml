@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=../../schemas/config_schema.json
 
 ---
 params:
@@ -28,8 +27,39 @@ params:
   # whether or not the implementation supports misaligned atomics
   MISALIGNED_AMO: false
 
-  # number of implemented programmable hardware performance counters
-  NUM_HPM_COUNTERS: 8
+  HPM_COUNTER_EN:
+  - false  # CY
+  - false # empty
+  - false  # IR
+  - true  # HPM3
+  - true  # HPM4
+  - true  # HPM5
+  - true  # HPM6
+  - true  # HPM7
+  - true  # HPM8
+  - true  # HPM9
+  - true  # HPM10
+  - false # HPM11
+  - false # HPM12
+  - false # HPM13
+  - false # HPM14
+  - false # HPM15
+  - false # HPM16
+  - false # HPM17
+  - false # HPM18
+  - false # HPM19
+  - false # HPM20
+  - false # HPM21
+  - false # HPM22
+  - false # HPM23
+  - false # HPM24
+  - false # HPM25
+  - false # HPM26
+  - false # HPM27
+  - false # HPM28
+  - false # HPM29
+  - false # HPM30
+  - false # HPM31
 
   # list of defined HPM events
   HPM_EVENTS:
@@ -119,6 +149,8 @@ params:
   # when true, writing an illegal value to a WLRL CSR field raises an Illegal Instruction exception
   # when false, writing an illegal value to a WLRL CSR field is ignored
   TRAP_ON_ILLEGAL_WLRL: true
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_UNIMPLEMENTED_CSR: true
 
   # when true, *tval is written with the virtual PC of the EBREAK instruction (same information as *epc)
   # when false, *tval is written with 0 on an EBREAK instruction
@@ -136,10 +168,11 @@ params:
   REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: true
   REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT: true
   REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
-  REPORT_CAUSE_IN_MTVAL_ON_SOFTWARE_CHECK: true
+  # REPORT_CAUSE_IN_MTVAL_ON_SOFTWARE_CHECK: true
   MTVAL_WIDTH: 64 # must check that this can hold any valid VA if any REPORT_VA* or Sdext, and, if REPORT_ENCODING*, at least [MXLEN, ILEN].min bits
 
   REPORT_VA_IN_STVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED: true
   REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED: true
   REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED: true
   REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT: true
@@ -149,10 +182,11 @@ params:
   REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT: true
   REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT: true
   REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION: true
-  REPORT_CAUSE_IN_STVAL_ON_SOFTWARE_CHECK: true
+  # REPORT_CAUSE_IN_STVAL_ON_SOFTWARE_CHECK: true
   STVAL_WIDTH: 64 # must check that this can hold any valid VA, and, if REPORT_ENCODING*, at least [SXLEN, ILEN].min bits
 
   REPORT_VA_IN_VSTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED: true
   REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED: true
   REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED: true
   REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT: true
@@ -162,7 +196,7 @@ params:
   REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT: true
   REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT: true
   REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION: true
-  REPORT_CAUSE_IN_VSTVAL_ON_SOFTWARE_CHECK: true
+  # REPORT_CAUSE_IN_VSTVAL_ON_SOFTWARE_CHECK: true
   # VSTVAL_WIDTH not needed; "vstval is a WARL register that must be able to hold the same set of values that stval can hold"
 
 
@@ -210,9 +244,41 @@ params:
   # maximum value is 16
   ASID_WIDTH: 12
 
+  # when the A extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.A` bit.
+  MUTABLE_MISA_A: false
+
+  # when the B extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.B` bit.
+  MUTABLE_MISA_B: false
+
   # when the C extensions is supported, indicates whether or not
   # the extension can be disabled in the `misa.C` bit.
   MUTABLE_MISA_C: false
+
+  # when the D extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.D` bit.
+  MUTABLE_MISA_D: false
+
+  # when the F extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.F` bit.
+  MUTABLE_MISA_F: false
+
+  # when the H extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.H` bit.
+  MUTABLE_MISA_H: false
+
+  # when the M extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.M` bit.
+  MUTABLE_MISA_M: false
+
+  # when the S extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.S` bit.
+  MUTABLE_MISA_S: false
+
+  # when the U extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.U` bit.
+  MUTABLE_MISA_U: false
 
   # size of a cache block, in bytes
   CACHE_BLOCK_SIZE: 64
@@ -223,38 +289,38 @@ params:
 
   # Endianess of data in M-mode. Can be one of:
   #
-  #  * 0: M-mode data is always little endian
-  #  * 1: M-mode data is always big endian
-  #  * 2: M-mode data can be either little or big endian, depending on the RW CSR field mstatus.MBE
-  M_MODE_ENDIANESS: 0
+  #  * little:  M-mode data is always little endian
+  #  * big:     M-mode data is always big endian
+  #  * dynamic: M-mode data can be either little or big endian, depending on the RW CSR field mstatus.MBE
+  M_MODE_ENDIANESS: little
 
   # Endianess of data in M-mode. Can be one of:
   #
-  #  * 0: S-mode data is always little endian
-  #  * 1: S-mode data is always big endian
-  #  * 2: S-mode data can be either little or big endian, depending on the RW CSR field mstatus.SBE
-  S_MODE_ENDIANESS: 0
+  #  * little:  S-mode data is always little endian
+  #  * big:     S-mode data is always big endian
+  #  * dynamic: S-mode data can be either little or big endian, depending on the RW CSR field mstatus.SBE
+  S_MODE_ENDIANESS: little
 
   # Endianess of data in M-mode. Can be one of:
   #
-  #  * 0: U-mode data is always little endian
-  #  * 1: U-mode data is always big endian
-  #  * 2: U-mode data can be either little or big endian, depending on the RW CSR field mstatus.UBE
-  U_MODE_ENDIANESS: 0
+  #  * litte:   U-mode data is always little endian
+  #  * big:     U-mode data is always big endian
+  #  * dynamic: U-mode data can be either little or big endian, depending on the RW CSR field mstatus.UBE
+  U_MODE_ENDIANESS: little
 
   # Endianess of data in VU-mode. Can be one of:
   #
-  #  * 0: VU-mode data is always little endian
-  #  * 1: VU-mode data is always big endian
-  #  * 2: VU-mode data can be either little or big endian, depending on the RW CSR field vsstatus.UBE
-  VU_MODE_ENDIANESS: 0
+  #  * little: VU-mode data is always little endian
+  #  * big: VU-mode data is always big endian
+  #  * dynamic: VU-mode data can be either little or big endian, depending on the RW CSR field vsstatus.UBE
+  VU_MODE_ENDIANESS: little
 
   # Endianess of data in VS-mode. Can be one of:
   #
-  #  * 0: VS-mode data is always little endian
-  #  * 1: VS-mode data is always big endian
-  #  * 2: VS-mode data can be either little or big endian, depending on the RW CSR field hstatus.VSBE
-  VS_MODE_ENDIANESS: 0
+  #  * little: VS-mode data is always little endian
+  #  * big: VS-mode data is always big endian
+  #  * dynamic: VS-mode data can be either little or big endian, depending on the RW CSR field hstatus.VSBE
+  VS_MODE_ENDIANESS: little
 
   # XLENs supported in S-mode. Can be one of:
   #
@@ -308,35 +374,4 @@ params:
   # (independent of whether or not the SC is in the current reservation set)
   LRSC_FAIL_ON_NON_EXACT_LRSC: false
 
-hpm_events:
-  - 'L1_ICACHE_MISS'
-  - 'L2_CACHE_MISS'
 
-custom_interrupt_codes: []
-custom_exception_codes: []
-
-extensions:
-  - [A, 2.1]
-  - [B, 1.0]
-  - [C, 2.2]
-  - [D, 2.2]
-  # - [F, 2.2]
-  - [I, 2.1]
-  - [H, 1.0]
-  - [M, 2.0]
-  - [S, 1.12]
-  - [U, 1.12]
-  - [Zicntr, 2.0]
-  - [Zicsr, 2.0]
-  - [Zihpm, 2.0]
-  - [Smaia, 1.0]
-  - [Smcdeleg, 0]
-  - [Smcntrpmf, 1.0]
-  - [Sscofpmf, 1.0]
-  - [Ssaia, 1.0]
-  - [Ssccfg, 0]
-  - [Sstc, 0.9]
-  - [Sv39, 1.12]
-  - [Sv48, 1.12]
-  - [Zicboz, "1.0.1-b34ea8a"]
-  - [Zicbom, "1.0.1-b34ea8a"]
