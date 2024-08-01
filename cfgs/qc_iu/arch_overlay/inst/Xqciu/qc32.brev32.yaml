@@ -3,8 +3,9 @@
 qc32.brev32:
   long_name: Reverse bit order
   description: |
-    Reverses the bit order of rs1 and writes the result to rd
+    Reverses the bit order of `rs1` and writes the result to `rd`
   definedBy: Xqciu
+  base: 32
   encoding:
     match:     000011000000-----011-----0001011
     variables:

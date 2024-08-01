@@ -3,10 +3,11 @@
 qc16.bexti:
   long_name: Single-Bit extract (Immediate)
   description: |
-    This instruction returns a single bit extracted from rd.
-    The index is read from the lower log2(XLEN) bits of shamt.
+    This instruction returns a single bit extracted from `rd`.
+    The index is read from the lower log2(XLEN) bits of `shamt`.
   definedBy: Xqciu
   assembly: " xd, shamt"
+  base: 32
   encoding:
     match: 100100--------01
     variables:

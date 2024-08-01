@@ -3,10 +3,9 @@
 qc32.exts:
   long_name: Extract bits signed
   description: |
-    Extract a subset of bits from rs1 into rd, and sign-extend the result.
-
-    The width of the subset is determined by (width_minus1[4:0] + 1) (1..32),
-    and the offset of the subset is determined by shamt[4:0].
+    Extract a subset of bits from `rs1` into `rd`, and sign-extend the result.
+    The width of the subset is determined by (`width_minus1` + 1) (1..32),
+    and the offset of the subset is determined by `shamt`.
   definedBy: Xqciu
   base: 32
   encoding:

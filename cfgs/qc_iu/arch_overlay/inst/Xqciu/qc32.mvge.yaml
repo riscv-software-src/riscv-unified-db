@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+qc32.mvge:
+  long_name: Conditional move if great or equal than (Register)
+  description: |
+    Move `rs3` to `rd` if the value in `rs1` is great or equal than value `rs2`
+  definedBy: Xqciu
+  base: 32
+  encoding:
+    match:     -----00----------101-----1011011
+    variables:
+    - name: rs1
+      location: 19-15
+      not: 0
+    - name: rs2
+      location: 24-20
+      not: 0
+    - name: rs3
+      location: 31-27
+      not: 0
+    - name: rd
+      location: 11-7
+      not: 0
+  assembly: " xd, xs1, xs2, xs3"
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    if ($signed(X[rs1]) >= $signed(X[rs2])) {
+      X[rd] = X[rs3];
+    }

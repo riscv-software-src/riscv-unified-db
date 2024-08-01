@@ -3,8 +3,9 @@
 qc32.addsat:
   long_name: Saturating signed addition
   description: |
-    Add signed values rs1 and rs2, saturate the signed result, and write to rd.
+    Add signed values `rs1` and `rs2`, saturate the signed result, and write to `rd`.
   definedBy: Xqciu
+  base: 32
   encoding:
     match:     0001110----------011-----0001011
     variables:
@@ -27,7 +28,6 @@ qc32.addsat:
     XReg sum = X[rs1] + X[rs2];
     XReg most_negative_number = 1 << (xlen() - 1);
     XReg most_positive_number = (1 << (xlen() - 1)) - 1;
-
     # overflow occurs if the operands are the same sign and the result is a different sign
     if (X[rs1][xlen()-1] == X[rs2][xlen()-1]) {
       if (sum[xlen()-1] != X[rs1][xlen()-1]) {
@@ -38,6 +38,5 @@ qc32.addsat:
         }
       }
     }
-
     # otherwise, overflow did not occur
     X[rd] = sum;

@@ -1,10 +1,11 @@
 # yaml-language-server: $schema=../../../../../schemas/inst_schema.json
 
 qc32.beqi:
-  long_name: Branch on equal (immediate)
+  long_name: Branch on equal (Immediate)
   description: |
-    Branches to PC + offset if the value in `rs1` is equal to the signed immediate
+    Branches to `PC` + `offset` if the value in `rs1` is equal to the signed immediate
   definedBy: Xqciu
+  base: 32
   encoding:
     match:     -----------------000-----1111011
     variables:

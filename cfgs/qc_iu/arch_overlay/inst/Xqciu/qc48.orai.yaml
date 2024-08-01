@@ -3,8 +3,9 @@
 qc48.orai:
   long_name: Or immediate
   description: |
-    Or a 32-bit immediate to the value in `rd`, and store the result back in `rd`.
+    Or a 32-bit immediate `imm` to the value in `rd`, and store the result back in `rd`.
   definedBy: Xqciu
+  base: 32
   encoding:
     match:     --------------------------------1001-----0011111
     variables:

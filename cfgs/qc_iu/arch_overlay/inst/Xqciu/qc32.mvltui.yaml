@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+qc32.mvltui:
+  long_name: Conditional move if less than unsigned (Immediate)
+  description: |
+    Move `rs3` to `rd` if the unsigned value in `rs1` is less than unsigned value of `imm`
+  definedBy: Xqciu
+  base: 32
+  encoding:
+    match:     -----10----------110-----1011011
+    variables:
+    - name: rs1
+      location: 19-15
+      not: 0
+    - name: imm
+      location: 24-20
+    - name: rs3
+      location: 31-27
+      not: 0
+    - name: rd
+      location: 11-7
+      not: 0
+  assembly: " xd, xs1, imm, xs3"
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    if (X[rs1] < imm) {
+      X[rd] = X[rs3];
+    }

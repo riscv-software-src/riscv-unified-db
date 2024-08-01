@@ -7,6 +7,7 @@ qc48.jal:
     address in x1.
   definedBy: Xqciu
   assembly: " imm"
+  base: 32
   encoding:
     match:     -----------------------00000---01100-----0011111
     variables:

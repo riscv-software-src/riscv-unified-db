@@ -3,8 +3,9 @@
 qc16.mveqz:
   long_name: Conditional Move if equal to zero
   description: |
-    Move rs1 to rd if rd == 0, keep rd value otherwise
+    Move `rs1` to `rd` if `rd` == 0, keep `rd` value otherwise
   definedBy: Xqciu
+  base: 32
   encoding:
     match:     101011---00---10
     variables:

@@ -3,10 +3,9 @@
 qc32.extdu:
   long_name: Extract bits from pair unsigned
   description: |
-    Extract a subset of bits from the register pair [rs, rs+1] into rd.
-
-    The width of the subset is determined by (width_minus1[4:0] + 1) (1..32),
-    and the offset (into the pair) of the subset is determined by shamt[4:0].
+    Extract a subset of bits from the register pair [`rs1`, `rs1`+1] into `rd`.
+    The width of the subset is determined by (`width_minus1` + 1) (1..32),
+    and the offset (into the pair) of the subset is determined by `shamt`.
   definedBy: Xqciu
   base: 32
   encoding:

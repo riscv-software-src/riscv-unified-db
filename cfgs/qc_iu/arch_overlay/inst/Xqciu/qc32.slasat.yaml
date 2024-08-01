@@ -3,10 +3,10 @@
 qc32.slasat:
   long_name: Saturating arithmetic left shift
   description: |
-    Left shift rs1 by the value of rs2, and saturate the signed result.
-
+    Left shift `rs1` by the value of `rs2`, and saturate the signed result.
     The number of words is in `length`.
   definedBy: Xqciu
+  base: 32
   encoding:
     match:     0001010----------011-----0001011
     variables:

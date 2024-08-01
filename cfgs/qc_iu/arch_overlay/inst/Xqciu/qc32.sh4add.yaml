@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+qc32.sh4add:
+  long_name: Shift left by 4 and add
+  description: |
+    This instruction shifts `rs1` to the left by 4 bit and adds it to `rs2`.
+  definedBy: Xqciu
+  assembly: " xd, xs1, xs2"
+  base: 32
+  encoding:
+    match: 0010100----------011-----0001011
+    variables:
+    - name: rs2
+      location: 24-20
+      not: 0
+    - name: rs1
+      location: 19-15
+      not: 0
+    - name: rd
+      location: 11-7
+      not: 0
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    X[rd] = X[rs2] + (X[rs1] << 4);

@@ -3,8 +3,9 @@
 qc48.bgeui:
   long_name: Branch on greater than or equal unsigned (immediate)
   description: |
-    Branches to PC + offset if the unsigned value in `rs1` is greater than or equal to the unsigned immediate.
+    Branches to `PC` + `offset` if the unsigned value in `rs1` is greater than or equal to the unsigned immediate `imm`.
   definedBy: Xqciu
+  base: 32
   encoding:
     match:     -----------------------11111-----100-----0011111
     variables:

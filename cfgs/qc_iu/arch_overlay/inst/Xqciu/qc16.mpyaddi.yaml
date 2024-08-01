@@ -1,10 +1,11 @@
 # yaml-language-server: $schema=../../../../../schemas/inst_schema.json
 
 qc16.mpyaddi:
-  long_name: Multiply and accumulate (immediate)
+  long_name: Multiply and accumulate (Immediate)
   description: |
-    Increments rd by the multiplication of rs1 and an unsigned immediate
+    Increments `rd` by the multiplication of `rs1` and an unsigned immediate
   definedBy: Xqciu
+  base: 32
   encoding:
     match: 001-----------10
     variables:

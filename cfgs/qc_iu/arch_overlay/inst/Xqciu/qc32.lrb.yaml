@@ -8,6 +8,7 @@ qc32.lrb:
     Sign extend the result.
   definedBy: Xqciu
   assembly: " xd, xs1, xs2, shamt"
+  base: 32
   encoding:
     match: 1000-------------111-----0001011
     variables:

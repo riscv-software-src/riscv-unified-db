@@ -3,8 +3,9 @@
 qc32.bgei:
   long_name: Branch on greater than or equal (immediate)
   description: |
-    Branches to PC + offset if the value in `rs1` is greater than or equal to the immediate.
+    Branches to `PC` + `offset` if the value in `rs1` is greater than or equal to the immediate.
   definedBy: Xqciu
+  base: 32
   encoding:
     match:     -----------------101-----1111011
     variables:

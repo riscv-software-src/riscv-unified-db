@@ -1,12 +1,12 @@
 # yaml-language-server: $schema=../../../../../schemas/inst_schema.json
 
 qc32.lwmi:
-  long_name: Load word multiple (immediate)
+  long_name: Load word multiple (Immediate)
   description: |
-    Loads multiple words starting from address (rs1 + imm) to registers, starting from rd.
-
-    The number of words is in the length immediate.
+    Loads multiple words starting from address (`rs1` + `imm`) to registers, starting from `rd`.
+    The number of words is in the `length` immediate.
   definedBy: Xqciu
+  base: 32
   encoding:
     match:     01---------------111-----0001011
     variables:

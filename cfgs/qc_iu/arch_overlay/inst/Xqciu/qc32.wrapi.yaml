@@ -1,11 +1,13 @@
 # yaml-language-server: $schema=../../../../../schemas/inst_schema.json
 
 qc32.wrapi:
-  long_name: Wraparound addition (Immediate)
+  long_name: Wraparound (Immediate)
   description: |
-    Adds an immediate value to rs1. If the result overflows, store the amount of overflow. 
-
+    If `rs1` >= `imm` perform subtraction between `rs1` and `imm`.
+    If `rs1` < 0, perform addition between `rs1` and `imm`,
+    else, select `rs1`. The result is stored in `rd`. 
   definedBy: Xqciu
+  base: 32
   encoding:
     match:     0----------------000-----0001011
     variables:
@@ -25,7 +27,6 @@ qc32.wrapi:
     vu: always
   operation(): |
     XReg rs1_value = X[rs1];
-
     X[rd] = ($signed(rs1_value) >= imm)
       ? rs1_value - imm
       : (($signed(rs1_value) < 0)

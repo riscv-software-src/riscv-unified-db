@@ -3,8 +3,9 @@
 qc32.subsat:
   long_name: Saturating signed subtraction
   description: |
-    Subtract signed values rs1 and rs2, saturate the signed result, and write to rd.
+    Subtract signed values `rs1` and `rs2`, saturate the signed result, and write to `rd`.
   definedBy: Xqciu
+  base: 32
   encoding:
     match:     0010000----------011-----0001011
     variables:

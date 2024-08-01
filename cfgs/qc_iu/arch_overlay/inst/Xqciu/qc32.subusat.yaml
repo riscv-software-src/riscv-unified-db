@@ -3,8 +3,9 @@
 qc32.subusat:
   long_name: Saturating unsigned subtraction
   description: |
-    Subtract unsigned values rs1 and rs2, saturate the unsigned result, and write to rd.
+    Subtract unsigned values `rs1` and `rs2`, saturate the unsigned result, and write to `rd`.
   definedBy: Xqciu
+  base: 32
   encoding:
     match:     0010001----------011-----0001011
     variables:

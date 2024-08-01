@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+qc32.selectnei:
+  long_name: Select load immediate or register if not equal (Immediate)
+  description: |
+    Move `rs2` to `rd` if the value in `rd` is not equal to value `imm`,
+    move `rs3` to `rd` otherwise
+  definedBy: Xqciu
+  base: 32
+  encoding:
+    match:     -----10----------011-----1011011
+    variables:
+    - name: imm
+      location: 19-15
+    - name: rs2
+      location: 24-20
+      not: 0
+    - name: rs3
+      location: 31-27
+      not: 0
+    - name: rd
+      location: 11-7
+      not: 0
+  assembly: " xd, imm, xs2, xs3"
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    if ($signed(X[rd]) != $signed(imm)) {
+      X[rd] = X[rs2];
+    } else {
+      X[rd] = X[rs3];
+    }

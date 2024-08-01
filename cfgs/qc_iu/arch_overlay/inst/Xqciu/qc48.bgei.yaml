@@ -3,8 +3,9 @@
 qc48.bgei:
   long_name: Branch on greater than or equal (immediate)
   description: |
-    Branches to PC + offset if the value in `rs1` is greater than or equal to the immediate.
+    Branches to `PC` + `offset` if the value in `rs1` is greater than or equal to the immediate `imm`.
   definedBy: Xqciu
+  base: 32
   encoding:
     match:     -----------------------11101-----100-----0011111
     variables:

@@ -5,10 +5,11 @@ qc32.cto:
   description: |
     Count the number of ones before the first zero in `rs1`, starting from the LSB
     and progressing to the MSB.
-
     Accordingly, if the input is ~0, the output is XLEN, and if the least-significant
     bit of the input is a 0, the output is 0.
+    Output written to `rd`
   definedBy: Xqciu
+  base: 32
   encoding:
     match:     000010100000-----011-----0001011
     variables:

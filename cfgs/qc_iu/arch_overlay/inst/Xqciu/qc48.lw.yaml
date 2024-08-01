@@ -4,10 +4,11 @@ qc48.lw:
   long_name: Load word
   description: |
     Load 32 bits of data into register `rd` from an
-    address formed by adding `rs1` to a signed offset.
+    address formed by adding `rs1` to a signed offset `imm`.
     Sign extend the result.
   definedBy: Xqciu
   assembly: " xd, imm(xs1)"
+  base: 32
   encoding:
     match:     ----------------00---------------110-----0011111
     variables:

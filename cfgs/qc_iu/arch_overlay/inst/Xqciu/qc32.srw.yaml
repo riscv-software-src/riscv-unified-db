@@ -7,6 +7,7 @@ qc32.srw:
     address formed by adding `rs1` to `rs2`, shifted by `shamt`.
   definedBy: Xqciu
   assembly: " xs3, xs1, xs2, shamt"
+  base: 32
   encoding:
     match: 1111-------------110-----0101011
     variables:

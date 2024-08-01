@@ -3,10 +3,10 @@
 qc32.sllsat:
   long_name: Saturating logical left shift
   description: |
-    Left shift rs1 by the value of rs2, and saturate the unsigned result.
-
+    Left shift `rs1` by the value of `rs2`, and saturate the unsigned result.
     The number of words is in `length`.
   definedBy: Xqciu
+  base: 32
   encoding:
     match:     0001100----------011-----0001011
     variables:

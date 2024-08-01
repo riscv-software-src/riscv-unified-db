@@ -3,10 +3,10 @@
 qc32.swm:
   long_name: Store word multiple
   description: |
-    Stores multiple words from the registers starting at rs3 to the address starting at (rs1 + imm).
-
-    The number of words is in rs2.
+    Stores multiple words from the registers starting at `rs3` to the address starting at (`rs1` + `imm`).
+    The number of words is in `rs2`.
   definedBy: Xqciu
+  base: 32
   encoding:
     match:     00---------------111-----0101011
     variables:

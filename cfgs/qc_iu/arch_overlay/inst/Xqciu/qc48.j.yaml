@@ -6,6 +6,7 @@ qc48.j:
     Jump to a PC-relative offset 
   definedBy: Xqciu
   assembly: " imm"
+  base: 32
   encoding:
     match:     -----------------------00000---00100-----0011111
     variables:

@@ -121,7 +121,7 @@ endif::[]
 == Copyright and license information
 This document is released under the <%= ext.doc_license["url"] %>[<%= ext.doc_license["name"] %>].
 
-Copyright <%= ext_version["ratification_date"].split("-")[0] %> by <%= ext.company["name"] %>.
+Copyright <%= ext_version["ratification_date"].nil? ? Date.today.year : ext_version["ratification_date"].split("-")[0] %> by <%= ext.company["name"] %>.
 
 [preface]
 == Acknowledgements

@@ -3,8 +3,9 @@
 qc48.xorai:
   long_name: Exclusive Or immediate
   description: |
-    Exclusive or a 32-bit immediate to the value in `rd`, and store the result back in `rd`.
+    Exclusive or a 32-bit immediate `imm` to the value in `rd`, and store the result back in `rd`.
   definedBy: Xqciu
+  base: 32
   encoding:
     match:     --------------------------------0001-----0011111
     variables:

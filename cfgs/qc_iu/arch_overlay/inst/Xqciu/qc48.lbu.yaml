@@ -4,10 +4,11 @@ qc48.lbu:
   long_name: Load byte unsigned
   description: |
     Load 8 bits of data into register `rd` from an
-    address formed by adding `rs1` to a signed offset.
+    address formed by adding `rs1` to a signed offset `imm`.
     Zero extend the result.
   definedBy: Xqciu
   assembly: " xd, imm(xs1)"
+  base: 32
   encoding:
     match:     ----------------01---------------101-----0011111
     variables:

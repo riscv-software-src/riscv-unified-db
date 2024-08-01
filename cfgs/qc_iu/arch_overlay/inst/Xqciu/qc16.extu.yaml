@@ -3,11 +3,11 @@
 qc16.extu:
   long_name: Extract bits unsigned
   description: |
-    Extract a subset of bits from rd starting from LSB.
-
-    The width of the subset is determined by (width_minus1[4:0] + 1) (1..32).
+    Extract a subset of bits from `rd` starting from LSB.
+    The width of the subset is determined by (`width_minus1`[4:0] + 1) (1..32).
   definedBy: Xqciu
   assembly: " xd, width"
+  base: 32
   encoding:
     match: 0001----------10
     variables:

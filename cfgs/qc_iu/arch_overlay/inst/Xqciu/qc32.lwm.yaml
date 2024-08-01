@@ -3,10 +3,10 @@
 qc32.lwm:
   long_name: Load word multiple
   description: |
-    Loads multiple words starting from address (rs1 + imm) to registers, starting from rd.
-
-    The number of words is in rs2
+    Loads multiple words starting from address (`rs1` + `imm`) to registers, starting from `rd`.
+    The number of words is in `rs2`
   definedBy: Xqciu
+  base: 32
   encoding:
     match:     00---------------111-----0001011
     variables:
