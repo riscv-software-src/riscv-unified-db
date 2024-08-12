@@ -13,6 +13,7 @@ qc16.bseti:
     variables:
     - name: shamt
       location: 6-2
+      not: 0
     - name: rd
       location: 9-7
   access:

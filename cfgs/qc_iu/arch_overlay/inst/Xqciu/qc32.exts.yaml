@@ -9,7 +9,7 @@ qc32.exts:
   definedBy: Xqciu
   base: 32
   encoding:
-    match:     00---------------010-----0001011
+    match:     01---------------010-----0001011
     variables:
     - name: width_minus1
       location: 29-25

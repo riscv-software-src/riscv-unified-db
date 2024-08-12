@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+qc32.csrrwri:
+  long_name: Atomic Read/Write CSR (Register) Immediate
+  description: |
+    Atomically write CSR using a 5-bit immediate `imm`, and load the previous value into `rd`.
+    Read the old value of the CSR, zero-extends the value to `XLEN` bits,
+    and then write it to integer register `rd`.
+    The CSR number is in `rs2` register.
+    The 5-bit uimm field is zero-extended and written to the CSR.
+    If `rd`=`x0`, then the instruction shall not read the CSR and shall not
+    cause any of the side effects that might occur on a CSR read.
+  definedBy: Xqciu
+  assembly: " xd, imm, xs2"
+  encoding:
+    match: 1000111----------000-----1110011
+    variables:
+    - name: rs2
+      location: 24-20
+      not: 0
+    - name: imm
+      location: 19-15
+    - name: rd
+      location: 11-7
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg csr = X[rs2];
+    if (rd != 0) {
+      X[rd] = CSR[csr].sw_read();
+    } 
+    # writes the zero-extended immediate to the CSR,
+    # performing any WARL transformations first
+    CSR[csr].sw_write({{XLEN-5{1'b0}}, imm});

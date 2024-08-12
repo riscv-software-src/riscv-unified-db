@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+qc32.extduprh:
+  long_name: Extract bits from pair unsigned, packed descriptor high part (Register)
+  description: |
+    Extract a subset of bits from the register pair [`rs1`, `rs1`+1] into `rd`.
+    The width of the subset is determined by `rs2` bits [31:24] + 1 (1..32),
+    and the offset of the subset is determined by `rs2` bits [23:16].
+  definedBy: Xqciu
+  base: 32
+  encoding:
+    match:     0000111----------011-----0001011
+    variables:
+    - name: rs2
+      location: 24-20
+      not: 0
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
+      not: 0
+  assembly: " xd, xs1, xs2"
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    Bits<{1'b0, XLEN}*2> pair = {X[rs1 + 1], X[rs1]};
+    XReg width = X[rs2][31:24] + 1;
+    XReg shamt = X[rs2][23:16];
+    X[rd] = (pair >> shamt) & ((1 << width) - 1);

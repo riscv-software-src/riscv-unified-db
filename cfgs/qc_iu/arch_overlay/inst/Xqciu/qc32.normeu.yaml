@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+qc32.normeu:
+  long_name: Unsigned Even Normalization
+  description: |
+    Unsigned even normalization of `rs1` (exponent is even). 
+    Even exponent written in bits[7:0] of the result.
+    Mantissa (based on even exponent) written in bits[31:8] of the result.
+    Write result to `rd`. 
+  definedBy: Xqciu
+  base: 32
+  encoding:
+    match:     000100100000-----011-----0001011
+    variables:
+    - name: rs1
+      location: 19-15
+      not: 0
+    - name: rd
+      location: 11-7
+      not: 0
+  assembly: " xd, xs1"
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg clz = ((xlen() - 1) - $signed(highest_set_bit(X[rs1]))) & ~1;
+    XReg exp = (X[rs1] << clz);
+    XReg mnt = (-clz);
+    X[rd] = {mnt[23:0],exp[7:0]};
+    

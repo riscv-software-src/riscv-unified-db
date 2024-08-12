@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+qc32.clrint:
+  long_name: Clear interrupt (Register)
+  description: |
+    Clear interrupt, interrupt number is in `rs3`.
+  definedBy: Xqciu
+  assembly: " xs3"
+  base: 32
+  encoding:
+    match: 11001110000000000000-----1110011
+    variables:
+    - name: rs3
+      location: 11-7
+      not: 0
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg idx = rs3 / 32;
+    XReg bit = rs3 % 32;
+    XReg pre_csr = CSR[mclicip0 + idx].sw_read();
+    CSR[mclicip0 + idx].sw_write(pre_csr & ~(1 << bit));

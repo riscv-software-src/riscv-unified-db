@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+qc16.di:
+  long_name: Disable interrupts
+  description: |
+    Globally disable interrupts.
+    Equivalent to "csrrci `zero`, `mstatus`, 8".
+  definedBy: Xqciu
+  assembly: " xd"
+  base: 32
+  encoding:
+    match: '0001101100010010'
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg pre_mstatus = CSR[mstatus].sw_read();
+    CSR[mstatus].sw_write(pre_mstatus & ~8);

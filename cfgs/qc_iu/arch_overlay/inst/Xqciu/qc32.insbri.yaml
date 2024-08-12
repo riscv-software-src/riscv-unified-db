@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+qc32.insbri:
+  long_name: Insert bits (Immediate)
+  description: |
+    Insertion of a subset of bits of an `imm` into `rd`.
+    The width of the subset is determined by `rs1` bits [31:16] + 1,
+    and the offset of the subset is determined by `rs1` bits [15:0].
+  definedBy: Xqciu
+  base: 32
+  encoding:
+    match:     1----------------000-----0001011
+    variables:
+    - name: imm
+      location: 30-20
+    - name: rs1
+      location: 19-15
+      not: 0
+    - name: rd
+      location: 11-7
+      not: 0
+  assembly: " xd, xs1, imm"
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg width = X[rs1][31:16] + 1;
+    XReg shamt = X[rs1][15:0];
+    XReg mask = ((1 << width) - 1) << shamt;
+    XReg orig_val = X[rd];
+    X[rd] = (orig_val & ~mask) | ((imm << shamt) & mask);

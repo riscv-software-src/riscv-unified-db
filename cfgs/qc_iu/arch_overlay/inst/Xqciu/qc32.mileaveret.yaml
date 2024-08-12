@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+qc32.mileaveret:
+  long_name: Machine mode interrupt exit
+  description: |
+    Machine mode interrupt exit.
+    Interrupt frame is restored from the stack.
+  assembly: ""
+  definedBy: Xqciu
+  access:
+    s: never
+    u: never
+    vs: never
+    vu: never
+  base: 32
+  encoding:
+    match: '11111100001000000000000001110011'
+  operation(): |
+    XReg virtual_address = X[2] + 96;
+    XReg prev_retpc = read_memory<32>(virtual_address -  4);
+    XReg curr_retpc = CSR[mcause].NMI ? CSR[mnepc].sw_read() : CSR[mepc].sw_read();
+    if (CSR[mcause].NMI != 1'b1) {
+      CSR[mepc].sw_write(prev_retpc);
+    } else {
+      CSR[mnepc].sw_write(prev_retpc);
+    }
+    X[ 8] = read_memory<32>(virtual_address -  8);
+    CSR[mcause].sw_write(read_memory<32>(virtual_address - 12));
+    X[ 1] = read_memory<32>(virtual_address - 16);
+    CSR[flags].sw_write(read_memory<32>(virtual_address - 20));
+    X[ 5] = read_memory<32>(virtual_address - 24);
+    X[ 6] = read_memory<32>(virtual_address - 28);
+    X[ 7] = read_memory<32>(virtual_address - 32);
+    X[10] = read_memory<32>(virtual_address - 36);
+    X[11] = read_memory<32>(virtual_address - 40);
+    X[12] = read_memory<32>(virtual_address - 44);
+    X[13] = read_memory<32>(virtual_address - 48);
+    X[14] = read_memory<32>(virtual_address - 52);
+    X[15] = read_memory<32>(virtual_address - 56);
+    X[16] = read_memory<32>(virtual_address - 60);
+    X[17] = read_memory<32>(virtual_address - 64);
+    X[28] = read_memory<32>(virtual_address - 68);
+    X[29] = read_memory<32>(virtual_address - 72);
+    X[30] = read_memory<32>(virtual_address - 76);
+    X[31] = read_memory<32>(virtual_address - 80);
+    X[2] = X[2] + 96;
+    PC = curr_retpc;

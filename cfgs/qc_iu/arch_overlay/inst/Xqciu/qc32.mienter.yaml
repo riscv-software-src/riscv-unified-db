@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+qc32.mienter:
+  long_name: Machine mode interrupt enter
+  description: |
+    Machine mode interrupt enter, interrupt nesting is disabled.
+    Interrupt frame is saved in the stack.
+    Interrupts are disabled.
+  assembly: ""
+  definedBy: Xqciu
+  access:
+    s: never
+    u: never
+    vs: never
+    vu: never
+  base: 32
+  encoding:
+    match: '11111100000000000000000001110011'
+  operation(): |
+    XReg virtual_address = X[2];
+    XReg mepc_val = CSR[mepc].sw_read();
+    XReg mnepc_val = CSR[mnepc].sw_read();
+    XReg mcause_val = CSR[mcause].sw_read();
+    XReg flags_val = CSR[flags].sw_read();
+    if (CSR[mcause].NMI != 1'b1) {
+      write_memory<32>(virtual_address -  4, mepc_val);
+    } else {
+      write_memory<32>(virtual_address -  4, mnepc_val);
+    }
+    write_memory<32>(virtual_address -  8, X[ 8][31:0]);
+    write_memory<32>(virtual_address - 12, mcause_val);
+    write_memory<32>(virtual_address - 16, X[ 1][31:0]);
+    write_memory<32>(virtual_address - 20, flags_val);
+    write_memory<32>(virtual_address - 24, X[ 5][31:0]);
+    write_memory<32>(virtual_address - 28, X[ 6][31:0]);
+    write_memory<32>(virtual_address - 32, X[ 7][31:0]);
+    write_memory<32>(virtual_address - 36, X[10][31:0]);
+    write_memory<32>(virtual_address - 40, X[11][31:0]);
+    write_memory<32>(virtual_address - 44, X[12][31:0]);
+    write_memory<32>(virtual_address - 48, X[13][31:0]);
+    write_memory<32>(virtual_address - 52, X[14][31:0]);
+    write_memory<32>(virtual_address - 56, X[15][31:0]);
+    write_memory<32>(virtual_address - 60, X[16][31:0]);
+    write_memory<32>(virtual_address - 64, X[17][31:0]);
+    write_memory<32>(virtual_address - 68, X[28][31:0]);
+    write_memory<32>(virtual_address - 72, X[29][31:0]);
+    write_memory<32>(virtual_address - 76, X[30][31:0]);
+    write_memory<32>(virtual_address - 80, X[31][31:0]);
+    X[2] = X[2] - 96;

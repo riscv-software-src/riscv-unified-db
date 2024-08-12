@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+qc32.compress2:
+  long_name: Bit compression (every 2nd bit)
+  description: |
+    Bit compression (every 2nd bit) of `rs1`, zero-pad bits [31:16] of the result.
+    Write result to `rd`. 
+  definedBy: Xqciu
+  base: 32
+  encoding:
+    match:     000000000000-----011-----0001011
+    variables:
+    - name: rs1
+      location: 19-15
+      not: 0
+    - name: rd
+      location: 11-7
+      not: 0
+  assembly: " xd, xs1"
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg b0 = {X[rs1][14],X[rs1][12],X[rs1][10],X[rs1][8],X[rs1][6],X[rs1][4],X[rs1][2],X[rs1][0]};
+    XReg b1 = {X[rs1][30],X[rs1][28],X[rs1][26],X[rs1][24],X[rs1][22],X[rs1][20],X[rs1][18],X[rs1][16]};
+    X[rd] = {16'b0,b1[7:0],b0[7:0]};

@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+qc16.delay:
+  long_name: Delay execution
+  description: |
+    Delay execution for given `imm` amount of cycles.
+  definedBy: Xqciu
+  assembly: " imm"
+  base: 32
+  encoding:
+    match: '000000000-----10'
+    variables:
+    - name: imm
+      location: 6-2
+      not: 0
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    delay(imm);

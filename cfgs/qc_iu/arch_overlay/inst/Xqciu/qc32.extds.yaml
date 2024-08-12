@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=../../../../../schemas/inst_schema.json
 
 qc32.extds:
-  long_name: Extract bits from pair signed
+  long_name: Extract bits from pair signed (Immediate)
   description: |
     Extract a subset of bits from the register pair [`rs1`, `rs1`+1] into `rd`, and sign extend the result.
     The width of the subset is determined by (`width_minus1` + 1) (1..32),

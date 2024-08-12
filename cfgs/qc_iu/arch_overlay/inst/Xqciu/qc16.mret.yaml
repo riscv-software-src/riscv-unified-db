@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+qc16.mret:
+  long_name: Machine Exception Return
+  description: |
+    Returns from an exception in M-mode.
+  assembly: ""
+  definedBy: Xqciu
+  access:
+    s: never
+    u: never
+    vs: never
+    vu: never
+  base: 32
+  encoding:
+    match: '0001100100010010'
+  operation(): |
+    if (implemented?(ExtensionName::S) && CSR[mstatus].MPP != 2'b11) {
+      CSR[mstatus].MPRV = 0;
+    }
+    CSR[mstatus].MIE = CSR[mstatus].MPIE;
+    CSR[mstatus].MPIE = 1;
+    if (CSR[mstatus].MPP == 2'b00) {
+      set_mode(PrivilegeMode::U);
+    } else if (CSR[mstatus].MPP == 2'b01) {
+      set_mode(PrivilegeMode::S);
+    } else if (CSR[mstatus].MPP == 2'b11) {
+      set_mode(PrivilegeMode::M);
+    }
+    CSR[mstatus].MPP = implemented?(ExtensionName::U) ? 2'b00 : 2'b11;
+    PC = CSR[mepc].sw_read();

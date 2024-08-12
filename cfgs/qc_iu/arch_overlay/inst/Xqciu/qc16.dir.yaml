@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+qc16.dir:
+  long_name: Disable interrupts (Register)
+  description: |
+    Globally disable interrupts, write previous value of `mstatus` to `rd`.
+    Equivalent to "csrrci `rd`, `mstatus`, 8".
+  definedBy: Xqciu
+  assembly: " xd"
+  base: 32
+  encoding:
+    match: 0001-----0000010
+    variables:
+    - name: rd
+      location: 11-7
+      not: 0
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg pre_mstatus = CSR[mstatus].sw_read();
+    CSR[mstatus].sw_write(pre_mstatus & ~8);
+    X[rd] = pre_mstatus;

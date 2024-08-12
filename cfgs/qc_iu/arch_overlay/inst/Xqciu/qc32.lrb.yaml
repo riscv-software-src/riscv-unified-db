@@ -18,6 +18,7 @@ qc32.lrb:
       location: 19-15
     - name: rs2
       location: 24-20
+      not: 0
     - name: rd
       location: 11-7
   access:

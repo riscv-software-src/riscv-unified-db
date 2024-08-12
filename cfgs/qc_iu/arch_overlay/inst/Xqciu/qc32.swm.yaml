@@ -11,7 +11,7 @@ qc32.swm:
     match:     00---------------111-----0101011
     variables:
     - name: imm
-      location: 30-25
+      location: 29-25
       left_shift: 2
     - name: rs1
       location: 19-15
@@ -20,7 +20,6 @@ qc32.swm:
       not: 0
     - name: rs3
       location: 11-7
-      not: 0
   assembly: " xs3, xs2, imm(xs1)"
   access:
     s: always
@@ -30,9 +29,7 @@ qc32.swm:
   operation(): |
     XReg vaddr = X[rs1] + imm;
     XReg num_words = X[rs2];
-
     raise (ExceptionCode::IllegalInstruction, $encoding) if ((rs3 + num_words) > 32);
-
     for (U32 i = 0; i < num_words; i++) {
       write_memory<32>(vaddr, X[rs3 + i]);
       vaddr = vaddr + 4;

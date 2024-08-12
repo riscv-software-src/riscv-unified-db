@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+qc32.insbprh:
+  long_name: Insert bits, packed descriptor high part (Register)
+  description: |
+    Insertion of a subset of bits from `rs1` into `rd`.
+    The width of the subset is determined by `rs2` bits [31:24] + 1 (1..32),
+    and the offset of the subset is determined by `rs2` bits [23:15].
+  definedBy: Xqciu
+  base: 32
+  encoding:
+    match:     0000011----------011-----0001011
+    variables:
+    - name: rs2
+      location: 24-20
+      not: 0
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
+      not: 0
+  assembly: " xd, xs1, xs2"
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg width = X[rs2][31:24] + 1;
+    XReg shamt = X[rs2][23:16];
+    XReg mask = ((1 << width) - 1) << shamt;
+    XReg orig_val = X[rd]; 
+    X[rd] = (orig_val & ~mask) | ((X[rs1] << shamt) & mask);

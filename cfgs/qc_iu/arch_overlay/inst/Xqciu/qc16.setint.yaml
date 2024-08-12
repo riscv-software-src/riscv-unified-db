@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+qc16.setint:
+  long_name: Set interrupt (Register)
+  description: |
+    Set interrupt, interrupt number is in `rs1`.
+  definedBy: Xqciu
+  assembly: " xs1"
+  base: 32
+  encoding:
+    match: 0001-----0001010
+    variables:
+    - name: rs1
+      location: 11-7
+      not: 0
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg idx = rs1 / 32;
+    XReg bit = rs1 % 32;
+    XReg pre_csr = CSR[mclicip0 + idx].sw_read();
+    CSR[mclicip0 + idx].sw_write(pre_csr | (1 << bit));

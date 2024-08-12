@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+qc32.expand2:
+  long_name: Bit expansion (every 2nd bit)
+  description: |
+    Bit expansion (every 2nd bit) of `rs1`, bits [31:16] of `rs1` are ignored.
+    Write result to `rd`. 
+  definedBy: Xqciu
+  base: 32
+  encoding:
+    match:     000001000000-----011-----0001011
+    variables:
+    - name: rs1
+      location: 19-15
+      not: 0
+    - name: rd
+      location: 11-7
+      not: 0
+  assembly: " xd, xs1"
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg b0 = {X[rs1][3],X[rs1][3],X[rs1][2],X[rs1][2],X[rs1][1],X[rs1][1],X[rs1][0],X[rs1][0]};
+    XReg b1 = {X[rs1][7],X[rs1][7],X[rs1][6],X[rs1][6],X[rs1][5],X[rs1][5],X[rs1][4],X[rs1][4]};
+    XReg b2 = {X[rs1][11],X[rs1][11],X[rs1][10],X[rs1][10],X[rs1][9],X[rs1][9],X[rs1][8],X[rs1][8]};
+    XReg b3 = {X[rs1][15],X[rs1][15],X[rs1][14],X[rs1][14],X[rs1][13],X[rs1][13],X[rs1][12],X[rs1][12]};
+    X[rd] = {b3[7:0],b2[7:0],b1[7:0],b0[7:0]};

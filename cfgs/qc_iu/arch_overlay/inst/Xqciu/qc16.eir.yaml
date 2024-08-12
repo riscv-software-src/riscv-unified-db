@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+qc16.eir:
+  long_name: Restore interrupts (Register)
+  description: |
+    Globally restore interrupts, write `rs1` to `mstatus`.
+    Equivalent to "csrrs `zero`, `mstatus`, `rs1`".
+  definedBy: Xqciu
+  assembly: " xs1"
+  base: 32
+  encoding:
+    match: 0001-----0000110
+    variables:
+    - name: rs1
+      location: 11-7
+      not: 0
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    CSR[mstatus].sw_write(X[rs1]);

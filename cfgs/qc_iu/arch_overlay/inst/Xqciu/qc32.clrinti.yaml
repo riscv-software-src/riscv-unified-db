@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+qc32.clrinti:
+  long_name: Clear interrupt (Immediate)
+  description: |
+    Clear interrupt, interrupt number is in `imm` (0 - 1023).
+  definedBy: Xqciu
+  assembly: " imm"
+  base: 32
+  encoding:
+    match: 1100111----------000000001110011
+    variables:
+    - name: imm
+      location: 24-15
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg idx = imm / 32;
+    XReg bit = imm % 32;
+    XReg pre_csr = CSR[mclicip0 + idx].sw_read();
+    CSR[mclicip0 + idx].sw_write(pre_csr & ~(1 << bit));

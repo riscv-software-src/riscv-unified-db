@@ -11,7 +11,7 @@ qc32.lwm:
     match:     00---------------111-----0001011
     variables:
     - name: imm
-      location: 30-25
+      location: 29-25
       left_shift: 2
     - name: rs1
       location: 19-15
@@ -30,9 +30,7 @@ qc32.lwm:
   operation(): |
     XReg vaddr = X[rs1] + imm;
     XReg num_words = X[rs2];
-
     raise (ExceptionCode::IllegalInstruction, $encoding) if ((rd + num_words) > 32);
-
     for (U32 i = 0; i < num_words; i++) {
       X[rd + i] = read_memory<32>(vaddr);
       vaddr = vaddr + 4;

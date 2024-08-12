@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=../../../../../schemas/inst_schema.json
 
 qc32.insbi:
-  long_name: Insert bits (immediate)
+  long_name: Insert bits (Immediate)
   description: |
     Insertion of a subset of bits of an `imm` into `rd`.
     The width of the subset is determined by (`width_minus1` + 1) (1..32),
