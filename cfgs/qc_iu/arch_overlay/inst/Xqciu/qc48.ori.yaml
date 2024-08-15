@@ -25,4 +25,4 @@ qc48.ori:
     vs: always
     vu: always
   operation(): |
-    X[rd] = X[rs1] | sext(imm,25);
+    X[rd] = X[rs1] | sext(imm,26);

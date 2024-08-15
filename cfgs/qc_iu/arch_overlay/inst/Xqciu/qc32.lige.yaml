@@ -28,5 +28,5 @@ qc32.lige:
     vu: always
   operation(): |
     if ($signed(X[rs1]) >= $signed(X[rs2])) {
-      X[rd] = simm;
+      X[rd] = sext(simm, 5);
     }

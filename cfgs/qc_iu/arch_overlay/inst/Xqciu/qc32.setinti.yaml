@@ -18,7 +18,9 @@ qc32.setinti:
     vs: always
     vu: always
   operation(): |
+    Bits<12> MCLICIP0_ADDR = CSR[mclicip0].address();
+
     XReg idx = imm / 32;
     XReg bit = imm % 32;
-    XReg pre_csr = CSR[mclicip0 + idx].sw_read();
-    CSR[mclicip0 + idx].sw_write(pre_csr | (1 << bit));
+    XReg pre_csr = CSR[MCLICIP0_ADDR + idx].sw_read();
+    CSR[MCLICIP0_ADDR + idx].sw_write(pre_csr | (1 << bit));

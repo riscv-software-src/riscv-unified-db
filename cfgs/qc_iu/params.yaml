@@ -73,7 +73,7 @@ params:
   # NUM_HPM_COUNTERS == 8, it would be illegal to add index
   # 11 in COUNTEN_EN since the highest implemented counter
   # would be at bit 10
-  COUNTENABLE_EN:
+  MCOUNTENABLE_EN:
   - true  # CY
   - false # empty
   - true  # IR

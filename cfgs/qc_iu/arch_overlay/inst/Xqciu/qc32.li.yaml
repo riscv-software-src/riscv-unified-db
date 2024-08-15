@@ -21,4 +21,4 @@ qc32.li:
     vs: always
     vu: always
   operation(): |
-    X[rd] = sext(imm,19);
+    X[rd] = sext(imm,20);

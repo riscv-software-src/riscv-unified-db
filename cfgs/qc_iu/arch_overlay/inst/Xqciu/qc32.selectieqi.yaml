@@ -30,5 +30,5 @@ qc32.selectieqi:
     if ($signed(X[rd]) == $signed(imm)) {
       X[rd] = X[rs2];
     } else {
-      X[rd] = simm2;
+      X[rd] = sext(simm2, 5);
     }

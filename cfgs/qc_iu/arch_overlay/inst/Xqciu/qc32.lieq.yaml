@@ -27,6 +27,6 @@ qc32.lieq:
     vs: always
     vu: always
   operation(): |
-    if ($signed(X[rs1]) == $signed(X[rs2])) {
-      X[rd] = simm;
+    if (X[rs1] == X[rs2]) {
+      X[rd] = sext(simm, 20);
     }

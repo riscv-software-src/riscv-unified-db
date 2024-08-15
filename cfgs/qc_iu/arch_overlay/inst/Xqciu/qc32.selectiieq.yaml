@@ -28,7 +28,7 @@ qc32.selectiieq:
     vu: always
   operation(): |
     if ($signed(X[rd]) == $signed(X[rs1])) {
-      X[rd] = simm1;
+      X[rd] = sext(simm1, 5);
     } else {
-      X[rd] = simm2;
+      X[rd] = sext(simm2, 5);
     }

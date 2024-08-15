@@ -27,5 +27,5 @@ qc32.ligeui:
     vu: always
   operation(): |
     if (X[rs1] >= imm) {
-      X[rd] = simm;
+      X[rd] = sext(simm, 5);
     }

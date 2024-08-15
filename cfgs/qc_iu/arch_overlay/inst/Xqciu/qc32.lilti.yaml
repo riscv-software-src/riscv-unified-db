@@ -27,5 +27,5 @@ qc32.lilti:
     vu: always
   operation(): |
     if ($signed(X[rs1]) < $signed(imm)) {
-      X[rd] = simm;
+      X[rd] = sext(simm, 5);
     }

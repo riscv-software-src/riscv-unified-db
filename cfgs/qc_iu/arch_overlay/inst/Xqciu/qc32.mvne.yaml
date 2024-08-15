@@ -28,6 +28,6 @@ qc32.mvne:
     vs: always
     vu: always
   operation(): |
-    if ($signed(X[rs1]) != $signed(X[rs2])) {
+    if (X[rs1] != X[rs2]) {
       X[rd] = X[rs3];
     }

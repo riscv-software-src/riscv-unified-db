@@ -27,7 +27,7 @@ qc32.wrapi:
     vu: always
   operation(): |
     XReg rs1_value = X[rs1];
-    X[rd] = ($signed(rs1_value) >= imm)
+    X[rd] = ($signed(rs1_value) >= $signed(imm))
       ? rs1_value - imm
       : (($signed(rs1_value) < 0)
          ? (rs1_value + imm)

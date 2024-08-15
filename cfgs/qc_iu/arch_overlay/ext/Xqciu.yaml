@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../../schemas/ext_schema.json
 
 Xqciu:
   type: unprivileged
@@ -15,7 +15,62 @@ Xqciu:
       company: Qualcomm Technologies, Inc.
       email: dhower@qti.qualcomm.com
   description: |
-    Custom instructions for the Qualcomm RVIU.
+    The Xqciu extension includes a set of instructions that improve RISC-V code density and
+    performance in microontrollers. It fills several gaps:
+
+    Long immediates::
+    --
+    This extension provides wide-immediate versions of
+    loads, stores, branches, jumps, and several arithemtic operations.
+    --
+
+    Addressing modes::
+    --
+    New indexed addressing modes are added for load and store instructions.
+    --
+
+    Load/store multiple::
+    --
+    Xqciu adds instructions that load multiple sequential values from memory into multiple registers.
+    Analogous instructions for stores are also included.
+    --
+
+    Branch immediate instructions::
+    --
+    The base RISC-V ISA provides conditional branches that compare two register values.
+    Xqciu adds conditional branch instructions that compare an immediate value to a register value,
+    reducing a common code sequence into a single instruction.
+    --
+
+    Conditional instructions::
+    --
+    Xqciu includes a variety of conditional select instructions that pick one of two operand values based on the result of a condition
+    and conditional move instructions that either move a value or retain a value in a destination register based on the result of a condition.
+    Conditional select and conditional move instructions help reduce code size and avoid branches in common code sequences.
+    --
+
+    Extra bit manipulation instructions::
+    --
+    Xqciu expands upon the standard `B` extension by adding instructions for
+    bit insertion/extraction, bit set/clear, sign and zero extension, and bit counting instructions.
+    --
+
+    Fast interrupt instructions::
+    --
+    Xqciu adds instructions to accelerate interrupt handling, including instructions to quickly
+    enable/disable interrupts and instructions to automatically save an interrupt frame.
+    --
+
+    Saturating arithemtic::
+    --
+    Xqciu adds saturating arithmetic instructions to improve performance of fixed-point calculations.
+    --
+
+    Xqciu adds 16, 32, and 48-bit instruction encodings. The 16 and 32-bit encodings are allocated
+    in the custom opcode space so as not to conflict with standard RISC-V instructions. The 48-bit instructions
+    follow the guidance for 48-bit instructions in the RISC-V standard, but are not allocated in reserved custom
+    space since no such space has been defined by RISC-V International.
+
   doc_license:
     name: Creative Commons Attribution 4.0 International License
     url: https://creativecommons.org/licenses/by/4.0/
