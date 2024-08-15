@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+amomaxu.w:
+  long_name: Atomic MAX unsigned word
+  description: |
+     Atomically:
+       
+       * Load the word at address _rs1_
+       * Write the sign-extended value into _rd_
+       * Unsigned compare the least-significant word of register _rs2_ to the loaded value, and select the maximum value
+       * Write the maximum to the address in _rs1_
+  definedBy: [A, Zaamo]
+  assembly: xd, xs2, (xrs1)
+  encoding:
+    match: 11100------------010-----0101111
+    variables:
+    - name: aq
+      location: 26
+    - name: rl
+      location: 27
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    if (implemented?(ExtensionName::A) && (CSR[misa].A == 1'b0)) {
+      raise (ExceptionCode::IllegalInstruction, $encoding);
+    }
+
+    XReg virtual_address = X[rs1];
+
+    X[rd] = amo<32>(virtual_address, X[rs2][31:0], AmoOperation::Maxu, aq, rl);

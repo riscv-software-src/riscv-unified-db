@@ -1448,7 +1448,8 @@ class Instruction < ArchDefObject
 
     return nil unless @data.key?("operation()")
 
-    pruned_ast = type_checked_operation_ast(arch_def, effective_xlen).prune(fill_symtab(global_symtab, effective_xlen))
+    type_checked_ast = type_checked_operation_ast(arch_def, effective_xlen)
+    pruned_ast = type_checked_ast.prune(fill_symtab(global_symtab, effective_xlen))
     arch_def.idl_compiler.type_check(
       pruned_ast,
       fill_symtab(global_symtab, effective_xlen),
