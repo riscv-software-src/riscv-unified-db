@@ -19,7 +19,7 @@ pmpcfg12:
 
           The bits are as follows:
 
-          [%autowidth]
+          [separator="!",%autowidth]
           !===
           ! Name ! Location ! Description
 
@@ -78,7 +78,7 @@ pmpcfg12:
 
           The bits are as follows:
 
-          [%autowidth]
+          [separator="!",%autowidth]
           !===
           ! Name ! Location ! Description
 
@@ -137,7 +137,7 @@ pmpcfg12:
 
           The bits are as follows:
 
-          [%autowidth]
+          [separator="!",%autowidth]
           !===
           ! Name ! Location ! Description
 
@@ -196,7 +196,7 @@ pmpcfg12:
 
           The bits are as follows:
 
-          [%autowidth]
+          [separator="!",%autowidth]
           !===
           ! Name ! Location ! Description
 
@@ -256,7 +256,7 @@ pmpcfg12:
 
           The bits are as follows:
 
-          [%autowidth]
+          [separator="!",%autowidth]
           !===
           ! Name ! Location ! Description
 
@@ -316,7 +316,7 @@ pmpcfg12:
 
           The bits are as follows:
 
-          [%autowidth]
+          [separator="!",%autowidth]
           !===
           ! Name ! Location ! Description
 
@@ -376,7 +376,7 @@ pmpcfg12:
 
           The bits are as follows:
 
-          [%autowidth]
+          [separator="!",%autowidth]
           !===
           ! Name ! Location ! Description
 
@@ -436,7 +436,7 @@ pmpcfg12:
 
           The bits are as follows:
 
-          [%autowidth]
+          [separator="!",%autowidth]
           !===
           ! Name ! Location ! Description
 

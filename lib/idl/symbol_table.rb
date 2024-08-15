@@ -21,6 +21,10 @@ module Idl
       @function_name = function_name
     end
 
+    def hash
+      [@name, @type, @value, @decode_var, @template_index, @function_name].hash
+    end
+
     def to_s
       "VAR: #{type} #{name} #{value.nil? ? 'NO VALUE' : value}"
     end
@@ -74,6 +78,12 @@ module Idl
     attr_reader :archdef
 
     class DuplicateSymError < StandardError
+    end
+
+    def hash
+      return @frozen_hash unless @frozen_hash.nil?
+
+      [@scopes.hash, @archdef.hash].hash
     end
 
     def initialize(arch_def)
@@ -180,6 +190,10 @@ module Idl
         v.freeze
       end
       @scopes.freeze
+
+      # set frozen_hash so that we can quickly compare symtabs
+      @frozen_hash = [@scopes.hash, @archdef.hash].hash
+
       freeze
     end
 
@@ -200,7 +214,6 @@ module Idl
       raise "Error: popping the symbol table would remove global scope" if @scopes.size == 1
 
       @scopes.pop
-
     end
 
     # @return [Boolean] whether or not any symbol 'name' is defined at any level in the symbol table

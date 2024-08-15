@@ -106,15 +106,95 @@ params:
   - false # HPM30
   - false # HPM31
 
- # Indicates which counters can delegated via mcounteren
+  # Indicates which counters can delegated via mcounteren
   #
   # An unimplemented counter cannot be specified, i.e., if
   # NUM_HPM_COUNTERS == 8, it would be illegal to add index
   # 11 in COUNTEN_EN since the highest implemented counter
   # would be at bit 10
-  COUNTENABLE_EN:
+  MCOUNTENABLE_EN:
   - true  # CY
-  - false # empty
+  - false # TM
+  - true  # IR
+  - true  # HPM3
+  - true  # HPM4
+  - true  # HPM5
+  - true  # HPM6
+  - true  # HPM7
+  - true  # HPM8
+  - true  # HPM9
+  - true  # HPM10
+  - false # HPM11
+  - false # HPM12
+  - false # HPM13
+  - false # HPM14
+  - false # HPM15
+  - false # HPM16
+  - false # HPM17
+  - false # HPM18
+  - false # HPM19
+  - false # HPM20
+  - false # HPM21
+  - false # HPM22
+  - false # HPM23
+  - false # HPM24
+  - false # HPM25
+  - false # HPM26
+  - false # HPM27
+  - false # HPM28
+  - false # HPM29
+  - false # HPM30
+  - false # HPM31
+
+  # Indicates which counters can delegated via scounteren
+  #
+  # An unimplemented counter cannot be specified, i.e., if
+  # NUM_HPM_COUNTERS == 8, it would be illegal to add index
+  # 11 in COUNTEN_EN since the highest implemented counter
+  # would be at bit 10
+  SCOUNTENABLE_EN:
+  - true  # CY
+  - false # TM
+  - true  # IR
+  - true  # HPM3
+  - true  # HPM4
+  - true  # HPM5
+  - true  # HPM6
+  - true  # HPM7
+  - true  # HPM8
+  - true  # HPM9
+  - true  # HPM10
+  - false # HPM11
+  - false # HPM12
+  - false # HPM13
+  - false # HPM14
+  - false # HPM15
+  - false # HPM16
+  - false # HPM17
+  - false # HPM18
+  - false # HPM19
+  - false # HPM20
+  - false # HPM21
+  - false # HPM22
+  - false # HPM23
+  - false # HPM24
+  - false # HPM25
+  - false # HPM26
+  - false # HPM27
+  - false # HPM28
+  - false # HPM29
+  - false # HPM30
+  - false # HPM31
+
+  # Indicates which counters can delegated via hcounteren
+  #
+  # An unimplemented counter cannot be specified, i.e., if
+  # NUM_HPM_COUNTERS == 8, it would be illegal to add index
+  # 11 in COUNTEN_EN since the highest implemented counter
+  # would be at bit 10
+  HCOUNTENABLE_EN:
+  - true  # CY
+  - false # TM
   - true  # IR
   - true  # HPM3
   - true  # HPM4

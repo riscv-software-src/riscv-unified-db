@@ -1,6 +1,5 @@
 # yaml-language-server: $schema=../../schemas/csr_schema.json
 
-# <%- max_code = [interrupt_codes.keys.max, exception_codes.keys.max].max -%>
 
 mcause:
   long_name: Machine Cause
@@ -55,16 +54,18 @@ mcause:
         <%- end -%>
 
         Valid interrupt codes are:
+        [separator="!"]
         !===
-        <%- Hash[interrupt_codes.sort_by{ |num, _name| num }].each do |num, name| -%>
-        ! <%= num %> ! <%= name %>
+        <%- interrupt_codes.sort_by{ |code| code.num }.each do |code| -%>
+        ! <%= code.num %> ! <%= code.name %>
         <%- end -%>
         !===
 
         Valid exception codes are:
+        [separator="!"]
         !===
-        <%- Hash[exception_codes.sort_by{ |num, _name| num }].each do |num, name| -%>
-        ! <%= num %> ! <%= name %>
+        <%- exception_codes.sort_by{ |code| code.num }.each do |code| -%>
+        ! <%= code.num %> ! <%= code.name %>
         <%- end -%>
         !===
       type: RW-RH

@@ -17,7 +17,7 @@ satp:
 
         Controls the current translation mode according to the table below.
 
-        [%autowidth]
+        [separator="!",%autowidth]
         !===
         ! Value ! Name ! Description
 

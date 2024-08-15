@@ -23,14 +23,14 @@ Original::
 +
 [subs="specialchars,macros"]
 ----
-<%= body_ast.gen_adoc.gsub('(', 'pass:[(]') %>
+<%= body_ast.gen_adoc %>
 ----
 
 Pruned::
 +
 [subs="specialchars,macros"]
 ----
-<%= body_ast.prune(global_symtab.deep_clone).gen_adoc.gsub('(', 'pass:[(]') %>
+<%= body_ast.prune(global_symtab.deep_clone).gen_adoc %>
 ----
 ====
 <%- end -%>

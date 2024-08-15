@@ -50,7 +50,6 @@ require "ruby-prof"
         File.write(path, arch_def.find_replace_links(erb.result(binding)))
       end
     when "func"
-      isa_def = arch_def.global_ast
       global_symtab = arch_def.sym_table
       path = dir_path / "funcs.adoc"
       puts "  Generating #{path}"
@@ -101,7 +100,7 @@ require "ruby-prof"
         lines << " * `#{inst.name}` #{inst.long_name}"
       end
     when "func"
-      puts "Generting functino list"
+      puts "Generting function list"
       arch_def.implemented_functions.each do |func|
         lines << " * `#{func.name}`"
       end

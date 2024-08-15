@@ -27,7 +27,7 @@ menvcfg:
 
     [[menvcfg-FIOM]]
     .Modified interpretation of FENCE predecessor and successor sets for modes less privileged than M when FIOM=1.
-    [%autowidth,float="center",align="center",cols="^,<",options="header"]
+    [separator="!",%autowidth,float="center",align="center",cols="^,<",options="header"]
     !===
     !Instruction bit |Meaning when set
     !PI +
@@ -253,7 +253,7 @@ menvcfg:
         FENCE instructions ordering I/O regions also implicitly order memory regions when executed
         in any mode less privileged than M-mode.
 
-        [%autowidth,float="center",align="center",cols="^,<",options="header"]
+        [separator="!",%autowidth,float="center",align="center",cols="^,<",options="header"]
         !===
         !Instruction bit !Meaning when set
         !PI +

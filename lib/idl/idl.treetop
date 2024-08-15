@@ -377,7 +377,7 @@ grammar Idl
   rule function_call
     csr:csr_register_access_expression space* '.' space* 'sw_write' space* '(' space* expression space* ')' <Idl::CsrSoftwareWriteSyntaxNode>
     /
-    csr:csr_register_access_expression space* '.' space* 'sw_read' space* '(' space* ')' <Idl::CsrSoftwareReadSyntaxNode>
+    csr:csr_register_access_expression space* '.' space* function_name space* '(' space* ')' <Idl::CsrFunctionCallSyntaxNode>
     /
     function_name t:(space* '<' space* targs:function_call_template_arguments space* '>')? space* '(' space* function_arg_list space* ')' <Idl::FunctionCallExpressionSyntaxNode>
   end
