@@ -336,3 +336,35 @@ builtin function atomically_set_pte_a_d {
       * return true    
   }
 }
+
+builtin function atomic_read_modify_write_32 {
+  returns Bits<32>
+  arguments
+    Bits<PHYS_ADDR_WIDTH>  phys_addr,
+    Bits<32>               value,
+    AmoOperation           op
+  description {
+    Atomically read-modify-write 32-bits starting at phys_address using +value+ and +op+.
+
+    Return the original (unmodified) read value.
+
+    All access checks/alignment checks/etc. should be done before calling this function;
+    it's assumed the RMW is OK to proceed.
+  }
+}
+
+builtin function atomic_read_modify_write_64 {
+  returns Bits<64>
+  arguments
+    Bits<PHYS_ADDR_WIDTH>  phys_addr,
+    Bits<64>               value,
+    AmoOperation           op
+  description {
+    Atomically read-modify-write 64-bits starting at phys_address using +value+ and +op+.
+
+    Return the original (unmodified) read value.
+
+    All access checks/alignment checks/etc. should be done before calling this function;
+    it's assumed the RMW is OK to proceed.
+  }
+}

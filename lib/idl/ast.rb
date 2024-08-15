@@ -41,6 +41,9 @@ module Idl
     # @return [String] Source input file
     attr_reader :input_file
 
+    # @return [Integer] Starting line in the source input file (i.e., position 0 of {#input} in the file)
+    attr_reader :starting_line
+
     # @return [String] Source string
     attr_reader :input
 
@@ -131,6 +134,7 @@ module Idl
     def initialize(input, interval, children)
       @input = input
       @input_file = nil
+      @starting_line = 0
       @interval = interval
       children.each { |child| raise ArgumentError, "Children of #{self.class.name} must be AstNodes (found a #{child.class.name})" unless child.is_a?(AstNode)}
       @children = children

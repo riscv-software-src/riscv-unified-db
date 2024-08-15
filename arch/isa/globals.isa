@@ -43,14 +43,37 @@ enum MemoryOperation {
   Fetch
 }
 
+# Types of Atmoic Read-modify-write operations
+enum AmoOperation {
+  Swap
+  Add
+  And
+  Or
+  Xor
+  Max
+  Maxu
+  Min
+  Minu
+}
+
 enum PmaAttribute {
   RsrvNone         # LR/SC not allowed
   RsrvNonEventual  # LR/SC allowed, but no gaurantee it will ever succeed
   RsrvEventual     # LR/SC with forward-progress gaurantees
 
+  MAG16            # Misaligned Atomicity Granule = 16-byte
+  MAG8             # Misaligned Atomicity Granule = 8-byte
+  MAG4             # Misaligned Atomicity Granule = 4-byte
+  MAG2             # Misaligned Atomicity Granule = 2-byte
+
+  AmoNone          # No AMOs allowed
+  AmoSwap          # amoswap is allowed
+  AmoLogical       # amoswap, amoand, amoor, and amoxor are allowed
+  AmoArithmetic    # All amos are allowed
+
   # page walk permissions
-  HardwarePageTableRead
-  HardwarePageTableWrite
+  HardwarePageTableRead    # permission to read during a page walk
+  HardwarePageTableWrite   # permission to write during a page walk
 }
 
 # do not change these values!! the compiler assumes them
@@ -1341,6 +1364,40 @@ function canonical_vaddr? {
   }
 }
 
+function misaligned_is_atomic? {
+  template U32 N
+  returns Boolean
+  arguments Bits<PHYS_ADDR_WIDTH> physical_address
+  description {
+    Returns true if an access starting at +physical_address+ that is +N+ bits long is atomic.
+
+    This function takes into account any Atomicity Granule PMAs, so *it should not be used
+    for load-reserved/store-conditional*, since those PMAs do not apply to those accesses.
+  }
+  body {
+    # if the hart doesn't support Misligned Atomicity Granules,
+    # then this misligned access is not atomic
+    return false if MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE == 0;
+
+    if (pma_applies?(PmaAttribute::MAG16, physical_address, N) &&
+        in_naturally_aligned_region?<M, 128>(physical_address_address, N)) {
+      return true;
+    } else if (pma_applies?(PmaAttribute::MAG8, physical_address, N) &&
+                in_naturally_aligned_region?<XLEN, 64>(physical_address, N)) {
+      return true;
+    } else if (pma_applies?(PmaAttribute::MAG4, physical_address, N) &&
+                in_naturally_aligned_region?<XLEN, 32>(physical_address, N)) {
+      return true;
+    } else if (pma_applies?(PmaAttribute::MAG2, physical_address, N) &&
+                in_naturally_aligned_region?<XLEN, 16>(physical_address, N)) {
+      return true;
+    } else {
+      # not saved by a Misaligned Atomicity Granule
+      return false;
+    }
+  }
+}
+
 function read_memory_aligned {
   template U32 len
   returns Bits<len>
@@ -1367,16 +1424,49 @@ function read_memory {
   returns Bits<len>
   arguments XReg virtual_address
   description {
-    Read from virtual memory
+    Read from virtual memory.
+
   }
   body {
     Boolean aligned = is_naturally_aligned<XLEN, len>(virtual_address);
+    XReg physical_address;
 
     if (aligned) {
       return read_memory_aligned<len>(virtual_address);
-    } else if (!aligned && !MISALIGNED_LDST) {
+    }
+    
+    # access isn't naturally aligned, but it still might be atomic if this hart supports
+    # Misliagned Atomicity Granules. We won't know that, though, until after translation since PMAs
+    # apply to physical addresses
+    if (MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE > 0) {
+      # sanity check that the implementation isn't expecting a Misaligned exception
+      # before an access/page fault exception (that would be an invalid config)
+      assert(MISALIGNED_LDST_EXCEPTION_PRIORITY == "low");
+
+      physical_address = (CSR[misa].S == 1)
+        ? translate(virtual_address, MemoryOperation::Read)
+        : virtual_address;
+
+      if (misaligned_is_atomic?<len>(physical_address)) {
+        access_check<len>(physical_address, virtual_address, MemoryOperation::Read, ExceptionCode::LoadAccessFault);
+        return read_physical_memory<len>(physical_address);
+      }
+    }
+
+    # at this point, we have a misligned access
+    if (!MISALIGNED_LDST) {
+      # misaligned is not supported, we'll raise either a Misaligned exception or
+      # a page/access fault exception, depending on the configuration
+      if (MISALIGNED_LDST_EXCEPTION_PRIORITY == "low") {
+        # do translation to trigger any access/page faults before raising misaligned
+        physical_address = (CSR[misa].S == 1)
+          ? translate(virtual_address, MemoryOperation::Read)
+          : virtual_address;
+        access_check<len>(physical_address, virtual_address, MemoryOperation::Read, ExceptionCode::LoadAccessFault);
+      }
       raise (ExceptionCode::LoadAddressMisaligned, virtual_address);
     } else {
+
       # misaligned, must break into multiple reads
       if (MISALIGNED_SPLIT_STRATEGY == "by_byte") {
         Bits<len> result = 0;
@@ -1563,6 +1653,66 @@ function store_conditional {
   }
 }
 
+function amo {
+  template U32 N                # number of bits being loaded/stored
+  returns Bits<N>
+  arguments
+    Bits<XLEN> virtual_address, # the virtual address to load from/store to
+    Bits<N> value,              # the value for the second hald of the atomic operation
+    AmoOperation op,            # atomic operation to apply
+    Bits<1>    aq,              # acquire semantics? 0=no, 1=yes
+    Bits<1>    rl               # release semantics? 0=no, 1=yes
+  description {
+    Atomically read-modify-write the location at virtual_address.
+
+    The value written to virtual_address will depend on +op+.
+
+    If +aq+ is 1, then the amo also acts as a memory model acquire.
+    If +rl+ is 1, then the amo also acts as a memory model release.
+  }
+  body {
+    Boolean aligned = is_naturally_aligned<PHYS_ADDR_WIDTH, N>(virtual_address);
+
+    if (!aligned && MISALIGNED_LDST_EXCEPTION_PRIORITY == "high") {
+      raise(ExceptionCode::StoreAmoAddressMisaligned, virtual_address);
+    }
+
+    Bits<PHYS_ADDR_WIDTH> physical_address =
+      (CSR[misa].S == 1)
+        ? translate(virtual_address, MemoryOperation::ReadModifyWrite)
+        : virtual_address;
+
+    # PMA Atomicity checks
+    if (pma_applies?(PmaAttribute::AmoNone, physical_address, N)) {
+      raise(ExceptionCode::StoreAmoAccessFault, virtual_address);
+    } else if (((op == AmoOperation::Add || op == AmoOperation::Max || op == AmoOperation::Maxu || op == AmoOperation::Min || op == AmoOperation::Minu)) &&
+               !pma_applies?(PmaAttribute::AmoArithmetic, physical_address, N)) {
+      raise(ExceptionCode::StoreAmoAccessFault, virtual_address);
+    } else if (((op == AmoOperation::And || op == AmoOperation::Or || op == AmoOperation::Xor)) &&
+                !pma_applies?(PmaAttribute::AmoLogical, physical_address, N)) {
+      raise(ExceptionCode::StoreAmoAccessFault, virtual_address);
+    } else {
+      assert(
+        pma_applies?(PmaAttribute::AmoSwap, physical_address, N) &&
+        op == AmoOperation::Swap
+      );
+    }
+
+    # pma alignment checks
+    if (!aligned &&
+         !misaligned_is_atomic?<N>(physical_address)) {
+      raise (ExceptionCode::StoreAmoAddressMisaligned, virtual_address);
+    }
+
+    if (N == 32) {
+      return atomic_read_modify_write_32(physical_address, value, op);
+    } else {
+      return atomic_read_modify_write_64(physical_address, value, op);
+    }
+
+  }
+}
+
 
 
 function write_memory_aligned {
@@ -1593,15 +1743,50 @@ function write_memory {
   }
   body {
     Boolean aligned = is_naturally_aligned<XLEN, len>(virtual_address);
+    XReg physical_address;
 
     if (aligned) {
       write_memory_aligned<len>(virtual_address, value);
-    } else if (!aligned && !MISALIGNED_LDST) {
+    }
+    
+    # access isn't naturally aligned, but it still might be atomic if this hart supports
+    # Misliagned Atomicity Granules. We won't know that, though, until after translation since PMAs
+    # apply to physical addresses
+    if (MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE > 0) {
+      # sanity check that the implementation isn't expecting a Misaligned exception
+      # before an access/page fault exception (that would be an invalid config)
+      assert(MISALIGNED_LDST_EXCEPTION_PRIORITY == "low");
+
+      physical_address = (CSR[misa].S == 1)
+        ? translate(virtual_address, MemoryOperation::Write)
+        : virtual_address;
+
+      if (misaligned_is_atomic?<len>(physical_address)) {
+        access_check<len>(physical_address, virtual_address, MemoryOperation::Write, ExceptionCode::StoreAmoAccessFault);
+        write_physical_memory<len>(physical_address, value);
+      }
+    }
+
+    # at this point, we have a misligned access that must be split
+    if (!MISALIGNED_LDST) {
+      # misaligned is not supported, we'll raise either a Misaligned exception or
+      # a page/access fault exception, depending on the configuration
+      if (MISALIGNED_LDST_EXCEPTION_PRIORITY == "low") {
+        # do translation to trigger any access/page faults before raising misaligned
+        physical_address = (CSR[misa].S == 1)
+          ? translate(virtual_address, MemoryOperation::Write)
+          : virtual_address;
+        access_check<len>(physical_address, virtual_address, MemoryOperation::Write, ExceptionCode::StoreAmoAccessFault);
+      }
       raise (ExceptionCode::StoreAmoAddressMisaligned, virtual_address);
     } else {
-      # misaligned, must break into multiple writes
-      for (U32 i = 0; i <= len; i++) {
-        write_memory_aligned<8>(virtual_address + i, (value >> (8*i))[7:0]);
+      # misaligned, must break into multiple reads
+      if (MISALIGNED_SPLIT_STRATEGY == "by_byte") {
+        for (U32 i = 0; i <= len; i++) {
+          write_memory_aligned<8>(virtual_address + i, (value >> (8*i))[7:0]);
+        }
+      } else if (MISALIGNED_SPLIT_STRATEGY == "custom") {
+        unpredictable("An implementation is free to break a misaligned access any way, leading to unpredictable behavior when any part of the misaligned access causes an exception");
       }
     }
   }
