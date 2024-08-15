@@ -214,6 +214,13 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/playbook.yaml} => proc { |tname|
             color: white;
             font-weight: bold;
           }
+
+          .csr-field-info {
+            margin-left: 1em;
+            padding: 1em;
+            border-radius: 25px;
+            border: 2px solid;
+          }
   PLAYBOOK
 end
 

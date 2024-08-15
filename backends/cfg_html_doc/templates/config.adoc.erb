@@ -11,7 +11,7 @@
 
 == Parameters
 
-<%- arch_def.params.each do |param| -%>
+<%- arch_def.params.sort_by { |param| param.name }.each do |param| -%>
 === *<%= param.name %>*
 
 [cols="1,4,1"]

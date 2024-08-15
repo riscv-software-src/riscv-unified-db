@@ -307,3 +307,19 @@ H:
         When false `vstval` is written with 0 when an `IllegalInstruction` exception occurs.
       schema:
         type: boolean
+    HCOUNTENABLE_EN:
+      description: |
+        Indicates which counters can delegated via `hcounteren`
+
+        An unimplemented counter cannot be specified, i.e., if
+        HPM_COUNTER_EN[3] is false, it would be illegal to set
+        HCOUNTENABLE_EN[3] to true.
+
+        HCOUNTENABLE_EN[0:2] must all be false if `Zicntr` is not implemented.
+        HCOUNTENABLE_EN[3:31] must all be false if `Zihpm` is not implemented.
+      schema:
+        type: array
+        items:
+          type: boolean
+        maxItems: 32
+        minItems: 32

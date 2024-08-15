@@ -39,6 +39,13 @@ builtin function read_mcycle {
   }
 }
 
+builtin function read_mtime {
+  returns Bits<64>
+  description {
+    Return the current value of the real time device.
+  }
+}
+
 builtin function sw_write_mcycle {
   returns Bits<64>
   arguments Bits<64> value

@@ -13,7 +13,9 @@ module Rouge
       id = /[a-zA-Z_][a-zA-Z0-9_]*/
 
       def self.keywords
-        @keywords ||= Set.new %w[
+        return @keywords unless @keywords.nil?
+
+        @keywords = Set.new %w[
           if else for return returns arguments description body function builtin enum bitfield
         ]
       end
@@ -39,7 +41,7 @@ module Rouge
         rule %r/0x[0-9a-f]+[lu]*/i, Num::Hex
         rule %r/0[0-7]+[lu]*/i, Num::Oct
         rule %r{\d+}, Num::Integer
-        rule %r{(?:true|false|\$encoding|\$pc)}, Name::Builtin
+        rule %r{(?:true|false|\$encoding|\$pc|\$signed|\$bits)}, Name::Builtin
         rule %r{[.,;:\[\]\(\)\}\{]}, Punctuation
         rule %r([~!%^&*+=\|?:<>/-]), Operator
         rule id do |m|

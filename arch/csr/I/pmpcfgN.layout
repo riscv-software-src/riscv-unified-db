@@ -24,7 +24,7 @@ pmpcfg<%= pmpcfg_num %>:
 
           The bits are as follows:
 
-          [%autowidth]
+          [separator="!",%autowidth]
           !===
           ! Name ! Location ! Description
 

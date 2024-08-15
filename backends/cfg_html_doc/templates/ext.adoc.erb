@@ -4,12 +4,6 @@
 
 Implemented Version:: <%= ext_version.version %>
 
-<%- if !ext.implies.empty? -%>
-This extension implies the following extension(s):
-
-`<%= ext.name %>` => <%= ext.implies.map { |e| "`#{e.name}`, version #{e.version}" }.join(", ") %>
-<%- end -%>
-
 == Versions
 
 <%- ext.versions.each do |v| -%>
@@ -50,4 +44,19 @@ The following instructions are added by this extension in the <%= ext.arch_def.n
  | <%= "`#{inst.name}`" %> | *<%= inst.long_name %>*
 <%- end -%>
 |===
+<%- end -%>
+
+<%- unless ext.params.empty? -%>
+== Parameters
+
+This extension has the following implementation options:
+
+<%- ext.params.sort_by { |p| p.name }.each do |param| -%>
+<%= param.name %>::
++
+--
+<%= param.desc %>
+--
+<%- end -%>
+
 <%- end -%>

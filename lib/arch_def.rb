@@ -9,6 +9,7 @@ require_relative "idl/passes/find_return_values"
 require_relative "idl/passes/gen_adoc"
 require_relative "idl/passes/prune"
 require_relative "idl/passes/reachable_functions"
+require_relative "idl/passes/reachable_functions_unevaluated"
 require_relative "idl/passes/reachable_exceptions"
 
 # base for any object representation of the Architecture Definition
@@ -331,7 +332,7 @@ class CsrField < ArchDefObject
     type =
       if @data.key?("type")
         @data["type"]
-      else
+      elsif arch_def.is_a?(ImplArchDef)
         # the type is config-specific...
         idl = @data["type()"]
         raise "type() is nil for #{csr.name}.#{name} #{@data}?" if idl.nil?
@@ -363,8 +364,23 @@ class CsrField < ArchDefObject
         ensure
           sym_table.pop
         end
+      else
+        raise "arch def is generic, can't know type exactly"
       end
     @type_cache[arch_def] = type
+  end
+
+  # @return [String] A pretty-printed type string
+  def type_pretty(arch_def)
+    if arch_def.is_a?(ImplArchDef)
+      type(arch_def)
+    else
+      if @data.key?("type")
+        @data["type"]
+      else
+        @data["type()"]
+      end
+    end
   end
 
   # @return [Alias,nil] The aliased field, or nil if there is no alias
@@ -394,10 +410,11 @@ class CsrField < ArchDefObject
     @alias
   end
 
-  # @return [Array<Idl::FunctionDefAst] List of functions called thorugh this field
+  # @return [Array<Idl::FunctionDefAst>] List of functions called thorugh this field
   # @param archdef [ImplArchDef] a configuration
   # @Param effective_xlen [Integer] 32 or 64; needed because fields can change in different XLENs
   def reachable_functions(archdef, effective_xlen)
+    return @reachable_functions unless @reachable_functions.nil?
 
     fns = []
     if has_custom_sw_write?
@@ -422,7 +439,36 @@ class CsrField < ArchDefObject
         fns.concat ast.reachable_functions(archdef.sym_table.deep_clone.push)
       end
     end
-    fns
+
+    @reachable_functions = fns.uniq
+  end
+
+  # @return [Array<Idl::FunctionDefAst>] List of functions called thorugh this field, irrespective of context
+  # @param archdef [ArchDef] Architecture definition
+  def reachable_functions_unevaluated(archdef)
+    return @reachable_functions_unevaluated unless @reachable_functions_unevaluated.nil?
+
+    fns = []
+    if has_custom_sw_write?
+      ast = sw_write_ast(archdef.idl_compiler)
+      unless ast.nil?
+        fns.concat ast.reachable_functions_unevaluated(archdef)
+      end
+    end
+    if @data.key?("type()")
+      ast = type_ast(archdef.idl_compiler)
+      unless ast.nil?
+        fns.concat ast.reachable_functions_unevaluated(archdef)
+      end
+    end
+    if @data.key?("reset_value()")
+      ast = reset_value_ast(archdef.idl_compiler)
+      unless ast.nil?
+        fns.concat ast.reachable_functions_unevalutated(archdef)
+      end
+    end
+
+    @reachable_functions_unevaluated = fns.uniq
   end
 
   # @return [Csr] Parent CSR for this field
@@ -432,12 +478,16 @@ class CsrField < ArchDefObject
   # @return [Boolean] Whether or not the location of the field changes dynamically
   #                   (e.g., based on mstatus.SXL) in the configuration
   def dynamic_location?(arch_def)
-    if @data.key?("location_rv32")
-      csr.modes_with_access.each do |mode|
-        return true if arch_def.multi_xlen_in_mode?(mode)
+    if arch_def.is_a?(ImplArchDef)
+      unless @data["location_rv32"].nil?
+        csr.modes_with_access.each do |mode|
+          return true if arch_def.multi_xlen_in_mode?(mode)
+        end
       end
+      false
+    else
+      !@data["location_rv32"].nil?
     end
-    false
   end
 
   # @param arch_def [IdL::Compiler] A compiler
@@ -526,8 +576,22 @@ class CsrField < ArchDefObject
       else
         symtab = arch_def.sym_table.deep_clone
         symtab.push
-        pruned_reset_value_ast(arch_def).return_value(symtab)
+        val = pruned_reset_value_ast(arch_def).return_value(symtab)
+        val = "UNDEFINED_LEGAL" if val == 0x1_0000_0000_0000_0000
+        val
       end
+  end
+
+  def reset_value_pretty(arch_def)
+    if arch_def.is_a?(ImplArchDef)
+      reset_value(arch_def)
+    else
+      if @data.key?("reset_value")
+        @data["reset_value"]
+      else
+        @data["reset_value()"]
+      end
+    end
   end
 
   # @return [Boolean] true if the CSR field has a custom sw_write function
@@ -667,6 +731,9 @@ class CsrField < ArchDefObject
   # @return [Boolean] Whether or not this field only exists when XLEN == 32
   def base32_only? = @data.key?("base") && @data["base"] == 32
 
+  def defined_in_base32? = @data["base"].nil? || @data["base"] == 32
+  def defined_in_base64? = @data["base"].nil? || @data["base"] == 64
+
   # @return [Boolean] Whether or not this field exists for any XLEN
   def defined_in_all_bases? = @data["base"].nil?
 
@@ -700,7 +767,11 @@ class CsrField < ArchDefObject
         #{derangeify.call(location(arch_def, 64))} when #{condition.sub('%%', '1')}
       LOC
     else
-      derangeify.call(location(arch_def, arch_def.param_values["XLEN"]))
+      if arch_def.is_a?(ImplArchDef)
+        derangeify.call(location(arch_def, arch_def.param_values["XLEN"]))
+      else
+        derangeify.call(location(arch_def, nil))
+      end
     end
   end
 
@@ -773,11 +844,28 @@ class Csr < ArchDefObject
     @data["priv_mode"]
   end
 
+  def long_name
+    @data["long_name"]
+  end
+
   # @return [Integer] CSR address in VS/VU mode, if different from other modes
   # @return [nil] If the CSR is not accessible in VS/VU mode, or if it's address does not change in those modes
   def virtual_address
     @data["virtual_address"]
   end
+
+  # @return [Integer] 32 or 64, the XLEN this CSR is exclusively defined in
+  # @return [nil] if this CSR is defined in all bases
+  def base = @data["base"]
+
+  # @return [Boolean] true if this CSR is defined when XLEN is 32
+  def defined_in_base32? = @data["base"].nil? || @data["base"] == 32
+
+  # @return [Boolean] true if this CSR is defined when XLEN is 64
+  def defined_in_base64? = @data["base"].nil? || @data["base"] == 64
+
+  # @return [Boolean] true if this CSR is defined regardless of the effective XLEN
+  def defined_in_all_bases? = @data["base"].nil?
 
   # @param arch_def [ArchDef] A configuration
   # @return [Boolean] Whether or not the format of this CSR changes when the effective XLEN changes in some mode
@@ -791,6 +879,8 @@ class Csr < ArchDefObject
   # @param arch_def [ImplArchDef] A configuration
   # @return [Array<Idl::FunctionDefAst>] List of functions reachable from this CSR's sw_read or a field's sw_wirte function
   def reachable_functions(arch_def)
+    return @reachable_functions unless @reachable_functions.nil?
+
     fns = []
 
     if has_custom_sw_read?
@@ -813,7 +903,26 @@ class Csr < ArchDefObject
       end
     end
 
-    fns.uniq
+    @reachable_functions = fns.uniq
+  end
+
+  # @param arch_def [ArchDef] Architecture definition
+  # @return [Array<Idl::FunctionDefAst>] List of functions reachable from this CSR's sw_read or a field's sw_wirte function, irrespective of context
+  def reachable_functions_unevaluated(arch_def)
+    return @reachable_functions_unevaluated unless @reachable_functions_unevaluated.nil?
+
+    fns = []
+
+    if has_custom_sw_read?
+      ast = sw_read_ast(arch_def.idl_compiler)
+      fns.concat(ast.reachable_functions_unevaluated(arch_def))
+    end
+
+    fields.each do |field|
+      fns.concat(field.reachable_functions_unevaluated(arch_def))
+    end
+
+    @reachable_functions_unevaluated = fns.uniq
   end
 
   # @param arch_def [ArchDef] A configuration
@@ -824,15 +933,45 @@ class Csr < ArchDefObject
 
     case @data["length"]
     when "MXLEN"
-      false # mxlen can never change
+      if arch_def.is_a?(ImplArchDef)
+        false # mxlen can never change
+      else
+        if @data["base"].nil?
+          # don't know MXLEN
+          true
+        else
+          # mxlen is always "base"
+          false
+        end
+      end
     when "SXLEN"
-      arch_def.param_values["SXLEN"] == 3264
+      if arch_def.is_a?(ImplArchDef)
+        arch_def.param_values["SXLEN"] == 3264
+      else
+        if @data["base"].nil?
+          # don't know SXLEN
+          true
+        else
+          # sxlen is always "base"
+          false
+        end
+      end
     when "VSXLEN"
-      arch_def.param_values["VSXLEN"] == 3264
+      if arch_def.is_a?(ImplArchDef)
+        arch_def.param_values["VSXLEN"] == 3264
+      else
+        if @data["base"].nil?
+          # don't know VSXLEN
+          true
+        else
+          # vsxlen is always "base"
+          false
+        end
+      end
     else
       raise "Unexpected length"
     end
-    !@data["length"].is_a?(Integer) && (@data["length"] != "MXLEN")
+    # !@data["length"].is_a?(Integer) && (@data["length"] != "MXLEN")
   end
 
   # @param arch_def [ArchDef] A configuration (can be nil if the lenth is not dependent on a config parameter)
@@ -841,27 +980,60 @@ class Csr < ArchDefObject
   def length(arch_def, effective_xlen = nil)
     case @data["length"]
     when "MXLEN"
-      arch_def.param_values["XLEN"]
-    when "SXLEN"
-      if arch_def.param_values["SXLEN"] == 3264
-        raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
-
-        effective_xlen
+      if arch_def.is_a?(ImplArchDef)
+        arch_def.param_values["XLEN"]
       else
-        raise "CSR #{name} is not implemented" if arch_def.implemented_csrs.none? { |c| c.name == name }
-        raise "CSR #{name} is not implemented" if arch_def.param_values["SXLEN"].nil?
+        if @data["base"].nil?
+          @data["base"]
+        else
+          # don't know MXLEN
+          raise ArgumentError, "effective_xlen is required when length is MXLEN and arch_def is generic" if effective_xlen.nil?
 
-        arch_def.param_values["SXLEN"]
+          effective_xlen
+        end
+      end
+    when "SXLEN"
+      if arch_def.is_a?(ImplArchDef)
+        if arch_def.param_values["SXLEN"] == 3264
+          raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
+
+          effective_xlen
+        else
+          raise "CSR #{name} is not implemented" if arch_def.implemented_csrs.none? { |c| c.name == name }
+          raise "CSR #{name} is not implemented" if arch_def.param_values["SXLEN"].nil?
+
+          arch_def.param_values["SXLEN"]
+        end
+      else
+        if @data["base"].nil?
+          @data["base"]
+        else
+          # don't know SXLEN
+          raise ArgumentError, "effective_xlen is required when length is SXLEN and arch_def is generic" if effective_xlen.nil?
+
+          effective_xlen
+        end
       end
     when "VSXLEN"
-      if arch_def.param_values["VSXLEN"] == 3264
-        raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
+      if arch_def.is_a?(ImplArchDef)
+        if arch_def.param_values["VSXLEN"] == 3264
+          raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
 
-        effective_xlen
+          effective_xlen
+        else
+          raise "CSR #{name} is not implemented" if arch_def.param_values["VSXLEN"].nil?
+
+          arch_def.param_values["VSXLEN"]
+        end
       else
-        raise "CSR #{name} is not implemented" if arch_def.param_values["VSXLEN"].nil?
+        if @data["base"].nil?
+          @data["base"]
+        else
+          # don't know VSXLEN
+          raise ArgumentError, "effective_xlen is required when length is VSXLEN and arch_def is generic" if effective_xlen.nil?
 
-        arch_def.param_values["VSXLEN"]
+          effective_xlen
+        end
       end
     when Integer
       @data["length"]
@@ -1153,7 +1325,12 @@ class Csr < ArchDefObject
       "reg" => []
     }
     last_idx = -1
-    field_list = implemented_fields_for(arch_def, effective_xlen)
+    field_list =
+      if arch_def.is_a?(ImplArchDef)
+        implemented_fields_for(arch_def, effective_xlen)
+      else
+        fields
+      end
     field_list.each do |field|
 
       if field.location(arch_def, effective_xlen).min != last_idx + 1
@@ -1202,6 +1379,12 @@ class Instruction < ArchDefObject
     @data["base"]
   end
 
+  # @param xlen [Integer] 32 or 64, the target xlen
+  # @return [Boolean] whethen or not instruction is defined in base +xlen+
+  def defined_in_base?(xlen)
+    base == xlen
+  end
+
   # @return [String] Assembly format
   def assembly
     @data["assembly"]
@@ -1210,7 +1393,7 @@ class Instruction < ArchDefObject
   # @return [Array<ExtensionRequirement>] List of extensions requirements (in addition to one returned by {#defined_by}) that must be met for the instruction to exist
   def extension_requirements
     return [] unless @data.key?("requires")
-    
+
     @extension_requirements = []
     if @data["requires"].is_a?(Array)
       # could be either a single extension with requirement, or a list of requirements
@@ -1220,7 +1403,7 @@ class Instruction < ArchDefObject
         # this is a list
         @data["requires"].each do |r|
           @extension_requirements << to_extension_requirement(r)
-      end
+        end
       end
     else
       @extension_requirements << to_extension_requirement(@data["requires"])
@@ -1922,6 +2105,29 @@ class Extension < ArchDefObject
     @data["versions"]
   end
 
+  # @return [Array<Hash>] Ratified versions hash from config
+  def ratified_versions
+    @data["versions"].select { |v| v["state"] == "ratified" }
+  end
+
+  # @return [String] Mimumum defined version of this extension
+  def min_version
+    versions.map { |v| Gem::Version.new(v["version"]) }.min
+  end
+
+  # @return [String] Maximum defined version of this extension
+  def max_version
+    versions.map { |v| Gem::Version.new(v["version"]) }.max
+  end
+
+  # @return [String] Mimumum defined ratified version of this extension
+  # @return [nil] if there is no ratified version
+  def min_ratified_version
+    return nil if ratified_versions.empty?
+
+    ratified_versions.map { |v| Gem::Version.new(v["version"]) }.min
+  end
+
   # @return [Array<ExtensionParameter>] List of parameters added by this extension
   def params
     return @params unless @params.nil?
@@ -1969,9 +2175,59 @@ class Extension < ArchDefObject
     implications
   end
 
-  # returns the list of instructions implemented by this extension
+  # @return [Array<Instruction>] the list of instructions implemented by this extension (may be empty)
   def instructions
-    arch_def.instructions.select { |i| i.definedBy == name || (i.definedBy.is_a?(Array) && i.definedBy.include?(name)) }
+    return @instructions unless @instructions.nil?
+
+    @instructions = arch_def.instructions.select { |i| i.definedBy == name || (i.definedBy.is_a?(Array) && i.definedBy.include?(name)) }
+  end
+
+  # @return [Array<Csr>] the list of CSRs implemented by this extension (may be empty)
+  def csrs
+    return @csrs unless @csrs.nil?
+
+    @csrs = arch_def.csrs.select { |csr| csr.defined_by?(ExtensionVersion.new(name, max_version)) }
+  end
+
+  # return the set of reachable functions from any of this extensions's CSRs or instructions in the given evaluation context
+  #
+  # @param symtab [Idl::SymbolTable] The evaluation context
+  # @return [Array<Idl::FunctionDefAst>] Array of IDL functions reachable from any instruction or CSR in the extension
+  def reachable_functions(symtab)
+    @reachable_functions ||= {}
+
+    return @reachable_functions[symtab] unless @reachable_functions[symtab].nil?
+
+    funcs = []
+
+    puts "Finding all reachable functions from extension #{name}"
+
+    instructions.each do |inst|
+      funcs += inst.reachable_functions(symtab, 32) if inst.defined_in_base?(32)
+      funcs += inst.reachable_functions(symtab, 64) if inst.defined_in_base?(64)
+    end
+
+    csrs.each do |csr|
+      funcs += csr.reachable_functions(arch_def)
+    end
+
+    @reachable_functions[symtab] = funcs.uniq
+  end
+
+  # @return [Array<Idl::FunctionDefAst>] Array of IDL functions reachable from any instruction or CSR in the extension, irrespective of a specific evaluation context
+  def reachable_functions_unevaluated
+    return @reachable_functions_unevaluated unless @reachable_functions_unevaluated.nil?
+
+    funcs = []
+    instructions.each do |inst|
+      funcs += inst.operation_ast(arch_def.idl_compiler).reachable_functions_unevaluated(arch_def)
+    end
+
+    csrs.each do |csr|
+      funcs += csr.reachable_functions_unevaluated(arch_def)
+    end
+
+    @reachable_functions_unevaluated = funcs.uniq(&:name)
   end
 end
 
@@ -2042,6 +2298,10 @@ class ExtensionRequirement
   # @return [Gem::Requirement] Version requirement
   def version_requirement
     @requirement
+  end
+
+  def to_s
+    "#{name} #{@requirement}"
   end
 
   # @param name [#to_s] Extension name
@@ -2200,6 +2460,32 @@ class ArchDef
     instruction_hash[inst_name.to_s]
   end
 
+  # @return [Array<Idl::FunctionBodyAst>] List of all functions defined by the architecture
+  def functions
+    return @functions unless @functions.nil?
+
+    @functions = @global_ast.functions
+  end
+
+  # @return [Hash<String,FunctionBodyAst>] Function hash of name => FunctionBodyAst
+  def function_hash
+    return @function_hash unless @function_hash.nil?
+
+    @function_hash = {}
+    functions.each do |func|
+      @function_hash[func.name] = func
+    end
+
+    @function_hash
+  end
+
+  # @param name [String] A function name
+  # @return [Idl::FunctionBodyAst] A function named +name+
+  # @return [nil] if no function named +name+ is found
+  def function(name)
+    function_hash[name]
+  end
+
   # given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`
   # and replace them with links to the relevant object page
   #
@@ -2214,7 +2500,7 @@ class ArchDef
         "%%LINK%csr_field;#{csr_name}.#{field_name};#{csr_name}.#{field_name}%%"
       elsif !csr.nil?
         "%%LINK%csr;#{csr_name};#{csr_name}%%"
-      elsif inst(name.downcase)
+      elsif inst(name)
         "%%LINK%inst;#{name};#{name}%%"
       elsif extension(name)
         "%%LINK%ext;#{name};#{name}%%"
@@ -2248,7 +2534,7 @@ class ExceptionCode
   end
 end
 
-# all the same informatin as ExceptinCOde, but for interrupts
+# all the same informatin as ExceptinCode, but for interrupts
 InterruptCode = Class.new(ExceptionCode)
 
 # Object model for a configured architecture definition
@@ -2379,8 +2665,10 @@ class ImplArchDef < ArchDef
     @sym_table = Idl::SymbolTable.new(self)
 
     # load the globals into the symbol table
+    custom_globals_path = $root / "cfgs" / @name / "arch_overlay" / "isa" / "globals.isa"
+    idl_path = File.exist?(custom_globals_path) ? custom_globals_path : $root / "arch" / "isa" / "globals.isa"
     @global_ast = @idl_compiler.compile_file(
-      $root / "arch" / "isa" / "globals.isa",
+      idl_path,
       symtab: @sym_table
     )
 
