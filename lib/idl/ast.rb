@@ -5112,32 +5112,53 @@ module Idl
     def to_idl = "#{csr.to_idl}.sw_write(#{expression.to_idl})"
   end
 
-  class CsrSoftwareReadSyntaxNode < Treetop::Runtime::SyntaxNode
+  # @api private
+  class CsrFunctionCallSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
-      CsrSoftwareReadAst.new(input, interval, csr.to_ast)
+      CsrFunctionCallAst.new(input, interval, function_name.text_value, csr.to_ast)
     end
   end
 
-  class CsrSoftwareReadAst < AstNode
+  # represents a function call for a CSR register
+  # for example:
+  #
+  #   CSR[mstatus].address()
+  #   CSR[mtval].sw_read()
+  class CsrFunctionCallAst < AstNode
     include Rvalue
+
+    # @return [String] The function being called
+    attr_reader :function_name
 
     def csr = @children[0]
 
-    def initialize(input, interval, csr)
+    def initialize(input, interval, function_name, csr)
       super(input, interval, [csr])
+      @function_name = function_name
     end
 
     def type_check(symtab)
+      unless ["sw_read", "address"].include?(function_name)
+        type_error "'#{function_name}' is not a supported CSR function call"
+      end
+
       csr.type_check(symtab)
     end
 
     def type(symtab)
       archdef = symtab.archdef
 
-      if csr_known?(symtab)
-        Type.new(:bits, width: archdef.csr(csr.csr_name(symtab)).length)
+      case function_name
+      when "sw_read"
+        if csr_known?(symtab)
+          Type.new(:bits, width: archdef.csr(csr.csr_name(symtab)).length)
+        else
+          Type.new(:bits, width: archdef.param_values["XLEN"])
+        end
+      when "address"
+        Type.new(:bits, width: 12)
       else
-        Type.new(:bits, width: archdef.param_values["XLEN"])
+        internal_error "No function '#{function_name}' for CSR. call type check first!"
       end
     end
 
@@ -5155,15 +5176,24 @@ module Idl
 
     # @todo check the sw_read function body
     def value(symtab)
-      value_error "CSR not knowable" unless csr_known?(symtab)
-      cd = csr_def(symtab)
-      cd.fields.each { |f| value_error "#{csr_name}.#{f.name} not RO" unless f.type == "RO" }
+      case function_name
+      when "sw_read"
+        value_error "CSR not knowable" unless csr_known?(symtab)
+        cd = csr_def(symtab)
+        cd.fields.each { |f| value_error "#{csr_name}.#{f.name} not RO" unless f.type == "RO" }
 
-      value_error "TODO: CSRs with sw_read function"
+        value_error "TODO: CSRs with sw_read function"
+      when "address"
+        value_error "CSR not knowable" unless csr_known?(symtab)
+        cd = csr_def(symtab)
+        cd.address
+      else
+        internal_error "TODO: #{function_name}"
+      end
     end
 
     # @!macro to_idl
-    def to_idl = "#{csr.to_idl}.sw_read()"
+    def to_idl = "#{csr.to_idl}.#{function_call}()"
   end
 
   class CsrWriteSyntaxNode < Treetop::Runtime::SyntaxNode

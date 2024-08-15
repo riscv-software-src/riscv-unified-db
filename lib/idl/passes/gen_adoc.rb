@@ -65,9 +65,9 @@ module Idl
       "#{' '*indent}(#{variables.map { |v| v.gen_adoc(0, indent_spaces: )}.join(', ')} = #{function_call.gen_adoc(0, indent_spaces:)})"
     end
   end
-  class CsrSoftwareReadAst
+  class CsrFunctionCallAst
     def gen_adoc(indent, indent_spaces: 2)
-      "#{' '*indent}#{csr.gen_adoc(indent, indent_spaces:)}.sw_read()"
+      "#{' '*indent}#{csr.gen_adoc(indent, indent_spaces:)}.#{function_name}()"
     end
   end
   class CsrSoftwareWriteAst
@@ -133,7 +133,7 @@ module Idl
   end
   class SignCastAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      "#{' '*indent}$signed+(+#{expression.gen_adoc(0, indent_spaces:)})"
+      "#{' '*indent}$signed+++(+++#{expression.gen_adoc(0, indent_spaces:)})"
     end
   end
   class AryRangeAccessAst

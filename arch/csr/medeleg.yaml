@@ -48,7 +48,7 @@ medeleg:
         The handling mode is determined as follows:
 
         <%- if ext?(:H) -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.IAM`# .2+! [.rotate]#`hedeleg.IAM`# 4+^.>! Current Mode
         .>h! `M-mode` .>h! `HS-mode` .>h! `VS-mode` .>h! `VU-mode`
@@ -59,7 +59,7 @@ medeleg:
         ! 1 ! 1 ! M ! HS ! VS ! VS
         !===
         <%- else -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.IAM`# 2+^.>! Current Mode
         .>h! `M-mode` .>h! `S-mode`
@@ -85,7 +85,7 @@ medeleg:
         The handling mode is determined as follows:
 
         <%- if ext?(:H) -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.IAF`# .2+! [.rotate]#`hedeleg.IAF`# 4+^.>! Current Mode
         .>h! `M-mode` .>h! `HS-mode` .>h! `VS-mode` .>h! `VU-mode`
@@ -96,7 +96,7 @@ medeleg:
         ! 1 ! 1 ! M ! HS ! VS ! VS
         !===
         <%- else -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.IAF`# 2+^.>! Current Mode
         .>h! `M-mode` .>h! `S-mode`
@@ -123,7 +123,7 @@ medeleg:
         The handling mode is determined as follows:
 
         <%- if ext?(:H) -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.II`# .2+! [.rotate]#`hedeleg.II`# 4+^.>! Current Mode
         .>h! `M-mode` .>h! `HS-mode` .>h! `VS-mode` .>h! `VU-mode`
@@ -134,7 +134,7 @@ medeleg:
         ! 1 ! 1 ! M ! HS ! VS ! VS
         !===
         <%- else -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.II`# 2+^.>! Current Mode
         .>h! `M-mode` .>h! `S-mode`
@@ -160,7 +160,7 @@ medeleg:
         The handling mode is determined as follows:
 
         <%- if ext?(:H) -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.B`# .2+! [.rotate]#`hedeleg.B`# 4+^.>! Current Mode
         .>h! `M-mode` .>h! `HS-mode` .>h! `VS-mode` .>h! `VU-mode`
@@ -171,7 +171,7 @@ medeleg:
         ! 1 ! 1 ! M ! HS ! VS ! VS
         !===
         <%- else -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.B`# 2+^.>! Current Mode
         .>h! `M-mode` .>h! `S-mode`
@@ -202,7 +202,7 @@ medeleg:
         The handling mode is determined as follows:
 
         <%- if ext?(:H) -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.LAM`# .2+! [.rotate]#`hedeleg.LAM`# 4+^.>! Current Mode
         .>h! `M-mode` .>h! `HS-mode` .>h! `VS-mode` .>h! `VU-mode`
@@ -213,7 +213,7 @@ medeleg:
         ! 1 ! 1 ! M ! HS ! VS ! VS
         !===
         <%- else -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.LAM`# 2+^.>! Current Mode
         .>h! `M-mode` .>h! `S-mode`
@@ -240,7 +240,7 @@ medeleg:
         The handling mode is determined as follows:
 
         <%- if ext?(:H) -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.LAF`# .2+! [.rotate]#`hedeleg.LAF`# 4+^.>! Current Mode
         .>h! `M-mode` .>h! `HS-mode` .>h! `VS-mode` .>h! `VU-mode`
@@ -251,7 +251,7 @@ medeleg:
         ! 1 ! 1 ! M ! HS ! VS ! VS
         !===
         <%- else -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.LAF`# 2+^.>! Current Mode
         .>h! `M-mode` .>h! `S-mode`
@@ -283,7 +283,7 @@ medeleg:
         The handling mode is determined as follows:
 
         <%- if ext?(:H) -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.SAM`# .2+! [.rotate]#`hedeleg.SAM`# 4+^.>! Current Mode
         .>h! `M-mode` .>h! `HS-mode` .>h! `VS-mode` .>h! `VU-mode`
@@ -294,7 +294,7 @@ medeleg:
         ! 1 ! 1 ! M ! HS ! VS ! VS
         !===
         <%- else -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.SAM`# 2+^.>! Current Mode
         .>h! `M-mode` .>h! `S-mode`
@@ -321,7 +321,7 @@ medeleg:
         The handling mode is determined as follows:
 
         <%- if ext?(:H) -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.SAF`# .2+! [.rotate]#`hedeleg.SAF`# 4+^.>! Current Mode
         .>h! `M-mode` .>h! `HS-mode` .>h! `VS-mode` .>h! `VU-mode`
@@ -332,7 +332,7 @@ medeleg:
         ! 1 ! 1 ! M ! HS ! VS ! VS
         !===
         <%- else -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.SAF`# 2+^.>! Current Mode
         .>h! `M-mode` .>h! `S-mode`
@@ -358,7 +358,7 @@ medeleg:
         The handling mode is determined as follows:
 
         <%- if ext?(:H) -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.EU`# .2+! [.rotate]#`hedeleg.EU`# 4+^.>! Current Mode
         .>h! `M-mode` .>h! `HS-mode` .>h! `VS-mode` .>h! `VU-mode`
@@ -369,7 +369,7 @@ medeleg:
         ! 1 ! 1 ! M ! HS ! VS ! VS
         !===
         <%- else -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.EU`# 2+^.>! Current Mode
         .>h! `M-mode` .>h! `S-mode`
@@ -395,7 +395,7 @@ medeleg:
 
         The handling mode is determined as follows:
 
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.ES`# 2+^.>! Current Mode
         .>h! `M-mode` .>h! `(H)S-mode`
@@ -419,7 +419,7 @@ medeleg:
 
         The handling mode is determined as follows:
 
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.EVS`# 2+^.>! Current Mode
         .>h! `M-mode` .>h! `(H)S-mode`
@@ -455,7 +455,7 @@ medeleg:
         The handling mode is determined as follows:
 
         <%- if ext?(:H) -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.IPF`# .2+! [.rotate]#`hedeleg.IPF`# 4+^.>! Current Mode
         .>h! `M-mode` .>h! `HS-mode` .>h! `VS-mode` .>h! `VU-mode`
@@ -466,7 +466,7 @@ medeleg:
         ! 1 ! 1 ! M ! HS ! VS ! VS
         !===
         <%- else -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.IPF`# 2+^.>! Current Mode
         .>h! `M-mode` .>h! `S-mode`
@@ -492,7 +492,7 @@ medeleg:
         The handling mode is determined as follows:
 
         <%- if ext?(:H) -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.LPF`# .2+! [.rotate]#`hedeleg.LPF`# 4+^.>! Current Mode
         .>h! `M-mode` .>h! `HS-mode` .>h! `VS-mode` .>h! `VU-mode`
@@ -503,7 +503,7 @@ medeleg:
         ! 1 ! 1 ! M ! HS ! VS ! VS
         !===
         <%- else -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.LPF`# 2+^.>! Current Mode
         .>h! `M-mode` .>h! `S-mode`
@@ -530,7 +530,7 @@ medeleg:
         The handling mode is determined as follows:
 
         <%- if ext?(:H) -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.SPF`# .2+! [.rotate]#`hedeleg.SPF`# 4+^.>! Current Mode
         .>h! `M-mode` .>h! `HS-mode` .>h! `VS-mode` .>h! `VU-mode`
@@ -541,7 +541,7 @@ medeleg:
         ! 1 ! 1 ! M ! HS ! VS ! VS
         !===
         <%- else -%>
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.LPF`# 2+^.>! Current Mode
         .>h! `M-mode` .>h! `S-mode`
@@ -566,7 +566,7 @@ medeleg:
 
         The handling mode is determined as follows:
 
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.IGPF`# 2+^.>! Current Mode
         .>h! `M-mode` .>h! `(H)S-mode`
@@ -591,7 +591,7 @@ medeleg:
 
         The handling mode is determined as follows:
 
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.LGPF`# 2+^.>! Current Mode
         .>h! `M-mode` .>h! `(H)S-mode`
@@ -617,7 +617,7 @@ medeleg:
 
         The handling mode is determined as follows:
 
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.VI`# 2+^.>! Current Mode
         .>h! `M-mode` .>h! `(H)S-mode`
@@ -643,7 +643,7 @@ medeleg:
 
         The handling mode is determined as follows:
 
-        [%autowidth, %footer]
+        [separator="!",%autowidth, %footer]
         !===
         .2+! [.rotate]#`medeleg.SGPF`# 2+^.>! Current Mode
         .>h! `M-mode` .>h! `(H)S-mode`

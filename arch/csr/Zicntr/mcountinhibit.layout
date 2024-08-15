@@ -57,7 +57,7 @@ mcountinhibit:
     HPM<%= hpm_num %>:
       location: <%= hpm_num %>
       description: |
-        <%%- if NUM_HPM_COUNTERS > <%= hpm_num - 3%> -%>
+        <%%- if COUNTINHIBIT_EN[<%= hpm_num %>] -%>
         When set, `hpmcounter<%= hpm_num %>.COUNT` stops counting in all privilege modes.
         <%%- else -%>
         Since hpmcounter<%= hpm_num %> is not implemented, this field is read-only zero.

@@ -14,10 +14,11 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <%- if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <%- end -%>
+h| Defining extension | <%= csr.defined_by.map(&:to_s).join(", ") %>
 <%- if csr.dynamic_length?(arch_def) -%>
 h| Length         | <%= csr.length_pretty(arch_def) %>
 <%- else -%>
-h| Length         | <%= csr.length_pretty(arch_def) %>-bit
+h| Length         | <%= csr.length_pretty(arch_def) %>
 <%- end -%>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===
@@ -57,7 +58,7 @@ This CSR format changes dynamically.
 |Name | Location | Type | Reset Value
 
 <%- csr.implemented_fields(arch_def).each do |field| -%>
-| xref:<%=csr.name%>-<%=field.name%>-def[`<%= field.name %>`]
+| `xref:<%=csr.name%>-<%=field.name%>-def[<%= field.name %>]`
 | <%= field.location_pretty(arch_def) %>
 | <%= field.type(arch_def) %>
 | <%= field.reset_value(arch_def) %>
@@ -75,13 +76,13 @@ This CSR has no fields. However, it must still exist (not cause an `Illegal Inst
 [[<%=csr.name%>-<%=field.name%>-def]]
 === `<%= field.name %>`
 
-[example]
-****
+[.csr-field-info]
+--
 Location::
-<%= field.location_pretty(arch_def) %>
+`<%=field.csr.name%>[<%= field.location_pretty(arch_def) %>]`
 
 Description::
-<%= field.description %>
+<%= arch_def.render_erb(field.description).gsub("\n\n", "\n+\n") %>
 
 Type::
 [%autowidth]
@@ -93,29 +94,40 @@ Type::
 Reset value::
 <%= field.reset_value(arch_def) %>
 
-****
-
-<%- end -%>
-<%- end -%>
-
-<%- if csr.fields.map(&:has_custom_sw_write?).any? -%>
-== Software write
-
-This CSR may store a value that is different from what software attempts to write.
-
-When a software write occurs (_e.g._, through `csrrw`), the following determines the
-written value:
-
-[idl]
-----
-<%- csr.fields.each do |field| -%>
 <%- if field.has_custom_sw_write? -%>
-<%= field.name %> = <%= field["sw_write(csr_value)"] %>
-<%- else -%>
-<%= field.name %> = csr_value.<%= field.name %>
-<%- end -%>
-<%- end -%>
+Softare write::
+This field has special behavior when written by software (_e.g._, through `csrrw`).
++
+When software tries to write `csr_value`, the field will be written with the return value of the function below.
++
+<%- if arch_def.multi_xlen? && csr.defined_in_all_bases? && field.defined_in_all_bases? -%>
+[tabs]
+====
+RV32::
++
+[source,idl,subs="specialchars,macros"]
 ----
+<%= field.pruned_sw_write_ast(arch_def, 32).gen_adoc %>
+----
+
+RV64::
++
+[source,idl,subs="specialchars,macros"]
+----
+<%= field.pruned_sw_write_ast(arch_def, 64).gen_adoc %>
+----
+<%- else -%>
+<%- xlen = !arch_def.multi_xlen? ? arch_def.mxlen : (!csr.defined_in_all_bases? ? csr.base : field.base) -%>
+[source,idl,subs="specialchars,macros"]
+----
+<%= field.pruned_sw_write_ast(arch_def, xlen).gen_adoc %>
+----
+<%- end -%>
+<%- end -%>
+
+--
+
+<%- end -%>
 <%- end -%>
 
 <%- if csr.has_custom_sw_read? -%>

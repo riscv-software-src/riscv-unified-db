@@ -22,7 +22,7 @@ senvcfg:
           * `1`: The instruction is executed
 
         To summarize access:
-        [%autowidth]
+        [separator="!",%autowidth]
         !===
         ! `menvcfg.CBZE` ! `senvcfg.CBZE` behavior
 
@@ -53,7 +53,7 @@ senvcfg:
           * `1`: The instruction is executed
 
         To summarize access:
-        [%autowidth]
+        [separator="!",%autowidth]
         !===
         ! `menvcfg.CBCFE` ! `senvcfg.CBCFE` behavior
 
@@ -75,7 +75,7 @@ senvcfg:
         This field has restricted values based on the value of `menvcfg.CBIE`.
         When an invalid value is written, it is ignored and the field remains unchanged.
 
-        [%autowidth,cols=",.>"]
+        [separator="!",%autowidth,cols=",.>"]
         !===
         ! [.rotate]#`menvcfg.CBIE`# ! Valid values of `senvcfg.CBIE`
 
@@ -115,7 +115,7 @@ senvcfg:
         FENCE instructions ordering I/O regions also implicitly order memory regions when executed
         in U-mode as follows:
 
-        [%autowidth,float="center",align="center",cols="^,<",options="header"]
+        [separator="!",%autowidth,float="center",align="center",cols="^,<",options="header"]
         !===
         !Instruction bit !Meaning when set
         !PI +

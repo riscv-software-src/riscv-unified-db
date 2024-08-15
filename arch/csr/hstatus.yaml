@@ -22,6 +22,7 @@ hstatus:
 
         Determines the effective XLEN in VS-mode. Valid values are:
 
+        [separator="!"]
         !===
         ! Value ! VSXLEN
 
@@ -87,7 +88,7 @@ hstatus:
 
         The `wfi` instruction is also affected by `mstatus.TW`, as shown below:
 
-        [%autowidth,%footer]
+        [separator="!",%autowidth,%footer]
         !===
         .2+! [.rotate]#`mstatus.TW`# .2+! [.rotate]#`hstatus.VTW`# 4+^.>! `wfi` behavior
         h! HS-mode h! U-mode h! VS-mode h! VU-mode

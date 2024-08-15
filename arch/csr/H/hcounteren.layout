@@ -21,19 +21,73 @@ hcounteren:
         When `mcounteren.CY` and `hcounteren.CY` are set,
         the `cycle` CSR (an alias of `mcycle`) is accessible to VS-mode.
 
-        This bit is read-only 0 when `mcounteren.CY` is clear.
+        When `hcounteren.CY` is clear and `mcounteren.CY` is set, then any access to `cycle` in
+        VU-mode or VS-mode causes a VirtualInstruction execption.
 
         Summary:
 
+        [separator="!",cols="1,1,1,4,4"]
         !===
-        ! `mcounteren.CY` ! `hcounteren.CY` behavior
+        .2+h! [.rotate]#`hcounteren.CY`# .2+h! [.rotate]#`mcounteren.CY`# .2+h! [.rotate]#`scounteren.CY`# 2+^.>! `cycle` access behavior
+        .>h! VS-mode .>h! VU-mode
 
-        ! 0 ! read-only 0
-        ! 1 ! writeable
+        ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+        ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+        ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+        ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+        ! 1 ! 1 ! 1 ! allowed              ! allowed
         !===
       definedBy: Zicntr
-      type: RW-H
-      reset_value: UNDEFINED_LEGAL
+      type(): |
+        if (HCOUNTENABLE_EN[0]) {
+          return CsrFieldType::RW;
+        } else {
+          return CsrFieldType::RO;
+        }
+      reset_value(): |
+        if (HCOUNTENABLE_EN[0]) {
+          return UNDEFINED_LEGAL;
+        } else {
+          return 0;
+        }
+    TM:
+      location: 1
+      description: |
+        When all of `scounteren.TM`, `mcounteren.TM`, and `hcounteren.TM` are set,
+        the `time` CSR (an alias of `mtime` memory-mapped CSR) is accessible to VU-mode.
+
+        When `mcounteren.TM` and `hcounteren.TM` are set,
+        the `time` CSR (an alias of `mtime`) is accessible to VS-mode.
+
+        When `hcounteren.TM` is clear and `mcounteren.TM` is set, then any access to `time` in
+        VU-mode or VS-mode causes a VirtualInstruction execption.
+
+        Summary:
+
+        [separator="!",%autowidth]
+        !===
+        .2+h! [.rotate]#`hcounteren.TM`# .2+h! [.rotate]#`mcounteren.TM`# .2+h! [.rotate]#`scounteren.TM`# 2+^.>! `cycle` access behavior
+        .>h! VS-mode .>h! VU-mode
+
+        ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+        ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+        ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+        ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+        ! 1 ! 1 ! 1 ! allowed              ! allowed
+        !===
+      definedBy: Zicntr
+      type(): |
+        if (HCOUNTENABLE_EN[1]) {
+          return CsrFieldType::RW;
+        } else {
+          return CsrFieldType::RO;
+        }
+      reset_value(): |
+        if (HCOUNTENABLE_EN[1]) {
+          return UNDEFINED_LEGAL;
+        } else {
+          return 0;
+        }
     IR:
       location: 2
       description: |
@@ -43,20 +97,34 @@ hcounteren:
         When `mcounteren.IR` and `hcounteren.IR` are set,
         the `instret` CSR (an alias of `minstret`) is accessible to VS-mode.
 
-        This bit is read-only 0 when `mcounteren.IR` is clear.
+        When `hcounteren.IR` is clear and `mcounteren.IR` is set, then any access to `instret` in
+        VU-mode or VS-mode causes a VirtualInstruction execption.
 
         Summary:
 
+        [separator="!",%autowidth]
         !===
-        ! `mcounteren.IR` ! `hcounteren.IR` behavior
+        .2+h! [.rotate]#`hcounteren.IR`# .2+h! [.rotate]#`mcounteren.IR`# .2+h! [.rotate]#`scounteren.IR`# 2+^.>! `cycle` access behavior
+        .>h! VS-mode .>h! VU-mode
 
-        ! 0 ! read-only 0
-        ! 1 ! writeable
+        ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+        ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+        ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+        ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+        ! 1 ! 1 ! 1 ! allowed              ! allowed
         !===
-
-
-      type: RW-H
-      reset_value: UNDEFINED_LEGAL
+      type(): |
+        if (HCOUNTENABLE_EN[2]) {
+          return CsrFieldType::RW;
+        } else {
+          return CsrFieldType::RO;
+        }
+      reset_value(): |
+        if (HCOUNTENABLE_EN[2]) {
+          return UNDEFINED_LEGAL;
+        } else {
+          return 0;
+        }
     <%- (3..31).each do |hpm_num| -%>
     HPM<%= hpm_num %>:
       location: <%= hpm_num %>
@@ -67,25 +135,32 @@ hcounteren:
         When `mcounteren.HPM<%= hpm_num %>` and `hcounteren.HPM<%= hpm_num %>` are set,
         the `hpmcounter<%= hpm_num %>` CSR (an alias of `mhpmconuter<%= hpm_num %>`) is accessible to VS-mode.
 
-        This bit is read-only 0 when `mcounteren.HPM<%= hpm_num %>` is clear.
+        When `hcounteren.HPM<%= hpm_num %>` is clear and `mcounteren.HPM<%= hpm_num %>` is set, then any access to `hpmcounter<%= hpm_num %>` in
+        VU-mode or VS-mode causes a VirtualInstruction execption.
 
         Summary:
 
+        [separator="!",%autowidth]
         !===
-        ! `mcounteren.HPM<%= hpm_num %>` ! `hcounteren.HPM<%= hpm_num %>` behavior
+        .2+h! [.rotate]#`hcounteren.HPM<%= hpm_num %>`# .2+h! [.rotate]#`mcounteren.HPM<%= hpm_num %>`# .2+h! [.rotate]#`scounteren.HPM<%= hpm_num %>`# 2+^.>! `cycle` access behavior
+        .>h! VS-mode .>h! VU-mode
 
-        ! 0 ! read-only 0
-        ! 1 ! writeable
+        ! 0 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+        ! 0 ! 1 ! - ! `VirtualInstruction` ! `VirtualInstruction`
+        ! 1 ! 0 ! - ! `IllegalInstruction` ! `IllegalInstruction`
+        ! 1 ! 1 ! 0 ! allowed              ! `VirtualInstruction`
+        ! 1 ! 1 ! 1 ! allowed              ! allowed
         !===
-
-      type: RW
-      reset_value: UNDEFINED_LEGAL
+      type(): |
+        if (HCOUNTENABLE_EN[<%= hpm_num %>]) {
+          return CsrFieldType::RW;
+        } else {
+          return CsrFieldType::RO;
+        }
+      reset_value(): |
+        if (HCOUNTENABLE_EN[<%= hpm_num %>]) {
+          return UNDEFINED_LEGAL;
+        } else {
+          return 0;
+        }
     <%- end -%>
-  sw_read(): |
-    if (!implemented?(ExtensionName::Zicntr) && !implemented?(ExtensionName::Zihpm)) {
-      # this CSR isn't supposed to exist when Zicntr and Zihpm are not implemented
-      raise(ExceptionCode::IllegalInstruction, $encoding);
-    }
-
-    # any bit of mcounteren that is zero forces that same bit of hcounteren to 0
-    return $bits(CSR[hcounteren]) & $bits(CSR[mcounteren]);

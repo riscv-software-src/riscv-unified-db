@@ -44,7 +44,7 @@ sip:
         <%- end -%>
 
         To summarize:
-        [%autowidth]
+        [separator="!",%autowidth]
         !===
         ! `mideleg.SSI` ! `sip.SSIP` behavior
 
@@ -77,7 +77,7 @@ sip:
         <%- end -%>
 
         To summarize:
-        [%autowidth]
+        [separator="!",%autowidth]
         !===
         ! `mideleg.STI` ! `sip.STIP` behavior
 
@@ -102,7 +102,7 @@ sip:
         Otherwise, `sip.SEIP` is a read-only view of `mip.SEIP`.
 
         To summarize:
-        [%autowidth]
+        [separator="!",%autowidth]
         !===
         ! `mideleg.SEI` ! `sip.SEIP` behavior
 
@@ -131,7 +131,7 @@ sip:
         Software writes 0 to `sip.LCOFIP` to clear the pending interrupt.
 
         To summarize:
-        [%autowidth]
+        [separator="!",%autowidth]
         !===
         ! `mideleg.LCOFI` ! `sip.LCOFIP` behavior
 

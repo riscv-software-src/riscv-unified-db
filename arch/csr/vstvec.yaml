@@ -1,7 +1,5 @@
 # yaml-language-server: $schema=../../schemas/csr_schema.json
 
-# <%- va_size = ext?(:Sv57) ? 57 : (ext?(:Sv48) ? 49 :39) -%>
-
 vstvec:
   long_name: Supervisor Trap Vector
   address: 0x205
@@ -14,6 +12,7 @@ vstvec:
     BASE:
       location: 63-2
       description: |
+        <%- va_size = ext?(:Sv57) ? 57 : (ext?(:Sv48) ? 49 :39) -%>
         Bit 63:0 of the virtual address of the exception vector for any trap taken into VS-mode.
 
         If the base address is written with a non-cannonical address (_i.e._, bits 63:<%= va_size %> do not match bit <%= va_size-1 %>),
