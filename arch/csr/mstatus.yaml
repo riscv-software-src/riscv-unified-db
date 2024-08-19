@@ -323,14 +323,27 @@ mstatus:
     FS:
       location: 14-13
       description: |
-        Floating point context status.
+        *Floating point context status*
         
         When 0, floating point instructions (from F and D extensions) are disabled,
         and cause `ILLEGAL INSTRUCTION` exceptions.
-        When a floating point register, or the fCSR register is written, FS obtains the value 3.
-        Values 1 and 2 are valid write values for software, but are not interpreted by hardware
-        other than to possibly enable a previously-disabled floating point unit. 
-      type: RW-H
+
+        Software may write values 1, 2, or 3 into `mstatus.FS` to indicate the state is
+        Initial, Clean, or Dirty, respectively.
+
+        The hart may update `mstatus.FS` when floating point state is written.
+        If HW_MSTATUS_FS_DIRTY_UPDATE == "precise", then `mstatus.FS` is written with the value 3
+        exactly when floating point state (f register or `fcsr`) is written and no other time.
+        If HW_MSTATUS_FS_DIRTY_UPDATE == "imprecise", then `mstatus.FS` is written with the value 3
+        at unpredictable times by the hart.
+        If HW_MSTATUS_FS_DIRTY_UPDATE == "none", then the hart never writes `mstatus.FS`, other than
+        through software writes (_e.g._, via `csrrw`).
+      type(): |
+        if (!implemented?(ExtensionName::F) || (HW_MSTATUS_FS_DIRTY_UPDATE == "none")) {
+          return CsrFieldType::RW;
+        } else {
+          return CsrFieldType::RWH;
+        }
       definedBy: F
       reset_value: UNDEFINED_LEGAL
     MPP:
@@ -509,3 +522,9 @@ mstatus:
 
       type: RW-H
       reset_value: UNDEFINED_LEGAL
+  sw_read(): |
+    if (implemented?(ExtensionName::F) && (HW_MSTATUS_FS_DIRTY_UPDATE == "imprecise")) {
+      unpredictable("The value of `mstatus.FS` is unpredictable");
+    } else {
+      return $bits(CSR[mstatus]);
+    }

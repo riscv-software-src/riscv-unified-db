@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+flt.s:
+  long_name: Single-precision floating-point less than
+  definedBy: F
+  assembly: rd, fs1, fs2
+  description: |
+    Writes 1 to _rd_ if _fs1_ is less than _fs2_, and 0 otherwise.
+
+    If either operand is NaN, the result is 0 (not equal).
+    If either operand is a NaN (signaling or quiet), the invalid flag is set.
+
+  encoding:
+    match: 1010000----------001-----1010011
+    variables:
+    - name: fs2
+      location: 24-20
+    - name: fs1
+      location: 19-15
+    - name: rd
+      location: 11-7  
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    check_f_ok();
+
+    Bits<32> sp_value_a = f[fs1][31:0];
+    Bits<32> sp_value_b = f[fs1][31:0];
+
+    if (is_sp_nan?(sp_value_a) || is_sp_nan?(sp_value_b)) {
+      set_fp_flag(FpFlag::NV);
+      X[rd] = 0;
+    } else {
+      Boolean sign_a = sp_value_a[31] == 1;
+      Boolean sign_b = sp_value_b[31] == 1;
+
+      Boolean a_lt_b = 
+        (sign_a != sign_b)
+          ? (sign_a && ((sp_value_a[30:0] | sp_value_b[30:0]) != 0)) # opposite sign, a is negative. a is less than b as long as both are not zero
+          : ((sp_value_a != sp_value_b) && (sign_a != (sp_value_a < sp_value_b)));
+      X[rd] = a_lt_b ? 1 : 0;
+    }

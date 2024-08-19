@@ -2874,7 +2874,7 @@ module Idl
 
     # @!macro value_no_archdef
     def value(symtab)
-      internal_error "Must call type_check first" if symtab.get(@enum_class_name).nil?
+      internal_error "Must call type_check first: No enum class #{@enum_class_name}" if symtab.get(@enum_class_name).nil?
 
       symtab.get(@enum_class_name).value(@member_name)
     end
@@ -4943,6 +4943,7 @@ module Idl
 
     # @!macro value
     def value(symtab)
+      type_error "CSR[#{csr_name(symtab)}] has no field named #{@field_name}" if field_def(symtab).nil?
       value_error "'#{csr_name(symtab)}.#{field_name(symtab)}' is not RO" unless field_def(symtab).type(symtab.archdef) == "RO"
       field_def(symtab).reset_value(symtab.archdef)
     end

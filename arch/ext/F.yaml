@@ -238,3 +238,17 @@ F:
         Indicates whether or not the `F` extension can be disabled with the `misa.F` bit.
       schema:
         type: boolean
+    HW_MSTATUS_FS_DIRTY_UPDATE:
+      description: |
+        Indicates whether or not hardware will write to `mstatus.FS`
+
+        Values are:
+        [separator="!"]
+        !===
+        h! none  ! Hardware never writes `mstatus.FS`
+        h! precise  ! Hardware writes `mstatus.FS` to the Dirty (3) state precisely when F registers are modified
+        h! imprecise ! Hardware writes `mstatus.FS` imprecisely. This will result in a call to unpredictable() on any attempt to read `mstatus` or write FP state.
+        !===
+      schema:
+        type: string
+        enum: ["none", "precise", "imprecise"]
