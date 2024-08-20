@@ -209,6 +209,12 @@ module Idl
     end
   end
 
+  class PcAssignmentAst
+    def gen_adoc(indent = 0, indent_spaces: 2)
+      "#{' '*indent}$pc = #{rhs.gen_adoc(0, indent_spaces:)}"
+    end
+  end
+
   class AryElementAssignmentAst
     def gen_adoc(indent = 0, indent_spaces: 2)
       "#{' '*indent}#{lhs.gen_adoc(0, indent_spaces:)}[#{idx.gen_adoc(0, indent_spaces:)}] = #{rhs.gen_adoc(0, indent_spaces:)}"

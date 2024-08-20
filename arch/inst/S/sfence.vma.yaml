@@ -220,7 +220,7 @@ sfence.vma:
     vu: always
   operation(): |
     XReg vaddr = X[rs1];
-    Bits<ASID_WIDTH> asid = X[rs2][ASID_WIDTH-1:0];
+    Bits<16> asid = X[rs2][ASID_WIDTH-1:0];
 
     if ((rs1 == 0) && (rs2 == 0)) {
       # invalidate all translations, from all addresses and all ASIDs

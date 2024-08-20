@@ -77,6 +77,9 @@ module Idl
   class SymbolTable
     attr_reader :archdef
 
+    # @return [Integer] 32 or 64, the XLEN in M-mode
+    attr_reader :mxlen
+
     class DuplicateSymError < StandardError
     end
 
@@ -86,73 +89,59 @@ module Idl
       [@scopes.hash, @archdef.hash].hash
     end
 
-    def initialize(arch_def)
+    def initialize(arch_def, effective_xlen = nil)
       @archdef = arch_def
+      if arch_def.is_a?(ImplArchDef)
+        raise "effective_xlen should not be set when symbol table is given an ImplArchDef" unless effective_xlen.nil?
+      else
+        raise "effective_xlen should be set when symbol table is given an ArchDef" if effective_xlen.nil?
+      end
+      @mxlen = effective_xlen.nil? ? arch_def.mxlen : effective_xlen
       @scopes = [{
-        'X' => Var.new(
-          'X',
-          Type.new(:array, sub_type: XregType.new(arch_def.param_values['XLEN']), width: 32, qualifiers: [:global])
+        "X" => Var.new(
+          "X",
+          Type.new(:array, sub_type: XregType.new(@mxlen), width: 32, qualifiers: [:global])
         ),
-        'XReg' => XregType.new(arch_def.param_values['XLEN']),
-        'PC' => Var.new(
-          'PC',
-          XregType.new(arch_def.param_values['XLEN'])
-        ),
-        'Boolean' => Type.new(:boolean),
-        'True' => Var.new(
-          'True',
+        "XReg" => XregType.new(@mxlen),
+        "Boolean" => Type.new(:boolean),
+        "true" => Var.new(
+          "true",
           Type.new(:boolean),
           true
         ),
-        'true' => Var.new(
-          'true',
-          Type.new(:boolean),
-          true
-        ),
-        'False' => Var.new(
-          'False',
-          Type.new(:boolean),
-          false
-        ),
-        'false' => Var.new(
-          'false',
+        "false" => Var.new(
+          "false",
           Type.new(:boolean),
           false
         )
 
       }]
-      arch_def.param_values.each do |name, value|
-        if value.is_a?(Integer)
-          width = value.bit_length
-          width = 1 if width.zero? # happens if value is 0
-          add!(name, Var.new(name, Type.new(:bits, width:, qualifiers: [:const]), value))
-        elsif value.is_a?(TrueClass) || value.is_a?(FalseClass)
-          add!(name, Var.new(name, Type.new(:boolean, qualifiers: [:const]), value))
-        elsif value.is_a?(String)
-          add!(name, Var.new(name, Type.new(:string, width: value.length, qualifiers: [:const]), value))
-        elsif value.is_a?(Array)
-          unless value.all? { |v| v.is_a?(Integer) || v.is_a?(TrueClass) || v.is_a?(FalseClass) }
-            raise "For param #{name}: Can only handle arrays of ints or bools"
-          end
+      if arch_def.is_a?(ImplArchDef)
+        arch_def.params_with_value.each do |param_with_value|
+          add!(param_with_value.name, Var.new(param_with_value.name, param_with_value.type, param_with_value.value))
+        end
+      end
+      # now add all parameters, even those not implemented
+      arch_def.params.each do |param|
+        next if arch_def.is_a?(ImplArchDef) && arch_def.params_with_value.include? { |p| p.name == param.name }
 
-          ary = []
-          element_type =
-            if value[0].is_a?(Integer)
-              max_bit_width = value.reduce(0) { |v, max| v > max ? v : max }
-              Type.new(:bits, width: max_bit_width)
-            else
-              Type.new(:boolean)
-            end
-          ary_type = Type.new(:array, width: value.size, sub_type: element_type)
-          value.each_with_index do |v, idx|
-            ary << v #Var.new("#{name}[#{idx}]", element_type, v)
+        if param.exts.size == 1
+          if param.name == "XLEN"
+            # special case: we actually do know XLEN
+            add!(param.name, Var.new(param.name, param.type, @mxlen))
+          else
+            add!(param.name, Var.new(param.name, param.type))
           end
-          add!(name, Var.new(name, ary_type, ary))
-          # also add the array size
-          ary_size_bits = ary.size.zero? ? 1 : ary.size.bit_length
-          add!("#{name}_SIZE", Var.new("#{name}_SIZE", Type.new(:bits, width: ary_size_bits), ary.size))
         else
-          raise "Unhandled config param type '#{value.class.name}' for '#{name}'"
+          # could already be present...
+          existing_sym = get(param.name)
+          if existing_sym.nil?
+             add!(param.name, Var.new(param.name, param.type))
+          else
+            unless existing_sym.type.equal_to?(param.type)
+              raise "Definition error: Param #{param.name} is defined by multiple extensions and is not the same definition in each"
+            end
+          end
         end
       end
 
@@ -195,6 +184,7 @@ module Idl
       @frozen_hash = [@scopes.hash, @archdef.hash].hash
 
       freeze
+      self
     end
 
     # pushes a new scope

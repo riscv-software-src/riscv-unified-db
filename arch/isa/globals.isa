@@ -177,7 +177,7 @@ bitfield (64) Sv39PageTableEntry {
 
 # floating point register file
 U32 FLEN = implemented?(ExtensionName::D) ? 7'd64 : 7'd32;
-Bits<FLEN> f[32] = [0, 0, 0, 0, 0, 0, 0, 0,
+Bits<64> f[32] = [0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0];
@@ -1483,11 +1483,11 @@ function read_memory {
 
 # hart-global state to track the local reservation set
 Boolean    reservation_set_valid = false;
-Bits<XLEN> reservation_set_address;
-Bits<XLEN> reservation_set_size;
-Bits<XLEN> reservation_physical_address;  # The exact address used by the LR.W/LR.D
-Bits<XLEN> reservation_virtual_address;   # The exact address used by the LR.W/LR.D
-Bits<XLEN> reservation_size;              # the size of the LR operation (32 or 64)
+XReg       reservation_set_address;
+XReg       reservation_set_size;
+XReg       reservation_physical_address;  # The exact address used by the LR.W/LR.D
+XReg       reservation_virtual_address;   # The exact address used by the LR.W/LR.D
+XReg       reservation_size;              # the size of the LR operation (32 or 64)
 
 function invalidate_reservation_set {
   description {
@@ -1654,14 +1654,14 @@ function store_conditional {
 }
 
 function amo {
-  template U32 N                # number of bits being loaded/stored
+  template U32 N           # number of bits being loaded/stored
   returns Bits<N>
   arguments
-    Bits<XLEN> virtual_address, # the virtual address to load from/store to
-    Bits<N> value,              # the value for the second hald of the atomic operation
-    AmoOperation op,            # atomic operation to apply
-    Bits<1>    aq,              # acquire semantics? 0=no, 1=yes
-    Bits<1>    rl               # release semantics? 0=no, 1=yes
+    XReg virtual_address,  # the virtual address to load from/store to
+    Bits<N> value,         # the value for the second hald of the atomic operation
+    AmoOperation op,       # atomic operation to apply
+    Bits<1>    aq,         # acquire semantics? 0=no, 1=yes
+    Bits<1>    rl          # release semantics? 0=no, 1=yes
   description {
     Atomically read-modify-write the location at virtual_address.
 

@@ -99,7 +99,7 @@ module Idl
       if type_check
         begin
           ast.type_check(symtab)
-        rescue AstNode::TypeError, AstNode::InternalError => e
+        rescue AstNode::TypeError, AstNode::InternalError, AstNode::ValueError => e
           warn "\n"
           warn e.what
           warn e.bt
@@ -221,7 +221,7 @@ module Idl
       # type check
       begin
         ast.type_check(symtab)
-      rescue AstNode::TypeError => e
+      rescue AstNode::TypeError, AstNode::ValueError => e
         warn "While type checking #{what}:"
         warn e.what
         warn e.backtrace

@@ -21,13 +21,13 @@
       description: |
         Alias of mhpmevent<%= hpm_num %>.OF.
       type(): |
-        if (NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) {
+        if (HPM_COUNTER_EN[<%= hpm_num %>]) {
           return CsrFieldType::RWH;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if (NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) {
+        if (HPM_COUNTER_EN[<%= hpm_num %>]) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -39,13 +39,13 @@
       description: |
         Alias of mhpmevent<%= hpm_num %>.MINH.
       type(): |
-        if (NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) {
+        if (HPM_COUNTER_EN[<%= hpm_num %>]) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if (NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) {
+        if (HPM_COUNTER_EN[<%= hpm_num %>]) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -57,13 +57,13 @@
       description: |
         Alias of mhpmevent<%= hpm_num %>.SINH.
       type(): |
-        if ((NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) && implemented?(ExtensionName::S) && (CSR[misa].S == 1'b1)) {
+        if ((HPM_COUNTER_EN[<%= hpm_num %>]) && implemented?(ExtensionName::S) && (CSR[misa].S == 1'b1)) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if ((NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) && implemented?(ExtensionName::S)) {
+        if ((HPM_COUNTER_EN[<%= hpm_num %>]) && implemented?(ExtensionName::S)) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -75,13 +75,13 @@
       description: |
         Alias of mhpmevent<%= hpm_num %>.UINH.
       type(): |
-        if ((NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) && implemented?(ExtensionName::U) && (CSR[misa].U == 1'b1)) {
+        if ((HPM_COUNTER_EN[<%= hpm_num %>]) && implemented?(ExtensionName::U) && (CSR[misa].U == 1'b1)) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if ((NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) && implemented?(ExtensionName::U)) {
+        if ((HPM_COUNTER_EN[<%= hpm_num %>]) && implemented?(ExtensionName::U)) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -93,13 +93,13 @@
       description: |
         Alias of mhpmevent<%= hpm_num %>.VSINH.
       type(): |
-        if ((NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) && implemented?(ExtensionName::H) && (CSR[misa].H == 1'b1)) {
+        if ((HPM_COUNTER_EN[<%= hpm_num %>]) && implemented?(ExtensionName::H) && (CSR[misa].H == 1'b1)) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if ((NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) && implemented?(ExtensionName::H)) {
+        if ((HPM_COUNTER_EN[<%= hpm_num %>]) && implemented?(ExtensionName::H)) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -111,13 +111,13 @@
       description: |
         Alias of mhpmevent<%= hpm_num %>.VUINH.
       type(): |
-        if ((NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) && implemented?(ExtensionName::H) && (CSR[misa].H == 1'b1)) {
+        if ((HPM_COUNTER_EN[<%= hpm_num %>]) && implemented?(ExtensionName::H) && (CSR[misa].H == 1'b1)) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if ((NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) && implemented?(ExtensionName::H)) {
+        if ((HPM_COUNTER_EN[<%= hpm_num %>]) && implemented?(ExtensionName::H)) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -128,13 +128,13 @@
       description: High part of event selector for performance counter `mhpmcounter<%= hpm_num %>`.
       alias: mhpmevent<%= hpm_num %>.EVENT[57:32]
       type(): |
-        if (NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) {
+        if (HPM_COUNTER_EN[<%= hpm_num %>]) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if (NUM_HPM_COUNTERS > <%= hpm_num - 3 %>) {
+        if (HPM_COUNTER_EN[<%= hpm_num %>]) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;

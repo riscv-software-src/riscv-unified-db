@@ -29,6 +29,6 @@ blt:
     XReg rhs = X[rs2];
 
     if ($signed(lhs) < $signed(rhs)) {
-      jump_halfword(PC + imm);
+      jump_halfword($pc + imm);
     }
     
