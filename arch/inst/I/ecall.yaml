@@ -29,9 +29,21 @@ ecall:
     vu: always
   operation(): |
     if (mode() == PrivilegeMode::M) {
-      raise(ExceptionCode::Mcall, 0);
+      if (TRAP_ON_ECALL_FROM_M) {
+        raise_precise(ExceptionCode::Mcall, 0);
+      } else {
+        eei_ecall_from_m();
+      }
     } else if (mode() == PrivilegeMode::S) {
-      raise (ExceptionCode::Scall, 0);
+      if (TRAP_ON_ECALL_FROM_S) {
+        raise_precise(ExceptionCode::Scall, 0);
+      } else {
+        eei_ecall_from_s();
+      }
     } else if (mode() == PrivilegeMode::U) {
-      raise (ExceptionCode::Ucall, 0);
+      if (TRAP_ON_ECALL_FROM_U) {
+        raise_precise(ExceptionCode::Ucall, 0);
+      } else {
+        eei_ecall_from_u();
+      }
     }
