@@ -131,6 +131,22 @@ function is_naturally_aligned {
   }
 }
 
+function in_naturally_aligned_region? {
+  template U32 N
+  returns Boolean
+  arguments
+    XReg address,   # starting address
+    U32  length     # length of the access
+  description {
+    Checks if a length-bit access starting at +address+ lies entirely within an N-bit naturally-aligned region.
+  }
+  body {
+    XReg Mask = (N/8) - 1;
+    
+    return (address & ~mask) == ((address + length - 1) & ~mask);
+  }
+}
+
 function contains? {
   returns Boolean
   arguments
