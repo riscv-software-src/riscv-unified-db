@@ -298,6 +298,21 @@ function exception_handling_mode {
   }
 }
 
+function unimplemented_csr {
+  arguments Bits<INST_ENCODING_WIDTH> encoding
+  description {
+    Either raises an IllegalInstruction exception or enters unpredictable state,
+    depending on the setting of the TRAP_ON_UNIMPLEMENTED_CSR parameter.
+  }
+  body {
+    if (TRAP_ON_UNIMPLEMENTED_CSR) {
+      raise(ExceptionCode::IllegalInstruction, encoding);
+    } else {
+      unpredictable("Accessing an unimplmented CSR");
+    }
+  }
+}
+
 function mtval_readonly? {
   returns Boolean
   description {
@@ -564,6 +579,25 @@ function raise {
     ExceptionCode exception_code, # exception code to raise
     PrivilegeMode from_mode,      # the effective mode to raise from (may be different than actual current mode)
     XReg tval                     # value to write into tval
+  description {
+    Raise synchronous exception number `exception_code`.
+
+    The exception may be imprecise, and will cause exectuion to enter an
+    unpredictable state, if PRECISE_SYNCHRONOUS_EXCEPTIONS is false.
+
+    Otherwise, the exception will be precise.
+  }
+  body {
+    if (!PRECISE_SYNCHRONOUS_EXCEPTIONS) {
+      unpredictable("Imprecise synchronous exception");
+    } else {
+      raise_precise(exception_code, tval);
+    }
+  }
+}
+
+function raise_precise {
+  arguments ExceptionCode exception_code, XReg tval
   description {
     Raise synchronous exception number `exception_code`.
   }

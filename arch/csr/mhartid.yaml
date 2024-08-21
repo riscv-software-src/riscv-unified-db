@@ -14,3 +14,5 @@ mhartid:
       type: RO
       description: hart-specific ID.
       reset_value: UNDEFINED_LEGAL
+  sw_read(): |
+    return hartid();
