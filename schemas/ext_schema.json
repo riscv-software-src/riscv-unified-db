@@ -132,12 +132,6 @@
                   { "type": "array", "items": { "$ref": "schema_defs.json#/$defs/extension_requirement" }}
                 ]
               },
-              "required_parameters": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              },
               "contributors": {
                 "description": "List of contributors to this version of the extension",
                 "type": "array",
@@ -159,6 +153,21 @@
                     }
                   }
                 }
+              },
+              "param_constraints": {
+                "type": "object",
+                "patternProperties": {
+                  "[A-Z][a-zA-Z0-9_]": {
+                    "type": "object",
+                    "properties": {
+                      "schema": {
+                        "$ref": "http://json-schema.org/draft-07/schema#"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
               }
             },
             "additionalProperties": false
@@ -222,7 +231,7 @@
 
   "type": "object",
   "patternProperties": {
-    "^([A-WY])|([SXZ][a-z]+)$": {
+    "^([A-WY])|([SXZ][a-z0-9]+)$": {
       "$ref": "#/$defs/ext_data"
     }
   },
