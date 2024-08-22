@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=../../schemas/testplan_schema.json
+
 mc:
   name: Microcontroller Certification
   long_name: LONG NAME
@@ -113,47 +115,53 @@ mc:
       schema:
         const: 4
 
-  requirements:
-    REQ-UINST-001:
-      it: Should use little-endian byte order
-    REQ-UINST-003:
-      it: Should implement the B extension instructions
-      when:
-        version: ">= 2.0"
-    
-    REQ-UCSR-001-a:
-      it: Should raise an Illegal Instruction exception when writing to the `cycle` CSR
+  requirement_groups:
+    MC-unpriv:
+      description: |
+        The MC-Unpriv defines unprivileged ISA requirements.
+        Note that unprivileged ISA features are those that are usable in all privilege modes;
+        they aren't only usable in U-mode (User-mode).
+        It is unfortunate that both “Unprivileged” and “User” start with the letter “U” but they
+        aren't the same thing.
 
-    REQ-UCSR-001-b:
-      it: Should return the XLEN least-significant bits of the `mcycle` CSR when reading the `cycle` CSR
-    
-    REQ-UCSR-002-a:
-      it: Should raise an Illegal Instruction exception when writing to the `time` CSR
+      requirements:
+        REQ-UINST-001:
+          description: Should use little-endian byte order
+        REQ-UINST-003:
+          description: Should implement the B extension instructions
+          when:
+            plan_version: ">= 2.0"
 
-    REQ-UCSR-002-b:
-      it: Should return the XLEN least-significant bits of the `mtime` CSR when reading the `time` CSR
-      when:
-        param:
-          TIME_CSR_IMPLEMENTED: true
+        REQ-UCSR-001-a:
+          description: Should raise an Illegal Instruction exception when writing to the `cycle` CSR
 
-    REQ-UCSR-002-c:
-      it: Should raise an Illegal Instruction exception when reading the `time` CSR
-      when:
-        param:
-          TIME_CSR_IMPLEMENTED: false
+        REQ-UCSR-001-b:
+          description: Should return the XLEN least-significant bits of the `mcycle` CSR when reading the `cycle` CSR
+        
+        REQ-UCSR-002-a:
+          description: Should raise an Illegal Instruction exception when writing to the `time` CSR
 
-    REQ-M32CSR-001-a:
-      it: Should raise an illegal instruction trap when writing the 'cycleh' CSR
+        REQ-UCSR-002-b:
+          description: Should return the XLEN least-significant bits of the `mtime` CSR when reading the `time` CSR
+          when:
+            param:
+              TIME_CSR_IMPLEMENTED: true
+
+        REQ-UCSR-002-c:
+          description: Should raise an Illegal Instruction exception when reading the `time` CSR
+          when:
+            param:
+              TIME_CSR_IMPLEMENTED: false
+
+    MC-Unpriv-32:
       when:
         xlen: 32
-      group: MC-unpriv-32
-    REQ-M32CSR-001-b:
-      it: Should return the most-significant 32-bits of the `mcycle` CSR when reading `cycleh`
-      when:
-        xlen: 32
-      group: MC-unpriv-32
-    REQ-M32CSR-002:
-      it: Should return the most-significant 32-bits of the `minstret` CSR when reading `instreth`
-      when:
-        xlen: 32
-      group: MC-unpriv-32
+      description: |
+        The MC-Unpriv-32 defines unprivileged ISA requirements specific to 32-bit processors.
+      requirements:
+        REQ-M32CSR-001-a:
+          description: Should raise an illegal instruction trap when writing the 'cycleh' CSR
+        REQ-M32CSR-001-b:
+          description: Should return the most-significant 32-bits of the `mcycle` CSR when reading `cycleh`
+        REQ-M32CSR-002:
+          description: Should return the most-significant 32-bits of the `minstret` CSR when reading `instreth`
