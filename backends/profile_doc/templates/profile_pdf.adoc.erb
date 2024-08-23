@@ -1,0 +1,139 @@
+[[header]]
+:description: <%= profile_family.marketing_name %> Profile
+:revdate: <%= profile_family.ratification_date.nil? ? Date.today : profile_family.ratification_date %>
+:revnumber: <%= profile_family.profiles.map(&:version).sort.last %>
+:revmark: "TODO: revmark"
+:company: <%= profile_family.company.name %>
+:url-riscv: https://riscv.org
+:doctype: book
+:preface-title: Licensing and Acknowledgements
+:colophon:
+:appendix-caption: Appendix
+:title-logo-image: image:risc-v_logo.png["RISC-V International Logo",pdfwidth=3.25in,align=center]
+<%# unless profile_family.state == "ratified" -%>
+:page-background-image: image:draft.png[opacity=20%]
+<%# end -%>
+:back-cover-image: image:riscv-horizontal-color.svg[opacity=25%]
+// Settings
+:experimental:
+:reproducible:
+:wavedrom: <%= $root %>/node_modules/.bin/wavedrom-cli
+// needs to be changed
+:imagesoutdir: images
+:icons: font
+:lang: en
+:example-caption: Example
+:listing-caption: Listing
+:table-caption: Table
+:figure-caption: Figure
+:xrefstyle: short
+:chapter-refsig: Chapter
+:section-refsig: Section
+:appendix-refsig: Appendix
+:sectnums:
+:toc: left
+:toclevels: 5
+:source-highlighter: pygments
+ifdef::backend-pdf[]
+:source-highlighter: rouge
+endif::[]
+:data-uri:
+:hide-uri-scheme:
+:stem:
+:footnote:
+:stem: latexmath
+:footnote:
+:le: &#8804;
+:ge: &#8805;
+:ne: &#8800;
+:approx: &#8776;
+:inf: &#8734;
+:csrname: envcfg
+:imagesdir: images
+
+= <%= profile_family.name %> Profile Family
+
+
+// Preamble
+<%=
+ "TODO: revmark"
+%>
+
+[preface]
+== Copyright and license information
+This document is released under the
+<%- if profile_family.doc_license.url.nil? -%>
+<%= profile_family.doc_license.name %>.
+<%- else -%>
+<%= profile_family.doc_license.url %>[<%= profile_family.doc_license.name %>].
+<%- end -%>
+
+<%- if profile_family.ratification_date.nil? -%>
+Copyright <%= Date.today.year %>
+<%- else -%>
+Copyright <%= profile_family.ratification_date.year %>
+<%- end -%>
+by <%= profile_family.company.name %>.
+
+
+[preface]
+== Acknowledgements
+
+<%- profile_family.profiles.each do |profile| -%>
+Contributors to version <%= profile.version %> of the <%= profile.marketing_name %> Profile (in alphabetical order) include: +
+
+<%- profile.contributors.sort.each do |c| -%>
+ * <%= c.name %> <<%= c.email %>> (<%= c.company %>)
+<%- end -%>
+<%- end -%>
+
+We express our gratitude to everyone that contributed to, reviewed or
+improved this specification through their comments and questions.
+
+[preface]
+== Profiles
+
+The following profiles are defined in this family:
+
+<%- profile_family.profiles.each do |profile| -%>
+--
+Name: <%= profile.marketing_name %>
+State: <%= profile.state %>
+<%- unless profile.ratification_date.nil? -%>
+Ratification date: <%= profile.ratification_date %>
+<%- end -%>
+--
+<%- end -%>
+
+<<<
+== Family description
+
+<%= profile_family.description %>
+
+<%- profile_family.profiles.each do |profile| -%>
+<<<
+== <%= profile.marketing_name %> Profile
+
+<%= profile.description %>
+
+=== Extensions
+
+The <%= profile.marketing_name %> Profile has
+<%= profile.mandatory_extension_requirements.size %> mandatory extensions
+and <%= profile.optional_extension_requirements.size %> optional extensions.
+
+==== Mandatory Extensions
+
+<%- profile.mandatory_extension_requirements.each do |ext_req| -%>
+<%= ext_req.name %>::
+  Version Requirement:: <%= ext_req.version_requirement %>
+<%- end -%>
+
+==== Optional Extensions
+
+<%- profile.optional_extension_requirements.each do |ext_req| -%>
+<%= ext_req.name %>::
+  Version Requirement:: <%= ext_req.version_requirement %>
+<%- end -%>
+
+<%- end -%>

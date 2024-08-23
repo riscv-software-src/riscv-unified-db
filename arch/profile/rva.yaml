@@ -1,0 +1,132 @@
+
+family:
+  name: rva
+  marketing_name: RVA
+  description: desc
+  modes: [U, S]
+  company:
+    name: RISC-V International
+    url: https://riscv.org
+  doc_license:
+    name: Creative Commons Attribution 4.0 International License
+    url: https://creativecommons.org/licenses/by/4.0/
+    text_url: https://creativecommons.org/licenses/by/4.0/legalcode.txt
+
+profiles:
+- name: rva20u64   # can be anything, serves as a key in the database
+  mode: U          # privilege mode
+  base: 64         # base XLEN
+  version: "1.0"   # semantic version of the profile within it's lineage [family, mode, base]
+  marketing_name: RVA20U64 # marketing name for documentation
+  description: "..."
+  state: ratified # current status ["ratified", "development"]
+  ratification_date: null # when ratified, must be present. Date the profile was ratified on
+  contributors:
+  - name: Krste Asanovic
+    email: krste@sifive.com
+    company: SiFive
+  extensions:
+    mandatory:
+    - name: A
+      version: "= 2.1"
+    - name: C
+      version: "= 2.2"
+    - name: D
+      version: "= 2.2"
+    - name: F
+      version: "= 2.2"
+    - name: M
+      version: "= 2.0"
+    - name: Zicntr
+      version: " = 2.0"
+    - name: Ziccif
+      version: "= 1.0"
+    - name: Ziccrse
+      version: "= 1.0"
+    - name: Ziccamoa
+      version: "= 1.0"
+    - name: Za128rs
+      version: "= 1.0"
+    - name: Zicclsm
+      version: "= 1.0"
+    optional:
+    - name: Zihpm
+      version: "= 2.0"
+- name: rva22u64
+  extensions:
+    mandatory:
+    - name: H
+      version: "= 1.0"
+
+modes:
+  U:
+  - name: rva_u_64
+    version: "1.0"
+
+rva_s_64:
+  family: rva
+  mode: S
+  base: 64
+  versions:
+  - version: "1.0"
+    status: ratified
+    marketing_name: RVA20U64
+    inherits:
+      name: rva_u_64
+      version: "1.0"
+
+
+  - version: "2.0"
+    inherits:
+      name: rva_u_64
+      version: "1.0"
+    status: ratified
+    marketing_name: RVA22U64
+
+  - version: "3.0"
+    inherits:
+      name: rva_u_64
+      version: "2.0"
+    status: frozen
+    marketing_name: RVA23U64
+
+extensions:
+  "1.0":
+    mandatory:
+    - name: S
+      version: "= 1.11"
+    - name: Zifencei
+      version: "?"
+      note: |
+        `zifencei` is mandated as it is the only standard way to support instruction-cache coherence
+        in RVA20 application processors.
+        A new instruction-cache coherence mechanism is under development which might be added as an
+        option in the future.
+    - name: Svbare
+      version: "= 1.0"
+      note: |
+        This is a new extension name for this feature.
+    - name: Sv39
+      version: "= 1.11"
+    - name: Svade
+      version: "?"
+    - name: Ssccptr
+      version: "1.0"
+    - name: Sstvecd
+      version: "1.0"
+    - name: Sstvala
+      version: "= 1.0"
+    optional:
+    - name: Sv48
+      version: "= 1.11"
+    - name: Ssu64xl
+      version: "= 1.0"
+
+param_constraints:
+  TRAP_ON_ECALL_FROM_U:
+    schema:
+      const: true
+    note: |
+      The `ecall` instruction operates as per the unprivileged architecture specification.
+      An `ecall` in user mode causes a contained trap to supervisor mode.
+      An `ecall` in supervisor mode causes a requested trap to the execution environment.
