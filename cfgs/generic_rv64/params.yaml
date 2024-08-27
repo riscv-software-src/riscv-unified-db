@@ -348,6 +348,8 @@ params:
   # the extension can be disabled in the `misa.F` bit.
   MUTABLE_MISA_F: false
 
+  HW_MSTATUS_FS_DIRTY_UPDATE: precise
+
   # when the H extensions is supported, indicates whether or not
   # the extension can be disabled in the `misa.H` bit.
   MUTABLE_MISA_H: false

@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+feq.s:
+  long_name: Single-precision floating-point equal
+  definedBy: F
+  assembly: rd, fs1, fs2
+  description: |
+    Writes 1 to _rd_ if _fs1_ and _fs2_ are equal, and 0 otherwise.
+
+    If either operand is NaN, the result is 0 (not equal). If either operand is a signaling NaN, the invalid flag is set.
+
+    Positive zero is considered equal to negative zero.
+  encoding:
+    match: 1010000----------010-----1010011
+    variables:
+    - name: fs2
+      location: 24-20
+    - name: fs1
+      location: 19-15
+    - name: rd
+      location: 11-7  
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    check_f_ok();
+
+    Bits<32> sp_value_a = f[fs1][31:0];
+    Bits<32> sp_value_b = f[fs1][31:0];
+
+    if (is_sp_nan?(sp_value_a) || is_sp_nan?(sp_value_b)) {
+      if (is_sp_signaling_nan?(sp_value_a) || is_sp_signaling_nan?(sp_value_b)) {
+        set_fp_flag(FpFlag::NV);
+      }
+      X[rd] = 0;
+    } else {
+      X[rd] = (
+        (sp_value_a == sp_value_b)
+        || ((sp_value_a | sp_value_b)[30:0] == 0) # pos 0 is equal to neg zero
+      ) ? 1 : 0;
+    }

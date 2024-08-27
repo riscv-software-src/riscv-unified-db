@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+flw:
+  long_name: Single-precision floating-point load
+  description: |
+    The `flw` instruction loads a single-precision floating-point value from memory at address _rs1_ + _imm_ into floating-point register _rd_.
+
+    `flw` does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
+
+
+  definedBy: F
+  assembly: fd, imm(xs1)
+  encoding:
+    match: -----------------010-----0000111
+    variables:
+    - name: imm
+      location: 31-20
+    - name: rs1
+      location: 19-15
+    - name: fd
+      location: 11-7
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    check_f_ok();
+
+    XReg virtual_address = X[rs1] + $signed(imm);
+
+    Bits<32> sp_value = read_memory<32>(virtual_address);
+
+    if (implemented?(ExtensionName::D)) {
+      f[fd] = nan_box(sp_value);
+    } else {
+      f[fd] = sp_value;
+    }
+
+    mark_f_state_dirty();

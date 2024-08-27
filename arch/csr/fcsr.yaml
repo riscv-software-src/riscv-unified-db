@@ -93,7 +93,7 @@ fcsr:
   length: 32
   definedBy: F
   fields:
-    RMODE:
+    FRM:
       location: 7-5
       description: |
         Rounding modes are encoded as follows:

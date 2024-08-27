@@ -72,7 +72,10 @@ rule %r{#{$root}/\.stamps/arch-gen-.*\.stamp} => proc { |tname|
   arch_files = Dir.glob($root / "arch" / "**" / "*.yaml")
   config_files =
     Dir.glob($root / "cfgs" / config_name / "arch_overlay" / "**" / "*.yaml") +
-    [($root / "cfgs" / config_name / "params.yaml").to_s]
+    [
+      ($root / "cfgs" / config_name / "params.yaml").to_s,
+      ($root / "cfgs" / config_name / "implemented_exts.yaml").to_s,
+    ]
   [
     "#{$root}/.stamps",
     "#{ARCH_GEN_DIR}/lib/arch_gen.rb",

@@ -37,6 +37,8 @@ module Idl
         false
       when :array
         Array.new(@width, sub_type.default)
+      when :string
+        ""
       else
         raise "No default for #{@kind}"
       end

@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+fsgnjx.s:
+  long_name: Single-precision sign inject exclusive or
+  description: |
+    Writes _fd_ with the xor of the sign bits of _fs2_ and _fs1_ and the exponent and mantissa of _fs1_.
+
+    Sign-injection instructions do not set floating-point exception flags, nor do they canonicalize NaNs.
+  definedBy: F
+  assembly: fd, fs1, fs2
+  encoding:
+    match: 0010000----------010-----1010011
+    variables:
+    - name: fs2
+      location: 24-20
+    - name: fs1
+      location: 19-15
+    - name: fd
+      location: 11-7
+  pseudoinstructions:
+    when: fs1 == fs2
+    to: fabs.s fd, fs1
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    check_f_ok();
+
+    Bits<32> sp_value = {f[fs1][31] ^ f[fs2][31], f[fs1][30:0]};
+
+    if (implemented?(ExtensionName::D)) {
+      f[fd] = nan_box(sp_value);
+    } else {
+      f[fd] = sp_value;
+    }
+
+    mark_f_state_dirty();
