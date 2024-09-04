@@ -4,7 +4,9 @@ qc32.ligeui:
   long_name: Conditional load immediate if great or equal than unsigned (Immediate)
   description: |
     Move `simm` to `rd` if the unsigned value in `rs1` is great or equal than unsigned value `imm`
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqccli
   base: 32
   encoding:
     match:     -----11----------111-----1011011

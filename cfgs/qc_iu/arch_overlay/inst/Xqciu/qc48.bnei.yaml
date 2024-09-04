@@ -4,7 +4,9 @@ qc48.bnei:
   long_name: Branch on not equal (immediate)
   description: |
     Branches to `PC` + `offset` if the value in `rs1` is not equal to the signed immediate `imm`.
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqcbi
   base: 32
   encoding:
     match:     -----------------------11001-----100-----0011111

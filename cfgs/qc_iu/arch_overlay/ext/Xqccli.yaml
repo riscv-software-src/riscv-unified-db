@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=../../../../schemas/ext_schema.json
+
+Xqccli:
+  type: unprivileged
+  long_name: Qualcomm conditional load immediate
+  versions:
+  - version: 0.1
+    state: development
+    ratification_date: null
+    contributors:
+    - name: Albert Yosher
+      company: Qualcomm Technologies, Inc.
+      email: ayosher@qti.qualcomm.com
+    - name: Derek Hower
+      company: Qualcomm Technologies, Inc.
+      email: dhower@qti.qualcomm.com
+  description: |
+    The Xqccli extension includes twelve instructions that conditionally
+    load an immediate value.
+
+  doc_license:
+    name: Creative Commons Attribution 4.0 International License
+    url: https://creativecommons.org/licenses/by/4.0/
+  company:
+    name: Qualcomm Technologies, Inc.
+    url: https://qualcomm.com

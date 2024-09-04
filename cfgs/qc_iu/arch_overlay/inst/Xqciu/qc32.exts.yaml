@@ -6,7 +6,9 @@ qc32.exts:
     Extract a subset of bits from `rs1` into `rd`, and sign-extend the result.
     The width of the subset is determined by (`width_minus1` + 1) (1..32),
     and the offset of the subset is determined by `shamt`.
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqcbm
   base: 32
   encoding:
     match:     01---------------010-----0001011

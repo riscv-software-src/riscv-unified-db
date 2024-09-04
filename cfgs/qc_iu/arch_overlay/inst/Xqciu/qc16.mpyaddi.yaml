@@ -4,7 +4,9 @@ qc16.mpyaddi:
   long_name: Multiply and accumulate (Immediate)
   description: |
     Increments `rd` by the multiplication of `rs1` and an unsigned immediate
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqcac
   base: 32
   encoding:
     match: 001-----------10

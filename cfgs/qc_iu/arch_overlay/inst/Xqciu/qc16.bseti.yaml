@@ -5,7 +5,9 @@ qc16.bseti:
   description: |
     This instruction returns `rd` with a single bit set at the index specified in shamt.
     The index is read from the lower log2(XLEN) bits of `shamt`.
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqcbm
   assembly: " xd, shamt"
   base: 32
   encoding:

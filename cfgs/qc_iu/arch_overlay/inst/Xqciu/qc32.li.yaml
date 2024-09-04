@@ -4,7 +4,9 @@ qc32.li:
   long_name: Load immediate large
   description: |
     Loads the 20-bit immediate `imm` into `rd`.
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqcli
   base: 32
   encoding:
     match:     -------------------------0011011

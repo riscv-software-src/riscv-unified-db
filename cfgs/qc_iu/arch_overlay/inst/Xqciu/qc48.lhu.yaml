@@ -6,7 +6,9 @@ qc48.lhu:
     Load 16 bits of data into register `rd` from an
     address formed by adding `rs1` to a signed offset `imm`.
     Zero extend the result.
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqclo
   assembly: " xd, imm(xs1)"
   base: 32
   encoding:

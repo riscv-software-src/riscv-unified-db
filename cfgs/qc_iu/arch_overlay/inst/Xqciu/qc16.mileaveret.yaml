@@ -6,7 +6,9 @@ qc16.mileaveret:
     Machine mode interrupt exit.
     Interrupt frame is restored from the stack.
   assembly: ""
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqcint
   access:
     s: never
     u: never

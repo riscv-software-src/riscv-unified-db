@@ -5,7 +5,9 @@ qc32.selectine:
   description: |
     Move `rs2` to `rd` if the value in `rd` is not equal to value `rs1`,
     move `simm2` to `rd` otherwise
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqccs
   base: 32
   encoding:
     match:     -----01----------011-----1011011

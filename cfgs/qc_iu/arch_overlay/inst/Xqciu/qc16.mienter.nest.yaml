@@ -5,7 +5,9 @@ qc16.mienter.nest:
     Interrupt frame is saved in the stack.
     Interrupts are enabled.
   assembly: ""
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqcint
   access:
     s: never
     u: never

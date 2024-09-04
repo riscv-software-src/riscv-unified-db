@@ -197,3 +197,5 @@ params:
   #  * 2: M-mode data can be either little or big endian, depending on the RW CSR field mstatus.MBE
   M_MODE_ENDIANESS: little
 
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: low
+  MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE: 0

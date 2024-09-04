@@ -4,7 +4,9 @@ qc32.mvgei:
   long_name: Conditional move if great or equal than (Immediate)
   description: |
     Move `rs3` to `rd` if the value in `rs1` is great or equal than value of `imm`
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqccm
   base: 32
   encoding:
     match:     -----10----------101-----1011011

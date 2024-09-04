@@ -4,7 +4,9 @@ qc32.mvgeui:
   long_name: Conditional move if great or equal than unsigned (Immediate)
   description: |
     Move `rs3` to `rd` if the unsigned value in `rs1` is great or equal than unsigned value of `imm`
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqccm
   base: 32
   encoding:
     match:     -----10----------111-----1011011

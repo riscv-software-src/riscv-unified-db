@@ -4,7 +4,9 @@ qc32.mveqi:
   long_name: Conditional move if equal (Immediate)
   description: |
     Move `rs3` to `rd` if the value in `rs1` is equal to value of `imm`
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqccm
   base: 32
   encoding:
     match:     -----10----------000-----1011011

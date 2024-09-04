@@ -5,7 +5,9 @@ qc48.ori:
   description: |
     Or a sign-extended 26-bit immediate `imm` to the value in `rs1`, 
     and store the result in `rd`.
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqclia
   base: 32
   encoding:
     match:     ----------------01---------------011-----0011111

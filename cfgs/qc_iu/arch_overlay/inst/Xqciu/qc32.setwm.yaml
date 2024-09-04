@@ -5,7 +5,9 @@ qc32.setwm:
   description: |
     Stores the value of `rs3` multiple times into the address starting at (`rs1` + `imm`).
     The number of writes is in `rs2`.
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqclsm
   base: 32
   encoding:
     match:     10---------------111-----0101011

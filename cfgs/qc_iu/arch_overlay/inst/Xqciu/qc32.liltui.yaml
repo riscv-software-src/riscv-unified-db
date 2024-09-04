@@ -4,7 +4,9 @@ qc32.liltui:
   long_name: Conditional load immediate if less than unsigned (Immediate)
   description: |
     Move `simm` to `rd` if the unsigned value in `rs1` is less than unsigned value `imm`
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqccli
   base: 32
   encoding:
     match:     -----11----------110-----1011011

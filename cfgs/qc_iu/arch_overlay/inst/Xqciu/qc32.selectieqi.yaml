@@ -5,7 +5,9 @@ qc32.selectieqi:
   description: |
     Move `rs2` to `rd` if the value in `rd` is equal to value `imm`,
     move `simm2` to `rd` otherwise
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqccs
   base: 32
   encoding:
     match:     -----11----------010-----1011011

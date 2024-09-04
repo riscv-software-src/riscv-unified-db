@@ -4,7 +4,9 @@ qc32.ligeu:
   long_name: Conditional load immediate if great or equal than unsigned (Register)
   description: |
     Move `simm` to `rd` if the unsigned value in `rs1` is great or equal than unsigned value `rs2`
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqccli
   base: 32
   encoding:
     match:     -----01----------111-----1011011

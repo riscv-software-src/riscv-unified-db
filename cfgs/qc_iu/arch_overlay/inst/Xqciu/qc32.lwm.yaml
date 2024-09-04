@@ -5,7 +5,9 @@ qc32.lwm:
   description: |
     Loads multiple words starting from address (`rs1` + `imm`) to registers, starting from `rd`.
     The number of words is in `rs2`
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqclsm
   base: 32
   encoding:
     match:     00---------------111-----0001011

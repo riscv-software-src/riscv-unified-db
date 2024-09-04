@@ -5,7 +5,9 @@ qc48.sh:
   description: |
     Store 16 bits of data from register `rs2` to an
     address formed by adding `rs1` to a signed offset `imm`.
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqclo
   assembly: " xs2, imm(xs1)"
   base: 32
   encoding:
