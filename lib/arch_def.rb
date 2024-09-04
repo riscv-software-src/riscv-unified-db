@@ -133,7 +133,7 @@ class ArchDefObject
 
   def extension_requirement?(obj)
     obj.is_a?(String) && obj =~ /^([A-WY])|([SXZ][a-z]+)$/ ||
-      obj.is_a?(Array) && obj[0] =~ /^([A-WY])|([SXZ][a-z]+)$/
+      obj.is_a?(Array) && obj[0] =~ /^([A-WY])|([SXZ][a-z]+)$/ && obj[1] =~ /^<>=~.*$/
   end
   private :extension_requirement?
 
@@ -142,17 +142,33 @@ class ArchDefObject
     return @defined_by unless @defined_by.nil?
 
     @defined_by = []
+    # definedBy can be:
+    #
+    #  * [String] Extension name
+    #  * [Array] Extension name, version
+    #  * [Array] Array of one of the two above
     if @data["definedBy"].is_a?(Array)
-      # could be either a single extension with requirement, or a list of requirements
-      if extension_requirement?(@data["definedBy"][0])
-        @defined_by << to_extension_requirement(@data["definedBy"][0])
+      if @data["definedBy"].size == 2
+        if @data["definedBy"][1].is_a?(String) && @data["definedBy"][1] =~ /^<>=~$/
+          @defined_by << to_extension_requirement(@data["definedBy"])
+        elsif @data["definedBy"][1].is_a?(String)
+          # this is an array of extension names
+          @defined_by << to_extension_requirement(@data["definedBy"][0])
+          @defined_by << to_extension_requirement(@data["definedBy"][1])
+        else
+          # this is a list of extension requirements
+          @data["definedBy"].each do |r|
+            @defined_by << to_extension_requirement(r)
+          end
+        end
       else
-        # this is a list
+        # this is a list of extension requirements
         @data["definedBy"].each do |r|
           @defined_by << to_extension_requirement(r)
         end
       end
     else
+      raise "unexpected" unless @data["definedBy"].is_a?(String)
       @defined_by << to_extension_requirement(@data["definedBy"])
     end
 
@@ -2180,7 +2196,9 @@ class Extension < ArchDefObject
   def instructions
     return @instructions unless @instructions.nil?
 
-    @instructions = arch_def.instructions.select { |i| i.definedBy == name || (i.definedBy.is_a?(Array) && i.definedBy.include?(name)) }
+    @instructions = arch_def.instructions.select do |i|
+      i.definedBy == name || (i.definedBy.is_a?(Array) && i.definedBy.include?(name)) || (i.definedBy.is_a?(Array) && i.definedBy[0].is_a?(Array) && i.definedBy.any? { |e| e[0] == name })
+    end
   end
 
   # @return [Array<Csr>] the list of CSRs implemented by this extension (may be empty)

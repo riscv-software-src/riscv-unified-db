@@ -154,12 +154,17 @@ Ratification Date:: <%= version["ratification_date"] %>
 <%- if version.key?("url") -%>
 Design document:: <%= version["url"] %>
 <%- end -%>
-<%- if version.key?("change") -%>
+<%- if version.key?("changes") -%>
 Changes::
 <%= version["changes"] %>
 <%- end -%>
+<%- unless version["implies"].nil? || version["implies"].empty? -%>
+Implies::
+* <%= version["implies"].map { |name, version| "#{name} (#{version})" }.join("\n* ") %>
+<%- end -%>
 --
 <%- end -%>
+
 
 <<<
 == Extension description
@@ -167,8 +172,52 @@ Changes::
 <%= ext.description %>
 
 <%- unless ext.implies.nil? -%>
-<%- ext.implies.each do |e| -%>
+=== Sub-extensions
+The following sub-extensions are defined:
+
+<%- ext.implies.each do |sub_ext| -%>
+==== <%= sub_ext.name %>
+
+<%= arch_def.extension(sub_ext.name).description %>
+
 <%- end -%>
+<%- end -%>
+
+<%- unless ext.instructions.empty? -%>
+<<<
+== Instruction summary
+
+The following <%= ext.instructions.size %> instructions are added by this extension:
+
+[%autowidth]
+|===
+| RV32 | RV64 | Mnemonic | Instruction | <%= ext.versions.map { |v| "v#{v["version"]}" }.join(" | ") %>
+
+<%- ext.instructions.each do |i| -%>
+| <%= i.rv32? ? "&#x2713;" : "" %>
+| <%= i.rv64? ? "&#x2713;" : "" %>
+| `<%= i.name %> <%= i.assembly.gsub("x", "r").strip %>`
+| xref:insns-<%= i.name.gsub('.', '_') %>[<%= i.long_name %>]
+| <%= ext.versions.map { |v| i.defined_by?(ext.name, v["version"]) ? "&#x2713;" : "" }.join(" | ") %>
+<%- end -%>
+|===
+
+<%- unless ext.implies.empty? -%>
+=== Instructions by sub-extension
+
+[%autowidth]
+|===
+| Mnemonic | `<%= ext.name %>` | <%= ext.implies.map { |e| "`#{e.name}`" }.join(" | ") %>
+
+<%- ext.instructions.each do |i| -%>
+| `<%= i.name %>`
+| &#x2713;
+| <%= ext.implies.map { |e| i.defined_by?(e.name, arch_def.extension(e.name).max_version) ? "&#x2713;" : "" }.join(" | ") %>
+<%- end -%>
+|===
+
+<%- end -%>
+
 <%- end -%>
 
 <%- unless ext.csrs.empty? -%>
@@ -327,23 +376,6 @@ This CSR may return a value that is different from what is stored in hardware.
 <%- end -%>
 
 <%- unless ext.instructions.empty? -%>
-<<<
-== Instruction summary
-
-The following <%= ext.instructions.size %> instructions are added by this extension:
-
-[%autowidth]
-|===
-| RV32 | RV64 | Mnemonic | Instruction | <%= ext.versions.map { |v| "v#{v["version"]}" }.join(" | ") %>
-
-<%- ext.instructions.each do |i| -%>
-| <%= i.rv32? ? "&#x2713;" : "" %>
-| <%= i.rv64? ? "&#x2713;" : "" %>
-| `<%= i.name %> <%= i.assembly.gsub("x", "r") %>`
-| xref:insns-<%= i.name.gsub('.', '_') %>[<%= i.long_name %>]
-| <%= ext.versions.map { |v| i.defined_by?(ext.name, v["version"]) ? "&#x2713;" : "" }.join(" | ") %>
-<%- end -%>
-|===
 
 <<<
 [#insns,reftext="Instructions (in alphabetical order)"]
