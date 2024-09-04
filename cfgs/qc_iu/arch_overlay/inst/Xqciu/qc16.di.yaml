@@ -6,7 +6,7 @@ qc16.di:
     Globally disable interrupts.
     Equivalent to "csrrci `zero`, `mstatus`, 8".
   definedBy: Xqciu
-  assembly: " xd"
+  assembly: ""
   base: 32
   encoding:
     match: '0001101100010010'

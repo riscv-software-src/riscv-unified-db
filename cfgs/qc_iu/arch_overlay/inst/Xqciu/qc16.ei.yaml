@@ -6,7 +6,7 @@ qc16.ei:
     Globally enable interrupts.
     Equivalent to "csrrsi `zero`, `mstatus`, 8".
   definedBy: Xqciu
-  assembly: " xs1"
+  assembly: ""
   base: 32
   encoding:
     match: '0001101110010010'
