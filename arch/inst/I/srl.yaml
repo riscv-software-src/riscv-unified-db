@@ -20,8 +20,9 @@ srl:
     u: always
     vs: always
     vu: always
+  data_independent_timing: true
   operation(): |
-    if (XLEN == 64) {
+    if (xlen() == 64) {
       X[rd] = X[rs1] >> X[rs2][5:0];
     } else {
       X[rd] = X[rs1] >> X[rs2][4:0];

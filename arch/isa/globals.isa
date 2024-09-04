@@ -74,6 +74,19 @@ enum PmaAttribute {
   # page walk permissions
   HardwarePageTableRead    # permission to read during a page walk
   HardwarePageTableWrite   # permission to write during a page walk
+
+  # Memory types
+  MainMemory          # Main memory region
+  IO                  # I/O region
+  Cacheable           # Cacheable memory region
+  Coherent            # Coherent memory region
+  Idempotent          # Idempotent memory region
+}
+
+enum Pbmt {
+  PMA 0   # Use underlying PMA
+  NV  1   # Non-cacheable, idempotent, weakly-ordered (RVWMO), main memory
+  IO  2   # Non-cacheable, non-idempotent, strongly (channel 0) ordered, I/O
 }
 
 # do not change these values!! the compiler assumes them
@@ -155,6 +168,28 @@ bitfield (10) PteFlags {
   R 1 # read permission
   V 0 # valid
 }
+
+struct TranslationResult {
+  Bits<PHYS_ADDR_WIDTH> paddr;
+  Pbmt pbmt;
+  PteFlags pte_flags;
+}
+
+# options associated with a translation (TLB) invalidation
+struct VmaOrderType {
+  Boolean global;  # include global mappings?
+  Boolean smode;   # include smode (satp-based) mappings?
+  Boolean vsmode;  # include vsmode (vsatp-based) mappings?
+  Boolean gstage;  # include gstage (hgatp-based) mappings?
+
+  Boolean single_vmid;    # Only order a single VMID?
+  Bits<VMID_WIDTH> vmid;  # when single_vmid is true, the VMID to order
+  Boolean single_asid;    # Only order a single ASID?
+  Bits<ASID_WIDTH> asid;  # when single_asid is true, the ASID to order
+  Boolean single_vaddr;   # Only order a single virtual address?
+  XReg vaddr;             # when single_vaddr is true, the virtual address to order
+}
+
 
 bitfield (64) Sv39PageTableEntry {
   N 63
@@ -1062,7 +1097,8 @@ function page_walk {
     U32 PA_SIZE,     # physical address size (Sv32 = 34, Sv39 = 56, Sv48 = 56, Sv57 = 56)
     U32 PTESIZE,     # length, in bits, of a Page Table Entry (Sv32 = 4, others = 8)
     U32 LEVELS       # levels in the page tabl (Sv32 = 2, Sv39 = 3, Sv48 = 4, Sv57 = 5)
-  returns Bits<PA_SIZE> # the translated address
+  returns
+    TranslationResult  # the translated address and attributes
   arguments
     Bits<XLEN> vaddr,  # the virtual address to translate
     MemoryOperation op # the operation type
@@ -1080,6 +1116,7 @@ function page_walk {
   }
   body {
     Bits<PA_SIZE> ppn;
+    TranslationResult result;
 
     # the VPN size is 10 bits in Sv32, and 9 bits in all others
     U32 VPN_SIZE = (LEVELS == 2) ? 10 : 9;
@@ -1121,6 +1158,12 @@ function page_walk {
       access_check<PTESIZE>(pte_addr, vaddr, MemoryOperation::Read, access_fault_code);
 
       if (!pma_applies?(PmaAttribute::HardwarePageTableRead, pte_addr, PTESIZE)) {
+        if (implemented?(ExtensionName::Ssccptr)
+            && pma_applies?(PmaAttribute::MainMemory)
+            && pma_applies?(PmaAttribute::Cacheable)
+            && pma_applies?(PmaAttribute::Coherent)) {
+          spec_violation("When Ssccptr is implemented, cacheable and coherent main memory regions must support page table reads");
+        }
         raise(access_fault_code, vaddr);
       }
 
@@ -1128,15 +1171,16 @@ function page_walk {
       PteFlags pte_flags = pte[9:0];
 
       # check if any reserved bits are set
-      # Sv39 has no reserved bits, and Sv39/48/57 all have reserved bits at 60:54
+      # Sv32 has no reserved bits, and Sv39/48/57 all have reserved bits at 60:54
       if ((VA_SIZE != 32) && (pte[60:54] != 0)) {
         raise(page_fault_code, vaddr);
       }
 
       if (pte_flags.V == 0 ||                    # invalid entry
-         (pte_flags.R == 0 && pte_flags.W == 1)) { # write permission must also have read permission
+         (pte_flags.R == 0 && pte_flags.W == 1)  # write permission must also have read permission
 #          || (!implemented?(ExtensionName::Svnapot) && pte.N != 0)
-#          || (!implemented?(ExtensionName::Svpbmt) && pte.PBMT != 0)) {
+          || ((VA_SIZE != 32) && (CSR[menvcfg].PBMTE == 0) && (pte[62:61] != 0))    # PBMT is reserved if Svpbmt is not supported
+          || ((VA_SIZE != 32) && (CSR[menvcfg].PBMTE == 1) && (pte[62:61] == 3))) { # PBMT == 3 is reserved
         # found invalid PTE
         raise (page_fault_code, vaddr);
       } else if (pte_flags.R == 1 || pte_flags.X == 1) {
@@ -1234,7 +1278,10 @@ function page_walk {
               i = i + 1;
             } else {
               # successful translation and update
-              return {(pte[PA_SIZE-3:(i*VPN_SIZE) + 10] << 2), vaddr[11:0]};
+              result.paddr = {(pte[PA_SIZE-3:(i*VPN_SIZE) + 10] << 2), vaddr[11:0]};
+              result.pbmt = pte[62:61];
+              result.pte_flags = pte_flags;
+              return result;
             }
           }
 
@@ -1244,7 +1291,10 @@ function page_walk {
         }
 
         # translation succeeded
-        return {(pte[PA_SIZE-3:(i*VPN_SIZE) + 10] << 2), vaddr[11:0]};
+        result.paddr = {(pte[PA_SIZE-3:(i*VPN_SIZE) + 10] << 2), vaddr[11:0]};
+        result.pbmt = pte[62:61];
+        result.pte_flags = pte_flags;
+        return result;
       } else {
         # found a pointer to the next level
 
@@ -1258,6 +1308,11 @@ function page_walk {
           raise (page_fault_code, vaddr);
         }
 
+        if ((VA_SIZE != 32) && (pte[62:61] != 0)) {
+          # PBMT must be zero in a pointer PTE
+          raise (page_fault_code, vaddr);
+        }
+
         # fall through to next level
         ppn = pte[PA_SIZE-3:10] << 12;
       }
@@ -1266,7 +1321,9 @@ function page_walk {
 }
 
 function translate {
-  returns Bits<PHYS_ADDR_WIDTH>
+  returns
+    Bits<PHYS_ADDR_WIDTH>,    # Translated physical address
+    Bits<2>                   # PBMT value (for Svpbmt)
   arguments XReg vaddr, MemoryOperation op
   description {
     Translate a virtual address for a load, returning a physical address.
@@ -1277,10 +1334,26 @@ function translate {
   body {
     SatpMode translation_mode = current_translation_mode();
 
-    XReg paddr;
+    #####################################################################
+    # First, check for a cached translation result
+    #####################################################################
+
+    Boolean cached_translation_valid;
+    TranslationResult cached_translation_result;
+
+    (cached_translation_valid, cached_translation_result) =
+      cached_translation(vaddr, op);
+
+    if (cached_translation_valid) {
+      return cached_translation_result.paddr, cached_translation_result.pbmt;
+    }
+
+    #####################################################################
+    # No cached translation, so go through the full translation process
+    #####################################################################
 
     if (implemented?(ExtensionName::H) && virtual_mode?()) {
-      return 0;
+      return 0, 0;
 #      if (translation_mode == SatpMode::Bare) {
 #        # bare == no translation
 #        return translate_gstage(vaddr, op);
@@ -1304,22 +1377,133 @@ function translate {
     } else {
       if (translation_mode == SatpMode::Bare) {
         # bare == no translation
-        paddr = vaddr;
-      } else if (implemented?(ExtensionName::Sv32) && translation_mode == SatpMode::Sv32) {
+        return vaddr, 0;
+      }
+      
+      TranslationResult result;
+      if (implemented?(ExtensionName::Sv32) && translation_mode == SatpMode::Sv32) {
         # Sv32 page table walk
-        paddr = page_walk<32, 34, 32, 2>(vaddr, op);
+        result = page_walk<32, 34, 32, 2>(vaddr, op);
       } else if (implemented?(ExtensionName::Sv39) && translation_mode == SatpMode::Sv39) {
         # Sv39 page table walk
-        paddr = page_walk<39, 56, 64, 3>(vaddr, op);
+        result = page_walk<39, 56, 64, 3>(vaddr, op);
       } else if (implemented?(ExtensionName::Sv48) && translation_mode == SatpMode::Sv48) {
         # Sv48 page table walk
-        paddr = page_walk<48, 56, 64, 4>(vaddr, op);
+        result = page_walk<48, 56, 64, 4>(vaddr, op);
       } else if (implemented?(ExtensionName::Sv57) && translation_mode == SatpMode::Sv57) {
         # Sv57 page table walk
-        paddr = page_walk<57, 56, 64, 5>(vaddr, op);
+        result = page_walk<57, 56, 64, 5>(vaddr, op);
+      } else {
+        # invlaid mode
+        if (op == MemoryOperation::Read) {
+          raise (ExceptionCode::LoadPageFault, vaddr);
+        } else if (op == MemoryOperation::Write) {
+          raise (ExceptionCode::StoreAmoPageFault, vaddr);
+        } else {
+          raise (ExceptionCode::InstructionPageFault, vaddr);
+        }
       }
     }
-    return paddr;
+
+    maybe_cache_translation(vaddr, op, result);
+    return result.paddr, result.pbmt;
+  }
+}
+
+function cacheable? {
+  returns Boolean
+  arguments XReg vaddr
+  description {
+    Whether or not the virtual address +vaddr+ maps to cacheable memory.
+
+    This takes into account Svpbmt, if supported and enabled.
+  }
+  body {
+    Bits<PHYS_ADDR_WIDTH> paddr;
+    Bits<2> pbmt;
+
+    (paddr, pbmt) = translate(vaddr);
+
+    if (CSR[menvcfg].PBMTE == 0) {
+      return pma_applies?(PmaAttribute::Cacheable, paddr, len);
+    } else {
+      return
+        !((pbmt == $bits(Pbmt::NC)) || (pbmt == $bits(Pbmt::IO)))
+        && pma_applies?(PmaAttribute::Cacheable, paddr, len);
+    }
+  }
+}
+
+function idempotent? {
+  returns Boolean
+  arguments XReg vaddr
+  description {
+    Whether or not the virtual address +vaddr+ maps to idempotent memory.
+
+    This takes into account Svpbmt, if supported and enabled.
+  }
+  body {
+    Bits<PHYS_ADDR_WIDTH> paddr;
+    Bits<2> pbmt;
+
+    (paddr, pbmt) = translate(vaddr);
+
+    if (CSR[menvcfg].PBMTE == 0) {
+      return pma_applies?(PmaAttribute::Idempotent, paddr, len);
+    } else {
+      return
+        (pbmt == $bits(Pbmt::NC))
+        || (!(pbmt == $bits(Pbmt::IO))
+            && pma_applies?(PmaAttribute::Idempotent, paddr, len));
+    }
+  }
+}
+
+function main_memory? {
+  returns Boolean
+  arguments XReg vaddr
+  description {
+    Whether or not the virtual address +vaddr+ maps to a main memory PMA region.
+
+    This takes into account Svpbmt, if supported and enabled.
+  }
+  body {
+    Bits<PHYS_ADDR_WIDTH> paddr;
+    Bits<2> pbmt;
+
+    (paddr, pbmt) = translate(vaddr);
+
+    if (CSR[menvcfg].PBMTE == 0) {
+      return pma_applies?(PmaAttribute::MainMemory, paddr, len);
+    } else {
+      return
+        (pbmt == $bits(Pbmt::NC))
+        || pma_applies(PmaAttribute::MainMemory, paddr, len);
+    }
+  }
+}
+
+function io? {
+  returns Boolean
+  arguments XReg vaddr
+  description {
+    Whether or not the virtual address +vaddr+ maps to an I/O PMA region.
+
+    This takes into account Svpbmt, if supported and enabled.
+  }
+  body {
+    Bits<PHYS_ADDR_WIDTH> paddr;
+    Bits<2> pbmt;
+
+    (paddr, pbmt) = translate(vaddr);
+
+    if (CSR[menvcfg].PBMTE == 0) {
+      return pma_applies?(PmaAttribute::IO, paddr, len);
+    } else {
+      return
+        (pbmt == $bits(Pbmt::IO))
+        || pma_applies(PmaAttribute::IO, paddr, len);
+    }
   }
 }
 

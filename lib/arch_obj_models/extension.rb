@@ -61,6 +61,9 @@ class Extension < ArchDefObject
   # @return [ArchDef] The architecture defintion
   attr_reader :arch_def
 
+  # @return [String] Long name of the extension
+  def long_name = @data["long_name"]
+
   # @return [String] Company that developed the extension
   # @return [nil] if the company isn't known
   def company

@@ -1,0 +1,84 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+hinval.gvma:
+  long_name: Invalidate cached address translations
+  definedBy: Svinval
+  requires: H
+  encoding:
+    match: 0110011----------000000001110011
+    variables:
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+  description: |
+    `hinval.gvma` has the same semantics as `sinval.vma` except that it combines with
+    `sfence.w.inval` and `sfence.inval.ir` to replace `hfence.gvma` and uses VMID instead of ASID.
+  access:
+    s: sometimes
+    u: never
+    vs: never
+    vu: never
+  assembly: xs1, xs2
+  operation(): |
+    XReg gaddr = X[rs1];
+    Bits<VMID_WIDTH> vmid = X[rs2][VMID_WIDTH-1:0];
+
+    if (mode() == PrivilegeMode::U) {
+      raise (ExceptionCode::IllegalInstruction, $encoding);
+    }
+
+    if (CSR[mstatus].TVM == 1 && mode() == PrivilegeMode::S) {
+      raise (ExceptionCode::IllegalInstruction, $encoding);
+    }
+
+    if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
+      raise (ExceptionCode::VirtualInstruction, $encoding);
+    }
+
+    # note: this will default to "all"
+    VmaOrderType vma_type;
+    vma_type.gstage = true;
+
+    if ((rs1 == 0) && (rs2 == 0)) {
+      # invalidate all G-stage translations, from all addresses and all VMIDs
+      # includes global mappings
+      vma_type.global = true;
+
+      invalidate_translations(vma_type);
+
+    } else if ((rs1 == 0) && (rs2 != 0)) {
+      # invalidates all G-stage translations from VMID 'vmid'
+      # does not affect global mappings
+      vma_type.single_vmid = true;
+      vma_type.vmid = vmid;
+
+      invalidate_translations(vma_type);
+
+    } else if ((rs1 != 0) && (rs2 == 0)) {
+      # invalidate all G-stage translations from leaf page tables containing 'vaddr'
+      # does not affect global mappings
+      if (canonical_vaddr?(vaddr)) {
+        vma_type.single_vaddr = true;
+        vma_type.vaddr = gaddr;
+
+        invalidate_translations(vma_type);
+
+      }
+      # else, silently do nothing
+
+    } else {
+      # invalidate all G-stage translations from leaf page tables for virtual machine 'vmid' containing 'vaddr'
+      # does not affect global mappings
+      if (canonical_vaddr?(vaddr)) {
+        vma_type.single_vmid = true;
+        vma_type.vmid = vmid;
+        vma_type.single_vaddr = true;
+        vma_type.vaddr = vaddr;
+
+        invalidate_translations(vma_type);
+
+      }
+      # else, silently do nothing
+    }
+    

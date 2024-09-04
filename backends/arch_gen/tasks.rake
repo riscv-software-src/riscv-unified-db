@@ -52,18 +52,27 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
     ext_obj[ext_name]["__source"] = f
     [ext_name, ext_obj[ext_name]]
   end.to_h
-  profile_family_hash = Dir.glob($root / "arch" / "profile" / "**" / "*.yaml").map do |f|
+  profile_family_hash = Dir.glob($root / "arch" / "profile_family" / "**" / "*.yaml").map do |f|
     profile_obj = YAML.load_file(f)
-    profile_name = profile_obj["family"]["name"]
-    profile_obj["family"]["__source"] = f
-    [profile_name, profile_obj]
+    profile_name = profile_obj.keys[0]
+    profile_obj[profile_name]["name"] = profile_name
+    profile_obj[profile_name]["__source"] = f
+    [profile_name, profile_obj[profile_name]]
+  end.to_h
+  profile_hash = Dir.glob($root / "arch" / "profile" / "**" / "*.yaml").map do |f|
+    profile_obj = YAML.load_file(f)
+    profile_name = profile_obj.keys[0]
+    profile_obj[profile_name]["name"] = profile_name
+    profile_obj[profile_name]["__source"] = f
+    [profile_name, profile_obj[profile_name]]
   end.to_h
 
   arch_def = {
     "instructions" => inst_hash,
     "extensions" => ext_hash,
     "csrs" => csr_hash,
-    "profile_families" => profile_family_hash
+    "profile_families" => profile_family_hash,
+    "profiles" => profile_hash
   }
 
   dest = "#{$root}/gen/_/arch/arch_def.yaml"

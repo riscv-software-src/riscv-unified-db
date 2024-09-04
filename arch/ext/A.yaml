@@ -40,7 +40,7 @@ A:
     The `A` extension comprises instructions provided by the `Zaamo` and `Zalrsc`
     extensions.
 
-    === Specifying Ordering of Atomic Instructions
+    = Specifying Ordering of Atomic Instructions
 
     The base RISC-V ISA has a relaxed memory model, with the `FENCE`
     instruction used to impose additional ordering constraints. The address

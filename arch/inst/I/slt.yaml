@@ -21,6 +21,7 @@ slt:
     u: always
     vs: always
     vu: always
+  data_independent_timing: true
   operation(): |
     XReg src1 = X[rs1];
     XReg src2 = X[rs2];

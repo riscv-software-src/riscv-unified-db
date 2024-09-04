@@ -4,9 +4,9 @@ rule %r{#{$root}/gen/profile_doc/adoc/.*\.adoc} => proc { |tname|
   profile_family_name = Pathname.new(tname).basename(".adoc")
   [
     __FILE__,
-    "#{$root}/backends/profile_doc/templates/profile_pdf.adoc.erb",
-    "#{$root}/arch/profile/#{profile_family_name}.yaml"
-  ]
+    "#{$root}/lib/arch_obj_models/profile.rb",
+    "#{$root}/backends/profile_doc/templates/profile_pdf.adoc.erb"
+  ] + Dir.glob("#{$root}/arch/profile/**/*.yaml")
 } do |t|
   profile_family_name = Pathname.new(t.name).basename(".adoc").to_s
 
@@ -21,6 +21,7 @@ rule %r{#{$root}/gen/profile_doc/adoc/.*\.adoc} => proc { |tname|
 
   FileUtils.mkdir_p File.dirname(t.name)
   File.write t.name, AsciidocUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
+  puts "Generated adoc source at #{t.name}"
 end
 
 rule %r{#{$root}/gen/profile_doc/pdf/.*\.pdf} => proc { |tname|
@@ -46,6 +47,9 @@ rule %r{#{$root}/gen/profile_doc/pdf/.*\.pdf} => proc { |tname|
     "-o #{t.name}",
     adoc_filename
   ].join(" ")
+
+  puts
+  puts "SUCCESS! File written to #{t.name}"
 end
 
 namespace :gen do

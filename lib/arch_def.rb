@@ -44,9 +44,13 @@ class ArchDef
     end
   end
 
-  def inspect = "ArchDef"
+  # Returns a string representation of the object, suitable for debugging.
+  # @return [String] A string representation of the object.
+  def inspect
+    "ArchDef"
+  end
 
-  # @return [Array<Extesion>] List of all extensions, even those that are't implemented
+  # @return [Array<Extension>] List of all extensions, even those that are't implemented
   def extensions
     return @extensions unless @extensions.nil?
 
@@ -187,6 +191,32 @@ class ArchDef
   # @return [nil] if the profile family does not exist
   def profile_family(name) = profile_families_hash[name]
 
+  # @return [Profile] List of all defined profiles
+  def profiles
+    return @profiles unless @profiles.nil?
+
+    @profiles = []
+    @arch_def["profiles"].each_value do |profile_data|
+      @profiles << Profile.new(profile_data, self)
+    end
+    @profiles
+  end
+
+  # @return [Hash<String, Profile>] Profiles, indexed by name
+  def profiles_hash
+    return @profiles_hash unless @profiles_hash.nil?
+
+    @profiles_hash = {}
+    profiles.each do |profile|
+      @profiles_hash[profile.name] = profile
+    end
+    @profiles_hash
+  end
+
+  # @return [Profile] The profile named +name+
+  # @return [nil] if the profile does not exist
+  def profile(name) = profiles_hash[name]
+
   # given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`
   # and replace them with links to the relevant object page
   #
@@ -273,6 +303,12 @@ class ImplArchDef < ArchDef
     @params
   end
 
+  # Returns an environment hash suitable for use with ERb templates.
+  #
+  # This method returns a hash containing the architecture definition and other
+  # relevant data that can be used to generate ERb templates.
+  #
+  # @return [Hash] An environment hash suitable for use with ERb templates.
   def erb_env
     return @env unless @env.nil?
 

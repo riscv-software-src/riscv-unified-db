@@ -17,7 +17,7 @@ D:
     (((double-precision, floating point)))
     (((floating point, double precision)))
 
-    === D Register State
+    = D Register State
 
     The D extension widens the 32 floating-point registers, `f0-f31`, to
     64 bits (FLEN=64 in <<fprs>>. The `f` registers can
@@ -33,7 +33,7 @@ D:
     (((floating-point, supported precisions)))
 
     [[nanboxing]]
-    === NaN Boxing of Narrower Values
+    = NaN Boxing of Narrower Values
 
     When multiple floating-point precisions are supported, then valid values
     of narrower _n_-bit types, _n_<FLEN, are represented in the lower _n_ bits of an FLEN-bit NaN value, in a process termed NaN-boxing. The upper bits of a valid NaN-boxed value must be all 1s. Valid NaN-boxed _n_-bit values

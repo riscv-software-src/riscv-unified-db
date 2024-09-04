@@ -4,23 +4,43 @@ require_relative "obj"
 
 # representation of a specific profile for a Family, Mode, and Base
 class Profile < ArchDefObject
-  # @return [ProfileFamily] The family this profile belongs to
-  attr_reader :family
-
   # @return [ArchDef] The defining ArchDef
-  def arch_def = @family.arch_def
+  attr_reader :arch_def
+
+  def initialize(data, arch_def)
+    super(data)
+    @arch_def = arch_def
+  end
+
+  def family = arch_def.profile_family(@data["family"])
+
+  # @return [Profile] Profiles this one inherits from
+  # @return [nil] if this profile has no parent
+  def inherits = arch_def.profile(@data["inherits"])
 
   # @return ["M", "S", "U", "VS", "VU"] Privilege mode for the profile
-  def mode = @data["mode"]
+  def mode
+    if @data["mode"].nil?
+      raise "No mode specified an no inheritance for profile '#{name}'" if inherits.empty?
+      inherits.last.mode
+    else
+      @data["mode"]
+    end
+  end
 
   # @return [32, 64] The base XLEN for the profile
-  def base = @data["base"]
+  def base
+    if @data["base"].nil?
+      raise "No base specified an no inheritance for profile '#{name}'" if inherits.empty?
+
+      inherits.last.base
+    else
+      @data["base"]
+    end
+  end
 
   # @return [Gem::Version] Semantic version of the Profile within the ProfileLineage
   def version = Gem::Version.new(@data["version"])
-
-  # @return ["development", "ratified"] The current status of the definition
-  def status = @data["status"]
 
   # @return [String] The marketing name of the Profile
   def marketing_name = @data["marketing_name"]
@@ -41,24 +61,42 @@ class Profile < ArchDefObject
     @data["contributors"].map { |data| Person.new(data) }
   end
 
-  def initialize(profile_version_data, lineage)
-    super(profile_version_data)
-    @lineage = lineage
+  # @return [String] Given an extension +ext_name+, return the status
+  def extension_status(ext_name)
+    if mandatory?(ext_name)
+      req = mandatory_extension_requirements.find do |req|
+        req.name == ext_name
+      end.version_requirement
+      "Mandatory, #{req}"
+    elsif optional?(ext_name)
+      req = optional_extension_requirements.find do |req|
+        req.name == ext_name
+      end.version_requirement
+      "Optional, #{req}"
+    else
+      "-"
+    end
   end
 
-  # @return [Profile] The Profile this one inherits
-  # @return [nil] if this profile does not inherit from another
-  def parent
-    return @parent unless @parent.nil?
-
-    if @data["inherits"].nil?
-      nil
-    else
-      @parent = arch_def.profile(
-        @data["inherits"]["name"],
-        @data["inherits"]["version"]
-      )
+  # @return [String] The note associated with extension +ext_name+
+  # @return [nil] if there is no note for +ext_name+
+  def extension_note(ext_name)
+    unless @data.dig("extensions", "mandatory").nil?
+      ext = @data["extensions"]["mandatory"].find { |e| e["name"] == ext_name }
+      return ext["note"] unless ext.nil?
     end
+
+    unless @data.dig("extensions", "optional").nil?
+      ext = @data["extensions"]["optional"].find { |e| e["name"] == ext_name }
+      return ext["note"] unless ext.nil?
+    end
+
+    unless @data.dig("extensions", "excluded").nil?
+      ext = @data["extensions"]["excluded"].find { |e| e["name"] == ext_name }
+      return ext["note"] unless ext.nil?
+    end
+
+    nil
   end
 
   # @return [Array<ExtensionRequirement>] List of mandatory extensions for the profile
@@ -66,7 +104,7 @@ class Profile < ArchDefObject
     return @mandatory_extensions unless @mandatory_extensions.nil?
 
     @mandatory_extensions = []
-    @mandatory_extensions += parent.mandatory_extension_requirements unless parent.nil?
+    @mandatory_extensions += inherits.mandatory_extension_requirements unless inherits.nil?
 
     # we need to remove anything that was changed from inheritance
     unless @data["extensions"].nil?
@@ -85,14 +123,29 @@ class Profile < ArchDefObject
   end
 
   # @return [Array<Extension>] List of mandatory extensions
-  def mandatory_extensions = mandatory_extension_requirements.map { |e| arch_def.extension(e.name) }
+  def mandatory_extensions
+    mandatory_extension_requirements.map do |e|
+      obj = arch_def.extension(e.name)
+
+      # @todo: change this to raise once all the profile extensions
+      #        are defined
+      warn "Extension #{e.name} is not defined" if obj.nil?
+
+      obj
+    end.reject(&:nil?)
+  end
+
+  # @return [Boolean] whether or not +ext_name+ is mandatory in the prfoile
+  def mandatory?(ext_name)
+    mandatory_extension_requirements.any? { |ext| ext.name == ext_name }
+  end
 
   # @return [Array<ExtensionRequirement>] List of optional extensions for the profile
   def optional_extension_requirements
     return @optional_extensions unless @optional_extensions.nil?
 
     @optional_extensions = []
-    @optional_extensions += parent.optional_extension_requirements unless parent.nil?
+    @optional_extensions += inherits.optional_extension_requirements unless inherits.nil?
 
     # we need to remove anything that was changed from inheritance
     unless @data["extensions"].nil?
@@ -109,6 +162,25 @@ class Profile < ArchDefObject
 
     @optional_extensions
   end
+
+  # @return [Array<Extension>] List of optional extensions
+  def optional_extensions
+    optional_extension_requirements.map do |e|
+      obj = arch_def.extension(e.name)
+
+      # @todo: change this to raise once all the profile extensions
+      #        are defined
+      warn "Extension #{e.name} is not defined" if obj.nil?
+
+      obj
+    end.reject(&:nil?)
+  end
+
+  # @return [Boolean] whether or not +ext_name+ is optional in the prfoile
+  def optional?(ext_name)
+    optional_extension_requirements.any? { |ext| ext.name == ext_name }
+  end
+
 end
 
 # A profile family is a set of profiles that share a common goal or lineage
@@ -119,10 +191,10 @@ class ProfileFamily < ArchDefObject
   attr_reader :arch_def
 
   # @return [String] Name of the family
-  def name = @data["family"]["name"]
+  def name = @data["name"]
 
   # @return [String] Name of the family
-  def marketing_name = @data["family"]["marketing_name"]
+  def marketing_name = @data["marketing_name"]
 
   # @param arch_def [ArchDef] Architecture spec
   # @param profile_family_data [Hash<String, Object>] The data from YAML
@@ -140,11 +212,7 @@ class ProfileFamily < ArchDefObject
   def profiles
     return @profiles unless @profiles.nil?
 
-    @profiles = []
-    @data["profiles"].each do |profile_data|
-      @profiles << Profile.new(profile_data, self)
-    end
-    @profiles
+    @profiles = arch_def.profiles.select { |profile| profile.data["family"] == name }
   end
 
   # @return [Date] The most recent ratification date of any profile in the family
@@ -157,11 +225,24 @@ class ProfileFamily < ArchDefObject
     date
   end
 
+  # @return [Array<Extension>] List of all extensions referenced by the family
+  def referenced_extensions
+    return @referenced_extensions unless @referenced_extensions.nil?
+
+    @referenced_extensions = []
+    profiles.each do |profile|
+      @referenced_extensions += profile.mandatory_extensions
+      @referenced_extensions += profile.optional_extensions
+    end
+
+    @referenced_extensions.uniq!(&:name)
+  end
+
   # @return [Company] Company that created the profile
-  def company = Company.new(@data["family"]["company"])
+  def company = Company.new(@data["company"])
 
   # @return [License] Documentation license
   def doc_license
-    License.new(@data["family"]["doc_license"])
+    License.new(@data["doc_license"])
   end
 end

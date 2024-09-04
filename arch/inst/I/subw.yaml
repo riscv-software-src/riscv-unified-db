@@ -20,6 +20,7 @@ subw:
     u: always
     vs: always
     vu: always
+  data_independent_timing: true
   operation(): |
     Bits<32> t0 = X[rs1][31:0];
     Bits<32> t1 = X[rs2][31:0];

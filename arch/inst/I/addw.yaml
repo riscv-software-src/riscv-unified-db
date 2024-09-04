@@ -22,6 +22,7 @@ addw:
     u: always
     vs: always
     vu: always
+  data_independent_timing: true
   operation(): |
     XReg operand1 = sext(X[rs1], 31);
     XReg operand2 = sext(X[rs2], 31);

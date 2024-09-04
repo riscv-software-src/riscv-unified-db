@@ -627,6 +627,9 @@ module Idl
     # @return {Array<AstNode>] List of all bitfield definitions
     def bitfields = definitions.select { |e| e.is_a?(BitfieldDefinitionAst) }
 
+    # @return [Array<AstNode>] List of all struct definitions
+    def structs = definitions.select { |e| e.is_a?(StructDefinitionAst) }
+
     # @return {Array<AstNode>] List of all function definitions
     def functions = definitions.select { |e| e.is_a?(FunctionDefAst) }
 
@@ -1041,6 +1044,87 @@ module Idl
       end
       idl << "}"
       idl.join("\n")
+    end
+  end
+
+  class StructDefinitionSyntaxNode < Treetop::Runtime::SyntaxNode
+    def to_ast
+      member_types = []
+      member_names = []
+      member.elements.each do |m|
+        member_types << m.type_name.to_ast
+        member_names << m.id.text_value
+      end
+      StructDefinitionAst.new(input, interval, user_type_name.text_value, member_types, member_names)
+    end
+  end
+
+  # Structure declaration
+  #
+  # for example, this maps to a StructDefinitionAst:
+  #
+  # struct TranslationResult {
+  #   Bits<PHYS_ADDR_SIZE> paddr;
+  #   Pbmt pbmt;
+  #   ...
+  # }
+  class StructDefinitionAst < AstNode
+    include Declaration
+
+    # @return [String] Struct name
+    attr_reader :name
+
+    # @return [Array<AstNode>] Types of each member
+    attr_reader :member_types
+
+    # @return [Array<String>] Member names
+    attr_reader :member_names
+
+    def initialize(input, interval, name, member_types, member_names)
+      super(input, interval, member_types)
+
+      @name = name
+      @member_types = member_types
+      @member_names = member_names
+    end
+
+    # @!macro type_check
+    def type_check(symtab)
+      @member_types.each do |t|
+        t.type_check(symtab)
+      end
+    end
+
+    # @!macro type
+    def type(symtab)
+      @type = StructType.new(@name, @member_types.map { |t| t.type(symtab) }, @member_names)
+    end
+
+    # @!macro add_symbol
+    def add_symbol(symtab)
+      t = type(symtab)
+      symtab.add!(name, t)
+    end
+
+    # @param name [String] Member name
+    # @param symtab [SymbolTable] Context
+    # @return [Type] Type of member +name+
+    # @return [nil] if there is no member +name+
+    def member_type(name, symtab)
+      idx = member_names.index(name)
+      return nil if idx.nil?
+      member_types[idx].type(symtab)
+    end
+
+    # @return [Integer] Number of members
+    def num_members = member_names.size
+
+    def to_idl
+      member_decls = []
+      num_members.times do |i|
+        member_decls << "#{member_types[i].to_idl} #{member_names[i]}"
+      end
+      "struct #{name} { #{member_decls.join("; ")}; }"
     end
   end
 
@@ -1504,7 +1588,7 @@ module Idl
 
   class FieldAssignmentSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
-      FieldAssignmentAst.new(input, interval, bitfield_access_expression.to_ast, field_name.text_value, rval.to_ast)
+      FieldAssignmentAst.new(input, interval, field_access_expression.to_ast, rval.to_ast)
     end
   end
 
@@ -1515,29 +1599,23 @@ module Idl
   #   entry.PPN = 0
   #
   class FieldAssignmentAst < AstNode
-    def bitfield = @children[0]
+    def field_access = @children[0]
     def write_value = @children[1]
 
-    def initialize(input, interval, bitfield, field_name, write_value)
-      super(input, interval, [bitfield, write_value])
-
-      @field_name = field_name
+    def initialize(input, interval, field_access, write_value)
+      super(input, interval, [field_access, write_value])
     end
 
     # @!macro type
     def type(symtab)
-      Type.new(:bits, width: bitfield.type(symtab).range(@field_name).size)
+      field_access.type(symtab)
     end
 
     # @!macro type_check
     def type_check(symtab)
-      bitfield.type_check(symtab)
+      field_access.type_check(symtab)
 
-      type_error "Cannot write const variable" if bitfield.type(symtab).const?
-
-      unless bitfield.type(symtab).field_names.include?(@field_name)
-        type_error "#{@field_name} is not a member of #{bitfield.type(symtab)}"
-      end
+      type_error "Cannot write const variable" if field_access.type(symtab).const?
 
       write_value.type_check(symtab)
       return if write_value.type(symtab).convertable_to?(type(symtab))
@@ -1547,16 +1625,22 @@ module Idl
 
     # @!macro execute
     def execute(symtab)
-      value_error "TODO: Field assignement execution"
+      if field_access.type(symtab).kind == :struct
+        struct_val = field_access.obj.value(symtab)
+        struct_val[field_access.field_name] = write_value.value(symtab)
+        symtab.add(field_access.obj.name, Var.new(field_access.obj.name, field_access.type(symtab), struct_val))
+      else
+        value_error "TODO: Field assignement execution"
+      end
     end
 
     # @!macro execute_unknown
     def execute_unknown(symtab)
-      value_error "TODO: Field assignement execution"
+      symtab.add(field_access.obj.name, Var.new(field_access.obj.name, field_access.type(symtab), nil))
     end
 
     # @!macro to_idl
-    def to_idl = "#{bitfield.to_idl}.#{@field_name} = #{write_value.to_idl}"
+    def to_idl = "#{field_access.to_idl} = #{write_value.to_idl}"
   end
 
   class CsrFieldAssignmentSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -2766,20 +2850,20 @@ module Idl
     def to_idl = "#{rval.to_idl}++"
   end
 
-  class BitfieldAccessExpressionSyntaxNode < Treetop::Runtime::SyntaxNode
+  class FieldAccessExpressionSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
-      BitfieldAccessExpressionAst.new(input, interval, rval.to_ast, field_name.text_value)
+      FieldAccessExpressionAst.new(input, interval, rval.to_ast, field_name.text_value)
     end
   end
 
-  # represents a bitfield field access (rvalue)
+  # represents a bitfield or struct field access (rvalue)
   #
   # for example:
   #   entry.PPN
-  class BitfieldAccessExpressionAst < AstNode
+  class FieldAccessExpressionAst < AstNode
     include Rvalue
 
-    def bitfield = @children[0]
+    def obj = @children[0]
 
     def initialize(input, interval, bitfield, field_name)
       super(input, interval, [bitfield])
@@ -2788,48 +2872,53 @@ module Idl
     end
 
     def kind(symtab)
-      bitfield.type(symtab).kind
+      obj.type(symtab).kind
     end
 
     # @!macro type
     def type(symtab)
-      bf_type = bitfield.type(symtab)
+      obj_type = obj.type(symtab)
 
-      if bf_type.kind == :bitfield
-        Type.new(:bits, width: bf_type.range(@field_name).size)
+      if obj_type.kind == :bitfield
+        Type.new(:bits, width: obj_type.range(@field_name).size)
+      elsif obj_type.kind == :struct
+        obj_type.member_type(@field_name, symtab)
       else
         internal_error "huh?"
       end
     end
 
     def type_check(symtab)
-      bitfield.type_check(symtab)
+      obj.type_check(symtab)
 
-      bf_type = bitfield.type(symtab)
+      obj_type = obj.type(symtab)
 
-      if bf_type.kind == :bitfield
-        internal_error "#{bitfield.text_value} Not a BitfieldType (is a #{bf_type.class.name})" unless bf_type.respond_to?(:field_names)
-        unless bf_type.field_names.include?(@field_name)
-          type_error "#{@field_name} is not a member of #{bf_type}"
+      if obj_type.kind == :bitfield
+        internal_error "#{bitfield.text_value} Not a BitfieldType (is a #{obj_type.class.name})" unless obj_type.respond_to?(:field_names)
+        unless obj_type.field_names.include?(@field_name)
+          type_error "#{@field_name} is not a member of #{obj_type}"
         end
-
+      elsif obj_type.kind == :struct
+        type_error "#{@field_name} is not a member of #{obj_type}" unless obj_type.member?(@field_name)
       else
-        type_error "#{bitfield.text_value} is not a bitfield (is #{bitfield.type(symtab)})"
+        type_error "#{obj.text_value} is not a bitfield (is #{obj.type(symtab)})"
       end
     end
 
     # @!macro value
     def value(symtab)
       if kind(symtab) == :bitfield
-        range = bitfield.type(symtab).range(@field_name)
-        (bitfield.value(symtab) >> range.first) & ((1 << range.size) - 1)
+        range = obj.type(symtab).range(@field_name)
+        (obj.value(symtab) >> range.first) & ((1 << range.size) - 1)
+      elsif kind(symtab) == :struct
+        obj.value(symtab)[@field_name]
       else
-        type_error "#{bitfield.text_value} is Not a bitfield."
+        type_error "#{obj.text_value} is Not a bitfield."
       end
     end
 
     # @!macro to_idl
-    def to_idl = "#{bitfield.to_idl}.#{@field_name}"
+    def to_idl = "#{obj.to_idl}.#{@field_name}"
   end
 
   class EnumRefSyntaxNode < Treetop::Runtime::SyntaxNode

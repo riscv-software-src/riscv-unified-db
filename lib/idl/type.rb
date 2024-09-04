@@ -10,6 +10,7 @@ module Idl
       :enum,     # enumeration class
       :enum_ref, # reference to an enumeration element, convertable to int and/or Bits<bit_width(MAX_ENUM_VALUE)>
       :bitfield, # bitfield, convertable to int and/or Bits<width>
+      :struct,   # structure class
       :array,    # array of other types
       :tuple,    # tuple of other disimilar types
       :function, # function
@@ -365,6 +366,36 @@ module Idl
     def make_global
       @qualifiers.append(:global).uniq!
       self
+    end
+  end
+
+  class StructType < Type
+
+    def initialize(type_name, member_types, member_names)
+      raise ArgumentError, "Argument 1 should be a type name" unless type_name.is_a?(String)
+
+      raise ArgumentError, "Argument 2 should be an array of types" unless member_types.is_a?(Array)
+
+      raise ArgumentError, "Argument 3 should be an array of names" unless member_names.is_a?(Array) && member_names.all? { |m| m.is_a?(String) }
+
+      raise ArgumentError, "member_types and member_names must be the same size" unless member_names.size == member_types.size
+
+      super(:struct)
+      @type_name = type_name
+      @member_types = member_types
+      @member_names = member_names
+    end
+
+    def clone
+      StructType.new(@type_name, @member_types, @member_names)
+    end
+
+    def default
+      hsh = {}
+      @member_types.size.times do |i|
+        hsh[@member_names[i]] = @member_types[i].default
+      end
+      hsh
     end
   end
 

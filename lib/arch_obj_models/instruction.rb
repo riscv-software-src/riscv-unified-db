@@ -5,6 +5,13 @@ require_relative "obj"
 
 # model of a specific instruction in a specific base (RV32/RV64)
 class Instruction < ArchDefObject
+  def ==(other)
+    if other.is_a?(Instruction)
+      name == other.name
+    else
+      raise ArgumentError, "Instruction is comparable to a #{other.class.name}"
+    end
+  end
 
   # @return [Hash<String, String>] Hash of access permissions for each mode. The key is the lowercase name of a privilege mode, and the value is one of ['never', 'sometimes', 'always']
   def access
@@ -596,7 +603,6 @@ class Instruction < ArchDefObject
     desc = {
       "reg" => []
     }
-
     display_fields = encoding(base).opcode_fields
     display_fields += encoding(base).decode_variables.map(&:grouped_encoding_fields).flatten
 

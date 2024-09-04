@@ -20,6 +20,29 @@
       },
       "additionalProperties": false
     },
+    "requires_entry": {
+      "oneOf": [
+        { "$ref": "schema_defs.json#/$defs/extension_requirement" },
+        {
+          "type": "object",
+          "properties": {
+            "anyOf": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/requires_entry"
+              }
+            },
+            "allOf": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/requires_entry"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      ]
+    },
     "ext_data": {
       "type": "object",
       "required": ["description", "long_name", "versions"],
@@ -109,7 +132,13 @@
                   {"type": "null", "$comment": "When version isn't ratified" }
                 ]
               },
-              "changes": { "type": "string", "description": "Changes since last version" },
+              "changes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Changes since last version"
+              },
               "url": { "type": "string", "format": "uri", "description": "Link to ratified document" },
               "implies": {
                 "description": "Extension(s) implied by this extension (i.e., any subextesions)",
@@ -120,10 +149,7 @@
               },
               "requires": {
                 "description": "Extension(s) required by this extension",
-                "oneOf": [
-                  { "$ref": "schema_defs.json#/$defs/extension_requirement" },
-                  { "type": "array", "items": { "$ref": "schema_defs.json#/$defs/extension_requirement" }}
-                ]
+                "$ref": "#/$defs/requires_entry"
               },
               "conflicts": {
                 "description": "Extension(s) that conflict with this extension; both cannot be implemented at the same time",
@@ -161,7 +187,12 @@
                     "type": "object",
                     "properties": {
                       "schema": {
-                        "$ref": "http://json-schema.org/draft-07/schema#"
+                        "$ref": "http://json-schema.org/draft-07/schema#",
+                        "description": "Extra schema constraints for the parameter"
+                      },
+                      "extra_validation": {
+                        "type": "string",
+                        "description": "Extra validation to be performed in Ruby after JSON schema validation. Useful for complex conditions JSON Schema cannot handle (e.g., cross-parameter, data-dependent validation)"
                       }
                     },
                     "additionalProperties": false

@@ -138,3 +138,70 @@ fence:
     u: always
     vs: always
     vu: always
+  operation(): |
+    Boolean is_fence_tso;
+    Boolean is_pause;
+
+    if (fm == 1) {
+      if (pred == 0x3 && succ == 0x3) {
+        # this is a fence.tso instruction
+        is_fence_tso = true;
+      }
+    }
+    if (implemented?(ExtensionName::Zihintpause)) {
+      if ((pred == 1) && (succ == 0) && (fm == 0) && (rd == 0) && (rs1 == 0)) {
+        # this is a PAUSE instruction
+        is_pause = true;
+      }
+    }
+
+    Boolean pred_i = pred[3];
+    Boolean pred_o = pred[2];
+    Boolean pred_r = pred[1];
+    Boolean pred_w = pred[0];
+
+    Boolean succ_i = succ[3];
+    Boolean succ_o = succ[2];
+    Boolean succ_r = succ[1];
+    Boolean succ_w = succ[0];
+
+    if (is_fence_tso) {
+      fence_tso();
+    } else if (is_pause) {
+      pause();
+    } else {
+
+      # apply FIOM overrides
+      if (mode() == PrivilegeMode::S) {
+        if (CSR[menvcfg].FIOM) {
+          if (pred_i) { pred_r = true; }
+          if (pred_o) { pred_w = true; }
+          if (succ_i) { succ_r = true; }
+          if (succ_o) { succ_w = true; }
+        }
+      } else if (mode() == PrivilegeMode::U) {
+        if (CSR[menvcfg].FIOM || CSR[senvcfg].FIOM) {
+          if (pred_i) { pred_r = true; }
+          if (pred_o) { pred_w = true; }
+          if (succ_i) { succ_r = true; }
+          if (succ_o) { succ_w = true; }
+        }    
+      } else if (mode() == PrivilegeMode::VS || mode() == PrivilegeMode::VU) {
+        if (CSR[menvcfg].FIOM || CSR[henvcfg].FIOM) {
+          if (pred_i) { pred_r = true; }
+          if (pred_o) { pred_w = true; }
+          if (succ_i) { succ_r = true; }
+          if (succ_o) { succ_w = true; }
+        }    
+      }
+
+      fence(
+        pred_i, pred_o, pred_r, pred_w,
+        succ_i, succ_o, succ_r, succ_w
+      );
+    }
+  pseudoinstructions:
+  - when: (pred == 0x3) && (succ == 0x3) && (fm == 1)
+    to: fence.tso
+  - when: (pred == 1) && (succ == 0) && (fm == 0) && (rd == 0) && (rs1 == 0)
+    to: pause

@@ -5,6 +5,13 @@ require_relative "obj"
 
 # CSR definition
 class Csr < ArchDefObject
+  def ==(other)
+    if other.is_a?(Csr)
+      name == other.name
+    else
+      raise ArgumentError, "Csr is not comparable to #{other.class.name}"
+    end
+  end
 
   # @return [Integer] CSR address (the value passed as an immediate to csrrw, etc.)
   # @return [nil] if the CSR is indirect-accesss-only
@@ -156,7 +163,7 @@ class Csr < ArchDefObject
       if arch_def.is_a?(ImplArchDef)
         arch_def.param_values["XLEN"]
       else
-        if @data["base"].nil?
+        if !@data["base"].nil?
           @data["base"]
         else
           # don't know MXLEN
@@ -178,7 +185,7 @@ class Csr < ArchDefObject
           arch_def.param_values["SXLEN"]
         end
       else
-        if @data["base"].nil?
+        if !@data["base"].nil?
           @data["base"]
         else
           # don't know SXLEN
@@ -199,7 +206,7 @@ class Csr < ArchDefObject
           arch_def.param_values["VSXLEN"]
         end
       else
-        if @data["base"].nil?
+        if !@data["base"].nil?
           @data["base"]
         else
           # don't know VSXLEN
@@ -251,6 +258,8 @@ class Csr < ArchDefObject
   # @return [String] IDL condition of when the effective xlen is 32
   def length_cond32
     case @data["length"]
+    when "MXLEN"
+      "CSR[misa].MXL == 0"
     when "SXLEN"
       "CSR[mstatus].SXL == 0"
     when "VSXLEN"
@@ -263,6 +272,8 @@ class Csr < ArchDefObject
   # @return [String] IDL condition of when the effective xlen is 64
   def length_cond64
     case @data["length"]
+    when "MXLEN"
+      "CSR[misa].MXL == 1"
     when "SXLEN"
       "CSR[mstatus].SXL == 1"
     when "VSXLEN"
@@ -278,12 +289,14 @@ class Csr < ArchDefObject
     if dynamic_length?(arch_def)
       cond = 
         case @data["length"]
+        when "MXLEN"
+          "CSR[misa].MXL == %%"
         when "SXLEN"
           "CSR[mstatus].SXL == %%"
         when "VSXLEN"
           "CSR[hstatus].VSXL == %%"
         else
-          raise "Unexpected length"
+          raise "Unexpected length '#{@data['length']}'"
         end
 
       <<~LENGTH
@@ -502,7 +515,11 @@ class Csr < ArchDefObject
       if arch_def.is_a?(ImplArchDef)
         implemented_fields_for(arch_def, effective_xlen)
       else
-        fields
+        fields.select do |f|
+          effective_xlen.nil? || \
+            ((effective_xlen == 32) && f.defined_in_base32?) || \
+            ((effective_xlen == 64) && f.defined_in_base64?)
+        end
       end
     field_list.each do |field|
 
