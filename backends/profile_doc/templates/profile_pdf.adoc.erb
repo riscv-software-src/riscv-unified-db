@@ -397,7 +397,7 @@ Version<%= ext_req.version_requirement %>
 
 <%- profile_family.referenced_extensions.each do |ext| -%>
 <<<
-=== <%= ext.name %>
+=== <%= ext.name %> Extension
 <%= ext.long_name %>
 
 .Status
@@ -443,11 +443,11 @@ end.join(" | ") -%>
 
 ==== Synopsys
 
-:leveloffset: +4
+:leveloffset: +3
 
 <%= ext.description %>
 
-:leveloffset: -4
+:leveloffset: -3
 
 <%- insts = arch_def.instructions.select { |i| i.definedBy == ext.name || i.definedBy.include?(ext.name) } -%>
 <%- unless insts.empty? -%>
@@ -489,7 +489,7 @@ This extension has the following implementation options:
 
 <%- insts.each do |inst| -%>
 <<<
-[[inst:<%=inst.name.gsub('.', '_')%>-def]]
+[[inst-<%=inst.name.gsub('.', '_')%>-def]]
 === <%= inst.name %>
 
 *<%= inst.long_name %>*
@@ -631,14 +631,14 @@ This instruction may result in the following synchronous exceptions:
 [appendix]
 == CSR Specifications
 
-<%=
+<%-
   csrs = profile_family.referenced_extensions.map { |ext| ext.csrs }.flatten.uniq
   csrs.sort_by!(&:name)
 -%>
 
 <%- csrs.each do |csr| -%>
 <<<
-[csr:#<%= csr.name %>-def]
+[[csr-<%= csr.name %>-def]]
 === <%= csr.name %>
 
 *<%= csr.long_name %>*

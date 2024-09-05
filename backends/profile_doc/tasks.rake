@@ -2,7 +2,9 @@
 
 rule %r{#{$root}/gen/profile_doc/adoc/.*\.adoc} => proc { |tname|
   profile_family_name = Pathname.new(tname).basename(".adoc")
+
   [
+    "#{$root}/.stamps/arch-gen.stamp",
     __FILE__,
     "#{$root}/lib/arch_obj_models/profile.rb",
     "#{$root}/backends/profile_doc/templates/profile_pdf.adoc.erb"
@@ -52,6 +54,31 @@ rule %r{#{$root}/gen/profile_doc/pdf/.*\.pdf} => proc { |tname|
   puts "SUCCESS! File written to #{t.name}"
 end
 
+rule %r{#{$root}/gen/profile_doc/html/.*\.html} => proc { |tname|
+  profile_family_name = Pathname.new(tname).basename(".html")
+  [__FILE__, "#{$root}/gen/profile_doc/adoc/#{profile_family_name}.adoc"]
+} do |t|
+  profile_family_name = Pathname.new(t.name).basename(".html")
+
+  adoc_filename = "#{$root}/gen/profile_doc/adoc/#{profile_family_name}.adoc"
+
+  FileUtils.mkdir_p File.dirname(t.name)
+  sh [
+    "asciidoctor",
+    "-w",
+    "-v",
+    "-a toc",
+    "-a imagesdir=#{$root}/ext/docs-resources/images",
+    "-r asciidoctor-diagram",
+    "-r #{$root}/backends/ext_pdf_doc/idl_lexer",
+    "-o #{t.name}",
+    adoc_filename
+  ].join(" ")
+
+  puts
+  puts "SUCCESS! File written to #{t.name}"
+end
+
 namespace :gen do
   desc "Create a specification PDF for +profile_family+"
   task :profile_pdf, [:profile_family] => ["gen:arch"] do |_t, args|
@@ -62,5 +89,16 @@ namespace :gen do
     raise ArgumentError, "No profile family named '#{family_name}" if family.nil?
 
     Rake::Task["#{$root}/gen/profile_doc/pdf/#{family_name}.pdf"].invoke
+  end
+
+  desc "Create a specification HTML for +profile_family+"
+  task :profile_html, [:profile_family] => ["gen:arch"] do |_t, args|
+    family_name = args[:profile_family]
+    raise ArgumentError, "Missing required option +profile_family+" if family_name.nil?
+
+    family = arch_def_for("_").profile_family(family_name)
+    raise ArgumentError, "No profile family named '#{family_name}" if family.nil?
+
+    Rake::Task["#{$root}/gen/profile_doc/html/#{family_name}.html"].invoke
   end
 end

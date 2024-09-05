@@ -84,7 +84,7 @@ F:
     3+^| [.small]#32#
     |===
 
-    === Floating-Point Control and Status Register
+    == Floating-Point Control and Status Register
 
     The floating-point control and status register, `fcsr`, is a RISC-V
     control and status register (CSR). It is a 32-bit read/write register

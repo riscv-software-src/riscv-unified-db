@@ -153,7 +153,7 @@ Zkt:
     adhere to the requirements of `Zkt`.
     ====
 
-    =====	RVI (Base Instruction Set)
+    ===	RVI (Base Instruction Set)
 
     Only basic arithmetic and `slt*` (for carry computations) are included.
     The data-independent timing requirement does not apply to HINT instruction
@@ -198,7 +198,7 @@ Zkt:
     |          | &#10003; | sraw  _rd_, _rs1_, _rs2_ |  'sraw'
     |===
 
-    =====	RVM (Multiply)
+    ===	RVM (Multiply)
 
     Multiplication is included; division and remaindering excluded.
 
@@ -216,7 +216,7 @@ Zkt:
     |          | &#10003; | mulw   _rd_, _rs1_, _rs2_ | 'mulw'
     |===
 
-    =====	RVC (Compressed)
+    ===	RVC (Compressed)
 
     Same criteria as in RVI. Organised by quadrants.
 
@@ -245,7 +245,7 @@ Zkt:
     | &#10003; | &#10003; | c.add      | 'c_add'
     |===
 
-    =====	RVK (Scalar Cryptography)
+    ===	RVK (Scalar Cryptography)
 
     All K-specific instructions are included.
     Additionally, `seed` CSR latency should be independent of `ES16` state output
@@ -291,7 +291,7 @@ Zkt:
     |===
 
 
-    =====	RVB (Bitmanip)
+    ===	RVB (Bitmanip)
 
     The `Zbkb`, `Zbkc' and `Zbkx' extensions are included in their entirety.
 

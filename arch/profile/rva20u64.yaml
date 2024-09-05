@@ -47,6 +47,12 @@ rva20u64:
       version: "= 2.2"
     - name: M
       version: "= 2.0"
+    - name: U
+      version: "~> 2.0"
+      param_constraints:
+        U_MODE_ENDIANESS:
+          schema:
+            const: little
     - name: Zicntr
       version: " = 2.0"
     - name: Ziccif

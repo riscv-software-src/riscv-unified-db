@@ -26,10 +26,9 @@ module AsciidocUtils
 
         case type
         when "inst"
-          "xref:insns-#{name.gsub(',', '_')}[#{link_text.gsub(']', '\]')}]"
+          "xref:#inst-#{name.gsub('.', '_')}-def[#{link_text.gsub(']', '\]')}]"
         when "csr"
-          # "xref:csrs:#{name}.adoc##{name}-def[#{link_text.gsub(']', '\]')}]"
-          link_text
+          "xref:#csr-#{name}-def[#{link_text.gsub(']', '\]')}]"
         when "csr_field"
           csr_name, field_name = name.split('.')
           # "xref:csrs:#{csr_name}.adoc##{csr_name}-#{field_name}-def[#{link_text.gsub(']', '\]')}]"
@@ -76,6 +75,32 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/pdf/.*_extension\.pdf} => proc { |tname|
     "-a imagesdir=#{$root}/ext/docs-resources/images",
     "-r asciidoctor-diagram",
     "-r #{$root}/backends/ext_pdf_doc/idl_lexer",
+    "-o #{t.name}",
+    adoc_file
+  ].join(" ")
+
+  puts
+  puts "Success!! File written to #{t.name}"
+end
+
+rule %r{#{$root}/gen/ext_pdf_doc/.*/html/.*_extension\.html} => proc { |tname|
+  config_name = Pathname.new(tname).relative_path_from("#{$root}/gen/ext_pdf_doc").to_s.split("/")[0]
+  ext_name = Pathname.new(tname).basename(".html").to_s.split("_")[0..-2].join("_")
+  [
+    "#{$root}/gen/ext_pdf_doc/#{config_name}/adoc/#{ext_name}_extension.adoc"
+  ]
+} do |t|
+  ext_name = Pathname.new(t.name).basename(".html").to_s.split("_")[0..-2].join("_")
+  config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen/ext_pdf_doc").to_s.split("/")[0]
+  adoc_file = "#{$root}/gen/ext_pdf_doc/#{config_name}/adoc/#{ext_name}_extension.adoc"
+
+  FileUtils.mkdir_p File.dirname(t.name)
+  sh [
+    "asciidoctor",
+    "-w",
+    "-v",
+    "-a toc",
+    "-r asciidoctor-diagram",
     "-o #{t.name}",
     adoc_file
   ].join(" ")
@@ -150,5 +175,19 @@ namespace :gen do
     extension = args[:extension]
 
     Rake::Task[$root / "gen" / "ext_pdf_doc" / args[:cfg] / "pdf" / "#{extension}_extension.pdf"].invoke(args)
+  end
+
+  desc <<~DESC
+    Generate HTML documentation for :extension that is defined or overlayed in :cfg
+
+    The latest version will be used, but can be overloaded by setting the EXT_VERSION environment variable.
+  DESC
+  task :cfg_ext_html, [:extension, :cfg] do |_t, args|
+    raise ArgumentError, "Missing required argument :extension" if args[:extension].nil?
+    raise ArgumentError, "Missing required argument :cfg" if args[:cfg].nil?
+
+    extension = args[:extension]
+
+    Rake::Task[$root / "gen" / "ext_pdf_doc" / args[:cfg] / "html" / "#{extension}_extension.html"].invoke(args)
   end
 end
