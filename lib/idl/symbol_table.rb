@@ -118,25 +118,38 @@ module Idl
       }]
       if arch_def.is_a?(ImplArchDef)
         arch_def.params_with_value.each do |param_with_value|
-          add!(param_with_value.name, Var.new(param_with_value.name, param_with_value.type, param_with_value.value))
+          type = Type.from_json_schema(param_with_value.schema).make_const
+          if type.kind == :array && type.width == :unknown
+            type = Type.new(:array, width: param_with_value.value.length, sub_type: type.sub_type)
+          end
+
+          # could already be present...
+          existing_sym = get(param_with_value.name)
+          if existing_sym.nil?
+            add!(param_with_value.name, Var.new(param_with_value.name, type, param_with_value.value))
+          else
+            unless existing_sym.type.equal_to?(type) && existing_sym.value == param_with_value.value
+              raise DuplicateSymError, "Definition error: Param #{param.name} is defined by multiple extensions and is not the same definition in each"
+            end
+          end
         end
       end
       # now add all parameters, even those not implemented
       arch_def.params.each do |param|
-        next if arch_def.is_a?(ImplArchDef) && arch_def.params_with_value.include? { |p| p.name == param.name }
+        next if arch_def.is_a?(ImplArchDef) && arch_def.params_with_value.any? { |p| p.name == param.name }
 
         if param.exts.size == 1
           if param.name == "XLEN"
             # special case: we actually do know XLEN
-            add!(param.name, Var.new(param.name, param.type, @mxlen))
+            add!(param.name, Var.new(param.name, param.type.clone.make_const, @mxlen))
           else
-            add!(param.name, Var.new(param.name, param.type))
+            add!(param.name, Var.new(param.name, param.type.clone.make_const))
           end
         else
           # could already be present...
           existing_sym = get(param.name)
           if existing_sym.nil?
-             add!(param.name, Var.new(param.name, param.type))
+            add!(param.name, Var.new(param.name, param.type.clone.make_const))
           else
             unless existing_sym.type.equal_to?(param.type)
               raise "Definition error: Param #{param.name} is defined by multiple extensions and is not the same definition in each"

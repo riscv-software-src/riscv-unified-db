@@ -8,6 +8,18 @@ require_relative "symbol_table"
 module Treetop
   module Runtime
     class SyntaxNode
+      # Sets the input file for this syntax node unless it has already been set.
+      #
+      # If the input file has not been set, it will be set with the given filename and starting line number.
+      #
+      # @param [String] filename The name of the input file.
+      # @param [Integer] starting_line The starting line number in the input file.
+      def set_input_file_unless_already_set(filename, starting_line = 0)
+        if @input_file.nil?
+          set_input(filename, starting_line)
+        end
+      end
+
       # remember where the code comes from
       #
       # @param filename [String] Filename
@@ -142,6 +154,23 @@ module Idl
       @children = children
       @parent = nil # will be set later unless this is the root
       @children.each { |child| child.instance_variable_set(:@parent, self) }
+    end
+
+    # Sets the input file for this syntax node unless it has already been set.
+    #
+    # If the input file has not been set, it will be set with the given filename and starting line number.
+    #
+    # @param [String] filename The name of the input file.
+    # @param [Integer] starting_line The starting line number in the input file.
+    def set_input_file_unless_already_set(filename, starting_line = 0)
+      return unless @input_file.nil?
+
+      @input_file = filename
+      @starting_line = starting_line
+      children.each do |child|
+        child.set_input_file_unless_already_set(filename, starting_line)
+      end
+      raise "?" if @starting_line.nil?
     end
 
     # remember where the code comes from
@@ -670,13 +699,18 @@ module Idl
 
     def type_check(symtab)
       type_error "#{expression.text_value} is not an array" unless expression.type(symtab).kind == :array
+      if symtab.archdef.is_a?(ImplArchDef)
+        type_error "#{expression.text_value} must have a known value at compile time" if expression.type(symtab).width == :unknown
+      else
+        type_error "#{expression.text_value} must be a constant" unless expression.type(symtab).const?
+      end
     end
 
     def type(symtab)
       if expression.type(symtab).width == :unknown
-        Type.new(:bits, width: :unknown)
+        Type.new(:bits, width: :unknown, qualifiers: [:const])
       else
-        Type.new(:bits, width: expression.type(symtab).width.bit_length)
+        Type.new(:bits, width: expression.type(symtab).width.bit_length, qualifiers: [:const])
       end
     end
 
@@ -1269,7 +1303,7 @@ module Idl
     def execute(symtab) = value_error "$pc is never statically known"
 
     # @macro execute_unknown
-    def execute_unknown(symtab) = value_error "$pc is never statically known"
+    def execute_unknown(symtab); end
 
     # @!macro type_check
     def type_check(symtab)
@@ -1542,16 +1576,16 @@ module Idl
         var_val &= ~mask
 
         var_val | ((rval_val << lsb_val) & mask)
-        symtab.add(variable.name, variable.type(symtab), var_val)
+        symtab.add(variable.name, Var.new(variable.name, variable.type(symtab), var_val))
       rescue ValueError
-        symtab.add(variable.name, variable.type(symtab), nil)
+        symtab.add(variable.name, Var.new(variable.name, variable.type(symtab)))
         raise
       end
     end
 
     # @!macro execute_unknown
     def execute_unknown(symtab)
-      symtab.add(variable.name, variable.type(symtab), nil)
+      symtab.add(variable.name, Var.new(variable.name, variable.type(symtab)))
     end
 
     # @!macro to_idl
@@ -1897,7 +1931,14 @@ module Idl
         begin
           ary_size.value(symtab)
         rescue ValueError
-          type_error "Array size must be known at compile time" if symtab.archdef.is_a?(ImplArchDef)
+          # if this is an ImplArchDef, this is an error because all constants are supposed to be known
+          if symtab.archdef.is_a?(ImplArchDef)
+            puts symtab.get(ary_size.text_value)
+            type_error "Array size (#{ary_size.text_value}) must be known at compile time"
+          else
+            # otherwise, it's ok that we don't know the value yet, as long as the value is a const
+            type_error "Array size (#{ary_size.text_value}) must be a constant" unless ary_size.type(symtab).const?
+          end
         end
       end
 
@@ -2543,8 +2584,14 @@ module Idl
             else
               internal_error "Unhandled binary op #{op}"
             end
-          v_trunc = v & ((1 << type(symtab).width) - 1)
-          warn "WARNING: The value of '#{text_value}' is truncated from #{v} to #{v_trunc} because the result is only #{type(symtab).width} bits" if v != v_trunc
+          v_trunc =
+            if !lhs.type(symtab).const? || !rhs.type(symtab).const?
+              # when both sides are constant, the value is not truncated
+              v & ((1 << type(symtab).width) - 1)
+            else
+              v
+            end
+          warn "WARNING: The value of '#{text_value}' (#{lhs.type(symtab).const?}, #{rhs.type(symtab).const?}) is truncated from #{v} to #{v_trunc} because the result is only #{type(symtab).width} bits" if v != v_trunc
           v_trunc
         end
       # @value_cache[symtab] = value
@@ -4426,7 +4473,7 @@ module Idl
       @targs.each do |a|
         ttype = a.type(symtab)
         ttype = ttype.ref_type if ttype.kind == :enum
-        ttypes << ttype
+        ttypes << ttype.clone.make_const
       end
       ttypes
     end

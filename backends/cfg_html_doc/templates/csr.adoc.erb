@@ -148,7 +148,7 @@ Original::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= csr.type_checked_sw_read_ast(arch_def).gen_adoc %>
+<%= csr.type_checked_sw_read_ast(arch_def.sym_table).gen_adoc %>
 ----
 ====
 <%- end -%>
