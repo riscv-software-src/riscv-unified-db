@@ -392,6 +392,20 @@ Version<%= ext_req.version_requirement %>
 
 <%- end -%>
 
+== Profile Parameters
+
+<%= profile_family.marketing_name %> has <%= profile_family.referenced_extensions.reduce(0) { |sum, ext| sum + ext.params.size } %> associated paramters.
+
+<%- profile_family.referenced_extensions.each do |ext| -%>
+<%- ext.params.sort_by { |p| p.name }.each do |param| -%>
+<%= param.name %>::
++
+--
+<%= param.desc %>
+--
+<%- end -%>
+<%-  end -%>
+
 [appendix]
 == Extension Specifications
 
