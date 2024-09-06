@@ -262,53 +262,54 @@ class CsrField < ArchDefObject
 
   # @return [Idl::FunctionBodyAst] Abstract syntax tree of the type() function, after it has been type checked
   # @return [nil] if the type property is not a function
-  # @param idl_compiler [Idl::Compiler] A compiler
-  def type_checked_type_ast(arch_def)
+  # @param symtab [Idl::SymbolTable] Symbol table
+  def type_checked_type_ast(symtab)
     @type_checked_type_asts ||= {}
-    ast = @type_checked_type_asts[arch_def.name]
+    ast = @type_checked_type_asts[symtab.hash]
     return ast unless ast.nil?
 
-    symtab = arch_def.sym_table.deep_clone
+    symtab_hash = symtab.hash
+    symtab = symtab.deep_clone
     symtab.push
     # all CSR instructions are 32-bit
     symtab.add(
       "__expected_return_type",
-      Idl::Type.new(:enum_ref, enum_class: arch_def.sym_table.get("CsrFieldType"))
+      Idl::Type.new(:enum_ref, enum_class: symtab.get("CsrFieldType"))
     )
 
-    ast = type_ast(arch_def.idl_compiler)
-    arch_def.idl_compiler.type_check(
+    ast = type_ast(symtab.archdef.idl_compiler)
+    symtab.archdef.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{name}].type()"
     )
-    @type_checked_type_asts[arch_def.name] = ast
+    @type_checked_type_asts[symtab_hash] = ast
   end
 
   # @return [Idl::FunctionBodyAst] Abstract syntax tree of the type() function, after it has been type checked and pruned
   # @return [nil] if the type property is not a function
-  # @param idl_compiler [Idl::Compiler] A compiler
-  def pruned_type_ast(arch_def)
+  # @param symtab [Idl::SymbolTable] Global symbols
+  def pruned_type_ast(symtab)
     @pruned_type_asts ||= {}
-    ast = @pruned_type_asts[arch_def.name]
+    ast = @pruned_type_asts[symtab.hash]
     return ast unless ast.nil?
 
-    ast = type_checked_type_ast(arch_def).prune(arch_def.sym_table.deep_clone)
+    ast = type_checked_type_ast(symtab).prune(symtab.deep_clone)
 
-    symtab = arch_def.sym_table.deep_clone
+    symtab_hash = symtab.hash
     symtab.push
     # all CSR instructions are 32-bit
     symtab.add(
       "__expected_return_type",
-      Idl::Type.new(:enum_ref, enum_class: arch_def.sym_table.get("CsrFieldType"))
+      Idl::Type.new(:enum_ref, enum_class: symtab.get("CsrFieldType"))
     )
 
-    arch_def.idl_compiler.type_check(
+    symtab.archdef.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{name}].type()"
     )
-    @pruned_type_asts[arch_def.name] = ast
+    @pruned_type_asts[symtab_hash] = ast
   end
 
   # returns the definitive type for a configuration
@@ -337,11 +338,11 @@ class CsrField < ArchDefObject
         idl = @data["type()"]
         raise "type() is nil for #{csr.name}.#{name} #{@data}?" if idl.nil?
 
-        sym_table = arch_def.sym_table.deep_clone(clone_values: true)
-        sym_table.push # for consistency with template functions
+        # grab global symtab
+        sym_table = arch_def.sym_table
 
         begin
-          case pruned_type_ast(arch_def).return_value(sym_table)
+          case pruned_type_ast(sym_table.deep_clone).return_value(sym_table.deep_clone.push)
           when 0
             "RO"
           when 1
@@ -361,12 +362,15 @@ class CsrField < ArchDefObject
           warn "In parsing #{csr.name}.#{name}::type()"
           warn "  Return of type() function cannot be evaluated at compile time"
           raise e
-        ensure
-          sym_table.pop
         end
       else
-        raise "arch def is generic, can't know type exactly"
+        raise Idl::AstNode::ValueError.new(
+          type_ast(arch_def.idl_compiler).lineno,
+          type_ast(arch_def.idl_compiler).input_file,
+          "arch def is generic, can't know type exactly"
+        )
       end
+
     @type_cache[arch_def] = type
   end
 
@@ -416,27 +420,39 @@ class CsrField < ArchDefObject
   def reachable_functions(archdef, effective_xlen)
     return @reachable_functions unless @reachable_functions.nil?
 
+    symtab =
+      if (archdef.is_a?(ImplArchDef))
+        archdef.sym_table
+      else
+        raise ArgumentError, "Must supply effective_xlen for generic ArchDef" if effective_xlen.nil?
+
+        if effective_xlen == 32
+          archdef.sym_table_32
+        else
+          archdef.sym_table_64
+        end
+      end
+
     fns = []
     if has_custom_sw_write?
       ast = pruned_sw_write_ast(archdef, effective_xlen)
       unless ast.nil?
-        symtab = archdef.sym_table.deep_clone
-        symtab.push
-        symtab.add("csr_value", Idl::Var.new("csr_value", csr.bitfield_type(symtab.archdef, effective_xlen)))
-
-        fns.concat ast.reachable_functions(symtab)
+        sw_write_symtab = symtab.deep_clone
+        sw_write_symtab.push
+        sw_write_symtab.add("csr_value", Idl::Var.new("csr_value", csr.bitfield_type(symtab.archdef, effective_xlen)))
+        fns.concat ast.reachable_functions(sw_write_symtab)
       end
     end
     if @data.key?("type()")
-      ast = pruned_type_ast(archdef)
+      ast = pruned_type_ast(symtab.deep_clone)
       unless ast.nil?
-        fns.concat ast.reachable_functions(archdef.sym_table.deep_clone.push)
+        fns.concat ast.reachable_functions(symtab.deep_clone.push)
       end
     end
     if @data.key?("reset_value()")
-      ast = pruned_reset_value_ast(archdef)
+      ast = pruned_reset_value_ast(symtab.deep_clone)
       unless ast.nil?
-        fns.concat ast.reachable_functions(archdef.sym_table.deep_clone.push)
+        fns.concat ast.reachable_functions(symtab.deep_clone.push)
       end
     end
 
@@ -507,63 +523,67 @@ class CsrField < ArchDefObject
     )
   end
 
-  # @param arch_def [ImplArchDef] A config
+  # @param symtab [Idl::SymbolTable] A symbol table with globals
   # @return [Idl::FunctionBodyAst] Abstract syntax tree of the reset_value function, after being type checked
   # @return [nil] If the reset_value is not a function
-  def type_checked_reset_value_ast(arch_def)
+  def type_checked_reset_value_ast(symtab)
+    raise ArgumentError, "Expecting Idl::SymbolTable" unless symtab.is_a?(Idl::SymbolTable)
+
     @type_checked_reset_value_asts ||= {}
-    ast = @type_checked_reset_value_asts[arch_def.name]
+    ast = @type_checked_reset_value_asts[symtab.hash]
     return ast unless ast.nil?
 
     return nil unless @data.key?("reset_value()")
 
-    ast = reset_value_ast(arch_def.idl_compiler)
+    ast = reset_value_ast(symtab.archdef.idl_compiler)
 
-    symtab = arch_def.sym_table.deep_clone
+    symtab_hash = symtab.hash
+    symtab = symtab.deep_clone
     symtab.push
     symtab.add("__expected_return_type", Idl::Type.new(:bits, width: 64))
-    arch_def.idl_compiler.type_check(
+    symtab.archdef.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{csr.name}].reset_value()"
     )
-    @type_checked_reset_value_asts[arch_def.name] = ast
+    @type_checked_reset_value_asts[symtab_hash] = ast
   end
 
-  # @param arch_def [ImplArchDef] A config
+  # @param symtab [Idl::SymbolTable] Global symbol table
   # @return [Idl::FunctionBodyAst] Abstract syntax tree of the reset_value function, type checked and pruned
   # @return [nil] If the reset_value is not a function
-  def pruned_reset_value_ast(arch_def)
+  def pruned_reset_value_ast(symtab)
     @pruned_reset_value_asts ||= {}
-    ast = @pruned_reset_value_asts[arch_def.name]
+    ast = @pruned_reset_value_asts[symtab.hash]
     return ast unless ast.nil?
 
     return nil unless @data.key?("reset_value()")
 
-    ast = type_checked_reset_value_ast(arch_def)
+    ast = type_checked_reset_value_ast(symtab)
 
-    symtab = arch_def.sym_table.deep_clone
+    symtab_hash = symtab.hash
+    symtab = symtab.deep_clone
     symtab.push
     symtab.add("__expected_return_type", Idl::Type.new(:bits, width: 64))
 
     ast = ast.prune(symtab)
 
-    symtab = arch_def.sym_table.deep_clone
+    symtab.pop
     symtab.push
     symtab.add("__expected_return_type", Idl::Type.new(:bits, width: 64))
-    arch_def.idl_compiler.type_check(
+    symtab.archdef.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{csr.name}].reset_value()"
     )
 
-    @type_checked_reset_value_asts[arch_def.name] = ast
+    @type_checked_reset_value_asts[symtab_hash] = ast
   end
 
   # @param arch_def [ArchDef] A config
   # @return [Integer] The reset value of this field
   # @return [String]  The string 'UNDEFINED_LEGAL' if, for this config, there is no defined reset value
-  def reset_value(arch_def)
+  def reset_value(arch_def, effective_xlen = nil)
     if !@reset_value_cache.nil? && @reset_value_cache.key?(arch_def)
       return @reset_value_cache[arch_def]
     end
@@ -574,9 +594,15 @@ class CsrField < ArchDefObject
       if @data.key?("reset_value")
         @data["reset_value"]
       else
-        symtab = arch_def.sym_table.deep_clone
-        symtab.push
-        val = pruned_reset_value_ast(arch_def).return_value(symtab)
+        symtab =
+          if arch_def.is_a?(ImplArchDef)
+            arch_def.sym_table
+          else
+            raise ArgumentError, "effective_xlen is required when using generic arch_def" if effective_xlen.nil?
+
+            effective_xlen == 32 ? arch_def.sym_table_32 : arch_def.sym_table_64
+          end
+        val = pruned_reset_value_ast(symtab.deep_clone).return_value(symtab.deep_clone.push)
         val = "UNDEFINED_LEGAL" if val == 0x1_0000_0000_0000_0000
         val
       end
@@ -601,15 +627,16 @@ class CsrField < ArchDefObject
 
   # @return [FunctionBodyAst] The abstract syntax tree of the sw_write() function, after being type checked
   # @param effective_xlen [Integer] 32 or 64; the effective XLEN to evaluate this field in (relevant when fields move in different XLENs)
-  # @param arch_def [ImplArchDef] A configuration
-  def type_checked_sw_write_ast(arch_def, effective_xlen)
+  # @param symtab [Idl::SymbolTable] Symbol table with globals
+  def type_checked_sw_write_ast(symtab, effective_xlen)
     @type_checked_sw_write_asts ||= {}
-    ast = @type_checked_sw_write_asts[arch_def.name]
+    ast = @type_checked_sw_write_asts[symtab.hash]
     return ast unless ast.nil?
 
     return nil unless @data.key?("sw_write(csr_value)")
 
-    symtab = arch_def.sym_table.deep_clone
+    symtab_hash = symtab.hash
+    symtab = symtab.deep_clone
     symtab.push
     # all CSR instructions are 32-bit
     symtab.add(
@@ -622,16 +649,16 @@ class CsrField < ArchDefObject
     )
     symtab.add(
       "csr_value",
-      Idl::Var.new("csr_value", csr.bitfield_type(arch_def, effective_xlen))
+      Idl::Var.new("csr_value", csr.bitfield_type(symtab.archdef, effective_xlen))
     )
 
-    ast = sw_write_ast(arch_def.idl_compiler)
-    arch_def.idl_compiler.type_check(
+    ast = sw_write_ast(symtab.archdef.idl_compiler)
+    symtab.archdef.idl_compiler.type_check(
       ast,
       symtab,
-      "CSR[#{name}].sw_write()"
+      "CSR[#{csr.name}].#{name}.sw_write()"
     )
-    @type_checked_sw_write_asts[arch_def.name] = ast
+    @type_checked_sw_write_asts[symtab_hash] = ast
   end
 
   # @return [Idl::FunctionBodyAst] The abstract syntax tree of the sw_write() function
@@ -652,6 +679,8 @@ class CsrField < ArchDefObject
 
     raise "unexpected #{@sw_write_ast.class}" unless @sw_write_ast.is_a?(Idl::FunctionBodyAst)
 
+    @sw_write_ast.set_input_file(csr.__source, csr.source_line("fields", name, "sw_write(csr_value)"))
+
     @sw_write_ast
   end
 
@@ -660,6 +689,7 @@ class CsrField < ArchDefObject
   # @param effective_xlen [Integer] effective xlen, needed because fields can change in different bases
   # @param arch_def [ImplArchDef] A configuration
   def pruned_sw_write_ast(arch_def, effective_xlen)
+    raise ArgumentError, "Not expecting a generic Arch def" unless arch_def.is_a?(ImplArchDef)
     @pruned_sw_write_asts ||= {}
     ast = @pruned_sw_write_asts[arch_def.name]
     return ast unless ast.nil?
@@ -682,7 +712,7 @@ class CsrField < ArchDefObject
       Idl::Var.new("csr_value", csr.bitfield_type(arch_def, effective_xlen))
     )
 
-    ast = type_checked_sw_write_ast(arch_def, effective_xlen).prune(symtab)
+    ast = type_checked_sw_write_ast(arch_def.sym_table.deep_clone, effective_xlen).prune(symtab.deep_clone)
 
     arch_def.idl_compiler.type_check(
       ast,
@@ -709,7 +739,10 @@ class CsrField < ArchDefObject
 
     if @data[key].is_a?(Integer)
       if @data[key] > csr.length(arch_def, effective_xlen || @data["base"])
-        raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr.length(arch_def, effective_xlen)}) in #{csr.name}.#{name}"
+        raise Idl::AstNode::ValueError.new(
+          csr.source_line("fields", name, key), csr.__source,
+          "Location (#{key} = #{@data[key]}) is past the csr length (#{csr.length(arch_def, effective_xlen)}) in #{csr.name}.#{name}"
+        )
       end
 
       @data[key]..@data[key]
@@ -981,9 +1014,9 @@ class Csr < ArchDefObject
     case @data["length"]
     when "MXLEN"
       if arch_def.is_a?(ImplArchDef)
-        arch_def.param_values["XLEN"]
+        arch_def.mxlen
       else
-        if @data["base"].nil?
+        if !@data["base"].nil?
           @data["base"]
         else
           # don't know MXLEN
@@ -1005,7 +1038,7 @@ class Csr < ArchDefObject
           arch_def.param_values["SXLEN"]
         end
       else
-        if @data["base"].nil?
+        if !@data["base"].nil?
           @data["base"]
         else
           # don't know SXLEN
@@ -1026,7 +1059,7 @@ class Csr < ArchDefObject
           arch_def.param_values["VSXLEN"]
         end
       else
-        if @data["base"].nil?
+        if !@data["base"].nil?
           @data["base"]
         else
           # don't know VSXLEN
@@ -1234,13 +1267,14 @@ class Csr < ArchDefObject
   end
 
   # @return [FunctionBodyAst] The abstract syntax tree of the sw_read() function, after being type checked
-  # @param arch_def [ImplArchDef] A configuration
-  def type_checked_sw_read_ast(arch_def)
+  # @param symtab [Idl::SymbolTable] Symbol table with globals
+  def type_checked_sw_read_ast(symtab)
     @type_checked_sw_read_asts ||= {}
-    ast = @type_checked_sw_read_asts[arch_def.name]
+    ast = @type_checked_sw_read_asts[symtab.hash]
     return ast unless ast.nil?
 
-    symtab = arch_def.sym_table.deep_clone
+    symtab_hash = symtab.hash
+    symtab = symtab.deep_clone
     symtab.push
     # all CSR instructions are 32-bit
     symtab.add(
@@ -1252,13 +1286,13 @@ class Csr < ArchDefObject
       Idl::Type.new(:bits, width: 128)
      )
 
-    ast = sw_read_ast(arch_def.idl_compiler)
-    arch_def.idl_compiler.type_check(
+    ast = sw_read_ast(symtab.archdef.idl_compiler)
+    symtab.archdef.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{name}].sw_read()"
     )
-    @type_checked_sw_read_asts[arch_def.name] = ast
+    @type_checked_sw_read_asts[symtab_hash] = ast
   end
 
   # @return [FunctionBodyAst] The abstract syntax tree of the sw_read() function
@@ -1286,7 +1320,7 @@ class Csr < ArchDefObject
     ast = @pruned_sw_read_asts[arch_def.name]
     return ast unless ast.nil?
 
-    ast = type_checked_sw_read_ast(arch_def).prune(arch_def.sym_table.deep_clone)
+    ast = type_checked_sw_read_ast(arch_def.sym_table).prune(arch_def.sym_table.deep_clone)
 
     symtab = arch_def.sym_table.deep_clone
     symtab.push
@@ -1448,7 +1482,7 @@ class Instruction < ArchDefObject
 
     return nil unless @data.key?("operation()")
 
-    type_checked_ast = type_checked_operation_ast(arch_def, effective_xlen)
+    type_checked_ast = type_checked_operation_ast(arch_def.idl_compiler, global_symtab, effective_xlen)
     pruned_ast = type_checked_ast.prune(fill_symtab(global_symtab, effective_xlen))
     arch_def.idl_compiler.type_check(
       pruned_ast,
@@ -1886,20 +1920,21 @@ class Instruction < ArchDefObject
   end
 
   # @return [FunctionBodyAst] A type-checked abstract syntax tree of the operation
-  # @param arch_def [ImplArchDef] A configuration
+  # @param idl_compiler [Idl::Compiler] Compiler
+  # @param symtab [Idl::SymbolTable] Symbol table with globals
   # @param effective_xlen [Integer] 32 or 64, the effective xlen to type check against
-  def type_checked_operation_ast(arch_def, effective_xlen)
+  def type_checked_operation_ast(idl_compiler, symtab, effective_xlen)
     @type_checked_operation_ast ||= {}
-    ast = @type_checked_operation_ast[arch_def.name]
+    ast = @type_checked_operation_ast[symtab.hash]
     return ast unless ast.nil?
 
     return nil unless @data.key?("operation()")
 
-    ast = operation_ast(arch_def.idl_compiler)
+    ast = operation_ast(idl_compiler)
 
-    arch_def.idl_compiler.type_check(ast, fill_symtab(arch_def.sym_table, effective_xlen), "#{name}.operation()")
+    idl_compiler.type_check(ast, fill_symtab(symtab, effective_xlen), "#{name}.operation()")
 
-    @type_checked_operation_ast[arch_def.name] = ast
+    @type_checked_operation_ast[symtab.hash] = ast
   end
 
   # @return [FunctionBodyAst] The abstract syntax tree of the instruction operation
@@ -2046,15 +2081,27 @@ class ExtensionParameter
   # @return [nil] If there is no extra validatino
   attr_reader :extra_validation
 
-  # @return [Extension] The extension that defines this parameter
-  attr_reader :ext
+  # @return [Array<Extension>] The extension(s) that define this parameter
+  #
+  # Some parameters are defined by multiple extensions (e.g., CACHE_BLOCK_SIZE by Zicbom and Zicboz).
+  # When defined in multiple places, the parameter *must* mean the extact same thing.
+  attr_reader :exts
 
-  def initialize(name, desc, schema, extra_validation, ext)
+  # @returns [Idl::Type] Type of the parameter
+  attr_reader :type
+
+  def initialize(name, desc, schema, extra_validation, exts)
     @name = name
     @desc = desc
     @schema = schema
     @extra_validation = extra_validation
-    @ext = ext
+    @exts = exts
+    begin
+      @type = Idl::Type.from_json_schema(@schema).make_const.freeze
+    rescue
+      warn "While parsing scheme for ExtensionParameter #{ext.name}.#{name}"
+      raise
+    end
   end
 end
 
@@ -2075,8 +2122,8 @@ class ExtensionParameterWithValue
   # @return [nil] If there is no extra validatino
   def extra_validation = @param.extra_validation
 
-  # @return [Extension] The extension that defines this parameter
-  def ext = @param.ext
+  # @return [Array<Extension>] The extension(s) that defines this parameter
+  def exts = @param.exts
 
   def initialize(param, value)
     @param = param
@@ -2136,12 +2183,30 @@ class Extension < ArchDefObject
     @params = []
     if @data.key?("params")
       @data["params"].each do |param_name, param_data|
+        also_defined_in = []
+        unless param_data["also_defined_in"].nil?
+          if param_data["also_defined_in"].is_a?(String)
+            other_ext = arch_def.extension(param_data["also_defined_in"])
+            raise "Definition error in #{name}.#{param_name}: #{param_data['also_defined_in']} is not a known extension" if other_ext.nil?
+            also_defined_in << other_ext
+          else
+            unless param_data["also_defined_in"].is_a?(Array) && param_data["also_defined_in"].all? { |e| e.is_a?(String) }
+              raise "schema error: also_defined_in should be a string or array of strings"
+            end
+
+            param_data["also_defined_in"].each do |other_ext_name|
+              other_ext = arch_def.extension(other_ext_name)
+              raise "Definition error in #{name}.#{param_name}: #{param_data['also_defined_in']} is not a known extension" if other.nil?
+              also_defined_in << other_ext
+            end
+          end
+        end
         @params << ExtensionParameter.new(
           param_name,
           param_data["description"],
           param_data["schema"],
           param_data["extra_validation"],
-          self
+          [self] + also_defined_in
         )
       end
     end
@@ -2350,6 +2415,8 @@ class ArchDef
   # @return [Idl::AstNode] Abstract syntax tree of global scope
   attr_reader :global_ast
 
+  def name = "_"
+
   # Initialize a new configured architecture defintiion
   #
   # @param config_name [#to_s] The name of a configuration, which must correspond
@@ -2362,13 +2429,44 @@ class ArchDef
 
       @arch_def = YAML.load_file(arch_def_file)
 
-      # load the globals into the symbol table
+      # parse globals
       @global_ast = @idl_compiler.compile_file(
         $root / "arch" / "isa" / "globals.isa",
-        type_check: false
+        symtab: sym_table_32
       )
+      sym_table_32.deep_freeze
+
+      # do it again for rv64, but we don't need the ast this time
+      @idl_compiler.compile_file(
+        $root / "arch" / "isa" / "globals.isa",
+        symtab: sym_table_64
+      )
+      sym_table_64.deep_freeze
+
     end
   end
+
+  # Get a symbol table with globals defined for a generic (config-independent) RV32 architecture defintion
+  # Being config-independent, parameters in this symbol table will not have values assigned
+  #
+  # @return [Idl::SymbolTable] Symbol table with config-independent global symbols populated for RV32
+  def sym_table_32
+    return @sym_table_32 unless @sym_table_32.nil?
+
+    @sym_table_32 = Idl::SymbolTable.new(self, 32)
+  end
+
+  # Get a symbol table with globals defined for a generic (config-independent) RV64 architecture defintion
+  # Being config-independent, parameters in this symbol table will not have values assigned
+  #
+  # @return [Idl::SymbolTable] Symbol table with config-independent global symbols populated for RV64
+  def sym_table_64
+    return @sym_table_64 unless @sym_table_64.nil?
+
+    @sym_table_64 = Idl::SymbolTable.new(self, 64)
+  end
+
+  def possible_xlens = [32, 64]
 
   def inspect = "ArchDef"
 
@@ -2383,7 +2481,7 @@ class ArchDef
     @extensions
   end
 
-  # @returns [Hash<String, Extension>] Hash of all extensions, even those that aren't implemented, indexed by extension name
+  # @return [Hash<String, Extension>] Hash of all extensions, even those that aren't implemented, indexed by extension name
   def extension_hash
     return @extension_hash unless @extension_hash.nil?
 
@@ -2399,6 +2497,34 @@ class ArchDef
   # @return [nil] if no extension `name` exists
   def extension(name)
     extension_hash[name.to_s]
+  end
+
+  # @return [Array<ExtensionParameter>] List of all parameters defined in the architecture
+  def params
+    return @params unless @params.nil?
+
+    @params = []
+    extensions.each do |ext|
+      @params += ext.params
+    end
+    @params
+  end
+
+  # @return [Hash<String, ExtensionParameter>] Hash of all extension parameters defined in the architecture
+  def params_hash
+    return @params_hash unless @params_hash.nil?
+
+    @params_hash = {}
+    params.each do |param|
+      @params_hash[param.name] = param
+    end
+    @param_hash
+  end
+
+  # @return [ExtensionParameter] Parameter named +name+
+  # @return [nil] if there is no parameter named +name+
+  def param(name)
+    params_hash[name]
   end
 
   # @return [Array<Csr>] List of all CSRs defined by RISC-V, whether or not they are implemented
@@ -2487,6 +2613,46 @@ class ArchDef
     function_hash[name]
   end
 
+  # @return [Array<ExceptionCode>] All exception codes defined by extensions
+  def exception_codes
+    return @exception_codes unless @exception_codes.nil?
+
+    @exception_codes =
+      extensions.reduce([]) do |list, ext_version|
+        ecodes = extension(ext_version.name)["exception_codes"]
+        next list if ecodes.nil?
+
+        ecodes.each do |ecode|
+          # double check that all the codes are unique
+          raise "Duplicate exception code" if list.any? { |e| e.num == ecode["num"] || e.name == ecode["name"] || e.var == ecode["var"] }
+
+          list << ExceptionCode.new(ecode["name"], ecode["var"], ecode["num"], self)
+        end
+        list
+      end
+  end
+
+  # @return [Array<InteruptCode>] All interrupt codes defined by extensions
+  def interrupt_codes
+    return @interrupt_codes unless @interrupt_codes.nil?
+
+    @interupt_codes =
+      extensions.reduce([]) do |list, ext_version|
+        icodes = extension(ext_version.name)["interrupt_codes"]
+        next list if icodes.nil?
+
+        icodes.each do |icode|
+          # double check that all the codes are unique
+          if list.any? { |i| i.num == icode["num"] || i.name == icode["name"] || i.var == icode["var"] }
+            raise "Duplicate interrupt code"
+          end
+
+          list << InterruptCode.new(icode["name"], icode["var"], icode["num"], self)
+        end
+        list
+      end
+  end
+
   # given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`
   # and replace them with links to the relevant object page
   #
@@ -2555,23 +2721,23 @@ class ImplArchDef < ArchDef
   # hash for Hash lookup
   def hash = @name.hash
 
-  # @return [Array<ExtensionParameterWithValue>] List of all parameters for the config
-  def params
-    return @params unless @params.nil?
+  # @return [Array<ExtensionParameterWithValue>] List of all available parameters for the config
+  def params_with_value
+    return @params_with_value unless @params_with_value.nil?
 
-    @params = []
+    @params_with_value = []
     implemented_extensions.each do |ext_version|
       ext = extension(ext_version.name)
       ext.params.each do |ext_param|
         if param_values.key?(ext_param.name)
-          @params << ExtensionParameterWithValue.new(
+          @params_with_value << ExtensionParameterWithValue.new(
             ext_param,
             param_values[ext_param.name]
           )
         end
       end
     end
-    @params
+    @params_with_value
   end
 
   def erb_env
@@ -2583,8 +2749,8 @@ class ImplArchDef < ArchDef
     @env.instance_variable_set(:@arch_gen, self)
 
     # add each parameter, either as a method (lowercase) or constant (uppercase)
-    params.each do |param|
-      @env.const_set(param.name, param.value)
+    params_with_value.each do |param|
+      @env.const_set(param.name, param.value) unless @env.const_defined?(param.name)
     end
 
     @env.instance_exec do

@@ -36,7 +36,13 @@ module Idl
       when :boolean
         false
       when :array
-        Array.new(@width, sub_type.default)
+        if @width == :unknown
+          Array.new
+        else
+          Array.new(@width, sub_type.default)
+        end
+      when :string
+        ""
       else
         raise "No default for #{@kind}"
       end
@@ -74,7 +80,7 @@ module Idl
 
       raise "Should be a FunctionType" if kind == :function && !self.is_a?(FunctionType)
 
-      raise "Width must be an Integer, is a #{width.class}" unless width.nil? || width.is_a?(Integer)
+      raise "Width must be an Integer, is a #{width.class}" unless width.nil? || width.is_a?(Integer) || width == :unknown
       @width = width
       @sub_type = sub_type
       raise "Tuples need a type list" if kind == :tuple && tuple_types.nil?
@@ -85,7 +91,7 @@ module Idl
       @name = name
       if kind == :bits
         raise "Bits type must have width" unless @width
-        raise "Bits type must have positive width" unless @width.positive?
+        raise "Bits type must have positive width" unless @width == :unknown || @width.positive?
       end
       if kind == :enum
         raise "Enum type must have width" unless @width
@@ -208,7 +214,8 @@ module Idl
         return @return_type.convertable_to?(type)
       when :enum
         if type.kind == :bits
-          return width <= type.width
+          return false
+          # return (type.width == :unknown) || (width <= type.width)
         elsif type.kind == :enum
           return type.enum_class == enum_class
         else
@@ -280,7 +287,9 @@ module Idl
 
     def to_cxx_no_qualifiers
         if @kind == :bits
+          raise "@width is unknown" if @width == :unknown
           raise "@width is a #{@width.class}" unless @width.is_a?(Integer)
+
           if signed?
             "SignedBits<#{@width.is_a?(Integer) ? @width : @width.to_cxx}>"
           else
@@ -365,6 +374,98 @@ module Idl
     def make_global
       @qualifiers.append(:global).uniq!
       self
+    end
+
+    # @return [Idl::Type] Type of a scalar
+    # @param schema [Hash] JSON Schema desciption of a scalar
+    def self.from_json_schema_scalar_type(schema)
+      if schema.key?("type")
+        case schema["type"]
+        when "boolean"
+          Type.new(:boolean)
+        when "integer"
+          if schema.key?("enum")
+            Type.new(:bits, width: schema["enum"].max.bit_length)
+          elsif schema.key?("maximum")
+            Type.new(:bits, width: schema["maximum"].bit_length)
+          else
+            Type.new(:bits, width: 128)
+          end
+        when "string"
+          if schema.key?("enum")
+            Type.new(:string, width: schema["enum"].map(&:length).max)
+          else
+            Type.new(:string, width: 4096)
+          end
+        else
+          raise "Unhandled JSON schema type"
+        end
+      elsif schema.key?("const")
+        case schema["const"]
+        when TrueClass, FalseClass
+          Type.new(:boolean)
+        when Integer
+          Type.new(:bits, width: schema["const"].bit_length)
+        when String
+          Type.new(:string, width: schema["const"].length)
+        else
+          raise "Unhandled const type"
+        end
+      else
+        raise "unhandled scalar schema"
+      end
+    end
+    private_class_method :from_json_schema_scalar_type
+
+    # @return [Idl::Type] Type of array
+    # @param schema [Hash] JSON Schema desciption of an array
+    def self.from_json_schema_array_type(schema)
+      width = schema["minItems"]
+      if !schema.key?("minItems") || !schema.key?("maxItems") || (schema["minItems"] != schema["maxItems"])
+        width = :unknown
+      end
+
+      if schema["items"].is_a?(Hash)
+        case schema["items"]["type"]
+        when "boolean", "integer", "string"
+          Type.new(:array, width:, sub_type: from_json_schema_scalar_type(schema["items"]))
+        when "array"
+          Type.new(:array, width:, sub_type: from_json_schema_array_type(schema["items"]))
+        end
+      elsif schema["items"].is_a?(Array)
+        # this ia an array with each element specified
+        sub_type = nil
+        schema["items"].each do |item_schema|
+          if sub_type.nil?
+            sub_type = from_json_schema_scalar_type(item_schema)
+          else
+            unless sub_type.equal_to?(from_json_schema_scalar_type(item_schema))
+              raise "Schema error: Array elements must be the same type (#{sub_type} #{from_json_schema_scalar_type(item_schema)}) \n#{schema["items"]}"
+            end
+          end
+        end
+        if schema.key?("additionalItems")
+          if sub_type.nil?
+            sub_type = from_json_schema_scalar_type(schema["additionalItems"])
+          else
+            unless sub_type.equal_to?(from_json_schema_scalar_type(schema["additionalItems"]))
+              raise "Schema error: Array elements must be the same type"
+            end
+          end
+        end
+        Type.new(:array, width:, sub_type:)
+      end
+    end
+    private_class_method :from_json_schema_array_type
+
+    # @returns [Idl::Type] Type described by JSON +schema+
+    def self.from_json_schema(schema)
+      case schema["type"]
+      when "boolean", "integer", "string"
+        from_json_schema_scalar_type(schema)
+      when "array"
+        from_json_schema_array_type(schema)
+      end
     end
   end
 
@@ -509,7 +610,7 @@ module Idl
       symtab.push
 
       template_values.each_with_index do |value, idx|
-        func_call_ast.type_error "template value should be an Integer" unless value.is_a?(Integer)
+        func_call_ast.type_error "template value should be an Integer (found #{value.class.name})" unless value == :unknown || value.is_a?(Integer)
 
         symtab.add!(template_names[idx], Var.new(template_names[idx], template_types(symtab)[idx], value, template_index: idx, function_name: @func_def_ast.name))
       end

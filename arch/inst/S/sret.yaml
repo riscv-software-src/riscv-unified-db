@@ -113,7 +113,7 @@ sret:
       CSR[mstatus].SIE = CSR[mstatus].SPIE;
       CSR[mstatus].SPIE = 1;
       CSR[mstatus].SPP = 2'b00;
-      PC = $bits(CSR[sepc]);
+      $pc = $bits(CSR[sepc]);
     } else {
       if (CSR[mstatus].TSR == 1'b1) {
         raise (ExceptionCode::IllegalInstruction, $encoding);
@@ -121,5 +121,5 @@ sret:
       CSR[vsstatus].SPP = 0;
       CSR[vsstatus].SIE = CSR[vsstatus].SPIE;
       CSR[vsstatus].SPIE = 1;
-      PC = $bits(CSR[vsepc]);
+      $pc = $bits(CSR[vsepc]);
     }

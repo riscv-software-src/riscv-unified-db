@@ -323,3 +323,10 @@ H:
           type: boolean
         maxItems: 32
         minItems: 32
+    IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO:
+      description: |
+        Whether writes from M-mode, U-mode, or S-mode to vsatp with an illegal mode setting are
+        ignored (as they are with satp), or if they are treated as WARL, leading to undpredictable
+        behavior.
+      schema:
+        type: boolean

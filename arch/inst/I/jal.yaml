@@ -22,7 +22,7 @@ jal:
     vs: always
     vu: always
   operation(): |
-    XReg retrun_addr = PC + 4;
+    XReg retrun_addr = $pc + 4;
 
-    jump_halfword(PC + imm);
+    jump_halfword($pc + imm);
     X[rd] = retrun_addr;

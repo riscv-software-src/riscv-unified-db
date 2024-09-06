@@ -21,11 +21,29 @@ class TestExpressions < Minitest::Test
 
   def test_that_values_are_tuncated
     idl = <<~IDL.strip
+      a + b
+    IDL
+    @symtab.add("a", Idl::Var.new("a", Idl::Type.new(:bits, width:4), 0xf))
+    @symtab.add("b", Idl::Var.new("b", Idl::Type.new(:bits, width:4), 0x1))
+
+    ast = @compiler.compile_expression(idl, @symtab)
+    assert_equal 0, ast.value(@symtab)
+
+    idl = <<~IDL.strip
+      4'hf + 5'h1
+    IDL
+
+    ast = @compiler.compile_expression(idl, @symtab)
+    assert_equal 16, ast.value(@symtab)
+  end
+
+  def test_that_const_values_are_not_tuncated
+    idl = <<~IDL.strip
       4'hf + 4'h1
     IDL
 
     ast = @compiler.compile_expression(idl, @symtab)
-    assert_equal 0, ast.value(@symtab)
+    assert_equal 0x10, ast.value(@symtab)
 
     idl = <<~IDL.strip
       4'hf + 5'h1
@@ -41,6 +59,7 @@ class TestExpressions < Minitest::Test
     IDL
 
     ast = @compiler.compile_expression(idl, @symtab)
+    warn ast.value(@symtab)
     refute_equal 14, ast.value(@symtab)
     assert_equal 10, ast.value(@symtab)
   end
