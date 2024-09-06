@@ -8,6 +8,18 @@ require_relative "symbol_table"
 module Treetop
   module Runtime
     class SyntaxNode
+      # Sets the input file for this syntax node unless it has already been set.
+      #
+      # If the input file has not been set, it will be set with the given filename and starting line number.
+      #
+      # @param [String] filename The name of the input file.
+      # @param [Integer] starting_line The starting line number in the input file.
+      def set_input_file_unless_already_set(filename, starting_line = 0)
+        if @input_file.nil?
+          set_input(filename, starting_line)
+        end
+      end
+
       # remember where the code comes from
       #
       # @param filename [String] Filename
@@ -118,9 +130,11 @@ module Idl
         @reason = reason
       end
 
+      def what = message
+
       def message
         <<~WHAT
-          In file #{input_file}
+          In file #{file}
           On line #{lineno}
             A value error occured
             #{reason}
@@ -140,6 +154,23 @@ module Idl
       @children = children
       @parent = nil # will be set later unless this is the root
       @children.each { |child| child.instance_variable_set(:@parent, self) }
+    end
+
+    # Sets the input file for this syntax node unless it has already been set.
+    #
+    # If the input file has not been set, it will be set with the given filename and starting line number.
+    #
+    # @param [String] filename The name of the input file.
+    # @param [Integer] starting_line The starting line number in the input file.
+    def set_input_file_unless_already_set(filename, starting_line = 0)
+      return unless @input_file.nil?
+
+      @input_file = filename
+      @starting_line = starting_line
+      children.each do |child|
+        child.set_input_file_unless_already_set(filename, starting_line)
+      end
+      raise "?" if @starting_line.nil?
     end
 
     # remember where the code comes from
@@ -513,7 +544,9 @@ module Idl
 
       value_error "Value of '#{name}' not known" if var.value.nil?
 
-      var.value
+      v = var.value
+      value_error "Value of #{name} is unknown" if v == :unknown
+      v
     end
 
     # @!macro to_idl
@@ -652,6 +685,45 @@ module Idl
       definitions.each { |d| d.type_check(symtab) }
     end
   end
+
+  class ArraySizeSyntaxNode < Treetop::Runtime::SyntaxNode
+    def to_ast
+      ArraySizeAst.new(input, interval, expression.to_ast)
+    end
+  end
+
+  class ArraySizeAst < AstNode
+    # @return [AstNode] Array expression
+    def expression = children[0]
+
+    def initialize(input, interval, expression)
+      super(input, interval, [expression])
+    end
+
+    def type_check(symtab)
+      type_error "#{expression.text_value} is not an array" unless expression.type(symtab).kind == :array
+      if symtab.archdef.is_a?(ImplArchDef)
+        type_error "#{expression.text_value} must have a known value at compile time" if expression.type(symtab).width == :unknown
+      else
+        type_error "#{expression.text_value} must be a constant" unless expression.type(symtab).const?
+      end
+    end
+
+    def type(symtab)
+      if expression.type(symtab).width == :unknown
+        Type.new(:bits, width: :unknown, qualifiers: [:const])
+      else
+        Type.new(:bits, width: expression.type(symtab).width.bit_length, qualifiers: [:const])
+      end
+    end
+
+    def value(symtab)
+      expression.type(symtab).width
+    end
+
+    def to_idl = "$array_size(#{expression.to_idl})"
+  end
+
 
   class EnumSizeSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
@@ -1317,6 +1389,42 @@ module Idl
 
   end
 
+  class PcAssignmentSyntaxNode < Treetop::Runtime::SyntaxNode
+    def to_ast
+      PcAssignmentAst.new(input, interval, rval.to_ast)
+    end
+  end
+
+  class PcAssignmentAst < AstNode
+    include Executable
+
+    # @return [AstNode] Right-hand side expression
+    def rhs = children[0]
+
+    def initialize(input, interval, rval)
+      super(input, interval, [rval])
+    end
+
+    # @macro execute
+    def execute(symtab) = value_error "$pc is never statically known"
+
+    # @macro execute_unknown
+    def execute_unknown(symtab); end
+
+    # @!macro type_check
+    def type_check(symtab)
+    end
+
+    # @!macro value
+    def value(symtab) = value_error "$pc is never statically known"
+
+    # @!macro type
+    def type(symtab) = symtab.xreg_type
+
+    # @!macro to_idl
+    def to_idl = "$pc = #{rhs.to_idl}"
+  end
+
   class VariableAssignmentSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
       VariableAssignmentAst.new(input, interval, var.to_ast, rval.to_ast)
@@ -1329,6 +1437,7 @@ module Idl
   #   # given: Bits<XLEN> zero;
   #   zero = XLEN'b0
   class VariableAssignmentAst < AstNode
+    include Executable
 
     def lhs = @children[0]
     def rhs = @children[1]
@@ -1392,6 +1501,7 @@ module Idl
   # for example:
   #   X[rs1] = XLEN'd0
   class AryElementAssignmentAst < AstNode
+    include Executable
 
     def lhs = @children[0]
     def idx = @children[1]
@@ -1509,6 +1619,8 @@ module Idl
   # for example:
   #   vec[8:0] = 8'd0
   class AryRangeAssignmentAst < AstNode
+    include Executable
+
     def variable = @children[0]
     def msb = @children[1]
     def lsb = @children[2]
@@ -1570,16 +1682,16 @@ module Idl
         var_val &= ~mask
 
         var_val | ((rval_val << lsb_val) & mask)
-        symtab.add(variable.name, variable.type(symtab), var_val)
+        symtab.add(variable.name, Var.new(variable.name, variable.type(symtab), var_val))
       rescue ValueError
-        symtab.add(variable.name, variable.type(symtab), nil)
+        symtab.add(variable.name, Var.new(variable.name, variable.type(symtab)))
         raise
       end
     end
 
     # @!macro execute_unknown
     def execute_unknown(symtab)
-      symtab.add(variable.name, variable.type(symtab), nil)
+      symtab.add(variable.name, Var.new(variable.name, variable.type(symtab)))
     end
 
     # @!macro to_idl
@@ -1599,7 +1711,9 @@ module Idl
   #   entry.PPN = 0
   #
   class FieldAssignmentAst < AstNode
-    def field_access = @children[0]
+    include Executable
+
+    def bitfield = @children[0]
     def write_value = @children[1]
 
     def initialize(input, interval, field_access, write_value)
@@ -1650,6 +1764,8 @@ module Idl
   end
 
   class CsrFieldAssignmentAst < AstNode
+    include Executable
+
     def csr_field = @children[0]
     def write_value = @children[1]
 
@@ -1705,6 +1821,8 @@ module Idl
   # for example:
   #   (match_result, cfg) = pmp_match<access_size>(paddr);
   class MultiVariableAssignmentAst < AstNode
+    include Executable
+
     def variables = @children[0..-2]
     def function_call = @children.last
 
@@ -1892,7 +2010,12 @@ module Idl
       # dtype = dtype.clone.qualify(q.text_value.to_sym) unless q.empty?
 
       unless ary_size.nil?
-        dtype = Type.new(:array, width: ary_size.value(symtab), sub_type: dtype.clone, qualifiers:)
+        begin
+          dtype = Type.new(:array, width: ary_size.value(symtab), sub_type: dtype.clone, qualifiers:)
+        rescue ValueError
+          type_error "Array size must be known at compile time" if symtab.archdef.is_a?(ImplArchDef)
+          dtype = Type.new(:array, width: :unknown, sub_type: dtype.clone, qualifiers:)
+        end
       end
 
       dtype
@@ -1914,7 +2037,14 @@ module Idl
         begin
           ary_size.value(symtab)
         rescue ValueError
-          type_error "Array size must be known at compile time"
+          # if this is an ImplArchDef, this is an error because all constants are supposed to be known
+          if symtab.archdef.is_a?(ImplArchDef)
+            puts symtab.get(ary_size.text_value)
+            type_error "Array size (#{ary_size.text_value}) must be known at compile time"
+          else
+            # otherwise, it's ok that we don't know the value yet, as long as the value is a const
+            type_error "Array size (#{ary_size.text_value}) must be a constant" unless ary_size.type(symtab).const?
+          end
         end
       end
 
@@ -2021,7 +2151,10 @@ module Idl
         begin
           symtab.add(lhs.text_value, Var.new(lhs.text_value, decl_type.clone, rhs.value(symtab)))
         rescue ValueError => e
-          type_error "Declaring constant with a non-constant value (#{e})"
+          unless rhs.type(symtab).const?
+            type_error "Declaring constant with a non-constant value (#{e})"
+          end
+          symtab.add(lhs.text_value, Var.new(lhs.text_value, decl_type.clone))
         end
       else
         symtab.add(lhs.text_value, Var.new(lhs.text_value, decl_type.clone))
@@ -2285,9 +2418,44 @@ module Idl
           Type.new(:bits, width: lhs_type.width, qualifiers:)
         end
       #elsif ["+", "-", "*", "/", "%"].include?(op)
+      elsif lhs_type.const? && rhs_type.const?
+        # if both types are const and the operator results in a Bits type,
+        # then the result type is the largest of:
+        #
+        #  * the minimum bit width needed to represent `lhs op rhs`
+        #  * the largest width of either lhs or rhs
+        result_width =
+          case op
+          when "*"
+            if [lhs_type.width, rhs_type.width].include?(:unknown)
+              :unknown
+            else
+              lhs_type.width + rhs_type.width
+            end
+          when "+", "-"
+            if [lhs_type.width, rhs_type.width].include?(:unknown)
+              :unknown
+            else
+              [lhs_type.width, rhs_type.width].max + 1
+            end
+          when "/", "%", ">>", ">>>"
+            lhs_type.width
+          when "&", "|", "^"
+            if [lhs_type.width, rhs_type.width].include?(:unknown)
+              :unknown
+            else
+              [lhs_type.width, rhs_type.width].max
+            end
+          end
+        qualifiers << :signed if lhs_type.signed? && rhs_type.signed?
+        Type.new(:bits, width: result_width, qualifiers:)
       else
         qualifiers << :signed if lhs_type.signed? && rhs_type.signed?
-        Type.new(:bits, width: [lhs_type.width, rhs_type.width].max, qualifiers:)
+        if [lhs_type.width, rhs_type.width].include?(:unknown)
+          Type.new(:bits, width: :unknown, qualifiers:)
+        else
+          Type.new(:bits, width: [lhs_type.width, rhs_type.width].max, qualifiers:)
+        end
       end
     end
 
@@ -2522,8 +2690,14 @@ module Idl
             else
               internal_error "Unhandled binary op #{op}"
             end
-          v_trunc = v & ((1 << type(symtab).width) - 1)
-          warn "WARNING: The value of '#{text_value}' is truncated from #{v} to #{v_trunc} because the result is only #{type(symtab).width} bits" if v != v_trunc
+          v_trunc =
+            if !lhs.type(symtab).const? || !rhs.type(symtab).const?
+              # when both sides are constant, the value is not truncated
+              v & ((1 << type(symtab).width) - 1)
+            else
+              v
+            end
+          warn "WARNING: The value of '#{text_value}' (#{lhs.type(symtab).const?}, #{rhs.type(symtab).const?}) is truncated from #{v} to #{v_trunc} because the result is only #{type(symtab).width} bits" if v != v_trunc
           v_trunc
         end
       # @value_cache[symtab] = value
@@ -2681,7 +2855,7 @@ module Idl
       begin
         type_error "replication amount must be positive (#{n.value(symtab)})" unless n.value(symtab).positive?
       rescue ValueError
-        type_error "replication amount must be known at compile time"
+        # type_error "replication amount must be known at compile time"
       end
     end
 
@@ -2696,8 +2870,12 @@ module Idl
 
     # @!macro type
     def type(symtab)
-      width = (n.value(symtab) * v.type(symtab).width)
-      Type.new(:bits, width:)
+      begin
+        width = (n.value(symtab) * v.type(symtab).width)
+        Type.new(:bits, width:)
+      rescue ValueError
+        Type.new(:bits, width: :unknown)
+      end
     end
 
     # @!macro to_idl
@@ -2780,7 +2958,7 @@ module Idl
         internal_error "Forgot to set __instruction_encoding_size" if sz.nil?
         Type.new(:bits, width: sz.value, qualifiers: [:const])
       when "$pc"
-        if symtab.archdef.mxlen == 32
+        if symtab.mxlen == 32
           Bits32Type
         else
           Bits64Type
@@ -3138,11 +3316,14 @@ module Idl
           false_expression.type(symtab)
         end
       rescue ValueError
-        if true_expression.type(symtab).kind == :bits && false_expression.type(symtab).kind == :bits
-          Type.new(:bits, width: [true_expression.type(symtab).width, false_expression.type(symtab).width].max)
-        else
-          true_expression.type(symtab)
-        end
+        t = 
+          if true_expression.type(symtab).kind == :bits && false_expression.type(symtab).kind == :bits
+            Type.new(:bits, width: [true_expression.type(symtab).width, false_expression.type(symtab).width].max)
+          else
+            true_expression.type(symtab).clone
+          end
+        t.make_const if condition.type(symtab).const? && true_expression.type(symtab).const? && false_expression.type(symtab).const?
+        t
       end
     end
 
@@ -3633,7 +3814,11 @@ module Idl
     def type_check(symtab)
       if @type_name == "Bits"
         bits_expression.type_check(symtab)
-        type_error "Bits width (#{bits_expression.value(symtab)}) must be positive" unless bits_expression.value(symtab).positive?
+        begin
+          type_error "Bits width (#{bits_expression.value(symtab)}) must be positive" unless bits_expression.value(symtab).positive?
+        rescue ValueError
+          type_error "Bit width must be known at compile time" if symtab.is_a?(ImplArchDef)
+        end
       end
       unless ["Bits", "String", "XReg", "Boolean", "U32", "U64"].include?(@type_name)
         type_error "Unimplemented builtin type #{text_value}"
@@ -3642,10 +3827,9 @@ module Idl
 
     # @!macro type
     def type(symtab)
-      archdef = symtab.archdef
       case @type_name
       when "XReg"
-        if archdef.mxlen == 32
+        if symtab.mxlen == 32
           Bits32Type
         else
           Bits64Type
@@ -3659,7 +3843,11 @@ module Idl
       when "String"
         StringType
       when "Bits"
-        Type.new(:bits, width: bits_expression.value(symtab))
+        begin
+          Type.new(:bits, width: bits_expression.value(symtab))
+        rescue ValueError
+          Type.new(:bits, width: :unknown)
+        end
       else
         internal_error "TODO: #{text_value}"
       end
@@ -3732,7 +3920,7 @@ module Idl
         value_text = ::Regexp.last_match(6)
 
         if width.nil? || width == "XLEN"
-          width = symtab.archdef.param_values["XLEN"]
+          width = symtab.mxlen
           memoize = false
         end
 
@@ -3743,7 +3931,7 @@ module Idl
 
     # @!macro type
     def type(symtab)
-      cache_idx = symtab.archdef.mxlen >> 6 # 0 = 32, 1 = 64
+      cache_idx = symtab.mxlen >> 6 # 0 = 32, 1 = 64
       return @types[cache_idx] unless @types[cache_idx].nil?
 
       case text_value.delete("_")
@@ -3754,7 +3942,7 @@ module Idl
 
         memoize = true
         if width.nil? || width == "XLEN"
-          width = symtab.archdef.param_values["XLEN"]
+          width = symtab.mxlen
           memoize = false
         end
 
@@ -3794,7 +3982,7 @@ module Idl
         width = ::Regexp.last_match(1)
         memoize = true
         if width.nil? || width == "XLEN"
-          width = archdef.param_values["XLEN"]
+          width = symtab.mxlen
           memoize = false
         end
         # @width = width if memoize
@@ -3831,7 +4019,7 @@ module Idl
 
         memoize = true
         if width.nil? || width == "XLEN"
-          width = symtab.archdef.param_values["XLEN"]
+          width = symtab.mxlen
           memoize = false
         end
 
@@ -4017,6 +4205,8 @@ module Idl
 
     # @!macro type
     def type(symtab)
+      return ConstBoolType if name == "implemented?"
+
       func_def_type = symtab.get(name)
       func_def_type.return_type(template_values(symtab), self)
     end
@@ -4035,7 +4225,9 @@ module Idl
           extname_ref = arg_nodes[0]
           type_error "First argument should be a ExtensionName" unless extname_ref.type(symtab).kind == :enum_ref && extname_ref.class_name == "ExtensionName"
 
-          return symtab.archdef.ext?(arg_nodes[0].member_name)
+          return symtab.archdef.ext?(arg_nodes[0].member_name) if symtab.archdef.is_a?(ImplArchDef)
+
+          value_error "implemented? is only known when evaluating in the context of a configuration"
         else
           value_error "value of builtin function cannot be known"
         end
@@ -4392,7 +4584,7 @@ module Idl
       @targs.each do |a|
         ttype = a.type(symtab)
         ttype = ttype.ref_type if ttype.kind == :enum
-        ttypes << ttype
+        ttypes << ttype.clone.make_const
       end
       ttypes
     end
@@ -5078,7 +5270,7 @@ module Idl
       if cd.nil?
         # we don't know anything about this index, so we can only
         # treat this as a generic
-        if archdef.mxlen == 32
+        if symtab.mxlen == 32
           Bits32Type
         else
           Bits64Type
@@ -5145,7 +5337,11 @@ module Idl
     def value(symtab)
       cd = csr_def(symtab)
       value_error "CSR number not knowable" if cd.nil?
-      value_error "CSR is not implemented" unless symtab.archdef.implemented_csrs.any? { |icsr| icsr.name == cd.name }
+      if symtab.archdef.is_a?(ImplArchDef)
+        value_error "CSR is not implemented" unless symtab.archdef.implemented_csrs.any? { |icsr| icsr.name == cd.name }
+      else
+        value_error "CSR is not defined" unless symtab.archdef.csrs.any? { |icsr| icsr.name == cd.name }
+      end
       cd.fields.each { |f| value_error "#{csr_name(symtab)}.#{f.name} not RO" unless f.type(symtab.archdef) == "RO" }
 
       csr_def(symtab).fields.reduce(0) { |val, f| val | (f.value << f.location.begin) }
@@ -5177,7 +5373,7 @@ module Idl
       csr.type_check(symtab)
       expression.type_check(symtab)
 
-      return if expression.type(symtab).kind == :bits && expression.type(symtab).width == archdef.param_values["XLEN"]
+      return if expression.type(symtab).kind == :bits && expression.type(symtab).width == symtab.mxlen
 
       type_error "CSR value must be an XReg"
     end
@@ -5246,7 +5442,7 @@ module Idl
         if csr_known?(symtab)
           Type.new(:bits, width: archdef.csr(csr.csr_name(symtab)).length)
         else
-          Type.new(:bits, width: archdef.param_values["XLEN"])
+          Type.new(:bits, width: symtab.mxlen)
         end
       when "address"
         Type.new(:bits, width: 12)

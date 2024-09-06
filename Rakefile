@@ -3,6 +3,7 @@
 $root = Pathname.new(__FILE__).dirname.realpath
 $lib = $root / "lib"
 
+require "ruby-progressbar"
 require "yard"
 require "minitest/test_task"
 
@@ -64,10 +65,48 @@ end
 desc "Validate the arch docs"
 task validate: "gen:arch" do
   validator = Validator.instance
-  Dir.glob("#{$root}/arch/**/*.yaml") do |f|
+  puts "Checking arch files against schema.."
+  arch_files = Dir.glob("#{$root}/arch/**/*.yaml")
+  progressbar = ProgressBar.create(total: arch_files.size)
+  arch_files.each do |f|
+    progressbar.increment
     validator.validate(f)
   end
   puts "All files validate against their schema"
+
+  puts "Type checking IDL code..."
+  arch_def = arch_def_for("_")
+  progressbar = ProgressBar.create(title: "Instructions", total: arch_def.instructions.size)
+  arch_def.instructions.each do |inst|
+    progressbar.increment
+    inst.type_checked_operation_ast(arch_def.idl_compiler, arch_def.sym_table_32, 32) if inst.rv32?
+    inst.type_checked_operation_ast(arch_def.idl_compiler, arch_def.sym_table_64, 64) if inst.rv64?
+    # also need to check for an RV64 machine running with effective XLEN of 32
+    inst.type_checked_operation_ast(arch_def.idl_compiler, arch_def.sym_table_64, 32) if inst.rv64? && inst.rv32?
+  end
+  progressbar = ProgressBar.create(title: "CSRs", total: arch_def.csrs.size)
+  arch_def.csrs.each do |csr|
+    progressbar.increment
+    if csr.has_custom_sw_read?
+      csr.type_checked_sw_read_ast(arch_def.sym_table_32) if csr.defined_in_base32?
+      csr.type_checked_sw_read_ast(arch_def.sym_table_64) if csr.defined_in_base64?
+    end
+    csr.fields.each do |field|
+      unless field.type_ast(arch_def.idl_compiler).nil?
+        field.type_checked_type_ast(arch_def.sym_table_32) if csr.defined_in_base32? && field.defined_in_base32?
+        field.type_checked_type_ast(arch_def.sym_table_64) if csr.defined_in_base64? && field.defined_in_base64?
+      end
+      unless field.reset_value_ast(arch_def.idl_compiler).nil?
+        field.type_checked_reset_value_ast(arch_def.sym_table_32) if csr.defined_in_base32? && field.defined_in_base32?
+        field.type_checked_reset_value_ast(arch_def.sym_table_64) if csr.defined_in_base64? && field.defined_in_base64?
+      end
+      unless field.sw_write_ast(arch_def.idl_compiler).nil?
+        field.type_checked_sw_write_ast(arch_def.sym_table_32, 32) if csr.defined_in_base32? && field.defined_in_base32?
+        field.type_checked_sw_write_ast(arch_def.sym_table_64, 64) if csr.defined_in_base64? && field.defined_in_base64?
+      end
+    end
+  end
+  puts "All IDL passed type checking"
 end
 
 def insert_warning(str, from)
@@ -76,6 +115,7 @@ def insert_warning(str, from)
   first_line = lines.shift
   lines.unshift(first_line, "\n# WARNING: This file is auto-generated from #{Pathname.new(from).relative_path_from($root)}\n\n").join("")
 end
+private :insert_warning
 
 (3..31).each do |hpm_num|
   file "#{$root}/arch/csr/Zihpm/mhpmcounter#{hpm_num}.yaml" => [

@@ -212,7 +212,7 @@ bitfield (64) Sv39PageTableEntry {
 
 # floating point register file
 U32 FLEN = implemented?(ExtensionName::D) ? 7'd64 : 7'd32;
-Bits<FLEN> f[32] = [0, 0, 0, 0, 0, 0, 0, 0,
+Bits<64> f[32] = [0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0];
@@ -489,27 +489,27 @@ function raise {
     PrivilegeMode handling_mode = exception_handling_mode(exception_code);
 
     if (handling_mode == PrivilegeMode::M) {
-      CSR[mepc].PC = PC;
+      CSR[mepc].PC = $pc;
       if (!mtval_readonly?()) {
         CSR[mtval].VALUE = mtval_for(exception_code, tval);
       }
-      PC = {CSR[mtvec].BASE, 2'b00};
+      $pc = {CSR[mtvec].BASE, 2'b00};
       CSR[mcause].INT = 1'b0;
       CSR[mcause].CAUSE = $bits(exception_code);
     } else if (implemented?(ExtensionName::S) && (handling_mode == PrivilegeMode::HS)) {
-      CSR[sepc].PC = PC;
+      CSR[sepc].PC = $pc;
       if (!stval_readonly?()) {
         CSR[stval].VALUE = stval_for(exception_code, tval);
       }
-      PC = {CSR[stvec].BASE, 2'b00};
+      $pc = {CSR[stvec].BASE, 2'b00};
       CSR[scause].INT = 1'b0;
       CSR[scause].CODE = $bits(exception_code);
     } else if (implemented?(ExtensionName::H) && (handling_mode == PrivilegeMode::VS)) {
-      CSR[vsepc].PC = PC;
+      CSR[vsepc].PC = $pc;
       if (!vstval_readonly?()) {
         CSR[vstval].VALUE = vstval_for(exception_code, tval);
       }
-      PC = {CSR[vstvec].BASE, 2'b00};
+      $pc = {CSR[vstvec].BASE, 2'b00};
       CSR[vscause].INT = 1'b0;
       CSR[vscause].CODE = $bits(exception_code);
     }
@@ -551,7 +551,7 @@ function jump {
       raise(ExceptionCode::InstructionAddressMisaligned, target_addr);
     }
 
-    PC = target_addr;
+    $pc = target_addr;
   }
 }
 
@@ -573,7 +573,7 @@ function jump_halfword {
       }
     }
 
-    PC = target_hw_addr;
+    $pc = target_hw_addr;
   }
 }
 
@@ -1525,9 +1525,9 @@ function canonical_vaddr? {
     # canonical depends on the virtual address size in the current translation mode
     SatpMode satp_mode;
     if (virtual_mode?()) {
-      satp_mode = CSR[vsatp];
+      satp_mode = CSR[vsatp].MODE;
     } else {
-      satp_mode = CSR[satp];
+      satp_mode = CSR[satp].MODE;
     }
 
     # calculate the effective address after pointer masking
@@ -1667,11 +1667,11 @@ function read_memory {
 
 # hart-global state to track the local reservation set
 Boolean    reservation_set_valid = false;
-Bits<XLEN> reservation_set_address;
-Bits<XLEN> reservation_set_size;
-Bits<XLEN> reservation_physical_address;  # The exact address used by the LR.W/LR.D
-Bits<XLEN> reservation_virtual_address;   # The exact address used by the LR.W/LR.D
-Bits<XLEN> reservation_size;              # the size of the LR operation (32 or 64)
+XReg       reservation_set_address;
+XReg       reservation_set_size;
+XReg       reservation_physical_address;  # The exact address used by the LR.W/LR.D
+XReg       reservation_virtual_address;   # The exact address used by the LR.W/LR.D
+XReg       reservation_size;              # the size of the LR operation (32 or 64)
 
 function invalidate_reservation_set {
   description {
@@ -1701,7 +1701,7 @@ function register_reservation_set {
   }
   body {
     reservation_set_valid = true;
-    reservation_address = physical_address;
+    reservation_set_address = physical_address;
 
     if (LRSC_RESERVATION_STRATEGY == "reserve naturally-aligned 64-byte region") {
       reservation_set_address = physical_address & ~XLEN'h3f;
@@ -1838,14 +1838,14 @@ function store_conditional {
 }
 
 function amo {
-  template U32 N                # number of bits being loaded/stored
+  template U32 N           # number of bits being loaded/stored
   returns Bits<N>
   arguments
-    Bits<XLEN> virtual_address, # the virtual address to load from/store to
-    Bits<N> value,              # the value for the second hald of the atomic operation
-    AmoOperation op,            # atomic operation to apply
-    Bits<1>    aq,              # acquire semantics? 0=no, 1=yes
-    Bits<1>    rl               # release semantics? 0=no, 1=yes
+    XReg virtual_address,  # the virtual address to load from/store to
+    Bits<N> value,         # the value for the second hald of the atomic operation
+    AmoOperation op,       # atomic operation to apply
+    Bits<1>    aq,         # acquire semantics? 0=no, 1=yes
+    Bits<1>    rl          # release semantics? 0=no, 1=yes
   description {
     Atomically read-modify-write the location at virtual_address.
 

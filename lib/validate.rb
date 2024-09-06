@@ -95,6 +95,7 @@ class Validator
       # resolve refs as a relative path from the schema file
       ref_resolver = proc do |pattern|
         if pattern.to_s =~ /^http/
+          puts pattern
           JSON.parse(Net::HTTP.get(pattern))
         else
           JSON.load_file($root / "schemas" / pattern.to_s)

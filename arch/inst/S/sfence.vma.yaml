@@ -220,7 +220,7 @@ sfence.vma:
     vu: never
   operation(): |
     XReg vaddr = X[rs1];
-    Bits<ASID_WIDTH> asid = X[rs2][ASID_WIDTH-1:0];
+    Bits<16> asid = X[rs2][ASID_WIDTH-1:0];
 
     if (mode() == PrivilegeMode::U) {
       raise (ExceptionCode::IllegalInstruction, $encoding);

@@ -24,6 +24,8 @@ class ArchDef
   # @return [Idl::AstNode] Abstract syntax tree of global scope
   attr_reader :global_ast
 
+  def name = "_"
+
   # Initialize a new configured architecture defintiion
   #
   # @param config_name [#to_s] The name of a configuration, which must correspond
@@ -36,19 +38,48 @@ class ArchDef
 
       @arch_def = YAML.load_file(arch_def_file)
 
-      # load the globals into the symbol table
+      # parse globals
       @global_ast = @idl_compiler.compile_file(
         $root / "arch" / "isa" / "globals.isa",
-        type_check: false
+        symtab: sym_table_32
       )
+      sym_table_32.deep_freeze
+
+      # do it again for rv64, but we don't need the ast this time
+      @idl_compiler.compile_file(
+        $root / "arch" / "isa" / "globals.isa",
+        symtab: sym_table_64
+      )
+      sym_table_64.deep_freeze
+
     end
   end
 
+  # Get a symbol table with globals defined for a generic (config-independent) RV32 architecture defintion
+  # Being config-independent, parameters in this symbol table will not have values assigned
+  #
+  # @return [Idl::SymbolTable] Symbol table with config-independent global symbols populated for RV32
+  def sym_table_32
+    return @sym_table_32 unless @sym_table_32.nil?
+
+    @sym_table_32 = Idl::SymbolTable.new(self, 32)
+  end
+
+  # Get a symbol table with globals defined for a generic (config-independent) RV64 architecture defintion
+  # Being config-independent, parameters in this symbol table will not have values assigned
+  #
+  # @return [Idl::SymbolTable] Symbol table with config-independent global symbols populated for RV64
+  def sym_table_64
+    return @sym_table_64 unless @sym_table_64.nil?
+
+    @sym_table_64 = Idl::SymbolTable.new(self, 64)
+  end
+
+  def possible_xlens = [32, 64]
+
   # Returns a string representation of the object, suitable for debugging.
   # @return [String] A string representation of the object.
-  def inspect
-    "ArchDef"
-  end
+  def inspect = "ArchDef"
 
   # @return [Array<Extension>] List of all extensions, even those that are't implemented
   def extensions
@@ -61,7 +92,7 @@ class ArchDef
     @extensions
   end
 
-  # @returns [Hash<String, Extension>] Hash of all extensions, even those that aren't implemented, indexed by extension name
+  # @return [Hash<String, Extension>] Hash of all extensions, even those that aren't implemented, indexed by extension name
   def extension_hash
     return @extension_hash unless @extension_hash.nil?
 
@@ -77,6 +108,34 @@ class ArchDef
   # @return [nil] if no extension `name` exists
   def extension(name)
     extension_hash[name.to_s]
+  end
+
+  # @return [Array<ExtensionParameter>] List of all parameters defined in the architecture
+  def params
+    return @params unless @params.nil?
+
+    @params = []
+    extensions.each do |ext|
+      @params += ext.params
+    end
+    @params
+  end
+
+  # @return [Hash<String, ExtensionParameter>] Hash of all extension parameters defined in the architecture
+  def params_hash
+    return @params_hash unless @params_hash.nil?
+
+    @params_hash = {}
+    params.each do |param|
+      @params_hash[param.name] = param
+    end
+    @param_hash
+  end
+
+  # @return [ExtensionParameter] Parameter named +name+
+  # @return [nil] if there is no parameter named +name+
+  def param(name)
+    params_hash[name]
   end
 
   # @return [Array<Csr>] List of all CSRs defined by RISC-V, whether or not they are implemented
@@ -217,6 +276,46 @@ class ArchDef
   # @return [nil] if the profile does not exist
   def profile(name) = profiles_hash[name]
 
+  # @return [Array<ExceptionCode>] All exception codes defined by extensions
+  def exception_codes
+    return @exception_codes unless @exception_codes.nil?
+
+    @exception_codes =
+      extensions.reduce([]) do |list, ext_version|
+        ecodes = extension(ext_version.name)["exception_codes"]
+        next list if ecodes.nil?
+
+        ecodes.each do |ecode|
+          # double check that all the codes are unique
+          raise "Duplicate exception code" if list.any? { |e| e.num == ecode["num"] || e.name == ecode["name"] || e.var == ecode["var"] }
+
+          list << ExceptionCode.new(ecode["name"], ecode["var"], ecode["num"], self)
+        end
+        list
+      end
+  end
+
+  # @return [Array<InteruptCode>] All interrupt codes defined by extensions
+  def interrupt_codes
+    return @interrupt_codes unless @interrupt_codes.nil?
+
+    @interupt_codes =
+      extensions.reduce([]) do |list, ext_version|
+        icodes = extension(ext_version.name)["interrupt_codes"]
+        next list if icodes.nil?
+
+        icodes.each do |icode|
+          # double check that all the codes are unique
+          if list.any? { |i| i.num == icode["num"] || i.name == icode["name"] || i.var == icode["var"] }
+            raise "Duplicate interrupt code"
+          end
+
+          list << InterruptCode.new(icode["name"], icode["var"], icode["num"], self)
+        end
+        list
+      end
+  end
+
   # given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`
   # and replace them with links to the relevant object page
   #
@@ -284,23 +383,23 @@ class ImplArchDef < ArchDef
   # hash for Hash lookup
   def hash = @name.hash
 
-  # @return [Array<ExtensionParameterWithValue>] List of all parameters for the config
-  def params
-    return @params unless @params.nil?
+  # @return [Array<ExtensionParameterWithValue>] List of all available parameters for the config
+  def params_with_value
+    return @params_with_value unless @params_with_value.nil?
 
-    @params = []
+    @params_with_value = []
     implemented_extensions.each do |ext_version|
       ext = extension(ext_version.name)
       ext.params.each do |ext_param|
         if param_values.key?(ext_param.name)
-          @params << ExtensionParameterWithValue.new(
+          @params_with_value << ExtensionParameterWithValue.new(
             ext_param,
             param_values[ext_param.name]
           )
         end
       end
     end
-    @params
+    @params_with_value
   end
 
   # Returns an environment hash suitable for use with ERb templates.
@@ -318,8 +417,8 @@ class ImplArchDef < ArchDef
     @env.instance_variable_set(:@arch_gen, self)
 
     # add each parameter, either as a method (lowercase) or constant (uppercase)
-    params.each do |param|
-      @env.const_set(param.name, param.value)
+    params_with_value.each do |param|
+      @env.const_set(param.name, param.value) unless @env.const_defined?(param.name)
     end
 
     @env.instance_exec do

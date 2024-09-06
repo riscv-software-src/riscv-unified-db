@@ -419,14 +419,14 @@ class Csr < ArchDefObject
     @data.key?("sw_read()") && !@data["sw_read()"].empty?
   end
 
-  # @return [FunctionBodyAst] The abstract syntax tree of the sw_read() function, after being type checked
-  # @param arch_def [ImplArchDef] A configuration
-  def type_checked_sw_read_ast(arch_def)
+  # @param symtab [Idl::SymbolTable] Symbol table with globals
+  def type_checked_sw_read_ast(symtab)
     @type_checked_sw_read_asts ||= {}
-    ast = @type_checked_sw_read_asts[arch_def.name]
+    ast = @type_checked_sw_read_asts[symtab.hash]
     return ast unless ast.nil?
 
-    symtab = arch_def.sym_table.deep_clone
+    symtab_hash = symtab.hash
+    symtab = symtab.deep_clone
     symtab.push
     # all CSR instructions are 32-bit
     symtab.add(
@@ -438,13 +438,13 @@ class Csr < ArchDefObject
       Idl::Type.new(:bits, width: 128)
      )
 
-    ast = sw_read_ast(arch_def.idl_compiler)
-    arch_def.idl_compiler.type_check(
+    ast = sw_read_ast(symtab.archdef.idl_compiler)
+    symtab.archdef.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{name}].sw_read()"
     )
-    @type_checked_sw_read_asts[arch_def.name] = ast
+    @type_checked_sw_read_asts[symtab_hash] = ast
   end
 
   # @return [FunctionBodyAst] The abstract syntax tree of the sw_read() function
@@ -464,6 +464,8 @@ class Csr < ArchDefObject
 
     raise "unexpected #{@sw_read_ast.class}" unless @sw_read_ast.is_a?(Idl::FunctionBodyAst)
 
+    @sw_read_ast.set_input_file_unless_already_set(__source, source_line("sw_read()"))
+
     @sw_read_ast
   end
 
@@ -472,7 +474,7 @@ class Csr < ArchDefObject
     ast = @pruned_sw_read_asts[arch_def.name]
     return ast unless ast.nil?
 
-    ast = type_checked_sw_read_ast(arch_def).prune(arch_def.sym_table.deep_clone)
+    ast = type_checked_sw_read_ast(arch_def.sym_table).prune(arch_def.sym_table.deep_clone)
 
     symtab = arch_def.sym_table.deep_clone
     symtab.push

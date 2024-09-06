@@ -18,15 +18,27 @@ class ExtensionParameter
   # @return [nil] If there is no extra validatino
   attr_reader :extra_validation
 
-  # @return [Extension] The extension that defines this parameter
-  attr_reader :ext
+  # @return [Array<Extension>] The extension(s) that define this parameter
+  #
+  # Some parameters are defined by multiple extensions (e.g., CACHE_BLOCK_SIZE by Zicbom and Zicboz).
+  # When defined in multiple places, the parameter *must* mean the extact same thing.
+  attr_reader :exts
 
-  def initialize(name, desc, schema, extra_validation, ext)
+  # @returns [Idl::Type] Type of the parameter
+  attr_reader :type
+
+  def initialize(name, desc, schema, extra_validation, exts)
     @name = name
     @desc = desc
     @schema = schema
     @extra_validation = extra_validation
-    @ext = ext
+    @exts = exts
+    begin
+      @type = Idl::Type.from_json_schema(@schema).make_const.freeze
+    rescue
+      warn "While parsing scheme for ExtensionParameter #{ext.name}.#{name}"
+      raise
+    end
   end
 end
 
@@ -48,7 +60,7 @@ class ExtensionParameterWithValue
   def extra_validation = @param.extra_validation
 
   # @return [Extension] The extension that defines this parameter
-  def ext = @param.ext
+  def exts = @param.exts
 
   def initialize(param, value)
     @param = param
@@ -111,12 +123,30 @@ class Extension < ArchDefObject
     @params = []
     if @data.key?("params")
       @data["params"].each do |param_name, param_data|
+        also_defined_in = []
+        unless param_data["also_defined_in"].nil?
+          if param_data["also_defined_in"].is_a?(String)
+            other_ext = arch_def.extension(param_data["also_defined_in"])
+            raise "Definition error in #{name}.#{param_name}: #{param_data['also_defined_in']} is not a known extension" if other_ext.nil?
+            also_defined_in << other_ext
+          else
+            unless param_data["also_defined_in"].is_a?(Array) && param_data["also_defined_in"].all? { |e| e.is_a?(String) }
+              raise "schema error: also_defined_in should be a string or array of strings"
+            end
+
+            param_data["also_defined_in"].each do |other_ext_name|
+              other_ext = arch_def.extension(other_ext_name)
+              raise "Definition error in #{name}.#{param_name}: #{param_data['also_defined_in']} is not a known extension" if other.nil?
+              also_defined_in << other_ext
+            end
+          end
+        end
         @params << ExtensionParameter.new(
           param_name,
           param_data["description"],
           param_data["schema"],
           param_data["extra_validation"],
-          self
+          [self] + also_defined_in
         )
       end
     end

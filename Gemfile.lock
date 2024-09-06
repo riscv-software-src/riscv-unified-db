@@ -153,6 +153,7 @@ DEPENDENCIES
   rouge
   rubocop-minitest
   ruby-prof
+  ruby-progressbar (~> 1.13)
   solargraph
   treetop (= 1.6.12)
   webrick

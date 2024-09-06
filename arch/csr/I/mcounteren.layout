@@ -102,13 +102,13 @@ mcounteren:
         When `hcounteren.CY` && `scounteren.CY` are both set, `cycle` is futher accessible to VU-mode.
         <%%- end -%>
       type(): |
-        if (COUNTENABLE_EN[2]) {
+        if (MCOUNTENABLE_EN[2]) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if (COUNTENABLE_EN[2]) {
+        if (MCOUNTENABLE_EN[2]) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -140,13 +140,13 @@ mcounteren:
         When `hcounteren.IR` && `scounteren.IR` are both set, `instret` is futher accessible to VU-mode.
         <%%- end -%>
       type(): |
-        if (COUNTENABLE_EN[2]) {
+        if (MCOUNTENABLE_EN[2]) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if (COUNTENABLE_EN[2]) {
+        if (MCOUNTENABLE_EN[2]) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -172,13 +172,13 @@ mcounteren:
         When `hcounteren.HPM<%= hpm_num %>` && `scounteren.HPM<%= hpm_num %>` are both set, `hpmcounter<%= hpm_num %>` is futher accessible to VU-mode.
         <%%- end -%>
       type(): |
-        if (COUNTENABLE_EN[<%= hpm_num %>]) {
+        if (MCOUNTENABLE_EN[<%= hpm_num %>]) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if (COUNTENABLE_EN[<%= hpm_num %>]) {
+        if (MCOUNTENABLE_EN[<%= hpm_num %>]) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;

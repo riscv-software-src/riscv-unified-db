@@ -29,6 +29,6 @@ bne:
     XReg rhs = X[rs2];
 
     if (lhs != rhs) {
-      jump_halfword(PC + imm);
+      jump_halfword($pc + imm);
     }
     

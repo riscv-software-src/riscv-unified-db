@@ -23,7 +23,7 @@ jalr:
     vu: always
   operation(): |
     XReg returnaddr;
-    returnaddr = PC + 4;
+    returnaddr = $pc + 4;
 
     jump(X[rs1] + imm);
     X[rd] = returnaddr;

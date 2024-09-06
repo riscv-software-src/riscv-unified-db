@@ -11,7 +11,7 @@
 
 == Parameters
 
-<%- arch_def.params.sort_by { |param| param.name }.each do |param| -%>
+<%- arch_def.params_with_value.sort_by { |param| param.name }.each do |param| -%>
 === *<%= param.name %>*
 
 [cols="1,4,1"]
@@ -20,7 +20,7 @@
 
 | <%= param.value %>
 a| <%= param.desc %>
-a| `<%= param.ext.name %>`
+a| <%= param.exts.map { |e| "`#{e.name}`" }.join(", ")%>
 |===
 
 <%- end -%>

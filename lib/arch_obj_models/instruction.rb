@@ -99,7 +99,7 @@ class Instruction < ArchDefObject
 
     return nil unless @data.key?("operation()")
 
-    type_checked_ast = type_checked_operation_ast(arch_def, effective_xlen)
+    type_checked_ast = type_checked_operation_ast(arch_def.idl_compiler, global_symtab, effective_xlen)
     pruned_ast = type_checked_ast.prune(fill_symtab(global_symtab, effective_xlen))
     arch_def.idl_compiler.type_check(
       pruned_ast,
@@ -537,20 +537,21 @@ class Instruction < ArchDefObject
   end
 
   # @return [FunctionBodyAst] A type-checked abstract syntax tree of the operation
-  # @param arch_def [ImplArchDef] A configuration
+  # @param idl_compiler [Idl::Compiler] Compiler
+  # @param symtab [Idl::SymbolTable] Symbol table with globals
   # @param effective_xlen [Integer] 32 or 64, the effective xlen to type check against
-  def type_checked_operation_ast(arch_def, effective_xlen)
+  def type_checked_operation_ast(idl_compiler, symtab, effective_xlen)
     @type_checked_operation_ast ||= {}
-    ast = @type_checked_operation_ast[arch_def.name]
+    ast = @type_checked_operation_ast[symtab.hash]
     return ast unless ast.nil?
 
     return nil unless @data.key?("operation()")
 
-    ast = operation_ast(arch_def.idl_compiler)
+    ast = operation_ast(idl_compiler)
 
-    arch_def.idl_compiler.type_check(ast, fill_symtab(arch_def.sym_table, effective_xlen), "#{name}.operation()")
+    idl_compiler.type_check(ast, fill_symtab(symtab, effective_xlen), "#{name}.operation()")
 
-    @type_checked_operation_ast[arch_def.name] = ast
+    @type_checked_operation_ast[symtab.hash] = ast
   end
 
   # @return [FunctionBodyAst] The abstract syntax tree of the instruction operation
