@@ -75,9 +75,14 @@ module Idl
       "#{' '*indent}#{csr.gen_adoc(indent, indent_spaces:)}.sw_write(#{expression.gen_adoc(0, indent_spaces:)})"
     end
   end
-  class BitfieldAccessExpressionAst
+  class FieldAccessExpressionAst
     def gen_adoc(indent, indent_spaces: 2)
-      "#{' '*indent}#{bitfield.gen_adoc(indent, indent_spaces: )}.#{@field_name}"
+      "#{' '*indent}#{obj.gen_adoc(indent, indent_spaces: )}.#{@field_name}"
+    end
+  end
+  class FieldAssignmentAst
+    def gen_adoc(indent, indent_spaces: 2)
+      "#{field_access.gen_adoc(0, indent_spaces:)} = #{write_value.gen_adoc(0, indent_spaces:)}"
     end
   end
   class ConcatenationExpressionAst
@@ -209,6 +214,12 @@ module Idl
     end
   end
 
+  class PcAssignmentAst
+    def gen_adoc(indent = 0, indent_spaces: 2)
+      "#{' '*indent}$pc = #{rhs.gen_adoc(0, indent_spaces:)}"
+    end
+  end
+
   class AryElementAssignmentAst
     def gen_adoc(indent = 0, indent_spaces: 2)
       "#{' '*indent}#{lhs.gen_adoc(0, indent_spaces:)}[#{idx.gen_adoc(0, indent_spaces:)}] = #{rhs.gen_adoc(0, indent_spaces:)}"
@@ -251,6 +262,12 @@ module Idl
       after_name << "<#{template_arg_nodes.map { |t| t.gen_adoc(0, indent_spaces:)}.join(', ')}>" unless template_arg_nodes.empty?
       after_name << "pass:[(]#{arg_nodes.map { |a| a.gen_adoc(0, indent_spaces: ) }.join(', ')})"
       "#{' '*indent}%%LINK%func;#{name};#{name}%%#{after_name.join ''}"
+    end
+  end
+
+  class ArraySizeAst
+    def gen_adoc(indent = 0, indent_spaces: 2)
+      "#{' '*indent}$array_size(#{expression.gen_adoc(0, indent_spaces:)})"
     end
   end
 

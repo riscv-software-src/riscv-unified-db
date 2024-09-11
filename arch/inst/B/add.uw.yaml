@@ -23,7 +23,7 @@ add.uw:
     vs: always
     vu: always
   pseudoinstructions:
-    when: rs2 == 0
+  - when: rs2 == 0
     to: zext.w xd, xs1
   operation(): |
     if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {

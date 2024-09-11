@@ -10,7 +10,8 @@ vscause:
   definedBy: H
   fields:
     INT:
-      location: 63
+      location_rv64: 63
+      location_rv32: 31
       description: |
         Written by hardware when a trap is taken into VS-mode.
         

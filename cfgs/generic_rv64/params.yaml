@@ -458,4 +458,7 @@ params:
   # (independent of whether or not the SC is in the current reservation set)
   LRSC_FAIL_ON_NON_EXACT_LRSC: false
 
-
+  # Whether writes from M-mode, U-mode, or S-mode to vsatp with an illegal mode setting are
+  # ignored (as they are with satp), or if they are treated as WARL, leading to undpredictable
+  # behavior.
+  IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true

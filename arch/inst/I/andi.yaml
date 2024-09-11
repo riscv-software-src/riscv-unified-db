@@ -19,4 +19,5 @@ andi:
     u: always
     vs: always
     vu: always
+  data_independent_timing: true
   operation(): X[rd] = X[rs1] & imm;

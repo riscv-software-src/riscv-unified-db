@@ -20,6 +20,7 @@ sll:
     u: always
     vs: always
     vu: always
+  data_independent_timing: true
   operation(): |
     if (xlen() == 64) {
       X[rd] = X[rs1] << X[rs2][5:0];

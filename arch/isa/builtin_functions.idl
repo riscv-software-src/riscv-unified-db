@@ -70,6 +70,7 @@ builtin function sw_write_mcycle {
   arguments Bits<64> value
   description {
     Given a _value_ that software is trying to write into mcycle,
+    perform the write and
     return the value that will actually be written.
   }
 }
@@ -192,6 +193,14 @@ builtin function ifence {
   }
 }
 
+builtin function pause {
+  description {
+    Pause hart retirement for a implementation-defined period of time, which may be zero.
+
+    See `Zihintpause` for more.
+  }
+}
+
 builtin function pow {
   returns XReg
   arguments XReg value, XReg exponent
@@ -202,80 +211,66 @@ builtin function pow {
 
 
 builtin function maybe_cache_translation {
-  arguments TranslationResult result
+  arguments
+    XReg vaddr,
+    MemoryOperation op,
+    TranslationResult result
   description {
     Given a translation result, potentially cache the result for later use. This function models
     a TLB fill operation. A valid implementation does nothing.
   }
 }
 
-builtin function invalidate_all_translations {
+builtin function cached_translation {
+  returns
+    Boolean,                     # whether or not the cached translation is valid
+    TranslationResult            # cached result
+  arguments
+    XReg vaddr,         # virtual address
+    MemoryOperation op  # operation
   description {
-    Locally invalidate all cached address translations, from all address ranges
-    and all ASIDs, including global mappings.
+    Possibly returns a cached translation result matching +vaddr+.
+
+    If the result is value, the first return value will be true.
+    +paddr+ is the full translation of +vaddr+, including the page offset
+    +pbmt+ is the result of any paged-based attributes for the translation
+  }
+}
+
+builtin function order_pgtbl_writes_before_vmafence {
+  arguments
+    VmaOrderType order_type
+  description {
+    Orders all writes prior to this call in global memory order that affect a page table in the set
+    identified by +order_type+ before any subsequent
+    sfence.vma/hfence.vma/sinval.vma/hinval.gvma/hinval.vvma in program order.
+
+    Performs the ordering function of SFENCE.VMA/HFENCE.[GV]VMA/SFENCE.W.INVAL.
 
     A valid implementation does nothing if address caching is not used.
   }
 }
 
-builtin function sfence_all {
+builtin function order_pgtbl_reads_after_vmafence {
+  arguments
+    VmaOrderType order_type
   description {
-    Ensure all loads and stores after this operation see any previous address cache invalidations.
-  }
-}
+    Orders all reads after to this call in global memory order to a page table in the set
+    identified by +order_type+ after any prior
+    sfence.vma/hfence.vma/sinval.vma/hinval.gvma/hinval.vvma in program order.
 
-builtin function sfence_asid {
-  arguments Bits<ASID_WIDTH> asid
-  description {
-    Ensure all reads and writes using address space 'asid' see any previous address space invalidations.
-
-    Does not have to (but may, if conservative) order any global mappings.
-  }
-}
-
-builtin function sfence_vaddr {
-  arguments XReg vaddr
-  description {
-    Ensure all reads and writes using a leaf page table that contains 'vaddr' see any previous address space invalidations.
-
-    Must also order any global mappings containing 'vaddr'.
-  }
-}
-
-builtin function sfence_asid_vaddr {
-  arguments Bits<ASID_WIDTH> asid, XReg vaddr
-  description {
-    Ensure all reads and writes using address space 'asid' and a leaf page table that contains 'vaddr' see any previous address space invalidations.
-
-    Does not have to (but may, if conservative) order any global mappings.
-  }
-}
-
-builtin function invalidate_asid_translations {
-  arguments Bits<ASID_WIDTH> asid
-  description {
-    Locally invalidate all cached address translations for address space 'asid'.
-    Does not affect global mappings.
+    Performs the ordering function of SFENCE.VMA/HFENCE.[GV]VMA/SFENCE.INVAL.IR.
 
     A valid implementation does nothing if address caching is not used.
   }
 }
 
-builtin function invalidate_vaddr_translations {
-  arguments XReg vaddr
+builtin function invalidate_translations {
+  arguments
+    VmaOrderType inval_type
   description {
-    Locally invalidate all cached address translations representing 'vaddr', for all address spaces.
-    Equally affects global mappings.
-
-    A valid implementation does nothing if address caching is not used.
-  }
-}
-
-builtin function invalidate_asid_vaddr_translations {
-  arguments Bits<ASID_WIDTH> asid, XReg vaddr
-  description {
-    Locally invalidate all cached address translations for address space 'asid' that represent 'vaddr'.
-    Does not affect global mappings.
+    Locally invalidate the cached S-mode/VS-mode/G-stage address translations
+    contained in the set identified by +inval_type+.
 
     A valid implementation does nothing if address caching is not used.
   }
@@ -317,7 +312,7 @@ builtin function pma_applies? {
     U32                   len     #< Size of the region, in bits
   description {
     Checks if _attr_ is applied to the entire physical address region
-    between [paddr, paddr + len).
+    between [paddr, paddr + len) based on static PMA attributes.
   }
 }
 
@@ -338,7 +333,7 @@ builtin function atomic_check_then_write_32 {
 
     Preconditions:
 
-     * paddr must be aligned to 32-bits
+     * paddr will be aligned to 32-bits
 
   }
 }
@@ -360,7 +355,7 @@ builtin function atomic_check_then_write_64 {
 
     Preconditions:
 
-     * paddr must be aligned to 64-bits
+     * paddr will be aligned to 64-bits
   }
 }
 
@@ -376,7 +371,11 @@ builtin function atomically_set_pte_a {
       * Reads the _pte_len_ value at _pte_addr_
       ** If the read value does not exactly equal pte_value, returns false
       * Sets the 'A' bit and writes the result to _pte_addr_
-      * return true    
+      * return true 
+
+    Preconditions:
+
+      * pte_addr will be aligned to 64-bits
   }
 }
 
@@ -392,7 +391,11 @@ builtin function atomically_set_pte_a_d {
       * Reads the _pte_len_ value at _pte_addr_
       ** If the read value does not exactly equal pte_value, returns false
       * Sets the 'A' and 'D' bits and writes the result to _pte_addr_
-      * return true    
+      * return true
+
+    Preconditions:
+
+      * pte_addr will be aligned to 64-bits
   }
 }
 

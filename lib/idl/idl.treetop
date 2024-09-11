@@ -12,6 +12,8 @@ grammar Idl
         /
         bitfield_definition
         /
+        struct_definition
+        /
         function_definition
         / 
         space+
@@ -45,6 +47,12 @@ grammar Idl
     'bitfield' space* '(' space* int space* ')' space* user_type_name space* '{' space*
       e:(field_name space+ range:(int lsb:(space* '-' space* int)?) space+)+ space*
     '}' <Idl::BitfieldDefinitionSyntaxNode>
+  end
+
+  rule struct_definition
+    'struct' space* user_type_name space* '{' space*
+      member:(type_name space+ id space* ';' space*)+
+    '}' <Idl::StructDefinitionSyntaxNode>
   end
 
   rule version_string
@@ -271,8 +279,8 @@ grammar Idl
     'CSR' space* '[' space* idx:expression space* ']' <Idl::CsrReadExpressionSyntaxNode>
   end
 
-  rule bitfield_access_expression
-    rval space* '.' space* field_name <Idl::BitfieldAccessExpressionSyntaxNode>
+  rule field_access_expression
+    rval space* '.' space* field_name <Idl::FieldAccessExpressionSyntaxNode>
   end
 
   rule ary_eligible_expression
@@ -288,7 +296,7 @@ grammar Idl
     /
     csr_register_access_expression
     /
-    bitfield_access_expression
+    field_access_expression
     /
     rval # must come last!
   end
@@ -320,6 +328,8 @@ grammar Idl
     /
     '$enum_to_a' space* '(' space* user_type_name ')' <Idl::EnumArrayCastSyntaxNode>
     /
+    '$array_size' space* '(' space* expression ')' <Idl::ArraySizeSyntaxNode>
+    /
     paren_expression
     /
     o:unary_operator space* e:expression <Idl::UnaryOperatorExpressionSyntaxNode>
@@ -338,7 +348,7 @@ grammar Idl
     /
     csr_register_access_expression
     /
-    bitfield_access_expression
+    field_access_expression
     /
     enum_ref
     /
@@ -438,10 +448,11 @@ grammar Idl
   rule assignment
     '(' first:(id / dontcare_lvalue) space* rest:(',' space* var:(id / dontcare_lvalue) space*)+ ')' space* '=' space* function_call <Idl::MultiVariableAssignmentSyntaxNode> /
     single_declaration_with_initialization /
+    '$pc' space* '=' space* rval:expression <Idl::PcAssignmentSyntaxNode> /
     var:id space* '=' space* rval:expression <Idl::VariableAssignmentSyntaxNode> /
     # note: there is no full CSR assignment (must assign fields)
     csr_field_access_expression space* '=' space* rval:expression <Idl::CsrFieldAssignmentSyntaxNode> /
-    bitfield_access_expression space* '=' space* rval:expression <Idl::FieldAssignmentSyntaxNode> /
+    field_access_expression space* '=' space* rval:expression <Idl::FieldAssignmentSyntaxNode> /
     var:var_write space* '[' space* msb:expression space* ':' space* lsb:expression space* ']' space* '=' space* rval:expression <Idl::AryRangeAssignmentSyntaxNode> /
     var:var_write space* '[' space* idx:expression space* ']' space* '=' space* rval:expression <Idl::AryElementAssignmentSyntaxNode>
   end
@@ -567,7 +578,7 @@ grammar Idl
   end
 
   rule field_name
-    [a-zA-Z] [a-zA-Z0-9]*
+    [a-zA-Z] [a-zA-Z0-9_]*
   end
 
   rule type_name

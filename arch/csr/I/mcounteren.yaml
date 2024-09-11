@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../../../schemas/csr_schema.json
+# yaml-language-server: $schema=../../schemas/csr_schema.json
 
 # WARNING: This file is auto-generated from arch/csr/I/mcounteren.layout
 
@@ -105,13 +105,13 @@ mcounteren:
         When `hcounteren.CY` && `scounteren.CY` are both set, `cycle` is futher accessible to VU-mode.
         <%- end -%>
       type(): |
-        if (MCOUNTENABLE_EN[0]) {
+        if (MCOUNTENABLE_EN[2]) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if (MCOUNTENABLE_EN[0]) {
+        if (MCOUNTENABLE_EN[2]) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -119,34 +119,10 @@ mcounteren:
     TM:
       location: 1
       description: |
-        When set, the `time` CSR (an alias of the `mtime` memory-mapped CSR) is accessible to
-        <%- if ext?(:S) -%>
-        S-mode.
-        <%- else -%>
-        U-mode.
-        <%- end -%>
-
-        <%- if ext?(:S) -%>
-        When `scounteren.TM` is also set, `time` is futher accessible to U-mode.
-        <%- end -%>
-
-        <%- if ext?(:H) -%>
-        When `hcounteren.TM` is also set, `time` is futher accessible to VS-mode.
-
-        When `hcounteren.TM` && `scounteren.TM` are both set, `time` is futher accessible to VU-mode.
-        <%- end -%>
-      type(): |
-        if (MCOUNTENABLE_EN[1]) {
-          return CsrFieldType::RW;
-        } else {
-          return CsrFieldType::RO;
-        }
-      reset_value(): |
-        if (MCOUNTENABLE_EN[1]) {
-          return UNDEFINED_LEGAL;
-        } else {
-          return 0;
-        }
+        Placeholder for delegating `time` to less-privileged modes; however, since `time`
+        is memory-mapped rather than a CSR, this field is always read-only zero.
+      type: RO
+      reset_value: 0
     IR:
       location: 2
       description: |

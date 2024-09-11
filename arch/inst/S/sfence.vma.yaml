@@ -215,48 +215,90 @@ sfence.vma:
       location: 19-15
   access:
     s: always
-    u: always
+    u: never
     vs: always
-    vu: always
+    vu: never
   operation(): |
     XReg vaddr = X[rs1];
-    Bits<ASID_WIDTH> asid = X[rs2][ASID_WIDTH-1:0];
+    Bits<16> asid = X[rs2][ASID_WIDTH-1:0];
+
+    if (mode() == PrivilegeMode::U) {
+      raise (ExceptionCode::IllegalInstruction, $encoding);
+    }
+
+    if (CSR[misa].H == 1 && mode() == PrivilegeMode::VU) {
+      raise (ExceptionCode::IllegalInstruction, $encoding);
+    }
+
+    if (CSR[mstatus].TVM == 1 &&
+        ((mode() == PrivilegeMode::S) || (mode() == PrivilegeMode::VS))) {
+      raise (ExceptionCode::IllegalInstruction, $encoding);
+    }
+
+    if (CSR[misa].H == 1 && CSR[hstatus].VTVM == 1 && mode() == PrivilegeMode::VS) {
+      raise (ExceptionCode::VirtualInstruction, $encoding);
+    }
+
+    if (!implemented?(ExtensionName::Sv32) && !implemented?(ExtensionName::Sv39) && !implemented?(ExtensionName::Sv48) && !implemented?(ExtensionName::Sv57)) {
+      if (TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY) {
+        raise (ExceptionCode::IllegalInstruction, $encoding);
+      }
+    }
+
+    # note: this will default to "all", without globals included
+    VmaInvalType vma_type;
+    if (CSR[misa].H == 1 && mode() == PrivilegeMode::VS) {
+      vma_type.vsmode = true;
+      vma_type.single_vmid = true;
+      vma_type.vmid = CSR[hgatp].VMID;
+    } else {
+      vma_type.smode = true;
+    }
 
     if ((rs1 == 0) && (rs2 == 0)) {
       # invalidate all translations, from all addresses and all ASIDs
       # includes global mappings
-      invalidate_all_translations();
+      vma_type.global = true;
 
-      # then order all subsequent loads and stores after the invalidation
-      sfence_all();
+      order_pgtbl_writes_before_vmafence(vma_type);
+      invalidate_translations(vma_type);
+      order_pgtbl_reads_after_vmafence(vma_type);
 
     } else if ((rs1 == 0) && (rs2 != 0)) {
       # invalidates all translations from ASID 'asid'
       # does not affect global mappings
-      invalidate_asid_translations(asid);
+      vma_type.single_asid = true;
+      vma_type.asid = asid;
 
-      # then order subsequent loads and stores after the invalidation
-      sfence_asid(asid);
+      order_pgtbl_writes_before_vmafence(vma_type);
+      invalidate_translations(vma_type);
+      order_pgtbl_reads_after_vmafence(vma_type);
 
     } else if ((rs1 != 0) && (rs2 == 0)) {
-        # invalidate all translations from leaf page tables containing 'vaddr'
-        # does not affect global mappings
-        if (canonical_vaddr?(vaddr)) {
-          invalidate_vaddr_translations(vaddr);
+      # invalidate all translations from leaf page tables containing 'vaddr'
+      # does not affect global mappings
+      if (canonical_vaddr?(vaddr)) {
+        vma_type.single_vaddr = true;
+        vma_type.vaddr = vaddr;
 
-          # then order subsequent loads and stores after the invalidation
-          sfence_vaddr(vaddr);
-        }
-        # else, silently do nothing
+        order_pgtbl_writes_before_vmafence(vma_type);
+        invalidate_translations(vma_type);
+        order_pgtbl_reads_after_vmafence(vma_type);
+      }
+      # else, silently do nothing
 
     } else {
-        # invalidate all translations from leaf page tables for address space 'asid' containing 'vaddr'
-        # does not affect global mappings
-        if (canonical_vaddr?(vaddr)) {
-          invalidate_asid_vaddr_translations(asid, vaddr);
+      # invalidate all translations from leaf page tables for address space 'asid' containing 'vaddr'
+      # does not affect global mappings
+      if (canonical_vaddr?(vaddr)) {
+        vma_type.single_asid = true;
+        vma_type.asid = asid;
+        vma_type.single_vaddr = true;
+        vma_type.vaddr = vaddr;
 
-          # then order subsequent loads and stores after the invalidation
-          sfence_asid_vaddr(asid, vaddr);
-        }
-        # else, silently do nothing
+        order_pgtbl_writes_before_vmafence(vma_type);
+        invalidate_translations(vma_type);
+        order_pgtbl_reads_after_vmafence(vma_type);
+      }
+      # else, silently do nothing
     }

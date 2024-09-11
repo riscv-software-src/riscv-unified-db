@@ -12,7 +12,7 @@ hcounteren:
     Together with `scounteren`, delegates control of the hardware performance-monitoring counters
     to VS/VU-mode
 
-    See `cycle` for a table of how exceptions occur across all modes.
+    See `cycle` for a table describing how exceptions occur.
   definedBy: H
   fields:
     CY:

@@ -84,7 +84,7 @@ H:
     Hypervisors can support nested virtualization analogously.
     ====
 
-    === Privilege Modes
+    = Privilege Modes
 
     The current _virtualization mode_, denoted V, indicates whether the hart
     is currently executing in a guest. When V=1, the hart is either in
@@ -323,3 +323,57 @@ H:
           type: boolean
         maxItems: 32
         minItems: 32
+    IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO:
+      description: |
+        Whether writes from M-mode, U-mode, or S-mode to vsatp with an illegal mode setting are
+        ignored (as they are with satp), or if they are treated as WARL, leading to undpredictable
+        behavior.
+      schema:
+        type: boolean
+    GSTAGE_MODE_BARE:
+      description: |
+        Whether or not writing mode=Bare is supported in the `hgatp` register.
+      schema:
+        type: boolean
+    SV32X4_TRANSLATION:
+      description: |
+        Whether or not Sv32x4 translation mode is supported.
+      schema:
+        type: boolean
+      extra_validation: |
+        # Sv32x4 is only valid if S-mode can get into XLEN=32 mode
+        assert SXLEN == 32 || SXLEN == 3264 if SV32X4_TRANSLATION
+    SV39X4_TRANSLATION:
+      description: |
+        Whether or not Sv39x4 translation mode is supported.
+      schema:
+        type: boolean
+      extra_validation: |
+        # Sv39x4 is only valid if S-mode can get into XLEN=64 mode
+        assert SXLEN == 64 || SXLEN == 3264 if SV39X4_TRANSLATION
+    SV48X4_TRANSLATION:
+      description: |
+        Whether or not Sv48x4 translation mode is supported.
+      schema:
+        type: boolean
+      extra_validation: |
+        # Sv48x4 is only valid if S-mode can get into XLEN=64 mode
+        assert SXLEN == 64 || SXLEN == 3264 if SV48X4_TRANSLATION
+    SV57X4_TRANSLATION:
+      description: |
+        Whether or not Sv57x4 translation mode is supported.
+      schema:
+        type: boolean
+      extra_validation: |
+        # Sv57x4 is only valid if S-mode can get into XLEN=64 mode
+        assert SXLEN == 64 || SXLEN == 3264 if SV57X4_TRANSLATION
+    VMID_WIDTH:
+      description: |
+        Number of bits supported in `hgatp.VMID` (i.e., the supported width of a virtual machine ID).
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 14
+      extra_validation: |
+        # if XLEN = 32, then VMID MAX is actually 7
+        assert VMID_WIDTH <= 7 if SXLEN == 32

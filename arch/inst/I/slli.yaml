@@ -29,6 +29,7 @@ slli:
     u: always
     vs: always
     vu: always
+  data_independent_timing: true
   operation(): |
     # shamt is between 0-(XLEN-1)
     X[rd] = X[rs1] << shamt;

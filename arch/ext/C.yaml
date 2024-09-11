@@ -15,7 +15,7 @@ C:
     50%-60% of the RISC-V instructions in a program can be replaced with RVC
     instructions, resulting in a 25%-30% code-size reduction.
 
-    === Overview
+    = Overview
 
     RVC uses a simple compression scheme that offers shorter 16-bit versions
     of common 32-bit RISC-V instructions when:
@@ -172,7 +172,7 @@ C:
     performance impact as doubling the instruction cache size. cite:[waterman-ms]
     ====
 
-    === Compressed Instruction Formats
+    = Compressed Instruction Formats
     ((((compressed, formats))))
 
     <<rvc-form>> shows the nine compressed instruction

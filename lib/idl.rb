@@ -92,14 +92,16 @@ module Idl
         end
 
         include_ast = compile_file(include_path, symtab: nil, type_check: false)
+        include_ast.set_input_file_unless_already_set(include_path)
         ast.replace_include!(child, include_ast)
       end
 
-      ast.set_input_file(path.to_s)
+      # we may have already set an input file from an include, so only set it if it's not already set
+      ast.set_input_file_unless_already_set(path.to_s)
       if type_check
         begin
           ast.type_check(symtab)
-        rescue AstNode::TypeError, AstNode::InternalError => e
+        rescue AstNode::TypeError, AstNode::InternalError, AstNode::ValueError => e
           warn "\n"
           warn e.what
           warn e.bt
@@ -221,7 +223,7 @@ module Idl
       # type check
       begin
         ast.type_check(symtab)
-      rescue AstNode::TypeError => e
+      rescue AstNode::TypeError, AstNode::ValueError => e
         warn "While type checking #{what}:"
         warn e.what
         warn e.backtrace

@@ -23,13 +23,13 @@ mhpmevent3h:
       description: |
         Alias of mhpmevent3.OF.
       type(): |
-        if (NUM_HPM_COUNTERS > 0) {
+        if (HPM_COUNTER_EN[3]) {
           return CsrFieldType::RWH;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if (NUM_HPM_COUNTERS > 0) {
+        if (HPM_COUNTER_EN[3]) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -41,13 +41,13 @@ mhpmevent3h:
       description: |
         Alias of mhpmevent3.MINH.
       type(): |
-        if (NUM_HPM_COUNTERS > 0) {
+        if (HPM_COUNTER_EN[3]) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if (NUM_HPM_COUNTERS > 0) {
+        if (HPM_COUNTER_EN[3]) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -59,13 +59,13 @@ mhpmevent3h:
       description: |
         Alias of mhpmevent3.SINH.
       type(): |
-        if ((NUM_HPM_COUNTERS > 0) && implemented?(ExtensionName::S) && (CSR[misa].S == 1'b1)) {
+        if ((HPM_COUNTER_EN[3]) && implemented?(ExtensionName::S) && (CSR[misa].S == 1'b1)) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if ((NUM_HPM_COUNTERS > 0) && implemented?(ExtensionName::S)) {
+        if ((HPM_COUNTER_EN[3]) && implemented?(ExtensionName::S)) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -77,13 +77,13 @@ mhpmevent3h:
       description: |
         Alias of mhpmevent3.UINH.
       type(): |
-        if ((NUM_HPM_COUNTERS > 0) && implemented?(ExtensionName::U) && (CSR[misa].U == 1'b1)) {
+        if ((HPM_COUNTER_EN[3]) && implemented?(ExtensionName::U) && (CSR[misa].U == 1'b1)) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if ((NUM_HPM_COUNTERS > 0) && implemented?(ExtensionName::U)) {
+        if ((HPM_COUNTER_EN[3]) && implemented?(ExtensionName::U)) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -95,13 +95,13 @@ mhpmevent3h:
       description: |
         Alias of mhpmevent3.VSINH.
       type(): |
-        if ((NUM_HPM_COUNTERS > 0) && implemented?(ExtensionName::H) && (CSR[misa].H == 1'b1)) {
+        if ((HPM_COUNTER_EN[3]) && implemented?(ExtensionName::H) && (CSR[misa].H == 1'b1)) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if ((NUM_HPM_COUNTERS > 0) && implemented?(ExtensionName::H)) {
+        if ((HPM_COUNTER_EN[3]) && implemented?(ExtensionName::H)) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -113,13 +113,13 @@ mhpmevent3h:
       description: |
         Alias of mhpmevent3.VUINH.
       type(): |
-        if ((NUM_HPM_COUNTERS > 0) && implemented?(ExtensionName::H) && (CSR[misa].H == 1'b1)) {
+        if ((HPM_COUNTER_EN[3]) && implemented?(ExtensionName::H) && (CSR[misa].H == 1'b1)) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if ((NUM_HPM_COUNTERS > 0) && implemented?(ExtensionName::H)) {
+        if ((HPM_COUNTER_EN[3]) && implemented?(ExtensionName::H)) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;
@@ -130,13 +130,13 @@ mhpmevent3h:
       description: High part of event selector for performance counter `mhpmcounter3`.
       alias: mhpmevent3.EVENT[57:32]
       type(): |
-        if (NUM_HPM_COUNTERS > 0) {
+        if (HPM_COUNTER_EN[3]) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RO;
         }
       reset_value(): |
-        if (NUM_HPM_COUNTERS > 0) {
+        if (HPM_COUNTER_EN[3]) {
           return UNDEFINED_LEGAL;
         } else {
           return 0;

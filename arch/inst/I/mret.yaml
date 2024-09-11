@@ -25,4 +25,4 @@ mret:
       set_mode(PrivilegeMode::M);
     }
     CSR[mstatus].MPP = implemented?(ExtensionName::U) ? 2'b00 : 2'b11;
-    PC = $bits(CSR[mepc]);
+    $pc = $bits(CSR[mepc]);
