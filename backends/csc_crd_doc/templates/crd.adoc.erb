@@ -1,0 +1,106 @@
+= <%= crd.name %> Certification Requirements Document
+
+== Revision History
+
+|===
+| Date | Revision | Changes
+
+<%- crd.family.revisions.each do |rev| -%>
+| <%= rev.date %> | <%= rev.version %>
+| <%- rev.changes.each do |change| %>
+ * <%= change %>
+<%- end -%>
+<%- end -%>
+|===
+
+== Introduction
+
+=== <%= crd.family.name %> Family
+
+<%= crd.family.overview %>
+
+=== <%= crd.name %> Requirements
+
+<%= crd.name %> is version <%= crd.version %> of the <%= crd.family.name %> Family.
+
+<%= crd.description %>
+
+== Specification Versions
+
+TSC Profile:: <%= crd.tsc_profile.nil? ? "No profile" : crd.tsc_profile.marketing_name %>
+Unpriv ISA Manual Revision:: <%= crd.unpriv_isa_manual_revision %>
+Priv ISA Manual Revision:: <%= crd.priv_isa_manual_revision %>
+Debug Manual Revision:: <%= crd.debug_manual_revision %>
+
+== Requirements
+
+=== Privileged Modes
+
+|===
+| M | S | U | VS | VU
+
+| <%- if crd.family.mandatory_priv_modes.include?('M') -%> MANDATORY <%- else -%> OUT_OF_SCOPE <%- end -%>
+| <%- if crd.family.mandatory_priv_modes.include?('S') -%> MANDATORY <%- else -%> OUT_OF_SCOPE <%- end -%>
+| <%- if crd.family.mandatory_priv_modes.include?('U') -%> MANDATORY <%- else -%> OUT_OF_SCOPE <%- end -%>
+| <%- if crd.family.mandatory_priv_modes.include?('VS') -%> MANDATORY <%- else -%> OUT_OF_SCOPE <%- end -%>
+| <%- if crd.family.mandatory_priv_modes.include?('VU') -%> MANDATORY <%- else -%> OUT_OF_SCOPE <%- end -%>
+
+|===
+
+=== Extensions
+
+The following extensions are MANDATORY.
+
+[%autowidth]
+|===
+| Extension | Version
+
+<%- crd.mandatory_extensions.each do |ext| -%>
+| <%= ext.name %>
+| <%= ext.version_requirement %>
+<%- end -%>
+|===
+
+Any extension not listed above is OUT_OF_SCOPE.
+
+=== Specification Options
+
+The following extension options are restricted from their allowed values in the RISC-V specification:
+
+[%autowidth]
+|===
+| Option | Extension | Constraint | Note
+
+<%- crd.param_constraints.each do |constraint| -%>
+| <%= constraint.param.name %>
+| <%= constraint.param.exts.map(&:name).join(', ') %>
+| <%= constraint.schema_constraint_pretty %>
+a| <%= constraint.note %>
+<%- end -%>
+|===
+
+<%- crd.requirement_groups.each do |group| -%>
+=== <%= group.name %>
+
+<%= group.description %>
+
+<%- unless group.when.nil? -%>
+[IMPORTANT]
+<%= group.name %> requirements only apply when <%= group.when_pretty %>.
+<%- end -%>
+
+[%autowidth]
+|===
+| Name | Description
+
+<%- group.requirements.each do |req| -%>
+| <%= req.name %>
+a| <%= req.description %>
+<%- unless req.when.nil? -%>
+[IMPORTANT]
+Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
+<%- end -%>
+<%- end -%>
+|===
+
+<%- end -%>

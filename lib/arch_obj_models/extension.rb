@@ -136,7 +136,7 @@ class Extension < ArchDefObject
 
             param_data["also_defined_in"].each do |other_ext_name|
               other_ext = arch_def.extension(other_ext_name)
-              raise "Definition error in #{name}.#{param_name}: #{param_data['also_defined_in']} is not a known extension" if other.nil?
+              raise "Definition error in #{name}.#{param_name}: #{param_data['also_defined_in']} is not a known extension" if other_ext.nil?
               also_defined_in << other_ext
             end
           end
