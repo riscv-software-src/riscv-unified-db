@@ -12,5 +12,6 @@ Zicbop:
     CACHE_BLOCK_SIZE:
       description: |
         The observable size of a cache block, in bytes
+      also_defined_in: Zicbom
       schema:
         type: integer

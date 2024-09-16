@@ -23,7 +23,7 @@ ror:
   data_independent_timing: true
   operation(): |
     if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
-      raise (ExceptionCode::IllegalInstruction, $encoding);
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
     XReg shamt = (xlen() == 32) ? X[rs2][4:0] : X[rs2][5:0];

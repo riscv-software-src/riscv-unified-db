@@ -75,6 +75,8 @@ class Validator
             "    At #{r['data_pointer']}, '#{r['data']}' is not a array\n"
           elsif r["type"] == "oneOf"
             "    At #{r['data_pointer']}, '#{r['data']}' matches more than one of #{r['schema']['oneOf']}\n"
+          elsif r["type"] == "const"
+            "    At #{r['data_pointer']}, '#{r['data']}' does not match required value '#{r['schema']['const']}'\n"
           else
             "    #{r}\n\n"
           end
@@ -95,7 +97,6 @@ class Validator
       # resolve refs as a relative path from the schema file
       ref_resolver = proc do |pattern|
         if pattern.to_s =~ /^http/
-          puts pattern
           JSON.parse(Net::HTTP.get(pattern))
         else
           JSON.load_file($root / "schemas" / pattern.to_s)

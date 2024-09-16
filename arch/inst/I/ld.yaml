@@ -25,4 +25,4 @@ ld:
   operation(): |
     XReg virtual_address = X[rs1] + imm;
 
-    X[rd] = read_memory<64>(virtual_address);
+    X[rd] = read_memory<64>(virtual_address, $encoding);

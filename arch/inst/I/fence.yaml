@@ -155,15 +155,15 @@ fence:
       }
     }
 
-    Boolean pred_i = pred[3];
-    Boolean pred_o = pred[2];
-    Boolean pred_r = pred[1];
-    Boolean pred_w = pred[0];
+    Boolean pred_i = pred[3] == 1;
+    Boolean pred_o = pred[2] == 1;
+    Boolean pred_r = pred[1] == 1;
+    Boolean pred_w = pred[0] == 1;
 
-    Boolean succ_i = succ[3];
-    Boolean succ_o = succ[2];
-    Boolean succ_r = succ[1];
-    Boolean succ_w = succ[0];
+    Boolean succ_i = succ[3] == 1;
+    Boolean succ_o = succ[2] == 1;
+    Boolean succ_r = succ[1] == 1;
+    Boolean succ_w = succ[0] == 1;
 
     if (is_fence_tso) {
       fence_tso();
@@ -173,21 +173,21 @@ fence:
 
       # apply FIOM overrides
       if (mode() == PrivilegeMode::S) {
-        if (CSR[menvcfg].FIOM) {
+        if (CSR[menvcfg].FIOM == 1) {
           if (pred_i) { pred_r = true; }
           if (pred_o) { pred_w = true; }
           if (succ_i) { succ_r = true; }
           if (succ_o) { succ_w = true; }
         }
       } else if (mode() == PrivilegeMode::U) {
-        if (CSR[menvcfg].FIOM || CSR[senvcfg].FIOM) {
+        if ((CSR[menvcfg].FIOM | CSR[senvcfg].FIOM) == 1) {
           if (pred_i) { pred_r = true; }
           if (pred_o) { pred_w = true; }
           if (succ_i) { succ_r = true; }
           if (succ_o) { succ_w = true; }
         }    
       } else if (mode() == PrivilegeMode::VS || mode() == PrivilegeMode::VU) {
-        if (CSR[menvcfg].FIOM || CSR[henvcfg].FIOM) {
+        if ((CSR[menvcfg].FIOM | CSR[henvcfg].FIOM) == 1) {
           if (pred_i) { pred_r = true; }
           if (pred_o) { pred_w = true; }
           if (succ_i) { succ_r = true; }

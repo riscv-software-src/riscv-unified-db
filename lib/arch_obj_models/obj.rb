@@ -256,3 +256,98 @@ class Person < ArchDefObject
     name <=> other.name
   end
 end
+
+# represents a JSON Schema compoisition, e.g.:
+#
+# anyOf:
+#   - oneOf:
+#     - A
+#     - B
+#   - C
+#
+class SchemaCondition
+  # @param composition_hash [Hash] A possibly recursive hash of "allOf", "anyOf", "oneOf"
+  def initialize(composition_hash)
+    raise ArgumentError, "Expecting a JSON schema composition" unless is_a_condition?(composition_hash)
+
+    @hsh = composition_hash
+  end
+
+  def is_a_condition?(hsh)
+    return false unless hsh.is_a?(Hash) && hsh.keys.size == 1 && hsh[hsh.keys[0]].is_a?(Array)
+
+    return false unless ["allOf", "anyOf", "oneOf"].include?(hsh.keys[0])
+
+    hsh[hsh.keys[0]].each do |element|
+      if element.is_a?(Hash)
+        return false unless is_a_condition?(element)
+      end
+    end
+
+    return true
+  end
+  private :is_a_condition?
+
+  def to_rb_helper(hsh)
+    if hsh.is_a?(Hash)
+      key = hsh.keys[0]
+
+      case key
+      when "allOf"
+        rb_str = hsh[key].map { |element| to_rb_helper(element) }.join(' && ')
+        "(#{rb_str})"
+      when "anyOf"
+        rb_str = hsh[key].map { |element| to_rb_helper(element) }.join(' || ')
+        "(#{rb_str})"
+      when "oneOf"
+        rb_str = hsh[key].map { |element| to_rb_helper(element) }.join(', ')
+        "([#{rb_str}].count(true) == 1)"
+      else
+        "(yield #{hsh})"
+      end
+    else
+      "(yield #{hsh})"
+    end
+  end
+
+  # Given the name of a ruby array +ary_name+ containing the available objects to test,
+  # return a string that can be eval'd to determine if the objects in +ary_name+
+  # meet the Condition
+  #
+  # @param ary_name [String] Name of a ruby string in the eval binding
+  # @return [Boolean] If the condition is met
+  def to_rb
+    to_rb_helper(@hsh)
+  end
+
+  # @example See if a string satisfies
+  #   cond = { "anyOf" => ["A", "B", "C"] }
+  #   string = "A"
+  #   cond.satisfied_by? { |endpoint| endpoint == string } #=> true
+  #   string = "D"
+  #   cond.satisfied_by? { |endpoint| endpoint == string } #=> false
+  #
+  # @example See if an array satisfies
+  #   cond = { "allOf" => ["A", "B", "C"] }
+  #   ary = ["A", "B", "C", "D"]
+  #   cond.satisfied_by? { |endpoint| ary.include?(endpoint) } #=> true
+  #   ary = ["A", "B"]
+  #   cond.satisfied_by? { |endpoint| ary.include?(endpoint) } #=> false
+  #
+  # @yieldparam obj [Object] An endpoint in the condition
+  # @yieldreturn [Boolean] Whether or not +obj+ is what you are looking for
+  # @return [Boolean] Whether or not the entire condition is satisfied
+  def satisfied_by?(&block)
+    raise ArgumentError, "Missing required block" unless block_given?
+
+    raise ArgumentError, "Expecting one argument to block" unless block.arity == 1
+
+    eval to_rb
+  end
+end
+
+class AlwaysTrueSchemaCondition
+  def to_rb = "true"
+  
+  def satisfied_by? = true
+end

@@ -6,7 +6,7 @@
   "$defs": {
     "extension_name": {
       "type": "string",
-      "pattern": "^([A-WY])|([SXZ][a-z]+)$"
+      "pattern": "^([A-WY])|([SXZ][a-z0-9]+)$"
     },
     "extension_version": {
       "oneOf": [

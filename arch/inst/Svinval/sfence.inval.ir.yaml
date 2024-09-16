@@ -17,11 +17,11 @@ sfence.inval.ir:
   assembly: ""
   operation(): |
     if (mode() == PrivilegeMode::U) {
-      raise (ExceptionCode::IllegalInstruction, $encoding);
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
     if (CSR[misa].H == 1 && mode() == PrivilegeMode::VU) {
-      raise (ExceptionCode::VirtualInstruction, $encoding);
+      raise (ExceptionCode::VirtualInstruction, mode(), $encoding);
     }
 
     # order all subsequent (implicit) loads after an sfence/hfence invalidation

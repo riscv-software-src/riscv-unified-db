@@ -155,6 +155,10 @@ menvcfg:
         menvcfg.PBMTE is zero.
         <% end %>
 
+        After changing `menvcfg.PBMTE`, executing an `sfence.vma` instruction with _rs1_=_x0_ and
+        _rs2_=_x0_ suffices to synchronize address-translation caches with respect to the altered
+        interpretation of page-table entries' PBMT fields.
+
       definedBy: Svpbmt
       type: RW
       reset_value: UNDEFINED_LEGAL

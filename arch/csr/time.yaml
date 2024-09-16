@@ -36,33 +36,33 @@ time:
       # S-mode is present ->
       #   mcounteren determines access in S-mode
       if (CSR[mcounteren].TM == 1'b0) {
-        raise(ExceptionCode::IllegalInstruction, $encoding);
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
       }
     } else if (mode() == PrivilegeMode::U) {
       if (CSR[misa].S == 1'b1) {
         # S-mode is present ->
         #   mcounteren and scounteren together determine access in U-mode
         if ((CSR[mcounteren].TM & CSR[scounteren].TM) == 1'b0) {
-          raise(ExceptionCode::IllegalInstruction, $encoding);
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
         }
       } else if (CSR[mcounteren].TM == 1'b0) {
         # S-mode is not present ->
         #   mcounteren determines access in U-mode
-        raise(ExceptionCode::IllegalInstruction, $encoding);
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
       }
     } else if (mode() == PrivilegeMode::VS) {
       # access in VS mode
       if (CSR[hcounteren].TM == 1'b0 && CSR[mcounteren] == 1'b1) {
-        raise(ExceptionCode::VirtualInstruction, $encoding);
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
       } else if (CSR[mcounteren].TM == 1'b0) {
-        raise(ExceptionCode::IllegalInstruction, $encoding);
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
       }
     } else if (mode() == PrivilegeMode::VU) {
       # access in VU mode
       if (((CSR[hcounteren].TM & CSR[scounteren].TM) == 1'b0) && (CSR[mcounteren].IR == 1'b1)) {
-        raise(ExceptionCode::VirtualInstruction, $encoding);
+        raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
       } else if (CSR[mcounteren].TM == 1'b0) {
-        raise(ExceptionCode::IllegalInstruction, $encoding);
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
       }
     }
 

@@ -506,7 +506,7 @@ class CsrField < ArchDefObject
       Idl::Var.new("csr_value", csr.bitfield_type(arch_def, effective_xlen))
     )
 
-    ast = type_checked_sw_write_ast(arch_def, effective_xlen).prune(symtab)
+    ast = type_checked_sw_write_ast(arch_def.sym_table.deep_clone, effective_xlen).prune(symtab.deep_clone)
 
     arch_def.idl_compiler.type_check(
       ast,

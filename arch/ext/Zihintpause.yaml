@@ -53,7 +53,7 @@ Zihintpause:
     implementations are expected to deliberately stall the PAUSE instruction
     until outstanding memory transactions have completed. Because the
     successor set is null, however, PAUSE does not _mandate_ any particular
-    memory ordering—hence, it truly is a HINT.
+    memory ordering--hence, it truly is a HINT.
     (((PAUSE, encoding)))
 
     Like other FENCE instructions, PAUSE cannot be used within LR/SC

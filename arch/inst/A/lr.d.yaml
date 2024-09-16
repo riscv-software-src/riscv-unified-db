@@ -61,7 +61,9 @@ lr.d:
     vu: always
   operation(): |
     if (implemented?(ExtensionName::A) && (CSR[misa].A == 1'b0)) {
-      raise (ExceptionCode::IllegalInstruction, $encoding);
+      # even though this is a memory operation, the exception occurs before that would be known,
+      # so mode() is the correct reporting mode rathat than effective_ldst_mode()
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
     XReg virtual_address = X[rs1];
@@ -76,12 +78,12 @@ lr.d:
       #   for the misalignment, if the misaligned access should not be emulated.
 
       if (LRSC_MISALIGNED_BEHAVIOR == "always raise misaligned exception") {
-        raise(ExceptionCode::LoadAddressMisaligned, virtual_address);
+        raise(ExceptionCode::LoadAddressMisaligned, effective_ldst_mode(), virtual_address);
       } else if (LRSC_MISALIGNED_BEHAVIOR == "always raise access fault") {
-        raise(ExceptionCode::LoadAccessFault, virtual_address);
+        raise(ExceptionCode::LoadAccessFault, effective_ldst_mode(), virtual_address);
       } else {
         unpredictable("Implementations may raise either a LoadAddressMisaligned or a LoadAccessFault when an LR/SC address is misaligned");
       }
     }
 
-    X[rd] = load_reserved<32>(virtual_address, aq, rl);
+    X[rd] = load_reserved<32>(virtual_address, aq, rl, $encoding);

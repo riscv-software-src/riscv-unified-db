@@ -30,7 +30,7 @@ divw:
     vu: always
   operation(): |
     if (implemented?(ExtensionName::M) && (CSR[misa].M == 1'b0)) {
-      raise (ExceptionCode::IllegalInstruction, $encoding);
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
     Bits<32> src1 = X[rs1][31:0];

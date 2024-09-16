@@ -25,4 +25,4 @@ lbu:
   operation(): |
     XReg virtual_address = X[rs1] + imm;
 
-    X[rd] = read_memory<8>(virtual_address);
+    X[rd] = read_memory<8>(virtual_address, $encoding);

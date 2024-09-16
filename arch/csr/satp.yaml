@@ -43,13 +43,13 @@ satp:
               if (CSR[satp].MODE != 0) {
                 # changes *to* Bare mode take effect immediately without needing sfence.vma
                 # thus, an implicit sfence.vma occurs now
-                order_all_pgtbl_writes_before_sfence();
+                VmaOrderType order_type;
+                order_type.global = true;
+                order_pgtbl_writes_before_vmafence(order_type);
 
-                TranslationInvalidationOptions opts;
-                opts.global = true;
-                invalidate_smode_translations(opts);
+                invalidate_translations(order_type);
 
-                order_all_pgtbl_reads_after_sfence();
+                order_pgtbl_reads_after_vmafence(order_type);
               }
               return csr_value.MODE;
             } else {
@@ -61,13 +61,13 @@ satp:
           if (CSR[satp].MODE == 0) {
             # changes *from* Bare mode take effect immediately without needing sfence.vma
             # thus, an implicit sfence.vma occurs now
-                order_all_pgtbl_writes_before_sfence();
+            VmaOrderType order_type;
+            order_type.global = true;
+            order_pgtbl_writes_before_vmafence(order_type);
 
-                TranslationInvalidationOptions opts;
-                opts.global = true;
-                invalidate_smode_translations(opts);
+            invalidate_translations(order_type);
 
-                order_all_pgtbl_reads_after_sfence();
+            order_pgtbl_reads_after_vmafence(order_type);
           }
           return csr_value.MODE;
         }
@@ -75,13 +75,13 @@ satp:
           if (CSR[satp].MODE == 0) {
             # changes *from* Bare mode take effect immediately without needing sfence.vma
             # thus, an implicit sfence.vma occurs now
-                order_all_pgtbl_writes_before_sfence();
+            VmaOrderType order_type;
+            order_type.global = true;
+            order_pgtbl_writes_before_vmafence(order_type);
 
-                TranslationInvalidationOptions opts;
-                opts.global = true;
-                invalidate_smode_translations(opts);
+            invalidate_translations(order_type);
 
-                order_all_pgtbl_reads_after_sfence();
+            order_pgtbl_reads_after_vmafence(order_type);
           }
 
           return csr_value.MODE;
@@ -90,13 +90,13 @@ satp:
           if (CSR[satp].MODE == 0) {
             # changes *from* Bare mode take effect immediately without needing sfence.vma
             # thus, an implicit sfence.vma occurs now
-                order_all_pgtbl_writes_before_sfence();
+            VmaOrderType order_type;
+            order_type.global = true;
+            order_pgtbl_writes_before_vmafence(order_type);
 
-                TranslationInvalidationOptions opts;
-                opts.global = true;
-                invalidate_smode_translations(opts);
+            invalidate_translations(order_type);
 
-                order_all_pgtbl_reads_after_sfence();
+            order_pgtbl_reads_after_vmafence(order_type);
           }
 
           return csr_value.MODE;

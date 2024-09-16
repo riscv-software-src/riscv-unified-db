@@ -21,19 +21,19 @@ hinval.gvma:
     vu: never
   assembly: xs1, xs2
   operation(): |
-    XReg gaddr = X[rs1];
+    XReg gpa = X[rs1];
     Bits<VMID_WIDTH> vmid = X[rs2][VMID_WIDTH-1:0];
 
     if (mode() == PrivilegeMode::U) {
-      raise (ExceptionCode::IllegalInstruction, $encoding);
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
     if (CSR[mstatus].TVM == 1 && mode() == PrivilegeMode::S) {
-      raise (ExceptionCode::IllegalInstruction, $encoding);
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
     if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-      raise (ExceptionCode::VirtualInstruction, $encoding);
+      raise (ExceptionCode::VirtualInstruction, mode(), $encoding);
     }
 
     # note: this will default to "all"
@@ -58,9 +58,9 @@ hinval.gvma:
     } else if ((rs1 != 0) && (rs2 == 0)) {
       # invalidate all G-stage translations from leaf page tables containing 'vaddr'
       # does not affect global mappings
-      if (canonical_vaddr?(vaddr)) {
-        vma_type.single_vaddr = true;
-        vma_type.vaddr = gaddr;
+      if (canonical_gpaddr?(gpa)) {
+        vma_type.single_gpaddr = true;
+        vma_type.gpaddr = gpa;
 
         invalidate_translations(vma_type);
 
@@ -70,11 +70,11 @@ hinval.gvma:
     } else {
       # invalidate all G-stage translations from leaf page tables for virtual machine 'vmid' containing 'vaddr'
       # does not affect global mappings
-      if (canonical_vaddr?(vaddr)) {
+      if (canonical_gpaddr?(gpa)) {
         vma_type.single_vmid = true;
         vma_type.vmid = vmid;
-        vma_type.single_vaddr = true;
-        vma_type.vaddr = vaddr;
+        vma_type.single_gpaddr = true;
+        vma_type.gpaddr = gpa;
 
         invalidate_translations(vma_type);
 

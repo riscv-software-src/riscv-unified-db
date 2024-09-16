@@ -27,19 +27,19 @@ sinval.vma:
 
     if (CSR[mstatus].TVM == 1 &&
         ((mode() == PrivilegeMode::S) || (mode() == PrivilegeMode::VS))) {
-      raise(ExceptionCode::IllegalInstruction, $encoding);
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
     if (CSR[misa].H == 1 && CSR[hstatus].VTVM == 1 && mode() == PrivilegeMode::VS) {
-      raise (ExceptionCode::VirtualInstruction, $encoding);
+      raise (ExceptionCode::VirtualInstruction, mode(), $encoding);
     }
 
     if (mode() == PrivilegeMode::U) {
-      raise (ExceptionCode::IllegalInstruction, $encoding);
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
     if (CSR[misa].H == 1 && mode() == PrivilegeMode::VU) {
-      raise (ExceptionCode::VirtualInstruction, $encoding);
+      raise (ExceptionCode::VirtualInstruction, mode(), $encoding);
     }
 
     # note: this will default to "all"

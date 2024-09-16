@@ -226,27 +226,39 @@ class Csr < ArchDefObject
   def max_length(arch_def)
     case @data["length"]
     when "MXLEN"
-      arch_def.param_values["XLEN"]
-    when "SXLEN"
-      if arch_def.param_values["SXLEN"] == 3264
-        raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
-
-        64
+      if arch_def.is_a?(ImplArchDef)
+        arch_def.param_values["XLEN"]
       else
-        raise "CSR #{name} is not implemented" if arch_def.implemented_csrs.none? { |c| c.name == name }
-        raise "CSR #{name} is not implemented" if arch_def.param_values["SXLEN"].nil?
+        64
+      end
+    when "SXLEN"
+      if arch_def.is_a?(ImplArchDef)
+        if arch_def.param_values["SXLEN"] == 3264
+          raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
 
-        arch_def.param_values["SXLEN"]
+          64
+        else
+          raise "CSR #{name} is not implemented" if arch_def.implemented_csrs.none? { |c| c.name == name }
+          raise "CSR #{name} is not implemented" if arch_def.param_values["SXLEN"].nil?
+
+          arch_def.param_values["SXLEN"]
+        end
+      else
+        64
       end
     when "VSXLEN"
-      if arch_def.param_values["VSXLEN"] == 3264
-        raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
+      if arch_def.is_a?(ImplArchDef)
+        if arch_def.param_values["VSXLEN"] == 3264
+          raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
 
-        64
+          64
+        else
+          raise "CSR #{name} is not implemented" if arch_def.param_values["VSXLEN"].nil?
+
+          arch_def.param_values["VSXLEN"]
+        end
       else
-        raise "CSR #{name} is not implemented" if arch_def.param_values["VSXLEN"].nil?
-
-        arch_def.param_values["VSXLEN"]
+        64
       end
     when Integer
       @data["length"]
@@ -458,7 +470,8 @@ class Csr < ArchDefObject
       @data["sw_read()"],
       return_type: Idl::Type.new(:bits, width: 128), # big int to hold special return values
       name: "CSR[#{name}].sw_read()",
-      input_file: source_line("sw_read()"),
+      input_file: __source,
+      input_line: source_line("sw_read()"),
       type_check: false
     )
 
