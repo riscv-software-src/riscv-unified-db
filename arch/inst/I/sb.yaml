@@ -24,4 +24,4 @@ sb:
   operation(): |
     XReg virtual_address = X[rs1] + imm;
 
-    write_memory<8>(virtual_address, X[rs2][7:0]);
+    write_memory<8>(virtual_address, X[rs2][7:0], $encoding);

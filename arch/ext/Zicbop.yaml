@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+Zicbop:
+  long_name: Cache block prefetch
+  description: Cache block prefetch instruction
+  type: unprivileged
+  versions:
+  - version: 1.0.1-b34ea8a
+    state: ratified
+    ratification_date: 2022-05
+  params:
+    CACHE_BLOCK_SIZE:
+      description: |
+        The observable size of a cache block, in bytes
+      also_defined_in: Zicbom
+      schema:
+        type: integer

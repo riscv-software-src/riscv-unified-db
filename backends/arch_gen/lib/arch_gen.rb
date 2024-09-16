@@ -100,13 +100,25 @@ class ArchGen
   def params
     return @params unless @params.nil?
 
-    @params = (YAML.load_file @cfg_params_path)["params"]
+    gen_params_schema
+
+    # use validator to pick up defaults
+    @params =
+      Validator.instance.validate_str(
+        File.read(@cfg_params_path),
+        schema_path: @params_schema_path
+      )["params"]
   end
 
   def assert(cond)
     raise "Assertion Failed" unless cond
   end
   private :assert
+
+  def ext?(name)
+    @implemented_extensions.any? { |ext| ext["name"] == name.to_s }
+  end
+  private :ext?
 
   # checks any "extra_validation" given by parameter definitions
   def params_extra_validation
@@ -185,16 +197,12 @@ class ArchGen
   def check_extension_dependencies
     @implemented_extensions.each do |ext|
       requirements = @required_ext_map[[ext["name"], ext["version"]]]
-      next if requirements.nil? || requirements.empty?
-
-      # turn into an array, if needed
-      requirements = [requirements] unless requirements[0].is_a?(Array)
-      requirements.each do |r|
-        next if @implemented_extensions.any? do |e|
-          e["name"] == r[0] &&
-          Gem::Requirement.new(r[1]).satisfied_by?(Gem::Version.new(e["version"]))
+      satisfied = requirements.satisfied_by? do |req|
+        @implemented_extensions.any? do |ext2|
+          (ext2["name"] == req[0]) && Gem::Requirement.new(req[1]).satisfied_by?(Gem::Version.new(ext2["version"]))
         end
-
+      end
+      unless satisfied
         warn "Extension '#{ext}' requires extension '#{r}'; it must also be implemented"
         exit 1
       end
@@ -717,12 +725,16 @@ class ArchGen
                 end
       requires = case v["requires"]
                  when nil
-                   []
-                 when Array
-                   v["requires"][0].is_a?(Array) ? v["requires"] : [v["requires"]]
+                   AlwaysTrueSchemaCondition.new
+                 when Hash
+                   SchemaCondition.new(v["requires"])
+                 else
+                   SchemaCondition.new({"oneOf" => [v["requires"]]})
                  end
+      raise "Bad condition" if requires.nil?
+
       @implied_ext_map[[ext_name, v["version"].to_s]] = implies.map { |i| [i[0], i[1].to_s] }
-      @required_ext_map[[ext_name, v["version"].to_s]] = requires.map { |i| [i[0], i[1].to_s] }
+      @required_ext_map[[ext_name, v["version"].to_s]] = requires
     end
 
     belongs =
@@ -857,7 +869,10 @@ class ArchGen
       end
 
     # get the inst data (not including the name key), which is redundant at this point
-    inst_data = YAML.load_file(merged_path)[inst_name]
+    inst_data = YAML.load_file(merged_path)
+    raise "The first and only key of #{arch_path} must be '#{inst_name}" unless inst_data.key?(inst_name)
+    inst_data = inst_data[inst_name]
+
     inst_data["name"] = inst_name
     inst_data["__source"] = og_path.to_s
 

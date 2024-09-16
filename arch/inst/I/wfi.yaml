@@ -87,21 +87,21 @@ wfi:
   operation(): |
     # first, perform all the access checks
     if (mode() == PrivilegeMode::U) {
-      raise (ExceptionCode::IllegalInstruction, $encoding);
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
     if ((CSR[misa].S == 1) && (CSR[mstatus].TW == 1'b1)) {
       if (mode() != PrivilegeMode::M) {
-        raise (ExceptionCode::IllegalInstruction, $encoding);
+        raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
       }
     }
     if (CSR[misa].H == 1) {
       if (CSR[hstatus].VTW == 1'b0) {
         if (mode() == PrivilegeMode::VU) {
-          raise (ExceptionCode::VirtualInstruction, $encoding);
+          raise (ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
       } else if (CSR[hstatus].VTW == 1'b1) {
         if ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)) {
-          raise (ExceptionCode::VirtualInstruction, $encoding);
+          raise (ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
       }
     }

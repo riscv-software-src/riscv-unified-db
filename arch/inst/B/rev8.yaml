@@ -34,9 +34,10 @@ rev8:
     u: always
     vs: always
     vu: always
+  data_independent_timing: true
   operation(): |
     if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
-      raise (ExceptionCode::IllegalInstruction, $encoding);
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
     XReg input = X[rs1];

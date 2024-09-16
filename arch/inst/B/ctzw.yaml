@@ -25,7 +25,7 @@ ctzw:
     vu: always
   operation(): |
     if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
-      raise (ExceptionCode::IllegalInstruction, $encoding);
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
     X[rd] = (xlen() - 1) - $signed(lowest_set_bit(X[rs1][31:0]));

@@ -75,6 +75,8 @@ class Validator
             "    At #{r['data_pointer']}, '#{r['data']}' is not a array\n"
           elsif r["type"] == "oneOf"
             "    At #{r['data_pointer']}, '#{r['data']}' matches more than one of #{r['schema']['oneOf']}\n"
+          elsif r["type"] == "const"
+            "    At #{r['data_pointer']}, '#{r['data']}' does not match required value '#{r['schema']['const']}'\n"
           else
             "    #{r}\n\n"
           end

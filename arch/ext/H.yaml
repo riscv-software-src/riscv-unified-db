@@ -7,7 +7,9 @@ H:
   - version: 1.0
     state: ratified
     ratification_date: 2019-12
-    requires: [S, '>= 1.12']
+    requires:
+      oneOf:
+      - [S, '>= 1.12']
   interrupt_codes:
   - num: 2
     name: Virtual supervisor software interrupt
@@ -84,7 +86,7 @@ H:
     Hypervisors can support nested virtualization analogously.
     ====
 
-    === Privilege Modes
+    = Privilege Modes
 
     The current _virtualization mode_, denoted V, indicates whether the hart
     is currently executing in a guest. When V=1, the hart is either in
@@ -330,3 +332,297 @@ H:
         behavior.
       schema:
         type: boolean
+    GSTAGE_MODE_BARE:
+      description: |
+        Whether or not writing mode=Bare is supported in the `hgatp` register.
+      schema:
+        type: boolean
+    SV32_VSMODE_TRANSLATION:
+      description: |
+        Whether or not Sv32 translation is supported in first-stage (VS-stage)
+        translation.
+      schema:
+        type: boolean
+      extra_validation: |
+        # Sv32 is only valid if VS-mode can get into XLEN=32 mode
+        assert (VSXLEN == 32 || VSXLEN == 3264) if SV32_VSMODE_TRANSLATION
+    SV39_VSMODE_TRANSLATION:
+      description: |
+        Whether or not Sv39 translation is supported in first-stage (VS-stage)
+        translation.
+      schema:
+        type: boolean
+      extra_validation: |
+        # Sv39 is only valid if VS-mode can get into XLEN=64 mode
+        assert (VSXLEN == 64 || VSXLEN == 3264) if SV39_VSMODE_TRANSLATION
+    SV48_VSMODE_TRANSLATION:
+      description: |
+        Whether or not Sv48 translation is supported in first-stage (VS-stage)
+        translation.
+      schema:
+        type: boolean
+      extra_validation: |
+        # Sv48 is only valid if VS-mode can get into XLEN=64 mode
+        assert (VSXLEN == 64 || VSXLEN == 3264) if SV48_VSMODE_TRANSLATION
+    SV57_VSMODE_TRANSLATION:
+      description: |
+        Whether or not Sv57 translation is supported in first-stage (VS-stage)
+        translation.
+      schema:
+        type: boolean
+      extra_validation: |
+        # Sv57 is only valid if VS-mode can get into XLEN=64 mode
+        assert (VSXLEN == 64 || VSXLEN == 3264) if SV57_VSMODE_TRANSLATION
+    SV32X4_TRANSLATION:
+      description: |
+        Whether or not Sv32x4 translation mode is supported.
+      schema:
+        type: boolean
+      extra_validation: |
+        # Sv32x4 is only valid if S-mode can get into XLEN=32 mode
+        assert SXLEN == 32 || SXLEN == 3264 if SV32X4_TRANSLATION
+    SV39X4_TRANSLATION:
+      description: |
+        Whether or not Sv39x4 translation mode is supported.
+      schema:
+        type: boolean
+      extra_validation: |
+        # Sv39x4 is only valid if S-mode can get into XLEN=64 mode
+        assert SXLEN == 64 || SXLEN == 3264 if SV39X4_TRANSLATION
+    SV48X4_TRANSLATION:
+      description: |
+        Whether or not Sv48x4 translation mode is supported.
+      schema:
+        type: boolean
+      extra_validation: |
+        # Sv48x4 is only valid if S-mode can get into XLEN=64 mode
+        assert SXLEN == 64 || SXLEN == 3264 if SV48X4_TRANSLATION
+    SV57X4_TRANSLATION:
+      description: |
+        Whether or not Sv57x4 translation mode is supported.
+      schema:
+        type: boolean
+      extra_validation: |
+        # Sv57x4 is only valid if S-mode can get into XLEN=64 mode
+        assert SXLEN == 64 || SXLEN == 3264 if SV57X4_TRANSLATION
+    VMID_WIDTH:
+      description: |
+        Number of bits supported in `hgatp.VMID` (i.e., the supported width of a virtual machine ID).
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 14
+      extra_validation: |
+        # if XLEN = 32, then VMID MAX is actually 7
+        assert VMID_WIDTH <= 7 if SXLEN == 32
+    REPORT_GPA_IN_TVAL_ON_LOAD_GUEST_PAGE_FAULT:
+      description: |
+        Whether or not GPA >> 2 is written into htval/mtval2 when a load guest page fault occurs.
+
+        If false, 0 will be written into htval/mtval2 on a load guest page fault.
+      schema:
+        type: boolean
+    REPORT_GPA_IN_TVAL_ON_STORE_AMO_GUEST_PAGE_FAULT:
+      description: |
+        Whether or not GPA >> 2 is written into htval/mtval2 when a store/amo guest page fault occurs.
+
+        If false, 0 will be written into htval/mtval2 on a store/amo guest page fault.
+      schema:
+        type: boolean
+    REPORT_GPA_IN_TVAL_ON_INSTRUCTION_GUEST_PAGE_FAULT:
+      description: |
+        Whether or not GPA >> 2 is written into htval/mtval2 when an instruction guest page fault occurs.
+
+        If false, 0 will be written into htval/mtval2 on an instruction guest page fault.
+      schema:
+        type: boolean
+    REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT:
+      description: |
+        Whether or not GPA >> 2 is written into htval/mtval2 when a guest page fault occurs while
+        walking a VS-mode page table.
+
+        If false, 0 will be written into htval/mtval2 on an intermediate guest page fault.
+      schema:
+        type: boolean
+    TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT:
+      description: |
+        Value to write into htval/mtval2 when there is a guest page fault on a final translation.
+
+        Possible values:
+          * "always zero": Always write the value zero
+          * "always pseudoinstruction": Always write the pseudoinstruction
+          * "always transformed standard instruction": Always write the transformation of the standard instruction encoding
+          * "custom": A custom value, which will cause an UNPREDICTABLE event.        
+      schema:
+        type: string
+        enum:
+        - "always zero"
+        - "always pseudoinstruction"
+        - "always transformed standard instruction"
+        - "custom"
+    TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT:
+      description: |
+        Value to write into htval/mtval2 when there is a guest page fault on a final translation.
+
+        Possible values:
+          * "always zero": Always write the value zero
+          * "always pseudoinstruction": Always write the pseudoinstruction
+          * "always transformed standard instruction": Always write the transformation of the standard instruction encoding
+          * "custom": A custom value, which will cause an UNPREDICTABLE event.        
+      schema:
+        type: string
+        enum:
+        - "always zero"
+        - "always pseudoinstruction"
+        - "always transformed standard instruction"
+        - "custom"
+    TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT:
+      description: |
+        Value to write into htval/mtval2 when there is a guest page fault on a final translation.
+
+        Possible values:
+          * "always zero": Always write the value zero
+          * "always pseudoinstruction": Always write the pseudoinstruction
+      schema:
+        type: string
+        enum:
+        - "always zero"
+        - "always pseudoinstruction"
+    TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED:
+      description: |
+        Value written into htinst/mtinst when there is an instruction address misaligned exception.
+
+        Possible values:
+          * "always zero": Always write the value zero
+          * "custom": Write a custom value, which resuls in UNPREDICTABLE
+      schema:
+        type: string
+        enum:
+        - "always zero"
+        - "custom"
+    TINST_VALUE_ON_BREAKPOINT:
+      description: |
+        Value written into htinst/mtinst on a Breakpoint exception from VU/VS-mode.
+
+        Possible values:
+          * "always zero": Always write the value zero
+          * "custom": Write a custom value, which resuls in UNPREDICTABLE
+      schema:
+        type: string
+        enum: ['always zero', 'custom']
+    TINST_VALUE_ON_VIRTUAL_INSTRUCTION:
+      description: |
+        Value written into htinst/mtinst on a VirtualInstruction exception from VU/VS-mode.
+
+        Possible values:
+          * "always zero": Always write the value zero
+          * "custom": Write a custom value, which resuls in UNPREDICTABLE
+      schema:
+        type: string
+        enum: ['always zero', 'custom']
+    TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED:
+      description: |
+        Value written into htinst/mtinst on a VirtualInstruction exception from VU/VS-mode.
+
+        Possible values:
+          * "always zero": Always write the value zero
+          * "always transformed standard instruction": Always write a transformed standard instruction as defined by H
+          * "custom": Write a custom value, which resuls in UNPREDICTABLE
+      schema:
+        type: string
+        enum: ['always zero', 'always transformed standard instruction', 'custom']
+    TINST_VALUE_ON_LOAD_ACCESS_FAULT:
+      description: |
+        Value written into htinst/mtinst on an AccessFault exception from VU/VS-mode.
+
+        Possible values:
+          * "always zero": Always write the value zero
+          * "always transformed standard instruction": Always write a transformed standard instruction as defined by H
+          * "custom": Write a custom value, which resuls in UNPREDICTABLE
+      schema:
+        type: string
+        enum: ['always zero', 'always transformed standard instruction', 'custom']
+    TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED:
+      description: |
+        Value written into htinst/mtinst on a VirtualInstruction exception from VU/VS-mode.
+
+        Possible values:
+          * "always zero": Always write the value zero
+          * "always transformed standard instruction": Always write a transformed standard instruction as defined by H
+          * "custom": Write a custom value, which resuls in UNPREDICTABLE
+      schema:
+        type: string
+        enum: ['always zero', 'always transformed standard instruction', 'custom']
+    TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT:
+      description: |
+        Value written into htinst/mtinst on an AccessFault exception from VU/VS-mode.
+
+        Possible values:
+          * "always zero": Always write the value zero
+          * "always transformed standard instruction": Always write a transformed standard instruction as defined by H
+          * "custom": Write a custom value, which resuls in UNPREDICTABLE
+      schema:
+        type: string
+        enum: ['always zero', 'always transformed standard instruction', 'custom']
+    TINST_VALUE_ON_UCALL:
+      description: |
+        Value written into htinst/mtinst on a UCall exception from VU/VS-mode.
+
+        Possible values:
+          * "always zero": Always write the value zero
+          * "custom": Write a custom value, which resuls in UNPREDICTABLE
+      schema:
+        type: string
+        enum: ['always zero', 'custom']
+    TINST_VALUE_ON_SCALL:
+      description: |
+        Value written into htinst/mtinst on a SCall exception from VU/VS-mode.
+
+        Possible values:
+          * "always zero": Always write the value zero
+          * "custom": Write a custom value, which resuls in UNPREDICTABLE
+      schema:
+        type: string
+        enum: ['always zero', 'custom']
+    TINST_VALUE_ON_MCALL:
+      description: |
+        Value written into htinst/mtinst on a MCall exception from VU/VS-mode.
+
+        Possible values:
+          * "always zero": Always write the value zero
+          * "custom": Write a custom value, which resuls in UNPREDICTABLE
+      schema:
+        type: string
+        enum: ['always zero', 'custom']
+    TINST_VALUE_ON_VSCALL:
+      description: |
+        Value written into htinst/mtinst on a VSCall exception from VU/VS-mode.
+
+        Possible values:
+          * "always zero": Always write the value zero
+          * "custom": Write a custom value, which resuls in UNPREDICTABLE
+      schema:
+        type: string
+        enum: ['always zero', 'custom']
+    TINST_VALUE_ON_LOAD_PAGE_FAULT:
+      description: |
+        Value written into htinst/mtinst on a LoadPageFault exception from VU/VS-mode.
+
+        Possible values:
+          * "always zero": Always write the value zero
+          * "always transformed standard instruction": Always write a transformed standard instruction as defined by H
+          * "custom": Write a custom value, which resuls in UNPREDICTABLE
+      schema:
+        type: string
+        enum: ['always zero', 'always transformed standard instruction', 'custom']
+    TINST_VALUE_ON_STORE_AMO_PAGE_FAULT:
+      description: |
+        Value written into htinst/mtinst on a StoreAmoPageFault exception from VU/VS-mode.
+
+        Possible values:
+          * "always zero": Always write the value zero
+          * "always transformed standard instruction": Always write a transformed standard instruction as defined by H
+          * "custom": Write a custom value, which resuls in UNPREDICTABLE
+      schema:
+        type: string
+        enum: ['always zero', 'always transformed standard instruction', 'custom']

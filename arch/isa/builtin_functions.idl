@@ -51,7 +51,21 @@ builtin function sw_write_mcycle {
   arguments Bits<64> value
   description {
     Given a _value_ that software is trying to write into mcycle,
+    perform the write and
     return the value that will actually be written.
+  }
+}
+
+builtin function cache_block_zero {
+  arguments
+    XReg cache_block_physical_address
+  description {
+    Zero the cache block at the given physical address.
+
+    The cache block may be zeroed using 1 or more writes.
+
+    A cache-block-sized region is zeroed regardless of whether
+    or not the memory is in a cacheable PMA region.
   }
 }
 
@@ -120,16 +134,143 @@ builtin function saturate {
   }
 }
 
+builtin function prefetch_instruction {
+  arguments
+    XReg virtual_address     # virtual cache block address
+  description {
+    Hint to prefetch a block containing +virtual_address+ for an upcoming fetch.
+  }
+}
+
+builtin function prefetch_read {
+  arguments
+    XReg virtual_address     # virtual cache block address
+  description {
+    Hint to prefetch a block containing +virtual_address+ for an upcoming load.
+  }
+}
+
+builtin function prefetch_write {
+  arguments
+    XReg virtual_address     # virtual cache block address
+  description {
+    Hint to prefetch a block containing +virtual_address+ for an upcoming store.
+  }
+}
+
+# TODO: REMOVE THESE AFTER MERGE WITH FP BRANCH!
+builtin function check_f_ok {
+  description { REmove me. }
+}
+builtin function mark_f_state_dirty {
+  description { Remove me. }
+}
+
+# TODO: move this *fixed* function to fp.idl
+function nan_box {
+  template U32 FROM_SIZE, U32 TO_SIZE
+  returns Bits<TO_SIZE>
+  arguments Bits<FROM_SIZE> from_value
+  description {
+    Produces a properly NaN-boxed floating-point value from a floating-point value
+    of smaller size by adding all 1's to the upper bits.
+  }
+  body {
+    assert(FROM_SIZE > TO_SIZE, "Bad template arugments; FROM_SIZE must be less than TO_SIZE");
+
+    return {{FROM_SIZE - TO_SIZE{1'b1}}, sp_value};
+  }
+}
+Bits<32> SP_POS_INF       = 32'b0_11111111_00000000000000000000000;
+Bits<32> SP_NEG_INF       = 32'b1_11111111_00000000000000000000000;
+Bits<32> SP_POS_ZERO      = 32'b0_00000000_00000000000000000000000;
+Bits<32> SP_NEG_ZERO      = 32'b1_00000000_00000000000000000000000;
+Bits<32> SP_CANONICAL_NAN = 32'b0_11111111_10000000000000000000000;
+Bits<16> HP_CANONICAL_NAN = 16'b0_11111_1000000000;
+Bits<32> WORD_NEG_OVERFLOW = 32'h8000_0000; # minimum 32-bit integer
+Bits<32> WORD_POS_OVERFLOW = 32'h7FFF_FFFF; # maximum 32-bit integer
+enum FpFlag {
+  NX 0b00001 # Inexact
+  UF 0b00010 # Underflow
+  OF 0b00100 # Overflow
+  DZ 0b01000 # Divide by zero
+  NV 0b10000 # Invalid Operation
+}
+builtin function set_fp_flag {
+  arguments
+    FpFlag f
+  description { Remove me. }
+}
+function packToF32UI {
+  returns Bits<32>
+  arguments
+    Bits<1> sign,
+    Bits<8> exp,
+    Bits<23> sig
+  description {
+    Pack components into a 32-bit value
+  }
+  body {
+    return {sign, exp, sig};
+  }
+}
+
+# TODO: THis needs to move to fp.idl
+function packToF16UI {
+  returns Bits<32>
+  arguments
+    Bits<1> sign,
+    Bits<5> exp,
+    Bits<10> sig
+  description {
+    Pack components into a 16-bit value
+  }
+  body {
+    return {sign, exp, sig};
+  }
+}
+
+# TODO: This need to move to fp.idl
+function softfloat_normSubnormalF16Sig {
+  returns Bits<5>, Bits<10>
+  arguments
+    Bits<16> hp_value
+  description {
+    normalize subnormal half-precision value
+  }
+  body {
+    Bits<8> shift_dist = count_leading_zeros<16>(hp_value);
+    return {1 - shift_dist, hp_value << shift_dist};
+  }
+}
+
+
 builtin function fence {
-  arguments Boolean PI, Boolean PR, Boolean PO, Boolean PW, Boolean SI, Boolean SR, Boolean SO, Boolean SW
+  arguments
+    Boolean pi, Boolean pr, Boolean po, Boolean pw,
+    Boolean si, Boolean sr, Boolean so, Boolean sw
   description {
     Execute a memory ordering fence.(according to the FENCE instruction).
+  }
+}
+
+builtin function fence_tso {
+  description {
+    Execute a TSO memory ordering fence.(according to the FENCE instruction).
   }
 }
 
 builtin function ifence {
   description {
     Execute a memory ordering instruction fence (according to FENCE.I).
+  }
+}
+
+builtin function pause {
+  description {
+    Pause hart retirement for a implementation-defined period of time, which may be zero.
+
+    See `Zihintpause` for more.
   }
 }
 
@@ -143,80 +284,66 @@ builtin function pow {
 
 
 builtin function maybe_cache_translation {
-  arguments TranslationResult result
+  arguments
+    XReg vaddr,
+    MemoryOperation op,
+    TranslationResult result
   description {
     Given a translation result, potentially cache the result for later use. This function models
     a TLB fill operation. A valid implementation does nothing.
   }
 }
 
-builtin function invalidate_all_translations {
+builtin function cached_translation {
+  returns
+    Boolean,                     # whether or not the cached translation is valid
+    TranslationResult            # cached result
+  arguments
+    XReg vaddr,         # virtual address
+    MemoryOperation op  # operation
   description {
-    Locally invalidate all cached address translations, from all address ranges
-    and all ASIDs, including global mappings.
+    Possibly returns a cached translation result matching +vaddr+.
+
+    If the result is value, the first return value will be true.
+    +paddr+ is the full translation of +vaddr+, including the page offset
+    +pbmt+ is the result of any paged-based attributes for the translation
+  }
+}
+
+builtin function order_pgtbl_writes_before_vmafence {
+  arguments
+    VmaOrderType order_type
+  description {
+    Orders all writes prior to this call in global memory order that affect a page table in the set
+    identified by +order_type+ before any subsequent
+    sfence.vma/hfence.vma/sinval.vma/hinval.gvma/hinval.vvma in program order.
+
+    Performs the ordering function of SFENCE.VMA/HFENCE.[GV]VMA/SFENCE.W.INVAL.
 
     A valid implementation does nothing if address caching is not used.
   }
 }
 
-builtin function sfence_all {
+builtin function order_pgtbl_reads_after_vmafence {
+  arguments
+    VmaOrderType order_type
   description {
-    Ensure all loads and stores after this operation see any previous address cache invalidations.
-  }
-}
+    Orders all reads after to this call in global memory order to a page table in the set
+    identified by +order_type+ after any prior
+    sfence.vma/hfence.vma/sinval.vma/hinval.gvma/hinval.vvma in program order.
 
-builtin function sfence_asid {
-  arguments Bits<16> asid
-  description {
-    Ensure all reads and writes using address space 'asid' see any previous address space invalidations.
-
-    Does not have to (but may, if conservative) order any global mappings.
-  }
-}
-
-builtin function sfence_vaddr {
-  arguments XReg vaddr
-  description {
-    Ensure all reads and writes using a leaf page table that contains 'vaddr' see any previous address space invalidations.
-
-    Must also order any global mappings containing 'vaddr'.
-  }
-}
-
-builtin function sfence_asid_vaddr {
-  arguments Bits<16> asid, XReg vaddr
-  description {
-    Ensure all reads and writes using address space 'asid' and a leaf page table that contains 'vaddr' see any previous address space invalidations.
-
-    Does not have to (but may, if conservative) order any global mappings.
-  }
-}
-
-builtin function invalidate_asid_translations {
-  arguments Bits<16> asid
-  description {
-    Locally invalidate all cached address translations for address space 'asid'.
-    Does not affect global mappings.
+    Performs the ordering function of SFENCE.VMA/HFENCE.[GV]VMA/SFENCE.INVAL.IR.
 
     A valid implementation does nothing if address caching is not used.
   }
 }
 
-builtin function invalidate_vaddr_translations {
-  arguments XReg vaddr
+builtin function invalidate_translations {
+  arguments
+    VmaOrderType inval_type
   description {
-    Locally invalidate all cached address translations representing 'vaddr', for all address spaces.
-    Equally affects global mappings.
-
-    A valid implementation does nothing if address caching is not used.
-  }
-}
-
-builtin function invalidate_asid_vaddr_translations {
-  arguments Bits<16> asid, XReg vaddr
-  description {
-    Locally invalidate all cached address translations for address space 'asid' that represent 'vaddr'.
-    Does not affect global mappings.
+    Locally invalidate the cached S-mode/VS-mode/G-stage address translations
+    contained in the set identified by +inval_type+.
 
     A valid implementation does nothing if address caching is not used.
   }
@@ -258,7 +385,7 @@ builtin function pma_applies? {
     U32                   len     #< Size of the region, in bits
   description {
     Checks if _attr_ is applied to the entire physical address region
-    between [paddr, paddr + len).
+    between [paddr, paddr + len) based on static PMA attributes.
   }
 }
 
@@ -279,7 +406,7 @@ builtin function atomic_check_then_write_32 {
 
     Preconditions:
 
-     * paddr must be aligned to 32-bits
+     * paddr will be aligned to 32-bits
 
   }
 }
@@ -301,7 +428,7 @@ builtin function atomic_check_then_write_64 {
 
     Preconditions:
 
-     * paddr must be aligned to 64-bits
+     * paddr will be aligned to 64-bits
   }
 }
 
@@ -317,7 +444,11 @@ builtin function atomically_set_pte_a {
       * Reads the _pte_len_ value at _pte_addr_
       ** If the read value does not exactly equal pte_value, returns false
       * Sets the 'A' bit and writes the result to _pte_addr_
-      * return true    
+      * return true 
+
+    Preconditions:
+
+      * pte_addr will be aligned to 64-bits
   }
 }
 
@@ -333,7 +464,11 @@ builtin function atomically_set_pte_a_d {
       * Reads the _pte_len_ value at _pte_addr_
       ** If the read value does not exactly equal pte_value, returns false
       * Sets the 'A' and 'D' bits and writes the result to _pte_addr_
-      * return true    
+      * return true
+
+    Preconditions:
+
+      * pte_addr will be aligned to 64-bits
   }
 }
 

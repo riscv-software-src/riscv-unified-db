@@ -187,3 +187,50 @@ S:
           type: boolean
         maxItems: 32
         minItems: 32
+      extra_validation: |
+        SCOUNTENABLE_EN[0..2].all? { |en| !en } unless ext?(:Zicntr)
+        SCOUNTENABLE_EN[3..].all? { |en| !en } unless ext?(:Zihpm)
+
+        # SCOUNTEN_EN can only be writable if the hpm counter exists
+        SCOUNTENABLE_EN.each_with_index { |scounten, idx| next if idx < 3; assert (!scounten || HPM_COUNTER_EN[idx]) }
+    SV_MODE_BARE:
+      description: |
+        Whether or not writing mode=Bare is supported in the `satp` register.
+      schema:
+        type: boolean
+    STVEC_MODE_DIRECT:
+      description: |
+        Whether or not `stvec.MODE` supports Direct (0).
+      schema:
+        type: boolean
+      extra_validation:
+        assert STVEC_MODE_DIRECT || STVEC_MODE_VECTORED
+    STVEC_MODE_VECTORED:
+      description: |
+        Whether or not `stvec.MODE` supports Vectored (1).
+      schema:
+        type: boolean
+      extra_validation:
+        assert STVEC_MODE_DIRECT || STVEC_MODE_VECTORED
+    SATP_MODE_BARE:
+      description: |
+        Whether or not satp.MODE == Bare is supported.
+      schema:
+        type: boolean
+    TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY:
+      description: |
+        For implementations that make `satp`.MODE read-only zero
+        (always Bare, _i.e._, no virtual translation is implemented),
+        attempts to execute an SFENCE.VMA instruction might raise an
+        illegal-instruction exception.
+
+        TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY indicates whether
+        or not that exception occurs.
+
+        TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY has no effect when
+        some virtual translation mode is supported.
+      schema:
+        type: boolean
+        default: false
+      extra_validation:
+        assert TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY == false if ext?(:Sv32) || ext?(:Sv39) || ext?(:Sv48) || ext?(:Sv57)

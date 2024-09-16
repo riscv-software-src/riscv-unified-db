@@ -58,10 +58,21 @@ cbo.zero:
     ! 1 ! 0 ! 1 ! executes ! `Illegal Instruction` ! executes ! `Virtual Instruction` 
     ! 1 ! 1 ! 1 ! executes ! executes ! executes ! executes
     !===
-  # operation(): |
-  #   let cache_block_address = X[RS1] & ~(CACHE_BLOCK_SIZE-1);
+  operation(): |
+    if ((mode() == PrivilegeMode::M && CSR[menvcfg].CBZE == 0) ||
+        (mode() == PrivilegeMode::U && CSR[senvcfg].CBZE == 0)) {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);    
+    }
+    else if ((mode() == PrivilegeMode::VS && CSR[henvcfg].CBZE ==0) ||
+             (mode() == PrivilegeMode::VU && (CSR[henvcfg].CBZE | CSR[senvcfg].CBZE) == 0)) {
+      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+    } else {
+      XReg mask = CACHE_BLOCK_SIZE - 1;
+      XReg cache_block_vaddr = X[rs1] & ~mask;
 
-  #   // zeroing operation can occur in any number of independent stores
-  #   for (i=0; i<CACHE_BLOCK_SIZE; i++) {
-  #     MEM[cache_block_address + i, 8] = 0;
-  #   }
+      TranslationResult result;
+      result = translate(cache_block_vaddr, MemoryOperation::Write, effective_ldst_mode(), $encoding);
+      access_check(result.paddr, CACHE_BLOCK_SIZE*8, cache_block_vaddr, MemoryOperation::Write, ExceptionCode::StoreAmoAccessFault, effective_ldst_mode());
+
+      cache_block_zero(result.paddr);
+    }

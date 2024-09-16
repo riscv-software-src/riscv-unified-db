@@ -207,20 +207,28 @@
           "type": "string",
           "description": "Assembly format of the instruction. Can use decode variables"
         },
+        "data_independent_timing": {
+          "type": "boolean",
+          "description": "Whether or not the instruction must execute with data-independent timing when the Zkt extension is supported",
+          "default": false
+        },
         "pseudoinstructions": {
           "description": "Variations of this instruction that form a pseudoinstruction",
-          "type": "object",
-          "properties": {
-            "when": {
-              "type": "string",
-              "description": "Condition when the instruction has an alias"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "when": {
+                "type": "string",
+                "description": "Condition when the instruction has an alias"
+              },
+              "to": {
+                "type": "string",
+                "description": "pseduoinstruction format"
+              }
             },
-            "to": {
-              "type": "string",
-              "description": "pseduoinstruction format"
-            }
-          },
-          "additionalProperties": false
+            "additionalProperties": false
+          }
         },
         "__source": {
           "description": "Path to the source file. Used by downstream tooling; not expected to be found in handwritten files",

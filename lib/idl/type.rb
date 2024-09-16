@@ -10,6 +10,7 @@ module Idl
       :enum,     # enumeration class
       :enum_ref, # reference to an enumeration element, convertable to int and/or Bits<bit_width(MAX_ENUM_VALUE)>
       :bitfield, # bitfield, convertable to int and/or Bits<width>
+      :struct,   # structure class
       :array,    # array of other types
       :tuple,    # tuple of other disimilar types
       :function, # function
@@ -31,7 +32,7 @@ module Idl
 
     def default
       case @kind
-      when :bits, :enum_ref, :bitfield
+      when :bits, :bitfield
         0
       when :boolean
         false
@@ -43,6 +44,10 @@ module Idl
         end
       when :string
         ""
+      when :enum_ref
+        @enum_class.element_values.min
+      when :enum
+        raise "?"
       else
         raise "No default for #{@kind}"
       end
@@ -250,6 +255,8 @@ module Idl
         return type.kind == :string
       when :void
         return false
+      when :struct
+        return type.kind == :struct && (type.type_name == type_name)
       else
         raise "unimplemented type '#{@kind}'"
       end
@@ -279,6 +286,8 @@ module Idl
           "void"
         elsif @kind == :string
           "string"
+        elsif @kind == :struct
+          "struct #{type_name}"
         else
           raise @kind.to_s
         end
@@ -469,6 +478,46 @@ module Idl
     end
   end
 
+  class StructType < Type
+    attr_reader :type_name
+
+    def initialize(type_name, member_types, member_names)
+      raise ArgumentError, "Argument 1 should be a type name" unless type_name.is_a?(String)
+
+      raise ArgumentError, "Argument 2 should be an array of types" unless member_types.is_a?(Array)
+
+      raise ArgumentError, "Argument 3 should be an array of names" unless member_names.is_a?(Array) && member_names.all? { |m| m.is_a?(String) }
+
+      raise ArgumentError, "member_types and member_names must be the same size" unless member_names.size == member_types.size
+
+      super(:struct)
+      @type_name = type_name
+      @member_types = member_types
+      @member_names = member_names
+    end
+
+    def clone
+      StructType.new(@type_name, @member_types, @member_names)
+    end
+
+    def default
+      hsh = {}
+      @member_types.size.times do |i|
+        hsh[@member_names[i]] = @member_types[i].default
+      end
+      hsh
+    end
+
+    def member?(name) = @member_names.include?(name)
+
+    def member_type(member_name)
+      idx = @member_names.index(member_name)
+      raise "No member named '#{member_name}'" if idx.nil?
+
+      @member_types[idx]
+    end
+  end
+
   class EnumerationType < Type
     attr_reader :element_names, :element_values, :width, :ref_type
 
@@ -624,9 +673,9 @@ module Idl
       @func_def_ast.arguments(symtab).each do |atype, aname|
         func_call_ast.type_error "Missing argument #{idx}" if idx >= argument_nodes.size
         begin
-          symtab.add!(aname, Var.new(aname, atype, argument_nodes[idx].value(call_site_symtab)))
+          symtab.add(aname, Var.new(aname, atype, argument_nodes[idx].value(call_site_symtab)))
         rescue AstNode::ValueError => e
-          symtab.add!(aname, Var.new(aname, atype))
+          symtab.add(aname, Var.new(aname, atype))
         end
         idx += 1
       end

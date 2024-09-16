@@ -75,9 +75,14 @@ module Idl
       "#{' '*indent}#{csr.gen_adoc(indent, indent_spaces:)}.sw_write(#{expression.gen_adoc(0, indent_spaces:)})"
     end
   end
-  class BitfieldAccessExpressionAst
+  class FieldAccessExpressionAst
     def gen_adoc(indent, indent_spaces: 2)
-      "#{' '*indent}#{bitfield.gen_adoc(indent, indent_spaces: )}.#{@field_name}"
+      "#{' '*indent}#{obj.gen_adoc(indent, indent_spaces: )}.#{@field_name}"
+    end
+  end
+  class FieldAssignmentAst
+    def gen_adoc(indent, indent_spaces: 2)
+      "#{field_access.gen_adoc(0, indent_spaces:)} = #{write_value.gen_adoc(0, indent_spaces:)}"
     end
   end
   class ConcatenationExpressionAst

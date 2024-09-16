@@ -7,14 +7,15 @@ F:
   - version: 2.2
     state: ratified
     ratification_date: 2019-12
-    changes: Define NaN-boxing scheme, changed definition of FMAX and FMIN
+    changes:
+    - Define NaN-boxing scheme, changed definition of FMAX and FMIN
   description: |
     This chapter describes the standard instruction-set extension for
     single-precision floating-point, which is named "F" and adds
     single-precision floating-point computational instructions compliant
     with the IEEE 754-2008 arithmetic standard cite:[ieee754-2008]. The F extension depends on the "Zicsr" extension for control and status register access.
 
-    === F Register State
+    = F Register State
 
     The F extension adds 32 floating-point registers, `f0-f31`, each 32
     bits wide, and a floating-point control and status register `fcsr`,
@@ -84,7 +85,7 @@ F:
     3+^| [.small]#32#
     |===
 
-    === Floating-Point Control and Status Register
+    == Floating-Point Control and Status Register
 
     The floating-point control and status register, `fcsr`, is a RISC-V
     control and status register (CSR). It is a 32-bit read/write register
@@ -186,7 +187,7 @@ F:
     ultimately chose to omit these instructions to keep the ISA simple.
     ====
 
-    === NaN Generation and Propagation
+    = NaN Generation and Propagation
 
     Except when otherwise stated, if the result of a floating-point
     operation is NaN, it is the canonical NaN. The canonical NaN has a
@@ -218,7 +219,7 @@ F:
     provide exceptional default values.
     ====
 
-    === Subnormal Arithmetic
+    = Subnormal Arithmetic
 
     Operations on subnormal numbers are handled in accordance with the IEEE 754-2008 standard.
     (((operations, subnormal)))

@@ -30,9 +30,10 @@ mulh:
     u: always
     vs: always
     vu: always
+  data_independent_timing: true
   operation(): |
     if (implemented?(ExtensionName::M) && (CSR[misa].M == 1'b0)) {
-      raise (ExceptionCode::IllegalInstruction, $encoding);
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
     # enlarge and sign extend the sources

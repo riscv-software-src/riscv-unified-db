@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+flh:
+  long_name: Half-precision floating-point load
+  description: |
+    The `flh` instruction loads a single-precision floating-point value from memory at address _rs1_ + _imm_ into floating-point register _rd_.
+
+    `flh` does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
+
+    `flh` is only guaranteed to execute atomically if the effective address is naturally aligned.
+
+  definedBy: [Zfh, Zfhmin]
+  assembly: fd, imm(xs1)
+  encoding:
+    match: -----------------001-----0000111
+    variables:
+    - name: imm
+      location: 31-20
+    - name: rs1
+      location: 19-15
+    - name: fd
+      location: 11-7
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    check_f_ok();
+
+    XReg virtual_address = X[rs1] + $signed(imm);
+
+    Bits<16> hp_value = read_memory<16>(virtual_address, $encoding);
+
+    f[fd] = nan_box<16, FLEN>(hp_value);
+
+    mark_f_state_dirty();

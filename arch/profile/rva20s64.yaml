@@ -1,0 +1,61 @@
+
+rva20s64:
+  family: rva
+  description: |
+    The RVA20S64 profile specifies the ISA features available to a
+    supervisor-mode execution environment in 64-bit applications
+    processors.  RVA20S64 is based on privileged architecture version
+    1.11.
+  marketing_name: RVA20S64
+  inherits: rva20u64
+  mode: S
+  version: "1.0"
+  contributors:
+  - name: Krste Asanovic
+    email: krste@sifive.com
+    company: SiFive
+  extensions:
+    mandatory:
+    - name: S
+      version: "= 1.11"
+    - name: Zifencei
+      version: "= 2.0"
+      note: |
+        Zifencei is mandated as it is the only standard way to support
+        instruction-cache coherence in RVA20 application processors.  A new
+        instruction-cache coherence mechanism is under development which might
+        be added as an option in the future.
+    - name: Svbare
+      version: "= 1.0"
+      note: |
+        Svbare is a new extension name introduced with RVA20.
+    - name: Sv39
+      version: "= 1.11"
+    - name: Svade
+      version: "~> 1.0"
+      note: |
+        Svbare is a new extension name introduced with RVA20.
+
+        It is subsequently defined in more detail with the ratification of
+        `Svadu`.
+    - name: Ssccptr
+      version: "= 1.0"
+      note: |
+        Ssccptr is a new extension name introduced with RVA20.
+    - name: Sstvecd
+      version: "= 1.0"
+      note: |
+        Sstvecd is a new extension name introduced with RVA20.
+    - name: Sstvala
+      version: "= 1.0"
+      note: |
+        Sstvala is a new extension name introduced with RVA20.
+    optional:
+    - name: Zihpm
+      version: "= 2.0"
+    - name: Sv48
+      version: "= 1.11"
+    - name: Ssu64xl
+      version: "= 1.0"
+      note: |
+        Ssu64xl is a new extension name introduced with RVA20.

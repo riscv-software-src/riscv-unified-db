@@ -20,6 +20,7 @@ slliw:
     u: always
     vs: always
     vu: always
+  data_independent_timing: true
   operation(): |
     # shamt is between 0-32
     X[rd] = sext(X[rs1] << shamt, 31);

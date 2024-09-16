@@ -21,7 +21,10 @@ andn:
     u: always
     vs: always
     vu: always
+  data_independent_timing: true
   operation(): |
-    raise (ExceptionCode::IllegalInstruction, $encoding) if (CSR[misa].B == 1'b0);
+    if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
 
     X[rd] = X[rs2] & ~X[rs1];

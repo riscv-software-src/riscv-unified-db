@@ -19,4 +19,30 @@ ori:
     u: always
     vs: always
     vu: always
-  operation(): X[rd] = X[rs1] | imm;
+  data_independent_timing: true
+  operation(): |
+    if (implemented?(ExtensionName::Zicbop)) {
+      if (rd == 0) {
+        if (imm[4:0] == 0) {
+          # prefetch.i instruction
+          Bits<12> offset = {imm[11:5], rd};
+          prefetch_instruction(offset);
+        } else if (imm[4:0] == 1) {
+          # prefetch.r instruction
+          Bits<12> offset = {imm[11:5], rd};
+          prefetch_read(offset);        
+        } else if (imm[4:0] == 3) {
+          # prefetch.r instruction
+          Bits<12> offset = {imm[11:5], rd};
+          prefetch_write(offset);        
+        }
+      }
+    }
+    X[rd] = X[rs1] | imm;
+  pseudoinstructions:
+    - when: (rd == 0) && (imm[4:0] == 0)
+      to: prefetch.i offset
+    - when: (rd == 0) && (imm[4:0] == 1)
+      to: prefetch.r offset
+    - when: (rd == 0) && (imm[4:0] == 3)
+      to: prefetch.w offset

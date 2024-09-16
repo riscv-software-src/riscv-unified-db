@@ -25,4 +25,4 @@ ebreak:
     vs: always
     vu: always
   operation(): |
-    raise (ExceptionCode::Breakpoint, $pc);
+    raise (ExceptionCode::Breakpoint, mode(), $pc);

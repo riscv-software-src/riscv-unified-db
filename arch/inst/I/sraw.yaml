@@ -21,6 +21,7 @@ sraw:
     u: always
     vs: always
     vu: always
+  data_independent_timing: true
   operation(): |
     XReg operand1 = sext(X[rs1], 31);
 
