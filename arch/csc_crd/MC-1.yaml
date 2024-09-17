@@ -26,7 +26,13 @@ MC-1:
   - name: Zicntr
     version: "~> 2.0"
 
-  param_constraints:
+  optional_extensions:
+  - name: B
+    version: "~> 1.0"
+    note: This is just for testing the database (B isn't a real MC-1 extension)
+
+# Parameters listed here are IN SCOPE, otherwise assumed to be OUT OF SCOPE.
+  in_scope_params:
     PRECISE_SYNCHRONOUS_EXCEPTIONS:
       schema:
         const: true
@@ -77,6 +83,10 @@ MC-1:
       note: OPT-MTVEV-ALIGN-VECTORED
       schema:
         const: 4
+    ARCH_ID: {} # Unconstrained
+    XLEN:
+      schema:
+        const: 32
 
   requirement_groups:
     - name: MC-unpriv

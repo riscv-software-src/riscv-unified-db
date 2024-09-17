@@ -49,7 +49,7 @@ Debug Manual Revision:: <%= crd.debug_manual_revision %>
 
 === Extensions
 
-The following extensions are MANDATORY.
+==== MANDATORY Extensions
 
 [%autowidth]
 |===
@@ -61,24 +61,57 @@ The following extensions are MANDATORY.
 <%- end -%>
 |===
 
-Any extension not listed above is OUT_OF_SCOPE.
+==== OPTIONAL Extensions
 
-=== Specification Options
+<%- if crd.optional_extensions.empty? -%>
+None
+<%- else -%>
+[%autowidth]
+|===
+| Extension | Version
 
-The following extension options are restricted from their allowed values in the RISC-V specification:
+<%- crd.optional_extensions.each do |ext| -%>
+| <%= ext.name %>
+| <%= ext.version_requirement %>
+<%- end -%>
+|===
+<%- end -%>
+
+==== OUT OF SCOPE Extensions
+Any extension not listed above as MANDATORY or OPTIONAL is OUT OF SCOPE.
+
+=== Extension Parameters
+
+==== IN SCOPE Parameters
+
+Parameters listed in this section are IN SCOPE (i.e., they'll be covered by the associated certificate).
 
 [%autowidth]
 |===
-| Option | Extension | Constraint | Note
+| Parameter | Extension | Constraint | Note
 
-<%- crd.param_constraints.each do |constraint| -%>
+<%- crd.in_scope_param_constraints.each do |constraint| -%>
 | <%= constraint.param.name %>
 | <%= constraint.param.exts.map(&:name).join(', ') %>
-| <%= constraint.schema_constraint_pretty %>
+| <%= constraint.schema_constraint_pretty == "" ? "Unconstrained" : constraint.schema_constraint_pretty %>
 a| <%= constraint.note %>
 <%- end -%>
 |===
 
+==== OUT OF SCOPE Parameters
+
+Parameters listed in this section are OUT OF SCOPE (i.e., they won't be covered by the associated certificate).
+
+[%autowidth]
+|===
+| Parameter | Extension | Description
+
+<%- crd.out_of_scope_param_constraints.each do |param| -%>
+| <%= param.name %>
+| <%= param.exts.map(&:name).join(', ') %>
+a| <%= param.desc %>
+<%- end -%>
+|===
 <%- crd.requirement_groups.each do |group| -%>
 === <%= group.name %>
 
@@ -104,3 +137,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 |===
 
 <%- end -%>
+
+[appendix]
+== Extensions
+TBD - Mainly here to allow long descriptions of parameters to be displayed outside the IN SCOPE parameter table.

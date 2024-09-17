@@ -100,6 +100,17 @@ class CscCrd < ArchDefObject
     @mandatory_extensions
   end
 
+  def optional_extensions
+    return @optional_extensions unless @optional_extensions.nil?
+
+    @optional_extensions = []
+    return @optional_extensions if @data["optional_extensions"].nil?
+    @data["optional_extensions"].each do |ext|
+      @optional_extensions << ExtensionRequirement.new(ext["name"], ext["version"])
+    end
+    @optional_extensions
+  end
+
   class Requirement < ArchDefObject
     def initialize(data, arch_def)
       super(data)
@@ -185,7 +196,7 @@ class CscCrd < ArchDefObject
     end
 
     def single_value?
-      @schema_constraint.key?("const")
+      !@schema_constraint.nil? && @schema_constraint.key?("const")
     end
 
     def value
@@ -195,6 +206,7 @@ class CscCrd < ArchDefObject
     end
 
     def schema_constraint_pretty
+      return "" if @schema_constraint.nil?
       if @schema_constraint.key?("const")
         "== #{@schema_constraint["const"]}"
       elsif @schema_constraint.key?("enum")
@@ -206,11 +218,11 @@ class CscCrd < ArchDefObject
 
   end
 
-  def param_constraints
+  def in_scope_param_constraints
     return @param_constraints unless @param_constraints.nil?
 
     @param_constraints = []
-    @data["param_constraints"].each do |param_name, param_data| 
+    @data["in_scope_params"].each do |param_name, param_data| 
       from_ext = @arch_def.extensions.find { |ext| ext.params.any?{ |p| p.name == param_name } }
       raise "Cannot find extension definition that has a parameter named '#{param_name}'" if from_ext.nil?
 
@@ -218,5 +230,19 @@ class CscCrd < ArchDefObject
       @param_constraints << ParameterConstraint.new(param, param_data["schema"], param_data["note"])
     end
     @param_constraints
+  end
+
+  # @return [Array<ExtensionParameter>] List of parameters that are out of scope
+  def out_of_scope_param_constraints
+    return @out_of_scope_param_constraints unless @out_of_scope_param_constraints.nil?
+ 
+    @out_of_scope_param_constraints = []
+    mandatory_extensions.each do |ext|
+      @arch_def.extension(ext.name).params.each do |param|
+        next if in_scope_param_constraints.any? { |c| c.param.name == param.name }
+        @out_of_scope_param_constraints << param
+      end
+    end
+    @out_of_scope_param_constraints
   end
 end
