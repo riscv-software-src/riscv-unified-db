@@ -66,13 +66,34 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
     profile_obj[profile_name]["__source"] = f
     [profile_name, profile_obj[profile_name]]
   end.to_h
+  manual_hash = {}
+  Dir.glob($root / "arch" / "manual" / "**" / "contents.yaml").map do |f|
+    manual_version = YAML.load_file(f)
+    manual_id = manual_version["manual"]
+    unless manual_hash.key?(manual_id)
+      manual_info_files = Dir.glob($root / "arch" / "manual" / "**" / "#{manual_id}.yaml")
+      raise "Could not find manual info '#{manual_id}'.yaml, needed by #{f}" if manual_info_files.empty?
+      raise "Found multiple manual infos '#{manual_id}'.yaml, needed by #{f}" if manual_info_files.size > 1
+
+      manual_info_file = manual_info_files.first
+      manual_hash[manual_id] = YAML.load_file(manual_info_file)
+      manual_hash[manual_id]["__source"] = manual_info_file
+      # TODO: schema validation
+    end
+
+    manual_hash[manual_id]["versions"] ||= []
+    manual_hash[manual_id]["versions"] << YAML.load_file(f)
+    # TODO: schema validation
+    manual_hash[manual_id]["versions"].last["__source"] = f
+  end
 
   arch_def = {
     "instructions" => inst_hash,
     "extensions" => ext_hash,
     "csrs" => csr_hash,
     "profile_families" => profile_family_hash,
-    "profiles" => profile_hash
+    "profiles" => profile_hash,
+    "manuals" => manual_hash
   }
 
   dest = "#{$root}/gen/_/arch/arch_def.yaml"
