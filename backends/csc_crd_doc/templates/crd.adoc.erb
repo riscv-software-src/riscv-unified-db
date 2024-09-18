@@ -2,13 +2,15 @@
 
 == Revision History
 
+[cols="1,1,5"]
 |===
 | Date | Revision | Changes
 
 <%- crd.family.revisions.each do |rev| -%>
-| <%= rev.date %> | <%= rev.version %>
-| <%- rev.changes.each do |change| %>
- * <%= change %>
+| <%= rev.date %> 
+| <%= rev.version %>
+a| <%- rev.changes.each do |change| %>
+* <%= change %>
 <%- end -%>
 <%- end -%>
 |===
@@ -19,20 +21,22 @@
 
 <%= crd.family.overview %>
 
-=== <%= crd.name %> Requirements
-
-<%= crd.name %> is version <%= crd.version %> of the <%= crd.family.name %> Family.
+=== <%= crd.name %> Description
 
 <%= crd.description %>
 
-== Specification Versions
+=== Related Specifications
 
-TSC Profile:: <%= crd.tsc_profile.nil? ? "No profile" : crd.tsc_profile.marketing_name %>
-Unpriv ISA Manual Revision:: <%= crd.unpriv_isa_manual_revision %>
-Priv ISA Manual Revision:: <%= crd.priv_isa_manual_revision %>
-Debug Manual Revision:: <%= crd.debug_manual_revision %>
+[cols="2,2,3,3,3"]
+|===
+| MC Version | TSC Profile | Unpriv ISA Manual | Priv ISA Manual | Debug Manual
 
-== Requirements
+| <%= crd.name %>
+| <%= crd.tsc_profile.nil? ? "No profile" : crd.tsc_profile.marketing_name %>
+| <%= crd.unpriv_isa_manual_revision %>
+| <%= crd.priv_isa_manual_revision %>
+| <%= crd.debug_manual_revision %>
+|===
 
 === Privileged Modes
 
@@ -47,46 +51,48 @@ Debug Manual Revision:: <%= crd.debug_manual_revision %>
 
 |===
 
-=== Extensions
+== Extensions
 
-==== MANDATORY Extensions
+=== MANDATORY Extensions
 
 [%autowidth]
 |===
-| Extension | Version
+| Extension | Version | Note
 
 <%- crd.mandatory_extensions.each do |ext| -%>
 | <%= ext.name %>
 | <%= ext.version_requirement %>
+| <%= ext.note %>
 <%- end -%>
 |===
 
-==== OPTIONAL Extensions
+=== OPTIONAL Extensions
 
 <%- if crd.optional_extensions.empty? -%>
 None
 <%- else -%>
 [%autowidth]
 |===
-| Extension | Version
+| Extension | Version | Note
 
 <%- crd.optional_extensions.each do |ext| -%>
 | <%= ext.name %>
 | <%= ext.version_requirement %>
+| <%= ext.note %>
 <%- end -%>
 |===
 <%- end -%>
 
-==== OUT OF SCOPE Extensions
+=== OUT OF SCOPE Extensions
 Any extension not listed above as MANDATORY or OPTIONAL is OUT OF SCOPE.
 
-=== Extension Parameters
+== Extension Parameters
 
-==== IN SCOPE Parameters
+=== IN SCOPE Parameters
 
 Parameters listed in this section are IN SCOPE (i.e., they'll be covered by the associated certificate).
 
-[%autowidth]
+[cols="3,1,1,2"]
 |===
 | Parameter | Extension | Constraint | Note
 
@@ -98,11 +104,11 @@ a| <%= constraint.note %>
 <%- end -%>
 |===
 
-==== OUT OF SCOPE Parameters
+=== OUT OF SCOPE Parameters
 
 Parameters listed in this section are OUT OF SCOPE (i.e., they won't be covered by the associated certificate).
 
-[%autowidth]
+[cols="5,2,12"]
 |===
 | Parameter | Extension | Description
 
@@ -112,8 +118,9 @@ Parameters listed in this section are OUT OF SCOPE (i.e., they won't be covered 
 a| <%= param.desc %>
 <%- end -%>
 |===
+
 <%- crd.requirement_groups.each do |group| -%>
-=== <%= group.name %>
+== <%= group.name %>
 
 <%= group.description %>
 
@@ -124,7 +131,7 @@ a| <%= param.desc %>
 
 [%autowidth]
 |===
-| Name | Description
+| Req Number | Description
 
 <%- group.requirements.each do |req| -%>
 | <%= req.name %>
