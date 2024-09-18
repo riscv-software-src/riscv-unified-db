@@ -6,7 +6,7 @@ Microcontroller:
     date: 2024-07-29
     changes:
     - First version after moving non-microcontroller content in this document to a new document
-      called “RISC-V Certification Plans”
+      called “RISC-V CRDs (Certification Requirement Documents)”
     - Change MC-1 Unpriv ISA spec from
       “https://riscv.org/wp-content/uploads/2016/06/riscv-spec-v2.1.pdf[riscv-spec-v2.1], May 31,
       2016” to https://github.com/riscv/riscv-isa-manual/releases/tag/Ratified-IMAFDQC since the
@@ -21,18 +21,18 @@ Microcontroller:
     - Added a table showing the mapping from MC version to ISA manuals.
     - "..."
 
-    overview: |
-      This Certification Plan proposes requirements for the “MC” certified RISC-V microcontroller.
-      MC targets microcontrollers running low-level software on an RTOS or bare-metal.
-      The MC is not intended for the smallest possible microcontrollers but rather for applications
-      requiring a certified microcontroller.
-      See the https://docs.google.com/document/d/133SZKc18tLsQcT1o6gEmBUkjwrtg2ow63me54RQ1jiY[RISC-V Certification Plan]
-      document for information relevant to all RISC-V Certification Plans.
+  overview: |
+    This Certification Plan proposes requirements for the “MC” certified RISC-V microcontroller.
+    MC targets microcontrollers running low-level software on an RTOS or bare-metal.
+    The MC is not intended for the smallest possible microcontrollers but rather for applications
+    requiring a certified microcontroller.
+    See the https://docs.google.com/document/d/133SZKc18tLsQcT1o6gEmBUkjwrtg2ow63me54RQ1jiY[RISC-V Certification Plan]
+    document for information relevant to all RISC-V Certification Plans.
 
-      The MC (M = Microcontroller, C = Certified) has the following naming scheme (suffixes after MC
-      are optional but in the below order):
+    The MC (M = Microcontroller, C = Certified) has the following naming scheme (suffixes after MC
+    are optional but in the below order):
 
-      ...
+    ...
 
   mandatory_priv_modes:
   - M

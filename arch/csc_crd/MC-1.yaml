@@ -8,12 +8,19 @@ MC-1:
   # semantic version within the CRD family
   version: "1.0"
 
-  tsc_profile: null # there is no MC profile
+  description: |
+    MC-1 can be though of as a minimal 32-bit RISC-V processor with M-mode support:
+
+    * The Unprivileged ISA is RV32I with a few extensions suitable for a basic microcontroller
+    * The M-mode features are those listed as mandatory in the RISC-V Privileged ISA manual.
+
+  # Specification versions
+  tsc_profile: null # None for MC-1
   unpriv_isa_manual_revision: "20191213"
   priv_isa_manual_revision: "20190608-Priv-MSU-Ratified"
   debug_manual_revision: "0.13.2"
-  description: "..."
 
+# XXX - Remove version information since specifying priv/unpriv ISA manual should imply this.
   mandatory_extensions:
   - name: I
     version: "~> 2.1"
@@ -89,7 +96,7 @@ MC-1:
         const: 32
 
   requirement_groups:
-    - name: MC-unpriv
+    - name: MC-Unpriv
       description: |
         The MC-Unpriv defines unprivileged ISA requirements.
         Note that unprivileged ISA features are those that are usable in all privilege modes;

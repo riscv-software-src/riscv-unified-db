@@ -95,7 +95,7 @@ class CscCrd < ArchDefObject
 
     @mandatory_extensions = []
     @data["mandatory_extensions"].each do |ext|
-      @mandatory_extensions << ExtensionRequirement.new(ext["name"], ext["version"])
+      @mandatory_extensions << ExtensionRequirement.new(ext["name"], ext["version"], note: ext["note"])
     end
     @mandatory_extensions
   end
@@ -106,7 +106,7 @@ class CscCrd < ArchDefObject
     @optional_extensions = []
     return @optional_extensions if @data["optional_extensions"].nil?
     @data["optional_extensions"].each do |ext|
-      @optional_extensions << ExtensionRequirement.new(ext["name"], ext["version"])
+      @optional_extensions << ExtensionRequirement.new(ext["name"], ext["version"], note: ext["note"])
     end
     @optional_extensions
   end
@@ -238,6 +238,12 @@ class CscCrd < ArchDefObject
  
     @out_of_scope_param_constraints = []
     mandatory_extensions.each do |ext|
+      @arch_def.extension(ext.name).params.each do |param|
+        next if in_scope_param_constraints.any? { |c| c.param.name == param.name }
+        @out_of_scope_param_constraints << param
+      end
+    end
+    optional_extensions.each do |ext|
       @arch_def.extension(ext.name).params.each do |param|
         next if in_scope_param_constraints.any? { |c| c.param.name == param.name }
         @out_of_scope_param_constraints << param
