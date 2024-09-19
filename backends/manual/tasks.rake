@@ -275,11 +275,11 @@ rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/playbook.yml} => proc { |tname|
 end
 
 file $root / "ext" / "riscv-isa_manual" / "README.md" do
-  sh "git submodule init ext/riscv-isa-manual"
+  sh "git submodule update --init ext/riscv-isa-manual"
 end
 
 Dir.glob($root / "arch" / "manual" / "**" / "contents.yaml") do |content_fn|
-  file "#{File.dirname(content_fn)}/riscv-isa-manual/README.md" do |t|
+  file "#{File.dirname(content_fn)}/riscv-isa-manual/README.md" => ($root / "ext" / "riscv-isa_manual" / "README.md").to_s do |t|
     content_obj = YAML.load_file(content_fn)
     cmd = [
       "git",
