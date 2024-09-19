@@ -176,7 +176,7 @@ class ArchDef
     return @instructions unless @instructions.nil?
 
     @instructions = @arch_def["instructions"].map do |_inst_name, inst_data|
-      Instruction.new(inst_data)
+      Instruction.new(inst_data, self)
     end
 
     @instructions
@@ -198,6 +198,7 @@ class ArchDef
   def inst(inst_name)
     instruction_hash[inst_name.to_s]
   end
+  alias instruction inst
 
   # @return [Array<Idl::FunctionBodyAst>] List of all functions defined by the architecture
   def functions

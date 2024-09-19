@@ -319,7 +319,8 @@ function mtval_readonly? {
       (implemented?(ExtensionName::Zaamo) && REPORT_VA_IN_MTVAL_ON_AMO_PAGE_FAULT) ||
       REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT ||
       REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ||
-      # REPORT_CAUSE_IN_MTVAL_ON_SOFTWARE_CHECK ||
+      REPORT_CAUSE_IN_MTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK ||
+      REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK ||
       implemented?(ExtensionName::Sdext)
     );
   }
@@ -344,7 +345,8 @@ function stval_readonly? {
         REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT ||
         REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT ||
         REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION ||
-        REPORT_CAUSE_IN_STVAL_ON_SOFTWARE_CHECK ||
+        REPORT_CAUSE_IN_STVAL_ON_SHADOW_STACK_SOFTWARE_CHECK ||
+        REPORT_CAUSE_IN_STVAL_ON_LANDING_PAD_SOFTWARE_CHECK ||
         implemented?(ExtensionName::Sdext)
       );
     } else {
@@ -372,7 +374,8 @@ function vstval_readonly? {
         REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT ||
         REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT ||
         REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION ||
-        REPORT_CAUSE_IN_VSTVAL_ON_SOFTWARE_CHECK ||
+        REPORT_CAUSE_IN_VSTVAL_ON_SHADOW_STACK_SOFTWARE_CHECK ||
+        REPORT_CAUSE_IN_VSTVAL_ON_LANDING_PAD_SOFTWARE_CHECK ||
         implemented?(ExtensionName::Sdext)
       );
     } else {
@@ -411,8 +414,10 @@ function mtval_for {
       return REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT ? tval : 0;
     } else if (exception_code == ExceptionCode::IllegalInstruction) {
       return REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION ? tval : 0;
-    # } else if (exception_code == ExceptionCode::SoftwareCheck) {
-      # return REPORT_CAUSE_IN_MTVAL_ON_SOFTWARE_CHECK ? tval : 0;
+    } else if (exception_code == ExceptionCode::SoftwareCheck) {
+      # software check options are more fine-grained (per-software-check type), so always use tval,
+      # which must be config-checked at the call site
+      return tval;
     } else {
       return 0;
     }
@@ -449,8 +454,10 @@ function stval_for {
       return REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT ? tval : 0;
     } else if (exception_code == ExceptionCode::IllegalInstruction) {
       return REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION ? tval : 0;
-    # } else if (exception_code == ExceptionCode::SoftwareCheck) {
-      # return REPORT_CAUSE_IN_STVAL_ON_SOFTWARE_CHECK ? tval : 0;
+    } else if (exception_code == ExceptionCode::SoftwareCheck) {
+      # software checks have a fine-grained implementation option (per-software-check type), so always use tval,
+      # which must be config-checked at the call site
+      return tval;
     } else {
       return 0;
     }
@@ -488,8 +495,10 @@ function vstval_for {
       return REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT ? tval : 0;
     } else if (exception_code == ExceptionCode::IllegalInstruction) {
       return REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION ? tval : 0;
-    # } else if (exception_code == ExceptionCode::SoftwareCheck) {
-      # return REPORT_CAUSE_IN_VSTVAL_ON_SOFTWARE_CHECK ? tval : 0;
+    } else if (exception_code == ExceptionCode::SoftwareCheck) {
+      # software checks have a fine-grained implementation option (per-software-check type), so always use tval,
+      #  which must be config-checked at the call site
+      return tval;
     } else {
       return 0;
     }
@@ -2301,16 +2310,16 @@ function misaligned_is_atomic? {
     return false if MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE == 0;
 
     if (pma_applies?(PmaAttribute::MAG16, physical_address, N) &&
-        in_naturally_aligned_region?<M, 128>(physical_address_address, N)) {
+        in_naturally_aligned_region?<128>(physical_address, N)) {
       return true;
     } else if (pma_applies?(PmaAttribute::MAG8, physical_address, N) &&
-                in_naturally_aligned_region?<XLEN, 64>(physical_address, N)) {
+                in_naturally_aligned_region?<4>(physical_address, N)) {
       return true;
     } else if (pma_applies?(PmaAttribute::MAG4, physical_address, N) &&
-                in_naturally_aligned_region?<XLEN, 32>(physical_address, N)) {
+                in_naturally_aligned_region?<32>(physical_address, N)) {
       return true;
     } else if (pma_applies?(PmaAttribute::MAG2, physical_address, N) &&
-                in_naturally_aligned_region?<XLEN, 16>(physical_address, N)) {
+                in_naturally_aligned_region?<16>(physical_address, N)) {
       return true;
     } else {
       # not saved by a Misaligned Atomicity Granule
@@ -2355,7 +2364,7 @@ function read_memory {
 
   }
   body {
-    Boolean aligned = is_naturally_aligned<XLEN, LEN>(virtual_address);
+    Boolean aligned = is_naturally_aligned<LEN>(virtual_address);
     XReg physical_address;
 
     if (aligned) {
@@ -2601,7 +2610,7 @@ function amo {
     If +rl+ is 1, then the amo also acts as a memory model release.
   }
   body {
-    Boolean aligned = is_naturally_aligned<PHYS_ADDR_WIDTH, N>(virtual_address);
+    Boolean aligned = is_naturally_aligned<N>(virtual_address);
 
     if (!aligned && MISALIGNED_LDST_EXCEPTION_PRIORITY == "high") {
       raise(ExceptionCode::StoreAmoAddressMisaligned, effective_ldst_mode(), virtual_address);
@@ -2678,7 +2687,7 @@ function write_memory {
     Write to virtual memory
   }
   body {
-    Boolean aligned = is_naturally_aligned<XLEN, LEN>(virtual_address);
+    Boolean aligned = is_naturally_aligned<LEN>(virtual_address);
     XReg physical_address;
 
     if (aligned) {

@@ -8,7 +8,7 @@ Svade:
     during a page walk. Rather, encountering a PTE with the A bit clear or the D bit clear when
     an operation is a write will cause a Page Fault.
   versions:
-  - version: 1.0
+  - version: "1.0.0"
     state: ratified
     ratification_date: 2023-11
     url: https://github.com/riscvarchive/riscv-svadu/releases/download/v1.0/riscv-svadu.pdf

@@ -7,7 +7,7 @@ A:
     name: RISC-V International
     url: https://riscv.org
   versions:
-  - version: 2.1
+  - version: "2.1.0"
     state: ratified
     ratification_date: 2019-12
     contributors:
@@ -15,8 +15,8 @@ A:
       email: unknown@void.segfault
       company: Unknown
     implies:
-    - [Zaamo, 1.0]
-    - [Zalrsc, 1.0]
+    - [Zaamo, "1.0.0"]
+    - [Zalrsc, "1.0.0"]
   description: |
 
     The atomic-instruction extension, named `A`, contains

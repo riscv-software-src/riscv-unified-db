@@ -5,7 +5,7 @@ Smaia:
   description: Advanced Interrupt Architecture, M-mode extension
   type: privileged
   versions:
-  - version: 1.0
+  - version: "1.0.0"
     state: ratified
     ratification_date: 2023-06
     url: https://github.com/riscv/riscv-aia/releases/download/1.0/riscv-interrupts-1.0.pdf

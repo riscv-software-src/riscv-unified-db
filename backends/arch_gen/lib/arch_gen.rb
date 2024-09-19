@@ -884,7 +884,7 @@ class ArchGen
       raise e
     end
 
-    inst_obj = Instruction.new(inst_data[inst_name])
+    inst_obj = Instruction.new(inst_data[inst_name], nil)
     possible_xlens = [params["XLEN"]]
     if @cfg_impl_ext.any? { |e| e[0] == "S" }
       possible_xlens << 32 if [32, 3264].include?(params["SXLEN"])
