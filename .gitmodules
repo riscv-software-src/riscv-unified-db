@@ -4,3 +4,6 @@
 [submodule "ext/docs-resources"]
 	path = ext/docs-resources
 	url = https://github.com/riscv/docs-resources.git
+[submodule "ext/riscv-isa-manual"]
+	path = ext/riscv-isa-manual
+	url = https://github.com/riscv/riscv-isa-manual

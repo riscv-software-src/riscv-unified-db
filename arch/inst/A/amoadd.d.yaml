@@ -11,7 +11,7 @@ amoadd.d:
        * Write the sum to the address in _rs1_
   definedBy: [A, Zaamo]
   base: 64
-  assembly: xd, xs2, (xrs1)
+  assembly: xd, xs2, (xs1)
   encoding:
     match: 00000------------011-----0101111
     variables:

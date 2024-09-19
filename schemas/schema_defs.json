@@ -4,20 +4,27 @@
   "title": "Common patterns used by all schemas",
 
   "$defs": {
+    "semantic_version": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+    },
+    "spec_state": {
+      "type": "string",
+      "enum": [
+        "development",
+        "frozen",
+        "public-review",
+        "ratification-ready",
+        "ratified",
+        "nonstandard-released"
+      ]
+    },
     "extension_name": {
       "type": "string",
       "pattern": "^([A-WY])|([SXZ][a-z0-9]+)$"
     },
     "extension_version": {
-      "oneOf": [
-        {
-          "type": "number"
-        },
-        {
-          "type": "string",
-          "pattern": "^[0-9]+(\\.[0-9]+(\\.[0-9]+(-[a-fA-F0-9]+)?)?)?$"
-        }
-      ]
+      "$ref": "#/$defs/semantic_version"
     },
     "requirement_string": {
       "type": "string",
@@ -69,6 +76,42 @@
         }
       ]
 
+    },
+    "author": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Author's full name"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Author's email address"
+        },
+        "organization": {
+          "$ref": "#/$defs/organization",
+          "description": "Author's organization, which should be an RVI member (or individual)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "organization": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Organization name"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Organization URL"
+        }
+      },
+      "additionalProperties": false
     }
   }
 }

@@ -1,0 +1,15 @@
+<%- manual_version.volumes.each do |volume| -%>
+.<%= volume.title %>
+<%- volume.chapters.each do |chapter| -%>
+* xref:chapters:<%= File.basename(chapter.path) %>[<%= chapter.title %>]
+<%- end -%>
+
+<%- end -%>
+
+.Alphabetical list of instrutions
+<%- manual_version.instructions.sort { |a, b| a.name <=> b.name }.each do |inst| -%>
+* xref:insts:<%= inst.name %>.adoc[<%= inst.name %>]
+<%- end -%>
+
+.Execution functions (IDL)
+* xref:funcs:funcs.adoc[Functions]

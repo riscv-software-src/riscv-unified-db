@@ -3,7 +3,7 @@ Xcustom:
   long_name: A new custom extension!
   type: unprivileged
   versions:
-  - version: 0.1
+  - version: "0.1.0"
     ratification_date: null
     state: development
   description: |

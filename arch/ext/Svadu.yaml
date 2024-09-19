@@ -91,7 +91,7 @@ Svadu:
     is zero, the implementation behaves as though Svadu were not implemented for
     VS-stage address translation.
   versions:
-  - version: 1.0
+  - version: "1.0.0"
     state: ratified
     ratification_date: 2023-11
     url: https://github.com/riscvarchive/riscv-svadu/releases/download/v1.0/riscv-svadu.pdf

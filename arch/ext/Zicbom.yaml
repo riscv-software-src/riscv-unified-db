@@ -5,7 +5,7 @@ Zicbom:
   description: Cache block management instructions
   type: unprivileged
   versions:
-  - version: 1.0.1-b34ea8a
+  - version: "1.0.1-b34ea8a"
     state: ratified
     ratification_date: 2022-05
   params:

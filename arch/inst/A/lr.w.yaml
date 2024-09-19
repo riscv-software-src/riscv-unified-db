@@ -72,7 +72,7 @@ lr.w:
 
     XReg virtual_address = X[rs1];
 
-    if (!is_naturally_aligned<XLEN, 32>(virtual_address)) {
+    if (!is_naturally_aligned<32>(virtual_address)) {
       # can raise either LoadAddressMisaligned *or* LoadAccessFault
       #
       # from the spec:

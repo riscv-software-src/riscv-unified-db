@@ -4,7 +4,7 @@ I:
   type: unprivileged
   long_name: Base integer ISA
   versions:
-  - version: 2.1
+  - version: "2.1.0"
     state: ratified
     ratification_date: 2019-06
     changes:
@@ -73,6 +73,11 @@ I:
   - num: 15
     name: Store/AMO page fault
     var: StoreAmoPageFault
+  - num: 18
+    name: Software Check
+    var: SoftwareCheck
+    when:
+      version: ">= 2.1.0"
   params:
     XLEN:
       description: |

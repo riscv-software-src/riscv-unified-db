@@ -1,0 +1,8 @@
+name: isa
+marketing_name: RISC-V ISA Manual
+url: https://github.com/riscv/riscv-isa-manual
+license:
+  id: CC-BY-4.0
+  name: Creative Commons Attribution 4.0 International Public License
+  url: https://creativecommons.org/licenses/by/4.0/legalcode
+# versions are found in by search all subdirectories for "contents.yaml"

@@ -66,6 +66,6 @@ Zihintpause:
     ====
   type: unprivileged
   versions:
-  - version: 2.0
+  - version: "2.0.0"
     state: ratified
     ratification_date: null

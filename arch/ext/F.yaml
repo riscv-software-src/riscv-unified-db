@@ -4,7 +4,7 @@ F:
   type: unprivileged
   long_name: Single-precision floating-point
   versions:
-  - version: 2.2
+  - version: "2.2.0"
     state: ratified
     ratification_date: 2019-12
     changes:

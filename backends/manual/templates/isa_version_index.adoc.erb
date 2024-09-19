@@ -1,0 +1,10 @@
+= <%= manual_version.manual.marketing_name %>: <%= manual_version.marketing_version %>
+
+// This is the landing page for a manual version
+
+<%- if manual_version.state == "ratified" -%>
+This version is RATIFIED. It will not change.
+<%- else -%>
+This version is a DRAFT. It may change.
+<%- end -%>
+

@@ -13,7 +13,7 @@ Zbs:
     name: Creative Commons Attribution 4.0 International License (CC-BY 4.0)
     url: https://creativecommons.org/licenses/by/4.0/
   versions:
-  - version: 1.0
+  - version: "1.0.0"
     state: ratified
     ratification_date: 2021-06
     url: https://drive.google.com/drive/u/0/folders/1_wqb-rXOVkGa6rqmugN3kwCftWDf1daU

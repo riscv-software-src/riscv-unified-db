@@ -117,17 +117,17 @@ function bit_length {
 }
 
 function is_naturally_aligned {
-  template U32 M, U32 N
+  template U32 N
   returns Boolean
-  arguments Bits<M> value
+  arguments XReg value
   description {
-    Checks if M-bit value is naturally aligned to N bits.
+    Checks if value is naturally aligned to N bits.
   }
   body {
     return true if N == 8; # everything is byte aligned
 
-    Bits<M> mask = (N/8) - 1;
-    return (value & ~mask) == value;
+    XReg Mask = (N/8) - 1;
+    return (value & ~Mask) == value;
   }
 }
 
@@ -143,7 +143,7 @@ function in_naturally_aligned_region? {
   body {
     XReg Mask = (N/8) - 1;
     
-    return (address & ~mask) == ((address + length - 1) & ~mask);
+    return (address & ~Mask) == ((address + length - 1) & ~Mask);
   }
 }
 
