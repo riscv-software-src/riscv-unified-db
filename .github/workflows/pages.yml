@@ -20,6 +20,8 @@ jobs:
     steps:
     - name: Clone Github Repo Action
       uses: actions/checkout@v4
+      with:
+        submodules: true
     - name: Setup apptainer
       uses: eWaterCycle/setup-apptainer@v2.0.0
     - name: Get container from cache
