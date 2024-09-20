@@ -306,7 +306,8 @@ Dir.glob($root / "arch" / "manual" / "**" / "contents.yaml") do |content_fn|
       "--git-dir=#{$root}/.git/modules/ext/riscv-isa-manual",
       "worktree add",
       t.name,
-      content_obj["isa_manual_tree"]
+      content_obj["isa_manual_tree"],
+      "2>&1"
     ].join(" ")
     sh cmd
   end
