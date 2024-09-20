@@ -8,7 +8,7 @@ marketing_version: "20240411"
 state: "development"
 url: https://github.com/riscv/riscv-isa-manual/releases/tag/20240411
 uses_isa_manual: true
-isa_manual_tree: "20240411"
+isa_manual_tree: "tags/20240411"
 volumes:
 - title: "RISC-V Instruction Set Manual, Volume I: Unprivileged ISA"
   description: "The RISC-V Instruction Set Manual, Volume I: Unprivileged ISA"
