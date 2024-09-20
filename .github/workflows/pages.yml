@@ -54,7 +54,7 @@ jobs:
     - name: Copy cfg html
       run: cp -R gen/cfg_html_doc/generic_rv64/html _site/example_cfg
     - name: Copy manual html
-      run: cp -R gen/manual/top/all/html _site/manual
+      run: cp -R gen/manual/isa/top/all/html _site/manual
     - name: Setup Pages
       uses: actions/configure-pages@v5
     - name: Upload artifact
