@@ -36,7 +36,6 @@ volumes:
   - riscv-isa-manual/src/a-st-ext.adoc
   - riscv-isa-manual/src/zawrs.adoc
   - riscv-isa-manual/src/zacas.adoc
-  - riscv-isa-manual/src/zabha.adoc
   - riscv-isa-manual/src/rvwmo.adoc
   - riscv-isa-manual/src/ztso-st-ext.adoc
   - riscv-isa-manual/src/cmo.adoc
@@ -44,7 +43,6 @@ volumes:
   - riscv-isa-manual/src/d-st-ext.adoc
   - riscv-isa-manual/src/q-st-ext.adoc
   - riscv-isa-manual/src/zfh.adoc
-  - riscv-isa-manual/src/bfloat16.adoc
   - riscv-isa-manual/src/zfa.adoc
   - riscv-isa-manual/src/zfinx.adoc
   - riscv-isa-manual/src/c-st-ext.adoc
@@ -55,7 +53,6 @@ volumes:
   - riscv-isa-manual/src/v-st-ext.adoc
   - riscv-isa-manual/src/scalar-crypto.adoc
   - riscv-isa-manual/src/vector-crypto.adoc
-  - riscv-isa-manual/src/unpriv-cfi.adoc
   - riscv-isa-manual/src/rv-32-64g.adoc
   - riscv-isa-manual/src/extending.adoc
   - riscv-isa-manual/src/naming.adoc
@@ -66,6 +63,7 @@ volumes:
   - riscv-isa-manual/src/vector-examples.adoc
   - riscv-isa-manual/src/calling-convention.adoc
   #/End of Vector appendices
+  - riscv-isa-manual/src/index.adoc
   extensions:
   - [I, "2.1.0"]
   - [U, "1.12.0"]
