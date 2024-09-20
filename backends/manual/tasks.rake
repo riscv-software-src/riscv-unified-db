@@ -295,7 +295,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/playbook.yml} => proc { |tname|
 end
 
 file $root / "ext" / "riscv-isa-manual" / "README.md" do
-  sh "git submodule update --init ext/riscv-isa-manual"
+  sh "git submodule update --init ext/riscv-isa-manual 2>&1"
 end
 
 Dir.glob($root / "arch" / "manual" / "**" / "contents.yaml") do |content_fn|
