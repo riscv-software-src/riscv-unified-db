@@ -230,6 +230,26 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/insts/pages/.*.adoc} => [
   File.write t.name, AntoraUtils.resolve_links(erb.result(binding))
 end
 
+# rule to create csr appendix page
+rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/csrs/pages/.*.adoc} => [
+  __FILE__,
+  "gen:arch",
+  ($root / "backends" / "manual" / "templates" / "csr.adoc.erb").to_s
+] do |t|
+  csr_name = File.basename(t.name, ".adoc")
+
+  arch_def = arch_def_for("_")
+  csr = arch_def.csr(csr_name)
+  raise "Can't find csr '#{csr_name}'" if csr.nil?
+
+  csr_template_path = $root / "backends" / "manual" / "templates" / "csr.adoc.erb"
+  erb = ERB.new(csr_template_path.read, trim_mode: "-")
+  erb.filename = csr_template_path.to_s
+
+  FileUtils.mkdir_p File.dirname(t.name)
+  File.write t.name, AntoraUtils.resolve_links(erb.result(binding))
+end
+
 # rule to create IDL function appendix page
 rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/funcs/pages/funcs.adoc} => [
   __FILE__,
@@ -274,7 +294,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/playbook.yml} => proc { |tname|
   File.write t.name, erb.result(binding)
 end
 
-file $root / "ext" / "riscv-isa_manual" / "README.md" do
+file $root / "ext" / "riscv-isa-manual" / "README.md" do
   sh "git submodule update --init ext/riscv-isa-manual"
 end
 
@@ -344,6 +364,9 @@ namespace :gen do
       Rake::Task[antora_path / "nav.adoc"].invoke
       version.instructions.each do |inst|
         Rake::Task[antora_path / "modules" / "insts" / "pages" / "#{inst.name}.adoc"].invoke
+      end
+      version.csrs.each do |csr|
+        Rake::Task[antora_path / "modules" / "csrs" / "pages" / "#{csr.name}.adoc"].invoke
       end
     end
 

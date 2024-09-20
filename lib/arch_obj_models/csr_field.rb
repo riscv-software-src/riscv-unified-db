@@ -532,8 +532,14 @@ class CsrField < ArchDefObject
     raise "Missing location for #{csr.name}.#{name} (#{key})?" unless @data.key?(key)
 
     if @data[key].is_a?(Integer)
-      if @data[key] > csr.length(arch_def, effective_xlen || @data["base"])
-        raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr.length(arch_def, effective_xlen)}) in #{csr.name}.#{name}"
+      if (arch_def.is_a?(ImplArchDef))
+        if @data[key] > csr.length(arch_def, effective_xlen || @data["base"])
+          raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr.length(arch_def, effective_xlen)}) in #{csr.name}.#{name}"
+        end
+      else
+        if @data[key] > csr.max_length(arch_def)
+          raise "Location (#{key} = #{@data[key]}) is past the max csr length (#{csr.max_length(arch_def)}) in #{csr.name}.#{name}"
+        end
       end
 
       @data[key]..@data[key]
@@ -541,8 +547,14 @@ class CsrField < ArchDefObject
       e, s = @data[key].split("-").map(&:to_i)
       raise "Invalid location" if s > e
 
-      if e > csr.length(arch_def, effective_xlen)
-        raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr.length(arch_def, effective_xlen)}) in #{csr.name}.#{name}"
+      if (arch_def.is_a?(ImplArchDef))
+        if e > csr.length(arch_def, effective_xlen)
+          raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr.length(arch_def, effective_xlen)}) in #{csr.name}.#{name}"
+        end
+      else
+        if e > csr.max_length(arch_def)
+          raise "Location (#{key} = #{@data[key]}) is past the max csr length (#{csr.max_length(arch_def)}) in #{csr.name}.#{name}"
+        end
       end
 
       s..e
@@ -578,12 +590,14 @@ class CsrField < ArchDefObject
     if dynamic_location?(arch_def)
       condition =
         case csr.priv_mode
+        when "M"
+          "CSR[misa].MXL == %%"
         when "S"
           "CSR[mstatus].SXL == %%"
         when "VS"
           "CSR[hstatus].VSXL == %%"
         else
-          raise "Unexpected priv mode"
+          raise "Unexpected priv mode #{csr.priv_mode} for #{csr.name}"
         end
 
       <<~LOC
