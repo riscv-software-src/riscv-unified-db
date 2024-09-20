@@ -171,4 +171,18 @@ class ManualVersion < ArchDefObject
     end
     @instructions
   end
+
+  # @return [Array<Csr>] All csrs defined in this version
+  def csrs
+    return @csrs unless @csrs.nil?
+
+    @csrs = []
+    extensions.each do |ext|
+      ext_obj = @arch_def.extension(ext.name)
+      ext_obj.csrs.each do |csr|
+        @csrs << csr
+      end
+    end
+    @csrs
+  end
 end

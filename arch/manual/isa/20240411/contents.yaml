@@ -68,6 +68,7 @@ volumes:
   #/End of Vector appendices
   extensions:
   - [I, "2.1.0"]
+  - [U, "1.12.0"]
   # - [E, "2.0"]
   # - [RVI64, "2.1"]
   # - [RVI128, "1.7"]
@@ -177,3 +178,42 @@ volumes:
     email: awaterman@sifive.com
     organization: SiFive, Inc.
     url: https://www.sifive.com/
+  chapters:
+    - riscv-isa-manual/src/priv-preface.adoc
+    - riscv-isa-manual/src/priv-intro.adoc
+    - riscv-isa-manual/src/priv-csrs.adoc
+    - riscv-isa-manual/src/machine.adoc
+    - riscv-isa-manual/src/smstateen.adoc
+    - riscv-isa-manual/src/indirect-csr.adoc
+    - riscv-isa-manual/src/smepmp.adoc
+    - riscv-isa-manual/src/smcntrpmf.adoc
+    - riscv-isa-manual/src/rnmi.adoc
+    - riscv-isa-manual/src/smcdeleg.adoc
+    - riscv-isa-manual/src/supervisor.adoc
+    - riscv-isa-manual/src/sstc.adoc
+    - riscv-isa-manual/src/sscofpmf.adoc
+    - riscv-isa-manual/src/hypervisor.adoc
+    - riscv-isa-manual/src/priv-insns.adoc
+    - riscv-isa-manual/src/priv-history.adoc
+    - riscv-isa-manual/src/bibliography.adoc
+  extensions:
+  - [Smstateen, "1.0.0"]
+  - [Smcsrind, "1.0.0"]
+  - [Sscsrind, "1.0.0"]
+  - [Smepmp, "1.0.0"]
+  - [Smcntrpmf, "1.0.0"]
+  - [Smrnmi, "0.5.0"]
+  - [Smcdeleg, "1.0.0"]
+  - [S, "1.12.0"]
+  - [Sv32, "1.13.0"]
+  - [Sv39, "1.13.0"]
+  - [Sv48, "1.13.0"]
+  - [Sv57, "1.13.0"]
+  - [Svnapot, "1.0.0"]
+  - [Svpbmt, "1.0.0"]
+  - [Svinval, "1.0.0"]
+  - [Svadu, "1.0.0"]
+  - [Svvptc, "1.0.0"]
+  - [Sstc, "1.0.0"]
+  - [Sscofpmf, "1.0.0"]
+  - [H, "1.0.0"]

@@ -11,5 +11,10 @@
 * xref:insts:<%= inst.name %>.adoc[<%= inst.name %>]
 <%- end -%>
 
+.Alphabetical list of CSRs
+<%- manual_version.csrs.sort { |a, b| a.name <=> b.name }.each do |csr| -%>
+* xref:csrs:<%= csr.name %>.adoc[<%= csr.name %>]
+<%- end -%>
+
 .Execution functions (IDL)
 * xref:funcs:funcs.adoc[Functions]
