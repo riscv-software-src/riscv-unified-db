@@ -299,7 +299,7 @@ file $root / "ext" / "riscv-isa-manual" / "README.md" do
 end
 
 Dir.glob($root / "arch" / "manual" / "**" / "contents.yaml") do |content_fn|
-  file "#{File.dirname(content_fn)}/riscv-isa-manual/README.md" => ($root / "ext" / "riscv-isa_manual" / "README.md").to_s do |t|
+  file "#{File.dirname(content_fn)}/riscv-isa-manual/README.md" => ($root / "ext" / "riscv-isa-manual" / "README.md").to_s do |t|
     content_obj = YAML.load_file(content_fn)
     cmd = [
       "git",
