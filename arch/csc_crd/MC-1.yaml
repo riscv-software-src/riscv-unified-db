@@ -14,6 +14,13 @@ MC-1:
     * The Unprivileged ISA is RV32I with a few extensions suitable for a basic microcontroller
     * The M-mode features are those listed as mandatory in the RISC-V Privileged ISA manual.
 
+    Key features not included in MC-1 (i.e., OUT OF SCOPE):
+
+    * Interrupt Controller (e.g., CLIC, CLINT, PLIC)
+    * Features for modes other than M-mode
+    * PMP
+    * Debug & trace (TBD)
+
   # Specification versions
   tsc_profile: null # None for MC-1
   unpriv_isa_manual_revision: "20191213"
@@ -21,80 +28,79 @@ MC-1:
   debug_manual_revision: "0.13.2"
 
 # XXX - Remove version information since specifying priv/unpriv ISA manual should imply this.
-  mandatory_extensions:
-  - name: I
-    version: "~> 2.1"
-  - name: C
-    version: "~> 2.2"
-  - name: M
-    version: "~> 2.0"
-  - name: Zicsr
-    version: "~> 2.0"
-  - name: Zicntr
-    version: "~> 2.0"
-
-  optional_extensions:
-  - name: B
-    version: "~> 1.0"
-    note: This is just for testing the database (B isn't a real MC-1 extension)
-
-# Parameters listed here are IN SCOPE, otherwise assumed to be OUT OF SCOPE.
-  in_scope_params:
-    PRECISE_SYNCHRONOUS_EXCEPTIONS:
-      schema:
-        const: true
-    TRAP_ON_UNIMPLEMENTED_CSR:
-      schema:
-        const: true
-    TRAP_ON_UNIMPLEMENTED_INSTRUCTION:
-      schema:
-        const: true
-    TRAP_ON_ECALL_FROM_M:
-      note: REQ-UINST-017
-      schema:
-        const: true
-    REPORT_VA_IN_MTVAL_ON_BREAKPOINT:
-      schema:
-        const: true
-    REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT:
-      schema:
-        const: true
-    REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT:
-      schema:
-        const: true
-    REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT:
-      schema:
-        const: true
-    REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION:
-      schema:
-        const: true
-    M_MODE_ENDIANESS:
-      schema:
-        const: little
-    # OPT-RDTIME doesn't need constraint (behavior defined by TIME_CSR_IMPLEMENTED)
-    # OPT-MTIME-PADDR doesn't have parameter -- it's considered non-ISA by the database
-    # OPT-MTIMECMP-PADDR doesn't have parameter -- it's considered non-ISA by the database
-    # OPT-MSIP-PADDR doesn't have parameter -- it's considered non-ISA by the database
-    # OPT-MHARTID doesn't need constrained (behavior is a builtin)
-    # OPT-MVENDORID doesn't need constrained (but behavior is controlled by VENDOR_ID_BANK and VENDOR_ID_OFFSET)
-    # OPT-MARCHID doesn't need constrained (but behavior is controlled by ARCH_ID)
-    # OPT-MIMPID doesn't need constrained (but behavior is controlled by IMP_ID)
-    # OPT-MISA doesn't need constrained (but behavior is controlled by MISA_CSR_IMPLEMENTED)
-    # OPT-CLINT doesn't need a parameter; it is mandated in the spec
-    # OPT-CLIC doesn't need a paramter
-    MTVEC_BASE_ALIGNMENT_DIRECT:
-      note: OPT-MTVEC-ALIGN-DIRECT
-      schema:
-        const: 4
-    MTVEC_BASE_ALIGNMENT_VECTORED:
-      note: OPT-MTVEV-ALIGN-VECTORED
-      schema:
-        const: 4
-    ARCH_ID: {} # Unconstrained
-    XLEN:
-      schema:
-        const: 32
-
+  extensions:
+    mandatory:
+    - name: I
+      version: "~> 2.1"
+      note: "The I extension is the base Integer instruction set and is considered an \"extension\" for convenience."
+      param_constraints:
+          PRECISE_SYNCHRONOUS_EXCEPTIONS:
+            schema:
+              const: true
+          TRAP_ON_UNIMPLEMENTED_CSR:
+            schema:
+              const: true
+          TRAP_ON_UNIMPLEMENTED_INSTRUCTION:
+            schema:
+              const: true
+          TRAP_ON_ECALL_FROM_M:
+            note: REQ-UINST-017
+            schema:
+              const: true
+          REPORT_VA_IN_MTVAL_ON_BREAKPOINT:
+            schema:
+              const: true
+          REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT:
+            schema:
+              const: true
+          REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT:
+            schema:
+              const: true
+          REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT:
+            schema:
+              const: true
+          REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION:
+            schema:
+              const: true
+          M_MODE_ENDIANESS:
+            schema:
+              const: little
+          # OPT-RDTIME doesn't need constraint (behavior defined by TIME_CSR_IMPLEMENTED)
+          # OPT-MTIME-PADDR doesn't have parameter -- it's considered non-ISA by the database
+          # OPT-MTIMECMP-PADDR doesn't have parameter -- it's considered non-ISA by the database
+          # OPT-MSIP-PADDR doesn't have parameter -- it's considered non-ISA by the database
+          # OPT-MHARTID doesn't need constrained (behavior is a builtin)
+          # OPT-MVENDORID doesn't need constrained (but behavior is controlled by VENDOR_ID_BANK and VENDOR_ID_OFFSET)
+          # OPT-MARCHID doesn't need constrained (but behavior is controlled by ARCH_ID)
+          # OPT-MIMPID doesn't need constrained (but behavior is controlled by IMP_ID)
+          # OPT-MISA doesn't need constrained (but behavior is controlled by MISA_CSR_IMPLEMENTED)
+          # OPT-CLINT doesn't need a parameter; it is mandated in the spec
+          # OPT-CLIC doesn't need a paramter
+          MTVEC_BASE_ALIGNMENT_DIRECT:
+            note: OPT-MTVEC-ALIGN-DIRECT
+            schema:
+              const: 4
+          MTVEC_BASE_ALIGNMENT_VECTORED:
+            note: OPT-MTVEV-ALIGN-VECTORED
+            schema:
+              const: 4
+          ARCH_ID: {} # Unconstrained
+          XLEN:
+            schema:
+              const: 32
+    - name: C
+      # version: "~> 2.2"
+    - name: M
+      # version: "~> 2.0"
+    - name: Zicsr
+      # version: "~> 2.0"
+    - name: Zicntr
+      # version: "~> 2.0"
+    #XXX optional: {} # None
+    optional:
+    - name: B
+      note: "This is just for testing. B isn't really optional for MC-1."
+  
   requirement_groups:
     - name: MC-Unpriv
       description: |

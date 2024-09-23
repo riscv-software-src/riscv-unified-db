@@ -1,6 +1,8 @@
 = <%= crd.name %> Certification Requirements Document
 
-== Revision History
+== <%= crd.family.name %> Family Revision History
+
+Contains documentation changes that apply to all releases of the family.
 
 [cols="1,1,5"]
 |===
@@ -17,9 +19,11 @@ a| <%- rev.changes.each do |change| %>
 
 == Introduction
 
-=== <%= crd.family.name %> Family
+<%= crd.family.introduction %>
 
-<%= crd.family.overview %>
+=== Naming Scheme
+
+<%= crd.family.naming_scheme %>
 
 === <%= crd.name %> Description
 
@@ -51,42 +55,69 @@ a| <%- rev.changes.each do |change| %>
 
 |===
 
-== Extensions
+=== Extension Summary
 
-=== MANDATORY Extensions
+Any extension not listed in the table below is OUT OF SCOPE.
 
 [%autowidth]
 |===
-| Extension | Version | Note
+| Extension | Version | Status | Requirement | Description
 
-<%- crd.mandatory_extensions.each do |ext| -%>
-| <%= ext.name %>
-| <%= ext.version_requirement %>
-| <%= ext.note %>
+<%- crd.extension_reqs.sort.each do |ext_req| -%>
+<%- ext = crd.arch_def.extension(ext_req.name) -%>
+| <%= ext_req.name %>
+| <%= ext_req.version_requirement %>
+| <%= ext_req.status %>
+| <%= ext_req.req_id %>
+| <%= ext.nil? ? "" : ext.long_name %>
 <%- end -%>
 |===
 
-=== OPTIONAL Extensions
+== Extension Details
 
-<%- if crd.optional_extensions.empty? -%>
-None
-<%- else -%>
-[%autowidth]
-|===
-| Extension | Version | Note
+<%- crd.extension_reqs.sort.each do |ext_req| -%>
+<%- ext = crd.arch_def.extension(ext_req.name) -%>
 
-<%- crd.optional_extensions.each do |ext| -%>
-| <%= ext.name %>
-| <%= ext.version_requirement %>
-| <%= ext.note %>
+=== Extension <%= ext_req.name %>
+* Requirement: <%= ext_req.req_id %>
+<%= ext.nil? ? "" : "* Description: " + ext.long_name %>
+<%- unless ext_req.note.nil? -%>
++
+[NOTE]
+--
+<%= ext_req.note %>
+--
 <%- end -%>
+
+<%- unless crd.param_constraints(ext_req).empty? -%>
+[cols="3,1,1,2"]
 |===
-<%- end -%>
+| Parameter | Extension | Constraint | Note
+<%- crd.param_constraints(ext_req).each do |constraint| -%>
+| <%= constraint.param.name %>
+| <%= constraint.param.exts.map(&:name).join(', ') %>
+| <%= constraint.schema_constraint_pretty == "" ? "Unconstrained" : constraint.schema_constraint_pretty %>
+a| <%= constraint.note %>
+<%- end # do constraint -%>
+|===
+<%- end # unless table -%>
 
-=== OUT OF SCOPE Extensions
-Any extension not listed above as MANDATORY or OPTIONAL is OUT OF SCOPE.
+<%- unless crd.extension_out_of_scope_param_constraints(ext_req).empty? -%>
+[cols="5,2,12"]
+|===
+| Parameter | Extension | Description
+<%- crd.extension_out_of_scope_param_constraints(ext_req).each do |param| -%>
+| <%= param.name %>
+| <%= param.exts.map(&:name).join(', ') %>
+a| <%= param.desc %>
+<%- end # do constraint -%>
+|===
+<%- end # unless table -%>
+<%- end # do extension-%>
 
-== Extension Parameters
+== Parameter Requirements
+
+This section lists requirements related to parameters associated with extensions.
 
 === IN SCOPE Parameters
 
@@ -107,6 +138,7 @@ a| <%= constraint.note %>
 === OUT OF SCOPE Parameters
 
 Parameters listed in this section are OUT OF SCOPE (i.e., they won't be covered by the associated certificate).
+Any parameter from a MANDATORY or OPTIONAL extension that aren't listed as IN SCOPE parameters show up here.
 
 [cols="5,2,12"]
 |===
@@ -119,8 +151,13 @@ a| <%= param.desc %>
 <%- end -%>
 |===
 
+== Additional Requirements
+
+This section contains requirements in addition to those already specified related to extensions and parameters.
+These additional requirements are organized as groups of related requirements.
+
 <%- crd.requirement_groups.each do |group| -%>
-== <%= group.name %>
+=== <%= group.name %>
 
 <%= group.description %>
 

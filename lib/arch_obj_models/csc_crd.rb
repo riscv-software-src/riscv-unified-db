@@ -20,6 +20,8 @@ class CscCrdFamily < ArchDefObject
 end
 
 class CscCrdFamily < ArchDefObject
+  attr_reader :arch_def
+
   def initialize(data, arch_def)
     super(data)
     @arch_def = arch_def
@@ -37,7 +39,9 @@ class CscCrdFamily < ArchDefObject
     @revisions
   end
 
-  def overview = @data["overview"]
+  def introduction = @data["introduction"]
+
+  def naming_scheme = @data["naming_scheme"]
 
   def eql?(other)
     other.is_a?(CscCrdFamily) && other.name == name
@@ -55,6 +59,7 @@ class CscCrdFamily < ArchDefObject
 end
 
 class CscCrd < ArchDefObject
+  attr_reader :arch_def
 
   def initialize(data, arch_def)
     super(data)
@@ -90,25 +95,113 @@ class CscCrd < ArchDefObject
 
   def description = @data["description"]
 
-  def mandatory_extensions
-    return @mandatory_extensions unless @mandatory_extensions.nil?
+  def extension_reqs
+    return @extension_reqs unless @extension_reqs.nil?
 
-    @mandatory_extensions = []
-    @data["mandatory_extensions"].each do |ext|
-      @mandatory_extensions << ExtensionRequirement.new(ext["name"], ext["version"], note: ext["note"])
+    @extension_reqs = []
+    [ "mandatory", "optional"].each do |status|
+      @data["extensions"][status]&.each do |ext|
+        @extension_reqs << 
+          ExtensionRequirement.new(ext["name"], ext["version"], note: ext["note"], req_id: "REQ-EXT-" + ext["name"],
+            status: status)
+      end
     end
-    @mandatory_extensions
+    @extension_reqs
   end
 
-  def optional_extensions
-    return @optional_extensions unless @optional_extensions.nil?
+  class ParameterConstraint
+    attr_reader :param
+    attr_reader :note
 
-    @optional_extensions = []
-    return @optional_extensions if @data["optional_extensions"].nil?
-    @data["optional_extensions"].each do |ext|
-      @optional_extensions << ExtensionRequirement.new(ext["name"], ext["version"], note: ext["note"])
+    def initialize(param, constraint, note)
+      raise ArgumentError, "Expecting ExtensionParameter" unless param.is_a?(ExtensionParameter)
+
+      @param = param
+      @schema_constraint = constraint
+      @note = note
     end
-    @optional_extensions
+
+    def single_value?
+      !@schema_constraint.nil? && @schema_constraint.key?("const")
+    end
+
+    def value
+      raise "Parameter constraint for #{@param.name} is not a single value" unless single_value?
+
+      @schema_constraint["const"]
+    end
+
+    def schema_constraint_pretty
+      return "" if @schema_constraint.nil?
+      if @schema_constraint.key?("const")
+        "== #{@schema_constraint["const"]}"
+      elsif @schema_constraint.key?("enum")
+        "One of: [#{@schema_constraint["enum"].join(', ')}]"
+      else
+        raise "TODO: Pretty schema for #{@schema_constraint}"
+      end
+    end
+
+  end
+
+  def param_constraints(ext_req)
+    param_constraints = []    # Local variable, no caching
+
+    ext_data = @data["extensions"][ext_req.status].find {|ext| ext["name"] == ext_req.name}
+    raise "Cannot find extension named #{ext_req.name}" if ext_data.nil?
+    
+    from_ext = @arch_def.extension(ext_data["name"])
+    raise "Cannot find extension named #{ext_data["name"]}" if from_ext.nil?
+
+    # & is the safe navigation operator
+    ext_data["param_constraints"]&.each do |param_name, param_data|
+        param = from_ext.params.find { |p| p.name == param_name }
+        raise "There is no param '#{param_name}' in extension '#{ext_data["name"]}" if param.nil?
+
+        param_constraints << ParameterConstraint.new(param, param_data["schema"], param_data["note"])
+    end
+
+    param_constraints
+  end
+
+  def in_scope_param_constraints
+    return @in_scope_param_constraints unless @in_scope_param_constraints.nil?
+
+    @in_scope_param_constraints = []
+
+    @data["extensions"]["mandatory"].each do |ext_data| 
+      from_ext = @arch_def.extension(ext_data["name"])
+      raise "Cannot find extension named #{ext_data["name"]}" if from_ext.nil?
+
+      next if ext_data["param_constraints"].nil?
+
+      ext_data["param_constraints"].each do |param_name, param_data|
+        param = from_ext.params.find { |p| p.name == param_name }
+        raise "There is no param '#{param_name}' in extension '#{ext_data["name"]}" if param.nil?
+
+        @in_scope_param_constraints << ParameterConstraint.new(param, param_data["schema"], param_data["note"])
+      end
+    end
+    @in_scope_param_constraints
+  end
+
+  # @return [Array<ExtensionParameter>] List of parameters that are out of scope
+  def out_of_scope_param_constraints
+    return @out_of_scope_param_constraints unless @out_of_scope_param_constraints.nil?
+ 
+    @out_of_scope_param_constraints = []
+    extension_reqs.each do |ext_req|
+      @arch_def.extension(ext_req.name).params.each do |param|
+        next if in_scope_param_constraints.any? { |c| c.param.name == param.name }
+        @out_of_scope_param_constraints << param
+      end
+    end
+    @out_of_scope_param_constraints
+  end
+
+  # @return [Array<ExtensionParameter>] List of parameters that are out of scope
+  def extension_out_of_scope_param_constraints(ext_req)
+    out_of_scope_param_constraints.select{|param| param.exts.any? {|ext| ext.name == ext_req.name} } 
   end
 
   class Requirement < ArchDefObject
@@ -183,72 +276,4 @@ class CscCrd < ArchDefObject
     @requirement_groups
   end
 
-  class ParameterConstraint
-    attr_reader :note
-    attr_reader :param
-
-    def initialize(param, constraint, note)
-      raise ArgumentError, "Expecting ExtensionParameter" unless param.is_a?(ExtensionParameter)
-
-      @param = param
-      @schema_constraint = constraint
-      @note = note
-    end
-
-    def single_value?
-      !@schema_constraint.nil? && @schema_constraint.key?("const")
-    end
-
-    def value
-      raise "Parameter constraint for #{@param.name} is not a single value" unless single_value?
-
-      @schema_constraint["const"]
-    end
-
-    def schema_constraint_pretty
-      return "" if @schema_constraint.nil?
-      if @schema_constraint.key?("const")
-        "== #{@schema_constraint["const"]}"
-      elsif @schema_constraint.key?("enum")
-        "One of: [#{@schema_constraint["enum"].join(', ')}]"
-      else
-        raise "TODO: Pretty schema for #{@schema_constraint}"
-      end
-    end
-
-  end
-
-  def in_scope_param_constraints
-    return @param_constraints unless @param_constraints.nil?
-
-    @param_constraints = []
-    @data["in_scope_params"].each do |param_name, param_data| 
-      from_ext = @arch_def.extensions.find { |ext| ext.params.any?{ |p| p.name == param_name } }
-      raise "Cannot find extension definition that has a parameter named '#{param_name}'" if from_ext.nil?
-
-      param = from_ext.params.find { |p| p.name == param_name }
-      @param_constraints << ParameterConstraint.new(param, param_data["schema"], param_data["note"])
-    end
-    @param_constraints
-  end
-
-  # @return [Array<ExtensionParameter>] List of parameters that are out of scope
-  def out_of_scope_param_constraints
-    return @out_of_scope_param_constraints unless @out_of_scope_param_constraints.nil?
- 
-    @out_of_scope_param_constraints = []
-    mandatory_extensions.each do |ext|
-      @arch_def.extension(ext.name).params.each do |param|
-        next if in_scope_param_constraints.any? { |c| c.param.name == param.name }
-        @out_of_scope_param_constraints << param
-      end
-    end
-    optional_extensions.each do |ext|
-      @arch_def.extension(ext.name).params.each do |param|
-        next if in_scope_param_constraints.any? { |c| c.param.name == param.name }
-        @out_of_scope_param_constraints << param
-      end
-    end
-    @out_of_scope_param_constraints
-  end
 end

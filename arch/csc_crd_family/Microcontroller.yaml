@@ -19,20 +19,64 @@ Microcontroller:
     - Supporting multiple MC versions to support customers wanting to certify existing microcontrollers not using the latest version of ratified standards.
     - Changed versioning scheme to use major.minor.patch instead of 3-digit major & minor.
     - Added a table showing the mapping from MC version to ISA manuals.
-    - "..."
+    - Reluctantly made interrupts OUT OF SCOPE for MC-1 since only the CLINT interrupt controller
+      was ratified at that time and isn’t anticipated to be the interrupt controller used by MC-1 implementations.
+    - Clarified MANDATORY behaviors for mie and mip CSRs
+    - Removed canonical discovery recipe because the OPT-* options directly inform the certification
+      tests and certification reference model of the status of the various options. Also, canonical
+      discovery recipes (e.g., probing for CLIC) violate the certification approach of avoiding writing
+      potentially illegal values to CSR fields.
+    - Added more options for interrupts
+    - Moved non-microcontroller content in this document to a new document called “RISC-V Certification Plans”
+  - version: "0.5"
+    date: 2024-06-03
+    changes:
+    - Renamed to “RISC-V Microcontroller Certification Plan” based on Jason’s recommendation
+    - Added mvendorid, marchid, mimpid, and mhardid read-only priv CSRs because Allen pointed out
+      these are mandatory in M-mode v1.13 (probably older versions too, haven’t looked yet).
+    - Added table showing mapping of MC versions to associated RISC-V specifications
+  - version: "0.4"
+    date: 2024-06-03
+    changes:
+    - Added M-mode instruction requirements
+    - Made Zicntr MANDATORY due to very low cost for implementations to support (in the spirit of minimizing options).
+    - Removed OPT-CNTR-PREC since minstret and mcycle must be a full 64 bits to be standard-compliant.
+  - version: "0.3"
+    date: 2024-05-25
+    changes:
+    - Includes Zicntr as OPTIONAL and then has only 32-bit counters for instret and cycle.
+  - version: "0.2"
+    date: 2024-05-20
+    changes:
+    - Very early draft
+  - version: "0.1"
+    date: 2024-05-16
+    changes:
+    - Initial version
 
-  overview: |
-    This Certification Plan proposes requirements for the “MC” certified RISC-V microcontroller.
-    MC targets microcontrollers running low-level software on an RTOS or bare-metal.
-    The MC is not intended for the smallest possible microcontrollers but rather for applications
-    requiring a certified microcontroller.
-    See the https://docs.google.com/document/d/133SZKc18tLsQcT1o6gEmBUkjwrtg2ow63me54RQ1jiY[RISC-V Certification Plan]
-    document for information relevant to all RISC-V Certification Plans.
+  introduction: |
+    This CRD (Certification Requirements Document) specifies requirements for microcontrollers.
+    It targets microcontrollers running low-level software on an RTOS or bare-metal.
+    This CRD is not intended for the smallest possible microcontrollers but rather for applications
+    benefiting from a standardized microcontroller.
+    See the https://docs.google.com/document/d/133SZKc18tLsQcT1o6gEmBUkjwrtg2ow63me54RQ1jiY[RISC-V CRDs]
+    document for information relevant to all RISC-V CRDs.
 
-    The MC (M = Microcontroller, C = Certified) has the following naming scheme (suffixes after MC
+  naming_scheme: |
+    The MC (M = Microcontroller, C = Certificate) has the following naming scheme (suffixes after MC
     are optional but in the below order):
 
-    ...
+     MC<-VERSION><-MODE><-XLEN>
+
+    Where:
+
+    * \<-VERSION> is formatted as -<major>[.<minor>.[patch]] where left & right square braces denote optional. If \<-VERSION> is omitted, the reference applies equally to all versions. 
+    ** A <major> release indicates significant new functionality covered by the release.
+    ** A <minor> release is an update to the initial major release that changes requirements. The initial major release has an implicit minor release value of “.0” so the first update to a major release has a minor release of “.1”.
+    ** A <patch> release only provides specification clarifications and doesn’t change requirements. The initial minor release has an implicit patch release value of “.0” so the first update to a minor release has a patch release of “.1”.
+    ** For example, the first release of MC is MC-1 (can omit the implicit “.0” minor release), its first minor release is MC-1.1, a patch release of this minor release is MC-1.1.1 and the next major release is MC-2.
+    * \<-MODE> is -Unpriv, -Priv, or -Debug. If \<-MODE> is omitted, the reference applies equally to all modes.
+    * \<-XLEN> is -32 for 32-bit microcontrollers and -64 for 64-bit microcontrollers. If \<-XLEN> is omitted, the reference applies equally to 32-bit and 64-bit microcontrollers. The term MXLEN used in the Priv ISA Manual is always equal to XLEN for MC.
 
   mandatory_priv_modes:
   - M
