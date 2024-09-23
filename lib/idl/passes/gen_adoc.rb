@@ -82,7 +82,7 @@ module Idl
   end
   class FieldAssignmentAst
     def gen_adoc(indent, indent_spaces: 2)
-      "#{field_access.gen_adoc(0, indent_spaces:)} = #{write_value.gen_adoc(0, indent_spaces:)}"
+      "#{bitfield.gen_adoc(0, indent_spaces:)} = #{write_value.gen_adoc(0, indent_spaces:)}"
     end
   end
   class ConcatenationExpressionAst
