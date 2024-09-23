@@ -1165,11 +1165,16 @@ module Idl
       @member_types.each do |t|
         t.type_check(symtab)
       end
+      add_symbol(symtab)
     end
 
     # @!macro type
     def type(symtab)
-      @type = StructType.new(@name, @member_types.map { |t| t.type(symtab) }, @member_names)
+      @type = StructType.new(@name, @member_types.map do |t|
+        member_type = t.type(symtab)
+        member_type = Type.new(:enum_ref, enum_class: member_type) if member_type.kind == :enum
+        member_type
+      end, @member_names)
     end
 
     # @!macro add_symbol
@@ -1704,7 +1709,7 @@ module Idl
     end
   end
 
-  # represents a bitfield assignement
+  # represents a bitfield or struct assignement
   #
   # for example:
   #   Sv39PageTableEntry entry;
@@ -1713,7 +1718,7 @@ module Idl
   class FieldAssignmentAst < AstNode
     include Executable
 
-    def bitfield = @children[0]
+    def field_access = @children[0]
     def write_value = @children[1]
 
     def initialize(input, interval, field_access, write_value)
@@ -1742,7 +1747,7 @@ module Idl
       if field_access.type(symtab).kind == :struct
         struct_val = field_access.obj.value(symtab)
         struct_val[field_access.field_name] = write_value.value(symtab)
-        symtab.add(field_access.obj.name, Var.new(field_access.obj.name, field_access.type(symtab), struct_val))
+        symtab.add(field_access.obj.name, Var.new(field_access.obj.name, field_access.obj.type(symtab), struct_val))
       else
         value_error "TODO: Field assignement execution"
       end
@@ -1750,7 +1755,7 @@ module Idl
 
     # @!macro execute_unknown
     def execute_unknown(symtab)
-      symtab.add(field_access.obj.name, Var.new(field_access.obj.name, field_access.type(symtab), nil))
+      symtab.add(field_access.obj.name, Var.new(field_access.obj.name, field_access.obj.type(symtab), nil))
     end
 
     # @!macro to_idl
@@ -2059,6 +2064,7 @@ module Idl
         # fill global with nil to prevent its use in compile-time evaluation
         symtab.add(id.text_value, Var.new(id.text_value, decl_type(symtab), nil))
       else
+        type_error "No Type '#{type_name.text_value}'" if decl_type(symtab).nil?
         symtab.add(id.text_value, Var.new(id.text_value, decl_type(symtab), decl_type(symtab).default))
       end
     end
@@ -2304,8 +2310,11 @@ module Idl
       when :enum_ref
         Type.new(:bits, width: etype.enum_class.width)
       when :csr
-        type_error "Cannot $bits cast CSR #{etype.csr.name} because its length is dynamic" if etype.csr.dynamic_length?(symtab.archdef)
-        Type.new(:bits, width: etype.csr.length(symtab.archdef))
+        if etype.csr.dynamic_length?(symtab.archdef)
+          Type.new(:bits, width: :unknown)
+        else
+          Type.new(:bits, width: etype.csr.length(symtab.archdef))
+        end
       end
     end
 
@@ -2465,15 +2474,15 @@ module Idl
 
       lhs.type_check(symtab)
       short_circuit = false
-      begin
-        lhs_value = lhs.value(symtab)
-        if (lhs_value == true && op == "||") || (lhs_value == false && op == "&&")
-          short_circuit = true
-        end
-      rescue ValueError
-        short_circuit = false
-      end
-      rhs.type_check(symtab) unless short_circuit
+      # begin
+      #   lhs_value = lhs.value(symtab)
+      #   if (lhs_value == true && op == "||") || (lhs_value == false && op == "&&")
+      #     short_circuit = true
+      #   end
+      # rescue ValueError
+      #   short_circuit = false
+      # end
+      rhs.type_check(symtab) #unless short_circuit
 
       if ["<=", ">=", "<", ">", "!=", "=="].include?(op)
         rhs_type = rhs.type(symtab)
@@ -3060,9 +3069,9 @@ module Idl
       if obj_type.kind == :bitfield
         Type.new(:bits, width: obj_type.range(@field_name).size)
       elsif obj_type.kind == :struct
-        obj_type.member_type(@field_name, symtab)
+        obj_type.member_type(@field_name)
       else
-        internal_error "huh?"
+        internal_error "huh? #{obj.text_value} #{obj_type.kind}"
       end
     end
 
@@ -3525,7 +3534,7 @@ module Idl
     end
 
     # @!macro type_no_args
-    def type(_symtab, _archdef)
+    def type(_symtab)
       Type.new(:dontcare)
     end
 
@@ -4321,19 +4330,19 @@ module Idl
 
       stmts.each do |s|
         s.type_check(symtab)
-        next unless return_value_might_be_known
+        # next unless return_value_might_be_known
 
-        begin
-          if s.is_a?(Returns)
-            s.return_value(symtab)
-            # if we reach here, the return value is known, so we don't have to go futher
-            break
-          else
-            s.execute(symtab)
-          end
-        rescue ValueError
-          return_value_might_be_known = false
-        end
+        # begin
+        #   if s.is_a?(Returns)
+        #     s.return_value(symtab)
+        #     # if we reach here, the return value is known, so we don't have to go futher
+        #     break
+        #   else
+        #     s.execute(symtab)
+        #   end
+        # rescue ValueError
+        #   return_value_might_be_known = false
+        # end
       end
     end
 
@@ -4492,10 +4501,9 @@ module Idl
       else
 
         tuple_types = @return_type_nodes.map do |r|
-          rtype = t.type(symtab)
+          rtype = r.type(symtab)
           rtype = rtype.ref_type if rtype.kind == :enum
-
-          tuple_types << rtype
+          rtype
         end
 
         Type.new(:tuple, tuple_types:)
@@ -4861,16 +4869,7 @@ module Idl
         type_error "'#{cond.text_value}' is not boolean"
       end
 
-      begin
-        # only type check the body if it is reachable
-        if cond.value(symtab) == true
-          body.type_check(symtab)
-          return # don't bother with the rest
-        end
-      rescue ValueError
-        # condition isn't compile-time-known; have to check the body
-        body.type_check(symtab)
-      end
+      body.type_check(symtab)
     end
 
     # @!macro return_values
@@ -4949,16 +4948,7 @@ module Idl
 
       type_error "'#{if_cond.text_value}' is not boolean" unless if_cond.type(symtab).convertable_to?(:boolean)
 
-      begin
-        # only type check the body if it is reachable
-        if if_cond.value(symtab) == true
-          if_body.type_check(symtab)
-          return # don't bother with the rest
-        end
-      rescue ValueError
-        # we don't know if the body is reachable; type check it
-        if_body.type_check(symtab)
-      end
+      if_body.type_check(symtab)
 
       internal_error "not at same level #{level} #{symtab.levels}" unless level == symtab.levels
 
@@ -5224,7 +5214,13 @@ module Idl
 
     # @!macro value
     def value(symtab)
-      value_error "'#{csr_name(symtab)}.#{field_name(symtab)}' is not RO" unless field_def(symtab).type(symtab.archdef) == "RO"
+      # field isn't implemented, so it must be zero
+      return 0 if field_def(symtab).nil?
+
+      unless field_def(symtab).type(symtab.archdef) == "RO"
+        value_error "'#{csr_name(symtab)}.#{field_name(symtab)}' is not RO"
+      end
+
       field_def(symtab).reset_value(symtab.archdef)
     end
   end

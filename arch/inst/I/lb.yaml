@@ -25,4 +25,4 @@ lb:
   operation(): |
     XReg virtual_address = X[rs1] + imm;
 
-    X[rd] = sext(read_memory<8>(virtual_address), 8);
+    X[rd] = sext(read_memory<8>(virtual_address, $encoding), 8);

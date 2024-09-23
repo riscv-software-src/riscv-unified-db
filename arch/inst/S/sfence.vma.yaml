@@ -223,30 +223,30 @@ sfence.vma:
     Bits<16> asid = X[rs2][ASID_WIDTH-1:0];
 
     if (mode() == PrivilegeMode::U) {
-      raise (ExceptionCode::IllegalInstruction, $encoding);
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
     if (CSR[misa].H == 1 && mode() == PrivilegeMode::VU) {
-      raise (ExceptionCode::IllegalInstruction, $encoding);
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
     if (CSR[mstatus].TVM == 1 &&
         ((mode() == PrivilegeMode::S) || (mode() == PrivilegeMode::VS))) {
-      raise (ExceptionCode::IllegalInstruction, $encoding);
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
     if (CSR[misa].H == 1 && CSR[hstatus].VTVM == 1 && mode() == PrivilegeMode::VS) {
-      raise (ExceptionCode::VirtualInstruction, $encoding);
+      raise (ExceptionCode::VirtualInstruction, mode(), $encoding);
     }
 
     if (!implemented?(ExtensionName::Sv32) && !implemented?(ExtensionName::Sv39) && !implemented?(ExtensionName::Sv48) && !implemented?(ExtensionName::Sv57)) {
       if (TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY) {
-        raise (ExceptionCode::IllegalInstruction, $encoding);
+        raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
       }
     }
 
     # note: this will default to "all", without globals included
-    VmaInvalType vma_type;
+    VmaOrderType vma_type;
     if (CSR[misa].H == 1 && mode() == PrivilegeMode::VS) {
       vma_type.vsmode = true;
       vma_type.single_vmid = true;

@@ -51,7 +51,8 @@ fcvt.s.h:
       if ((exp | frac16) == 0) {
         f[fd] = nan_box<16, FLEN>(packToF16UI( sign, 0, 0 ));
       } else {
-        f[fd] = soffloat_roundPackToF16(sign, exp - 0x71, frac16 | 0x4000);
+        assert(false, "TODO: implement roundPackToF16");
+        # f[fd] = soffloat_roundPackToF16(sign, exp - 0x71, frac16 | 0x4000);
       }
 
     }

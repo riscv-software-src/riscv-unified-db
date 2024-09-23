@@ -22,7 +22,7 @@ sh3add:
     vu: always
   operation(): |
     if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
-      raise (ExceptionCode::IllegalInstruction, $encoding);
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
     X[rd] = X[rs2] + (X[rs1] << 3);

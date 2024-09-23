@@ -43,11 +43,11 @@ hgatp:
     10 +
     11-15
     |Bare +
-    — +
+    -- +
     Sv39x4 +
     Sv48x4 +
     Sv57x4 +
-    —
+    --
     |No translation or protection. +
     _Reserved_ +
     Page-based 41-bit virtual addressing (2-bit extension of
@@ -124,31 +124,31 @@ hgatp:
       type: RW
       reset_value: UNDEFINED_LEGAL
       sw_write(csr_value): |
-        if (csr_value.MODE == $bits(TranslationMode::Bare)) {
+        if (csr_value.MODE == $bits(HgatpMode::Bare)) {
           if (!GSTAGE_MODE_BARE) {
             return UNDEFINED_LEGAL_DETERMINISTIC;
           }
         }
 
-        if (csr_value.MODE == $bits(TranslationMode::Sv32x4)) {
+        if (csr_value.MODE == $bits(HgatpMode::Sv32x4)) {
           if (!SV32X4_TRANSLATION) {
             return UNDEFINED_LEGAL_DETERMINISTIC;
           }
         }
 
-        if (csr_value.MODE == $bits(TranslationMode::Sv39x4)) {
+        if (csr_value.MODE == $bits(HgatpMode::Sv39x4)) {
           if (!SV39X4_TRANSLATION) {
             return UNDEFINED_LEGAL_DETERMINISTIC;
           }
         }
 
-        if (csr_value.MODE == $bits(TranslationMode::Sv48x4)) {
+        if (csr_value.MODE == $bits(HgatpMode::Sv48x4)) {
           if (!SV48X4_TRANSLATION) {
             return UNDEFINED_LEGAL_DETERMINISTIC;
           }
         }
 
-        if (csr_value.MODE == $bits(TranslationMode::Sv57x4)) {
+        if (csr_value.MODE == $bits(HgatpMode::Sv57x4)) {
           if (!SV57X4_TRANSLATION) {
             return UNDEFINED_LEGAL_DETERMINISTIC;
           }
@@ -174,7 +174,7 @@ hgatp:
         if (VMID_WIDTH == 0) {
           return CsrFieldType::RO;
         } else {
-          return CsrFieldType:RW;
+          return CsrFieldType::RW;
         }
       reset_value(): |
         if (VMID_WIDTH == 0) {
@@ -183,7 +183,7 @@ hgatp:
           return UNDEFINED_LEGAL;
         }
       sw_write(csr_value): |
-        if (csr_value.MODE == $bits(TranslationMode::Bare)) {
+        if (csr_value.MODE == $bits(HgatpMode::Bare)) {
           # when MODE == Bare, PPN and VMID must be 0
           if (csr_value.VMID == 0) {
             return 0;
@@ -202,7 +202,7 @@ hgatp:
           # Bare is the only supported mode, PPN is always 0
           return CsrFieldType::RO;
         } else {
-          return CsrFieldType:RW;
+          return CsrFieldType::RW;
         }
       reset_value(): |
         if (!SV32X4_TRANSLATION && !SV39X4_TRANSLATION && !SV48X4_TRANSLATION && !SV57X4_TRANSLATION) {
@@ -212,7 +212,7 @@ hgatp:
           return UNDEFINED_LEGAL_DETERMINISTIC;
         }
       sw_write(csr_value): |
-        if (csr_value.MODE == $bits(TranslationMode::Bare)) {
+        if (csr_value.MODE == $bits(HgatpMode::Bare)) {
           # when MODE == Bare, PPN and VMID must be 0
           if (csr_value.PPN == 0) {
             return 0;
@@ -220,13 +220,13 @@ hgatp:
             return UNDEFINED_LEGAL_DETERMINISTIC;
           }
         }
-        return csr_value.PPN:
+        return csr_value.PPN;
 
   sw_read(): |
-    if ((csr_value.MODE == $bits(TranslationMode::Sv32x4)) 
-        || (csr_value.MODE == $bits(TranslationMode::Sv39x4))
-        || (csr_value.MODE == $bits(TranslationMode::Sv48x4))
-        || (csr_value.MODE == $bits(TranslationMode::Sv57x4))) {
+    if ((CSR[hgatp].MODE == $bits(HgatpMode::Sv32x4)) 
+        || (CSR[hgatp].MODE == $bits(HgatpMode::Sv39x4))
+        || (CSR[hgatp].MODE == $bits(HgatpMode::Sv48x4))
+        || (CSR[hgatp].MODE == $bits(HgatpMode::Sv57x4))) {
       # bits 1:0 of PPN read as zero
       return $bits(CSR[hgatp]) & ~64'h3;
     } else {

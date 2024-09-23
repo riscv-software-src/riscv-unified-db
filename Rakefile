@@ -62,52 +62,63 @@ task :clean do
   FileUtils.rm_rf $root / ".stamps"
 end
 
-desc "Validate the arch docs"
-task validate: "gen:arch" do
-  validator = Validator.instance
-  puts "Checking arch files against schema.."
-  arch_files = Dir.glob("#{$root}/arch/**/*.yaml")
-  progressbar = ProgressBar.create(total: arch_files.size)
-  arch_files.each do |f|
-    progressbar.increment
-    validator.validate(f)
-  end
-  puts "All files validate against their schema"
-
-  puts "Type checking IDL code..."
-  arch_def = arch_def_for("_")
-  progressbar = ProgressBar.create(title: "Instructions", total: arch_def.instructions.size)
-  arch_def.instructions.each do |inst|
-    progressbar.increment
-    inst.type_checked_operation_ast(arch_def.idl_compiler, arch_def.sym_table_32, 32) if inst.rv32?
-    inst.type_checked_operation_ast(arch_def.idl_compiler, arch_def.sym_table_64, 64) if inst.rv64?
-    # also need to check for an RV64 machine running with effective XLEN of 32
-    inst.type_checked_operation_ast(arch_def.idl_compiler, arch_def.sym_table_64, 32) if inst.rv64? && inst.rv32?
-  end
-  progressbar = ProgressBar.create(title: "CSRs", total: arch_def.csrs.size)
-  arch_def.csrs.each do |csr|
-    progressbar.increment
-    if csr.has_custom_sw_read?
-      csr.type_checked_sw_read_ast(arch_def.sym_table_32) if csr.defined_in_base32?
-      csr.type_checked_sw_read_ast(arch_def.sym_table_64) if csr.defined_in_base64?
+namespace :validate do
+  task schema: "gen:arch" do
+    validator = Validator.instance
+    puts "Checking arch files against schema.."
+    arch_files = Dir.glob("#{$root}/arch/**/*.yaml")
+    progressbar = ProgressBar.create(total: arch_files.size)
+    arch_files.each do |f|
+      progressbar.increment
+      validator.validate(f)
     end
-    csr.fields.each do |field|
-      unless field.type_ast(arch_def.idl_compiler).nil?
-        field.type_checked_type_ast(arch_def.sym_table_32) if csr.defined_in_base32? && field.defined_in_base32?
-        field.type_checked_type_ast(arch_def.sym_table_64) if csr.defined_in_base64? && field.defined_in_base64?
+    puts "All files validate against their schema"  
+  end
+  task idl: "gen:arch"  do
+    puts "Type checking IDL code..."
+    arch_def = arch_def_for("_")
+    progressbar = ProgressBar.create(title: "Instructions", total: arch_def.instructions.size)
+    arch_def.instructions.each do |inst|
+      progressbar.increment
+      inst.type_checked_operation_ast(arch_def.idl_compiler, arch_def.sym_table_32, 32) if inst.rv32?
+      inst.type_checked_operation_ast(arch_def.idl_compiler, arch_def.sym_table_64, 64) if inst.rv64?
+      # also need to check for an RV64 machine running with effective XLEN of 32
+      inst.type_checked_operation_ast(arch_def.idl_compiler, arch_def.sym_table_64, 32) if inst.rv64? && inst.rv32?
+    end
+    progressbar = ProgressBar.create(title: "CSRs", total: arch_def.csrs.size)
+    arch_def.csrs.each do |csr|
+      progressbar.increment
+      if csr.has_custom_sw_read?
+        csr.type_checked_sw_read_ast(arch_def.sym_table_32) if csr.defined_in_base32?
+        csr.type_checked_sw_read_ast(arch_def.sym_table_64) if csr.defined_in_base64?
       end
-      unless field.reset_value_ast(arch_def.idl_compiler).nil?
-        field.type_checked_reset_value_ast(arch_def.sym_table_32) if csr.defined_in_base32? && field.defined_in_base32?
-        field.type_checked_reset_value_ast(arch_def.sym_table_64) if csr.defined_in_base64? && field.defined_in_base64?
-      end
-      unless field.sw_write_ast(arch_def.idl_compiler).nil?
-        field.type_checked_sw_write_ast(arch_def.sym_table_32, 32) if csr.defined_in_base32? && field.defined_in_base32?
-        field.type_checked_sw_write_ast(arch_def.sym_table_64, 64) if csr.defined_in_base64? && field.defined_in_base64?
+      csr.fields.each do |field|
+        unless field.type_ast(arch_def.idl_compiler).nil?
+          field.type_checked_type_ast(arch_def.sym_table_32) if csr.defined_in_base32? && field.defined_in_base32?
+          field.type_checked_type_ast(arch_def.sym_table_64) if csr.defined_in_base64? && field.defined_in_base64?
+        end
+        unless field.reset_value_ast(arch_def.idl_compiler).nil?
+          field.type_checked_reset_value_ast(arch_def.sym_table_32) if csr.defined_in_base32? && field.defined_in_base32?
+          field.type_checked_reset_value_ast(arch_def.sym_table_64) if csr.defined_in_base64? && field.defined_in_base64?
+        end
+        unless field.sw_write_ast(arch_def.idl_compiler).nil?
+          field.type_checked_sw_write_ast(arch_def.sym_table_32, 32) if csr.defined_in_base32? && field.defined_in_base32?
+          field.type_checked_sw_write_ast(arch_def.sym_table_64, 64) if csr.defined_in_base64? && field.defined_in_base64?
+        end
       end
     end
+    progressbar = ProgressBar.create(title: "Functions", total: arch_def.functions.size)
+    arch_def.functions.each do |func|
+      progressbar.increment
+      func.type_check_body(arch_def.sym_table_32)
+      func.type_check_body(arch_def.sym_table_64)
+    end
+    puts "All IDL passed type checking"
   end
-  puts "All IDL passed type checking"
 end
+
+desc "Validate the arch docs"
+task validate: ["validate:schema", "validate:idl"]
 
 def insert_warning(str, from)
   # insert a warning on the second line

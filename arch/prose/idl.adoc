@@ -171,6 +171,8 @@ Enumerations are declared using the `enum` keyword. Both enumeration names and m
 
 Enumeration members can be treated like integers. When that occurs, their type is Bits<N>, where N is the bit width required to represent any member of the enumeration.
 
+When an enumeration reference is declared without an initial value, it will default to the smallest value of any enum member.
+
 [source,idl]
 ----
 enum SatpMode {

@@ -51,12 +51,12 @@ fcvt.h.s:
           f[fd] = packToF32UI(sign, 0, 0);
         } else {
           Bits<6> norm_exp;
-          (norm_exp, frac) = soffloat_normSubnormalF16Sig( frac );
+          (norm_exp, frac) = softfloat_normSubnormalF16Sig( frac );
           exp = norm_exp - 1;
-          f[fd] = packToF3UI(sign, exp + 0x70, frac << 13);
+          f[fd] = packToF32UI(sign, exp + 0x70, frac << 13);
         }
       } else {
-        f[fd] = packToF3UI(sign, exp + 0x70, frac << 13);
+        f[fd] = packToF32UI(sign, exp + 0x70, frac << 13);
       }
     }
 

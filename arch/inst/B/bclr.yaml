@@ -22,7 +22,9 @@ bclr:
     vs: always
     vu: always
   operation(): |
-    raise (ExceptionCode::IllegalInstruction, $encoding) if (CSR[misa].B == 1'b0);
+    if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
 
     XReg index = X[rs2] & (xlen() - 1);
     X[rd] = X[rs1] & ~(1 << index);

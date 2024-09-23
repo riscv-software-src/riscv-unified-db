@@ -25,15 +25,15 @@ ori:
       if (rd == 0) {
         if (imm[4:0] == 0) {
           # prefetch.i instruction
-          Bits<12> offset = {imm[31:25], imm[11:7]};
+          Bits<12> offset = {imm[11:5], rd};
           prefetch_instruction(offset);
         } else if (imm[4:0] == 1) {
           # prefetch.r instruction
-          Bits<12> offset = {imm[31:25], imm[11:7]};
+          Bits<12> offset = {imm[11:5], rd};
           prefetch_read(offset);        
         } else if (imm[4:0] == 3) {
           # prefetch.r instruction
-          Bits<12> offset = {imm[31:25], imm[11:7]};
+          Bits<12> offset = {imm[11:5], rd};
           prefetch_write(offset);        
         }
       }

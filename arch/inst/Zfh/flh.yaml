@@ -30,7 +30,7 @@ flh:
 
     XReg virtual_address = X[rs1] + $signed(imm);
 
-    Bits<16> hp_value = read_memory<16>(virtual_address);
+    Bits<16> hp_value = read_memory<16>(virtual_address, $encoding);
 
     f[fd] = nan_box<16, FLEN>(hp_value);
 

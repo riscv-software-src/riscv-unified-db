@@ -21,7 +21,7 @@ sext.b:
     vu: always
   operation(): |
     if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
-      raise (ExceptionCode::IllegalInstruction, $encoding);
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
     if (xlen() == 32) {

@@ -298,6 +298,8 @@ grammar Idl
     /
     field_access_expression
     /
+    bits_cast
+    /
     rval # must come last!
   end
 
@@ -313,6 +315,10 @@ grammar Idl
     rval space* '++' <Idl::PostIncrementExpressionSyntaxNode>
   end
 
+  rule bits_cast
+    '$bits' space* '(' space* expression space* ')' <Idl::BitsCastSyntaxNode>
+  end
+
   rule unary_expression
     '[' space* first:expression rest:(space* ',' space* expression)* space* ']' <Idl::ArrayLiteralSyntaxNode>
     /
@@ -320,7 +326,7 @@ grammar Idl
     /
     '$signed' space* '(' space* expression space* ')' <Idl::SignCastSyntaxNode>
     /
-    '$bits' space* '(' space* expression space* ')' <Idl::BitsCastSyntaxNode>
+    bits_cast
     /
     '$enum_size' space* '(' space* user_type_name ')' <Idl::EnumSizeSyntaxNode>
     /
@@ -559,18 +565,18 @@ grammar Idl
   end
 
   rule keyword
-    'if' ![A-Za-z0-9] /
-    'else' ![A-Za-z0-9] /
-    'for' ![A-Za-z0-9] /
-    'return' ![A-Za-z0-9] /
-    'returns' ![A-Za-z0-9] /
-    'arguments' ![A-Za-z0-9] /
-    'description' ![A-Za-z0-9] /
-    'body' ![A-Za-z0-9] /
-    'function' ![A-Za-z0-9] /
-    'builtin' ![A-Za-z0-9] /
-    'enum' ![A-Za-z0-9]  /
-    'bitfield' ![A-Za-z0-9]
+    'if' ![A-Za-z0-9_] /
+    'else' ![A-Za-z0-9_] /
+    'for' ![A-Za-z0-9_] /
+    'return' ![A-Za-z0-9_] /
+    'returns' ![A-Za-z0-9_] /
+    'arguments' ![A-Za-z0-9_] /
+    'description' ![A-Za-z0-9_] /
+    'body' ![A-Za-z0-9_] /
+    'function' ![A-Za-z0-9_] /
+    'builtin' ![A-Za-z0-9_] /
+    'enum' ![A-Za-z0-9_]  /
+    'bitfield' ![A-Za-z0-9_]
   end
 
   rule user_type_name
