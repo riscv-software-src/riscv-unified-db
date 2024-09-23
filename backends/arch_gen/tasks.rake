@@ -107,12 +107,9 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
     "csrs" => csr_hash,
     "profile_families" => profile_family_hash,
     "profiles" => profile_hash,
-<<<<<<< HEAD
     "csc_crd_families" => csc_crd_family_hash,
-    "csc_crds" => csc_crd_hash
-=======
+    "csc_crds" => csc_crd_hash,
     "manuals" => manual_hash
->>>>>>> origin/main
   }
 
   dest = "#{$root}/gen/_/arch/arch_def.yaml"
