@@ -467,12 +467,12 @@ I:
         type: boolean
     MISA_CSR_IMPLEMENTED:
       description: |
-        Whether or not the `misa` CSR is implemented.
+        Whether or not the `misa` CSR returns zero or a non-zero value.
 
         Possible values:
 
         true::
-          The `misa` CSR is implemented as defined in the privlege spec.
+          The `misa` CSR returns a non-zero value.
         
         false::
           The `misa` CSR is read-only-0.

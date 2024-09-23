@@ -236,6 +236,13 @@ params:
   TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
   TRAP_ON_UNIMPLEMENTED_CSR: true
 
+  # Whether or not a real hardware `time` CSR exists. Implementations can either provide a real
+  # CSR or trap and emulate access at M-mode.
+  TIME_CSR_IMPLEMENTED: true
+
+  # Whether or not the `misa` CSR returns zero or a non-zero value.
+  MISA_CSR_IMPLEMENTED: true
+
   # when true, *tval is written with the virtual PC of the EBREAK instruction (same information as *epc)
   # when false, *tval is written with 0 on an EBREAK instruction
   #
