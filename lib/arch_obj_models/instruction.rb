@@ -30,6 +30,9 @@ class Instruction < ArchDefObject
     @data["base"]
   end
 
+  # @return [Boolean] Whether or not the instruction must have data-independent timing when Zkt is enabled.
+  def data_independent_timing? = @data["data_independent_timing"]
+
   # @param xlen [Integer] 32 or 64, the target xlen
   # @return [Boolean] whethen or not instruction is defined in base +xlen+
   def defined_in_base?(xlen)
@@ -179,6 +182,11 @@ class Instruction < ArchDefObject
 
   # @return [ArchDef] The architecture definition
   attr_reader :arch_def
+
+  def initialize(data, arch_def)
+    super(data)
+    @arch_def = arch_def
+  end
 
   # represents a single contiguous instruction encoding field
   # Multiple EncodingFields may make up a single DecodeField, e.g., when an immediate

@@ -9,6 +9,6 @@ Ziccamoa:
     [NOTE]
     This extension was ratified as part of the RVA20 profile.
   versions:
-  - version: "1.0"
+  - version: "1.0.0"
     state: ratified
     ratification_date: null

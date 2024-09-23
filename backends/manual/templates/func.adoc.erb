@@ -1,0 +1,26 @@
+:tabs-sync-option:
+
+// defintions and helper functions for ISA definitions
+
+= Functions
+
+<%- arch_def.functions.each do |f| -%>
+[#<%= f.name %>-func-def]
+== <%= f.name %><%- if f.builtin? -%> (builtin)<%- end -%>
+
+<%= f.description %>
+
+|===
+h| Return Type l| <%= f.return_type_list_str.join(', ') %>
+h| Arguments   l| <%= f.arguments_list_str.join (', ') %>
+|===
+
+<%- unless f.builtin? -%>
+<%- body_ast = f.body -%>
+[subs="specialchars,macros"]
+----
+<%= body_ast.gen_adoc %>
+----
+<%- end -%>
+
+<%- end -%>

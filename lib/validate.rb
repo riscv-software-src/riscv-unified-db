@@ -18,7 +18,8 @@ class Validator
     inst: $root / "schemas" / "inst_schema.json",
     ext: $root / "schemas" / "ext_schema.json",
     csr: $root / "schemas" / "csr_schema.json",
-    cfg_impl_ext: $root / "schemas" / "implemented_exts_schema.json"
+    cfg_impl_ext: $root / "schemas" / "implemented_exts_schema.json",
+    manual_version: $root / "schemas" / "manual_version_schema.json"
   }.freeze
 
   # types of objects that can be validated
@@ -183,6 +184,8 @@ class Validator
         type = :ext
       when %r{.*arch/csr/.*\.yaml$}
         type = :csr
+      when %r{.*arch/manual/.*/.*contents\.yaml$}
+        type = :manual_version
       else
         warn "Cannot determine type from YAML path '#{path}'; skipping"
         return

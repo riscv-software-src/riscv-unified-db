@@ -154,9 +154,35 @@ class Csr < ArchDefObject
     # !@data["length"].is_a?(Integer) && (@data["length"] != "MXLEN")
   end
 
+  # @param arch_def [ArchDef] Architecture definition
+  # @return [Integer] Smallest length of the CSR in any mode
+  def min_length(arch_def)
+    case @data["length"]
+    when "MXLEN", "SXLEN", "VSXLEN"
+      32
+    when Integer
+      @data["length"]
+    else
+      raise "Unexpected length"
+    end
+  end
+
+  # @param arch_def [ArchDef] Architecture definition
+  # @return [Integer] Largest length of the CSR in any mode
+  def max_length(arch_def)
+    case @data["length"]
+    when "MXLEN", "SXLEN", "VSXLEN"
+      64
+    when Integer
+      @data["length"]
+    else
+      raise "Unexpected length"
+    end
+  end
+
   # @param arch_def [ArchDef] A configuration (can be nil if the lenth is not dependent on a config parameter)
   # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
-  # @return [Integer] Length, in bits, of the CSR
+  # @return [Integer] Length, in bits, of the CSR, given effective_xlen
   def length(arch_def, effective_xlen = nil)
     case @data["length"]
     when "MXLEN"
@@ -167,7 +193,7 @@ class Csr < ArchDefObject
           @data["base"]
         else
           # don't know MXLEN
-          raise ArgumentError, "effective_xlen is required when length is MXLEN and arch_def is generic" if effective_xlen.nil?
+          raise ArgumentError, "for CSR #{name}: effective_xlen is required when length is MXLEN and arch_def is generic" if effective_xlen.nil?
 
           effective_xlen
         end

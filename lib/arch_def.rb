@@ -11,6 +11,7 @@ require_relative "idl/passes/prune"
 require_relative "idl/passes/reachable_functions"
 require_relative "idl/passes/reachable_functions_unevaluated"
 require_relative "idl/passes/reachable_exceptions"
+require_relative "arch_obj_models/manual"
 require_relative "arch_obj_models/profile"
 require_relative "arch_obj_models/csr_field"
 require_relative "arch_obj_models/csr"
@@ -176,7 +177,7 @@ class ArchDef
     return @instructions unless @instructions.nil?
 
     @instructions = @arch_def["instructions"].map do |_inst_name, inst_data|
-      Instruction.new(inst_data)
+      Instruction.new(inst_data, self)
     end
 
     @instructions
@@ -198,6 +199,7 @@ class ArchDef
   def inst(inst_name)
     instruction_hash[inst_name.to_s]
   end
+  alias instruction inst
 
   # @return [Array<Idl::FunctionBodyAst>] List of all functions defined by the architecture
   def functions
@@ -224,6 +226,31 @@ class ArchDef
   def function(name)
     function_hash[name]
   end
+
+  # @return [Array<Manual>] List of all manuals defined by the architecture
+  def manuals
+    return @manuals unless @manuals.nil?
+
+    @manuals = []
+    @arch_def["manuals"].each_value do |manual_data|
+      @manuals << Manual.new(manual_data, self)
+    end
+    @manuals
+  end
+
+  # @return [Hash<String, Manual>] All manuals, indexed by name
+  def manuals_hash
+    return @manuals_hash unless @manuals_hash.nil?
+
+    @manuals_hash = {}
+    manuals.each do |manual|
+      @manuals_hash[manual.name] = manual
+    end
+    @manuals_hash
+  end
+
+  # @return [Manual,nil] A manual named +name+, or nil if it doesn't exist
+  def manual(name) = manuals_hash[name]
 
   # @return [Array<ProfileFamily>] All known profile families
   def profile_families

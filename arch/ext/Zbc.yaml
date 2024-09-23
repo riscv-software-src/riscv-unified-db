@@ -9,7 +9,7 @@ Zbc:
     name: RISC-V International
     url: https://riscv.org
   versions:
-  - version: 1.0
+  - version: "1.0.0"
     state: ratified
     ratification_date: 2021-06
     repositories:

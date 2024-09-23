@@ -10,7 +10,7 @@ B:
     name: Creative Commons Attribution 4.0 International License
     url: https://creativecommons.org/licenses/by/4.0/
   versions:
-  - version: 1.0
+  - version: "1.0.0"
     state: ratified
     ratification_date: 2024-04
     contributors:
@@ -19,9 +19,9 @@ B:
       company: Rivos, Inc.
     url: https://drive.google.com/file/d/1SgLoasaBjs5WboQMaU3wpHkjUwV71UZn/view
     implies:
-    - [Zba, 1.0]
-    - [Zbb, 1.0]
-    - [Zbs, 1.0]
+    - [Zba, "1.0.0"]
+    - [Zbb, "1.0.0"]
+    - [Zbs, "1.0.0"]
   description: |
     The B standard extension comprises instructions provided by the `Zba`, `Zbb`, and `Zbs` extensions.
 
