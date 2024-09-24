@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+qc.48.jal:
+  long_name: Jump and link
+  description: |
+    Jump to a PC-relative offset and store the return
+    address in x1.
+  definedBy: Xqciu
+  assembly: " imm"
+  base: 32
+  encoding:
+    match:     -----------------------00000---01100-----0011111
+    variables:
+    - name: imm
+      location: 47-32|19-17|31|7|30-25|11-8
+      left_shift: 1
+      sign_extend: true
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  operation(): |
+    XReg retrun_addr = PC + 6;
+    jump_halfword(PC + imm);
+    X[1] = retrun_addr;

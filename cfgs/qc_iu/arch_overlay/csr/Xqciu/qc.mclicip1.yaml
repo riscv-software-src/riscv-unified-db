@@ -1,0 +1,171 @@
+# yaml-language-server: $schema=../../../../../schemas/csr_schema.json
+
+qc.mclicip1:
+  long_name: IRQ Pending 1
+  address: 0x7f1
+  length: 32
+  priv_mode: M
+  definedBy: Xqciu
+  description: |
+    Pending bits for IRQs 32-63
+  fields:
+    IRQ32:
+      type: RW
+      reset_value: 0
+      location: 0
+      description: IRQ33 pending
+    IRQ33:
+      type: RW
+      reset_value: 0
+      location: 1
+      description: IRQ33 pending
+    IRQ34:
+      type: RW
+      reset_value: 0
+      location: 2
+      description: IRQ33 pending
+    IRQ35:
+      type: RW
+      reset_value: 0
+      location: 3
+      description: IRQ33 pending
+    IRQ36:
+      type: RW
+      reset_value: 0
+      location: 4
+      description: IRQ33 pending
+    IRQ37:
+      type: RW
+      reset_value: 0
+      location: 5
+      description: IRQ33 pending
+    IRQ38:
+      type: RW
+      reset_value: 0
+      location: 6
+      description: IRQ33 pending
+    IRQ39:
+      type: RW
+      reset_value: 0
+      location: 7
+      description: IRQ33 pending
+    IRQ40:
+      type: RW
+      reset_value: 0
+      location: 8
+      description: IRQ33 pending
+    IRQ41:
+      type: RW
+      reset_value: 0
+      location: 9
+      description: IRQ33 pending
+    IRQ42:
+      type: RW
+      reset_value: 0
+      location: 10
+      description: IRQ33 pending
+    IRQ43:
+      type: RW
+      reset_value: 0
+      location: 11
+      description: IRQ33 pending
+    IRQ44:
+      type: RW
+      reset_value: 0
+      location: 12
+      description: IRQ33 pending
+    IRQ45:
+      type: RW
+      reset_value: 0
+      location: 13
+      description: IRQ33 pending
+    IRQ46:
+      type: RW
+      reset_value: 0
+      location: 14
+      description: IRQ33 pending
+    IRQ47:
+      type: RW
+      reset_value: 0
+      location: 15
+      description: IRQ33 pending
+    IRQ48:
+      type: RW
+      reset_value: 0
+      location: 16
+      description: IRQ33 pending
+    IRQ49:
+      type: RW
+      reset_value: 0
+      location: 17
+      description: IRQ33 pending
+    IRQ50:
+      type: RW
+      reset_value: 0
+      location: 18
+      description: IRQ33 pending
+    IRQ51:
+      type: RW
+      reset_value: 0
+      location: 19
+      description: IRQ33 pending
+    IRQ52:
+      type: RW
+      reset_value: 0
+      location: 20
+      description: IRQ33 pending
+    IRQ53:
+      type: RW
+      reset_value: 0
+      location: 21
+      description: IRQ33 pending
+    IRQ54:
+      type: RW
+      reset_value: 0
+      location: 22
+      description: IRQ33 pending
+    IRQ55:
+      type: RW
+      reset_value: 0
+      location: 23
+      description: IRQ33 pending
+    IRQ56:
+      type: RW
+      reset_value: 0
+      location: 24
+      description: IRQ33 pending
+    IRQ57:
+      type: RW
+      reset_value: 0
+      location: 25
+      description: IRQ33 pending
+    IRQ58:
+      type: RW
+      reset_value: 0
+      location: 26
+      description: IRQ33 pending
+    IRQ59:
+      type: RW
+      reset_value: 0
+      location: 27
+      description: IRQ33 pending
+    IRQ60:
+      type: RW
+      reset_value: 0
+      location: 28
+      description: IRQ33 pending
+    IRQ61:
+      type: RW
+      reset_value: 0
+      location: 29
+      description: IRQ33 pending
+    IRQ62:
+      type: RW
+      reset_value: 0
+      location: 30
+      description: IRQ33 pending
+    IRQ63:
+      type: RW
+      reset_value: 0
+      location: 31
+      description: IRQ33 pending
