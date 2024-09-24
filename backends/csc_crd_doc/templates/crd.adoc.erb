@@ -73,7 +73,7 @@ Any extension not listed in the table below is OUT OF SCOPE.
 <%- end -%>
 |===
 
-== Extension Details
+== Extension Requirements
 
 <%- crd.extension_reqs.sort.each do |ext_req| -%>
 <%- ext = crd.arch_def.extension(ext_req.name) -%>
@@ -90,12 +90,15 @@ Any extension not listed in the table below is OUT OF SCOPE.
 <%- end -%>
 
 <%- unless crd.param_constraints(ext_req).empty? -%>
-[cols="3,1,1,2"]
+==== Extension <%= ext_req.name %> - IN SCOPE Parameters
+
+These parameters are covered by an <%= crd.name %> certificate.
+
+[cols="3,1,2"]
 |===
-| Parameter | Extension | Constraint | Note
+| Parameter | Constraint | Note
 <%- crd.param_constraints(ext_req).each do |constraint| -%>
 | <%= constraint.param.name %>
-| <%= constraint.param.exts.map(&:name).join(', ') %>
 | <%= constraint.schema_constraint_pretty == "" ? "Unconstrained" : constraint.schema_constraint_pretty %>
 a| <%= constraint.note %>
 <%- end # do constraint -%>
@@ -103,53 +106,20 @@ a| <%= constraint.note %>
 <%- end # unless table -%>
 
 <%- unless crd.extension_out_of_scope_param_constraints(ext_req).empty? -%>
-[cols="5,2,12"]
+==== Extension <%= ext_req.name %> - OUT OF SCOPE Parameters
+
+These parameters are *NOT* covered by an <%= crd.name %> certificate.
+
+[cols="5,12"]
 |===
-| Parameter | Extension | Description
+| Parameter | Description
 <%- crd.extension_out_of_scope_param_constraints(ext_req).each do |param| -%>
 | <%= param.name %>
-| <%= param.exts.map(&:name).join(', ') %>
 a| <%= param.desc %>
 <%- end # do constraint -%>
 |===
 <%- end # unless table -%>
 <%- end # do extension-%>
-
-== Parameter Requirements
-
-This section lists requirements related to parameters associated with extensions.
-
-=== IN SCOPE Parameters
-
-Parameters listed in this section are IN SCOPE (i.e., they'll be covered by the associated certificate).
-
-[cols="3,1,1,2"]
-|===
-| Parameter | Extension | Constraint | Note
-
-<%- crd.in_scope_param_constraints.each do |constraint| -%>
-| <%= constraint.param.name %>
-| <%= constraint.param.exts.map(&:name).join(', ') %>
-| <%= constraint.schema_constraint_pretty == "" ? "Unconstrained" : constraint.schema_constraint_pretty %>
-a| <%= constraint.note %>
-<%- end -%>
-|===
-
-=== OUT OF SCOPE Parameters
-
-Parameters listed in this section are OUT OF SCOPE (i.e., they won't be covered by the associated certificate).
-Any parameter from a MANDATORY or OPTIONAL extension that aren't listed as IN SCOPE parameters show up here.
-
-[cols="5,2,12"]
-|===
-| Parameter | Extension | Description
-
-<%- crd.out_of_scope_param_constraints.each do |param| -%>
-| <%= param.name %>
-| <%= param.exts.map(&:name).join(', ') %>
-a| <%= param.desc %>
-<%- end -%>
-|===
 
 == Additional Requirements
 
