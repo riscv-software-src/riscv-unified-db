@@ -5,7 +5,9 @@ qc.c.ei:
   description: |
     Globally enable interrupts.
     Equivalent to "csrrsi `zero`, `mstatus`, 8".
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqcint
   assembly: ""
   base: 32
   encoding:

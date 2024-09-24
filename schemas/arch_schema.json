@@ -64,7 +64,7 @@
       "type": "array",
       "items": {
         "type": "string",
-        "pattern": "^[a-z][a-zA-Z0-9]+$",
+        "pattern": "^[a-z][a-zA-Z0-9.]+$",
         "description": "CSR name"
       }
     },

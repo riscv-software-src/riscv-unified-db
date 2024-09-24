@@ -5,7 +5,9 @@ qc.c.eir:
   description: |
     Globally restore interrupts, write `rs1` to `mstatus`.
     Equivalent to "csrrs `zero`, `mstatus`, `rs1`".
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqcint
   assembly: " xs1"
   base: 32
   encoding:

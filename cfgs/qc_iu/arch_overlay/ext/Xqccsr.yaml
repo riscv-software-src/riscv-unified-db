@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=../../../../schemas/ext_schema.json
 
-Xqcbi:
+Xqccsr:
   type: unprivileged
-  long_name: Qualcomm branch immediate
+  long_name: Qualcomm CSR instructions
   versions:
   - version: 0.1
     state: development
@@ -15,11 +15,7 @@ Xqcbi:
       company: Qualcomm Technologies, Inc.
       email: dhower@qti.qualcomm.com
   description: |
-    The Xqcbi extension includes twelve conditional branch instructions that use an immediate
-    operand for a source.
-
-    All instructions in Xqcbi following the same relocation type as standard RISC-V branches
-    in the base architecture (e.g., BEQ, BNE, etc.).
+    The Xqccsr extension contains instructions to read/write certain critical CSRs.
 
   doc_license:
     name: Creative Commons Attribution 4.0 International License

@@ -702,7 +702,10 @@ class ArchGen
 
     merged_path = gen_merged_def(:ext, arch_path, arch_overlay_path)
 
-    ext_obj = YAML.load_file(merged_path)[ext_name]
+    yaml_contents = YAML.load_file(merged_path)
+    raise "In #{merged_path}, key does not match file name" unless yaml_contents.key?(ext_name)
+
+    ext_obj = yaml_contents[ext_name]
     ext_obj["name"] = ext_name
 
     @implied_ext_map ||= {}

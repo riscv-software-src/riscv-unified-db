@@ -5,7 +5,9 @@ qc.compress2:
   description: |
     Bit compression (every 2nd bit) of `rs1`, zero-pad bits [31:16] of the result.
     Write result to `rd`. 
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqcbm
   base: 32
   encoding:
     match:     000000000000-----011-----0001011

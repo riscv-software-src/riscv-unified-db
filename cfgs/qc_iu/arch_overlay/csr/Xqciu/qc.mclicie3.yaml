@@ -13,7 +13,7 @@ qc.mclicie3:
       type: RW
       reset_value: 0
       location: 0
-      description: IRQ97 enabled
+      description: IRQ96 enabled
     IRQ97:
       type: RW
       reset_value: 0
@@ -23,149 +23,149 @@ qc.mclicie3:
       type: RW
       reset_value: 0
       location: 2
-      description: IRQ97 enabled
+      description: IRQ98 enabled
     IRQ99:
       type: RW
       reset_value: 0
       location: 3
-      description: IRQ97 enabled
+      description: IRQ99 enabled
     IRQ100:
       type: RW
       reset_value: 0
       location: 4
-      description: IRQ97 enabled
+      description: IRQ100 enabled
     IRQ101:
       type: RW
       reset_value: 0
       location: 5
-      description: IRQ97 enabled
+      description: IRQ101 enabled
     IRQ102:
       type: RW
       reset_value: 0
       location: 6
-      description: IRQ97 enabled
+      description: IRQ102 enabled
     IRQ103:
       type: RW
       reset_value: 0
       location: 7
-      description: IRQ97 enabled
+      description: IRQ103 enabled
     IRQ104:
       type: RW
       reset_value: 0
       location: 8
-      description: IRQ97 enabled
+      description: IRQ104 enabled
     IRQ105:
       type: RW
       reset_value: 0
       location: 9
-      description: IRQ97 enabled
+      description: IRQ105 enabled
     IRQ106:
       type: RW
       reset_value: 0
       location: 10
-      description: IRQ97 enabled
+      description: IRQ106 enabled
     IRQ107:
       type: RW
       reset_value: 0
       location: 11
-      description: IRQ97 enabled
+      description: IRQ107 enabled
     IRQ108:
       type: RW
       reset_value: 0
       location: 12
-      description: IRQ97 enabled
+      description: IRQ108 enabled
     IRQ109:
       type: RW
       reset_value: 0
       location: 13
-      description: IRQ97 enabled
+      description: IRQ109 enabled
     IRQ110:
       type: RW
       reset_value: 0
       location: 14
-      description: IRQ97 enabled
+      description: IRQ110 enabled
     IRQ111:
       type: RW
       reset_value: 0
       location: 15
-      description: IRQ97 enabled
+      description: IRQ111 enabled
     IRQ112:
       type: RW
       reset_value: 0
       location: 16
-      description: IRQ97 enabled
+      description: IRQ112 enabled
     IRQ113:
       type: RW
       reset_value: 0
       location: 17
-      description: IRQ97 enabled
+      description: IRQ113 enabled
     IRQ114:
       type: RW
       reset_value: 0
       location: 18
-      description: IRQ97 enabled
+      description: IRQ114 enabled
     IRQ115:
       type: RW
       reset_value: 0
       location: 19
-      description: IRQ97 enabled
+      description: IRQ115 enabled
     IRQ116:
       type: RW
       reset_value: 0
       location: 20
-      description: IRQ97 enabled
+      description: IRQ116 enabled
     IRQ117:
       type: RW
       reset_value: 0
       location: 21
-      description: IRQ97 enabled
+      description: IRQ117 enabled
     IRQ118:
       type: RW
       reset_value: 0
       location: 22
-      description: IRQ97 enabled
+      description: IRQ118 enabled
     IRQ119:
       type: RW
       reset_value: 0
       location: 23
-      description: IRQ97 enabled
+      description: IRQ119 enabled
     IRQ120:
       type: RW
       reset_value: 0
       location: 24
-      description: IRQ97 enabled
+      description: IRQ120 enabled
     IRQ121:
       type: RW
       reset_value: 0
       location: 25
-      description: IRQ97 enabled
+      description: IRQ121 enabled
     IRQ122:
       type: RW
       reset_value: 0
       location: 26
-      description: IRQ97 enabled
+      description: IRQ122 enabled
     IRQ123:
       type: RW
       reset_value: 0
       location: 27
-      description: IRQ97 enabled
+      description: IRQ123 enabled
     IRQ124:
       type: RW
       reset_value: 0
       location: 28
-      description: IRQ97 enabled
+      description: IRQ124 enabled
     IRQ125:
       type: RW
       reset_value: 0
       location: 29
-      description: IRQ97 enabled
+      description: IRQ125 enabled
     IRQ126:
       type: RW
       reset_value: 0
       location: 30
-      description: IRQ97 enabled
+      description: IRQ126 enabled
     IRQ127:
       type: RW
       reset_value: 0
       location: 31
-      description: IRQ97 enabled
+      description: IRQ127 enabled

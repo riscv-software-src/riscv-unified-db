@@ -5,7 +5,7 @@ qc.c.mret:
   description: |
     Returns from an exception in M-mode.
   assembly: ""
-  definedBy: Xqciu
+  definedBy: Xqcpr
   access:
     s: never
     u: never

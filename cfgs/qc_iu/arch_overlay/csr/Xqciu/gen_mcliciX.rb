@@ -18,7 +18,7 @@ pend_template = <<~YAML
         type: RW
         reset_value: 0
         location: <%= i %>
-        description: IRQ<%= num*32 + 1 %> pending
+        description: IRQ<%= num*32 + i %> pending
       <%- end -%>
 YAML
 
@@ -39,7 +39,7 @@ en_template = <<~YAML
         type: RW
         reset_value: 0
         location: <%= i %>
-        description: IRQ<%= num*32 + 1 %> enabled
+        description: IRQ<%= num*32 + i %> enabled
       <%- end -%>
 YAML
 

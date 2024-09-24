@@ -4,7 +4,7 @@ qc.c.delay:
   long_name: Delay execution
   description: |
     Delay execution for given `imm` amount of cycles.
-  definedBy: Xqciu
+  definedBy: Xqcpr
   assembly: " imm"
   base: 32
   encoding:

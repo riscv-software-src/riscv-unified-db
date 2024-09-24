@@ -4,7 +4,9 @@ qc.addsat:
   long_name: Saturating signed addition
   description: |
     Add signed values `rs1` and `rs2`, saturate the signed result, and write to `rd`.
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqca
   base: 32
   encoding:
     match:     0001110----------011-----0001011

@@ -27,18 +27,35 @@ Xqciu:
     changes: |
       * Splits Xqciu into sub-extensions based on instruction type
       * Removed shXadd instructions in favor of generic shladd
+  - version: 0.3
+    state: development
+    ratification_date: null
+    contributors:
+    - name: Albert Yosher
+      company: Qualcomm Technologies, Inc.
+      email: ayosher@qti.qualcomm.com
+    - name: Derek Hower
+      company: Qualcomm Technologies, Inc.
+      email: dhower@qti.qualcomm.com
+    changes: |
+      * Rename mnemonics to match toolchain guidelines
+      * Ensure every instruction belongs to at least one sub extension
     implies:
+    - [Xqca, 0.1]
     - [Xqcac, 0.1]
     - [Xqcbi, 0.1]
     - [Xqcbm, 0.1]
     - [Xqccli, 0.1]
     - [Xqccm, 0.1]
     - [Xqccs, 0.1]
+    - [Xqccsr, 0.1]
     - [Xqcint, 0.1]
+    - [Xqclb, 0.1]
     - [Xqcli, 0.1]
     - [Xqclia, 0.1]
     - [Xqclo, 0.1]
     - [Xqclsm, 0.1]
+    - [Xqcsls, 0.1]
   description: |
     The Xqciu extension includes a set of instructions that improve RISC-V code density and
     performance in microontrollers. It fills several gaps:

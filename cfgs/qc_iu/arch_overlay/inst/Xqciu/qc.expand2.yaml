@@ -5,7 +5,9 @@ qc.expand2:
   description: |
     Bit expansion (every 2nd bit) of `rs1`, bits [31:16] of `rs1` are ignored.
     Write result to `rd`. 
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqcbm
   base: 32
   encoding:
     match:     000001000000-----011-----0001011

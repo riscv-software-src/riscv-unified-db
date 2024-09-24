@@ -5,7 +5,9 @@ qc.sllsat:
   description: |
     Left shift `rs1` by the value of `rs2`, and saturate the unsigned result.
     The number of words is in `length`.
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqca
   base: 32
   encoding:
     match:     0001100----------011-----0001011

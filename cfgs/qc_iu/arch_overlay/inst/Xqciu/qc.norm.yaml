@@ -7,7 +7,9 @@ qc.norm:
     Exponent written in bits[7:0] of the result.
     Mantissa written in bits[31:8] of the result.
     Write result to `rd`. 
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqca
   base: 32
   encoding:
     match:     000011100000-----011-----0001011

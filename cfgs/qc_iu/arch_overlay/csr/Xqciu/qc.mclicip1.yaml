@@ -13,7 +13,7 @@ qc.mclicip1:
       type: RW
       reset_value: 0
       location: 0
-      description: IRQ33 pending
+      description: IRQ32 pending
     IRQ33:
       type: RW
       reset_value: 0
@@ -23,149 +23,149 @@ qc.mclicip1:
       type: RW
       reset_value: 0
       location: 2
-      description: IRQ33 pending
+      description: IRQ34 pending
     IRQ35:
       type: RW
       reset_value: 0
       location: 3
-      description: IRQ33 pending
+      description: IRQ35 pending
     IRQ36:
       type: RW
       reset_value: 0
       location: 4
-      description: IRQ33 pending
+      description: IRQ36 pending
     IRQ37:
       type: RW
       reset_value: 0
       location: 5
-      description: IRQ33 pending
+      description: IRQ37 pending
     IRQ38:
       type: RW
       reset_value: 0
       location: 6
-      description: IRQ33 pending
+      description: IRQ38 pending
     IRQ39:
       type: RW
       reset_value: 0
       location: 7
-      description: IRQ33 pending
+      description: IRQ39 pending
     IRQ40:
       type: RW
       reset_value: 0
       location: 8
-      description: IRQ33 pending
+      description: IRQ40 pending
     IRQ41:
       type: RW
       reset_value: 0
       location: 9
-      description: IRQ33 pending
+      description: IRQ41 pending
     IRQ42:
       type: RW
       reset_value: 0
       location: 10
-      description: IRQ33 pending
+      description: IRQ42 pending
     IRQ43:
       type: RW
       reset_value: 0
       location: 11
-      description: IRQ33 pending
+      description: IRQ43 pending
     IRQ44:
       type: RW
       reset_value: 0
       location: 12
-      description: IRQ33 pending
+      description: IRQ44 pending
     IRQ45:
       type: RW
       reset_value: 0
       location: 13
-      description: IRQ33 pending
+      description: IRQ45 pending
     IRQ46:
       type: RW
       reset_value: 0
       location: 14
-      description: IRQ33 pending
+      description: IRQ46 pending
     IRQ47:
       type: RW
       reset_value: 0
       location: 15
-      description: IRQ33 pending
+      description: IRQ47 pending
     IRQ48:
       type: RW
       reset_value: 0
       location: 16
-      description: IRQ33 pending
+      description: IRQ48 pending
     IRQ49:
       type: RW
       reset_value: 0
       location: 17
-      description: IRQ33 pending
+      description: IRQ49 pending
     IRQ50:
       type: RW
       reset_value: 0
       location: 18
-      description: IRQ33 pending
+      description: IRQ50 pending
     IRQ51:
       type: RW
       reset_value: 0
       location: 19
-      description: IRQ33 pending
+      description: IRQ51 pending
     IRQ52:
       type: RW
       reset_value: 0
       location: 20
-      description: IRQ33 pending
+      description: IRQ52 pending
     IRQ53:
       type: RW
       reset_value: 0
       location: 21
-      description: IRQ33 pending
+      description: IRQ53 pending
     IRQ54:
       type: RW
       reset_value: 0
       location: 22
-      description: IRQ33 pending
+      description: IRQ54 pending
     IRQ55:
       type: RW
       reset_value: 0
       location: 23
-      description: IRQ33 pending
+      description: IRQ55 pending
     IRQ56:
       type: RW
       reset_value: 0
       location: 24
-      description: IRQ33 pending
+      description: IRQ56 pending
     IRQ57:
       type: RW
       reset_value: 0
       location: 25
-      description: IRQ33 pending
+      description: IRQ57 pending
     IRQ58:
       type: RW
       reset_value: 0
       location: 26
-      description: IRQ33 pending
+      description: IRQ58 pending
     IRQ59:
       type: RW
       reset_value: 0
       location: 27
-      description: IRQ33 pending
+      description: IRQ59 pending
     IRQ60:
       type: RW
       reset_value: 0
       location: 28
-      description: IRQ33 pending
+      description: IRQ60 pending
     IRQ61:
       type: RW
       reset_value: 0
       location: 29
-      description: IRQ33 pending
+      description: IRQ61 pending
     IRQ62:
       type: RW
       reset_value: 0
       location: 30
-      description: IRQ33 pending
+      description: IRQ62 pending
     IRQ63:
       type: RW
       reset_value: 0
       location: 31
-      description: IRQ33 pending
+      description: IRQ63 pending

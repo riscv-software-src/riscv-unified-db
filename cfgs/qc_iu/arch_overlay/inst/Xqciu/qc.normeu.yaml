@@ -7,7 +7,9 @@ qc.normeu:
     Even exponent written in bits[7:0] of the result.
     Mantissa (based on even exponent) written in bits[31:8] of the result.
     Write result to `rd`. 
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqca
   base: 32
   encoding:
     match:     000100100000-----011-----0001011

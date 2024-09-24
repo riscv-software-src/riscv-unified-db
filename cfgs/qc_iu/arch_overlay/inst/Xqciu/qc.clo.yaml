@@ -8,7 +8,9 @@ qc.clo:
     Accordingly, if the input is ~0, the output is XLEN, and if the most-significant
     bit of the input is a 0, the output is 0.
     output written to the `rd`
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqcbm
   base: 32
   encoding:
     match:     000010000000-----011-----0001011

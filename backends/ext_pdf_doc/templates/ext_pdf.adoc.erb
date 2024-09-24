@@ -419,8 +419,14 @@ RV64::
 Description::
 <%= i.description %>
 
+
 Decode Variables::
 
+<%- if i.multi_encoding? ? (i.decode_variables(32).empty? && i.decode_variables(64).empty?) : i.decode_variables(i.base.nil? ? 64 : i.base).empty? -%>
+
+<%= i.name %> has no decode variables.
+
+<%- else -%>
 <%- if i.multi_encoding? -%>
 RV32::
 +
@@ -446,7 +452,8 @@ RV64::
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
 <%- end -%>
 ----
-<%- end -%>
+<%- end # if multi_encoding? -%>
+<%- end # if no decode variables-%>
 
 Operation::
 [source,idl,subs="specialchars,macros"]

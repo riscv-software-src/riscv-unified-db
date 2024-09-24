@@ -4,7 +4,9 @@ qc.48.j:
   long_name: Jump
   description: |
     Jump to a PC-relative offset 
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqclb
   assembly: " imm"
   base: 32
   encoding:

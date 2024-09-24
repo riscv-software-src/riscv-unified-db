@@ -3,9 +3,11 @@
 qc.compress3:
   long_name: Bit compression (every 3nd bit)
   description: |
-    Bit compression (every 3nd bit) of `rs1`, zero-pad bits [31:11] of the result.
+    Bit compression (every 3rd bit) of `rs1`, zero-pad bits [31:11] of the result.
     Write result to `rd`. 
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqcbm
   base: 32
   encoding:
     match:     000000100000-----011-----0001011

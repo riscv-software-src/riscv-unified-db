@@ -1,17 +1,17 @@
 # yaml-language-server: $schema=../../../../../schemas/inst_schema.json
 
-qc.exts:
-  long_name: Extract bits signed
+qc.extd:
+  long_name: Extract bits from pair signed (Immediate)
   description: |
-    Extract a subset of bits from `rs1` into `rd`, and sign-extend the result.
+    Extract a subset of bits from the register pair [`rs1`, `rs1`+1] into `rd`, and sign extend the result.
     The width of the subset is determined by (`width_minus1` + 1) (1..32),
-    and the offset of the subset is determined by `shamt`.
+    and the offset (into the pair) of the subset is determined by `shamt`.
   definedBy:
   - Xqciu
   - Xqcbm
   base: 32
   encoding:
-    match:     01---------------010-----0001011
+    match:     11---------------010-----0001011
     variables:
     - name: width_minus1
       location: 29-25
@@ -19,7 +19,6 @@ qc.exts:
       location: 24-20
     - name: rs1
       location: 19-15
-      not: 0
     - name: rd
       location: 11-7
       not: 0
@@ -30,6 +29,6 @@ qc.exts:
     vs: always
     vu: always
   operation(): |
+    Bits<{1'b0, XLEN}*2> pair = {X[rs1 + 1], X[rs1]};
     XReg width = width_minus1 + 1;
-    XReg unsigned_extraction = (X[rs1] >> shamt) & ((1 << width) - 1);
-    X[rd] = sext(unsigned_extraction, width_minus1);
+    X[rd] = sext((pair >> shamt) & ((1 << width) - 1), width_minus1);

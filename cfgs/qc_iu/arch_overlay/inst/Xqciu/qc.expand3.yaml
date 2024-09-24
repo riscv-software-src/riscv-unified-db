@@ -3,9 +3,11 @@
 qc.expand3:
   long_name: Bit expansion (every 3nd bit)
   description: |
-    Bit expansion (every 3nd bit) of `rs1`, bits [31:11] of `rs1` are ignored.
+    Bit expansion (every 3rd bit) of `rs1`, bits [31:11] of `rs1` are ignored.
     Write result to `rd`. 
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqcbm
   base: 32
   encoding:
     match:     000001100000-----011-----0001011

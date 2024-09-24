@@ -4,7 +4,9 @@ qc.setinti:
   long_name: Set interrupt (Immediate)
   description: |
     Set interrupt, interrupt number is in `imm` (0 - 1023).
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqcint
   assembly: " imm"
   base: 32
   encoding:

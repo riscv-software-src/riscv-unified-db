@@ -4,7 +4,9 @@ qc.c.clrint:
   long_name: Clear interrupt (Register)
   description: |
     Clear interrupt, interrupt number is in `rs1`.
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqcint
   assembly: " xs1"
   base: 32
   encoding:

@@ -5,7 +5,9 @@ qc.48.jal:
   description: |
     Jump to a PC-relative offset and store the return
     address in x1.
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqclb
   assembly: " imm"
   base: 32
   encoding:

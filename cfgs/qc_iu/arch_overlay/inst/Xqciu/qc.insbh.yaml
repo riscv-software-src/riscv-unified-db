@@ -11,7 +11,9 @@ qc.insbh:
     The width of the subset is determined by (`width_minus1` + 1) (1..32),
     and the offset of the subset is determined by `shamt`.
     In case when width + offset <= 32, the destination register is left unchanged.
-  definedBy: Xqciu
+  definedBy:
+  - Xqciu
+  - Xqcbm
   base: 32
   encoding:
     match:     10---------------001-----0001011
