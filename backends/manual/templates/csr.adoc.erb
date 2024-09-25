@@ -5,19 +5,32 @@
 
 *<%= csr.long_name %>*
 
-<%= csr.description %>
+<%= arch_def.render_erb(csr.description) %>
 
 == Attributes
 [%autowidth]
 |===
+h| Defining Extension | <%= csr.defined_by.map { |er| "`#{er.name}` (version #{er.version_requirement})" }.join(" or ") %>
 h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <%- if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <%- end -%>
 <%- if csr.dynamic_length?(arch_def) -%>
-h| Length         | <%= csr.length_pretty(arch_def) %>
+h| Length
+a|
+
+[when,"<%= csr.length_cond32 %>"]
+--
+<%= csr.length_pretty(arch_def, 32) %>
+--
+
+[when,"<%= csr.length_cond64 %>"]
+--
+<%= csr.length_pretty(arch_def, 64) %>
+--
+
 <%- else -%>
-h| Length         | <%= csr.length_pretty(arch_def) %>-bit
+h| Length         | <%= csr.length_pretty(arch_def) %>
 <%- end -%>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===
@@ -35,30 +48,59 @@ h| Privilege Mode | <%= csr.priv_mode %>
     so there is more than one format to display -%>
 This CSR format changes dynamically.
 
-.<%= csr.name %> Format when <%= csr.length_cond32 %>
+[when,"<%= csr.length_cond32 %>"]
+--
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
 <%= JSON.dump csr.wavedrom_desc(arch_def, 32) %>
 ....
+--
 
-.<%= csr.name %> Format when <%= csr.length_cond64 %>
+[when,"<%= csr.length_cond64 %>"]
+--
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
 <%= JSON.dump csr.wavedrom_desc(arch_def, 64) %>
 ....
+--
 <%- end -%>
 
 == Field Summary
 
-[%autowidth,float="center",align="center",cols="^,<,<,<",options="header",role="stretch"]
+// use @ as a separator since IDL code can contain |
+[%autowidth,separator=@,float="center",align="center",cols="^,<,<,<",options="header",role="stretch"]
 |===
-|Name | Location | Type | Reset Value
+@ Name @ Location @ Type @ Reset Value
 
 <%- csr.fields.each do |field| -%>
-| xref:<%=csr.name%>-<%=field.name%>-def[`<%= field.name %>`]
-| <%= field.location_pretty(arch_def) %>
-| <%= field.type_pretty(arch_def) %>
-| <%= field.reset_value_pretty(arch_def) %>
+@ xref:<%=csr.name%>-<%=field.name%>-def[`<%= field.name %>`]
+a@
+<%- if field.dynamic_location?(arch_def) -%>
+
+[when,"<%= field.location_cond32 %>"]
+--
+<%= field.location_pretty(arch_def, 32) %>
+--
+
+[when,"<%= field.location_cond64 %>"]
+--
+<%= field.location_pretty(arch_def, 64) %>
+--
+
+<%- else -%>
+<%= field.location_pretty(arch_def) %>
+<%- end -%>
+a@
+
+--
+<%= field.type_pretty(arch_def) %>
+--
+
+a@
+
+--
+<%= field.reset_value_pretty(arch_def) %>
+--
 
 <%- end -%>
 |===
@@ -73,13 +115,16 @@ This CSR has no fields. However, it must still exist (not cause an `Illegal Inst
 [[<%=csr.name%>-<%=field.name%>-def]]
 === `<%= field.name %>`
 
-[example]
+<%- if !field.defined_in_all_bases? -%>
+IMPORTANT: <%= field.name %> is only defined in <%= field.base32_only? ? "RV32" : "RV64" %> (`<%= field.base32_only? ? field.location_cond32 : field.location_cond64 %>`)
+<%- end -%>
+
 ****
 Location::
 <%= field.location_pretty(arch_def) %>
 
 Description::
-<%= field.description %>
+<%= arch_def.render_erb(field.description, "#{csr.name}.#{field.name}.description").gsub("\n", " +\n") %>
 
 Type::
 <%= field.type_pretty(arch_def) %>

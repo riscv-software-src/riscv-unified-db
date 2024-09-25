@@ -323,7 +323,7 @@ class Csr < ArchDefObject
 
   # @param arch_def [ArchDef] A configuration
   # @return [String] Pretty-printed length string
-  def length_pretty(arch_def)
+  def length_pretty(arch_def, effective_xlen=nil)
     if dynamic_length?(arch_def)
       cond = 
         case @data["length"]
@@ -337,10 +337,14 @@ class Csr < ArchDefObject
           raise "Unexpected length '#{@data['length']}'"
         end
 
-      <<~LENGTH
-        #{length(arch_def, 32)} when #{cond.sub('%%', '0')}
-        #{length(arch_def, 64)} when #{cond.sub('%%', '1')}
-      LENGTH
+      if effective_xlen.nil?
+        <<~LENGTH
+          #{length(arch_def, 32)} when #{cond.sub('%%', '0')}
+          #{length(arch_def, 64)} when #{cond.sub('%%', '1')}
+        LENGTH
+      else
+        "#{length(arch_def, effective_xlen)}-bit"
+      end
     else
       "#{length(arch_def)}-bit"
     end
@@ -562,11 +566,15 @@ class Csr < ArchDefObject
             ((effective_xlen == 64) && f.defined_in_base64?)
         end
       end
+    field_list.sort! { |a, b| a.location(arch_def, effective_xlen).min <=> b.location(arch_def, effective_xlen).min }
     field_list.each do |field|
 
       if field.location(arch_def, effective_xlen).min != last_idx + 1
         # have some reserved space
-        desc["reg"] << { "bits" => (field.location(arch_def, effective_xlen).min - last_idx - 1), type: 1 }
+        n = field.location(arch_def, effective_xlen).min - last_idx - 1
+        raise "negative reserved space? #{n} #{name} #{field.location(arch_def, effective_xlen).min} #{last_idx + 1}" if n <= 0
+
+        desc["reg"] << { "bits" => n, type: 1 }
       end
       desc["reg"] << { "bits" => field.location(arch_def, effective_xlen).size, "name" => field.name, type: 2 }
       last_idx = field.location(arch_def, effective_xlen).max

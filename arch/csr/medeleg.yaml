@@ -194,10 +194,9 @@ medeleg:
 
         Exceptions are never taken into a less-privileged mode, regardless of `medeleg`.
 
-        <%- if MISALIGNED_LDST -%>
+        [when,"MISALIGNED_LDST == true"]
         Note that because this implementation supports misaligned loads, this exception will never occur.
         However, the writeable bit should be presented anyway.
-        <%- end -%>
 
         The handling mode is determined as follows:
 
@@ -275,10 +274,9 @@ medeleg:
 
         Exceptions are never taken into a less-privileged mode, regardless of `medeleg`.
 
-        <%- if MISALIGNED_LDST && MISALIGNED_AMO -%>
+        [when,"MISALIGNED_LDST == true && MISALIGNED_AMO == true"]
         Note that beause the implementation supports misaligned stores and misaligned AMOs (or no AMOs), this exception will never occur.
         Even so, the writeable bit should be presented anyway.
-        <%- end -%>
 
         The handling mode is determined as follows:
 

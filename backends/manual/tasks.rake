@@ -266,7 +266,53 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/funcs/pages/funcs.adoc} => [
   File.write t.name, AntoraUtils.resolve_links(erb.result(binding))
 end
 
-rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/playbook.yml} => proc { |tname|
+rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/landing/antora.yml} => [
+  __FILE__
+] do |t|
+  parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
+  manual_name = parts[0]
+
+  arch_def = arch_def_for("_")
+  manual = arch_def.manual(manual_name)
+  raise "Can't find any manual version for '#{manual_name}'" if manual.nil?
+
+  FileUtils.mkdir_p File.basename(t.name)
+  File.write t.name, <<~ANTORA
+    name: landing
+    version: ~
+    title: Home
+  ANTORA
+end
+
+rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/landing/modules/ROOT/pages/index.adoc} => proc { |tname|
+  parts = tname.sub("#{MANUAL_GEN_DIR}/", "").split("/")
+  manual_name = parts[0]
+  FileList[
+    __FILE__,
+    ($root / "arch" / "manual" / manual_name / "#{manual_name}.yaml").to_s,
+    ($root / "backends" / "manual" / "templates" / "index.adoc.erb").to_s,
+    ($root / "arch" / "manual" / manual_name / "**" / "contents.yaml").to_s
+  ]
+} do |t|
+  parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
+  manual_name = parts[0]
+
+  arch_def = arch_def_for("_")
+  manual = arch_def.manual(manual_name)
+  raise "Can't find any manual version for '#{manual_name}'" if manual.nil?
+
+  versions, output_hash = versions_from_env(manual)
+  raise "unexpected mismatch" unless output_hash == parts[2]
+
+  landing_template_path = $root / "backends" / "manual" / "templates" / "index.adoc.erb"
+  erb = ERB.new(landing_template_path.read, trim_mode: "-")
+  erb.filename = landing_template_path.to_s
+
+  FileUtils.mkdir_p File.dirname(t.name)
+  File.write t.name, erb.result(binding)
+end
+
+rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/playbook/playbook.yml} => proc { |tname|
   parts = tname.sub("#{MANUAL_GEN_DIR}/", "").split("/")
   manual_name = parts[0]
   FileList[
@@ -371,7 +417,13 @@ namespace :gen do
       end
     end
 
-    playbook_path = MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / "top" / output_hash / "antora" / "playbook.yml"
+    landing_page_path = MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / "top" / output_hash / "antora" / "landing" / "modules" / "ROOT" / "pages" / "index.adoc"
+    Rake::Task[landing_page_path].invoke
+
+    landing_antora_path = MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / "top" / output_hash / "antora" / "landing" / "antora.yml"
+    Rake::Task[landing_antora_path].invoke
+
+    playbook_path = MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / "top" / output_hash / "antora" / "playbook" / "playbook.yml"
     Rake::Task[playbook_path].invoke
 
     sh [

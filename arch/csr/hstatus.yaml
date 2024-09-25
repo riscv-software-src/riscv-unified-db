@@ -18,8 +18,8 @@ hstatus:
       description: |
         *VS-mode XLen*
 
-        <%- if VSXLEN == 3264 -%>
-
+        [when,"VSXLEN == 3264"]
+        --
         Determines the effective XLEN in VS-mode. Valid values are:
 
         [separator="!"]
@@ -30,11 +30,15 @@ hstatus:
         ! 1     ! 64
         !===
 
-        <%- else -%>
+        --
 
-        Because the implementation only supports a single VSXLEN, this field is read-only <%= VSXLEN == 32 ? 0 : 1 %>.
+        [when,"VSXLEN = 32"]
+        Because the implementation only supports a single VSXLEN == 32, this field is read-only-0.
 
-        <%- end -%>
+        [when,"VSXLEN = 64"]
+        Because the implementation only supports a single VSXLEN == 64, this field is read-only-1.
+
+
       type(): |
         if ((VSXLEN == 32) || (VSXLEN == 64)) {
           return CsrFieldType::RO;
@@ -214,11 +218,11 @@ hstatus:
         Controls the endianness of data VS-mode (0 = little, 1 = big).
         Instructions are always little endian, regardless of the data setting.
 
-        <%- if VS_MODE_ENDIANESS == 'little' -%>
+        [when,"VS_MODE_ENDIANESS == little"]
         Since the CPU does not support big endian in VS-mode, this is hardwired to 0.
-        <%- elsif VS_MODE_ENDIANESS == 'big' -%>
+
+        [when,"VS_MODE_ENDIANESS == bit"]
         Since the CPU does not support litte endian in VS-mode, this is hardwired to 1.
-        <%- end -%><%# VS_MODE_ENDIANESS == 'dynamic' -%>
       type(): |
         if (VS_MODE_ENDIANESS == "dynamic") {
           # mode is mutable

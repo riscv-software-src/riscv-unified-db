@@ -47,7 +47,8 @@ module Idl
   end
   class StringLiteralAst
     def gen_adoc(indent, indent_spaces: 2)
-      "#{' '*indent}\"#{text_value}\""
+      # text_value will include leading and trailing quotes
+      "#{' '*indent}#{text_value}"
     end
   end
   class DontCareReturnAst

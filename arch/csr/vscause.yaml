@@ -18,11 +18,12 @@ vscause:
         When set, the last exception was caused by an asynchronous Interrupt.
 
         `vscause.INT` is writeable.
-        <%- if TRAP_ON_ILLEGAL_WLRL -%>
+
+        [when,"TRAP_ON_ILLEGAL_WLRL == true"]
         If `vscause` is written with an undefined cause (combination of `vscause.INT` and `vscause.CODE`), an `Illegal Instruction` exception occurs.
-        <%- else -%>
+
+        [when,"TRAP_ON_ILLEGAL_WLRL == false"]
         If `vscause` is written with an undefined cause (combination of `vscause.INT` and `vscause.CODE`), neither `vscause.INT` nor `vscause.CODE` are modified.
-        <%- end -%>
       type: RW-RH
       sw_write(csr_value): |
         # the write only holds if the INT/CODE combination is valid
@@ -48,11 +49,12 @@ vscause:
         Holds the interrupt or exception code for the last taken trap.
 
         `vscause.CODE` is writeable.
-        <%- if TRAP_ON_ILLEGAL_WLRL -%>
+
+        [when,"TRAP_ON_ILLEGAL_WLRL == true"]
         If `vscause` is written with an undefined cause (combination of `vscause.INT` and `vscause.CODE`), an `Illegal Instruction` exception occurs.
-        <%- else -%>
+
+        [when,"TRAP_ON_ILLEGAL_WLRL == false"]
         If `vscause` is written with an undefined cause (combination of `vscause.INT` and `vscause.CODE`), neither `vscause.INT` nor `vscause.CODE` are modified.
-        <%- end -%>
 
         Valid interrupt codes are:
         [separator="!"]

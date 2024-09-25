@@ -16,7 +16,7 @@ pmpaddr54:
       location_rv32: 31-0
       location_rv64: 63-0
       description: |
-        Bits <%= PHYS_ADDR_WIDTH-1 %>:2 of the address specifier for PMP entry 54
+        Bits PHYS_ADDR_WIDTH-1:2 of the address specifier for PMP entry 54
         (or, if `pmp55cfg.A` == TOR, for PMP entry 55).
       type(): |
         if (NUM_PMP_ENTRIES > 54) {

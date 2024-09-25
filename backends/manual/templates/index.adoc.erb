@@ -1,0 +1,12 @@
+// This becomes the index of the entire Antora site
+
+= <%= manual.marketing_name %>
+
+The following verions of the manual can be found here:
+
+<%- versions.each do |version| -%>
+* xref:<%= version.marketing_version %>@<%= manual.name %>:ROOT:index.adoc[Version <%= version.marketing_version %>]
+<%- end -%>
+
+This site was generated using https://github.com/riscv-software-src/riscv-unified-db[riscv-unified-db],
+at commit <%= `git rev-parse HEAD` %><%- unless `git status -s`.empty? -%>, with dirty state<%- end -%>.

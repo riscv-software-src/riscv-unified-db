@@ -8,7 +8,7 @@
 This instruction is defined by<%- if inst.defined_by.size > 1 -%> any of the following<%- end -%>:
 
   <%- inst.defined_by.each do |ext| -%>
-  * `<%= ext.name %>`, `<%= ext.version_requirement %>`
+  * `<%= ext.name %>` (version `<%= ext.version_requirement %>`)
   <%- end -%>
 
 <%- unless inst.extension_requirements.empty? -%>

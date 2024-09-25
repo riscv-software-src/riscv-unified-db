@@ -33,7 +33,7 @@ wfi:
     | 0 | Wait | Trap (I)
     | 1 | Trap (I) | Trap (I)
 
-    6+| Trap (I) - Trap with `Illegal Instruction` code
+    4+| Trap (I) - Trap with `Illegal Instruction` code
     |===
 
     <%- end -%>
@@ -80,7 +80,7 @@ wfi:
     | 0 | Wait | Trap (I)
     | 1 | Trap (I) | Trap (I)
 
-    6+| Trap (I) - Trap with `Illegal Instruction` code
+    4+| Trap (I) - Trap with `Illegal Instruction` code
     |===
 
     <%- end -%>

@@ -366,6 +366,81 @@ class ArchDef
       end
     end
   end
+
+  # Returns an environment hash suitable for use with ERb templates.
+  #
+  # This method returns a hash containing the architecture definition and other
+  # relevant data that can be used to generate ERb templates.
+  #
+  # @return [Hash] An environment hash suitable for use with ERb templates.
+  def erb_env
+    return @env unless @env.nil?
+
+    @env = Class.new
+    @env.instance_variable_set(:@cfg, @cfg)
+    @env.instance_variable_set(:@params, @params)
+    @env.instance_variable_set(:@arch_gen, self)
+
+    @env.instance_exec do
+      # method to check if a given extension (with an optional version number) is present
+      #
+      # @param ext_name [String,#to_s] Name of the extension
+      # @param ext_requirement [String, #to_s] Version string, as a Gem Requirement (https://guides.rubygems.org/patterns/#pessimistic-version-constraint)
+      # @return [Boolean] whether or not extension +ext_name+ meeting +ext_requirement+ is implemented in the config
+      def ext?(ext_name, ext_requirement = ">= 0")
+        true # ?
+      end
+
+      # @return [Array<Integer>] List of possible XLENs for any implemented mode
+      def possible_xlens
+        [32, 64]
+      end
+
+      # insert a hyperlink to an object
+      # At this point, we insert a placeholder since it will be up
+      # to the backend to create a specific link
+      #
+      # @params type [Symbol] Type (:section, :csr, :inst, :ext)
+      # @params name [#to_s] Name of the object
+      def link_to(type, name)
+        "%%LINK%#{type};#{name}%%"
+      end
+
+      # info on interrupt and exception codes
+
+      # @returns [Hash<Integer, String>] architecturally-defined exception codes and their names
+      def exception_codes
+        @arch_gen.exception_codes
+      end
+
+      # returns [Hash<Integer, String>] architecturally-defined interrupt codes and their names
+      def interrupt_codes
+        @arch_gen.interrupt_codes
+      end
+    end
+
+    @env
+  end
+  private :erb_env
+
+  # passes _erb_template_ through ERB within the content of this config
+  #
+  # @param erb_template [String] ERB source
+  # @return [String] The rendered text
+  def render_erb(erb_template, what='')
+    t = Tempfile.new("template")
+    t.write erb_template
+    t.flush
+    begin
+      Tilt["erb"].new(t.path, trim: "-").render(erb_env)
+    rescue
+      warn "While rendering ERB template: #{what}"
+      raise
+    ensure
+      t.close
+      t.unlink
+    end
+  end
 end
 
 # a synchroncous exception code
@@ -489,17 +564,6 @@ class ImplArchDef < ArchDef
     @env
   end
   private :erb_env
-
-  # passes _erb_template_ through ERB within the content of this config
-  #
-  # @param erb_template [String] ERB source
-  # @return [String] The rendered text
-  def render_erb(erb_template)
-    t = Tempfile.new("template")
-    t.write erb_template
-    t.flush
-    Tilt["erb"].new(t.path, trim: "-").render(erb_env)
-  end
 
   # Initialize a new configured architecture defintiion
   #
