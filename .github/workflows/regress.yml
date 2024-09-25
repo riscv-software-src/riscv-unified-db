@@ -33,5 +33,7 @@ jobs:
       run: ./bin/setup
     - name: Run IDL tests
       run: ./do idl_test
+    - name: Run validator
+      run: ./do validate
     - name: Build html documentation for generic_rv64
       run: ./do gen:html[generic_rv64]
