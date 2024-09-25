@@ -49,7 +49,7 @@ lr.d:
     - name: aq
       location: 26
     - name: rl
-      location: 27
+      location: 25
     - name: rs1
       location: 19-15
     - name: rd

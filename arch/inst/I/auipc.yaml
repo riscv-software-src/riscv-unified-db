@@ -6,7 +6,7 @@ auipc:
   definedBy: I
   assembly: xd, imm
   encoding:
-    match: --------------------------001011
+    match: -------------------------0010111
     variables:
     - name: imm
       location: 31-12

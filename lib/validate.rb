@@ -40,13 +40,19 @@ class Validator
     end
   end
 
-  # exception raised when an object does not validate against its schema
   class ValidationError < ::StandardError
+    def initialize(why)
+      super(why)
+    end
+  end
+
+  # exception raised when an object does not validate against its schema
+  class SchemaValidationError < ::StandardError
 
     # result from JsonSchemer.validate
     attr_reader :result
 
-    # create a new ValidationError
+    # create a new SchemaValidationError
     #
     # @param result [JsonSchemer::Result] JsonSchemer result
     def initialize(result)
@@ -120,7 +126,7 @@ class Validator
   # @return [Object] The object represented by str
   # @param str [String] A YAML document
   # @param type [Symbol] Type of the object (One of TYPES)
-  # @raise [ValidationError] if the str is not valid against the type schema
+  # @raise [SchemaValidationError] if the str is not valid against the type schema
   # @see TYPES
   def validate_str(str, type: nil, schema_path: nil)
     raise "Invalid type #{type}" unless TYPES.any?(type) || !schema_path.nil?
@@ -153,7 +159,7 @@ class Validator
         )
       end
 
-    raise ValidationError, schema.validate(jsonified_obj) unless schema.valid?(jsonified_obj)
+    raise SchemaValidationError, schema.validate(jsonified_obj) unless schema.valid?(jsonified_obj)
 
     jsonified_obj
   end
@@ -164,7 +170,7 @@ class Validator
   #
   # @param path [#to_s] Path to a YAML document
   # @param type [Symbol] Type of the object (One of TYPES). If nil, type will be inferred from path
-  # @raise [ValidationError] if the str is not valid against the type schema
+  # @raise [SchemaValidationError] if the str is not valid against the type schema
   # @see TYPES
   def validate(path, type: nil)
     schema_path = nil
@@ -196,6 +202,66 @@ class Validator
     rescue Psych::SyntaxError => e
       warn "While parsing #{path}"
       raise e
+    end
+  end
+
+  def ary_from_location(location_str_or_int)
+    return [location_str_or_int] if location_str_or_int.is_a?(Integer)
+
+    bits = []
+    parts = location_str_or_int.split("|")
+    parts.each do |part|
+      if part.include?("-")
+        msb, lsb = part.split("-").map(&:to_i)
+        (lsb..msb).each { |i| bits << i }
+      else
+        bits << part.to_i
+      end
+    end
+    bits
+  end
+
+  def validate_instruction_encoding(inst_name, encoding)
+    match = encoding["match"]
+    raise "No match for instruction #{inst_name}?" if match.nil?
+
+    variables = encoding["variables"]
+    match.size.times do |i|
+      if match[match.size - 1 - i] == "-"
+        # make sure exactly one variable covers this bit
+        vars_match = variables.count { |variable| ary_from_location(variable["location"]).include?(i) }
+        if vars_match.zero?
+          raise ValidationError, "In instruction #{inst_name}, no variable or encoding bit covers bit #{i}"
+        elsif vars_match != 1 
+          raise ValidationError, "In instruction, #{inst_name}, bit #{i} is covered by more than one variable"
+        end
+      else
+        # make sure no variable covers this bit
+        unless variables.nil?
+          unless variables.none? { |variable| ary_from_location(variable["location"]).include?(i) }
+            raise ValidationError, "In instruction, #{inst_name}, bit #{i} is covered by both a variable and the match string"
+          end
+        end
+      end
+    end
+  end
+
+  # @param path [Pathname] Path to an instruction YAML document
+  # @raise [ValidateError] if there is a problem with the instruction defintion
+  def validate_instruction(path)
+    obj = YAML.load_file(path)
+    raise "Invalid instruction definition: #{obj}" unless obj.is_a?(Hash)
+
+    inst_name = path.basename('.yaml').to_s
+    raise "Invalid instruction definition: #{inst_name} #{obj}" unless obj.key?(inst_name)
+
+    obj = obj[inst_name]
+
+    if (obj["encoding"]["RV32"].nil?)
+      validate_instruction_encoding(inst_name, obj["encoding"])
+    else
+      validate_instruction_encoding(inst_name, obj["encoding"]["RV32"])
+      validate_instruction_encoding(inst_name, obj["encoding"]["RV64"])
     end
   end
 end
