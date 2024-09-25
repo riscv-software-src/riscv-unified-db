@@ -299,7 +299,7 @@ class ArchGen
     # make sure it passes validation
     # begin
     #   @validator.validate_str(YAML.dump(arch_def), type: :arch)
-    # rescue Validator::ValidationError => e
+    # rescue Validator::SchemaValidationError => e
     #   warn "While validating the unified architecture defintion at #{abs_arch_def_path}"
     #   raise e
     # end
@@ -498,7 +498,7 @@ class ArchGen
     # verify
     begin
       @validator.validate_str(rendered_def, type:)
-    rescue Validator::ValidationError => e
+    rescue Validator::SchemaValidationError => e
       warn "#{type} definition in #{source_path} did not validate"
       raise e
     end
@@ -594,7 +594,7 @@ class ArchGen
 
     begin
       @validator.validate_str(merged_path.read, type:)
-    rescue Validator::ValidationError => e
+    rescue Validator::SchemaValidationError => e
       warn "Merged #{type} definition in #{merged_path} did not validate"
       raise e
     end
@@ -643,7 +643,7 @@ class ArchGen
     csr_yaml = YAML.dump({ csr_name => csr_data})
     begin
       csr_data = @validator.validate_str(csr_yaml, type: :csr)
-    rescue Validator::ValidationError => e
+    rescue Validator::SchemaValidationError => e
       warn "Instruction definition in #{merged_path} did not validate"
       raise e
     end
@@ -879,7 +879,7 @@ class ArchGen
     inst_yaml = YAML.dump({ inst_name => inst_data})
     begin
       inst_data = @validator.validate_str(inst_yaml, type: :inst)
-    rescue Validator::ValidationError => e
+    rescue Validator::SchemaValidationError => e
       warn "Instruction definition in #{gen_inst_path} did not validate"
       raise e
     end

@@ -12,7 +12,7 @@ sraiw:
     match: 0100000----------101-----0011011
     variables:
     - name: shamt
-      location: 25-20
+      location: 24-20
     - name: rs1
       location: 19-15
     - name: rd

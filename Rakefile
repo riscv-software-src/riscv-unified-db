@@ -63,6 +63,14 @@ task :clean do
 end
 
 namespace :validate do
+  task :insts do
+    puts "Checking instruction encodings..."
+    inst_paths = Dir.glob("#{$root}/arch/inst/**/*.yaml").map { |f| Pathname.new(f) }
+    inst_paths.each do |inst_path|
+      Validator.instance.validate_instruction(inst_path)
+    end
+    puts "All instruction encodings pass basic sanity tests"
+  end
   task schema: "gen:arch" do
     validator = Validator.instance
     puts "Checking arch files against schema.."
@@ -118,7 +126,7 @@ namespace :validate do
 end
 
 desc "Validate the arch docs"
-task validate: ["validate:schema", "validate:idl"]
+task validate: ["validate:schema", "validate:idl", "validate:insts"]
 
 def insert_warning(str, from)
   # insert a warning on the second line

@@ -578,7 +578,7 @@ class ImplArchDef < ArchDef
     validator = Validator.instance
     begin
       validator.validate_str(arch_def_file.read, type: :arch)
-    rescue Validator::ValidationError => e
+    rescue Validator::SchemaValidationError => e
       warn "While parsing unified architecture definition at #{arch_def_file}"
       raise e
     end

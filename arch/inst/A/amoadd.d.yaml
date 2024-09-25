@@ -18,7 +18,7 @@ amoadd.d:
     - name: aq
       location: 26
     - name: rl
-      location: 27
+      location: 25
     - name: rs2
       location: 24-20
     - name: rs1
