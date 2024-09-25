@@ -1,5 +1,12 @@
+// Number heading sections (e.g., 1.0, 1.1, etc.)
+:sectnums:  
+
+// Add a table of contents for HTML (and VSCode adoc preview)
+:toc: left
+
 = <%= crd.name %> Certification Requirements Document
 
+[Preface]
 == <%= crd.family.name %> Family Revision History
 
 Contains documentation changes that apply to all releases of the family.
@@ -55,34 +62,36 @@ a| <%- rev.changes.each do |change| %>
 
 |===
 
-=== Extension Summary
+== Extension Requirements
 
+=== Summary
+
+The following table lists all extensions that are IN SCOPE (i.e., MANDATORY or OPTIONAL).
 Any extension not listed in the table below is OUT OF SCOPE.
 
 [%autowidth]
 |===
-| Extension | Version | Status | Requirement | Description
+| Requirement ID | Extension | Version Requirement | Status | Long Name
 
 <%- crd.extension_reqs.sort.each do |ext_req| -%>
 <%- ext = crd.arch_def.extension(ext_req.name) -%>
+| <%= ext_req.req_id %>
 | <%= ext_req.name %>
 | <%= ext_req.version_requirement %>
-| <%= ext_req.status %>
-| <%= ext_req.req_id %>
+| <%= ext_req.status.upcase %>
 | <%= ext.nil? ? "" : ext.long_name %>
 <%- end -%>
 |===
 
-== Extension Requirements
-
 <%- crd.extension_reqs.sort.each do |ext_req| -%>
 <%- ext = crd.arch_def.extension(ext_req.name) -%>
 
-=== Extension <%= ext_req.name %>
-* Requirement: <%= ext_req.req_id %>
-<%= ext.nil? ? "" : "* Description: " + ext.long_name %>
+=== Extension <%= ext_req.name %> +
+*Requirement ID*: <%= ext_req.req_id %> +
+<%= ext.nil? ? "" : "*Long Name*: " + ext.long_name + " +" %>
+*Version Requirement*: <%= ext_req.version_requirement %> +
+*Status*: <%= ext_req.status.upcase %> +
 <%- unless ext_req.note.nil? -%>
-+
 [NOTE]
 --
 <%= ext_req.note %>
@@ -90,7 +99,7 @@ Any extension not listed in the table below is OUT OF SCOPE.
 <%- end -%>
 
 <%- unless crd.param_constraints(ext_req).empty? -%>
-==== Extension <%= ext_req.name %> - IN SCOPE Parameters
+==== IN SCOPE Parameters
 
 These parameters are covered by an <%= crd.name %> certificate.
 
@@ -106,18 +115,13 @@ a| <%= constraint.note %>
 <%- end # unless table -%>
 
 <%- unless crd.extension_out_of_scope_param_constraints(ext_req).empty? -%>
-==== Extension <%= ext_req.name %> - OUT OF SCOPE Parameters
+==== OUT OF SCOPE Parameters
 
 These parameters are *NOT* covered by an <%= crd.name %> certificate.
 
-[cols="5,12"]
-|===
-| Parameter | Description
 <%- crd.extension_out_of_scope_param_constraints(ext_req).each do |param| -%>
-| <%= param.name %>
-a| <%= param.desc %>
+* <%= param.name %>
 <%- end # do constraint -%>
-|===
 <%- end # unless table -%>
 <%- end # do extension-%>
 
@@ -153,5 +157,76 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 <%- end -%>
 
 [appendix]
-== Extensions
-TBD - Mainly here to allow long descriptions of parameters to be displayed outside the IN SCOPE parameter table.
+== Extension Descriptions
+<%- crd.extension_reqs.sort.each do |ext_req| -%>
+<%- ext = crd.arch_def.extension(ext_req.name) -%>
+
+=== Extension <%= ext_req.name %> +
+<%= ext.nil? ? "" : "*Long Name*: " + ext.long_name + " +" %>
+
+*Version Requirement*: <%= ext_req.version_requirement %> +
+
+Description: ::
++
+--
+<%= ext.description %>
+--
+<%- unless ext_req.note.nil? -%>
+[NOTE]
+--
+<%= ext_req.note %>
+--
+<%- end -%>
+
+<%- unless crd.param_constraints(ext_req).empty? -%>
+==== IN SCOPE Parameters
+
+These parameters are covered by an <%= crd.name %> certificate.
+
+<%- crd.param_constraints(ext_req).each do |constraint| -%>
+<%= constraint.param.name %>::
++
+--
+<%= constraint.param.desc %>
+--
+<%- end # do constraint -%>
+<%- end # unless table -%>
+<%- end -%>
+
+[appendix]
+== Extension Parameters
+<%- crd.extension_reqs.sort.each do |ext_req| -%>
+<%- ext = crd.arch_def.extension(ext_req.name) -%>
+
+=== Extension <%= ext_req.name %> +
+<%- if crd.arch_def.extension(ext_req.name).params.empty? -%>
+None
+<%- end %>
+<%- unless crd.param_constraints(ext_req).empty? -%>
+==== IN SCOPE Parameters
+
+These parameters are covered by an <%= crd.name %> certificate.
+
+<%- crd.param_constraints(ext_req).each do |constraint| -%>
+<%= constraint.param.name %>::
++
+--
+<%= constraint.param.desc %>
+--
+<%- end # do constraint -%>
+<%- end # unless table -%>
+
+<%- unless crd.extension_out_of_scope_param_constraints(ext_req).empty? -%>
+==== OUT OF SCOPE Parameters
+
+These parameters are *NOT* covered by an <%= crd.name %> certificate.
+
+<%- crd.extension_out_of_scope_param_constraints(ext_req).each do |param| -%>
+<%= param.name %>::
++
+--
+<%= param.desc %>
+--
+<%- end # do constraint -%>
+<%- end # unless table -%>
+<%- end -%>
