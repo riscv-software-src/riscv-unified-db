@@ -107,7 +107,7 @@ These parameters are covered by an <%= crd.name %> certificate.
 |===
 | Parameter | Constraint | Note
 <%- crd.param_constraints(ext_req).each do |constraint| -%>
-| <%= constraint.param.name %>
+| <<anchor-ext-<%= ext_req.name %>-param-<%= constraint.param.name %>,<%= constraint.param.name %>>> 
 | <%= constraint.schema_constraint_pretty == "" ? "Unconstrained" : constraint.schema_constraint_pretty %>
 a| <%= constraint.note %>
 <%- end # do constraint -%>
@@ -120,7 +120,7 @@ a| <%= constraint.note %>
 These parameters are *NOT* covered by an <%= crd.name %> certificate.
 
 <%- crd.extension_out_of_scope_param_constraints(ext_req).each do |param| -%>
-* <%= param.name %>
+* <<anchor-ext-<%= ext_req.name %>-param-<%= param.name %>,<%= param.name %>>> 
 <%- end # do constraint -%>
 <%- end # unless table -%>
 <%- end # do extension-%>
@@ -166,31 +166,20 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 
 *Version Requirement*: <%= ext_req.version_requirement %> +
 
-Description: ::
-+
---
+==== Synopsis
+
+:leveloffset: +3
+
 <%= ext.description %>
---
+
+:leveloffset: -3
+
 <%- unless ext_req.note.nil? -%>
 [NOTE]
 --
 <%= ext_req.note %>
 --
 <%- end -%>
-
-<%- unless crd.param_constraints(ext_req).empty? -%>
-==== IN SCOPE Parameters
-
-These parameters are covered by an <%= crd.name %> certificate.
-
-<%- crd.param_constraints(ext_req).each do |constraint| -%>
-<%= constraint.param.name %>::
-+
---
-<%= constraint.param.desc %>
---
-<%- end # do constraint -%>
-<%- end # unless table -%>
 <%- end -%>
 
 [appendix]
@@ -208,6 +197,7 @@ None
 These parameters are covered by an <%= crd.name %> certificate.
 
 <%- crd.param_constraints(ext_req).each do |constraint| -%>
+[[anchor-ext-<%= ext_req.name %>-param-<%= constraint.param.name %>]]
 <%= constraint.param.name %>::
 +
 --
@@ -222,6 +212,7 @@ These parameters are covered by an <%= crd.name %> certificate.
 These parameters are *NOT* covered by an <%= crd.name %> certificate.
 
 <%- crd.extension_out_of_scope_param_constraints(ext_req).each do |param| -%>
+[[anchor-ext-<%= ext_req.name %>-param-<%= param.name %>]]
 <%= param.name %>::
 +
 --

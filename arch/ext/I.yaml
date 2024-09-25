@@ -121,6 +121,15 @@ I:
       schema:
         type: boolean
         default: true
+    TRAP_ON_EBREAK:
+      description: |
+        Whether or not an EBREAK causes a synchronous exception.
+
+        The spec states that implementations may handle EBREAKs transparently
+        without raising a trap, in which case the EEI must provide a builtin.
+      schema:
+        type: boolean
+        default: true
     ARCH_ID:
       description: |
         Vendor-specific architecture ID in `marchid`
