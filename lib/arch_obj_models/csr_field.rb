@@ -2,6 +2,8 @@
 
 require_relative "obj"
 
+require_relative "../idl/passes/gen_option_adoc"
+
 # A CSR field object
 class CsrField < ArchDefObject
   # @return [Csr] The Csr that defines this field
@@ -44,7 +46,7 @@ class CsrField < ArchDefObject
 
     @type_ast = idl_compiler.compile_func_body(
       @data["type()"],
-      name: "CSR[#{name}].type()",
+      name: "CSR[#{csr.name}].#{name}.type()",
       input_file: csr.__source,
       input_line: csr.source_line("fields", name, "type()"),
       type_check: false
@@ -177,7 +179,8 @@ class CsrField < ArchDefObject
       if @data.key?("type")
         @data["type"]
       else
-        @data["type()"]
+        ast = type_ast(arch_def.idl_compiler)
+        ast.gen_option_adoc
       end
     end
   end
@@ -403,6 +406,10 @@ class CsrField < ArchDefObject
       end
   end
 
+  def dynamic_reset_value?
+    @data["reset_value()"] != nil
+  end
+
   def reset_value_pretty(arch_def)
     if arch_def.is_a?(ImplArchDef)
       reset_value(arch_def)
@@ -410,7 +417,8 @@ class CsrField < ArchDefObject
       if @data.key?("reset_value")
         @data["reset_value"]
       else
-        @data["reset_value()"]
+        ast = reset_value_ast(arch_def.idl_compiler)
+        ast.gen_option_adoc
       end
     end
   end
@@ -580,13 +588,40 @@ class CsrField < ArchDefObject
     location(arch_def, effective_xlen).size
   end
 
+  def location_cond32
+    case csr.priv_mode
+    when "M"
+      "CSR[misa].MXL == 0"
+    when "S"
+      "CSR[mstatus].SXL == 0"
+    when "VS"
+      "CSR[hstatus].VSXL == 0"
+    else
+      raise "Unexpected priv mode #{csr.priv_mode} for #{csr.name}"
+    end
+  end
+
+  def location_cond64
+    case csr.priv_mode
+    when "M"
+      "CSR[misa].MXL == 1"
+    when "S"
+      "CSR[mstatus].SXL == 1"
+    when "VS"
+      "CSR[hstatus].VSXL == 1"
+    else
+      raise "Unexpected priv mode #{csr.priv_mode} for #{csr.name}"
+    end
+  end
+
   # @return [String] Pretty-printed location string
-  def location_pretty(arch_def)
+  def location_pretty(arch_def, effective_xlen = nil)
     derangeify = proc { |loc|
-      return loc.min.to_s if loc.size == 1
+      next loc.min.to_s if loc.size == 1
 
       "#{loc.max}:#{loc.min}"
     }
+
     if dynamic_location?(arch_def)
       condition =
         case csr.priv_mode
@@ -600,10 +635,14 @@ class CsrField < ArchDefObject
           raise "Unexpected priv mode #{csr.priv_mode} for #{csr.name}"
         end
 
-      <<~LOC
-        #{derangeify.call(location(arch_def, 32))} when #{condition.sub('%%', '0')}
-        #{derangeify.call(location(arch_def, 64))} when #{condition.sub('%%', '1')}
-      LOC
+      if effective_xlen.nil?
+        <<~LOC
+          * #{derangeify.call(location(arch_def, 32))} when #{condition.sub('%%', '0')}
+          * #{derangeify.call(location(arch_def, 64))} when #{condition.sub('%%', '1')}
+        LOC
+      else
+        derangeify.call(location(arch_def, effective_xlen))
+      end
     else
       if arch_def.is_a?(ImplArchDef)
         derangeify.call(location(arch_def, arch_def.param_values["XLEN"]))

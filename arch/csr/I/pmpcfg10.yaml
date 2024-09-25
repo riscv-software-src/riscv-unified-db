@@ -28,16 +28,19 @@ pmpcfg10:
           h! A ! 4:3
           a! Address matching mode. One of:
             
+              [when,"PMP_GRANULARITY < 2"]
               * *OFF* (0) - Null region (disabled)
               * *TOR* (1) - Top of range
-              <%- if PMP_GRANULARITY < 2 -%>
               * *NA4* (2) - Naturally aligned four-byte region
-              <%- end -%>
               * *NAPOT* (3) - Natrually aligned power of two
 
-          <%- if PMP_GRANULARITY >= 2 -%>
+              [when,"PMP_GRANULARITY >= 2"]
+              * *OFF* (0) - Null region (disabled)
+              * *TOR* (1) - Top of range
+              * *NAPOT* (3) - Natrually aligned power of two
+
+          [when,"PMP_GRANULARITY >= 2"]
           Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
-          <%- end -%>
           
           h! X ! 2 ! When clear, instruction fetchs cause an `Access Fault` for the matching region and privilege mode.
           h! W ! 1 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
@@ -87,16 +90,19 @@ pmpcfg10:
           h! A ! 12:11
           a! Address matching mode. One of:
             
+              [when,"PMP_GRANULARITY < 2"]
               * *OFF* (0) - Null region (disabled)
               * *TOR* (1) - Top of range
-              <%- if PMP_GRANULARITY < 2 -%>
               * *NA4* (2) - Naturally aligned four-byte region
-              <%- end -%>
               * *NAPOT* (3) - Natrually aligned power of two
 
-          <%- if PMP_GRANULARITY >= 2 -%>
+              [when,"PMP_GRANULARITY >= 2"]
+              * *OFF* (0) - Null region (disabled)
+              * *TOR* (1) - Top of range
+              * *NAPOT* (3) - Natrually aligned power of two
+
+          [when,"PMP_GRANULARITY >= 2"]
           Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
-          <%- end -%>
           
           h! X ! 10 ! When clear, instruction fetchs cause an `Access Fault` for the matching region and privilege mode.
           h! W ! 9 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
@@ -146,16 +152,19 @@ pmpcfg10:
           h! A ! 20:19
           a! Address matching mode. One of:
             
+              [when,"PMP_GRANULARITY < 2"]
               * *OFF* (0) - Null region (disabled)
               * *TOR* (1) - Top of range
-              <%- if PMP_GRANULARITY < 2 -%>
               * *NA4* (2) - Naturally aligned four-byte region
-              <%- end -%>
               * *NAPOT* (3) - Natrually aligned power of two
 
-          <%- if PMP_GRANULARITY >= 2 -%>
+              [when,"PMP_GRANULARITY >= 2"]
+              * *OFF* (0) - Null region (disabled)
+              * *TOR* (1) - Top of range
+              * *NAPOT* (3) - Natrually aligned power of two
+
+          [when,"PMP_GRANULARITY >= 2"]
           Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
-          <%- end -%>
           
           h! X ! 18 ! When clear, instruction fetchs cause an `Access Fault` for the matching region and privilege mode.
           h! W ! 17 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
@@ -205,16 +214,19 @@ pmpcfg10:
           h! A ! 28:27
           a! Address matching mode. One of:
             
+              [when,"PMP_GRANULARITY < 2"]
               * *OFF* (0) - Null region (disabled)
               * *TOR* (1) - Top of range
-              <%- if PMP_GRANULARITY < 2 -%>
               * *NA4* (2) - Naturally aligned four-byte region
-              <%- end -%>
               * *NAPOT* (3) - Natrually aligned power of two
 
-          <%- if PMP_GRANULARITY >= 2 -%>
+              [when,"PMP_GRANULARITY >= 2"]
+              * *OFF* (0) - Null region (disabled)
+              * *TOR* (1) - Top of range
+              * *NAPOT* (3) - Natrually aligned power of two
+
+          [when,"PMP_GRANULARITY >= 2"]
           Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
-          <%- end -%>
           
           h! X ! 26 ! When clear, instruction fetchs cause an `Access Fault` for the matching region and privilege mode.
           h! W ! 25 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
@@ -265,16 +277,19 @@ pmpcfg10:
           h! A ! 36:35
           a! Address matching mode. One of:
             
+              [when,"PMP_GRANULARITY < 2"]
               * *OFF* (0) - Null region (disabled)
               * *TOR* (1) - Top of range
-              <%- if PMP_GRANULARITY < 2 -%>
               * *NA4* (2) - Naturally aligned four-byte region
-              <%- end -%>
               * *NAPOT* (3) - Natrually aligned power of two
 
-          <%- if PMP_GRANULARITY >= 2 -%>
+              [when,"PMP_GRANULARITY >= 2"]
+              * *OFF* (0) - Null region (disabled)
+              * *TOR* (1) - Top of range
+              * *NAPOT* (3) - Natrually aligned power of two
+
+          [when,"PMP_GRANULARITY >= 2"]
           Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
-          <%- end -%>
           
           h! X ! 34 ! When clear, instruction fetchs cause an `Access Fault` for the matching region and privilege mode.
           h! W ! 33 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
@@ -325,16 +340,19 @@ pmpcfg10:
           h! A ! 44:43
           a! Address matching mode. One of:
             
+              [when,"PMP_GRANULARITY < 2"]
               * *OFF* (0) - Null region (disabled)
               * *TOR* (1) - Top of range
-              <%- if PMP_GRANULARITY < 2 -%>
               * *NA4* (2) - Naturally aligned four-byte region
-              <%- end -%>
               * *NAPOT* (3) - Natrually aligned power of two
 
-          <%- if PMP_GRANULARITY >= 2 -%>
+              [when,"PMP_GRANULARITY >= 2"]
+              * *OFF* (0) - Null region (disabled)
+              * *TOR* (1) - Top of range
+              * *NAPOT* (3) - Natrually aligned power of two
+
+          [when,"PMP_GRANULARITY >= 2"]
           Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
-          <%- end -%>
           
           h! X ! 42 ! When clear, instruction fetchs cause an `Access Fault` for the matching region and privilege mode.
           h! W ! 41 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
@@ -385,16 +403,19 @@ pmpcfg10:
           h! A ! 52:51
           a! Address matching mode. One of:
             
+              [when,"PMP_GRANULARITY < 2"]
               * *OFF* (0) - Null region (disabled)
               * *TOR* (1) - Top of range
-              <%- if PMP_GRANULARITY < 2 -%>
               * *NA4* (2) - Naturally aligned four-byte region
-              <%- end -%>
               * *NAPOT* (3) - Natrually aligned power of two
 
-          <%- if PMP_GRANULARITY >= 2 -%>
+              [when,"PMP_GRANULARITY >= 2"]
+              * *OFF* (0) - Null region (disabled)
+              * *TOR* (1) - Top of range
+              * *NAPOT* (3) - Natrually aligned power of two
+
+          [when,"PMP_GRANULARITY >= 2"]
           Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
-          <%- end -%>
           
           h! X ! 50 ! When clear, instruction fetchs cause an `Access Fault` for the matching region and privilege mode.
           h! W ! 49 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
@@ -445,16 +466,19 @@ pmpcfg10:
           h! A ! 60:59
           a! Address matching mode. One of:
             
+              [when,"PMP_GRANULARITY < 2"]
               * *OFF* (0) - Null region (disabled)
               * *TOR* (1) - Top of range
-              <%- if PMP_GRANULARITY < 2 -%>
               * *NA4* (2) - Naturally aligned four-byte region
-              <%- end -%>
               * *NAPOT* (3) - Natrually aligned power of two
 
-          <%- if PMP_GRANULARITY >= 2 -%>
+              [when,"PMP_GRANULARITY >= 2"]
+              * *OFF* (0) - Null region (disabled)
+              * *TOR* (1) - Top of range
+              * *NAPOT* (3) - Natrually aligned power of two
+
+          [when,"PMP_GRANULARITY >= 2"]
           Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
-          <%- end -%>
           
           h! X ! 58 ! When clear, instruction fetchs cause an `Access Fault` for the matching region and privilege mode.
           h! W ! 57 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.

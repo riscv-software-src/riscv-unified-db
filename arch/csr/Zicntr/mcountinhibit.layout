@@ -57,11 +57,11 @@ mcountinhibit:
     HPM<%= hpm_num %>:
       location: <%= hpm_num %>
       description: |
-        <%%- if COUNTINHIBIT_EN[<%= hpm_num %>] -%>
+        [when="COUNTINHIBIT_EN[<%= hpm_num %>] == true"]
         When set, `hpmcounter<%= hpm_num %>.COUNT` stops counting in all privilege modes.
-        <%%- else -%>
+
+        [when="COUNTINHIBIT_EN[<%= hpm_num %>] == false"]
         Since hpmcounter<%= hpm_num %> is not implemented, this field is read-only zero.
-        <%%- end -%>
       type(): |
         return COUNTINHIBIT_EN[<%= hpm_num %>] ? CsrFieldType::RW : CsrFieldType::RO;
       reset_value(): |

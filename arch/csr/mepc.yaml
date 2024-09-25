@@ -23,14 +23,17 @@ mepc:
         On an exception retun from M-mode (from the MRET instruction),
         control transfers to the virtual address read out of `mepc.PC`.
 
-        Because PCs are always <% if ext?(:C) %>halfword<% else %>word<% end %>-aligned,
-        <% if ext?(:C) %>bit 0<% else %>bits 1:0<% end %> of `mepc.PC` are always
+        [when,"ext?(:C)"]
+        Because PCs are always halfword-aligned, bit 0 of `mepc.PC` is always
         read-only 0.
 
-        <% if ext?(:C) && MUTABLE_MISA_C %>
+        [when,"!ext?(:C)"]
+        Because PCs are always word-aligned, bits 1:0 of `mepc.PC` are always
+        read-only 0.
+
+        [when,"ext?(:C) && MUTABLE_MISA_C == true"]
         When `misa.C` is clear, bit 1 is masked to zero. Writes to bit 1 are still captured, and
         may be visible on the next read with `misa.C` is set.
-        <% end %>
       type: RW-RH
       sw_write(csr_value): |
         return csr_value.PC & ~64'b1;

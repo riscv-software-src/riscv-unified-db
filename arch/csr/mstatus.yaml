@@ -15,8 +15,8 @@ mstatus:
   definedBy: I
   fields:
     SD:
-      location_rv32: 31-0
-      location_rv64: 63-0
+      location_rv32: 31
+      location_rv64: 63
       description: |
         State Dirty.
         
@@ -57,12 +57,11 @@ mstatus:
         Controls the endianness of data M-mode (0 = little, 1 = big).
         Instructions are always little endian, regardless of the data setting.
 
-        <%- if M_MODE_ENDIANESS == "little" -%>
+        [when,"M_MODE_ENDIANESS == little"]
         Since the CPU does not support big endian, this is hardwired to 0.
-        <%- elsif M_MODE_ENDIANESS == "bit" -%>
-        Since the CPU does not support litte endian, this is hardwired to 1.
-        <%- end -%><%# M_MODE_ENDIANESS == "dynamic" -%>
 
+        [when,"M_MODE_ENDIANESS == big"]
+        Since the CPU does not support litte endian, this is hardwired to 1.
       type(): |
         return (M_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
 
@@ -80,12 +79,11 @@ mstatus:
         Controls the endianness of S-mode (0 = little, 1 = big).
         Instructions are always little endian, regardless of the data setting.
 
-        <%- if S_MODE_ENDIANESS == "little" -%>
+        [when,"S_MODE_ENDIANESS == little"]
         Since the CPU does not support big endian, this is hardwired to 0.
-        <%- elsif S_MODE_ENDIANESS == "big" -%>
-        Since the CPU does not support litte endian, this is hardwired to 1.
-        <%- end -%><%# S_MODE_ENDIANESS == "dynamic" -%>
 
+        [when,"S_MODE_ENDIANESS == big"]
+        Since the CPU does not support litte endian, this is hardwired to 1.
       type(): |
         return (S_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
 
@@ -107,25 +105,20 @@ mstatus:
         
         Sets the effective XLEN for S-mode (0 = 32-bit, 1 = 64-bit, 2 = 128-bit [reserved]).
 
-        <%- if ext?(:S) -%>
-        <%- if SXLEN == 32 -%>
-
+        [when,"SXLEN==32"]
         Since the CPU only supports SXLEN==32, this is hardwired to 0.
 
-        <%- SXLEN == 64 -%>
-
+        [when,"SXLEN==32"]
         Since the CPU only supports SXLEN==64, this is hardwired to 1.
 
-        <%- else -%><%# SXLEN == 3264 -%>
-
+        [when,"SXLEN=3264"]
+        --
         It is not valid to have SXLEN less than UXLEN.
         
         It is UNDEFINED_LEGAL what will happen if a software sets `mstatus.SXL` to be greater than `mstatus.UXL`.
        
         It is UNDEFINED_LEGAL to set the MSB of SXL.
-
-        <%- end -%>
-        <%- end -%>
+        --
       type(): |
         return (implemented?(ExtensionName::S) && SXLEN == 3264) ? CsrFieldType::RW : CsrFieldType::RO;
 
@@ -161,24 +154,21 @@ mstatus:
         
         Sets the effective XLEN for U-mode (0 = 32-bit, 1 = 64-bit, 2 = 128-bit [reserved]).
 
-        <%- if UXLEN == 32 -%>
-
+        [when,"UXLEN == 32"]
         Since the CPU only supports UXLEN==32, this is hardwired to 0.
 
-        <%- elsif UXLEN == 64 -%>
-
+        [when,"UXLEN == 64"]
         Since the CPU only supports UXLEN==64, this is hardwired to 1.
 
-        <%- else -%><%# UXLEN == 3264 -%>
 
+        [when,"UXLEN == 3264"]
+        --
         It is not valid to have SXLEN less than UXLEN.
         
         It is UNDEFINED_LEGAL what will happen if a software sets `mstatus.SXL` to be greater than `mstatus.UXL`.
        
         It is UNDEFINED_LEGAL to set the MSB of UXL.
-
-        <%- end -%>
-
+        --
       type(): |
         return (UXLEN == 3264) ? CsrFieldType::RW : CsrFieldType::RO;
 
@@ -218,9 +208,8 @@ mstatus:
         When 1, attempts to execute the `sret` instruction while executing in HS/S-mode
         will raise an Illegal Instruction exception.
 
-        <%- if ext?(:H) -%>
+        [when,"ext?(:H)"]
         Does not affect the behavior of `sret` in VS_mode (see `hstatus.VTSR`).
-        <%- end -%>
       type: RW
       definedBy: S
       reset_value: UNDEFINED_LEGAL
@@ -274,29 +263,18 @@ mstatus:
         to a 'U' (user) page will cause an ILLEGAL INSTRUCTION exception.
       definedBy: S
       type(): |
-        Boolean has_vm =
-          implemented?(ExtensionName::Sv32) ||
-          implemented?(ExtensionName::Sv39) ||
-          implemented?(ExtensionName::Sv48) ||
-          implemented?(ExtensionName::Sv57);
-        # note that has_vm implies S extension is implemented
-        if (!has_vm) {
-          return CsrFieldType::RO;
-        } else {
+        # only writable if there is some translation supported
+        if (has_virt_mem?()) {
           return CsrFieldType::RW;
+        } else {
+          return CsrFieldType::RO;
         }
       reset_value(): |
-        Boolean has_vm =
-          implemented?(ExtensionName::Sv32) ||
-          implemented?(ExtensionName::Sv39) ||
-          implemented?(ExtensionName::Sv48) ||
-          implemented?(ExtensionName::Sv57);
-        # note that has_vm implies S extension is implemented
-        if (!has_vm) {
+        if (has_virt_mem?()) {
+          return UNDEFINED_LEGAL;
+        } else {
           # read-only zero when there is no virtual memory
           return 0;
-        } else {
-          return UNDEFINED_LEGAL;
         }
     MPRV:
       location: 17
@@ -441,12 +419,11 @@ mstatus:
         Controls the endianness of U-mode (0 = little, 1 = big).
         Instructions are always little endian, regardless of the data setting.
 
-        <%- if U_MODE_ENDIANESS == "little" -%>
+        [when,"U_MODE_ENDIANESS == 'little'"]
         Since the CPU does not support big endian in U-mode, this is hardwired to 0.
-        <%- elsif U_MODE_ENDIANESS == "big" -%>
-        Since the CPU does not support litte endian in U-mode, this is hardwired to 1.
-        <%- end -%><%# U_MODE_ENDIANESS == "dynamic" -%>
-      
+
+        [when,"U_MODE_ENDIANESS == 'big'"]
+        Since the CPU does not support litte endian in U-mode, this is hardwired to 1.      
       type(): |
         return (U_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
 

@@ -31,6 +31,19 @@ function ary_includes? {
   }
 }
 
+function has_virt_mem? {
+  returns Boolean
+  description {
+    Returns true if some virtual memory translation (Sv*) is supported in the config.
+  }
+  body {
+    return implemented?(ExtensionName::Sv32) ||
+           implemented?(ExtensionName::Sv39) ||
+           implemented?(ExtensionName::Sv48) ||
+           implemented?(ExtensionName::Sv57);
+  }
+}
+
 function highest_set_bit {
   returns XReg
   arguments XReg value

@@ -18,7 +18,7 @@ pmpaddr<%= pmpaddr_num %>:
       location_rv32: 31-0
       location_rv64: 63-0
       description: |
-        Bits <%%= PHYS_ADDR_WIDTH-1 %>:2 of the address specifier for PMP entry <%= pmpaddr_num %>
+        Bits PHYS_ADDR_WIDTH-1:2 of the address specifier for PMP entry <%= pmpaddr_num %>
         (or, if `pmp<%= pmpaddr_num+1 %>cfg.A` == TOR, for PMP entry <%= pmpaddr_num + 1 %>).
       type(): |
         if (NUM_PMP_ENTRIES > <%= pmpaddr_num %>) {

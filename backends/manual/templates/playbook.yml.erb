@@ -1,9 +1,11 @@
 ---
 site:
   title: <%= manual.marketing_name %>
-  start_page: ROOT:landing.adoc
+  start_page: landing:ROOT:index.adoc
 content:
   sources:
+  - url: <%= $root %>
+    start_path: gen/manual/<%= manual.name %>/top/<%= output_hash %>/antora/landing
   <%- versions.each do |version| -%>
   - url: <%= $root %>
     start_path: gen/manual/<%= manual.name %>/<%= version.name %>/antora
@@ -15,6 +17,7 @@ asciidoc:
   extensions:
   - 'asciidoctor-kroki'
   - '@asciidoctor/tabs'
+  - '<%= $root %>/lib/asciidoc_when_extension.js'
 ui:
   bundle:
     url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
@@ -90,4 +93,13 @@ ui:
         padding: 1em;
         border-radius: 25px;
         border: 2px solid;
+      }
+
+      .doc .admonitionblock td.icon i.icon-when {
+        background-color: #fffdd0;
+        color: #000;
+      }
+
+      .doc .admonitionblock td.icon i.icon-when::after {
+        text-transform: none;
       }

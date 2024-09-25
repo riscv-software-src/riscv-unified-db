@@ -2364,7 +2364,9 @@ module Idl
 
     # @return [BinaryExpressionAst] this expression, but with an inverted condition
     def invert(symtab)
-      type_error "Not a boolean operator" unless type(symtab).kind == :boolean
+      unless symtab.nil?
+        type_error "Not a boolean operator" unless type(symtab).kind == :boolean
+      end
 
       inverted_op_map = {
         "==" => "!=",
@@ -2375,11 +2377,11 @@ module Idl
         ">=" => "<"
       }
 
-      raise "TODO" unless inverted_op_map.key?(op)
-
-      inverted_text = "#{lhs.to_idl} #{op} #{rhs.to_idl}"
-      inverted_op_node = Treetop::Runtime::SyntaxNode.new(inverted_op_map[op], (0..inverted_op_map[op].size))
-      BinaryExpressionAst.new(inverted_text, 0..(inverted_text.size - 1), lhs, inverted_op_node, rhs)
+      if inverted_op_map.key?(op)
+        BinaryExpressionAst.new(input, interval, lhs, inverted_op_map[op], rhs)
+      else
+        UnaryOperatorExpressionAst.new(input, interval, "!", self)
+      end
       # else
       #   # harder case of && / ||
       #   if op == "&&"
@@ -3180,6 +3182,16 @@ module Idl
       super(input, interval, [expression])
 
       @op = op
+    end
+
+    def invert(symtab)
+      unless symtab.nil?
+        type_error "Not a boolean operator" unless type(symtab).kind == :boolean
+      end
+
+      type_error "Invert only works with !" unless op == "!"
+
+      expression
     end
 
     # @!macro type
@@ -4747,7 +4759,6 @@ module Idl
     include Executable
     include Returns
 
-    attr_reader :stmts
     def stmts = @children
 
     def initialize(input, interval, body_stmts)

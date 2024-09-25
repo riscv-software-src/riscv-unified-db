@@ -13,7 +13,8 @@
     COUNT:
       location: 63-0
       description: |
-        <%%- if HPM_COUNTER_EN[<%= hpm_num %>] -%>
+        [when="HPM_COUNTER_EN[<%= hpm_num %>] == true"]
+        --
         Performance counter for event selected in `mhpmevent<%= hpm_num %>.EVENT`.
 
         Increments every time event occurs unless:
@@ -32,9 +33,10 @@
           * `mhpmevent<%= hpm_num %>.VUINH` <%%- if ext?(:Ssccfg) -%>or its alias `hpmevent<%= hpm_num %>.SINH`<%%- end -%> is set and the current privilege level is VU
           <%%- end -%>
           <%%- end -%>
-        <%%- else -%>
+        --
+
+        [when="HPM_COUNTER_EN[<%= hpm_num %>] == false"]
         Unimplemented performance counter. Must be read-only 0 (access does not cause trap).
-        <%%- end -%>
 
       type(): 'return (HPM_COUNTER_EN[<%= hpm_num %>]) ? CsrFieldType::RWH : CsrFieldType::RO;'
       reset_value(): 'return (HPM_COUNTER_EN[<%= hpm_num %>]) ? UNDEFINED_LEGAL : 0;'

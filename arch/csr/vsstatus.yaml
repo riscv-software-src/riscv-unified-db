@@ -5,7 +5,7 @@ vsstatus:
   address: 0x200
   virtual_address: 0x100
   priv_mode: VS
-  length: 64
+  length: VSXLEN
   description: |
     The vsstatus register tracks and controls the hart's current operating state.
 
@@ -17,7 +17,8 @@ vsstatus:
   definedBy: H
   fields:
     SD:
-      location: 63
+      location_rv64: 63
+      location_rv32: 31
       description: |
         *State Dirty*
         
@@ -34,15 +35,17 @@ vsstatus:
       affectedBy: [F, D, V]
     UXL:
       location: 33-32
+      base: 64
       description: |
         *VU-mode XLEN*
 
         Sets the effective XLEN for VU-mode (0 = 32-bit, 1 = 64-bit, 2 = 128-bit).
-        <% if VUXLEN == 32 -%>
+
+        [when,"VUXLEN == 32"]
         Since the hart only supports VUXLEN==32, this is hardwired to 0.
-        <% elsif VUXLEN == 64 -%>
+
+        [when,"VUXLEN == 64"]
         Since the hart only supports VUXLEN==64, this is hardwired to 1.
-        <%- end -%><%# VUXLEN == 3264 -%>
 
       type(): |
         return (VUXLEN == 3264) ? CsrFieldType::RW : CsrFieldType::RO;
@@ -154,11 +157,12 @@ vsstatus:
         *VU-mode Big Endian*
 
         Controls the endianness of VU-mode (0 = little, 1 = big).
-        <%- if VU_MODE_ENDIANESS == "little" -%>
+
+        [when,"VU_MODE_ENDIANESS == 'little'"]
         Since the CPU does not support big endian, this is hardwired to 0.
-        <%- elsif VU_MODE_ENDIANESS == "big" -%>
+
+        [when,"VU_MODE_ENDIANESS == 'big'"]
         Since the CPU does not support big endian, this is hardwired to 1.
-        <%- end -%><%# VU_MODE_ENDIANESS == "dynamic" -%>
       type(): |
         return (VU_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
       definedBy: S
