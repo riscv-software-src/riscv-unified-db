@@ -626,3 +626,12 @@ H:
       schema:
         type: string
         enum: ['always zero', 'always transformed standard instruction', 'custom']
+    TRAP_ON_ECALL_FROM_VS:
+      description: |
+        Whether or not an ECALL-from-VS-mode causes a synchronous exception.
+
+        The spec states that implementations may handle ECALLs transparently
+        without raising a trap, in which case the EEI must provide a builtin.
+      schema:
+        type: boolean
+        default: true

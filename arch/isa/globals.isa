@@ -299,7 +299,7 @@ function exception_handling_mode {
 }
 
 function unimplemented_csr {
-  arguments Bits<INST_ENCODING_WIDTH> encoding
+  arguments Bits<INSTR_ENC_SIZE> encoding
   description {
     Either raises an IllegalInstruction exception or enters unpredictable state,
     depending on the setting of the TRAP_ON_UNIMPLEMENTED_CSR parameter.
@@ -591,13 +591,16 @@ function raise {
     if (!PRECISE_SYNCHRONOUS_EXCEPTIONS) {
       unpredictable("Imprecise synchronous exception");
     } else {
-      raise_precise(exception_code, tval);
+      raise_precise(exception_code, from_mode, tval);
     }
   }
 }
 
 function raise_precise {
-  arguments ExceptionCode exception_code, XReg tval
+  arguments
+    ExceptionCode exception_code, # exception code to raise
+    PrivilegeMode from_mode,      # the effective mode to raise from (may be different than actual current mode)
+    XReg tval                     # value to write into tval
   description {
     Raise synchronous exception number `exception_code`.
   }

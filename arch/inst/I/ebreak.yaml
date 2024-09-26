@@ -26,7 +26,7 @@ ebreak:
     vu: always
   operation(): |
     if (TRAP_ON_EBREAK) {
-      raise_precise(ExceptionCode::Breakpoint, $pc);
+      raise_precise(ExceptionCode::Breakpoint, mode(), $pc);
     } else {
       eei_ebreak();
     }

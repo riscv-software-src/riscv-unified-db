@@ -30,25 +30,25 @@ ecall:
   operation(): |
     if (mode() == PrivilegeMode::M) {
       if (TRAP_ON_ECALL_FROM_M) {
-        raise_precise(ExceptionCode::Mcall, 0);
+        raise_precise(ExceptionCode::Mcall, PrivilegeMode::M, 0);
       } else {
         eei_ecall_from_m();
       }
     } else if (mode() == PrivilegeMode::S) {
       if (TRAP_ON_ECALL_FROM_S) {
-        raise_precise(ExceptionCode::Scall, 0);
+        raise_precise(ExceptionCode::Scall, PrivilegeMode::S, 0);
       } else {
         eei_ecall_from_s();
       }
     } else if (mode() == PrivilegeMode::U || mode() == PrivilegeMode::VU) {
       if (TRAP_ON_ECALL_FROM_U) {
-        raise_precise(ExceptionCode::Ucall, 0);
+        raise_precise(ExceptionCode::Ucall, mode(), 0);
       } else {
         eei_ecall_from_u();
       }
     } else if (mode() == PrivilegeMode::VS) {
       if (TRAP_ON_ECALL_FROM_VS) {
-        raise_precise(ExceptionCode::VScall, 0);
+        raise_precise(ExceptionCode::VScall, PrivilegeMode::VS, 0);
       } else {
         eei_ecall_from_vs();
       }
