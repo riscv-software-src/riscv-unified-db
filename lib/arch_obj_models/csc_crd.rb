@@ -110,7 +110,7 @@ class CscCrd < ArchDefObject
   end
 
   class ParameterConstraint
-    attr_reader :param
+    attr_reader :param  # ExtensionParameter object
     attr_reader :note
 
     def initialize(param, constraint, note)
@@ -141,42 +141,47 @@ class CscCrd < ArchDefObject
         raise "TODO: Pretty schema for #{@schema_constraint}"
       end
     end
-
   end
 
+  # @return [Array<ParameterConstraint>] List of parameters constraints specified by an extension requirement.
   def param_constraints(ext_req)
     param_constraints = []    # Local variable, no caching
 
     ext_data = @data["extensions"][ext_req.status].find {|ext| ext["name"] == ext_req.name}
     raise "Cannot find extension named #{ext_req.name}" if ext_data.nil?
     
-    from_ext = @arch_def.extension(ext_data["name"])
-    raise "Cannot find extension named #{ext_data["name"]}" if from_ext.nil?
+    # Find Extension object from database
+    ext_db = @arch_def.extension(ext_data["name"])
+    raise "Cannot find extension named #{ext_data["name"]}" if ext_db.nil?
 
     # & is the safe navigation operator
     ext_data["param_constraints"]&.each do |param_name, param_data|
-        param = from_ext.params.find { |p| p.name == param_name }
-        raise "There is no param '#{param_name}' in extension '#{ext_data["name"]}" if param.nil?
+        # Find ExtensionParameter object from database
+        ext_param_db = ext_db.params.find { |p| p.name == param_name }
+        raise "There is no param '#{param_name}' in extension '#{ext_data["name"]}" if ext_param_db.nil?
 
-        param_constraints << ParameterConstraint.new(param, param_data["schema"], param_data["note"])
+        param_constraints << ParameterConstraint.new(ext_param_db, param_data["schema"], param_data["note"])
     end
 
     param_constraints
   end
 
+  # @return [Array<ParameterConstraint>] List of parameters constraints specified by any extension.
   def in_scope_param_constraints
     return @in_scope_param_constraints unless @in_scope_param_constraints.nil?
 
     @in_scope_param_constraints = []
 
+    # XXX - Only looks at mandatory
     @data["extensions"]["mandatory"].each do |ext_data| 
-      from_ext = @arch_def.extension(ext_data["name"])
-      raise "Cannot find extension named #{ext_data["name"]}" if from_ext.nil?
+      # Find Extension object from database
+      ext_db = @arch_def.extension(ext_data["name"])
+      raise "Cannot find extension named #{ext_data["name"]}" if ext_db.nil?
 
       next if ext_data["param_constraints"].nil?
 
       ext_data["param_constraints"].each do |param_name, param_data|
-        param = from_ext.params.find { |p| p.name == param_name }
+        param = ext_db.params.find { |p| p.name == param_name }
         raise "There is no param '#{param_name}' in extension '#{ext_data["name"]}" if param.nil?
 
         @in_scope_param_constraints << ParameterConstraint.new(param, param_data["schema"], param_data["note"])
@@ -185,7 +190,7 @@ class CscCrd < ArchDefObject
     @in_scope_param_constraints
   end
 
-  # @return [Array<ExtensionParameter>] List of parameters that are out of scope
+  # @return [Array<ParameterConstraint>] List of parameters that are out of scope across all extensions.
   def out_of_scope_param_constraints
     return @out_of_scope_param_constraints unless @out_of_scope_param_constraints.nil?
  
