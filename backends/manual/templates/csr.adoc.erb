@@ -5,7 +5,7 @@
 
 *<%= csr.long_name %>*
 
-<%= arch_def.render_erb(csr.description) %>
+<%= arch_def.render_erb(csr.description, "#{csr.name}.description") %>
 
 == Attributes
 [%autowidth]

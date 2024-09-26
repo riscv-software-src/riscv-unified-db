@@ -136,7 +136,7 @@ class Extension < ArchDefObject
 
             param_data["also_defined_in"].each do |other_ext_name|
               other_ext = arch_def.extension(other_ext_name)
-              raise "Definition error in #{name}.#{param_name}: #{param_data['also_defined_in']} is not a known extension" if other.nil?
+              raise "Definition error in #{name}.#{param_name}: #{param_data['also_defined_in']} is not a known extension" if other_ext.nil?
               also_defined_in << other_ext
             end
           end
@@ -154,7 +154,7 @@ class Extension < ArchDefObject
   end
 
   # @param ext_data [Hash<String, Object>] The extension data from the architecture spec
-  # @param arch_def [ArchDef] The architecture defintion
+  # @param arch_def [ArchDef] The architecture definition
   def initialize(ext_data, arch_def)
     super(ext_data)
     @arch_def = arch_def
@@ -300,6 +300,9 @@ end
 class ExtensionRequirement
   # @return [String] Extension name
   attr_reader :name
+  attr_reader :note     # Optional note. Can be nil.
+  attr_reader :req_id   # Optional Requirement ID. Can be nil.
+  attr_reader :status   # Optional status (e.g., Mandatory, Optional, etc.). Can be nil.
 
   # @return [Gem::Requirement] Version requirement
   def version_requirement
@@ -312,7 +315,7 @@ class ExtensionRequirement
 
   # @param name [#to_s] Extension name
   # @param requirements (see Gem::Requirement#new)
-  def initialize(name, *requirements)
+  def initialize(name, *requirements, note: nil, req_id: nil, status: nil)
     @name = name.to_s
     requirements =
       if requirements.empty?
@@ -321,6 +324,9 @@ class ExtensionRequirement
         requirements
       end
     @requirement = Gem::Requirement.new(requirements)
+    @note = note
+    @req_id = req_id
+    @status = status
   end
 
   # @overload
@@ -345,5 +351,12 @@ class ExtensionRequirement
     else
       raise ArgumentError, "Wrong number of args (expecting 1 or 2)"
     end
+  end
+
+  # sorts by name
+  def <=>(other)
+    raise ArgumentError, "ExtensionRequirements are only comparable to other extension requirements" unless other.is_a?(ExtensionRequirement)
+
+    @name <=> other.name
   end
 end

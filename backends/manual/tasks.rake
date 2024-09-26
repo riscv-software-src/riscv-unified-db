@@ -361,7 +361,7 @@ end
 
 namespace :gen do
   html_manual_desc = <<~DESC
-    Generate an HTML site for one or more versions of the manual.
+    Generate an HTML site for one or more versions of the manual (./do --desc for options)
 
     Options:
 
@@ -378,7 +378,7 @@ namespace :gen do
       A static HTML website will be written into gen/manual/MANUAL_NAME/<hash of versions>/html
   DESC
   desc html_manual_desc
-  task :html_manual, [:manual_name, :version] => "gen:arch" do
+  task :html_manual => "gen:arch" do
     raise ArgumentError, "Missing required environment variable MANUAL_NAME\n\n#{html_manual_desc}" if ENV["MANUAL_NAME"].nil?
     raise ArgumentError, "Missing required environment variable VERSIONS\n\n#{html_manual_desc}" if ENV["VERSIONS"].nil?
 

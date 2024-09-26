@@ -32,6 +32,25 @@ builtin function read_hpm_counter {
   }
 }
 
+builtin function hartid {
+  returns XReg   # hart id
+  description {
+    Returns the value for `mhartid` as seen by this hart.
+
+    Must obey the rules of the priv spec:
+
+    [quote]
+    ____
+    The `mhartid` CSR is an MXLEN-bit read-only register containing the integer ID of the hardware
+    thread running the code.
+    This register must be readable in any implementation.
+    Hart IDs might not necessarily be numbered contiguously in a multiprocessor system, but at
+    least one hart must have a hart ID of zero.
+    Hart IDs must be unique within the execution environment.
+    ____
+  }
+}
+
 builtin function read_mcycle {
   returns Bits<64>
   description {
@@ -66,6 +85,56 @@ builtin function cache_block_zero {
 
     A cache-block-sized region is zeroed regardless of whether
     or not the memory is in a cacheable PMA region.
+  }
+}
+
+builtin function eei_ecall_from_m {
+  description {
+    When TRAP_ON_ECALL_FROM_M is false, this function will be called to
+    emulate the EEI handling of ECALL-from-M.
+
+    If TRAP_ON_ECALL_FROM_M is true, this function will never be called,
+    and does not need to be provided (if pruning is applied to IDL).
+  }
+}
+
+builtin function eei_ecall_from_s {
+  description {
+    When TRAP_ON_ECALL_FROM_S is false, this function will be called to
+    emulate the EEI handling of ECALL-from-S.
+
+    If TRAP_ON_ECALL_FROM_S is true, this function will never be called,
+    and does not need to be provided (if pruning is applied to IDL).
+  }
+}
+
+builtin function eei_ecall_from_u {
+  description {
+    When TRAP_ON_ECALL_FROM_U is false, this function will be called to
+    emulate the EEI handling of ECALL-from-U.
+
+    If TRAP_ON_ECALL_FROM_U is true, this function will never be called,
+    and does not need to be provided (if pruning is applied to IDL).
+  }
+}
+
+builtin function eei_ecall_from_vs {
+  description {
+    When TRAP_ON_ECALL_FROM_VS is false, this function will be called to
+    emulate the EEI handling of ECALL-from-VS.
+
+    If TRAP_ON_ECALL_FROM_VS is true, this function will never be called,
+    and does not need to be provided (if pruning is applied to IDL).
+  }
+}
+
+builtin function eei_ebreak {
+  description {
+    When TRAP_ON_EBREAK is false, this function will be called to
+    emulate the EEI handling of EBREAK
+
+    If TRAP_ON_EBREAK is true, this function will never be called,
+    and does not need to be provided (if pruning is applied to IDL).
   }
 }
 

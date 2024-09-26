@@ -19,6 +19,11 @@
         "nonstandard-released"
       ]
     },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "A specific day in YYYY-MM-DD format, for example 2018-11-13"
+    },
     "extension_name": {
       "type": "string",
       "pattern": "^([A-WY])|([SXZ][a-z0-9]+)$"

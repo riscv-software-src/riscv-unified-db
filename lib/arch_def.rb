@@ -17,6 +17,7 @@ require_relative "arch_obj_models/csr_field"
 require_relative "arch_obj_models/csr"
 require_relative "arch_obj_models/instruction"
 require_relative "arch_obj_models/extension"
+require_relative "arch_obj_models/csc_crd"
 
 class ArchDef
   # @return [Idl::Compiler] The IDL compiler
@@ -37,7 +38,7 @@ class ArchDef
     unless from_child
       arch_def_file = $root / "gen" / "_" / "arch" / "arch_def.yaml"
 
-      @arch_def = YAML.load_file(arch_def_file)
+      @arch_def = YAML.load_file(arch_def_file, permitted_classes: [Date])
 
       # parse globals
       @global_ast = @idl_compiler.compile_file(
@@ -302,6 +303,50 @@ class ArchDef
   # @return [Profile] The profile named +name+
   # @return [nil] if the profile does not exist
   def profile(name) = profiles_hash[name]
+
+  def csc_crd_families
+    return @csc_crd_families unless @csc_crd_families.nil?
+
+    @csc_crd_families = []
+    @arch_def["csc_crd_families"].each_value do |family_data|
+      @csc_crd_families << CscCrdFamily.new(family_data, self)
+    end
+    @csc_crd_families
+  end
+
+  def csc_crd_famlies_hash
+    return @csc_crd_families_hash unless @csc_crd_families_hash.nil?
+
+    @csc_crd_families_hash = {}
+    csc_crd_families.each do |family|
+      @csc_crd_families_hash[family.name] = family
+    end
+    @csc_crd_families_hash
+  end
+
+  def csc_crd_family(name) = csc_crd_famlies_hash[name]
+
+  def csc_crds
+    return @csc_crds unless @csc_crds.nil?
+
+    @csc_crds = []
+    @arch_def["csc_crds"].each_value do |csc_crd_data|
+      @csc_crds << CscCrd.new(csc_crd_data, self)
+    end
+    @csc_crds
+  end
+
+  def csc_crds_hash
+    return @csc_crds_hash unless @csc_crds_hash.nil?
+
+    @csc_crds_hash = {}
+    csc_crds.each do |csc_crd|
+      @csc_crds_hash[csc_crd.name] = csc_crd
+    end
+    @csc_crds_hash
+  end
+
+  def csc_crd(name) = csc_crds_hash[name]
 
   # @return [Array<ExceptionCode>] All exception codes defined by extensions
   def exception_codes

@@ -15,7 +15,7 @@ mhpmcounter8:
     COUNT:
       location: 63-0
       description: |
-        [when,"HPM_COUNTER_EN[8] == true"]
+        [when="HPM_COUNTER_EN[8] == true"]
         --
         Performance counter for event selected in `mhpmevent8.EVENT`.
 
@@ -37,7 +37,7 @@ mhpmcounter8:
           <%- end -%>
         --
 
-        [when,"HPM_COUNTER_EN[8] == false"]
+        [when="HPM_COUNTER_EN[8] == false"]
         Unimplemented performance counter. Must be read-only 0 (access does not cause trap).
 
       type(): 'return (HPM_COUNTER_EN[8]) ? CsrFieldType::RWH : CsrFieldType::RO;'

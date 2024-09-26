@@ -1,0 +1,223 @@
+// Number heading sections (e.g., 1.0, 1.1, etc.)
+:sectnums:  
+
+// Add a table of contents for HTML (and VSCode adoc preview)
+:toc: left
+
+= <%= crd.name %> Certification Requirements Document
+
+[Preface]
+== <%= crd.family.name %> Family Revision History
+
+Contains documentation changes that apply to all releases of the family.
+
+[cols="1,1,5"]
+|===
+| Date | Revision | Changes
+
+<%- crd.family.revisions.each do |rev| -%>
+| <%= rev.date %> 
+| <%= rev.version %>
+a| <%- rev.changes.each do |change| %>
+* <%= change %>
+<%- end -%>
+<%- end -%>
+|===
+
+== Introduction
+
+<%= crd.family.introduction %>
+
+=== Naming Scheme
+
+<%= crd.family.naming_scheme %>
+
+=== <%= crd.name %> Description
+
+<%= crd.description %>
+
+=== Related Specifications
+
+[cols="2,2,3,3,3"]
+|===
+| MC Version | TSC Profile | Unpriv ISA Manual | Priv ISA Manual | Debug Manual
+
+| <%= crd.name %>
+| <%= crd.tsc_profile.nil? ? "No profile" : crd.tsc_profile.marketing_name %>
+| <%= crd.unpriv_isa_manual_revision %>
+| <%= crd.priv_isa_manual_revision %>
+| <%= crd.debug_manual_revision %>
+|===
+
+=== Privileged Modes
+
+|===
+| M | S | U | VS | VU
+
+| <%- if crd.family.mandatory_priv_modes.include?('M') -%> MANDATORY <%- else -%> OUT_OF_SCOPE <%- end -%>
+| <%- if crd.family.mandatory_priv_modes.include?('S') -%> MANDATORY <%- else -%> OUT_OF_SCOPE <%- end -%>
+| <%- if crd.family.mandatory_priv_modes.include?('U') -%> MANDATORY <%- else -%> OUT_OF_SCOPE <%- end -%>
+| <%- if crd.family.mandatory_priv_modes.include?('VS') -%> MANDATORY <%- else -%> OUT_OF_SCOPE <%- end -%>
+| <%- if crd.family.mandatory_priv_modes.include?('VU') -%> MANDATORY <%- else -%> OUT_OF_SCOPE <%- end -%>
+
+|===
+
+== Extension Requirements
+
+=== Summary
+
+The following table lists all extensions that are IN SCOPE (i.e., MANDATORY or OPTIONAL).
+Any extension not listed in the table below is OUT OF SCOPE.
+
+[%autowidth]
+|===
+| Requirement ID | Extension | Version Requirement | Status | Long Name
+
+<%- crd.extension_reqs.sort.each do |ext_req| -%>
+<%- ext = crd.arch_def.extension(ext_req.name) -%>
+| <%= ext_req.req_id %>
+| <%= ext_req.name %>
+| <%= ext_req.version_requirement %>
+| <%= ext_req.status.upcase %>
+| <%= ext.nil? ? "" : ext.long_name %>
+<%- end -%>
+|===
+
+<%- crd.extension_reqs.sort.each do |ext_req| -%>
+<%- ext = crd.arch_def.extension(ext_req.name) -%>
+
+=== Extension <%= ext_req.name %> +
+*Requirement ID*: <%= ext_req.req_id %> +
+<%= ext.nil? ? "" : "*Long Name*: " + ext.long_name + " +" %>
+*Version Requirement*: <%= ext_req.version_requirement %> +
+*Status*: <%= ext_req.status.upcase %> +
+<%- unless ext_req.note.nil? -%>
+[NOTE]
+--
+<%= ext_req.note %>
+--
+<%- end -%>
+
+<%- unless crd.param_constraints(ext_req).empty? -%>
+==== IN SCOPE Parameters
+
+These parameters are covered by an <%= crd.name %> certificate.
+
+[cols="3,1,2"]
+|===
+| Parameter | Constraint | Note
+<%- crd.param_constraints(ext_req).each do |constraint| -%>
+| <<anchor-ext-<%= ext_req.name %>-param-<%= constraint.param.name %>,<%= constraint.param.name %>>> 
+| <%= constraint.schema_constraint_pretty == "" ? "Unconstrained" : constraint.schema_constraint_pretty %>
+a| <%= constraint.note %>
+<%- end # do constraint -%>
+|===
+<%- end # unless table -%>
+
+<%- unless crd.extension_out_of_scope_param_constraints(ext_req).empty? -%>
+==== OUT OF SCOPE Parameters
+
+These parameters are *NOT* covered by an <%= crd.name %> certificate.
+
+<%- crd.extension_out_of_scope_param_constraints(ext_req).each do |param| -%>
+* <<anchor-ext-<%= ext_req.name %>-param-<%= param.name %>,<%= param.name %>>> 
+<%- end # do constraint -%>
+<%- end # unless table -%>
+<%- end # do extension-%>
+
+== Additional Requirements
+
+This section contains requirements in addition to those already specified related to extensions and parameters.
+These additional requirements are organized as groups of related requirements.
+
+<%- crd.requirement_groups.each do |group| -%>
+=== <%= group.name %>
+
+<%= group.description %>
+
+<%- unless group.when.nil? -%>
+[IMPORTANT]
+<%= group.name %> requirements only apply when <%= group.when_pretty %>.
+<%- end -%>
+
+[%autowidth]
+|===
+| Req Number | Description
+
+<%- group.requirements.each do |req| -%>
+| <%= req.name %>
+a| <%= req.description %>
+<%- unless req.when.nil? -%>
+[IMPORTANT]
+Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
+<%- end -%>
+<%- end -%>
+|===
+
+<%- end -%>
+
+[appendix]
+== Extension Descriptions
+<%- crd.extension_reqs.sort.each do |ext_req| -%>
+<%- ext = crd.arch_def.extension(ext_req.name) -%>
+
+=== Extension <%= ext_req.name %> +
+<%= ext.nil? ? "" : "*Long Name*: " + ext.long_name + " +" %>
+
+*Version Requirement*: <%= ext_req.version_requirement %> +
+
+==== Synopsis
+
+:leveloffset: +3
+
+<%= ext.description %>
+
+:leveloffset: -3
+
+<%- unless ext_req.note.nil? -%>
+[NOTE]
+--
+<%= ext_req.note %>
+--
+<%- end -%>
+<%- end -%>
+
+[appendix]
+== Extension Parameters
+<%- crd.extension_reqs.sort.each do |ext_req| -%>
+<%- ext = crd.arch_def.extension(ext_req.name) -%>
+
+=== Extension <%= ext_req.name %> +
+<%- if crd.arch_def.extension(ext_req.name).params.empty? -%>
+None
+<%- end %>
+<%- unless crd.param_constraints(ext_req).empty? -%>
+==== IN SCOPE Parameters
+
+These parameters are covered by an <%= crd.name %> certificate.
+
+<%- crd.param_constraints(ext_req).each do |constraint| -%>
+[[anchor-ext-<%= ext_req.name %>-param-<%= constraint.param.name %>]]
+<%= constraint.param.name %>::
++
+--
+<%= constraint.param.desc %>
+--
+<%- end # do constraint -%>
+<%- end # unless table -%>
+
+<%- unless crd.extension_out_of_scope_param_constraints(ext_req).empty? -%>
+==== OUT OF SCOPE Parameters
+
+These parameters are *NOT* covered by an <%= crd.name %> certificate.
+
+<%- crd.extension_out_of_scope_param_constraints(ext_req).each do |param| -%>
+[[anchor-ext-<%= ext_req.name %>-param-<%= param.name %>]]
+<%= param.name %>::
++
+--
+<%= param.desc %>
+--
+<%- end # do constraint -%>
+<%- end # unless table -%>
+<%- end -%>
