@@ -2,8 +2,7 @@
 
 require_relative "obj"
 
-
-# an implmentation parameter/option for an extension
+# A parameter (AKA option, AKA implementation-defined value) supported by an extension
 class ExtensionParameter
   # @return [String] Parameter name
   attr_reader :name
@@ -296,7 +295,7 @@ class ExtensionVersion
   end
 end
 
-# represents an extension requirement, that is an extension name paired with version requirement(s)
+# Represents an extension requirement, that is an extension name paired with version requirement(s)
 class ExtensionRequirement
   # @return [String] Extension name
   attr_reader :name

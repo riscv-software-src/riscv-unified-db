@@ -54,11 +54,11 @@ a| <%- rev.changes.each do |change| %>
 |===
 | M | S | U | VS | VU
 
-| <%- if crd.family.mandatory_priv_modes.include?('M') -%> MANDATORY <%- else -%> OUT_OF_SCOPE <%- end -%>
-| <%- if crd.family.mandatory_priv_modes.include?('S') -%> MANDATORY <%- else -%> OUT_OF_SCOPE <%- end -%>
-| <%- if crd.family.mandatory_priv_modes.include?('U') -%> MANDATORY <%- else -%> OUT_OF_SCOPE <%- end -%>
-| <%- if crd.family.mandatory_priv_modes.include?('VS') -%> MANDATORY <%- else -%> OUT_OF_SCOPE <%- end -%>
-| <%- if crd.family.mandatory_priv_modes.include?('VU') -%> MANDATORY <%- else -%> OUT_OF_SCOPE <%- end -%>
+| <%- if crd.family.mandatory_priv_modes.include?('M') -%> MANDATORY <%- else -%> OUT OF SCOPE <%- end -%>
+| <%- if crd.family.mandatory_priv_modes.include?('S') -%> MANDATORY <%- else -%> OUT OF SCOPE <%- end -%>
+| <%- if crd.family.mandatory_priv_modes.include?('U') -%> MANDATORY <%- else -%> OUT OF SCOPE <%- end -%>
+| <%- if crd.family.mandatory_priv_modes.include?('VS') -%> MANDATORY <%- else -%> OUT OF SCOPE <%- end -%>
+| <%- if crd.family.mandatory_priv_modes.include?('VU') -%> MANDATORY <%- else -%> OUT OF SCOPE <%- end -%>
 
 |===
 
@@ -107,20 +107,20 @@ These parameters are covered by an <%= crd.name %> certificate.
 |===
 | Parameter | Constraint | Note
 <%- crd.param_constraints(ext_req).each do |constraint| -%>
-| <<anchor-ext-<%= ext_req.name %>-param-<%= constraint.param.name %>,<%= constraint.param.name %>>> 
-| <%= constraint.schema_constraint_pretty == "" ? "Unconstrained" : constraint.schema_constraint_pretty %>
+| <<anchor-ext-<%= ext_req.name %>-param-<%= constraint.param_db.name %>,<%= constraint.param_db.name %>>> 
+| <%= constraint.schema_constraint_pretty %>
 a| <%= constraint.note %>
 <%- end # do constraint -%>
 |===
 <%- end # unless table -%>
 
-<%- unless crd.extension_out_of_scope_param_constraints(ext_req).empty? -%>
+<%- unless crd.extension_out_of_scope_params(ext_req.name).empty? -%>
 ==== OUT OF SCOPE Parameters
 
 These parameters are *NOT* covered by an <%= crd.name %> certificate.
 
-<%- crd.extension_out_of_scope_param_constraints(ext_req).each do |param| -%>
-* <<anchor-ext-<%= ext_req.name %>-param-<%= param.name %>,<%= param.name %>>> 
+<%- crd.extension_out_of_scope_params(ext_req.name).each do |param_db| -%>
+* <<anchor-ext-<%= ext_req.name %>-param-<%= param_db.name %>,<%= param_db.name %>>> 
 <%- end # do constraint -%>
 <%- end # unless table -%>
 <%- end # do extension-%>
@@ -194,29 +194,25 @@ None
 <%- unless crd.param_constraints(ext_req).empty? -%>
 ==== IN SCOPE Parameters
 
-These parameters are covered by an <%= crd.name %> certificate.
-
 <%- crd.param_constraints(ext_req).each do |constraint| -%>
-[[anchor-ext-<%= ext_req.name %>-param-<%= constraint.param.name %>]]
-<%= constraint.param.name %>::
+[[anchor-ext-<%= ext_req.name %>-param-<%= constraint.param_db.name %>]]
+<%= constraint.param_db.name %>::
 +
 --
-<%= constraint.param.desc %>
+<%= constraint.param_db.desc %>
 --
 <%- end # do constraint -%>
 <%- end # unless table -%>
 
-<%- unless crd.extension_out_of_scope_param_constraints(ext_req).empty? -%>
+<%- unless crd.extension_out_of_scope_params(ext_req.name).empty? -%>
 ==== OUT OF SCOPE Parameters
 
-These parameters are *NOT* covered by an <%= crd.name %> certificate.
-
-<%- crd.extension_out_of_scope_param_constraints(ext_req).each do |param| -%>
-[[anchor-ext-<%= ext_req.name %>-param-<%= param.name %>]]
-<%= param.name %>::
+<%- crd.extension_out_of_scope_params(ext_req.name).each do |param_db| -%>
+[[anchor-ext-<%= ext_req.name %>-param-<%= param_db.name %>]]
+<%= param_db.name %>::
 +
 --
-<%= param.desc %>
+<%= param_db.desc %>
 --
 <%- end # do constraint -%>
 <%- end # unless table -%>

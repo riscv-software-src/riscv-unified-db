@@ -100,6 +100,10 @@ MC-1:
     optional:
     - name: B
       note: "This is just for testing. B isn't really optional for MC-1."
+      param_constraints:
+          MUTABLE_MISA_B:
+            schema:
+              const: true
   
   requirement_groups:
     - name: MC-Unpriv
