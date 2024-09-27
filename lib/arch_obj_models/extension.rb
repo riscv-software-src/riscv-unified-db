@@ -39,6 +39,13 @@ class ExtensionParameter
       raise
     end
   end
+
+  # sorts by name
+  def <=>(other)
+    raise ArgumentError, "ExtensionParameters are only comparable to other extension parameters" unless other.is_a?(ExtensionParameter)
+
+    @name <=> other.name
+  end
 end
 
 class ExtensionParameterWithValue

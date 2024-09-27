@@ -106,7 +106,7 @@ These parameters are covered by an <%= crd.name %> certificate.
 [cols="3,1,2"]
 |===
 | Parameter | Constraint | Note
-<%- crd.param_constraints(ext_req).each do |constraint| -%>
+<%- crd.param_constraints(ext_req).sort.each do |constraint| -%>
 | <<anchor-ext-<%= ext_req.name %>-param-<%= constraint.param_db.name %>,<%= constraint.param_db.name %>>> 
 | <%= constraint.schema_constraint_pretty %>
 a| <%= constraint.note %>
@@ -114,12 +114,12 @@ a| <%= constraint.note %>
 |===
 <%- end # unless table -%>
 
-<%- unless crd.extension_out_of_scope_params(ext_req.name).empty? -%>
+<%- unless crd.out_of_scope_params(ext_req.name).empty? -%>
 ==== OUT OF SCOPE Parameters
 
 These parameters are *NOT* covered by an <%= crd.name %> certificate.
 
-<%- crd.extension_out_of_scope_params(ext_req.name).each do |param_db| -%>
+<%- crd.out_of_scope_params(ext_req.name).sort.each do |param_db| -%>
 * <<anchor-ext-<%= ext_req.name %>-param-<%= param_db.name %>,<%= param_db.name %>>> 
 <%- end # do constraint -%>
 <%- end # unless table -%>
@@ -194,7 +194,7 @@ None
 <%- unless crd.param_constraints(ext_req).empty? -%>
 ==== IN SCOPE Parameters
 
-<%- crd.param_constraints(ext_req).each do |constraint| -%>
+<%- crd.param_constraints(ext_req).sort.each do |constraint| -%>
 [[anchor-ext-<%= ext_req.name %>-param-<%= constraint.param_db.name %>]]
 <%= constraint.param_db.name %>::
 +
@@ -204,10 +204,10 @@ None
 <%- end # do constraint -%>
 <%- end # unless table -%>
 
-<%- unless crd.extension_out_of_scope_params(ext_req.name).empty? -%>
+<%- unless crd.out_of_scope_params(ext_req.name).empty? -%>
 ==== OUT OF SCOPE Parameters
 
-<%- crd.extension_out_of_scope_params(ext_req.name).each do |param_db| -%>
+<%- crd.out_of_scope_params(ext_req.name).sort.each do |param_db| -%>
 [[anchor-ext-<%= ext_req.name %>-param-<%= param_db.name %>]]
 <%= param_db.name %>::
 +

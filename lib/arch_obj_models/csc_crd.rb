@@ -153,9 +153,17 @@ class CscCrd < ArchDefObject
         raise "TODO: Pretty schema for #{@schema_constraint}"
       end
     end
+
+    # sorts by name
+    def <=>(other)
+      raise ArgumentError, 
+        "CrdParameterConstraint are only comparable to other parameter constraints" unless other.is_a?(CrdParameterConstraint)
+      @param_db.name <=> other.param_db.name
+    end
   end
 
   # @return [Array<CrdParameterConstraint>] List of parameters constraints from CRD extension information.
+  # These are always IN SCOPE by definition (since they are listed in the CRD).
   def param_constraints(ext_req_crd)
     param_constraints = []    # Local variable, no caching
 
@@ -181,10 +189,11 @@ class CscCrd < ArchDefObject
   end
 
   # @return [Array<CrdParameterConstraint>] List of parameters constraints specified by any extension in CRD.
-  def all_in_scope_parmeter_contraints
-    return @all_in_scope_parmeter_contraints unless @all_in_scope_parmeter_contraints.nil?
+  # These are always IN SCOPE by definition (since they are listed in the CRD).
+  def all_parameter_constraints
+    return @all_parameter_constraints unless @all_parameter_constraints.nil?
 
-    @all_in_scope_parmeter_contraints = []
+    @all_parameter_constraints = []
 
     [ "mandatory", "optional"].each do |status|
       @data["extensions"][status].each do |ext_crd| 
@@ -196,11 +205,11 @@ class CscCrd < ArchDefObject
           param_db = ext_db.params.find { |p| p.name == param_name }
           raise "There is no param '#{param_name}' in extension '#{ext_crd["name"]}" if param_db.nil?
   
-          @all_in_scope_parmeter_contraints << CrdParameterConstraint.new(param_db, param_data["schema"], param_data["note"])
+          @all_parameter_constraints << CrdParameterConstraint.new(param_db, param_data["schema"], param_data["note"])
         end
       end
     end
-    @all_in_scope_parmeter_contraints
+    @all_parameter_constraints
   end
 
   # @return [Array<ExtensionParameter>] List of parameters that are out of scope across all extensions.
@@ -210,7 +219,7 @@ class CscCrd < ArchDefObject
     @all_out_of_scope_params = []
     extension_reqs.each do |ext_req_crd|
       @arch_def.extension(ext_req_crd.name).params.each do |param_db|
-        next if all_in_scope_parmeter_contraints.any? { |c| c.param_db.name == param_db.name }
+        next if all_parameter_constraints.any? { |c| c.param_db.name == param_db.name }
         @all_out_of_scope_params << param_db
       end
     end
@@ -218,7 +227,7 @@ class CscCrd < ArchDefObject
   end
 
   # @return [Array<ExtensionParameter>] List of parameters that are out of scope for named extension.
-  def extension_out_of_scope_params(ext_name)
+  def out_of_scope_params(ext_name)
     all_out_of_scope_params.select{|param_db| param_db.exts.any? {|ext| ext.name == ext_name} } 
   end
 

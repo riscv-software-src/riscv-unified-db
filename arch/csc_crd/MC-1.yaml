@@ -34,17 +34,36 @@ MC-1:
       version: "~> 2.1"
       note: "The I extension is the base Integer instruction set and is considered an \"extension\" for convenience."
       param_constraints:
+          # TODO Add parameter for hart ID
+          # TODO Add parameter for whether direct and vectored CLINT modes are supported (not required by ISA)
+          MTVEC_BASE_ALIGNMENT_DIRECT:
+            note: TODO - This should be a minimum of 4, not equal to 4. Ignored if CLINT direct mode not supported.
+            schema:
+              const: 4
+          MTVEC_BASE_ALIGNMENT_VECTORED:
+            note: TODO - This should be a minimum of 4, not equal to 4. Ignored if CLINT direct mode not supported.
+            schema:
+              const: 4
+          ARCH_ID: {} # Unconstrained
+          IMP_ID: {} # Unconstrained
+          VENDOR_ID_BANK:
+            note: TODO - Just want parameter for M_VENDOR_ID CSR read value.
+          VENDOR_ID_OFFSET:
+            note: TODO - Just want parameter for M_VENDOR_ID CSR read value.
+          MISA_CSR_IMPLEMENTED: {} # Unconstrained
+          TIME_CSR_IMPLEMENTED: {} # Unconstrained
+          MTVAL_WIDTH: {} # Unconstrained
+          PHYS_ADDR_WIDTH: {}
+            # XXX schema:
+            # XXX: <= XLEN
           PRECISE_SYNCHRONOUS_EXCEPTIONS:
-            schema:
-              const: true
-          TRAP_ON_UNIMPLEMENTED_CSR:
-            schema:
-              const: true
-          TRAP_ON_UNIMPLEMENTED_INSTRUCTION:
+            note: Allen Baum isn't sure this can ever be false
             schema:
               const: true
           TRAP_ON_ECALL_FROM_M:
-            note: REQ-UINST-017
+            schema:
+              const: true
+          TRAP_ON_EBREAK:
             schema:
               const: true
           REPORT_VA_IN_MTVAL_ON_BREAKPOINT:
@@ -65,31 +84,18 @@ MC-1:
           M_MODE_ENDIANESS:
             schema:
               const: little
-          # OPT-RDTIME doesn't need constraint (behavior defined by TIME_CSR_IMPLEMENTED)
-          # OPT-MTIME-PADDR doesn't have parameter -- it's considered non-ISA by the database
-          # OPT-MTIMECMP-PADDR doesn't have parameter -- it's considered non-ISA by the database
-          # OPT-MSIP-PADDR doesn't have parameter -- it's considered non-ISA by the database
-          # OPT-MHARTID doesn't need constrained (behavior is a builtin)
-          # OPT-MVENDORID doesn't need constrained (but behavior is controlled by VENDOR_ID_BANK and VENDOR_ID_OFFSET)
-          # OPT-MARCHID doesn't need constrained (but behavior is controlled by ARCH_ID)
-          # OPT-MIMPID doesn't need constrained (but behavior is controlled by IMP_ID)
-          # OPT-MISA doesn't need constrained (but behavior is controlled by MISA_CSR_IMPLEMENTED)
-          # OPT-CLINT doesn't need a parameter; it is mandated in the spec
-          # OPT-CLIC doesn't need a paramter
-          MTVEC_BASE_ALIGNMENT_DIRECT:
-            note: OPT-MTVEC-ALIGN-DIRECT
-            schema:
-              const: 4
-          MTVEC_BASE_ALIGNMENT_VECTORED:
-            note: OPT-MTVEV-ALIGN-VECTORED
-            schema:
-              const: 4
-          ARCH_ID: {} # Unconstrained
           XLEN:
             schema:
               const: 32
+          CONFIG_PTR_ADDRESS:
+            schema:
+              const: 0
     - name: C
       version: "~> 2.2"
+      param_constraints:
+          MUTABLE_MISA_C:
+            schema:
+              const: false
     - name: M
       version: "~> 2.0"
     - name: Zicsr
@@ -103,7 +109,7 @@ MC-1:
       param_constraints:
           MUTABLE_MISA_B:
             schema:
-              const: true
+              const: false
   
   requirement_groups:
     - name: MC-Unpriv
