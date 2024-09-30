@@ -57,6 +57,25 @@ Dir.glob("#{$root}/arch/csc_crd/*.yaml") do |f|
     ].join(" ")
   end
 
+  file "#{$root}/gen/csc_crd_doc/html/#{crd_name}.html" => [
+    "#{$root}/gen/csc_crd_doc/adoc/#{crd_name}.adoc"
+  ] do |t|
+    adoc_file = "#{$root}/gen/csc_crd_doc/adoc/#{crd_name}.adoc"
+    FileUtils.mkdir_p File.dirname(t.name)
+    sh [
+      "asciidoctor",
+      "-w",
+      "-v",
+      "-a toc",
+      "-a imagesdir=#{$root}/ext/docs-resources/images",
+      "-b html5",
+      "-r asciidoctor-diagram",
+      "-r #{$root}/backends/ext_pdf_doc/idl_lexer",
+      "-o #{t.name}",
+      adoc_file
+    ].join(" ")
+  end
+
 end
 
 namespace :gen do
@@ -78,5 +97,19 @@ namespace :gen do
     end
 
     Rake::Task["#{$root}/gen/csc_crd_doc/pdf/#{args[:crd_name]}.pdf"].invoke
+  end
+
+  task :csc_crd_html, [:crd_name] do |_t, args|
+    if args[:crd_name].nil?
+      warn "Missing required option: 'crd_family_name'"
+      exit 1
+    end
+
+    unless File.exist?("#{$root}/arch/csc_crd/#{args[:crd_name]}.yaml")
+      warn "No CRD named '#{args[:crd_name]}' found in arch/csc_crd"
+      exit 1
+    end
+
+    Rake::Task["#{$root}/gen/csc_crd_doc/html/#{args[:crd_name]}.html"].invoke
   end
 end

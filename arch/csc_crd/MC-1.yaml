@@ -32,32 +32,32 @@ MC-1:
     mandatory:
     - name: I
       version: "~> 2.1"
-      note: "The I extension is the base Integer instruction set and is considered an \"extension\" for convenience."
+    - name: C
+      version: "~> 2.2"
       param_constraints:
-          # TODO Add parameter for hart ID
-          # TODO Add parameter for whether direct and vectored CLINT modes are supported (not required by ISA)
-          MTVEC_BASE_ALIGNMENT_DIRECT:
-            note: TODO - This should be a minimum of 4, not equal to 4. Ignored if CLINT direct mode not supported.
+          MUTABLE_MISA_C:
             schema:
-              const: 4
-          MTVEC_BASE_ALIGNMENT_VECTORED:
-            note: TODO - This should be a minimum of 4, not equal to 4. Ignored if CLINT direct mode not supported.
-            schema:
-              const: 4
+              const: false
+    - name: M
+      version: "~> 2.0"
+    - name: Zicsr
+      version: "~> 2.0"
+    - name: Zicntr
+      version: "~> 2.0"
+    - name: Sm
+      version: "~> 1.11"
+      param_constraints:
+          MTVEC_BASE_ALIGNMENT_DIRECT: {} # Unconstrained
+          MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
           ARCH_ID: {} # Unconstrained
           IMP_ID: {} # Unconstrained
-          VENDOR_ID_BANK:
-            note: TODO - Just want parameter for M_VENDOR_ID CSR read value.
-          VENDOR_ID_OFFSET:
-            note: TODO - Just want parameter for M_VENDOR_ID CSR read value.
+          VENDOR_ID_BANK: {} # Unconstrained
+          VENDOR_ID_OFFSET: {} # Unconstrained
           MISA_CSR_IMPLEMENTED: {} # Unconstrained
           TIME_CSR_IMPLEMENTED: {} # Unconstrained
           MTVAL_WIDTH: {} # Unconstrained
-          PHYS_ADDR_WIDTH: {}
-            # XXX schema:
-            # XXX: <= XLEN
+          PHYS_ADDR_WIDTH: {} # Unconstrained
           PRECISE_SYNCHRONOUS_EXCEPTIONS:
-            note: Allen Baum isn't sure this can ever be false
             schema:
               const: true
           TRAP_ON_ECALL_FROM_M:
@@ -90,18 +90,6 @@ MC-1:
           CONFIG_PTR_ADDRESS:
             schema:
               const: 0
-    - name: C
-      version: "~> 2.2"
-      param_constraints:
-          MUTABLE_MISA_C:
-            schema:
-              const: false
-    - name: M
-      version: "~> 2.0"
-    - name: Zicsr
-      version: "~> 2.0"
-    - name: Zicntr
-      version: "~> 2.0"
     #XXX optional: {} # None
     optional:
     - name: B
@@ -157,3 +145,11 @@ MC-1:
         description: Should return the most-significant 32-bits of the `mcycle` CSR when reading `cycleh`
       - name: REQ-M32CSR-002
         description: Should return the most-significant 32-bits of the `minstret` CSR when reading `instreth`
+
+    - name: MC-Priv
+      description: |
+        The MC-Priv defines Privileged ISA requirements.
+      requirements:
+      - name: REQ-PRIV-HARTID
+        description: | 
+          One hart in system has to have a HARTID of 0. Reading `mhartid` on other CSRs provides some value.

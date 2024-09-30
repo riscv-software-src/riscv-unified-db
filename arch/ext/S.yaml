@@ -6,7 +6,7 @@ S:
   versions:
   - version: "1.12.0"
     state: ratified
-    ratification_date: 2019-12
+    ratification_date: 2021-12
     requires: [U, "= 1.12.0"]
   description: |
     This chapter describes the RISC-V supervisor-level architecture, which
@@ -217,6 +217,15 @@ S:
         Whether or not satp.MODE == Bare is supported.
       schema:
         type: boolean
+    TRAP_ON_ECALL_FROM_S:
+      description: |
+        Whether or not an ECALL-from-S-mode causes a synchronous exception.
+
+        The spec states that implementations may handle ECALLs transparently
+        without raising a trap, in which case the EEI must provide a builtin.
+      schema:
+        type: boolean
+        default: true
     TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY:
       description: |
         For implementations that make `satp`.MODE read-only zero
