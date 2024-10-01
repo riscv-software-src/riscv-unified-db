@@ -6,7 +6,7 @@ mtvec:
   priv_mode: M
   length: 64
   description: Controls where traps jump.
-  definedBy: I
+  definedBy: Sm
   fields:
     BASE:
       location: 63-2

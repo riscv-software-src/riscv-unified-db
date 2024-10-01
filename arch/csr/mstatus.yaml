@@ -12,7 +12,7 @@ mstatus:
   length: MXLEN
  
   description: The mstatus register tracks and controls the hart's current operating state.
-  definedBy: I
+  definedBy: Sm
   fields:
     SD:
       location_rv32: 31

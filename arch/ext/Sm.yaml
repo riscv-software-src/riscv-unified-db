@@ -8,25 +8,17 @@ Sm:
     state: ratified
     ratification_date: 2019-12
     changes:
-    - Moved Machine and Supervisor spec to *Ratified* status.
+    - Moved Machine spec to *Ratified* status.
     - Improvements to the description and commentary.
-    - Added a draft proposal for a hypervisor extension.
     - Specified which interrupt sources are reserved for standard use.
     - Allocated some synchronous exception causes for custom use.
     - Specified the priority ordering of synchronous exceptions.
     - Added specification that xRET instructions may, but are not required
       to, clear LR reservations if A extension present.
-    - The virtual-memory system no longer permits supervisor mode to execute
-      instructions from user pages, regardless of the SUM setting.
-    - Clarified that ASIDs are private to a hart, and added commentary about
-      the possibility of a future global-ASID extension.
-    - SFENCE.VMA semantics have been clarified.
     - Made the `mstatus`.MPP field *WARL*, rather than *WLRL*.
     - Made the unused `__x__ip` fields *WPRI*, rather than *WIRI*.
     - Made the unused `misa` fields *WARL*, rather than *WIRI*.
     - Made the unused `pmpaddr` and `pmpcfg` fields *WARL*, rather than *WIRI*.
-    - Required all harts in a system to employ the same PTE-update scheme as
-      each other.
     - Rectified an editing error that misdescribed the mechanism by which
       `mstatus.__x__IE` is written upon an exception.
     - Described scheme for emulating misaligned AMOs.
@@ -43,12 +35,65 @@ Sm:
     state: ratified
     ratification_date: 2021-12
     changes:
-    - TODO
+    - Changed MRET to clear `mstatus`.MPRV when leaving M-mode.
+    - Relaxed I/O regions have been specified to follow RVWMO. The previous
+      specification implied that PPO rules other than fences and
+      acquire/release annotations did not apply.
+    - Constrained the LR/SC reservation set size and shape when using
+      page-based virtual memory.
+    - PMP changes require an SFENCE.VMA on any hart that implements
+      page-based virtual memory, even if VM is not currently enabled.
+    - Removed the N extension.
+    - Defined the mandatory RV32-only CSR `mstatush`, which contains most of
+      the same fields as the upper 32 bits of RV64’s `mstatus`.
+    - Defined the mandatory CSR `mconfigptr`, which if nonzero contains the
+      address of a configuration data structure.
+    - Defined optional `mseccfg` and `mseccfgh` CSRs, which control the
+      machine’s security configuration.
+    - Defined `menvcfg` CSR (and RV32-only `menvcfgh`), which control various characteristics
+      of the execution environment.
+    - Designated part of SYSTEM major opcode for custom use.
+    - Permitted the unconditional delegation of less-privileged interrupts.
+    - Added optional big-endian and bi-endian support.
+    - Made priority of load/store/AMO address-misaligned exceptions
+      implementation-defined relative to load/store/AMO page-fault and
+      access-fault exceptions.
+    - PMP reset values are now platform-defined.
+    - An additional 48 optional PMP registers have been defined.
+    - Software breakpoint exceptions are permitted to write either 0 or the
+      `pc` to `__x__tval`.
+    - Specified relaxed constraints for implicit reads of non-idempotent regions.
   - version: "1.13.0"
-    state: ratified
+    state: frozen
     ratification_date: 2023-12
     changes:
-    - TODO
+    - Redefined `misa`.MXL to be read-only, making MXLEN a constant.
+    - Defined the `misa`.B field to reflect that the B extension has been
+      implemented.
+    - Defined the `misa`.V field to reflect that the V extension has been
+      implemented.
+    - Defined the RV32-only `medelegh` CSR.
+    - Defined the misaligned atomicity granule PMA, superseding the proposed Zam
+      extension.
+    - Defined hardware error and software check exception codes.
+    - Specified synchronization requirements when changing the PBMTE fields
+      in `menvcfg` and `henvcfg`.
+    - Exposed count-overflow interrupts to VS-mode via the Shlcofideleg extension.
+    - Relaxed behavior of some HINTs when MXLEN > XLEN.
+    - Transliterated the document from LaTeX into AsciiDoc.
+    - Included all ratified extensions through March 2024.
+    - Clarified that "platform- or custom-use" interrupts are actually
+      "platform-use interrupts", where the platform can choose to make some custom.
+    - Clarified semantics of explicit accesses to CSRs wider than XLEN bits.
+    - Clarified that MXLEN&#8805;SXLEN.
+    - Clarified that WFI is not a HINT instruction.
+    - Clarified that, for a given exception cause, `__x__tval` might sometimes
+      be set to a nonzero value but sometimes not.
+    - Clarified exception behavior of unimplemented or inaccessible CSRs.
+    - Replaced the concept of vacant memory regions with inaccessible memory or I/O regions.
+    - Clarified that timer and count-overflow interrupts' arrival in
+      interrupt-pending registers is not immediate.
+    - Clarified that MXR affects only explicit memory accesses.
   description: |
     TODO
   interrupt_codes:

@@ -42,7 +42,7 @@ wfi:
     for an unspecified period of time to see if an interrupt occurs before raising the trap.
     That period of time can be zero (_i.e._, `wfi` always causes a trap in the cases identified
     above).
-  definedBy: I
+  definedBy: Sm
   assembly: ""
   encoding:
     match: '00010000010100000000000001110011'
