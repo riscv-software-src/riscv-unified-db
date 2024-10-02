@@ -504,3 +504,5 @@ params:
   TINST_VALUE_ON_VSCALL: "always zero"
   TINST_VALUE_ON_LOAD_PAGE_FAULT: "always zero"
   TINST_VALUE_ON_STORE_AMO_PAGE_FAULT: "always zero"
+  MTVEC_MODES: [0, 1]
+
