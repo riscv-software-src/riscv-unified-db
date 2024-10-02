@@ -22,18 +22,18 @@ Dir.glob("#{$root}/arch/csc_crd/*.yaml") do |f|
     "gen:arch"
   ] do |t|
     # TODO: schema validation
-    crd = arch_def_for("_").csc_crd(crd_name)
+    arch_def = arch_def_for("_")
+    crd = arch_def.csc_crd(crd_name)
     raise "No CSC CRD defined for #{crd_name}" if crd.nil?
 
     version = File.basename(t.name, '.adoc').split('-')[1..].join('-')
 
-
-
-    template = ERB.new(File.read("#{CSC_CRD_DOC_DIR}/templates/crd.adoc.erb"), trim_mode: "-")
-    template.filename = "#{CSC_CRD_DOC_DIR}/templates/crd.adoc.erb"
+    erb = ERB.new(File.read("#{CSC_CRD_DOC_DIR}/templates/crd.adoc.erb"), trim_mode: "-")
+    erb.filename = "#{CSC_CRD_DOC_DIR}/templates/crd.adoc.erb"
     
     FileUtils.mkdir_p File.dirname(t.name)
-    File.write t.name, template.result(binding)
+    File.write t.name, AsciidocUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
+    puts "Generated adoc source at #{t.name}"
   end
 
   file "#{$root}/gen/csc_crd_doc/pdf/#{crd_name}.pdf" => [

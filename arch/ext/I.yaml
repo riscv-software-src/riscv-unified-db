@@ -11,10 +11,3 @@ I:
     - ratified RVWMO memory model and exclusion of FENCE.I, counters, and CSR instructions that were in previous base ISA
   description: |
     Base integer instructions -- TODO
-  params:
-    MISALIGNED_LDST:
-      description: |
-        Whether or not the implementation supports non-atomic misaligned loads and stores in
-        main memory (does *not* affect misaligned support to device memory)
-      schema:
-        type: boolean

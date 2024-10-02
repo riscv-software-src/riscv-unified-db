@@ -233,6 +233,13 @@ Sm:
         type: integer
         minimum: 0
         maximum: 127
+    MISALIGNED_LDST:
+      description: |
+        Does the implementation perform non-atomic misaligned loads and stores to main memory 
+        (does *not* affect misaligned support to device memory)? 
+        If not, the implementation throws a misaligned exception.
+      schema:
+        type: boolean
     MISALIGNED_LDST_EXCEPTION_PRIORITY:
       description: |
         The relative priority of a load/store/AMO exception vs. load/store/AMO page-fault

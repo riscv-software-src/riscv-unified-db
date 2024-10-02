@@ -126,9 +126,13 @@ a| <%= constraint.note %>
 
 <%- unless crd.out_of_scope_params(ext_req.name).empty? -%>
 .<%= ext_req.name %> Extension OUT-OF-SCOPE Parameters
+[%autowidth]
+|===
+| Parameter
 <%- crd.out_of_scope_params(ext_req.name).sort.each do |param_db| -%>
-* <<anchor-ext-<%= ext_req.name %>-param-<%= param_db.name %>,<%= param_db.name %>>> 
+| <<anchor-ext-<%= ext_req.name %>-param-<%= param_db.name %>,<%= param_db.name %>>> 
 <%- end # do constraint -%>
+|===
 <%- end # unless table -%>
 <%- end # do extension-%>
 
