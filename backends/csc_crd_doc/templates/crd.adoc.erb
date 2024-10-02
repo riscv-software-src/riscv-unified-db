@@ -1,8 +1,20 @@
+
 // Number heading sections (e.g., 1.0, 1.1, etc.)
 :sectnums:  
 
 // Add a table of contents for HTML (and VSCode adoc preview)
 :toc: left
+
+// Include headings up to 3 levels deep (don't know why 5 gives you this).
+:toclevels: 5
+
+//
+// Stuff to generate nice wavedrom drawings of instruction and CSR fields
+//
+:wavedrom: <%= $root %>/node_modules/.bin/wavedrom-cli
+
+// TODO: needs to be changed
+:imagesoutdir: images
 
 = <%= crd.name %> Certification Requirements Document
 
@@ -54,11 +66,11 @@ a| <%- rev.changes.each do |change| %>
 |===
 | M | S | U | VS | VU
 
-| <%- if crd.family.mandatory_priv_modes.include?('M') -%> MANDATORY <%- else -%> OUT OF SCOPE <%- end -%>
-| <%- if crd.family.mandatory_priv_modes.include?('S') -%> MANDATORY <%- else -%> OUT OF SCOPE <%- end -%>
-| <%- if crd.family.mandatory_priv_modes.include?('U') -%> MANDATORY <%- else -%> OUT OF SCOPE <%- end -%>
-| <%- if crd.family.mandatory_priv_modes.include?('VS') -%> MANDATORY <%- else -%> OUT OF SCOPE <%- end -%>
-| <%- if crd.family.mandatory_priv_modes.include?('VU') -%> MANDATORY <%- else -%> OUT OF SCOPE <%- end -%>
+| <%- if crd.family.mandatory_priv_modes.include?('M') -%> MANDATORY <%- else -%> OUT-OF-SCOPE <%- end -%>
+| <%- if crd.family.mandatory_priv_modes.include?('S') -%> MANDATORY <%- else -%> OUT-OF-SCOPE <%- end -%>
+| <%- if crd.family.mandatory_priv_modes.include?('U') -%> MANDATORY <%- else -%> OUT-OF-SCOPE <%- end -%>
+| <%- if crd.family.mandatory_priv_modes.include?('VS') -%> MANDATORY <%- else -%> OUT-OF-SCOPE <%- end -%>
+| <%- if crd.family.mandatory_priv_modes.include?('VU') -%> MANDATORY <%- else -%> OUT-OF-SCOPE <%- end -%>
 
 |===
 
@@ -66,8 +78,8 @@ a| <%- rev.changes.each do |change| %>
 
 === Summary
 
-The following table lists all extensions that are IN SCOPE (i.e., MANDATORY or OPTIONAL).
-Any extension not listed in the table below is OUT OF SCOPE.
+The following table lists all extensions that are IN-SCOPE (i.e., MANDATORY or OPTIONAL).
+Any extension not listed in the table below is OUT-OF-SCOPE.
 
 [%autowidth]
 |===
@@ -76,7 +88,7 @@ Any extension not listed in the table below is OUT OF SCOPE.
 <%- crd.extension_reqs.sort.each do |ext_req| -%>
 <%- ext = crd.arch_def.extension(ext_req.name) -%>
 | <%= ext_req.req_id %>
-| <%= ext_req.name %>
+| <<anchor-ext-requirement-<%= ext_req.name %>,<%= ext_req.name %>>> 
 | <%= ext_req.version_requirement %>
 | <%= ext_req.status.upcase %>
 | <%= ext.nil? ? "" : ext.long_name %>
@@ -86,6 +98,7 @@ Any extension not listed in the table below is OUT OF SCOPE.
 <%- crd.extension_reqs.sort.each do |ext_req| -%>
 <%- ext = crd.arch_def.extension(ext_req.name) -%>
 
+[[anchor-ext-requirement-<%= ext_req.name %>]]
 === Extension <%= ext_req.name %> +
 *Requirement ID*: <%= ext_req.req_id %> +
 <%= ext.nil? ? "" : "*Long Name*: " + ext.long_name + " +" %>
@@ -99,10 +112,7 @@ Any extension not listed in the table below is OUT OF SCOPE.
 <%- end -%>
 
 <%- unless crd.param_constraints(ext_req).empty? -%>
-==== IN SCOPE Parameters
-
-These parameters are covered by an <%= crd.name %> certificate.
-
+.<%= ext_req.name %> Extension IN-SCOPE Parameters
 [cols="3,1,2"]
 |===
 | Parameter | Constraint | Note
@@ -115,10 +125,7 @@ a| <%= constraint.note %>
 <%- end # unless table -%>
 
 <%- unless crd.out_of_scope_params(ext_req.name).empty? -%>
-==== OUT OF SCOPE Parameters
-
-These parameters are *NOT* covered by an <%= crd.name %> certificate.
-
+.<%= ext_req.name %> Extension OUT-OF-SCOPE Parameters
 <%- crd.out_of_scope_params(ext_req.name).sort.each do |param_db| -%>
 * <<anchor-ext-<%= ext_req.name %>-param-<%= param_db.name %>,<%= param_db.name %>>> 
 <%- end # do constraint -%>
@@ -157,7 +164,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 <%- end -%>
 
 [appendix]
-== Extension Descriptions
+== Extension Specifications
 <%- crd.extension_reqs.sort.each do |ext_req| -%>
 <%- ext = crd.arch_def.extension(ext_req.name) -%>
 
@@ -165,6 +172,31 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 <%= ext.nil? ? "" : "*Long Name*: " + ext.long_name + " +" %>
 
 *Version Requirement*: <%= ext_req.version_requirement %> +
+
+<%- ext.versions.each do |v| -%>
+<%= v["version"] %>::
+  Ratification date:::
+    <%= v["ratification_date"] %>
+  <%- if v.key?("changes") -%>
+  Changes:::
+
+    <%- v["changes"].each do |c| -%>
+    * <%= c %>  
+    <%- end -%>
+
+  <%- end -%>
+  <%- if v.key?("url") -%>
+  Ratification document:::
+    <%= v["url"] %>
+  <%- end -%>
+  <%- if v.key?("implies") -%>
+  Implies:::
+    <%- implications = v["implies"][0].is_a?(Array) ? v["implies"] : [v["implies"]] -%>
+    <%- implications.each do |i| -%>
+    * `<%= i[0] %>` version <%= i[1] %>
+    <%- end -%>
+  <%- end -%>
+<%- end -%>
 
 ==== Synopsis
 
@@ -180,19 +212,23 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 <%= ext_req.note %>
 --
 <%- end -%>
+
+<%- insts = crd.arch_def.instructions.select { |i| i.definedBy == ext.name || i.definedBy.include?(ext.name) } -%>
+<%- unless insts.empty? -%>
+==== Instructions
+
+The following instructions are added by this extension:
+
+[cols="1,3"]
+|===
+<%- insts.each do |inst| -%>
+ | <%= "`#{inst.name}`" %> | *<%= inst.long_name %>*
+<%- end -%>
+|===
 <%- end -%>
 
-[appendix]
-== Extension Parameters
-<%- crd.extension_reqs.sort.each do |ext_req| -%>
-<%- ext = crd.arch_def.extension(ext_req.name) -%>
-
-=== Extension <%= ext_req.name %> +
-<%- if crd.arch_def.extension(ext_req.name).params.empty? -%>
-None
-<%- end %>
 <%- unless crd.param_constraints(ext_req).empty? -%>
-==== IN SCOPE Parameters
+==== IN-SCOPE Parameters
 
 <%- crd.param_constraints(ext_req).sort.each do |constraint| -%>
 [[anchor-ext-<%= ext_req.name %>-param-<%= constraint.param_db.name %>]]
@@ -205,7 +241,7 @@ None
 <%- end # unless table -%>
 
 <%- unless crd.out_of_scope_params(ext_req.name).empty? -%>
-==== OUT OF SCOPE Parameters
+==== OUT-OF-SCOPE Parameters
 
 <%- crd.out_of_scope_params(ext_req.name).sort.each do |param_db| -%>
 [[anchor-ext-<%= ext_req.name %>-param-<%= param_db.name %>]]
@@ -216,4 +252,222 @@ None
 --
 <%- end # do constraint -%>
 <%- end # unless table -%>
+<%- end # do ext_req -%>
+
+[appendix]
+== Instruction Specifications
+
+<%=
+  insts = crd.extensions.map { |ext| ext.instructions }.flatten.uniq
+  insts.sort_by!(&:name)
+-%>
+
+<%- insts.each do |inst| -%>
+<<<
+[[inst-<%=inst.name.gsub('.', '_')%>-def]]
+=== <%= inst.name %>
+
+*<%= inst.long_name %>*
+
+This instruction is defined by<%- if inst.defined_by.size > 1 -%> any of the following<%- end -%>:
+
+  <%- inst.defined_by.each do |ext| -%>
+  * `<%= ext.name %>`, `<%= ext.version_requirement %>`
+  <%- end -%>
+
+<%- unless inst.extension_requirements.empty? -%>
+Additionally, this instruction is only defined if the following <%- if inst.extension_requirements.size == 1 -%>extension is<%- else -%>extensions are<%- end -%> also present and active:
+
+  <%- inst.extension_requirements.each do |ext| -%>
+  * `<%= ext.name %>`, `<%= ext.version_requirement %>`
+  <%- end -%>
+
+<%- end -%>
+
+==== Encoding
+
+<%- if inst.multi_encoding? -%>
+[NOTE]
+This instruction has different encodings in RV32 and RV64.
+
+[tabs]
+====
+RV32::
++
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....  
+<%= JSON.dump inst.wavedrom_desc(32) %>
+....
+
+RV64::
++
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....  
+<%= JSON.dump inst.wavedrom_desc(64) %>
+....
+====
+<%- else -%>
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....  
+<%= JSON.dump inst.wavedrom_desc(inst.base.nil? ? 32 : inst.base) %>
+....
+<%- end -%>
+
+==== Synopsis
+
+<%= inst.description %>
+
+==== Access
+<%- if crd.extensions.any? { |e| e.name == "H" } -%>
+[cols="^,^,^,^,^"]
+<%- else -%>
+[cols="^,^,^"]
+<%- end -%>
+|===
+| M | <%- if crd.extensions.any? { |e| e.name == "H" } -%>HS<%- else -%>S<%- end -%> | U <%- if crd.extensions.any? { |e| e.name == "H" } -%> | VS | VU <%- end -%>
+
+| [.access-always]#Always#
+| [.access-<%=inst.access['s']%>]#<%= inst.access['s'].capitalize %>#
+| [.access-<%=inst.access['u']%>]#<%= inst.access['u'].capitalize %>#
+<% if crd.extensions.any? { |e| e.name == "H" } %>
+| [.access-<%=inst.access['vs']%>]#<%= inst.access['vs'].capitalize %>#
+| [.access-<%=inst.access['vu']%>]#<%= inst.access['vu'].capitalize %>#
+<% end %>
+|===
+
+<%- if inst.access_detail? -%>
+<%= inst.access_detail %>
+<%- end -%>
+
+==== Decode Variables
+
+<%- if inst.multi_encoding? -%>
+[tabs]
+====
+RV32::
++
+[source.idl]
+----
+<%- inst.decode_variables(32).each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<%- end -%>
+----
+
+RV64::
++
+[source,idl]
+----
+<%- inst.decode_variables(64).each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<%- end -%>
+----
+====
+<%- else -%>
+[source,idl]
+----
+<%- inst.decode_variables(inst.base.nil? ? 32 : inst.base).each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<%- end -%>
+----
+<%- end -%>
+
+==== Execution
+
+<%- xlens = inst.base.nil? ? [32, 64] : [inst.base] -%>
+
+<%- if inst.key?("operation()") -%>
+[source,idl,subs="specialchars,macros"]
+----
+<%= inst.operation_ast(crd.arch_def.idl_compiler).gen_adoc %>
+----
+<%- end -%>
+
+==== Exceptions
+
+// TODO: add back after sym table update for generic arch def is merged in profiles branch
+<%#
+<%- exception_list = inst.reachable_exceptions_str(crd.arch_def.sym_table) -% >
+<%- if exception_list.empty? -% >
+This instruction does not generate synchronous exceptions.
+<%- else -% >
+This instruction may result in the following synchronous exceptions:
+
+  <%- exception_list.sort.each do |etype| -% >
+  * <%= etype % >
+  <%- end -% >
+
+<%- end -% >
+%>
+
+<%- end -%>
+
+[appendix]
+== CSR Specifications
+
+<%-
+  csrs = crd.extensions.map { |ext| ext.csrs }.flatten.uniq
+  csrs.sort_by!(&:name)
+-%>
+
+<%- csrs.each do |csr| -%>
+<<<
+[[csr-<%= csr.name %>-def]]
+=== <%= csr.name %>
+
+*<%= csr.long_name %>*
+
+<%- unless csr.base.nil? -%>
+[NOTE]
+--
+`<%= csr.name %>` is only defined in RV<%= csr.base %>.
+--
+<%- end -%>
+
+<%= csr.description %>
+
+==== Attributes
+[%autowidth]
+|===
+h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
+<%- if csr.priv_mode == 'VS' -%>
+h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
+<%- end -%>
+h| Defining extension | <%= csr.defined_by.map(&:to_s).join(", ") %>
+<%- if csr.dynamic_length?(crd.arch_def) -%>
+h| Length         | <%= csr.length_pretty(crd.arch_def) %>
+<%- else -%>
+h| Length         | <%= csr.length_pretty(crd.arch_def) %>
+<%- end -%>
+h| Privilege Mode | <%= csr.priv_mode %>
+|===
+
+
+==== Format
+<%- unless csr.dynamic_length?(crd.arch_def) || csr.fields.any? { |f| f.dynamic_location?(crd.arch_def) } -%>
+<%# CSR has a known static length, so there is only one format to display -%>
+.<%= csr.name %> format
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump csr.wavedrom_desc(crd.arch_def, csr.base.nil? ? 32 : csr.base) %>
+....
+<%- else -%>
+<%# CSR has a dynamic length, or a field has a dynamic location,
+    so there is more than one format to display -%>
+This CSR format changes dynamically with XLEN.
+
+.<%= csr.name %> Format when <%= csr.length_cond32 %>
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump csr.wavedrom_desc(crd.arch_def, 32) %>
+....
+
+.<%= csr.name %> Format when <%= csr.length_cond64 %>
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump csr.wavedrom_desc(crd.arch_def, 64) %>
+....
+
+
+<%- end -%>
+
 <%- end -%>

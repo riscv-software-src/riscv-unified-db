@@ -58,13 +58,13 @@ class CscCrdFamily < ArchDefObject
   end
 
   def crds
-    return @versions unless @version.nil?
+    return @crds unless @version.nil?
 
-    @versions = []
+    @crds = []
     arch_def.csc_crds.each do |csc_crd|
-      @versions << csc_crd if csc_crd.famly == self
+      @crds << csc_crd if csc_crd.famly == self
     end
-    @versions
+    @crds
   end
 end
 
@@ -105,7 +105,7 @@ class CscCrd < ArchDefObject
 
   def description = @data["description"]
 
-  # @return [Array<ExtensionRequirements>] - # An extension with its CRD information.
+  # @return [Array<ExtensionRequirements>] - # Extensions with their CRD information.
   def extension_reqs
     return @extension_reqs_crd unless @extension_reqs_crd.nil?
 
@@ -118,6 +118,19 @@ class CscCrd < ArchDefObject
       end
     end
     @extension_reqs_crd
+  end
+
+  # @return [Array<Extension>] List of extensions
+  def extensions
+    extension_reqs.map do |er|
+      obj = arch_def.extension(er.name)
+
+      # @todo: change this to raise once all the profile extensions
+      #        are defined
+      warn "Extension #{er.name} is not defined" if obj.nil?
+
+      obj
+    end.reject(&:nil?)
   end
 
   # Holds an extension's parameter schema constraint from the CRD YAML.

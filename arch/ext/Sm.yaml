@@ -95,7 +95,15 @@ Sm:
       interrupt-pending registers is not immediate.
     - Clarified that MXR affects only explicit memory accesses.
   description: |
-    TODO
+    This chapter describes the machine-level operations available in machine-mode (M-mode), which is
+    the highest privilege mode in a RISC-V hart. M-mode is used for low-level access to a hardware
+    platform and is the first mode entered at reset. M-mode can also be used to implement features that
+    are too difficult or expensive to implement in hardware directly. The RISC-V machine-level ISA
+    contains a common core that is extended depending on which other privilege levels are supported and
+    other details of the hardware implementation.
+    This chapter describes the RISC-V machine-level architecture, which
+    contains a common core that is used with various supervisor-level
+    address translation and protection schemes.
   interrupt_codes:
   - num: 1
     name: Supervisor software interrupt

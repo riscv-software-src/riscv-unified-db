@@ -92,12 +92,8 @@ MC-1:
               const: 0
     #XXX optional: {} # None
     optional:
-    - name: B
-      note: "This is just for testing. B isn't really optional for MC-1."
-      param_constraints:
-          MUTABLE_MISA_B:
-            schema:
-              const: false
+    - name: Zifencei
+      note: "This is just for testing. Zifencei extension isn't really optional for MC-1."
   
   requirement_groups:
     - name: MC-Unpriv

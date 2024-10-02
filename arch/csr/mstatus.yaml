@@ -485,4 +485,5 @@ mstatus:
         * When 1, (H)S-mode interrupts that are not otherwise disabled with a field in `sie` are enabled.
 
       type: RW-H
+      definedBy: S
       reset_value: UNDEFINED_LEGAL
