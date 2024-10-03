@@ -106,6 +106,13 @@
           "additionalProperties": false
         },
         "type": { "enum": ["unprivileged", "privileged"] },
+        "conflicts": {
+          "description": "Extension(s) that conflict with this extension; both cannot be implemented at the same time",
+          "oneOf": [
+            { "$ref": "schema_defs.json#/$defs/extension_requirement" },
+            { "type": "array", "items": { "$ref": "schema_defs.json#/$defs/extension_requirement" }}
+          ]
+        },
         "versions": {
           "type": "array",
           "items": {
@@ -162,13 +169,6 @@
               "requires": {
                 "description": "Extension(s) required by this extension",
                 "$ref": "#/$defs/requires_entry"
-              },
-              "conflicts": {
-                "description": "Extension(s) that conflict with this extension; both cannot be implemented at the same time",
-                "oneOf": [
-                  { "$ref": "schema_defs.json#/$defs/extension_requirement" },
-                  { "type": "array", "items": { "$ref": "schema_defs.json#/$defs/extension_requirement" }}
-                ]
               },
               "contributors": {
                 "description": "List of contributors to this version of the extension",
@@ -276,6 +276,10 @@
             }
           },
           "additionalProperties": false
+        },
+        "__source": {
+          "type": "string",
+          "description": "Source file where this extension was defined"
         }
       },
       "additionalProperties": false

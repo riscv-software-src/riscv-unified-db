@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "date"
 require "json"
 require "json_schemer"
 require "pathname"
@@ -132,7 +133,7 @@ class Validator
     raise "Invalid type #{type}" unless TYPES.any?(type) || !schema_path.nil?
 
     begin
-      obj = YAML.safe_load(str, permitted_classes: [Symbol])
+      obj = YAML.safe_load(str, permitted_classes: [Symbol, Date])
     rescue Psych::SyntaxError => e
       warn "While parsing: #{str}\n\n"
       raise e

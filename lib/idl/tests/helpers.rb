@@ -22,9 +22,6 @@ class MockArchDef
   def interrupt_codes = [OpenStruct.new(var: "CoolInterrupt", num: 1)]
 end
 
-class ImplArchDef
-end
-
 module TestMixin
   def setup
     @archdef = MockArchDef.new

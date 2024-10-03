@@ -298,7 +298,7 @@ module Idl
     # @param reason [String] Error message
     # @raise [AstNode::ValueError] always
     def value_error(reason)
-      raise AstNode::ValueError.new(lineno, input_file, reason)
+      raise AstNode::ValueError.new(lineno, input_file, reason), reason, []
     end
 
     # unindent a multiline string, getting rid of all common leading whitespace (like <<~ heredocs)
@@ -701,11 +701,13 @@ module Idl
     end
 
     def type_check(symtab)
-      type_error "#{expression.text_value} is not an array" unless expression.type(symtab).kind == :array
-      if symtab.archdef.is_a?(ImplArchDef)
-        type_error "#{expression.text_value} must have a known value at compile time" if expression.type(symtab).width == :unknown
-      else
-        type_error "#{expression.text_value} must be a constant" unless expression.type(symtab).const?
+      expression.type_check(symtab)
+      expression_type = expression.type(symtab)
+      type_error "#{expression.text_value} is not an array" unless expression_type.kind == :array
+      type_error "#{expression.text_value} must be a constant" unless expression_type.const?
+
+      if symtab.archdef.fully_configured? && (expression_type.width == :unknown)
+        type_error "#{expression.text_value} must have a known value at compile time"
       end
     end
 
@@ -966,8 +968,37 @@ module Idl
       end
     end
 
+    def element_names(symtab)
+      case name
+      when 'ExtensionName'
+        symtab.archdef.extensions.map(&:name)
+      when 'ExceptionCode'
+        symtab.archdef.exception_codes(&:var)
+      when 'InterruptCode'
+        symtab.archdef.interrupt_codes(&:var)
+      else
+        type_error "Unknown builtin enum type '#{name}'"
+      end
+    end
+
+    def element_values(symtab)
+      case name
+      when 'ExtensionName'
+        (0...symtab.archdef.extensions.size).to_a
+      when 'ExceptionCode'
+        symtab.archdef.exception_codes(&:num)
+      when 'InterruptCode'
+        symtab.archdef.interrupt_codes(&:num)
+      else
+        type_error "Unknown builtin enum type '#{name}'"
+      end
+    end
+
     # @!macro type_no_archdef
     def type(symtab) = symtab.get(@user_type.text_value)
+
+    # @return [String] name of the enum class
+    def name = @user_type.text_value
 
     # @!macro to_idl
     def to_idl = "builtin enum #{@user_type.text_value}"
@@ -1063,6 +1094,10 @@ module Idl
       @name = name
       @size = size
       @fields = fields
+    end
+    
+    def size(symtab)
+      @size.value(symtab)
     end
 
     # @return [Array<String>] Array of all element names, in the same order as those from {#element_ranges}
@@ -2018,7 +2053,7 @@ module Idl
         begin
           dtype = Type.new(:array, width: ary_size.value(symtab), sub_type: dtype.clone, qualifiers:)
         rescue ValueError
-          type_error "Array size must be known at compile time" if symtab.archdef.is_a?(ImplArchDef)
+          type_error "Array size must be known at compile time" if symtab.archdef.fully_configured?
           dtype = Type.new(:array, width: :unknown, sub_type: dtype.clone, qualifiers:)
         end
       end
@@ -2042,9 +2077,8 @@ module Idl
         begin
           ary_size.value(symtab)
         rescue ValueError
-          # if this is an ImplArchDef, this is an error because all constants are supposed to be known
-          if symtab.archdef.is_a?(ImplArchDef)
-            puts symtab.get(ary_size.text_value)
+          # if this is a fully configured ArchDef, this is an error because all constants are supposed to be known
+          if symtab.archdef.fully_configured?
             type_error "Array size (#{ary_size.text_value}) must be known at compile time"
           else
             # otherwise, it's ok that we don't know the value yet, as long as the value is a const
@@ -2378,9 +2412,9 @@ module Idl
       }
 
       if inverted_op_map.key?(op)
-        BinaryExpressionAst.new(input, interval, lhs, inverted_op_map[op], rhs)
+        BinaryExpressionAst.new(input, interval, lhs.dup, inverted_op_map[op], rhs.dup)
       else
-        UnaryOperatorExpressionAst.new(input, interval, "!", self)
+        UnaryOperatorExpressionAst.new(input, interval, "!", self.dup)
       end
       # else
       #   # harder case of && / ||
@@ -3838,7 +3872,7 @@ module Idl
         begin
           type_error "Bits width (#{bits_expression.value(symtab)}) must be positive" unless bits_expression.value(symtab).positive?
         rescue ValueError
-          type_error "Bit width must be known at compile time" if symtab.is_a?(ImplArchDef)
+          type_error "Bit width must be known at compile time" if symtab.archdef.fully_configured?
         end
       end
       unless ["Bits", "String", "XReg", "Boolean", "U32", "U64"].include?(@type_name)
@@ -4246,9 +4280,9 @@ module Idl
           extname_ref = arg_nodes[0]
           type_error "First argument should be a ExtensionName" unless extname_ref.type(symtab).kind == :enum_ref && extname_ref.class_name == "ExtensionName"
 
-          return symtab.archdef.ext?(arg_nodes[0].member_name) if symtab.archdef.is_a?(ImplArchDef)
+          return symtab.archdef.ext?(arg_nodes[0].member_name) if symtab.archdef.fully_configured?
 
-          value_error "implemented? is only known when evaluating in the context of a configuration"
+          value_error "implemented? is only known when evaluating in the context of a fully-configured arch def"
         else
           value_error "value of builtin function cannot be known"
         end
@@ -5344,7 +5378,7 @@ module Idl
     def value(symtab)
       cd = csr_def(symtab)
       value_error "CSR number not knowable" if cd.nil?
-      if symtab.archdef.is_a?(ImplArchDef)
+      if symtab.archdef.fully_configured?
         value_error "CSR is not implemented" unless symtab.archdef.implemented_csrs.any? { |icsr| icsr.name == cd.name }
       else
         value_error "CSR is not defined" unless symtab.archdef.csrs.any? { |icsr| icsr.name == cd.name }

@@ -116,7 +116,7 @@ Svadu:
     - name: Paul Donahue
     - name: Ved Shanbhogue
       company: Rivos, Inc.
-    conflicts: Svade
+  conflicts: Svade
   doc_license:
     name: Creative Commons Attribution 4.0 International License (CC-BY 4.0)
     url: https://creativecommons.org/licenses/by/4.0/

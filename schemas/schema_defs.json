@@ -8,6 +8,13 @@
       "type": "string",
       "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
     },
+    "field_location": {
+      "oneOf": [
+        {"type": "number", "description": "Location of a single bit"},
+        {"type": "string", "pattern": "^[0-9]+-[0-9]+$", "description": "Location range of a multibit field"}
+      ],
+      "description": "Location of a field in a register"
+    },
     "spec_state": {
       "type": "string",
       "enum": [
