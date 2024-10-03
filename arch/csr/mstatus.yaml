@@ -241,9 +241,29 @@ mstatus:
         *`hfence.vvma`, `sfence.w.inval`, or `sfence.inval.ir` to trap.
         * Any additional traps in VS-mode (controlled via `hstatus.VTVM` instead).
 
-      type: RW
+      type(): |
+        if (CSR[misa].S == 1'b0) {
+          return CsrFieldType::RO;
+        } else {
+          return CsrFieldType::RW;
+        }
       definedBy: S
-      reset_value: UNDEFINED_LEGAL
+      reset_value(): |
+        if (CSR[misa].S == 1'b0) {
+          return 0;
+        } else if (MSTATUS_TVM_IMPLEMENTED) {
+          return UNDEFINED_LEGAL;
+        } else {
+          return 0;
+        }
+      sw_write(csr_value): |
+        if (CSR[misa].S == 1'b0) {
+          return 0;
+        } else if (MSTATUS_TVM_IMPLEMENTED) {
+          return csr_value.TVM;
+        } else {
+          return 0;
+        }
     MXR:
       location: 19
       description: |
@@ -286,7 +306,8 @@ mstatus:
 
         `mstatus.MPRV` is cleared on any exception return (`mret` or `sret` instruction, regardless of the trap handler privilege mode).
       definedBy: U
-      type: RW-H
+      type(): |
+        return (CSR[misa].U == 1'b1) ? CsrFieldType::RWH : CsrFieldType::RO;
       reset_value: 0
     XS:
       location: 16-15
@@ -308,9 +329,40 @@ mstatus:
         When a floating point register, or the fCSR register is written, FS obtains the value 3.
         Values 1 and 2 are valid write values for software, but are not interpreted by hardware
         other than to possibly enable a previously-disabled floating point unit. 
-      type: RW-H
+      type(): |
+        if (CSR[misa].F == 1'b1){
+          return CsrFieldType::RWH;
+        } else if ((CSR[misa].S == 1'b0) && (CSR[misa].F == 1'b0)) {
+          # must be read-only-0
+          return CsrFieldType::RO;
+        } else {
+          assert (CSR[misa].S == 1'b1);
+          # there will be no hardware update in this case because we know the F extension isn't implemented
+          return MSTATUS_FS_WRITEABLE ? CsrFieldType::RW : CsrFieldType::RO;
+        }
       definedBy: F
-      reset_value: UNDEFINED_LEGAL
+      reset_value(): |
+        if (CSR[misa].F == 1'b1){
+          return UNDEFINED_LEGAL;
+        } else if ((CSR[misa].S == 1'b0) && (CSR[misa].F == 1'b0)) {
+          # must be read-only-0
+          return 0;
+        } else {
+          assert (CSR[misa].S == 1'b1);
+          # there will be no hardware update in this case because we know the F extension isn't implemented
+          return MSTATUS_FS_WRITEABLE ? UNDEFINED_LEGAL : 0;
+        }
+      sw_write(csr_value): |
+        if (CSR[misa].F == 1'b1){
+          return ary_includes?(MSTATUS_FS_LEGAL_VALUES, csr_value.FS) ? csr_value.FS : UNDEFINED_LEGAL_DETERMINISTIC;
+        } else if ((CSR[misa].S == 1'b0) && (CSR[misa].F == 1'b0)) {
+          # must be read-only-0
+          return 0;
+        } else {
+          assert (CSR[misa].S == 1'b1);
+          # there will be no hardware update in this case because we know the F extension isn't implemented
+          return ary_includes?(MSTATUS_FS_LEGAL_VALUES, csr_value.FS) ? csr_value.FS : UNDEFINED_LEGAL_DETERMINISTIC;
+        }
     MPP:
       location: 12-11
       description: |
@@ -449,9 +501,11 @@ mstatus:
         Can also be written by software without immediate side effect.
 
         Other than serving as a record of nested traps as described above, `mstatus.SPIE` does not affect execution.
-      type: RW-H
+      type(): |
+        return (CSR[misa].S == 1'b1) ? CsrFieldType::RWH : CsrFieldType::RO;
       definedBy: S
-      reset_value: UNDEFINED_LEGAL
+      reset_value(): |
+        return (CSR[misa].S == 1'b1) ? UNDEFINED_LEGAL : 0;
     MIE:
       location: 3
       description: |
@@ -484,6 +538,8 @@ mstatus:
         * When 0, all (H)S-mode interrupts are disabled when the current privilege level is (H)S (M-mode interrupts are still enabled).
         * When 1, (H)S-mode interrupts that are not otherwise disabled with a field in `sie` are enabled.
 
-      type: RW-H
+      type(): |
+        return (CSR[misa].S == 1'b1) ? CsrFieldType::RWH : CsrFieldType::RO;
       definedBy: S
-      reset_value: UNDEFINED_LEGAL
+      reset_value(): |
+        return (CSR[misa].S == 1'b1) ? UNDEFINED_LEGAL : 0;
