@@ -13,9 +13,13 @@ def arch_def_for(config_name)
 
   @arch_defs[config_name] =
     if config_name == "_"
-      ArchDef.new
+      ArchDef.new("_", $root / "gen" / "_" / "arch" / "arch_def.yaml")
     else
-      ImplArchDef.new(config_name)
+      ArchDef.new(
+        config_name,
+        $root / "gen" / config_name / "arch" / "arch_def.yaml",
+        overlay_path: $root / "cfgs" / config_name / "arch_overlay"
+      )
     end
 end
 
@@ -103,6 +107,7 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
   end.to_h
 
   arch_def = {
+    "type" => "unconfigured",
     "instructions" => inst_hash,
     "extensions" => ext_hash,
     "csrs" => csr_hash,

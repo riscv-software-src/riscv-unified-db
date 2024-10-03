@@ -4,15 +4,34 @@
   "type": "object",
   "title": "Unified Architecture Specification",
   "required": [
+    "type",
     "extensions",
-    "implemented_extensions",
     "csrs",
-    "implemented_csrs",
-    "params",
-    "instructions",
-    "implemented_instructions"
+    "instructions"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": { "enum": ["partially configured", "fully configured"]}
+        }
+      },
+      "then": {
+        "required": [
+          "implemented_instructions",
+          "implemented_extensions",
+          "implemented_csrs",
+          "params"
+        ]
+      }
+    }
   ],
   "properties": {
+    "type": {
+      "type": "string",
+      "description": "Type of the arch",
+      "enum": ["unconfigured", "partially configured", "fully configured"]
+    },
     "params": {
       "type": "object"
     },
@@ -85,6 +104,21 @@
         "pattern": "^[a-z][a-zA-Z0-9.]+$",
         "description": "Instruction name"
       }
+    },
+    "profile_families": {
+      "type": "object"
+    },
+    "profiles": {
+      "type": "object"
+    },
+    "manuals": {
+      "type": "object"
+    },
+    "csc_crd_families": {
+      "type": "object"
+    },
+    "csc_crds": {
+      "type": "object"
     }
   },
   "additionalProperties": false

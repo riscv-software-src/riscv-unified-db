@@ -239,3 +239,16 @@ F:
         Indicates whether or not the `F` extension can be disabled with the `misa.F` bit.
       schema:
         type: boolean
+    MSTATUS_FS_LEGAL_VALUES:
+      description: |
+        The set of values that mstatus.FS will accept from a software write.
+      schema:
+        type: array
+        items:
+          type: integer
+          enum: [0,1,2,3]
+        maxItems: 4
+        uniqueItems: true
+      also_defined_in: S
+      extra_validation: |
+        assert MSTATUS_FS_LEGAL_VALUES.include?(0) && MSTATUS_FS_LEGAL_VALUES.include?(3) if ext?(:F)

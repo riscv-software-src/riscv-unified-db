@@ -278,6 +278,7 @@ class ArchGen
     end.to_h
 
     arch_def = {
+      "type" => "fully configured",
       "params" => params,
       "instructions" => inst_hash,
       "implemented_instructions" => @implemented_instructions,

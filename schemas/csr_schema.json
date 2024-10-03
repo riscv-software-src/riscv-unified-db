@@ -15,25 +15,16 @@
           "description": "Name of the field. Optional because it is implied by the object key of the CSR object holding the field"
         },
         "location": {
-          "oneOf": [
-            {"type": "number", "description": "Location of a single bit"},
-            {"type": "string", "pattern": "^[0-9]+-[0-9]+$", "description": "Location range of a multibit field"}
-          ],
+          "$ref": "schema_defs.json#/$defs/field_location",
           "description": "Location of the field within the CSR register"
         },
         "location_rv32": {
-          "description": "Location of the field within the CSR register when the effective XLEN of the current mode is 32",
-          "oneOf": [
-            {"type": "number", "description": "Location of a single bit"},
-            {"type": "string", "pattern": "^[0-9]+-[0-9]+$", "description": "Location range of a multibit field"}
-          ]
+          "$ref": "schema_defs.json#/$defs/field_location",
+          "description": "Location of the field within the CSR register when the effective XLEN of the current mode is 32"
         },
         "location_rv64": {
-          "description": "Location of the field within the CSR register when the effective XLEN of the current mode is 64",
-          "oneOf": [
-            {"type": "number", "description": "Location of a single bit"},
-            {"type": "string", "pattern": "^[0-9]+-[0-9]+$", "description": "Location range of a multibit field"}
-          ]
+          "$ref": "schema_defs.json#/$defs/field_location",
+          "description": "Location of the field within the CSR register when the effective XLEN of the current mode is 64"
         },
         "reset_value": {
           "description": "Value of the state after reset. Can be UNDEFINED_LEGAL for the generic architecture spec, but must have an integer value for the implementation spec",

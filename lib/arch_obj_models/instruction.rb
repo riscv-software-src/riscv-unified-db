@@ -640,7 +640,7 @@ class Instruction < ArchDefObject
     if @data.key?("excludedBy")
       if @data["exludedBy"].is_a?(Array)
         # could be either a single extension with exclusion, or a list of exclusions
-        if extension_exclusion?(@data["definedBy"][0])
+        if extension_exclusion?(@data["excludedBy"][0])
           @extension_exclusions << to_extension_requirement(@data["excludedBy"][0])
         else
           # this is a list

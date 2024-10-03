@@ -19,6 +19,12 @@ else
   SINGULARITY_CACHE=
 fi
 
+if [ -f $ROOT/.git ]; then
+  # if this is a worktree, need to add the parent git repo in, too
+  GIT_PATH=`git rev-parse --git-common-dir | tr -d '\n' | xargs dirname`
+  HOME_OPT="${HOME_OPT} --bind ${GIT_PATH}:${GIT_PATH}"
+fi
+
 if [ ! -d $ROOT/.home ]; then
   mkdir $ROOT/.home
 fi
