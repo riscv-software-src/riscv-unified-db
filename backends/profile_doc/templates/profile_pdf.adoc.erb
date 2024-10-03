@@ -18,7 +18,7 @@
 :experimental:
 :reproducible:
 :wavedrom: <%= $root %>/node_modules/.bin/wavedrom-cli
-// needs to be changed
+// TODO: needs to be changed
 :imagesoutdir: images
 :icons: font
 :lang: en
@@ -440,7 +440,11 @@ end.join(" | ") -%>
     <%= v["ratification_date"] %>
   <%- if v.key?("changes") -%>
   Changes:::
-    <%= v["changes"] %>
+
+    <%- v["changes"].each do |c| -%>
+    * <%= c %>  
+    <%- end -%>
+
   <%- end -%>
   <%- if v.key?("url") -%>
   Ratification document:::

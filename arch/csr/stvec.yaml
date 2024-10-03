@@ -6,7 +6,7 @@ stvec:
   priv_mode: S
   length: 64
   description: Controls where traps jump.
-  definedBy: I
+  definedBy: S
   fields:
     BASE:
       location: 63-2

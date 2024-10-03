@@ -7,7 +7,7 @@ mcause:
   priv_mode: M
   length: MXLEN
   description: Reports the cause of the latest exception.
-  definedBy: I
+  definedBy: Sm
   fields:
     INT:
       location_rv32: 31

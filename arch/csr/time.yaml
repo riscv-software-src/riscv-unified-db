@@ -28,7 +28,7 @@ time:
     --
   priv_mode: U
   length: 64
-  definedBy: I
+  definedBy: U
   fields:
     COUNT:
       location: 63-0

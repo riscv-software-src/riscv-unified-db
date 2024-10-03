@@ -6,7 +6,7 @@ mtval:
   description: Holds trap-specific information
   priv_mode: M
   length: 64
-  definedBy: I
+  definedBy: Sm
   fields:
     VALUE:
       location: 63-0

@@ -6,7 +6,7 @@ menvcfgh:
   description: Contains bits to enable/disable extensions
   priv_mode: M
   length: 32
-  definedBy: I
+  definedBy: Sm
   fields:
     STCE:
       location: 31

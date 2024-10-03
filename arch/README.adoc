@@ -200,7 +200,7 @@ marchid: # <1>
   length: MXLEN # <4>
   description: | # <5>
     Asciidoc description
-  definedBy: I # <6>
+  definedBy: Sm # <6>
   fields: # <7>
     Architecture:
       location_rv32: 31-0 # <8>

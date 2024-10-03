@@ -7,7 +7,7 @@ mstatush:
   base: 32
   length: 32
   description: The mstatus register tracks and controls the hart's current operating state.
-  definedBy: I
+  definedBy: Sm
   fields:
     MPV:
       location: 7

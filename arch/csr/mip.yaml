@@ -6,7 +6,7 @@ mip:
   priv_mode: M
   description: Machine Interrupt Pending bits
   length: 64
-  definedBy: I
+  definedBy: Sm
   fields:
     SSIP:
       location: 1
