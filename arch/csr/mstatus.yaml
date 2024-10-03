@@ -336,7 +336,6 @@ mstatus:
           # must be read-only-0
           return CsrFieldType::RO;
         } else {
-          assert (CSR[misa].S == 1'b1);
           # there will be no hardware update in this case because we know the F extension isn't implemented
           return MSTATUS_FS_WRITEABLE ? CsrFieldType::RW : CsrFieldType::RO;
         }
@@ -348,20 +347,18 @@ mstatus:
           # must be read-only-0
           return 0;
         } else {
-          assert (CSR[misa].S == 1'b1);
           # there will be no hardware update in this case because we know the F extension isn't implemented
           return MSTATUS_FS_WRITEABLE ? UNDEFINED_LEGAL : 0;
         }
       sw_write(csr_value): |
         if (CSR[misa].F == 1'b1){
-          return ary_includes?(MSTATUS_FS_LEGAL_VALUES, csr_value.FS) ? csr_value.FS : UNDEFINED_LEGAL_DETERMINISTIC;
+          return ary_includes?<$array_size(MSTATUS_FS_LEGAL_VALUES), 2>(MSTATUS_FS_LEGAL_VALUES, csr_value.FS) ? csr_value.FS : UNDEFINED_LEGAL_DETERMINISTIC;
         } else if ((CSR[misa].S == 1'b0) && (CSR[misa].F == 1'b0)) {
           # must be read-only-0
           return 0;
         } else {
-          assert (CSR[misa].S == 1'b1);
           # there will be no hardware update in this case because we know the F extension isn't implemented
-          return ary_includes?(MSTATUS_FS_LEGAL_VALUES, csr_value.FS) ? csr_value.FS : UNDEFINED_LEGAL_DETERMINISTIC;
+          return ary_includes?<$array_size(MSTATUS_FS_LEGAL_VALUES), 2>(MSTATUS_FS_LEGAL_VALUES, csr_value.FS) ? csr_value.FS : UNDEFINED_LEGAL_DETERMINISTIC;
         }
     MPP:
       location: 12-11
