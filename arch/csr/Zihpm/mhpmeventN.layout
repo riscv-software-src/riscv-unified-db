@@ -11,7 +11,7 @@
   description: |
     Programmable hardware performance counter event selector
     <%% if ext?(:Sscofpmf) %> and overflow/filtering control<%% end %>
-  definedBy: I
+  definedBy: Sm
   fields:
     OF:
       location: 63

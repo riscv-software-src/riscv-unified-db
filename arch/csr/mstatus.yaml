@@ -12,7 +12,7 @@ mstatus:
   length: MXLEN
  
   description: The mstatus register tracks and controls the hart's current operating state.
-  definedBy: I
+  definedBy: Sm
   fields:
     SD:
       location_rv32: 31
@@ -485,4 +485,5 @@ mstatus:
         * When 1, (H)S-mode interrupts that are not otherwise disabled with a field in `sie` are enabled.
 
       type: RW-H
+      definedBy: S
       reset_value: UNDEFINED_LEGAL

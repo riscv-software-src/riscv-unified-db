@@ -22,18 +22,18 @@ Dir.glob("#{$root}/arch/csc_crd/*.yaml") do |f|
     "gen:arch"
   ] do |t|
     # TODO: schema validation
-    crd = arch_def_for("_").csc_crd(crd_name)
+    arch_def = arch_def_for("_")
+    crd = arch_def.csc_crd(crd_name)
     raise "No CSC CRD defined for #{crd_name}" if crd.nil?
 
     version = File.basename(t.name, '.adoc').split('-')[1..].join('-')
 
-
-
-    template = ERB.new(File.read("#{CSC_CRD_DOC_DIR}/templates/crd.adoc.erb"), trim_mode: "-")
-    template.filename = "#{CSC_CRD_DOC_DIR}/templates/crd.adoc.erb"
+    erb = ERB.new(File.read("#{CSC_CRD_DOC_DIR}/templates/crd.adoc.erb"), trim_mode: "-")
+    erb.filename = "#{CSC_CRD_DOC_DIR}/templates/crd.adoc.erb"
     
     FileUtils.mkdir_p File.dirname(t.name)
-    File.write t.name, template.result(binding)
+    File.write t.name, AsciidocUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
+    puts "Generated adoc source at #{t.name}"
   end
 
   file "#{$root}/gen/csc_crd_doc/pdf/#{crd_name}.pdf" => [
@@ -50,6 +50,25 @@ Dir.glob("#{$root}/arch/csc_crd/*.yaml") do |f|
       "-a pdf-theme=#{$root}/ext/docs-resources/themes/riscv-pdf.yml",
       "-a pdf-fontsdir=#{$root}/ext/docs-resources/fonts",
       "-a imagesdir=#{$root}/ext/docs-resources/images",
+      "-r asciidoctor-diagram",
+      "-r #{$root}/backends/ext_pdf_doc/idl_lexer",
+      "-o #{t.name}",
+      adoc_file
+    ].join(" ")
+  end
+
+  file "#{$root}/gen/csc_crd_doc/html/#{crd_name}.html" => [
+    "#{$root}/gen/csc_crd_doc/adoc/#{crd_name}.adoc"
+  ] do |t|
+    adoc_file = "#{$root}/gen/csc_crd_doc/adoc/#{crd_name}.adoc"
+    FileUtils.mkdir_p File.dirname(t.name)
+    sh [
+      "asciidoctor",
+      "-w",
+      "-v",
+      "-a toc",
+      "-a imagesdir=#{$root}/ext/docs-resources/images",
+      "-b html5",
       "-r asciidoctor-diagram",
       "-r #{$root}/backends/ext_pdf_doc/idl_lexer",
       "-o #{t.name}",
@@ -78,5 +97,19 @@ namespace :gen do
     end
 
     Rake::Task["#{$root}/gen/csc_crd_doc/pdf/#{args[:crd_name]}.pdf"].invoke
+  end
+
+  task :csc_crd_html, [:crd_name] do |_t, args|
+    if args[:crd_name].nil?
+      warn "Missing required option: 'crd_family_name'"
+      exit 1
+    end
+
+    unless File.exist?("#{$root}/arch/csc_crd/#{args[:crd_name]}.yaml")
+      warn "No CRD named '#{args[:crd_name]}' found in arch/csc_crd"
+      exit 1
+    end
+
+    Rake::Task["#{$root}/gen/csc_crd_doc/html/#{args[:crd_name]}.html"].invoke
   end
 end

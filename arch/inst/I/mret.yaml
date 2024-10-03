@@ -3,7 +3,7 @@ mret:
   description: |
     Returns from an exception in M-mode.
   assembly: ""
-  definedBy: I
+  definedBy: Sm
   access:
     s: never
     u: never

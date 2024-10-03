@@ -32,19 +32,38 @@ MC-1:
     mandatory:
     - name: I
       version: "~> 2.1"
-      note: "The I extension is the base Integer instruction set and is considered an \"extension\" for convenience."
+    - name: C
+      version: "~> 2.2"
       param_constraints:
+          MUTABLE_MISA_C:
+            schema:
+              const: false
+    - name: M
+      version: "~> 2.0"
+    - name: Zicsr
+      version: "~> 2.0"
+    - name: Zicntr
+      version: "~> 2.0"
+    - name: Sm
+      version: "~> 1.11"
+      param_constraints:
+          MTVEC_BASE_ALIGNMENT_DIRECT: {} # Unconstrained
+          MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
+          ARCH_ID: {} # Unconstrained
+          IMP_ID: {} # Unconstrained
+          VENDOR_ID_BANK: {} # Unconstrained
+          VENDOR_ID_OFFSET: {} # Unconstrained
+          MISA_CSR_IMPLEMENTED: {} # Unconstrained
+          TIME_CSR_IMPLEMENTED: {} # Unconstrained
+          MTVAL_WIDTH: {} # Unconstrained
+          PHYS_ADDR_WIDTH: {} # Unconstrained
           PRECISE_SYNCHRONOUS_EXCEPTIONS:
             schema:
               const: true
-          TRAP_ON_UNIMPLEMENTED_CSR:
-            schema:
-              const: true
-          TRAP_ON_UNIMPLEMENTED_INSTRUCTION:
-            schema:
-              const: true
           TRAP_ON_ECALL_FROM_M:
-            note: REQ-UINST-017
+            schema:
+              const: true
+          TRAP_ON_EBREAK:
             schema:
               const: true
           REPORT_VA_IN_MTVAL_ON_BREAKPOINT:
@@ -65,41 +84,16 @@ MC-1:
           M_MODE_ENDIANESS:
             schema:
               const: little
-          # OPT-RDTIME doesn't need constraint (behavior defined by TIME_CSR_IMPLEMENTED)
-          # OPT-MTIME-PADDR doesn't have parameter -- it's considered non-ISA by the database
-          # OPT-MTIMECMP-PADDR doesn't have parameter -- it's considered non-ISA by the database
-          # OPT-MSIP-PADDR doesn't have parameter -- it's considered non-ISA by the database
-          # OPT-MHARTID doesn't need constrained (behavior is a builtin)
-          # OPT-MVENDORID doesn't need constrained (but behavior is controlled by VENDOR_ID_BANK and VENDOR_ID_OFFSET)
-          # OPT-MARCHID doesn't need constrained (but behavior is controlled by ARCH_ID)
-          # OPT-MIMPID doesn't need constrained (but behavior is controlled by IMP_ID)
-          # OPT-MISA doesn't need constrained (but behavior is controlled by MISA_CSR_IMPLEMENTED)
-          # OPT-CLINT doesn't need a parameter; it is mandated in the spec
-          # OPT-CLIC doesn't need a paramter
-          MTVEC_BASE_ALIGNMENT_DIRECT:
-            note: OPT-MTVEC-ALIGN-DIRECT
-            schema:
-              const: 4
-          MTVEC_BASE_ALIGNMENT_VECTORED:
-            note: OPT-MTVEV-ALIGN-VECTORED
-            schema:
-              const: 4
-          ARCH_ID: {} # Unconstrained
           XLEN:
             schema:
               const: 32
-    - name: C
-      version: "~> 2.2"
-    - name: M
-      version: "~> 2.0"
-    - name: Zicsr
-      version: "~> 2.0"
-    - name: Zicntr
-      version: "~> 2.0"
+          CONFIG_PTR_ADDRESS:
+            schema:
+              const: 0
     #XXX optional: {} # None
     optional:
-    - name: B
-      note: "This is just for testing. B isn't really optional for MC-1."
+    - name: Zifencei
+      note: "This is just for testing. Zifencei extension isn't really optional for MC-1."
   
   requirement_groups:
     - name: MC-Unpriv
@@ -147,3 +141,11 @@ MC-1:
         description: Should return the most-significant 32-bits of the `mcycle` CSR when reading `cycleh`
       - name: REQ-M32CSR-002
         description: Should return the most-significant 32-bits of the `minstret` CSR when reading `instreth`
+
+    - name: MC-Priv
+      description: |
+        The MC-Priv defines Privileged ISA requirements.
+      requirements:
+      - name: REQ-PRIV-HARTID
+        description: | 
+          One hart in system has to have a HARTID of 0. Reading `mhartid` on other CSRs provides some value.

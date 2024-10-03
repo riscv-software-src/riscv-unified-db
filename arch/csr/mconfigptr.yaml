@@ -37,7 +37,7 @@ mconfigptr:
 
   priv_mode: M
   length: MXLEN
-  definedBy: I
+  definedBy: Sm
   fields:
     ADDRESS:
       location_rv32: 31-0

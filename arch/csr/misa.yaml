@@ -6,7 +6,7 @@ misa:
   priv_mode: M
   length: 64
   description: Reports the XLEN and "major" extensions supported by the ISA.
-  definedBy: I
+  definedBy: Sm
   fields:
     MXL:
       location: 63-62

@@ -40,7 +40,7 @@ marchid:
     variants of a design.
     ====
 
-  definedBy: I
+  definedBy: Sm
   fields:
     Architecture:
       location_rv32: 31-0

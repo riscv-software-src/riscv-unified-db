@@ -37,3 +37,12 @@ U:
         enum: [32, 64, 3264]
       extra_validation: |
         assert UXLEN == 32 if XLEN == 32
+    TRAP_ON_ECALL_FROM_U:
+      description: |
+        Whether or not an ECALL-from-U-mode causes a synchronous exception.
+
+        The spec states that implementations may handle ECALLs transparently
+        without raising a trap, in which case the EEI must provide a builtin.
+      schema:
+        type: boolean
+        default: true

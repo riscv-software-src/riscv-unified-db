@@ -23,7 +23,7 @@ mimpid:
     most-significant nibble down) with subfields aligned on nibble
     boundaries to ease human readability.
     ====
-  definedBy: I
+  definedBy: Sm
   fields:
     Implementation:
       location_rv32: 31-0

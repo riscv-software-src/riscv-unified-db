@@ -1,3 +1,13 @@
+# Classes for CRD (Certification Requirements Documents).
+# Each CRD is a member of a CRD family (e.g., Microcontroller).
+#
+# Some classes inherit from the ArchDefObject class. This provides facilities for accessing
+# the contents of a CRD family or CRD YAML definition via the "data" member (hash holding YAML file contents).
+# A variable name with a "_crd" suffix indicates it is from the CRD family/member YAML file.
+#
+# The "archdef" member is an ArchDef class containing the "database" of RISC-V standards
+# including extensions, instructions, CSRs, Profiles, and CRDs.
+# A variable name with a "_db" suffix indicates it is from the archdef.
 
 class CscCrdFamily < ArchDefObject
   class Revision < ArchDefObject
@@ -48,13 +58,13 @@ class CscCrdFamily < ArchDefObject
   end
 
   def crds
-    return @versions unless @version.nil?
+    return @crds unless @version.nil?
 
-    @versions = []
+    @crds = []
     arch_def.csc_crds.each do |csc_crd|
-      @versions << csc_crd if csc_crd.famly == self
+      @crds << csc_crd if csc_crd.famly == self
     end
-    @versions
+    @crds
   end
 end
 
@@ -95,29 +105,44 @@ class CscCrd < ArchDefObject
 
   def description = @data["description"]
 
+  # @return [Array<ExtensionRequirements>] - # Extensions with their CRD information.
   def extension_reqs
-    return @extension_reqs unless @extension_reqs.nil?
+    return @extension_reqs_crd unless @extension_reqs_crd.nil?
 
-    @extension_reqs = []
+    @extension_reqs_crd = []
     [ "mandatory", "optional"].each do |status|
-      @data["extensions"][status]&.each do |ext|
-        @extension_reqs << 
-          ExtensionRequirement.new(ext["name"], ext["version"], note: ext["note"], req_id: "REQ-EXT-" + ext["name"],
-            status: status)
+      @data["extensions"][status]&.each do |ext_crd|
+        @extension_reqs_crd << 
+          ExtensionRequirement.new(ext_crd["name"], ext_crd["version"], 
+            note: ext_crd["note"], req_id: "REQ-EXT-" + ext_crd["name"], status: status)
       end
     end
-    @extension_reqs
+    @extension_reqs_crd
   end
 
-  class ParameterConstraint
-    attr_reader :param
+  # @return [Array<Extension>] List of extensions
+  def extensions
+    extension_reqs.map do |er|
+      obj = arch_def.extension(er.name)
+
+      # @todo: change this to raise once all the profile extensions
+      #        are defined
+      warn "Extension #{er.name} is not defined" if obj.nil?
+
+      obj
+    end.reject(&:nil?)
+  end
+
+  # Holds an extension's parameter schema constraint from the CRD YAML.
+  class CrdParameterConstraint
+    attr_reader :param_db  # ExtensionParameter object (from the architecture database)
     attr_reader :note
 
-    def initialize(param, constraint, note)
-      raise ArgumentError, "Expecting ExtensionParameter" unless param.is_a?(ExtensionParameter)
+    def initialize(param_db, schema_constraint, note)
+      raise ArgumentError, "Expecting ExtensionParameter" unless param_db.is_a?(ExtensionParameter)
 
-      @param = param
-      @schema_constraint = constraint
+      @param_db = param_db
+      @schema_constraint = schema_constraint
       @note = note
     end
 
@@ -126,15 +151,15 @@ class CscCrd < ArchDefObject
     end
 
     def value
-      raise "Parameter constraint for #{@param.name} is not a single value" unless single_value?
+      raise "Parameter schema_constraint for #{@param_db.name} is not a single value" unless single_value?
 
       @schema_constraint["const"]
     end
 
     def schema_constraint_pretty
-      return "" if @schema_constraint.nil?
+      return "Unconstrained" if (@schema_constraint.nil? or @schema_constraint == "")
       if @schema_constraint.key?("const")
-        "== #{@schema_constraint["const"]}"
+        "#{@schema_constraint["const"]}"
       elsif @schema_constraint.key?("enum")
         "One of: [#{@schema_constraint["enum"].join(', ')}]"
       else
@@ -142,66 +167,81 @@ class CscCrd < ArchDefObject
       end
     end
 
+    # sorts by name
+    def <=>(other)
+      raise ArgumentError, 
+        "CrdParameterConstraint are only comparable to other parameter constraints" unless other.is_a?(CrdParameterConstraint)
+      @param_db.name <=> other.param_db.name
+    end
   end
 
-  def param_constraints(ext_req)
+  # @return [Array<CrdParameterConstraint>] List of parameters constraints from CRD extension information.
+  # These are always IN SCOPE by definition (since they are listed in the CRD).
+  def param_constraints(ext_req_crd)
     param_constraints = []    # Local variable, no caching
 
-    ext_data = @data["extensions"][ext_req.status].find {|ext| ext["name"] == ext_req.name}
-    raise "Cannot find extension named #{ext_req.name}" if ext_data.nil?
+    # Get extension information from CRD YAML for passed in extension requirement.
+    ext_crd = @data["extensions"][ext_req_crd.status].find {|ext| ext["name"] == ext_req_crd.name}
+    raise "Cannot find extension named #{ext_req_crd.name}" if ext_crd.nil?
     
-    from_ext = @arch_def.extension(ext_data["name"])
-    raise "Cannot find extension named #{ext_data["name"]}" if from_ext.nil?
+    # Find Extension object from database
+    ext_db = @arch_def.extension(ext_crd["name"])
+    raise "Cannot find extension named #{ext_crd["name"]}" if ext_db.nil?
 
-    # & is the safe navigation operator
-    ext_data["param_constraints"]&.each do |param_name, param_data|
-        param = from_ext.params.find { |p| p.name == param_name }
-        raise "There is no param '#{param_name}' in extension '#{ext_data["name"]}" if param.nil?
+    # Loop through an extension's parameter constraints (hash) from the CRD.
+    # Note that "&" is the Ruby safe navigation operator (i.e., skip do loop if nil).
+    ext_crd["param_constraints"]&.each do |param_name, param_data|
+        # Find ExtensionParameter object from database
+        ext_param_db = ext_db.params.find { |p| p.name == param_name }
+        raise "There is no param '#{param_name}' in extension '#{ext_crd["name"]}" if ext_param_db.nil?
 
-        param_constraints << ParameterConstraint.new(param, param_data["schema"], param_data["note"])
+        param_constraints << CrdParameterConstraint.new(ext_param_db, param_data["schema"], param_data["note"])
     end
 
     param_constraints
   end
 
-  def in_scope_param_constraints
-    return @in_scope_param_constraints unless @in_scope_param_constraints.nil?
+  # @return [Array<CrdParameterConstraint>] List of parameters constraints specified by any extension in CRD.
+  # These are always IN SCOPE by definition (since they are listed in the CRD).
+  def all_parameter_constraints
+    return @all_parameter_constraints unless @all_parameter_constraints.nil?
 
-    @in_scope_param_constraints = []
+    @all_parameter_constraints = []
 
-    @data["extensions"]["mandatory"].each do |ext_data| 
-      from_ext = @arch_def.extension(ext_data["name"])
-      raise "Cannot find extension named #{ext_data["name"]}" if from_ext.nil?
-
-      next if ext_data["param_constraints"].nil?
-
-      ext_data["param_constraints"].each do |param_name, param_data|
-        param = from_ext.params.find { |p| p.name == param_name }
-        raise "There is no param '#{param_name}' in extension '#{ext_data["name"]}" if param.nil?
-
-        @in_scope_param_constraints << ParameterConstraint.new(param, param_data["schema"], param_data["note"])
+    [ "mandatory", "optional"].each do |status|
+      @data["extensions"][status].each do |ext_crd| 
+        # Find Extension object from database
+        ext_db = @arch_def.extension(ext_crd["name"])
+        raise "Cannot find extension named #{ext_crd["name"]}" if ext_db.nil?
+  
+        ext_crd["param_constraints"]&.each do |param_name, param_data|
+          param_db = ext_db.params.find { |p| p.name == param_name }
+          raise "There is no param '#{param_name}' in extension '#{ext_crd["name"]}" if param_db.nil?
+  
+          @all_parameter_constraints << CrdParameterConstraint.new(param_db, param_data["schema"], param_data["note"])
+        end
       end
     end
-    @in_scope_param_constraints
+    @all_parameter_constraints
   end
 
-  # @return [Array<ExtensionParameter>] List of parameters that are out of scope
-  def out_of_scope_param_constraints
-    return @out_of_scope_param_constraints unless @out_of_scope_param_constraints.nil?
+  # @return [Array<ExtensionParameter>] List of parameters that are out of scope across all extensions.
+  def all_out_of_scope_params
+    return @all_out_of_scope_params unless @all_out_of_scope_params.nil?
  
-    @out_of_scope_param_constraints = []
-    extension_reqs.each do |ext_req|
-      @arch_def.extension(ext_req.name).params.each do |param|
-        next if in_scope_param_constraints.any? { |c| c.param.name == param.name }
-        @out_of_scope_param_constraints << param
+    @all_out_of_scope_params = []
+    extension_reqs.each do |ext_req_crd|
+      @arch_def.extension(ext_req_crd.name).params.each do |param_db|
+        next if all_parameter_constraints.any? { |c| c.param_db.name == param_db.name }
+        @all_out_of_scope_params << param_db
       end
     end
-    @out_of_scope_param_constraints
+    @all_out_of_scope_params
   end
 
-  # @return [Array<ExtensionParameter>] List of parameters that are out of scope
-  def extension_out_of_scope_param_constraints(ext_req)
-    out_of_scope_param_constraints.select{|param| param.exts.any? {|ext| ext.name == ext_req.name} } 
+  # @return [Array<ExtensionParameter>] List of parameters that are out of scope for named extension.
+  def out_of_scope_params(ext_name)
+    all_out_of_scope_params.select{|param_db| param_db.exts.any? {|ext| ext.name == ext_name} } 
   end
 
   class Requirement < ArchDefObject
@@ -275,5 +315,4 @@ class CscCrd < ArchDefObject
     end
     @requirement_groups
   end
-
 end

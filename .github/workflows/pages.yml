@@ -53,6 +53,8 @@ jobs:
       run: mkdir -p _site/manual
     - name: Create _site/pdfs
       run: mkdir -p _site/pdfs
+    - name: Create _site/htmls
+      run: mkdir -p _site/htmls
     - name: Copy cfg html
       run: cp -R gen/cfg_html_doc/generic_rv64/html _site/example_cfg
     - name: Create RVA Family PDF Spec
@@ -63,6 +65,10 @@ jobs:
       run: ./do gen:csc_crd_pdf[MC-1]
     - name: Copy MC-1 PDF
       run: cp gen/csc_crd_doc/pdf/MC-1.pdf _site/pdfs/MC-1.pdf
+    - name: Create MC-1 HTML Spec
+      run: ./do gen:csc_crd_html[MC-1]
+    - name: Copy MC-1 HTML
+      run: cp gen/csc_crd_doc/html/MC-1.html _site/htmls/MC-1.html
     - name: Copy manual html
       run: cp -R gen/manual/isa/top/all/html _site/manual
     - name: Setup Pages

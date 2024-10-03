@@ -10,7 +10,7 @@ sip:
     Hypervisor-related interrupts (VS-mode interrupts and Supervisor Guest interrupts) are not reflected
     in `sip` even though those interrupts can be taken in HS-mode. Instead, they are reported through `hip`.
   length: 64
-  definedBy: I
+  definedBy: S
   fields:
     SSIP:
       location: 1

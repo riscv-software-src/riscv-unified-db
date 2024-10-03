@@ -11,7 +11,7 @@ pmpcfg5:
   priv_mode: M
   length: MXLEN
   description: PMP entry configuration
-  definedBy: I
+  definedBy: Sm
   fields:
     pmp20cfg:
       location: 7-0

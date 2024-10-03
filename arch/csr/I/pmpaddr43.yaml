@@ -10,7 +10,7 @@ pmpaddr43:
   priv_mode: M
   length: MXLEN
   description: PMP entry address
-  definedBy: I
+  definedBy: Sm
   fields:
     ADDR:
       location_rv32: 31-0
