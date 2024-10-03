@@ -251,7 +251,7 @@ S:
       schema:
         type: boolean
       extra_validation:
-        assert MSTATUS_FS_WRITEABL == true if ext?(:F)
+        assert MSTATUS_FS_WRITEABLE == true if ext?(:F)
     MSTATUS_FS_LEGAL_VALUES:
       description: |
         The set of values that mstatus.FS will accept from a software write.
