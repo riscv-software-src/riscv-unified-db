@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=../../schemas/ext_schema.json
 
-Sm:
+Smpmp:
   type: privileged
   long_name: Physical Memory Protection
   versions:
