@@ -1831,8 +1831,12 @@ module Idl
 
     def type_check(symtab)
       csr_field.type_check(symtab)
-      if ["RO", "RO-H"].any?(csr_field.field_def(symtab).type(symtab.archdef))
-        type_error "Cannot write to read-only CSR field"
+      begin
+        if ["RO", "RO-H"].any?(csr_field.field_def(symtab).type(symtab.archdef))
+          type_error "Cannot write to read-only CSR field"
+        end
+      rescue ValueError
+        # ok, we don't know the type because the archdef isn't configured
       end
 
       write_value.type_check(symtab)

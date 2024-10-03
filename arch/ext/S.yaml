@@ -243,3 +243,32 @@ S:
         default: false
       extra_validation:
         assert TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY == false if ext?(:Sv32) || ext?(:Sv39) || ext?(:Sv48) || ext?(:Sv57)
+    MSTATUS_FS_WRITEABLE:
+      description: |
+        When `S` is enabled but `F` is not, mstatus.FS is optionally writeable.
+
+        This parameter only has an effect when both S and F mode are disabled.
+      schema:
+        type: boolean
+      extra_validation:
+        assert MSTATUS_FS_WRITEABL == true if ext?(:F)
+    MSTATUS_FS_LEGAL_VALUES:
+      description: |
+        The set of values that mstatus.FS will accept from a software write.
+      schema:
+        type: array
+        items:
+          type: integer
+          enum: [0,1,2,3]
+        maxItems: 4
+        uniqueItems: true
+      also_defined_in: F
+      extra_validation: |
+        assert MSTATUS_FS_LEGAL_VALUES.include?(0) && MSTATUS_FS_LEGAL_VALUES.include?(3) if ext?(:F)
+    MSTATUS_TVM_IMPLEMENTED:
+      description: |
+        Whether or not mstatus.TVM is implemented.
+
+        When not implemented mstatus.TVM will be read-only-zero.
+      schema:
+        type: boolean
