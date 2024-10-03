@@ -91,8 +91,8 @@ module Idl
 
     def initialize(arch_def, effective_xlen = nil)
       @archdef = arch_def
-      if arch_def.is_a?(ImplArchDef)
-        raise "effective_xlen should not be set when symbol table is given an ImplArchDef" unless effective_xlen.nil?
+      if arch_def.fully_configured?
+        raise "effective_xlen should not be set when symbol table is given a fully-configured ArchDef" unless effective_xlen.nil?
       else
         raise "effective_xlen should be set when symbol table is given an ArchDef" if effective_xlen.nil?
       end
@@ -116,28 +116,24 @@ module Idl
         )
 
       }]
-      if arch_def.is_a?(ImplArchDef)
-        arch_def.params_with_value.each do |param_with_value|
-          type = Type.from_json_schema(param_with_value.schema).make_const
-          if type.kind == :array && type.width == :unknown
-            type = Type.new(:array, width: param_with_value.value.length, sub_type: type.sub_type)
-          end
+      arch_def.params_with_value.each do |param_with_value|
+        type = Type.from_json_schema(param_with_value.schema).make_const
+        if type.kind == :array && type.width == :unknown
+          type = Type.new(:array, width: param_with_value.value.length, sub_type: type.sub_type)
+        end
 
-          # could already be present...
-          existing_sym = get(param_with_value.name)
-          if existing_sym.nil?
-            add!(param_with_value.name, Var.new(param_with_value.name, type, param_with_value.value))
-          else
-            unless existing_sym.type.equal_to?(type) && existing_sym.value == param_with_value.value
-              raise DuplicateSymError, "Definition error: Param #{param.name} is defined by multiple extensions and is not the same definition in each"
-            end
+        # could already be present...
+        existing_sym = get(param_with_value.name)
+        if existing_sym.nil?
+          add!(param_with_value.name, Var.new(param_with_value.name, type, param_with_value.value))
+        else
+          unless existing_sym.type.equal_to?(type) && existing_sym.value == param_with_value.value
+            raise DuplicateSymError, "Definition error: Param #{param.name} is defined by multiple extensions and is not the same definition in each"
           end
         end
       end
       # now add all parameters, even those not implemented
-      arch_def.params.each do |param|
-        next if arch_def.is_a?(ImplArchDef) && arch_def.params_with_value.any? { |p| p.name == param.name }
-
+      arch_def.params_without_value.each do |param|
         if param.exts.size == 1
           if param.name == "XLEN"
             # special case: we actually do know XLEN

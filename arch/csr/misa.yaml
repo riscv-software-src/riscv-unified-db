@@ -4,12 +4,13 @@ misa:
   long_name: Machine ISA Control
   address: 0x301
   priv_mode: M
-  length: 64
+  length: MXLEN
   description: Reports the XLEN and "major" extensions supported by the ISA.
   definedBy: Sm
   fields:
     MXL:
-      location: 63-62
+      location_rv32: 31-30
+      location_rv64: 63-62
       description: XLEN in M-mode.
       type: RO
       reset_value: 2

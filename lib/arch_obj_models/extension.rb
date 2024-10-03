@@ -187,6 +187,12 @@ class Extension < ArchDefObject
     implications
   end
 
+  def conflicts
+    return [] if @data["conflicts"].nil?
+
+    to_extension_requirement_list(@data["conflicts"])
+  end
+
   # @return [Array<Instruction>] the list of instructions implemented by this extension (may be empty)
   def instructions
     return @instructions unless @instructions.nil?

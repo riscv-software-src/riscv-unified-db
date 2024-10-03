@@ -119,6 +119,24 @@ class ArchDefObject
   end
   private :to_extension_requirement
 
+  def to_extension_requirement_list(obj)
+    list = []
+    if obj.is_a?(Array)
+      # could be either a single extension with exclusion, or a list of exclusions
+      if extension_exclusion?(obj[0])
+        list << to_extension_requirement(obj[0])
+      else
+        # this is a list
+        obj.each do |r|
+          list << to_extension_exclusion(r)
+        end
+      end
+    else
+      list << to_extension_requirement(obj)
+    end
+    list
+  end
+
   def extension_requirement?(obj)
     obj.is_a?(String) && obj =~ /^([A-WY])|([SXZ][a-z]+)$/ ||
       obj.is_a?(Array) && obj[0] =~ /^([A-WY])|([SXZ][a-z]+)$/

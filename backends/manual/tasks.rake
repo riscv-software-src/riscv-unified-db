@@ -347,9 +347,10 @@ end
 Dir.glob($root / "arch" / "manual" / "**" / "contents.yaml") do |content_fn|
   file "#{File.dirname(content_fn)}/riscv-isa-manual/README.md" => ($root / "ext" / "riscv-isa-manual" / "README.md").to_s do |t|
     content_obj = YAML.load_file(content_fn)
+    git_dir = `git rev-parse --git-dir`.strip
     cmd = [
       "git",
-      "--git-dir=#{$root}/.git/modules/ext/riscv-isa-manual",
+      "--git-dir=#{git_dir}/modules/ext/riscv-isa-manual",
       "worktree add",
       File.dirname(t.name),
       content_obj["isa_manual_tree"],
