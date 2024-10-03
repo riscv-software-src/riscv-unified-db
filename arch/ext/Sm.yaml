@@ -18,7 +18,6 @@ Sm:
     - Made the `mstatus`.MPP field *WARL*, rather than *WLRL*.
     - Made the unused `__x__ip` fields *WPRI*, rather than *WIRI*.
     - Made the unused `misa` fields *WARL*, rather than *WIRI*.
-    - Made the unused `pmpaddr` and `pmpcfg` fields *WARL*, rather than *WIRI*.
     - Rectified an editing error that misdescribed the mechanism by which
       `mstatus.__x__IE` is written upon an exception.
     - Described scheme for emulating misaligned AMOs.
@@ -28,7 +27,6 @@ Sm:
       `misa` register.
     - Defined the `mcountinhibit` CSR, which stops performance counters from
       incrementing to reduce energy consumption.
-    - Specified semantics for PMP regions coarser than four bytes.
     - Specified contents of CSRs across XLEN modification.
     - Moved PLIC chapter into its own document.
   - version: "1.12.0"
@@ -58,8 +56,6 @@ Sm:
     - Made priority of load/store/AMO address-misaligned exceptions
       implementation-defined relative to load/store/AMO page-fault and
       access-fault exceptions.
-    - PMP reset values are now platform-defined.
-    - An additional 48 optional PMP registers have been defined.
     - Software breakpoint exceptions are permitted to write either 0 or the
       `pc` to `__x__tval`.
     - Specified relaxed constraints for implicit reads of non-idempotent regions.
@@ -264,13 +260,13 @@ Sm:
     MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE:
       description: |
         The maximum granule size, in bytes, that the hart can atomically perform a
-        misligned load/store/AMO without raising a Misaligned exception. When MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE is 0, the hart
+        misaligned load/store/AMO without raising a Misaligned exception. When MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE is 0, the hart
         cannot atomically perform a misaligned load/store/AMO. When a power of two, the hart can
         atomically load/store/AMO a misaligned access that is fully contained in a
         MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE-aligned region.
 
         [NOTE]
-        Even if the hart is capable of performing a misligned load/store/AMO atomically,
+        Even if the hart is capable of performing a misaligned load/store/AMO atomically,
         a misaligned exception may still occur if the access does not have the appropriate
         Misaligned Atomicity Granule PMA set.
       schema:
@@ -443,7 +439,9 @@ Sm:
         type: boolean
     MTVAL_WIDTH:
       description: |
-        The number of implemented bits in `mtval`.
+        The number of implemented bits in the `mtval` CSR.
+        This is the CSR that may be written when a trap is taken into M-mode with exception-specific information to
+        assist software in handling the trap (e.g., address associated with exception).
 
         Must be greater than or equal to _max_(`PHYS_ADDR_WIDTH`, `VA_SIZE`)
       schema:
@@ -453,56 +451,12 @@ Sm:
       description: |
         Physical address of the unified discovery configuration data structure.
         This address is reported in the `mconfigptr` CSR.
+        TODO: GitHub issue 53
       schema:
         type: integer
       # GitHub issue 53
       # when:
       #  version: ">= 1.12.0"
-    NUM_PMP_ENTRIES:
-      description: |
-        Number of implemented PMP entries. Can be any value between 0-64, inclusive.
-  
-        The architecture mandates that the number of implemented PMP registers
-        must appear to be 0, 16, or 64.
-
-        Therefore, pmp registers will behave as follows according to NUN_PMP_ENTRIES:
-        
-        [separator="!"]
-        !===
-        ! NUM_PMP_ENTRIES ! pmpaddr<0-15> / pmpcfg<0-3> ! pmpaddr<16-63> / pmpcfg<4-15>
-        ! 0               ! N                           ! N
-        ! 1-16            ! Y                           ! N
-        ! 17-64           ! Y                           ! Y
-        !===
-
-        ** N = Not implemented; access will cause `IllegalInstruction`
-           if TRAP_ON_UNIMPLEMENTED_CSR is true
-        ** Y = Implemented; access will not cause an exception (from M-mode), but register
-           may be read-only-zero if NUM_PMP_ENTRIES is less than the corresponding register
-        
-        [NOTE]
-        `pmpcfgN` for an odd N never exists when XLEN == 64
-
-        When NUM_PMP_ENTRIES is not exactly 0, 16, or 64, some extant pmp registers,
-        and associated pmpNcfg, will be read-only zero (but will never cause an exception).
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 64
-    PMP_GRANULARITY:
-      description: |
-        log2 of the smallest supported PMP region.
-        
-        Generally, for systems with an MMU, should not be smaller than 12,
-        as that would preclude caching PMP results in the TLB along with
-        virtual memory translations
-
-        Note that PMP_GRANULARITY is equal to G+2 (not G) as described in
-        the privileged architecture.
-      schema:
-        type: integer
-        minimum: 2
-        maximum: 66
     PMA_GRANULARITY:
       description: |
         log2 of the smallest supported PMA region.

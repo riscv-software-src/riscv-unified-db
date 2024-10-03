@@ -10,7 +10,7 @@ pmpaddr5:
   priv_mode: M
   length: MXLEN
   description: PMP entry address
-  definedBy: Sm
+  definedBy: Smpmp
   fields:
     ADDR:
       location_rv32: 31-0

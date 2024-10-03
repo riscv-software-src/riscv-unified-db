@@ -95,7 +95,7 @@ Reset value::
 <%= field.reset_value(arch_def) %>
 
 <%- if field.has_custom_sw_write? -%>
-Softare write::
+Software write::
 This field has special behavior when written by software (_e.g._, through `csrrw`).
 +
 When software tries to write `csr_value`, the field will be written with the return value of the function below.
