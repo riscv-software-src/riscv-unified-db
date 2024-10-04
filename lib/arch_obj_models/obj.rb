@@ -27,6 +27,10 @@
 class ArchDefObject
   attr_reader :data, :name, :long_name, :description
 
+  def <=>(other)
+    name <=> other.name
+  end
+
   # @return [String] Source file that data for this object can be attributed to
   # @return [nil] if the source isn't known
   def __source
@@ -269,10 +273,6 @@ class Person < ArchDefObject
   # @return [String] Company the person works for
   # @return [nil] if the company is not known, or if the person is an individual contributor
   def company = @data["company"]
-
-  def <=>(other)
-    name <=> other.name
-  end
 end
 
 # represents a JSON Schema compoisition, e.g.:

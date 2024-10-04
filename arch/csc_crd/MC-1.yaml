@@ -34,7 +34,7 @@ MC-1:
       version: "~> 2.1"
     - name: C
       version: "~> 2.2"
-      param_constraints:
+      parameters:
           MUTABLE_MISA_C:
             schema:
               const: false
@@ -46,7 +46,7 @@ MC-1:
       version: "~> 2.0"
     - name: Sm
       version: "~> 1.11"
-      param_constraints:
+      parameters:
           MTVEC_BASE_ALIGNMENT_DIRECT: {} # Unconstrained
           MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
           ARCH_ID: {} # Unconstrained
@@ -90,12 +90,7 @@ MC-1:
           CONFIG_PTR_ADDRESS:
             schema:
               const: 0
-    #XXX optional: {} # None
-    optional:
-    - name: Zihpm
-      note: "This is just for testing. Zihpm extension isn't really optional for MC-1."
-    - name: Smhpm
-      note: "This is just for testing. Smhpm extension isn't really optional for MC-1."
+    optional: {} # None
   
   requirement_groups:
     - name: MC-Unpriv

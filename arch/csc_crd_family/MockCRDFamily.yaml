@@ -1,0 +1,21 @@
+MockCRDFamily:
+  name: MockCRDFamily
+  long_name: Mock CRD Family Long Name
+  revision_history:
+  - version: "0.1"
+    date: 2024-10-04
+    changes:
+    - Created to test CRDs
+  - version: "0.2"
+    date: 2024-10-05
+    changes:
+    - Also created to test CRDs
+
+  introduction: |
+    Here's the Mock CRD Family's introduction.
+
+  naming_scheme: |
+    Here's the Mock CRD Family's naming scheme.
+
+  mandatory_priv_modes:
+  - M

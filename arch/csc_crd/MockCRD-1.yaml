@@ -1,0 +1,129 @@
+# yaml-language-server: $schema=../../schemas/testplan_schema.json
+
+MockCRD-1:
+  name: MockCRD-1
+  long_name: Mock CRD Long Name
+
+  family: MockCRDFamily
+  
+  # semantic version within the CRD family
+  version: "1.0"
+
+  description: |
+    Mock CRD description:
+
+    * Hello
+    * Bob!
+
+  # Specification versions
+  tsc_profile: null
+  unpriv_isa_manual_revision: "20191213"
+  priv_isa_manual_revision: "20190608-Priv-MSU-Ratified"
+  debug_manual_revision: "0.13.2"
+
+# XXX - Remove version information since specifying priv/unpriv ISA manual should imply this.
+  extensions:
+    mandatory:
+    - name: I
+      version: "~> 2.1"
+    - name: C
+      version: "~> 2.2"
+      parameters:
+          MUTABLE_MISA_C:
+            schema:
+              const: false
+    - name: M
+      version: "~> 2.0"
+    - name: Zicsr
+      version: "~> 2.0"
+    - name: Zicntr
+      version: "~> 2.0"
+    - name: Sm
+      version: "~> 1.11"
+      parameters:
+          MTVEC_BASE_ALIGNMENT_DIRECT: {} # Unconstrained
+          MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
+          ARCH_ID: {} # Unconstrained
+          IMP_ID: {} # Unconstrained
+          VENDOR_ID_BANK: {} # Unconstrained
+          VENDOR_ID_OFFSET: {} # Unconstrained
+          MISA_CSR_IMPLEMENTED: {} # Unconstrained
+          TIME_CSR_IMPLEMENTED: {} # Unconstrained
+          MTVAL_WIDTH: {} # Unconstrained
+          PHYS_ADDR_WIDTH: {} # Unconstrained
+          PRECISE_SYNCHRONOUS_EXCEPTIONS:
+            schema:
+              const: true
+          TRAP_ON_ECALL_FROM_M:
+            schema:
+              const: true
+          TRAP_ON_EBREAK:
+            schema:
+              const: true
+          REPORT_VA_IN_MTVAL_ON_BREAKPOINT:
+            schema:
+              const: true
+          REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT:
+            schema:
+              const: true
+          REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT:
+            schema:
+              const: true
+          REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT:
+            schema:
+              const: true
+          REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION:
+            schema:
+              const: true
+          M_MODE_ENDIANESS:
+            schema:
+              const: little
+          XLEN:
+            schema:
+              const: 32
+          CONFIG_PTR_ADDRESS:
+            schema:
+              const: 0
+    optional:
+    - name: Zifencei
+      note: "Here's a note for Zifencei"
+    - name: Zicbop
+      note: "Testing CACHE_BLOCK_SIZE parameter which is also defined by Zicbom."
+      parameters:
+          CACHE_BLOCK_SIZE:
+            schema:
+              const: 64
+    - name: Zicbom
+      note: "Testing CACHE_BLOCK_SIZE parameter which is also defined by Zicbop."
+      parameters:
+          CACHE_BLOCK_SIZE:
+            schema:
+              const: 64
+  
+  requirement_groups:
+    - name: Req-Grp-Any-XLEN
+      description: |
+        A bunch of additional requirements not associated with an extension.
+      requirements:
+      - name: REQ-ANY-XLEN-001
+        description: Must pay your taxes on time
+      - name: REQ-ANY-XLEN-002
+        description: Don't count your chickens before they're hatched!
+
+    - name: Req-Grp-XLEN32
+      when:
+        xlen: 32
+      description: |
+        A bunch of additional requirements only that should show up for XLEN=32
+      requirements:
+      - name: REQ-XLEN32-001
+        description: Need lots of extra CSRs with `h` suffix
+
+    - name: Req-Grp-XLEN64
+      when:
+        xlen: 64
+      description: |
+        A bunch of additional requirements only that should show up for XLEN=64
+      requirements:
+      - name: REQ-XLEN64-001
+        description: Can avoid adding extra CSRs with `h` suffix
