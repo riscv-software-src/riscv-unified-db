@@ -5,20 +5,9 @@
 
 *<%= inst.long_name %>*
 
-This instruction is defined by<%- if inst.defined_by.size > 1 -%> any of the following<%- end -%>:
+This instruction is defined by:
 
-  <%- inst.defined_by.each do |ext| -%>
-  * `<%= ext.name %>` (version `<%= ext.version_requirement %>`)
-  <%- end -%>
-
-<%- unless inst.extension_requirements.empty? -%>
-Additionally, this instruction is only defined if the following <%- if inst.extension_requirements.size == 1 -%>extension is<%- else -%>extensions are<%- end -%> also present and active:
-
-  <%- inst.extension_requirements.each do |ext| -%>
-  * `<%= ext.name %>`, `<%= ext.version_requirement %>`
-  <%- end -%>
-
-<%- end -%>
+<%= inst.defined_by.to_asciidoc %>
 
 == Encoding
 

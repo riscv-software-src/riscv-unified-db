@@ -199,7 +199,7 @@ class ArchGen
       requirements = @required_ext_map[[ext["name"], ext["version"]]]
       satisfied = requirements.satisfied_by? do |req|
         @implemented_extensions.any? do |ext2|
-          (ext2["name"] == req[0]) && Gem::Requirement.new(req[1]).satisfied_by?(Gem::Version.new(ext2["version"]))
+          (ext2["name"] == req.name) && Gem::Requirement.new(req.version_requirement).satisfied_by?(Gem::Version.new(ext2["version"]))
         end
       end
       unless satisfied
@@ -659,7 +659,7 @@ class ArchGen
     @implemented_csrs ||= []
     @implemented_csrs << csr_name if belongs
 
-    gen_csr_path = @gen_dir / "arch" / "csr" / csr_obj.defined_by[0].name / "#{csr_name}.yaml"
+    gen_csr_path = @gen_dir / "arch" / "csr" / csr_obj.primary_defined_by / "#{csr_name}.yaml"
     FileUtils.mkdir_p gen_csr_path.dirname
     gen_csr_path.write csr_yaml
   end
@@ -910,8 +910,8 @@ class ArchGen
     @implemented_instructions ||= []
     @implemented_instructions << inst_name if belongs
 
-    raise "?" if inst_obj.defined_by[0].name.nil?
-    gen_inst_path = @gen_dir / "arch" / "inst" / inst_obj.defined_by[0].name / "#{inst_name}.yaml"
+    raise "?" if inst_obj.primary_defined_by.nil?
+    gen_inst_path = @gen_dir / "arch" / "inst" / inst_obj.primary_defined_by / "#{inst_name}.yaml"
     FileUtils.mkdir_p gen_inst_path.dirname
     gen_inst_path.write inst_yaml
 

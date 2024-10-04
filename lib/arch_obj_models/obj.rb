@@ -97,15 +97,15 @@ class ArchDefObject
     if args.size == 1
       raise ArgumentError, "Parameter must be an ExtensionVersion" unless args[0].is_a?(ExtensionVersion)
 
-      defined_by.any? do |r|
-        r.satisfied_by?(args[0])
+      defined_by.satisfied_by? do |r|
+        r.name == args[0].name && r.version_requirement.satisfied_by?(args[0].version)
       end
     elsif args.size == 2
       raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
       raise ArgumentError, "Second parameter must be an extension version" unless args[0].respond_to?(:to_s)
 
-      defined_by.any? do |r|
-        r.satisfied_by?(args[0].to_s, args[1].to_s)
+      defined_by.satisfied_by? do |r|
+        r.name == args[0] && r.version_requirement.satisfied_by?(args[1].to_s)
       end
     end
   end
@@ -143,44 +143,14 @@ class ArchDefObject
   end
   private :extension_requirement?
 
-  # @return [Array<ExtensionRequirement>] Extension(s) that define the instruction. If *any* requirement is met, the instruction is defined.
+  # @return [SchemaCondition] Extension(s) that define the instruction. If *any* requirement is met, the instruction is defined.
   def defined_by
-    return @defined_by unless @defined_by.nil?
+    SchemaCondition.new(@data["definedBy"])
+  end
 
-    @defined_by = []
-    # definedBy can be:
-    #
-    #  * [String] Extension name
-    #  * [Array] Extension name, version
-    #  * [Array] Array of one of the two above
-    if @data["definedBy"].is_a?(Array)
-      if @data["definedBy"].size == 2
-        if @data["definedBy"][1].is_a?(String) && @data["definedBy"][1] =~ /^<>=~$/
-          @defined_by << to_extension_requirement(@data["definedBy"])
-        elsif @data["definedBy"][1].is_a?(String)
-          # this is an array of extension names
-          @defined_by << to_extension_requirement(@data["definedBy"][0])
-          @defined_by << to_extension_requirement(@data["definedBy"][1])
-        else
-          # this is a list of extension requirements
-          @data["definedBy"].each do |r|
-            @defined_by << to_extension_requirement(r)
-          end
-        end
-      else
-        # this is a list of extension requirements
-        @data["definedBy"].each do |r|
-          @defined_by << to_extension_requirement(r)
-        end
-      end
-    else
-      raise "unexpected" unless @data["definedBy"].is_a?(String)
-      @defined_by << to_extension_requirement(@data["definedBy"])
-    end
-
-    raise "empty requirements" if @defined_by.empty?
-
-    @defined_by
+  # @return [String] Name of an extension that "primarily" defines the object (i.e., is the first in a list)
+  def primary_defined_by
+    defined_by.first_requirement.name
   end
 
   # @return [Integer] THe source line number of +path+ in the YAML file
@@ -286,45 +256,129 @@ end
 class SchemaCondition
   # @param composition_hash [Hash] A possibly recursive hash of "allOf", "anyOf", "oneOf"
   def initialize(composition_hash)
-    raise ArgumentError, "Expecting a JSON schema composition" unless is_a_condition?(composition_hash)
+    unless is_a_condition?(composition_hash)
+      raise ArgumentError, "Expecting a JSON schema comdition (got #{composition_hash})"
+    end
 
     @hsh = composition_hash
   end
 
-  def is_a_condition?(hsh)
-    return false unless hsh.is_a?(Hash) && hsh.keys.size == 1 && hsh[hsh.keys[0]].is_a?(Array)
+  VERSION_REQ_REGEX = /^((>=)|(>)|(~>)|(<)|(<=)|(=))?\s*[0-9]+(\.[0-9]+(\.[0-9]+(-[a-fA-F0-9]+)?)?)?$/
+  def is_a_version_requirement(ver)
+    case ver
+    when String
+      ver =~ VERSION_REQ_REGEX
+    when Array
+      ver.all? { |v| v =~ VERSION_REQ_REGEX }
+    else
+      false
+    end
+  end
 
-    return false unless ["allOf", "anyOf", "oneOf"].include?(hsh.keys[0])
-
-    hsh[hsh.keys[0]].each do |element|
-      if element.is_a?(Hash)
-        return false unless is_a_condition?(element)
+  def to_asciidoc(cond = @hsh, indent = 0)
+    case cond
+    when String
+      "#{' ' * indent}* #{cond}, version >= 0"
+    when Hash
+      if cond.key?("name")
+        if cond.key?("version")
+          "#{' ' * indent}* #{cond['name']}, version #{cond['version']}\n"
+        else
+          "#{' ' * indent}* #{cond['name']}, version >= 0\n"
+        end
+      else
+        "#{' ' * indent}* #{cond.keys[0]}:\n" + to_asciidoc(cond[cond.keys[0]], indent + 2)
       end
+    when Array
+      cond.map { |e| to_asciidoc(e, indent) }.join("\n")
+    else
+      raise "Unknown condition type: #{cond}"
+    end
+  end
+
+  def is_a_condition?(hsh)
+    case hsh
+    when String
+      true
+    when Hash
+      if hsh.key?("name")
+        return false if hsh.size > 2
+
+        if hsh.size > 1
+          return false unless hsh.key?("version")
+
+          return false unless is_a_version_requirement(hsh["version"])
+        end
+
+      else
+        return false unless hsh.size == 1
+
+        return false unless ["allOf", "anyOf", "oneOf"].include?(hsh.keys[0])
+
+        hsh[hsh.keys[0]].each do |element|
+          return false unless is_a_condition?(element)
+        end
+      end
+    else
+      raise "unexpected #{hsh.class.name} #{hsh}"
     end
 
-    return true
+    true
   end
   private :is_a_condition?
 
+  # @return [ExtensionRequirement] First requirement found, without considering any boolean operators
+  def first_requirement(req = @hsh)
+    case req
+    when String
+      ExtensionRequirement.new(req, ">= 0")
+    when Hash
+      if req.key?("name")
+        ExtensionRequirement.new(req["name"], req["version"] || ">= 0")
+      else
+        first_requirement(req[req.keys[0]])
+      end
+    when Array
+      first_requirement(req[0])
+    else
+      raise "unexpected"
+    end
+  end
+
   def to_rb_helper(hsh)
     if hsh.is_a?(Hash)
-      key = hsh.keys[0]
-
-      case key
-      when "allOf"
-        rb_str = hsh[key].map { |element| to_rb_helper(element) }.join(' && ')
-        "(#{rb_str})"
-      when "anyOf"
-        rb_str = hsh[key].map { |element| to_rb_helper(element) }.join(' || ')
-        "(#{rb_str})"
-      when "oneOf"
-        rb_str = hsh[key].map { |element| to_rb_helper(element) }.join(', ')
-        "([#{rb_str}].count(true) == 1)"
+      if hsh.key?("name")
+        if hsh.key?("version")
+          if hsh["version"].is_a?(String)
+            "(yield ExtensionRequirement.new('#{hsh["name"]}', '#{hsh["version"]}'))"
+          elsif hsh["version"].is_a?(Array)
+            "(yield ExtensionRequirement.new('#{hsh["name"]}', #{hsh["version"].map { |v| "'#{v}'" }.join(', ')}))"
+          else
+            raise "unexpected"
+          end
+        else
+          "(yield ExtensionRequirement.new('#{hsh["name"]}'))"
+        end
       else
-        "(yield #{hsh})"
+        key = hsh.keys[0]
+
+        case key
+        when "allOf"
+          rb_str = hsh[key].map { |element| to_rb_helper(element) }.join(' && ')
+          "(#{rb_str})"
+        when "anyOf"
+          rb_str = hsh[key].map { |element| to_rb_helper(element) }.join(' || ')
+          "(#{rb_str})"
+        when "oneOf"
+          rb_str = hsh[key].map { |element| to_rb_helper(element) }.join(', ')
+          "([#{rb_str}].count(true) == 1)"
+        else
+          raise "Unexpected"
+          "(yield #{hsh})"
+        end
       end
     else
-      "(yield #{hsh})"
+      "(yield ExtensionRequirement.new('#{hsh}'))"
     end
   end
 

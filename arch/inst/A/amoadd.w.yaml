@@ -9,7 +9,8 @@ amoadd.w:
        * Write the sign-extended value into _rd_
        * Add the least-significant word of register _rs2_ to the loaded value
        * Write the sum to the address in _rs1_
-  definedBy: [A, Zaamo]
+  definedBy:
+    anyOf: [A, Zaamo]
   assembly: xd, xs2, (xrs1)
   encoding:
     match: 00000------------010-----0101111

@@ -10,7 +10,7 @@
 == Attributes
 [%autowidth]
 |===
-h| Defining Extension | <%= csr.defined_by.map { |er| "`#{er.name}` (version #{er.version_requirement})" }.join(" or ") %>
+h| Defining Extension a| <%= csr.defined_by.to_asciidoc %>
 h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <%- if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>

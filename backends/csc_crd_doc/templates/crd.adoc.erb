@@ -273,20 +273,9 @@ The following instructions are added by this extension:
 
 *<%= inst.long_name %>*
 
-This instruction is defined by<%- if inst.defined_by.size > 1 -%> any of the following<%- end -%>:
+This instruction is defined by:
 
-  <%- inst.defined_by.each do |ext| -%>
-  * `<%= ext.name %>`, `<%= ext.version_requirement %>`
-  <%- end -%>
-
-<%- unless inst.extension_requirements.empty? -%>
-Additionally, this instruction is only defined if the following <%- if inst.extension_requirements.size == 1 -%>extension is<%- else -%>extensions are<%- end -%> also present and active:
-
-  <%- inst.extension_requirements.each do |ext| -%>
-  * `<%= ext.name %>`, `<%= ext.version_requirement %>`
-  <%- end -%>
-
-<%- end -%>
+<%= inst.defined_by.to_asciidoc %>
 
 ==== Encoding
 
@@ -436,7 +425,7 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <%- if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <%- end -%>
-h| Defining extension | <%= csr.defined_by.map(&:to_s).join(", ") %>
+h| Defining extension a| <%= csr.defined_by.to_asciidoc %>
 <%- if csr.dynamic_length?(crd.arch_def) -%>
 h| Length         | <%= csr.length_pretty(crd.arch_def) %>
 <%- else -%>

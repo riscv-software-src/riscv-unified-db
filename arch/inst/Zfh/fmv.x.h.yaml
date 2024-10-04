@@ -2,7 +2,8 @@
 
 fmv.x.h:
   long_name: Move half-precision value from floating-point to integer register
-  definedBy: [Zfh, Zfhmin]
+  definedBy:
+    anyOf: [Zfh, Zfhmin]
   assembly: rd, fs1
   description: |
      Moves the half-precision value in floating-point register rs1 represented in IEEE 754-2008

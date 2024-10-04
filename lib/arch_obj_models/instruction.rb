@@ -44,28 +44,6 @@ class Instruction < ArchDefObject
     @data["assembly"]
   end
 
-  # @return [Array<ExtensionRequirement>] List of extensions requirements (in addition to one returned by {#defined_by}) that must be met for the instruction to exist
-  def extension_requirements
-    return [] unless @data.key?("requires")
-
-    @extension_requirements = []
-    if @data["requires"].is_a?(Array)
-      # could be either a single extension with requirement, or a list of requirements
-      if extension_requirement?(@data["requires"][0])
-        @extension_requirements << to_extension_requirement(@data["requires"][0])
-      else
-        # this is a list
-        @data["requires"].each do |r|
-          @extension_requirements << to_extension_requirement(r)
-        end
-      end
-    else
-      @extension_requirements << to_extension_requirement(@data["requires"])
-    end
-
-    @extension_requirements
-  end
-
   def fill_symtab(global_symtab, effective_xlen)
     symtab = global_symtab.deep_clone
     symtab.push

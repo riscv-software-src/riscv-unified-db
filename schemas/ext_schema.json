@@ -34,29 +34,6 @@
       },
       "additionalProperties": false
     },
-    "requires_entry": {
-      "oneOf": [
-        { "$ref": "schema_defs.json#/$defs/extension_requirement" },
-        {
-          "type": "object",
-          "properties": {
-            "anyOf": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/requires_entry"
-              }
-            },
-            "allOf": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/requires_entry"
-              }
-            },
-            "additionalProperties": false
-          }
-        }
-      ]
-    },
     "ext_data": {
       "type": "object",
       "required": ["description", "long_name", "versions"],
@@ -168,7 +145,7 @@
               },
               "requires": {
                 "description": "Extension(s) required by this extension",
-                "$ref": "#/$defs/requires_entry"
+                "$ref": "schema_defs.json#/$defs/requires_entry"
               },
               "contributors": {
                 "description": "List of contributors to this version of the extension",

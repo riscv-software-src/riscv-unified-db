@@ -5,7 +5,8 @@ bext:
   description: |
     This instruction returns a single bit extracted from rs1 at the index specified in rs2.
     The index is read from the lower log2(XLEN) bits of rs2.
-  definedBy: [B, Zbs]
+  definedBy:
+    anyOf: [B, Zbs]
   assembly: xd, xs1, xs2
   encoding:
     match: 0100100----------101-----0110011
