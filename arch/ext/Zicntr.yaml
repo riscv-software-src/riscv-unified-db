@@ -8,4 +8,6 @@ Zicntr:
   - version: "2.0.0"
     state: ratified
     ratification_date: 2019-12
-    requires: [Zicsr, ">= 2.0"]
+    requires:
+      name: Zicsr
+      version: ">= 2.0"

@@ -37,7 +37,10 @@ mcountinhibit:
     cannot be inhibited with the `mcountinhibit` mechanism.
     ====
 
-  definedBy: [Sm, Smhpm]
+  definedBy:
+    anyOf:
+    - name: Sm
+    - name: Smhpm
   fields:
     CY:
       location: 0

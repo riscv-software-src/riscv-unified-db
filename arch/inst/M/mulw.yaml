@@ -13,7 +13,8 @@ mulw:
     but signed arguments must be proper 32-bit signed values, whereas unsigned arguments
     must have their upper 32 bits clear. If the arguments are not known to be sign- or zero-extended,
     an alternative is to shift both arguments left by 32 bits, then use MULH[[S]U].
-  definedBy: [M, Zmmul]
+  definedBy:
+    anyOf: [M, Zmmul]
   assembly: xd, xs1, xs2
   encoding:
     match: 0000001----------000-----0111011

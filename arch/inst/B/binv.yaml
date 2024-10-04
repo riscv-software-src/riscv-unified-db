@@ -5,7 +5,8 @@ binv:
   description: |
     This instruction returns rs1 with a single bit inverted at the index specified in rs2.
     The index is read from the lower log2(XLEN) bits of rs2.
-  definedBy: [B, Zbs]
+  definedBy:
+    anyOf: [B, Zbs]
   assembly: xd, xs1, xs2
   encoding:
     match: 0110100----------001-----0110011

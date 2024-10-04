@@ -53,6 +53,7 @@ class ArchDef
   def fully_configured? = @arch_def["type"] == "fully configured"
   def partially_configured? = @arch_def["type"] == "partially configured"
   def unconfigured? = @arch_def["type"] == "unconfigured"
+  def configured? = @arch_def["type"] != "unconfigured"
   def type = @arch_def["type"]
 
   # Initialize a new configured architecture defintiion

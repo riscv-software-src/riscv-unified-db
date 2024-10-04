@@ -4,7 +4,8 @@ maxu:
   long_name: Unsigned maximum
   description: |
     This instruction returns the larger of two unsigned integers.
-  definedBy: [B, Zbb]
+  definedBy:
+    anyOf: [B, Zbb]
   assembly: xd, xs1, xs2
   encoding:
     match: 0000101----------111-----0110011

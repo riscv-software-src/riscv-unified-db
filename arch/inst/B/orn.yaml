@@ -4,7 +4,8 @@ orn:
   long_name: OR with inverted operand
   description: |
     This instruction performs the bitwise logical OR operation between rs1 and the bitwise inversion of rs2.
-  definedBy: [B, Zbb, Zbkb]
+  definedBy:
+    anyOf: [B, Zbb, Zbkb]
   assembly: xd, xs1, xs2
   encoding:
     match: 0100000----------110-----0110011

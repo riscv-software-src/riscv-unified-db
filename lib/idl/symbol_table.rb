@@ -119,7 +119,7 @@ module Idl
       arch_def.params_with_value.each do |param_with_value|
         type = Type.from_json_schema(param_with_value.schema).make_const
         if type.kind == :array && type.width == :unknown
-          type = Type.new(:array, width: param_with_value.value.length, sub_type: type.sub_type)
+          type = Type.new(:array, width: param_with_value.value.length, sub_type: type.sub_type, qualifiers: [:const])
         end
 
         # could already be present...

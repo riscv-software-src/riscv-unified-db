@@ -103,32 +103,8 @@
           "description": "Detailed description of the instruction"
         },
         "definedBy": {
-          "oneOf": [
-            {
-              "$ref": "schema_defs.json#/$defs/extension_requirement"
-            },
-            {
-              "type": "array",
-              "items": {
-                "$ref": "schema_defs.json#/$defs/extension_requirement"
-              }
-            }
-          ],
+          "$ref": "schema_defs.json#/$defs/requires_entry",
           "description": "Extension(s) that defines the instruction"
-        },
-        "requires": {
-          "oneOf": [
-            {
-              "$ref": "schema_defs.json#/$defs/extension_requirement"
-            },
-            {
-              "type": "array",
-              "items": {
-                "$ref": "schema_defs.json#/$defs/extension_requirement"
-              }
-            }
-          ],
-          "description": "Extension(s) that must also be present (in addition to definedBy) for the instruction to exist"
         },
         "excludedBy": {
           "oneOf": [

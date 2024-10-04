@@ -71,23 +71,51 @@
     "extension_requirement": {
       "description": "A requirement on an extension. Can either specify just an extension name, in which case version '>= 0' is implied, or both a name and a requirement",
       "oneOf": [
+        { "$ref": "#/$defs/extension_name" },
         {
-          "$ref": "#/$defs/extension_name"
-        },
-        {
-          "type": "array",
-          "items": [
-            {
+          "type": "object",
+          "properties": {
+            "name": {
               "$ref": "#/$defs/extension_name"
             },
-            {
+            "version": {
               "$ref": "#/$defs/version_requirements"
             }
-          ],
-          "additionalItems": false
+          },
+          "required": ["name"],
+          "additionalProperties": false
         }
       ]
 
+    },
+    "requires_entry": {
+      "oneOf": [
+        { "$ref": "#/$defs/extension_requirement" },
+        {
+          "type": "object",
+          "properties": {
+            "anyOf": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/requires_entry"
+              }
+            },
+            "allOf": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/requires_entry"
+              }
+            },
+            "oneOf": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/requires_entry"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
     },
     "author": {
       "type": "object",

@@ -15,7 +15,8 @@ mul:
     Microarchitectures can then fuse these into a single multiply operation instead of
     performing two separate multiplies.
 
-  definedBy: [M, Zmmul]
+  definedBy:
+    anyOf: [M, Zmmul]
   assembly: xd, xs1, xs2
   encoding:
     match: 0000001----------000-----0110011

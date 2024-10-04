@@ -9,4 +9,4 @@ Zihpm:
     state: ratified
     ratification_date: unknown
     requires: 
-      oneOf: [Smhpm]
+      name: Smhpm

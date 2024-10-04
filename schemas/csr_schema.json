@@ -86,17 +86,7 @@
           "description": "When specified, indicates that this field aliases (a portion of) another CSR field"
         },
         "definedBy": {
-          "oneOf": [
-            {
-              "$ref": "schema_defs.json#/$defs/extension_requirement"
-            },
-            {
-              "type": "array",
-              "items": {
-                "$ref": "schema_defs.json#/$defs/extension_requirement"
-              }
-            }
-          ],
+          "$ref": "schema_defs.json#/$defs/requires_entry",
           "description": "Where this field is defined: indicates that the field is only present if the extension(s) are implemented. If definedBy is not given, defaults to the definedBy field of the parent CSR"
         },
         "affectedBy": {
@@ -194,17 +184,7 @@
           "description": "A full Asciidoc description of the CSR, indended to be used as documentation."
         },
         "definedBy": {
-          "oneOf": [
-            {
-              "$ref": "schema_defs.json#/$defs/extension_requirement"
-            },
-            {
-              "type": "array",
-              "items": {
-                "$ref": "schema_defs.json#/$defs/extension_requirement"
-              }
-            }
-          ],
+          "$ref": "schema_defs.json#/$defs/requires_entry",
           "description": "Extension(s) that define the CSR"
         },
         "address": {

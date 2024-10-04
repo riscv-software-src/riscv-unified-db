@@ -21,9 +21,9 @@ Zic64b:
       company: SiFive, Inc.
     requires:
       anyOf:
-      - Zicbom
-      - Zicboz
-      - Zicbop
+      - name: Zicbom
+      - name: Zicboz
+      - name: Zicbop
     param_constraints:
       CACHE_BLOCK_SIZE:
         schema:
