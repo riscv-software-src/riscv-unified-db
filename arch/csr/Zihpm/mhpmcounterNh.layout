@@ -10,7 +10,7 @@
   base: 32
   description: |
     Upper half of mhpmcounter<%= hpm_num %>.
-  definedBy: Zihpm
+  definedBy: Smhpm
   fields:
     COUNT:
       location: 32-0

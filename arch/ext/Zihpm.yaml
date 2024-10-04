@@ -8,31 +8,5 @@ Zihpm:
   - version: "2.0.0"
     state: ratified
     ratification_date: unknown
-  params:
-    HPM_COUNTER_EN:
-      description: |
-        List of HPM counters that are enabled.
-        There is one entry for each hpmcounter.
-
-        The first three entries *must* be false (as they correspond to CY, IR, TM in, _e.g._ `mhmpcountinhibit`)
-        Index 3 in HPM_COUNTER_EN corresponds to hpmcounter3.
-        Index 31 in HPM_COUNTER_EN corresponds to hpmcounter31.
-      schema:
-        type: array
-        items:
-        - const: false
-        - const: false
-        - const: false
-        additionalItems:
-          type: boolean
-        maxItems: 32
-        minItems: 32
-    HPM_EVENTS:
-      description: |
-        List of defined event numbers that can be written into hpmeventN
-      schema:
-        type: array
-        items:
-          type: integer
-          minimum: 0
-          maximum: 0x03ffffffffffffff # bits 63-58 are used by `Sscofpmf`
+    requires: 
+      oneOf: [Smhpm]

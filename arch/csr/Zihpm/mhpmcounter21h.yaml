@@ -12,7 +12,7 @@ mhpmcounter21h:
   base: 32
   description: |
     Upper half of mhpmcounter21.
-  definedBy: Zihpm
+  definedBy: Smhpm
   fields:
     COUNT:
       location: 32-0

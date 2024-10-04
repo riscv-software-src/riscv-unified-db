@@ -92,8 +92,10 @@ MC-1:
               const: 0
     #XXX optional: {} # None
     optional:
-    - name: Zifencei
-      note: "This is just for testing. Zifencei extension isn't really optional for MC-1."
+    - name: Zihpm
+      note: "This is just for testing. Zihpm extension isn't really optional for MC-1."
+    - name: Smhpm
+      note: "This is just for testing. Smhpm extension isn't really optional for MC-1."
   
   requirement_groups:
     - name: MC-Unpriv

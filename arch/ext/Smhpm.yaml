@@ -1,0 +1,89 @@
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+Smhpm:
+  long_name: M-mode programmable hardware performance counters
+  description: M-mode programmable hardware performance counters
+  type: privileged
+  versions:
+  - version: "1.11.0"
+    state: ratified
+    ratification_date: 2019-12
+    changes:
+    - Defined the `mcountinhibit` CSR, which stops performance counters from
+      incrementing to reduce energy consumption.
+  - version: "1.12.0"
+    state: ratified
+    ratification_date: 2021-12
+    changes:
+    - PMP changes require an SFENCE.VMA on any hart that implements
+      page-based virtual memory, even if VM is not currently enabled.
+    - PMP reset values are now platform-defined.
+    - An additional 48 optional PMP registers have been defined.
+  - version: "1.13.0"
+    state: frozen
+    ratification_date: 2023-12
+  params:
+    HPM_COUNTER_EN:
+      description: |
+        List of HPM counters that are enabled.
+        There is one entry for each hpmcounter.
+
+        The first three entries *must* be false (as they correspond to CY, IR, TM in, _e.g._ `mhmpcountinhibit`)
+        Index 3 in HPM_COUNTER_EN corresponds to hpmcounter3.
+        Index 31 in HPM_COUNTER_EN corresponds to hpmcounter31.
+      schema:
+        type: array
+        items:
+        - const: false
+        - const: false
+        - const: false
+        additionalItems:
+          type: boolean
+        maxItems: 32
+        minItems: 32
+    HPM_EVENTS:
+      description: |
+        List of defined event numbers that can be written into hpmeventN
+      schema:
+        type: array
+        items:
+          type: integer
+          minimum: 0
+          maximum: 0x03ffffffffffffff # bits 63-58 are used by `Sscofpmf`
+    COUNTINHIBIT_EN:
+      description: |
+        Indicates which hardware performance monitor counters can be disabled from `mcountinhibit`.
+
+        An unimplemented counter cannot be specified, i.e., if HPM_COUNTER_EN[3] is false, 
+        it would be illegal to set COUNTINHIBIT_EN[3] to true.
+
+        COUNTINHIBIT_EN[1] can never be true, since it corresponds to `mcountinhibit.TM`,
+        which is always read-only-0.
+
+        COUNTINHIBIT_EN[3:31] must all be false if `Zihpm` is not implemented.
+      schema:
+        type: array
+        items:
+        - type: boolean
+        - const: false
+        - type: boolean
+        additionalItems:
+          type: boolean
+        maxItems: 32
+        minItems: 32
+    MCOUNTENABLE_EN:
+      description: |
+        Indicates which counters can be delegated via `mcounteren`.
+
+        An unimplemented counter cannot be specified, i.e., if
+        HPM_COUNTER_EN[3] is false, it would be illegal to set
+        MCOUNTENABLE_EN[3] to true.
+
+        MCOUNTENABLE_EN[0:2] must all be false if `Zicntr` is not implemented.
+        MCOUNTENABLE_EN[3:31] must all be false if `Zihpm` is not implemented.
+      schema:
+        type: array
+        items:
+          type: boolean
+        maxItems: 32
+        minItems: 32
