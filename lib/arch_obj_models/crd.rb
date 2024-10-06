@@ -1,15 +1,38 @@
 # Classes for CRD (Certification Requirements Documents).
 # Each CRD is a member of a CRD family (e.g., Microcontroller).
 #
-# Some classes inherit from the ArchDefObject class. This provides facilities for accessing
-# the contents of a CRD family or CRD YAML definition via the "data" member (hash holding YAML file contents).
+# Many classes inherit from the ArchDefObject class. This provides facilities for accessing the contents of a
+# CRD family YAML or CRD YAML file via the "data" member (hash holding releated YAML file contents).
 # A variable name with a "_crd" suffix indicates it is from the CRD family/member YAML file.
 #
-# The "archdef" member is an ArchDef class containing the "database" of RISC-V standards
-# including extensions, instructions, CSRs, Profiles, and CRDs.
-# A variable name with a "_db" suffix indicates it is from the archdef.
+# Many classes have an "archdef" member which is an ArchDef (not ArchDefObject) class.
+# The "archdef" member contains the "database" of RISC-V standards including extensions, instructions, CSRs, Profiles, and CRDs. 
+# A variable name with a "_db" suffix indicates it is an object reference from the database.
+# The archdef member has methods such as:
+#   extensions()          Array<Extension> of all extensions known to the database (even if not implemented).
+#   extension(name)       Extension object for "name" and nil if none.
+#   parameters()          Array<ExtensionParameter> of all parameters defined in the architecture
+#   param(name)           ExtensionParameter object for "name" and nil if none.
+#   csrs()                Array<Csr> of all CSRs defined by RISC-V, whether or not they are implemented
+#   csr(name)             Csr object for "name" and nil if none.
+#   instructions()        Array<Instruction> of all instructions, whether or not they are implemented
+#   inst(name)            Instruction object for "name" and nil if none.
+#   profile_families      Array<ProfileFamily> of all known profile families
+#   profile_family(name)  ProfileFamily object for "name" and nil if none.
+#   profiles              Array<Profile> of all known profiles.
+#   profile(name)         Profile object for "name" and nil if none.
+#   crd_families          Array<CrdFamily> of all known CRD families
+#   crd_family(name)      CrdFamily object for "name" and nil if none.
+#   crds                  Array<Crd> of all known CRDs.
+#   crd(name)             Crd object for "name" and nil if none.
 
-class CscCrdFamily < ArchDefObject
+###################
+# CrdFamily Class #
+###################
+
+# Holds information from CRD family YAML file.
+# The inherited "data" member is the database of extensions, instructions, CSRs, etc.
+class CrdFamily < ArchDefObject
   class Revision < ArchDefObject
     def initialize(data)
       super(data)
@@ -29,7 +52,7 @@ class CscCrdFamily < ArchDefObject
   end
 end
 
-class CscCrdFamily < ArchDefObject
+class CrdFamily < ArchDefObject
   attr_reader :arch_def
 
   def initialize(data, arch_def)
@@ -50,25 +73,30 @@ class CscCrdFamily < ArchDefObject
   end
 
   def introduction = @data["introduction"]
-
   def naming_scheme = @data["naming_scheme"]
 
   def eql?(other)
-    other.is_a?(CscCrdFamily) && other.name == name
+    other.is_a?(CrdFamily) && other.name == name
   end
 
   def crds
     return @crds unless @version.nil?
 
     @crds = []
-    arch_def.csc_crds.each do |csc_crd|
-      @crds << csc_crd if csc_crd.famly == self
+    arch_def.crds.each do |crd|
+      @crds << crd if crd.famly == self
     end
     @crds
   end
 end
 
-class CscCrd < ArchDefObject
+#############
+# Crd Class #
+#############
+
+# Holds information about a CRD YAML file.
+# The inherited "data" member is the database of extensions, instructions, CSRs, etc.
+class Crd < ArchDefObject
   attr_reader :arch_def
 
   def initialize(data, arch_def)
@@ -81,8 +109,8 @@ class CscCrd < ArchDefObject
   def family
     return @family unless @family.nil?
 
-    fam = @arch_def.csc_crd_family(@data["family"])
-    raise "No CSC CRD family named '#{@data["family"]}'" if fam.nil?
+    fam = @arch_def.crd_family(@data["family"])
+    raise "No C CRD family named '#{@data["family"]}'" if fam.nil?
 
     @family = fam
   end
@@ -98,11 +126,8 @@ class CscCrd < ArchDefObject
   end
 
   def unpriv_isa_manual_revision = @data["unpriv_isa_manual_revision"]
-
   def priv_isa_manual_revision = @data["priv_isa_manual_revision"]
-
   def debug_manual_revision = @data["debug_manual_revision"]
-
   def description = @data["description"]
 
   # @return [Extension] - # Returns Extension object from database (nil if not found).
@@ -111,6 +136,7 @@ class CscCrd < ArchDefObject
   end
 
   # @return [Array<Extension>] List of extensions listed as mandatory or optional in CRD.
+  # The Extension object is from the database (not the CRD).
   def extensions_in_crd
     extension_reqs_in_crd.map do |er|
       obj = arch_def.extension(er.name)
@@ -138,15 +164,22 @@ class CscCrd < ArchDefObject
     @extension_reqs_in_crd
   end
 
-  # Holds extension parameter information from the CRD.
+  ###################################
+  # ExtensionParameterFromCrd Class #
+  ###################################
+
+  # Holds extension parameter information from the CRD. #
   class ExtensionParameterFromCrd
-    attr_reader :db_param  # ExtensionParameter object (from the architecture database)
+    attr_reader :crd       # Crd object
+    attr_reader :param_db  # ExtensionParameter object (from the architecture database)
     attr_reader :note
 
-    def initialize(db_param, schema_constraint, note)
-      raise ArgumentError, "Expecting ExtensionParameter" unless db_param.is_a?(ExtensionParameter)
+    def initialize(crd, param_db, schema_constraint, note)
+      raise ArgumentError, "Expecting Crd" unless crd.is_a?(Crd)
+      raise ArgumentError, "Expecting ExtensionParameter" unless param_db.is_a?(ExtensionParameter)
 
-      @db_param = db_param
+      @crd = crd
+      @param_db = param_db
       @schema_constraint = schema_constraint
       @note = note
     end
@@ -156,20 +189,41 @@ class CscCrd < ArchDefObject
     end
 
     def name
-      @db_param.name
+      @param_db.name
     end
 
     def value
-      raise "Parameter schema_constraint for #{@db_param.name} is not a single value" unless single_value?
+      raise "Parameter schema_constraint for #{@param_db.name} is not a single value" unless single_value?
 
       @schema_constraint["const"]
     end
 
     # @return [Array<Extension>]
-    # All the extensions in the architecture database (might not be included in the CRD) that define this parameter.
-    # XXX
-    def all_extensions_in_db
-      @db_param.exts
+    # All the extensions in the CRD that define this parameter.
+    def all_extensions_in_crd
+      exts = []
+      extensions_in_crd = crd.extensions_in_crd
+
+      # Interate through all the extensions in the architecture database 
+      # that define this parameter.
+      @param_db.exts.each do |ext_in_db|
+        found = false
+
+        extensions_in_crd.each do |ext_in_crd|
+          if ext_in_db.name == ext_in_crd.name
+            found = true
+            next
+          end
+        end
+
+        if found
+            # Only add extensions that exist in this CRD.
+            exts << ext_in_db
+        end
+      end
+
+      # Return intersection of extension names
+      exts
     end
 
     def schema_constraint_pretty
@@ -187,13 +241,19 @@ class CscCrd < ArchDefObject
     def <=>(other)
       raise ArgumentError, 
         "ExtensionParameterFromCrd are only comparable to other parameter constraints" unless other.is_a?(ExtensionParameterFromCrd)
-      @db_param.name <=> other.db_param.name
+      @param_db.name <=> other.param_db.name
     end
-  end
+  end # class ExtensionParameterFromCrd
+
+  ############################################
+  # Routines using ExtensionParameterFromCrd #
+  ############################################
 
   # @return [Array<ExtensionParameterFromCrd>] List of extension parameters from CRD for given extension.
   # These are always IN SCOPE by definition (since they are listed in the CRD).
   def extension_parameters_from_crd(ext_req_crd)
+    raise ArgumentError, "Expecting ExtensionRequirement" unless ext_req_crd.is_a?(ExtensionRequirement)
+
     extension_parameters_from_crd = []    # Local variable, no caching
 
     # Get extension information from CRD YAML for passed in extension requirement.
@@ -211,7 +271,8 @@ class CscCrd < ArchDefObject
         ext_param_db = ext_db.params.find { |p| p.name == param_name }
         raise "There is no param '#{param_name}' in extension '#{ext_crd["name"]}" if ext_param_db.nil?
 
-        extension_parameters_from_crd << ExtensionParameterFromCrd.new(ext_param_db, param_data["schema"], param_data["note"])
+        extension_parameters_from_crd << 
+          ExtensionParameterFromCrd.new(self, ext_param_db, param_data["schema"], param_data["note"])
     end
 
     extension_parameters_from_crd
@@ -233,10 +294,11 @@ class CscCrd < ArchDefObject
         raise "Cannot find extension named #{ext_crd["name"]}" if ext_db.nil?
   
         ext_crd["parameters"]&.each do |param_name, param_data|
-          db_param = ext_db.params.find { |p| p.name == param_name }
-          raise "There is no param '#{param_name}' in extension '#{ext_crd["name"]}" if db_param.nil?
+          param_db = ext_db.params.find { |p| p.name == param_name }
+          raise "There is no param '#{param_name}' in extension '#{ext_crd["name"]}" if param_db.nil?
   
-          @all_extension_parameters_from_crd << ExtensionParameterFromCrd.new(db_param, param_data["schema"], param_data["note"])
+          @all_extension_parameters_from_crd << 
+            ExtensionParameterFromCrd.new(self, param_db, param_data["schema"], param_data["note"])
         end
       end
     end
@@ -249,9 +311,9 @@ class CscCrd < ArchDefObject
  
     @all_out_of_scope_params = []
     extension_reqs_in_crd.each do |ext_req_crd|
-      @arch_def.extension(ext_req_crd.name).params.each do |db_param|
-        next if all_extension_parameters_from_crd.any? { |c| c.db_param.name == db_param.name }
-        @all_out_of_scope_params << db_param
+      @arch_def.extension(ext_req_crd.name).params.each do |param_db|
+        next if all_extension_parameters_from_crd.any? { |c| c.param_db.name == param_db.name }
+        @all_out_of_scope_params << param_db
       end
     end
     @all_out_of_scope_params
@@ -259,9 +321,14 @@ class CscCrd < ArchDefObject
 
   # @return [Array<ExtensionParameter>] List of parameters that are out of scope for named extension.
   def out_of_scope_params(ext_name)
-    all_out_of_scope_params.select{|db_param| db_param.exts.any? {|ext| ext.name == ext_name} } 
+    all_out_of_scope_params.select{|param_db| param_db.exts.any? {|ext| ext.name == ext_name} } 
   end
 
+  #####################
+  # Requirement Class #
+  #####################
+
+  # Holds extra requirements not associated with extensions or their parameters.
   class Requirement < ArchDefObject
     def initialize(data, arch_def)
       super(data)
@@ -288,6 +355,12 @@ class CscCrd < ArchDefObject
     end
   end
 
+  ##########################
+  # RequirementGroup Class #
+  ##########################
+
+  # Holds a group of Requirement objects to provide a one-level group.
+  # Can't nest RequirementGroup objects to make multi-level group.
   class RequirementGroup < ArchDefObject
     def initialize(data, arch_def)
       super(data)
@@ -333,4 +406,5 @@ class CscCrd < ArchDefObject
     end
     @requirement_groups
   end
+
 end

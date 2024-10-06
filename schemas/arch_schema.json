@@ -114,10 +114,10 @@
     "manuals": {
       "type": "object"
     },
-    "csc_crd_families": {
+    "crd_families": {
       "type": "object"
     },
-    "csc_crds": {
+    "crds": {
       "type": "object"
     }
   },

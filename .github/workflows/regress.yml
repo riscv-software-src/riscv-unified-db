@@ -38,8 +38,8 @@ jobs:
     - name: Build html documentation for generic_rv64
       run: ./do gen:html[generic_rv64]
     - name: Build PDF documentation for MockCRD-1
-      run: ./do gen:csc_crd_pdf[MockCRD-1]
+      run: ./do gen:crd_pdf[MockCRD-1]
     - name: Build PDF documentation for MC-1
-      run: ./do gen:csc_crd_pdf[MC-1]
+      run: ./do gen:crd_pdf[MC-1]
     - name: Build PDF documentation for RVA Profile Family
       run: ./do gen:profile_pdf[rva]

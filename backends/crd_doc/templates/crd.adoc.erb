@@ -108,7 +108,7 @@ None
 | Parameter | Extension(s)
 <%- crd.all_extension_parameters_from_crd.sort.each do |param_crd| -%>
 | <%= param_crd.name %>
-| <%- param_crd.all_extensions_in_db.sort.each do |ext_db| -%><<anchor-ext-<%= ext_db.name %>-param-<%= param_crd.name %>,<%= ext_db.name %>>> <%- end # do ext_db -%>
+| <%- param_crd.all_extensions_in_crd.sort.each do |ext_db| -%><<anchor-ext-<%= ext_db.name %>-param-<%= param_crd.name %>,<%= ext_db.name %>>> <%- end # do ext_db -%>
 
 <%- end # do param_crd -%>
 |===
@@ -125,10 +125,10 @@ None
 <%- else -%>
 [%autowidth]
 |===
-| Parameter
-<%- crd.all_out_of_scope_params.sort.each do |db_param| -%>
-| <<anchor-param-<%= db_param.name %>,<%= db_param.name %>>> 
-<%- end # do db_param -%>
+| Parameter | Extension(s)
+<%- crd.all_out_of_scope_params.sort.each do |param_db| -%>
+| <<anchor-param-<%= param_db.name %>,<%= param_db.name %>>> 
+<%- end # do param_db -%>
 |===
 <%- end # if table -%>
 
@@ -160,7 +160,7 @@ None
 |===
 | Parameter | Constraint | Note
 <%- crd.extension_parameters_from_crd(ext_req_crd).sort.each do |param_crd| -%>
-| <<anchor-ext-<%= ext_req_crd.name %>-param-<%= param_crd.db_param.name %>,<%= param_crd.db_param.name %>>> 
+| <<anchor-ext-<%= ext_req_crd.name %>-param-<%= param_crd.name %>,<%= param_crd.name %>>> 
 | <%= param_crd.schema_constraint_pretty %>
 a| <%= param_crd.note %>
 <%- end # do param_crd -%>
@@ -172,8 +172,8 @@ a| <%= param_crd.note %>
 [%autowidth]
 |===
 | Parameter
-<%- crd.out_of_scope_params(ext_req_crd.name).sort.each do |db_param| -%>
-| <<anchor-ext-<%= ext_req_crd.name %>-param-<%= db_param.name %>,<%= db_param.name %>>> 
+<%- crd.out_of_scope_params(ext_req_crd.name).sort.each do |param_db| -%>
+| <<anchor-ext-<%= ext_req_crd.name %>-param-<%= param_db.name %>,<%= param_db.name %>>> 
 <%- end # do -%>
 |===
 <%- end # unless table -%>
@@ -278,11 +278,11 @@ The following instructions are added by this extension:
 ==== IN-SCOPE Parameters
 
 <%- crd.extension_parameters_from_crd(ext_req_crd).sort.each do |param_crd| -%>
-[[anchor-ext-<%= ext_req_crd.name %>-param-<%= param_crd.db_param.name %>]]
-<%= param_crd.db_param.name %>::
+[[anchor-ext-<%= ext_req_crd.name %>-param-<%= param_crd.name %>]]
+<%= param_crd.name %>::
 +
 --
-<%= param_crd.db_param.desc %>
+<%= param_crd.param_db.desc %>
 --
 <%- end # do param_crd -%>
 <%- end # unless table -%>
@@ -290,14 +290,14 @@ The following instructions are added by this extension:
 <%- unless crd.out_of_scope_params(ext_req_crd.name).empty? -%>
 ==== OUT-OF-SCOPE Parameters
 
-<%- crd.out_of_scope_params(ext_req_crd.name).sort.each do |db_param| -%>
-[[anchor-ext-<%= ext_req_crd.name %>-param-<%= db_param.name %>]]
-<%= db_param.name %>::
+<%- crd.out_of_scope_params(ext_req_crd.name).sort.each do |param_db| -%>
+[[anchor-ext-<%= ext_req_crd.name %>-param-<%= param_db.name %>]]
+<%= param_db.name %>::
 +
 --
-<%= db_param.desc %>
+<%= param_db.desc %>
 --
-<%- end # do db_param -%>
+<%- end # do param_db -%>
 <%- end # unless table -%>
 <%- end # do ext_req_crd -%>
 

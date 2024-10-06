@@ -62,13 +62,13 @@ jobs:
     - name: Copy RVA Family PDF
       run: cp gen/profile_doc/pdf/rva.pdf _site/pdfs/rva.pdf
     - name: Create MC-1 PDF Spec
-      run: ./do gen:csc_crd_pdf[MC-1]
+      run: ./do gen:crd_pdf[MC-1]
     - name: Copy MC-1 PDF
-      run: cp gen/csc_crd_doc/pdf/MC-1.pdf _site/pdfs/MC-1.pdf
+      run: cp gen/crd_doc/pdf/MC-1.pdf _site/pdfs/MC-1.pdf
     - name: Create MC-1 HTML Spec
-      run: ./do gen:csc_crd_html[MC-1]
+      run: ./do gen:crd_html[MC-1]
     - name: Copy MC-1 HTML
-      run: cp gen/csc_crd_doc/html/MC-1.html _site/htmls/MC-1.html
+      run: cp gen/crd_doc/html/MC-1.html _site/htmls/MC-1.html
     - name: Copy manual html
       run: cp -R gen/manual/isa/top/all/html _site/manual
     - name: Setup Pages
