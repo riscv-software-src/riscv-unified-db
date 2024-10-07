@@ -130,15 +130,14 @@ class Crd < ArchDefObject
   def debug_manual_revision = @data["debug_manual_revision"]
   def description = @data["description"]
 
-  # @return [Extension] - # Returns Extension object from database (nil if not found).
+  # @return [Extension] - # Returns named Extension object from database (nil if not found).
   def extension_from_db(name)
     @arch_def.extension(name)
   end
 
-  # @return [Array<Extension>] List of extensions listed as mandatory or optional in CRD.
-  # The Extension object is from the database (not the CRD).
-  def extensions_in_crd
-    extension_reqs_in_crd.map do |er|
+  # @return [Array<Extension>] List of all extensions listed as mandatory or optional in CRD.
+  def in_scope_extensions
+    in_scope_ext_reqs.map do |er|
       obj = arch_def.extension(er.name)
 
       # @todo: change this to raise once all the profile extensions
@@ -150,35 +149,33 @@ class Crd < ArchDefObject
   end
 
   # @return [Array<ExtensionRequirements>] - # Extensions with their CRD information.
-  def extension_reqs_in_crd
-    return @extension_reqs_in_crd unless @extension_reqs_in_crd.nil?
+  # XXX Good example of why I filed issue 75
+  def in_scope_ext_reqs
+    return @in_scope_ext_reqs unless @in_scope_ext_reqs.nil?
 
-    @extension_reqs_in_crd = []
+    @in_scope_ext_reqs = []
     [ "mandatory", "optional"].each do |status|
       @data["extensions"][status]&.each do |ext_crd|
-        @extension_reqs_in_crd << 
+        @in_scope_ext_reqs << 
           ExtensionRequirement.new(ext_crd["name"], ext_crd["version"], 
             note: ext_crd["note"], req_id: "REQ-EXT-" + ext_crd["name"], status: status)
       end
     end
-    @extension_reqs_in_crd
+    @in_scope_ext_reqs
   end
 
   ###################################
-  # ExtensionParameterFromCrd Class #
+  # InScopeExtensionParameter Class #
   ###################################
 
-  # Holds extension parameter information from the CRD. #
-  class ExtensionParameterFromCrd
-    attr_reader :crd       # Crd object
+  # Holds extension parameter information from the CRD.
+  class InScopeExtensionParameter
     attr_reader :param_db  # ExtensionParameter object (from the architecture database)
     attr_reader :note
 
-    def initialize(crd, param_db, schema_constraint, note)
-      raise ArgumentError, "Expecting Crd" unless crd.is_a?(Crd)
+    def initialize(param_db, schema_constraint, note)
       raise ArgumentError, "Expecting ExtensionParameter" unless param_db.is_a?(ExtensionParameter)
 
-      @crd = crd
       @param_db = param_db
       @schema_constraint = schema_constraint
       @note = note
@@ -198,34 +195,6 @@ class Crd < ArchDefObject
       @schema_constraint["const"]
     end
 
-    # @return [Array<Extension>]
-    # All the extensions in the CRD that define this parameter.
-    def all_extensions_in_crd
-      exts = []
-      extensions_in_crd = crd.extensions_in_crd
-
-      # Interate through all the extensions in the architecture database 
-      # that define this parameter.
-      @param_db.exts.each do |ext_in_db|
-        found = false
-
-        extensions_in_crd.each do |ext_in_crd|
-          if ext_in_db.name == ext_in_crd.name
-            found = true
-            next
-          end
-        end
-
-        if found
-            # Only add extensions that exist in this CRD.
-            exts << ext_in_db
-        end
-      end
-
-      # Return intersection of extension names
-      exts
-    end
-
     def schema_constraint_pretty
       return "Unconstrained" if (@schema_constraint.nil? or @schema_constraint == "")
       if @schema_constraint.key?("const")
@@ -240,25 +209,52 @@ class Crd < ArchDefObject
     # sorts by name
     def <=>(other)
       raise ArgumentError, 
-        "ExtensionParameterFromCrd are only comparable to other parameter constraints" unless other.is_a?(ExtensionParameterFromCrd)
+        "InScopeExtensionParameter are only comparable to other parameter constraints" unless other.is_a?(InScopeExtensionParameter)
       @param_db.name <=> other.param_db.name
     end
-  end # class ExtensionParameterFromCrd
+  end # class InScopeExtensionParameter
 
   ############################################
-  # Routines using ExtensionParameterFromCrd #
+  # Routines using InScopeExtensionParameter #
   ############################################
 
-  # @return [Array<ExtensionParameterFromCrd>] List of extension parameters from CRD for given extension.
+  # @return [Array<InScopeExtensionParameter>] List of parameters specified by any extension in CRD.
   # These are always IN SCOPE by definition (since they are listed in the CRD).
-  def extension_parameters_from_crd(ext_req_crd)
-    raise ArgumentError, "Expecting ExtensionRequirement" unless ext_req_crd.is_a?(ExtensionRequirement)
+  # Can have multiple array entries with the same parameter name since multiple extensions may define
+  # the same parameter.
+  def all_in_scope_ext_params
+    return @all_in_scope_ext_params unless @all_in_scope_ext_params.nil?
 
-    extension_parameters_from_crd = []    # Local variable, no caching
+    @all_in_scope_ext_params = []
+
+    [ "mandatory", "optional"].each do |status|
+      @data["extensions"][status].each do |ext_crd| 
+        # Find Extension object from database
+        ext_db = @arch_def.extension(ext_crd["name"])
+        raise "Cannot find extension named #{ext_crd["name"]}" if ext_db.nil?
+  
+        ext_crd["parameters"]&.each do |param_name, param_data|
+          param_db = ext_db.params.find { |p| p.name == param_name }
+          raise "There is no param '#{param_name}' in extension '#{ext_crd["name"]}" if param_db.nil?
+  
+          @all_in_scope_ext_params << 
+            InScopeExtensionParameter.new(param_db, param_data["schema"], param_data["note"])
+        end
+      end
+    end
+    @all_in_scope_ext_params
+  end
+
+  # @return [Array<InScopeExtensionParameter>] List of extension parameters from CRD for given extension.
+  # These are always IN SCOPE by definition (since they are listed in the CRD).
+  def in_scope_ext_params(ext_req)
+    raise ArgumentError, "Expecting ExtensionRequirement" unless ext_req.is_a?(ExtensionRequirement)
+
+    ext_params = []    # Local variable, no caching
 
     # Get extension information from CRD YAML for passed in extension requirement.
-    ext_crd = @data["extensions"][ext_req_crd.status].find {|ext| ext["name"] == ext_req_crd.name}
-    raise "Cannot find extension named #{ext_req_crd.name}" if ext_crd.nil?
+    ext_crd = @data["extensions"][ext_req.status].find {|ext| ext["name"] == ext_req.name}
+    raise "Cannot find extension named #{ext_req.name}" if ext_crd.nil?
     
     # Find Extension object from database
     ext_db = @arch_def.extension(ext_crd["name"])
@@ -271,57 +267,88 @@ class Crd < ArchDefObject
         ext_param_db = ext_db.params.find { |p| p.name == param_name }
         raise "There is no param '#{param_name}' in extension '#{ext_crd["name"]}" if ext_param_db.nil?
 
-        extension_parameters_from_crd << 
-          ExtensionParameterFromCrd.new(self, ext_param_db, param_data["schema"], param_data["note"])
+        ext_params << 
+          InScopeExtensionParameter.new(ext_param_db, param_data["schema"], param_data["note"])
     end
 
-    extension_parameters_from_crd
+    ext_params
   end
 
-  # @return [Array<ExtensionParameterFromCrd>] List of parameters specified by any extension in CRD.
-  # These are always IN SCOPE by definition (since they are listed in the CRD).
-  # Can have multiple array entries with the same parameter name since multiple extensions may define
-  # the same parameter.
-  def all_extension_parameters_from_crd
-    return @all_extension_parameters_from_crd unless @all_extension_parameters_from_crd.nil?
-
-    @all_extension_parameters_from_crd = []
-
-    [ "mandatory", "optional"].each do |status|
-      @data["extensions"][status].each do |ext_crd| 
-        # Find Extension object from database
-        ext_db = @arch_def.extension(ext_crd["name"])
-        raise "Cannot find extension named #{ext_crd["name"]}" if ext_db.nil?
-  
-        ext_crd["parameters"]&.each do |param_name, param_data|
-          param_db = ext_db.params.find { |p| p.name == param_name }
-          raise "There is no param '#{param_name}' in extension '#{ext_crd["name"]}" if param_db.nil?
-  
-          @all_extension_parameters_from_crd << 
-            ExtensionParameterFromCrd.new(self, param_db, param_data["schema"], param_data["note"])
-        end
-      end
-    end
-    @all_extension_parameters_from_crd
-  end
-
-  # @return [Array<ExtensionParameter>] List of parameters that are out of scope across all extensions.
+  # @return [Array<ExtensionParameter>] Parameters out of scope across all in scope extensions (those listed in the CRD).
   def all_out_of_scope_params
     return @all_out_of_scope_params unless @all_out_of_scope_params.nil?
  
     @all_out_of_scope_params = []
-    extension_reqs_in_crd.each do |ext_req_crd|
-      @arch_def.extension(ext_req_crd.name).params.each do |param_db|
-        next if all_extension_parameters_from_crd.any? { |c| c.param_db.name == param_db.name }
+    in_scope_ext_reqs.each do |ext_req|
+      @arch_def.extension(ext_req.name).params.each do |param_db|
+        next if all_in_scope_ext_params.any? { |c| c.param_db.name == param_db.name }
         @all_out_of_scope_params << param_db
       end
     end
     @all_out_of_scope_params
   end
 
-  # @return [Array<ExtensionParameter>] List of parameters that are out of scope for named extension.
+  # @return [Array<ExtensionParameter>] Parameters that are out of scope for named extension.
   def out_of_scope_params(ext_name)
     all_out_of_scope_params.select{|param_db| param_db.exts.any? {|ext| ext.name == ext_name} } 
+  end
+
+  # @return [Array<Extension>]
+  # All the in-scope extensions (those in the CRD) that define this parameter in the database 
+  # and the parameter is in-scope (listed in that extension's list of parameters in the CRD).
+  def all_in_scope_exts_with_param(param_db)
+    raise ArgumentError, "Expecting ExtensionParameter" unless param_db.is_a?(ExtensionParameter)
+
+    exts = []
+
+    # Interate through all the extensions in the architecture database that define this parameter.
+    param_db.exts.each do |ext_in_db|
+      found = false
+
+      in_scope_extensions.each do |in_scope_ext|
+        if ext_in_db.name == in_scope_ext.name
+          found = true
+          next
+        end
+      end
+
+      if found
+          # Only add extensions that exist in this CRD.
+          exts << ext_in_db
+      end
+    end
+
+    # Return intersection of extension names
+    exts
+  end
+
+  # @return [Array<Extension>]
+  # All the in-scope extensions (those in the CRD) that define this parameter in the database 
+  # but the parameter is out-of-scope (not listed in that extension's list of parameters in the CRD).
+  def all_in_scope_exts_without_param(param_db)
+    raise ArgumentError, "Expecting ExtensionParameter" unless param_db.is_a?(ExtensionParameter)
+
+    exts = []   # Local variable, no caching
+
+    # Interate through all the extensions in the architecture database that define this parameter.
+    param_db.exts.each do |ext_in_db|
+      found = false
+
+      in_scope_extensions.each do |in_scope_ext|
+        if ext_in_db.name == in_scope_ext.name
+          found = true
+          next
+        end
+      end
+
+      if found
+          # Only add extensions that are in-scope (i.e., exist in this CRD).
+          exts << ext_in_db
+      end
+    end
+
+    # Return intersection of extension names
+    exts
   end
 
   #####################
