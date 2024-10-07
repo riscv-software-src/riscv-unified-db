@@ -43,9 +43,9 @@ rev8:
     XReg input = X[rs1];
     XReg output = 0;
 
-    XReg j = xlen() - 1;
+    XReg j = mxlen() - 1;
 
-    for (U32 i=0; i<(xlen()-8); i = i+8) {
+    for (U32 i=0; i<(mxlen()-8); i = i+8) {
       output[(i+7):i] = input[j:(j-7)];
       j = j - 8;
     }

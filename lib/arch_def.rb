@@ -648,20 +648,20 @@ class ImplArchDef < ArchDef
 
   def inspect = "ArchDef##{name}"
 
-  # @return [Boolean] true if this configuration can execute in multiple xlen environments
-  # (i.e., that in some mode the effective xlen can be either 32 or 64, depending on CSR values)
-  def multi_xlen?
+  # @return [Boolean] true if this configuration can execute in multiple mxlen environments
+  # (i.e., that in some mode the effective mxlen can be either 32 or 64, depending on CSR values)
+  def multi_mxlen?
     ["SXLEN", "UXLEN", "VSXLEN", "VUXLEN"].any? { |key| @param_values[key] == 3264 }
   end
 
   # @return [Array<Integer>] List of possible XLENs in any mode for this config
   def possible_xlens
-    multi_xlen? ? [32, 64] : [mxlen]
+    multi_mxlen? ? [32, 64] : [mxlen]
   end
 
   # @param mode [String] One of ['M', 'S', 'U', 'VS', 'VU']
   # @return [Boolean] whether or not XLEN can change in the mode
-  def multi_xlen_in_mode?(mode)
+  def multi_mxlen_in_mode?(mode)
     case mode
     when "M"
       false
@@ -812,7 +812,7 @@ class ImplArchDef < ArchDef
     implemented_instructions.each do |inst|
       @implemented_functions <<
         if inst.base.nil?
-          if multi_xlen?
+          if multi_mxlen?
             (inst.reachable_functions(sym_table, 32) +
              inst.reachable_functions(sym_table, 64))
           else

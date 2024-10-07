@@ -38,7 +38,7 @@ cpop:
     XReg bitcount = 0;
     XReg rs1_val = X[rs1];
 
-    for (U32 i=0; i < xlen(); i++) {
+    for (U32 i=0; i < mxlen(); i++) {
       if (rs1_val[i] == 1'b1) {
         bitcount = bitcount + 1;
       }

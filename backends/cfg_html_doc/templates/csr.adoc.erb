@@ -100,7 +100,7 @@ This field has special behavior when written by software (_e.g._, through `csrrw
 +
 When software tries to write `csr_value`, the field will be written with the return value of the function below.
 +
-<%- if arch_def.multi_xlen? && csr.defined_in_all_bases? && field.defined_in_all_bases? -%>
+<%- if arch_def.multi_mxlen? && csr.defined_in_all_bases? && field.defined_in_all_bases? -%>
 [tabs]
 ====
 RV32::
@@ -117,10 +117,10 @@ RV64::
 <%= field.pruned_sw_write_ast(arch_def, 64).gen_adoc %>
 ----
 <%- else -%>
-<%- xlen = !arch_def.multi_xlen? ? arch_def.mxlen : (!csr.defined_in_all_bases? ? csr.base : field.base) -%>
+<%- mxlen = !arch_def.multi_mxlen? ? arch_def.mxlen : (!csr.defined_in_all_bases? ? csr.base : field.base) -%>
 [source,idl,subs="specialchars,macros"]
 ----
-<%= field.pruned_sw_write_ast(arch_def, xlen).gen_adoc %>
+<%= field.pruned_sw_write_ast(arch_def, mxlen).gen_adoc %>
 ----
 <%- end -%>
 <%- end -%>

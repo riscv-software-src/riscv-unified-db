@@ -214,17 +214,17 @@ class CsrField < ArchDefObject
 
   # @return [Array<Idl::FunctionDefAst>] List of functions called thorugh this field
   # @param archdef [ImplArchDef] a configuration
-  # @Param effective_xlen [Integer] 32 or 64; needed because fields can change in different XLENs
-  def reachable_functions(archdef, effective_xlen)
+  # @Param effective_mxlen [Integer] 32 or 64; needed because fields can change in different XLENs
+  def reachable_functions(archdef, effective_mxlen)
     return @reachable_functions unless @reachable_functions.nil?
 
     symtab =
       if (archdef.is_a?(ImplArchDef))
         archdef.sym_table
       else
-        raise ArgumentError, "Must supply effective_xlen for generic ArchDef" if effective_xlen.nil?
+        raise ArgumentError, "Must supply effective_mxlen for generic ArchDef" if effective_mxlen.nil?
 
-        if effective_xlen == 32
+        if effective_mxlen == 32
           archdef.sym_table_32
         else
           archdef.sym_table_64
@@ -233,11 +233,11 @@ class CsrField < ArchDefObject
 
     fns = []
     if has_custom_sw_write?
-      ast = pruned_sw_write_ast(archdef, effective_xlen)
+      ast = pruned_sw_write_ast(archdef, effective_mxlen)
       unless ast.nil?
         sw_write_symtab = symtab.deep_clone
         sw_write_symtab.push
-        sw_write_symtab.add("csr_value", Idl::Var.new("csr_value", csr.bitfield_type(symtab.archdef, effective_xlen)))
+        sw_write_symtab.add("csr_value", Idl::Var.new("csr_value", csr.bitfield_type(symtab.archdef, effective_mxlen)))
         fns.concat ast.reachable_functions(sw_write_symtab)
       end
     end
@@ -295,7 +295,7 @@ class CsrField < ArchDefObject
     if arch_def.is_a?(ImplArchDef)
       unless @data["location_rv32"].nil?
         csr.modes_with_access.each do |mode|
-          return true if arch_def.multi_xlen_in_mode?(mode)
+          return true if arch_def.multi_mxlen_in_mode?(mode)
         end
       end
       false
@@ -381,7 +381,7 @@ class CsrField < ArchDefObject
   # @param arch_def [ArchDef] A config
   # @return [Integer] The reset value of this field
   # @return [String]  The string 'UNDEFINED_LEGAL' if, for this config, there is no defined reset value
-  def reset_value(arch_def, effective_xlen = nil)
+  def reset_value(arch_def, effective_mxlen = nil)
     if !@reset_value_cache.nil? && @reset_value_cache.key?(arch_def)
       return @reset_value_cache[arch_def]
     end
@@ -396,9 +396,9 @@ class CsrField < ArchDefObject
           if arch_def.is_a?(ImplArchDef)
             arch_def.sym_table
           else
-            raise ArgumentError, "effective_xlen is required when using generic arch_def" if effective_xlen.nil?
+            raise ArgumentError, "effective_mxlen is required when using generic arch_def" if effective_mxlen.nil?
 
-            effective_xlen == 32 ? arch_def.sym_table_32 : arch_def.sym_table_64
+            effective_mxlen == 32 ? arch_def.sym_table_32 : arch_def.sym_table_64
           end
         val = pruned_reset_value_ast(symtab.deep_clone).return_value(symtab.deep_clone.push)
         val = "UNDEFINED_LEGAL" if val == 0x1_0000_0000_0000_0000
@@ -429,9 +429,9 @@ class CsrField < ArchDefObject
   end
 
   # @return [FunctionBodyAst] The abstract syntax tree of the sw_write() function, after being type checked
-  # @param effective_xlen [Integer] 32 or 64; the effective XLEN to evaluate this field in (relevant when fields move in different XLENs)
+  # @param effective_mxlen [Integer] 32 or 64; the effective XLEN to evaluate this field in (relevant when fields move in different XLENs)
   # @param symtab [Idl::SymbolTable] Symbol table with globals
-  def type_checked_sw_write_ast(symtab, effective_xlen)
+  def type_checked_sw_write_ast(symtab, effective_mxlen)
     @type_checked_sw_write_asts ||= {}
     ast = @type_checked_sw_write_asts[symtab.hash]
     return ast unless ast.nil?
@@ -452,7 +452,7 @@ class CsrField < ArchDefObject
     )
     symtab.add(
       "csr_value",
-      Idl::Var.new("csr_value", csr.bitfield_type(symtab.archdef, effective_xlen))
+      Idl::Var.new("csr_value", csr.bitfield_type(symtab.archdef, effective_mxlen))
     )
 
     ast = sw_write_ast(symtab.archdef.idl_compiler)
@@ -489,9 +489,9 @@ class CsrField < ArchDefObject
 
   # @return [Idl::FunctionBodyAst] The abstract syntax tree of the sw_write() function, type checked
   # @return [nil] if there is no sw_write() function
-  # @param effective_xlen [Integer] effective xlen, needed because fields can change in different bases
+  # @param effective_mxlen [Integer] effective mxlen, needed because fields can change in different bases
   # @param arch_def [ImplArchDef] A configuration
-  def pruned_sw_write_ast(arch_def, effective_xlen)
+  def pruned_sw_write_ast(arch_def, effective_mxlen)
     @pruned_sw_write_asts ||= {}
     ast = @pruned_sw_write_asts[arch_def.name]
     return ast unless ast.nil?
@@ -511,10 +511,10 @@ class CsrField < ArchDefObject
     )
     symtab.add(
       "csr_value",
-      Idl::Var.new("csr_value", csr.bitfield_type(arch_def, effective_xlen))
+      Idl::Var.new("csr_value", csr.bitfield_type(arch_def, effective_mxlen))
     )
 
-    ast = type_checked_sw_write_ast(arch_def.sym_table.deep_clone, effective_xlen).prune(symtab.deep_clone)
+    ast = type_checked_sw_write_ast(arch_def.sym_table.deep_clone, effective_mxlen).prune(symtab.deep_clone)
 
     arch_def.idl_compiler.type_check(
       ast,
@@ -525,24 +525,24 @@ class CsrField < ArchDefObject
   end
 
   # @param arch_def [ArchDef] A config. May be nil if the locaiton is not configturation-dependent
-  # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
+  # @param effective_mxlen [Integer] The effective mxlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
   # @return [Range] the location within the CSR as a range (single bit fields will be a range of size 1)
-  def location(arch_def, effective_xlen = nil)
+  def location(arch_def, effective_mxlen = nil)
     key =
       if @data.key?("location")
         "location"
       else
-        raise ArgumentError, "Expecting 32 or 64" unless [32, 64].include?(effective_xlen)
+        raise ArgumentError, "Expecting 32 or 64" unless [32, 64].include?(effective_mxlen)
 
-        "location_rv#{effective_xlen}"
+        "location_rv#{effective_mxlen}"
       end
 
     raise "Missing location for #{csr.name}.#{name} (#{key})?" unless @data.key?(key)
 
     if @data[key].is_a?(Integer)
       if (arch_def.is_a?(ImplArchDef))
-        if @data[key] > csr.length(arch_def, effective_xlen || @data["base"])
-          raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr.length(arch_def, effective_xlen)}) in #{csr.name}.#{name}"
+        if @data[key] > csr.length(arch_def, effective_mxlen || @data["base"])
+          raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr.length(arch_def, effective_mxlen)}) in #{csr.name}.#{name}"
         end
       else
         if @data[key] > csr.max_length(arch_def)
@@ -556,8 +556,8 @@ class CsrField < ArchDefObject
       raise "Invalid location" if s > e
 
       if (arch_def.is_a?(ImplArchDef))
-        if e > csr.length(arch_def, effective_xlen)
-          raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr.length(arch_def, effective_xlen)}) in #{csr.name}.#{name}"
+        if e > csr.length(arch_def, effective_mxlen)
+          raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr.length(arch_def, effective_mxlen)}) in #{csr.name}.#{name}"
         end
       else
         if e > csr.max_length(arch_def)
@@ -582,10 +582,10 @@ class CsrField < ArchDefObject
   def defined_in_all_bases? = @data["base"].nil?
 
   # @param arch_def [ArchDef] A config. May be nil if the width of the field is not configuration-dependent
-  # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
+  # @param effective_mxlen [Integer] The effective mxlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
   # @return [Integer] Number of bits in the field
-  def width(arch_def, effective_xlen)
-    location(arch_def, effective_xlen).size
+  def width(arch_def, effective_mxlen)
+    location(arch_def, effective_mxlen).size
   end
 
   def location_cond32
@@ -615,7 +615,7 @@ class CsrField < ArchDefObject
   end
 
   # @return [String] Pretty-printed location string
-  def location_pretty(arch_def, effective_xlen = nil)
+  def location_pretty(arch_def, effective_mxlen = nil)
     derangeify = proc { |loc|
       next loc.min.to_s if loc.size == 1
 
@@ -635,13 +635,13 @@ class CsrField < ArchDefObject
           raise "Unexpected priv mode #{csr.priv_mode} for #{csr.name}"
         end
 
-      if effective_xlen.nil?
+      if effective_mxlen.nil?
         <<~LOC
           * #{derangeify.call(location(arch_def, 32))} when #{condition.sub('%%', '0')}
           * #{derangeify.call(location(arch_def, 64))} when #{condition.sub('%%', '1')}
         LOC
       else
-        derangeify.call(location(arch_def, effective_xlen))
+        derangeify.call(location(arch_def, effective_mxlen))
       end
     else
       if arch_def.is_a?(ImplArchDef)

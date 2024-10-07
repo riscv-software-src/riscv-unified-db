@@ -26,6 +26,6 @@ ror:
       raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
-    XReg shamt = (xlen() == 32) ? X[rs2][4:0] : X[rs2][5:0];
+    XReg shamt = (mxlen() == 32) ? X[rs2][4:0] : X[rs2][5:0];
 
-    X[rd] = (X[rs1] >> shamt) | (X[rs1] << (xlen() - shamt));
+    X[rd] = (X[rs1] >> shamt) | (X[rs1] << (mxlen() - shamt));

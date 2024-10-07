@@ -131,7 +131,7 @@ MC-1:
 
     - name: MC-Unpriv-32
       when:
-        xlen: 32
+        mxlen: 32
       description: |
         The MC-Unpriv-32 defines unprivileged ISA requirements specific to 32-bit processors.
       requirements:

@@ -777,7 +777,7 @@ function valid_exception_code? {
   }
 }
 
-function xlen {
+function mxlen {
   returns Bits<8>
   description {
     Returns the effective XLEN for the current privilege mode.
@@ -842,17 +842,17 @@ function mask_eaddr {
     #  if (mode() == PrivilegeMode::M) {
     #    if (CSR[mpm].menable) {
     #      # ignore upper mbits of effective address
-    #      return sext(xlen() - CSR[mpm].mbits, eaddr);
+    #      return sext(mxlen() - CSR[mpm].mbits, eaddr);
     #    }
     #  } else if (mode() == PrivilegeMode::S) { # also applies to HS mode
     #    if (CSR[spm].senable) {
     #      # ignore upper sbits of effective address
-    #      return sext(xlen() - CSR[spm].sbits, eaddr);
+    #      return sext(mxlen() - CSR[spm].sbits, eaddr);
     #    }
     #  } else if (mode() == PrivilegeMode::U || mode() == PrivilegeMode::VU) {
     #    if (CSR[upm].uenable) {
     #      # ignore upper ubits of effective address
-    #      return sext(xlen() - CSR[upm].ubits, eaddr);
+    #      return sext(mxlen() - CSR[upm].ubits, eaddr);
     #    }
     #  }
     #}
@@ -1167,18 +1167,18 @@ function base32? {
     return True iff current effective XLEN == 32
   }
   body {
-    XRegWidth xlen32 = XRegWidth::XLEN32;
+    XRegWidth mxlen32 = XRegWidth::XLEN32;
     if (mode() == PrivilegeMode::M) {
-      return CSR[misa].MXL == $bits(xlen32);
+      return CSR[misa].MXL == $bits(mxlen32);
     } else if (implemented?(ExtensionName::S) && mode() == PrivilegeMode::S) {
-      return CSR[mstatus].SXL == $bits(xlen32);
+      return CSR[mstatus].SXL == $bits(mxlen32);
     } else if (implemented?(ExtensionName::U) && mode() == PrivilegeMode::U) {
-      return CSR[mstatus].UXL == $bits(xlen32);
+      return CSR[mstatus].UXL == $bits(mxlen32);
     } else if (implemented?(ExtensionName::H) && mode() == PrivilegeMode::VS) {
-      return CSR[hstatus].VSXL == $bits(xlen32);
+      return CSR[hstatus].VSXL == $bits(mxlen32);
     } else {
       assert(implemented?(ExtensionName::H) && mode() == PrivilegeMode::VU, "Unexpected mode");
-      return CSR[vsstatus].UXL == $bits(xlen32);
+      return CSR[vsstatus].UXL == $bits(mxlen32);
     }
   }
 }
@@ -1189,7 +1189,7 @@ function base64? {
     return True iff current effective XLEN == 64
   }
   body {
-    return xlen() == 64;
+    return mxlen() == 64;
   }
 }
 
@@ -1955,7 +1955,7 @@ function stage1_page_walk {
 
     ppn = CSR[vsatp].PPN;
 
-    if (vaddr[xlen()-1:VA_SIZE] != {xlen()-VA_SIZE{vaddr[VA_SIZE - 1]}}) {
+    if (vaddr[mxlen()-1:VA_SIZE] != {mxlen()-VA_SIZE{vaddr[VA_SIZE - 1]}}) {
       # non-canonical virtual address raises a page fault
       # note that if pointer masking is enabled,
       # vaddr has already been transformed before reaching here

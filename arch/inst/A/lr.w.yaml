@@ -91,7 +91,7 @@ lr.w:
     }
 
     XReg load_value = load_reserved<32>(virtual_address, aq, rl, $encoding);
-    if (xlen() == 64) {
+    if (mxlen() == 64) {
       X[rd] = load_value;
     } else {
       X[rd] = sext(load_value[31:0], 32);

@@ -28,4 +28,4 @@ ctzw:
       raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
-    X[rd] = (xlen() - 1) - $signed(lowest_set_bit(X[rs1][31:0]));
+    X[rd] = (mxlen() - 1) - $signed(lowest_set_bit(X[rs1][31:0]));

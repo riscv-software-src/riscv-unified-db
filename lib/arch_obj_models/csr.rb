@@ -49,7 +49,7 @@ class Csr < ArchDefObject
 
   # @param arch_def [ArchDef] A configuration
   # @return [Boolean] Whether or not the format of this CSR changes when the effective XLEN changes in some mode
-  def format_changes_with_xlen?(arch_def)
+  def format_changes_with_mxlen?(arch_def)
     dynamic_length?(arch_def) ||
       implemented_fields(arch_def).any? do |f|
         f.dynamic_location?(arch_def)
@@ -70,7 +70,7 @@ class Csr < ArchDefObject
       fns.concat(ast.reachable_functions(symtab))
     end
 
-    if arch_def.multi_xlen?
+    if arch_def.multi_mxlen?
       implemented_fields_for(arch_def, 32).each do |field|
         fns.concat(field.reachable_functions(arch_def, 32))
       end
@@ -181,9 +181,9 @@ class Csr < ArchDefObject
   end
 
   # @param arch_def [ArchDef] A configuration (can be nil if the lenth is not dependent on a config parameter)
-  # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
-  # @return [Integer] Length, in bits, of the CSR, given effective_xlen
-  def length(arch_def, effective_xlen = nil)
+  # @param effective_mxlen [Integer] The effective mxlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
+  # @return [Integer] Length, in bits, of the CSR, given effective_mxlen
+  def length(arch_def, effective_mxlen = nil)
     case @data["length"]
     when "MXLEN"
       if arch_def.is_a?(ImplArchDef)
@@ -193,17 +193,17 @@ class Csr < ArchDefObject
           @data["base"]
         else
           # don't know MXLEN
-          raise ArgumentError, "for CSR #{name}: effective_xlen is required when length is MXLEN and arch_def is generic" if effective_xlen.nil?
+          raise ArgumentError, "for CSR #{name}: effective_mxlen is required when length is MXLEN and arch_def is generic" if effective_mxlen.nil?
 
-          effective_xlen
+          effective_mxlen
         end
       end
     when "SXLEN"
       if arch_def.is_a?(ImplArchDef)
         if arch_def.param_values["SXLEN"] == 3264
-          raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
+          raise ArgumentError, "effective_mxlen is required when length is dynamic (#{name})" if effective_mxlen.nil?
 
-          effective_xlen
+          effective_mxlen
         else
           raise "CSR #{name} is not implemented" if arch_def.implemented_csrs.none? { |c| c.name == name }
           raise "CSR #{name} is not implemented" if arch_def.param_values["SXLEN"].nil?
@@ -215,17 +215,17 @@ class Csr < ArchDefObject
           @data["base"]
         else
           # don't know SXLEN
-          raise ArgumentError, "effective_xlen is required when length is SXLEN and arch_def is generic" if effective_xlen.nil?
+          raise ArgumentError, "effective_mxlen is required when length is SXLEN and arch_def is generic" if effective_mxlen.nil?
 
-          effective_xlen
+          effective_mxlen
         end
       end
     when "VSXLEN"
       if arch_def.is_a?(ImplArchDef)
         if arch_def.param_values["VSXLEN"] == 3264
-          raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
+          raise ArgumentError, "effective_mxlen is required when length is dynamic (#{name})" if effective_mxlen.nil?
 
-          effective_xlen
+          effective_mxlen
         else
           raise "CSR #{name} is not implemented" if arch_def.param_values["VSXLEN"].nil?
 
@@ -236,9 +236,9 @@ class Csr < ArchDefObject
           @data["base"]
         else
           # don't know VSXLEN
-          raise ArgumentError, "effective_xlen is required when length is VSXLEN and arch_def is generic" if effective_xlen.nil?
+          raise ArgumentError, "effective_mxlen is required when length is VSXLEN and arch_def is generic" if effective_mxlen.nil?
 
-          effective_xlen
+          effective_mxlen
         end
       end
     when Integer
@@ -248,7 +248,7 @@ class Csr < ArchDefObject
     end
   end
 
-  # @return [Integer] The largest length of this CSR in any valid mode/xlen for the config
+  # @return [Integer] The largest length of this CSR in any valid mode/mxlen for the config
   def max_length(arch_def)
     case @data["length"]
     when "MXLEN"
@@ -260,7 +260,7 @@ class Csr < ArchDefObject
     when "SXLEN"
       if arch_def.is_a?(ImplArchDef)
         if arch_def.param_values["SXLEN"] == 3264
-          raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
+          raise ArgumentError, "effective_mxlen is required when length is dynamic (#{name})" if effective_mxlen.nil?
 
           64
         else
@@ -275,7 +275,7 @@ class Csr < ArchDefObject
     when "VSXLEN"
       if arch_def.is_a?(ImplArchDef)
         if arch_def.param_values["VSXLEN"] == 3264
-          raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
+          raise ArgumentError, "effective_mxlen is required when length is dynamic (#{name})" if effective_mxlen.nil?
 
           64
         else
@@ -293,7 +293,7 @@ class Csr < ArchDefObject
     end
   end
 
-  # @return [String] IDL condition of when the effective xlen is 32
+  # @return [String] IDL condition of when the effective mxlen is 32
   def length_cond32
     case @data["length"]
     when "MXLEN"
@@ -307,7 +307,7 @@ class Csr < ArchDefObject
     end
   end
 
-  # @return [String] IDL condition of when the effective xlen is 64
+  # @return [String] IDL condition of when the effective mxlen is 64
   def length_cond64
     case @data["length"]
     when "MXLEN"
@@ -323,7 +323,7 @@ class Csr < ArchDefObject
 
   # @param arch_def [ArchDef] A configuration
   # @return [String] Pretty-printed length string
-  def length_pretty(arch_def, effective_xlen=nil)
+  def length_pretty(arch_def, effective_mxlen=nil)
     if dynamic_length?(arch_def)
       cond = 
         case @data["length"]
@@ -337,13 +337,13 @@ class Csr < ArchDefObject
           raise "Unexpected length '#{@data['length']}'"
         end
 
-      if effective_xlen.nil?
+      if effective_mxlen.nil?
         <<~LENGTH
           #{length(arch_def, 32)} when #{cond.sub('%%', '0')}
           #{length(arch_def, 64)} when #{cond.sub('%%', '1')}
         LENGTH
       else
-        "#{length(arch_def, effective_xlen)}-bit"
+        "#{length(arch_def, effective_mxlen)}-bit"
       end
     else
       "#{length(arch_def)}-bit"
@@ -375,16 +375,16 @@ class Csr < ArchDefObject
 
   # @param arch_Def [ArchDef] A configuration
   # @return [Array<CsrField>] All implemented fields for this CSR at the given effective XLEN, sorted by location (smallest location first)
-  #                           Excluded any fields that are defined by unimplemented extensions or a base that is not effective_xlen
-  def implemented_fields_for(arch_def, effective_xlen)
+  #                           Excluded any fields that are defined by unimplemented extensions or a base that is not effective_mxlen
+  def implemented_fields_for(arch_def, effective_mxlen)
     @implemented_fields_for ||= {}
-    key = [arch_def.name, effective_xlen].hash
+    key = [arch_def.name, effective_mxlen].hash
 
     return @implemented_fields_for[key] if @implemented_fields_for.key?(key)
 
     @implemented_fields_for[key] =
       implemented_fields(arch_def).select do |f|
-        !f.key?("base") || f.base == effective_xlen
+        !f.key?("base") || f.base == effective_mxlen
       end
   end
 
@@ -416,10 +416,10 @@ class Csr < ArchDefObject
     @fields = @data["fields"].map { |_field_name, field_data| CsrField.new(self, field_data) }
   end
 
-  # @return [Array<CsrField>] All known fields of this CSR when XLEN == +effective_xlen+
-  # equivalent to {#fields} if +effective_xlen+ is nil
-  def fields_for(effective_xlen)
-    fields.select { |f| effective_xlen.nil? || !f.key?("base") || f.base == effective_xlen }
+  # @return [Array<CsrField>] All known fields of this CSR when XLEN == +effective_mxlen+
+  # equivalent to {#fields} if +effective_mxlen+ is nil
+  def fields_for(effective_mxlen)
+    fields.select { |f| effective_mxlen.nil? || !f.key?("base") || f.base == effective_mxlen }
   end
 
   # @return [Hash<String,CsrField>] Hash of fields, indexed by field name
@@ -445,14 +445,14 @@ class Csr < ArchDefObject
   end
 
   # @param arch_def [ArchDef] A configuration
-  # @param effective_xlen [Integer] The effective XLEN to apply, needed when field locations change with XLEN in some mode
+  # @param effective_mxlen [Integer] The effective XLEN to apply, needed when field locations change with XLEN in some mode
   # @return [Idl::BitfieldType] A bitfield type that can represent all fields of the CSR
-  def bitfield_type(arch_def, effective_xlen = nil)
+  def bitfield_type(arch_def, effective_mxlen = nil)
     Idl::BitfieldType.new(
       "Csr#{name.capitalize}Bitfield",
-      length(arch_def, effective_xlen),
-      fields_for(effective_xlen).map(&:name),
-      fields_for(effective_xlen).map { |f| f.location(arch_def, effective_xlen) }
+      length(arch_def, effective_mxlen),
+      fields_for(effective_mxlen).map(&:name),
+      fields_for(effective_mxlen).map { |f| f.location(arch_def, effective_mxlen) }
     )
   end
 
@@ -549,43 +549,43 @@ class Csr < ArchDefObject
   #   ]}
   #
   # @param arch_def [ArchDef] A configuration
-  # @param effective_xlen [Integer,nil] Effective XLEN to use when CSR length is dynamic
+  # @param effective_mxlen [Integer,nil] Effective XLEN to use when CSR length is dynamic
   # @return [Hash] A representation of the WaveDrom drawing for the CSR (should be turned into JSON for wavedrom)
-  def wavedrom_desc(arch_def, effective_xlen)
+  def wavedrom_desc(arch_def, effective_mxlen)
     desc = {
       "reg" => []
     }
     last_idx = -1
     field_list =
       if arch_def.is_a?(ImplArchDef)
-        implemented_fields_for(arch_def, effective_xlen)
+        implemented_fields_for(arch_def, effective_mxlen)
       else
         fields.select do |f|
-          effective_xlen.nil? || \
-            ((effective_xlen == 32) && f.defined_in_base32?) || \
-            ((effective_xlen == 64) && f.defined_in_base64?)
+          effective_mxlen.nil? || \
+            ((effective_mxlen == 32) && f.defined_in_base32?) || \
+            ((effective_mxlen == 64) && f.defined_in_base64?)
         end
       end
-    field_list.sort! { |a, b| a.location(arch_def, effective_xlen).min <=> b.location(arch_def, effective_xlen).min }
+    field_list.sort! { |a, b| a.location(arch_def, effective_mxlen).min <=> b.location(arch_def, effective_mxlen).min }
     field_list.each do |field|
 
-      if field.location(arch_def, effective_xlen).min != last_idx + 1
+      if field.location(arch_def, effective_mxlen).min != last_idx + 1
         # have some reserved space
-        n = field.location(arch_def, effective_xlen).min - last_idx - 1
-        raise "negative reserved space? #{n} #{name} #{field.location(arch_def, effective_xlen).min} #{last_idx + 1}" if n <= 0
+        n = field.location(arch_def, effective_mxlen).min - last_idx - 1
+        raise "negative reserved space? #{n} #{name} #{field.location(arch_def, effective_mxlen).min} #{last_idx + 1}" if n <= 0
 
         desc["reg"] << { "bits" => n, type: 1 }
       end
-      desc["reg"] << { "bits" => field.location(arch_def, effective_xlen).size, "name" => field.name, type: 2 }
-      last_idx = field.location(arch_def, effective_xlen).max
+      desc["reg"] << { "bits" => field.location(arch_def, effective_mxlen).size, "name" => field.name, type: 2 }
+      last_idx = field.location(arch_def, effective_mxlen).max
     end
-    if !field_list.empty? && (field_list.last.location(arch_def, effective_xlen).max != (length(arch_def, effective_xlen) - 1))
+    if !field_list.empty? && (field_list.last.location(arch_def, effective_mxlen).max != (length(arch_def, effective_mxlen) - 1))
       # reserved space at the end
-      desc["reg"] << { "bits" => (length(arch_def, effective_xlen) - 1 - last_idx), type: 1 }
+      desc["reg"] << { "bits" => (length(arch_def, effective_mxlen) - 1 - last_idx), type: 1 }
       # desc['reg'] << { 'bits' => 1, type: 1 }
     end
-    desc["config"] = { "bits" => length(arch_def, effective_xlen) }
-    desc["config"]["lanes"] = length(arch_def, effective_xlen) / 16
+    desc["config"] = { "bits" => length(arch_def, effective_mxlen) }
+    desc["config"]["lanes"] = length(arch_def, effective_mxlen) / 16
     desc
   end
 
