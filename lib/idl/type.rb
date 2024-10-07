@@ -762,8 +762,8 @@ module Idl
   # XReg is really a Bits<> type, so we override it just to get
   # prettier prints
   class XregType < Type
-    def initialize(xlen)
-      super(:bits, width: xlen)
+    def initialize(mxlen)
+      super(:bits, width: mxlen)
     end
 
     def to_s

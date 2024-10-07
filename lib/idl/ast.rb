@@ -2210,7 +2210,7 @@ module Idl
   class BinaryExpressionRightSyntaxNode < Treetop::Runtime::SyntaxNode
 
     # fix up left recursion
-    # i.e., xlen() - 1 - i => (xlen() - 1) - i
+    # i.e., mxlen() - 1 - i => (mxlen() - 1) - i
     def to_ast
       first =
         BinaryExpressionAst.new(
@@ -4235,8 +4235,8 @@ module Idl
     # @!macro value
     def value(symtab)
       # sometimes we want to evaluate for a specific XLEN
-      if name == "xlen" && !symtab.get("__effective_xlen").nil?
-        return symtab.get("__effective_xlen").value
+      if name == "mxlen" && !symtab.get("__effective_mxlen").nil?
+        return symtab.get("__effective_mxlen").value
       end
 
       func_def_type = symtab.get(name)
@@ -5213,7 +5213,7 @@ module Idl
         end
       end
       if fd.defined_in_all_bases?
-        Type.new(:bits, width: symtab.archdef.possible_xlens.map{ |xlen| fd.width(symtab.archdef, xlen) }.max)
+        Type.new(:bits, width: symtab.archdef.possible_xlens.map{ |mxlen| fd.width(symtab.archdef, mxlen) }.max)
       elsif fd.base64_only?
         Type.new(:bits, width: fd.width(symtab.archdef, 64))
       elsif fd.base32_only?

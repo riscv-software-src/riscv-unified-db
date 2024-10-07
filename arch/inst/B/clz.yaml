@@ -26,4 +26,4 @@ clz:
       raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
-    X[rd] = (xlen() - 1) - $signed(highest_set_bit(X[rs1]));
+    X[rd] = (mxlen() - 1) - $signed(highest_set_bit(X[rs1]));

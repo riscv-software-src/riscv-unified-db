@@ -22,7 +22,7 @@ Additionally, this instruction is only defined if the following <%- if inst.exte
 
 == Encoding
 
-<%- if arch_def.multi_xlen? && inst.multi_encoding? -%>
+<%- if arch_def.multi_mxlen? && inst.multi_encoding? -%>
 [NOTE]
 This instruction has different encodings in RV32 and RV64.
 
@@ -77,7 +77,7 @@ RV64::
 
 == Decode Variables
 
-<%- if arch_def.multi_xlen? && inst.multi_encoding? -%>
+<%- if arch_def.multi_mxlen? && inst.multi_encoding? -%>
 [tabs]
 ====
 RV32::
@@ -109,17 +109,17 @@ RV64::
 
 == Execution
 
-<%- xlens = inst.base.nil? ? (arch_def.multi_xlen? ? [32, 64] : [arch_def.mxlen]) : [inst.base] -%>
+<%- xlens = inst.base.nil? ? (arch_def.multi_mxlen? ? [32, 64] : [arch_def.mxlen]) : [inst.base] -%>
 
 <%- if inst.key?("operation()") -%>
 [tabs]
 ====
-<%- xlens.each do |effective_xlen| -%>
-Pruned, XLEN == <%= effective_xlen %>::
+<%- xlens.each do |effective_mxlen| -%>
+Pruned, XLEN == <%= effective_mxlen %>::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.pruned_operation_ast(arch_def.sym_table, effective_xlen).gen_adoc %>
+<%= inst.pruned_operation_ast(arch_def.sym_table, effective_mxlen).gen_adoc %>
 ----
 <%- end -%>
 

@@ -33,10 +33,10 @@ class Instruction < ArchDefObject
   # @return [Boolean] Whether or not the instruction must have data-independent timing when Zkt is enabled.
   def data_independent_timing? = @data["data_independent_timing"]
 
-  # @param xlen [Integer] 32 or 64, the target xlen
-  # @return [Boolean] whethen or not instruction is defined in base +xlen+
-  def defined_in_base?(xlen)
-    base == xlen
+  # @param mxlen [Integer] 32 or 64, the target mxlen
+  # @return [Boolean] whethen or not instruction is defined in base +mxlen+
+  def defined_in_base?(mxlen)
+    base == mxlen
   end
 
   # @return [String] Assembly format
@@ -66,7 +66,7 @@ class Instruction < ArchDefObject
     @extension_requirements
   end
 
-  def fill_symtab(global_symtab, effective_xlen)
+  def fill_symtab(global_symtab, effective_mxlen)
     symtab = global_symtab.deep_clone
     symtab.push
     symtab.add(
@@ -74,10 +74,10 @@ class Instruction < ArchDefObject
       Idl::Var.new("__instruction_encoding_size", Idl::Type.new(:bits, width: encoding_width.bit_length), encoding_width)
     )
     symtab.add(
-      "__effective_xlen",
-      Idl::Var.new("__effective_xlen", Idl::Type.new(:bits, width: 7), effective_xlen)
+      "__effective_mxlen",
+      Idl::Var.new("__effective_mxlen", Idl::Type.new(:bits, width: 7), effective_mxlen)
     )
-    @encodings[effective_xlen].decode_variables.each do |d|
+    @encodings[effective_mxlen].decode_variables.each do |d|
       qualifiers = []
       qualifiers << :signed if d.sext?
       width = d.size
@@ -92,7 +92,7 @@ class Instruction < ArchDefObject
 
   # @param global_symtab [Idl::SymbolTable] Symbol table with global scope populated and a configuration loaded
   # @return [Idl::FunctionBodyAst] A pruned abstract syntax tree
-  def pruned_operation_ast(global_symtab, effective_xlen)
+  def pruned_operation_ast(global_symtab, effective_mxlen)
     @pruned_asts ||= {}
 
     arch_def = global_symtab.archdef
@@ -102,11 +102,11 @@ class Instruction < ArchDefObject
 
     return nil unless @data.key?("operation()")
 
-    type_checked_ast = type_checked_operation_ast(arch_def.idl_compiler, global_symtab, effective_xlen)
-    pruned_ast = type_checked_ast.prune(fill_symtab(global_symtab, effective_xlen))
+    type_checked_ast = type_checked_operation_ast(arch_def.idl_compiler, global_symtab, effective_mxlen)
+    pruned_ast = type_checked_ast.prune(fill_symtab(global_symtab, effective_mxlen))
     arch_def.idl_compiler.type_check(
       pruned_ast,
-      fill_symtab(global_symtab, effective_xlen),
+      fill_symtab(global_symtab, effective_mxlen),
       "#{name}.operation() (pruned)"
     )
 
@@ -114,14 +114,14 @@ class Instruction < ArchDefObject
   end
 
   # @param symtab [Idl::SymbolTable] Symbol table with global scope populated
-  # @param effective_xlen [Integer] The effective XLEN to evaluate against
+  # @param effective_mxlen [Integer] The effective XLEN to evaluate against
   # @return [Array<Idl::FunctionBodyAst>] List of all functions that can be reached from operation()
-  def reachable_functions(symtab, effective_xlen)
+  def reachable_functions(symtab, effective_mxlen)
     if @data["operation()"].nil?
       []
     else
       # RubyProf.start
-      pruned_operation_ast(symtab, effective_xlen).reachable_functions(fill_symtab(symtab, effective_xlen))
+      pruned_operation_ast(symtab, effective_mxlen).reachable_functions(fill_symtab(symtab, effective_mxlen))
       # result = RubyProf.stop
       # RubyProf::FlatPrinter.new(result).print($stdout)
       # exit
@@ -129,27 +129,27 @@ class Instruction < ArchDefObject
   end
 
   # @param symtab [Idl::SymbolTable] Symbol table with global scope populated
-  # @param effective_xlen [Integer] Effective XLEN to evaluate against
+  # @param effective_mxlen [Integer] Effective XLEN to evaluate against
   # @return [Array<Integer>] List of all exceptions that can be reached from operation()
-  def reachable_exceptions(symtab, effective_xlen)
+  def reachable_exceptions(symtab, effective_mxlen)
     if @data["operation()"].nil?
       []
     else
-      pruned_operation_ast(symtab).reachable_exceptions(fill_symtab(symtab, effective_xlen)).uniq
+      pruned_operation_ast(symtab).reachable_exceptions(fill_symtab(symtab, effective_mxlen)).uniq
     end
   end
 
   # @param symtab [Idl::SymbolTable] Symbol table with global scope populated
-  # @param effective_xlen [Integer] Effective XLEN to evaluate against. If nil, evaluate against all valid XLENs
+  # @param effective_mxlen [Integer] Effective XLEN to evaluate against. If nil, evaluate against all valid XLENs
   # @return [Array<Integer>] List of all exceptions that can be reached from operation()
-  def reachable_exceptions_str(symtab, effective_xlen=nil)
+  def reachable_exceptions_str(symtab, effective_mxlen=nil)
     if @data["operation()"].nil?
       []
     else
       # RubyProf.start
       etype = symtab.get("ExceptionCode")
-      if effective_xlen.nil?
-        if symtab.archdef.multi_xlen?
+      if effective_mxlen.nil?
+        if symtab.archdef.multi_mxlen?
           if base.nil?
             (
               pruned_operation_ast(symtab, 32).reachable_exceptions(fill_symtab(symtab, 32)).uniq.map { |code|
@@ -165,13 +165,13 @@ class Instruction < ArchDefObject
             }
           end
         else
-          effective_xlen = symtab.archdef.mxlen
-          pruned_operation_ast(symtab, effective_xlen).reachable_exceptions(fill_symtab(symtab, effective_xlen)).uniq.map { |code|
+          effective_mxlen = symtab.archdef.mxlen
+          pruned_operation_ast(symtab, effective_mxlen).reachable_exceptions(fill_symtab(symtab, effective_mxlen)).uniq.map { |code|
             etype.element_name(code)
           }
         end
       else
-        pruned_operation_ast(symtab, effective_xlen).reachable_exceptions(fill_symtab(symtab, effective_xlen)).uniq.map { |code|
+        pruned_operation_ast(symtab, effective_mxlen).reachable_exceptions(fill_symtab(symtab, effective_mxlen)).uniq.map { |code|
           etype.element_name(code)
         }
       end
@@ -547,8 +547,8 @@ class Instruction < ArchDefObject
   # @return [FunctionBodyAst] A type-checked abstract syntax tree of the operation
   # @param idl_compiler [Idl::Compiler] Compiler
   # @param symtab [Idl::SymbolTable] Symbol table with globals
-  # @param effective_xlen [Integer] 32 or 64, the effective xlen to type check against
-  def type_checked_operation_ast(idl_compiler, symtab, effective_xlen)
+  # @param effective_mxlen [Integer] 32 or 64, the effective mxlen to type check against
+  def type_checked_operation_ast(idl_compiler, symtab, effective_mxlen)
     @type_checked_operation_ast ||= {}
     ast = @type_checked_operation_ast[symtab.hash]
     return ast unless ast.nil?
@@ -557,7 +557,7 @@ class Instruction < ArchDefObject
 
     ast = operation_ast(idl_compiler)
 
-    idl_compiler.type_check(ast, fill_symtab(symtab, effective_xlen), "#{name}.operation()")
+    idl_compiler.type_check(ast, fill_symtab(symtab, effective_mxlen), "#{name}.operation()")
 
     @type_checked_operation_ast[symtab.hash] = ast
   end

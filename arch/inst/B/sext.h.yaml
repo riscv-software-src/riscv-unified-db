@@ -24,8 +24,8 @@ sext.h:
       raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
-    if (xlen() == 32) {
+    if (mxlen() == 32) {
       X[rd] = {{16{X[rs1][15]}}, X[rs1][15:0]};
-    } else if (xlen() == 64) {
+    } else if (mxlen() == 64) {
       X[rd] = {{48{X[rs1][15]}}, X[rs1][15:0]};
     }

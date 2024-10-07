@@ -28,7 +28,7 @@ orc.b:
     XReg input = X[rs1];
     XReg output = 0;
 
-    for (U32 i=0; i<(xlen() - 8); i = i+8) {
+    for (U32 i=0; i<(mxlen() - 8); i = i+8) {
       output[(i+7):i] = (input[(i+7):i] == 0) ? 8'd0 : ~8'd0;
     }
 

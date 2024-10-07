@@ -30,7 +30,7 @@ clmul:
     XReg rs2_val = X[rs2];
     XReg output = 0;
 
-    for (U32 i=0; i < xlen(); i++) {
+    for (U32 i=0; i < mxlen(); i++) {
       output = (((rs2_val >> i) & 1) == 1)
         ? output ^ (rs1_val << i)
         : output;

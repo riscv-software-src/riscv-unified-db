@@ -22,7 +22,7 @@ class TestVariables < Minitest::Test
       if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
         raise(ExceptionCode::IllegalInstruction, $encoding);
       }
-      XReg index = shamt & (xlen() - 1);
+      XReg index = shamt & (mxlen() - 1);
     FUNC
     
     tokens.each do |token, chunk|

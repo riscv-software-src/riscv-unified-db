@@ -89,14 +89,14 @@ module Idl
       [@scopes.hash, @archdef.hash].hash
     end
 
-    def initialize(arch_def, effective_xlen = nil)
+    def initialize(arch_def, effective_mxlen = nil)
       @archdef = arch_def
       if arch_def.is_a?(ImplArchDef)
-        raise "effective_xlen should not be set when symbol table is given an ImplArchDef" unless effective_xlen.nil?
+        raise "effective_mxlen should not be set when symbol table is given an ImplArchDef" unless effective_mxlen.nil?
       else
-        raise "effective_xlen should be set when symbol table is given an ArchDef" if effective_xlen.nil?
+        raise "effective_mxlen should be set when symbol table is given an ArchDef" if effective_mxlen.nil?
       end
-      @mxlen = effective_xlen.nil? ? arch_def.mxlen : effective_xlen
+      @mxlen = effective_mxlen.nil? ? arch_def.mxlen : effective_mxlen
       @scopes = [{
         "X" => Var.new(
           "X",

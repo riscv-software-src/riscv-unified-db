@@ -257,8 +257,8 @@ class CscCrd < ArchDefObject
     def when_pretty
       @data["when"].keys.map do |key|
         case key
-        when "xlen"
-          "XLEN == #{@data["when"]["xlen"]}"
+        when "mxlen"
+          "XLEN == #{@data["when"]["mxlen"]}"
         when "param"
           @data["when"]["param"].map do |param_name, param_value|
             "Parameter #{param_name} == #{param_value}"
@@ -283,8 +283,8 @@ class CscCrd < ArchDefObject
     def when_pretty
       @data["when"].keys.map do |key|
         case key
-        when "xlen"
-          "XLEN == #{@data["when"]["xlen"]}"
+        when "mxlen"
+          "XLEN == #{@data["when"]["mxlen"]}"
         when "param"
           @data["when"]["param"].map do |param_name, param_value|
             "Parameter #{param_name} == #{param_value}"

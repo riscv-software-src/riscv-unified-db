@@ -26,5 +26,5 @@ bext:
       raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
-    XReg index = X[rs2] & (xlen() - 1);
+    XReg index = X[rs2] & (mxlen() - 1);
     X[rd] = (X[rs1] >> index) & 1;

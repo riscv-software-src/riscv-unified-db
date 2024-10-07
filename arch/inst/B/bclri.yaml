@@ -37,5 +37,5 @@ bclri:
       raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
 
-    XReg index = shamt & (xlen() - 1);
+    XReg index = shamt & (mxlen() - 1);
     X[rd] = X[rs1] & ~(1 << index);
