@@ -85,38 +85,38 @@ Any extension not listed in the table below is OUT-OF-SCOPE.
 |===
 | Requirement ID | Extension | Version Requirement | Status | Long Name
 
-<%- crd.extension_reqs_in_crd.sort.each do |ext_req_crd| -%>
-<%- ext_db = crd.extension_from_db(ext_req_crd.name) -%>
-| <%= ext_req_crd.req_id %>
-| <<anchor-ext-requirement-<%= ext_req_crd.name %>,<%= ext_req_crd.name %>>> 
-| <%= ext_req_crd.version_requirement %>
-| <%= ext_req_crd.status.upcase %>
+<%- crd.in_scope_ext_reqs.sort.each do |ext_req| -%>
+<%- ext_db = crd.extension_from_db(ext_req.name) -%>
+| <%= ext_req.req_id %>
+| <<anchor-ext-requirement-<%= ext_req.name %>,<%= ext_req.name %>>> 
+| <%= ext_req.version_requirement %>
+| <%= ext_req.status.upcase %>
 | <%= ext_db.nil? ? "" : ext_db.long_name %>
 <%- end -%>
 |===
 
 === IN-SCOPE Parameters
 
-These parameters (sorted alphabetically) are IN-SCOPE. 
+These parameters (sorted alphabetically) defined by MANDATORY or OPTIONAL extensions are IN-SCOPE. 
 An implementation must abide by the allowed values to obtain a certificate. 
 
-<%- if crd.all_extension_parameters_from_crd.empty? -%>
+<%- if crd.all_in_scope_ext_params.empty? -%>
 None
 <%- else -%>
 [%autowidth]
 |===
 | Parameter | Extension(s)
-<%- crd.all_extension_parameters_from_crd.sort.each do |param_crd| -%>
-| <%= param_crd.name %>
-| <%- param_crd.all_extensions_in_crd.sort.each do |ext_db| -%><<anchor-ext-<%= ext_db.name %>-param-<%= param_crd.name %>,<%= ext_db.name %>>> <%- end # do ext_db -%>
+<%- crd.all_in_scope_ext_params.sort.each do |in_scope_ext_param| -%>
+| <%= in_scope_ext_param.name %>
+| <%- crd.all_in_scope_exts_with_param(in_scope_ext_param.param_db).sort.each do |ext_db| -%><<anchor-ext-<%= ext_db.name %>-param-<%= in_scope_ext_param.name %>,<%= ext_db.name %>>> <%- end # do ext_db -%>
 
-<%- end # do param_crd -%>
+<%- end # do -%>
 |===
 <%- end # if table -%>
 
 === OUT-OF-SCOPE Parameters
 
-These parameters (sorted alphabetically) are OUT-OF-SCOPE. 
+These parameters (sorted alphabetically) defined by MANDATORY or OPTIONAL extensions are OUT-OF-SCOPE. 
 There are no restrictions on their values for certification purposes because the certificate 
 doesn't cover their associated behaviors.
 
@@ -127,8 +127,10 @@ None
 |===
 | Parameter | Extension(s)
 <%- crd.all_out_of_scope_params.sort.each do |param_db| -%>
-| <<anchor-param-<%= param_db.name %>,<%= param_db.name %>>> 
-<%- end # do param_db -%>
+| <%= param_db.name %>
+| <%- crd.all_in_scope_exts_without_param(param_db).sort.each do |ext_db| -%><<anchor-ext-<%= ext_db.name %>-param-<%= param_db.name %>,<%= ext_db.name %>>> <%- end # do ext_db -%>
+
+<%- end # do -%>
 |===
 <%- end # if table -%>
 
@@ -138,42 +140,42 @@ None
 
 == Extension Requirements
 
-<%- crd.extension_reqs_in_crd.sort.each do |ext_req_crd| -%>
-<%- ext_db = crd.extension_from_db(ext_req_crd.name) -%>
+<%- crd.in_scope_ext_reqs.sort.each do |ext_req| -%>
+<%- ext_db = crd.extension_from_db(ext_req.name) -%>
 
-[[anchor-ext-requirement-<%= ext_req_crd.name %>]]
-=== Extension <%= ext_req_crd.name %> +
-*Requirement ID*: <%= ext_req_crd.req_id %> +
+[[anchor-ext-requirement-<%= ext_req.name %>]]
+=== Extension <%= ext_req.name %> +
+*Requirement ID*: <%= ext_req.req_id %> +
 <%= ext_db.nil? ? "" : "*Long Name*: " + ext_db.long_name + " +" %>
-*Version Requirement*: <%= ext_req_crd.version_requirement %> +
-*Status*: <%= ext_req_crd.status.upcase %> +
-<%- unless ext_req_crd.note.nil? -%>
+*Version Requirement*: <%= ext_req.version_requirement %> +
+*Status*: <%= ext_req.status.upcase %> +
+<%- unless ext_req.note.nil? -%>
 [NOTE]
 --
-<%= ext_req_crd.note %>
+<%= ext_req.note %>
 --
 <%- end -%>
 
-<%- unless crd.extension_parameters_from_crd(ext_req_crd).empty? -%>
-.<%= ext_req_crd.name %> Extension IN-SCOPE Parameters
+<%- unless crd.in_scope_ext_params(ext_req).empty? -%>
+.<%= ext_req.name %> Extension IN-SCOPE Parameters
 [cols="3,1,2"]
 |===
 | Parameter | Constraint | Note
-<%- crd.extension_parameters_from_crd(ext_req_crd).sort.each do |param_crd| -%>
-| <<anchor-ext-<%= ext_req_crd.name %>-param-<%= param_crd.name %>,<%= param_crd.name %>>> 
-| <%= param_crd.schema_constraint_pretty %>
-a| <%= param_crd.note %>
-<%- end # do param_crd -%>
+<%- crd.in_scope_ext_params(ext_req).sort.each do |ext_param| -%>
+| <<anchor-ext-<%= ext_req.name %>-param-<%= ext_param.name %>,<%= ext_param.name %>>> 
+| <%= ext_param.schema_constraint_pretty %>
+a| <%= ext_param.note %>
+<%- end # do ext_param -%>
 |===
 <%- end # unless table -%>
 
-<%- unless crd.out_of_scope_params(ext_req_crd.name).empty? -%>
-.<%= ext_req_crd.name %> Extension OUT-OF-SCOPE Parameters
+<%- unless crd.out_of_scope_params(ext_req.name).empty? -%>
+.<%= ext_req.name %> Extension OUT-OF-SCOPE Parameters
 [%autowidth]
 |===
 | Parameter
-<%- crd.out_of_scope_params(ext_req_crd.name).sort.each do |param_db| -%>
-| <<anchor-ext-<%= ext_req_crd.name %>-param-<%= param_db.name %>,<%= param_db.name %>>> 
+<%- crd.out_of_scope_params(ext_req.name).sort.each do |param_db| -%>
+| <<anchor-ext-<%= ext_req.name %>-param-<%= param_db.name %>,<%= param_db.name %>>> 
 <%- end # do -%>
 |===
 <%- end # unless table -%>
@@ -212,13 +214,13 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 
 [appendix]
 == Extension Specifications
-<%- crd.extension_reqs_in_crd.sort.each do |ext_req_crd| -%>
-<%- ext_db = crd.extension_from_db(ext_req_crd.name) -%>
+<%- crd.in_scope_ext_reqs.sort.each do |ext_req| -%>
+<%- ext_db = crd.extension_from_db(ext_req.name) -%>
 
-=== Extension <%= ext_req_crd.name %> +
+=== Extension <%= ext_req.name %> +
 <%= ext_db.nil? ? "" : "*Long Name*: " + ext_db.long_name + " +" %>
 
-*Version Requirement*: <%= ext_req_crd.version_requirement %> +
+*Version Requirement*: <%= ext_req.version_requirement %> +
 
 <%- ext_db.versions.each do |v| -%>
 <%= v["version"] %>::
@@ -253,10 +255,10 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 
 :leveloffset: -3
 
-<%- unless ext_req_crd.note.nil? -%>
+<%- unless ext_req.note.nil? -%>
 [NOTE]
 --
-<%= ext_req_crd.note %>
+<%= ext_req.note %>
 --
 <%- end -%>
 
@@ -274,24 +276,24 @@ The following instructions are added by this extension:
 |===
 <%- end -%>
 
-<%- unless crd.extension_parameters_from_crd(ext_req_crd).empty? -%>
+<%- unless crd.in_scope_ext_params(ext_req).empty? -%>
 ==== IN-SCOPE Parameters
 
-<%- crd.extension_parameters_from_crd(ext_req_crd).sort.each do |param_crd| -%>
-[[anchor-ext-<%= ext_req_crd.name %>-param-<%= param_crd.name %>]]
-<%= param_crd.name %>::
+<%- crd.in_scope_ext_params(ext_req).sort.each do |ext_param| -%>
+[[anchor-ext-<%= ext_req.name %>-param-<%= ext_param.name %>]]
+<%= ext_param.name %>::
 +
 --
-<%= param_crd.param_db.desc %>
+<%= ext_param.param_db.desc %>
 --
-<%- end # do param_crd -%>
+<%- end # do ext_param -%>
 <%- end # unless table -%>
 
-<%- unless crd.out_of_scope_params(ext_req_crd.name).empty? -%>
+<%- unless crd.out_of_scope_params(ext_req.name).empty? -%>
 ==== OUT-OF-SCOPE Parameters
 
-<%- crd.out_of_scope_params(ext_req_crd.name).sort.each do |param_db| -%>
-[[anchor-ext-<%= ext_req_crd.name %>-param-<%= param_db.name %>]]
+<%- crd.out_of_scope_params(ext_req.name).sort.each do |param_db| -%>
+[[anchor-ext-<%= ext_req.name %>-param-<%= param_db.name %>]]
 <%= param_db.name %>::
 +
 --
@@ -299,13 +301,13 @@ The following instructions are added by this extension:
 --
 <%- end # do param_db -%>
 <%- end # unless table -%>
-<%- end # do ext_req_crd -%>
+<%- end # do ext_req -%>
 
 [appendix]
 == Instruction Specifications
 
 <%=
-  insts = crd.extensions_in_crd.map { |ext_crd| ext_crd.instructions }.flatten.uniq
+  insts = crd.in_scope_extensions.map { |ext_crd| ext_crd.instructions }.flatten.uniq
   insts.sort_by!(&:name)
 -%>
 
@@ -354,18 +356,18 @@ RV64::
 <%= inst.description %>
 
 ==== Access
-<%- if crd.extensions_in_crd.any? { |e| e.name == "H" } -%>
+<%- if crd.in_scope_extensions.any? { |e| e.name == "H" } -%>
 [cols="^,^,^,^,^"]
 <%- else -%>
 [cols="^,^,^"]
 <%- end -%>
 |===
-| M | <%- if crd.extensions_in_crd.any? { |e| e.name == "H" } -%>HS<%- else -%>S<%- end -%> | U <%- if crd.extensions_in_crd.any? { |e| e.name == "H" } -%> | VS | VU <%- end -%>
+| M | <%- if crd.in_scope_extensions.any? { |e| e.name == "H" } -%>HS<%- else -%>S<%- end -%> | U <%- if crd.in_scope_extensions.any? { |e| e.name == "H" } -%> | VS | VU <%- end -%>
 
 | [.access-always]#Always#
 | [.access-<%=inst.access['s']%>]#<%= inst.access['s'].capitalize %>#
 | [.access-<%=inst.access['u']%>]#<%= inst.access['u'].capitalize %>#
-<% if crd.extensions_in_crd.any? { |e| e.name == "H" } %>
+<% if crd.in_scope_extensions.any? { |e| e.name == "H" } %>
 | [.access-<%=inst.access['vs']%>]#<%= inst.access['vs'].capitalize %>#
 | [.access-<%=inst.access['vu']%>]#<%= inst.access['vu'].capitalize %>#
 <% end %>
@@ -441,7 +443,7 @@ This instruction may result in the following synchronous exceptions:
 == CSR Specifications
 
 <%-
-  csrs = crd.extensions_in_crd.map { |ext_crd| ext_crd.csrs }.flatten.uniq
+  csrs = crd.in_scope_extensions.map { |ext_crd| ext_crd.csrs }.flatten.uniq
   csrs.sort_by!(&:name)
 -%>
 
