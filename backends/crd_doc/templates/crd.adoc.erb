@@ -1,4 +1,3 @@
-
 // Number heading sections (e.g., 1.0, 1.1, etc.)
 :sectnums:  
 
@@ -88,7 +87,7 @@ Any extension not listed in the table below is OUT-OF-SCOPE.
 <%- crd.in_scope_ext_reqs.sort.each do |ext_req| -%>
 <%- ext_db = crd.extension_from_db(ext_req.name) -%>
 | <%= ext_req.req_id %>
-| <<anchor-ext-requirement-<%= ext_req.name %>,<%= ext_req.name %>>> 
+| <<ext-requirement-<%= ext_req.name %>-def,<%= ext_req.name %>>> 
 | <%= ext_req.version_requirement %>
 | <%= ext_req.status.upcase %>
 | <%= ext_db.nil? ? "" : ext_db.long_name %>
@@ -106,9 +105,10 @@ None
 [%autowidth]
 |===
 | Parameter | Extension(s)
+
 <%- crd.all_in_scope_ext_params.sort.each do |in_scope_ext_param| -%>
 | <%= in_scope_ext_param.name %>
-| <%- crd.all_in_scope_exts_with_param(in_scope_ext_param.param_db).sort.each do |ext_db| -%><<anchor-ext-<%= ext_db.name %>-param-<%= in_scope_ext_param.name %>,<%= ext_db.name %>>> <%- end # do ext_db -%>
+| <%- crd.all_in_scope_exts_with_param(in_scope_ext_param.param_db).sort.each do |ext_db| -%><<ext-<%= ext_db.name %>-param-<%= in_scope_ext_param.name %>-def,<%= ext_db.name %>>> <%- end # do ext_db -%>
 
 <%- end # do -%>
 |===
@@ -126,9 +126,10 @@ None
 [%autowidth]
 |===
 | Parameter | Extension(s)
+
 <%- crd.all_out_of_scope_params.sort.each do |param_db| -%>
 | <%= param_db.name %>
-| <%- crd.all_in_scope_exts_without_param(param_db).sort.each do |ext_db| -%><<anchor-ext-<%= ext_db.name %>-param-<%= param_db.name %>,<%= ext_db.name %>>> <%- end # do ext_db -%>
+| <%- crd.all_in_scope_exts_without_param(param_db).sort.each do |ext_db| -%><<ext-<%= ext_db.name %>-param-<%= param_db.name %>-def,<%= ext_db.name %>>> <%- end # do ext_db -%>
 
 <%- end # do -%>
 |===
@@ -136,14 +137,44 @@ None
 
 === CSRs by Name
 
+<%-
+  csrs = crd.in_scope_extensions.map { |ext_crd| ext_crd.csrs }.flatten.uniq
+-%>
+
+[%autowidth]
+|===
+| Name | Long Name | Address | Mode | Primary Extension
+
+<%- csrs.sort_by!(&:name).each do |csr| -%>
+| <<csr-<%= csr.name %>-def,<%= csr.name %>>>
+| <%= csr.long_name %>
+| <%= "0x#{csr.address.to_s(16)}" %>
+| <%= csr.priv_mode %>
+| <%= csr.primary_defined_by %>
+<%- end # do -%>
+|===
+
 === CSRs by Address
+
+[%autowidth]
+|===
+| Address | Mode | Name | Long Name | Primary Extension
+
+<%- csrs.sort_by!(&:address).each do |csr| -%>
+| <%= "0x#{csr.address.to_s(16)}" %>
+| <%= csr.priv_mode %>
+| <<csr-<%= csr.name %>-def,<%= csr.name %>>>
+| <%= csr.long_name %>
+| <%= csr.primary_defined_by %>
+<%- end # do -%>
+|===
 
 == Extension Requirements
 
 <%- crd.in_scope_ext_reqs.sort.each do |ext_req| -%>
 <%- ext_db = crd.extension_from_db(ext_req.name) -%>
 
-[[anchor-ext-requirement-<%= ext_req.name %>]]
+[[ext-requirement-<%= ext_req.name %>-def]]
 === Extension <%= ext_req.name %> +
 *Requirement ID*: <%= ext_req.req_id %> +
 <%= ext_db.nil? ? "" : "*Long Name*: " + ext_db.long_name + " +" %>
@@ -161,8 +192,9 @@ None
 [cols="3,1,2"]
 |===
 | Parameter | Constraint | Note
+
 <%- crd.in_scope_ext_params(ext_req).sort.each do |ext_param| -%>
-| <<anchor-ext-<%= ext_req.name %>-param-<%= ext_param.name %>,<%= ext_param.name %>>> 
+| <<ext-<%= ext_req.name %>-param-<%= ext_param.name %>-def,<%= ext_param.name %>>> 
 | <%= ext_param.schema_constraint_pretty %>
 a| <%= ext_param.note %>
 <%- end # do ext_param -%>
@@ -174,8 +206,9 @@ a| <%= ext_param.note %>
 [%autowidth]
 |===
 | Parameter
+
 <%- crd.out_of_scope_params(ext_req.name).sort.each do |param_db| -%>
-| <<anchor-ext-<%= ext_req.name %>-param-<%= param_db.name %>,<%= param_db.name %>>> 
+| <<ext-<%= ext_req.name %>-param-<%= param_db.name %>-def,<%= param_db.name %>>> 
 <%- end # do -%>
 |===
 <%- end # unless table -%>
@@ -271,7 +304,7 @@ The following instructions are added by this extension:
 [cols="1,3"]
 |===
 <%- insts.each do |inst| -%>
- | <%= "`#{inst.name}`" %> | *<%= inst.long_name %>*
+| <%= "`#{inst.name}`" %> | *<%= inst.long_name %>*
 <%- end -%>
 |===
 <%- end -%>
@@ -280,7 +313,7 @@ The following instructions are added by this extension:
 ==== IN-SCOPE Parameters
 
 <%- crd.in_scope_ext_params(ext_req).sort.each do |ext_param| -%>
-[[anchor-ext-<%= ext_req.name %>-param-<%= ext_param.name %>]]
+[[ext-<%= ext_req.name %>-param-<%= ext_param.name %>-def]]
 <%= ext_param.name %>::
 +
 --
@@ -293,7 +326,7 @@ The following instructions are added by this extension:
 ==== OUT-OF-SCOPE Parameters
 
 <%- crd.out_of_scope_params(ext_req.name).sort.each do |param_db| -%>
-[[anchor-ext-<%= ext_req.name %>-param-<%= param_db.name %>]]
+[[ext-<%= ext_req.name %>-param-<%= param_db.name %>-def]]
 <%= param_db.name %>::
 +
 --
