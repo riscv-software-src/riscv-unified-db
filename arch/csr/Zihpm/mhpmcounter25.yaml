@@ -10,7 +10,7 @@ mhpmcounter25:
   priv_mode: M
   length: 64
   description: Programmable hardware performance counter.
-  definedBy: Zihpm
+  definedBy: Smhpm
   fields:
     COUNT:
       location: 63-0

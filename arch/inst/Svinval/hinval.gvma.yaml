@@ -2,8 +2,10 @@
 
 hinval.gvma:
   long_name: Invalidate cached address translations
-  definedBy: Svinval
-  requires: H
+  definedBy:
+    allOf:
+    - Svinval
+    - H
   encoding:
     match: 0110011----------000000001110011
     variables:

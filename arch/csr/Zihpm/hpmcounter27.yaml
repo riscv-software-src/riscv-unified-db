@@ -5,7 +5,7 @@
 
 
 hpmcounter27:
-  long_name: Cycle counter for RDCYCLE Instruction
+  long_name: User-mode Hardware Performance Counter 24
   address: 0xC1B
   description: |
     Alias for M-mode CSR `mhpmcounter27`.

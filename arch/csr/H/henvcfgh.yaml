@@ -1,0 +1,105 @@
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+henvcfgh:
+  address: 0x61A
+  long_name: most-significant 32 bits of Hypervisor Environment Configuration
+  description: |
+    The henvcfgh CSR is a 32-bit read/write register for the most-significant 32 bits of `henvcfg`.
+  priv_mode: S
+  length: 32
+  definedBy:
+    allOf:
+      - name: Sm
+        version: ">=1.12"
+      - name: H
+  fields:
+    STCE:
+      location: 31
+      alias: henvcfg.STCE
+      description: |
+        *STimecmp Enable*
+
+        When set, `stimecmp` is operational in VS-mode if `menvcfg.STCE` is also set.
+
+        When `menvcfg.STCE` is zero:
+         * `henvcfg.STCE` reads-as-zero
+         * `vstimecmp` access raises an `IllegalInstruction` exception.
+         * `hip.VSTIP` reverts to its defined behavior as if Sstc is not implemented.
+         * VS-mode timer interrupts will not be generated
+
+        When `menvcfg.STCE` is one and `henvcfg.STCE` is zero:
+         * Accessing `stimecmp` in VS-mode or VU-mode (really `vstimecmp`) raises a VirtualInterrupt exception
+         * `hip.VSTIP` reverts to its defined behavior as if Sstc is not implemented.
+         * VS-mode timer interrupts will not be generated
+
+      definedBy: Sstc
+      type(): |
+        return (implemented?(ExtensionName::Sstc)) ? CsrFieldType::RO : CsrFieldType::RW;
+      reset_value(): |
+        return (implemented?(ExtensionName::Sstc)) ? UNDEFINED_LEGAL : 0;
+    PBMTE:
+      location: 30
+      alias: henvcfg.PBMTE
+      description: |
+        *Page Based Memory Type Enable*
+
+        The PBMTE bit controls whether the `Svpbmt` extension is available for use in VS-stage
+        address translation.
+        
+        When PBMTE=1, Svpbmt is available for VS-stage address translation.
+        
+        When PBMTE=0, the implementation behaves as though `Svpbmt` were not implemented for
+        VS-stage address translation.
+        
+        If `Svpbmt` is not implemented, PBMTE is read-only zero.
+
+        `henvcfg.PBMTE` is read-as-zero if `menvcfg.PBMTE` is zero.
+
+        If the setting of the PBMTE bit in `menvcfg` is changed, an `hfence.gvma` instruction with
+        _rs1_=_x0_ and _rs2_=_x0_ suffices to synchronize with respect to the altered interpretation
+        of G-stage and VS-stage PTEs' PBMT fields.
+
+        By contrast, if the PBMTE bit in `henvcfg` is changed, executing an `hfence.vvma` with 
+        _rs1_=_x0_ and _rs2_=_x0_ suffices to synchronize with respect to the altered interpretation
+        of VS-stage PTEs' PBMT fields for the currently active VMID.
+
+        [NOTE]
+        --
+        No mechanism is provided to atomically change `vsatp` and `hgatp` together.
+        Hence, to prevent speculative execution causing one guest's VS-stage translations to be
+        cached under another guest's VMID, world-switch code should zero `vsatp`, then swap `hgatp`,
+        then finally write the new `vsatp` value.
+        Similarly, if `henvcfg.PBMTE` need be world-switched, it should be switched after zeroing
+        `vsatp` but before writing the new `vsatp` value, obviating the need to execute an
+        `hfence.vvma` instruction.
+        --
+      definedBy: Svpbmt
+      type(): |
+        return (implemented?(ExtensionName::Svpbmt)) ? CsrFieldType::RO : CsrFieldType::RW;
+      reset_value(): |
+        return (implemented?(ExtensionName::Svpbmt)) ? UNDEFINED_LEGAL : 0;
+    ADUE:
+      location: 29
+      alias: henvcfg.ADUE
+      description: |
+        If the `Svadu` extension is implemented, the ADUE bit controls whether hardware updating of
+        PTE A/D bits is enabled for VS-stage address translation.
+        
+        When ADUE=1, hardware updating of PTE A/D bits is enabled during VS-stage address
+        translation, and the implementation behaves as though the Svade extension were not
+        implemented for VS-mode address translation.
+        
+        When ADUE=0, the implementation behaves as though Svade were implemented for VS-stage
+        address translation.
+        
+        If Svadu is not implemented, ADUE is read-only zero.
+
+        Furthermore, for implementations with the hypervisor extension, henvcfg.ADUE is read-only
+        zero if menvcfg.ADUE is zero.
+      definedBy: Svadu
+      type(): |
+        return (implemented?(ExtensionName::Svadu)) ? CsrFieldType::RO : CsrFieldType::RW;
+      reset_value(): |
+        return (implemented?(ExtensionName::Svadu)) ? UNDEFINED_LEGAL : 0;
+  sw_read(): |
+    return CSR[henvcfg].sw_read()[63:32];

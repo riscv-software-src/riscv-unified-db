@@ -34,29 +34,6 @@
       },
       "additionalProperties": false
     },
-    "requires_entry": {
-      "oneOf": [
-        { "$ref": "schema_defs.json#/$defs/extension_requirement" },
-        {
-          "type": "object",
-          "properties": {
-            "anyOf": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/requires_entry"
-              }
-            },
-            "allOf": {
-              "type": "array",
-              "items": {
-                "$ref": "#/$defs/requires_entry"
-              }
-            },
-            "additionalProperties": false
-          }
-        }
-      ]
-    },
     "ext_data": {
       "type": "object",
       "required": ["description", "long_name", "versions"],
@@ -106,6 +83,13 @@
           "additionalProperties": false
         },
         "type": { "enum": ["unprivileged", "privileged"] },
+        "conflicts": {
+          "description": "Extension(s) that conflict with this extension; both cannot be implemented at the same time",
+          "oneOf": [
+            { "$ref": "schema_defs.json#/$defs/extension_requirement" },
+            { "type": "array", "items": { "$ref": "schema_defs.json#/$defs/extension_requirement" }}
+          ]
+        },
         "versions": {
           "type": "array",
           "items": {
@@ -161,14 +145,7 @@
               },
               "requires": {
                 "description": "Extension(s) required by this extension",
-                "$ref": "#/$defs/requires_entry"
-              },
-              "conflicts": {
-                "description": "Extension(s) that conflict with this extension; both cannot be implemented at the same time",
-                "oneOf": [
-                  { "$ref": "schema_defs.json#/$defs/extension_requirement" },
-                  { "type": "array", "items": { "$ref": "schema_defs.json#/$defs/extension_requirement" }}
-                ]
+                "$ref": "schema_defs.json#/$defs/requires_entry"
               },
               "contributors": {
                 "description": "List of contributors to this version of the extension",
@@ -276,6 +253,10 @@
             }
           },
           "additionalProperties": false
+        },
+        "__source": {
+          "type": "string",
+          "description": "Source file where this extension was defined"
         }
       },
       "additionalProperties": false

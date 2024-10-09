@@ -13,9 +13,13 @@ def arch_def_for(config_name)
 
   @arch_defs[config_name] =
     if config_name == "_"
-      ArchDef.new
+      ArchDef.new("_", $root / "gen" / "_" / "arch" / "arch_def.yaml")
     else
-      ImplArchDef.new(config_name)
+      ArchDef.new(
+        config_name,
+        $root / "gen" / config_name / "arch" / "arch_def.yaml",
+        overlay_path: $root / "cfgs" / config_name / "arch_overlay"
+      )
     end
 end
 
@@ -87,14 +91,14 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
     # TODO: schema validation
     manual_hash[manual_id]["versions"].last["__source"] = f
   end
-  csc_crd_family_hash = Dir.glob($root / "arch" / "csc_crd_family" / "**" / "*.yaml").map do |f|
+  crd_family_hash = Dir.glob($root / "arch" / "crd_family" / "**" / "*.yaml").map do |f|
     family_obj = YAML.load_file(f, permitted_classes: [Date])
     family_name = family_obj.keys[0]
     family_obj[family_name]["name"] = family_name
     family_obj[family_name]["__source"] = f
     [family_name, family_obj[family_name]]
   end.to_h
-  csc_crd_hash = Dir.glob($root / "arch" / "csc_crd" / "**" / "*.yaml").map do |f|
+  crd_hash = Dir.glob($root / "arch" / "crd" / "**" / "*.yaml").map do |f|
     crd_obj = YAML.load_file(f, permitted_classes: [Date])
     crd_name = crd_obj.keys[0]
     crd_obj[crd_name]["name"] = crd_name
@@ -103,14 +107,15 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
   end.to_h
 
   arch_def = {
+    "type" => "unconfigured",
     "instructions" => inst_hash,
     "extensions" => ext_hash,
     "csrs" => csr_hash,
     "profile_families" => profile_family_hash,
     "profiles" => profile_hash,
     "manuals" => manual_hash,
-    "csc_crd_families" => csc_crd_family_hash,
-    "csc_crds" => csc_crd_hash
+    "crd_families" => crd_family_hash,
+    "crds" => crd_hash
   }
 
   dest = "#{$root}/gen/_/arch/arch_def.yaml"

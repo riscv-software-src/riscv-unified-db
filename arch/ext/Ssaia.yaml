@@ -9,4 +9,6 @@ Ssaia:
     state: ratified
     ratification_date: 2023-06
     url: https://github.com/riscv/riscv-aia/releases/download/1.0/riscv-interrupts-1.0.pdf
-    requires: [S, ">= 1.12"]
+    requires:
+      name: S
+      version: ">= 1.12"

@@ -8,7 +8,8 @@ slli.uw:
 
     [NOTE]
     This instruction is the same as `slli` with `zext.w` performed on rs1 before shifting.
-  definedBy: [B, Zba]
+  definedBy:
+    anyOf: [B, Zba]
   base: 64
   encoding:
     match: 0000010----------001-----0011011

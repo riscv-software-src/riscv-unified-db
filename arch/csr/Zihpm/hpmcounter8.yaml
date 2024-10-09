@@ -5,7 +5,7 @@
 
 
 hpmcounter8:
-  long_name: Cycle counter for RDCYCLE Instruction
+  long_name: User-mode Hardware Performance Counter 5
   address: 0xC08
   description: |
     Alias for M-mode CSR `mhpmcounter8`.

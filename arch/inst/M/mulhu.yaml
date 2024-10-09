@@ -14,7 +14,8 @@ mulhu:
     ---
 
     Microarchitectures may look for that sequence and fuse the operations.
-  definedBy: [M, Zmmul]
+  definedBy:
+    anyOf: [M, Zmmul]
   assembly: xd, xs1, xs2
   encoding:
     match: 0000001----------011-----0110011

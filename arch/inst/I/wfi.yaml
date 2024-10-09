@@ -27,13 +27,13 @@ wfi:
 
     [%autowidth,%footer]
     |===
-    .2+| [.rotate]#`mstatus.TW`# 4+^.>| `wfi` behavior
+    .2+| [.rotate]#`mstatus.TW`# 2+^.>| `wfi` behavior
     h| S-mode h| U-mode
 
     | 0 | Wait | Trap (I)
     | 1 | Trap (I) | Trap (I)
 
-    4+| Trap (I) - Trap with `Illegal Instruction` code
+    3+| Trap (I) - Trap with `Illegal Instruction` code
     |===
 
     <%- end -%>
@@ -74,13 +74,13 @@ wfi:
 
     [%autowidth,%footer]
     |===
-    .2+| [.rotate]#`mstatus.TW`# 4+^.>| `wfi` behavior
+    .2+| [.rotate]#`mstatus.TW`# 2+^.>| `wfi` behavior
     h| S-mode h| U-mode
 
     | 0 | Wait | Trap (I)
     | 1 | Trap (I) | Trap (I)
 
-    4+| Trap (I) - Trap with `Illegal Instruction` code
+    3+| Trap (I) - Trap with `Illegal Instruction` code
     |===
 
     <%- end -%>

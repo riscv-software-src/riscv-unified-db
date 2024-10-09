@@ -8,7 +8,8 @@ amoswap.d:
        * Load the doubleword at address _rs1_
        * Write the value into _rd_
        * Store the value of register _rs2_ to the address in _rs1_
-  definedBy: [A, Zaamo]
+  definedBy:
+    anyOf: [A, Zaamo]
   base: 64
   assembly: xd, xs2, (xrs1)
   encoding:

@@ -7,7 +7,8 @@ clzw:
     Accordingly, if the least-significant word is 0, the output is 32, and if the most-significant
     bit of the word (_i.e._, bit 31) is a 1, the output is 0.
   base: 64
-  definedBy: [B, Zbb]
+  definedBy:
+    anyOf: [B, Zbb]
   assembly: xd, xs1
   encoding:
     match: 011000000000-----001-----0011011

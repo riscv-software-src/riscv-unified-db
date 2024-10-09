@@ -3,7 +3,7 @@
 <%- raise "'hpm_num' must be defined" if hpm_num.nil? -%>
 
 hpmcounter<%= hpm_num %>h:
-  long_name: Cycle counter for RDCYCLE Instruction, high half
+  long_name: User-mode Hardware Performance Counter <%= hpm_num - 3 %>, high half
   address: 0x<%= (0xC83 + (hpm_num - 3)).to_s(16).upcase %>
   description: |
     Alias for M-mode CSR `mhpmcounter<%= hpm_num %>h`.

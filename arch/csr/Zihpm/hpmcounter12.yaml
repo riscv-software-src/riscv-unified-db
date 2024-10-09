@@ -5,7 +5,7 @@
 
 
 hpmcounter12:
-  long_name: Cycle counter for RDCYCLE Instruction
+  long_name: User-mode Hardware Performance Counter 9
   address: 0xC0C
   description: |
     Alias for M-mode CSR `mhpmcounter12`.

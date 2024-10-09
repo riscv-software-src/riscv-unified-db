@@ -4,7 +4,8 @@ clmulh:
   long_name: Carry-less multiply (high-part)
   description: |
     `clmulh` produces the upper half of the 2*XLEN carry-less product
-  definedBy: [B, Zbc]
+  definedBy:
+    anyOf: [B, Zbc]
   assembly: xd, xs1, xs2
   encoding:
     match: 0000101----------011-----0110011

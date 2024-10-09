@@ -12,7 +12,8 @@ fsh:
 
     `fsh` is only guaranteed to execute atomically if the effective address is naturally aligned.
 
-  definedBy: [Zfh, Zfhmin]
+  definedBy:
+    anyOf: [Zfh, Zfhmin]
   assembly: fs2, imm(xs1)
   encoding:
     match: -----------------001-----0100111

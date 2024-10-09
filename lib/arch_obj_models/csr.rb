@@ -56,7 +56,7 @@ class Csr < ArchDefObject
       end
   end
 
-  # @param arch_def [ImplArchDef] A configuration
+  # @param arch_def [ArchDef] A configuration
   # @return [Array<Idl::FunctionDefAst>] List of functions reachable from this CSR's sw_read or a field's sw_wirte function
   def reachable_functions(arch_def)
     return @reachable_functions unless @reachable_functions.nil?
@@ -111,47 +111,23 @@ class Csr < ArchDefObject
   def dynamic_length?(arch_def)
     return false if @data["length"].is_a?(Integer)
 
+    # when a CSR is only defined in one base, its length can't change
+    return false unless @data["base"].nil?
+
     case @data["length"]
     when "MXLEN"
-      if arch_def.is_a?(ImplArchDef)
-        false # mxlen can never change
-      else
-        if @data["base"].nil?
-          # don't know MXLEN
-          true
-        else
-          # mxlen is always "base"
-          false
-        end
-      end
+      # mxlen can never change at runtime, so if we have it in the config, the length is not dynamic
+      # if we don't have it in the config, we don't know what the length is
+      return arch_def.mxlen.nil?
     when "SXLEN"
-      if arch_def.is_a?(ImplArchDef)
-        arch_def.param_values["SXLEN"] == 3264
-      else
-        if @data["base"].nil?
-          # don't know SXLEN
-          true
-        else
-          # sxlen is always "base"
-          false
-        end
-      end
+      # dynamic if either we don't know SXLEN or SXLEN is explicitly mutable
+      [nil, 3264].include?(arch_def.param_values["SXLEN"])
     when "VSXLEN"
-      if arch_def.is_a?(ImplArchDef)
-        arch_def.param_values["VSXLEN"] == 3264
-      else
-        if @data["base"].nil?
-          # don't know VSXLEN
-          true
-        else
-          # vsxlen is always "base"
-          false
-        end
-      end
+      # dynamic if either we don't know VSXLEN or VSXLEN is explicitly mutable
+      [nil, 3264].include?(arch_def.param_values["VSXLEN"])
     else
       raise "Unexpected length"
     end
-    # !@data["length"].is_a?(Integer) && (@data["length"] != "MXLEN")
   end
 
   # @param arch_def [ArchDef] Architecture definition
@@ -183,63 +159,45 @@ class Csr < ArchDefObject
   # @param arch_def [ArchDef] A configuration (can be nil if the lenth is not dependent on a config parameter)
   # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
   # @return [Integer] Length, in bits, of the CSR, given effective_xlen
+  # @return [nil] if the length cannot be determined from the arch_def (e.g., because SXLEN is unknown and +effective_xlen+ was not provided)
   def length(arch_def, effective_xlen = nil)
     case @data["length"]
     when "MXLEN"
-      if arch_def.is_a?(ImplArchDef)
-        arch_def.param_values["XLEN"]
-      else
-        if !@data["base"].nil?
-          @data["base"]
-        else
-          # don't know MXLEN
-          raise ArgumentError, "for CSR #{name}: effective_xlen is required when length is MXLEN and arch_def is generic" if effective_xlen.nil?
+      return arch_def.mxlen unless arch_def.mxlen.nil?
 
-          effective_xlen
-        end
+      if !@data["base"].nil?
+        @data["base"]
+      else
+        # don't know MXLEN
+        effective_xlen
       end
     when "SXLEN"
-      if arch_def.is_a?(ImplArchDef)
+      if arch_def.param_values.key?("SXLEN")
         if arch_def.param_values["SXLEN"] == 3264
-          raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
-
           effective_xlen
         else
-          raise "CSR #{name} is not implemented" if arch_def.implemented_csrs.none? { |c| c.name == name }
-          raise "CSR #{name} is not implemented" if arch_def.param_values["SXLEN"].nil?
-
           arch_def.param_values["SXLEN"]
         end
+      elsif !@data["base"].nil?
+        # if this CSR is only available in one base, then we know its length
+        @data["base"]
       else
-        if !@data["base"].nil?
-          @data["base"]
-        else
-          # don't know SXLEN
-          raise ArgumentError, "effective_xlen is required when length is SXLEN and arch_def is generic" if effective_xlen.nil?
-
-          effective_xlen
-        end
+        # don't know SXLEN
+        effective_xlen
       end
     when "VSXLEN"
-      if arch_def.is_a?(ImplArchDef)
+      if arch_def.param_values.key?("VSXLEN")
         if arch_def.param_values["VSXLEN"] == 3264
-          raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
-
           effective_xlen
         else
-          raise "CSR #{name} is not implemented" if arch_def.param_values["VSXLEN"].nil?
-
           arch_def.param_values["VSXLEN"]
         end
+      elsif !@data["base"].nil?
+        # if this CSR is only available in one base, then we know its length
+        @data["base"]
       else
-        if !@data["base"].nil?
-          @data["base"]
-        else
-          # don't know VSXLEN
-          raise ArgumentError, "effective_xlen is required when length is VSXLEN and arch_def is generic" if effective_xlen.nil?
-
-          effective_xlen
-        end
+        # don't know VSXLEN
+        effective_xlen
       end
     when Integer
       @data["length"]
@@ -250,37 +208,26 @@ class Csr < ArchDefObject
 
   # @return [Integer] The largest length of this CSR in any valid mode/xlen for the config
   def max_length(arch_def)
+    return @data["base"] unless @data["base"].nil?
+
     case @data["length"]
     when "MXLEN"
-      if arch_def.is_a?(ImplArchDef)
-        arch_def.param_values["XLEN"]
-      else
-        64
-      end
+      arch_def.mxlen || 64
     when "SXLEN"
-      if arch_def.is_a?(ImplArchDef)
+      if arch_def.param_values.key?("SXLEN")
         if arch_def.param_values["SXLEN"] == 3264
-          raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
-
           64
         else
-          raise "CSR #{name} is not implemented" if arch_def.implemented_csrs.none? { |c| c.name == name }
-          raise "CSR #{name} is not implemented" if arch_def.param_values["SXLEN"].nil?
-
           arch_def.param_values["SXLEN"]
         end
       else
         64
       end
     when "VSXLEN"
-      if arch_def.is_a?(ImplArchDef)
+      if arch_def.param_values.key?("VSXLEN")
         if arch_def.param_values["VSXLEN"] == 3264
-          raise ArgumentError, "effective_xlen is required when length is dynamic (#{name})" if effective_xlen.nil?
-
           64
         else
-          raise "CSR #{name} is not implemented" if arch_def.param_values["VSXLEN"].nil?
-
           arch_def.param_values["VSXLEN"]
         end
       else
@@ -551,21 +498,19 @@ class Csr < ArchDefObject
   # @param arch_def [ArchDef] A configuration
   # @param effective_xlen [Integer,nil] Effective XLEN to use when CSR length is dynamic
   # @return [Hash] A representation of the WaveDrom drawing for the CSR (should be turned into JSON for wavedrom)
-  def wavedrom_desc(arch_def, effective_xlen)
+  def wavedrom_desc(arch_def, effective_xlen, exclude_unimplemented: false)
     desc = {
       "reg" => []
     }
     last_idx = -1
+
     field_list =
-      if arch_def.is_a?(ImplArchDef)
+      if exclude_unimplemented
         implemented_fields_for(arch_def, effective_xlen)
       else
-        fields.select do |f|
-          effective_xlen.nil? || \
-            ((effective_xlen == 32) && f.defined_in_base32?) || \
-            ((effective_xlen == 64) && f.defined_in_base64?)
-        end
+        fields_for(effective_xlen)
       end
+
     field_list.sort! { |a, b| a.location(arch_def, effective_xlen).min <=> b.location(arch_def, effective_xlen).min }
     field_list.each do |field|
 

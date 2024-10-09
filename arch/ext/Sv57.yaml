@@ -9,4 +9,6 @@ Sv57:
     state: ratified
     ratification_date: unknown
     url: https://github.com/riscv/riscv-isa-manual/releases/download/Priv-v1.12/riscv-privileged-20211203.pdf
-    requires: [Sv48, ">= 1.12"]
+    requires:
+      name: Sv48
+      version: ">= 1.12"

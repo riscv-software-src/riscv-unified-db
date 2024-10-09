@@ -4,7 +4,8 @@ xnor:
   long_name: Exclusive NOR
   description: |
     This instruction performs the bit-wise exclusive-NOR operation on rs1 and rs2.
-  definedBy: [B, Zbb, Zbkb]
+  definedBy:
+    anyOf: [B, Zbb, Zbkb]
   assembly: xd, xs1, xs2
   encoding:
     match: 0100000----------100-----0110011

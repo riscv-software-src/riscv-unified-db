@@ -16,7 +16,8 @@ cpopw:
     function `__builtin_popcountl (unsigned long x)` for LP64 is
     implemented by cpop on RV64.
     ----
-  definedBy: [B, Zbb]
+  definedBy:
+    anyOf: [B, Zbb]
   base: 64
   assembly: xd, xs1
   encoding:

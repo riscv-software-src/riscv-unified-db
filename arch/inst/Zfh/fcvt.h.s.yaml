@@ -2,7 +2,8 @@
 
 fcvt.h.s:
   long_name: Convert half-precision float to a single-precision float
-  definedBy: [Zfh, Zfhmin]
+  definedBy:
+    anyOf: [Zfh, Zfhmin]
   assembly: fd, xs1
   description: |
     Converts a half-precision number in floating-point register _fs1_ into a single-precision floating-point number in

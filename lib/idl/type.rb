@@ -172,15 +172,17 @@ module Idl
 
       case @kind
       when :boolean
-        return type.kind == :boolean
+        type.kind == :boolean
       when :enum_ref
-        return type.kind == :enum_ref && type.name == @enum_class.name
+        type.kind == :enum_ref && type.name == @enum_class.name
       when :dontcare
-        return true
+        true
       when :bits
-        return type.kind == :bits && type.width == @width
+        type.kind == :bits && type.width == @width
       when :string
-        return type.kind == :string && type.width == @width
+        type.kind == :string && type.width == @width
+      when :array
+        type.kind == :array && type.sub_type.equal_to?(@sub_type)
       else
         raise "unimplemented type '#{@kind}'"
       end

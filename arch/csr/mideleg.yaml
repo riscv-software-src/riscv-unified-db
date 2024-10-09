@@ -6,9 +6,16 @@ mideleg:
   priv_mode: M
   length: MXLEN
   definedBy:
-  # after 1.9.1, mideleg does not exist whe S-mode is not implemented
-  - [S, "> 1.9.1"]
-  - [M, "< 1.0"]
+    # after 1.9.1, mideleg does not exist whe S-mode is not implemented
+    # we can represent that by making mideleg an S extension CSR post 1.9.1
+    oneOf:
+    - name: Sm
+      version: "<= 1.9.1"
+    - allOf:
+      - name: S
+        version: "> 1.9.1"
+      - name: Sm
+        version: "> 1.9.1"
   description: |
     Controls exception delegation from M-mode to HS/S-mode
 

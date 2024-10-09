@@ -6,7 +6,8 @@ add.uw:
   description: |
     This instruction performs an XLEN-wide addition between rs2 and the
     zero-extended least-significant word of rs1.
-  definedBy: [B, Zba]
+  definedBy:
+    anyOf: [B, Zba]
   assembly: xd, xs1, xs2
   encoding:
     match: 0000100----------000-----0111011

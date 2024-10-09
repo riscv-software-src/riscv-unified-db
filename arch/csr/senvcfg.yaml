@@ -6,7 +6,11 @@ senvcfg:
   description: Contains bits to enable/disable extensions
   priv_mode: S
   length: 64
-  definedBy: S
+  definedBy:
+    allOf:
+      - name: Sm
+        version: ">=1.12"
+      - name: S
   fields:
     CBZE:
       location: 7

@@ -5,7 +5,8 @@ sext.h:
   description: |
     This instruction sign-extends the least-significant halfword in the source to XLEN by copying the
     most-significant bit in the halfword (i.e., bit 15) to all of the more-significant bits.
-  definedBy: [B, Zbb]
+  definedBy:
+    anyOf: [B, Zbb]
   assembly: xd, xs1
   encoding:
     match: 011000000101-----001-----0010011

@@ -1,4 +1,3 @@
-
 // Number heading sections (e.g., 1.0, 1.1, etc.)
 :sectnums:  
 
@@ -74,34 +73,129 @@ a| <%- rev.changes.each do |change| %>
 
 |===
 
-== Extension Requirements
+== Summary
 
-=== Summary
+=== Extensions
 
 The following table lists all extensions that are IN-SCOPE (i.e., MANDATORY or OPTIONAL).
 Any extension not listed in the table below is OUT-OF-SCOPE.
 
 [%autowidth]
 |===
-| Requirement ID | Extension | Version Requirement | Status | Long Name
+| Requirement ID | Extension | Status | Long Name
 
-<%- crd.extension_reqs.sort.each do |ext_req| -%>
-<%- ext = crd.arch_def.extension(ext_req.name) -%>
-| <%= ext_req.req_id %>
-| <<anchor-ext-requirement-<%= ext_req.name %>,<%= ext_req.name %>>> 
-| <%= ext_req.version_requirement %>
+<%- crd.in_scope_ext_reqs.sort.each do |ext_req| -%>
+<%- ext_db = crd.extension_from_db(ext_req.name) -%>
+| <<<%= ext_req.req_id %>-def,<%= ext_req.req_id %>>> 
+| <<ext-<%= ext_req.name %>-def,<%= ext_req.name %>>> 
 | <%= ext_req.status.upcase %>
-| <%= ext.nil? ? "" : ext.long_name %>
+| <%= ext_db.nil? ? "" : ext_db.long_name %>
 <%- end -%>
 |===
 
-<%- crd.extension_reqs.sort.each do |ext_req| -%>
-<%- ext = crd.arch_def.extension(ext_req.name) -%>
+=== Supported Options
 
-[[anchor-ext-requirement-<%= ext_req.name %>]]
+These implementation-dependent options are defined by MANDATORY or OPTIONAL extensions and are IN-SCOPE.
+An implementation must abide by the allowed values to obtain a certificate. 
+
+<%- if crd.all_in_scope_ext_params.empty? -%>
+None
+<%- else -%>
+[%autowidth]
+|===
+| Option | Extension(s)
+
+<%- crd.all_in_scope_ext_params.sort.each do |in_scope_ext_param| -%>
+| <%= in_scope_ext_param.name %>
+| <%- crd.all_in_scope_exts_with_param(in_scope_ext_param.param_db).sort.each do |ext_db| -%><<ext-<%= ext_db.name %>-param-<%= in_scope_ext_param.name %>-def,<%= ext_db.name %>>> <%- end # do ext_db -%>
+
+<%- end # do -%>
+|===
+<%- end # if table -%>
+
+=== Unsupported Options
+
+These implementation-dependent options are defined by MANDATORY or OPTIONAL extensions are OUT-OF-SCOPE. 
+There are no restrictions on their values for certification purposes because the certificate 
+doesn't certify the results as a function of these options.
+
+<%- if crd.all_out_of_scope_params.empty? -%>
+None
+<%- else -%>
+[%autowidth]
+|===
+| Option | Extension(s)
+
+<%- crd.all_out_of_scope_params.sort.each do |param_db| -%>
+| <%= param_db.name %>
+| <%- crd.all_in_scope_exts_without_param(param_db).sort.each do |ext_db| -%><<ext-<%= ext_db.name %>-param-<%= param_db.name %>-def,<%= ext_db.name %>>> <%- end # do ext_db -%>
+
+<%- end # do -%>
+|===
+<%- end # if table -%>
+
+=== Instructions
+
+<%-
+  insts = crd.in_scope_extensions.map { |ext_crd| ext_crd.instructions }.flatten.uniq
+  insts.sort_by!(&:name)
+-%>
+
+[%autowidth]
+|===
+| Name | Long Name
+
+<%- insts.each do |inst| -%>
+| <%= link_to_inst(inst.name) %>
+| <%= inst.long_name %>
+<%- end # do -%>
+|===
+
+=== CSRs
+
+<%-
+  csrs = crd.in_scope_extensions.map { |ext_crd| ext_crd.csrs }.flatten.uniq
+-%>
+
+==== By Name
+
+[%autowidth]
+|===
+| Name | Long Name | Address | Mode | Primary Extension
+
+<%- csrs.sort_by!(&:name).each do |csr| -%>
+| <<csr-<%= csr.name %>-def,<%= csr.name %>>>
+| <%= csr.long_name %>
+| <%= "0x#{csr.address.to_s(16)}" %>
+| <%= csr.priv_mode %>
+| <%= csr.primary_defined_by %>
+<%- end # do -%>
+|===
+
+==== By Address
+
+[%autowidth]
+|===
+| Address | Mode | Name | Long Name | Primary Extension
+
+<%- csrs.sort_by!(&:address).each do |csr| -%>
+| <%= "0x#{csr.address.to_s(16)}" %>
+| <%= csr.priv_mode %>
+| <<csr-<%= csr.name %>-def,<%= csr.name %>>>
+| <%= csr.long_name %>
+| <%= csr.primary_defined_by %>
+<%- end # do -%>
+|===
+
+== Extension Requirements
+
+<%- crd.in_scope_ext_reqs.sort.each do |ext_req| -%>
+<%- ext_db = crd.extension_from_db(ext_req.name) -%>
+
+[[<%= ext_req.req_id %>-def]]
 === Extension <%= ext_req.name %> +
 *Requirement ID*: <%= ext_req.req_id %> +
-<%= ext.nil? ? "" : "*Long Name*: " + ext.long_name + " +" %>
+<%= ext_db.nil? ? "" : "*Long Name*: " + ext_db.long_name + " +" %>
 *Version Requirement*: <%= ext_req.version_requirement %> +
 *Status*: <%= ext_req.status.upcase %> +
 <%- unless ext_req.note.nil? -%>
@@ -111,34 +205,36 @@ Any extension not listed in the table below is OUT-OF-SCOPE.
 --
 <%- end -%>
 
-<%- unless crd.param_constraints(ext_req).empty? -%>
-.<%= ext_req.name %> Extension IN-SCOPE Parameters
+<%- unless crd.in_scope_ext_params(ext_req).empty? -%>
+.<%= ext_req.name %> Extension IN-SCOPE Options
 [cols="3,1,2"]
 |===
-| Parameter | Constraint | Note
-<%- crd.param_constraints(ext_req).sort.each do |constraint| -%>
-| <<anchor-ext-<%= ext_req.name %>-param-<%= constraint.param_db.name %>,<%= constraint.param_db.name %>>> 
-| <%= constraint.schema_constraint_pretty %>
-a| <%= constraint.note %>
-<%- end # do constraint -%>
+| Option | Constraint | Note
+
+<%- crd.in_scope_ext_params(ext_req).sort.each do |ext_param| -%>
+| <<ext-<%= ext_req.name %>-param-<%= ext_param.name %>-def,<%= ext_param.name %>>> 
+| <%= ext_param.schema_constraint_pretty %>
+a| <%= ext_param.note %>
+<%- end # do ext_param -%>
 |===
 <%- end # unless table -%>
 
 <%- unless crd.out_of_scope_params(ext_req.name).empty? -%>
-.<%= ext_req.name %> Extension OUT-OF-SCOPE Parameters
+.<%= ext_req.name %> Extension OUT-OF-SCOPE Options
 [%autowidth]
 |===
-| Parameter
+| Option
+
 <%- crd.out_of_scope_params(ext_req.name).sort.each do |param_db| -%>
-| <<anchor-ext-<%= ext_req.name %>-param-<%= param_db.name %>,<%= param_db.name %>>> 
-<%- end # do constraint -%>
+| <<ext-<%= ext_req.name %>-param-<%= param_db.name %>-def,<%= param_db.name %>>> 
+<%- end # do -%>
 |===
 <%- end # unless table -%>
 <%- end # do extension-%>
 
 == Additional Requirements
 
-This section contains requirements in addition to those already specified related to extensions and parameters.
+This section contains requirements in addition to those already specified related to extensions and options.
 These additional requirements are organized as groups of related requirements.
 
 <%- crd.requirement_groups.each do |group| -%>
@@ -169,15 +265,16 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 
 [appendix]
 == Extension Specifications
-<%- crd.extension_reqs.sort.each do |ext_req| -%>
-<%- ext = crd.arch_def.extension(ext_req.name) -%>
+<%- crd.in_scope_ext_reqs.sort.each do |ext_req| -%>
+<%- ext_db = crd.extension_from_db(ext_req.name) -%>
 
+[[ext-<%= ext_req.name %>-def]]
 === Extension <%= ext_req.name %> +
-<%= ext.nil? ? "" : "*Long Name*: " + ext.long_name + " +" %>
+<%= ext_db.nil? ? "" : "*Long Name*: " + ext_db.long_name + " +" %>
 
 *Version Requirement*: <%= ext_req.version_requirement %> +
 
-<%- ext.versions.each do |v| -%>
+<%- ext_db.versions.each do |v| -%>
 <%= v["version"] %>::
   Ratification date:::
     <%= v["ratification_date"] %>
@@ -206,7 +303,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 
 :leveloffset: +3
 
-<%= ext.description %>
+<%= ext_db.description %>
 
 :leveloffset: -3
 
@@ -217,7 +314,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 --
 <%- end -%>
 
-<%- insts = crd.arch_def.instructions.select { |i| i.definedBy == ext.name || i.definedBy.include?(ext.name) } -%>
+<%- insts = crd.arch_def.instructions.select { |i| i.definedBy == ext_db.name || i.definedBy.include?(ext_db.name) } -%>
 <%- unless insts.empty? -%>
 ==== Instructions
 
@@ -226,35 +323,36 @@ The following instructions are added by this extension:
 [cols="1,3"]
 |===
 <%- insts.each do |inst| -%>
- | <%= "`#{inst.name}`" %> | *<%= inst.long_name %>*
+| <%= link_to_inst(inst.name) %>
+| *<%= inst.long_name %>*
 <%- end -%>
 |===
 <%- end -%>
 
-<%- unless crd.param_constraints(ext_req).empty? -%>
-==== IN-SCOPE Parameters
+<%- unless crd.in_scope_ext_params(ext_req).empty? -%>
+==== IN-SCOPE Options
 
-<%- crd.param_constraints(ext_req).sort.each do |constraint| -%>
-[[anchor-ext-<%= ext_req.name %>-param-<%= constraint.param_db.name %>]]
-<%= constraint.param_db.name %>::
+<%- crd.in_scope_ext_params(ext_req).sort.each do |ext_param| -%>
+[[ext-<%= ext_req.name %>-param-<%= ext_param.name %>-def]]
+<%= ext_param.name %>::
 +
 --
-<%= constraint.param_db.desc %>
+<%= ext_param.param_db.desc %>
 --
-<%- end # do constraint -%>
+<%- end # do ext_param -%>
 <%- end # unless table -%>
 
 <%- unless crd.out_of_scope_params(ext_req.name).empty? -%>
-==== OUT-OF-SCOPE Parameters
+==== OUT-OF-SCOPE Options
 
 <%- crd.out_of_scope_params(ext_req.name).sort.each do |param_db| -%>
-[[anchor-ext-<%= ext_req.name %>-param-<%= param_db.name %>]]
+[[ext-<%= ext_req.name %>-param-<%= param_db.name %>-def]]
 <%= param_db.name %>::
 +
 --
 <%= param_db.desc %>
 --
-<%- end # do constraint -%>
+<%- end # do param_db -%>
 <%- end # unless table -%>
 <%- end # do ext_req -%>
 
@@ -262,31 +360,20 @@ The following instructions are added by this extension:
 == Instruction Specifications
 
 <%=
-  insts = crd.extensions.map { |ext| ext.instructions }.flatten.uniq
+  insts = crd.in_scope_extensions.map { |ext_crd| ext_crd.instructions }.flatten.uniq
   insts.sort_by!(&:name)
 -%>
 
 <%- insts.each do |inst| -%>
 <<<
-[[inst-<%=inst.name.gsub('.', '_')%>-def]]
+<%= anchor_for_inst(inst.name) %>
 === <%= inst.name %>
 
 *<%= inst.long_name %>*
 
-This instruction is defined by<%- if inst.defined_by.size > 1 -%> any of the following<%- end -%>:
+This instruction is defined by:
 
-  <%- inst.defined_by.each do |ext| -%>
-  * `<%= ext.name %>`, `<%= ext.version_requirement %>`
-  <%- end -%>
-
-<%- unless inst.extension_requirements.empty? -%>
-Additionally, this instruction is only defined if the following <%- if inst.extension_requirements.size == 1 -%>extension is<%- else -%>extensions are<%- end -%> also present and active:
-
-  <%- inst.extension_requirements.each do |ext| -%>
-  * `<%= ext.name %>`, `<%= ext.version_requirement %>`
-  <%- end -%>
-
-<%- end -%>
+<%= inst.defined_by.to_asciidoc %>
 
 ==== Encoding
 
@@ -294,7 +381,6 @@ Additionally, this instruction is only defined if the following <%- if inst.exte
 [NOTE]
 This instruction has different encodings in RV32 and RV64.
 
-[tabs]
 ====
 RV32::
 +
@@ -322,18 +408,18 @@ RV64::
 <%= inst.description %>
 
 ==== Access
-<%- if crd.extensions.any? { |e| e.name == "H" } -%>
+<%- if crd.in_scope_extensions.any? { |e| e.name == "H" } -%>
 [cols="^,^,^,^,^"]
 <%- else -%>
 [cols="^,^,^"]
 <%- end -%>
 |===
-| M | <%- if crd.extensions.any? { |e| e.name == "H" } -%>HS<%- else -%>S<%- end -%> | U <%- if crd.extensions.any? { |e| e.name == "H" } -%> | VS | VU <%- end -%>
+| M | <%- if crd.in_scope_extensions.any? { |e| e.name == "H" } -%>HS<%- else -%>S<%- end -%> | U <%- if crd.in_scope_extensions.any? { |e| e.name == "H" } -%> | VS | VU <%- end -%>
 
 | [.access-always]#Always#
 | [.access-<%=inst.access['s']%>]#<%= inst.access['s'].capitalize %>#
 | [.access-<%=inst.access['u']%>]#<%= inst.access['u'].capitalize %>#
-<% if crd.extensions.any? { |e| e.name == "H" } %>
+<% if crd.in_scope_extensions.any? { |e| e.name == "H" } %>
 | [.access-<%=inst.access['vs']%>]#<%= inst.access['vs'].capitalize %>#
 | [.access-<%=inst.access['vu']%>]#<%= inst.access['vu'].capitalize %>#
 <% end %>
@@ -346,7 +432,6 @@ RV64::
 ==== Decode Variables
 
 <%- if inst.multi_encoding? -%>
-[tabs]
 ====
 RV32::
 +
@@ -409,7 +494,7 @@ This instruction may result in the following synchronous exceptions:
 == CSR Specifications
 
 <%-
-  csrs = crd.extensions.map { |ext| ext.csrs }.flatten.uniq
+  csrs = crd.in_scope_extensions.map { |ext_crd| ext_crd.csrs }.flatten.uniq
   csrs.sort_by!(&:name)
 -%>
 
@@ -436,7 +521,7 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <%- if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <%- end -%>
-h| Defining extension | <%= csr.defined_by.map(&:to_s).join(", ") %>
+h| Defining extension a| <%= csr.defined_by.to_asciidoc %>
 <%- if csr.dynamic_length?(crd.arch_def) -%>
 h| Length         | <%= csr.length_pretty(crd.arch_def) %>
 <%- else -%>
@@ -472,6 +557,6 @@ This CSR format changes dynamically with XLEN.
 ....
 
 
-<%- end -%>
+<%- end # unless dynamic length -%>
 
-<%- end -%>
+<%- end # do csrs -%>

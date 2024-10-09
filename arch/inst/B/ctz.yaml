@@ -8,7 +8,8 @@ ctz:
     to the most-significant bit (i.e., XLEN-1). Accordingly, if the
     input is 0, the output is XLEN, and if the least-significant bit
     of the input is a 1, the output is 0.
-  definedBy: [B, Zbb]
+  definedBy:
+    anyOf: [B, Zbb]
   assembly: xd, xs1
   encoding:
     match: 011000000001-----001-----0010011

@@ -5,7 +5,7 @@
 
 
 hpmcounter21:
-  long_name: Cycle counter for RDCYCLE Instruction
+  long_name: User-mode Hardware Performance Counter 18
   address: 0xC15
   description: |
     Alias for M-mode CSR `mhpmcounter21`.

@@ -5,7 +5,7 @@
 
 
 hpmcounter25:
-  long_name: Cycle counter for RDCYCLE Instruction
+  long_name: User-mode Hardware Performance Counter 22
   address: 0xC19
   description: |
     Alias for M-mode CSR `mhpmcounter25`.

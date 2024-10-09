@@ -4,7 +4,8 @@ ror:
   long_name: Rotate right (Register)
   description: |
     This instruction performs a rotate right of rs1 by the amount in least-significant `log2(XLEN)` bits of rs2.
-  definedBy: [B, Zbb, Zbkb]
+  definedBy:
+    anyOf: [B, Zbb, Zbkb]
   assembly: xd, xs1, xs2
   encoding:
     match: 0110000----------101-----0110011
