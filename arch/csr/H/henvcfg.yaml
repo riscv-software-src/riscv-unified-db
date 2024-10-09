@@ -89,7 +89,11 @@ henvcfg:
 
   priv_mode: S
   length: 64
-  definedBy: H
+  definedBy:
+    allOf:
+      - name: Sm
+        version: ">=1.12"
+      - name: H
   fields:
     STCE:
       location: 63

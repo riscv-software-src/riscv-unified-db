@@ -18,6 +18,9 @@ require_relative "arch_obj_models/csr"
 require_relative "arch_obj_models/instruction"
 require_relative "arch_obj_models/extension"
 require_relative "arch_obj_models/crd"
+require_relative "template_helpers"
+
+include TemplateHelpers
 
 class ArchDef
   # @return [Idl::Compiler] The IDL compiler

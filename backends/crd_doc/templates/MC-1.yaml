@@ -27,21 +27,23 @@ MC-1:
   priv_isa_manual_revision: "20190608-Priv-MSU-Ratified"
   debug_manual_revision: "0.13.2"
 
-# XXX - Remove version information since specifying priv/unpriv ISA manual should imply this.
+# extension_parameters_for_ext_req - Remove version information since specifying priv/unpriv ISA manual should imply this.
   extensions:
     mandatory:
     - name: I
       version: "~> 2.1"
     - name: C
       version: "~> 2.2"
+      parameters:
+          MUTABLE_MISA_C:
+            schema:
+              const: false
     - name: M
       version: "~> 2.0"
     - name: Zicsr
       version: "~> 2.0"
     - name: Zicntr
       version: "~> 2.0"
-      parameters:
-          TIME_CSR_IMPLEMENTED: {} # Unconstrained
     - name: Sm
       version: "~> 1.11"
       parameters:
@@ -52,6 +54,7 @@ MC-1:
           VENDOR_ID_BANK: {} # Unconstrained
           VENDOR_ID_OFFSET: {} # Unconstrained
           MISA_CSR_IMPLEMENTED: {} # Unconstrained
+          TIME_CSR_IMPLEMENTED: {} # Unconstrained
           MTVAL_WIDTH: {} # Unconstrained
           MTVEC_MODES: {} # Unconstrained
           PHYS_ADDR_WIDTH: {} # Unconstrained

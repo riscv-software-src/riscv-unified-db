@@ -195,14 +195,16 @@ class Crd < ArchDefObject
       @schema_constraint["const"]
     end
 
-    def schema_constraint_pretty
-      return "Unconstrained" if (@schema_constraint.nil? or @schema_constraint == "")
-      if @schema_constraint.key?("const")
-        "#{@schema_constraint["const"]}"
-      elsif @schema_constraint.key?("enum")
-        "One of: [#{@schema_constraint["enum"].join(', ')}]"
+    def schema_constraint_pretty(schema_constraint = @schema_constraint)
+      return "Unconstrained" if (schema_constraint.nil? or schema_constraint == "")
+      if schema_constraint.key?("const")
+        "#{schema_constraint["const"]}"
+      elsif schema_constraint.key?("enum")
+        "One of: [#{schema_constraint["enum"].join(', ')}]"
+      elsif schema_constraint.key?("contains")
+        "Contains : [#{schema_constraint_pretty(schema_constraint["contains"])}]"
       else
-        raise "TODO: Pretty schema for #{@schema_constraint}"
+        raise "TODO: Pretty schema for #{schema_constraint}"
       end
     end
 

@@ -38,6 +38,8 @@ MockCRD-1:
       version: "~> 2.0"
     - name: Zicntr
       version: "~> 2.0"
+      parameters:
+          TIME_CSR_IMPLEMENTED: {} # Unconstrained
     - name: Sm
       version: "~> 1.11"
       parameters:
@@ -50,6 +52,9 @@ MockCRD-1:
           MISA_CSR_IMPLEMENTED: {} # Unconstrained
           TIME_CSR_IMPLEMENTED: {} # Unconstrained
           MTVAL_WIDTH: {} # Unconstrained
+          MTVEC_MODES:
+            schema:
+              contains: { const : 0 }
           PHYS_ADDR_WIDTH: {} # Unconstrained
           PRECISE_SYNCHRONOUS_EXCEPTIONS:
             schema:
