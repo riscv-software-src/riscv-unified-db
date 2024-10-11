@@ -23,87 +23,112 @@ MockCRD-1:
 
 # XXX - Remove version information since specifying priv/unpriv ISA manual should imply this.
   extensions:
-    mandatory:
-    - name: I
-      version: "~> 2.1"
-    - name: C
-      version: "~> 2.2"
-      parameters:
-          MUTABLE_MISA_C:
-            schema:
-              const: false
-    - name: M
-      version: "~> 2.0"
-    - name: Zicsr
-      version: "~> 2.0"
-    - name: Zicntr
-      version: "~> 2.0"
-      parameters:
-          TIME_CSR_IMPLEMENTED: {} # Unconstrained
-    - name: Sm
-      version: "~> 1.11"
-      parameters:
-          MTVEC_BASE_ALIGNMENT_DIRECT: {} # Unconstrained
-          MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
-          ARCH_ID: {} # Unconstrained
-          IMP_ID: {} # Unconstrained
-          VENDOR_ID_BANK: {} # Unconstrained
-          VENDOR_ID_OFFSET: {} # Unconstrained
-          MISA_CSR_IMPLEMENTED: {} # Unconstrained
-          TIME_CSR_IMPLEMENTED: {} # Unconstrained
-          MTVAL_WIDTH: {} # Unconstrained
-          MTVEC_MODES:
-            schema:
-              contains: { const : 0 }
-          PHYS_ADDR_WIDTH: {} # Unconstrained
-          PRECISE_SYNCHRONOUS_EXCEPTIONS:
-            schema:
-              const: true
-          TRAP_ON_ECALL_FROM_M:
-            schema:
-              const: true
-          TRAP_ON_EBREAK:
-            schema:
-              const: true
-          REPORT_VA_IN_MTVAL_ON_BREAKPOINT:
-            schema:
-              const: true
-          REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT:
-            schema:
-              const: true
-          REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT:
-            schema:
-              const: true
-          REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT:
-            schema:
-              const: true
-          REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION:
-            schema:
-              const: true
-          M_MODE_ENDIANESS:
-            schema:
-              const: little
-          XLEN:
-            schema:
-              const: 32
-          CONFIG_PTR_ADDRESS:
-            schema:
-              const: 0
-    optional:
-    - name: Zifencei
-      note: "Here's a note for Zifencei"
-    - name: Zicbop
-      note: "Testing CACHE_BLOCK_SIZE parameter which is also defined by Zicbom."
-      parameters:
-          CACHE_BLOCK_SIZE:
-            schema:
-              const: 64
-    - name: Zicbom
-      note: "Testing CACHE_BLOCK_SIZE parameter which is also defined by Zicbop."
-      parameters:
-          CACHE_BLOCK_SIZE:
-            schema:
-              const: 64
+  - name: MockExt
+    status: mandatory
+    parameters:
+      MOCK_ENUM_2_INTS: {}
+      MOCK_ENUM_2_STRINGS: {}
+      MOCK_BOOL: {}
+      MOCK_64_BIT_INT: {}
+      MOCK_25_BIT_INT: {}
+      MOCK_INT_RANGE: {}
+      MOCK_INT_ENUM_ARRAY: {}
+      MOCK_BOOL_ARRAY_OF_8_FIRST_2_FALSE: {}
+      MOCK_STRING_ENUM_ARRAY:
+        schema:
+          contains: { const : DEF }
+  - name: I
+    version: "~> 2.1"
+    status: mandatory
+    note: Here's a note for the I extension.
+  - name: C
+    version: "~> 2.2"
+    status: mandatory
+    parameters:
+        MUTABLE_MISA_C:
+          schema:
+            const: false
+    note: |
+      Here's a multi-line note +
+      for the C extension.
+  - name: M
+    status: mandatory
+    version: "~> 2.0"
+  - name: Zicsr
+    version: "~> 2.0"
+    status: mandatory
+  - name: Zicntr
+    version: "~> 2.0"
+    status: mandatory
+    parameters:
+        TIME_CSR_IMPLEMENTED: {} # Unconstrained
+  - name: Sm
+    version: "~> 1.11"
+    status: mandatory
+    parameters:
+        MTVEC_BASE_ALIGNMENT_DIRECT: {} # Unconstrained
+        MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
+        ARCH_ID: {} # Unconstrained
+        IMP_ID: {} # Unconstrained
+        VENDOR_ID_BANK: {} # Unconstrained
+        VENDOR_ID_OFFSET: {} # Unconstrained
+        MISA_CSR_IMPLEMENTED: {} # Unconstrained
+        MTVAL_WIDTH: {} # Unconstrained
+        MTVEC_MODES:
+          note: Here's a note for MTVEC_MODES parameter.
+          schema:
+            contains: { const : 0 }
+        PHYS_ADDR_WIDTH: {} # Unconstrained
+        PRECISE_SYNCHRONOUS_EXCEPTIONS:
+          schema:
+            const: true
+        TRAP_ON_ECALL_FROM_M:
+          schema:
+            const: true
+        TRAP_ON_EBREAK:
+          schema:
+            const: true
+        REPORT_VA_IN_MTVAL_ON_BREAKPOINT:
+          schema:
+            const: true
+        REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT:
+          schema:
+            const: true
+        REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT:
+          schema:
+            const: true
+        REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT:
+          schema:
+            const: true
+        REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION:
+          schema:
+            const: true
+        M_MODE_ENDIANESS:
+          schema:
+            const: little
+        XLEN:
+          schema:
+            const: 32
+        CONFIG_PTR_ADDRESS:
+          schema:
+            const: 0
+  - name: Zifencei
+    status: optional
+    note: "Here's a note for Zifencei"
+  - name: Zicbop
+    status: optional
+    note: "Testing CACHE_BLOCK_SIZE parameter which is also defined by Zicbom."
+    parameters:
+        CACHE_BLOCK_SIZE:
+          schema:
+            const: 64
+  - name: Zicbom
+    status: optional
+    note: "Testing CACHE_BLOCK_SIZE parameter which is also defined by Zicbop."
+    parameters:
+        CACHE_BLOCK_SIZE:
+          schema:
+            const: 64
   
   requirement_groups:
     - name: Req-Grp-Any-XLEN

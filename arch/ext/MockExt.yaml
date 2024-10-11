@@ -1,0 +1,70 @@
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+MockExt:
+  type: privileged
+  long_name: Mock Extension (for testing database)
+  description: This is just for testing
+  versions:
+  - version: "1.0.0"
+    state: ratified
+  params:
+    MOCK_ENUM_2_INTS:
+      description: foo
+      schema:
+        type: integer
+        enum: [32, 64]
+    MOCK_ENUM_2_STRINGS:
+      description: foo
+      schema:
+        type: string
+        enum: ["high", "low"]
+    MOCK_BOOL:
+      description: foo
+      schema:
+        type: boolean
+    MOCK_64_BIT_INT:
+      description: foo
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0xffffffffffffffff
+    MOCK_25_BIT_INT:
+      description: foo
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 33554431
+    MOCK_INT_RANGE:
+      description: foo
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 127
+    MOCK_INT_ENUM_ARRAY:
+      description: foo
+      schema:
+        type: array
+        items:
+          type: integer
+          enum: [0, 1]
+        minItems: 1
+        maxItems: 2
+        uniqueItems: true
+    MOCK_STRING_ENUM_ARRAY:
+      description: foo
+      schema:
+        type: array
+        items:
+          type: string
+          enum: [ABC, DEF, GHI]
+    MOCK_BOOL_ARRAY_OF_8_FIRST_2_FALSE:
+      description: foo
+      schema:
+        type: array
+        items:
+        - const: false
+        - const: false
+        additionalItems:
+          type: boolean
+        maxItems: 8
+        minItems: 8

@@ -73,68 +73,86 @@ a| <%- rev.changes.each do |change| %>
 
 |===
 
-== Summary
+== Extensions
 
-=== Extensions
+Any RISC-V extension not listed in this section is OUT-OF-SCOPE so the <%= crd.name %>
+certificate doesn't cover its associated behaviors.
 
-The following table lists all extensions that are IN-SCOPE (i.e., MANDATORY or OPTIONAL).
-Any extension not listed in the table below is OUT-OF-SCOPE.
+<%- ["mandatory","optional"].each do |status| -%>
 
+=== <%= status.capitalize %> Extensions
+
+<%- ext_reqs = crd.in_scope_ext_reqs(status) -%>
+<%- if ext_reqs.empty? -%>
+None
+<%- else -%>
 [%autowidth]
 |===
-| Requirement ID | Extension | Status | Long Name
+| Requirement ID | Extension | Version | Long Name | Note
 
-<%- crd.in_scope_ext_reqs.sort.each do |ext_req| -%>
+<%- ext_reqs.sort.each do |ext_req| -%>
 <%- ext_db = crd.extension_from_db(ext_req.name) -%>
-| <<<%= ext_req.req_id %>-def,<%= ext_req.req_id %>>> 
+| <%= ext_req.req_id %> 
 | <<ext-<%= ext_req.name %>-def,<%= ext_req.name %>>> 
-| <%= ext_req.status.upcase %>
+| <%= ext_req.version_requirement %>
 | <%= ext_db.nil? ? "" : ext_db.long_name %>
+| <%= ext_req.note.nil? ? "" : ext_req.note %>
 <%- end -%>
 |===
+<%- end # if table -%>
+<%- end # do ext_reqs -%>
 
-=== Supported Options
+== Implementation-dependencies
 
-These implementation-dependent options are defined by MANDATORY or OPTIONAL extensions and are IN-SCOPE.
-An implementation must abide by the allowed values to obtain a certificate. 
+RISC-V standards support many implementation-defined parameters. In many cases, there
+are no names associated with these parameters. Names are defined in this section when
+not provided in the associated standard.
+
+=== IN-SCOPE Parameters
+
+These implementation-dependent options defined by MANDATORY or OPTIONAL extensions are IN-SCOPE. 
+An implementation must abide by the "Allowed Value(s)" to obtain a certificate. 
 
 <%- if crd.all_in_scope_ext_params.empty? -%>
 None
 <%- else -%>
 [%autowidth]
 |===
-| Option | Extension(s)
+| Parameter | Type | Allowed Value(s) | Extension(s) | Note
 
 <%- crd.all_in_scope_ext_params.sort.each do |in_scope_ext_param| -%>
 | <%= in_scope_ext_param.name %>
+| <%= in_scope_ext_param.param_db.schema_type %>
+| <%= in_scope_ext_param.schema_pretty_crd_merged_with_param_db %>
 | <%- crd.all_in_scope_exts_with_param(in_scope_ext_param.param_db).sort.each do |ext_db| -%><<ext-<%= ext_db.name %>-param-<%= in_scope_ext_param.name %>-def,<%= ext_db.name %>>> <%- end # do ext_db -%>
-
+a| <%= in_scope_ext_param.note %>
 <%- end # do -%>
 |===
 <%- end # if table -%>
 
-=== Unsupported Options
+=== OUT-OF-SCOPE Parameters
 
-These implementation-dependent options are defined by MANDATORY or OPTIONAL extensions are OUT-OF-SCOPE. 
+These implementation-dependent options defined by MANDATORY or OPTIONAL extensions are OUT-OF-SCOPE. 
 There are no restrictions on their values for certification purposes because the certificate 
-doesn't certify the results as a function of these options.
+doesn't cover the behavior of the associated RISC-V standard as a function of these parameters.
 
 <%- if crd.all_out_of_scope_params.empty? -%>
 None
 <%- else -%>
 [%autowidth]
 |===
-| Option | Extension(s)
+| Parameters | Type | Extension(s)
 
 <%- crd.all_out_of_scope_params.sort.each do |param_db| -%>
 | <%= param_db.name %>
+| <%= param_db.schema_type %>
 | <%- crd.all_in_scope_exts_without_param(param_db).sort.each do |ext_db| -%><<ext-<%= ext_db.name %>-param-<%= param_db.name %>-def,<%= ext_db.name %>>> <%- end # do ext_db -%>
 
 <%- end # do -%>
 |===
 <%- end # if table -%>
 
-=== Instructions
+== Instruction Summary
 
 <%-
   insts = crd.in_scope_extensions.map { |ext_crd| ext_crd.instructions }.flatten.uniq
@@ -151,13 +169,13 @@ None
 <%- end # do -%>
 |===
 
-=== CSRs
+== CSR Summary
 
 <%-
   csrs = crd.in_scope_extensions.map { |ext_crd| ext_crd.csrs }.flatten.uniq
 -%>
 
-==== By Name
+=== By Name
 
 [%autowidth]
 |===
@@ -172,7 +190,7 @@ None
 <%- end # do -%>
 |===
 
-==== By Address
+=== By Address
 
 [%autowidth]
 |===
@@ -187,54 +205,9 @@ None
 <%- end # do -%>
 |===
 
-== Extension Requirements
-
-<%- crd.in_scope_ext_reqs.sort.each do |ext_req| -%>
-<%- ext_db = crd.extension_from_db(ext_req.name) -%>
-
-[[<%= ext_req.req_id %>-def]]
-=== Extension <%= ext_req.name %> +
-*Requirement ID*: <%= ext_req.req_id %> +
-<%= ext_db.nil? ? "" : "*Long Name*: " + ext_db.long_name + " +" %>
-*Version Requirement*: <%= ext_req.version_requirement %> +
-*Status*: <%= ext_req.status.upcase %> +
-<%- unless ext_req.note.nil? -%>
-[NOTE]
---
-<%= ext_req.note %>
---
-<%- end -%>
-
-<%- unless crd.in_scope_ext_params(ext_req).empty? -%>
-.<%= ext_req.name %> Extension IN-SCOPE Options
-[cols="3,1,2"]
-|===
-| Option | Constraint | Note
-
-<%- crd.in_scope_ext_params(ext_req).sort.each do |ext_param| -%>
-| <<ext-<%= ext_req.name %>-param-<%= ext_param.name %>-def,<%= ext_param.name %>>> 
-| <%= ext_param.schema_constraint_pretty %>
-a| <%= ext_param.note %>
-<%- end # do ext_param -%>
-|===
-<%- end # unless table -%>
-
-<%- unless crd.out_of_scope_params(ext_req.name).empty? -%>
-.<%= ext_req.name %> Extension OUT-OF-SCOPE Options
-[%autowidth]
-|===
-| Option
-
-<%- crd.out_of_scope_params(ext_req.name).sort.each do |param_db| -%>
-| <<ext-<%= ext_req.name %>-param-<%= param_db.name %>-def,<%= param_db.name %>>> 
-<%- end # do -%>
-|===
-<%- end # unless table -%>
-<%- end # do extension-%>
-
 == Additional Requirements
 
-This section contains requirements in addition to those already specified related to extensions and options.
+This section contains requirements in addition to those already specified related to extensions and parameters.
 These additional requirements are organized as groups of related requirements.
 
 <%- crd.requirement_groups.each do |group| -%>
@@ -264,7 +237,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 <%- end -%>
 
 [appendix]
-== Extension Specifications
+== Extension Details
 <%- crd.in_scope_ext_reqs.sort.each do |ext_req| -%>
 <%- ext_db = crd.extension_from_db(ext_req.name) -%>
 
@@ -276,8 +249,12 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 
 <%- ext_db.versions.each do |v| -%>
 <%= v["version"] %>::
+  State:::
+    <%= v["state"] %>
+  <%- if v["state"] == "ratified" -%>
   Ratification date:::
     <%= v["ratification_date"] %>
+  <%- end # if %>
   <%- if v.key?("changes") -%>
   Changes:::
 
@@ -330,7 +307,7 @@ The following instructions are added by this extension:
 <%- end -%>
 
 <%- unless crd.in_scope_ext_params(ext_req).empty? -%>
-==== IN-SCOPE Options
+==== IN-SCOPE Parameters
 
 <%- crd.in_scope_ext_params(ext_req).sort.each do |ext_param| -%>
 [[ext-<%= ext_req.name %>-param-<%= ext_param.name %>-def]]
@@ -343,7 +320,7 @@ The following instructions are added by this extension:
 <%- end # unless table -%>
 
 <%- unless crd.out_of_scope_params(ext_req.name).empty? -%>
-==== OUT-OF-SCOPE Options
+==== OUT-OF-SCOPE Parameters
 
 <%- crd.out_of_scope_params(ext_req.name).sort.each do |param_db| -%>
 [[ext-<%= ext_req.name %>-param-<%= param_db.name %>-def]]
@@ -357,7 +334,7 @@ The following instructions are added by this extension:
 <%- end # do ext_req -%>
 
 [appendix]
-== Instruction Specifications
+== Instruction Details
 
 <%=
   insts = crd.in_scope_extensions.map { |ext_crd| ext_crd.instructions }.flatten.uniq
@@ -491,7 +468,7 @@ This instruction may result in the following synchronous exceptions:
 <%- end -%>
 
 [appendix]
-== CSR Specifications
+== CSR Details
 
 <%-
   csrs = crd.in_scope_extensions.map { |ext_crd| ext_crd.csrs }.flatten.uniq
