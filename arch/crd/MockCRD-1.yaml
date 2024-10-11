@@ -28,13 +28,20 @@ MockCRD-1:
     parameters:
       MOCK_ENUM_2_INTS: {}
       MOCK_ENUM_2_STRINGS: {}
-      MOCK_BOOL: {}
-      MOCK_64_BIT_INT: {}
+      MOCK_BOOL_1: {}
+      MOCK_BOOL_2:
+        schema:
+          const: true
+      MOCK_1_BIT_INT: {}
+      MOCK_2_BIT_INT: {}
       MOCK_25_BIT_INT: {}
-      MOCK_INT_RANGE: {}
-      MOCK_INT_ENUM_ARRAY: {}
-      MOCK_BOOL_ARRAY_OF_8_FIRST_2_FALSE: {}
-      MOCK_STRING_ENUM_ARRAY:
+      MOCK_64_BIT_INT: {}
+      MOCK_INT_RANGE_0_TO_127: {}
+      MOCK_INT_RANGE_0_TO_128: {}
+      MOCK_INT_RANGE_1_TO_128: {}
+      MOCK_ARRAY_INT_ENUM: {}
+      MOCK_ARRAY_BOOL_ARRAY_OF_8_FIRST_2_FALSE: {}
+      MOCK_ARRAY_STRING_ENUM:
         schema:
           contains: { const : DEF }
   - name: I

@@ -6,7 +6,7 @@ MockExt:
   description: This is just for testing
   versions:
   - version: "1.0.0"
-    state: ratified
+    state: development
   params:
     MOCK_ENUM_2_INTS:
       description: foo
@@ -17,8 +17,12 @@ MockExt:
       description: foo
       schema:
         type: string
-        enum: ["high", "low"]
-    MOCK_BOOL:
+        enum: ["low", "high"]
+    MOCK_BOOL_1:
+      description: foo
+      schema:
+        type: boolean
+    MOCK_BOOL_2:
       description: foo
       schema:
         type: boolean
@@ -28,19 +32,49 @@ MockExt:
         type: integer
         minimum: 0
         maximum: 0xffffffffffffffff
+    MOCK_1_BIT_INT:
+      description: foo
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 1
+    MOCK_2_BIT_INT:
+      description: foo
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 3
     MOCK_25_BIT_INT:
       description: foo
       schema:
         type: integer
         minimum: 0
         maximum: 33554431
-    MOCK_INT_RANGE:
+    MOCK_INT_RANGE_0_TO_2:
+      description: foo
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 2
+    MOCK_INT_RANGE_0_TO_127:
       description: foo
       schema:
         type: integer
         minimum: 0
         maximum: 127
-    MOCK_INT_ENUM_ARRAY:
+    MOCK_INT_RANGE_0_TO_128:
+      description: foo
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 128
+    MOCK_INT_RANGE_1_TO_128:
+      description: foo
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 128
+    MOCK_ARRAY_INT_ENUM:
       description: foo
       schema:
         type: array
@@ -50,14 +84,30 @@ MockExt:
         minItems: 1
         maxItems: 2
         uniqueItems: true
-    MOCK_STRING_ENUM_ARRAY:
+    MOCK_ARRAY_MIN_ONLY:
+      description: foo
+      schema:
+        type: array
+        items:
+          type: integer
+          enum: [0, 1]
+        minItems: 3
+    MOCK_ARRAY_MAX_ONLY:
+      description: foo
+      schema:
+        type: array
+        items:
+          type: integer
+          enum: [0, 1]
+        maxItems: 10
+    MOCK_ARRAY_STRING_ENUM:
       description: foo
       schema:
         type: array
         items:
           type: string
           enum: [ABC, DEF, GHI]
-    MOCK_BOOL_ARRAY_OF_8_FIRST_2_FALSE:
+    MOCK_ARRAY_BOOL_ARRAY_OF_8_FIRST_2_FALSE:
       description: foo
       schema:
         type: array

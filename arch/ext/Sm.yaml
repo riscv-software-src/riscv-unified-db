@@ -243,8 +243,8 @@ Sm:
 
         [separator="!"]
         !===
-        ! high ! Misaligned load/store/AMO exceptions are always higher priority than load/store/AMO page-fault and access-fault exceptions.
         ! low  ! Misaligned load/store/AMO exceptions are always lower priority than load/store/AMO page-fault and access-fault exceptions.
+        ! high ! Misaligned load/store/AMO exceptions are always higher priority than load/store/AMO page-fault and access-fault exceptions.
         !===
 
         MISALIGNED_LDST_EXCEPTION_PRIORITY cannot be "high" when MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE
@@ -252,7 +252,7 @@ Sm:
         address translation.
       schema:
         type: string
-        enum: ["high", "low"]
+        enum: ["low", "high"]
         extra_validation: |
           assert (MISALIGNED_LDST_EXCEPTION_PRIORITY == "low") if MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE.positive?
     MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE:
@@ -407,7 +407,7 @@ Sm:
         Must be greater than or equal to _max_(`PHYS_ADDR_WIDTH`, `VA_SIZE`)
       schema:
         type: integer
-        maximum: 0xffffffffffffffff
+        maximum: 64
     CONFIG_PTR_ADDRESS:
       description: |
         Physical address of the unified discovery configuration data structure.

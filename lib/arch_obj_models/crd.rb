@@ -151,24 +151,32 @@ class Crd < ArchDefObject
   end
 
   # @return [Array<ExtensionRequirements>] - # Extensions with their CRD information.
-  # XXX Good example of why I filed issue 75
-  def in_scope_ext_reqs
-    return @in_scope_ext_reqs unless @in_scope_ext_reqs.nil?
-
-    @in_scope_ext_reqs = []
+  # If desired_status is provided, only returns extensions with that status.
+  def in_scope_ext_reqs(desired_status = nil)
+    in_scope_ext_reqs = []
     @data["extensions"]&.each do |ext_crd|
-      status = ext_crd["status"]
-      raise "Missing extension status for extension #{ext_crd["name"]}" if status.nil?
+      actual_status = ext_crd["status"]
+      raise "Missing extension status for extension #{ext_crd["name"]}" if actual_status.nil?
 
-      if (status != "mandatory") && (status != "optional")
-        raise "Unknown extension status of #{status} for extension #{ext_crd["name"]}" 
+      if (actual_status != "mandatory") && (actual_status != "optional")
+        raise "Unknown extension status of #{actual_status} for extension #{ext_crd["name"]}" 
       end
 
-      @in_scope_ext_reqs << 
-        ExtensionRequirement.new(ext_crd["name"], ext_crd["version"], status: status,
-          note: ext_crd["note"], req_id: "REQ-EXT-" + ext_crd["name"])
+      add = false
+
+      if desired_status.nil?
+        add = true
+      elsif desired_status == actual_status
+        add = true
+      end
+
+      if add
+        in_scope_ext_reqs << 
+          ExtensionRequirement.new(ext_crd["name"], ext_crd["version"], status: actual_status,
+            note: ext_crd["note"], req_id: "REQ-EXT-" + ext_crd["name"])
+      end
     end
-    @in_scope_ext_reqs
+    in_scope_ext_reqs
   end
 
   ###################################
@@ -185,32 +193,31 @@ class Crd < ArchDefObject
       raise ArgumentError, "Expecting schema_hash to be a hash" unless schema_hash.is_a?(Hash)
 
       @param_db = param_db
-      @schema_constraint = Schema.new(schema_hash)
+      @schema_crd = Schema.new(schema_hash)
       @note = note
     end
 
     def single_value?
-      @schema_constraint.single_value?
+      @schema_crd.single_value?
     end
 
     def name
       @param_db.name
     end
 
+    def idl_type
+      @param_db.type
+    end
+
     def value
-      raise "Parameter schema_constraint for #{@param_db.name} is not a single value" unless single_value?
+      raise "Parameter schema_crd for #{name} is not a single value" unless single_value?
 
-      @schema_constraint.value
+      @schema_crd.value
     end
 
-    # Pretty convert just CRD's parameter constraint to a string.
-    def schema_constraint_pretty
-      @schema_constraint.pretty
-    end
-
-    # Pretty convert CRD's parameter constraint merged with extension schema to a string.
-    def schema_merge_pretty
-      Schema.new(@param_db.schema).merge!(@schema_constraint).pretty
+    # Pretty convert CRD's parameter constraint merged into extension schema to a string.
+    def schema_pretty_crd_merged_with_param_db
+      Schema.new(@param_db.schema).merge!(@schema_crd).to_pretty_s
     end
 
     # sorts by name
