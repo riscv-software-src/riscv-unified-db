@@ -291,7 +291,8 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 --
 <%- end -%>
 
-<%- insts = crd.arch_def.instructions.select { |i| i.definedBy == ext_db.name || i.definedBy.include?(ext_db.name) } -%>
+// TODO: GitHub issue 92: Use version specified by each profile.
+<%- insts = crd.arch_def.instructions.select { |i| i.defined_by?(ext_db.name,ext_db.min_version) } -%>
 <%- unless insts.empty? -%>
 ==== Instructions
 

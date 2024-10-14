@@ -118,7 +118,8 @@ MockCRD-1:
             const: 32
         CONFIG_PTR_ADDRESS:
           schema:
-            const: 0
+            const: 0xdeadbeef
+          note: "This parameter and its associated CSR shouldn't be here. See GitHub issue #53."
   - name: Zifencei
     presence: optional
     note: "Here's a note for Zifencei"

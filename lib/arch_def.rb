@@ -313,7 +313,7 @@ class ArchDef
         if e.is_a?(String)
           @prohibited_extensions << ExtensionRequirement.new(e, nil)
         else
-          @prohibited_extensions << ExtensionRequirement.new(e["name"], e["requirements"])
+          @prohibited_extensions << ExtensionRequirement.new(e["name"], e["requirements"], presence: "prohibited")
         end
       end
     end

@@ -467,7 +467,8 @@ end.join(" | ") -%>
 
 :leveloffset: -3
 
-<%- insts = arch_def.instructions.select { |i| i.definedBy == ext.name || i.definedBy.include?(ext.name) } -%>
+// TODO: GitHub issue 92: Use version specified by each profile and add version info to inst table below.
+<%- insts = arch_def.instructions.select { |i| i.defined_by?(ext.name,ext.min_version) } -%>
 <%- unless insts.empty? -%>
 ==== Instructions
 

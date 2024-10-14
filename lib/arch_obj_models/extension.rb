@@ -203,7 +203,7 @@ class Extension < ArchDefObject
   def instructions
     return @instructions unless @instructions.nil?
 
-    @instructions = arch_def.instructions.select { |i| i.definedBy == name || (i.definedBy.is_a?(Array) && i.definedBy.include?(name)) }
+    @instructions = arch_def.instructions.select { |i| @data["versions"].any? { |version| i.defined_by?(name, version["version"]) }}
   end
 
   # @return [Array<Csr>] the list of CSRs implemented by this extension (may be empty)

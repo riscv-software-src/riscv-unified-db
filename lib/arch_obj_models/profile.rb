@@ -14,15 +14,15 @@ class Profile < ArchDefObject
 
   def family = arch_def.profile_family(@data["family"])
 
-  # @return [Profile] Profile that this profile inherits from (the "hier")
+  # @return [Profile] Profile that this profile inherits from
   # @return [nil] if this profile has no parent
   def inherits_from = arch_def.profile(@data["inherits"])
 
   # @return ["M", "S", "U", "VS", "VU"] Privilege mode for the profile
   def mode
     if @data["mode"].nil?
-      raise "No mode specified and no inheritance for profile '#{name}'" if inherits_from.empty?
-      inherits_from.last.mode
+      raise "No mode specified and no inheritance for profile '#{name}'" if inherits_from.nil?
+      inherits_from.mode
     else
       @data["mode"]
     end
@@ -31,9 +31,9 @@ class Profile < ArchDefObject
   # @return [32, 64] The base XLEN for the profile
   def base
     if @data["base"].nil?
-      raise "No base specified and no inheritance for profile '#{name}'" if inherits_from.empty?
+      raise "No base specified and no inheritance for profile '#{name}'" if inherits_from.nil?
 
-      inherits_from.last.base
+      inherits_from.base
     else
       @data["base"]
     end
@@ -98,9 +98,9 @@ class Profile < ArchDefObject
         @data["extensions"]&.any? { |opt| opt["name"] == ext_req.name }
       }
 
-      @data["extensions"]&.each do |ext_ver|
-        if ext_ver["presence"] == "mandatory"
-          @mandatory_ext_reqs << ExtensionRequirement.new(ext_ver["name"], ext_ver["version"], presence: "mandatory")
+      @data["extensions"]&.each do |ext_req|
+        if ext_req["presence"] == "mandatory"
+          @mandatory_ext_reqs << ExtensionRequirement.new(ext_req["name"], ext_req["version"], presence: "mandatory")
         end
       end
     end
