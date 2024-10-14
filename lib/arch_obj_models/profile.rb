@@ -14,15 +14,15 @@ class Profile < ArchDefObject
 
   def family = arch_def.profile_family(@data["family"])
 
-  # @return [Profile] Profiles this one inherits from
+  # @return [Profile] Profile that this profile inherits from (the "hier")
   # @return [nil] if this profile has no parent
-  def inherits = arch_def.profile(@data["inherits"])
+  def inherits_from = arch_def.profile(@data["inherits"])
 
   # @return ["M", "S", "U", "VS", "VU"] Privilege mode for the profile
   def mode
     if @data["mode"].nil?
-      raise "No mode specified an no inheritance for profile '#{name}'" if inherits.empty?
-      inherits.last.mode
+      raise "No mode specified and no inheritance for profile '#{name}'" if inherits_from.empty?
+      inherits_from.last.mode
     else
       @data["mode"]
     end
@@ -31,9 +31,9 @@ class Profile < ArchDefObject
   # @return [32, 64] The base XLEN for the profile
   def base
     if @data["base"].nil?
-      raise "No base specified an no inheritance for profile '#{name}'" if inherits.empty?
+      raise "No base specified and no inheritance for profile '#{name}'" if inherits_from.empty?
 
-      inherits.last.base
+      inherits_from.last.base
     else
       @data["base"]
     end
@@ -61,8 +61,8 @@ class Profile < ArchDefObject
     @data["contributors"].map { |data| Person.new(data) }
   end
 
-  # @return [String] Given an extension +ext_name+, return the status
-  def extension_status(ext_name)
+  # @return [String] Given an extension +ext_name+, return the presence
+  def extension_presence(ext_name)
     if mandatory?(ext_name)
       req = mandatory_extension_requirements.find do |req|
         req.name == ext_name
@@ -81,45 +81,31 @@ class Profile < ArchDefObject
   # @return [String] The note associated with extension +ext_name+
   # @return [nil] if there is no note for +ext_name+
   def extension_note(ext_name)
-    unless @data.dig("extensions", "mandatory").nil?
-      ext = @data["extensions"]["mandatory"].find { |e| e["name"] == ext_name }
-      return ext["note"] unless ext.nil?
-    end
-
-    unless @data.dig("extensions", "optional").nil?
-      ext = @data["extensions"]["optional"].find { |e| e["name"] == ext_name }
-      return ext["note"] unless ext.nil?
-    end
-
-    unless @data.dig("extensions", "excluded").nil?
-      ext = @data["extensions"]["excluded"].find { |e| e["name"] == ext_name }
-      return ext["note"] unless ext.nil?
-    end
-
-    nil
+    ext = @data["extensions"].find { |e| e["name"] == ext_name }
+    return ext["note"] unless ext.nil?
   end
 
   # @return [Array<ExtensionRequirement>] List of mandatory extensions for the profile
   def mandatory_extension_requirements
-    return @mandatory_extensions unless @mandatory_extensions.nil?
+    return @mandatory_ext_reqs unless @mandatory_ext_reqs.nil?
 
-    @mandatory_extensions = []
-    @mandatory_extensions += inherits.mandatory_extension_requirements unless inherits.nil?
+    @mandatory_ext_reqs = []
+    @mandatory_ext_reqs += inherits_from.mandatory_extension_requirements unless inherits_from.nil?
 
     # we need to remove anything that was changed from inheritance
     unless @data["extensions"].nil?
-      @mandatory_extensions.delete_if { |ext_req|
-        @data["extensions"]["optional"]&.any? { |opt| opt["name"] == ext_req.name } ||
-          @data["extensions"]["removed"]&.any? { |opt| opt["name"] == ext_req.name } ||
-          @data["extensions"]["mandatory"]&.any? { |opt| opt["name"] == ext_req.name }
+      @mandatory_ext_reqs.delete_if { |ext_req|
+        @data["extensions"]&.any? { |opt| opt["name"] == ext_req.name }
       }
 
-      @data["extensions"]["mandatory"]&.each do |ext_ver|
-        @mandatory_extensions << ExtensionRequirement.new(ext_ver["name"], ext_ver["version"])
+      @data["extensions"]&.each do |ext_ver|
+        if ext_ver["presence"] == "mandatory"
+          @mandatory_ext_reqs << ExtensionRequirement.new(ext_ver["name"], ext_ver["version"], presence: "mandatory")
+        end
       end
     end
 
-    @mandatory_extensions
+    @mandatory_ext_reqs
   end
 
   # @return [Array<Extension>] List of mandatory extensions
@@ -142,25 +128,25 @@ class Profile < ArchDefObject
 
   # @return [Array<ExtensionRequirement>] List of optional extensions for the profile
   def optional_extension_requirements
-    return @optional_extensions unless @optional_extensions.nil?
+    return @optional_ext_reqs unless @optional_ext_reqs.nil?
 
-    @optional_extensions = []
-    @optional_extensions += inherits.optional_extension_requirements unless inherits.nil?
+    @optional_ext_reqs = []
+    @optional_ext_reqs += inherits_from.optional_extension_requirements unless inherits_from.nil?
 
     # we need to remove anything that was changed from inheritance
     unless @data["extensions"].nil?
-      @optional_extensions.delete_if { |ext_req|
-        @data["extensions"]["optional"]&.any? { |opt| opt["name"] == ext_req.name } ||
-          @data["extensions"]["removed"]&.any? { |opt| opt["name"] == ext_req.name } ||
-          @data["extensions"]["mandatory"]&.any? { |opt| opt["name"] == ext_req.name }
+      @optional_ext_reqs.delete_if { |ext_req|
+        @data["extensions"]&.any? { |opt| opt["name"] == ext_req.name }
       }
 
-      @data["extensions"]["optional"]&.each do |ext_ver|
-        @optional_extensions << ExtensionRequirement.new(ext_ver["name"], ext_ver["version"])
+      @data["extensions"]&.each do |ext_ver|
+        if ext_ver["presence"] == "optional"
+          @optional_ext_reqs << ExtensionRequirement.new(ext_ver["name"], ext_ver["version"], presence: "optional")
+        end
       end
     end
 
-    @optional_extensions
+    @optional_ext_reqs
   end
 
   # @return [Array<Extension>] List of optional extensions

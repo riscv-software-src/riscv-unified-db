@@ -78,11 +78,11 @@ a| <%- rev.changes.each do |change| %>
 Any RISC-V extension not listed in this section is OUT-OF-SCOPE so the <%= crd.name %>
 certificate doesn't cover its associated behaviors.
 
-<%- ["mandatory","optional"].each do |status| -%>
+<%- ["mandatory","optional"].each do |presence| -%>
 
-=== <%= status.capitalize %> Extensions
+=== <%= presence.capitalize %> Extensions
 
-<%- ext_reqs = crd.in_scope_ext_reqs(status) -%>
+<%- ext_reqs = crd.in_scope_ext_reqs(presence) -%>
 <%- if ext_reqs.empty? -%>
 None
 <%- else -%>

@@ -17,105 +17,118 @@ rva20u64:
     email: krste@sifive.com
     company: SiFive
   extensions:
-    mandatory:
-    - name: I
-      version: "~> 2.1"
-      note: |
-        RVI is the mandatory base ISA for RVA, and is little-endian.
+  - name: I
+    presence: mandatory
+    version: "~> 2.1"
+    note: |
+      RVI is the mandatory base ISA for RVA, and is little-endian.
 
-        As per the unprivileged architecture specification, the `ecall`
-        instruction causes a requested trap to the execution environment.
+      As per the unprivileged architecture specification, the `ecall`
+      instruction causes a requested trap to the execution environment.
 
-        The `fence.tso` instruction is mandatory.
+      The `fence.tso` instruction is mandatory.
 
-        NOTE: The `fence.tso` instruction was incorrectly described as
-        optional in the 2019 ratified specifications. However, `fence.tso` is
-        encoded within the standard `fence` encoding such that implementations
-        must treat it as a simple global fence if they do not natively support
-        TSO-ordering optimizations.  As software can always assume without any
-        penalty that `fence.tso` is being exploited by a hardware
-        implementation, there is no advantage to making the instruction a
-        profile option.  Later versions of the unprivileged ISA
-        specifications correctly indicate that `fence.tso` is mandatory.
-    - name: A
-      version: "= 2.1"
-    - name: C
-      version: "= 2.2"
-    - name: D
-      version: "= 2.2"
-    - name: F
-      version: "= 2.2"
-    - name: M
-      version: "= 2.0"
-    - name: U
-      version: "~> 2.0"
-      param_constraints:
-        U_MODE_ENDIANESS:
-          schema:
-            const: little
-    - name: Zicntr
-      version: " = 2.0"
-    - name: Ziccif
-      version: "= 1.0"
-      note: |
-        Ziccif is a new extension name introduced with RVA20.
-        The fetch atomicity requirement facilitates runtime patching
-        of aligned instructions.
-    - name: Ziccrse
-      version: "= 1.0"
-      note: |
-        Ziccrse is a new extension name introduced with RVA20.
-    - name: Ziccamoa
-      version: "= 1.0"
-      note: |
-        Ziccamo is a new extension name introduced with RVA20.
-    - name: Za128rs
-      version: "= 1.0"
-      note: |
-        Za128rs is a new extension name introduced with RVA20.
-        The minimum reservation set size is effectively determined by the
-        size of atomic accesses in the `A` extension.
-    - name: Zicclsm
-      version: "= 1.0"
-      note: |
-        Zicclsm is a new extension name introduced with RVA20.
-        This requires misaligned support for all regular load and store
-        instructions (including scalar and vector) but not AMOs or other
-        specialized forms of memory access.  Even though mandated, misaligned
-        loads and stores might execute extremely slowly.  Standard software
-        distributions should assume their existence only for correctness, not
-        for performance.
-    optional:
-    - name: Zihpm
-      version: "= 2.0"
-      note: |
-        The number of counters is platform-specific.
-    excluded:
-    - name: Q
-      note: |
-        The rationale to not make Q an optional extension is that
-        quad-precision floating-point is unlikely to be implemented in
-        hardware, and so we do not require or expect A-profile software to
-        expend effort optimizing use of Q instructions in case they are
-        present.
-    - name: Zifencei
-      note: |
-        Zifencei is not classed as a supported option in the user-mode
-        profile because it is not sufficient by itself to produce the desired
-        effect in a multiprogrammed multiprocessor environment without OS
-        support, and so the instruction cache flush should always be performed
-        using an OS call rather than using the `fence.i` instruction.
-        `fence.i` semantics can be expensive to implement for some hardware
-        memory hierarchy designs, and so alternative non-standard
-        instruction-cache coherence mechanisms can be used behind the OS
-        abstraction.  A separate extension is being developed for more general
-        and efficient instruction cache coherence.
+      NOTE: The `fence.tso` instruction was incorrectly described as
+      optional in the 2019 ratified specifications. However, `fence.tso` is
+      encoded within the standard `fence` encoding such that implementations
+      must treat it as a simple global fence if they do not natively support
+      TSO-ordering optimizations.  As software can always assume without any
+      penalty that `fence.tso` is being exploited by a hardware
+      implementation, there is no advantage to making the instruction a
+      profile option.  Later versions of the unprivileged ISA
+      specifications correctly indicate that `fence.tso` is mandatory.
+  - name: A
+    presence: mandatory
+    version: "= 2.1"
+  - name: C
+    presence: mandatory
+    version: "= 2.2"
+  - name: D
+    presence: mandatory
+    version: "= 2.2"
+  - name: F
+    presence: mandatory
+    version: "= 2.2"
+  - name: M
+    presence: mandatory
+    version: "= 2.0"
+  - name: U
+    presence: mandatory
+    version: "~> 2.0"
+    param_constraints:
+      U_MODE_ENDIANESS:
+        schema:
+          const: little
+  - name: Zicntr
+    presence: mandatory
+    version: " = 2.0"
+  - name: Ziccif
+    presence: mandatory
+    version: "= 1.0"
+    note: |
+      Ziccif is a new extension name introduced with RVA20.
+      The fetch atomicity requirement facilitates runtime patching
+      of aligned instructions.
+  - name: Ziccrse
+    presence: mandatory
+    version: "= 1.0"
+    note: |
+      Ziccrse is a new extension name introduced with RVA20.
+  - name: Ziccamoa
+    presence: mandatory
+    version: "= 1.0"
+    note: |
+      Ziccamo is a new extension name introduced with RVA20.
+  - name: Za128rs
+    presence: mandatory
+    version: "= 1.0"
+    note: |
+      Za128rs is a new extension name introduced with RVA20.
+      The minimum reservation set size is effectively determined by the
+      size of atomic accesses in the `A` extension.
+  - name: Zicclsm
+    presence: mandatory
+    version: "= 1.0"
+    note: |
+      Zicclsm is a new extension name introduced with RVA20.
+      This requires misaligned support for all regular load and store
+      instructions (including scalar and vector) but not AMOs or other
+      specialized forms of memory access.  Even though mandated, misaligned
+      loads and stores might execute extremely slowly.  Standard software
+      distributions should assume their existence only for correctness, not
+      for performance.
+  - name: Zihpm
+    presence: optional
+    version: "= 2.0"
+    note: |
+      The number of counters is platform-specific.
+  - name: Q
+    presence: excluded
+    note: |
+      The rationale to not make Q an optional extension is that
+      quad-precision floating-point is unlikely to be implemented in
+      hardware, and so we do not require or expect A-profile software to
+      expend effort optimizing use of Q instructions in case they are
+      present.
+  - name: Zifencei
+    presence: excluded
+    note: |
+      Zifencei is not classed as a supported option in the user-mode
+      profile because it is not sufficient by itself to produce the desired
+      effect in a multiprogrammed multiprocessor environment without OS
+      support, and so the instruction cache flush should always be performed
+      using an OS call rather than using the `fence.i` instruction.
+      `fence.i` semantics can be expensive to implement for some hardware
+      memory hierarchy designs, and so alternative non-standard
+      instruction-cache coherence mechanisms can be used behind the OS
+      abstraction.  A separate extension is being developed for more general
+      and efficient instruction cache coherence.
 
-        The execution environment must provide a means to synchronize writes to
-        instruction memory with instruction fetches, the implementation of which
-        likely relies on the Zifencei extension.
-        For example, RISC-V Linux supplies the `__riscv_flush_icache` system call and
-        a corresponding vDSO call.
+      The execution environment must provide a means to synchronize writes to
+      instruction memory with instruction fetches, the implementation of which
+      likely relies on the Zifencei extension.
+      For example, RISC-V Linux supplies the `__riscv_flush_icache` system call and
+      a corresponding vDSO call.
   recommendations:
   - Implementations are strongly recommended to raise illegal-instruction
     exceptions on attempts to execute unimplemented opcodes.

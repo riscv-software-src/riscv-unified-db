@@ -320,7 +320,7 @@ class ExtensionRequirement
   attr_reader :name
   attr_reader :note     # Optional note. Can be nil.
   attr_reader :req_id   # Optional Requirement ID. Can be nil.
-  attr_reader :status   # Optional status (e.g., Mandatory, Optional, etc.). Can be nil.
+  attr_reader :presence # Optional presence (e.g., Mandatory, Optional, etc.). Can be nil.
 
   # @return [Gem::Requirement] Version requirement
   def version_requirement
@@ -333,7 +333,7 @@ class ExtensionRequirement
 
   # @param name [#to_s] Extension name
   # @param requirements (see Gem::Requirement#new)
-  def initialize(name, *requirements, note: nil, req_id: nil, status: nil)
+  def initialize(name, *requirements, note: nil, req_id: nil, presence: nil)
     @name = name.to_s
     requirements =
       if requirements.empty?
@@ -344,7 +344,7 @@ class ExtensionRequirement
     @requirement = Gem::Requirement.new(requirements)
     @note = note
     @req_id = req_id
-    @status = status
+    @presence = presence
   end
 
   # @overload

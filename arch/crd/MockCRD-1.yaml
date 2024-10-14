@@ -24,7 +24,7 @@ MockCRD-1:
 # XXX - Remove version information since specifying priv/unpriv ISA manual should imply this.
   extensions:
   - name: MockExt
-    status: mandatory
+    presence: mandatory
     parameters:
       MOCK_ENUM_2_INTS: {}
       MOCK_ENUM_2_STRINGS: {}
@@ -46,11 +46,11 @@ MockCRD-1:
           contains: { const : DEF }
   - name: I
     version: "~> 2.1"
-    status: mandatory
+    presence: mandatory
     note: Here's a note for the I extension.
   - name: C
     version: "~> 2.2"
-    status: mandatory
+    presence: mandatory
     parameters:
         MUTABLE_MISA_C:
           schema:
@@ -59,19 +59,19 @@ MockCRD-1:
       Here's a multi-line note +
       for the C extension.
   - name: M
-    status: mandatory
+    presence: mandatory
     version: "~> 2.0"
   - name: Zicsr
     version: "~> 2.0"
-    status: mandatory
+    presence: mandatory
   - name: Zicntr
     version: "~> 2.0"
-    status: mandatory
+    presence: mandatory
     parameters:
         TIME_CSR_IMPLEMENTED: {} # Unconstrained
   - name: Sm
     version: "~> 1.11"
-    status: mandatory
+    presence: mandatory
     parameters:
         MTVEC_BASE_ALIGNMENT_DIRECT: {} # Unconstrained
         MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
@@ -120,22 +120,34 @@ MockCRD-1:
           schema:
             const: 0
   - name: Zifencei
-    status: optional
+    presence: optional
     note: "Here's a note for Zifencei"
   - name: Zicbop
-    status: optional
+    presence: optional
     note: "Testing CACHE_BLOCK_SIZE parameter which is also defined by Zicbom."
     parameters:
         CACHE_BLOCK_SIZE:
           schema:
             const: 64
   - name: Zicbom
-    status: optional
+    presence: optional
     note: "Testing CACHE_BLOCK_SIZE parameter which is also defined by Zicbop."
     parameters:
         CACHE_BLOCK_SIZE:
           schema:
             const: 64
+  - name: Zba
+    presence: mandatory
+    version: "~> 1.0"
+    note: "Added these as mandatory to see if bug in profiles not listing instructions in appendix is here in CRD too."
+  - name: Zbb
+    presence: mandatory
+    version: "~> 1.0"
+    note: "Added these as mandatory to see if bug in profiles not listing instructions in appendix is here in CRD too."
+  - name: Zbs
+    presence: mandatory
+    version: "~> 1.0"
+    note: "Added these as mandatory to see if bug in profiles not listing instructions in appendix is here in CRD too."
   
   requirement_groups:
     - name: Req-Grp-Any-XLEN

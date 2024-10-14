@@ -341,7 +341,7 @@ The <%= profile_family.marketing_name %> Profile Family references
 | Extension | <%= profile_family.profiles.map(&:marketing_name).join(" | ") -%>
 
 <%- profile_family.referenced_extensions.sort_by(&:name).each do |ext| -%>
-| <%= ext.name %> | <%= profile_family.profiles.map { |profile| profile.extension_status(ext.name) }.join(" | ") -%>
+| <%= ext.name %> | <%= profile_family.profiles.map { |profile| profile.extension_presence(ext.name) }.join(" | ") -%>
 <%- end -%>
 
 |===
@@ -665,7 +665,7 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <%- if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <%- end -%>
-h| Defining extension | <%= csr.defined_by.map(&:to_s).join(", ") %>
+h| Defining extension a| <%= csr.defined_by.to_asciidoc %>
 <%- if csr.dynamic_length?(arch_def) -%>
 h| Length         | <%= csr.length_pretty(arch_def) %>
 <%- else -%>

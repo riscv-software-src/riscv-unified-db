@@ -3,12 +3,10 @@
 #
 # Many classes inherit from the ArchDefObject class. This provides facilities for accessing the contents of a
 # CRD family YAML or CRD YAML file via the "data" member (hash holding releated YAML file contents).
-# A variable name with a "_crd" suffix indicates it is from the CRD family/member YAML file.
 #
-# Many classes have an "archdef" member which is an ArchDef (not ArchDefObject) class.
-# The "archdef" member contains the "database" of RISC-V standards including extensions, instructions, CSRs, Profiles, and CRDs. 
-# A variable name with a "_db" suffix indicates it is an object reference from the database.
-# The archdef member has methods such as:
+# Many classes have an "arch_def" member which is an ArchDef (not ArchDefObject) class.
+# The "arch_def" member contains the "database" of RISC-V standards including extensions, instructions, CSRs, Profiles, and CRDs. 
+# The arch_def member has methods such as:
 #   extensions()          Array<Extension> of all extensions known to the database (even if not implemented).
 #   extension(name)       Extension object for "name" and nil if none.
 #   parameters()          Array<ExtensionParameter> of all parameters defined in the architecture
@@ -25,6 +23,9 @@
 #   crd_family(name)      CrdFamily object for "name" and nil if none.
 #   crds                  Array<Crd> of all known CRDs.
 #   crd(name)             Crd object for "name" and nil if none.
+#
+# A variable name with a "_crd" suffix indicates it is from the CRD family/member YAML file.
+# A variable name with a "_db" suffix indicates it is an object reference from the arch_def database.
 
 require_relative "schema"
 
@@ -112,7 +113,7 @@ class Crd < ArchDefObject
     return @family unless @family.nil?
 
     fam = @arch_def.crd_family(@data["family"])
-    raise "No C CRD family named '#{@data["family"]}'" if fam.nil?
+    raise "No CRD family named '#{@data["family"]}'" if fam.nil?
 
     @family = fam
   end
@@ -151,28 +152,28 @@ class Crd < ArchDefObject
   end
 
   # @return [Array<ExtensionRequirements>] - # Extensions with their CRD information.
-  # If desired_status is provided, only returns extensions with that status.
-  def in_scope_ext_reqs(desired_status = nil)
+  # If desired_presence is provided, only returns extensions with that presence.
+  def in_scope_ext_reqs(desired_presence = nil)
     in_scope_ext_reqs = []
     @data["extensions"]&.each do |ext_crd|
-      actual_status = ext_crd["status"]
-      raise "Missing extension status for extension #{ext_crd["name"]}" if actual_status.nil?
+      actual_presence = ext_crd["presence"]
+      raise "Missing extension presence for extension #{ext_crd["name"]}" if actual_presence.nil?
 
-      if (actual_status != "mandatory") && (actual_status != "optional")
-        raise "Unknown extension status of #{actual_status} for extension #{ext_crd["name"]}" 
+      if (actual_presence != "mandatory") && (actual_presence != "optional")
+        raise "Unknown extension presence of #{actual_presence} for extension #{ext_crd["name"]}" 
       end
 
       add = false
 
-      if desired_status.nil?
+      if desired_presence.nil?
         add = true
-      elsif desired_status == actual_status
+      elsif desired_presence == actual_presence
         add = true
       end
 
       if add
         in_scope_ext_reqs << 
-          ExtensionRequirement.new(ext_crd["name"], ext_crd["version"], status: actual_status,
+          ExtensionRequirement.new(ext_crd["name"], ext_crd["version"], presence: actual_presence,
             note: ext_crd["note"], req_id: "REQ-EXT-" + ext_crd["name"])
       end
     end

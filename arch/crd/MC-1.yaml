@@ -31,24 +31,24 @@ MC-1:
   extensions:
   - name: I
     version: "~> 2.1"
-    status: mandatory
+    presence: mandatory
   - name: C
     version: "~> 2.2"
-    status: mandatory
+    presence: mandatory
   - name: M
     version: "~> 2.0"
-    status: mandatory
+    presence: mandatory
   - name: Zicsr
     version: "~> 2.0"
-    status: mandatory
+    presence: mandatory
   - name: Zicntr
     version: "~> 2.0"
-    status: mandatory
+    presence: mandatory
     parameters:
         TIME_CSR_IMPLEMENTED: {} # Unconstrained
   - name: Sm
     version: "~> 1.11"
-    status: mandatory
+    presence: mandatory
     parameters:
         MTVEC_BASE_ALIGNMENT_DIRECT: {} # Unconstrained
         MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
