@@ -41,11 +41,11 @@ Sm:
       page-based virtual memory, even if VM is not currently enabled.
     - Removed the N extension.
     - Defined the mandatory RV32-only CSR `mstatush`, which contains most of
-      the same fields as the upper 32 bits of RV64’s `mstatus`.
+      the same fields as the upper 32 bits of RV64's `mstatus`.
     - Defined the mandatory CSR `mconfigptr`, which if nonzero contains the
       address of a configuration data structure.
     - Defined optional `mseccfg` and `mseccfgh` CSRs, which control the
-      machine’s security configuration.
+      machine's security configuration.
     - Defined `menvcfg` CSR (and RV32-only `menvcfgh`), which control various characteristics
       of the execution environment.
     - Designated part of SYSTEM major opcode for custom use.

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'ruby-prof-flamegraph'
+
 require_relative "obj"
 
 
@@ -44,9 +46,9 @@ class Instruction < ArchDefObject
     @data["assembly"]
   end
 
-  def fill_symtab(global_symtab, effective_xlen)
+  def fill_symtab(global_symtab, effective_xlen, ast)
     symtab = global_symtab.deep_clone
-    symtab.push
+    symtab.push(ast)
     symtab.add(
       "__instruction_encoding_size",
       Idl::Var.new("__instruction_encoding_size", Idl::Type.new(:bits, width: encoding_width.bit_length), encoding_width)
@@ -81,10 +83,13 @@ class Instruction < ArchDefObject
     return nil unless @data.key?("operation()")
 
     type_checked_ast = type_checked_operation_ast(arch_def.idl_compiler, global_symtab, effective_xlen)
-    pruned_ast = type_checked_ast.prune(fill_symtab(global_symtab, effective_xlen))
+    print "Pruning #{name} operation()..."
+    pruned_ast = type_checked_ast.prune(fill_symtab(global_symtab, effective_xlen, type_checked_ast))
+    puts "done"
+    pruned_ast.freeze_tree(global_symtab)
     arch_def.idl_compiler.type_check(
       pruned_ast,
-      fill_symtab(global_symtab, effective_xlen),
+      fill_symtab(global_symtab, effective_xlen, pruned_ast),
       "#{name}.operation() (pruned)"
     )
 
@@ -99,22 +104,43 @@ class Instruction < ArchDefObject
       []
     else
       # RubyProf.start
-      pruned_operation_ast(symtab, effective_xlen).reachable_functions(fill_symtab(symtab, effective_xlen))
+      ast = type_checked_operation_ast(symtab.archdef.idl_compiler, symtab, effective_xlen)
+      print "Determining reachable funcs from #{name}..."
+      fns = ast.reachable_functions(fill_symtab(symtab, effective_xlen, ast))
+      puts "done"
       # result = RubyProf.stop
       # RubyProf::FlatPrinter.new(result).print($stdout)
       # exit
+      fns
     end
   end
 
   # @param symtab [Idl::SymbolTable] Symbol table with global scope populated
   # @param effective_xlen [Integer] Effective XLEN to evaluate against
-  # @return [Array<Integer>] List of all exceptions that can be reached from operation()
+  # @return [Integer] Mask of all exceptions that can be reached from operation()
   def reachable_exceptions(symtab, effective_xlen)
     if @data["operation()"].nil?
       []
     else
-      pruned_operation_ast(symtab).reachable_exceptions(fill_symtab(symtab, effective_xlen)).uniq
+      # pruned_ast =  pruned_operation_ast(symtab)
+      # type_checked_operation_ast()
+      type_checked_ast = type_checked_operation_ast(symtab.arch_def.idl_compiler, symtab, effective_xlen)
+      symtab = fill_symtab(symtab, effective_xlen, pruned_ast)
+      type_checked_ast.reachable_exceptions(symtab)
     end
+  end
+
+  def mask_to_array(int)
+    elems = []
+    idx = 0
+    while int != 0
+      if (int & (1 << idx)) != 0
+        elems << idx
+      end
+      int &= ~(1 << idx)
+      idx += 1
+    end
+    elems
   end
 
   # @param symtab [Idl::SymbolTable] Symbol table with global scope populated
@@ -130,28 +156,54 @@ class Instruction < ArchDefObject
         if symtab.archdef.multi_xlen?
           if base.nil?
             (
-              pruned_operation_ast(symtab, 32).reachable_exceptions(fill_symtab(symtab, 32)).uniq.map { |code|
-                etype.element_name(code)
-              } +
-              pruned_operation_ast(symtab, 64).reachable_exceptions(fill_symtab(symtab, 64)).uniq.map { |code|
+              pruned_ast = pruned_operation_ast(symtab, 32)
+              print "Determining reachable exceptions from #{name}#RV32..."
+              e32 = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, 32, pruned_ast))).map { |code|
                 etype.element_name(code)
               }
+              puts "done"
+              pruned_ast = pruned_operation_ast(symtab, 64)
+              print "Determining reachable exceptions from #{name}#RV64..."
+              e64 = mask_to_array(prunted_ast.reachable_exceptions(fill_symtab(symtab, 64, pruned_ast))).map { |code|
+                etype.element_name(code)
+              }
+              puts done
+              e32 + e64
             ).uniq
           else
-            pruned_operation_ast(symtab, base).reachable_exceptions(fill_symtab(symtab, base)).uniq.map { |code|
-              etype.element_name(code)
-            }
+            pruned_ast = pruned_operation_ast(symtab, base)
+            print "Determining reachable exceptions from #{name}..."
+            result = RubyProf.profile do
+              e = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, base, pruned_ast))).map { |code|
+                etype.element_name(code)
+              }
+            end
+            RubyProf::CallStackPrinter.new(result).print(File.open("#{name}-profile.html", "w+"), {})
+            puts "done"
+            e
           end
         else
           effective_xlen = symtab.archdef.mxlen
-          pruned_operation_ast(symtab, effective_xlen).reachable_exceptions(fill_symtab(symtab, effective_xlen)).uniq.map { |code|
-            etype.element_name(code)
-          }
+          pruned_ast = pruned_operation_ast(symtab, effective_xlen)
+          print "Determining reachable exceptions from #{name}..."
+          # result = RubyProf.profile do
+            e = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, effective_xlen, pruned_ast))).map { |code|
+              etype.element_name(code)
+            }
+          # end
+          # RubyProf::FlameGraphPrinter.new(result).print(File.open("#{name}-profile.html", "w+"), {})
+          puts "done"
+          e
         end
       else
-        pruned_operation_ast(symtab, effective_xlen).reachable_exceptions(fill_symtab(symtab, effective_xlen)).uniq.map { |code|
+        pruned_ast = pruned_operation_ast(symtab, effective_xlen)
+
+        print "Determining reachable exceptions from #{name}..."
+        e = mask_to_array(prunted_ast.reachable_exceptions(fill_symtab(symtab, effective_xlen, pruned_ast))).map { |code|
           etype.element_name(code)
         }
+        puts "done"
+        e
       end
       # result = RubyProf.stop
       # RubyProf::FlatPrinter.new(result).print(STDOUT)
@@ -533,21 +585,23 @@ class Instruction < ArchDefObject
 
     return nil unless @data.key?("operation()")
 
-    ast = operation_ast(idl_compiler)
+    ast = operation_ast(symtab)
 
-    idl_compiler.type_check(ast, fill_symtab(symtab, effective_xlen), "#{name}.operation()")
+    idl_compiler.type_check(ast, fill_symtab(symtab, effective_xlen, ast), "#{name}.operation()")
 
     @type_checked_operation_ast[symtab.hash] = ast
   end
 
+  # @param symtab [SymbolTable] Symbol table with compilation context
   # @return [FunctionBodyAst] The abstract syntax tree of the instruction operation
-  def operation_ast(idl_compiler)
+  def operation_ast(symtab)
     return @operation_ast unless @operation_ast.nil?
     return nil if @data["operation()"].nil?
 
     # now, parse the operation
-    @operation_ast = idl_compiler.compile_inst_operation(
+    @operation_ast = symtab.archdef.idl_compiler.compile_inst_operation(
       self,
+      symtab:,
       input_file: @data["__source"],
       input_line: source_line("operation()")
     )

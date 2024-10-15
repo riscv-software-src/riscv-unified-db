@@ -27,7 +27,7 @@ cycleh:
   fields:
     COUNT:
       location: 31-0
-      alias: mcycleh.COUNT
+      alias: mcycleh.COUNT[63:32]
       description: Alias of `mcycleh.COUNT`.
       type: RO-H
       reset_value: UNDEFINED_LEGAL

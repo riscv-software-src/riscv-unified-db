@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+mtval2:
+  address: 0x34b
+  long_name: Machine Second Trap Value Register
+  description: |
+    When a trap is taken into M-mode from a virtual mode, mtval2 is written with additional exception-specific information,
+    alongside mtval, to assist software in handling the trap.
+
+    When a guest-page-fault trap is taken into M-mode, mtval2 is written with either zero or the guest physical address that faulted, shifted right by 2 bits. For other traps, mtval2 is set to zero, but a future standard or extension may redefine mtval2's setting for other traps.
+
+    If a guest-page fault is due to an implicit memory access during first-stage (VS-stage) address translation, a guest physical address written to mtval2 is that of the implicit memory access that faulted. Additional information is provided in CSR mtinst to disambiguate such situations.
+
+    Otherwise, for misaligned loads and stores that cause guest-page faults, a nonzero guest physical address in mtval2 corresponds to the faulting portion of the access as indicated by the virtual address in mtval. For instruction guest-page faults on systems with variable-length instructions, a nonzero mtval2 corresponds to the faulting portion of the instruction as indicated by the virtual address in mtval.
+
+    mtval2 is a WARL register that must be able to hold zero and may be capable of holding only an arbitrary subset of other 2-bit-shifted guest physical addresses, if any.
+  priv_mode: M
+  length: MXLEN
+  definedBy: H
+  fields:
+    VALUE:
+      location_rv64: 63-0
+      location_rv32: 31-0
+      type(): |
+        if (REPORT_GPA_IN_TVAL_ON_LOAD_GUEST_PAGE_FAULT
+            || REPORT_GPA_IN_TVAL_ON_STORE_AMO_GUEST_PAGE_FAULT
+            || REPORT_GPA_IN_TVAL_ON_INSTRUCTION_GUEST_PAGE_FAULT
+            || REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT) {
+          return CsrFieldType::RWH;
+        } else {
+          return CsrFieldType::RO;
+        }
+      description: |
+        Exception-speicific information for a trap into M-mode.
+      reset_value: UNDEFINED_LEGAL

@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../../schemas/csr_schema.json
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
 
 vsatp:
   address: 0x280
@@ -94,7 +94,7 @@ vsatp:
             return UNDEFINED_LEGAL_DETERMINISTIC;
           }
         } else {
-          XReg shamt = (CSR[mstatus].SXL == $bits(XRegWidth::XLEN64)) ? 16 : 9;
+          XReg shamt = ((XLEN == 32) || (CSR[mstatus].SXL == $bits(XRegWidth::XLEN32))) ? 9 : 16;
           XReg all_ones = ((1 << shamt) - 1);
           XReg largest_allowed_asid = (1 << shamt) - 1;
 

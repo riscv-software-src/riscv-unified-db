@@ -133,7 +133,7 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
 
   arch_def =
     if config_name == "_"
-      arch_def_for(nil)
+      arch_def_for("_64")
     else
       arch_def_for(config_name)
     end

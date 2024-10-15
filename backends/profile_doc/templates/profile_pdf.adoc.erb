@@ -619,7 +619,7 @@ RV64::
 
 // TODO: add back after sym table update for generic arch def is merged in profiles branch
 <%#
-<%- exception_list = inst.reachable_exceptions_str(arch_def.sym_table) -% >
+<%- exception_list = inst.reachable_exceptions_str(arch_def.symtab) -% >
 <%- if exception_list.empty? -% >
 This instruction does not generate synchronous exceptions.
 <%- else -% >

@@ -27,6 +27,10 @@ class MockArchDef
   def fully_configured? = false
   def partially_configured? = true
   def unconfigured? = false
+
+  def name = "mock"
+
+  attr_accessor :global_ast
 end
 
 module TestMixin

@@ -205,6 +205,7 @@ class Validator
       if [:inst, :ext, :csr].include?(type) && obj.keys.first != File.basename(path, ".yaml").to_s
         raise ValidationError, "In #{path}, top key '#{obj.keys.first}' does not match filename '#{File.basename(path)}'"
       end
+      obj
     rescue Psych::SyntaxError => e
       warn "While parsing #{path}"
       raise e

@@ -23,7 +23,7 @@ class ArchDef
   # @return [Idl::Compiler] The IDL compiler
   attr_reader :idl_compiler
 
-  # @return [Idl::AstNode] Abstract syntax tree of global scope
+  # @return [Idl::IsaAst] Abstract syntax tree of global scope
   attr_reader :global_ast
 
   # @return [String] Name of this definition. Special names are:
@@ -40,14 +40,14 @@ class ArchDef
   attr_reader :mxlen
 
   # hash for Hash lookup
-  def hash = @name.hash
+  def hash = @name_sym.hash
 
   # @return [Idl::SymbolTable] Symbol table with global scope
-  # @return [nil] if the architecture is not configured (use sym_table_32 or sym_table_64)
-  def sym_table
-    raise NotImplementedError, "Un-configured ArchDefs have no symbol table" if @sym_table.nil?
+  # @return [nil] if the architecture is not configured (use symtab_32 or symtab_64)
+  def symtab
+    raise NotImplementedError, "Un-configured ArchDefs have no symbol table" if @symtab.nil?
 
-    @sym_table
+    @symtab
   end
 
   def fully_configured? = @arch_def["type"] == "fully configured"
@@ -61,7 +61,9 @@ class ArchDef
   # @param config_name [#to_s] The name of a configuration, which must correspond
   #                            to a folder under $root/cfgs
   def initialize(config_name, arch_def_path, overlay_path: nil)
-    @name = config_name.to_s
+    @name = config_name.to_s.freeze
+    @name_sym = @name.to_sym.freeze
+
     @idl_compiler = Idl::Compiler.new(self)
 
     validator = Validator.instance
@@ -72,8 +74,8 @@ class ArchDef
       raise e
     end
 
-    @arch_def = YAML.load_file(arch_def_path, permitted_classes: [Date])
-    @param_values = @arch_def.key?("params") ? @arch_def["params"] : {}
+    @arch_def = YAML.load_file(arch_def_path, permitted_classes: [Date]).freeze
+    @param_values = (@arch_def.key?("params") ? @arch_def["params"] : {}).freeze
     @mxlen = @arch_def.dig("params", "XLEN") # might be nil
 
     unless @mxlen.nil?
@@ -81,55 +83,100 @@ class ArchDef
       # to populate the symbol table.
       #
       # if this is the fully generic config ("_"), then you need to use
-      # either sym_table_32 or sym_table_64
-      @sym_table = Idl::SymbolTable.new(self)
+      # either symtab_32 or symtab_64
+      @symtab = Idl::SymbolTable.new(self)
       custom_globals_path = overlay_path.nil? ? Pathname.new("/does/not/exist") : overlay_path / "isa" / "globals.isa"
       idl_path = File.exist?(custom_globals_path) ? custom_globals_path : $root / "arch" / "isa" / "globals.isa"
       @global_ast = @idl_compiler.compile_file(
-        idl_path,
-        symtab: @sym_table
+        idl_path
       )
-
-      @sym_table.deep_freeze
+      @global_ast.add_global_symbols(@symtab)
+      @symtab.deep_freeze
+      @global_ast.freeze_tree(@symtab)
+      @mxlen.freeze
     else
       # parse globals
       @global_ast = @idl_compiler.compile_file(
-        $root / "arch" / "isa" / "globals.isa",
-        symtab: sym_table_32
+        $root / "arch" / "isa" / "globals.isa"
       )
-      sym_table_32.deep_freeze
+      @global_ast.add_global_symbols(symtab_32)
+      symtab_32.deep_freeze
+      @global_ast.freeze_tree(symtab_32)
 
       # do it again for rv64, but we don't need the ast this time
-      @idl_compiler.compile_file(
-        $root / "arch" / "isa" / "globals.isa",
-        symtab: sym_table_64
+      global_ast_64 = @idl_compiler.compile_file(
+        $root / "arch" / "isa" / "globals.isa"
       )
-      sym_table_64.deep_freeze
+      global_ast_64.add_global_symbols(symtab_64)
+      symtab_64.deep_freeze
+      global_ast_64.freeze_tree(symtab_64)
     end
   end
 
-  # Get a symbol table with globals defined for a generic (config-independent) RV32 architecture defintion
-  # Being config-independent, parameters in this symbol table will not have values assigned
+  # type check all IDL, including globals, instruction ops, and CSR functions
   #
-  # @return [Idl::SymbolTable] Symbol table with config-independent global symbols populated for RV32
-  def sym_table_32
-    raise NotImplementedError, "Use sym_table for configured def" unless @sym_table.nil?
+  # @param show_progress [Boolean] whether to show progress bars
+  # @param io [IO] where to write progress bars
+  # @return [void]
+  def type_check(show_progress: true, io: $stdout)
+    io.puts "Type checking IDL code for #{name}..."
+    progressbar =
+      if show_progress
+        ProgressBar.create(title: "Instructions", total: instructions.size)
+      end
 
-    return @sym_table_32 unless @sym_table_32.nil?
+    instructions.each do |inst|
+      progressbar.increment if show_progress
+      if @mxlen == 32
+        inst.type_checked_operation_ast(@idl_compiler, @symtab, 32) if inst.rv32?
+      elsif @mxlen == 64
+        inst.type_checked_operation_ast(@idl_compiler, @symtab, 64) if inst.rv64?
+        inst.type_checked_operation_ast(@idl_compiler, @symtab, 32) if possible_xlens.include?(32) && inst.rv32?
+      end
+    end
 
-    @sym_table_32 = Idl::SymbolTable.new(self, 32)
-  end
+    progressbar =
+      if show_progress
+        ProgressBar.create(title: "CSRs", total: csrs.size)
+      end
 
-  # Get a symbol table with globals defined for a generic (config-independent) RV64 architecture defintion
-  # Being config-independent, parameters in this symbol table will not have values assigned
-  #
-  # @return [Idl::SymbolTable] Symbol table with config-independent global symbols populated for RV64
-  def sym_table_64
-    raise NotImplementedError, "Use sym_table for configured def" unless @sym_table.nil?
+    csrs.each do |csr|
+      progressbar.increment if show_progress
+      if csr.has_custom_sw_read?
+        if (possible_xlens.include?(32) && csr.defined_in_base32?) || (possible_xlens.include?(64) && csr.defined_in_base64?)
+          csr.type_checked_sw_read_ast(@symtab)
+        end
+      end
+      csr.fields.each do |field|
+        unless field.type_ast(@symtab).nil?
+          if ((possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?) ||
+              (possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?))
+            field.type_checked_type_ast(@symtab) 
+          end
+        end
+        unless field.reset_value_ast(@symtab).nil?
+          if ((possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?) ||
+              (possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?))
+            field.type_checked_reset_value_ast(@symtab) if csr.defined_in_base32? && field.defined_in_base32?
+          end
+        end
+        unless field.sw_write_ast(@symtab).nil?
+          field.type_checked_sw_write_ast(@symtab, 32) if possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?
+          field.type_checked_sw_write_ast(@symtab, 64) if possible_xlens.include?(64) &&  csr.defined_in_base64? && field.defined_in_base64?
+        end
+      end
+    end
 
-    return @sym_table_64 unless @sym_table_64.nil?
+    progressbar =
+      if show_progress
+        ProgressBar.create(title: "Functions", total: functions.size)
+      end
+    functions.each do |func|
+      progressbar.increment if show_progress
+      func.type_check(@symtab)
+    end
 
-    @sym_table_64 = Idl::SymbolTable.new(self, 64)
+    puts "done" if show_progress
   end
 
   # Returns whether or not it may be possible to switch XLEN given this definition.
@@ -161,6 +208,8 @@ class ArchDef
   # @return [Boolean] true if this configuration might execute in multiple xlen environments in +mode+
   #                   (e.g., that in some mode the effective xlen can be either 32 or 64, depending on CSR values)
   def multi_xlen_in_mode?(mode)
+    return false if mxlen == 32
+
     case mode
     when "M"
       mxlen.nil?
@@ -763,16 +812,18 @@ class ArchDef
       @implemented_functions <<
         if inst.base.nil?
           if multi_xlen?
-            (inst.reachable_functions(sym_table, 32) +
-             inst.reachable_functions(sym_table, 64))
+            (inst.reachable_functions(symtab, 32) +
+             inst.reachable_functions(symtab, 64))
           else
-            inst.reachable_functions(sym_table, mxlen)
+            inst.reachable_functions(symtab, mxlen)
           end
         else
-          inst.reachable_functions(sym_table, inst.base)
+          inst.reachable_functions(symtab, inst.base)
         end
     end
-    @implemented_functions.flatten!.uniq!(&:name)
+    raise "?" unless @implemented_functions.is_a?(Array)
+    @implemented_functions = @implemented_functions.flatten
+    @implemented_functions.uniq!(&:name)
 
     puts "  Finding all reachable functions from CSR operations"
 
@@ -921,6 +972,7 @@ class ExceptionCode
 
   def initialize(name, var, number, ext)
     @name = name
+    @name.freeze
     @var = var
     @num = number
     @ext = ext

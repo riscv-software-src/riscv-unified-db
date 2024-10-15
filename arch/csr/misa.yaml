@@ -90,7 +90,7 @@ misa:
     G:
       location: 6
       description: |
-        Indicates support for all of the following extensions: `I`, `A`, `M`, `F`, 'D'.
+        Indicates support for all of the following extensions: `I`, `A`, `M`, `F`, `D`.
       type(): |
         if ((implemented?(ExtensionName::A) && MUTABLE_MISA_A) ||
             (implemented?(ExtensionName::M) && MUTABLE_MISA_M) ||

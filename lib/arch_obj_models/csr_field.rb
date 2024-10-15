@@ -39,16 +39,17 @@ class CsrField < ArchDefObject
 
   # @return [Idl::FunctionBodyAst] Abstract syntax tree of the type() function
   # @return [nil] if the type property is not a function
-  # @param idl_compiler [Idl::Compiler] A compiler
-  def type_ast(idl_compiler)
+  # @param symtab [SymbolTable] Symbol table with execution context
+  def type_ast(symtab)
     return @type_ast unless @type_ast.nil?
     return nil if @data["type()"].nil?
 
-    @type_ast = idl_compiler.compile_func_body(
+    @type_ast = symtab.archdef.idl_compiler.compile_func_body(
       @data["type()"],
       name: "CSR[#{csr.name}].#{name}.type()",
       input_file: csr.__source,
       input_line: csr.source_line("fields", name, "type()"),
+      symtab:,
       type_check: false
     )
 
@@ -66,20 +67,25 @@ class CsrField < ArchDefObject
     return ast unless ast.nil?
 
     symtab_hash = symtab.hash
-    symtab = symtab.deep_clone
-    symtab.push
+
+    symtab = symtab.global_clone
+
+    symtab.push(ast)
     # all CSR instructions are 32-bit
     symtab.add(
       "__expected_return_type",
       Idl::Type.new(:enum_ref, enum_class: symtab.get("CsrFieldType"))
     )
 
-    ast = type_ast(symtab.archdef.idl_compiler)
+    ast = type_ast(symtab)
     symtab.archdef.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{name}].type()"
     )
+    symtab.pop
+    symtab.release
+
     @type_checked_type_asts[symtab_hash] = ast
   end
 
@@ -94,24 +100,29 @@ class CsrField < ArchDefObject
     ast = type_checked_type_ast(symtab).prune(symtab.deep_clone)
 
     symtab_hash = symtab.hash
-    symtab.push
+    symtab = symtab.global_clone
+    symtab.push(ast)
     # all CSR instructions are 32-bit
     symtab.add(
       "__expected_return_type",
       Idl::Type.new(:enum_ref, enum_class: symtab.get("CsrFieldType"))
     )
 
+    ast.freeze_tree(symtab)
+
     symtab.archdef.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{name}].type()"
     )
+    symtab.pop
+    symtab.release
     @pruned_type_asts[symtab_hash] = ast
   end
 
   # returns the definitive type for a configuration
   #
-  # @param arch_def [ArchDef] A config
+  # @param symtab [SymbolTable] Symbol table
   # @return [String]
   #    The type of the field. One of:
   #      'RO'    => Read-only
@@ -120,12 +131,14 @@ class CsrField < ArchDefObject
   #      'RW-R'  => Read-write, with a restricted set of legal values
   #      'RW-H'  => Read-write, with a hardware update
   #      'RW-RH' => Read-write, with a hardware update and a restricted set of legal values
-  def type(arch_def)
-    if !@type_cache.nil? && @type_cache.key?(arch_def)
-      return @type_cache[arch_def]
-    end
+  def type(symtab)
+    raise ArgumentError, "Argument 1 should be a symtab" unless symtab.is_a?(Idl::SymbolTable)
 
-    @type_cache ||= {}
+    unless @type_cache.nil?
+      raise "Different archdef for type #{@type_cache.keys},  #{symtab.archdef}" unless @type_cache.key?(symtab.archdef)
+
+      return @type_cache[symtab.archdef]
+    end
 
     type =
       if @data.key?("type")
@@ -135,46 +148,58 @@ class CsrField < ArchDefObject
         idl = @data["type()"]
         raise "type() is nil for #{csr.name}.#{name} #{@data}?" if idl.nil?
 
-        raise Idl::AstNode::ValueError.new(0, "", ""), "ArchDef is not configured" if arch_def.unconfigured?
+        
 
-        # grab global symtab
-        sym_table = arch_def.sym_table
-
+        # value_result = Idl::AstNode.value_try do
+        ast = type_checked_type_ast(symtab)
         begin
-          case type_checked_type_ast(sym_table.deep_clone).return_value(sym_table.deep_clone.push)
-          when 0
-            "RO"
-          when 1
-            "RO-H"
-          when 2
-            "RW"
-          when 3
-            "RW-R"
-          when 4
-            "RW-H"
-          when 5
-            "RW-RH"
-          else
-            raise "Unhandled CsrFieldType value"
-          end
-        rescue Idl::AstNode::ValueError => e
-          warn "In parsing #{csr.name}.#{name}::type()"
-          warn "  Return of type() function cannot be evaluated at compile time"
-          raise e
+          symtab = symtab.global_clone
+
+          symtab.push(ast)
+          type =  case ast.return_value(symtab)
+                  when 0
+                    "RO"
+                  when 1
+                    "RO-H"
+                  when 2
+                    "RW"
+                  when 3
+                    "RW-R"
+                  when 4
+                    "RW-H"
+                  when 5
+                    "RW-RH"
+                  else
+                    raise "Unhandled CsrFieldType value"
+                  end
+        ensure
+          symtab.pop
+          symtab.release
         end
+        type
+        # end
+        # Idl::AstNode.value_else(value_result) do
+        #   warn "In parsing #{csr.name}.#{name}::type()"
+        #   raise "  Return of type() function cannot be evaluated at compile time"
+        #   Idl::AstNode.value_error ""
+        # end
       end
 
-    @type_cache[arch_def] = type
+    @type_cache ||= {}
+    @type_cache[symtab.archdef] = type
   end
 
   # @return [String] A pretty-printed type string
-  def type_pretty(arch_def)
-    begin
-      type(arch_def)
-    rescue Idl::AstNode::ValueError => e
-      ast = type_ast(arch_def.idl_compiler)
-      ast.gen_option_adoc
+  def type_pretty(symtab)
+    str = nil
+    value_result = Idl::AstNode.value_try do
+      str = type(symtab)
     end
+    Idl::AstNode.value_else(value_result) do
+      ast = type_ast(symtab)
+      str = ast.gen_option_adoc
+    end
+    str
   end
 
   # @return [Alias,nil] The aliased field, or nil if there is no alias
@@ -212,14 +237,14 @@ class CsrField < ArchDefObject
 
     symtab =
       if (archdef.configured?)
-        archdef.sym_table
+        archdef.symtab
       else
         raise ArgumentError, "Must supply effective_xlen for generic ArchDef" if effective_xlen.nil?
 
         if effective_xlen == 32
-          archdef.sym_table_32
+          archdef.symtab_32
         else
-          archdef.sym_table_64
+          archdef.symtab_64
         end
       end
 
@@ -228,7 +253,7 @@ class CsrField < ArchDefObject
       ast = pruned_sw_write_ast(archdef, effective_xlen)
       unless ast.nil?
         sw_write_symtab = symtab.deep_clone
-        sw_write_symtab.push
+        sw_write_symtab.push(ast)
         sw_write_symtab.add("csr_value", Idl::Var.new("csr_value", csr.bitfield_type(symtab.archdef, effective_xlen)))
         fns.concat ast.reachable_functions(sw_write_symtab)
       end
@@ -236,13 +261,13 @@ class CsrField < ArchDefObject
     if @data.key?("type()")
       ast = pruned_type_ast(symtab.deep_clone)
       unless ast.nil?
-        fns.concat ast.reachable_functions(symtab.deep_clone.push)
+        fns.concat ast.reachable_functions(symtab.deep_clone.push(ast))
       end
     end
     if @data.key?("reset_value()")
       ast = pruned_reset_value_ast(symtab.deep_clone)
       unless ast.nil?
-        fns.concat ast.reachable_functions(symtab.deep_clone.push)
+        fns.concat ast.reachable_functions(symtab.deep_clone.push(ast))
       end
     end
 
@@ -250,27 +275,29 @@ class CsrField < ArchDefObject
   end
 
   # @return [Array<Idl::FunctionDefAst>] List of functions called thorugh this field, irrespective of context
-  # @param archdef [ArchDef] Architecture definition
-  def reachable_functions_unevaluated(archdef)
+  # @param symtab [SymbolTable]
+  def reachable_functions_unevaluated(symtab)
+    raise ArgumentError, "Argument should be a symtab" unless symtab.is_a?(Idl::SymbolTable)
+
     return @reachable_functions_unevaluated unless @reachable_functions_unevaluated.nil?
 
     fns = []
     if has_custom_sw_write?
-      ast = sw_write_ast(archdef.idl_compiler)
+      ast = sw_write_ast(symtab)
       unless ast.nil?
-        fns.concat ast.reachable_functions_unevaluated(archdef)
+        fns.concat ast.reachable_functions_unevaluated(symtab)
       end
     end
     if @data.key?("type()")
-      ast = type_ast(archdef.idl_compiler)
+      ast = type_ast(symtab)
       unless ast.nil?
-        fns.concat ast.reachable_functions_unevaluated(archdef)
+        fns.concat ast.reachable_functions_unevaluated(symtab)
       end
     end
     if @data.key?("reset_value()")
-      ast = reset_value_ast(archdef.idl_compiler)
+      ast = reset_value_ast(symtab)
       unless ast.nil?
-        fns.concat ast.reachable_functions_unevalutated(archdef)
+        fns.concat ast.reachable_functions_unevalutated(symtab)
       end
     end
 
@@ -294,16 +321,19 @@ class CsrField < ArchDefObject
   # @param arch_def [IdL::Compiler] A compiler
   # @return [Idl::FunctionBodyAst] Abstract syntax tree of the reset_value function
   # @return [nil] If the reset_value is not a function
-  def reset_value_ast(idl_compiler)
+  def reset_value_ast(symtab)
+    raise ArgumentError, "Argument should be a symtab (is a #{symtab.class.name})" unless symtab.is_a?(Idl::SymbolTable)
+
     return @reset_value_ast unless @reset_value_ast.nil?
     return nil unless @data.key?("reset_value()")
 
-    @reset_value_ast = idl_compiler.compile_func_body(
+    @reset_value_ast = symtab.archdef.idl_compiler.compile_func_body(
       @data["reset_value()"],
       return_type: Idl::Type.new(:bits, width: 64),
       name: "CSR[#{parent.name}].#{name}.reset_value()",
       input_file: csr.__source,
       input_line: csr.source_line("fields", name, "reset_value()"),
+      symtab:,
       type_check: false
     )
   end
@@ -320,11 +350,11 @@ class CsrField < ArchDefObject
 
     return nil unless @data.key?("reset_value()")
 
-    ast = reset_value_ast(symtab.archdef.idl_compiler)
+    ast = reset_value_ast(symtab)
 
     symtab_hash = symtab.hash
     symtab = symtab.deep_clone
-    symtab.push
+    symtab.push(ast)
     symtab.add("__expected_return_type", Idl::Type.new(:bits, width: 64))
     symtab.archdef.idl_compiler.type_check(
       ast,
@@ -348,18 +378,21 @@ class CsrField < ArchDefObject
 
     symtab_hash = symtab.hash
     symtab = symtab.deep_clone
-    symtab.push
+    symtab.push(ast)
     symtab.add("__expected_return_type", Idl::Type.new(:bits, width: 64))
 
     ast = ast.prune(symtab)
 
     symtab.pop
-    symtab.push
+
+    ast.freeze_tree(symtab)
+
+    symtab.push(ast)
     symtab.add("__expected_return_type", Idl::Type.new(:bits, width: 64))
     symtab.archdef.idl_compiler.type_check(
       ast,
       symtab,
-      "CSR[#{csr.name}].reset_value()"
+      "CSR[#{csr.name}].#{name}.reset_value()"
     )
 
     @type_checked_reset_value_asts[symtab_hash] = ast
@@ -369,9 +402,8 @@ class CsrField < ArchDefObject
   # @return [Integer] The reset value of this field
   # @return [String]  The string 'UNDEFINED_LEGAL' if, for this config, there is no defined reset value
   def reset_value(arch_def, effective_xlen = nil)
-    if !@reset_value_cache.nil? && @reset_value_cache.key?(arch_def)
-      return @reset_value_cache[arch_def]
-    end
+    cached_value = @reset_value_cache.nil? ? nil : @reset_value_cache[arch_def]
+    return cached_value if cached_value
 
     @reset_value_cache ||= {}
 
@@ -381,13 +413,14 @@ class CsrField < ArchDefObject
       else
         symtab =
           if !arch_def.mxlen.nil?
-            arch_def.sym_table
+            arch_def.symtab
           else
             raise ArgumentError, "effective_xlen is required when using generic arch_def" if effective_xlen.nil?
 
-            effective_xlen == 32 ? arch_def.sym_table_32 : arch_def.sym_table_64
+            effective_xlen == 32 ? arch_def.symtab_32 : arch_def.symtab_64
           end
-        val = pruned_reset_value_ast(symtab.deep_clone).return_value(symtab.deep_clone.push)
+        ast = pruned_reset_value_ast(symtab.deep_clone)
+        val = ast.return_value(symtab.deep_clone.push(ast))
         val = "UNDEFINED_LEGAL" if val == 0x1_0000_0000_0000_0000
         val
       end
@@ -396,36 +429,39 @@ class CsrField < ArchDefObject
   def dynamic_reset_value?(arch_def)
     return false unless @data["reset_value"].nil?
 
-    begin
+    value_result = value_try do
       if arch_def.mxlen.nil?
-        # need to try with generic sym_table_32/sym_table_64
+        # need to try with generic symtab_32/symtab_64
         reset_value_32 = reset_value(arch_def, 32)
         reset_value_64 = reset_value(arch_def, 64)
         reset_value_32 != reset_value_64
       else
         # just call the function, see if we get a value error
         reset_value(arch_def)
+        false
       end
-    rescue Idl::AstNode::ValueError
-      true
-    end
+    end || true
   end
 
   def reset_value_pretty(arch_def)
-    begin
-      if arch_def.mxlen.nil?
-        if dynamic_reset_value?(arch_def)
-          raise Idl::AstNode::ValueError.new(0, "", "")
+    str = nil
+    value_result = Idl::AstNode.value_try do
+      str =
+        if arch_def.mxlen.nil?
+          if dynamic_reset_value?(arch_def)
+            Idl::AstNode.value_error ""
+          else
+            reset_value(arch_def, 32) # 32 or 64, doesn't matter
+          end
         else
-          reset_value(arch_def, 32) # 32 or 64, doesn't matter
+          reset_value(arch_def)
         end
-      else
-        reset_value(arch_def)
-      end
-    rescue Idl::AstNode::ValueError
-      ast = reset_value_ast(arch_def.idl_compiler)
-      ast.gen_option_adoc
     end
+    Idl::AstNode.value_else(value_result) do
+      ast = reset_value_ast(arch_def.symtab)
+      str = ast.gen_option_adoc
+    end
+    str
   end
 
   # @return [Boolean] true if the CSR field has a custom sw_write function
@@ -444,8 +480,8 @@ class CsrField < ArchDefObject
     return nil unless @data.key?("sw_write(csr_value)")
 
     symtab_hash = symtab.hash
-    symtab = symtab.deep_clone
-    symtab.push
+    symtab = symtab.global_clone
+    symtab.push(ast)
     # all CSR instructions are 32-bit
     symtab.add(
       "__instruction_encoding_size",
@@ -460,39 +496,43 @@ class CsrField < ArchDefObject
       Idl::Var.new("csr_value", csr.bitfield_type(symtab.archdef, effective_xlen))
     )
 
-    ast = sw_write_ast(symtab.archdef.idl_compiler)
+    ast = sw_write_ast(symtab)
     symtab.archdef.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{csr.name}].#{name}.sw_write()"
     )
+    symtab.pop
+    symtab.release
     @type_checked_sw_write_asts[symtab_hash] = ast
   end
 
   # @return [Idl::FunctionBodyAst] The abstract syntax tree of the sw_write() function
   # @return [nil] If there is no sw_write() function
-  # @param idl_compiler [Idl::Compiler] A compiler
-  def sw_write_ast(idl_compiler)
+  # @param archdef [ArchDef] An architecture definition
+  def sw_write_ast(symtab)
+    raise ArgumentError, "Argument should be a symtab" unless symtab.is_a?(Idl::SymbolTable)
+
     return @sw_write_ast unless @sw_write_ast.nil?
     return nil if @data["sw_write(csr_value)"].nil?
 
     # now, parse the function
-    @sw_write_ast = idl_compiler.compile_func_body(
+    @sw_write_ast = symtab.archdef.idl_compiler.compile_func_body(
       @data["sw_write(csr_value)"],
       return_type: Idl::Type.new(:bits, width: 128), # big int to hold special return values
       name: "CSR[#{csr.name}].#{name}.sw_write(csr_value)",
-      input_file: csr.source_line("fields", name, "sw_write(csr_value)"),
+      input_file: csr.__source,
+      input_line: csr.source_line("fields", name, "sw_write(csr_value)"),
+      symtab:,
       type_check: false
     )
 
     raise "unexpected #{@sw_write_ast.class}" unless @sw_write_ast.is_a?(Idl::FunctionBodyAst)
 
-    @sw_write_ast.set_input_file(csr.__source, csr.source_line("fields", name, "sw_write(csr_value)"))
-
     @sw_write_ast
   end
 
-  # @return [Idl::FunctionBodyAst] The abstract syntax tree of the sw_write() function, type checked
+  # @return [Idl::FunctionBodyAst] The abstract syntax tree of the sw_write() function, type checked and pruned
   # @return [nil] if there is no sw_write() function
   # @param effective_xlen [Integer] effective xlen, needed because fields can change in different bases
   # @param arch_def [ArchDef] A configuration
@@ -505,8 +545,8 @@ class CsrField < ArchDefObject
 
     raise ArgumentError, "arch_def must be configured to prune" if arch_def.unconfigured?
 
-    symtab = arch_def.sym_table.deep_clone
-    symtab.push
+    symtab = arch_def.symtab.global_clone
+    symtab.push(ast)
     # all CSR instructions are 32-bit
     symtab.add(
       "__instruction_encoding_size",
@@ -521,13 +561,22 @@ class CsrField < ArchDefObject
       Idl::Var.new("csr_value", csr.bitfield_type(arch_def, effective_xlen))
     )
 
-    ast = type_checked_sw_write_ast(arch_def.sym_table.deep_clone, effective_xlen).prune(symtab.deep_clone)
+    ast = type_checked_sw_write_ast(arch_def.symtab, effective_xlen)
+    ast = ast.prune(symtab)
+    raise "Symbol table didn't come back at global + 1" unless symtab.levels == 2
+
+    ast.freeze_tree(arch_def.symtab)
+
 
     arch_def.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{name}].sw_write(csr_value)"
     )
+
+    symtab.pop
+    symtab.release
+
     @pruned_sw_write_asts[arch_def.name] = ast
   end
 
@@ -706,6 +755,6 @@ class CsrField < ArchDefObject
 
   # @return [String] Long description of the field type
   def type_desc(arch_def)
-    TYPE_DESC_MAP[type(arch_def)]
+    TYPE_DESC_MAP[type(arch_def.symtab)]
   end
 end
