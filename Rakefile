@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "etc"
+
 $root = Pathname.new(__FILE__).dirname.realpath
 $lib = $root / "lib"
 
@@ -82,45 +84,84 @@ namespace :validate do
     end
     puts "All files validate against their schema"  
   end
-  task idl: "gen:arch"  do
-    puts "Type checking IDL code..."
-    arch_def = arch_def_for("_")
-    progressbar = ProgressBar.create(title: "Instructions", total: arch_def.instructions.size)
-    arch_def.instructions.each do |inst|
-      progressbar.increment
-      inst.type_checked_operation_ast(arch_def.idl_compiler, arch_def.sym_table_32, 32) if inst.rv32?
-      inst.type_checked_operation_ast(arch_def.idl_compiler, arch_def.sym_table_64, 64) if inst.rv64?
-      # also need to check for an RV64 machine running with effective XLEN of 32
-      inst.type_checked_operation_ast(arch_def.idl_compiler, arch_def.sym_table_64, 32) if inst.rv64? && inst.rv32?
-    end
-    progressbar = ProgressBar.create(title: "CSRs", total: arch_def.csrs.size)
-    arch_def.csrs.each do |csr|
-      progressbar.increment
-      if csr.has_custom_sw_read?
-        csr.type_checked_sw_read_ast(arch_def.sym_table_32) if csr.defined_in_base32?
-        csr.type_checked_sw_read_ast(arch_def.sym_table_64) if csr.defined_in_base64?
-      end
-      csr.fields.each do |field|
-        unless field.type_ast(arch_def.idl_compiler).nil?
-          field.type_checked_type_ast(arch_def.sym_table_32) if csr.defined_in_base32? && field.defined_in_base32?
-          field.type_checked_type_ast(arch_def.sym_table_64) if csr.defined_in_base64? && field.defined_in_base64?
-        end
-        unless field.reset_value_ast(arch_def.idl_compiler).nil?
-          field.type_checked_reset_value_ast(arch_def.sym_table_32) if csr.defined_in_base32? && field.defined_in_base32?
-          field.type_checked_reset_value_ast(arch_def.sym_table_64) if csr.defined_in_base64? && field.defined_in_base64?
-        end
-        unless field.sw_write_ast(arch_def.idl_compiler).nil?
-          field.type_checked_sw_write_ast(arch_def.sym_table_32, 32) if csr.defined_in_base32? && field.defined_in_base32?
-          field.type_checked_sw_write_ast(arch_def.sym_table_64, 64) if csr.defined_in_base64? && field.defined_in_base64?
-        end
-      end
-    end
-    progressbar = ProgressBar.create(title: "Functions", total: arch_def.functions.size)
-    arch_def.functions.each do |func|
-      progressbar.increment
-      func.type_check_body(arch_def.sym_table_32)
-      func.type_check_body(arch_def.sym_table_64)
-    end
+  task idl: ["gen:arch", "#{$root}/.stamps/arch-gen-_32.stamp", "#{$root}/.stamps/arch-gen-_64.stamp"]  do
+    print "Parsing IDL code for RV32..."
+    arch_def_32 = arch_def_for("_32")
+    puts "done"
+
+    arch_def_32.type_check
+
+    print "Parsing IDL code for RV64..."
+    arch_def_64 = arch_def_for("_64")
+    puts "done"
+
+    arch_def_64.type_check
+
+    # arch_def_64 = arch_def_for("_64")
+    # arch_def_64.type_check
+
+    # puts "Type checking IDL code..."
+    # progressbar = ProgressBar.create(title: "Instructions", total: arch_def_32.instructions.size + arch_def_64.instructions.size)
+    # arch_def_32.instructions.each do |inst|
+    #   progressbar.increment
+    #   inst.type_checked_operation_ast(arch_def_32.idl_compiler, arch_def_32.symtab, 32) if inst.rv32?
+    # end
+    # arch_def_64.instructions.each do |inst|
+    #   progressbar.increment
+    #   inst.type_checked_operation_ast(arch_def_64.idl_compiler, arch_def_64.symtab, 64) if inst.rv64?
+    #   # also need to check for an RV64 machine running with effective XLEN of 32
+    #   inst.type_checked_operation_ast(arch_def_64.idl_compiler, arch_def_64.symtab, 32) if inst.rv64? && inst.rv32?
+    # end
+
+    # progressbar = ProgressBar.create(title: "CSRs", total: arch_def_32.csrs.size + arch_def_64.csrs.size)
+    # arch_def_32.csrs.each do |csr|
+    #   progressbar.increment
+    #   profile = RubyProf::Profile.new
+    #   result = profile.profile do
+    #     if csr.has_custom_sw_read?
+    #       csr.type_checked_sw_read_ast(arch_def_32.symtab) if csr.defined_in_base32?
+    #     end
+    #     csr.fields.each do |field|
+    #       unless field.type_ast(arch_def_32.symtab).nil?
+    #         field.type_checked_type_ast(arch_def_32.symtab) if csr.defined_in_base32? && field.defined_in_base32?
+    #       end
+    #       unless field.reset_value_ast(arch_def_32.symtab).nil?
+    #         field.type_checked_reset_value_ast(arch_def_32.symtab) if csr.defined_in_base32? && field.defined_in_base32?
+    #       end
+    #       unless field.sw_write_ast(arch_def_32.symtab).nil?
+    #         field.type_checked_sw_write_ast(arch_def_32.symtab, 32) if csr.defined_in_base32? && field.defined_in_base32?
+    #       end
+    #     end
+    #   end
+    #   RubyProf::GraphHtmlPrinter.new(result).print(File.open("#{csr.name}-prof.html", "w+"), {})
+    # end
+    # arch_def_64.csrs.each do |csr|
+    #   progressbar.increment
+    #   if csr.has_custom_sw_read?
+    #     csr.type_checked_sw_read_ast(arch_def_64.symtab) if csr.defined_in_base64?
+    #   end
+    #   csr.fields.each do |field|
+    #     unless field.type_ast(arch_def_64.symtab).nil?
+    #       field.type_checked_type_ast(arch_def_64.symtab) if csr.defined_in_base64? && field.defined_in_base64?
+    #     end
+    #     unless field.reset_value_ast(arch_def_64.symtab).nil?
+    #       field.type_checked_reset_value_ast(arch_def_64.symtab) if csr.defined_in_base64? && field.defined_in_base64?
+    #     end
+    #     unless field.sw_write_ast(arch_def_64.symtab).nil?
+    #       field.type_checked_sw_write_ast(arch_def_64.symtab, 32) if csr.defined_in_base32? && field.defined_in_base32?
+    #       field.type_checked_sw_write_ast(arch_def_64.symtab, 64) if csr.defined_in_base64? && field.defined_in_base64?
+    #     end
+    #   end
+    # end
+    # progressbar = ProgressBar.create(title: "Functions", total: arch_def_32.functions.size + arch_def_64.functions.size)
+    # arch_def_32.functions.each do |func|
+    #   progressbar.increment
+    #   func.type_check(arch_def_32.symtab)
+    # end
+    # arch_def_64.functions.each do |func|
+    #   progressbar.increment
+    #   func.type_check(arch_def_64.symtab)
+    # end
     puts "All IDL passed type checking"
   end
 end

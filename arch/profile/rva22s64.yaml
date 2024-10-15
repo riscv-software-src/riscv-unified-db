@@ -15,80 +15,93 @@ rva22s64:
     email: krste@sifive.com
     company: SiFive
   extensions:
-    mandatory:
-    - name: S
-      version: "= 1.12"
-    - name: Sscounterenw
-      version: "= 1.0"
-      note: |
-        Sstvala is a new extension name introduced with RVA22.
-    - name: Svpbmt
-      version: "~> 1.0"
-    - name: Svinval
-      version: "~> 1.0"
-    - name: Ssstateen
-      version: "~> 1.0"
-      when:
-        implemented: H
-      note: |
-        Ssstateen is a new extension name introduced with RVA22.
-    - name: Shvstvala
-      version: "~> 1.0"
-      when:
-        implemented: H
-      note: |
-        Shvstvala is a new extension name introduced with RVA22.
-    - name: Shtvala
-      version: "~> 1.0"
-      when:
-        implemented: H
-      note: |
-        Shtvala is a new extension name introduced with RVA22.
-    - name: Shvstvecd
-      version: "~> 1.0"
-      when:
-        implemented: H
-      note: |
-        Shvstvecd is a new extension name introduced with RVA22.
-    - name: Shgatpa
-      version: "~> 1.0"
-      when:
-        implemented: H
-      note: |
-        Shgatpa is a new extension name introduced with RVA22.
-    optional:
-    - name: Sv57
-      version: "~> 1.12"
-    - name: Svnapot
-      version: "~> 1.0"
-      note: |
-        It is expected that Svnapot will be mandatory in the next
-        profile release.
-    - name: Sstc
-      version: "~> 1.0"
-      note: |
-        Sstc was not made mandatory in RVA22S64 as it is a more
-        disruptive change affecting system-level architecture, and will take
-        longer for implementations to adopt.  It is expected to be made
-        mandatory in the next profile release.
-    - name: Sscofpmf
-      version: "~> 1.0"
-      note: |
-        Platforms may choose to mandate the presence of Sscofpmf.
-    - name: Zkr
-      version: "~> 1.0"
-      note: |
-        Technically, Zk is also a privileged-mode option capturing that
-        Zkr, Zkn, and Zkt are all implemented.  However, the Zk rollup is less
-        descriptive than specifying the individual extensions explicitly.
-    - name: H
-      version: "~> 1.0"
-      note: |
-        The following extensions become mandatory when H is implemented:
+  - name: S
+    presence: mandatory
+    version: "= 1.12"
+  - name: Sscounterenw
+    presence: mandatory
+    version: "= 1.0"
+    note: |
+      Sstvala is a new extension name introduced with RVA22.
+  - name: Svpbmt
+    presence: mandatory
+    version: "~> 1.0"
+  - name: Svinval
+    presence: mandatory
+    version: "~> 1.0"
+  - name: Ssstateen
+    presence: mandatory
+    version: "~> 1.0"
+    when:
+      implemented: H
+    note: |
+      Ssstateen is a new extension name introduced with RVA22.
+  - name: Shvstvala
+    presence: mandatory
+    version: "~> 1.0"
+    when:
+      implemented: H
+    note: |
+      Shvstvala is a new extension name introduced with RVA22.
+  - name: Shtvala
+    presence: mandatory
+    version: "~> 1.0"
+    when:
+      implemented: H
+    note: |
+      Shtvala is a new extension name introduced with RVA22.
+  - name: Shvstvecd
+    presence: mandatory
+    version: "~> 1.0"
+    when:
+      implemented: H
+    note: |
+      Shvstvecd is a new extension name introduced with RVA22.
+  - name: Shgatpa
+    presence: mandatory
+    version: "~> 1.0"
+    when:
+      implemented: H
+    note: |
+      Shgatpa is a new extension name introduced with RVA22.
+  - name: Sv57
+    presence: optional
+    version: "~> 1.12"
+  - name: Svnapot
+    presence: optional
+    version: "~> 1.0"
+    note: |
+      It is expected that Svnapot will be mandatory in the next
+      profile release.
+  - name: Sstc
+    presence: optional
+    version: "~> 1.0"
+    note: |
+      Sstc was not made mandatory in RVA22S64 as it is a more
+      disruptive change affecting system-level architecture, and will take
+      longer for implementations to adopt.  It is expected to be made
+      mandatory in the next profile release.
+  - name: Sscofpmf
+    presence: optional
+    version: "~> 1.0"
+    note: |
+      Platforms may choose to mandate the presence of Sscofpmf.
+  - name: Zkr
+    presence: optional
+    version: "~> 1.0"
+    note: |
+      Technically, Zk is also a privileged-mode option capturing that
+      Zkr, Zkn, and Zkt are all implemented.  However, the Zk rollup is less
+      descriptive than specifying the individual extensions explicitly.
+  - name: H
+    presence: optional
+    version: "~> 1.0"
+    note: |
+      The following extensions become mandatory when H is implemented:
 
-         * Ssstateen
-         * Shcounterenw
-         * Shvstvala
-         * Shtvala
-         * Shvstvecd
-         * Shgatpa
+       * Ssstateen
+       * Shcounterenw
+       * Shvstvala
+       * Shtvala
+       * Shvstvecd
+       * Shgatpa

@@ -107,7 +107,9 @@ GEM
     rubocop-minitest (0.35.1)
       rubocop (>= 1.61, < 2.0)
       rubocop-ast (>= 1.31.1, < 2.0)
-    ruby-prof (1.7.0)
+    ruby-prof (0.18.0)
+    ruby-prof-flamegraph (0.3.0)
+      ruby-prof (~> 0.13)
     ruby-progressbar (1.13.0)
     ruby-rc4 (0.1.5)
     simpleidn (0.2.3)
@@ -152,6 +154,7 @@ DEPENDENCIES
   rouge
   rubocop-minitest
   ruby-prof
+  ruby-prof-flamegraph
   ruby-progressbar (~> 1.13)
   solargraph
   treetop (= 1.6.12)

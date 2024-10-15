@@ -5,7 +5,7 @@
 
 
 hpmcounter22h:
-  long_name: Cycle counter for RDCYCLE Instruction, high half
+  long_name: User-mode Hardware Performance Counter 19, high half
   address: 0xC96
   description: |
     Alias for M-mode CSR `mhpmcounter22h`.

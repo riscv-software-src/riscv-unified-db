@@ -91,12 +91,13 @@ module Idl
 
     def initialize(arch_def, effective_xlen = nil)
       @archdef = arch_def
-      if arch_def.is_a?(ImplArchDef)
-        raise "effective_xlen should not be set when symbol table is given an ImplArchDef" unless effective_xlen.nil?
+      if arch_def.fully_configured?
+        raise "effective_xlen should not be set when symbol table is given a fully-configured ArchDef" unless effective_xlen.nil?
       else
-        raise "effective_xlen should be set when symbol table is given an ArchDef" if effective_xlen.nil?
+        raise "effective_xlen should be set when symbol table is given an ArchDef" if effective_xlen.nil? && arch_def.mxlen.nil?
       end
       @mxlen = effective_xlen.nil? ? arch_def.mxlen : effective_xlen
+      @callstack = [nil]
       @scopes = [{
         "X" => Var.new(
           "X",
@@ -116,28 +117,24 @@ module Idl
         )
 
       }]
-      if arch_def.is_a?(ImplArchDef)
-        arch_def.params_with_value.each do |param_with_value|
-          type = Type.from_json_schema(param_with_value.schema).make_const
-          if type.kind == :array && type.width == :unknown
-            type = Type.new(:array, width: param_with_value.value.length, sub_type: type.sub_type)
-          end
+      arch_def.params_with_value.each do |param_with_value|
+        type = Type.from_json_schema(param_with_value.schema).make_const
+        if type.kind == :array && type.width == :unknown
+          type = Type.new(:array, width: param_with_value.value.length, sub_type: type.sub_type, qualifiers: [:const])
+        end
 
-          # could already be present...
-          existing_sym = get(param_with_value.name)
-          if existing_sym.nil?
-            add!(param_with_value.name, Var.new(param_with_value.name, type, param_with_value.value))
-          else
-            unless existing_sym.type.equal_to?(type) && existing_sym.value == param_with_value.value
-              raise DuplicateSymError, "Definition error: Param #{param.name} is defined by multiple extensions and is not the same definition in each"
-            end
+        # could already be present...
+        existing_sym = get(param_with_value.name)
+        if existing_sym.nil?
+          add!(param_with_value.name, Var.new(param_with_value.name, type, param_with_value.value))
+        else
+          unless existing_sym.type.equal_to?(type) && existing_sym.value == param_with_value.value
+            raise DuplicateSymError, "Definition error: Param #{param.name} is defined by multiple extensions and is not the same definition in each"
           end
         end
       end
       # now add all parameters, even those not implemented
-      arch_def.params.each do |param|
-        next if arch_def.is_a?(ImplArchDef) && arch_def.params_with_value.any? { |p| p.name == param.name }
-
+      arch_def.params_without_value.each do |param|
         if param.exts.size == 1
           if param.name == "XLEN"
             # special case: we actually do know XLEN
@@ -159,30 +156,30 @@ module Idl
       end
 
       # add the builtin extensions
-      add!(
-        "ExtensionName",
-        EnumerationType.new(
-          "ExtensionName",
-          arch_def.extensions.map(&:name),
-          Array.new(arch_def.extensions.size) { |i| i + 1 }
-        )
-      )
-      add!(
-        "ExceptionCode",
-        EnumerationType.new(
-          "ExceptionCode",
-          arch_def.exception_codes.map(&:var),
-          arch_def.exception_codes.map(&:num)
-        )
-      )
-      add!(
-        "InterruptCode",
-        EnumerationType.new(
-          "InterruptCode",
-          arch_def.interrupt_codes.map(&:var),
-          arch_def.interrupt_codes.map(&:num)
-        )
-      )
+      # add!(
+      #   "ExtensionName",
+      #   EnumerationType.new(
+      #     "ExtensionName",
+      #     arch_def.extensions.map(&:name),
+      #     Array.new(arch_def.extensions.size) { |i| i + 1 }
+      #   )
+      # )
+      # add!(
+      #   "ExceptionCode",
+      #   EnumerationType.new(
+      #     "ExceptionCode",
+      #     arch_def.exception_codes.map(&:var),
+      #     arch_def.exception_codes.map(&:num)
+      #   )
+      # )
+      # add!(
+      #   "InterruptCode",
+      #   EnumerationType.new(
+      #     "InterruptCode",
+      #     arch_def.interrupt_codes.map(&:var),
+      #     arch_def.interrupt_codes.map(&:num)
+      #   )
+      # )
     end
 
     # do a deep freeze to protect the sym table and all its entries from modification
@@ -196,17 +193,39 @@ module Idl
       # set frozen_hash so that we can quickly compare symtabs
       @frozen_hash = [@scopes.hash, @archdef.hash].hash
 
+      # set up the global clone that be used as a mutable table
+      @global_clone_pool = []
+
+      5.times do 
+        copy = SymbolTable.allocate
+        copy.instance_variable_set(:@scopes, [@scopes[0]])
+        copy.instance_variable_set(:@callstack, [@callstack[0]])
+        copy.instance_variable_set(:@archdef, @archdef)
+        copy.instance_variable_set(:@mxlen, @mxlen)
+        copy.instance_variable_set(:@global_clone_pool, @global_clone_pool)
+        copy.instance_variable_set(:@in_use, false)
+        @global_clone_pool << copy
+      end
+
       freeze
       self
     end
 
+    # @return [String] inspection string
+    def inspect
+      "SymbolTable[#{@archdef.name}]#{frozen? ? ' (frozen)' : ''}"
+    end
+
     # pushes a new scope
     # @return [SymbolTable] self
-    def push
+    def push(ast)
       # puts "push #{caller[0]}"
       # @scope_caller ||= []
       # @scope_caller.push caller[0]
+      raise "#{@scopes.size} #{@callstack.size}" unless @scopes.size == @callstack.size
       @scopes << {}
+      @callstack << ast
+      @frozen_hash = nil
       self
     end
 
@@ -216,7 +235,13 @@ module Idl
       # puts "    from #{@scope_caller.pop}"
       raise "Error: popping the symbol table would remove global scope" if @scopes.size == 1
 
+      raise "?" unless @scopes.size == @callstack.size
       @scopes.pop
+      @callstack.pop
+    end
+
+    def callstack
+      @callstack.reverse.map { |ast| ast.nil? ? "" : "#{ast.input_file}:#{ast.lineno}" }.join("\n")
     end
 
     # @return [Boolean] whether or not any symbol 'name' is defined at any level in the symbol table
@@ -233,7 +258,8 @@ module Idl
     # @return [Object] A symbol named 'name', or nil if not found
     def get(name)
       @scopes.reverse_each do |s|
-        return s[name] if s.key?(name)
+        result = s.fetch(name, nil)
+        return result unless result.nil?
       end
       nil
     end
@@ -327,6 +353,51 @@ module Idl
       end
     end
 
+    # @return [Boolean] true if the symbol table is at the global scope
+    def at_global_scope?
+      @scopes.size == 1
+    end
+
+    # @return [SymbolTable] a mutable clone of the global scope of this SymbolTable
+    def global_clone
+      # raise "symtab isn't frozen" if @global_clone.nil?
+      # raise "global clone isn't at global scope" unless @global_clone.at_global_scope?
+
+      @global_clone_pool.each do |symtab|
+        unless symtab.in_use?
+          symtab.instance_variable_set(:@in_use, true)
+          return symtab
+        end
+      end
+
+      # need more!
+      warn "Allocating more SymbolTables"
+      5.times do
+        copy = SymbolTable.allocate
+        copy.instance_variable_set(:@scopes, [@scopes[0]])
+        copy.instance_variable_set(:@callstack, [@callstack[0]])
+        copy.instance_variable_set(:@archdef, @archdef)
+        copy.instance_variable_set(:@mxlen, @mxlen)
+        copy.instance_variable_set(:@global_clone_pool, @global_clone_pool)
+        copy.instance_variable_set(:@in_use, false)
+        @global_clone_pool << copy
+      end
+
+      global_clone
+    end
+
+    def release
+      pop while levels > 1
+      raise "Clone isn't back in global scope" unless at_global_scope?
+      raise "You are calling release on the frozen SymbolTable" if frozen?
+      raise "??" if @in_use.nil?
+      raise "Double release detected" unless @in_use
+
+      @in_use = false
+    end
+
+    def in_use? = @in_use
+
     # @return [SymbolTable] a deep clone of this SymbolTable
     def deep_clone(clone_values: false, freeze_global: true)
       raise "don't do this" unless freeze_global
@@ -336,11 +407,13 @@ module Idl
       if levels == 1
         copy = dup
         copy.instance_variable_set(:@scopes, copy.instance_variable_get(:@scopes).dup)
+        copy.instance_variable_set(:@callstack, copy.instance_variable_get(:@callstack).dup)
         return copy
       end
 
       copy = dup
       # back up the table to global scope
+      copy.instance_variable_set(:@callstack, @callstack.dup)
       copy.instance_variable_set(:@scopes, [])
       c_scopes = copy.instance_variable_get(:@scopes)
       c_scopes.push(@scopes[0])

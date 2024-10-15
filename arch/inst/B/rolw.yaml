@@ -5,7 +5,8 @@ rolw:
   description: |
     This instruction performs a rotate left of the least-significant word of rs1 by the amount in least-significant 5 bits of rs2.
     The resulting word value is sign-extended by copying bit 31 to all of the more-significant bits.
-  definedBy: [B, Zbb, Zbkb]
+  definedBy:
+    anyOf: [B, Zbb, Zbkb]
   assembly: xd, xs1, xs2
   base: 64
   encoding:

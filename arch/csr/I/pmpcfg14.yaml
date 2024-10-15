@@ -10,7 +10,7 @@ pmpcfg14:
   priv_mode: M
   length: MXLEN
   description: PMP entry configuration
-  definedBy: Sm
+  definedBy: Smpmp
   fields:
     pmp56cfg:
       location: 7-0

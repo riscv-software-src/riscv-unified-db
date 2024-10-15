@@ -245,9 +245,9 @@ function nan_box {
     of smaller size by adding all 1's to the upper bits.
   }
   body {
-    assert(FROM_SIZE > TO_SIZE, "Bad template arugments; FROM_SIZE must be less than TO_SIZE");
+    assert(FROM_SIZE < TO_SIZE, "Bad template arugments; FROM_SIZE must be less than TO_SIZE");
 
-    return {{FROM_SIZE - TO_SIZE{1'b1}}, sp_value};
+    return {{TO_SIZE - FROM_SIZE{1'b1}}, from_value};
   }
 }
 Bits<32> SP_POS_INF       = 32'b0_11111111_00000000000000000000000;

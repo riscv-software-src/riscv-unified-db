@@ -13,7 +13,8 @@ Svpbmt:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    requires: Sv39
+    requires:
+      name: Sv39
     param_constraints:
       SATP_MODE_BARE:
         schema:

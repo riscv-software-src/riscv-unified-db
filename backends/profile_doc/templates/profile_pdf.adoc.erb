@@ -341,7 +341,7 @@ The <%= profile_family.marketing_name %> Profile Family references
 | Extension | <%= profile_family.profiles.map(&:marketing_name).join(" | ") -%>
 
 <%- profile_family.referenced_extensions.sort_by(&:name).each do |ext| -%>
-| <%= ext.name %> | <%= profile_family.profiles.map { |profile| profile.extension_status(ext.name) }.join(" | ") -%>
+| <%= ext.name %> | <%= profile_family.profiles.map { |profile| profile.extension_presence(ext.name) }.join(" | ") -%>
 <%- end -%>
 
 |===
@@ -467,7 +467,8 @@ end.join(" | ") -%>
 
 :leveloffset: -3
 
-<%- insts = arch_def.instructions.select { |i| i.definedBy == ext.name || i.definedBy.include?(ext.name) } -%>
+// TODO: GitHub issue 92: Use version specified by each profile and add version info to inst table below.
+<%- insts = arch_def.instructions.select { |i| i.defined_by?(ext.name,ext.min_version) } -%>
 <%- unless insts.empty? -%>
 ==== Instructions
 
@@ -512,21 +513,9 @@ This extension has the following implementation options:
 
 *<%= inst.long_name %>*
 
-This instruction is defined by<%- if inst.defined_by.size > 1 -%> any of the following<%- end -%>:
+This instruction is defined by:
 
-  <%- inst.defined_by.each do |ext| -%>
-  * `<%= ext.name %>`, `<%= ext.version_requirement %>`
-  <%- end -%>
-
-<%- unless inst.extension_requirements.empty? -%>
-Additionally, this instruction is only defined if the following <%- if inst.extension_requirements.size == 1 -%>extension is<%- else -%>extensions are<%- end -%> also present and active:
-
-  <%- inst.extension_requirements.each do |ext| -%>
-  * `<%= ext.name %>`, `<%= ext.version_requirement %>`
-  <%- end -%>
-
-<%- end -%>
-
+<%= inst.defined_by.to_asciidoc %>
 
 ==== Encoding
 
@@ -623,7 +612,7 @@ RV64::
 <%- if inst.key?("operation()") -%>
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.operation_ast(arch_def.idl_compiler).gen_adoc %>
+<%= inst.operation_ast(arch_def.symtab).gen_adoc %>
 ----
 <%- end -%>
 
@@ -631,7 +620,7 @@ RV64::
 
 // TODO: add back after sym table update for generic arch def is merged in profiles branch
 <%#
-<%- exception_list = inst.reachable_exceptions_str(arch_def.sym_table) -% >
+<%- exception_list = inst.reachable_exceptions_str(arch_def.symtab) -% >
 <%- if exception_list.empty? -% >
 This instruction does not generate synchronous exceptions.
 <%- else -% >
@@ -677,7 +666,7 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <%- if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <%- end -%>
-h| Defining extension | <%= csr.defined_by.map(&:to_s).join(", ") %>
+h| Defining extension a| <%= csr.defined_by.to_asciidoc %>
 <%- if csr.dynamic_length?(arch_def) -%>
 h| Length         | <%= csr.length_pretty(arch_def) %>
 <%- else -%>

@@ -23,4 +23,5 @@ group :development do
   gem "solargraph"
   gem 'rubocop-minitest'
   gem 'ruby-prof'
+  gem "ruby-prof-flamegraph"
 end

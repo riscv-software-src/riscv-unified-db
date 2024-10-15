@@ -28,7 +28,7 @@ time:
     --
   priv_mode: U
   length: 64
-  definedBy: U
+  definedBy: Zicntr
   fields:
     COUNT:
       location: 63-0

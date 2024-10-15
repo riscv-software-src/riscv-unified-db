@@ -21,7 +21,7 @@ def create_literal(value)
   elsif value.is_a?(TrueClass) || value.is_a?(FalseClass)
     create_bool_literal(value)
   else
-    raise "TODO"
+    raise "TODO: #{value.class.name}"
   end
 end
 
@@ -35,9 +35,10 @@ module Idl
       new_node.instance_variable_set(:@children, new_children)
 
       if is_a?(Executable)
-        begin
+        value_result = value_try do
           execute(symtab)
-        rescue ValueError
+        end
+        value_else(value_result) do
           execute_unknown(symtab)
         end
       end
@@ -48,10 +49,11 @@ module Idl
   end
   class FunctionCallExpressionAst
     def prune(symtab)
-      begin
+      value_result = value_try do
         v = value(symtab)
-        create_literal(v)
-      rescue ValueError
+        return create_literal(v)
+      end
+      value_else(value_result) do
         FunctionCallExpressionAst.new(input, interval, name, targs.map { |t| t.prune(symtab) }, args.map { |a| a.prune(symtab)} )
       end
     end
@@ -69,79 +71,92 @@ module Idl
   end
   class ForLoopAst
     def prune(symtab)
-      symtab.push
+      symtab.push(self)
       symtab.add(init.lhs.name, Var.new(init.lhs.name, init.lhs_type(symtab)))
-      new_loop =
-        ForLoopAst.new(
-          input, interval,
-          init.prune(symtab),
-          condition.prune(symtab),
-          update.prune(symtab),
-          stmts.map { |s| s.prune(symtab) }
-        )
-      symtab.pop
+      begin
+        new_loop =
+          ForLoopAst.new(
+            input, interval,
+            init.prune(symtab),
+            condition.prune(symtab),
+            update.prune(symtab),
+            stmts.map { |s| s.prune(symtab) }
+          )
+      ensure
+        symtab.pop
+      end
       new_loop
     end
   end
   class FunctionBodyAst
     def prune(symtab, args_already_applied: false)
-      symtab.push
-
-      func_def = find_ancestor(FunctionDefAst)
-      unless args_already_applied || func_def.nil?
-        if func_def.templated? # can't prune a template because we don't have all types
-          return dup
-        end
-
-        # push template values
-        func_def.template_names.each_with_index do |tname, idx|
-          symtab.add(tname, Var.new(tname, func_def.template_types(symtab)[idx]))
-        end
-
-        # push args
-        func_def.arguments(symtab).each do |arg_type, arg_name|
-          symtab.add(arg_name, Var.new(arg_name, arg_type))
-        end
-      end
+      symtab.push(self)
 
       begin
-        # go through the statements, and stop if we find one that retuns or raises an exception
-        statements.each_with_index do |s, idx|
-          if s.is_a?(ReturnStatementAst)
-            return FunctionBodyAst.new(input, interval, statements[0..idx].map { |s| s.prune(symtab) })
-          elsif s.is_a?(ConditionalReturnStatementAst)
-            begin
-              v = s.return_value(symtab)
+        func_def = find_ancestor(FunctionDefAst)
+        unless args_already_applied || func_def.nil?
+          if func_def.templated? # can't prune a template because we don't have all types
+            return dup
+          end
 
-              # conditional return, condition not taken if v.nil?
-              return FunctionBodyAst.new(input, interval, statements[0..idx].map { |s| s.prune(symtab) }) unless v.nil?
-            rescue ValueError
-              # conditional return, condition not known; keep going
-            end
-          elsif s.is_a?(StatementAst) && s.action.is_a?(FunctionCallExpressionAst) && s.action.name == "raise"
-            return FunctionBodyAst.new(input, interval, statements[0..idx].map { |s| s.prune(symtab) })
-          else
-            s.execute(symtab)
+          # push template values
+          func_def.template_names.each_with_index do |tname, idx|
+            symtab.add(tname, Var.new(tname, func_def.template_types(symtab)[idx]))
+          end
+
+          # push args
+          func_def.arguments(symtab).each do |arg_type, arg_name|
+            symtab.add(arg_name, Var.new(arg_name, arg_type))
           end
         end
 
-        FunctionBodyAst.new(input, interval, statements.map { |s| s.prune(symtab) })
-      rescue ValueError
-        FunctionBodyAst.new(input, interval, statements.map { |s| s.prune(symtab) })
+        pruned_body = nil
+
+        value_result = value_try do
+          # go through the statements, and stop if we find one that retuns or raises an exception
+          statements.each_with_index do |s, idx|
+            if s.is_a?(ReturnStatementAst)
+              pruned_body = FunctionBodyAst.new(input, interval, statements[0..idx].map { |s| s.prune(symtab) })
+              return pruned_body
+            elsif s.is_a?(ConditionalReturnStatementAst)
+              value_try do
+                v = s.return_value(symtab)
+
+                # conditional return, condition not taken if v.nil?
+                unless v.nil?
+                  pruned_body = FunctionBodyAst.new(input, interval, statements[0..idx].map { |s| s.prune(symtab) })
+                  return pruned_body
+                end
+              end
+              # || conditional return, condition not known; keep going
+            elsif s.is_a?(StatementAst) && s.action.is_a?(FunctionCallExpressionAst) && s.action.name == "raise"
+              pruned_body = FunctionBodyAst.new(input, interval, statements[0..idx].map { |s| s.prune(symtab) })
+              return pruned_body
+            else
+              s.execute(symtab)
+            end
+          end
+
+          pruned_body = FunctionBodyAst.new(input, interval, statements.map { |s| s.prune(symtab) })
+        end
+        value_else(value_result) do
+          pruned_body = FunctionBodyAst.new(input, interval, statements.map { |s| s.prune(symtab) })
+        end
       ensure
         symtab.pop
       end
+
+      pruned_body
     end
   end
   class StatementAst
     def prune(symtab)
       pruned_action = action.prune(symtab)
       pruned_action.add_symbol(symtab) if pruned_action.is_a?(Declaration)
-      begin
+      value_try do
         pruned_action.execute(symtab) if pruned_action.is_a?(Executable)
-      rescue ValueError
-        # ok
       end
+      # || ok
 
       StatementAst.new(input, interval, pruned_action)
     end
@@ -149,22 +164,21 @@ module Idl
   class BinaryExpressionAst
     # @!macro prune
     def prune(symtab)
-      begin
+      value_try do
         val = value(symtab)
         return create_literal(val)
-      rescue ValueError
-        # fall through
+      end
+      # fall through
+
+      lhs_value = nil
+      rhs_value = nil
+
+      value_try do
+        lhs_value = lhs.value(symtab)
       end
 
-      begin
-        lhs_value = lhs.value(symtab)
-      rescue ValueError
-        lhs_value = nil
-      end
-      begin
+      value_try do
         rhs_value = rhs.value(symtab)
-      rescue ValueError
-        rhs_value = nil
       end
 
       if op == "&&"
@@ -245,67 +259,72 @@ module Idl
   class IfAst
     # @!macro prune
     def prune(symtab)
-      if if_cond.value(symtab)
-        if_body.prune(symtab)
-      elsif !elseifs.empty?
-        # we know that the if condition is false, so now we treat the else if
-        # as the starting point and try again
-        IfAst.new(
-          input, interval,
-          elseifs[0].cond.dup,
-          elseifs[0].body.dup,
-          elseifs[1..].map(&:dup),
-          final_else_body.dup).prune(symtab)
-      elsif !final_else_body.stmts.empty?
-        # the if is false, and there are no else ifs, so the result of the prune is just the pruned else body
-        final_else_body.prune(symtab)
-      else
-        # the if is false, and there are no else ifs or elses. This is just a no-op
-        NoopAst.new
-      end
-    rescue ValueError
-      # we don't know the value of the if condition
-      # we still might know the value of an else if
-      unknown_elsifs = []
-      elseifs.each do |eif|
-        begin
-          if eif.cond.value(symtab)
-            # this elseif is true, so turn it into an else and then we are done
-            return IfAst.new(
-              input, interval,
-              if_cond.dup,
-              if_body.dup,
-              unknown_elsifs.map(&:dup),
-              eif.body.dup
-            ).prune(symtab)
-          else
-            # this elseif is false, so we can remove it
-            next
-          end
-        rescue ValueError
-          unknown_elsifs << eif
+      value_result = value_try do
+        if if_cond.value(symtab)
+          return if_body.prune(symtab)
+        elsif !elseifs.empty?
+          # we know that the if condition is false, so now we treat the else if
+          # as the starting point and try again
+          return IfAst.new(
+            input, interval,
+            elseifs[0].cond.dup,
+            elseifs[0].body.dup,
+            elseifs[1..].map(&:dup),
+            final_else_body.dup).prune(symtab)
+        elsif !final_else_body.stmts.empty?
+          # the if is false, and there are no else ifs, so the result of the prune is just the pruned else body
+          return final_else_body.prune(symtab)
+        else
+          # the if is false, and there are no else ifs or elses. This is just a no-op
+          return NoopAst.new
         end
       end
-      # we get here, then we don't know the value of anything. just return this if with everything pruned
-      IfAst.new(
-        input, interval,
-        if_cond.prune(symtab),
-        if_body.prune(symtab),
-        elseifs.map { |eif| eif.prune(symtab) },
-        final_else_body.prune(symtab)
-      )
+      value_else(value_result) do
+        # we don't know the value of the if condition
+        # we still might know the value of an else if
+        unknown_elsifs = []
+        elseifs.each do |eif|
+          value_result = value_try do
+            if eif.cond.value(symtab)
+              # this elseif is true, so turn it into an else and then we are done
+              return IfAst.new(
+                input, interval,
+                if_cond.dup,
+                if_body.dup,
+                unknown_elsifs.map(&:dup),
+                eif.body.dup
+              ).prune(symtab)
+            else
+              # this elseif is false, so we can remove it
+              next :ok
+            end
+          end
+          value_else(value_result) do
+            unknown_elsifs << eif
+          end
+        end
+        # we get here, then we don't know the value of anything. just return this if with everything pruned
+        IfAst.new(
+          input, interval,
+          if_cond.prune(symtab),
+          if_body.prune(symtab),
+          unknown_elsifs.map { |eif| eif.prune(symtab) },
+          final_else_body.prune(symtab)
+        )
+      end
     end
   end
 
   class ConditionalReturnStatementAst
     def prune(symtab)
-      begin
+      value_result = value_try do
         if condition.value(symtab)
           return return_expression.prune(symtab)
         else
           return NoopAst.new
         end
-      rescue ValueError
+      end
+      value_else(value_result) do
         ConditionalReturnStatementAst.new(input, interval, return_expression.prune(symtab), condition.prune(symtab))
       end
     end
@@ -313,40 +332,42 @@ module Idl
 
   class ConditionalStatementAst
     def prune(symtab)
-      if condition.value(symtab)
+      value_result = value_try do
+        if condition.value(symtab)
+          pruned_action = action.prune(symtab)
+          pruned_action.add_symbol(symtab) if pruned_action.is_a?(Declaration)
+          value_result = value_try do
+            pruned_action.execute(symtab) if pruned_action.is_a?(Executable)
+          end
+
+          return StatementAst.new(input, interval, pruned_action)
+        else
+          return NoopAst.new
+        end
+      end
+      value_else(value_result) do
+        # condition not known
         pruned_action = action.prune(symtab)
         pruned_action.add_symbol(symtab) if pruned_action.is_a?(Declaration)
-        begin
+        value_result = value_try do
           pruned_action.execute(symtab) if pruned_action.is_a?(Executable)
-        rescue ValueError
-          # ok
         end
-        StatementAst.new(input, interval, pruned_action)
-      else
-        NoopAst.new()
+          # ok
+        ConditionalStatementAst.new(input, interval, pruned_action, condition.prune(symtab))
       end
-    rescue ValueError
-      # condition not known
-      pruned_action = action.prune(symtab)
-      pruned_action.add_symbol(symtab) if pruned_action.is_a?(Declaration)
-      begin
-        pruned_action.execute(symtab) if pruned_action.is_a?(Executable)
-      rescue ValueError
-        # ok
-      end
-      ConditionalStatementAst.new(input, interval, pruned_action, condition.prune(symtab))
     end
   end
 
   class TernaryOperatorExpressionAst
     def prune(symtab)
-      begin
+      value_result = value_try do
         if condition.value(symtab)
-          true_expression.prune(symtab)
+          return true_expression.prune(symtab)
         else
-          false_expression.prune(symtab)
+          return false_expression.prune(symtab)
         end
-      rescue ValueError
+      end
+      value_else(value_result) do
         TernaryOperatorExpressionAst.new(
           input, interval,
           condition.prune(symtab),

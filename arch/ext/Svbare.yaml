@@ -12,7 +12,8 @@ Svbare:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    requires: S
+    requires:
+      name: S
     param_constraints:
       SATP_MODE_BARE:
         schema:

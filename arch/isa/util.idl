@@ -82,6 +82,28 @@ function lowest_set_bit {
   }
 }
 
+function count_leading_zeros {
+  template U32 N
+  returns
+    Bits<bit_length(N)>  # Number of leading zeros in +vlaue+
+  arguments
+    Bits<N> value        # value to count zero in
+  description {
+    Returns the number of leading 0 bits before the most-significant 1 bit of +value+,
+    or N if value is zero.
+  }
+  body {
+    for (U32 i=0; i < N; i++) {
+      if (value[N - 1 - i] == 1) {
+        return i;
+      }
+    }
+
+    # fall-through; value must be zero
+    return N;
+  }
+}
+
 function sext {
   returns XReg
   arguments XReg value, XReg first_extended_bit

@@ -6,7 +6,8 @@ binvi:
     This instruction returns rs1 with a single bit inverted at the index specified in shamt.
     The index is read from the lower log2(XLEN) bits of shamt.
     For RV32, the encodings corresponding to shamt[5]=1 are reserved.
-  definedBy: [B, Zbs]
+  definedBy:
+    anyOf: [B, Zbs]
   assembly: xd, xs1, shamt
   encoding:
     RV32:

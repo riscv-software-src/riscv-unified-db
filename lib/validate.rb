@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "date"
 require "json"
 require "json_schemer"
 require "pathname"
@@ -95,7 +96,7 @@ class Validator
     end
   end
 
-  # iniailize a new Validator
+  # initialize a new Validator
   #
   # @raise [SchemaError] if a schema is ill-formed
   def initialize
@@ -132,7 +133,7 @@ class Validator
     raise "Invalid type #{type}" unless TYPES.any?(type) || !schema_path.nil?
 
     begin
-      obj = YAML.safe_load(str, permitted_classes: [Symbol])
+      obj = YAML.safe_load(str, permitted_classes: [Symbol, Date])
     rescue Psych::SyntaxError => e
       warn "While parsing: #{str}\n\n"
       raise e
@@ -198,7 +199,13 @@ class Validator
       end
     end
     begin
-      validate_str(File.read(path.to_s), type:, schema_path:)
+      obj = validate_str(File.read(path.to_s), type:, schema_path:)
+
+      # check that the top key matches the filename
+      if [:inst, :ext, :csr].include?(type) && obj.keys.first != File.basename(path, ".yaml").to_s
+        raise ValidationError, "In #{path}, top key '#{obj.keys.first}' does not match filename '#{File.basename(path)}'"
+      end
+      obj
     rescue Psych::SyntaxError => e
       warn "While parsing #{path}"
       raise e

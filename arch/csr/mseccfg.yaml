@@ -6,6 +6,8 @@ mseccfg:
   priv_mode: M
   length: 64
   description: Machine Security Configuration
-  definedBy: M
+  definedBy:
+    name: Sm
+    version: ">=1.12"
   fields: {}
   

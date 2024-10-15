@@ -18,7 +18,6 @@ Sm:
     - Made the `mstatus`.MPP field *WARL*, rather than *WLRL*.
     - Made the unused `__x__ip` fields *WPRI*, rather than *WIRI*.
     - Made the unused `misa` fields *WARL*, rather than *WIRI*.
-    - Made the unused `pmpaddr` and `pmpcfg` fields *WARL*, rather than *WIRI*.
     - Rectified an editing error that misdescribed the mechanism by which
       `mstatus.__x__IE` is written upon an exception.
     - Described scheme for emulating misaligned AMOs.
@@ -26,9 +25,6 @@ Sm:
       with variable IALIGN.
     - Specified the behavior of writing self-contradictory values to the
       `misa` register.
-    - Defined the `mcountinhibit` CSR, which stops performance counters from
-      incrementing to reduce energy consumption.
-    - Specified semantics for PMP regions coarser than four bytes.
     - Specified contents of CSRs across XLEN modification.
     - Moved PLIC chapter into its own document.
   - version: "1.12.0"
@@ -45,11 +41,11 @@ Sm:
       page-based virtual memory, even if VM is not currently enabled.
     - Removed the N extension.
     - Defined the mandatory RV32-only CSR `mstatush`, which contains most of
-      the same fields as the upper 32 bits of RV64’s `mstatus`.
+      the same fields as the upper 32 bits of RV64's `mstatus`.
     - Defined the mandatory CSR `mconfigptr`, which if nonzero contains the
       address of a configuration data structure.
     - Defined optional `mseccfg` and `mseccfgh` CSRs, which control the
-      machine’s security configuration.
+      machine's security configuration.
     - Defined `menvcfg` CSR (and RV32-only `menvcfgh`), which control various characteristics
       of the execution environment.
     - Designated part of SYSTEM major opcode for custom use.
@@ -58,8 +54,6 @@ Sm:
     - Made priority of load/store/AMO address-misaligned exceptions
       implementation-defined relative to load/store/AMO page-fault and
       access-fault exceptions.
-    - PMP reset values are now platform-defined.
-    - An additional 48 optional PMP registers have been defined.
     - Software breakpoint exceptions are permitted to write either 0 or the
       `pc` to `__x__tval`.
     - Specified relaxed constraints for implicit reads of non-idempotent regions.
@@ -249,8 +243,8 @@ Sm:
 
         [separator="!"]
         !===
-        ! high ! Misaligned load/store/AMO exceptions are always higher priority than load/store/AMO page-fault and access-fault exceptions.
         ! low  ! Misaligned load/store/AMO exceptions are always lower priority than load/store/AMO page-fault and access-fault exceptions.
+        ! high ! Misaligned load/store/AMO exceptions are always higher priority than load/store/AMO page-fault and access-fault exceptions.
         !===
 
         MISALIGNED_LDST_EXCEPTION_PRIORITY cannot be "high" when MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE
@@ -258,19 +252,19 @@ Sm:
         address translation.
       schema:
         type: string
-        enum: ["high", "low"]
+        enum: ["low", "high"]
         extra_validation: |
           assert (MISALIGNED_LDST_EXCEPTION_PRIORITY == "low") if MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE.positive?
     MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE:
       description: |
         The maximum granule size, in bytes, that the hart can atomically perform a
-        misligned load/store/AMO without raising a Misaligned exception. When MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE is 0, the hart
+        misaligned load/store/AMO without raising a Misaligned exception. When MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE is 0, the hart
         cannot atomically perform a misaligned load/store/AMO. When a power of two, the hart can
         atomically load/store/AMO a misaligned access that is fully contained in a
         MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE-aligned region.
 
         [NOTE]
-        Even if the hart is capable of performing a misligned load/store/AMO atomically,
+        Even if the hart is capable of performing a misaligned load/store/AMO atomically,
         a misaligned exception may still occur if the access does not have the appropriate
         Misaligned Atomicity Granule PMA set.
       schema:
@@ -288,43 +282,6 @@ Sm:
       schema: 
         type: string
         enum: ["by_byte", "custom"]
-    COUNTINHIBIT_EN:
-      description: |
-        Indicates which hardware performance monitor counters can be disabled from `mcountinhibit`.
-
-        An unimplemented counter cannot be specified, i.e., if HPM_COUNTER_EN[3] is false, 
-        it would be illegal to set COUNTINHIBIT_EN[3] to true.
-
-        COUNTINHIBIT_EN[1] can never be true, since it corresponds to `mcountinhibit.TM`,
-        which is always read-only-0.
-
-        COUNTINHIBIT_EN[3:31] must all be false if `Zihpm` is not implemented.
-      schema:
-        type: array
-        items:
-        - type: boolean
-        - const: false
-        - type: boolean
-        additionalItems:
-          type: boolean
-        maxItems: 32
-        minItems: 32
-    MCOUNTENABLE_EN:
-      description: |
-        Indicates which counters can be delegated via `mcounteren`.
-
-        An unimplemented counter cannot be specified, i.e., if
-        HPM_COUNTER_EN[3] is false, it would be illegal to set
-        MCOUNTENABLE_EN[3] to true.
-
-        MCOUNTENABLE_EN[0:2] must all be false if `Zicntr` is not implemented.
-        MCOUNTENABLE_EN[3:31] must all be false if `Zihpm` is not implemented.
-      schema:
-        type: array
-        items:
-          type: boolean
-        maxItems: 32
-        minItems: 32
     TRAP_ON_ILLEGAL_WLRL:
       description: |
         When true, writing an illegal value to a WLRL CSR field raises an `IllegalInstruction` exception.
@@ -443,66 +400,24 @@ Sm:
         type: boolean
     MTVAL_WIDTH:
       description: |
-        The number of implemented bits in `mtval`.
+        The number of implemented bits in the `mtval` CSR.
+        This is the CSR that may be written when a trap is taken into M-mode with exception-specific information to
+        assist software in handling the trap (e.g., address associated with exception).
 
         Must be greater than or equal to _max_(`PHYS_ADDR_WIDTH`, `VA_SIZE`)
       schema:
         type: integer
-        maximum: 0xffffffffffffffff
+        maximum: 64
     CONFIG_PTR_ADDRESS:
       description: |
         Physical address of the unified discovery configuration data structure.
         This address is reported in the `mconfigptr` CSR.
+        TODO: GitHub issue 53
       schema:
         type: integer
       # GitHub issue 53
       # when:
       #  version: ">= 1.12.0"
-    NUM_PMP_ENTRIES:
-      description: |
-        Number of implemented PMP entries. Can be any value between 0-64, inclusive.
-  
-        The architecture mandates that the number of implemented PMP registers
-        must appear to be 0, 16, or 64.
-
-        Therefore, pmp registers will behave as follows according to NUN_PMP_ENTRIES:
-        
-        [separator="!"]
-        !===
-        ! NUM_PMP_ENTRIES ! pmpaddr<0-15> / pmpcfg<0-3> ! pmpaddr<16-63> / pmpcfg<4-15>
-        ! 0               ! N                           ! N
-        ! 1-16            ! Y                           ! N
-        ! 17-64           ! Y                           ! Y
-        !===
-
-        ** N = Not implemented; access will cause `IllegalInstruction`
-           if TRAP_ON_UNIMPLEMENTED_CSR is true
-        ** Y = Implemented; access will not cause an exception (from M-mode), but register
-           may be read-only-zero if NUM_PMP_ENTRIES is less than the corresponding register
-        
-        [NOTE]
-        `pmpcfgN` for an odd N never exists when XLEN == 64
-
-        When NUM_PMP_ENTRIES is not exactly 0, 16, or 64, some extant pmp registers,
-        and associated pmpNcfg, will be read-only zero (but will never cause an exception).
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 64
-    PMP_GRANULARITY:
-      description: |
-        log2 of the smallest supported PMP region.
-        
-        Generally, for systems with an MMU, should not be smaller than 12,
-        as that would preclude caching PMP results in the TLB along with
-        virtual memory translations
-
-        Note that PMP_GRANULARITY is equal to G+2 (not G) as described in
-        the privileged architecture.
-      schema:
-        type: integer
-        minimum: 2
-        maximum: 66
     PMA_GRANULARITY:
       description: |
         log2 of the smallest supported PMA region.
@@ -535,23 +450,6 @@ Sm:
       schema:
         type: string
         enum: [little, big, dynamic]
-    TIME_CSR_IMPLEMENTED:
-      description: |
-        Whether or not a real hardware `time` CSR exists. Implementations can either provide a real
-        CSR or emulate access at M-mode.
-
-        Possible values:
-
-        true::
-          `time`/`timeh` exists, and accessing it will not cause an IllegalInstruction trap
-        
-        false::
-          `time`/`timeh` does not exist.
-          Accessing the CSR will cause an IllegalInstruction trap or enter an unpredictable state,
-          depending on TRAP_ON_UNIMPLEMENTED_CSR.
-          Privileged software may emulate the `time` CSR, or may pass the exception to a lower level.
-      schema:
-        type: boolean
     MISA_CSR_IMPLEMENTED:
       description: |
         Whether or not the `misa` CSR returns zero or a non-zero value.
@@ -567,7 +465,7 @@ Sm:
         type: boolean
     MTVEC_MODES:
       description: |
-        The 2-bit `mtvec.MODE` field has several possibile treatments for an implementation.
+        Modes supported by `mtvec.MODE`. If only one, it is assumed to be read-only with that value.
       schema:
         type: array
         items:

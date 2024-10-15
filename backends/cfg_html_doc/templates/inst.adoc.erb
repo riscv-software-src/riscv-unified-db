@@ -5,20 +5,9 @@
 
 *<%= inst.long_name %>*
 
-This instruction is defined by<%- if inst.defined_by.size > 1 -%> any of the following<%- end -%>:
+This instruction is defined by:
 
-  <%- inst.defined_by.each do |ext| -%>
-  * `<%= ext.name %>`, `<%= ext.version_requirement %>`
-  <%- end -%>
-
-<%- unless inst.extension_requirements.empty? -%>
-Additionally, this instruction is only defined if the following <%- if inst.extension_requirements.size == 1 -%>extension is<%- else -%>extensions are<%- end -%> also present and active:
-
-  <%- inst.extension_requirements.each do |ext| -%>
-  * `<%= ext.name %>`, `<%= ext.version_requirement %>`
-  <%- end -%>
-
-<%- end -%>
+<%- inst.defined_by.to_asciidoc -%>
 
 == Encoding
 
@@ -119,7 +108,7 @@ Pruned, XLEN == <%= effective_xlen %>::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.pruned_operation_ast(arch_def.sym_table, effective_xlen).gen_adoc %>
+<%= inst.pruned_operation_ast(arch_def.symtab, effective_xlen).gen_adoc %>
 ----
 <%- end -%>
 
@@ -132,7 +121,7 @@ Original::
 ====
 <%- end -%>
 
-<%- exception_list = inst.reachable_exceptions_str(arch_def.sym_table) -%>
+<%- exception_list = inst.reachable_exceptions_str(arch_def.symtab) -%>
 <%- unless exception_list.empty? -%>
 == Exceptions
 

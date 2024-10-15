@@ -14,7 +14,7 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <%- if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <%- end -%>
-h| Defining extension | <%= csr.defined_by.map(&:to_s).join(", ") %>
+h| Defining extension a| <%= csr.defined_by.to_asciidoc %>
 <%- if csr.dynamic_length?(arch_def) -%>
 h| Length         | <%= csr.length_pretty(arch_def) %>
 <%- else -%>
@@ -29,7 +29,7 @@ h| Privilege Mode | <%= csr.priv_mode %>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(arch_def, arch_def.param_values["XLEN"]) %>
+<%= JSON.dump csr.wavedrom_desc(arch_def, arch_def.param_values["XLEN"], exclude_unimplemented: true) %>
 ....
 <%- else -%>
 <%# CSR has a dynamic length, or a field has a dynamic location,
@@ -39,13 +39,13 @@ This CSR format changes dynamically.
 .<%= csr.name %> Format when <%= csr.length_cond32 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(arch_def, 32) %>
+<%= JSON.dump csr.wavedrom_desc(arch_def, 32, exclude_unimplemented: true) %>
 ....
 
 .<%= csr.name %> Format when <%= csr.length_cond64 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(arch_def, 64) %>
+<%= JSON.dump csr.wavedrom_desc(arch_def, 64, exclude_unimplemented: true) %>
 ....
 
 
@@ -60,7 +60,7 @@ This CSR format changes dynamically.
 <%- csr.implemented_fields(arch_def).each do |field| -%>
 | `xref:<%=csr.name%>-<%=field.name%>-def[<%= field.name %>]`
 | <%= field.location_pretty(arch_def) %>
-| <%= field.type(arch_def) %>
+| <%= field.type(arch_def.symtab) %>
 | <%= field.reset_value(arch_def) %>
 
 <%- end -%>
@@ -88,14 +88,14 @@ Type::
 [%autowidth]
 |===
 
-| <%= field.type(arch_def) %> | <%= field.type_desc(arch_def) %>
+| <%= field.type(arch_def.symtab) %> | <%= field.type_desc(arch_def) %>
 |===
 
 Reset value::
 <%= field.reset_value(arch_def) %>
 
 <%- if field.has_custom_sw_write? -%>
-Softare write::
+Software write::
 This field has special behavior when written by software (_e.g._, through `csrrw`).
 +
 When software tries to write `csr_value`, the field will be written with the return value of the function below.
@@ -148,7 +148,7 @@ Original::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= csr.type_checked_sw_read_ast(arch_def.sym_table).gen_adoc %>
+<%= csr.type_checked_sw_read_ast(arch_def.symtab).gen_adoc %>
 ----
 ====
 <%- end -%>

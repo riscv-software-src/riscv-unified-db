@@ -6,7 +6,8 @@ orc.b:
     Combines the bits within each byte using bitwise logical OR. This sets the bits
     of each byte in the result rd to all zeros if no bit within the respective byte
     of rs is set, or to all ones if any bit within the respective byte of rs is set.
-  definedBy: [B, Zbb]
+  definedBy:
+    anyOf: [B, Zbb]
   assembly: xd, xs1, xs2
   encoding:
     match: 001010000111-----101-----0010011

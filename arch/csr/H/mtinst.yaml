@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+mtinst:
+  address: 0x34a
+  long_name: Machine Trap Instruction Register
+  description: |
+    When a trap is taken into M-mode, mtinst is written with a value that, if nonzero,
+    provides information about the instruction that trapped, to assist software in handling the trap.
+    The values that may be written to mtinst on a trap are documented in TODO.
+
+    mtinst is a WARL register that need only be able to hold the values that the implementation may automatically write to it on a trap.
+  priv_mode: M
+  length: MXLEN
+  definedBy: H
+  fields:
+    VALUE:
+      location_rv64: 63-0
+      location_rv32: 31-0
+      type(): |
+        if (   (TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT != "always zero")
+            || (TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT != "always zero")
+            || (TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT != "always zero")
+            || (TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED != "always zero")
+            || (TINST_VALUE_ON_BREAKPOINT != "always zero")
+            || (TINST_VALUE_ON_VIRTUAL_INSTRUCTION != "always zero")
+            || (TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED != "always zero")
+            || (TINST_VALUE_ON_LOAD_ACCESS_FAULT != "always zero")
+            || (TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED != "always zero")
+            || (TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT != "always_zero")
+            || (TINST_VALUE_ON_UCALL != "always zero")
+            || (TINST_VALUE_ON_SCALL != "always zero")
+            || (TINST_VALUE_ON_MCALL != "always zero")
+            || (TINST_VALUE_ON_VSCALL != "always zero")
+            || (TINST_VALUE_ON_LOAD_PAGE_FAULT  != "always zero")
+            || (TINST_VALUE_ON_STORE_AMO_PAGE_FAULT != "always zero")) {
+          return CsrFieldType::RWH;
+        } else {
+          return CsrFieldType::RO;
+        }
+      description: |
+        Exception-speicific information for a trap into M-mode.
+      reset_value: UNDEFINED_LEGAL

@@ -50,7 +50,7 @@ require "ruby-prof"
         File.write(path, arch_def.find_replace_links(erb.result(binding)))
       end
     when "func"
-      global_symtab = arch_def.sym_table
+      global_symtab = arch_def.symtab
       path = dir_path / "funcs.adoc"
       puts "  Generating #{path}"
       File.write(path, arch_def.find_replace_links(erb.result(binding)))

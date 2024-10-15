@@ -279,8 +279,16 @@ grammar Idl
     'CSR' space* '[' space* idx:expression space* ']' <Idl::CsrReadExpressionSyntaxNode>
   end
 
+  rule field_access_eligible_expression
+    paren_expression
+    /
+    function_call # Ast is assigned in function_call rule
+    /
+    rval # must come last!
+  end
+
   rule field_access_expression
-    rval space* '.' space* field_name <Idl::FieldAccessExpressionSyntaxNode>
+    field_access_eligible_expression space* '.' space* field_name <Idl::FieldAccessExpressionSyntaxNode>
   end
 
   rule ary_eligible_expression
@@ -290,13 +298,13 @@ grammar Idl
     /
     concatenation_expression
     /
+    field_access_expression 
+    /
     function_call # Ast is assigned in function_call rule
     /
     csr_field_access_expression
     /
     csr_register_access_expression
-    /
-    field_access_expression
     /
     bits_cast
     /
@@ -334,6 +342,8 @@ grammar Idl
     /
     '$enum_to_a' space* '(' space* user_type_name ')' <Idl::EnumArrayCastSyntaxNode>
     /
+    '$enum' space* '(' space* user_type_name space* ',' space* expression space* ')' <Idl::EnumCastSyntaxNode>
+    /
     '$array_size' space* '(' space* expression ')' <Idl::ArraySizeSyntaxNode>
     /
     paren_expression
@@ -348,13 +358,13 @@ grammar Idl
     /
     concatenation_expression
     /
+    field_access_expression
+    /
     function_call # Ast is assigned in function_call rule
     /
     csr_field_access_expression
     /
     csr_register_access_expression
-    /
-    field_access_expression
     /
     enum_ref
     /

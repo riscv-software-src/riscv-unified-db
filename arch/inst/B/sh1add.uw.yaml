@@ -6,7 +6,8 @@ sh1add.uw:
     This instruction performs an XLEN-wide addition of two addends. The first addend is rs2.
     The second addend is the unsigned value formed by extracting the least-significant word of rs1
     and shifting it left by 1 place.
-  definedBy: [B, Zba]
+  definedBy:
+    anyOf: [B, Zba]
   base: 64
   encoding:
     match: 0010000----------010-----0111011

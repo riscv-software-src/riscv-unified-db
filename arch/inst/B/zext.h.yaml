@@ -11,7 +11,8 @@ zext.h:
 
     [NOTE]
     The *zext.h* instruction is a pseduo-op for `packw` when `Zbkb` is implmeneted and XLEN == 64.
-  definedBy: [B, Zbb]
+  definedBy:
+    anyOf: [B, Zbb]
   encoding:
     RV32:
       match: 000010000000-----100-----0110011

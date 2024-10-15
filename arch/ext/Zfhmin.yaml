@@ -45,5 +45,7 @@ Zfhmin:
   - version: "1.0.0"
     state: ratified
     ratification_date: 2021-11
-    requires: [F, ">= 2.2"]
+    requires:
+      name: F
+      version: ">= 2.2"
 

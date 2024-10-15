@@ -12,14 +12,14 @@ rule %r{#{$root}/gen/profile_doc/adoc/.*\.adoc} => proc { |tname|
 } do |t|
   profile_family_name = Pathname.new(t.name).basename(".adoc").to_s
 
-  profile_family = arch_def_for("_").profile_family(profile_family_name)
+  profile_family = arch_def_for("_64").profile_family(profile_family_name)
   raise ArgumentError, "No profile family named '#{profile_family_name}'" if profile_family.nil?
 
   template_path = Pathname.new "#{$root}/backends/profile_doc/templates/profile_pdf.adoc.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")
   erb.filename = template_path.to_s
 
-  arch_def = arch_def_for("_")
+  arch_def = arch_def_for("_64")
 
   FileUtils.mkdir_p File.dirname(t.name)
   File.write t.name, AsciidocUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
@@ -85,7 +85,7 @@ namespace :gen do
     family_name = args[:profile_family]
     raise ArgumentError, "Missing required option +profile_family+" if family_name.nil?
 
-    family = arch_def_for("_").profile_family(family_name)
+    family = arch_def_for("_64").profile_family(family_name)
     raise ArgumentError, "No profile family named '#{family_name}" if family.nil?
 
     Rake::Task["#{$root}/gen/profile_doc/pdf/#{family_name}.pdf"].invoke
@@ -96,7 +96,7 @@ namespace :gen do
     family_name = args[:profile_family]
     raise ArgumentError, "Missing required option +profile_family+" if family_name.nil?
 
-    family = arch_def_for("_").profile_family(family_name)
+    family = arch_def_for("_64").profile_family(family_name)
     raise ArgumentError, "No profile family named '#{family_name}" if family.nil?
 
     Rake::Task["#{$root}/gen/profile_doc/html/#{family_name}.html"].invoke
