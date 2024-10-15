@@ -191,7 +191,12 @@ class Crd < ArchDefObject
 
     def initialize(param_db, schema_hash, note)
       raise ArgumentError, "Expecting ExtensionParameter" unless param_db.is_a?(ExtensionParameter)
-      raise ArgumentError, "Expecting schema_hash to be a hash" unless schema_hash.is_a?(Hash)
+
+      if schema_hash.nil?
+        schema_hash = {}
+      else
+        raise ArgumentError, "Expecting schema_hash to be a hash" unless schema_hash.is_a?(Hash)
+      end
 
       @param_db = param_db
       @schema_crd = Schema.new(schema_hash)
@@ -216,9 +221,26 @@ class Crd < ArchDefObject
       @schema_crd.value
     end
 
-    # Pretty convert CRD's parameter constraint merged into extension schema to a string.
-    def schema_pretty_crd_merged_with_param_db
-      Schema.new(@param_db.schema).merge!(@schema_crd).to_pretty_s
+    # @return [String] - # What parameter values are allowed by the CRD.
+    #
+    # Old implementation:
+    #   def schema_pretty_crd_merged_with_param_db
+    #     Schema.new(@param_db.schema).merge!(@schema_crd).to_pretty_s
+    #   end
+    def allowed_values
+      if (@schema_crd.empty?)
+        # CRD doesn't add any constraints on parameter's value.
+        return "Any"
+      end
+
+      # Create a Schema object just using information in the parameter database.
+      schema_obj = Schema.new(@param_db.schema)
+
+      # Merge in constraints imposed by the CRD on the parameter.
+      schema_obj.merge!(@schema_crd)
+
+      # Create string showing allowed values of parameter with CRD constraints added
+      schema_obj.to_pretty_s
     end
 
     # sorts by name
@@ -252,7 +274,7 @@ class Crd < ArchDefObject
         raise "There is no param '#{param_name}' in extension '#{ext_crd["name"]}" if param_db.nil?
 
         @all_in_scope_ext_params << 
-          InScopeExtensionParameter.new(param_db, param_data["schema"] || {}, param_data["note"])
+          InScopeExtensionParameter.new(param_db, param_data["schema"], param_data["note"])
       end
     end
     @all_in_scope_ext_params
@@ -281,7 +303,7 @@ class Crd < ArchDefObject
         raise "There is no param '#{param_name}' in extension '#{ext_crd["name"]}" if ext_param_db.nil?
 
         ext_params << 
-          InScopeExtensionParameter.new(ext_param_db, param_data["schema"] || {}, param_data["note"])
+          InScopeExtensionParameter.new(ext_param_db, param_data["schema"], param_data["note"])
     end
 
     ext_params

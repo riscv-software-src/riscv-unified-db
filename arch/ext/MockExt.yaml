@@ -26,6 +26,12 @@ MockExt:
       description: foo
       schema:
         type: boolean
+    MOCK_32_BIT_INT:
+      description: foo
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0xffffffff
     MOCK_64_BIT_INT:
       description: foo
       schema:
@@ -62,6 +68,24 @@ MockExt:
         type: integer
         minimum: 0
         maximum: 127
+    MOCK_INT_RANGE_0_TO_999:
+      description: foo
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 999
+    MOCK_INT_RANGE_0_TO_1023:
+      description: foo
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 1023
+    MOCK_INT_RANGE_1000_TO_2048:
+      description: foo
+      schema:
+        type: integer
+        minimum: 1000 
+        maximum: 2048
     MOCK_INT_RANGE_0_TO_128:
       description: foo
       schema:
@@ -100,7 +124,14 @@ MockExt:
           type: integer
           enum: [0, 1]
         maxItems: 10
-    MOCK_ARRAY_STRING_ENUM:
+    MOCK_ARRAY_STRING_ENUM1:
+      description: foo
+      schema:
+        type: array
+        items:
+          type: string
+          enum: [ABC, DEF, GHI]
+    MOCK_ARRAY_STRING_ENUM2:
       description: foo
       schema:
         type: array
