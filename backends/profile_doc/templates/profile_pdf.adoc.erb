@@ -612,7 +612,7 @@ RV64::
 <%- if inst.key?("operation()") -%>
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.operation_ast(arch_def.idl_compiler).gen_adoc %>
+<%= inst.operation_ast(arch_def.symtab).gen_adoc %>
 ----
 <%- end -%>
 
