@@ -96,7 +96,7 @@ class Validator
     end
   end
 
-  # iniailize a new Validator
+  # initialize a new Validator
   #
   # @raise [SchemaError] if a schema is ill-formed
   def initialize

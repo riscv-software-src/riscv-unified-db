@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "obj"
+require_relative "schema"
 
 # A parameter (AKA option, AKA implementation-defined value) supported by an extension
 class ExtensionParameter
@@ -25,6 +26,11 @@ class ExtensionParameter
 
   # @returns [Idl::Type] Type of the parameter
   attr_reader :type
+
+  # Pretty convert extension schema to a string.
+  def schema_type
+    Schema.new(@schema).to_pretty_s
+  end
 
   def initialize(name, desc, schema, extra_validation, exts)
     @name = name
@@ -197,7 +203,7 @@ class Extension < ArchDefObject
   def instructions
     return @instructions unless @instructions.nil?
 
-    @instructions = arch_def.instructions.select { |i| i.definedBy == name || (i.definedBy.is_a?(Array) && i.definedBy.include?(name)) }
+    @instructions = arch_def.instructions.select { |i| @data["versions"].any? { |version| i.defined_by?(name, version["version"]) }}
   end
 
   # @return [Array<Csr>] the list of CSRs implemented by this extension (may be empty)
@@ -314,7 +320,7 @@ class ExtensionRequirement
   attr_reader :name
   attr_reader :note     # Optional note. Can be nil.
   attr_reader :req_id   # Optional Requirement ID. Can be nil.
-  attr_reader :status   # Optional status (e.g., Mandatory, Optional, etc.). Can be nil.
+  attr_reader :presence # Optional presence (e.g., Mandatory, Optional, etc.). Can be nil.
 
   # @return [Gem::Requirement] Version requirement
   def version_requirement
@@ -327,7 +333,7 @@ class ExtensionRequirement
 
   # @param name [#to_s] Extension name
   # @param requirements (see Gem::Requirement#new)
-  def initialize(name, *requirements, note: nil, req_id: nil, status: nil)
+  def initialize(name, *requirements, note: nil, req_id: nil, presence: nil)
     @name = name.to_s
     requirements =
       if requirements.empty?
@@ -338,7 +344,7 @@ class ExtensionRequirement
     @requirement = Gem::Requirement.new(requirements)
     @note = note
     @req_id = req_id
-    @status = status
+    @presence = presence
   end
 
   # @overload

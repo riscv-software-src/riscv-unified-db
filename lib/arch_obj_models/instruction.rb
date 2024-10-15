@@ -11,7 +11,17 @@ class Instruction < ArchDefObject
     if other.is_a?(Instruction)
       name == other.name
     else
-      raise ArgumentError, "Instruction is comparable to a #{other.class.name}"
+      raise ArgumentError, "Instruction is not comparable to a #{other.class.name}"
+    end
+  end
+
+  alias eql? ==
+
+  def <=>(other)
+    if other.is_a?(Instruction)
+      name <=> other.name
+    else
+      raise ArgumentError, "Instruction is not comparable to a #{other.class.name}"
     end
   end
 

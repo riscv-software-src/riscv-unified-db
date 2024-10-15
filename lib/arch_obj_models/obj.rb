@@ -27,6 +27,10 @@
 class ArchDefObject
   attr_reader :data, :name, :long_name, :description
 
+  def <=>(other)
+    name <=> other.name
+  end
+
   # @return [String] Source file that data for this object can be attributed to
   # @return [nil] if the source isn't known
   def __source
@@ -102,11 +106,13 @@ class ArchDefObject
       end
     elsif args.size == 2
       raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
-      raise ArgumentError, "Second parameter must be an extension version" unless args[0].respond_to?(:to_s)
+      version = args[1].is_a?(Gem::Version) ? args[1] : Gem::Version.new(args[1]) 
 
       defined_by.satisfied_by? do |r|
-        r.name == args[0] && r.version_requirement.satisfied_by?(args[1].to_s)
+        r.name == args[0] && r.version_requirement.satisfied_by?(version)
       end
+    else
+      raise ArgumentError, "Unsupported number of arguments of " + args.size
     end
   end
 
@@ -239,10 +245,6 @@ class Person < ArchDefObject
   # @return [String] Company the person works for
   # @return [nil] if the company is not known, or if the person is an individual contributor
   def company = @data["company"]
-
-  def <=>(other)
-    name <=> other.name
-  end
 end
 
 # represents a JSON Schema compoisition, e.g.:

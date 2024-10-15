@@ -1,15 +1,15 @@
 # yaml-language-server: $schema=../../schemas/csr_schema.json
 
-time:
-  long_name: Timer for RDTIME Instruction
-  address: 0xC01
+timeh:
+  long_name: High-half timer for RDTIME Instruction
+  address: 0xC81
   description: |
     [when,"TIME_CSR_IMPLEMENTED == false"]
     This CSR does not exist, and access will cause an IllegalInstruction exception.
 
     [when,"TIME_CSR_IMPLEMENTED == true"]
     --
-    Shadow of the memory-mapped M-mode CSR `mtime`.
+    Shadow of the memory-mapped M-mode CSR `mtimeh`.
 
     Privilege mode access is controlled with `mcounteren.TM`, `scounteren.TM`, and `hcounteren.TM` as follows:
 
@@ -27,15 +27,14 @@ time:
     !===
     --
   priv_mode: U
-  length: 64
+  length: 32
   definedBy: Zicntr
   fields:
     COUNT:
-      location: 63-0
+      location: 31-0
+      alias: time.COUNT[63:32]
       description: |
-        Reports the current wall-clock time from the timer device.
-
-        Alias of the `mtime` memory-mapped CSR.
+        Reports the most significant 32 bits of the current wall-clock time from the timer device.
       type: RO-H
       reset_value: UNDEFINED_LEGAL
   sw_read(): |
@@ -78,4 +77,4 @@ time:
       }
     }
 
-    return read_mtime();
+    return read_mtime()[63:32];

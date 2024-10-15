@@ -1,10 +1,10 @@
 # yaml-language-server: $schema=../../schemas/csr_schema.json
 
-mseccfg:
-  long_name: Machine Security Configuration
-  address: 0x747
+mseccfgh:
+  long_name: Most significant 32 bits of Machine Security Configuration
+  address: 0x757
   priv_mode: M
-  length: 64
+  length: 32
   description: Machine Security Configuration
   definedBy:
     name: Sm

@@ -17,7 +17,10 @@ require_relative "arch_obj_models/csr_field"
 require_relative "arch_obj_models/csr"
 require_relative "arch_obj_models/instruction"
 require_relative "arch_obj_models/extension"
-require_relative "arch_obj_models/csc_crd"
+require_relative "arch_obj_models/crd"
+require_relative "template_helpers"
+
+include TemplateHelpers
 
 class ArchDef
   # @return [Idl::Compiler] The IDL compiler
@@ -56,7 +59,7 @@ class ArchDef
   def configured? = @arch_def["type"] != "unconfigured"
   def type = @arch_def["type"]
 
-  # Initialize a new configured architecture defintiion
+  # Initialize a new configured architecture definition
   #
   # @param config_name [#to_s] The name of a configuration, which must correspond
   #                            to a folder under $root/cfgs
@@ -359,7 +362,7 @@ class ArchDef
         if e.is_a?(String)
           @prohibited_extensions << ExtensionRequirement.new(e, nil)
         else
-          @prohibited_extensions << ExtensionRequirement.new(e["name"], e["requirements"])
+          @prohibited_extensions << ExtensionRequirement.new(e["name"], e["requirements"], presence: "prohibited")
         end
       end
     end
@@ -621,49 +624,49 @@ class ArchDef
   # @return [nil] if the profile does not exist
   def profile(name) = profiles_hash[name]
 
-  def csc_crd_families
-    return @csc_crd_families unless @csc_crd_families.nil?
+  def crd_families
+    return @crd_families unless @crd_families.nil?
 
-    @csc_crd_families = []
-    @arch_def["csc_crd_families"].each_value do |family_data|
-      @csc_crd_families << CscCrdFamily.new(family_data, self)
+    @crd_families = []
+    @arch_def["crd_families"].each_value do |family_data|
+      @crd_families << CrdFamily.new(family_data, self)
     end
-    @csc_crd_families
+    @crd_families
   end
 
-  def csc_crd_famlies_hash
-    return @csc_crd_families_hash unless @csc_crd_families_hash.nil?
+  def crd_famlies_hash
+    return @crd_families_hash unless @crd_families_hash.nil?
 
-    @csc_crd_families_hash = {}
-    csc_crd_families.each do |family|
-      @csc_crd_families_hash[family.name] = family
+    @crd_families_hash = {}
+    crd_families.each do |family|
+      @crd_families_hash[family.name] = family
     end
-    @csc_crd_families_hash
+    @crd_families_hash
   end
 
-  def csc_crd_family(name) = csc_crd_famlies_hash[name]
+  def crd_family(name) = crd_famlies_hash[name]
 
-  def csc_crds
-    return @csc_crds unless @csc_crds.nil?
+  def crds
+    return @crds unless @crds.nil?
 
-    @csc_crds = []
-    @arch_def["csc_crds"].each_value do |csc_crd_data|
-      @csc_crds << CscCrd.new(csc_crd_data, self)
+    @crds = []
+    @arch_def["crds"].each_value do |crd_data|
+      @crds << Crd.new(crd_data, self)
     end
-    @csc_crds
+    @crds
   end
 
-  def csc_crds_hash
-    return @csc_crds_hash unless @csc_crds_hash.nil?
+  def crds_hash
+    return @crds_hash unless @crds_hash.nil?
 
-    @csc_crds_hash = {}
-    csc_crds.each do |csc_crd|
-      @csc_crds_hash[csc_crd.name] = csc_crd
+    @crds_hash = {}
+    crds.each do |crd|
+      @crds_hash[crd.name] = crd
     end
-    @csc_crds_hash
+    @crds_hash
   end
 
-  def csc_crd(name) = csc_crds_hash[name]
+  def crd(name) = crds_hash[name]
 
   # @return [Array<ExceptionCode>] All exception codes defined by RISC-V
   def exception_codes

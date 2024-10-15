@@ -126,7 +126,11 @@ menvcfg:
     not exist.
   priv_mode: M
   length: 64
-  definedBy: U
+  definedBy:
+    allOf:
+      - name: Sm
+        version: ">=1.12"
+      - name: U
   fields:
     STCE:
       location: 63
