@@ -35,13 +35,22 @@ MockCRD-1:
       MOCK_1_BIT_INT: {}
       MOCK_2_BIT_INT: {}
       MOCK_25_BIT_INT: {}
+      MOCK_32_BIT_INT:
+        schema:
+          const: 0xdeadbeef
       MOCK_64_BIT_INT: {}
       MOCK_INT_RANGE_0_TO_127: {}
       MOCK_INT_RANGE_0_TO_128: {}
       MOCK_INT_RANGE_1_TO_128: {}
+      MOCK_INT_RANGE_0_TO_999: {}
+      MOCK_INT_RANGE_0_TO_1023: {}
+      MOCK_INT_RANGE_1000_TO_2048: {}
       MOCK_ARRAY_INT_ENUM: {}
       MOCK_ARRAY_BOOL_ARRAY_OF_8_FIRST_2_FALSE: {}
-      MOCK_ARRAY_STRING_ENUM:
+      MOCK_ARRAY_STRING_ENUM1:
+        schema:
+          const : DEF
+      MOCK_ARRAY_STRING_ENUM2:
         schema:
           contains: { const : DEF }
   - name: I

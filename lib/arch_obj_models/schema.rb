@@ -12,21 +12,23 @@ class Schema
       raise ArgumentError, "Expecting non-empty hash" if schema_hash.empty?
 
       if schema_hash.key?("const")
-        "#{schema_hash["const"]}"
+        large2hex(schema_hash["const"])
       elsif schema_hash.key?("enum")
         "[#{schema_hash["enum"].join(', ')}]"
       elsif schema_hash.key?("type")
         case schema_hash["type"]
         when "integer"
           min = schema_hash["minimum"]
+          minstr = large2hex(min)
           max = schema_hash["maximum"]
+          maxstr = large2hex(max)
           if min && max
             sz = num_bits(min, max)
-            (sz > 0) ? "#{sz}-bit integer" : "#{min} to #{max}"
+            (sz > 0) ? "#{sz}-bit integer" : "#{minstr} to #{maxstr}"
           elsif min
-            "&#8805; #{min}"
+            "&#8805; #{minstr}"
           elsif max
-            "&#8804; #{max}"
+            "&#8804; #{maxstr}"
           else
             "integer"
           end
@@ -90,14 +92,29 @@ class Schema
       end
     end
 
+    # Convert large integers to hex str.
+    def large2hex(value)
+      if value.nil?
+        ""
+      elsif value.is_a?(Integer)
+        (value > 999) ? "0x" + value.to_s(16) : value.to_s
+      else
+        value.to_s
+      end
+    end
+
     def merge!(other_schema)
-        raise ArgumentError, "Expecting Schema" unless (other_schema.is_a?(Schema) || other_schema.is_a?(Hash))
+      raise ArgumentError, "Expecting Schema" unless (other_schema.is_a?(Schema) || other_schema.is_a?(Hash))
 
-        hash = other_schema.is_a?(Schema) ? other_schema.instance_variable_get(:@schema_hash) : other_schema
+      hash = other_schema.is_a?(Schema) ? other_schema.instance_variable_get(:@schema_hash) : other_schema
 
-        @schema_hash.merge!(hash)
+      @schema_hash.merge!(hash)
 
-        self
+      self
+    end
+
+    def empty?
+      @schema_hash.empty?
     end
 
     def single_value?

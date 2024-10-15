@@ -111,7 +111,8 @@ not provided in the associated standard.
 === IN-SCOPE Parameters
 
 These implementation-dependent options defined by MANDATORY or OPTIONAL extensions are IN-SCOPE. 
-An implementation must abide by the "Allowed Value(s)" to obtain a certificate. 
+An implementation must abide by the "Allowed Value(s)" to obtain a certificate.
+If the "Allowed Value(s)" is "Any" then any value allowed by the type is acceptable.
 
 <%- if crd.all_in_scope_ext_params.empty? -%>
 None
@@ -123,7 +124,7 @@ None
 <%- crd.all_in_scope_ext_params.sort.each do |in_scope_ext_param| -%>
 | <%= in_scope_ext_param.name %>
 | <%= in_scope_ext_param.param_db.schema_type %>
-| <%= in_scope_ext_param.schema_pretty_crd_merged_with_param_db %>
+| <%= in_scope_ext_param.allowed_values %>
 | <%- crd.all_in_scope_exts_with_param(in_scope_ext_param.param_db).sort.each do |ext_db| -%><<ext-<%= ext_db.name %>-param-<%= in_scope_ext_param.name %>-def,<%= ext_db.name %>>> <%- end # do ext_db -%>
 a| <%= in_scope_ext_param.note %>
 <%- end # do -%>
