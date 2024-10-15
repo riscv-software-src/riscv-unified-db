@@ -96,6 +96,11 @@ module Idl
       "#{' '*indent}$bits(#{expression.gen_adoc(0, indent_spaces: )})"
     end
   end
+  class EnumCastAst
+    def gen_adoc(indent, indent_spaces: 2)
+      "#{' '*indent}$enum(#{enum_name.gen_adoc(0, indent_spaces:)}, #{expression.gen_adoc(0, indent_spaces: )})"
+    end
+  end
   class CsrFieldAssignmentAst
     def gen_adoc(indent, indent_spaces: 2)
       "#{' '*indent}#{csr_field.gen_adoc(indent, indent_spaces:)} = #{write_value.gen_adoc(0, indent_spaces:)}"

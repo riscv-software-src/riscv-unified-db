@@ -1,0 +1,5 @@
+---
+params:
+  NAME: _32
+
+  XLEN: 32

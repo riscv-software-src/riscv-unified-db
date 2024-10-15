@@ -108,7 +108,7 @@ Pruned, XLEN == <%= effective_xlen %>::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.pruned_operation_ast(arch_def.sym_table, effective_xlen).gen_adoc %>
+<%= inst.pruned_operation_ast(arch_def.symtab, effective_xlen).gen_adoc %>
 ----
 <%- end -%>
 
@@ -121,7 +121,7 @@ Original::
 ====
 <%- end -%>
 
-<%- exception_list = inst.reachable_exceptions_str(arch_def.sym_table) -%>
+<%- exception_list = inst.reachable_exceptions_str(arch_def.symtab) -%>
 <%- unless exception_list.empty? -%>
 == Exceptions
 

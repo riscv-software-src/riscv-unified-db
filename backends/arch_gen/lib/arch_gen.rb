@@ -42,7 +42,8 @@ class ArchGen
           "type" => "object",
           "required" => ["NAME"],
           "properties" => {
-            "NAME" => { "type" => "string", "enum" => [@name] }
+            "NAME" => { "type" => "string", "enum" => [@name] },
+            "XLEN" => { "type" => "intger", "enum" => [32, 64] }
           },
           "additionalProperties" => false
         }
@@ -89,6 +90,12 @@ class ArchGen
 
     @cfg_impl_ext = @validator.validate(cfg_impl_ext_path)["implemented_extensions"]
     raise "Validation failed" if @cfg_impl_ext.nil?
+
+    cfg_opts_path = @cfg_dir / "cfg.yaml"
+    @cfg_opts = YAML.load_file(cfg_opts_path)
+    raise "Validation failed" if @cfg_opts.nil?
+    raise "Validation failed: bad type" unless ["partially configured", "fully configured"].include?(@cfg_opts["type"])
+
 
     @params_schema_path = @gen_dir / "schemas" / "params_schema.json"
 
@@ -276,16 +283,69 @@ class ArchGen
       ext_name = ext_obj.keys[0]
       [ext_name, ext_obj[ext_name]]
     end.to_h
+    profile_family_hash = Dir.glob($root / "arch" / "profile_family" / "**" / "*.yaml").map do |f|
+      profile_obj = YAML.load_file(f)
+      profile_name = profile_obj.keys[0]
+      profile_obj[profile_name]["name"] = profile_name
+      profile_obj[profile_name]["__source"] = f
+      [profile_name, profile_obj[profile_name]]
+    end.to_h
+    profile_hash = Dir.glob($root / "arch" / "profile" / "**" / "*.yaml").map do |f|
+      profile_obj = YAML.load_file(f)
+      profile_name = profile_obj.keys[0]
+      profile_obj[profile_name]["name"] = profile_name
+      profile_obj[profile_name]["__source"] = f
+      [profile_name, profile_obj[profile_name]]
+    end.to_h
+    manual_hash = {}
+    Dir.glob($root / "arch" / "manual" / "**" / "contents.yaml").map do |f|
+      manual_version = YAML.load_file(f)
+      manual_id = manual_version["manual"]
+      unless manual_hash.key?(manual_id)
+        manual_info_files = Dir.glob($root / "arch" / "manual" / "**" / "#{manual_id}.yaml")
+        raise "Could not find manual info '#{manual_id}'.yaml, needed by #{f}" if manual_info_files.empty?
+        raise "Found multiple manual infos '#{manual_id}'.yaml, needed by #{f}" if manual_info_files.size > 1
+  
+        manual_info_file = manual_info_files.first
+        manual_hash[manual_id] = YAML.load_file(manual_info_file)
+        manual_hash[manual_id]["__source"] = manual_info_file
+        # TODO: schema validation
+      end
+  
+      manual_hash[manual_id]["versions"] ||= []
+      manual_hash[manual_id]["versions"] << YAML.load_file(f)
+      # TODO: schema validation
+      manual_hash[manual_id]["versions"].last["__source"] = f
+    end
+    csc_crd_family_hash = Dir.glob($root / "arch" / "csc_crd_family" / "**" / "*.yaml").map do |f|
+      family_obj = YAML.load_file(f, permitted_classes: [Date])
+      family_name = family_obj.keys[0]
+      family_obj[family_name]["name"] = family_name
+      family_obj[family_name]["__source"] = f
+      [family_name, family_obj[family_name]]
+    end.to_h
+    csc_crd_hash = Dir.glob($root / "arch" / "csc_crd" / "**" / "*.yaml").map do |f|
+      crd_obj = YAML.load_file(f, permitted_classes: [Date])
+      crd_name = crd_obj.keys[0]
+      crd_obj[crd_name]["name"] = crd_name
+      crd_obj[crd_name]["__source"] = f
+      [crd_name, crd_obj[crd_name]]
+    end.to_h
 
     arch_def = {
-      "type" => "fully configured",
+      "type" => @cfg_opts["type"],
       "params" => params,
       "instructions" => inst_hash,
       "implemented_instructions" => @implemented_instructions,
       "extensions" => ext_hash,
       "implemented_extensions" => @implemented_extensions,
       "csrs" => csr_hash,
-      "implemented_csrs" => @implemented_csrs
+      "implemented_csrs" => @implemented_csrs,
+      "profile_families" => profile_family_hash,
+      "profiles" => profile_hash,
+      "manuals" => manual_hash,
+      "csc_crd_families" => csc_crd_family_hash,
+      "csc_crds" => csc_crd_hash
     }
 
     yaml = YAML.dump(arch_def)

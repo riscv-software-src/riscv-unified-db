@@ -1,0 +1,4 @@
+params:
+  NAME: _64
+
+  XLEN: 64

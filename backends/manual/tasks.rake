@@ -30,50 +30,63 @@ directory MANUAL_GEN_DIR / "adoc"
 directory MANUAL_GEN_DIR / "antora"
 directory MANUAL_GEN_DIR / "html"
 
-["inst", "csr", "ext"].each do |type|
-  directory MANUAL_GEN_DIR / "antora" / "modules" / "#{type}s" / "pages"
+# ["inst", "csr", "ext"].each do |type|
+#   directory MANUAL_GEN_DIR / "antora" / "modules" / "#{type}s" / "pages"
 
-  Dir.glob($root / "arch" / type / "**" / "*.yaml") do |fn|
-    file MANUAL_GEN_DIR / "adoc" / "#{File.basename(fn, '.yaml')}.adoc" => [
-      "gen:arch",
-      (MANUAL_GEN_DIR / "adoc").to_s,
-      ($root / "backends" / "manual" / "templates" / "#{type}.adoc.erb").to_s,
-      __FILE__
-    ] do |t|
-      name = File.basename(t.name, ".adoc")
+#   Dir.glob($root / "arch" / type / "**" / "*.yaml") do |fn|
+#     file MANUAL_GEN_DIR / "adoc" / "#{File.basename(fn, '.yaml')}.adoc" => [
+#       "gen:arch",
+#       (MANUAL_GEN_DIR / "adoc").to_s,
+#       ($root / "backends" / "manual" / "templates" / "#{type}.adoc.erb").to_s,
+#       __FILE__
+#     ] do |t|
+#       name = File.basename(t.name, ".adoc")
 
-      arch_def = arch_def_for("_")
-      erb = case type
-            when "inst"
-              inst = arch_def.instruction(name)
-              raise "Could not find inst '#{name}'" if inst.nil?
+#       arch_def_32 = arch_def_for("_32")
+#       arch_def_64 = arch_def_for("_64")
+#       erb = case type
+#             when "inst"
+#               inst_32 = arch_def_32.instruction(name)
+#               raise "Could not find inst '#{name}' in RV32" if inst_32.nil?
 
-              ERB.new(File.read($root / "backends" / "manual" / "templates" / "inst.adoc.erb"), trim_mode: "-")
-            when "csr"
-              csr = arch_def.csr(name)
-              raise "Could not find inst '#{name}'" if csr.nil?
+#               inst_64 = arch_def_64.instruction(name)
+#               raise "Could not find inst '#{name}' in RV64" if inst_64.nil?
 
-              ERB.new(File.read($root / "backends" / "manual" / "templates" / "csr.adoc.erb"), trim_mode: "-")
-            when "ext"
-              ext = arch_def.extension(name)
-              raise "Could not find ext '#{name}'" if ext.nil?
+#               inst = inst_32 || inst_64
 
-              ERB.new(File.read($root / "backends" / "manual" / "templates" / "ext.adoc.erb"), trim_mode: "-")
-            else
-              raise "Unhandled type '#{type}'"
-            end
+#               ERB.new(File.read($root / "backends" / "manual" / "templates" / "inst.adoc.erb"), trim_mode: "-")
+#             when "csr"
+#               csr_32 = arch_def_32.csr(name)
+#               raise "Could not find csr '#{name}' in RV32" if csr_32.nil?
 
-      File.write(t.name, erb.result(binding))
-    end
+#               csr_64 = arch_def_64.csr(name)
+#               raise "Could not find csr '#{name}' in RV32" if csr_64.nil?
 
-    file MANUAL_GEN_DIR / "antora" / "modules" / "#{type}s" / "pages" => [
-      (MANUAL_GEN_DIR / "adoc" / "#{File.basename(fn, '.yaml')}.adoc").to_s,
-      (MANUAL_GEN_DIR / "antora" / "modules" / "#{type}s" / "pages").to_s
-    ] do |t|
-      FileUtils.cp t.prerequisites.first, t.name
-    end
-  end
-end
+#               csr = csr_32 || csr_64
+
+#               ERB.new(File.read($root / "backends" / "manual" / "templates" / "csr.adoc.erb"), trim_mode: "-")
+#             when "ext"
+#               ext = arch_def_64.extension(name)
+#               raise "Could not find ext '#{name}'" if ext.nil?
+
+#               arch_def = arch_def_64
+
+#               ERB.new(File.read($root / "backends" / "manual" / "templates" / "ext.adoc.erb"), trim_mode: "-")
+#             else
+#               raise "Unhandled type '#{type}'"
+#             end
+
+#       File.write(t.name, erb.result(binding))
+#     end
+
+#     file MANUAL_GEN_DIR / "antora" / "modules" / "#{type}s" / "pages" => [
+#       (MANUAL_GEN_DIR / "adoc" / "#{File.basename(fn, '.yaml')}.adoc").to_s,
+#       (MANUAL_GEN_DIR / "antora" / "modules" / "#{type}s" / "pages").to_s
+#     ] do |t|
+#       FileUtils.cp t.prerequisites.first, t.name
+#     end
+#   end
+# end
 
 file MANUAL_GEN_DIR / "antora" / "antora.yml" => (MANUAL_GEN_DIR / "antora").to_s do |t|
   File.write t.name, <<~ANTORA
@@ -88,7 +101,7 @@ end
 # Rule to create a chapter page in antora hierarchy
 rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/chapters/pages/.*\.adoc} do |t|
   parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
-  manual_version = arch_def_for("_").manual(parts[0]).version(parts[1])
+  manual_version = arch_def_for("_64").manual(parts[0]).version(parts[1])
   chapter_name = File.basename(t.name, ".adoc")
 
   volume = manual_version.volumes.find { |v| !v.chapter(chapter_name).nil? }
@@ -119,7 +132,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/antora.yml} => proc { |tname|
   ]
 } do |t|
   parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
-  manual_version = arch_def_for("_").manual(parts[0])&.version(parts[1])
+  manual_version = arch_def_for("_64").manual(parts[0])&.version(parts[1])
 
   raise "Can't find any manual version for '#{parts[0]}' '#{parts[1]}'" if manual_version.nil?
 
@@ -154,7 +167,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/nav.adoc} => proc { |tname|
   ]
 } do |t|
   parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
-  manual_version = arch_def_for("_").manual(parts[0])&.version(parts[1])
+  manual_version = arch_def_for("_64").manual(parts[0])&.version(parts[1])
 
   raise "Can't find any manual version for '#{parts[0]}' '#{parts[1]}'" if manual_version.nil?
 
@@ -193,7 +206,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/ROOT/pages/index.adoc} => proc { 
   ]
 } do |t|
   parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
-  manual_version = arch_def_for("_").manual(parts[0])&.version(parts[1])
+  manual_version = arch_def_for("_64").manual(parts[0])&.version(parts[1])
 
   raise "Can't find any manual version for '#{parts[0]}' '#{parts[1]}'" if manual_version.nil?
 
@@ -218,7 +231,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/insts/pages/.*.adoc} => [
 ] do |t|
   inst_name = File.basename(t.name, ".adoc")
 
-  arch_def = arch_def_for("_")
+  arch_def = arch_def_for("_64")
   inst = arch_def.instruction(inst_name)
   raise "Can't find instruction '#{inst_name}'" if inst.nil?
 
@@ -238,7 +251,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/csrs/pages/.*.adoc} => [
 ] do |t|
   csr_name = File.basename(t.name, ".adoc")
 
-  arch_def = arch_def_for("_")
+  arch_def = arch_def_for("_64")
   csr = arch_def.csr(csr_name)
   raise "Can't find csr '#{csr_name}'" if csr.nil?
 
@@ -256,7 +269,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/funcs/pages/funcs.adoc} => [
   "gen:arch",
   ($root / "backends" / "manual" / "templates" / "func.adoc.erb").to_s
 ] do |t|
-  arch_def = arch_def_for("_")
+  arch_def = arch_def_for("_64")
 
   funcs_template_path = $root / "backends" / "manual" / "templates" / "func.adoc.erb"
   erb = ERB.new(funcs_template_path.read, trim_mode: "-")
@@ -272,7 +285,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/landing/antora.yml} => [
   parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
   manual_name = parts[0]
 
-  arch_def = arch_def_for("_")
+  arch_def = arch_def_for("_64")
   manual = arch_def.manual(manual_name)
   raise "Can't find any manual version for '#{manual_name}'" if manual.nil?
 
@@ -297,7 +310,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/landing/modules/ROOT/pages/index.adoc
   parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
   manual_name = parts[0]
 
-  arch_def = arch_def_for("_")
+  arch_def = arch_def_for("_64")
   manual = arch_def.manual(manual_name)
   raise "Can't find any manual version for '#{manual_name}'" if manual.nil?
 
@@ -325,7 +338,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/playbook/playbook.yml} => proc { |tna
   parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
   manual_name = parts[0]
 
-  arch_def = arch_def_for("_")
+  arch_def = arch_def_for("_64")
   manual = arch_def.manual(manual_name)
   raise "Can't find any manual version for '#{manual_name}'" if manual.nil?
 
@@ -379,11 +392,11 @@ namespace :gen do
       A static HTML website will be written into gen/manual/MANUAL_NAME/<hash of versions>/html
   DESC
   desc html_manual_desc
-  task :html_manual => "gen:arch" do
+  task :html_manual => "#{$root}/.stamps/arch-gen-_64.stamp" do
     raise ArgumentError, "Missing required environment variable MANUAL_NAME\n\n#{html_manual_desc}" if ENV["MANUAL_NAME"].nil?
     raise ArgumentError, "Missing required environment variable VERSIONS\n\n#{html_manual_desc}" if ENV["VERSIONS"].nil?
 
-    arch_def = arch_def_for("_")
+    arch_def = arch_def_for("_64")
     manual = arch_def.manuals.find { |m| m.name == ENV["MANUAL_NAME"] }
     raise "No manual '#{ENV['MANUAL_NAME']}'" if manual.nil?
 
@@ -448,7 +461,7 @@ namespace :serve do
 
     port = ENV.key?("PORT") ? ENV["PORT"] : 8000
 
-    arch_def = arch_def_for("_")
+    arch_def = arch_def_for("_64")
     manual = arch_def.manuals.find { |m| m.name == ENV["MANUAL_NAME"] }
     raise "No manual '#{ENV['MANUAL_NAME']}'" if manual.nil?
 

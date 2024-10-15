@@ -41,7 +41,7 @@ module Idl
       @arch_def = arch_def
     end
 
-    def compile_file(path, symtab: nil, type_check: true)
+    def compile_file(path)
       @parser.set_input_file(path.to_s)
 
       m = @parser.parse path.read
@@ -91,24 +91,13 @@ module Idl
           MSG
         end
 
-        include_ast = compile_file(include_path, symtab: nil, type_check: false)
+        include_ast = compile_file(include_path)
         include_ast.set_input_file_unless_already_set(include_path)
         ast.replace_include!(child, include_ast)
       end
 
       # we may have already set an input file from an include, so only set it if it's not already set
       ast.set_input_file_unless_already_set(path.to_s)
-      if type_check
-        begin
-          ast.type_check(symtab)
-        rescue AstNode::TypeError, AstNode::InternalError, AstNode::ValueError => e
-          warn "\n"
-          warn e.what
-          warn e.bt
-          exit 1
-        end
-        ast.freeze_tree
-      end
 
       ast
     end
@@ -138,12 +127,13 @@ module Idl
       # fix up left recursion
       ast = m.to_ast
       ast.set_input_file(input_file, input_line)
+      ast.freeze_tree(symtab)
 
       # type check
       unless type_check == false
         cloned_symtab = symtab.deep_clone
 
-        cloned_symtab.push
+        cloned_symtab.push(ast)
         cloned_symtab.add("__expected_return_type", return_type) unless return_type.nil?
 
         extra_syms.each { |k, v|
@@ -179,7 +169,6 @@ module Idl
           cloned_symtab.pop
         end
 
-        ast.freeze_tree
       end
 
       ast
@@ -188,11 +177,11 @@ module Idl
     # compile an instruction operation, and return the abstract syntax tree
     #
     # @param inst [Instruction] Instruction object
-    # @param symtab [SymbolTable] Symbol table to use for type checking
+    # @param symtab [SymbolTable] Symbol table
     # @param input_file [Pathname] Path to the input file this source comes from
     # @param input_line [Integer] Starting line in the input file that this source comes from
     # @return [Ast] The root of the abstract syntax tree
-    def compile_inst_operation(inst, input_file: nil, input_line: 0)
+    def compile_inst_operation(inst, symtab:, input_file: nil, input_line: 0)
       operation = inst["operation()"]
       @parser.set_input_file(input_file, input_line)
 
@@ -208,7 +197,7 @@ module Idl
       # fix up left recursion
       ast = m.to_ast
       ast.set_input_file(input_file, input_line)
-      ast.freeze_tree
+      ast.freeze_tree(symtab)
 
       ast
     end
@@ -221,21 +210,28 @@ module Idl
     # @raise AstNode::TypeError if a type error is found
     def type_check(ast, symtab, what)
       # type check
+      raise "Tree should be frozen" unless ast.frozen?
+
       begin
-        ast.type_check(symtab)
-      rescue AstNode::TypeError, AstNode::ValueError => e
-        warn "While type checking #{what}:"
-        warn e.what
-        warn e.backtrace
-        exit 1
+        value_result = AstNode.value_try do
+          ast.type_check(symtab)
+        end
+        AstNode.value_else(value_result) do
+          warn "While type checking #{what}, got a value error on:"
+          warn ast.text_value
+          warn AstNode.value_error_reason
+          warn symtab.callstack
+          unless AstNode.value_error_ast.nil?
+            warn "At #{AstNode.value_error_ast.input_file}:#{AstNode.value_error_ast.lineno}"
+          end
+          exit 1
+        end
       rescue AstNode::InternalError => e
         warn "While type checking #{what}:"
         warn e.what
         warn e.backtrace
         exit 1
       end
-
-      ast.freeze_tree
 
       ast
     end
@@ -252,6 +248,7 @@ module Idl
 
       ast = m.to_ast
       ast.set_input_file("[EXPRESSION]", 0)
+      ast.freeze_tree(symtab)
       begin
         ast.type_check(symtab)
       rescue AstNode::TypeError => e
@@ -270,7 +267,6 @@ module Idl
         exit 1
       end
 
-      ast.freeze_tree
 
       ast
     end

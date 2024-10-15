@@ -93,7 +93,7 @@ a@
 a@
 
 --
-<%= field.type_pretty(arch_def) %>
+<%= field.type_pretty(arch_def.symtab) %>
 --
 
 a@
@@ -127,7 +127,7 @@ Description::
 <%= arch_def.render_erb(field.description, "#{csr.name}.#{field.name}.description").gsub("\n", " +\n") %>
 
 Type::
-<%= field.type_pretty(arch_def) %>
+<%= field.type_pretty(arch_def.symtab) %>
 
 Reset value::
 <%= field.reset_value_pretty(arch_def) %>
@@ -164,7 +164,7 @@ This CSR may return a value that is different from what is stored in hardware.
 
 [source,idl,subs="specialchars,macros"]
 ----
-<%= csr.sw_read_ast(arch_def.idl_compiler).gen_adoc %>
+<%= csr.sw_read_ast(arch_def.symtab).gen_adoc %>
 ----
 <%- end -%>
 

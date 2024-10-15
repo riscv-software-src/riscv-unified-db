@@ -60,7 +60,7 @@ This CSR format changes dynamically.
 <%- csr.implemented_fields(arch_def).each do |field| -%>
 | `xref:<%=csr.name%>-<%=field.name%>-def[<%= field.name %>]`
 | <%= field.location_pretty(arch_def) %>
-| <%= field.type(arch_def) %>
+| <%= field.type(arch_def.symtab) %>
 | <%= field.reset_value(arch_def) %>
 
 <%- end -%>
@@ -88,7 +88,7 @@ Type::
 [%autowidth]
 |===
 
-| <%= field.type(arch_def) %> | <%= field.type_desc(arch_def) %>
+| <%= field.type(arch_def.symtab) %> | <%= field.type_desc(arch_def) %>
 |===
 
 Reset value::
@@ -148,7 +148,7 @@ Original::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= csr.type_checked_sw_read_ast(arch_def.sym_table).gen_adoc %>
+<%= csr.type_checked_sw_read_ast(arch_def.symtab).gen_adoc %>
 ----
 ====
 <%- end -%>
