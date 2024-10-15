@@ -95,6 +95,16 @@
           "items": {
             "type": "object",
             "required": ["version", "state"],
+              "if": {
+                "properties": {
+                  "state": {
+                    "const": "ratified"
+                  }
+                }
+              },
+              "then": {
+                "required": ["ratification_date"]
+              },
             "properties": {
               "version": {
                 "$ref": "schema_defs.json#/$defs/extension_version"
