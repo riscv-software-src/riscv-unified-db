@@ -22,7 +22,7 @@ Dir.glob("#{$root}/arch/crd/*.yaml") do |f|
     "gen:arch"
   ] do |t|
     # TODO: schema validation
-    arch_def = arch_def_for("_")
+    arch_def = arch_def_for("_64")
     crd = arch_def.crd(crd_name)
     raise "No CRD defined for #{crd_name}" if crd.nil?
 
