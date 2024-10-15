@@ -64,6 +64,56 @@ module Idl
     end
   end
 
+
+  class IfAst
+    def reachable_functions(symtab)
+      fns = []
+      value_try do
+        fns.concat if_cond.reachable_functions(symtab) if if_cond.is_a?(FunctionCallExpressionAst)
+        value_result = value_try do
+          if (if_cond.value(symtab))
+            fns.concat if_body.reachable_functions(symtab)
+            return fns # no need to continue
+          else
+            elseifs.each do |eif|
+              fns.concat eif.cond.reachable_functions(symtab) if eif.cond.is_a?(FunctionCallExpressionAst)
+              value_result = value_try do
+                if (eif.cond.value(symtab))
+                  fns.concat eif.body.reachable_functions(symtab)
+                  return fns # no need to keep going
+                end
+              end
+              value_else(value_result) do
+                # condition isn't known; body is potentially reachable
+                fns.concat eif.body.reachable_functions(symtab)
+              end
+            end
+            fns.concat final_else_body.reachable_functions(symtab)
+          end
+        end
+        value_else(value_result) do
+          fns.concat if_body.reachable_functions(symtab)
+
+          elseifs.each do |eif|
+            fns.concat eif.cond.reachable_functions(symtab) if eif.cond.is_a?(FunctionCallExpressionAst)
+            value_result = value_try do
+              if (eif.cond.value(symtab))
+                fns.concat eif.body.reachable_functions(symtab)
+                return fns # no need to keep going
+              end
+            end
+            value_else(value_result) do
+              # condition isn't known; body is potentially reachable
+              fns.concat eif.body.reachable_functions(symtab)
+            end
+          end
+          fns.concat final_else_body.reachable_functions(symtab)
+        end
+      end
+      return fns
+    end
+  end
+
   class ConditionalReturnStatementAst
     def reachable_functions(symtab)
       fns = condition.is_a?(FunctionCallExpressionAst) ? condition.reachable_functions(symtab) : []

@@ -5977,7 +5977,7 @@ module Idl
       case function_name
       when "sw_read"
         if csr_known?(symtab)
-          Type.new(:bits, width: archdef.csr(csr.csr_name(symtab)).length)
+          Type.new(:bits, width: archdef.csr(csr.csr_name(symtab)).length(archdef))
         else
           Type.new(:bits, width: symtab.mxlen)
         end
