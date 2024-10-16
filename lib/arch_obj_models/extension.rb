@@ -46,6 +46,18 @@ class ExtensionParameter
     end
   end
 
+  # @return [String]
+  def name_potentially_with_link(exts_db)
+    raise ArgumentError, "Expecting Array" unless exts_db.is_a?(Array)
+    raise ArgumentError, "Expecting Array[Extension]" unless exts_db[0].is_a?(Extension)
+
+    if exts_db.size == 1
+      "<<ext-#{exts_db[0].name}-param-#{name}-def,#{name}>>"
+    else  
+      "#{name}"
+    end
+  end
+
   # sorts by name
   def <=>(other)
     raise ArgumentError, "ExtensionParameters are only comparable to other extension parameters" unless other.is_a?(ExtensionParameter)
