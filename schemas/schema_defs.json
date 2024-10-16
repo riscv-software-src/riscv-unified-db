@@ -152,6 +152,15 @@
         }
       },
       "additionalProperties": false
+    },
+    "when_condition": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "$ref": "#/$defs/version_requirements"
+        }
+      },
+      "additionalProperties": false
     }
   }
 }
