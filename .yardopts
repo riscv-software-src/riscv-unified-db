@@ -1,1 +1,0 @@
--o _site/ruby --embed-mixins 'lib/**/*.rb'
