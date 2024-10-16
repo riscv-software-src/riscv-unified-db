@@ -47,7 +47,7 @@ MC-1:
     parameters:
         TIME_CSR_IMPLEMENTED: {} # Unconstrained
   - name: Sm
-    version: "~> 1.11"
+    version: "~> 1.11.0"
     presence: mandatory
     parameters:
         MTVEC_BASE_ALIGNMENT_DIRECT: {} # Unconstrained
