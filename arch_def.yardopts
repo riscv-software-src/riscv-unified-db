@@ -1,0 +1,1 @@
+-o _site/ruby/arch_def --no-private --embed-mixins --readme 'lib/DB_MODEL.README.adoc' 'lib/arch_obj_models/*.rb' lib/arch_def.rb

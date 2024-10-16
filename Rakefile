@@ -31,7 +31,8 @@ namespace :gen do
   desc "Generate documentation for the ruby tooling"
   task tool_doc: "#{$root}/.stamps/dev_gems" do
     Dir.chdir($root) do
-      sh "bundle exec yard doc"
+      sh "bundle exec yard doc --yardopts arch_def.yardopts"
+      sh "bundle exec yard doc --yardopts idl.yardopts"
     end
   end
 end
