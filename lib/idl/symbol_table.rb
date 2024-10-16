@@ -138,17 +138,17 @@ module Idl
         if param.exts.size == 1
           if param.name == "XLEN"
             # special case: we actually do know XLEN
-            add!(param.name, Var.new(param.name, param.type.clone.make_const, @mxlen))
+            add!(param.name, Var.new(param.name, param.idl_type.clone.make_const, @mxlen))
           else
-            add!(param.name, Var.new(param.name, param.type.clone.make_const))
+            add!(param.name, Var.new(param.name, param.idl_type.clone.make_const))
           end
         else
           # could already be present...
           existing_sym = get(param.name)
           if existing_sym.nil?
-            add!(param.name, Var.new(param.name, param.type.clone.make_const))
+            add!(param.name, Var.new(param.name, param.idl_type.clone.make_const))
           else
-            unless existing_sym.type.equal_to?(param.type)
+            unless existing_sym.type.equal_to?(param.idl_type)
               raise "Definition error: Param #{param.name} is defined by multiple extensions and is not the same definition in each"
             end
           end

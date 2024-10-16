@@ -98,71 +98,6 @@ namespace :validate do
 
     arch_def_64.type_check
 
-    # arch_def_64 = arch_def_for("_64")
-    # arch_def_64.type_check
-
-    # puts "Type checking IDL code..."
-    # progressbar = ProgressBar.create(title: "Instructions", total: arch_def_32.instructions.size + arch_def_64.instructions.size)
-    # arch_def_32.instructions.each do |inst|
-    #   progressbar.increment
-    #   inst.type_checked_operation_ast(arch_def_32.idl_compiler, arch_def_32.symtab, 32) if inst.rv32?
-    # end
-    # arch_def_64.instructions.each do |inst|
-    #   progressbar.increment
-    #   inst.type_checked_operation_ast(arch_def_64.idl_compiler, arch_def_64.symtab, 64) if inst.rv64?
-    #   # also need to check for an RV64 machine running with effective XLEN of 32
-    #   inst.type_checked_operation_ast(arch_def_64.idl_compiler, arch_def_64.symtab, 32) if inst.rv64? && inst.rv32?
-    # end
-
-    # progressbar = ProgressBar.create(title: "CSRs", total: arch_def_32.csrs.size + arch_def_64.csrs.size)
-    # arch_def_32.csrs.each do |csr|
-    #   progressbar.increment
-    #   profile = RubyProf::Profile.new
-    #   result = profile.profile do
-    #     if csr.has_custom_sw_read?
-    #       csr.type_checked_sw_read_ast(arch_def_32.symtab) if csr.defined_in_base32?
-    #     end
-    #     csr.fields.each do |field|
-    #       unless field.type_ast(arch_def_32.symtab).nil?
-    #         field.type_checked_type_ast(arch_def_32.symtab) if csr.defined_in_base32? && field.defined_in_base32?
-    #       end
-    #       unless field.reset_value_ast(arch_def_32.symtab).nil?
-    #         field.type_checked_reset_value_ast(arch_def_32.symtab) if csr.defined_in_base32? && field.defined_in_base32?
-    #       end
-    #       unless field.sw_write_ast(arch_def_32.symtab).nil?
-    #         field.type_checked_sw_write_ast(arch_def_32.symtab, 32) if csr.defined_in_base32? && field.defined_in_base32?
-    #       end
-    #     end
-    #   end
-    #   RubyProf::GraphHtmlPrinter.new(result).print(File.open("#{csr.name}-prof.html", "w+"), {})
-    # end
-    # arch_def_64.csrs.each do |csr|
-    #   progressbar.increment
-    #   if csr.has_custom_sw_read?
-    #     csr.type_checked_sw_read_ast(arch_def_64.symtab) if csr.defined_in_base64?
-    #   end
-    #   csr.fields.each do |field|
-    #     unless field.type_ast(arch_def_64.symtab).nil?
-    #       field.type_checked_type_ast(arch_def_64.symtab) if csr.defined_in_base64? && field.defined_in_base64?
-    #     end
-    #     unless field.reset_value_ast(arch_def_64.symtab).nil?
-    #       field.type_checked_reset_value_ast(arch_def_64.symtab) if csr.defined_in_base64? && field.defined_in_base64?
-    #     end
-    #     unless field.sw_write_ast(arch_def_64.symtab).nil?
-    #       field.type_checked_sw_write_ast(arch_def_64.symtab, 32) if csr.defined_in_base32? && field.defined_in_base32?
-    #       field.type_checked_sw_write_ast(arch_def_64.symtab, 64) if csr.defined_in_base64? && field.defined_in_base64?
-    #     end
-    #   end
-    # end
-    # progressbar = ProgressBar.create(title: "Functions", total: arch_def_32.functions.size + arch_def_64.functions.size)
-    # arch_def_32.functions.each do |func|
-    #   progressbar.increment
-    #   func.type_check(arch_def_32.symtab)
-    # end
-    # arch_def_64.functions.each do |func|
-    #   progressbar.increment
-    #   func.type_check(arch_def_64.symtab)
-    # end
     puts "All IDL passed type checking"
   end
 end
@@ -325,4 +260,21 @@ namespace :gen do
       Rake::Task["#{$root}/arch/csr/I/pmpcfg#{pmpcfg_num}.yaml"].invoke
     end
   end
+end
+
+desc <<~DESC
+  Run the regression tests
+
+  These tests must pass before a commit will be allowed in the main branch on GitHub
+DESC
+task :regress do
+  Rake::Task["idl_test"].invoke
+  Rake::Task["validate"].invoke
+  Rake::Task["gen:html"].invoke("generic_rv64")
+  Rake::Task["gen:crd_pdf"].invoke("MockCRD-1")
+  Rake::Task["gen:crd_pdf"].invoke("MC-1")
+  Rake::Task["gen:profile_pdf"].invoke("rva")
+
+  puts
+  puts "Regression test PASSED"
 end

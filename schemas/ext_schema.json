@@ -27,6 +27,9 @@
         "schema": {
           "$ref": "https://json-schema.org/draft-07/schema#"
         },
+        "when": {
+          "$ref": "schema_defs.json#/$defs/when_condition"
+        },
         "extra_validation": {
           "description": "Ruby code to perform extra validation, when it is not easily expressed with JSON Schema (_e.g._, because it depends on the value of another parameter)",
           "type": "string"

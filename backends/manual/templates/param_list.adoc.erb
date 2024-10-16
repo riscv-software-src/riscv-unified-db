@@ -1,0 +1,18 @@
+= Architectural Parameters
+
+<%-
+  params = manual_version.extensions.map{ |e| e.params(arch_def) }.flatten.uniq(&:name).sort_by!(&:name)
+-%>
+
+The following <%= params.size %> parameters are defined in this manual:
+
+|===
+| Name | Type | Extension(s) | Description
+
+<%- params.each do |param| -%>
+| <%= param.name %>
+| <%= param.schema.to_pretty_s %>
+| <%= param.exts.map { |ext| "`#{ext.name}`"}.join(", ") %>
+a| <%= param.desc %>
+<%- end -%>
+|===

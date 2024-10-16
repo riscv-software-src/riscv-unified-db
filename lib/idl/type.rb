@@ -474,11 +474,12 @@ module Idl
 
     # @returns [Idl::Type] Type described by JSON +schema+
     def self.from_json_schema(schema)
-      case schema["type"]
+      hsh = schema.to_h
+      case hsh["type"]
       when "boolean", "integer", "string"
-        from_json_schema_scalar_type(schema)
+        from_json_schema_scalar_type(hsh)
       when "array"
-        from_json_schema_array_type(schema)
+        from_json_schema_array_type(hsh)
       end
     end
   end

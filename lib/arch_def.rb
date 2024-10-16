@@ -432,15 +432,11 @@ class ArchDef
     prohibited_extensions.include? { |ext_req| ext_req.name == ext_name }
   end
 
-  # @return [Array<ExtensionParameter>] List of all parameters defined in the architecture
+  # @return [Array<ExtensionParameter>] Alphabetical list of all parameters defined in the architecture
   def params
     return @params unless @params.nil?
 
-    @params = []
-    extensions.each do |ext|
-      @params += ext.params
-    end
-    @params
+    @params = extensions.map(&:params).flatten.uniq(&:name).sort_by!(&:name)
   end
 
   # @return [Hash<String, ExtensionParameter>] Hash of all extension parameters defined in the architecture
