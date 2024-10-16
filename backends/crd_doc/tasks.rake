@@ -19,7 +19,7 @@ Dir.glob("#{$root}/arch/crd/*.yaml") do |f|
     "#{$root}/arch/crd_family/#{crd_obj[crd_name]['family']}.yaml",
     "#{CRD_DOC_DIR}/templates/crd.adoc.erb",
     __FILE__,
-    "gen:arch"
+    "#{$root}/.stamps/arch-gen-_64.stamp"
   ] do |t|
     # TODO: schema validation
     arch_def = arch_def_for("_64")
