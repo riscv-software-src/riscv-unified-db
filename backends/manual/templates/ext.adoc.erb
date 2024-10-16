@@ -1,0 +1,70 @@
+[ext:$<%= ext.name %>-def]
+= <%= ext.name %> Extension
+<%= ext.long_name %>
+
+== Versions
+
+<%- ext.versions.each do |v| -%>
+<%- implemented = arch_def.implemented_extensions.include?(ExtensionVersion.new(ext.name, v["version"])) -%>
+<%= v["version"] %>::
+  State:::
+    <%= v["state"] %>
+  <%- if v["state"] == "ratified" -%>
+  Ratification date:::
+    <%= v["ratification_date"] %>
+  <%- end -%>
+  <%- if v.key?("changes") -%>
+  Changes:::
+    <%- v["changes"].each do |change| %>
+    * <%= change %>
+    <%- end -%>
+  <%- end -%>
+  <%- if v.key?("url") -%>
+  Ratification document:::
+    <%= v["url"] %>
+  <%- end -%>
+  <%- if v.key?("implies") -%>
+  Implies:::
+    <%- implications = v["implies"][0].is_a?(Array) ? v["implies"] : [v["implies"]] -%>
+    <%- implications.each do |i| -%>
+    * `<%= i[0] %>` version <%= i[1] %>
+    <%- end -%>
+  <%- end -%>
+<%- end -%>
+
+== Synopsis
+
+<%= ext.description %>
+
+<%- insts = arch_def.instructions.select { |i| ext.versions.any? { |v| i.defined_by?(ext.name, v["version"]) } } -%>
+<%- unless insts.empty? -%>
+== Instructions
+
+The following instructions are defined by this extension:
+
+[cols="1,3"]
+|===
+<%- insts.each do |inst| -%>
+ | <%= "`#{inst.name}`" %> | *<%= inst.long_name %>*
+<%- end -%>
+|===
+<%- end -%>
+
+<%- unless ext.params.empty? -%>
+== Parameters
+
+This extension has the following implementation options:
+
+<%- ext.params.sort_by { |p| p.name }.each do |param| -%>
+<%= param.name %>::
++
+--
+|===
+h| Type | <%= param.schema["type"] %>
+h| Valid Values | <%= Schema.new(param.schema).to_pretty_s %>
+h| Description a| <%= param.desc %>
+|===
+--
+<%- end -%>
+
+<%- end -%>

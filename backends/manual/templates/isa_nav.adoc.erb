@@ -16,5 +16,10 @@
 * xref:csrs:<%= csr.name %>.adoc[<%= csr.name %>]
 <%- end -%>
 
+.Alphabetical list of extensions
+<%- manual_version.extensions.sort { |a, b| a.name <=> b.name }.each do |ext| -%>
+* xref:exts:<%= ext.name %>.adoc[<%= ext.name %>]
+<%- end -%>
+
 .Execution functions (IDL)
 * xref:funcs:funcs.adoc[Functions]

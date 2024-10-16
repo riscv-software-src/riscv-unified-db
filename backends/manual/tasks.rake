@@ -30,64 +30,6 @@ directory MANUAL_GEN_DIR / "adoc"
 directory MANUAL_GEN_DIR / "antora"
 directory MANUAL_GEN_DIR / "html"
 
-# ["inst", "csr", "ext"].each do |type|
-#   directory MANUAL_GEN_DIR / "antora" / "modules" / "#{type}s" / "pages"
-
-#   Dir.glob($root / "arch" / type / "**" / "*.yaml") do |fn|
-#     file MANUAL_GEN_DIR / "adoc" / "#{File.basename(fn, '.yaml')}.adoc" => [
-#       "gen:arch",
-#       (MANUAL_GEN_DIR / "adoc").to_s,
-#       ($root / "backends" / "manual" / "templates" / "#{type}.adoc.erb").to_s,
-#       __FILE__
-#     ] do |t|
-#       name = File.basename(t.name, ".adoc")
-
-#       arch_def_32 = arch_def_for("_32")
-#       arch_def_64 = arch_def_for("_64")
-#       erb = case type
-#             when "inst"
-#               inst_32 = arch_def_32.instruction(name)
-#               raise "Could not find inst '#{name}' in RV32" if inst_32.nil?
-
-#               inst_64 = arch_def_64.instruction(name)
-#               raise "Could not find inst '#{name}' in RV64" if inst_64.nil?
-
-#               inst = inst_32 || inst_64
-
-#               ERB.new(File.read($root / "backends" / "manual" / "templates" / "inst.adoc.erb"), trim_mode: "-")
-#             when "csr"
-#               csr_32 = arch_def_32.csr(name)
-#               raise "Could not find csr '#{name}' in RV32" if csr_32.nil?
-
-#               csr_64 = arch_def_64.csr(name)
-#               raise "Could not find csr '#{name}' in RV32" if csr_64.nil?
-
-#               csr = csr_32 || csr_64
-
-#               ERB.new(File.read($root / "backends" / "manual" / "templates" / "csr.adoc.erb"), trim_mode: "-")
-#             when "ext"
-#               ext = arch_def_64.extension(name)
-#               raise "Could not find ext '#{name}'" if ext.nil?
-
-#               arch_def = arch_def_64
-
-#               ERB.new(File.read($root / "backends" / "manual" / "templates" / "ext.adoc.erb"), trim_mode: "-")
-#             else
-#               raise "Unhandled type '#{type}'"
-#             end
-
-#       File.write(t.name, erb.result(binding))
-#     end
-
-#     file MANUAL_GEN_DIR / "antora" / "modules" / "#{type}s" / "pages" => [
-#       (MANUAL_GEN_DIR / "adoc" / "#{File.basename(fn, '.yaml')}.adoc").to_s,
-#       (MANUAL_GEN_DIR / "antora" / "modules" / "#{type}s" / "pages").to_s
-#     ] do |t|
-#       FileUtils.cp t.prerequisites.first, t.name
-#     end
-#   end
-# end
-
 file MANUAL_GEN_DIR / "antora" / "antora.yml" => (MANUAL_GEN_DIR / "antora").to_s do |t|
   File.write t.name, <<~ANTORA
     name: riscv_manual
@@ -226,7 +168,7 @@ end
 # rule to create instruction appendix page
 rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/insts/pages/.*.adoc} => [
   __FILE__,
-  "gen:arch",
+  "#{$root}/.stamps/arch-gen-_64.stamp",
   ($root / "backends" / "manual" / "templates" / "instruction.adoc.erb").to_s
 ] do |t|
   inst_name = File.basename(t.name, ".adoc")
@@ -240,13 +182,13 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/insts/pages/.*.adoc} => [
   erb.filename = inst_template_path.to_s
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AntoraUtils.resolve_links(erb.result(binding))
+  File.write t.name, AntoraUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
 end
 
 # rule to create csr appendix page
 rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/csrs/pages/.*.adoc} => [
   __FILE__,
-  "gen:arch",
+  "#{$root}/.stamps/arch-gen-_64.stamp",
   ($root / "backends" / "manual" / "templates" / "csr.adoc.erb").to_s
 ] do |t|
   csr_name = File.basename(t.name, ".adoc")
@@ -260,13 +202,33 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/csrs/pages/.*.adoc} => [
   erb.filename = csr_template_path.to_s
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AntoraUtils.resolve_links(erb.result(binding))
+  File.write t.name, AntoraUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
+end
+
+# rule to create ext appendix page
+rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/exts/pages/.*.adoc} => [
+  __FILE__,
+  "#{$root}/.stamps/arch-gen-_64.stamp",
+  ($root / "backends" / "manual" / "templates" / "ext.adoc.erb").to_s
+] do |t|
+  ext_name = File.basename(t.name, ".adoc")
+
+  arch_def = arch_def_for("_64")
+  ext = arch_def.extension(ext_name)
+  raise "Can't find extension '#{ext_name}'" if ext.nil?
+
+  ext_template_path = $root / "backends" / "manual" / "templates" / "ext.adoc.erb"
+  erb = ERB.new(ext_template_path.read, trim_mode: "-")
+  erb.filename = ext_template_path.to_s
+
+  FileUtils.mkdir_p File.dirname(t.name)
+  File.write t.name, AntoraUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
 end
 
 # rule to create IDL function appendix page
 rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/funcs/pages/funcs.adoc} => [
   __FILE__,
-  "gen:arch",
+  "#{$root}/.stamps/arch-gen-_64.stamp",
   ($root / "backends" / "manual" / "templates" / "func.adoc.erb").to_s
 ] do |t|
   arch_def = arch_def_for("_64")
@@ -276,7 +238,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/funcs/pages/funcs.adoc} => [
   erb.filename = funcs_template_path.to_s
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AntoraUtils.resolve_links(erb.result(binding))
+  File.write t.name, AntoraUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
 end
 
 rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/landing/antora.yml} => [
@@ -428,6 +390,9 @@ namespace :gen do
       end
       version.csrs.each do |csr|
         Rake::Task[antora_path / "modules" / "csrs" / "pages" / "#{csr.name}.adoc"].invoke
+      end
+      version.extensions.each do |ext|
+        Rake::Task[antora_path / "modules" / "exts" / "pages" / "#{ext.name}.adoc"].invoke
       end
     end
 
