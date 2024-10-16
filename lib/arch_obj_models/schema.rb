@@ -72,7 +72,7 @@ class Schema
             ""
           end
 
-          if items.nil? 
+          array_str = if items.nil? 
             size_str + "array"
           else 
             if items.is_a?(Hash)
@@ -92,11 +92,15 @@ class Schema
               raise "to_pretty_s unknown array items #{items} in #{schema_hash}"
             end
           end
+
+          if schema_hash.key?("contains")
+            array_str = array_str + " Contains : [#{to_pretty_s(schema_hash["contains"])}]"
+          end
+
+          array_str
         else
           raise "to_pretty_s unknown type #{schema_hash["type"]} in #{schema_hash}"
         end
-      elsif schema_hash.key?("contains")
-        "Contains : [#{to_pretty_s(schema_hash["contains"])}]"
       else
         raise "TODO: to_pretty_s schema for #{schema_hash}"
       end
