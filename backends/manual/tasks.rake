@@ -241,6 +241,24 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/funcs/pages/funcs.adoc} => [
   File.write t.name, AntoraUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
 end
 
+# rule to create IDL function appendix page
+rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/params/pages/param_list.adoc} => [
+  __FILE__,
+  "#{$root}/.stamps/arch-gen-_64.stamp",
+  ($root / "backends" / "manual" / "templates" / "param_list.adoc.erb").to_s
+] do |t|
+  arch_def = arch_def_for("_64")
+  parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
+  manual_version = arch_def.manual(parts[0])&.version(parts[1])
+
+  param_list_template_path = $root / "backends" / "manual" / "templates" / "param_list.adoc.erb"
+  erb = ERB.new(param_list_template_path.read, trim_mode: "-")
+  erb.filename = param_list_template_path.to_s
+
+  FileUtils.mkdir_p File.dirname(t.name)
+  File.write t.name, AntoraUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
+end
+
 rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/landing/antora.yml} => [
   __FILE__
 ] do |t|
@@ -394,6 +412,7 @@ namespace :gen do
       version.extensions.each do |ext|
         Rake::Task[antora_path / "modules" / "exts" / "pages" / "#{ext.name}.adoc"].invoke
       end
+      Rake::Task[antora_path / "modules" / "params" / "pages" / "param_list.adoc"].invoke
     end
 
     landing_page_path = MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / "top" / output_hash / "antora" / "landing" / "modules" / "ROOT" / "pages" / "index.adoc"

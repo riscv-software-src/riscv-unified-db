@@ -5,13 +5,16 @@ require_relative "schema"
 
 # A parameter (AKA option, AKA implementation-defined value) supported by an extension
 class ExtensionParameter
+  # @return [ArchDef] The defining Arch def
+  attr_reader :archdef
+
   # @return [String] Parameter name
   attr_reader :name
 
   # @return [String] Asciidoc description
   attr_reader :desc
 
-  # @return [Hash] JSON Schema for the parameter value
+  # @return [Schema] JSON Schema for this param
   attr_reader :schema
 
   # @return [String] Ruby code to perform validation above and beyond JSON schema
@@ -25,25 +28,46 @@ class ExtensionParameter
   attr_reader :exts
 
   # @returns [Idl::Type] Type of the parameter
-  attr_reader :type
+  attr_reader :idl_type
 
   # Pretty convert extension schema to a string.
   def schema_type
-    Schema.new(@schema).to_pretty_s
+    @schema.to_pretty_s
   end
 
-  def initialize(name, desc, schema, extra_validation, exts)
+  def initialize(ext, name, data)
+    @archdef = ext.arch_def
+    @data = data
     @name = name
-    @desc = desc
-    @schema = schema
-    @extra_validation = extra_validation
-    @exts = exts
-    begin
-      @type = Idl::Type.from_json_schema(@schema).make_const.freeze
-    rescue
-      warn "While parsing scheme for ExtensionParameter #{ext.name}.#{name}"
-      raise
+    @desc = data["description"]
+    @schema = Schema.new(data["schema"])
+    @extra_validation = data["extra_validation"]
+    also_defined_in = []
+    unless data["also_defined_in"].nil?
+      if data["also_defined_in"].is_a?(String)
+        other_ext = @archdef.extension(data["also_defined_in"])
+        raise "Definition error in #{ext.name}.#{name}: #{data['also_defined_in']} is not a known extension" if other_ext.nil?
+        also_defined_in << other_ext
+      else
+        unless data["also_defined_in"].is_a?(Array) && data["also_defined_in"].all? { |e| e.is_a?(String) }
+          raise "schema error: also_defined_in should be a string or array of strings"
+        end
+
+        data["also_defined_in"].each do |other_ext_name|
+          other_ext = @archdef.extension(other_ext_name)
+          raise "Definition error in #{ext.name}.#{name}: #{data['also_defined_in']} is not a known extension" if other_ext.nil?
+          also_defined_in << other_ext
+        end
+      end
     end
+    @exts = [ext] + also_defined_in
+    @idl_type = @schema.to_idl_type.make_const.freeze
+  end
+
+  def defined_in_extension_version?(version)
+    return true if @data.dig("when", "version").nil?
+
+    Gem::Requirement.new(@data["when"]["version"]).satisfied_by?(version)
   end
 
   # sorts by name
@@ -135,31 +159,7 @@ class Extension < ArchDefObject
     @params = []
     if @data.key?("params")
       @data["params"].each do |param_name, param_data|
-        also_defined_in = []
-        unless param_data["also_defined_in"].nil?
-          if param_data["also_defined_in"].is_a?(String)
-            other_ext = arch_def.extension(param_data["also_defined_in"])
-            raise "Definition error in #{name}.#{param_name}: #{param_data['also_defined_in']} is not a known extension" if other_ext.nil?
-            also_defined_in << other_ext
-          else
-            unless param_data["also_defined_in"].is_a?(Array) && param_data["also_defined_in"].all? { |e| e.is_a?(String) }
-              raise "schema error: also_defined_in should be a string or array of strings"
-            end
-
-            param_data["also_defined_in"].each do |other_ext_name|
-              other_ext = arch_def.extension(other_ext_name)
-              raise "Definition error in #{name}.#{param_name}: #{param_data['also_defined_in']} is not a known extension" if other_ext.nil?
-              also_defined_in << other_ext
-            end
-          end
-        end
-        @params << ExtensionParameter.new(
-          param_name,
-          param_data["description"],
-          param_data["schema"],
-          param_data["extra_validation"],
-          [self] + also_defined_in
-        )
+        @params << ExtensionParameter.new(self, param_name, param_data)
       end
     end
     @params
@@ -275,6 +275,11 @@ class ExtensionVersion
   # @return Extension the extension object
   def ext(arch_def)
     arch_def.extension(name)
+  end
+
+  # @return [Array<ExtensionParameter>] The list of parameters for this extension version
+  def params(arch_def)
+    ext(arch_def).params.select { |p| p.defined_in_extension_version?(@version) }
   end
 
   # @overload ==(other)

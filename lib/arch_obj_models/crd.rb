@@ -234,7 +234,7 @@ class Crd < ArchDefObject
       end
 
       # Create a Schema object just using information in the parameter database.
-      schema_obj = Schema.new(@param_db.schema)
+      schema_obj = @param_db.schema
 
       # Merge in constraints imposed by the CRD on the parameter.
       schema_obj.merge!(@schema_crd)

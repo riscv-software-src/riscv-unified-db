@@ -1,5 +1,11 @@
 #frozen_string_literal: true
 
+require_relative "../idl/type"
+
+# represents a JSON Schema
+#
+# Used when an object in the database specifies a constraint using JSON schema
+# For example, extension parameters
 class Schema 
     def initialize(schema_hash)
         raise ArgumentError, "Expecting hash" unless schema_hash.is_a?(Hash)
@@ -7,6 +13,10 @@ class Schema
         @schema_hash = schema_hash
     end
 
+    # @return [Hash] Hash representation of the JSON Schema
+    def to_h = @schema_hash
+
+    # @return [String] A human-readable description of the schema
     def to_pretty_s(schema_hash = @schema_hash)
       raise ArgumentError, "Expecting hash" unless schema_hash.is_a?(Hash)
       raise ArgumentError, "Expecting non-empty hash" if schema_hash.empty?
@@ -137,6 +147,11 @@ class Schema
     def num_bits(min, max)
         return 0 unless min == 0
         is_power_of_two?(max+1) ? max.bit_length : 0
+    end
+
+    # @return [Idl::Type] THe IDL-equivalent type for this schema object
+    def to_idl_type
+      Idl::Type.from_json_schema(@schema_hash)
     end
 end
 

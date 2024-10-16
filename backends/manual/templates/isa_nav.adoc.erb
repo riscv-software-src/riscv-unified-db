@@ -1,25 +1,26 @@
 <%- manual_version.volumes.each do |volume| -%>
-.<%= volume.title %>
+* <%= volume.title %>
 <%- volume.chapters.each do |chapter| -%>
-* xref:chapters:<%= File.basename(chapter.path) %>[<%= chapter.title %>]
+** xref:chapters:<%= File.basename(chapter.path) %>[<%= chapter.title %>]
 <%- end -%>
 
 <%- end -%>
 
-.Alphabetical list of instrutions
+* Alphabetical list of instrutions
 <%- manual_version.instructions.sort { |a, b| a.name <=> b.name }.each do |inst| -%>
-* xref:insts:<%= inst.name %>.adoc[<%= inst.name %>]
+** xref:insts:<%= inst.name %>.adoc[<%= inst.name %>]
 <%- end -%>
 
-.Alphabetical list of CSRs
+* Alphabetical list of CSRs
 <%- manual_version.csrs.sort { |a, b| a.name <=> b.name }.each do |csr| -%>
-* xref:csrs:<%= csr.name %>.adoc[<%= csr.name %>]
+** xref:csrs:<%= csr.name %>.adoc[<%= csr.name %>]
 <%- end -%>
 
-.Alphabetical list of extensions
+* Alphabetical list of extensions
 <%- manual_version.extensions.sort { |a, b| a.name <=> b.name }.each do |ext| -%>
-* xref:exts:<%= ext.name %>.adoc[<%= ext.name %>]
+** xref:exts:<%= ext.name %>.adoc[<%= ext.name %>]
 <%- end -%>
 
-.Execution functions (IDL)
-* xref:funcs:funcs.adoc[Functions]
+* xref:params:param_list.adoc[Alphabetical list of parameters]
+
+* xref:funcs:funcs.adoc[Execution functions (IDL)]
