@@ -364,6 +364,16 @@ class ExtensionRequirement
     @presence = presence
   end
 
+  # @return [Array<ExtensionVersion>] The list of extension versions that satisfy this requirement
+  def satisfying_versions(archdef)
+    ext = archdef.extension(@name)
+    return [] if ext.nil?
+
+    ext.versions.select { |v| @requirement.satisfied_by?(Gem::Version.new(v["version"])) }.map do |v|
+      ExtensionVersion.new(@name, v["version"])
+    end
+  end
+
   # @overload
   #   @param extension_version [ExtensionVersion] A specific extension version
   #   @return [Boolean] whether or not the extension_version meets this requirement
