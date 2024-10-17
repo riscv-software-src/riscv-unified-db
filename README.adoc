@@ -107,5 +107,5 @@ Quick start:
 == More info
 
  * xref:arch/README.adoc[Architecture specification format]
- * xref:arch/README.adoc[Documentation for the generator tool and IDL]
- ** https://riscv-software-src.github.io/riscv-unified-db/ruby/index.html[YARD docs for the generator tool and IDL]
+ * xref:_site/ruby/arch_def/index.html[Ruby database object model documentation]
+ * xref:_site/ruby/idl/index.html[IDL Compiler documentation]

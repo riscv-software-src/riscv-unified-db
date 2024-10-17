@@ -152,6 +152,7 @@ class ManualVersion < ArchDefObject
 
   def state = @data["state"]
 
+  # @return [Array<ExtensionVersion>] Array of extension versions in this manual version
   def extensions
     return @extensions unless @extensions.nil?
 

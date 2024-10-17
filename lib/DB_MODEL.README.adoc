@@ -1,0 +1,99 @@
+= Ruby interface to database
+
+A Ruby interface for https://github.com/riscv-software-src/riscv-unified-db[`riscv-unified-db`] is located in the `lib` directory. It can be used to query the database in the context of a configuration through a set of object models.
+
+The main class is `ArchDef`, which represents all of the database information plus any known configuration parameters. An `ArchDef` must be initialized from a configuration in the `cfg` directory. Two configurations are provided -- _32 and _64 -- that represent generic RV32/RV64 machines (_i.e._, the only known configuration parameter is `MXLEN`). 
+
+== Configuration files
+
+A configuration consists of a folder under `cfgs`. Inside that folder, there are three required files and one optional directory.
+
+=== Required configuration files
+
+`cfg.yaml`::
+A YAML object (hash) that currently contains only one field `type`. `type` can be one of:
+
+* "partially configured": The configuration has some parameters and/or implemented extensions known, but others are not known. Examples of a _partially configured_ configuration are the generic _32/_64 configs and a profile (which has some known/mandatory extensions, but also many unknown/optional extensions). 
+* "fully configured": The configuration exhaustively lists a set of implmented extensions and parameters. An example of a _fully configured_ configuration is the `generic_rv64` example, which represents a theoritical implementation of RV64. In a _fully configured_ configuration, any extension that isn't known to be implemented is treated as unimplmented, and will be pruned out of the database for certain operations.
+
+`implemented_exts.yaml`::
+
+A YAML file with an array of known implemented extensions along with their versions.
+
+.Example `implemented_exts.yaml`
+[source,yaml]
+----
+implemented_extensions:
+  - [A, "2.1.0"]
+  - [B, "1.0.0"]
+  - [C, "2.2.0"]
+  - [D, "2.2.0"]
+  - [F, "2.2.0"]
+  # ...
+----
+
+`params.yaml`::
+
+A YAML file with values for parameters defined by the implemented extensions. Params must be exhuastive for a _fully configured_ configuration. Params will be schema checked using information stored in the database.
+
+.Example `params.yaml`
+[source,yaml]
+----
+params:
+  MISALIGNED_LDST: true
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: high
+  MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE: 0
+  MISALIGNED_SPLIT_STRATEGY: by_byte
+  # ...
+----
+
+=== Optional overlay
+
+A configuration can customize the standard RISC-V specification by providing an `arch_overlay` directory. This can be used to, for example, describe a custom extension or to create custom behavior of a standard instructions.
+
+The `arch_overlay` directory is treated as an overlay on the standard `arch` directory. The contents of any file found in `arch_overlay` is either merged on top of the corresponding file in `arch`, if such a file exists, or added to the overall specification (_e.g._, when defining a new extension). An example of an overlay can be found in `cfgs/generic_rv64/arch_overlay`.
+
+== ArchDef interface
+
+An `ArchDef` is most easily obtained by using the convience function `arch_def_for(String)`, which takes the name of a folder under `cfgs`. Once you have an `ArchDef`, you can begin to query the database.
+
+.Architecture queries
+[source,ruby]
+----
+# get a configuration
+arch_def = arch_def_for("_64")
+
+# all extensions, implemented or not
+arch_def.extensions #=> Array<Extension>
+
+# all implemented extensions
+arch_def.implemented_extensions #=> Array<Extension>
+
+# All Parameters for the 'C' extension
+arch_def.extension("C").params #=> Array<Param>
+
+# all ratified extensions
+arch_def.extensions.select { |ext| ext.state == "ratified" } #=> Array<Extension>
+
+# all RISC-V instructions, implemented or not
+arch_def.instructions #=> Array<Instruction>
+
+# all instructions defined by an implemented extension
+arch_def.implemented_instructions #=> Array<Instruction>
+
+# the `addi` instruction
+arch_def.instruction("addi") #=> Instruction
+
+# abstract syntax tree of the `addi` execution
+arch_def.instruction("addi").operation_ast #=> Idl::AstNode
+
+# all CSRs, implemented or not
+arch_def.csrs
+
+# all CSRs defined by an implemented extension
+arch_def.implemented_csrs
+
+# the `mstatus.MPRV` CSR field
+arch_def.csr("mstatus").field("MPRV") #=> CsrField
+
+----

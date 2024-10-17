@@ -1,5 +1,11 @@
 #frozen_string_literal: true
 
+require_relative "../idl/type"
+
+# represents a JSON Schema
+#
+# Used when an object in the database specifies a constraint using JSON schema
+# For example, extension parameters
 class Schema 
     def initialize(schema_hash)
         raise ArgumentError, "Expecting hash" unless schema_hash.is_a?(Hash)
@@ -7,6 +13,15 @@ class Schema
         @schema_hash = schema_hash
     end
 
+    # @return [Hash] Hash representation of the JSON Schema
+    def to_h = @schema_hash
+
+    # @return [String] Human-readable type of the schema (e.g., array, string, integer)
+    def type_pretty
+      @schema_hash["type"]
+    end
+
+    # @return [String] A human-readable description of the schema
     def to_pretty_s(schema_hash = @schema_hash)
       raise ArgumentError, "Expecting hash" unless schema_hash.is_a?(Hash)
       raise ArgumentError, "Expecting non-empty hash" if schema_hash.empty?
@@ -62,7 +77,7 @@ class Schema
             ""
           end
 
-          if items.nil? 
+          array_str = if items.nil? 
             size_str + "array"
           else 
             if items.is_a?(Hash)
@@ -82,11 +97,15 @@ class Schema
               raise "to_pretty_s unknown array items #{items} in #{schema_hash}"
             end
           end
+
+          if schema_hash.key?("contains")
+            array_str = array_str + " Contains : [#{to_pretty_s(schema_hash["contains"])}]"
+          end
+
+          array_str
         else
           raise "to_pretty_s unknown type #{schema_hash["type"]} in #{schema_hash}"
         end
-      elsif schema_hash.key?("contains")
-        "Contains : [#{to_pretty_s(schema_hash["contains"])}]"
       else
         raise "TODO: to_pretty_s schema for #{schema_hash}"
       end
@@ -137,6 +156,11 @@ class Schema
     def num_bits(min, max)
         return 0 unless min == 0
         is_power_of_two?(max+1) ? max.bit_length : 0
+    end
+
+    # @return [Idl::Type] THe IDL-equivalent type for this schema object
+    def to_idl_type
+      Idl::Type.from_json_schema(@schema_hash)
     end
 end
 

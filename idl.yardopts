@@ -1,0 +1,1 @@
+-o _site/ruby/idl --title 'IDL Compiler' --no-private --embed-mixins 'lib/idl/*.rb' lib/idl.rb
