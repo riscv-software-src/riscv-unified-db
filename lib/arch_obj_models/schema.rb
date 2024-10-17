@@ -16,6 +16,11 @@ class Schema
     # @return [Hash] Hash representation of the JSON Schema
     def to_h = @schema_hash
 
+    # @return [String] Human-readable type of the schema (e.g., array, string, integer)
+    def type_pretty
+      @schema_hash["type"]
+    end
+
     # @return [String] A human-readable description of the schema
     def to_pretty_s(schema_hash = @schema_hash)
       raise ArgumentError, "Expecting hash" unless schema_hash.is_a?(Hash)
