@@ -20,7 +20,7 @@ module Idl
 
   class FunctionCallExpressionAst
     def reachable_exceptions(symtab)
-      if name == "raise"
+      if name == "raise" || name == "raise_precise"
         # first argument is the exception
         code_ast = arg_nodes[0]
         value_result = value_try do
