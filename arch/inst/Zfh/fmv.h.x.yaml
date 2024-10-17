@@ -22,7 +22,7 @@ fmv.h.x:
     vs: always
     vu: always
   operation(): |
-    check_f_ok();
+    check_f_ok($encoding);
 
     Bits<16> hp_value = X[rs1][15:0];
 

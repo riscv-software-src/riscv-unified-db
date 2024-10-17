@@ -29,7 +29,7 @@ fcvt.h.s:
     vs: always
     vu: always
   operation(): |
-    check_f_ok();
+    check_f_ok($encoding);
 
     Bits<16> hp_value = f[fs1][15:0];
 

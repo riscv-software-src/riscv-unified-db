@@ -27,7 +27,7 @@ flh:
     vs: always
     vu: always
   operation(): |
-    check_f_ok();
+    check_f_ok($encoding);
 
     XReg virtual_address = X[rs1] + $signed(imm);
 

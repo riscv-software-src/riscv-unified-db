@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../../schemas/csr_schema.json
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
 
 fcsr:
   long_name: Floating-point control and status register (`frm` + `fflags`)
@@ -93,7 +93,7 @@ fcsr:
   length: 32
   definedBy: F
   fields:
-    RMODE:
+    FRM:
       location: 7-5
       description: |
         Rounding modes are encoded as follows:

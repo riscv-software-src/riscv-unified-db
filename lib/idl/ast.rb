@@ -3522,7 +3522,11 @@ module Idl
         end
       when "!"
         unless exp.type(symtab).convertable_to?(:boolean)
-          type_error "#{exp.type(symtab)} does not support unary #{op} operator"
+          if exp.type(symtab).kind == :bits
+            type_error "#{exp.type(symtab)} does not support unary #{op} operator. Perhaps you want '#{exp.text_value} != 0'?"
+          else
+            type_error "#{exp.type(symtab)} does not support unary #{op} operator"
+          end
         end
       else
         internal_error "Unhandled op #{op}"
@@ -4545,9 +4549,9 @@ module Idl
 
       func_def_type = func_type(symtab)
 
-      type_error "Missing template arguments in call to #{@name}" if template? && func_def_type.template_names.empty?
+      type_error "Template arguments provided in call to non-template function #{@name}" if template? && func_def_type.template_names.empty?
 
-      type_error "Template arguments provided in call to non-template function #{@name}" if !template? && !func_def_type.template_names.empty?
+      type_error "Missing template arguments in call to #{@name}" if !template? && !func_def_type.template_names.empty?
 
       if template?
         num_targs = template_arg_nodes.size
@@ -4880,6 +4884,8 @@ module Idl
 
       @argument_nodes.each do |a|
         atype = a.type(symtab)
+        type_error "No type for #{a.text_value}" if atype.nil?
+
         atype = atype.ref_type if atype.kind == :enum
 
         arglist << [atype, a.name]
@@ -5440,7 +5446,14 @@ module Idl
       level = symtab.levels
       if_cond.type_check(symtab)
 
-      type_error "'#{if_cond.text_value}' is not boolean" unless if_cond.type(symtab).convertable_to?(:boolean)
+
+      unless if_cond.type(symtab).convertable_to?(:boolean)
+        if if_cond.type(symtab).kind == :bits
+          type_error "'#{if_cond.text_value}' is not boolean. Maybe you meant 'if ((#{if_cond.text_value}) != 0)'?"
+        else
+          type_error "'#{if_cond.text_value}' is not boolean"
+        end
+      end
 
       if_cond_value = nil
       value_try do
