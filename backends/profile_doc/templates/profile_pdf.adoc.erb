@@ -618,20 +618,17 @@ RV64::
 
 ==== Exceptions
 
-// TODO: add back after sym table update for generic arch def is merged in profiles branch
-<%#
-<%- exception_list = inst.reachable_exceptions_str(arch_def.symtab) -% >
-<%- if exception_list.empty? -% >
+<%- exception_list = inst.reachable_exceptions_str(arch_def.symtab) -%>
+<%- if exception_list.empty? -%>
 This instruction does not generate synchronous exceptions.
-<%- else -% >
+<%- else -%>
 This instruction may result in the following synchronous exceptions:
 
-  <%- exception_list.sort.each do |etype| -% >
-  * <%= etype % >
-  <%- end -% >
+  <%- exception_list.sort.each do |etype| -%>
+  * <%= etype %>
+  <%- end -%>
 
-<%- end -% >
-%>
+<%- end -%>
 
 <%- end -%>
 
