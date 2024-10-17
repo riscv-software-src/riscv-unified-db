@@ -133,7 +133,7 @@ hcounteren:
         the `hpmcounter<%= hpm_num %>` CSR (an alias of `mhpmcounter<%= hpm_num %>`) is accessible to VU-mode.
 
         When `mcounteren.HPM<%= hpm_num %>` and `hcounteren.HPM<%= hpm_num %>` are set,
-        the `hpmcounter<%= hpm_num %>` CSR (an alias of `mhpmconuter<%= hpm_num %>`) is accessible to VS-mode.
+        the `hpmcounter<%= hpm_num %>` CSR (an alias of `mhpmcounter<%= hpm_num %>`) is accessible to VS-mode.
 
         When `hcounteren.HPM<%= hpm_num %>` is clear and `mcounteren.HPM<%= hpm_num %>` is set, then any access to `hpmcounter<%= hpm_num %>` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
