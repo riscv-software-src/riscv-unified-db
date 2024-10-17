@@ -24,3 +24,14 @@ fsgnjx.s:
     vu: always
   data_independent_timing: true
   operation(): |
+    check_f_ok();
+
+    Bits<32> sp_value = {f[fs1][31] ^ f[fs2][31], f[fs1][30:0]};
+
+    if (implemented?(ExtensionName::D)) {
+      f[fd] = nan_box(sp_value);
+    } else {
+      f[fd] = sp_value;
+    }
+
+    mark_f_state_dirty();

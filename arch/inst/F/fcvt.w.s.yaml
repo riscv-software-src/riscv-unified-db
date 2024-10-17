@@ -51,4 +51,30 @@ fcvt.w.s:
     vu: always
   data_independent_timing: true
   operation(): |
-      
+      check_f_ok();
+
+      Bits<32> sp_value = f[fs1][31:0];
+
+      Bits<1> sign = sp_value[31];
+      Bits<8> exp = sp_value[30:23];
+      Bits<23> sig = sp_value[22:0];
+
+      RoundingMode rounding_mode = rm_to_mode(rm, $encoding);
+
+      if ( (exp == 0xff) && (sig != 0)) {
+        sign = 0;
+        set_fp_flag(FpFlag::NV);
+        X[rd] = SP_CANONICAL_NAN;
+      } else {
+        if (exp != 0) {
+          sig = sig | 0x00800000;
+        }
+        Bits<64> sig64 = sig << 32;
+        Bits<16> shift_dist = 0xAA - exp;
+        if (0 < shift_dist) {
+          sig64 = softfloat_shiftRightJam64(sig64, shift_dist );
+        }
+        X[rd] = softfloat_roundToI32( sign, sig64, rounding_mode );
+      }
+
+

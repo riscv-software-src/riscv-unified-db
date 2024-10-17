@@ -23,4 +23,14 @@ fmv.w.x:
     vu: always
   data_independent_timing: true
   operation(): |
+    check_f_ok();
 
+    Bits<32> sp_value = X[rs1][31:0];
+
+    if (implemented?(ExtensionName::D)) {
+      f[fd] = nan_box(sp_value);
+    } else {
+      f[fd] = sp_value;
+    }
+
+    mark_f_state_dirty();

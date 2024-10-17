@@ -25,3 +25,16 @@ flw:
     vu: always
   data_independent_timing: true
   operation(): |
+    check_f_ok();
+
+    XReg virtual_address = X[rs1] + $signed(imm);
+
+    Bits<32> sp_value = read_memory<32>(virtual_address);
+
+    if (implemented?(ExtensionName::D)) {
+      f[fd] = nan_box(sp_value);
+    } else {
+      f[fd] = sp_value;
+    }
+
+    mark_f_state_dirty();
