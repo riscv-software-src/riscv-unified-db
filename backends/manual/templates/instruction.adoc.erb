@@ -108,8 +108,7 @@ RV64::
 ----
 <%- end -%>
 
-<%# exception_list = inst.reachable_exceptions_str(inst.arch_def.sym_table_64, 64) -%>
-<%- exception_list = [] -%>
+<% exception_list = inst.reachable_exceptions_str(inst.arch_def.symtab, 64) -%>
 <%- unless exception_list.empty? -%>
 == Exceptions
 

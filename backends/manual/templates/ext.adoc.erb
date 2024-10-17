@@ -60,8 +60,8 @@ This extension has the following implementation options:
 +
 --
 |===
-h| Type | <%= param.schema["type"] %>
-h| Valid Values | <%= Schema.new(param.schema).to_pretty_s %>
+h| Type | <%= param.schema.type_pretty %>
+h| Valid Values | <%= param.schema.to_pretty_s %>
 h| Description a| <%= param.desc %>
 |===
 --
