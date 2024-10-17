@@ -9,6 +9,26 @@ This instruction is defined by:
 
 <%= inst.defined_by.to_asciidoc %>
 
+This instruction is included in the following profiles:
+
+<%- arch_def.profiles.each do |profile| -%>
+<%-
+  in_profile_mandatory = profile.mandatory_extension_requirements.any? do |ext_req|
+    ext_versions = ext_req.satisfying_versions(arch_def)
+    ext_versions.any? { |ext_ver| inst.defined_by?(ext_ver) }
+  end
+  in_profile_optional = profile.optional_extension_requirements.any? do |ext_req|
+    ext_versions = ext_req.satisfying_versions(arch_def)
+    ext_versions.any? { |ext_ver| inst.defined_by?(ext_ver) }
+  end
+  if in_profile_mandatory
+-%>
+* <%= profile.marketing_name %> (Mandatory)
+<%- elsif in_profile_optional -%>
+* <%= profile.marketing_name %> (Optional)
+<%- end -%>
+<%- end -%>
+
 == Encoding
 
 <%- if inst.multi_encoding? -%>
@@ -74,7 +94,7 @@ This instruction must have data-independent timing when extension `Zkt` is enabl
 ====
 RV32::
 +
-[source.idl]
+[source,idl]
 ----
 <%- inst.decode_variables(32).each do |d| -%>
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;

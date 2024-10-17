@@ -189,13 +189,18 @@ end
 rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/csrs/pages/.*.adoc} => [
   __FILE__,
   "#{$root}/.stamps/arch-gen-_64.stamp",
+  "#{$root}/.stamps/arch-gen-_32.stamp",
   ($root / "backends" / "manual" / "templates" / "csr.adoc.erb").to_s
 ] do |t|
   csr_name = File.basename(t.name, ".adoc")
 
   arch_def = arch_def_for("_64")
+  arch_def_32 = arch_def_for("_32")
+
   csr = arch_def.csr(csr_name)
   raise "Can't find csr '#{csr_name}'" if csr.nil?
+
+  csr_32 = arch_def_32.csr(csr_name)
 
   csr_template_path = $root / "backends" / "manual" / "templates" / "csr.adoc.erb"
   erb = ERB.new(csr_template_path.read, trim_mode: "-")
