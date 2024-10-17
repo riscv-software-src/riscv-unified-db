@@ -273,6 +273,11 @@ class Crd < ArchDefObject
         param_db = ext_db.params.find { |p| p.name == param_name }
         raise "There is no param '#{param_name}' in extension '#{ext_crd["name"]}" if param_db.nil?
 
+        next unless ext_db.versions.any? do |ver|
+          Gem::Requirement.new(ext_crd["version"]).satisfied_by?(Gem::Version.new(ver["version"])) &&
+            param_db.defined_in_extension_version?(ver["version"])
+        end
+
         @all_in_scope_ext_params << 
           InScopeExtensionParameter.new(param_db, param_data["schema"], param_data["note"])
       end
@@ -302,6 +307,11 @@ class Crd < ArchDefObject
         ext_param_db = ext_db.params.find { |p| p.name == param_name }
         raise "There is no param '#{param_name}' in extension '#{ext_crd["name"]}" if ext_param_db.nil?
 
+        next unless ext_db.versions.any? do |ver|
+          Gem::Requirement.new(ext_crd["version"]).satisfied_by?(Gem::Version.new(ver["version"])) &&
+            ext_param_db.defined_in_extension_version?(ver["version"])
+        end
+
         ext_params << 
           InScopeExtensionParameter.new(ext_param_db, param_data["schema"], param_data["note"])
     end
@@ -315,8 +325,15 @@ class Crd < ArchDefObject
  
     @all_out_of_scope_params = []
     in_scope_ext_reqs.each do |ext_req|
-      @arch_def.extension(ext_req.name).params.each do |param_db|
+      ext_db = @arch_def.extension(ext_req.name)
+      ext_db.params.each do |param_db|
         next if all_in_scope_ext_params.any? { |c| c.param_db.name == param_db.name }
+
+        next unless ext_db.versions.any? do |ver|
+          Gem::Requirement.new(ext_req.version_requirement).satisfied_by?(Gem::Version.new(ver["version"])) &&
+            param_db.defined_in_extension_version?(ver["version"])
+        end
+
         @all_out_of_scope_params << param_db
       end
     end

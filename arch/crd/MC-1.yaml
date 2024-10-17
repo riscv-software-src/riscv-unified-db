@@ -47,7 +47,7 @@ MC-1:
     parameters:
         TIME_CSR_IMPLEMENTED: {} # Unconstrained
   - name: Sm
-    version: "~> 1.11"
+    version: "~> 1.11.0"
     presence: mandatory
     parameters:
         MTVEC_BASE_ALIGNMENT_DIRECT: {} # Unconstrained
@@ -60,10 +60,6 @@ MC-1:
         MTVAL_WIDTH: {} # Unconstrained
         MTVEC_MODES: {} # Unconstrained
         PHYS_ADDR_WIDTH: {} # Unconstrained
-        CONFIG_PTR_ADDRESS:
-          schema:
-            const: 0xdeadbeef
-          note: "This parameter and its associated CSR shouldn't be here. See GitHub issue #53."
         PRECISE_SYNCHRONOUS_EXCEPTIONS:
           schema:
             const: true
