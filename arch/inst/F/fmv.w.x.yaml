@@ -14,7 +14,7 @@ fmv.w.x:
     variables:
     - name: rs1
       location: 19-15
-    - name: rd
+    - name: fd
       location: 11-7
   access:
     s: always
@@ -23,12 +23,12 @@ fmv.w.x:
     vu: always
   data_independent_timing: true
   operation(): |
-    check_f_ok();
+    check_f_ok($encoding);
 
     Bits<32> sp_value = X[rs1][31:0];
 
     if (implemented?(ExtensionName::D)) {
-      f[fd] = nan_box(sp_value);
+      f[fd] = nan_box<32, 64>(sp_value);
     } else {
       f[fd] = sp_value;
     }

@@ -27,6 +27,6 @@ fmv.x.h:
     vs: always
     vu: always
   operation(): |
-    check_f_ok();
+    check_f_ok($encoding);
 
     X[rd] = sext(f[fs1][15:0], 16);

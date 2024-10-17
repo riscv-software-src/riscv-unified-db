@@ -11,13 +11,13 @@ fle.s:
       Positive zero and negative zero are considered equal.
 
   definedBy: F
-  assembly: xd, xs1, xs2
+  assembly: xd, fs1, fs2
   encoding:
     match: 1010000----------000-----1010011
     variables:
-    - name: rs2
+    - name: fs2
       location: 24-20
-    - name: rs1
+    - name: fs1
       location: 19-15
     - name: rd
       location: 11-7
@@ -28,10 +28,10 @@ fle.s:
     vu: always
   data_independent_timing: true
   operation(): |
-    check_f_ok();
+    check_f_ok($encoding);
 
     Bits<32> sp_value_a = f[fs1][31:0];
-    Bits<32> sp_value_b = f[fs1][31:0];
+    Bits<32> sp_value_b = f[fs2][31:0];
 
     if (is_sp_nan?(sp_value_a) || is_sp_nan?(sp_value_b)) {
       if (is_sp_signaling_nan?(sp_value_a) || is_sp_signaling_nan?(sp_value_b)) {

@@ -8,7 +8,7 @@ fsw:
     `fsw` does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
   definedBy: F
-  assembly: fs1, fs2, imm
+  assembly: fs2, xs1, imm
   encoding:
     match: -----------------010-----0100111
     variables:
@@ -16,7 +16,7 @@ fsw:
       location: 31-25|11-7
     - name: fs2
       location: 24-20
-    - name: fs1
+    - name: rs1
       location: 19-15
   access:
     s: always
@@ -25,8 +25,8 @@ fsw:
     vu: always
   data_independent_timing: true
   operation(): |
-    check_f_ok();
+    check_f_ok($encoding);
 
     XReg virtual_address = X[rs1] + $signed(imm);
 
-    write_memory<32>(virtual_address, f[fs2][31:0]);
+    write_memory<32>(virtual_address, f[fs2][31:0], $encoding);

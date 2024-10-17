@@ -27,7 +27,7 @@ feq.s:
     vu: always
   data_independent_timing: true
   operation(): |
-    check_f_ok();
+    check_f_ok($encoding);
 
     Bits<32> sp_value_a = f[fs1][31:0];
     Bits<32> sp_value_b = f[fs1][31:0];

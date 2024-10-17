@@ -45,7 +45,7 @@ fclass.s:
     vu: always
   data_independent_timing: false
   operation(): |
-    check_f_ok();
+    check_f_ok($encoding);
 
     Bits<32> sp_value = f[fs1][31:0];
 

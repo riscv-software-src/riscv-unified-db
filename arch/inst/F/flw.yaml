@@ -3,12 +3,12 @@
 flw:
   long_name: Single-precision floating-point load
   description: |
-    The `flw` instruction loads a single-precision floating-point value from memory at address _rs1_ + _imm_ into floating-point register _rd_.
+    The `flw` instruction loads a single-precision floating-point value from memory at address _rs1_ + _imm_ into floating-point register _fd_.
 
     `flw` does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
   definedBy: F
-  assembly: xd, xs1, imm
+  assembly: fd, xs1, imm
   encoding:
     match: -----------------010-----0000111
     variables:
@@ -16,7 +16,7 @@ flw:
       location: 31-20
     - name: rs1
       location: 19-15
-    - name: rd
+    - name: fd
       location: 11-7
   access:
     s: always
@@ -25,14 +25,14 @@ flw:
     vu: always
   data_independent_timing: true
   operation(): |
-    check_f_ok();
+    check_f_ok($encoding);
 
     XReg virtual_address = X[rs1] + $signed(imm);
 
-    Bits<32> sp_value = read_memory<32>(virtual_address);
+    Bits<32> sp_value = read_memory<32>(virtual_address, $encoding);
 
     if (implemented?(ExtensionName::D)) {
-      f[fd] = nan_box(sp_value);
+      f[fd] = nan_box<32, 64>(sp_value);
     } else {
       f[fd] = sp_value;
     }
