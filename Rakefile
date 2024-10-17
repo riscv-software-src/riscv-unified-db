@@ -270,6 +270,9 @@ DESC
 task :regress do
   Rake::Task["idl_test"].invoke
   Rake::Task["validate"].invoke
+  ENV["MANUAL_NAME"] = "isa"
+  ENV["VERSIONS"] = "all"
+  Rake::Task["gen:html_manual"].invoke
   Rake::Task["gen:html"].invoke("generic_rv64")
   Rake::Task["gen:crd_pdf"].invoke("MockCRD-1")
   Rake::Task["gen:crd_pdf"].invoke("MC-1")

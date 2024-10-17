@@ -129,33 +129,39 @@ class ArchGen
 
   # checks any "extra_validation" given by parameter definitions
   def params_extra_validation
-    fork do
-      # add parameters as a constant
-      params.each do |key, value|
-        self.class.const_set(key, value)
-      end
 
-      @implemented_extensions.each do |ext|
-        ext_name = ext["name"]
-        gen_ext_path = @gen_dir / "arch" / "ext" / "#{ext_name}.yaml"
-        ext_yaml = YAML.safe_load gen_ext_path.read
-        unless ext_yaml[ext_name]["params"].nil?
-          ext_yaml[ext_name]["params"].each do |param_name, param_data|
-            next unless param_data.key?("extra_validation")
-            begin
-              eval param_data["extra_validation"]
-            rescue StandardError => e
-              warn "While checking extension parameter #{ext_name}::#{param_name}.extra_validation"
-              warn param_data["extra_validation"]
-              warn e
-              exit 1
-            end
+    agen = self
+
+    eval_context = Class.new do
+    end
+
+    eval_context.class.define_method(:ext?) { |name| agen.send(:ext?, name) }
+    eval_context.class.define_method(:assert) { |cond| agen.send(:assert, cond) }
+
+    # add parameters as a constant
+    params.each do |key, value|
+      eval_context.const_set(key, value)
+    end
+
+
+    @implemented_extensions.each do |ext|
+      ext_name = ext["name"]
+      gen_ext_path = @gen_dir / "arch" / "ext" / "#{ext_name}.yaml"
+      ext_yaml = YAML.safe_load gen_ext_path.read
+      unless ext_yaml[ext_name]["params"].nil?
+        ext_yaml[ext_name]["params"].each do |param_name, param_data|
+          next unless param_data.key?("extra_validation")
+          begin
+            eval_context.class_eval param_data["extra_validation"]
+          rescue StandardError => e
+            warn "While checking extension parameter #{ext_name}::#{param_name}.extra_validation"
+            warn param_data["extra_validation"]
+            warn e
+            exit 1
           end
         end
       end
     end
-    Process.wait
-    exit 1 unless $CHILD_STATUS.success?
   end
   private :params_extra_validation
 
