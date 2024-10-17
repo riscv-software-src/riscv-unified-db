@@ -117,7 +117,7 @@ If the "Allowed Value(s)" is "Any" then any value allowed by the type is accepta
 <% if crd.all_in_scope_ext_params.empty? -%>
 None
 <% else -%>
-[cols="4,2,1,1,3"]
+[cols="4,2,1,1,2"]
 |===
 | Parameter | Type | Allowed Value(s) | Extension(s) | Note
 
@@ -316,7 +316,7 @@ The following instructions are added by this extension:
 
 <% crd.in_scope_ext_params(ext_req).sort.each do |ext_param| -%>
 [[ext-<%= ext_req.name %>-param-<%= ext_param.name %>-def]]
-<%= ext_param.name %>::
+<%= ext_param.name %> &#8658; <%= ext_param.param_db.schema_type %>::
 +
 --
 <%= ext_param.param_db.desc %>
@@ -329,7 +329,7 @@ The following instructions are added by this extension:
 
 <% crd.out_of_scope_params(ext_req.name).sort.each do |param_db| -%>
 [[ext-<%= ext_req.name %>-param-<%= param_db.name %>-def]]
-<%= param_db.name %>::
+<%= param_db.name %> &#8658; <%= param_db.schema_type %>::
 +
 --
 <%= param_db.desc %>
@@ -455,20 +455,18 @@ RV64::
 
 ==== Exceptions
 
-// TODO: add back after sym table update for generic arch def is merged in profiles branch
-<%#
-<% exception_list = inst.reachable_exceptions_str(crd.arch_def.symtab) -% >
-<% if exception_list.empty? -% >
+<%- exception_list = inst.reachable_exceptions_str(crd.arch_def.symtab) -%>
+<%- if exception_list.empty? -%>
 This instruction does not generate synchronous exceptions.
-<% else -% >
+<%- else -%>
 This instruction may result in the following synchronous exceptions:
 
-  <% exception_list.sort.each do |etype| -% >
-  * <%= etype % >
-  <% end -% >
+  <%- exception_list.sort.each do |etype| -%>
+  * <%= etype %>
+  <%- end -%>
 
-<% end -% >
-%>
+<%- end -%>
+
 
 <% end -%>
 

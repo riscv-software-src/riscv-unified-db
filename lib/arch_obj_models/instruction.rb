@@ -160,7 +160,6 @@ class Instruction < ArchDefObject
     if @data["operation()"].nil?
       []
     else
-      # RubyProf.start
       etype = symtab.get("ExceptionCode")
       if effective_xlen.nil?
         if symtab.archdef.multi_xlen?
@@ -174,21 +173,18 @@ class Instruction < ArchDefObject
               puts "done"
               pruned_ast = pruned_operation_ast(symtab, 64)
               print "Determining reachable exceptions from #{name}#RV64..."
-              e64 = mask_to_array(prunted_ast.reachable_exceptions(fill_symtab(symtab, 64, pruned_ast))).map { |code|
+              e64 = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, 64, pruned_ast))).map { |code|
                 etype.element_name(code)
               }
-              puts done
+              puts "done"
               e32 + e64
             ).uniq
           else
             pruned_ast = pruned_operation_ast(symtab, base)
             print "Determining reachable exceptions from #{name}..."
-            result = RubyProf.profile do
-              e = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, base, pruned_ast))).map { |code|
-                etype.element_name(code)
-              }
-            end
-            RubyProf::CallStackPrinter.new(result).print(File.open("#{name}-profile.html", "w+"), {})
+            e = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, base, pruned_ast))).map { |code|
+              etype.element_name(code)
+            }
             puts "done"
             e
           end
@@ -196,12 +192,9 @@ class Instruction < ArchDefObject
           effective_xlen = symtab.archdef.mxlen
           pruned_ast = pruned_operation_ast(symtab, effective_xlen)
           print "Determining reachable exceptions from #{name}..."
-          # result = RubyProf.profile do
-            e = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, effective_xlen, pruned_ast))).map { |code|
-              etype.element_name(code)
-            }
-          # end
-          # RubyProf::FlameGraphPrinter.new(result).print(File.open("#{name}-profile.html", "w+"), {})
+          e = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, effective_xlen, pruned_ast))).map { |code|
+            etype.element_name(code)
+          }
           puts "done"
           e
         end
@@ -209,14 +202,12 @@ class Instruction < ArchDefObject
         pruned_ast = pruned_operation_ast(symtab, effective_xlen)
 
         print "Determining reachable exceptions from #{name}..."
-        e = mask_to_array(prunted_ast.reachable_exceptions(fill_symtab(symtab, effective_xlen, pruned_ast))).map { |code|
+        e = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, effective_xlen, pruned_ast))).map { |code|
           etype.element_name(code)
         }
         puts "done"
         e
       end
-      # result = RubyProf.stop
-      # RubyProf::FlatPrinter.new(result).print(STDOUT)
     end
   end
 

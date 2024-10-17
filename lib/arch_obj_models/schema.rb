@@ -122,14 +122,12 @@ class Schema
       end
     end
 
-    def merge!(other_schema)
+    def merge(other_schema)
       raise ArgumentError, "Expecting Schema" unless (other_schema.is_a?(Schema) || other_schema.is_a?(Hash))
 
-      hash = other_schema.is_a?(Schema) ? other_schema.instance_variable_get(:@schema_hash) : other_schema
+      other_hash = other_schema.is_a?(Schema) ? other_schema.instance_variable_get(:@schema_hash) : other_schema
 
-      @schema_hash.merge!(hash)
-
-      self
+      Schema.new(@schema_hash.merge(other_hash))
     end
 
     def empty?

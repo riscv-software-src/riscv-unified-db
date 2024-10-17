@@ -67,7 +67,7 @@ class ExtensionParameter
   def defined_in_extension_version?(version)
     return true if @data.dig("when", "version").nil?
 
-    Gem::Requirement.new(@data["when"]["version"]).satisfied_by?(version)
+    Gem::Requirement.new(@data["when"]["version"]).satisfied_by?(Gem::Version.new(version))
   end
 
   # @return [String]
