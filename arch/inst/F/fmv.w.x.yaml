@@ -3,10 +3,10 @@
 fmv.w.x:
   long_name: Single-precision floating-point move from integer
   description: |
-    Moves the single-precision value encoded in IEEE 754-2008 standard encoding
-    from the lower 32 bits of integer register `rs1` to the floating-point
-    register `rd`. The bits are not modified in the transfer, and in particular,
-    the payloads of non-canonical NaNs are preserved.
+      Moves the single-precision value encoded in IEEE 754-2008 standard encoding
+      from the lower 32 bits of integer register `rs1` to the floating-point
+      register `fd`. The bits are not modified in the transfer, and in particular,
+      the payloads of non-canonical NaNs are preserved.
   definedBy: F
   assembly: fd, xs1
   encoding:
@@ -21,5 +21,6 @@ fmv.w.x:
     u: always
     vs: always
     vu: always
-  # operation(): |
-  #   f[rd] = X[rs1][31:0];
+  data_independent_timing: true
+  operation(): |
+
