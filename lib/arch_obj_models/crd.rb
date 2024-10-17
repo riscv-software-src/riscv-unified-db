@@ -222,11 +222,6 @@ class Crd < ArchDefObject
     end
 
     # @return [String] - # What parameter values are allowed by the CRD.
-    #
-    # Old implementation:
-    #   def schema_pretty_crd_merged_with_param_db
-    #     Schema.new(@param_db.schema).merge!(@schema_crd).to_pretty_s
-    #   end
     def allowed_values
       if (@schema_crd.empty?)
         # CRD doesn't add any constraints on parameter's value.
@@ -236,11 +231,9 @@ class Crd < ArchDefObject
       # Create a Schema object just using information in the parameter database.
       schema_obj = @param_db.schema
 
-      # Merge in constraints imposed by the CRD on the parameter.
-      schema_obj.merge!(@schema_crd)
-
-      # Create string showing allowed values of parameter with CRD constraints added
-      schema_obj.to_pretty_s
+      # Merge in constraints imposed by the CRD on the parameter and then
+      # create string showing allowed values of parameter with CRD constraints added
+      schema_obj.merge(@schema_crd).to_pretty_s
     end
 
     # sorts by name
