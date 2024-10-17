@@ -256,11 +256,11 @@ class Extension < ArchDefObject
 
     funcs = []
     instructions.each do |inst|
-      funcs += inst.operation_ast(arch_def.idl_compiler).reachable_functions_unevaluated(arch_def)
+      funcs += inst.operation_ast(arch_def.symtab).reachable_functions(arch_def.symtab)
     end
 
     csrs.each do |csr|
-      funcs += csr.reachable_functions_unevaluated(arch_def)
+      funcs += csr.reachable_functions(arch_def)
     end
 
     @reachable_functions_unevaluated = funcs.uniq(&:name)
