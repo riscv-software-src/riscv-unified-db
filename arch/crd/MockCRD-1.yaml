@@ -6,6 +6,9 @@ MockCRD-1:
 
   family: MockCRDFamily
   
+   # XLEN used by rakefile
+  base: 64
+
   # semantic version within the CRD family
   version: "1.0"
 
@@ -124,7 +127,7 @@ MockCRD-1:
             const: little
         XLEN:
           schema:
-            const: 32
+            const: 64
         CONFIG_PTR_ADDRESS:
           schema:
             const: 0xdeadbeef

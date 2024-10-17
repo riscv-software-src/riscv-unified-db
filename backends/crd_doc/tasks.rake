@@ -13,16 +13,19 @@ Dir.glob("#{$root}/arch/crd/*.yaml") do |f|
   crd_name = File.basename(f, ".yaml")
   crd_obj = YAML.load_file(f, permitted_classes: [Date])
   raise "Ill-formed CRD file #{f}: missing 'family' field" if crd_obj.dig(crd_name, 'family').nil?
+
+  base = crd_obj[crd_name]["base"]
+  raise "Missing CRD base" if base.nil?
   
   file "#{$root}/gen/crd_doc/adoc/#{crd_name}.adoc" => [
     "#{$root}/arch/crd/#{crd_name}.yaml",
     "#{$root}/arch/crd_family/#{crd_obj[crd_name]['family']}.yaml",
     "#{CRD_DOC_DIR}/templates/crd.adoc.erb",
     __FILE__,
-    "#{$root}/.stamps/arch-gen-_64.stamp"
+    "#{$root}/.stamps/arch-gen-_#{base}.stamp"
   ] do |t|
     # TODO: schema validation
-    arch_def = arch_def_for("_64")
+    arch_def = arch_def_for("_#{base}")
     crd = arch_def.crd(crd_name)
     raise "No CRD defined for #{crd_name}" if crd.nil?
 

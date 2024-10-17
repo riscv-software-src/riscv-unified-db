@@ -8,6 +8,9 @@ MC-1:
   # semantic version within the CRD family
   version: "1.0"
 
+  # XLEN used by rakefile
+  base: 32
+
   description: |
     MC-1 can be though of as a minimal 32-bit RISC-V processor with M-mode support:
 
