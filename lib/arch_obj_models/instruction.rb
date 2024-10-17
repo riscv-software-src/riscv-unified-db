@@ -202,7 +202,7 @@ class Instruction < ArchDefObject
         pruned_ast = pruned_operation_ast(symtab, effective_xlen)
 
         print "Determining reachable exceptions from #{name}..."
-        e = mask_to_array(prunted_ast.reachable_exceptions(fill_symtab(symtab, effective_xlen, pruned_ast))).map { |code|
+        e = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, effective_xlen, pruned_ast))).map { |code|
           etype.element_name(code)
         }
         puts "done"
