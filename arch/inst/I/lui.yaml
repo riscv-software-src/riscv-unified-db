@@ -20,3 +20,18 @@ lui:
     vu: always
   data_independent_timing: true
   operation(): X[rd] = imm;
+
+
+
+  sail(): |
+    {
+      let off : xlenbits = sign_extend(imm @ 0x000);
+      let ret : xlenbits = match op {
+        RISCV_LUI   => off,
+        RISCV_AUIPC => get_arch_pc() + off
+      };
+      X(rd) = ret;
+      RETIRE_SUCCESS
+    }
+  
+  

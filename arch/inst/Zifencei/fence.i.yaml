@@ -41,3 +41,10 @@ fence.i:
     vu: always
   operation(): |
     ifence();
+
+
+
+  sail(): |
+    { /* __barrier(Barrier_RISCV_i); */ RETIRE_SUCCESS }
+  
+  

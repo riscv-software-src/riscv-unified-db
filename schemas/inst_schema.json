@@ -177,7 +177,11 @@
         },
         "operation()": {
           "type": "string",
-          "description": "Functional description of the instruction using ISA language"
+          "description": "Functional description of the instruction using IDL language"
+        },
+        "sail()": {
+          "type": "string",
+          "description": "Functional description of the instruction using Sail"
         },
         "assembly": {
           "type": "string",
