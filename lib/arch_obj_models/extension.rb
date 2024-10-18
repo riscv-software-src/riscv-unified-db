@@ -256,11 +256,11 @@ class Extension < ArchDefObject
 
     funcs = []
     instructions.each do |inst|
-      funcs += inst.operation_ast(arch_def.idl_compiler).reachable_functions_unevaluated(arch_def)
+      funcs += inst.operation_ast(arch_def.symtab).reachable_functions(arch_def.symtab)
     end
 
     csrs.each do |csr|
-      funcs += csr.reachable_functions_unevaluated(arch_def)
+      funcs += csr.reachable_functions(arch_def)
     end
 
     @reachable_functions_unevaluated = funcs.uniq(&:name)
@@ -362,6 +362,16 @@ class ExtensionRequirement
     @note = note
     @req_id = req_id
     @presence = presence
+  end
+
+  # @return [Array<ExtensionVersion>] The list of extension versions that satisfy this requirement
+  def satisfying_versions(archdef)
+    ext = archdef.extension(@name)
+    return [] if ext.nil?
+
+    ext.versions.select { |v| @requirement.satisfied_by?(Gem::Version.new(v["version"])) }.map do |v|
+      ExtensionVersion.new(@name, v["version"])
+    end
   end
 
   # @overload

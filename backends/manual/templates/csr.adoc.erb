@@ -15,13 +15,13 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <%- if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <%- end -%>
-<%- if csr.dynamic_length?(arch_def) -%>
+<%- if csr.dynamic_length?(arch_def) ||  csr.data["length"] == "MXLEN" -%>
 h| Length
 a|
 
 [when,"<%= csr.length_cond32 %>"]
 --
-<%= csr.length_pretty(arch_def, 32) %>
+<%= csr_32.length_pretty(arch_def_32, 32) %>
 --
 
 [when,"<%= csr.length_cond64 %>"]
@@ -36,7 +36,7 @@ h| Privilege Mode | <%= csr.priv_mode %>
 |===
 
 == Format
-<%- unless csr.dynamic_length?(arch_def) || csr.fields.any? { |f| f.dynamic_location?(arch_def) } -%>
+<%- unless csr.dynamic_length?(arch_def) || csr.fields.any? { |f| f.dynamic_location?(arch_def) } || csr.data["length"] == "MXLEN" -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -52,7 +52,7 @@ This CSR format changes dynamically.
 --
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(arch_def, 32) %>
+<%= JSON.dump csr_32.wavedrom_desc(arch_def_32, 32) %>
 ....
 --
 

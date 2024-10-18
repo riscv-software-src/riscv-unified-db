@@ -135,7 +135,7 @@ hcounteren:
         the `hpmcounter3` CSR (an alias of `mhpmcounter3`) is accessible to VU-mode.
 
         When `mcounteren.HPM3` and `hcounteren.HPM3` are set,
-        the `hpmcounter3` CSR (an alias of `mhpmconuter3`) is accessible to VS-mode.
+        the `hpmcounter3` CSR (an alias of `mhpmcounter3`) is accessible to VS-mode.
 
         When `hcounteren.HPM3` is clear and `mcounteren.HPM3` is set, then any access to `hpmcounter3` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -172,7 +172,7 @@ hcounteren:
         the `hpmcounter4` CSR (an alias of `mhpmcounter4`) is accessible to VU-mode.
 
         When `mcounteren.HPM4` and `hcounteren.HPM4` are set,
-        the `hpmcounter4` CSR (an alias of `mhpmconuter4`) is accessible to VS-mode.
+        the `hpmcounter4` CSR (an alias of `mhpmcounter4`) is accessible to VS-mode.
 
         When `hcounteren.HPM4` is clear and `mcounteren.HPM4` is set, then any access to `hpmcounter4` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -209,7 +209,7 @@ hcounteren:
         the `hpmcounter5` CSR (an alias of `mhpmcounter5`) is accessible to VU-mode.
 
         When `mcounteren.HPM5` and `hcounteren.HPM5` are set,
-        the `hpmcounter5` CSR (an alias of `mhpmconuter5`) is accessible to VS-mode.
+        the `hpmcounter5` CSR (an alias of `mhpmcounter5`) is accessible to VS-mode.
 
         When `hcounteren.HPM5` is clear and `mcounteren.HPM5` is set, then any access to `hpmcounter5` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -246,7 +246,7 @@ hcounteren:
         the `hpmcounter6` CSR (an alias of `mhpmcounter6`) is accessible to VU-mode.
 
         When `mcounteren.HPM6` and `hcounteren.HPM6` are set,
-        the `hpmcounter6` CSR (an alias of `mhpmconuter6`) is accessible to VS-mode.
+        the `hpmcounter6` CSR (an alias of `mhpmcounter6`) is accessible to VS-mode.
 
         When `hcounteren.HPM6` is clear and `mcounteren.HPM6` is set, then any access to `hpmcounter6` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -283,7 +283,7 @@ hcounteren:
         the `hpmcounter7` CSR (an alias of `mhpmcounter7`) is accessible to VU-mode.
 
         When `mcounteren.HPM7` and `hcounteren.HPM7` are set,
-        the `hpmcounter7` CSR (an alias of `mhpmconuter7`) is accessible to VS-mode.
+        the `hpmcounter7` CSR (an alias of `mhpmcounter7`) is accessible to VS-mode.
 
         When `hcounteren.HPM7` is clear and `mcounteren.HPM7` is set, then any access to `hpmcounter7` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -320,7 +320,7 @@ hcounteren:
         the `hpmcounter8` CSR (an alias of `mhpmcounter8`) is accessible to VU-mode.
 
         When `mcounteren.HPM8` and `hcounteren.HPM8` are set,
-        the `hpmcounter8` CSR (an alias of `mhpmconuter8`) is accessible to VS-mode.
+        the `hpmcounter8` CSR (an alias of `mhpmcounter8`) is accessible to VS-mode.
 
         When `hcounteren.HPM8` is clear and `mcounteren.HPM8` is set, then any access to `hpmcounter8` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -357,7 +357,7 @@ hcounteren:
         the `hpmcounter9` CSR (an alias of `mhpmcounter9`) is accessible to VU-mode.
 
         When `mcounteren.HPM9` and `hcounteren.HPM9` are set,
-        the `hpmcounter9` CSR (an alias of `mhpmconuter9`) is accessible to VS-mode.
+        the `hpmcounter9` CSR (an alias of `mhpmcounter9`) is accessible to VS-mode.
 
         When `hcounteren.HPM9` is clear and `mcounteren.HPM9` is set, then any access to `hpmcounter9` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -394,7 +394,7 @@ hcounteren:
         the `hpmcounter10` CSR (an alias of `mhpmcounter10`) is accessible to VU-mode.
 
         When `mcounteren.HPM10` and `hcounteren.HPM10` are set,
-        the `hpmcounter10` CSR (an alias of `mhpmconuter10`) is accessible to VS-mode.
+        the `hpmcounter10` CSR (an alias of `mhpmcounter10`) is accessible to VS-mode.
 
         When `hcounteren.HPM10` is clear and `mcounteren.HPM10` is set, then any access to `hpmcounter10` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -431,7 +431,7 @@ hcounteren:
         the `hpmcounter11` CSR (an alias of `mhpmcounter11`) is accessible to VU-mode.
 
         When `mcounteren.HPM11` and `hcounteren.HPM11` are set,
-        the `hpmcounter11` CSR (an alias of `mhpmconuter11`) is accessible to VS-mode.
+        the `hpmcounter11` CSR (an alias of `mhpmcounter11`) is accessible to VS-mode.
 
         When `hcounteren.HPM11` is clear and `mcounteren.HPM11` is set, then any access to `hpmcounter11` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -468,7 +468,7 @@ hcounteren:
         the `hpmcounter12` CSR (an alias of `mhpmcounter12`) is accessible to VU-mode.
 
         When `mcounteren.HPM12` and `hcounteren.HPM12` are set,
-        the `hpmcounter12` CSR (an alias of `mhpmconuter12`) is accessible to VS-mode.
+        the `hpmcounter12` CSR (an alias of `mhpmcounter12`) is accessible to VS-mode.
 
         When `hcounteren.HPM12` is clear and `mcounteren.HPM12` is set, then any access to `hpmcounter12` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -505,7 +505,7 @@ hcounteren:
         the `hpmcounter13` CSR (an alias of `mhpmcounter13`) is accessible to VU-mode.
 
         When `mcounteren.HPM13` and `hcounteren.HPM13` are set,
-        the `hpmcounter13` CSR (an alias of `mhpmconuter13`) is accessible to VS-mode.
+        the `hpmcounter13` CSR (an alias of `mhpmcounter13`) is accessible to VS-mode.
 
         When `hcounteren.HPM13` is clear and `mcounteren.HPM13` is set, then any access to `hpmcounter13` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -542,7 +542,7 @@ hcounteren:
         the `hpmcounter14` CSR (an alias of `mhpmcounter14`) is accessible to VU-mode.
 
         When `mcounteren.HPM14` and `hcounteren.HPM14` are set,
-        the `hpmcounter14` CSR (an alias of `mhpmconuter14`) is accessible to VS-mode.
+        the `hpmcounter14` CSR (an alias of `mhpmcounter14`) is accessible to VS-mode.
 
         When `hcounteren.HPM14` is clear and `mcounteren.HPM14` is set, then any access to `hpmcounter14` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -579,7 +579,7 @@ hcounteren:
         the `hpmcounter15` CSR (an alias of `mhpmcounter15`) is accessible to VU-mode.
 
         When `mcounteren.HPM15` and `hcounteren.HPM15` are set,
-        the `hpmcounter15` CSR (an alias of `mhpmconuter15`) is accessible to VS-mode.
+        the `hpmcounter15` CSR (an alias of `mhpmcounter15`) is accessible to VS-mode.
 
         When `hcounteren.HPM15` is clear and `mcounteren.HPM15` is set, then any access to `hpmcounter15` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -616,7 +616,7 @@ hcounteren:
         the `hpmcounter16` CSR (an alias of `mhpmcounter16`) is accessible to VU-mode.
 
         When `mcounteren.HPM16` and `hcounteren.HPM16` are set,
-        the `hpmcounter16` CSR (an alias of `mhpmconuter16`) is accessible to VS-mode.
+        the `hpmcounter16` CSR (an alias of `mhpmcounter16`) is accessible to VS-mode.
 
         When `hcounteren.HPM16` is clear and `mcounteren.HPM16` is set, then any access to `hpmcounter16` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -653,7 +653,7 @@ hcounteren:
         the `hpmcounter17` CSR (an alias of `mhpmcounter17`) is accessible to VU-mode.
 
         When `mcounteren.HPM17` and `hcounteren.HPM17` are set,
-        the `hpmcounter17` CSR (an alias of `mhpmconuter17`) is accessible to VS-mode.
+        the `hpmcounter17` CSR (an alias of `mhpmcounter17`) is accessible to VS-mode.
 
         When `hcounteren.HPM17` is clear and `mcounteren.HPM17` is set, then any access to `hpmcounter17` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -690,7 +690,7 @@ hcounteren:
         the `hpmcounter18` CSR (an alias of `mhpmcounter18`) is accessible to VU-mode.
 
         When `mcounteren.HPM18` and `hcounteren.HPM18` are set,
-        the `hpmcounter18` CSR (an alias of `mhpmconuter18`) is accessible to VS-mode.
+        the `hpmcounter18` CSR (an alias of `mhpmcounter18`) is accessible to VS-mode.
 
         When `hcounteren.HPM18` is clear and `mcounteren.HPM18` is set, then any access to `hpmcounter18` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -727,7 +727,7 @@ hcounteren:
         the `hpmcounter19` CSR (an alias of `mhpmcounter19`) is accessible to VU-mode.
 
         When `mcounteren.HPM19` and `hcounteren.HPM19` are set,
-        the `hpmcounter19` CSR (an alias of `mhpmconuter19`) is accessible to VS-mode.
+        the `hpmcounter19` CSR (an alias of `mhpmcounter19`) is accessible to VS-mode.
 
         When `hcounteren.HPM19` is clear and `mcounteren.HPM19` is set, then any access to `hpmcounter19` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -764,7 +764,7 @@ hcounteren:
         the `hpmcounter20` CSR (an alias of `mhpmcounter20`) is accessible to VU-mode.
 
         When `mcounteren.HPM20` and `hcounteren.HPM20` are set,
-        the `hpmcounter20` CSR (an alias of `mhpmconuter20`) is accessible to VS-mode.
+        the `hpmcounter20` CSR (an alias of `mhpmcounter20`) is accessible to VS-mode.
 
         When `hcounteren.HPM20` is clear and `mcounteren.HPM20` is set, then any access to `hpmcounter20` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -801,7 +801,7 @@ hcounteren:
         the `hpmcounter21` CSR (an alias of `mhpmcounter21`) is accessible to VU-mode.
 
         When `mcounteren.HPM21` and `hcounteren.HPM21` are set,
-        the `hpmcounter21` CSR (an alias of `mhpmconuter21`) is accessible to VS-mode.
+        the `hpmcounter21` CSR (an alias of `mhpmcounter21`) is accessible to VS-mode.
 
         When `hcounteren.HPM21` is clear and `mcounteren.HPM21` is set, then any access to `hpmcounter21` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -838,7 +838,7 @@ hcounteren:
         the `hpmcounter22` CSR (an alias of `mhpmcounter22`) is accessible to VU-mode.
 
         When `mcounteren.HPM22` and `hcounteren.HPM22` are set,
-        the `hpmcounter22` CSR (an alias of `mhpmconuter22`) is accessible to VS-mode.
+        the `hpmcounter22` CSR (an alias of `mhpmcounter22`) is accessible to VS-mode.
 
         When `hcounteren.HPM22` is clear and `mcounteren.HPM22` is set, then any access to `hpmcounter22` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -875,7 +875,7 @@ hcounteren:
         the `hpmcounter23` CSR (an alias of `mhpmcounter23`) is accessible to VU-mode.
 
         When `mcounteren.HPM23` and `hcounteren.HPM23` are set,
-        the `hpmcounter23` CSR (an alias of `mhpmconuter23`) is accessible to VS-mode.
+        the `hpmcounter23` CSR (an alias of `mhpmcounter23`) is accessible to VS-mode.
 
         When `hcounteren.HPM23` is clear and `mcounteren.HPM23` is set, then any access to `hpmcounter23` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -912,7 +912,7 @@ hcounteren:
         the `hpmcounter24` CSR (an alias of `mhpmcounter24`) is accessible to VU-mode.
 
         When `mcounteren.HPM24` and `hcounteren.HPM24` are set,
-        the `hpmcounter24` CSR (an alias of `mhpmconuter24`) is accessible to VS-mode.
+        the `hpmcounter24` CSR (an alias of `mhpmcounter24`) is accessible to VS-mode.
 
         When `hcounteren.HPM24` is clear and `mcounteren.HPM24` is set, then any access to `hpmcounter24` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -949,7 +949,7 @@ hcounteren:
         the `hpmcounter25` CSR (an alias of `mhpmcounter25`) is accessible to VU-mode.
 
         When `mcounteren.HPM25` and `hcounteren.HPM25` are set,
-        the `hpmcounter25` CSR (an alias of `mhpmconuter25`) is accessible to VS-mode.
+        the `hpmcounter25` CSR (an alias of `mhpmcounter25`) is accessible to VS-mode.
 
         When `hcounteren.HPM25` is clear and `mcounteren.HPM25` is set, then any access to `hpmcounter25` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -986,7 +986,7 @@ hcounteren:
         the `hpmcounter26` CSR (an alias of `mhpmcounter26`) is accessible to VU-mode.
 
         When `mcounteren.HPM26` and `hcounteren.HPM26` are set,
-        the `hpmcounter26` CSR (an alias of `mhpmconuter26`) is accessible to VS-mode.
+        the `hpmcounter26` CSR (an alias of `mhpmcounter26`) is accessible to VS-mode.
 
         When `hcounteren.HPM26` is clear and `mcounteren.HPM26` is set, then any access to `hpmcounter26` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -1023,7 +1023,7 @@ hcounteren:
         the `hpmcounter27` CSR (an alias of `mhpmcounter27`) is accessible to VU-mode.
 
         When `mcounteren.HPM27` and `hcounteren.HPM27` are set,
-        the `hpmcounter27` CSR (an alias of `mhpmconuter27`) is accessible to VS-mode.
+        the `hpmcounter27` CSR (an alias of `mhpmcounter27`) is accessible to VS-mode.
 
         When `hcounteren.HPM27` is clear and `mcounteren.HPM27` is set, then any access to `hpmcounter27` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -1060,7 +1060,7 @@ hcounteren:
         the `hpmcounter28` CSR (an alias of `mhpmcounter28`) is accessible to VU-mode.
 
         When `mcounteren.HPM28` and `hcounteren.HPM28` are set,
-        the `hpmcounter28` CSR (an alias of `mhpmconuter28`) is accessible to VS-mode.
+        the `hpmcounter28` CSR (an alias of `mhpmcounter28`) is accessible to VS-mode.
 
         When `hcounteren.HPM28` is clear and `mcounteren.HPM28` is set, then any access to `hpmcounter28` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -1097,7 +1097,7 @@ hcounteren:
         the `hpmcounter29` CSR (an alias of `mhpmcounter29`) is accessible to VU-mode.
 
         When `mcounteren.HPM29` and `hcounteren.HPM29` are set,
-        the `hpmcounter29` CSR (an alias of `mhpmconuter29`) is accessible to VS-mode.
+        the `hpmcounter29` CSR (an alias of `mhpmcounter29`) is accessible to VS-mode.
 
         When `hcounteren.HPM29` is clear and `mcounteren.HPM29` is set, then any access to `hpmcounter29` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -1134,7 +1134,7 @@ hcounteren:
         the `hpmcounter30` CSR (an alias of `mhpmcounter30`) is accessible to VU-mode.
 
         When `mcounteren.HPM30` and `hcounteren.HPM30` are set,
-        the `hpmcounter30` CSR (an alias of `mhpmconuter30`) is accessible to VS-mode.
+        the `hpmcounter30` CSR (an alias of `mhpmcounter30`) is accessible to VS-mode.
 
         When `hcounteren.HPM30` is clear and `mcounteren.HPM30` is set, then any access to `hpmcounter30` in
         VU-mode or VS-mode causes a VirtualInstruction execption.
@@ -1171,7 +1171,7 @@ hcounteren:
         the `hpmcounter31` CSR (an alias of `mhpmcounter31`) is accessible to VU-mode.
 
         When `mcounteren.HPM31` and `hcounteren.HPM31` are set,
-        the `hpmcounter31` CSR (an alias of `mhpmconuter31`) is accessible to VS-mode.
+        the `hpmcounter31` CSR (an alias of `mhpmcounter31`) is accessible to VS-mode.
 
         When `hcounteren.HPM31` is clear and `mcounteren.HPM31` is set, then any access to `hpmcounter31` in
         VU-mode or VS-mode causes a VirtualInstruction execption.

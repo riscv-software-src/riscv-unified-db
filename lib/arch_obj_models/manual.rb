@@ -170,7 +170,7 @@ class ManualVersion < ArchDefObject
         @instructions << inst
       end
     end
-    @instructions
+    @instructions = @instructions.uniq(&:name)
   end
 
   # @return [Array<Csr>] All csrs defined in this version
@@ -184,6 +184,6 @@ class ManualVersion < ArchDefObject
         @csrs << csr
       end
     end
-    @csrs
+    @csrs = @csrs.uniq(&:name)
   end
 end

@@ -5682,6 +5682,7 @@ module Idl
         @value = nil
       end
       @type = calc_type(symtab)
+      @archdef = symtab.archdef # remember archdef, used in gen_adoc pass
       freeze
     end
 
@@ -5811,6 +5812,12 @@ module Idl
       end
 
       @idx = idx
+    end
+
+    def freeze_tree(symtab)
+      @archdef = symtab.archdef # remember archdef, used by gen_adoc pass
+      @idx.freeze_tree(symtab)
+      freeze
     end
 
     # @!macro type

@@ -61,11 +61,11 @@ mstatus:
         Since the CPU does not support big endian, this is hardwired to 0.
 
         [when,"M_MODE_ENDIANESS == big"]
-        Since the CPU does not support litte endian, this is hardwired to 1.
+        Since the CPU does not support little endian, this is hardwired to 1.
       type(): |
         return (M_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
 
-      # if endianess is mutable, MBE comes out of reset in little-endian mode
+      # if endianness is mutable, MBE comes out of reset in little-endian mode
       reset_value(): |
         return (M_MODE_ENDIANESS == "big") ? 1 : 0;
 

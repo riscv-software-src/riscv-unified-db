@@ -10,14 +10,30 @@
 
 <%= f.description %>
 
+[cols="1,2"]
 |===
-h| Return Type l| <%= f.return_type_list_str.join(', ') %>
-h| Arguments   l| <%= f.arguments_list_str.join (', ') %>
+h| Return Type
+a|
+[source,idl]
+----
+<%= f.return_type_list_str.join(', ') %>
+----
+
+h| Arguments
+a|
+<%- if f.arguments_list_str.empty? -%>
+None
+<%- else -%>
+[source,idl]
+----
+<%= f.arguments_list_str.join (', ') %>
+----
+<%- end -%>
 |===
 
 <%- unless f.builtin? -%>
 <%- body_ast = f.body -%>
-[subs="specialchars,macros"]
+[source,idl,subs="specialchars,macros"]
 ----
 <%= body_ast.gen_adoc %>
 ----
