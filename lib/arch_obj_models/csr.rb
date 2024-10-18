@@ -535,7 +535,7 @@ class Csr < ArchDefObject
 
         desc["reg"] << { "bits" => n, type: 1 }
       end
-      if arch_def.partially_configured? && arch_def.optional_in_cfg?(arch_def)
+      if arch_def.partially_configured? && field.optional_in_cfg?(arch_def)
         desc["reg"] << { "bits" => field.location(arch_def, effective_xlen).size, "name" => field.name, type: optional_type }
       else
         desc["reg"] << { "bits" => field.location(arch_def, effective_xlen).size, "name" => field.name, type: 2 }
