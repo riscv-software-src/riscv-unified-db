@@ -291,9 +291,18 @@ Sm:
         type: boolean
     TRAP_ON_UNIMPLEMENTED_INSTRUCTION:
       description: |
-        When true, fetching an unimplemented instruction will cause an `IllegalInstruction` exception.
+        When true, fetching an unimplemented instruction from the custom encoding space will cause
+        an `IllegalInstruction` exception.
 
-        When false, fetching an unimplemented instruction is `unpredictable`.
+        When false, fetching an unimplemented instruction is `UNPREDICTABLE`.
+      schema:
+        type: boolean
+    TRAP_ON_RESERVED_INSTRUCTION:
+      description: |
+        When true, fetching an unimplemented and/or undefined instruction from the standard/reserved
+        encoding space will cause an `IllegalInstruction` exception.
+
+        When false, fetching such an instruction is `UNPREDICTABLE`.
       schema:
         type: boolean
     TRAP_ON_UNIMPLEMENTED_CSR:
