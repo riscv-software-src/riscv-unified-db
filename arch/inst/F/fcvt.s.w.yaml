@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+fcvt.s.w:
+  long_name: Convert signed 32-bit integer to single-precision float
+  description: |
+    Converts a 32-bit signed integer in integer register _rs1_ into a floating-point number in
+    floating-point register _fd_.
+
+    All floating-point to integer and integer to floating-point conversion instructions round
+    according to the _rm_ field.
+    A floating-point register can be initialized to floating-point positive zero using
+    `fcvt.s.w rd, x0`, which will never set any exception flags.
+
+    All floating-point conversion instructions set the Inexact exception flag if the rounded
+    result differs from the operand value and the Invalid exception flag is not set.
+  definedBy: F
+  assembly: fd, xs1
+  encoding:
+    match: 110100000000-------------1010011
+    variables:
+    - name: rs1
+      location: 19-15
+    - name: rm
+      location: 14-12
+    - name: fd
+      location: 11-7
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  data_independent_timing: false
+  operation(): |
+    check_f_ok($encoding);
+
+    Bits<32> int_value = X[rs1];
+
+    Bits<1> sign = int_value[31];
+
+    RoundingMode rounding_mode = rm_to_mode(rm, $encoding);
+
+    if ((int_value & 32'h7fff_ffff) == 0) {
+      X[fd] = (sign == 1) ? packToF32UI(1, 0x9E, 0) : 0;
+    } else {
+      Bits<32> absA = (sign == 1) ? -int_value : int_value;
+      X[fd] = softfloat_normRoundPackToF32( sign, 0x9C, absA, rounding_mode );
+    }
+
+    mark_f_state_dirty();
+

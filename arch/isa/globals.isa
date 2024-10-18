@@ -2,6 +2,7 @@
 
 include "builtin_functions.idl"
 include "util.idl"
+include "fp.idl"
 
 # global state
 
@@ -144,14 +145,6 @@ enum XRegWidth {
 #   StoreAmoGuestPageFault 23
 # }
 
-enum RoundingMode {
-  RNE 0  # Round to nearest, ties to even
-  RTZ 1  # Round toward zero
-  RDN 2  # Round down (towards -inf)
-  RUP 3  # Round up (towards +inf)
-  RMM 4  # Round to nearest, ties to Max Magnitude
-}
-
 enum SatpMode {
   Bare 0
   Sv32 1
@@ -224,14 +217,6 @@ bitfield (64) Sv39PageTableEntry {
   R 1
   V 0
 }
-
-# floating point register file
-# U32 FLEN = implemented?(ExtensionName::D) ? 7'd64 : 7'd32;
-U32 FLEN = 7'd64;
-Bits<FLEN> f[32] = [0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0];
 
 PrivilegeMode current_mode = PrivilegeMode::M;
 
