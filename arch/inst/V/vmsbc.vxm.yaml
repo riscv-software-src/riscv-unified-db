@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+vmsbc.vxm:
+  long_name: No synopsis available.
+  description: |
+      No description available.
+  definedBy: V
+  assembly: vs2, xs1, vd
+  encoding:
+    match: 0100110----------100-----1010111
+    variables:
+    - name: vs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: vd
+      location: 11-7
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  data_independent_timing: true
+  operation(): |
+      
