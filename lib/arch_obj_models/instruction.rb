@@ -665,30 +665,6 @@ class Instruction < ArchDefObject
     !@data.key?("base") || base == 64
   end
 
-  # @return [Array<ExtensionRequirement>] Extension exclusions for the instruction. If *any* exclusion is met, the instruction is not defined
-  def extension_exclusions
-    return @extension_exclusions unless @extension_excludions.nil?
-
-    @extension_exclusions = []
-    if @data.key?("excludedBy")
-      if @data["exludedBy"].is_a?(Array)
-        # could be either a single extension with exclusion, or a list of exclusions
-        if extension_exclusion?(@data["excludedBy"][0])
-          @extension_exclusions << to_extension_requirement(@data["excludedBy"][0])
-        else
-          # this is a list
-          @data["excludeddBy"].each do |r|
-            @extension_exclusions << to_extension_exclusion(r)
-          end
-        end
-      else
-        @extension_exclusions << to_extension_requirement(@data["excludedBy"])
-      end
-    end
-
-    @extension_exclusions
-  end
-
   # @overload excluded_by?(ext_name, ext_version)
   #   @param ext_name [#to_s] An extension name
   #   @param ext_version [#to_s] A specific extension version
@@ -697,18 +673,24 @@ class Instruction < ArchDefObject
   #   @param ext_version [ExtensionVersion] An extension version
   #   @return [Boolean] Whether or not the instruction is excluded by ext_version
   def excluded_by?(*args)
+    return false if @data["excludedBy"].nil?
+
+    excluded_by = SchemaCondition.new(@data["excludedBy"])
+
     if args.size == 1
       raise ArgumentError, "Parameter must be an ExtensionVersion" unless args[0].is_a?(ExtensionVersion)
 
-      extension_exclusions.any? do |r|
-        r.satisfied_by?(args[0])
+      excluded_by.satisfied_by? do |r|
+        r.name == args[0].name && r.version_requirement.satisfied_by?(args[0].version)
       end
     elsif args.size == 2
       raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
       raise ArgumentError, "Second parameter must be an extension version" unless args[0].respond_to?(:to_s)
 
-      extension_exclusions.any? do |r|
-        r.satisfied_by?(args[0].to_s, args[1].to_s)
+      version = args[1].is_a?(Gem::Version) ? args[1] : Gem::Version.new(args[1])
+
+      excluded_by.satisfied_by? do |r|
+        r.name == args[0] && r.version_requirement.satisfied_by?(version)
       end
     end
   end
