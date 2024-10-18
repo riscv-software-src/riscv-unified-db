@@ -713,12 +713,19 @@ class Instruction < ArchDefObject
     end
   end
 
-  # @param possible_xlens [Array<Integer>] List of xlens that be used in any implemented mode
-  # @param extensions [Array<ExtensionVersion>] List of extensions implemented
+  # @param arch_def [ArchDef] The architecture definition
   # @return [Boolean] whether or not the instruction is implemented given the supplies config options
-  def exists_in_cfg?(possible_xlens, extensions)
-    (@data["base"].nil? || (possible_xlens.include? @data["base"])) &&
-      extensions.any? { |e| defined_by?(e) } &&
-      extensions.none? { |e| excluded_by?(e) }
+  def exists_in_cfg?(arch_def)
+    if arch_def.fully_configured?
+      (@data["base"].nil? || (arch_def.possible_xlens.include? @data["base"])) &&
+        arch_def.implemented_extensions.any? { |e| defined_by?(e) } &&
+        arch_def.implemented_extensions.none? { |e| excluded_by?(e) }
+    else
+      raise "unexpected arch_def type" unless arch_def.partially_configured?
+
+      (@data["base"].nil? || (arch_def.possible_xlens.include? @data["base"])) &&
+        arch_def.prohibited_extensions.none? { |e| defined_by?(e) } &&
+        arch_def.mandatory_extensions.none? { |e| excluded_by?(e) }
+    end
   end
 end

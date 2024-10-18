@@ -352,7 +352,7 @@ class Csr < ArchDefObject
       end
 
     @implemented_fields = fields.select do |f|
-      f.exists_in_cfg?(implemented_bases, arch_def.implemented_extensions)
+      f.exists_in_cfg?(arch_def)
     end
   end
 
@@ -509,8 +509,10 @@ class Csr < ArchDefObject
   #
   # @param arch_def [ArchDef] A configuration
   # @param effective_xlen [Integer,nil] Effective XLEN to use when CSR length is dynamic
+  # @param exclude_unimplemented [Boolean] If true, do not create include unimplemented fields in the figure
+  # @param optional_type [Integer] Wavedrom type (Fill color) for fields that are optional (not mandatory) in a partially-specified arch_def
   # @return [Hash] A representation of the WaveDrom drawing for the CSR (should be turned into JSON for wavedrom)
-  def wavedrom_desc(arch_def, effective_xlen, exclude_unimplemented: false)
+  def wavedrom_desc(arch_def, effective_xlen, exclude_unimplemented: false, optional_type: 2)
     desc = {
       "reg" => []
     }
@@ -533,7 +535,11 @@ class Csr < ArchDefObject
 
         desc["reg"] << { "bits" => n, type: 1 }
       end
-      desc["reg"] << { "bits" => field.location(arch_def, effective_xlen).size, "name" => field.name, type: 2 }
+      if field.optional_in_cfg?(arch_def)
+        desc["reg"] << { "bits" => field.location(arch_def, effective_xlen).size, "name" => field.name, type: optional_type }
+      else
+        desc["reg"] << { "bits" => field.location(arch_def, effective_xlen).size, "name" => field.name, type: 2 }
+      end
       last_idx = field.location(arch_def, effective_xlen).max
     end
     if !field_list.empty? && (field_list.last.location(arch_def, effective_xlen).max != (length(arch_def, effective_xlen) - 1))
@@ -546,11 +552,26 @@ class Csr < ArchDefObject
     desc
   end
 
-  # @param possible_xlens [Array<Integer>] List of xlens that be used in any implemented mode
-  # @param extensions [Array<ExtensionVersion>] List of extensions implemented
-  # @return [Boolean] whether or not the instruction is implemented given the supplies config options
-  def exists_in_cfg?(possible_xlens, extensions)
-    (@data["base"].nil? || (possible_xlens.include? @data["base"])) &&
-      extensions.any? { |e| defined_by?(e) }
+  # @param arch_def [ArchDef] Architecture def
+  # @return [Boolean] whether or not the CSR is possibly implemented given the supplies config options
+  def exists_in_cfg?(arch_def)
+    if arch_def.fully_configured?
+      (@data["base"].nil? || (arch_def.possible_xlens.include? @data["base"])) &&
+        arch_def.implemented_extensions.any? { |e| defined_by?(e) }
+    else
+      (@data["base"].nil? || (arch_def.possible_xlens.include? @data["base"])) &&
+        arch_def.prohibited_extensions.none? { |e| defined_by?(e) }
+    end
+  end
+
+  # @param arch_def [ArchDef] Architecture def
+  # @return [Boolean] whether or not the CSR is optional in the config
+  def optional_in_cfg?(arch_def)
+    raise "optional_in_cfg? should only be used by a partially-specified arch def" unless arch_def.partially_configured?
+
+    exists_in_cfg?(arch_def) &&
+      arch_def.mandatory_extensions.none? do |ext_req|
+        ext_req.satisfying_versions(arch_def).none? { |ext_ver| defined_by?(ext_ver) }
+      end
   end
 end

@@ -361,7 +361,7 @@ class ArchDef
     return @mandatory_extensions unless @mandatory_extensions.nil?
 
     @mandatory_extensions = []
-    if @arch_def.key?("mandtory_extensions")
+    if @arch_def.key?("mandatory_extensions")
       @arch_def["mandatory_extensions"].each do |e|
         @mandatory_extensions << ExtensionRequirement.new(e["name"], e["version"])
       end

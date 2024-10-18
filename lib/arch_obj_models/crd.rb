@@ -305,7 +305,7 @@ class Crd < ArchDefObject
             ext_param_db.defined_in_extension_version?(ver["version"])
         end
 
-        ext_params << 
+        ext_params <<
           InScopeExtensionParameter.new(ext_param_db, param_data["schema"], param_data["note"])
     end
 
