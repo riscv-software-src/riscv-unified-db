@@ -277,6 +277,7 @@ Sm:
         to process the load/store, which determines how/which exceptions will be reported
 
         Options:
+
          * by_byte: The load/store appears to be broken into byte-sized accesses that processed sequentially from smallest address to largest address
          * custom: Something else. Will result in a call to unpredictable() in the execution
       schema: 
