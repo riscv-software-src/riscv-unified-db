@@ -6,11 +6,11 @@ fcvt.lu.s:
       No description available.
   definedBy: F
   base: 64
-  assembly: xd, xs1, rm
+  assembly: xd, fs1, rm
   encoding:
     match: 110000000011-------------1010011
     variables:
-    - name: rs1
+    - name: fs1
       location: 19-15
     - name: rm
       location: 14-12

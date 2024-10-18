@@ -5,13 +5,13 @@ fltq.s:
   description: |
       No description available.
   definedBy: F, Zfa
-  assembly: xd, xs1, xs2
+  assembly: xd, fs1, fs2
   encoding:
     match: 1010000----------101-----1010011
     variables:
-    - name: rs2
+    - name: fs2
       location: 24-20
-    - name: rs1
+    - name: fs1
       location: 19-15
     - name: rd
       location: 11-7

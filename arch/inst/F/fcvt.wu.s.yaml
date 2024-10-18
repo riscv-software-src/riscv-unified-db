@@ -5,7 +5,7 @@ fcvt.wu.s:
   description: |
       No description available.
   definedBy: F
-  assembly: xd, xs1, rm
+  assembly: xd, fs1, rm
   encoding:
     match: 110000000001-------------1010011
     variables:
