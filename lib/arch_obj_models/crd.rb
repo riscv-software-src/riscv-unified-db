@@ -479,4 +479,25 @@ class Crd < ArchDefObject
     @requirement_groups
   end
 
+  # @return [ArchDef] A partially-configued architecture definition corresponding to this CRD
+  def to_arch_def
+    return @generated_arch_def unless @generated_arch_def.nil?
+
+    arch_def_data = arch_def.unconfigured_data
+
+    arch_def_data["mandatory_extensions"] = in_scope_ext_reqs("mandatory").map do |ext_req|
+      {
+        "name" => ext_req.name,
+        "version" => ext_req.version_requirement.requirements.map { |r| "#{r[0]} #{r[1]}" }
+      }
+    end
+    arch_def_data["params"] = all_in_scope_ext_params.select(&:single_value?).map { |p| [p.name, p.value] }.to_h
+
+    file = Tempfile.new("archdef")
+    file.write(YAML.safe_dump(arch_def_data, permitted_classes: [Date]))
+    file.flush
+    file.close
+    @generated_arch_def = ArchDef.new(name, Pathname.new(file.path))
+  end
+
 end
