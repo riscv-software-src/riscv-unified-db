@@ -24,3 +24,14 @@ addiw:
   operation(): |
     XReg operand = sext(X[rs1], 31);
     X[rd] = sext(operand + imm, 31);
+
+
+
+  sail(): |
+    {
+      let result : xlenbits = sign_extend(imm) + X(rs1);
+      X(rd) = sign_extend(result[31..0]);
+      RETIRE_SUCCESS
+    }
+  
+  

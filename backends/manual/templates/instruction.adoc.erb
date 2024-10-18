@@ -121,12 +121,26 @@ RV64::
 
 == Execution
 
+[tabs]
+====
 <%- if inst.key?("operation()") -%>
+IDL::
++
 [source,idl,subs="specialchars,macros"]
 ----
 <%= inst.operation_ast(inst.arch_def.symtab).gen_adoc %>
 ----
 <%- end -%>
+
+<%- if inst.key?("sail()") -%>
+Sail::
++
+[source,sail]
+----
+<%= inst["sail()"] %>
+----
+<%- end -%>
+====
 
 <% exception_list = inst.reachable_exceptions_str(inst.arch_def.symtab, 64) -%>
 <%- unless exception_list.empty? -%>
@@ -139,3 +153,4 @@ This instruction may result in the following synchronous exceptions:
   <%- end -%>
 
 <%- end -%>
+

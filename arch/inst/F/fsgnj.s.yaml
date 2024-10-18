@@ -40,3 +40,20 @@ fsgnj.s:
     }
 
     mark_f_state_dirty();
+
+
+
+  sail(): |
+    {
+      let rs1_val_S = F_or_X_S(rs1);
+      let rs2_val_S = F_or_X_S(rs2);
+    
+      let (fflags, rd_val) : (bits_fflags, bool) =
+          riscv_f32Le (rs1_val_S, rs2_val_S);
+    
+      accrue_fflags(fflags);
+      X(rd) = zero_extend(bool_to_bits(rd_val));
+      RETIRE_SUCCESS
+    }
+  
+  
