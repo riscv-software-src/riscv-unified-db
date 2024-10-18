@@ -133,10 +133,10 @@ hstatus:
         When `hstatus.VGEIN` != 0, it selects which bit of `hgeip` is currently active in VS-mode.
 
       type(): |
-        # if NUM_EXTERNAL_GUEST_INTERRUPTS+1 is a power of two (beacuse indexing in `hgeip` starts at 1),
+        # if NUM_EXTERNAL_GUEST_INTERRUPTS+1 is 63 (beacuse indexing in `hgeip` starts at 1),
         # then the field accepts any value.
         # Otherwise, it accepts a restricted set of values
-        if (power_of_2?<6>(NUM_EXTERNAL_GUEST_INTERRUPTS + 1)) {
+        if (NUM_EXTERNAL_GUEST_INTERRUPTS == 63) {
           return CsrFieldType::RW;
         } else {
           return CsrFieldType::RWR;
