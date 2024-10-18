@@ -125,10 +125,14 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
   FileUtils.touch(t.name)
 end
 
+obj_model_files = Dir.glob($root / "lib" / "arch_obj_models" / "*.rb")
+obj_model_files << ($root / "lib" / "arch_def.rb")
+
+arch_files = Dir.glob($root / "arch" / "**" / "*.yaml")
+
 # stamp to indicate completion of Arch Gen for a given config
 rule %r{#{$root}/\.stamps/arch-gen-.*\.stamp} => proc { |tname|
   config_name = Pathname.new(tname).basename(".stamp").sub("arch-gen-", "")
-  arch_files = Dir.glob($root / "arch" / "**" / "*.yaml")
   config_files =
     Dir.glob($root / "cfgs" / config_name / "arch_overlay" / "**" / "*.yaml") +
     [($root / "cfgs" / config_name / "params.yaml").to_s]
@@ -136,8 +140,14 @@ rule %r{#{$root}/\.stamps/arch-gen-.*\.stamp} => proc { |tname|
     "#{$root}/.stamps",
     "#{ARCH_GEN_DIR}/lib/arch_gen.rb",
     "#{$root}/lib/idl/ast.rb",
-    "#{ARCH_GEN_DIR}/tasks.rake"
-  ] + arch_files + config_files
+    "#{ARCH_GEN_DIR}/tasks.rake",
+    arch_files,
+    config_files,
+    
+    # the stamp file is not actually dependent on the Ruby object model,
+    # but in general we want to rebuild anything using this stamp when the object model changes
+    obj_model_files.map(&:to_s)
+  ].flatten
 } do |t|
   config_name = Pathname.new(t.name).basename(".stamp").sub("arch-gen-", "")
 
