@@ -20,6 +20,6 @@ vsext.vf8:
     u: always
     vs: always
     vu: always
-  data_independent_timing: true
+  data_independent_timing: false
   operation(): |
       
