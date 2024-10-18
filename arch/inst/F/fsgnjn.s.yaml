@@ -23,6 +23,10 @@ fsgnjn.s:
     vs: always
     vu: always
   data_independent_timing: true
+  pseudoinstructions:
+  - when: (rs2 == rs1)
+    to: fneg.s
+
   operation(): |
     check_f_ok($encoding);
 
