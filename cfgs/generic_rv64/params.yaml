@@ -234,6 +234,7 @@ params:
   # when false, writing an illegal value to a WLRL CSR field is ignored
   TRAP_ON_ILLEGAL_WLRL: true
   TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
   TRAP_ON_UNIMPLEMENTED_CSR: true
 
   # Whether or not a real hardware `time` CSR exists. Implementations can either provide a real

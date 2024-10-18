@@ -291,9 +291,18 @@ Sm:
         type: boolean
     TRAP_ON_UNIMPLEMENTED_INSTRUCTION:
       description: |
-        When true, fetching an unimplemented instruction will cause an `IllegalInstruction` exception.
+        When true, fetching an unimplemented instruction from the custom encoding space will cause
+        an `IllegalInstruction` exception.
 
-        When false, fetching an unimplemented instruction is `unpredictable`.
+        When false, fetching an unimplemented instruction is `UNPREDICTABLE`.
+      schema:
+        type: boolean
+    TRAP_ON_RESERVED_INSTRUCTION:
+      description: |
+        When true, fetching an unimplemented and/or undefined instruction from the standard/reserved
+        encoding space will cause an `IllegalInstruction` exception.
+
+        When false, fetching such an instruction is `UNPREDICTABLE`.
       schema:
         type: boolean
     TRAP_ON_UNIMPLEMENTED_CSR:
@@ -462,6 +471,34 @@ Sm:
           The `misa` CSR is read-only-0.
       schema:
         type: boolean
+    MTVEC_BASE_VALUES:
+      description: |
+        The supported values in `mtvec.base`. 
+
+        Possible values:
+
+        none::
+          `mtvec.base` is read-only-zero.
+
+        width::
+          `mtvec.base` supports any value that fits in MTVEC_BASE_WIDTH bits
+
+        custom::
+          `mtvec.base` supports a custom set of values. Any attempt to read or write `mtvec.BASE` will
+          result in UNPREDICTABLE execution.
+      schema:
+        type: string
+        enum: [none, width, custom]
+    MTVEC_BASE_WIDTH:
+      description: |
+        When MTVEC_BASE_VALUES is 'width', the bit width of supported value in `mtvec.BASE`
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 60
+      extra_validation: |
+        # max width is actually 30 for RV32
+        assert MTVEC_BASE_WIDTH <= 30 if MTVEC_BASE_VALUES == "width" && XLEN == 32
     MTVEC_MODES:
       description: |
         Modes supported by `mtvec.MODE`. If only one, it is assumed to be read-only with that value.
