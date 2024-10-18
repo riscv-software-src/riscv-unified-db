@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+vle64ff.v:
+  long_name: No synopsis available.
+  description: |
+      No description available.
+  definedBy: V
+  assembly: nf, vm, xs1, vd
+  encoding:
+    match: ---000-10000-----111-----0000111
+    variables:
+    - name: nf
+      location: 31-29
+    - name: vm
+      location: 25-25
+    - name: rs1
+      location: 19-15
+    - name: vd
+      location: 11-7
+  access:
+    s: always
+    u: always
+    vs: always
+    vu: always
+  data_independent_timing: false
+  operation(): |
+      
