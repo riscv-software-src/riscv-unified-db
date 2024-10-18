@@ -29,6 +29,10 @@ Dir.glob("#{$root}/arch/crd/*.yaml") do |f|
     crd = arch_def.crd(crd_name)
     raise "No CRD defined for #{crd_name}" if crd.nil?
 
+    # switch to the generated CRD arch def
+    arch_def = crd.to_arch_def
+    crd = arch_def.crd(crd_name)
+
     version = File.basename(t.name, '.adoc').split('-')[1..].join('-')
 
     erb = ERB.new(File.read("#{CRD_DOC_DIR}/templates/crd.adoc.erb"), trim_mode: "-")

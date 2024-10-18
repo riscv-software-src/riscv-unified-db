@@ -5,7 +5,6 @@
 == Versions
 
 <%- ext.versions.each do |v| -%>
-<%- implemented = arch_def.implemented_extensions.include?(ExtensionVersion.new(ext.name, v["version"])) -%>
 <%= v["version"] %>::
   State:::
     <%= v["state"] %>

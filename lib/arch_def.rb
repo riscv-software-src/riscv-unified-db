@@ -341,6 +341,8 @@ class ArchDef
   # may be overridden by subclass
   # @return [Array<ExtensionVersion>] List of all extensions known to be implemented in this architecture
   def implemented_extensions
+    raise "implemented_extensions is only valid for a fully configured defintion" unless fully_configured?
+
     return @implemented_extensions unless @implemented_extensions.nil?
 
     @implemented_extensions = []
@@ -350,6 +352,21 @@ class ArchDef
       end
     end
     @implemented_extensions
+  end
+
+  # @return [Array<ExtensionRequirement>] List of extensions that are explicitly required by an arch def
+  def mandatory_extensions
+    raise "mandatory_extensions is only valid for a partially configured defintion" unless partially_configured?
+
+    return @mandatory_extensions unless @mandatory_extensions.nil?
+
+    @mandatory_extensions = []
+    if @arch_def.key?("mandatory_extensions")
+      @arch_def["mandatory_extensions"].each do |e|
+        @mandatory_extensions << ExtensionRequirement.new(e["name"], e["version"])
+      end
+    end
+    @mandatory_extensions
   end
 
   # @return [Array<ExtensionRequirement>] List of extensions that are explicitly prohibited by an arch def
@@ -411,12 +428,27 @@ class ArchDef
     return cached_result unless cached_result.nil?
 
     result =
-      implemented_extensions.any? do |e|
-        if ext_version_requirements.empty?
-          e.name == ext_name.to_s
-        else
-          requirement = Gem::Requirement.new(ext_version_requirements)
-          (e.name == ext_name.to_s) && requirement.satisfied_by?(e.version)
+      if fully_configured?
+        implemented_extensions.any? do |e|
+          if ext_version_requirements.empty?
+            e.name == ext_name.to_s
+          else
+            requirement = Gem::Requirement.new(ext_version_requirements)
+            (e.name == ext_name.to_s) && requirement.satisfied_by?(e.version)
+          end
+        end
+      else
+        raise "unexpected type" unless partially_configured?
+
+        mandatory_extensions.any? do |e|
+          if ext_version_requirements.empty?
+            e.name == ext_name.to_s
+          else
+            requirement = Gem::Requirement.new(ext_version_requirements)
+            e.satisfying_versions.all? do |ext_ver|
+              (e.name == ext_name.to_s) && requirement.satisfied_by?(exrt_ver.version)
+            end
+          end
         end
       end
     @ext_cache[[ext_name, ext_version_requirements]] = result
@@ -934,6 +966,27 @@ class ArchDef
     @env
   end
   private :erb_env
+
+  # create a new raw *unconfigured* architecture defintion data structure
+  #
+  # The data will not include anything configuration-dependent such as implemented_*/mandatory_*/etc.
+  #
+  # This function can be used to create a new arch_def for a different configuration
+  #
+  # @return [Hash] A unconfigured architecture definition
+  def unconfigured_data
+    {
+      "type" => "partially configured",
+      "instructions" => instructions.map { |i| [i.name, i.data] }.to_h,
+      "extensions" => extensions.map.map { |e| [e.name, e.data] }.to_h,
+      "csrs" => csrs.map { |c| [c.name, c.data] }.to_h,
+      "profile_families" => profile_families.map { |f| [f.name, f.data] }.to_h,
+      "profiles" => profiles.map { |p| [p.name, p.data] }.to_h,
+      "manuals" => manuals.map { |m| [m.name, m.data] }.to_h,
+      "crd_families" => crd_families.map { |f| [f.name, f.data] }.to_h,
+      "crds" => crds.map { |c| [c.name, c.data] }.to_h
+    }
+  end
 
   # passes _erb_template_ through ERB within the content of this config
   #
