@@ -35,3 +35,19 @@ rolw:
     XReg unextended_result = (rs1_word << shamt) | (rs1_word >> (32 - shamt));
 
     X[rd] = {{32{unextended_result[31]}}, unextended_result};
+
+
+
+  sail(): |
+    {
+      let rs1_val = (X(rs1))[31..0];
+      let shamt = (X(rs2))[4..0];
+      let result : bits(32) = match op {
+        RISCV_ROLW => rs1_val <<< shamt,
+        RISCV_RORW => rs1_val >>> shamt
+      };
+      X(rd) = sign_extend(result);
+      RETIRE_SUCCESS
+    }
+  
+  

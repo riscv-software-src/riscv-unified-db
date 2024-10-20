@@ -41,3 +41,17 @@ rori:
     XReg shamt = (xlen() == 32) ? shamt[4:0] : shamt[5:0];
 
     X[rd] = (X[rs1] >> shamt) | (X[rs1] << (xlen() - shamt));
+
+
+
+  sail(): |
+    {
+      let rs1_val = X(rs1);
+      let result : xlenbits = if sizeof(xlen) == 32
+                              then rs1_val >>> shamt[4..0]
+                              else rs1_val >>> shamt;
+      X(rd) = result;
+      RETIRE_SUCCESS
+    }
+  
+  
