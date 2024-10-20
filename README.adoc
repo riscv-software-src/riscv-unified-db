@@ -2,6 +2,9 @@
 
 == Generated artifacts
 
+Added this line in b1 +
+And add this line too in b1 +
+
 The following artifacts have been generated from the top of the `main` branch:
 
 * https://riscv-software-src.github.io/riscv-unified-db/manual/html/index.html[ISA Manual with instruction and CSR appendix]
