@@ -42,7 +42,7 @@ A YAML file with values for parameters defined by the implemented extensions. Pa
 params:
   MISALIGNED_LDST: true
   MISALIGNED_LDST_EXCEPTION_PRIORITY: high
-  MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE: 0
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0
   MISALIGNED_SPLIT_STRATEGY: by_byte
   # ...
 ----

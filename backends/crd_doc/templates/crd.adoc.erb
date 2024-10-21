@@ -209,6 +209,7 @@ None
 <% end # do -%>
 |===
 
+<% unless crd.requirement_groups.empty? -%>
 == Additional Requirements
 
 This section contains requirements in addition to those already specified related to extensions and parameters.
@@ -239,6 +240,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 |===
 
 <% end -%>
+<% end # unless requirement_groups.empty? -%>
 
 [appendix]
 == Extension Details

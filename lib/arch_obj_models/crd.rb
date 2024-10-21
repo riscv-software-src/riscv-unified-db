@@ -473,7 +473,7 @@ class Crd < ArchDefObject
     return @requirement_groups unless @requirement_groups.nil?
 
     @requirement_groups = []
-    @data["requirement_groups"].each do |req_group|
+    @data["requirement_groups"]&.each do |req_group|
       @requirement_groups << RequirementGroup.new(req_group, @arch_def)
     end
     @requirement_groups

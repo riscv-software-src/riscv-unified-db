@@ -231,7 +231,7 @@ Sm:
       description: |
         Does the implementation perform non-atomic misaligned loads and stores to main memory 
         (does *not* affect misaligned support to device memory)? 
-        If not, the implementation throws a misaligned exception.
+        If not, the implementation always throws a misaligned exception.
       schema:
         type: boolean
     MISALIGNED_LDST_EXCEPTION_PRIORITY:
@@ -247,21 +247,21 @@ Sm:
         ! high ! Misaligned load/store/AMO exceptions are always higher priority than load/store/AMO page-fault and access-fault exceptions.
         !===
 
-        MISALIGNED_LDST_EXCEPTION_PRIORITY cannot be "high" when MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE
+        MISALIGNED_LDST_EXCEPTION_PRIORITY cannot be "high" when MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE
         is non-zero, since the atomicity of an access cannot be determined in that case until after
         address translation.
       schema:
         type: string
         enum: ["low", "high"]
         extra_validation: |
-          assert (MISALIGNED_LDST_EXCEPTION_PRIORITY == "low") if MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE.positive?
-    MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE:
+          assert (MISALIGNED_LDST_EXCEPTION_PRIORITY == "low") if MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE.positive?
+    MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE:
       description: |
         The maximum granule size, in bytes, that the hart can atomically perform a
-        misaligned load/store/AMO without raising a Misaligned exception. When MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE is 0, the hart
+        misaligned load/store/AMO without raising a Misaligned exception. When MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE is 0, the hart
         cannot atomically perform a misaligned load/store/AMO. When a power of two, the hart can
         atomically load/store/AMO a misaligned access that is fully contained in a
-        MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE-aligned region.
+        MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE-aligned region.
 
         [NOTE]
         Even if the hart is capable of performing a misaligned load/store/AMO atomically,

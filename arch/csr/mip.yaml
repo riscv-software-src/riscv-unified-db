@@ -5,7 +5,7 @@ mip:
   address: 0x344
   priv_mode: M
   description: Machine Interrupt Pending bits
-  length: 64
+  length: MXLEN
   definedBy: Sm
   fields:
     SSIP:
