@@ -13,7 +13,7 @@
     {
       "if": {
         "properties": {
-          "type": { "enum": ["partially configured", "fully configured"]}
+          "type": { "enum": ["fully configured"]}
         }
       },
       "then": {
@@ -60,6 +60,13 @@
           }
         },
         "additionalProperties": false
+      }
+    },
+    "mandatory_extensions": {
+      "description": "Extensions mandatory in this architecture",
+      "type": "array",
+      "items": {
+        "$ref": "schema_defs.json#/$defs/extension_requirement"
       }
     },
     "extensions": {

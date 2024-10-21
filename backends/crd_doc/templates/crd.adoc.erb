@@ -519,7 +519,7 @@ h| Privilege Mode | <%= csr.priv_mode %>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(crd.arch_def, csr.base.nil? ? 32 : csr.base) %>
+<%= JSON.dump csr.wavedrom_desc(crd.arch_def, csr.base.nil? ? 32 : csr.base, optional_type: 3) %>
 ....
 <% else -%>
 <%# CSR has a dynamic length, or a field has a dynamic location,
@@ -529,13 +529,13 @@ This CSR format changes dynamically with XLEN.
 .<%= csr.name %> Format when <%= csr.length_cond32 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(crd.arch_def, 32) %>
+<%= JSON.dump csr.wavedrom_desc(crd.arch_def, 32, optional_type: 3) %>
 ....
 
 .<%= csr.name %> Format when <%= csr.length_cond64 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(crd.arch_def, 64) %>
+<%= JSON.dump csr.wavedrom_desc(crd.arch_def, 64, optional_type: 3) %>
 ....
 
 
