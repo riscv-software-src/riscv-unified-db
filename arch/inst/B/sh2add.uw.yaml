@@ -49,3 +49,21 @@ sh2add.uw:
     }
   
   
+
+
+  sail(): |
+    {
+      let rs1_val = X(rs1);
+      let rs2_val = X(rs2);
+      let shamt : bits(2) = match op {
+        RISCV_ADDUW    => 0b00,
+        RISCV_SH1ADDUW => 0b01,
+        RISCV_SH2ADDUW => 0b10,
+        RISCV_SH3ADDUW => 0b11
+      };
+      let result : xlenbits = (zero_extend(rs1_val[31..0]) << shamt) + rs2_val;
+      X(rd) = result;
+      RETIRE_SUCCESS
+    }
+  
+  

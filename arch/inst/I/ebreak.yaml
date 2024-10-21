@@ -40,3 +40,12 @@ ebreak:
     }
   
   
+
+
+  sail(): |
+    {
+      handle_mem_exception(PC, E_Breakpoint());
+      RETIRE_FAIL
+    }
+  
+  

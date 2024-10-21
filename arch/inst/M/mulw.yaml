@@ -66,3 +66,24 @@ mulw:
     }
   
   
+
+
+  sail(): |
+    {
+      if extension("M") | haveZmmul() then {
+        let rs1_val = X(rs1)[31..0];
+        let rs2_val = X(rs2)[31..0];
+        let rs1_int : int = signed(rs1_val);
+        let rs2_int : int = signed(rs2_val);
+        /* to_bits requires expansion to 64 bits followed by truncation */
+        let result32 = to_bits(64, rs1_int * rs2_int)[31..0];
+        let result : xlenbits = sign_extend(result32);
+        X(rd) = result;
+        RETIRE_SUCCESS
+      } else {
+        handle_illegal();
+        RETIRE_FAIL
+      }
+    }
+  
+  
