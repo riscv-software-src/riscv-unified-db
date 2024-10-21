@@ -14,6 +14,7 @@ implemented_extensions:
   - [Smhpm, "1.12.0"]
   - [Smpmp, "1.12.0"]
   - [U, "1.12.0"]
+  - [V, "1.0.0"]
   - [Zicntr, "2.0.0"]
   - [Zicsr, "2.0.0"]
   - [Zihpm, "2.0.0"]

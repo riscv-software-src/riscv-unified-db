@@ -372,6 +372,10 @@ params:
   # the extension can be disabled in the `misa.U` bit.
   MUTABLE_MISA_U: false
 
+  # when the V extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.V` bit.
+  MUTABLE_MISA_V: false
+
   # size of a cache block, in bytes
   CACHE_BLOCK_SIZE: 64
 
