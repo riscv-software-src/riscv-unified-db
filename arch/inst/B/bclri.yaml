@@ -60,3 +60,22 @@ bclri:
     }
   
   
+
+
+  sail(): |
+    {
+      let rs1_val = X(rs1);
+      let mask : xlenbits = if sizeof(xlen) == 32
+                            then zero_extend(0b1) << shamt[4..0]
+                            else zero_extend(0b1) << shamt;
+      let result : xlenbits = match op {
+        RISCV_BCLRI => rs1_val & ~(mask),
+        RISCV_BEXTI => zero_extend(bool_to_bits((rs1_val & mask) != zeros())),
+        RISCV_BINVI => rs1_val ^ mask,
+        RISCV_BSETI => rs1_val | mask
+      };
+      X(rd) = result;
+      RETIRE_SUCCESS
+    }
+  
+  

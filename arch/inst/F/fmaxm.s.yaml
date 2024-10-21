@@ -46,3 +46,25 @@ fmaxm.s:
     }
   
   
+
+
+  sail(): |
+    {
+      let rs1_val_S = F_S(rs1);
+      let rs2_val_S = F_S(rs2);
+    
+      let is_quiet  = true;
+      let (rs2_lt_rs1, fflags) = fle_S (rs2_val_S, rs1_val_S, is_quiet);
+    
+      let rd_val_S  = if      (f_is_NaN_S(rs1_val_S) | f_is_NaN_S(rs2_val_S))           then canonical_NaN_S()
+                      else if (f_is_neg_zero_S(rs1_val_S) & f_is_pos_zero_S(rs2_val_S)) then rs2_val_S
+                      else if (f_is_neg_zero_S(rs2_val_S) & f_is_pos_zero_S(rs1_val_S)) then rs1_val_S
+                      else if rs2_lt_rs1                                                then rs1_val_S
+                      else /* (not rs2_lt_rs1) */                                            rs2_val_S;
+    
+      accrue_fflags(fflags);
+      F_S(rd) = rd_val_S;
+      RETIRE_SUCCESS
+    }
+  
+  
