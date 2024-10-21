@@ -24,3 +24,23 @@ slti:
   data_independent_timing: true
   operation(): |
     X[rd] = ($signed(X[rs1]) < $signed(imm)) ? '1 : '0;
+
+
+
+  sail(): |
+    {
+      let rs1_val = X(rs1);
+      let immext : xlenbits = sign_extend(imm);
+      let result : xlenbits = match op {
+        RISCV_ADDI  => rs1_val + immext,
+        RISCV_SLTI  => zero_extend(bool_to_bits(rs1_val <_s immext)),
+        RISCV_SLTIU => zero_extend(bool_to_bits(rs1_val <_u immext)),
+        RISCV_ANDI  => rs1_val & immext,
+        RISCV_ORI   => rs1_val | immext,
+        RISCV_XORI  => rs1_val ^ immext
+      };
+      X(rd) = result;
+      RETIRE_SUCCESS
+    }
+  
+  

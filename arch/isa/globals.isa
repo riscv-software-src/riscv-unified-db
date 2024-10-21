@@ -2367,7 +2367,7 @@ function misaligned_is_atomic? {
   body {
     # if the hart doesn't support Misligned Atomicity Granules,
     # then this misligned access is not atomic
-    return false if MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE == 0;
+    return false if MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE == 0;
 
     if (pma_applies?(PmaAttribute::MAG16, physical_address, N) &&
         in_naturally_aligned_region?<128>(physical_address, N)) {
@@ -2434,7 +2434,7 @@ function read_memory {
     # access isn't naturally aligned, but it still might be atomic if this hart supports
     # Misliagned Atomicity Granules. We won't know that, though, until after translation since PMAs
     # apply to physical addresses
-    if (MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE > 0) {
+    if (MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE > 0) {
       # sanity check that the implementation isn't expecting a Misaligned exception
       # before an access/page fault exception (that would be an invalid config)
       assert(MISALIGNED_LDST_EXCEPTION_PRIORITY == "low", "Invalid config: can't mix low-priority misaligned exceptions with large atomicity granule");
@@ -2758,7 +2758,7 @@ function write_memory {
     # access isn't naturally aligned, but it still might be atomic if this hart supports
     # Misliagned Atomicity Granules. We won't know that, though, until after translation since PMAs
     # apply to physical addresses
-    if (MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE > 0) {
+    if (MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE > 0) {
       # sanity check that the implementation isn't expecting a Misaligned exception
       # before an access/page fault exception (that would be an invalid config)
       assert(MISALIGNED_LDST_EXCEPTION_PRIORITY == "low", "Invalid config: can't mix low-priority misaligned exceptions with large atomicity granule");

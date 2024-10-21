@@ -5,11 +5,12 @@ mtval:
   address: 0x343
   description: Holds trap-specific information
   priv_mode: M
-  length: 64
+  length: MXLEN
   definedBy: Sm
   fields:
     VALUE:
-      location: 63-0
+      location_rv32: 31-0
+      location_rv64: 63-0
       description: |
         Written with trap-specific information when a trap is taken into M-mode.
 
