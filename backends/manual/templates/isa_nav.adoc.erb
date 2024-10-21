@@ -6,7 +6,7 @@
 
 <%- end -%>
 
-* Alphabetical list of instrutions
+* Alphabetical list of instructions
 <%- manual_version.instructions.sort { |a, b| a.name <=> b.name }.each do |inst| -%>
 ** xref:insts:<%= inst.name %>.adoc[<%= inst.name %>]
 <%- end -%>
