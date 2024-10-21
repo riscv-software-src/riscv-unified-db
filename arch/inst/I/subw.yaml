@@ -44,3 +44,21 @@ subw:
     }
   
   
+
+
+  sail(): |
+    {
+      let rs1_val = (X(rs1))[31..0];
+      let rs2_val = (X(rs2))[31..0];
+      let result : bits(32) = match op {
+        RISCV_ADDW => rs1_val + rs2_val,
+        RISCV_SUBW => rs1_val - rs2_val,
+        RISCV_SLLW => rs1_val << (rs2_val[4..0]),
+        RISCV_SRLW => rs1_val >> (rs2_val[4..0]),
+        RISCV_SRAW => shift_right_arith32(rs1_val, rs2_val[4..0])
+      };
+      X(rd) = sign_extend(result);
+      RETIRE_SUCCESS
+    }
+  
+  
