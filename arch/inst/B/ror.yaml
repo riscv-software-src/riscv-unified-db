@@ -30,3 +30,56 @@ ror:
     XReg shamt = (xlen() == 32) ? X[rs2][4:0] : X[rs2][5:0];
 
     X[rd] = (X[rs1] >> shamt) | (X[rs1] << (xlen() - shamt));
+
+
+
+  sail(): |
+    {
+      let rs1_val = X(rs1);
+      let rs2_val = X(rs2);
+      let result : xlenbits = match op {
+        RISCV_ANDN => rs1_val & ~(rs2_val),
+        RISCV_ORN  => rs1_val | ~(rs2_val),
+        RISCV_XNOR => ~(rs1_val ^ rs2_val),
+        RISCV_MAX  => to_bits(sizeof(xlen), max(signed(rs1_val),   signed(rs2_val))),
+        RISCV_MAXU => to_bits(sizeof(xlen), max(unsigned(rs1_val), unsigned(rs2_val))),
+        RISCV_MIN  => to_bits(sizeof(xlen), min(signed(rs1_val),   signed(rs2_val))),
+        RISCV_MINU => to_bits(sizeof(xlen), min(unsigned(rs1_val), unsigned(rs2_val))),
+        RISCV_ROL  => if sizeof(xlen) == 32
+                      then rs1_val <<< rs2_val[4..0]
+                      else rs1_val <<< rs2_val[5..0],
+        RISCV_ROR  => if sizeof(xlen) == 32
+                      then rs1_val >>> rs2_val[4..0]
+                      else rs1_val >>> rs2_val[5..0]
+      };
+      X(rd) = result;
+      RETIRE_SUCCESS
+    }
+  
+  
+
+
+  sail(): |
+    {
+      let rs1_val = X(rs1);
+      let rs2_val = X(rs2);
+      let result : xlenbits = match op {
+        RISCV_ANDN => rs1_val & ~(rs2_val),
+        RISCV_ORN  => rs1_val | ~(rs2_val),
+        RISCV_XNOR => ~(rs1_val ^ rs2_val),
+        RISCV_MAX  => to_bits(sizeof(xlen), max(signed(rs1_val),   signed(rs2_val))),
+        RISCV_MAXU => to_bits(sizeof(xlen), max(unsigned(rs1_val), unsigned(rs2_val))),
+        RISCV_MIN  => to_bits(sizeof(xlen), min(signed(rs1_val),   signed(rs2_val))),
+        RISCV_MINU => to_bits(sizeof(xlen), min(unsigned(rs1_val), unsigned(rs2_val))),
+        RISCV_ROL  => if sizeof(xlen) == 32
+                      then rs1_val <<< rs2_val[4..0]
+                      else rs1_val <<< rs2_val[5..0],
+        RISCV_ROR  => if sizeof(xlen) == 32
+                      then rs1_val >>> rs2_val[4..0]
+                      else rs1_val >>> rs2_val[5..0]
+      };
+      X(rd) = result;
+      RETIRE_SUCCESS
+    }
+  
+  

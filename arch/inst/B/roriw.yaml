@@ -34,3 +34,26 @@ roriw:
 
     XReg unextended_result = (X[rs1] >> shamt) | (X[rs1] << (32 - shamt));
     X[rd] = {{32{unextended_result[31]}}, unextended_result};
+
+
+
+  sail(): |
+    {
+      let rs1_val = (X(rs1))[31..0];
+      let result : xlenbits = sign_extend(rs1_val >>> shamt);
+      X(rd) = result;
+      RETIRE_SUCCESS
+    }
+  
+  
+
+
+  sail(): |
+    {
+      let rs1_val = (X(rs1))[31..0];
+      let result : xlenbits = sign_extend(rs1_val >>> shamt);
+      X(rd) = result;
+      RETIRE_SUCCESS
+    }
+  
+  

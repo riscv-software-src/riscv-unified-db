@@ -27,3 +27,38 @@ sh3add:
     }
 
     X[rd] = X[rs2] + (X[rs1] << 3);
+
+
+
+  sail(): |
+    {
+      let rs1_val = X(rs1);
+      let rs2_val = X(rs2);
+      let shamt : bits(2) = match op {
+        RISCV_SH1ADD => 0b01,
+        RISCV_SH2ADD => 0b10,
+        RISCV_SH3ADD => 0b11
+      };
+      let result : xlenbits = (rs1_val << shamt) + rs2_val;
+      X(rd) = result;
+      RETIRE_SUCCESS
+    }
+  
+  
+
+
+  sail(): |
+    {
+      let rs1_val = X(rs1);
+      let rs2_val = X(rs2);
+      let shamt : bits(2) = match op {
+        RISCV_SH1ADD => 0b01,
+        RISCV_SH2ADD => 0b10,
+        RISCV_SH3ADD => 0b11
+      };
+      let result : xlenbits = (rs1_val << shamt) + rs2_val;
+      X(rd) = result;
+      RETIRE_SUCCESS
+    }
+  
+  

@@ -33,3 +33,48 @@ slli:
   operation(): |
     # shamt is between 0-(XLEN-1)
     X[rd] = X[rs1] << shamt;
+
+
+
+  sail(): |
+    {
+      let rs1_val = X(rs1);
+      /* the decoder guard should ensure that shamt[5] = 0 for RV32 */
+      let result : xlenbits = match op {
+        RISCV_SLLI => if   sizeof(xlen) == 32
+                      then rs1_val << shamt[4..0]
+                      else rs1_val << shamt,
+        RISCV_SRLI => if   sizeof(xlen) == 32
+                      then rs1_val >> shamt[4..0]
+                      else rs1_val >> shamt,
+        RISCV_SRAI => if   sizeof(xlen) == 32
+                      then shift_right_arith32(rs1_val, shamt[4..0])
+                      else shift_right_arith64(rs1_val, shamt)
+      };
+      X(rd) = result;
+      RETIRE_SUCCESS
+    }
+  
+  
+
+
+  sail(): |
+    {
+      let rs1_val = X(rs1);
+      /* the decoder guard should ensure that shamt[5] = 0 for RV32 */
+      let result : xlenbits = match op {
+        RISCV_SLLI => if   sizeof(xlen) == 32
+                      then rs1_val << shamt[4..0]
+                      else rs1_val << shamt,
+        RISCV_SRLI => if   sizeof(xlen) == 32
+                      then rs1_val >> shamt[4..0]
+                      else rs1_val >> shamt,
+        RISCV_SRAI => if   sizeof(xlen) == 32
+                      then shift_right_arith32(rs1_val, shamt[4..0])
+                      else shift_right_arith64(rs1_val, shamt)
+      };
+      X(rd) = result;
+      RETIRE_SUCCESS
+    }
+  
+  

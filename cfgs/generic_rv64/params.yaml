@@ -24,7 +24,7 @@ params:
 
   MISALIGNED_LDST_EXCEPTION_PRIORITY: high
 
-  MAX_MISALIGNED_ATOMICITY_GRANULE_SIZE: 0
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0
 
   MISALIGNED_SPLIT_STRATEGY: by_byte
 
@@ -371,6 +371,10 @@ params:
   # when the U extensions is supported, indicates whether or not
   # the extension can be disabled in the `misa.U` bit.
   MUTABLE_MISA_U: false
+
+  # when the V extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.V` bit.
+  MUTABLE_MISA_V: false
 
   # size of a cache block, in bytes
   CACHE_BLOCK_SIZE: 64

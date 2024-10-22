@@ -27,3 +27,34 @@ sraiw:
     # shamt is between 0-32
     XReg operand = sext(X[rs1], 31);
     X[rd] = sext(operand >>> shamt, 31);
+
+
+
+  sail(): |
+    {
+      let rs1_val = (X(rs1))[31..0];
+      let result : bits(32) = match op {
+        RISCV_SLLIW => rs1_val << shamt,
+        RISCV_SRLIW => rs1_val >> shamt,
+        RISCV_SRAIW => shift_right_arith32(rs1_val, shamt)
+      };
+      X(rd) = sign_extend(result);
+      RETIRE_SUCCESS
+    }
+  
+  
+
+
+  sail(): |
+    {
+      let rs1_val = (X(rs1))[31..0];
+      let result : bits(32) = match op {
+        RISCV_SLLIW => rs1_val << shamt,
+        RISCV_SRLIW => rs1_val >> shamt,
+        RISCV_SRAIW => shift_right_arith32(rs1_val, shamt)
+      };
+      X(rd) = sign_extend(result);
+      RETIRE_SUCCESS
+    }
+  
+  

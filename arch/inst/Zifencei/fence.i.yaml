@@ -33,7 +33,14 @@ fence.i:
   definedBy: Zifencei
   assembly: ""
   encoding:
-    match: "00000000000000000001000000001111"
+    match: -----------------001-----0001111
+    variables:
+    - name: imm
+      location: 31-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
   access:
     s: always
     u: always
@@ -41,3 +48,14 @@ fence.i:
     vu: always
   operation(): |
     ifence();
+
+  sail(): |
+    { /* __barrier(Barrier_RISCV_i); */ RETIRE_SUCCESS }
+  
+
+
+
+  sail(): |
+    { /* __barrier(Barrier_RISCV_i); */ RETIRE_SUCCESS }
+  
+  

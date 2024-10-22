@@ -209,6 +209,7 @@ None
 <% end # do -%>
 |===
 
+<% unless crd.requirement_groups.empty? -%>
 == Additional Requirements
 
 This section contains requirements in addition to those already specified related to extensions and parameters.
@@ -239,6 +240,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 |===
 
 <% end -%>
+<% end # unless requirement_groups.empty? -%>
 
 [appendix]
 == Extension Details
@@ -512,12 +514,16 @@ h| Privilege Mode | <%= csr.priv_mode %>
 
 
 ==== Format
+
+Green fields are present in <%= crd.name %>.
+Red fields are defined by the RISC-V ISA but not present in <%= crd.name %>.
+
 <% unless csr.dynamic_length?(crd.arch_def) || csr.fields.any? { |f| f.dynamic_location?(crd.arch_def) } -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(crd.arch_def, csr.base.nil? ? 32 : csr.base) %>
+<%= JSON.dump csr.wavedrom_desc(crd.arch_def, csr.base.nil? ? 32 : csr.base, optional_type: 3) %>
 ....
 <% else -%>
 <%# CSR has a dynamic length, or a field has a dynamic location,
@@ -527,13 +533,13 @@ This CSR format changes dynamically with XLEN.
 .<%= csr.name %> Format when <%= csr.length_cond32 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(crd.arch_def, 32) %>
+<%= JSON.dump csr.wavedrom_desc(crd.arch_def, 32, optional_type: 3) %>
 ....
 
 .<%= csr.name %> Format when <%= csr.length_cond64 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(crd.arch_def, 64) %>
+<%= JSON.dump csr.wavedrom_desc(crd.arch_def, 64, optional_type: 3) %>
 ....
 
 

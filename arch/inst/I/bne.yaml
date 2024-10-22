@@ -32,3 +32,75 @@ bne:
       jump_halfword($pc + imm);
     }
     
+
+
+  sail(): |
+    {
+      let rs1_val = X(rs1);
+      let rs2_val = X(rs2);
+      let taken : bool = match op {
+        RISCV_BEQ  => rs1_val == rs2_val,
+        RISCV_BNE  => rs1_val != rs2_val,
+        RISCV_BLT  => rs1_val <_s rs2_val,
+        RISCV_BGE  => rs1_val >=_s rs2_val,
+        RISCV_BLTU => rs1_val <_u rs2_val,
+        RISCV_BGEU => rs1_val >=_u rs2_val
+      };
+      let t : xlenbits = PC + sign_extend(imm);
+      if taken then {
+        /* Extensions get the first checks on the prospective target address. */
+        match ext_control_check_pc(t) {
+          Ext_ControlAddr_Error(e) => {
+            ext_handle_control_check_error(e);
+            RETIRE_FAIL
+          },
+          Ext_ControlAddr_OK(target) => {
+            if bit_to_bool(target[1]) & not(extension("C")) then {
+              handle_mem_exception(target, E_Fetch_Addr_Align());
+              RETIRE_FAIL;
+            } else {
+              set_next_pc(target);
+              RETIRE_SUCCESS
+            }
+          }
+        }
+      } else RETIRE_SUCCESS
+    }
+  
+  
+
+
+  sail(): |
+    {
+      let rs1_val = X(rs1);
+      let rs2_val = X(rs2);
+      let taken : bool = match op {
+        RISCV_BEQ  => rs1_val == rs2_val,
+        RISCV_BNE  => rs1_val != rs2_val,
+        RISCV_BLT  => rs1_val <_s rs2_val,
+        RISCV_BGE  => rs1_val >=_s rs2_val,
+        RISCV_BLTU => rs1_val <_u rs2_val,
+        RISCV_BGEU => rs1_val >=_u rs2_val
+      };
+      let t : xlenbits = PC + sign_extend(imm);
+      if taken then {
+        /* Extensions get the first checks on the prospective target address. */
+        match ext_control_check_pc(t) {
+          Ext_ControlAddr_Error(e) => {
+            ext_handle_control_check_error(e);
+            RETIRE_FAIL
+          },
+          Ext_ControlAddr_OK(target) => {
+            if bit_to_bool(target[1]) & not(extension("C")) then {
+              handle_mem_exception(target, E_Fetch_Addr_Align());
+              RETIRE_FAIL;
+            } else {
+              set_next_pc(target);
+              RETIRE_SUCCESS
+            }
+          }
+        }
+      } else RETIRE_SUCCESS
+    }
+  
+  

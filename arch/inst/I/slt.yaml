@@ -27,3 +27,62 @@ slt:
     XReg src2 = X[rs2];
 
     X[rd] = ($signed(src1) < $signed(src2)) ? '1 : '0;
+
+
+
+  sail(): |
+    {
+      let rs1_val = X(rs1);
+      let rs2_val = X(rs2);
+      let result : xlenbits = match op {
+        RISCV_ADD  => rs1_val + rs2_val,
+        RISCV_SLT  => zero_extend(bool_to_bits(rs1_val <_s rs2_val)),
+        RISCV_SLTU => zero_extend(bool_to_bits(rs1_val <_u rs2_val)),
+        RISCV_AND  => rs1_val & rs2_val,
+        RISCV_OR   => rs1_val | rs2_val,
+        RISCV_XOR  => rs1_val ^ rs2_val,
+        RISCV_SLL  => if   sizeof(xlen) == 32
+                      then rs1_val << (rs2_val[4..0])
+                      else rs1_val << (rs2_val[5..0]),
+        RISCV_SRL  => if   sizeof(xlen) == 32
+                      then rs1_val >> (rs2_val[4..0])
+                      else rs1_val >> (rs2_val[5..0]),
+        RISCV_SUB  => rs1_val - rs2_val,
+        RISCV_SRA  => if   sizeof(xlen) == 32
+                      then shift_right_arith32(rs1_val, rs2_val[4..0])
+                      else shift_right_arith64(rs1_val, rs2_val[5..0])
+      };
+      X(rd) = result;
+      RETIRE_SUCCESS
+    }
+  
+  
+
+
+  sail(): |
+    {
+      let rs1_val = X(rs1);
+      let rs2_val = X(rs2);
+      let result : xlenbits = match op {
+        RISCV_ADD  => rs1_val + rs2_val,
+        RISCV_SLT  => zero_extend(bool_to_bits(rs1_val <_s rs2_val)),
+        RISCV_SLTU => zero_extend(bool_to_bits(rs1_val <_u rs2_val)),
+        RISCV_AND  => rs1_val & rs2_val,
+        RISCV_OR   => rs1_val | rs2_val,
+        RISCV_XOR  => rs1_val ^ rs2_val,
+        RISCV_SLL  => if   sizeof(xlen) == 32
+                      then rs1_val << (rs2_val[4..0])
+                      else rs1_val << (rs2_val[5..0]),
+        RISCV_SRL  => if   sizeof(xlen) == 32
+                      then rs1_val >> (rs2_val[4..0])
+                      else rs1_val >> (rs2_val[5..0]),
+        RISCV_SUB  => rs1_val - rs2_val,
+        RISCV_SRA  => if   sizeof(xlen) == 32
+                      then shift_right_arith32(rs1_val, rs2_val[4..0])
+                      else shift_right_arith64(rs1_val, rs2_val[5..0])
+      };
+      X(rd) = result;
+      RETIRE_SUCCESS
+    }
+  
+  

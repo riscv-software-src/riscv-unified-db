@@ -107,17 +107,7 @@
           "description": "Extension(s) that defines the instruction"
         },
         "excludedBy": {
-          "oneOf": [
-            {
-              "$ref": "schema_defs.json#/$defs/extension_requirement"
-            },
-            {
-              "type": "array",
-              "items": {
-                "$ref": "schema_defs.json#/$defs/extension_requirement"
-              }
-            }
-          ],
+          "$ref": "schema_defs.json#/$defs/requires_entry",
           "description": "Extension(s) that, if implemented, exclude the instruction (even if the definedBy extension is also implemented)"
         },
         "encoding": {
@@ -177,7 +167,11 @@
         },
         "operation()": {
           "type": "string",
-          "description": "Functional description of the instruction using ISA language"
+          "description": "Functional description of the instruction using IDL language"
+        },
+        "sail()": {
+          "type": "string",
+          "description": "Functional description of the instruction using Sail"
         },
         "assembly": {
           "type": "string",
