@@ -143,3 +143,23 @@ sret:
     }
   
   
+
+
+  sail(): |
+    {
+      let sret_illegal : bool = match cur_privilege {
+        User       => true,
+        Supervisor => not(haveSupMode ()) | mstatus.TSR() == 0b1,
+        Machine    => not(haveSupMode ())
+      };
+      if   sret_illegal
+      then { handle_illegal(); RETIRE_FAIL }
+      else if not(ext_check_xret_priv (Supervisor))
+      then { ext_fail_xret_priv(); RETIRE_FAIL }
+      else {
+        set_next_pc(exception_handler(cur_privilege, CTL_SRET(), PC));
+        RETIRE_SUCCESS
+      }
+    }
+  
+  
