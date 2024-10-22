@@ -225,6 +225,28 @@ class Extension < ArchDefObject
     @csrs = arch_def.csrs.select { |csr| csr.defined_by?(ExtensionVersion.new(name, max_version)) }
   end
 
+  # @return [Array<Csr>] the list of CSRs implemented by this extension (may be empty)
+  def implemented_csrs(archdef)
+    raise "should only be called with a fully configured arch def" unless archdef.fully_configured?
+
+    return @implemented_csrs unless @implemented_csrs.nil?
+
+    @implemented_csrs = archdef.implemented_csrs.select do |csr|
+      versions.any? { |ver| csr.defined_by?(ExtensionVersion.new(name, ver["version"])) }
+    end
+  end
+
+  # @return [Array<Csr>] the list of CSRs implemented by this extension (may be empty)
+  def implemented_instructions(archdef)
+    raise "should only be called with a fully configured arch def" unless archdef.fully_configured?
+
+    return @implemented_instructions unless @implemented_instructions.nil?
+
+    @implemented_instructions = archdef.implemented_instructions.select do |inst|
+      versions.any? { |ver| inst.defined_by?(ExtensionVersion.new(name, ver["version"])) }
+    end
+  end
+
   # return the set of reachable functions from any of this extensions's CSRs or instructions in the given evaluation context
   #
   # @param symtab [Idl::SymbolTable] The evaluation context
@@ -327,6 +349,28 @@ class ExtensionVersion
       @name <=> other.name
     else
       @version <=> other.version
+    end
+  end
+
+  # @return [Array<Csr>] the list of CSRs implemented by this extension version (may be empty)
+  def implemented_csrs(archdef)
+    raise "should only be called with a fully configured arch def" unless archdef.fully_configured?
+
+    return @implemented_csrs unless @implemented_csrs.nil?
+
+    @implemented_csrs = archdef.implemented_csrs.select do |csr|
+      csr.defined_by?(self)
+    end
+  end
+
+  # @return [Array<Csr>] the list of CSRs implemented by this extension version (may be empty)
+  def implemented_instructions(archdef)
+    raise "should only be called with a fully configured arch def" unless archdef.fully_configured?
+
+    return @implemented_instructions unless @implemented_instructions.nil?
+
+    @implemented_instructions = archdef.implemented_instructions.select do |inst|
+      inst.defined_by?(self)
     end
   end
 end
