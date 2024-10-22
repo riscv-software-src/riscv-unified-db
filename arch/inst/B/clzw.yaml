@@ -47,17 +47,3 @@ clzw:
   
 
 
-  sail(): |
-    {
-      let rs1_val = X(rs1);
-      result : nat = 0;
-      done : bool = false;
-      foreach (i from 31 downto 0)
-        if not(done) then if rs1_val[i] == bitzero
-                        then result = result + 1
-                        else done = true;
-      X(rd) = to_bits(sizeof(xlen), result);
-      RETIRE_SUCCESS
-    }
-  
-  

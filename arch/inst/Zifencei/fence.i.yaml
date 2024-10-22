@@ -55,7 +55,3 @@ fence.i:
 
 
 
-  sail(): |
-    { /* __barrier(Barrier_RISCV_i); */ RETIRE_SUCCESS }
-  
-  
