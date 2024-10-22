@@ -514,6 +514,10 @@ h| Privilege Mode | <%= csr.priv_mode %>
 
 
 ==== Format
+
+Green fields are present in <%= crd.name %>.
+Red fields are defined by the RISC-V ISA but not present in <%= crd.name %>.
+
 <% unless csr.dynamic_length?(crd.arch_def) || csr.fields.any? { |f| f.dynamic_location?(crd.arch_def) } -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
