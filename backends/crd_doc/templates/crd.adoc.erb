@@ -176,7 +176,7 @@ None
 == CSR Summary
 
 <%
-  csrs = crd.in_scope_extensions.map { |ext_crd| ext_crd.csrs }.flatten.uniq
+  csrs = crd.in_scope_ext_reqs.map { |ext_crd_req| ext_crd_req.csrs(crd.arch_def) }.flatten.uniq
 -%>
 
 === By Name
@@ -476,7 +476,7 @@ This instruction may result in the following synchronous exceptions:
 == CSR Details
 
 <%
-  csrs = crd.in_scope_extensions.map { |ext_crd| ext_crd.csrs }.flatten.uniq
+  csrs = crd.in_scope_ext_reqs.map { |ext_crd_req| ext_crd_req.csrs(crd.arch_def) }.flatten.uniq
   csrs.sort_by!(&:name)
 -%>
 

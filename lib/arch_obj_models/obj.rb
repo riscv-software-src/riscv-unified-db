@@ -151,6 +151,8 @@ class ArchDefObject
 
   # @return [SchemaCondition] Extension(s) that define the instruction. If *any* requirement is met, the instruction is defined.
   def defined_by
+    raise "ERROR: definedBy is nul for #{name}" if @data["definedBy"].nil?
+
     SchemaCondition.new(@data["definedBy"])
   end
 

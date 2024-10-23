@@ -8,5 +8,5 @@ medelegh:
   base: 32
   description: |
     Alias of the upper 32 bits of `medeleg`.
-  definedBy: I
+  definedBy: S
   fields: {}
