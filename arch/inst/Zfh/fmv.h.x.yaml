@@ -42,12 +42,3 @@ fmv.h.x:
   
 
 
-  sail(): |
-    {
-      let rs1_val_X            = X(rs1);
-      let rd_val_H             = rs1_val_X [15..0];
-      F(rd) = nan_box (rd_val_H);
-      RETIRE_SUCCESS
-    }
-  
-  
