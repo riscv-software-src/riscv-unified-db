@@ -369,7 +369,7 @@ class ExtensionVersion
 
     return @implemented_instructions unless @implemented_instructions.nil?
 
-    @implemented_instructions = archdef.implementesd_instructions.select do |inst|
+    @implemented_instructions = archdef.implemented_instructions.select do |inst|
       inst.defined_by?(self)
     end
   end
