@@ -63,6 +63,12 @@ MC-1:
         MTVAL_WIDTH: {} # Unconstrained
         MTVEC_MODES: {} # Unconstrained
         PHYS_ADDR_WIDTH: {} # Unconstrained
+        MISALIGNED_LDST: {} # Unconstrained
+        MISALIGNED_LDST_EXCEPTION_PRIORITY : {} # Unconstrained
+        MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: {} # Unconstrained
+        MISALIGNED_SPLIT_STRATEGY:
+          schema:
+            const: by_byte
         PRECISE_SYNCHRONOUS_EXCEPTIONS:
           schema:
             const: true
@@ -78,58 +84,3 @@ MC-1:
         XLEN:
           schema:
             const: 32
-  
-  requirement_groups:
-    - name: MC-Unpriv
-      description: |
-        The MC-Unpriv defines unprivileged ISA requirements.
-        Note that unprivileged ISA features are those that are usable in all privilege modes;
-        they aren't only usable in U-mode (User-mode).
-        It is unfortunate that both “Unprivileged” and “User” start with the letter “U” but they
-        aren't the same thing.
-
-      requirements:
-      - name: REQ-UINST-001
-        description: Should use little-endian byte order
-
-      - name: REQ-UCSR-001-a
-        description: Should raise an Illegal Instruction exception when writing to the `cycle` CSR
-
-      - name: REQ-UCSR-001-b
-        description: Should return the XLEN least-significant bits of the `mcycle` CSR when reading the `cycle` CSR
-        
-      - name: REQ-UCSR-002-a
-        description: Should raise an Illegal Instruction exception when writing to the `time` CSR
-
-      - name: REQ-UCSR-002-b
-        description: Should return the XLEN least-significant bits of the `mtime` CSR when reading the `time` CSR
-        when:
-          param:
-            TIME_CSR_IMPLEMENTED: true
-
-      - name: REQ-UCSR-002-c
-        description: Should raise an Illegal Instruction exception when reading the `time` CSR
-        when:
-          param:
-            TIME_CSR_IMPLEMENTED: false
-
-    - name: MC-Unpriv-32
-      when:
-        xlen: 32
-      description: |
-        The MC-Unpriv-32 defines unprivileged ISA requirements specific to 32-bit processors.
-      requirements:
-      - name: REQ-M32CSR-001-a
-        description: Should raise an illegal instruction trap when writing the 'cycleh' CSR
-      - name: REQ-M32CSR-001-b
-        description: Should return the most-significant 32-bits of the `mcycle` CSR when reading `cycleh`
-      - name: REQ-M32CSR-002
-        description: Should return the most-significant 32-bits of the `minstret` CSR when reading `instreth`
-
-    - name: MC-Priv
-      description: |
-        The MC-Priv defines Privileged ISA requirements.
-      requirements:
-      - name: REQ-PRIV-HARTID
-        description: | 
-          One hart in system has to have a HARTID of 0. Reading `mhartid` on other CSRs provides some value.

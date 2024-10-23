@@ -19,8 +19,7 @@ auipc:
     vs: always
     vu: always
     data_independent_timing: true
-    operation(): X[rd] = $pc + imm;
-
+  operation(): X[rd] = $pc + imm;
 
 
   sail(): |

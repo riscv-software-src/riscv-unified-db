@@ -23,3 +23,17 @@ czero.nez:
   data_independent_timing: false
   operation(): |
       
+
+
+
+  sail(): |
+    {
+      let value = X(rs1);
+      let condition = X(rs2);
+      let result : xlenbits = if (condition != zeros()) then zeros()
+    						    else value;
+      X(rd) = result;
+      RETIRE_SUCCESS
+    }
+  
+  
