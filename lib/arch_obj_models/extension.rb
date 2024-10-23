@@ -422,15 +422,24 @@ class ExtensionRequirement
   #   @param extension_version [ExtensionVersion] A specific extension version
   #   @return [Boolean] whether or not the extension_version meets this requirement
   # @overload
+  #   @param extension_requirement [ExtensionRequirement] A range of extension versions
+  #   @return [Boolean] whether or not extension_requirement is satisfied by this requirement
+  # @overload
   #   @param extension_name [#to_s] An extension name
   #   @param extension_name [#to_s] An extension version
   #   @return [Boolean] whether or not the extension_version meets this requirement
   def satisfied_by?(*args)
     if args.size == 1
-      raise ArgumentError, "Single argument must be an ExtensionVersion" unless args[0].is_a?(ExtensionVersion)
-
-      args[0].name == @name &&
-        @requirement.satisfied_by?(Gem::Version.new(args[0].version))
+      if args[0].is_a?(ExtensionVersion)
+        args[0].name == @name &&
+          @requirement.satisfied_by?(Gem::Version.new(args[0].version))
+      elsif args[0].is_a?(ExtensionRequirement)
+        satisfying_versions.all? do |ext_ver|
+          satified_by?(ext_ver)
+        end
+      else
+        raise ArgumentError, "Single argument must be an ExtensionVersion or ExtensionRquirement"
+      end
     elsif args.size == 2
       raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
       raise ArgumentError, "First parameter must be an extension version" unless args[1].respond_to?(:to_s)
@@ -439,6 +448,17 @@ class ExtensionRequirement
         @requirement.satisfied_by?(Gem::Version.new(args[1]))
     else
       raise ArgumentError, "Wrong number of args (expecting 1 or 2)"
+    end
+  end
+
+  # @return [Array<Csr>] List of CSRs defined by any extension satisfying this requirement
+  def csrs(arch_def)
+    return @csrs unless @csrs.nil?
+
+    @csrs = arch_def.csrs.select do |csr|
+      satisfying_versions(arch_def).any? do |ext_ver|
+        csr.defined_by?(ext_ver)
+      end
     end
   end
 
