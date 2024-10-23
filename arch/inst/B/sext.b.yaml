@@ -48,16 +48,3 @@ sext.b:
   
 
 
-  sail(): |
-    {
-      let rs1_val = X(rs1);
-      let result : xlenbits = match op {
-        RISCV_SEXTB => sign_extend(rs1_val[7..0]),
-        RISCV_SEXTH => sign_extend(rs1_val[15..0]),
-        RISCV_ZEXTH => zero_extend(rs1_val[15..0])
-      };
-      X(rd) = result;
-      RETIRE_SUCCESS
-    }
-  
-  
