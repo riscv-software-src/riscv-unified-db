@@ -63,6 +63,12 @@ MC-1:
         MTVAL_WIDTH: {} # Unconstrained
         MTVEC_MODES: {} # Unconstrained
         PHYS_ADDR_WIDTH: {} # Unconstrained
+        MISALIGNED_LDST: {} # Unconstrained
+        MISALIGNED_LDST_EXCEPTION_PRIORITY : {} # Unconstrained
+        MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: {} # Unconstrained
+        MISALIGNED_SPLIT_STRATEGY:
+          schema:
+            const: by_byte
         PRECISE_SYNCHRONOUS_EXCEPTIONS:
           schema:
             const: true
