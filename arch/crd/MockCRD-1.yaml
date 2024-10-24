@@ -5,6 +5,9 @@ MockCRD-1:
   long_name: Mock CRD Long Name
 
   family: MockCRDFamily
+
+  mandatory_priv_modes:
+  - M,U
   
    # XLEN used by rakefile
   base: 64
