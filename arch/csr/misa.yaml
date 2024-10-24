@@ -23,8 +23,8 @@ misa:
         Writing 0 to this field will cause all atomic instructions to raise an `IllegalInstruction` exception.
       type(): |
         return (implemented?(ExtensionName::A) && MUTABLE_MISA_A) ? CsrFieldType::RW : CsrFieldType::RO;
-      reset_value(): |
-        return implemented?(ExtensionName::A) ? 1 : 0;
+      definedBy: A
+      reset_value: 1
     B:
       location: 1
       description: |
@@ -34,8 +34,8 @@ misa:
         Writing 0 to this field will cause all bitmanip instructions to raise an `IllegalInstruction` exception.
       type(): |
         return (implemented?(ExtensionName::B) && MUTABLE_MISA_B) ? CsrFieldType::RW : CsrFieldType::RO;
-      reset_value(): |
-        return implemented?(ExtensionName::B) ? 1 : 0;
+      definedBy: B
+      reset_value: 1
     C:
       location: 2
       description: |
@@ -46,8 +46,8 @@ misa:
         Additionally, IALIGN becomes 32.
       type(): |
         return (implemented?(ExtensionName::C) && MUTABLE_MISA_C) ? CsrFieldType::RW : CsrFieldType::RO;
-      reset_value(): |
-        return implemented?(ExtensionName::C) ? 1 : 0;
+      definedBy: C
+      reset_value: 1
     D:
       location: 3
       description: |
@@ -61,8 +61,8 @@ misa:
         --
       type(): |
         return (implemented?(ExtensionName::D) && MUTABLE_MISA_D) ? CsrFieldType::RW : CsrFieldType::RO;
-      reset_value(): |
-        return implemented?(ExtensionName::D) ? 1 : 0;
+      definedBy: D
+      reset_value: 1
     F:
       location: 5
       description: |
@@ -76,8 +76,8 @@ misa:
         --
       type(): |
         return (implemented?(ExtensionName::F) && MUTABLE_MISA_F) ? CsrFieldType::RW : CsrFieldType::RO;
-      reset_value(): |
-        return implemented?(ExtensionName::F) ? 1 : 0;
+      definedBy: F
+      reset_value: 1
       sw_write(csr_value): |
         if (csr_value.F == 0 && csr_value.D == 1) {
           return UNDEFINED_LEGAL_DETERMINISTIC;
@@ -115,13 +115,14 @@ misa:
         Writing 0 to this field will cause all attempts to enter VS- or VU- mode, execute a hypervisor instruction, or access a hypervisor CSR to raise an `IllegalInstruction` fault.
       type(): |
         return (implemented?(ExtensionName::H) && MUTABLE_MISA_H) ? CsrFieldType::RW : CsrFieldType::RO;
-      reset_value(): |
-        return implemented?(ExtensionName::H) ? 1 : 0;
+      definedBy: H
+      reset_value: 1
     I:
       location: 8
       description: |
         Indicates support for the `I` (base) extension.
       type: RO
+      definedBy: I
       reset_value: 1
     M:
       location: 13
@@ -132,8 +133,8 @@ misa:
         Writing 0 to this field will cause all attempts to execute an integer multiply or divide instruction to raise an `IllegalInstruction` exception.
       type(): |
         return (implemented?(ExtensionName::M) && MUTABLE_MISA_M) ? CsrFieldType::RW : CsrFieldType::RO;
-      reset_value(): |
-        return implemented?(ExtensionName::M) ? 1 : 0;
+      definedBy: M
+      reset_value: 1
     S:
       location: 19
       description: |
@@ -143,8 +144,8 @@ misa:
         Writing 0 to this field will cause all attempts to enter S-mode or access S-mode state to raise an exception.
       type(): |
         return (implemented?(ExtensionName::S) && MUTABLE_MISA_S) ? CsrFieldType::RW : CsrFieldType::RO;
-      reset_value(): |
-        return implemented?(ExtensionName::S) ? 1 : 0;
+      definedBy: S
+      reset_value: 1
     U:
       location: 21
       description: |
@@ -154,19 +155,18 @@ misa:
         Writing 0 to this field will cause all attempts to enter U-mode to raise an exception.
       type(): |
         return (implemented?(ExtensionName::U) && MUTABLE_MISA_U) ? CsrFieldType::RW : CsrFieldType::RO;
-      reset_value(): |
-        return implemented?(ExtensionName::U) ? 1 : 0;
+      definedBy: U
+      reset_value: 1
     V:
       location: 22
       description: |
         Indicates support for the `V` (vector) extension.
 
-        [when,"MUTABLE_MISA_S == true"]
+        [when,"MUTABLE_MISA_V == true"]
         Writing 0 to this field will cause all attempts to execute a vector instruction to raise an `IllegalInstruction` trap.
       type: RO
-      reset_value: 0 # TODO
-      # reset_value(): |
-      #   return implemented?(ExtensionName::V) ? 1 : 0;
+      definedBy: V
+      reset_value: 1
   sw_read(): |
     return (
       (CSR[misa].MXL << 62) |

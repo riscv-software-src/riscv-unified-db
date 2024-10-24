@@ -512,7 +512,7 @@ class Csr < ArchDefObject
   # @param exclude_unimplemented [Boolean] If true, do not create include unimplemented fields in the figure
   # @param optional_type [Integer] Wavedrom type (Fill color) for fields that are optional (not mandatory) in a partially-specified arch_def
   # @return [Hash] A representation of the WaveDrom drawing for the CSR (should be turned into JSON for wavedrom)
-  def wavedrom_desc(arch_def, effective_xlen, exclude_unimplemented: false, optional_type: 2)
+  def wavedrom_desc(arch_def, effective_xlen, exclude_unimplemented: false, optional_type: 3)
     desc = {
       "reg" => []
     }
@@ -536,9 +536,10 @@ class Csr < ArchDefObject
         desc["reg"] << { "bits" => n, type: 1 }
       end
       if arch_def.partially_configured? && field.optional_in_cfg?(arch_def)
+        puts "#{name}.#{field.name} is OPTIONAL"
         desc["reg"] << { "bits" => field.location(arch_def, effective_xlen).size, "name" => field.name, type: optional_type }
       else
-        desc["reg"] << { "bits" => field.location(arch_def, effective_xlen).size, "name" => field.name, type: 2 }
+        desc["reg"] << { "bits" => field.location(arch_def, effective_xlen).size, "name" => field.name, type: 3 }
       end
       last_idx = field.location(arch_def, effective_xlen).max
     end
@@ -570,7 +571,7 @@ class Csr < ArchDefObject
     raise "optional_in_cfg? should only be used by a partially-specified arch def" unless arch_def.partially_configured?
 
     exists_in_cfg?(arch_def) &&
-      arch_def.mandatory_extensions.none? do |ext_req|
+      arch_def.mandatory_extensions.all? do |ext_req|
         ext_req.satisfying_versions(arch_def).none? { |ext_ver| defined_by?(ext_ver) }
       end
   end
