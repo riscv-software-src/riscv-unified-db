@@ -4,6 +4,9 @@ MC-1:
   name: MC-1
   long_name: LONG NAME
   family: Microcontroller
+
+  mandatory_priv_modes:
+  - M
   
   # semantic version within the CRD family
   version: "1.0"

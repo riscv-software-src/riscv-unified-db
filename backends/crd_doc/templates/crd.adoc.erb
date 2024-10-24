@@ -42,13 +42,15 @@ a| <% rev.changes.each do |change| %>
 
 CSR field colors::
 
-* Grey fields are reserved (WPRI)
-* Green fields are present
-* Red fields are defined by the RISC-V ISA but not present
+* [green]#Green fields# are present in the associated CRD.
+* [red]#Red fields# are defined by the RISC-V ISA but not required in the associated CRD.
+* [silver]#Grey fields# are reserved for future use by RISC-V (AKA WPRI). Software should ignore the values read from
+these fields and should preserve the values held in these fields when writing values to other fields.
+For forward compatibility, implementations that do not furnish these fields must make them read-only zero.
 
 CSR field types::
 
-[%autowidth]
+[cols="1,6"]
 |===
 | Abbreviation | Description
 
@@ -83,16 +85,16 @@ CSR field types::
 | <%= crd.debug_manual_revision %>
 |===
 
-=== Privileged Modes
+=== <%= crd.name %> Privileged Modes
 
 |===
 | M | S | U | VS | VU
 
-| <% if crd.family.mandatory_priv_modes.include?('M') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if crd.family.mandatory_priv_modes.include?('S') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if crd.family.mandatory_priv_modes.include?('U') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if crd.family.mandatory_priv_modes.include?('VS') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if crd.family.mandatory_priv_modes.include?('VU') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if crd.m_mode? -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if crd.s_mode? -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if crd.u_mode? -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if crd.vs_mode? -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if crd.vu_mode? -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
 
 |===
 

@@ -63,8 +63,6 @@ class CrdFamily < ArchDefObject
     @arch_def = arch_def
   end
 
-  def mandatory_priv_modes = @data["mandatory_priv_modes"]
-
   def revisions
     return @revisions unless @revisions.nil?
 
@@ -116,6 +114,33 @@ class Crd < ArchDefObject
     raise "No CRD family named '#{@data["family"]}'" if fam.nil?
 
     @family = fam
+  end
+
+  def mandatory_priv_modes = @data["mandatory_priv_modes"]
+
+  # @return [true/false]
+  def m_mode?
+    mandatory_priv_modes.include?('M')
+  end
+
+  # @return [true/false]
+  def s_mode?
+    mandatory_priv_modes.include?('S')
+  end
+
+  # @return [true/false]
+  def u_mode?
+    mandatory_priv_modes.include?('U')
+  end
+
+  # @return [true/false]
+  def vs_mode?
+    mandatory_priv_modes.include?('VS')
+  end
+
+  # @return [true/false]
+  def vu_mode?
+    mandatory_priv_modes.include?('VU')
   end
 
   def tsc_profile

@@ -77,6 +77,3 @@ Microcontroller:
     ** For example, the first release of MC is MC-1 (can omit the implicit “.0” minor release), its first minor release is MC-1.1, a patch release of this minor release is MC-1.1.1 and the next major release is MC-2.
     * \<-MODE> is -Unpriv, -Priv, or -Debug. If \<-MODE> is omitted, the reference applies equally to all modes.
     * \<-XLEN> is -32 for 32-bit microcontrollers and -64 for 64-bit microcontrollers. If \<-XLEN> is omitted, the reference applies equally to 32-bit and 64-bit microcontrollers. The term MXLEN used in the Priv ISA Manual is always equal to XLEN for MC.
-
-  mandatory_priv_modes:
-  - M

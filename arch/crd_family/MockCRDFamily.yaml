@@ -16,6 +16,3 @@ MockCRDFamily:
 
   naming_scheme: |
     Here's the Mock CRD Family's naming scheme.
-
-  mandatory_priv_modes:
-  - M
