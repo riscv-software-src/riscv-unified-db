@@ -212,6 +212,8 @@ class CsrField < ArchDefObject
 
   # @return [String] A pretty-printed type string
   def type_pretty(symtab)
+    raise ArgumentError, "Expecting SymbolTable" unless symtab.is_a?(Idl::SymbolTable)
+
     str = nil
     value_result = Idl::AstNode.value_try do
       str = type(symtab)
@@ -640,6 +642,7 @@ class CsrField < ArchDefObject
         end
       elsif e > csr_length
         raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr_length}) in #{csr.name}.#{name}"
+
       end
 
       s..e

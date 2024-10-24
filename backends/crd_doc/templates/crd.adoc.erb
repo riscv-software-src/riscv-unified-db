@@ -15,6 +15,8 @@
 // TODO: needs to be changed
 :imagesoutdir: images
 
+<% arch_def = crd.arch_def   # Set local Ruby variables -%>
+
 = <%= crd.name %> Certification Requirements Document
 
 [Preface]
@@ -32,6 +34,27 @@ Contains documentation changes that apply to all releases of the family.
 a| <% rev.changes.each do |change| %>
 * <%= change %>
 <% end -%>
+<% end -%>
+|===
+
+[Preface]
+== Typographic Conventions
+
+CSR field colors::
+
+* Grey fields are reserved (WPRI)
+* Green fields are present
+* Red fields are defined by the RISC-V ISA but not present
+
+CSR field types::
+
+[%autowidth]
+|===
+| Abbreviation | Description
+
+<% CsrField::TYPE_DESC_MAP.each do |abbreviation, description| -%>
+| <%= abbreviation %>
+| <%= description %>
 <% end -%>
 |===
 
@@ -298,7 +321,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 <% end -%>
 
 // TODO: GitHub issue 92: Use version specified by each profile.
-<% insts = crd.arch_def.instructions.select { |i| i.defined_by?(ext_db.name,ext_db.min_version) } -%>
+<% insts = arch_def.instructions.select { |i| i.defined_by?(ext_db.name,ext_db.min_version) } -%>
 <% unless insts.empty? -%>
 ==== Instructions
 
@@ -451,13 +474,13 @@ RV64::
 <% if inst.key?("operation()") -%>
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.operation_ast(crd.arch_def.symtab).gen_adoc %>
+<%= inst.operation_ast(arch_def.symtab).gen_adoc %>
 ----
 <% end -%>
 
 ==== Exceptions
 
-<%- exception_list = inst.reachable_exceptions_str(crd.arch_def.symtab) -%>
+<%- exception_list = inst.reachable_exceptions_str(arch_def.symtab) -%>
 <%- if exception_list.empty? -%>
 This instruction does not generate synchronous exceptions.
 <%- else -%>
@@ -504,26 +527,22 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <% end -%>
 h| Defining extension a| <%= csr.defined_by.to_asciidoc %>
-<% if csr.dynamic_length?(crd.arch_def) -%>
-h| Length         | <%= csr.length_pretty(crd.arch_def) %>
+<% if csr.dynamic_length?(arch_def) -%>
+h| Length         | <%= csr.length_pretty(arch_def) %>
 <% else -%>
-h| Length         | <%= csr.length_pretty(crd.arch_def) %>
+h| Length         | <%= csr.length_pretty(arch_def) %>
 <% end -%>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===
 
 
-==== Format
-
-Green fields are present in <%= crd.name %>.
-Red fields are defined by the RISC-V ISA but not present in <%= crd.name %>.
-
-<% unless csr.dynamic_length?(crd.arch_def) || csr.fields.any? { |f| f.dynamic_location?(crd.arch_def) } -%>
+==== <%= crd.name %> Format
+<% unless csr.dynamic_length?(crd.arch_def) || csr.implemented_fields(arch_def).any? { |f| f.dynamic_location?(crd.arch_def) } -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(crd.arch_def, csr.base.nil? ? 32 : csr.base, optional_type: 3) %>
+<%= JSON.dump csr.wavedrom_desc(arch_def, csr.base.nil? ? 32 : csr.base, optional_type: 3) %>
 ....
 <% else -%>
 <%# CSR has a dynamic length, or a field has a dynamic location,
@@ -533,16 +552,119 @@ This CSR format changes dynamically with XLEN.
 .<%= csr.name %> Format when <%= csr.length_cond32 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(crd.arch_def, 32, optional_type: 3) %>
+<%= JSON.dump csr.wavedrom_desc(arch_def, 32, optional_type: 3) %>
 ....
 
 .<%= csr.name %> Format when <%= csr.length_cond64 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(crd.arch_def, 64, optional_type: 3) %>
+<%= JSON.dump csr.wavedrom_desc(arch_def, 64, optional_type: 3) %>
 ....
 
 
 <% end # unless dynamic length -%>
+
+==== <%= crd.name %> Field Summary
+
+// use @ as a separator since IDL code can contain |
+[%autowidth,separator=@,float="center",align="center",cols="^,<,<,<",options="header",role="stretch"]
+|===
+@ Name @ Location @ Type @ Reset Value
+
+<%- csr.implemented_fields(arch_def).each do |field| -%>
+@ xref:<%=csr.name%>-<%=field.name%>-def[`<%= field.name %>`]
+a@
+<%- if field.dynamic_location?(arch_def) -%>
+
+[when,"<%= field.location_cond32 %>"]
+--
+<%= field.location_pretty(arch_def, 32) %>
+--
+
+[when,"<%= field.location_cond64 %>"]
+--
+<%= field.location_pretty(arch_def, 64) %>
+--
+
+<%- else -%>
+<%= field.location_pretty(arch_def) %>
+<%- end -%>
+a@
+
+--
+<%= field.type_pretty(arch_def.symtab) %>
+--
+
+a@
+
+--
+<%= field.reset_value_pretty(arch_def) %>
+--
+
+<%- end -%>
+|===
+
+==== <%= crd.name %> Fields
+
+<%- if csr.implemented_fields(arch_def).empty? -%>
+This CSR has no fields. However, it must still exist (not cause an `Illegal Instruction` trap) and always return zero on a read.
+<%- else -%>
+
+<%- csr.implemented_fields(arch_def).each do |field| -%>
+[[<%=csr.name%>-<%=field.name%>-def]]
+===== `<%= field.name %>`
+
+<%- if !field.defined_in_all_bases? -%>
+IMPORTANT: <%= field.name %> is only defined in <%= field.base32_only? ? "RV32" : "RV64" %> (`<%= field.base32_only? ? field.location_cond32 : field.location_cond64 %>`)
+<%- end -%>
+
+****
+Location::
+<%= field.location_pretty(arch_def) %>
+
+Description::
+<%= field.description.gsub("\n", " +\n") %>
+
+Type::
+<%= field.type_pretty(arch_def.symtab) %>
+
+Reset value::
+<%= field.reset_value_pretty(arch_def) %>
+
+****
+
+<%- end -%>
+<%- end -%>
+
+<%- if csr.implemented_fields(arch_def).map(&:has_custom_sw_write?).any? -%>
+==== Software write
+
+This CSR may store a value that is different from what software attempts to write.
+
+When a software write occurs (_e.g._, through `csrrw`), the following determines the
+written value:
+
+[idl]
+----
+<%- csr.implemented_fields(arch_def).each do |field| -%>
+<%- if field.has_custom_sw_write? -%>
+<%= field.name %> = <%= field["sw_write(csr_value)"] %>
+<%- else -%>
+<%= field.name %> = csr_value.<%= field.name %>
+<%- end -%>
+<%- end -%>
+----
+<%- end -%>
+
+<%- if csr.has_custom_sw_read? -%>
+==== Software read
+
+This CSR may return a value that is different from what is stored in hardware.
+
+[source,idl,subs="specialchars,macros"]
+----
+<%= csr.sw_read_ast(arch_def.symtab).gen_adoc %>
+----
+<%- end -%>
 
 <% end # do csrs -%>
