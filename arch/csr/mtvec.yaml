@@ -4,14 +4,15 @@ mtvec:
   long_name: Machine Trap Vector Control
   address: 0x305
   priv_mode: M
-  length: 64
+  length: MXLEN
   description: Controls where traps jump.
   definedBy: Sm
   fields:
     BASE:
-      location: 63-2
+      location_rv64: 63-2
+      location_rv32: 31-2
       description: |
-        Bits [63:2] of the exception vector physical address for any trap taken in M-mode.
+        Bits [MXLEN-1:2] of the exception vector physical address for any trap taken in M-mode.
 
         The implementation physical memory map may resitrict which values are legal in this field.
       type: RW-R
