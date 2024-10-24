@@ -31,10 +31,31 @@ class CsrField < ArchDefObject
   # @param possible_xlens [Array<Integer>] List of xlens that be used in any implemented mode
   # @param extensions [Array<ExtensionVersion>] List of extensions implemented
   # @return [Boolean] whether or not the instruction is implemented given the supplies config options
-  def exists_in_cfg?(possible_xlens, extensions)
-    parent.exists_in_cfg?(possible_xlens, extensions) &&
-      (@data["base"].nil? || possible_xlens.include?(@data["base"])) &&
-      (@data["definedBy"].nil? || extensions.any? { |e| defined_by?(e) } )
+  def exists_in_cfg?(arch_def)
+    if arch_def.fully_configured?
+      parent.exists_in_cfg?(arch_def) &&
+        (@data["base"].nil? || arch_def.possible_xlens.include?(@data["base"])) &&
+        (@data["definedBy"].nil? || arch_def.implemented_extensions.any? { |ext_ver| defined_by?(ext_ver) })
+    else
+      raise "unexpected type" unless arch_def.partially_configured?
+
+      parent.exists_in_cfg?(arch_def) &&
+        (@data["base"].nil? || arch_def.possible_xlens.include?(@data["base"])) &&
+        (@data["definedBy"].nil? || arch_def.prohibited_extensions.none? { |ext_ver| defined_by?(ext_ver) })
+    end
+  end
+
+  # @return [Boolean] For a partially configured arch_def, whether or not the field is optional (not mandatory or prohibited)
+  def optional_in_cfg?(arch_def)
+    raise "optional_in_cfg? should only be called on a partially configured arch_def" unless arch_def.partially_configured?
+
+    exists_in_cfg?(arch_def) &&
+      (
+        parent.optional_in_cfg?(arch_def) ||
+        (data["definedBy"].nil? || arch_def.mandatory_extensions.none? do |ext_req|
+          ext_req.satisfying_versions(arch_def).none? { |ext_ver| defined_by?(ext_ver) }
+        end)
+      )
   end
 
   # @return [Idl::FunctionBodyAst] Abstract syntax tree of the type() function
@@ -191,6 +212,8 @@ class CsrField < ArchDefObject
 
   # @return [String] A pretty-printed type string
   def type_pretty(symtab)
+    raise ArgumentError, "Expecting SymbolTable" unless symtab.is_a?(Idl::SymbolTable)
+
     str = nil
     value_result = Idl::AstNode.value_try do
       str = type(symtab)
@@ -619,6 +642,7 @@ class CsrField < ArchDefObject
         end
       elsif e > csr_length
         raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr_length}) in #{csr.name}.#{name}"
+
       end
 
       s..e

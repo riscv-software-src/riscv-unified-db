@@ -116,41 +116,43 @@ class ArchDefObject
     end
   end
 
-  def to_extension_requirement(obj)
-    if obj.is_a?(String)
-      ExtensionRequirement.new(obj, ">= 0")
-    else
-      ExtensionRequirement.new(*obj)
-    end
-  end
-  private :to_extension_requirement
+  # def to_extension_requirement(obj)
+  #   if obj.is_a?(String)
+  #     ExtensionRequirement.new(obj, ">= 0")
+  #   else
+  #     ExtensionRequirement.new(*obj)
+  #   end
+  # end
+  # private :to_extension_requirement
 
-  def to_extension_requirement_list(obj)
-    list = []
-    if obj.is_a?(Array)
-      # could be either a single extension with exclusion, or a list of exclusions
-      if extension_exclusion?(obj[0])
-        list << to_extension_requirement(obj[0])
-      else
-        # this is a list
-        obj.each do |r|
-          list << to_extension_exclusion(r)
-        end
-      end
-    else
-      list << to_extension_requirement(obj)
-    end
-    list
-  end
+  # def to_extension_requirement_list(obj)
+  #   list = []
+  #   if obj.is_a?(Array)
+  #     # could be either a single extension with exclusion, or a list of exclusions
+  #     if extension_exclusion?(obj[0])
+  #       list << to_extension_requirement(obj[0])
+  #     else
+  #       # this is a list
+  #       obj.each do |r|
+  #         list << to_extension_exclusion(r)
+  #       end
+  #     end
+  #   else
+  #     list << to_extension_requirement(obj)
+  #   end
+  #   list
+  # end
 
-  def extension_requirement?(obj)
-    obj.is_a?(String) && obj =~ /^([A-WY])|([SXZ][a-z]+)$/ ||
-      obj.is_a?(Array) && obj[0] =~ /^([A-WY])|([SXZ][a-z]+)$/
-  end
-  private :extension_requirement?
+  # def extension_requirement?(obj)
+  #   obj.is_a?(String) && obj =~ /^([A-WY])|([SXZ][a-z]+)$/ ||
+  #     obj.is_a?(Array) && obj[0] =~ /^([A-WY])|([SXZ][a-z]+)$/
+  # end
+  # private :extension_requirement?
 
   # @return [SchemaCondition] Extension(s) that define the instruction. If *any* requirement is met, the instruction is defined.
   def defined_by
+    raise "ERROR: definedBy is nul for #{name}" if @data["definedBy"].nil?
+
     SchemaCondition.new(@data["definedBy"])
   end
 
@@ -258,6 +260,8 @@ end
 class SchemaCondition
   # @param composition_hash [Hash] A possibly recursive hash of "allOf", "anyOf", "oneOf"
   def initialize(composition_hash)
+    raise ArgumentError, "composition_hash is nil" if composition_hash.nil?
+
     unless is_a_condition?(composition_hash)
       raise ArgumentError, "Expecting a JSON schema comdition (got #{composition_hash})"
     end
@@ -322,7 +326,7 @@ class SchemaCondition
         end
       end
     else
-      raise "unexpected #{hsh.class.name} #{hsh}"
+      raise "unexpected #{hsh.class.name} #{hsh} #{@hsh}"
     end
 
     true

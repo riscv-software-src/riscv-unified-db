@@ -8,6 +8,6 @@ mseccfg:
   description: Machine Security Configuration
   definedBy:
     name: Sm
-    version: ">=1.12"
+    version: ">= 1.12"
   fields: {}
   
