@@ -316,6 +316,10 @@ class ExtensionVersion
     ext(arch_def).params.select { |p| p.defined_in_extension_version?(@version) }
   end
 
+  def to_s
+    "#{name}@#{version}"
+  end
+
   # @overload ==(other)
   #   @param other [String] An extension name
   #   @return [Boolean] whether or not this ExtensionVersion is named 'other'

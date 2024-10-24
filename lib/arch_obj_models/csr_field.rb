@@ -52,7 +52,7 @@ class CsrField < ArchDefObject
     exists_in_cfg?(arch_def) &&
       (
         parent.optional_in_cfg?(arch_def) ||
-        (data["definedBy"].nil? || arch_def.mandatory_extensions.none? do |ext_req|
+        (data["definedBy"].nil? || arch_def.mandatory_extensions.all? do |ext_req|
           ext_req.satisfying_versions(arch_def).none? { |ext_ver| defined_by?(ext_ver) }
         end)
       )
