@@ -81,7 +81,7 @@ end
 
 namespace :gen do
   desc "Create a specification PDF for +profile_family+"
-  task :profile_pdf, [:profile_family] => ["gen:arch"] do |_t, args|
+  task :profile_pdf, [:profile_family] => ["#{$root}/.stamps/arch-gen-_64.stamp"] do |_t, args|
     family_name = args[:profile_family]
     raise ArgumentError, "Missing required option +profile_family+" if family_name.nil?
 
@@ -92,7 +92,7 @@ namespace :gen do
   end
 
   desc "Create a specification HTML for +profile_family+"
-  task :profile_html, [:profile_family] => ["gen:arch"] do |_t, args|
+  task :profile_html, [:profile_family] => ["#{$root}/.stamps/arch-gen-_64.stamp"] do |_t, args|
     family_name = args[:profile_family]
     raise ArgumentError, "Missing required option +profile_family+" if family_name.nil?
 
