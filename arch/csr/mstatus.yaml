@@ -454,7 +454,7 @@ mstatus:
           return MSTATUS_VS_WRITEABLE ? UNDEFINED_LEGAL : 0;
         }
       sw_write(csr_value): |
-        if (CSR[misa]. =V= 1'b1){
+        if (CSR[misa].V == 1'b1){
           return ary_includes?<$array_size(MSTATUS_VS_LEGAL_VALUES), 2>(MSTATUS_VS_LEGAL_VALUES, csr_value.FS) ? csr_value.FS : UNDEFINED_LEGAL_DETERMINISTIC;
         } else if ((CSR[misa].S == 1'b0) && (CSR[misa].V == 1'b0)) {
           # must be read-only-0
