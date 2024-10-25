@@ -15,7 +15,6 @@ const rec = async (branch, root) => {
     const isFile = (await stat(path.resolve(localPath, el))).isFile();
     const fileExt = path.extname(el);
     const baseName = path.basename(el, fileExt);
-    console.log(localPath, el, baseName, fileExt, isFile);
     if (isFile) {
       if (['.yaml', '.json'].includes(fileExt)) {
         node[baseName] = {$ref: path.join(...branch, el)};
