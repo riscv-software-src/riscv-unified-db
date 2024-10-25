@@ -246,7 +246,9 @@ menvcfg:
       definedBy: Zicbom
       type: RW-R
       sw_write(csr_value): |
-        if (csr_value.CBIE == 0 || csr_value.CBIE == 1 || csr_value.CBIE == 3) {
+        if ((csr_value.CBIE == 0) ||
+            (ALLOW_CBO_INVAL_UPGRADE_TO_FLUSH && (csr_value.CBIE == 1)) ||
+            (csr_value.CBIE == 3)) {
           return csr_value.CBIE;
         } else {
           return CSR[menvcfg].CBIE;
