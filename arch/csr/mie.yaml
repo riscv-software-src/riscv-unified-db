@@ -156,6 +156,7 @@ mie:
 
         Alias of `sie.SSIE` when `mideleg.SSI` is set. Otherwise, `sie.SSIE` is read-only 0.
       type: RW
+      definedBy: S
       reset_value: 0
     VSSIE:
       location: 2
@@ -188,6 +189,7 @@ mie:
 
         Alias of `sip.STIE` when `mideleg.STI` is set. Otherwise, `sip.STIE` is read-only 0.
       type: RW
+      definedBy: S
       reset_value: 0
     VSTIE:
       location: 6
@@ -220,6 +222,7 @@ mie:
 
         Alias of `sie.SEIE` when `mideleg.SEI` is set. Otherwise, `sie.SEIE` is read-only 0.
       type: RW
+      definedBy: S
       reset_value: 0
     VSEIE:
       location: 10
