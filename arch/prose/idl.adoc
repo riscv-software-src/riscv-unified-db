@@ -144,7 +144,7 @@ There are several aliases of Bits<N> available, as shown below.
 |===
 | Alias | Type
 
-| `XReg`  | `Bits<XLEN>`, where XLEN is configuratin-dependent
+| `XReg`  | `Bits<XLEN>`, where XLEN is configuration-dependent
 | `U64`   | `Bits<64>`
 | `U32`   | `Bits<32>`
 |===
@@ -249,7 +249,7 @@ Arrays are declared by appending the size of the array in brackets after the var
 .Array declarations
 [source,idl]
 ----
-Bitx<32> array_of_words[10];      # array of ten words
+Bits<32> array_of_words[10];      # array of ten words
 Boolean  array_of_bools[12];      # array of twelve booleans
 Bits<32> matrix_of_words[32][32]; # array of arrays of 32 words
 ----
@@ -264,7 +264,7 @@ array_of_bools[3]      # Boolean type; the third word in array_of_bools
 matrix_of_words[3][4]  # Bits<32> type; the fourth word in the third array of matrix_of_words
 ----
 
-Arrays cannot be casted to Bits<N> type, so the storage order is irrelant and unspecified.
+Arrays cannot be casted to Bits<N> type, so the storage order is irrelevant and unspecified.
 
 ==== Tuples
 
@@ -309,7 +309,7 @@ Literals may contain any number of underscores after the initial digit for clari
 4'sb1101      # -3 decimal, signed, 4-bit wide
 -4'sb1101     #  3 decimal, signed, 4-bit wide
 
-32'h80000000  # 0x8000000, unsigned, 32-bit wide
+32'h80000000  # 0x80000000, unsigned, 32-bit wide
 32'h8000_0000 # same as above (underscores ignored)
 
 8'13          # 13 decimal, 8-bit wide (default radix is 10)
@@ -340,7 +340,7 @@ Literals may contain any number of underscores after the initial digit for clari
 0x0fff      # 4095 decimal, unsigned 12-bit wide (leading zeros have no impact)
 0           # 0 decimal, unsigned, 1-bit wide (0 is specially defined to be 1-bit wide)
 
-0x80000000  # 0x8000000, unsigned, 32-bit wide
+0x80000000  # 0x80000000, unsigned, 32-bit wide
 0x8000_0000 # same as above (underscores ignored)
 
 # negative literals
@@ -360,7 +360,7 @@ Array literals are composed of a list of comma-separated values in brackets, sim
 .Array literals
 [source,idl]
 ----
-Bitx<32> array_of_words[10] = [0,1,2,3,4,5,6,7,8,9];
+Bits<32> array_of_words[10] = [0,1,2,3,4,5,6,7,8,9];
 Boolean  array_of_bools[12] =
   [
     true,true,true,true,true,true,
@@ -509,7 +509,7 @@ Variables may be optionally initialized when they are declared using the assignm
 [source,idl]
 ----
 Boolean condition;              # declare condition, initialized to false
-XReg    address = 0x8000_0000;  # declare address, initialized to 0x800000000
+XReg    address = 0x8000_0000;  # declare address, initialized to 0x80000000
 Bits<8> pmpCfg0;                # declare pmpCfg0, initialized to 8'd0
 Bits<8> pmp_cfg_0;              # declare pmp_cfg_0, initialized to 8'd0
 Bits<8> ary[2];                 # declare ary, initialized to [8'd0, 8'd0]
@@ -550,8 +550,8 @@ Note that many global constants, such are configuration parameters, are implicit
 [source,idl]
 ----
 Boolean I_LIKE_CHEESE = true;   # declare I_LIKE_CHEESE, initialized to true
-XReg    Address = 0x8000_0000;  # declare Address, initialized to 0x800000000
-XReg    AddressAlias = Address; # declare AddressAlias, initialized to 0x800000000
+XReg    Address = 0x8000_0000;  # declare Address, initialized to 0x80000000
+XReg    AddressAlias = Address; # declare AddressAlias, initialized to 0x80000000
 
 # Bits<8> pmpCfg;  # constant names must start with a lowercase letter. pmpCfg would be a variable
 
@@ -592,7 +592,7 @@ Bitfields can be converted to a `Bits<N>` type, where N is the width of the bitf
 
 == Casting
 
-There are two explicit cast operators in IDL: `$isgned` and `$bits`.
+There are two explicit cast operators in IDL: `$isigned` and `$bits`.
 
 Unsigned Bits<N> values may be cast to signed values using the `$signed` cast operator.
 
