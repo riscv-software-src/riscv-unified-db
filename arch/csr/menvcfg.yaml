@@ -248,7 +248,7 @@ menvcfg:
       sw_write(csr_value): |
         if ((csr_value.CBIE == 0) ||
             (csr_value.CBIE == 1) ||
-            ((!FORCE_UPGRADE_CBO_INVAL_TO_FLUSH) && (csr_value.CBIE == 3)) {
+            ((!FORCE_UPGRADE_CBO_INVAL_TO_FLUSH) && (csr_value.CBIE == 3))) {
           return csr_value.CBIE;
         } else {
           return CSR[menvcfg].CBIE;
