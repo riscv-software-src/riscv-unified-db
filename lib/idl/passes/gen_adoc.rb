@@ -161,7 +161,7 @@ module Idl
 
   class MultiVariableDeclarationAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      "#{' ' * indent}#{type_name.gen_adoc(0, indent_spaces:)} #{var_names.map { |var| var.gen_adoc(0, indent_spaces:) }.join(', ')}"
+      "#{' ' * indent}#{type_name.gen_adoc(0, indent_spaces:)} #{var_name_nodes.map { |var| var.gen_adoc(0, indent_spaces:) }.join(', ')}"
     end
   end
 
