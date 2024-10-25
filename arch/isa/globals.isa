@@ -89,7 +89,7 @@ enum PmaAttribute {
 
 enum Pbmt {
   PMA 0   # Use underlying PMA
-  NV  1   # Non-cacheable, idempotent, weakly-ordered (RVWMO), main memory
+  NC  1   # Non-cacheable, idempotent, weakly-ordered (RVWMO), main memory
   IO  2   # Non-cacheable, non-idempotent, strongly (channel 0) ordered, I/O
 }
 
