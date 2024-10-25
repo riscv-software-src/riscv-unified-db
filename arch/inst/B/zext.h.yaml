@@ -28,7 +28,7 @@ zext.h:
         location: 19-15
       - name: rd
         location: 11-7
-  excludedBy: [Zk, Zkn, Zks, Zbkb]  # zext.h is a pseduo-op for pack/packw when Zbkb is implemented 
+  excludedBy: Zbkb  # zext.h is a pseduo-op for pack/packw when Zbkb is implemented 
   assembly: xd, xs1
   access:
     s: always
