@@ -2825,7 +2825,8 @@ function mstatus_sd_reset_value
   }
   body {
     # the reset value is known if both FS and VS are known
-    assert(mstatus_sd_has_known_reset());
+    assert(mstatus_sd_has_known_reset(),
+           "mstatus_sd_reset_value is only defined when mstatus_sd_has_known_reset() == true");
 
     Bits<2> fs_value, vs_value; # defaults to 0
 
