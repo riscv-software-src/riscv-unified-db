@@ -5,7 +5,7 @@ ror:
   description: |
     This instruction performs a rotate right of rs1 by the amount in least-significant `log2(XLEN)` bits of rs2.
   definedBy:
-    anyOf: [B, Zbb, Zbkb]
+    anyOf: [B, Zbb, Zbkb, Zk, Zkn, Zks]
   assembly: xd, xs1, xs2
   encoding:
     match: 0110000----------101-----0110011
