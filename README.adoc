@@ -28,7 +28,7 @@ This repository contains:
 
 === Working examples:
 
- * Generate https://riscv-software-src.github.io/riscv-unified-db/manual/index.html[configuration-specific documentation] taylored to the set of implemented extensions and unnamed implementation options (_e.g._, `./do gen:html[generic_rv64]`).
+ * Generate https://riscv-software-src.github.io/riscv-unified-db/manual/html/index.html[configuration-specific documentation] taylored to the set of implemented extensions and unnamed implementation options (_e.g._, `./do gen:html[generic_rv64]`).
  ** Only implemented extensions/instructions/CSRs are included
  ** Unreachable/unimplemented parts of the formal specification are pruned away
  ** A dedicated documentation page for every implemented instruction, including its encoding, pruned execution behavior, and what types of exceptions it may cause.
@@ -108,5 +108,3 @@ Quick start:
 == More info
 
  * xref:arch/README.adoc[Architecture specification format]
- * xref:_site/ruby/arch_def/index.html[Ruby database object model documentation]
- * xref:_site/ruby/idl/index.html[IDL Compiler documentation]
