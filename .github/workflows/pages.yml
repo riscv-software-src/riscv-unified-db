@@ -51,6 +51,8 @@ jobs:
       run: mkdir -p _site/example_cfg
     - name: Create _site/manual
       run: mkdir -p _site/manual
+    - name: Create _site/dash
+      run: mkdir -p _site/dash
     - name: Create _site/pdfs
       run: mkdir -p _site/pdfs
     - name: Create _site/htmls
@@ -71,6 +73,10 @@ jobs:
       run: cp gen/crd_doc/html/MC-1.html _site/htmls/MC-1.html
     - name: Copy manual html
       run: cp -R gen/manual/isa/top/all/html _site/manual
+    - name: Generate dashboard
+      run: ./do gen:dash
+    - name: Copy dashboard
+      run: cp -R gen/dashboard/* _site/dash
     - name: Setup Pages
       uses: actions/configure-pages@v5
     - name: Upload artifact
