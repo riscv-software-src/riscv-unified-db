@@ -120,7 +120,7 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
     end
   raise "Can't find extension '#{ext_name}'" if arch_yaml_paths.empty?
 
-  stamp = config_name == "_" ? "#{$root}/.stamps/arch-gen.stamp" : "#{$root}/.stamps/arch-gen-#{config_name}.stamp"
+  stamp = config_name == "_" ? "#{$root}/.stamps/arch-gen-_64.stamp" : "#{$root}/.stamps/arch-gen-#{config_name}.stamp"
 
   [
     stamp,
@@ -145,7 +145,12 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
   erb.filename = template_path.to_s
 
   ext = arch_def.extension(ext_name)
-  version_num = ENV.key?("EXT_VERSION") ? ENV["EXT_VERSION"] : ext.versions.sort { |v| Gem::Version.new(v["version"]) }.last["version"]
+  version_num =
+    if ENV.key?("EXT_VERSION")
+      ENV["EXT_VERSION"]
+    else
+      ext.versions.max { |a, b| Gem::Version.new(a["version"]) <=> Gem::Version.new(b["version"]) }["version"]
+    end
   ext_version = ext.versions.find { |v| v["version"] == version_num }
   FileUtils.mkdir_p File.dirname(t.name)
   File.write t.name, AsciidocUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
