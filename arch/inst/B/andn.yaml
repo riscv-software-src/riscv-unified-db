@@ -6,7 +6,7 @@ andn:
     This instruction performs the bitwise logical AND operation between `rs1` and the
     bitwise inversion of `rs2`.
   definedBy:
-    anyOf: [B, Zbb]
+    anyOf: [B, Zbb, Zbkb, Zk, Zkn, Zks]
   assembly: xd, xs1, xs2
   encoding:
     match: 0100000----------111-----0110011

@@ -5,7 +5,7 @@ clmulh:
   description: |
     `clmulh` produces the upper half of the 2*XLEN carry-less product
   definedBy:
-    anyOf: [B, Zbc]
+    anyOf: [B, Zbc, Zbkc, Zk, Zkn, Zks]
   assembly: xd, xs1, xs2
   encoding:
     match: 0000101----------011-----0110011
