@@ -3601,7 +3601,11 @@ module Idl
     # @!macro type_check
     def type_check(symtab)
       condition.type_check(symtab)
-      type_error "ternary selector must be bool" unless condition.type(symtab).kind == :boolean
+      if condition.type(symtab).kind == :bits
+        type_error "ternary selector must be bool (maybe you meant '#{condition.text_value} != 0'?)"
+      else
+        type_error "ternary selector must be bool" unless condition.type(symtab).kind == :boolean
+      end
 
       value_result = value_try do
         cond = condition.value(symtab)
@@ -5740,9 +5744,9 @@ module Idl
       fd = field_def(symtab)
       if fd.nil?
         if @idx.is_a?(IntLiteralAst)
-          internal_error "Could not find CSR[#{@idx.to_idl}]"
+          internal_error "Could not find CSR[#{@idx.to_idl}].#{@field_name}"
         else
-          internal_error "Could not find CSR[#{@idx}]"
+          internal_error "Could not find CSR[#{@idx}].#{@field_name}"
         end
       end
       if fd.defined_in_all_bases?
@@ -6026,7 +6030,7 @@ module Idl
       when "sw_read"
         value_error "CSR not knowable" unless csr_known?(symtab)
         cd = csr_def(symtab)
-        cd.fields.each { |f| value_error "#{csr_name}.#{f.name} not RO" unless f.type == "RO" }
+        cd.fields.each { |f| value_error "#{csr_name(symtab)}.#{f.name} not RO" unless f.type(symtab) == "RO" }
 
         value_error "TODO: CSRs with sw_read function"
       when "address"

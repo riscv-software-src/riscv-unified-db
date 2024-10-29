@@ -96,7 +96,8 @@ sc.d:
     Software should not set the _rl_ bit on an LR instruction unless the _aq_ bit is also set.
     LR.rl and SC.aq instructions are not guaranteed to provide any stronger ordering than those
     with both bits clear, but may result in lower performance.
-  definedBy: A
+  definedBy:
+    anyOf: [A, Zalrsc]
   assembly: xd, xs2, xs1
   encoding:
     match: 00011------------011-----0101111
