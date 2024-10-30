@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+# This file contains AST functions that prune out unreachable paths given
+# some known values in a symbol talbe
+# It adds a `prune` function to every AstNode that returns a new,
+# pruned subtree.
+
 require_relative "../ast"
 
 def create_int_literal(value)
@@ -152,13 +157,17 @@ module Idl
   class StatementAst
     def prune(symtab)
       pruned_action = action.prune(symtab)
+
+      new_stmt = StatementAst.new(input, interval, pruned_action)
+      pruned_action.freeze_tree(symtab) unless pruned_action.frozen?
+
       pruned_action.add_symbol(symtab) if pruned_action.is_a?(Declaration)
       value_try do
         pruned_action.execute(symtab) if pruned_action.is_a?(Executable)
       end
       # || ok
 
-      StatementAst.new(input, interval, pruned_action)
+      new_stmt
     end
   end
   class BinaryExpressionAst
