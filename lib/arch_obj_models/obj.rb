@@ -284,16 +284,16 @@ class SchemaCondition
   def to_asciidoc(cond = @hsh, indent = 0)
     case cond
     when String
-      "#{' ' * indent}* #{cond}, version >= 0"
+      "#{'*' * indent}* #{cond}, version >= 0"
     when Hash
       if cond.key?("name")
         if cond.key?("version")
-          "#{' ' * indent}* #{cond['name']}, version #{cond['version']}\n"
+          "#{'*' * indent}* #{cond['name']}, version #{cond['version']}\n"
         else
-          "#{' ' * indent}* #{cond['name']}, version >= 0\n"
+          "#{'*' * indent}* #{cond['name']}, version >= 0\n"
         end
       else
-        "#{' ' * indent}* #{cond.keys[0]}:\n" + to_asciidoc(cond[cond.keys[0]], indent + 2)
+        "#{'*' * indent}* #{cond.keys[0]}:\n" + to_asciidoc(cond[cond.keys[0]], indent + 2)
       end
     when Array
       cond.map { |e| to_asciidoc(e, indent) }.join("\n")
