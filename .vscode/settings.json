@@ -9,5 +9,5 @@
   "files.watcherExclude": {
     "**/.home": true
   },
-  "asciidoc.antora.enableAntoraSupport": true
+  "asciidoc.antora.showEnableAntoraPrompt": true
 }

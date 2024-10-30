@@ -361,6 +361,8 @@ module Idl
 
     # @!macro freeze_tree
     def freeze_tree(global_symtab)
+      return if frozen?
+
       @children.each { |child| child.freeze_tree(global_symtab) }
       freeze
     end
@@ -1095,6 +1097,8 @@ module Idl
     end
 
     def freeze_tree(global_symtab)
+      return if frozen?
+
       # call type to get it set before we freeze the object
       type(global_symtab)
       freeze
@@ -1257,6 +1261,8 @@ module Idl
 
     # @!macro freeze_tree
     def freeze_tree(global_symtab)
+      return if frozen?
+
       type(global_symtab)
       freeze
     end
@@ -1498,7 +1504,9 @@ module Idl
       if var.type(symtab).kind == :array
         value_result = value_try do
           index_value = index.value(symtab)
-          type_error "Array index out of range" if index_value >= var.type(symtab).width
+          if var.type(symtab).width != :unknown
+            type_error "Array index out of range" if index_value >= var.type(symtab).width
+          end
         end # Ok, doesn't need to be known
 
       elsif var.type(symtab).integral?
@@ -2161,8 +2169,11 @@ module Idl
   class MultiVariableDeclarationAst < AstNode
     include Declaration
 
+    # @return [AstNode] Declared type
     def type_name = @children[0]
-    def var_names = @children[1..]
+
+    # @return [Array<AstNode>] Variable names
+    def var_name_nodes = @children[1..]
 
     def initialize(input, interval, type_name, var_names)
       super(input, interval, [type_name] + var_names)
@@ -2170,13 +2181,14 @@ module Idl
       @global = false
     end
 
+    # mark this declaration as being in global scope
     def make_global
       @global = true
     end
 
     # @return [Array<String>] Variables being declared
     def var_names
-      var_names.map(&:text_value)
+      var_name_nodes.map(&:text_value)
     end
 
     # @!macro type_check
@@ -2186,6 +2198,7 @@ module Idl
       add_symbol(symtab)
     end
 
+    # @!macro type
     def type(symtab)
       if @global
         type_name.type(symtab).clone.make_global
@@ -2196,13 +2209,13 @@ module Idl
 
     # @!macro add_symbol
     def add_symbol(symtab)
-      var_names.each do |vname|
-        symtab.add(vname.text_values, Var.new(vname.text_value, type(symtab), type(symtab).default))
+      var_name_nodes.each do |vname|
+        symtab.add(vname.text_value, Var.new(vname.text_value, type(symtab), type(symtab).default))
       end
     end
 
     # @!macro to_idl
-    def to_idl = "#{type_name.to_idl} #{var_names.map(&:to_idl).join(', ')}"
+    def to_idl = "#{type_name.to_idl} #{var_name_nodes.map(&:to_idl).join(', ')}"
   end
 
   class VariableDeclarationSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -3415,6 +3428,8 @@ module Idl
 
     # @!macro freeze_tree
     def freeze_tree(global_symtab)
+      return if frozen?
+
       enum_def_ast = global_symtab.archdef.global_ast.enums.find { |e| e.name == @enum_class_name }
 
       @enum_def_type =
@@ -3601,7 +3616,11 @@ module Idl
     # @!macro type_check
     def type_check(symtab)
       condition.type_check(symtab)
-      type_error "ternary selector must be bool" unless condition.type(symtab).kind == :boolean
+      if condition.type(symtab).kind == :bits
+        type_error "ternary selector must be bool (maybe you meant '#{condition.text_value} != 0'?)"
+      else
+        type_error "ternary selector must be bool" unless condition.type(symtab).kind == :boolean
+      end
 
       value_result = value_try do
         cond = condition.value(symtab)
@@ -4175,6 +4194,8 @@ module Idl
     end
 
     def freeze_tree(symtab)
+      return if frozen?
+
       if @type_name == "Bits"
         # precalculate size if possible
         begin
@@ -4845,6 +4866,8 @@ module Idl
 
     # @!macro freeze_tree
     def freeze_tree(global_symtab)
+      return if frozen?
+
       unless templated?
         arguments(global_symtab)
       end
@@ -5675,6 +5698,8 @@ module Idl
     end
 
     def freeze_tree(symtab)
+      return if frozen?
+
       value_result = value_try do
         @value = calc_value(symtab)
       end
@@ -5740,9 +5765,9 @@ module Idl
       fd = field_def(symtab)
       if fd.nil?
         if @idx.is_a?(IntLiteralAst)
-          internal_error "Could not find CSR[#{@idx.to_idl}]"
+          internal_error "Could not find CSR[#{@idx.to_idl}].#{@field_name}"
         else
-          internal_error "Could not find CSR[#{@idx}]"
+          internal_error "Could not find CSR[#{@idx}].#{@field_name}"
         end
       end
       if fd.defined_in_all_bases?
@@ -5815,6 +5840,8 @@ module Idl
     end
 
     def freeze_tree(symtab)
+      return if frozen?
+
       @archdef = symtab.archdef # remember archdef, used by gen_adoc pass
       @idx.freeze_tree(symtab)
       freeze
@@ -6026,7 +6053,7 @@ module Idl
       when "sw_read"
         value_error "CSR not knowable" unless csr_known?(symtab)
         cd = csr_def(symtab)
-        cd.fields.each { |f| value_error "#{csr_name}.#{f.name} not RO" unless f.type == "RO" }
+        cd.fields.each { |f| value_error "#{csr_name(symtab)}.#{f.name} not RO" unless f.type(symtab) == "RO" }
 
         value_error "TODO: CSRs with sw_read function"
       when "address"

@@ -18,6 +18,12 @@ module Idl
     end
   end
 
+  class FunctionCallExpressionAst
+    def gen_option_adoc
+      gen_adoc(0)
+    end
+  end
+
   class IfAst
     def gen_option_adoc
       adoc = 
