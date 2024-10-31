@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "pathname"
 require "yaml"
 
 # loads a YAML file and expands any $ref/$mref references
@@ -22,8 +23,11 @@ class YamlLoader
 
         if key == "$mref"
           relative_path = value.split("#")[0]
-          target_filename = File.realpath(File.join(File.dirname(filename), relative_path))
-          raise "#{target_filename} does not exist" unless File.exist?(target_filename)
+          target_filename = File.realpath(File.join(filename.dirname, relative_path))
+
+          unless File.exist?(target_filename)
+            raise "While locating $mref in #{filename}, #{target_filename} does not exist"
+          end
 
           target_obj = YamlLoader.load(target_filename, yaml_opts)
           target_obj = target_obj.dig(*value.split("#/")[1].split("/"))
@@ -44,14 +48,15 @@ class YamlLoader
   # @param yaml_opts [Hash] options to pass to YAML.load_file
   # @return [Object] the loaded YAML file
   def self.load(filename, yaml_opts = {})
-    raise ArgumentError, "Cannot find file #{filename}" unless File.exist?(filename)
+    filename = Pathname.new(filename)
+    raise ArgumentError, "Cannot find file #{filename}" unless filename.exist?
 
-    filename = File.realpath(filename)
+    filename = filename.realpath
     return @cache[filename] if @cache.key?(filename)
 
     obj = YAML.load_file(filename, **yaml_opts)
     obj = expand(filename, obj, yaml_opts) if obj.is_a?(Hash)
 
-    @cache[filename] = obj
+    # @cache[filename] = obj
   end
 end
