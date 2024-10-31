@@ -146,7 +146,7 @@ class ArchGen
     @implemented_extensions.each do |ext|
       ext_name = ext["name"]
       gen_ext_path = @gen_dir / "arch" / "ext" / "#{ext_name}.yaml"
-      ext_yaml = YAML.load_file gen_ext_path.read
+      ext_yaml = YAML.load_file gen_ext_path.to_s
       unless ext_yaml[ext_name]["params"].nil?
         ext_yaml[ext_name]["params"].each do |param_name, param_data|
           next unless param_data.key?("extra_validation")
