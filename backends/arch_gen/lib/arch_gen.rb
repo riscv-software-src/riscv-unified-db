@@ -6,7 +6,6 @@ require "pathname"
 require "rake/application"
 require "rubygems/requirement"
 require "tilt"
-require "yaml"
 
 require_relative "#{$lib}/validate"
 require_relative "#{$lib}/arch_def"
@@ -53,7 +52,7 @@ class ArchGen
     @implemented_extensions.each do |ext|
       ext_name = ext["name"]
       gen_ext_path = @gen_dir / "arch" / "ext" / "#{ext_name}.yaml"
-      ext_yaml = YAML.safe_load gen_ext_path.read
+      ext_yaml = YamlLoader.load gen_ext_path.to_s
       unless ext_yaml[ext_name]["params"].nil?
         ext_yaml[ext_name]["params"].each do |param_name, param_data|
           schema["properties"]["params"]["required"] << param_name
@@ -92,7 +91,7 @@ class ArchGen
     raise "Validation failed" if @cfg_impl_ext.nil?
 
     cfg_opts_path = @cfg_dir / "cfg.yaml"
-    @cfg_opts = YAML.load_file(cfg_opts_path)
+    @cfg_opts = YamlLoader.load(cfg_opts_path)
     raise "Validation failed" if @cfg_opts.nil?
     raise "Validation failed: bad type" unless ["partially configured", "fully configured"].include?(@cfg_opts["type"])
 
@@ -147,7 +146,7 @@ class ArchGen
     @implemented_extensions.each do |ext|
       ext_name = ext["name"]
       gen_ext_path = @gen_dir / "arch" / "ext" / "#{ext_name}.yaml"
-      ext_yaml = YAML.safe_load gen_ext_path.read
+      ext_yaml = YamlLoader.load gen_ext_path.read
       unless ext_yaml[ext_name]["params"].nil?
         ext_yaml[ext_name]["params"].each do |param_name, param_data|
           next unless param_data.key?("extra_validation")
@@ -275,29 +274,29 @@ class ArchGen
   #
   def gen_arch_def
     csr_hash = Dir.glob(@gen_dir / "arch" / "csr" / "**" / "*.yaml").map do |f|
-      csr_obj = YAML.load_file(f)
+      csr_obj = YamlLoader.load(f)
       csr_name = csr_obj.keys[0]
       [csr_name, csr_obj[csr_name]]
     end.to_h
     inst_hash = Dir.glob(@gen_dir / "arch" / "inst" / "**" / "*.yaml").map do |f|
-      inst_obj = YAML.load_file(f)
+      inst_obj = YamlLoader.load(f)
       inst_name = inst_obj.keys[0]
       [inst_name, inst_obj[inst_name]]
     end.to_h
     ext_hash = Dir.glob(@gen_dir / "arch" / "ext" / "**" / "*.yaml").map do |f|
-      ext_obj = YAML.load_file(f)
+      ext_obj = YamlLoader.load(f)
       ext_name = ext_obj.keys[0]
       [ext_name, ext_obj[ext_name]]
     end.to_h
     profile_family_hash = Dir.glob($root / "arch" / "profile_family" / "**" / "*.yaml").map do |f|
-      profile_obj = YAML.load_file(f)
+      profile_obj = YamlLoader.load(f)
       profile_name = profile_obj.keys[0]
       profile_obj[profile_name]["name"] = profile_name
       profile_obj[profile_name]["__source"] = f
       [profile_name, profile_obj[profile_name]]
     end.to_h
     profile_hash = Dir.glob($root / "arch" / "profile" / "**" / "*.yaml").map do |f|
-      profile_obj = YAML.load_file(f)
+      profile_obj = YamlLoader.load(f)
       profile_name = profile_obj.keys[0]
       profile_obj[profile_name]["name"] = profile_name
       profile_obj[profile_name]["__source"] = f
@@ -305,7 +304,7 @@ class ArchGen
     end.to_h
     manual_hash = {}
     Dir.glob($root / "arch" / "manual" / "**" / "contents.yaml").map do |f|
-      manual_version = YAML.load_file(f)
+      manual_version = YamlLoader.load(f)
       manual_id = manual_version["manual"]
       unless manual_hash.key?(manual_id)
         manual_info_files = Dir.glob($root / "arch" / "manual" / "**" / "#{manual_id}.yaml")
@@ -313,25 +312,25 @@ class ArchGen
         raise "Found multiple manual infos '#{manual_id}'.yaml, needed by #{f}" if manual_info_files.size > 1
   
         manual_info_file = manual_info_files.first
-        manual_hash[manual_id] = YAML.load_file(manual_info_file)
+        manual_hash[manual_id] = YamlLoader.load(manual_info_file)
         manual_hash[manual_id]["__source"] = manual_info_file
         # TODO: schema validation
       end
   
       manual_hash[manual_id]["versions"] ||= []
-      manual_hash[manual_id]["versions"] << YAML.load_file(f)
+      manual_hash[manual_id]["versions"] << YamlLoader.load(f)
       # TODO: schema validation
       manual_hash[manual_id]["versions"].last["__source"] = f
     end
     crd_family_hash = Dir.glob($root / "arch" / "crd_family" / "**" / "*.yaml").map do |f|
-      family_obj = YAML.load_file(f, permitted_classes: [Date])
+      family_obj = YamlLoader.load(f, permitted_classes: [Date])
       family_name = family_obj.keys[0]
       family_obj[family_name]["name"] = family_name
       family_obj[family_name]["__source"] = f
       [family_name, family_obj[family_name]]
     end.to_h
     crd_hash = Dir.glob($root / "arch" / "crd" / "**" / "*.yaml").map do |f|
-      crd_obj = YAML.load_file(f, permitted_classes: [Date])
+      crd_obj = YamlLoader.load(f, permitted_classes: [Date])
       crd_name = crd_obj.keys[0]
       crd_obj[crd_name]["name"] = crd_name
       crd_obj[crd_name]["__source"] = f
@@ -590,7 +589,7 @@ class ArchGen
       raise e
     end
 
-    def_obj = YAML.safe_load(rendered_def)
+    def_obj = YamlLoader.load(rendered_def)
 
     raise "#{type} name ('#{name}') must match key in defintion ('#{def_obj.keys[0]}')" if name.to_s != def_obj.keys[0]
 
@@ -626,7 +625,7 @@ class ArchGen
     extra_env&.each { |k, v| current_env.define_singleton_method(k) { v } }
     rendered_def = Tilt["erb"].new(source_path, trim: "-").render(current_env)
 
-    def_obj = YAML.safe_load(rendered_def)
+    def_obj = YamlLoader.load(rendered_def)
 
     raise "#{type} name (#{name}) must match key in defintion (#{def_obj.keys[0]})" if name.to_s != def_obj.keys[0]
 
@@ -672,8 +671,8 @@ class ArchGen
       FileUtils.cp overlay_path, merged_path
     else
       # arch and overlay, do the merge
-      arch_obj = YAML.load_file(arch_path)
-      overlay_obj = YAML.load_file(overlay_path)
+      arch_obj = YamlLoader.load(arch_path)
+      overlay_obj = YamlLoader.load(overlay_path)
 
       merge(arch_obj, overlay_obj)
       merged_path.write YAML.dump(arch_obj)
@@ -722,7 +721,7 @@ class ArchGen
       end
 
     # get the csr data (not including the name key), which is redundant at this point
-    csr_data = YAML.load_file(merged_path)[csr_name]
+    csr_data = YamlLoader.load(merged_path)[csr_name]
     csr_data["name"] = csr_name
     csr_data["fields"].each { |n, f| f["name"] = n }
     csr_data["__source"] = og_path.to_s
@@ -805,7 +804,7 @@ class ArchGen
 
     merged_path = gen_merged_def(:ext, arch_path, arch_overlay_path)
 
-    yaml_contents = YAML.load_file(merged_path)
+    yaml_contents = YamlLoader.load(merged_path)
     raise "In #{merged_path}, key does not match file name" unless yaml_contents.key?(ext_name)
 
     ext_obj = yaml_contents[ext_name]
@@ -884,7 +883,7 @@ class ArchGen
 
     @exception_codes = {}
     Dir.glob(@gen_dir / "arch" / "ext" / "*.yaml") do |ext_path|
-      ext_obj = YAML.load_file(ext_path)
+      ext_obj = YamlLoader.load(ext_path)
       ext_obj = ext_obj[ext_obj.keys[0]]
       if ext_obj.key?("exception_codes")
         ext_obj["exception_codes"].each do |exception_code|
@@ -905,7 +904,7 @@ class ArchGen
 
     @interrupt_codes = {}
     Dir.glob(@gen_dir / "arch" / "ext" / "*.yaml") do |ext_path|
-      ext_obj = YAML.load_file(ext_path)
+      ext_obj = YamlLoader.load(ext_path)
       ext_obj = ext_obj[ext_obj.keys[0]]
       if ext_obj.key?("interrupt_codes")
         ext_obj["interrupt_codes"].each do |interrupt_code|
@@ -967,7 +966,7 @@ class ArchGen
       end
 
     # get the inst data (not including the name key), which is redundant at this point
-    inst_data = YAML.load_file(merged_path)
+    inst_data = YamlLoader.load(merged_path)
     raise "The first and only key of #{arch_path} must be '#{inst_name}" unless inst_data.key?(inst_name)
     inst_data = inst_data[inst_name]
 
