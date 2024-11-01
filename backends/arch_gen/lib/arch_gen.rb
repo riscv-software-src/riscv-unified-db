@@ -470,31 +470,51 @@ class ArchGen
   end
   private :env
 
-  def merge_helper(base_obj, updates, path_so_far)
-    obj = path_so_far.empty? ? updates : updates.dig(*path_so_far)
-    obj.each do |key, value|
-      if value.is_a?(Hash)
-        merge_helper(base_obj, updates, (path_so_far + [key]))
+  # merges patch into base_obj based on JSON Merge Patch (RFC 7386)
+  #
+  # @param base_obj [Hash] base object to merge into
+  # @param patch [Hash] patch to merge into base_obj
+  # @param path_so_far [Array<String>] path into the current object. Shouldn't be set by user (used during recursion)
+  # @return [Hash] merged object
+  def merge_patch(base, patch, path_so_far = [])
+    patch_obj = path_so_far.empty? ? patch : patch.dig(*path_so_far)
+    patch_obj.each do |key, patch_value|
+      if patch_value.is_a?(Hash)
+        # continue to dig
+        merge_patch(base, patch, (path_so_far + [key]))
       else
-        (path_so_far + [key]).each_with_index do |k, idx|
-          base_obj[k] ||= {}
-          if idx != path_so_far.size
-            base_obj = base_obj[k]
-          else
-            base_obj[k] = value
+        base_ptr = base.dig(*path_so_far)
+        base_value = base_ptr&.dig(key)
+        case patch_value
+        when nil
+          # remove from base, if it exists
+          unless base_value.nil?
+            base_ptr[key] = nil
           end
+        else
+          # add or overwrite value in base
+          if base_ptr.nil?
+            # need to create intermediate nodes, too
+            base_ptr = base
+            path_so_far.each do |k|
+              base_ptr[k] = {} unless base_ptr.key?(k)
+              base_ptr = base_ptr[k]
+            end
+            base_ptr = base.dig(*path_so_far)
+          end
+          base_ptr[key] = patch_value
         end
       end
     end
   end
-  private :merge_helper
+  private :merge_patch
 
   # overwrites base_obj with any data in update
   #
   # @param base_obj [Hash] Base object
   # @param updates [Hash] Object with overlays
   # @return [Hash] Updated object
-  def merge(base_obj, updates) = merge_helper(base_obj, updates, [])
+  def merge(base_obj, updates) = merge_patch(base_obj, updates, [])
   private :merge
 
   # @param type [Symbol] Type of the object (@see Validator::SCHEMA_PATHS)
@@ -728,6 +748,7 @@ class ArchGen
     end
     belongs =
       csr_obj.exists_in_cfg?(arch_def_mock)
+  
 
     @implemented_csrs ||= []
     @implemented_csrs << csr_name if belongs
@@ -784,7 +805,10 @@ class ArchGen
 
     merged_path = gen_merged_def(:ext, arch_path, arch_overlay_path)
 
-    ext_obj = YAML.load_file(merged_path)[ext_name]
+    yaml_contents = YAML.load_file(merged_path)
+    raise "In #{merged_path}, key does not match file name" unless yaml_contents.key?(ext_name)
+
+    ext_obj = yaml_contents[ext_name]
     ext_obj["name"] = ext_name
 
     @implied_ext_map ||= {}

@@ -23,9 +23,9 @@
     FROZEN_STATE
   when "development"
     <<~DEV_STATE
-      This document is in the http://riscv.org/spec-state[Development state].
-      
-      Change should be expected
+      This document is in the http://riscv.org/spec-state[Development state]. + \\
+      + \\
+      Change should be expected + \\
     DEV_STATE
   else
     raise "TODO: #{ext_version["state"]} description"
@@ -37,11 +37,13 @@
 :preface-title: Licensing and Acknowledgements
 :colophon:
 :appendix-caption: Appendix
+<%- if !ext.company.nil? && (ext.company["name"] =~ /RISCV/) -%>
 :title-logo-image: image:risc-v_logo.png["RISC-V International Logo",pdfwidth=3.25in,align=center]
+:back-cover-image: image:riscv-horizontal-color.svg[opacity=25%]
+<%- end -%>
 <%- unless ext_version["state"] == "ratified" -%>
 :page-background-image: image:draft.png[opacity=20%]
 <%- end -%>
-:back-cover-image: image:riscv-horizontal-color.svg[opacity=25%]
 // Settings
 :experimental:
 :reproducible:
@@ -121,7 +123,7 @@ endif::[]
 == Copyright and license information
 This document is released under the <%= ext.doc_license.nil? ? "unknown" : ext.doc_license["url"] %>[<%= ext.doc_license.nil? ? "unknown" : ext.doc_license["name"] %>].
 
-Copyright <%= ext_version["ratification_date"].split("-")[0] %> by <%= ext.company.nil? ? "unknown" : ext.company["name"] %>.
+Copyright <%= ext_version["ratification_date"].nil? ? Date.today.year : ext_version["ratification_date"].split("-")[0] %> by <%= ext.company.nil? ? "unknown" : ext.company["name"] %>.
 
 [preface]
 == Acknowledgements
@@ -131,7 +133,8 @@ Contributors to version <%= version["version"] %> of the specification (in alpha
 
 <%- unless version["contributors"].nil? -%>
 <%- version["contributors"].sort { |a, b| a["name"].split(" ").last <=> b["name"].split(" ").last }.each do |c| -%>
- * <%= c["name"] %> <<%= c["email"] %>> (<%= c["company"] %>)
+  * <%= c["name"] %> <<%= c["email"] %>> (<%= c["company"] %>)
+
 <%- end -%>
 <%- end -%>
 <%- end -%>
@@ -154,12 +157,17 @@ Ratification Date:: <%= version["ratification_date"] %>
 <%- if version.key?("url") -%>
 Design document:: <%= version["url"] %>
 <%- end -%>
-<%- if version.key?("change") -%>
+<%- if version.key?("changes") -%>
 Changes::
 <%= version["changes"] %>
 <%- end -%>
+<%- unless version["implies"].nil? || version["implies"].empty? -%>
+Implies::
+* <%= version["implies"].map { |name, version| "#{name} (#{version})" }.join("\n* ") %>
+<%- end -%>
 --
 <%- end -%>
+
 
 <<<
 == Extension description
@@ -167,8 +175,51 @@ Changes::
 <%= ext.description %>
 
 <%- unless ext.implies.nil? -%>
-<%- ext.implies.each do |e| -%>
+=== Sub-extensions
+The following sub-extensions are defined:
+
+<%- ext.implies.each do |sub_ext| -%>
+==== <%= sub_ext.name %>
+
+<%= arch_def.extension(sub_ext.name).description %>
+
 <%- end -%>
+<%- end -%>
+
+<%- unless ext.instructions.empty? -%>
+<<<
+== Instruction summary
+
+The following <%= ext.instructions.size %> instructions are added by this extension:
+
+[%autowidth]
+|===
+| RV32 | RV64 | Mnemonic | Instruction | <%= ext.versions.map { |v| "v#{v["version"]}" }.join(" | ") %>
+
+<%- ext.instructions.each do |i| -%>
+| <%= i.rv32? ? "&#x2713;" : "" %>
+| <%= i.rv64? ? "&#x2713;" : "" %>
+| `<%= i.name %> <%= i.assembly.gsub("x", "r").strip %>`
+| xref:insns-<%= i.name.gsub('.', '_') %>[<%= i.long_name %>]
+| <%= ext.versions.map { |v| i.defined_by?(ext.name, v["version"]) ? "&#x2713;" : "" }.join(" | ") %>
+<%- end -%>
+|===
+
+<%- unless ext.implies.empty? -%>
+=== Instructions by sub-extension
+
+|===
+| Mnemonic | `<%= ext.name %>` | <%= ext.implies.map { |e| "`#{e.name}`" }.join(" | ") %>
+
+<%- ext.instructions.each do |i| -%>
+| `<%= i.name %>`
+| &#x2713;
+| <%= ext.implies.map { |e| i.defined_by?(e.name, arch_def.extension(e.name).max_version) ? "&#x2713;" : "" }.join(" | ") %>
+<%- end -%>
+|===
+
+<%- end -%>
+
 <%- end -%>
 
 <%- unless ext.csrs.empty? -%>
@@ -328,24 +379,6 @@ This CSR may return a value that is different from what is stored in hardware.
 
 <%- unless ext.instructions.empty? -%>
 <<<
-== Instruction summary
-
-The following <%= ext.instructions.size %> instructions are added by this extension:
-
-[%autowidth]
-|===
-| RV32 | RV64 | Mnemonic | Instruction | <%= ext.versions.map { |v| "v#{v["version"]}" }.join(" | ") %>
-
-<%- ext.instructions.each do |i| -%>
-| <%= i.rv32? ? "&#x2713;" : "" %>
-| <%= i.rv64? ? "&#x2713;" : "" %>
-| `<%= i.name %> <%= i.assembly.gsub("x", "r") %>`
-| xref:insns-<%= i.name.gsub('.', '_') %>[<%= i.long_name %>]
-| <%= ext.versions.map { |v| i.defined_by?(ext.name, v["version"]) ? "&#x2713;" : "" }.join(" | ") %>
-<%- end -%>
-|===
-
-<<<
 [#insns,reftext="Instructions (in alphabetical order)"]
 == Instructions (in alphabetical order)
 
@@ -387,8 +420,14 @@ RV64::
 Description::
 <%= i.description %>
 
+
 Decode Variables::
 
+<%- if i.multi_encoding? ? (i.decode_variables(32).empty? && i.decode_variables(64).empty?) : i.decode_variables(i.base.nil? ? 64 : i.base).empty? -%>
+
+<%= i.name %> has no decode variables.
+
+<%- else -%>
 <%- if i.multi_encoding? -%>
 RV32::
 +
@@ -414,7 +453,8 @@ RV64::
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
 <%- end -%>
 ----
-<%- end -%>
+<%- end # if multi_encoding? -%>
+<%- end # if no decode variables-%>
 
 Operation::
 <%- unless i.data["operation()"].nil? -%>

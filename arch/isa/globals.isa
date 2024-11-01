@@ -2798,3 +2798,45 @@ function write_memory {
   }
 }
 
+function mstatus_sd_has_known_reset
+{
+  returns Boolean
+  description {
+    Returns true if the mstatus.SD bit has a defined reset value, as determined by various parameters.
+  }
+  body {
+    # the reset value is known if both FS and VS are known
+
+    Boolean fs_has_single_value =
+      ((!implemented?(ExtensionName::F)) || ($array_size(MSTATUS_FS_LEGAL_VALUES) == 1));
+
+    Boolean vs_has_single_value =
+      ((!implemented?(ExtensionName::V)) || ($array_size(MSTATUS_VS_LEGAL_VALUES) == 1));
+
+    return fs_has_single_value && vs_has_single_value;
+  }
+}
+
+function mstatus_sd_reset_value
+{
+  returns Bits<1>
+  description {
+    Returns the reset value of mstatus.SD when known
+  }
+  body {
+    # the reset value is known if both FS and VS are known
+    assert(mstatus_sd_has_known_reset(),
+           "mstatus_sd_reset_value is only defined when mstatus_sd_has_known_reset() == true");
+
+    Bits<2> fs_value, vs_value; # defaults to 0
+
+    if ((!implemented?(ExtensionName::F)) || ($array_size(MSTATUS_FS_LEGAL_VALUES) == 1)) {
+      fs_value = (!implemented?(ExtensionName::F)) ? 0 : MSTATUS_FS_LEGAL_VALUES[0];
+    }
+    if ((!implemented?(ExtensionName::V)) || ($array_size(MSTATUS_VS_LEGAL_VALUES) == 1)) {
+      fs_value = (!implemented?(ExtensionName::V)) ? 0 : MSTATUS_VS_LEGAL_VALUES[0];
+    }
+
+    return ((fs_value == 3) || (vs_value == 3)) ? 1 : 0;
+  }
+}

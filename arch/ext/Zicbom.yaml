@@ -15,12 +15,12 @@ Zicbom:
       also_defined_in: [Zicboz, Zicbop]
       schema:
         type: integer
-    ALLOW_CBO_INVAL_UPGRADE_TO_FLUSH:
+    FORCE_UPGRADE_CBO_INVAL_TO_FLUSH:
       description: |
-        When true, an implementation can (when `menvcfg.CBIE` == `01`) upgrade a `cbo.inval`
-        instruction to a `cbo.flush`.
+        When true, an implementation prohibits setting `menvcfg.CBIE` == `11` such that all `cbo.inval`
+        instructions either trap (when `menvcfg.CBIE` == '00') or flush (when `menvcfg.CBIE` == '01').
 
-        When false, an implementation does not support the upgrade, and the value '01' cannot be
-        written to `menvcfg.CBIE`.
+        When false, an implementation allows a true INVAL operation for `cbo.inval`, and thus supports
+        the setting `menvcfg.CBIE` == `11`.
       schema:
         type: boolean
