@@ -27,7 +27,8 @@
         "asciidoctor.asciidoctor-vscode",
         "zhwu95.riscv",
         "tomoki1207.pdf",
-        "CraigMaslowski.erb"
+        "CraigMaslowski.erb",
+        "HowerLimited.idl-vscode"
       ]
     }
   },
