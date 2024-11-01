@@ -6,6 +6,9 @@
   "remoteEnv": {
     "DISPLAY": ":0"
   },
+  "containerEnv": {
+    "DEVCONTAINER_ENV": "true"
+  },
   // vscode extensions
   "customizations": {
     "vscode": {
