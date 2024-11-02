@@ -103,15 +103,15 @@ rva20u64:
     note: |
       The number of counters is platform-specific.
   extra_notes:
-  - location: optional
-    note: |
+  - presence: optional
+    text: |
       The rationale to not make Q an optional extension is that
       quad-precision floating-point is unlikely to be implemented in
       hardware, and so we do not require or expect A-profile software to
       expend effort optimizing use of Q instructions in case they are
       present.
-  - location: optional
-    note: |
+  - presence: optional
+    text: |
       Zifencei is not classed as a supported option in the user-mode
       profile because it is not sufficient by itself to produce the desired
       effect in a multiprogrammed multiprocessor environment without OS
@@ -122,13 +122,14 @@ rva20u64:
       instruction-cache coherence mechanisms can be used behind the OS
       abstraction.  A separate extension is being developed for more general
       and efficient instruction cache coherence.
-  - location: optional
-    note: |
+  - presence: optional
+    text: |
       The execution environment must provide a means to synchronize writes to
       instruction memory with instruction fetches, the implementation of which
       likely relies on the Zifencei extension.
       For example, RISC-V Linux supplies the `__riscv_flush_icache` system call and
       a corresponding vDSO call.
   recommendations:
-  - Implementations are strongly recommended to raise illegal-instruction
-    exceptions on attempts to execute unimplemented opcodes.
+  - text: |
+      Implementations are strongly recommended to raise illegal-instruction
+      exceptions on attempts to execute unimplemented opcodes.

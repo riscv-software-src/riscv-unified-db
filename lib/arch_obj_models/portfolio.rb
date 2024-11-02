@@ -446,6 +446,7 @@ class Portfolio < ArchDefObject
 
   class Recommendation < ArchDefObject
     def initialize(data)
+      puts "CCC: data = #{data}"
       super(data)
     end
 
