@@ -62,31 +62,31 @@ endif::[]
 [preface]
 == Copyright and license information
 This document is released under the
-<%- if profile_family.doc_license.url.nil? -%>
+<% if profile_family.doc_license.url.nil? -%>
 <%= profile_family.doc_license.name %>.
-<%- else -%>
+<% else -%>
 <%= profile_family.doc_license.url %>[<%= profile_family.doc_license.name %>].
-<%- end -%>
+<% end -%>
 
-<%- if profile_family.ratification_date.nil? -%>
+<% if profile_family.ratification_date.nil? -%>
 Copyright <%= Date.today.year %>
-<%- else -%>
+<% else -%>
 Copyright <%= profile_family.ratification_date.year %>
-<%- end -%>
+<% end -%>
 by <%= profile_family.company.name %>.
 
 
 [preface]
 == Acknowledgements
 
-<%- profile_family.profiles.each do |profile| -%>
+<% profile_family.profiles.each do |profile| -%>
 Contributors to the <%= profile.marketing_name %> Profile (in alphabetical order) include: +
 
-<%- profile.contributors.sort.each do |c| -%>
+<% profile.contributors.sort.each do |c| -%>
  * <%= c.name %> <<%= c.email %>> (<%= c.company %>)
-<%- end -%>
+<% end -%>
 
-<%- end -%>
+<% end -%>
 
 We express our gratitude to everyone that contributed to, reviewed or
 improved this specification through their comments and questions.
@@ -329,15 +329,15 @@ non-profile extensions on an earlier profile.
 
 The following profiles are defined in this family:
 
-<%- profile_family.profiles.each do |profile| -%>
+<% profile_family.profiles.each do |profile| -%>
 --
 Name:: <%= profile.marketing_name %>
 State:: <%= profile.state %>
-<%- unless profile.ratification_date.nil? -%>
+<% unless profile.ratification_date.nil? -%>
 Ratification date:: <%= profile.ratification_date %>
-<%- end -%>
+<% end -%>
 --
-<%- end -%>
+<% end -%>
 
 === Extensions in the <%= profile_family.name %> Family 
 
@@ -348,77 +348,79 @@ The <%= profile_family.marketing_name %> Profile Family references
 |===
 | Extension | <%= profile_family.profiles.map(&:marketing_name).join(" | ") -%>
 
-<%- profile_family.referenced_extensions.sort_by(&:name).each do |ext| -%>
+<% profile_family.referenced_extensions.sort_by(&:name).each do |ext| -%>
 | <%= ext.name %> | <%= profile_family.profiles.map { |profile| profile.extension_presence(ext.name) }.join(" | ") -%>
-<%- end -%>
+<% end -%>
 
 |===
 
-<%- profile_family.profiles.each do |profile| -%>
+<% profile_family.profiles.each do |profile| -%>
 <<<
 == <%= profile.marketing_name %> Profile
 
 <%= profile.description %>
 
-=== Extensions
+<% ["mandatory","optional"].each do |presence| -%>
 
-The <%= profile.marketing_name %> Profile has
-<%= profile.mandatory_extension_requirements.size %> mandatory extensions
-and <%= profile.optional_extension_requirements.size %> optional extensions.
+=== <%= presence.capitalize %> Extensions
 
-==== Mandatory Extensions
+<% ext_reqs = profile.in_scope_ext_reqs(presence) -%>
 
-<%- profile.mandatory_extension_requirements.each do |ext_req| -%>
-<%- ext = profile.arch_def.extension(ext_req.name) -%>
+The <%= profile.marketing_name %> Profile has <%= ext_reqs.size %> <%= presence %> extensions.
+
+<% unless ext_reqs.empty? -%>
+<% ext_reqs.each do |ext_req| -%>
+<% ext = profile.arch_def.extension(ext_req.name) -%>
 * *<%= ext_req.name %>* <%= ext.nil? ? "" : ext.long_name %>
 +
 Version <%= ext_req.version_requirement %>
-<%- unless profile.extension_note(ext_req.name).nil? -%>
+<% unless profile.extension_note(ext_req.name).nil? -%>
 +
 [NOTE]
 --
 <%= profile.extension_note(ext_req.name) %>
 --
-<%- end -%>
-<%- end -%>
+<% end # unless note -%>
+<% end # each ext_req -%>
+<% end # no ext_reqs -%>
 
-==== Optional Extensions
+<% profile.extra_notes_for_presence(presence)&.each do |extra_note| -%>
+NOTE: <%= extra_note.text %>
 
-<%- profile.optional_extension_requirements.each do |ext_req| -%>
-<%- ext = profile.arch_def.extension(ext_req.name) -%>
-* *<%= ext_req.name %>* <%= ext.nil? ? "" : ext.long_name %>
-+
-Version<%= ext_req.version_requirement %>
-<%- unless profile.extension_note(ext_req.name).nil? -%>
-+
-[NOTE]
---
-<%= profile.extension_note(ext_req.name) %>
---
-<%- end -%>
-<%- end -%>
+<% end # each extra_note -%>
 
-<%- end -%>
+<% end # presence -%>
+
+<% unless profile.recommendations.empty? -%>
+=== Recommendations
+
+Recommendations are not strictly mandated but are included to guide implementers making design choices.
+
+<% profile.recommendations.each do |recommendation| -%>
+<%= recommendation.text %>
+<% end # each recommendation %>
+<% end # unless recommendations empty %>
+<% end # each profile -%>
 
 == Profile Parameters
 
 <%= profile_family.marketing_name %> has <%= profile_family.referenced_extensions.reduce(0) { |sum, ext| sum + ext.params.size } %> associated paramters.
 
-<%- profile_family.referenced_extensions.each do |ext| -%>
-<%- ext.params.sort_by { |p| p.name }.each do |param| -%>
+<% profile_family.referenced_extensions.each do |ext| -%>
+<% ext.params.sort_by { |p| p.name }.each do |param| -%>
 <%= param.name %>::
 +
 --
 <%= param.desc %>
 --
-<%- end -%>
-<%-  end -%>
+<% end -%>
+<%  end -%>
 
 <<<
 [appendix]
 == Extension Specifications
 
-<%- profile_family.referenced_extensions.each do |ext| -%>
+<% profile_family.referenced_extensions.each do |ext| -%>
 <<<
 === <%= ext.name %> Extension
 <%= ext.long_name %>
@@ -427,10 +429,10 @@ Version<%= ext_req.version_requirement %>
 |===
 | Profile | v<%= ext.versions.map { |v| v["version"] }.join(" | v") %>
 
-<%- profile_family.profiles.each do |profile| -%>
+<% profile_family.profiles.each do |profile| -%>
 | <%= profile.marketing_name %> | <%= ext.versions.map do |v|
-  mandatory = profile.mandatory_extension_requirements.any? { |req| req.satisfied_by?(ext.name, v["version"]) }
-  optional = profile.optional_extension_requirements.any? { |req| req.satisfied_by?(ext.name, v["version"]) }
+  mandatory = profile.in_scope_ext_reqs("mandatory").any? { |req| req.satisfied_by?(ext.name, v["version"]) }
+  optional = profile.in_scope_ext_reqs("optional").any? { |req| req.satisfied_by?(ext.name, v["version"]) }
   if mandatory
     "mandatory"
   elsif optional
@@ -439,34 +441,34 @@ Version<%= ext_req.version_requirement %>
     "-"
   end
 end.join(" | ") -%>
-<%- end -%>
+<% end -%>
 
 |===
 
-<%- ext.versions.each do |v| -%>
+<% ext.versions.each do |v| -%>
 <%= v["version"] %>::
   Ratification date:::
     <%= v["ratification_date"] %>
-  <%- if v.key?("changes") -%>
+  <% if v.key?("changes") -%>
   Changes:::
 
-    <%- v["changes"].each do |c| -%>
+    <% v["changes"].each do |c| -%>
     * <%= c %>  
-    <%- end -%>
+    <% end -%>
 
-  <%- end -%>
-  <%- if v.key?("url") -%>
+  <% end -%>
+  <% if v.key?("url") -%>
   Ratification document:::
     <%= v["url"] %>
-  <%- end -%>
-  <%- if v.key?("implies") -%>
+  <% end -%>
+  <% if v.key?("implies") -%>
   Implies:::
-    <%- implications = v["implies"][0].is_a?(Array) ? v["implies"] : [v["implies"]] -%>
-    <%- implications.each do |i| -%>
+    <% implications = v["implies"][0].is_a?(Array) ? v["implies"] : [v["implies"]] -%>
+    <% implications.each do |i| -%>
     * `<%= i[0] %>` version <%= i[1] %>
-    <%- end -%>
-  <%- end -%>
-<%- end -%>
+    <% end -%>
+  <% end -%>
+<% end -%>
 
 ==== Synopsis
 
@@ -477,35 +479,35 @@ end.join(" | ") -%>
 :leveloffset: -3
 
 // TODO: GitHub issue 92: Use version specified by each profile and add version info to inst table below.
-<%- insts = arch_def.instructions.select { |i| i.defined_by?(ext.name,ext.min_version) } -%>
-<%- unless insts.empty? -%>
+<% insts = arch_def.instructions.select { |i| i.defined_by?(ext.name,ext.min_version) } -%>
+<% unless insts.empty? -%>
 ==== Instructions
 
 The following instructions are added by this extension:
 
 [cols="1,3"]
 |===
-<%- insts.each do |inst| -%>
+<% insts.each do |inst| -%>
  | <%= "`#{inst.name}`" %> | *<%= inst.long_name %>*
-<%- end -%>
+<% end -%>
 |===
-<%- end -%>
+<% end -%>
 
-<%- unless ext.params.empty? -%>
+<% unless ext.params.empty? -%>
 ==== Parameters
 
 This extension has the following implementation options:
 
-<%- ext.params.sort_by { |p| p.name }.each do |param| -%>
+<% ext.params.sort_by { |p| p.name }.each do |param| -%>
 <%= param.name %>::
 +
 --
 <%= param.desc %>
 --
-<%- end -%>
+<% end -%>
 
-<%- end -%>
-<%- end -%>
+<% end -%>
+<% end -%>
 
 <<<
 [appendix]
@@ -516,7 +518,7 @@ This extension has the following implementation options:
   insts.sort_by!(&:name)
 -%>
 
-<%- insts.each do |inst| -%>
+<% insts.each do |inst| -%>
 <<<
 [[inst-<%=inst.name.gsub('.', '_')%>-def]]
 === <%= inst.name %>
@@ -529,7 +531,7 @@ This instruction is defined by:
 
 ==== Encoding
 
-<%- if inst.multi_encoding? -%>
+<% if inst.multi_encoding? -%>
 [NOTE]
 This instruction has different encodings in RV32 and RV64.
 
@@ -549,25 +551,25 @@ RV64::
 <%= JSON.dump inst.wavedrom_desc(64) %>
 ....
 ====
-<%- else -%>
+<% else -%>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....  
 <%= JSON.dump inst.wavedrom_desc(inst.base.nil? ? 32 : inst.base) %>
 ....
-<%- end -%>
+<% end -%>
 
 ==== Synopsis
 
 <%= inst.description %>
 
 ==== Access
-<%- if profile_family.referenced_extensions.any? { |e| e.name == "H" } -%>
+<% if profile_family.referenced_extensions.any? { |e| e.name == "H" } -%>
 [cols="^,^,^,^,^"]
-<%- else -%>
+<% else -%>
 [cols="^,^,^"]
-<%- end -%>
+<% end -%>
 |===
-| M | <%- if profile_family.referenced_extensions.any? { |e| e.name == "H" } -%>HS<%- else -%>S<%- end -%> | U <%- if profile_family.referenced_extensions.any? { |e| e.name == "H" } -%> | VS | VU <%- end -%>
+| M | <% if profile_family.referenced_extensions.any? { |e| e.name == "H" } -%>HS<% else -%>S<% end -%> | U <% if profile_family.referenced_extensions.any? { |e| e.name == "H" } -%> | VS | VU <% end -%>
 
 | [.access-always]#Always#
 | [.access-<%=inst.access['s']%>]#<%= inst.access['s'].capitalize %>#
@@ -578,92 +580,92 @@ RV64::
 <% end %>
 |===
 
-<%- if inst.access_detail? -%>
+<% if inst.access_detail? -%>
 <%= inst.access_detail %>
-<%- end -%>
+<% end -%>
 
 
 ==== Decode Variables
 
-<%- if inst.multi_encoding? -%>
+<% if inst.multi_encoding? -%>
 [tabs]
 ====
 RV32::
 +
 [source.idl]
 ----
-<%- inst.decode_variables(32).each do |d| -%>
+<% inst.decode_variables(32).each do |d| -%>
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
-<%- end -%>
+<% end -%>
 ----
 
 RV64::
 +
 [source,idl]
 ----
-<%- inst.decode_variables(64).each do |d| -%>
+<% inst.decode_variables(64).each do |d| -%>
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
-<%- end -%>
+<% end -%>
 ----
 ====
-<%- else -%>
+<% else -%>
 [source,idl]
 ----
-<%- inst.decode_variables(inst.base.nil? ? 32 : inst.base).each do |d| -%>
+<% inst.decode_variables(inst.base.nil? ? 32 : inst.base).each do |d| -%>
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
-<%- end -%>
+<% end -%>
 ----
-<%- end -%>
+<% end -%>
 
 ==== Execution
 
-<%- xlens = inst.base.nil? ? [32, 64] : [inst.base] -%>
+<% xlens = inst.base.nil? ? [32, 64] : [inst.base] -%>
 
-<%- if inst.key?("operation()") -%>
+<% if inst.key?("operation()") -%>
 [source,idl,subs="specialchars,macros"]
 ----
 <%= inst.operation_ast(arch_def.symtab).gen_adoc %>
 ----
-<%- end -%>
+<% end -%>
 
 ==== Exceptions
 
-<%- exception_list = inst.reachable_exceptions_str(arch_def.symtab) -%>
-<%- if exception_list.empty? -%>
+<% exception_list = inst.reachable_exceptions_str(arch_def.symtab) -%>
+<% if exception_list.empty? -%>
 This instruction does not generate synchronous exceptions.
-<%- else -%>
+<% else -%>
 This instruction may result in the following synchronous exceptions:
 
-  <%- exception_list.sort.each do |etype| -%>
+  <% exception_list.sort.each do |etype| -%>
   * <%= etype %>
-  <%- end -%>
+  <% end -%>
 
-<%- end -%>
+<% end -%>
 
-<%- end -%>
+<% end -%>
 
 <<<
 [appendix]
 == CSR Specifications
 
-<%-
+<%
   csrs = profile_family.referenced_extensions.map { |ext| ext.csrs }.flatten.uniq
   csrs.sort_by!(&:name)
 -%>
 
-<%- csrs.each do |csr| -%>
+<% csrs.each do |csr| -%>
 <<<
 [[csr-<%= csr.name %>-def]]
 === <%= csr.name %>
 
 *<%= csr.long_name %>*
 
-<%- unless csr.base.nil? -%>
+<% unless csr.base.nil? -%>
 [NOTE]
 --
 `<%= csr.name %>` is only defined in RV<%= csr.base %>.
 --
-<%- end -%>
+<% end -%>
 
 <%= csr.description %>
 
@@ -671,28 +673,28 @@ This instruction may result in the following synchronous exceptions:
 [%autowidth]
 |===
 h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
-<%- if csr.priv_mode == 'VS' -%>
+<% if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
-<%- end -%>
+<% end -%>
 h| Defining extension a| <%= csr.defined_by.to_asciidoc %>
-<%- if csr.dynamic_length?(arch_def) -%>
+<% if csr.dynamic_length?(arch_def) -%>
 h| Length         | <%= csr.length_pretty(arch_def) %>
-<%- else -%>
+<% else -%>
 h| Length         | <%= csr.length_pretty(arch_def) %>
-<%- end -%>
+<% end -%>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===
 
 
 ==== Format
-<%- unless csr.dynamic_length?(arch_def) || csr.fields.any? { |f| f.dynamic_location?(arch_def) } -%>
+<% unless csr.dynamic_length?(arch_def) || csr.fields.any? { |f| f.dynamic_location?(arch_def) } -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
 <%= JSON.dump csr.wavedrom_desc(arch_def, csr.base.nil? ? 32 : csr.base) %>
 ....
-<%- else -%>
+<% else -%>
 <%# CSR has a dynamic length, or a field has a dynamic location,
     so there is more than one format to display -%>
 This CSR format changes dynamically with XLEN.
@@ -710,6 +712,6 @@ This CSR format changes dynamically with XLEN.
 ....
 
 
-<%- end -%>
+<% end -%>
 
-<%- end -%>
+<% end -%>

@@ -157,56 +157,6 @@ class Portfolio < ArchDefObject
     @in_scope_extensions
   end
 
-  # @return [Array<ExtensionRequirement>] List of mandatory extensions listed in the portfolio.
-  def mandatory_extension_requirements
-    return @mandatory_ext_reqs unless @mandatory_ext_reqs.nil?
-
-    @mandatory_ext_reqs = in_scope_ext_reqs("mandatory")
-  end
-
-  # @return [Array<Extension>] List of mandatory extensions listed in the portfolio.
-  def mandatory_extensions
-    mandatory_extension_requirements.map do |e|
-      obj = arch_def.extension(e.name)
-
-      # @todo: change this to raise once all the profile extensions
-      #        are defined
-      warn "Extension #{e.name} is not defined" if obj.nil?
-
-      obj
-    end.reject(&:nil?)
-  end
-
-  # @return [Boolean] whether or not +ext_name+ is mandatory in the portfolio.
-  def mandatory?(ext_name)
-    mandatory_extension_requirements.any? { |ext| ext.name == ext_name }
-  end
-
-  # @return [Array<ExtensionRequirement>] List of optional extensions listed in the portfolio.
-  def optional_extension_requirements
-    return @optional_ext_reqs unless @optional_ext_reqs.nil?
-
-    @optional_ext_reqs = in_scope_ext_reqs("optional")
-  end
-
-  # @return [Array<Extension>] List of optional extensions listed in the portfolio.
-  def optional_extensions
-    optional_extension_requirements.map do |e|
-      obj = arch_def.extension(e.name)
-
-      # @todo: change this to raise once all the profile extensions
-      #        are defined
-      warn "Extension #{e.name} is not defined" if obj.nil?
-
-      obj
-    end.reject(&:nil?)
-  end
-
-  # @return [Boolean] whether or not +ext_name+ is optional in the prfoile
-  def optional?(ext_name)
-    optional_extension_requirements.any? { |ext| ext.name == ext_name }
-  end
-
   ###################################
   # InScopeExtensionParameter Class #
   ###################################
@@ -456,5 +406,61 @@ class Portfolio < ArchDefObject
       @revision_history << RevisionHistory.new(rev)
     end
     @revision_history
+  end
+
+  ######################
+  # ExtraNote Subclass #
+  ######################
+
+  class ExtraNote < ArchDefObject
+    def initialize(data)
+      super(data)
+    end
+
+    def presence
+      @data["presence"]
+    end
+
+    def text
+      @data["text"]
+    end
+  end
+
+  def extra_notes
+    return @extra_notes unless @extra_notes.nil?
+
+    @extra_notes = []
+    @data["extra_notes"]&.each do |extra_note|
+      @extra_notes << ExtraNote.new(extra_note)
+    end
+    @extra_notes
+  end
+
+  def extra_notes_for_presence(desired_presence)
+    extra_notes.select {|extra_note| extra_note.presence == desired_presence}
+  end
+
+  ###########################
+  # Recommendation Subclass #
+  ###########################
+
+  class Recommendation < ArchDefObject
+    def initialize(data)
+      super(data)
+    end
+
+    def text
+      @data["text"]
+    end
+  end
+
+  def recommendations
+    return @recommendations unless @recommendations.nil?
+
+    @recommendations = []
+    @data["recommendations"]&.each do |recommendation|
+      @recommendations << Recommendation.new(recommendation)
+    end
+    @recommendations
   end
 end
