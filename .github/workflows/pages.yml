@@ -58,7 +58,7 @@ jobs:
     - name: Copy cfg html
       run: cp -R gen/cfg_html_doc/generic_rv64/html _site/example_cfg
     - name: Create RVA Family PDF Spec
-      run: ./do gen:profile_pdf[rva]
+      run: ./do gen:profile[rva]
     - name: Copy RVA Family PDF
       run: cp gen/profile_doc/pdf/rva.pdf _site/pdfs/rva.pdf
     - name: Create MC-1 PDF Spec
