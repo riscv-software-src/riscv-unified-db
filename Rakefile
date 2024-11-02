@@ -276,6 +276,7 @@ task :regress do
   Rake::Task["gen:html"].invoke("generic_rv64")
   Rake::Task["gen:crd_pdf"].invoke("MockCRD-1")
   Rake::Task["gen:crd_pdf"].invoke("MC-1")
+  Rake::Task["gen:profile_pdf"].invoke("MockProfileFamily")
   Rake::Task["gen:profile_pdf"].invoke("rva")
 
   puts

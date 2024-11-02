@@ -102,16 +102,15 @@ rva20u64:
     version: "= 2.0"
     note: |
       The number of counters is platform-specific.
-  - name: Q
-    presence: excluded
+  extra_notes:
+  - location: optional
     note: |
       The rationale to not make Q an optional extension is that
       quad-precision floating-point is unlikely to be implemented in
       hardware, and so we do not require or expect A-profile software to
       expend effort optimizing use of Q instructions in case they are
       present.
-  - name: Zifencei
-    presence: excluded
+  - location: optional
     note: |
       Zifencei is not classed as a supported option in the user-mode
       profile because it is not sufficient by itself to produce the desired
@@ -123,7 +122,8 @@ rva20u64:
       instruction-cache coherence mechanisms can be used behind the OS
       abstraction.  A separate extension is being developed for more general
       and efficient instruction cache coherence.
-
+  - location: optional
+    note: |
       The execution environment must provide a means to synchronize writes to
       instruction memory with instruction fetches, the implementation of which
       likely relies on the Zifencei extension.

@@ -6,7 +6,6 @@ rva22s64:
     supervisor-mode execution environment in 64-bit applications
     processors.  RVA22S64 is based on privileged architecture version
     1.12.
-  inherits: rva22u64
   version: "2.0"
   mode: S
   marketing_name: RVA22S64

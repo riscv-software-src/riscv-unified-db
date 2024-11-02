@@ -12,6 +12,16 @@ MockCRD-1:
   # semantic version within the CRD family
   version: "1.0"
 
+  revision_history:
+  - revision: "0.1"
+    date: 2024-10-04
+    changes:
+    - Created to test CRDs
+  - revision: "0.2"
+    date: 2024-10-05
+    changes:
+    - Also created to test CRDs
+
   description: |
     Mock CRD description:
 

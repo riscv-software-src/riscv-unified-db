@@ -12,6 +12,7 @@ require_relative "idl/passes/reachable_functions"
 require_relative "idl/passes/reachable_functions_unevaluated"
 require_relative "idl/passes/reachable_exceptions"
 require_relative "arch_obj_models/manual"
+require_relative "arch_obj_models/portfolio"
 require_relative "arch_obj_models/profile"
 require_relative "arch_obj_models/csr_field"
 require_relative "arch_obj_models/csr"
@@ -632,7 +633,12 @@ class ArchDef
 
     @profiles = []
     @arch_def["profiles"].each_value do |profile_data|
-      @profiles << Profile.new(profile_data, self)
+      raise ArgumentError, "Expecting profile_data to be a hash" unless profile_data.is_a?(Hash)
+
+      profile = Profile.new(profile_data, self)
+      raise ArgumentError, "Profile constructor returned nil" if profile.nil?
+
+      @profiles << profile
     end
     @profiles
   end
@@ -672,8 +678,11 @@ class ArchDef
     @crd_families_hash
   end
 
+  # @return [CrdFamily] The CRD family named +name+
+  # @return [nil] if the CRD family does not exist
   def crd_family(name) = crd_famlies_hash[name]
 
+  # @return [Crd] List of all defined CRDs
   def crds
     return @crds unless @crds.nil?
 
@@ -694,6 +703,8 @@ class ArchDef
     @crds_hash
   end
 
+  # @return [Crd] The CRD named +name+
+  # @return [nil] if the CRD does not exist
   def crd(name) = crds_hash[name]
 
   # @return [Array<ExceptionCode>] All exception codes defined by RISC-V

@@ -1,0 +1,28 @@
+MockProfile-1:
+  family: MockProfileFamily
+  description: This is the Mock Profile description.
+  marketing_name: MockProfile-1 Marketing Name
+  mode: S
+  version: "1.0"
+  contributors:
+  - name: Krste Asanovic
+    email: krste@sifive.com
+    company: SiFive
+  extensions:
+  - name: S
+    presence: mandatory
+    version: "= 1.11"
+  - name: Zifencei
+    presence: mandatory
+    version: "= 2.0"
+    note: |
+      Zifencei is mandated as it is the only standard way to support
+      instruction-cache coherence in RVA20 application processors.  A new
+      instruction-cache coherence mechanism is under development which might
+      be added as an option in the future.
+  - name: Zihpm
+    presence: optional
+    version: "= 2.0"
+  - name: Sv48
+    presence: optional
+    version: "= 1.11"

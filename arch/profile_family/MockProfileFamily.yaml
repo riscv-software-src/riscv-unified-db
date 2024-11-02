@@ -1,0 +1,15 @@
+
+MockProfileFamily:
+  marketing_name: Mock Profile Family
+  description: This is the Mock Profile Family description.
+  company:
+    name: RISC-V International
+    url: https://riscv.org
+  doc_license:
+    name: Creative Commons Attribution 4.0 International License
+    url: https://creativecommons.org/licenses/by/4.0/
+    text_url: https://creativecommons.org/licenses/by/4.0/legalcode.txt
+  introduction: |
+    Here's the Mock Profile Family's introduction.
+  naming_scheme: |
+    Here's the Mock Profile Family's naming scheme.

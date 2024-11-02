@@ -312,7 +312,20 @@ are by definition non-profile extensions.  For example, mandatory or
 optional profile extensions for a new profile might be prototyped as
 non-profile extensions on an earlier profile.
 
-== Profiles in the <%= profile_family.name %> family
+// XXX - Need to create render() Ruby function.
+// <%# render("#{$root}/backends/portfolio_doc/templates/family_intro.erb", portfolio_family: profile_family) %>
+
+== <%= profile_family.name %> Introduction
+
+<%= profile_family.introduction %>
+
+=== <%= profile_family.name %> Naming Scheme
+
+<%= profile_family.naming_scheme %>
+
+=== <%= profile_family.name %> Family Description
+
+<%= profile_family.description %>
 
 The following profiles are defined in this family:
 
@@ -326,12 +339,7 @@ Ratification date:: <%= profile.ratification_date %>
 --
 <%- end -%>
 
-<<<
-== Family description
-
-<%= profile_family.description %>
-
-=== Extension summary
+=== Extensions in the <%= profile_family.name %> Family 
 
 The <%= profile_family.marketing_name %> Profile Family references
 <%= profile_family.referenced_extensions.size %> extensions.
@@ -406,6 +414,7 @@ Version<%= ext_req.version_requirement %>
 <%- end -%>
 <%-  end -%>
 
+<<<
 [appendix]
 == Extension Specifications
 
@@ -498,6 +507,7 @@ This extension has the following implementation options:
 <%- end -%>
 <%- end -%>
 
+<<<
 [appendix]
 == Instruction Specifications
 
@@ -632,6 +642,7 @@ This instruction may result in the following synchronous exceptions:
 
 <%- end -%>
 
+<<<
 [appendix]
 == CSR Specifications
 

@@ -8,6 +8,59 @@ MC-1:
   # semantic version within the CRD family
   version: "1.0"
 
+  revision_history:
+  - revision: "0.7"
+    date: 2024-07-29
+    changes:
+    - First version after moving non-microcontroller content in this document to a new document
+      called “RISC-V CRDs (Certification Requirement Documents)”
+    - Change MC-1 Unpriv ISA spec from
+      “https://riscv.org/wp-content/uploads/2016/06/riscv-spec-v2.1.pdf[riscv-spec-v2.1], May 31,
+      2016” to https://github.com/riscv/riscv-isa-manual/releases/tag/Ratified-IMAFDQC since the
+      former isn't ratified by the latter is the oldest ratified version.
+    - Added requirements for WFI instruction
+    - Added requirements related to msip memory-mapped register
+  - revision: "0.6"
+    date: 2024-07-11
+    changes:
+    - Supporting multiple MC versions to support customers wanting to certify existing microcontrollers not using the latest version of ratified standards.
+    - Changed versioning scheme to use major.minor.patch instead of 3-digit major & minor.
+    - Added a table showing the mapping from MC version to ISA manuals.
+    - Reluctantly made interrupts OUT OF SCOPE for MC-1 since only the CLINT interrupt controller
+      was ratified at that time and isn’t anticipated to be the interrupt controller used by MC-1 implementations.
+    - Clarified MANDATORY behaviors for mie and mip CSRs
+    - Removed canonical discovery recipe because the OPT-* options directly inform the certification
+      tests and certification reference model of the status of the various options. Also, canonical
+      discovery recipes (e.g., probing for CLIC) violate the certification approach of avoiding writing
+      potentially illegal values to CSR fields.
+    - Added more options for interrupts
+    - Moved non-microcontroller content in this document to a new document called “RISC-V Certification Plans”
+  - revision: "0.5"
+    date: 2024-06-03
+    changes:
+    - Renamed to “RISC-V Microcontroller Certification Plan” based on Jason’s recommendation
+    - Added mvendorid, marchid, mimpid, and mhardid read-only priv CSRs because Allen pointed out
+      these are mandatory in M-mode v1.13 (probably older versions too, haven’t looked yet).
+    - Added table showing mapping of MC versions to associated RISC-V specifications
+  - revision: "0.4"
+    date: 2024-06-03
+    changes:
+    - Added M-mode instruction requirements
+    - Made Zicntr MANDATORY due to very low cost for implementations to support (in the spirit of minimizing options).
+    - Removed OPT-CNTR-PREC since minstret and mcycle must be a full 64 bits to be standard-compliant.
+  - revision: "0.3"
+    date: 2024-05-25
+    changes:
+    - Includes Zicntr as OPTIONAL and then has only 32-bit counters for instret and cycle.
+  - revision: "0.2"
+    date: 2024-05-20
+    changes:
+    - Very early draft
+  - revision: "0.1"
+    date: 2024-05-16
+    changes:
+    - Initial version
+
   # XLEN used by rakefile
   base: 32
 
