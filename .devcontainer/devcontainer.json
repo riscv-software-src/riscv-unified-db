@@ -1,0 +1,41 @@
+{
+  "name": "RISC-V UnifiedDB Dev",
+  "build": { "dockerfile": "Dockerfile" },
+  "updateContentCommand": "${containerWorkspaceFolder}/.devcontainer/updateContentCommand.sh",
+  "onCreateCommand": "${containerWorkspaceFolder}/.devcontainer/onCreateCommand.sh",
+  "remoteEnv": {
+    "DISPLAY": ":0"
+  },
+  "containerEnv": {
+    "DEVCONTAINER_ENV": "true"
+  },
+  // vscode extensions
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "solargraph.bundlerPath": "bundle",
+        "solargraph.useBundler": true,
+        "files.exclude": {
+          "**/.home": true,
+          "**/.yardoc": true
+        },
+        "files.watcherExclude": {
+          "**/.home": true
+        },
+        "asciidoc.antora.showEnableAntoraPrompt": true
+      },
+      "extensions": [
+        "castwide.solargraph",
+        "redhat.vscode-yaml",
+        "asciidoctor.asciidoctor-vscode",
+        "zhwu95.riscv",
+        "tomoki1207.pdf",
+        "CraigMaslowski.erb",
+        "HowerLimited.idl-vscode"
+      ]
+    }
+  },
+  "forwardPorts": [
+    8000, 8080
+  ]
+}

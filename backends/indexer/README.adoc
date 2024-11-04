@@ -1,0 +1,8 @@
+Creates an index of the database using JSON Reference.
+
+== Tasks
+
+[source,bash]
+----
+./do gen:index # writes index to ROOT/gen/indexer/index-unifieddb.json
+----
