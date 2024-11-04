@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "yaml_loader"
+
 require "date"
 require "json"
 require "json_schemer"
@@ -256,7 +258,7 @@ class Validator
   # @param path [Pathname] Path to an instruction YAML document
   # @raise [ValidateError] if there is a problem with the instruction defintion
   def validate_instruction(path)
-    obj = YAML.load_file(path)
+    obj = YamlLoader.load(path)
     raise "Invalid instruction definition: #{obj}" unless obj.is_a?(Hash)
 
     inst_name = path.basename('.yaml').to_s
