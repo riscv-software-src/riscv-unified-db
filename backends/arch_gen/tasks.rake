@@ -2,6 +2,7 @@
 
 # This file contains tasks related to the generation of a configured architecture specification
 
+require_relative "../../lib/yaml_loader"
 require_relative "lib/arch_gen"
 
 ARCH_GEN_DIR = Pathname.new(__FILE__).dirname
@@ -33,7 +34,7 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
   ] + Dir.glob($root / "arch" / "**" / "*.yaml")
 ) do |t|
   csr_hash = Dir.glob($root / "arch" / "csr" / "**" / "*.yaml").map do |f|
-    csr_obj = YAML.load_file(f)
+    csr_obj = YamlLoader.load(f)
     csr_name = csr_obj.keys[0]
     csr_obj[csr_name]["name"] = csr_name
     csr_obj[csr_name]["fields"].map do |k, v|
@@ -44,28 +45,28 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
     [csr_name, csr_obj[csr_name]]
   end.to_h
   inst_hash = Dir.glob($root / "arch" / "inst" / "**" / "*.yaml").map do |f|
-    inst_obj = YAML.load_file(f)
+    inst_obj = YamlLoader.load(f)
     inst_name = inst_obj.keys[0]
     inst_obj[inst_name]["name"] = inst_name
     inst_obj[inst_name]["__source"] = f
     [inst_name, inst_obj[inst_name]]
   end.to_h
   ext_hash = Dir.glob($root / "arch" / "ext" / "**" / "*.yaml").map do |f|
-    ext_obj = YAML.load_file(f)
+    ext_obj = YamlLoader.load(f)
     ext_name = ext_obj.keys[0]
     ext_obj[ext_name]["name"] = ext_name
     ext_obj[ext_name]["__source"] = f
     [ext_name, ext_obj[ext_name]]
   end.to_h
   profile_family_hash = Dir.glob($root / "arch" / "profile_family" / "**" / "*.yaml").map do |f|
-    profile_obj = YAML.load_file(f)
+    profile_obj = YamlLoader.load(f)
     profile_name = profile_obj.keys[0]
     profile_obj[profile_name]["name"] = profile_name
     profile_obj[profile_name]["__source"] = f
     [profile_name, profile_obj[profile_name]]
   end.to_h
   profile_hash = Dir.glob($root / "arch" / "profile" / "**" / "*.yaml").map do |f|
-    profile_obj = YAML.load_file(f)
+    profile_obj = YamlLoader.load(f)
     profile_name = profile_obj.keys[0]
     profile_obj[profile_name]["name"] = profile_name
     profile_obj[profile_name]["__source"] = f
@@ -73,7 +74,7 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
   end.to_h
   manual_hash = {}
   Dir.glob($root / "arch" / "manual" / "**" / "contents.yaml").map do |f|
-    manual_version = YAML.load_file(f)
+    manual_version = YamlLoader.load(f)
     manual_id = manual_version["manual"]
     unless manual_hash.key?(manual_id)
       manual_info_files = Dir.glob($root / "arch" / "manual" / "**" / "#{manual_id}.yaml")
@@ -81,25 +82,25 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
       raise "Found multiple manual infos '#{manual_id}'.yaml, needed by #{f}" if manual_info_files.size > 1
 
       manual_info_file = manual_info_files.first
-      manual_hash[manual_id] = YAML.load_file(manual_info_file)
+      manual_hash[manual_id] = YamlLoader.load(manual_info_file)
       manual_hash[manual_id]["__source"] = manual_info_file
       # TODO: schema validation
     end
 
     manual_hash[manual_id]["versions"] ||= []
-    manual_hash[manual_id]["versions"] << YAML.load_file(f)
+    manual_hash[manual_id]["versions"] << YamlLoader.load(f)
     # TODO: schema validation
     manual_hash[manual_id]["versions"].last["__source"] = f
   end
   crd_family_hash = Dir.glob($root / "arch" / "crd_family" / "**" / "*.yaml").map do |f|
-    family_obj = YAML.load_file(f, permitted_classes: [Date])
+    family_obj = YamlLoader.load(f, permitted_classes: [Date])
     family_name = family_obj.keys[0]
     family_obj[family_name]["name"] = family_name
     family_obj[family_name]["__source"] = f
     [family_name, family_obj[family_name]]
   end.to_h
   crd_hash = Dir.glob($root / "arch" / "crd" / "**" / "*.yaml").map do |f|
-    crd_obj = YAML.load_file(f, permitted_classes: [Date])
+    crd_obj = YamlLoader.load(f, permitted_classes: [Date])
     crd_name = crd_obj.keys[0]
     crd_obj[crd_name]["name"] = crd_name
     crd_obj[crd_name]["__source"] = f
