@@ -1,16 +1,19 @@
 [[header]]
-:description: <%= profile_family.marketing_name %> Profile
-:revdate: <%= profile_family.ratification_date.nil? ? Date.today : profile_family.ratification_date %>
-:revnumber: <%= profile_family.profiles.map(&:version).sort.last %>
+:description: <%= profile_release.marketing_name %> Profile
+:revdate: <%= profile_release.ratification_date.nil? ? Date.today : profile_release.ratification_date %>
+
+// XXX - Figure out what we really want here - Change percent hash to percent equals.
+// :revnumber: <%# profile_release.map(&:version).sort.last %>
+
 :revmark: "TODO: revmark"
-:company: <%= profile_family.company.name %>
+:company: <%= profile_class.company.name %>
 :url-riscv: https://riscv.org
 :doctype: book
 :preface-title: Licensing and Acknowledgements
 :colophon:
 :appendix-caption: Appendix
 :title-logo-image: image:risc-v_logo.png["RISC-V International Logo",pdfwidth=3.25in,align=center]
-<%# unless profile_family.state == "ratified" -%>
+<%# unless profile_release.state == "ratified" -%>
 :page-background-image: image:draft.png[opacity=20%]
 <%# end -%>
 :back-cover-image: image:riscv-horizontal-color.svg[opacity=25%]
@@ -51,7 +54,7 @@ endif::[]
 :csrname: envcfg
 :imagesdir: images
 
-= <%= profile_family.name %> Profile Family
+= <%= profile_release.name %> Profile Release
 
 
 // Preamble
@@ -62,30 +65,26 @@ endif::[]
 [preface]
 == Copyright and license information
 This document is released under the
-<% if profile_family.doc_license.url.nil? -%>
-<%= profile_family.doc_license.name %>.
+<% if profile_class.doc_license.url.nil? -%>
+<%= profile_class.doc_license.name %>.
 <% else -%>
-<%= profile_family.doc_license.url %>[<%= profile_family.doc_license.name %>].
+<%= profile_class.doc_license.url %>[<%= profile_class.doc_license.name %>].
 <% end -%>
 
-<% if profile_family.ratification_date.nil? -%>
+<% if profile_release.ratification_date.nil? -%>
 Copyright <%= Date.today.year %>
 <% else -%>
-Copyright <%= profile_family.ratification_date.year %>
+Copyright <%= profile_release.ratification_date.year %>
 <% end -%>
-by <%= profile_family.company.name %>.
-
+by <%= profile_class.company.name %>.
 
 [preface]
 == Acknowledgements
 
-<% profile_family.profiles.each do |profile| -%>
-Contributors to the <%= profile.marketing_name %> Profile (in alphabetical order) include: +
+Contributors to the <%= profile_release.marketing_name %> Profile (in alphabetical order) include: +
 
-<% profile.contributors.sort.each do |c| -%>
+<% profile_release.contributors.sort.each do |c| -%>
  * <%= c.name %> <<%= c.email %>> (<%= c.company %>)
-<% end -%>
-
 <% end -%>
 
 We express our gratitude to everyone that contributed to, reviewed or
@@ -313,56 +312,75 @@ optional profile extensions for a new profile might be prototyped as
 non-profile extensions on an earlier profile.
 
 // XXX - Need to create render() Ruby function.
-// <%# render("#{$root}/backends/portfolio_doc/templates/family_intro.erb", portfolio_family: profile_family) %>
+// <%# render("#{$root}/backends/portfolio_doc/templates/family_intro.erb", portfolio_class: profile_class) %>
 
-== <%= profile_family.name %> Introduction
+== <%= profile_class.name %> Profile Class
 
-<%= profile_family.introduction %>
+<%= profile_class.introduction %>
 
-=== <%= profile_family.name %> Naming Scheme
+=== <%= profile_class.name %> Description
 
-<%= profile_family.naming_scheme %>
+<%= profile_class.description %>
 
-=== <%= profile_family.name %> Family Description
+=== <%= profile_class.name %> Naming Scheme
 
-<%= profile_family.description %>
+<%= profile_class.naming_scheme %>
 
-The following profiles are defined in this family:
+NOTE: Profile names are embeddable into RISC-V ISA naming strings.
+This implies that there will be no standard ISA extension with a name
+that matches the profile naming convention.  This allows tools that
+process the RISC-V ISA naming string to parse and/or process a combined string.
 
-<% profile_family.profiles.each do |profile| -%>
+=== <%= profile_class.name %> Profile Releases
+
+The following profile releases are defined in this profile class:
+
+<% profile_class.profile_releases.each do |profile_release| -%>
 --
-Name:: <%= profile.marketing_name %>
-State:: <%= profile.state %>
-<% unless profile.ratification_date.nil? -%>
-Ratification date:: <%= profile.ratification_date %>
-<% end -%>
+Name:: <%= profile_release.marketing_name %>
+State:: <%= profile_release.state %>
+<% unless profile_release.ratification_date.nil? -%>
+Ratification date:: <%= profile_release.ratification_date %>
+<% end # unless -%>
 --
-<% end -%>
+<% end # each profile_release -%>
 
-=== Extensions in the <%= profile_family.name %> Family 
+=== Extension Presence
 
-The <%= profile_family.marketing_name %> Profile Family references
-<%= profile_family.referenced_extensions.size %> extensions.
+The <%= profile_class.marketing_name %> Profile Class references
+<%= profile_class.referenced_extensions.size %> extensions.
 
 .Status
 |===
-| Extension | <%= profile_family.profiles.map(&:marketing_name).join(" | ") -%>
+| Extension | <%= profile_class.profiles.map(&:marketing_name).join(" | ") -%>
 
-<% profile_family.referenced_extensions.sort_by(&:name).each do |ext| -%>
-| <%= ext.name %> | <%= profile_family.profiles.map { |profile| profile.extension_presence(ext.name) }.join(" | ") -%>
+<% profile_class.referenced_extensions.sort_by(&:name).each do |ext| -%>
+| <%= ext.name %> | <%= profile_class.profiles.map { |profile| profile.extension_presence(ext.name) }.join(" | ") -%>
 <% end -%>
 
 |===
 
-<% profile_family.profiles.each do |profile| -%>
-<<<
-== <%= profile.marketing_name %> Profile
+== <%= profile_release.name %> Profile Release
 
-<%= profile.description %>
+<%= profile_release.introduction %>
+
+<%= profile_release.marketing_name %> has <%= profile_release.referenced_extensions.reduce(0) { |sum, ext| sum + ext.params.size } %> 
+associated implementation-defined parameters across all its defined profiles.
+
+<% unless profile_release.description.nil? -%>
+=== <%= profile_release.name %> Description
+
+<%= profile_release.description %>
+
+<% end # unless -%>
+<% profile_release.profiles.each do |profile| -%>
+=== <%= profile.marketing_name %> Profile
+
+<%= profile.introduction %>
 
 <% ["mandatory","optional"].each do |presence| -%>
 
-=== <%= presence.capitalize %> Extensions
+==== <%= presence.capitalize %> Extensions
 
 <% ext_reqs = profile.in_scope_ext_reqs(presence) -%>
 
@@ -391,23 +409,22 @@ NOTE: <%= extra_note.text %>
 
 <% end # presence -%>
 
-<% puts("CCC profile #{profile.name}") -%>
 <% unless profile.recommendations.empty? -%>
-=== Recommendations
+==== Recommendations
 
 Recommendations are not strictly mandated but are included to guide implementers making design choices.
 
 <% profile.recommendations.each do |recommendation| -%>
 <%= recommendation.text %>
-<% end # each recommendation %>
-<% end # unless recommendations empty %>
-<% end # each profile -%>
+<% end # each recommendation -%>
+<% end # unless recommendations empty -%>
 
-== Profile Parameters
+==== Implementation-dependencies
 
-<%= profile_family.marketing_name %> has <%= profile_family.referenced_extensions.reduce(0) { |sum, ext| sum + ext.params.size } %> associated paramters.
+<%= profile.marketing_name %> has <%= profile.referenced_extensions.reduce(0) { |sum, ext| sum + ext.params.size } %>
+associated implementation-defined parameters.
 
-<% profile_family.referenced_extensions.each do |ext| -%>
+<% profile.referenced_extensions.each do |ext| -%>
 <% ext.params.sort_by { |p| p.name }.each do |param| -%>
 <%= param.name %>::
 +
@@ -417,11 +434,13 @@ Recommendations are not strictly mandated but are included to guide implementers
 <% end -%>
 <%  end -%>
 
+<% end # each profile -%>
+
 <<<
 [appendix]
-== Extension Specifications
+== Extension Details
 
-<% profile_family.referenced_extensions.each do |ext| -%>
+<% profile_release.referenced_extensions.sort.each do |ext| -%>
 <<<
 === <%= ext.name %> Extension
 <%= ext.long_name %>
@@ -430,7 +449,7 @@ Recommendations are not strictly mandated but are included to guide implementers
 |===
 | Profile | v<%= ext.versions.map { |v| v["version"] }.join(" | v") %>
 
-<% profile_family.profiles.each do |profile| -%>
+<% profile_release.profiles.each do |profile| -%>
 | <%= profile.marketing_name %> | <%= ext.versions.map do |v|
   mandatory = profile.in_scope_ext_reqs("mandatory").any? { |req| req.satisfied_by?(ext.name, v["version"]) }
   optional = profile.in_scope_ext_reqs("optional").any? { |req| req.satisfied_by?(ext.name, v["version"]) }
@@ -488,7 +507,7 @@ The following instructions are added by this extension:
 
 [cols="1,3"]
 |===
-<% insts.each do |inst| -%>
+<% insts.sort.each do |inst| -%>
  | <%= "`#{inst.name}`" %> | *<%= inst.long_name %>*
 <% end -%>
 |===
@@ -512,10 +531,10 @@ This extension has the following implementation options:
 
 <<<
 [appendix]
-== Instruction Specifications
+== Instruction Details
 
 <%=
-  insts = profile_family.referenced_extensions.map { |ext| ext.instructions }.flatten.uniq
+  insts = profile_release.referenced_extensions.map { |ext| ext.instructions }.flatten.uniq
   insts.sort_by!(&:name)
 -%>
 
@@ -564,18 +583,18 @@ RV64::
 <%= inst.description %>
 
 ==== Access
-<% if profile_family.referenced_extensions.any? { |e| e.name == "H" } -%>
+<% if profile_release.referenced_extensions.any? { |e| e.name == "H" } -%>
 [cols="^,^,^,^,^"]
 <% else -%>
 [cols="^,^,^"]
 <% end -%>
 |===
-| M | <% if profile_family.referenced_extensions.any? { |e| e.name == "H" } -%>HS<% else -%>S<% end -%> | U <% if profile_family.referenced_extensions.any? { |e| e.name == "H" } -%> | VS | VU <% end -%>
+| M | <% if profile_release.referenced_extensions.any? { |e| e.name == "H" } -%>HS<% else -%>S<% end -%> | U <% if profile_release.referenced_extensions.any? { |e| e.name == "H" } -%> | VS | VU <% end -%>
 
 | [.access-always]#Always#
 | [.access-<%=inst.access['s']%>]#<%= inst.access['s'].capitalize %>#
 | [.access-<%=inst.access['u']%>]#<%= inst.access['u'].capitalize %>#
-<% if profile_family.referenced_extensions.any? { |e| e.name == "H" } %>
+<% if profile_release.referenced_extensions.any? { |e| e.name == "H" } %>
 | [.access-<%=inst.access['vs']%>]#<%= inst.access['vs'].capitalize %>#
 | [.access-<%=inst.access['vu']%>]#<%= inst.access['vu'].capitalize %>#
 <% end %>
@@ -647,10 +666,10 @@ This instruction may result in the following synchronous exceptions:
 
 <<<
 [appendix]
-== CSR Specifications
+== CSR Details
 
 <%
-  csrs = profile_family.referenced_extensions.map { |ext| ext.csrs }.flatten.uniq
+  csrs = profile_release.referenced_extensions.map { |ext| ext.csrs }.flatten.uniq
   csrs.sort_by!(&:name)
 -%>
 

@@ -287,10 +287,12 @@ task :regress do
   ENV["VERSIONS"] = "all"
   Rake::Task["gen:html_manual"].invoke
   Rake::Task["gen:html"].invoke("generic_rv64")
-  Rake::Task["gen:crd_pdf"].invoke("MockCRD-1")
-  Rake::Task["gen:crd_pdf"].invoke("MC-1")
-  Rake::Task["gen:profile"].invoke("MockProfileFamily")
-  Rake::Task["gen:profile"].invoke("rva")
+  Rake::Task["gen:cert_model_pdf"].invoke("MockCertificateModel")
+  Rake::Task["gen:cert_model_pdf"].invoke("MC100")
+  Rake::Task["gen:profile"].invoke("MockProfileRelease")
+  Rake::Task["gen:profile"].invoke("RVA20")
+  Rake::Task["gen:profile"].invoke("RVA22")
+  Rake::Task["gen:profile"].invoke("RVI20")
 
   puts
   puts "Regression test PASSED"

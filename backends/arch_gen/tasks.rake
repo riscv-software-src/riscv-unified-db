@@ -34,7 +34,7 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
   ] + Dir.glob($root / "arch" / "**" / "*.yaml")
 ) do |t|
   csr_hash = Dir.glob($root / "arch" / "csr" / "**" / "*.yaml").map do |f|
-    csr_obj = YamlLoader.load(f)
+    csr_obj = YamlLoader.load(f, permitted_classes:[Date])
     csr_name = csr_obj.keys[0]
     csr_obj[csr_name]["name"] = csr_name
     csr_obj[csr_name]["fields"].map do |k, v|
@@ -45,36 +45,50 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
     [csr_name, csr_obj[csr_name]]
   end.to_h
   inst_hash = Dir.glob($root / "arch" / "inst" / "**" / "*.yaml").map do |f|
-    inst_obj = YamlLoader.load(f)
+    inst_obj = YamlLoader.load(f, permitted_classes:[Date])
     inst_name = inst_obj.keys[0]
     inst_obj[inst_name]["name"] = inst_name
     inst_obj[inst_name]["__source"] = f
     [inst_name, inst_obj[inst_name]]
   end.to_h
   ext_hash = Dir.glob($root / "arch" / "ext" / "**" / "*.yaml").map do |f|
-    ext_obj = YamlLoader.load(f)
+    ext_obj = YamlLoader.load(f, permitted_classes:[Date])
     ext_name = ext_obj.keys[0]
     ext_obj[ext_name]["name"] = ext_name
     ext_obj[ext_name]["__source"] = f
     [ext_name, ext_obj[ext_name]]
   end.to_h
-  profile_family_hash = Dir.glob($root / "arch" / "profile_family" / "**" / "*.yaml").map do |f|
-    profile_obj = YamlLoader.load(f)
-    profile_name = profile_obj.keys[0]
-    profile_obj[profile_name]["name"] = profile_name
-    profile_obj[profile_name]["__source"] = f
-    [profile_name, profile_obj[profile_name]]
+  profile_class_hash = Dir.glob($root / "arch" / "profile_class" / "**" / "*.yaml").map do |f|
+    profile_class_obj = YamlLoader.load(f, permitted_classes:[Date])
+    profile_class_name = profile_class_obj.keys[0]
+    profile_class_obj[profile_class_name]["name"] = profile_class_name
+    profile_class_obj[profile_class_name]["__source"] = f
+    [profile_class_name, profile_class_obj[profile_class_name]]
   end.to_h
-  profile_hash = Dir.glob($root / "arch" / "profile" / "**" / "*.yaml").map do |f|
-    profile_obj = YamlLoader.load(f)
-    profile_name = profile_obj.keys[0]
-    profile_obj[profile_name]["name"] = profile_name
-    profile_obj[profile_name]["__source"] = f
-    [profile_name, profile_obj[profile_name]]
+  profile_release_hash = Dir.glob($root / "arch" / "profile_release" / "**" / "*.yaml").map do |f|
+    profile_release_obj = YamlLoader.load(f, permitted_classes:[Date])
+    profile_release_name = profile_release_obj.keys[0]
+    profile_release_obj[profile_release_name]["name"] = profile_release_name
+    profile_release_obj[profile_release_name]["__source"] = f
+    [profile_release_name, profile_release_obj[profile_release_name]]
+  end.to_h
+  cert_class_hash = Dir.glob($root / "arch" / "certificate_class" / "**" / "*.yaml").map do |f|
+    cert_class_obj = YamlLoader.load(f, permitted_classes:[Date])
+    cert_class_name = cert_class_obj.keys[0]
+    cert_class_obj[cert_class_name]["name"] = cert_class_name
+    cert_class_obj[cert_class_name]["__source"] = f
+    [cert_class_name, cert_class_obj[cert_class_name]]
+  end.to_h
+  cert_model_hash = Dir.glob($root / "arch" / "certificate_model" / "**" / "*.yaml").map do |f|
+    cert_model_obj = YamlLoader.load(f, permitted_classes:[Date])
+    cert_model_name = cert_model_obj.keys[0]
+    cert_model_obj[cert_model_name]["name"] = cert_model_name
+    cert_model_obj[cert_model_name]["__source"] = f
+    [cert_model_name, cert_model_obj[cert_model_name]]
   end.to_h
   manual_hash = {}
   Dir.glob($root / "arch" / "manual" / "**" / "contents.yaml").map do |f|
-    manual_version = YamlLoader.load(f)
+    manual_version = YamlLoader.load(f, permitted_classes:[Date])
     manual_id = manual_version["manual"]
     unless manual_hash.key?(manual_id)
       manual_info_files = Dir.glob($root / "arch" / "manual" / "**" / "#{manual_id}.yaml")
@@ -82,41 +96,27 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
       raise "Found multiple manual infos '#{manual_id}'.yaml, needed by #{f}" if manual_info_files.size > 1
 
       manual_info_file = manual_info_files.first
-      manual_hash[manual_id] = YamlLoader.load(manual_info_file)
+      manual_hash[manual_id] = YamlLoader.load(manual_info_file, permitted_classes:[Date])
       manual_hash[manual_id]["__source"] = manual_info_file
       # TODO: schema validation
     end
 
     manual_hash[manual_id]["versions"] ||= []
-    manual_hash[manual_id]["versions"] << YamlLoader.load(f)
+    manual_hash[manual_id]["versions"] << YamlLoader.load(f, permitted_classes:[Date])
     # TODO: schema validation
     manual_hash[manual_id]["versions"].last["__source"] = f
   end
-  crd_family_hash = Dir.glob($root / "arch" / "crd_family" / "**" / "*.yaml").map do |f|
-    family_obj = YamlLoader.load(f, permitted_classes: [Date])
-    family_name = family_obj.keys[0]
-    family_obj[family_name]["name"] = family_name
-    family_obj[family_name]["__source"] = f
-    [family_name, family_obj[family_name]]
-  end.to_h
-  crd_hash = Dir.glob($root / "arch" / "crd" / "**" / "*.yaml").map do |f|
-    crd_obj = YamlLoader.load(f, permitted_classes: [Date])
-    crd_name = crd_obj.keys[0]
-    crd_obj[crd_name]["name"] = crd_name
-    crd_obj[crd_name]["__source"] = f
-    [crd_name, crd_obj[crd_name]]
-  end.to_h
 
   arch_def = {
     "type" => "unconfigured",
     "instructions" => inst_hash,
     "extensions" => ext_hash,
     "csrs" => csr_hash,
-    "profile_families" => profile_family_hash,
-    "profiles" => profile_hash,
-    "manuals" => manual_hash,
-    "crd_families" => crd_family_hash,
-    "crds" => crd_hash
+    "profile_classes" => profile_class_hash,
+    "profile_releases" => profile_release_hash,
+    "certificate_classes" => cert_class_hash,
+    "certificate_models" => cert_model_hash,
+    "manuals" => manual_hash
   }
 
   dest = "#{$root}/gen/_/arch/arch_def.yaml"

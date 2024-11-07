@@ -1,18 +1,15 @@
-# Classes for CRD (Certification Requirements Documents).
-# Each CRD is a member of a CRD family (e.g., Microcontroller).
-#
-# A variable name with a "_crd" suffix indicates it is from the CRD family/member YAML file.
-# A variable name with a "_db" suffix indicates it is an object reference from the arch_def database.
+# Classes for certificates.
+# Each certificate model is a member of a certificate class.
 
 require_relative "portfolio"
 
 ###################
-# CrdFamily Class #
+# CertClass Class #
 ###################
 
-# Holds information from CRD family YAML file.
+# Holds information from certificate class YAML file.
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
-class CrdFamily < PortfolioFamily
+class CertClass < PortfolioClass
   # @param data [Hash<String, Object>] The data from YAML
   # @param arch_def [ArchDef] Architecture spec
   def initialize(data, arch_def)
@@ -22,13 +19,13 @@ class CrdFamily < PortfolioFamily
   def mandatory_priv_modes = @data["mandatory_priv_modes"]
 end
 
-#############
-# Crd Class #
-#############
+###################
+# CertModel Class #
+###################
 
-# Holds information about a CRD YAML file.
+# Holds information about a certificate model YAML file.
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
-class Crd < Portfolio
+class CertModel < PortfolioInstance
   # @param data [Hash<String, Object>] The data from YAML
   # @param arch_def [ArchDef] Architecture spec
   def initialize(data, arch_def)
@@ -49,12 +46,12 @@ class Crd < Portfolio
     profile
   end
 
-  # @return [CrdFamily] The CRD family specified by this profile.
-  def family
-    family = @arch_def.crd_family(@data["family"])
-    raise "No CRD family named '#{@data["family"]}'" if family.nil?
+  # @return [CertClass] The certification class that this model belongs to.
+  def cert_class
+    cert_class = @arch_def.cert_class(@data["class"])
+    raise "No certificate class named '#{@data["class"]}'" if cert_class.nil?
 
-    family
+    cert_class
   end
 
   # @return [ArchDef] A partially-configued architecture definition corresponding to this CRD
@@ -161,6 +158,4 @@ class Crd < Portfolio
     end
     @requirement_groups
   end
-
-
 end

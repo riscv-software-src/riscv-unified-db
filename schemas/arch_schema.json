@@ -112,19 +112,22 @@
         "description": "Instruction name"
       }
     },
-    "profile_families": {
+    "profile_classes": {
       "type": "object"
     },
-    "profiles": {
-      "type": "object"
+    "profile_releases": {
+      "type": "object",
+      "items": {
+          "type": "string"
+      }
     },
     "manuals": {
       "type": "object"
     },
-    "crd_families": {
+    "certificate_classes": {
       "type": "object"
     },
-    "crds": {
+    "certificate_models": {
       "type": "object"
     }
   },

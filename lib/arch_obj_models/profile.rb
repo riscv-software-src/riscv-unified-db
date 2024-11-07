@@ -2,21 +2,19 @@
 
 require_relative "portfolio"
 
-# A profile family is a set of profiles that share a common goal or lineage
-#
-# For example, the RVA family is a set of profiles for application processors
-class ProfileFamily < PortfolioFamily
+# A profile class consists of a number of releases each with set of profiles.
+# For example, the RVA profile class has releases such as RVA20, RVA22, RVA23
+# that each include an unprivileged profile (e.g., RVA20U64) and one more
+# privileged profiles (e.g., RVA20S64).
+class ProfileClass < PortfolioClass
   # @param data [Hash<String, Object>] The data from YAML
   # @param arch_def [ArchDef] Architecture spec
   def initialize(data, arch_def)
     super(data, arch_def)
   end
 
-  # @return [String] Name of the family
+  # @return [String] Name of the class
   def marketing_name = @data["marketing_name"]
-
-  # @return [Array<String>] Privilege modes that this family defines profiles for
-  def modes = @data["modes"]
 
   # @return [Company] Company that created the profile
   def company = Company.new(@data["company"])
@@ -26,26 +24,32 @@ class ProfileFamily < PortfolioFamily
     License.new(@data["doc_license"])
   end
 
-  # @return [Date] The most recent ratification date of any profile in the family
-  # @return [nil] if there are no ratified profiles in the family
-  def ratification_date
-    date = nil
-    profiles.each do |profile|
-      date = profile.ratification_date if !profile.ratification_date.nil? && profile.ratification_date < date
-    end
-    date
+  # @return [Array<ProfileRelease>] Defined profile releases in this profile class
+  def profile_releases
+    return @profile_releases unless @profile_releases.nil?
+
+    @profile_releases = @arch_def.profile_releases.select { |pr| pr.profile_class.name == name }
+
+    @profile_releases
   end
 
-  # @return [Array<Profile>] Defined profiles in this family
+  # @return [Array<Profile>] All profiles in this profile class (for all releases).
   def profiles
     return @profiles unless @profiles.nil?
 
-    @profiles = arch_def.profiles.select { |profile| profile.data["family"] == name }
+    puts " 2a: profiles for class #{name} called."
+
+    @profiles = []
+    @arch_def.profiles.each do |profile|
+      if profile.profile_class.name == name
+        @profiles << profile
+      end
+    end
 
     @profiles
   end
 
-  # @return [Array<Extension>] List of all extensions referenced by the family
+  # @return [Array<Extension>] List of all extensions referenced by the class
   def referenced_extensions
     return @referenced_extensions unless @referenced_extensions.nil?
 
@@ -61,35 +65,21 @@ class ProfileFamily < PortfolioFamily
 
 end
 
-# representation of a specific profile for a Family, Mode, and Base
-class Profile < Portfolio
+# A profile release consists of a number of releases each with one or more profiles.
+# For example, the RVA20 profile release has profiles RVA20U64 and RVA20S64.
+# Note there is no Portfolio* base class for a ProfileRelease to inherit from since there is no
+# equivalent to a ProfileRelease in a Certificate so no potential for a shared base class.
+class ProfileRelease < ArchDefObject
+  # @param data [Hash<String, Object>] The data from YAML
+  # @param arch_def [ArchDef] Architecture spec
   def initialize(data, arch_def)
-    super(data, arch_def)
+    super(data)
+    @arch_def = arch_def
   end
 
-  # @return [String] The marketing name of the Profile
   def marketing_name = @data["marketing_name"]
-
-  # @return [String] State of the profile spec
+  def introduction = @data["introduction"]
   def state = @data["state"]
-
-  # @return [ProfileFamily] The profile family specified by this profile.
-  def family
-    family = @arch_def.profile_family(@data["family"])
-    raise "No profile family named '#{@data["family"]}'" if family.nil?
-
-    family
-  end
-
-  # @return ["M", "S", "U", "VS", "VU"] Privilege mode for the profile
-  def mode
-    @data["mode"]
-  end
-
-  # @return [32, 64] The base XLEN for the profile
-  def base
-    @data["base"]
-  end
 
   # @return [Date] Ratification date
   # @return [nil] if the profile is not ratified
@@ -103,4 +93,74 @@ class Profile < Portfolio
   def contributors
     @data["contributors"].map { |data| Person.new(data) }
   end
+
+  # @return [ProfileClass] Profile Class that this ProfileRelease belongs to
+  def profile_class
+    profile_class = @arch_def.profile_class(@data["class"])
+    raise "No profile class named '#{@data["class"]}'" if profile_class.nil?
+
+    profile_class
+  end
+
+  # @return [Array<Profile>] All profiles in this profile release
+  def profiles
+    return @profiles unless @profiles.nil?
+
+    @profiles = []
+    @arch_def.profiles.each do |profile|
+      if profile.profile_release.name == name
+        @profiles << profile
+      end
+    end
+    @profiles
+  end
+
+  # @return [Array<Extension>] List of all extensions referenced by the release
+  def referenced_extensions
+    return @referenced_extensions unless @referenced_extensions.nil?
+
+    @referenced_extensions = []
+    profiles.each do |profile|
+      @referenced_extensions += profile.in_scope_extensions
+    end
+
+    @referenced_extensions.uniq!(&:name)
+
+    @referenced_extensions
+  end
+end
+
+# Representation of a specific profile in a profile release.
+class Profile < PortfolioInstance
+  def initialize(data, arch_def)
+    super(data, arch_def)
+  end
+
+  # @return [String] The marketing name of the Profile
+  def introduction = @data["introduction"]
+  def marketing_name = @data["marketing_name"]
+
+  # @return [ProfileRelease] The profile release this profile belongs to
+  def profile_release
+    profile_release = @arch_def.profile_release(@data["release"])
+    raise "No profile release named '#{@data["release"]}'" if profile_release.nil?
+
+    profile_release
+  end
+
+  # @return [ProfileClass] The profile class this profile belongs to
+  def profile_class = profile_release.profile_class
+
+  # @return ["M", "S", "U", "VS", "VU"] Privilege mode for the profile
+  def mode
+    @data["mode"]
+  end
+
+  # @return [32, 64] The base XLEN for the profile
+  def base
+    @data["base"]
+  end
+
+  # @return [Array<Extension>] List of all extensions referenced by the profile
+  def referenced_extensions = in_scope_extensions
 end

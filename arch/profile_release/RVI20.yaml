@@ -1,0 +1,151 @@
+RVI20:
+  name: RVI20
+  marketing_name: RVI20
+  class: RVI
+  release: 20
+  state: ratified # current status ["ratified", "development"]
+  ratification_date: "2023-04-03"
+
+  # Semantic versions within the release
+  versions: 
+  - version: "1.0.0"
+
+  introduction: |
+    The two profiles RVI20U32 and RVI20U64 correspond to the RV32I and RV64I base ISAs respectively.
+  contributors:
+  - name: Krste Asanovic
+    email: krste@sifive.com
+    company: SiFive
+  profiles:
+  - name: RVI20U32
+    marketing_name: RVI20U32
+    mode: Unpriv
+    base: 32
+    release: RVI20
+    introduction: |
+      RVI20U32 specifies the ISA features available to generic unprivileged
+      execution environments.
+    extensions:
+    - name: I
+      presence: mandatory
+      version: "~> 2.1"
+      note: |
+        RVI is the mandatory base ISA for RVA, and is little-endian.
+  
+        As per the unprivileged architecture specification, the `ecall`
+        instruction causes a requested trap to the execution environment.
+  
+        Misaligned loads and stores might not be supported.
+  
+        The `fence.tso` instruction is mandatory.
+  
+        NOTE: The `fence.tso` instruction was incorrectly described as
+        optional in the 2019 ratified specifications. However, `fence.tso` is
+        encoded within the standard `fence` encoding such that implementations
+        must treat it as a simple global fence if they do not natively support
+        TSO-ordering optimizations.  As software can always assume without any
+        penalty that `fence.tso` is being exploited by a hardware
+        implementation, there is no advantage to making the instruction a
+        profile option.  Later versions of the unprivileged ISA specifications
+        correctly indicate that `fence.tso` is mandatory.
+  
+    - name: A
+      presence: optional
+      version: "= 2.1"
+    - name: C
+      presence: optional
+      version: "= 2.2"
+    - name: D
+      presence: optional
+      version: "= 2.2"
+      note: |
+        NOTE: The rationale to not include Q as a profile option is that
+        quad-precision floating-point is unlikely to be implemented in
+        hardware, and so we do not require or expect software to expend effort
+        optimizing use of Q instructions in case they are present.
+    - name: F
+      presence: optional
+      version: "= 2.2"
+    - name: M
+      presence: optional
+      version: "= 2.0"
+    - name: Zicntr
+      presence: optional
+      version: " = 2.0"
+    - name: Zihpm
+      presence: optional
+      version: "= 2.0"
+      note: |
+        The number of counters is platform-specific.
+    - name: Zifencei
+      presence: optional
+    recommendations:
+    - text: |
+        Implementations are strongly recommended to raise illegal-instruction
+        exceptions on attempts to execute unimplemented opcodes.
+  - name: RVI20U64
+    marketing_name: RVI20U64
+    mode: Unpriv
+    base: 64
+    release: RVI20
+    introduction: |
+      RVI20U64 specifies the ISA features available to generic unprivileged
+      execution environments.
+    extensions:
+    - name: I
+      presence: mandatory
+      version: "~> 2.1"
+      note: |
+        RVI is the mandatory base ISA for RVA, and is little-endian.
+  
+        As per the unprivileged architecture specification, the `ecall`
+        instruction causes a requested trap to the execution environment.
+  
+        Misaligned loads and stores might not be supported.
+  
+        The `fence.tso` instruction is mandatory.
+  
+        NOTE: The `fence.tso` instruction was incorrectly described as
+        optional in the 2019 ratified specifications. However, `fence.tso` is
+        encoded within the standard `fence` encoding such that implementations
+        must treat it as a simple global fence if they do not natively support
+        TSO-ordering optimizations.  As software can always assume without any
+        penalty that `fence.tso` is being exploited by a hardware
+        implementation, there is no advantage to making the instruction a
+        profile option.  Later versions of the unprivileged ISA specifications
+        correctly indicate that `fence.tso` is mandatory.
+  
+    - name: A
+      presence: optional
+      version: "= 2.1"
+    - name: C
+      presence: optional
+      version: "= 2.2"
+    - name: D
+      presence: optional
+      version: "= 2.2"
+      note: |
+        NOTE: The rationale to not include Q as a profile option is that
+        quad-precision floating-point is unlikely to be implemented in
+        hardware, and so we do not require or expect software to expend effort
+        optimizing use of Q instructions in case they are present.
+    - name: F
+      presence: optional
+      version: "= 2.2"
+    - name: M
+      presence: optional
+      version: "= 2.0"
+    - name: Zicntr
+      presence: optional
+      version: " = 2.0"
+    - name: Zihpm
+      presence: optional
+      version: "= 2.0"
+      note: |
+        The number of counters is platform-specific.
+    - name: Zifencei
+      presence: optional
+    recommendations:
+    - text: |
+        Implementations are strongly recommended to raise illegal-instruction
+        exceptions on attempts to execute unimplemented opcodes.

@@ -1,0 +1,14 @@
+MockCertificateClass:
+  name: MockCertificateClass
+  long_name: Mock Certificate Class Long Name
+
+  introduction: |
+    Here's the Mock Certificate Class introduction.
+
+  naming_scheme: |
+    Here's the Mock Certificate Class naming scheme.
+
+  mandatory_priv_modes:
+  - M
+
+  description: Here's the Mock Certificate Class description.
