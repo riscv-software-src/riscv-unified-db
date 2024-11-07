@@ -10,6 +10,7 @@
 diag-ditaa-*
 arch/manual/isa/**/riscv-isa-manual
 gen
+gen_expected
 node_modules
 _site
 images

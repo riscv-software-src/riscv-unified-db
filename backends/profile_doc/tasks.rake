@@ -7,7 +7,7 @@ rule %r{#{$root}/gen/profile_doc/adoc/.*\.adoc} => proc { |tname|
     "#{$root}/.stamps/arch-gen.stamp",
     __FILE__,
     "#{$root}/lib/arch_obj_models/profile.rb",
-    "#{$root}/backends/profile_doc/templates/profile_pdf.adoc.erb"
+    "#{$root}/backends/profile_doc/templates/profile.adoc.erb"
   ] + Dir.glob("#{$root}/arch/profile/**/*.yaml")
 } do |t|
   profile_family_name = Pathname.new(t.name).basename(".adoc").to_s
@@ -15,7 +15,7 @@ rule %r{#{$root}/gen/profile_doc/adoc/.*\.adoc} => proc { |tname|
   profile_family = arch_def_for("_64").profile_family(profile_family_name)
   raise ArgumentError, "No profile family named '#{profile_family_name}'" if profile_family.nil?
 
-  template_path = Pathname.new "#{$root}/backends/profile_doc/templates/profile_pdf.adoc.erb"
+  template_path = Pathname.new "#{$root}/backends/profile_doc/templates/profile.adoc.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")
   erb.filename = template_path.to_s
 
@@ -81,7 +81,7 @@ end
 
 namespace :gen do
   desc "Create a specification PDF for +profile_family+"
-  task :profile_pdf, [:profile_family] => ["#{$root}/.stamps/arch-gen-_64.stamp"] do |_t, args|
+  task :profile, [:profile_family] => ["#{$root}/.stamps/arch-gen-_64.stamp"] do |_t, args|
     family_name = args[:profile_family]
     raise ArgumentError, "Missing required option +profile_family+" if family_name.nil?
 

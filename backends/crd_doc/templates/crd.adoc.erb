@@ -20,17 +20,17 @@
 = <%= crd.name %> Certification Requirements Document
 
 [Preface]
-== <%= crd.family.name %> Family Revision History
+== Revision History
 
-Contains documentation changes that apply to all releases of the family.
+History of documentation changes that eventually lead to releases.
 
 [cols="1,1,5"]
 |===
 | Date | Revision | Changes
 
-<% crd.family.revisions.each do |rev| -%>
+<% crd.revision_history.each do |rev| -%>
 | <%= rev.date %> 
-| <%= rev.version %>
+| <%= rev.revision %>
 a| <% rev.changes.each do |change| %>
 * <%= change %>
 <% end -%>
@@ -60,11 +60,15 @@ CSR field types::
 
 == Introduction
 
-<%= crd.family.introduction %>
+<%= crd_family.introduction %>
 
-=== Naming Scheme
+=== <%= crd_family.name %> Naming Scheme
 
-<%= crd.family.naming_scheme %>
+<%= crd_family.naming_scheme %>
+
+=== <%= crd_family.name %> Family Description
+
+<%= crd_family.description %>
 
 === <%= crd.name %> Description
 
@@ -88,14 +92,15 @@ CSR field types::
 |===
 | M | S | U | VS | VU
 
-| <% if crd.family.mandatory_priv_modes.include?('M') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if crd.family.mandatory_priv_modes.include?('S') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if crd.family.mandatory_priv_modes.include?('U') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if crd.family.mandatory_priv_modes.include?('VS') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if crd.family.mandatory_priv_modes.include?('VU') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if crd_family.mandatory_priv_modes.include?('M') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if crd_family.mandatory_priv_modes.include?('S') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if crd_family.mandatory_priv_modes.include?('U') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if crd_family.mandatory_priv_modes.include?('VS') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if crd_family.mandatory_priv_modes.include?('VU') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
 
 |===
 
+<<<
 == Extensions
 
 Any RISC-V extension not listed in this section is OUT-OF-SCOPE so the <%= crd.name %>
@@ -125,6 +130,7 @@ None
 <% end # if table -%>
 <% end # do ext_reqs -%>
 
+<<<
 == Implementation-dependencies
 
 RISC-V standards support many implementation-defined parameters. In many cases, there
@@ -265,6 +271,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 <% end -%>
 <% end # unless requirement_groups.empty? -%>
 
+<<<
 [appendix]
 == Extension Details
 <% crd.in_scope_ext_reqs.sort.each do |ext_req| -%>
@@ -363,6 +370,7 @@ The following instructions are added by this extension:
 <% end # unless table -%>
 <% end # do ext_req -%>
 
+<<<
 [appendix]
 == Instruction Details
 
@@ -495,6 +503,7 @@ This instruction may result in the following synchronous exceptions:
 
 <% end -%>
 
+<<<
 [appendix]
 == CSR Details
 

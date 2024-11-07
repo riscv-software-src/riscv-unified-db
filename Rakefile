@@ -289,7 +289,8 @@ task :regress do
   Rake::Task["gen:html"].invoke("generic_rv64")
   Rake::Task["gen:crd_pdf"].invoke("MockCRD-1")
   Rake::Task["gen:crd_pdf"].invoke("MC-1")
-  Rake::Task["gen:profile_pdf"].invoke("rva")
+  Rake::Task["gen:profile"].invoke("MockProfileFamily")
+  Rake::Task["gen:profile"].invoke("rva")
 
   puts
   puts "Regression test PASSED"

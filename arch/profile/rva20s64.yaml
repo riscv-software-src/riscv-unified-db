@@ -7,7 +7,6 @@ rva20s64:
     processors.  RVA20S64 is based on privileged architecture version
     1.11.
   marketing_name: RVA20S64
-  inherits: rva20u64
   mode: S
   version: "1.0"
   contributors:
