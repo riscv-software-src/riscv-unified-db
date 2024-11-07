@@ -1,29 +1,11 @@
-# Classes for Porfolios which form a common base class for Profiles and CRDs.
+# Classes for Porfolios which form a common base class for profiles and certificates.
 # A "Portfolio" is a named & versioned grouping of extensions (each with a name and version).
-# Each Portfolio is a member of a Portfolio Family (e.g., Microcontroller).
+# Each Portfolio Instance is a member of a Portfolio Class:
+#   RVA20U64 and MC100 are examples of portfolio instances
+#   RVA and MC are examples of portfolio classes 
 #
 # Many classes inherit from the ArchDefObject class. This provides facilities for accessing the contents of a
-# Portfolio Family YAML or Portfolio YAML file via the "data" member (hash holding releated YAML file contents).
-#
-# Many classes have an "arch_def" member which is an ArchDef (not ArchDefObject) class.
-# The "arch_def" member contains the "database" of RISC-V standards including extensions, instructions, CSRs, Profiles, and CRDs. 
-# The arch_def member has methods such as:
-#   extensions()          Array<Extension> of all extensions known to the database (even if not implemented).
-#   extension(name)       Extension object for "name" and nil if none.
-#   parameters()          Array<ExtensionParameter> of all parameters defined in the architecture
-#   param(name)           ExtensionParameter object for "name" and nil if none.
-#   csrs()                Array<Csr> of all CSRs defined by RISC-V, whether or not they are implemented
-#   csr(name)             Csr object for "name" and nil if none.
-#   instructions()        Array<Instruction> of all instructions, whether or not they are implemented
-#   inst(name)            Instruction object for "name" and nil if none.
-#   profile_families      Array<ProfileFamily> of all known profile families
-#   profile_family(name)  ProfileFamily object for "name" and nil if none.
-#   profiles              Array<Profile> of all known profiles.
-#   profile(name)         Profile object for "name" and nil if none.
-#   crd_families          Array<CrdFamily> of all known CRD families
-#   crd_family(name)      CrdFamily object for "name" and nil if none.
-#   crds                  Array<Crd> of all known CRDs.
-#   crd(name)             Crd object for "name" and nil if none.
+# Portfolio Class YAML or Portfolio Model YAML file via the "data" member (hash holding releated YAML file contents).
 #
 # A variable name with a "_portfolio" suffix indicates it is from the porfolio YAML file.
 # A variable name with a "_db" suffix indicates it is an object reference from the arch_def database.
@@ -31,13 +13,13 @@
 require_relative "obj"
 require_relative "schema"
 
-########################
-# PortfolioFamily Class #
-########################
+##################
+# PortfolioClass #
+##################
 
-# Holds information from Portfolio family YAML file (CRD family or Profile family).
+# Holds information from Portfolio class YAML file (certificate class or profile class).
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
-class PortfolioFamily < ArchDefObject
+class PortfolioClass < ArchDefObject
   # @return [ArchDef] The defining ArchDef
   attr_reader :arch_def
 
@@ -58,13 +40,13 @@ class PortfolioFamily < ArchDefObject
   end
 end
 
-###################
-# Portfolio Class #
-###################
+#####################
+# PortfolioInstance #
+#####################
 
-# Holds information about a Portfolio YAML file (CRD or Profile).
+# Holds information about a PortfolioInstance YAML file (certificate or profile).
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
-class Portfolio < ArchDefObject
+class PortfolioInstance < ArchDefObject
   # @return [ArchDef] The defining ArchDef
   attr_reader :arch_def
 
@@ -77,7 +59,7 @@ class Portfolio < ArchDefObject
 
   def description = @data["description"]
 
-  # @return [Gem::Version] Semantic version of the Portfolio
+  # @return [Gem::Version] Semantic version of the PortfolioInstance
   def version = Gem::Version.new(@data["version"])
 
   # @return [Extension] - Returns named Extension object from database (nil if not found).
@@ -201,7 +183,7 @@ class Portfolio < ArchDefObject
     # @return [String] - # What parameter values are allowed by the portfolio.
     def allowed_values
       if (@schema_portfolio.empty?)
-        # Portfolio doesn't add any constraints on parameter's value.
+        # PortfolioInstance doesn't add any constraints on parameter's value.
         return "Any"
       end
 
@@ -446,7 +428,6 @@ class Portfolio < ArchDefObject
 
   class Recommendation < ArchDefObject
     def initialize(data)
-      puts "CCC: data = #{data}"
       super(data)
     end
 

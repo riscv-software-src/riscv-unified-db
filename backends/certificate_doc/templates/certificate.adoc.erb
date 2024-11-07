@@ -15,9 +15,7 @@
 // TODO: needs to be changed
 :imagesoutdir: images
 
-<% arch_def = crd.arch_def   # Set local Ruby variables -%>
-
-= <%= crd.name %> Certification Requirements Document
+= <%= cert_model.name %> Certification Requirements Document
 
 [Preface]
 == Revision History
@@ -28,7 +26,7 @@ History of documentation changes that eventually lead to releases.
 |===
 | Date | Revision | Changes
 
-<% crd.revision_history.each do |rev| -%>
+<% cert_model.revision_history.each do |rev| -%>
 | <%= rev.date %> 
 | <%= rev.revision %>
 a| <% rev.changes.each do |change| %>
@@ -60,31 +58,31 @@ CSR field types::
 
 == Introduction
 
-<%= crd_family.introduction %>
+<%= cert_class.introduction %>
 
-=== <%= crd_family.name %> Naming Scheme
+=== <%= cert_class.name %> Naming Scheme
 
-<%= crd_family.naming_scheme %>
+<%= cert_class.naming_scheme %>
 
-=== <%= crd_family.name %> Family Description
+=== <%= cert_class.name %> Class Description
 
-<%= crd_family.description %>
+<%= cert_class.description %>
 
-=== <%= crd.name %> Description
+=== <%= cert_model.name %> Description
 
-<%= crd.description %>
+<%= cert_model.description %>
 
 === Related Specifications
 
 [cols="2,2,3,3,3"]
 |===
-| MC Version | TSC Profile | Unpriv ISA Manual | Priv ISA Manual | Debug Manual
+| Certificate Model | TSC Profile | Unpriv ISA Manual | Priv ISA Manual | Debug Manual
 
-| <%= crd.name %>
-| <%= crd.tsc_profile.nil? ? "No profile" : crd.tsc_profile.marketing_name %>
-| <%= crd.unpriv_isa_manual_revision %>
-| <%= crd.priv_isa_manual_revision %>
-| <%= crd.debug_manual_revision %>
+| <%= cert_model.name %>
+| <%= cert_model.tsc_profile.nil? ? "No profile" : cert_model.tsc_profile.marketing_name %>
+| <%= cert_model.unpriv_isa_manual_revision %>
+| <%= cert_model.priv_isa_manual_revision %>
+| <%= cert_model.debug_manual_revision %>
 |===
 
 === Privileged Modes
@@ -92,25 +90,25 @@ CSR field types::
 |===
 | M | S | U | VS | VU
 
-| <% if crd_family.mandatory_priv_modes.include?('M') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if crd_family.mandatory_priv_modes.include?('S') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if crd_family.mandatory_priv_modes.include?('U') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if crd_family.mandatory_priv_modes.include?('VS') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if crd_family.mandatory_priv_modes.include?('VU') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if cert_class.mandatory_priv_modes.include?('M') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if cert_class.mandatory_priv_modes.include?('S') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if cert_class.mandatory_priv_modes.include?('U') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if cert_class.mandatory_priv_modes.include?('VS') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if cert_class.mandatory_priv_modes.include?('VU') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
 
 |===
 
 <<<
 == Extensions
 
-Any RISC-V extension not listed in this section is OUT-OF-SCOPE so the <%= crd.name %>
+Any RISC-V extension not listed in this section is OUT-OF-SCOPE so the <%= cert_model.name %>
 certificate doesn't cover its associated behaviors.
 
 <% ["mandatory","optional"].each do |presence| -%>
 
 === <%= presence.capitalize %> Extensions
 
-<% ext_reqs = crd.in_scope_ext_reqs(presence) -%>
+<% ext_reqs = cert_model.in_scope_ext_reqs(presence) -%>
 <% if ext_reqs.empty? -%>
 None
 <% else -%>
@@ -119,7 +117,7 @@ None
 | Requirement ID | Extension | Version | Long Name | Note
 
 <% ext_reqs.sort.each do |ext_req| -%>
-<% ext_db = crd.extension_from_db(ext_req.name) -%>
+<% ext_db = cert_model.extension_from_db(ext_req.name) -%>
 | <%= ext_req.req_id %> 
 | <<ext-<%= ext_req.name %>-def,<%= ext_req.name %>>> 
 | <%= ext_req.version_requirement %>
@@ -129,19 +127,19 @@ None
 |===
 <% end # if empty ext_reqs -%>
 
-<% crd.extra_notes_for_presence(presence)&.each do |extra_note| -%>
+<% cert_model.extra_notes_for_presence(presence)&.each do |extra_note| -%>
 NOTE: <%= extra_note.text %>
 
 <% end # each extra_note -%>
 
 <% end # each presence -%>
 
-<% unless crd.recommendations.empty? -%>
+<% unless cert_model.recommendations.empty? -%>
 === Recommendations
 
 Recommendations are not strictly mandated but are included to guide implementers making design choices.
 
-<% crd.recommendations.each do |recommendation| -%>
+<% cert_model.recommendations.each do |recommendation| -%>
 <%= recommendation.text %>
 <% end # each recommendation -%>
 <% end # unless recommendations empty -%>
@@ -159,16 +157,16 @@ These implementation-dependent options defined by MANDATORY or OPTIONAL extensio
 An implementation must abide by the "Allowed Value(s)" to obtain a certificate.
 If the "Allowed Value(s)" is "Any" then any value allowed by the type is acceptable.
 
-<% if crd.all_in_scope_ext_params.empty? -%>
+<% if cert_model.all_in_scope_ext_params.empty? -%>
 None
 <% else -%>
 [cols="4,2,1,1,2"]
 |===
 | Parameter | Type | Allowed Value(s) | Extension(s) | Note
 
-<% crd.all_in_scope_ext_params.sort.each do |in_scope_ext_param| -%>
+<% cert_model.all_in_scope_ext_params.sort.each do |in_scope_ext_param| -%>
 <% param_db = in_scope_ext_param.param_db -%>
-<% exts_db = crd.all_in_scope_exts_with_param(param_db) -%>
+<% exts_db = cert_model.all_in_scope_exts_with_param(param_db) -%>
 | <%= param_db.name_potentially_with_link(exts_db) %>
 | <%= param_db.schema_type %>
 | <%= in_scope_ext_param.allowed_values %>
@@ -184,15 +182,15 @@ These implementation-dependent options defined by MANDATORY or OPTIONAL extensio
 There are no restrictions on their values for certification purposes because the certificate 
 doesn't cover the behavior of the associated RISC-V standard as a function of these parameters.
 
-<% if crd.all_out_of_scope_params.empty? -%>
+<% if cert_model.all_out_of_scope_params.empty? -%>
 None
 <% else -%>
 [%autowidth]
 |===
 | Parameters | Type | Extension(s)
 
-<% crd.all_out_of_scope_params.sort.each do |param_db| -%>
-<% exts_db = crd.all_in_scope_exts_without_param(param_db) -%>
+<% cert_model.all_out_of_scope_params.sort.each do |param_db| -%>
+<% exts_db = cert_model.all_in_scope_exts_without_param(param_db) -%>
 | <%= param_db.name_potentially_with_link(exts_db) %>
 | <%= param_db.schema_type %>
 | <% exts_db.sort.each do |ext_db| -%><<ext-<%= ext_db.name %>-param-<%= param_db.name %>-def,<%= ext_db.name %>>> <% end # do ext_db -%>
@@ -204,7 +202,7 @@ None
 == Instruction Summary
 
 <%
-  insts = crd.in_scope_extensions.map { |ext_crd| ext_crd.instructions }.flatten.uniq
+  insts = cert_model.in_scope_extensions.map { |ext_cert_model| ext_cert_model.instructions }.flatten.uniq
   insts.sort_by!(&:name)
 -%>
 
@@ -221,7 +219,7 @@ None
 == CSR Summary
 
 <%
-  csrs = crd.in_scope_ext_reqs.map { |ext_crd_req| ext_crd_req.csrs(crd.arch_def) }.flatten.uniq
+  csrs = cert_model.in_scope_ext_reqs.map { |ext_req| ext_req.csrs(cert_model.arch_def) }.flatten.uniq
 -%>
 
 === By Name
@@ -254,13 +252,13 @@ None
 <% end # do -%>
 |===
 
-<% unless crd.requirement_groups.empty? -%>
+<% unless cert_model.requirement_groups.empty? -%>
 == Additional Requirements
 
 This section contains requirements in addition to those already specified related to extensions and parameters.
 These additional requirements are organized as groups of related requirements.
 
-<% crd.requirement_groups.each do |group| -%>
+<% cert_model.requirement_groups.each do |group| -%>
 === <%= group.name %>
 
 <%= group.description %>
@@ -290,8 +288,8 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 <<<
 [appendix]
 == Extension Details
-<% crd.in_scope_ext_reqs.sort.each do |ext_req| -%>
-<% ext_db = crd.extension_from_db(ext_req.name) -%>
+<% cert_model.in_scope_ext_reqs.sort.each do |ext_req| -%>
+<% ext_db = cert_model.extension_from_db(ext_req.name) -%>
 
 [[ext-<%= ext_req.name %>-def]]
 === Extension <%= ext_req.name %> +
@@ -352,17 +350,17 @@ The following instructions are added by this extension:
 
 [cols="1,3"]
 |===
-<% insts.each do |inst| -%>
+<% insts.sort.each do |inst| -%>
 | <%= link_to_inst(inst.name) %>
 | *<%= inst.long_name %>*
 <% end -%>
 |===
 <% end -%>
 
-<% unless crd.in_scope_ext_params(ext_req).empty? -%>
+<% unless cert_model.in_scope_ext_params(ext_req).empty? -%>
 ==== IN-SCOPE Parameters
 
-<% crd.in_scope_ext_params(ext_req).sort.each do |ext_param| -%>
+<% cert_model.in_scope_ext_params(ext_req).sort.each do |ext_param| -%>
 [[ext-<%= ext_req.name %>-param-<%= ext_param.name %>-def]]
 <%= ext_param.name %> &#8658; <%= ext_param.param_db.schema_type %>::
 +
@@ -372,10 +370,10 @@ The following instructions are added by this extension:
 <% end # do ext_param -%>
 <% end # unless table -%>
 
-<% unless crd.out_of_scope_params(ext_req.name).empty? -%>
+<% unless cert_model.out_of_scope_params(ext_req.name).empty? -%>
 ==== OUT-OF-SCOPE Parameters
 
-<% crd.out_of_scope_params(ext_req.name).sort.each do |param_db| -%>
+<% cert_model.out_of_scope_params(ext_req.name).sort.each do |param_db| -%>
 [[ext-<%= ext_req.name %>-param-<%= param_db.name %>-def]]
 <%= param_db.name %> &#8658; <%= param_db.schema_type %>::
 +
@@ -391,7 +389,7 @@ The following instructions are added by this extension:
 == Instruction Details
 
 <%=
-  insts = crd.in_scope_extensions.map { |ext_crd| ext_crd.instructions }.flatten.uniq
+  insts = cert_model.in_scope_extensions.map { |ext_cert_model| ext_cert_model.instructions }.flatten.uniq
   insts.sort_by!(&:name)
 -%>
 
@@ -439,18 +437,18 @@ RV64::
 <%= inst.description %>
 
 ==== Access
-<% if crd.in_scope_extensions.any? { |e| e.name == "H" } -%>
+<% if cert_model.in_scope_extensions.any? { |e| e.name == "H" } -%>
 [cols="^,^,^,^,^"]
 <% else -%>
 [cols="^,^,^"]
 <% end -%>
 |===
-| M | <% if crd.in_scope_extensions.any? { |e| e.name == "H" } -%>HS<% else -%>S<% end -%> | U <% if crd.in_scope_extensions.any? { |e| e.name == "H" } -%> | VS | VU <% end -%>
+| M | <% if cert_model.in_scope_extensions.any? { |e| e.name == "H" } -%>HS<% else -%>S<% end -%> | U <% if cert_model.in_scope_extensions.any? { |e| e.name == "H" } -%> | VS | VU <% end -%>
 
 | [.access-always]#Always#
 | [.access-<%=inst.access['s']%>]#<%= inst.access['s'].capitalize %>#
 | [.access-<%=inst.access['u']%>]#<%= inst.access['u'].capitalize %>#
-<% if crd.in_scope_extensions.any? { |e| e.name == "H" } %>
+<% if cert_model.in_scope_extensions.any? { |e| e.name == "H" } %>
 | [.access-<%=inst.access['vs']%>]#<%= inst.access['vs'].capitalize %>#
 | [.access-<%=inst.access['vu']%>]#<%= inst.access['vu'].capitalize %>#
 <% end %>
@@ -524,7 +522,7 @@ This instruction may result in the following synchronous exceptions:
 == CSR Details
 
 <%
-  csrs = crd.in_scope_ext_reqs.map { |ext_crd_req| ext_crd_req.csrs(crd.arch_def) }.flatten.uniq
+  csrs = cert_model.in_scope_ext_reqs.map { |ext_req| ext_req.csrs(cert_model.arch_def) }.flatten.uniq
   csrs.sort_by!(&:name)
 -%>
 
@@ -561,8 +559,8 @@ h| Privilege Mode | <%= csr.priv_mode %>
 |===
 
 
-==== <%= crd.name %> Format
-<% unless csr.dynamic_length?(crd.arch_def) || csr.implemented_fields(arch_def).any? { |f| f.dynamic_location?(crd.arch_def) } -%>
+==== <%= cert_model.name %> Format
+<% unless csr.dynamic_length?(cert_model.arch_def) || csr.implemented_fields(arch_def).any? { |f| f.dynamic_location?(cert_model.arch_def) } -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -589,7 +587,7 @@ This CSR format changes dynamically with XLEN.
 
 <% end # unless dynamic length -%>
 
-==== <%= crd.name %> Field Summary
+==== <%= cert_model.name %> Field Summary
 
 // use @ as a separator since IDL code can contain |
 [%autowidth,separator=@,float="center",align="center",cols="^,<,<,<",options="header",role="stretch"]
@@ -629,7 +627,7 @@ a@
 <%- end -%>
 |===
 
-==== <%= crd.name %> Fields
+==== <%= cert_model.name %> Fields
 
 <%- if csr.implemented_fields(arch_def).empty? -%>
 This CSR has no fields. However, it must still exist (not cause an `Illegal Instruction` trap) and always return zero on a read.

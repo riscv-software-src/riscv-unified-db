@@ -1,12 +1,17 @@
 # yaml-language-server: $schema=../../schemas/testplan_schema.json
 
-MC-1:
-  name: MC-1
-  long_name: LONG NAME
-  family: Microcontroller
-  
-  # semantic version within the CRD family
-  version: "1.0"
+MC100:
+  name: MC100
+  long_name: Basic Microcontroller Certificate
+  class: MC
+  model: 100
+
+  # Semantic versions within the model
+  versions: 
+  - version: "1.0.0"
+
+  # XLEN used by rakefile
+  base: 32
 
   revision_history:
   - revision: "0.7"
@@ -14,7 +19,7 @@ MC-1:
     changes:
     - First version after moving non-microcontroller content in this document to a new document
       called “RISC-V CRDs (Certification Requirement Documents)”
-    - Change MC-1 Unpriv ISA spec from
+    - Change MC100 Unpriv ISA spec from
       “https://riscv.org/wp-content/uploads/2016/06/riscv-spec-v2.1.pdf[riscv-spec-v2.1], May 31,
       2016” to https://github.com/riscv/riscv-isa-manual/releases/tag/Ratified-IMAFDQC since the
       former isn't ratified by the latter is the oldest ratified version.
@@ -26,8 +31,8 @@ MC-1:
     - Supporting multiple MC versions to support customers wanting to certify existing microcontrollers not using the latest version of ratified standards.
     - Changed versioning scheme to use major.minor.patch instead of 3-digit major & minor.
     - Added a table showing the mapping from MC version to ISA manuals.
-    - Reluctantly made interrupts OUT OF SCOPE for MC-1 since only the CLINT interrupt controller
-      was ratified at that time and isn’t anticipated to be the interrupt controller used by MC-1 implementations.
+    - Reluctantly made interrupts OUT OF SCOPE for MC100 since only the CLINT interrupt controller
+      was ratified at that time and isn’t anticipated to be the interrupt controller used by MC100 implementations.
     - Clarified MANDATORY behaviors for mie and mip CSRs
     - Removed canonical discovery recipe because the OPT-* options directly inform the certification
       tests and certification reference model of the status of the various options. Also, canonical
@@ -61,16 +66,13 @@ MC-1:
     changes:
     - Initial version
 
-  # XLEN used by rakefile
-  base: 32
-
   description: |
-    MC-1 can be though of as a minimal 32-bit RISC-V processor with M-mode support:
+    MC100 can be though of as minimal 32-bit RISC-V processors with M-mode support:
 
     * The Unprivileged ISA is RV32I with a few extensions suitable for a basic microcontroller
-    * The M-mode features are those listed as mandatory in the RISC-V Privileged ISA manual.
+    * The M-mode features are those listed as mandatory in the associated RISC-V Privileged ISA manual
 
-    Key features not included in MC-1 (i.e., OUT OF SCOPE):
+    Key features not included in MC100 (i.e., OUT OF SCOPE):
 
     * Interrupt Controller (e.g., CLIC, CLINT, PLIC)
     * Features for modes other than M-mode
@@ -78,7 +80,7 @@ MC-1:
     * Debug & trace (TBD)
 
   # Specification versions
-  tsc_profile: null # None for MC-1
+  tsc_profile: null # None for MC100
   unpriv_isa_manual_revision: "20191213"
   priv_isa_manual_revision: "20190608-Priv-MSU-Ratified"
   debug_manual_revision: "0.13.2"

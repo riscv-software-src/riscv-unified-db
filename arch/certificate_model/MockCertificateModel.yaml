@@ -1,16 +1,18 @@
 # yaml-language-server: $schema=../../schemas/testplan_schema.json
 
-MockCRD-1:
-  name: MockCRD-1
-  long_name: Mock CRD Long Name
-
-  family: MockCRDFamily
+MockCertificateModel:
+  name: MockCertificateModel
+  long_name: Mock Certificate Model Long Name
+  class: MockCertificateClass
+  model: MockModel
   
    # XLEN used by rakefile
   base: 64
 
-  # semantic version within the CRD family
-  version: "1.0"
+  # Semantic versions within the model
+  versions:
+    - version: "1.0.0"
+    - version: "1.1.0"  
 
   revision_history:
   - revision: "0.1"
@@ -135,6 +137,16 @@ MockCRD-1:
         M_MODE_ENDIANESS:
           schema:
             const: little
+          # XXX Uncomment when GitHub issue #XXX is fixed.
+          #schema:
+          #- when:
+          #    version: "=1.0.0"
+          #    then:
+          #      const: little
+          #- when:
+          #    version: "=1.1.0"
+          #    then:
+          #      enum: [little, big]
         XLEN:
           schema:
             const: 64
