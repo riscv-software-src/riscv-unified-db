@@ -125,10 +125,26 @@ None
 | <%= ext_req.version_requirement %>
 | <%= ext_db.nil? ? "" : ext_db.long_name %>
 | <%= ext_req.note.nil? ? "" : ext_req.note %>
-<% end -%>
+<% end # each ext_req -%>
 |===
-<% end # if table -%>
-<% end # do ext_reqs -%>
+<% end # if empty ext_reqs -%>
+
+<% crd.extra_notes_for_presence(presence)&.each do |extra_note| -%>
+NOTE: <%= extra_note.text %>
+
+<% end # each extra_note -%>
+
+<% end # each presence -%>
+
+<% unless crd.recommendations.empty? -%>
+=== Recommendations
+
+Recommendations are not strictly mandated but are included to guide implementers making design choices.
+
+<% crd.recommendations.each do |recommendation| -%>
+<%= recommendation.text %>
+<% end # each recommendation -%>
+<% end # unless recommendations empty -%>
 
 <<<
 == Implementation-dependencies
