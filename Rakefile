@@ -55,8 +55,20 @@ namespace :serve do
   end
 end
 
-Minitest::TestTask.create :idl_test do |t|
+desc "Run the IDL compiler test suite"
+task :idl_test do
+  t = Minitest::TestTask.new(:lib_test)
   t.test_globs = ["#{$root}/lib/idl/tests/test_*.rb"]
+  t.process_env
+  ruby t.make_test_cmd
+end
+
+desc "Run the Ruby library test suite"
+task :lib_test do
+  t = Minitest::TestTask.new(:lib_test)
+  t.test_globs = ["#{$root}/lib/test/test_*.rb"]
+  t.process_env
+  ruby t.make_test_cmd
 end
 
 desc "Clean up all generated files"
@@ -269,6 +281,7 @@ desc <<~DESC
 DESC
 task :regress do
   Rake::Task["idl_test"].invoke
+  Rake::Task["lib_test"].invoke
   Rake::Task["validate"].invoke
   ENV["MANUAL_NAME"] = "isa"
   ENV["VERSIONS"] = "all"
