@@ -87,55 +87,55 @@ MC100:
 
 # XXX - Remove version information since specifying priv/unpriv ISA manual should imply this.
   extensions:
-  - name: I
-    version: "~> 2.1"
-    presence: mandatory
-  - name: C
-    version: "~> 2.2"
-    presence: mandatory
-  - name: M
-    version: "~> 2.0"
-    presence: mandatory
-  - name: Zicsr
-    version: "~> 2.0"
-    presence: mandatory
-  - name: Zicntr
-    version: "~> 2.0"
-    presence: mandatory
-    parameters:
-        TIME_CSR_IMPLEMENTED: {} # Unconstrained
-  - name: Sm
-    version: "~> 1.11.0"
-    presence: mandatory
-    parameters:
-        MTVEC_BASE_ALIGNMENT_DIRECT: {} # Unconstrained
-        MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
-        ARCH_ID: {} # Unconstrained
-        IMP_ID: {} # Unconstrained
-        VENDOR_ID_BANK: {} # Unconstrained
-        VENDOR_ID_OFFSET: {} # Unconstrained
-        MISA_CSR_IMPLEMENTED: {} # Unconstrained
-        MTVAL_WIDTH: {} # Unconstrained
-        MTVEC_MODES: {} # Unconstrained
-        PHYS_ADDR_WIDTH: {} # Unconstrained
-        MISALIGNED_LDST: {} # Unconstrained
-        MISALIGNED_LDST_EXCEPTION_PRIORITY : {} # Unconstrained
-        MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: {} # Unconstrained
-        MISALIGNED_SPLIT_STRATEGY:
-          schema:
-            const: by_byte
-        PRECISE_SYNCHRONOUS_EXCEPTIONS:
-          schema:
-            const: true
-        TRAP_ON_ECALL_FROM_M:
-          schema:
-            const: true
-        TRAP_ON_EBREAK:
-          schema:
-            const: true
-        M_MODE_ENDIANESS:
-          schema:
-            const: little
-        XLEN:
-          schema:
-            const: 32
+    I:
+      version: "~> 2.1"
+      presence: mandatory
+    C:
+      version: "~> 2.2"
+      presence: mandatory
+    M:
+      version: "~> 2.0"
+      presence: mandatory
+    Zicsr:
+      version: "~> 2.0"
+      presence: mandatory
+    Zicntr:
+      version: "~> 2.0"
+      presence: mandatory
+      parameters:
+          TIME_CSR_IMPLEMENTED: {} # Unconstrained
+    Sm:
+      version: "~> 1.11.0"
+      presence: mandatory
+      parameters:
+          MTVEC_BASE_ALIGNMENT_DIRECT: {} # Unconstrained
+          MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
+          ARCH_ID: {} # Unconstrained
+          IMP_ID: {} # Unconstrained
+          VENDOR_ID_BANK: {} # Unconstrained
+          VENDOR_ID_OFFSET: {} # Unconstrained
+          MISA_CSR_IMPLEMENTED: {} # Unconstrained
+          MTVAL_WIDTH: {} # Unconstrained
+          MTVEC_MODES: {} # Unconstrained
+          PHYS_ADDR_WIDTH: {} # Unconstrained
+          MISALIGNED_LDST: {} # Unconstrained
+          MISALIGNED_LDST_EXCEPTION_PRIORITY : {} # Unconstrained
+          MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: {} # Unconstrained
+          MISALIGNED_SPLIT_STRATEGY:
+            schema:
+              const: by_byte
+          PRECISE_SYNCHRONOUS_EXCEPTIONS:
+            schema:
+              const: true
+          TRAP_ON_ECALL_FROM_M:
+            schema:
+              const: true
+          TRAP_ON_EBREAK:
+            schema:
+              const: true
+          M_MODE_ENDIANESS:
+            schema:
+              const: little
+          XLEN:
+            schema:
+              const: 32

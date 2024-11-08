@@ -7,7 +7,7 @@
 # Many classes inherit from the ArchDefObject class. This provides facilities for accessing the contents of a
 # Portfolio Class YAML or Portfolio Model YAML file via the "data" member (hash holding releated YAML file contents).
 #
-# A variable name with a "_portfolio" suffix indicates it is from the porfolio YAML file.
+# A variable name with a "_data" suffix indicates it is the raw hash data from the porfolio YAML file.
 # A variable name with a "_db" suffix indicates it is an object reference from the arch_def database.
 
 require_relative "obj"
@@ -62,47 +62,35 @@ class PortfolioInstance < ArchDefObject
   # @return [Gem::Version] Semantic version of the PortfolioInstance
   def version = Gem::Version.new(@data["version"])
 
-  # @return [Extension] - Returns named Extension object from database (nil if not found).
-  def extension_from_db(ext_name)
-    @arch_def.extension(ext_name)
-  end
-
-  # @return [Extension] - Returns named Extension object from portfolio (error if not found).
-  def extension_from_portfolio(ext_name)
-    # Get extension information from YAML for passed in extension name.
-    ext_portfolio = @data["extensions"].find {|ext| ext["name"] == ext_name}
-    raise "Cannot find extension named #{ext_name}" if ext_portfolio.nil?
-
-    ext_portfolio
-  end
-
   # @return [String] Given an extension +ext_name+, return the presence.
   #                  If the extension name isn't found in the portfolio, return "-".
   def extension_presence(ext_name)
     # Get extension information from YAML for passed in extension name.
-    ext_portfolio = @data["extensions"].find {|ext| ext["name"] == ext_name}
+    ext_data = @data["extensions"][ext_name]
 
-    ext_portfolio.nil? ? "-" : ext_portfolio["presence"]
+    ext_data.nil? ? "-" : ext_data["presence"]
   end
 
   # @return [String] The note associated with extension +ext_name+
   # @return [nil] if there is no note for +ext_name+
   def extension_note(ext_name)
-    ext = extension_from_portfolio(ext_name)
+    # Get extension information from YAML for passed in extension name.
+    ext_data = @data["extensions"][ext_name]
+    raise "Cannot find extension named #{ext_name}" if ext_data.nil?
 
-    return ext["note"] unless ext.nil?
+    return ext_data["note"] unless ext_data.nil?
   end
 
   # @return [Array<ExtensionRequirements>] - # Extensions with their portfolio information.
   # If desired_presence is provided, only returns extensions with that presence.
   def in_scope_ext_reqs(desired_presence = nil)
     in_scope_ext_reqs = []
-    @data["extensions"]&.each do |ext_portfolio|
-      actual_presence = ext_portfolio["presence"]
-      raise "Missing extension presence for extension #{ext_portfolio["name"]}" if actual_presence.nil?
+    @data["extensions"]&.each do |ext_name, ext_data|
+      actual_presence = ext_data["presence"]
+      raise "Missing extension presence for extension #{ext_name}" if actual_presence.nil?
 
       if (actual_presence != "mandatory") && (actual_presence != "optional")
-        raise "Unknown extension presence of #{actual_presence} for extension #{ext_portfolio["name"]}" 
+        raise "Unknown extension presence of #{actual_presence} for extension #{ext_name}" 
       end
 
       add = false
@@ -115,8 +103,8 @@ class PortfolioInstance < ArchDefObject
 
       if add
         in_scope_ext_reqs << 
-          ExtensionRequirement.new(ext_portfolio["name"], ext_portfolio["version"], presence: actual_presence,
-            note: ext_portfolio["note"], req_id: "REQ-EXT-" + ext_portfolio["name"])
+          ExtensionRequirement.new(ext_name, ext_data["version"], presence: actual_presence,
+            note: ext_data["note"], req_id: "REQ-EXT-" + ext_name)
       end
     end
     in_scope_ext_reqs
@@ -216,17 +204,17 @@ class PortfolioInstance < ArchDefObject
 
     @all_in_scope_ext_params = []
 
-    @data["extensions"].each do |ext_portfolio| 
+    @data["extensions"].each do |ext_name, ext_data| 
       # Find Extension object from database
-      ext_db = @arch_def.extension(ext_portfolio["name"])
-      raise "Cannot find extension named #{ext_portfolio["name"]}" if ext_db.nil?
+      ext_db = @arch_def.extension(ext_name)
+      raise "Cannot find extension named #{ext_name}" if ext_db.nil?
 
-      ext_portfolio["parameters"]&.each do |param_name, param_data|
+      ext_data["parameters"]&.each do |param_name, param_data|
         param_db = ext_db.params.find { |p| p.name == param_name }
-        raise "There is no param '#{param_name}' in extension '#{ext_portfolio["name"]}" if param_db.nil?
+        raise "There is no param '#{param_name}' in extension '#{ext_name}" if param_db.nil?
 
         next unless ext_db.versions.any? do |ver_hash|
-          Gem::Requirement.new(ext_portfolio["version"]).satisfied_by?(Gem::Version.new(ver_hash["version"])) &&
+          Gem::Requirement.new(ext_data["version"]).satisfied_by?(Gem::Version.new(ver_hash["version"])) &&
             param_db.defined_in_extension_version?(ver_hash["version"])
         end
 
@@ -245,22 +233,22 @@ class PortfolioInstance < ArchDefObject
     ext_params = []    # Local variable, no caching
 
     # Get extension information from portfolio YAML for passed in extension requirement.
-    ext_portfolio = @data["extensions"].find {|ext| ext["name"] == ext_req.name}
-    raise "Cannot find extension named #{ext_req.name}" if ext_portfolio.nil?
+    ext_data = @data["extensions"][ext_req.name]
+    raise "Cannot find extension named #{ext_req.name}" if ext_data.nil?
     
     # Find Extension object from database
-    ext_db = @arch_def.extension(ext_portfolio["name"])
-    raise "Cannot find extension named #{ext_portfolio["name"]}" if ext_db.nil?
+    ext_db = @arch_def.extension(ext_req.name)
+    raise "Cannot find extension named #{ext_req.name}" if ext_db.nil?
 
     # Loop through an extension's parameter constraints (hash) from the portfolio.
     # Note that "&" is the Ruby safe navigation operator (i.e., skip do loop if nil).
-    ext_portfolio["parameters"]&.each do |param_name, param_data|
+    ext_data["parameters"]&.each do |param_name, param_data|
         # Find ExtensionParameter object from database
         ext_param_db = ext_db.params.find { |p| p.name == param_name }
-        raise "There is no param '#{param_name}' in extension '#{ext_portfolio["name"]}" if ext_param_db.nil?
+        raise "There is no param '#{param_name}' in extension '#{ext_req.name}" if ext_param_db.nil?
 
         next unless ext_db.versions.any? do |ver_hash|
-          Gem::Requirement.new(ext_portfolio["version"]).satisfied_by?(Gem::Version.new(ver_hash["version"])) &&
+          Gem::Requirement.new(ext_data["version"]).satisfied_by?(Gem::Version.new(ver_hash["version"])) &&
             ext_param_db.defined_in_extension_version?(ver_hash["version"])
         end
 

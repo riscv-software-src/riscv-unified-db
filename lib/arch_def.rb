@@ -690,7 +690,8 @@ class ArchDef
     @arch_def["profile_releases"].each_value do |pr_data|
       raise ArgumentError, "Expecting pr_data to be a hash" unless pr_data.is_a?(Hash)
 
-      pr_data["profiles"].each do |profile_data|
+      pr_data["profiles"].each do |profile_name, profile_data|
+        profile_data["name"] = profile_name
         profile = Profile.new(profile_data, self)
         raise ArgumentError, "Profile constructor returned nil" if profile.nil?
 

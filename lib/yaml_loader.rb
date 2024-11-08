@@ -48,6 +48,7 @@ class YamlLoader
     elsif obj.keys.include?("$mref")
       # we handle the mref key first so that any override will take priority
       mref = obj["$mref"]
+      raise ArgumentError, "Missing reference after $mref (did you forget to put a relative reference in quotes?)" if mref.nil?
       mref_targets = mref.is_a?(String) ? [mref] : mref
 
       new_obj = {}
@@ -67,10 +68,19 @@ class YamlLoader
             YamlLoader.load(target_filename, yaml_opts)
           end
 
-        target_obj = target_obj.dig(*mref_target.split("#/")[1].split("/"))
-        if target_obj.nil?
-          raise DereferenceError, "JSON Path #{mref_target.split('#')[1]} does not exist in #{relative_path}"
+        mref_target_suffix = mref_target.split("#/")[1]
+        mref_target_path = mref_target_suffix.split("/")
+        begin
+          target_obj = target_obj.dig(*mref_target_path) 
+        rescue TypeError => e
+          if e.message == "no implicit conversion of String into Integer"
+            warn "$mref: \"#{mref_target}\" found in file #{filename} references an Array but needs to reference a Hash"
+          end
+          raise e
         end
+
+        raise DereferenceError, "JSON Path #{mref_target_suffix} in file #{filename} does not exist in #{relative_path}" if target_obj.nil?
+        raise ArgumentError, "$mref: \"#{mref_target}\" in file #{filename} references a #{target_obj.class} but needs to reference a Hash" unless target_obj.is_a?(Hash)
 
         target_obj.each do |target_key, target_value|
           new_obj[target_key] = expand(filename, target_value, yaml_opts)

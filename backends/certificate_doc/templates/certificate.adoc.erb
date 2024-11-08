@@ -117,7 +117,7 @@ None
 | Requirement ID | Extension | Version | Long Name | Note
 
 <% ext_reqs.sort.each do |ext_req| -%>
-<% ext_db = cert_model.extension_from_db(ext_req.name) -%>
+<% ext_db = arch_def.extension(ext_req.name) -%>
 | <%= ext_req.req_id %> 
 | <<ext-<%= ext_req.name %>-def,<%= ext_req.name %>>> 
 | <%= ext_req.version_requirement %>
@@ -289,7 +289,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 [appendix]
 == Extension Details
 <% cert_model.in_scope_ext_reqs.sort.each do |ext_req| -%>
-<% ext_db = cert_model.extension_from_db(ext_req.name) -%>
+<% ext_db = arch_def.extension(ext_req.name) -%>
 
 [[ext-<%= ext_req.name %>-def]]
 === Extension <%= ext_req.name %> +

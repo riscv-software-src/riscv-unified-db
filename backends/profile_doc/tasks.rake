@@ -87,7 +87,7 @@ namespace :gen do
     raise ArgumentError, "Missing required option +profile_release+" if profile_release_name.nil?
 
     profile_release = arch_def_for("_64").profile_release(profile_release_name)
-    raise ArgumentError, "No profile release named '#{profile_release_name}" if profile_release.nil?
+    raise ArgumentError, "No profile release named '#{profile_release_name}'" if profile_release.nil?
 
     Rake::Task["#{$root}/gen/profile_doc/pdf/#{profile_release_name}.pdf"].invoke
   end
