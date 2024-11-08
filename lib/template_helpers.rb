@@ -1,6 +1,12 @@
+# frozen_string_literal: true
+
 # At this point, we insert a placeholder since it will be up
 # to the backend to create a specific link.
 
+require "erb"
+require "pathname"
+
+# collection of functions that can be used inside ERB templates
 module TemplateHelpers
   # Insert a hyperlink to an extension.
   # @param name [#to_s] Name of the extension
@@ -64,5 +70,13 @@ module TemplateHelpers
   # @param field_name [#to_s] Name of the CSR field
   def anchor_for_csr_field(csr_name, field_name)
     "[[csr_field-#{csr_name.gsub(".", "_")}-#{field_name.gsub(".", "_")}-def]]"
+  end
+
+  def render(template_path, locals = {})
+    template_path = Pathname.new(template_path)
+    erb = ERB.new(template)
+    erb.filename = template_path.realpath
+
+    erb.result(OpenStruct.new(locals).instance_eval { binding })
   end
 end
