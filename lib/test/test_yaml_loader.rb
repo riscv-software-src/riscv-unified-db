@@ -1,3 +1,4 @@
+
 require "minitest/autorun"
 
 $root ||= (Pathname.new(__FILE__) / ".." / ".." ).realpath
@@ -5,6 +6,132 @@ $root ||= (Pathname.new(__FILE__) / ".." / ".." ).realpath
 require_relative "../yaml_loader"
 
 class TestYamlLoader < Minitest::Test
+
+  def test_that_spurious_recursive_mref_works
+    yaml = <<~YAML
+      base:
+        key1: value1
+        key2: value2
+
+      middle:
+        $mref: "#/base"
+        key3: value3
+        key4: value4
+
+      bottom:
+        $mref:
+        - "#/base"
+        - "#/middle"
+        key2: value2_new
+        key4: value4_new
+        key5: value5
+    YAML
+
+    f = Tempfile.new("yml")
+    f.write(yaml)
+    f.flush
+
+    doc = YamlLoader.load(f.path)
+    assert_equal({ "key1" => "value1", "key2" => "value2", "key3" => "value3", "key4" => "value4" }, doc["middle"])
+    assert_equal({ "key1" => "value1", "key2" => "value2_new", "key3" => "value3", "key4" => "value4_new", "key5" => "value5" }, doc["bottom"])
+  end
+
+  def test_that_recursive_mref_works
+    yaml = <<~YAML
+      base:
+        key1: value1
+        key2: value2
+
+      middle:
+        $mref: "#/base"
+        key3: value3
+        key4: value4
+
+      bottom:
+        $mref: "#/middle"
+        key2: value2_new
+        key4: value4_new
+        key5: value5
+    YAML
+
+    f = Tempfile.new("yml")
+    f.write(yaml)
+    f.flush
+
+    doc = YamlLoader.load(f.path)
+    assert_equal({ "key1" => "value1", "key2" => "value2", "key3" => "value3", "key4" => "value4" }, doc["middle"])
+    assert_equal({ "key1" => "value1", "key2" => "value2_new", "key3" => "value3", "key4" => "value4_new", "key5" => "value5" }, doc["bottom"])
+  end
+
+  def test_that_nested_mref_works
+    yaml = <<~YAML
+    top:
+      base:
+        key1: value1
+        key2: value2
+        key3: value3
+
+    bottom:
+      child:
+        $mref: "#/top/base"
+        key3: value3_new
+    YAML
+
+    f = Tempfile.new("yml")
+    f.write(yaml)
+    f.flush
+
+    doc = YamlLoader.load(f.path)
+    assert_equal({ "key1" => "value1", "key2" => "value2", "key3" => "value3_new" }, doc["bottom"]["child"])
+  end
+
+  def test_that_mref_doesnt_delete_keys
+    yaml = <<~YAML
+    base:
+      key1: value1
+      key2: value2
+      key3: value3
+
+    child:
+      $mref: "#/base"
+      key3: value3_new
+    YAML
+
+    f = Tempfile.new("yml")
+    f.write(yaml)
+    f.flush
+
+    doc = YamlLoader.load(f.path)
+    assert_equal({ "key1" => "value1", "key2" => "value2", "key3" => "value3_new" }, doc["child"])
+  end
+
+  def test_that_double_mref_doesnt_delete_keys
+    yaml = <<~YAML
+    base1:
+      key1: value1
+      key2: value2
+      key3: value3
+
+    base2:
+      key4: value4
+      key5: value5
+      key6: value6
+
+    child:
+      $mref:
+      - "#/base1"
+      - "#/base2"
+      key3: value3_new
+      key6: value6_new
+    YAML
+
+    f = Tempfile.new("yml")
+    f.write(yaml)
+    f.flush
+
+    doc = YamlLoader.load(f.path)
+    assert_equal({ "key1" => "value1", "key2" => "value2", "key3" => "value3_new", "key4" => "value4", "key5" => "value5", "key6" => "value6_new" }, doc["child"])
+  end
 
   def test_refs_in_the_same_document
     yaml = <<~YAML
