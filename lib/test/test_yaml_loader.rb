@@ -7,6 +7,49 @@ require_relative "../yaml_loader"
 
 class TestYamlLoader < Minitest::Test
 
+  def test_remove
+    yaml = <<~YAML
+      base:
+        key1: value1
+        key2: value2
+
+      child:
+        $mref: "#/base"
+        $remove: key2
+        key3: value3
+    YAML
+
+    f = Tempfile.new("yml")
+    f.write(yaml)
+    f.flush
+
+    doc = YamlLoader.load(f.path)
+    assert_equal({ "key1" => "value1", "key3" => "value3" }, doc["child"])
+  end
+
+  def test_multiple_remove
+    yaml = <<~YAML
+      base:
+        key1: value1
+        key2: value2
+        key3: value3
+
+      child:
+        $mref: "#/base"
+        $remove:
+        - key2
+        - key3
+        key4: value4
+    YAML
+
+    f = Tempfile.new("yml")
+    f.write(yaml)
+    f.flush
+
+    doc = YamlLoader.load(f.path)
+    assert_equal({ "key1" => "value1", "key4" => "value4" }, doc["child"])
+  end
+
   def test_that_mref_with_nested_replace_works
     yaml = <<~YAML
       base:
