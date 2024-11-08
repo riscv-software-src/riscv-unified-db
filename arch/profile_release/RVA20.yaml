@@ -44,6 +44,7 @@ RVA20:
         terms of the amount of software that targets this profile.
       extensions:
         $mref: "RVI20.yaml#/RVI20/profiles/RVI20U64/extensions"
+        $remove: Zifencei   # Not allowed as an option for Unpriv ISA (only available in Priv ISA).
         A:
           presence: mandatory
         C:
@@ -63,9 +64,6 @@ RVA20:
                 const: little
         Zicntr:
           presence: mandatory
-        #Zifencei:
-        #  How do we remove Zifencei as an option since it is included in the RVI64 profile
-        #  presence: XXX
         Ziccif:
           presence: mandatory
           version: "= 1.0"

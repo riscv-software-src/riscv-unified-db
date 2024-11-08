@@ -82,8 +82,10 @@ class YamlLoader
         raise DereferenceError, "JSON Path #{mref_target_suffix} in file #{filename} does not exist in #{relative_path}" if target_obj.nil?
         raise ArgumentError, "$mref: \"#{mref_target}\" in file #{filename} references a #{target_obj.class} but needs to reference a Hash" unless target_obj.is_a?(Hash)
 
+        target_obj = expand(filename, target_obj, yaml_opts)
         target_obj.each do |target_key, target_value|
-          new_obj[target_key] = expand(filename, target_value, yaml_opts)
+          
+          new_obj[target_key] = target_value
         end
       end
 
