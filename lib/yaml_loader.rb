@@ -72,8 +72,9 @@ class YamlLoader
           raise DereferenceError, "JSON Path #{mref_target.split('#')[1]} does not exist in #{relative_path}"
         end
 
+        target_obj = expand(filename, target_obj, yaml_opts)
         target_obj.each do |target_key, target_value|
-          new_obj[target_key] = expand(filename, target_value, yaml_opts)
+          new_obj[target_key] = target_value
         end
       end
 
