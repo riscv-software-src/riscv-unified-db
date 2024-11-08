@@ -42,8 +42,6 @@ MockCertificateModel:
     - "../profile_release/MockProfileRelease.yaml#/MockProfileRelease/profiles/MP-U-64/extensions"
     - "../profile_release/MockProfileRelease.yaml#/MockProfileRelease/profiles/MP-S-64/extensions"
     I:
-      presence: optional
-      version: "=2.1.0"
       note: Changed inherited I extension from mandatory to optional and version is =2.1.0 instead of ~>2.1
     MockExt:
       presence: mandatory
