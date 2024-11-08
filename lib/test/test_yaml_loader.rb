@@ -7,6 +7,37 @@ require_relative "../yaml_loader"
 
 class TestYamlLoader < Minitest::Test
 
+  def test_that_mref_with_nested_replace_works
+    yaml = <<~YAML
+      base:
+        key1:
+          sub_key1: value1
+        key2: value2
+
+      middle:
+        $mref: "#/base"
+        key3: value3
+        key4: value4
+
+      bottom:
+        $mref:
+        - "#/base"
+        - "#/middle"
+        key1:
+          sub_key6: value6
+        key2: value2_new
+        key4: value4_new
+        key5: value5
+    YAML
+
+    f = Tempfile.new("yml")
+    f.write(yaml)
+    f.flush
+
+    doc = YamlLoader.load(f.path)
+    assert_equal({ "key1" => {"sub_key1" => "value1", "sub_key6" => "value6"}, "key2" => "value2_new", "key3" => "value3", "key4" => "value4_new", "key5" => "value5" }, doc["bottom"])
+  end
+
   def test_that_spurious_recursive_mref_works
     yaml = <<~YAML
       base:

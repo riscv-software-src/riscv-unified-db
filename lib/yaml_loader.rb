@@ -94,7 +94,13 @@ class YamlLoader
       obj_keys.each do |key|
         value = obj[key]
 
-        new_obj[key] = expand(filename, value, yaml_opts)
+        expanded = expand(filename, value, yaml_opts)
+        if new_obj[key].is_a?(Hash)
+          raise "should be a hash" unless expanded.is_a?(Hash)
+          new_obj[key].merge!(expanded)
+        else
+          new_obj[key] = expanded
+        end
       end
       new_obj
     else
