@@ -74,24 +74,36 @@ class YamlLoader
 
         target_obj = expand(filename, target_obj, yaml_opts)
         target_obj.each do |target_key, target_value|
-          new_obj[target_key] = target_value
+          if (new_obj[target_key].is_a?(Hash))
+            raise "Should be a hash" unless target_value.is_a?(Hash)
+            new_obj[target_key] = target_value.merge(new_obj[target_key])
+          else
+            new_obj[target_key] = target_value
+          end
         end
       end
 
       obj.delete("$mref")
-      obj_keys = obj.keys
-      obj_keys.each do |key|
-        value = obj[key]
-
-        expanded = expand(filename, value, yaml_opts)
-        if new_obj[key].is_a?(Hash)
-          raise "should be a hash" unless expanded.is_a?(Hash)
-          new_obj[key].merge!(expanded)
+      # now merge target_obj and obj
+      keys = (obj.keys + new_obj.keys).uniq
+      final_obj = {}
+      keys.each do |key|
+        if !obj.key?(key)
+          final_obj[key] = new_obj[key]
+        elsif !new_obj.key?(key)
+          final_obj[key] = expand(filename, obj[key], yaml_opts)
         else
-          new_obj[key] = expanded
+          value = obj[key]
+
+          if new_obj[key].is_a?(Hash)
+            raise "should be a hash" unless new_obj[key].is_a?(Hash)
+            final_obj[key] = new_obj[key].merge(obj[key])
+          else
+            final_obj[key] = expand(filename, obj[key], yaml_opts)
+          end
         end
       end
-      new_obj
+      final_obj
     else
       obj_keys = obj.keys
       obj_keys.each do |key|
