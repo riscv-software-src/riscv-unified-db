@@ -14,6 +14,7 @@ class YamlLoader
 
     return obj.map { |v| expand(filename, v, yaml_opts) } if obj.is_a?(Array)
 
+    new_obj =
     if obj.keys.include?("$ref")
       # according JSON Reference, all keys except $ref are ignored
       relative_path = obj["$ref"].split("#")[0]
@@ -85,6 +86,7 @@ class YamlLoader
 
         new_obj[key] = expand(filename, value, yaml_opts)
       end
+
       new_obj
     else
       obj_keys = obj.keys
@@ -95,6 +97,16 @@ class YamlLoader
       end
       obj
     end
+
+    obj_keys = new_obj.keys
+    if obj_keys.include? "$remove"
+      remove_keys = obj["$remove"].is_a?(Array) ? obj["$remove"] : [obj["$remove"]]
+      remove_keys.each do |key|
+        new_obj.delete(key)
+      end
+    end
+    new_obj.delete("$remove")
+    new_obj
   end
 
   # load a YAML file and expand any $ref/$mref references
