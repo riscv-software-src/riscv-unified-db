@@ -43,7 +43,7 @@ RVA20:
         most important profile within application processors in
         terms of the amount of software that targets this profile.
       extensions:
-        $mref: "RVI20.yaml#/RVI20/profiles/RVI20U64/extensions"
+        $inherits: "RVI20.yaml#/RVI20/profiles/RVI20U64/extensions"
         $remove: Zifencei   # Not allowed as an option for Unpriv ISA (only available in Priv ISA).
         A:
           presence: mandatory

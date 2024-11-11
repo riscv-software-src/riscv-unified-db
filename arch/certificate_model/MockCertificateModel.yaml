@@ -38,7 +38,7 @@ MockCertificateModel:
 
 # XXX - Remove version information since specifying priv/unpriv ISA manual should imply this.
   extensions:
-    $mref:
+    $inherits:
     - "../profile_release/MockProfileRelease.yaml#/MockProfileRelease/profiles/MP-U-64/extensions"
     - "../profile_release/MockProfileRelease.yaml#/MockProfileRelease/profiles/MP-S-64/extensions"
     I:
