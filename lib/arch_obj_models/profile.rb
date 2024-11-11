@@ -37,8 +37,6 @@ class ProfileClass < PortfolioClass
   def profiles
     return @profiles unless @profiles.nil?
 
-    puts " 2a: profiles for class #{name} called."
-
     @profiles = []
     @arch_def.profiles.each do |profile|
       if profile.profile_class.name == name
