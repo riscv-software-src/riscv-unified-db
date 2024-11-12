@@ -11,7 +11,7 @@
     "field_location": {
       "oneOf": [
         {"type": "number", "description": "Location of a single bit"},
-        {"type": "string", "pattern": "^[0-9]+-[0-9]+$", "description": "Location range of a multibit field"}
+        {"type": "string", "pattern": "^[0-9]+-[0-9]+$", "description": "Location range of a multi-bit field"}
       ],
       "description": "Location of a field in a register"
     },
@@ -43,7 +43,7 @@
       "pattern": "^((>=)|(>)|(~>)|(<)|(<=)|(=))?\\s*[0-9]+(\\.[0-9]+(\\.[0-9]+(-[a-fA-F0-9]+)?)?)?$"
     },
     "version_requirements": {
-      "description": "A (set of) version requirments",
+      "description": "A (set of) version requirements",
       "oneOf": [
         {
           "$ref": "#/$defs/requirement_string"

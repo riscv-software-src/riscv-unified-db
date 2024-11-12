@@ -70,7 +70,7 @@
           }
         },
         "doc_license": {
-          "description": "License that applies to the textual documantation for this extension",
+          "description": "License that applies to the textual documentation for this extension",
           "type": "object",
           "properties": {
             "name": {
@@ -150,7 +150,7 @@
               },
               "url": { "type": "string", "format": "uri", "description": "Link to ratified document" },
               "implies": {
-                "description": "Extension(s) implied by this extension (i.e., any subextesions)",
+                "description": "Extension(s) implied by this extension (i.e., any subextensions)",
                 "oneOf": [
                   { "$ref": "schema_defs.json#/$defs/extension_name_and_version" },
                   { "type": "array", "items": { "$ref": "schema_defs.json#/$defs/extension_name_and_version" }}

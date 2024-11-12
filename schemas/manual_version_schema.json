@@ -23,7 +23,7 @@
         },
         "authors": {
           "type": "array",
-          "itesm": {
+          "items": {
             "$ref": "schema_defs.json#/$defs/author"
           }
         },
@@ -66,7 +66,7 @@
     },
     "marketing_version": {
       "type": "string",
-      "description": "The publically displayed version number"
+      "description": "The publicly displayed version number"
     },
     "state": {
       "$ref": "schema_defs.json#/$defs/spec_state",
@@ -91,7 +91,7 @@
       "items": {
         "$ref": "#/$defs/volume"
       },
-      "descriptoin": "List of volumes in this version"
+      "description": "List of volumes in this version"
     }
   },
   "additionalProperties": false

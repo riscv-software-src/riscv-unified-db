@@ -64,11 +64,11 @@
         },
         "type": {
           "enum": ["RO", "RO-H", "RW", "RW-R", "RW-H", "RW-RH"],
-          "description": "Type of the field. One of:\n * RO: Read-only immutable\n * RO-H: Read-only, updated by hardware\n * RW: Read-write, not updated by hardware\n * RW-R: Read-write, but values are restricted. sw_write(value) must be provided\n * RW-H: Read-write, with hardware updates\n * RW-RH: Read-write, with hardware updates, but values are restricted. sw_write(value) must be provded"
+          "description": "Type of the field. One of:\n * RO: Read-only immutable\n * RO-H: Read-only, updated by hardware\n * RW: Read-write, not updated by hardware\n * RW-R: Read-write, but values are restricted. sw_write(value) must be provided\n * RW-H: Read-write, with hardware updates\n * RW-RH: Read-write, with hardware updates, but values are restricted. sw_write(value) must be provided"
         },
         "type()": {
           "type": "string",
-          "description": "Function that returns a configuration-depenent type. The return value should be a CsrFieldType enum, and must be compile-time-known."
+          "description": "Function that returns a configuration-dependent type. The return value should be a CsrFieldType enum, and must be compile-time-known."
         },
         "alias": {
           "oneOf": [
@@ -182,7 +182,7 @@
         },
         "description": {
           "type": "string",
-          "description": "A full Asciidoc description of the CSR, indended to be used as documentation."
+          "description": "A full Asciidoc description of the CSR, intended to be used as documentation."
         },
         "definedBy": {
           "$ref": "schema_defs.json#/$defs/requires_entry",
@@ -196,7 +196,7 @@
         },
         "indirect_address": {
           "type": "integer",
-          "description": "Indirect sddress of the CSR, as given to the indirect CSRs of the `Smcsrind`/`Sscdrind` extensions"
+          "description": "Indirect address of the CSR, as given to the indirect CSRs of the `Smcsrind`/`Sscdrind` extensions"
         },
         "indirect": {
           "type": "boolean",
@@ -230,7 +230,7 @@
           "description": "Function that returns the value of the CSR when read by software (i.e., a Zicsr instruction). If not specified, the value last written (through hw_write) is returned."
         },
         "__source": {
-          "description": "Path to the source file this defintion came from; used by downstream tooling -- not expected to be in handwritten files",
+          "description": "Path to the source file this definition came from; used by downstream tooling -- not expected to be in handwritten files",
           "type": "string"
         }
       },

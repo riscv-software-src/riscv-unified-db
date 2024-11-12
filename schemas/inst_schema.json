@@ -152,11 +152,11 @@
         "name": {
           "type": "string",
           "pattern": "^[a-z0-9.]+$",
-          "desription": "Instruction mnemonic (must be lowercase)"
+          "description": "Instruction mnemonic (must be lowercase)"
         },
         "long_name": {
           "type": "string",
-          "description": "Short descrption of the instruction"
+          "description": "Short description of the instruction"
         },
         "description": {
           "type": "string",
@@ -254,7 +254,7 @@
               },
               "to": {
                 "type": "string",
-                "description": "pseduoinstruction format"
+                "description": "pseudoinstruction format"
               }
             },
             "additionalProperties": false
