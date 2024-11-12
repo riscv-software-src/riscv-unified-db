@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+import yaml
 from collections import defaultdict
 
 def parse_header_files(header_files):
@@ -188,29 +189,65 @@ def format_encoding(encoding_str):
     formatted_str = f"{group1}{group2}{group3}{group4}{group5}"
     return formatted_str
 
-def get_instruction_names_from_directory(directory_path):
+def get_instruction_yaml_files(directory_path):
     """
-    Lists all .yaml files in the specified directory and extracts instruction names.
+    Recursively finds all .yaml files in the specified directory and its subdirectories,
+    and maps instruction names to their YAML file paths.
 
     Args:
         directory_path (str): Path to the directory containing YAML files.
 
     Returns:
-        instr_names (set): A set of instruction names without the .yaml extension.
+        instr_yaml_map (dict): Mapping from instruction name to YAML file path.
+    """
+    instr_yaml_map = {}
+    for root, dirs, files in os.walk(directory_path):
+        for file in files:
+            if file.endswith('.yaml'):
+                instr_name = os.path.splitext(file)[0]
+                yaml_path = os.path.join(root, file)
+                if instr_name in instr_yaml_map:
+                    print(f"Warning: Multiple YAML files found for instruction '{instr_name}'. "
+                          f"Using '{instr_yaml_map[instr_name]}' and ignoring '{yaml_path}'.")
+                else:
+                    instr_yaml_map[instr_name] = yaml_path
+    return instr_yaml_map
+
+def parse_yaml_encoding(yaml_file_path):
+    """
+    Parses the YAML file to extract the 'encoding: match' string.
+
+    Args:
+        yaml_file_path (str): Path to the YAML file.
+
+    Returns:
+        match_encoding (str): The 32-character match encoding string.
     """
     try:
-        files = os.listdir(directory_path)
+        with open(yaml_file_path, 'r') as yaml_file:
+            yaml_content = yaml.safe_load(yaml_file)
+            if not isinstance(yaml_content, dict) or not yaml_content:
+                print(f"Warning: YAML file '{yaml_file_path}' is empty or not properly formatted.")
+                return ''
+
+            # Assuming the YAML structure has the instruction name as the top key
+            # and 'encoding' as a subkey
+            # Example:
+            # add:
+            #   encoding:
+            #     match: "0000000----------000-----0110011"
+            instr_name = list(yaml_content.keys())[0]
+            encoding = yaml_content[instr_name].get('encoding', {})
+            match_encoding = encoding.get('match', '')
+            if not match_encoding:
+                print(f"Warning: 'encoding.match' not found in YAML file '{yaml_file_path}'.")
+            return match_encoding
     except FileNotFoundError:
-        print(f"Error: Directory '{directory_path}' not found.")
-        return set()
-
-    instr_names = set()
-    for file in files:
-        if file.endswith('.yaml'):
-            instr_name = os.path.splitext(file)[0]
-            instr_names.add(instr_name)
-
-    return instr_names
+        print(f"Error: YAML file '{yaml_file_path}' not found.")
+        return ''
+    except yaml.YAMLError as e:
+        print(f"Error: Failed to parse YAML file '{yaml_file_path}': {e}")
+        return ''
 
 def main():
     """
@@ -229,13 +266,13 @@ def main():
     ]
 
     # Define the path to the directory containing YAML files
-    yaml_directory = '../../arch/inst/V'  # Replace with your actual directory path
+    yaml_directory = '../../arch/inst/'  # Replace with your actual directory path
 
-    # Get instruction names from the YAML directory
-    yaml_instr_names = get_instruction_names_from_directory(yaml_directory)
-    if not yaml_instr_names:
-        print("No instruction names found. Exiting.")
-        sys.exit(1)  # Exit if no instruction names are found
+    # Get instruction YAML mappings from the YAML directory recursively
+    instr_yaml_map = get_instruction_yaml_files(yaml_directory)
+    if not instr_yaml_map:
+        print("No YAML files found. Exiting.")
+        sys.exit(1)  # Exit if no YAML files are found
 
     # Parse header files to get all #define constants
     defines = parse_header_files(header_files)
@@ -252,16 +289,33 @@ def main():
     # Group instructions by name
     instr_group = defaultdict(list)
     for instr in instructions:
-        if instr['name'] in yaml_instr_names and 'INSN_ALIAS' not in instr['flags']:
+        if instr['name'] in instr_yaml_map and 'INSN_ALIAS' not in instr['flags']:
             instr_group[instr['name']].append(instr)
 
     if not instr_group:
         print("No matching non-alias instructions found between YAML files and instruction definitions.")
         sys.exit(1)  # Exit if no matching instructions are found
 
+    # Initialize a flag to track mismatches
+    mismatches_found = False
+
     # Process each instruction group
     for name, defs in instr_group.items():
         success_encodings = []
+        yaml_encoding = ''
+        yaml_file_path = instr_yaml_map.get(name, '')
+        
+        if not yaml_file_path:
+            # No YAML file found for this instruction
+            print(f"Warning: No YAML file found for instruction '{name}'. Skipping comparison.")
+            continue
+
+        yaml_encoding = parse_yaml_encoding(yaml_file_path)
+
+        if not yaml_encoding:
+            # Skip comparison if YAML encoding is missing
+            continue
+
         for d in defs:
             try:
                 # Evaluate MATCH expression
@@ -279,23 +333,31 @@ def main():
                 continue
 
         if success_encodings:
-            # Print all successful encodings for this instruction
             for class_, encoding in success_encodings:
-                print(f'Instruction: {name}')
-                print(f'  Class: {class_}')
-                print(f'  match: {encoding}\n')
+                if encoding != yaml_encoding:
+                    mismatches_found = True
+                    print(f"Error: Encoding mismatch for instruction '{name}' in YAML file '{yaml_file_path}'.")
+                    print(f"  YAML match     : {yaml_encoding}")
+                    print(f"  Generated match: {encoding}\n")
         else:
             # No valid definitions could be processed for this instruction
-            print(f"Error: Could not evaluate any MATCH/MASK expressions for instruction '{name}'. Exiting.")
-            sys.exit(1)  # Terminate the script
+            print(f"Error: Could not evaluate any MATCH/MASK expressions for instruction '{name}' in YAML file '{yaml_file_path}'.\n")
+            mismatches_found = True
 
     # Optionally, notify about YAML files without corresponding instruction definitions
     defined_instr_names = set(instr['name'] for instr in instructions)
+    yaml_instr_names = set(instr_yaml_map.keys())
     undefined_yaml_instr = yaml_instr_names - defined_instr_names
     if undefined_yaml_instr:
         print("Warning: The following instructions from YAML directory do not have definitions:")
-        for instr in undefined_yaml_instr:
+        for instr in sorted(undefined_yaml_instr):
             print(f"  - {instr}")
+
+    # Exit with appropriate status code
+    if mismatches_found:
+        sys.exit(1)  # Exit with error code if any mismatches are found
+    else:
+        sys.exit(0)  # Successful execution
 
 if __name__ == "__main__":
     main()
