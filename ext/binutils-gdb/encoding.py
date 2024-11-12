@@ -1,84 +1,133 @@
+import os
 import re
+import sys
+from collections import defaultdict
 
 def parse_header_files(header_files):
     """
-    Parses header files to extract MATCH_* and MASK_* definitions.
+    Parses header files to extract all #define constants.
 
     Args:
         header_files (list of str): Paths to header files.
 
     Returns:
-        match_dict (dict): Mapping from MATCH_* name to its integer value.
-        mask_dict (dict): Mapping from MASK_* name to its integer value.
+        defines (dict): Mapping from define name to its integer value.
     """
-    match_pattern = re.compile(r'#define\s+MATCH_(\w+)\s+0x([0-9a-fA-F]+)')
-    mask_pattern = re.compile(r'#define\s+MASK_(\w+)\s+0x([0-9a-fA-F]+)')
+    define_pattern = re.compile(r'#define\s+(\w+)\s+(.+)')
 
-    match_dict = {}
-    mask_dict = {}
+    defines = {}
 
     for header_file in header_files:
         try:
             with open(header_file, 'r') as file:
-                for line in file:
+                for line_num, line in enumerate(file, 1):
                     # Remove inline comments
                     line = line.split('//')[0]
                     line = line.split('/*')[0]
-                    match = match_pattern.match(line)
+                    match = define_pattern.match(line)
                     if match:
                         name = match.group(1)
-                        value = int(match.group(2), 16)
-                        match_dict[name] = value
-                        continue
-                    mask = mask_pattern.match(line)
-                    if mask:
-                        name = mask.group(1)
-                        value = int(mask.group(2), 16)
-                        mask_dict[name] = value
-                        continue
+                        value_expr = match.group(2).strip()
+                        try:
+                            # Replace defined constants in the expression with their values
+                            value = evaluate_expression(value_expr, defines)
+                            defines[name] = value
+                            # Debug: Uncomment the following line to see parsed defines
+                            # print(f"Parsed Define: {name} = {hex(value)}")
+                        except Exception:
+                            # Skip defines that cannot be evaluated
+                            continue
         except FileNotFoundError:
             print(f"Error: Header file '{header_file}' not found.")
-            continue
+            sys.exit(1)  # Exit if a header file is missing
 
-    return match_dict, mask_dict
+    return defines
+
+def evaluate_expression(expr, defines):
+    """
+    Evaluates a C-style expression using the defines provided.
+
+    Args:
+        expr (str): The expression to evaluate.
+        defines (dict): Mapping from define names to integer values.
+
+    Returns:
+        int: The evaluated integer value of the expression.
+    """
+    # Replace C-style bitwise operators with Python equivalents if needed
+    expr = expr.replace('<<', '<<').replace('>>', '>>').replace('|', '|').replace('&', '&').replace('~', '~')
+
+    if '|' in expr:
+        # Assign only the part before the first '|'
+        expr = expr.split('|')[0]
+
+    # Replace define names with their integer values
+    tokens = re.findall(r'\w+|\S', expr)
+    expr_converted = ''
+    for token in tokens:
+        if token in defines:
+            expr_converted += str(defines[token])
+        elif re.match(r'0x[0-9a-fA-F]+', token):  # Hexadecimal literals
+            expr_converted += str(int(token, 16))
+        elif re.match(r'\d+', token):  # Decimal literals
+            expr_converted += token
+        elif token in ('|', '&', '~', '<<', '>>', '(', ')'):
+            expr_converted += f' {token} '
+        else:
+            raise ValueError(f"Undefined constant or invalid token: {token}")
+
+    try:
+        # Safely evaluate the expression
+        value = eval(expr_converted, {"__builtins__": None}, {})
+    except Exception as e:
+        raise ValueError(f"Failed to evaluate expression '{expr}': {e}")
+
+    return value
 
 def parse_instruction_files(instruction_files):
     """
-    Parses instruction definition files to extract instruction names and their MATCH_* and MASK_* along with class.
+    Parses instruction definition files to extract instruction names, their MATCH_* and MASK_* expressions, class, and flags.
 
     Args:
         instruction_files (list of str): Paths to instruction definition files.
 
     Returns:
-        instructions (list of dict): Each dict contains 'name', 'match_name', 'mask_name', 'class'.
+        instructions (list of dict): Each dict contains 'name', 'match_expr', 'mask_expr', 'class', 'flags', 'line_num', 'file'.
     """
-    # Pattern to match instruction definitions
+    # Updated pattern to capture the entire match and mask expressions and the flags
     # Example line:
-    # {"add", 0, INSN_CLASS_I, "d,s,t", MATCH_ADD, MASK_ADD, match_opcode, 0 },
+    # {"fence",       0, INSN_CLASS_I, "P,Q",       MATCH_FENCE, MASK_FENCE|MASK_RD|MASK_RS1|(MASK_IMM & ~MASK_PRED & ~MASK_SUCC), match_opcode, 0 },
     instr_pattern = re.compile(
-        r'\{\s*"([\w\.]+)",\s*\d+,\s*(INSN_CLASS_\w+),\s*"[^"]*",\s*MATCH_(\w+),\s*MASK_(\w+),.*\},')
+        r'\{\s*"([\w\.]+)",\s*\d+,\s*(INSN_CLASS_\w+),\s*"[^"]*",\s*(MATCH_[^,]+),\s*(MASK_[^,]+),[^,]+,\s*([^}]+)\s*\},'
+    )
 
     instructions = []
 
     for instr_file in instruction_files:
         try:
             with open(instr_file, 'r') as file:
-                for line in file:
+                for line_num, line in enumerate(file, 1):
                     instr_match = instr_pattern.match(line)
                     if instr_match:
                         instr_name = instr_match.group(1)
                         instr_class = instr_match.group(2)
-                        match_name = instr_match.group(3)
-                        mask_name = instr_match.group(4)
+                        match_expr = instr_match.group(3).strip()
+                        mask_expr = instr_match.group(4).strip()
+                        flags = instr_match.group(5).strip()
                         instructions.append({
                             'name': instr_name,
                             'class': instr_class,
-                            'match_name': match_name,
-                            'mask_name': mask_name
+                            'match_expr': match_expr,
+                            'mask_expr': mask_expr,
+                            'flags': flags,
+                            'line_num': line_num,
+                            'file': instr_file
                         })
+                        # Debug: Uncomment the following line to see parsed instructions
+                        # print(f"Parsed Instruction: {instr_name} at {instr_file}:{line_num}")
         except FileNotFoundError:
             print(f"Error: Instruction file '{instr_file}' not found.")
-            continue
+            sys.exit(1)  # Exit if an instruction file is missing
 
     return instructions
 
@@ -139,65 +188,114 @@ def format_encoding(encoding_str):
     formatted_str = f"{group1}{group2}{group3}{group4}{group5}"
     return formatted_str
 
+def get_instruction_names_from_directory(directory_path):
+    """
+    Lists all .yaml files in the specified directory and extracts instruction names.
+
+    Args:
+        directory_path (str): Path to the directory containing YAML files.
+
+    Returns:
+        instr_names (set): A set of instruction names without the .yaml extension.
+    """
+    try:
+        files = os.listdir(directory_path)
+    except FileNotFoundError:
+        print(f"Error: Directory '{directory_path}' not found.")
+        return set()
+
+    instr_names = set()
+    for file in files:
+        if file.endswith('.yaml'):
+            instr_name = os.path.splitext(file)[0]
+            instr_names.add(instr_name)
+
+    return instr_names
+
 def main():
     """
-    Main function to parse files and generate instruction encodings.
+    Main function to parse files and generate instruction encodings based on YAML directory.
     """
-    # Define file paths ad hoc here
+    # Define file paths here
     # Update these paths based on your actual file locations
     header_files = [
-        'riscv-opc.h',
-        'includeriscv.h'  # Replace with your actual additional header file names
+        'include/opcode/riscv-opc.h',
+        'include/opcode/riscv.h'  # Replace with your actual additional header file names
     ]
 
     instruction_files = [
-        'riscv-opc.c'
+        'opcodes/riscv-opc.c'
         # Add more instruction definition files if necessary
     ]
 
-    # Parse header files to get MATCH_* and MASK_* definitions
-    match_dict, mask_dict = parse_header_files(header_files)
+    # Define the path to the directory containing YAML files
+    yaml_directory = '../../arch/inst/V'  # Replace with your actual directory path
 
-    # Parse instruction definition files to get instructions
+    # Get instruction names from the YAML directory
+    yaml_instr_names = get_instruction_names_from_directory(yaml_directory)
+    if not yaml_instr_names:
+        print("No instruction names found. Exiting.")
+        sys.exit(1)  # Exit if no instruction names are found
+
+    # Parse header files to get all #define constants
+    defines = parse_header_files(header_files)
+    if not defines:
+        print("No #define constants parsed. Exiting.")
+        sys.exit(1)  # Exit if no defines are parsed
+
+    # Parse instruction definition files to get all instructions
     instructions = parse_instruction_files(instruction_files)
+    if not instructions:
+        print("No instructions parsed from instruction definition files. Exiting.")
+        sys.exit(1)  # Exit if no instructions are parsed
 
-    # Process each instruction and print all encodings
+    # Group instructions by name
+    instr_group = defaultdict(list)
     for instr in instructions:
-        name = instr['name']
-        instr_class = instr['class']
-        match_key = instr['match_name']
-        mask_key = instr['mask_name']
+        if instr['name'] in yaml_instr_names and 'INSN_ALIAS' not in instr['flags']:
+            instr_group[instr['name']].append(instr)
 
-        # Retrieve MATCH and MASK values
-        match_val = match_dict.get(match_key)
-        mask_val = mask_dict.get(mask_key)
+    if not instr_group:
+        print("No matching non-alias instructions found between YAML files and instruction definitions.")
+        sys.exit(1)  # Exit if no matching instructions are found
 
-        if match_val is None:
-            print(f"Warning: MATCH_{match_key} not found for instruction '{name}'. Skipping.")
-            continue
-        if mask_val is None:
-            print(f"Warning: MASK_{mask_key} not found for instruction '{name}'. Skipping.")
-            continue
+    # Process each instruction group
+    for name, defs in instr_group.items():
+        success_encodings = []
+        for d in defs:
+            try:
+                # Evaluate MATCH expression
+                match_val = evaluate_expression(d['match_expr'], defines)
+                # Evaluate MASK expression
+                mask_val = evaluate_expression(d['mask_expr'], defines)
+                # Generate the encoding string
+                encoding_str = match_mask_to_encoding(match_val, mask_val)
+                # Format the encoding string
+                formatted_encoding = format_encoding(encoding_str)
+                # Collect successful encodings
+                success_encodings.append((d['class'], formatted_encoding))
+            except Exception:
+                # Skip this definition if evaluation fails
+                continue
 
-        # Generate the encoding string
-        encoding_str = match_mask_to_encoding(match_val, mask_val)
+        if success_encodings:
+            # Print all successful encodings for this instruction
+            for class_, encoding in success_encodings:
+                print(f'Instruction: {name}')
+                print(f'  Class: {class_}')
+                print(f'  match: {encoding}\n')
+        else:
+            # No valid definitions could be processed for this instruction
+            print(f"Error: Could not evaluate any MATCH/MASK expressions for instruction '{name}'. Exiting.")
+            sys.exit(1)  # Terminate the script
 
-        # Format the encoding string
-        formatted_encoding = format_encoding(encoding_str)
-
-        # Print the result, including class information
-        print(f'Instruction: {name}')
-        print(f'  Class: {instr_class}')
-        print(f'  match: {formatted_encoding}\n')
-
-    # Optionally, verify specific instructions if needed
-    # e.g., 'add' instruction
-    # for instr in instructions:
-    #     if instr['name'] == 'add' and instr['class'] == 'INSN_CLASS_I':
-    #         encoding_str = match_mask_to_encoding(match_val, mask_val)
-    #         formatted_encoding = format_encoding(encoding_str)
-    #         print(f'Verification for \'add\' instruction:')
-    #         print(f'  match: {formatted_encoding}\n')
+    # Optionally, notify about YAML files without corresponding instruction definitions
+    defined_instr_names = set(instr['name'] for instr in instructions)
+    undefined_yaml_instr = yaml_instr_names - defined_instr_names
+    if undefined_yaml_instr:
+        print("Warning: The following instructions from YAML directory do not have definitions:")
+        for instr in undefined_yaml_instr:
+            print(f"  - {instr}")
 
 if __name__ == "__main__":
     main()
