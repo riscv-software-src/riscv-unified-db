@@ -6,7 +6,6 @@ require "pathname"
 require "rake/application"
 require "rubygems/requirement"
 require "tilt"
-require "yaml"
 
 require_relative "#{$lib}/validate"
 require_relative "#{$lib}/arch_def"
@@ -53,7 +52,7 @@ class ArchGen
     @implemented_extensions.each do |ext|
       ext_name = ext["name"]
       gen_ext_path = @gen_dir / "arch" / "ext" / "#{ext_name}.yaml"
-      ext_yaml = YAML.safe_load gen_ext_path.read
+      ext_yaml = YAML.load_file gen_ext_path.to_s
       unless ext_yaml[ext_name]["params"].nil?
         ext_yaml[ext_name]["params"].each do |param_name, param_data|
           schema["properties"]["params"]["required"] << param_name
@@ -92,7 +91,7 @@ class ArchGen
     raise "Validation failed" if @cfg_impl_ext.nil?
 
     cfg_opts_path = @cfg_dir / "cfg.yaml"
-    @cfg_opts = YAML.load_file(cfg_opts_path)
+    @cfg_opts = YamlLoader.load(cfg_opts_path, permitted_classes:[Date])
     raise "Validation failed" if @cfg_opts.nil?
     raise "Validation failed: bad type" unless ["partially configured", "fully configured"].include?(@cfg_opts["type"])
 
@@ -147,7 +146,7 @@ class ArchGen
     @implemented_extensions.each do |ext|
       ext_name = ext["name"]
       gen_ext_path = @gen_dir / "arch" / "ext" / "#{ext_name}.yaml"
-      ext_yaml = YAML.safe_load gen_ext_path.read
+      ext_yaml = YAML.load_file gen_ext_path.to_s
       unless ext_yaml[ext_name]["params"].nil?
         ext_yaml[ext_name]["params"].each do |param_name, param_data|
           next unless param_data.key?("extra_validation")
@@ -275,37 +274,51 @@ class ArchGen
   #
   def gen_arch_def
     csr_hash = Dir.glob(@gen_dir / "arch" / "csr" / "**" / "*.yaml").map do |f|
-      csr_obj = YAML.load_file(f)
+      csr_obj = YamlLoader.load(f, permitted_classes:[Date])
       csr_name = csr_obj.keys[0]
       [csr_name, csr_obj[csr_name]]
     end.to_h
     inst_hash = Dir.glob(@gen_dir / "arch" / "inst" / "**" / "*.yaml").map do |f|
-      inst_obj = YAML.load_file(f)
+      inst_obj = YamlLoader.load(f, permitted_classes:[Date])
       inst_name = inst_obj.keys[0]
       [inst_name, inst_obj[inst_name]]
     end.to_h
     ext_hash = Dir.glob(@gen_dir / "arch" / "ext" / "**" / "*.yaml").map do |f|
-      ext_obj = YAML.load_file(f)
+      ext_obj = YamlLoader.load(f, permitted_classes:[Date])
       ext_name = ext_obj.keys[0]
       [ext_name, ext_obj[ext_name]]
     end.to_h
-    profile_family_hash = Dir.glob($root / "arch" / "profile_family" / "**" / "*.yaml").map do |f|
-      profile_obj = YAML.load_file(f)
-      profile_name = profile_obj.keys[0]
-      profile_obj[profile_name]["name"] = profile_name
-      profile_obj[profile_name]["__source"] = f
-      [profile_name, profile_obj[profile_name]]
+    profile_class_hash = Dir.glob($root / "arch" / "profile_class" / "**" / "*.yaml").map do |f|
+      profile_class_obj = YamlLoader.load(f, permitted_classes:[Date])
+      profile_class_name = profile_class_obj.keys[0]
+      profile_class_obj[profile_class_name]["name"] = profile_class_name
+      profile_class_obj[profile_class_name]["__source"] = f
+      [profile_class_name, profile_class_obj[profile_class_name]]
     end.to_h
-    profile_hash = Dir.glob($root / "arch" / "profile" / "**" / "*.yaml").map do |f|
-      profile_obj = YAML.load_file(f)
-      profile_name = profile_obj.keys[0]
-      profile_obj[profile_name]["name"] = profile_name
-      profile_obj[profile_name]["__source"] = f
-      [profile_name, profile_obj[profile_name]]
+    profile_release_hash = Dir.glob($root / "arch" / "profile_release" / "**" / "*.yaml").map do |f|
+      profile_release_obj = YamlLoader.load(f, permitted_classes:[Date])
+      profile_release_name = profile_release_obj.keys[0]
+      profile_release_obj[profile_release_name]["name"] = profile_release_name
+      profile_release_obj[profile_release_name]["__source"] = f
+      [profile_release_name, profile_release_obj[profile_release_name]]
+    end.to_h
+    cert_class_hash = Dir.glob($root / "arch" / "certificate_class" / "**" / "*.yaml").map do |f|
+      cert_class_obj = YamlLoader.load(f, permitted_classes:[Date])
+      cert_class_name = cert_class_obj.keys[0]
+      cert_class_obj[cert_class_name]["name"] = cert_class_name
+      cert_class_obj[cert_class_name]["__source"] = f
+      [cert_class_name, cert_class_obj[cert_class_name]]
+    end.to_h
+    cert_model_hash = Dir.glob($root / "arch" / "certificate_model" / "**" / "*.yaml").map do |f|
+      cert_model_obj = YamlLoader.load(f, permitted_classes:[Date])
+      cert_model_name = cert_model_obj.keys[0]
+      cert_model_obj[cert_model_name]["name"] = cert_model_name
+      cert_model_obj[cert_model_name]["__source"] = f
+      [cert_model_name, cert_model_obj[cert_model_name]]
     end.to_h
     manual_hash = {}
     Dir.glob($root / "arch" / "manual" / "**" / "contents.yaml").map do |f|
-      manual_version = YAML.load_file(f)
+      manual_version = YamlLoader.load(f, permitted_classes:[Date])
       manual_id = manual_version["manual"]
       unless manual_hash.key?(manual_id)
         manual_info_files = Dir.glob($root / "arch" / "manual" / "**" / "#{manual_id}.yaml")
@@ -313,30 +326,16 @@ class ArchGen
         raise "Found multiple manual infos '#{manual_id}'.yaml, needed by #{f}" if manual_info_files.size > 1
   
         manual_info_file = manual_info_files.first
-        manual_hash[manual_id] = YAML.load_file(manual_info_file)
+        manual_hash[manual_id] = YamlLoader.load(manual_info_file, permitted_classes:[Date])
         manual_hash[manual_id]["__source"] = manual_info_file
         # TODO: schema validation
       end
   
       manual_hash[manual_id]["versions"] ||= []
-      manual_hash[manual_id]["versions"] << YAML.load_file(f)
+      manual_hash[manual_id]["versions"] << YamlLoader.load(f, permitted_classes:[Date])
       # TODO: schema validation
       manual_hash[manual_id]["versions"].last["__source"] = f
     end
-    crd_family_hash = Dir.glob($root / "arch" / "crd_family" / "**" / "*.yaml").map do |f|
-      family_obj = YAML.load_file(f, permitted_classes: [Date])
-      family_name = family_obj.keys[0]
-      family_obj[family_name]["name"] = family_name
-      family_obj[family_name]["__source"] = f
-      [family_name, family_obj[family_name]]
-    end.to_h
-    crd_hash = Dir.glob($root / "arch" / "crd" / "**" / "*.yaml").map do |f|
-      crd_obj = YAML.load_file(f, permitted_classes: [Date])
-      crd_name = crd_obj.keys[0]
-      crd_obj[crd_name]["name"] = crd_name
-      crd_obj[crd_name]["__source"] = f
-      [crd_name, crd_obj[crd_name]]
-    end.to_h
 
     arch_def = {
       "type" => @cfg_opts["type"],
@@ -347,11 +346,11 @@ class ArchGen
       "implemented_extensions" => @implemented_extensions,
       "csrs" => csr_hash,
       "implemented_csrs" => @implemented_csrs,
-      "profile_families" => profile_family_hash,
-      "profiles" => profile_hash,
-      "manuals" => manual_hash,
-      "crd_families" => crd_family_hash,
-      "crds" => crd_hash
+      "profile_classes" => profile_class_hash,
+      "profile_releases" => profile_release_hash,
+      "certificate_classes" => cert_class_hash,
+      "certificate_models" => cert_model_hash,
+      "manuals" => manual_hash
     }
 
     yaml = YAML.dump(arch_def)
@@ -470,31 +469,51 @@ class ArchGen
   end
   private :env
 
-  def merge_helper(base_obj, updates, path_so_far)
-    obj = path_so_far.empty? ? updates : updates.dig(*path_so_far)
-    obj.each do |key, value|
-      if value.is_a?(Hash)
-        merge_helper(base_obj, updates, (path_so_far + [key]))
+  # merges patch into base_obj based on JSON Merge Patch (RFC 7386)
+  #
+  # @param base_obj [Hash] base object to merge into
+  # @param patch [Hash] patch to merge into base_obj
+  # @param path_so_far [Array<String>] path into the current object. Shouldn't be set by user (used during recursion)
+  # @return [Hash] merged object
+  def merge_patch(base, patch, path_so_far = [])
+    patch_obj = path_so_far.empty? ? patch : patch.dig(*path_so_far)
+    patch_obj.each do |key, patch_value|
+      if patch_value.is_a?(Hash)
+        # continue to dig
+        merge_patch(base, patch, (path_so_far + [key]))
       else
-        (path_so_far + [key]).each_with_index do |k, idx|
-          base_obj[k] ||= {}
-          if idx != path_so_far.size
-            base_obj = base_obj[k]
-          else
-            base_obj[k] = value
+        base_ptr = base.dig(*path_so_far)
+        base_value = base_ptr&.dig(key)
+        case patch_value
+        when nil
+          # remove from base, if it exists
+          unless base_value.nil?
+            base_ptr[key] = nil
           end
+        else
+          # add or overwrite value in base
+          if base_ptr.nil?
+            # need to create intermediate nodes, too
+            base_ptr = base
+            path_so_far.each do |k|
+              base_ptr[k] = {} unless base_ptr.key?(k)
+              base_ptr = base_ptr[k]
+            end
+            base_ptr = base.dig(*path_so_far)
+          end
+          base_ptr[key] = patch_value
         end
       end
     end
   end
-  private :merge_helper
+  private :merge_patch
 
   # overwrites base_obj with any data in update
   #
   # @param base_obj [Hash] Base object
   # @param updates [Hash] Object with overlays
   # @return [Hash] Updated object
-  def merge(base_obj, updates) = merge_helper(base_obj, updates, [])
+  def merge(base_obj, updates) = merge_patch(base_obj, updates, [])
   private :merge
 
   # @param type [Symbol] Type of the object (@see Validator::SCHEMA_PATHS)
@@ -526,99 +545,6 @@ class ArchGen
   def schema_path_for(type) = Validator::SCHEMA_PATHS[type]
   private :schema_path_for
 
-  # Render a architecture definition file and save it to gen_dir / .rendered_arch
-  #
-  # Will not re-render if rendered file already exists and sources have not changed
-  #
-  # @param type [Symbol] Type of the object (@see Validator::SCHEMA_PATHS)
-  # @param name [#to_s] Name of the object
-  # @param extra_env [Hash,NilObject] Optional hash with extra enviornment variables for the render
-  # @return [Pathname,nil] Path to generated file, or nil if there is no (valid) definition for type,name
-  def gen_rendered_arch_def(type, name, extra_env = {})
-    gen_path = @gen_dir / ".rendered_arch" / type.to_s / "#{name}.yaml"
-
-    source_path = arch_path_for(type, name)
-    return nil if source_path.nil?
-
-    schema_path = schema_path_for(type)
-
-    if gen_path.exist?
-      # this already exists...see if we need to regenerate it
-      dep_mtime = [File.mtime(__FILE__), source_path.mtime, schema_path.mtime].max
-      return gen_path if gen_path.mtime >= dep_mtime # no update needed
-    end
-
-    trace "Rendering architecture file for #{type}:#{name}"
-
-    # render the source template
-    current_env = env.clone
-    extra_env&.each { |k, v| current_env.define_singleton_method(k) { v } }
-    rendered_def = Tilt["erb"].new(source_path, trim: "-").render(current_env)
-
-    # see if the rendering was empty, meaning that the def isn't valid in this config
-    return nil if rendered_def.nil?
-
-    # write the object
-    FileUtils.mkdir_p gen_path.dirname
-    File.write(gen_path, rendered_def)
-
-    # verify
-    begin
-      @validator.validate_str(rendered_def, type:)
-    rescue Validator::SchemaValidationError => e
-      warn "#{type} definition in #{source_path} did not validate"
-      raise e
-    end
-
-    def_obj = YAML.safe_load(rendered_def)
-
-    raise "#{type} name ('#{name}') must match key in defintion ('#{def_obj.keys[0]}')" if name.to_s != def_obj.keys[0]
-
-    # return path to generated file
-    gen_path
-  end
-  private :gen_rendered_arch_def
-
-  # Render a architecture overlay definition file and save it to gen_dir / .rendered_overlay_arch
-  #
-  # Will not re-render if rendered file already exists and sources have not changed
-  #
-  # @param type [Symbol] Type of the object (@see Validator::SCHEMA_PATHS)
-  # @param name [#to_s] Name of the object
-  # @param extra_env [Hash,NilObject] Optional hash with extra enviornment variables for the render
-  # @return [Pathname] Path to generated file
-  def gen_rendered_arch_overlay_def(type, name, extra_env = {})
-    gen_path = @gen_dir / ".rendered_overlay_arch" / type.to_s / "#{name}.yaml"
-
-    source_path = arch_overlay_path_for(type, name)
-    return nil if source_path.nil?
-
-    if gen_path.exist?
-      # this already exists...see if we need to regenerate it
-      dep_mtime = [File.mtime(__FILE__), source_path.mtime].max
-      return gen_path if gen_path.mtime >= dep_mtime # no update needed
-    end
-
-    trace "Rendering overlay file for #{type}:#{name}"
-
-    # render the source template
-    current_env = env.clone
-    extra_env&.each { |k, v| current_env.define_singleton_method(k) { v } }
-    rendered_def = Tilt["erb"].new(source_path, trim: "-").render(current_env)
-
-    def_obj = YAML.safe_load(rendered_def)
-
-    raise "#{type} name (#{name}) must match key in defintion (#{def_obj.keys[0]})" if name.to_s != def_obj.keys[0]
-
-    # write the object
-    FileUtils.mkdir_p gen_path.dirname
-    File.write(gen_path, YAML.dump(def_obj))
-
-    # return path to generated file
-    gen_path
-  end
-  private :gen_rendered_arch_overlay_def
-
   # generate a merged definition from rendered arch and overlay, and write it to gen / .merged_arch
   #
   # Skips if gen file already exists and sources are older
@@ -646,14 +572,16 @@ class ArchGen
     FileUtils.mkdir_p merged_path.dirname
     if overlay_path.nil?
       # no overlay, just copy arch
-      FileUtils.cp arch_path, merged_path
+      merged_path.write YAML.dump(YamlLoader.load(arch_path))
+      # FileUtils.cp arch_path, merged_path
     elsif arch_path.nil?
       # no arch, overlay is arch
-      FileUtils.cp overlay_path, merged_path
+      merged_path.write YAML.dump(YamlLoader.load(overlay_path))
+      # FileUtils.cp overlay_path, merged_path
     else
       # arch and overlay, do the merge
-      arch_obj = YAML.load_file(arch_path)
-      overlay_obj = YAML.load_file(overlay_path)
+      arch_obj = YamlLoader.load(arch_path)
+      overlay_obj = YamlLoader.load(overlay_path)
 
       merge(arch_obj, overlay_obj)
       merged_path.write YAML.dump(arch_obj)
@@ -676,8 +604,8 @@ class ArchGen
   # @param csr_name [#to_s] CSR name
   # @param extra_env [Hash] Extra enviornment variables to be used when parsing the CSR definition template
   def maybe_add_csr(csr_name, extra_env = {})
-    arch_path         = arch_path_for(:csr, csr_name) # gen_rendered_arch_def(:csr, csr_name, extra_env)
-    arch_overlay_path = arch_overlay_path_for(:csr, csr_name) # gen_rendered_arch_overlay_def(:csr, csr_name, extra_env)
+    arch_path         = arch_path_for(:csr, csr_name)
+    arch_overlay_path = arch_overlay_path_for(:csr, csr_name)
 
     # return immediately if this CSR isn't defined in this config
     raise "No arch or overlay for sr #{csr_name}" if arch_path.nil? && arch_overlay_path.nil?
@@ -728,6 +656,7 @@ class ArchGen
     end
     belongs =
       csr_obj.exists_in_cfg?(arch_def_mock)
+  
 
     @implemented_csrs ||= []
     @implemented_csrs << csr_name if belongs
@@ -776,15 +705,18 @@ class ArchGen
   end
 
   def maybe_add_ext(ext_name)
-    arch_path         = arch_path_for(:ext, ext_name) # gen_rendered_arch_def(:ext, ext_name)
-    arch_overlay_path = arch_overlay_path_for(:ext, ext_name) # gen_rendered_arch_overlay_def(:ext, ext_name)
+    arch_path         = arch_path_for(:ext, ext_name)
+    arch_overlay_path = arch_overlay_path_for(:ext, ext_name)
 
     # return immediately if this ext isn't defined
     return if arch_path.nil? && arch_overlay_path.nil?
 
     merged_path = gen_merged_def(:ext, arch_path, arch_overlay_path)
 
-    ext_obj = YAML.load_file(merged_path)[ext_name]
+    yaml_contents = YAML.load_file(merged_path)
+    raise "In #{merged_path}, key does not match file name" unless yaml_contents.key?(ext_name)
+
+    ext_obj = yaml_contents[ext_name]
     ext_obj["name"] = ext_name
 
     @implied_ext_map ||= {}
@@ -860,7 +792,7 @@ class ArchGen
 
     @exception_codes = {}
     Dir.glob(@gen_dir / "arch" / "ext" / "*.yaml") do |ext_path|
-      ext_obj = YAML.load_file(ext_path)
+      ext_obj = YamlLoader.load(ext_path, permitted_classes:[Date])
       ext_obj = ext_obj[ext_obj.keys[0]]
       if ext_obj.key?("exception_codes")
         ext_obj["exception_codes"].each do |exception_code|
@@ -881,7 +813,7 @@ class ArchGen
 
     @interrupt_codes = {}
     Dir.glob(@gen_dir / "arch" / "ext" / "*.yaml") do |ext_path|
-      ext_obj = YAML.load_file(ext_path)
+      ext_obj = YamlLoader.load(ext_path, permitted_classes:[Date])
       ext_obj = ext_obj[ext_obj.keys[0]]
       if ext_obj.key?("interrupt_codes")
         ext_obj["interrupt_codes"].each do |interrupt_code|
@@ -917,8 +849,8 @@ class ArchGen
   # @param inst_name [#to_s] instruction name
   # @param extra_env [Hash] Extra options to add into the rendering enviornment
   def maybe_add_inst(inst_name, extra_env = {})
-    arch_path         = arch_path_for(:inst, inst_name) # gen_rendered_arch_def(:inst, inst_name, extra_env)
-    arch_overlay_path = arch_overlay_path_for(:inst, inst_name) # gen_rendered_arch_overlay_def(:inst, inst_name, extra_env)
+    arch_path         = arch_path_for(:inst, inst_name)
+    arch_overlay_path = arch_overlay_path_for(:inst, inst_name)
 
     # return immediately if inst isn't defined in this config
     raise "No arch or overlay for instruction #{inst_name}" if arch_path.nil? && arch_overlay_path.nil?

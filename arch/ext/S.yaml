@@ -254,6 +254,15 @@ S:
         type: boolean
       extra_validation:
         assert MSTATUS_FS_WRITEABLE == true if ext?(:F)
+    MSTATUS_VS_WRITEABLE:
+      description: |
+        When `S` is enabled but `V` is not, mstatus.VS is optionally writeable.
+
+        This parameter only has an effect when both S and V mode are disabled.
+      schema:
+        type: boolean
+      extra_validation:
+        assert MSTATUS_VS_WRITEABLE == true if ext?(:V)
     MSTATUS_FS_LEGAL_VALUES:
       description: |
         The set of values that mstatus.FS will accept from a software write.
@@ -267,6 +276,22 @@ S:
       also_defined_in: F
       extra_validation: |
         assert MSTATUS_FS_LEGAL_VALUES.include?(0) && MSTATUS_FS_LEGAL_VALUES.include?(3) if ext?(:F)
+    MSTATUS_VS_LEGAL_VALUES:
+      description: |
+        The set of values that mstatus.VS will accept from a software write.
+      schema:
+        type: array
+        items:
+          type: integer
+          enum: [0,1,2,3]
+        maxItems: 4
+        uniqueItems: true
+      also_defined_in: V
+      extra_validation: |
+        assert MSTATUS_VS_LEGAL_VALUES.include?(0) && MSTATUS_VS_LEGAL_VALUES.include?(3) if ext?(:V)
+
+        # if HW is writing VS, then Dirty (3) better be a supported value
+        assert MSTATUS_VS_LEGAL_VALUES.include?(3) if ext?(:V) && (HW_MSTATUS_VS_DIRTY_UPDATE != "never")
     MSTATUS_TVM_IMPLEMENTED:
       description: |
         Whether or not mstatus.TVM is implemented.

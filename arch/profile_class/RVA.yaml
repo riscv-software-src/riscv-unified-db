@@ -1,0 +1,28 @@
+RVA:
+  marketing_name: RVA
+  introduction: |
+    The RVA profile class targets application processors for markets
+    requiring a high-degree of binary compatibility between compliant implementations.
+  description: |
+    The RVA profile class is intended to be used for 64-bit application
+    processors running rich OS stacks.  Only user-mode and
+    supervisor-mode profiles are specified in this class.
+  naming_scheme: |
+    The profile class name is RVA (RISC-V Apps processor).
+    A profile release name is an integer (currently 2 digits, could grow in the future).
+    A full profile name is comprised of, in order:
+
+    * Prefix *RVA* for RISC-V Applications
+    * Profile release
+    * Privilege mode:
+    ** *U* Unprivileged (available to any privilege mode, *U* is *not* User-mode)
+    ** *S* Supervisor mode (note that Hypervisor support is treated as an option)
+    ** *M* Machine mode
+    * A base ISA XLEN specifier (*32*, *64*)
+  company:
+    name: RISC-V International
+    url: https://riscv.org
+  doc_license:
+    name: Creative Commons Attribution 4.0 International License
+    url: https://creativecommons.org/licenses/by/4.0/
+    text_url: https://creativecommons.org/licenses/by/4.0/legalcode.txt

@@ -1,21 +1,22 @@
 # frozen_string_literal: true
 
 rule %r{#{$root}/gen/profile_doc/adoc/.*\.adoc} => proc { |tname|
-  profile_family_name = Pathname.new(tname).basename(".adoc")
+  profile_release_name = Pathname.new(tname).basename(".adoc")
 
   [
     "#{$root}/.stamps/arch-gen.stamp",
     __FILE__,
     "#{$root}/lib/arch_obj_models/profile.rb",
-    "#{$root}/backends/profile_doc/templates/profile_pdf.adoc.erb"
-  ] + Dir.glob("#{$root}/arch/profile/**/*.yaml")
+    "#{$root}/backends/profile_doc/templates/profile.adoc.erb"
+  ] + Dir.glob("#{$root}/arch/profile_release/**/*.yaml")
 } do |t|
-  profile_family_name = Pathname.new(t.name).basename(".adoc").to_s
+  profile_release_name = Pathname.new(t.name).basename(".adoc").to_s
 
-  profile_family = arch_def_for("_64").profile_family(profile_family_name)
-  raise ArgumentError, "No profile family named '#{profile_family_name}'" if profile_family.nil?
+  profile_release = arch_def_for("_64").profile_release(profile_release_name)
+  raise ArgumentError, "No profile release named '#{profile_release_name}'" if profile_release.nil?
+  profile_class = profile_release.profile_class
 
-  template_path = Pathname.new "#{$root}/backends/profile_doc/templates/profile_pdf.adoc.erb"
+  template_path = Pathname.new "#{$root}/backends/profile_doc/templates/profile.adoc.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")
   erb.filename = template_path.to_s
 
@@ -27,12 +28,12 @@ rule %r{#{$root}/gen/profile_doc/adoc/.*\.adoc} => proc { |tname|
 end
 
 rule %r{#{$root}/gen/profile_doc/pdf/.*\.pdf} => proc { |tname|
-  profile_family_name = Pathname.new(tname).basename(".pdf")
-  [__FILE__, "#{$root}/gen/profile_doc/adoc/#{profile_family_name}.adoc"]
+  profile_release_name = Pathname.new(tname).basename(".pdf")
+  [__FILE__, "#{$root}/gen/profile_doc/adoc/#{profile_release_name}.adoc"]
 } do |t|
-  profile_family_name = Pathname.new(t.name).basename(".pdf")
+  profile_release_name = Pathname.new(t.name).basename(".pdf")
 
-  adoc_filename = "#{$root}/gen/profile_doc/adoc/#{profile_family_name}.adoc"
+  adoc_filename = "#{$root}/gen/profile_doc/adoc/#{profile_release_name}.adoc"
 
   FileUtils.mkdir_p File.dirname(t.name)
   sh [
@@ -55,12 +56,12 @@ rule %r{#{$root}/gen/profile_doc/pdf/.*\.pdf} => proc { |tname|
 end
 
 rule %r{#{$root}/gen/profile_doc/html/.*\.html} => proc { |tname|
-  profile_family_name = Pathname.new(tname).basename(".html")
-  [__FILE__, "#{$root}/gen/profile_doc/adoc/#{profile_family_name}.adoc"]
+  profile_release_name = Pathname.new(tname).basename(".html")
+  [__FILE__, "#{$root}/gen/profile_doc/adoc/#{profile_release_name}.adoc"]
 } do |t|
-  profile_family_name = Pathname.new(t.name).basename(".html")
+  profile_release_name = Pathname.new(t.name).basename(".html")
 
-  adoc_filename = "#{$root}/gen/profile_doc/adoc/#{profile_family_name}.adoc"
+  adoc_filename = "#{$root}/gen/profile_doc/adoc/#{profile_release_name}.adoc"
 
   FileUtils.mkdir_p File.dirname(t.name)
   sh [
@@ -80,25 +81,25 @@ rule %r{#{$root}/gen/profile_doc/html/.*\.html} => proc { |tname|
 end
 
 namespace :gen do
-  desc "Create a specification PDF for +profile_family+"
-  task :profile_pdf, [:profile_family] => ["#{$root}/.stamps/arch-gen-_64.stamp"] do |_t, args|
-    family_name = args[:profile_family]
-    raise ArgumentError, "Missing required option +profile_family+" if family_name.nil?
+  desc "Create a specification PDF for +profile_release+"
+  task :profile, [:profile_release] => ["#{$root}/.stamps/arch-gen-_64.stamp"] do |_t, args|
+    profile_release_name = args[:profile_release]
+    raise ArgumentError, "Missing required option +profile_release+" if profile_release_name.nil?
 
-    family = arch_def_for("_64").profile_family(family_name)
-    raise ArgumentError, "No profile family named '#{family_name}" if family.nil?
+    profile_release = arch_def_for("_64").profile_release(profile_release_name)
+    raise ArgumentError, "No profile release named '#{profile_release_name}'" if profile_release.nil?
 
-    Rake::Task["#{$root}/gen/profile_doc/pdf/#{family_name}.pdf"].invoke
+    Rake::Task["#{$root}/gen/profile_doc/pdf/#{profile_release_name}.pdf"].invoke
   end
 
-  desc "Create a specification HTML for +profile_family+"
-  task :profile_html, [:profile_family] => ["#{$root}/.stamps/arch-gen-_64.stamp"] do |_t, args|
-    family_name = args[:profile_family]
-    raise ArgumentError, "Missing required option +profile_family+" if family_name.nil?
+  desc "Create a specification HTML for +profile_release+"
+  task :profile_html, [:profile_release] => ["#{$root}/.stamps/arch-gen-_64.stamp"] do |_t, args|
+    profile_release_name = args[:profile_release]
+    raise ArgumentError, "Missing required option +profile_release+" if profile_release_name.nil?
 
-    family = arch_def_for("_64").profile_family(family_name)
-    raise ArgumentError, "No profile family named '#{family_name}" if family.nil?
+    profile_release = arch_def_for("_64").profile_release(profile_release_name)
+    raise ArgumentError, "No profile release named '#{profile_release_name}" if profile_release.nil?
 
-    Rake::Task["#{$root}/gen/profile_doc/html/#{family_name}.html"].invoke
+    Rake::Task["#{$root}/gen/profile_doc/html/#{profile_release_name}.html"].invoke
   end
 end

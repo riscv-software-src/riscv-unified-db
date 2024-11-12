@@ -1,5 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+
   "title": "CSR description",
   "description": "A CSR register specification",
 
@@ -278,7 +279,7 @@
     "misa:\\n  long_name: Machine ISA Control\\n  address: 0x301\\n  priv_mode: M\\n  length: 64\\n  description: Reports the XLEN and 'major' extensions supported by the ISA.\\n  definedBy: I\\n  fields:\\n    MXL:\\n      location: 63-62\\n      description: XLEN in M-mode.\\n      type: RO\\n      value: 2\\n    Extensions:      location: 25-0\\n      description: |\\n        Indicates support for major (single letter) ISA extensions.\\n\\n        Value corresponds to A, D, F, H, I, M, S, U\\n      type: RO\\n      value: 0x1411A9"
   ],
   "patternProperties": {
-    "^[a-z][a-z0-9A-Z]+$": {
+    "^[a-z][a-z0-9A-Z_]+$": {
       "description": "CSR name",
       "$ref": "#/$defs/csr_register"
     }

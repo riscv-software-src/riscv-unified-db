@@ -159,6 +159,12 @@ module Idl
     end
   end
 
+  class MultiVariableDeclarationAst
+    def gen_adoc(indent = 0, indent_spaces: 2)
+      "#{' ' * indent}#{type_name.gen_adoc(0, indent_spaces:)} #{var_name_nodes.map { |var| var.gen_adoc(0, indent_spaces:) }.join(', ')}"
+    end
+  end
+
   class TernaryOperatorExpressionAst
     def gen_adoc(indent = 0, indent_spaces: 2)
       "#{' ' * indent}#{condition.gen_adoc(0, indent_spaces:)} ? #{true_expression.gen_adoc(0, indent_spaces:)} : #{false_expression.gen_adoc(0, indent_spaces:)}"

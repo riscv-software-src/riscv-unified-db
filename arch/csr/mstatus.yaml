@@ -22,9 +22,29 @@ mstatus:
         
         Read-only bit that summarizes whether either the FS, XS, or VS
         fields signal the presence of some dirty state.
-      type: RO-H
-      reset_value: UNDEFINED_LEGAL
-      affectedBy: [F, D, V]
+      definedBy:
+        anyOf: [F,V] # NOTE: if you implement a custom extension overlay that writes to XS, then you need to add your extension here in the overlay as well
+      type(): |
+        # this is read-only if FS and VS are both read-only
+        # otherwise, it is read-only with hardware update
+
+        if (implemented?(ExtensionName::F) && (HW_MSTATUS_FS_DIRTY_UPDATE != "never")) {
+          return CsrFieldType::ROH;
+        } else if (implemented?(ExtensionName::V) && (HW_MSTATUS_VS_DIRTY_UPDATE != "never")) {
+          return CsrFieldType::ROH;
+        } else {
+          return CsrFieldType::RO;
+        }
+      reset_value(): |
+        # the reset value is known if both FS and VS are legal
+        # make this a function call so that it can be displayed succinctly in docs
+
+        if (mstatus_sd_has_known_reset()) {
+          return mstatus_sd_reset_value();
+        } else {
+          return UNDEFINED_LEGAL;
+        }
+
     MPV:
       location: 39
       base: 64
@@ -339,7 +359,8 @@ mstatus:
           # there will be no hardware update in this case because we know the F extension isn't implemented
           return MSTATUS_FS_WRITEABLE ? CsrFieldType::RW : CsrFieldType::RO;
         }
-      definedBy: F
+      definedBy:
+        anyOf: [F, S]
       reset_value(): |
         if (CSR[misa].F == 1'b1){
           return UNDEFINED_LEGAL;
@@ -410,9 +431,38 @@ mstatus:
         When a vector register or vector CSR is written, VS obtains the value 3.
         Values 1 and 2 are valid write values for software, but are not interpreted by hardware
         other than to possibly enable a previously-disabled vector unit.
-      type: RW-H
-      reset_value: UNDEFINED_LEGAL
-      definedBy: V
+      definedBy:
+        anyOf: [V, S]
+      type(): |
+        if (CSR[misa].V == 1'b1){
+          return CsrFieldType::RWH;
+        } else if ((CSR[misa].S == 1'b0) && (CSR[misa].V == 1'b0)) {
+          # must be read-only-0
+          return CsrFieldType::RO;
+        } else {
+          # there will be no hardware update in this case because we know the V extension isn't implemented
+          return MSTATUS_VS_WRITEABLE ? CsrFieldType::RW : CsrFieldType::RO;
+        }
+      reset_value(): |
+        if (CSR[misa].V == 1'b1){
+          return UNDEFINED_LEGAL;
+        } else if ((CSR[misa].S == 1'b0) && (CSR[misa].V == 1'b0)) {
+          # must be read-only-0
+          return 0;
+        } else {
+          # there will be no hardware update in this case because we know the V extension isn't implemented
+          return MSTATUS_VS_WRITEABLE ? UNDEFINED_LEGAL : 0;
+        }
+      sw_write(csr_value): |
+        if (CSR[misa].V == 1'b1){
+          return ary_includes?<$array_size(MSTATUS_VS_LEGAL_VALUES), 2>(MSTATUS_VS_LEGAL_VALUES, csr_value.FS) ? csr_value.FS : UNDEFINED_LEGAL_DETERMINISTIC;
+        } else if ((CSR[misa].S == 1'b0) && (CSR[misa].V == 1'b0)) {
+          # must be read-only-0
+          return 0;
+        } else {
+          # there will be no hardware update in this case because we know the V extension isn't implemented
+          return ary_includes?<$array_size(MSTATUS_VS_LEGAL_VALUES), 2>(MSTATUS_VS_LEGAL_VALUES, csr_value.FS) ? csr_value.FS : UNDEFINED_LEGAL_DETERMINISTIC;
+        }
     SPP:
       location: 8
       description: |

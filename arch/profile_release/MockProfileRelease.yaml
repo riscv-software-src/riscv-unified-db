@@ -1,0 +1,78 @@
+MockProfileRelease:
+  name: MockProfileRelease
+  marketing_name: MockProfileRelease Marketing Name
+  class: MockProfileClass
+  release: 20
+  state: ratified # current status ["ratified", "development"]
+  versions: 
+  - version: "1.0"
+  ratification_date: "2024-01-01"
+  introduction: Here's the Mock Profile Release introduction.
+  description: |
+    This is the Mock Profile Release description.
+    It can be longer than the introduction since it gets its own sub-heading.
+  contributors:
+  - name: Joe Blow
+    email: joe.blow@riscv.org
+    company: Acme Inc
+  - name: Jane Doe
+    email: jane.doe@gmail.com
+    company: Universal Imports
+  profiles:
+    MP-U-64:
+      marketing_name: MockProfile 64-bit Unpriv
+      mode: Unpriv
+      base: 64
+      release: MockProfileRelease
+      extensions:
+        A:
+          presence: optional
+          version: "= 2.1"
+        I:
+          presence: mandatory
+          version: "~> 2.1"
+    MP-S-64:
+      marketing_name: MockProfile 64-bit S-mode
+      description: This is the Mock Profile Supervisor Mode description.
+      mode: S
+      base: 64
+      release: MockProfileRelease
+      contributors:
+      - name: Micky Mouse
+        email: micky@disney.com
+        company: Disney
+      extensions:
+        $inherits: "#/MockProfileRelease/profiles/MP-U-64/extensions"
+        A:
+          presence: mandatory
+        S:
+          presence: mandatory
+          version: "= 1.11"
+        Zifencei:
+          presence: mandatory
+          version: "= 2.0"
+          note: |
+            Zifencei is mandated as it is the only standard way to support
+            instruction-cache coherence in RVA20 application processors.  A new
+            instruction-cache coherence mechanism is under development which might
+            be added as an option in the future.
+        Zihpm:
+          presence: optional
+          version: "= 2.0"
+        Sv48:
+          presence: optional
+          version: "= 1.11"
+      extra_notes:
+      - presence: optional
+        text: Here's the first extra note for the optional extensions section.
+      - presence: mandatory
+        text: |
+          Here's the first extra note for the mandatory extensions section.
+          This note is multiple lines.
+      - presence: optional
+        text: Here's the second extra note for the optional extensions section.
+      recommendations:
+      - text: |
+          Implementations are strongly recommended to raise illegal-instruction
+          exceptions on attempts to execute unimplemented opcodes.
+      - text: Micky should give Pluto an extra treat

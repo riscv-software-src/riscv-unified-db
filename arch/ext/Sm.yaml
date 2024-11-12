@@ -422,7 +422,6 @@ Sm:
       description: |
         Physical address of the unified discovery configuration data structure.
         This address is reported in the `mconfigptr` CSR.
-        TODO: GitHub issue 53
       schema:
         type: integer
       when:

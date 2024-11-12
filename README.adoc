@@ -8,8 +8,10 @@ The following artifacts have been generated from the top of the `main` branch:
 * https://riscv-software-src.github.io/riscv-unified-db/example_cfg/html/index.html[configuration-specific documentation]
 * https://riscv-software-src.github.io/riscv-unified-db/ruby/arch_def/index.html[Ruby API documentation (database interface)]
 * https://riscv-software-src.github.io/riscv-unified-db/ruby/idl/index.html[Ruby IDL API documentation (IDL compiler)]
-* https://riscv-software-src.github.io/riscv-unified-db/pdfs/rva.pdf[RVA Profile Family]
-* https://riscv-software-src.github.io/riscv-unified-db/pdfs/MC-1.pdf[MC-1 Certification Requirements Document]
+* https://riscv-software-src.github.io/riscv-unified-db/pdfs/RVI20.pdf[RVI20 Profile Release]
+* https://riscv-software-src.github.io/riscv-unified-db/pdfs/RVA20.pdf[RVA20 Profile Release]
+* https://riscv-software-src.github.io/riscv-unified-db/pdfs/RVA22.pdf[RVA22 Profile Release]
+* https://riscv-software-src.github.io/riscv-unified-db/pdfs/MC100.pdf[MC100 Certification Requirements Document]
 
 == Overview
 
@@ -28,7 +30,7 @@ This repository contains:
 
 === Working examples:
 
- * Generate https://riscv-software-src.github.io/riscv-unified-db/manual/index.html[configuration-specific documentation] taylored to the set of implemented extensions and unnamed implementation options (_e.g._, `./do gen:html[generic_rv64]`).
+ * Generate https://riscv-software-src.github.io/riscv-unified-db/manual/html/index.html[configuration-specific documentation] taylored to the set of implemented extensions and unnamed implementation options (_e.g._, `./do gen:html[generic_rv64]`).
  ** Only implemented extensions/instructions/CSRs are included
  ** Unreachable/unimplemented parts of the formal specification are pruned away
  ** A dedicated documentation page for every implemented instruction, including its encoding, pruned execution behavior, and what types of exceptions it may cause.
@@ -51,9 +53,14 @@ This repository contains:
 
 == Prerequisites
 
-The only requirement is the `Singularity CE` (>= 3.3) or `Apptainer` (>= 1.0) container system. Either one will work (they are forks).
+There are two supported ways to run the RISC-V Unified Database,
+both of which are container-based.
 
-If it is not installed, either as your IT admin or:
+=== Singularity/Apptainer
+
+You can run within `Singularity CE` (>= 3.3) or `Apptainer` (>= 1.0) container system. Either one will work (they are forks).
+
+If it is not installed, either ask your IT admin or:
 
  * For Apptainer, see https://apptainer.org/docs/admin/main/installation.html[Apptainer Installation].
  * For Singularity CE, see https://docs.sylabs.io/guides/latest/admin-guide/installation.html[Singularity CE Installation].
@@ -62,35 +69,31 @@ If it is not installed, either as your IT admin or:
 You do *not* need root privileges to download or use the container. However, to modify/build the container,
 you will need either root privileges or the ability to run in `fakeroot` mode. See https://docs.sylabs.io/guides/4.1/user-guide/fakeroot.html[Singularity Fakeroot Documentation] for more information.
 
-== Setup
+When you run with Singularity/Apptainer, the files under `bin/`
+will run within the container, _e.g._:
 
-Do once:
+```bash
+./bin/ruby --version
+# => ruby 3.2.3 (2024-01-18 revision 52bb2ac0a6) [x86_64-linux-gnu]
+```
 
-[source,bash]
-----
-./bin/setup
+=== Devcontainer
 
-# or, if you also want development tools (:development group in Gemfile) installed
-# DEVELOPMENT=1 ./bin/setup
-----
+You can also leverage https://containers.dev/[devcontainers] to run the RISC-V Unified Database.
 
-[NOTE]
-If you forget, don't worry. Setup will be invoked by any program in bin/ if necessary.
+This is especially useful when using Visual Studio Code or GitHub codespaces, as it will setup up your IDE environment for you.
 
-=== VSCode
+==== VS Code
 
-If using Visual Studio Code and want to use development tools, you will need to restart the editor
-after setup.
+To run the devcontainer locally, you will need to have https://docs.docker.com/engine/install[Docker installed].
 
-Helpful extensions are
+With Docker installed, install the https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers[Dev Containers] extension in VS Code.
 
- * https://marketplace.visualstudio.com/items?itemName=asciidoctor.asciidoctor-vscode[AsciiDoc]
- * https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml[YAML]
- * https://marketplace.visualstudio.com/items?itemName=castwide.solargraph[Solargraph] (for a Ruby Language Server)
- * https://marketplace.visualstudio.com/items?itemName=onnovalkering.vscode-singularity[Singularity] (if you plan on working on the container)
+You can then run `Dev Containers: Open Folder in Container...` from the Command Palette (Ctrl+Shift+P) and select the folder with this repository.
 
-The `.vscode/settings.json` file in the repo will ensure that Solargraph works without any additional
-configuration (assuming you've already run ./bin/setup).
+==== GitHub Codespaces
+
+You can start a GitHub Codespace for this repository by clicking the "Code" button and selecting "Open with Codespaces".
 
 == Tasks
 
@@ -100,13 +103,18 @@ Quick start:
 ----
 ./do --tasks                 # list all documented tasks
 
-# examples
-./do validate                # validate against the schema
-./do gen:arch[generic_rv64]  # generate arch spec for the 'generic_rv64' config
+## examples
+
+# validate against the schema
+./do validate
+
+# generate all versions of ISA manual, as an Antora static website
+./do gen:html_manual MANUAL_NAME=isa VERSIONS=all
+
+# generate an implementation-specific spec for the 'generic_rv64' config
+./do gen:arch[generic_rv64]
 ----
 
 == More info
 
  * xref:arch/README.adoc[Architecture specification format]
- * xref:_site/ruby/arch_def/index.html[Ruby database object model documentation]
- * xref:_site/ruby/idl/index.html[IDL Compiler documentation]

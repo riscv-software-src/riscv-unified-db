@@ -1,5 +1,29 @@
 # frozen_string_literal: true
 
+# Many classes have an "arch_def" member which is an ArchDef (not ArchDefObject) class.
+# The "arch_def" member contains the "database" of RISC-V standards including extensions, instructions, 
+# CSRs, Profiles, and Certificates. 
+#
+# The arch_def member has methods such as:
+#   extensions()                Array<Extension> of all extensions known to the database (even if not implemented).
+#   extension(name)             Extension object for "name" and nil if none.
+#   parameters()                Array<ExtensionParameter> of all parameters defined in the architecture
+#   param(name)                 ExtensionParameter object for "name" and nil if none.
+#   csrs()                      Array<Csr> of all CSRs defined by RISC-V, whether or not they are implemented
+#   csr(name)                   Csr object for "name" and nil if none.
+#   instructions()              Array<Instruction> of all instructions, whether or not they are implemented
+#   inst(name)                  Instruction object for "name" and nil if none.
+#   profile_classes             Array<ProfileClass> of all known profile classes.
+#   profile_class(class_name)   ProfileClass object for "class_name" and nil if none.
+#   profile_releases            Array<ProfileRelease> of all profile releases for all profile classes
+#   profile_release(release_name) ProfileRelease object for "release_name" and nil if none.
+#   profiles                    Array<Profile> of all profiles in all releases in all classes
+#   profile(name)               Profile object for profile "name" and nil if none.
+#   cert_classes                Array<CertClass> of all known certificate classes
+#   cert_class(name)            CertClass object for "name" and nil if none.
+#   cert_models                 Array<CertModel> of all known certificate models across all classes.
+#   cert_model(name)            CertModel object for "name" and nil if none.
+
 require "forwardable"
 require "ruby-prof"
 
@@ -12,12 +36,13 @@ require_relative "idl/passes/reachable_functions"
 require_relative "idl/passes/reachable_functions_unevaluated"
 require_relative "idl/passes/reachable_exceptions"
 require_relative "arch_obj_models/manual"
+require_relative "arch_obj_models/portfolio"
 require_relative "arch_obj_models/profile"
 require_relative "arch_obj_models/csr_field"
 require_relative "arch_obj_models/csr"
 require_relative "arch_obj_models/instruction"
 require_relative "arch_obj_models/extension"
-require_relative "arch_obj_models/crd"
+require_relative "arch_obj_models/certificate"
 require_relative "template_helpers"
 
 include TemplateHelpers
@@ -600,44 +625,83 @@ class ArchDef
   # @return [Manual,nil] A manual named +name+, or nil if it doesn't exist
   def manual(name) = manuals_hash[name]
 
-  # @return [Array<ProfileFamily>] All known profile families
-  def profile_families
-    return @profile_families unless @profile_families.nil?
+  # @return [Array<ProfileClass>] All known profile classes (e.g. RVA)
+  def profile_classes
+    return @profile_classes unless @profile_classes.nil?
 
-    @profile_families = []
-    @arch_def["profile_families"].each_value do |family_data|
-      @profile_families << ProfileFamily.new(family_data, self)
+    @profile_classes = []
+    @arch_def["profile_classes"].each_value do |pc_data|
+      @profile_classes << ProfileClass.new(pc_data, self)
     end
-    @profile_families
+    @profile_classes
   end
 
-  # @return [Hash<String, ProfileFamily>] Profile families, indexed by name
-  def profile_families_hash
-    return @profile_families_hash unless @profile_families_hash.nil?
+  # @return [Hash<String, ProfileClass>] Profile classes, indexed by profile class name
+  def profile_classes_hash
+    return @profile_classes_hash unless @profile_classes_hash.nil?
 
-    @profile_families_hash = {}
-    profile_families.each do |family|
-      @profile_families_hash[family.name] = family
+    @profile_classes_hash = {}
+    profile_classes.each do |pc|
+      @profile_classes_hash[pc.name] = pc
     end
-    @profile_families_hash
+    @profile_classes_hash
   end
 
-  # @return [ProfileFamily] The profile family named +name+
-  # @return [nil] if the profile family does not exist
-  def profile_family(name) = profile_families_hash[name]
+  # @return [ProfileClass] The profile class named +name+
+  # @return [nil] if the profile class does not exist
+  def profile_class(profile_class_name) = profile_classes_hash[profile_class_name]
 
-  # @return [Profile] List of all defined profiles
+  # @return [ProfileRelease] List of all profile releases (e.g. RVA20, RVA22) for all profile classes.
+  def profile_releases
+    return @profile_releases unless @profile_releases.nil?
+
+    @profile_releases = []
+    @arch_def["profile_releases"].each_value do |pr_data|
+      raise ArgumentError, "Expecting pr_data to be a hash" unless pr_data.is_a?(Hash)
+
+      profile_release = ProfileRelease.new(pr_data, self)
+      raise ArgumentError, "ProfileRelease constructor returned nil" if profile_release.nil?
+
+      @profile_releases << profile_release
+    end
+    @profile_releases
+  end
+
+  # @return [Hash<String, ProfileRelease>], indexed by profile release name
+  def profile_releases_hash
+    return @profile_releases_hash unless @profile_releases_hash.nil?
+
+    @profile_releases_hash = {}
+    profile_releases.each do |profile_release|
+      @profile_releases_hash[profile_release.name] = profile_release
+    end
+    @profile_releases_hash
+  end
+
+  # @return [ProfileRelease] The profile release named +profile_release_name+
+  # @return [nil] if the profile release does not exist
+  def profile_release(profile_release_name) = profile_releases_hash[profile_release_name]
+
+  # @return [Profile] List of all defined profiles in all releases in all classes
   def profiles
     return @profiles unless @profiles.nil?
 
     @profiles = []
-    @arch_def["profiles"].each_value do |profile_data|
-      @profiles << Profile.new(profile_data, self)
+    @arch_def["profile_releases"].each_value do |pr_data|
+      raise ArgumentError, "Expecting pr_data to be a hash" unless pr_data.is_a?(Hash)
+
+      pr_data["profiles"].each do |profile_name, profile_data|
+        profile_data["name"] = profile_name
+        profile = Profile.new(profile_data, self)
+        raise ArgumentError, "Profile constructor returned nil" if profile.nil?
+
+        @profiles << profile
+      end
     end
     @profiles
   end
 
-  # @return [Hash<String, Profile>] Profiles, indexed by name
+  # @return [Hash<String, Profile>] Profiles, indexed by profile name
   def profiles_hash
     return @profiles_hash unless @profiles_hash.nil?
 
@@ -652,49 +716,54 @@ class ArchDef
   # @return [nil] if the profile does not exist
   def profile(name) = profiles_hash[name]
 
-  def crd_families
-    return @crd_families unless @crd_families.nil?
+  def cert_classes
+    return @cert_classes unless @cert_classes.nil?
 
-    @crd_families = []
-    @arch_def["crd_families"].each_value do |family_data|
-      @crd_families << CrdFamily.new(family_data, self)
+    @cert_classes = []
+    @arch_def["certificate_classes"].each_value do |cc_data|
+      @cert_classes << CertClass.new(cc_data, self)
     end
-    @crd_families
+    @cert_classes
   end
 
-  def crd_famlies_hash
-    return @crd_families_hash unless @crd_families_hash.nil?
+  def cert_classes_hash
+    return @cert_classes_hash unless @cert_classes_hash.nil?
 
-    @crd_families_hash = {}
-    crd_families.each do |family|
-      @crd_families_hash[family.name] = family
+    @cert_classes_hash = {}
+    cert_classes.each do |cc|
+      @cert_classes_hash[cc.name] = cc
     end
-    @crd_families_hash
+    @cert_classes_hash
   end
 
-  def crd_family(name) = crd_famlies_hash[name]
+  # @return [CertClass] The certificate class named +name+
+  # @return [nil] if the certificate class does not exist
+  def cert_class(name) = cert_classes_hash[name]
 
-  def crds
-    return @crds unless @crds.nil?
+  # @return [CertModel] List of all defined certificate models across all certificate classes
+  def cert_models
+    return @cert_models unless @cert_models.nil?
 
-    @crds = []
-    @arch_def["crds"].each_value do |crd_data|
-      @crds << Crd.new(crd_data, self)
+    @cert_models = []
+    @arch_def["certificate_models"].each_value do |cm_data|
+      @cert_models << CertModel.new(cm_data, self)
     end
-    @crds
+    @cert_models
   end
 
-  def crds_hash
-    return @crds_hash unless @crds_hash.nil?
+  def cert_models_hash
+    return @cert_models_hash unless @cert_models_hash.nil?
 
-    @crds_hash = {}
-    crds.each do |crd|
-      @crds_hash[crd.name] = crd
+    @cert_models_hash = {}
+    cert_models.each do |cert_model|
+      @cert_models_hash[cert_model.name] = cert_model
     end
-    @crds_hash
+    @cert_models_hash
   end
 
-  def crd(name) = crds_hash[name]
+  # @return [CertModel] The CertModel named +name+
+  # @return [nil] if the CertModel does not exist
+  def cert_model(name) = cert_models_hash[name]
 
   # @return [Array<ExceptionCode>] All exception codes defined by RISC-V
   def exception_codes
@@ -980,11 +1049,11 @@ class ArchDef
       "instructions" => instructions.map { |i| [i.name, i.data] }.to_h,
       "extensions" => extensions.map.map { |e| [e.name, e.data] }.to_h,
       "csrs" => csrs.map { |c| [c.name, c.data] }.to_h,
-      "profile_families" => profile_families.map { |f| [f.name, f.data] }.to_h,
-      "profiles" => profiles.map { |p| [p.name, p.data] }.to_h,
+      "profile_classes" => profile_classes.map { |f| [f.name, f.data] }.to_h,
+      "profile_releases" => profile_releases.map { |p| [p.name, p.data] }.to_h,
       "manuals" => manuals.map { |m| [m.name, m.data] }.to_h,
-      "crd_families" => crd_families.map { |f| [f.name, f.data] }.to_h,
-      "crds" => crds.map { |c| [c.name, c.data] }.to_h
+      "certificate_classes" => cert_classes.map { |f| [f.name, f.data] }.to_h,
+      "certificate_models" => cert_models.map { |c| [c.name, c.data] }.to_h
     }
   end
 

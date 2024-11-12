@@ -10,7 +10,7 @@ zext.h:
     The *zext.h* instruction is a pseudo-op for `pack` when `Zbkb` is implemented and XLEN == 32.
 
     [NOTE]
-    The *zext.h* instruction is a pseduo-op for `packw` when `Zbkb` is implmeneted and XLEN == 64.
+    The *zext.h* instruction is a pseudo-op for `packw` when `Zbkb` is implemented and XLEN == 64.
   definedBy:
     anyOf: [B, Zbb]
   encoding:
@@ -28,7 +28,8 @@ zext.h:
         location: 19-15
       - name: rd
         location: 11-7
-  excludedBy: Zbkb  # zext.h is a pseduo-op for pack/packw when Zbkb is implemented 
+  excludedBy: 
+    anyOf: [Zk, Zkn, Zks, Zbkb]  # zext.h instruction is a pseudo-op for `packw` when `Zbkb` is implemented 
   assembly: xd, xs1
   access:
     s: always

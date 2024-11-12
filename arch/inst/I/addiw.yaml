@@ -7,7 +7,7 @@ addiw:
   base: 64
   assembly: xd, xs1, imm
   encoding:
-    match: -----------------000-----0001011
+    match: -----------------000-----0011011
     variables:
     - name: imm
       location: 31-20
