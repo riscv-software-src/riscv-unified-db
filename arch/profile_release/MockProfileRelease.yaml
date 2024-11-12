@@ -42,7 +42,7 @@ MockProfileRelease:
         email: micky@disney.com
         company: Disney
       extensions:
-        $mref: "#/MockProfileRelease/profiles/MP-U-64/extensions"
+        $inherits: "#/MockProfileRelease/profiles/MP-U-64/extensions"
         A:
           presence: mandatory
         S:

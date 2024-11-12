@@ -84,6 +84,6 @@ RVI20:
           Implementations are strongly recommended to raise illegal-instruction
           exceptions on attempts to execute unimplemented opcodes.
     RVI20U64:
-      $mref: "#/RVI20/profiles/RVI20U32"
+      $inherits: "#/RVI20/profiles/RVI20U32"
       base: 64
       marketing_name: RVI20U64

@@ -43,7 +43,7 @@ RVA22:
         most important profile within application processors in
         terms of the amount of software that targets this profile.
       extensions:
-        $mref: "RVA20.yaml#/RVA20/profiles/RVA20U64/extensions"
+        $inherits: "RVA20.yaml#/RVA20/profiles/RVA20U64/extensions"
         Zihpm:
           presence: mandatory
           version: "= 2.0"
@@ -167,7 +167,7 @@ RVA22:
         processors.  RVA22S64 is based on privileged architecture version
         1.12.
       extensions:
-        $mref: "RVA20.yaml#/RVA20/profiles/RVA20S64/extensions"
+        $inherits: "RVA20.yaml#/RVA20/profiles/RVA20S64/extensions"
         S:
           presence: mandatory
           version: "= 1.12"

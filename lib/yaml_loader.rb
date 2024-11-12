@@ -3,7 +3,7 @@
 require "pathname"
 require "yaml"
 
-# loads a YAML file and expands any $ref/$mref references
+# loads a YAML file and expands any $ref/$inherits references
 class YamlLoader
   @cache = {}
 
@@ -46,16 +46,16 @@ class YamlLoader
 
         ref
       end
-    elsif obj.keys.include?("$mref")
-      # we handle the mref key first so that any override will take priority
-      mref = obj["$mref"]
-      raise ArgumentError, "Missing reference after $mref (did you forget to put a relative reference in quotes?)" if mref.nil?
-      mref_targets = mref.is_a?(String) ? [mref] : mref
+    elsif obj.keys.include?("$inherits")
+      # we handle the inherits key first so that any override will take priority
+      inherits = obj["$inherits"]
+      raise ArgumentError, "Missing reference after $inherits (did you forget to put a relative reference in quotes?)" if inherits.nil?
+      inherits_targets = inherits.is_a?(String) ? [inherits] : inherits
 
       new_obj = {}
 
-      mref_targets.each do |mref_target|
-        relative_path = mref_target.split("#")[0]
+      inherits_targets.each do |inherits_target|
+        relative_path = inherits_target.split("#")[0]
         target_obj =
           if relative_path.empty?
             YAML.load_file(filename, **yaml_opts)
@@ -63,25 +63,25 @@ class YamlLoader
             target_filename = File.realpath(File.join(filename.dirname, relative_path))
 
             unless File.exist?(target_filename)
-              raise DereferenceError, "While locating $mref in #{filename}, #{target_filename} does not exist"
+              raise DereferenceError, "While locating $inherits in #{filename}, #{target_filename} does not exist"
             end
 
             YamlLoader.load(target_filename, yaml_opts)
           end
 
-        mref_target_suffix = mref_target.split("#/")[1]
-        mref_target_path = mref_target_suffix.split("/")
+        inherits_target_suffix = inherits_target.split("#/")[1]
+        inherits_target_path = inherits_target_suffix.split("/")
         begin
-          target_obj = target_obj.dig(*mref_target_path) 
+          target_obj = target_obj.dig(*inherits_target_path) 
         rescue TypeError => e
           if e.message == "no implicit conversion of String into Integer"
-            warn "$mref: \"#{mref_target}\" found in file #{filename} references an Array but needs to reference a Hash"
+            warn "$inherits: \"#{inherits_target}\" found in file #{filename} references an Array but needs to reference a Hash"
           end
           raise e
         end
 
-        raise DereferenceError, "JSON Path #{mref_target_suffix} in file #{filename} does not exist in #{relative_path}" if target_obj.nil?
-        raise ArgumentError, "$mref: \"#{mref_target}\" in file #{filename} references a #{target_obj.class} but needs to reference a Hash" unless target_obj.is_a?(Hash)
+        raise DereferenceError, "JSON Path #{inherits_target_suffix} in file #{filename} does not exist in #{relative_path}" if target_obj.nil?
+        raise ArgumentError, "$inherits: \"#{inherits_target}\" in file #{filename} references a #{target_obj.class} but needs to reference a Hash" unless target_obj.is_a?(Hash)
 
         target_obj = expand(filename, target_obj, yaml_opts)
         target_obj.each do |target_key, target_value|
@@ -94,7 +94,7 @@ class YamlLoader
         end
       end
 
-      obj.delete("$mref")
+      obj.delete("$inherits")
       # now merge target_obj and obj
       keys = (obj.keys + new_obj.keys).uniq
       final_obj = {}
@@ -138,7 +138,7 @@ class YamlLoader
     new_obj
   end
 
-  # load a YAML file and expand any $ref/$mref references
+  # load a YAML file and expand any $ref/$inherits references
   # @param filename [String,Pathname] path to the YAML file
   # @param yaml_opts [Hash] options to pass to YAML.load_file
   # @return [Object] the loaded YAML file

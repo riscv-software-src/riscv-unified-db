@@ -15,7 +15,7 @@ class TestYamlLoader < Minitest::Test
         key2: value2
 
       child:
-        $mref: "#/base"
+        $inherits: "#/base"
         $remove: key2
         key3: value3
     YAML
@@ -36,7 +36,7 @@ class TestYamlLoader < Minitest::Test
         key3: value3
 
       child:
-        $mref: "#/base"
+        $inherits: "#/base"
         $remove:
         - key2
         - key3
@@ -51,7 +51,7 @@ class TestYamlLoader < Minitest::Test
     assert_equal({ "key1" => "value1", "key4" => "value4" }, doc["child"])
   end
 
-  def test_that_mref_with_nested_replace_works
+  def test_that_inherits_with_nested_replace_works
     yaml = <<~YAML
       base:
         key1:
@@ -59,12 +59,12 @@ class TestYamlLoader < Minitest::Test
         key2: value2
 
       middle:
-        $mref: "#/base"
+        $inherits: "#/base"
         key3: value3
         key4: value4
 
       bottom:
-        $mref:
+        $inherits:
         - "#/base"
         - "#/middle"
         key1:
@@ -82,19 +82,19 @@ class TestYamlLoader < Minitest::Test
     assert_equal({ "key1" => {"sub_key1" => "value1", "sub_key6" => "value6"}, "key2" => "value2_new", "key3" => "value3", "key4" => "value4_new", "key5" => "value5" }, doc["bottom"])
   end
 
-  def test_that_spurious_recursive_mref_works
+  def test_that_spurious_recursive_inherits_works
     yaml = <<~YAML
       base:
         key1: value1
         key2: value2
 
       middle:
-        $mref: "#/base"
+        $inherits: "#/base"
         key3: value3
         key4: value4
 
       bottom:
-        $mref:
+        $inherits:
         - "#/base"
         - "#/middle"
         key2: value2_new
@@ -111,19 +111,19 @@ class TestYamlLoader < Minitest::Test
     assert_equal({ "key1" => "value1", "key2" => "value2_new", "key3" => "value3", "key4" => "value4_new", "key5" => "value5" }, doc["bottom"])
   end
 
-  def test_that_recursive_mref_works
+  def test_that_recursive_inherits_works
     yaml = <<~YAML
       base:
         key1: value1
         key2: value2
 
       middle:
-        $mref: "#/base"
+        $inherits: "#/base"
         key3: value3
         key4: value4
 
       bottom:
-        $mref: "#/middle"
+        $inherits: "#/middle"
         key2: value2_new
         key4: value4_new
         key5: value5
@@ -138,7 +138,7 @@ class TestYamlLoader < Minitest::Test
     assert_equal({ "key1" => "value1", "key2" => "value2_new", "key3" => "value3", "key4" => "value4_new", "key5" => "value5" }, doc["bottom"])
   end
 
-  def test_that_nested_mref_works
+  def test_that_nested_inherits_works
     yaml = <<~YAML
     top:
       base:
@@ -148,7 +148,7 @@ class TestYamlLoader < Minitest::Test
 
     bottom:
       child:
-        $mref: "#/top/base"
+        $inherits: "#/top/base"
         key3: value3_new
     YAML
 
@@ -160,7 +160,7 @@ class TestYamlLoader < Minitest::Test
     assert_equal({ "key1" => "value1", "key2" => "value2", "key3" => "value3_new" }, doc["bottom"]["child"])
   end
 
-  def test_that_mref_doesnt_delete_keys
+  def test_that_inherits_doesnt_delete_keys
     yaml = <<~YAML
     base:
       key1: value1
@@ -168,7 +168,7 @@ class TestYamlLoader < Minitest::Test
       key3: value3
 
     child:
-      $mref: "#/base"
+      $inherits: "#/base"
       key3: value3_new
     YAML
 
@@ -180,7 +180,7 @@ class TestYamlLoader < Minitest::Test
     assert_equal({ "key1" => "value1", "key2" => "value2", "key3" => "value3_new" }, doc["child"])
   end
 
-  def test_that_double_mref_doesnt_delete_keys
+  def test_that_double_inherits_doesnt_delete_keys
     yaml = <<~YAML
     base1:
       key1: value1
@@ -193,7 +193,7 @@ class TestYamlLoader < Minitest::Test
       key6: value6
 
     child:
-      $mref:
+      $inherits:
       - "#/base1"
       - "#/base2"
       key3: value3_new
@@ -274,7 +274,7 @@ class TestYamlLoader < Minitest::Test
     assert_equal({ "a" => "hash" }, doc["obj3"])
   end
 
-  def test_mrefs_in_the_same_document
+  def test_inheritss_in_the_same_document
     yaml = <<~YAML
       $defs:
         target1: A string
@@ -282,15 +282,15 @@ class TestYamlLoader < Minitest::Test
           a: hash
 
       obj1:
-        $mref: "#/$defs/target2"
+        $inherits: "#/$defs/target2"
 
       obj2:
-        $mref: "#/$defs/target2"
+        $inherits: "#/$defs/target2"
         a: Should take precedence
 
       obj3:
         a: Should take precedence
-        $mref: "#/$defs/target2"
+        $inherits: "#/$defs/target2"
 
     YAML
 
@@ -304,7 +304,7 @@ class TestYamlLoader < Minitest::Test
     assert_equal({ "a" => "Should take precedence" }, doc["obj3"])
   end
 
-  def test_mrefs_in_the_different_document
+  def test_inheritss_in_the_different_document
     yaml1 = <<~YAML
       $defs:
         target1: A string
@@ -319,15 +319,15 @@ class TestYamlLoader < Minitest::Test
 
     yaml2 = <<~YAML
       obj1:
-        $mref: "#{f1_path.basename}#/$defs/target2"
+        $inherits: "#{f1_path.basename}#/$defs/target2"
 
       obj2:
-        $mref: "#{f1_path.basename}#/$defs/target2"
+        $inherits: "#{f1_path.basename}#/$defs/target2"
         a: Should take precedence
 
       obj3:
         a: Should take precedence
-        $mref: "#{f1_path.basename}#/$defs/target2"
+        $inherits: "#{f1_path.basename}#/$defs/target2"
     YAML
 
     f2 = Tempfile.new("yml")
@@ -340,7 +340,7 @@ class TestYamlLoader < Minitest::Test
     assert_equal({ "a" => "Should take precedence" }, doc["obj3"])
   end
 
-  def test_multi_mrefs_in_the_same_document
+  def test_multi_inheritss_in_the_same_document
     yaml = <<~YAML
       $defs:
         target1:
@@ -349,7 +349,7 @@ class TestYamlLoader < Minitest::Test
           a: hash
 
       obj1:
-        $mref:
+        $inherits:
         - "#/$defs/target1"
         - "#/$defs/target2"
 
@@ -363,7 +363,7 @@ class TestYamlLoader < Minitest::Test
     assert_equal({ "a" => "hash", "b" => "nice" }, doc["obj1"])
   end
 
-  def test_that_invalid_mrefs_raise
+  def test_that_invalid_inheritss_raise
     yaml = <<~YAML
       $defs:
         target1:
@@ -372,7 +372,7 @@ class TestYamlLoader < Minitest::Test
           a: hash
 
       obj1:
-        $mref: "#/path/to/nowwhere"
+        $inherits: "#/path/to/nowwhere"
 
     YAML
 
