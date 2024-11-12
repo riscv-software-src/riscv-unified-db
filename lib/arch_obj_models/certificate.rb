@@ -54,14 +54,14 @@ class CertModel < PortfolioInstance
     cert_class
   end
 
-  # @return [ArchDef] A partially-configued architecture definition corresponding to this CRD
+  # @return [ArchDef] A partially-configued architecture definition corresponding to this certificate.
   # XXX - Why doesn't profile have this?
   def to_arch_def
     return @generated_arch_def unless @generated_arch_def.nil?
 
     arch_def_data = arch_def.unconfigured_data
 
-    arch_def_data["mandatory_extensions"] = in_scope_ext_reqs("mandatory").map do |ext_req|
+    arch_def_data["mandatory_extensions"] = mandatory_ext_reqs.map do |ext_req|
       {
         "name" => ext_req.name,
         "version" => ext_req.version_requirement.requirements.map { |r| "#{r[0]} #{r[1]}" }

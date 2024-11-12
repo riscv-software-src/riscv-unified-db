@@ -135,7 +135,7 @@ MockCertificateModel:
           M_MODE_ENDIANESS:
             schema:
               const: little
-            # XXX Uncomment when GitHub issue #XXX is fixed.
+            #  Uncomment when GitHub issue # is fixed.
             #schema:
             #- when:
             #    version: "=1.0.0"

@@ -378,13 +378,13 @@ associated implementation-defined parameters across all its defined profiles.
 
 <%= profile.introduction %>
 
-<% ["mandatory","optional"].each do |presence| -%>
+<% ExtensionPresence.presence_types_obj.each do |presence_obj| -%>
 
-==== <%= presence.capitalize %> Extensions
+==== <%= presence_obj.to_s.capitalize %> Extensions
 
-<% ext_reqs = profile.in_scope_ext_reqs(presence) -%>
+<% ext_reqs = profile.in_scope_ext_reqs(presence_obj) -%>
 
-The <%= profile.marketing_name %> Profile has <%= ext_reqs.size %> <%= presence %> extensions.
+The <%= profile.marketing_name %> Profile has <%= ext_reqs.size %> <%= presence_obj.to_s %> extensions.
 
 <% unless ext_reqs.empty? -%>
 <% ext_reqs.each do |ext_req| -%>
@@ -402,12 +402,12 @@ Version <%= ext_req.version_requirement %>
 <% end # each ext_req -%>
 <% end # no ext_reqs -%>
 
-<% profile.extra_notes_for_presence(presence)&.each do |extra_note| -%>
+<% profile.extra_notes_for_presence(presence_obj)&.each do |extra_note| -%>
 NOTE: <%= extra_note.text %>
 
 <% end # each extra_note -%>
 
-<% end # presence -%>
+<% end # presence_obj -%>
 
 <% unless profile.recommendations.empty? -%>
 ==== Recommendations
@@ -450,17 +450,7 @@ associated implementation-defined parameters.
 | Profile | v<%= ext.versions.map { |v| v["version"] }.join(" | v") %>
 
 <% profile_release.profiles.each do |profile| -%>
-| <%= profile.marketing_name %> | <%= ext.versions.map do |v|
-  mandatory = profile.in_scope_ext_reqs("mandatory").any? { |req| req.satisfied_by?(ext.name, v["version"]) }
-  optional = profile.in_scope_ext_reqs("optional").any? { |req| req.satisfied_by?(ext.name, v["version"]) }
-  if mandatory
-    "mandatory"
-  elsif optional
-    "optional"
-  else
-    "-"
-  end
-end.join(" | ") -%>
+| <%= profile.marketing_name %> | <%= profile.version_strongest_presence(versions).join(" | ") -%>
 <% end -%>
 
 |===
