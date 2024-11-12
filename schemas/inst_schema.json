@@ -62,7 +62,7 @@
             "name": {
               "type": "string"
             },
-            "$mref": {
+            "$inherits": {
               "type": "string",
               "pattern": "^(\\.\\./)+common/inst_variable_types\\.yaml#/[a-zA-Z0-9_]+",
               "description": "Reference to variable metadata"
