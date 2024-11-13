@@ -174,8 +174,9 @@ volumes:
   authors:
   - name: Andrew Waterman
     email: awaterman@sifive.com
-    organization: SiFive, Inc.
-    url: https://www.sifive.com/
+    organization:
+      name: SiFive, Inc.
+      url: https://www.sifive.com/
   chapters:
     - riscv-isa-manual/src/priv-preface.adoc
     - riscv-isa-manual/src/priv-intro.adoc
