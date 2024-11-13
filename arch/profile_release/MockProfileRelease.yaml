@@ -31,6 +31,9 @@ MockProfileRelease:
         I:
           presence: mandatory
           version: "~> 2.1"
+        Svade:
+          presence: mandatory
+          note: Adding this to get coverage when extension "conflicts" with another (Svadu in this case).
     MP-S-64:
       marketing_name: MockProfile 64-bit S-mode
       description: This is the Mock Profile Supervisor Mode description.
@@ -45,6 +48,7 @@ MockProfileRelease:
         $inherits: "#/MockProfileRelease/profiles/MP-U-64/extensions"
         A:
           presence: mandatory
+          note: This should be listed as mandatory in MP-S-64 and optional in MP-U-64.
         S:
           presence: 
             optional: localized
@@ -68,6 +72,11 @@ MockProfileRelease:
       - presence: mandatory
         text: |
           Here's the first extra note for the mandatory extensions section.
+          This note is multiple lines.
+      - presence: optional
+        text: |
+          Here's the first extra note for the optional extensions section.
+          In this case, we don't differentiate between optional types.
           This note is multiple lines.
       - presence: 
           optional: localized

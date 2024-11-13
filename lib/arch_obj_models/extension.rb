@@ -445,8 +445,20 @@ class ExtensionPresence
     @presence_types_obj
   end
 
+  def self.optional_types_obj
+    return @optional_types_obj unless @optional_types_obj.nil?
+
+    @optional_types_obj = []
+
+    optional_types.each do |optional_type|
+      @optional_types_obj << ExtensionPresence.new({ self.optional => optional_type })
+    end
+
+    @optional_types_obj
+  end
+
   def to_s
-    @optional_type.nil? ? "#{presence}" : "#{presence}:#{optional_type}"
+    @optional_type.nil? ? "#{presence}" : "#{presence} (#{optional_type})"
   end
 
   # @overload ==(other)

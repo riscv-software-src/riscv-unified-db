@@ -71,15 +71,16 @@ class PortfolioInstance < ArchDefObject
   end
 
   # Returns the strongest presence string for each of the specified versions.
-  # @param versions [Array<ExtensionVersion>]
+  # @param ext_name [String]
+  # @param ext_versions [Array<ExtensionVersion>]
   # @return [Array<String>]
-  def version_strongest_presence(versions)
+  def version_strongest_presence(ext_name, ext_versions)
     presences = []
     
     # See if any extension requirement in this profile lists this version as either mandatory or optional.
-    versions.map do |v|
-      mandatory = mandatory_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(ext.name, v["version"]) }
-      optional = optional_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(ext.name, v["version"]) }
+    ext_versions.map do |v|
+      mandatory = mandatory_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(ext_name, v["version"]) }
+      optional = optional_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(ext_name, v["version"]) }
 
       # Just show strongest presence (mandatory stronger than optional).
       if mandatory
@@ -107,12 +108,14 @@ class PortfolioInstance < ArchDefObject
   # @param desired_presence [String, Hash, ExtensionPresence]
   # @return [Array<ExtensionRequirements>] - # Extensions with their portfolio information.
   # If desired_presence is provided, only returns extensions with that presence.
+  # If desired_presence is a String, only the presence portion of an ExtensionPresence is compared.
   def in_scope_ext_reqs(desired_presence = nil)
     in_scope_ext_reqs = []
 
     # Convert desired_present argument to ExtensionPresence object if not nil.
-    desired_presence_obj = 
-      desired_presence.nil? ? nil : 
+    desired_presence_converted = 
+      desired_presence.nil?                     ? nil : 
+      desired_presence.is_a?(String)            ? desired_presence :
       desired_presence.is_a?(ExtensionPresence) ? desired_presence :
       ExtensionPresence.new(desired_presence)
 
@@ -123,11 +126,10 @@ class PortfolioInstance < ArchDefObject
       # Convert String or Hash to object.
       actual_presence_obj = ExtensionPresence.new(actual_presence)
 
-      match = false
-      if desired_presence_obj.nil?
-        match = true
+      match = if desired_presence.nil?
+        true  # Always match
       else
-        match = (actual_presence_obj == desired_presence_obj)
+        (actual_presence_obj == desired_presence_converted)
       end
 
       if match
@@ -141,6 +143,7 @@ class PortfolioInstance < ArchDefObject
 
   def mandatory_ext_reqs = in_scope_ext_reqs(ExtensionPresence.mandatory)
   def optional_ext_reqs = in_scope_ext_reqs(ExtensionPresence.optional)
+  def optional_type_ext_reqs = in_scope_ext_reqs(ExtensionPresence.optional)
 
   # @return [Array<Extension>] List of all extensions listed in portfolio.
   def in_scope_extensions
@@ -157,6 +160,46 @@ class PortfolioInstance < ArchDefObject
     end.reject(&:nil?)
 
     @in_scope_extensions
+  end
+
+  # @return [Boolean] Does the profile differentiate between different types of optional.
+  def uses_optional_types?
+    return @uses_optional_types unless @uses_optional_types.nil?
+
+    @uses_optional_types = false
+
+    # Iterate through different kinds of optional using the "object" version (not the string version).
+    ExtensionPresence.optional_types_obj.each do |optional_type_obj|
+      # See if any extension reqs have this type of optional.
+      unless in_scope_ext_reqs(optional_type_obj).empty?
+        @uses_optional_types = true
+      end
+    end
+
+    @uses_optional_types
+  end
+
+  # @return [ArchDef] A partially-configured architecture definition corresponding to this certificate.
+  def to_arch_def
+    return @generated_arch_def unless @generated_arch_def.nil?
+
+    arch_def_data = arch_def.unconfigured_data
+
+    arch_def_data["mandatory_extensions"] = mandatory_ext_reqs.map do |ext_req|
+      {
+        "name" => ext_req.name,
+        "version" => ext_req.version_requirement.requirements.map { |r| "#{r[0]} #{r[1]}" }
+      }
+    end
+    arch_def_data["params"] = all_in_scope_ext_params.select(&:single_value?).map { |p| [p.name, p.value] }.to_h
+
+    # XXX Add list of prohibited_extensions
+
+    file = Tempfile.new("archdef")
+    file.write(YAML.safe_dump(arch_def_data, permitted_classes: [Date]))
+    file.flush
+    file.close
+    @generated_arch_def = ArchDef.new(name, Pathname.new(file.path))
   end
 
   ###################################

@@ -56,7 +56,6 @@ endif::[]
 
 = <%= profile_release.name %> Profile Release
 
-
 // Preamble
 <%=
  "TODO: revmark"
@@ -378,36 +377,12 @@ associated implementation-defined parameters across all its defined profiles.
 
 <%= profile.introduction %>
 
-<% ExtensionPresence.presence_types_obj.each do |presence_obj| -%>
+<% ExtensionPresence.presence_types.each do |presence_type| -%>
 
-==== <%= presence_obj.to_s.capitalize %> Extensions
+==== <%= presence_type.capitalize %> Extensions
 
-<% ext_reqs = profile.in_scope_ext_reqs(presence_obj) -%>
-
-The <%= profile.marketing_name %> Profile has <%= ext_reqs.size %> <%= presence_obj.to_s %> extensions.
-
-<% unless ext_reqs.empty? -%>
-<% ext_reqs.each do |ext_req| -%>
-<% ext = profile.arch_def.extension(ext_req.name) -%>
-* *<%= ext_req.name %>* <%= ext.nil? ? "" : ext.long_name %>
-+
-Version <%= ext_req.version_requirement %>
-<% unless profile.extension_note(ext_req.name).nil? -%>
-+
-[NOTE]
---
-<%= profile.extension_note(ext_req.name) %>
---
-<% end # unless note -%>
-<% end # each ext_req -%>
-<% end # no ext_reqs -%>
-
-<% profile.extra_notes_for_presence(presence_obj)&.each do |extra_note| -%>
-NOTE: <%= extra_note.text %>
-
-<% end # each extra_note -%>
-
-<% end # presence_obj -%>
+<%= profile.extensions_to_adoc(presence_type, 5).join("\n") %>
+<% end -%>
 
 <% unless profile.recommendations.empty? -%>
 ==== Recommendations
@@ -450,7 +425,7 @@ associated implementation-defined parameters.
 | Profile | v<%= ext.versions.map { |v| v["version"] }.join(" | v") %>
 
 <% profile_release.profiles.each do |profile| -%>
-| <%= profile.marketing_name %> | <%= profile.version_strongest_presence(versions).join(" | ") -%>
+| <%= profile.marketing_name %> | <%= profile.version_strongest_presence(ext.name, ext.versions).join(" | ") -%>
 <% end -%>
 
 |===
