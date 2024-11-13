@@ -31,6 +31,9 @@ MockProfileRelease:
         I:
           presence: mandatory
           version: "~> 2.1"
+        Svade:
+          presence: mandatory
+          note: Adding this to get coverage when extension "conflicts" with another (Svadu in this case).
     MP-S-64:
       marketing_name: MockProfile 64-bit S-mode
       description: This is the Mock Profile Supervisor Mode description.
@@ -45,32 +48,51 @@ MockProfileRelease:
         $inherits: "#/MockProfileRelease/profiles/MP-U-64/extensions"
         A:
           presence: mandatory
+          note: This should be listed as mandatory in MP-S-64 and optional in MP-U-64.
         S:
-          presence: mandatory
-          version: "= 1.11"
+          presence: 
+            optional: localized
+          version: "= 1.12"
         Zifencei:
-          presence: mandatory
+          presence: 
+            optional: development
           version: "= 2.0"
-          note: |
-            Zifencei is mandated as it is the only standard way to support
-            instruction-cache coherence in RVA20 application processors.  A new
-            instruction-cache coherence mechanism is under development which might
-            be added as an option in the future.
+          note: 
         Zihpm:
-          presence: optional
+          presence: 
+            optional: expansion
           version: "= 2.0"
+          note: Made this a expansion option
         Sv48:
-          presence: optional
+          presence: 
+            optional: transitory
           version: "= 1.11"
+          note: Made this a transitory option
       extra_notes:
-      - presence: optional
-        text: Here's the first extra note for the optional extensions section.
       - presence: mandatory
         text: |
           Here's the first extra note for the mandatory extensions section.
           This note is multiple lines.
       - presence: optional
-        text: Here's the second extra note for the optional extensions section.
+        text: |
+          Here's the first extra note for the optional extensions section.
+          In this case, we don't differentiate between optional types.
+          This note is multiple lines.
+      - presence: 
+          optional: localized
+        text: Here's the first extra note for the localized optional extensions section.
+      - presence: 
+          optional: localized
+        text: Here's the second extra note for the localized optional extensions section.
+      - presence: 
+          optional: development
+        text: Here's the first extra note for the development optional extensions section.
+      - presence: 
+          optional: expansion
+        text: Here's the first extra note for the expansion optional extensions section.
+      - presence: 
+          optional: transitory
+        text: Here's the first extra note for the transitory optional extensions section.
       recommendations:
       - text: |
           Implementations are strongly recommended to raise illegal-instruction

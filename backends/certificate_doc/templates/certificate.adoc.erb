@@ -104,11 +104,11 @@ CSR field types::
 Any RISC-V extension not listed in this section is OUT-OF-SCOPE so the <%= cert_model.name %>
 certificate doesn't cover its associated behaviors.
 
-<% ["mandatory","optional"].each do |presence| -%>
+<% ExtensionPresence.presence_types_obj.each do |presence_obj| -%>
 
-=== <%= presence.capitalize %> Extensions
+=== <%= presence_obj.to_s.capitalize %> Extensions
 
-<% ext_reqs = cert_model.in_scope_ext_reqs(presence) -%>
+<% ext_reqs = cert_model.in_scope_ext_reqs(presence_obj) -%>
 <% if ext_reqs.empty? -%>
 None
 <% else -%>
@@ -117,22 +117,22 @@ None
 | Requirement ID | Extension | Version | Long Name | Note
 
 <% ext_reqs.sort.each do |ext_req| -%>
-<% ext_db = arch_def.extension(ext_req.name) -%>
+<% ext = arch_def.extension(ext_req.name) -%>
 | <%= ext_req.req_id %> 
 | <<ext-<%= ext_req.name %>-def,<%= ext_req.name %>>> 
 | <%= ext_req.version_requirement %>
-| <%= ext_db.nil? ? "" : ext_db.long_name %>
+| <%= ext.nil? ? "" : ext.long_name %>
 | <%= ext_req.note.nil? ? "" : ext_req.note %>
 <% end # each ext_req -%>
 |===
 <% end # if empty ext_reqs -%>
 
-<% cert_model.extra_notes_for_presence(presence)&.each do |extra_note| -%>
+<% cert_model.extra_notes_for_presence(presence_obj)&.each do |extra_note| -%>
 NOTE: <%= extra_note.text %>
 
 <% end # each extra_note -%>
 
-<% end # each presence -%>
+<% end # each possible presence -%>
 
 <% unless cert_model.recommendations.empty? -%>
 === Recommendations
@@ -165,12 +165,12 @@ None
 | Parameter | Type | Allowed Value(s) | Extension(s) | Note
 
 <% cert_model.all_in_scope_ext_params.sort.each do |in_scope_ext_param| -%>
-<% param_db = in_scope_ext_param.param_db -%>
-<% exts_db = cert_model.all_in_scope_exts_with_param(param_db) -%>
-| <%= param_db.name_potentially_with_link(exts_db) %>
-| <%= param_db.schema_type %>
+<% param = in_scope_ext_param.param -%>
+<% exts = cert_model.all_in_scope_exts_with_param(param) -%>
+| <%= param.name_potentially_with_link(exts) %>
+| <%= param.schema_type %>
 | <%= in_scope_ext_param.allowed_values %>
-| <% exts_db.sort.each do |ext_db| -%><<ext-<%= ext_db.name %>-param-<%= param_db.name %>-def,<%= ext_db.name %>>> <% end # do ext_db -%>
+| <% exts.sort.each do |ext| -%><<ext-<%= ext.name %>-param-<%= param.name %>-def,<%= ext.name %>>> <% end # do ext -%>
 a| <%= in_scope_ext_param.note %>
 <% end # do -%>
 |===
@@ -189,11 +189,11 @@ None
 |===
 | Parameters | Type | Extension(s)
 
-<% cert_model.all_out_of_scope_params.sort.each do |param_db| -%>
-<% exts_db = cert_model.all_in_scope_exts_without_param(param_db) -%>
-| <%= param_db.name_potentially_with_link(exts_db) %>
-| <%= param_db.schema_type %>
-| <% exts_db.sort.each do |ext_db| -%><<ext-<%= ext_db.name %>-param-<%= param_db.name %>-def,<%= ext_db.name %>>> <% end # do ext_db -%>
+<% cert_model.all_out_of_scope_params.sort.each do |param| -%>
+<% exts = cert_model.all_in_scope_exts_without_param(param) -%>
+| <%= param.name_potentially_with_link(exts) %>
+| <%= param.schema_type %>
+| <% exts.sort.each do |ext| -%><<ext-<%= ext.name %>-param-<%= param.name %>-def,<%= ext.name %>>> <% end # do ext -%>
 
 <% end # do -%>
 |===
@@ -219,7 +219,7 @@ None
 == CSR Summary
 
 <%
-  csrs = cert_model.in_scope_ext_reqs.map { |ext_req| ext_req.csrs(cert_model.arch_def) }.flatten.uniq
+  csrs = cert_model.in_scope_ext_reqs.map { |ext_req| ext_req.csrs(arch_def) }.flatten.uniq
 -%>
 
 === By Name
@@ -289,15 +289,15 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 [appendix]
 == Extension Details
 <% cert_model.in_scope_ext_reqs.sort.each do |ext_req| -%>
-<% ext_db = arch_def.extension(ext_req.name) -%>
+<% ext = arch_def.extension(ext_req.name) -%>
 
 [[ext-<%= ext_req.name %>-def]]
 === Extension <%= ext_req.name %> +
-<%= ext_db.nil? ? "" : "*Long Name*: " + ext_db.long_name + " +" %>
+<%= ext.nil? ? "" : "*Long Name*: " + ext.long_name + " +" %>
 
 *Version Requirement*: <%= ext_req.version_requirement %> +
 
-<% ext_db.versions.each do |v| -%>
+<% ext.versions.each do |v| -%>
 <%= v["version"] %>::
   State:::
     <%= v["state"] %>
@@ -330,7 +330,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 
 :leveloffset: +3
 
-<%= ext_db.description %>
+<%= ext.description %>
 
 :leveloffset: -3
 
@@ -342,7 +342,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 <% end -%>
 
 // TODO: GitHub issue 92: Use version specified by each profile.
-<% insts = arch_def.instructions.select { |i| i.defined_by?(ext_db.name,ext_db.min_version) } -%>
+<% insts = arch_def.instructions.select { |i| i.defined_by?(ext.name,ext.min_version) } -%>
 <% unless insts.empty? -%>
 ==== Instructions
 
@@ -362,10 +362,10 @@ The following instructions are added by this extension:
 
 <% cert_model.in_scope_ext_params(ext_req).sort.each do |ext_param| -%>
 [[ext-<%= ext_req.name %>-param-<%= ext_param.name %>-def]]
-<%= ext_param.name %> &#8658; <%= ext_param.param_db.schema_type %>::
+<%= ext_param.name %> &#8658; <%= ext_param.param.schema_type %>::
 +
 --
-<%= ext_param.param_db.desc %>
+<%= ext_param.param.desc %>
 --
 <% end # do ext_param -%>
 <% end # unless table -%>
@@ -373,14 +373,14 @@ The following instructions are added by this extension:
 <% unless cert_model.out_of_scope_params(ext_req.name).empty? -%>
 ==== OUT-OF-SCOPE Parameters
 
-<% cert_model.out_of_scope_params(ext_req.name).sort.each do |param_db| -%>
-[[ext-<%= ext_req.name %>-param-<%= param_db.name %>-def]]
-<%= param_db.name %> &#8658; <%= param_db.schema_type %>::
+<% cert_model.out_of_scope_params(ext_req.name).sort.each do |param| -%>
+[[ext-<%= ext_req.name %>-param-<%= param.name %>-def]]
+<%= param.name %> &#8658; <%= param.schema_type %>::
 +
 --
-<%= param_db.desc %>
+<%= param.desc %>
 --
-<% end # do param_db -%>
+<% end # do param -%>
 <% end # unless table -%>
 <% end # do ext_req -%>
 
@@ -522,7 +522,7 @@ This instruction may result in the following synchronous exceptions:
 == CSR Details
 
 <%
-  csrs = cert_model.in_scope_ext_reqs.map { |ext_req| ext_req.csrs(cert_model.arch_def) }.flatten.uniq
+  csrs = cert_model.in_scope_ext_reqs.map { |ext_req| ext_req.csrs(arch_def) }.flatten.uniq
   csrs.sort_by!(&:name)
 -%>
 
@@ -560,7 +560,7 @@ h| Privilege Mode | <%= csr.priv_mode %>
 
 
 ==== <%= cert_model.name %> Format
-<% unless csr.dynamic_length?(cert_model.arch_def) || csr.implemented_fields(arch_def).any? { |f| f.dynamic_location?(cert_model.arch_def) } -%>
+<% unless csr.dynamic_length?(arch_def) || csr.implemented_fields(arch_def).any? { |f| f.dynamic_location?(arch_def) } -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]

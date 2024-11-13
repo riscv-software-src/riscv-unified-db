@@ -56,7 +56,6 @@ endif::[]
 
 = <%= profile_release.name %> Profile Release
 
-
 // Preamble
 <%=
  "TODO: revmark"
@@ -378,36 +377,12 @@ associated implementation-defined parameters across all its defined profiles.
 
 <%= profile.introduction %>
 
-<% ["mandatory","optional"].each do |presence| -%>
+<% ExtensionPresence.presence_types.each do |presence_type| -%>
 
-==== <%= presence.capitalize %> Extensions
+==== <%= presence_type.capitalize %> Extensions
 
-<% ext_reqs = profile.in_scope_ext_reqs(presence) -%>
-
-The <%= profile.marketing_name %> Profile has <%= ext_reqs.size %> <%= presence %> extensions.
-
-<% unless ext_reqs.empty? -%>
-<% ext_reqs.each do |ext_req| -%>
-<% ext = profile.arch_def.extension(ext_req.name) -%>
-* *<%= ext_req.name %>* <%= ext.nil? ? "" : ext.long_name %>
-+
-Version <%= ext_req.version_requirement %>
-<% unless profile.extension_note(ext_req.name).nil? -%>
-+
-[NOTE]
---
-<%= profile.extension_note(ext_req.name) %>
---
-<% end # unless note -%>
-<% end # each ext_req -%>
-<% end # no ext_reqs -%>
-
-<% profile.extra_notes_for_presence(presence)&.each do |extra_note| -%>
-NOTE: <%= extra_note.text %>
-
-<% end # each extra_note -%>
-
-<% end # presence -%>
+<%= profile.extensions_to_adoc(presence_type, 5).join("\n") %>
+<% end -%>
 
 <% unless profile.recommendations.empty? -%>
 ==== Recommendations
@@ -450,17 +425,7 @@ associated implementation-defined parameters.
 | Profile | v<%= ext.versions.map { |v| v["version"] }.join(" | v") %>
 
 <% profile_release.profiles.each do |profile| -%>
-| <%= profile.marketing_name %> | <%= ext.versions.map do |v|
-  mandatory = profile.in_scope_ext_reqs("mandatory").any? { |req| req.satisfied_by?(ext.name, v["version"]) }
-  optional = profile.in_scope_ext_reqs("optional").any? { |req| req.satisfied_by?(ext.name, v["version"]) }
-  if mandatory
-    "mandatory"
-  elsif optional
-    "optional"
-  else
-    "-"
-  end
-end.join(" | ") -%>
+| <%= profile.marketing_name %> | <%= profile.version_strongest_presence(ext.name, ext.versions).join(" | ") -%>
 <% end -%>
 
 |===

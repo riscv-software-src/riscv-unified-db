@@ -161,4 +161,85 @@ class Profile < PortfolioInstance
 
   # @return [Array<Extension>] List of all extensions referenced by the profile
   def referenced_extensions = in_scope_extensions
+
+  # Too complicated to put in profile ERB template.
+  # @param presence_type [String]
+  # @param heading_level [Integer]
+  # @return [Array<String>] Each array entry is a line
+  def extensions_to_adoc(presence_type, heading_level)
+    ret = []
+
+    presence_ext_reqs = in_scope_ext_reqs(presence_type)
+    plural = (presence_ext_reqs.size == 1) ? "" : "s"
+    ret << "The #{marketing_name} Profile has #{presence_ext_reqs.size} #{presence_type} extension#{plural}."
+    ret << ""
+
+    unless presence_ext_reqs.empty?
+      if (presence_type == ExtensionPresence.optional) && uses_optional_types?
+        # Iterate through each optional type. Use object version (not string) to get
+        # precise comparisons (i.e., presence string and optional type string).
+        ExtensionPresence.optional_types_obj.each do |optional_type_obj|
+          optional_type_ext_reqs = in_scope_ext_reqs(optional_type_obj)
+          unless optional_type_ext_reqs.empty?
+            ret << ""
+            ret << ("=" * heading_level) + " #{optional_type_obj.optional_type.capitalize} Options"
+            optional_type_ext_reqs.each do |ext_req|
+              ret << ext_req_to_adoc(ext_req)
+              ret << ext_note_to_adoc(ext_req.name)
+            end # each ext_req
+          end # unless optional_type_ext_reqs empty
+
+          # Add extra notes that just belong to just this optional type.
+          extra_notes_for_presence(optional_type_obj)&.each do |extra_note|
+            ret << "NOTE: #{extra_note.text}"
+            ret << ""
+          end # each extra_note
+        end # each optional_type_obj
+      else # don't bother with optional types
+        presence_ext_reqs.each do |ext_req|
+          ret << ext_req_to_adoc(ext_req)
+          ret << ext_note_to_adoc(ext_req.name)
+        end # each ext_req
+      end # checking for optional types
+    end # presence_ext_reqs isn't empty
+
+    # Add extra notes that just belong to this presence.
+    # Use object version (not string) of presence to avoid adding extra notes
+    # already added for optional types if they are in use.
+    extra_notes_for_presence(ExtensionPresence.new(presence_type))&.each do |extra_note|
+      ret << "NOTE: #{extra_note.text}"
+      ret << ""
+    end # each extra_note
+
+    ret
+  end
+
+  # @param ext_req [ExtensionRequirement]
+  # @return [Array<String>]
+  def ext_req_to_adoc(ext_req)
+    ret = []
+
+    ext = arch_def.extension(ext_req.name)
+    ret << "* *#{ext_req.name}* " + (ext.nil? ? "" : ext.long_name)
+    ret << "+"
+    ret << "Version #{ext_req.version_requirement}"
+
+    ret
+  end
+
+  # @param ext_name [String]
+  # @return [Array<String>]
+  def ext_note_to_adoc(ext_name)
+    ret = []
+ 
+    unless extension_note(ext_name).nil?
+      ret << "+"
+      ret << "[NOTE]"
+      ret << "--"
+      ret << extension_note(ext_name)
+      ret << "--"
+    end
+  
+    ret
+  end
 end

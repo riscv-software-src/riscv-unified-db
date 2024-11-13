@@ -22,6 +22,10 @@ rule %r{#{$root}/gen/profile_doc/adoc/.*\.adoc} => proc { |tname|
 
   arch_def = arch_def_for("_64")
 
+  # XXX - Add call to to_arch_def() in portfolio instance class.
+  # But somehow have to merge the multiple portofolios in one profile release to one since
+  # to_arch_def used to provide coloring of fields in CSRs in appendices that apply to all profiles in a release.
+
   FileUtils.mkdir_p File.dirname(t.name)
   File.write t.name, AsciidocUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
   puts "Generated adoc source at #{t.name}"
