@@ -3,6 +3,12 @@
 C:
   type: unprivileged
   long_name: Compressed instructions
+  company:
+    name: RISC-V International
+    url: https://riscv.org
+  doc_license:
+    name: Creative Commons Attribution 4.0 International License
+    url: https://creativecommons.org/licenses/by/4.0/
   versions:
   - version: "2.2.0"
     state: ratified
