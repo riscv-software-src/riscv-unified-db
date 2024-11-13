@@ -256,12 +256,12 @@ def main():
     # Define file paths here
     # Update these paths based on your actual file locations
     header_files = [
-        'include/opcode/riscv-opc.h',
-        'include/opcode/riscv.h'  # Replace with your actual additional header file names
+        'binutils/include/opcode/riscv-opc.h',
+        'binutils/include/opcode/riscv.h'  # Replace with your actual additional header file names
     ]
 
     instruction_files = [
-        'opcodes/riscv-opc.c'
+        'binutils/opcodes/riscv-opc.c'
         # Add more instruction definition files if necessary
     ]
 
