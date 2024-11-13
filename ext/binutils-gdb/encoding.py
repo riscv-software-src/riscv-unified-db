@@ -334,11 +334,15 @@ def main():
 
         if success_encodings:
             for class_, encoding in success_encodings:
-                if encoding != yaml_encoding:
-                    mismatches_found = True
-                    print(f"Error: Encoding mismatch for instruction '{name}' in YAML file '{yaml_file_path}'.")
-                    print(f"  YAML match     : {yaml_encoding}")
-                    print(f"  Generated match: {encoding}\n")
+                if success_encodings:
+                    for class_, encoding in success_encodings:
+                        # Simulate a mismatch by modifying the encoding
+                        if True:  # Always trigger the mismatch condition
+                            mismatches_found = True
+                            print(f"Error: Encoding mismatch for instruction '{name}' in YAML file '{yaml_file_path}'.")
+                            print(f"  YAML match     : {yaml_encoding}")
+                            print(f"  Generated match: {encoding}\n")
+                            sys.exit(1)  # Exit immediately on first mismatch
         else:
             # No valid definitions could be processed for this instruction
             print(f"Error: Could not evaluate any MATCH/MASK expressions for instruction '{name}' in YAML file '{yaml_file_path}'.\n")
