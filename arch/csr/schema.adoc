@@ -1,6 +1,6 @@
-= Schema for CSR defintions
+= Schema for CSR definitions
 
-A CSR defintion is a mapping (_i.e._, hash, dictionary, ...) containing exactly one key
+A CSR definition is a mapping (_i.e._, hash, dictionary, ...) containing exactly one key
 equal to the CSR name, and pointing to an object specified below. For example:
 
 .CSR object
@@ -30,7 +30,7 @@ Description::
 |===
 | *key*         | description
 | *value type*  | String
-| *description* | A full Asciidoc description of the CSR, indended to be used as documentation.
+| *description* | A full Asciidoc description of the CSR, intended to be used as documentation.
 |===
 
 Defining extension::
@@ -118,12 +118,12 @@ Fields::
 
 == Schema for CSR fields
 
-A CSR field defintion is a mapping (_i.e._, hash, dictionary, ...) containing exactly one key
+A CSR field definition is a mapping (_i.e._, hash, dictionary, ...) containing exactly one key
 equal to the CSR field name, in uppercase, and pointing to an object specified below.
 
 Location::
 
-[IMPORTANT] `location` is required *unless* the location is depenent on the XLEN of a certain mode, in which case both `location_rv32` and `location_rv64` are required
+[IMPORTANT] `location` is required *unless* the location is dependent on the XLEN of a certain mode, in which case both `location_rv32` and `location_rv64` are required
 
 |===
 | *key*         | location
@@ -160,13 +160,13 @@ Reset Value::
 |===
 | *key*         | reset_value
 | *value type*  | Integer -OR- "UNDEFINED_LEGAL"
-| *description* | Value of the field coming out of reset. When the specific value is not defined, "UNDEFINED_LEGAL" is use to indicate that the value isn't known but is gauranteed to a legal value for the field.
+| *description* | Value of the field coming out of reset. When the specific value is not defined, "UNDEFINED_LEGAL" is use to indicate that the value isn't known but is guaranteed to a legal value for the field.
 |===
 
 |===
 | *key*         | reset_value()
 | *value type*  | String of IDL code that returns a reset value
-| *description* | Value of the field coming out of reset. When the specific value is not defined, the special value UNDEFINED_LEGAL can be returned to indicate that the value isn't known but is gauranteed to a legal value for the field.
+| *description* | Value of the field coming out of reset. When the specific value is not defined, the special value UNDEFINED_LEGAL can be returned to indicate that the value isn't known but is guaranteed to a legal value for the field.
 |===
 
 Type::

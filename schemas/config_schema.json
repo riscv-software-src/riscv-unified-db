@@ -316,12 +316,12 @@
         "REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION": {
           "type": "boolean",
           "default": false,
-          "description": "When true, stval is written with the faulting instruciton encoding when a IllegalInstruction exception occurs.\nWhen false, stval is written with 0"
+          "description": "When true, stval is written with the faulting instruction encoding when a IllegalInstruction exception occurs.\nWhen false, stval is written with 0"
         },
         "REPORT_CAUSE_IN_STVAL_ON_SOFTWARE_CHECK": {
           "type": "boolean",
           "default": false,
-          "description": "When true, stval is written with the casue when a SoftwareCheck exception occurs.\nWhen false, stval is written with 0"
+          "description": "When true, stval is written with the cause when a SoftwareCheck exception occurs.\nWhen false, stval is written with 0"
         },
         "STVAL_WIDTH": {
           "type": "integer",
