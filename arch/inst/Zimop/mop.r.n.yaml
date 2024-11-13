@@ -93,4 +93,3 @@ pseudoinstructions:
 - when: (mop_r_t_30 == 0x1) && (mop_r_t_21_20 == 0x3) && (mop_r_t_27_26 == 0x3)
   to: mop.r.31
 operation(): |
-    

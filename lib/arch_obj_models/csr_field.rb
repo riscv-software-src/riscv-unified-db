@@ -174,7 +174,7 @@ class CsrField < ArchDefObject
         idl = @data["type()"]
         raise "type() is nil for #{csr.name}.#{name} #{@data}?" if idl.nil?
 
-        
+
 
         # value_result = Idl::AstNode.value_try do
         ast = type_checked_type_ast(symtab)

@@ -56,7 +56,7 @@ params:
     description: |
       Indicates which hardware performance monitor counters can be disabled from `mcountinhibit`.
 
-      An unimplemented counter cannot be specified, i.e., if HPM_COUNTER_EN[3] is false, 
+      An unimplemented counter cannot be specified, i.e., if HPM_COUNTER_EN[3] is false,
       it would be illegal to set COUNTINHIBIT_EN[3] to true.
 
       COUNTINHIBIT_EN[1] can never be true, since it corresponds to `mcountinhibit.TM`,

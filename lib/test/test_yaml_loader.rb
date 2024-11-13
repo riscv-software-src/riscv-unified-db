@@ -42,7 +42,7 @@ class TestYamlLoader < Minitest::Test
         - key3
         key4: value4
     YAML
-    
+
     f = Tempfile.new("yml")
     f.write(yaml)
     f.flush
@@ -346,10 +346,10 @@ class TestYamlLoader < Minitest::Test
 
       obj1:
         target10: abc
-        target11: 
+        target11:
           $copy: "#/$defs/target1"
         target12: def
-        target13: 
+        target13:
           $copy: "#/$defs/target3"
 
     YAML
@@ -359,11 +359,11 @@ class TestYamlLoader < Minitest::Test
     f.flush
 
     doc = YamlLoader.load(f.path)
-    assert_equal({ 
-        "target10" => "abc", 
-        "target11" => "A string", 
-        "target12" => "def", 
-        "target13" => "Another string" 
+    assert_equal({
+        "target10" => "abc",
+        "target11" => "A string",
+        "target12" => "def",
+        "target13" => "Another string"
       }, doc["obj1"])
   end
 
@@ -384,10 +384,10 @@ class TestYamlLoader < Minitest::Test
     yaml2 = <<~YAML
       obj1:
         target10: abc
-        target11: 
+        target11:
           $copy: "#{f1_path.basename}#/$defs/target1"
         target12: def
-        target13: 
+        target13:
           $copy: "#{f1_path.basename}#/$defs/target3"
     YAML
 
@@ -396,11 +396,11 @@ class TestYamlLoader < Minitest::Test
     f2.flush
 
     doc = YamlLoader.load(f2.path)
-    assert_equal({ 
-        "target10" => "abc", 
-        "target11" => "A string", 
-        "target12" => "def", 
-        "target13" => "Another string" 
+    assert_equal({
+        "target10" => "abc",
+        "target11" => "A string",
+        "target12" => "def",
+        "target13" => "Another string"
       }, doc["obj1"])
   end
 

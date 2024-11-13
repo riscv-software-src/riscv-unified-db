@@ -7,7 +7,7 @@ RVA20:
   ratification_date: "2023-04-03"
 
   # Semantic versions within the release
-  versions: 
+  versions:
   - version: "1.0.0"
 
   introduction: |
@@ -162,7 +162,7 @@ RVA20:
           version: "~> 1.0"
           note: |
             Svbare is a new extension name introduced with RVA20.
-      
+
             It is subsequently defined in more detail with the ratification of
             `Svadu`.
         Ssccptr:

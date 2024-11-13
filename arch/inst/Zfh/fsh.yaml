@@ -37,7 +37,7 @@ operation(): |
   XReg virtual_address = X[rs1] + $signed(imm);
 
   Bits<16> hp_value = f[fs2][15:0];
-  
+
   write_memory<16>(virtual_address, hp_value, $encoding);
 
 
@@ -80,7 +80,3 @@ sail(): |
         }
     }
   }
-
-
-
-

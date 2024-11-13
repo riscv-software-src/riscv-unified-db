@@ -28,10 +28,10 @@ description: |
   4+^.>h! `hpmcounter22` behavior
   .^h! S-mode .^h! U-mode .^h! VS-mode .^h! VU-mode
 
-  ! 0 ! - ! - ! `IllegalInstruction` ! `IllegalInstruction` ! `IllegalInstruction` ! `IllegalInstruction` 
+  ! 0 ! - ! - ! `IllegalInstruction` ! `IllegalInstruction` ! `IllegalInstruction` ! `IllegalInstruction`
   ! 1 ! 0 ! 0 ! read-only ! `IllegalInstruction` ! `VirtualInstruction` ! `VirtualInstruction`
-  ! 1 ! 1 ! 0 ! read-only ! read-only ! `VirtualInstruction` ! `VirtualInstruction` 
-  ! 1 ! 0 ! 1 ! read-only ! `IllegalInstruction` ! read-only ! `VirtualInstruction` 
+  ! 1 ! 1 ! 0 ! read-only ! read-only ! `VirtualInstruction` ! `VirtualInstruction`
+  ! 1 ! 0 ! 1 ! read-only ! `IllegalInstruction` ! read-only ! `VirtualInstruction`
   ! 1 ! 1 ! 1 ! read-only ! read-only ! read-only ! read-only
   !===
   <%- elsif ext?(:S) -%>
@@ -49,7 +49,7 @@ description: |
   [%autowidth,cols="1,1",separator="!"]
   !===
   .2+h![.rotate]#`mcounteren.HPM22`#
-  ^.>h! `hpmcounter22` behavior  
+  ^.>h! `hpmcounter22` behavior
   .^h! U-mode
 
   ! 0 ! `IllegalInstruction`

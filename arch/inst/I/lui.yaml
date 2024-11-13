@@ -35,7 +35,3 @@ sail(): |
     X(rd) = ret;
     RETIRE_SUCCESS
   }
-
-
-
-

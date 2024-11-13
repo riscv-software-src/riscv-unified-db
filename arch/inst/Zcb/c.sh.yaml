@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: c.sh
-long_name: Store unsigned halfword, 16-bit encoding 
+long_name: Store unsigned halfword, 16-bit encoding
 description: |
   Stores a 16-bit value from register rs2 into memory.
   It computes an effective address by adding the zero-extended offset, to the base address in register rs1.

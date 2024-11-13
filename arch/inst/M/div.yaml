@@ -8,7 +8,7 @@ description: |
   Divide rs1 by rs2, and store the result in rd. The remainder is discarded.
 
   Division by zero will put -1 into rd.
-  
+
   Division resulting in signed overflow (when most negative number is divided by -1)
   will put the most negative number into rd;
 definedBy: M
@@ -68,7 +68,3 @@ sail(): |
       RETIRE_FAIL
     }
   }
-
-
-
-

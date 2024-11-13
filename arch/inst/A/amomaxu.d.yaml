@@ -6,7 +6,7 @@ name: amomaxu.d
 long_name: Atomic MAX unsigned doubleword
 description: |
    Atomically:
-     
+
      * Load the doubleword at address _rs1_
      * Write the loaded value into _rd_
      * Unsigned compare the value of register _rs2_ to the loaded value, and select the maximum value
@@ -95,7 +95,7 @@ sail(): |
                           AMOXOR  => rs2_val ^ loaded,
                           AMOAND  => rs2_val & loaded,
                           AMOOR   => rs2_val | loaded,
-  
+
                           /* These operations convert bitvectors to integer values using [un]signed,
                            * and back using to_bits().
                            */
@@ -135,7 +135,3 @@ sail(): |
       RETIRE_FAIL
     }
   }
-
-
-
-

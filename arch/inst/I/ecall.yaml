@@ -71,7 +71,3 @@ sail(): |
     set_next_pc(exception_handler(cur_privilege, CTL_TRAP(t), PC));
     RETIRE_FAIL
   }
-
-
-
-

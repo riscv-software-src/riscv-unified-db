@@ -301,7 +301,7 @@ module Idl
       if idx_text =~ /[0-9]+/
         "#{' '*indent}#{csr_text}"
       else
-        if @archdef.csr(csr_text).nil? 
+        if @archdef.csr(csr_text).nil?
         "#{' '*indent}#{csr_text}"
         else
           "#{' '*indent}%%LINK%csr_field;#{idx_text}.#{@field_name};#{csr_text}%%"

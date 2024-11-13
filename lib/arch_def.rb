@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 # Many classes have an "arch_def" member which is an ArchDef (not ArchDefObject) class.
-# The "arch_def" member contains the "database" of RISC-V standards including extensions, instructions, 
-# CSRs, Profiles, and Certificates. 
+# The "arch_def" member contains the "database" of RISC-V standards including extensions, instructions,
+# CSRs, Profiles, and Certificates.
 #
 # The arch_def member has methods such as:
 #   extensions()                Array<Extension> of all extensions known to the database (even if not implemented).
@@ -179,7 +179,7 @@ class ArchDef
         unless field.type_ast(@symtab).nil?
           if ((possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?) ||
               (possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?))
-            field.type_checked_type_ast(@symtab) 
+            field.type_checked_type_ast(@symtab)
           end
         end
         unless field.reset_value_ast(@symtab).nil?
@@ -911,7 +911,7 @@ class ArchDef
   def implemented_csrs
     return @implemented_csrs unless @implemented_csrs.nil?
 
-    @implemented_csrs = 
+    @implemented_csrs =
       if @arch_def.key?("implemented_csrs")
         csrs.select { |c| @arch_def["implemented_csrs"].include?(c.name) }
       else
