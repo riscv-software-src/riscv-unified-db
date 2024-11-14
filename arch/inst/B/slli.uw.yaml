@@ -15,7 +15,7 @@ slli.uw:
     match: 000010-----------001-----0011011
     variables:
     - name: shamt
-      location: 24-20
+      location: 25-20
     - name: rs1
       location: 19-15
     - name: rd
