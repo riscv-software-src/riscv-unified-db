@@ -1,0 +1,14 @@
+#!/bin/bash
+
+ROOT=$(dirname $(dirname $(realpath $BASH_SOURCE[0])))
+CONTAINER_TAG=$(cat ${ROOT}/bin/.container-tag)
+CONTAINER_PATH=${ROOT}/.singularity/image-${CONTAINER_TAG}.sif
+HOME_OPT="--bind ${ROOT}/.home:${HOME}"
+
+# Create virtual environment using absolute path
+echo "Creating virtual environment..."
+singularity exec ${HOME_OPT} ${CONTAINER_PATH} /usr/bin/python3 -m venv ${ROOT}/.home/.venv
+
+# Install packages
+echo "Installing packages..."
+singularity exec ${HOME_OPT} ${CONTAINER_PATH} bash -c "source ${ROOT}/.home/.venv/bin/activate && pip install pyyaml"
