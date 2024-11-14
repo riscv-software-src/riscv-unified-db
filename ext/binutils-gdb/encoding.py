@@ -184,8 +184,6 @@ def format_encoding(encoding_str):
     group4 = encoding_str[20:25]  # bits 11-7
     group5 = encoding_str[25:32]  # bits 6-0
 
-    # Combine groups with no separators as per desired format
-    # Example: 0000000----------000-----0110011
     formatted_str = f"{group1}{group2}{group3}{group4}{group5}"
     return formatted_str
 
@@ -229,13 +227,6 @@ def parse_yaml_encoding(yaml_file_path):
             if not isinstance(yaml_content, dict) or not yaml_content:
                 print(f"Warning: YAML file '{yaml_file_path}' is empty or not properly formatted.")
                 return ''
-
-            # Assuming the YAML structure has the instruction name as the top key
-            # and 'encoding' as a subkey
-            # Example:
-            # add:
-            #   encoding:
-            #     match: "0000000----------000-----0110011"
             instr_name = list(yaml_content.keys())[0]
             encoding = yaml_content[instr_name].get('encoding', {})
             match_encoding = encoding.get('match', '')
@@ -256,17 +247,16 @@ def main():
     # Define file paths here
     # Update these paths based on your actual file locations
     header_files = [
-        'binutils/include/opcode/riscv-opc.h',
-        'binutils/include/opcode/riscv.h'  # Replace with your actual additional header file names
+        'ext/binutils-gdb/binutils/include/opcode/riscv-opc.h',
+        'ext/binutils-gdb/binutils/include/opcode/riscv.h' 
     ]
 
     instruction_files = [
-        'binutils/opcodes/riscv-opc.c'
-        # Add more instruction definition files if necessary
+        'ext/binutils-gdb/binutils/opcodes/riscv-opc.c'
     ]
 
     # Define the path to the directory containing YAML files
-    yaml_directory = '../../arch/inst/'  # Replace with your actual directory path
+    yaml_directory = 'arch/inst/' 
 
     # Get instruction YAML mappings from the YAML directory recursively
     instr_yaml_map = get_instruction_yaml_files(yaml_directory)
