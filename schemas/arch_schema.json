@@ -78,11 +78,9 @@
       }
     },
     "csrs": {
-      "type": "object",
-      "patternProperties": {
-        ".*": {
-          "$ref": "csr_schema.json#/$defs/csr_register"
-        }
+      "type": "array",
+      "items": {
+        "$ref": "csr_schema.json#/$defs/csr_register"
       }
     },
     "implemented_csrs": {

@@ -517,7 +517,7 @@ class ArchDef
   def csrs
     return @csrs unless @csrs.nil?
 
-    @csrs = @arch_def["csrs"].map do |_csr_name, csr_data|
+    @csrs = @arch_def["csrs"].map do |csr_data|
       Csr.new(csr_data)
     end
   end

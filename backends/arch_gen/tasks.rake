@@ -33,17 +33,15 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
     __FILE__
   ] + Dir.glob($root / "arch" / "**" / "*.yaml")
 ) do |t|
-  csr_hash = Dir.glob($root / "arch" / "csr" / "**" / "*.yaml").map do |f|
+  csr_ary = Dir.glob($root / "arch" / "csr" / "**" / "*.yaml").map do |f|
     csr_obj = YamlLoader.load(f, permitted_classes:[Date])
-    csr_name = csr_obj.keys[0]
-    csr_obj[csr_name]["name"] = csr_name
-    csr_obj[csr_name]["fields"].map do |k, v|
+    csr_obj["fields"].map do |k, v|
       v["name"] = k
       [k, v]
     end
-    csr_obj[csr_name]["__source"] = f
-    [csr_name, csr_obj[csr_name]]
-  end.to_h
+    csr_obj["__source"] = f
+    csr_obj
+  end
   inst_ary = Dir.glob($root / "arch" / "inst" / "**" / "*.yaml").map do |f|
     inst_obj = YamlLoader.load(f, permitted_classes:[Date])
     inst_obj["__source"] = f
@@ -109,7 +107,7 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
     "type" => "unconfigured",
     "instructions" => inst_ary,
     "extensions" => ext_hash,
-    "csrs" => csr_hash,
+    "csrs" => csr_ary,
     "profile_classes" => profile_class_hash,
     "profile_releases" => profile_release_hash,
     "certificate_classes" => cert_class_hash,

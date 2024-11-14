@@ -273,11 +273,9 @@ class ArchGen
   # Generate the config-specific, unified architecture spec data structure
   #
   def gen_arch_def
-    csr_hash = Dir.glob(@gen_dir / "arch" / "csr" / "**" / "*.yaml").map do |f|
-      csr_obj = YamlLoader.load(f, permitted_classes:[Date])
-      csr_name = csr_obj.keys[0]
-      [csr_name, csr_obj[csr_name]]
-    end.to_h
+    csr_ary = Dir.glob(@gen_dir / "arch" / "csr" / "**" / "*.yaml").map do |f|
+      YamlLoader.load(f, permitted_classes:[Date])
+    end
     inst_ary = Dir.glob(@gen_dir / "arch" / "inst" / "**" / "*.yaml").map do |f|
       YamlLoader.load(f, permitted_classes:[Date])
     end
@@ -342,7 +340,7 @@ class ArchGen
       "implemented_instructions" => @implemented_instructions,
       "extensions" => ext_hash,
       "implemented_extensions" => @implemented_extensions,
-      "csrs" => csr_hash,
+      "csrs" => csr_ary,
       "implemented_csrs" => @implemented_csrs,
       "profile_classes" => profile_class_hash,
       "profile_releases" => profile_release_hash,
@@ -628,12 +626,11 @@ class ArchGen
       end
 
     # get the csr data (not including the name key), which is redundant at this point
-    csr_data = YAML.load_file(merged_path)[csr_name]
-    csr_data["name"] = csr_name
+    csr_data = YAML.load_file(merged_path)
     csr_data["fields"].each { |n, f| f["name"] = n }
     csr_data["__source"] = og_path.to_s
 
-    csr_yaml = YAML.dump({ csr_name => csr_data})
+    csr_yaml = YAML.dump(csr_data)
     begin
       csr_data = @validator.validate_str(csr_yaml, type: :csr)
     rescue Validator::SchemaValidationError => e
@@ -641,7 +638,7 @@ class ArchGen
       raise e
     end
 
-    csr_obj = Csr.new(csr_data[csr_name])
+    csr_obj = Csr.new(csr_data)
     arch_def_mock = Object.new
     arch_def_mock.define_singleton_method(:fully_configured?) { true }
     pos_xlen_local = possible_xlens
