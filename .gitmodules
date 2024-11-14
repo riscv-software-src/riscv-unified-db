@@ -9,5 +9,5 @@
 	url = https://github.com/riscv/riscv-isa-manual
 [submodule "ext/binutils-gdb/binutils"]
 	path = ext/binutils-gdb/binutils
-	url = git@github.com:bminor/binutils-gdb.git
+	url = https://github.com/bminor/binutils-gdb.git
 	branch = master
