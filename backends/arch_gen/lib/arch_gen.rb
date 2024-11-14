@@ -278,11 +278,9 @@ class ArchGen
       csr_name = csr_obj.keys[0]
       [csr_name, csr_obj[csr_name]]
     end.to_h
-    inst_hash = Dir.glob(@gen_dir / "arch" / "inst" / "**" / "*.yaml").map do |f|
-      inst_obj = YamlLoader.load(f, permitted_classes:[Date])
-      inst_name = inst_obj.keys[0]
-      [inst_name, inst_obj[inst_name]]
-    end.to_h
+    inst_ary = Dir.glob(@gen_dir / "arch" / "inst" / "**" / "*.yaml").map do |f|
+      YamlLoader.load(f, permitted_classes:[Date])
+    end
     ext_hash = Dir.glob(@gen_dir / "arch" / "ext" / "**" / "*.yaml").map do |f|
       ext_obj = YamlLoader.load(f, permitted_classes:[Date])
       ext_name = ext_obj.keys[0]
@@ -340,7 +338,7 @@ class ArchGen
     arch_def = {
       "type" => @cfg_opts["type"],
       "params" => params,
-      "instructions" => inst_hash,
+      "instructions" => inst_ary,
       "implemented_instructions" => @implemented_instructions,
       "extensions" => ext_hash,
       "implemented_extensions" => @implemented_extensions,
@@ -876,13 +874,9 @@ class ArchGen
 
     # get the inst data (not including the name key), which is redundant at this point
     inst_data = YAML.load_file(merged_path)
-    raise "The first and only key of #{arch_path} must be '#{inst_name}" unless inst_data.key?(inst_name)
-    inst_data = inst_data[inst_name]
-
-    inst_data["name"] = inst_name
     inst_data["__source"] = og_path.to_s
 
-    inst_yaml = YAML.dump({ inst_name => inst_data})
+    inst_yaml = YAML.dump(inst_data)
     begin
       inst_data = @validator.validate_str(inst_yaml, type: :inst)
     rescue Validator::SchemaValidationError => e
@@ -890,7 +884,7 @@ class ArchGen
       raise e
     end
 
-    inst_obj = Instruction.new(inst_data[inst_name], nil)
+    inst_obj = Instruction.new(inst_data, nil)
     possible_xlens = [params["XLEN"]]
     if @cfg_impl_ext.any? { |e| e[0] == "S" }
       possible_xlens << 32 if [32, 3264].include?(params["SXLEN"])
@@ -923,11 +917,6 @@ class ArchGen
     gen_inst_path = @gen_dir / "arch" / "inst" / inst_obj.primary_defined_by / "#{inst_name}.yaml"
     FileUtils.mkdir_p gen_inst_path.dirname
     gen_inst_path.write inst_yaml
-
-
-    # @instructions << inst_def
-    # @inst_hash ||= {}
-    # @inst_hash[inst_name] = @instructions.last
   end
   private :maybe_add_inst
 

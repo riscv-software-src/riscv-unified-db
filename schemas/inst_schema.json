@@ -146,9 +146,19 @@
     },
     "inst_data": {
       "type": "object",
-      "required": ["long_name", "description", "definedBy", "access", "assembly"],
+      "required": ["$schema", "kind", "name", "long_name", "description", "definedBy", "access", "assembly"],
       "additionalProperties": false,
       "properties": {
+        "$schema": {
+          "type": "string",
+          "format": "uri-reference",
+          "const": "inst_schema.json#",
+          "description": "Path to schema, relative to <UDB ROOT>/schemas"
+        },
+        "kind": {
+          "type": "string",
+          "const": "instruction"
+        },
         "name": {
           "type": "string",
           "pattern": "^[a-z0-9.]+$",
@@ -268,13 +278,5 @@
     }
   },
 
-  "type": "object",
-  "title": "Instruction specification",
-  "patternProperties": {
-    ".*": {
-      "$ref": "#/$defs/inst_data"
-    }
-  },
-  "additionalProperties": false,
-  "maxProperties": 1
+ "$ref": "#/$defs/inst_data"
 }

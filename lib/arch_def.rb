@@ -549,7 +549,7 @@ class ArchDef
   def instructions
     return @instructions unless @instructions.nil?
 
-    @instructions = @arch_def["instructions"].map do |_inst_name, inst_data|
+    @instructions = @arch_def["instructions"].map do |inst_data|
       Instruction.new(inst_data, self)
     end
 

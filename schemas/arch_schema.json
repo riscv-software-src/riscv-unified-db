@@ -95,12 +95,9 @@
       }
     },
     "instructions": {
-      "type": "object",
-      "patternProperties": {
-        ".*": {
-          "$ref": "inst_schema.json#/$defs/inst_data"
-        },
-        "additionalProperties": false
+      "type": "array",
+      "items": {
+        "$ref": "inst_schema.json#"
       }
     },
     "implemented_instructions": {
