@@ -9,8 +9,6 @@ vsse32.v:
   encoding:
     match: 000010-----------110-----0100111
     variables:
-    - name: nf
-      location: 31-29
     - name: vm
       location: 25-25
     - name: rs2

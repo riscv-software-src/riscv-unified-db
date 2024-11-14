@@ -9,8 +9,6 @@ vle64.v:
   encoding:
     match: 000000-00000-----111-----0000111
     variables:
-    - name: nf
-      location: 31-29
     - name: vm
       location: 25-25
     - name: rs1
