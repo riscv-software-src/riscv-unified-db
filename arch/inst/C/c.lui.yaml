@@ -22,8 +22,7 @@ encoding:
     left_shift: 12
   - name: rd
     location: 11-7
-    not: 0
-    not: 2
+    not: [0, 2]
 access:
   s: always
   u: always

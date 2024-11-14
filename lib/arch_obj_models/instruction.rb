@@ -289,7 +289,7 @@ class Instruction < ArchDefObject
       elsif excludes.size == 1
         "#{name} != #{excludes[0]}"
       else
-        "#{name} != {#{excludes[0].join(',')}}"
+        "#{name} != {#{excludes.join(',')}}"
       end
     end
 
