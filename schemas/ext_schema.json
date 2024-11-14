@@ -39,8 +39,19 @@
     },
     "ext_data": {
       "type": "object",
-      "required": ["description", "long_name", "versions"],
+      "required": ["$schema", "kind", "name", "description", "long_name", "versions"],
       "properties": {
+        "$schema": {
+          "type": "string",
+          "format": "uri-reference",
+          "const": "ext_schema.json#",
+          "description": "Path to schema, relative to <UDB ROOT>/schemas"
+        },
+        "kind": {
+          "type": "string",
+          "const": "extension",
+          "description": "Object type"
+        },
         "name": { "$ref": "schema_defs.json#/$defs/extension_name" },
         "long_name": {
           "type": "string",
@@ -276,12 +287,5 @@
     }
   },
 
-  "type": "object",
-  "patternProperties": {
-    "^([A-WY])|([SXZ][a-z0-9]+)$": {
-      "$ref": "#/$defs/ext_data"
-    }
-  },
-  "additionalProperties": false,
-  "maxProperties": 1
+  "$ref": "#/$defs/ext_data"
 }

@@ -70,11 +70,9 @@
       }
     },
     "extensions": {
-      "type": "object",
-      "patternProperties": {
-        ".*": {
-          "$ref": "ext_schema.json#/$defs/ext_data"
-        }
+      "type": "array",
+      "items": {
+        "$ref": "ext_schema.json#/$defs/ext_data"
       }
     },
     "csrs": {

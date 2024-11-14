@@ -279,11 +279,9 @@ class ArchGen
     inst_ary = Dir.glob(@gen_dir / "arch" / "inst" / "**" / "*.yaml").map do |f|
       YamlLoader.load(f, permitted_classes:[Date])
     end
-    ext_hash = Dir.glob(@gen_dir / "arch" / "ext" / "**" / "*.yaml").map do |f|
-      ext_obj = YamlLoader.load(f, permitted_classes:[Date])
-      ext_name = ext_obj.keys[0]
-      [ext_name, ext_obj[ext_name]]
-    end.to_h
+    ext_ary = Dir.glob(@gen_dir / "arch" / "ext" / "**" / "*.yaml").map do |f|
+      YamlLoader.load(f, permitted_classes:[Date])
+    end
     profile_class_hash = Dir.glob($root / "arch" / "profile_class" / "**" / "*.yaml").map do |f|
       profile_class_obj = YamlLoader.load(f, permitted_classes:[Date])
       profile_class_name = profile_class_obj.keys[0]
@@ -338,7 +336,7 @@ class ArchGen
       "params" => params,
       "instructions" => inst_ary,
       "implemented_instructions" => @implemented_instructions,
-      "extensions" => ext_hash,
+      "extensions" => ext_ary,
       "implemented_extensions" => @implemented_extensions,
       "csrs" => csr_ary,
       "implemented_csrs" => @implemented_csrs,
@@ -709,10 +707,9 @@ class ArchGen
     merged_path = gen_merged_def(:ext, arch_path, arch_overlay_path)
 
     yaml_contents = YAML.load_file(merged_path)
-    raise "In #{merged_path}, key does not match file name" unless yaml_contents.key?(ext_name)
+    raise "In #{merged_path}, key does not match file name" unless yaml_contents["name"] == ext_name
 
-    ext_obj = yaml_contents[ext_name]
-    ext_obj["name"] = ext_name
+    ext_obj = yaml_contents
 
     @implied_ext_map ||= {}
     @required_ext_map ||= {}
@@ -759,7 +756,7 @@ class ArchGen
 
     gen_ext_path = @gen_dir / "arch" / "ext" / "#{ext_name}.yaml"
     FileUtils.mkdir_p gen_ext_path.dirname
-    gen_ext_path.write YAML.dump({ ext_name => ext_obj })
+    gen_ext_path.write YAML.dump(ext_obj)
   end
   private :maybe_add_ext
 

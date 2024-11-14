@@ -357,7 +357,7 @@ class ArchDef
     return @extensions unless @extensions.nil?
 
     @extensions = []
-    @arch_def["extensions"].each_value do |ext_data|
+    @arch_def["extensions"].each do |ext_data|
       @extensions << Extension.new(ext_data, self)
     end
     @extensions

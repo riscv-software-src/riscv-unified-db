@@ -205,11 +205,8 @@ class Validator
       obj = validate_str(File.read(path.to_s), path:, type:, schema_path:)
 
       # check that the top key matches the filename
-      if [:inst, :csr].include?(type) && obj["name"] != File.basename(path, ".yaml").to_s
+      if [:inst, :csr, :ext].include?(type) && obj["name"] != File.basename(path, ".yaml").to_s
         raise ValidationError, "In #{path}, object name '#{obj.keys.first}' does not match filename '#{File.basename(path)}'"
-      end
-      if [:ext].include?(type) && obj.keys.first != File.basename(path, ".yaml").to_s
-        raise ValidationError, "In #{path}, top key '#{obj.keys.first}' does not match filename '#{File.basename(path)}'"
       end
       obj
     rescue Psych::SyntaxError => e

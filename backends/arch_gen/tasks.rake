@@ -47,13 +47,11 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
     inst_obj["__source"] = f
     inst_obj
   end
-  ext_hash = Dir.glob($root / "arch" / "ext" / "**" / "*.yaml").map do |f|
+  ext_ary = Dir.glob($root / "arch" / "ext" / "**" / "*.yaml").map do |f|
     ext_obj = YamlLoader.load(f, permitted_classes:[Date])
-    ext_name = ext_obj.keys[0]
-    ext_obj[ext_name]["name"] = ext_name
-    ext_obj[ext_name]["__source"] = f
-    [ext_name, ext_obj[ext_name]]
-  end.to_h
+    ext_obj["__source"] = f
+    ext_obj
+  end
   profile_class_hash = Dir.glob($root / "arch" / "profile_class" / "**" / "*.yaml").map do |f|
     profile_class_obj = YamlLoader.load(f, permitted_classes:[Date])
     profile_class_name = profile_class_obj.keys[0]
@@ -106,7 +104,7 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
   arch_def = {
     "type" => "unconfigured",
     "instructions" => inst_ary,
-    "extensions" => ext_hash,
+    "extensions" => ext_ary,
     "csrs" => csr_ary,
     "profile_classes" => profile_class_hash,
     "profile_releases" => profile_release_hash,
