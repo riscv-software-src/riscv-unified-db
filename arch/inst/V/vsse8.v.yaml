@@ -7,7 +7,7 @@ vsse8.v:
   definedBy: V
   assembly: nf, vm, xs2, xs1, vs3
   encoding:
-    match: ---010-----------000-----0100111
+    match: 000010-----------000-----0100111
     variables:
     - name: nf
       location: 31-29

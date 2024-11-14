@@ -7,7 +7,7 @@ vle16.v:
   definedBy: V
   assembly: nf, vm, xs1, vd
   encoding:
-    match: ---000-00000-----101-----0000111
+    match: 000000-00000-----101-----0000111
     variables:
     - name: nf
       location: 31-29

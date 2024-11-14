@@ -7,7 +7,7 @@ vluxei8.v:
   definedBy: V
   assembly: nf, vm, vs2, xs1, vd
   encoding:
-    match: ---001-----------000-----0000111
+    match: 000001-----------000-----0000111
     variables:
     - name: nf
       location: 31-29
