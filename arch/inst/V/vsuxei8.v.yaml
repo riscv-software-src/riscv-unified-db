@@ -5,7 +5,7 @@ vsuxei8.v:
   description: |
       No description available.
   definedBy: V
-  assembly: nf, vm, vs2, xs1, vs3
+  assembly: vm, vs2, xs1, vs3
   encoding:
     match: 000001-----------000-----0100111
     variables:

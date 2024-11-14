@@ -5,7 +5,7 @@ vlse16.v:
   description: |
       No description available.
   definedBy: V
-  assembly: nf, vm, xs2, xs1, vd
+  assembly: vm, xs2, xs1, vd
   encoding:
     match: 000010-----------101-----0000111
     variables:

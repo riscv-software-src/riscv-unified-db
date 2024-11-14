@@ -5,7 +5,7 @@ vle64ff.v:
   description: |
       No description available.
   definedBy: V
-  assembly: nf, vm, xs1, vd
+  assembly: vm, xs1, vd
   encoding:
     match: 000000-10000-----111-----0000111
     variables:
