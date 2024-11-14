@@ -1046,9 +1046,9 @@ class ArchDef
   def unconfigured_data
     {
       "type" => "partially configured",
-      "instructions" => instructions.map { |i| [i.name, i.data] }.to_h,
-      "extensions" => extensions.map.map { |e| [e.name, e.data] }.to_h,
-      "csrs" => csrs.map { |c| [c.name, c.data] }.to_h,
+      "instructions" => instructions.map(&:data),
+      "extensions" => extensions.map.map(&:data),
+      "csrs" => csrs.map(&:data),
       "profile_classes" => profile_classes.map { |f| [f.name, f.data] }.to_h,
       "profile_releases" => profile_releases.map { |p| [p.name, p.data] }.to_h,
       "manuals" => manuals.map { |m| [m.name, m.data] }.to_h,
