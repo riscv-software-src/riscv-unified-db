@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "etc"
-
+require "open3"
 $root = Pathname.new(__FILE__).dirname.realpath
 $lib = $root / "lib"
 
@@ -275,6 +275,15 @@ namespace :gen do
 end
 
 desc <<~DESC
+  Check all encodings against binutils
+
+  Part of the regression test.
+DESC
+task :encoding_validate do
+  sh ".home/.venv/bin/python ext/binutils-gdb/encoding.py"
+end
+
+desc <<~DESC
   Run the regression tests
 
   These tests must pass before a commit will be allowed in the main branch on GitHub
@@ -283,6 +292,7 @@ task :regress do
   Rake::Task["idl_test"].invoke
   Rake::Task["lib_test"].invoke
   Rake::Task["validate"].invoke
+  Rake::Task["encoding_validate"].invoke 
   ENV["MANUAL_NAME"] = "isa"
   ENV["VERSIONS"] = "all"
   Rake::Task["gen:html_manual"].invoke
