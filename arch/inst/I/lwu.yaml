@@ -10,7 +10,7 @@ lwu:
   base: 64
   assembly: xd, imm(rs1)
   encoding:
-    match: -----------------110-----0000111
+    match: -----------------110-----0000011
     variables:
     - name: imm
       location: 31-20
