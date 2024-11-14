@@ -53,8 +53,8 @@ class ArchGen
       ext_name = ext["name"]
       gen_ext_path = @gen_dir / "arch" / "ext" / "#{ext_name}.yaml"
       ext_yaml = YAML.load_file gen_ext_path.to_s
-      unless ext_yaml[ext_name]["params"].nil?
-        ext_yaml[ext_name]["params"].each do |param_name, param_data|
+      unless ext_yaml["params"].nil?
+        ext_yaml["params"].each do |param_name, param_data|
           schema["properties"]["params"]["required"] << param_name
           schema["properties"]["params"]["properties"][param_name] = {
             "description" => param_data["description"]
@@ -147,8 +147,8 @@ class ArchGen
       ext_name = ext["name"]
       gen_ext_path = @gen_dir / "arch" / "ext" / "#{ext_name}.yaml"
       ext_yaml = YAML.load_file gen_ext_path.to_s
-      unless ext_yaml[ext_name]["params"].nil?
-        ext_yaml[ext_name]["params"].each do |param_name, param_data|
+      unless ext_yaml["params"].nil?
+        ext_yaml["params"].each do |param_name, param_data|
           next unless param_data.key?("extra_validation")
           begin
             eval_context.class_eval param_data["extra_validation"]

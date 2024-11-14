@@ -5,7 +5,7 @@ kind: instruction
 name: c.j
 long_name: Jump
 description: |
-  C.J performs an unconditional control transfer. The offset is sign-extended and added to the pc to form the jump target address. C.J can therefore target a ±2 KiB range.
+  C.J performs an unconditional control transfer. The offset is sign-extended and added to the pc to form the jump target address. C.J can therefore target a &pm;2 KiB range.
   It expands to `jal` `x0, offset`.
 definedBy:
   anyOf:

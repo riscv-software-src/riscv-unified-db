@@ -34,6 +34,7 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
   ] + Dir.glob($root / "arch" / "**" / "*.yaml")
 ) do |t|
   csr_ary = Dir.glob($root / "arch" / "csr" / "**" / "*.yaml").map do |f|
+puts f
     csr_obj = YamlLoader.load(f, permitted_classes:[Date])
     csr_obj["fields"].map do |k, v|
       v["name"] = k
