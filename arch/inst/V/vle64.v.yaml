@@ -5,12 +5,10 @@ vle64.v:
   description: |
       No description available.
   definedBy: V
-  assembly: nf, vm, xs1, vd
+  assembly: vm, xs1, vd
   encoding:
-    match: ---000-00000-----111-----0000111
+    match: 000000-00000-----111-----0000111
     variables:
-    - name: nf
-      location: 31-29
     - name: vm
       location: 25-25
     - name: rs1

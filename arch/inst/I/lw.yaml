@@ -9,7 +9,7 @@ lw:
   definedBy: I
   assembly: xd, imm(rs1)
   encoding:
-    match: -----------------010-----0000111
+    match: -----------------010-----0000011
     variables:
     - name: imm
       location: 31-20

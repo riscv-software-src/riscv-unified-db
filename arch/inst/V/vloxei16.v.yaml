@@ -5,12 +5,10 @@ vloxei16.v:
   description: |
       No description available.
   definedBy: V
-  assembly: nf, vm, vs2, xs1, vd
+  assembly: vm, vs2, xs1, vd
   encoding:
-    match: ---011-----------101-----0000111
+    match: 000011-----------101-----0000111
     variables:
-    - name: nf
-      location: 31-29
     - name: vm
       location: 25-25
     - name: vs2

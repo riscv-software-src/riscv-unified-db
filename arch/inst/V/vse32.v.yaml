@@ -5,12 +5,10 @@ vse32.v:
   description: |
       No description available.
   definedBy: V
-  assembly: nf, vm, xs1, vs3
+  assembly: vm, xs1, vs3
   encoding:
-    match: ---000-00000-----110-----0100111
+    match: 000000-00000-----110-----0100111
     variables:
-    - name: nf
-      location: 31-29
     - name: vm
       location: 25-25
     - name: rs1
