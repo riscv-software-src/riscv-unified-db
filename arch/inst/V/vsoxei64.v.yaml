@@ -5,12 +5,10 @@ vsoxei64.v:
   description: |
       No description available.
   definedBy: V
-  assembly: nf, vm, vs2, xs1, vs3
+  assembly: vm, vs2, xs1, vs3
   encoding:
-    match: ---011-----------111-----0100111
+    match: 000011-----------111-----0100111
     variables:
-    - name: nf
-      location: 31-29
     - name: vm
       location: 25-25
     - name: vs2
