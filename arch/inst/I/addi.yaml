@@ -11,7 +11,7 @@ encoding:
   match: -----------------000-----0010011
   variables:
   - name: imm
-    $inherits: ../../common/inst_variable_types.yaml#/itype_imm
+    $inherits: common/inst_variable_types.yaml#/itype_imm
   - name: rs1
     location: 19-15
   - name: rd

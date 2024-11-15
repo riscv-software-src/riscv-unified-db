@@ -4,7 +4,7 @@
 
 
 
-$schema: "csr_schema.json#"
+$schema: csr_schema.json#
 kind: csr
 name: mhpmcounter10
 long_name: Machine Hardware Performance Counter 10

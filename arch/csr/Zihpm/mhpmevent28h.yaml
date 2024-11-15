@@ -4,7 +4,7 @@
 
 
 
-$schema: "csr_schema.json#"
+$schema: csr_schema.json#
 kind: csr
 name: mhpmevent28h
 long_name: Machine Hardware Performance Counter 28 Control, High half

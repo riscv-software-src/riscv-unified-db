@@ -124,7 +124,10 @@
       }
     },
     "certificate_models": {
-      "type": "object"
+      "type": "array",
+      "items": {
+        "$ref": "cert_model_schema.json#"
+      }
     }
   },
   "additionalProperties": false

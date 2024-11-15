@@ -3,7 +3,7 @@
 # WARNING: This file is auto-generated from arch/csr/Zicntr/mcountinhibit.layout
 
 
-$schema: "csr_schema.json#"
+$schema: csr_schema.json#
 kind: csr
 name: mcountinhibit
 long_name: Machine Counter Inhibit

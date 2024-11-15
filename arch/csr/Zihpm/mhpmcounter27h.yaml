@@ -4,7 +4,7 @@
 
 
 
-$schema: "csr_schema.json#"
+$schema: csr_schema.json#
 kind: csr
 name: mhpmcounter27h
 long_name: Machine Hardware Performance Counter 27, Upper half

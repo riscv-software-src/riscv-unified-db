@@ -720,7 +720,7 @@ class ArchDef
     return @cert_classes unless @cert_classes.nil?
 
     @cert_classes = []
-    @arch_def["certificate_classes"].each_value do |cc_data|
+    @arch_def["certificate_classes"].each do |cc_data|
       @cert_classes << CertClass.new(cc_data, self)
     end
     @cert_classes
@@ -745,7 +745,7 @@ class ArchDef
     return @cert_models unless @cert_models.nil?
 
     @cert_models = []
-    @arch_def["certificate_models"].each_value do |cm_data|
+    @arch_def["certificate_models"].each do |cm_data|
       @cert_models << CertModel.new(cm_data, self)
     end
     @cert_models
@@ -1053,7 +1053,7 @@ class ArchDef
       "profile_releases" => profile_releases.map { |p| [p.name, p.data] }.to_h,
       "manuals" => manuals.map { |m| [m.name, m.data] }.to_h,
       "certificate_classes" => cert_classes.map(&:data),
-      "certificate_models" => cert_models.map { |c| [c.name, c.data] }.to_h
+      "certificate_models" => cert_models.map(&:data)
     }
   end
 

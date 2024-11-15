@@ -71,13 +71,11 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
     cert_class_obj["__source"] = f
     cert_class_obj
   end
-  cert_model_hash = Dir.glob($root / "arch" / "certificate_model" / "**" / "*.yaml").map do |f|
+  cert_model_ary = Dir.glob($root / "arch" / "certificate_model" / "**" / "*.yaml").map do |f|
     cert_model_obj = YamlLoader.load(f, permitted_classes:[Date])
-    cert_model_name = cert_model_obj.keys[0]
-    cert_model_obj[cert_model_name]["name"] = cert_model_name
-    cert_model_obj[cert_model_name]["__source"] = f
-    [cert_model_name, cert_model_obj[cert_model_name]]
-  end.to_h
+    cert_model_obj["__source"] = f
+    cert_model_obj
+  end
   manual_hash = {}
   Dir.glob($root / "arch" / "manual" / "**" / "contents.yaml").map do |f|
     manual_version = YamlLoader.load(f, permitted_classes:[Date])
@@ -107,7 +105,7 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
     "profile_classes" => profile_class_hash,
     "profile_releases" => profile_release_hash,
     "certificate_classes" => cert_class_ary,
-    "certificate_models" => cert_model_hash,
+    "certificate_models" => cert_model_ary,
     "manuals" => manual_hash
   }
 
