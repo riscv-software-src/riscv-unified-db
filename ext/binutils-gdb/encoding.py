@@ -132,19 +132,23 @@ def parse_instruction_files(instruction_files):
 
     return instructions
 
-def match_mask_to_encoding(match, mask):
+def match_mask_to_encoding(match, mask, is_compressed=False):
     """
     Converts MATCH and MASK values into a binary encoding string with '0', '1', and '-'.
 
     Args:
         match (int): The MATCH_* integer value.
         mask (int): The MASK_* integer value.
+        is_compressed (bool): Whether this is a compressed (16-bit) instruction
 
     Returns:
-        encoding_str (str): A 32-character string representing the encoding.
+        encoding_str (str): A 16 or 32-character string representing the encoding.
     """
     encoding = []
-    for bit in range(31, -1, -1):  # From bit 31 to bit 0
+    # Use 15 for 16-bit instructions, 31 for 32-bit instructions
+    max_bit = 15 if is_compressed else 31
+    
+    for bit in range(max_bit, -1, -1):  # From max_bit to bit 0
         mask_bit = (mask >> bit) & 1
         if mask_bit:
             match_bit = (match >> bit) & 1
@@ -157,35 +161,28 @@ def match_mask_to_encoding(match, mask):
 def format_encoding(encoding_str):
     """
     Formats the encoding string by grouping bits for readability.
-
-    Desired format:
-    match: 0000000----------000-----0110011
-
-    Which corresponds to:
-    - bits 31-25: 7 bits
-    - bits 24-15: 10 bits
-    - bits 14-12: 3 bits
-    - bits 11-7: 5 bits
-    - bits 6-0: 7 bits
+    Handles both 32-bit and 16-bit instructions.
 
     Args:
-        encoding_str (str): The 32-character encoding string.
+        encoding_str (str): The encoding string.
 
     Returns:
         formatted_str (str): The formatted encoding string with separators.
     """
-    if len(encoding_str) != 32:
-        print("Error: Encoding string is not 32 bits long.")
-        return encoding_str  # Return as is
-
-    group1 = encoding_str[0:7]    # bits 31-25
-    group2 = encoding_str[7:17]   # bits 24-15
-    group3 = encoding_str[17:20]  # bits 14-12
-    group4 = encoding_str[20:25]  # bits 11-7
-    group5 = encoding_str[25:32]  # bits 6-0
-
-    formatted_str = f"{group1}{group2}{group3}{group4}{group5}"
-    return formatted_str
+    if len(encoding_str) == 16:  # Compressed instruction
+        # Compressed instruction format (16 bits)
+        # Typical format is: func3(3) | imm/register fields | op(2)
+        return encoding_str  # Return as-is for compressed instructions
+    elif len(encoding_str) == 32:  # Standard instruction
+        group1 = encoding_str[0:7]    # bits 31-25
+        group2 = encoding_str[7:17]   # bits 24-15
+        group3 = encoding_str[17:20]  # bits 14-12
+        group4 = encoding_str[20:25]  # bits 11-7
+        group5 = encoding_str[25:32]  # bits 6-0
+        return f"{group1}{group2}{group3}{group4}{group5}"
+    else:
+        print(f"Error: Unexpected encoding string length: {len(encoding_str)}")
+        return encoding_str 
 
 def get_instruction_yaml_files(directory_path):
     """
@@ -308,12 +305,15 @@ def main():
 
         for d in defs:
             try:
+                # Check if it's a compressed instruction
+                is_compressed = name.startswith('c.') or 'CLASS_C' in d['class']
+                
                 # Evaluate MATCH expression
                 match_val = evaluate_expression(d['match_expr'], defines)
                 # Evaluate MASK expression
                 mask_val = evaluate_expression(d['mask_expr'], defines)
-                # Generate the encoding string
-                encoding_str = match_mask_to_encoding(match_val, mask_val)
+                # Generate the encoding string with compression flag
+                encoding_str = match_mask_to_encoding(match_val, mask_val, is_compressed)
                 # Format the encoding string
                 formatted_encoding = format_encoding(encoding_str)
                 # Collect successful encodings
@@ -322,17 +322,16 @@ def main():
                 # Skip this definition if evaluation fails
                 continue
 
+
         if success_encodings:
             for class_, encoding in success_encodings:
-                if success_encodings:
-                    for class_, encoding in success_encodings:
-                        # Simulate a mismatch by modifying the encoding
-                        if True:  # Always trigger the mismatch condition
-                            mismatches_found = True
-                            print(f"Error: Encoding mismatch for instruction '{name}' in YAML file '{yaml_file_path}'.")
-                            print(f"  YAML match     : {yaml_encoding}")
-                            print(f"  Generated match: {encoding}\n")
-                            sys.exit(1)  # Exit immediately on first mismatch
+                # Actually compare the encodings
+                if yaml_encoding.replace(" ", "") != encoding.replace(" ", ""):
+                    mismatches_found = True
+                    print(f"Error: Encoding mismatch for instruction '{name}' in YAML file '{yaml_file_path}'.")
+                    print(f"  YAML match     : {yaml_encoding}")
+                    print(f"  Generated match: {encoding}\n")
+                    sys.exit(1)  # Exit immediately on first mismatch
         else:
             # No valid definitions could be processed for this instruction
             print(f"Error: Could not evaluate any MATCH/MASK expressions for instruction '{name}' in YAML file '{yaml_file_path}'.\n")
