@@ -34,7 +34,6 @@ file "#{$root}/.stamps/arch-gen.stamp" => (
   ] + Dir.glob($root / "arch" / "**" / "*.yaml")
 ) do |t|
   csr_ary = Dir.glob($root / "arch" / "csr" / "**" / "*.yaml").map do |f|
-puts f
     csr_obj = YamlLoader.load(f, permitted_classes:[Date])
     csr_obj["fields"].map do |k, v|
       v["name"] = k
@@ -67,13 +66,11 @@ puts f
     profile_release_obj[profile_release_name]["__source"] = f
     [profile_release_name, profile_release_obj[profile_release_name]]
   end.to_h
-  cert_class_hash = Dir.glob($root / "arch" / "certificate_class" / "**" / "*.yaml").map do |f|
+  cert_class_ary = Dir.glob($root / "arch" / "certificate_class" / "**" / "*.yaml").map do |f|
     cert_class_obj = YamlLoader.load(f, permitted_classes:[Date])
-    cert_class_name = cert_class_obj.keys[0]
-    cert_class_obj[cert_class_name]["name"] = cert_class_name
-    cert_class_obj[cert_class_name]["__source"] = f
-    [cert_class_name, cert_class_obj[cert_class_name]]
-  end.to_h
+    cert_class_obj["__source"] = f
+    cert_class_obj
+  end
   cert_model_hash = Dir.glob($root / "arch" / "certificate_model" / "**" / "*.yaml").map do |f|
     cert_model_obj = YamlLoader.load(f, permitted_classes:[Date])
     cert_model_name = cert_model_obj.keys[0]
@@ -109,7 +106,7 @@ puts f
     "csrs" => csr_ary,
     "profile_classes" => profile_class_hash,
     "profile_releases" => profile_release_hash,
-    "certificate_classes" => cert_class_hash,
+    "certificate_classes" => cert_class_ary,
     "certificate_models" => cert_model_hash,
     "manuals" => manual_hash
   }

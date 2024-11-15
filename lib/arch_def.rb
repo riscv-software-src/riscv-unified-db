@@ -1052,7 +1052,7 @@ class ArchDef
       "profile_classes" => profile_classes.map { |f| [f.name, f.data] }.to_h,
       "profile_releases" => profile_releases.map { |p| [p.name, p.data] }.to_h,
       "manuals" => manuals.map { |m| [m.name, m.data] }.to_h,
-      "certificate_classes" => cert_classes.map { |f| [f.name, f.data] }.to_h,
+      "certificate_classes" => cert_classes.map(&:data),
       "certificate_models" => cert_models.map { |c| [c.name, c.data] }.to_h
     }
   end

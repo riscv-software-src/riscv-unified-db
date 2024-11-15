@@ -118,7 +118,10 @@
       "type": "object"
     },
     "certificate_classes": {
-      "type": "object"
+      "type": "array",
+      "items": {
+        "$ref": "cert_class_schema.json#"
+      }
     },
     "certificate_models": {
       "type": "object"

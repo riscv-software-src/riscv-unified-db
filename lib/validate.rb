@@ -22,7 +22,8 @@ class Validator
     ext: $root / "schemas" / "ext_schema.json",
     csr: $root / "schemas" / "csr_schema.json",
     cfg_impl_ext: $root / "schemas" / "implemented_exts_schema.json",
-    manual_version: $root / "schemas" / "manual_version_schema.json"
+    manual_version: $root / "schemas" / "manual_version_schema.json",
+    cert_class: $root / "schemas" / "cert_class_schema.json"
   }.freeze
 
   # types of objects that can be validated
@@ -196,6 +197,8 @@ class Validator
         type = :csr
       when %r{.*arch/manual/.*/.*contents\.yaml$}
         type = :manual_version
+      when %r{.*arch/certificate_class/.*\.yaml$}
+        type = :cert_class
       else
         warn "Cannot determine type from YAML path '#{path}'; skipping"
         return
@@ -204,8 +207,8 @@ class Validator
     begin
       obj = validate_str(File.read(path.to_s), path:, type:, schema_path:)
 
-      # check that the top key matches the filename
-      if [:inst, :csr, :ext].include?(type) && obj["name"] != File.basename(path, ".yaml").to_s
+      # check that the name matches the filename
+      if [:inst, :csr, :ext, :cert_class].include?(type) && obj["name"] != File.basename(path, ".yaml").to_s
         raise ValidationError, "In #{path}, object name '#{obj.keys.first}' does not match filename '#{File.basename(path)}'"
       end
       obj
