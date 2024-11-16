@@ -15,7 +15,7 @@
     },
     "name": {
       "type": "string",
-      "pattern": "^[A-Z][a-zA-Z_]*[0-9]+$",
+      "pattern": "^[A-Z][a-zA-Z0-9_]*$",
       "description": "The short name of the model, used as a database key"
     },
     "long_name": {
@@ -31,11 +31,6 @@
         }
       },
       "description": "Reference to the class this model belongs to"
-    },
-    "model": {
-      "type": "integer",
-      "minimum": 0,
-      "description": "Model number"
     },
     "versions": {
       "type": "array",
