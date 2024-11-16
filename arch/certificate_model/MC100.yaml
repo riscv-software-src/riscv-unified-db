@@ -6,7 +6,6 @@ name: MC100
 long_name: Basic Microcontroller Certificate
 class:
   $ref: certificate_class/MC.yaml#
-model: 100
 
 # Semantic versions within the model
 versions: 
