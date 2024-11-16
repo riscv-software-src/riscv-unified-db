@@ -1,14 +1,15 @@
-MockCertificateClass:
-  name: MockCertificateClass
-  long_name: Mock Certificate Class Long Name
+# yaml-language-server: $schema=../../schemas/cert_class_schema.json
 
-  introduction: |
-    Here's the Mock Certificate Class introduction.
+$schema: cert_class_schema.json#
+kind: certificate class
+name: MockCertificateClass
+long_name: Mock Certificate Class Long Name
 
-  naming_scheme: |
-    Here's the Mock Certificate Class naming scheme.
+introduction: |
+  Here's the Mock Certificate Class introduction.
 
-  mandatory_priv_modes:
-  - M
+naming_scheme: |
+  Here's the Mock Certificate Class naming scheme.
 
-  description: Here's the Mock Certificate Class description.
+mandatory_priv_modes:
+- M

@@ -4,6 +4,11 @@
   "title": "Common patterns used by all schemas",
 
   "$defs": {
+    "__source": {
+      "type": "string",
+      "format": "uri-reference",
+      "description": "Path to the source file containing this object"
+    },
     "semantic_version": {
       "type": "string",
       "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
@@ -15,6 +20,29 @@
       ],
       "description": "Location of a field in a register"
     },
+    "revision_history_entry": {
+      "type": "object",
+      "properties": {
+        "revision": {
+          "$ref": "#/$defs/semantic_version",
+          "description": "Revision number"
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "description": "The date of the change"
+        },
+        "changes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of changes"
+        }
+      },
+      "required": ["date", "revision", "changes"],
+      "additionalProperties": false
+    },
     "spec_state": {
       "type": "string",
       "enum": [
@@ -24,6 +52,29 @@
         "ratification-ready",
         "ratified",
         "nonstandard-released"
+      ]
+    },
+    "extension_presence": {
+      "oneOf": [
+        {
+          "type": "string",
+          "enum": [
+            "mandatory",
+            "optional",
+            "prohibited"
+          ]
+        },
+        {
+          "type": "object",
+          "required": ["optional"],
+          "properties": {
+            "optional": {
+              "type": "string",
+              "enum": ["localized", "development", "expansion", "transitory"]
+            }
+          },
+          "additionalProperties": false
+        }
       ]
     },
     "date": {
@@ -161,6 +212,17 @@
         }
       },
       "additionalProperties": false
+    },
+    "parameter_constraint": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "$ref": "json-schema-draft-07.json#"
+        },
+        "when": {
+          "$ref": "#/$defs/when_condition"
+        }
+      }
     }
   }
 }

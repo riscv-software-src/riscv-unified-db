@@ -1,35 +1,38 @@
-MC:
-  name: MC
-  long_name: Microcontroller Certificate Class
+# yaml-language-server: $schema=../../schemas/cert_class_schema.json
 
-  introduction: |
-    This certification class specifies requirements for microcontrollers.
-    It targets microcontrollers running low-level software on an RTOS or bare-metal.
-    This CRD is not intended for the smallest possible microcontrollers but rather for applications
-    benefiting from a standardized microcontroller.
-    See the https://docs.google.com/document/d/133SZKc18tLsQcT1o6gEmBUkjwrtg2ow63me54RQ1jiY[RISC-V CRDs]
-    document for information relevant to all RISC-V CRDs.
+$schema: cert_class_schema.json#
+kind: certificate class
+name: MC
+long_name: Microcontroller Certificate Class
 
-  naming_scheme: |
-    The MC (M = Microcontroller, C = Certificate) has the following naming scheme (suffixes after MC
-    are optional but in the below order):
+introduction: |
+  This certification class specifies requirements for microcontrollers.
+  It targets microcontrollers running low-level software on an RTOS or bare-metal.
+  This CRD is not intended for the smallest possible microcontrollers but rather for applications
+  benefiting from a standardized microcontroller.
+  See the https://docs.google.com/document/d/133SZKc18tLsQcT1o6gEmBUkjwrtg2ow63me54RQ1jiY[RISC-V CRDs]
+  document for information relevant to all RISC-V CRDs.
 
-     MC<model>[v<version>]
+naming_scheme: |
+  The MC (M = Microcontroller, C = Certificate) has the following naming scheme (suffixes after MC
+  are optional but in the below order):
 
-    Where:
+    MC<model>[v<version>]
 
-    * Left & right square braces denote optional. 
-    * \<model> is a 3 digit integer. It is changed only when mandatory extensions are added to a CRD.
-    ** The one's digit is incremented when a small mandatory extension is added (e.g., Zicond)
-    ** The ten's digit is incremented when a medium mandatory extension is addded (e.g., PMP)
-    ** The hundreds's digit is incremented when a large mandatory extension is addded (e.g., V or H)
-    * \<version> is a semantic version (see semver.org) formatted as <major>[.<minor>.[patch]]. If \<version> is omitted, the reference applies equally to all versions. 
-    ** A <major> release indicates support for a new optional extension.
-    ** A <minor> release indicates one or more of the following changes to the certification tests associated with the CRD.
-    *** Fix test bug or increase test coverage
-    *** Add more allowed parameter values
-    *** Support new extension version
-    ** A <patch> release indicates just CRD specification changes without any difference in functional behavior
+  Where:
 
-  mandatory_priv_modes:
-  - M
+  * Left & right square braces denote optional. 
+  * \<model> is a 3 digit integer. It is changed only when mandatory extensions are added to a CRD.
+  ** The one's digit is incremented when a small mandatory extension is added (e.g., Zicond)
+  ** The ten's digit is incremented when a medium mandatory extension is addded (e.g., PMP)
+  ** The hundreds's digit is incremented when a large mandatory extension is addded (e.g., V or H)
+  * \<version> is a semantic version (see semver.org) formatted as <major>[.<minor>.[patch]]. If \<version> is omitted, the reference applies equally to all versions. 
+  ** A <major> release indicates support for a new optional extension.
+  ** A <minor> release indicates one or more of the following changes to the certification tests associated with the CRD.
+  *** Fix test bug or increase test coverage
+  *** Add more allowed parameter values
+  *** Support new extension version
+  ** A <patch> release indicates just CRD specification changes without any difference in functional behavior
+
+mandatory_priv_modes:
+- M

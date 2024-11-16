@@ -30,13 +30,26 @@ class YamlLoader
           raise DereferenceError, "JSON Path #{obj['$ref'].split('#')[1]} does not exist in #{filename}"
         end
 
-        ref
+        { "$ref" => obj["$ref"] } # ignore any other keys that might exist
       else
-        target_filename = File.realpath(File.join(filename.dirname, relative_path))
+        target_filename =
+          if File.exist?(File.join(filename.dirname, relative_path))
+            File.realpath(File.join(filename.dirname, relative_path))
+          elsif File.exist?(File.join($root, 'arch', relative_path))
+            File.join($root, 'arch', relative_path)
+          else
+            raise DereferenceError, "#{relative_path} cannot be found"
+          end
 
         obj_doc = YamlLoader.load(target_filename, yaml_opts)
-        obj_path = obj["$ref"].split("#")[1].split("/")[1..]
-        target_obj = obj_doc.dig(*obj_path)
+        file_path, obj_path = obj["$ref"].split("#")
+        target_obj =
+          if obj_path.nil?
+            obj_doc
+          else
+            obj_doc.dig(*(obj_path.split("/")[1..]))
+            
+          end
         raise "#{obj['$ref']} cannot be found" if target_obj.nil?
 
         ref = expand(target_filename, target_obj, yaml_opts)
@@ -44,7 +57,7 @@ class YamlLoader
           raise DereferenceError, "JSON Path #{obj['$ref'].split('#')[1]} does not exist in #{target_filename}"
         end
 
-        ref
+        { "$ref" => obj["$ref"] } # ignore any other keys that might exist
       end
     elsif obj.keys.include?("$inherits")
       # we handle the inherits key first so that any override will take priority
@@ -60,7 +73,14 @@ class YamlLoader
           if relative_path.empty?
             YAML.load_file(filename, **yaml_opts)
           else
-            target_filename = File.realpath(File.join(filename.dirname, relative_path))
+            target_filename =
+              if File.exist?(File.join(filename.dirname, relative_path))
+                File.realpath(File.join(filename.dirname, relative_path))
+              elsif File.exist?(File.join($root, 'arch', relative_path))
+                File.join($root, 'arch', relative_path)
+              else
+                raise DereferenceError, "#{relative_path} cannot be found"
+              end
 
             unless File.exist?(target_filename)
               raise DereferenceError, "While locating $inherits in #{filename}, #{target_filename} does not exist"

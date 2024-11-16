@@ -12,14 +12,15 @@ CERT_DOC_DIR = Pathname.new "#{$root}/backends/certificate_doc"
 Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
   cert_model_name = File.basename(f, ".yaml")
   cert_model_obj = YAML.load_file(f, permitted_classes: [Date])
-  raise "Ill-formed certificate model file #{f}: missing 'class' field" if cert_model_obj.dig(cert_model_name, 'class').nil?
+  cert_class_name = File.basename(cert_model_obj['class']['$ref'].split("#")[0], ".yaml")
+  raise "Ill-formed certificate model file #{f}: missing 'class' field" if cert_model_obj['class'].nil?
 
-  base = cert_model_obj[cert_model_name]["base"]
+  base = cert_model_obj["base"]
   raise "Missing certificate model base" if base.nil?
   
   file "#{$root}/gen/certificate_doc/adoc/#{cert_model_name}.adoc" => [
     "#{$root}/arch/certificate_model/#{cert_model_name}.yaml",
-    "#{$root}/arch/certificate_class/#{cert_model_obj[cert_model_name]['class']}.yaml",
+    "#{$root}/arch/certificate_class/#{cert_class_name}.yaml",
     "#{CERT_DOC_DIR}/templates/certificate.adoc.erb",
     __FILE__,
     "#{$root}/.stamps/arch-gen-_#{base}.stamp"

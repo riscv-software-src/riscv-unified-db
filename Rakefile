@@ -287,7 +287,7 @@ task :regress do
   ENV["VERSIONS"] = "all"
   Rake::Task["gen:html_manual"].invoke
   Rake::Task["gen:html"].invoke("generic_rv64")
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MockCertificateModel.pdf"].invoke
+  Rake::Task["#{$root}/gen/certificate_doc/pdf/MockCertificateModel100.pdf"].invoke
   Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100.pdf"].invoke
   Rake::Task["#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"].invoke
   Rake::Task["#{$root}/gen/profile_doc/pdf/RVA20.pdf"].invoke

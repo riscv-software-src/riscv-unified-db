@@ -70,19 +70,15 @@
       }
     },
     "extensions": {
-      "type": "object",
-      "patternProperties": {
-        ".*": {
-          "$ref": "ext_schema.json#/$defs/ext_data"
-        }
+      "type": "array",
+      "items": {
+        "$ref": "ext_schema.json#/$defs/ext_data"
       }
     },
     "csrs": {
-      "type": "object",
-      "patternProperties": {
-        ".*": {
-          "$ref": "csr_schema.json#/$defs/csr_register"
-        }
+      "type": "array",
+      "items": {
+        "$ref": "csr_schema.json#/$defs/csr_register"
       }
     },
     "implemented_csrs": {
@@ -95,12 +91,9 @@
       }
     },
     "instructions": {
-      "type": "object",
-      "patternProperties": {
-        ".*": {
-          "$ref": "inst_schema.json#/$defs/inst_data"
-        },
-        "additionalProperties": false
+      "type": "array",
+      "items": {
+        "$ref": "inst_schema.json#"
       }
     },
     "implemented_instructions": {
@@ -125,10 +118,16 @@
       "type": "object"
     },
     "certificate_classes": {
-      "type": "object"
+      "type": "array",
+      "items": {
+        "$ref": "cert_class_schema.json#"
+      }
     },
     "certificate_models": {
-      "type": "object"
+      "type": "array",
+      "items": {
+        "$ref": "cert_model_schema.json#"
+      }
     }
   },
   "additionalProperties": false

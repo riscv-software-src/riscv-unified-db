@@ -1,10 +1,12 @@
 # yaml-language-server: $schema=../../schemas/ext_schema.json
 
-Zicsr:
-  long_name: Control and status registers
-  description: Control and status registers
-  type: unprivileged
-  versions:
-  - version: "2.0.0"
-    state: ratified
-    ratification_date: null
+$schema: "ext_schema.json#"
+kind: extension
+name: Zicsr
+long_name: Control and status registers
+description: Control and status registers
+type: unprivileged
+versions:
+- version: "2.0.0"
+  state: ratified
+  ratification_date: null
