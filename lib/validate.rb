@@ -22,7 +22,8 @@ class Validator
     ext: $root / "schemas" / "ext_schema.json",
     csr: $root / "schemas" / "csr_schema.json",
     cfg_impl_ext: $root / "schemas" / "implemented_exts_schema.json",
-    manual_version: $root / "schemas" / "manual_version_schema.json"
+    manual_version: $root / "schemas" / "manual_version_schema.json",
+    cert_class: $root / "schemas" / "cert_class_schema.json"
   }.freeze
 
   # types of objects that can be validated
@@ -58,9 +59,10 @@ class Validator
     # create a new SchemaValidationError
     #
     # @param result [JsonSchemer::Result] JsonSchemer result
-    def initialize(result)
+    def initialize(path, result)
+      msg = "While validating #{path}:\n\n"
       nerrors = result.count
-      msg = +"#{nerrors} error(s) during validations\n\n"
+      msg << "#{nerrors} error(s) during validations\n\n"
       result.to_a.each do |r|
         msg <<
           if r["type"] == "required" && !r.dig("details", "missing_keys").nil?
@@ -131,7 +133,7 @@ class Validator
   # @param type [Symbol] Type of the object (One of TYPES)
   # @raise [SchemaValidationError] if the str is not valid against the type schema
   # @see TYPES
-  def validate_str(str, type: nil, schema_path: nil)
+  def validate_str(str, type: nil, schema_path: nil, path: nil)
     raise "Invalid type #{type}" unless TYPES.any?(type) || !schema_path.nil?
 
     begin
@@ -162,7 +164,7 @@ class Validator
         )
       end
 
-    raise SchemaValidationError, schema.validate(jsonified_obj) unless schema.valid?(jsonified_obj)
+    raise SchemaValidationError.new(path, schema.validate(jsonified_obj)) unless schema.valid?(jsonified_obj)
 
     jsonified_obj
   end
@@ -195,17 +197,19 @@ class Validator
         type = :csr
       when %r{.*arch/manual/.*/.*contents\.yaml$}
         type = :manual_version
+      when %r{.*arch/certificate_class/.*\.yaml$}
+        type = :cert_class
       else
         warn "Cannot determine type from YAML path '#{path}'; skipping"
         return
       end
     end
     begin
-      obj = validate_str(File.read(path.to_s), type:, schema_path:)
+      obj = validate_str(File.read(path.to_s), path:, type:, schema_path:)
 
-      # check that the top key matches the filename
-      if [:inst, :ext, :csr].include?(type) && obj.keys.first != File.basename(path, ".yaml").to_s
-        raise ValidationError, "In #{path}, top key '#{obj.keys.first}' does not match filename '#{File.basename(path)}'"
+      # check that the name matches the filename
+      if [:inst, :csr, :ext, :cert_class].include?(type) && obj["name"] != File.basename(path, ".yaml").to_s
+        raise ValidationError, "In #{path}, object name '#{obj.keys.first}' does not match filename '#{File.basename(path)}'"
       end
       obj
     rescue Psych::SyntaxError => e
@@ -262,9 +266,7 @@ class Validator
     raise "Invalid instruction definition: #{obj}" unless obj.is_a?(Hash)
 
     inst_name = path.basename('.yaml').to_s
-    raise "Invalid instruction definition: #{inst_name} #{obj}" unless obj.key?(inst_name)
-
-    obj = obj[inst_name]
+    raise "Invalid instruction definition: #{inst_name} #{obj}" unless obj["name"] == inst_name
 
     if (obj["encoding"]["RV32"].nil?)
       validate_instruction_encoding(inst_name, obj["encoding"])

@@ -17,8 +17,48 @@ class YamlLoader
     new_obj =
     if obj.keys.include?("$ref")
       # according JSON Reference, all keys except $ref are ignored
-      ref_target = obj["$ref"]
-      self.get_ref_target_obj(filename, ref_target, yaml_opts)
+      relative_path = obj["$ref"].split("#")[0]
+      if relative_path.empty?
+        # this is a reference in the same document
+        obj_doc = YAML.load_file(filename, **yaml_opts)
+        obj_path = obj["$ref"].split("#")[1].split("/")[1..]
+        target_obj = obj_doc.dig(*obj_path)
+        raise DereferenceError, "#{obj['$ref']} cannot be found" if target_obj.nil?
+
+        ref = expand(filename, target_obj, yaml_opts)
+        if ref.nil?
+          raise DereferenceError, "JSON Path #{obj['$ref'].split('#')[1]} does not exist in #{filename}"
+        end
+
+        { "$ref" => obj["$ref"] } # ignore any other keys that might exist
+      else
+        target_filename =
+          if File.exist?(File.join(filename.dirname, relative_path))
+            File.realpath(File.join(filename.dirname, relative_path))
+          elsif File.exist?(File.join($root, 'arch', relative_path))
+            File.join($root, 'arch', relative_path)
+          else
+            raise DereferenceError, "#{relative_path} cannot be found"
+          end
+
+        obj_doc = YamlLoader.load(target_filename, yaml_opts)
+        file_path, obj_path = obj["$ref"].split("#")
+        target_obj =
+          if obj_path.nil?
+            obj_doc
+          else
+            obj_doc.dig(*(obj_path.split("/")[1..]))
+            
+          end
+        raise "#{obj['$ref']} cannot be found" if target_obj.nil?
+
+        ref = expand(target_filename, target_obj, yaml_opts)
+        if ref.nil?
+          raise DereferenceError, "JSON Path #{obj['$ref'].split('#')[1]} does not exist in #{target_filename}"
+        end
+
+        { "$ref" => obj["$ref"] } # ignore any other keys that might exist
+      end
     elsif obj.keys.include?("$inherits")
       # we handle the inherits key first so that any override will take priority
       inherits = obj["$inherits"]
@@ -30,8 +70,24 @@ class YamlLoader
       new_obj = {}
 
       inherits_targets.each do |inherits_target|
-        target_obj = get_inherits_target_obj(filename, inherits_target, yaml_opts)
+        relative_path = inherits_target.split("#")[0]
+        target_obj =
+          if relative_path.empty?
+            YAML.load_file(filename, **yaml_opts)
+          else
+            target_filename =
+              if File.exist?(File.join(filename.dirname, relative_path))
+                File.realpath(File.join(filename.dirname, relative_path))
+              elsif File.exist?(File.join($root, 'arch', relative_path))
+                File.join($root, 'arch', relative_path)
+              else
+                raise DereferenceError, "#{relative_path} cannot be found"
+              end
 
+            unless File.exist?(target_filename)
+              raise DereferenceError, "While locating $inherits in #{filename}, #{target_filename} does not exist"
+            end
+            
         raise ArgumentError, "$inherits: \"#{inherits_target}\" in file #{filename} references a #{target_obj.class} but needs to reference a Hash" unless target_obj.is_a?(Hash)
 
         target_obj = expand(filename, target_obj, yaml_opts)
@@ -126,41 +182,6 @@ class YamlLoader
 
       ref
     end
-  end
-
-  # @param filename [String,Pathname] path to the YAML file
-  # @param inherits_target [String]
-  # @param yaml_opts [Hash] options to pass to YAML.load_file
-  # @return [Object]
-  def self.get_inherits_target_obj(filename, inherits_target, yaml_opts)
-    relative_path = inherits_target.split("#")[0]
-    target_obj =
-      if relative_path.empty?
-        YAML.load_file(filename, **yaml_opts)
-      else
-        target_filename = File.realpath(File.join(filename.dirname, relative_path))
-
-        unless File.exist?(target_filename)
-          raise DereferenceError, "While locating $inherits in #{filename}, #{target_filename} does not exist"
-        end
-
-        YamlLoader.load(target_filename, yaml_opts)
-      end
-
-    inherits_target_suffix = inherits_target.split("#/")[1]
-    inherits_target_path = inherits_target_suffix.split("/")
-    begin
-      target_obj = target_obj.dig(*inherits_target_path) 
-    rescue TypeError => e
-      if e.message == "no implicit conversion of String into Integer"
-        warn "$inherits: \"#{inherits_target}\" found in file #{filename} references an Array but needs to reference a Hash"
-      end
-      raise e
-    end
-
-    raise DereferenceError, "JSON Path #{inherits_target_suffix} in file #{filename} does not exist in #{relative_path}" if target_obj.nil?
-
-    target_obj
   end
 
   # load a YAML file and expand any $ref/$inherits references

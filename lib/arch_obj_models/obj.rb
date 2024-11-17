@@ -182,7 +182,12 @@ class ArchDefObject
     path_idx = 0
     Psych.parse_stream(File.read(yaml_filename), filename: yaml_filename) do |doc|
       mapping = doc.children[0]
-      data = mapping.children[1]
+      data =
+        if mapping.children.size == 2
+          mapping.children[1]
+        else
+          mapping
+        end
       while path_idx < path.size
         idx = 0
         while idx < data.children.size

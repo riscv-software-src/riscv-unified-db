@@ -1,45 +1,47 @@
 # yaml-language-server: $schema=../../../schemas/inst_schema.json
 
-xori:
-  long_name: Exclusive Or immediate
-  description: Exclusive or an immediate to the value in rs1, and store the result in rd
-  definedBy: I
-  assembly: xd, xs1, imm
-  encoding:
-    match: -----------------100-----0010011
-    variables:
-    - name: imm
-      location: 31-20
-    - name: rs1
-      location: 19-15
-    - name: rd
-      location: 11-7
-  access:
-    s: always
-    u: always
-    vs: always
-    vu: always
-  data_independent_timing: true
-  operation(): X[rd] = X[rs1] ^ imm;
+$schema: "inst_schema.json#"
+kind: instruction
+name: xori
+long_name: Exclusive Or immediate
+description: Exclusive or an immediate to the value in rs1, and store the result in rd
+definedBy: I
+assembly: xd, xs1, imm
+encoding:
+  match: -----------------100-----0010011
+  variables:
+  - name: imm
+    location: 31-20
+  - name: rs1
+    location: 19-15
+  - name: rd
+    location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: true
+operation(): X[rd] = X[rs1] ^ imm;
 
 
 
-  sail(): |
-    {
-      let rs1_val = X(rs1);
-      let immext : xlenbits = sign_extend(imm);
-      let result : xlenbits = match op {
-        RISCV_ADDI  => rs1_val + immext,
-        RISCV_SLTI  => zero_extend(bool_to_bits(rs1_val <_s immext)),
-        RISCV_SLTIU => zero_extend(bool_to_bits(rs1_val <_u immext)),
-        RISCV_ANDI  => rs1_val & immext,
-        RISCV_ORI   => rs1_val | immext,
-        RISCV_XORI  => rs1_val ^ immext
-      };
-      X(rd) = result;
-      RETIRE_SUCCESS
-    }
-  
-  
+sail(): |
+  {
+    let rs1_val = X(rs1);
+    let immext : xlenbits = sign_extend(imm);
+    let result : xlenbits = match op {
+      RISCV_ADDI  => rs1_val + immext,
+      RISCV_SLTI  => zero_extend(bool_to_bits(rs1_val <_s immext)),
+      RISCV_SLTIU => zero_extend(bool_to_bits(rs1_val <_u immext)),
+      RISCV_ANDI  => rs1_val & immext,
+      RISCV_ORI   => rs1_val | immext,
+      RISCV_XORI  => rs1_val ^ immext
+    };
+    X(rd) = result;
+    RETIRE_SUCCESS
+  }
+
+
 
 
