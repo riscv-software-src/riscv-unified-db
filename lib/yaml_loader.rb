@@ -142,7 +142,7 @@ class YamlLoader
         obj[key] =
         if value.is_a?(String) && value.start_with?("$copy:")
           copy_target = value.delete_prefix("$copy:").lstrip
-          self.get_ref_target_obj(filename, copy_target, yaml_opts)
+          self.get_copy_target_obj(filename, copy_target, yaml_opts)
         else
           expand(filename, value, yaml_opts)
         end
@@ -162,21 +162,21 @@ class YamlLoader
   end
 
   # @param filename [String,Pathname] path to the YAML file
-  # @param ref_target [String]
+  # @param copy_target [String]
   # @param yaml_opts [Hash] options to pass to YAML.load_file
   # @return [Object]
-  def self.get_ref_target_obj(filename, ref_target, yaml_opts)
-    relative_path = ref_target.split("#")[0]
+  def self.get_copy_target_obj(filename, copy_target, yaml_opts)
+    relative_path = copy_target.split("#")[0]
     if relative_path.empty?
       # this is a reference in the same document
       obj_doc = YAML.load_file(filename, **yaml_opts)
-      obj_path = ref_target.split("#")[1].split("/")[1..]
+      obj_path = copy_target.split("#")[1].split("/")[1..]
       target_obj = obj_doc.dig(*obj_path)
-      raise DereferenceError, "$ref: #{obj_path} cannot be found in file #{filename}" if target_obj.nil?
+      raise DereferenceError, "$copy: #{obj_path} referenced to same file cannot be found in file #{filename}" if target_obj.nil?
 
       ref = expand(filename, target_obj, yaml_opts)
       if ref.nil?
-        raise DereferenceError, "JSON Path #{obj_path} does not exist in file #{filename}"
+        raise DereferenceError, "$copy: JSON Path #{obj_path} referenced to same file does not exist in file #{filename}"
       end
 
       ref
@@ -184,13 +184,13 @@ class YamlLoader
       target_filename = File.realpath(File.join(filename.dirname, relative_path))
 
       obj_doc = YamlLoader.load(target_filename, yaml_opts)
-      obj_path = ref_target.split("#")[1].split("/")[1..]
+      obj_path = copy_target.split("#")[1].split("/")[1..]
       target_obj = obj_doc.dig(*obj_path)
-      raise "$ref: #{obj_path} cannot be found in file #{target_filename}" if target_obj.nil?
+      raise DereferenceError, "$copy: #{obj_path} referenced from file #{filename} cannot be found in file #{target_filename}" if target_obj.nil?
 
       ref = expand(target_filename, target_obj, yaml_opts)
       if ref.nil?
-        raise DereferenceError, "JSON Path #{obj_path} does not exist in file #{target_filename}"
+        raise DereferenceError, "$copy: JSON Path #{obj_path} referenced from file #{filename} does not exist in file #{target_filename}"
       end
 
       ref

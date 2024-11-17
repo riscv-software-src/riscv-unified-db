@@ -2,7 +2,7 @@
 
 $schema: "csr_schema.json#"
 kind: csr
-name: mip>
+name: mip
 long_name: Machine Interrupt Pending
 address: 0x344
 priv_mode: M
