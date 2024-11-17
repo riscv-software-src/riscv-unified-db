@@ -63,8 +63,6 @@ class YamlLoader
       # we handle the inherits key first so that any override will take priority
       inherits = obj["$inherits"]
       raise ArgumentError, "Missing reference after $inherits (did you forget to put a relative reference in quotes?)" if inherits.nil?
-
-      # Create array of targets. If provided only one target as a string, convert it to an array of 1 element.
       inherits_targets = inherits.is_a?(String) ? [inherits] : inherits
 
       new_obj = {}
@@ -87,7 +85,22 @@ class YamlLoader
             unless File.exist?(target_filename)
               raise DereferenceError, "While locating $inherits in #{filename}, #{target_filename} does not exist"
             end
-            
+
+            YamlLoader.load(target_filename, yaml_opts)
+          end
+
+        inherits_target_suffix = inherits_target.split("#/")[1]
+        inherits_target_path = inherits_target_suffix.split("/")
+        begin
+          target_obj = target_obj.dig(*inherits_target_path) 
+        rescue TypeError => e
+          if e.message == "no implicit conversion of String into Integer"
+            warn "$inherits: \"#{inherits_target}\" found in file #{filename} references an Array but needs to reference a Hash"
+          end
+          raise e
+        end
+
+        raise DereferenceError, "JSON Path #{inherits_target_suffix} in file #{filename} does not exist in #{relative_path}" if target_obj.nil?
         raise ArgumentError, "$inherits: \"#{inherits_target}\" in file #{filename} references a #{target_obj.class} but needs to reference a Hash" unless target_obj.is_a?(Hash)
 
         target_obj = expand(filename, target_obj, yaml_opts)
