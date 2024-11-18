@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema": "http://json-schema.org/draft/2020-12/schema#",
 
   "$defs": {
     "param_data": {
@@ -25,7 +25,7 @@
           "description": "When a parameter is defined by multiple extensions, declare the other extensions here. The parameter *must* mean the same thing in all extensions."
         },
         "schema": {
-          "$ref": "json-schema-draft-07.json#"
+          "$ref": "json-schema-draft/2020-12.json#"
         },
         "when": {
           "$ref": "schema_defs.json#/$defs/when_condition"
@@ -200,7 +200,7 @@
                     "type": "object",
                     "properties": {
                       "schema": {
-                        "$ref": "json-schema-draft-07.json#",
+                        "$ref": "json-schema-draft/2020-12.json#",
                         "description": "Extra schema constraints for the parameter"
                       },
                       "extra_validation": {
