@@ -1,7 +1,8 @@
 FROM ubuntu:24.04 AS spython-base
 RUN export DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
-RUN apt-get install -y --no-install-recommends git
+RUN apt-get install -y --no-install-recommends git gh
+RUN apt-get install -y --no-install-recommends less
 RUN apt-get install -y --no-install-recommends python3
 RUN apt-get install -y --no-install-recommends python3.12-venv python3-pip
 RUN apt-get install -y --no-install-recommends build-essential
