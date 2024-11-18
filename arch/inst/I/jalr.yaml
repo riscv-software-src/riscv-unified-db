@@ -1,64 +1,66 @@
 # yaml-language-server: $schema=../../../schemas/inst_schema.json
 
-jalr:
-  long_name: Jump and link register
-  description: |
-    Jump to an address formed by adding rs1
-    to a signed offset, and store the return address in rd.
-  definedBy: I
-  assembly: xd, imm(rs1)
-  encoding:
-    match: -----------------000-----1100111
-    variables:
-    - name: imm
-      location: 31-20
-    - name: rs1
-      location: 19-15
-    - name: rd
-      location: 11-7
-  access:
-    s: always
-    u: always
-    vs: always
-    vu: always
-  operation(): |
-    XReg returnaddr;
-    returnaddr = $pc + 4;
+$schema: "inst_schema.json#"
+kind: instruction
+name: jalr
+long_name: Jump and link register
+description: |
+  Jump to an address formed by adding rs1
+  to a signed offset, and store the return address in rd.
+definedBy: I
+assembly: xd, imm(rs1)
+encoding:
+  match: -----------------000-----1100111
+  variables:
+  - name: imm
+    location: 31-20
+  - name: rs1
+    location: 19-15
+  - name: rd
+    location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  XReg returnaddr;
+  returnaddr = $pc + 4;
 
-    jump(X[rs1] + imm);
-    X[rd] = returnaddr;
+  jump(X[rs1] + imm);
+  X[rd] = returnaddr;
 
 
 
-  sail(): |
-    {
-    /* For the sequential model, the memory-model definition doesn't work directly
-     * if rs1 = rd.  We would effectively have to keep a regfile for reads and another for
-     * writes, and swap on instruction completion.  This could perhaps be optimized in
-     * some manner, but for now, we just keep a reordered definition to improve simulator
-     * performance.
-     */
-      let t : xlenbits = X(rs1) + sign_extend(imm);
-      /* Extensions get the first checks on the prospective target address. */
-      match ext_control_check_addr(t) {
-        Ext_ControlAddr_Error(e) => {
-          ext_handle_control_check_error(e);
+sail(): |
+  {
+  /* For the sequential model, the memory-model definition doesn't work directly
+   * if rs1 = rd.  We would effectively have to keep a regfile for reads and another for
+   * writes, and swap on instruction completion.  This could perhaps be optimized in
+   * some manner, but for now, we just keep a reordered definition to improve simulator
+   * performance.
+   */
+    let t : xlenbits = X(rs1) + sign_extend(imm);
+    /* Extensions get the first checks on the prospective target address. */
+    match ext_control_check_addr(t) {
+      Ext_ControlAddr_Error(e) => {
+        ext_handle_control_check_error(e);
+        RETIRE_FAIL
+      },
+      Ext_ControlAddr_OK(addr) => {
+        let target = [addr with 0 = bitzero];  /* clear addr[0] */
+        if bit_to_bool(target[1]) & not(extension("C")) then {
+          handle_mem_exception(target, E_Fetch_Addr_Align());
           RETIRE_FAIL
-        },
-        Ext_ControlAddr_OK(addr) => {
-          let target = [addr with 0 = bitzero];  /* clear addr[0] */
-          if bit_to_bool(target[1]) & not(extension("C")) then {
-            handle_mem_exception(target, E_Fetch_Addr_Align());
-            RETIRE_FAIL
-          } else {
-            X(rd) = get_next_pc();
-            set_next_pc(target);
-            RETIRE_SUCCESS
-          }
+        } else {
+          X(rd) = get_next_pc();
+          set_next_pc(target);
+          RETIRE_SUCCESS
         }
       }
     }
-  
-  
+  }
+
+
 
 

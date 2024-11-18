@@ -1,14 +1,16 @@
 # yaml-language-server: $schema=../../schemas/csr_schema.json
 
-hedelegh:
-  long_name: Hypervisor Exception Delegation High
-  address: 0x612
-  base: 32
-  priv_mode: S
-  length: 32
-  description: |
-    Controls exception delegation from HS-mode to VS-mode.
+$schema: "csr_schema.json#"
+kind: csr
+name: hedelegh
+long_name: Hypervisor Exception Delegation High
+address: 0x612
+base: 32
+priv_mode: S
+length: 32
+description: |
+  Controls exception delegation from HS-mode to VS-mode.
 
-    Alias of upper bits of `hedeleg`[63:32].
-  definedBy: H
-  fields: {}
+  Alias of upper bits of `hedeleg`[63:32].
+definedBy: H
+fields: {}

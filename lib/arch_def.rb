@@ -357,7 +357,7 @@ class ArchDef
     return @extensions unless @extensions.nil?
 
     @extensions = []
-    @arch_def["extensions"].each_value do |ext_data|
+    @arch_def["extensions"].each do |ext_data|
       @extensions << Extension.new(ext_data, self)
     end
     @extensions
@@ -517,7 +517,7 @@ class ArchDef
   def csrs
     return @csrs unless @csrs.nil?
 
-    @csrs = @arch_def["csrs"].map do |_csr_name, csr_data|
+    @csrs = @arch_def["csrs"].map do |csr_data|
       Csr.new(csr_data)
     end
   end
@@ -549,7 +549,7 @@ class ArchDef
   def instructions
     return @instructions unless @instructions.nil?
 
-    @instructions = @arch_def["instructions"].map do |_inst_name, inst_data|
+    @instructions = @arch_def["instructions"].map do |inst_data|
       Instruction.new(inst_data, self)
     end
 
@@ -720,7 +720,7 @@ class ArchDef
     return @cert_classes unless @cert_classes.nil?
 
     @cert_classes = []
-    @arch_def["certificate_classes"].each_value do |cc_data|
+    @arch_def["certificate_classes"].each do |cc_data|
       @cert_classes << CertClass.new(cc_data, self)
     end
     @cert_classes
@@ -745,7 +745,7 @@ class ArchDef
     return @cert_models unless @cert_models.nil?
 
     @cert_models = []
-    @arch_def["certificate_models"].each_value do |cm_data|
+    @arch_def["certificate_models"].each do |cm_data|
       @cert_models << CertModel.new(cm_data, self)
     end
     @cert_models
@@ -1046,14 +1046,14 @@ class ArchDef
   def unconfigured_data
     {
       "type" => "partially configured",
-      "instructions" => instructions.map { |i| [i.name, i.data] }.to_h,
-      "extensions" => extensions.map.map { |e| [e.name, e.data] }.to_h,
-      "csrs" => csrs.map { |c| [c.name, c.data] }.to_h,
+      "instructions" => instructions.map(&:data),
+      "extensions" => extensions.map.map(&:data),
+      "csrs" => csrs.map(&:data),
       "profile_classes" => profile_classes.map { |f| [f.name, f.data] }.to_h,
       "profile_releases" => profile_releases.map { |p| [p.name, p.data] }.to_h,
       "manuals" => manuals.map { |m| [m.name, m.data] }.to_h,
-      "certificate_classes" => cert_classes.map { |f| [f.name, f.data] }.to_h,
-      "certificate_models" => cert_models.map { |c| [c.name, c.data] }.to_h
+      "certificate_classes" => cert_classes.map(&:data),
+      "certificate_models" => cert_models.map(&:data)
     }
   end
 

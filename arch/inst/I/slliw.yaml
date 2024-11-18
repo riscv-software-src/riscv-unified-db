@@ -1,44 +1,46 @@
 # yaml-language-server: $schema=../../../schemas/inst_schema.json
 
-slliw:
-  long_name: Shift left logical immediate word
-  description: Shift the 32-bit value in rs1 left by shamt, and store the sign-extended result in rd
-  definedBy: I
-  base: 64
-  assembly: xd, xs1, shamt
-  encoding:
-    match: 0000000----------001-----0011011
-    variables:
-    - name: shamt
-      location: 24-20
-    - name: rs1
-      location: 19-15
-    - name: rd
-      location: 11-7
-  access:
-    s: always
-    u: always
-    vs: always
-    vu: always
-  data_independent_timing: true
-  operation(): |
-    # shamt is between 0-32
-    X[rd] = sext(X[rs1] << shamt, 31);
+$schema: "inst_schema.json#"
+kind: instruction
+name: slliw
+long_name: Shift left logical immediate word
+description: Shift the 32-bit value in rs1 left by shamt, and store the sign-extended result in rd
+definedBy: I
+base: 64
+assembly: xd, xs1, shamt
+encoding:
+  match: 0000000----------001-----0011011
+  variables:
+  - name: shamt
+    location: 24-20
+  - name: rs1
+    location: 19-15
+  - name: rd
+    location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: true
+operation(): |
+  # shamt is between 0-32
+  X[rd] = sext(X[rs1] << shamt, 31);
 
 
 
-  sail(): |
-    {
-      let rs1_val = (X(rs1))[31..0];
-      let result : bits(32) = match op {
-        RISCV_SLLIW => rs1_val << shamt,
-        RISCV_SRLIW => rs1_val >> shamt,
-        RISCV_SRAIW => shift_right_arith32(rs1_val, shamt)
-      };
-      X(rd) = sign_extend(result);
-      RETIRE_SUCCESS
-    }
-  
-  
+sail(): |
+  {
+    let rs1_val = (X(rs1))[31..0];
+    let result : bits(32) = match op {
+      RISCV_SLLIW => rs1_val << shamt,
+      RISCV_SRLIW => rs1_val >> shamt,
+      RISCV_SRAIW => shift_right_arith32(rs1_val, shamt)
+    };
+    X(rd) = sign_extend(result);
+    RETIRE_SUCCESS
+  }
+
+
 
 

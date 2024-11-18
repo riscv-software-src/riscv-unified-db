@@ -1,39 +1,41 @@
 # yaml-language-server: $schema=../../../schemas/inst_schema.json
 
-addiw:
-  long_name: Add immediate word
-  description: Add an immediate to the 32-bit value in rs1, and store the sign extended result in rd
-  definedBy: I
-  base: 64
-  assembly: xd, xs1, imm
-  encoding:
-    match: -----------------000-----0011011
-    variables:
-    - name: imm
-      location: 31-20
-    - name: rs1
-      location: 19-15
-    - name: rd
-      location: 11-7
-  access:
-    s: always
-    u: always
-    vs: always
-    vu: always
-  data_independent_timing: true
-  operation(): |
-    XReg operand = sext(X[rs1], 31);
-    X[rd] = sext(operand + imm, 31);
+$schema: "inst_schema.json#"
+kind: instruction
+name: addiw
+long_name: Add immediate word
+description: Add an immediate to the 32-bit value in rs1, and store the sign extended result in rd
+definedBy: I
+base: 64
+assembly: xd, xs1, imm
+encoding:
+  match: -----------------000-----0011011
+  variables:
+  - name: imm
+    location: 31-20
+  - name: rs1
+    location: 19-15
+  - name: rd
+    location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: true
+operation(): |
+  XReg operand = sext(X[rs1], 31);
+  X[rd] = sext(operand + imm, 31);
 
 
 
-  sail(): |
-    {
-      let result : xlenbits = sign_extend(imm) + X(rs1);
-      X(rd) = sign_extend(result[31..0]);
-      RETIRE_SUCCESS
-    }
-  
-  
+sail(): |
+  {
+    let result : xlenbits = sign_extend(imm) + X(rs1);
+    X(rd) = sign_extend(result[31..0]);
+    RETIRE_SUCCESS
+  }
+
+
 
 
