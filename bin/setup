@@ -25,70 +25,83 @@ if [ -f $ROOT/.git ]; then
   HOME_OPT="${HOME_OPT} --bind ${GIT_PATH}:${GIT_PATH}"
 fi
 
+if [ -v DEVCONTAINER_ENV ]; then
+  RUN=""
+else
+  RUN="singularity run  ${HOME_OPT} ${CONTAINER_PATH} "
+fi
+
 if [ ! -d $ROOT/.home ]; then
   mkdir $ROOT/.home
 fi
 
-if [ ! -f ${CONTAINER_PATH} ]; then
- echo "Fetching container..."
-  if [ ! -d "${ROOT}/.singularity" ]; then
-    mkdir -p ${ROOT}/.singularity
+if [ ! -v DEVCONTAINER_ENV ]; then
+  if [ ! -f ${CONTAINER_PATH} ]; then
+  echo "Fetching container..."
+    if [ ! -d "${ROOT}/.singularity" ]; then
+      mkdir -p ${ROOT}/.singularity
+    fi
+    singularity pull ${SINGULARITY_CACHE} ${CONTAINER_PATH} oras://docker.io/riscvintl/spec-generator:$CONTAINER_TAG
   fi
-  singularity pull ${SINGULARITY_CACHE} ${CONTAINER_PATH} oras://docker.io/riscvintl/spec-generator:$CONTAINER_TAG
 fi
 
 if [ ! -f $ROOT/.bundle/config ]; then
   OLDDIR=$PWD
   cd $ROOT
-  singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle config set --local path ${ROOT}/.home/.gems
-  singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle config set --local cache_path ${ROOT}/.home/.cache
+  ${RUN} bundle config set --local path ${ROOT}/.home/.gems
+  ${RUN} bundle config set --local cache_path ${ROOT}/.home/.cache
   cd $OLDDIR
 fi
 
 if [ ! -d $ROOT/.home/.gems ]; then
   OLDDIR=$PWD
   cd $ROOT
-  singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle install
+  ${RUN} bundle install
   cd $OLDDIR
 fi
 
-if [ ! -f $ROOT/ext/riscv-opcodes/README.md ]; then
-  git submodule update --init ext/riscv-opcodes
+if [ ! -d $ROOT/.home/.venv ]; then
+  ${RUN} /usr/bin/python3 -m venv ${ROOT}/.home/.venv
 fi
+source ${ROOT}/.home/.venv/bin/activate
+if [ ! -f ${ROOT}/.home/.venv/bin/pre-commit ]; then
+  ${RUN} ${ROOT}/.home/.venv/bin/pip install -r requirements.txt
+fi
+
+# if [ ! -f $ROOT/ext/riscv-opcodes/README.md ]; then
+#   git submodule update --init ext/riscv-opcodes
+# fi
 
 if [[ ! -z "$DEVELOPMENT" && $DEVELOPMENT -eq 1 ]]; then
   if [ ! -d "${ROOT}/.home/.yard/gem_index"]; then
-    singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle exec --gemfile ${ROOT}/Gemfile yard config --gem-install-yri
-    singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle exec --gemfile ${ROOT}/Gemfile yard gems
+    ${RUN} bundle exec --gemfile ${ROOT}/Gemfile yard config --gem-install-yri
+    ${RUN} bundle exec --gemfile ${ROOT}/Gemfile yard gems
     touch ${ROOT}/.stamps/dev_gems
   fi
 fi
 
-if [[ ! -z "$VSCODE" && $VSCODE -eq 1 ]]; then
-  declare -a exts=(
-    castwide.solargraph,
-    redhat.vscode-yaml,
-    onnovalkering.vscode-singularity,
-    asciidoctor.asciidoctor-vscode
-  )
-  for ext in "${exts[@]}"; do
-    ignore=`code --list-extensions | grep "${ext}"`
-    if [ $? -eq 1 ]; then
-      echo "Installing VS Code extension ${ext}"
-      code --install-extension ${ext}
-    else
-      echo "Extension ${ext} already installed"
-    fi
-  done
-fi
-
 if [ ! -d ${ROOT}/node_modules ]; then
-  singularity run ${HOME_OPT} ${CONTAINER_PATH} npm i
+  ${RUN} npm i
 fi
 
-BUNDLE="singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle"
-RUBY="singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle exec ruby"
-RAKE="singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle exec rake"
-NPM="singularity run ${HOME_OPT} ${CONTAINER_PATH} npm"
-NPX="singularity run ${HOME_OPT} ${CONTAINER_PATH} npx"
-NODE="singularity run ${HOME_OPT} ${CONTAINER_PATH} node"
+if [ -v DEVCONTAINER_ENV ]; then
+  BUNDLE="bundle"
+  RUBY="bundle exec ruby"
+  RAKE="bundle exec rake"
+  NPM="npm"
+  NPX="npx"
+  NODE="node"
+  PYTHON="python3"
+  PIP="${ROOT}/.home/.venv/bin/pip"
+  BASH="bash"
+else
+  BUNDLE="singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle"
+  RUBY="singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle exec ruby"
+  RAKE="singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle exec rake"
+  NPM="singularity run ${HOME_OPT} ${CONTAINER_PATH} npm"
+  NPX="singularity run ${HOME_OPT} ${CONTAINER_PATH} npx"
+  NODE="singularity run ${HOME_OPT} ${CONTAINER_PATH} node"
+  PYTHON="singularity run ${HOME_OPT} ${CONTAINER_PATH} python3"
+  PIP="singularity run ${HOME_OPT} ${CONTAINER_PATH} ${ROOT}/.home/.venv/bin/pip"
+  BASH="singularity run ${HOME_OPT} ${CONTAINER_PATH} bash"
+fi
