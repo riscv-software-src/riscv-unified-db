@@ -33,8 +33,6 @@ def parse_header_files(header_files):
                             # Replace defined constants in the expression with their values
                             value = evaluate_expression(value_expr, defines)
                             defines[name] = value
-                            # Debug: Uncomment the following line to see parsed defines
-                            # print(f"Parsed Define: {name} = {hex(value)}")
                         except Exception:
                             # Skip defines that cannot be evaluated
                             continue
@@ -95,9 +93,6 @@ def parse_instruction_files(instruction_files):
     Returns:
         instructions (list of dict): Each dict contains 'name', 'match_expr', 'mask_expr', 'class', 'flags', 'line_num', 'file'.
     """
-    # Updated pattern to capture the entire match and mask expressions and the flags
-    # Example line:
-    # {"fence",       0, INSN_CLASS_I, "P,Q",       MATCH_FENCE, MASK_FENCE|MASK_RD|MASK_RS1|(MASK_IMM & ~MASK_PRED & ~MASK_SUCC), match_opcode, 0 },
     instr_pattern = re.compile(
         r'\{\s*"([\w\.]+)",\s*\d+,\s*(INSN_CLASS_\w+),\s*"[^"]*",\s*(MATCH_[^,]+),\s*(MASK_[^,]+),[^,]+,\s*([^}]+)\s*\},'
     )
@@ -115,6 +110,15 @@ def parse_instruction_files(instruction_files):
                         match_expr = instr_match.group(3).strip()
                         mask_expr = instr_match.group(4).strip()
                         flags = instr_match.group(5).strip()
+                        
+                        # Skip alias entries
+                        if 'INSN_ALIAS' in flags:
+                            continue
+                            
+                        # Check if the instruction follows the naming pattern
+                        if not check_match_mask_pattern(instr_name, match_expr, mask_expr):
+                            continue  # Skip instructions that don't follow the pattern
+                            
                         instructions.append({
                             'name': instr_name,
                             'class': instr_class,
@@ -124,8 +128,6 @@ def parse_instruction_files(instruction_files):
                             'line_num': line_num,
                             'file': instr_file
                         })
-                        # Debug: Uncomment the following line to see parsed instructions
-                        # print(f"Parsed Instruction: {instr_name} at {instr_file}:{line_num}")
         except FileNotFoundError:
             print(f"Error: Instruction file '{instr_file}' not found.")
             sys.exit(1)  # Exit if an instruction file is missing
@@ -210,32 +212,91 @@ def get_instruction_yaml_files(directory_path):
 
 def parse_yaml_encoding(yaml_file_path):
     """
-    Parses the YAML file to extract the 'encoding: match' string.
+    Parses the YAML file to extract the encoding match string.
+    Handles the new YAML format with top-level encoding field.
 
     Args:
         yaml_file_path (str): Path to the YAML file.
 
     Returns:
-        match_encoding (str): The 32-character match encoding string.
+        match_encoding (str): The match encoding string.
     """
     try:
         with open(yaml_file_path, 'r') as yaml_file:
             yaml_content = yaml.safe_load(yaml_file)
-            if not isinstance(yaml_content, dict) or not yaml_content:
-                print(f"Warning: YAML file '{yaml_file_path}' is empty or not properly formatted.")
+            
+            # Handle case where yaml_content is None
+            if yaml_content is None:
+                print(f"Warning: Empty YAML file '{yaml_file_path}'.")
                 return ''
-            instr_name = list(yaml_content.keys())[0]
-            encoding = yaml_content[instr_name].get('encoding', {})
+                
+            if not isinstance(yaml_content, dict):
+                print(f"Warning: Unexpected YAML format in '{yaml_file_path}'. Content type: {type(yaml_content)}")
+                return ''
+            
+            # Get encoding section directly from top level
+            encoding = yaml_content.get('encoding', {})
+            
+            if not isinstance(encoding, dict):
+                print(f"Warning: Encoding is not a dictionary in '{yaml_file_path}'")
+                return ''
+            
+            # Get match value directly from encoding section
             match_encoding = encoding.get('match', '')
+            
             if not match_encoding:
-                print(f"Warning: 'encoding.match' not found in YAML file '{yaml_file_path}'.")
+                print(f"Warning: No 'encoding.match' found in YAML file '{yaml_file_path}'.")
+            
+            # Remove any whitespace in the match encoding
+            match_encoding = match_encoding.replace(' ', '')
+            
             return match_encoding
+            
     except FileNotFoundError:
         print(f"Error: YAML file '{yaml_file_path}' not found.")
         return ''
     except yaml.YAMLError as e:
         print(f"Error: Failed to parse YAML file '{yaml_file_path}': {e}")
         return ''
+    except Exception as e:
+        print(f"Error: Unexpected error processing '{yaml_file_path}': {e}")
+        return ''
+
+    
+def check_match_mask_pattern(instr_name, match_expr, mask_expr):
+    """
+    Checks if the MATCH and MASK names follow the expected pattern based on instruction name.
+    Allows both MATCH_NAME and MATCH_NAME_SUFFIX patterns.
+    
+    Args:
+        instr_name (str): The instruction name (e.g., "add" or "vfmin.vv")
+        match_expr (str): The MATCH expression (e.g., "MATCH_ADD" or "MATCH_VFMINVV")
+        mask_expr (str): The MASK expression (e.g., "MASK_ADD" or "MASK_VFMINVV")
+        
+    Returns:
+        bool: True if the pattern matches, False otherwise
+    """
+    # Convert instruction name to uppercase and handle special characters
+    normalized_name = instr_name.replace('.', '')
+    normalized_name = normalized_name.replace('_', '')
+    normalized_name = normalized_name.upper()
+    
+    # Extract the base MATCH and MASK names (before any '|' operations)
+    base_match = match_expr.split('|')[0].strip()
+    base_mask = mask_expr.split('|')[0].strip()
+    
+    # Remove MATCH_ and MASK_ prefixes
+    if base_match.startswith('MATCH_'):
+        base_match = base_match[6:]  # Remove 'MATCH_'
+    if base_mask.startswith('MASK_'):
+        base_mask = base_mask[5:]    # Remove 'MASK_'
+        
+    # Remove any remaining underscores for comparison
+    base_match = base_match.replace('_', '')
+    base_mask = base_mask.replace('_', '')
+    
+    # Now compare the normalized strings
+    return base_match == normalized_name and base_mask == normalized_name
 
 def main():
     """
