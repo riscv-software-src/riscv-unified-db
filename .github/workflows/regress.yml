@@ -10,6 +10,10 @@ jobs:
     steps:
     - name: Clone Github Repo Action
       uses: actions/checkout@v4
+    - name: Initialize binutils submodule
+      run: |
+        git submodule init ext/binutils-gdb/binutils  # initialize only this submodule
+        git submodule update ext/binutils-gdb/binutils  # update it
     - name: Setup apptainer
       uses: eWaterCycle/setup-apptainer@v2.0.0
     - name: Get container from cache
