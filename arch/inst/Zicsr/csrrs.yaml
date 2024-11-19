@@ -16,7 +16,7 @@ description: |
 definedBy: Zicsr
 assembly: xd, xs1, csr
 encoding:
-  match: -----------------000-----0010011
+  match: -----------------010-----0010011
   variables:
   - name: csr
     location: 31-20
