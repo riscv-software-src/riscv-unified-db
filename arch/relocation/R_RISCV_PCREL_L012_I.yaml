@@ -1,0 +1,14 @@
+$schema: reolaction_schema.json#
+kind: relocation
+variable_name: "I-Type"
+relocation_variable_description: Specifies a field as the immediate field in an I-type instruction
+relocation_type: R_RISCV_PCREL_LO12_I
+relocation_description: |
+  Low 12 bits of a 32-bit PC-relative,
+  `%pcrel_lo(address of %pcrel_hi)`, the
+  addend must be 0.
+calculation: S - P # calculation, using symbols defined in ABI doc 8.4.1
+number: 24   # the number of the relocation, encoded in the r_info field
+type: static # relocation type (static, dynamic, both)
+
+
