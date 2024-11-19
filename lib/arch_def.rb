@@ -856,6 +856,57 @@ class ArchDef
     @arch_def
   end
 
+  # given a `$ref` target, return the Ruby object
+  #
+  # @params uri [String] JSON Reference pointer
+  # @return [Object] The pointed-to object
+  def ref(uri)
+    raise ArgumentError, "JSON Reference must contain one '#'" unless uri.count("#") == 1
+
+    file_path, obj_path = uri.split("#")
+    obj =
+      case file_path
+      when /^certificate_class.*/
+        cert_class_name = File.basename(file_path, ".yaml")
+        cert_class(cert_class_name)
+      when /^certificate_model.*/
+        cert_mode_name = File.basename(file_path, ".yaml")
+        cert_model(cert_model_name)
+      when /^csr.*/
+        csr_name = File.basename(file_path, ".yaml")
+        csr(csr_name)
+      when /^ext.*/
+        ext_name = File.basename(file_path, ".yaml")
+        extension(ext_name)
+      when /^inst.*/
+        inst_name = File.basename(file_path, ".yaml")
+        instruction(inst_name)
+      when /^manual.*/
+        manual_name = File.basename(file_path, ".yaml")
+        manual(manual_name)
+      when /^profile_class.*/
+        profile_class_name = File.basename(file_path, ".yaml")
+        profile_class(profile_class_name)
+      when /^profile_release.*/
+        profile_release_name = File.basename(file_path, ".yaml")
+        profile_release(profile_release_name)
+      else
+        raise "Unhandled ref object: #{file_path}"
+      end
+
+      if obj_path.nil?
+        obj
+      else
+        parts = obj_path.split("/")
+        parts.each do |part|
+          raise "Error in $ref. There is no method '#{part}' for a #{obj.class.name}" unless obj.respond_to?(part.to_sym)
+
+          obj = obj.send(part)
+        end
+        obj
+      end
+  end
+
   # @return [Array<Csr>] List of all implemented CSRs
   def implemented_csrs
     return @implemented_csrs unless @implemented_csrs.nil?
