@@ -3,9 +3,8 @@ RVB23:
   marketing_name: RVB23
   class: RVB
   release: 23
-  state: ratified # current status ["ratified", "development"]
+  state: ratified   # current status ["ratified", "development"]
   ratification_date: "2023-04-03"
-
   # Semantic versions within the release
   versions: 
   - version: "1.0.0"
@@ -43,76 +42,203 @@ RVB23:
         most important profile within application processors in
         terms of the amount of software that targets this profile.
       extensions:
+        #########################################################################
+        # imported from RVA22
+        #########################################################################
         $inherits: "RVA22.yaml#/RVA22/profiles/RVA22U64/extensions"
-        Zihpm:
+
+        #########################################################################
+        # MANDATORY extensions in RVB23 (and RVA23)
+        #########################################################################
+        Zihintntl:
           presence: mandatory
-          version: "= 2.0"
-        Zihintpause:
-          presence: mandatory
-          version: "= 2.0"
+          version: "???"
           note: |
-            While the `pause` instruction is a HINT can be implemented as a
-            NOP and hence trivially supported by hardware implementers, its
-            inclusion in the mandatory extension list signifies that software
-            should use the instruction whenever it would make sense and that
-            implementors are expected to exploit this information to optimize
-            hardware execution.
-        Zba:
+            Non-temporal memory-access locality hints
+        Zicond:
           presence: mandatory
-          version: "~> 1.0"
-        Zbb:
-          presence: mandatory
-          version: "~> 1.0"
-        Zbs:
-          presence: mandatory
-          version: "~> 1.0"
-        Zic64b:
-          presence: mandatory
-          version: "= 1.0"
+          version: "???"
           note: |
-            This is a new extension name for this feature. While the general
-            RISC-V specifications are agnostic to cache block size, selecting a
-            common cache block size simplifies the specification and use of the
-            following cache-block extensions within the application processor
-            profile. Software does not have to query a discovery mechanism and/or
-            provide dynamic dispatch to the appropriate code. We choose 64 bytes
-            at it is effectively an industry standard. Implementations may use
-            longer cache blocks to reduce tag cost provided they use 64-byte
-            sub-blocks to remain compatible. Implementations may use shorter cache
-            blocks provided they sequence cache operations across the multiple
-            cache blocks comprising a 64-byte block to remain compatible.
-        Zicbom:
+            Integer conditional operations
+        Zimop:
           presence: mandatory
-          version: "~> 1.0"
-        Zicbop:
-          presence: mandatory
-          version: "~> 1.0"
+          version: "???"
           note: |
-            As with other HINTS, the inclusion of prefetches in the
-            mandatory set of extensions indicates that software should generate
-            these instructions where they are expected to be useful, and hardware
-            is expected to exploit that information.
-        Zicboz:
+            May-be operations
+         Zcmop:
           presence: mandatory
-          version: "~> 1.0"
+          version: "???"
+          note: |
+            Commpressed (16-bit) may-be operations
+        Zcb:
+          presence: mandatory
+          version: "???"
+          note: |
+            Additional compressed (16-bit) instructions  
+        Zfa:
+          presence: mandatory
+          version: "???"
+          note: |
+            Additional floating-point instructions 
+        Zawrs:
+          presence: mandatory
+          version: "???"
+          note: |
+            Wait-on-reservation-set instructions
+
+        #########################################################################
+        # OPTIONAL LOCALIZED extensions  
+        #########################################################################
+        
+        #---------------------------------
+        # In RVB23 (and RVA23)
+        #---------------------------------
+        Zvkng:
+          presence: 
+            optional: localized
+          version: "???"
+          note: |
+            Vector crypto NIST Algorithms with GCM
+        Zvksgm:
+          presence: 
+            optional: localized
+          version: "???"
+            note: |
+              Vector crypto Shang-Mi Algorithms with GCM
+
+        #---------------------------------
+        # In RVB23 (but not in RVA23)
+        #---------------------------------
+        Zvkg:
+          presence: 
+            optional: localized
+          version: "???"
+          note: |
+            Vector GCM/GMAC instructions
+        
+        Zvknc:
+          presence: 
+            optional: localized
+          version: "???"
+          note: |
+            Vector crypto NIST algorithms with carryless multiply
+        Zvksc:
+          presence: 
+            optional: localized
+          version: "???"
+          note: |
+            Vector crypto Shang-Mi algorithms with carryless multiply
+        # RVA profiles mandate the higher-performing but more expensive GHASH options 
+        # when adding vector crypto. To reduce implementation cost, RVB profiles also 
+        # allow these carryless multiply options (Zvknc and Zvksc) to implement GCM 
+        # efficiently, with GHASH available as a separate option.
+        
+        Zkn:
+          presence: 
+            optional: localized
+          version: "???"
+          note: |
+            Scalar crypto NIST algorithms
+        Zks:
+          presence: 
+            optional: localized
+          version: "???"
+          note: |
+            Scalar crypto Shang-Mi algorithms
+        # RVA23 profiles drop support for the above scalar crypto as an option, as the vector 
+        # extension is now mandatory in RVA23. 
+        # RVB23 profiles do support scalar crypto as an option, as the vector extension is optional in RVB23.
+        
+        #########################################################################
+        # OPTIONAL DEVELOPMENT extensions in RVB23  
+        #########################################################################
+        # The following are new development options, intended to become mandatory in a later RVB profile:
+        Zabha:
+          presence: 
+            optional: development
+          version: "???"
+          note: |
+            Byte and halfword atomic memory operations
+        Zacas:
+          presence: 
+            optional: development
+          version: "???"
+          note: |
+            Compare-and-Swap instructions
+        Ziccamoc:
+          presence: 
+            optional: development
+          version: "???"
+          note: |
+            Main memory regions with both the cacheability and coherence PMAs 
+            must provide AMOCASQ-level PMA support
+        Zama16b:
+          presence: 
+            optional: development
+          version: "???"
+          note: |
+            Misaligned loads, stores, and AMOs to main memory regions that do not cross 
+            Daaaa naturally aligned 16-byte boundary are atomic
+        
+        #########################################################################
+        # OPTIONAL EXPANSION extensions in RVB23  
+        #########################################################################
+        
+        #---------------------------------
+        # Optional in RVB23U64 (but Mandatory in RVA23U64)
+        #---------------------------------
         Zfhmin:
-          presence: mandatory
+          presence: 
+            optional: expansion
           version: "~> 1.0"
           note: |
             Zfhmin is a small extension that adds support to load/store and convert
             IEEE 754 half-precision numbers to and from the IEEE 754 single-precision
             format.  The hardware cost for this extension is low, and mandating the
             extension avoids adding an option to the profile.
-        Zkt:
-          presence: mandatory
-          version: "~> 1.0"
+        V:
+          presence: 
+            optional: expansion
+          version: "~> 1.0 ???"
           note: |
-            Zkt requires a certain subset of integer instructions execute
-            with data-independent latency.  Mandating this feature enables
-            portable libraries for safe basic cryptographic operations. It is
-            expected that application processors will naturally have this property
-            and so implementation cost is low, if not zero, in most systems that
-            would support RVB23.
+             The Vector extension
+        # Note: it is unclear if other Zve* extensions should also be supported in RVB 
+
+       Zvfhmin:
+          presence: 
+            optional: expansion
+          version: "???"
+          note: |
+            Vector minimal half-precision floating-point
+       Zvbb:
+          presence: 
+            optional: expansion
+          version: "???"
+          note: |
+            Vector basic bit-manipulation instructions 
+       Zvkt:
+          presence: 
+            optional: expansion 
+          version: "???"
+          note: |
+            Vector basic bit-manipulation instructions 
+       Supm:
+          presence: 
+            optional: expansion
+          version: "???"
+          note: |
+            Pointer masking, with the execution environment providing 
+            a means to select PMLEN=0 and PMLEN=7 at minimum 
+       
+        #---------------------------------
+        # Expansion options in RVB23 (and also RVA23)
+        #---------------------------------
+
+        ############ Need to continue inseting at THIS POINT ################
+
+
+
+
         Zfh:
           presence: optional
           version: "~> 1.0"
