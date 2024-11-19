@@ -136,28 +136,27 @@ class YamlLoader
       end
 
       final_obj
+    elsif obj.keys.include?("$copy")
+      self.get_copy_target_obj(filename, obj["$copy"], yaml_opts)
     else
       # Go through each hash entry.
       obj.each do |key, value|
-        obj[key] =
-        if value.is_a?(String) && value.start_with?("$copy:")
-          copy_target = value.delete_prefix("$copy:").lstrip
-          self.get_copy_target_obj(filename, copy_target, yaml_opts)
-        else
-          expand(filename, value, yaml_opts)
-        end
+        obj[key] = expand(filename, value, yaml_opts)
       end
       obj
     end
 
-    obj_keys = new_obj.keys
-    if obj_keys.include? "$remove"
-      remove_keys = obj["$remove"].is_a?(Array) ? obj["$remove"] : [obj["$remove"]]
-      remove_keys.each do |key|
-        new_obj.delete(key)
+    if new_obj.is_a?(Hash)
+      obj_keys = new_obj.keys
+      if obj_keys.include? "$remove"
+        remove_keys = obj["$remove"].is_a?(Array) ? obj["$remove"] : [obj["$remove"]]
+        remove_keys.each do |key|
+          new_obj.delete(key)
+        end
       end
+      new_obj.delete("$remove")
     end
-    new_obj.delete("$remove")
+
     new_obj
   end
 

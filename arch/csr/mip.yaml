@@ -6,13 +6,20 @@ name: mip
 long_name: Machine Interrupt Pending
 address: 0x344
 priv_mode: M
+
+# Description is shared with mie CSR (it copies it from here).
 description: |
-  The `mip` register is an MXLEN-bit read/write register containing
-  information on pending interrupts, while `mie` is the corresponding
-  MXLEN-bit read/write register containing interrupt enable bits.
-  Interrupt cause number _i_ (as reported in CSR `mcause`)
-  corresponds with bit _i_ in both `mip` and
-  `mie`. Bits 15:0 are allocated to standard interrupt causes only, while
+  The `mie` and `mip` CSRs are MXLEN-bit read/write registers used when
+  the CLINT or PLIC interrupt controllers are present.
+  Note that the CLINT refers to an interrupt controller
+  used by some RISC-V implementations but isn't a ratified
+  RISC-V International standard.
+  
+  The `mip` CSR contains information on pending interrupts, while `mie` is the corresponding
+  CSR containing interrupt enable bits.
+  Interrupt cause number _i_ (as reported in the `mcause` CSR)
+  corresponds to bit _i_ in both `mip` and `mie`. 
+  Bits 15:0 are allocated to standard interrupt causes only, while
   bits 16 and above are designated for platform use.
 
   NOTE: Interrupts designated for platform use may be designated for custom use

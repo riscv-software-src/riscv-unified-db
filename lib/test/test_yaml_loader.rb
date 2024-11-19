@@ -346,9 +346,11 @@ class TestYamlLoader < Minitest::Test
 
       obj1:
         target10: abc
-        target11: "$copy: #/$defs/target1"
+        target11: 
+          $copy: "#/$defs/target1"
         target12: def
-        target13: "$copy: #/$defs/target3"
+        target13: 
+          $copy: "#/$defs/target3"
 
     YAML
 
@@ -382,9 +384,11 @@ class TestYamlLoader < Minitest::Test
     yaml2 = <<~YAML
       obj1:
         target10: abc
-        target11: "$copy: #{f1_path.basename}#/$defs/target1"
+        target11: 
+          $copy: "#{f1_path.basename}#/$defs/target1"
         target12: def
-        target13: "$copy: #{f1_path.basename}#/$defs/target3"
+        target13: 
+          $copy: "#{f1_path.basename}#/$defs/target3"
     YAML
 
     f2 = Tempfile.new("yml")
