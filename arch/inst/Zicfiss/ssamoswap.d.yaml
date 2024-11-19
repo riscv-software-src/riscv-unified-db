@@ -1,11 +1,11 @@
 # yaml-language-server: $schema=../../../schemas/inst_schema.json
 
-$schema: "inst_schema.json#"
+$schema: inst_schema.json#
 kind: instruction
 name: ssamoswap.d
 long_name: No synopsis available.
 description: |
-    No description available.
+      No description available.
 definedBy: Zicfiss
 assembly: xd, xs1, xs2, aq, rl
 encoding:
@@ -28,4 +28,4 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    
+      
