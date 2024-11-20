@@ -26,10 +26,7 @@ RVB23:
 
     NOTE: Only XLEN=64 application processor profiles are currently defined.
     It would be possible to also define very similar XLEN=32 variants.
-  contributors:
-  - name: Krste Asanovic
-    email: krste@sifive.com
-    company: SiFive
+  
   profiles:
     RVB23U64:
       marketing_name: RVB23U64
@@ -121,17 +118,21 @@ RVB23:
             optional: localized
           version: "???"
           note: |
-            Vector crypto NIST algorithms with carryless multiply
+            Vector crypto NIST algorithms with carryless multiply. 
+            To reduce implementation cost, RVB profiles allow this carryless multiply option to 
+            implement GCM efficiently, with GHASH available as a separate option.
+          # RVA23 does not include Zvknc because it mandates the higher-performing 
+          # but more expensive GHASH options when adding vector crypto.
         Zvksc:
           presence: 
             optional: localized
           version: "???"
           note: |
-            Vector crypto Shang-Mi algorithms with carryless multiply
-        # RVA profiles mandate the higher-performing but more expensive GHASH options 
-        # when adding vector crypto. To reduce implementation cost, RVB profiles also 
-        # allow these carryless multiply options (Zvknc and Zvksc) to implement GCM 
-        # efficiently, with GHASH available as a separate option.
+            Vector crypto Shang-Mi algorithms with carryless multiply. 
+            To reduce implementation cost, RVB profiles allow this carryless multiply option to 
+            implement GCM efficiently, with GHASH available as a separate option.
+          # RVA23 does not include Zvksc because it mandates the higher-performing 
+          # but more expensive GHASH options when adding vector crypto.
         
         Zkn:
           presence: 
@@ -230,22 +231,22 @@ RVB23:
             Pointer masking, with the execution environment providing 
             a means to select PMLEN=0 and PMLEN=7 at minimum 
        
-        #---------------------------------
+        #--------------------------------------------
         # Expansion options in RVB23 (and also RVA23)
-        #---------------------------------
+        #--------------------------------------------
+Zfh:
+          presence: 
+            optional: expansion 
+          version: "=1.0"
+          note: A future RVB profile might mandate V.
 
         ############ Need to continue inseting at THIS POINT ################
 
+        
 
-
-
-        Zfh:
-          presence: optional
-          version: "~> 1.0"
-          note: A future profile might mandate V.
         V:
           presence: optional
-          version: "~> 1.0"
+          version: "=1.0"
           note: |
             The smaller vector extensions (Zve32f, Zve32x, Zve64d, Zve64f,
             Zve64x) are not provided as separately supported profile options. The
