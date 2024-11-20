@@ -342,7 +342,7 @@ Reset value::
 <%- end -%>
 
 <%- if csr.fields.map(&:has_custom_sw_write?).any? -%>
-== Software write
+==== Software write
 
 This CSR may store a value that is different from what software attempts to write.
 
@@ -362,7 +362,7 @@ written value:
 <%- end -%>
 
 <%- if csr.has_custom_sw_read? -%>
-== Software read
+==== Software read
 
 This CSR may return a value that is different from what is stored in hardware.
 
