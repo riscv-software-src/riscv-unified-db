@@ -211,10 +211,10 @@ assembly: xs1, xs2
 encoding:
   match: 0001001----------000000001110011
   variables:
-  - name: rs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
 access:
   s: always
   u: never
@@ -305,8 +305,6 @@ operation(): |
     # else, silently do nothing
   }
 
-
-
 sail(): |
   {
     let addr : option(xlenbits) = if rs1 == 0b00000 then None() else Some(X(rs1));
@@ -321,7 +319,3 @@ sail(): |
       Machine    => { flush_TLB(asid, addr); RETIRE_SUCCESS }
     }
   }
-
-
-
-

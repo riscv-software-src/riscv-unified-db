@@ -5,16 +5,16 @@ kind: instruction
 name: fclass.h
 long_name: No synopsis available.
 description: |
-      No description available.
+  No description available.
 definedBy: Zfh
 assembly: xd, xs1
 encoding:
   match: 111001000000-----001-----1010011
   variables:
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -22,4 +22,3 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-      

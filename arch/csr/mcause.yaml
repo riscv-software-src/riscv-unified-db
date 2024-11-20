@@ -1,6 +1,5 @@
 # yaml-language-server: $schema=../../schemas/csr_schema.json
 
-
 $schema: "csr_schema.json#"
 kind: csr
 name: mcause
@@ -16,7 +15,7 @@ fields:
     location_rv64: 63
     description: |
       Written by hardware when a trap is taken into M-mode.
-      
+
       When set, the last exception was caused by an asynchronous Interrupt.
 
       `mcause.INT` is writeable.

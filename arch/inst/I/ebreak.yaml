@@ -18,9 +18,9 @@ description: |
   As EBREAK causes a synchronous exception, it is not considered to retire,
   and should not increment the `minstret` CSR.
 definedBy: I
-assembly: ''
+assembly: ""
 encoding:
-  match: '00000000000100000000000001110011'
+  match: "00000000000100000000000001110011"
 access:
   s: always
   u: always
@@ -33,14 +33,8 @@ operation(): |
     eei_ebreak();
   }
 
-
-
 sail(): |
   {
     handle_mem_exception(PC, E_Breakpoint());
     RETIRE_FAIL
   }
-
-
-
-

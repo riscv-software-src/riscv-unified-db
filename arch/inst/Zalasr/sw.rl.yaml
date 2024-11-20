@@ -5,18 +5,18 @@ kind: instruction
 name: sw.rl
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy: Zalasr
 assembly: xs1, xs2, aq
 encoding:
   match: 00111-1----------010000000101111
   variables:
-  - name: aq
-    location: 26-26
-  - name: rs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
+    - name: aq
+      location: 26-26
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
 access:
   s: always
   u: always
@@ -24,9 +24,6 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    
-
-
 
 sail(): |
   {
@@ -70,4 +67,3 @@ sail(): |
         }
     }
   }
-

@@ -18,12 +18,12 @@ assembly: xd, xs1, csr
 encoding:
   match: -----------------010-----0010011
   variables:
-  - name: csr
-    location: 31-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: csr
+      location: 31-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -40,8 +40,6 @@ operation(): |
   CSR[csr].sw_write(initial_csr_value | mask);
 
   X[rd] = initial_csr_value;
-
-
 
 sail(): |
   {
@@ -68,7 +66,3 @@ sail(): |
       RETIRE_SUCCESS
     }
   }
-
-
-
-

@@ -38,4 +38,3 @@ operation(): |
     vma_type.gstage = true;
   }
   order_pgtbl_writes_before_vmafence(vma_type);
- 

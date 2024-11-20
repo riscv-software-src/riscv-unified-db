@@ -15,12 +15,12 @@ assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------110-----0110011
   variables:
-  - name: rs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -38,7 +38,7 @@ operation(): |
     # division by zero. Since RISC-V does not have arithmetic exceptions, the result is defined
     # to be the dividend
     X[rd] = src1;
-  
+
   } else if ((src1 == {1'b1, {XLEN-1{1'b0}}}) && (src2 == {XLEN{1'b1}})) {
     # signed overflow. Since RISC-V does not have arithmetic exceptions, the result is defined
     # to be zero
@@ -47,7 +47,6 @@ operation(): |
   } else {
     X[rd] = $signed(src1) % $signed(src2);
   }
-
 
 sail(): |
   {
@@ -65,7 +64,3 @@ sail(): |
       RETIRE_FAIL
     }
   }
-
-
-
-

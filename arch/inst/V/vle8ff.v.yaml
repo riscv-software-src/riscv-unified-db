@@ -5,18 +5,18 @@ kind: instruction
 name: vle8ff.v
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy: V
 assembly: vm, xs1, vd
 encoding:
   match: 000000-10000-----000-----0000111
   variables:
-  - name: vm
-    location: 25-25
-  - name: rs1
-    location: 19-15
-  - name: vd
-    location: 11-7
+    - name: vm
+      location: 25-25
+    - name: rs1
+      location: 19-15
+    - name: vd
+      location: 11-7
 access:
   s: always
   u: always
@@ -24,9 +24,6 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    
-
-
 
 sail(): |
   {
@@ -38,9 +35,8 @@ sail(): |
     let EMUL_pow = EEW_pow - SEW_pow + LMUL_pow;
     let num_elem = get_num_elem(EMUL_pow, EEW);
     let nf_int = nfields_int(nf);
-  
+
     if illegal_load(vd, vm, nf_int, EEW, EMUL_pow) then { handle_illegal(); return RETIRE_FAIL };
-  
+
     process_vlsegff(nf_int, vm, vd, load_width_bytes, rs1, EMUL_pow, num_elem)
   }
-

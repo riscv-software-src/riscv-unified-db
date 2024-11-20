@@ -11,17 +11,17 @@ description: |
   It expands to `fsw` `rs2, offset(x2)`.
 definedBy:
   allOf:
-  - C
-  - F
+    - C
+    - F
 assembly: fs2, imm(sp)
 encoding:
   match: 111-----------10
   variables:
-  - name: imm
-    location: 8-7|12-9
-    left_shift: 2
-  - name: rs2
-    location: 6-2
+    - name: imm
+      location: 8-7|12-9
+      left_shift: 2
+    - name: rs2
+      location: 6-2
 access:
   s: always
   u: always

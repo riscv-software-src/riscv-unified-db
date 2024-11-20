@@ -55,4 +55,3 @@ fields:
       } else {
         return UNDEFINED_LEGAL;
       }
-

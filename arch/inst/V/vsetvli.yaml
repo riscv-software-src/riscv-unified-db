@@ -5,18 +5,18 @@ kind: instruction
 name: vsetvli
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy: V
 assembly: xs1, xd, imm
 encoding:
   match: 0----------------111-----1010111
   variables:
-  - name: zimm11
-    location: 30-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: zimm11
+      location: 30-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -24,9 +24,6 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    
-
-
 
 sail(): |
   {
@@ -35,7 +32,7 @@ sail(): |
     let LMUL_pow_ori  = get_lmul_pow();
     let SEW_pow_ori   = get_sew_pow();
     let ratio_pow_ori = SEW_pow_ori - LMUL_pow_ori;
-  
+
     /* set vtype */
     match op {
       VSETVLI => {
@@ -46,7 +43,7 @@ sail(): |
         vtype->bits() = X(rs2)
       }
     };
-  
+
     /* check legal SEW and LMUL and calculate VLMAX */
     let LMUL_pow_new = get_lmul_pow();
     let SEW_pow_new  = get_sew_pow();
@@ -61,7 +58,7 @@ sail(): |
       return RETIRE_SUCCESS
     };
     let VLMAX = int_power(2, VLEN_pow + LMUL_pow_new - SEW_pow_new);
-  
+
     /* set vl according to VLMAX and AVL */
     if (rs1 != 0b00000) then { /* normal stripmining */
       let rs1_val = X(rs1);
@@ -90,14 +87,10 @@ sail(): |
     };
     print_reg("CSR vtype <- " ^ BitStr(vtype.bits()));
     print_reg("CSR vl <- " ^ BitStr(vl));
-  
+
     /* reset vstart to 0 */
     vstart = zeros();
     print_reg("CSR vstart <- " ^ BitStr(vstart));
-  
+
     RETIRE_SUCCESS
   }
-
-
-
-

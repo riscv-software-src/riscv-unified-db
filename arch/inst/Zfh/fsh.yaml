@@ -20,12 +20,12 @@ assembly: fs2, imm(xs1)
 encoding:
   match: -----------------001-----0100111
   variables:
-  - name: imm
-    location: 31-25|11-7
-  - name: rs1
-    location: 19-15
-  - name: fs2
-    location: 24-20
+    - name: imm
+      location: 31-25|11-7
+    - name: rs1
+      location: 19-15
+    - name: fs2
+      location: 24-20
 access:
   s: always
   u: always
@@ -37,10 +37,8 @@ operation(): |
   XReg virtual_address = X[rs1] + $signed(imm);
 
   Bits<16> hp_value = f[fs2][15:0];
-  
+
   write_memory<16>(virtual_address, hp_value, $encoding);
-
-
 
 sail(): |
   {
@@ -80,7 +78,3 @@ sail(): |
         }
     }
   }
-
-
-
-

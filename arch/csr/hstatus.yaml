@@ -40,7 +40,6 @@ fields:
       [when,"VSXLEN = 64"]
       Because the implementation only supports a single VSXLEN == 64, this field is read-only-1.
 
-
     type(): |
       if ((VSXLEN == 32) || (VSXLEN == 64)) {
         return CsrFieldType::RO;
@@ -90,7 +89,7 @@ fields:
       amount of time (which can be 0).
 
       When both `hstatus.VTW` and `mstatus.TW` are clear, a `wfi` instruction
-      executes in VS-mode without a timeout period. 
+      executes in VS-mode without a timeout period.
 
       The `wfi` instruction is also affected by `mstatus.TW`, as shown below:
 
@@ -99,7 +98,7 @@ fields:
       .2+! [.rotate]#`mstatus.TW`# .2+! [.rotate]#`hstatus.VTW`# 4+^.>! `wfi` behavior
       h! HS-mode h! U-mode h! VS-mode h! VU-mode
 
-      ! 0 ! 0 ! Wait ! Trap (I) ! Wait ! Trap (V) 
+      ! 0 ! 0 ! Wait ! Trap (I) ! Wait ! Trap (V)
       ! 0 ! 1 ! Wait ! Trap (I) ! Trap (V) ! Trap (V)
       ! 1 ! - ! Trap (I) ! Trap (I) ! Trap (I) ! Trap (I)
 

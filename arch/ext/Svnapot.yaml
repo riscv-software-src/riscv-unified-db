@@ -56,7 +56,7 @@ description: |
   <<ptenapot>>, then a page-fault exception must be raised.
   * Implicit reads of NAPOT page table entries may create
   address-translation cache entries mapping
-  _a_ + _j_*PTESIZE to a copy of _pte_ in which _pte_._ppn_[_i_][_pte_.__napot_bits__-1:0] 
+  _a_ + _j_*PTESIZE to a copy of _pte_ in which _pte_._ppn_[_i_][_pte_.__napot_bits__-1:0]
   is replaced by _vpn[i][pte.napot_bits_-1:0], for any or all _j_ such that
   __j__ >> __napot_bits__ = __vpn__[__i__] >> __napot_bits__, all for the address space identified in _satp_ as loaded by step 1.
 
@@ -152,7 +152,7 @@ description: |
   1 +
   2 +
   ...
-  |=== 
+  |===
 
   In such a case, an implementation may or may not support all options.
   The discoverability mechanism for this extension would be extended to
@@ -168,8 +168,8 @@ description: |
   first step.
   ====
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: 2021-11
-  requires:
-    name: Sv39
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2021-11
+    requires:
+      name: Sv39

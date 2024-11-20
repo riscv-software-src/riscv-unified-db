@@ -5,7 +5,7 @@ kind: instruction
 name: cbo.clean
 long_name: Cache Block Clean
 description: |
-  Cleans an entire cache block globally throughout the system. 
+  Cleans an entire cache block globally throughout the system.
 
   Exactly what happens is coherence protocol-dependent, but in general it is expected that after this
   operation():
@@ -34,14 +34,14 @@ description: |
   <%- end -%>
 
   CBO operations never raise a misaligned address fault.
-  
+
 definedBy: Zicbom
 assembly: "TODO"
 encoding:
   match: 000000000001-----010000000001111
   variables:
-  - name: rs1
-    location: 19-15
+    - name: rs1
+      location: 19-15
 access:
   m: always
   s: sometimes
@@ -59,14 +59,14 @@ access_detail: |
   4+^.>h! `cbo.clean` Instruction Behavior
   .^h! S-mode .^h! U-mode .^h! VS-mode .^h! VU-mode
 
-  ! 0 ! - ! - ! `Illegal Instruction` ! `Illegal Instruction` ! `Virtual Instruction` ! `Virtual Instruction` 
-  ! 1 ! 0 ! 0 ! executes  ! `Illegal Instruction` ! `Virtual Instruction` ! `Virtual Instruction` 
-  ! 1 ! 1 ! 0 ! executes ! executes ! `Virtual Instruction` ! `Virtual Instruction` 
-  ! 1 ! 0 ! 1 ! executes ! `Illegal Instruction` ! executes ! `Virtual Instruction` 
+  ! 0 ! - ! - ! `Illegal Instruction` ! `Illegal Instruction` ! `Virtual Instruction` ! `Virtual Instruction`
+  ! 1 ! 0 ! 0 ! executes  ! `Illegal Instruction` ! `Virtual Instruction` ! `Virtual Instruction`
+  ! 1 ! 1 ! 0 ! executes ! executes ! `Virtual Instruction` ! `Virtual Instruction`
+  ! 1 ! 0 ! 1 ! executes ! `Illegal Instruction` ! executes ! `Virtual Instruction`
   ! 1 ! 1 ! 1 ! executes ! executes ! executes ! executes
   !===
+
 # operation(): |
 #   let cache_block_address = X[rs1] & ~(CACHE_BLOCK_SIZE-1);
 
 #   CACHE_BLOCK_CLEAN(cache_block_address);
-

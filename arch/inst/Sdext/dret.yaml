@@ -5,11 +5,11 @@ kind: instruction
 name: dret
 long_name: No synopsis available.
 description: |
-      No description available.
+  No description available.
 definedBy: Sdext
 assembly: dret
 encoding:
-  match: '01111011001000000000000001110011'
+  match: "01111011001000000000000001110011"
   variables: []
 access:
   s: always
@@ -18,4 +18,3 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-      

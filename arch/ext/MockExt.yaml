@@ -7,11 +7,11 @@ type: privileged
 long_name: Mock Extension (for testing database)
 description: This is just for testing
 versions:
-- version: "0.9.9"
-  state: development
-- version: "1.0.0"
-  state: ratified
-  ratification_date: 2024-04
+  - version: "0.9.9"
+    state: development
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2024-04
 params:
   MOCK_ENUM_2_INTS:
     description: foo
@@ -89,7 +89,7 @@ params:
     description: foo
     schema:
       type: integer
-      minimum: 1000 
+      minimum: 1000
       maximum: 2048
   MOCK_INT_RANGE_0_TO_128:
     description: foo
@@ -148,8 +148,8 @@ params:
     schema:
       type: array
       items:
-      - const: false
-      - const: false
+        - const: false
+        - const: false
       additionalItems:
         type: boolean
       maxItems: 8

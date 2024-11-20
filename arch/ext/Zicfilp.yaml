@@ -6,9 +6,9 @@ description: |
   TODO
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: 2024-07
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2024-07
 params:
   REPORT_CAUSE_IN_MTVAL_ON_LANDING_PAD_SOFTWARE_CHECK:
     description: |

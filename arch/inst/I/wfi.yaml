@@ -16,7 +16,7 @@ description: |
   .2+| [.rotate]#`mstatus.TW`# .2+| [.rotate]#`hstatus.VTW`# 4+^.>| `wfi` behavior
   h| HS-mode h| U-mode h| VS-mode h| in VU-mode
 
-  | 0 | 0 | Wait | Trap (I) | Wait | Trap (V) 
+  | 0 | 0 | Wait | Trap (I) | Wait | Trap (V)
   | 0 | 1 | Wait | Trap (I) | Trap (V) | Trap (V)
   | 1 | - | Trap (I) | Trap (I) | Trap (I) | Trap (I)
 
@@ -47,7 +47,7 @@ description: |
 definedBy: Sm
 assembly: ""
 encoding:
-  match: '00010000010100000000000001110011'
+  match: "00010000010100000000000001110011"
 access:
   s: sometimes
   u: sometimes
@@ -63,7 +63,7 @@ access_detail: |
   .2+| [.rotate]#`mstatus.TW`# .2+| [.rotate]#`hstatus.VTW`# 4+^.>| `wfi` behavior
   h| HS-mode h| U-mode h| VS-mode h| in VU-mode
 
-  | 0 | 0 | Wait | Trap (I) | Wait | Trap (V) 
+  | 0 | 0 | Wait | Trap (I) | Wait | Trap (V)
   | 0 | 1 | Wait | Trap (I) | Trap (V) | Trap (V)
   | 1 | - | Trap (I) | Trap (I) | Trap (I) | Trap (I)
 
@@ -111,8 +111,6 @@ operation(): |
   # passed, so now do the wait
   wfi();
 
-
-
 sail(): |
   match cur_privilege {
       Machine    => { platform_wfi(); RETIRE_SUCCESS },
@@ -121,7 +119,3 @@ sail(): |
                     else { platform_wfi(); RETIRE_SUCCESS },
       User       => { handle_illegal(); RETIRE_FAIL }
     }
-
-
-
-

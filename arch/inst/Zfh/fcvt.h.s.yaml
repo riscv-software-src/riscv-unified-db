@@ -19,12 +19,12 @@ description: |
 encoding:
   match: 010001000000-------------1010011
   variables:
-  - name: fs1
-    location: 19-15
-  - name: rm
-    location: 14-12
-  - name: fd
-    location: 11-7  
+    - name: fs1
+      location: 19-15
+    - name: rm
+      location: 14-12
+    - name: fd
+      location: 11-7
 access:
   s: always
   u: always
@@ -65,8 +65,6 @@ operation(): |
 
   mark_f_state_dirty();
 
-
-
 sail(): |
   {
     assert(sizeof(xlen) >= 64);
@@ -76,14 +74,10 @@ sail(): |
       Some(rm') => {
         let rm_3b = encdec_rounding_mode(rm');
         let (fflags, rd_val_H) = riscv_ui64ToF16 (rm_3b, rs1_val_LU);
-  
+
         accrue_fflags(fflags);
         F_or_X_H(rd) = rd_val_H;
         RETIRE_SUCCESS
       }
     }
   }
-
-
-
-

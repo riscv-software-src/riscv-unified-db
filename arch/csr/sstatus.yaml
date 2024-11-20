@@ -22,7 +22,7 @@ fields:
       *State Dirty*
 
       Alias of `mstatus.SD`.
-      
+
     type: RO-H
     reset_value: UNDEFINED_LEGAL
     affectedBy: [F, D, V]
@@ -34,7 +34,7 @@ fields:
       *U-mode XLEN*
 
       Alias of `mstatus.UXL`.
-      
+
     type: RO
     reset_value: UNDEFINED_LEGAL
   MXR:
@@ -44,7 +44,7 @@ fields:
       *Make eXecutable Readable*
 
       Alias of `mstatus.MXR`.
-      
+
     type: RW
     reset_value: UNDEFINED_LEGAL
   SUM:
@@ -54,7 +54,7 @@ fields:
       *permit Supervisor Memory Access*
 
       Alias of `mstatus.SUM`.
-      
+
     type: RW
     reset_value: UNDEFINED_LEGAL
   XS:
@@ -62,9 +62,9 @@ fields:
     location: 16-15
     description: |
       Custom (X) extension context Status.
-      
+
       Alias of `mstatus.XS`.
-      
+
     type: RO
     reset_value: UNDEFINED_LEGAL
   FS:
@@ -87,7 +87,7 @@ fields:
       Alias of `mstatus.VS`.
 
     type: RW-H
-    reset_value: UNDEFINED_LEGAL 
+    reset_value: UNDEFINED_LEGAL
     definedBy: V
   SPP:
     alias: mstatus.SPP
@@ -116,7 +116,7 @@ fields:
       *S-mode Previous Interrupt Enable*
 
       Alias of `mstatus.SPIE`.
-      
+
     type: RW-H
     definedBy: S
     reset_value: UNDEFINED_LEGAL
@@ -127,6 +127,6 @@ fields:
       *S-mode Interrupt Enable*
 
       Alias of `mstatus.SIE`.
-      
+
     type: RW-H
     reset_value: UNDEFINED_LEGAL

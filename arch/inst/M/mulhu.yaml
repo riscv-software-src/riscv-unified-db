@@ -22,12 +22,12 @@ assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------011-----0110011
   variables:
-  - name: rs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -44,7 +44,6 @@ operation(): |
   Bits<XLEN*8'd2> src2 = {{XLEN{1'b0}}, X[rs2]};
 
   X[rd] = (src1 * src2)[(XLEN*8'd2)-1:XLEN];
-
 
 sail(): |
   {
@@ -64,7 +63,3 @@ sail(): |
       RETIRE_FAIL
     }
   }
-
-
-
-

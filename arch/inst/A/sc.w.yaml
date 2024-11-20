@@ -110,16 +110,16 @@ assembly: xd, xs2, xs1
 encoding:
   match: 00011------------010-----0101111
   variables:
-  - name: aq
-    location: 26
-  - name: rl
-    location: 25
-  - name: rs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: aq
+      location: 26
+    - name: rl
+      location: 25
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -155,8 +155,6 @@ operation(): |
 
   Boolean success = store_conditional<32>(virtual_address, value, aq, rl, $encoding);
   X[rd] = success ? 0 : 1;
-
-
 
 sail(): |
   {
@@ -234,7 +232,3 @@ sail(): |
       }
     }
   }
-
-
-
-

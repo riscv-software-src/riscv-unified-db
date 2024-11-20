@@ -17,12 +17,12 @@ assembly: xd, zimm, csr
 encoding:
   match: -----------------101-----1110011
   variables:
-  - name: csr
-    location: 31-20
-  - name: imm
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: csr
+      location: 31-20
+    - name: imm
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -31,13 +31,11 @@ access:
 operation(): |
   if (rd != 0) {
     X[rd] = CSR[csr].sw_read();
-  } 
+  }
 
   # writes the zero-extended immediate to the CSR,
   # performing any WARL transformations first
   CSR[csr].sw_write({{XLEN-5{1'b0}}, imm});
-
-
 
 sail(): |
   {
@@ -64,7 +62,3 @@ sail(): |
       RETIRE_SUCCESS
     }
   }
-
-
-
-

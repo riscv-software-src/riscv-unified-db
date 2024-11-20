@@ -12,12 +12,12 @@ description: |
   This extension was ratified as part of the RVA22 profile.
 type: privileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
-  requires:
-    name: Sv39
-  param_constraints:
-    SATP_MODE_BARE:
-      schema:
-        const: true
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    requires:
+      name: Sv39
+    param_constraints:
+      SATP_MODE_BARE:
+        schema:
+          const: true
