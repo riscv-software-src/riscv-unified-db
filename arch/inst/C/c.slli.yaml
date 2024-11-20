@@ -6,7 +6,7 @@ name: c.slli
 long_name: Shift left logical immediate
 description: |
   Shift the value in rd left by shamt, and store the result back in rd.
-  C.SLLI expands into `slli rd, rd, shamt`. 
+  C.SLLI expands into `slli rd, rd, shamt`.
 definedBy:
   anyOf:
   - C
@@ -47,7 +47,3 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
-
-
-
-

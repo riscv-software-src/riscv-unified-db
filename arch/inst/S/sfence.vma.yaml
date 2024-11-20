@@ -321,7 +321,3 @@ sail(): |
       Machine    => { flush_TLB(asid, addr); RETIRE_SUCCESS }
     }
   }
-
-
-
-

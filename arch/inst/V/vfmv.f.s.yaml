@@ -22,7 +22,7 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    
+
 
 
 
@@ -31,14 +31,14 @@ sail(): |
     let rm_3b    = fcsr.FRM();
     let SEW      = get_sew();
     let num_elem = get_num_elem(0, SEW);
-  
+
     if illegal_fp_vd_unmasked(SEW, rm_3b) | SEW > sizeof(flen)
     then { handle_illegal(); return RETIRE_FAIL };
     assert(num_elem > 0 & SEW != 8);
-  
+
     let 'n = num_elem;
     let 'm = SEW;
-  
+
     let vs2_val : vector('n, dec, bits('m)) = read_vreg(num_elem, SEW, 0, vs2);
     match 'm {
       16 => F_H(rd) = vs2_val[0],
@@ -46,7 +46,6 @@ sail(): |
       64 => F_D(rd) = vs2_val[0]
     };
     vstart = zeros();
-  
+
     RETIRE_SUCCESS
   }
-

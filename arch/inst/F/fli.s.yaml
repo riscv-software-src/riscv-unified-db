@@ -22,7 +22,7 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
-    
+
 
 
 
@@ -65,7 +65,3 @@ sail(): |
     F_S(rd) = bits;
     RETIRE_SUCCESS
   }
-
-
-
-

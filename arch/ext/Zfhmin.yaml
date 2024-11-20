@@ -50,4 +50,3 @@ versions:
   requires:
     name: F
     version: ">= 2.2"
-

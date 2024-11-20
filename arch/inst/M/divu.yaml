@@ -6,7 +6,7 @@ name: divu
 long_name: Unsigned division
 description: |
   Divide unsigned values in rs1 by rs2, and store the result in rd.
-  
+
   The remainder is discarded.
 
   If the value in rs2 is zero, rd gets the largest unsigned value.
@@ -60,7 +60,3 @@ sail(): |
       RETIRE_FAIL
     }
   }
-
-
-
-

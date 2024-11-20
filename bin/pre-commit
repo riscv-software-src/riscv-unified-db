@@ -3,4 +3,3 @@
 ROOT=$(dirname $(dirname $(realpath $BASH_SOURCE[0])))
 
 ${ROOT}/bin/bash -c "source ${ROOT}/.home/.venv/bin/activate && pre-commit $@"
-

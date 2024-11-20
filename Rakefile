@@ -95,7 +95,7 @@ namespace :validate do
       progressbar.increment
       validator.validate(f)
     end
-    puts "All files validate against their schema"  
+    puts "All files validate against their schema"
   end
   task idl: ["gen:arch", "#{$root}/.stamps/arch-gen-_32.stamp", "#{$root}/.stamps/arch-gen-_64.stamp"]  do
     print "Parsing IDL code for RV32..."

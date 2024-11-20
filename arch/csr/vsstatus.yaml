@@ -23,7 +23,7 @@ fields:
     location_rv32: 31
     description: |
       *State Dirty*
-      
+
       Read-only bit that summarizes whether any of the
       `vsstatus.FS`, <% if ext?(:V) %> `vsstatus.VS`, <% end %> or `vsstatus.XS`
       fields signal the presence of some dirty state
@@ -104,7 +104,7 @@ fields:
     location: 16-15
     description: |
       *Custom (X) extension context Status*
-      
+
       Summarizes the current state of any custom extension state.
       Either 0 - Off, 1 - Initial, 2 - Clean, 3 - Dirty.
       Since there are no custom extensions, this field is read-only 0.
@@ -124,7 +124,7 @@ fields:
       `vsstatus.FS` is written with the value 3.
 
       Values 1 and 2 are valid write values for software, but are not interpreted by hardware
-      other than to possibly enable a previously-disabled floating point unit. 
+      other than to possibly enable a previously-disabled floating point unit.
     type: RW-H
     definedBy: F
     reset_value: UNDEFINED_LEGAL
@@ -138,7 +138,7 @@ fields:
       Values 1 and 2 are valid write values for software, but are not interpreted by hardware
       other than to possibly enable a previously-disabled vector unit.
     type: RW-H
-    reset_value: UNDEFINED_LEGAL 
+    reset_value: UNDEFINED_LEGAL
     definedBy: V
   SPP:
     location: 8

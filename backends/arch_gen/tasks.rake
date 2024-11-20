@@ -134,7 +134,7 @@ rule %r{#{$root}/\.stamps/arch-gen-.*\.stamp} => proc { |tname|
     "#{ARCH_GEN_DIR}/tasks.rake",
     arch_files,
     config_files,
-    
+
     # the stamp file is not actually dependent on the Ruby object model,
     # but in general we want to rebuild anything using this stamp when the object model changes
     obj_model_files.map(&:to_s)

@@ -31,7 +31,7 @@ access:
 operation(): |
   if (rd != 0) {
     X[rd] = CSR[csr].sw_read();
-  } 
+  }
 
   # writes the value in X[rs1] to the CSR,
   # performing any WARL transformations first
@@ -64,7 +64,3 @@ sail(): |
       RETIRE_SUCCESS
     }
   }
-
-
-
-

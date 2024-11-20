@@ -18,18 +18,18 @@ RVA:
     substantial fraction of software to be delivered to end-customers in
     binary form, compatibility across multiple implementations from
     different RISC-V vendors is required.
-    
+
     The RVIA ISA extension ratification process ensures that all processor
     vendors have agreed to the specification of a standard extension if
     present.  However, by themselves, the ISA extension specifications do
     not guarantee that a certain set of standard extensions will be
     present in all implementations.
-    
+
     *The primary goal of the RVA profiles is to align processor vendors
     targeting binary software markets, so software can rely on the
     existence of a certain set of ISA features in a particular generation
     of RISC-V implementations.*
-    
+
     Alignment is not only for compatibility, but also to ensure RISC-V is
     competitive in these markets.  The binary app markets are also
     generally those with the most competitive performance requirements
@@ -48,7 +48,7 @@ RVA:
     for certain limited cases, and binary app markets will not support a
     wide range of optional features, particularly for the nascent RISC-V
     binary app ecosystems.
-    
+
     To maintain alignment and increase RISC-V competitiveness over time,
     the mandatory set of extensions must increase over time in successive
     generations of RVA profile.  (RVA profiles may eventually have to
@@ -63,11 +63,11 @@ RVA:
     considerable investment, and no single binary app ecosystem can
     justify the development costs of these processors, especially for
     RISC-V in its early stage of adoption.
-    
+
     While the heart of the profile is the set of mandatory extensions,
     there are several kinds of optional extension that serve important
     roles in the profile.
-    
+
     The first kind are _localized_ _options_, whose presence or use
     necessarily differs along geo-political and/or jurisdictional
     boundaries, with crypto being the obvious example.  These will always
@@ -75,7 +75,7 @@ RVA:
     perfectly acceptable to handle this optionality on other
     architectures, as the use of the extensions is well contained in
     certain libraries.
-    
+
     The second kind of optional extension is a _development_ _option_,
     which represents a new ISA extension in an early part of its lifecycle
     but which is intended to become mandatory in a later generation of the
@@ -87,7 +87,7 @@ RVA:
     Denoting an extension as a _development_ _option_ signals to the
     community that development should be prioritized for such extensions
     as they will become mandatory.
-    
+
     The third kind of optional extension are _expansion_ _options_, which
     are those that may have a large implementation cost but are not always
     needed in a particular platform, and which can be readily handled by
@@ -99,7 +99,7 @@ RVA:
     future matrix extensions.  These have large implementation costs, and
     use of matrix instructions can be readily supported with discovery and
     alternate math libraries.
-    
+
     The fourth kind of optional extensions are _transitory_ _options_,
     where it is not clear if the extension will change to a mandatory,
     localized, or expansion option, or be possibly dropped over time.
@@ -113,7 +113,7 @@ RVA:
     term.  Denoting an option as transitory signals to the community that
     this extension may be removed in a future profile, though the time
     scale may span many years.
-    
+
     Except for the localized options, it could be argued that other three
     kinds of option could be left out of profiles.  Binary distributions
     of applications willing to invest in discovery can use an optional

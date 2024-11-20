@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: c.flw
-long_name: Load single-precision 
+long_name: Load single-precision
 description: |
   Loads a single precision floating-point value from memory into register rd.
   It computes an effective address by adding the zero-extended offset, scaled by 4,

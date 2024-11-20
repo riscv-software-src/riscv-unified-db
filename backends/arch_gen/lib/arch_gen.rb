@@ -165,7 +165,7 @@ class ArchGen
   private :params_extra_validation
 
   # validate the params.yaml file of a config.
-  # 
+  #
   # This does several things:
   #
   #  * Generates a config-specific schmea based on:
@@ -314,13 +314,13 @@ class ArchGen
         manual_info_files = Dir.glob($root / "arch" / "manual" / "**" / "#{manual_id}.yaml")
         raise "Could not find manual info '#{manual_id}'.yaml, needed by #{f}" if manual_info_files.empty?
         raise "Found multiple manual infos '#{manual_id}'.yaml, needed by #{f}" if manual_info_files.size > 1
-  
+
         manual_info_file = manual_info_files.first
         manual_hash[manual_id] = YamlLoader.load(manual_info_file, permitted_classes:[Date])
         manual_hash[manual_id]["__source"] = manual_info_file
         # TODO: schema validation
       end
-  
+
       manual_hash[manual_id]["versions"] ||= []
       manual_hash[manual_id]["versions"] << YamlLoader.load(f, permitted_classes:[Date])
       # TODO: schema validation
@@ -645,7 +645,7 @@ class ArchGen
     end
     belongs =
       csr_obj.exists_in_cfg?(arch_def_mock)
-  
+
 
     @implemented_csrs ||= []
     @implemented_csrs << csr_name if belongs

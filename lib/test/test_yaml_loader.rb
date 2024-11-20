@@ -42,7 +42,7 @@ class TestYamlLoader < Minitest::Test
         - key3
         key4: value4
     YAML
-    
+
     f = Tempfile.new("yml")
     f.write(yaml)
     f.flush

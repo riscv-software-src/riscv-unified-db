@@ -17,7 +17,7 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
 
   base = cert_model_obj["base"]
   raise "Missing certificate model base" if base.nil?
-  
+
   file "#{$root}/gen/certificate_doc/adoc/#{cert_model_name}.adoc" => [
     "#{$root}/arch/certificate_model/#{cert_model_name}.yaml",
     "#{$root}/arch/certificate_class/#{cert_class_name}.yaml",
@@ -40,7 +40,7 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
 
     erb = ERB.new(File.read("#{CERT_DOC_DIR}/templates/certificate.adoc.erb"), trim_mode: "-")
     erb.filename = "#{CERT_DOC_DIR}/templates/certificate.adoc.erb"
-    
+
     FileUtils.mkdir_p File.dirname(t.name)
     File.write t.name, AsciidocUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
     puts "Generated adoc source at #{t.name}"

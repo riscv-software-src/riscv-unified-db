@@ -146,7 +146,7 @@ module Idl
         # condition not known
         fns = fns.concat action.reachable_functions(symtab) if action.is_a?(FunctionCallExpressionAst)
       end
-      
+
       fns
     end
   end

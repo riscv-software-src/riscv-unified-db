@@ -22,7 +22,7 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    
+
 
 
 
@@ -31,24 +31,24 @@ sail(): |
     let rm_3b    = fcsr.FRM();
     let SEW      = get_sew();
     let num_elem = get_num_elem(0, SEW);
-  
+
     if illegal_fp_vd_unmasked(SEW, rm_3b) then { handle_illegal(); return RETIRE_FAIL };
     assert(num_elem > 0 & SEW != 8);
-  
+
     let 'n = num_elem;
     let 'm = SEW;
-  
+
     let vm_val  : vector('n, dec, bool)     = read_vmask(num_elem, 0b1, 0b00000);
     let rs1_val : bits('m)                  = get_scalar_fp(rs1, 'm);
     let vd_val  : vector('n, dec, bits('m)) = read_vreg(num_elem, SEW, 0, vd);
     result      : vector('n, dec, bits('m)) = undefined;
     mask        : vector('n, dec, bool)     = undefined;
-  
+
     (result, mask) = init_masked_result(num_elem, SEW, 0, vd_val, vm_val);
-  
+
     /* one body element */
     if mask[0] then result[0] = rs1_val;
-  
+
     /* others treated as tail elements */
     let tail_ag : agtype = get_vtype_vta();
     foreach (i from 1 to (num_elem - 1)) {
@@ -57,9 +57,8 @@ sail(): |
         AGNOSTIC    => vd_val[i] /* TODO: configuration support */
       }
     };
-  
+
     write_vreg(num_elem, SEW, 0, vd, result);
     vstart = zeros();
     RETIRE_SUCCESS
   }
-

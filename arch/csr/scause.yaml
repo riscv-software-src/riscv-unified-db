@@ -16,7 +16,7 @@ fields:
     location_rv64: 63
     description: |
       Written by hardware when a trap is taken into S-mode.
-      
+
       When set, the last exception was caused by an asynchronous Interrupt.
 
       `scause.INT` is writeable.

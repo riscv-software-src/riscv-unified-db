@@ -22,7 +22,7 @@ encoding:
   - name: fs1
     location: 19-15
   - name: rd
-    location: 11-7  
+    location: 11-7
 access:
   s: always
   u: always
@@ -42,7 +42,3 @@ sail(): |
     F(rd) = nan_box (rd_val_H);
     RETIRE_SUCCESS
   }
-
-
-
-

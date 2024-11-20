@@ -16,7 +16,7 @@ fields:
     location_rv32: 31
     description: |
       Written by hardware when a trap is taken into VS-mode.
-      
+
       When set, the last exception was caused by an asynchronous Interrupt.
 
       `vscause.INT` is writeable.
