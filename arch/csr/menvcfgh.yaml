@@ -19,7 +19,7 @@ fields:
     alias: menvcfg.STCE
     description: |
       *STimecmp Enable*
-      
+
       Alias of `menvcfg.STCE`
     definedBy: Sstc
     type: RW

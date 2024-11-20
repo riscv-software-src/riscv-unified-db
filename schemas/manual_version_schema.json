@@ -50,7 +50,14 @@
   },
 
   "type": "object",
-  "required": ["manual", "version", "name", "marketing_version", "state", "volumes"],
+  "required": [
+    "manual",
+    "version",
+    "name",
+    "marketing_version",
+    "state",
+    "volumes"
+  ],
   "properties": {
     "name": {
       "type": "string",

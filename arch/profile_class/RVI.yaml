@@ -3,7 +3,7 @@ RVI:
   introduction: The RVI profile class documents the initial set of unprivileged instructions.
   description: |
     The RVI profile class provides a generic target for software toolchains
-    and represent the minimum level of compatibility with RISC-V ratified standards.  
+    and represent the minimum level of compatibility with RISC-V ratified standards.
 
     NOTE: Profiles in this class are designated as _unprivileged_ profiles as opposed to
     _user_-_mode_ profiles.  Code using this profile class can run in any

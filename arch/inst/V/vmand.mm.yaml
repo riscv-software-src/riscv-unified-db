@@ -5,18 +5,18 @@ kind: instruction
 name: vmand.mm
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy: V
 assembly: vs2, vs1, vd
 encoding:
   match: 0110011----------010-----1010111
   variables:
-  - name: vs2
-    location: 24-20
-  - name: vs1
-    location: 19-15
-  - name: vd
-    location: 11-7
+    - name: vs2
+      location: 24-20
+    - name: vs1
+      location: 19-15
+    - name: vd
+      location: 11-7
 access:
   s: always
   u: always
@@ -24,29 +24,26 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    
-
-
 
 sail(): |
   {
     let SEW      = get_sew();
     let LMUL_pow = get_lmul_pow();
     let num_elem = unsigned(vlenb) * 8;
-  
+
     if illegal_vd_unmasked() then { handle_illegal(); return RETIRE_FAIL };
-  
+
     let 'n = num_elem;
     let 'm = SEW;
-  
+
     let vs1_val : vector('n, dec, bool) = read_vmask(num_elem, 0b0, vs1);
     let vs2_val : vector('n, dec, bool) = read_vmask(num_elem, 0b0, vs2);
     let vd_val  : vector('n, dec, bool) = read_vmask(num_elem, 0b0, vd);
     result      : vector('n, dec, bool) = undefined;
     mask        : vector('n, dec, bool) = undefined;
-  
+
     (result, mask) = init_masked_result_carry(num_elem, SEW, 0, vd_val);
-  
+
     foreach (i from 0 to (num_elem - 1)) {
       if mask[i] then {
         result[i] = match funct6 {
@@ -61,9 +58,8 @@ sail(): |
         }
       }
     };
-  
+
     write_vmask(num_elem, vd, result);
     vstart = zeros();
     RETIRE_SUCCESS
   }
-

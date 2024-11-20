@@ -17,12 +17,12 @@ assembly: xd, xs1, csr
 encoding:
   match: -----------------001-----1110011
   variables:
-  - name: csr
-    location: 31-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: csr
+      location: 31-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -31,13 +31,11 @@ access:
 operation(): |
   if (rd != 0) {
     X[rd] = CSR[csr].sw_read();
-  } 
+  }
 
   # writes the value in X[rs1] to the CSR,
   # performing any WARL transformations first
   CSR[csr].sw_write(X[rs1]);
-
-
 
 sail(): |
   {
@@ -64,7 +62,3 @@ sail(): |
       RETIRE_SUCCESS
     }
   }
-
-
-
-

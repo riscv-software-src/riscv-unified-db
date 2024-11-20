@@ -5,16 +5,16 @@ kind: instruction
 name: hlv.wu
 long_name: No synopsis available.
 description: |
-      No description available.
+  No description available.
 definedBy: H
 assembly: xd, xs1
 encoding:
   match: 011010000001-----100-----1110011
   variables:
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -23,4 +23,3 @@ access:
 data_independent_timing: false
 base: 64
 operation(): |
-      

@@ -20,11 +20,11 @@ fields:
     location_rv64: 63
     description: |
       State Dirty.
-      
+
       Read-only bit that summarizes whether either the FS, XS, or VS
       fields signal the presence of some dirty state.
     definedBy:
-      anyOf: [F,V] # NOTE: if you implement a custom extension overlay that writes to XS, then you need to add your extension here in the overlay as well
+      anyOf: [F, V] # NOTE: if you implement a custom extension overlay that writes to XS, then you need to add your extension here in the overlay as well
     type(): |
       # this is read-only if FS and VS are both read-only
       # otherwise, it is read-only with hardware update
@@ -74,7 +74,7 @@ fields:
     base: 64
     description: |
       *M-mode Big Endian*
-      
+
       Controls the endianness of data M-mode (0 = little, 1 = big).
       Instructions are always little endian, regardless of the data setting.
 
@@ -96,7 +96,7 @@ fields:
     definedBy: S
     description: |
       *S-mode Big Endian*
-      
+
       Controls the endianness of S-mode (0 = little, 1 = big).
       Instructions are always little endian, regardless of the data setting.
 
@@ -123,7 +123,7 @@ fields:
     definedBy: S
     description: |
       *S-mode XLEN*
-      
+
       Sets the effective XLEN for S-mode (0 = 32-bit, 1 = 64-bit, 2 = 128-bit [reserved]).
 
       [when,"SXLEN==32"]
@@ -135,9 +135,9 @@ fields:
       [when,"SXLEN=3264"]
       --
       It is not valid to have SXLEN less than UXLEN.
-      
+
       It is UNDEFINED_LEGAL what will happen if a software sets `mstatus.SXL` to be greater than `mstatus.UXL`.
-     
+
       It is UNDEFINED_LEGAL to set the MSB of SXL.
       --
     type(): |
@@ -172,7 +172,7 @@ fields:
     definedBy: U
     description: |
       U-mode XLEN.
-      
+
       Sets the effective XLEN for U-mode (0 = 32-bit, 1 = 64-bit, 2 = 128-bit [reserved]).
 
       [when,"UXLEN == 32"]
@@ -185,9 +185,9 @@ fields:
       [when,"UXLEN == 3264"]
       --
       It is not valid to have SXLEN less than UXLEN.
-      
+
       It is UNDEFINED_LEGAL what will happen if a software sets `mstatus.SXL` to be greater than `mstatus.UXL`.
-     
+
       It is UNDEFINED_LEGAL to set the MSB of UXL.
       --
     type(): |
@@ -210,7 +210,7 @@ fields:
         return csr_value.UXL == 1;
       } else {
         return csr_value.UXL <= 1;
-      }        
+      }
 
     reset_value(): |
       if (UXLEN == 32) {
@@ -258,7 +258,7 @@ fields:
       * writing the `hgtap` CSR, executing an `hfence.gvma`, or executing an `hinval.gvma` while in HS-mode
 
       Notably, `mstatus.TVM` does *not* cause
-      
+
       *`hfence.vvma`, `sfence.w.inval`, or `sfence.inval.ir` to trap.
       * Any additional traps in VS-mode (controlled via `hstatus.VTVM` instead).
 
@@ -289,7 +289,7 @@ fields:
     location: 19
     description: |
       Make eXecutable Readable.
-      
+
       When 1, loads from pages marked readable *or executable* are allowed.
       When 0, loads from pages marked executable raise a Page Fault exception.
     definedBy: S
@@ -299,7 +299,7 @@ fields:
     location: 18
     description: |
       permit Supervisor Memory Access.
-      
+
       When 0, an S-mode read or an M-mode read with mstatus.MPRV=1 and mstatus.MPP=01
       to a 'U' (user) page will cause an ILLEGAL INSTRUCTION exception.
     definedBy: S
@@ -321,7 +321,7 @@ fields:
     location: 17
     description: |
       Modify PRiVilege.
-      
+
       When 1, loads and stores behave as if the current virutalization mode:privilege level was
       `mstatus.MPV`:`mstatus.MPP`.
 
@@ -334,7 +334,7 @@ fields:
     location: 16-15
     description: |
       *Custom (X) extension context Status*
-      
+
       Summarizes the current state of any custom extension state.
       Either 0 - Off, 1 - Initial, 2 - Clean, 3 - Dirty.
       Since there are no custom extensions in the base spec, this field is read-only 0.
@@ -344,12 +344,12 @@ fields:
     location: 14-13
     description: |
       Floating point context status.
-      
+
       When 0, floating point instructions (from F and D extensions) are disabled,
       and cause `ILLEGAL INSTRUCTION` exceptions.
       When a floating point register, or the fCSR register is written, FS obtains the value 3.
       Values 1 and 2 are valid write values for software, but are not interpreted by hardware
-      other than to possibly enable a previously-disabled floating point unit. 
+      other than to possibly enable a previously-disabled floating point unit.
     type(): |
       if (CSR[misa].F == 1'b1){
         return CsrFieldType::RWH;
@@ -427,7 +427,7 @@ fields:
     location: 10-9
     description: |
       Vector context status.
-      
+
       When 0, vector instructions (from the V extension) are disabled, and cause ILLEGAL INSTRUCTION exceptions.
       When a vector register or vector CSR is written, VS obtains the value 3.
       Values 1 and 2 are valid write values for software, but are not interpreted by hardware
@@ -468,7 +468,7 @@ fields:
     location: 8
     description: |
       *S-mode Previous Privilege*
-      
+
       Written by hardware in two cases:
 
       * Written with the prior nominal privilege level when entering (H)S-mode from an exception/interrupt.
@@ -498,7 +498,7 @@ fields:
     location: 7
     description: |
       *M-mode Previous Interrupt Enable*
-      
+
       Written by hardware in two cases:
 
       * Written with prior value of `mstatus.MIE` when entering M-mode from an exception/interrupt.
@@ -507,7 +507,7 @@ fields:
       Can also be written by software without immediate side effect.
 
       Other than serving as a record of nested traps as described above, `mstatus.MPIE` does not affect execution.
-      
+
     type: RW-H
     reset_value: UNDEFINED_LEGAL
   UBE:
@@ -515,7 +515,7 @@ fields:
     definedBy: U
     description: |
       *U-mode Big Endian*
-      
+
       Controls the endianness of U-mode (0 = little, 1 = big).
       Instructions are always little endian, regardless of the data setting.
 
@@ -523,7 +523,7 @@ fields:
       Since the CPU does not support big endian in U-mode, this is hardwired to 0.
 
       [when,"U_MODE_ENDIANESS == 'big'"]
-      Since the CPU does not support litte endian in U-mode, this is hardwired to 1.      
+      Since the CPU does not support litte endian in U-mode, this is hardwired to 1.
     type(): |
       return (U_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
 
@@ -558,7 +558,7 @@ fields:
     location: 3
     description: |
       *M-mode Interrupt Enable*
-      
+
       Written by hardware in two cases:
 
       * Written with the value 0 when entering M-mode from an exception/interrupt.
@@ -568,14 +568,14 @@ fields:
 
       * When 0, all interrupts are disabled when the current privilege level is M.
       * When 1, interrupts that are not otherwise disabled with a field in `mie` are enabled.
-      
+
     type: RW-H
     reset_value: 0
   SIE:
     location: 1
     description: |
       *S-mode Interrupt Enable*
-      
+
       Written by hardware in two cases:
 
       * Written with the value 0 when entering (H)S-mode from an exception/interrupt.

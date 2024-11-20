@@ -5,16 +5,16 @@ kind: instruction
 name: hsv.d
 long_name: No synopsis available.
 description: |
-      No description available.
+  No description available.
 definedBy: H
 assembly: xs1, xs2
 encoding:
   match: 0110111----------100000001110011
   variables:
-  - name: rs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
 access:
   s: always
   u: always
@@ -23,4 +23,3 @@ access:
 data_independent_timing: false
 base: 64
 operation(): |
-      

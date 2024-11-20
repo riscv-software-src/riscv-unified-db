@@ -5,22 +5,22 @@ kind: instruction
 name: flt.s
 long_name: Single-precision floating-point less than
 description: |
-    Writes 1 to _rd_ if _fs1_ is less than _fs2_, and 0 otherwise.
+  Writes 1 to _rd_ if _fs1_ is less than _fs2_, and 0 otherwise.
 
-    If either operand is NaN, the result is 0 (not equal).
-    If either operand is a NaN (signaling or quiet), the invalid flag is set.
+  If either operand is NaN, the result is 0 (not equal).
+  If either operand is a NaN (signaling or quiet), the invalid flag is set.
 
 definedBy: F
 assembly: xd, fs1, fs2
 encoding:
   match: 1010000----------001-----1010011
   variables:
-  - name: fs2
-    location: 24-20
-  - name: fs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: fs2
+      location: 24-20
+    - name: fs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -40,30 +40,22 @@ operation(): |
     Boolean sign_a = sp_value_a[31] == 1;
     Boolean sign_b = sp_value_b[31] == 1;
 
-    Boolean a_lt_b = 
+    Boolean a_lt_b =
       (sign_a != sign_b)
         ? (sign_a && ((sp_value_a[30:0] | sp_value_b[30:0]) != 0)) # opposite sign, a is negative. a is less than b as long as both are not zero
         : ((sp_value_a != sp_value_b) && (sign_a != (sp_value_a < sp_value_b)));
     X[rd] = a_lt_b ? 1 : 0;
   }
 
-
-
-
-
 sail(): |
   {
     let rs1_val_S = F_or_X_S(rs1);
     let rs2_val_S = F_or_X_S(rs2);
-  
+
     let (fflags, rd_val) : (bits_fflags, bool) =
         riscv_f32Le (rs1_val_S, rs2_val_S);
-  
+
     accrue_fflags(fflags);
     X(rd) = zero_extend(bool_to_bits(rd_val));
     RETIRE_SUCCESS
   }
-
-
-
-

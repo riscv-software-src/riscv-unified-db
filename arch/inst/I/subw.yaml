@@ -11,12 +11,12 @@ assembly: xd, xs1, xs2
 encoding:
   match: 0100000----------000-----0111011
   variables:
-  - name: rs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -27,8 +27,6 @@ operation(): |
   Bits<32> t0 = X[rs1][31:0];
   Bits<32> t1 = X[rs2][31:0];
   X[rd] = sext(t0 - t1, 31);
-
-
 
 sail(): |
   {
@@ -44,7 +42,3 @@ sail(): |
     X(rd) = sign_extend(result);
     RETIRE_SUCCESS
   }
-
-
-
-

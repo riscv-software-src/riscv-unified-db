@@ -11,13 +11,13 @@ definedBy:
   # after 1.9.1, mideleg does not exist whe S-mode is not implemented
   # we can represent that by making mideleg an S extension CSR post 1.9.1
   oneOf:
-  - name: Sm
-    version: "<= 1.9.1"
-  - allOf:
-    - name: S
-      version: "> 1.9.1"
     - name: Sm
-      version: "> 1.9.1"
+      version: "<= 1.9.1"
+    - allOf:
+        - name: S
+          version: "> 1.9.1"
+        - name: Sm
+          version: "> 1.9.1"
 description: |
   Controls exception delegation from M-mode to HS/S-mode
 
@@ -26,7 +26,7 @@ description: |
   appropriate level with the `MRET` instruction. To increase performance,
   implementations can provide individual read/write bits within `mideleg`
   to indicate that certain exceptions and interrupts should
-  be processed directly by a lower privilege level. 
+  be processed directly by a lower privilege level.
 
   In harts with S-mode, the `mideleg` register must
   exist, and setting a bit `mideleg` will delegate the
@@ -104,7 +104,7 @@ fields:
       *Virtual Supervisor Software Interrupt delegation*
 
       When 1, Virtual Supervisor Software interrupts are delegated to HS-mode.
-      
+
       Virtual Supervisor Software Interrupts are always delegated to HS-mode, so this field is read-only one.
     type: RO
     reset_value: 1
@@ -113,7 +113,7 @@ fields:
     location: 3
     description: |
       *Machine Software interrupt delegation*
-      
+
       Since M-mode interrupts cannot be delegated, this field is read-only zero.
     type: RO
     reset_value: 0
@@ -121,7 +121,7 @@ fields:
     location: 5
     description: |
       *Supervisor Timer interrupt delegation*
-    
+
       When 1, Supervisor Timer interrupts are delegated to HS/S-mode.
     type: RW
     reset_value: 0
@@ -131,7 +131,7 @@ fields:
       *Virutal Supervisor Timer interrupt delegation*
 
       When 1, Virtual Supervisor Timer interrupts are delegated to HS-mode.
-      
+
       Virtual Supervisor Time Interrupts are always delegated to HS-mode, so this field is read-only one.
     type: RO
     reset_value: 1
@@ -140,7 +140,7 @@ fields:
     location: 7
     description: |
       *Machine Timer interrupt delegation*
-      
+
       Since M-mode interrupts cannot be delegated, this field is read-only zero.
     type: RO
     reset_value: 0
@@ -148,7 +148,7 @@ fields:
     location: 9
     description: |
       *Supervisor External interrupt delegation*
-    
+
       When 1, Supervisor External interrupts are delegated to HS/S-mode.
     type: RW
     reset_value: 0
@@ -165,7 +165,7 @@ fields:
     location: 11
     description: |
       *Machine External interrupt delegation*
-      
+
       Since M-mode interrupts cannot be delegated, this field is read-only zero.
     type: RO
     reset_value: 0
@@ -173,7 +173,7 @@ fields:
     location: 12
     description: |
       *Supervisor Guest External Interrupt delegation*
-      
+
       Supervisor Guest External interrupts are always delegated to HS-mode, so this field is read-only one.
     type: RO
     reset_value: 1

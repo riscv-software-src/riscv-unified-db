@@ -15,21 +15,21 @@ encoding:
   RV32:
     match: 0010100----------001-----0010011
     variables:
-    - name: shamt
-      location: 24-20
-    - name: rs1
-      location: 19-15
-    - name: rd
-      location: 11-7
+      - name: shamt
+        location: 24-20
+      - name: rs1
+        location: 19-15
+      - name: rd
+        location: 11-7
   RV64:
     match: 001010-----------001-----0010011
     variables:
-    - name: shamt
-      location: 25-20
-    - name: rs1
-      location: 19-15
-    - name: rd
-      location: 11-7
+      - name: shamt
+        location: 25-20
+      - name: rs1
+        location: 19-15
+      - name: rd
+        location: 11-7
 access:
   s: always
   u: always
@@ -42,8 +42,6 @@ operation(): |
 
   XReg index = shamt & (xlen() - 1);
   X[rd] = X[rs1] | (1 << index);
-
-
 
 sail(): |
   {
@@ -60,7 +58,3 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
-
-
-
-

@@ -164,7 +164,16 @@
     },
     "csr_register": {
       "type": "object",
-      "required": ["$schema", "kind", "name", "long_name", "length", "description", "priv_mode", "definedBy"],
+      "required": [
+        "$schema",
+        "kind",
+        "name",
+        "long_name",
+        "length",
+        "description",
+        "priv_mode",
+        "definedBy"
+      ],
 
       "properties": {
         "$schema": {
@@ -215,7 +224,8 @@
           "default": false,
           "description": "Whether or not the CSR is accessible via an indirect address"
         },
-        "virtual_address": true, "$comment": "Conditionally required; see below",
+        "virtual_address": true,
+        "$comment": "Conditionally required; see below",
         "priv_mode": {
           "enum": ["M", "S", "U", "VS"]
         },

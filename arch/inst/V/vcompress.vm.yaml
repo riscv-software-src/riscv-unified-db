@@ -5,18 +5,18 @@ kind: instruction
 name: vcompress.vm
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy: V
 assembly: vs2, vs1, vd
 encoding:
   match: 0101111----------010-----1010111
   variables:
-  - name: vs2
-    location: 24-20
-  - name: vs1
-    location: 19-15
-  - name: vd
-    location: 11-7
+    - name: vs2
+      location: 24-20
+    - name: vs1
+      location: 19-15
+    - name: vd
+      location: 11-7
 access:
   s: always
   u: always
@@ -24,9 +24,6 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    
-
-
 
 sail(): |
   {
@@ -35,19 +32,19 @@ sail(): |
     let SEW = get_sew();
     let LMUL_pow = get_lmul_pow();
     let num_elem = get_num_elem(LMUL_pow, SEW);
-  
+
     /* vcompress should always be executed with a vstart of 0 */
     if start_element != 0 | vs1 == vd | vs2 == vd | illegal_vd_unmasked()
     then { handle_illegal(); return RETIRE_FAIL };
-  
+
     let 'n = num_elem;
     let 'm = SEW;
-  
+
     let vs1_val : vector('n, dec, bool)     = read_vmask(num_elem, 0b0, vs1);
     let vs2_val : vector('n, dec, bits('m)) = read_vreg(num_elem, SEW, LMUL_pow, vs2);
     let vd_val  : vector('n, dec, bits('m)) = read_vreg(num_elem, SEW, LMUL_pow, vd);
     result      : vector('n, dec, bits('m)) = undefined;
-  
+
     /* body elements */
     vd_idx : nat = 0;
     foreach (i from 0 to (num_elem - 1)) {
@@ -71,9 +68,8 @@ sail(): |
         }
       }
     };
-  
+
     write_vreg(num_elem, SEW, LMUL_pow, vd, result);
     vstart = zeros();
     RETIRE_SUCCESS
   }
-

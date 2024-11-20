@@ -13,10 +13,10 @@ assembly: xd, xs1
 encoding:
   match: 011000000101-----001-----0010011
   variables:
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -33,8 +33,6 @@ operation(): |
     X[rd] = {{48{X[rs1][15]}}, X[rs1][15:0]};
   }
 
-
-
 sail(): |
   {
     let rs1_val = X(rs1);
@@ -46,7 +44,3 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
-
-
-
-

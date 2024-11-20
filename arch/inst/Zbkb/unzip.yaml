@@ -5,17 +5,17 @@ kind: instruction
 name: unzip
 long_name: No synopsis available.
 description: |
-      No description available.
+  No description available.
 definedBy:
   anyOf: [B, Zbkb, Zk, Zkn, Zks]
 assembly: xd, xs1
 encoding:
   match: 000010001111-----101-----0010011
   variables:
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -24,4 +24,3 @@ access:
 data_independent_timing: false
 base: 32
 operation(): |
-      

@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: c.lw
-long_name: Load word 
+long_name: Load word
 description: |
   Loads a 32-bit value from memory into register rd.
   It computes an effective address by adding the zero-extended offset, scaled by 4,
@@ -11,19 +11,19 @@ description: |
   It expands to `lw` `rd, offset(rs1)`.
 definedBy:
   anyOf:
-  - C
-  - Zca
+    - C
+    - Zca
 assembly: xd, imm(xs1)
 encoding:
   match: 010-----------00
   variables:
-  - name: imm
-    location: 5|12-10|6
-    left_shift: 2
-  - name: rd
-    location: 4-2
-  - name: rs1
-    location: 9-7
+    - name: imm
+      location: 5|12-10|6
+      left_shift: 2
+    - name: rd
+      location: 4-2
+    - name: rs1
+      location: 9-7
 access:
   s: always
   u: always
