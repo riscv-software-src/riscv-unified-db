@@ -559,7 +559,7 @@ h| Privilege Mode | <%= csr.priv_mode %>
 |===
 
 
-==== <%= cert_model.name %> Format
+==== Format
 <% unless csr.dynamic_length?(arch_def) || csr.implemented_fields(arch_def).any? { |f| f.dynamic_location?(arch_def) } -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
@@ -587,7 +587,7 @@ This CSR format changes dynamically with XLEN.
 
 <% end # unless dynamic length -%>
 
-==== <%= cert_model.name %> Field Summary
+==== Field Summary
 
 // use @ as a separator since IDL code can contain |
 [%autowidth,separator=@,float="center",align="center",cols="^,<,<,<",options="header",role="stretch"]
@@ -627,7 +627,7 @@ a@
 <%- end -%>
 |===
 
-==== <%= cert_model.name %> Fields
+==== Fields
 
 <%- if csr.implemented_fields(arch_def).empty? -%>
 This CSR has no fields. However, it must still exist (not cause an `Illegal Instruction` trap) and always return zero on a read.
