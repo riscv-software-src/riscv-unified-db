@@ -49,37 +49,37 @@ RVB23:
         #########################################################################
         Zihintntl:
           presence: mandatory
-          version: "???"
+          version: "=1.0"
           note: |
             Non-temporal memory-access locality hints
         Zicond:
           presence: mandatory
-          version: "???"
+          version: "=1.0"
           note: |
             Integer conditional operations
         Zimop:
           presence: mandatory
-          version: "???"
+          version: "=1.0"
           note: |
             May-be operations
          Zcmop:
           presence: mandatory
-          version: "???"
+          version: "=1.0"
           note: |
             Commpressed (16-bit) may-be operations
         Zcb:
           presence: mandatory
-          version: "???"
+          version: "=1.0"
           note: |
             Additional compressed (16-bit) instructions  
         Zfa:
           presence: mandatory
-          version: "???"
+          version: "=1.0"
           note: |
             Additional floating-point instructions 
         Zawrs:
           presence: mandatory
-          version: "???"
+          version: "=1.0"
           note: |
             Wait-on-reservation-set instructions
 
@@ -93,13 +93,13 @@ RVB23:
         Zvkng:
           presence: 
             optional: localized
-          version: "???"
+          version: "=1.0"
           note: |
             Vector crypto NIST Algorithms with GCM
         Zvksgm:
           presence: 
             optional: localized
-          version: "???"
+          version: "=1.0"
             note: |
               Vector crypto Shang-Mi Algorithms with GCM
 
@@ -109,14 +109,14 @@ RVB23:
         Zvkg:
           presence: 
             optional: localized
-          version: "???"
+          version: "=1.0"
           note: |
             Vector GCM/GMAC instructions
         
         Zvknc:
           presence: 
             optional: localized
-          version: "???"
+          version: "=1.0"
           note: |
             Vector crypto NIST algorithms with carryless multiply. 
             To reduce implementation cost, RVB profiles allow this carryless multiply option to 
@@ -126,7 +126,7 @@ RVB23:
         Zvksc:
           presence: 
             optional: localized
-          version: "???"
+          version: "=1.0"
           note: |
             Vector crypto Shang-Mi algorithms with carryless multiply. 
             To reduce implementation cost, RVB profiles allow this carryless multiply option to 
@@ -137,13 +137,13 @@ RVB23:
         Zkn:
           presence: 
             optional: localized
-          version: "???"
+          version: "=1.0"
           note: |
             Scalar crypto NIST algorithms
         Zks:
           presence: 
             optional: localized
-          version: "???"
+          version: "=1.0"
           note: |
             Scalar crypto Shang-Mi algorithms
         # RVA23 profiles drop support for the above scalar crypto as an option, as the vector 
@@ -157,26 +157,26 @@ RVB23:
         Zabha:
           presence: 
             optional: development
-          version: "???"
+          version: "=1.0"
           note: |
             Byte and halfword atomic memory operations
         Zacas:
           presence: 
             optional: development
-          version: "???"
+          version: "=1.0"
           note: |
             Compare-and-Swap instructions
         Ziccamoc:
           presence: 
             optional: development
-          version: "???"
+          version: "=1.0"
           note: |
             Main memory regions with both the cacheability and coherence PMAs 
             must provide AMOCASQ-level PMA support
         Zama16b:
           presence: 
             optional: development
-          version: "???"
+          version: "=1.0"
           note: |
             Misaligned loads, stores, and AMOs to main memory regions that do not cross 
             Daaaa naturally aligned 16-byte boundary are atomic
@@ -205,28 +205,28 @@ RVB23:
              The Vector extension
         # Note: it is unclear if other Zve* extensions should also be supported in RVB 
 
-       Zvfhmin:
+        Zvfhmin:
           presence: 
             optional: expansion
-          version: "???"
+          version: "=1.0"
           note: |
             Vector minimal half-precision floating-point
-       Zvbb:
+        Zvbb:
           presence: 
             optional: expansion
-          version: "???"
+          version: "=1.0"
           note: |
             Vector basic bit-manipulation instructions 
-       Zvkt:
+        Zvkt:
           presence: 
             optional: expansion 
-          version: "???"
+          version: "=1.0"
           note: |
             Vector basic bit-manipulation instructions 
-       Supm:
+        Supm:
           presence: 
             optional: expansion
-          version: "???"
+          version: "=1.0"
           note: |
             Pointer masking, with the execution environment providing 
             a means to select PMLEN=0 and PMLEN=7 at minimum 
@@ -234,31 +234,120 @@ RVB23:
         #--------------------------------------------
         # Expansion options in RVB23 (and also RVA23)
         #--------------------------------------------
-Zfh:
+        Zfh:
           presence: 
             optional: expansion 
           version: "=1.0"
           note: A future RVB profile might mandate V.
+        Zbc:
+          presence: 
+            optional: expansion 
+          version: "=1.0"
+          note: Scalar carryless multiplication
+        Zicfilp:
+          presence: 
+            optional: expansion 
+          version: "=1.0"
+          note: Landing Pads
+        Zicfiss:
+          presence: 
+            optional: expansion 
+          version: "=1.0"
+          note: Shadow Stack
+        Zvfh:
+          presence: 
+            optional: expansion 
+          version: "=1.0"
+          note: Vector half-precision floating-point
+        Zfbfmin:
+          presence: 
+            optional: expansion 
+          version: "=1.0"
+          note: Scalar BF16 conversion instructions
+        Zvfbfmin:
+          presence: 
+            optional: expansion 
+          version: "=1.0"
+          note: Vector BF16 conversion instructions
+        Zvfbfwma:
+          presence: 
+            optional: expansion 
+          version: "=1.0"
+          note: Vector BF16 widening mul-add instruction
 
-        ############ Need to continue inseting at THIS POINT ################
+        #--------------------------------------------
+        # Zvbc is an expansion option in RVB23U64
+        # (but is not intended to be made mandatory in future RVB Profiles)
+        # It will be listed in RVA23U64 as a *development* option,
+        # as it is intended to become mandatory in future RVA Profiles.
+        #--------------------------------------------
+        Zvbc:
+          presence: 
+            optional: expansion 
+          version: "=1.0"
+          note: Vector carryless multiplication
 
-        
-
-        V:
-          presence: optional
+        #--------------------------------------------
+        # Ssstrict is an expansion option in RVB2U64 and RVA23U64
+        # (but is not intended to be made mandatory in future RVB or RVA Profiles)
+        #--------------------------------------------
+        Sstrict:
+          presence: 
+            optional: expansion 
           version: "=1.0"
           note: |
-            The smaller vector extensions (Zve32f, Zve32x, Zve64d, Zve64f,
-            Zve64x) are not provided as separately supported profile options. The
-            full V extension is specified as the only supported profile option.
-      
-            A future profile might mandate V.
-        Zkn:
-          presence: optional
-          version: "~> 1.0"
-        Zks:
-          presence: optional
-          version: "~> 1.0"
+            all opcodes in the Standard and Reserved opcode spaces (SROS), 
+            other than those identified in a Profile as Mandatory or Optional,
+            cause a trap.
+          # should the above say "subsequent Profile" rather than just "Profile"?
+          # (where is the official definition of Ssstrict?)
+
+
+        #########################################################################
+        # TRANSITORY EXPANSION extensions in RVB23  
+        #########################################################################
+
+        #--------------------------------------------
+        # (there are no Transitory expansion options in RVB23)
+        #--------------------------------------------
+
+
+        
+    RVB23S64:
+      marketing_name: RVB23S64
+      mode: Priv
+      base: 64
+      release: RVB23
+      introduction: |
+        The RVB23S64 profile specifies the ISA features available to supervisor-mode
+        execution environments in 64-bit applications processors. 
+        An ECALL in user mode causes a contained trap to supervisor mode.
+        An ECALL in supervisor mode causes a requested trap to the execution environment.
+      extensions:
+        #########################################################################
+        # imported from RVA22S64
+        #########################################################################
+        $inherits: "RVA22.yaml#/RVA22/profiles/RVA22S64/extensions"
+
+        #########################################################################
+        # MANDATORY extensions in RVB23 (and RVA23)
+        #########################################################################
+        Ss1p13:
+          presence: mandatory
+          version: "=1.0"
+          note: |
+            Privileged architecture version 1.13
+
+        #####################################################################
+        ########## Continue inseting new material at THIS POINT #############
+        #####################################################################
+
+
+
+
+
+
+
       extra_notes:
       - presence: optional
         text: |
