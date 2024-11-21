@@ -138,7 +138,11 @@ class Extension < ArchDefObject
 
   # @return [Array<Hash>] versions hash from config
   def versions
-    @data["versions"]
+    return @versions unless @versions.nil?
+
+    @versions = @data["versions"].map do |v|
+      ExtensionVersion.new(name, v["version"], arch_def)
+    end
   end
 
   # @return [Array<Hash>] Ratified versions hash from config
@@ -146,22 +150,22 @@ class Extension < ArchDefObject
     @data["versions"].select { |v| v["state"] == "ratified" }
   end
 
-  # @return [String] Mimumum defined version of this extension
+  # @return [Gem::Version] Mimumum defined version of this extension
   def min_version
-    versions.map { |v| Gem::Version.new(v["version"]) }.min
+    versions.map { |v| v.version }.min
   end
 
-  # @return [String] Maximum defined version of this extension
+  # @return [Gem::Version] Maximum defined version of this extension
   def max_version
-    versions.map { |v| Gem::Version.new(v["version"]) }.max
+    versions.map { |v| v.version }.max
   end
 
-  # @return [String] Mimumum defined ratified version of this extension
+  # @return [Gem::Version] Mimumum defined ratified version of this extension
   # @return [nil] if there is no ratified version
   def min_ratified_version
     return nil if ratified_versions.empty?
 
-    ratified_versions.map { |v| Gem::Version.new(v["version"]) }.min
+    ratified_versions.map { |v| v.version }.min
   end
 
   # @return [Array<ExtensionParameter>] List of parameters added by this extension
@@ -196,9 +200,9 @@ class Extension < ArchDefObject
         next
       when Array
         if v["implies"][0].is_a?(Array)
-          implications += v["implies"].map { |e| ExtensionVersion.new(e[0], e[1])}
+          implications += v["implies"].map { |e| ExtensionVersion.new(e[0], e[1], @arch_def)}
         else
-          implications << ExtensionVersion.new(v["implies"][0], v["implies"][1])
+          implications << ExtensionVersion.new(v["implies"][0], v["implies"][1], @arch_def)
         end
       end
     end
@@ -222,7 +226,7 @@ class Extension < ArchDefObject
   def csrs
     return @csrs unless @csrs.nil?
 
-    @csrs = arch_def.csrs.select { |csr| csr.defined_by?(ExtensionVersion.new(name, max_version)) }
+    @csrs = arch_def.csrs.select { |csr| csr.defined_by?(ExtensionVersion.new(name, max_version, @arch_def)) }
   end
 
   # @return [Array<Csr>] the list of CSRs implemented by this extension (may be empty)
@@ -232,7 +236,7 @@ class Extension < ArchDefObject
     return @implemented_csrs unless @implemented_csrs.nil?
 
     @implemented_csrs = archdef.implemented_csrs.select do |csr|
-      versions.any? { |ver| csr.defined_by?(ExtensionVersion.new(name, ver["version"])) }
+      versions.any? { |ver| csr.defined_by?(ExtensionVersion.new(name, ver["version"], @arch_def)) }
     end
   end
 
@@ -243,7 +247,7 @@ class Extension < ArchDefObject
     return @implemented_instructions unless @implemented_instructions.nil?
 
     @implemented_instructions = archdef.implemented_instructions.select do |inst|
-      versions.any? { |ver| inst.defined_by?(ExtensionVersion.new(name, ver["version"])) }
+      versions.any? { |ver| inst.defined_by?(ExtensionVersion.new(name, ver["version"], @arch_def)) }
     end
   end
 
@@ -297,22 +301,46 @@ class ExtensionVersion
   # @return [Gem::Version] Version of the extension
   attr_reader :version
 
+  # @return [Extension] Extension
+  attr_reader :ext
+
   # @param name [#to_s] The extension name
   # @param version [Integer,String] The version specifier
   # @param arch_def [ArchDef] The architecture definition
-  def initialize(name, version)
+  def initialize(name, version, arch_def)
     @name = name.to_s
     @version = Gem::Version.new(version)
+    @arch_def = arch_def
+    unless arch_def.nil?
+      @ext = arch_def.extension(@name)
+      raise "Extension #{name} not found in arch def" if @ext.nil?
+
+      @data = @ext.data["versions"].find { |v| v["version"] == version.to_s }
+      raise "Extension #{name} version #{version} not found in arch def" if @data.nil?
+    end
   end
 
-  # @return Extension the extension object
-  def ext(arch_def)
-    arch_def.extension(name)
+  # @return [String] The state of the extension version ('ratified', 'developemnt', etc)
+  def state = @data["state"]
+
+  def ratification_date = @data["ratification_date"]
+
+  def changes = @data["changes"].nil? ? [] : @data["changes"]
+
+  def url = @data["url"]
+
+  def contributors
+    return @contributors unless @contributors.nil?
+
+    @contributors = []
+    @data["contributors"].each do |c|
+      @contributors << Person.new(c)
+    end
   end
 
   # @return [Array<ExtensionParameter>] The list of parameters for this extension version
-  def params(arch_def)
-    ext(arch_def).params.select { |p| p.defined_in_extension_version?(@version) }
+  def params
+    @ext.params.select { |p| p.defined_in_extension_version?(@version) }
   end
 
   def to_s
@@ -334,6 +362,42 @@ class ExtensionVersion
     else
       raise "Unexpected comparison"
     end
+  end
+
+  def requirements
+    r = case @data["requires"]
+        when nil
+          AlwaysTrueSchemaCondition.new
+        when Hash
+          SchemaCondition.new(@data["requires"])
+        else
+          SchemaCondition.new({"oneOf" => [@data["requires"]]})
+        end
+    if @data.key?("implies")
+      rs = [r] + implications.map { |e| e.requirements }
+      rs = rs.reject { |r| r.empty? }
+      unless rs.empty?
+        r = SchemaCondition.all_of(*rs.map { |r| r.to_h })
+      end
+    end
+    r
+  end
+
+  def implications
+    return @implications unless @implications.nil?
+
+    @implications = []
+    case @data["implies"]
+    when nil
+      return @implications
+    when Array
+      if @data["implies"][0].is_a?(Array)
+        @implications += @data["implies"].map { |e| ExtensionVersion.new(e[0], e[1], @arch_def)}
+      else
+        @implications << ExtensionVersion.new(@data["implies"][0], @data["implies"][1], @arch_def)
+      end
+    end
+    @implications
   end
 
   # @param ext_name [String] Extension name
@@ -529,7 +593,7 @@ class ExtensionRequirement
     return [] if ext.nil?
 
     ext.versions.select { |v| @requirement.satisfied_by?(Gem::Version.new(v["version"])) }.map do |v|
-      ExtensionVersion.new(@name, v["version"])
+      ExtensionVersion.new(@name, v["version"], archdef)
     end
   end
 

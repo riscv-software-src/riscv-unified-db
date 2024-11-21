@@ -102,7 +102,7 @@ class ManualVolume
         next
       end
 
-      @extensions << ExtensionVersion.new(ext[0], ext[1])
+      @extensions << ExtensionVersion.new(ext[0], ext[1], arch_def)
     end
     @extensions
   end

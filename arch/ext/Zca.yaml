@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+Zca:
+  long_name: Common compressed instructions
+  description: |
+    TODO
+  type: unprivileged
+  company:
+    name: RISC-V International
+    url: https://riscv.org
+  versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2021-06
+    repositories:
+      - url: https://github.com/riscv/riscv-bitmanip
+        branch: main

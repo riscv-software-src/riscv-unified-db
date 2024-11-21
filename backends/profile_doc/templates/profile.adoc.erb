@@ -422,7 +422,7 @@ associated implementation-defined parameters.
 
 .Status
 |===
-| Profile | v<%= ext.versions.map { |v| v["version"] }.join(" | v") %>
+| Profile | v<%= ext.versions.map { |v| v.version }.join(" | v") %>
 
 <% profile_release.profiles.each do |profile| -%>
 | <%= profile.marketing_name %> | <%= profile.version_strongest_presence(ext.name, ext.versions).join(" | ") -%>
@@ -431,29 +431,28 @@ associated implementation-defined parameters.
 |===
 
 <% ext.versions.each do |v| -%>
-<%= v["version"] %>::
+<%= v.version %>::
   Ratification date:::
-    <%= v["ratification_date"] %>
-  <% if v.key?("changes") -%>
+    <%= v.ratification_date %>
+  <% unless v.changes.empty? -%>
   Changes:::
 
-    <% v["changes"].each do |c| -%>
+    <% v.changes.each do |c| -%>
     * <%= c %>  
     <% end -%>
 
-  <% end -%>
-  <% if v.key?("url") -%>
+  <%- end -%>
+  <%- unless v.url.nil? -%>
   Ratification document:::
-    <%= v["url"] %>
-  <% end -%>
-  <% if v.key?("implies") -%>
+    <%= v.url %>
+  <%- end -%>
+  <%- unless v.implications -%>
   Implies:::
-    <% implications = v["implies"][0].is_a?(Array) ? v["implies"] : [v["implies"]] -%>
-    <% implications.each do |i| -%>
-    * `<%= i[0] %>` version <%= i[1] %>
-    <% end -%>
-  <% end -%>
-<% end -%>
+    <%- v.implications.each do |i| -%>
+    * `<%= i.name %>` version <%= i.version %>
+    <%- end -%>
+  <%- end -%>
+<%- end -%>
 
 ==== Synopsis
 

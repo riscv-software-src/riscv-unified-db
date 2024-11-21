@@ -149,9 +149,9 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
     if ENV.key?("EXT_VERSION")
       ENV["EXT_VERSION"]
     else
-      ext.versions.max { |a, b| Gem::Version.new(a["version"]) <=> Gem::Version.new(b["version"]) }["version"]
+      ext.versions.max { |a, b| a.version <=> b.version }.version
     end
-  ext_version = ext.versions.find { |v| v["version"] == version_num }
+  ext_version = ext.versions.find { |v| v.version == version_num }
   FileUtils.mkdir_p File.dirname(t.name)
   File.write t.name, AsciidocUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
 end
