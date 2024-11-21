@@ -416,27 +416,6 @@ function softfloat_normSubnormalF16Sig {
   }
 }
 
-function softfloat_normRoundPackToF32 {
-  returns Bits<32>
-  arguments
-    Bits<1> sign,
-    Bits<8> exp,
-    Bits<23> sig,
-    RoundingMode mode
-  description {
-    Normalize, round, and pack into a 32-bit floating point value
-  }
-  body {
-    Bits<8> shiftDist = count_leading_zeros<32>(sig) - 1;
-    exp = exp - shiftDist;
-    if ((7 <= shiftDist) && (exp < 0xFD)) {
-      return packToF32UI(sign, (sig != 0) ? exp : 0, sig << (shiftDist - 7));
-    } else {
-      return softfloat_roundPackToF32(sign, exp, sig << shiftDist, mode);
-    }
-  }
-}
-
 function softfloat_roundPackToF32 {
   returns Bits<32>     # single precision value
   arguments
@@ -483,5 +462,26 @@ function softfloat_roundPackToF32 {
       exp = 0;
     }
     return packToF32UI(sign, exp, sig);
+  }
+}
+
+function softfloat_normRoundPackToF32 {
+  returns Bits<32>
+  arguments
+    Bits<1> sign,
+    Bits<8> exp,
+    Bits<23> sig,
+    RoundingMode mode
+  description {
+    Normalize, round, and pack into a 32-bit floating point value
+  }
+  body {
+    Bits<8> shiftDist = count_leading_zeros<32>(sig) - 1;
+    exp = exp - shiftDist;
+    if ((7 <= shiftDist) && (exp < 0xFD)) {
+      return packToF32UI(sign, (sig != 0) ? exp : 0, sig << (shiftDist - 7));
+    } else {
+      return softfloat_roundPackToF32(sign, exp, sig << shiftDist, mode);
+    }
   }
 }
