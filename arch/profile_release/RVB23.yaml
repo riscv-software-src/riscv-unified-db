@@ -332,11 +332,160 @@ RVB23:
         #########################################################################
         # MANDATORY extensions in RVB23 (and RVA23)
         #########################################################################
+        Zifencei:
+          presence: mandatory
+          version: "=1.0"
+          note: |
+            Instruction-Fetch fence instruction.
+            Zifencei is mandated as it is the only standard way to support
+            instruction-cache coherence in RVB23 application processors. 
+            A new instruction-cache coherence mechanism is under development 
+            (tentatively named Zjid), which might be added as an option in the future.
+
         Ss1p13:
           presence: mandatory
           version: "=1.0"
           note: |
             Privileged architecture version 1.13
+
+        Svnapot:
+          presence: mandatory
+          version: "=1.0"
+          note: |
+            NAPOT translation contiguity.
+            Svnapot is very low cost to provide, so is made mandatory even in RVB.
+
+        Svbare:
+          presence: mandatory
+          version: "=1.0"
+          note: |
+            The *satp* mode Bare must be supported
+
+        Sv39:
+          presence: mandatory
+          version: "=1.0"
+          note: |
+            Page-Based 39-bit Virtual-Memory System
+
+        Svade:
+          presence: mandatory
+          version: "=1.0"
+          note: |
+            A page-fault exception is raised when a page is accessed when A bit = 0 ,
+            or when a page is written when D bit = 0
+
+        Ssccptr:
+          presence: mandatory
+          version: "=1.0"
+          note: |
+            Main memory regions with both the cacheability and coherence PMAs must
+            support hardware page-table reads
+
+        Sstvecd:
+          presence: mandatory
+          version: "=1.0"
+          note: |
+            *stvec*.MODE must be capable of holding the value 0 (Direct).
+            When *stvec*.MODE=Direct,
+            *stvec*.BASE must be capable of holding any valid four-byte-aligned address
+            
+        Sstvala:
+          presence: mandatory
+          version: "=1.0"
+          note: |
+            *stval* must be written with the faulting virtual address for load, store,
+            and instruction page-fault, access-fault, and misaligned exceptions,
+            and for breakpoint exceptions other than those caused by execution of
+            the EBREAK or C.EBREAK instructions.
+            For virtual-instruction and illegal instruction exceptions,
+            *stval* must be written with the faulting instruction .
+
+        Sscounterenw:
+          presence: mandatory
+          version: "=1.0"
+          note: |
+            For any *hpmcounter* that is not read-only zero,
+            the corresponding bit in *scounteren* must be writable.
+
+        Svpbmt:
+          presence: mandatory
+          version: "=1.0"
+          note: |
+            Page-based memory types
+
+        Svinval:
+          presence: mandatory
+          version: "=1.0"
+          note: |
+            Fine-grained address-translation cache invalidation
+
+        Sstc:
+          presence: mandatory
+          version: "=1.0"
+          note: |
+            supervisor-mode timer interrupts
+
+        Sscofpmf:
+          presence: mandatory
+          version: "=1.0"
+          note: |
+            Count overflow and mode-based filtering
+
+        Ssu64xl:
+          presence: mandatory
+          version: "=1.0"
+          note: |
+            *sstatus*.UXL must be capable of holding the value 2
+            (that is, UXLEN=64 must be supported)
+
+
+
+        #########################################################################
+        # OPTIONAL LOCALIZED extensions in RVB23S64 
+        #########################################################################
+
+        # there are no Optional Localized extensions in RVB23S64
+
+        #########################################################################
+        # OPTIONAL DEVELOPMENT extensions in RVB23S64 
+        #########################################################################
+
+        # there are no Optional Development extensions in RVB23S64
+
+
+        #########################################################################
+        # OPTIONAL EXPANSION extensions in RVB23S64 (mandatory in RVA23S64)
+        #########################################################################
+
+        Ssnpm:
+          presence: 
+            optional: expansion
+          version: "=1.0"
+          note: |
+            Pointer masking, with *senvcfg*.PME supporting, at minimum,
+            settings PMLEN=0 and PMLEN=7
+
+        Sha:
+          presence: 
+            optional: expansion
+          version: "=1.0"
+          note: |
+            The augmented hypervisor extension
+
+        ?????:
+          presence: 
+            optional: expansion
+          version: "=1.0"
+          ??depends_upon: H, Ssnpm
+          note: |
+            If the hypervisor extension is implemented
+            and pointer masking (Ssnpm) is supported
+            then *henvcfg*.PME must support at minimum, settings PMLEN=0 and PMLEN=7
+
+
+
+
+
 
         #####################################################################
         ########## Continue inseting new material at THIS POINT #############
