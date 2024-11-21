@@ -145,13 +145,18 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
   erb.filename = template_path.to_s
 
   ext = arch_def.extension(ext_name)
-  version_num =
-    if ENV.key?("EXT_VERSION")
-      ENV["EXT_VERSION"]
+  version_strs = ENV["VERSION"].split(",")
+  versions =
+    if version_strs.include?("all")
+      ext.versions
     else
-      ext.versions.max { |a, b| a.version <=> b.version }.version
+      vs = ext.versions.select do |ext_ver|
+        version_strs.include?(ext_ver.version.to_s)
+      end
+      vs << ext.max_version if version_strs.include?("latest")
+      vs.uniq
     end
-  ext_version = ext.versions.find { |v| v.version == version_num }
+  max_version = versions.max { |a, b| a.version <=> b.version }
   FileUtils.mkdir_p File.dirname(t.name)
   File.write t.name, AsciidocUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
 end
@@ -161,25 +166,36 @@ namespace :gen do
     Generate PDF documentation for :extension
 
     If the extension is custom (from an arch_overlay), also give the config name
+
+    Options:
+
+     * EXT - The extension name
+     * CFG - The config name, required only when an overlay is required
+     * VERSION - A list of versions to include. May also be "all" or "latest".
+
+    Examples:
+
+     ./do gen:ext_pdf EXT=Xqci CFG=qc_iu VERSION=latest
+     ./do gen:ext_pdf EXT=B VERSION=all
+     ./do gen:ext_pdf EXT=B VERSION=1.0.0
+     ./do gen:ext_pdf EXT=B VERSION=1.0.0,1.1.0
+
   DESC
   task :ext_pdf, [:extension] do |_t, args|
-    extension = args[:extension]
+    raise ArgumentError, "Missing required argument EXT" if ENV["EXT"].nil?
 
-    Rake::Task[$root / "gen" / "ext_pdf_doc" / "_" / "pdf" / "#{extension}_extension.pdf"].invoke
-  end
+    extension = ENV["EXT"]
+    cfg = ENV["CFG"]
+    version = ENV["VERSION"]
 
-  desc <<~DESC
-    Generate PDF documentation for :extension that is defined or overlayed in :cfg
+    versions = version.split(",")
+    raise ArgumentError, "Nothing else should be specified with 'all'" if versions.include?("all") && versions.size > 1
 
-    The latest version will be used, but can be overloaded by setting the EXT_VERSION environment variable.
-  DESC
-  task :cfg_ext_pdf, [:extension, :cfg] do |_t, args|
-    raise ArgumentError, "Missing required argument :extension" if args[:extension].nil?
-    raise ArgumentError, "Missing required argument :cfg" if args[:cfg].nil?
-
-    extension = args[:extension]
-
-    Rake::Task[$root / "gen" / "ext_pdf_doc" / args[:cfg] / "pdf" / "#{extension}_extension.pdf"].invoke(args)
+    if cfg.nil?
+      Rake::Task[$root / "gen" / "ext_pdf_doc" / "_" / "pdf" / "#{extension}_extension.pdf"].invoke
+    else
+      Rake::Task[$root / "gen" / "ext_pdf_doc" / cfg / "pdf" / "#{extension}_extension.pdf"].invoke(args)
+    end
   end
 
   desc <<~DESC

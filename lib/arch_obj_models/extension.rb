@@ -145,27 +145,27 @@ class Extension < ArchDefObject
     end
   end
 
-  # @return [Array<Hash>] Ratified versions hash from config
+  # @return [Array<ExtensionVersion>] Ratified versions hash from config
   def ratified_versions
-    @data["versions"].select { |v| v["state"] == "ratified" }
+    versions.select { |v| v.state == "ratified" }
   end
 
-  # @return [Gem::Version] Mimumum defined version of this extension
+  # @return [ExtensionVersion] Mimumum defined version of this extension
   def min_version
-    versions.map { |v| v.version }.min
+    versions.min { |a, b| a.version <=> b.version }
   end
 
-  # @return [Gem::Version] Maximum defined version of this extension
+  # @return [ExtensionVersion] Maximum defined version of this extension
   def max_version
-    versions.map { |v| v.version }.max
+    versions.max { |a, b| a.version <=> b.version }
   end
 
-  # @return [Gem::Version] Mimumum defined ratified version of this extension
+  # @return [ExtensionVersion] Mimumum defined ratified version of this extension
   # @return [nil] if there is no ratified version
   def min_ratified_version
     return nil if ratified_versions.empty?
 
-    ratified_versions.map { |v| v.version }.min
+    ratified_versions.min { |a, b| a.version <=> b.version }
   end
 
   # @return [Array<ExtensionParameter>] List of parameters added by this extension
@@ -191,22 +191,9 @@ class Extension < ArchDefObject
   # @param version_requirement [String] Version requirement
   # @return [Array<ExtensionVersion>] Array of extensions implied by any version of this extension meeting version_requirement
   def implies(version_requirement = ">= 0")
-    implications = []
-    @data["versions"].each do |v|
-      next unless Gem::Requirement.new(version_requirement).satisfied_by?(Gem::Version.new(v["version"]))
+    return [] unless Gem::Requirement.new(version_requirement).satisfied_by?(max_version.version)
 
-      case v["implies"]
-      when nil
-        next
-      when Array
-        if v["implies"][0].is_a?(Array)
-          implications += v["implies"].map { |e| ExtensionVersion.new(e[0], e[1], @arch_def)}
-        else
-          implications << ExtensionVersion.new(v["implies"][0], v["implies"][1], @arch_def)
-        end
-      end
-    end
-    implications
+    max_version.implications
   end
 
   def conflicts
@@ -215,18 +202,18 @@ class Extension < ArchDefObject
     to_extension_requirement_list(@data["conflicts"])
   end
 
-  # @return [Array<Instruction>] the list of instructions implemented by this extension (may be empty)
+  # @return [Array<Instruction>] the list of instructions implemented by *any version* of this extension (may be empty)
   def instructions
     return @instructions unless @instructions.nil?
 
-    @instructions = arch_def.instructions.select { |i| @data["versions"].any? { |version| i.defined_by?(name, version["version"]) }}
+    @instructions = arch_def.instructions.select { |i| versions.any? { |v| i.defined_by?(v) }}
   end
 
-  # @return [Array<Csr>] the list of CSRs implemented by this extension (may be empty)
+  # @return [Array<Csr>] the list of CSRs implemented by *any version* of this extension (may be empty)
   def csrs
     return @csrs unless @csrs.nil?
 
-    @csrs = arch_def.csrs.select { |csr| csr.defined_by?(ExtensionVersion.new(name, max_version, @arch_def)) }
+    @csrs = arch_def.csrs.select { |csr| versions.any? { |v| csr.defined_by?(v) } }
   end
 
   # @return [Array<Csr>] the list of CSRs implemented by this extension (may be empty)
@@ -364,6 +351,14 @@ class ExtensionVersion
     end
   end
 
+  # @param other [ExtensionVersion] Comparison
+  # @return [Boolean] Whether or not +other+ is an ExtensionVersion with the same name and version
+  def eql?(other)
+    return false unless other.is_a?(ExtensionVersion)
+
+    @name == other.name && @version == other.version
+  end
+
   def requirements
     r = case @data["requires"]
         when nil
@@ -392,11 +387,12 @@ class ExtensionVersion
       return @implications
     when Array
       if @data["implies"][0].is_a?(Array)
-        @implications += @data["implies"].map { |e| ExtensionVersion.new(e[0], e[1], @arch_def)}
+        @implications += @data["implies"].map { |e| ExtensionVersion.new(e[0], e[1], @arch_def) }
       else
         @implications << ExtensionVersion.new(@data["implies"][0], @data["implies"][1], @arch_def)
       end
     end
+    @implications.uniq!
     @implications
   end
 

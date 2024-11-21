@@ -341,7 +341,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 <% end -%>
 
 // TODO: GitHub issue 92: Use version specified by each profile.
-<% insts = arch_def.instructions.select { |i| i.defined_by?(ext.name,ext.min_version) } -%>
+<% insts = arch_def.instructions.select { |i| i.defined_by?(ext_db.min_version) } -%>
 <% unless insts.empty? -%>
 ==== Instructions
 
