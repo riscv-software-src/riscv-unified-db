@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-
+  "$id": "file://ext_schema.json",
   "$defs": {
     "param_data": {
       "type": "object",
