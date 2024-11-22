@@ -274,6 +274,10 @@ class SchemaCondition
     @hsh = composition_hash
   end
 
+  def to_h = @hsh
+
+  def empty? = false
+
   VERSION_REQ_REGEX = /^((>=)|(>)|(~>)|(<)|(<=)|(=))?\s*[0-9]+(\.[0-9]+(\.[0-9]+(-[a-fA-F0-9]+)?)?)?$/
   def is_a_version_requirement(ver)
     case ver
@@ -356,6 +360,45 @@ class SchemaCondition
     end
   end
 
+  # combine all conds into one using AND
+  def self.all_of(*conds)
+    cond = SchemaCondition.new({
+      "allOf" => conds
+    })
+    
+    SchemaCondition.new(cond.minimize)
+  end
+
+  # @return [Object] Schema for this condition, with basic logic minimization
+  def minimize(hsh = @hsh)
+    case hsh
+    when Hash
+      if hsh.key?("name")
+        hsh
+      else
+        min_ary = key = nil
+        if hsh.key?("allOf")
+          min_ary = hsh["allOf"].map { |element| minimize(element) }
+          key = "allOf"
+        elsif hsh.key?("anyOf")
+          min_ary = hsh["anyOf"].map { |element| minimize(element) }
+          key = "anyOf"
+        elsif hsh.key?("oneOf")
+          min_ary = hsh["oneOf"].map { |element| minimize(element) }
+          key = "oneOf"
+        end
+        min_ary = min_ary.uniq!
+        if min_ary.size == 1
+          min_ary.first
+        else
+          { key => min_ary }
+        end
+      end
+    else
+      hsh
+    end
+  end
+
   def to_rb_helper(hsh)
     if hsh.is_a?(Hash)
       if hsh.key?("name")
@@ -433,4 +476,8 @@ class AlwaysTrueSchemaCondition
   def to_rb = "true"
   
   def satisfied_by? = true
+
+  def empty? = true
+
+  def to_h = {}
 end

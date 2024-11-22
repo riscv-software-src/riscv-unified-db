@@ -1,9 +1,9 @@
 [[header]]
 :description: <%= ext.long_name %> (<%= ext.name %>)
-:revdate: <%= ext_version.key?("ratification_date") ? ext_version["ratification_date"] : Date.today %>
-:revnumber: <%= ext_version["version"] %>
+:revdate: <%= max_version.ratification_date.nil? ? Date.today : max_version.ratification_date %>
+:revnumber: <%= max_version.version %>
 :revmark: <%=
-  case ext_version["state"]
+  case max_version.state
   when "ratified"
     <<~STATE
       This document is in the http://riscv.org/spec-state[Ratified state] + \\
@@ -14,12 +14,12 @@
     STATE
   when "frozen"
     <<~FROZEN_STATE
-      This document is in the http://riscv.org/spec-state[Frozen state].
-
-      Change is extremely unlikely.
-      A high threshold will be used, and a change will only occur because of some truly
-      critical issue being identified during the public review cycle.
-      Any other desired or needed changes can be the subject of a follow-on new extension.
+      This document is in the http://riscv.org/spec-state[Frozen state]. + \\
+      + \\
+      Change is extremely unlikely. + \\
+      A high threshold will be used, and a change will only occur because of some truly + \\
+      critical issue being identified during the public review cycle. + \\
+      Any other desired or needed changes can be the subject of a follow-on new extension. + \\
     FROZEN_STATE
   when "development"
     <<~DEV_STATE
@@ -28,7 +28,7 @@
       Change should be expected + \\
     DEV_STATE
   else
-    raise "TODO: #{ext_version["state"]} description"
+    raise "TODO: #{max_version.state} description"
   end
 %>
 :company: <%= ext.company.nil? ? "unknown" : ext.company["name"] %>
@@ -41,7 +41,7 @@
 :title-logo-image: image:risc-v_logo.png["RISC-V International Logo",pdfwidth=3.25in,align=center]
 :back-cover-image: image:riscv-horizontal-color.svg[opacity=25%]
 <%- end -%>
-<%- unless ext_version["state"] == "ratified" -%>
+<%- if max_version.state == "development" -%>
 :page-background-image: image:draft.png[opacity=20%]
 <%- end -%>
 // Settings
@@ -85,7 +85,7 @@ endif::[]
 
 // Preamble
 <%=
-  case ext_version["state"]
+  case max_version.state
   when "ratified"
     <<~RATIFIED_STATE
       [WARNING]
@@ -115,7 +115,7 @@ endif::[]
       ====
     DEV_STATE
   else
-    raise "TODO: #{ext_version["state"]} description"
+    raise "TODO: #{max_version.state} description"
   end
 %>
 
@@ -123,17 +123,17 @@ endif::[]
 == Copyright and license information
 This document is released under the <%= ext.doc_license.nil? ? "unknown" : ext.doc_license["url"] %>[<%= ext.doc_license.nil? ? "unknown" : ext.doc_license["name"] %>].
 
-Copyright <%= ext_version["ratification_date"].nil? ? Date.today.year : ext_version["ratification_date"].split("-")[0] %> by <%= ext.company.nil? ? "unknown" : ext.company["name"] %>.
+Copyright <%= max_version.ratification_date.nil? ? Date.today.year : max_version.ratification_date.split("-")[0] %> by <%= ext.company.nil? ? "unknown" : ext.company["name"] %>.
 
 [preface]
 == Acknowledgements
 
-<%- ext.versions.each do |version| -%>
-Contributors to version <%= version["version"] %> of the specification (in alphabetical order) include: +
+<%- versions.each do |version| -%>
+Contributors to version <%= version.version %> of the specification (in alphabetical order) include: +
 
-<%- unless version["contributors"].nil? -%>
-<%- version["contributors"].sort { |a, b| a["name"].split(" ").last <=> b["name"].split(" ").last }.each do |c| -%>
-  * <%= c["name"] %> <<%= c["email"] %>> (<%= c["company"] %>)
+<%- unless version.contributors.empty? -%>
+<%- version.contributors.sort { |a, b| a.name.split(" ").last <=> b.name.split(" ").last }.each do |c| -%>
+  * <%= c.name %> <<%= c.email %>> (<%= c.company %>)
 
 <%- end -%>
 <%- end -%>
@@ -145,25 +145,39 @@ improved this specification through their comments and questions.
 [preface]
 == Versions
 
-The following versions have been defined:
+<%- if versions.size > 1 -%>
+This specification documents versions <%= versions.map { |v| v.version }.join(', ') %> of <%= ext.name %>:
+<%- else -%>
+This specification documents version <%= max_version.version %> of <%= ext.name %>.
+<%- end -%>
+
+=== Version History
 
 <%- ext.versions.each do |version| -%>
 --
-Version:: <%= version["version"] %>
-State:: <%= version["state"] %>
-<%- if version.key?("ratification_date") && !version["ratification_date"].nil? -%>
-Ratification Date:: <%= version["ratification_date"] %>
+Version:: <%= version.version %>
+State:: <%= version.state %>
+<%- unless version.ratification_date.nil? -%>
+Ratification Date:: <%= version.ratification_date %>
 <%- end -%>
-<%- if version.key?("url") -%>
-Design document:: <%= version["url"] %>
+<%- unless version.url.nil? -%>
+Design document:: <%= version.url %>
 <%- end -%>
-<%- if version.key?("changes") -%>
+<%- unless version.changes.empty? -%>
 Changes::
-<%= version["changes"] %>
+
+    <% version.changes.each do |c| -%>
+    * <%= c %>  
+    <% end -%>
+
 <%- end -%>
-<%- unless version["implies"].nil? || version["implies"].empty? -%>
+<%- unless version.implications.empty? -%>
 Implies::
-* <%= version["implies"].map { |name, version| "#{name} (#{version})" }.join("\n* ") %>
+* <%= version.implications.map { |i| "#{i.name} (#{i.version})" }.join("\n* ") %>
+<%- unless version.requirements.empty? -%>
+Requires::
+<%= version.requirements.to_asciidoc %>
+<%- end -%>
 <%- end -%>
 --
 <%- end -%>
@@ -174,14 +188,32 @@ Implies::
 
 <%= ext.description %>
 
-<%- unless ext.implies.nil? -%>
+<%- implications = versions.map { |v| v.implications }.flatten.uniq -%>
+<%- unless implications.nil? -%>
 === Sub-extensions
-The following sub-extensions are defined:
+<%- if implications.size > 1 -%>
+<%= ext.name %> defines the following #{implications.size} sub-extensions:
+<%- else -%>
+<%= ext.name %> defines a single sub-extension:
+<%- end -%>
 
-<%- ext.implies.each do |sub_ext| -%>
-==== <%= sub_ext.name %>
+<%- implications.each do |sub_ext| -%>
+==== <%= sub_ext.name %> (<%= sub_ext.version %>)
+
+<%- if versions.size > 1 -%>
+<%= sub_ext.name %> (<%= sub_ext.version %>) is implied by
+version <%= versions.select { |v| v.implications.include?(sub_ext)}.map(&:version).join(", ") %>
+of <%= ext.name %>.
+<%- end -%>
 
 <%= arch_def.extension(sub_ext.name).description %>
+
+<%- unless sub_ext.requirements.empty? -%>
+<%= sub_ext.name %> requires:
+
+<%= sub_ext.requirements.to_asciidoc %>
+
+<%- end -%>
 
 <%- end -%>
 <%- end -%>
@@ -194,27 +226,29 @@ The following <%= ext.instructions.size %> instructions are added by this extens
 
 [%autowidth]
 |===
-| RV32 | RV64 | Mnemonic | Instruction | <%= ext.versions.map { |v| "v#{v["version"]}" }.join(" | ") %>
+| RV32 | RV64 | Mnemonic | Instruction <%- if versions.size > 1 -%>| <%= versions.map { |v| "v#{v.version}" }.join(" | ") %><%- end -%>
 
 <%- ext.instructions.each do |i| -%>
 | <%= i.rv32? ? "&#x2713;" : "" %>
 | <%= i.rv64? ? "&#x2713;" : "" %>
 | `<%= i.name %> <%= i.assembly.gsub("x", "r").strip %>`
 | xref:insns-<%= i.name.gsub('.', '_') %>[<%= i.long_name %>]
-| <%= ext.versions.map { |v| i.defined_by?(ext.name, v["version"]) ? "&#x2713;" : "" }.join(" | ") %>
+<%- if versions.size > 1 -%>
+| <%= ext.versions.map { |v| i.defined_by?(ext.name, v.version) ? "&#x2713;" : "" }.join(" | ") %>
+<%- end -%>
 <%- end -%>
 |===
 
-<%- unless ext.implies.empty? -%>
+<%- unless implications.empty? -%>
 === Instructions by sub-extension
 
+[%autowidth]
 |===
-| Mnemonic | `<%= ext.name %>` | <%= ext.implies.map { |e| "`#{e.name}`" }.join(" | ") %>
+| Mnemonic | <%= implications.map { |e| "`#{e.name}`" }.join(" | ") %>
 
 <%- ext.instructions.each do |i| -%>
 | `<%= i.name %>`
-| &#x2713;
-| <%= ext.implies.map { |e| i.defined_by?(e.name, arch_def.extension(e.name).max_version) ? "&#x2713;" : "" }.join(" | ") %>
+| <%= implications.map { |e| i.defined_by?(e) ? "&#x2713;" : "" }.join(" | ") %>
 <%- end -%>
 |===
 
@@ -230,14 +264,16 @@ The following <%= ext.csrs.size %> are added by this extension.
 
 [%autowidth]
 |===
-| RV32 | RV64 | CSR | Name | <%= ext.versions.map { |v| "v#{v["version"]}" }.join(" | ") %>
+| RV32 | RV64 | CSR | Name <%- if versions.size > 1 -%>| <%= versions.map { |v| "v#{v.version}" }.join(" | ") %><%- end -%>
 
 <%- ext.csrs.each do |csr| -%>
 | <%= csr.defined_in_base32? ? "&#x2713;" : "" %>
 | <%= csr.defined_in_base64? ? "&#x2713;" : "" %>
 | xref:csrs-<%= csr.name.gsub('.', '_') %>[<%= csr.name %>]
 | <%= csr.long_name %>
-| <%= ext.versions.map { |v| csr.defined_by?(ext.name, v["version"]) ? "&#x2713;" : "" }.join(" | ") %>
+<%- if versions.size > 1 -%>
+| <%= ext.versions.map { |v| csr.defined_by?(ext.name, v.version) ? "&#x2713;" : "" }.join(" | ") %>
+<%- end -%>
 <%- end -%>
 
 |===
