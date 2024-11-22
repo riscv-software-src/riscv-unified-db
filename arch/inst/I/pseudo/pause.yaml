@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: pseudoinstruction
+name: pause
+long_name: No synopsis available.
+description: |
+      No description available.
+definedBy: I
+assembly: pause
+origin_instruction: fence
+encoding:
+  match: '00000001000000000000000000001111'
+  variables: []
+operation(): |
+      
