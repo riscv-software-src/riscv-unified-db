@@ -126,11 +126,12 @@ class PortfolioInstance < ArchDefObject
       # Convert String or Hash to object.
       actual_presence_obj = ExtensionPresence.new(actual_presence)
 
-      match = if desired_presence.nil?
-        true  # Always match
-      else
-        (actual_presence_obj == desired_presence_converted)
-      end
+      match =
+        if desired_presence.nil?
+          true # Always match
+        else
+          actual_presence_obj == desired_presence_converted
+        end
 
       if match
         in_scope_ext_reqs << 
@@ -280,10 +281,10 @@ class PortfolioInstance < ArchDefObject
         param = ext.params.find { |p| p.name == param_name }
         raise "There is no param '#{param_name}' in extension '#{ext_name}" if param.nil?
 
-        next unless ext.versions.any? do |ver_hash|
-          Gem::Requirement.new(ext_data["version"]).satisfied_by?(Gem::Version.new(ver_hash["version"])) &&
-            param.defined_in_extension_version?(ver_hash["version"])
-        end
+        next unless ext.versions.any? do |ext_ver|
+                      Gem::Requirement.new(ext_data["version"]).satisfied_by?(ext_ver.version) &&
+                      param.defined_in_extension_version?(ext_ver.version)
+                    end
 
         @all_in_scope_ext_params << 
           InScopeExtensionParameter.new(param, param_data["schema"], param_data["note"])
@@ -314,10 +315,10 @@ class PortfolioInstance < ArchDefObject
         ext_param = ext.params.find { |p| p.name == param_name }
         raise "There is no param '#{param_name}' in extension '#{ext_req.name}" if ext_param.nil?
 
-        next unless ext.versions.any? do |ver_hash|
-          Gem::Requirement.new(ext_data["version"]).satisfied_by?(Gem::Version.new(ver_hash["version"])) &&
-            ext_param.defined_in_extension_version?(ver_hash["version"])
-        end
+        next unless ext.versions.any? do |ext_ver|
+                      Gem::Requirement.new(ext_data["version"]).satisfied_by?(ext_ver.version) &&
+                      ext_param.defined_in_extension_version?(ext_ver.version)
+                    end
 
         ext_params <<
           InScopeExtensionParameter.new(ext_param, param_data["schema"], param_data["note"])
@@ -336,10 +337,10 @@ class PortfolioInstance < ArchDefObject
       ext.params.each do |param|
         next if all_in_scope_ext_params.any? { |c| c.param.name == param.name }
 
-        next unless ext.versions.any? do |ver_hash|
-          Gem::Requirement.new(ext_req.version_requirement).satisfied_by?(Gem::Version.new(ver_hash["version"])) &&
-            param.defined_in_extension_version?(ver_hash["version"])
-        end
+        next unless ext.versions.any? do |ext_ver|
+                      Gem::Requirement.new(ext_req.version_requirement).satisfied_by?(ext_ver.version) &&
+                      param.defined_in_extension_version?(ext_ver.version)
+                    end
 
         @all_out_of_scope_params << param
       end

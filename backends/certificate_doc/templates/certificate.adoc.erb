@@ -297,7 +297,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 
 *Version Requirement*: <%= ext_req.version_requirement %> +
 
-<% ext_db.versions.each do |v| -%>
+<% ext.versions.each do |v| -%>
 <%= v.version %>::
   State:::
     <%= v.state %>
@@ -341,7 +341,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 <% end -%>
 
 // TODO: GitHub issue 92: Use version specified by each profile.
-<% insts = arch_def.instructions.select { |i| i.defined_by?(ext_db.min_version) } -%>
+<% insts = arch_def.instructions.select { |i| i.defined_by?(ext.min_version) } -%>
 <% unless insts.empty? -%>
 ==== Instructions
 

@@ -588,9 +588,7 @@ class ExtensionRequirement
     ext = archdef.extension(@name)
     return [] if ext.nil?
 
-    ext.versions.select { |v| @requirement.satisfied_by?(Gem::Version.new(v["version"])) }.map do |v|
-      ExtensionVersion.new(@name, v["version"], archdef)
-    end
+    ext.versions.select { |v| @requirement.satisfied_by?(v.version) }
   end
 
   # @overload
