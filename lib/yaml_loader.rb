@@ -136,26 +136,64 @@ class YamlLoader
       end
 
       final_obj
-
+    elsif obj.keys.include?("$copy")
+      self.get_copy_target_obj(filename, obj["$copy"], yaml_opts)
     else
-      obj_keys = obj.keys
-      obj_keys.each do |key|
-        value = obj[key]
-
+      # Go through each hash entry.
+      obj.each do |key, value|
         obj[key] = expand(filename, value, yaml_opts)
       end
       obj
     end
 
-    obj_keys = new_obj.keys
-    if obj_keys.include? "$remove"
-      remove_keys = obj["$remove"].is_a?(Array) ? obj["$remove"] : [obj["$remove"]]
-      remove_keys.each do |key|
-        new_obj.delete(key)
+    if new_obj.is_a?(Hash)
+      obj_keys = new_obj.keys
+      if obj_keys.include? "$remove"
+        remove_keys = obj["$remove"].is_a?(Array) ? obj["$remove"] : [obj["$remove"]]
+        remove_keys.each do |key|
+          new_obj.delete(key)
+        end
       end
+      new_obj.delete("$remove")
     end
-    new_obj.delete("$remove")
+
     new_obj
+  end
+
+  # @param filename [String,Pathname] path to the YAML file
+  # @param copy_target [String]
+  # @param yaml_opts [Hash] options to pass to YAML.load_file
+  # @return [Object]
+  def self.get_copy_target_obj(filename, copy_target, yaml_opts)
+    relative_path = copy_target.split("#")[0]
+    if relative_path.empty?
+      # this is a reference in the same document
+      obj_doc = YAML.load_file(filename, **yaml_opts)
+      obj_path = copy_target.split("#")[1].split("/")[1..]
+      target_obj = obj_doc.dig(*obj_path)
+      raise DereferenceError, "$copy: #{obj_path} referenced to same file cannot be found in file #{filename}" if target_obj.nil?
+
+      ref = expand(filename, target_obj, yaml_opts)
+      if ref.nil?
+        raise DereferenceError, "$copy: JSON Path #{obj_path} referenced to same file does not exist in file #{filename}"
+      end
+
+      ref
+    else
+      target_filename = File.realpath(File.join(filename.dirname, relative_path))
+
+      obj_doc = YamlLoader.load(target_filename, yaml_opts)
+      obj_path = copy_target.split("#")[1].split("/")[1..]
+      target_obj = obj_doc.dig(*obj_path)
+      raise DereferenceError, "$copy: #{obj_path} referenced from file #{filename} cannot be found in file #{target_filename}" if target_obj.nil?
+
+      ref = expand(target_filename, target_obj, yaml_opts)
+      if ref.nil?
+        raise DereferenceError, "$copy: JSON Path #{obj_path} referenced from file #{filename} does not exist in file #{target_filename}"
+      end
+
+      ref
+    end
   end
 
   # load a YAML file and expand any $ref/$inherits references
