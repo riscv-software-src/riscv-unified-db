@@ -91,7 +91,7 @@
     },
     "requirement_string": {
       "type": "string",
-      "pattern": "^((>=)|(>)|(~>)|(<)|(<=)|(=))?\\s*[0-9]+(\\.[0-9]+(\\.[0-9]+(-[a-fA-F0-9]+)?)?)?$"
+      "pattern": "^((>=)|(>)|(~>)|(<)|(<=)|(=))\\s*[0-9]+(\\.[0-9]+(\\.[0-9]+(-[a-fA-F0-9]+)?)?)?$"
     },
     "version_requirements": {
       "description": "A (set of) version requirements",

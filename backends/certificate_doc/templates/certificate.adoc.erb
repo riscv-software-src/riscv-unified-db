@@ -298,30 +298,29 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 *Version Requirement*: <%= ext_req.version_requirement %> +
 
 <% ext.versions.each do |v| -%>
-<%= v["version"] %>::
+<%= v.version %>::
   State:::
-    <%= v["state"] %>
-  <% if v["state"] == "ratified" -%>
+    <%= v.state %>
+  <% if v.state == "ratified" -%>
   Ratification date:::
-    <%= v["ratification_date"] %>
+    <%= v.ratification_date %>
   <% end # if %>
-  <% if v.key?("changes") -%>
+  <% if v.changes.size > 0 -%>
   Changes:::
 
-    <% v["changes"].each do |c| -%>
+    <% v.changes.each do |c| -%>
     * <%= c %>  
     <% end -%>
 
   <% end -%>
-  <% if v.key?("url") -%>
+  <% unless v.url.nil? -%>
   Ratification document:::
-    <%= v["url"] %>
+    <%= v.url %>
   <% end -%>
-  <% if v.key?("implies") -%>
+  <% if v.implications.size > 0 -%>
   Implies:::
-    <% implications = v["implies"][0].is_a?(Array) ? v["implies"] : [v["implies"]] -%>
-    <% implications.each do |i| -%>
-    * `<%= i[0] %>` version <%= i[1] %>
+    <% v.implications.each do |i| -%>
+    * `<%= i.name %>` version <%= i.version %>
     <% end -%>
   <% end -%>
 <% end -%>
@@ -342,7 +341,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 <% end -%>
 
 // TODO: GitHub issue 92: Use version specified by each profile.
-<% insts = arch_def.instructions.select { |i| i.defined_by?(ext.name,ext.min_version) } -%>
+<% insts = arch_def.instructions.select { |i| i.defined_by?(ext.min_version) } -%>
 <% unless insts.empty? -%>
 ==== Instructions
 

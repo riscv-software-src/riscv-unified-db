@@ -5,28 +5,29 @@
 == Versions
 
 <%- ext.versions.each do |v| -%>
-<%= v["version"] %>::
+<%= v.version %>::
   State:::
-    <%= v["state"] %>
-  <%- if v["state"] == "ratified" -%>
+    <%= v.state %>
+  <%- if v.state == "ratified" -%>
   Ratification date:::
-    <%= v["ratification_date"] %>
+    <%= v.ratification_date %>
   <%- end -%>
-  <%- if v.key?("changes") -%>
+  <%- unless v.changes.empty? -%>
   Changes:::
-    <%- v["changes"].each do |change| %>
+
+    <%- v.changes.each do |change| %>
     * <%= change %>
     <%- end -%>
+
   <%- end -%>
-  <%- if v.key?("url") -%>
+  <%- unless v.url.nil? -%>
   Ratification document:::
-    <%= v["url"] %>
+    <%= v.url %>
   <%- end -%>
-  <%- if v.key?("implies") -%>
+  <%- unless v.implications -%>
   Implies:::
-    <%- implications = v["implies"][0].is_a?(Array) ? v["implies"] : [v["implies"]] -%>
-    <%- implications.each do |i| -%>
-    * `<%= i[0] %>` version <%= i[1] %>
+    <%- v.implications.each do |i| -%>
+    * `<%= i.name %>` version <%= i.version %>
     <%- end -%>
   <%- end -%>
 <%- end -%>
@@ -35,7 +36,7 @@
 
 <%= ext.description %>
 
-<%- insts = arch_def.instructions.select { |i| ext.versions.any? { |v| i.defined_by?(ext.name, v["version"]) } } -%>
+<%- insts = arch_def.instructions.select { |i| ext.versions.any? { |v| i.defined_by?(ext.name, v.version) } } -%>
 <%- unless insts.empty? -%>
 == Instructions
 
