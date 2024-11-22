@@ -1,0 +1,26 @@
+
+
+$schema: inst_format.json#
+kind: instruction format
+name: R-type
+size: 32
+fields:
+- location: 31-25
+  name: funct7
+  kind: opcode  
+- location: 24-20
+  name: rs2
+  kind: x source register
+- location: 19-15
+  name: rs1
+  kind: x source register
+- location: 14-12
+  name: funct3
+  kind: opcode
+- location: 11-7
+  name: rd
+  kind: x destination register
+- location: 6-0
+  name: opcode
+  kind: opcode
+  opcode: true

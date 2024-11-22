@@ -1,0 +1,23 @@
+
+$schema: inst_format.json#
+kind: instruction format
+name: B-type
+size: 32
+fields:
+- location: 31|7|30-25|11-8
+  name: imm
+  kind: immediate
+  left_shift: 1
+  sign_extend: true
+  relocations:
+  - $ref: relocation/R_RISCV_BRANCH.yaml#
+- location: 24-20
+  name: rs2
+  kind: x source register
+- location: 19-15
+  name: rs1
+  kind: x source register
+- location: 6-0
+  name: opcode
+  kind: opcode
+  opcode: true

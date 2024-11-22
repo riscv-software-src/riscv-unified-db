@@ -3,6 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: lui
+format: { $ref: inst_format/utype.yaml# }
 long_name: Load upper immediate
 description: Load the zero-extended imm into rd.
 definedBy: I
@@ -10,18 +11,17 @@ assembly: xd, imm
 encoding:
   match: -------------------------0110111
   variables:
-  - name: imm
-    location: 31-12
-    left_shift: 12
-  - name: rd
-    location: 11-7
+  - field: { $ref: inst_format/utype.yaml#/fields/name=imm }
+    name: imm
+  - field: { $ref: inst_format/utype.yaml#/fields/name=rd }
+    name: xd
 access:
   s: always
   u: always
   vs: always
   vu: always
 data_independent_timing: true
-operation(): X[rd] = imm;
+operation(): X[xd] = sext(imm, 32);
 
 
 

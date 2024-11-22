@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: jal
 long_name: Jump and link
+format: { $ref: inst_format/jtype.yaml# }
 description: |
   Jump to a PC-relative offset and store the return
   address in rd.
@@ -12,12 +13,10 @@ assembly: xd, imm
 encoding:
   match: -------------------------1101111
   variables:
-  - name: imm
-    location: 31|19-12|20|30-21
-    left_shift: 1
-    sign_extend: true
-  - name: rd
-    location: 11-7
+  - field: { $ref: inst_format/jtype.yaml#/fields/name=imm }
+    name: imm
+  - field: { $ref: inst_format/jtype.yaml#/fields/name=rd }
+    name: xd
 access:
   s: always
   u: always
@@ -26,8 +25,8 @@ access:
 operation(): |
   XReg retrun_addr = $pc + 4;
 
-  jump_halfword($pc + imm);
-  X[rd] = retrun_addr;
+  jump_halfword($pc + sext(imm, 31));
+  X[xd] = retrun_addr;
 
 
 

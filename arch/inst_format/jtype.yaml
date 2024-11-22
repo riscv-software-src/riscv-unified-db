@@ -1,0 +1,21 @@
+
+
+$schema: inst_format.json#
+kind: instruction format
+name: J-type
+size: 32
+fields:
+- location: 31|19-12|20|30-21
+  name: imm
+  kind: immediate
+  left_shift: 1
+  sign_extend: true
+  relocations:
+  - $ref: relocation/R_RISCV_JAL.yaml#
+- location: 11-7
+  name: rd
+  kind: x destination register
+- location: 6-0
+  name: opcode
+  kind: opcode
+  opcode: true

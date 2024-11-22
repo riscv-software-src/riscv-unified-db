@@ -4,30 +4,31 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: lb
 long_name: Load byte
+format: { $ref: inst_format/itype.yaml# }
 description: |
   Load 8 bits of data into register `rd` from an
   address formed by adding `rs1` to a signed offset.
   Sign extend the result.
 definedBy: I
-assembly: xd, imm(rs1)
+assembly: xd, offset(rs1)
 encoding:
   match: -----------------000-----0000011
   variables:
-  - name: imm
-    location: 31-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+  - format: { $ref: inst_format/itype.yaml#/fields/name=imm }
+    name: offset
+  - format: { $ref: inst_format/itype.yaml#/fields/name=rs1 }
+    name: xs1
+  - format: { $ref: inst_format/itype.yaml#/fields/name=rs1 }
+    name: xd
 access:
   s: always
   u: always
   vs: always
   vu: always
 operation(): |
-  XReg virtual_address = X[rs1] + imm;
+  XReg virtual_address = X[xs1] + sext(imm, 31);
 
-  X[rd] = sext(read_memory<8>(virtual_address, $encoding), 8);
+  X[xd] = sext(read_memory<8>(virtual_address, $encoding), 8);
 
 
 

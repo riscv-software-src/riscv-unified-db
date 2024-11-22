@@ -1,0 +1,23 @@
+
+$schema: inst_format.json#
+kind: instruction format
+name: U-type
+fields:
+- location: 31-12
+  name: imm
+  kind: immediate
+  sign_extend: true
+  left_shift: 12
+  relocations:
+  - $ref: relocation/R_RISCV_GOT_HI20.yaml#
+  - $ref: relocation/R_RISCV_TLS_GOT_HI20.yaml#
+  - $ref: relocation/R_RISCV_TLS_GD_HI20.yaml#
+  - $ref: relocation/R_RISCV_PCREL_HI20.yaml#
+  - $ref: relocation/R_RISCV_TPREL_HI20.yaml#
+  - $ref: relocation/R_RISCV_TLSDESC_HI20.yaml#
+- location: 11-7
+  name: rd
+  kind: x destination register
+- location: 6-0
+  name: opcode
+  kind: opcode
