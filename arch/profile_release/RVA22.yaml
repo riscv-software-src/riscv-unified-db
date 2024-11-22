@@ -156,6 +156,10 @@ RVA22:
         text: |
           The Zfinx, Zdinx, Zhinx, Zhinxmin extensions are incompatible
           with the profile mandates to support the F and D extensions.
+      recommendations:
+      - text: |
+          Implementations are strongly recommended to raise illegal-instruction
+          exceptions on attempts to execute unimplemented opcodes.
     RVA22S64:
       marketing_name: RVA22S64
       mode: S
@@ -258,3 +262,7 @@ RVA22:
              * Shtvala
              * Shvstvecd
              * Shgatpa
+      recommendations:
+      - text: |
+          Implementations are strongly recommended to raise illegal-instruction
+          exceptions on attempts to execute unimplemented opcodes.
