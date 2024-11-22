@@ -261,7 +261,7 @@ fields:
       - hip.VSTIP
     description: |
       *Virtual Supervisor Timer Interrupt Pending*
-      
+
       Reports the current pending state of a VS-mode timer interrupt
       <%- if ext?(:Sstc) -%>
       , which is normally controlled by the `vstimecmp` CSR, but can also be injected by the hypervisor through `hvip.VSTIP`.
@@ -294,7 +294,7 @@ fields:
     location: 7
     description: |
       *Machine Timer Interrupt Pending*
-      
+
       Reports the current pending state of an M-mode timer interrupt.
 
       Bit is controlled by the timer device (using `mtimecmp`), and is not writeable.
@@ -357,7 +357,7 @@ fields:
       *Machine External Interrupt Pending*
 
       Reports the current pending state of an M-mode external interrupt.
-      
+
       MEIP is controlled by the external interrupt controller <% if ext?(:Smaia) %>(AIA) <% end %>.
       It is not writable by software.
     type: RO-H

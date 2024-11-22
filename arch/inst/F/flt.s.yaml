@@ -40,7 +40,7 @@ operation(): |
     Boolean sign_a = sp_value_a[31] == 1;
     Boolean sign_b = sp_value_b[31] == 1;
 
-    Boolean a_lt_b = 
+    Boolean a_lt_b =
       (sign_a != sign_b)
         ? (sign_a && ((sp_value_a[30:0] | sp_value_b[30:0]) != 0)) # opposite sign, a is negative. a is less than b as long as both are not zero
         : ((sp_value_a != sp_value_b) && (sign_a != (sp_value_a < sp_value_b)));
@@ -55,15 +55,11 @@ sail(): |
   {
     let rs1_val_S = F_or_X_S(rs1);
     let rs2_val_S = F_or_X_S(rs2);
-  
+
     let (fflags, rd_val) : (bits_fflags, bool) =
         riscv_f32Le (rs1_val_S, rs2_val_S);
-  
+
     accrue_fflags(fflags);
     X(rd) = zero_extend(bool_to_bits(rd_val));
     RETIRE_SUCCESS
   }
-
-
-
-

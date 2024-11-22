@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: c.fsw
-long_name: Store single-precision 
+long_name: Store single-precision
 description: |
   Stores a single precision floating-point value in register rs2 to memory.
   It computes an effective address by adding the zero-extended offset, scaled by 4,

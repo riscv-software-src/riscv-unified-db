@@ -24,4 +24,3 @@ access:
 data_independent_timing: false
 base: 32
 operation(): |
-      

@@ -448,8 +448,8 @@ params:
 
   # Strategy used to handle reservation sets
   #
-  #  * "reserve naturally-aligned 64-byte region": Always reserve the 64-byte block containing the LR/SC address 
-  #  * "reserve naturally-aligned 128-byte region": Always reserve the 128-byte block containing the LR/SC address 
+  #  * "reserve naturally-aligned 64-byte region": Always reserve the 64-byte block containing the LR/SC address
+  #  * "reserve naturally-aligned 128-byte region": Always reserve the 128-byte block containing the LR/SC address
   #  * "reserve exactly enough to cover the access": Always reserve exactly the LR/SC access, and no more
   #  * "custom": Custom behavior, leading to an 'unpredictable' call on any LR/SC
   LRSC_RESERVATION_STRATEGY: reserve naturally-aligned 64-byte region

@@ -272,7 +272,7 @@ class Csr < ArchDefObject
   # @return [String] Pretty-printed length string
   def length_pretty(arch_def, effective_xlen=nil)
     if dynamic_length?(arch_def)
-      cond = 
+      cond =
         case @data["length"]
         when "MXLEN"
           "CSR[misa].MXL == %%"

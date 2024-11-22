@@ -7,7 +7,7 @@ long_name: And
 description: |
   And rd with rs2, and store the result in rd
   The rd and rs2 register indexes should be used as rd+8 and rs2+8 (registers x8-x15).
-  C.AND expands into `and rd, rd, rs2`. 
+  C.AND expands into `and rd, rd, rs2`.
 definedBy:
   anyOf:
   - C

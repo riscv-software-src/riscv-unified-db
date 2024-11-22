@@ -218,4 +218,3 @@ Custom Write Function::
 Alias::
 
 Some fields are aliases for another field, often in a different CSR. THe `alias` key is used to indicate that this field just points somewhere else.
-

@@ -231,7 +231,7 @@ class Profile < PortfolioInstance
   # @return [Array<String>]
   def ext_note_to_adoc(ext_name)
     ret = []
- 
+
     unless extension_note(ext_name).nil?
       ret << "+"
       ret << "[NOTE]"
@@ -239,7 +239,7 @@ class Profile < PortfolioInstance
       ret << extension_note(ext_name)
       ret << "--"
     end
-  
+
     ret
   end
 end

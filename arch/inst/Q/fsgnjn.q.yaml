@@ -27,4 +27,3 @@ pseudoinstructions:
 - when: (rs2 == rs1)
   to: fneg.q
 operation(): |
-    

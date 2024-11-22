@@ -24,7 +24,7 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
-    
+
 
 
 
@@ -37,14 +37,10 @@ sail(): |
       Some(rm') => {
         let rm_3b = encdec_rounding_mode(rm');
         let (fflags, rd_val_S) = riscv_ui64ToF32 (rm_3b, rs1_val_LU);
-  
+
         accrue_fflags(fflags);
         F_or_X_S(rd) = rd_val_S;
         RETIRE_SUCCESS
       }
     }
   }
-
-
-
-

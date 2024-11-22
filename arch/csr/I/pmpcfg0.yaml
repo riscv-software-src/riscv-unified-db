@@ -29,7 +29,7 @@ fields:
         h! - ! 6:5 ! _Reserved_ Writes shall be ignored.
         h! A ! 4:3
         a! Address matching mode. One of:
-          
+
             [when="PMP_GRANULARITY < 2"]
             * *OFF* (0) - Null region (disabled)
             * *TOR* (1) - Top of range
@@ -43,7 +43,7 @@ fields:
 
         [when="PMP_GRANULARITY >= 2"]
         Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
-        
+
         h! X ! 2 ! When clear, instruction fetchs cause an `Access Fault` for the matching region and privilege mode.
         h! W ! 1 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
         h! R ! 0 ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.
@@ -91,7 +91,7 @@ fields:
         h! - ! 14:13 ! _Reserved_ Writes shall be ignored.
         h! A ! 12:11
         a! Address matching mode. One of:
-          
+
             [when="PMP_GRANULARITY < 2"]
             * *OFF* (0) - Null region (disabled)
             * *TOR* (1) - Top of range
@@ -105,7 +105,7 @@ fields:
 
         [when="PMP_GRANULARITY >= 2"]
         Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
-        
+
         h! X ! 10 ! When clear, instruction fetchs cause an `Access Fault` for the matching region and privilege mode.
         h! W ! 9 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
         h! R ! 8 ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.
@@ -153,7 +153,7 @@ fields:
         h! - ! 22:21 ! _Reserved_ Writes shall be ignored.
         h! A ! 20:19
         a! Address matching mode. One of:
-          
+
             [when="PMP_GRANULARITY < 2"]
             * *OFF* (0) - Null region (disabled)
             * *TOR* (1) - Top of range
@@ -167,7 +167,7 @@ fields:
 
         [when="PMP_GRANULARITY >= 2"]
         Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
-        
+
         h! X ! 18 ! When clear, instruction fetchs cause an `Access Fault` for the matching region and privilege mode.
         h! W ! 17 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
         h! R ! 16 ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.
@@ -215,7 +215,7 @@ fields:
         h! - ! 30:29 ! _Reserved_ Writes shall be ignored.
         h! A ! 28:27
         a! Address matching mode. One of:
-          
+
             [when="PMP_GRANULARITY < 2"]
             * *OFF* (0) - Null region (disabled)
             * *TOR* (1) - Top of range
@@ -229,7 +229,7 @@ fields:
 
         [when="PMP_GRANULARITY >= 2"]
         Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
-        
+
         h! X ! 26 ! When clear, instruction fetchs cause an `Access Fault` for the matching region and privilege mode.
         h! W ! 25 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
         h! R ! 24 ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.
@@ -278,7 +278,7 @@ fields:
         h! - ! 38:37 ! _Reserved_ Writes shall be ignored.
         h! A ! 36:35
         a! Address matching mode. One of:
-          
+
             [when="PMP_GRANULARITY < 2"]
             * *OFF* (0) - Null region (disabled)
             * *TOR* (1) - Top of range
@@ -292,7 +292,7 @@ fields:
 
         [when="PMP_GRANULARITY >= 2"]
         Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
-        
+
         h! X ! 34 ! When clear, instruction fetchs cause an `Access Fault` for the matching region and privilege mode.
         h! W ! 33 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
         h! R ! 32 ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.
@@ -341,7 +341,7 @@ fields:
         h! - ! 46:45 ! _Reserved_ Writes shall be ignored.
         h! A ! 44:43
         a! Address matching mode. One of:
-          
+
             [when="PMP_GRANULARITY < 2"]
             * *OFF* (0) - Null region (disabled)
             * *TOR* (1) - Top of range
@@ -355,7 +355,7 @@ fields:
 
         [when="PMP_GRANULARITY >= 2"]
         Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
-        
+
         h! X ! 42 ! When clear, instruction fetchs cause an `Access Fault` for the matching region and privilege mode.
         h! W ! 41 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
         h! R ! 40 ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.
@@ -404,7 +404,7 @@ fields:
         h! - ! 54:53 ! _Reserved_ Writes shall be ignored.
         h! A ! 52:51
         a! Address matching mode. One of:
-          
+
             [when="PMP_GRANULARITY < 2"]
             * *OFF* (0) - Null region (disabled)
             * *TOR* (1) - Top of range
@@ -418,7 +418,7 @@ fields:
 
         [when="PMP_GRANULARITY >= 2"]
         Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
-        
+
         h! X ! 50 ! When clear, instruction fetchs cause an `Access Fault` for the matching region and privilege mode.
         h! W ! 49 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
         h! R ! 48 ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.
@@ -467,7 +467,7 @@ fields:
         h! - ! 62:61 ! _Reserved_ Writes shall be ignored.
         h! A ! 60:59
         a! Address matching mode. One of:
-          
+
             [when="PMP_GRANULARITY < 2"]
             * *OFF* (0) - Null region (disabled)
             * *TOR* (1) - Top of range
@@ -481,7 +481,7 @@ fields:
 
         [when="PMP_GRANULARITY >= 2"]
         Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
-        
+
         h! X ! 58 ! When clear, instruction fetchs cause an `Access Fault` for the matching region and privilege mode.
         h! W ! 57 ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
         h! R ! 56 ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.

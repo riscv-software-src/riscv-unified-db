@@ -5,9 +5,9 @@ kind: instruction
 name: c.addi4spn
 long_name: Add a zero-extended non-zero immediate, scaled by 4, to the stack pointer
 description: |
-  Adds a zero-extended non-zero immediate, scaled by 4, to the stack pointer, x2, and writes the result to rd'. 
+  Adds a zero-extended non-zero immediate, scaled by 4, to the stack pointer, x2, and writes the result to rd'.
   This instruction is used to generate pointers to stack-allocated variables.
-  It expands to `addi rd', x2, nzuimm[9:2]`. 
+  It expands to `addi rd', x2, nzuimm[9:2]`.
   C.ADDI4SPN is only valid when nzuimm &ne; 0; the code points with nzuimm=0 are reserved.
 definedBy:
   anyOf:
@@ -34,4 +34,3 @@ operation(): |
   }
 
   X[rd+8] = X[2] + imm;
-

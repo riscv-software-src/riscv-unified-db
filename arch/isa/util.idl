@@ -177,7 +177,7 @@ function in_naturally_aligned_region? {
   }
   body {
     XReg Mask = (N/8) - 1;
-    
+
     return (address & ~Mask) == ((address + length - 1) & ~Mask);
   }
 }

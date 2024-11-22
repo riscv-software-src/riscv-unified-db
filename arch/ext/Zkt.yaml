@@ -105,14 +105,14 @@ description: |
   If a secret ends up in address calculation affecting a load or store, that
   is a violation. If a secret affects a branch's condition, that is also a
   violation. A secret variable location or register becomes a non-secret via
-  specific zeroization/sanitisation or by being declared ciphertext 
+  specific zeroization/sanitisation or by being declared ciphertext
   (or otherwise no-longer-secret information). In essence, secrets can only
   "touch" instructions on the Zkt list while they are secrets.
 
   == Specific Instruction Rationale
 
   * HINT instruction forms (typically encodings with `rd=x0`) are excluded from
-  the data-independent time requirement. 
+  the data-independent time requirement.
   * Floating point (F, D, Q, L extensions) are currently excluded from the
   constant-time requirement as they have very few applications in standardised
   cryptography. We may consider adding floating point add, sub, multiply as a
@@ -360,4 +360,3 @@ versions:
 company:
   name: RISC-V International
   url: https://riscv.org
-

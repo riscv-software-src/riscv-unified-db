@@ -231,8 +231,8 @@ params:
       maximum: 127
   MISALIGNED_LDST:
     description: |
-      Does the implementation perform non-atomic misaligned loads and stores to main memory 
-      (does *not* affect misaligned support to device memory)? 
+      Does the implementation perform non-atomic misaligned loads and stores to main memory
+      (does *not* affect misaligned support to device memory)?
       If not, the implementation always throws a misaligned exception.
     schema:
       type: boolean
@@ -282,7 +282,7 @@ params:
 
        * by_byte: The load/store appears to be broken into byte-sized accesses that processed sequentially from smallest address to largest address
        * custom: Something else. Will result in a call to unpredictable() in the execution
-    schema: 
+    schema:
       type: string
       enum: ["by_byte", "custom"]
   TRAP_ON_ILLEGAL_WLRL:
@@ -431,7 +431,7 @@ params:
   PMA_GRANULARITY:
     description: |
       log2 of the smallest supported PMA region.
-      
+
       Generally, for systems with an MMU, should not be smaller than 12,
       as that would preclude caching PMP results in the TLB along with
       virtual memory translations
@@ -468,7 +468,7 @@ params:
 
       true::
         The `misa` CSR returns a non-zero value.
-      
+
       false::
         The `misa` CSR is read-only-0.
     schema:

@@ -32,11 +32,11 @@ operation(): |
       } else if (imm[4:0] == 1) {
         # prefetch.r instruction
         Bits<12> offset = {imm[11:5], rd};
-        prefetch_read(offset);        
+        prefetch_read(offset);
       } else if (imm[4:0] == 3) {
         # prefetch.r instruction
         Bits<12> offset = {imm[11:5], rd};
-        prefetch_write(offset);        
+        prefetch_write(offset);
       }
     }
   }
@@ -66,7 +66,3 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
-
-
-
-

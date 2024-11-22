@@ -34,7 +34,7 @@ fields:
         h! - ! <%= ((i+1)*8)-2 %>:<%= ((i+1)*8)-3 %> ! _Reserved_ Writes shall be ignored.
         h! A ! <%= ((i+1)*8)-4 %>:<%= ((i+1)*8)-5 %>
         a! Address matching mode. One of:
-          
+
             [when="PMP_GRANULARITY < 2"]
             * *OFF* (0) - Null region (disabled)
             * *TOR* (1) - Top of range
@@ -48,7 +48,7 @@ fields:
 
         [when="PMP_GRANULARITY >= 2"]
         Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
-        
+
         h! X ! <%= ((i)*8)+2 %> ! When clear, instruction fetchs cause an `Access Fault` for the matching region and privilege mode.
         h! W ! <%= ((i)*8)+1 %> ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
         h! R ! <%= ((i)*8)+0 %> ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.

@@ -6,7 +6,7 @@ name: amomin.w
 long_name: Atomic MIN word
 description: |
    Atomically:
-     
+
      * Load the word at address _rs1_
      * Write the sign-extended value into _rd_
      * Signed compare the least-significant word of register _rs2_ to the loaded value, and select the mimimum value
@@ -95,7 +95,7 @@ sail(): |
                           AMOXOR  => rs2_val ^ loaded,
                           AMOAND  => rs2_val & loaded,
                           AMOOR   => rs2_val | loaded,
-  
+
                           /* These operations convert bitvectors to integer values using [un]signed,
                            * and back using to_bits().
                            */
@@ -135,7 +135,3 @@ sail(): |
       RETIRE_FAIL
     }
   }
-
-
-
-

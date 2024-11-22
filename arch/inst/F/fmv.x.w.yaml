@@ -40,7 +40,3 @@ sail(): |
     F(rd) = nan_box (rd_val_S);
     RETIRE_SUCCESS
   }
-
-
-
-

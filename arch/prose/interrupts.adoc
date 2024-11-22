@@ -1,7 +1,7 @@
 [[sec:interrupts]]
 = Interrupts
 
-== Machine Interrupt (`mip` and `mie`) Registers 
+== Machine Interrupt (`mip` and `mie`) Registers
 
 The `mip` register is an MXLEN-bit read/write register containing
 information on pending interrupts, while `mie` is the corresponding

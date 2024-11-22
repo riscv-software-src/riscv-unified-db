@@ -46,7 +46,3 @@ sail(): |
     X(rd) = to_bits(sizeof(xlen), result);
     RETIRE_SUCCESS
   }
-
-
-
-

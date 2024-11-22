@@ -245,7 +245,7 @@ class Validator
         vars_match = variables.count { |variable| ary_from_location(variable["location"]).include?(i) }
         if vars_match.zero?
           raise ValidationError, "In instruction #{inst_name}, no variable or encoding bit covers bit #{i}"
-        elsif vars_match != 1 
+        elsif vars_match != 1
           raise ValidationError, "In instruction, #{inst_name}, bit #{i} is covered by more than one variable"
         end
       else

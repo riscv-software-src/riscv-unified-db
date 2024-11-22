@@ -24,7 +24,7 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    
+
 
 
 
@@ -37,4 +37,3 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
-

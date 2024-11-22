@@ -127,7 +127,7 @@ fields:
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
       if (csr_value.MODE == 0) {
-        if (virtual_mode?() || IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO) {          
+        if (virtual_mode?() || IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO) {
           # when MODE == Bare, PPN and ASID must be zero
           if (csr_value.ASID == 0 && csr_value.PPN == 0) {
             return csr_value.PPN;

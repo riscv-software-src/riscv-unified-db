@@ -6,7 +6,7 @@ name: c.add
 long_name: Add
 description: |
   Add the value in rs2 to rd, and store the result in rd.
-  C.ADD expands into `add rd, rd, rs2`. 
+  C.ADD expands into `add rd, rd, rs2`.
 definedBy:
   anyOf:
   - C

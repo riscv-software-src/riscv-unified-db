@@ -95,4 +95,3 @@ operation(): |
     }
     # else, silently do nothing
   }
-  

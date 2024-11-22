@@ -24,7 +24,7 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    
+
 
 
 
@@ -33,27 +33,27 @@ sail(): |
     let SEW      = get_sew();
     let LMUL_pow = get_lmul_pow();
     let num_elem = get_num_elem(LMUL_pow, SEW);
-  
+
     if illegal_vd_masked(vd) then { handle_illegal(); return RETIRE_FAIL };
-  
+
     let 'n = num_elem;
     let 'm = SEW;
-  
+
     /* for bypassing normal masking in init_masked_result */
     vec_trues : vector('n, dec, bool) = undefined;
     foreach (i from 0 to (num_elem - 1)) {
       vec_trues[i] = true
     };
-  
+
     let vm_val  : vector('n, dec, bool)     = read_vmask_carry(num_elem, 0b0, 0b00000);
     let rs1_val : bits('m)                  = get_scalar(rs1, SEW);
     let vs2_val : vector('n, dec, bits('m)) = read_vreg(num_elem, SEW, LMUL_pow, vs2);
     let vd_val  : vector('n, dec, bits('m)) = read_vreg(num_elem, SEW, LMUL_pow, vd);
     result      : vector('n, dec, bits('m)) = undefined;
     mask        : vector('n, dec, bool)     = undefined;
-  
+
     (result, mask) = init_masked_result(num_elem, SEW, LMUL_pow, vd_val, vec_trues);
-  
+
     foreach (i from 0 to (num_elem - 1)) {
       if mask[i] then {
         result[i] = match funct6 {
@@ -62,9 +62,8 @@ sail(): |
         }
       }
     };
-  
+
     write_vreg(num_elem, SEW, LMUL_pow, vd, result);
     vstart = zeros();
     RETIRE_SUCCESS
   }
-

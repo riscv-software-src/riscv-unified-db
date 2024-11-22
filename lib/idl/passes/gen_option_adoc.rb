@@ -26,7 +26,7 @@ module Idl
 
   class IfAst
     def gen_option_adoc
-      adoc = 
+      adoc =
         <<~ADOC
           [when,"#{if_cond.to_idl}"]
           #{if_body.gen_option_adoc}
