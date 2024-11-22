@@ -373,7 +373,7 @@ class ArchDef
     @implemented_extensions = []
     if @arch_def.key?("implemented_extensions")
       @arch_def["implemented_extensions"].each do |e|
-        @implemented_extensions << ExtensionVersion.new(e["name"], e["version"])
+        @implemented_extensions << ExtensionVersion.new(e["name"], e["version"], self)
       end
     end
     @implemented_extensions

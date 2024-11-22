@@ -92,7 +92,7 @@ require "ruby-prof"
     when "ext"
       puts "Generting full extension list"
       arch_def.implemented_extensions.each do |ext_version|
-        lines << " * `#{ext_version.name}` #{ext_version.ext(arch_def).long_name}"
+        lines << " * `#{ext_version.name}` #{ext_version.ext.long_name}"
       end
     when "inst"
       puts "Generting full instruction list"
