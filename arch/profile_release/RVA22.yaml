@@ -46,10 +46,10 @@ RVA22:
         $inherits: "profile_release/RVA20.yaml#/RVA20/profiles/RVA20U64/extensions"
         Zihpm:
           presence: mandatory
-          version: "= 2.0"
+          version: "~> 2.0"
         Zihintpause:
           presence: mandatory
-          version: "= 2.0"
+          version: "~> 2.0"
           note: |
             While the `pause` instruction is a HINT can be implemented as a
             NOP and hence trivially supported by hardware implementers, its
@@ -68,7 +68,7 @@ RVA22:
           version: "~> 1.0"
         Zic64b:
           presence: mandatory
-          version: "= 1.0"
+          version: "~> 1.0"
           note: |
             This is a new extension name for this feature. While the general
             RISC-V specifications are agnostic to cache block size, selecting a
@@ -170,10 +170,10 @@ RVA22:
         $inherits: "profile_release/RVA20.yaml#/RVA20/profiles/RVA20S64/extensions"
         S:
           presence: mandatory
-          version: "= 1.12"
+          version: "~> 1.12"
         Sscounterenw:
           presence: mandatory
-          version: "= 1.0"
+          version: "~> 1.0"
           note: |
             Sstvala is a new extension name introduced with RVA22.
         Svpbmt:
