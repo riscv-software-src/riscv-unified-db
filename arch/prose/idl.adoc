@@ -560,7 +560,7 @@ Two builtin variables exist:
 
 === Constants
 
-Constants are declared like mutable variables, execpt that their name starts with an uppercase letter.
+Constants are declared like mutable variables, except that their name starts with an uppercase letter.
 
 Constant names must start with an uppercase letter and can be followed by any number of letters (any case), numbers, or an underscore. Constants must be initialized when declared, and cannot be assigned after declaration. Constants must be initialized with a value known at compile time (_i.e._, initialization cannot reference variables).
 
