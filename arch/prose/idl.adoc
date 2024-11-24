@@ -161,7 +161,7 @@ All strings must be compile-time-known values.
 
 === Composite Types
 
-IDL also supports three composite types: enumerations, bitfields, and arrays.
+IDL also supports four composite types: enumerations, bitfields, structs, and arrays.
 
 ==== Enumerations
 
@@ -239,6 +239,24 @@ Sv39PageTableEntry pte = pte_data;
 # members are accessed with the '.' operator
 Bits<2> pbmt = pte.PBMT;
 ----
+
+==== Structs
+
+A struct is a collection of unrelated types, similar to a `struct` in C/C++ or Verilog. Structs are declared using the `struct` keyword. Struct names must begin with a capital letter. Struct members can begin with either lowercase or uppercase; in the former, the member is mutable and in the former the member is const. Struct members may be any type, including other structs.
+
+Struct declarations do _not_ need to be followed by a semicolon (as they are in C/C++).
+
+.example Struct
+[source,idl]
+----
+struct TranslationResult {
+  Bits<PHYS_ADDR_WIDTH> paddr; # a bit vector
+  Pbmt pbmt;                   # an enum
+  PteFlags pte_flags;          # another enum
+}
+----
+
+Structs can be the return value of a function. Structs, like every other variable in IDL, are always passed-by-value.
 
 ==== Arrays
 
@@ -592,7 +610,7 @@ Bitfields can be converted to a `Bits<N>` type, where N is the width of the bitf
 
 == Casting
 
-There are two explicit cast operators in IDL: `$isigned` and `$bits`.
+There are four explicit cast operators in IDL: `$signed`, `$bits`, `$enum`, and `$enum_to_a`.
 
 Unsigned Bits<N> values may be cast to signed values using the `$signed` cast operator.
 
@@ -628,6 +646,55 @@ $bits(CSR[mstatus])  # => XLEN'd??
 # assuming:
 #   bitfield (64) Sv39PageTableEntry { ... }
 $bits(Sv39PageTableEntry) # => 64'd??
+----
+
+The `$enum` cast will convert a `Bits<N>` type into an enum.
+
+[source,idl]
+----
+$enum(RoundingMode, 1'b1)  # => RoundingMode::RTZ
+----
+
+The `$enum_to_a` cast will convert an enumeration type into an array of the enumeration values. The values will in the declaration order of the enum members.
+
+[source,idl]
+----
+$enum_to_a(RoundingMode)  # => [0, 1, 2, 3, 4]
+----
+
+== Builtins
+
+IDL provides a several builtins to access implicit machine state or query data structure properties.
+
+=== Implicit Machine State
+
+The current program counter (virtual address of the instruction being executed) is available in `$pc` in Instruction and CSR scope. `$pc` is not available in function scope or global scope.
+
+The current instruction encoding (of the instruction being executed) is available in `$encoding` in Instruction and CSR scope. `$encoding` is not available in function scope or global scope.
+
+=== Data Type Queries
+
+The size (number of members) of an enum can be found with `$enum_size`.
+
+[source,idl]
+----
+$enum_size(RoundingMode) # => 5
+----
+
+The size of an enum element (the number of bits needed to represent the largest enum value) can be
+found with `$enum_element_size`.
+
+[source,idl]
+----
+$enum_element_size(RoundingMode) # => 3
+----
+
+The size (number of elements) of an array can be found with `$array_size`.
+
+[source,idl]
+----
+Bits<32> array [13];
+$array_size(array) # => 13
 ----
 
 == Control flow
@@ -925,23 +992,4 @@ mstatus:
       # if endianess is mutable, MBE comes out of reset in little-endian mode
       reset_value(): |
         return (M_MODE_ENDIANESS == "big") ? 1 : 0;
-----
-
-== Compilation order
-
-The order of declaration is important in IDL (like C/C++, unlike Verilog). A variable, constant, or function must be declared *before* it is used.
-
-.Compilation order
-[source,idl]
-----
-function mod {
-  ...
-  body {
-    # (-, remainder) = divmod(value); # compilation error: divmod not defined
-    # return remainder;
-  }
-}
-
-function divmod { ... }
-
 ----

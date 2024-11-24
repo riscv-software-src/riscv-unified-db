@@ -48,7 +48,7 @@ class CertModel < PortfolioInstance
 
   # @return [CertClass] The certification class that this model belongs to.
   def cert_class
-    cert_class = @arch_def.cert_class(File.basename(@data["class"]['$ref'].split("#")[0], ".yaml"))
+    cert_class = @arch_def.ref(@data["class"]['$ref'])
     raise "No certificate class named '#{@data["class"]}'" if cert_class.nil?
 
     cert_class

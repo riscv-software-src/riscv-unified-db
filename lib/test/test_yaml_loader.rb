@@ -225,7 +225,6 @@ class TestYamlLoader < Minitest::Test
       obj3:
         a: Should take precedence
         $inherits: "#/$defs/target2"
-
     YAML
 
     f = Tempfile.new("yml")
@@ -363,5 +362,97 @@ class TestYamlLoader < Minitest::Test
 
     assert_raises(YamlLoader::DereferenceError) { YamlLoader.load(f.path) }
   end
+
+  def test_copy_in_the_same_document
+    yaml = <<~YAML
+      $defs:
+        target1: A string
+        target2:
+          a: hash
+        target3: Another string
+
+      obj1:
+        target10: abc
+        target11: 
+          $copy: "#/$defs/target1"
+        target12: def
+        target13: 
+          $copy: "#/$defs/target3"
+
+    YAML
+
+    f = Tempfile.new("yml")
+    f.write(yaml)
+    f.flush
+
+    doc = YamlLoader.load(f.path)
+    assert_equal({ 
+        "target10" => "abc", 
+        "target11" => "A string", 
+        "target12" => "def", 
+        "target13" => "Another string" 
+      }, doc["obj1"])
+  end
+
+  def test_copy_in_the_different_document
+    yaml1 = <<~YAML
+      $defs:
+        target1: A string
+        target2:
+          a: hash
+        target3: Another string
+    YAML
+
+    f1 = Tempfile.new("yml")
+    f1.write(yaml1)
+    f1.flush
+    f1_path = Pathname.new(f1.path)
+
+    yaml2 = <<~YAML
+      obj1:
+        target10: abc
+        target11: 
+          $copy: "#{f1_path.basename}#/$defs/target1"
+        target12: def
+        target13: 
+          $copy: "#{f1_path.basename}#/$defs/target3"
+    YAML
+
+    f2 = Tempfile.new("yml")
+    f2.write(yaml2)
+    f2.flush
+
+    doc = YamlLoader.load(f2.path)
+    assert_equal({ 
+        "target10" => "abc", 
+        "target11" => "A string", 
+        "target12" => "def", 
+        "target13" => "Another string" 
+      }, doc["obj1"])
+  end
+
+  def test_multi_inherits_in_the_same_document
+    yaml = <<~YAML
+      $defs:
+        target1:
+          b: nice
+        target2:
+          a: hash
+
+      obj1:
+        $inherits:
+        - "#/$defs/target1"
+        - "#/$defs/target2"
+
+    YAML
+
+    f = Tempfile.new("yml")
+    f.write(yaml)
+    f.flush
+
+    doc = YamlLoader.load(f.path)
+    assert_equal({ "a" => "hash", "b" => "nice" }, doc["obj1"])
+  end
+
 
 end

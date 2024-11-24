@@ -138,30 +138,34 @@ class Extension < ArchDefObject
 
   # @return [Array<Hash>] versions hash from config
   def versions
-    @data["versions"]
+    return @versions unless @versions.nil?
+
+    @versions = @data["versions"].map do |v|
+      ExtensionVersion.new(name, v["version"], arch_def)
+    end
   end
 
-  # @return [Array<Hash>] Ratified versions hash from config
+  # @return [Array<ExtensionVersion>] Ratified versions hash from config
   def ratified_versions
-    @data["versions"].select { |v| v["state"] == "ratified" }
+    versions.select { |v| v.state == "ratified" }
   end
 
-  # @return [String] Mimumum defined version of this extension
+  # @return [ExtensionVersion] Mimumum defined version of this extension
   def min_version
-    versions.map { |v| Gem::Version.new(v["version"]) }.min
+    versions.min { |a, b| a.version <=> b.version }
   end
 
-  # @return [String] Maximum defined version of this extension
+  # @return [ExtensionVersion] Maximum defined version of this extension
   def max_version
-    versions.map { |v| Gem::Version.new(v["version"]) }.max
+    versions.max { |a, b| a.version <=> b.version }
   end
 
-  # @return [String] Mimumum defined ratified version of this extension
+  # @return [ExtensionVersion] Mimumum defined ratified version of this extension
   # @return [nil] if there is no ratified version
   def min_ratified_version
     return nil if ratified_versions.empty?
 
-    ratified_versions.map { |v| Gem::Version.new(v["version"]) }.min
+    ratified_versions.min { |a, b| a.version <=> b.version }
   end
 
   # @return [Array<ExtensionParameter>] List of parameters added by this extension
@@ -187,22 +191,9 @@ class Extension < ArchDefObject
   # @param version_requirement [String] Version requirement
   # @return [Array<ExtensionVersion>] Array of extensions implied by any version of this extension meeting version_requirement
   def implies(version_requirement = ">= 0")
-    implications = []
-    @data["versions"].each do |v|
-      next unless Gem::Requirement.new(version_requirement).satisfied_by?(Gem::Version.new(v["version"]))
+    return [] unless Gem::Requirement.new(version_requirement).satisfied_by?(max_version.version)
 
-      case v["implies"]
-      when nil
-        next
-      when Array
-        if v["implies"][0].is_a?(Array)
-          implications += v["implies"].map { |e| ExtensionVersion.new(e[0], e[1])}
-        else
-          implications << ExtensionVersion.new(v["implies"][0], v["implies"][1])
-        end
-      end
-    end
-    implications
+    max_version.implications
   end
 
   def conflicts
@@ -211,18 +202,18 @@ class Extension < ArchDefObject
     to_extension_requirement_list(@data["conflicts"])
   end
 
-  # @return [Array<Instruction>] the list of instructions implemented by this extension (may be empty)
+  # @return [Array<Instruction>] the list of instructions implemented by *any version* of this extension (may be empty)
   def instructions
     return @instructions unless @instructions.nil?
 
-    @instructions = arch_def.instructions.select { |i| @data["versions"].any? { |version| i.defined_by?(name, version["version"]) }}
+    @instructions = arch_def.instructions.select { |i| versions.any? { |v| i.defined_by?(v) }}
   end
 
-  # @return [Array<Csr>] the list of CSRs implemented by this extension (may be empty)
+  # @return [Array<Csr>] the list of CSRs implemented by *any version* of this extension (may be empty)
   def csrs
     return @csrs unless @csrs.nil?
 
-    @csrs = arch_def.csrs.select { |csr| csr.defined_by?(ExtensionVersion.new(name, max_version)) }
+    @csrs = arch_def.csrs.select { |csr| versions.any? { |v| csr.defined_by?(v) } }
   end
 
   # @param archdef [ArchDef] Architecture spec
@@ -233,7 +224,7 @@ class Extension < ArchDefObject
     return @implemented_csrs unless @implemented_csrs.nil?
 
     @implemented_csrs = archdef.implemented_csrs.select do |csr|
-      versions.any? { |ver| csr.defined_by?(ExtensionVersion.new(name, ver["version"])) }
+      versions.any? { |ver| csr.defined_by?(ExtensionVersion.new(name, ver["version"], @arch_def)) }
     end
   end
 
@@ -245,7 +236,7 @@ class Extension < ArchDefObject
     return @implemented_instructions unless @implemented_instructions.nil?
 
     @implemented_instructions = archdef.implemented_instructions.select do |inst|
-      versions.any? { |ver| inst.defined_by?(ExtensionVersion.new(name, ver["version"])) }
+      versions.any? { |ver| inst.defined_by?(ExtensionVersion.new(name, ver["version"], @arch_def)) }
     end
   end
 
@@ -299,22 +290,46 @@ class ExtensionVersion
   # @return [Gem::Version] Version of the extension
   attr_reader :version
 
+  # @return [Extension] Extension
+  attr_reader :ext
+
   # @param name [#to_s] The extension name
   # @param version [Integer,String] The version specifier
   # @param arch_def [ArchDef] The architecture definition
-  def initialize(name, version)
+  def initialize(name, version, arch_def)
     @name = name.to_s
     @version = Gem::Version.new(version)
+    @arch_def = arch_def
+    unless arch_def.nil?
+      @ext = arch_def.extension(@name)
+      raise "Extension #{name} not found in arch def" if @ext.nil?
+
+      @data = @ext.data["versions"].find { |v| v["version"] == version.to_s }
+      raise "Extension #{name} version #{version} not found in arch def" if @data.nil?
+    end
   end
 
-  # @return Extension the extension object
-  def ext(arch_def)
-    arch_def.extension(name)
+  # @return [String] The state of the extension version ('ratified', 'developemnt', etc)
+  def state = @data["state"]
+
+  def ratification_date = @data["ratification_date"]
+
+  def changes = @data["changes"].nil? ? [] : @data["changes"]
+
+  def url = @data["url"]
+
+  def contributors
+    return @contributors unless @contributors.nil?
+
+    @contributors = []
+    @data["contributors"].each do |c|
+      @contributors << Person.new(c)
+    end
   end
 
   # @return [Array<ExtensionParameter>] The list of parameters for this extension version
-  def params(arch_def)
-    ext(arch_def).params.select { |p| p.defined_in_extension_version?(@version) }
+  def params
+    @ext.params.select { |p| p.defined_in_extension_version?(@version) }
   end
 
   def to_s
@@ -336,6 +351,51 @@ class ExtensionVersion
     else
       raise "Unexpected comparison"
     end
+  end
+
+  # @param other [ExtensionVersion] Comparison
+  # @return [Boolean] Whether or not +other+ is an ExtensionVersion with the same name and version
+  def eql?(other)
+    return false unless other.is_a?(ExtensionVersion)
+
+    @name == other.name && @version == other.version
+  end
+
+  def requirements
+    r = case @data["requires"]
+        when nil
+          AlwaysTrueSchemaCondition.new
+        when Hash
+          SchemaCondition.new(@data["requires"])
+        else
+          SchemaCondition.new({"oneOf" => [@data["requires"]]})
+        end
+    if @data.key?("implies")
+      rs = [r] + implications.map { |e| e.requirements }
+      rs = rs.reject { |r| r.empty? }
+      unless rs.empty?
+        r = SchemaCondition.all_of(*rs.map { |r| r.to_h })
+      end
+    end
+    r
+  end
+
+  def implications
+    return @implications unless @implications.nil?
+
+    @implications = []
+    case @data["implies"]
+    when nil
+      return @implications
+    when Array
+      if @data["implies"][0].is_a?(Array)
+        @implications += @data["implies"].map { |e| ExtensionVersion.new(e[0], e[1], @arch_def) }
+      else
+        @implications << ExtensionVersion.new(@data["implies"][0], @data["implies"][1], @arch_def)
+      end
+    end
+    @implications.uniq!
+    @implications
   end
 
   # @param ext_name [String] Extension name
@@ -531,9 +591,7 @@ class ExtensionRequirement
     ext = archdef.extension(@name)
     return [] if ext.nil?
 
-    ext.versions.select { |v| @requirement.satisfied_by?(Gem::Version.new(v["version"])) }.map do |v|
-      ExtensionVersion.new(@name, v["version"])
-    end
+    ext.versions.select { |v| @requirement.satisfied_by?(v.version) }
   end
 
   # @return [ExtensionVersion] The minimum extension versions that satisfy this extension requirement
