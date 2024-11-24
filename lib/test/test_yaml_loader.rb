@@ -208,7 +208,7 @@ class TestYamlLoader < Minitest::Test
     assert_equal({ "key1" => "value1", "key2" => "value2", "key3" => "value3_new", "key4" => "value4", "key5" => "value5", "key6" => "value6_new" }, doc["child"])
   end
 
-  def test_inheritss_in_the_same_document
+  def test_inherits_in_the_same_document
     yaml = <<~YAML
       $defs:
         target1: A string
@@ -238,7 +238,7 @@ class TestYamlLoader < Minitest::Test
     assert_equal({ "a" => "Should take precedence" }, doc["obj3"])
   end
 
-  def test_inheritss_in_the_different_document
+  def test_inherits_in_the_different_document
     yaml1 = <<~YAML
       $defs:
         target1: A string
@@ -274,7 +274,34 @@ class TestYamlLoader < Minitest::Test
     assert_equal({ "a" => "Should take precedence" }, doc["obj3"])
   end
 
-  def test_multi_inheritss_in_the_same_document
+  def test_inherits_entire_object
+    yaml1 = <<~YAML
+      target1: A string
+      target2:
+        a: hash
+    YAML
+
+    f1 = Tempfile.new("yml")
+    f1.write(yaml1)
+    f1.flush
+    f1_path = Pathname.new(f1.path)
+
+    yaml2 = <<~YAML
+      $inherits: "#{f1_path.basename}#"
+
+      target1: Should take precedence
+    YAML
+
+    f2 = Tempfile.new("yml")
+    f2.write(yaml2)
+    f2.flush
+
+    doc = YamlLoader.load(f2.path)
+    assert_equal("Should take precedence", doc["target1"])
+    assert_equal({ "a" => "hash" }, doc["target2"])
+  end
+
+  def test_multi_inherits_in_the_same_document
     yaml = <<~YAML
       $defs:
         target1:
@@ -297,7 +324,7 @@ class TestYamlLoader < Minitest::Test
     assert_equal({ "a" => "hash", "b" => "nice" }, doc["obj1"])
   end
 
-  def test_that_invalid_inheritss_raise
+  def test_that_invalid_inherits_raise
     yaml = <<~YAML
       $defs:
         target1:

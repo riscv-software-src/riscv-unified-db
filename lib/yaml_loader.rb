@@ -90,14 +90,17 @@ class YamlLoader
           end
 
         inherits_target_suffix = inherits_target.split("#/")[1]
-        inherits_target_path = inherits_target_suffix.split("/")
-        begin
-          target_obj = target_obj.dig(*inherits_target_path) 
-        rescue TypeError => e
-          if e.message == "no implicit conversion of String into Integer"
-            warn "$inherits: \"#{inherits_target}\" found in file #{filename} references an Array but needs to reference a Hash"
+        unless inherits_target_suffix.nil?
+          begin
+            # Inherit the portion of the object specified by the target path.
+            inherits_target_path = inherits_target_suffix.split("/")
+            target_obj = target_obj.dig(*inherits_target_path) 
+          rescue TypeError => e
+            if e.message == "no implicit conversion of String into Integer"
+              warn "$inherits: \"#{inherits_target}\" found in file #{filename} references an Array but needs to reference a Hash"
+            end
+            raise e
           end
-          raise e
         end
 
         raise DereferenceError, "JSON Path #{inherits_target_suffix} in file #{filename} does not exist in #{relative_path}" if target_obj.nil?

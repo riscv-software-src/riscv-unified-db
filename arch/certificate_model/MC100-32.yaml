@@ -2,8 +2,8 @@
 
 $schema: cert_model_schema.json#
 kind: certificate model
-name: MC100
-long_name: Basic Microcontroller Certificate
+name: MC100-32
+long_name: Basic 32-bit Microcontroller Certificate
 class:
   $ref: certificate_class/MC.yaml#
 
@@ -68,9 +68,10 @@ revision_history:
   - Initial version
 
 description: |
-  MC100 can be though of as minimal 32-bit RISC-V processors with M-mode support:
+  MC100 can be though of as a minimal RISC-V processor with minimal M-mode support:
 
-  * The Unprivileged ISA is RV32I with a few extensions suitable for a basic microcontroller
+  * The Unprivileged ISA is RV32I for MC100-32 and RV64I for MC100-64 with a few extensions suitable 
+    for a basic microcontroller
   * The M-mode features are those listed as mandatory in the associated RISC-V Privileged ISA manual
 
   Key features not included in MC100 (i.e., OUT OF SCOPE):

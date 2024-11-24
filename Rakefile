@@ -288,7 +288,8 @@ task :regress do
   Rake::Task["gen:html_manual"].invoke
   Rake::Task["gen:html"].invoke("generic_rv64")
   Rake::Task["#{$root}/gen/certificate_doc/pdf/MockCertificateModel.pdf"].invoke
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100.pdf"].invoke
+  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100-32.pdf"].invoke
+  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100-64.pdf"].invoke
   Rake::Task["#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"].invoke
   Rake::Task["#{$root}/gen/profile_doc/pdf/RVA20.pdf"].invoke
   Rake::Task["#{$root}/gen/profile_doc/pdf/RVA22.pdf"].invoke
@@ -302,39 +303,11 @@ desc <<~DESC
   Generate all certificates and profile PDFs.
 DESC
 task :cert_profile_pdfs do
-  puts "==================================="
-  puts "cert_profile_pdfs: Generating MC100"
-  puts "                   1st target"
-  puts "==================================="
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100.pdf"].invoke
-
-  puts "=================================================="
-  puts "cert_profile_pdfs: Generating MockCertificateModel"
-  puts "                   2nd target"
-  puts "=================================================="
+  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100-32.pdf"].invoke
+  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100-64.pdf"].invoke
   Rake::Task["#{$root}/gen/certificate_doc/pdf/MockCertificateModel.pdf"].invoke
-
-  puts "==================================="
-  puts "cert_profile_pdfs: Generating RVA20"
-  puts "                   3rd target"
-  puts "==================================="
   Rake::Task["#{$root}/gen/profile_doc/pdf/RVA20.pdf"].invoke
-
-  puts "==================================="
-  puts "cert_profile_pdfs: Generating RVA22"
-  puts "                   4th target"
-  puts "==================================="
   Rake::Task["#{$root}/gen/profile_doc/pdf/RVA22.pdf"].invoke
-
-  puts "==================================="
-  puts "cert_profile_pdfs: Generating RVI20"
-  puts "                   5th target"
-  puts "==================================="
   Rake::Task["#{$root}/gen/profile_doc/pdf/RVI20.pdf"].invoke
-
-  puts "==================================="
-  puts "cert_profile_pdfs: Generating MockProfileRelease"
-  puts "                   6th target"
-  puts "==================================="
   Rake::Task["#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"].invoke
 end

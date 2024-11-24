@@ -30,11 +30,13 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
     cert_model = arch_def.cert_model(cert_model_name)
     raise "No certificate model defined for #{cert_model_name}" if cert_model.nil?
 
-    # Switch to the generated certificate arch def
+    # Switch to the generated certificate arch def and set some variables available to ERB template.
     # XXX - Add this to profile releases
     arch_def = cert_model.to_arch_def
     cert_model = arch_def.cert_model(cert_model_name)
+    portfolio = cert_model
     cert_class = cert_model.cert_class
+    portfolio_class = cert_class
 
     version = File.basename(t.name, '.adoc').split('-')[1..].join('-')
 

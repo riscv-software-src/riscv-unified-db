@@ -5,13 +5,16 @@
 # CSRs, Profiles, and Certificates. 
 #
 # The arch_def member has methods such as:
-#   extensions()                Array<Extension> of all extensions known to the database (even if not implemented).
+#   extensions()                Array<Extension> of all extensions known to the database (even if not implemented)
+#   implemented_extensions()    Array<Extension> of all extensions known to be implemented in this configuration
 #   extension(name)             Extension object for "name" and nil if none.
 #   parameters()                Array<ExtensionParameter> of all parameters defined in the architecture
 #   param(name)                 ExtensionParameter object for "name" and nil if none.
 #   csrs()                      Array<Csr> of all CSRs defined by RISC-V, whether or not they are implemented
+#   implemented_csrs()          Array<Csr> of all CSRs in this configuration
 #   csr(name)                   Csr object for "name" and nil if none.
-#   instructions()              Array<Instruction> of all instructions, whether or not they are implemented
+#   instructions()              Array<Instruction> of all instructions (even if not implemented)
+#   implemented_instructions()  Array<Instruction> of all instructions implemented in this configuration
 #   inst(name)                  Instruction object for "name" and nil if none.
 #   profile_classes             Array<ProfileClass> of all known profile classes.
 #   profile_class(class_name)   ProfileClass object for "class_name" and nil if none.
@@ -364,9 +367,9 @@ class ArchDef
   end
 
   # may be overridden by subclass
-  # @return [Array<ExtensionVersion>] List of all extensions known to be implemented in this architecture
+  # @return [Array<ExtensionVersion>] List of all extensions known to be implemented in this configuration
   def implemented_extensions
-    raise "implemented_extensions is only valid for a fully configured defintion" unless fully_configured?
+    raise "implemented_extensions is only valid for a fully configured definition" unless fully_configured?
 
     return @implemented_extensions unless @implemented_extensions.nil?
 
@@ -381,7 +384,7 @@ class ArchDef
 
   # @return [Array<ExtensionRequirement>] List of extensions that are explicitly required by an arch def
   def mandatory_extensions
-    raise "mandatory_extensions is only valid for a partially configured defintion" unless partially_configured?
+    raise "mandatory_extensions is only valid for a partially configured definition" unless partially_configured?
 
     return @mandatory_extensions unless @mandatory_extensions.nil?
 
@@ -851,7 +854,7 @@ class ArchDef
       end
   end
 
-  # @return [Hash] The raw architecture defintion data structure
+  # @return [Hash] The raw architecture definition data structure
   def data
     @arch_def
   end
@@ -885,7 +888,7 @@ class ArchDef
     implemented_csr_hash[csr_name]
   end
 
-  # @return [Array<Instruction>] List of all implemented instructions
+  # @return [Array<Instruction>] List of all implemented instructions in this configuration
   def implemented_instructions
     return @implemented_instructions unless @implemented_instructions.nil?
 
@@ -898,7 +901,6 @@ class ArchDef
         []
       end
   end
-
 
   # @return [Array<FuncDefAst>] List of all reachable IDL functions for the config
   def implemented_functions
@@ -1036,7 +1038,7 @@ class ArchDef
   end
   private :erb_env
 
-  # create a new raw *unconfigured* architecture defintion data structure
+  # create a new raw *unconfigured* architecture definition data structure
   #
   # The data will not include anything configuration-dependent such as implemented_*/mandatory_*/etc.
   #

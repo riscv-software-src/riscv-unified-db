@@ -4,6 +4,24 @@
   "type": "object",
   "required": ["$schema", "kind", "name", "long_name"],
   "additionalProperties": false,
+  "patternProperties": {
+    "^\\$inherits": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^profile_release|certificate_model/.*\\.yaml#.*"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^profile_release|certificate_model/.*\\.yaml#.*"
+          },
+          "uniqueItems": true
+        }
+      ]
+    }
+  },
   "properties": {
     "$schema": {
       "type": "string",
@@ -15,7 +33,7 @@
     },
     "name": {
       "type": "string",
-      "pattern": "^[A-Z][a-zA-Z0-9_]*$",
+      "pattern": "^[A-Z][a-zA-Z0-9_-]*$",
       "description": "The short name of the model, used as a database key"
     },
     "long_name": {
@@ -75,7 +93,7 @@
           "properties": {
             "$ref": {
               "type": "string",
-              "pattern": "^profile_release/[A-Z][a-zA-Z0-9_]*\\.yaml#"
+              "pattern": "^profile_release|certificate_model/[A-Z][a-zA-Z0-9_]*\\.yaml#"
             }
           },
           "additionalProperties": false
@@ -100,13 +118,13 @@
           "oneOf": [
             {
               "type": "string",
-              "pattern": "^profile_release/.*\\.yaml#.*"
+              "pattern": "^profile_release|certificate_model/.*\\.yaml#.*"
             },
             {
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^profile_release/.*\\.yaml#.*"
+                "pattern": "^profile_release|certificate_model/.*\\.yaml#.*"
               },
               "uniqueItems": true
             }

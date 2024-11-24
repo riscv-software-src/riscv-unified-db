@@ -225,6 +225,7 @@ class Extension < ArchDefObject
     @csrs = arch_def.csrs.select { |csr| csr.defined_by?(ExtensionVersion.new(name, max_version)) }
   end
 
+  # @param archdef [ArchDef] Architecture spec
   # @return [Array<Csr>] the list of CSRs implemented by this extension (may be empty)
   def implemented_csrs(archdef)
     raise "should only be called with a fully configured arch def" unless archdef.fully_configured?
@@ -236,7 +237,8 @@ class Extension < ArchDefObject
     end
   end
 
-  # @return [Array<Csr>] the list of CSRs implemented by this extension (may be empty)
+  # @param archdef [ArchDef] Architecture spec
+  # @return [Array<Csr>] the list of instructions implemented by this extension (may be empty)
   def implemented_instructions(archdef)
     raise "should only be called with a fully configured arch def" unless archdef.fully_configured?
 
@@ -356,6 +358,7 @@ class ExtensionVersion
   end
 
   # @return [Array<Csr>] the list of CSRs implemented by this extension version (may be empty)
+  # JamesBall
   def implemented_csrs(archdef)
     raise "should only be called with a fully configured arch def" unless archdef.fully_configured?
 
@@ -366,7 +369,7 @@ class ExtensionVersion
     end
   end
 
-  # @return [Array<Csr>] the list of CSRs implemented by this extension version (may be empty)
+  # @return [Array<Instruction>] the list of instructions implemented by this extension version (may be empty)
   def implemented_instructions(archdef)
     raise "should only be called with a fully configured arch def" unless archdef.fully_configured?
 
@@ -523,13 +526,30 @@ class ExtensionRequirement
     @presence = presence
   end
 
-  # @return [Array<ExtensionVersion>] The list of extension versions that satisfy this requirement
+  # @return [Array<ExtensionVersion>] The list of extension versions that satisfy this extension requirement
   def satisfying_versions(archdef)
     ext = archdef.extension(@name)
     return [] if ext.nil?
 
     ext.versions.select { |v| @requirement.satisfied_by?(Gem::Version.new(v["version"])) }.map do |v|
       ExtensionVersion.new(@name, v["version"])
+    end
+  end
+
+  # @return [ExtensionVersion] The minimum extension versions that satisfy this extension requirement
+  # JamesBall
+  def min_satisfying_version(archdef) = satisfying_version(archdef).min
+
+  # @param archdef [ArchDef] Architecture spec
+  # @return [Array<Instruction>] the list of instructions implemented by this extension (may be empty)
+  # JamesBall
+  def implemented_instructions(archdef)
+    raise "should only be called with a fully configured arch def" unless archdef.fully_configured?
+
+    return @implemented_instructions unless @implemented_instructions.nil?
+
+    @implemented_instructions = archdef.implemented_instructions.select do |inst|
+      versions.any? { |ver| inst.defined_by?(ExtensionVersion.new(name, ver["version"])) }
     end
   end
 
@@ -553,7 +573,7 @@ class ExtensionRequirement
           satified_by?(ext_ver)
         end
       else
-        raise ArgumentError, "Single argument must be an ExtensionVersion or ExtensionRquirement"
+        raise ArgumentError, "Single argument must be an ExtensionVersion or ExtensionRequirement"
       end
     elsif args.size == 2
       raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)

@@ -56,7 +56,175 @@ CSR field types::
 <% end -%>
 |===
 
-== Introduction
+== Certification Requirements Documents (CRDs)
+
+=== Introduction
+
+A Certification Requirements Document (CRD) lists requirements an implementation must meet
+to obtain a specific RVI (RISC-V International) certificate. 
+CRDs are developed by the RVI CSC (Certification Steering Committee) organization.
+The CRDs refer to and augment information provided in existing ratified RVI standards. 
+
+There are a variety of certificates offered by RVI to accomodate the various RVI standards.
+There are certificates for processors, non-processor system IP (e.g., IOMMU), 
+and system platforms (processor + system IP) hardware standards.
+There are multiple classes of processor certificates available to accomodate the wide range of 
+RISC-V implementations from basic microcontrollers to advanced Applications-class processors.
+
+Each CRD has a list of mandatory behaviors along with a list of optional behaviors.
+Each certificate has a name and version number that is shared by its associated CRD.
+Note that not all behaviors allowed in RISC-V standards are supported by a particular CRD.
+
+=== Naming Scheme
+
+CRDs and certificates have the following naming scheme:
+
+  Format: <name>[*v*<version>]
+
+Where:
+
+* Left & right square braces denote optional.
+* Less-than & greater-than signs just separate fields (i.e., they aren't present in the CRD name).
+* <name> identifies the type of CRD/certificate (e.g., processor vs. non-processor system IP)
+** The <name> is changed when new mandatory behaviors are added to a certificate.
+* <version> identifies a particular CRD/certificate release
+** Format is <major>[.<minor>[.<patch>]]
+** Follows semantic versioning scheme (https://semver.org/)
+** The <major> release is updated when certification test changes are made that *could* cause a previously certified
+   implementation to now fail. 
+   Examples are fixing a test bug or increasing test coverage.
+   A <major> release of 0 is used for pre-release versions of a CRD and release versions start with 1.
+** The <minor> release is updated when a certificate increases support for optional behaviors.
+   Examples are supporting for new optional standards or 
+   supporting additional optional behaviors for standards already in a certificate.
+** The <patch> release is updated when certification test changes are made that *can't* cause a previously certified
+   implementation to now fail or for non-functional changes to documentation.
+   Examples are test changes not designed to increase coverage or fixing a documentation typo.
+** If omitted, defaults to v1.0.0
+** Examples: v1, v1.1, v2.3.1, 0.3.4 (pre-release)
+
+=== Terminology
+
+==== Requirements
+
+[%autowidth]
+|===
+| Term | Meaning
+
+| MANDATORY | You have to implement it to get a certificate and the certificate tests will cover it
+| OPTIONAL | It’s up to you if you implement or not. If you claim to implement it, certificate tests will cover it
+| IN-SCOPE | Either MANDATORY or OPTIONAL
+| OUT-OF-SCOPE | It’s up to you if you implement or not. If you implement it, it won't be certified but make sure you don’t mess up anything we are certifying.
+| INCOMPATIBLE | If you implement it you won’t get a certificate
+|===
+
+==== Glossary
+
+[%autowidth]
+|===
+| Term | Meaning
+
+| CRD | Certification Requirements Document
+| N/A | “Not Applicable”
+| AKA | “Also Known As”
+|===
+
+=== Processor Certificates
+
+Certificates are available for different classes of processors as shown in the table below. 
+These documents augment information in the related TSC Profile when available and/or other RVI standards documents 
+(e.g., Priv and Unpriv ISA manuals). 
+Please refer to the CRDs listed below for detailed certification requirements for the corresponding class of processors.
+
+[%autowidth]
+|===
+| Certificate | CRD | TSC Profile | Description
+
+| MC100-series | TBD | None | Minimal microcontroller that runs low-level software on an RTOS or bare-metal (no virtual memory)
+| MC200-series | TBD | RVM | Advanced microcontroller
+| RVB-series | TBD | RVB23 | Applications-class processors running Bespoke rich operating systems (e.g., Yocto Linux)
+| RVA-series | TBD | RVA23 | Applications-class processors running standard rich operating systems (e.g., commercial Linux distributions, Android)
+|===
+
+=== RISC-V Extensions
+
+All optional extensions of the RISC-V ISA not explicitly mentioned by the individual CRDs are OUT-OF-SCOPE.
+Only ratified extensions are candidates for certification. 
+This means all custom extensions are OUT-OF-SCOPE. 
+This is independent of where a custom extension opcodes are located 
+(i.e., either in the custom opcode space or standard & reserved opcode space).
+
+=== CSR Fields
+
+==== Definition of CSR Fields
+
+[%autowidth]
+|===
+| Field Type | Read Value After Writing Illegal Value | Read Value Function Of | Illegal Instruction Exception | Priv ISA Manual Quote
+
+| WLRL | Any deterministic legal or illegal value | Value before write and illegal value written | Optional 
+| Implementations are permitted but not required to raise an illegal-instruction exception if an instruction attempts to write a non-supported value to a WLRL field. Implementations can return arbitrary bit patterns on the read of a WLRL field when the last write was of an illegal value, but the value returned should deterministically depend on the illegal written value and the value of the field prior to the write.
+| WARL | Any deterministic legal value | Any architectural hart state | Prohibited
+| Implementations will not raise an exception on writes of unsupported values to a WARL field. Implementations can return any legal value on the read of a WARL field when the last write was of an illegal value, but the legal value returned should deterministically depend on the illegal written value and the architectural state of the hart.
+| WPRI | 0 | Nothing | Not specified
+| Some whole read/write fields are reserved for future use. Implementations that do not furnish these fields must make them read-only zero.
+|===
+
+==== Treatment of CSR Fields
+
+*WARL (Write Anything, Read Legal)*:
+
+The Priv ISA requires reads of WARL fields to return some implementation-dependent deterministic legal value 
+after the field is written with an illegal value. 
+Certifying such behaviors is expensive and provides low value for a certificate since software can’t rely 
+on a particular behavior from one implementation to another.
+
+CSC processor CRDs define writes to WARL fields of illegal values to be OUT-OF-SCOPE unless otherwise stated 
+(i.e., certification tests will only ever write legal values to WARL fields except for the special cases listed below).
+When not OUT-OF-SCOPE, the required behavior is defined as this might be more constrained in implementations than 
+in the standard.
+
+The following special cases for WARL are supported when explicitly listed in the corresponding CRD CSR field requirements:
+1. Probing for Field Width
+* Some WARL fields are variable length such as the ASID field in the virtual memory extension.
+* Here’s the algorithm recommended to discover the ASID width:
+** The number of implemented ASID bits, termed ASIDLEN, may be determined by writing one to every bit position in 
+   the ASID field, then reading back the value in the satp CSR to see which bit positions in the ASID field hold a one.
+* The RVCP-provided certification materials (certification tests, certification reference models) can map writes of
+  illegal values to the ASID field to the corresponding read value as long as they are provided the ASIDLEN value
+  for an implementation.
+2. Probing for Options
+* E.g., Writable misa bits
+3. Allowed values are a function of extension presence and/or their parameters
+* E.g., satp.mode legal write values
+
+*WLRL (Write Legal, Read Legal)*:
+
+The Priv ISA requires reads of WLRL fields to return some implementation-dependent deterministic arbitrary value
+after the field is written with an illegal value. 
+Certifying such behaviors is expensive and provides low value for a certificate since software can’t rely 
+on a particular behavior.  
+CSC processor CRDs define writes to WLRL fields of illegal values to be OUT-OF-SCOPE unless otherwise stated 
+(i.e., certification tests will only ever write legal values to WLRL fields).
+
+*WPRI (Write Preserve, Read Ignore)*:
+
+The Priv ISA requires reads of WPRI fields to return a value of 0. 
+Such WPRI fields are always unimplemented by definition. 
+Certification tests are aware of which fields in the CSRs are WPRI and normally write them with 0 but will 
+also write them with ~0 (all ones) and ensure that reads return 0 in both cases. 
+It is OUT-OF-SCOPE for certification tests to write all possible values of WPRI fields 
+(especially if they are more than just a few bits) and certification tests aren’t designed to be comprehensive 
+verification test suites anyways.
+
+=== System IP CRDs
+
+TBD
+
+=== Platform CRDs
+TBD
+
+== <%= cert_class.name %> and <%= cert_model.name %> Introduction
 
 <%= cert_class.introduction %>
 
@@ -389,7 +557,7 @@ The following instructions are added by this extension:
 == Instruction Details
 
 <%=
-  insts = cert_model.in_scope_extensions.map { |ext_cert_model| ext_cert_model.instructions }.flatten.uniq
+  insts = portfolio.in_scope_ext_reqs.map { |ext_req| ext_req.implemented_instructions }.flatten.uniq
   insts.sort_by!(&:name)
 -%>
 
