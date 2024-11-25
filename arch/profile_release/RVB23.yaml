@@ -325,9 +325,9 @@ RVB23:
         An ECALL in supervisor mode causes a requested trap to the execution environment.
       extensions:
         #########################################################################
-        # imported from RVA22S64
+        # imported from RVA23U64
         #########################################################################
-        $inherits: "RVA22.yaml#/RVA22/profiles/RVA22S64/extensions"
+        $inherits: "#/RVB23.yaml/RVB23/profiles/RVB23U64/extensions"
 
         #########################################################################
         # MANDATORY extensions in RVB23 (and RVA23)
