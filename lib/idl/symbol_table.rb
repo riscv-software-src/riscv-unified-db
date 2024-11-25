@@ -89,21 +89,16 @@ module Idl
       [@scopes.hash, @archdef.hash].hash
     end
 
-    def initialize(arch_def, effective_xlen = nil)
+    def initialize(arch_def)
       @archdef = arch_def
-      if arch_def.fully_configured?
-        raise "effective_xlen should not be set when symbol table is given a fully-configured ArchDef" unless effective_xlen.nil?
-      else
-        raise "effective_xlen should be set when symbol table is given an ArchDef" if effective_xlen.nil? && arch_def.mxlen.nil?
-      end
-      @mxlen = effective_xlen.nil? ? arch_def.mxlen : effective_xlen
+      @mxlen = arch_def.mxlen
       @callstack = [nil]
       @scopes = [{
         "X" => Var.new(
           "X",
-          Type.new(:array, sub_type: XregType.new(@mxlen), width: 32, qualifiers: [:global])
+          Type.new(:array, sub_type: XregType.new(@mxlen.nil? ? :unknown : @mxlen), width: 32, qualifiers: [:global])
         ),
-        "XReg" => XregType.new(@mxlen),
+        "XReg" => XregType.new(@mxlen.nil? ? :unknown : @mxlen),
         "Boolean" => Type.new(:boolean),
         "true" => Var.new(
           "true",

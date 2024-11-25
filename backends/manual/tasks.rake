@@ -186,23 +186,23 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/insts/pages/.*.adoc} => [
 end
 
 # rule to create csr appendix page
-rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/csrs/pages/.*.adoc} => [
+rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/csrs/pages/.*\.adoc} => [
   __FILE__,
-  "#{$root}/.stamps/arch-gen-_64.stamp",
-  "#{$root}/.stamps/arch-gen-_32.stamp",
-  ($root / "backends" / "manual" / "templates" / "csr.adoc.erb").to_s
+  "gen:arch",
+  # "#{$root}/.stamps/arch-gen-_32.stamp",
+  ($root / "backends" / "common_templates" / "adoc" / "csr.adoc.erb").to_s
 ] do |t|
   csr_name = File.basename(t.name, ".adoc")
 
-  arch_def = arch_def_for("_64")
-  arch_def_32 = arch_def_for("_32")
+  arch_def = arch_def_for("_")
+  # arch_def_32 = arch_def_for("_32")
 
   csr = arch_def.csr(csr_name)
   raise "Can't find csr '#{csr_name}'" if csr.nil?
 
-  csr_32 = arch_def_32.csr(csr_name)
+  # csr_32 = arch_def_32.csr(csr_name)
 
-  csr_template_path = $root / "backends" / "manual" / "templates" / "csr.adoc.erb"
+  csr_template_path = $root / "backends" / "common_templates" / "adoc" / "csr.adoc.erb"
   erb = ERB.new(csr_template_path.read, trim_mode: "-")
   erb.filename = csr_template_path.to_s
 
@@ -408,11 +408,11 @@ namespace :gen do
       Rake::Task[antora_path / "modules" / "ROOT" / "pages" / "index.adoc"].invoke
       Rake::Task[antora_path / "antora.yml"].invoke
       Rake::Task[antora_path / "nav.adoc"].invoke
-      version.instructions.each do |inst|
-        Rake::Task[antora_path / "modules" / "insts" / "pages" / "#{inst.name}.adoc"].invoke
-      end
       version.csrs.each do |csr|
         Rake::Task[antora_path / "modules" / "csrs" / "pages" / "#{csr.name}.adoc"].invoke
+      end
+      version.instructions.each do |inst|
+        Rake::Task[antora_path / "modules" / "insts" / "pages" / "#{inst.name}.adoc"].invoke
       end
       version.extensions.each do |ext|
         Rake::Task[antora_path / "modules" / "exts" / "pages" / "#{ext.name}.adoc"].invoke

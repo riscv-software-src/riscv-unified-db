@@ -8,15 +8,12 @@
 == Attributes
 [%autowidth]
 |===
+h| Defining Extension a| <%= csr.defined_by.to_asciidoc %>
 h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <%- if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <%- end -%>
-<%- if csr.dynamic_length?(arch_def) -%>
 h| Length         | <%= csr.length_pretty(arch_def) %>
-<%- else -%>
-h| Length         | <%= csr.length_pretty(arch_def) %>-bit
-<%- end -%>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===
 
@@ -48,15 +45,15 @@ This CSR format changes dynamically.
 
 == Field Summary
 
-[%autowidth,float="center",align="center",cols="^,<,<,<",options="header",role="stretch"]
+[%autowidth,separator=@,float="center",align="center",cols="^,<,<,<",options="header",role="stretch"]
 |===
-|Name | Location | Type | Reset Value
+@Name @ Location @ Type @ Reset Value
 
 <%- csr.fields.each do |field| -%>
-| xref:<%=csr.name%>-<%=field.name%>-def[`<%= field.name %>`]
-| <%= field.location_pretty(arch_def) %>
-| <%= field.type_pretty(arch_def.symtab) %>
-| <%= field.reset_value_pretty(arch_def) %>
+@ <%= link_to_csr_field(csr.name, field.name) %>
+@ <%= field.location_pretty(arch_def) %>
+@ <%= field.type_pretty(arch_def.symtab) %>
+@ <%= field.reset_value_pretty(arch_def) %>
 
 <%- end -%>
 |===

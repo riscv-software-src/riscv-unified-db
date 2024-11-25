@@ -47,6 +47,7 @@ module Idl
     Bits1Type = Type.new(:bits, width: 1).freeze
     Bits32Type = Type.new(:bits, width: 32).freeze
     Bits64Type = Type.new(:bits, width: 64).freeze
+    BitsUnknownType = Type.new(:bits, width: :unknown).freeze
     ConstBoolType = Type.new(:boolean, qualifiers: [:const]).freeze
     BoolType = Type.new(:boolean).freeze
     VoidType = Type.new(:void).freeze
@@ -4319,6 +4320,8 @@ module Idl
 
     # @!macro type
     def type(symtab)
+      return BitsUnknownType if symtab.mxlen.nil?
+
       cache_idx = symtab.mxlen >> 6 # 0 = 32, 1 = 64
       return @types[cache_idx] unless @types[cache_idx].nil?
 

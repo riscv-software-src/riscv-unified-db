@@ -105,40 +105,18 @@ class ArchDef
     @arch_def = YAML.load_file(arch_def_path, permitted_classes: [Date]).freeze
     @param_values = (@arch_def.key?("params") ? @arch_def["params"] : {}).freeze
     @mxlen = @arch_def.dig("params", "XLEN") # might be nil
+    raise "Must set XLEN for a configured arch def" if @mxlen.nil? && configured?
 
-    unless @mxlen.nil?
-      # need at least XLEN specified to have a full architecture definition
-      # to populate the symbol table.
-      #
-      # if this is the fully generic config ("_"), then you need to use
-      # either symtab_32 or symtab_64
-      @symtab = Idl::SymbolTable.new(self)
-      custom_globals_path = overlay_path.nil? ? Pathname.new("/does/not/exist") : overlay_path / "isa" / "globals.isa"
-      idl_path = File.exist?(custom_globals_path) ? custom_globals_path : $root / "arch" / "isa" / "globals.isa"
-      @global_ast = @idl_compiler.compile_file(
-        idl_path
-      )
-      @global_ast.add_global_symbols(@symtab)
-      @symtab.deep_freeze
-      @global_ast.freeze_tree(@symtab)
-      @mxlen.freeze
-    else
-      # parse globals
-      @global_ast = @idl_compiler.compile_file(
-        $root / "arch" / "isa" / "globals.isa"
-      )
-      @global_ast.add_global_symbols(symtab_32)
-      symtab_32.deep_freeze
-      @global_ast.freeze_tree(symtab_32)
-
-      # do it again for rv64, but we don't need the ast this time
-      global_ast_64 = @idl_compiler.compile_file(
-        $root / "arch" / "isa" / "globals.isa"
-      )
-      global_ast_64.add_global_symbols(symtab_64)
-      symtab_64.deep_freeze
-      global_ast_64.freeze_tree(symtab_64)
-    end
+    @symtab = Idl::SymbolTable.new(self)
+    custom_globals_path = overlay_path.nil? ? Pathname.new("/does/not/exist") : overlay_path / "isa" / "globals.isa"
+    idl_path = File.exist?(custom_globals_path) ? custom_globals_path : $root / "arch" / "isa" / "globals.isa"
+    @global_ast = @idl_compiler.compile_file(
+      idl_path
+    )
+    @global_ast.add_global_symbols(@symtab)
+    @symtab.deep_freeze
+    @global_ast.freeze_tree(@symtab)
+    @mxlen.freeze
   end
 
   # type check all IDL, including globals, instruction ops, and CSR functions
@@ -462,9 +440,7 @@ class ArchDef
             (e.name == ext_name.to_s) && requirement.satisfied_by?(e.version)
           end
         end
-      else
-        raise "unexpected type" unless partially_configured?
-
+      elsif partially_configured?
         mandatory_extensions.any? do |e|
           if ext_version_requirements.empty?
             e.name == ext_name.to_s
@@ -475,6 +451,10 @@ class ArchDef
             end
           end
         end
+      else
+        raise "unexpected type" unless unconfigured?
+
+        false
       end
     @ext_cache[[ext_name, ext_version_requirements]] = result
   end
