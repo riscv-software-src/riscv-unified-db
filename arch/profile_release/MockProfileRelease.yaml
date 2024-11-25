@@ -27,7 +27,7 @@ MockProfileRelease:
       extensions:
         A:
           presence: optional
-          version: "= 2.1"
+          version: "~> 2.1"
         I:
           presence: mandatory
           version: "~> 2.1"
@@ -52,21 +52,21 @@ MockProfileRelease:
         S:
           presence: 
             optional: localized
-          version: "= 1.12"
+          version: "~> 1.12"
         Zifencei:
           presence: 
             optional: development
-          version: "= 2.0"
+          version: "~> 2.0"
           note: 
         Zihpm:
           presence: 
             optional: expansion
-          version: "= 2.0"
+          version: "~> 2.0"
           note: Made this a expansion option
         Sv48:
           presence: 
             optional: transitory
-          version: "= 1.11"
+          version: "~> 1.11"
           note: Made this a transitory option
       extra_notes:
       - presence: mandatory
