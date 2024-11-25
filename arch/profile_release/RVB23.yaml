@@ -62,7 +62,7 @@ RVB23:
           version: "~>1.0"
           note: |
             May-be operations
-         Zcmop:
+        Zcmop:
           presence: mandatory
           version: "~>1.0"
           note: |
@@ -100,8 +100,8 @@ RVB23:
           presence: 
             optional: localized
           version: "~>1.0"
-            note: |
-              Vector crypto Shang-Mi Algorithms with GCM
+          note: |
+            Vector crypto Shang-Mi Algorithms with GCM
 
         #---------------------------------
         # In RVB23 (but not in RVA23)
@@ -200,7 +200,7 @@ RVB23:
         V:
           presence: 
             optional: expansion
-          version: "~> 1.0 ???"
+          version: "~> 1.0"
           note: |
              The Vector extension
         # Note: it is unclear if other Zve* extensions should also be supported in RVB 
@@ -327,7 +327,7 @@ RVB23:
         #########################################################################
         # imported from RVA23U64
         #########################################################################
-        $inherits: "#/RVB23.yaml/RVB23/profiles/RVB23U64/extensions"
+        $inherits: "RVA22.yaml#/RVA22/profiles/RVA22S64/extensions"
 
         #########################################################################
         # MANDATORY extensions in RVB23 (and RVA23)
@@ -484,8 +484,8 @@ RVB23:
           version: "~>1.0"
           when:
             allOf:
-              implemented: H
-              implemented: Ssnpm
+            - implemented: H
+            - implemented: Ssnpm
           note: |
             If the hypervisor extension is implemented
             and pointer masking (Ssnpm) is supported

@@ -77,6 +77,7 @@ Copyright <%= profile_release.ratification_date.year %>
 <% end -%>
 by <%= profile_class.company.name %>.
 
+<% unless profile_release.contributors.nil? -%>
 [preface]
 == Acknowledgements
 
@@ -88,6 +89,7 @@ Contributors to the <%= profile_release.marketing_name %> Profile (in alphabetic
 
 We express our gratitude to everyone that contributed to, reviewed or
 improved this specification through their comments and questions.
+<% end # no contributors -%>
 
 == RISC-V Profiles
 

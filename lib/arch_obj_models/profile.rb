@@ -89,6 +89,8 @@ class ProfileRelease < ArchDefObject
 
   # @return [Array<Person>] Contributors to the profile spec
   def contributors
+    return nil if @data["contributors"].nil?
+
     @data["contributors"].map { |data| Person.new(data) }
   end
 
