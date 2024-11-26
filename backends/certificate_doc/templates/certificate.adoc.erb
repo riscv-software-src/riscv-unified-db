@@ -556,7 +556,8 @@ The following instructions are added by this extension:
 == Instruction Details
 
 <%=
-  insts = portfolio.in_scope_ext_reqs.map { |ext_req| ext_req.implemented_instructions }.flatten.uniq
+  # insts = portfolio.in_scope_ext_reqs.map { |ext_req| ext_req.implemented_instructions }.flatten.uniq
+  insts = cert_model.in_scope_extensions.map { |ext_cert_model| ext_cert_model.instructions }.flatten.uniq
   insts.sort_by!(&:name)
 -%>
 
