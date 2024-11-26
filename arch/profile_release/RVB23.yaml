@@ -81,7 +81,12 @@ RVB23:
           presence: mandatory
           version: "~>1.0"
           note: |
-            Wait-on-reservation-set instructions
+            Wait-on-reservation-set (WRS) instructions
+        Za64rs:
+          presence: mandatory
+          version: "~>1.0"
+          note: |
+            Reservation sets are contiguous, naturally aligned, and a maximum of 64 bytes
 
         #########################################################################
         # OPTIONAL LOCALIZED extensions  
@@ -96,7 +101,7 @@ RVB23:
           version: "~>1.0"
           note: |
             Vector crypto NIST Algorithms with GCM
-        Zvksgm:
+        Zvksg:
           presence: 
             optional: localized
           version: "~>1.0"
@@ -299,7 +304,7 @@ RVB23:
             all opcodes in the Standard and Reserved opcode spaces (SROS), 
             other than those identified in a Profile as Mandatory or Optional,
             cause a trap.
-          # should the above say "subsequent Profile" rather than just "Profile"?
+          # should the above say "current or subsequent Profile" rather than just "Profile"?
           # (where is the official definition of Ssstrict?)
 
 
@@ -337,6 +342,7 @@ RVB23:
           version: "~>1.0"
           note: |
             Instruction-Fetch fence instruction.
+            
             Zifencei is mandated as it is the only standard way to support
             instruction-cache coherence in RVB23 application processors. 
             A new instruction-cache coherence mechanism is under development 
@@ -478,7 +484,7 @@ RVB23:
           note: |
             The augmented hypervisor extension
 
-        __??__:
+        __NEED_AN_EXTENSION_NAME_HERE__:
           presence: 
             optional: expansion
           version: "~>1.0"
