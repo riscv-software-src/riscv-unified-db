@@ -68,7 +68,7 @@ revision_history:
   - Initial version
 
 description: |
-  MC100 can be though of as a minimal RISC-V processor with minimal M-mode support:
+  MC100 is a basic RISC-V processor with minimal M-mode support:
 
   * The Unprivileged ISA is RV32I for MC100-32 and RV64I for MC100-64 with a few extensions suitable 
     for a basic microcontroller
@@ -79,7 +79,7 @@ description: |
   * Interrupt Controller (e.g., CLIC, CLINT, PLIC)
   * Features for modes other than M-mode
   * PMP
-  * Debug & trace (TBD)
+  * Debug & trace
 
 # Specification versions
 tsc_profile: null # None for MC100

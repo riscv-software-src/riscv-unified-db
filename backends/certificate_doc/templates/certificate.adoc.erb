@@ -367,7 +367,36 @@ None
 |===
 <% end # if table -%>
 
+== Traps
+
+RISC-V supports both synchronous exceptions and asynchronous interrupts.
+TODO: List only traps that exist in this certificate model (currently lists all possible in present extensions).
+See https://github.com/riscv-software-src/riscv-unified-db/issues/291 and https://github.com/riscv-software-src/riscv-unified-db/issues/324
+TODO: Show traps per privilege mode
+
+=== Synchronous Exceptions
+
+|===
+| `xcause.CODE` CSR Field Value | Name
+<% arch_def.exception_codes.sort_by{ |code| code.num }.each do |code| -%>
+| <%= code.num %> | <%= code.name %>
+<% end -%>
+|===
+
+=== Asynchronous Interrupts
+
+|===
+| `xcause.CODE` CSR Field Value | Name
+<% arch_def.interrupt_codes.sort_by{ |code| code.num }.each do |code| -%>
+| <%= code.num %> | <%= code.name %>
+<% end -%>
+|===
+
 == Instruction Summary
+
+TODO: List only instructions that exist in this certificate model. 
+Currently lists all possible in present extensions so the I extension is providing both RV32I and RV64I instructions.
+See https://github.com/riscv-software-src/riscv-unified-db/issues/291 and https://github.com/riscv-software-src/riscv-unified-db/issues/324
 
 <%
   insts = cert_model.in_scope_extensions.map { |ext_cert_model| ext_cert_model.instructions }.flatten.uniq

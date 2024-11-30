@@ -6,8 +6,6 @@ $root ||= (Pathname.new(__FILE__) / ".." / ".." ).realpath
 require_relative "../yaml_loader"
 
 class TestYamlLoader < Minitest::Test
-
-
   def test_remove
     yaml = <<~YAML
       base:
@@ -277,7 +275,9 @@ class TestYamlLoader < Minitest::Test
     yaml1 = <<~YAML
       target1: A string
       target2:
-        a: hash
+        sub1:
+          key_a: value_a
+          key_b: value_b
     YAML
 
     f1 = Tempfile.new("yml")
@@ -289,6 +289,10 @@ class TestYamlLoader < Minitest::Test
       $inherits: "#{f1_path.basename}#"
 
       target1: Should take precedence
+
+      target2:
+        sub1:
+          key_a: new_value_a
     YAML
 
     f2 = Tempfile.new("yml")
@@ -297,7 +301,7 @@ class TestYamlLoader < Minitest::Test
 
     doc = YamlLoader.load(f2.path)
     assert_equal("Should take precedence", doc["target1"])
-    assert_equal({ "a" => "hash" }, doc["target2"])
+    assert_equal({ "sub1" => { "key_a" => "new_value_a", "key_b" => "value_b" }}, doc["target2"])
   end
 
   def test_multi_inherits_in_the_same_document
@@ -430,29 +434,4 @@ class TestYamlLoader < Minitest::Test
         "target13" => "Another string" 
       }, doc["obj1"])
   end
-
-  def test_multi_inherits_in_the_same_document
-    yaml = <<~YAML
-      $defs:
-        target1:
-          b: nice
-        target2:
-          a: hash
-
-      obj1:
-        $inherits:
-        - "#/$defs/target1"
-        - "#/$defs/target2"
-
-    YAML
-
-    f = Tempfile.new("yml")
-    f.write(yaml)
-    f.flush
-
-    doc = YamlLoader.load(f.path)
-    assert_equal({ "a" => "hash", "b" => "nice" }, doc["obj1"])
-  end
-
-
 end

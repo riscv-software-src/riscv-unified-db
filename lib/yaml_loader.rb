@@ -42,7 +42,7 @@ class YamlLoader
           end
 
         obj_doc = YamlLoader.load(target_filename, yaml_opts)
-        file_path, obj_path = obj["$ref"].split("#")
+        obj_path = obj["$ref"].split("#")[1]
         target_obj =
           if obj_path.nil?
             obj_doc
@@ -118,7 +118,7 @@ class YamlLoader
       end
 
       obj.delete("$inherits")
-      # now merge target_obj and obj
+      # now merge obj and new_obj into final_obj
       keys = (obj.keys + new_obj.keys).uniq
       final_obj = {}
       keys.each do |key|
@@ -199,7 +199,7 @@ class YamlLoader
     end
   end
 
-  # load a YAML file and expand any $ref/$inherits references
+  # load a YAML file and expand any $ref/$inherits/$copy references
   # @param filename [String,Pathname] path to the YAML file
   # @param yaml_opts [Hash] options to pass to YAML.load_file
   # @return [Object] the loaded YAML file

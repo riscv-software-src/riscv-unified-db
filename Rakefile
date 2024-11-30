@@ -303,14 +303,37 @@ task :regress do
 end
 
 desc <<~DESC
-  Generate all certificates and profile PDFs.
+  Generate all portfolio-based PDF artifacts (certificates and profiles)
 DESC
-task :cert_profile_pdfs do
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100-32.pdf"].invoke
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100-64.pdf"].invoke
+task :portfolios do
+  portfolio_start_msg("MockCertificateModel")
   Rake::Task["#{$root}/gen/certificate_doc/pdf/MockCertificateModel.pdf"].invoke
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA20.pdf"].invoke
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA22.pdf"].invoke
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVI20.pdf"].invoke
+  portfolio_start_msg("MockProfileRelease")
   Rake::Task["#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"].invoke
+  portfolio_start_msg("MC100-32")
+  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100-32.pdf"].invoke
+  portfolio_start_msg("MC100-64")
+  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100-64.pdf"].invoke
+  portfolio_start_msg("MC200-32")
+  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC200-32.pdf"].invoke
+  portfolio_start_msg("MC200-64")
+  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC200-64.pdf"].invoke
+  portfolio_start_msg("MC300-32")
+  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC300-32.pdf"].invoke
+  portfolio_start_msg("MC300-64")
+  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC300-64.pdf"].invoke
+  portfolio_start_msg("RVI20")
+  Rake::Task["#{$root}/gen/profile_doc/pdf/RVI20.pdf"].invoke
+  portfolio_start_msg("RVA20")
+  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA20.pdf"].invoke
+  portfolio_start_msg("RVA22")
+  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA22.pdf"].invoke
+end
+
+def portfolio_start_msg(name)
+  puts ""
+  puts "================================================================================================="
+  puts "#{name}"
+  puts "================================================================================================="
+  puts ""
 end

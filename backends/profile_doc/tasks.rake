@@ -15,10 +15,10 @@ rule %r{#{$root}/gen/profile_doc/adoc/.*\.adoc} => proc { |tname|
   # Switch to the generated profile certificate arch def and set some variables available to ERB template.
   # XXX - Copy what certificate tasks.rake file does here (i.e. switching to generated profile arch def).
   profile_release = arch_def_for("_64").profile_release(profile_release_name)
-  portfolio = cert_model
+  portfolio = profile_release
   raise ArgumentError, "No profile release named '#{profile_release_name}'" if profile_release.nil?
   profile_class = profile_release.profile_class
-  portfolio_class = cert_class
+  portfolio_class = profile_class
 
   template_path = Pathname.new "#{$root}/backends/profile_doc/templates/profile.adoc.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")

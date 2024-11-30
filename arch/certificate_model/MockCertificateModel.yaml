@@ -136,7 +136,7 @@ extensions:
         M_MODE_ENDIANESS:
           schema:
             const: little
-          #  Uncomment when GitHub issue # is fixed.
+          # TODO: Uncomment when GitHub issue # is fixed.
           #schema:
           #- when:
           #    version: "=1.0.0"
