@@ -489,7 +489,7 @@ function softfloat_normRoundPackToF32 {
 function signF32UI {
   returns Bits<1>
   arguments
-    Bits<32> a,
+    Bits<32> a
   description {
     Extract sign-bit of a 32-bit floating point number
   }
@@ -501,7 +501,7 @@ function signF32UI {
 function expF32UI {
   returns Bits<8>
   arguments
-    Bits<32> a,
+    Bits<32> a
   description {
     Extract exponent of a 32-bit floating point number
   }
@@ -513,7 +513,7 @@ function expF32UI {
 function fracF32UI {
   returns Bits<23>
   arguments
-    Bits<32> a,
+    Bits<32> a
   description {
     Extract significand of a 32-bit floating point number
   }
@@ -590,14 +590,14 @@ function softfloat_propagateNaNF32UI {
   }
   body {
     # check if a and b are signalling 
-    Boolean isSigNaN_a = is_sp_signaling_nan(a);
-    Boolean isSigNaN_b = is_sp_signaling_nan(b);
+    Boolean isSigNaN_a = is_sp_signaling_nan?(a);
+    Boolean isSigNaN_b = is_sp_signaling_nan?(b);
 
     # get non Signalling versions of a and b
     U32 nonsig_a = returnNonSignalingNaN(a);
     U32 nonsig_b = returnNonSignalingNaN(b);
   
-    if (isSigNaN_a | isSigNaN_b) {
+    if (isSigNaN_a || isSigNaN_b) {
       # raise invalid flag if either number is NaN
       set_fp_flag(FpFlag::NV);
       if ( isSigNaN_a ) {
@@ -606,9 +606,9 @@ function softfloat_propagateNaNF32UI {
           return returnLargerMag(a, b);
         }
           # if b is NaN return non signaling value of b
-          return is_sp_nan(b) ? nonsig_b : nonsig_a;
+          return is_sp_nan?(b) ? nonsig_b : nonsig_a;
         } else {
-          return is_sp_nan(a) ? nonsig_a : nonsig_b;
+          return is_sp_nan?(a) ? nonsig_a : nonsig_b;
         } 
     }
 
@@ -643,7 +643,7 @@ function softfloat_addMagsF32 {
     Bits<8> expZ;
 
     # calculate difference of exponents
-    Bits<8> expDiff = expA - expB
+    Bits<8> expDiff = expA - expB;
 
     if (expDiff == 8'd0) {
       if (expA == 8'd0) {
@@ -654,8 +654,8 @@ function softfloat_addMagsF32 {
       # check if A is infinity or NaN
       if (expA == 8'hFF) {
         # A is NaN if significand is non-zero and exponent is 8'hFF
-        if ((sigA != 8'd0) | (sigB != 8'd0)) {
-          softfloat_propagateNaNF32UI(a, b);
+        if ((sigA != 8'd0) || (sigB != 8'd0)) {
+          return softfloat_propagateNaNF32UI(a, b);
         }
         # return infinity if A is infinity
         return a;
@@ -687,7 +687,7 @@ function softfloat_addMagsF32 {
         if (expB == 8'hFF) {
           # B is NaN if exponent is 8'hFF and significand is non-zero
           if (sigB != 0) {
-            softfloat_propagateNaNF32UI(a, b);
+            return softfloat_propagateNaNF32UI(a, b);
           }
           # return infinity with same sign as A
           return packToF32UI(signZ, 8'hFF, 23'h0);
@@ -701,7 +701,7 @@ function softfloat_addMagsF32 {
         if (expA == 8'hFF) {
           # A is NaN if exponent is 8'hFF and significand is non-zero
           if (sigA != 0) {
-            softfloat_propagateNaNF32UI(a, b);
+            return softfloat_propagateNaNF32UI(a, b);
           }
             # return infinity with same sign as A
             return a;
@@ -752,19 +752,27 @@ function softfloat_subMagsF32 {
     # declare a variable to store the difference in significand
     U32 sigDiff;
 
+    # declare a sigX and sigY
+    U32 sigX; 
+    U32 sigY;
+
+    # declare a U32 sigA and sigB
+    U32 sigA_32;
+    U32 sigB_32;
+
     # declare a variable to store shift distance
     Bits<8> shiftDist;
 
     # calculate difference of exponents
-    Bits<8> expDiff = expA - expB
+    Bits<8> expDiff = expA - expB;
 
     if (expDiff == 8'd0) {
     
       # check if A is infinity or NaN
       if (expA == 8'hFF) {
         # A is NaN if significand is non-zero and exponent is 8'hFF
-        if ((sigA != 8'd0) | (sigB != 8'd0)) {
-          softfloat_propagateNaNF32UI(a, b);
+        if ((sigA != 8'd0) || (sigB != 8'd0)) {
+          return softfloat_propagateNaNF32UI(a, b);
         }
         # return infinity if A is infinity
         return a;
@@ -775,7 +783,7 @@ function softfloat_subMagsF32 {
       # check if no difference in significand 
       if (sigDiff == 0) {
         # return -0 if rounding mode is round down, else return +0
-        return packToF32UI((mode == RoundingMode::RDN),0,0);  
+        return packToF32UI(((mode == RoundingMode::RDN) ? 1 : 0),0,0);  
       }
 
       if (expA != 0) {
@@ -783,10 +791,73 @@ function softfloat_subMagsF32 {
       }
 
       signZ = signF32UI(a);
+
+      # if difference is negative, change the sign of the result
       if (sigDiff < 0) {
-        signZ != signZ;
-        sigDiff = -32'hs1 * sigDiff;
+        signZ = ~signZ;
+        sigDiff = -32'sh1 * sigDiff;
       }
    
-      
+      shiftDist = count_leading_zeros<32>(sigDiff) - 8;
+      expZ = expA - shiftDist;
 
+      if (expZ < 0) {
+        shiftDist = expA;
+        expZ       = 0;
+      }
+
+      return packToF32UI(signZ, expZ, sigDiff << shiftDist);
+
+    } else {
+      # when difference in exponents are not zero 
+      signZ = signF32UI(a);
+      sigA_32 = 32'h0 + (sigA << 7);
+      sigB_32 = 32'h0 + (sigB << 7);
+      if (expDiff < 0) {
+        signZ = ~signZ;
+        if (expB == 0xFF) {
+          if (sigB_32 != 0) {
+            return softfloat_propagateNaNF32UI(a, b);
+          }
+          return packToF32UI(signZ, expB, 0);
+        }
+        expZ = expB - 1;
+        sigX = sigB_32 | 0x40000000;
+        sigY = sigA_32 + ((expA != 0) ? 0x40000000 : sigA_32);
+        expDiff = - expDiff;
+      } else {
+        if (expA == 0xFF) {
+          if (sigA_32 != 0) {
+            return softfloat_propagateNaNF32UI(a, b);
+          }
+          return a;
+        }
+        expZ = expA - 1;
+        sigX = sigA_32 | 0x40000000;
+        sigY = sigB_32 + ((expB != 0) ? 0x40000000 : sigB_32);
+      }
+      return softfloat_normRoundPackToF32(signZ, expZ, sigX - softfloat_shiftRightJam32(sigY, expDiff), mode);
+    }
+  }
+}
+
+function f32_add {
+  returns U32
+  arguments 
+    U32 a,
+    U32 b,
+    RoundingMode mode
+  description {
+    Returns sum of 2 floating point numbers
+  } 
+  body {
+    U32 a_xor_b = a ^ b;
+    if (signF32UI(a_xor_b) == 1) {
+      # subtract if signs are different
+      return softfloat_subMagsF32(a,b,mode);
+    } else {
+      # add if signs are the same
+      return softfloat_addMagsF32(a,b,mode);
+    }
+  }
+}
