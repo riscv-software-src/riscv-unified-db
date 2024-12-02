@@ -320,9 +320,10 @@ class ExtensionVersion
     return @contributors unless @contributors.nil?
 
     @contributors = []
-    @data["contributors"].each do |c|
+    @data["contributors"]&.each do |c|
       @contributors << Person.new(c)
     end
+    @contributors
   end
 
   # @return [Array<ExtensionParameter>] The list of parameters for this extension version
