@@ -298,6 +298,10 @@ namespace :test do
     ENV["MANUAL_NAME"] = "isa"
     ENV["VERSIONS"] = "all"
     Rake::Task["gen:html_manual"].invoke
+    
+    ENV["EXT"] = "B"
+    ENV["VERSION"] = "latest"
+    Rake::Task["gen:ext_pdf"].invoke
 
     Rake::Task["gen:html"].invoke("generic_rv64")
 

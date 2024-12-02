@@ -639,7 +639,7 @@ class ArchGen
     arch_def_mock.define_singleton_method(:possible_xlens) do
       pos_xlen_local
     end
-    impl_ext = @cfg_impl_ext.map { |e| ExtensionVersion.new(e[0], e[1]) }
+    impl_ext = @cfg_impl_ext.map { |e| ExtensionVersion.new(e[0], e[1], nil) }
     arch_def_mock.define_singleton_method(:implemented_extensions) do
       impl_ext
     end
@@ -893,7 +893,7 @@ class ArchGen
     arch_def_mock = Object.new
     arch_def_mock.define_singleton_method(:fully_configured?) { true }
     arch_def_mock.define_singleton_method(:possible_xlens) { possible_xlens }
-    impl_ext = @cfg_impl_ext.map { |e| ExtensionVersion.new(e[0], e[1]) }
+    impl_ext = @cfg_impl_ext.map { |e| ExtensionVersion.new(e[0], e[1], nil) }
     arch_def_mock.define_singleton_method(:implemented_extensions) do
       impl_ext
     end
