@@ -3,6 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: addi
+format: { $ref: inst_format/itype.yaml# }
 long_name: Add immediate
 description: Add an immediate to the value in rs1, and store the result in rd
 definedBy: I
@@ -10,19 +11,19 @@ assembly: xd, xs1, imm
 encoding:
   match: -----------------000-----0010011
   variables:
-  - name: imm
-    $inherits: common/inst_variable_types.yaml#/itype_imm
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+  - field: { $ref: inst_format/itype.yaml#/fields/name=imm }
+    name: imm
+  - field: { $ref: inst_format/itype.yaml#/fields/name=rs1 }
+    name: xs1
+  - field: { $ref: inst_format/itype.yaml#/fields/name=rd }
+    name: xd
 access:
   s: always
   u: always
   vs: always
   vu: always
 data_independent_timing: true
-operation(): X[rd] = X[rs1] + imm;
+operation(): X[xd] = X[xs1] + sext(imm, 31);
 
 
 

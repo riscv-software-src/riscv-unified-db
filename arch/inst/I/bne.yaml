@@ -3,6 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: bne
+format: { $ref: inst_format/btype.yaml# }
 long_name: Branch if not equal
 description: |
   Branch to PC + imm if
@@ -14,13 +15,12 @@ assembly: xs1, xs2, imm
 encoding:
   match: -----------------001-----1100011
   variables:
-  - name: imm
-    location: 31|7|30-25|11-8
-    left_shift: 1
-  - name: rs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
+  - field: { $ref: inst_format/btype.yaml#/fields/name=imm }
+    name: offset
+  - field: { $ref: inst_format/btype.yaml#/fields/name=rs2}
+    name: xs2
+  - field: { $ref: inst_format/btype.yaml#/fields/name=rs1}
+    name: rs1
 access:
   s: always
   u: always
@@ -31,7 +31,7 @@ operation(): |
   XReg rhs = X[rs2];
 
   if (lhs != rhs) {
-    jump_halfword($pc + imm);
+    jump_halfword($pc + sext(imm, 31));
   }
   
 

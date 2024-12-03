@@ -3,6 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: add
+format: { $ref: inst_format/rtype.yaml# }
 long_name: Integer add
 description: |
   Add the value in rs1 to rs2, and store the result in rd.
@@ -12,19 +13,19 @@ assembly: xd, xs1, xs2
 encoding:
   match: 0000000----------000-----0110011
   variables:
-  - name: rs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+  - field: { $ref: inst_format/rtype.yaml#/fields/name=rs2 }
+    name: xs2
+  - field: { $ref: inst_format/rtype.yaml#/fields/name=rs1 }
+    name: xs1
+  - field: { $ref: inst_format/rtype.yaml#/fields/name=rd }
+    name: xd
 access:
   s: always
   u: always
   vs: always
   vu: always
 data_independent_timing: true
-operation(): X[rd] = X[rs1] + X[rs2];
+operation(): X[xd] = X[xs1] + X[xs2];
 
 
 
