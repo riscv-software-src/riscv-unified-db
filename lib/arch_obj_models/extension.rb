@@ -448,6 +448,7 @@ end
 #     Example => presence:
 #                  optional: development
 class ExtensionPresence
+  include Comparable  # Creates <, >, <=, >= automatically since <=> is provided
   attr_reader :presence
   attr_reader :optional_type
 
