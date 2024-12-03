@@ -61,35 +61,48 @@ class PortfolioInstance < ArchDefObject
   # @return [Gem::Version] Semantic version of the PortfolioInstance
   def version = Gem::Version.new(@data["version"])
 
-  # @return [String] Given an extension +ext_name+, return the presence as a string.
-  #                  If the extension name isn't found in the portfolio, return "-".
-  def extension_presence(ext_name)
+  # @return [ExtensionPresence] Given an extension +ext_name+, return the presence.
+  #                             If the extension name isn't found in the portfolio, return nil.
+  def extension_presence_obj(ext_name)
     # Get extension information from YAML for passed in extension name.
     ext_data = @data["extensions"][ext_name]
 
-    ext_data.nil? ? "-" : ExtensionPresence.new(ext_data["presence"]).to_s
+    ext_data.nil? ? nil : ExtensionPresence.new(ext_data["presence"])
   end
 
-  # Returns the strongest presence string for each of the specified versions.
+  # @return [String] Given an extension +ext_name+, return the presence as a string.
+  #                  If the extension name isn't found in the portfolio, return "-".
+  def extension_presence(ext_name)
+    ext_presence_obj = extension_presence_obj(ext_name)
+
+    ext_presence_obj.nil? ? "-" : ext_presence_obj.to_s
+  end
+
+  # Returns the greatest presence string for each of the specified versions.
   # @param ext_name [String]
   # @param ext_versions [Array<ExtensionVersion>]
   # @return [Array<String>]
-  def version_strongest_presence(ext_name, ext_versions)
+  def version_greatest_presence(ext_name, ext_versions)
     presences = []
     
-    # See if any extension requirement in this profile lists this version as either mandatory or optional.
     ext_versions.map do |v|
-      mandatory = mandatory_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(ext_name, v.version) }
-      optional = optional_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(ext_name, v.version) }
+      greatest_presence = nil
 
-      # Just show strongest presence (mandatory stronger than optional).
-      if mandatory
-        presences << ExtensionPresence.mandatory
-      elsif optional
-        presences << ExtensionPresence.optional
-      else
-        presences << "-"
+      in_scope_ext_reqs.each do |ext_req|
+        if ext_req.satisfied_by?(ext_name, v.version)
+          presence = extension_presence_obj(ext_name)
+
+          unless presence.nil? 
+            if greatest_presence.nil?
+              greatest_presence = presence
+            elsif presence > greatest_presence
+              greatest_presence = presence
+            end
+          end
+        end
       end
+
+      presences << (greatest_presence.nil? ? "-" : greatest_presence.to_s_concise)
     end
 
     presences
@@ -194,7 +207,7 @@ class PortfolioInstance < ArchDefObject
     end
     arch_def_data["params"] = all_in_scope_ext_params.select(&:single_value?).map { |p| [p.name, p.value] }.to_h
 
-    # XXX Add list of prohibited_extensions
+    # TODO: Add list of prohibited_extensions
 
     file = Tempfile.new("archdef")
     file.write(YAML.safe_dump(arch_def_data, permitted_classes: [Date]))

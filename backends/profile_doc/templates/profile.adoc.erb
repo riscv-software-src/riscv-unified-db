@@ -2,7 +2,7 @@
 :description: <%= profile_release.marketing_name %> Profile
 :revdate: <%= profile_release.ratification_date.nil? ? Date.today : profile_release.ratification_date %>
 
-// XXX - Figure out what we really want here - Change percent hash to percent equals.
+// TODO - Figure out what we really want here - Change percent hash to percent equals.
 // :revnumber: <%# profile_release.map(&:version).sort.last %>
 
 :revmark: "TODO: revmark"
@@ -311,6 +311,7 @@ optional profile extensions for a new profile might be prototyped as
 non-profile extensions on an earlier profile.
 
 // XXX - Need to create render() Ruby function.
+// See https://github.com/riscv-software-src/riscv-unified-db/issues/59
 // <%# render("#{$root}/backends/portfolio_doc/templates/family_intro.erb", portfolio_class: profile_class) %>
 
 == <%= profile_class.name %> Profile Class
@@ -344,21 +345,6 @@ Ratification date:: <%= profile_release.ratification_date %>
 --
 <% end # each profile_release -%>
 
-=== Extension Presence
-
-The <%= profile_class.marketing_name %> Profile Class references
-<%= profile_class.referenced_extensions.size %> extensions.
-
-.Status
-|===
-| Extension | <%= profile_class.profiles.map(&:marketing_name).join(" | ") -%>
-
-<% profile_class.referenced_extensions.sort_by(&:name).each do |ext| -%>
-| <%= ext.name %> | <%= profile_class.profiles.map { |profile| profile.extension_presence(ext.name) }.join(" | ") -%>
-<% end -%>
-
-|===
-
 == <%= profile_release.name %> Profile Release
 
 <%= profile_release.introduction %>
@@ -370,8 +356,8 @@ associated implementation-defined parameters across all its defined profiles.
 === <%= profile_release.name %> Description
 
 <%= profile_release.description %>
-
 <% end # unless -%>
+
 <% profile_release.profiles.each do |profile| -%>
 === <%= profile.marketing_name %> Profile
 
@@ -413,6 +399,41 @@ associated implementation-defined parameters.
 
 <<<
 [appendix]
+== Profile Comparisons
+
+=== Release Comparison
+
+The <%= profile_class.marketing_name %> Profile Class has <%= profile_class.profile_releases.size %> releases that
+reference a total of <%= profile_class.referenced_extensions.size %> extensions.
+
+.Extension Presence
+|===
+| Extension | <%= profile_class.profile_releases.map(&:marketing_name).join(" | ") %>
+
+<% profile_class.referenced_extensions.sort_by(&:name).each do |ext| -%>
+| <%= ext.name %> | <%= profile_class.profile_releases.map { |profile_release| profile_release.extension_presence(ext.name) }.join(" | ") %>
+<% end -%>
+|===
+
+=== Profile Comparison
+
+The <%= profile_release.marketing_name %> Profile Release has <%= profile_release.profiles.size %> profiles that
+reference a total of <%= profile_release.referenced_extensions.size %> extensions.
+
+[NOTE]
+Extensions present in a profile are also present in higher-privileged profiles in the same profile release.
+
+.Extension Presence
+|===
+| Extension | <%= profile_release.profiles.map(&:marketing_name).join(" | ") %>
+
+<% profile_release.referenced_extensions.sort_by(&:name).each do |ext| -%>
+| <%= ext.name %> | <%= profile_release.profiles.map { |profile| profile.extension_presence(ext.name) }.join(" | ") %>
+<% end -%>
+|===
+
+<<<
+[appendix]
 == Extension Details
 
 <% profile_release.referenced_extensions.sort.each do |ext| -%>
@@ -420,12 +441,12 @@ associated implementation-defined parameters.
 === <%= ext.name %> Extension
 <%= ext.long_name %>
 
-.Status
+.Presence
 |===
 | Profile | v<%= ext.versions.map { |v| v.version }.join(" | v") %>
 
 <% profile_release.profiles.each do |profile| -%>
-| <%= profile.marketing_name %> | <%= profile.version_strongest_presence(ext.name, ext.versions).join(" | ") -%>
+| <%= profile.marketing_name %> | <%= profile.version_greatest_presence(ext.name, ext.versions).join(" | ") -%>
 <% end -%>
 
 |===

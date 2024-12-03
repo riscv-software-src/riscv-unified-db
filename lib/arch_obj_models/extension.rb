@@ -476,8 +476,8 @@ class ExtensionPresence
     end
   end
 
-  def mandatory? = (@presence == mandatory) 
-  def optional? = (@presence == optional)
+  def mandatory? = (@presence == "mandatory") 
+  def optional? = (@presence == "optional")
 
   # Class methods
   def self.mandatory = "mandatory"
@@ -522,6 +522,17 @@ class ExtensionPresence
     @optional_type.nil? ? "#{presence}" : "#{presence} (#{optional_type})"
   end
 
+  def to_s_concise
+    "#{presence}"
+  end
+
+  #
+  # Overloaded comparison operators following these rules:
+  #   - "mandatory" is greater than "optional"
+  #   - optional_types all have same rank
+  #   - equals compares presence and then optional_type
+  #
+
   # @overload ==(other)
   #   @param other [String] A presence string
   #   @return [Boolean] whether or not this ExtensionPresence has the same presence (ignores optional_type)
@@ -538,6 +549,26 @@ class ExtensionPresence
       raise "Unexpected comparison"
     end
   end
+
+  # @overload >(other)
+  #   @param other [ExtensionPresence] An extension presence object
+  #   @return [Boolean] Whether or not this ExtensionPresence is greater-than the other
+  def >(other) = (self.mandatory? && other.optional?)
+
+  # @overload >=(other)
+  #   @param other [ExtensionPresence] An extension presence object
+  #   @return [Boolean] Whether or not this ExtensionPresence is greater-than or equal to the other
+  def >=(other) = (self > other) || (self == other)
+
+  # @overload <(other)
+  #   @param other [ExtensionPresence] An extension presence object
+  #   @return [Boolean] Whether or not this ExtensionPresence is less-than the other
+  def <(other) = (self.optional? && other.mandatory?)
+
+  # @overload <=(other)
+  #   @param other [ExtensionPresence] An extension presence object
+  #   @return [Boolean] Whether or not this ExtensionPresence is less-than or equal to the other
+  def <=(other) = (self < other) || (self == other)
 
   # Sorts by presence, then by optional_type
   def <=>(other)
