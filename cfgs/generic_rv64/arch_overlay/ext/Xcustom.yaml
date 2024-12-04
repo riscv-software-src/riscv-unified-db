@@ -6,7 +6,7 @@ long_name: A new custom extension!
 type: unprivileged
 versions:
 - version: "0.1.0"
-  ratification_date: null
+  ratification_date: unknown
   state: development
 description: |
   A new custom extension!

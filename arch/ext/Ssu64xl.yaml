@@ -2,10 +2,10 @@
 
 $schema: "ext_schema.json#"
 kind: extension
-name: Ziccamoa
-long_name: Main memory atomicity requirement for RVA profiles
+name: Ssu64xl
+long_name: UXLEN=64 must be supported
 description: |
-  Main memory regions with both the cacheability and coherence PMAs must support AMOArithmetic.
+  `sstatus.UXL` must be capable of holding the value 2 (i.e., UXLEN=64 must be supported).
 
   [NOTE]
   This extension was ratified as part of the RVA20 profile.

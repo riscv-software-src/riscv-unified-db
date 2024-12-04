@@ -4,7 +4,7 @@ rule %r{#{$root}/gen/profile_doc/adoc/.*\.adoc} => proc { |tname|
   profile_release_name = Pathname.new(tname).basename(".adoc")
 
   [
-    "#{$root}/.stamps/arch-gen.stamp",
+    "#{$root}/.stamps/arch-gen-_64.stamp",
     __FILE__,
     "#{$root}/lib/arch_obj_models/profile.rb",
     "#{$root}/backends/profile_doc/templates/profile.adoc.erb"

@@ -460,6 +460,7 @@ params:
     schema:
       type: string
       enum: [little, big, dynamic]
+      # TODO: Only little available in Sm 1.11
   MISA_CSR_IMPLEMENTED:
     description: |
       Whether or not the `misa` CSR returns zero or a non-zero value.

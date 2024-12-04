@@ -126,6 +126,27 @@ class ProfileRelease < ArchDefObject
 
     @referenced_extensions
   end
+
+  # @return [String] Given an extension +ext_name+, return the presence as a string.
+  #                  Returns the greatest presence string across all profiles in the release.
+  #                  If the extension name isn't found in the release, return "-".
+  def extension_presence(ext_name)
+    greatest_presence = nil
+
+    profiles.each do |profile|
+      presence = profile.extension_presence_obj(ext_name)
+
+      unless presence.nil? 
+        if greatest_presence.nil?
+          greatest_presence = presence
+        elsif presence > greatest_presence
+          greatest_presence = presence
+        end
+      end
+    end
+
+    greatest_presence.nil? ? "-" : greatest_presence.to_s_concise
+  end
 end
 
 # Representation of a specific profile in a profile release.
