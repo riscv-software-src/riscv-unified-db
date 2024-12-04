@@ -79,7 +79,7 @@ class CertModel < PortfolioInstance
             "Parameter #{param_name} == #{param_value}"
           end
         else
-          raise "TODO: when type #{key} not implemented"
+          raise "Type #{key} not implemented"
         end
       end.flatten.join(" and ")
     end
@@ -111,7 +111,7 @@ class CertModel < PortfolioInstance
             "Parameter #{param_name} == #{param_value}"
           end
         else
-          raise "TODO: when type #{key} not implemented"
+          raise "Type #{key} not implemented"
         end
       end.flatten.join(" and ")
     end

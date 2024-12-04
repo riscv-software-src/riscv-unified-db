@@ -82,6 +82,7 @@ class PortfolioInstance < ArchDefObject
   # @param ext_name [String]
   # @param ext_versions [Array<ExtensionVersion>]
   # @return [Array<String>]
+  # JamesBall
   def version_greatest_presence(ext_name, ext_versions)
     presences = []
     
@@ -132,26 +133,41 @@ class PortfolioInstance < ArchDefObject
       desired_presence.is_a?(ExtensionPresence) ? desired_presence :
       ExtensionPresence.new(desired_presence)
 
+    missing_ext = false
+
     @data["extensions"]&.each do |ext_name, ext_data|
       actual_presence = ext_data["presence"]    # Could be a String or Hash
       raise "Missing extension presence for extension #{ext_name}" if actual_presence.nil?
 
-      # Convert String or Hash to object.
+      # Convert presence String or Hash to object.
       actual_presence_obj = ExtensionPresence.new(actual_presence)
 
-      match =
-        if desired_presence.nil?
-          true # Always match
+      if desired_presence.nil? || (actual_presence_obj == desired_presence_converted)
+        version_data = ext_data["version"]
+
+        ext_req =
+          ExtensionRequirement.new(ext_name, version_data, presence: actual_presence_obj,
+            note: ext_data["note"], req_id: "REQ-EXT-" + ext_name)
+
+        # Does extension even exist? 
+        # If not, don't raise an error right away so we can find all of the missing extensions and report them all.
+        ext = arch_def.extension(ext_name)
+        if ext.nil?
+          puts "Extension #{ext_name} for #{name} not found in database" 
+          missing_ext = true
         else
-          actual_presence_obj == desired_presence_converted
+          # Okay, so extension exists. Can the extension requirement be met?
+          raise "No version of extension #{ext_name} in #{name} satifies the extension requirement #{version_data}" unless ext_req.satisfied_by_ext?(ext)
         end
 
-      if match
-        in_scope_ext_reqs << 
-          ExtensionRequirement.new(ext_name, ext_data["version"], presence: actual_presence_obj,
-            note: ext_data["note"], req_id: "REQ-EXT-" + ext_name)
+        in_scope_ext_reqs << ext_req
       end
     end
+
+    # TODO: Change to "raise" when missing extensions added to database so we can make progress until then.
+    # See https://github.com/riscv-software-src/riscv-unified-db/issues/320
+    puts "One or more extensions referenced by #{name} missing in database" if missing_ext
+
     in_scope_ext_reqs
   end
 
@@ -163,15 +179,9 @@ class PortfolioInstance < ArchDefObject
   def in_scope_extensions
     return @in_scope_extensions unless @in_scope_extensions.nil?
 
-    @in_scope_extensions = in_scope_ext_reqs.map do |er|
-      obj = arch_def.extension(er.name)
-
-      # @todo: change this to raise once all the profile extensions
-      #        are defined
-      warn "Extension #{er.name} is not defined" if obj.nil?
-
-      obj
-    end.reject(&:nil?)
+    @in_scope_extensions = in_scope_ext_reqs.map do |ext_req|
+      arch_def.extension(ext_req.name)
+    end.reject(&:nil?)  # Filter out extensions that don't exist yet.
 
     @in_scope_extensions
   end

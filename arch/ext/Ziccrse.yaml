@@ -12,4 +12,4 @@ description: |
 versions:
 - version: "1.0.0"
   state: ratified
-  ratification_date: null
+  ratification_date: unknown

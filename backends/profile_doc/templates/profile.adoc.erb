@@ -441,7 +441,7 @@ Extensions present in a profile are also present in higher-privileged profiles i
 === <%= ext.name %> Extension
 <%= ext.long_name %>
 
-.Presence
+.<%= ext.name %> Extension Presence
 |===
 | Profile | v<%= ext.versions.map { |v| v.version }.join(" | v") %>
 
@@ -453,8 +453,12 @@ Extensions present in a profile are also present in higher-privileged profiles i
 
 <% ext.versions.each do |v| -%>
 <%= v.version %>::
+  State:::
+    <%= v.state %>
+  <% if v.state == "ratified" -%>
   Ratification date:::
     <%= v.ratification_date %>
+  <% end # if %>
   <% unless v.changes.empty? -%>
   Changes:::
 
@@ -462,18 +466,18 @@ Extensions present in a profile are also present in higher-privileged profiles i
     * <%= c %>  
     <% end -%>
 
-  <%- end -%>
-  <%- unless v.url.nil? -%>
+  <% end -%>
+  <% unless v.url.nil? -%>
   Ratification document:::
     <%= v.url %>
-  <%- end -%>
-  <%- unless v.implications -%>
+  <% end -%>
+  <% unless v.implications -%>
   Implies:::
-    <%- v.implications.each do |i| -%>
+    <% v.implications.each do |i| -%>
     * `<%= i.name %>` version <%= i.version %>
-    <%- end -%>
-  <%- end -%>
-<%- end -%>
+    <% end -%>
+  <% end -%>
+<% end -%>
 
 ==== Synopsis
 
@@ -484,8 +488,8 @@ Extensions present in a profile are also present in higher-privileged profiles i
 :leveloffset: -3
 
 // TODO: GitHub issue 92: Use version specified by each profile and add version info to inst table below.
-<%- insts = arch_def.instructions.select { |i| i.defined_by?(ext.min_version) } -%>
-<%- unless insts.empty? -%>
+<% insts = arch_def.instructions.select { |i| i.defined_by?(ext.min_version) } -%>
+<% unless insts.empty? -%>
 ==== Instructions
 
 The following instructions are added by this extension:

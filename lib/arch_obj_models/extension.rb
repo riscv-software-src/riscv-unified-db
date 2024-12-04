@@ -448,7 +448,6 @@ end
 #     Example => presence:
 #                  optional: development
 class ExtensionPresence
-  include Comparable  # Creates <, >, <=, >= automatically since <=> is provided
   attr_reader :presence
   attr_reader :optional_type
 
@@ -527,13 +526,6 @@ class ExtensionPresence
     "#{presence}"
   end
 
-  #
-  # Overloaded comparison operators following these rules:
-  #   - "mandatory" is greater than "optional"
-  #   - optional_types all have same rank
-  #   - equals compares presence and then optional_type
-  #
-
   # @overload ==(other)
   #   @param other [String] A presence string
   #   @return [Boolean] whether or not this ExtensionPresence has the same presence (ignores optional_type)
@@ -551,27 +543,9 @@ class ExtensionPresence
     end
   end
 
-  # @overload >(other)
-  #   @param other [ExtensionPresence] An extension presence object
-  #   @return [Boolean] Whether or not this ExtensionPresence is greater-than the other
-  def >(other) = (self.mandatory? && other.optional?)
-
-  # @overload >=(other)
-  #   @param other [ExtensionPresence] An extension presence object
-  #   @return [Boolean] Whether or not this ExtensionPresence is greater-than or equal to the other
-  def >=(other) = (self > other) || (self == other)
-
-  # @overload <(other)
-  #   @param other [ExtensionPresence] An extension presence object
-  #   @return [Boolean] Whether or not this ExtensionPresence is less-than the other
-  def <(other) = (self.optional? && other.mandatory?)
-
-  # @overload <=(other)
-  #   @param other [ExtensionPresence] An extension presence object
-  #   @return [Boolean] Whether or not this ExtensionPresence is less-than or equal to the other
-  def <=(other) = (self < other) || (self == other)
-
-  # Sorts by presence, then by optional_type
+  # @overload <=>(other)
+  #   @param other [String] A presence string
+  #   @return [Integer] Sort alphabetically by presence, then alphabetically by optional_type
   def <=>(other)
     raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
 
@@ -580,6 +554,45 @@ class ExtensionPresence
     else
       @optional_type <=> other.optional_type
     end
+  end
+
+  ######################################################
+  # Following comparison operators follow these rules:
+  #   - "mandatory" is greater than "optional"
+  #   - optional_types all have same rank
+  #   - equals compares presence and then optional_type
+  ######################################################
+
+  # @overload >(other)
+  #   @param other [ExtensionPresence] An extension presence object
+  #   @return [Boolean] Whether or not this ExtensionPresence is greater-than the other
+  def >(other) 
+    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
+    (self.mandatory? && other.optional?)
+  end
+
+  # @overload >=(other)
+  #   @param other [ExtensionPresence] An extension presence object
+  #   @return [Boolean] Whether or not this ExtensionPresence is greater-than or equal to the other
+  def >=(other)
+    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
+    (self > other) || (self == other)
+  end 
+
+  # @overload <(other)
+  #   @param other [ExtensionPresence] An extension presence object
+  #   @return [Boolean] Whether or not this ExtensionPresence is less-than the other
+  def <(other) 
+    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
+    (self.optional? && other.mandatory?)
+  end
+
+  # @overload <=(other)
+  #   @param other [ExtensionPresence] An extension presence object
+  #   @return [Boolean] Whether or not this ExtensionPresence is less-than or equal to the other
+  def <=(other) 
+    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
+    (self < other) || (self == other)
   end
 end
 
@@ -624,6 +637,14 @@ class ExtensionRequirement
     ext.versions.select { |v| @requirement.satisfied_by?(v.version) }
   end
 
+  # @return [Boolean] True if any extension version satifies this requirement
+  # @param [Extension] The extension object that contains one or more versions
+  def satisfied_by_ext?(ext) 
+    return false if ext.nil?
+    
+    ext.versions.any? { |v| @requirement.satisfied_by?(v.version) }
+  end  
+
   # @overload
   #   @param extension_version [ExtensionVersion] A specific extension version
   #   @return [Boolean] whether or not the extension_version meets this requirement
@@ -644,14 +665,13 @@ class ExtensionRequirement
           satified_by?(ext_ver)
         end
       else
-        raise ArgumentError, "Single argument must be an ExtensionVersion or ExtensionRquirement"
+        raise ArgumentError, "Single argument must be an ExtensionVersion or ExtensionRequirement"
       end
     elsif args.size == 2
       raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
       raise ArgumentError, "First parameter must be an extension version" unless args[1].respond_to?(:to_s)
 
-      args[0] == @name &&
-        @requirement.satisfied_by?(Gem::Version.new(args[1]))
+      (args[0] == @name) && @requirement.satisfied_by?(Gem::Version.new(args[1]))
     else
       raise ArgumentError, "Wrong number of args (expecting 1 or 2)"
     end
