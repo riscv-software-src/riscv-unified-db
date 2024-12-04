@@ -637,14 +637,6 @@ class ExtensionRequirement
     ext.versions.select { |v| @requirement.satisfied_by?(v.version) }
   end
 
-  # @return [Boolean] True if any extension version satifies this requirement
-  # @param [Extension] The extension object that contains one or more versions
-  def satisfied_by_ext?(ext) 
-    return false if ext.nil?
-    
-    ext.versions.any? { |v| @requirement.satisfied_by?(v.version) }
-  end  
-
   # @overload
   #   @param extension_version [ExtensionVersion] A specific extension version
   #   @return [Boolean] whether or not the extension_version meets this requirement

@@ -5,14 +5,15 @@ kind: csr
 name: senvcfg
 address: 0x10A
 long_name: Supervisor Environment Configuration
-description: Contains bits to enable/disable extensions
+description: |
+  Contains fields that control certain characteristics of the U-mode execution environment.
 priv_mode: S
 length: 64
 definedBy:
   allOf:
-    - name: Sm
-      version: ">=1.12"
     - name: S
+      version: ">=1.12"
+    - name: U
 fields:
   CBZE:
     location: 7

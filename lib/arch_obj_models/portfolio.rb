@@ -136,6 +136,14 @@ class PortfolioInstance < ArchDefObject
     missing_ext = false
 
     @data["extensions"]&.each do |ext_name, ext_data|
+      # Does extension even exist? 
+      # If not, don't raise an error right away so we can find all of the missing extensions and report them all.
+      ext = arch_def.extension(ext_name)
+      if ext.nil?
+        puts "Extension #{ext_name} for #{name} not found in database" 
+        missing_ext = true
+      end
+
       actual_presence = ext_data["presence"]    # Could be a String or Hash
       raise "Missing extension presence for extension #{ext_name}" if actual_presence.nil?
 
@@ -143,24 +151,8 @@ class PortfolioInstance < ArchDefObject
       actual_presence_obj = ExtensionPresence.new(actual_presence)
 
       if desired_presence.nil? || (actual_presence_obj == desired_presence_converted)
-        version_data = ext_data["version"]
-
-        ext_req =
-          ExtensionRequirement.new(ext_name, version_data, presence: actual_presence_obj,
+        in_scope_ext_reqs << ExtensionRequirement.new(ext_name, ext_data["version"], presence: actual_presence_obj,
             note: ext_data["note"], req_id: "REQ-EXT-" + ext_name)
-
-        # Does extension even exist? 
-        # If not, don't raise an error right away so we can find all of the missing extensions and report them all.
-        ext = arch_def.extension(ext_name)
-        if ext.nil?
-          puts "Extension #{ext_name} for #{name} not found in database" 
-          missing_ext = true
-        else
-          # Okay, so extension exists. Can the extension requirement be met?
-          raise "No version of extension #{ext_name} in #{name} satifies the extension requirement #{version_data}" unless ext_req.satisfied_by_ext?(ext)
-        end
-
-        in_scope_ext_reqs << ext_req
       end
     end
 
