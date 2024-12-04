@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: pseudoinstruction
+name: fence.tso
+long_name: No synopsis available.
+description: |
+      No description available.
+definedBy: I
+assembly: xs1, xd
+origin_instruction: fence
+encoding:
+  match: 100000110011-----000-----0001111
+  variables:
+  - name: rs1
+    location: 19-15
+  - name: rd
+    location: 11-7
+operation(): |
+      
