@@ -43,6 +43,7 @@ RVB23:
         # imported from RVA22
         #########################################################################
         $inherits: "RVA22.yaml#/RVA22/profiles/RVA22U64/extensions"
+        $remove: Za128rs
 
         #########################################################################
         # MANDATORY extensions in RVB23 (and RVA23)
