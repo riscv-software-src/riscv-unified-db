@@ -275,4 +275,42 @@ class Validator
       validate_instruction_encoding(inst_name, obj["encoding"]["RV64"])
     end
   end
+  # Validate the format of a definedBy field in an instruction file
+  #
+  # @param defined_by [String, Hash] The definedBy field to validate
+  # @return [Boolean] true if the field format is valid, false otherwise
+  # - String must be non-empty and without commas
+  # - Hash must have single key (anyOf/oneOf/allOf) with array or comma-separated list values
+  def valid_defined_by?(defined_by)
+      return false if defined_by.nil?
+      
+      case defined_by
+      when String
+        # Simple string case - shouldn't contain commas
+        !defined_by.include?(',') && !defined_by.strip.empty?
+      when Hash
+        # Only allow one key which must be anyOf, oneOf, or allOf
+        return false unless defined_by.size == 1
+        key = defined_by.keys.first
+        return false unless ['anyOf', 'oneOf', 'allOf'].include?(key)
+        
+        value = defined_by[key]
+        case value
+        when Array
+          # Each array element should be a simple string without commas
+          value.all? { |v| v.is_a?(String) && !v.include?(',') && !v.strip.empty? }
+        when String
+          # Also accept the compact form: anyOf: [C,Zca]
+          # Split by comma and/or brackets, strip whitespace and validate
+          elements = value.gsub(/[\[\]]/, '').split(',').map(&:strip)
+          elements.all? { |v| !v.empty? }
+        else
+          false
+        end
+      else
+        false
+      end
+    end
+  
 end
+
