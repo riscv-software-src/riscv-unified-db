@@ -90,15 +90,37 @@ namespace :test do
   end
   task schema: "gen:arch" do
     validator = Validator.instance
-    puts "Checking arch files against schema.."
+    puts "Checking arch files against schema..."
     arch_files = Dir.glob("#{$root}/arch/**/*.yaml")
     progressbar = ProgressBar.create(total: arch_files.size)
+    
+    incorrect_defined_by_files = []
+    
     arch_files.each do |f|
       progressbar.increment
       validator.validate(f)
+      
+      # Only check definedBy for instructions
+      if f.include?("/inst/")
+        yaml_content = YamlLoader.load(f, permitted_classes: [Date])
+        if defined_by = yaml_content['definedBy']
+          unless validator.valid_defined_by?(defined_by)
+            incorrect_defined_by_files << f
+          end
+        end
+      end
     end
+    
+    if incorrect_defined_by_files.any?
+      puts "\nThe following instruction files have incorrectly formatted 'definedBy' fields:"
+      incorrect_defined_by_files.each do |file|
+        puts "  #{Pathname.new(file).relative_path_from($root)}"
+      end
+      exit 1
+    end
+    
     Rake::Task["test:insts"].invoke
-    puts "All files validate against their schema"  
+    puts "All files validate against their schema"
   end
   task idl_model: ["gen:arch", "#{$root}/.stamps/arch-gen-_32.stamp", "#{$root}/.stamps/arch-gen-_64.stamp"]  do
     print "Parsing IDL code for RV32..."
