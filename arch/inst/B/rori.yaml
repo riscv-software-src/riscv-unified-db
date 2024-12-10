@@ -12,7 +12,7 @@ definedBy:
 assembly: xd, xs1, shamt
 encoding:
   RV32:
-    match: 0110000----------101-----0110011
+    match: 0110000----------101-----0010011
     variables:
     - name: shamt
       location: 24-20
@@ -21,7 +21,7 @@ encoding:
     - name: rd
       location: 11-7
   RV64:
-    match: 011000-----------101-----0110011
+    match: 011000-----------101-----0010011
     variables:
     - name: shamt
       location: 25-20
@@ -55,7 +55,3 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
-
-
-
-

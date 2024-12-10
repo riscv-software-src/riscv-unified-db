@@ -34,7 +34,7 @@ class Instruction < ArchDefObject
         vars_match = variables.count { |variable| ary_from_location(variable["location"]).include?(i) }
         if vars_match.zero?
           raise ValidationError, "In instruction #{inst_name}, no variable or encoding bit covers bit #{i}"
-        elsif vars_match != 1 
+        elsif vars_match != 1
           raise ValidationError, "In instruction, #{inst_name}, bit #{i} is covered by more than one variable"
         end
       else
@@ -303,7 +303,7 @@ class Instruction < ArchDefObject
       @range.size
     end
   end
-  
+
   # decode field constructions from YAML file, rather than riscv-opcodes
   # eventually, we will move so that all instructions use the YAML file,
   class DecodeVariable
@@ -568,7 +568,7 @@ class Instruction < ArchDefObject
       @format.chars.each_with_index do |c, idx|
         if c == "-"
           next if field_chars.empty?
-          
+
           field_text = field_chars.join("")
           field_lsb = @format.size - idx
           field_msb = @format.size - idx - 1 + field_text.size

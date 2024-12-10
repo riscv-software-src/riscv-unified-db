@@ -38,7 +38,7 @@ operation(): |
     # division by zero. Since RISC-V does not have arithmetic exceptions, the result is defined
     # to be the dividend
     X[rd] = src1;
-  
+
   } else if ((src1 == {1'b1, {XLEN-1{1'b0}}}) && (src2 == {XLEN{1'b1}})) {
     # signed overflow. Since RISC-V does not have arithmetic exceptions, the result is defined
     # to be zero
@@ -65,7 +65,3 @@ sail(): |
       RETIRE_FAIL
     }
   }
-
-
-
-

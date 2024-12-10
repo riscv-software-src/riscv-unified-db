@@ -1,5 +1,5 @@
 // Number heading sections (e.g., 1.0, 1.1, etc.)
-:sectnums:  
+:sectnums:
 
 // Add a table of contents for HTML (and VSCode adoc preview)
 :toc: left
@@ -27,7 +27,7 @@ History of documentation changes that eventually lead to releases.
 | Date | Revision | Changes
 
 <% cert_model.revision_history.each do |rev| -%>
-| <%= rev.date %> 
+| <%= rev.date %>
 | <%= rev.revision %>
 a| <% rev.changes.each do |change| %>
 * <%= change %>
@@ -118,8 +118,8 @@ None
 
 <% ext_reqs.sort.each do |ext_req| -%>
 <% ext = arch_def.extension(ext_req.name) -%>
-| <%= ext_req.req_id %> 
-| <<ext-<%= ext_req.name %>-def,<%= ext_req.name %>>> 
+| <%= ext_req.req_id %>
+| <<ext-<%= ext_req.name %>-def,<%= ext_req.name %>>>
 | <%= ext_req.requirement_specs.map(&:to_s).join(", ") %>
 | <%= ext.nil? ? "" : ext.long_name %>
 | <%= ext_req.note.nil? ? "" : ext_req.note %>
@@ -153,7 +153,7 @@ not provided in the associated standard.
 
 === IN-SCOPE Parameters
 
-These implementation-dependent options defined by MANDATORY or OPTIONAL extensions are IN-SCOPE. 
+These implementation-dependent options defined by MANDATORY or OPTIONAL extensions are IN-SCOPE.
 An implementation must abide by the "Allowed Value(s)" to obtain a certificate.
 If the "Allowed Value(s)" is "Any" then any value allowed by the type is acceptable.
 
@@ -178,8 +178,8 @@ a| <%= in_scope_ext_param.note %>
 
 === OUT-OF-SCOPE Parameters
 
-These implementation-dependent options defined by MANDATORY or OPTIONAL extensions are OUT-OF-SCOPE. 
-There are no restrictions on their values for certification purposes because the certificate 
+These implementation-dependent options defined by MANDATORY or OPTIONAL extensions are OUT-OF-SCOPE.
+There are no restrictions on their values for certification purposes because the certificate
 doesn't cover the behavior of the associated RISC-V standard as a function of these parameters.
 
 <% if cert_model.all_out_of_scope_params.empty? -%>
@@ -309,7 +309,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
   Changes:::
 
     <% v.changes.each do |c| -%>
-    * <%= c %>  
+    * <%= c %>
     <% end -%>
 
   <% end -%>
@@ -413,20 +413,20 @@ This instruction has different encodings in RV32 and RV64.
 RV32::
 +
 [wavedrom, ,svg,subs='attributes',width="100%"]
-....  
+....
 <%= JSON.dump inst.wavedrom_desc(32) %>
 ....
 
 RV64::
 +
 [wavedrom, ,svg,subs='attributes',width="100%"]
-....  
+....
 <%= JSON.dump inst.wavedrom_desc(64) %>
 ....
 ====
 <% else -%>
 [wavedrom, ,svg,subs='attributes',width="100%"]
-....  
+....
 <%= JSON.dump inst.wavedrom_desc(inst.base.nil? ? 32 : inst.base) %>
 ....
 <% end -%>

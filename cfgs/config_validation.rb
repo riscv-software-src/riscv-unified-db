@@ -22,7 +22,7 @@ assert [nil, 32].include?(UXLEN) if ext?(:U) && XLEN == 32
 assert [nil, 32].include?(UXLEN) if ext?(:S) && ext?(:U) && SXLEN == 32
 
 max_va_width =
-  if ext?(:Sv57) 
+  if ext?(:Sv57)
     57
   elsif ext?(:Sv48)
     48

@@ -8,7 +8,7 @@ class:
   $ref: certificate_class/MC.yaml#
 
 # Semantic versions within the model
-versions: 
+versions:
 - version: "1.0.0"
 
 # XLEN used by rakefile

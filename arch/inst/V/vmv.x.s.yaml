@@ -22,7 +22,7 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    
+
 
 
 
@@ -30,19 +30,18 @@ sail(): |
   {
     let SEW      = get_sew();
     let num_elem = get_num_elem(0, SEW);
-  
+
     if illegal_vd_unmasked() then { handle_illegal(); return RETIRE_FAIL };
-  
+
     assert(num_elem > 0);
     let 'n = num_elem;
     let 'm = SEW;
-  
+
     let vs2_val : vector('n, dec, bits('m)) = read_vreg(num_elem, SEW, 0, vs2);
     X(rd) = if sizeof(xlen) < SEW then slice(vs2_val[0], 0, sizeof(xlen))
             else if sizeof(xlen) > SEW then sign_extend(vs2_val[0])
             else vs2_val[0];
     vstart = zeros();
-  
+
     RETIRE_SUCCESS
   }
-

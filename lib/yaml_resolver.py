@@ -32,18 +32,18 @@ registry = Registry(retrieve=retrieve_from_filesystem)
 # https://python-jsonschema.readthedocs.io/en/stable/faq/#why-doesn-t-my-schema-s-default-property-set-the-default-on-my-instance
 def extend_with_default(validator_class):
     """Extends the jsonschema validator to support default values.
-    
+
     Parameters
     ----------
     validator_class : jsonschema.Draft7Validator
         The validator class to extend.
-    
+
     Returns
     -------
     jsonschema.Draft7Validator
-        The extended validator class that will fill in default values    
+        The extended validator class that will fill in default values
     """
-    
+
     validate_properties = validator_class.VALIDATORS["properties"]
 
 
@@ -82,7 +82,7 @@ def _merge_patch(base: dict, patch: dict, path_so_far = []) -> None:
   patch : dict
     The patch object
   path_so_far : list
-    The current dict key path within patch 
+    The current dict key path within patch
   """
 
   patch_obj = patch if len(path_so_far) == 0 else dig(patch, *path_so_far)
@@ -133,7 +133,7 @@ def read_yaml(file_path : str | Path):
   ----------
   file_path : str, Path
     Filesystem path to the YAML file
-  
+
   Returns
   -------
   dict, list
@@ -187,7 +187,7 @@ def dig(obj : dict, *keys):
       return dig(next_obj, *keys[1:])
   except KeyError:
     return None
-  
+
 resolved_objs = {}
 def resolve(rel_path : str | Path, arch_root : str | Path) -> dict:
   """Resolve the file at arch_root/rel_path by expanding operators and applying defaults
@@ -198,7 +198,7 @@ def resolve(rel_path : str | Path, arch_root : str | Path) -> dict:
     The relative path to the file to resolve
   arch_root : str, Path
     The root of the architecture
-  
+
   Returns
   -------
   dict
@@ -301,7 +301,7 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root):
       del obj["$remove"]
 
     return obj
-  
+
 def merge_file(rel_path : str | Path, arch_dir : str | Path, overlay_dir : str | Path | None, merge_dir : str | Path) -> None:
   """ pick the right file(s) to merge, and write the result to merge_dir
 
@@ -333,7 +333,7 @@ def merge_file(rel_path : str | Path, arch_dir : str | Path, overlay_dir : str |
   elif overlay_path == None or not os.path.exists(overlay_path):
     if arch_path == None:
       raise "Must supply with arch_path or overlay_path"
-    
+
     # no overlay, just copy arch
     if not os.path.exists(merge_path) or (os.path.getmtime(arch_path) > os.path.getmtime(merge_path)):
       shutil.copyfile(os.path.join(arch_dir, rel_path), merge_path)
@@ -364,7 +364,7 @@ def _get_schema(uri):
   abs_path = os.path.join(SCHEMAS_PATH, rel_path)
   if not os.path.exists(abs_path):
     raise SchemaNotFoundException(f"Schema not found: {uri}")
-  
+
   # Open the JSON file
   with open(abs_path, 'r') as f:
     # Load the JSON data into a Python dictionary
@@ -405,7 +405,7 @@ def resolve_file(rel_path : str | Path, arch_dir: str | Path, resolved_dir: str 
         print(f"JSON Schema Validation Error for {rel_path}:")
         print(best_match(schema.iter_errors(resolved_obj)).message)
         exit(1)
-    
+
     write_yaml(resolved_path, resolved_obj)
     os.chmod(resolved_path, 0o444)
 

@@ -7,7 +7,7 @@ RVI20:
   ratification_date: "2023-04-03"
 
   # Semantic versions within the release
-  versions: 
+  versions:
   - version: "1.0.0"
 
   introduction: |

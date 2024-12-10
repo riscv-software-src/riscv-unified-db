@@ -208,7 +208,7 @@ class ArchDefObject
 
   # @return [Array<String>] List of keys added by this ArchDefObject
   def keys = @data.keys
-  
+
   # @param k (see Hash#key?)
   # @return (see Hash#key?)
   def key?(k) = @data.key?(k)
@@ -593,7 +593,7 @@ end
 
 class AlwaysTrueSchemaCondition
   def to_rb = "true"
-  
+
   def satisfied_by? = true
 
   def empty? = true

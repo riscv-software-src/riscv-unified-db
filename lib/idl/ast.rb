@@ -1268,7 +1268,7 @@ module Idl
       type(global_symtab)
       freeze
     end
-    
+
     # @return [Integer] The number of bits in the Bitfield
     def size(symtab)
       @size.value(symtab)
@@ -1839,7 +1839,7 @@ module Idl
         end
       when :bits
         var = symtab.get(lhs.text_value)
-        value_result = value_try do 
+        value_result = value_try do
           v = rhs.value(symtab)
           var.value = (lhs.value & ~0) | ((v & 1) << idx.value(symtab))
         end
@@ -2563,7 +2563,7 @@ module Idl
   #
   # This will result in a BitsCaseAst:
   #
-  #   $bits(ExceptionCode::LoadAccessFault) 
+  #   $bits(ExceptionCode::LoadAccessFault)
   class BitsCastAst < AstNode
     include Rvalue
 
@@ -2830,7 +2830,7 @@ module Idl
       # cached_value = @value_cache[symtab]
       # return cached_value unless cached_value.nil?
 
-      value = 
+      value =
         if op == ">>>"
           lhs_value = lhs.value(symtab)
           if lhs_value & (1 << (lhs.type(symtab).width - 1)).zero?
@@ -3008,7 +3008,7 @@ module Idl
             else
               v
             end
-  
+
           warn "WARNING: The value of '#{text_value}' (#{lhs.type(symtab).const?}, #{rhs.type(symtab).const?}) is truncated from #{v} to #{v_trunc} because the result is only #{type(symtab).width} bits" if v != v_trunc
           v_trunc
         end
@@ -3464,7 +3464,7 @@ module Idl
     # @!macro type_check
     def type_check(symtab)
       enum_def_type = @enum_def_type
-      
+
       type_error "No symbol #{@enum_class_name} has been defined" if enum_def_type.nil?
 
       type_error "#{@enum_class_name} is not an enum type" unless enum_def_type.is_a?(EnumerationType)
@@ -4557,7 +4557,7 @@ module Idl
     def template_values(symtab, unknown_ok: false)
       return EMPTY_ARRAY unless template?
 
-      if unknown_ok 
+      if unknown_ok
         template_arg_nodes.map do |e|
           val = nil
           value_result = value_try do
@@ -4985,7 +4985,7 @@ module Idl
               rtype = rtype.ref_type if rtype.kind == :enum
               rtype
             end
-    
+
             Type.new(:tuple, tuple_types:)
           end
 

@@ -39,7 +39,7 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
 
     erb = ERB.new(File.read("#{CERT_DOC_DIR}/templates/certificate.adoc.erb"), trim_mode: "-")
     erb.filename = "#{CERT_DOC_DIR}/templates/certificate.adoc.erb"
-    
+
     FileUtils.mkdir_p File.dirname(t.name)
     File.write t.name, AsciidocUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
     puts "Generated adoc source at #{t.name}"

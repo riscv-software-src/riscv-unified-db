@@ -161,7 +161,7 @@ params:
   NUM_EXTERNAL_GUEST_INTERRUPTS:
     description: |
       Number of supported virtualized guest interrupts
-      
+
       Corresponds to the `GEILEN` parameter in the RVI specs
     schema:
       type: integer
@@ -462,7 +462,7 @@ params:
         * "always zero": Always write the value zero
         * "always pseudoinstruction": Always write the pseudoinstruction
         * "always transformed standard instruction": Always write the transformation of the standard instruction encoding
-        * "custom": A custom value, which will cause an UNPREDICTABLE event.        
+        * "custom": A custom value, which will cause an UNPREDICTABLE event.
     schema:
       type: string
       enum:
@@ -478,7 +478,7 @@ params:
         * "always zero": Always write the value zero
         * "always pseudoinstruction": Always write the pseudoinstruction
         * "always transformed standard instruction": Always write the transformation of the standard instruction encoding
-        * "custom": A custom value, which will cause an UNPREDICTABLE event.        
+        * "custom": A custom value, which will cause an UNPREDICTABLE event.
     schema:
       type: string
       enum:

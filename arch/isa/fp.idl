@@ -314,7 +314,7 @@ function softfloat_shiftRightJam64 {
      be zero.  If any nonzero bits are shifted off, they are "jammed" into the
      least-significant bit of the shifted value by setting the least-significant
      bit to 1.  This shifted-and-jammed value is returned.
-     
+
      The value of 'dist' can be arbitrarily large.  In particular, if +dist+ is
      greater than 64, the result will be either 0 or 1, depending on whether +a+
      is zero or nonzero.

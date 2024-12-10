@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: c.sw
-long_name: Store word 
+long_name: Store word
 description: |
   Stores a 32-bit value in register rs2 to memory.
   It computes an effective address by adding the zero-extended offset, scaled by 4,

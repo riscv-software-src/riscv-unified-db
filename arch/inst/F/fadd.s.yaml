@@ -26,7 +26,7 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
-    
+
 
 
 
@@ -50,7 +50,3 @@ sail(): |
       }
     }
   }
-
-
-
-

@@ -301,7 +301,7 @@ module Idl
       raise "Level #{level} is too large #{@scopes.size}" if  level >= @scopes.size
 
       raise "Symbol #{name} already defined" unless @scopes[0...level].select { |h| h.key? name }.empty?
-  
+
       @scopes[level][name] = var
     end
 

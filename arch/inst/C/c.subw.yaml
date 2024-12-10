@@ -7,7 +7,7 @@ long_name: Subtract word
 description: |
   Subtract the 32-bit values in rs2 from rd, and store the result in rd.
   The rd and rs2 register indexes should be used as rd+8 and rs2+8 (registers x8-x15).
-  C.SUBW expands into `subw rd, rd, rs2`. 
+  C.SUBW expands into `subw rd, rd, rs2`.
 definedBy:
   anyOf:
   - C

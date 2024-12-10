@@ -45,4 +45,3 @@ pseudoinstructions:
 - when: (mop_rr_t_30 == 0x1) && (mop_rr_t_27_26 == 0x3)
   to: mop.rr.7
 operation(): |
-    

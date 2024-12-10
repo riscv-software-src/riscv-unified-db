@@ -29,4 +29,3 @@ pseudoinstructions:
 - when: (rs2 == 0x0)
   to: zext.h
 operation(): |
-    

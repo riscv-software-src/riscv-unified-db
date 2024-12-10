@@ -544,7 +544,7 @@ class ExtensionPresence
       data.each do |key, value|
         if key == "optional"
           raise ArgumentError, "Extension presence hash #{data} missing type of optional" if value.nil?
-          raise ArgumentError, "Unknown extension presence optional #{value} for type of optional" unless 
+          raise ArgumentError, "Unknown extension presence optional #{value} for type of optional" unless
             ["localized", "development", "expansion", "transitory"].include?(value)
 
           @presence = key
@@ -558,7 +558,7 @@ class ExtensionPresence
     end
   end
 
-  def mandatory? = (@presence == mandatory) 
+  def mandatory? = (@presence == mandatory)
   def optional? = (@presence == optional)
 
   # Class methods

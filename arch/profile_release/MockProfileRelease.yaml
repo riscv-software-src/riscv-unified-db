@@ -4,7 +4,7 @@ MockProfileRelease:
   class: MockProfileClass
   release: 20
   state: ratified # current status ["ratified", "development"]
-  versions: 
+  versions:
   - version: "1.0"
   ratification_date: "2024-01-01"
   introduction: Here's the Mock Profile Release introduction.
