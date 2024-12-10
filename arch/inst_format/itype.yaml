@@ -1,0 +1,28 @@
+
+$schema: inst_format.json#
+kind: instruction format
+name: I-type
+size: 32
+fields:
+- location: 31-20
+  name: imm
+  kind: immediate
+  sign_extend: true
+  relocations:
+  - $ref: relocation/R_RISCV_PCREL_LO12_I.yaml#
+  - $ref: relocation/R_RISCV_TPREL_LO12_I.yaml#
+  - $ref: relocation/R_RISCV_TLSDESC_ADD_LO12.yaml#
+  - $ref: relocation/R_RISCV_LO12_I.yaml#
+- location: 19-15
+  name: rs1
+  kind: x source register
+- location: 14-12
+  name: funct3
+  kind: opcode
+- location: 11-7
+  name: rd
+  kind: x destination register
+- location: 6-0
+  name: opcode
+  kind: opcode
+  opcode: true
