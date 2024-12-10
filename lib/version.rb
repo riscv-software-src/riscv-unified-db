@@ -1,6 +1,29 @@
 # frozen_string_literal: true
 
-# represents an RVI version specifier
+# Represents an RVI version specifier
+#
+# Version specs have the form:
+#   MAJOR[.MINOR[.PATCH[-pre]]]
+# Where MAJOR, MINOR, and PATCH are integers and "pre" is an optional string
+#
+# Notably, these DO NOT represent a Semantic Version (https://semver.og).
+#
+# Rather, versions are treated as follows:
+#
+#  * Versions are assumed to be backward compatible by default.
+#     For example,
+#        - 2.0 is compatible with 1.0
+#        - 1.1 is compatible with 1.0
+#        - 0.9 is *not* compatible with 1.0
+#  * A version can be explictly marked as "breaking" in the architecture defintion
+#      Breaking versions are not backward compatible with any smaller versions
+#      For example, if version 2.2 is Breaking,
+#        - 3.0 is compatible with 2.2
+#        - 2.3 is compatible with 2.2
+#        - 3.0 is *not* compatible with 2.0
+#        - 2.2 is *not* compatible with 2.0
+#        - 2.1 is compatible with 2.0
+#
 class VersionSpec
   include Comparable
 
@@ -94,7 +117,21 @@ class VersionSpec
   end
 end
 
-# A requirement
+# Represents a version requirement
+#
+# A requirement is either a logical comparison (>, >=, <, <=, =, !=)
+# or a compatible operator (~>).
+#
+# @example Logical requirement
+#   # When the requirement is a logical comparison, the extension parameter is not needed
+#   RequirementSpec.new(">= 0.5").satisfied_by?(VersionSpec.new("1.0"), nil) #=> true
+#   RequirementSpec.new(">= 0.5").satisfied_by?(VersionSpec.new("0.4"), nil) #=> false
+#
+# @example Compatible requirement
+#   s_ext = Extension.new(...) # S extension, which is breaking between 1.11 -> 1.12
+#   RequirementSpec.new("~> 1.11").satisfied_by?(VersionSpec.new("1.10"), s_ext) #=> true
+#   RequirementSpec.new("~> 1.11").satisfied_by?(VersionSpec.new("1.11"), s_ext) #=> true
+#   RequirementSpec.new("~> 1.11").satisfied_by?(VersionSpec.new("1.12"), s_ext) #=> false
 class RequirementSpec
   REQUIREMENT_OP_REGEX = /((?:>=)|(?:>)|(?:~>)|(?:<)|(?:<=)|(?:!=)|(?:=))/
   REQUIREMENT_REGEX = /#{REQUIREMENT_OP_REGEX}\s*(#{VersionSpec::VERSION_REGEX})/
