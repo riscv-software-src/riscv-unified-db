@@ -12,6 +12,8 @@ repos:
       - id: check-merge-conflict
         args: ["--assume-in-merge"]
         exclude: \.adoc$ # sections titles Level 6 "=======" get flagged otherwise
+      - id: check-json
+        exclude: ^\.devcontainer/ # Uses JSONC (comments)
 
   - repo: https://github.com/rbubley/mirrors-prettier
     rev: v3.3.3
