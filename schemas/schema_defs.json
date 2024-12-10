@@ -124,7 +124,7 @@
     },
     "extension_name": {
       "type": "string",
-      "pattern": "^([A-WY])|([SXZ][a-z0-9]+)$"
+      "pattern": "^(([A-WY])|([SXZ][a-z0-9]+))$"
     },
     "extension_version": {
       "$ref": "#/$defs/semantic_version"
