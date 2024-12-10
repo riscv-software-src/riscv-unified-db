@@ -32,5 +32,5 @@ fields:
         return CsrFieldType::RO;
       }
     description: |
-      Exception-speicific information for a trap into M-mode.
+      Exception-specific information for a trap into M-mode.
     reset_value: UNDEFINED_LEGAL

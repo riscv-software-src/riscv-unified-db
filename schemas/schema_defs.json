@@ -80,7 +80,8 @@
     "date": {
       "type": "string",
       "format": "date",
-      "description": "A specific day in YYYY-MM-DD format, for example 2018-11-13"
+      "description": "A specific day in YYYY-MM-DD format",
+      "examples": ["2018-11-13", "2024-12-31"]
     },
     "extension_name": {
       "type": "string",

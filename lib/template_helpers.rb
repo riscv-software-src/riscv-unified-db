@@ -72,10 +72,12 @@ module TemplateHelpers
     "[[csr_field-#{csr_name.gsub(".", "_")}-#{field_name.gsub(".", "_")}-def]]"
   end
 
-  def render(template_path, locals = {})
-    template_path = Pathname.new(template_path)
-    erb = ERB.new(template)
-    erb.filename = template_path.realpath
+  def partial(template_path, locals = {})
+    template_path = Pathname.new($root / "backends" / "common_templates" / template_path)
+    raise ArgumentError, "Template '#{template_path} not found" unless template_path.exist?
+
+    erb = ERB.new(template_path.read, trim_mode: "-")
+    erb.filename = template_path.realpath.to_s
 
     erb.result(OpenStruct.new(locals).instance_eval { binding })
   end

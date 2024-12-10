@@ -7,23 +7,26 @@ Implemented Version:: <%= ext_version.version %>
 == Versions
 
 <%- ext.versions.each do |v| -%>
-<%- implemented = arch_def.implemented_extensions.include?(ExtensionVersion.new(ext.name, v["version"])) -%>
-<%= v["version"] %>::
+<%- implemented = arch_def.implemented_extensions.include?(v) -%>
+<%= v.version %>::
   Ratification date:::
-    <%= v["ratification_date"] %>
-  <%- if v.key?("changes") -%>
+    <%= v.ratification_date %>
+  <%- unless v.changes.empty? -%>
   Changes:::
-    <%= v["changes"] %>
+
+    <% v.changes.each do |c| -%>
+    * <%= c %>  
+    <% end -%>
+
   <%- end -%>
-  <%- if v.key?("url") -%>
+  <%- unless v.url.nil? -%>
   Ratification document:::
-    <%= v["url"] %>
+    <%= v.url %>
   <%- end -%>
-  <%- if v.key?("implies") -%>
+  <%- unless v.implications.empty? -%>
   Implies:::
-    <%- implications = v["implies"][0].is_a?(Array) ? v["implies"] : [v["implies"]] -%>
-    <%- implications.each do |i| -%>
-    * `<%= i[0] %>` version <%= i[1] %>
+    <%- v.implications.each do |i| -%>
+    * `<%= i.name %>` version <%= i.version %>
     <%- end -%>
   <%- end -%>
 <%- end -%>

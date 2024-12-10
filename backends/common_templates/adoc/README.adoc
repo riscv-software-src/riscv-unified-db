@@ -1,0 +1,1 @@
+This directory contains partial templates (e.g., a CSR description) to be used by document generators.

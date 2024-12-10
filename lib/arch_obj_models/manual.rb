@@ -97,12 +97,12 @@ class ManualVolume
         next
       end
 
-      unless ext_obj.versions.any? { |v| v["version"] == ext[1] }
+      unless ext_obj.versions.any? { |v| v.version == ext[1] }
         warn "Extension '#{ext[0]}', version '#{ext[1]}' is not defined in the database"
         next
       end
 
-      @extensions << ExtensionVersion.new(ext[0], ext[1])
+      @extensions << ExtensionVersion.new(ext[0], ext[1], arch_def)
     end
     @extensions
   end
