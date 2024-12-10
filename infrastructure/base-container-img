@@ -1,0 +1,39 @@
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV DEVCONTAINER_ENV=1
+ENV BUNDLE_PATH=/usr/local/bundle
+ENV BUNDLE_APP_CONFIG=/usr/local/bundle
+
+# Set working directory
+WORKDIR /workspace
+
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    git \
+    gh \
+    less \
+    python3 \
+    python3.12-venv \
+    python3-pip \
+    build-essential \
+    ruby \
+    ruby-dev \
+    bundler \
+    nodejs \
+    npm \
+    ditaa && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy and install Ruby dependencies
+COPY Gemfile Gemfile.lock ./
+RUN bundle install
+
+# Copy and install Node.js dependencies
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# Final working directory
+WORKDIR /workspace
