@@ -19,11 +19,11 @@ require_relative "arch_obj_models/manual"
 require_relative "arch_obj_models/portfolio"
 require_relative "arch_obj_models/profile"
 
-# represents an entire RISC-V Specification.
+# represents an entire RISC-V Architecture.
 #
 # Could be either the standard spec (defined by RISC-V International)
 # of a custom spec (defined as an overlay in cfgs/)
-class Specification
+class Architecture
   # @return [Pathname] Path to the directory with the standard YAML files
   attr_reader :path
 

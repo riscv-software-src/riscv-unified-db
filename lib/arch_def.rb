@@ -42,7 +42,7 @@ require_relative "template_helpers"
 
 include TemplateHelpers
 
-class ArchDef < Specification
+class ArchDef < Architecture
   extend Forwardable
 
   # @return [Idl::Compiler] The IDL compiler
@@ -56,24 +56,6 @@ class ArchDef < Specification
   #                  * 'rv32' - A generic RV32 architecture, with only one parameter set (XLEN == 32)
   #                  * 'rv64' - A generic RV64 architecture, with only one parameter set (XLEN == 64)
   attr_reader :name
-
-  # def_delegator :@specification, :ref
-
-  # Specification::OBJS.each do |obj_info|
-  #   def_delegator :@specification, obj_info[:fn_name].to_sym
-  #   def_delegator :@specification, "#{obj_info[:fn_name]}_hash".to_sym
-
-  #   fn_name = ActiveSupport::Inflector.pluralize(obj_info[:fn_name]).to_sym
-  #   define_method(fn_name) do
-  #     obj = @obj_cache[fn_name]
-  #     return obj unless obj.nil?
-
-  #     puts "populating #{fn_name}"
-
-  #     @obj_cache[fn_name] =
-  #       @specification.send(fn_name).map { |spec_obj| spec_obj.clone(arch_def: self) }
-  #   end
-  # end
 
   def_delegators \
     :@config, \

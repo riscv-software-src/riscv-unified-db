@@ -92,7 +92,7 @@ class ArchDefObject
 
   attr_reader :data, :data_path, :specification, :arch_def, :name, :long_name, :description
 
-  # @return [Specification] If only a specification (no config) is known
+  # @return [Architecture] If only a specification (no config) is known
   # @return [ArchDef] If a specification and config is known
   attr_reader :arch
 
@@ -189,7 +189,7 @@ class ArchDefObject
     if arch.is_a?(ArchDef)
       @arch_def = arch
       @specification = arch
-    elsif arch.is_a?(Specification)
+    elsif arch.is_a?(Architecture)
       @specification = arch
     end
     @arch = arch
