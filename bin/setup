@@ -91,7 +91,7 @@ if [ -v DEVCONTAINER_ENV ]; then
   NPM="npm"
   NPX="npx"
   NODE="node"
-  PYTHON="python3"
+  PYTHON="${ROOT}/.home/.venv/bin/python3"
   PIP="${ROOT}/.home/.venv/bin/pip"
   BASH="bash"
 else
@@ -101,7 +101,8 @@ else
   NPM="singularity run ${HOME_OPT} ${CONTAINER_PATH} npm"
   NPX="singularity run ${HOME_OPT} ${CONTAINER_PATH} npx"
   NODE="singularity run ${HOME_OPT} ${CONTAINER_PATH} node"
-  PYTHON="singularity run ${HOME_OPT} ${CONTAINER_PATH} python3"
+  PRE_COMMIT="singularity run ${HOME_OPT} ${CONTAINER_PATH} ${ROOT}/.home/.venv/bin/pre-commit"
+  PYTHON="singularity run ${HOME_OPT} ${CONTAINER_PATH} ${ROOT}/.home/.venv/bin/python3"
   PIP="singularity run ${HOME_OPT} ${CONTAINER_PATH} ${ROOT}/.home/.venv/bin/pip"
   BASH="singularity run ${HOME_OPT} ${CONTAINER_PATH} bash"
 fi

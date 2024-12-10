@@ -1,5 +1,6 @@
 #!/bin/bash
 
-ROOT=$(dirname $(dirname $(realpath $BASH_SOURCE[0])))
+BIN_ROOT=$(dirname $(realpath $BASH_SOURCE[0]))
+source ${BIN_ROOT}/setup
 
-${ROOT}/bin/bash -c "source ${ROOT}/.home/.venv/bin/activate && pre-commit $@"
+${PRE_COMMIT} "$@"
