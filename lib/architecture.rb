@@ -19,14 +19,15 @@ require_relative "arch_obj_models/manual"
 require_relative "arch_obj_models/portfolio"
 require_relative "arch_obj_models/profile"
 
-# represents an entire RISC-V Architecture.
+# Represents the entire RISC-V Architecture.
 #
 # Could be either the standard spec (defined by RISC-V International)
-# of a custom spec (defined as an overlay in cfgs/)
+# of a custom spec (defined as an arch_overlay in cfgs/)
 class Architecture
   # @return [Pathname] Path to the directory with the standard YAML files
   attr_reader :path
 
+  # @param arch_dir [Sting,Pathname] Path to a directory with a fully merged/resolved architecture defintion
   def initialize(arch_dir)
     @arch_dir = Pathname.new(arch_dir)
     raise "Arch directory not found: #{arch_dir}" unless @arch_dir.exist?
@@ -37,6 +38,8 @@ class Architecture
     @object_hashes ||= {}
   end
 
+  # validate the architecture against JSON Schema and any object-specific verification
+  # @param show_progress [Boolean] Whether to show a progress bar
   def validate(show_progress: true)
     progressbar = ProgressBar.create(total: objs.size) if show_progress
 
@@ -263,16 +266,15 @@ class Architecture
         raise "Unhandled ref object: #{file_path}"
       end
 
-      if obj_path.nil?
-        obj
-      else
-        parts = obj_path.split("/")
-        parts.each do |part|
-          raise "Error in $ref. There is no method '#{part}' for a #{obj.class.name}" unless obj.respond_to?(part.to_sym)
+    unless obj_path.nil?
+      parts = obj_path.split("/")
+      parts.each do |part|
+        raise "Error in $ref. There is no method '#{part}' for a #{obj.class.name}" unless obj.respond_to?(part.to_sym)
 
-          obj = obj.send(part)
-        end
-        obj
+        obj = obj.send(part)
       end
+    end
+
+    obj
   end
 end
