@@ -10,7 +10,6 @@ require "yard"
 require "minitest/test_task"
 
 require_relative $root / "lib" / "specification"
-require_relative $root / "lib" / "resolver"
 
 directory "#{$root}/.stamps"
 
