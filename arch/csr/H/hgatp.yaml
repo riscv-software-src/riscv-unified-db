@@ -225,7 +225,7 @@ fields:
       return csr_value.PPN;
 
 sw_read(): |
-  if ((CSR[hgatp].MODE == $bits(HgatpMode::Sv32x4)) 
+  if ((CSR[hgatp].MODE == $bits(HgatpMode::Sv32x4))
       || (CSR[hgatp].MODE == $bits(HgatpMode::Sv39x4))
       || (CSR[hgatp].MODE == $bits(HgatpMode::Sv48x4))
       || (CSR[hgatp].MODE == $bits(HgatpMode::Sv57x4))) {

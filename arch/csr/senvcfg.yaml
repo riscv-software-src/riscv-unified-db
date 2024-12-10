@@ -101,7 +101,7 @@ fields:
         * `01`: The instruction is executed and performs a flush operation
         * `10`: _Reserved_
         * `11`: The instruction is executed and performs an invalidate operation
-      
+
       See `cbo.inval` for more details.
     definedBy: Zicbom
     type: RW-R

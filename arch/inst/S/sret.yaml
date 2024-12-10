@@ -29,7 +29,7 @@ description: |
   |===
 
   *When the current privlege mode is VS-mode*
-  
+
   `sret` sets
   `vsstatus.SPP` = 0, `vsstatus.SIE` = `vstatus.SPIE`, and `vsstatus.SPIE` = 1,
   changes the privlege mode according to the table below,
@@ -54,7 +54,7 @@ access:
   vs: sometimes
   vu: never
 access_detail: |
-  Access is determined as follows: 
+  Access is determined as follows:
 
   [%autowidth]
   |===
@@ -92,7 +92,7 @@ operation(): |
         raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
       } else if (mode() == PrivilegeMode::VU || mode() == PrivilegeMode::VS) {
         raise (ExceptionCode::VirtualInstruction, mode(), $encoding);
-      }      
+      }
     }
   } else {
     if (mode() != PrivilegeMode::U) {
@@ -143,7 +143,3 @@ sail(): |
       RETIRE_SUCCESS
     }
   }
-
-
-
-

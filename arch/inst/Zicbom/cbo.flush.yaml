@@ -26,7 +26,7 @@ description: |
   Because cache blocks are naturally aligned and always fit in a single PMP or PMA regions, the PMP
   and PMA access checks only need to check a single address in the line.
   <%- end -%>
-  
+
   CBO operations never raise a misaligned address fault.
 definedBy: Zicbom
 assembly: "TODO"
@@ -52,10 +52,10 @@ access_detail: |
   4+^.>h! `cbo.flush` Instruction Behavior
   .^h! S-mode .^h! U-mode .^h! VS-mode .^h! VU-mode
 
-  ! 0 ! - ! - ! `Illegal Instruction` ! `Illegal Instruction` ! `Virtual Instruction` ! `Virtual Instruction` 
-  ! 1 ! 0 ! 0 ! executes  ! `Illegal Instruction` ! `Virtual Instruction` ! `Virtual Instruction` 
-  ! 1 ! 1 ! 0 ! executes ! executes ! `Virtual Instruction` ! `Virtual Instruction` 
-  ! 1 ! 0 ! 1 ! executes ! `Illegal Instruction` ! executes ! `Virtual Instruction` 
+  ! 0 ! - ! - ! `Illegal Instruction` ! `Illegal Instruction` ! `Virtual Instruction` ! `Virtual Instruction`
+  ! 1 ! 0 ! 0 ! executes  ! `Illegal Instruction` ! `Virtual Instruction` ! `Virtual Instruction`
+  ! 1 ! 1 ! 0 ! executes ! executes ! `Virtual Instruction` ! `Virtual Instruction`
+  ! 1 ! 0 ! 1 ! executes ! `Illegal Instruction` ! executes ! `Virtual Instruction`
   ! 1 ! 1 ! 1 ! executes ! executes ! executes ! executes
   !===
 # operation(): |
@@ -67,4 +67,3 @@ access_detail: |
 #   if (has_fault?) {
 #     raise(code);
 #   }
-

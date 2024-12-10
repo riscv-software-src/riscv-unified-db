@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: c.fsd
-long_name: Store double-precision 
+long_name: Store double-precision
 description: |
   Stores a double precision floating-point value in register rs2 to memory.
   It computes an effective address by adding the zero-extended offset, scaled by 8,

@@ -1,0 +1,14 @@
+---
+exclude: ^docs/ruby/ # All generated code
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-symlinks
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: check-merge-conflict
+        args: ["--assume-in-merge"]
+        exclude: \.adoc$ # sections titles Level 6 "=======" get flagged otherwise

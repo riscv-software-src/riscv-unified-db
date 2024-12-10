@@ -40,7 +40,3 @@ sail(): |
     X(rd) = sign_extend(result);
     RETIRE_SUCCESS
   }
-
-
-
-

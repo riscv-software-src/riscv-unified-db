@@ -7,7 +7,7 @@ RVA22:
   ratification_date: "2023-04-03"
 
   # Semantic versions within the release
-  versions: 
+  versions:
   - version: "1.0.0"
 
   introduction: |
@@ -124,7 +124,7 @@ RVA22:
             The smaller vector extensions (Zve32f, Zve32x, Zve64d, Zve64f,
             Zve64x) are not provided as separately supported profile options. The
             full V extension is specified as the only supported profile option.
-      
+
             A future profile might mandate V.
         Zkn:
           presence: optional
@@ -255,7 +255,7 @@ RVA22:
           version: "~> 1.0"
           note: |
             The following extensions become mandatory when H is implemented:
-      
+
              * Ssstateen
              * Shcounterenw
              * Shvstvala

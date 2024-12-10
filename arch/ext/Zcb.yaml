@@ -5,12 +5,12 @@ kind: extension
 name: Zcb
 long_name: Simple code-size saving instructions
 description: |
-  Zcb has simple code-size saving instructions which are easy to implement on all CPUs. 
+  Zcb has simple code-size saving instructions which are easy to implement on all CPUs.
   All proposed encodings are currently reserved for all architectures, and have no conflicts with any existing extensions.
-  
+
   The Zcb extension depends on the Zca extension.
-  
-  As shown on the individual instruction pages, many of the instructions in Zcb depend upon another extension being implemented. 
+
+  As shown on the individual instruction pages, many of the instructions in Zcb depend upon another extension being implemented.
   For example, c.mul is only implemented if M or Zmmul is implemented, and c.sext.b is only implemented if Zbb is implemented.
 
 type: unprivileged
@@ -31,12 +31,12 @@ versions:
     - name: Matteo Perotti
     - name: Nidal Faour
     - name: Bill Traynor
-    - name: Rafael Sene 
+    - name: Rafael Sene
     - name: Xinlong Wu
     - name: sinan
     - name: Jeremy Bennett
-    - name: Heda Chen 
+    - name: Heda Chen
     - name: Alasdair Armstrong
     - name: Graeme Smecher
-    - name: Nicolas Brunie 
+    - name: Nicolas Brunie
     - name: Jiawei

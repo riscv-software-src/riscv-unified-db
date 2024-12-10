@@ -8,7 +8,7 @@ address: 0x304
 priv_mode: M
 length: MXLEN
 definedBy: Sm
-description: 
+description:
   $copy: "mip.yaml#/description"
 fields:
   SSIE:

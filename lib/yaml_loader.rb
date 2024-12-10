@@ -48,7 +48,7 @@ class YamlLoader
             obj_doc
           else
             obj_doc.dig(*(obj_path.split("/")[1..]))
-            
+
           end
         raise "#{obj['$ref']} cannot be found" if target_obj.nil?
 
@@ -92,7 +92,7 @@ class YamlLoader
         inherits_target_suffix = inherits_target.split("#/")[1]
         inherits_target_path = inherits_target_suffix.split("/")
         begin
-          target_obj = target_obj.dig(*inherits_target_path) 
+          target_obj = target_obj.dig(*inherits_target_path)
         rescue TypeError => e
           if e.message == "no implicit conversion of String into Integer"
             warn "$inherits: \"#{inherits_target}\" found in file #{filename} references an Array but needs to reference a Hash"

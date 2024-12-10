@@ -42,7 +42,3 @@ sail(): |
     X(rsdc) = result_wide[(sizeof(xlen) - 1) .. 0];
     RETIRE_SUCCESS
   }
-
-
-
-

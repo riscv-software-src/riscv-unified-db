@@ -72,7 +72,7 @@ operation(): |
   } else {
     assert(is_sp_quiet_nan?(sp_value), "Unexpected SP value");
     X[rd] = 1 << 9;
-  }        
+  }
 
 
 
@@ -83,7 +83,3 @@ sail(): |
     F(rd) = nan_box (rd_val_S);
     RETIRE_SUCCESS
   }
-
-
-
-

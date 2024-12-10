@@ -14,11 +14,11 @@ description: |
   Note that the CLINT refers to an interrupt controller
   used by some RISC-V implementations but isn't a ratified
   RISC-V International standard.
-  
+
   The `mip` CSR contains information on pending interrupts, while `mie` is the corresponding
   CSR containing interrupt enable bits.
   Interrupt cause number _i_ (as reported in the `mcause` CSR)
-  corresponds to bit _i_ in both `mip` and `mie`. 
+  corresponds to bit _i_ in both `mip` and `mie`.
   Bits 15:0 are allocated to standard interrupt causes only, while
   bits 16 and above are designated for platform use.
 
@@ -26,7 +26,7 @@ description: |
   at the platform's discretion.
 
   An interrupt _i_ will trap to M-mode (causing the privilege mode to
-  change to M-mode) if all of the following are true: 
+  change to M-mode) if all of the following are true:
 
     * either the current privilege mode is M and the MIE bit in the `mstatus` register is
     set, or the current privilege mode has less privilege than M-mode;
@@ -261,7 +261,7 @@ fields:
       - hip.VSTIP
     description: |
       *Virtual Supervisor Timer Interrupt Pending*
-      
+
       Reports the current pending state of a VS-mode timer interrupt
       <%- if ext?(:Sstc) -%>
       , which is normally controlled by the `vstimecmp` CSR, but can also be injected by the hypervisor through `hvip.VSTIP`.
@@ -294,7 +294,7 @@ fields:
     location: 7
     description: |
       *Machine Timer Interrupt Pending*
-      
+
       Reports the current pending state of an M-mode timer interrupt.
 
       Bit is controlled by the timer device (using `mtimecmp`), and is not writeable.
@@ -357,7 +357,7 @@ fields:
       *Machine External Interrupt Pending*
 
       Reports the current pending state of an M-mode external interrupt.
-      
+
       MEIP is controlled by the external interrupt controller <% if ext?(:Smaia) %>(AIA) <% end %>.
       It is not writable by software.
     type: RO-H

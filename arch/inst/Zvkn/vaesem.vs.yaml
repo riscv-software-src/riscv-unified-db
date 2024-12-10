@@ -23,4 +23,3 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    

@@ -9,7 +9,7 @@ description: |
   and instruction page-fault, access-fault, and misaligned exceptions,
   and for breakpoint exceptions other than those caused by execution of the
   `ebreak` or `c.ebreak instructions.
-  
+
   For virtual-instruction and illegal-instruction exceptions,
   `stval` must be written with the faulting instruction.
 
