@@ -7,18 +7,18 @@
 
 This instruction is defined by:
 
-<%= inst.defined_by.to_asciidoc %>
+<%= inst.defined_by_condition.to_asciidoc %>
 
 This instruction is included in the following profiles:
 
 <%- arch_def.profiles.each do |profile| -%>
 <%-
   in_profile_mandatory = profile.mandatory_ext_reqs.any? do |ext_req|
-    ext_versions = ext_req.satisfying_versions(arch_def)
+    ext_versions = ext_req.satisfying_versions
     ext_versions.any? { |ext_ver| inst.defined_by?(ext_ver) }
   end
   in_profile_optional = profile.optional_ext_reqs.any? do |ext_req|
-    ext_versions = ext_req.satisfying_versions(arch_def)
+    ext_versions = ext_req.satisfying_versions
     ext_versions.any? { |ext_ver| inst.defined_by?(ext_ver) }
   end
   if in_profile_mandatory

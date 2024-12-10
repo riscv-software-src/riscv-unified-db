@@ -17,11 +17,11 @@ versions:
 
 revision_history:
 - revision: "0.1.0"
-  date: 2024-10-04
+  date: "2024-10-04"
   changes:
   - Created to test CRDs
 - revision: "0.2.0"
-  date: 2024-10-05
+  date: "2024-10-05"
   changes:
   - Also created to test CRDs
 
@@ -40,8 +40,7 @@ debug_manual_revision: "0.13.2"
 # XXX - Remove version information since specifying priv/unpriv ISA manual should imply this.
 extensions:
   $inherits:
-  - "profile_release/MockProfileRelease.yaml#/MockProfileRelease/profiles/MP-U-64/extensions"
-  - "profile_release/MockProfileRelease.yaml#/MockProfileRelease/profiles/MP-S-64/extensions"
+  - "profile/MP-S-64.yaml#/extensions"
   I:
     note: Just added this note to I extension
   MockExt:

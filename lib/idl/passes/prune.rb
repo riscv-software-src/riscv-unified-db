@@ -220,16 +220,19 @@ module Idl
           BinaryExpressionAst.new(input, interval, lhs.prune(symtab), @op, rhs.prune(symtab))
         end
       elsif op == "|"
+        rhs_type = rhs.type(symtab)
+        lhs_type = lhs.type(symtab)
+
         if lhs_value == 0
           # rhs idenntity
           rhs.prune(symtab)
-        elsif lhs_value == ((1 << rhs.type(symtab).width) - 1)
+        elsif rhs_type.width != :unknown && lhs_value == ((1 << rhs.type(symtab).width) - 1)
           # ~0 | anything == ~0
           create_literal(lhs_value)
         elsif rhs_value == 0
           # lhs identity
           lhs.prune(symtab)
-        elsif rhs_value == (1 << lhs.type(symtab).width - 1)
+        elsif lhs_type.width != :unknown && rhs_value == (1 << lhs.type(symtab).width - 1)
           # anything | ~0 == ~0
           create_literal(rhs_value)
         else

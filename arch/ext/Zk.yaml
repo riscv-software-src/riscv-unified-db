@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zk
+long_name: Standard Cryptography Extensions
+description: |
+  This extension is shorthand for the following set of other extensions:
+
+  * `Zkn`
+  * `Zkr`
+  * `Zkt`
+
+type: unprivileged
+versions:
+- version: "1.0.0"
+  state: ratified
+  ratification_date: null
+  implies:
+  - ["Zkn", "1.0.0"]
+  - ["Zkr", "1.0.0"]
+  - ["Zkt", "1.0.0"]

@@ -39,8 +39,10 @@ fields:
       When Vectored, asynchronous interrupts jump to (`vstvec.BASE` << 2 + `vscause.CAUSE`*4) while synchronous exceptions continue to jump to (`vstvec.BASE` << 2).
     type: RW-R
     sw_write(csr_value): |
-      if (csr_value.MODE == 0 || csr_value.MODE == 1) {
-        return csr_value.MODE;
+      if (VSTVEC_MODE_DIRECT && csr_value.MODE == 0) {
+        return 0;
+      } else if (VSTVEC_MODE_VECTORED && csr_value.MODE == 1) {
+        return 1;
       } else {
         return UNDEFINED_LEGAL_DETERMINISTIC;
       }

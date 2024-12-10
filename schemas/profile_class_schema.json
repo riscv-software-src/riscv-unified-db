@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+
+  "type": "object",
+  "required": ["$schema", "kind", "name"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "profile_class_schema.json#"
+    },
+    "kind": {
+      "type": "string",
+      "const": "profile class"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name (database key) of this Profile Class"
+    },
+    "marketing_name": {
+      "type": "string",
+      "description": "The publicly displayed profile class name"
+    },
+    "introduction": {
+      "type": "string",
+      "description": "Asciidoc introduction to this Profile Class"
+    },
+    "description": {
+      "type": "string",
+      "description": "Prose introduction, in asciidoc"
+    },
+    "naming_scheme": {
+      "type": "string",
+      "description": "Commentary on how profile releases in the class are named"
+    },
+    "company": {
+      "$ref": "schema_defs.json#/$defs/company"
+    },
+    "doc_license": {
+      "$ref": "schema_defs.json#/$defs/license"
+    },
+    "$source": {
+      "type": "string",
+      "format": "uri-refencence",
+      "description": "Realtive (from arch/) path to the original YAML file"
+    }
+  },
+  "additionalProperties": false
+}

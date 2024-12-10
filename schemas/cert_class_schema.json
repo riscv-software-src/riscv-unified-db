@@ -40,8 +40,8 @@
       "minItems": 1,
       "description": "List of mandatory privilege modes for the class"
     },
-    "__source": {
-      "$ref": "schema_defs.json#/$defs/__source"
+    "$source": {
+      "$ref": "schema_defs.json#/$defs/$source"
     }
   }
 }

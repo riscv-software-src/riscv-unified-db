@@ -4,8 +4,8 @@
 
 |===
 | Name | Version
-<%- arch_def.implemented_extensions.sort{ |a,b| a.name <=> b.name }.each do |e| -%>
-| `<%= e.name %>` | <%= e.version.to_s %>
+<%- arch_def.transitive_implemented_extensions.sort{ |a,b| a.name <=> b.name }.each do |e| -%>
+| `<%= e.name %>` | <%= e.version_spec %>
 <%- end -%>
 |===
 

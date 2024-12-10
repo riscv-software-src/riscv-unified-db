@@ -311,6 +311,14 @@ params:
       When false `vstval` is written with 0 when an `IllegalInstruction` exception occurs.
     schema:
       type: boolean
+  REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT:
+    description: |
+      When true, `htval` is written with the Guest Physical Address, shifted right by 2, that
+      caused a `GuestPageFault` exception.
+
+      When false, `htval` is written with0 when a `GuestPageFault` exception occurs.
+    schema:
+      type: boolean
   HCOUNTENABLE_EN:
     description: |
       Indicates which counters can delegated via `hcounteren`
@@ -637,3 +645,17 @@ params:
     schema:
       type: boolean
       default: true
+  VSTVEC_MODE_DIRECT:
+    description: |
+      Whether or not `vstvec.MODE` supports Direct (0).
+    schema:
+      type: boolean
+    extra_validation:
+      assert STVEC_MODE_DIRECT || STVEC_MODE_VECTORED
+  VSTVEC_MODE_VECTORED:
+    description: |
+      Whether or not `stvec.MODE` supports Vectored (1).
+    schema:
+      type: boolean
+    extra_validation:
+      assert STVEC_MODE_DIRECT || STVEC_MODE_VECTORED

@@ -511,7 +511,7 @@ This extension has the following implementation options:
 
 This instruction is defined by:
 
-<%= inst.defined_by.to_asciidoc %>
+<%= inst.defined_by_condition.to_asciidoc %>
 
 ==== Encoding
 
@@ -660,7 +660,7 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <% if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <% end -%>
-h| Defining extension a| <%= csr.defined_by.to_asciidoc %>
+h| Defining extension a| <%= csr.defined_by_condition.to_asciidoc %>
 <% if csr.dynamic_length?(arch_def) -%>
 h| Length         | <%= csr.length_pretty(arch_def) %>
 <% else -%>

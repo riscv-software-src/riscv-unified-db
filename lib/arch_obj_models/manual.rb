@@ -5,20 +5,15 @@ require "asciidoctor"
 require_relative "obj"
 
 class Manual < ArchDefObject
-  def initialize(data, arch_def)
-    super(data)
-    @arch_def = arch_def
-  end
-
   def versions
     return @versions unless @versions.nil?
 
-    @versions = []
-    @data["versions"].each do |version|
-      @versions << ManualVersion.new(version, self, @arch_def)
-    end
-
-    @versions
+    @versions =
+      if @arch_def.nil?
+        @specification.manual_versions.select { |mv| mv.manual == self }
+      else
+        @arch_def.manual_versions.select { |mv| mv.manual == self }
+      end
   end
 
   def version(name)
@@ -27,6 +22,12 @@ class Manual < ArchDefObject
 
   # @return [String] The title of the manual, as used by marketing
   def marketing_name = @data["marketing_name"]
+
+  # for manuals that reference an external repo, set the url to that repo data (file path)
+  def repo_path=(path)
+    @repo_path = Pathname.new(path)
+    versions.each { |v| v.repo_path = @repo_path }
+  end
 end
 
 class ManualChapter
@@ -34,23 +35,30 @@ class ManualChapter
     @volume = volume
     @version = volume.version
 
-    fullpath = "#{@version.path}/#{path}"
-    raise "Path '#{fullpath}' does not exist" unless File.exist?(fullpath)
-
-    @path = fullpath
+    @path = Pathname.new path
   end
 
   def name
-    File.basename(@path, ".adoc")
+    @path.basename(".adoc").to_s
   end
 
   def title
     return @title unless @title.nil?
 
-    @title = (Asciidoctor.load File.read(path).scrub).doctitle.encode("US-ASCII")
+    @title = (Asciidoctor.load File.read(fullpath).scrub).doctitle.encode("US-ASCII")
   end
 
-  # @return [String] The absolute path to the chapter
+  def fullpath
+    raise "Must call repo_path= first" if @repo_path.nil?
+
+    @repo_path / @path
+  end
+
+  def repo_path=(path)
+    @repo_path = path
+  end
+
+  # @return [Pathname] The relative path to the chapter
   attr_reader :path
 end
 
@@ -58,7 +66,6 @@ class ManualVolume
   # @return [ManualVersion] The version this volume belongs to
   attr_reader :version
 
-  # @return [ArchDef] The architecture definition
   def arch_def = version.arch_def
 
   def initialize(data, version)
@@ -97,28 +104,37 @@ class ManualVolume
         next
       end
 
-      unless ext_obj.versions.any? { |v| v.version == ext[1] }
+      ext_ver = ExtensionVersion.new(ext[0], ext[1], arch_def)
+      unless ext_obj.versions.any? { |known_ver| known_ver == ext_ver }
         warn "Extension '#{ext[0]}', version '#{ext[1]}' is not defined in the database"
         next
       end
 
-      @extensions << ExtensionVersion.new(ext[0], ext[1], arch_def)
+      @extensions << ext_ver
     end
     @extensions
+  end
+
+  def repo_path=(path)
+    @repo_path = path
+    chapters.each { |c| c.repo_path = path }
   end
 end
 
 class ManualVersion < ArchDefObject
   # @return [Manual] The manual this version belongs to
-  attr_reader :manual
+  def manual
+    return @manual unless @manual.nil?
 
-  # @return [ArchDef] The architecture definition
-  attr_reader :arch_def
+    @manual =
+      if @arch_def.nil?
+        @specification.ref(@data["manual"]["$ref"])
+      else
+        @arch_def.ref(@data["manual"]["$ref"])
+      end
+    raise "Error: manual #{@data['manual']['$ref']} is not found" if @manual.nil?
 
-  def initialize(data, manual, arch_def)
-    super(data)
-    @manual = manual
-    @arch_def = arch_def
+    @manual
   end
 
   # @return [String] Semantic version number
@@ -129,7 +145,7 @@ class ManualVersion < ArchDefObject
 
   # @return [String] Path to the directory containing contents.yaml file for this version
   def path
-    File.dirname(@data["__source"])
+    File.dirname(@data["$source"])
   end
 
   # @return [Boolean] Whether or not this version is using riscv-isa-manual as a source
@@ -185,5 +201,10 @@ class ManualVersion < ArchDefObject
       end
     end
     @csrs = @csrs.uniq(&:name)
+  end
+
+  def repo_path=(path)
+    @repo_path = path
+    volumes.each { |v| v.repo_path = path }
   end
 end

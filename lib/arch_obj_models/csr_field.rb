@@ -23,8 +23,9 @@ class CsrField < ArchDefObject
 
   # @param parent_csr [Csr] The Csr that defined this field
   # @param field_data [Hash<String,Object>] Field data from the arch spec
-  def initialize(parent_csr, field_data)
-    super(field_data)
+  def initialize(parent_csr, field_name, field_data)
+    super(field_data, parent_csr.data_path, arch: parent_csr.arch)
+    @name = field_name
     @parent = parent_csr
   end
 
@@ -35,13 +36,13 @@ class CsrField < ArchDefObject
     if arch_def.fully_configured?
       parent.exists_in_cfg?(arch_def) &&
         (@data["base"].nil? || arch_def.possible_xlens.include?(@data["base"])) &&
-        (@data["definedBy"].nil? || arch_def.implemented_extensions.any? { |ext_ver| defined_by?(ext_ver) })
+        (@data["definedBy"].nil? || arch_def.transitive_implemented_extensions.any? { |ext_ver| defined_by?(ext_ver) })
     else
       raise "unexpected type" unless arch_def.partially_configured?
 
       parent.exists_in_cfg?(arch_def) &&
         (@data["base"].nil? || arch_def.possible_xlens.include?(@data["base"])) &&
-        (@data["definedBy"].nil? || arch_def.prohibited_extensions.none? { |ext_ver| defined_by?(ext_ver) })
+        (@data["definedBy"].nil? || arch_def.prohibited_extensions.none? { |ext_req| ext_req.satisfying_versions.any? { |ext_ver| defined_by?(ext_ver) } })
     end
   end
 
@@ -55,7 +56,7 @@ class CsrField < ArchDefObject
           parent.optional_in_cfg?(arch_def)
         else
           arch_def.mandatory_extensions.all? do |ext_req|
-            ext_req.satisfying_versions(arch_def).none? do |ext_ver|
+            ext_req.satisfying_versions.none? do |ext_ver|
               defined_by?(ext_ver)
             end
           end
@@ -173,8 +174,6 @@ class CsrField < ArchDefObject
         # the type is config-specific...
         idl = @data["type()"]
         raise "type() is nil for #{csr.name}.#{name} #{@data}?" if idl.nil?
-
-
 
         # value_result = Idl::AstNode.value_try do
         ast = type_checked_type_ast(symtab)
@@ -429,7 +428,7 @@ class CsrField < ArchDefObject
   # @param arch_def [ArchDef] A config
   # @return [Integer] The reset value of this field
   # @return [String]  The string 'UNDEFINED_LEGAL' if, for this config, there is no defined reset value
-  def reset_value(arch_def, effective_xlen = nil)
+  def reset_value(arch_def)
     cached_value = @reset_value_cache.nil? ? nil : @reset_value_cache[arch_def]
     return cached_value if cached_value
 
@@ -439,14 +438,7 @@ class CsrField < ArchDefObject
       if @data.key?("reset_value")
         @data["reset_value"]
       else
-        symtab =
-          if !arch_def.mxlen.nil?
-            arch_def.symtab
-          else
-            raise ArgumentError, "effective_xlen is required when using generic arch_def" if effective_xlen.nil?
-
-            effective_xlen == 32 ? arch_def.symtab_32 : arch_def.symtab_64
-          end
+        symtab = arch_def.symtab
         ast = pruned_reset_value_ast(symtab.deep_clone)
         val = ast.return_value(symtab.deep_clone.push(ast))
         val = "UNDEFINED_LEGAL" if val == 0x1_0000_0000_0000_0000
@@ -457,33 +449,16 @@ class CsrField < ArchDefObject
   def dynamic_reset_value?(arch_def)
     return false unless @data["reset_value"].nil?
 
-    value_result = value_try do
-      if arch_def.mxlen.nil?
-        # need to try with generic symtab_32/symtab_64
-        reset_value_32 = reset_value(arch_def, 32)
-        reset_value_64 = reset_value(arch_def, 64)
-        reset_value_32 != reset_value_64
-      else
-        # just call the function, see if we get a value error
-        reset_value(arch_def)
-        false
-      end
+    value_result = Idl::AstNode.value_try do
+      reset_value(arch_def)
+      false
     end || true
   end
 
   def reset_value_pretty(arch_def)
     str = nil
     value_result = Idl::AstNode.value_try do
-      str =
-        if arch_def.mxlen.nil?
-          if dynamic_reset_value?(arch_def)
-            Idl::AstNode.value_error ""
-          else
-            reset_value(arch_def, 32) # 32 or 64, doesn't matter
-          end
-        else
-          reset_value(arch_def)
-        end
+      str = reset_value(arch_def)
     end
     Idl::AstNode.value_else(value_result) do
       ast = reset_value_ast(arch_def.symtab)

@@ -4,8 +4,8 @@
 
 The following versions of the manual can be found here:
 
-<%- versions.each do |version| -%>
-* xref:<%= version.marketing_version %>@<%= manual.name %>:ROOT:index.adoc[Version <%= version.marketing_version %>]
+<%- manual.versions.each do |version| -%>
+* xref:<%= version.name %>@<%= manual.name %>:ROOT:index.adoc[Version <%= version.marketing_version %>]
 <%- end -%>
 
 This site was generated using https://github.com/riscv-software-src/riscv-unified-db[riscv-unified-db],

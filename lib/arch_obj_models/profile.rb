@@ -7,12 +7,6 @@ require_relative "portfolio"
 # that each include an unprivileged profile (e.g., RVA20U64) and one more
 # privileged profiles (e.g., RVA20S64).
 class ProfileClass < PortfolioClass
-  # @param data [Hash<String, Object>] The data from YAML
-  # @param arch_def [ArchDef] Architecture spec
-  def initialize(data, arch_def)
-    super(data, arch_def)
-  end
-
   # @return [String] Name of the class
   def marketing_name = @data["marketing_name"]
 
@@ -68,13 +62,6 @@ end
 # Note there is no Portfolio* base class for a ProfileRelease to inherit from since there is no
 # equivalent to a ProfileRelease in a Certificate so no potential for a shared base class.
 class ProfileRelease < ArchDefObject
-  # @param data [Hash<String, Object>] The data from YAML
-  # @param arch_def [ArchDef] Architecture spec
-  def initialize(data, arch_def)
-    super(data)
-    @arch_def = arch_def
-  end
-
   def marketing_name = @data["marketing_name"]
   def introduction = @data["introduction"]
   def state = @data["state"]
@@ -105,10 +92,8 @@ class ProfileRelease < ArchDefObject
     return @profiles unless @profiles.nil?
 
     @profiles = []
-    @arch_def.profiles.each do |profile|
-      if profile.profile_release.name == name
-        @profiles << profile
-      end
+    @data["profiles"].each do |profile_ref|
+      @profiles << @arch_def.ref(profile_ref["$ref"])
     end
     @profiles
   end
@@ -130,9 +115,6 @@ end
 
 # Representation of a specific profile in a profile release.
 class Profile < PortfolioInstance
-  def initialize(data, arch_def)
-    super(data, arch_def)
-  end
 
   # @return [String] The marketing name of the Profile
   def introduction = @data["introduction"]
@@ -140,7 +122,7 @@ class Profile < PortfolioInstance
 
   # @return [ProfileRelease] The profile release this profile belongs to
   def profile_release
-    profile_release = @arch_def.profile_release(@data["release"])
+    profile_release = @arch_def.ref(@data["release"])
     raise "No profile release named '#{@data["release"]}'" if profile_release.nil?
 
     profile_release

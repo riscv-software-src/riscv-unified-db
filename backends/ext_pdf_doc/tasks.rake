@@ -120,10 +120,7 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
     end
   raise "Can't find extension '#{ext_name}'" if arch_yaml_paths.empty?
 
-  stamp = config_name == "_" ? "#{$root}/.stamps/arch-gen-_64.stamp" : "#{$root}/.stamps/arch-gen-#{config_name}.stamp"
-
   [
-    stamp,
     (EXT_PDF_DOC_DIR / "templates" / "ext_pdf.adoc.erb").to_s,
     arch_yaml_paths,
     __FILE__
@@ -131,12 +128,7 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
 } do |t|
   config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen/ext_pdf_doc").to_s.split("/")[0]
 
-  arch_def =
-    if config_name == "_"
-      arch_def_for("_64")
-    else
-      arch_def_for(config_name)
-    end
+  arch_def = arch_def_for("_")
 
   ext_name = Pathname.new(t.name).basename(".adoc").to_s.split("_")[0..-2].join("_")
 
@@ -151,7 +143,7 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
       ext.versions
     else
       vs = ext.versions.select do |ext_ver|
-        version_strs.include?(ext_ver.version.to_s)
+        version_strs.include?(ext_ver.version_spec.to_s)
       end
       vs << ext.max_version if version_strs.include?("latest")
       vs.uniq

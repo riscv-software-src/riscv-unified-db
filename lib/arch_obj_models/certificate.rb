@@ -10,12 +10,6 @@ require_relative "portfolio"
 # Holds information from certificate class YAML file.
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
 class CertClass < PortfolioClass
-  # @param data [Hash<String, Object>] The data from YAML
-  # @param arch_def [ArchDef] Architecture spec
-  def initialize(data, arch_def)
-    super(data, arch_def)
-  end
-
   def mandatory_priv_modes = @data["mandatory_priv_modes"]
 end
 
@@ -26,12 +20,6 @@ end
 # Holds information about a certificate model YAML file.
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
 class CertModel < PortfolioInstance
-  # @param data [Hash<String, Object>] The data from YAML
-  # @param arch_def [ArchDef] Architecture spec
-  def initialize(data, arch_def)
-    super(data, arch_def)
-  end
-
   def unpriv_isa_manual_revision = @data["unpriv_isa_manual_revision"]
   def priv_isa_manual_revision = @data["priv_isa_manual_revision"]
   def debug_manual_revision = @data["debug_manual_revision"]
@@ -59,11 +47,13 @@ class CertModel < PortfolioInstance
   #####################
 
   # Holds extra requirements not associated with extensions or their parameters.
-  class Requirement < ArchDefObject
+  class Requirement
     def initialize(data, arch_def)
-      super(data)
+      @data = data
       @arch_def = arch_def
     end
+
+    def name = @data["name"]
 
     def description = @data["description"]
 
@@ -91,11 +81,13 @@ class CertModel < PortfolioInstance
 
   # Holds a group of Requirement objects to provide a one-level group.
   # Can't nest RequirementGroup objects to make multi-level group.
-  class RequirementGroup < ArchDefObject
+  class RequirementGroup
     def initialize(data, arch_def)
-      super(data)
+      @data = data
       @arch_def = arch_def
     end
+
+    def name = @data["name"]
 
     def description = @data["description"]
 

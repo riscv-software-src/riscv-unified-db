@@ -36,7 +36,7 @@ end
 module TestMixin
   def setup
     @archdef = MockArchDef.new
-    @symtab = Idl::SymbolTable.new(@archdef, 32)
-    @compiler = Idl::Compiler.new(@archdef)
+    @symtab = Idl::SymbolTable.new(@archdef)
+    @compiler = Idl::Compiler.new
   end
 end
