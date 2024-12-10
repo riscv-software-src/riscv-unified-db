@@ -2,7 +2,6 @@
 
 require_relative "obj"
 
-
 # CSR definition
 class Csr < ArchDefObject
   def ==(other)
@@ -118,7 +117,7 @@ class Csr < ArchDefObject
     when "MXLEN"
       # mxlen can never change at runtime, so if we have it in the config, the length is not dynamic
       # if we don't have it in the config, we don't know what the length is
-      return arch_def.mxlen.nil?
+      arch_def.mxlen.nil?
     when "SXLEN"
       # dynamic if either we don't know SXLEN or SXLEN is explicitly mutable
       [nil, 3264].include?(arch_def.param_values["SXLEN"])
@@ -136,19 +135,6 @@ class Csr < ArchDefObject
     case @data["length"]
     when "MXLEN", "SXLEN", "VSXLEN"
       32
-    when Integer
-      @data["length"]
-    else
-      raise "Unexpected length"
-    end
-  end
-
-  # @param arch_def [ArchDef] Architecture definition
-  # @return [Integer] Largest length of the CSR in any mode
-  def max_length(arch_def)
-    case @data["length"]
-    when "MXLEN", "SXLEN", "VSXLEN"
-      64
     when Integer
       @data["length"]
     else
@@ -360,7 +346,7 @@ class Csr < ArchDefObject
   def fields
     return @fields unless @fields.nil?
 
-    @fields = @data["fields"].map { |_field_name, field_data| CsrField.new(self, field_data) }
+    @fields = @data["fields"].map { |field_name, field_data| CsrField.new(self, field_name, field_data) }
   end
 
   # @return [Array<CsrField>] All known fields of this CSR when XLEN == +effective_xlen+
@@ -557,10 +543,10 @@ class Csr < ArchDefObject
   def exists_in_cfg?(arch_def)
     if arch_def.fully_configured?
       (@data["base"].nil? || (arch_def.possible_xlens.include? @data["base"])) &&
-        arch_def.implemented_extensions.any? { |e| defined_by?(e) }
+        arch_def.transitive_implemented_extensions.any? { |e| defined_by?(e) }
     else
       (@data["base"].nil? || (arch_def.possible_xlens.include? @data["base"])) &&
-        arch_def.prohibited_extensions.none? { |e| defined_by?(e) }
+        arch_def.prohibited_extensions.none? { |ext_req| ext_req.satisfying_versions.any? { |e| defined_by?(e) } }
     end
   end
 
@@ -571,7 +557,7 @@ class Csr < ArchDefObject
 
     exists_in_cfg?(arch_def) &&
       arch_def.mandatory_extensions.all? do |ext_req|
-        ext_req.satisfying_versions(arch_def).none? do |ext_ver|
+        ext_req.satisfying_versions.none? do |ext_ver|
           defined_by?(ext_ver)
         end
       end

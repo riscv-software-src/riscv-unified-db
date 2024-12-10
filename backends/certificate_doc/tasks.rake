@@ -17,16 +17,15 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
 
   base = cert_model_obj["base"]
   raise "Missing certificate model base" if base.nil?
-  
+
   file "#{$root}/gen/certificate_doc/adoc/#{cert_model_name}.adoc" => [
     "#{$root}/arch/certificate_model/#{cert_model_name}.yaml",
     "#{$root}/arch/certificate_class/#{cert_class_name}.yaml",
     "#{CERT_DOC_DIR}/templates/certificate.adoc.erb",
-    __FILE__,
-    "#{$root}/.stamps/arch-gen-_#{base}.stamp"
+    __FILE__
   ] do |t|
     # TODO: schema validation
-    arch_def = arch_def_for("_#{base}")
+    arch_def = arch_def_for("rv#{base}")
     cert_model = arch_def.cert_model(cert_model_name)
     raise "No certificate model defined for #{cert_model_name}" if cert_model.nil?
 

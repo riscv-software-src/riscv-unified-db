@@ -14,7 +14,7 @@ module Idl
       @type = type
       @type.freeze
       @value = value
-      raise 'unexpected' unless decode_var.is_a?(TrueClass) || decode_var.is_a?(FalseClass)
+      raise "unexpected" unless decode_var.is_a?(TrueClass) || decode_var.is_a?(FalseClass)
 
       @decode_var = decode_var
       @template_index = template_index
@@ -75,7 +75,7 @@ module Idl
 
   # scoped symbol table holding known symbols at a current point in parsing
   class SymbolTable
-    attr_reader :archdef
+    def archdef = @arch_def
 
     # @return [Integer] 32 or 64, the XLEN in M-mode
     attr_reader :mxlen
@@ -86,12 +86,13 @@ module Idl
     def hash
       return @frozen_hash unless @frozen_hash.nil?
 
-      [@scopes.hash, @archdef.hash].hash
+      [@scopes.hash, @arch_def.hash].hash
     end
 
     def initialize(arch_def)
-      @archdef = arch_def
-      @mxlen = arch_def.mxlen
+      raise if arch_def.nil?
+      @arch_def = arch_def
+      @mxlen = arch_def.unconfigured? ? nil : arch_def.mxlen
       @callstack = [nil]
       @scopes = [{
         "X" => Var.new(
@@ -128,15 +129,11 @@ module Idl
           end
         end
       end
+
       # now add all parameters, even those not implemented
       arch_def.params_without_value.each do |param|
         if param.exts.size == 1
-          if param.name == "XLEN"
-            # special case: we actually do know XLEN
-            add!(param.name, Var.new(param.name, param.idl_type.clone.make_const, @mxlen))
-          else
-            add!(param.name, Var.new(param.name, param.idl_type.clone.make_const))
-          end
+          add!(param.name, Var.new(param.name, param.idl_type.clone.make_const))
         else
           # could already be present...
           existing_sym = get(param.name)
@@ -149,32 +146,6 @@ module Idl
           end
         end
       end
-
-      # add the builtin extensions
-      # add!(
-      #   "ExtensionName",
-      #   EnumerationType.new(
-      #     "ExtensionName",
-      #     arch_def.extensions.map(&:name),
-      #     Array.new(arch_def.extensions.size) { |i| i + 1 }
-      #   )
-      # )
-      # add!(
-      #   "ExceptionCode",
-      #   EnumerationType.new(
-      #     "ExceptionCode",
-      #     arch_def.exception_codes.map(&:var),
-      #     arch_def.exception_codes.map(&:num)
-      #   )
-      # )
-      # add!(
-      #   "InterruptCode",
-      #   EnumerationType.new(
-      #     "InterruptCode",
-      #     arch_def.interrupt_codes.map(&:var),
-      #     arch_def.interrupt_codes.map(&:num)
-      #   )
-      # )
     end
 
     # do a deep freeze to protect the sym table and all its entries from modification
@@ -186,16 +157,16 @@ module Idl
       @scopes.freeze
 
       # set frozen_hash so that we can quickly compare symtabs
-      @frozen_hash = [@scopes.hash, @archdef.hash].hash
+      @frozen_hash = [@scopes.hash, @arch_def.hash].hash
 
       # set up the global clone that be used as a mutable table
       @global_clone_pool = []
 
-      5.times do 
+      5.times do
         copy = SymbolTable.allocate
         copy.instance_variable_set(:@scopes, [@scopes[0]])
         copy.instance_variable_set(:@callstack, [@callstack[0]])
-        copy.instance_variable_set(:@archdef, @archdef)
+        copy.instance_variable_set(:@arch_def, @arch_def)
         copy.instance_variable_set(:@mxlen, @mxlen)
         copy.instance_variable_set(:@global_clone_pool, @global_clone_pool)
         copy.instance_variable_set(:@in_use, false)
@@ -208,7 +179,7 @@ module Idl
 
     # @return [String] inspection string
     def inspect
-      "SymbolTable[#{@archdef.name}]#{frozen? ? ' (frozen)' : ''}"
+      "SymbolTable[#{@arch_def.name}]#{frozen? ? ' (frozen)' : ''}"
     end
 
     # pushes a new scope
@@ -371,7 +342,7 @@ module Idl
         copy = SymbolTable.allocate
         copy.instance_variable_set(:@scopes, [@scopes[0]])
         copy.instance_variable_set(:@callstack, [@callstack[0]])
-        copy.instance_variable_set(:@archdef, @archdef)
+        copy.instance_variable_set(:@arch_def, @arch_def)
         copy.instance_variable_set(:@mxlen, @mxlen)
         copy.instance_variable_set(:@global_clone_pool, @global_clone_pool)
         copy.instance_variable_set(:@in_use, false)

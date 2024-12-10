@@ -27,6 +27,8 @@ From: ubuntu:24.04
 
   apt-get install -y --no-install-recommends ditaa
 
+  apt-get install -y --no-install-recommends libyaml-dev
+
   # cleanup
   apt-get clean autoclean
   apt-get autoremove -y

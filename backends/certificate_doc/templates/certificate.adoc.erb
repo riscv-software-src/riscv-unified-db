@@ -120,7 +120,7 @@ None
 <% ext = arch_def.extension(ext_req.name) -%>
 | <%= ext_req.req_id %> 
 | <<ext-<%= ext_req.name %>-def,<%= ext_req.name %>>> 
-| <%= ext_req.version_requirement %>
+| <%= ext_req.requirement_specs.map(&:to_s).join(", ") %>
 | <%= ext.nil? ? "" : ext.long_name %>
 | <%= ext_req.note.nil? ? "" : ext_req.note %>
 <% end # each ext_req -%>
@@ -219,7 +219,7 @@ None
 == CSR Summary
 
 <%
-  csrs = cert_model.in_scope_ext_reqs.map { |ext_req| ext_req.csrs(arch_def) }.flatten.uniq
+  csrs = cert_model.in_scope_ext_reqs.map { |ext_req| ext_req.csrs }.flatten.uniq
 -%>
 
 === By Name
@@ -295,10 +295,10 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 === Extension <%= ext_req.name %> +
 <%= ext.nil? ? "" : "*Long Name*: " + ext.long_name + " +" %>
 
-*Version Requirement*: <%= ext_req.version_requirement %> +
+*Version Requirement*: <%= ext_req.requirement_specs.map(&:to_s).join(", ") %> +
 
 <% ext.versions.each do |v| -%>
-<%= v.version %>::
+<%= v.version_spec %>::
   State:::
     <%= v.state %>
   <% if v.state == "ratified" -%>
@@ -320,7 +320,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
   <% if v.implications.size > 0 -%>
   Implies:::
     <% v.implications.each do |i| -%>
-    * `<%= i.name %>` version <%= i.version %>
+    * `<%= i.name %>` version <%= i.version_spec %>
     <% end -%>
   <% end -%>
 <% end -%>
@@ -401,7 +401,7 @@ The following instructions are added by this extension:
 
 This instruction is defined by:
 
-<%= inst.defined_by.to_asciidoc %>
+<%= inst.defined_by_condition.to_asciidoc %>
 
 ==== Encoding
 
@@ -521,7 +521,7 @@ This instruction may result in the following synchronous exceptions:
 == CSR Details
 
 <%
-  csrs = cert_model.in_scope_ext_reqs.map { |ext_req| ext_req.csrs(arch_def) }.flatten.uniq
+  csrs = cert_model.in_scope_ext_reqs.map { |ext_req| ext_req.csrs }.flatten.uniq
   csrs.sort_by!(&:name)
 -%>
 
@@ -548,7 +548,7 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <% if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <% end -%>
-h| Defining extension a| <%= csr.defined_by.to_asciidoc %>
+h| Defining extension a| <%= csr.defined_by_condition.to_asciidoc %>
 <% if csr.dynamic_length?(arch_def) -%>
 h| Length         | <%= csr.length_pretty(arch_def) %>
 <% else -%>

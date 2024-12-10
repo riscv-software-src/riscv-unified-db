@@ -5,9 +5,7 @@ require "ruby-prof"
 # fill out templates for every csr, inst, ext, and func
 ["csr", "inst", "ext", "func"].each do |type|
   rule %r{#{$root}/\.stamps/adoc-gen-#{type}s-.*\.stamp} => proc { |tname|
-    config_name = Pathname.new(tname).basename(".stamp").sub("adoc-gen-#{type}s-", "")
     [
-      "#{$root}/.stamps/arch-gen-#{config_name}.stamp",
       "#{CFG_HTML_DOC_DIR}/templates/#{type}.adoc.erb",
       "#{$root}/lib/arch_def.rb",
       "#{$root}/lib/idl/passes/gen_adoc.rb",
@@ -28,13 +26,13 @@ require "ruby-prof"
 
     case type
     when "csr"
-      arch_def.implemented_csrs.each do |csr|
+      arch_def.transitive_implemented_csrs.each do |csr|
         path = dir_path / "#{csr.name}.adoc"
         puts "  Generating #{path}"
         File.write(path, arch_def.find_replace_links(erb.result(binding)))
       end
     when "inst"
-      arch_def.implemented_instructions.each do |inst|
+      arch_def.transitive_implemented_instructions.each do |inst|
         path = dir_path / "#{inst.name}.adoc"
         puts "  Generating #{path}"
         # RubyProf.start
@@ -43,7 +41,7 @@ require "ruby-prof"
         # RubyProf::FlatPrinter.new(result).print(STDOUT)
       end
     when "ext"
-      arch_def.implemented_extensions.each do |ext_version|
+      arch_def.transitive_implemented_extensions.each do |ext_version|
         ext = arch_def.extension(ext_version.name)
         path = dir_path / "#{ext.name}.adoc"
         puts "  Generating #{path}"
@@ -86,17 +84,17 @@ require "ruby-prof"
     case type
     when "csr"
       puts "Generting full CSR list"
-      arch_def.implemented_csrs.each do |csr|
+      arch_def.transitive_implemented_csrs.each do |csr|
         lines << " * `#{csr.name}` #{csr.long_name}"
       end
     when "ext"
       puts "Generting full extension list"
-      arch_def.implemented_extensions.each do |ext_version|
+      arch_def.transitive_implemented_extensions.each do |ext_version|
         lines << " * `#{ext_version.name}` #{ext_version.ext.long_name}"
       end
     when "inst"
       puts "Generting full instruction list"
-      arch_def.implemented_instructions.each do |inst|
+      arch_def.transitive_implemented_instructions.each do |inst|
         lines << " * `#{inst.name}` #{inst.long_name}"
       end
     when "func"
@@ -112,14 +110,10 @@ require "ruby-prof"
   end
 end
 
-rule %r{#{$root}/gen/cfg_html_doc/.*/adoc/ROOT/landing.adoc} => proc { |tname|
-  config_name = Pathname.new(tname).relative_path_from("#{$root}/gen/cfg_html_doc").to_s.split("/")[0]
-  [
-    "#{$root}/\.stamps/arch-gen-#{config_name}\.stamp",
-    "#{CFG_HTML_DOC_DIR}/templates/landing.adoc.erb",
-    __FILE__
-  ]
-} do |t|
+rule %r{#{$root}/gen/cfg_html_doc/.*/adoc/ROOT/landing.adoc} => [
+  "#{CFG_HTML_DOC_DIR}/templates/landing.adoc.erb",
+  __FILE__
+] do |t|
   config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen/cfg_html_doc").to_s.split("/")[0]
 
   arch_def = arch_def_for(config_name)
@@ -130,7 +124,6 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/adoc/ROOT/landing.adoc} => proc { |tname|
   FileUtils.mkdir_p File.dirname(t.name)
   File.write t.name, erb.result(binding)
 end
-
 
 namespace :gen do
   desc "Generate Asciidoc source for config into gen/CONFIG_NAME/adoc"

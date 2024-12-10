@@ -8,7 +8,7 @@
 == Attributes
 [%autowidth]
 |===
-h| Defining Extension a| <%= csr.defined_by.to_asciidoc %>
+h| Defining Extension a| <%= csr.defined_by_condition.to_asciidoc %>
 h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <%- if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>

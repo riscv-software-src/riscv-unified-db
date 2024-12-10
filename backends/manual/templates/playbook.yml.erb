@@ -6,7 +6,7 @@ content:
   sources:
   - url: <%= $root %>
     start_path: gen/manual/<%= manual.name %>/top/<%= output_hash %>/antora/landing
-  <%- versions.each do |version| -%>
+  <%- manual.versions.each do |version| -%>
   - url: <%= $root %>
     start_path: gen/manual/<%= manual.name %>/<%= version.name %>/antora
   <%- end -%>

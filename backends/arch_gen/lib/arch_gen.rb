@@ -286,24 +286,24 @@ class ArchGen
       profile_class_obj = YamlLoader.load(f, permitted_classes:[Date])
       profile_class_name = profile_class_obj.keys[0]
       profile_class_obj[profile_class_name]["name"] = profile_class_name
-      profile_class_obj[profile_class_name]["__source"] = f
+      profile_class_obj[profile_class_name]["$source"] = f
       [profile_class_name, profile_class_obj[profile_class_name]]
     end.to_h
     profile_release_hash = Dir.glob($root / "arch" / "profile_release" / "**" / "*.yaml").map do |f|
       profile_release_obj = YamlLoader.load(f, permitted_classes:[Date])
       profile_release_name = profile_release_obj.keys[0]
       profile_release_obj[profile_release_name]["name"] = profile_release_name
-      profile_release_obj[profile_release_name]["__source"] = f
+      profile_release_obj[profile_release_name]["$source"] = f
       [profile_release_name, profile_release_obj[profile_release_name]]
     end.to_h
     cert_class_ary = Dir.glob($root / "arch" / "certificate_class" / "**" / "*.yaml").map do |f|
       cert_class_obj = YamlLoader.load(f, permitted_classes:[Date])
-      cert_class_obj["__source"] = f
+      cert_class_obj["$source"] = f
       cert_class_obj
     end
     cert_model_ary = Dir.glob($root / "arch" / "certificate_model" / "**" / "*.yaml").map do |f|
       cert_model_obj = YamlLoader.load(f, permitted_classes:[Date])
-      cert_model_obj["__source"] = f
+      cert_model_obj["$source"] = f
       cert_model_obj
     end
     manual_hash = {}
@@ -317,14 +317,14 @@ class ArchGen
   
         manual_info_file = manual_info_files.first
         manual_hash[manual_id] = YamlLoader.load(manual_info_file, permitted_classes:[Date])
-        manual_hash[manual_id]["__source"] = manual_info_file
+        manual_hash[manual_id]["$source"] = manual_info_file
         # TODO: schema validation
       end
   
       manual_hash[manual_id]["versions"] ||= []
       manual_hash[manual_id]["versions"] << YamlLoader.load(f, permitted_classes:[Date])
       # TODO: schema validation
-      manual_hash[manual_id]["versions"].last["__source"] = f
+      manual_hash[manual_id]["versions"].last["$source"] = f
     end
 
     arch_def = {
@@ -622,7 +622,7 @@ class ArchGen
     # get the csr data (not including the name key), which is redundant at this point
     csr_data = YAML.load_file(merged_path)
     csr_data["fields"].each { |n, f| f["name"] = n }
-    csr_data["__source"] = og_path.to_s
+    csr_data["$source"] = og_path.to_s
 
     csr_yaml = YAML.dump(csr_data)
     begin
@@ -864,7 +864,7 @@ class ArchGen
 
     # get the inst data (not including the name key), which is redundant at this point
     inst_data = YAML.load_file(merged_path)
-    inst_data["__source"] = og_path.to_s
+    inst_data["$source"] = og_path.to_s
 
     inst_yaml = YAML.dump(inst_data)
     begin

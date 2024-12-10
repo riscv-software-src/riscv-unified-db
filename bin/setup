@@ -15,7 +15,7 @@ if [ -v GITHUB_ACTIONS ]; then
 else
   CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
   HOME_PATH=${HOME}
-  HOME_OPT="--bind ${ROOT}/.home:${HOME_PATH}"
+  HOME_OPT="--bind ${ROOT}/.home:${HOME_PATH} --bind /local/mnt/workspace/.vscode-server:/local/mnt/workspace/.vscode-server"
   SINGULARITY_CACHE=
 fi
 
@@ -91,7 +91,7 @@ if [ -v DEVCONTAINER_ENV ]; then
   NPM="npm"
   NPX="npx"
   NODE="node"
-  PYTHON="python3"
+  PYTHON="${ROOT}/.home/.venv/bin/python3"
   PIP="${ROOT}/.home/.venv/bin/pip"
   BASH="bash"
 else
@@ -101,7 +101,7 @@ else
   NPM="singularity run ${HOME_OPT} ${CONTAINER_PATH} npm"
   NPX="singularity run ${HOME_OPT} ${CONTAINER_PATH} npx"
   NODE="singularity run ${HOME_OPT} ${CONTAINER_PATH} node"
-  PYTHON="singularity run ${HOME_OPT} ${CONTAINER_PATH} python3"
+  PYTHON="singularity run ${HOME_OPT} ${CONTAINER_PATH} ${ROOT}/.home/.venv/bin/python3"
   PIP="singularity run ${HOME_OPT} ${CONTAINER_PATH} ${ROOT}/.home/.venv/bin/pip"
   BASH="singularity run ${HOME_OPT} ${CONTAINER_PATH} bash"
 fi

@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zks
+long_name: ShangMi Algorithm Suite
+description: |
+  This extension is shorthand for the following set of other extensions:
+
+  * `Zbkb`
+  * `Zbkc`
+  * `Zbkx`
+  * `Zksed`
+  * `Zksh`
+
+type: unprivileged
+versions:
+- version: "1.0.0"
+  state: ratified
+  ratification_date: null
+  implies:
+  - ["Zbkb", "1.0.0"]
+  - ["Zbkc", "1.0.0"]
+  - ["Zbkx", "1.0.0"]
+  - ["Zkne", "1.0.0"]
+  - ["Zknd", "1.0.0"]
+  - ["Zknh", "1.0.0"]

@@ -26,28 +26,25 @@
 
 require "forwardable"
 require "ruby-prof"
+require "tilt"
 
-require_relative "validate"
+require_relative "config"
+require_relative "specification"
+
 require_relative "idl"
 require_relative "idl/passes/find_return_values"
 require_relative "idl/passes/gen_adoc"
 require_relative "idl/passes/prune"
-require_relative "idl/passes/reachable_functions"
-require_relative "idl/passes/reachable_functions_unevaluated"
 require_relative "idl/passes/reachable_exceptions"
-require_relative "arch_obj_models/manual"
-require_relative "arch_obj_models/portfolio"
-require_relative "arch_obj_models/profile"
-require_relative "arch_obj_models/csr_field"
-require_relative "arch_obj_models/csr"
-require_relative "arch_obj_models/instruction"
-require_relative "arch_obj_models/extension"
-require_relative "arch_obj_models/certificate"
+require_relative "idl/passes/reachable_functions"
+
 require_relative "template_helpers"
 
 include TemplateHelpers
 
-class ArchDef
+class ArchDef < Specification
+  extend Forwardable
+
   # @return [Idl::Compiler] The IDL compiler
   attr_reader :idl_compiler
 
@@ -56,134 +53,32 @@ class ArchDef
 
   # @return [String] Name of this definition. Special names are:
   #                  * '_'   - The generic architecture, with no configuration settings.
-  #                  * '_32' - A generic RV32 architecture, with only one parameter set (XLEN == 32)
-  #                  * '_64' - A generic RV64 architecture, with only one parameter set (XLEN == 64)
+  #                  * 'rv32' - A generic RV32 architecture, with only one parameter set (XLEN == 32)
+  #                  * 'rv64' - A generic RV64 architecture, with only one parameter set (XLEN == 64)
   attr_reader :name
 
-  # @return [Hash<String, Object>] A hash mapping parameter name to value for any parameter that has been configured with a value. May be empty.
-  attr_reader :param_values
+  # def_delegator :@specification, :ref
 
-  # @return [Integer] 32 or 64, the XLEN in M-mode
-  # @return [nil] if the XLEN in M-mode is not configured
-  attr_reader :mxlen
+  # Specification::OBJS.each do |obj_info|
+  #   def_delegator :@specification, obj_info[:fn_name].to_sym
+  #   def_delegator :@specification, "#{obj_info[:fn_name]}_hash".to_sym
 
-  # hash for Hash lookup
-  def hash = @name_sym.hash
+  #   fn_name = ActiveSupport::Inflector.pluralize(obj_info[:fn_name]).to_sym
+  #   define_method(fn_name) do
+  #     obj = @obj_cache[fn_name]
+  #     return obj unless obj.nil?
 
-  # @return [Idl::SymbolTable] Symbol table with global scope
-  # @return [nil] if the architecture is not configured (use symtab_32 or symtab_64)
-  def symtab
-    raise NotImplementedError, "Un-configured ArchDefs have no symbol table" if @symtab.nil?
+  #     puts "populating #{fn_name}"
 
-    @symtab
-  end
+  #     @obj_cache[fn_name] =
+  #       @specification.send(fn_name).map { |spec_obj| spec_obj.clone(arch_def: self) }
+  #   end
+  # end
 
-  def fully_configured? = @arch_def["type"] == "fully configured"
-  def partially_configured? = @arch_def["type"] == "partially configured"
-  def unconfigured? = @arch_def["type"] == "unconfigured"
-  def configured? = @arch_def["type"] != "unconfigured"
-  def type = @arch_def["type"]
-
-  # Initialize a new configured architecture definition
-  #
-  # @param config_name [#to_s] The name of a configuration, which must correspond
-  #                            to a folder under $root/cfgs
-  def initialize(config_name, arch_def_path, overlay_path: nil)
-    @name = config_name.to_s.freeze
-    @name_sym = @name.to_sym.freeze
-
-    @idl_compiler = Idl::Compiler.new(self)
-
-    validator = Validator.instance
-    begin
-      validator.validate_str(arch_def_path.read, type: :arch)
-    rescue Validator::SchemaValidationError => e
-      warn "While parsing unified architecture definition at #{arch_def_path}"
-      raise e
-    end
-
-    @arch_def = YAML.load_file(arch_def_path, permitted_classes: [Date]).freeze
-    @param_values = (@arch_def.key?("params") ? @arch_def["params"] : {}).freeze
-    @mxlen = @arch_def.dig("params", "XLEN") # might be nil
-    raise "Must set XLEN for a configured arch def" if @mxlen.nil? && configured?
-
-    @symtab = Idl::SymbolTable.new(self)
-    custom_globals_path = overlay_path.nil? ? Pathname.new("/does/not/exist") : overlay_path / "isa" / "globals.isa"
-    idl_path = File.exist?(custom_globals_path) ? custom_globals_path : $root / "arch" / "isa" / "globals.isa"
-    @global_ast = @idl_compiler.compile_file(
-      idl_path
-    )
-    @global_ast.add_global_symbols(@symtab)
-    @symtab.deep_freeze
-    @global_ast.freeze_tree(@symtab)
-    @mxlen.freeze
-  end
-
-  # type check all IDL, including globals, instruction ops, and CSR functions
-  #
-  # @param show_progress [Boolean] whether to show progress bars
-  # @param io [IO] where to write progress bars
-  # @return [void]
-  def type_check(show_progress: true, io: $stdout)
-    io.puts "Type checking IDL code for #{name}..."
-    progressbar =
-      if show_progress
-        ProgressBar.create(title: "Instructions", total: instructions.size)
-      end
-
-    instructions.each do |inst|
-      progressbar.increment if show_progress
-      if @mxlen == 32
-        inst.type_checked_operation_ast(@idl_compiler, @symtab, 32) if inst.rv32?
-      elsif @mxlen == 64
-        inst.type_checked_operation_ast(@idl_compiler, @symtab, 64) if inst.rv64?
-        inst.type_checked_operation_ast(@idl_compiler, @symtab, 32) if possible_xlens.include?(32) && inst.rv32?
-      end
-    end
-
-    progressbar =
-      if show_progress
-        ProgressBar.create(title: "CSRs", total: csrs.size)
-      end
-
-    csrs.each do |csr|
-      progressbar.increment if show_progress
-      if csr.has_custom_sw_read?
-        if (possible_xlens.include?(32) && csr.defined_in_base32?) || (possible_xlens.include?(64) && csr.defined_in_base64?)
-          csr.type_checked_sw_read_ast(@symtab)
-        end
-      end
-      csr.fields.each do |field|
-        unless field.type_ast(@symtab).nil?
-          if ((possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?) ||
-              (possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?))
-            field.type_checked_type_ast(@symtab) 
-          end
-        end
-        unless field.reset_value_ast(@symtab).nil?
-          if ((possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?) ||
-              (possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?))
-            field.type_checked_reset_value_ast(@symtab) if csr.defined_in_base32? && field.defined_in_base32?
-          end
-        end
-        unless field.sw_write_ast(@symtab).nil?
-          field.type_checked_sw_write_ast(@symtab, 32) if possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?
-          field.type_checked_sw_write_ast(@symtab, 64) if possible_xlens.include?(64) &&  csr.defined_in_base64? && field.defined_in_base64?
-        end
-      end
-    end
-
-    progressbar =
-      if show_progress
-        ProgressBar.create(title: "Functions", total: functions.size)
-      end
-    functions.each do |func|
-      progressbar.increment if show_progress
-      func.type_check(@symtab)
-    end
-
-    puts "done" if show_progress
-  end
+  def_delegators \
+    :@config, \
+    :fully_configured?, :partially_configured?, :unconfigured?, :configured?, \
+    :mxlen, :param_values
 
   # Returns whether or not it may be possible to switch XLEN given this definition.
   #
@@ -223,15 +118,15 @@ class ArchDef
       return true if unconfigured?
 
       if fully_configured?
-        ext?(:S) && (@param_values["SXLEN"] == 3264)
+        ext?(:S) && (param_values["SXLEN"] == 3264)
       elsif partially_configured?
         return false if prohibited_ext?(:S)
 
         return true unless ext?(:S) # if S is not known to be implemented, we can't say anything about it
 
-        return true unless @param_values.key?("SXLEN")
+        return true unless param_values.key?("SXLEN")
 
-        @param_values["SXLEN"] == 3264
+        param_values["SXLEN"] == 3264
       else
         raise "Unexpected configuration state"
       end
@@ -241,13 +136,13 @@ class ArchDef
       return true if unconfigured?
 
       if fully_configured?
-        ext?(:U) && (@param_values["UXLEN"] == 3264)
+        ext?(:U) && (param_values["UXLEN"] == 3264)
       elsif partially_configured?
         return true unless ext?(:U) # if U is not known to be implemented, we can't say anything about it
 
-        return true unless @param_values.key?("UXLEN")
+        return true unless param_values.key?("UXLEN")
 
-        @param_values["UXLEN"] == 3264
+        param_values["UXLEN"] == 3264
       else
         raise "Unexpected configuration state"
       end
@@ -257,13 +152,13 @@ class ArchDef
       return true if unconfigured?
 
       if fully_configured?
-        ext?(:H) && (@param_values["VSXLEN"] == 3264)
+        ext?(:H) && (param_values["VSXLEN"] == 3264)
       elsif partially_configured?
         return true unless ext?(:H) # if H is not known to be implemented, we can't say anything about it
 
-        return true unless @param_values.key?("VSXLEN")
+        return true unless param_values.key?("VSXLEN")
 
-        @param_values["VSXLEN"] == 3264
+        param_values["VSXLEN"] == 3264
       else
         raise "Unexpected configuration state"
       end
@@ -273,13 +168,13 @@ class ArchDef
       return true if unconfigured?
 
       if fully_configured?
-        ext?(:H) && (@param_values["VUXLEN"] == 3264)
+        ext?(:H) && (param_values["VUXLEN"] == 3264)
       elsif partially_configured?
         return true unless ext?(:H) # if H is not known to be implemented, we can't say anything about it
 
-        return true unless @param_values.key?("VUXLEN")
+        return true unless param_values.key?("VUXLEN")
 
-        @param_values["VUXLEN"] == 3264
+        param_values["VUXLEN"] == 3264
       else
         raise "Unexpected configuration state"
       end
@@ -291,21 +186,148 @@ class ArchDef
   # @return [Array<Integer>] List of possible XLENs in any mode for this config
   def possible_xlens = multi_xlen? ? [32, 64] : [mxlen]
 
+  # hash for Hash lookup
+  def hash = @name_sym.hash
+
+  # @return [Idl::SymbolTable] Symbol table with global scope
+  # @return [nil] if the architecture is not configured (use symtab_32 or symtab_64)
+  def symtab
+    raise NotImplementedError, "Un-configured ArchDefs have no symbol table" if @symtab.nil?
+
+    @symtab
+  end
+
+  def config_type = @config.type
+
+  # Initialize a new configured architecture definition
+  #
+  # @param config_name [#to_s] The name of a configuration, which must correspond
+  #                            to a folder name under cfg_path
+  def initialize(config_name, arch_path, overlay_path: nil, cfg_path: "#{$root}/cfgs")
+    super(arch_path)
+
+    @name = config_name.to_s.freeze
+    @name_sym = @name.to_sym.freeze
+
+    @obj_cache = {}
+
+    @config = Config.create("#{cfg_path}/#{config_name}/cfg.yaml")
+    @mxlen = @config.mxlen
+    @mxlen.freeze
+
+    @idl_compiler = Idl::Compiler.new
+
+    @symtab = Idl::SymbolTable.new(self)
+    custom_globals_path = overlay_path.nil? ? Pathname.new("/does/not/exist") : overlay_path / "isa" / "globals.isa"
+    idl_path = File.exist?(custom_globals_path) ? custom_globals_path : $root / "arch" / "isa" / "globals.isa"
+    @global_ast = @idl_compiler.compile_file(
+      idl_path
+    )
+    @global_ast.add_global_symbols(@symtab)
+    @symtab.deep_freeze
+    @global_ast.freeze_tree(@symtab)
+  end
+
+  # type check all IDL, including globals, instruction ops, and CSR functions
+  #
+  # @param config [Config] Configuration
+  # @param show_progress [Boolean] whether to show progress bars
+  # @param io [IO] where to write progress bars
+  # @return [void]
+  def type_check(show_progress: true, io: $stdout)
+    io.puts "Type checking IDL code for #{@config.name}..."
+    progressbar =
+      if show_progress
+        ProgressBar.create(title: "Instructions", total: instructions.size)
+      end
+
+    instructions.each do |inst|
+      progressbar.increment if show_progress
+      if @mxlen == 32
+        inst.type_checked_operation_ast(@idl_compiler, @symtab, 32) if inst.rv32?
+      elsif @mxlen == 64
+        inst.type_checked_operation_ast(@idl_compiler, @symtab, 64) if inst.rv64?
+        inst.type_checked_operation_ast(@idl_compiler, @symtab, 32) if @config.possible_xlens.include?(32) && inst.rv32?
+      end
+    end
+
+    progressbar =
+      if show_progress
+        ProgressBar.create(title: "CSRs", total: csrs.size)
+      end
+
+    csrs.each do |csr|
+      progressbar.increment if show_progress
+      if csr.has_custom_sw_read?
+        if (@config.possible_xlens.include?(32) && csr.defined_in_base32?) || (@config.possible_xlens.include?(64) && csr.defined_in_base64?)
+          csr.type_checked_sw_read_ast(@symtab)
+        end
+      end
+      csr.fields.each do |field|
+        unless field.type_ast(@symtab).nil?
+          if ((@config.possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?) ||
+              (@config.possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?))
+            field.type_checked_type_ast(@symtab) 
+          end
+        end
+        unless field.reset_value_ast(@symtab).nil?
+          if ((@config.possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?) ||
+              (@config.possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?))
+            field.type_checked_reset_value_ast(@symtab) if csr.defined_in_base32? && field.defined_in_base32?
+          end
+        end
+        unless field.sw_write_ast(@symtab).nil?
+          field.type_checked_sw_write_ast(@symtab, 32) if @config.possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?
+          field.type_checked_sw_write_ast(@symtab, 64) if @config.possible_xlens.include?(64) &&  csr.defined_in_base64? && field.defined_in_base64?
+        end
+      end
+    end
+
+    progressbar =
+      if show_progress
+        ProgressBar.create(title: "Functions", total: functions.size)
+      end
+    functions.each do |func|
+      progressbar.increment if show_progress
+      func.type_check(@symtab)
+    end
+
+    puts "done" if show_progress
+  end
+
   # @return [Array<ExtensionParameterWithValue>] List of all available parameters with known values for the config
   def params_with_value
     return @params_with_value unless @params_with_value.nil?
 
     @params_with_value = []
-    extensions.each do |ext_version|
-      ext = extension(ext_version.name)
-      ext.params.each do |ext_param|
-        if param_values.key?(ext_param.name)
+    return @params_with_value if @config.unconfigured?
+
+    if @config.fully_configured?
+      transitive_implemented_extensions.each do |ext_version|
+        ext = extension(ext_version.name)
+        ext.params.each do |ext_param|
+          next unless @config.param_values.key?(ext_param.name)
+
           @params_with_value << ExtensionParameterWithValue.new(
             ext_param,
-            param_values[ext_param.name]
+            @config.param_values[ext_param.name]
           )
         end
       end
+    elsif @config.partially_configured?
+      mandatory_extensions.each do |ext_requirement|
+        ext = extension(ext_requirement.name)
+        ext.params.each do |ext_param|
+          next unless @config.param_values.key?(ext_param.name)
+
+          @params_with_value << ExtensionParameterWithValue.new(
+            ext_param,
+            @config.param_values[ext_param.name]
+          )
+        end
+      end
+    else
+      raise "ERROR: unexpected config type"
     end
     @params_with_value
   end
@@ -315,12 +337,11 @@ class ArchDef
     return @params_without_value unless @params_without_value.nil?
 
     @params_without_value = []
-    extensions.each do |ext_version|
-      ext = extension(ext_version.name)
+    extensions.each do |ext|
       ext.params.each do |ext_param|
-        unless param_values.key?(ext_param.name)
-          @params_without_value << ext_param
-        end
+        next if @config.param_values.key?(ext_param.name)
+
+        @params_without_value << ext_param
       end
     end
     @params_without_value
@@ -330,85 +351,104 @@ class ArchDef
   # @return [String] A string representation of the object.
   def inspect = "ArchDef##{name}"
 
-  # @return [Array<Extension>] List of all extensions, even those that are't implemented
-  def extensions
-    return @extensions unless @extensions.nil?
+  # @return [Array<ExtensionVersion>] List of all extensions known to be implemented in this config, including transitive implications
+  def transitive_implemented_extensions
+    return @transitive_implemented_extensions unless @transitive_implemented_extensions.nil?
 
-    @extensions = []
-    @arch_def["extensions"].each do |ext_data|
-      @extensions << Extension.new(ext_data, self)
+    raise "implemented_extensions is only valid for a fully configured defintion" unless @config.fully_configured?
+
+    list = @config.implemented_extensions(self)
+    list.each do |e|
+      implications = e.transitive_implications
+      list.concat(implications) unless implications.empty?
     end
-    @extensions
+    @transitive_implemented_extensions = list.uniq.sort
   end
 
-  # may be overridden by subclass
-  # @return [Array<ExtensionVersion>] List of all extensions known to be implemented in this architecture
-  def implemented_extensions
-    raise "implemented_extensions is only valid for a fully configured defintion" unless fully_configured?
+  # @return [Array<ExtensionRequirement>] List of all mandatory extension requirements
+  def mandatory_extensions = @config.mandatory_extensions(self)
 
-    return @implemented_extensions unless @implemented_extensions.nil?
-
-    @implemented_extensions = []
-    if @arch_def.key?("implemented_extensions")
-      @arch_def["implemented_extensions"].each do |e|
-        @implemented_extensions << ExtensionVersion.new(e["name"], e["version"], self)
-      end
-    end
-    @implemented_extensions
-  end
-
-  # @return [Array<ExtensionRequirement>] List of extensions that are explicitly required by an arch def
-  def mandatory_extensions
-    raise "mandatory_extensions is only valid for a partially configured defintion" unless partially_configured?
-
-    return @mandatory_extensions unless @mandatory_extensions.nil?
-
-    @mandatory_extensions = []
-    if @arch_def.key?("mandatory_extensions")
-      @arch_def["mandatory_extensions"].each do |e|
-        @mandatory_extensions << ExtensionRequirement.new(e["name"], e["version"], presence: "mandatory")
-      end
-    end
-    @mandatory_extensions
-  end
-
-  # @return [Array<ExtensionRequirement>] List of extensions that are explicitly prohibited by an arch def
+  # @return [Array<ExtensionRequirement>] List of all extensions that are prohibited.
+  #                                       This includes extensions explicitly prohibited by the config file
+  #                                       and extensions that conflict with a mandatory extension.
   def prohibited_extensions
     return @prohibited_extensions unless @prohibited_extensions.nil?
 
-    @prohibited_extensions = []
-    if @arch_def.key?("prohibited_extensions")
-      @arch_def["prohibited_extensions"].each do |e|
-        if e.is_a?(String)
-          @prohibited_extensions << ExtensionRequirement.new(e, nil)
-        else
-          @prohibited_extensions << ExtensionRequirement.new(e["name"], e["requirements"], presence: "prohibited")
+    if @config.partially_configured?
+      @prohibited_extensions = @config.prohibited_extensions(self)
+
+      # now add any extensions that are prohibited by a mandatory extension
+      mandatory_extensions.each do |ext_req|
+        ext_req.extension.conflicts.each do |conflict|
+          if @prohibited_extensions.none? { |prohibited_ext| prohibited_ext.name == conflict.name }
+            @prohibited_extensions << conflict
+          else
+            # pick whichever requirement is more expansive
+            p = @prohibited_extensions.find { |prohibited_ext| prohibited_ext.name == confict.name }
+            if p.version_requirement.subsumes?(conflict.version_requirement)
+              @prohibited_extensions.delete(p)
+              @prohibited_extensions << conflict
+            end
+          end
         end
       end
+
+      @prohibited_extensions
+    elsif @config.fully_configured?
+      prohibited_ext_versions = []
+      extensions.each do |ext|
+        ext.versions.each do |ext_ver|
+          prohibited_ext_versions << ext_ver unless transitive_implemented_extensions.include?(ext_ver)
+        end
+      end
+      @prohibited_extensions = []
+      prohibited_ext_versions.group_by(&:name).each_value do |ext_ver_list|
+        if ext_ver_list.sort == ext_ver_list[0].ext.versions.sort
+          # excludes every version
+          @prohibited_extensions <<
+            ExtensionRequirement.new(
+              ext_ver_list[0].ext.name, ">= #{ext_ver_list.min.version_spec.canonical}",
+              presence: "prohibited", arch_def: self
+            )
+        elsif ext_ver_list.size == (ext_ver_list[0].ext.versions.size - 1)
+          # excludes all but one version
+          allowed_version_list = (ext_ver_list[0].ext.versions - ext_ver_list)
+          raise "Expected only a single element" unless allowed_version_list.size == 1
+
+          allowed_version = allowed_version_list[0]
+          @prohibited_extensions <<
+            ExtensionRequirement.new(
+              ext_ver_list[0].ext.name, "!= #{allowed_version.version_spec.canonical}",
+              presence: "prohibited", arch_def: self
+            )
+        else
+          # need to group
+          raise "TODO"
+        end
+      end
+    else
+      @prohibited_extensions = []
     end
     @prohibited_extensions
   end
 
-  def prohibited_ext?(ext_name)
-    prohibited_extensions.any? { |ext_req| ext_req.name == ext_name.to_s }
-  end
-
-  # @return [Hash<String, Extension>] Hash of all extensions, even those that aren't implemented, indexed by extension name
-  def extension_hash
-    return @extension_hash unless @extension_hash.nil?
-
-    @extension_hash = {}
-    extensions.each do |ext|
-      @extension_hash[ext.name] = ext
+  # @overload prohibited_ext?(ext)
+  #   Returns true if the ExtensionVersion +ext+ is prohibited
+  #   @param ext [ExtensionVersion] An extension version
+  #   @return [Boolean]
+  #
+  # @overload prohibited_ext?(ext)
+  #   Returns true if any version of the extension named +ext+ is prohibited
+  #   @param ext [String] An extension name
+  #   @return [Boolean]
+  def prohibited_ext?(ext)
+    if ext.is_a?(ExtensionVersion)
+      prohibited_extensions.any? { |ext_req| ext_req.satisfied_by?(ext) }
+    elsif ext.is_a?(String) || ext.is_a?(Symbol)
+      prohibited_extensions.any? { |ext_req| ext_req.name == ext.to_s }
+    else
+      raise ArgumentError, "Argument to prohibited_ext? should be an ExtensionVersion or a String"
     end
-    @extension_hash
-  end
-
-  # @param name [#to_s] Extension name
-  # @return [Extension] Extension named `name`
-  # @return [nil] if no extension `name` exists
-  def extension(name)
-    extension_hash[name.to_s]
   end
 
   # @overload ext?(ext_name)
@@ -416,8 +456,7 @@ class ArchDef
   #   @return [Boolean] True if the extension `name` is implemented
   # @overload ext?(ext_name, ext_version_requirements)
   #   @param ext_name [#to_s] Extension name (case sensitive)
-  #   @param ext_version_requirements [Number,String,Array] Extension version requirements, taking the same inputs as Gem::Requirement
-  #   @see https://docs.ruby-lang.org/en/3.0/Gem/Requirement.html#method-c-new Gem::Requirement#new
+  #   @param ext_version_requirements [Number,String,Array] Extension version requirements
   #   @return [Boolean] True if the extension `name` meeting `ext_version_requirements` is implemented
   #   @example Checking extension presence with a version requirement
   #     arch_def.ext?(:S, ">= 1.12")
@@ -431,23 +470,23 @@ class ArchDef
     return cached_result unless cached_result.nil?
 
     result =
-      if fully_configured?
-        implemented_extensions.any? do |e|
+      if @config.fully_configured?
+        transitive_implemented_extensions.any? do |e|
           if ext_version_requirements.empty?
             e.name == ext_name.to_s
           else
-            requirement = Gem::Requirement.new(ext_version_requirements)
-            (e.name == ext_name.to_s) && requirement.satisfied_by?(e.version)
+            requirement = ExtensionRequirement.new(ext_name, *ext_version_requirements, arch_def: self)
+            requirement.satisfied_by?(e)
           end
         end
-      elsif partially_configured?
+      elsif @config.partially_configured?
         mandatory_extensions.any? do |e|
           if ext_version_requirements.empty?
             e.name == ext_name.to_s
           else
-            requirement = Gem::Requirement.new(ext_version_requirements)
+            requirement = ExtensionRequirement.new(ext_name, *ext_version_requirements, arch_def: self)
             e.satisfying_versions.all? do |ext_ver|
-              (e.name == ext_name.to_s) && requirement.satisfied_by?(exrt_ver.version)
+              requirement.satisfied_by?(ext_ver)
             end
           end
         end
@@ -457,311 +496,6 @@ class ArchDef
         false
       end
     @ext_cache[[ext_name, ext_version_requirements]] = result
-  end
-
-  # @return [Array<ExtensionRequirement>] Array of all extensions that are prohibited because they are excluded by an implemented extension
-  def conflicting_extensions
-    extensions.map(&:conflicts).flatten
-  end
-
-  # @return [Boolean] whether or not ext_name is prohibited because it is excluded by an implemented extension
-  def conflicting_ext?(ext_name)
-    prohibited_extensions.include? { |ext_req| ext_req.name == ext_name }
-  end
-
-  # @return [Array<ExtensionParameter>] Alphabetical list of all parameters defined in the architecture
-  def params
-    return @params unless @params.nil?
-
-    @params = extensions.map(&:params).flatten.uniq(&:name).sort_by!(&:name)
-  end
-
-  # @return [Hash<String, ExtensionParameter>] Hash of all extension parameters defined in the architecture
-  def params_hash
-    return @params_hash unless @params_hash.nil?
-
-    @params_hash = {}
-    params.each do |param|
-      @params_hash[param.name] = param
-    end
-    @param_hash
-  end
-
-  # @return [ExtensionParameter] Parameter named +name+
-  # @return [nil] if there is no parameter named +name+
-  def param(name)
-    params_hash[name]
-  end
-
-  # @return [Array<Csr>] List of all CSRs defined by RISC-V, whether or not they are implemented
-  def csrs
-    return @csrs unless @csrs.nil?
-
-    @csrs = @arch_def["csrs"].map do |csr_data|
-      Csr.new(csr_data)
-    end
-  end
-
-  # @return [Array<String>] List of all known CSRs, even those not implemented by
-  #                         this config
-  def all_known_csr_names
-    @arch_def["csrs"].map { |csr| csr[0] }
-  end
-
-  # @return [Hash<String, Csr>] All csrs, even unimplemented ones, indexed by CSR name
-  def csr_hash
-    return @csr_hash unless @csr_hash.nil?
-
-    @csr_hash = {}
-    csrs.each do |csr|
-      @csr_hash[csr.name] = csr
-    end
-    @csr_hash
-  end
-
-  # @param csr_name [#to_s] CSR name
-  # @return [Csr,nil] a specific csr, or nil if it doesn't exist
-  def csr(csr_name)
-    csr_hash[csr_name]
-  end
-
-  # @return [Array<Instruction>] List of all instructions, whether or not they are implemented
-  def instructions
-    return @instructions unless @instructions.nil?
-
-    @instructions = @arch_def["instructions"].map do |inst_data|
-      Instruction.new(inst_data, self)
-    end
-
-    @instructions
-  end
-
-  # @return [Hash<String, Instruction>] All instructions, indexed by name
-  def instruction_hash
-    return @instruction_hash unless @instruction_hash.nil?
-
-    @instruction_hash = {}
-    instructions.each do |inst|
-      @instruction_hash[inst.name] = inst
-    end
-    @instruction_hash
-  end
-
-  # @param inst_name [#to_s] Instruction name
-  # @return [Instruction,nil] An instruction named 'inst_name', or nil if it doesn't exist
-  def inst(inst_name)
-    instruction_hash[inst_name.to_s]
-  end
-  alias instruction inst
-
-  # @return [Array<Idl::FunctionBodyAst>] List of all functions defined by the architecture
-  def functions
-    return @functions unless @functions.nil?
-
-    @functions = @global_ast.functions
-  end
-
-  # @return [Hash<String,FunctionBodyAst>] Function hash of name => FunctionBodyAst
-  def function_hash
-    return @function_hash unless @function_hash.nil?
-
-    @function_hash = {}
-    functions.each do |func|
-      @function_hash[func.name] = func
-    end
-
-    @function_hash
-  end
-
-  # @param name [String] A function name
-  # @return [Idl::FunctionBodyAst] A function named +name+
-  # @return [nil] if no function named +name+ is found
-  def function(name)
-    function_hash[name]
-  end
-
-  # @return [Array<Manual>] List of all manuals defined by the architecture
-  def manuals
-    return @manuals unless @manuals.nil?
-
-    @manuals = []
-    @arch_def["manuals"].each_value do |manual_data|
-      @manuals << Manual.new(manual_data, self)
-    end
-    @manuals
-  end
-
-  # @return [Hash<String, Manual>] All manuals, indexed by name
-  def manuals_hash
-    return @manuals_hash unless @manuals_hash.nil?
-
-    @manuals_hash = {}
-    manuals.each do |manual|
-      @manuals_hash[manual.name] = manual
-    end
-    @manuals_hash
-  end
-
-  # @return [Manual,nil] A manual named +name+, or nil if it doesn't exist
-  def manual(name) = manuals_hash[name]
-
-  # @return [Array<ProfileClass>] All known profile classes (e.g. RVA)
-  def profile_classes
-    return @profile_classes unless @profile_classes.nil?
-
-    @profile_classes = []
-    @arch_def["profile_classes"].each_value do |pc_data|
-      @profile_classes << ProfileClass.new(pc_data, self)
-    end
-    @profile_classes
-  end
-
-  # @return [Hash<String, ProfileClass>] Profile classes, indexed by profile class name
-  def profile_classes_hash
-    return @profile_classes_hash unless @profile_classes_hash.nil?
-
-    @profile_classes_hash = {}
-    profile_classes.each do |pc|
-      @profile_classes_hash[pc.name] = pc
-    end
-    @profile_classes_hash
-  end
-
-  # @return [ProfileClass] The profile class named +name+
-  # @return [nil] if the profile class does not exist
-  def profile_class(profile_class_name) = profile_classes_hash[profile_class_name]
-
-  # @return [ProfileRelease] List of all profile releases (e.g. RVA20, RVA22) for all profile classes.
-  def profile_releases
-    return @profile_releases unless @profile_releases.nil?
-
-    @profile_releases = []
-    @arch_def["profile_releases"].each_value do |pr_data|
-      raise ArgumentError, "Expecting pr_data to be a hash" unless pr_data.is_a?(Hash)
-
-      profile_release = ProfileRelease.new(pr_data, self)
-      raise ArgumentError, "ProfileRelease constructor returned nil" if profile_release.nil?
-
-      @profile_releases << profile_release
-    end
-    @profile_releases
-  end
-
-  # @return [Hash<String, ProfileRelease>], indexed by profile release name
-  def profile_releases_hash
-    return @profile_releases_hash unless @profile_releases_hash.nil?
-
-    @profile_releases_hash = {}
-    profile_releases.each do |profile_release|
-      @profile_releases_hash[profile_release.name] = profile_release
-    end
-    @profile_releases_hash
-  end
-
-  # @return [ProfileRelease] The profile release named +profile_release_name+
-  # @return [nil] if the profile release does not exist
-  def profile_release(profile_release_name) = profile_releases_hash[profile_release_name]
-
-  # @return [Profile] List of all defined profiles in all releases in all classes
-  def profiles
-    return @profiles unless @profiles.nil?
-
-    @profiles = []
-    @arch_def["profile_releases"].each_value do |pr_data|
-      raise ArgumentError, "Expecting pr_data to be a hash" unless pr_data.is_a?(Hash)
-
-      pr_data["profiles"].each do |profile_name, profile_data|
-        profile_data["name"] = profile_name
-        profile = Profile.new(profile_data, self)
-        raise ArgumentError, "Profile constructor returned nil" if profile.nil?
-
-        @profiles << profile
-      end
-    end
-    @profiles
-  end
-
-  # @return [Hash<String, Profile>] Profiles, indexed by profile name
-  def profiles_hash
-    return @profiles_hash unless @profiles_hash.nil?
-
-    @profiles_hash = {}
-    profiles.each do |profile|
-      @profiles_hash[profile.name] = profile
-    end
-    @profiles_hash
-  end
-
-  # @return [Profile] The profile named +name+
-  # @return [nil] if the profile does not exist
-  def profile(name) = profiles_hash[name]
-
-  def cert_classes
-    return @cert_classes unless @cert_classes.nil?
-
-    @cert_classes = []
-    @arch_def["certificate_classes"].each do |cc_data|
-      @cert_classes << CertClass.new(cc_data, self)
-    end
-    @cert_classes
-  end
-
-  def cert_classes_hash
-    return @cert_classes_hash unless @cert_classes_hash.nil?
-
-    @cert_classes_hash = {}
-    cert_classes.each do |cc|
-      @cert_classes_hash[cc.name] = cc
-    end
-    @cert_classes_hash
-  end
-
-  # @return [CertClass] The certificate class named +name+
-  # @return [nil] if the certificate class does not exist
-  def cert_class(name) = cert_classes_hash[name]
-
-  # @return [CertModel] List of all defined certificate models across all certificate classes
-  def cert_models
-    return @cert_models unless @cert_models.nil?
-
-    @cert_models = []
-    @arch_def["certificate_models"].each do |cm_data|
-      @cert_models << CertModel.new(cm_data, self)
-    end
-    @cert_models
-  end
-
-  def cert_models_hash
-    return @cert_models_hash unless @cert_models_hash.nil?
-
-    @cert_models_hash = {}
-    cert_models.each do |cert_model|
-      @cert_models_hash[cert_model.name] = cert_model
-    end
-    @cert_models_hash
-  end
-
-  # @return [CertModel] The CertModel named +name+
-  # @return [nil] if the CertModel does not exist
-  def cert_model(name) = cert_models_hash[name]
-
-  # @return [Array<ExceptionCode>] All exception codes defined by RISC-V
-  def exception_codes
-    return @exception_codes unless @exception_codes.nil?
-
-    @exception_codes =
-      extensions.reduce([]) do |list, ext_version|
-        ecodes = extension(ext_version.name)["exception_codes"]
-        next list if ecodes.nil?
-
-        ecodes.each do |ecode|
-          # double check that all the codes are unique
-          raise "Duplicate exception code" if list.any? { |e| e.num == ecode["num"] || e.name == ecode["name"] || e.var == ecode["var"] }
-
-          list << ExceptionCode.new(ecode["name"], ecode["var"], ecode["num"], self)
-        end
-        list
-      end
   end
 
   # @return [Array<ExceptionCode>] All exception codes known to be implemented
@@ -782,27 +516,6 @@ class ArchDef
             next unless ext?(ext_version.name.to_sym, ecode["when"]["version"])
           end
           list << ExceptionCode.new(ecode["name"], ecode["var"], ecode["num"], self)
-        end
-        list
-      end
-  end
-
-  # @return [Array<InteruptCode>] All interrupt codes defined by extensions
-  def interrupt_codes
-    return @interrupt_codes unless @interrupt_codes.nil?
-
-    @interupt_codes =
-      extensions.reduce([]) do |list, ext_version|
-        icodes = extension(ext_version.name)["interrupt_codes"]
-        next list if icodes.nil?
-
-        icodes.each do |icode|
-          # double check that all the codes are unique
-          if list.any? { |i| i.num == icode["num"] || i.name == icode["name"] || i.var == icode["var"] }
-            raise "Duplicate interrupt code"
-          end
-
-          list << InterruptCode.new(icode["name"], icode["var"], icode["num"], self)
         end
         list
       end
@@ -831,105 +544,24 @@ class ArchDef
       end
   end
 
-  # @return [Hash] The raw architecture defintion data structure
-  def data
-    @arch_def
-  end
+  # @return [Array<Idl::FunctionBodyAst>] List of all functions defined by the architecture
+  def functions
+    return @functions unless @functions.nil?
 
-  # given a `$ref` target, return the Ruby object
-  #
-  # @params uri [String] JSON Reference pointer
-  # @return [Object] The pointed-to object
-  def ref(uri)
-    raise ArgumentError, "JSON Reference must contain one '#'" unless uri.count("#") == 1
-
-    file_path, obj_path = uri.split("#")
-    obj =
-      case file_path
-      when /^certificate_class.*/
-        cert_class_name = File.basename(file_path, ".yaml")
-        cert_class(cert_class_name)
-      when /^certificate_model.*/
-        cert_mode_name = File.basename(file_path, ".yaml")
-        cert_model(cert_model_name)
-      when /^csr.*/
-        csr_name = File.basename(file_path, ".yaml")
-        csr(csr_name)
-      when /^ext.*/
-        ext_name = File.basename(file_path, ".yaml")
-        extension(ext_name)
-      when /^inst.*/
-        inst_name = File.basename(file_path, ".yaml")
-        instruction(inst_name)
-      when /^manual.*/
-        manual_name = File.basename(file_path, ".yaml")
-        manual(manual_name)
-      when /^profile_class.*/
-        profile_class_name = File.basename(file_path, ".yaml")
-        profile_class(profile_class_name)
-      when /^profile_release.*/
-        profile_release_name = File.basename(file_path, ".yaml")
-        profile_release(profile_release_name)
-      else
-        raise "Unhandled ref object: #{file_path}"
-      end
-
-      if obj_path.nil?
-        obj
-      else
-        parts = obj_path.split("/")
-        parts.each do |part|
-          raise "Error in $ref. There is no method '#{part}' for a #{obj.class.name}" unless obj.respond_to?(part.to_sym)
-
-          obj = obj.send(part)
-        end
-        obj
-      end
+    @functions = @global_ast.functions
   end
 
   # @return [Array<Csr>] List of all implemented CSRs
-  def implemented_csrs
-    return @implemented_csrs unless @implemented_csrs.nil?
-
-    @implemented_csrs = 
-      if @arch_def.key?("implemented_csrs")
-        csrs.select { |c| @arch_def["implemented_csrs"].include?(c.name) }
-      else
-        []
-      end
-  end
-
-  # @return [Hash<String, Csr>] Implemented csrs, indexed by CSR name
-  def implemented_csr_hash
-    return @implemented_csr_hash unless @implemented_csr_hash.nil?
-
-    @implemented_csr_hash = {}
-    implemented_csrs.each do |csr|
-      @implemented_csr_hash[csr.name] = csr
-    end
-    @implemented_csr_hash
-  end
-
-  # @param csr_name [#to_s] CSR name
-  # @return [Csr,nil] a specific csr, or nil if it doesn't exist or isn't implemented
-  def implemented_csr(csr_name)
-    implemented_csr_hash[csr_name]
+  def transitive_implemented_csrs
+    @transitive_implemented_csrs ||=
+      transitive_implemented_extensions.map(&:implemented_csrs).flatten.uniq.sort
   end
 
   # @return [Array<Instruction>] List of all implemented instructions
-  def implemented_instructions
-    return @implemented_instructions unless @implemented_instructions.nil?
-
-    @implemented_instructions =
-      if @arch_def.key?("implemented_instructions")
-        @arch_def["implemented_instructions"].map do |inst_name|
-          instruction_hash[inst_name]
-        end
-      else
-        []
-      end
+  def transitive_implemented_instructions
+    @transitive_implemented_instructions ||=
+      transitive_implemented_extensions.map(&:implemented_instructions).flatten.uniq.sort
   end
-
 
   # @return [Array<FuncDefAst>] List of all reachable IDL functions for the config
   def implemented_functions
@@ -939,7 +571,7 @@ class ArchDef
 
     puts "  Finding all reachable functions from instruction operations"
 
-    implemented_instructions.each do |inst|
+    transitive_implemented_instructions.each do |inst|
       @implemented_functions <<
         if inst.base.nil?
           if multi_xlen?
@@ -958,7 +590,7 @@ class ArchDef
 
     puts "  Finding all reachable functions from CSR operations"
 
-    implemented_csrs.each do |csr|
+    transitive_implemented_csrs.each do |csr|
       csr_funcs = csr.reachable_functions(self)
       csr_funcs.each do |f|
         @implemented_functions << f unless @implemented_functions.any? { |i| i.name == f.name }
@@ -982,7 +614,7 @@ class ArchDef
         "%%LINK%csr_field;#{csr_name}.#{field_name};#{csr_name}.#{field_name}%%"
       elsif !csr.nil?
         "%%LINK%csr;#{csr_name};#{csr_name}%%"
-      elsif inst(name)
+      elsif instruction(name)
         "%%LINK%inst;#{name};#{name}%%"
       elsif extension(name)
         "%%LINK%ext;#{name};#{name}%%"
@@ -1067,32 +699,11 @@ class ArchDef
   end
   private :erb_env
 
-  # create a new raw *unconfigured* architecture defintion data structure
-  #
-  # The data will not include anything configuration-dependent such as implemented_*/mandatory_*/etc.
-  #
-  # This function can be used to create a new arch_def for a different configuration
-  #
-  # @return [Hash] A unconfigured architecture definition
-  def unconfigured_data
-    {
-      "type" => "partially configured",
-      "instructions" => instructions.map(&:data),
-      "extensions" => extensions.map.map(&:data),
-      "csrs" => csrs.map(&:data),
-      "profile_classes" => profile_classes.map { |f| [f.name, f.data] }.to_h,
-      "profile_releases" => profile_releases.map { |p| [p.name, p.data] }.to_h,
-      "manuals" => manuals.map { |m| [m.name, m.data] }.to_h,
-      "certificate_classes" => cert_classes.map(&:data),
-      "certificate_models" => cert_models.map(&:data)
-    }
-  end
-
   # passes _erb_template_ through ERB within the content of this config
   #
   # @param erb_template [String] ERB source
   # @return [String] The rendered text
-  def render_erb(erb_template, what='')
+  def render_erb(erb_template, what = "")
     t = Tempfile.new("template")
     t.write erb_template
     t.flush
@@ -1107,29 +718,3 @@ class ArchDef
     end
   end
 end
-
-# a synchroncous exception code
-class ExceptionCode
-  # @return [String] Long-form display name (can include special characters)
-  attr_reader :name
-
-  # @return [String] Field name for an IDL enum
-  attr_reader :var
-
-  # @return [Integer] Code, written into *mcause
-  attr_reader :num
-
-  # @return [Extension] Extension that defines this code
-  attr_reader :ext
-
-  def initialize(name, var, number, ext)
-    @name = name
-    @name.freeze
-    @var = var
-    @num = number
-    @ext = ext
-  end
-end
-
-# all the same informatin as ExceptinCode, but for interrupts
-InterruptCode = Class.new(ExceptionCode)

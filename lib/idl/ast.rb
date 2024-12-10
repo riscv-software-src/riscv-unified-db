@@ -48,6 +48,7 @@ module Idl
     Bits32Type = Type.new(:bits, width: 32).freeze
     Bits64Type = Type.new(:bits, width: 64).freeze
     BitsUnknownType = Type.new(:bits, width: :unknown).freeze
+    ConstBitsUnknownType = Type.new(:bits, width: :unknown, qualifiers: [:const]).freeze
     ConstBoolType = Type.new(:boolean, qualifiers: [:const]).freeze
     BoolType = Type.new(:boolean).freeze
     VoidType = Type.new(:void).freeze
@@ -1502,20 +1503,21 @@ module Idl
 
       type_error "Array index must be integral" unless index.type(symtab).integral?
 
-      if var.type(symtab).kind == :array
+      var_type = var.type(symtab)
+      if var_type.kind == :array
         value_result = value_try do
           index_value = index.value(symtab)
-          if var.type(symtab).width != :unknown
-            type_error "Array index out of range" if index_value >= var.type(symtab).width
+          if var_type.width != :unknown
+            type_error "Array index out of range" if index_value >= var_type.width
           end
         end # Ok, doesn't need to be known
 
-      elsif var.type(symtab).integral?
-        if var.type(symtab).kind == :bits
+      elsif var_type.integral?
+        if var_type.kind == :bits
           value_result = value_try do
             index_value = index.value(symtab)
-            if index_value >= var.type(symtab).width
-              type_error "Bits element index (#{index_value}) out of range (max #{var.type(symtab).width - 1}) in access '#{text_value}'"
+            if (var_type.width != :unknown) && (index_value >= var_type.width)
+              type_error "Bits element index (#{index_value}) out of range (max #{var_type.width - 1}) in access '#{text_value}'"
             end
           end # OK, doesn need to be known
         end
@@ -1526,9 +1528,10 @@ module Idl
     end
 
     def type(symtab)
-      if var.type(symtab).kind == :array
-        var.type(symtab).sub_type
-      elsif var.type(symtab).integral?
+      var_type = var.type(symtab)
+      if var_type.kind == :array
+        var_type.sub_type
+      elsif var_type.integral?
         Bits1Type
       else
         internal_error "Bad ary element access"
@@ -1583,8 +1586,9 @@ module Idl
         msb_value = msb.value(symtab)
         lsb_value = lsb.value(symtab)
 
-        if var.type(symtab).kind == :bits && msb_value >= var.type(symtab).width
-          type_error "Range too large for bits (msb = #{msb_value}, range size = #{var.type(symtab).width})"
+        var_type = var.type(symtab)
+        if var_type.kind == :bits && var_type.width != :unknown && msb_value >= var_type.width
+          type_error "Range too large for bits (msb = #{msb_value}, range size = #{var_type.width})"
         end
 
         range_size = msb_value - lsb_value + 1
@@ -2405,7 +2409,6 @@ module Idl
 
       decl_type = lhs_type(symtab)
 
-
       if decl_type.const?
         # this is a constant; ensure we are assigning a constant value
         value_result = value_try do
@@ -2413,7 +2416,7 @@ module Idl
         end
         value_else(value_result) do
           unless rhs.type(symtab).const?
-            type_error "Declaring constant with a non-constant value (#{e})"
+            type_error "Declaring constant with a non-constant value (#{rhs.text_value})"
           end
           symtab.add(lhs.text_value, Var.new(lhs.text_value, decl_type.clone))
         end
@@ -2951,14 +2954,19 @@ module Idl
 
         elsif op == "|"
           # if one side is all ones, we don't need to know the other side
-          value_result = value_try do
-            rhs_mask = ((1 << rhs.type(symtab).width) - 1)
-            return rhs_mask if (rhs.value(symtab) == rhs_mask) && (lhs.type(symtab).width <= rhs.type(symtab).width)
-          end
-          # ok, trye rhs
+          rhs_type = rhs.type(symtab)
+          value_error("Unknown width") if rhs_type.width == :unknown
+          lhs_type = lhs.type(symtab)
+          value_error("unknown width") if lhs_type.width == :unknown
 
-          lhs_mask = ((1 << lhs.type(symtab).width) - 1)
-          return lhs_mask if (lhs.value(symtab) == lhs_mask) && (rhs.type(symtab).width <= lhs.type(symtab).width)
+          value_result = value_try do
+            rhs_mask = ((1 << rhs_type.width) - 1)
+            return rhs_mask if (rhs.value(symtab) == rhs_mask) && (lhs_type.width <= rhs_type.width)
+          end
+          # ok, try rhs
+
+          lhs_mask = ((1 << lhs_type.width) - 1)
+          return lhs_mask if (lhs.value(symtab) == lhs_mask) && (rhs_type.width <= lhs_type.width)
 
           lhs.value(symtab) | rhs.value(symtab)
 
@@ -2992,6 +3000,10 @@ module Idl
           v_trunc =
             if !lhs.type(symtab).const? || !rhs.type(symtab).const?
               # when both sides are constant, the value is not truncated
+              width = type(symtab).width
+              if width == :unknown
+                value_error("unknown width in op that possibly truncates")
+              end
               v & ((1 << type(symtab).width) - 1)
             else
               v
@@ -3098,15 +3110,21 @@ module Idl
 
       expressions.each do |exp|
         exp.type_check(symtab)
-        type_error "Concatenation only supports Bits<> types" unless exp.type(symtab).kind == :bits
+        e_type = exp.type(symtab)
+        type_error "Concatenation only supports Bits<> types" unless e_type.kind == :bits
 
-        internal_error "Negative width for element #{exp.text_value}" if exp.type(symtab).width <= 0
+        internal_error "Negative width for element #{exp.text_value}" if (e_type.width != :unknown) && (e_type.width <= 0)
       end
     end
 
     # @!macro type
     def type(symtab)
-      total_width = expressions.reduce(0) { |sum, exp| sum + exp.type(symtab).width }
+      total_width = expressions.reduce(0) do |sum, exp|
+        e_type = exp.type(symtab)
+        return BitsUnknownType if e_type.width == :unknown
+
+        sum + e_type.width
+      end
 
       Type.new(:bits, width: total_width)
     end
@@ -3562,12 +3580,16 @@ module Idl
         else
           internal_error "Unhandled unary op #{op}"
         end
-      if type(symtab).integral?
-        val_trunc = val & ((1 << type(symtab).width) - 1)
-        if type(symtab).signed? && ((((val_trunc >> (type(symtab).width - 1))) & 1) == 1)
+      t = type(symtab)
+      if t.integral?
+        if t.width == :unknown
+          value_error("Unknown width for truncation")
+        end
+        val_trunc = val & ((1 << t.width) - 1)
+        if t.signed? && ((((val_trunc >> (t.width - 1))) & 1) == 1)
           # need to make this negative!
           # take the twos compliment
-          val_trunc = -((1 << type(symtab).width) - val_trunc)
+          val_trunc = -((1 << t.width) - val_trunc)
         end
       end
 
@@ -4298,7 +4320,15 @@ module Idl
 
     def initialize(input, interval)
       super(input, interval, EMPTY_ARRAY)
-      @types = [nil, nil]
+    end
+
+    def freeze_tree(global_symtab)
+      return if frozen?
+
+      # initialize the cached objects
+      type(global_symtab)
+      value(global_symtab)
+      freeze
     end
 
     # @!macro type_check
@@ -4309,8 +4339,7 @@ module Idl
         value_text = ::Regexp.last_match(6)
 
         if width.nil? || width == "XLEN"
-          width = symtab.mxlen
-          memoize = false
+          width = symtab.mxlen.nil? ? 32 : symtab.mxlen # 32 is the min width, which is what we care about here
         end
 
         # ensure we actually have enough bits to represent the value
@@ -4320,50 +4349,35 @@ module Idl
 
     # @!macro type
     def type(symtab)
-      return BitsUnknownType if symtab.mxlen.nil?
-
-      cache_idx = symtab.mxlen >> 6 # 0 = 32, 1 = 64
-      return @types[cache_idx] unless @types[cache_idx].nil?
+      return @type unless @type.nil?
 
       case text_value.delete("_")
       when /^((XLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
         # verilog-style literal
-        width = ::Regexp.last_match(1)
         signed = ::Regexp.last_match(4)
-
-        memoize = true
-        if width.nil? || width == "XLEN"
-          width = symtab.mxlen
-          memoize = false
-        end
+        width = width(symtab)
 
         qualifiers = signed == "s" ? [:signed, :const] : [:const]
-        t = Type.new(:bits, width: width.to_i, qualifiers:)
-        @types[cache_idx] = t if memoize
-        t
+        @type = Type.new(:bits, width: width, qualifiers:)
       when /^0([bdx]?)([0-9a-fA-F]*)(s?)$/
         # C++-style literal
         signed = ::Regexp.last_match(3)
 
         qualifiers = signed == "s" ? [:signed, :const] : [:const]
-        type = Type.new(:bits, width: width(symtab), qualifiers:)
-        @types[cache_idx] = type
-        type
+        @type = Type.new(:bits, width: width(symtab), qualifiers:)
       when /^([0-9]*)(s?)$/
         # basic decimal
         signed = ::Regexp.last_match(2)
 
         qualifiers = signed == "s" ? [:signed, :const] : [:const]
-        type = Type.new(:bits, width: width(symtab), qualifiers:)
-        @types[cache_idx] = type
-        type
+        @type = Type.new(:bits, width: width(symtab), qualifiers:)
       else
         internal_error "Unhandled int value"
       end
     end
 
     def width(symtab)
-      # return @width unless @width.nil?
+      return @width unless @width.nil?
 
       text_value_no_underscores = text_value.delete("_")
 
@@ -4371,29 +4385,26 @@ module Idl
       when /^((XLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
         # verilog-style literal
         width = ::Regexp.last_match(1)
-        memoize = true
         if width.nil? || width == "XLEN"
-          width = symtab.mxlen
-          memoize = false
+          width = symtab.mxlen.nil? ? :unknown : symtab.mxlen
+        else
+          width = width.to_i
         end
-        # @width = width if memoize
-        width
+        @width = width
       when /^0([bdx]?)([0-9a-fA-F]*)(s?)$/
         signed = ::Regexp.last_match(3)
 
         width = signed == "s" ? value(symtab).bit_length + 1 : value(symtab).bit_length
         width = 1 if width.zero? # happens when the literal is '0'
 
-        # @width = width
-        width
+        @width = width
       when /^([0-9]*)(s?)$/
         signed = ::Regexp.last_match(3)
 
         width = signed == "s" ? value(symtab).bit_length + 1 : value(symtab).bit_length
         width = 1 if width.zero? # happens when the literal is '0'
 
-        # @width = width
-        width
+        @width = width
       else
         internal_error "No match on int literal"
       end
@@ -4401,65 +4412,64 @@ module Idl
 
     # @!macro value
     def value(symtab)
-      # return @value unless @value.nil?
+      return @value unless @value.nil?
 
       if text_value.delete("_") =~ /^((XLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
         # verilog-style literal
-        width = ::Regexp.last_match(1)
         signed = ::Regexp.last_match(4)
-
-        memoize = true
-        if width.nil? || width == "XLEN"
-          width = symtab.mxlen
-          memoize = false
-        end
+        width = width(symtab)
 
         v =
-          if !signed.empty? && ((unsigned_value >> (width.to_i - 1)) == 1)
-            -(2**width.to_i - unsigned_value)
+          if width == :unknown
+            if !signed.empty?
+              if unsigned_value > 0x7fff_ffff
+                value_error("Don't know if value will be negative")
+              else
+                if unsigned_value > 0xffff_ffff
+                  value_error("Don't know if value will fit in literal")
+                end
+                unsigned_value
+              end
+            else
+              if unsigned_value > 0xffff_ffff
+                value_error("Don't know if value will fit in literal")
+              end
+              unsigned_value
+            end
           else
-            unsigned_value
+            if unsigned_value.bit_length > width
+              value_error("Value does not fit in literal")
+            end
+            if !signed.empty? && ((unsigned_value >> (width - 1)) == 1)
+              if unsigned_value.bit_length > (width - 1)
+                value_error("Value does not fit in literal")
+              end
+              -(2**width.to_i - unsigned_value)
+            else
+              unsigned_value
+            end
           end
 
-        # @value = v if memoize
-        v
+        @value = v
       else
-        # @value = unsigned_value
-        unsigned_value
+        @value = unsigned_value
       end
     end
 
 
     # @return [Integer] the unsigned value of this literal (i.e., treating it as unsigned even if the signed specifier is present)
     def unsigned_value
-      # return @unsigned_value unless @unsigned_value.nil?
+      return @unsigned_value unless @unsigned_value.nil?
 
-      case text_value.delete("_")
-      when /^((XLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
-        # verilog-style literal
-        radix_id = ::Regexp.last_match(5)
-        value = ::Regexp.last_match(6)
+      @unsigned_value =
+        case text_value.delete("_")
+        when /^((XLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
+          # verilog-style literal
+          radix_id = ::Regexp.last_match(5)
+          value = ::Regexp.last_match(6)
 
-        radix_id = "d" if radix_id.empty?
+          radix_id = "d" if radix_id.empty?
 
-        case radix_id
-        when "b"
-          value.to_i(2)
-        when "o"
-          value.to_i(8)
-        when "d"
-          value.to_i(10)
-        when "h"
-          value.to_i(16)
-        end
-      when /^0([bdx]?)([0-9a-fA-F]*)(s?)$/
-        # C++-style literal
-        radix_id = ::Regexp.last_match(1)
-        value = ::Regexp.last_match(2)
-
-        radix_id = "o" if radix_id.empty?
-
-        # @unsigned_value =
           case radix_id
           when "b"
             value.to_i(2)
@@ -4467,19 +4477,37 @@ module Idl
             value.to_i(8)
           when "d"
             value.to_i(10)
-          when "x"
+          when "h"
             value.to_i(16)
           end
+        when /^0([bdx]?)([0-9a-fA-F]*)(s?)$/
+          # C++-style literal
+          radix_id = ::Regexp.last_match(1)
+          value = ::Regexp.last_match(2)
 
-      when /^([0-9]*)(s?)$/
-        # basic decimal
-        value = ::Regexp.last_match(1)
+          radix_id = "o" if radix_id.empty?
 
-        # @unsigned_value = value.to_i(10)
-        value.to_i(10)
-      else
-        internal_error "Unhandled int value '#{text_value}'"
-      end
+          # @unsigned_value =
+            case radix_id
+            when "b"
+              value.to_i(2)
+            when "o"
+              value.to_i(8)
+            when "d"
+              value.to_i(10)
+            when "x"
+              value.to_i(16)
+            end
+
+        when /^([0-9]*)(s?)$/
+          # basic decimal
+          value = ::Regexp.last_match(1)
+
+          # @unsigned_value = value.to_i(10)
+          value.to_i(10)
+        else
+          internal_error "Unhandled int value '#{text_value}'"
+        end
     end
 
     # @!macro to_idl
@@ -5925,7 +5953,7 @@ module Idl
       cd = csr_def(symtab)
       value_error "CSR number not knowable" if cd.nil?
       if symtab.archdef.fully_configured?
-        value_error "CSR is not implemented" unless symtab.archdef.implemented_csrs.any? { |icsr| icsr.name == cd.name }
+        value_error "CSR is not implemented" unless symtab.archdef.transitive_implemented_csrs.any? { |icsr| icsr.name == cd.name }
       else
         value_error "CSR is not defined" unless symtab.archdef.csrs.any? { |icsr| icsr.name == cd.name }
       end
@@ -5960,7 +5988,8 @@ module Idl
       csr.type_check(symtab)
       expression.type_check(symtab)
 
-      return if expression.type(symtab).kind == :bits && expression.type(symtab).width == symtab.mxlen
+      e_type = expression.type(symtab)
+      return if e_type.kind == :bits && ((e_type.width == :unknown || symtab.mxlen.nil?) || (e_type.width == symtab.mxlen))
 
       type_error "CSR value must be an XReg"
     end
@@ -6029,7 +6058,7 @@ module Idl
         if csr_known?(symtab)
           Type.new(:bits, width: archdef.csr(csr.csr_name(symtab)).length(archdef))
         else
-          Type.new(:bits, width: symtab.mxlen)
+          Type.new(:bits, width: symtab.mxlen.nil? ? :unknown : symtab.mxlen)
         end
       when "address"
         Type.new(:bits, width: 12)

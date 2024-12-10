@@ -23,8 +23,9 @@ class CsrField < ArchDefObject
 
   # @param parent_csr [Csr] The Csr that defined this field
   # @param field_data [Hash<String,Object>] Field data from the arch spec
-  def initialize(parent_csr, field_data)
-    super(field_data)
+  def initialize(parent_csr, field_name, field_data)
+    super(field_data, parent_csr.data_path, arch: parent_csr.arch)
+    @name = field_name
     @parent = parent_csr
   end
 
@@ -35,13 +36,13 @@ class CsrField < ArchDefObject
     if arch_def.fully_configured?
       parent.exists_in_cfg?(arch_def) &&
         (@data["base"].nil? || arch_def.possible_xlens.include?(@data["base"])) &&
-        (@data["definedBy"].nil? || arch_def.implemented_extensions.any? { |ext_ver| defined_by?(ext_ver) })
+        (@data["definedBy"].nil? || arch_def.transitive_implemented_extensions.any? { |ext_ver| defined_by?(ext_ver) })
     else
       raise "unexpected type" unless arch_def.partially_configured?
 
       parent.exists_in_cfg?(arch_def) &&
         (@data["base"].nil? || arch_def.possible_xlens.include?(@data["base"])) &&
-        (@data["definedBy"].nil? || arch_def.prohibited_extensions.none? { |ext_ver| defined_by?(ext_ver) })
+        (@data["definedBy"].nil? || arch_def.prohibited_extensions.none? { |ext_req| ext_req.satisfying_versions.any? { |ext_ver| defined_by?(ext_ver) } })
     end
   end
 
@@ -55,7 +56,7 @@ class CsrField < ArchDefObject
           parent.optional_in_cfg?(arch_def)
         else
           arch_def.mandatory_extensions.all? do |ext_req|
-            ext_req.satisfying_versions(arch_def).none? do |ext_ver|
+            ext_req.satisfying_versions.none? do |ext_ver|
               defined_by?(ext_ver)
             end
           end
@@ -173,8 +174,6 @@ class CsrField < ArchDefObject
         # the type is config-specific...
         idl = @data["type()"]
         raise "type() is nil for #{csr.name}.#{name} #{@data}?" if idl.nil?
-
-        
 
         # value_result = Idl::AstNode.value_try do
         ast = type_checked_type_ast(symtab)

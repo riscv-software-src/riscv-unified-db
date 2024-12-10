@@ -35,10 +35,8 @@ Treetop.load(($root / "lib" / "idl" / "idl").to_s)
 module Idl
   # the Idl compiler
   class Compiler
-    # @param arch_def [ArchDef] Architecture defintion, the context of the compilation
-    def initialize(arch_def)
+    def initialize
       @parser = IdlParser.new
-      @arch_def = arch_def
     end
 
     def compile_file(path)

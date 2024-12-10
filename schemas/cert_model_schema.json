@@ -100,17 +100,25 @@
           "oneOf": [
             {
               "type": "string",
-              "pattern": "^profile_release/.*\\.yaml#.*"
+              "pattern": "^profile/.*\\.yaml#.*"
             },
             {
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^profile_release/.*\\.yaml#.*"
+                "pattern": "^profile/.*\\.yaml#.*"
               },
               "uniqueItems": true
             }
           ]
+        },
+        "^\\$child_of": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^profile/.*\\.yaml#.*"
+          },
+          "uniqueItems": true
         },
         "^([A-WY])|([SXZ][a-z0-9]+)$": {
           "type": "object",
@@ -192,8 +200,8 @@
         }
       }
     },
-    "__source": {
-      "$ref": "schema_defs.json#/$defs/__source"
+    "$source": {
+      "$ref": "schema_defs.json#/$defs/$source"
     }
   }
 }

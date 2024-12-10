@@ -58,7 +58,6 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/nav.adoc} => proc { |tname|
     Dir.glob("#{$root}/gen/cfg_html_doc/#{config_name}/antora/modules/exts/**/*.adoc") +
     [
       "#{CFG_HTML_DOC_DIR}/templates/toc.adoc.erb",
-      "#{$root}/.stamps/arch-gen-#{config_name}.stamp",
       __FILE__
     ]
 } do |t|
@@ -76,7 +75,6 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/ROOT/pages/config.adoc} => p
   config_name = Pathname.new(tname).relative_path_from("#{$root}/gen/cfg_html_doc").to_s.split("/")[0]
   [
     "#{CFG_HTML_DOC_DIR}/templates/config.adoc.erb",
-    "#{$root}/.stamps/arch-gen-#{config_name}.stamp",
     __FILE__
   ]
 } do |t|
