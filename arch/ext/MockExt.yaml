@@ -89,7 +89,7 @@ params:
     description: foo
     schema:
       type: integer
-      minimum: 1000 
+      minimum: 1000
       maximum: 2048
   MOCK_INT_RANGE_0_TO_128:
     description: foo

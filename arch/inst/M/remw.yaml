@@ -40,7 +40,7 @@ operation(): |
     # to be the dividend, sign extended to into the 64-bit register
     Bits<1> sign_bit = src1[31];
     X[rd] = {{32{sign_bit}}, src1};
-  
+
   } else if ((src1 == {33'b1, 31'b0}) && (src2 == 32'b1)) {
     # signed overflow. Since RISC-V does not have arithmetic exceptions, the result is defined
     # to be zero
@@ -71,7 +71,3 @@ sail(): |
       RETIRE_FAIL
     }
   }
-
-
-
-

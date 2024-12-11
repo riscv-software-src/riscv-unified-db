@@ -68,7 +68,7 @@ class ArchDefObject
 
   # @return [Array<String>] List of keys added by this ArchDefObject
   def keys = @data.keys
-  
+
   # @param k (see Hash#key?)
   # @return (see Hash#key?)
   def key?(k) = @data.key?(k)
@@ -106,7 +106,7 @@ class ArchDefObject
       end
     elsif args.size == 2
       raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
-      version = args[1].is_a?(Gem::Version) ? args[1] : Gem::Version.new(args[1]) 
+      version = args[1].is_a?(Gem::Version) ? args[1] : Gem::Version.new(args[1])
 
       defined_by.satisfied_by? do |r|
         r.name == args[0] && r.version_requirement.satisfied_by?(version)
@@ -365,7 +365,7 @@ class SchemaCondition
     cond = SchemaCondition.new({
       "allOf" => conds
     })
-    
+
     SchemaCondition.new(cond.minimize)
   end
 
@@ -474,7 +474,7 @@ end
 
 class AlwaysTrueSchemaCondition
   def to_rb = "true"
-  
+
   def satisfied_by? = true
 
   def empty? = true

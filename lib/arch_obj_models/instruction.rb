@@ -259,7 +259,7 @@ class Instruction < ArchDefObject
       @range.size
     end
   end
-  
+
   # decode field constructions from YAML file, rather than riscv-opcodes
   # eventually, we will move so that all instructions use the YAML file,
   class DecodeVariable
@@ -524,7 +524,7 @@ class Instruction < ArchDefObject
       @format.chars.each_with_index do |c, idx|
         if c == "-"
           next if field_chars.empty?
-          
+
           field_text = field_chars.join("")
           field_lsb = @format.size - idx
           field_msb = @format.size - idx - 1 + field_text.size

@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: c.lw
-long_name: Load word 
+long_name: Load word
 description: |
   Loads a 32-bit value from memory into register rd.
   It computes an effective address by adding the zero-extended offset, scaled by 4,

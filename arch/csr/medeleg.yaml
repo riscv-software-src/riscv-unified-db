@@ -67,7 +67,7 @@ fields:
       .>h! `M-mode` .>h! `S-mode`
 
       ! 0 ! M ! M
-      ! 1 ! M ! S 
+      ! 1 ! M ! S
       !===
       <%- end -%>
     type: RW
@@ -104,7 +104,7 @@ fields:
       .>h! `M-mode` .>h! `S-mode`
 
       ! 0 ! M ! M
-      ! 1 ! M ! S 
+      ! 1 ! M ! S
       !===
       <%- end -%>
 
@@ -142,7 +142,7 @@ fields:
       .>h! `M-mode` .>h! `S-mode`
 
       ! 0 ! M ! M
-      ! 1 ! M ! S 
+      ! 1 ! M ! S
       !===
       <%- end -%>
     type: RW
@@ -179,7 +179,7 @@ fields:
       .>h! `M-mode` .>h! `S-mode`
 
       ! 0 ! M ! M
-      ! 1 ! M ! S 
+      ! 1 ! M ! S
       !===
       <%- end -%>
     type: RW
@@ -220,7 +220,7 @@ fields:
       .>h! `M-mode` .>h! `S-mode`
 
       ! 0 ! M ! M
-      ! 1 ! M ! S 
+      ! 1 ! M ! S
       !===
       <%- end -%>
 
@@ -258,9 +258,9 @@ fields:
       .>h! `M-mode` .>h! `S-mode`
 
       ! 0 ! M ! M
-      ! 1 ! M ! S 
+      ! 1 ! M ! S
       !===
-      <%- end -%> 
+      <%- end -%>
 
     type: RW
     reset_value: UNDEFINED_LEGAL
@@ -300,9 +300,9 @@ fields:
       .>h! `M-mode` .>h! `S-mode`
 
       ! 0 ! M ! M
-      ! 1 ! M ! S 
+      ! 1 ! M ! S
       !===
-      <%- end -%> 
+      <%- end -%>
 
     type: RW
     reset_value: UNDEFINED_LEGAL
@@ -338,9 +338,9 @@ fields:
       .>h! `M-mode` .>h! `S-mode`
 
       ! 0 ! M ! M
-      ! 1 ! M ! S 
+      ! 1 ! M ! S
       !===
-      <%- end -%> 
+      <%- end -%>
     type: RW
     reset_value: UNDEFINED_LEGAL
   EU:
@@ -375,9 +375,9 @@ fields:
       .>h! `M-mode` .>h! `S-mode`
 
       ! 0 ! M ! M
-      ! 1 ! M ! S 
+      ! 1 ! M ! S
       !===
-      <%- end -%> 
+      <%- end -%>
 
     type: RW
     reset_value: UNDEFINED_LEGAL
@@ -401,7 +401,7 @@ fields:
       .>h! `M-mode` .>h! `(H)S-mode`
 
       ! 0 ! M ! M
-      ! 1 ! M ! (H)S 
+      ! 1 ! M ! (H)S
       !===
     type: RW
     reset_value: UNDEFINED_LEGAL
@@ -425,7 +425,7 @@ fields:
       .>h! `M-mode` .>h! `(H)S-mode`
 
       ! 0 ! M ! M
-      ! 1 ! M ! (H)S 
+      ! 1 ! M ! (H)S
       !===
     type: RW
     reset_value: UNDEFINED_LEGAL
@@ -472,9 +472,9 @@ fields:
       .>h! `M-mode` .>h! `S-mode`
 
       ! 0 ! M ! M
-      ! 1 ! M ! S 
+      ! 1 ! M ! S
       !===
-      <%- end -%> 
+      <%- end -%>
     type: RW
     reset_value: UNDEFINED_LEGAL
   LPF:
@@ -509,9 +509,9 @@ fields:
       .>h! `M-mode` .>h! `S-mode`
 
       ! 0 ! M ! M
-      ! 1 ! M ! S 
+      ! 1 ! M ! S
       !===
-      <%- end -%> 
+      <%- end -%>
 
     type: RW
     reset_value: UNDEFINED_LEGAL
@@ -547,9 +547,9 @@ fields:
       .>h! `M-mode` .>h! `S-mode`
 
       ! 0 ! M ! M
-      ! 1 ! M ! S 
+      ! 1 ! M ! S
       !===
-      <%- end -%> 
+      <%- end -%>
     type: RW
     reset_value: UNDEFINED_LEGAL
   IGPF:
@@ -572,7 +572,7 @@ fields:
       .>h! `M-mode` .>h! `(H)S-mode`
 
       ! 0 ! M ! M
-      ! 1 ! M ! HS 
+      ! 1 ! M ! HS
       !===
     type: RW
     reset_value: UNDEFINED_LEGAL
@@ -597,7 +597,7 @@ fields:
       .>h! `M-mode` .>h! `(H)S-mode`
 
       ! 0 ! M ! M
-      ! 1 ! M ! HS 
+      ! 1 ! M ! HS
       !===
 
     type: RW
@@ -623,7 +623,7 @@ fields:
       .>h! `M-mode` .>h! `(H)S-mode`
 
       ! 0 ! M ! M
-      ! 1 ! M ! HS 
+      ! 1 ! M ! HS
       !===
 
     type: RW
@@ -649,7 +649,7 @@ fields:
       .>h! `M-mode` .>h! `(H)S-mode`
 
       ! 0 ! M ! M
-      ! 1 ! M ! HS 
+      ! 1 ! M ! HS
       !===
     type: RW
     reset_value: UNDEFINED_LEGAL

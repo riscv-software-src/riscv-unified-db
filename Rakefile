@@ -98,7 +98,7 @@ namespace :test do
       validator.validate(f)
     end
     Rake::Task["test:insts"].invoke
-    puts "All files validate against their schema"  
+    puts "All files validate against their schema"
   end
   task idl_model: ["gen:arch", "#{$root}/.stamps/arch-gen-_32.stamp", "#{$root}/.stamps/arch-gen-_64.stamp"]  do
     print "Parsing IDL code for RV32..."
@@ -298,7 +298,7 @@ namespace :test do
     ENV["MANUAL_NAME"] = "isa"
     ENV["VERSIONS"] = "all"
     Rake::Task["gen:html_manual"].invoke
-    
+
     ENV["EXT"] = "B"
     ENV["VERSION"] = "latest"
     Rake::Task["gen:ext_pdf"].invoke
