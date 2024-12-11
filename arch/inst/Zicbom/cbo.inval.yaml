@@ -72,8 +72,8 @@ assembly: "TODO"
 encoding:
   match: 000000000000-----010000000001111
   variables:
-  - name: rs1
-    location: 19-15
+    - name: rs1
+      location: 19-15
 access:
   m: always
   s: sometimes
@@ -101,6 +101,7 @@ access_detail: |
   ! 01/11 ! 00 ! 01/11 ! executes ! `Illegal Instruction` ! executes ! `Virtual Instruction`
   ! 01/11 ! 01/11 ! 01/11 ! executes ! executes ! executes ! executes
   !===
+
 # operation(): |
 #   let cache_block_address = X[RS1] & ~(CACHE_BLOCK_SIZE-1);
 

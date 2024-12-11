@@ -8,7 +8,7 @@ RVA20:
 
   # Semantic versions within the release
   versions:
-  - version: "1.0.0"
+    - version: "1.0.0"
 
   introduction: |
     This profile release targets 64-bit application processors for markets
@@ -28,9 +28,9 @@ RVA20:
     NOTE: Only XLEN=64 application processor profiles are currently defined.
     It would be possible to also define very similar XLEN=32 variants.
   contributors:
-  - name: Krste Asanovic
-    email: krste@sifive.com
-    company: SiFive
+    - name: Krste Asanovic
+      email: krste@sifive.com
+      company: SiFive
   profiles:
-  - { $ref: profile/RVA20U64.yaml# }
-  - { $ref: profile/RVA20S64.yaml# }
+    - { $ref: profile/RVA20U64.yaml# }
+    - { $ref: profile/RVA20S64.yaml# }

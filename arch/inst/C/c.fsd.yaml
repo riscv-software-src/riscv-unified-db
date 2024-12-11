@@ -11,19 +11,19 @@ description: |
   It expands to `fsd` `rs2, offset(rs1)`.
 definedBy:
   allOf:
-  - C
-  - D
+    - C
+    - D
 assembly: xs2, imm(xs1)
 encoding:
   match: 101-----------00
   variables:
-  - name: imm
-    location: 6-5|12-10
-    left_shift: 3
-  - name: rs2
-    location: 4-2
-  - name: rs1
-    location: 9-7
+    - name: imm
+      location: 6-5|12-10
+      left_shift: 3
+    - name: rs2
+      location: 4-2
+    - name: rs1
+      location: 9-7
 access:
   s: always
   u: always

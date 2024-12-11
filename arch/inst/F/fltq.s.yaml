@@ -5,18 +5,18 @@ kind: instruction
 name: fltq.s
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy: { allOf: [F, Zfa] }
 assembly: xd, fs1, fs2
 encoding:
   match: 1010000----------101-----1010011
   variables:
-  - name: fs2
-    location: 24-20
-  - name: fs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: fs2
+      location: 24-20
+    - name: fs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -24,9 +24,6 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
-
-
-
 
 sail(): |
   {

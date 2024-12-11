@@ -3,29 +3,20 @@
 
   "type": "object",
   "title": "Architecture configuration",
-  "required": [
-    "$schema",
-    "kind",
-    "type",
-    "name",
-    "description"
-  ],
+  "required": ["$schema", "kind", "type", "name", "description"],
   "allOf": [
     {
       "if": {
         "properties": {
-          "type": { "const": "fully configured"}
+          "type": { "const": "fully configured" }
         }
       },
       "then": {
-        "required": [
-          "implemented_extensions",
-          "params"
-        ],
+        "required": ["implemented_extensions", "params"],
         "properties": {
           "params": {
             "type": "object"
-          },      
+          },
           "mandatory_extensions": {
             "type": "null"
           },
@@ -68,26 +59,22 @@
     {
       "if": {
         "properties": {
-          "type": { "const": "partially configured"}
+          "type": { "const": "partially configured" }
         }
       },
       "then": {
         "anyOf": [
           {
-            "required": [
-              "mandatory_extensions"
-            ]
+            "required": ["mandatory_extensions"]
           },
           {
-            "required": [
-              "params"
-            ]
+            "required": ["params"]
           }
         ],
         "properties": {
           "params": {
             "type": "object"
-          },      
+          },
           "mandatory_extensions": {
             "description": "Extensions mandatory in this architecture",
             "type": "array",
@@ -127,7 +114,7 @@
     {
       "if": {
         "properties": {
-          "type": { "const": "unconfigured"}
+          "type": { "const": "unconfigured" }
         }
       },
       "then": {

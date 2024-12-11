@@ -5,21 +5,21 @@ kind: instruction
 name: vror.vi
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy:
   anyOf: [Zvbb, Zvkn, Zvks]
 assembly: vm, vs2, vd, imm
 encoding:
   match: 01010------------011-----1010111
   variables:
-  - name: imm
-    location: 26|19-15
-  - name: vm
-    location: 25-25
-  - name: vs2
-    location: 24-20
-  - name: vd
-    location: 11-7
+    - name: imm
+      location: 26|19-15
+    - name: vm
+      location: 25-25
+    - name: vs2
+      location: 24-20
+    - name: vd
+      location: 11-7
 access:
   s: always
   u: always

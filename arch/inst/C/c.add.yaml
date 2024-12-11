@@ -9,16 +9,16 @@ description: |
   C.ADD expands into `add rd, rd, rs2`.
 definedBy:
   anyOf:
-  - C
-  - Zca
+    - C
+    - Zca
 assembly: xd, rs2
 encoding:
   match: 1001----------10
   variables:
-  - name: rs2
-    location: 6-2
-  - name: rd
-    location: 11-7
+    - name: rs2
+      location: 6-2
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always

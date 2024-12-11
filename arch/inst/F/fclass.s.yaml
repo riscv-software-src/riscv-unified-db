@@ -5,41 +5,41 @@ kind: instruction
 name: fclass.s
 long_name: Single-precision floating-point classify.
 description: |
-    The `fclass.s` instruction examines the value in floating-point register
-    _fs1_ and writes to integer register _rd_ a 10-bit mask that indicates
-    the class of the floating-point number.
-    The format of the mask is described in the table below.
-    The corresponding bit in _rd_ will be set if the property is true and
-    clear otherwise.
-    All other bits in _rd_ are cleared.
-    Note that exactly one bit in rd will be set.
-    `fclass.s` does not set the floating-point exception flags.
+  The `fclass.s` instruction examines the value in floating-point register
+  _fs1_ and writes to integer register _rd_ a 10-bit mask that indicates
+  the class of the floating-point number.
+  The format of the mask is described in the table below.
+  The corresponding bit in _rd_ will be set if the property is true and
+  clear otherwise.
+  All other bits in _rd_ are cleared.
+  Note that exactly one bit in rd will be set.
+  `fclass.s` does not set the floating-point exception flags.
 
-    .Format of result of `fclass` instruction.
-    [%autowidth,float="center",align="center",cols="^,<",options="header",]
-    |===
-    |_rd_ bit |Meaning
-    |0 |_rs1_ is latexmath:[$-\infty$].
-    |1 |_rs1_ is a negative normal number.
-    |2 |_rs1_ is a negative subnormal number.
-    |3 |_rs1_ is latexmath:[$-0$].
-    |4 |_rs1_ is latexmath:[$+0$].
-    |5 |_rs1_ is a positive subnormal number.
-    |6 |_rs1_ is a positive normal number.
-    |7 |_rs1_ is latexmath:[$+\infty$].
-    |8 |_rs1_ is a signaling NaN.
-    |9 |_rs1_ is a quiet NaN.
-    |===
+  .Format of result of `fclass` instruction.
+  [%autowidth,float="center",align="center",cols="^,<",options="header",]
+  |===
+  |_rd_ bit |Meaning
+  |0 |_rs1_ is latexmath:[$-\infty$].
+  |1 |_rs1_ is a negative normal number.
+  |2 |_rs1_ is a negative subnormal number.
+  |3 |_rs1_ is latexmath:[$-0$].
+  |4 |_rs1_ is latexmath:[$+0$].
+  |5 |_rs1_ is a positive subnormal number.
+  |6 |_rs1_ is a positive normal number.
+  |7 |_rs1_ is latexmath:[$+\infty$].
+  |8 |_rs1_ is a signaling NaN.
+  |9 |_rs1_ is a quiet NaN.
+  |===
 
 definedBy: F
 assembly: xd, fs1
 encoding:
   match: 111000000000-----001-----1010011
   variables:
-  - name: fs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: fs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -73,8 +73,6 @@ operation(): |
     assert(is_sp_quiet_nan?(sp_value), "Unexpected SP value");
     X[rd] = 1 << 9;
   }
-
-
 
 sail(): |
   {

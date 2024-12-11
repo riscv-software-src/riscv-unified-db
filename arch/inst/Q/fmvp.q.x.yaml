@@ -5,7 +5,7 @@ kind: instruction
 name: fmvp.q.x
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy:
   anyOf: [Q, Zfa]
 base: 64
@@ -13,12 +13,12 @@ assembly: qd, xs1, xs2
 encoding:
   match: 1011011----------000-----1010011
   variables:
-  - name: rs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always

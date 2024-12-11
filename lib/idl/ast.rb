@@ -1808,7 +1808,7 @@ module Idl
         var = symtab.get(lhs.text_value)
         value_result = value_try do
           v = rhs.value(symtab)
-          var.value = (lhs.value & ~0) | ((v & 1) << idx.value(symtab))
+          var.value = (lhs.value(symtab) & ~0) | ((v & 1) << idx.value(symtab))
         end
         value_else(value_result) do
           var.value = nil

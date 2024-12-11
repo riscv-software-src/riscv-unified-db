@@ -14,12 +14,12 @@ assembly: xd, imm(rs1)
 encoding:
   match: -----------------110-----0000011
   variables:
-  - name: imm
-    location: 31-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: imm
+      location: 31-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -29,8 +29,6 @@ operation(): |
   XReg virtual_address = X[rs1] + imm;
 
   X[rd] = read_memory<32>(virtual_address, $encoding);
-
-
 
 sail(): |
   {

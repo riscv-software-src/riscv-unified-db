@@ -50,7 +50,16 @@
   },
 
   "type": "object",
-  "required": ["$schema", "kind", "manual", "version", "name", "marketing_version", "state", "volumes"],
+  "required": [
+    "$schema",
+    "kind",
+    "manual",
+    "version",
+    "name",
+    "marketing_version",
+    "state",
+    "volumes"
+  ],
   "properties": {
     "$schema": {
       "type": "string",

@@ -8,10 +8,10 @@ definedBy: Svinval
 encoding:
   match: 0001011----------000000001110011
   variables:
-  - name: rs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
 description:
   The `sinval.vma` instruction invalidates any address-translation cache entries that an
   `sfence.vma` instruction with the same values of rs1 and rs2 would invalidate.

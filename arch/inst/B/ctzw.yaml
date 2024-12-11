@@ -17,10 +17,10 @@ assembly: xd, xs1
 encoding:
   match: 011000000001-----001-----0011011
   variables:
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -32,8 +32,6 @@ operation(): |
   }
 
   X[rd] = (xlen() - 1) - $signed(lowest_set_bit(X[rs1][31:0]));
-
-
 
 sail(): |
   {

@@ -15,8 +15,12 @@
     },
     "field_location": {
       "oneOf": [
-        {"type": "number", "description": "Location of a single bit"},
-        {"type": "string", "pattern": "^[0-9]+-[0-9]+$", "description": "Location range of a multi-bit field"}
+        { "type": "number", "description": "Location of a single bit" },
+        {
+          "type": "string",
+          "pattern": "^[0-9]+-[0-9]+$",
+          "description": "Location range of a multi-bit field"
+        }
       ],
       "description": "Location of a field in a register"
     },
@@ -98,11 +102,7 @@
       "oneOf": [
         {
           "type": "string",
-          "enum": [
-            "mandatory",
-            "optional",
-            "prohibited"
-          ]
+          "enum": ["mandatory", "optional", "prohibited"]
         },
         {
           "type": "object",
