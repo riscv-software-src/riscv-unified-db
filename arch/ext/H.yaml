@@ -6,41 +6,41 @@ name: H
 type: privileged
 long_name: Hypervisor
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: 2019-12
-  requires:
-    name: S
-    version: '>= 1.12.0'
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2019-12
+    requires:
+      name: S
+      version: ">= 1.12.0"
 interrupt_codes:
-- num: 2
-  name: Virtual supervisor software interrupt
-  var: VirtualSupervisorSoftware
-- num: 6
-  name: Virtual supervisor timer interrupt
-  var: VirtualSupervisorTimer
-- num: 10
-  name: Virtual supervisor external interrupt
-  var: VirtualSupervisorExternal
-- num: 12
-  name: Supervisor guest external interrupt
-  var: SupervisorGuestExternal
+  - num: 2
+    name: Virtual supervisor software interrupt
+    var: VirtualSupervisorSoftware
+  - num: 6
+    name: Virtual supervisor timer interrupt
+    var: VirtualSupervisorTimer
+  - num: 10
+    name: Virtual supervisor external interrupt
+    var: VirtualSupervisorExternal
+  - num: 12
+    name: Supervisor guest external interrupt
+    var: SupervisorGuestExternal
 exception_codes:
-- num: 10
-  name: Environment call from VS-mode
-  var: VScall
-- num: 20
-  name: Instruction guest page fault
-  var: InstructionGuestPageFault
-- num: 21
-  name: Load guest page fault
-  var: LoadGuestPageFault
-- num: 22
-  name: Virtual instruction
-  var: VirtualInstruction
-- num: 23
-  name: Store/AMO guest page fault
-  var: StoreAmoGuestPageFault
+  - num: 10
+    name: Environment call from VS-mode
+    var: VScall
+  - num: 20
+    name: Instruction guest page fault
+    var: InstructionGuestPageFault
+  - num: 21
+    name: Load guest page fault
+    var: LoadGuestPageFault
+  - num: 22
+    name: Virtual instruction
+    var: VirtualInstruction
+  - num: 23
+    name: Store/AMO guest page fault
+    var: StoreAmoGuestPageFault
 description: |
   This chapter describes the RISC-V hypervisor extension, which
   virtualizes the supervisor-level architecture to support the efficient
@@ -458,10 +458,10 @@ params:
     schema:
       type: string
       enum:
-      - "always zero"
-      - "always pseudoinstruction"
-      - "always transformed standard instruction"
-      - "custom"
+        - "always zero"
+        - "always pseudoinstruction"
+        - "always transformed standard instruction"
+        - "custom"
   TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT:
     description: |
       Value to write into htval/mtval2 when there is a guest page fault on a final translation.
@@ -474,10 +474,10 @@ params:
     schema:
       type: string
       enum:
-      - "always zero"
-      - "always pseudoinstruction"
-      - "always transformed standard instruction"
-      - "custom"
+        - "always zero"
+        - "always pseudoinstruction"
+        - "always transformed standard instruction"
+        - "custom"
   TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT:
     description: |
       Value to write into htval/mtval2 when there is a guest page fault on a final translation.
@@ -488,8 +488,8 @@ params:
     schema:
       type: string
       enum:
-      - "always zero"
-      - "always pseudoinstruction"
+        - "always zero"
+        - "always pseudoinstruction"
   TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED:
     description: |
       Value written into htinst/mtinst when there is an instruction address misaligned exception.
@@ -500,8 +500,8 @@ params:
     schema:
       type: string
       enum:
-      - "always zero"
-      - "custom"
+        - "always zero"
+        - "custom"
   TINST_VALUE_ON_BREAKPOINT:
     description: |
       Value written into htinst/mtinst on a Breakpoint exception from VU/VS-mode.
@@ -511,7 +511,7 @@ params:
         * "custom": Write a custom value, which resuls in UNPREDICTABLE
     schema:
       type: string
-      enum: ['always zero', 'custom']
+      enum: ["always zero", "custom"]
   TINST_VALUE_ON_VIRTUAL_INSTRUCTION:
     description: |
       Value written into htinst/mtinst on a VirtualInstruction exception from VU/VS-mode.
@@ -521,7 +521,7 @@ params:
         * "custom": Write a custom value, which resuls in UNPREDICTABLE
     schema:
       type: string
-      enum: ['always zero', 'custom']
+      enum: ["always zero", "custom"]
   TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED:
     description: |
       Value written into htinst/mtinst on a VirtualInstruction exception from VU/VS-mode.
@@ -532,7 +532,7 @@ params:
         * "custom": Write a custom value, which resuls in UNPREDICTABLE
     schema:
       type: string
-      enum: ['always zero', 'always transformed standard instruction', 'custom']
+      enum: ["always zero", "always transformed standard instruction", "custom"]
   TINST_VALUE_ON_LOAD_ACCESS_FAULT:
     description: |
       Value written into htinst/mtinst on an AccessFault exception from VU/VS-mode.
@@ -543,7 +543,7 @@ params:
         * "custom": Write a custom value, which resuls in UNPREDICTABLE
     schema:
       type: string
-      enum: ['always zero', 'always transformed standard instruction', 'custom']
+      enum: ["always zero", "always transformed standard instruction", "custom"]
   TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED:
     description: |
       Value written into htinst/mtinst on a VirtualInstruction exception from VU/VS-mode.
@@ -554,7 +554,7 @@ params:
         * "custom": Write a custom value, which resuls in UNPREDICTABLE
     schema:
       type: string
-      enum: ['always zero', 'always transformed standard instruction', 'custom']
+      enum: ["always zero", "always transformed standard instruction", "custom"]
   TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT:
     description: |
       Value written into htinst/mtinst on an AccessFault exception from VU/VS-mode.
@@ -565,7 +565,7 @@ params:
         * "custom": Write a custom value, which resuls in UNPREDICTABLE
     schema:
       type: string
-      enum: ['always zero', 'always transformed standard instruction', 'custom']
+      enum: ["always zero", "always transformed standard instruction", "custom"]
   TINST_VALUE_ON_UCALL:
     description: |
       Value written into htinst/mtinst on a UCall exception from VU/VS-mode.
@@ -575,7 +575,7 @@ params:
         * "custom": Write a custom value, which resuls in UNPREDICTABLE
     schema:
       type: string
-      enum: ['always zero', 'custom']
+      enum: ["always zero", "custom"]
   TINST_VALUE_ON_SCALL:
     description: |
       Value written into htinst/mtinst on a SCall exception from VU/VS-mode.
@@ -585,7 +585,7 @@ params:
         * "custom": Write a custom value, which resuls in UNPREDICTABLE
     schema:
       type: string
-      enum: ['always zero', 'custom']
+      enum: ["always zero", "custom"]
   TINST_VALUE_ON_MCALL:
     description: |
       Value written into htinst/mtinst on a MCall exception from VU/VS-mode.
@@ -595,7 +595,7 @@ params:
         * "custom": Write a custom value, which resuls in UNPREDICTABLE
     schema:
       type: string
-      enum: ['always zero', 'custom']
+      enum: ["always zero", "custom"]
   TINST_VALUE_ON_VSCALL:
     description: |
       Value written into htinst/mtinst on a VSCall exception from VU/VS-mode.
@@ -605,7 +605,7 @@ params:
         * "custom": Write a custom value, which resuls in UNPREDICTABLE
     schema:
       type: string
-      enum: ['always zero', 'custom']
+      enum: ["always zero", "custom"]
   TINST_VALUE_ON_LOAD_PAGE_FAULT:
     description: |
       Value written into htinst/mtinst on a LoadPageFault exception from VU/VS-mode.
@@ -616,7 +616,7 @@ params:
         * "custom": Write a custom value, which resuls in UNPREDICTABLE
     schema:
       type: string
-      enum: ['always zero', 'always transformed standard instruction', 'custom']
+      enum: ["always zero", "always transformed standard instruction", "custom"]
   TINST_VALUE_ON_STORE_AMO_PAGE_FAULT:
     description: |
       Value written into htinst/mtinst on a StoreAmoPageFault exception from VU/VS-mode.
@@ -627,7 +627,7 @@ params:
         * "custom": Write a custom value, which resuls in UNPREDICTABLE
     schema:
       type: string
-      enum: ['always zero', 'always transformed standard instruction', 'custom']
+      enum: ["always zero", "always transformed standard instruction", "custom"]
   TRAP_ON_ECALL_FROM_VS:
     description: |
       Whether or not an ECALL-from-VS-mode causes a synchronous exception.

@@ -10,16 +10,16 @@ description: |
   C.AND expands into `and rd, rd, rs2`.
 definedBy:
   anyOf:
-  - C
-  - Zca
+    - C
+    - Zca
 assembly: xd, rs2
 encoding:
   match: 100011---11---01
   variables:
-  - name: rs2
-    location: 4-2
-  - name: rd
-    location: 9-7
+    - name: rs2
+      location: 4-2
+    - name: rd
+      location: 9-7
 access:
   s: always
   u: always

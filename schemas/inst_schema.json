@@ -50,7 +50,7 @@
           "description": "Specific value(s) that are not permitted for this field."
         }
       },
-      "required": [ "location" ],
+      "required": ["location"],
       "additionalProperties": false
     },
     "field": {
@@ -146,7 +146,16 @@
     },
     "inst_data": {
       "type": "object",
-      "required": ["$schema", "kind", "name", "long_name", "description", "definedBy", "access", "assembly"],
+      "required": [
+        "$schema",
+        "kind",
+        "name",
+        "long_name",
+        "description",
+        "definedBy",
+        "access",
+        "assembly"
+      ],
       "additionalProperties": false,
       "properties": {
         "$schema": {
@@ -278,5 +287,5 @@
     }
   },
 
- "$ref": "#/$defs/inst_data"
+  "$ref": "#/$defs/inst_data"
 }

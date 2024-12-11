@@ -5,15 +5,15 @@ kind: instruction
 name: lpad
 long_name: No synopsis available.
 description: |
-      No description available.
+  No description available.
 definedBy: Zicfilp
 assembly: imm
 encoding:
   match: --------------------000000010111
   variables:
-  - name: imm
-    location: 31-12
-    left_shift: 12
+    - name: imm
+      location: 31-12
+      left_shift: 12
 access:
   s: always
   u: always

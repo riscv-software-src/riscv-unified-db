@@ -6,15 +6,15 @@ name: hinval.gvma
 long_name: Invalidate cached address translations
 definedBy:
   allOf:
-  - Svinval
-  - H
+    - Svinval
+    - H
 encoding:
   match: 0110011----------000000001110011
   variables:
-  - name: rs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
 description: |
   `hinval.gvma` has the same semantics as `sinval.vma` except that it combines with
   `sfence.w.inval` and `sfence.inval.ir` to replace `hfence.gvma` and uses VMID instead of ASID.

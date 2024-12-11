@@ -11,19 +11,19 @@ description: |
   It expands to `sd` `rs2, offset(rs1)`.
 definedBy:
   anyOf:
-  - C
-  - Zca
+    - C
+    - Zca
 assembly: xs2, imm(xs1)
 encoding:
   match: 111-----------00
   variables:
-  - name: imm
-    location: 6-5|12-10
-    left_shift: 3
-  - name: rs2
-    location: 4-2
-  - name: rs1
-    location: 9-7
+    - name: imm
+      location: 6-5|12-10
+      left_shift: 3
+    - name: rs2
+      location: 4-2
+    - name: rs1
+      location: 9-7
 access:
   s: always
   u: always

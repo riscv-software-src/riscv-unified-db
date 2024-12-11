@@ -8,14 +8,14 @@ RVI20:
 
   # Semantic versions within the release
   versions:
-  - version: "1.0.0"
+    - version: "1.0.0"
 
   introduction: |
     The two profiles RVI20U32 and RVI20U64 correspond to the RV32I and RV64I base ISAs respectively.
   contributors:
-  - name: Krste Asanovic
-    email: krste@sifive.com
-    company: SiFive
+    - name: Krste Asanovic
+      email: krste@sifive.com
+      company: SiFive
   profiles:
     RVI20U32:
       marketing_name: RVI20U32
@@ -80,9 +80,9 @@ RVI20:
           presence: optional
           version: "~> 2.0"
       recommendations:
-      - text: |
-          Implementations are strongly recommended to raise illegal-instruction
-          exceptions on attempts to execute unimplemented opcodes.
+        - text: |
+            Implementations are strongly recommended to raise illegal-instruction
+            exceptions on attempts to execute unimplemented opcodes.
     RVI20U64:
       $inherits: "#/RVI20/profiles/RVI20U32"
       base: 64

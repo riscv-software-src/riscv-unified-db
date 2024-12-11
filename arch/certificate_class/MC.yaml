@@ -35,4 +35,4 @@ naming_scheme: |
   ** A <patch> release indicates just CRD specification changes without any difference in functional behavior
 
 mandatory_priv_modes:
-- M
+  - M

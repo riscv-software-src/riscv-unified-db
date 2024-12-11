@@ -1,17 +1,17 @@
 ---
 include:
-- "lib/**/*.rb"
-- "tasks/**/*.rake"
+  - "lib/**/*.rb"
+  - "tasks/**/*.rake"
 exclude:
-- spec/**/*
-- test/**/*
-- vendor/**/*
-- ".home/**/*"
+  - spec/**/*
+  - test/**/*
+  - vendor/**/*
+  - ".home/**/*"
 require: []
 domains: []
 reporters:
-- rubocop
-- require_not_found
+  - rubocop
+  - require_not_found
 formatter:
   rubocop:
     cops: safe
@@ -19,6 +19,6 @@ formatter:
     only: []
     extra_args: []
 require_paths:
-- /usr/lib/ruby/3.2.0
+  - /usr/lib/ruby/3.2.0
 plugins: []
 max_files: 5000

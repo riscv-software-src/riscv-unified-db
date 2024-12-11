@@ -15,12 +15,12 @@ base: 64
 encoding:
   match: 0110000----------101-----0011011
   variables:
-  - name: shamt
-    location: 24-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: shamt
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -36,8 +36,6 @@ operation(): |
 
   XReg unextended_result = (X[rs1] >> shamt) | (X[rs1] << (32 - shamt));
   X[rd] = {{32{unextended_result[31]}}, unextended_result};
-
-
 
 sail(): |
   {

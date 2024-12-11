@@ -40,7 +40,6 @@ fields:
       [when,"VSXLEN = 64"]
       Because the implementation only supports a single VSXLEN == 64, this field is read-only-1.
 
-
     type(): |
       if ((VSXLEN == 32) || (VSXLEN == 64)) {
         return CsrFieldType::RO;

@@ -5,11 +5,11 @@ kind: instruction
 name: mnret
 long_name: No synopsis available.
 description: |
-      No description available.
+  No description available.
 definedBy: Smrnmi
 assembly: mnret
 encoding:
-  match: '01110000001000000000000001110011'
+  match: "01110000001000000000000001110011"
   variables: []
 access:
   s: always

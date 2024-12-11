@@ -11,18 +11,18 @@ description: |
   The code points with imm=0 are reserved; the remaining code points with rd=x0 are HINTs; and the remaining code points with rd=x2 correspond to the C.ADDI16SP instruction
 definedBy:
   anyOf:
-  - C
-  - Zca
+    - C
+    - Zca
 assembly: xd, imm
 encoding:
   match: 011-----------01
   variables:
-  - name: imm
-    location: 12|6-2
-    left_shift: 12
-  - name: rd
-    location: 11-7
-    not: [0, 2]
+    - name: imm
+      location: 12|6-2
+      left_shift: 12
+    - name: rd
+      location: 11-7
+      not: [0, 2]
 access:
   s: always
   u: always

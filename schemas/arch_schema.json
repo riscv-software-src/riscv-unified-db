@@ -3,17 +3,12 @@
 
   "type": "object",
   "title": "Unified Architecture Specification",
-  "required": [
-    "type",
-    "extensions",
-    "csrs",
-    "instructions"
-  ],
+  "required": ["type", "extensions", "csrs", "instructions"],
   "allOf": [
     {
       "if": {
         "properties": {
-          "type": { "enum": ["fully configured"]}
+          "type": { "enum": ["fully configured"] }
         }
       },
       "then": {
@@ -111,7 +106,7 @@
     "profile_releases": {
       "type": "object",
       "items": {
-          "type": "string"
+        "type": "string"
       }
     },
     "manuals": {
