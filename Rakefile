@@ -105,6 +105,7 @@ desc "Clean up all generated files"
 task :clean do
   FileUtils.rm_rf $root / "gen"
   FileUtils.rm_rf $root / ".stamps"
+  FileUtils.rm_rf $root / ".home"
 end
 
 namespace :test do

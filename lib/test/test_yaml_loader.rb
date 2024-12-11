@@ -20,8 +20,9 @@ class TestYamlLoader < Minitest::Test
       File.write(test_dir / "test.yaml", yaml)
 
       stdout, stderr, status =
-        Open3.capture3("#{$root}/.home/.venv/bin/python3 #{$root}/lib/yaml_resolver.py resolve #{arch_dir} #{resolved_dir}")
-
+        Dir.chdir($root) do
+          Open3.capture3("/bin/bash -c \"source #{$root}/.home/.venv/bin/activate && #{$root}/.home/.venv/bin/python3 #{$root}/lib/yaml_resolver.py resolve --no-progress #{arch_dir} #{resolved_dir}\"")
+        end
       # puts stdout
       # puts stderr
       # puts status
@@ -47,7 +48,8 @@ class TestYamlLoader < Minitest::Test
         File.write(test_dir / "test#{i + 1}.yaml", yaml)
       end
 
-      `#{$root}/.home/.venv/bin/python3 #{$root}/lib/yaml_resolver.py resolve #{arch_dir} #{resolved_dir}`
+      system "/bin/bash -c \"source #{$root}/.home/.venv/bin/activate && #{$root}/.home/.venv/bin/python3 #{$root}/lib/yaml_resolver.py resolve #{arch_dir} #{resolved_dir}\""
+      # `source #{$root}/.home/.venv/bin/activate && python3 #{$root}/lib/yaml_resolver.py resolve #{arch_dir} #{resolved_dir}`
 
       if $CHILD_STATUS == 0
         YAML.load_file(resolved_dir / "test" / "test1.yaml")
