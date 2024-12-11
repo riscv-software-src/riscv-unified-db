@@ -5,19 +5,19 @@ kind: instruction
 name: froundnx.q
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy:
   anyOf: [Q, Zfa]
 assembly: qd, qs1, rm
 encoding:
   match: 010001100101-------------1010011
   variables:
-  - name: qs1
-    location: 19-15
-  - name: rm
-    location: 14-12
-  - name: qd
-    location: 11-7
+    - name: qs1
+      location: 19-15
+    - name: rm
+      location: 14-12
+    - name: qd
+      location: 11-7
 access:
   s: always
   u: always

@@ -335,28 +335,28 @@ description: |
 
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: 2021-11
-  contributors:
-  - name: Alexander Zeh
-  - name: Andy Glew
-  - name: Barry Spinney
-  - name: Ben Marshall
-    email: benmarshall@pqshield.com
-  - name: Daniel Page
-  - name: Derek Atkins
-  - name: Ken Dockser
-  - name: Markku-Juhani O. Saarinen
-  - name: Nathan Menhorn
-  - name: L Peter Deutsch
-  - name: Richard Newell
-  - name: Claire Wolf
-- version: 1.0.1
-  state: ratified
-  ratification_date: null
-  changes:
-  - Fix typos to show that `c.srli`, `c.srai`, and `c.slli` are Zkt instructions in RV64.
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2021-11
+    contributors:
+      - name: Alexander Zeh
+      - name: Andy Glew
+      - name: Barry Spinney
+      - name: Ben Marshall
+        email: benmarshall@pqshield.com
+      - name: Daniel Page
+      - name: Derek Atkins
+      - name: Ken Dockser
+      - name: Markku-Juhani O. Saarinen
+      - name: Nathan Menhorn
+      - name: L Peter Deutsch
+      - name: Richard Newell
+      - name: Claire Wolf
+  - version: 1.0.1
+    state: ratified
+    ratification_date: null
+    changes:
+      - Fix typos to show that `c.srli`, `c.srai`, and `c.slli` are Zkt instructions in RV64.
 company:
   name: RISC-V International
   url: https://riscv.org

@@ -10,16 +10,16 @@ description: |
   C.SRLI expands into `srli rd, rd, shamt`.
 definedBy:
   anyOf:
-  - C
-  - Zca
+    - C
+    - Zca
 assembly: xd, shamt
 encoding:
   match: 100-00--------01
   variables:
-  - name: shamt
-    location: 12|6-2
-  - name: rd
-    location: 9-7
+    - name: shamt
+      location: 12|6-2
+    - name: rd
+      location: 9-7
 access:
   s: always
   u: always

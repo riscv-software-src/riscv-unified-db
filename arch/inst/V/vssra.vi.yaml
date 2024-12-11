@@ -5,20 +5,20 @@ kind: instruction
 name: vssra.vi
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy: V
 assembly: vm, vs2, vd, imm
 encoding:
   match: 101011-----------011-----1010111
   variables:
-  - name: vm
-    location: 25-25
-  - name: vs2
-    location: 24-20
-  - name: simm5
-    location: 19-15
-  - name: vd
-    location: 11-7
+    - name: vm
+      location: 25-25
+    - name: vs2
+      location: 24-20
+    - name: simm5
+      location: 19-15
+    - name: vd
+      location: 11-7
 access:
   s: always
   u: always
@@ -26,9 +26,6 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-
-
-
 
 sail(): |
   {

@@ -10,17 +10,17 @@ description: |
   four-byte-aligned address.
 type: privileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
-  url: https://github.com/riscv/riscv-profiles/releases/tag/v1.0
-  repositories:
-    - url: https://github.com/riscv/riscv-profiles
-      branch: main
-  contributors:
-  - name: Krste Asanovic
-    company: SiFive, Inc.
-  param_constraints:
-    STVEC_MODE_DIRECT:
-      schema:
-        const: true
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    url: https://github.com/riscv/riscv-profiles/releases/tag/v1.0
+    repositories:
+      - url: https://github.com/riscv/riscv-profiles
+        branch: main
+    contributors:
+      - name: Krste Asanovic
+        company: SiFive, Inc.
+    param_constraints:
+      STVEC_MODE_DIRECT:
+        schema:
+          const: true

@@ -1,5 +1,4 @@
 # yaml-language-server: $schema=../../../../schemas/manual_version_schema.json
-
 ---
 manual: isa
 version: "4.0.0-pre"
@@ -10,212 +9,212 @@ url: https://github.com/riscv/riscv-isa-manual/releases/tag/20240411
 uses_isa_manual: true
 isa_manual_tree: "tags/20240411"
 volumes:
-- title: "RISC-V Instruction Set Manual, Volume I: Unprivileged ISA"
-  description: "The RISC-V Instruction Set Manual, Volume I: Unprivileged ISA"
-  authors:
-  - name: Andrew Waterman
-    email: awaterman@sifive.com
-    organization:
-      name: SiFive, Inc.
-      url: https://www.sifive.com/
-  chapters:
-  - riscv-isa-manual/src/colophon.adoc
-  - riscv-isa-manual/src/intro.adoc
-  - riscv-isa-manual/src/rv32.adoc
-  - riscv-isa-manual/src/rv32e.adoc
-  - riscv-isa-manual/src/rv64.adoc
-  - riscv-isa-manual/src/rv128.adoc
-  - riscv-isa-manual/src/zifencei.adoc
-  - riscv-isa-manual/src/zicsr.adoc
-  - riscv-isa-manual/src/counters.adoc
-  - riscv-isa-manual/src/zihintntl.adoc
-  - riscv-isa-manual/src/zihintpause.adoc
-  - riscv-isa-manual/src/zimop.adoc
-  - riscv-isa-manual/src/zicond.adoc
-  - riscv-isa-manual/src/m-st-ext.adoc
-  - riscv-isa-manual/src/a-st-ext.adoc
-  - riscv-isa-manual/src/zawrs.adoc
-  - riscv-isa-manual/src/zacas.adoc
-  - riscv-isa-manual/src/rvwmo.adoc
-  - riscv-isa-manual/src/ztso-st-ext.adoc
-  - riscv-isa-manual/src/cmo.adoc
-  - riscv-isa-manual/src/f-st-ext.adoc
-  - riscv-isa-manual/src/d-st-ext.adoc
-  - riscv-isa-manual/src/q-st-ext.adoc
-  - riscv-isa-manual/src/zfh.adoc
-  - riscv-isa-manual/src/zfa.adoc
-  - riscv-isa-manual/src/zfinx.adoc
-  - riscv-isa-manual/src/c-st-ext.adoc
-  - riscv-isa-manual/src/zc.adoc
-  - riscv-isa-manual/src/b-st-ext.adoc
-  - riscv-isa-manual/src/j-st-ext.adoc
-  - riscv-isa-manual/src/p-st-ext.adoc
-  - riscv-isa-manual/src/v-st-ext.adoc
-  - riscv-isa-manual/src/scalar-crypto.adoc
-  - riscv-isa-manual/src/vector-crypto.adoc
-  - riscv-isa-manual/src/rv-32-64g.adoc
-  - riscv-isa-manual/src/extending.adoc
-  - riscv-isa-manual/src/naming.adoc
-  - riscv-isa-manual/src/history.adoc
-  - riscv-isa-manual/src/mm-eplan.adoc
-  - riscv-isa-manual/src/mm-formal.adoc
-  #Appendices for Vector
-  - riscv-isa-manual/src/vector-examples.adoc
-  - riscv-isa-manual/src/calling-convention.adoc
-  #/End of Vector appendices
-  - riscv-isa-manual/src/index.adoc
-  extensions:
-  - [I, "2.1.0"]
-  - [U, "1.12.0"]
-  # - [E, "2.0"]
-  # - [RVI64, "2.1"]
-  # - [RVI128, "1.7"]
-  - [Zifencei, "2.0.0"]
-  - [Zicsr, "2.0.0"]
-  - [Zicntr, "2.0.0"]
-  - [Zihpm, "2.0.0"]
-  - [Zihintntl, "1.0.0"]
-  - [Zihintpause, "2.0.0"]
-  - [Zimop, "2.0.0"]
-  - [Zicond, "1.0.0"]
-  - [M, "2.0.0"]
-  - [A, "2.1.0"]
-  - [Zawrs, "1.0.1"]
-  - [Zacas, "1.0.0"]
-  - [Zabha, "1.0.0"]
-  # - [RVWMO, "2.0"]
-  - [Ztso, "1.0.0"]
-  - [Zicbom, "1.0.0"]
-  - [Zicboz, "1.0.0"]
-  - [Zicbop, "1.0.0"]
-  - [F, "2.2.0"]
-  - [D, "2.2.0"]
-  # - [Q, "2.2"]
-  - [Zfh, "1.0.0"]
-  - [Zfhmin, "1.0.0"]
-  - [Zfbfmin, "1.0.0"]
-  - [Zvfbfmin, "1.0.0"]
-  - [Zvfbfwma, "1.0.0"]
-  - [Zfa, "1.0.0"]
-  - [Zfinx, "1.0.0"]
-  - [Zdinx, "1.0.0"]
-  - [Zhinx, "1.0.0"]
-  - [C, "2.0.0"]
-  - [Zca, "1.0.0"]
-  - [Zcf, "1.0.0"]
-  - [Zcd, "1.0.0"]
-  - [Zcb, "1.0.0"]
-  - [Zcmp, "1.0.0"]
-  - [Zcmt, "1.0.0"]
-  - [B, "1.0.0"]
-  - [Zba, "1.0.0"]
-  - [Zbb, "1.0.0"]
-  - [Zbc, "1.0.0"]
-  - [Zbs, "1.0.0"]
-  - [Zbkb, "1.0.0"]
-  - [Zbkc, "1.0.0"]
-  - [Zbkx, "1.0.0"]
-  # - [J, "0.0"]
-  # - [P, "0.2"]
-  - [V, "1.0.0"]
-  - [Zvl32b, "1.0.0"]
-  - [Zvl64b, "1.0.0"]
-  - [Zvl128b, "1.0.0"]
-  - [Zvl256b, "1.0.0"]
-  - [Zvl512b, "1.0.0"]
-  - [Zvl1024b, "1.0.0"]
-  - [Zve32x, "1.0.0"]
-  - [Zve32f, "1.0.0"]
-  - [Zve64x, "1.0.0"]
-  - [Zve64f, "1.0.0"]
-  - [Zve64d, "1.0.0"]
-  - [Zvfhmin, "1.0.0"]
-  - [Zvfh, "1.0.0"]
-  - [Zvknha, "1.0.0"]
-  - [Zvknhb, "1.0.0"]
-  - [Zbkb, "1.0.0"]
-  - [Zbkc, "1.0.0"]
-  - [Zbkx, "1.0.0"]
-  - [Zknd, "1.0.0"]
-  - [Zkne, "1.0.0"]
-  - [Zknh, "1.0.0"]
-  - [Zksed, "1.0.0"]
-  - [Zksh, "1.0.0"]
-  - [Zkr, "1.0.0"]
-  - [Zkn, "1.0.0"]
-  - [Zks, "1.0.0"]
-  - [Zk, "1.0.0"]
-  - [Zkt, "1.0.0"]
-  - [Zvbb, "1.0.0"]
-  - [Zvbc, "1.0.0"]
-  - [Zvkb, "1.0.0"]
-  - [Zvkg, "1.0.0"]
-  - [Zvkned, "1.0.0"]
-  - [Zvknha, "1.0.0"]
-  - [Zvknhb, "1.0.0"]
-  - [Zvksed, "1.0.0"]
-  - [Zvksh, "1.0.0"]
-  - [Zvkn, "1.0.0"]
-  - [Zvknc, "1.0.0"]
-  - [Zvkng, "1.0.0"]
-  - [Zvks, "1.0.0"]
-  - [Zvksc, "1.0.0"]
-  - [Zvksg, "1.0.0"]
-  - [Zvkt, "1.0.0"]
-  - [Zicfilp, "1.0.0"]
-  - [Zicfiss, "1.0.0"]
-  # - [Zam, "0.1"]
-  changes:
-  - The inclusion of all ratified extensions through March 2024.
-  - The draft Zam extension has been removed, in favor of the definition of a misaligned atomicity granule PMA.
-  - The concept of vacant memory regions has been superseded by inaccessible memory or I/O regions.
-- title: "RISC-V Instruction Set Manual, Volume II: Privileged ISA"
-  description: "The RISC-V Instruction Set Manual, Volume II: Privileged ISA"
-  authors:
-  - name: Andrew Waterman
-    email: awaterman@sifive.com
-    organization:
-      name: SiFive, Inc.
-      url: https://www.sifive.com/
-  chapters:
-    - riscv-isa-manual/src/priv-preface.adoc
-    - riscv-isa-manual/src/priv-intro.adoc
-    - riscv-isa-manual/src/priv-csrs.adoc
-    - riscv-isa-manual/src/machine.adoc
-    - riscv-isa-manual/src/smstateen.adoc
-    - riscv-isa-manual/src/indirect-csr.adoc
-    - riscv-isa-manual/src/smepmp.adoc
-    - riscv-isa-manual/src/smcntrpmf.adoc
-    - riscv-isa-manual/src/rnmi.adoc
-    - riscv-isa-manual/src/smcdeleg.adoc
-    - riscv-isa-manual/src/supervisor.adoc
-    - riscv-isa-manual/src/sstc.adoc
-    - riscv-isa-manual/src/sscofpmf.adoc
-    - riscv-isa-manual/src/hypervisor.adoc
-    - riscv-isa-manual/src/priv-insns.adoc
-    - riscv-isa-manual/src/priv-history.adoc
-    - riscv-isa-manual/src/bibliography.adoc
-  extensions:
-  - [Smstateen, "1.0.0"]
-  - [Smcsrind, "1.0.0"]
-  - [Sscsrind, "1.0.0"]
-  - [Smepmp, "1.0.0"]
-  - [Smcntrpmf, "1.0.0"]
-  - [Smrnmi, "0.5.0"]
-  - [Smcdeleg, "1.0.0"]
-  - [S, "1.12.0"]
-  - [Sm, "1.12.0"]
-  - [Smhpm, "1.12.0"]
-  - [Smpmp, "1.12.0"]
-  - [Sv32, "1.12.0"]
-  - [Sv39, "1.12.0"]
-  - [Sv48, "1.12.0"]
-  - [Sv57, "1.12.0"]
-  - [Svnapot, "1.0.0"]
-  - [Svpbmt, "1.0.0"]
-  - [Svinval, "1.0.0"]
-  - [Svadu, "1.0.0"]
-  - [Svvptc, "1.0.0"]
-  - [Sstc, "1.0.0"]
-  - [Sscofpmf, "1.0.0"]
-  - [H, "1.0.0"]
+  - title: "RISC-V Instruction Set Manual, Volume I: Unprivileged ISA"
+    description: "The RISC-V Instruction Set Manual, Volume I: Unprivileged ISA"
+    authors:
+      - name: Andrew Waterman
+        email: awaterman@sifive.com
+        organization:
+          name: SiFive, Inc.
+          url: https://www.sifive.com/
+    chapters:
+      - riscv-isa-manual/src/colophon.adoc
+      - riscv-isa-manual/src/intro.adoc
+      - riscv-isa-manual/src/rv32.adoc
+      - riscv-isa-manual/src/rv32e.adoc
+      - riscv-isa-manual/src/rv64.adoc
+      - riscv-isa-manual/src/rv128.adoc
+      - riscv-isa-manual/src/zifencei.adoc
+      - riscv-isa-manual/src/zicsr.adoc
+      - riscv-isa-manual/src/counters.adoc
+      - riscv-isa-manual/src/zihintntl.adoc
+      - riscv-isa-manual/src/zihintpause.adoc
+      - riscv-isa-manual/src/zimop.adoc
+      - riscv-isa-manual/src/zicond.adoc
+      - riscv-isa-manual/src/m-st-ext.adoc
+      - riscv-isa-manual/src/a-st-ext.adoc
+      - riscv-isa-manual/src/zawrs.adoc
+      - riscv-isa-manual/src/zacas.adoc
+      - riscv-isa-manual/src/rvwmo.adoc
+      - riscv-isa-manual/src/ztso-st-ext.adoc
+      - riscv-isa-manual/src/cmo.adoc
+      - riscv-isa-manual/src/f-st-ext.adoc
+      - riscv-isa-manual/src/d-st-ext.adoc
+      - riscv-isa-manual/src/q-st-ext.adoc
+      - riscv-isa-manual/src/zfh.adoc
+      - riscv-isa-manual/src/zfa.adoc
+      - riscv-isa-manual/src/zfinx.adoc
+      - riscv-isa-manual/src/c-st-ext.adoc
+      - riscv-isa-manual/src/zc.adoc
+      - riscv-isa-manual/src/b-st-ext.adoc
+      - riscv-isa-manual/src/j-st-ext.adoc
+      - riscv-isa-manual/src/p-st-ext.adoc
+      - riscv-isa-manual/src/v-st-ext.adoc
+      - riscv-isa-manual/src/scalar-crypto.adoc
+      - riscv-isa-manual/src/vector-crypto.adoc
+      - riscv-isa-manual/src/rv-32-64g.adoc
+      - riscv-isa-manual/src/extending.adoc
+      - riscv-isa-manual/src/naming.adoc
+      - riscv-isa-manual/src/history.adoc
+      - riscv-isa-manual/src/mm-eplan.adoc
+      - riscv-isa-manual/src/mm-formal.adoc
+      #Appendices for Vector
+      - riscv-isa-manual/src/vector-examples.adoc
+      - riscv-isa-manual/src/calling-convention.adoc
+      #/End of Vector appendices
+      - riscv-isa-manual/src/index.adoc
+    extensions:
+      - [I, "2.1.0"]
+      - [U, "1.12.0"]
+      # - [E, "2.0"]
+      # - [RVI64, "2.1"]
+      # - [RVI128, "1.7"]
+      - [Zifencei, "2.0.0"]
+      - [Zicsr, "2.0.0"]
+      - [Zicntr, "2.0.0"]
+      - [Zihpm, "2.0.0"]
+      - [Zihintntl, "1.0.0"]
+      - [Zihintpause, "2.0.0"]
+      - [Zimop, "2.0.0"]
+      - [Zicond, "1.0.0"]
+      - [M, "2.0.0"]
+      - [A, "2.1.0"]
+      - [Zawrs, "1.0.1"]
+      - [Zacas, "1.0.0"]
+      - [Zabha, "1.0.0"]
+      # - [RVWMO, "2.0"]
+      - [Ztso, "1.0.0"]
+      - [Zicbom, "1.0.0"]
+      - [Zicboz, "1.0.0"]
+      - [Zicbop, "1.0.0"]
+      - [F, "2.2.0"]
+      - [D, "2.2.0"]
+      # - [Q, "2.2"]
+      - [Zfh, "1.0.0"]
+      - [Zfhmin, "1.0.0"]
+      - [Zfbfmin, "1.0.0"]
+      - [Zvfbfmin, "1.0.0"]
+      - [Zvfbfwma, "1.0.0"]
+      - [Zfa, "1.0.0"]
+      - [Zfinx, "1.0.0"]
+      - [Zdinx, "1.0.0"]
+      - [Zhinx, "1.0.0"]
+      - [C, "2.0.0"]
+      - [Zca, "1.0.0"]
+      - [Zcf, "1.0.0"]
+      - [Zcd, "1.0.0"]
+      - [Zcb, "1.0.0"]
+      - [Zcmp, "1.0.0"]
+      - [Zcmt, "1.0.0"]
+      - [B, "1.0.0"]
+      - [Zba, "1.0.0"]
+      - [Zbb, "1.0.0"]
+      - [Zbc, "1.0.0"]
+      - [Zbs, "1.0.0"]
+      - [Zbkb, "1.0.0"]
+      - [Zbkc, "1.0.0"]
+      - [Zbkx, "1.0.0"]
+      # - [J, "0.0"]
+      # - [P, "0.2"]
+      - [V, "1.0.0"]
+      - [Zvl32b, "1.0.0"]
+      - [Zvl64b, "1.0.0"]
+      - [Zvl128b, "1.0.0"]
+      - [Zvl256b, "1.0.0"]
+      - [Zvl512b, "1.0.0"]
+      - [Zvl1024b, "1.0.0"]
+      - [Zve32x, "1.0.0"]
+      - [Zve32f, "1.0.0"]
+      - [Zve64x, "1.0.0"]
+      - [Zve64f, "1.0.0"]
+      - [Zve64d, "1.0.0"]
+      - [Zvfhmin, "1.0.0"]
+      - [Zvfh, "1.0.0"]
+      - [Zvknha, "1.0.0"]
+      - [Zvknhb, "1.0.0"]
+      - [Zbkb, "1.0.0"]
+      - [Zbkc, "1.0.0"]
+      - [Zbkx, "1.0.0"]
+      - [Zknd, "1.0.0"]
+      - [Zkne, "1.0.0"]
+      - [Zknh, "1.0.0"]
+      - [Zksed, "1.0.0"]
+      - [Zksh, "1.0.0"]
+      - [Zkr, "1.0.0"]
+      - [Zkn, "1.0.0"]
+      - [Zks, "1.0.0"]
+      - [Zk, "1.0.0"]
+      - [Zkt, "1.0.0"]
+      - [Zvbb, "1.0.0"]
+      - [Zvbc, "1.0.0"]
+      - [Zvkb, "1.0.0"]
+      - [Zvkg, "1.0.0"]
+      - [Zvkned, "1.0.0"]
+      - [Zvknha, "1.0.0"]
+      - [Zvknhb, "1.0.0"]
+      - [Zvksed, "1.0.0"]
+      - [Zvksh, "1.0.0"]
+      - [Zvkn, "1.0.0"]
+      - [Zvknc, "1.0.0"]
+      - [Zvkng, "1.0.0"]
+      - [Zvks, "1.0.0"]
+      - [Zvksc, "1.0.0"]
+      - [Zvksg, "1.0.0"]
+      - [Zvkt, "1.0.0"]
+      - [Zicfilp, "1.0.0"]
+      - [Zicfiss, "1.0.0"]
+    # - [Zam, "0.1"]
+    changes:
+      - The inclusion of all ratified extensions through March 2024.
+      - The draft Zam extension has been removed, in favor of the definition of a misaligned atomicity granule PMA.
+      - The concept of vacant memory regions has been superseded by inaccessible memory or I/O regions.
+  - title: "RISC-V Instruction Set Manual, Volume II: Privileged ISA"
+    description: "The RISC-V Instruction Set Manual, Volume II: Privileged ISA"
+    authors:
+      - name: Andrew Waterman
+        email: awaterman@sifive.com
+        organization:
+          name: SiFive, Inc.
+          url: https://www.sifive.com/
+    chapters:
+      - riscv-isa-manual/src/priv-preface.adoc
+      - riscv-isa-manual/src/priv-intro.adoc
+      - riscv-isa-manual/src/priv-csrs.adoc
+      - riscv-isa-manual/src/machine.adoc
+      - riscv-isa-manual/src/smstateen.adoc
+      - riscv-isa-manual/src/indirect-csr.adoc
+      - riscv-isa-manual/src/smepmp.adoc
+      - riscv-isa-manual/src/smcntrpmf.adoc
+      - riscv-isa-manual/src/rnmi.adoc
+      - riscv-isa-manual/src/smcdeleg.adoc
+      - riscv-isa-manual/src/supervisor.adoc
+      - riscv-isa-manual/src/sstc.adoc
+      - riscv-isa-manual/src/sscofpmf.adoc
+      - riscv-isa-manual/src/hypervisor.adoc
+      - riscv-isa-manual/src/priv-insns.adoc
+      - riscv-isa-manual/src/priv-history.adoc
+      - riscv-isa-manual/src/bibliography.adoc
+    extensions:
+      - [Smstateen, "1.0.0"]
+      - [Smcsrind, "1.0.0"]
+      - [Sscsrind, "1.0.0"]
+      - [Smepmp, "1.0.0"]
+      - [Smcntrpmf, "1.0.0"]
+      - [Smrnmi, "0.5.0"]
+      - [Smcdeleg, "1.0.0"]
+      - [S, "1.12.0"]
+      - [Sm, "1.12.0"]
+      - [Smhpm, "1.12.0"]
+      - [Smpmp, "1.12.0"]
+      - [Sv32, "1.12.0"]
+      - [Sv39, "1.12.0"]
+      - [Sv48, "1.12.0"]
+      - [Sv57, "1.12.0"]
+      - [Svnapot, "1.0.0"]
+      - [Svpbmt, "1.0.0"]
+      - [Svinval, "1.0.0"]
+      - [Svadu, "1.0.0"]
+      - [Svvptc, "1.0.0"]
+      - [Sstc, "1.0.0"]
+      - [Sscofpmf, "1.0.0"]
+      - [H, "1.0.0"]

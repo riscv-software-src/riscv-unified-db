@@ -6,9 +6,9 @@ name: Zaamo
 long_name: Load-acquire/Store-release atomic instructions
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: 2024-04
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2024-04
 description: |
   The atomic memory operation (AMO) instructions perform read-modify-write
   operations for multiprocessor synchronization and are encoded with an

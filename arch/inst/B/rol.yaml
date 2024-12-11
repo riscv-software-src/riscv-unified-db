@@ -12,12 +12,12 @@ assembly: xd, xs1, xs2
 encoding:
   match: 0110000----------001-----0110011
   variables:
-  - name: rs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -32,8 +32,6 @@ operation(): |
   XReg shamt = (xlen() == 32) ? X[rs2][4:0] : X[rs2][5:0];
 
   X[rd] = (X[rs1] << shamt) | (X[rs1] >> (xlen() - shamt));
-
-
 
 sail(): |
   {

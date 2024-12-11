@@ -7,10 +7,10 @@ long_name: Advanced Interrupt Architecture, S-mode extension
 description: Advanced Interrupt Architecture, S-mode extension
 type: privileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: 2023-06
-  url: https://github.com/riscv/riscv-aia/releases/download/1.0/riscv-interrupts-1.0.pdf
-  requires:
-    name: S
-    version: ">= 1.12"
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2023-06
+    url: https://github.com/riscv/riscv-aia/releases/download/1.0/riscv-interrupts-1.0.pdf
+    requires:
+      name: S
+      version: ">= 1.12"

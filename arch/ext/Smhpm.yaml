@@ -7,23 +7,23 @@ long_name: M-mode programmable hardware performance counters
 description: M-mode programmable hardware performance counters
 type: privileged
 versions:
-- version: "1.11.0"
-  state: ratified
-  ratification_date: 2019-12
-  changes:
-  - Defined the `mcountinhibit` CSR, which stops performance counters from
-    incrementing to reduce energy consumption.
-- version: "1.12.0"
-  state: ratified
-  ratification_date: 2021-12
-  changes:
-  - PMP changes require an SFENCE.VMA on any hart that implements
-    page-based virtual memory, even if VM is not currently enabled.
-  - PMP reset values are now platform-defined.
-  - An additional 48 optional PMP registers have been defined.
-- version: "1.13.0"
-  state: frozen
-  ratification_date: 2023-12
+  - version: "1.11.0"
+    state: ratified
+    ratification_date: 2019-12
+    changes:
+      - Defined the `mcountinhibit` CSR, which stops performance counters from
+        incrementing to reduce energy consumption.
+  - version: "1.12.0"
+    state: ratified
+    ratification_date: 2021-12
+    changes:
+      - PMP changes require an SFENCE.VMA on any hart that implements
+        page-based virtual memory, even if VM is not currently enabled.
+      - PMP reset values are now platform-defined.
+      - An additional 48 optional PMP registers have been defined.
+  - version: "1.13.0"
+    state: frozen
+    ratification_date: 2023-12
 params:
   HPM_COUNTER_EN:
     description: |
@@ -36,9 +36,9 @@ params:
     schema:
       type: array
       items:
-      - const: false
-      - const: false
-      - const: false
+        - const: false
+        - const: false
+        - const: false
       additionalItems:
         type: boolean
       maxItems: 32
@@ -66,9 +66,9 @@ params:
     schema:
       type: array
       items:
-      - type: boolean
-      - const: false
-      - type: boolean
+        - type: boolean
+        - const: false
+        - type: boolean
       additionalItems:
         type: boolean
       maxItems: 32

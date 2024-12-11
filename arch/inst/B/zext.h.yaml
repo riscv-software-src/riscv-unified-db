@@ -19,19 +19,19 @@ encoding:
   RV32:
     match: 000010000000-----100-----0110011
     variables:
-    - name: rs1
-      location: 19-15
-    - name: rd
-      location: 11-7
+      - name: rs1
+        location: 19-15
+      - name: rd
+        location: 11-7
   RV64:
     match: 000010000000-----100-----0111011
     variables:
-    - name: rs1
-      location: 19-15
-    - name: rd
-      location: 11-7
+      - name: rs1
+        location: 19-15
+      - name: rd
+        location: 11-7
 excludedBy:
-  anyOf: [Zk, Zkn, Zks, Zbkb]  # zext.h instruction is a pseudo-op for `packw` when `Zbkb` is implemented
+  anyOf: [Zk, Zkn, Zks, Zbkb] # zext.h instruction is a pseudo-op for `packw` when `Zbkb` is implemented
 assembly: xd, xs1
 access:
   s: always
@@ -44,8 +44,6 @@ operation(): |
   }
 
   X[rd] = X[rs1][15:0];
-
-
 
 sail(): |
   {

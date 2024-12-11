@@ -11,11 +11,11 @@ description: |
   This extension was ratified with the RVA22 profiles.
 type: privileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: 2023-08
-  url: https://drive.google.com/file/d/1KcjgbLM5L1ZKY8934aJl8aQwGlMz6Cbo/view?usp=drive_link
-  param_constraints:
-    SCOUNTENABLE_EN:
-      extra_validation: |
-        HPM_COUNTER_EN.each_with_index { |hpm_exists, idx| assert(!hpm_exists || SCOUNTENABLE_EN[idx]) }
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2023-08
+    url: https://drive.google.com/file/d/1KcjgbLM5L1ZKY8934aJl8aQwGlMz6Cbo/view?usp=drive_link
+    param_constraints:
+      SCOUNTENABLE_EN:
+        extra_validation: |
+          HPM_COUNTER_EN.each_with_index { |hpm_exists, idx| assert(!hpm_exists || SCOUNTENABLE_EN[idx]) }

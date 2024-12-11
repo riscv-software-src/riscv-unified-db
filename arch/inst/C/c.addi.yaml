@@ -11,18 +11,18 @@ description: |
   The code points with rd=x0 encode the C.NOP instruction; the remaining code points with imm=0 encode HINTs.
 definedBy:
   anyOf:
-  - C
-  - Zca
+    - C
+    - Zca
 assembly: xd, imm
 encoding:
   match: 000-----------01
   variables:
-  - name: imm
-    location: 12|6-2
-    not: 0
-  - name: rd
-    location: 11-7
-    not: 0
+    - name: imm
+      location: 12|6-2
+      not: 0
+    - name: rd
+      location: 11-7
+      not: 0
 access:
   s: always
   u: always

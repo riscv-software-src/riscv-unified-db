@@ -2,7 +2,7 @@ name: Regression test
 
 on:
   schedule:
-    - cron: '30 2 * * *'
+    - cron: "30 2 * * *"
   workflow_dispatch:
 
 jobs:
@@ -27,28 +27,28 @@ jobs:
     if: ${{ needs.check_date.outputs.should_run != 'false' }}
     runs-on: ubuntu-latest
     steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@v4
-    - name: Setup apptainer
-      uses: eWaterCycle/setup-apptainer@v2.0.0
-    - name: Get container from cache
-      id: cache-sif
-      uses: actions/cache@v3
-      with:
-        path: .singularity/image.sif
-        key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
-    - name: Get gems and node files from cache
-      id: cache-bundle-npm
-      uses: actions/cache@v3
-      with:
-        path: |
-          .home/.gems
-          node_modules
-        key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
-    - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
-      name: Build container
-      run: ./bin/build_container
-    - name: Setup project
-      run: ./bin/setup
-    - name: Run regression
-      run: ./do test:nightly
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: Setup apptainer
+        uses: eWaterCycle/setup-apptainer@v2.0.0
+      - name: Get container from cache
+        id: cache-sif
+        uses: actions/cache@v3
+        with:
+          path: .singularity/image.sif
+          key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
+      - name: Get gems and node files from cache
+        id: cache-bundle-npm
+        uses: actions/cache@v3
+        with:
+          path: |
+            .home/.gems
+            node_modules
+          key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
+      - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
+        name: Build container
+        run: ./bin/build_container
+      - name: Setup project
+        run: ./bin/setup
+      - name: Run regression
+        run: ./do test:nightly

@@ -5,16 +5,16 @@ kind: instruction
 name: vl4re32.v
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy: V
 assembly: xs1, vd
 encoding:
   match: 011000101000-----110-----0000111
   variables:
-  - name: rs1
-    location: 19-15
-  - name: vd
-    location: 11-7
+    - name: rs1
+      location: 19-15
+    - name: vd
+      location: 11-7
 access:
   s: always
   u: always

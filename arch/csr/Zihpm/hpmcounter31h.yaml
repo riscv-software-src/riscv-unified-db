@@ -2,8 +2,6 @@
 
 # WARNING: This file is auto-generated from arch/csr/Zihpm/hpmcounterNh.layout
 
-
-
 $schema: csr_schema.json#
 kind: csr
 name: hpmcounter31h

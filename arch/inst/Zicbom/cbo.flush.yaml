@@ -33,8 +33,8 @@ assembly: "TODO"
 encoding:
   match: 000000000010-----010000000001111
   variables:
-  - name: rs1
-    location: 19-15
+    - name: rs1
+      location: 19-15
 access:
   m: always
   s: sometimes
@@ -58,6 +58,7 @@ access_detail: |
   ! 1 ! 0 ! 1 ! executes ! `Illegal Instruction` ! executes ! `Virtual Instruction`
   ! 1 ! 1 ! 1 ! executes ! executes ! executes ! executes
   !===
+
 # operation(): |
 #   XReg cache_block_address = X[rs1] & ~(CACHE_BLOCK_SIZE-1);
 #   Boolean has_fault?;
