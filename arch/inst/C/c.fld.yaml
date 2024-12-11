@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: c.fld
-long_name: Load double-precision 
+long_name: Load double-precision
 description: |
   Loads a double precision floating-point value from memory into register rd.
   It computes an effective address by adding the zero-extended offset, scaled by 8,

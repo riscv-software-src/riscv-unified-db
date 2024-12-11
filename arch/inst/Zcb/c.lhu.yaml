@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: c.lhu
-long_name: Load unsigned halfword, 16-bit encoding 
+long_name: Load unsigned halfword, 16-bit encoding
 description: |
   Loads a 16-bit value from memory into register rd.
   It computes an effective address by adding the zero-extended offset, to the base address in register rs1.

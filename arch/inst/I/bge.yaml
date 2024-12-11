@@ -33,7 +33,7 @@ operation(): |
   if ($signed(lhs) >= $signed(rhs)) {
     jump_halfword($pc + imm);
   }
-  
+
 
 
 sail(): |
@@ -68,7 +68,3 @@ sail(): |
       }
     } else RETIRE_SUCCESS
   }
-
-
-
-

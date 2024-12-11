@@ -26,7 +26,7 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    
+
 
 
 
@@ -40,9 +40,8 @@ sail(): |
     let EMUL_index_pow = EEW_index_pow - EEW_data_pow + EMUL_data_pow;
     let num_elem = get_num_elem(EMUL_data_pow, EEW_data_bytes * 8);
     let nf_int = nfields_int(nf);
-  
+
     if illegal_indexed_load(vd, vm, nf_int, EEW_index_bytes * 8, EMUL_index_pow, EMUL_data_pow) then { handle_illegal(); return RETIRE_FAIL };
-  
+
     process_vlxseg(nf_int, vm, vd, EEW_index_bytes, EEW_data_bytes, EMUL_index_pow, EMUL_data_pow, rs1, vs2, num_elem, 3)
   }
-

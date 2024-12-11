@@ -67,7 +67,3 @@ sail(): |
       }
     } else RETIRE_SUCCESS
   }
-
-
-
-

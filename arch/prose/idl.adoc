@@ -369,7 +369,7 @@ Literals may contain any number of underscores after the initial digit for clari
 
 # gotcha
 -17         # 15 decimal: the literal is 17, unsigned, in 5-bits. when negated, the sign bit lost
--13         # 3 decimal: the literal is 13, unsigned, in 4-bits. when negated, the sign bit is lost 
+-13         # 3 decimal: the literal is 13, unsigned, in 4-bits. when negated, the sign bit is lost
 
 ----
 
@@ -427,7 +427,7 @@ The result of a binary operation is signed if both operands are signed; otherwis
 .2+| 0       | `i[idx]`     | `Bits<1>`             | Extract a single bit from bit position `idx`. +
                                                       `i` must be an integral type or an array. +
                                                       Result is unsigned, regardless of the sign of `i`.
-   
+
              | `i[msb:lsb]` | `Bits<msb - lsb + 1>` | Extract a range of bits between `msb` and `lsb`, inclusive. +
                                                       `i` must be an integral type. +
                                                       Result is unsigned, regardless of the sign of `i`.
@@ -472,19 +472,19 @@ The result of a binary operation is signed if both operands are signed; otherwis
 
                 | `i - j`    | `Bits<max(L(i), L(j))>`   | Subtraction +
                                                            The carry bit is discarded. +
-                                                           If the carry bit is needed, the operands can be widened prior to subtraction.                                                 
+                                                           If the carry bit is needed, the operands can be widened prior to subtraction.
 
-.3+| 8          | `i << j`   a| 
+.3+| 8          | `i << j`   a|
 [%autowidth]
 !===
 ! When ! Then
 ! `j` is literal  ! `Bits<L(i) + j>`
 ! `j` is variable ! `typeof(i)`
-!===                     
+!===
                                                            | Left logical shift. +
                                                              When the shift amount is known at compile time, the result is widened to not lose any data. +
                                                              When the shift amount is not known at compile time, the shifted bits are discarded.
-                
+
                 | `i >> j`   | `typeof(i)`                 | Right logical shift.
                 | `i >>> j`  | `typeof(i)`                 | Right arithmetic shift.
 
@@ -521,7 +521,7 @@ The result of a binary operation is signed if both operands are signed; otherwis
 
 === Mutable variables
 
-Variables must be declared with a type. Variable names must begin with a lowercase letter and can be followed by any number of letters (any case), numbers, or an underscore. 
+Variables must be declared with a type. Variable names must begin with a lowercase letter and can be followed by any number of letters (any case), numbers, or an underscore.
 
 Variables may be optionally initialized when they are declared using the assignment operator. Variables that are not explicitly initialized are implicitly initialized to zero (for Bits<N>) or false (for Boolean).
 
@@ -555,7 +555,7 @@ Two builtin variables exist:
 | Name | Type | Scope | Description
 
 | `$pc` | `Bits<XLEN>` | Global | The current program counter of the hart
-| `$encoding` | `Bits<VARIABLE>`, where VARIABLE is the length of the last fetched insruction | Instruction, Csr | The encoding of the last fetched instruction. Only accessible in Instruction scope and Csr scope (cannot be used in functions). 
+| `$encoding` | `Bits<VARIABLE>`, where VARIABLE is the length of the last fetched insruction | Instruction, Csr | The encoding of the last fetched instruction. Only accessible in Instruction scope and Csr scope (cannot be used in functions).
 |===
 
 === Constants
@@ -592,7 +592,7 @@ All configuration parameters are added to Global scope for compilation.
 
 == Type conversions
 
-Type conversions occur when dissimilar types are used in some binary operators or assignments. 
+Type conversions occur when dissimilar types are used in some binary operators or assignments.
 
 `Bits<N>` types are converted as follows:
 
@@ -769,7 +769,7 @@ Functions must be given a textual description; this is to promote IDL as an exec
 
 All arguments and return values are passed by value. There are no references or variable addresses in IDL.
 
-Functions must live in global scope. Functions cannot be nested. 
+Functions must live in global scope. Functions cannot be nested.
 
 A function may return zero or more values of any valid type. A function may accept zero or more arguments of any valid type.
 
@@ -783,7 +783,7 @@ IDL supports templated functions that take a compile-time-known constant as an a
 
 IDL only supports template values (_i.e._, you cannot pass a type as a template argument). Template values must be a Bits<N> type.
 
-Template functions are called using C++-style syntax, with the template argument enclosed in angle brackets. 
+Template functions are called using C++-style syntax, with the template argument enclosed in angle brackets.
 
 IDL cannot infer template arguments; they must be provided explictly.
 
@@ -941,7 +941,7 @@ instret:
 
 field.sw_write(csr_value)::
 
-The "sw_write(csr_value)" function of a CSR field executes when a software write (via a `Zicsr` instruction) occurs. It takes a single value, `csr_value`, that is an implicitly-defined bitfield of the CSR populated with the values software is trying to write. It returns a Bits<N> value repsenting what hardware is actually going to write into the field, where N is the width of the field. sw_write may also return the special value `UNDEFINED_LEGAL_DETERMINISTIC` to indicate that the written value is undefined, but it will be a legal value for the field and is deterministically determined based on the sequence of instructions leading to the write. 
+The "sw_write(csr_value)" function of a CSR field executes when a software write (via a `Zicsr` instruction) occurs. It takes a single value, `csr_value`, that is an implicitly-defined bitfield of the CSR populated with the values software is trying to write. It returns a Bits<N> value repsenting what hardware is actually going to write into the field, where N is the width of the field. sw_write may also return the special value `UNDEFINED_LEGAL_DETERMINISTIC` to indicate that the written value is undefined, but it will be a legal value for the field and is deterministically determined based on the sequence of instructions leading to the write.
 
 [NOTE]
 Note that the sw_read is specified for the entire CSR and the sw_write is specified for a CSR field.

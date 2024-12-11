@@ -1,4 +1,4 @@
 #!/bin/bash
 
-npm i 
+npm i
 bundle install

@@ -145,9 +145,9 @@
                   "additionalProperties": false
                 }
               },
-              "ratification_date": { 
+              "ratification_date": {
                 "oneOf": [
-                  {"type": "string", "pattern": "^20[0-9][0-9]-(0[1-9]|1[0-2])$", "$comment": "When ratification date is known", 
+                  {"type": "string", "pattern": "^20[0-9][0-9]-(0[1-9]|1[0-2])$", "$comment": "When ratification date is known",
                   "description": "A specific year and month in YYYY-MM format", "examples": ["2019-01", "2024-12"] },
                   {"type": "string", "pattern": "^unknown$", "$comment": "When ratification date is unknown" },
                   {"type": "null", "$comment": "When version isn't ratified" }

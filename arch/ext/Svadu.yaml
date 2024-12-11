@@ -12,7 +12,7 @@ description: |
   * When a virtual page is accessed and the A bit is clear, the PTE is updated to
     set the A bit.  When the virtual page is written and the D bit is clear, the
     PTE is updated to set the D bit. When G-stage address translation is in use
-    and is not Bare, the G-stage virtual pages may be accessed or written by 
+    and is not Bare, the G-stage virtual pages may be accessed or written by
     implicit accesses to VS-level memory management data structures, such as page
     tables.
 
@@ -38,7 +38,7 @@ description: |
     remote harts.                                                                +
                                                                                 +
     The PTE update is not required to be atomic with respect to the memory access
-    that caused the update and a trap may occur between the PTE update and the 
+    that caused the update and a trap may occur between the PTE update and the
     memory access that caused the PTE update. If a trap occurs then the A and/or D
     bit may be updated but the memory access that caused the PTE update might not
     occur. The hart must not perform the memory access that caused the PTE update
@@ -122,4 +122,3 @@ conflicts: Svade
 doc_license:
   name: Creative Commons Attribution 4.0 International License (CC-BY 4.0)
   url: https://creativecommons.org/licenses/by/4.0/
-  

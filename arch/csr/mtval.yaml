@@ -46,7 +46,7 @@ fields:
       ! [6] Store/AMO address misaligned ! The misaligned virtual store/AMO address.
       ! [7] Store/AMO access fault
       ! The virtual store/AMO address causing the access fault.
-      
+
         When the store/AMO is misaligned, the reported value is the smallest address on the page causing a fault
         (_e.g._, if an 8-byte store is equally split across a page and the fault occurs on the second page,
         address + 4 is reported).
@@ -63,34 +63,34 @@ fields:
         <% unless ext?(:C) %>(same as the value written to `mepc`)<% end %>.
       ! [13] Load page fault
       ! The part of the virtual load address causing in the page fault.
-        
+
         When the load is misaligned, the reported value is the smallest address on the page causing a fault
         (_e.g._, if an 8-byte load is equally split across a page and the fault occurs on the second page, address + 4 is reported).
       ! [15] Store/AMO page fault
       ! The virtual store/AMO address causing in the page fault.
-        
+
         When the store/AMO is misaligned, the reported value is the smallest address on the page causing a fault
         (_e.g._, if an 8-byte store is equally split across a page and the fault occurs on the second page, address + 4 is reported).
       <%- if ext?(:H) -%>
       ! [20] Instruction guest-page fault
       ! The <% if ext?(:C) %> portion of the <% end %> virtual PC causing the fault <% unless ext?(:C) %>(same as the value written to `mepc`)<% end %>.
-      
+
         The guest physical address is reported in `mtval2`.
       ! [21] Load guest-page fault
       ! The part of the virtual address causing the fault.
 
         When the load is misaligned, the reported value is the smallest address on the page causing a fault
         (_e.g._, if an 8-byte load is equally split across a page and the fault occurs on the second page, address + 4 is reported).
-        
+
         The guest physical address is reported in `mtval2`.
       ! [22] Virutal instruction
       ! The encoding of the faulting virtual instruction.
       ! [23] Store/AMO guest-page fault
       ! The part of the virtual address causing the fault.
-      
+
         When the store/AMO is misaligned, the reported value is the smallest address on the page causing a fault
         (_e.g._, if an 8-byte store is equally split across a page and the fault occurs on the second page, address + 4 is reported).
-        
+
         The guest physical address is reported in `mtval2`.
       <%- end -%>
       !===

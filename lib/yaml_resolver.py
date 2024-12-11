@@ -34,7 +34,7 @@ def dig(obj, *keys):
       return dig(next_obj, *keys[1:])
   except KeyError:
     return None
-  
+
 resolved_objs = {}
 def resolve(path, rel_path, arch_root):
   if path in resolved_objs:
