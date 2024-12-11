@@ -35,10 +35,7 @@
       "properties": {
         "XLEN": {
           "type": "integer",
-          "enum": [
-            32,
-            64
-          ],
+          "enum": [32, 64],
           "description": "Base instruction set datapath width (e.g., RV32 or RV64)\n"
         },
         "NAME": {
@@ -52,7 +49,7 @@
         },
         "M_MODE_ENDIANESS": {
           "type": "integer",
-          "enum": [ 0, 1, 2],
+          "enum": [0, 1, 2],
           "description": "Endianess of data in M-mode. Can be one of:\n\n  * 0: M-mode data is always little endian\n  * 1: M-mode data is always big endian\n  * 2: M-mode data can be either little or big endian, depending on the RW CSR field mstatus.MBE\n"
         },
         "S_MODE_ENDIANESS": {
@@ -390,8 +387,6 @@
           "description": "When true, vstval is written with the casue when a SoftwareCheck exception occurs.\nWhen false, vstval is written with 0"
         },
 
-
-
         "CONFIG_PTR_ADDRESS": {
           "type": "integer",
           "minimum": 0,
@@ -510,10 +505,7 @@
     }
   },
   "type": "object",
-  "required": [
-    "params",
-    "extensions"
-  ],
+  "required": ["params", "extensions"],
   "properties": {
     "params": {
       "$ref": "#/$defs/params"
