@@ -13,6 +13,6 @@ description: |
   value when the D or Q extension is present).
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

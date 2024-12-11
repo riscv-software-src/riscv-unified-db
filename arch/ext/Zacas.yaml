@@ -8,7 +8,7 @@ description: |
   Adds Word/Doubleword/Quadword compare-and-swap instructions.
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
-  requires: Zaamo
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    requires: Zaamo

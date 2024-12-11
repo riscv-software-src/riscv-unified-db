@@ -8,6 +8,6 @@ description: |
   Hart-visible portion of the debug spec.
 type: privileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

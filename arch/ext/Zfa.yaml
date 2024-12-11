@@ -13,7 +13,7 @@ description: |
   The `Zfa` extension depends on the `F` extension.
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
-  requires: F
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    requires: F

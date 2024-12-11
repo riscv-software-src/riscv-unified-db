@@ -14,7 +14,7 @@ description: |
   a double-precision value which is itself NaN-boxed inside a quad-precision value.
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
-  requires: D
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    requires: D

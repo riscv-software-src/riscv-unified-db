@@ -1,6 +1,5 @@
 # yaml-language-server: $schema=../../schemas/config_schema.json
 ---
-
 $schema: config_schema.json#
 kind: architecture configuration
 type: partially configured
@@ -9,7 +8,7 @@ description: A generic RV32 system; only MXLEN is known
 params:
   XLEN: 64
 mandatory_extensions:
-- name: "I"
-  version: ">= 0"
-- name: "Sm"
-  version: ">= 0"
+  - name: "I"
+    version: ">= 0"
+  - name: "Sm"
+    version: ">= 0"

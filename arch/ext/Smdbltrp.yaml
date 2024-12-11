@@ -17,6 +17,6 @@ description: |
   critical-error signal to the platform when the hart is in a critical error state.
 type: privileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

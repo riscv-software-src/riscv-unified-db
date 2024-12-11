@@ -1,6 +1,5 @@
 # yaml-language-server: $schema=../../schemas/config_schema.json
 ---
-
 $schema: config_schema.json#
 kind: architecture configuration
 type: unconfigured

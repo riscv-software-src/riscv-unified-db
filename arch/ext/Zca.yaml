@@ -19,25 +19,25 @@ company:
   name: RISC-V International
   url: https://riscv.org
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: 2023-04
-  repositories:
-    - url: https://github.com/riscv/riscv-code-size-reduction
-      branch: main
-  contributors:
-    - name: Tariq Kurd
-    - name: Ibrahim Abu Kharmeh
-    - name: Torbjørn Viem Ness
-    - name: Matteo Perotti
-    - name: Nidal Faour
-    - name: Bill Traynor
-    - name: Rafael Sene 
-    - name: Xinlong Wu
-    - name: sinan
-    - name: Jeremy Bennett
-    - name: Heda Chen 
-    - name: Alasdair Armstrong
-    - name: Graeme Smecher
-    - name: Nicolas Brunie 
-    - name: Jiawei
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2023-04
+    repositories:
+      - url: https://github.com/riscv/riscv-code-size-reduction
+        branch: main
+    contributors:
+      - name: Tariq Kurd
+      - name: Ibrahim Abu Kharmeh
+      - name: Torbjørn Viem Ness
+      - name: Matteo Perotti
+      - name: Nidal Faour
+      - name: Bill Traynor
+      - name: Rafael Sene
+      - name: Xinlong Wu
+      - name: sinan
+      - name: Jeremy Bennett
+      - name: Heda Chen
+      - name: Alasdair Armstrong
+      - name: Graeme Smecher
+      - name: Nicolas Brunie
+      - name: Jiawei

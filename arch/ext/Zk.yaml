@@ -13,10 +13,10 @@ description: |
 
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
-  implies:
-  - ["Zkn", "1.0.0"]
-  - ["Zkr", "1.0.0"]
-  - ["Zkt", "1.0.0"]
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    implies:
+      - ["Zkn", "1.0.0"]
+      - ["Zkr", "1.0.0"]
+      - ["Zkt", "1.0.0"]

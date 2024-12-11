@@ -16,6 +16,6 @@ description: |
   interrupted state, and one new instruction, `mnret`, to resume from the RNMI handler.
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

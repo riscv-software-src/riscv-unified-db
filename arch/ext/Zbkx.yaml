@@ -13,6 +13,6 @@ description: |
   execution latency does not depend on the (secret) data being operated on.
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

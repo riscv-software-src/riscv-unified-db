@@ -12,7 +12,7 @@ introduction: |
   terms of the amount of software that targets this profile.
 extensions:
   $inherits: "profile/RVI20U64.yaml#/extensions"
-  $remove: Zifencei   # Not allowed as an option for Unpriv ISA (only available in Priv ISA).
+  $remove: Zifencei # Not allowed as an option for Unpriv ISA (only available in Priv ISA).
   A:
     presence: mandatory
   C:
@@ -66,33 +66,33 @@ extensions:
       distributions should assume their existence only for correctness, not
       for performance.
 extra_notes:
-- presence: optional
-  text: |
-    The rationale to not make Q an optional extension is that
-    quad-precision floating-point is unlikely to be implemented in
-    hardware, and so we do not require or expect A-profile software to
-    expend effort optimizing use of Q instructions in case they are
-    present.
-- presence: optional
-  text: |
-    Zifencei is not classed as a supported option in the user-mode
-    profile because it is not sufficient by itself to produce the desired
-    effect in a multiprogrammed multiprocessor environment without OS
-    support, and so the instruction cache flush should always be performed
-    using an OS call rather than using the `fence.i` instruction.
-    `fence.i` semantics can be expensive to implement for some hardware
-    memory hierarchy designs, and so alternative non-standard
-    instruction-cache coherence mechanisms can be used behind the OS
-    abstraction.  A separate extension is being developed for more general
-    and efficient instruction cache coherence.
-- presence: optional
-  text: |
-    The execution environment must provide a means to synchronize writes to
-    instruction memory with instruction fetches, the implementation of which
-    likely relies on the Zifencei extension.
-    For example, RISC-V Linux supplies the `__riscv_flush_icache` system call and
-    a corresponding vDSO call.
+  - presence: optional
+    text: |
+      The rationale to not make Q an optional extension is that
+      quad-precision floating-point is unlikely to be implemented in
+      hardware, and so we do not require or expect A-profile software to
+      expend effort optimizing use of Q instructions in case they are
+      present.
+  - presence: optional
+    text: |
+      Zifencei is not classed as a supported option in the user-mode
+      profile because it is not sufficient by itself to produce the desired
+      effect in a multiprogrammed multiprocessor environment without OS
+      support, and so the instruction cache flush should always be performed
+      using an OS call rather than using the `fence.i` instruction.
+      `fence.i` semantics can be expensive to implement for some hardware
+      memory hierarchy designs, and so alternative non-standard
+      instruction-cache coherence mechanisms can be used behind the OS
+      abstraction.  A separate extension is being developed for more general
+      and efficient instruction cache coherence.
+  - presence: optional
+    text: |
+      The execution environment must provide a means to synchronize writes to
+      instruction memory with instruction fetches, the implementation of which
+      likely relies on the Zifencei extension.
+      For example, RISC-V Linux supplies the `__riscv_flush_icache` system call and
+      a corresponding vDSO call.
 recommendations:
-- text: |
-    Implementations are strongly recommended to raise illegal-instruction
-    exceptions on attempts to execute unimplemented opcodes.
+  - text: |
+      Implementations are strongly recommended to raise illegal-instruction
+      exceptions on attempts to execute unimplemented opcodes.

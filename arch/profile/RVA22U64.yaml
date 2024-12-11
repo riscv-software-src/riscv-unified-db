@@ -101,26 +101,26 @@ extensions:
     presence: optional
     version: "~> 1.0"
 extra_notes:
-- presence: optional
-  text: |
-    The scalar crypto extensions are expected to be superseded by
-    vector crypto standards in future profiles, and the scalar extensions
-    may be removed as supported options once vector crypto is present.
-- presence: optional
-  text: |
-    The smaller component scalar crypto extensions (Zbc, Zbkb, Zbkc,
-    Zbkx, Zknd, Zkne, Zknh, Zksed, Zksh) are not provided as separate
-    options in the profile.  Profile implementers should provide all of
-    the instructions in a given algorithm suite as part of the Zkn or Zks
-    supported options.
-- presence: optional
-  text: |
-    Access to the entropy source (Zkr) in a system is usually
-    carefully controlled.  While the design supports unprivileged access
-    to the entropy source, this is unlikely to be commonly used in an
-    application processor, and so Zkr was not added as a profile option.
-    This also means the roll-up Zk was not added as a profile option.
-- presence: optional
-  text: |
-    The Zfinx, Zdinx, Zhinx, Zhinxmin extensions are incompatible
-    with the profile mandates to support the F and D extensions.
+  - presence: optional
+    text: |
+      The scalar crypto extensions are expected to be superseded by
+      vector crypto standards in future profiles, and the scalar extensions
+      may be removed as supported options once vector crypto is present.
+  - presence: optional
+    text: |
+      The smaller component scalar crypto extensions (Zbc, Zbkb, Zbkc,
+      Zbkx, Zknd, Zkne, Zknh, Zksed, Zksh) are not provided as separate
+      options in the profile.  Profile implementers should provide all of
+      the instructions in a given algorithm suite as part of the Zkn or Zks
+      supported options.
+  - presence: optional
+    text: |
+      Access to the entropy source (Zkr) in a system is usually
+      carefully controlled.  While the design supports unprivileged access
+      to the entropy source, this is unlikely to be commonly used in an
+      application processor, and so Zkr was not added as a profile option.
+      This also means the roll-up Zk was not added as a profile option.
+  - presence: optional
+    text: |
+      The Zfinx, Zdinx, Zhinx, Zhinxmin extensions are incompatible
+      with the profile mandates to support the F and D extensions.

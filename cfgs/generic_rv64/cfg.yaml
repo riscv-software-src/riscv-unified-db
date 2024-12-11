@@ -65,43 +65,43 @@ params:
   MISALIGNED_AMO: false
 
   HPM_COUNTER_EN:
-  - false  # CY
-  - false # empty
-  - false  # IR
-  - true  # HPM3
-  - true  # HPM4
-  - true  # HPM5
-  - true  # HPM6
-  - true  # HPM7
-  - true  # HPM8
-  - true  # HPM9
-  - true  # HPM10
-  - false # HPM11
-  - false # HPM12
-  - false # HPM13
-  - false # HPM14
-  - false # HPM15
-  - false # HPM16
-  - false # HPM17
-  - false # HPM18
-  - false # HPM19
-  - false # HPM20
-  - false # HPM21
-  - false # HPM22
-  - false # HPM23
-  - false # HPM24
-  - false # HPM25
-  - false # HPM26
-  - false # HPM27
-  - false # HPM28
-  - false # HPM29
-  - false # HPM30
-  - false # HPM31
+    - false # CY
+    - false # empty
+    - false # IR
+    - true # HPM3
+    - true # HPM4
+    - true # HPM5
+    - true # HPM6
+    - true # HPM7
+    - true # HPM8
+    - true # HPM9
+    - true # HPM10
+    - false # HPM11
+    - false # HPM12
+    - false # HPM13
+    - false # HPM14
+    - false # HPM15
+    - false # HPM16
+    - false # HPM17
+    - false # HPM18
+    - false # HPM19
+    - false # HPM20
+    - false # HPM21
+    - false # HPM22
+    - false # HPM23
+    - false # HPM24
+    - false # HPM25
+    - false # HPM26
+    - false # HPM27
+    - false # HPM28
+    - false # HPM29
+    - false # HPM30
+    - false # HPM31
 
   # list of defined HPM events
   HPM_EVENTS:
-  - 0
-  - 3
+    - 0
+    - 3
 
   # Indicates which counters can be disabled from mcountinhibit
   #
@@ -110,38 +110,38 @@ params:
   # 11 in COUNTINHIBIT_EN since the highest implemented counter
   # would be at bit 10
   COUNTINHIBIT_EN:
-  - true  # CY
-  - false # empty
-  - true  # IR
-  - true  # HPM3
-  - true  # HPM4
-  - true  # HPM5
-  - true  # HPM6
-  - true  # HPM7
-  - true  # HPM8
-  - true  # HPM9
-  - true  # HPM10
-  - false # HPM11
-  - false # HPM12
-  - false # HPM13
-  - false # HPM14
-  - false # HPM15
-  - false # HPM16
-  - false # HPM17
-  - false # HPM18
-  - false # HPM19
-  - false # HPM20
-  - false # HPM21
-  - false # HPM22
-  - false # HPM23
-  - false # HPM24
-  - false # HPM25
-  - false # HPM26
-  - false # HPM27
-  - false # HPM28
-  - false # HPM29
-  - false # HPM30
-  - false # HPM31
+    - true # CY
+    - false # empty
+    - true # IR
+    - true # HPM3
+    - true # HPM4
+    - true # HPM5
+    - true # HPM6
+    - true # HPM7
+    - true # HPM8
+    - true # HPM9
+    - true # HPM10
+    - false # HPM11
+    - false # HPM12
+    - false # HPM13
+    - false # HPM14
+    - false # HPM15
+    - false # HPM16
+    - false # HPM17
+    - false # HPM18
+    - false # HPM19
+    - false # HPM20
+    - false # HPM21
+    - false # HPM22
+    - false # HPM23
+    - false # HPM24
+    - false # HPM25
+    - false # HPM26
+    - false # HPM27
+    - false # HPM28
+    - false # HPM29
+    - false # HPM30
+    - false # HPM31
 
   # Indicates which counters can delegated via mcounteren
   #
@@ -150,38 +150,38 @@ params:
   # 11 in COUNTEN_EN since the highest implemented counter
   # would be at bit 10
   MCOUNTENABLE_EN:
-  - true  # CY
-  - false # TM
-  - true  # IR
-  - true  # HPM3
-  - true  # HPM4
-  - true  # HPM5
-  - true  # HPM6
-  - true  # HPM7
-  - true  # HPM8
-  - true  # HPM9
-  - true  # HPM10
-  - false # HPM11
-  - false # HPM12
-  - false # HPM13
-  - false # HPM14
-  - false # HPM15
-  - false # HPM16
-  - false # HPM17
-  - false # HPM18
-  - false # HPM19
-  - false # HPM20
-  - false # HPM21
-  - false # HPM22
-  - false # HPM23
-  - false # HPM24
-  - false # HPM25
-  - false # HPM26
-  - false # HPM27
-  - false # HPM28
-  - false # HPM29
-  - false # HPM30
-  - false # HPM31
+    - true # CY
+    - false # TM
+    - true # IR
+    - true # HPM3
+    - true # HPM4
+    - true # HPM5
+    - true # HPM6
+    - true # HPM7
+    - true # HPM8
+    - true # HPM9
+    - true # HPM10
+    - false # HPM11
+    - false # HPM12
+    - false # HPM13
+    - false # HPM14
+    - false # HPM15
+    - false # HPM16
+    - false # HPM17
+    - false # HPM18
+    - false # HPM19
+    - false # HPM20
+    - false # HPM21
+    - false # HPM22
+    - false # HPM23
+    - false # HPM24
+    - false # HPM25
+    - false # HPM26
+    - false # HPM27
+    - false # HPM28
+    - false # HPM29
+    - false # HPM30
+    - false # HPM31
 
   # Indicates which counters can delegated via scounteren
   #
@@ -190,38 +190,38 @@ params:
   # 11 in COUNTEN_EN since the highest implemented counter
   # would be at bit 10
   SCOUNTENABLE_EN:
-  - true  # CY
-  - false # TM
-  - true  # IR
-  - true  # HPM3
-  - true  # HPM4
-  - true  # HPM5
-  - true  # HPM6
-  - true  # HPM7
-  - true  # HPM8
-  - true  # HPM9
-  - true  # HPM10
-  - false # HPM11
-  - false # HPM12
-  - false # HPM13
-  - false # HPM14
-  - false # HPM15
-  - false # HPM16
-  - false # HPM17
-  - false # HPM18
-  - false # HPM19
-  - false # HPM20
-  - false # HPM21
-  - false # HPM22
-  - false # HPM23
-  - false # HPM24
-  - false # HPM25
-  - false # HPM26
-  - false # HPM27
-  - false # HPM28
-  - false # HPM29
-  - false # HPM30
-  - false # HPM31
+    - true # CY
+    - false # TM
+    - true # IR
+    - true # HPM3
+    - true # HPM4
+    - true # HPM5
+    - true # HPM6
+    - true # HPM7
+    - true # HPM8
+    - true # HPM9
+    - true # HPM10
+    - false # HPM11
+    - false # HPM12
+    - false # HPM13
+    - false # HPM14
+    - false # HPM15
+    - false # HPM16
+    - false # HPM17
+    - false # HPM18
+    - false # HPM19
+    - false # HPM20
+    - false # HPM21
+    - false # HPM22
+    - false # HPM23
+    - false # HPM24
+    - false # HPM25
+    - false # HPM26
+    - false # HPM27
+    - false # HPM28
+    - false # HPM29
+    - false # HPM30
+    - false # HPM31
 
   # Indicates which counters can delegated via hcounteren
   #
@@ -230,38 +230,38 @@ params:
   # 11 in COUNTEN_EN since the highest implemented counter
   # would be at bit 10
   HCOUNTENABLE_EN:
-  - true  # CY
-  - false # TM
-  - true  # IR
-  - true  # HPM3
-  - true  # HPM4
-  - true  # HPM5
-  - true  # HPM6
-  - true  # HPM7
-  - true  # HPM8
-  - true  # HPM9
-  - true  # HPM10
-  - false # HPM11
-  - false # HPM12
-  - false # HPM13
-  - false # HPM14
-  - false # HPM15
-  - false # HPM16
-  - false # HPM17
-  - false # HPM18
-  - false # HPM19
-  - false # HPM20
-  - false # HPM21
-  - false # HPM22
-  - false # HPM23
-  - false # HPM24
-  - false # HPM25
-  - false # HPM26
-  - false # HPM27
-  - false # HPM28
-  - false # HPM29
-  - false # HPM30
-  - false # HPM31
+    - true # CY
+    - false # TM
+    - true # IR
+    - true # HPM3
+    - true # HPM4
+    - true # HPM5
+    - true # HPM6
+    - true # HPM7
+    - true # HPM8
+    - true # HPM9
+    - true # HPM10
+    - false # HPM11
+    - false # HPM12
+    - false # HPM13
+    - false # HPM14
+    - false # HPM15
+    - false # HPM16
+    - false # HPM17
+    - false # HPM18
+    - false # HPM19
+    - false # HPM20
+    - false # HPM21
+    - false # HPM22
+    - false # HPM23
+    - false # HPM24
+    - false # HPM25
+    - false # HPM26
+    - false # HPM27
+    - false # HPM28
+    - false # HPM29
+    - false # HPM30
+    - false # HPM31
 
   # when true, writing an illegal value to a WLRL CSR field raises an Illegal Instruction exception
   # when false, writing an illegal value to a WLRL CSR field is ignored
@@ -323,7 +323,6 @@ params:
   REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION: true
   # REPORT_CAUSE_IN_VSTVAL_ON_SOFTWARE_CHECK: true
   # VSTVAL_WIDTH not needed; "vstval is a WARL register that must be able to hold the same set of values that stval can hold"
-
 
   # address of the unified discovery configuration data structure
   # this address is reported in the mconfigptr CSR
@@ -481,8 +480,8 @@ params:
 
   # Strategy used to handle reservation sets
   #
-  #  * "reserve naturally-aligned 64-byte region": Always reserve the 64-byte block containing the LR/SC address 
-  #  * "reserve naturally-aligned 128-byte region": Always reserve the 128-byte block containing the LR/SC address 
+  #  * "reserve naturally-aligned 64-byte region": Always reserve the 64-byte block containing the LR/SC address
+  #  * "reserve naturally-aligned 128-byte region": Always reserve the 128-byte block containing the LR/SC address
   #  * "reserve exactly enough to cover the access": Always reserve exactly the LR/SC access, and no more
   #  * "custom": Custom behavior, leading to an 'unpredictable' call on any LR/SC
   LRSC_RESERVATION_STRATEGY: reserve naturally-aligned 64-byte region
@@ -543,12 +542,12 @@ params:
   TINST_VALUE_ON_LOAD_PAGE_FAULT: "always zero"
   TINST_VALUE_ON_STORE_AMO_PAGE_FAULT: "always zero"
   MTVEC_MODES: [0, 1]
-  MSTATUS_FS_LEGAL_VALUES: [0,1,2,3]
+  MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3]
   MSTATUS_FS_WRITEABLE: true
   MSTATUS_TVM_IMPLEMENTED: true
   HW_MSTATUS_FS_DIRTY_UPDATE: precise
   MSTATUS_VS_WRITEABLE: true
-  MSTATUS_VS_LEGAL_VALUES: [0,1,2,3]
+  MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
   HW_MSTATUS_VS_DIRTY_UPDATE: precise
   FORCE_UPGRADE_CBO_INVAL_TO_FLUSH: true
   REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT: true

@@ -11,6 +11,6 @@ description: |
   These instructions are only defined for SEW=64.
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

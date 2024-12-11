@@ -20,6 +20,6 @@ description: |
   control rather than data are exempt from DIEL.
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

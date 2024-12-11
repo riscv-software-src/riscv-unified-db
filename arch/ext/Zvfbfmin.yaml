@@ -12,10 +12,10 @@ description: |
   This extension depends upon either the `V` extension or the `Zve32f` embedded vector extension.
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
-  requires:
-    anyOf:
-    - V
-    - Zve32f
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    requires:
+      anyOf:
+        - V
+        - Zve32f

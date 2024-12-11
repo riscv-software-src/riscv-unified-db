@@ -16,10 +16,10 @@ description: |
   This extension was ratified with the RVA22 profiles.
 type: privileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
-  param_constraints:
-    REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT:
-      schema:
-        const: true
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    param_constraints:
+      REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT:
+        schema:
+          const: true

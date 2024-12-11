@@ -8,6 +8,6 @@ description: |
   Instructions for accelerating the encryption and key-schedule functions of the AES block cipher.
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

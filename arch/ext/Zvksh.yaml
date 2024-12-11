@@ -12,6 +12,6 @@ description: |
   To help avoid side-channel timing attacks, these instructions shall be implemented with data-independent timing.
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

@@ -7,6 +7,6 @@ long_name: Bit-manipulation for Cryptography
 description: This extension contains instructions essential for implementing common operations in cryptographic workloads.
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

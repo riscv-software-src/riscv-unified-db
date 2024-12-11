@@ -12,13 +12,12 @@ description: |
   This extension depends upon the single-precision floating-point extension `F`,
   and the `flh`, `fsh`, `fmv.x.h`, and `fmv.h.x` instructions as defined in the `Zfh` extension.
 
-
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
-  requires:
-    allOf:
-    - name: F
-    - name: Zfh
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    requires:
+      allOf:
+        - name: F
+        - name: Zfh

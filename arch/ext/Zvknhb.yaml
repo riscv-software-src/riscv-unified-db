@@ -9,7 +9,7 @@ description: |
 
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
-  implies: [Zvknha, "1.0.0"]
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    implies: [Zvknha, "1.0.0"]

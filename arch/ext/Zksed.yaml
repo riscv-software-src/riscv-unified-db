@@ -9,6 +9,6 @@ description: |
   same core operation for encryption and decryption, hence there is only one extension for it.
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

@@ -9,6 +9,6 @@ description: |
   This CSR provides up to 16 physical entropy bits that can be used to seed cryptographic random bit generators.
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

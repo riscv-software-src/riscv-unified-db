@@ -10,10 +10,10 @@ description: |
   This extension depends upon the `Zvfbfmin` extension and the `Zfbfmin` extension.
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
-  requires:
-    allOf:
-    - Zvfbfmin
-    - Zfbfmin
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    requires:
+      allOf:
+        - Zvfbfmin
+        - Zfbfmin

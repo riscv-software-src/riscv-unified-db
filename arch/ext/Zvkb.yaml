@@ -8,6 +8,6 @@ description: |
   Vector bit-manipulation instructions that are essential for implementing common cryptographic workloads securely & efficiently.
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

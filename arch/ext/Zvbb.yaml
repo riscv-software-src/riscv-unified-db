@@ -8,7 +8,7 @@ description: |
   Vector basic bit-manipulation instructions.
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
-  implies: [Zvkb, "1.0.0"]
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    implies: [Zvkb, "1.0.0"]
