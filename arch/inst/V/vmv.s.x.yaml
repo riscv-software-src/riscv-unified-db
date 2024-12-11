@@ -5,16 +5,16 @@ kind: instruction
 name: vmv.s.x
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy: V
 assembly: xs1, vd
 encoding:
   match: 010000100000-----110-----1010111
   variables:
-  - name: rs1
-    location: 19-15
-  - name: vd
-    location: 11-7
+    - name: rs1
+      location: 19-15
+    - name: vd
+      location: 11-7
 access:
   s: always
   u: always
@@ -22,9 +22,6 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-
-
-
 
 sail(): |
   {

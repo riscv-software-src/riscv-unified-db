@@ -14,12 +14,13 @@ repos:
         exclude: \.adoc$ # sections titles Level 6 "=======" get flagged otherwise
       - id: check-json
         exclude: ^\.devcontainer/ # Uses JSONC (comments)
+      - id: check-yaml
 
   - repo: https://github.com/rbubley/mirrors-prettier
     rev: v3.3.3
     hooks:
       - id: prettier
-        files: \.json$
+        files: \.(json|yml|yaml)$
         exclude: schemas/json-schema-draft-07.json
 
   - repo: https://github.com/python-jsonschema/check-jsonschema

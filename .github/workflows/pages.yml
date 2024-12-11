@@ -2,7 +2,7 @@ name: Deploy pages
 on:
   push:
     branches:
-    - main
+      - main
   workflow_dispatch:
 permissions:
   contents: read
@@ -18,73 +18,73 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-    - name: Clone Github Repo Action
-      uses: actions/checkout@v4
-    - name: Setup apptainer
-      uses: eWaterCycle/setup-apptainer@v2.0.0
-    - name: Get container from cache
-      id: cache-sif
-      uses: actions/cache@v3
-      with:
-        path: .singularity/image.sif
-        key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
-    - name: Get gems and node files from cache
-      id: cache-bundle-npm
-      uses: actions/cache@v3
-      with:
-        path: |
-          .home/.gems
-          node_modules
-        key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
-    - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
-      name: Build container
-      run: ./bin/build_container
-    - name: Setup project
-      run: ./bin/setup
-    - name: Build manual
-      run: ./do gen:html_manual MANUAL_NAME=isa VERSIONS=all
-    - name: Build html documentation for generic_rv64
-      run: ./do gen:html[generic_rv64]
-    - name: Generate YARD docs
-      run: ./do gen:tool_doc
-    - name: Create _site/example_cfg
-      run: mkdir -p _site/example_cfg
-    - name: Create _site/manual
-      run: mkdir -p _site/manual
-    - name: Create _site/pdfs
-      run: mkdir -p _site/pdfs
-    - name: Create _site/htmls
-      run: mkdir -p _site/htmls
-    - name: Copy cfg html
-      run: cp -R gen/cfg_html_doc/generic_rv64/html _site/example_cfg
-    - name: Create RVA20 Profile Release PDF Spec
-      run: ./do gen:profile[RVA20]
-    - name: Copy RVA20 Profile Release PDF
-      run: cp gen/profile_doc/pdf/RVA20.pdf _site/pdfs/RVA20.pdf
-    - name: Create RVA22 Profile Release PDF Spec
-      run: ./do gen:profile[RVA22]
-    - name: Copy RVA22 Profile Release PDF
-      run: cp gen/profile_doc/pdf/RVA22.pdf _site/pdfs/RVA22.pdf
-    - name: Create RVI20 Profile Release PDF Spec
-      run: ./do gen:profile[RVI20]
-    - name: Copy RVI20 Profile Release PDF
-      run: cp gen/profile_doc/pdf/RVA20.pdf _site/pdfs/RVI20.pdf
-    - name: Create MC100 PDF Spec
-      run: ./do gen:cert_model_pdf[MC100]
-    - name: Copy MC100 PDF
-      run: cp gen/certificate_doc/pdf/MC100.pdf _site/pdfs/MC100.pdf
-    - name: Create MC100 HTML Spec
-      run: ./do gen:cert_model_html[MC100]
-    - name: Copy MC100 HTML
-      run: cp gen/certificate_doc/html/MC100.html _site/htmls/MC100.html
-    - name: Copy manual html
-      run: cp -R gen/manual/isa/top/all/html _site/manual
-    - name: Setup Pages
-      uses: actions/configure-pages@v5
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: '_site'
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: Setup apptainer
+        uses: eWaterCycle/setup-apptainer@v2.0.0
+      - name: Get container from cache
+        id: cache-sif
+        uses: actions/cache@v3
+        with:
+          path: .singularity/image.sif
+          key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
+      - name: Get gems and node files from cache
+        id: cache-bundle-npm
+        uses: actions/cache@v3
+        with:
+          path: |
+            .home/.gems
+            node_modules
+          key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
+      - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
+        name: Build container
+        run: ./bin/build_container
+      - name: Setup project
+        run: ./bin/setup
+      - name: Build manual
+        run: ./do gen:html_manual MANUAL_NAME=isa VERSIONS=all
+      - name: Build html documentation for generic_rv64
+        run: ./do gen:html[generic_rv64]
+      - name: Generate YARD docs
+        run: ./do gen:tool_doc
+      - name: Create _site/example_cfg
+        run: mkdir -p _site/example_cfg
+      - name: Create _site/manual
+        run: mkdir -p _site/manual
+      - name: Create _site/pdfs
+        run: mkdir -p _site/pdfs
+      - name: Create _site/htmls
+        run: mkdir -p _site/htmls
+      - name: Copy cfg html
+        run: cp -R gen/cfg_html_doc/generic_rv64/html _site/example_cfg
+      - name: Create RVA20 Profile Release PDF Spec
+        run: ./do gen:profile[RVA20]
+      - name: Copy RVA20 Profile Release PDF
+        run: cp gen/profile_doc/pdf/RVA20.pdf _site/pdfs/RVA20.pdf
+      - name: Create RVA22 Profile Release PDF Spec
+        run: ./do gen:profile[RVA22]
+      - name: Copy RVA22 Profile Release PDF
+        run: cp gen/profile_doc/pdf/RVA22.pdf _site/pdfs/RVA22.pdf
+      - name: Create RVI20 Profile Release PDF Spec
+        run: ./do gen:profile[RVI20]
+      - name: Copy RVI20 Profile Release PDF
+        run: cp gen/profile_doc/pdf/RVA20.pdf _site/pdfs/RVI20.pdf
+      - name: Create MC100 PDF Spec
+        run: ./do gen:cert_model_pdf[MC100]
+      - name: Copy MC100 PDF
+        run: cp gen/certificate_doc/pdf/MC100.pdf _site/pdfs/MC100.pdf
+      - name: Create MC100 HTML Spec
+        run: ./do gen:cert_model_html[MC100]
+      - name: Copy MC100 HTML
+        run: cp gen/certificate_doc/html/MC100.html _site/htmls/MC100.html
+      - name: Copy manual html
+        run: cp -R gen/manual/isa/top/all/html _site/manual
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "_site"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

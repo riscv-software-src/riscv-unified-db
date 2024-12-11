@@ -5,7 +5,7 @@ kind: instruction
 name: sha512sum0
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy:
   anyOf: [Zk, Zkn, Zknh]
 base: 64
@@ -13,10 +13,10 @@ assembly: xd, xs1
 encoding:
   match: 000100000100-----001-----0010011
   variables:
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always

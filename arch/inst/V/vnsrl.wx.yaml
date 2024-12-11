@@ -5,20 +5,20 @@ kind: instruction
 name: vnsrl.wx
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy: V
 assembly: vm, vs2, xs1, vd
 encoding:
   match: 101100-----------100-----1010111
   variables:
-  - name: vm
-    location: 25-25
-  - name: vs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
-  - name: vd
-    location: 11-7
+    - name: vm
+      location: 25-25
+    - name: vs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: vd
+      location: 11-7
 access:
   s: always
   u: always
@@ -26,9 +26,6 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-
-
-
 
 sail(): |
   {

@@ -2,8 +2,6 @@
 
 # WARNING: This file is auto-generated from arch/csr/Zihpm/mhpmcounterN.layout
 
-
-
 $schema: csr_schema.json#
 kind: csr
 name: mhpmcounter5
@@ -42,8 +40,8 @@ fields:
       [when="HPM_COUNTER_EN[5] == false"]
       Unimplemented performance counter. Must be read-only 0 (access does not cause trap).
 
-    type(): 'return (HPM_COUNTER_EN[5]) ? CsrFieldType::RWH : CsrFieldType::RO;'
-    reset_value(): 'return (HPM_COUNTER_EN[5]) ? UNDEFINED_LEGAL : 0;'
+    type(): "return (HPM_COUNTER_EN[5]) ? CsrFieldType::RWH : CsrFieldType::RO;"
+    reset_value(): "return (HPM_COUNTER_EN[5]) ? UNDEFINED_LEGAL : 0;"
 sw_read(): |
   if (HPM_COUNTER_EN[5]) {
     return read_hpm_counter(5);

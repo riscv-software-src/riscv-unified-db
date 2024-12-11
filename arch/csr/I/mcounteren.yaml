@@ -2,7 +2,6 @@
 
 # WARNING: This file is auto-generated from arch/csr/I/mcounteren.layout
 
-
 $schema: csr_schema.json#
 kind: csr
 name: mcounteren
@@ -83,7 +82,6 @@ description: |
   <%- end -%>
   .
   <%- end -%>
-
 
 definedBy: U # actually, defined by RV64, but must implement U-mode for this CSR to exist
 fields:

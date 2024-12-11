@@ -1,5 +1,4 @@
 # yaml-language-server: $schema=../../schemas/inst_variable_metadatas.json
 ---
-
 itype_imm:
   location: 31-20

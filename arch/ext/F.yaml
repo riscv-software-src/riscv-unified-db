@@ -6,11 +6,11 @@ name: F
 type: unprivileged
 long_name: Single-precision floating-point
 versions:
-- version: "2.2.0"
-  state: ratified
-  ratification_date: 2019-12
-  changes:
-  - Define NaN-boxing scheme, changed definition of FMAX and FMIN
+  - version: "2.2.0"
+    state: ratified
+    ratification_date: 2019-12
+    changes:
+      - Define NaN-boxing scheme, changed definition of FMAX and FMIN
 description: |
   This chapter describes the standard instruction-set extension for
   single-precision floating-point, which is named "F" and adds
@@ -262,7 +262,7 @@ params:
       type: array
       items:
         type: integer
-        enum: [0,1,2,3]
+        enum: [0, 1, 2, 3]
       maxItems: 4
       uniqueItems: true
     also_defined_in: S

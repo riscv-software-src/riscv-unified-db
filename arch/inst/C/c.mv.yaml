@@ -9,18 +9,18 @@ description: |
   C.MV expands to addi rd, x0, rs2.
 definedBy:
   anyOf:
-  - C
-  - Zca
+    - C
+    - Zca
 assembly: xd, xs2
 encoding:
   match: 1000----------10
   variables:
-  - name: rd
-    location: 11-7
-    not: 0
-  - name: rs2
-    location: 6-2
-    not: 0
+    - name: rd
+      location: 11-7
+      not: 0
+    - name: rs2
+      location: 6-2
+      not: 0
 access:
   s: always
   u: always

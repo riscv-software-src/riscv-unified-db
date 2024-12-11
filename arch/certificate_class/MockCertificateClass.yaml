@@ -13,4 +13,4 @@ naming_scheme: |
   A Mock certificate class or model can have any name as long as it can be a hash key.
 
 mandatory_priv_modes:
-- M
+  - M

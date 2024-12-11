@@ -14,13 +14,13 @@ description: |
   The minimum reservation set size is effectively determined by the size of atomic accesses in
   the A extension.
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: null
-  param_constraints:
-    LRSC_RESERVATION_STRATEGY:
-      schema:
-        oneOf:
-        - const: reserve exactly enough to cover the access
-        - const: reserve naturally-aligned 64-byte region
-        - const: reserve naturally-aligned 128-byte region
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    param_constraints:
+      LRSC_RESERVATION_STRATEGY:
+        schema:
+          oneOf:
+            - const: reserve exactly enough to cover the access
+            - const: reserve naturally-aligned 64-byte region
+            - const: reserve naturally-aligned 128-byte region
