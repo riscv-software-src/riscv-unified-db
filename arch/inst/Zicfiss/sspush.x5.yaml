@@ -5,11 +5,11 @@ kind: instruction
 name: sspush.x5
 long_name: No synopsis available.
 description: |
-      No description available.
+  No description available.
 definedBy: Zicfiss
 assembly: sspush_x5
 encoding:
-  match: '11001110010100000100000001110011'
+  match: "11001110010100000100000001110011"
   variables: []
 access:
   s: always

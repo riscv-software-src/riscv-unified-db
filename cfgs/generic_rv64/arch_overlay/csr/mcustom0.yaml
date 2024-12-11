@@ -1,5 +1,4 @@
 # yaml-language-server: $schema=../../../../schemas/csr_schema.json
-
 ---
 $schema: "csr_schema.json#"
 kind: csr

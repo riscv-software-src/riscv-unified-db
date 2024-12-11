@@ -37,12 +37,12 @@ assembly: ""
 encoding:
   match: -----------------001-----0001111
   variables:
-  - name: imm
-    location: 31-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: imm
+      location: 31-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always

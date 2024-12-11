@@ -19,8 +19,8 @@ description: |
   and should not increment the `minstret` CSR.
 definedBy:
   anyOf:
-  - C
-  - Zca
+    - C
+    - Zca
 assembly: " "
 encoding:
   match: "1001000000000010"

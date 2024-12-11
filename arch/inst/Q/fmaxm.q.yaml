@@ -5,19 +5,19 @@ kind: instruction
 name: fmaxm.q
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy:
   anyOf: [Q, Zfa]
 assembly: qd, qs1, qs2
 encoding:
   match: 0010111----------011-----1010011
   variables:
-  - name: qs2
-    location: 24-20
-  - name: qs1
-    location: 19-15
-  - name: qd
-    location: 11-7
+    - name: qs2
+      location: 24-20
+    - name: qs1
+      location: 19-15
+    - name: qd
+      location: 11-7
 access:
   s: always
   u: always

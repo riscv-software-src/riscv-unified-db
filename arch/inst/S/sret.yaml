@@ -47,7 +47,7 @@ description: |
 definedBy: S
 assembly: ""
 encoding:
-  match: '00010000001000000000000001110011'
+  match: "00010000001000000000000001110011"
 access:
   s: sometimes
   u: never
@@ -125,7 +125,6 @@ operation(): |
     CSR[vsstatus].SPIE = 1;
     $pc = $bits(CSR[vsepc]);
   }
-
 
 sail(): |
   {

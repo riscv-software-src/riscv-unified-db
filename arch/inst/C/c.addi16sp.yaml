@@ -11,16 +11,16 @@ description: |
   C.ADDI16SP is only valid when nzimm &ne; 0; the code point with nzimm=0 is reserved.
 definedBy:
   anyOf:
-  - C
-  - Zca
+    - C
+    - Zca
 assembly: imm
 encoding:
   match: 011-00010-----01
   variables:
-  - name: imm
-    location: 12|4-3|5|2|6
-    left_shift: 4
-    not: 0
+    - name: imm
+      location: 12|4-3|5|2|6
+      left_shift: 4
+      not: 0
 access:
   s: always
   u: always

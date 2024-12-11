@@ -12,18 +12,18 @@ doc_license:
   name: Creative Commons Attribution 4.0 International License
   url: https://creativecommons.org/licenses/by/4.0/
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: 2024-04
-  contributors:
-  - name: Ved Shanbhogue
-    email: ved@rivosinc.com
-    company: Rivos, Inc.
-  url: https://drive.google.com/file/d/1SgLoasaBjs5WboQMaU3wpHkjUwV71UZn/view
-  implies:
-  - [Zba, "1.0.0"]
-  - [Zbb, "1.0.0"]
-  - [Zbs, "1.0.0"]
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2024-04
+    contributors:
+      - name: Ved Shanbhogue
+        email: ved@rivosinc.com
+        company: Rivos, Inc.
+    url: https://drive.google.com/file/d/1SgLoasaBjs5WboQMaU3wpHkjUwV71UZn/view
+    implies:
+      - [Zba, "1.0.0"]
+      - [Zbb, "1.0.0"]
+      - [Zbs, "1.0.0"]
 description: |
   The B standard extension comprises instructions provided by the `Zba`, `Zbb`, and `Zbs` extensions.
 

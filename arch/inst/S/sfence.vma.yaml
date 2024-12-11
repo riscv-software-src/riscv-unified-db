@@ -211,10 +211,10 @@ assembly: xs1, xs2
 encoding:
   match: 0001001----------000000001110011
   variables:
-  - name: rs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
 access:
   s: always
   u: never
@@ -304,8 +304,6 @@ operation(): |
     }
     # else, silently do nothing
   }
-
-
 
 sail(): |
   {
