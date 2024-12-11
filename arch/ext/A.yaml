@@ -9,16 +9,16 @@ company:
   name: RISC-V International
   url: https://riscv.org
 versions:
-- version: "2.1.0"
-  state: ratified
-  ratification_date: 2019-12
-  contributors:
-  - name: Unknown
-    email: unknown@void.segfault
-    company: Unknown
-  implies:
-  - [Zaamo, "1.0.0"]
-  - [Zalrsc, "1.0.0"]
+  - version: "2.1.0"
+    state: ratified
+    ratification_date: 2019-12
+    contributors:
+      - name: Unknown
+        email: unknown@void.segfault
+        company: Unknown
+    implies:
+      - [Zaamo, "1.0.0"]
+      - [Zalrsc, "1.0.0"]
 description: |
 
   The atomic-instruction extension, named `A`, contains
@@ -87,10 +87,10 @@ params:
     schema:
       type: string
       enum:
-      - reserve naturally-aligned 64-byte region
-      - reserve naturally-aligned 128-byte region
-      - reserve exactly enough to cover the access
-      - custom
+        - reserve naturally-aligned 64-byte region
+        - reserve naturally-aligned 128-byte region
+        - reserve exactly enough to cover the access
+        - custom
   LRSC_FAIL_ON_VA_SYNONYM:
     description: |
       Whether or not an `sc.l`/`sc.d` will fail if its VA does not match the VA of the prior
@@ -107,9 +107,9 @@ params:
     schema:
       type: string
       enum:
-      - always raise misaligned exception
-      - always raise access fault
-      - custom
+        - always raise misaligned exception
+        - always raise access fault
+        - custom
   LRSC_FAIL_ON_NON_EXACT_LRSC:
     description: |
       Whether or not a Store Conditional fails if its physical address and size do not

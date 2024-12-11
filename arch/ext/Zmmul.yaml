@@ -20,6 +20,6 @@ description: |
   implemented in soft logic.
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: 2022-06
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2022-06

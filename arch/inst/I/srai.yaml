@@ -13,21 +13,21 @@ encoding:
   RV32:
     match: 0100000----------101-----0010011
     variables:
-    - name: shamt
-      location: 24-20
-    - name: rs1
-      location: 19-15
-    - name: rd
-      location: 11-7
+      - name: shamt
+        location: 24-20
+      - name: rs1
+        location: 19-15
+      - name: rd
+        location: 11-7
   RV64:
     match: 010000-----------101-----0010011
     variables:
-    - name: shamt
-      location: 25-20
-    - name: rs1
-      location: 19-15
-    - name: rd
-      location: 11-7
+      - name: shamt
+        location: 25-20
+      - name: rs1
+        location: 19-15
+      - name: rd
+        location: 11-7
 access:
   s: always
   u: always
@@ -37,8 +37,6 @@ data_independent_timing: true
 operation(): |
   # shamt is between 0-63
   X[rd] = X[rs1] >>> shamt;
-
-
 
 sail(): |
   {

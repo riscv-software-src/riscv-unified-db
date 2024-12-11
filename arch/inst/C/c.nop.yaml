@@ -8,15 +8,15 @@ description: |
   C.NOP expands into `addi x0, x0, imm`.
 definedBy:
   anyOf:
-  - C
-  - Zca
+    - C
+    - Zca
 assembly: imm
 encoding:
   match: 000-00000-----01
   variables:
-  - name: imm
-    location: 12|6-2
-    not: 0
+    - name: imm
+      location: 12|6-2
+      not: 0
 access:
   s: always
   u: always

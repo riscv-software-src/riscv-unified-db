@@ -10,14 +10,14 @@ description: |
 
 definedBy:
   anyOf:
-  - Zcb
-  - Zce
+    - Zcb
+    - Zce
 assembly: xd
 encoding:
   match: 100111---1110101
   variables:
-  - name: rd
-    location: 9-7
+    - name: rd
+      location: 9-7
 access:
   s: always
   u: always

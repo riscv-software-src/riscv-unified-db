@@ -10,19 +10,19 @@ description: |
   It expands to `sh` `rs2, offset(rs1)`.
 definedBy:
   anyOf:
-  - Zcb
-  - Zce
+    - Zcb
+    - Zce
 assembly: xs2, imm(xs1)
 encoding:
   match: 100011---0----00
   variables:
-  - name: imm
-    location: 5
-    left_shift: 1
-  - name: rs2
-    location: 4-2
-  - name: rs1
-    location: 9-7
+    - name: imm
+      location: 5
+      left_shift: 1
+    - name: rs2
+      location: 4-2
+    - name: rs1
+      location: 9-7
 access:
   s: always
   u: always
