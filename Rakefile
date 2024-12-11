@@ -9,7 +9,7 @@ require "ruby-progressbar"
 require "yard"
 require "minitest/test_task"
 
-require_relative $root / "lib" / "specification"
+require_relative $root / "lib" / "architecture"
 
 directory "#{$root}/.stamps"
 
@@ -118,7 +118,7 @@ namespace :test do
   end
   task schema: "gen:resolved_arch" do
     puts "Checking arch files against schema.."
-    Specification.new("#{$root}/resolved_arch").validate(show_progress: true)
+    Architecture.new("#{$root}/resolved_arch").validate(show_progress: true)
     puts "All files validate against their schema"
   end
   task idl: ["gen:resolved_arch", "#{$root}/.stamps/resolve-rv32.stamp", "#{$root}/.stamps/resolve-rv64.stamp"]  do
@@ -293,7 +293,7 @@ namespace :test do
     Rake::Task["test:idl_compiler"].invoke
     Rake::Task["test:lib"].invoke
     Rake::Task["test:schema"].invoke
-    Rake::Task["test:idl_model"].invoke
+    Rake::Task["test:idl"].invoke
   end
 
   desc <<~DESC

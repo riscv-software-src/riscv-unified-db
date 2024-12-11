@@ -29,7 +29,7 @@ require "ruby-prof"
 require "tilt"
 
 require_relative "config"
-require_relative "specification"
+require_relative "architecture"
 
 require_relative "idl"
 require_relative "idl/passes/find_return_values"
@@ -229,7 +229,7 @@ class ArchDef < Architecture
         inst.type_checked_operation_ast(@idl_compiler, @symtab, 32) if inst.rv32?
       elsif @mxlen == 64
         inst.type_checked_operation_ast(@idl_compiler, @symtab, 64) if inst.rv64?
-        inst.type_checked_operation_ast(@idl_compiler, @symtab, 32) if @config.possible_xlens.include?(32) && inst.rv32?
+        inst.type_checked_operation_ast(@idl_compiler, @symtab, 32) if possible_xlens.include?(32) && inst.rv32?
       end
     end
 
@@ -241,26 +241,26 @@ class ArchDef < Architecture
     csrs.each do |csr|
       progressbar.increment if show_progress
       if csr.has_custom_sw_read?
-        if (@config.possible_xlens.include?(32) && csr.defined_in_base32?) || (@config.possible_xlens.include?(64) && csr.defined_in_base64?)
+        if (possible_xlens.include?(32) && csr.defined_in_base32?) || (possible_xlens.include?(64) && csr.defined_in_base64?)
           csr.type_checked_sw_read_ast(@symtab)
         end
       end
       csr.fields.each do |field|
         unless field.type_ast(@symtab).nil?
-          if ((@config.possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?) ||
-              (@config.possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?))
+          if ((possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?) ||
+              (possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?))
             field.type_checked_type_ast(@symtab)
           end
         end
         unless field.reset_value_ast(@symtab).nil?
-          if ((@config.possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?) ||
-              (@config.possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?))
+          if ((possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?) ||
+              (possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?))
             field.type_checked_reset_value_ast(@symtab) if csr.defined_in_base32? && field.defined_in_base32?
           end
         end
         unless field.sw_write_ast(@symtab).nil?
-          field.type_checked_sw_write_ast(@symtab, 32) if @config.possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?
-          field.type_checked_sw_write_ast(@symtab, 64) if @config.possible_xlens.include?(64) &&  csr.defined_in_base64? && field.defined_in_base64?
+          field.type_checked_sw_write_ast(@symtab, 32) if possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?
+          field.type_checked_sw_write_ast(@symtab, 64) if possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?
         end
       end
     end

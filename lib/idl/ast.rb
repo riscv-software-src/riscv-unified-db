@@ -4357,8 +4357,10 @@ module Idl
         signed = ::Regexp.last_match(4)
         width = width(symtab)
 
+        type_error("integer width must be positive") unless width.is_a?(Integer) && width.positive?
+
         qualifiers = signed == "s" ? [:signed, :const] : [:const]
-        @type = Type.new(:bits, width: width, qualifiers:)
+        @type = Type.new(:bits, width:, qualifiers:)
       when /^0([bdx]?)([0-9a-fA-F]*)(s?)$/
         # C++-style literal
         signed = ::Regexp.last_match(3)

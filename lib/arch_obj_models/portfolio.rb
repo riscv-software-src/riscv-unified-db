@@ -380,8 +380,8 @@ class PortfolioInstance < ArchDefObject
       end
 
       if found
-          # Only add extensions that exist in this portfolio.
-          exts << ext
+        # Only add extensions that exist in this portfolio.
+        exts << ext
       end
     end
 

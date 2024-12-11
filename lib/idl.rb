@@ -246,7 +246,16 @@ module Idl
 
       ast = m.to_ast
       ast.set_input_file("[EXPRESSION]", 0)
-      ast.freeze_tree(symtab)
+      value_result = ast.value_try do
+        ast.freeze_tree(symtab)
+      end
+      if value_result == :unknown_value
+        raise AstNode::TypeError, "Bad literal value" if pass_error
+
+        warn "Compiling #{expression}"
+        warn "Bad literal value"
+        exit 1
+      end
       begin
         ast.type_check(symtab)
       rescue AstNode::TypeError => e

@@ -195,7 +195,7 @@ def resolve(rel_path : str | Path, arch_root : str | Path) -> dict:
   Parameters
   ----------
   rel_path : str, Path
-    The relative path to the file to resolve
+    The relative path, from arch_root, to the file to resolve
   arch_root : str, Path
     The root of the architecture
 
@@ -240,7 +240,7 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root):
         ref_obj = _resolve(ref_obj, ref_obj_path, ref_file_path, doc_obj, arch_root)
       else:
         # this is a reference to another doc
-        if not os.path.exists(os.path.join(UDB_ROOT, arch_root, ref_file_path)):
+        if not os.path.exists(os.path.join(arch_root, ref_file_path)):
           raise ValueError(f"{ref_file_path} does not exist in {arch_root}/")
 
         ref_doc_obj = resolve(ref_file_path, arch_root)
@@ -249,6 +249,8 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root):
         ref_obj = _resolve(ref_obj, ref_obj_path, ref_file_path, ref_doc_obj, arch_root)
 
       for key in ref_obj:
+        if key == "$parent_of" or key == "$child_of":
+          continue # we don't propagate $parent_of / $child_of
         if isinstance(parent_obj.get(key), dict):
           merge(parent_obj[key], ref_obj[key], strategy=Strategy.REPLACE)
         else:
@@ -286,8 +288,13 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root):
           final_obj[key] = _resolve(obj[key], obj_path + [key], obj_file_path, doc_obj, arch_root)
 
     if "$remove" in final_obj:
-      if final_obj["$remove"] in final_obj:
-        del final_obj[final_obj["$remove"]]
+      if isinstance(final_obj["$remove"], list):
+        for key in final_obj["$remove"]:
+          if key in final_obj:
+            del final_obj[key]
+      else:
+        if final_obj["$remove"] in final_obj:
+          del final_obj[final_obj["$remove"]]
       del final_obj["$remove"]
 
     return final_obj
@@ -296,8 +303,13 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root):
       obj[key] = _resolve(obj[key], obj_path + [key], obj_file_path, doc_obj, arch_root)
 
     if "$remove" in obj:
-      if obj["$remove"] in obj:
-        del obj[obj["$remove"]]
+      if isinstance(obj["$remove"], list):
+        for key in obj["$remove"]:
+          if key in obj:
+            del obj[key]
+      else:
+        if obj["$remove"] in obj:
+          del obj[obj["$remove"]]
       del obj["$remove"]
 
     return obj
@@ -449,7 +461,7 @@ if __name__ == '__main__':
       arch_paths.extend(resolved_paths)
       arch_paths = list(set(arch_paths))
     for arch_path in tqdm(arch_paths, ascii=True, desc="Resolving arch"):
-      resolved_arch_path = f"{UDB_ROOT}/{args.resolved_dir}/{arch_path}"
+      resolved_arch_path = f"{UDB_ROOT}/{args.resolved_dir}/{arch_path}" if not os.path.isabs(args.resolved_dir) else f"{args.resolved_dir}/{arch_path}"
       os.makedirs(os.path.dirname(resolved_arch_path), exist_ok=True)
       resolve_file(arch_path, args.arch_dir, args.resolved_dir)
 
