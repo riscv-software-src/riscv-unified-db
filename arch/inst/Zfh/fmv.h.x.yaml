@@ -14,10 +14,10 @@ assembly: fd, xs1
 encoding:
   match: 111101000000-----000-----1010011
   variables:
-  - name: rs1
-    location: 19-15
-  - name: fd
-    location: 11-7
+    - name: rs1
+      location: 19-15
+    - name: fd
+      location: 11-7
 access:
   s: always
   u: always
@@ -31,7 +31,6 @@ operation(): |
   f[fd] = nan_box<16, FLEN>(hp_value);
 
   mark_f_state_dirty();
-
 
 sail(): |
   {

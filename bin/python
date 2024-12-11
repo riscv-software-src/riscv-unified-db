@@ -1,6 +1,8 @@
 #!/bin/bash
 
 ROOT=$(dirname $(realpath $BASH_SOURCE[0]))
-source $ROOT/setup
+if [ ! -v NO_SOURCE ]; then
+  source $ROOT/setup
+fi
 
 $PYTHON "$@"

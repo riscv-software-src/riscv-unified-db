@@ -47,7 +47,7 @@ description: |
 definedBy: Sm
 assembly: ""
 encoding:
-  match: '00010000010100000000000001110011'
+  match: "00010000010100000000000001110011"
 access:
   s: sometimes
   u: sometimes
@@ -110,8 +110,6 @@ operation(): |
 
   # passed, so now do the wait
   wfi();
-
-
 
 sail(): |
   match cur_privilege {

@@ -36,7 +36,6 @@ description: |
   M-mode software towards the beginning of the boot process.
   ====
 
-
 priv_mode: M
 length: MXLEN
 definedBy:

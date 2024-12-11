@@ -12,3 +12,42 @@ repos:
       - id: check-merge-conflict
         args: ["--assume-in-merge"]
         exclude: \.adoc$ # sections titles Level 6 "=======" get flagged otherwise
+      - id: check-json
+        exclude: ^\.devcontainer/ # Uses JSONC (comments)
+      - id: check-yaml
+
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: v3.3.3
+    hooks:
+      - id: prettier
+        files: \.(json|yml|yaml)$
+        exclude: schemas/json-schema-draft-07.json
+
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: 0.29.4
+    hooks:
+      - id: check-jsonschema
+        alias: check-jsonschema-inst
+        files: ^arch/inst/.*\.(yaml|yml)$
+        args: ["--schemafile", "schemas/inst_schema.json"]
+      - id: check-jsonschema
+        alias: check-jsonschema-csr
+        files: ^arch/csr/.*\.(yaml|yml)$
+        args: ["--schemafile", "schemas/csr_schema.json"]
+      - id: check-jsonschema
+        alias: check-jsonschema-ext
+        files: ^arch/ext/.*\.(yaml|yml)$
+        args: ["--schemafile", "schemas/ext_schema.json"]
+      - id: check-jsonschema
+        alias: check-jsonschema-cert-model
+        files: ^arch/certificate_model/.*\.(yaml|yml)$
+        args: ["--schemafile", "schemas/cert_model_schema.json"]
+      - id: check-jsonschema
+        alias: check-jsonschema-cert-class
+        files: ^arch/certificate_class/.*\.(yaml|yml)$
+        args: ["--schemafile", "schemas/cert_class_schema.json"]
+      # Commenting because throwing errors and not sure this is complete yet
+      # - id: check-jsonschema
+      #   alias: check-jsonschema-manual-version
+      #   files: ^arch/manual/.*\.(yaml|yml)$
+      #   args: ["--schemafile", "schemas/manual_version_schema.json"]

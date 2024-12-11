@@ -35,8 +35,8 @@ assembly: "TODO"
 encoding:
   match: 000000000100-----010000000001111
   variables:
-  - name: rs1
-    location: 19-15
+    - name: rs1
+      location: 19-15
 access:
   m: always
   s: sometimes

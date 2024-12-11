@@ -20,12 +20,12 @@ assembly: fd, xs1
 encoding:
   match: 110100000000-------------1010011
   variables:
-  - name: rs1
-    location: 19-15
-  - name: rm
-    location: 14-12
-  - name: fd
-    location: 11-7
+    - name: rs1
+      location: 19-15
+    - name: rm
+      location: 14-12
+    - name: fd
+      location: 11-7
 access:
   s: always
   u: always
@@ -49,9 +49,6 @@ operation(): |
   }
 
   mark_f_state_dirty();
-
-
-
 
 sail(): |
   {

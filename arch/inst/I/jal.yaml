@@ -12,12 +12,12 @@ assembly: xd, imm
 encoding:
   match: -------------------------1101111
   variables:
-  - name: imm
-    location: 31|19-12|20|30-21
-    left_shift: 1
-    sign_extend: true
-  - name: rd
-    location: 11-7
+    - name: imm
+      location: 31|19-12|20|30-21
+      left_shift: 1
+      sign_extend: true
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -28,8 +28,6 @@ operation(): |
 
   jump_halfword($pc + imm);
   X[rd] = retrun_addr;
-
-
 
 sail(): |
   {
