@@ -22,7 +22,7 @@ class ProfileClass < PortfolioClass
   def profile_releases
     return @profile_releases unless @profile_releases.nil?
 
-    @profile_releases = @arch_def.profile_releases.select { |pr| pr.profile_class.name == name }
+    @profile_releases = @cfg_arch.profile_releases.select { |pr| pr.profile_class.name == name }
 
     @profile_releases
   end
@@ -32,7 +32,7 @@ class ProfileClass < PortfolioClass
     return @profiles unless @profiles.nil?
 
     @profiles = []
-    @arch_def.profiles.each do |profile|
+    @cfg_arch.profiles.each do |profile|
       if profile.profile_class.name == name
         @profiles << profile
       end
@@ -61,7 +61,7 @@ end
 # For example, the RVA20 profile release has profiles RVA20U64 and RVA20S64.
 # Note there is no Portfolio* base class for a ProfileRelease to inherit from since there is no
 # equivalent to a ProfileRelease in a Certificate so no potential for a shared base class.
-class ProfileRelease < ArchDefObject
+class ProfileRelease < DatabaseObjectect
   def marketing_name = @data["marketing_name"]
   def introduction = @data["introduction"]
   def state = @data["state"]
@@ -81,7 +81,7 @@ class ProfileRelease < ArchDefObject
 
   # @return [ProfileClass] Profile Class that this ProfileRelease belongs to
   def profile_class
-    profile_class = @arch_def.profile_class(@data["class"])
+    profile_class = @cfg_arch.profile_class(@data["class"])
     raise "No profile class named '#{@data["class"]}'" if profile_class.nil?
 
     profile_class
@@ -93,7 +93,7 @@ class ProfileRelease < ArchDefObject
 
     @profiles = []
     @data["profiles"].each do |profile_ref|
-      @profiles << @arch_def.ref(profile_ref["$ref"])
+      @profiles << @cfg_arch.ref(profile_ref["$ref"])
     end
     @profiles
   end
@@ -122,7 +122,7 @@ class Profile < PortfolioInstance
 
   # @return [ProfileRelease] The profile release this profile belongs to
   def profile_release
-    profile_release = @arch_def.ref(@data["release"])
+    profile_release = @cfg_arch.ref(@data["release"])
     raise "No profile release named '#{@data["release"]}'" if profile_release.nil?
 
     profile_release
@@ -201,7 +201,7 @@ class Profile < PortfolioInstance
   def ext_req_to_adoc(ext_req)
     ret = []
 
-    ext = arch_def.extension(ext_req.name)
+    ext = cfg_arch.extension(ext_req.name)
     ret << "* *#{ext_req.name}* " + (ext.nil? ? "" : ext.long_name)
     ret << "+"
     ret << "Version #{ext_req.version_requirement}"

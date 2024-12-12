@@ -7,7 +7,7 @@ Implemented Version:: <%= ext_version.version_str %>
 == Versions
 
 <%- ext.versions.each do |v| -%>
-<%- implemented = arch_def.transitive_implemented_extensions.include?(v) -%>
+<%- implemented = cfg_arch.transitive_implemented_extensions.include?(v) -%>
 <%= v.version_str %>::
   Ratification date:::
     <%= v.ratification_date %>
@@ -35,11 +35,11 @@ Implemented Version:: <%= ext_version.version_str %>
 
 <%= ext.description %>
 
-<%- insts = arch_def.transitive_implemented_instructions.select { |i| i.definedBy == ext.name || i.definedBy.include?(ext.name) } -%>
+<%- insts = cfg_arch.transitive_implemented_instructions.select { |i| i.definedBy == ext.name || i.definedBy.include?(ext.name) } -%>
 <%- unless insts.empty? -%>
 == Instructions
 
-The following instructions are added by this extension in the <%= ext.arch_def.name %> configuration:
+The following instructions are added by this extension in the <%= ext.cfg_arch.name %> configuration:
 
 [cols="1,3"]
 |===

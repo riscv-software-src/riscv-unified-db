@@ -19,14 +19,14 @@ end
 
 directory "#{$root}/.stamps"
 
-def arch_def_for(config_name)
+def cfg_arch_for(config_name)
   Rake::Task["#{$root}/.stamps/resolve-#{config_name}.stamp"].invoke
 
-  @arch_defs ||= {}
-  return @arch_defs[config_name] if @arch_defs.key?(config_name)
+  @cfg_archs ||= {}
+  return @cfg_archs[config_name] if @cfg_archs.key?(config_name)
 
-  @arch_defs[config_name] =
-    ArchDef.new(
+  @cfg_archs[config_name] =
+    ConfiguredArchitecture.new(
       config_name,
       $root / "gen" / "resolved_arch" / config_name,
       overlay_path: $root / "cfgs" / config_name / "arch_overlay"
@@ -37,7 +37,7 @@ namespace :gen do
   desc "Generate documentation for the ruby tooling"
   task tool_doc: "#{$root}/.stamps/dev_gems" do
     Dir.chdir($root) do
-      sh "bundle exec yard doc --yardopts arch_def.yardopts"
+      sh "bundle exec yard doc --yardopts cfg_arch.yardopts"
       sh "bundle exec yard doc --yardopts idl.yardopts"
     end
   end
@@ -103,9 +103,7 @@ end
 
 desc "Clean up all generated files"
 task :clean do
-  FileUtils.rm_rf $root / "gen"
-  FileUtils.rm_rf $root / ".stamps"
-  FileUtils.rm_rf $root / ".home"
+  warn "Don't run clean using Rake. Run `./do clean` (alias for `./bin/clean`) instead."
 end
 
 namespace :test do
@@ -124,16 +122,16 @@ namespace :test do
   end
   task idl: ["gen:resolved_arch", "#{$root}/.stamps/resolve-rv32.stamp", "#{$root}/.stamps/resolve-rv64.stamp"]  do
     print "Parsing IDL code for RV32..."
-    arch_def32 = arch_def_for("rv32")
+    cfg_arch32 = cfg_arch_for("rv32")
     puts "done"
 
-    arch_def32.type_check
+    cfg_arch32.type_check
 
     print "Parsing IDL code for RV64..."
-    arch_def64 = arch_def_for("rv64")
+    cfg_arch64 = cfg_arch_for("rv64")
     puts "done"
 
-    arch_def64.type_check
+    cfg_arch64.type_check
 
     puts "All IDL passed type checking"
   end
@@ -143,7 +141,7 @@ def insert_warning(str, from)
   # insert a warning on the second line
   lines = str.lines
   first_line = lines.shift
-  lines.unshift(first_line, "\n# WARNING: This file is auto-generated from #{Pathname.new(from).relative_path_from($root)}\n\n").join("")
+  lines.unshift(first_line, "\n# WARNING: This file is auto-generated from #{Pathname.new(from).relative_path_from($root)}").join("")
 end
 private :insert_warning
 

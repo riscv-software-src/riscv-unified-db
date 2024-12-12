@@ -7,7 +7,7 @@ require "ruby-prof"
   rule %r{#{$root}/\.stamps/adoc-gen-#{type}s-.*\.stamp} => proc { |tname|
     [
       "#{CFG_HTML_DOC_DIR}/templates/#{type}.adoc.erb",
-      "#{$root}/lib/arch_def.rb",
+      "#{$root}/lib/cfg_arch.rb",
       "#{$root}/lib/idl/passes/gen_adoc.rb",
       __FILE__,
       "#{$root}/.stamps"
@@ -15,7 +15,7 @@ require "ruby-prof"
   } do |t|
     config_name = Pathname.new(t.name).basename(".stamp").sub("adoc-gen-#{type}s-", "")
 
-    arch_def = arch_def_for(config_name)
+    cfg_arch = cfg_arch_for(config_name)
     adoc_template_path = CFG_HTML_DOC_DIR / "templates" / "#{type}.adoc.erb"
     adoc_template = adoc_template_path.read
     erb = ERB.new(adoc_template, trim_mode: "-")
@@ -26,32 +26,32 @@ require "ruby-prof"
 
     case type
     when "csr"
-      arch_def.transitive_implemented_csrs.each do |csr|
+      cfg_arch.transitive_implemented_csrs.each do |csr|
         path = dir_path / "#{csr.name}.adoc"
         puts "  Generating #{path}"
-        File.write(path, arch_def.find_replace_links(erb.result(binding)))
+        File.write(path, cfg_arch.find_replace_links(erb.result(binding)))
       end
     when "inst"
-      arch_def.transitive_implemented_instructions.each do |inst|
+      cfg_arch.transitive_implemented_instructions.each do |inst|
         path = dir_path / "#{inst.name}.adoc"
         puts "  Generating #{path}"
         # RubyProf.start
-        File.write(path, arch_def.find_replace_links(erb.result(binding)))
+        File.write(path, cfg_arch.find_replace_links(erb.result(binding)))
         # result = RubyProf.stop
         # RubyProf::FlatPrinter.new(result).print(STDOUT)
       end
     when "ext"
-      arch_def.transitive_implemented_extensions.each do |ext_version|
-        ext = arch_def.extension(ext_version.name)
+      cfg_arch.transitive_implemented_extensions.each do |ext_version|
+        ext = cfg_arch.extension(ext_version.name)
         path = dir_path / "#{ext.name}.adoc"
         puts "  Generating #{path}"
-        File.write(path, arch_def.find_replace_links(erb.result(binding)))
+        File.write(path, cfg_arch.find_replace_links(erb.result(binding)))
       end
     when "func"
-      global_symtab = arch_def.symtab
+      global_symtab = cfg_arch.symtab
       path = dir_path / "funcs.adoc"
       puts "  Generating #{path}"
-      File.write(path, arch_def.find_replace_links(erb.result(binding)))
+      File.write(path, cfg_arch.find_replace_links(erb.result(binding)))
     else
       raise "todo"
     end
@@ -72,41 +72,41 @@ require "ruby-prof"
 
     config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen/cfg_html_doc").to_s.split("/")[0]
 
-    arch_def = arch_def_for(config_name)
+    cfg_arch = cfg_arch_for(config_name)
 
     lines = [
       "= Implemented #{to_long[type]}",
       "",
-      "The following are implemented by the #{arch_def.name} configuration:",
+      "The following are implemented by the #{cfg_arch.name} configuration:",
       ""
     ]
 
     case type
     when "csr"
       puts "Generting full CSR list"
-      arch_def.transitive_implemented_csrs.each do |csr|
+      cfg_arch.transitive_implemented_csrs.each do |csr|
         lines << " * `#{csr.name}` #{csr.long_name}"
       end
     when "ext"
       puts "Generting full extension list"
-      arch_def.transitive_implemented_extensions.each do |ext_version|
+      cfg_arch.transitive_implemented_extensions.each do |ext_version|
         lines << " * `#{ext_version.name}` #{ext_version.ext.long_name}"
       end
     when "inst"
       puts "Generting full instruction list"
-      arch_def.transitive_implemented_instructions.each do |inst|
+      cfg_arch.transitive_implemented_instructions.each do |inst|
         lines << " * `#{inst.name}` #{inst.long_name}"
       end
     when "func"
       puts "Generting function list"
-      arch_def.implemented_functions.each do |func|
+      cfg_arch.implemented_functions.each do |func|
         lines << " * `#{func.name}`"
       end
     else
       raise "Unsupported type"
     end
 
-    File.write t.name, arch_def.find_replace_links(lines.join("\n"))
+    File.write t.name, cfg_arch.find_replace_links(lines.join("\n"))
   end
 end
 
@@ -116,7 +116,7 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/adoc/ROOT/landing.adoc} => [
 ] do |t|
   config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen/cfg_html_doc").to_s.split("/")[0]
 
-  arch_def = arch_def_for(config_name)
+  cfg_arch = cfg_arch_for(config_name)
 
   puts "Generating landing page for #{config_name}"
   erb = ERB.new(File.read("#{CFG_HTML_DOC_DIR}/templates/landing.adoc.erb"), trim_mode: "-")

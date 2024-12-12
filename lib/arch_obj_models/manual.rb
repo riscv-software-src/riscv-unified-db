@@ -4,15 +4,15 @@ require "asciidoctor"
 
 require_relative "obj"
 
-class Manual < ArchDefObject
+class Manual < DatabaseObjectect
   def versions
     return @versions unless @versions.nil?
 
     @versions =
-      if @arch_def.nil?
+      if @cfg_arch.nil?
         @specification.manual_versions.select { |mv| mv.manual == self }
       else
-        @arch_def.manual_versions.select { |mv| mv.manual == self }
+        @cfg_arch.manual_versions.select { |mv| mv.manual == self }
       end
   end
 
@@ -66,7 +66,7 @@ class ManualVolume
   # @return [ManualVersion] The version this volume belongs to
   attr_reader :version
 
-  def arch_def = version.arch_def
+  def cfg_arch = version.cfg_arch
 
   def initialize(data, version)
     @data = data
@@ -98,13 +98,13 @@ class ManualVolume
     return @extensions if @data["extensions"].nil?
 
     @data["extensions"].each do |ext|
-      ext_obj = arch_def.extension(ext[0])
+      ext_obj = cfg_arch.extension(ext[0])
       if ext_obj.nil?
         warn "Extension '#{ext[0]}' is not in the database"
         next
       end
 
-      ext_ver = ExtensionVersion.new(ext[0], ext[1], arch_def)
+      ext_ver = ExtensionVersion.new(ext[0], ext[1], cfg_arch)
       unless ext_obj.versions.any? { |known_ver| known_ver == ext_ver }
         warn "Extension '#{ext[0]}', version '#{ext[1]}' is not defined in the database"
         next
@@ -121,16 +121,16 @@ class ManualVolume
   end
 end
 
-class ManualVersion < ArchDefObject
+class ManualVersion < DatabaseObjectect
   # @return [Manual] The manual this version belongs to
   def manual
     return @manual unless @manual.nil?
 
     @manual =
-      if @arch_def.nil?
+      if @cfg_arch.nil?
         @specification.ref(@data["manual"]["$ref"])
       else
-        @arch_def.ref(@data["manual"]["$ref"])
+        @cfg_arch.ref(@data["manual"]["$ref"])
       end
     raise "Error: manual #{@data['manual']['$ref']} is not found" if @manual.nil?
 
@@ -181,7 +181,7 @@ class ManualVersion < ArchDefObject
 
     @instructions = []
     extensions.each do |ext|
-      ext_obj = @arch_def.extension(ext.name)
+      ext_obj = @cfg_arch.extension(ext.name)
       ext_obj.instructions.each do |inst|
         @instructions << inst
       end
@@ -195,7 +195,7 @@ class ManualVersion < ArchDefObject
 
     @csrs = []
     extensions.each do |ext|
-      ext_obj = @arch_def.extension(ext.name)
+      ext_obj = @cfg_arch.extension(ext.name)
       ext_obj.csrs.each do |csr|
         @csrs << csr
       end

@@ -92,16 +92,16 @@ class PartialConfig < Config
   def implemented_extensions = raise "implemented_extensions is only availabe for a FullConfig"
 
   # @return [Array<ExtensionRequirement>] List of all extensions that must be implemented, as specified in the config file
-  #                                       Implied/required extensions are *not* transitively included (though they are from ArchDef#mandatory_extensions)
-  def mandatory_extensions(arch_def)
+  #                                       Implied/required extensions are *not* transitively included (though they are from ConfiguredArchitecture#mandatory_extensions)
+  def mandatory_extensions(cfg_arch)
     @mandatory_extensions ||=
       if @data.key?("mandatory_extensions")
         @data["mandatory_extensions"].map do |e|
-          ext = arch_def.extension(e["name"])
+          ext = cfg_arch.extension(e["name"])
           raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
 
           req_spec = e["version"].is_a?(Array) ? e["version"] : [e["version"]]
-          ExtensionRequirement.new(e["name"], *req_spec, presence: "mandatory", arch_def:)
+          ExtensionRequirement.new(e["name"], *req_spec, presence: "mandatory", cfg_arch:)
         end
       else
         []
@@ -110,7 +110,7 @@ class PartialConfig < Config
 
   # @return [Array<ExtensionRequirement>] List of all extensions that are prohibited.
   #                                       This only includes extensions explicitly prohibited by the config file.
-  def prohibited_extensions(arch_def)
+  def prohibited_extensions(cfg_arch)
     return @prohibited_extensions unless @prohibited_extensions.nil?
 
     @prohibited_extensions = []
@@ -118,18 +118,18 @@ class PartialConfig < Config
       @data["prohibited_extensions"].each do |e|
         @prohibited_extensions <<
           if e.is_a?(String)
-            ExtensionRequirement.new(e, nil, arch_def:)
+            ExtensionRequirement.new(e, nil, cfg_arch:)
           else
-            ExtensionRequirement.new(e["name"], e["version"], presence: "prohibited", arch_def:)
+            ExtensionRequirement.new(e["name"], e["version"], presence: "prohibited", cfg_arch:)
           end
       end
     end
     @prohibited_extensions
   end
 
-  def prohibited_ext?(ext_name, arch_def) = prohibited_extensions(arch_def).any? { |e| e.name == ext_name.to_s }
+  def prohibited_ext?(ext_name, cfg_arch) = prohibited_extensions(cfg_arch).any? { |e| e.name == ext_name.to_s }
 
-  def ext?(ext_name, arch_def) = mandatory_extensions(arch_def).any? { |e| e.name == ext_name.to_s }
+  def ext?(ext_name, cfg_arch) = mandatory_extensions(cfg_arch).any? { |e| e.name == ext_name.to_s }
 end
 
 
@@ -146,16 +146,16 @@ class FullConfig < Config
   end
 
   # @return [Array<ExtensionVersion>] List of all extensions known to be implemented in this architecture
-  def implemented_extensions(arch_def)
+  def implemented_extensions(cfg_arch)
     return @implemented_extensions unless @implemented_extensions.nil?
 
     @implemented_extensions = []
     if @data.key?("implemented_extensions")
       @data["implemented_extensions"].each do |e|
         if e.is_a?(Array)
-          @implemented_extensions << ExtensionVersion.new(e[0], e[1], arch_def)
+          @implemented_extensions << ExtensionVersion.new(e[0], e[1], cfg_arch)
         else
-          @implemented_extensions << ExtensionVersion.new(e["name"], e["version"], arch_def)
+          @implemented_extensions << ExtensionVersion.new(e["name"], e["version"], cfg_arch)
         end
       end
     end
@@ -164,6 +164,6 @@ class FullConfig < Config
 
   def mandatory_extensions = raise "mandatory_extensions is only availabe for a PartialConfig"
 
-  # def prohibited_ext?(ext_name, arch_def) = !ext?(ext_name, arch_def)
-  # def ext?(ext_name, arch_def) = implemented_extensions(arch_def).any? { |e| e.name == ext_name.to_s }
+  # def prohibited_ext?(ext_name, cfg_arch) = !ext?(ext_name, cfg_arch)
+  # def ext?(ext_name, cfg_arch) = implemented_extensions(cfg_arch).any? { |e| e.name == ext_name.to_s }
 end

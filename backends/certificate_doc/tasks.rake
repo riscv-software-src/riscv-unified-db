@@ -25,14 +25,14 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
     __FILE__
   ] do |t|
     # TODO: schema validation
-    arch_def = arch_def_for("rv#{base}")
-    cert_model = arch_def.cert_model(cert_model_name)
+    cfg_arch = cfg_arch_for("rv#{base}")
+    cert_model = cfg_arch.cert_model(cert_model_name)
     raise "No certificate model defined for #{cert_model_name}" if cert_model.nil?
 
     # Switch to the generated certificate arch def
     # XXX - Add this to profile releases
-    arch_def = cert_model.to_arch_def
-    cert_model = arch_def.cert_model(cert_model_name)
+    cfg_arch = cert_model.to_cfg_arch
+    cert_model = cfg_arch.cert_model(cert_model_name)
     cert_class = cert_model.cert_class
 
     version = File.basename(t.name, '.adoc').split('-')[1..].join('-')
@@ -41,7 +41,7 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
     erb.filename = "#{CERT_DOC_DIR}/templates/certificate.adoc.erb"
 
     FileUtils.mkdir_p File.dirname(t.name)
-    File.write t.name, AsciidocUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
+    File.write t.name, AsciidocUtils.resolve_links(cfg_arch.find_replace_links(erb.result(binding)))
     puts "Generated adoc source at #{t.name}"
   end
 

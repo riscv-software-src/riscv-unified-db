@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-# Many classes have an "arch_def" member which is an ArchDef (not ArchDefObject) class.
-# The "arch_def" member contains the "database" of RISC-V standards including extensions, instructions,
+# Many classes have an "cfg_arch" member which is an ConfiguredArchitecture (not DatabaseObjectect) class.
+# The "cfg_arch" member contains the "database" of RISC-V standards including extensions, instructions,
 # CSRs, Profiles, and Certificates.
 #
-# The arch_def member has methods such as:
+# The cfg_arch member has methods such as:
 #   extensions()                Array<Extension> of all extensions known to the database (even if not implemented).
 #   extension(name)             Extension object for "name" and nil if none.
 #   parameters()                Array<ExtensionParameter> of all parameters defined in the architecture
@@ -42,7 +42,7 @@ require_relative "template_helpers"
 
 include TemplateHelpers
 
-class ArchDef < Architecture
+class ConfiguredArchitecture < Architecture
   extend Forwardable
 
   # @return [Idl::Compiler] The IDL compiler
@@ -174,7 +174,7 @@ class ArchDef < Architecture
   # @return [Idl::SymbolTable] Symbol table with global scope
   # @return [nil] if the architecture is not configured (use symtab_32 or symtab_64)
   def symtab
-    raise NotImplementedError, "Un-configured ArchDefs have no symbol table" if @symtab.nil?
+    raise NotImplementedError, "Un-configured ConfiguredArchitectures have no symbol table" if @symtab.nil?
 
     @symtab
   end
@@ -331,7 +331,7 @@ class ArchDef < Architecture
 
   # Returns a string representation of the object, suitable for debugging.
   # @return [String] A string representation of the object.
-  def inspect = "ArchDef##{name}"
+  def inspect = "ConfiguredArchitecture##{name}"
 
   # @return [Array<ExtensionVersion>] List of all extensions known to be implemented in this config, including transitive implications
   def transitive_implemented_extensions
@@ -390,7 +390,7 @@ class ArchDef < Architecture
           @prohibited_extensions <<
             ExtensionRequirement.new(
               ext_ver_list[0].ext.name, ">= #{ext_ver_list.min.version_spec.canonical}",
-              presence: "prohibited", arch_def: self
+              presence: "prohibited", cfg_arch: self
             )
         elsif ext_ver_list.size == (ext_ver_list[0].ext.versions.size - 1)
           # excludes all but one version
@@ -401,7 +401,7 @@ class ArchDef < Architecture
           @prohibited_extensions <<
             ExtensionRequirement.new(
               ext_ver_list[0].ext.name, "!= #{allowed_version.version_spec.canonical}",
-              presence: "prohibited", arch_def: self
+              presence: "prohibited", cfg_arch: self
             )
         else
           # need to group
@@ -441,11 +441,11 @@ class ArchDef < Architecture
   #   @param ext_version_requirements [Number,String,Array] Extension version requirements
   #   @return [Boolean] True if the extension `name` meeting `ext_version_requirements` is implemented
   #   @example Checking extension presence with a version requirement
-  #     arch_def.ext?(:S, ">= 1.12")
+  #     cfg_arch.ext?(:S, ">= 1.12")
   #   @example Checking extension presence with multiple version requirements
-  #     arch_def.ext?(:S, ">= 1.12", "< 1.15")
+  #     cfg_arch.ext?(:S, ">= 1.12", "< 1.15")
   #   @example Checking extension precsence with a precise version requirement
-  #     arch_def.ext?(:S, 1.12)
+  #     cfg_arch.ext?(:S, 1.12)
   def ext?(ext_name, *ext_version_requirements)
     @ext_cache ||= {}
     cached_result = @ext_cache[[ext_name, ext_version_requirements]]
@@ -457,7 +457,7 @@ class ArchDef < Architecture
           if ext_version_requirements.empty?
             e.name == ext_name.to_s
           else
-            requirement = ExtensionRequirement.new(ext_name, *ext_version_requirements, arch_def: self)
+            requirement = ExtensionRequirement.new(ext_name, *ext_version_requirements, cfg_arch: self)
             requirement.satisfied_by?(e)
           end
         end
@@ -466,7 +466,7 @@ class ArchDef < Architecture
           if ext_version_requirements.empty?
             e.name == ext_name.to_s
           else
-            requirement = ExtensionRequirement.new(ext_name, *ext_version_requirements, arch_def: self)
+            requirement = ExtensionRequirement.new(ext_name, *ext_version_requirements, cfg_arch: self)
             e.satisfying_versions.all? do |ext_ver|
               requirement.satisfied_by?(ext_ver)
             end

@@ -12,7 +12,7 @@ rule %r{#{$root}/gen/profile_doc/adoc/.*\.adoc} => proc { |tname|
 } do |t|
   profile_release_name = Pathname.new(t.name).basename(".adoc").to_s
 
-  profile_release = arch_def_for("_64").profile_release(profile_release_name)
+  profile_release = cfg_arch_for("_64").profile_release(profile_release_name)
   raise ArgumentError, "No profile release named '#{profile_release_name}'" if profile_release.nil?
   profile_class = profile_release.profile_class
 
@@ -20,14 +20,14 @@ rule %r{#{$root}/gen/profile_doc/adoc/.*\.adoc} => proc { |tname|
   erb = ERB.new(template_path.read, trim_mode: "-")
   erb.filename = template_path.to_s
 
-  arch_def = arch_def_for("_64")
+  cfg_arch = cfg_arch_for("_64")
 
-  # XXX - Add call to to_arch_def() in portfolio instance class.
+  # XXX - Add call to to_cfg_arch() in portfolio instance class.
   # But somehow have to merge the multiple portofolios in one profile release to one since
-  # to_arch_def used to provide coloring of fields in CSRs in appendices that apply to all profiles in a release.
+  # to_cfg_arch used to provide coloring of fields in CSRs in appendices that apply to all profiles in a release.
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AsciidocUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
+  File.write t.name, AsciidocUtils.resolve_links(cfg_arch.find_replace_links(erb.result(binding)))
   puts "Generated adoc source at #{t.name}"
 end
 
@@ -90,7 +90,7 @@ namespace :gen do
     profile_release_name = args[:profile_release]
     raise ArgumentError, "Missing required option +profile_release+" if profile_release_name.nil?
 
-    profile_release = arch_def_for("_64").profile_release(profile_release_name)
+    profile_release = cfg_arch_for("_64").profile_release(profile_release_name)
     raise ArgumentError, "No profile release named '#{profile_release_name}'" if profile_release.nil?
 
     Rake::Task["#{$root}/gen/profile_doc/pdf/#{profile_release_name}.pdf"].invoke
@@ -101,7 +101,7 @@ namespace :gen do
     profile_release_name = args[:profile_release]
     raise ArgumentError, "Missing required option +profile_release+" if profile_release_name.nil?
 
-    profile_release = arch_def_for("_64").profile_release(profile_release_name)
+    profile_release = cfg_arch_for("_64").profile_release(profile_release_name)
     raise ArgumentError, "No profile release named '#{profile_release_name}" if profile_release.nil?
 
     Rake::Task["#{$root}/gen/profile_doc/html/#{profile_release_name}.html"].invoke

@@ -75,7 +75,7 @@ module Idl
 
   # scoped symbol table holding known symbols at a current point in parsing
   class SymbolTable
-    def archdef = @arch_def
+    def cfg_arch = @cfg_arch
 
     # @return [Integer] 32 or 64, the XLEN in M-mode
     attr_reader :mxlen
@@ -86,13 +86,13 @@ module Idl
     def hash
       return @frozen_hash unless @frozen_hash.nil?
 
-      [@scopes.hash, @arch_def.hash].hash
+      [@scopes.hash, @cfg_arch.hash].hash
     end
 
-    def initialize(arch_def)
-      raise if arch_def.nil?
-      @arch_def = arch_def
-      @mxlen = arch_def.unconfigured? ? nil : arch_def.mxlen
+    def initialize(cfg_arch)
+      raise if cfg_arch.nil?
+      @cfg_arch = cfg_arch
+      @mxlen = cfg_arch.unconfigured? ? nil : cfg_arch.mxlen
       @callstack = [nil]
       @scopes = [{
         "X" => Var.new(
@@ -113,7 +113,7 @@ module Idl
         )
 
       }]
-      arch_def.params_with_value.each do |param_with_value|
+      cfg_arch.params_with_value.each do |param_with_value|
         type = Type.from_json_schema(param_with_value.schema).make_const
         if type.kind == :array && type.width == :unknown
           type = Type.new(:array, width: param_with_value.value.length, sub_type: type.sub_type, qualifiers: [:const])
@@ -131,7 +131,7 @@ module Idl
       end
 
       # now add all parameters, even those not implemented
-      arch_def.params_without_value.each do |param|
+      cfg_arch.params_without_value.each do |param|
         if param.exts.size == 1
           add!(param.name, Var.new(param.name, param.idl_type.clone.make_const))
         else
@@ -157,7 +157,7 @@ module Idl
       @scopes.freeze
 
       # set frozen_hash so that we can quickly compare symtabs
-      @frozen_hash = [@scopes.hash, @arch_def.hash].hash
+      @frozen_hash = [@scopes.hash, @cfg_arch.hash].hash
 
       # set up the global clone that be used as a mutable table
       @global_clone_pool = []
@@ -166,7 +166,7 @@ module Idl
         copy = SymbolTable.allocate
         copy.instance_variable_set(:@scopes, [@scopes[0]])
         copy.instance_variable_set(:@callstack, [@callstack[0]])
-        copy.instance_variable_set(:@arch_def, @arch_def)
+        copy.instance_variable_set(:@cfg_arch, @cfg_arch)
         copy.instance_variable_set(:@mxlen, @mxlen)
         copy.instance_variable_set(:@global_clone_pool, @global_clone_pool)
         copy.instance_variable_set(:@in_use, false)
@@ -179,7 +179,7 @@ module Idl
 
     # @return [String] inspection string
     def inspect
-      "SymbolTable[#{@arch_def.name}]#{frozen? ? ' (frozen)' : ''}"
+      "SymbolTable[#{@cfg_arch.name}]#{frozen? ? ' (frozen)' : ''}"
     end
 
     # pushes a new scope
@@ -342,7 +342,7 @@ module Idl
         copy = SymbolTable.allocate
         copy.instance_variable_set(:@scopes, [@scopes[0]])
         copy.instance_variable_set(:@callstack, [@callstack[0]])
-        copy.instance_variable_set(:@arch_def, @arch_def)
+        copy.instance_variable_set(:@cfg_arch, @cfg_arch)
         copy.instance_variable_set(:@mxlen, @mxlen)
         copy.instance_variable_set(:@global_clone_pool, @global_clone_pool)
         copy.instance_variable_set(:@in_use, false)

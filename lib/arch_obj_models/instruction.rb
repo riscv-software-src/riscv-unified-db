@@ -6,7 +6,7 @@ require_relative "obj"
 
 
 # model of a specific instruction in a specific base (RV32/RV64)
-class Instruction < ArchDefObject
+class Instruction < DatabaseObjectect
   def self.ary_from_location(location_str_or_int)
     return [location_str_or_int] if location_str_or_int.is_a?(Integer)
 
@@ -137,25 +137,25 @@ class Instruction < ArchDefObject
   def pruned_operation_ast(global_symtab, effective_xlen)
     @pruned_asts ||= {}
 
-    arch_def = global_symtab.archdef
+    cfg_arch = global_symtab.cfg_arch
 
-    pruned_ast = @pruned_asts[arch_def.name]
+    pruned_ast = @pruned_asts[cfg_arch.name]
     return pruned_ast unless pruned_ast.nil?
 
     return nil unless @data.key?("operation()")
 
-    type_checked_ast = type_checked_operation_ast(arch_def.idl_compiler, global_symtab, effective_xlen)
+    type_checked_ast = type_checked_operation_ast(cfg_arch.idl_compiler, global_symtab, effective_xlen)
     print "Pruning #{name} operation()..."
     pruned_ast = type_checked_ast.prune(fill_symtab(global_symtab, effective_xlen, type_checked_ast))
     puts "done"
     pruned_ast.freeze_tree(global_symtab)
-    arch_def.idl_compiler.type_check(
+    cfg_arch.idl_compiler.type_check(
       pruned_ast,
       fill_symtab(global_symtab, effective_xlen, pruned_ast),
       "#{name}.operation() (pruned)"
     )
 
-    @pruned_asts[arch_def.name] = pruned_ast
+    @pruned_asts[cfg_arch.name] = pruned_ast
   end
 
   # @param symtab [Idl::SymbolTable] Symbol table with global scope populated
@@ -166,7 +166,7 @@ class Instruction < ArchDefObject
       []
     else
       # RubyProf.start
-      ast = type_checked_operation_ast(symtab.archdef.idl_compiler, symtab, effective_xlen)
+      ast = type_checked_operation_ast(symtab.cfg_arch.idl_compiler, symtab, effective_xlen)
       print "Determining reachable funcs from #{name}..."
       fns = ast.reachable_functions(fill_symtab(symtab, effective_xlen, ast))
       puts "done"
@@ -186,7 +186,7 @@ class Instruction < ArchDefObject
     else
       # pruned_ast =  pruned_operation_ast(symtab)
       # type_checked_operation_ast()
-      type_checked_ast = type_checked_operation_ast(symtab.arch_def.idl_compiler, symtab, effective_xlen)
+      type_checked_ast = type_checked_operation_ast(symtab.cfg_arch.idl_compiler, symtab, effective_xlen)
       symtab = fill_symtab(symtab, effective_xlen, pruned_ast)
       type_checked_ast.reachable_exceptions(symtab)
     end
@@ -214,7 +214,7 @@ class Instruction < ArchDefObject
     else
       etype = symtab.get("ExceptionCode")
       if effective_xlen.nil?
-        if symtab.archdef.multi_xlen?
+        if symtab.cfg_arch.multi_xlen?
           if base.nil?
             (
               pruned_ast = pruned_operation_ast(symtab, 32)
@@ -241,7 +241,7 @@ class Instruction < ArchDefObject
             e
           end
         else
-          effective_xlen = symtab.archdef.mxlen
+          effective_xlen = symtab.cfg_arch.mxlen
           pruned_ast = pruned_operation_ast(symtab, effective_xlen)
           print "Determining reachable exceptions from #{name}..."
           e = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, effective_xlen, pruned_ast))).map { |code|
@@ -644,7 +644,7 @@ class Instruction < ArchDefObject
     return nil if @data["operation()"].nil?
 
     # now, parse the operation
-    @operation_ast = symtab.archdef.idl_compiler.compile_inst_operation(
+    @operation_ast = symtab.cfg_arch.idl_compiler.compile_inst_operation(
       self,
       symtab:,
       input_file: @data["$source"],
@@ -719,7 +719,7 @@ class Instruction < ArchDefObject
   def excluded_by?(*args)
     return false if @data["excludedBy"].nil?
 
-    excluded_by = SchemaCondition.new(@data["excludedBy"], @arch_def)
+    excluded_by = SchemaCondition.new(@data["excludedBy"], @cfg_arch)
 
     ext_ver =
       if args.size == 1
@@ -730,7 +730,7 @@ class Instruction < ArchDefObject
         raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
         raise ArgumentError, "Second parameter must be an extension version" unless args[1].respond_to?(:to_s)
 
-        ExtensionVersion.new(args[0], args[1], @arch_def)
+        ExtensionVersion.new(args[0], args[1], @cfg_arch)
       end
 
     excluded_by.satisfied_by? do |r|
@@ -738,19 +738,19 @@ class Instruction < ArchDefObject
     end
   end
 
-  # @param arch_def [ArchDef] The architecture definition
+  # @param cfg_arch [ConfiguredArchitecture] The architecture definition
   # @return [Boolean] whether or not the instruction is implemented given the supplies config options
-  def exists_in_cfg?(arch_def)
-    if arch_def.fully_configured?
-      (@data["base"].nil? || (arch_def.possible_xlens.include? @data["base"])) &&
-        arch_def.implemented_extensions.any? { |e| defined_by?(e) } &&
-        arch_def.implemented_extensions.none? { |e| excluded_by?(e) }
+  def exists_in_cfg?(cfg_arch)
+    if cfg_arch.fully_configured?
+      (@data["base"].nil? || (cfg_arch.possible_xlens.include? @data["base"])) &&
+        cfg_arch.implemented_extensions.any? { |e| defined_by?(e) } &&
+        cfg_arch.implemented_extensions.none? { |e| excluded_by?(e) }
     else
-      raise "unexpected arch_def type" unless arch_def.partially_configured?
+      raise "unexpected cfg_arch type" unless cfg_arch.partially_configured?
 
-      (@data["base"].nil? || (arch_def.possible_xlens.include? @data["base"])) &&
-        arch_def.prohibited_extensions.none? { |e| defined_by?(e) } &&
-        arch_def.mandatory_extensions.none? { |e| excluded_by?(e) }
+      (@data["base"].nil? || (cfg_arch.possible_xlens.include? @data["base"])) &&
+        cfg_arch.prohibited_extensions.none? { |e| defined_by?(e) } &&
+        cfg_arch.mandatory_extensions.none? { |e| excluded_by?(e) }
     end
   end
 end

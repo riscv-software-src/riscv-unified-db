@@ -150,7 +150,7 @@ class Architecture
     generate_obj_methods(obj_info[:fn_name], obj_info[:arch_dir], obj_info[:klass])
   end
 
-  # @return [Array<ArchDefObject>] All known objects
+  # @return [Array<DatabaseObjectect>] All known objects
   def objs
     return @objs unless @objs.nil?
 
