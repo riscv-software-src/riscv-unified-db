@@ -333,13 +333,20 @@ class ConfiguredArchitecture < Architecture
   # @return [String] A string representation of the object.
   def inspect = "ConfiguredArchitecture##{name}"
 
+  def implemented_extensions
+    @implemented_extensions ||=
+      @config.implemented_extensions.map do |e|
+        ExtensionVersion.new(e["name"], e["version"], self, fail_if_version_does_not_exist: true)
+      end
+  end
+
   # @return [Array<ExtensionVersion>] List of all extensions known to be implemented in this config, including transitive implications
   def transitive_implemented_extensions
     return @transitive_implemented_extensions unless @transitive_implemented_extensions.nil?
 
     raise "implemented_extensions is only valid for a fully configured defintion" unless @config.fully_configured?
 
-    list = @config.implemented_extensions(self)
+    list = implemented_extensions
     list.each do |e|
       implications = e.transitive_implications
       list.concat(implications) unless implications.empty?
@@ -348,7 +355,15 @@ class ConfiguredArchitecture < Architecture
   end
 
   # @return [Array<ExtensionRequirement>] List of all mandatory extension requirements
-  def mandatory_extensions = @config.mandatory_extensions(self)
+  def mandatory_extensions
+    @mandatory_extensions ||=
+      @config.mandatory_extensions.map do |e|
+        ext = extension(e["name"])
+        raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
+
+        ExtensionRequirement.new(e["name"], *e["version"], presence: "mandatory", cfg_arch: self)
+      end
+  end
 
   # @return [Array<ExtensionRequirement>] List of all extensions that are prohibited.
   #                                       This includes extensions explicitly prohibited by the config file
@@ -357,7 +372,13 @@ class ConfiguredArchitecture < Architecture
     return @prohibited_extensions unless @prohibited_extensions.nil?
 
     if @config.partially_configured?
-      @prohibited_extensions = @config.prohibited_extensions(self)
+      @prohibited_extensions =
+        @config.prohibited_extensions.map do |e|
+          ext = extension(e["name"])
+          raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
+
+          ExtensionRequirement.new(e["name"], *e["version"], presence: "mandatory", cfg_arch: self)
+        end
 
       # now add any extensions that are prohibited by a mandatory extension
       mandatory_extensions.each do |ext_req|

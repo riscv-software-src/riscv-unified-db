@@ -2,8 +2,10 @@
 
 require "pathname"
 
+# this class represents a configuration file (e.g., cfgs/*/cfg.yaml), independent of the Architecture
 class Config
-  # @return [Hash<String, Object>] A hash mapping parameter name to value for any parameter that has been configured with a value. May be empty.
+  # @return [Hash<String, Object>] A hash mapping parameter name to value for any parameter that has
+  #                                been configured with a value. May be empty.
   attr_reader :param_values
 
   # use Config#create instead
@@ -60,6 +62,8 @@ class Config
   def type = @data["type"]
 end
 
+# this class represents a configuration file (e.g., cfgs/*/cfg.yaml) that is "unconfigured"
+# (i.e., we don't know any implemented/mandatory extensions or parameter values)
 class Unconfig < Config
   attr_reader :param_values
 
@@ -73,8 +77,13 @@ class Unconfig < Config
 
   def implemented_extensions = raise "implemented_extensions is only availabe for a FullConfig"
   def mandatory_extensions = raise "mandatory_extensions is only availabe for a PartialConfig"
+  def prohibited_extensions = raise "prohibited_extensions is only availabe for a PartialConfig"
 end
 
+# this class represents a configuration file (e.g., cfgs/*/cfg.yaml) that is "partially configured"
+# (i.e., we have a list of mandatory/prohibited extensions and a paritial list of parameter values)
+#
+# This would, for example, represent a Profile or configurable IP
 class PartialConfig < Config
   attr_reader :param_values, :mxlen
 
@@ -91,48 +100,53 @@ class PartialConfig < Config
 
   def implemented_extensions = raise "implemented_extensions is only availabe for a FullConfig"
 
-  # @return [Array<ExtensionRequirement>] List of all extensions that must be implemented, as specified in the config file
-  #                                       Implied/required extensions are *not* transitively included (though they are from ConfiguredArchitecture#mandatory_extensions)
-  def mandatory_extensions(cfg_arch)
+  # @return [Array<Hash{String => String,Array<String}>]
+  #    List of all extensions that must be implemented, as specified in the config file
+  #    The first entry in the nested array is an Extension name.
+  #    The second entry in the nested array is an Extension version requirement
+  #
+  # @example
+  #   partial_config.mandatory_extensions #=> [{ "name" => "A", "version" => ["~> 2.0"] }, { "name" => "B", "version" => ["~> 1.0"] }, ...]
+  def mandatory_extensions
     @mandatory_extensions ||=
-      if @data.key?("mandatory_extensions")
-        @data["mandatory_extensions"].map do |e|
-          ext = cfg_arch.extension(e["name"])
-          raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
-
-          req_spec = e["version"].is_a?(Array) ? e["version"] : [e["version"]]
-          ExtensionRequirement.new(e["name"], *req_spec, presence: "mandatory", cfg_arch:)
-        end
-      else
+      if @data["mandatory_extensions"].nil?
         []
+      else
+        @data["mandatory_extensions"].map do |e|
+          # convert the requirement to always be an array
+          { "name" => e["name"], "version" => e["version"].is_a?(String) ? [e["version"]] : e["version"]}
+        end
       end
   end
 
-  # @return [Array<ExtensionRequirement>] List of all extensions that are prohibited.
-  #                                       This only includes extensions explicitly prohibited by the config file.
-  def prohibited_extensions(cfg_arch)
-    return @prohibited_extensions unless @prohibited_extensions.nil?
-
-    @prohibited_extensions = []
-    if @data.key?("prohibited_extensions")
-      @data["prohibited_extensions"].each do |e|
-        @prohibited_extensions <<
-          if e.is_a?(String)
-            ExtensionRequirement.new(e, nil, cfg_arch:)
-          else
-            ExtensionRequirement.new(e["name"], e["version"], presence: "prohibited", cfg_arch:)
-          end
+  # @return [Array<Hash{String => String,Array<String}>]
+  #   List of all extensions that are explicitly prohibited.
+  #   The first entry in the nested array is an Extension name.
+  #   The second entry in the nested array is an Extension version requirement.
+  #
+  # @example
+  #   partial_config.prohibited_extensions #=> [{ "name" => "F", "version" => [">= 2.0"] }, { "name" => "Zfa", "version" => ["> = 1.0"] }, ...]
+  def prohibited_extensions
+    @prohibited_extensions ||=
+      if @data["prohibited_extensions"].nil?
+        []
+      else
+        @data["prohibited_extensions"].map do |e|
+          # convert the requirement to always be an array
+          { "name" => e["name"], "version" => e["version"].is_a?(String) ? [e["version"]] : e["version"]}
+        end
       end
-    end
-    @prohibited_extensions
   end
 
-  def prohibited_ext?(ext_name, cfg_arch) = prohibited_extensions(cfg_arch).any? { |e| e.name == ext_name.to_s }
+  # def prohibited_ext?(ext_name, cfg_arch) = prohibited_extensions(cfg_arch).any? { |e| e.name == ext_name.to_s }
 
-  def ext?(ext_name, cfg_arch) = mandatory_extensions(cfg_arch).any? { |e| e.name == ext_name.to_s }
+  # def ext?(ext_name, cfg_arch) = mandatory_extensions(cfg_arch).any? { |e| e.name == ext_name.to_s }
 end
 
-
+# this class represents a configuration file (e.g., cfgs/*/cfg.yaml) that is "fully configured"
+# (i.e., we have a complete list of implemented extensions and a complete list of parameter values)
+#
+# This would, for example, represent a specific silicon tapeout/SKU
 class FullConfig < Config
   attr_reader :param_values, :mxlen
 
@@ -145,24 +159,24 @@ class FullConfig < Config
     raise "Must set XLEN for a configured config" if @mxlen.nil?
   end
 
-  # @return [Array<ExtensionVersion>] List of all extensions known to be implemented in this architecture
-  def implemented_extensions(cfg_arch)
-    return @implemented_extensions unless @implemented_extensions.nil?
-
-    @implemented_extensions = []
-    if @data.key?("implemented_extensions")
-      @data["implemented_extensions"].each do |e|
-        if e.is_a?(Array)
-          @implemented_extensions << ExtensionVersion.new(e[0], e[1], cfg_arch)
-        else
-          @implemented_extensions << ExtensionVersion.new(e["name"], e["version"], cfg_arch)
+  # @return [Array<Hash<String, String>>] List of all extensions known to be implemented in this architecture
+  def implemented_extensions
+    @implemented_extensions ||=
+      if @data["implemented_extensions"].nil?
+        []
+      else
+        @data["implemented_extensions"].map do |e|
+          if e.is_a?(Array)
+            { "name" => e[0], "version" => e[1] }
+          else
+            e
+          end
         end
       end
-    end
-    @implemented_extensions
   end
 
   def mandatory_extensions = raise "mandatory_extensions is only availabe for a PartialConfig"
+  def prohibited_extensions = raise "prohibited_extensions is only availabe for a PartialConfig"
 
   # def prohibited_ext?(ext_name, cfg_arch) = !ext?(ext_name, cfg_arch)
   # def ext?(ext_name, cfg_arch) = implemented_extensions(cfg_arch).any? { |e| e.name == ext_name.to_s }
