@@ -1,0 +1,37 @@
+#pragma once
+
+#include <filesystem>
+#include <string>
+
+#include <nlohmann/json.hpp>
+
+#include "udb/bits-yaml.hpp"
+
+namespace udb {
+  struct <%= name_of(:params, cfg_arch) %>
+  {
+    class Error : public std::runtime_error {
+      public:
+      explicit Error(const std::string& msg) : std::runtime_error(msg) {}
+      explicit Error(const char* msg) : std::runtime_error(msg) {}
+    };
+
+    // read parameters out of a YAML (or JSON) config file
+    <%= name_of(:params, cfg_arch) %>(const nlohmann::json& cfg)
+    {
+      init(cfg);
+    }
+
+    void init(const nlohmann::json& params);
+
+    <%- cfg_arch.params_without_value.each do |param| -%>
+
+    // <%= param.desc.gsub("\n", "\n  // ") %>
+    <%= param.idl_type.to_cxx_no_qualifiers %> <%= param.name %>;
+    <%- end -%>
+
+    private:
+    void set_param(const std::string& param_name, const nlohmann::json& json);
+    void set_param_default(const std::string& param_name);
+  };
+}

@@ -546,7 +546,9 @@ class CsrField < DatabaseObjectect
 
     return nil unless @data.key?("sw_write(csr_value)")
 
-    raise ArgumentError, "cfg_arch must be configured to prune" if cfg_arch.unconfigured?
+    ast = type_checked_sw_write_ast(cfg_arch.symtab, effective_xlen)
+
+    return ast if cfg_arch.unconfigured?
 
     symtab = cfg_arch.symtab.global_clone
     symtab.push(ast)
@@ -564,7 +566,6 @@ class CsrField < DatabaseObjectect
       Idl::Var.new("csr_value", csr.bitfield_type(cfg_arch, effective_xlen))
     )
 
-    ast = type_checked_sw_write_ast(cfg_arch.symtab, effective_xlen)
     ast = ast.prune(symtab)
     raise "Symbol table didn't come back at global + 1" unless symtab.levels == 2
 

@@ -1,0 +1,79 @@
+#pragma once
+
+#include "udb/csr/csr.hpp"
+
+<%- csrs = cfg_arch.fully_configured? ? cfg_arch.implemented_csrs : cfg_arch.csrs -%>
+
+namespace udb {
+  <%- csrs.each do |csr| -%>
+  <%- fields = cfg_arch.fully_configured? ? csr.implemented_fields(cfg_arch) : csr.fields -%>
+  class <%= name_of(:csr, cfg_arch, csr.name) %> : public CsrBase {
+    <%- fields.each do |field| -%>
+    friend class <%= name_of(:csr_field, cfg_arch, csr.name, field.name ) -%>;
+    <%- end -%>
+
+    public:
+    <%= name_of(:csr, cfg_arch, csr.name) %>(<%= name_of(:hart, cfg_arch) %>* parent)
+      : CsrBase(),
+        m_parent(parent),
+        m_view(0)
+        <%- unless fields.empty? -%>,<%- end -%>
+        <%- fields.map { |field| "m_#{field.name}(parent)" }.join(", ") %>
+    {
+    }
+
+    unsigned address() const override { return <%= csr.address %>; }
+    const std::string name() const override { return "<%= csr.name %>"; }
+
+    void reset() override {
+      <%- fields.each do |field| -%>
+      m_<%= field.name %>.reset();
+      <%- end -%>
+    }
+
+    uint64_t hw_read() const override {
+      return _hw_read();
+    }
+
+    uint64_t _hw_read() const {
+      return m_view.value();
+    }
+    const <%= name_of(:csr_view, cfg_arch, csr.name) %>& readView() const { return m_view; }
+
+    virtual uint64_t sw_read() const {
+      return _sw_read();
+    }
+
+    Bits<<%= csr.max_length(cfg_arch) %>> _sw_read() const {
+      <%- if csr.has_custom_sw_read? -%>
+      <%= csr.pruned_sw_read_ast(cfg_arch).gen_cpp(cfg_arch.symtab) %>
+      <%- else -%>
+      return m_view.value();
+      <%- end -%>
+    }
+
+    bool sw_write(const uint64_t& value) override {
+      return _sw_write(value);
+    }
+
+    bool _sw_write(const Bits<<%= csr.max_length(cfg_arch) %>>& value) {
+      <%- fields = cfg_arch.fully_configured? ? csr.implemented_fields(cfg_arch) : csr.fields -%>
+      <%- fields.each do |field| -%>
+      <%- if field.has_custom_sw_write? -%>
+      <%- if cfg_arch.possible_xlens.include?(64) -%>
+      if (m_parent->xlen() == 64) {
+        <%= field.pruned_sw_write_ast(cfg_arch, 64).gen_cpp(cfg_arch.symtab) %>
+      }
+      <%- end -%>
+      <%- if cfg_arch.possible_xlens.include?(32) -%>
+      if (m_parent->xlen() == 32) {
+        <%= field.pruned_sw_write_ast(cfg_arch, 32).gen_cpp(cfg_arch.symtab) %>
+      }
+      <%- end -%>
+      <%- end -%>
+      <%- end -%>
+      return true;
+    }
+  };
+  <%- end -%>
+}

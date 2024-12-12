@@ -426,6 +426,8 @@ params:
       This address is reported in the `mconfigptr` CSR.
     schema:
       type: integer
+      minimum: 0
+      maximum: 0xFFFFFFFFFFFFFFFF
     when:
       version: ">= 1.12.0"
   PMA_GRANULARITY:
@@ -492,6 +494,7 @@ params:
     schema:
       type: integer
       minimum: 4
+      maximum: 64
       default: 4
       extra_validation: |
         # must be a power of two

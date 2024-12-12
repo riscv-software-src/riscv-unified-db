@@ -36,6 +36,12 @@ class ExtensionParameter
     @schema.to_pretty_s
   end
 
+  def default
+    if @data["schema"].key?("default")
+      @data["schema"]["default"]
+    end
+  end
+
   def initialize(ext, name, data)
     @cfg_arch = ext.cfg_arch
     @data = data

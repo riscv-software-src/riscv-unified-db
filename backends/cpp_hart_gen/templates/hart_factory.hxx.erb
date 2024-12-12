@@ -1,0 +1,55 @@
+
+#include "udb/defines.hpp"
+
+#include "udb/config_validator.hpp"
+
+#include ISS_FORMAT_INCLUDE
+
+<%- cfg_list = ENV["CONFIG"].split(",").map(&:strip) -%>
+
+<%- cfg_list.each do |cfg| -%>
+#include "udb/cfgs/<%= cfg %>/hart.hxx"
+<%- end -%>
+
+namespace udb {
+  class HartFactory {
+    HartFactory() = delete;
+
+  public:
+    static constexpr std::array<std::string_view, <%= cfg_list.size %>> configs() {
+      return { <%= cfg_list.map { |c| "\"#{c}\"" }.join(", ") %> };
+    }
+
+    static HartBase* create(const std::string& config_name, uint64_t hart_id, const std::filesystem::path& cfg_path, Memory& mem)
+    {
+      auto yaml = YAML::LoadFile(cfg_path.string());
+      nlohmann::json json = ConfigValidator::validate(yaml);
+
+      <%- cfg_list.each do |config| -%>
+      if (config_name == "<%= config %>") {
+        return new <%= name_of(:hart, config) %>(hart_id, mem, json);
+      }
+      <%- end %>
+
+      // bad config name
+      fmt::print("'{}' is not a valid config name\n", config_name);
+      exit(1);
+    }
+
+    static HartBase* create(const std::string& config_name, uint64_t hart_id, const std::string& cfg_yaml, Memory& mem)
+    {
+      auto yaml = YAML::Load(cfg_yaml);
+      nlohmann::json json = ConfigValidator::validate(yaml);
+
+      <%- cfg_list.each do |config| -%>
+      if (config_name == "<%= config %>") {
+        return new <%= name_of(:hart, config) %>(hart_id, mem, json);
+      }
+      <%- end %>
+
+      // bad config name
+      fmt::print("'{}' is not a valid config name\n", config_name);
+      exit(1);
+    }
+  };
+}
