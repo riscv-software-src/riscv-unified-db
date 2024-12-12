@@ -18,17 +18,21 @@ module CppHartGen
       when :csr
         raise "Missing csr name" unless extras.size == 1
 
-        "#{config_name.camelize}_#{extras[0].capitalize}_Csr"
+        "#{config_name.camelize}_#{extras[0].gsub(".", "_").capitalize}_Csr"
       when :csr_field
         raise "Missing csr name" unless extras.size == 2
 
-        "#{config_name.camelize}_#{extras[0].capitalize}_#{extras[1].capitalize}_Field"
+        "#{config_name.camelize}_#{extras[0].gsub(".", "_").capitalize}_#{extras[1].capitalize}_Field"
       when :csr_container
         "#{config_name.camelize}_CsrContainer"
       when :csr_view
         raise "Missing csr name" unless extras.size == 1
 
-        "#{config_name.camelize}_#{extras[0].capitalize}_CsrView"
+        "#{config_name.camelize}_#{extras[0].gsub(".", "_").capitalize}_CsrView"
+      when :inst
+        raise "Missing Instruction name" unless extras.size == 1
+
+        "#{config_name.camelize}_#{extras[0].gsub(".", "_").capitalize}_Inst"
       else
         raise "TODO: #{kind}"
       end

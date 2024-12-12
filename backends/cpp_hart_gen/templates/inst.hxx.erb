@@ -1,0 +1,43 @@
+#pragma once
+
+<%- ilist = cfg_arch.fully_configured? ? cfg_arch.transitive_implemented_instructions : cfg_arch.instructions -%>
+
+namespace udb {
+  <%- ilist.each do |inst| -%>
+  class <%= name_of(:inst, cfg_arch, inst.name) %> : public InstBase {
+  public:
+    <%= name_of(:inst, cfg_arch, inst.name) %>(<%= name_of(:hart, cfg_arch) %>* parent, XReg pc, uint64_t encoding)
+      : InstBase(pc, encoding),
+        m_parent(parent)
+    {
+    }
+
+    virtual ~<%= name_of(:inst, cfg_arch, inst.name) %>() {}
+
+    <%= name_of(:hart, cfg_arch) %>* parent() { return m_parent; }
+
+    size_t enc_len() const override { return <%= inst.encoding_width %>; }
+
+    void execute() override {
+      <%- if inst.operation_ast(cfg_arch.symtab).nil? -%>
+      assert(!"There is no operation() defined for this instruction");
+      <%- else -%>
+      <%- if !inst.base.nil? -%>
+      <%= inst.pruned_operation_ast(cfg_arch.symtab, inst.base).gen_cpp(cfg_arch.symtab, 6) %>
+      <%- elsif !cfg_arch.multi_xlen? -%>
+      <%= inst.pruned_operation_ast(cfg_arch.symtab, cfg_arch.possible_xlens[0]).gen_cpp(cfg_arch.symtab, 6) %>
+      <%- else -%>
+      if (m_parent->xlen() == 32) {
+        <%= inst.pruned_operation_ast(cfg_arch.symtab, 32).gen_cpp(cfg_arch.symtab, 8) %>
+      } else {
+        <%= inst.pruned_operation_ast(cfg_arch.symtab, 64).gen_cpp(cfg_arch.symtab, 8) %>
+      }
+      <%- end -%>
+      <%- end -%>
+    }
+
+  private:
+    <%= name_of(:hart, cfg_arch) %> * const m_parent;
+  };
+  <%- end -%>
+}

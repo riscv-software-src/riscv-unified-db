@@ -42,14 +42,11 @@ namespace riscv {
     Enum m_reg = INVALID;
   };
 
-  template <typename HartType>
   class InstBase {
     public:
-    InstBase(HartType* parent, XReg pc, uint64_t encoding)
-      : m_parent(parent), m_pc(pc), m_encoding(encoding)
+    InstBase(XReg pc, uint64_t encoding)
+      : m_pc(pc), m_encoding(encoding)
     {}
-
-    HartType* parent() { return m_parent; }
 
     XReg pc() { return m_pc; }
     uint64_t encoding() { return m_encoding; }
@@ -67,7 +64,6 @@ namespace riscv {
     virtual std::vector<Reg> dstRegs() const = 0;
 
     protected:
-    HartType* m_parent;
     XReg m_pc;
     uint64_t m_encoding;
   };
