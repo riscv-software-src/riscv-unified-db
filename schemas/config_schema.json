@@ -95,7 +95,7 @@
         "ASID_WIDTH": {
           "type": "integer",
           "maximum": 16,
-          "manimum": 0,
+          "minimum": 0,
           "description": "Number of implemented ASID bits"
         },
         "NUM_PMP_ENTRIES": {
