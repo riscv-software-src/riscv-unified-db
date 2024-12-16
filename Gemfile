@@ -24,4 +24,5 @@ group :development do
   gem 'rubocop-minitest'
   gem 'ruby-prof'
   gem "ruby-prof-flamegraph"
+  gem "rdbg"
 end
