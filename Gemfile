@@ -22,6 +22,7 @@ gem "yard"
 
 group :development do
   gem "debug"
+  gem "rdbg"
   gem "rubocop-minitest"
   gem "ruby-prof"
   gem "ruby-prof-flamegraph"
