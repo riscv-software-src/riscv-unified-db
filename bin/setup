@@ -169,4 +169,3 @@ fi
 HOOK
   chmod +x $ROOT/.git/hooks/pre-commit
 fi
-
