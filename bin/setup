@@ -6,8 +6,62 @@ cd $ROOT
 
 CONTAINER_TAG=`cat ${ROOT}/bin/.container-tag`
 
+# Supported container types:
+#
+# = devcontainer
+#
+# When devcontainer is used, all commands run "natively" (no container prefix), because it's assumed
+# that the command itself is already in the container context
+#
+# = docker
+#
+# A docker container. All commands on the host (using ./do or ./bin/*) are run in the context of a Docker image.
+#
+# = singularity
+#
+# An apptainer/singularity container. All commands on the host (using ./do or ./bin/*) are run in the context of an Apptainer/Singularity image.
+#
+#
+# ALL THREE CONTAINERS ARE IDENTICAL. Which one you use is a preference of your setup and installed
+# software.
+
+
+# get the container type
+#
+# use, in priority order:
+#  1. devcontainer, if DEVCONTAINER_ENV is set in the enviornment
+#  2. the type stored in .container-type
+#  3. Docker, if DOCKER is set in the enviornment
+#  4. The choice made by the user, which will be cached in .container-type
+if [ -v DEVCONTAINER_ENV ]; then
+CONTAINER_TYPE=devcontainer
+elif [ -f ${ROOT}/.container-type ]; then
+CONTAINER_TYPE=`cat ${ROOT}/.container-type`
+elif [ -v DOCKER ]; then
+CONTAINER_TYPE=docker
+else
+  echo -e "UDB tools run in a container. Both Docker and Singularity/Apptainer are supported.\\n\\n1. Docker\\n2. Singularity\\n"
+  while true; do
+    echo "Which would you like to use? (1/2) "
+    read ans
+    case $ans in
+        [1]* ) CONTAINER_TYPE=docker; break;;
+        [2]* ) CONTAINER_TYPE=singularity; break;;
+        * ) echo -e "\\nPlease answer 1 or 2.";;
+    esac
+  done
+fi
+
+if [ "${CONTAINER_TYPE}" != "docker" -a "${CONTAINER_TYPE}" != "singularity" ]; then
+  echo "BAD CONTAINER TYPE: ${CONTAINER_TYPE}"
+fi
+
+if [ ! -f ${ROOT}/.container-type ]; then
+  echo ${CONTAINER_TYPE} > ${ROOT}/.container-type
+fi
+
 print_env() {
-    if [ -v DOCKER ]; then
+    if [ "${CONTAINER_TYPE}" == "docker" ]; then
         echo "Using Docker environment"
     else
         echo "Using Singularity environment"
@@ -20,13 +74,18 @@ if [ -v GITHUB_ACTIONS ]; then
     HOME_PATH=${GITHUB_WORKSPACE}
     HOME_OPT="--home ${ROOT}/.home"
     SINGULARITY_CACHE=--disable-cache
-elif [ -v DOCKER ]; then
+elif [ "${CONTAINER_TYPE}" == "docker" ]; then
     print_env
-    if ! docker images udb | grep -q udb ; then
+    if ! docker images riscvintl/udb:${CONTAINER_TAG} | grep -q udb ; then
+        # TODO: pull the image if it can be found
         echo "Building Docker image..."
-        docker build -t udb -f .devcontainer/Dockerfile .
+        docker build -t riscvintl/udb:${CONTAINER_TAG} -f .devcontainer/Dockerfile .
     fi
-    DOCKER_BASE="docker run -it -v $(pwd):$(pwd) -w $(pwd) udb"
+    if [ -t 1 -a -t 0 ]; then
+      DOCKER_BASE="docker run -it -v $(pwd):$(pwd) -w $(pwd) riscvintl/udb:${CONTAINER_TAG}"
+    else
+      DOCKER_BASE="docker run -v $(pwd):$(pwd) -w $(pwd) riscvintl/udb:${CONTAINER_TAG}"
+    fi
     RUN="${DOCKER_BASE}"
 else
     print_env
@@ -34,6 +93,13 @@ else
     HOME_PATH=${HOME}
     HOME_OPT="--bind ${ROOT}/.home:${HOME_PATH}"
     SINGULARITY_CACHE=
+    if [ ! -f ${CONTAINER_PATH} ]; then
+      echo "Fetching container..."
+      if [ ! -d "${ROOT}/.singularity" ]; then
+        mkdir -p ${ROOT}/.singularity
+      fi
+      singularity pull ${SINGULARITY_CACHE} ${CONTAINER_PATH} oras://docker.io/riscvintl/spec-generator:$CONTAINER_TAG
+    fi
 fi
 
 if [ -f $ROOT/.git ]; then
@@ -44,7 +110,7 @@ fi
 
 if [ -v DEVCONTAINER_ENV ]; then
     RUN=""
-elif [ -v DOCKER ]; then
+elif [ "${CONTAINER_TYPE}" == "docker" ]; then
     RUN="${DOCKER_BASE}"
 else
     RUN="singularity run ${HOME_OPT} ${CONTAINER_PATH}"
@@ -52,23 +118,6 @@ fi
 
 if [ ! -d $ROOT/.home ]; then
     mkdir $ROOT/.home
-fi
-
-if [ ! -v DEVCONTAINER_ENV ]; then
-    if [ -v DOCKER ]; then
-        if ! docker images udb | grep -q udb ; then
-            echo "Building Docker image..."
-            docker build -t udb -f .devcontainer/Dockerfile .
-        fi
-    else
-        if [ ! -f ${CONTAINER_PATH} ]; then
-            echo "Fetching container..."
-            if [ ! -d "${ROOT}/.singularity" ]; then
-                mkdir -p ${ROOT}/.singularity
-            fi
-            singularity pull ${SINGULARITY_CACHE} ${CONTAINER_PATH} oras://docker.io/riscvintl/spec-generator:$CONTAINER_TAG
-        fi
-    fi
 fi
 
 if [ ! -f $ROOT/.bundle/config ]; then
@@ -122,15 +171,15 @@ if [ -v DEVCONTAINER_ENV ]; then
     PYTHON="${ROOT}/.home/.venv/bin/python3"
     PIP="${ROOT}/.home/.venv/bin/pip"
     BASH="bash"
-elif [ -v DOCKER ]; then
+elif [ "${CONTAINER_TYPE}" == "docker" ]; then
     BUNDLE="${DOCKER_BASE} bundle"
     RUBY="${DOCKER_BASE} bundle exec ruby"
     RAKE="${DOCKER_BASE} bundle exec rake"
     NPM="${DOCKER_BASE} npm"
     NPX="${DOCKER_BASE} npx"
     NODE="${DOCKER_BASE} node"
-    PYTHON="${DOCKER_BASE} python3"
-    PIP="${DOCKER_BASE} pip"
+    PYTHON="${DOCKER_BASE} ${ROOT}/.home/.venv/bin/python3"
+    PIP="${DOCKER_BASE} ${ROOT}/.home/.venv/bin/pip"
     BASH="${DOCKER_BASE} bash"
 else
     BUNDLE="singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle"
@@ -163,7 +212,7 @@ if [ -x "\$INSTALL_PYTHON" ]; then
 elif command -v pre-commit > /dev/null; then
     exec pre-commit "\${ARGS[@]}"
 else
-    echo '`pre-commit` not found.  Did you forget to activate your virtualenv?' 1>&2
+    echo '\`pre-commit\` not found.  Did you forget to activate your virtualenv?' 1>&2
     exit 1
 fi
 HOOK
