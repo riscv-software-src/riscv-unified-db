@@ -2044,7 +2044,7 @@ module Idl
     def type_check(symtab)
       csr_field.type_check(symtab)
       value_try do
-        if ["RO", "RO-H"].any?(csr_field.field_def(symtab).type(symtab))
+        if ["RO"].any?(csr_field.field_def(symtab).type(symtab))
           type_error "Cannot write to read-only CSR field"
         end
       end
