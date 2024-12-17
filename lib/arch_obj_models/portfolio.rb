@@ -178,11 +178,11 @@ class PortfolioInstance < DatabaseObjectect
     @uses_optional_types
   end
 
-  # @return [ConfiguredArchitecture] A partially-configured architecture definition corresponding to this certificate.
+  # @return [ConfiguredArchitecture] A partially-configured architecture definition corresponding to this portfolio.
   def to_cfg_arch
     return @generated_cfg_arch unless @generated_cfg_arch.nil?
 
-    # build up a config for the certificate
+    # build up a config for the portfolio
     config_data = {
       "$schema" => "config_schema.json",
       "type" => "partially configured",
