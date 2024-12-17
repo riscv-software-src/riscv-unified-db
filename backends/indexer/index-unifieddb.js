@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-'use strict';
+"use strict";
 
-const process = require('process');
-const path = require('path');
-const fs = require('fs');
+const process = require("process");
+const path = require("path");
+const fs = require("fs");
 
 const { readdir, stat } = fs.promises;
 
@@ -16,8 +16,8 @@ const rec = async (branch, root) => {
     const fileExt = path.extname(el);
     const baseName = path.basename(el, fileExt);
     if (isFile) {
-      if (['.yaml', '.json'].includes(fileExt)) {
-        node[baseName] = {$ref: path.join(...branch, el)};
+      if ([".yaml", ".json"].includes(fileExt)) {
+        node[baseName] = { $ref: path.join(...branch, el) };
       }
     } else {
       node[el] = await rec([...branch, el], root);
@@ -29,10 +29,12 @@ const rec = async (branch, root) => {
 const main = async () => {
   const [, , root] = process.argv;
   if (root === undefined) {
-    console.error('usage: ./index-unifieddb.js <path-to-unifieddb-arch-folder>');
+    console.error(
+      "usage: ./index-unifieddb.js <path-to-unifieddb-arch-folder>",
+    );
     return;
   }
-  const rootPath = path.resolve('.', root);
+  const rootPath = path.resolve(".", root);
   const tree = await rec([], rootPath);
   console.log(JSON.stringify(tree, null, 2));
 };

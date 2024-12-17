@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vaesz.vs
-long_name: No synopsis available.
+long_name: Vector AES round zero
 description: |
   No description available.
 definedBy:
@@ -21,5 +21,5 @@ access:
   u: always
   vs: always
   vu: always
-data_independent_timing: false
+data_independent_timing: true
 operation(): |

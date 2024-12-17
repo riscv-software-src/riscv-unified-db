@@ -7,11 +7,11 @@
 
 This instruction is defined by:
 
-<%- inst.defined_by.to_asciidoc -%>
+<%- inst.defined_by_condition.to_asciidoc -%>
 
 == Encoding
 
-<%- if arch_def.multi_xlen? && inst.multi_encoding? -%>
+<%- if cfg_arch.multi_xlen? && inst.multi_encoding? -%>
 [NOTE]
 This instruction has different encodings in RV32 and RV64.
 
@@ -34,7 +34,7 @@ RV64::
 <%- else -%>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump inst.wavedrom_desc(arch_def.param_values["XLEN"]) %>
+<%= JSON.dump inst.wavedrom_desc(cfg_arch.param_values["XLEN"]) %>
 ....
 <%- end -%>
 
@@ -43,18 +43,18 @@ RV64::
 <%= inst.description %>
 
 == Access
-<%- if arch_def.ext?(:H) -%>
+<%- if cfg_arch.ext?(:H) -%>
 [cols="^,^,^,^,^"]
 <%- else -%>
 [cols="^,^,^"]
 <%- end -%>
 |===
-| M | <%- if arch_def.ext?(:H) -%>HS<%- else -%>S<%- end -%> | U <%- if arch_def.ext?(:H) -%> | VS | VU <%- end -%>
+| M | <%- if cfg_arch.ext?(:H) -%>HS<%- else -%>S<%- end -%> | U <%- if cfg_arch.ext?(:H) -%> | VS | VU <%- end -%>
 
 | [.access-always]#Always#
 | [.access-<%=inst.access['s']%>]#<%= inst.access['s'].capitalize %>#
 | [.access-<%=inst.access['u']%>]#<%= inst.access['u'].capitalize %>#
-<% if arch_def.ext?(:H) %>
+<% if cfg_arch.ext?(:H) %>
 | [.access-<%=inst.access['vs']%>]#<%= inst.access['vs'].capitalize %>#
 | [.access-<%=inst.access['vu']%>]#<%= inst.access['vu'].capitalize %>#
 <% end %>
@@ -66,7 +66,7 @@ RV64::
 
 == Decode Variables
 
-<%- if arch_def.multi_xlen? && inst.multi_encoding? -%>
+<%- if cfg_arch.multi_xlen? && inst.multi_encoding? -%>
 [tabs]
 ====
 RV32::
@@ -90,7 +90,7 @@ RV64::
 <%- else -%>
 [source,idl]
 ----
-<%- inst.decode_variables(arch_def.param_values["XLEN"]).each do |d| -%>
+<%- inst.decode_variables(cfg_arch.param_values["XLEN"]).each do |d| -%>
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
 <%- end -%>
 ----
@@ -98,7 +98,7 @@ RV64::
 
 == Execution
 
-<%- xlens = inst.base.nil? ? (arch_def.multi_xlen? ? [32, 64] : [arch_def.mxlen]) : [inst.base] -%>
+<%- xlens = inst.base.nil? ? (cfg_arch.multi_xlen? ? [32, 64] : [cfg_arch.mxlen]) : [inst.base] -%>
 
 <%- if inst.key?("operation()") -%>
 [tabs]
@@ -108,7 +108,7 @@ Pruned, XLEN == <%= effective_xlen %>::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.pruned_operation_ast(arch_def.symtab, effective_xlen).gen_adoc %>
+<%= inst.pruned_operation_ast(cfg_arch.symtab, effective_xlen).gen_adoc %>
 ----
 <%- end -%>
 
@@ -116,12 +116,12 @@ Original::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.operation_ast(arch_def.idl_compiler).gen_adoc %>
+<%= inst.operation_ast(cfg_arch.idl_compiler).gen_adoc %>
 ----
 ====
 <%- end -%>
 
-<%- exception_list = inst.reachable_exceptions_str(arch_def.symtab) -%>
+<%- exception_list = inst.reachable_exceptions_str(cfg_arch.symtab) -%>
 <%- unless exception_list.empty? -%>
 == Exceptions
 

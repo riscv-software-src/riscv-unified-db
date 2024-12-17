@@ -22,39 +22,39 @@ fields:
     base: 64 # upper half doesn't exist in RV32
     <%- end -%>
     description: |
-        *PMP configuration for entry <%= pmpcfg_num*4 + i %>*
+      *PMP configuration for entry <%= pmpcfg_num*4 + i %>*
 
-        The bits are as follows:
+      The bits are as follows:
 
-        [separator="!",%autowidth]
-        !===
-        ! Name ! Location ! Description
+      [separator="!",%autowidth]
+      !===
+      ! Name ! Location ! Description
 
-        h! L ! <%= ((i+1)*8)-1 %>   ! Locks the entry from further modification. Additionally, when set, PMP checks also apply to M-mode for the entry.
-        h! - ! <%= ((i+1)*8)-2 %>:<%= ((i+1)*8)-3 %> ! _Reserved_ Writes shall be ignored.
-        h! A ! <%= ((i+1)*8)-4 %>:<%= ((i+1)*8)-5 %>
-        a! Address matching mode. One of:
+      h! L ! <%= ((i+1)*8)-1 %>   ! Locks the entry from further modification. Additionally, when set, PMP checks also apply to M-mode for the entry.
+      h! - ! <%= ((i+1)*8)-2 %>:<%= ((i+1)*8)-3 %> ! _Reserved_ Writes shall be ignored.
+      h! A ! <%= ((i+1)*8)-4 %>:<%= ((i+1)*8)-5 %>
+      a! Address matching mode. One of:
 
-            [when="PMP_GRANULARITY < 2"]
-            * *OFF* (0) - Null region (disabled)
-            * *TOR* (1) - Top of range
-            * *NA4* (2) - Naturally aligned four-byte region
-            * *NAPOT* (3) - Natrually aligned power of two
+          [when="PMP_GRANULARITY < 2"]
+          * *OFF* (0) - Null region (disabled)
+          * *TOR* (1) - Top of range
+          * *NA4* (2) - Naturally aligned four-byte region
+          * *NAPOT* (3) - Natrually aligned power of two
 
-            [when="PMP_GRANULARITY >= 2"]
-            * *OFF* (0) - Null region (disabled)
-            * *TOR* (1) - Top of range
-            * *NAPOT* (3) - Natrually aligned power of two
+          [when="PMP_GRANULARITY >= 2"]
+          * *OFF* (0) - Null region (disabled)
+          * *TOR* (1) - Top of range
+          * *NAPOT* (3) - Natrually aligned power of two
 
-        [when="PMP_GRANULARITY >= 2"]
-        Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
+      [when="PMP_GRANULARITY >= 2"]
+      Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
 
-        h! X ! <%= ((i)*8)+2 %> ! When clear, instruction fetchs cause an `Access Fault` for the matching region and privilege mode.
-        h! W ! <%= ((i)*8)+1 %> ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
-        h! R ! <%= ((i)*8)+0 %> ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.
-        !===
+      h! X ! <%= ((i)*8)+2 %> ! When clear, instruction fetchs cause an `Access Fault` for the matching region and privilege mode.
+      h! W ! <%= ((i)*8)+1 %> ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
+      h! R ! <%= ((i)*8)+0 %> ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.
+      !===
 
-        The combination of R = 0, W = 1 is reserved.
+      The combination of R = 0, W = 1 is reserved.
     type(): |
       if (NUM_PMP_ENTRIES > <%= pmpcfg_num*4 + i %>) {
         return CsrFieldType::RWR;

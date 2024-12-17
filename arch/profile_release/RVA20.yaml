@@ -1,190 +1,37 @@
-RVA20:
-  name: RVA20
-  marketing_name: RVA20
-  class: RVA
-  release: 20
-  state: ratified # current status ["ratified", "development"]
-  ratification_date: "2023-04-03"
+$schema: profile_release_schema.json#
+kind: profile release
+name: RVA20
+marketing_name: RVA20
+class: RVA
+release: 20
+state: ratified # current status ["ratified", "development"]
+ratification_date: "2023-04-03"
 
-  # Semantic versions within the release
-  versions:
-    - version: "1.0.0"
+# Semantic versions within the release
+versions:
+  - version: "1.0.0"
 
-  introduction: |
-    This profile release targets 64-bit application processors for markets
-    requiring a high-degree of binary compatibility between compliant implementations.
-  description: |
-    This profile release is intended to be used for 64-bit application
-    processors running rich OS stacks.  Only user-mode and
-    supervisor-mode profiles are specified in this release.
+introduction: |
+  This profile release targets 64-bit application processors for markets
+  requiring a high-degree of binary compatibility between compliant implementations.
+description: |
+  This profile release is intended to be used for 64-bit application
+  processors running rich OS stacks.  Only user-mode and
+  supervisor-mode profiles are specified in this release.
 
-    NOTE: There is no machine-mode profile currently defined for this release.
-    A machine-mode profile for application processors would only be used in specifying platforms for
-    portable machine-mode software. Given the relatively low volume of
-    portable M-mode software in this domain, the wide variety of potential
-    M-mode code, and the very specific needs of each type of M-mode
-    software, we are not specifying individual M-mode ISA requirements in this release.
+  NOTE: There is no machine-mode profile currently defined for this release.
+  A machine-mode profile for application processors would only be used in specifying platforms for
+  portable machine-mode software. Given the relatively low volume of
+  portable M-mode software in this domain, the wide variety of potential
+  M-mode code, and the very specific needs of each type of M-mode
+  software, we are not specifying individual M-mode ISA requirements in this release.
 
-    NOTE: Only XLEN=64 application processor profiles are currently defined.
-    It would be possible to also define very similar XLEN=32 variants.
-  contributors:
-    - name: Krste Asanovic
-      email: krste@sifive.com
-      company: SiFive
-  profiles:
-    RVA20U64:
-      marketing_name: RVA20U64
-      mode: Unpriv
-      base: 64
-      release: RVA20
-      introduction: |
-        The RVA20U64 profile specifies the ISA features available to user-mode
-        execution environments in 64-bit applications processors.  This is the
-        most important profile within application processors in
-        terms of the amount of software that targets this profile.
-      extensions:
-        $inherits: "profile_release/RVI20.yaml#/RVI20/profiles/RVI20U64/extensions"
-        $remove: Zifencei # Not allowed as an option for Unpriv ISA (only available in Priv ISA).
-        A:
-          presence: mandatory
-        C:
-          presence: mandatory
-        D:
-          presence: mandatory
-        F:
-          presence: mandatory
-        M:
-          presence: mandatory
-        U:
-          presence: mandatory
-          version: "~> 2.0"
-          param_constraints:
-            U_MODE_ENDIANESS:
-              schema:
-                const: little
-        Zicntr:
-          presence: mandatory
-        Ziccif:
-          presence: mandatory
-          version: "~> 1.0"
-          note: |
-            Ziccif is a profile-defined extension introduced with RVA20.
-            The fetch atomicity requirement facilitates runtime patching
-            of aligned instructions.
-        Ziccrse:
-          presence: mandatory
-          version: "~> 1.0"
-          note: Ziccrse is a profile-defined extension introduced with RVA20.
-        Ziccamoa:
-          presence: mandatory
-          version: "~> 1.0"
-          note: Ziccamo is a profile-defined extension introduced with RVA20.
-        Za128rs:
-          presence: mandatory
-          version: "~> 1.0"
-          note: |
-            Za128rs is a profile-defined extension introduced with RVA20.
-            The minimum reservation set size is effectively determined by the
-            size of atomic accesses in the `A` extension.
-        Zicclsm:
-          presence: mandatory
-          version: "~> 1.0"
-          note: |
-            Zicclsm is a profile-defined extension introduced with RVA20.
-            This requires misaligned support for all regular load and store
-            instructions (including scalar and vector) but not AMOs or other
-            specialized forms of memory access.  Even though mandated, misaligned
-            loads and stores might execute extremely slowly.  Standard software
-            distributions should assume their existence only for correctness, not
-            for performance.
-      extra_notes:
-        - presence: optional
-          text: |
-            The rationale to not make Q an optional extension is that
-            quad-precision floating-point is unlikely to be implemented in
-            hardware, and so we do not require or expect A-profile software to
-            expend effort optimizing use of Q instructions in case they are
-            present.
-        - presence: optional
-          text: |
-            Zifencei is not classed as a supported option in the user-mode
-            profile because it is not sufficient by itself to produce the desired
-            effect in a multiprogrammed multiprocessor environment without OS
-            support, and so the instruction cache flush should always be performed
-            using an OS call rather than using the `fence.i` instruction.
-            `fence.i` semantics can be expensive to implement for some hardware
-            memory hierarchy designs, and so alternative non-standard
-            instruction-cache coherence mechanisms can be used behind the OS
-            abstraction.  A separate extension is being developed for more general
-            and efficient instruction cache coherence.
-        - presence: optional
-          text: |
-            The execution environment must provide a means to synchronize writes to
-            instruction memory with instruction fetches, the implementation of which
-            likely relies on the Zifencei extension.
-            For example, RISC-V Linux supplies the `__riscv_flush_icache` system call and
-            a corresponding vDSO call.
-      recommendations:
-        - text: |
-            Implementations are strongly recommended to raise illegal-instruction
-            exceptions on attempts to execute unimplemented opcodes.
-    RVA20S64:
-      marketing_name: RVA20S64
-      mode: S
-      base: 64
-      release: RVA20
-      introduction: |
-        The RVA20S64 profile specifies the ISA features available to a
-        supervisor-mode execution environment in 64-bit applications
-        processors.  RVA20S64 is based on privileged architecture version 1.11.
-      extensions:
-        S:
-          presence: mandatory
-          version: "~> 1.11"
-        Zifencei:
-          presence: mandatory
-          version: "~> 2.0"
-          note: |
-            Zifencei is mandated as it is the only standard way to support
-            instruction-cache coherence in RVA20 application processors.  A new
-            instruction-cache coherence mechanism is under development which might
-            be added as an option in the future.
-        Svbare:
-          presence: mandatory
-          version: "~> 1.0"
-          note: |
-            Svbare is a new extension name introduced with RVA20.
-        Sv39:
-          presence: mandatory
-          version: "~> 1.11"
-        Svade:
-          presence: mandatory
-          version: "~> 1.0"
-          note: |
-            Svbare is a new extension name introduced with RVA20.
-
-            It is subsequently defined in more detail with the ratification of
-            `Svadu`.
-        Ssccptr:
-          presence: mandatory
-          version: "~> 1.0"
-          note: |
-            Ssccptr is a new extension name introduced with RVA20.
-        Sstvecd:
-          presence: mandatory
-          version: "~> 1.0"
-          note: |
-            Sstvecd is a new extension name introduced with RVA20.
-        Sstvala:
-          presence: mandatory
-          version: "~> 1.0"
-          note: |
-            Sstvala is a new extension name introduced with RVA20.
-        Sv48:
-          presence: optional
-          version: "~> 1.11"
-        Ssu64xl:
-          presence: optional
-          version: "~> 1.0"
-          note: |
-            Ssu64xl is a new extension name introduced with RVA20.
+  NOTE: Only XLEN=64 application processor profiles are currently defined.
+  It would be possible to also define very similar XLEN=32 variants.
+contributors:
+  - name: Krste Asanovic
+    email: krste@sifive.com
+    company: SiFive
+profiles:
+  - { $ref: profile/RVA20U64.yaml# }
+  - { $ref: profile/RVA20S64.yaml# }

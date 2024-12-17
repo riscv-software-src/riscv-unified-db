@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zvkn
+long_name: NIST Algorithm Suite
+description: |
+  This extension is shorthand for the following set of other extensions:
+
+  * `Zvkned`
+  * `Zvknhb`
+  * `Zvkb`
+  * `Zvkt`
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    implies:
+      - [Zvkned, "1.0.0"]
+      - [Zvknhb, "1.0.0"]
+      - [Zvkb, "1.0.0"]
+      - [Zvkt, "1.0.0"]

@@ -1,538 +1,165 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
 
-  "$defs": {
-    "params": {
-      "type": "object",
-      "required": [
-        "NAME",
-        "XLEN",
-        "M_MODE_ENDIANESS",
-        "NUM_PMP_ENTRIES",
-        "ARCH_ID",
-        "VENDOR_ID_BANK",
-        "VENDOR_ID_OFFSET",
-        "IMP_ID",
-        "MISALIGNED_LDST",
-        "NUM_HPM_COUNTERS",
-        "REPORT_VA_IN_MTVAL_ON_BREAKPOINT",
-        "REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED",
-        "REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED",
-        "REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED",
-        "REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT",
-        "REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT",
-        "REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT",
-        "REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT",
-        "REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT",
-        "REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT",
-        "REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION",
-        "TRAP_ON_ILLEGAL_WLRL",
-        "CONFIG_PTR_ADDRESS",
-        "PHYS_ADDR_WIDTH",
-        "CACHE_BLOCK_SIZE",
-        "MISALIGNED_SPLIT_STRATEGY"
-      ],
-      "properties": {
-        "XLEN": {
-          "type": "integer",
-          "enum": [32, 64],
-          "description": "Base instruction set datapath width (e.g., RV32 or RV64)\n"
-        },
-        "NAME": {
-          "type": "string",
-          "description": "Name of the configuration.\n*Must* match the directory name under cfgs/ where params.yaml is stored.\n"
-        },
-        "MISALIGNED_SPLIT_STRATEGY": {
-          "type": "string",
-          "enum": ["by_byte"],
-          "description": "How the implementation splits misaligned loads/stores."
-        },
-        "M_MODE_ENDIANESS": {
-          "type": "integer",
-          "enum": [0, 1, 2],
-          "description": "Endianess of data in M-mode. Can be one of:\n\n  * 0: M-mode data is always little endian\n  * 1: M-mode data is always big endian\n  * 2: M-mode data can be either little or big endian, depending on the RW CSR field mstatus.MBE\n"
-        },
-        "S_MODE_ENDIANESS": {
-          "type": "integer",
-          "enum": [0, 1, 2],
-          "description": "Endianess of data in S-mode. Can be one of:\n\n  * 0: S-mode data is always little endian\n  * 1: S-mode data is always big endian\n  * 2: S-mode data can be either little or big endian, depending on the RW CSR field mstatus.SBE\n"
-        },
-        "U_MODE_ENDIANESS": {
-          "type": "integer",
-          "enum": [0, 1, 2],
-          "description": "Endianess of data in U-mode. Can be one of:\n\n  * 0: U-mode data is always little endian\n  * 1: U-mode data is always big endian\n  * 2: U-mode data can be either little or big endian, depending on the RW CSR field mstatus.UBE\n"
-        },
-        "VS_MODE_ENDIANESS": {
-          "type": "integer",
-          "enum": [0, 1, 2],
-          "description": "Endianess of data in VS-mode. Can be one of:\n\n  * 0: VS-mode data is always little endian\n  * 1: VS-mode data is always big endian\n  * 2: VS-mode data can be either little or big endian, depending on the RW CSR field hstatus.VSBE\n"
-        },
-        "VU_MODE_ENDIANESS": {
-          "type": "integer",
-          "enum": [0, 1, 2],
-          "description": "Endianess of data in VU-mode. Can be one of:\n\n  * 0: VU-mode data is always little endian\n  * 1: VU-mode data is always big endian\n  * 2: VU-mode data can be either little or big endian, depending on the RW CSR field vsstatus.UBE\n"
-        },
-        "SXLEN": {
-          "description": "XLENs supported in S-mode. Can be one of:\n\n * 32:       SXLEN is always 32\n * 64:       SXLEN is always 64 * 3264: SXLEN can be changed (via mstatus.SXL) between 32 and 64",
-          "type": "integer",
-          "enum": [32, 64, 3264]
-        },
-        "UXLEN": {
-          "description": "XLENs supported in U-mode. Can be one of:\n\n * 32:       UXLEN is always 32\n * 64:       UXLEN is always 64 * 3264: UXLEN can be changed (via mstatus.UXL) between 32 and 64",
-          "type": "integer",
-          "enum": [32, 64, 3264]
-        },
-        "VSXLEN": {
-          "description": "XLENs supported in VS-mode. Can be one of:\n\n * 32:       VSXLEN is always 32\n * 64:       VSXLEN is always 64 * 3264: VSXLEN can be changed (via hstatus.VSXL) between 32 and 64",
-          "type": "integer",
-          "enum": [32, 64, 3264]
-        },
-        "VUXLEN": {
-          "description": "XLENs supported in VU-mode. Can be one of:\n\n * 32:       UXLEN is always 32\n * 64:       VUXLEN is always 64 * 3264: VUXLEN can be changed (via vsstatus.SXL) between 32 and 64",
-          "type": "integer",
-          "enum": [32, 64, 3264]
-        },
-        "ASID_WIDTH": {
-          "type": "integer",
-          "maximum": 16,
-          "minimum": 0,
-          "description": "Number of implemented ASID bits"
-        },
-        "NUM_PMP_ENTRIES": {
-          "type": "integer",
-          "maximum": 64,
-          "minimum": 0,
-          "description": "Number of implemented PMP entries"
-        },
-        "ARCH_ID": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 18446744073709551615,
-          "description": "Vendor-specific architecture ID presented in `marchid`"
-        },
-        "VENDOR_ID_BANK": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 33554431,
-          "description": "Vendor JEDEC code, bank"
-        },
-        "VENDOR_ID_OFFSET": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 127,
-          "description": "Vendor JEDEC code, offset"
-        },
-        "IMP_ID": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 18446744073709551615,
-          "description": "Vendor-specific implementation ID present in `mimpid`"
-        },
-        "MISALIGNED_LDST": {
-          "type": "boolean",
-          "description": " whether or not the implementation supports misaligned loads and stores in main memory (not including atomics). Must be true when extension Zicclsm is implemented."
-        },
-        "MISALIGNED_AMO": {
-          "type": "boolean",
-          "description": " whether or not the implementation supports misaligned atomics.",
-          "default": false
-        },
-        "NUM_HPM_COUNTERS": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 29,
-          "description": "Number of implemented programmable hardware counters (not including cycle, time, and instret)"
-        },
-        "HPM_EVENTS": {
-          "type": "array",
-          "items": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "uniqueItems": true,
-          "description": "List of defined HPM events that can be programmed into CSR[mhpmevent*]"
-        },
-        "COUNTINHIBIT_EN": {
-          "type": "array",
-          "description": "Indicates which counters can be disabled from mcountinhibit\n\n Formatted as a one-hot enable vector so that, for example, COUNTINHIBIT_EN[0] is for CY and COUNTINHIBIT_EN[3] is for HPM3",
-          "items": [
-            {
-              "type": "boolean"
-            },
-            {
-              "const": false,
-              "$comment": "There is no counter at index 1"
-            }
-          ],
-          "additionalItems": {
-            "type": "boolean"
-          },
-          "minItems": 32,
-          "maxItems": 32
-        },
-        "COUNTENABLE_EN": {
-          "type": "array",
-          "description": "Indicates which counters can be delegate from mcounteren\n\n Formatted as a one-hot enable vector so that, for example, COUNTENABLE_EN[0] is for CY and COUNTENABLE_EN[3] is for HPM3",
-          "items": [
-            {
-              "type": "boolean"
-            },
-            {
-              "const": false,
-              "$comment": "There is no counter at index 1"
-            }
-          ],
-          "additionalItems": {
-            "type": "boolean"
-          },
-          "minItems": 32,
-          "maxItems": 32
-        },
-        "TRAP_ON_ILLEGAL_WLRL": {
-          "type": "boolean",
-          "default": true,
-          "description": "When true, writing an illegal value to a WLRL CSR field raises an Illegal Instruction exception.\nWhen false, writing an illegal value to a WLRL CSR field is ignored."
-        },
-
-        "REPORT_VA_IN_MTVAL_ON_BREAKPOINT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, mtval is written with the virtual PC of the EBREAK instruction (same information as mepc).\nWhen false, mtval is written with 0 on an EBREAK instruction\n\nregardless, mtval is always written with a virtual PC when an external breakpoint is generated."
-        },
-        "REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, mtval is written with the virtual address when a misaligned load causes a LoadAddressMisaligned exception.\nWhen false, mtval is written with 0"
-        },
-        "REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, mtval is written with the virtual address when a misaligned store or atomic causes a StoreAmoAddressMisaligned exception.\nWhen false, mtval is written with 0"
-        },
-        "REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, mtval is written with the virtual address when a misaligned store or atomic causes a StoreAmoAddressMisaligned exception.\nWhen false, mtval is written with 0"
-        },
-        "REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, mtval is written with the virtual address when a load causes a LoadAccessFault exception.\nWhen false, mtval is written with 0"
-        },
-        "REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, mtval is written with the virtual address when a store or atomic causes a StoreAmoAccessFault exception.\nWhen false, mtval is written with 0"
-        },
-        "REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, mtval is written with the virtual address when a store or atomic causes a StoreAmoAccessFault exception.\nWhen false, mtval is written with 0"
-        },
-        "REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, mtval is written with the virtual address when a load causes a LoadPageFault exception.\nWhen false, mtval is written with 0"
-        },
-        "REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, mtval is written with the virtual address when a store or atomic causes a StoreAmoPageFault exception.\nWhen false, mtval is written with 0"
-        },
-        "REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, mtval is written with the virtual address when a store or atomic causes a StoreAmoPageFault exception.\nWhen false, mtval is written with 0"
-        },
-        "REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, mtval is written with the faulting instruciton encoding when a IllegalInstruction exception occurs.\nWhen false, mtval is written with 0"
-        },
-        "REPORT_CAUSE_IN_MTVAL_ON_SOFTWARE_CHECK": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, mtval is written with the casue when a SoftwareCheck exception occurs.\nWhen false, mtval is written with 0"
-        },
-        "MTVAL_WIDTH": {
-          "type": "integer",
-          "maximum": 64,
-          "description": "Number of implemented bits in MTVAL. Must be >= largest virtual address size if a VA is ever written to mtval by hardware or if Sdext is implemented. Must also be able to hold the minimum of MXLEN or ILEN if encodings are reported on IllegalInstruction exceptions"
-        },
-
-        "REPORT_VA_IN_STVAL_ON_BREAKPOINT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, stval is written with the virtual PC of the EBREAK instruction (same information as mepc).\nWhen false, stval is written with 0 on an EBREAK instruction\n\nregardless, stval is always written with a virtual PC when an external breakpoint is generated."
-        },
-        "REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, stval is written with the virtual address when a misaligned load causes a LoadAddressMisaligned exception.\nWhen false, stval is written with 0"
-        },
-        "REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, stval is written with the virtual address when a misaligned store or atomic causes a StoreAmoAddressMisaligned exception.\nWhen false, stval is written with 0"
-        },
-        "REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, stval is written with the virtual address when a misaligned store or atomic causes a StoreAmoAddressMisaligned exception.\nWhen false, stval is written with 0"
-        },
-        "REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, stval is written with the virtual address when a load causes a LoadAccessFault exception.\nWhen false, stval is written with 0"
-        },
-        "REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, stval is written with the virtual address when a store or atomic causes a StoreAmoAccessFault exception.\nWhen false, stval is written with 0"
-        },
-        "REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, stval is written with the virtual address when a store or atomic causes a StoreAmoAccessFault exception.\nWhen false, stval is written with 0"
-        },
-        "REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, stval is written with the virtual address when a load causes a LoadPageFault exception.\nWhen false, stval is written with 0"
-        },
-        "REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, stval is written with the virtual address when a store or atomic causes a StoreAmoPageFault exception.\nWhen false, stval is written with 0"
-        },
-        "REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, stval is written with the virtual address when a store or atomic causes a StoreAmoPageFault exception.\nWhen false, stval is written with 0"
-        },
-        "REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, stval is written with the faulting instruction encoding when a IllegalInstruction exception occurs.\nWhen false, stval is written with 0"
-        },
-        "REPORT_CAUSE_IN_STVAL_ON_SOFTWARE_CHECK": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, stval is written with the cause when a SoftwareCheck exception occurs.\nWhen false, stval is written with 0"
-        },
-        "STVAL_WIDTH": {
-          "type": "integer",
-          "maximum": 64,
-          "description": "Number of implemented bits in STVAL. Must be >= largest virtual address size if a VA is ever written to stval by hardware or if Sdext is implemented. Must also be able to hold the minimum of SXLEN or ILEN if encodings are reported on IllegalInstruction exceptions"
-        },
-
-        "REPORT_VA_IN_VSTVAL_ON_BREAKPOINT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, vstval is written with the virtual PC of the EBREAK instruction (same information as mepc).\nWhen false, vstval is written with 0 on an EBREAK instruction\n\nregardless, vstval is always written with a virtual PC when an external breakpoint is generated."
-        },
-        "REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, vstval is written with the virtual address when a misaligned load causes a LoadAddressMisaligned exception.\nWhen false, vstval is written with 0"
-        },
-        "REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, vstval is written with the virtual address when a misaligned store or atomic causes a StoreAmoAddressMisaligned exception.\nWhen false, vstval is written with 0"
-        },
-        "REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, vstval is written with the virtual address when a misaligned store or atomic causes a StoreAmoAddressMisaligned exception.\nWhen false, vstval is written with 0"
-        },
-        "REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, vstval is written with the virtual address when a load causes a LoadAccessFault exception.\nWhen false, vstval is written with 0"
-        },
-        "REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, vstval is written with the virtual address when a store or atomic causes a StoreAmoAccessFault exception.\nWhen false, vstval is written with 0"
-        },
-        "REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, vstval is written with the virtual address when a store or atomic causes a StoreAmoAccessFault exception.\nWhen false, vstval is written with 0"
-        },
-        "REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, vstval is written with the virtual address when a load causes a LoadPageFault exception.\nWhen false, vstval is written with 0"
-        },
-        "REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, vstval is written with the virtual address when a store or atomic causes a StoreAmoPageFault exception.\nWhen false, vstval is written with 0"
-        },
-        "REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, vstval is written with the virtual address when a store or atomic causes a StoreAmoPageFault exception.\nWhen false, vstval is written with 0"
-        },
-        "REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, vstval is written with the faulting instruciton encoding when a IllegalInstruction exception occurs.\nWhen false, vstval is written with 0"
-        },
-        "REPORT_CAUSE_IN_VSTVAL_ON_SOFTWARE_CHECK": {
-          "type": "boolean",
-          "default": false,
-          "description": "When true, vstval is written with the casue when a SoftwareCheck exception occurs.\nWhen false, vstval is written with 0"
-        },
-
-        "CONFIG_PTR_ADDRESS": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 18446744073709551615,
-          "description": "Physical address of the unified discovery configuration data structure (reported in `mconfigptr`)."
-        },
-        "PMP_GRANULARITY": {
-          "type": "integer",
-          "minimum": 2,
-          "maximum": 66,
-          "description": "log2 of the smallest supported PMP region."
-        },
-        "PMA_GRANULARITY": {
-          "type": "integer",
-          "minimum": 2,
-          "maximum": 66,
-          "description": "log2 of the smallest supported PMA region."
-        },
-        "PHYS_ADDR_WIDTH": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 36028797018963968,
-          "description": "Number of bits in the physical address space"
-        },
-        "MUTABLE_MISA_A": {
-          "type": "boolean",
-          "default": false,
-          "description": "When A extension is supported, wether or not it can be dynamically disabled by writing the `misa.A` bit."
-        },
-        "MUTABLE_MISA_B": {
-          "type": "boolean",
-          "default": false,
-          "description": "When B extension is supported, wether or not it can be dynamically disabled by writing the `misa.B` bit."
-        },
-        "MUTABLE_MISA_C": {
-          "type": "boolean",
-          "default": false,
-          "description": "When C extension is supported, wether or not it can be dynamically disabled by writing the `misa.C` bit."
-        },
-        "MUTABLE_MISA_D": {
-          "type": "boolean",
-          "default": false,
-          "description": "When D extension is supported, wether or not it can be dynamically disabled by writing the `misa.D` bit."
-        },
-        "MUTABLE_MISA_F": {
-          "type": "boolean",
-          "default": false,
-          "description": "When F extension is supported, wether or not it can be dynamically disabled by writing the `misa.F` bit."
-        },
-        "MUTABLE_MISA_H": {
-          "type": "boolean",
-          "default": false,
-          "description": "When H extension is supported, wether or not it can be dynamically disabled by writing the `misa.H` bit."
-        },
-        "MUTABLE_MISA_M": {
-          "type": "boolean",
-          "default": false,
-          "description": "When M extension is supported, wether or not it can be dynamically disabled by writing the `misa.M` bit."
-        },
-        "MUTABLE_MISA_S": {
-          "type": "boolean",
-          "default": false,
-          "description": "When S extension is supported, wether or not it can be dynamically disabled by writing the `misa.S` bit."
-        },
-        "MUTABLE_MISA_U": {
-          "type": "boolean",
-          "default": false,
-          "description": "When U extension is supported, wether or not it can be dynamically disabled by writing the `misa.U` bit."
-        },
-        "MUTABLE_MISA_V": {
-          "type": "boolean",
-          "default": false,
-          "description": "When V extension is supported, wether or not it can be dynamically disabled by writing the `misa.V` bit."
-        },
-        "CACHE_BLOCK_SIZE": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 65536,
-          "description": "Size, in bytes of a cache block (as seen by cache maintence operations)"
-        },
-        "NUM_EXTERNAL_GUEST_INTERRUPTS": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 63,
-          "description": "Number of supported virtualized guest external interrupts.\nCorresponds to the GEILEN parameter in RISC-V specifications."
-        },
-        "LRSC_RESERVATION_STRATEGY": {
-          "type": "string",
-          "enum": [
-            "reserve naturally-aligned 64-byte region",
-            "reserve naturally-aligned 128-byte region",
-            "reserve exactly enough to cover the access",
-            "custom"
-          ],
-          "description": "Strategy used to handle reservation sets\n\n  * 'reserve naturally-aligned 64-byte region': Always reserve the 64-byte block containing the LR/SC address\n  * 'reserve naturally-aligned 128-byte region': Always reserve the 128-byte block containing the LR/SC address\n  * 'reserve exactly enough to cover the access': Always reserve exactly the LR/SC access, and no more\n  * 'custom': Custom behavior, leading to an 'unpredictable' call on any LR/SC"
-        },
-        "LRSC_FAIL_ON_VA_SYNONYM": {
-          "type": "boolean",
-          "description": "whether or not an SC will fail if its VA does not match the VA of the prior LR, even if the physical address of the SC and LR are the same"
-        },
-        "LRSC_FAIL_ON_NON_EXACT_LRSC": {
-          "type": "boolean",
-          "description": "whether or not a Store Conditional fails if its physical address and size do not\nexactly match the physical address and size of the last Load Reserved in program order\n(independent of whether or not the SC is in the current reservation set)\n"
-        },
-        "LRSC_MISALIGNED_BEHAVIOR": {
-          "type": "string",
-          "enum": [
-            "always raise misaligned exception",
-            "always raise access fault",
-            "custom"
-          ],
-          "description": "what to do when an LR/SC address is misaligned:\n\n  * 'always raise misaligned exception': self-explainitory\n  * 'always raise access fault': self-explainitory\n  * 'custom': Custom behavior; misaligned LR/SC may sometimes raise a misaligned exception and sometimes raise a access fault. Will lead to an 'unpredictable' call on any misaligned LR/SC access"
+  "type": "object",
+  "title": "Architecture configuration",
+  "required": ["$schema", "kind", "type", "name", "description"],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": { "const": "fully configured" }
         }
       },
-      "additionalProperties": false
-    }
-  },
-  "type": "object",
-  "required": ["params", "extensions"],
-  "properties": {
-    "params": {
-      "$ref": "#/$defs/params"
+      "then": {
+        "required": ["implemented_extensions", "params"],
+        "properties": {
+          "params": {
+            "type": "object"
+          },
+          "mandatory_extensions": {
+            "type": "null"
+          },
+          "non_mandatory_extensions": {
+            "type": "null"
+          },
+          "prohbited_extensions": {
+            "type": "null"
+          },
+          "implemented_extensions": {
+            "description": "Extensions implemented by this architecture",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "version"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "pattern": "^([A-WY]|([SXZ][a-z0-9]+))$",
+                  "description": "Extension name"
+                },
+                "version": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "description": "Extension version"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        }
+      }
     },
-    "extensions": {
-      "type": "array",
-      "description": "Extension names and versions",
-      "items": {
-        "type": "array",
-        "prefixItems": [
+    {
+      "if": {
+        "properties": {
+          "type": { "const": "partially configured" }
+        }
+      },
+      "then": {
+        "anyOf": [
           {
-            "type": "string"
+            "required": ["mandatory_extensions"]
           },
           {
-            "oneOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "string",
-                "pattern": "^[0-9]+(\\.[0-9]+(\\.[0-9]+(-[a-fA-F0-9]+)?)?)?$"
-              }
-            ]
+            "required": ["params"]
           }
         ],
-        "additionalItems": false
+        "properties": {
+          "params": {
+            "type": "object"
+          },
+          "mandatory_extensions": {
+            "description": "Extensions mandatory in this architecture",
+            "type": "array",
+            "items": {
+              "$ref": "schema_defs.json#/$defs/extension_requirement"
+            },
+            "default": {
+              "const": []
+            }
+          },
+          "non_mandatory_extensions": {
+            "description": "Extensions that are not mandatory but are still _special_ in this architecture. This could mean different things depending on the context: for certificates or generated IP, this would correspond to _optional supported_, and extensions not in non_mandatory are not possible. For profiles, this corresponds to some type of _profile optional_, but extensions in non_mandatory are still possible.",
+            "type": "array",
+            "items": {
+              "$ref": "schema_defs.json#/$defs/extension_requirement"
+            },
+            "default": {
+              "const": []
+            }
+          },
+          "prohibited_extensions": {
+            "description": "Extensions explicitly prohibited in this architecture. Does *not* need to include extensions that are excluded because of a conflict-by-definition with a mandatory extension, as those will be calculated automatically",
+            "type": "array",
+            "items": {
+              "$ref": "schema_defs.json#/$defs/extension_requirement"
+            },
+            "default": {
+              "const": []
+            }
+          },
+          "implemented_extensions": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": { "const": "unconfigured" }
+        }
+      },
+      "then": {
+        "mandatory_extensions": {
+          "type": "null"
+        },
+        "non_mandatory_extensions": {
+          "type": "null"
+        },
+        "prohbited_extensions": {
+          "type": "null"
+        },
+        "params": {
+          "type": "null"
+        }
       }
     }
-  }
+  ],
+  "properties": {
+    "type": {
+      "type": "string",
+      "description": "Type of the arch",
+      "enum": ["unconfigured", "partially configured", "fully configured"]
+    },
+    "$schema": {
+      "type": "string",
+      "format": "uri-reference",
+      "const": "config_schema.json#"
+    },
+    "kind": {
+      "type": "string",
+      "const": "architecture configuration"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string",
+      "description": "An asciidoc description of the configuration"
+    },
+    "params": true,
+    "mandatory_extensions": true,
+    "non_mandatory_extensions": true,
+    "prohibited_extensions": true,
+    "implemented_extensions": true
+  },
+  "additionalProperties": false
 }

@@ -41,8 +41,8 @@ description: |
 
 definedBy:
   anyOf:
-  - name: Sm
-  - name: Smhpm
+    - name: Sm
+    - name: Smhpm
 fields:
   CY:
     location: 0

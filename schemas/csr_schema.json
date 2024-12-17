@@ -266,7 +266,7 @@
           "type": "string",
           "description": "Function that returns the value of the CSR when read by software (i.e., a Zicsr instruction). If not specified, the value last written (through hw_write) is returned."
         },
-        "__source": {
+        "$source": {
           "description": "Path to the source file this definition came from; used by downstream tooling -- not expected to be in handwritten files",
           "type": "string"
         }

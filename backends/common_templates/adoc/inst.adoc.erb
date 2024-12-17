@@ -75,10 +75,10 @@ Operation::
 <%- unless inst.data["operation()"].nil? -%>
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.operation_ast(arch_def.symtab).gen_adoc %>
+<%= inst.operation_ast(cfg_arch.symtab).gen_adoc %>
 ----
 <%- end -%>
 
 Included in::
 
-<%= inst.defined_by.to_asciidoc %>
+<%= inst.defined_by_condition.to_asciidoc %>
