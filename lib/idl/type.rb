@@ -61,10 +61,10 @@ module Idl
       self
     end
 
-    def self.from_typename(type_name, arch_def)
+    def self.from_typename(type_name, cfg_arch)
       case type_name
       when 'XReg'
-        return Type.new(:bits, width: arch_def.param_values['XLEN'])
+        return Type.new(:bits, width: cfg_arch.param_values['XLEN'])
       when 'FReg'
         return Type.new(:freg, width: 32)
       when 'DReg'
@@ -609,8 +609,8 @@ module Idl
   class CsrType < Type
     attr_reader :csr
 
-    def initialize(csr, arch_def, qualifiers: [])
-      super(:csr, name: csr.name, csr: csr, width: csr.max_length(arch_def), qualifiers: qualifiers)
+    def initialize(csr, cfg_arch, qualifiers: [])
+      super(:csr, name: csr.name, csr: csr, width: csr.max_length(cfg_arch), qualifiers: qualifiers)
     end
 
     def fields

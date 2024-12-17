@@ -10,12 +10,6 @@ require_relative "portfolio"
 # Holds information from certificate class YAML file.
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
 class CertClass < PortfolioClass
-  # @param data [Hash<String, Object>] The data from YAML
-  # @param arch_def [ArchDef] Architecture spec
-  def initialize(data, arch_def)
-    super(data, arch_def)
-  end
-
   def mandatory_priv_modes = @data["mandatory_priv_modes"]
 end
 
@@ -26,12 +20,6 @@ end
 # Holds information about a certificate model YAML file.
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
 class CertModel < PortfolioInstance
-  # @param data [Hash<String, Object>] The data from YAML
-  # @param arch_def [ArchDef] Architecture spec
-  def initialize(data, arch_def)
-    super(data, arch_def)
-  end
-
   def unpriv_isa_manual_revision = @data["unpriv_isa_manual_revision"]
   def priv_isa_manual_revision = @data["priv_isa_manual_revision"]
   def debug_manual_revision = @data["debug_manual_revision"]
@@ -39,7 +27,7 @@ class CertModel < PortfolioInstance
   def tsc_profile
     return nil if @data["tsc_profile"].nil?
 
-    profile = arch_def.profile(@data["tsc_profile"])
+    profile = cfg_arch.profile(@data["tsc_profile"])
 
     raise "No profile '#{@data["tsc_profile"]}'" if profile.nil?
 
@@ -48,7 +36,7 @@ class CertModel < PortfolioInstance
 
   # @return [CertClass] The certification class that this model belongs to.
   def cert_class
-    cert_class = @arch_def.ref(@data["class"]['$ref'])
+    cert_class = @cfg_arch.ref(@data["class"]['$ref'])
     raise "No certificate class named '#{@data["class"]}'" if cert_class.nil?
 
     cert_class
@@ -59,11 +47,13 @@ class CertModel < PortfolioInstance
   #####################
 
   # Holds extra requirements not associated with extensions or their parameters.
-  class Requirement < ArchDefObject
-    def initialize(data, arch_def)
-      super(data)
-      @arch_def = arch_def
+  class Requirement
+    def initialize(data, cfg_arch)
+      @data = data
+      @cfg_arch = cfg_arch
     end
+
+    def name = @data["name"]
 
     def description = @data["description"]
 
@@ -91,11 +81,13 @@ class CertModel < PortfolioInstance
 
   # Holds a group of Requirement objects to provide a one-level group.
   # Can't nest RequirementGroup objects to make multi-level group.
-  class RequirementGroup < ArchDefObject
-    def initialize(data, arch_def)
-      super(data)
-      @arch_def = arch_def
+  class RequirementGroup
+    def initialize(data, cfg_arch)
+      @data = data
+      @cfg_arch = cfg_arch
     end
+
+    def name = @data["name"]
 
     def description = @data["description"]
 
@@ -121,7 +113,7 @@ class CertModel < PortfolioInstance
 
       @requirements = []
       @data["requirements"].each do |req|
-        @requirements << Requirement.new(req, @arch_def)
+        @requirements << Requirement.new(req, @cfg_arch)
       end
       @requirements
     end
@@ -132,7 +124,7 @@ class CertModel < PortfolioInstance
 
     @requirement_groups = []
     @data["requirement_groups"]&.each do |req_group|
-      @requirement_groups << RequirementGroup.new(req_group, @arch_def)
+      @requirement_groups << RequirementGroup.new(req_group, @cfg_arch)
     end
     @requirement_groups
   end

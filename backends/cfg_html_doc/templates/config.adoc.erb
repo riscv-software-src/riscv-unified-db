@@ -1,17 +1,17 @@
-= Configuration of <%= arch_def.name %>
+= Configuration of <%= cfg_arch.name %>
 
 == Extensions
 
 |===
 | Name | Version
-<%- arch_def.implemented_extensions.sort{ |a,b| a.name <=> b.name }.each do |e| -%>
-| `<%= e.name %>` | <%= e.version.to_s %>
+<%- cfg_arch.transitive_implemented_extensions.sort{ |a,b| a.name <=> b.name }.each do |e| -%>
+| `<%= e.name %>` | <%= e.version_spec %>
 <%- end -%>
 |===
 
 == Parameters
 
-<%- arch_def.params_with_value.sort_by { |param| param.name }.each do |param| -%>
+<%- cfg_arch.params_with_value.sort_by { |param| param.name }.each do |param| -%>
 === *<%= param.name %>*
 
 [cols="1,4,1"]

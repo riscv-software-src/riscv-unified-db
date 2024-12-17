@@ -94,12 +94,10 @@ class TestExpressions < Minitest::Test
     assert_equal(-13, ast.value(@symtab))
 
     idl = "-4'sb1101"
-    ast = @compiler.compile_expression(idl, @symtab)
-    assert_equal 3, ast.value(@symtab)
+    assert_raises(Idl::AstNode::TypeError) { @compiler.compile_expression(idl, @symtab, pass_error: true) }
 
     idl = "4'sb1101"
-    ast = @compiler.compile_expression(idl, @symtab)
-    assert_equal(-3, ast.value(@symtab))
+    assert_raises(Idl::AstNode::TypeError) { @compiler.compile_expression(idl, @symtab, pass_error: true) }
 
     idl = "32'h80000000"
     ast = @compiler.compile_expression(idl, @symtab)
@@ -124,7 +122,7 @@ class TestExpressions < Minitest::Test
     assert_equal 13, ast.value(@symtab)
 
     # compilation error: 300 does not fit in 8 bits
-    idl = "'h1_0000_0000"
+    idl = "8'h1_0000_0000"
     assert_raises(Idl::AstNode::TypeError) { @compiler.compile_expression(idl, @symtab, pass_error: true) }
 
     # 3 decimal: the literal is 13, unsigned, in 4-bits. when negated, the sign bit is lost
@@ -144,5 +142,4 @@ class TestExpressions < Minitest::Test
     idl = "4'hff"
     assert_raises(Idl::AstNode::TypeError) { @compiler.compile_expression(idl, @symtab, pass_error: true) }
   end
-
 end

@@ -1,7 +1,7 @@
 [[header]]
 :description: <%= ext.long_name %> (<%= ext.name %>)
 :revdate: <%= max_version.ratification_date.nil? ? Date.today : max_version.ratification_date %>
-:revnumber: <%= max_version.version %>
+:revnumber: <%= max_version.version_spec %>
 :revmark: <%=
   case max_version.state
   when "ratified"
@@ -129,7 +129,7 @@ Copyright <%= max_version.ratification_date.nil? ? Date.today.year : max_version
 == Acknowledgements
 
 <%- versions.each do |version| -%>
-Contributors to version <%= version.version %> of the specification (in alphabetical order) include: +
+Contributors to version <%= version.version_spec %> of the specification (in alphabetical order) include: +
 
 <%- unless version.contributors.empty? -%>
 <%- version.contributors.sort { |a, b| a.name.split(" ").last <=> b.name.split(" ").last }.each do |c| -%>
@@ -146,16 +146,16 @@ improved this specification through their comments and questions.
 == Versions
 
 <%- if versions.size > 1 -%>
-This specification documents versions <%= versions.map { |v| v.version }.join(', ') %> of <%= ext.name %>:
+This specification documents versions <%= versions.map { |v| v.version_spec.to_s }.join(', ') %> of <%= ext.name %>:
 <%- else -%>
-This specification documents version <%= max_version.version %> of <%= ext.name %>.
+This specification documents version <%= max_version.version_spec %> of <%= ext.name %>.
 <%- end -%>
 
 === Version History
 
 <%- ext.versions.each do |version| -%>
 --
-Version:: <%= version.version %>
+Version:: <%= version.version_spec %>
 State:: <%= version.state %>
 <%- unless version.ratification_date.nil? -%>
 Ratification Date:: <%= version.ratification_date %>
@@ -173,10 +173,10 @@ Changes::
 <%- end -%>
 <%- unless version.implications.empty? -%>
 Implies::
-* <%= version.implications.map { |i| "#{i.name} (#{i.version})" }.join("\n* ") %>
-<%- unless version.requirements.empty? -%>
+* <%= version.implications.map { |i| "#{i.name} (#{i.version_spec})" }.join("\n* ") %>
+<%- unless version.requirement_condition.empty? -%>
 Requires::
-<%= version.requirements.to_asciidoc %>
+<%= version.requirement_condition.to_asciidoc %>
 <%- end -%>
 <%- end -%>
 --
@@ -200,7 +200,7 @@ Requires::
 <%- end -%>
 
 <%- implications.each do |sub_ext| -%>
-==== <%= sub_ext.name %> (<%= sub_ext.version %>)
+==== <%= sub_ext.name %> (<%= sub_ext.version_spec %>)
 
 <%- if versions.size > 1 -%>
 <%= sub_ext.name %> (<%= sub_ext.version %>) is implied by
@@ -208,12 +208,12 @@ version <%= versions.select { |v| v.implications.include?(sub_ext)}.map(&:versio
 of <%= ext.name %>.
 <%- end -%>
 
-<%= arch_def.extension(sub_ext.name).description %>
+<%= cfg_arch.extension(sub_ext.name).description %>
 
-<%- unless sub_ext.requirements.empty? -%>
+<%- unless sub_ext.requirement_condition.empty? -%>
 <%= sub_ext.name %> requires:
 
-<%= sub_ext.requirements.to_asciidoc %>
+<%= sub_ext.requirement_condition.to_asciidoc %>
 
 <%- end -%>
 
@@ -287,7 +287,7 @@ The following <%= ext.csrs.size %> are added by this extension.
 <%- ext.csrs.each do |csr| -%>
 <<<
 :leveloffset: +2
-<%= partial "adoc/csr.adoc.erb", { csr: csr, arch_def: arch_def } %>
+<%= partial "adoc/csr.adoc.erb", { csr: csr, cfg_arch: cfg_arch } %>
 :leveloffset: -2
 <%- end -%>
 
@@ -300,7 +300,7 @@ The following <%= ext.csrs.size %> are added by this extension.
 
 <%- ext.instructions.each do |i| -%>
 :leveloffset: +2
-<%= partial "adoc/inst.adoc.erb", { inst: i, arch_def: arch_def } %>
+<%= partial "adoc/inst.adoc.erb", { inst: i, cfg_arch: cfg_arch } %>
 :leveloffset: -2
 
 <<<
@@ -310,7 +310,7 @@ The following <%= ext.csrs.size %> are added by this extension.
 <<<
 == IDL Functions
 
-<%- ext.reachable_functions(arch_def.symtab).sort { |a,b| a.name <=> b.name }.each do |f| -%>
+<%- ext.reachable_functions(cfg_arch.symtab).sort { |a,b| a.name <=> b.name }.each do |f| -%>
 [#<%= f.name %>-func-def]
 === <%= f.name %><%- if f.builtin? -%> (builtin)<%- end -%>
 

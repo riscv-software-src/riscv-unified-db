@@ -15,7 +15,7 @@ if [ -v GITHUB_ACTIONS ]; then
 else
   CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
   HOME_PATH=${HOME}
-  HOME_OPT="--bind ${ROOT}/.home:${HOME_PATH}"
+  HOME_OPT="--bind ${ROOT}/.home:${HOME_PATH} --bind /local/mnt/workspace/.vscode-server:/local/mnt/workspace/.vscode-server"
   SINGULARITY_CACHE=
 fi
 

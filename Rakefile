@@ -9,7 +9,7 @@ require "ruby-progressbar"
 require "yard"
 require "minitest/test_task"
 
-require_relative $root / "lib" / "validate"
+require_relative $root / "lib" / "architecture"
 
 directory "#{$root}/.stamps"
 
@@ -19,22 +19,50 @@ end
 
 directory "#{$root}/.stamps"
 
-file "#{$root}/.stamps/dev_gems" => "#{$root}/.stamps" do
-  Dir.chdir($root) do
-    sh "bundle config set --local with development"
-    sh "bundle install"
-    FileUtils.touch "#{$root}/.stamps/dev_gems"
-  end
+def cfg_arch_for(config_name)
+  Rake::Task["#{$root}/.stamps/resolve-#{config_name}.stamp"].invoke
+
+  @cfg_archs ||= {}
+  return @cfg_archs[config_name] if @cfg_archs.key?(config_name)
+
+  @cfg_archs[config_name] =
+    ConfiguredArchitecture.new(
+      config_name,
+      $root / "gen" / "resolved_arch" / config_name,
+      overlay_path: $root / "cfgs" / config_name / "arch_overlay"
+    )
 end
 
 namespace :gen do
   desc "Generate documentation for the ruby tooling"
   task tool_doc: "#{$root}/.stamps/dev_gems" do
     Dir.chdir($root) do
-      sh "bundle exec yard doc --yardopts arch_def.yardopts"
+      sh "bundle exec yard doc --yardopts cfg_arch.yardopts"
       sh "bundle exec yard doc --yardopts idl.yardopts"
     end
   end
+
+  desc "Resolve the standard in arch/, and write it to resolved_arch/"
+  task "resolved_arch" do
+    sh "#{$root}/.home/.venv/bin/python3 lib/yaml_resolver.py resolve arch resolved_arch"
+  end
+end
+
+# rule to generate standard for any configurations with an overlay
+rule %r{#{$root}/.stamps/resolve-.+\.stamp} => proc { |tname|
+  cfg_name = File.basename(tname, ".stamp").sub("resolve-", "")
+  arch_files = Dir.glob("#{$root}/arch/**/*.yaml")
+  overlay_files = Dir.glob("#{$root}/cfgs/#{cfg_name}/arch_overlay/**/*.yaml")
+  [
+    "#{$root}/.stamps",
+    "#{$root}/lib/yaml_resolver.py"
+  ] + arch_files + overlay_files
+} do |t|
+  cfg_name = File.basename(t.name, ".stamp").sub("resolve-", "")
+  sh "#{$root}/.home/.venv/bin/python3 lib/yaml_resolver.py merge arch cfgs/#{cfg_name}/arch_overlay gen/arch/#{cfg_name}"
+  sh "#{$root}/.home/.venv/bin/python3 lib/yaml_resolver.py resolve gen/arch/#{cfg_name} gen/resolved_arch/#{cfg_name}"
+
+  FileUtils.touch t.name
 end
 
 namespace :serve do
@@ -75,8 +103,7 @@ end
 
 desc "Clean up all generated files"
 task :clean do
-  FileUtils.rm_rf $root / "gen"
-  FileUtils.rm_rf $root / ".stamps"
+  warn "Don't run clean using Rake. Run `./do clean` (alias for `./bin/clean`) instead."
 end
 
 namespace :test do
@@ -88,30 +115,23 @@ namespace :test do
     end
     puts "All instruction encodings pass basic sanity tests"
   end
-  task schema: "gen:arch" do
-    validator = Validator.instance
+  task schema: "gen:resolved_arch" do
     puts "Checking arch files against schema.."
-    arch_files = Dir.glob("#{$root}/arch/**/*.yaml")
-    progressbar = ProgressBar.create(total: arch_files.size)
-    arch_files.each do |f|
-      progressbar.increment
-      validator.validate(f)
-    end
-    Rake::Task["test:insts"].invoke
+    Architecture.new("#{$root}/resolved_arch").validate(show_progress: true)
     puts "All files validate against their schema"
   end
-  task idl_model: ["gen:arch", "#{$root}/.stamps/arch-gen-_32.stamp", "#{$root}/.stamps/arch-gen-_64.stamp"]  do
+  task idl: ["gen:resolved_arch", "#{$root}/.stamps/resolve-rv32.stamp", "#{$root}/.stamps/resolve-rv64.stamp"]  do
     print "Parsing IDL code for RV32..."
-    arch_def_32 = arch_def_for("_32")
+    cfg_arch32 = cfg_arch_for("rv32")
     puts "done"
 
-    arch_def_32.type_check
+    cfg_arch32.type_check
 
     print "Parsing IDL code for RV64..."
-    arch_def_64 = arch_def_for("_64")
+    cfg_arch64 = cfg_arch_for("rv64")
     puts "done"
 
-    arch_def_64.type_check
+    cfg_arch64.type_check
 
     puts "All IDL passed type checking"
   end
@@ -121,7 +141,7 @@ def insert_warning(str, from)
   # insert a warning on the second line
   lines = str.lines
   first_line = lines.shift
-  lines.unshift(first_line, "\n# WARNING: This file is auto-generated from #{Pathname.new(from).relative_path_from($root)}\n\n").join("")
+  lines.unshift(first_line, "\n# WARNING: This file is auto-generated from #{Pathname.new(from).relative_path_from($root)}").join("")
 end
 private :insert_warning
 
@@ -130,7 +150,6 @@ private :insert_warning
     "#{$root}/arch/csr/Zihpm/mhpmcounterN.layout",
     __FILE__
    ] do |t|
-    puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
     erb = ERB.new(File.read($root / "arch/csr/Zihpm/mhpmcounterN.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/Zihpm/mhpmcounterN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -139,7 +158,6 @@ private :insert_warning
     "#{$root}/arch/csr/Zihpm/mhpmcounterNh.layout",
     __FILE__
    ] do |t|
-    puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
     erb = ERB.new(File.read($root / "arch/csr/Zihpm/mhpmcounterNh.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/Zihpm/mhpmcounterNh.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -148,7 +166,6 @@ private :insert_warning
     "#{$root}/arch/csr/Zihpm/mhpmeventN.layout",
     __FILE__
    ] do |t|
-    puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
     erb = ERB.new(File.read($root / "arch/csr/Zihpm/mhpmeventN.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/Zihpm/mhpmeventN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -157,7 +174,6 @@ private :insert_warning
     "#{$root}/arch/csr/Zihpm/mhpmeventNh.layout",
     __FILE__
    ] do |t|
-    puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
     erb = ERB.new(File.read($root / "arch/csr/Zihpm/mhpmeventNh.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/Zihpm/mhpmeventNh.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -166,7 +182,6 @@ private :insert_warning
     "#{$root}/arch/csr/Zihpm/hpmcounterN.layout",
     __FILE__
    ] do |t|
-    puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
     erb = ERB.new(File.read($root / "arch/csr/Zihpm/hpmcounterN.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/Zihpm/hpmcounterN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -175,7 +190,6 @@ private :insert_warning
     "#{$root}/arch/csr/Zihpm/hpmcounterNh.layout",
     __FILE__
     ] do |t|
-    puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
     erb = ERB.new(File.read($root / "arch/csr/Zihpm/hpmcounterNh.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/Zihpm/hpmcounterNh.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -187,7 +201,6 @@ end
     "#{$root}/arch/csr/I/pmpaddrN.layout",
     __FILE__
    ] do |t|
-    puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
     erb = ERB.new(File.read($root / "arch/csr/I/pmpaddrN.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/I/pmpaddrN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -199,7 +212,6 @@ end
     "#{$root}/arch/csr/I/pmpcfgN.layout",
     __FILE__
    ] do |t|
-    puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
     erb = ERB.new(File.read($root / "arch/csr/I/pmpcfgN.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/I/pmpcfgN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -210,7 +222,6 @@ file "#{$root}/arch/csr/I/mcounteren.yaml" => [
   "#{$root}/arch/csr/I/mcounteren.layout",
   __FILE__
 ] do |t|
-  puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
   erb = ERB.new(File.read($root / "arch/csr/I/mcounteren.layout"), trim_mode: "-")
   erb.filename = "#{$root}/arch/csr/I/mcounteren.layout"
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -220,7 +231,6 @@ file "#{$root}/arch/csr/S/scounteren.yaml" => [
   "#{$root}/arch/csr/S/scounteren.layout",
   __FILE__
 ] do |t|
-  puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
   erb = ERB.new(File.read($root / "arch/csr/S/scounteren.layout"), trim_mode: "-")
   erb.filename = "#{$root}/arch/csr/S/scounteren.layout"
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -230,7 +240,6 @@ file "#{$root}/arch/csr/H/hcounteren.yaml" => [
   "#{$root}/arch/csr/H/hcounteren.layout",
   __FILE__
 ] do |t|
-  puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
   erb = ERB.new(File.read($root / "arch/csr/H/hcounteren.layout"), trim_mode: "-")
   erb.filename = "#{$root}/arch/csr/H/hcounteren.layout"
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -240,7 +249,6 @@ file "#{$root}/arch/csr/Zicntr/mcountinhibit.yaml" => [
   "#{$root}/arch/csr/Zicntr/mcountinhibit.layout",
   __FILE__
 ] do |t|
-  puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
   erb = ERB.new(File.read($root / "arch/csr/Zicntr/mcountinhibit.layout"), trim_mode: "-")
   erb.filename = "#{$root}/arch/csr/Zicntr/mcountinhibit.layout"
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -284,7 +292,7 @@ namespace :test do
     Rake::Task["test:idl_compiler"].invoke
     Rake::Task["test:lib"].invoke
     Rake::Task["test:schema"].invoke
-    Rake::Task["test:idl_model"].invoke
+    Rake::Task["test:idl"].invoke
   end
 
   desc <<~DESC

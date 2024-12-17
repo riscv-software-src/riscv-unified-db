@@ -11,7 +11,7 @@
 #          ...
 #        }
 #
-#     obj = ArchDefObject.new(data)
+#     obj = DatabaseObjectect.new(data)
 #     obj['name']    # 'mstatus'
 #     obj['address'] # 0x320
 #
@@ -24,8 +24,140 @@
 # Subclasses may override the accessors when a more complex data structure
 # is warranted, e.g., the CSR Field 'alias' returns a CsrFieldAlias object
 # instead of a simple string
-class ArchDefObject
-  attr_reader :data, :name, :long_name, :description
+class DatabaseObjectect
+  # Exception raised when there is a problem with a schema file
+  class SchemaError < ::StandardError
+    # result from JsonSchemer.validate
+    attr_reader :result
+
+    def initialize(result)
+      if result.is_a?(Enumerator)
+        super(result.to_a.map { |e| "At #{e['schema_pointer']}: #{e['type']}" })
+      else
+        super(result["error"])
+      end
+      @result = result
+    end
+  end
+
+  # exception raised when an object does not validate against its schema
+  class SchemaValidationError < ::StandardError
+
+    # result from JsonSchemer.validate
+    attr_reader :result
+
+    # create a new SchemaValidationError
+    #
+    # @param result [JsonSchemer::Result] JsonSchemer result
+    def initialize(path, result)
+      msg = "While validating #{path}:\n\n"
+      nerrors = result.count
+      msg << "#{nerrors} error(s) during validations\n\n"
+      result.to_a.each do |r|
+        msg <<
+          if r["type"] == "required" && !r.dig("details", "missing_keys").nil?
+            "    At '#{r['data_pointer']}': Missing required parameter(s) '#{r['details']['missing_keys']}'\n"
+          elsif r["type"] == "schema"
+            if r["schema_pointer"] == "/additionalProperties"
+              "    At #{r['data_pointer']}, there is an unallowed additional key\n"
+            else
+              "    At #{r['data_pointer']}, endpoint is an invalid key\n"
+            end
+          elsif r["type"] == "enum"
+            "    At #{r['data_pointer']}, '#{r['data']}' is not a valid enum value (#{r['schema']['enum']})\n"
+          elsif r["type"] == "maxProperties"
+            "    Maximum number of properties exceeded\n"
+          elsif r["type"] == "object"
+            "    At #{r['data_pointer']}, Expecting object, got #{r['data']}\n"
+          elsif r["type"] == "pattern"
+            "    At #{r['data_pointer']}, RegEx validation failed; '#{r['data']}' does not match '#{r['schema']['pattern']}'\n"
+          elsif r["type"] == "integer"
+            "    At #{r['data_pointer']}, '#{r['data']}' is not a integer\n"
+          elsif r["type"] == "array"
+            "    At #{r['data_pointer']}, '#{r['data']}' is not a array\n"
+          elsif r["type"] == "oneOf"
+            "    At #{r['data_pointer']}, '#{r['data']}' matches more than one of #{r['schema']['oneOf']}\n"
+          elsif r["type"] == "const"
+            "    At #{r['data_pointer']}, '#{r['data']}' does not match required value '#{r['schema']['const']}'\n"
+          else
+            "    #{r}\n\n"
+          end
+      end
+      msg << "\n"
+      # msg << result.to_a.to_s
+      super(msg)
+      @result = result
+    end
+  end
+
+  attr_reader :data, :data_path, :specification, :cfg_arch, :name, :long_name, :description
+
+  # @return [Architecture] If only a specification (no config) is known
+  # @return [ConfiguredArchitecture] If a specification and config is known
+  attr_reader :arch
+
+  def kind = @data["kind"]
+
+  @@schemas ||= {}
+  @@schema_ref_resolver ||= proc do |pattern|
+    if pattern.to_s =~ /^http/
+      JSON.parse(Net::HTTP.get(pattern))
+    else
+      JSON.load_file($root / "schemas" / pattern.to_s)
+    end
+  end
+
+  # validate the data against it's schema
+  # @raise [SchemaError] if the data is invalid
+  def validate
+    schemas = @@schemas
+    ref_resolver = @@schema_ref_resolver
+
+    if @data.key?("$schema")
+      schema_path = data["$schema"]
+      schema_file, obj_path = schema_path.split("#")
+      schema =
+        if schemas.key?(schema_file)
+          schemas[schema_file]
+        else
+          schemas[schema_file] = JSONSchemer.schema(
+            File.read("#{$root}/schemas/#{schema_file}"),
+            regexp_resolver: "ecma",
+            ref_resolver:,
+            insert_property_defaults: true
+          )
+          raise SchemaError, schemas[schema_file].validate_schema unless schemas[schema_file].valid_schema?
+
+          schemas[schema_file]
+        end
+
+      unless obj_path.nil?
+        obj_path_parts = obj_path.split("/")[1..]
+
+        obj_path_parts.each do |k|
+          schema = schema.fetch(k)
+        end
+      end
+
+      # convert through JSON to handle anything supported in YAML but not JSON
+      # (e.g., integer object keys will be coverted to strings)
+      jsonified_obj = JSON.parse(JSON.generate(@data))
+
+      raise "Nothing there?" if jsonified_obj.nil?
+
+      raise SchemaValidationError.new(@data_path, schema.validate(jsonified_obj)) unless schema.valid?(jsonified_obj)
+    else
+      warn "No $schema for #{@data_path}"
+    end
+  end
+
+  # clone this, and set the cfg_arch at the same time
+  # @return [ExtensionRequirement] The new object
+  def clone(cfg_arch: nil)
+    obj = super()
+    obj.instance_variable_set(:@cfg_arch, cfg_arch)
+    obj
+  end
 
   def <=>(other)
     name <=> other.name
@@ -34,7 +166,7 @@ class ArchDefObject
   # @return [String] Source file that data for this object can be attributed to
   # @return [nil] if the source isn't known
   def __source
-    @data["__source"]
+    @data["$source"]
   end
 
   # The raw content of definedBy in the data.
@@ -48,14 +180,22 @@ class ArchDefObject
   end
 
   # @param data [Hash<String,Object>] Hash with fields to be added
-  def initialize(data)
+  # @param data_path [Pathname] Path to the data file
+  def initialize(data, data_path, arch: nil)
     raise "Bad data" unless data.is_a?(Hash)
 
     @data = data
+    @data_path = data_path
+    if arch.is_a?(ConfiguredArchitecture)
+      @cfg_arch = arch
+      @specification = arch
+    elsif arch.is_a?(Architecture)
+      @specification = arch
+    end
+    @arch = arch
     @name = data["name"]
     @long_name = data["long_name"]
     @description = data["description"]
-
   end
 
   def inspect
@@ -66,29 +206,12 @@ class ArchDefObject
   extend Forwardable
   def_delegator :@data, :[]
 
-  # @return [Array<String>] List of keys added by this ArchDefObject
+  # @return [Array<String>] List of keys added by this DatabaseObjectect
   def keys = @data.keys
 
   # @param k (see Hash#key?)
   # @return (see Hash#key?)
   def key?(k) = @data.key?(k)
-
-  # adds accessor functions for any properties in the data
-  # def method_missing(method_name, *args, &block)
-  #   if @data.key?(method_name.to_s)
-  #     raise "Unexpected argument to '#{method_name}" unless args.empty?
-
-  #     raise "Unexpected block given to '#{method_name}" if block_given?
-
-  #     @data[method_name.to_s]
-  #   else
-  #     super
-  #   end
-  # end
-
-  # def respond_to_missing?(method_name, include_private = false)
-  #   @data.key?(method_name.to_s) || super
-  # end
 
   # @overload defined_by?(ext_name, ext_version)
   #   @param ext_name [#to_s] An extension name
@@ -98,67 +221,44 @@ class ArchDefObject
   #   @param ext_version [ExtensionVersion] An extension version
   #   @return [Boolean] Whether or not the instruction is defined by ext_version
   def defined_by?(*args)
-    if args.size == 1
-      raise ArgumentError, "Parameter must be an ExtensionVersion" unless args[0].is_a?(ExtensionVersion)
+    ext_ver =
+      if args.size == 1
+        raise ArgumentError, "Parameter must be an ExtensionVersion" unless args[0].is_a?(ExtensionVersion)
 
-      defined_by.satisfied_by? do |r|
-        r.name == args[0].name && r.version_requirement.satisfied_by?(args[0].version)
-      end
-    elsif args.size == 2
-      raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
-      version = args[1].is_a?(Gem::Version) ? args[1] : Gem::Version.new(args[1])
+        args[0]
+      elsif args.size == 2
+        raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
+        raise ArgumentError, "First parameter must be an extension version" unless args[1].respond_to?(:to_s)
 
-      defined_by.satisfied_by? do |r|
-        r.name == args[0] && r.version_requirement.satisfied_by?(version)
+        ExtensionVersion.new(args[0], args[1], cfg_arch)
+      else
+        raise ArgumentError, "Unsupported number of arguments (#{args.size})"
       end
-    else
-      raise ArgumentError, "Unsupported number of arguments of " + args.size
-    end
+
+    defined_by_condition.satisfied_by? { |req| req.satisfied_by?(ext_ver) }
   end
 
-  # def to_extension_requirement(obj)
-  #   if obj.is_a?(String)
-  #     ExtensionRequirement.new(obj, ">= 0")
-  #   else
-  #     ExtensionRequirement.new(*obj)
-  #   end
-  # end
-  # private :to_extension_requirement
+  # because of multiple ("allOf") conditions, we generally can't return a list of extension versions here....
+  # # @return [Array<ExtensionVersion>] Extension(s) that define the instruction. If *any* requirement is met, the instruction is defined.
+  # def defined_by
+  #   raise "ERROR: definedBy is nul for #{name}" if @data["definedBy"].nil?
 
-  # def to_extension_requirement_list(obj)
-  #   list = []
-  #   if obj.is_a?(Array)
-  #     # could be either a single extension with exclusion, or a list of exclusions
-  #     if extension_exclusion?(obj[0])
-  #       list << to_extension_requirement(obj[0])
-  #     else
-  #       # this is a list
-  #       obj.each do |r|
-  #         list << to_extension_exclusion(r)
-  #       end
-  #     end
-  #   else
-  #     list << to_extension_requirement(obj)
-  #   end
-  #   list
+  #   SchemaCondition.new(@data["definedBy"], @cfg_arch).satisfying_ext_versions
   # end
-
-  # def extension_requirement?(obj)
-  #   obj.is_a?(String) && obj =~ /^([A-WY])|([SXZ][a-z]+)$/ ||
-  #     obj.is_a?(Array) && obj[0] =~ /^([A-WY])|([SXZ][a-z]+)$/
-  # end
-  # private :extension_requirement?
 
   # @return [SchemaCondition] Extension(s) that define the instruction. If *any* requirement is met, the instruction is defined.
-  def defined_by
-    raise "ERROR: definedBy is nul for #{name}" if @data["definedBy"].nil?
+  def defined_by_condition
+    @defined_by_condition ||=
+      begin
+        raise "ERROR: definedBy is nul for #{name}" if @data["definedBy"].nil?
 
-    SchemaCondition.new(@data["definedBy"])
+        SchemaCondition.new(@data["definedBy"], @cfg_arch)
+      end
   end
 
   # @return [String] Name of an extension that "primarily" defines the object (i.e., is the first in a list)
   def primary_defined_by
-    defined_by.first_requirement.name
+    defined_by_condition.first_requirement
   end
 
   # @return [Integer] THe source line number of +path+ in the YAML file
@@ -176,8 +276,8 @@ class ArchDefObject
   def source_line(*path)
 
     # find the line number of this operation() in the *original* file
-    yaml_filename = @data["__source"]
-    raise "No __source for #{name}" if yaml_filename.nil?
+    yaml_filename = @data["$source"]
+    raise "No $source for #{name}" if yaml_filename.nil?
     line = nil
     path_idx = 0
     Psych.parse_stream(File.read(yaml_filename), filename: yaml_filename) do |doc|
@@ -208,12 +308,16 @@ class ArchDefObject
         end
       end
     end
-    raise "Didn't find key '#{path}' in #{@data['__source']}"
+    raise "Didn't find key '#{path}' in #{@data['$source']}"
   end
 end
 
 # A company description
-class Company < ArchDefObject
+class Company
+  def initialize(data)
+    @data = data
+  end
+
   # @return [String] Company name
   def name = @data["name"]
 
@@ -222,7 +326,11 @@ class Company < ArchDefObject
 end
 
 # License information
-class License < ArchDefObject
+class License
+  def initialize(data)
+    @data = data
+  end
+
   # @return [String] License name
   def name = @data["name"]
 
@@ -241,7 +349,9 @@ class License < ArchDefObject
 end
 
 # Personal information about a contributor
-class Person < ArchDefObject
+class Person
+  include Comparable
+
   # @return [String] Person's name
   def name = @data["name"]
 
@@ -252,6 +362,16 @@ class Person < ArchDefObject
   # @return [String] Company the person works for
   # @return [nil] if the company is not known, or if the person is an individual contributor
   def company = @data["company"]
+
+  def initialize(data)
+    @data = data
+  end
+
+  def <=>(other)
+    raise ArgumentError, "Person is only comparable to Person (not #{other.class.name})" unless other.is_a?(Person)
+
+    name <=> other.name
+  end
 end
 
 # represents a JSON Schema compoisition, e.g.:
@@ -264,7 +384,7 @@ end
 #
 class SchemaCondition
   # @param composition_hash [Hash] A possibly recursive hash of "allOf", "anyOf", "oneOf"
-  def initialize(composition_hash)
+  def initialize(composition_hash, cfg_arch)
     raise ArgumentError, "composition_hash is nil" if composition_hash.nil?
 
     unless is_a_condition?(composition_hash)
@@ -272,6 +392,7 @@ class SchemaCondition
     end
 
     @hsh = composition_hash
+    @cfg_arch = cfg_arch
   end
 
   def to_h = @hsh
@@ -346,10 +467,14 @@ class SchemaCondition
   def first_requirement(req = @hsh)
     case req
     when String
-      ExtensionRequirement.new(req, ">= 0")
+      ExtensionRequirement.new(req, cfg_arch: @cfg_arch)
     when Hash
       if req.key?("name")
-        ExtensionRequirement.new(req["name"], req["version"] || ">= 0")
+        if req["version"].nil?
+          ExtensionRequirement.new(req["name"], cfg_arch: @cfg_arch)
+        else
+          ExtensionRequirement.new(req["name"], req["version"], cfg_arch: @cfg_arch)
+        end
       else
         first_requirement(req[req.keys[0]])
       end
@@ -361,12 +486,12 @@ class SchemaCondition
   end
 
   # combine all conds into one using AND
-  def self.all_of(*conds)
+  def self.all_of(*conds, cfg_arch:)
     cond = SchemaCondition.new({
       "allOf" => conds
-    })
+    }, cfg_arch)
 
-    SchemaCondition.new(cond.minimize)
+    SchemaCondition.new(cond.minimize, cfg_arch)
   end
 
   # @return [Object] Schema for this condition, with basic logic minimization
@@ -404,14 +529,14 @@ class SchemaCondition
       if hsh.key?("name")
         if hsh.key?("version")
           if hsh["version"].is_a?(String)
-            "(yield ExtensionRequirement.new('#{hsh["name"]}', '#{hsh["version"]}'))"
+            "(yield ExtensionRequirement.new('#{hsh["name"]}', '#{hsh["version"]}', cfg_arch: @cfg_arch))"
           elsif hsh["version"].is_a?(Array)
-            "(yield ExtensionRequirement.new('#{hsh["name"]}', #{hsh["version"].map { |v| "'#{v}'" }.join(', ')}))"
+            "(yield ExtensionRequirement.new('#{hsh["name"]}', #{hsh["version"].map { |v| "'#{v}'" }.join(', ')}, cfg_arch: @cfg_arch))"
           else
             raise "unexpected"
           end
         else
-          "(yield ExtensionRequirement.new('#{hsh["name"]}'))"
+          "(yield ExtensionRequirement.new('#{hsh["name"]}', cfg_arch: @cfg_arch))"
         end
       else
         key = hsh.keys[0]
@@ -432,7 +557,7 @@ class SchemaCondition
         end
       end
     else
-      "(yield ExtensionRequirement.new('#{hsh}'))"
+      "(yield ExtensionRequirement.new('#{hsh}', cfg_arch: @cfg_arch))"
     end
   end
 
@@ -470,6 +595,16 @@ class SchemaCondition
 
     eval to_rb
   end
+
+  def satisfying_ext_versions
+    list = []
+    cfg_arch.extensions.each do |ext|
+      ext.versions.each do |ext_ver|
+        list << ext_ver if satisfied_by? { |ext_req| ext_req.satisfied_by?(ext_ver) }
+      end
+    end
+    list
+  end
 end
 
 class AlwaysTrueSchemaCondition
@@ -480,4 +615,5 @@ class AlwaysTrueSchemaCondition
   def empty? = true
 
   def to_h = {}
+  def minimize = {}
 end

@@ -74,34 +74,10 @@
         },
         "company": {
           "description": "The company that developed this extension",
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string",
-              "description": "Name of the company that developed this extension. Should be \"RISC-V International\" for standard extensions"
-            },
-            "url": {
-              "type": "string",
-              "format": "uri",
-              "description": "Website of the company that developed this extension. Should be \"https://riscv.org\" for standard extensions"
-            }
-          }
+          "$ref": "schema_defs.json#/$defs/company"
         },
         "doc_license": {
-          "description": "License that applies to the textual documentation for this extension",
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string",
-              "description": "License name"
-            },
-            "url": {
-              "type": "string",
-              "format": "uri",
-              "description": "Link to license text"
-            }
-          },
-          "additionalProperties": false
+          "$ref": "schema_defs.json#/$defs/license"
         },
         "type": { "enum": ["unprivileged", "privileged"] },
         "conflicts": {
@@ -311,7 +287,7 @@
           },
           "additionalProperties": false
         },
-        "__source": {
+        "$source": {
           "type": "string",
           "description": "Source file where this extension was defined"
         }

@@ -120,10 +120,7 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
     end
   raise "Can't find extension '#{ext_name}'" if arch_yaml_paths.empty?
 
-  stamp = config_name == "_" ? "#{$root}/.stamps/arch-gen-_64.stamp" : "#{$root}/.stamps/arch-gen-#{config_name}.stamp"
-
   [
-    stamp,
     (EXT_PDF_DOC_DIR / "templates" / "ext_pdf.adoc.erb").to_s,
     arch_yaml_paths,
     __FILE__
@@ -131,12 +128,7 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
 } do |t|
   config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen/ext_pdf_doc").to_s.split("/")[0]
 
-  arch_def =
-    if config_name == "_"
-      arch_def_for("_64")
-    else
-      arch_def_for(config_name)
-    end
+  cfg_arch = cfg_arch_for("_")
 
   ext_name = Pathname.new(t.name).basename(".adoc").to_s.split("_")[0..-2].join("_")
 
@@ -144,21 +136,21 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
   erb = ERB.new(template_path.read, trim_mode: "-")
   erb.filename = template_path.to_s
 
-  ext = arch_def.extension(ext_name)
+  ext = cfg_arch.extension(ext_name)
   version_strs = ENV["VERSION"].split(",")
   versions =
     if version_strs.include?("all")
       ext.versions
     else
       vs = ext.versions.select do |ext_ver|
-        version_strs.include?(ext_ver.version.to_s)
+        version_strs.include?(ext_ver.version_spec.to_s)
       end
       vs << ext.max_version if version_strs.include?("latest")
       vs.uniq
     end
   max_version = versions.max { |a, b| a.version <=> b.version }
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AsciidocUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
+  File.write t.name, AsciidocUtils.resolve_links(cfg_arch.find_replace_links(erb.result(binding)))
 end
 
 namespace :gen do
