@@ -422,7 +422,7 @@ associated implementation-defined parameters.
 
 .Status
 |===
-| Profile | v<%= ext.versions.map { |v| v.version }.join(" | v") %>
+| Profile | v<%= ext.versions.map { |ext_ver| ext_ver.canonical_version.to_s }.join(" | v") %>
 
 <% profile_release.profiles.each do |profile| -%>
 | <%= profile.marketing_name %> | <%= profile.version_strongest_presence(ext.name, ext.versions).join(" | ") -%>
@@ -431,7 +431,7 @@ associated implementation-defined parameters.
 |===
 
 <% ext.versions.each do |v| -%>
-<%= v.version %>::
+<%= v.canonical_version %>::
   Ratification date:::
     <%= v.ratification_date %>
   <% unless v.changes.empty? -%>

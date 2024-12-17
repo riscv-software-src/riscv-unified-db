@@ -67,17 +67,18 @@ class PortfolioInstance < DatabaseObjectect
 
     # See if any extension requirement in this profile lists this version as either mandatory or optional.
     ext_versions.map do |v|
-      mandatory = mandatory_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(ext_name, v.version) }
-      optional = optional_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(ext_name, v.version) }
+      mandatory = mandatory_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(v) }
+      optional = optional_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(v) }
 
       # Just show strongest presence (mandatory stronger than optional).
-      if mandatory
-        presences << ExtensionPresence.mandatory
-      elsif optional
-        presences << ExtensionPresence.optional
-      else
-        presences << "-"
-      end
+      presences <<
+        if mandatory
+          ExtensionPresence.mandatory
+        elsif optional
+          ExtensionPresence.optional
+        else
+          "-"
+        end
     end
 
     presences
