@@ -483,7 +483,8 @@ RVB23:
             optional: expansion
           version: "~>1.0"
           note: |
-            The augmented hypervisor extension
+            The set of augmented hypervisor extensions: H, Ssstateen, 
+            Shcounterenw, Shvstvala, Shtvala, Shvstvecd, Shvsatpa, Shgatpa
 
         __NEED_AN_EXTENSION_NAME_HERE__:
           presence: 
