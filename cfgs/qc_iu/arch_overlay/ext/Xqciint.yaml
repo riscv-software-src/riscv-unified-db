@@ -28,7 +28,8 @@ versions:
     email: dhower@qti.qualcomm.com
   changes:
     - Add information about instruction formats of each instruction
-  requires: { name: Zca, version: ">= 1.0.0" }
+  requires:
+    allOf: [{ name: Zca, version: ">= 1.0.0" }, { name: Smrnmi, version: ">= 1.0.0"}]
 description: |
   The Xqciint extension includes eleven instructions to accelerate interrupt
   servicing by performing common actions during ISR prologue/epilogue.

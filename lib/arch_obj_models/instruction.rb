@@ -130,7 +130,6 @@ class Instruction < DatabaseObjectect
 
     symtab
   end
-  private :fill_symtab
 
   # @param global_symtab [Idl::SymbolTable] Symbol table with global scope populated and a configuration loaded
   # @return [Idl::FunctionBodyAst] A pruned abstract syntax tree

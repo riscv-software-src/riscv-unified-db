@@ -70,18 +70,27 @@ namespace udb {
 
 
     void execute() override {
+
       <%- if inst.operation_ast(cfg_arch.symtab).nil? -%>
       assert(!"There is no operation() defined for this instruction");
       <%- else -%>
       <%- if !inst.base.nil? -%>
-      <%= inst.pruned_operation_ast(cfg_arch.symtab, inst.base).gen_cpp(cfg_arch.symtab, 6) %>
+        <%- pruned_ast = inst.pruned_operation_ast(cfg_arch.symtab, inst.base) -%>
+        <%- symtab = inst.fill_symtab(cfg_arch.symtab, inst.base, pruned_ast) -%>
+        <%= pruned_ast.gen_cpp(symtab, 6) %>
       <%- elsif !cfg_arch.multi_xlen? -%>
-      <%= inst.pruned_operation_ast(cfg_arch.symtab, cfg_arch.possible_xlens[0]).gen_cpp(cfg_arch.symtab, 6) %>
+        <%- pruned_ast = inst.pruned_operation_ast(cfg_arch.symtab, cfg_arch.possible_xlens[0]) -%>
+        <%- symtab = inst.fill_symtab(cfg_arch.symtab, cfg_arch.possible_xlens[0], pruned_ast) -%>
+        <%= pruned_ast.gen_cpp(symtab, 6) %>
       <%- else -%>
-      if (m_parent->xlen() == 32) {
-        <%= inst.pruned_operation_ast(cfg_arch.symtab, 32).gen_cpp(cfg_arch.symtab, 8) %>
+        if (m_parent->xlen() == 32) {
+        <%- pruned_ast = inst.pruned_operation_ast(cfg_arch.symtab, 32) -%>
+        <%- symtab = inst.fill_symtab(cfg_arch.symtab, 32, pruned_ast) -%>
+        <%= pruned_ast.gen_cpp(symtab, 8) %>
       } else {
-        <%= inst.pruned_operation_ast(cfg_arch.symtab, 64).gen_cpp(cfg_arch.symtab, 8) %>
+        <%- pruned_ast = inst.pruned_operation_ast(cfg_arch.symtab, 64) -%>
+        <%- symtab = inst.fill_symtab(cfg_arch.symtab, 64, pruned_ast) -%>
+        <%= pruned_ast.gen_cpp(symtab, 8) %>
       }
       <%- end -%>
       <%- end -%>
