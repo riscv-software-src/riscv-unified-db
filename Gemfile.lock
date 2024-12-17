@@ -114,6 +114,8 @@ GEM
     rainbow (3.1.1)
     rake (13.2.1)
     rbs (2.8.4)
+    rdbg (0.1.0)
+      debug (>= 1.2.2)
     rdoc (6.8.1)
       psych (>= 4.0.0)
     regexp_parser (2.9.2)
@@ -192,6 +194,7 @@ DEPENDENCIES
   minitest
   pygments.rb
   rake (~> 13.0)
+  rdbg
   rouge
   rubocop-minitest
   ruby-prof
