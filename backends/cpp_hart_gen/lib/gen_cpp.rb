@@ -54,7 +54,7 @@ module Idl
     end
   end
 
-  class PostDecrementExpressionAst
+  class PostIncrementExpressionAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       "#{' ' * indent}#{rval.gen_cpp(symtab, indent, indent_spaces:)}++"
     end
