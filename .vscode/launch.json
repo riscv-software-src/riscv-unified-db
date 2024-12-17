@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "rdbg",
+      "name": "RVA20 Profile",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:profile[RVA20]",
+      "args": [],
+      "askParameters": false
+    }
+  ]
+}
