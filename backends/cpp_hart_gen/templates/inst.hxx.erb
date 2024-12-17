@@ -19,21 +19,25 @@ namespace udb {
     size_t enc_len() const override { return <%= inst.encoding_width %>; }
 
     void execute() override {
-      <%- if inst.operation_ast(cfg_arch.symtab).nil? -%>
+      <%- symtab = cfg_arch.symtab.global_clone() -%>
+      <%- function_symtab = cfg_arch.symtab.global_clone().push(nil)  -%>
+      <%- if inst.operation_ast(symtab).nil? -%>
       assert(!"There is no operation() defined for this instruction");
       <%- else -%>
       <%- if !inst.base.nil? -%>
-      <%= inst.pruned_operation_ast(cfg_arch.symtab, inst.base).gen_cpp(cfg_arch.symtab, 6) %>
+      <%= inst.pruned_operation_ast(symtab, inst.base).gen_cpp(function_symtab, 6) %>
       <%- elsif !cfg_arch.multi_xlen? -%>
-      <%= inst.pruned_operation_ast(cfg_arch.symtab, cfg_arch.possible_xlens[0]).gen_cpp(cfg_arch.symtab, 6) %>
+      <%= inst.pruned_operation_ast(symtab, cfg_arch.possible_xlens[0]).gen_cpp(function_symtab, 6) %>
       <%- else -%>
-      if (m_parent->xlen() == 32) {
-        <%= inst.pruned_operation_ast(cfg_arch.symtab, 32).gen_cpp(cfg_arch.symtab, 8) %>
+        if (m_parent->xlen() == 32) {
+        <%= inst.pruned_operation_ast(symtab, 32).gen_cpp(function_symtab, 8) %>
       } else {
-        <%= inst.pruned_operation_ast(cfg_arch.symtab, 64).gen_cpp(cfg_arch.symtab, 8) %>
+        <%= inst.pruned_operation_ast(symtab, 64).gen_cpp(function_symtab, 8) %>
       }
       <%- end -%>
       <%- end -%>
+      <%- function_symtab.release()  -%>
+      <%- symtab.release() -%>
     }
 
   private:

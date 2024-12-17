@@ -17,10 +17,10 @@ module Idl
         # see if msb, lsb is compile-time-known
         _ = msb.value(symtab)
         _ = lsb.value(symtab)
-        expression = "bit_insert(#{variable.gen_cpp(0)}, #{msb.gen_cpp(0)}, #{lsb.gen_cpp(0)}, #{write_value.gen_cpp(0)})"
+        expression = "bit_insert(#{variable.gen_cpp(symtab)}, #{msb.gen_cpp(symtab)}, #{lsb.gen_cpp(symtab)}, #{write_value.gen_cpp(symtab)})"
       end
       value_else(value_result) do
-        expression = "bit_insert<#{msb.gen_cpp(0)}, #{lsb.gen_cpp(0)}>(#{variable.gen_cpp(0)}, #{write_value.gen_cpp(0)})"
+        expression = "bit_insert<#{msb.gen_cpp(symtab)}, #{lsb.gen_cpp(symtab)}>(#{variable.gen_cpp(symtab)}, #{write_value.gen_cpp(symtab)})"
       end
 
       "#{' ' * indent}#{expression}"
@@ -210,12 +210,14 @@ module Idl
 
   class VariableDeclarationAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
+      add_symbol(symtab)
       "#{' ' * indent}#{type_name.gen_cpp(symtab, 0, indent_spaces:)} #{id.gen_cpp(symtab, 0, indent_spaces:)}"
     end
   end
 
   class MultiVariableDeclarationAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
+      add_symbol(symtab)
       "#{' ' * indent}#{type_name.gen_cpp(symtab, 0, indent_spaces:)} #{var_name_nodes.map { |var| var.gen_cpp(symtab, 0, indent_spaces:) }.join(', ')}"
     end
   end
@@ -250,6 +252,8 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       # lines = ["#{' '*indent}for pass:[(]#{init.gen_cpp(0, indent_spaces:)}; #{condition.gen_cpp(0, indent_spaces:)}; #{update.gen_cpp(0, indent_spaces:)}) {"]
       lines = []
+      symtab.push(nil)
+      init.add_symbol(symtab)
       stmts.each do |s|
         lines << s.gen_cpp(symtab, indent_spaces, indent_spaces:)
       end
@@ -258,6 +262,7 @@ module Idl
         #{lines.join("\n")}
         }
       LOOP
+      symtab.pop()
       cpp.lines.map { |l| "#{' ' * indent}}#{l}" }.join('')
     end
   end
@@ -277,6 +282,7 @@ module Idl
 
   class VariableDeclarationWithInitializationAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
+      add_symbol(symtab)
       if ary_size.nil?
         "#{' ' * indent}#{type_name.gen_cpp(symtab, 0, indent_spaces:)} #{lhs.gen_cpp(symtab, 0, indent_spaces:)} = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
       else
