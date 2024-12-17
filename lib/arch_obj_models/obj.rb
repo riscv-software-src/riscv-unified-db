@@ -350,6 +350,8 @@ end
 
 # Personal information about a contributor
 class Person
+  include Comparable
+
   # @return [String] Person's name
   def name = @data["name"]
 
@@ -363,6 +365,12 @@ class Person
 
   def initialize(data)
     @data = data
+  end
+
+  def <=>(other)
+    raise ArgumentError, "Person is only comparable to Person (not #{other.class.name})" unless other.is_a?(Person)
+
+    name <=> other.name
   end
 end
 
