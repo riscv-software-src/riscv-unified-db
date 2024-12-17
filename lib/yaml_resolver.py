@@ -2,6 +2,7 @@ import glob, os
 import argparse
 import shutil
 import json
+import sys
 
 from pathlib import Path
 
@@ -208,6 +209,13 @@ def resolve(rel_path : str | Path, arch_root : str | Path) -> dict:
     return resolved_objs[str(rel_path)]
   else:
     unresolved_arch_data = read_yaml(os.path.join(arch_root, rel_path))
+    if not "name" in unresolved_arch_data:
+      print(f"ERROR: Missing 'name' key in {arch_root}/{rel_path}", file=sys.stderr)
+      exit(1)
+    fn_name = Path(rel_path).stem
+    if fn_name != unresolved_arch_data["name"]:
+      print(f"ERROR: 'name' key ({unresolved_arch_data["name"]}) must match filename ({fn_name} in {arch_root}/{rel_path}", file=sys.stderr)
+      exit(1)
     resolved_objs[str(rel_path)] = _resolve(unresolved_arch_data, [], rel_path, unresolved_arch_data, arch_root)
     return resolved_objs[str(rel_path)]
 

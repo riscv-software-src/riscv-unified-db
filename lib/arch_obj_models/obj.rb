@@ -313,7 +313,11 @@ class DatabaseObjectect
 end
 
 # A company description
-class Company < DatabaseObjectect
+class Company
+  def initialize(data)
+    @data = data
+  end
+
   # @return [String] Company name
   def name = @data["name"]
 
@@ -322,7 +326,11 @@ class Company < DatabaseObjectect
 end
 
 # License information
-class License < DatabaseObjectect
+class License
+  def initialize(data)
+    @data = data
+  end
+
   # @return [String] License name
   def name = @data["name"]
 

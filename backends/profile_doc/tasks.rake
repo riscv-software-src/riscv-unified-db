@@ -1,26 +1,23 @@
 # frozen_string_literal: true
 
-rule %r{#{$root}/gen/profile_doc/adoc/.*\.adoc} => proc { |tname|
-  profile_release_name = Pathname.new(tname).basename(".adoc")
-
-  [
-    "#{$root}/.stamps/arch-gen.stamp",
-    __FILE__,
-    "#{$root}/lib/arch_obj_models/profile.rb",
-    "#{$root}/backends/profile_doc/templates/profile.adoc.erb"
-  ] + Dir.glob("#{$root}/arch/profile_release/**/*.yaml")
-} do |t|
+rule %r{#{$root}/gen/profile_doc/adoc/.*\.adoc} => [
+  __FILE__,
+  "#{$root}/lib/arch_obj_models/profile.rb",
+  "#{$root}/backends/profile_doc/templates/profile.adoc.erb",
+  Dir.glob("#{$root}/arch/profile_release/**/*.yaml")
+].flatten do |t|
   profile_release_name = Pathname.new(t.name).basename(".adoc").to_s
 
-  profile_release = cfg_arch_for("_64").profile_release(profile_release_name)
+  profile_release = cfg_arch_for("_").profile_release(profile_release_name)
   raise ArgumentError, "No profile release named '#{profile_release_name}'" if profile_release.nil?
+
   profile_class = profile_release.profile_class
 
   template_path = Pathname.new "#{$root}/backends/profile_doc/templates/profile.adoc.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")
   erb.filename = template_path.to_s
 
-  cfg_arch = cfg_arch_for("_64")
+  cfg_arch = cfg_arch_for("_")
 
   # XXX - Add call to to_cfg_arch() in portfolio instance class.
   # But somehow have to merge the multiple portofolios in one profile release to one since
@@ -86,22 +83,22 @@ end
 
 namespace :gen do
   desc "Create a specification PDF for +profile_release+"
-  task :profile, [:profile_release] => ["#{$root}/.stamps/arch-gen-_64.stamp"] do |_t, args|
+  task :profile, [:profile_release] do |_t, args|
     profile_release_name = args[:profile_release]
     raise ArgumentError, "Missing required option +profile_release+" if profile_release_name.nil?
 
-    profile_release = cfg_arch_for("_64").profile_release(profile_release_name)
+    profile_release = cfg_arch_for("_").profile_release(profile_release_name)
     raise ArgumentError, "No profile release named '#{profile_release_name}'" if profile_release.nil?
 
     Rake::Task["#{$root}/gen/profile_doc/pdf/#{profile_release_name}.pdf"].invoke
   end
 
   desc "Create a specification HTML for +profile_release+"
-  task :profile_html, [:profile_release] => ["#{$root}/.stamps/arch-gen-_64.stamp"] do |_t, args|
+  task :profile_html, [:profile_release] do |_t, args|
     profile_release_name = args[:profile_release]
     raise ArgumentError, "Missing required option +profile_release+" if profile_release_name.nil?
 
-    profile_release = cfg_arch_for("_64").profile_release(profile_release_name)
+    profile_release = cfg_arch_for("_").profile_release(profile_release_name)
     raise ArgumentError, "No profile release named '#{profile_release_name}" if profile_release.nil?
 
     Rake::Task["#{$root}/gen/profile_doc/html/#{profile_release_name}.html"].invoke
