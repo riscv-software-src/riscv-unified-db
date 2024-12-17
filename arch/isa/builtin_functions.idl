@@ -422,11 +422,11 @@ builtin function atomically_set_pte_a {
     U32                   pte_len
   description {
     Atomically:
-    
+
       * Reads the _pte_len_ value at _pte_addr_
       ** If the read value does not exactly equal pte_value, returns false
       * Sets the 'A' bit and writes the result to _pte_addr_
-      * return true 
+      * return true
 
     Preconditions:
 
@@ -442,7 +442,7 @@ builtin function atomically_set_pte_a_d {
     U32                   pte_len
   description {
     Atomically:
-    
+
       * Reads the _pte_len_ value at _pte_addr_
       ** If the read value does not exactly equal pte_value, returns false
       * Sets the 'A' and 'D' bits and writes the result to _pte_addr_

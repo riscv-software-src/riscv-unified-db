@@ -5,7 +5,7 @@ kind: instruction
 name: fmvh.x.q
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy:
   anyOf: [Q, Zfa]
 base: 64
@@ -13,10 +13,10 @@ assembly: xd, qs1
 encoding:
   match: 111001100001-----000-----1010011
   variables:
-  - name: qs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: qs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -24,4 +24,3 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    

@@ -5,7 +5,7 @@ kind: instruction
 name: aes32dsi
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy:
   anyOf: [Zk, Zkn, Zknd]
 base: 32
@@ -13,14 +13,14 @@ assembly: xd, xs1, xs2, bs
 encoding:
   match: --10101----------000-----0110011
   variables:
-  - name: bs
-    location: 31-30
-  - name: rs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: bs
+      location: 31-30
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -28,4 +28,3 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
-    

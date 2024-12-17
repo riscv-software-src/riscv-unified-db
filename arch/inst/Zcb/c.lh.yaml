@@ -3,26 +3,26 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: c.lh
-long_name: Load signed halfword, 16-bit encoding 
+long_name: Load signed halfword, 16-bit encoding
 description: |
   Loads a 16-bit value from memory into register rd.
   It computes an effective address by adding the zero-extended offset, to the base address in register rs1.
   It expands to `lh` `rd, offset(rs1)`.
 definedBy:
   anyOf:
-  - Zcb
-  - Zce
+    - Zcb
+    - Zce
 assembly: xd, imm(xs1)
 encoding:
   match: 100001---1----00
   variables:
-  - name: imm
-    location: 5
-    left_shift: 1
-  - name: rd
-    location: 4-2
-  - name: rs1
-    location: 9-7
+    - name: imm
+      location: 5
+      left_shift: 1
+    - name: rd
+      location: 4-2
+    - name: rs1
+      location: 9-7
 access:
   s: always
   u: always

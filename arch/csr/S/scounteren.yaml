@@ -2,7 +2,6 @@
 
 # WARNING: This file is auto-generated from arch/csr/S/scounteren.layout
 
-
 $schema: csr_schema.json#
 kind: csr
 name: scounteren

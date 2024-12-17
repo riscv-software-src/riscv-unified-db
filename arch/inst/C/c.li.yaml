@@ -5,22 +5,22 @@ kind: instruction
 name: c.li
 long_name: Load the sign-extended 6-bit immediate
 description: |
-  C.LI loads the sign-extended 6-bit immediate, imm, into register rd. 
-  C.LI expands into `addi rd, x0, imm`. 
+  C.LI loads the sign-extended 6-bit immediate, imm, into register rd.
+  C.LI expands into `addi rd, x0, imm`.
   C.LI is only valid when rd &ne; x0; the code points with rd=x0 encode HINTs.
 definedBy:
   anyOf:
-  - C
-  - Zca
+    - C
+    - Zca
 assembly: xd, imm
 encoding:
   match: 010-----------01
   variables:
-  - name: imm
-    location: 12|6-2
-  - name: rd
-    location: 11-7
-    not: 0
+    - name: imm
+      location: 12|6-2
+    - name: rd
+      location: 11-7
+      not: 0
 access:
   s: always
   u: always
@@ -32,4 +32,3 @@ operation(): |
   }
 
   X[rd] = imm;
-

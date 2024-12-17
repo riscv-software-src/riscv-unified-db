@@ -2,7 +2,6 @@
 
 # WARNING: This file is auto-generated from arch/csr/Zicntr/mcountinhibit.layout
 
-
 $schema: csr_schema.json#
 kind: csr
 name: mcountinhibit
@@ -44,8 +43,8 @@ description: |
 
 definedBy:
   anyOf:
-  - name: Sm
-  - name: Smhpm
+    - name: Sm
+    - name: Smhpm
 fields:
   CY:
     location: 0

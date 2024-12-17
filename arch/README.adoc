@@ -21,7 +21,7 @@ To tame this challenge, this specification generator takes the following approac
 
 The architecture is specified in a series of https://en.wikipedia.org/wiki/YAML[YAML]
 files for _Extensions_, _Instructions_, and _Control and Status Registers (CSRs)_.
-Each extension/instruction/CSR has its own file. 
+Each extension/instruction/CSR has its own file.
 
 == Flow
 

@@ -5,18 +5,18 @@ kind: instruction
 name: vmorn.mm
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy: V
 assembly: vs2, vs1, vd
 encoding:
   match: 0111001----------010-----1010111
   variables:
-  - name: vs2
-    location: 24-20
-  - name: vs1
-    location: 19-15
-  - name: vd
-    location: 11-7
+    - name: vs2
+      location: 24-20
+    - name: vs1
+      location: 19-15
+    - name: vd
+      location: 11-7
 access:
   s: always
   u: always
@@ -24,4 +24,3 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    

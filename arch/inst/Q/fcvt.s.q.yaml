@@ -5,18 +5,18 @@ kind: instruction
 name: fcvt.s.q
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy: Q
 assembly: fd, qs1, rm
 encoding:
   match: 010000000011-------------1010011
   variables:
-  - name: qs1
-    location: 19-15
-  - name: rm
-    location: 14-12
-  - name: fd
-    location: 11-7
+    - name: qs1
+      location: 19-15
+    - name: rm
+      location: 14-12
+    - name: fd
+      location: 11-7
 access:
   s: always
   u: always
@@ -24,4 +24,3 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    

@@ -5,20 +5,20 @@ kind: instruction
 name: c.sext.b
 long_name: Sign-extend byte, 16-bit encoding
 description: |
-  This instruction takes a single source/destination operand. 
-  This instruction sign-extends the least-significant byte of the source to XLEN by copying 
+  This instruction takes a single source/destination operand.
+  This instruction sign-extends the least-significant byte of the source to XLEN by copying
   the most-significant bit in the byte (i.e., bit 7) to all of the more-significant bits.
 
 definedBy:
   allOf:
-  - Zcb
-  - Zbb
+    - Zcb
+    - Zbb
 assembly: xd
 encoding:
   match: 100111---1100101
   variables:
-  - name: rd
-    location: 9-7
+    - name: rd
+      location: 9-7
 access:
   s: always
   u: always
@@ -49,7 +49,3 @@ sail(): |
     X(rsdc) = result;
     RETIRE_SUCCESS
   }
-
-
-
-

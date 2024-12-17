@@ -363,7 +363,7 @@ The <%= profile_class.marketing_name %> Profile Class references
 
 <%= profile_release.introduction %>
 
-<%= profile_release.marketing_name %> has <%= profile_release.referenced_extensions.reduce(0) { |sum, ext| sum + ext.params.size } %> 
+<%= profile_release.marketing_name %> has <%= profile_release.referenced_extensions.reduce(0) { |sum, ext| sum + ext.params.size } %>
 associated implementation-defined parameters across all its defined profiles.
 
 <% unless profile_release.description.nil? -%>
@@ -438,7 +438,7 @@ associated implementation-defined parameters.
   Changes:::
 
     <% v.changes.each do |c| -%>
-    * <%= c %>  
+    * <%= c %>
     <% end -%>
 
   <%- end -%>
@@ -524,20 +524,20 @@ This instruction has different encodings in RV32 and RV64.
 RV32::
 +
 [wavedrom, ,svg,subs='attributes',width="100%"]
-....  
+....
 <%= JSON.dump inst.wavedrom_desc(32) %>
 ....
 
 RV64::
 +
 [wavedrom, ,svg,subs='attributes',width="100%"]
-....  
+....
 <%= JSON.dump inst.wavedrom_desc(64) %>
 ....
 ====
 <% else -%>
 [wavedrom, ,svg,subs='attributes',width="100%"]
-....  
+....
 <%= JSON.dump inst.wavedrom_desc(inst.base.nil? ? 32 : inst.base) %>
 ....
 <% end -%>

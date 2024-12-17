@@ -887,7 +887,7 @@ function pmp_match_64 {
   arguments Bits<PHYS_ADDR_WIDTH> paddr
   description {
     Given a physical address, see if any PMP entry matches.
-    
+
     If there is a complete match, return the PmpCfg that guards the region.
     If there is no match or a partial match, report that result.
   }
@@ -955,7 +955,7 @@ function pmp_match_32 {
   arguments Bits<PHYS_ADDR_WIDTH> paddr
   description {
     Given a physical address, see if any PMP entry matches.
-    
+
     If there is a complete match, return the PmpCfg that guards the region.
     If there is no match or a partial match, report that result.
   }
@@ -1023,7 +1023,7 @@ function pmp_match {
   arguments Bits<PHYS_ADDR_WIDTH> paddr
   description {
     Given a physical address, see if any PMP entry matches.
-    
+
     If there is a complete match, return the PmpCfg that guards the region.
     If there is no match or a partial match, report that result.
   }
@@ -1423,7 +1423,7 @@ function translate_gstage {
         raise_guest_page_fault(op, gpaddr, vaddr, tinst_value_for_guest_page_fault(op, encoding, true), effective_mode);
       }
     }
-  }    
+  }
 }
 
 function tinst_value_for_guest_page_fault {
@@ -1715,7 +1715,7 @@ function gstage_page_walk {
       # first level is x4 for G-stage, so add two bits to the vpn size
       U32 this_vpn_size = (i == (LEVELS - 1)) ? VPN_SIZE + 2 : VPN_SIZE;
       U32 vpn = (gpaddr >> (12 + VPN_SIZE*i)) & ((1 << this_vpn_size) - 1);
-      
+
       Bits<PA_SIZE> pte_paddr = (ppn << 12) + (vpn * (PTESIZE/8));
 
       # check hw page table access permission
@@ -2219,7 +2219,7 @@ function translate {
     +effective_mode+.
 
     The translation will depend on the effective privilege mode.
-    
+
     May raise a Page Fault or Access Fault.
 
     The final physical address is *not* access checked (for PMP, PMA, etc., violations).
@@ -2251,7 +2251,7 @@ function translate {
       # there is no translation in M-mode
       return vaddr;
     }
-   
+
     SatpMode translation_mode =
       current_translation_mode(effective_mode);
 
@@ -2317,7 +2317,7 @@ function canonical_vaddr? {
       return true;
     } else if (satp_mode == SatpMode::Sv32) {
       # Sv32 uses all 32 bits of the VA
-      return true; 
+      return true;
     } else if (satp_mode == SatpMode::Sv39) {
       return eaddr[63:39] == {25{eaddr[38]}};
     } else if (satp_mode == SatpMode::Sv48) {
@@ -2343,7 +2343,7 @@ function canonical_gpaddr? {
       return true;
     } else if (satp_mode == SatpMode::Sv32) {
       # Sv32 uses all 32 bits of the VA
-      return true; 
+      return true;
     } else if ((XLEN > 32) && (satp_mode == SatpMode::Sv39)) {
       return gpaddr[63:39] == {25{gpaddr[38]}};
     } else if ((XLEN > 32) && (satp_mode == SatpMode::Sv48)) {
@@ -2430,7 +2430,7 @@ function read_memory {
     if (aligned) {
       return read_memory_aligned<LEN>(virtual_address, encoding);
     }
-    
+
     # access isn't naturally aligned, but it still might be atomic if this hart supports
     # Misliagned Atomicity Granules. We won't know that, though, until after translation since PMAs
     # apply to physical addresses
@@ -2754,7 +2754,7 @@ function write_memory {
     if (aligned) {
       write_memory_aligned<LEN>(virtual_address, value, encoding);
     }
-    
+
     # access isn't naturally aligned, but it still might be atomic if this hart supports
     # Misliagned Atomicity Granules. We won't know that, though, until after translation since PMAs
     # apply to physical addresses

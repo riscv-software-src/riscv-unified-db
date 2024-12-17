@@ -164,7 +164,16 @@
     },
     "csr_register": {
       "type": "object",
-      "required": ["$schema", "kind", "name", "long_name", "length", "description", "priv_mode", "definedBy"],
+      "required": [
+        "$schema",
+        "kind",
+        "name",
+        "long_name",
+        "length",
+        "description",
+        "priv_mode",
+        "definedBy"
+      ],
 
       "properties": {
         "$schema": {
@@ -193,7 +202,7 @@
           "description": "Descriptive name for the CSR"
         },
         "description": {
-          "oneOf": [ 
+          "oneOf": [
             {
               "type": "string",
               "description": "A full Asciidoc description of the CSR, intended to be used as documentation."
@@ -202,11 +211,11 @@
               "type": "object",
               "description": "A full Asciidoc description of the CSR, intended to be used as documentation.",
               "properties": {
-                  "$copy" : {
-                      "type": "string",
-                      "format": "uri-reference"
-                  }
-                },
+                "$copy": {
+                  "type": "string",
+                  "format": "uri-reference"
+                }
+              },
               "additionalProperties": false
             }
           ]
@@ -230,7 +239,8 @@
           "default": false,
           "description": "Whether or not the CSR is accessible via an indirect address"
         },
-        "virtual_address": true, "$comment": "Conditionally required; see below",
+        "virtual_address": true,
+        "$comment": "Conditionally required; see below",
         "priv_mode": {
           "enum": ["M", "S", "U", "VS"]
         },

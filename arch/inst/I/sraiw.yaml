@@ -13,12 +13,12 @@ assembly: xd, xs1, shamt
 encoding:
   match: 0100000----------101-----0011011
   variables:
-  - name: shamt
-    location: 24-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: shamt
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -29,8 +29,6 @@ operation(): |
   # shamt is between 0-32
   XReg operand = sext(X[rs1], 31);
   X[rd] = sext(operand >>> shamt, 31);
-
-
 
 sail(): |
   {
@@ -43,7 +41,3 @@ sail(): |
     X(rd) = sign_extend(result);
     RETIRE_SUCCESS
   }
-
-
-
-

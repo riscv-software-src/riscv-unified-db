@@ -5,16 +5,16 @@ kind: instruction
 name: fli.s
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy: F, Zfa
 assembly: fd, fs1
 encoding:
   match: 111100000001-----000-----1010011
   variables:
-  - name: fs1
-    location: 19-15
-  - name: fd
-    location: 11-7
+    - name: fs1
+      location: 19-15
+    - name: fd
+      location: 11-7
 access:
   s: always
   u: always
@@ -22,9 +22,6 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
-    
-
-
 
 sail(): |
   {
@@ -65,7 +62,3 @@ sail(): |
     F_S(rd) = bits;
     RETIRE_SUCCESS
   }
-
-
-
-

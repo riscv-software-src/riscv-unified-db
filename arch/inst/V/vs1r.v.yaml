@@ -5,16 +5,16 @@ kind: instruction
 name: vs1r.v
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy: V
 assembly: xs1, vs3
 encoding:
   match: 000000101000-----000-----0100111
   variables:
-  - name: rs1
-    location: 19-15
-  - name: vs3
-    location: 11-7
+    - name: rs1
+      location: 19-15
+    - name: vs3
+      location: 11-7
 access:
   s: always
   u: always
@@ -22,4 +22,3 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    

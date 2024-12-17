@@ -16,12 +16,12 @@ assembly: xd, xs1, imm
 encoding:
   match: -----------------011-----0010011
   variables:
-  - name: imm
-    location: 31-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: imm
+      location: 31-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -30,8 +30,6 @@ access:
 data_independent_timing: true
 operation(): |
   X[rd] = (X[rs1] < imm) ? 1 : 0;
-
-
 
 sail(): |
   {
@@ -48,7 +46,3 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
-
-
-
-

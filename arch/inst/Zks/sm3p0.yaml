@@ -5,17 +5,17 @@ kind: instruction
 name: sm3p0
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy:
   anyOf: [Zks, Zksh]
 assembly: xd, xs1
 encoding:
   match: 000100001000-----001-----0010011
   variables:
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -23,4 +23,3 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    

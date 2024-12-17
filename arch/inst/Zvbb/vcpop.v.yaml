@@ -5,19 +5,19 @@ kind: instruction
 name: vcpop.v
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy:
   anyOf: [Zvbb, Zvkn, Zvks]
 assembly: vm, vs2, vd
 encoding:
   match: 010010------01110010-----1010111
   variables:
-  - name: vm
-    location: 25-25
-  - name: vs2
-    location: 24-20
-  - name: vd
-    location: 11-7
+    - name: vm
+      location: 25-25
+    - name: vs2
+      location: 24-20
+    - name: vd
+      location: 11-7
 access:
   s: always
   u: always
@@ -25,4 +25,3 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    

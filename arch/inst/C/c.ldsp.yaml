@@ -13,19 +13,19 @@ description: |
   C.LDSP is only valid when rd &ne; x0 the code points with rd=x0 are reserved.
 definedBy:
   anyOf:
-  - C
-  - Zca
+    - C
+    - Zca
 base: 64
 assembly: xd, imm(sp)
 encoding:
   match: 011-----------10
   variables:
-  - name: imm
-    location: 4-2|12|6-5
-    left_shift: 3
-  - name: rd
-    location: 11-7
-    not: 0
+    - name: imm
+      location: 4-2|12|6-5
+      left_shift: 3
+    - name: rd
+      location: 11-7
+      not: 0
 access:
   s: always
   u: always
