@@ -2024,14 +2024,14 @@ module Idl
     def type(symtab)
       if field(symtab).defined_in_all_bases?
         if symtab.cfg_arch.mxlen == 64 && symtab.cfg_arch.multi_xlen?
-          Type.new(:bits, width: [field(symtab).location(symtab.cfg_arch, 32).size, field(symtab).location(symtab.cfg_arch, 64).size].max)
+          Type.new(:bits, width: [field(symtab).location(32).size, field(symtab).location(symtab.cfg_arch, 64).size].max)
         else
-          Type.new(:bits, width: field(symtab).location(symtab.cfg_arch, symtab.cfg_arch.mxlen).size)
+          Type.new(:bits, width: field(symtab).location(symtab.cfg_arch.mxlen).size)
         end
       elsif field(symtab).base64_only?
-        Type.new(:bits, width: field(symtab).location(symtab.cfg_arch, 64).size)
+        Type.new(:bits, width: field(symtab).location(64).size)
       elsif field(symtab).base32_only?
-        Type.new(:bits, width: field(symtab).location(symtab.cfg_arch, 32).size)
+        Type.new(:bits, width: field(symtab).location(32).size)
       else
         internal_error "Unexpected base for field"
       end
@@ -2591,7 +2591,7 @@ module Idl
       when :enum_ref
         Type.new(:bits, width: etype.enum_class.width)
       when :csr
-        if etype.csr.dynamic_length?(symtab.cfg_arch)
+        if etype.csr.dynamic_length?
           Type.new(:bits, width: :unknown)
         else
           Type.new(:bits, width: etype.csr.length(symtab.cfg_arch))
@@ -5806,14 +5806,14 @@ module Idl
         end
       end
       if fd.defined_in_all_bases?
-        Type.new(:bits, width: symtab.cfg_arch.possible_xlens.map{ |xlen| fd.width(symtab.cfg_arch, xlen) }.max)
+        Type.new(:bits, width: symtab.cfg_arch.possible_xlens.map{ |xlen| fd.width(xlen) }.max)
       elsif fd.base64_only?
         if symtab.cfg_arch.possible_xlens.include?(64)
-          Type.new(:bits, width: fd.width(symtab.cfg_arch, 64))
+          Type.new(:bits, width: fd.width(64))
         end
       elsif fd.base32_only?
         if symtab.cfg_arch.possible_xlens.include?(32)
-          Type.new(:bits, width: fd.width(symtab.cfg_arch, 32))
+          Type.new(:bits, width: fd.width(32))
         end
       else
         internal_error "unexpected field base"

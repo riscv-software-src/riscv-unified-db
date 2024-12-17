@@ -368,12 +368,12 @@ class ConfiguredArchitecture < Architecture
   # @return [Array<ExtensionRequirement>] List of all extensions that are prohibited.
   #                                       This includes extensions explicitly prohibited by the config file
   #                                       and extensions that conflict with a mandatory extension.
-  def prohibited_extensions
-    return @prohibited_extensions unless @prohibited_extensions.nil?
+  def transitive_prohibited_extensions
+    return @transitive_prohibited_extensions unless @transitive_prohibited_extensions.nil?
 
     if @config.partially_configured?
-      @prohibited_extensions =
-        @config.prohibited_extensions.map do |e|
+      @transitive_prohibited_extensions =
+        @config.transitive_prohibited_extensions.map do |e|
           ext = extension(e["name"])
           raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
 
@@ -383,20 +383,20 @@ class ConfiguredArchitecture < Architecture
       # now add any extensions that are prohibited by a mandatory extension
       mandatory_extensions.each do |ext_req|
         ext_req.extension.conflicts.each do |conflict|
-          if @prohibited_extensions.none? { |prohibited_ext| prohibited_ext.name == conflict.name }
-            @prohibited_extensions << conflict
+          if @transitive_prohibited_extensions.none? { |prohibited_ext| prohibited_ext.name == conflict.name }
+            @transitive_prohibited_extensions << conflict
           else
             # pick whichever requirement is more expansive
-            p = @prohibited_extensions.find { |prohibited_ext| prohibited_ext.name == confict.name }
+            p = @transitive_prohibited_extensions.find { |prohibited_ext| prohibited_ext.name == confict.name }
             if p.version_requirement.subsumes?(conflict.version_requirement)
-              @prohibited_extensions.delete(p)
-              @prohibited_extensions << conflict
+              @transitive_prohibited_extensions.delete(p)
+              @transitive_prohibited_extensions << conflict
             end
           end
         end
       end
 
-      @prohibited_extensions
+      @transitive_prohibited_extensions
     elsif @config.fully_configured?
       prohibited_ext_versions = []
       extensions.each do |ext|
@@ -404,11 +404,11 @@ class ConfiguredArchitecture < Architecture
           prohibited_ext_versions << ext_ver unless transitive_implemented_extensions.include?(ext_ver)
         end
       end
-      @prohibited_extensions = []
+      @transitive_prohibited_extensions = []
       prohibited_ext_versions.group_by(&:name).each_value do |ext_ver_list|
         if ext_ver_list.sort == ext_ver_list[0].ext.versions.sort
           # excludes every version
-          @prohibited_extensions <<
+          @transitive_prohibited_extensions <<
             ExtensionRequirement.new(
               ext_ver_list[0].ext.name, ">= #{ext_ver_list.min.version_spec.canonical}",
               presence: "prohibited", cfg_arch: self
@@ -419,7 +419,7 @@ class ConfiguredArchitecture < Architecture
           raise "Expected only a single element" unless allowed_version_list.size == 1
 
           allowed_version = allowed_version_list[0]
-          @prohibited_extensions <<
+          @transitive_prohibited_extensions <<
             ExtensionRequirement.new(
               ext_ver_list[0].ext.name, "!= #{allowed_version.version_spec.canonical}",
               presence: "prohibited", cfg_arch: self
@@ -430,9 +430,9 @@ class ConfiguredArchitecture < Architecture
         end
       end
     else
-      @prohibited_extensions = []
+      @transitive_prohibited_extensions = []
     end
-    @prohibited_extensions
+    @transitive_prohibited_extensions
   end
 
   # @overload prohibited_ext?(ext)
@@ -446,9 +446,9 @@ class ConfiguredArchitecture < Architecture
   #   @return [Boolean]
   def prohibited_ext?(ext)
     if ext.is_a?(ExtensionVersion)
-      prohibited_extensions.any? { |ext_req| ext_req.satisfied_by?(ext) }
+      transitive_prohibited_extensions.any? { |ext_req| ext_req.satisfied_by?(ext) }
     elsif ext.is_a?(String) || ext.is_a?(Symbol)
-      prohibited_extensions.any? { |ext_req| ext_req.name == ext.to_s }
+      transitive_prohibited_extensions.any? { |ext_req| ext_req.name == ext.to_s }
     else
       raise ArgumentError, "Argument to prohibited_ext? should be an ExtensionVersion or a String"
     end
@@ -560,10 +560,40 @@ class ConfiguredArchitecture < Architecture
       transitive_implemented_extensions.map(&:implemented_csrs).flatten.uniq.sort
   end
 
-  # @return [Array<Instruction>] List of all implemented instructions
+  # @return [Array<Instruction>] List of all implemented instructions, sorted by name
   def transitive_implemented_instructions
     @transitive_implemented_instructions ||=
       transitive_implemented_extensions.map(&:implemented_instructions).flatten.uniq.sort
+  end
+
+  # @return [Array<Instruction>] List of all prohibited instructions, sorted by name
+  def transitive_prohibited_instructions
+    @transitive_prohibited_instructions ||=
+      transitive_prohibited_extensions.map(&:instructions).flatten.uniq.sort
+  end
+
+  # @return [Array<Instruction>] List of all instructions that are not prohibited by the config, sorted by name
+  def not_prohibited_instructions
+    @not_prohibited_instructions ||=
+      if fully_configured?
+        transitive_implemented_instructions
+      elsif partially_configured?
+        (instructions - transitive_prohibited_instructions).sort
+      else
+        instructions
+      end
+  end
+
+  # @return [Integer] The largest instruction encoding in the config
+  def largest_encoding
+    @largest_encoding ||=
+      if fully_configured?
+        transitive_implemented_instructions.max { |a, b| a.max_encoding_width <=> b.max_encoding_width }.max_encoding_width
+      elsif partially_configured?
+        not_prohibited_instructions.max { |a, b| a.max_encoding_width <=> b.max_encoding_width }.max_encoding_width
+      else
+        instructions.max { |a, b| a.max_encoding_width <=> b.max_encoding_width }.max_encoding_width
+      end
   end
 
   # @return [Array<FuncDefAst>] List of all reachable IDL functions for the config

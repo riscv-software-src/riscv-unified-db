@@ -180,7 +180,20 @@ module Idl
 
   class IntLiteralAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' '*indent}#{value(symtab).to_s}"
+      v = value(symtab)
+      if v >= 0
+        if v.bit_length <= 64
+          "#{' ' * indent}#{value(symtab)}ULL"
+        else
+          "#{' ' * indent}#{value(symtab)}_b"
+        end
+      else
+        if v.bit_length <= 63
+          "#{' ' * indent}#{value(symtab)}LL"
+        else
+          "#{' ' * indent}#{value(symtab)}_b"
+        end
+      end
     end
   end
 

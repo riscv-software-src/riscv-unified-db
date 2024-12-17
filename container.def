@@ -29,6 +29,9 @@ From: ubuntu:24.04
 
   apt-get install -y --no-install-recommends libyaml-dev
 
+  apt-get install -y --no-install-recommends cmake
+  apt-get install -y --no-install-recommends g++
+
   # cleanup
   apt-get clean autoclean
   apt-get autoremove -y

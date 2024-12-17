@@ -17,6 +17,7 @@
 #include "udb/csr.hpp"
 #include "udb/memory.hpp"
 #include "udb/enum.hxx"
+#include "udb/version.hpp"
 // #include "iss/bitfield_types.hxx"
 // #include "iss/csr_types.hxx"
 // #include "iss/inst.hpp"
@@ -168,6 +169,8 @@ namespace udb {
     virtual const CsrBase* csr(unsigned address) const = 0;
 
     virtual void printState(FILE* out = stdout) const = 0;
+
+    virtual bool implemented_Q_(const ExtensionName& ext, const VersionRequirement& req) = 0;
 
     protected:
     const unsigned m_hart_id;

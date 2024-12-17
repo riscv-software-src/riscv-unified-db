@@ -4,6 +4,7 @@ require "active_support/core_ext/string/inflections"
 
 require_relative "lib/template_helpers"
 require_relative "lib/gen_cpp"
+require_relative "lib/decode_tree"
 
 CPP_HART_GEN_SRC = $root / "backends" / "cpp_hart_gen"
 CPP_HART_GEN_DST = $root / "gen" / "cpp_hart_gen"
@@ -215,22 +216,18 @@ namespace :gen do
     Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/enum.hxx"].invoke
 
     configs.each do |config|
+      # Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/decode.cxx"].invoke
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/params.hxx"].invoke
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/params.cxx"].invoke
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/hart.hxx"].invoke
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/hart.cxx"].invoke
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/csrs.hxx"].invoke
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/csr_container.hxx"].invoke
-      Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/inst.hxx"].invoke
+      # Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/inst.hxx"].invoke
 
       Dir.glob("#{CPP_HART_GEN_SRC}/cpp/include/udb/*.hpp") do |f|
         Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/#{File.basename(f)}"].invoke
       end
-      # Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/#{config}/src/enum.cxx"].invoke
-      # Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/#{config}/include/bitfield.hxx"].invoke
-      # Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/#{config}/include/types.hxx"].invoke
-      # Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/#{config}/include/csr_container.hxx"].invoke
-      # Rake::Task["#{CPP_HART_GEN_DST}#{build_name}//#{config}/include/func_prototypes.hxx"].invoke
     end
   end
 end

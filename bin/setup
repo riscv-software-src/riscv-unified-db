@@ -94,6 +94,7 @@ if [ -v DEVCONTAINER_ENV ]; then
   PYTHON="${ROOT}/.home/.venv/bin/python3"
   PIP="${ROOT}/.home/.venv/bin/pip"
   BASH="bash"
+  GPP="g++"
 else
   BUNDLE="singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle"
   RUBY="singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle exec ruby"
@@ -104,6 +105,7 @@ else
   PYTHON="singularity run ${HOME_OPT} ${CONTAINER_PATH} ${ROOT}/.home/.venv/bin/python3"
   PIP="singularity run ${HOME_OPT} ${CONTAINER_PATH} ${ROOT}/.home/.venv/bin/pip"
   BASH="singularity run ${HOME_OPT} ${CONTAINER_PATH} bash"
+  GPP="singularity run ${HOME_OPT} ${CONTAINER_PATH} g++"
 fi
 
 if [ ! -f $ROOT/.git/hooks/pre-commit ]; then

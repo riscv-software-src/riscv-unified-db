@@ -100,7 +100,7 @@ class Instruction < DatabaseObjectect
   # @param xlen [Integer] 32 or 64, the target xlen
   # @return [Boolean] whethen or not instruction is defined in base +xlen+
   def defined_in_base?(xlen)
-    base == xlen
+    base.nil? || (base == xlen)
   end
 
   # @return [String] Assembly format
@@ -322,6 +322,8 @@ class Instruction < DatabaseObjectect
 
     # @return [Array<Integer>] Specific values that are prohibited for this variable
     attr_reader :excludes
+
+    attr_reader :encoding_fields
 
     # @return [String] Name, along with any != constraints,
     # @example
@@ -558,6 +560,29 @@ class Instruction < DatabaseObjectect
       end
     end
 
+    # @reteurn [Boolean] true if self and other_encoding cannot be distinguished
+    def conflicts?(other_encoding)
+      other_format = other_encoding.format
+      format.size.times.all? do |i|
+        format[i] == "-" \
+          || (i >= other_format.size) \
+          || (format[i] == other_format[i])
+      end || \
+        other_format.size.times.all? do |i|
+          other_format[i] == "-" \
+            || (i >= format.size) \
+            || (other_format[i] == format[i])
+        end
+    end
+
+    # @return [Array<Extension>] Extensions that conflict with this instruction, i.e., cannot be implemented if this instruction is implemented
+    def conflicting_exts
+      @conflicting_exts ||=
+        @cfg_arch.non_prohibited_extensions.select do |ext|
+          excluded_by?(ext.name, ext.min_version)
+        end
+    end
+
     # @param format [String] Format of the encoding, as 0's, 1's and -'s (for decode variables)
     # @param decode_vars [Array<Hash<String,Object>>] List of decode variable defintions from the arch spec
     def initialize(format, decode_vars)
@@ -669,6 +694,11 @@ class Instruction < DatabaseObjectect
     raise "unexpected: encodings are different sizes" unless encoding(32).size == encoding(64).size
 
     encoding(64).size
+  end
+
+  # @return [Integer] the largest encoding width of the instruction, in any XLEN for which this instruction is valid
+  def max_encoding_width
+    [(rv32? ? encoding(32).size : 0), (rv64? ? encoding(64).size : 0)].max
   end
 
   # @return [Array<DecodeVariable>] The decode variables

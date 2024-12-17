@@ -29,20 +29,18 @@ class CsrField < DatabaseObjectect
     @parent = parent_csr
   end
 
-  # @param possible_xlens [Array<Integer>] List of xlens that be used in any implemented mode
-  # @param extensions [Array<ExtensionVersion>] List of extensions implemented
-  # @return [Boolean] whether or not the instruction is implemented given the supplies config options
+  # @return [Boolean] whether or not the field is implemented given the config
   def exists_in_cfg?(cfg_arch)
     if cfg_arch.fully_configured?
       parent.exists_in_cfg?(cfg_arch) &&
         (@data["base"].nil? || cfg_arch.possible_xlens.include?(@data["base"])) &&
         (@data["definedBy"].nil? || cfg_arch.transitive_implemented_extensions.any? { |ext_ver| defined_by?(ext_ver) })
-    else
-      raise "unexpected type" unless cfg_arch.partially_configured?
-
+    elsif cfg_arch.partially_configured?
       parent.exists_in_cfg?(cfg_arch) &&
         (@data["base"].nil? || cfg_arch.possible_xlens.include?(@data["base"])) &&
         (@data["definedBy"].nil? || cfg_arch.prohibited_extensions.none? { |ext_req| ext_req.satisfying_versions.any? { |ext_ver| defined_by?(ext_ver) } })
+    else
+      true
     end
   end
 
@@ -334,15 +332,14 @@ class CsrField < DatabaseObjectect
   # @return [Csr] Parent CSR for this field
   alias csr parent
 
-  # @param cfg_arch [ConfiguredArchitecture] A configuration
   # @return [Boolean] Whether or not the location of the field changes dynamically
   #                   (e.g., based on mstatus.SXL) in the configuration
-  def dynamic_location?(cfg_arch)
+  def dynamic_location?
     # if there is no location_rv32, the the field never changes
     return false unless @data["location"].nil?
 
     # the field changes *if* some mode with access can change XLEN
-    csr.modes_with_access.any? { |mode| cfg_arch.multi_xlen_in_mode?(mode) }
+    csr.modes_with_access.any? { |mode| @cfg_arch.multi_xlen_in_mode?(mode) }
   end
 
   # @param cfg_arch [IdL::Compiler] A compiler
@@ -587,7 +584,7 @@ class CsrField < DatabaseObjectect
   # @param cfg_arch [ConfiguredArchitecture] A config. May be nil if the location is not configturation-dependent
   # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
   # @return [Range] the location within the CSR as a range (single bit fields will be a range of size 1)
-  def location(cfg_arch, effective_xlen = nil)
+  def location(effective_xlen = nil)
     key =
       if @data.key?("location")
         "location"
@@ -642,11 +639,23 @@ class CsrField < DatabaseObjectect
   # @return [Boolean] Whether or not this field exists for any XLEN
   def defined_in_all_bases? = @data["base"].nil?
 
-  # @param cfg_arch [ConfiguredArchitecture] A config. May be nil if the width of the field is not configuration-dependent
   # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
   # @return [Integer] Number of bits in the field
-  def width(cfg_arch, effective_xlen)
-    location(cfg_arch, effective_xlen).size
+  def width(effective_xlen)
+    location(effective_xlen).size
+  end
+
+  def max_width
+    @max_width ||=
+      if base64_only?
+        width(@cfg_arch, 64)
+      elsif base32_only?
+        width(@cfg_arch, 32)
+      else
+        @cfg_arch.possible_xlens.map do |xlen|
+          width(@cfg_arch, xlen)
+        end.max
+      end
   end
 
   def location_cond32

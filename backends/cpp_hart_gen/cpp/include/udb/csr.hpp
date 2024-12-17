@@ -2,11 +2,8 @@
 
 namespace udb {
   // base class for a 'view' of a CSR that contains field accessors
-  template <unsigned XLEN>
-  class CsrView : public BaseIsa<XLEN> {
+  class CsrView {
     public:
-    using typename BaseIsa<XLEN>::XReg;
-
     CsrView() {}
 
     // return the value as a CSR

@@ -70,6 +70,7 @@ endforeach()
 
 add_library(hart
   ${CMAKE_SOURCE_DIR}/src/db_data.cxx
+  ${CMAKE_SOURCE_DIR}/src/version.cpp
   ${GENERATED_SRCS}
 #  ../gen/iss/oryon/src/types.cxx
 #  ../gen/iss/oryon/src/csr_types.cxx

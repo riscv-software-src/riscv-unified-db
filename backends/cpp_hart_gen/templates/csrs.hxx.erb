@@ -1,12 +1,16 @@
 #pragma once
 
-#include "udb/csr/csr.hpp"
+#include "udb/csr.hpp"
 
 <%- csrs = cfg_arch.fully_configured? ? cfg_arch.implemented_csrs : cfg_arch.csrs -%>
 
 namespace udb {
+  class <%= name_of(:hart, cfg_arch) %>;
+
   <%- csrs.each do |csr| -%>
   <%- fields = cfg_arch.fully_configured? ? csr.implemented_fields(cfg_arch) : csr.fields -%>
+
+  // Csr class
   class <%= name_of(:csr, cfg_arch, csr.name) %> : public CsrBase {
     <%- fields.each do |field| -%>
     friend class <%= name_of(:csr_field, cfg_arch, csr.name, field.name ) -%>;
@@ -15,10 +19,9 @@ namespace udb {
     public:
     <%= name_of(:csr, cfg_arch, csr.name) %>(<%= name_of(:hart, cfg_arch) %>* parent)
       : CsrBase(),
-        m_parent(parent),
-        m_view(0)
+        m_parent(parent)
         <%- unless fields.empty? -%>,<%- end -%>
-        <%- fields.map { |field| "m_#{field.name}(parent)" }.join(", ") %>
+        <%= fields.map { |field| "m_#{field.name}(parent)" }.join(", ") %>
     {
     }
 
@@ -31,14 +34,42 @@ namespace udb {
       <%- end -%>
     }
 
-    uint64_t hw_read() const override {
-      return _hw_read();
+    uint64_t hw_read(unsigned effective_xlen) const override {
+      return _hw_read(effective_xlen);
     }
 
-    uint64_t _hw_read() const {
-      return m_view.value();
+    uint64_t _hw_read(unsigned effective_xlen) const {
+      <%- if csr.format_changes_with_xlen? -%>
+      if (effective_xlen == 32) {
+        return
+          <%- field_cpp = fields.select { |f| f.defined_in_base32? }.map do |field| -%>
+          <%- if field.dynamic_location? -%>
+          ((m_<%= field.name %>.value() & 0x<%= ((1 << field.location(32).size) - 1).to_s(16) %>) << <%= field.location(32).begin %>)
+          <%- else # location/size doesn't change, don't need to apply any masking -%>
+          (m_<%= field.name %>.value() << <%= field.location(32).begin %>)
+          <%- end -%>
+          <%- end -%>
+          <%= field_cpp.join(" && ") %>;
+      } else if (effective_xlen == 64) {
+        return
+          <%- field_cpp = fields.select { |f| f.defined_in_base64? }.map do |field| -%>
+          <%- if field.dynamic_location? -%>
+          ((m_<%= field.name %>.value() & 0x<%= ((1 << field.location(64).size) - 1).to_s(16) %>) << <%= field.location(64).begin %>)
+          <%- else # location/size doesn't change, don't need to apply any masking -%>
+          (m_<%= field.name %>.value() << <%= field.location(64).begin %>)
+          <%- end -%>
+          <%- end -%>
+          <%= field_cpp.join(" && ") %>;
+      }
+      <%- else -%>
+      <%- exlen = csr.defined_in_all_bases? ? cfg_arch.possible_xlens.max : (csr.defined_in_base32? ? 32 : 64) -%>
+      return
+        <%- field_cpp = fields.map do |field| -%>
+        (m_<%= field.name %>.value() << <%= field.location(exlen).begin %>)
+        <%- end -%>
+        <%= field_cpp.join(" && ") %>;
+      <%- end -%>
     }
-    const <%= name_of(:csr_view, cfg_arch, csr.name) %>& readView() const { return m_view; }
 
     virtual uint64_t sw_read() const {
       return _sw_read();
@@ -48,7 +79,7 @@ namespace udb {
       <%- if csr.has_custom_sw_read? -%>
       <%= csr.pruned_sw_read_ast(cfg_arch).gen_cpp(cfg_arch.symtab) %>
       <%- else -%>
-      return m_view.value();
+      return _hw_read(m_parent->xlen());
       <%- end -%>
     }
 
@@ -74,6 +105,12 @@ namespace udb {
       <%- end -%>
       return true;
     }
+
+  private:
+    <%= name_of(:hart, cfg_arch) %>* m_parent;
+    <%- fields.each do |field| %>
+    <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %>& m_<%= field.name %>;
+    <%- end -%>
   };
   <%- end -%>
 }

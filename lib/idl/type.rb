@@ -314,7 +314,7 @@ module Idl
         elsif @kind == :boolean
           "bool"
         elsif @kind == :function
-          "std::function<#{@return_type.to_cxx}(...)>"
+          "std::function<#{@return_type.to_cxx_no_qualifiers}(...)>"
         elsif @kind == :enum_ref
           "#{@enum_class.name}"
         elsif @kind == :tuple
@@ -322,7 +322,11 @@ module Idl
         elsif @kind == :bitfield
           "#{@name}"
         elsif @kind == :array
-          "#{@sub_type}[]"
+          if (@width == :unknown)
+            "std::vector<#{@sub_type.to_cxx_no_qualifiers}>"
+          else
+            "std::array<#{@sub_type.to_cxx_no_qualifiers}, #{@width}>"
+          end
         elsif @kind == :csr
           "#{@csr.downcase.capitalize}Csr"
         elsif @kind == :string

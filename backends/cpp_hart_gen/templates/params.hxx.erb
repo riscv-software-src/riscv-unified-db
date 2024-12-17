@@ -24,7 +24,10 @@ namespace udb {
 
     void init(const nlohmann::json& params);
 
+    <%- declared_params = Set.new -%>
     <%- cfg_arch.params_without_value.each do |param| -%>
+    <%- next if declared_params.include?(param.name) -%>
+    <%- declared_params << param.name -%>
 
     // <%= param.desc.gsub("\n", "\n  // ") %>
     <%= param.idl_type.to_cxx_no_qualifiers %> <%= param.name %>;

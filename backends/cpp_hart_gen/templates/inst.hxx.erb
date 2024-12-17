@@ -2,8 +2,30 @@
 
 <%- ilist = cfg_arch.fully_configured? ? cfg_arch.transitive_implemented_instructions : cfg_arch.instructions -%>
 
+<%
+  def extract_decode(bits)
+    bits.map do |r|
+      if r.is_a?(Intger)
+        "extract<#{r}, 1, #{inst.encoding_width}>(m_encoding)"
+      else
+        "extract<#{r.first}, #{r.size}, #{inst.encoding_width}>(m_encoding)"
+      end
+    end.join(" || ")
+  end
+-%>
+
 namespace udb {
+  template <typename T>
+  concept Is32 = requires(T value) { { value == 32} -> std::is_same<booL>; };
+
+  template <typename T>
+  concept Is32 = requires(T value) { { value == 64} -> std::is_same<booL>; };
+
+
   <%- ilist.each do |inst| -%>
+  <%- needs_rv32 = inst.rv32? && cfg_arch.possible_xlens.include?(32) -%>
+  <%- needs_rv64 = inst.rv64? && cfg_arch.possible_xlens.include?(64) -%>
+  template <unsigned XLEN>
   class <%= name_of(:inst, cfg_arch, inst.name) %> : public InstBase {
   public:
     <%= name_of(:inst, cfg_arch, inst.name) %>(<%= name_of(:hart, cfg_arch) %>* parent, XReg pc, uint64_t encoding)
@@ -17,6 +39,35 @@ namespace udb {
     <%= name_of(:hart, cfg_arch) %>* parent() { return m_parent; }
 
     size_t enc_len() const override { return <%= inst.encoding_width %>; }
+
+    //
+    // Decode variables
+    //
+    <%- if needs_rv32 && needs_rv64 -%>
+    <%- inst.decode_variables(32).each do |dv| -%>
+    Bits<<%= dv.size %> <%= dv.name %>() const requires Is32<XLEN> {
+      <%= extract_decode(dv.bits) %>;
+    }
+    <%- end -%>
+    <%- inst.decode_variables(64).each do |dv| -%>
+    Bits<<%= dv.size %> <%= dv.name %>() const requires Is64<XLEN> {
+      <%= extract_decode(dv.bits) %>;
+    }
+    <%- end -%>
+    <%- elsif needs_rv32 -%>
+    <%- inst.decode_variables(32).each do |dv| -%>
+    Bits<<%= dv.size %> <%= dv.name %>() const {
+      <%= extract_decode(dv.bits) %>;
+    }
+    <%- end -%>
+    <%- else -%>
+    <%- inst.decode_variables(64).each do |dv| -%>
+    Bits<<%= dv.size %> <%= dv.name %>() const {
+      <%= extract_decode(dv.bits) %>;
+    }
+    <%- end -%>
+    <%- end -%>
+
 
     void execute() override {
       <%- if inst.operation_ast(cfg_arch.symtab).nil? -%>

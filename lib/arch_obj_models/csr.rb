@@ -48,11 +48,8 @@ class Csr < DatabaseObjectect
 
   # @param cfg_arch [ConfiguredArchitecture] A configuration
   # @return [Boolean] Whether or not the format of this CSR changes when the effective XLEN changes in some mode
-  def format_changes_with_xlen?(cfg_arch)
-    dynamic_length?(cfg_arch) ||
-      implemented_fields(cfg_arch).any? do |f|
-        f.dynamic_location?(cfg_arch)
-      end
+  def format_changes_with_xlen?
+    dynamic_length? || implemented_fields.any?(&:dynamic_location?)
   end
 
   # @param cfg_arch [ConfiguredArchitecture] A configuration
@@ -104,10 +101,9 @@ class Csr < DatabaseObjectect
     @reachable_functions_unevaluated = fns.uniq
   end
 
-  # @param cfg_arch [ConfiguredArchitecture] A configuration
   # @return [Boolean] Whether or not the length of the CSR depends on a runtime value
   #                   (e.g., mstatus.SXL)
-  def dynamic_length?(cfg_arch)
+  def dynamic_length?
     return false if @data["length"].is_a?(Integer)
 
     # when a CSR is only defined in one base, its length can't change
@@ -131,10 +127,10 @@ class Csr < DatabaseObjectect
 
   # @param cfg_arch [ConfiguredArchitecture] Architecture definition
   # @return [Integer] Smallest length of the CSR in any mode
-  def min_length(cfg_arch)
+  def min_length
     case @data["length"]
     when "MXLEN", "SXLEN", "VSXLEN"
-      32
+      @cfg_arch.possible_xlens.min
     when Integer
       @data["length"]
     else
@@ -321,10 +317,9 @@ class Csr < DatabaseObjectect
       end
   end
 
-  # @param cfg_arch [ConfiguredArchitecture] A configuration
   # @return [Array<CsrField>] All implemented fields for this CSR
   #                           Excluded any fields that are defined by unimplemented extensions
-  def implemented_fields(cfg_arch)
+  def implemented_fields
     return @implemented_fields unless @implemented_fields.nil?
 
     implemented_bases =
@@ -385,7 +380,7 @@ class Csr < DatabaseObjectect
       "Csr#{name.capitalize}Bitfield",
       length(cfg_arch, effective_xlen),
       fields_for(effective_xlen).map(&:name),
-      fields_for(effective_xlen).map { |f| f.location(cfg_arch, effective_xlen) }
+      fields_for(effective_xlen).map { |f| f.location(effective_xlen) }
     )
   end
 
