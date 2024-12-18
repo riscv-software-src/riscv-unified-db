@@ -6,7 +6,7 @@ name: menvcfg
 address: 0x30A
 long_name: Machine Environment Configuration
 description: |
-  Contains fields that control certain characteristics of the execution environment 
+  Contains fields that control certain characteristics of the execution environment
   for modes less privileged than M-mode.
 
   The `menvcfg` CSR controls

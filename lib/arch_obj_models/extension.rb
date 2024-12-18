@@ -558,7 +558,7 @@ class ExtensionPresence
     end
   end
 
-  def mandatory? = (@presence == "mandatory") 
+  def mandatory? = (@presence == "mandatory")
   def optional? = (@presence == "optional")
 
   # Class methods
@@ -648,7 +648,7 @@ class ExtensionPresence
   # @overload >(other)
   #   @param other [ExtensionPresence] An extension presence object
   #   @return [Boolean] Whether or not this ExtensionPresence is greater-than the other
-  def >(other) 
+  def >(other)
     raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
     (self.mandatory? && other.optional?)
   end
@@ -659,12 +659,12 @@ class ExtensionPresence
   def >=(other)
     raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
     (self > other) || (self == other)
-  end 
+  end
 
   # @overload <(other)
   #   @param other [ExtensionPresence] An extension presence object
   #   @return [Boolean] Whether or not this ExtensionPresence is less-than the other
-  def <(other) 
+  def <(other)
     raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
     (self.optional? && other.mandatory?)
   end
@@ -672,7 +672,7 @@ class ExtensionPresence
   # @overload <=(other)
   #   @param other [ExtensionPresence] An extension presence object
   #   @return [Boolean] Whether or not this ExtensionPresence is less-than or equal to the other
-  def <=(other) 
+  def <=(other)
     raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
     (self < other) || (self == other)
   end

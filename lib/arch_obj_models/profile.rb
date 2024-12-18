@@ -121,7 +121,7 @@ class ProfileRelease < DatabaseObjectect
     profiles.each do |profile|
       presence = profile.extension_presence_obj(ext_name)
 
-      unless presence.nil? 
+      unless presence.nil?
         if greatest_presence.nil?
           greatest_presence = presence
         elsif presence > greatest_presence
