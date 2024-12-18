@@ -1,4 +1,3 @@
-
 # yaml-language-server: $schema=../../../schemas/csr_schema.json
 
 <%- raise "'hpm_num' must be defined" if hpm_num.nil? -%>

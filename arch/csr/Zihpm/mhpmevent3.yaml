@@ -1,4 +1,6 @@
-# WARNING: This file is auto-generated from arch/csr/Zihpm/mhpmeventN.layout# yaml-language-server: $schema=../../../schemas/csr_schema.json
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+# WARNING: This file is auto-generated from arch/csr/Zihpm/mhpmeventN.layout
 
 $schema: csr_schema.json#
 kind: csr
