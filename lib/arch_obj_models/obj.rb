@@ -313,7 +313,11 @@ class DatabaseObjectect
 end
 
 # A company description
-class Company < DatabaseObjectect
+class Company
+  def initialize(data)
+    @data = data
+  end
+
   # @return [String] Company name
   def name = @data["name"]
 
@@ -322,7 +326,11 @@ class Company < DatabaseObjectect
 end
 
 # License information
-class License < DatabaseObjectect
+class License
+  def initialize(data)
+    @data = data
+  end
+
   # @return [String] License name
   def name = @data["name"]
 
@@ -342,6 +350,8 @@ end
 
 # Personal information about a contributor
 class Person
+  include Comparable
+
   # @return [String] Person's name
   def name = @data["name"]
 
@@ -355,6 +365,12 @@ class Person
 
   def initialize(data)
     @data = data
+  end
+
+  def <=>(other)
+    raise ArgumentError, "Person is only comparable to Person (not #{other.class.name})" unless other.is_a?(Person)
+
+    name <=> other.name
   end
 end
 

@@ -206,7 +206,6 @@ end
 rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/csrs/pages/.*\.adoc} => [
   __FILE__,
   "gen:arch",
-  # "#{$root}/.stamps/arch-gen-_32.stamp",
   ($root / "backends" / "common_templates" / "adoc" / "csr.adoc.erb").to_s
 ] do |t|
   csr_name = File.basename(t.name, ".adoc")

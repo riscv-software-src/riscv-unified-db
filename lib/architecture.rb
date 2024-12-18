@@ -230,7 +230,7 @@ class Architecture
   # @params uri [String] JSON Reference pointer
   # @return [Object] The pointed-to object
   def ref(uri)
-    raise ArgumentError, "JSON Reference must contain one '#'" unless uri.count("#") == 1
+    raise ArgumentError, "JSON Reference (#{uri}) must contain one '#'" unless uri.count("#") == 1
 
     file_path, obj_path = uri.split("#")
     obj =
@@ -262,6 +262,9 @@ class Architecture
       when /^profile_release.*/
         profile_release_name = File.basename(file_path, ".yaml")
         profile_release(profile_release_name)
+      when /^profile.*/
+        profile_name = File.basename(file_path, ".yaml")
+        profile(profile_name)
       else
         raise "Unhandled ref object: #{file_path}"
       end

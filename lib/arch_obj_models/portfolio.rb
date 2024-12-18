@@ -67,17 +67,18 @@ class PortfolioInstance < DatabaseObjectect
 
     # See if any extension requirement in this profile lists this version as either mandatory or optional.
     ext_versions.map do |v|
-      mandatory = mandatory_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(ext_name, v.version) }
-      optional = optional_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(ext_name, v.version) }
+      mandatory = mandatory_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(v) }
+      optional = optional_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(v) }
 
       # Just show strongest presence (mandatory stronger than optional).
-      if mandatory
-        presences << ExtensionPresence.mandatory
-      elsif optional
-        presences << ExtensionPresence.optional
-      else
-        presences << "-"
-      end
+      presences <<
+        if mandatory
+          ExtensionPresence.mandatory
+        elsif optional
+          ExtensionPresence.optional
+        else
+          "-"
+        end
     end
 
     presences
@@ -177,11 +178,11 @@ class PortfolioInstance < DatabaseObjectect
     @uses_optional_types
   end
 
-  # @return [ConfiguredArchitecture] A partially-configured architecture definition corresponding to this certificate.
+  # @return [ConfiguredArchitecture] A partially-configured architecture definition corresponding to this portfolio.
   def to_cfg_arch
     return @generated_cfg_arch unless @generated_cfg_arch.nil?
 
-    # build up a config for the certificate
+    # build up a config for the portfolio
     config_data = {
       "$schema" => "config_schema.json",
       "type" => "partially configured",

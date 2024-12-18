@@ -2,6 +2,7 @@ import glob, os
 import argparse
 import shutil
 import json
+import sys
 
 from pathlib import Path
 
@@ -189,7 +190,7 @@ def dig(obj : dict, *keys):
     return None
 
 resolved_objs = {}
-def resolve(rel_path : str | Path, arch_root : str | Path) -> dict:
+def resolve(rel_path : str | Path, arch_root : str | Path, do_checks: bool) -> dict:
   """Resolve the file at arch_root/rel_path by expanding operators and applying defaults
 
   Parameters
@@ -208,15 +209,22 @@ def resolve(rel_path : str | Path, arch_root : str | Path) -> dict:
     return resolved_objs[str(rel_path)]
   else:
     unresolved_arch_data = read_yaml(os.path.join(arch_root, rel_path))
-    resolved_objs[str(rel_path)] = _resolve(unresolved_arch_data, [], rel_path, unresolved_arch_data, arch_root)
+    if do_checks and (not "name" in unresolved_arch_data):
+      print(f"ERROR: Missing 'name' key in {arch_root}/{rel_path}", file=sys.stderr)
+      exit(1)
+    fn_name = Path(rel_path).stem
+    if do_checks and (fn_name != unresolved_arch_data["name"]):
+      print(f"ERROR: 'name' key ({unresolved_arch_data["name"]}) must match filename ({fn_name} in {arch_root}/{rel_path}", file=sys.stderr)
+      exit(1)
+    resolved_objs[str(rel_path)] = _resolve(unresolved_arch_data, [], rel_path, unresolved_arch_data, arch_root, do_checks)
     return resolved_objs[str(rel_path)]
 
-def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root):
+def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
   if not (isinstance(obj, list) or isinstance(obj, dict)):
     return obj
 
   if isinstance(obj, list):
-    obj = list(map(lambda o: _resolve(o, obj_path, obj_file_path, doc_obj, arch_root), obj))
+    obj = list(map(lambda o: _resolve(o, obj_path, obj_file_path, doc_obj, arch_root, do_checks), obj))
     return obj
 
   if "$inherits" in obj:
@@ -237,16 +245,16 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root):
         ref_obj = dig(doc_obj, *ref_obj_path)
         if ref_obj == None:
           raise ValueError(f"{ref_obj_path} cannot be found in #{doc_obj}")
-        ref_obj = _resolve(ref_obj, ref_obj_path, ref_file_path, doc_obj, arch_root)
+        ref_obj = _resolve(ref_obj, ref_obj_path, ref_file_path, doc_obj, arch_root, do_checks)
       else:
         # this is a reference to another doc
         if not os.path.exists(os.path.join(arch_root, ref_file_path)):
           raise ValueError(f"{ref_file_path} does not exist in {arch_root}/")
 
-        ref_doc_obj = resolve(ref_file_path, arch_root)
+        ref_doc_obj = resolve(ref_file_path, arch_root, do_checks)
         ref_obj = dig(ref_doc_obj, *ref_obj_path)
 
-        ref_obj = _resolve(ref_obj, ref_obj_path, ref_file_path, ref_doc_obj, arch_root)
+        ref_obj = _resolve(ref_obj, ref_obj_path, ref_file_path, ref_doc_obj, arch_root, do_checks)
 
       for key in ref_obj:
         if key == "$parent_of" or key == "$child_of":
@@ -280,12 +288,12 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root):
       if not key in obj:
         final_obj[key] = parent_obj[key]
       elif not key in parent_obj:
-        final_obj[key] = _resolve(obj[key], obj_path + [key], obj_file_path, doc_obj, arch_root)
+        final_obj[key] = _resolve(obj[key], obj_path + [key], obj_file_path, doc_obj, arch_root, do_checks)
       else:
         if isinstance(parent_obj[key], dict):
           final_obj[key] = merge(yaml.load('{}'), parent_obj[key], obj[key], strategy=Strategy.REPLACE)
         else:
-          final_obj[key] = _resolve(obj[key], obj_path + [key], obj_file_path, doc_obj, arch_root)
+          final_obj[key] = _resolve(obj[key], obj_path + [key], obj_file_path, doc_obj, arch_root, do_checks)
 
     if "$remove" in final_obj:
       if isinstance(final_obj["$remove"], list):
@@ -300,7 +308,7 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root):
     return final_obj
   else:
     for key in obj:
-      obj[key] = _resolve(obj[key], obj_path + [key], obj_file_path, doc_obj, arch_root)
+      obj[key] = _resolve(obj[key], obj_path + [key], obj_file_path, doc_obj, arch_root, do_checks)
 
     if "$remove" in obj:
       if isinstance(obj["$remove"], list):
@@ -386,7 +394,7 @@ def _get_schema(uri):
   return schemas[rel_path]
 
 
-def resolve_file(rel_path : str | Path, arch_dir: str | Path, resolved_dir: str | Path):
+def resolve_file(rel_path : str | Path, arch_dir: str | Path, resolved_dir: str | Path, do_checks: bool):
   """Read object at arch_dir/rel_path, resolve it, and write it as YAML to resolved_dir/rel_path
 
   Parameters
@@ -406,10 +414,10 @@ def resolve_file(rel_path : str | Path, arch_dir: str | Path, resolved_dir: str 
   elif not os.path.exists(resolved_path) or (os.path.getmtime(arch_path) > os.path.getmtime(resolved_path)) or (os.path.getmtime(__file__) > os.path.getmtime(resolved_path)):
     if os.path.exists(resolved_path):
       os.remove(resolved_path)
-    resolved_obj = resolve(rel_path, args.arch_dir)
+    resolved_obj = resolve(rel_path, args.arch_dir, do_checks)
     resolved_obj["$source"] = os.path.join(args.arch_dir, rel_path)
 
-    if "$schema" in resolved_obj:
+    if do_checks and ("$schema" in resolved_obj):
       schema = _get_schema(resolved_obj["$schema"])
       try:
         schema.validate(instance=resolved_obj)
@@ -435,6 +443,7 @@ if __name__ == '__main__':
   all_parser.add_argument("arch_dir", type=str, help="Unresolved architecture (input) directory")
   all_parser.add_argument("resolved_dir", type=str, help="Resolved architecture (output) directory")
   all_parser.add_argument("--no-progress", action="store_true", help="Don't display progress bar")
+  all_parser.add_argument("--no-checks", action="store_true", help="Don't verify schema")
 
   args =  cmdparser.parse_args()
 
@@ -465,6 +474,6 @@ if __name__ == '__main__':
     for arch_path in iter:
       resolved_arch_path = f"{UDB_ROOT}/{args.resolved_dir}/{arch_path}" if not os.path.isabs(args.resolved_dir) else f"{args.resolved_dir}/{arch_path}"
       os.makedirs(os.path.dirname(resolved_arch_path), exist_ok=True)
-      resolve_file(arch_path, args.arch_dir, args.resolved_dir)
+      resolve_file(arch_path, args.arch_dir, args.resolved_dir, not args.no_checks)
 
     print(f"[INFO] Resolved architecture files written to {args.resolved_dir}")

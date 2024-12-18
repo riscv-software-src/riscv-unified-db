@@ -122,8 +122,8 @@ class Profile < PortfolioInstance
 
   # @return [ProfileRelease] The profile release this profile belongs to
   def profile_release
-    profile_release = @cfg_arch.ref(@data["release"])
-    raise "No profile release named '#{@data["release"]}'" if profile_release.nil?
+    profile_release = @cfg_arch.ref(@data["release"]["$ref"])
+    raise "No profile release named '#{@data["release"]["$ref"]}'" if profile_release.nil?
 
     profile_release
   end
@@ -204,7 +204,7 @@ class Profile < PortfolioInstance
     ext = cfg_arch.extension(ext_req.name)
     ret << "* *#{ext_req.name}* " + (ext.nil? ? "" : ext.long_name)
     ret << "+"
-    ret << "Version #{ext_req.version_requirement}"
+    ret << "Version #{ext_req.requirement_specs}"
 
     ret
   end

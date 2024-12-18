@@ -13,6 +13,8 @@ jobs:
       - uses: pre-commit/action@v3.0.1
   regress-smoke:
     runs-on: ubuntu-latest
+    env:
+      SINGULARITY: 1
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
@@ -45,6 +47,7 @@ jobs:
     env:
       MANUAL_NAME: isa
       VERSIONS: all
+      SINGULARITY: 1
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
@@ -75,6 +78,7 @@ jobs:
     env:
       EXT: B
       VERSION: latest
+      SINGULARITY: 1
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
@@ -102,6 +106,8 @@ jobs:
   regress-gen-certificate:
     runs-on: ubuntu-latest
     needs: regress-smoke
+    env:
+      SINGULARITY: 1
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
@@ -129,6 +135,8 @@ jobs:
   regress-gen-profile:
     runs-on: ubuntu-latest
     needs: regress-smoke
+    env:
+      SINGULARITY: 1
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4

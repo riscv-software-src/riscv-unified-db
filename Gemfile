@@ -23,6 +23,7 @@ group :development do
   gem "awesome_print"
   gem "debug"
   gem "minitest"
+  gem "rdbg"
   gem "rubocop-minitest"
   gem "ruby-prof"
   gem "ruby-prof-flamegraph"
