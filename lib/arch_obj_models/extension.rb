@@ -398,7 +398,7 @@ class ExtensionVersion
         if @data.key?("implies")
           rs = [r] + implications.map(&:requirement_condition)
           rs = rs.reject(&:empty?)
-          r = SchemaCondition.all_of(*rs.map(&:to_h)) unless rs.empty?
+          r = SchemaCondition.all_of(*rs.map(&:to_h), cfg_arch: @cfg_arch) unless rs.empty?
         end
         r
       end
