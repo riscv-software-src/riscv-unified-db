@@ -9,6 +9,6 @@ type: unprivileged
 versions:
   - version: "2.0.0"
     state: ratified
-    ratification_date: unknown
+    ratification_date: null
     requires:
       name: Smhpm
