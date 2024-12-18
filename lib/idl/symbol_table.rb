@@ -91,6 +91,7 @@ module Idl
 
     def initialize(cfg_arch)
       raise if cfg_arch.nil?
+
       @cfg_arch = cfg_arch
       @mxlen = cfg_arch.unconfigured? ? nil : cfg_arch.mxlen
       @callstack = [nil]

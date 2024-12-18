@@ -1,0 +1,10 @@
+%version: 1.0
+
+include "../../../../arch/isa/globals.isa"
+
+builtin function delay {
+  arguments XReg cycles
+  description {
+    Delay the processor by +cycles+ cycles.
+  }
+}
