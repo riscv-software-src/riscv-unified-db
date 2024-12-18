@@ -79,10 +79,10 @@ class PortfolioInstance < DatabaseObjectect
       greatest_presence = nil
 
       in_scope_ext_reqs.each do |ext_req|
-        if ext_req.satisfied_by?(ext_name, v.version)
+        if ext_req.satisfied_by?(v)
           presence = extension_presence_obj(ext_name)
 
-          unless presence.nil? 
+          unless presence.nil?
             if greatest_presence.nil?
               greatest_presence = presence
             elsif presence > greatest_presence
@@ -127,11 +127,11 @@ class PortfolioInstance < DatabaseObjectect
     @data["extensions"]&.each do |ext_name, ext_data|
       next if ext_name[0] == "$"
 
-      # Does extension even exist? 
+      # Does extension even exist?
       # If not, don't raise an error right away so we can find all of the missing extensions and report them all.
-      ext = arch_def.extension(ext_name)
+      ext = cfg_arch.extension(ext_name)
       if ext.nil?
-        puts "Extension #{ext_name} for #{name} not found in database" 
+        puts "Extension #{ext_name} for #{name} not found in database"
         missing_ext = true
       end
 
