@@ -198,7 +198,7 @@ fields:
     location_rv32: 21-0
     location_rv64: 43-0
     description: |
-       The physical page number (PPN) of the guest-physical root page table.
+      The physical page number (PPN) of the guest-physical root page table.
     type(): |
       if (!SV32X4_TRANSLATION && !SV39X4_TRANSLATION && !SV48X4_TRANSLATION && !SV57X4_TRANSLATION) {
         # Bare is the only supported mode, PPN is always 0
@@ -225,7 +225,7 @@ fields:
       return csr_value.PPN;
 
 sw_read(): |
-  if ((CSR[hgatp].MODE == $bits(HgatpMode::Sv32x4)) 
+  if ((CSR[hgatp].MODE == $bits(HgatpMode::Sv32x4))
       || (CSR[hgatp].MODE == $bits(HgatpMode::Sv39x4))
       || (CSR[hgatp].MODE == $bits(HgatpMode::Sv48x4))
       || (CSR[hgatp].MODE == $bits(HgatpMode::Sv57x4))) {

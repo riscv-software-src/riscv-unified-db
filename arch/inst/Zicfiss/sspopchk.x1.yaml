@@ -5,11 +5,11 @@ kind: instruction
 name: sspopchk.x1
 long_name: No synopsis available.
 description: |
-      No description available.
+  No description available.
 definedBy: Zicfiss
 assembly: sspopchk_x1
 encoding:
-  match: '11001101110000001100000001110011'
+  match: "11001101110000001100000001110011"
   variables: []
 access:
   s: always
@@ -18,4 +18,3 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-      

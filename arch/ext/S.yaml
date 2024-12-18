@@ -11,13 +11,13 @@ versions:
   ratification_date: 2019-06
   requires:
     name: U
-    version: ">= 1.0.0"
+    version: "= 1.0.0"
 - version: "1.12.0"
   state: ratified
   ratification_date: 2021-12
   requires:
     name: U
-    version: ">= 1.0.0"
+    version: "= 1.0.0"
 description: |
   This chapter describes the RISC-V supervisor-level architecture, which
   contains a common core that is used with various supervisor-level
@@ -213,15 +213,13 @@ params:
       Whether or not `stvec.MODE` supports Direct (0).
     schema:
       type: boolean
-    extra_validation:
-      assert STVEC_MODE_DIRECT || STVEC_MODE_VECTORED
+    extra_validation: assert STVEC_MODE_DIRECT || STVEC_MODE_VECTORED
   STVEC_MODE_VECTORED:
     description: |
       Whether or not `stvec.MODE` supports Vectored (1).
     schema:
       type: boolean
-    extra_validation:
-      assert STVEC_MODE_DIRECT || STVEC_MODE_VECTORED
+    extra_validation: assert STVEC_MODE_DIRECT || STVEC_MODE_VECTORED
   SATP_MODE_BARE:
     description: |
       Whether or not satp.MODE == Bare is supported.
@@ -251,8 +249,7 @@ params:
     schema:
       type: boolean
       default: false
-    extra_validation:
-      assert TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY == false if ext?(:Sv32) || ext?(:Sv39) || ext?(:Sv48) || ext?(:Sv57)
+    extra_validation: assert TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY == false if ext?(:Sv32) || ext?(:Sv39) || ext?(:Sv48) || ext?(:Sv57)
   MSTATUS_FS_WRITEABLE:
     description: |
       When `S` is enabled but `F` is not, mstatus.FS is optionally writeable.
@@ -260,8 +257,7 @@ params:
       This parameter only has an effect when both S and F mode are disabled.
     schema:
       type: boolean
-    extra_validation:
-      assert MSTATUS_FS_WRITEABLE == true if ext?(:F)
+    extra_validation: assert MSTATUS_FS_WRITEABLE == true if ext?(:F)
   MSTATUS_VS_WRITEABLE:
     description: |
       When `S` is enabled but `V` is not, mstatus.VS is optionally writeable.
@@ -269,8 +265,7 @@ params:
       This parameter only has an effect when both S and V mode are disabled.
     schema:
       type: boolean
-    extra_validation:
-      assert MSTATUS_VS_WRITEABLE == true if ext?(:V)
+    extra_validation: assert MSTATUS_VS_WRITEABLE == true if ext?(:V)
   MSTATUS_FS_LEGAL_VALUES:
     description: |
       The set of values that mstatus.FS will accept from a software write.
@@ -278,7 +273,7 @@ params:
       type: array
       items:
         type: integer
-        enum: [0,1,2,3]
+        enum: [0, 1, 2, 3]
       maxItems: 4
       uniqueItems: true
     also_defined_in: F
@@ -291,7 +286,7 @@ params:
       type: array
       items:
         type: integer
-        enum: [0,1,2,3]
+        enum: [0, 1, 2, 3]
       maxItems: 4
       uniqueItems: true
     also_defined_in: V

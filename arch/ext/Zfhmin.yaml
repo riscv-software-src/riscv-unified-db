@@ -44,10 +44,9 @@ description: |
   ====
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: 2021-11
-  requires:
-    name: F
-    version: ">= 2.2"
-
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2021-11
+    requires:
+      name: F
+      version: ">= 2.2"

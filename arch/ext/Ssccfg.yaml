@@ -7,7 +7,7 @@ long_name: Supervisor-mode counter configuration
 description: Supervisor-mode counter configuration
 type: privileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: unknown
-  url: https://docs.google.com/document/d/1s-GeH5XpHBLzbQZucA8DPA7vvF7Xvf_nrPbrU2YLBcE/edit#heading=h.yyrgtolcaczx
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    url: https://docs.google.com/document/d/1s-GeH5XpHBLzbQZucA8DPA7vvF7Xvf_nrPbrU2YLBcE/edit#heading=h.yyrgtolcaczx

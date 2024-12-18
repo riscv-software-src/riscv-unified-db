@@ -5,28 +5,28 @@ kind: instruction
 name: amomin.w
 long_name: Atomic MIN word
 description: |
-   Atomically:
-     
-     * Load the word at address _rs1_
-     * Write the sign-extended value into _rd_
-     * Signed compare the least-significant word of register _rs2_ to the loaded value, and select the mimimum value
-     * Write the result to the address in _rs1_
+  Atomically:
+
+    * Load the word at address _rs1_
+    * Write the sign-extended value into _rd_
+    * Signed compare the least-significant word of register _rs2_ to the loaded value, and select the mimimum value
+    * Write the result to the address in _rs1_
 definedBy:
   anyOf: [A, Zaamo]
 assembly: xd, xs2, (xrs1)
 encoding:
   match: 10000------------010-----0101111
   variables:
-  - name: aq
-    location: 26
-  - name: rl
-    location: 25
-  - name: rs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: aq
+      location: 26
+    - name: rl
+      location: 25
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -42,8 +42,6 @@ operation(): |
   XReg virtual_address = X[rs1];
 
   X[rd] = amo<32>(virtual_address, X[rs2][31:0], AmoOperation::Min, aq, rl, $encoding);
-
-
 
 sail(): |
   {
@@ -95,7 +93,7 @@ sail(): |
                           AMOXOR  => rs2_val ^ loaded,
                           AMOAND  => rs2_val & loaded,
                           AMOOR   => rs2_val | loaded,
-  
+
                           /* These operations convert bitvectors to integer values using [un]signed,
                            * and back using to_bits().
                            */
@@ -135,7 +133,3 @@ sail(): |
       RETIRE_FAIL
     }
   }
-
-
-
-

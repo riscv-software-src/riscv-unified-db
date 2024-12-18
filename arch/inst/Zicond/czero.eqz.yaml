@@ -5,18 +5,18 @@ kind: instruction
 name: czero.eqz
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy: Zicond
 assembly: xd, xs1, xs2
 encoding:
   match: 0000111----------101-----0110011
   variables:
-  - name: rs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -24,9 +24,6 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    
-
-
 
 sail(): |
   {
@@ -37,4 +34,3 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
-

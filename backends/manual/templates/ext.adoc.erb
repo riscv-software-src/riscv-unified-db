@@ -5,7 +5,7 @@
 == Versions
 
 <%- ext.versions.each do |v| -%>
-<%= v.version %>::
+<%= v.canonical_version %>::
   State:::
     <%= v.state %>
   <%- if v.state == "ratified" -%>
@@ -36,7 +36,7 @@
 
 <%= ext.description %>
 
-<%- insts = arch_def.instructions.select { |i| ext.versions.any? { |v| i.defined_by?(ext.name, v.version) } } -%>
+<%- insts = cfg_arch.instructions.select { |i| ext.versions.any? { |v| i.defined_by?(v) } } -%>
 <%- unless insts.empty? -%>
 == Instructions
 

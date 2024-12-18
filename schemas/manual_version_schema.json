@@ -50,15 +50,39 @@
   },
 
   "type": "object",
-  "required": ["manual", "version", "name", "marketing_version", "state", "volumes"],
+  "required": [
+    "$schema",
+    "kind",
+    "manual",
+    "version",
+    "name",
+    "marketing_version",
+    "state",
+    "volumes"
+  ],
   "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "manual_version_schema.json#"
+    },
+    "kind": {
+      "type": "string",
+      "const": "manual version"
+    },
     "name": {
       "type": "string",
       "description": "Name (database key) of this version"
     },
     "manual": {
-      "type": "string",
-      "description": "Name (database key) of the manual this version belongs to"
+      "type": "object",
+      "properties": {
+        "$ref": {
+          "type": "string",
+          "format": "uri-reference",
+          "pattern": "^manual/.*\\.yaml#$",
+          "description": "Pointer to the manual"
+        }
+      }
     },
     "version": {
       "$ref": "schema_defs.json#/$defs/semantic_version",
@@ -92,6 +116,11 @@
         "$ref": "#/$defs/volume"
       },
       "description": "List of volumes in this version"
+    },
+    "$source": {
+      "type": "string",
+      "format": "uri-reference",
+      "description": "Relative (from arch/) path to the original source file"
     }
   },
   "additionalProperties": false

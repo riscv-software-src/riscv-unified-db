@@ -18,10 +18,10 @@ description: |
   Standard software distributions should assume their existence only for correctness,
   not for performance.
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: unknown
-  param_constraints:
-    MISALIGNED_LDST:
-      schema:
-        const: true
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    param_constraints:
+      MISALIGNED_LDST:
+        schema:
+          const: true

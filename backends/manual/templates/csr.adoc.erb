@@ -5,43 +5,43 @@
 
 *<%= csr.long_name %>*
 
-<%= arch_def.render_erb(csr.description, "#{csr.name}.description") %>
+<%= cfg_arch.render_erb(csr.description, "#{csr.name}.description") %>
 
 == Attributes
 [%autowidth]
 |===
-h| Defining Extension a| <%= csr.defined_by.to_asciidoc %>
+h| Defining Extension a| <%= csr.defined_by_condition.to_asciidoc %>
 h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <%- if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <%- end -%>
-<%- if csr.dynamic_length?(arch_def) ||  csr.data["length"] == "MXLEN" -%>
+<%- if csr.dynamic_length?(cfg_arch) ||  csr.data["length"] == "MXLEN" -%>
 h| Length
 a|
 
 [when,"<%= csr.length_cond32 %>"]
 --
-<%= csr_32.length_pretty(arch_def_32, 32) %>
+<%= csr_32.length_pretty(cfg_arch_32, 32) %>
 --
 
 [when,"<%= csr.length_cond64 %>"]
 --
-<%= csr.length_pretty(arch_def, 64) %>
+<%= csr.length_pretty(cfg_arch, 64) %>
 --
 
 <%- else -%>
-h| Length         | <%= csr.length_pretty(arch_def) %>
+h| Length         | <%= csr.length_pretty(cfg_arch) %>
 <%- end -%>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===
 
 == Format
-<%- unless csr.dynamic_length?(arch_def) || csr.fields.any? { |f| f.dynamic_location?(arch_def) } || csr.data["length"] == "MXLEN" -%>
+<%- unless csr.dynamic_length?(cfg_arch) || csr.fields.any? { |f| f.dynamic_location?(cfg_arch) } || csr.data["length"] == "MXLEN" -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(arch_def, 64) %>
+<%= JSON.dump csr.wavedrom_desc(cfg_arch, 64) %>
 ....
 <%- else -%>
 <%# CSR has a dynamic length, or a field has a dynamic location,
@@ -52,7 +52,7 @@ This CSR format changes dynamically.
 --
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr_32.wavedrom_desc(arch_def_32, 32) %>
+<%= JSON.dump csr_32.wavedrom_desc(cfg_arch_32, 32) %>
 ....
 --
 
@@ -60,7 +60,7 @@ This CSR format changes dynamically.
 --
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(arch_def, 64) %>
+<%= JSON.dump csr.wavedrom_desc(cfg_arch, 64) %>
 ....
 --
 <%- end -%>
@@ -75,31 +75,31 @@ This CSR format changes dynamically.
 <%- csr.fields.each do |field| -%>
 @ xref:<%=csr.name%>-<%=field.name%>-def[`<%= field.name %>`]
 a@
-<%- if field.dynamic_location?(arch_def) -%>
+<%- if field.dynamic_location?(cfg_arch) -%>
 
 [when,"<%= field.location_cond32 %>"]
 --
-<%= field.location_pretty(arch_def, 32) %>
+<%= field.location_pretty(cfg_arch, 32) %>
 --
 
 [when,"<%= field.location_cond64 %>"]
 --
-<%= field.location_pretty(arch_def, 64) %>
+<%= field.location_pretty(cfg_arch, 64) %>
 --
 
 <%- else -%>
-<%= field.location_pretty(arch_def) %>
+<%= field.location_pretty(cfg_arch) %>
 <%- end -%>
 a@
 
 --
-<%= field.type_pretty(arch_def.symtab) %>
+<%= field.type_pretty(cfg_arch.symtab) %>
 --
 
 a@
 
 --
-<%= field.reset_value_pretty(arch_def) %>
+<%= field.reset_value_pretty(cfg_arch) %>
 --
 
 <%- end -%>
@@ -121,16 +121,16 @@ IMPORTANT: <%= field.name %> is only defined in <%= field.base32_only? ? "RV32" 
 
 ****
 Location::
-<%= field.location_pretty(arch_def) %>
+<%= field.location_pretty(cfg_arch) %>
 
 Description::
-<%= arch_def.render_erb(field.description, "#{csr.name}.#{field.name}.description").gsub("\n", " +\n") %>
+<%= cfg_arch.render_erb(field.description, "#{csr.name}.#{field.name}.description").gsub("\n", " +\n") %>
 
 Type::
-<%= field.type_pretty(arch_def.symtab) %>
+<%= field.type_pretty(cfg_arch.symtab) %>
 
 Reset value::
-<%= field.reset_value_pretty(arch_def) %>
+<%= field.reset_value_pretty(cfg_arch) %>
 
 ****
 
@@ -164,7 +164,6 @@ This CSR may return a value that is different from what is stored in hardware.
 
 [source,idl,subs="specialchars,macros"]
 ----
-<%= csr.sw_read_ast(arch_def.symtab).gen_adoc %>
+<%= csr.sw_read_ast(cfg_arch.symtab).gen_adoc %>
 ----
 <%- end -%>
-

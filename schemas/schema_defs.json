@@ -4,7 +4,7 @@
   "title": "Common patterns used by all schemas",
 
   "$defs": {
-    "__source": {
+    "$source": {
       "type": "string",
       "format": "uri-reference",
       "description": "Path to the source file containing this object"
@@ -15,8 +15,12 @@
     },
     "field_location": {
       "oneOf": [
-        {"type": "number", "description": "Location of a single bit"},
-        {"type": "string", "pattern": "^[0-9]+-[0-9]+$", "description": "Location range of a multi-bit field"}
+        { "type": "number", "description": "Location of a single bit" },
+        {
+          "type": "string",
+          "pattern": "^[0-9]+-[0-9]+$",
+          "description": "Location range of a multi-bit field"
+        }
       ],
       "description": "Location of a field in a register"
     },
@@ -54,15 +58,51 @@
         "nonstandard-released"
       ]
     },
+    "license": {
+      "description": "License that applies to the textual documentation for this extension",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "License name"
+        },
+        "id": {
+          "type": "string",
+          "description": "License identifier"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Link to license text"
+        },
+        "text_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Link to license text"
+        }
+      },
+      "additionalProperties": false
+    },
+    "company": {
+      "description": "A company",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the company. Should be \"RISC-V International\" for standard extensions"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Website of the company. Should be \"https://riscv.org\" for standard extensions"
+        }
+      }
+    },
     "extension_presence": {
       "oneOf": [
         {
           "type": "string",
-          "enum": [
-            "mandatory",
-            "optional",
-            "prohibited"
-          ]
+          "enum": ["mandatory", "optional", "prohibited"]
         },
         {
           "type": "object",
@@ -85,7 +125,7 @@
     },
     "extension_name": {
       "type": "string",
-      "pattern": "^([A-WY])|([SXZ][a-z0-9]+)$"
+      "pattern": "^(([A-WY])|([SXZ][a-z0-9]+))$"
     },
     "extension_version": {
       "$ref": "#/$defs/semantic_version"
@@ -138,7 +178,6 @@
           "additionalProperties": false
         }
       ]
-
     },
     "requires_entry": {
       "oneOf": [

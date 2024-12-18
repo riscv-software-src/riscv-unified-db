@@ -6,90 +6,90 @@ name: Sm
 type: privileged
 long_name: Machine mode
 versions:
-- version: "1.11.0"
-  state: ratified
-  ratification_date: 2019-12
-  changes:
-  - Moved Machine spec to *Ratified* status.
-  - Improvements to the description and commentary.
-  - Specified which interrupt sources are reserved for standard use.
-  - Allocated some synchronous exception causes for custom use.
-  - Specified the priority ordering of synchronous exceptions.
-  - Added specification that xRET instructions may, but are not required
-    to, clear LR reservations if A extension present.
-  - Made the `mstatus`.MPP field *WARL*, rather than *WLRL*.
-  - Made the unused `__x__ip` fields *WPRI*, rather than *WIRI*.
-  - Made the unused `misa` fields *WARL*, rather than *WIRI*.
-  - Rectified an editing error that misdescribed the mechanism by which
-    `mstatus.__x__IE` is written upon an exception.
-  - Described scheme for emulating misaligned AMOs.
-  - Specified the behavior of the `misa` and `__x__epc` registers in systems
-    with variable IALIGN.
-  - Specified the behavior of writing self-contradictory values to the
-    `misa` register.
-  - Specified contents of CSRs across XLEN modification.
-  - Moved PLIC chapter into its own document.
-- version: "1.12.0"
-  state: ratified
-  ratification_date: 2021-12
-  changes:
-  - Changed MRET to clear `mstatus`.MPRV when leaving M-mode.
-  - Relaxed I/O regions have been specified to follow RVWMO. The previous
-    specification implied that PPO rules other than fences and
-    acquire/release annotations did not apply.
-  - Constrained the LR/SC reservation set size and shape when using
-    page-based virtual memory.
-  - PMP changes require an SFENCE.VMA on any hart that implements
-    page-based virtual memory, even if VM is not currently enabled.
-  - Removed the N extension.
-  - Defined the mandatory RV32-only CSR `mstatush`, which contains most of
-    the same fields as the upper 32 bits of RV64's `mstatus`.
-  - Defined the mandatory CSR `mconfigptr`, which if nonzero contains the
-    address of a configuration data structure.
-  - Defined optional `mseccfg` and `mseccfgh` CSRs, which control the
-    machine's security configuration.
-  - Defined `menvcfg` CSR (and RV32-only `menvcfgh`), which control various characteristics
-    of the execution environment.
-  - Designated part of SYSTEM major opcode for custom use.
-  - Permitted the unconditional delegation of less-privileged interrupts.
-  - Added optional big-endian and bi-endian support.
-  - Made priority of load/store/AMO address-misaligned exceptions
-    implementation-defined relative to load/store/AMO page-fault and
-    access-fault exceptions.
-  - Software breakpoint exceptions are permitted to write either 0 or the
-    `pc` to `__x__tval`.
-  - Specified relaxed constraints for implicit reads of non-idempotent regions.
-- version: "1.13.0"
-  state: frozen
-  ratification_date: 2023-12
-  changes:
-  - Redefined `misa`.MXL to be read-only, making MXLEN a constant.
-  - Defined the `misa`.B field to reflect that the B extension has been
-    implemented.
-  - Defined the `misa`.V field to reflect that the V extension has been
-    implemented.
-  - Defined the RV32-only `medelegh` CSR.
-  - Defined the misaligned atomicity granule PMA, superseding the proposed Zam
-    extension.
-  - Defined hardware error and software check exception codes.
-  - Specified synchronization requirements when changing the PBMTE fields
-    in `menvcfg` and `henvcfg`.
-  - Exposed count-overflow interrupts to VS-mode via the Shlcofideleg extension.
-  - Relaxed behavior of some HINTs when MXLEN > XLEN.
-  - Transliterated the document from LaTeX into AsciiDoc.
-  - Included all ratified extensions through March 2024.
-  - Clarified that "platform- or custom-use" interrupts are actually
-    "platform-use interrupts", where the platform can choose to make some custom.
-  - Clarified semantics of explicit accesses to CSRs wider than XLEN bits.
-  - Clarified that MXLEN&#8805;SXLEN.
-  - Clarified that WFI is not a HINT instruction.
-  - Clarified that, for a given exception cause, `__x__tval` might sometimes
-    be set to a nonzero value but sometimes not.
-  - Clarified exception behavior of unimplemented or inaccessible CSRs.
-  - Replaced the concept of vacant memory regions with inaccessible memory or I/O regions.
-  - Clarified that timer and count-overflow interrupts' arrival in
-    interrupt-pending registers is not immediate.
-  - Clarified that MXR affects only explicit memory accesses.
+  - version: "1.11.0"
+    state: ratified
+    ratification_date: 2019-12
+    changes:
+      - Moved Machine spec to *Ratified* status.
+      - Improvements to the description and commentary.
+      - Specified which interrupt sources are reserved for standard use.
+      - Allocated some synchronous exception causes for custom use.
+      - Specified the priority ordering of synchronous exceptions.
+      - Added specification that xRET instructions may, but are not required
+        to, clear LR reservations if A extension present.
+      - Made the `mstatus`.MPP field *WARL*, rather than *WLRL*.
+      - Made the unused `__x__ip` fields *WPRI*, rather than *WIRI*.
+      - Made the unused `misa` fields *WARL*, rather than *WIRI*.
+      - Rectified an editing error that misdescribed the mechanism by which
+        `mstatus.__x__IE` is written upon an exception.
+      - Described scheme for emulating misaligned AMOs.
+      - Specified the behavior of the `misa` and `__x__epc` registers in systems
+        with variable IALIGN.
+      - Specified the behavior of writing self-contradictory values to the
+        `misa` register.
+      - Specified contents of CSRs across XLEN modification.
+      - Moved PLIC chapter into its own document.
+  - version: "1.12.0"
+    state: ratified
+    ratification_date: 2021-12
+    changes:
+      - Changed MRET to clear `mstatus`.MPRV when leaving M-mode.
+      - Relaxed I/O regions have been specified to follow RVWMO. The previous
+        specification implied that PPO rules other than fences and
+        acquire/release annotations did not apply.
+      - Constrained the LR/SC reservation set size and shape when using
+        page-based virtual memory.
+      - PMP changes require an SFENCE.VMA on any hart that implements
+        page-based virtual memory, even if VM is not currently enabled.
+      - Removed the N extension.
+      - Defined the mandatory RV32-only CSR `mstatush`, which contains most of
+        the same fields as the upper 32 bits of RV64's `mstatus`.
+      - Defined the mandatory CSR `mconfigptr`, which if nonzero contains the
+        address of a configuration data structure.
+      - Defined optional `mseccfg` and `mseccfgh` CSRs, which control the
+        machine's security configuration.
+      - Defined `menvcfg` CSR (and RV32-only `menvcfgh`), which control various characteristics
+        of the execution environment.
+      - Designated part of SYSTEM major opcode for custom use.
+      - Permitted the unconditional delegation of less-privileged interrupts.
+      - Added optional big-endian and bi-endian support.
+      - Made priority of load/store/AMO address-misaligned exceptions
+        implementation-defined relative to load/store/AMO page-fault and
+        access-fault exceptions.
+      - Software breakpoint exceptions are permitted to write either 0 or the
+        `pc` to `__x__tval`.
+      - Specified relaxed constraints for implicit reads of non-idempotent regions.
+  - version: "1.13.0"
+    state: frozen
+    ratification_date: 2023-12
+    changes:
+      - Redefined `misa`.MXL to be read-only, making MXLEN a constant.
+      - Defined the `misa`.B field to reflect that the B extension has been
+        implemented.
+      - Defined the `misa`.V field to reflect that the V extension has been
+        implemented.
+      - Defined the RV32-only `medelegh` CSR.
+      - Defined the misaligned atomicity granule PMA, superseding the proposed Zam
+        extension.
+      - Defined hardware error and software check exception codes.
+      - Specified synchronization requirements when changing the PBMTE fields
+        in `menvcfg` and `henvcfg`.
+      - Exposed count-overflow interrupts to VS-mode via the Shlcofideleg extension.
+      - Relaxed behavior of some HINTs when MXLEN > XLEN.
+      - Transliterated the document from LaTeX into AsciiDoc.
+      - Included all ratified extensions through March 2024.
+      - Clarified that "platform- or custom-use" interrupts are actually
+        "platform-use interrupts", where the platform can choose to make some custom.
+      - Clarified semantics of explicit accesses to CSRs wider than XLEN bits.
+      - Clarified that MXLEN&#8805;SXLEN.
+      - Clarified that WFI is not a HINT instruction.
+      - Clarified that, for a given exception cause, `__x__tval` might sometimes
+        be set to a nonzero value but sometimes not.
+      - Clarified exception behavior of unimplemented or inaccessible CSRs.
+      - Replaced the concept of vacant memory regions with inaccessible memory or I/O regions.
+      - Clarified that timer and count-overflow interrupts' arrival in
+        interrupt-pending registers is not immediate.
+      - Clarified that MXR affects only explicit memory accesses.
 description: |
   This chapter describes the machine-level operations available in machine-mode (M-mode), which is
   the highest privilege mode in a RISC-V hart. M-mode is used for low-level access to a hardware
@@ -101,72 +101,72 @@ description: |
   contains a common core that is used with various supervisor-level
   address translation and protection schemes.
 interrupt_codes:
-- num: 1
-  name: Supervisor software interrupt
-  var: SupervisorSoftware
-- num: 3
-  name: Machine software interrupt
-  var: MachineSoftware
-- num: 5
-  name: Supervisor timer interrupt
-  var: SupervisorTimer
-- num: 7
-  name: Machine timer interrupt
-  var: MachineTimer
-- num: 9
-  name: Supervisor external interrupt
-  var: SupervisorExternal
-- num: 11
-  name: Machine external interrupt
-  var: MachineExternal
+  - num: 1
+    name: Supervisor software interrupt
+    var: SupervisorSoftware
+  - num: 3
+    name: Machine software interrupt
+    var: MachineSoftware
+  - num: 5
+    name: Supervisor timer interrupt
+    var: SupervisorTimer
+  - num: 7
+    name: Machine timer interrupt
+    var: MachineTimer
+  - num: 9
+    name: Supervisor external interrupt
+    var: SupervisorExternal
+  - num: 11
+    name: Machine external interrupt
+    var: MachineExternal
 exception_codes:
-- num: 0
-  name: Instruction address misaligned
-  var: InstructionAddressMisaligned
-- num: 1
-  name: Instruction access fault
-  var: InstructionAccessFault
-- num: 2
-  name: Illegal instruction
-  var: IllegalInstruction
-- num: 3
-  name: Breakpoint
-  var: Breakpoint
-- num: 4
-  name: Load address misaligned
-  var: LoadAddressMisaligned
-- num: 5
-  name: Load access fault
-  var: LoadAccessFault
-- num: 6
-  name: Store/AMO address misaligned
-  var: StoreAmoAddressMisaligned
-- num: 7
-  name: Store/AMO access fault
-  var: StoreAmoAccessFault
-- num: 8
-  name: Environment call from <%- if ext?(:H) -%>V<%- end -%>U-mode
-  var: Ucall
-- num: 9
-  name: Environment call from <%- if ext?(:H) -%>H<%- end -%>S-mode
-  var: Scall
-- num: 11
-  name: Environment call from M-mode
-  var: Mcall
-- num: 12
-  name: Instruction page fault
-  var: InstructionPageFault
-- num: 13
-  name: Load page fault
-  var: LoadPageFault
-- num: 15
-  name: Store/AMO page fault
-  var: StoreAmoPageFault
-- num: 18
-  name: Software Check
-  var: SoftwareCheck
-  when:
-    version: ">= 1.13.0"
+  - num: 0
+    name: Instruction address misaligned
+    var: InstructionAddressMisaligned
+  - num: 1
+    name: Instruction access fault
+    var: InstructionAccessFault
+  - num: 2
+    name: Illegal instruction
+    var: IllegalInstruction
+  - num: 3
+    name: Breakpoint
+    var: Breakpoint
+  - num: 4
+    name: Load address misaligned
+    var: LoadAddressMisaligned
+  - num: 5
+    name: Load access fault
+    var: LoadAccessFault
+  - num: 6
+    name: Store/AMO address misaligned
+    var: StoreAmoAddressMisaligned
+  - num: 7
+    name: Store/AMO access fault
+    var: StoreAmoAccessFault
+  - num: 8
+    name: Environment call from <%- if ext?(:H) -%>V<%- end -%>U-mode
+    var: Ucall
+  - num: 9
+    name: Environment call from <%- if ext?(:H) -%>H<%- end -%>S-mode
+    var: Scall
+  - num: 11
+    name: Environment call from M-mode
+    var: Mcall
+  - num: 12
+    name: Instruction page fault
+    var: InstructionPageFault
+  - num: 13
+    name: Load page fault
+    var: LoadPageFault
+  - num: 15
+    name: Store/AMO page fault
+    var: StoreAmoPageFault
+  - num: 18
+    name: Software Check
+    var: SoftwareCheck
+    when:
+      version: ">= 1.13.0"
 params:
   XLEN:
     description: |
@@ -231,8 +231,8 @@ params:
       maximum: 127
   MISALIGNED_LDST:
     description: |
-      Does the implementation perform non-atomic misaligned loads and stores to main memory 
-      (does *not* affect misaligned support to device memory)? 
+      Does the implementation perform non-atomic misaligned loads and stores to main memory
+      (does *not* affect misaligned support to device memory)?
       If not, the implementation always throws a misaligned exception.
     schema:
       type: boolean
@@ -282,7 +282,7 @@ params:
 
        * by_byte: The load/store appears to be broken into byte-sized accesses that processed sequentially from smallest address to largest address
        * custom: Something else. Will result in a call to unpredictable() in the execution
-    schema: 
+    schema:
       type: string
       enum: ["by_byte", "custom"]
   TRAP_ON_ILLEGAL_WLRL:
@@ -431,7 +431,7 @@ params:
   PMA_GRANULARITY:
     description: |
       log2 of the smallest supported PMA region.
-      
+
       Generally, for systems with an MMU, should not be smaller than 12,
       as that would preclude caching PMP results in the TLB along with
       virtual memory translations
@@ -469,7 +469,7 @@ params:
 
       true::
         The `misa` CSR returns a non-zero value.
-      
+
       false::
         The `misa` CSR is read-only-0.
     schema:

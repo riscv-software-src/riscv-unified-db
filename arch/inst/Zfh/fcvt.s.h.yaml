@@ -16,12 +16,12 @@ description: |
 encoding:
   match: 010000000010-------------1010011
   variables:
-  - name: fs1
-    location: 19-15
-  - name: rm
-    location: 14-12
-  - name: fd
-    location: 11-7  
+    - name: fs1
+      location: 19-15
+    - name: rm
+      location: 14-12
+    - name: fd
+      location: 11-7
 access:
   s: always
   u: always
@@ -49,7 +49,7 @@ operation(): |
 
     # frac is a 24-bit significand, the bottom 9 bits LSB are extracted and OR-red
     # into a sticky flag, the top 15 MSBs are extracted, the LSB of this top slice
-    # is OR-red with the sticky 
+    # is OR-red with the sticky
     Bits<16> frac16 = (frac >> 9) | ((frac & 0x1ff) != 0 ? 1 : 0);
     if ((exp | frac16) == 0) {
       f[fd] = nan_box<16, FLEN>(packToF16UI( sign, 0, 0 ));
@@ -62,8 +62,6 @@ operation(): |
 
   mark_f_state_dirty();
 
-
-
 sail(): |
   {
     assert(sizeof(xlen) >= 64);
@@ -73,14 +71,10 @@ sail(): |
       Some(rm') => {
         let rm_3b = encdec_rounding_mode(rm');
         let (fflags, rd_val_H) = riscv_ui64ToF16 (rm_3b, rs1_val_LU);
-  
+
         accrue_fflags(fflags);
         F_or_X_H(rd) = rd_val_H;
         RETIRE_SUCCESS
       }
     }
   }
-
-
-
-

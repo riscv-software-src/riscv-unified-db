@@ -2,7 +2,7 @@
 
 A Ruby interface for https://github.com/riscv-software-src/riscv-unified-db[`riscv-unified-db`] is located in the `lib` directory. It can be used to query the database in the context of a configuration through a set of object models.
 
-The main class is `ArchDef`, which represents all of the database information plus any known configuration parameters. An `ArchDef` must be initialized from a configuration in the `cfg` directory. Two configurations are provided -- _32 and _64 -- that represent generic RV32/RV64 machines (_i.e._, the only known configuration parameter is `MXLEN`). 
+The main class is `ArchDef`, which represents all of the database information plus any known configuration parameters. An `ArchDef` must be initialized from a configuration in the `cfg` directory. Two configurations are provided -- _32 and _64 -- that represent generic RV32/RV64 machines (_i.e._, the only known configuration parameter is `MXLEN`).
 
 == Configuration files
 
@@ -13,7 +13,7 @@ A configuration consists of a folder under `cfgs`. Inside that folder, there are
 `cfg.yaml`::
 A YAML object (hash) that currently contains only one field `type`. `type` can be one of:
 
-* "partially configured": The configuration has some parameters and/or implemented extensions known, but others are not known. Examples of a _partially configured_ configuration are the generic _32/_64 configs and a profile (which has some known/mandatory extensions, but also many unknown/optional extensions). 
+* "partially configured": The configuration has some parameters and/or implemented extensions known, but others are not known. Examples of a _partially configured_ configuration are the generic _32/_64 configs and a profile (which has some known/mandatory extensions, but also many unknown/optional extensions).
 * "fully configured": The configuration exhaustively lists a set of implmented extensions and parameters. An example of a _fully configured_ configuration is the `generic_rv64` example, which represents a theoritical implementation of RV64. In a _fully configured_ configuration, any extension that isn't known to be implemented is treated as unimplmented, and will be pruned out of the database for certain operations.
 
 `implemented_exts.yaml`::

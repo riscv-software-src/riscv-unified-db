@@ -349,7 +349,7 @@ Ratification date:: <%= profile_release.ratification_date %>
 
 <%= profile_release.introduction %>
 
-<%= profile_release.marketing_name %> has <%= profile_release.referenced_extensions.reduce(0) { |sum, ext| sum + ext.params.size } %> 
+<%= profile_release.marketing_name %> has <%= profile_release.referenced_extensions.reduce(0) { |sum, ext| sum + ext.params.size } %>
 associated implementation-defined parameters across all its defined profiles.
 
 <% unless profile_release.description.nil? -%>
@@ -443,7 +443,7 @@ Extensions present in a profile are also present in higher-privileged profiles i
 
 .<%= ext.name %> Extension Presence
 |===
-| Profile | v<%= ext.versions.map { |v| v.version }.join(" | v") %>
+| Profile | v<%= ext.versions.map { |ext_ver| ext_ver.canonical_version.to_s }.join(" | v") %>
 
 <% profile_release.profiles.each do |profile| -%>
 | <%= profile.marketing_name %> | <%= profile.version_greatest_presence(ext.name, ext.versions).join(" | ") -%>
@@ -452,7 +452,7 @@ Extensions present in a profile are also present in higher-privileged profiles i
 |===
 
 <% ext.versions.each do |v| -%>
-<%= v.version %>::
+<%= v.canonical_version %>::
   State:::
     <%= v.state %>
   <% if v.state == "ratified" -%>
@@ -463,7 +463,7 @@ Extensions present in a profile are also present in higher-privileged profiles i
   Changes:::
 
     <% v.changes.each do |c| -%>
-    * <%= c %>  
+    * <%= c %>
     <% end -%>
 
   <% end -%>
@@ -488,8 +488,8 @@ Extensions present in a profile are also present in higher-privileged profiles i
 :leveloffset: -3
 
 // TODO: GitHub issue 92: Use version specified by each profile and add version info to inst table below.
-<% insts = arch_def.instructions.select { |i| i.defined_by?(ext.min_version) } -%>
-<% unless insts.empty? -%>
+<%- insts = cfg_arch.instructions.select { |i| i.defined_by?(ext.min_version) } -%>
+<%- unless insts.empty? -%>
 ==== Instructions
 
 The following instructions are added by this extension:
@@ -536,7 +536,7 @@ This extension has the following implementation options:
 
 This instruction is defined by:
 
-<%= inst.defined_by.to_asciidoc %>
+<%= inst.defined_by_condition.to_asciidoc %>
 
 ==== Encoding
 
@@ -549,20 +549,20 @@ This instruction has different encodings in RV32 and RV64.
 RV32::
 +
 [wavedrom, ,svg,subs='attributes',width="100%"]
-....  
+....
 <%= JSON.dump inst.wavedrom_desc(32) %>
 ....
 
 RV64::
 +
 [wavedrom, ,svg,subs='attributes',width="100%"]
-....  
+....
 <%= JSON.dump inst.wavedrom_desc(64) %>
 ....
 ====
 <% else -%>
 [wavedrom, ,svg,subs='attributes',width="100%"]
-....  
+....
 <%= JSON.dump inst.wavedrom_desc(inst.base.nil? ? 32 : inst.base) %>
 ....
 <% end -%>
@@ -633,13 +633,13 @@ RV64::
 <% if inst.key?("operation()") -%>
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.operation_ast(arch_def.symtab).gen_adoc %>
+<%= inst.operation_ast(cfg_arch.symtab).gen_adoc %>
 ----
 <% end -%>
 
 ==== Exceptions
 
-<% exception_list = inst.reachable_exceptions_str(arch_def.symtab) -%>
+<% exception_list = inst.reachable_exceptions_str(cfg_arch.symtab) -%>
 <% if exception_list.empty? -%>
 This instruction does not generate synchronous exceptions.
 <% else -%>
@@ -685,23 +685,23 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <% if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <% end -%>
-h| Defining extension a| <%= csr.defined_by.to_asciidoc %>
-<% if csr.dynamic_length?(arch_def) -%>
-h| Length         | <%= csr.length_pretty(arch_def) %>
+h| Defining extension a| <%= csr.defined_by_condition.to_asciidoc %>
+<% if csr.dynamic_length?(cfg_arch) -%>
+h| Length         | <%= csr.length_pretty(cfg_arch) %>
 <% else -%>
-h| Length         | <%= csr.length_pretty(arch_def) %>
+h| Length         | <%= csr.length_pretty(cfg_arch) %>
 <% end -%>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===
 
 
 ==== Format
-<% unless csr.dynamic_length?(arch_def) || csr.fields.any? { |f| f.dynamic_location?(arch_def) } -%>
+<% unless csr.dynamic_length?(cfg_arch) || csr.fields.any? { |f| f.dynamic_location?(cfg_arch) } -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(arch_def, csr.base.nil? ? 32 : csr.base) %>
+<%= JSON.dump csr.wavedrom_desc(cfg_arch, csr.base.nil? ? 32 : csr.base) %>
 ....
 <% else -%>
 <%# CSR has a dynamic length, or a field has a dynamic location,
@@ -711,13 +711,13 @@ This CSR format changes dynamically with XLEN.
 .<%= csr.name %> Format when <%= csr.length_cond32 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(arch_def, 32) %>
+<%= JSON.dump csr.wavedrom_desc(cfg_arch, 32) %>
 ....
 
 .<%= csr.name %> Format when <%= csr.length_cond64 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(arch_def, 64) %>
+<%= JSON.dump csr.wavedrom_desc(cfg_arch, 64) %>
 ....
 
 

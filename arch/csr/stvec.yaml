@@ -30,7 +30,7 @@ fields:
     location: 1-0
     description: |
       Vectoring mode for asynchronous interrupts.
-      
+
       0 - Direct, 1 - Vectored
 
       When Direct, all synchronous exceptions and asynchronous interrupts jump to (`stvec.BASE` << 2).

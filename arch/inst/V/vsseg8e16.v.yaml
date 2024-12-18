@@ -5,18 +5,18 @@ kind: instruction
 name: vsseg8e16.v
 long_name: No synopsis available.
 description: |
-      No description available.
+  No description available.
 definedBy: V
 assembly: vm, xs1, vs3
 encoding:
   match: 111000-00000-----101-----0100111
   variables:
-  - name: vm
-    location: 25-25
-  - name: rs1
-    location: 19-15
-  - name: vs3
-    location: 11-7
+    - name: vm
+      location: 25-25
+    - name: rs1
+      location: 19-15
+    - name: vs3
+      location: 11-7
 access:
   s: always
   u: always
@@ -24,4 +24,3 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-      

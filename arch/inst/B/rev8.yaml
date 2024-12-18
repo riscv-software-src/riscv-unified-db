@@ -21,17 +21,17 @@ encoding:
   RV32:
     match: 011010011000-----101-----0010011
     variables:
-    - name: rs1
-      location: 19-15
-    - name: rd
-      location: 11-7
+      - name: rs1
+        location: 19-15
+      - name: rd
+        location: 11-7
   RV64:
     match: 011010111000-----101-----0010011
     variables:
-    - name: rs1
-      location: 19-15
-    - name: rd
-      location: 11-7
+      - name: rs1
+        location: 19-15
+      - name: rd
+        location: 11-7
 access:
   s: always
   u: always
@@ -55,8 +55,6 @@ operation(): |
 
   X[rd] = output;
 
-
-
 sail(): |
   {
     let rs1_val = X(rs1);
@@ -66,7 +64,3 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
-
-
-
-

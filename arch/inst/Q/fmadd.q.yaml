@@ -5,22 +5,22 @@ kind: instruction
 name: fmadd.q
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy: Q
 assembly: qd, qs1, qs2, qs3, rm
 encoding:
   match: -----11------------------1000011
   variables:
-  - name: qs3
-    location: 31-27
-  - name: qs2
-    location: 24-20
-  - name: qs1
-    location: 19-15
-  - name: rm
-    location: 14-12
-  - name: qd
-    location: 11-7
+    - name: qs3
+      location: 31-27
+    - name: qs2
+      location: 24-20
+    - name: qs1
+      location: 19-15
+    - name: rm
+      location: 14-12
+    - name: qd
+      location: 11-7
 access:
   s: always
   u: always
@@ -28,4 +28,3 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    

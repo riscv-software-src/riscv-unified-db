@@ -12,12 +12,12 @@ assembly: xd, xs1, xs2
 encoding:
   match: 0100000----------100-----0110011
   variables:
-  - name: rs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -30,8 +30,6 @@ operation(): |
   }
 
   X[rd] = ~(X[rs1] ^ X[rs2]);
-
-
 
 sail(): |
   {
@@ -55,7 +53,3 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
-
-
-
-

@@ -6,9 +6,9 @@ name: V
 type: unprivileged
 long_name: Variable-length vector
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: unknown
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
 description: |
   TODO
 params:
@@ -38,7 +38,7 @@ params:
       type: array
       items:
         type: integer
-        enum: [0,1,2,3]
+        enum: [0, 1, 2, 3]
       maxItems: 4
       uniqueItems: true
     also_defined_in: S

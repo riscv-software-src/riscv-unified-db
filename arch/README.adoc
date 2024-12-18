@@ -15,60 +15,79 @@ A few challenging issues that arise include:
 
 To tame this challenge, this specification generator takes the following approach:
 
- * The generic architecture (in the `arch/` folder) is described in a way that covers all implementation options. As much as possible, the architecture is defined in a structured way that can be easily parsed using any programming language with a https://en.wikipedia.org/wiki/YAML[YAML] library. Complex behavior (_e.g._, instruction operation) and some configuration-dependent metadata is specified in an architecture definition language (xref:prose/idl.adoc[IDL]) that can formally define the architecture in arbitrary ways.
+ * The RVI standard architecture (in the `arch/` folder) is described in a way that covers all implementation options. As much as possible, the architecture is defined in a structured way that can be easily parsed using any programming language with a https://en.wikipedia.org/wiki/YAML[YAML] library. Complex behavior (_e.g._, instruction operation) and some configuration-dependent metadata is specified in an architecture definition language (xref:prose/idl.adoc[IDL]) that can formally define the architecture in arbitrary ways.
  * An implementation of RISC-V is specified as a _configuration_ containing all unnamed parameters and list of named supported extensions (in the `cfgs/` folder).
  * A tool, included in this repository, can generate an implmentation-specific specification by applying the configuration to the generic spec. Behaviors that are not relevant are left out, and behaviors that are affected by multiple extensions are merged into a single description.
 
+Three standard configs are present:
+
+ * `_`: A completely _unconfigured_ configuration, i.e., where there are no restrictions and no known parameter values.
+ * `rv32`: A configuration where only `MXLEN` is known to be 32, i.e., the RV32 ISA.
+ * `rv64`: A configuration where only `MXLEN` is known to be 64, i.e., the RV64 ISA.
+
 The architecture is specified in a series of https://en.wikipedia.org/wiki/YAML[YAML]
 files for _Extensions_, _Instructions_, and _Control and Status Registers (CSRs)_.
-Each extension/instruction/CSR has its own file. 
+Each extension/instruction/CSR has its own file.
 
 == Flow
 
 [ditaa]
 ....
-+----------------------------------------------------------------------------------------------+
-| Config (cfgs/NAME)                                                                           |
-| +-------------------------+ +-------------------------+ +---------------------------------+  |
-| | Implementation Options  | | Extension List          | | Implementation Overlay          |  |
-| | (cfgs/NAME/params.yaml) | | (cfgs/NAME/params.yaml) | | (cfgs/NAME/arch_overlay/*.yaml) |  |
-| +-------------------------+ +-------------------------+ +---------------------------------+  |
-+------------------------|-----|--------------------------------|------------------------------+
-                         |     |                                |
- +----------------+      v     v                                v
- |{s} Generic     |   /----------\                        /----------\
- |    Arch Spec   |-->|  Render  |                        |  Render  |
- | (arch)         |   |  (ERB)   :                        |  (ERB)   :
- +----------------+   \----------/                        \----------/
-                           |                                    |
-                           v                                    v
-              +-----------------------------+     +-----------------------------------+
-              | {s} Redered Arch Spec       |     | {s} Redered Overlay               |
-              | (gen/NAME/.rendered_arch)   |     | (gen/NAME/.rendered_overlay_arch) |
-              +-----------------------------+     +------------------------------------+
-                           |                                    |
-                           v                                    |
-                 /-------------------------\                    |
-                 |  Overlay                |<-------------------+
-                 | (gen/NAME/.merged_arch) :
-                 \-------------------------/
-                           |
-                           |
-                     /-----------\
-                     | Normalize |
-                     \-----------/
-                           |
-                           v
-              +-----------------------------+
-              | {s} Implementation-specific |
-              |     Archiecture Spec        |
-              | (gen/NAME/arch)             |
-              +-----------------------------+
++--------------------------------------------------------------------------+
+| Config (cfgs/NAME)                                                       |
+| +------------------------------+ +-----------------------------------+   |
+| | Config (extensions & params) | | Implementation Overlay [optional] |   |
+| | (cfgs/NAME/cfg.yaml)         | | (cfgs/NAME/arch_overlay/*.yaml)   |   |
+| +------------------------------+ +-----------------------------------+   |
++--------|------------------------------------------------------|----------+
+         |                                                      |
+         |                     +----------------+               v
+         |                     |{s} Standard    |    /--------------------\
+         |                     |    Arch Spec   |--->|  JSON Merge Patch  |
+         |                     | (arch)         |    |  RFC 7386          |
+         |                     +----------------+    \--------------------/
+         |                                                      |
+         |                                                      v
+         |                                        +--------------------------+
+         |                                        | {s} Merged Arch Spec     |
+         |                                        | (gen/arch/NAME/*.yaml)   |
+         |                                        +--------------------------+
+         |                                                      |
+         |                                                      v
+         |                                           /---------------------\
+         |                                           |  Resolve Operators  |
+         |                                           | ($inherits/$remove) |
+         |                                           \---------------------/
+         |                                                      |
+         |                                                      v
+         |                                     +---------------------------------+
+         |                                     | {s} Implementation-specific     |
+         |                                     |     Archiecture Spec            |
+         |                                     | (gen/resolved_arch/NAME/*.yaml) |
+         |                                     +---------------------------------+
+         |                                                 |
+  +------|-------------------------------------------------|---------+
+  |      |           Ruby Interface                        |         |
+  |   /--------\                                           |         |
+  |   | Config |                                           |         |
+  |   \--------/   /---------------\                       |         |
+  |       |      +-| Architecture  |<----------------------+         |
+  |       |      | \---------------/                                 |
+  |       |      |                                                   |
+  |       v      v                                                   |
+  | /------------------------\                                       |
+  | | ConfiguredArchitecture |                                       |
+  | \------------------------/                                       |
+  +------------------------------------------------------------------+
 ....
 
-The normalization step transitively determines all extensions/instructions/csrs that are implemented
-(_e.g._, because some extensions have implied dependencies) and ensures that missing fields are
-filled in with their defaults.
+The final architecture files go through two transformation steps. First, config overlay files, if present,
+are merged on top of the standard architecture files according to JSON Merge Patch. This step is where
+any custom behavior can be added to the specification. Second, the (possibly) merged files are _resolved_
+by implementing the database operators `$inherits` and `$remove`.
+
+The `ConfiguredArchitecture` class represents a configured view of the database, and is the basis
+of most queries about a config.
 
 == Data Format
 

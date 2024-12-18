@@ -11,6 +11,7 @@ RUN apt-get install -y --no-install-recommends bundler
 RUN apt-get install -y --no-install-recommends nodejs
 RUN apt-get install -y --no-install-recommends npm
 RUN apt-get install -y --no-install-recommends ditaa
+RUN apt-get install -y --no-install-recommends libyaml-dev
 RUN apt-get clean autoclean
 RUN apt-get autoremove -y
 RUN rm -rf /var/lib/{apt, dpkg, cache, log}

@@ -177,7 +177,7 @@ fields:
       updating of PTE A/D bits is enabled during S-mode address translation, and the
       implementation behaves as though the Svade extension were not implemented for S-mode address
       translation.
-      
+
       When the hypervisor extension is implemented, if ADUE=1, hardware updating of PTE A/D bits
       is enabled during G-stage address translation, and the implementation behaves as though the
       Svade extension were not implemented for G-stage address translation. When ADUE=0, the

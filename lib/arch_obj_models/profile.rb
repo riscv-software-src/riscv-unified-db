@@ -7,12 +7,6 @@ require_relative "portfolio"
 # that each include an unprivileged profile (e.g., RVA20U64) and one more
 # privileged profiles (e.g., RVA20S64).
 class ProfileClass < PortfolioClass
-  # @param data [Hash<String, Object>] The data from YAML
-  # @param arch_def [ArchDef] Architecture spec
-  def initialize(data, arch_def)
-    super(data, arch_def)
-  end
-
   # @return [String] Name of the class
   def marketing_name = @data["marketing_name"]
 
@@ -28,7 +22,7 @@ class ProfileClass < PortfolioClass
   def profile_releases
     return @profile_releases unless @profile_releases.nil?
 
-    @profile_releases = @arch_def.profile_releases.select { |pr| pr.profile_class.name == name }
+    @profile_releases = @cfg_arch.profile_releases.select { |pr| pr.profile_class.name == name }
 
     @profile_releases
   end
@@ -38,7 +32,7 @@ class ProfileClass < PortfolioClass
     return @profiles unless @profiles.nil?
 
     @profiles = []
-    @arch_def.profiles.each do |profile|
+    @cfg_arch.profiles.each do |profile|
       if profile.profile_class.name == name
         @profiles << profile
       end
@@ -67,14 +61,7 @@ end
 # For example, the RVA20 profile release has profiles RVA20U64 and RVA20S64.
 # Note there is no Portfolio* base class for a ProfileRelease to inherit from since there is no
 # equivalent to a ProfileRelease in a Certificate so no potential for a shared base class.
-class ProfileRelease < ArchDefObject
-  # @param data [Hash<String, Object>] The data from YAML
-  # @param arch_def [ArchDef] Architecture spec
-  def initialize(data, arch_def)
-    super(data)
-    @arch_def = arch_def
-  end
-
+class ProfileRelease < DatabaseObjectect
   def marketing_name = @data["marketing_name"]
   def introduction = @data["introduction"]
   def state = @data["state"]
@@ -94,7 +81,7 @@ class ProfileRelease < ArchDefObject
 
   # @return [ProfileClass] Profile Class that this ProfileRelease belongs to
   def profile_class
-    profile_class = @arch_def.profile_class(@data["class"])
+    profile_class = @cfg_arch.profile_class(@data["class"])
     raise "No profile class named '#{@data["class"]}'" if profile_class.nil?
 
     profile_class
@@ -105,10 +92,8 @@ class ProfileRelease < ArchDefObject
     return @profiles unless @profiles.nil?
 
     @profiles = []
-    @arch_def.profiles.each do |profile|
-      if profile.profile_release.name == name
-        @profiles << profile
-      end
+    @data["profiles"].each do |profile_ref|
+      @profiles << @cfg_arch.ref(profile_ref["$ref"])
     end
     @profiles
   end
@@ -151,9 +136,6 @@ end
 
 # Representation of a specific profile in a profile release.
 class Profile < PortfolioInstance
-  def initialize(data, arch_def)
-    super(data, arch_def)
-  end
 
   # @return [String] The marketing name of the Profile
   def introduction = @data["introduction"]
@@ -161,8 +143,8 @@ class Profile < PortfolioInstance
 
   # @return [ProfileRelease] The profile release this profile belongs to
   def profile_release
-    profile_release = @arch_def.profile_release(@data["release"])
-    raise "No profile release named '#{@data["release"]}'" if profile_release.nil?
+    profile_release = @cfg_arch.ref(@data["release"]["$ref"])
+    raise "No profile release named '#{@data["release"]["$ref"]}'" if profile_release.nil?
 
     profile_release
   end
@@ -240,10 +222,10 @@ class Profile < PortfolioInstance
   def ext_req_to_adoc(ext_req)
     ret = []
 
-    ext = arch_def.extension(ext_req.name)
+    ext = cfg_arch.extension(ext_req.name)
     ret << "* *#{ext_req.name}* " + (ext.nil? ? "" : ext.long_name)
     ret << "+"
-    ret << "Version #{ext_req.version_requirement}"
+    ret << "Version #{ext_req.requirement_specs}"
 
     ret
   end
@@ -252,7 +234,7 @@ class Profile < PortfolioInstance
   # @return [Array<String>]
   def ext_note_to_adoc(ext_name)
     ret = []
- 
+
     unless extension_note(ext_name).nil?
       ret << "+"
       ret << "[NOTE]"
@@ -260,7 +242,7 @@ class Profile < PortfolioInstance
       ret << extension_note(ext_name)
       ret << "--"
     end
-  
+
     ret
   end
 end

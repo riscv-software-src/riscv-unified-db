@@ -7,9 +7,9 @@ long_name: Cache block zero instruction
 description: Cache block zero instruction
 type: unprivileged
 versions:
-- version: 1.0.1-b34ea8a
-  state: ratified
-  ratification_date: 2022-05
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2022-05
 params:
   CACHE_BLOCK_SIZE:
     description: |
