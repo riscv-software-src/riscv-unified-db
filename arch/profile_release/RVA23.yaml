@@ -1,4 +1,5 @@
-RVA23:
+$schema: profile_schema.json#
+  kind: profile
   name: RVA23
   marketing_name: RVA23
   class: RVA

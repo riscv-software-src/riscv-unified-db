@@ -1,6 +1,7 @@
-RVB23:
+$schema: profile_schema.json#    
+  kind: profile 
   name: RVB23
-  marketing_name: RVB23
+  marketing_name: RVB23 
   class: RVB
   release: 23
   state: ratified   # current status ["ratified", "development"]
