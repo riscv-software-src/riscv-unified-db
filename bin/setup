@@ -32,13 +32,16 @@ CONTAINER_TAG=`cat ${ROOT}/bin/.container-tag`
 #  1. devcontainer, if DEVCONTAINER_ENV is set in the enviornment
 #  2. the type stored in .container-type
 #  3. Docker, if DOCKER is set in the enviornment
-#  4. The choice made by the user, which will be cached in .container-type
+#  4. Singularity, if SINGULARITY is set in the enviornment
+#  5. The choice made by the user, which will be cached in .container-type
 if [ -v DEVCONTAINER_ENV ]; then
 CONTAINER_TYPE=devcontainer
 elif [ -f ${ROOT}/.container-type ]; then
 CONTAINER_TYPE=`cat ${ROOT}/.container-type`
 elif [ -v DOCKER ]; then
 CONTAINER_TYPE=docker
+elif [ -v SINGULARITY ]; then
+CONTAINER_TYPE=singularity
 else
   echo -e "UDB tools run in a container. Both Docker and Singularity/Apptainer are supported.\\n\\n1. Docker\\n2. Singularity\\n"
   while true; do
