@@ -55,6 +55,7 @@ def load_yaml_encoding(instr_name):
 def compare_yaml_json_encoding(yaml_match, yaml_vars, json_encoding_str):
     """
     Compare the YAML encoding (match + vars) with the JSON encoding (binary format).
+    If the JSON has a variable like vm[?], it should be treated as just vm.
     Return a list of differences.
     """
     if not yaml_match:
@@ -75,8 +76,7 @@ def compare_yaml_json_encoding(yaml_match, yaml_vars, json_encoding_str):
         high, low = parse_location(var["location"])
         yaml_var_positions[var["name"]] = (high, low)
 
-    # Tokenize JSON encoding
-    tokens = re.findall(r'(?:[01]|[A-Za-z0-9]+(?:\[\d+\])?)', json_encoding_str)
+    tokens = re.findall(r'(?:[01]|[A-Za-z0-9]+(?:\[\d+\]|\[\?\])?)', json_encoding_str)
     json_bits = []
     bit_index = 31
     for t in tokens:
@@ -85,6 +85,13 @@ def compare_yaml_json_encoding(yaml_match, yaml_vars, json_encoding_str):
 
     if bit_index != -1:
         return [f"JSON encoding does not appear to be 32 bits. Ends at bit {bit_index+1}."]
+
+    normalized_json_bits = []
+    for pos, tt in json_bits:
+        if re.match(r'vm\[[^\]]*\]', tt):
+            tt = 'vm'
+        normalized_json_bits.append((pos, tt))
+    json_bits = normalized_json_bits
 
     differences = []
 
@@ -103,7 +110,6 @@ def compare_yaml_json_encoding(yaml_match, yaml_vars, json_encoding_str):
             elif json_bit_str != yaml_bit:
                 differences.append(f"Bit {b}: YAML expects '{yaml_bit}' but JSON has '{json_bit_str}'")
         else:
-            # Variable bit in YAML
             if json_bit_str in ['0', '1']:
                 differences.append(f"Bit {b}: YAML variable bit but JSON is fixed '{json_bit_str}'")
 
@@ -117,7 +123,8 @@ def compare_yaml_json_encoding(yaml_match, yaml_vars, json_encoding_str):
             else:
                 json_var_fields.append('?')
 
-        field_names = set(re.findall(r'([A-Za-z0-9]+)\[\d+\]', ' '.join(json_var_fields)))
+        # Extract field names from something like varName[index]. After normalizing, vm and others won't have indices.
+        field_names = set(re.findall(r'([A-Za-z0-9]+)(?:\[\d+\]|\[\?\])?', ' '.join(json_var_fields)))
         if len(field_names) == 0:
             differences.append(f"Variable {var_name}: No corresponding field found in JSON bits {high}-{low}")
         elif len(field_names) > 1:
@@ -128,23 +135,19 @@ def compare_yaml_json_encoding(yaml_match, yaml_vars, json_encoding_str):
 def safe_print_instruction_details(name: str, data: dict, output_stream):
     """Print formatted instruction details and compare YAML/JSON encodings."""
     try:
-        # Print the instruction details without separating by category
         output_stream.write(f"\n{name} Instruction Details\n")
         output_stream.write("=" * 50 + "\n")
 
-        # Basic Information
         output_stream.write("\nBasic Information:\n")
         output_stream.write("-" * 20 + "\n")
         output_stream.write(f"Name:              {name}\n")
         output_stream.write(f"Assembly Format:   {safe_get(data, 'AsmString', 'N/A')}\n")
         output_stream.write(f"Size:              {safe_get(data, 'Size', 'N/A')} bytes\n")
 
-        # Location
         locs = safe_get(data, '!locs', [])
         loc = locs[0] if isinstance(locs, list) and len(locs) > 0 else "N/A"
         output_stream.write(f"Location:          {loc}\n")
 
-        # Operands
         output_stream.write("\nOperands:\n")
         output_stream.write("-" * 20 + "\n")
         try:
@@ -159,26 +162,26 @@ def safe_print_instruction_details(name: str, data: dict, output_stream):
         except:
             output_stream.write("Outputs:           N/A\n")
 
-        # Instruction Properties
-        output_stream.write("\nInstruction Properties:\n")
-        output_stream.write("-" * 20 + "\n")
-        output_stream.write(f"Commutable:        {'Yes' if safe_get(data, 'isCommutable', 0) else 'No'}\n")
-        output_stream.write(f"Memory Load:       {'Yes' if safe_get(data, 'mayLoad', 0) else 'No'}\n")
-        output_stream.write(f"Memory Store:      {'Yes' if safe_get(data, 'mayStore', 0) else 'No'}\n")
-        output_stream.write(f"Side Effects:      {'Yes' if safe_get(data, 'hasSideEffects', 0) else 'No'}\n")
+        # # Instruction Properties
+        # output_stream.write("\nInstruction Properties:\n")
+        # output_stream.write("-" * 20 + "\n")
+        # output_stream.write(f"Commutable:        {'Yes' if safe_get(data, 'isCommutable', 0) else 'No'}\n")
+        # output_stream.write(f"Memory Load:       {'Yes' if safe_get(data, 'mayLoad', 0) else 'No'}\n")
+        # output_stream.write(f"Memory Store:      {'Yes' if safe_get(data, 'mayStore', 0) else 'No'}\n")
+        # output_stream.write(f"Side Effects:      {'Yes' if safe_get(data, 'hasSideEffects', 0) else 'No'}\n")
 
-        # Scheduling Info
-        sched = safe_get(data, 'SchedRW', [])
-        if sched:
-            output_stream.write("\nScheduling Information:\n")
-            output_stream.write("-" * 20 + "\n")
-            output_stream.write("Operations:\n")
-            try:
-                for op in sched:
-                    if isinstance(op, dict):
-                        output_stream.write(f"  - {op.get('printable', 'N/A')}\n")
-            except:
-                output_stream.write("  - Unable to parse scheduling information\n")
+        # # Scheduling Info
+        # sched = safe_get(data, 'SchedRW', [])
+        # if sched:
+        #     output_stream.write("\nScheduling Information:\n")
+        #     output_stream.write("-" * 20 + "\n")
+        #     output_stream.write("Operations:\n")
+        #     try:
+        #         for op in sched:
+        #             if isinstance(op, dict):
+        #                 output_stream.write(f"  - {op.get('printable', 'N/A')}\n")
+        #     except:
+        #         output_stream.write("  - Unable to parse scheduling information\n")
 
         # Encoding
         output_stream.write("\nEncoding Pattern:\n")
@@ -194,28 +197,31 @@ def safe_print_instruction_details(name: str, data: dict, output_stream):
             # Reverse the bit order before joining
             encoding_bits.reverse()
             encoding = "".join(encoding_bits)
-            output_stream.write(f"Binary Format:     {encoding}\n")
+            output_stream.write(f"JSON Encoding:     {encoding}\n")
         except:
-            output_stream.write("Binary Format:     Unable to parse encoding\n")
+            output_stream.write("JSON Encoding:     Unable to parse encoding\n")
             encoding = ""
 
-        # Now compare YAML vs JSON encodings
+        # compare YAML vs JSON encodings
         yaml_match, yaml_vars = load_yaml_encoding(name)
-        if yaml_match is not None and encoding:
+        if yaml_match is not None:
+            output_stream.write(f"YAML Encoding:     {yaml_match}\n")
+        else:
+            output_stream.write("YAML Encoding:     Not found\n")
+
+        if yaml_match and encoding:
+            # Perform comparison
             differences = compare_yaml_json_encoding(yaml_match, yaml_vars, encoding)
-            if differences:
-                output_stream.write("\nDifferences in encoding:\n")
+            if differences and len(differences) > 0:
+                output_stream.write("\nEncodings do not match. Differences:\n")
                 for d in differences:
                     output_stream.write(f"  - {d}\n")
                     print(f"Difference in {name}: {d}", file=sys.stdout)  # Print to console
             else:
-                output_stream.write("\nNo encoding differences found.\n")
+                output_stream.write("\nEncodings Match: No differences found.\n")
         else:
-            # If we have no YAML match or no encoding, we note that we can't compare
-            if yaml_match is None:
-                output_stream.write("\nNo YAML encoding match found for comparison.\n")
-            if not encoding:
-                output_stream.write("\nNo JSON encoding found for comparison.\n")
+            # If we have no YAML match or no JSON encoding, we note that we can't compare
+            output_stream.write("\nComparison: Cannot compare encodings (missing YAML or JSON encoding).\n")
 
         output_stream.write("\n")
     except Exception as e:
