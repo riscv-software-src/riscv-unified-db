@@ -7,6 +7,7 @@
 .stamps
 .venv
 .asciidoctor
+.container-type
 diag-ditaa-*
 arch/manual/isa/**/riscv-isa-manual
 gen
