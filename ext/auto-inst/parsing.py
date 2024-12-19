@@ -244,23 +244,37 @@ def get_repo_instructions(repo_directory):
 
 def find_json_key(instr_name, json_data):
     """
-    Attempt to find a matching key in json_data for instr_name, considering different
-    naming conventions: replacing '.' with '_', and trying various case transformations.
+    Find a matching instruction in json_data by comparing against AsmString values.
+    Returns the matching key if found, None otherwise.
+    
+    Args:
+        instr_name (str): The instruction name from YAML
+        json_data (dict): The JSON data containing instruction information
+        
+    Returns:
+        str or None: The matching key from json_data if found, None otherwise
     """
-    lower_name = instr_name.lower()
-    lower_name_underscore = lower_name.replace('.', '_')
-    variants = {
-        lower_name,
-        lower_name_underscore,
-        instr_name.upper(),
-        instr_name.replace('.', '_').upper(),
-        instr_name.capitalize(),
-        instr_name.replace('.', '_').capitalize()
-    }
-
-    for v in variants:
-        if v in json_data:
-            return v
+    # First, normalize the instruction name for comparison
+    instr_name = instr_name.lower().strip()
+    
+    # Search through all entries in json_data
+    for key, value in json_data.items():
+        if not isinstance(value, dict):
+            continue
+            
+        # Get the AsmString value and normalize it
+        asm_string = safe_get(value, 'AsmString', '').lower().strip()
+        if not asm_string:
+            continue
+            
+        # Extract the base instruction name from AsmString
+        # AsmString might be in format like "add $rd, $rs1, $rs2" 
+        # We want just "add"
+        base_asm_name = asm_string.split()[0]
+        
+        if base_asm_name == instr_name:
+            return key
+            
     return None
 
 def run_parser(json_file, repo_directory, output_file="output.txt"):
