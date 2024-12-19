@@ -3,9 +3,9 @@ import json
 import re
 import sys
 from collections import defaultdict
-import yaml  
+import yaml
 
-REPO_INSTRUCTIONS = {} 
+REPO_INSTRUCTIONS = {}
 REPO_DIRECTORY = None
 
 def safe_get(data, key, default=""):
@@ -123,7 +123,7 @@ def compare_yaml_json_encoding(yaml_match, yaml_vars, json_encoding_str):
             else:
                 json_var_fields.append('?')
 
-        # Extract field names from something like varName[index]. After normalizing, vm and others won't have indices.
+        # Extract field names
         field_names = set(re.findall(r'([A-Za-z0-9]+)(?:\[\d+\]|\[\?\])?', ' '.join(json_var_fields)))
         if len(field_names) == 0:
             differences.append(f"Variable {var_name}: No corresponding field found in JSON bits {high}-{low}")
@@ -161,27 +161,6 @@ def safe_print_instruction_details(name: str, data: dict, output_stream):
             output_stream.write(f"Outputs:           {out_ops}\n")
         except:
             output_stream.write("Outputs:           N/A\n")
-
-        # # Instruction Properties
-        # output_stream.write("\nInstruction Properties:\n")
-        # output_stream.write("-" * 20 + "\n")
-        # output_stream.write(f"Commutable:        {'Yes' if safe_get(data, 'isCommutable', 0) else 'No'}\n")
-        # output_stream.write(f"Memory Load:       {'Yes' if safe_get(data, 'mayLoad', 0) else 'No'}\n")
-        # output_stream.write(f"Memory Store:      {'Yes' if safe_get(data, 'mayStore', 0) else 'No'}\n")
-        # output_stream.write(f"Side Effects:      {'Yes' if safe_get(data, 'hasSideEffects', 0) else 'No'}\n")
-
-        # # Scheduling Info
-        # sched = safe_get(data, 'SchedRW', [])
-        # if sched:
-        #     output_stream.write("\nScheduling Information:\n")
-        #     output_stream.write("-" * 20 + "\n")
-        #     output_stream.write("Operations:\n")
-        #     try:
-        #         for op in sched:
-        #             if isinstance(op, dict):
-        #                 output_stream.write(f"  - {op.get('printable', 'N/A')}\n")
-        #     except:
-        #         output_stream.write("  - Unable to parse scheduling information\n")
 
         # Encoding
         output_stream.write("\nEncoding Pattern:\n")
@@ -234,18 +213,11 @@ def get_repo_instructions(repo_directory):
     """
     repo_instructions = {}
     for root, _, files in os.walk(repo_directory):
-        rel_path = os.path.relpath(root, repo_directory)
-        if rel_path == '.':
-            category = "Other"
-        else:
-            parts = rel_path.split(os.sep)
-            category = parts[0] if parts else "Other"
-
         for file in files:
             if file.endswith(".yaml"):
                 instr_name = os.path.splitext(file)[0]
-                # Store lowercase key for easy lookup
-                repo_instructions[instr_name.lower()] = category
+                relative_path = os.path.relpath(root, repo_directory)
+                repo_instructions[instr_name.lower()] = relative_path
     return repo_instructions
 
 def find_json_key(instr_name, json_data):
@@ -269,21 +241,21 @@ def find_json_key(instr_name, json_data):
             return v
     return None
 
-def main():
+def run_parser(json_file, repo_directory, output_file="output.txt"):
+    """
+    Run the parser logic:
+    1. Get instructions from the repo directory.
+    2. Parse the JSON file and match instructions.
+    3. Generate output.txt with instruction details.
+    """
     global REPO_INSTRUCTIONS, REPO_DIRECTORY
-
-    if len(sys.argv) != 3:
-        print("Usage: python riscv_parser.py <tablegen_json_file> <arch_inst_directory>")
-        sys.exit(1)
-
-    json_file = sys.argv[1]
-    REPO_DIRECTORY = sys.argv[2]
+    REPO_DIRECTORY = repo_directory
 
     # Get instructions and categories from the repository structure
     REPO_INSTRUCTIONS = get_repo_instructions(REPO_DIRECTORY)
     if not REPO_INSTRUCTIONS:
         print("No instructions found in the provided repository directory.")
-        sys.exit(1)
+        return None
 
     try:
         # Read and parse JSON
@@ -291,7 +263,7 @@ def main():
             data = json.loads(f.read())
     except Exception as e:
         print(f"Error reading file: {str(e)}")
-        sys.exit(1)
+        return None
 
     all_instructions = []
 
@@ -313,7 +285,7 @@ def main():
     # Sort all instructions by name
     all_instructions.sort(key=lambda x: x[0].lower())
 
-    with open("output.txt", "w") as outfile:
+    with open(output_file, "w") as outfile:
         outfile.write("RISC-V Instruction Summary\n")
         outfile.write("=" * 50 + "\n")
         total = len(all_instructions)
@@ -324,11 +296,24 @@ def main():
         outfile.write("\nDETAILED INSTRUCTION INFORMATION\n")
         outfile.write("=" * 80 + "\n")
 
-        # Print details for each instruction directly, no category splitting
+        # Print details for each instruction directly
         for name, instr_data in all_instructions:
             safe_print_instruction_details(name, instr_data, outfile)
 
-    print("Output has been written to output.txt")
+    print(f"Output has been written to {output_file}")
+    return output_file
+
+def main():
+    if len(sys.argv) != 3:
+        print("Usage: python riscv_parser.py <tablegen_json_file> <arch_inst_directory>")
+        sys.exit(1)
+
+    json_file = sys.argv[1]
+    repo_directory = sys.argv[2]
+
+    result = run_parser(json_file, repo_directory, output_file="output.txt")
+    if result is None:
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()
