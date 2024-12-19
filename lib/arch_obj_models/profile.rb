@@ -111,6 +111,27 @@ class ProfileRelease < DatabaseObjectect
 
     @referenced_extensions
   end
+
+  # @return [String] Given an extension +ext_name+, return the presence as a string.
+  #                  Returns the greatest presence string across all profiles in the release.
+  #                  If the extension name isn't found in the release, return "-".
+  def extension_presence(ext_name)
+    greatest_presence = nil
+
+    profiles.each do |profile|
+      presence = profile.extension_presence_obj(ext_name)
+
+      unless presence.nil?
+        if greatest_presence.nil?
+          greatest_presence = presence
+        elsif presence > greatest_presence
+          greatest_presence = presence
+        end
+      end
+    end
+
+    greatest_presence.nil? ? "-" : greatest_presence.to_s_concise
+  end
 end
 
 # Representation of a specific profile in a profile release.
@@ -204,7 +225,7 @@ class Profile < PortfolioInstance
     ext = cfg_arch.extension(ext_req.name)
     ret << "* *#{ext_req.name}* " + (ext.nil? ? "" : ext.long_name)
     ret << "+"
-    ret << "Version #{ext_req.requirement_specs}"
+    ret << "Version #{ext_req.requirement_specs_to_s}"
 
     ret
   end

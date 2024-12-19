@@ -107,7 +107,7 @@ class Schema
           raise "to_pretty_s unknown type #{schema_hash["type"]} in #{schema_hash}"
         end
       else
-        raise "TODO: to_pretty_s schema for #{schema_hash}"
+        raise "Unsupported schema for #{schema_hash}"
       end
     end
 

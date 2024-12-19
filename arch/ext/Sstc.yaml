@@ -3,8 +3,8 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Sstc
-long_name: Superivisor mode timer interrupts
-description: Superivisor mode timer interrupts
+long_name: Supervisor-mode timer interrupts
+description: Supervisor-mode timer interrupts
 type: privileged
 versions:
   - version: "0.9.0"
