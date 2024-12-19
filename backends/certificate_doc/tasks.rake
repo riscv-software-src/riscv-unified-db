@@ -29,7 +29,6 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
     cert_model = cfg_arch.cert_model(cert_model_name)
     raise "No certificate model defined for #{cert_model_name}" if cert_model.nil?
 
-    # Switch to the generated certificate arch def
     # XXX - Add this to profile releases
     cfg_arch = cert_model.to_cfg_arch
     cert_model = cfg_arch.cert_model(cert_model_name)

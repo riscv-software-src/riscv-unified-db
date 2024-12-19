@@ -6,7 +6,7 @@ require_relative "../version"
 
 # A parameter (AKA option, AKA implementation-defined value) supported by an extension
 class ExtensionParameter
-  # @return [ConfiguredArchitecture] The defining Arch def
+  # @return [ConfiguredArchitecture] The defining configured architecture
   attr_reader :cfg_arch
 
   # @return [String] Parameter name
@@ -293,14 +293,14 @@ class ExtensionVersion
     @cfg_arch = cfg_arch
 
     @ext = @cfg_arch.extension(@name)
-    raise "Extension #{name} not found in arch def" if @ext.nil?
+    raise "Extension #{name} not found in configured architecture #{cfg_arch.name}" if @ext.nil?
 
     @data = @ext.data["versions"].find { |v| VersionSpec.new(v["version"]) == @version_spec }
 
     if fail_if_version_does_not_exist && @data.nil?
-      raise ArgumentError, "#{@name}, Version #{version_str} is not defined"
+      raise ArgumentError, "Version #{version_str} of #{@name} extension in #{cfg_arch.name} is not defined"
     elsif @data.nil?
-      warn "#{@name}, Version #{version_str} is not defined"
+      warn "Version #{version_str} of #{@name} extension in #{cfg_arch.name} is not defined"
     end
   end
 
@@ -718,7 +718,7 @@ class ExtensionRequirement
     @cfg_arch = cfg_arch
     @ext = @cfg_arch.extension(@name)
 
-    raise ArgumentError, "Could not find extension named '#{@name}'" if @ext.nil?
+    raise ArgumentError, "Could not find extension named '#{@name}' in #{@cfg_arch.name}" if @ext.nil?
 
     requirements =
       if requirements.empty?

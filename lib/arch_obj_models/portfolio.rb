@@ -70,7 +70,6 @@ class PortfolioInstance < DatabaseObjectect
   # @param ext_name [String]
   # @param ext_versions [Array<ExtensionVersion>]
   # @return [Array<String>]
-  # JamesBall
   def version_greatest_presence(ext_name, ext_versions)
     presences = []
 
@@ -184,6 +183,13 @@ class PortfolioInstance < DatabaseObjectect
     @in_scope_extensions
   end
 
+  # @return [Array<Instruction>] Sorted list of all instructions associated with extensions listed as
+  #                              mandatory or optional in portfolio. Uses minimum version of
+  #                              extension version that meets extension requirement specified in portfolio.
+  def in_scope_instructions
+    in_scope_ext_reqs.map { |ext_req| ext_req.implemented_instructions }.flatten.uniq.sort
+  end
+
   # @return [Boolean] Does the profile differentiate between different types of optional.
   def uses_optional_types?
     return @uses_optional_types unless @uses_optional_types.nil?
@@ -201,6 +207,9 @@ class PortfolioInstance < DatabaseObjectect
     @uses_optional_types
   end
 
+  # Called by rakefile when generating a particular portfolio instance.
+  # Creates an in-memory data structure used by all portfolio routines that access a cfg_arch.
+  #
   # @return [ConfiguredArchitecture] A partially-configured architecture definition corresponding to this portfolio.
   def to_cfg_arch
     return @generated_cfg_arch unless @generated_cfg_arch.nil?

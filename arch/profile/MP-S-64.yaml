@@ -36,7 +36,7 @@ extensions:
       optional: transitory
     version: "= 1.11"
     note: Made this a transitory option
-  MockExt:
+  Xmock:
     presence: mandatory
     version: "~> 0.9.9"
 extra_notes:
