@@ -246,7 +246,7 @@ module Idl
       if @type_name == "Bits"
         "#{' '*indent}Bits<#{bits_expression.gen_cpp(symtab, 0, indent_spaces:)}>"
       elsif @type_name == "XReg"
-        "#{' '*indent}Bits<#{symtab.mxlen}>"
+        "#{' '*indent}Bits<#{symtab.cfg_arch.possible_xlens.max()}>"
       elsif @type_name == "Boolean"
         "#{' '*indent}bool"
       elsif @type_name == "U32"
