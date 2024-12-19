@@ -7,7 +7,7 @@ long_name: No synopsis available.
 description: |
   No description available.
 definedBy:
-  anyOf: [Q, Zfa]
+  allOf: [Q, Zfa]
 assembly: fd, qs1
 encoding:
   match: 111101100001-----000-----1010011

@@ -7,7 +7,7 @@ long_name: No synopsis available.
 description: |
   No description available.
 definedBy:
-  anyOf: [D, Zfa]
+  allOf: [D, Zfa]
 assembly: xd, xs1, xs2
 encoding:
   match: 1010001----------100-----1010011
