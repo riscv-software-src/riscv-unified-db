@@ -225,7 +225,7 @@ class Profile < PortfolioInstance
     ext = cfg_arch.extension(ext_req.name)
     ret << "* *#{ext_req.name}* " + (ext.nil? ? "" : ext.long_name)
     ret << "+"
-    ret << "Version #{ext_req.requirement_specs}"
+    ret << "Version #{ext_req.requirement_specs_to_s}"
 
     ret
   end

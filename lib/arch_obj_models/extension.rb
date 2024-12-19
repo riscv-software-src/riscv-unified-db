@@ -625,19 +625,6 @@ class ExtensionPresence
     end
   end
 
-  # @overload <=>(other)
-  #   @param other [String] A presence string
-  #   @return [Integer] Sort alphabetically by presence, then alphabetically by optional_type
-  def <=>(other)
-    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
-
-    if @presence != other.presence
-      @presence <=> other.presence
-    else
-      @optional_type <=> other.optional_type
-    end
-  end
-
   ######################################################
   # Following comparison operators follow these rules:
   #   - "mandatory" is greater than "optional"
@@ -695,8 +682,12 @@ class ExtensionRequirement
   # @return [Array<RequirementSpec>] Set of requirement specifications
   def requirement_specs = @requirements
 
+  def requirement_specs_to_s
+    "#{@requirements.map(&:to_s).join(', ')}"
+  end
+
   def to_s
-    "#{name} #{@requirements.map(&:to_s).join(', ')}"
+    "#{name} " + requirement_specs_to_s
   end
 
   # @return [Extension] The extension that this requirement is for
