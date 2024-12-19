@@ -187,7 +187,7 @@ class PortfolioInstance < DatabaseObjectect
   #                              mandatory or optional in portfolio. Uses minimum version of
   #                              extension version that meets extension requirement specified in portfolio.
   def in_scope_instructions
-    in_scope_ext_reqs.map { |ext_req| ext_req.implemented_instructions }.flatten.uniq.sort
+    in_scope_extensions.map { |ext| ext.instructions }.flatten.uniq.sort
   end
 
   # @return [Boolean] Does the profile differentiate between different types of optional.
