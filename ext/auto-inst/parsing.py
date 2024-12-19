@@ -75,8 +75,16 @@ def compare_yaml_json_encoding(instr_name, yaml_match, yaml_vars, json_encoding_
         return [f"YAML match pattern length is {len(yaml_pattern_str)}, expected {expected_length}. Cannot compare properly."]
 
     def parse_location(loc_str):
-        high, low = loc_str.split('-')
-        return int(high), int(low)
+        # Ensure loc_str is a string
+        loc_str = str(loc_str).strip()
+        if '-' in loc_str:
+            high, low = loc_str.split('-')
+            return int(high), int(low)
+        else:
+            # If no dash, treat it as a single bit field
+            val = int(loc_str)
+            return val, val
+
 
     yaml_var_positions = {}
     for var in yaml_vars:
