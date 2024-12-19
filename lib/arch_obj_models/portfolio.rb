@@ -49,36 +49,49 @@ class PortfolioInstance < DatabaseObjectect
   # @return [Gem::Version] Semantic version of the PortfolioInstance
   def version = Gem::Version.new(@data["version"])
 
-  # @return [String] Given an extension +ext_name+, return the presence as a string.
-  #                  If the extension name isn't found in the portfolio, return "-".
-  def extension_presence(ext_name)
+  # @return [ExtensionPresence] Given an extension +ext_name+, return the presence.
+  #                             If the extension name isn't found in the portfolio, return nil.
+  def extension_presence_obj(ext_name)
     # Get extension information from YAML for passed in extension name.
     ext_data = @data["extensions"][ext_name]
 
-    ext_data.nil? ? "-" : ExtensionPresence.new(ext_data["presence"]).to_s
+    ext_data.nil? ? nil : ExtensionPresence.new(ext_data["presence"])
   end
 
-  # Returns the strongest presence string for each of the specified versions.
+  # @return [String] Given an extension +ext_name+, return the presence as a string.
+  #                  If the extension name isn't found in the portfolio, return "-".
+  def extension_presence(ext_name)
+    ext_presence_obj = extension_presence_obj(ext_name)
+
+    ext_presence_obj.nil? ? "-" : ext_presence_obj.to_s
+  end
+
+  # Returns the greatest presence string for each of the specified versions.
   # @param ext_name [String]
   # @param ext_versions [Array<ExtensionVersion>]
   # @return [Array<String>]
-  def version_strongest_presence(ext_name, ext_versions)
+  def version_greatest_presence(ext_name, ext_versions)
     presences = []
 
     # See if any extension requirement in this profile lists this version as either mandatory or optional.
     ext_versions.map do |v|
-      mandatory = mandatory_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(v) }
-      optional = optional_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(v) }
+      greatest_presence = nil
 
-      # Just show strongest presence (mandatory stronger than optional).
-      presences <<
-        if mandatory
-          ExtensionPresence.mandatory
-        elsif optional
-          ExtensionPresence.optional
-        else
-          "-"
+      in_scope_ext_reqs.each do |ext_req|
+        if ext_req.satisfied_by?(v)
+          presence = extension_presence_obj(ext_name)
+
+          unless presence.nil?
+            if greatest_presence.nil?
+              greatest_presence = presence
+            elsif presence > greatest_presence
+              greatest_presence = presence
+            end
+          end
         end
+      end
+
+      presences << (greatest_presence.nil? ? "-" : greatest_presence.to_s_concise)
     end
 
     presences
@@ -108,13 +121,23 @@ class PortfolioInstance < DatabaseObjectect
       desired_presence.is_a?(ExtensionPresence) ? desired_presence :
       ExtensionPresence.new(desired_presence)
 
+    missing_ext = false
+
     @data["extensions"]&.each do |ext_name, ext_data|
       next if ext_name[0] == "$"
+
+      # Does extension even exist?
+      # If not, don't raise an error right away so we can find all of the missing extensions and report them all.
+      ext = cfg_arch.extension(ext_name)
+      if ext.nil?
+        puts "Extension #{ext_name} for #{name} not found in database"
+        missing_ext = true
+      end
 
       actual_presence = ext_data["presence"]    # Could be a String or Hash
       raise "Missing extension presence for extension #{ext_name}" if actual_presence.nil?
 
-      # Convert String or Hash to object.
+      # Convert presence String or Hash to object.
       actual_presence_obj = ExtensionPresence.new(actual_presence)
 
       match =
@@ -137,6 +160,11 @@ class PortfolioInstance < DatabaseObjectect
           end
       end
     end
+
+    # TODO: Change to "raise" when missing extensions added to database so we can make progress until then.
+    # See https://github.com/riscv-software-src/riscv-unified-db/issues/320
+    puts "One or more extensions referenced by #{name} missing in database" if missing_ext
+
     in_scope_ext_reqs
   end
 
@@ -148,17 +176,18 @@ class PortfolioInstance < DatabaseObjectect
   def in_scope_extensions
     return @in_scope_extensions unless @in_scope_extensions.nil?
 
-    @in_scope_extensions = in_scope_ext_reqs.map do |er|
-      obj = cfg_arch.extension(er.name)
-
-      # @todo: change this to raise once all the profile extensions
-      #        are defined
-      warn "Extension #{er.name} is not defined" if obj.nil?
-
-      obj
-    end.reject(&:nil?)
+    @in_scope_extensions = in_scope_ext_reqs.map do |ext_req|
+      cfg_arch.extension(ext_req.name)
+    end.reject(&:nil?)  # Filter out extensions that don't exist yet.
 
     @in_scope_extensions
+  end
+
+  # @return [Array<Instruction>] Sorted list of all instructions associated with extensions listed as
+  #                              mandatory or optional in portfolio. Uses minimum version of
+  #                              extension version that meets extension requirement specified in portfolio.
+  def in_scope_instructions
+    in_scope_extensions.map { |ext| ext.instructions }.flatten.uniq.sort
   end
 
   # @return [Boolean] Does the profile differentiate between different types of optional.
@@ -178,6 +207,9 @@ class PortfolioInstance < DatabaseObjectect
     @uses_optional_types
   end
 
+  # Called by rakefile when generating a particular portfolio instance.
+  # Creates an in-memory data structure used by all portfolio routines that access a cfg_arch.
+  #
   # @return [ConfiguredArchitecture] A partially-configured architecture definition corresponding to this portfolio.
   def to_cfg_arch
     return @generated_cfg_arch unless @generated_cfg_arch.nil?
@@ -198,7 +230,7 @@ class PortfolioInstance < DatabaseObjectect
       "params" => all_in_scope_ext_params.select(&:single_value?).map { |p| [p.name, p.value] }.to_h
     }
 
-    # XXX Add list of prohibited_extensions
+    # TODO: Add list of prohibited_extensions
 
     @generated_cfg_arch =
       Dir.mktmpdir do |dir|

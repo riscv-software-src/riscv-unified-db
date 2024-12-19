@@ -9,7 +9,7 @@ type: privileged
 versions:
   - version: "1.12.0"
     state: ratified
-    ratification_date: unknown
+    ratification_date: null
     url: https://github.com/riscv/riscv-isa-manual/releases/download/Priv-v1.12/riscv-privileged-20211203.pdf
     requires:
       name: Sv39

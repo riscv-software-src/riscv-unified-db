@@ -7,11 +7,13 @@ rule %r{#{$root}/gen/profile_doc/adoc/.*\.adoc} => [
   Dir.glob("#{$root}/arch/profile_release/**/*.yaml")
 ].flatten do |t|
   profile_release_name = Pathname.new(t.name).basename(".adoc").to_s
-
   profile_release = cfg_arch_for("_").profile_release(profile_release_name)
   raise ArgumentError, "No profile release named '#{profile_release_name}'" if profile_release.nil?
 
+  # Set globals for ERB template.
   profile_class = profile_release.profile_class
+  portfolio_class = profile_class
+  portfolio = profile_release
 
   template_path = Pathname.new "#{$root}/backends/profile_doc/templates/profile.adoc.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")

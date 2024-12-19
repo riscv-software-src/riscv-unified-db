@@ -6,7 +6,7 @@ require_relative "../version"
 
 # A parameter (AKA option, AKA implementation-defined value) supported by an extension
 class ExtensionParameter
-  # @return [ConfiguredArchitecture] The defining Arch def
+  # @return [ConfiguredArchitecture] The defining configured architecture
   attr_reader :cfg_arch
 
   # @return [String] Parameter name
@@ -293,14 +293,14 @@ class ExtensionVersion
     @cfg_arch = cfg_arch
 
     @ext = @cfg_arch.extension(@name)
-    raise "Extension #{name} not found in arch def" if @ext.nil?
+    raise "Extension #{name} not found in configured architecture #{cfg_arch.name}" if @ext.nil?
 
     @data = @ext.data["versions"].find { |v| VersionSpec.new(v["version"]) == @version_spec }
 
     if fail_if_version_does_not_exist && @data.nil?
-      raise ArgumentError, "#{@name}, Version #{version_str} is not defined"
+      raise ArgumentError, "Version #{version_str} of #{@name} extension in #{cfg_arch.name} is not defined"
     elsif @data.nil?
-      warn "#{@name}, Version #{version_str} is not defined"
+      warn "Version #{version_str} of #{@name} extension in #{cfg_arch.name} is not defined"
     end
   end
 
@@ -558,8 +558,8 @@ class ExtensionPresence
     end
   end
 
-  def mandatory? = (@presence == mandatory)
-  def optional? = (@presence == optional)
+  def mandatory? = (@presence == "mandatory")
+  def optional? = (@presence == "optional")
 
   # Class methods
   def self.mandatory = "mandatory"
@@ -604,6 +604,10 @@ class ExtensionPresence
     @optional_type.nil? ? "#{presence}" : "#{presence} (#{optional_type})"
   end
 
+  def to_s_concise
+    "#{presence}"
+  end
+
   # @overload ==(other)
   #   @param other [String] A presence string
   #   @return [Boolean] whether or not this ExtensionPresence has the same presence (ignores optional_type)
@@ -621,15 +625,43 @@ class ExtensionPresence
     end
   end
 
-  # Sorts by presence, then by optional_type
-  def <=>(other)
-    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
+  ######################################################
+  # Following comparison operators follow these rules:
+  #   - "mandatory" is greater than "optional"
+  #   - optional_types all have same rank
+  #   - equals compares presence and then optional_type
+  ######################################################
 
-    if @presence != other.presence
-      @presence <=> other.presence
-    else
-      @optional_type <=> other.optional_type
-    end
+  # @overload >(other)
+  #   @param other [ExtensionPresence] An extension presence object
+  #   @return [Boolean] Whether or not this ExtensionPresence is greater-than the other
+  def >(other)
+    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
+    (self.mandatory? && other.optional?)
+  end
+
+  # @overload >=(other)
+  #   @param other [ExtensionPresence] An extension presence object
+  #   @return [Boolean] Whether or not this ExtensionPresence is greater-than or equal to the other
+  def >=(other)
+    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
+    (self > other) || (self == other)
+  end
+
+  # @overload <(other)
+  #   @param other [ExtensionPresence] An extension presence object
+  #   @return [Boolean] Whether or not this ExtensionPresence is less-than the other
+  def <(other)
+    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
+    (self.optional? && other.mandatory?)
+  end
+
+  # @overload <=(other)
+  #   @param other [ExtensionPresence] An extension presence object
+  #   @return [Boolean] Whether or not this ExtensionPresence is less-than or equal to the other
+  def <=(other)
+    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
+    (self < other) || (self == other)
   end
 end
 
@@ -650,8 +682,12 @@ class ExtensionRequirement
   # @return [Array<RequirementSpec>] Set of requirement specifications
   def requirement_specs = @requirements
 
+  def requirement_specs_to_s
+    "#{@requirements.map(&:to_s).join(', ')}"
+  end
+
   def to_s
-    "#{name} #{@requirements.map(&:to_s).join(', ')}"
+    "#{name} " + requirement_specs_to_s
   end
 
   # @return [Extension] The extension that this requirement is for
@@ -673,7 +709,7 @@ class ExtensionRequirement
     @cfg_arch = cfg_arch
     @ext = @cfg_arch.extension(@name)
 
-    raise ArgumentError, "Could not find extension named '#{@name}'" if @ext.nil?
+    raise ArgumentError, "Could not find extension named '#{@name}' in #{@cfg_arch.name}" if @ext.nil?
 
     requirements =
       if requirements.empty?
@@ -721,7 +757,7 @@ class ExtensionRequirement
           end
         end
       else
-        raise ArgumentError, "Single argument must be an ExtensionVersion or ExtensionRquirement"
+        raise ArgumentError, "Single argument must be an ExtensionVersion or ExtensionRequirement"
       end
     elsif args.size == 2
       raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
