@@ -17,23 +17,22 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
 
   base = cert_model_obj["base"]
   raise "Missing certificate model base" if base.nil?
-  
+
   file "#{$root}/gen/certificate_doc/adoc/#{cert_model_name}.adoc" => [
     "#{$root}/arch/certificate_model/#{cert_model_name}.yaml",
     "#{$root}/arch/certificate_class/#{cert_class_name}.yaml",
     "#{CERT_DOC_DIR}/templates/certificate.adoc.erb",
-    __FILE__,
-    "#{$root}/.stamps/arch-gen-_#{base}.stamp"
+    __FILE__
   ] do |t|
     # TODO: schema validation
-    arch_def = arch_def_for("_#{base}")
-    cert_model = arch_def.cert_model(cert_model_name)
+    cfg_arch = cfg_arch_for("rv#{base}")
+    cert_model = cfg_arch.cert_model(cert_model_name)
     raise "No certificate model defined for #{cert_model_name}" if cert_model.nil?
 
     # Switch to the generated certificate arch def and set some variables available to ERB template.
     # XXX - Add this to profile releases
-    arch_def = cert_model.to_arch_def
-    cert_model = arch_def.cert_model(cert_model_name)
+    cfg_arch = cert_model.to_cfg_arch
+    cert_model = cfg_arch.cert_model(cert_model_name)
     portfolio = cert_model
     cert_class = cert_model.cert_class
     portfolio_class = cert_class
@@ -42,9 +41,9 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
 
     erb = ERB.new(File.read("#{CERT_DOC_DIR}/templates/certificate.adoc.erb"), trim_mode: "-")
     erb.filename = "#{CERT_DOC_DIR}/templates/certificate.adoc.erb"
-    
+
     FileUtils.mkdir_p File.dirname(t.name)
-    File.write t.name, AsciidocUtils.resolve_links(arch_def.find_replace_links(erb.result(binding)))
+    File.write t.name, AsciidocUtils.resolve_links(cfg_arch.find_replace_links(erb.result(binding)))
     puts "Generated adoc source at #{t.name}"
   end
 

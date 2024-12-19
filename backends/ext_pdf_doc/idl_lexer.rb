@@ -5,7 +5,7 @@ module Rouge
     class Idl < RegexLexer
       tag "idl"
       filenames "idl", "isa"
-      
+
       title "IDL"
       desc "ISA Description Language"
 

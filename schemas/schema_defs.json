@@ -4,7 +4,7 @@
   "title": "Common patterns used by all schemas",
 
   "$defs": {
-    "__source": {
+    "$source": {
       "type": "string",
       "format": "uri-reference",
       "description": "Path to the source file containing this object"
@@ -13,10 +13,18 @@
       "type": "string",
       "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
     },
+    "rvi_version": {
+      "type": "string",
+      "pattern": "^[0-9]+(\\.[0-9]+(\\.[0-9]+(-pre)?)?)?$"
+    },
     "field_location": {
       "oneOf": [
-        {"type": "number", "description": "Location of a single bit"},
-        {"type": "string", "pattern": "^[0-9]+-[0-9]+$", "description": "Location range of a multi-bit field"}
+        { "type": "number", "description": "Location of a single bit" },
+        {
+          "type": "string",
+          "pattern": "^[0-9]+-[0-9]+$",
+          "description": "Location range of a multi-bit field"
+        }
       ],
       "description": "Location of a field in a register"
     },
@@ -54,15 +62,51 @@
         "nonstandard-released"
       ]
     },
+    "license": {
+      "description": "License that applies to the textual documentation for this extension",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "License name"
+        },
+        "id": {
+          "type": "string",
+          "description": "License identifier"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Link to license text"
+        },
+        "text_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Link to license text"
+        }
+      },
+      "additionalProperties": false
+    },
+    "company": {
+      "description": "A company",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the company. Should be \"RISC-V International\" for standard extensions"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Website of the company. Should be \"https://riscv.org\" for standard extensions"
+        }
+      }
+    },
     "extension_presence": {
       "oneOf": [
         {
           "type": "string",
-          "enum": [
-            "mandatory",
-            "optional",
-            "prohibited"
-          ]
+          "enum": ["mandatory", "optional", "prohibited"]
         },
         {
           "type": "object",
@@ -80,18 +124,19 @@
     "date": {
       "type": "string",
       "format": "date",
-      "description": "A specific day in YYYY-MM-DD format, for example 2018-11-13"
+      "description": "A specific day in YYYY-MM-DD format",
+      "examples": ["2018-11-13", "2024-12-31"]
     },
     "extension_name": {
       "type": "string",
-      "pattern": "^([A-WY])|([SXZ][a-z0-9]+)$"
+      "pattern": "^(([A-WY])|([SXZ][a-z0-9]+))$"
     },
     "extension_version": {
-      "$ref": "#/$defs/semantic_version"
+      "$ref": "#/$defs/rvi_version"
     },
     "requirement_string": {
       "type": "string",
-      "pattern": "^((>=)|(>)|(~>)|(<)|(<=)|(=))\\s*[0-9]+(\\.[0-9]+(\\.[0-9]+(-[a-fA-F0-9]+)?)?)?$"
+      "pattern": "^((>=)|(>)|(~>)|(<)|(<=)|(=))?\\s*[0-9]+(\\.[0-9]+(\\.[0-9]+(-[a-fA-F0-9]+)?)?)?$"
     },
     "version_requirements": {
       "description": "A (set of) version requirements",
@@ -137,7 +182,6 @@
           "additionalProperties": false
         }
       ]
-
     },
     "requires_entry": {
       "oneOf": [

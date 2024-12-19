@@ -8,7 +8,7 @@ description: |
   Divide rs1 by rs2, and store the result in rd. The remainder is discarded.
 
   Division by zero will put -1 into rd.
-  
+
   Division resulting in signed overflow (when most negative number is divided by -1)
   will put the most negative number into rd;
 definedBy: M
@@ -16,12 +16,12 @@ assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------100-----0110011
   variables:
-  - name: rs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -50,7 +50,6 @@ operation(): |
     X[rd] = $signed(src1) / $signed(src2);
   }
 
-
 sail(): |
   {
     if extension("M") then {
@@ -68,7 +67,3 @@ sail(): |
       RETIRE_FAIL
     }
   }
-
-
-
-

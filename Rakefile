@@ -9,7 +9,7 @@ require "ruby-progressbar"
 require "yard"
 require "minitest/test_task"
 
-require_relative $root / "lib" / "validate"
+require_relative $root / "lib" / "architecture"
 
 directory "#{$root}/.stamps"
 
@@ -19,22 +19,50 @@ end
 
 directory "#{$root}/.stamps"
 
-file "#{$root}/.stamps/dev_gems" => "#{$root}/.stamps" do
-  Dir.chdir($root) do
-    sh "bundle config set --local with development"
-    sh "bundle install"
-    FileUtils.touch "#{$root}/.stamps/dev_gems"
-  end
+def cfg_arch_for(config_name)
+  Rake::Task["#{$root}/.stamps/resolve-#{config_name}.stamp"].invoke
+
+  @cfg_archs ||= {}
+  return @cfg_archs[config_name] if @cfg_archs.key?(config_name)
+
+  @cfg_archs[config_name] =
+    ConfiguredArchitecture.new(
+      config_name,
+      $root / "gen" / "resolved_arch" / config_name,
+      overlay_path: $root / "cfgs" / config_name / "arch_overlay"
+    )
 end
 
 namespace :gen do
   desc "Generate documentation for the ruby tooling"
   task tool_doc: "#{$root}/.stamps/dev_gems" do
     Dir.chdir($root) do
-      sh "bundle exec yard doc --yardopts arch_def.yardopts"
+      sh "bundle exec yard doc --yardopts cfg_arch.yardopts"
       sh "bundle exec yard doc --yardopts idl.yardopts"
     end
   end
+
+  desc "Resolve the standard in arch/, and write it to resolved_arch/"
+  task "resolved_arch" do
+    sh "#{$root}/.home/.venv/bin/python3 lib/yaml_resolver.py resolve arch resolved_arch"
+  end
+end
+
+# rule to generate standard for any configurations with an overlay
+rule %r{#{$root}/.stamps/resolve-.+\.stamp} => proc { |tname|
+  cfg_name = File.basename(tname, ".stamp").sub("resolve-", "")
+  arch_files = Dir.glob("#{$root}/arch/**/*.yaml")
+  overlay_files = Dir.glob("#{$root}/cfgs/#{cfg_name}/arch_overlay/**/*.yaml")
+  [
+    "#{$root}/.stamps",
+    "#{$root}/lib/yaml_resolver.py"
+  ] + arch_files + overlay_files
+} do |t|
+  cfg_name = File.basename(t.name, ".stamp").sub("resolve-", "")
+  sh "#{$root}/.home/.venv/bin/python3 lib/yaml_resolver.py merge arch cfgs/#{cfg_name}/arch_overlay gen/arch/#{cfg_name}"
+  sh "#{$root}/.home/.venv/bin/python3 lib/yaml_resolver.py resolve gen/arch/#{cfg_name} gen/resolved_arch/#{cfg_name}"
+
+  FileUtils.touch t.name
 end
 
 namespace :serve do
@@ -55,29 +83,30 @@ namespace :serve do
   end
 end
 
-desc "Run the IDL compiler test suite"
-task :idl_test do
-  t = Minitest::TestTask.new(:lib_test)
-  t.test_globs = ["#{$root}/lib/idl/tests/test_*.rb"]
-  t.process_env
-  ruby t.make_test_cmd
-end
+namespace :test do
+  # "Run the IDL compiler test suite"
+  task :idl_compiler do
+    t = Minitest::TestTask.new(:lib_test)
+    t.test_globs = ["#{$root}/lib/idl/tests/test_*.rb"]
+    t.process_env
+    ruby t.make_test_cmd
+  end
 
-desc "Run the Ruby library test suite"
-task :lib_test do
-  t = Minitest::TestTask.new(:lib_test)
-  t.test_globs = ["#{$root}/lib/test/test_*.rb"]
-  t.process_env
-  ruby t.make_test_cmd
+  # "Run the Ruby library test suite"
+  task :lib do
+    t = Minitest::TestTask.new(:lib_test)
+    t.test_globs = ["#{$root}/lib/test/test_*.rb"]
+    t.process_env
+    ruby t.make_test_cmd
+  end
 end
 
 desc "Clean up all generated files"
 task :clean do
-  FileUtils.rm_rf $root / "gen"
-  FileUtils.rm_rf $root / ".stamps"
+  warn "Don't run clean using Rake. Run `./do clean` (alias for `./bin/clean`) instead."
 end
 
-namespace :validate do
+namespace :test do
   task :insts do
     puts "Checking instruction encodings..."
     inst_paths = Dir.glob("#{$root}/arch/inst/**/*.yaml").map { |f| Pathname.new(f) }
@@ -86,42 +115,33 @@ namespace :validate do
     end
     puts "All instruction encodings pass basic sanity tests"
   end
-  task schema: "gen:arch" do
-    validator = Validator.instance
+  task schema: "gen:resolved_arch" do
     puts "Checking arch files against schema.."
-    arch_files = Dir.glob("#{$root}/arch/**/*.yaml")
-    progressbar = ProgressBar.create(total: arch_files.size)
-    arch_files.each do |f|
-      progressbar.increment
-      validator.validate(f)
-    end
-    puts "All files validate against their schema"  
+    Architecture.new("#{$root}/resolved_arch").validate(show_progress: true)
+    puts "All files validate against their schema"
   end
-  task idl: ["gen:arch", "#{$root}/.stamps/arch-gen-_32.stamp", "#{$root}/.stamps/arch-gen-_64.stamp"]  do
+  task idl: ["gen:resolved_arch", "#{$root}/.stamps/resolve-rv32.stamp", "#{$root}/.stamps/resolve-rv64.stamp"]  do
     print "Parsing IDL code for RV32..."
-    arch_def_32 = arch_def_for("_32")
+    cfg_arch32 = cfg_arch_for("rv32")
     puts "done"
 
-    arch_def_32.type_check
+    cfg_arch32.type_check
 
     print "Parsing IDL code for RV64..."
-    arch_def_64 = arch_def_for("_64")
+    cfg_arch64 = cfg_arch_for("rv64")
     puts "done"
 
-    arch_def_64.type_check
+    cfg_arch64.type_check
 
     puts "All IDL passed type checking"
   end
 end
 
-desc "Validate the arch docs"
-task validate: ["validate:schema", "validate:idl", "validate:insts"]
-
 def insert_warning(str, from)
   # insert a warning on the second line
   lines = str.lines
   first_line = lines.shift
-  lines.unshift(first_line, "\n# WARNING: This file is auto-generated from #{Pathname.new(from).relative_path_from($root)}\n\n").join("")
+  lines.unshift(first_line, "\n# WARNING: This file is auto-generated from #{Pathname.new(from).relative_path_from($root)}").join("")
 end
 private :insert_warning
 
@@ -130,7 +150,6 @@ private :insert_warning
     "#{$root}/arch/csr/Zihpm/mhpmcounterN.layout",
     __FILE__
    ] do |t|
-    puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
     erb = ERB.new(File.read($root / "arch/csr/Zihpm/mhpmcounterN.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/Zihpm/mhpmcounterN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -139,7 +158,6 @@ private :insert_warning
     "#{$root}/arch/csr/Zihpm/mhpmcounterNh.layout",
     __FILE__
    ] do |t|
-    puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
     erb = ERB.new(File.read($root / "arch/csr/Zihpm/mhpmcounterNh.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/Zihpm/mhpmcounterNh.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -148,7 +166,6 @@ private :insert_warning
     "#{$root}/arch/csr/Zihpm/mhpmeventN.layout",
     __FILE__
    ] do |t|
-    puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
     erb = ERB.new(File.read($root / "arch/csr/Zihpm/mhpmeventN.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/Zihpm/mhpmeventN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -157,7 +174,6 @@ private :insert_warning
     "#{$root}/arch/csr/Zihpm/mhpmeventNh.layout",
     __FILE__
    ] do |t|
-    puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
     erb = ERB.new(File.read($root / "arch/csr/Zihpm/mhpmeventNh.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/Zihpm/mhpmeventNh.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -166,7 +182,6 @@ private :insert_warning
     "#{$root}/arch/csr/Zihpm/hpmcounterN.layout",
     __FILE__
    ] do |t|
-    puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
     erb = ERB.new(File.read($root / "arch/csr/Zihpm/hpmcounterN.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/Zihpm/hpmcounterN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -175,7 +190,6 @@ private :insert_warning
     "#{$root}/arch/csr/Zihpm/hpmcounterNh.layout",
     __FILE__
     ] do |t|
-    puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
     erb = ERB.new(File.read($root / "arch/csr/Zihpm/hpmcounterNh.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/Zihpm/hpmcounterNh.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -187,7 +201,6 @@ end
     "#{$root}/arch/csr/I/pmpaddrN.layout",
     __FILE__
    ] do |t|
-    puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
     erb = ERB.new(File.read($root / "arch/csr/I/pmpaddrN.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/I/pmpaddrN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -199,7 +212,6 @@ end
     "#{$root}/arch/csr/I/pmpcfgN.layout",
     __FILE__
    ] do |t|
-    puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
     erb = ERB.new(File.read($root / "arch/csr/I/pmpcfgN.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/I/pmpcfgN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -210,7 +222,6 @@ file "#{$root}/arch/csr/I/mcounteren.yaml" => [
   "#{$root}/arch/csr/I/mcounteren.layout",
   __FILE__
 ] do |t|
-  puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
   erb = ERB.new(File.read($root / "arch/csr/I/mcounteren.layout"), trim_mode: "-")
   erb.filename = "#{$root}/arch/csr/I/mcounteren.layout"
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -220,7 +231,6 @@ file "#{$root}/arch/csr/S/scounteren.yaml" => [
   "#{$root}/arch/csr/S/scounteren.layout",
   __FILE__
 ] do |t|
-  puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
   erb = ERB.new(File.read($root / "arch/csr/S/scounteren.layout"), trim_mode: "-")
   erb.filename = "#{$root}/arch/csr/S/scounteren.layout"
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -230,7 +240,6 @@ file "#{$root}/arch/csr/H/hcounteren.yaml" => [
   "#{$root}/arch/csr/H/hcounteren.layout",
   __FILE__
 ] do |t|
-  puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
   erb = ERB.new(File.read($root / "arch/csr/H/hcounteren.layout"), trim_mode: "-")
   erb.filename = "#{$root}/arch/csr/H/hcounteren.layout"
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -240,7 +249,6 @@ file "#{$root}/arch/csr/Zicntr/mcountinhibit.yaml" => [
   "#{$root}/arch/csr/Zicntr/mcountinhibit.layout",
   __FILE__
 ] do |t|
-  puts "Generating #{Pathname.new(t.name).relative_path_from($root)}"
   erb = ERB.new(File.read($root / "arch/csr/Zicntr/mcountinhibit.layout"), trim_mode: "-")
   erb.filename = "#{$root}/arch/csr/Zicntr/mcountinhibit.layout"
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -274,32 +282,55 @@ namespace :gen do
   end
 end
 
-desc <<~DESC
-  Run the regression tests
+namespace :test do
+  desc <<~DESC
+    Run smoke tests
 
-  These tests must pass before a commit will be allowed in the main branch on GitHub
-DESC
-task :regress do
-  Rake::Task["idl_test"].invoke
-  Rake::Task["lib_test"].invoke
-  Rake::Task["validate"].invoke
-  ENV["MANUAL_NAME"] = "isa"
-  ENV["VERSIONS"] = "all"
-  Rake::Task["gen:html_manual"].invoke
-  Rake::Task["gen:html"].invoke("generic_rv64")
-  ENV["EXT"] = "B"
-  ENV["VERSION"] = "latest"
-  Rake::Task["gen:ext_pdf"].invoke
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MockCertificateModel.pdf"].invoke
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100-32.pdf"].invoke
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100-64.pdf"].invoke
-  Rake::Task["#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"].invoke
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA20.pdf"].invoke
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA22.pdf"].invoke
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVI20.pdf"].invoke
+    These are basic but fast-running tests to check the database and tools
+  DESC
+  task :smoke do
+    Rake::Task["test:idl_compiler"].invoke
+    Rake::Task["test:lib"].invoke
+    Rake::Task["test:schema"].invoke
+    Rake::Task["test:idl"].invoke
+  end
 
-  puts
-  puts "Regression test PASSED"
+  desc <<~DESC
+    Run the regression tests
+
+    These tests must pass before a commit will be allowed in the main branch on GitHub
+  DESC
+  task :regress do
+    Rake::Task["test:smoke"].invoke
+
+    ENV["MANUAL_NAME"] = "isa"
+    ENV["VERSIONS"] = "all"
+    Rake::Task["gen:html_manual"].invoke
+
+    ENV["EXT"] = "B"
+    ENV["VERSION"] = "latest"
+    Rake::Task["gen:ext_pdf"].invoke
+
+    Rake::Task["gen:html"].invoke("generic_rv64")
+
+    Rake::Task["#{$root}/gen/certificate_doc/pdf/MockCertificateModel.pdf"].invoke
+    Rake::Task["#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"].invoke
+
+    puts
+    puts "Regression test PASSED"
+  end
+
+  desc <<~DESC
+    Run the nightly regression tests
+
+    Generally, this tries to build all artifacts
+  DESC
+  task :nightly do
+    Rake::Task["regress"].invoke
+    Rake::Task["portfolios"].invoke
+    puts
+    puts "Nightly regression test PASSED"
+  end
 end
 
 desc <<~DESC
@@ -337,3 +368,16 @@ def portfolio_start_msg(name)
   puts "================================================================================================="
   puts ""
 end
+
+# Shortcut targets for building profiles and certificates.
+task "MockCertificateModel": "#{$root}/gen/certificate_doc/pdf/MockCertificateModel.pdf"
+task "MC100-32": "#{$root}/gen/certificate_doc/pdf/MC100-32.pdf"
+task "MC100-64": "#{$root}/gen/certificate_doc/pdf/MC100-64.pdf"
+task "MC200-32": "#{$root}/gen/certificate_doc/pdf/MC200-32.pdf"
+task "MC200-64": "#{$root}/gen/certificate_doc/pdf/MC200-64.pdf"
+task "MC300-32": "#{$root}/gen/certificate_doc/pdf/MC300-32.pdf"
+task "MC300-64": "#{$root}/gen/certificate_doc/pdf/MC300-64.pdf"
+task "MockProfileRelease": "#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"
+task "RVI20": "#{$root}/gen/profile_doc/pdf/RVI20.pdf"
+task "RVA20": "#{$root}/gen/profile_doc/pdf/RVA20.pdf"
+task "RVA22": "#{$root}/gen/profile_doc/pdf/RVA22.pdf"

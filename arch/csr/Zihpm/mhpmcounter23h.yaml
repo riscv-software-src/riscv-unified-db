@@ -2,8 +2,6 @@
 
 # WARNING: This file is auto-generated from arch/csr/Zihpm/mhpmcounterNh.layout
 
-
-
 $schema: csr_schema.json#
 kind: csr
 name: mhpmcounter23h
@@ -21,8 +19,8 @@ fields:
     alias: mhpmcounter.COUNT23[63:32]
     description: |
       Upper bits of counter.
-    type(): 'return (HPM_COUNTER_EN[23]) ? CsrFieldType::RWH : CsrFieldType::RO;'
-    reset_value(): 'return (HPM_COUNTER_EN[23]) ? UNDEFINED_LEGAL : 0;'
+    type(): "return (HPM_COUNTER_EN[23]) ? CsrFieldType::RWH : CsrFieldType::RO;"
+    reset_value(): "return (HPM_COUNTER_EN[23]) ? UNDEFINED_LEGAL : 0;"
 sw_read(): |
   if (HPM_COUNTER_EN[23]) {
     return read_hpm_counter(23)[63:32];

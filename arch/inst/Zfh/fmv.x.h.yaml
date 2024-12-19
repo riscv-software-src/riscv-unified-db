@@ -8,21 +8,21 @@ definedBy:
   anyOf: [Zfh, Zfhmin]
 assembly: rd, fs1
 description: |
-   Moves the half-precision value in floating-point register rs1 represented in IEEE 754-2008
-   encoding to the lower 16 bits of integer register rd.
+  Moves the half-precision value in floating-point register rs1 represented in IEEE 754-2008
+  encoding to the lower 16 bits of integer register rd.
 
-   The bits are not modified in the transfer, and in particular, the payloads of non-canonical
-   NaNs are preserved.
+  The bits are not modified in the transfer, and in particular, the payloads of non-canonical
+  NaNs are preserved.
 
-   The highest XLEN-16 bits of the destination register are filled with copies of the
-   floating-point number's sign bit.
+  The highest XLEN-16 bits of the destination register are filled with copies of the
+  floating-point number's sign bit.
 encoding:
   match: 111001000000-----000-----1010011
   variables:
-  - name: fs1
-    location: 19-15
-  - name: rd
-    location: 11-7  
+    - name: fs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -33,8 +33,6 @@ operation(): |
 
   X[rd] = sext(f[fs1][15:0], 16);
 
-
-
 sail(): |
   {
     let rs1_val_X            = X(rs1);
@@ -42,7 +40,3 @@ sail(): |
     F(rd) = nan_box (rd_val_H);
     RETIRE_SUCCESS
   }
-
-
-
-

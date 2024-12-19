@@ -14,7 +14,7 @@ module Idl
       @type = type
       @type.freeze
       @value = value
-      raise 'unexpected' unless decode_var.is_a?(TrueClass) || decode_var.is_a?(FalseClass)
+      raise "unexpected" unless decode_var.is_a?(TrueClass) || decode_var.is_a?(FalseClass)
 
       @decode_var = decode_var
       @template_index = template_index
@@ -75,7 +75,7 @@ module Idl
 
   # scoped symbol table holding known symbols at a current point in parsing
   class SymbolTable
-    attr_reader :archdef
+    def cfg_arch = @cfg_arch
 
     # @return [Integer] 32 or 64, the XLEN in M-mode
     attr_reader :mxlen
@@ -86,24 +86,21 @@ module Idl
     def hash
       return @frozen_hash unless @frozen_hash.nil?
 
-      [@scopes.hash, @archdef.hash].hash
+      [@scopes.hash, @cfg_arch.hash].hash
     end
 
-    def initialize(arch_def, effective_xlen = nil)
-      @archdef = arch_def
-      if arch_def.fully_configured?
-        raise "effective_xlen should not be set when symbol table is given a fully-configured ArchDef" unless effective_xlen.nil?
-      else
-        raise "effective_xlen should be set when symbol table is given an ArchDef" if effective_xlen.nil? && arch_def.mxlen.nil?
-      end
-      @mxlen = effective_xlen.nil? ? arch_def.mxlen : effective_xlen
+    def initialize(cfg_arch)
+      raise if cfg_arch.nil?
+
+      @cfg_arch = cfg_arch
+      @mxlen = cfg_arch.unconfigured? ? nil : cfg_arch.mxlen
       @callstack = [nil]
       @scopes = [{
         "X" => Var.new(
           "X",
-          Type.new(:array, sub_type: XregType.new(@mxlen), width: 32, qualifiers: [:global])
+          Type.new(:array, sub_type: XregType.new(@mxlen.nil? ? :unknown : @mxlen), width: 32, qualifiers: [:global])
         ),
-        "XReg" => XregType.new(@mxlen),
+        "XReg" => XregType.new(@mxlen.nil? ? :unknown : @mxlen),
         "Boolean" => Type.new(:boolean),
         "true" => Var.new(
           "true",
@@ -117,7 +114,7 @@ module Idl
         )
 
       }]
-      arch_def.params_with_value.each do |param_with_value|
+      cfg_arch.params_with_value.each do |param_with_value|
         type = Type.from_json_schema(param_with_value.schema).make_const
         if type.kind == :array && type.width == :unknown
           type = Type.new(:array, width: param_with_value.value.length, sub_type: type.sub_type, qualifiers: [:const])
@@ -133,15 +130,11 @@ module Idl
           end
         end
       end
+
       # now add all parameters, even those not implemented
-      arch_def.params_without_value.each do |param|
+      cfg_arch.params_without_value.each do |param|
         if param.exts.size == 1
-          if param.name == "XLEN"
-            # special case: we actually do know XLEN
-            add!(param.name, Var.new(param.name, param.idl_type.clone.make_const, @mxlen))
-          else
-            add!(param.name, Var.new(param.name, param.idl_type.clone.make_const))
-          end
+          add!(param.name, Var.new(param.name, param.idl_type.clone.make_const))
         else
           # could already be present...
           existing_sym = get(param.name)
@@ -154,32 +147,6 @@ module Idl
           end
         end
       end
-
-      # add the builtin extensions
-      # add!(
-      #   "ExtensionName",
-      #   EnumerationType.new(
-      #     "ExtensionName",
-      #     arch_def.extensions.map(&:name),
-      #     Array.new(arch_def.extensions.size) { |i| i + 1 }
-      #   )
-      # )
-      # add!(
-      #   "ExceptionCode",
-      #   EnumerationType.new(
-      #     "ExceptionCode",
-      #     arch_def.exception_codes.map(&:var),
-      #     arch_def.exception_codes.map(&:num)
-      #   )
-      # )
-      # add!(
-      #   "InterruptCode",
-      #   EnumerationType.new(
-      #     "InterruptCode",
-      #     arch_def.interrupt_codes.map(&:var),
-      #     arch_def.interrupt_codes.map(&:num)
-      #   )
-      # )
     end
 
     # do a deep freeze to protect the sym table and all its entries from modification
@@ -191,16 +158,16 @@ module Idl
       @scopes.freeze
 
       # set frozen_hash so that we can quickly compare symtabs
-      @frozen_hash = [@scopes.hash, @archdef.hash].hash
+      @frozen_hash = [@scopes.hash, @cfg_arch.hash].hash
 
       # set up the global clone that be used as a mutable table
       @global_clone_pool = []
 
-      5.times do 
+      5.times do
         copy = SymbolTable.allocate
         copy.instance_variable_set(:@scopes, [@scopes[0]])
         copy.instance_variable_set(:@callstack, [@callstack[0]])
-        copy.instance_variable_set(:@archdef, @archdef)
+        copy.instance_variable_set(:@cfg_arch, @cfg_arch)
         copy.instance_variable_set(:@mxlen, @mxlen)
         copy.instance_variable_set(:@global_clone_pool, @global_clone_pool)
         copy.instance_variable_set(:@in_use, false)
@@ -213,7 +180,7 @@ module Idl
 
     # @return [String] inspection string
     def inspect
-      "SymbolTable[#{@archdef.name}]#{frozen? ? ' (frozen)' : ''}"
+      "SymbolTable[#{@cfg_arch.name}]#{frozen? ? ' (frozen)' : ''}"
     end
 
     # pushes a new scope
@@ -335,7 +302,7 @@ module Idl
       raise "Level #{level} is too large #{@scopes.size}" if  level >= @scopes.size
 
       raise "Symbol #{name} already defined" unless @scopes[0...level].select { |h| h.key? name }.empty?
-  
+
       @scopes[level][name] = var
     end
 
@@ -376,7 +343,7 @@ module Idl
         copy = SymbolTable.allocate
         copy.instance_variable_set(:@scopes, [@scopes[0]])
         copy.instance_variable_set(:@callstack, [@callstack[0]])
-        copy.instance_variable_set(:@archdef, @archdef)
+        copy.instance_variable_set(:@cfg_arch, @cfg_arch)
         copy.instance_variable_set(:@mxlen, @mxlen)
         copy.instance_variable_set(:@global_clone_pool, @global_clone_pool)
         copy.instance_variable_set(:@in_use, false)

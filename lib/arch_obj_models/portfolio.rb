@@ -2,12 +2,14 @@
 # A "Portfolio" is a named & versioned grouping of extensions (each with a name and version).
 # Each Portfolio Instance is a member of a Portfolio Class:
 #   RVA20U64 and MC100 are examples of portfolio instances
-#   RVA and MC are examples of portfolio classes 
+#   RVA and MC are examples of portfolio classes
 #
-# Many classes inherit from the ArchDefObject class. This provides facilities for accessing the contents of a
+# Many classes inherit from the DatabaseObjectect class. This provides facilities for accessing the contents of a
 # Portfolio Class YAML or Portfolio Model YAML file via the "data" member (hash holding releated YAML file contents).
 #
 # A variable name with a "_data" suffix indicates it is the raw hash data from the porfolio YAML file.
+
+require "tmpdir"
 
 require_relative "obj"
 require_relative "schema"
@@ -18,16 +20,9 @@ require_relative "schema"
 
 # Holds information from Portfolio class YAML file (certificate class or profile class).
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
-class PortfolioClass < ArchDefObject
-  # @return [ArchDef] The defining ArchDef
-  attr_reader :arch_def
-
-  # @param data [Hash<String, Object>] The data from YAML
-  # @param arch_def [ArchDef] Architecture spec
-  def initialize(data, arch_def)
-    super(data)
-    @arch_def = arch_def
-  end
+class PortfolioClass < DatabaseObjectect
+  # @return [ConfiguredArchitecture] The defining ConfiguredArchitecture
+  attr_reader :cfg_arch
 
   def introduction = @data["introduction"]
   def naming_scheme = @data["naming_scheme"]
@@ -45,16 +40,9 @@ end
 
 # Holds information about a PortfolioInstance YAML file (certificate or profile).
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
-class PortfolioInstance < ArchDefObject
-  # @return [ArchDef] The defining ArchDef
-  attr_reader :arch_def
-
-  # @param data [Hash<String, Object>] The data from YAML
-  # @param arch_def [ArchDef] Architecture spec
-  def initialize(data, arch_def)
-    super(data)
-    @arch_def = arch_def
-  end
+class PortfolioInstance < DatabaseObjectect
+  # @return [ConfiguredArchitecture] The defining ConfiguredArchitecture
+  attr_reader :cfg_arch
 
   def description = @data["description"]
 
@@ -76,20 +64,21 @@ class PortfolioInstance < ArchDefObject
   # @return [Array<String>]
   def version_strongest_presence(ext_name, ext_versions)
     presences = []
-    
+
     # See if any extension requirement in this profile lists this version as either mandatory or optional.
     ext_versions.map do |v|
-      mandatory = mandatory_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(ext_name, v.version) }
-      optional = optional_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(ext_name, v.version) }
+      mandatory = mandatory_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(v) }
+      optional = optional_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(v) }
 
       # Just show strongest presence (mandatory stronger than optional).
-      if mandatory
-        presences << ExtensionPresence.mandatory
-      elsif optional
-        presences << ExtensionPresence.optional
-      else
-        presences << "-"
-      end
+      presences <<
+        if mandatory
+          ExtensionPresence.mandatory
+        elsif optional
+          ExtensionPresence.optional
+        else
+          "-"
+        end
     end
 
     presences
@@ -113,13 +102,15 @@ class PortfolioInstance < ArchDefObject
     in_scope_ext_reqs = []
 
     # Convert desired_present argument to ExtensionPresence object if not nil.
-    desired_presence_converted = 
-      desired_presence.nil?                     ? nil : 
+    desired_presence_converted =
+      desired_presence.nil?                     ? nil :
       desired_presence.is_a?(String)            ? desired_presence :
       desired_presence.is_a?(ExtensionPresence) ? desired_presence :
       ExtensionPresence.new(desired_presence)
 
     @data["extensions"]&.each do |ext_name, ext_data|
+      next if ext_name[0] == "$"
+
       actual_presence = ext_data["presence"]    # Could be a String or Hash
       raise "Missing extension presence for extension #{ext_name}" if actual_presence.nil?
 
@@ -134,9 +125,16 @@ class PortfolioInstance < ArchDefObject
         end
 
       if match
-        in_scope_ext_reqs << 
-          ExtensionRequirement.new(ext_name, ext_data["version"], presence: actual_presence_obj,
-            note: ext_data["note"], req_id: "REQ-EXT-" + ext_name)
+        in_scope_ext_reqs <<
+          if ext_data.key?("version")
+            ExtensionRequirement.new(
+              ext_name, ext_data["version"], cfg_arch: @cfg_arch,
+              presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
+          else
+            ExtensionRequirement.new(
+              ext_name, cfg_arch: @cfg_arch,
+              presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
+          end
       end
     end
     in_scope_ext_reqs
@@ -151,7 +149,7 @@ class PortfolioInstance < ArchDefObject
     return @in_scope_extensions unless @in_scope_extensions.nil?
 
     @in_scope_extensions = in_scope_ext_reqs.map do |er|
-      obj = arch_def.extension(er.name)
+      obj = cfg_arch.extension(er.name)
 
       # @todo: change this to raise once all the profile extensions
       #        are defined
@@ -180,27 +178,34 @@ class PortfolioInstance < ArchDefObject
     @uses_optional_types
   end
 
-  # @return [ArchDef] A partially-configured architecture definition corresponding to this certificate.
-  def to_arch_def
-    return @generated_arch_def unless @generated_arch_def.nil?
+  # @return [ConfiguredArchitecture] A partially-configured architecture definition corresponding to this portfolio.
+  def to_cfg_arch
+    return @generated_cfg_arch unless @generated_cfg_arch.nil?
 
-    arch_def_data = arch_def.unconfigured_data
-
-    arch_def_data["mandatory_extensions"] = mandatory_ext_reqs.map do |ext_req|
-      {
-        "name" => ext_req.name,
-        "version" => ext_req.version_requirement.requirements.map { |r| "#{r[0]} #{r[1]}" }
-      }
-    end
-    arch_def_data["params"] = all_in_scope_ext_params.select(&:single_value?).map { |p| [p.name, p.value] }.to_h
+    # build up a config for the portfolio
+    config_data = {
+      "$schema" => "config_schema.json",
+      "type" => "partially configured",
+      "kind" => "architecture configuration",
+      "name" => name,
+      "description" => "A partially configured architecture definition corresponding to the #{name} portfolio.",
+      "mandatory_extensions" => mandatory_ext_reqs.map do |ext_req|
+        {
+          "name" => ext_req.name,
+          "version" => ext_req.requirement_specs.map(&:to_s)
+        }
+      end,
+      "params" => all_in_scope_ext_params.select(&:single_value?).map { |p| [p.name, p.value] }.to_h
+    }
 
     # XXX Add list of prohibited_extensions
 
-    file = Tempfile.new("archdef")
-    file.write(YAML.safe_dump(arch_def_data, permitted_classes: [Date]))
-    file.flush
-    file.close
-    @generated_arch_def = ArchDef.new(name, Pathname.new(file.path))
+    @generated_cfg_arch =
+      Dir.mktmpdir do |dir|
+        FileUtils.mkdir("#{dir}/#{name}")
+        File.write("#{dir}/#{name}/cfg.yaml", YAML.safe_dump(config_data, permitted_classes: [Date]))
+        @generated_cfg_arch = ConfiguredArchitecture.new(name, @cfg_arch.path, cfg_path: dir)
+      end
   end
 
   ###################################
@@ -253,7 +258,7 @@ class PortfolioInstance < ArchDefObject
 
     # sorts by name
     def <=>(other)
-      raise ArgumentError, 
+      raise ArgumentError,
         "InScopeExtensionParameter are only comparable to other parameter constraints" unless other.is_a?(InScopeExtensionParameter)
       @param.name <=> other.param.name
     end
@@ -272,9 +277,11 @@ class PortfolioInstance < ArchDefObject
 
     @all_in_scope_ext_params = []
 
-    @data["extensions"].each do |ext_name, ext_data| 
+    @data["extensions"].each do |ext_name, ext_data|
+      next if ext_name[0] == "$"
+
       # Find Extension object from database
-      ext = @arch_def.extension(ext_name)
+      ext = @cfg_arch.extension(ext_name)
       raise "Cannot find extension named #{ext_name}" if ext.nil?
 
       ext_data["parameters"]&.each do |param_name, param_data|
@@ -282,11 +289,12 @@ class PortfolioInstance < ArchDefObject
         raise "There is no param '#{param_name}' in extension '#{ext_name}" if param.nil?
 
         next unless ext.versions.any? do |ext_ver|
-                      Gem::Requirement.new(ext_data["version"]).satisfied_by?(ext_ver.version) &&
-                      param.defined_in_extension_version?(ext_ver.version)
+                      ver_req = ext_data["version"] || ">= #{ext.min_version.version_spec}"
+                      ExtensionRequirement.new(ext_name, ver_req, cfg_arch: @cfg_arch).satisfied_by?(ext_ver) &&
+                      param.defined_in_extension_version?(ext_ver)
                     end
 
-        @all_in_scope_ext_params << 
+        @all_in_scope_ext_params <<
           InScopeExtensionParameter.new(param, param_data["schema"], param_data["note"])
       end
     end
@@ -303,25 +311,25 @@ class PortfolioInstance < ArchDefObject
     # Get extension information from portfolio YAML for passed in extension requirement.
     ext_data = @data["extensions"][ext_req.name]
     raise "Cannot find extension named #{ext_req.name}" if ext_data.nil?
-    
+
     # Find Extension object from database
-    ext = @arch_def.extension(ext_req.name)
+    ext = @cfg_arch.extension(ext_req.name)
     raise "Cannot find extension named #{ext_req.name}" if ext.nil?
 
     # Loop through an extension's parameter constraints (hash) from the portfolio.
     # Note that "&" is the Ruby safe navigation operator (i.e., skip do loop if nil).
     ext_data["parameters"]&.each do |param_name, param_data|
-        # Find ExtensionParameter object from database
-        ext_param = ext.params.find { |p| p.name == param_name }
-        raise "There is no param '#{param_name}' in extension '#{ext_req.name}" if ext_param.nil?
+      # Find ExtensionParameter object from database
+      ext_param = ext.params.find { |p| p.name == param_name }
+      raise "There is no param '#{param_name}' in extension '#{ext_req.name}" if ext_param.nil?
 
-        next unless ext.versions.any? do |ext_ver|
-                      Gem::Requirement.new(ext_data["version"]).satisfied_by?(ext_ver.version) &&
-                      ext_param.defined_in_extension_version?(ext_ver.version)
-                    end
+      next unless ext.versions.any? do |ext_ver|
+                    ext_req.satisfied_by?(ext_ver) &&
+                    ext_param.defined_in_extension_version?(ext_ver)
+                  end
 
-        ext_params <<
-          InScopeExtensionParameter.new(ext_param, param_data["schema"], param_data["note"])
+      ext_params <<
+        InScopeExtensionParameter.new(ext_param, param_data["schema"], param_data["note"])
     end
 
     ext_params
@@ -330,16 +338,16 @@ class PortfolioInstance < ArchDefObject
   # @return [Array<ExtensionParameter>] Parameters out of scope across all in scope extensions (those listed in the portfolio).
   def all_out_of_scope_params
     return @all_out_of_scope_params unless @all_out_of_scope_params.nil?
- 
+
     @all_out_of_scope_params = []
     in_scope_ext_reqs.each do |ext_req|
-      ext = @arch_def.extension(ext_req.name)
+      ext = @cfg_arch.extension(ext_req.name)
       ext.params.each do |param|
         next if all_in_scope_ext_params.any? { |c| c.param.name == param.name }
 
         next unless ext.versions.any? do |ext_ver|
-                      Gem::Requirement.new(ext_req.version_requirement).satisfied_by?(ext_ver.version) &&
-                      param.defined_in_extension_version?(ext_ver.version)
+                      ext_req.satisfied_by?(ext_ver) &&
+                      param.defined_in_extension_version?(ext_ver)
                     end
 
         @all_out_of_scope_params << param
@@ -350,11 +358,11 @@ class PortfolioInstance < ArchDefObject
 
   # @return [Array<ExtensionParameter>] Parameters that are out of scope for named extension.
   def out_of_scope_params(ext_name)
-    all_out_of_scope_params.select{|param| param.exts.any? {|ext| ext.name == ext_name} } 
+    all_out_of_scope_params.select{ |param| param.exts.any? { |ext| ext.name == ext_name } }
   end
 
   # @return [Array<Extension>]
-  # All the in-scope extensions (those in the portfolio) that define this parameter in the database 
+  # All the in-scope extensions (those in the portfolio) that define this parameter in the database
   # and the parameter is in-scope (listed in that extension's list of parameters in the portfolio).
   def all_in_scope_exts_with_param(param)
     raise ArgumentError, "Expecting ExtensionParameter" unless param.is_a?(ExtensionParameter)
@@ -373,8 +381,8 @@ class PortfolioInstance < ArchDefObject
       end
 
       if found
-          # Only add extensions that exist in this portfolio.
-          exts << ext
+        # Only add extensions that exist in this portfolio.
+        exts << ext
       end
     end
 
@@ -383,7 +391,7 @@ class PortfolioInstance < ArchDefObject
   end
 
   # @return [Array<Extension>]
-  # All the in-scope extensions (those in the portfolio) that define this parameter in the database 
+  # All the in-scope extensions (those in the portfolio) that define this parameter in the database
   # but the parameter is out-of-scope (not listed in that extension's list of parameters in the portfolio).
   def all_in_scope_exts_without_param(param)
     raise ArgumentError, "Expecting ExtensionParameter" unless param.is_a?(ExtensionParameter)
@@ -418,9 +426,9 @@ class PortfolioInstance < ArchDefObject
   # Tracks history of portfolio document.  This is separate from its version since
   # a document may be revised several times before a new version is released.
 
-  class RevisionHistory < ArchDefObject
+  class RevisionHistory
     def initialize(data)
-      super(data)
+      @data = data
     end
 
     def revision = @data["revision"]
@@ -442,9 +450,9 @@ class PortfolioInstance < ArchDefObject
   # ExtraNote Subclass #
   ######################
 
-  class ExtraNote < ArchDefObject
+  class ExtraNote
     def initialize(data)
-      super(data) 
+      @data = data
 
       @presence_obj = ExtensionPresence.new(@data["presence"])
     end
@@ -463,7 +471,7 @@ class PortfolioInstance < ArchDefObject
     @extra_notes
   end
 
-  # @param desired_presence [ExtensionPresence] 
+  # @param desired_presence [ExtensionPresence]
   # @return [String] Note for desired_presence
   # @return [nil] No note for desired_presence
   def extra_notes_for_presence(desired_presence_obj)
@@ -476,9 +484,9 @@ class PortfolioInstance < ArchDefObject
   # Recommendation Subclass #
   ###########################
 
-  class Recommendation < ArchDefObject
+  class Recommendation
     def initialize(data)
-      super(data)
+      @data = data
     end
 
     def text = @data["text"]

@@ -19,8 +19,8 @@ fields:
     alias: mhpmcounter.COUNT<%= hpm_num %>[63:32]
     description: |
       Upper bits of counter.
-    type(): 'return (HPM_COUNTER_EN[<%= hpm_num %>]) ? CsrFieldType::RWH : CsrFieldType::RO;'
-    reset_value(): 'return (HPM_COUNTER_EN[<%= hpm_num %>]) ? UNDEFINED_LEGAL : 0;'
+    type(): "return (HPM_COUNTER_EN[<%= hpm_num %>]) ? CsrFieldType::RWH : CsrFieldType::RO;"
+    reset_value(): "return (HPM_COUNTER_EN[<%= hpm_num %>]) ? UNDEFINED_LEGAL : 0;"
 sw_read(): |
   if (HPM_COUNTER_EN[<%= hpm_num %>]) {
     return read_hpm_counter(<%= hpm_num %>)[63:32];

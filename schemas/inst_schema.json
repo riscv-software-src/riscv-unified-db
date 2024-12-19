@@ -50,7 +50,7 @@
           "description": "Specific value(s) that are not permitted for this field."
         }
       },
-      "required": [ "location" ],
+      "required": ["location"],
       "additionalProperties": false
     },
     "field": {
@@ -74,6 +74,11 @@
           "properties": {
             "name": {
               "type": "string"
+            },
+            "$child_of": {
+              "type": "string",
+              "pattern": "^common/inst_variable_types\\.yaml#/[a-zA-Z0-9_]+",
+              "description": "Cookie crumb of the reference to variable metadata"
             },
             "location": {
               "$ref": "#/$defs/field_location"
@@ -146,7 +151,16 @@
     },
     "inst_data": {
       "type": "object",
-      "required": ["$schema", "kind", "name", "long_name", "description", "definedBy", "access", "assembly"],
+      "required": [
+        "$schema",
+        "kind",
+        "name",
+        "long_name",
+        "description",
+        "definedBy",
+        "access",
+        "assembly"
+      ],
       "additionalProperties": false,
       "properties": {
         "$schema": {
@@ -270,7 +284,7 @@
             "additionalProperties": false
           }
         },
-        "__source": {
+        "$source": {
           "description": "Path to the source file. Used by downstream tooling; not expected to be found in handwritten files",
           "type": "string"
         }
@@ -278,5 +292,5 @@
     }
   },
 
- "$ref": "#/$defs/inst_data"
+  "$ref": "#/$defs/inst_data"
 }

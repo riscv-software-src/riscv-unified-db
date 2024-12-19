@@ -1,7 +1,7 @@
 [[header]]
 :description: <%= ext.long_name %> (<%= ext.name %>)
 :revdate: <%= max_version.ratification_date.nil? ? Date.today : max_version.ratification_date %>
-:revnumber: <%= max_version.version %>
+:revnumber: <%= max_version.version_spec %>
 :revmark: <%=
   case max_version.state
   when "ratified"
@@ -129,7 +129,7 @@ Copyright <%= max_version.ratification_date.nil? ? Date.today.year : max_version
 == Acknowledgements
 
 <%- versions.each do |version| -%>
-Contributors to version <%= version.version %> of the specification (in alphabetical order) include: +
+Contributors to version <%= version.version_spec %> of the specification (in alphabetical order) include: +
 
 <%- unless version.contributors.empty? -%>
 <%- version.contributors.sort { |a, b| a.name.split(" ").last <=> b.name.split(" ").last }.each do |c| -%>
@@ -146,16 +146,16 @@ improved this specification through their comments and questions.
 == Versions
 
 <%- if versions.size > 1 -%>
-This specification documents versions <%= versions.map { |v| v.version }.join(', ') %> of <%= ext.name %>:
+This specification documents versions <%= versions.map { |v| v.version_spec.to_s }.join(', ') %> of <%= ext.name %>:
 <%- else -%>
-This specification documents version <%= max_version.version %> of <%= ext.name %>.
+This specification documents version <%= max_version.version_spec %> of <%= ext.name %>.
 <%- end -%>
 
 === Version History
 
 <%- ext.versions.each do |version| -%>
 --
-Version:: <%= version.version %>
+Version:: <%= version.version_spec %>
 State:: <%= version.state %>
 <%- unless version.ratification_date.nil? -%>
 Ratification Date:: <%= version.ratification_date %>
@@ -167,16 +167,16 @@ Design document:: <%= version.url %>
 Changes::
 
     <% version.changes.each do |c| -%>
-    * <%= c %>  
+    * <%= c %>
     <% end -%>
 
 <%- end -%>
 <%- unless version.implications.empty? -%>
 Implies::
-* <%= version.implications.map { |i| "#{i.name} (#{i.version})" }.join("\n* ") %>
-<%- unless version.requirements.empty? -%>
+* <%= version.implications.map { |i| "#{i.name} (#{i.version_spec})" }.join("\n* ") %>
+<%- unless version.requirement_condition.empty? -%>
 Requires::
-<%= version.requirements.to_asciidoc %>
+<%= version.requirement_condition.to_asciidoc %>
 <%- end -%>
 <%- end -%>
 --
@@ -186,10 +186,12 @@ Requires::
 <<<
 == Extension description
 
+:leveloffset: +2
 <%= ext.description %>
+:leveloffset: -2
 
 <%- implications = versions.map { |v| v.implications }.flatten.uniq -%>
-<%- unless implications.nil? -%>
+<%- unless implications.empty? -%>
 === Sub-extensions
 <%- if implications.size > 1 -%>
 <%= ext.name %> defines the following #{implications.size} sub-extensions:
@@ -198,7 +200,7 @@ Requires::
 <%- end -%>
 
 <%- implications.each do |sub_ext| -%>
-==== <%= sub_ext.name %> (<%= sub_ext.version %>)
+==== <%= sub_ext.name %> (<%= sub_ext.version_spec %>)
 
 <%- if versions.size > 1 -%>
 <%= sub_ext.name %> (<%= sub_ext.version %>) is implied by
@@ -206,12 +208,12 @@ version <%= versions.select { |v| v.implications.include?(sub_ext)}.map(&:versio
 of <%= ext.name %>.
 <%- end -%>
 
-<%= arch_def.extension(sub_ext.name).description %>
+<%= cfg_arch.extension(sub_ext.name).description %>
 
-<%- unless sub_ext.requirements.empty? -%>
+<%- unless sub_ext.requirement_condition.empty? -%>
 <%= sub_ext.name %> requires:
 
-<%= sub_ext.requirements.to_asciidoc %>
+<%= sub_ext.requirement_condition.to_asciidoc %>
 
 <%- end -%>
 
@@ -284,134 +286,12 @@ The following <%= ext.csrs.size %> are added by this extension.
 
 <%- ext.csrs.each do |csr| -%>
 <<<
-[#csrs-<%= csr.name.gsub('.', '_') %>,reftext=<%= csr.name %>]
-=== <%= csr.name %>
-
-*<%= csr.long_name %>*
-
-<%= arch_def.render_erb(csr.description) %>
-
-==== Attributes
-[%autowidth]
-|===
-h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
-<%- if csr.priv_mode == 'VS' -%>
-h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
-<%- end -%>
-<%- if csr.dynamic_length?(arch_def) -%>
-h| Length         | <%= csr.length_pretty(arch_def) %>
-<%- else -%>
-h| Length         | <%= csr.length_pretty(arch_def) %>-bit
-<%- end -%>
-h| Privilege Mode | <%= csr.priv_mode %>
-|===
-
-==== Format
-<%- unless csr.dynamic_length?(arch_def) || csr.fields.any? { |f| f.dynamic_location?(arch_def) } -%>
-<%# CSR has a known static length, so there is only one format to display -%>
-.<%= csr.name %> format
-[wavedrom, ,svg,subs='attributes',width="100%"]
-....
-<%= JSON.dump csr.wavedrom_desc(arch_def, 64) %>
-....
-<%- else -%>
-<%# CSR has a dynamic length, or a field has a dynamic location,
-    so there is more than one format to display -%>
-This CSR format changes dynamically.
-
-.<%= csr.name %> Format when <%= csr.length_cond32 %>
-[wavedrom, ,svg,subs='attributes',width="100%"]
-....
-<%= JSON.dump csr.wavedrom_desc(arch_def, 32) %>
-....
-
-.<%= csr.name %> Format when <%= csr.length_cond64 %>
-[wavedrom, ,svg,subs='attributes',width="100%"]
-....
-<%= JSON.dump csr.wavedrom_desc(arch_def, 64) %>
-....
+:leveloffset: +2
+<%= partial "adoc/csr.adoc.erb", { csr: csr, cfg_arch: cfg_arch } %>
+:leveloffset: -2
 <%- end -%>
 
-==== Field Summary
-
-[%autowidth,float="center",align="center",cols="^,<,<,<",options="header",role="stretch"]
-|===
-|Name | Location | Type | Reset Value
-
-<%- csr.fields.each do |field| -%>
-| xref:<%=csr.name%>-<%=field.name%>-def[`<%= field.name %>`]
-| <%= field.location_pretty(arch_def) %>
-| <%= field.type_pretty(arch_def.symtab) %>
-| <%= field.reset_value_pretty(arch_def) %>
-
-<%- end -%>
-|===
-
-
-==== Fields
-
-<%- if csr.fields.empty? -%>
-This CSR has no fields. However, it must still exist (not cause an `Illegal Instruction` trap) and always return zero on a read.
-<%- else -%>
-
-<%- csr.fields.each do |field| -%>
-[[<%=csr.name%>-<%=field.name%>-def]]
-===== `<%= field.name %>`
-
-[example]
-****
-Location::
-<%= field.location_pretty(arch_def) %>
-
-Description::
-<%= field.description %>
-
-Type::
-<%= field.type_pretty(arch_def.symtab) %>
-
-Reset value::
-<%= field.reset_value_pretty(arch_def) %>
-
-****
-
-<%- end -%>
-<%- end -%>
-
-<%- if csr.fields.map(&:has_custom_sw_write?).any? -%>
-==== Software write
-
-This CSR may store a value that is different from what software attempts to write.
-
-When a software write occurs (_e.g._, through `csrrw`), the following determines the
-written value:
-
-[idl]
-----
-<%- csr.fields.each do |field| -%>
-<%- if field.has_custom_sw_write? -%>
-<%= field.name %> = <%= field["sw_write(csr_value)"] %>
-<%- else -%>
-<%= field.name %> = csr_value.<%= field.name %>
-<%- end -%>
-<%- end -%>
-----
-<%- end -%>
-
-<%- if csr.has_custom_sw_read? -%>
-==== Software read
-
-This CSR may return a value that is different from what is stored in hardware.
-
-[source,idl,subs="specialchars,macros"]
-----
-<%= csr.sw_read_ast(arch_def.symtab).gen_adoc %>
-----
-<%- end -%>
-
-
-<%- end -%>
-
-<%- end -%>
+<%- end # unless csrs.empty? -%>
 
 <%- unless ext.instructions.empty? -%>
 <<<
@@ -419,91 +299,9 @@ This CSR may return a value that is different from what is stored in hardware.
 == Instructions (in alphabetical order)
 
 <%- ext.instructions.each do |i| -%>
-[#insns-<%= i.name.gsub('.', '_') %>,reftext=<%= i.long_name %>]
-=== <%= i.name %>
-
-Synopsis::
-<%= i.long_name %>
-
-Mnemonic::
-----
-<%= i.name %> <%= i.assembly.gsub('x', 'r') %>
-----
-
-Encoding::
-<%- if i.multi_encoding? -%>
-[NOTE]
-This instruction has different encodings in RV32 and RV64
-
-RV32::
-[wavedrom, ,svg,subs='attributes',width="100%"]
-....
-<%= JSON.dump i.wavedrom_desc(32) %>
-....
-
-RV64::
-[wavedrom, ,svg,subs='attributes',width="100%"]
-....
-<%= JSON.dump i.wavedrom_desc(64) %>
-....
-<%- else -%>
-[wavedrom, ,svg,subs='attributes',width="100%"]
-....
-<%= JSON.dump i.wavedrom_desc(i.base.nil? ? 64 : i.base) %>
-....
-<%- end -%>
-
-Description::
-<%= i.description %>
-
-
-Decode Variables::
-
-<%- if i.multi_encoding? ? (i.decode_variables(32).empty? && i.decode_variables(64).empty?) : i.decode_variables(i.base.nil? ? 64 : i.base).empty? -%>
-
-<%= i.name %> has no decode variables.
-
-<%- else -%>
-<%- if i.multi_encoding? -%>
-RV32::
-+
-[source,idl]
-----
-<%- i.decode_variables(32).each do |d| -%>
-<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
-<%- end -%>
-----
-
-RV64::
-+
-[source,idl]
-----
-<%- i.decode_variables(64).each do |d| -%>
-<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
-<%- end -%>
-----
-<%- else -%>
-[source,idl,subs="specialchars,macros"]
-----
-<%- i.decode_variables(i.base.nil? ? 64 : i.base).each do |d| -%>
-<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
-<%- end -%>
-----
-<%- end # if multi_encoding? -%>
-<%- end # if no decode variables-%>
-
-Operation::
-<%- unless i.data["operation()"].nil? -%>
-[source,idl,subs="specialchars,macros"]
-----
-<%= i.operation_ast(arch_def.symtab).gen_adoc %>
-----
-<%- end -%>
-
-Included in::
-
-<%= i.defined_by.to_asciidoc %>
-
+:leveloffset: +2
+<%= partial "adoc/inst.adoc.erb", { inst: i, cfg_arch: cfg_arch } %>
+:leveloffset: -2
 
 <<<
 <%- end -%>
@@ -512,7 +310,7 @@ Included in::
 <<<
 == IDL Functions
 
-<%- ext.reachable_functions(arch_def.symtab).sort { |a,b| a.name <=> b.name }.each do |f| -%>
+<%- ext.reachable_functions(cfg_arch.symtab).sort { |a,b| a.name <=> b.name }.each do |f| -%>
 [#<%= f.name %>-func-def]
 === <%= f.name %><%- if f.builtin? -%> (builtin)<%- end -%>
 

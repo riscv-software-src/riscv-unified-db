@@ -6,7 +6,7 @@ require_relative "../idl/type"
 #
 # Used when an object in the database specifies a constraint using JSON schema
 # For example, extension parameters
-class Schema 
+class Schema
     def initialize(schema_hash)
         raise ArgumentError, "Expecting hash" unless schema_hash.is_a?(Hash)
 
@@ -77,9 +77,9 @@ class Schema
             ""
           end
 
-          array_str = if items.nil? 
+          array_str = if items.nil?
             size_str + "array"
-          else 
+          else
             if items.is_a?(Hash)
               "#{size_str}array of #{to_pretty_s(items)}"
             elsif items.is_a?(Array)
@@ -89,7 +89,7 @@ class Schema
               end
               additional_items = schema_hash["additionalItems"]
               if additional_items
-                str = str + "additional items are: +\n&nbsp;&nbsp;" + 
+                str = str + "additional items are: +\n&nbsp;&nbsp;" +
                   to_pretty_s(additional_items)
               end
               str
@@ -161,4 +161,3 @@ class Schema
       Idl::Type.from_json_schema(@schema_hash)
     end
 end
-

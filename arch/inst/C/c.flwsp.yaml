@@ -11,17 +11,17 @@ description: |
   It expands to `flw` `rd, offset(x2)`.
 definedBy:
   allOf:
-  - C
-  - F
+    - C
+    - F
 assembly: fd, imm(sp)
 encoding:
   match: 011-----------10
   variables:
-  - name: imm
-    location: 3-2|12|6-4
-    left_shift: 2
-  - name: rd
-    location: 11-7
+    - name: imm
+      location: 3-2|12|6-4
+      left_shift: 2
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always

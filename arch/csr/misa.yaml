@@ -184,4 +184,3 @@ sw_read(): |
     (CSR[misa].C << 2) |
     (CSR[misa].B << 1) |
     CSR[misa].A);
-  

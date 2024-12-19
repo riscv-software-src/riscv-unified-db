@@ -106,8 +106,8 @@ Quick start:
 
 ## examples
 
-# validate against the schema
-./do validate
+# run smoke tests
+./do test:smoke
 
 # generate all versions of ISA manual, as an Antora static website
 ./do gen:html_manual MANUAL_NAME=isa VERSIONS=all

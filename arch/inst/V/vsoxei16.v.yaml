@@ -5,20 +5,20 @@ kind: instruction
 name: vsoxei16.v
 long_name: No synopsis available.
 description: |
-    No description available.
+  No description available.
 definedBy: V
 assembly: vm, vs2, xs1, vs3
 encoding:
   match: 000011-----------101-----0100111
   variables:
-  - name: vm
-    location: 25-25
-  - name: vs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
-  - name: vs3
-    location: 11-7
+    - name: vm
+      location: 25-25
+    - name: vs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: vs3
+      location: 11-7
 access:
   s: always
   u: always
@@ -26,9 +26,6 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-    
-
-
 
 sail(): |
   {
@@ -40,9 +37,8 @@ sail(): |
     let EMUL_index_pow = EEW_index_pow - EEW_data_pow + EMUL_data_pow;
     let num_elem = get_num_elem(EMUL_data_pow, EEW_data_bytes * 8); /* number of data and indices are the same */
     let nf_int = nfields_int(nf);
-  
+
     if illegal_indexed_store(nf_int, EEW_index_bytes * 8, EMUL_index_pow, EMUL_data_pow) then { handle_illegal(); return RETIRE_FAIL };
-  
+
     process_vsxseg(nf_int, vm, vs3, EEW_index_bytes, EEW_data_bytes, EMUL_index_pow, EMUL_data_pow, rs1, vs2, num_elem, 1)
   }
-

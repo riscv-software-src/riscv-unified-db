@@ -24,7 +24,7 @@ class TestVariables < Minitest::Test
       }
       XReg index = shamt & (xlen() - 1);
     FUNC
-    
+
     tokens.each do |token, chunk|
       puts token
       puts chunk

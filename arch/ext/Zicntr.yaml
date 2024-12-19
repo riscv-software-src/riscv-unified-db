@@ -7,12 +7,12 @@ long_name: Architectural performance counters
 description: Architectural performance counters
 type: unprivileged
 versions:
-- version: "2.0.0"
-  state: ratified
-  ratification_date: 2019-12
-  requires:
-    name: Zicsr
-    version: ">= 2.0"
+  - version: "2.0.0"
+    state: ratified
+    ratification_date: 2019-12
+    requires:
+      name: Zicsr
+      version: ">= 2.0"
 params:
   TIME_CSR_IMPLEMENTED:
     description: |
@@ -23,7 +23,7 @@ params:
 
       true::
         `time`/`timeh` exists, and accessing it will not cause an IllegalInstruction trap
-      
+
       false::
         `time`/`timeh` does not exist.
         Accessing the CSR will cause an IllegalInstruction trap or enter an unpredictable state,

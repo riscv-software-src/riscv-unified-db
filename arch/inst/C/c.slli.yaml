@@ -6,20 +6,20 @@ name: c.slli
 long_name: Shift left logical immediate
 description: |
   Shift the value in rd left by shamt, and store the result back in rd.
-  C.SLLI expands into `slli rd, rd, shamt`. 
+  C.SLLI expands into `slli rd, rd, shamt`.
 definedBy:
   anyOf:
-  - C
-  - Zca
+    - C
+    - Zca
 assembly: xd, shamt
 encoding:
   match: 000-----------10
   variables:
-  - name: shamt
-    location: 12|6-2
-  - name: rd
-    location: 11-7
-    not: 0
+    - name: shamt
+      location: 12|6-2
+    - name: rd
+      location: 11-7
+      not: 0
 access:
   s: always
   u: always
@@ -47,7 +47,3 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
-
-
-
-

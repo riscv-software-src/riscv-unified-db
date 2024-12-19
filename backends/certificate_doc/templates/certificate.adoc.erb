@@ -1,5 +1,5 @@
 // Number heading sections (e.g., 1.0, 1.1, etc.)
-:sectnums:  
+:sectnums:
 
 // Add a table of contents for HTML (and VSCode adoc preview)
 :toc: left
@@ -27,7 +27,7 @@ History of documentation changes that eventually lead to releases.
 | Date | Revision | Changes
 
 <% cert_model.revision_history.each do |rev| -%>
-| <%= rev.date %> 
+| <%= rev.date %>
 | <%= rev.revision %>
 a| <% rev.changes.each do |change| %>
 * <%= change %>
@@ -61,14 +61,14 @@ CSR field types::
 === Introduction
 
 A Certification Requirements Document (CRD) lists requirements an implementation must meet
-to obtain a specific RVI (RISC-V International) certificate. 
+to obtain a specific RVI (RISC-V International) certificate.
 CRDs are developed by the RVI CSC (Certification Steering Committee) organization.
-The CRDs refer to and augment information provided in existing ratified RVI standards. 
+The CRDs refer to and augment information provided in existing ratified RVI standards.
 
 There are a variety of certificates offered by RVI to accomodate the various RVI standards.
-There are certificates for processors, non-processor system IP (e.g., IOMMU), 
+There are certificates for processors, non-processor system IP (e.g., IOMMU),
 and system platforms (processor + system IP) hardware standards.
-There are multiple classes of processor certificates available to accomodate the wide range of 
+There are multiple classes of processor certificates available to accomodate the wide range of
 RISC-V implementations from basic microcontrollers to advanced Applications-class processors.
 
 Each CRD has a list of mandatory behaviors along with a list of optional behaviors.
@@ -91,11 +91,11 @@ Where:
 ** Format is <major>[.<minor>[.<patch>]]
 ** Follows semantic versioning scheme (https://semver.org/)
 ** The <major> release is updated when certification test changes are made that *could* cause a previously certified
-   implementation to now fail. 
+   implementation to now fail.
    Examples are fixing a test bug or increasing test coverage.
    A <major> release of 0 is used for pre-release versions of a CRD and release versions start with 1.
 ** The <minor> release is updated when a certificate increases support for optional behaviors.
-   Examples are supporting for new optional standards or 
+   Examples are supporting for new optional standards or
    supporting additional optional behaviors for standards already in a certificate.
 ** The <patch> release is updated when certification test changes are made that *can't* cause a previously certified
    implementation to now fail or for non-functional changes to documentation.
@@ -131,9 +131,9 @@ Where:
 
 === Processor Certificates
 
-Certificates are available for different classes of processors as shown in the table below. 
-These documents augment information in the related TSC Profile when available and/or other RVI standards documents 
-(e.g., Priv and Unpriv ISA manuals). 
+Certificates are available for different classes of processors as shown in the table below.
+These documents augment information in the related TSC Profile when available and/or other RVI standards documents
+(e.g., Priv and Unpriv ISA manuals).
 Please refer to the CRDs listed below for detailed certification requirements for the corresponding class of processors.
 
 [%autowidth]
@@ -149,9 +149,9 @@ Please refer to the CRDs listed below for detailed certification requirements fo
 === RISC-V Extensions
 
 All optional extensions of the RISC-V ISA not explicitly mentioned by the individual CRDs are OUT-OF-SCOPE.
-Only ratified extensions are candidates for certification. 
-This means all custom extensions are OUT-OF-SCOPE. 
-This is independent of where a custom extension opcodes are located 
+Only ratified extensions are candidates for certification.
+This means all custom extensions are OUT-OF-SCOPE.
+This is independent of where a custom extension opcodes are located
 (i.e., either in the custom opcode space or standard & reserved opcode space).
 
 === CSR Fields
@@ -162,7 +162,7 @@ This is independent of where a custom extension opcodes are located
 |===
 | Field Type | Read Value After Writing Illegal Value | Read Value Function Of | Illegal Instruction Exception | Priv ISA Manual Quote
 
-| WLRL | Any deterministic legal or illegal value | Value before write and illegal value written | Optional 
+| WLRL | Any deterministic legal or illegal value | Value before write and illegal value written | Optional
 | Implementations are permitted but not required to raise an illegal-instruction exception if an instruction attempts to write a non-supported value to a WLRL field. Implementations can return arbitrary bit patterns on the read of a WLRL field when the last write was of an illegal value, but the value returned should deterministically depend on the illegal written value and the value of the field prior to the write.
 | WARL | Any deterministic legal value | Any architectural hart state | Prohibited
 | Implementations will not raise an exception on writes of unsupported values to a WARL field. Implementations can return any legal value on the read of a WARL field when the last write was of an illegal value, but the legal value returned should deterministically depend on the illegal written value and the architectural state of the hart.
@@ -174,21 +174,21 @@ This is independent of where a custom extension opcodes are located
 
 *WARL (Write Anything, Read Legal)*:
 
-The Priv ISA requires reads of WARL fields to return some implementation-dependent deterministic legal value 
-after the field is written with an illegal value. 
-Certifying such behaviors is expensive and provides low value for a certificate since software can’t rely 
+The Priv ISA requires reads of WARL fields to return some implementation-dependent deterministic legal value
+after the field is written with an illegal value.
+Certifying such behaviors is expensive and provides low value for a certificate since software can’t rely
 on a particular behavior from one implementation to another.
 
-CSC processor CRDs define writes to WARL fields of illegal values to be OUT-OF-SCOPE unless otherwise stated 
+CSC processor CRDs define writes to WARL fields of illegal values to be OUT-OF-SCOPE unless otherwise stated
 (i.e., certification tests will only ever write legal values to WARL fields except for the special cases listed below).
-When not OUT-OF-SCOPE, the required behavior is defined as this might be more constrained in implementations than 
+When not OUT-OF-SCOPE, the required behavior is defined as this might be more constrained in implementations than
 in the standard.
 
 The following special cases for WARL are supported when explicitly listed in the corresponding CRD CSR field requirements:
 1. Probing for Field Width
 * Some WARL fields are variable length such as the ASID field in the virtual memory extension.
 * Here’s the algorithm recommended to discover the ASID width:
-** The number of implemented ASID bits, termed ASIDLEN, may be determined by writing one to every bit position in 
+** The number of implemented ASID bits, termed ASIDLEN, may be determined by writing one to every bit position in
    the ASID field, then reading back the value in the satp CSR to see which bit positions in the ASID field hold a one.
 * The RVCP-provided certification materials (certification tests, certification reference models) can map writes of
   illegal values to the ASID field to the corresponding read value as long as they are provided the ASIDLEN value
@@ -201,20 +201,20 @@ The following special cases for WARL are supported when explicitly listed in the
 *WLRL (Write Legal, Read Legal)*:
 
 The Priv ISA requires reads of WLRL fields to return some implementation-dependent deterministic arbitrary value
-after the field is written with an illegal value. 
-Certifying such behaviors is expensive and provides low value for a certificate since software can’t rely 
-on a particular behavior.  
-CSC processor CRDs define writes to WLRL fields of illegal values to be OUT-OF-SCOPE unless otherwise stated 
+after the field is written with an illegal value.
+Certifying such behaviors is expensive and provides low value for a certificate since software can’t rely
+on a particular behavior.
+CSC processor CRDs define writes to WLRL fields of illegal values to be OUT-OF-SCOPE unless otherwise stated
 (i.e., certification tests will only ever write legal values to WLRL fields).
 
 *WPRI (Write Preserve, Read Ignore)*:
 
-The Priv ISA requires reads of WPRI fields to return a value of 0. 
-Such WPRI fields are always unimplemented by definition. 
-Certification tests are aware of which fields in the CSRs are WPRI and normally write them with 0 but will 
-also write them with ~0 (all ones) and ensure that reads return 0 in both cases. 
-It is OUT-OF-SCOPE for certification tests to write all possible values of WPRI fields 
-(especially if they are more than just a few bits) and certification tests aren’t designed to be comprehensive 
+The Priv ISA requires reads of WPRI fields to return a value of 0.
+Such WPRI fields are always unimplemented by definition.
+Certification tests are aware of which fields in the CSRs are WPRI and normally write them with 0 but will
+also write them with ~0 (all ones) and ensure that reads return 0 in both cases.
+It is OUT-OF-SCOPE for certification tests to write all possible values of WPRI fields
+(especially if they are more than just a few bits) and certification tests aren’t designed to be comprehensive
 verification test suites anyways.
 
 === System IP CRDs
@@ -285,10 +285,10 @@ None
 | Requirement ID | Extension | Version | Long Name | Note
 
 <% ext_reqs.sort.each do |ext_req| -%>
-<% ext = arch_def.extension(ext_req.name) -%>
-| <%= ext_req.req_id %> 
-| <<ext-<%= ext_req.name %>-def,<%= ext_req.name %>>> 
-| <%= ext_req.version_requirement %>
+<% ext = cfg_arch.extension(ext_req.name) -%>
+| <%= ext_req.req_id %>
+| <<ext-<%= ext_req.name %>-def,<%= ext_req.name %>>>
+| <%= ext_req.requirement_specs.map(&:to_s).join(", ") %>
 | <%= ext.nil? ? "" : ext.long_name %>
 | <%= ext_req.note.nil? ? "" : ext_req.note %>
 <% end # each ext_req -%>
@@ -321,7 +321,7 @@ not provided in the associated standard.
 
 === IN-SCOPE Parameters
 
-These implementation-dependent options defined by MANDATORY or OPTIONAL extensions are IN-SCOPE. 
+These implementation-dependent options defined by MANDATORY or OPTIONAL extensions are IN-SCOPE.
 An implementation must abide by the "Allowed Value(s)" to obtain a certificate.
 If the "Allowed Value(s)" is "Any" then any value allowed by the type is acceptable.
 
@@ -346,8 +346,8 @@ a| <%= in_scope_ext_param.note %>
 
 === OUT-OF-SCOPE Parameters
 
-These implementation-dependent options defined by MANDATORY or OPTIONAL extensions are OUT-OF-SCOPE. 
-There are no restrictions on their values for certification purposes because the certificate 
+These implementation-dependent options defined by MANDATORY or OPTIONAL extensions are OUT-OF-SCOPE.
+There are no restrictions on their values for certification purposes because the certificate
 doesn't cover the behavior of the associated RISC-V standard as a function of these parameters.
 
 <% if cert_model.all_out_of_scope_params.empty? -%>
@@ -394,7 +394,7 @@ TODO: Show traps per privilege mode
 
 == Instruction Summary
 
-TODO: List only instructions that exist in this certificate model. 
+TODO: List only instructions that exist in this certificate model.
 Currently lists all possible in present extensions so the I extension is providing both RV32I and RV64I instructions.
 See https://github.com/riscv-software-src/riscv-unified-db/issues/291 and https://github.com/riscv-software-src/riscv-unified-db/issues/324
 
@@ -416,7 +416,7 @@ See https://github.com/riscv-software-src/riscv-unified-db/issues/291 and https:
 == CSR Summary
 
 <%
-  csrs = cert_model.in_scope_ext_reqs.map { |ext_req| ext_req.csrs(arch_def) }.flatten.uniq
+  csrs = cert_model.in_scope_ext_reqs.map { |ext_req| ext_req.csrs }.flatten.uniq
 -%>
 
 === By Name
@@ -486,16 +486,16 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 [appendix]
 == Extension Details
 <% cert_model.in_scope_ext_reqs.sort.each do |ext_req| -%>
-<% ext = arch_def.extension(ext_req.name) -%>
+<% ext = cfg_arch.extension(ext_req.name) -%>
 
 [[ext-<%= ext_req.name %>-def]]
 === Extension <%= ext_req.name %> +
 <%= ext.nil? ? "" : "*Long Name*: " + ext.long_name + " +" %>
 
-*Version Requirement*: <%= ext_req.version_requirement %> +
+*Version Requirement*: <%= ext_req.requirement_specs.map(&:to_s).join(", ") %> +
 
 <% ext.versions.each do |v| -%>
-<%= v.version %>::
+<%= v.version_spec %>::
   State:::
     <%= v.state %>
   <% if v.state == "ratified" -%>
@@ -506,7 +506,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
   Changes:::
 
     <% v.changes.each do |c| -%>
-    * <%= c %>  
+    * <%= c %>
     <% end -%>
 
   <% end -%>
@@ -517,7 +517,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
   <% if v.implications.size > 0 -%>
   Implies:::
     <% v.implications.each do |i| -%>
-    * `<%= i.name %>` version <%= i.version %>
+    * `<%= i.name %>` version <%= i.version_spec %>
     <% end -%>
   <% end -%>
 <% end -%>
@@ -538,7 +538,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 <% end -%>
 
 // TODO: GitHub issue 92: Use version specified by each profile.
-<% insts = arch_def.instructions.select { |i| i.defined_by?(ext.min_version) } -%>
+<% insts = cfg_arch.instructions.select { |i| i.defined_by?(ext.min_version) } -%>
 <% unless insts.empty? -%>
 ==== Instructions
 
@@ -599,7 +599,7 @@ The following instructions are added by this extension:
 
 This instruction is defined by:
 
-<%= inst.defined_by.to_asciidoc %>
+<%= inst.defined_by_condition.to_asciidoc %>
 
 ==== Encoding
 
@@ -611,20 +611,20 @@ This instruction has different encodings in RV32 and RV64.
 RV32::
 +
 [wavedrom, ,svg,subs='attributes',width="100%"]
-....  
+....
 <%= JSON.dump inst.wavedrom_desc(32) %>
 ....
 
 RV64::
 +
 [wavedrom, ,svg,subs='attributes',width="100%"]
-....  
+....
 <%= JSON.dump inst.wavedrom_desc(64) %>
 ....
 ====
 <% else -%>
 [wavedrom, ,svg,subs='attributes',width="100%"]
-....  
+....
 <%= JSON.dump inst.wavedrom_desc(inst.base.nil? ? 32 : inst.base) %>
 ....
 <% end -%>
@@ -693,13 +693,13 @@ RV64::
 <% if inst.key?("operation()") -%>
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.operation_ast(arch_def.symtab).gen_adoc %>
+<%= inst.operation_ast(cfg_arch.symtab).gen_adoc %>
 ----
 <% end -%>
 
 ==== Exceptions
 
-<%- exception_list = inst.reachable_exceptions_str(arch_def.symtab) -%>
+<%- exception_list = inst.reachable_exceptions_str(cfg_arch.symtab) -%>
 <%- if exception_list.empty? -%>
 This instruction does not generate synchronous exceptions.
 <%- else -%>
@@ -719,7 +719,7 @@ This instruction may result in the following synchronous exceptions:
 == CSR Details
 
 <%
-  csrs = cert_model.in_scope_ext_reqs.map { |ext_req| ext_req.csrs(arch_def) }.flatten.uniq
+  csrs = cert_model.in_scope_ext_reqs.map { |ext_req| ext_req.csrs }.flatten.uniq
   csrs.sort_by!(&:name)
 -%>
 
@@ -746,23 +746,23 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <% if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <% end -%>
-h| Defining extension a| <%= csr.defined_by.to_asciidoc %>
-<% if csr.dynamic_length?(arch_def) -%>
-h| Length         | <%= csr.length_pretty(arch_def) %>
+h| Defining extension a| <%= csr.defined_by_condition.to_asciidoc %>
+<% if csr.dynamic_length?(cfg_arch) -%>
+h| Length         | <%= csr.length_pretty(cfg_arch) %>
 <% else -%>
-h| Length         | <%= csr.length_pretty(arch_def) %>
+h| Length         | <%= csr.length_pretty(cfg_arch) %>
 <% end -%>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===
 
 
 ==== Format
-<% unless csr.dynamic_length?(arch_def) || csr.implemented_fields(arch_def).any? { |f| f.dynamic_location?(arch_def) } -%>
+<% unless csr.dynamic_length?(cfg_arch) || csr.implemented_fields(cfg_arch).any? { |f| f.dynamic_location?(cfg_arch) } -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(arch_def, csr.base.nil? ? 32 : csr.base, optional_type: 2) %>
+<%= JSON.dump csr.wavedrom_desc(cfg_arch, csr.base.nil? ? 32 : csr.base, optional_type: 2) %>
 ....
 <% else -%>
 <%# CSR has a dynamic length, or a field has a dynamic location,
@@ -772,13 +772,13 @@ This CSR format changes dynamically with XLEN.
 .<%= csr.name %> Format when <%= csr.length_cond32 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(arch_def, 32, optional_type: 2) %>
+<%= JSON.dump csr.wavedrom_desc(cfg_arch, 32, optional_type: 2) %>
 ....
 
 .<%= csr.name %> Format when <%= csr.length_cond64 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(arch_def, 64, optional_type: 2) %>
+<%= JSON.dump csr.wavedrom_desc(cfg_arch, 64, optional_type: 2) %>
 ....
 
 
@@ -791,34 +791,34 @@ This CSR format changes dynamically with XLEN.
 |===
 @ Name @ Location @ Type @ Reset Value
 
-<%- csr.implemented_fields(arch_def).each do |field| -%>
+<%- csr.implemented_fields(cfg_arch).each do |field| -%>
 @ xref:<%=csr.name%>-<%=field.name%>-def[`<%= field.name %>`]
 a@
-<%- if field.dynamic_location?(arch_def) -%>
+<%- if field.dynamic_location?(cfg_arch) -%>
 
 [when,"<%= field.location_cond32 %>"]
 --
-<%= field.location_pretty(arch_def, 32) %>
+<%= field.location_pretty(cfg_arch, 32) %>
 --
 
 [when,"<%= field.location_cond64 %>"]
 --
-<%= field.location_pretty(arch_def, 64) %>
+<%= field.location_pretty(cfg_arch, 64) %>
 --
 
 <%- else -%>
-<%= field.location_pretty(arch_def) %>
+<%= field.location_pretty(cfg_arch) %>
 <%- end -%>
 a@
 
 --
-<%= field.type_pretty(arch_def.symtab) %>
+<%= field.type_pretty(cfg_arch.symtab) %>
 --
 
 a@
 
 --
-<%= field.reset_value_pretty(arch_def) %>
+<%= field.reset_value_pretty(cfg_arch) %>
 --
 
 <%- end -%>
@@ -826,11 +826,11 @@ a@
 
 ==== Fields
 
-<%- if csr.implemented_fields(arch_def).empty? -%>
+<%- if csr.implemented_fields(cfg_arch).empty? -%>
 This CSR has no fields. However, it must still exist (not cause an `Illegal Instruction` trap) and always return zero on a read.
 <%- else -%>
 
-<%- csr.implemented_fields(arch_def).each do |field| -%>
+<%- csr.implemented_fields(cfg_arch).each do |field| -%>
 [[<%=csr.name%>-<%=field.name%>-def]]
 ===== `<%= field.name %>`
 
@@ -840,23 +840,23 @@ IMPORTANT: <%= field.name %> is only defined in <%= field.base32_only? ? "RV32" 
 
 ****
 Location::
-<%= field.location_pretty(arch_def) %>
+<%= field.location_pretty(cfg_arch) %>
 
 Description::
 <%= field.description.gsub("\n", " +\n") %>
 
 Type::
-<%= field.type_pretty(arch_def.symtab) %>
+<%= field.type_pretty(cfg_arch.symtab) %>
 
 Reset value::
-<%= field.reset_value_pretty(arch_def) %>
+<%= field.reset_value_pretty(cfg_arch) %>
 
 ****
 
 <%- end -%>
 <%- end -%>
 
-<%- if csr.implemented_fields(arch_def).map(&:has_custom_sw_write?).any? -%>
+<%- if csr.implemented_fields(cfg_arch).map(&:has_custom_sw_write?).any? -%>
 ==== Software write
 
 This CSR may store a value that is different from what software attempts to write.
@@ -866,7 +866,7 @@ written value:
 
 [idl]
 ----
-<%- csr.implemented_fields(arch_def).each do |field| -%>
+<%- csr.implemented_fields(cfg_arch).each do |field| -%>
 <%- if field.has_custom_sw_write? -%>
 <%= field.name %> = <%= field["sw_write(csr_value)"] %>
 <%- else -%>
@@ -883,7 +883,7 @@ This CSR may return a value that is different from what is stored in hardware.
 
 [source,idl,subs="specialchars,macros"]
 ----
-<%= csr.sw_read_ast(arch_def.symtab).gen_adoc %>
+<%= csr.sw_read_ast(cfg_arch.symtab).gen_adoc %>
 ----
 <%- end -%>
 

@@ -73,8 +73,8 @@ description: |
   `sfence.w.inval` and `sfence.inval.ir` instructions as no-ops.
   --
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: 2021-11
-  requires:
-    name: S
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2021-11
+    requires:
+      name: S

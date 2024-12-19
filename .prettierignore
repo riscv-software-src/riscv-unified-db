@@ -1,0 +1,11 @@
+gen
+.home
+.singularity
+node_modules
+.asciidoctor
+.bundle
+.git
+.github
+.vscode
+docs/ruby
+ext

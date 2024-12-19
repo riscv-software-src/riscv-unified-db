@@ -14,12 +14,12 @@ base: 64
 encoding:
   match: 0010000----------010-----0111011
   variables:
-  - name: rs2
-    location: 24-20
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: rs2
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 assembly: xd, xs1, xs2
 access:
   s: always
@@ -32,8 +32,6 @@ operation(): |
   }
 
   X[rd] = X[rs2] + (X[rs1][31:0] << 1);
-
-
 
 sail(): |
   {
@@ -49,7 +47,3 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
-
-
-
-

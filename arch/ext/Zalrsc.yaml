@@ -6,9 +6,9 @@ name: Zalrsc
 long_name: Atomic read-modify-write instructions
 type: unprivileged
 versions:
-- version: "1.0.0"
-  state: ratified
-  ratification_date: 2024-04
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2024-04
 description: |
 
   Complex atomic memory operations on a single memory word or doubleword

@@ -15,10 +15,10 @@ assembly: xd, xs1
 encoding:
   match: 011000000000-----001-----0010011
   variables:
-  - name: rs1
-    location: 19-15
-  - name: rd
-    location: 11-7
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -30,8 +30,6 @@ operation(): |
   }
 
   X[rd] = (xlen() - 1) - $signed(highest_set_bit(X[rs1]));
-
-
 
 sail(): |
   {
@@ -45,7 +43,3 @@ sail(): |
     X(rd) = to_bits(sizeof(xlen), result);
     RETIRE_SUCCESS
   }
-
-
-
-

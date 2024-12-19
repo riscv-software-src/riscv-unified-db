@@ -1,11 +1,62 @@
+# frozen_string_literal: true
 
+require "English"
+require "fileutils"
 require "minitest/autorun"
+require "open3"
+require "tmpdir"
+require "yaml"
 
-$root ||= (Pathname.new(__FILE__) / ".." / ".." ).realpath
-
-require_relative "../yaml_loader"
+$root ||= (Pathname.new(__FILE__) / ".." / ".." / "..").realpath
 
 class TestYamlLoader < Minitest::Test
+  def resolve_yaml(yaml)
+    Dir.mktmpdir do |dir|
+      arch_dir = Pathname.new(dir) / "arch"
+      resolved_dir = Pathname.new(dir) / "resolved_arch"
+      test_dir = arch_dir / "test"
+      FileUtils.mkdir_p test_dir
+
+      File.write(test_dir / "test.yaml", yaml)
+
+      stdout, stderr, status =
+        Dir.chdir($root) do
+          Open3.capture3("/bin/bash -c \"source #{$root}/.home/.venv/bin/activate && #{$root}/.home/.venv/bin/python3 #{$root}/lib/yaml_resolver.py resolve --no-progress --no-checks #{arch_dir} #{resolved_dir}\"")
+        end
+      # puts stdout
+      # puts stderr
+      # puts status
+
+      if status.to_i.zero?
+        YAML.load_file(resolved_dir / "test" / "test.yaml")
+      end
+    end
+  end
+
+  def resolve_multi_yaml(*yamls)
+    Dir.mktmpdir do |dir|
+      arch_dir = Pathname.new(dir) / "arch"
+      resolved_dir = Pathname.new(dir) / "resolved_arch"
+      test_dir = arch_dir / "test"
+      FileUtils.mkdir_p test_dir
+
+      yamls.each_index do |i|
+        yaml = yamls[i]
+        yamls.size.times do |j|
+          yaml = yaml.gsub("YAML#{j + 1}_REL_PATH", "test/test#{j + 1}.yaml")
+        end
+        File.write(test_dir / "test#{i + 1}.yaml", yaml)
+      end
+
+      system "/bin/bash -c \"source #{$root}/.home/.venv/bin/activate && #{$root}/.home/.venv/bin/python3 #{$root}/lib/yaml_resolver.py resolve --no-checks #{arch_dir} #{resolved_dir}\""
+      # `source #{$root}/.home/.venv/bin/activate && python3 #{$root}/lib/yaml_resolver.py resolve #{arch_dir} #{resolved_dir}`
+
+      if $CHILD_STATUS == 0
+        YAML.load_file(resolved_dir / "test" / "test1.yaml")
+      end
+    end
+  end
+
   def test_remove
     yaml = <<~YAML
       base:
@@ -18,12 +69,8 @@ class TestYamlLoader < Minitest::Test
         key3: value3
     YAML
 
-    f = Tempfile.new("yml")
-    f.write(yaml)
-    f.flush
-
-    doc = YamlLoader.load(f.path)
-    assert_equal({ "key1" => "value1", "key3" => "value3" }, doc["child"])
+    doc = resolve_yaml(yaml)
+    assert_equal({ "$child_of" => "#/base", "key1" => "value1", "key3" => "value3" }, doc["child"])
   end
 
   def test_multiple_remove
@@ -40,13 +87,9 @@ class TestYamlLoader < Minitest::Test
         - key3
         key4: value4
     YAML
-    
-    f = Tempfile.new("yml")
-    f.write(yaml)
-    f.flush
 
-    doc = YamlLoader.load(f.path)
-    assert_equal({ "key1" => "value1", "key4" => "value4" }, doc["child"])
+    doc = resolve_yaml(yaml)
+    assert_equal({ "$child_of" => "#/base", "key1" => "value1", "key4" => "value4" }, doc["child"])
   end
 
   def test_that_inherits_with_nested_replace_works
@@ -63,7 +106,6 @@ class TestYamlLoader < Minitest::Test
 
       bottom:
         $inherits:
-        - "#/base"
         - "#/middle"
         key1:
           sub_key6: value6
@@ -72,41 +114,8 @@ class TestYamlLoader < Minitest::Test
         key5: value5
     YAML
 
-    f = Tempfile.new("yml")
-    f.write(yaml)
-    f.flush
-
-    doc = YamlLoader.load(f.path)
-    assert_equal({ "key1" => {"sub_key1" => "value1", "sub_key6" => "value6"}, "key2" => "value2_new", "key3" => "value3", "key4" => "value4_new", "key5" => "value5" }, doc["bottom"])
-  end
-
-  def test_that_spurious_recursive_inherits_works
-    yaml = <<~YAML
-      base:
-        key1: value1
-        key2: value2
-
-      middle:
-        $inherits: "#/base"
-        key3: value3
-        key4: value4
-
-      bottom:
-        $inherits:
-        - "#/base"
-        - "#/middle"
-        key2: value2_new
-        key4: value4_new
-        key5: value5
-    YAML
-
-    f = Tempfile.new("yml")
-    f.write(yaml)
-    f.flush
-
-    doc = YamlLoader.load(f.path)
-    assert_equal({ "key1" => "value1", "key2" => "value2", "key3" => "value3", "key4" => "value4" }, doc["middle"])
-    assert_equal({ "key1" => "value1", "key2" => "value2_new", "key3" => "value3", "key4" => "value4_new", "key5" => "value5" }, doc["bottom"])
+    doc = resolve_yaml(yaml)
+    assert_equal({ "$child_of" => ["#/middle"], "key1" => { "sub_key1" => "value1", "sub_key6" => "value6" }, "key2" => "value2_new", "key3" => "value3", "key4" => "value4_new", "key5" => "value5" }, doc["bottom"])
   end
 
   def test_that_recursive_inherits_works
@@ -127,83 +136,67 @@ class TestYamlLoader < Minitest::Test
         key5: value5
     YAML
 
-    f = Tempfile.new("yml")
-    f.write(yaml)
-    f.flush
-
-    doc = YamlLoader.load(f.path)
-    assert_equal({ "key1" => "value1", "key2" => "value2", "key3" => "value3", "key4" => "value4" }, doc["middle"])
-    assert_equal({ "key1" => "value1", "key2" => "value2_new", "key3" => "value3", "key4" => "value4_new", "key5" => "value5" }, doc["bottom"])
+    doc = resolve_yaml(yaml)
+    assert_equal({ "$child_of" => "#/base", "$parent_of" => "test/test.yaml#/bottom", "key1" => "value1", "key2" => "value2", "key3" => "value3", "key4" => "value4" }, doc["middle"])
+    assert_equal({ "$child_of" => "#/middle", "key1" => "value1", "key2" => "value2_new", "key3" => "value3", "key4" => "value4_new", "key5" => "value5" }, doc["bottom"])
   end
 
   def test_that_nested_inherits_works
     yaml = <<~YAML
-    top:
+      top:
+        base:
+          key1: value1
+          key2: value2
+          key3: value3
+
+      bottom:
+        child:
+          $inherits: "#/top/base"
+          key3: value3_new
+    YAML
+
+    doc = resolve_yaml(yaml)
+    assert_equal({ "$child_of" => "#/top/base", "key1" => "value1", "key2" => "value2", "key3" => "value3_new" }, doc["bottom"]["child"])
+  end
+
+  def test_that_inherits_doesnt_delete_keys
+    yaml = <<~YAML
       base:
         key1: value1
         key2: value2
         key3: value3
 
-    bottom:
       child:
-        $inherits: "#/top/base"
+        $inherits: "#/base"
         key3: value3_new
     YAML
 
-    f = Tempfile.new("yml")
-    f.write(yaml)
-    f.flush
-
-    doc = YamlLoader.load(f.path)
-    assert_equal({ "key1" => "value1", "key2" => "value2", "key3" => "value3_new" }, doc["bottom"]["child"])
-  end
-
-  def test_that_inherits_doesnt_delete_keys
-    yaml = <<~YAML
-    base:
-      key1: value1
-      key2: value2
-      key3: value3
-
-    child:
-      $inherits: "#/base"
-      key3: value3_new
-    YAML
-
-    f = Tempfile.new("yml")
-    f.write(yaml)
-    f.flush
-
-    doc = YamlLoader.load(f.path)
-    assert_equal({ "key1" => "value1", "key2" => "value2", "key3" => "value3_new" }, doc["child"])
+    doc = resolve_yaml(yaml)
+    assert_equal({ "$child_of" => "#/base", "key1" => "value1", "key2" => "value2", "key3" => "value3_new" }, doc["child"])
   end
 
   def test_that_double_inherits_doesnt_delete_keys
     yaml = <<~YAML
-    base1:
-      key1: value1
-      key2: value2
-      key3: value3
+      base1:
+        key1: value1
+        key2: value2
+        key3: value3
 
-    base2:
-      key4: value4
-      key5: value5
-      key6: value6
+      base2:
+        key4: value4
+        key5: value5
+        key6: value6
 
-    child:
-      $inherits:
-      - "#/base1"
-      - "#/base2"
-      key3: value3_new
-      key6: value6_new
+      child:
+        $inherits:
+        - "#/base1"
+        - "#/base2"
+        key3: value3_new
+        key6: value6_new
     YAML
 
-    f = Tempfile.new("yml")
-    f.write(yaml)
-    f.flush
-
-    doc = YamlLoader.load(f.path)
-    assert_equal({ "key1" => "value1", "key2" => "value2", "key3" => "value3_new", "key4" => "value4", "key5" => "value5", "key6" => "value6_new" }, doc["child"])
+    doc = resolve_yaml(yaml)
+    assert_equal({ "$child_of" => ["#/base1", "#/base2"], "key1" => "value1", "key2" => "value2", "key3" => "value3_new", "key4" => "value4", "key5" => "value5", "key6" => "value6_new" }, doc["child"])
   end
 
   def test_inherits_in_the_same_document
@@ -225,22 +218,47 @@ class TestYamlLoader < Minitest::Test
         $inherits: "#/$defs/target2"
     YAML
 
-    f = Tempfile.new("yml")
-    f.write(yaml)
-    f.flush
-
-    doc = YamlLoader.load(f.path)
-    assert_equal({ "a" => "hash" }, doc["obj1"])
-    assert_equal({ "a" => "Should take precedence" }, doc["obj2"])
-    assert_equal({ "a" => "Should take precedence" }, doc["obj3"])
+    doc = resolve_yaml(yaml)
+    assert_equal({ "$child_of" => "#/$defs/target2", "a" => "hash" }, doc["obj1"])
+    assert_equal({ "$child_of" => "#/$defs/target2", "a" => "Should take precedence" }, doc["obj2"])
+    assert_equal({ "$child_of" => "#/$defs/target2", "a" => "Should take precedence" }, doc["obj3"])
   end
 
   def test_inherits_in_the_different_document
-    yaml1 = <<~YAML
+    yaml2 = <<~YAML
       $defs:
         target1: A string
         target2:
           a: hash
+    YAML
+
+    yaml1 = <<~YAML
+      obj1:
+        $inherits: "YAML2_REL_PATH#/$defs/target2"
+
+      obj2:
+        $inherits: "YAML2_REL_PATH#/$defs/target2"
+        a: Should take precedence
+
+      obj3:
+        a: Should take precedence
+        $inherits: "YAML2_REL_PATH#/$defs/target2"
+    YAML
+
+    doc = resolve_multi_yaml(yaml1, yaml2)
+    assert_equal({ "$child_of" => "test/test2.yaml#/$defs/target2", "a" => "hash" }, doc["obj1"])
+    assert_equal({ "$child_of" => "test/test2.yaml#/$defs/target2", "a" => "Should take precedence" }, doc["obj2"])
+    assert_equal({ "$child_of" => "test/test2.yaml#/$defs/target2", "a" => "Should take precedence" }, doc["obj3"])
+  end
+
+  // Added JamesBall
+  def test_inherits_entire_object
+    yaml1 = <<~YAML
+      target1: A string
+      target2:
+        sub1:
+          key_a: value_a
+          key_b: value_b
     YAML
 
     f1 = Tempfile.new("yml")
@@ -250,7 +268,7 @@ class TestYamlLoader < Minitest::Test
 
     yaml2 = <<~YAML
       obj1:
-        $inherits: "#{f1_path.basename}#/$defs/target2"
+        $inherits: "YAML2_REL_PATH#/$defs/target2"
 
       obj2:
         $inherits: "#{f1_path.basename}#/$defs/target2"
@@ -271,39 +289,6 @@ class TestYamlLoader < Minitest::Test
     assert_equal({ "a" => "Should take precedence" }, doc["obj3"])
   end
 
-  def test_inherits_entire_object
-    yaml1 = <<~YAML
-      target1: A string
-      target2:
-        sub1:
-          key_a: value_a
-          key_b: value_b
-    YAML
-
-    f1 = Tempfile.new("yml")
-    f1.write(yaml1)
-    f1.flush
-    f1_path = Pathname.new(f1.path)
-
-    yaml2 = <<~YAML
-      $inherits: "#{f1_path.basename}#"
-
-      target1: Should take precedence
-
-      target2:
-        sub1:
-          key_a: new_value_a
-    YAML
-
-    f2 = Tempfile.new("yml")
-    f2.write(yaml2)
-    f2.flush
-
-    doc = YamlLoader.load(f2.path)
-    assert_equal("Should take precedence", doc["target1"])
-    assert_equal({ "sub1" => { "key_a" => "new_value_a", "key_b" => "value_b" }}, doc["target2"])
-  end
-
   def test_multi_inherits_in_the_same_document
     yaml = <<~YAML
       $defs:
@@ -319,12 +304,8 @@ class TestYamlLoader < Minitest::Test
 
     YAML
 
-    f = Tempfile.new("yml")
-    f.write(yaml)
-    f.flush
-
-    doc = YamlLoader.load(f.path)
-    assert_equal({ "a" => "hash", "b" => "nice" }, doc["obj1"])
+    doc = resolve_yaml(yaml)
+    assert_equal({ "$child_of" => ["#/$defs/target1", "#/$defs/target2"], "a" => "hash", "b" => "nice" }, doc["obj1"])
   end
 
   def test_that_invalid_inherits_raise
@@ -377,10 +358,10 @@ class TestYamlLoader < Minitest::Test
 
       obj1:
         target10: abc
-        target11: 
+        target11:
           $copy: "#/$defs/target1"
         target12: def
-        target13: 
+        target13:
           $copy: "#/$defs/target3"
 
     YAML
@@ -390,11 +371,11 @@ class TestYamlLoader < Minitest::Test
     f.flush
 
     doc = YamlLoader.load(f.path)
-    assert_equal({ 
-        "target10" => "abc", 
-        "target11" => "A string", 
-        "target12" => "def", 
-        "target13" => "Another string" 
+    assert_equal({
+        "target10" => "abc",
+        "target11" => "A string",
+        "target12" => "def",
+        "target13" => "Another string"
       }, doc["obj1"])
   end
 
@@ -415,10 +396,10 @@ class TestYamlLoader < Minitest::Test
     yaml2 = <<~YAML
       obj1:
         target10: abc
-        target11: 
+        target11:
           $copy: "#{f1_path.basename}#/$defs/target1"
         target12: def
-        target13: 
+        target13:
           $copy: "#{f1_path.basename}#/$defs/target3"
     YAML
 
@@ -427,11 +408,11 @@ class TestYamlLoader < Minitest::Test
     f2.flush
 
     doc = YamlLoader.load(f2.path)
-    assert_equal({ 
-        "target10" => "abc", 
-        "target11" => "A string", 
-        "target12" => "def", 
-        "target13" => "Another string" 
+    assert_equal({
+        "target10" => "abc",
+        "target11" => "A string",
+        "target12" => "def",
+        "target13" => "Another string"
       }, doc["obj1"])
   end
 end
