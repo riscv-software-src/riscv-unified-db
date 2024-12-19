@@ -18,7 +18,7 @@ def setup_paths(request):
 
     return json_file, repo_dir, output_file
 
-def test_run_parser_mimic_old_behavior(setup_paths):
+def test_llvm(setup_paths):
     json_file, repo_dir, output_file = setup_paths
 
     # Run the parser (similar to old behavior)

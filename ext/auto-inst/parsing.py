@@ -52,10 +52,14 @@ def load_yaml_encoding(instr_name):
 
     return yaml_match, yaml_vars
 
-def compare_yaml_json_encoding(yaml_match, yaml_vars, json_encoding_str):
+def compare_yaml_json_encoding(instr_name, yaml_match, yaml_vars, json_encoding_str):
     """
     Compare the YAML encoding (match + vars) with the JSON encoding (binary format).
     If the JSON has a variable like vm[?], it should be treated as just vm.
+
+    If instr_name starts with 'C_', then treat the instruction as 16 bits long.
+    Otherwise, treat it as 32 bits long.
+
     Return a list of differences.
     """
     if not yaml_match:
@@ -63,9 +67,12 @@ def compare_yaml_json_encoding(yaml_match, yaml_vars, json_encoding_str):
     if not json_encoding_str:
         return ["No JSON encoding available for comparison."]
 
+    # Determine expected length based on whether it's a compressed instruction (C_)
+    expected_length = 16 if instr_name.startswith('C_') else 32
+
     yaml_pattern_str = yaml_match.replace('-', '.')
-    if len(yaml_pattern_str) != 32:
-        return [f"YAML match pattern length is {len(yaml_pattern_str)}, expected 32. Cannot compare properly."]
+    if len(yaml_pattern_str) != expected_length:
+        return [f"YAML match pattern length is {len(yaml_pattern_str)}, expected {expected_length}. Cannot compare properly."]
 
     def parse_location(loc_str):
         high, low = loc_str.split('-')
@@ -76,16 +83,18 @@ def compare_yaml_json_encoding(yaml_match, yaml_vars, json_encoding_str):
         high, low = parse_location(var["location"])
         yaml_var_positions[var["name"]] = (high, low)
 
+    # Tokenize the JSON encoding string. We assume it should match the expected_length in bits.
     tokens = re.findall(r'(?:[01]|[A-Za-z0-9]+(?:\[\d+\]|\[\?\])?)', json_encoding_str)
     json_bits = []
-    bit_index = 31
+    bit_index = expected_length - 1
     for t in tokens:
         json_bits.append((bit_index, t))
         bit_index -= 1
 
     if bit_index != -1:
-        return [f"JSON encoding does not appear to be 32 bits. Ends at bit {bit_index+1}."]
+        return [f"JSON encoding does not appear to be {expected_length} bits. Ends at bit {bit_index+1}."]
 
+    # Normalize JSON bits (handle vm[?] etc.)
     normalized_json_bits = []
     for pos, tt in json_bits:
         if re.match(r'vm\[[^\]]*\]', tt):
@@ -96,8 +105,8 @@ def compare_yaml_json_encoding(yaml_match, yaml_vars, json_encoding_str):
     differences = []
 
     # Check fixed bits
-    for b in range(32):
-        yaml_bit = yaml_pattern_str[31 - b]
+    for b in range(expected_length):
+        yaml_bit = yaml_pattern_str[expected_length - 1 - b]
         token = [tt for (pos, tt) in json_bits if pos == b]
         if not token:
             differences.append(f"Bit {b}: No corresponding JSON bit found.")
@@ -115,6 +124,11 @@ def compare_yaml_json_encoding(yaml_match, yaml_vars, json_encoding_str):
 
     # Check variable fields
     for var_name, (high, low) in yaml_var_positions.items():
+        # Ensure the variable range fits within the expected_length
+        if high >= expected_length or low < 0:
+            differences.append(f"Variable {var_name}: location {high}-{low} is out of range for {expected_length}-bit instruction.")
+            continue
+
         json_var_fields = []
         for bb in range(low, high+1):
             token = [tt for (pos, tt) in json_bits if pos == bb]
@@ -190,7 +204,7 @@ def safe_print_instruction_details(name: str, data: dict, output_stream):
 
         if yaml_match and encoding:
             # Perform comparison
-            differences = compare_yaml_json_encoding(yaml_match, yaml_vars, encoding)
+            differences = compare_yaml_json_encoding(name, yaml_match, yaml_vars, encoding)
             if differences and len(differences) > 0:
                 output_stream.write("\nEncodings do not match. Differences:\n")
                 for d in differences:
