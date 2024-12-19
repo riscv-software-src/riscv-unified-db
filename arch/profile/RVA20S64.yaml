@@ -11,6 +11,13 @@ introduction: |
   processors.  RVA20S64 is based on privileged architecture version 1.11.
 extensions:
   $inherits: "profile/RVI20U64.yaml#/extensions"
+  U:
+    presence: mandatory
+    version: "~> 1.0"
+    param_constraints:
+      U_MODE_ENDIANESS:
+        schema:
+          const: little``
   S:
     presence: mandatory
     version: "= 1.11"

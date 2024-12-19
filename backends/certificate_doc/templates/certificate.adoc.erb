@@ -201,16 +201,11 @@ None
 
 == Instruction Summary
 
-<%
-  insts = cert_model.in_scope_extensions.map { |ext_cert_model| ext_cert_model.instructions }.flatten.uniq
-  insts.sort_by!(&:name)
--%>
-
 [%autowidth]
 |===
 | Name | Long Name
 
-<% insts.each do |inst| -%>
+<% portfolio.in_scope_instructions.each do |inst| -%>
 | <%= link_to_inst(inst.name) %>
 | <%= inst.long_name %>
 <% end # do -%>
@@ -387,12 +382,7 @@ The following instructions are added by this extension:
 [appendix]
 == Instruction Details
 
-<%=
-  insts = cert_model.in_scope_extensions.map { |ext_cert_model| ext_cert_model.instructions }.flatten.uniq
-  insts.sort_by!(&:name)
--%>
-
-<% insts.each do |inst| -%>
+<% portfolio.in_scope_instructions.each do |inst| -%>
 <<<
 <%= anchor_for_inst(inst.name) %>
 === <%= inst.name %>
