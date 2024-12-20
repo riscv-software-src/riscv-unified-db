@@ -8,8 +8,8 @@ class:
   $ref: certificate_class/MC.yaml#
 
 # Semantic versions within the model
-versions: 
-- version: "1.0.0"
+versions:
+  - version: "1.0.0"
 
 # XLEN used by rakefile
 base: 32
@@ -17,10 +17,10 @@ base: 32
 $inherits: "certificate_model/MC200-32.yaml#"
 
 revision_history:
-- revision: "0.1.0"
-  date: 2024-11-27
-  changes:
-  - First created
+  - revision: "0.1.0"
+    date: "2024-11-27"
+    changes:
+      - First created
 
 description: |
   MC300 is an advanced RISC-V microcontroller that adds the following mandatory extensions to the MC200-series:

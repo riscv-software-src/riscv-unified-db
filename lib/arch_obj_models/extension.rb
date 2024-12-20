@@ -693,7 +693,7 @@ class ExtensionRequirement
     ext = @cfg_arch.extension(@name)
     return [] if ext.nil?
 
-    ext.versions.select { |v| @requirement.satisfied_by?(v.version) }
+    ext.versions.select { |v| satisfied_by?(v) }
   end
 
   # @overload

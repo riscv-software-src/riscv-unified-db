@@ -306,6 +306,8 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
       del final_obj["$remove"]
 
     return final_obj
+  #elif "$copy" in obj:
+  #  raise "$copy support was lost by https://github.com/riscv-software-src/riscv-unified-db/pull/350"
   else:
     for key in obj:
       obj[key] = _resolve(obj[key], obj_path + [key], obj_file_path, doc_obj, arch_root, do_checks)
@@ -417,6 +419,7 @@ def resolve_file(rel_path : str | Path, arch_dir: str | Path, resolved_dir: str 
     resolved_obj = resolve(rel_path, args.arch_dir, do_checks)
     resolved_obj["$source"] = os.path.join(args.arch_dir, rel_path)
 
+    write_yaml(resolved_path, resolved_obj)
     if do_checks and ("$schema" in resolved_obj):
       schema = _get_schema(resolved_obj["$schema"])
       try:
@@ -426,7 +429,6 @@ def resolve_file(rel_path : str | Path, arch_dir: str | Path, resolved_dir: str 
         print(best_match(schema.iter_errors(resolved_obj)).message)
         exit(1)
 
-    write_yaml(resolved_path, resolved_obj)
     os.chmod(resolved_path, 0o444)
 
 if __name__ == '__main__':

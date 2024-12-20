@@ -4,25 +4,55 @@
   "type": "object",
   "required": ["$schema", "kind", "name", "long_name"],
   "additionalProperties": false,
-  "patternProperties": {
-    "^\\$inherits": {
+  "properties": {
+    "$inherits": {
       "oneOf": [
         {
           "type": "string",
-          "pattern": "^profile_release|certificate_model/.*\\.yaml#.*"
+          "pattern": "^(profile|certificate_model)/.*\\.yaml#.*"
         },
         {
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^profile_release|certificate_model/.*\\.yaml#.*"
+            "pattern": "^(profile|certificate_model)/.*\\.yaml#.*"
           },
           "uniqueItems": true
         }
       ]
-    }
-  },
-  "properties": {
+    },
+    "$child_of": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^(profile|certificate_model)/.*\\.yaml#.*"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(profile|certificate_model)/.*\\.yaml#.*"
+          },
+          "uniqueItems": true
+        }
+      ]
+    },
+    "$parent_of": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^(profile|certificate_model)/.*\\.yaml#.*"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(profile|certificate_model)/.*\\.yaml#.*"
+          },
+          "uniqueItems": true
+        }
+      ]
+    },
     "$schema": {
       "type": "string",
       "const": "cert_model_schema.json#"
@@ -114,29 +144,37 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "^\\$inherits": {
+        "\\$inherits": {
           "oneOf": [
             {
               "type": "string",
-              "pattern": "^profile|certificate_model/.*\\.yaml#.*"
+              "pattern": "^(profile|certificate_model)/.*\\.yaml#.*"
             },
             {
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^profile|certificate_model/.*\\.yaml#.*"
+                "pattern": "^(profile|certificate_model)/.*\\.yaml#.*"
               },
               "uniqueItems": true
             }
           ]
         },
-        "^\\$child_of": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "pattern": "^profile/.*\\.yaml#.*"
-          },
-          "uniqueItems": true
+        "\\$child_of": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^(profile|certificate_model)/.*\\.yaml#.*"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(profile|certificate_model)/.*\\.yaml#.*"
+              },
+              "uniqueItems": true
+            }
+          ]
         },
         "^([A-WY])|([SXZ][a-z0-9]+)$": {
           "type": "object",
