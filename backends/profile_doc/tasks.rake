@@ -14,8 +14,10 @@ rule %r{#{$root}/gen/profile_doc/adoc/.*\.adoc} => [
   portfolio = profile_release
   raise ArgumentError, "No profile release named '#{profile_release_name}'" if profile_release.nil?
 
+  # Set globals for ERB template.
   profile_class = profile_release.profile_class
   portfolio_class = profile_class
+  portfolio = profile_release
 
   template_path = Pathname.new "#{$root}/backends/profile_doc/templates/profile.adoc.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")

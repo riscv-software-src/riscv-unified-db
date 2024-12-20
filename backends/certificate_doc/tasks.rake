@@ -25,16 +25,18 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
     __FILE__
   ] do |t|
     # TODO: schema validation
-    cfg_arch = cfg_arch_for("rv#{base}")
-    cert_model = cfg_arch.cert_model(cert_model_name)
-    raise "No certificate model defined for #{cert_model_name}" if cert_model.nil?
+    base_cert_model = cfg_arch_for("rv#{base}").cert_model(cert_model_name)
+    raise "No certificate model named '#{cert_model_name}'" if base_cert_model.nil?
 
-    # Switch to the generated certificate arch def and set some variables available to ERB template.
+    # Ask base certification model to create an in-memory config arch for this model.
     # XXX - Add this to profile releases
-    cfg_arch = cert_model.to_cfg_arch
+    cfg_arch = base_cert_model.to_cfg_arch
+
+    # Set globals for ERB template.
     cert_model = cfg_arch.cert_model(cert_model_name)
     portfolio = cert_model
     cert_class = cert_model.cert_class
+    portfolio = cert_model
     portfolio_class = cert_class
 
     version = File.basename(t.name, '.adoc').split('-')[1..].join('-')
