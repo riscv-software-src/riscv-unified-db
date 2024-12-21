@@ -7,6 +7,9 @@ require_relative "portfolio"
 # that each include an unprivileged profile (e.g., RVA20U64) and one more
 # privileged profiles (e.g., RVA20S64).
 class ProfileClass < PortfolioClass
+  # @return [String] Naming scheme for profile class
+  def naming_scheme = @data["naming_scheme"]
+
   # @return [String] Name of the class
   def marketing_name = @data["marketing_name"]
 
@@ -63,7 +66,10 @@ end
 # equivalent to a ProfileRelease in a Certificate so no potential for a shared base class.
 class ProfileRelease < DatabaseObjectect
   def marketing_name = @data["marketing_name"]
+
+  # @return [String] Small enough (~1 paragraph) to be suitable immediately after a higher-level heading.
   def introduction = @data["introduction"]
+
   def state = @data["state"]
 
   # @return [Date] Ratification date
@@ -136,9 +142,7 @@ end
 
 # Representation of a specific profile in a profile release.
 class Profile < PortfolioInstance
-
   # @return [String] The marketing name of the Profile
-  def introduction = @data["introduction"]
   def marketing_name = @data["marketing_name"]
 
   # @return [ProfileRelease] The profile release this profile belongs to

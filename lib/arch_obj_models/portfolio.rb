@@ -24,8 +24,10 @@ class PortfolioClass < DatabaseObjectect
   # @return [ConfiguredArchitecture] The defining ConfiguredArchitecture
   attr_reader :cfg_arch
 
+  # @return [String] Small enough (~1 paragraph) to be suitable immediately after a higher-level heading.
   def introduction = @data["introduction"]
-  def naming_scheme = @data["naming_scheme"]
+
+  # @return [String] Large enough to need its own heading (generally one level deeper than the "introduction").
   def description = @data["description"]
 
   # Returns true if other is the same class (not a derived class) and has the same name.
@@ -44,6 +46,10 @@ class PortfolioInstance < DatabaseObjectect
   # @return [ConfiguredArchitecture] The defining ConfiguredArchitecture
   attr_reader :cfg_arch
 
+  # @return [String] Small enough (~1 paragraph) to be suitable immediately after a higher-level heading.
+  def introduction = @data["introduction"]
+
+  # @return [String] Large enough to need its own heading (generally one level deeper than the "introduction").
   def description = @data["description"]
 
   # @return [Gem::Version] Semantic version of the PortfolioInstance

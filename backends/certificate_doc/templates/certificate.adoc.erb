@@ -15,7 +15,7 @@
 // TODO: needs to be changed
 :imagesoutdir: images
 
-= <%= cert_model.name %> Certification Requirements Document
+= <%= cert_model.name %> Processor Certification Requirements Document
 
 [Preface]
 == Revision History
@@ -56,13 +56,19 @@ CSR field types::
 <% end -%>
 |===
 
-== Certification Requirements Documents (CRDs)
+== Introduction
 
-=== Introduction
+<%= cert_model.introduction %>
 
-A Certification Requirements Document (CRD) lists requirements an implementation must meet
-to obtain a specific RVI (RISC-V International) certificate.
-CRDs are developed by the RVI CSC (Certification Steering Committee) organization.
+<%= cert_class.introduction %>
+
+=== What's a CRD?
+
+Certification Requirements Documents (CRDs) list requirements an implementation must meet
+to obtain an associated RVI (RISC-V International) certificate.
+CRDs are developed by the RVI CSC (Certification Steering Committee) organization in collaboration
+with the RVI TSC (Technical Steering Committee) organization who creates RISC-V standards.
+
 The CRDs refer to and augment information provided in existing ratified RVI standards.
 
 There are a variety of certificates offered by RVI to accomodate the various RVI standards.
@@ -72,41 +78,39 @@ There are multiple classes of processor certificates available to accomodate the
 RISC-V implementations from basic microcontrollers to advanced Applications-class processors.
 
 Each CRD has a list of mandatory behaviors along with a list of optional behaviors.
-Each certificate has a name and version number that is shared by its associated CRD.
 Note that not all behaviors allowed in RISC-V standards are supported by a particular CRD.
 
-=== Naming Scheme
+=== CRD Naming Scheme
 
-CRDs and certificates have the following naming scheme:
+CRDs have the following naming scheme:
 
-  Format: <name>[*v*<version>]
+  Format: <name>[v<version>]
 
 Where:
 
 * Left & right square braces denote optional.
 * Less-than & greater-than signs just separate fields (i.e., they aren't present in the CRD name).
-* <name> identifies the type of CRD/certificate (e.g., processor vs. non-processor system IP)
-** The <name> is changed when new mandatory behaviors are added to a certificate.
-* <version> identifies a particular CRD/certificate release
+* <name> identifies the type of RISC-V standard (processor, non-processor system IP, or platform) along with
+  any other information required to identify the variant of that standard.
+* <version> identifies a particular CRD release
 ** Format is <major>[.<minor>[.<patch>]]
 ** Follows semantic versioning scheme (https://semver.org/)
 ** The <major> release is updated when certification test changes are made that *could* cause a previously certified
    implementation to now fail.
-   Examples are fixing a test bug or increasing test coverage.
+   Examples are fixing a test bug, or increasing test coverage, or requiring a new version of a standard
    A <major> release of 0 is used for pre-release versions of a CRD and release versions start with 1.
-** The <minor> release is updated when a certificate increases support for optional behaviors.
+** The <minor> release is updated when a CRD increases support for optional behaviors.
    Examples are supporting for new optional standards or
    supporting additional optional behaviors for standards already in a certificate.
 ** The <patch> release is updated when certification test changes are made that *can't* cause a previously certified
-   implementation to now fail or for non-functional changes to documentation.
+   implementation to now fail.
    Examples are test changes not designed to increase coverage or fixing a documentation typo.
 ** If omitted, defaults to v1.0.0
 ** Examples: v1, v1.1, v2.3.1, 0.3.4 (pre-release)
 
-=== Terminology
+=== CRD Terminology
 
-==== Requirements
-
+.Requirement Types
 [%autowidth]
 |===
 | Term | Meaning
@@ -118,8 +122,7 @@ Where:
 | INCOMPATIBLE | If you implement it you won’t get a certificate
 |===
 
-==== Glossary
-
+.Glossary
 [%autowidth]
 |===
 | Term | Meaning
@@ -129,35 +132,45 @@ Where:
 | AKA | “Also Known As”
 |===
 
-=== Processor Certificates
+=== Processor CRDs
 
-Certificates are available for different classes of processors as shown in the table below.
+There are Processor CRDs for different classes of RISC-V processors.
 These documents augment information in the related TSC Profile when available and/or other RVI standards documents
 (e.g., Priv and Unpriv ISA manuals).
-Please refer to the CRDs listed below for detailed certification requirements for the corresponding class of processors.
+Only ratified extensions are candidates for certification.
+This implies all custom extensions are also OUT-OF-SCOPE.
+
+==== Processor CRD Naming Scheme
+
+Processor CRD names have the following format:
+
+  <class><model>[<-base>]
+
+Where:
+
+* <class> is MC for Microcontroller Class and AC for Apps-processor Class
+* <model> is 3-digit integer defined as follows:
+** The hundreds's digit indicates the series
+** The ten's digit identifies large differences in mandatory extensions (e.g., V, H) within the series
+** The one's digit indentifies small/medium differences in mandatory extensions (e.g., Zicond, PMP) within the series
+* <base> is optional and is 32 for RV32I, 64 for RV64I, and 32E for RV32E
+** If a CRD supports multiple bases and <base> is omitted in a reference, it applies to all supported bases
+** If a CRD only supports one base then <base> is generally omitted
 
 [%autowidth]
 |===
-| Certificate | CRD | TSC Profile | Description
+| CRD | TSC Profile | Description
 
-| MC100-series | TBD | None | Minimal microcontroller that runs low-level software on an RTOS or bare-metal (no virtual memory)
-| MC200-series | TBD | RVM | Advanced microcontroller
-| RVB-series | TBD | RVB23 | Applications-class processors running Bespoke rich operating systems (e.g., Yocto Linux)
-| RVA-series | TBD | RVA23 | Applications-class processors running standard rich operating systems (e.g., commercial Linux distributions, Android)
+| MC100-series | TBD | 32/64-bit minimal microcontroller that runs low-level software on an RTOS or bare-metal (no virtual memory)
+| MC200-series | TBD | 32/64-bit intermediate microcontroller
+| MC300-series | TBD | 32/64-bit advanced microcontroller
+| AC100-series | RVB23 | 64-bit Apps-processor running Bespoke rich operating systems (e.g., Yocto Linux)
+| AC200-series | RVA23 | 64-bit Apps-processor running standard rich operating systems (e.g., commercial Linux distributions, Android)
 |===
 
-=== RISC-V Extensions
+==== CSR Field Terminology
 
-All optional extensions of the RISC-V ISA not explicitly mentioned by the individual CRDs are OUT-OF-SCOPE.
-Only ratified extensions are candidates for certification.
-This means all custom extensions are OUT-OF-SCOPE.
-This is independent of where a custom extension opcodes are located
-(i.e., either in the custom opcode space or standard & reserved opcode space).
-
-=== CSR Fields
-
-==== Definition of CSR Fields
-
+.Definition of CSR Fields
 [%autowidth]
 |===
 | Field Type | Read Value After Writing Illegal Value | Read Value Function Of | Illegal Instruction Exception | Priv ISA Manual Quote
@@ -170,8 +183,6 @@ This is independent of where a custom extension opcodes are located
 | Some whole read/write fields are reserved for future use. Implementations that do not furnish these fields must make them read-only zero.
 |===
 
-==== Treatment of CSR Fields
-
 *WARL (Write Anything, Read Legal)*:
 
 The Priv ISA requires reads of WARL fields to return some implementation-dependent deterministic legal value
@@ -179,13 +190,15 @@ after the field is written with an illegal value.
 Certifying such behaviors is expensive and provides low value for a certificate since software can’t rely
 on a particular behavior from one implementation to another.
 
-CSC processor CRDs define writes to WARL fields of illegal values to be OUT-OF-SCOPE unless otherwise stated
+Processor CRDs define writes to WARL fields of illegal values to be OUT-OF-SCOPE unless otherwise stated
 (i.e., certification tests will only ever write legal values to WARL fields except for the special cases listed below).
 When not OUT-OF-SCOPE, the required behavior is defined as this might be more constrained in implementations than
 in the standard.
 
 The following special cases for WARL are supported when explicitly listed in the corresponding CRD CSR field requirements:
+
 1. Probing for Field Width
+
 * Some WARL fields are variable length such as the ASID field in the virtual memory extension.
 * Here’s the algorithm recommended to discover the ASID width:
 ** The number of implemented ASID bits, termed ASIDLEN, may be determined by writing one to every bit position in
@@ -193,9 +206,13 @@ The following special cases for WARL are supported when explicitly listed in the
 * The RVCP-provided certification materials (certification tests, certification reference models) can map writes of
   illegal values to the ASID field to the corresponding read value as long as they are provided the ASIDLEN value
   for an implementation.
+
 2. Probing for Options
+
 * E.g., Writable misa bits
+
 3. Allowed values are a function of extension presence and/or their parameters
+
 * E.g., satp.mode legal write values
 
 *WLRL (Write Legal, Read Legal)*:
@@ -204,7 +221,7 @@ The Priv ISA requires reads of WLRL fields to return some implementation-depende
 after the field is written with an illegal value.
 Certifying such behaviors is expensive and provides low value for a certificate since software can’t rely
 on a particular behavior.
-CSC processor CRDs define writes to WLRL fields of illegal values to be OUT-OF-SCOPE unless otherwise stated
+Processor CRDs define writes to WLRL fields of illegal values to be OUT-OF-SCOPE unless otherwise stated
 (i.e., certification tests will only ever write legal values to WLRL fields).
 
 *WPRI (Write Preserve, Read Ignore)*:
@@ -216,29 +233,6 @@ also write them with ~0 (all ones) and ensure that reads return 0 in both cases.
 It is OUT-OF-SCOPE for certification tests to write all possible values of WPRI fields
 (especially if they are more than just a few bits) and certification tests aren’t designed to be comprehensive
 verification test suites anyways.
-
-=== System IP CRDs
-
-TBD
-
-=== Platform CRDs
-TBD
-
-== <%= cert_class.name %> and <%= cert_model.name %> Introduction
-
-<%= cert_class.introduction %>
-
-=== <%= cert_class.name %> Naming Scheme
-
-<%= cert_class.naming_scheme %>
-
-=== <%= cert_class.name %> Class Description
-
-<%= cert_class.description %>
-
-=== <%= cert_model.name %> Description
-
-<%= cert_model.description %>
 
 === Related Specifications
 
@@ -269,8 +263,8 @@ TBD
 <<<
 == Extensions
 
-Any RISC-V extension not listed in this section is OUT-OF-SCOPE so the <%= cert_model.name %>
-certificate doesn't cover its associated behaviors.
+Any RISC-V extensions not listed in this section are OUT-OF-SCOPE.
+The <%= cert_model.name %> certificate doesn't cover their behaviors.
 
 <% ExtensionPresence.presence_types_obj.each do |presence_obj| -%>
 

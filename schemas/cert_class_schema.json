@@ -11,7 +11,7 @@
     },
     "kind": {
       "type": "string",
-      "const": "certificate class"
+      "const": "Processor CRD"
     },
     "name": {
       "type": "string",
@@ -25,10 +25,6 @@
     "introduction": {
       "type": "string",
       "description": "Asciidoc text containing the introduction prose for the class"
-    },
-    "naming_scheme": {
-      "type": "string",
-      "description": "Asciidoc text describing the naming scheme for the class"
     },
     "mandatory_priv_modes": {
       "type": "array",

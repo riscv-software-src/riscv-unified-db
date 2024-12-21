@@ -22,11 +22,11 @@
     },
     "introduction": {
       "type": "string",
-      "description": "Asciidoc introduction to this Profile Class"
+      "description": "Asciidoc text containing the introduction prose for the class"
     },
     "description": {
       "type": "string",
-      "description": "Prose introduction, in asciidoc"
+      "description": "Asciidoc text containing longer description prose for the class"
     },
     "naming_scheme": {
       "type": "string",

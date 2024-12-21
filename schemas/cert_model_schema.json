@@ -108,9 +108,9 @@
       "minItems": 1,
       "description": "Revisions of the model document"
     },
-    "description": {
+    "introduction": {
       "type": "string",
-      "description": "Asciidoc description"
+      "description": "Asciidoc text containing the introduction prose for the model"
     },
     "tsc_profile": {
       "oneOf": [
