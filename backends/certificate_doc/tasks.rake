@@ -34,6 +34,7 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
 
     # Set globals for ERB template.
     cert_model = cfg_arch.cert_model(cert_model_name)
+    portfolio = cert_model
     cert_class = cert_model.cert_class
     portfolio = cert_model
     portfolio_class = cert_class

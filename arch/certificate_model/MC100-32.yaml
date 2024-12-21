@@ -2,8 +2,8 @@
 
 $schema: cert_model_schema.json#
 kind: certificate model
-name: MC100
-long_name: Basic Microcontroller Certificate
+name: MC100-32
+long_name: Basic 32-bit Microcontroller Certificate
 class:
   $ref: certificate_class/MC.yaml#
 
@@ -67,18 +67,17 @@ revision_history:
     changes:
       - Initial version
 
-description: |
-  MC100 can be though of as minimal 32-bit RISC-V processors with M-mode support:
+introduction: |
+  The MC100 Processor CRD (Certification Requirements Document) defines the requirements
+  a processor implementation must meet in order to be eligible for the associated MC100 certificate.
+  MC100 is a basic RISC-V processor with minimal M-mode support and has 32-bit and 64-bit variants.
 
-  * The Unprivileged ISA is RV32I with a few extensions suitable for a basic microcontroller
-  * The M-mode features are those listed as mandatory in the associated RISC-V Privileged ISA manual
+  MC100 is not intended for the smallest possible microcontrollers but rather for applications
+  benefiting from a minimal but standardized microcontroller. It consists of:
 
-  Key features not included in MC100 (i.e., OUT OF SCOPE):
-
-  * Interrupt Controller (e.g., CLIC, CLINT, PLIC)
-  * Features for modes other than M-mode
-  * PMP
-  * Debug & trace (TBD)
+  * Unprivileged ISA: RV32I for MC100-32 and RV64I for MC100-64 with a few extensions suitable
+  for a basic microcontroller.
+  * Privileged ISA: Only the M-mode features listed as mandatory in the RISC-V Privileged ISA manual
 
 # Specification versions
 tsc_profile: null # None for MC100

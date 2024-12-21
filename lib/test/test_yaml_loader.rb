@@ -251,6 +251,30 @@ class TestYamlLoader < Minitest::Test
     assert_equal({ "$child_of" => "test/test2.yaml#/$defs/target2", "a" => "Should take precedence" }, doc["obj3"])
   end
 
+  def test_inherits_entire_object
+    yaml2 = <<~YAML
+      target1: A string
+      target2:
+        a: hash
+        sub1:
+          key_a: old_value_a
+          key_b: old_value_b
+    YAML
+
+    yaml1 = <<~YAML
+      $inherits: "YAML2_REL_PATH#"
+      target1: Should take precedence
+      target2:
+        sub1:
+          key_a: new_value_a
+    YAML
+
+    doc = resolve_multi_yaml(yaml1, yaml2)
+    assert_equal("test/test2.yaml#", doc["$child_of"])
+    assert_equal("Should take precedence", doc["target1"])
+    assert_equal({ "a" => "hash", "sub1" => { "key_a" => "new_value_a", "key_b" => "old_value_b" }}, doc["target2"])
+  end
+
   def test_multi_inherits_in_the_same_document
     yaml = <<~YAML
       $defs:
@@ -286,4 +310,62 @@ class TestYamlLoader < Minitest::Test
     doc = resolve_yaml(yaml)
     assert_nil doc
   end
+
+  # Commented out until https://github.com/riscv-software-src/riscv-unified-db/issues/369 is fixed.
+#   def test_copy_in_the_same_document
+#     yaml = <<~YAML
+#       $defs:
+#         target1: A string
+#         target2:
+#           a: hash
+#         target3: Another string
+#
+#       obj1:
+#         target10: abc
+#         target11:
+#           $copy: "#/$defs/target1"
+#         target12: def
+#         target13:
+#           $copy: "#/$defs/target3"
+#
+#     YAML
+#
+#     doc = resolve_yaml(yaml)
+#     assert_equal({
+#         "$child_of" => "#/$defs",
+#         "target10"  => "abc",
+#         "target11"  => "A string",
+#         "target12"  => "def",
+#         "target13"  => "Another string"
+#       }, doc["obj1"])
+#   end
+#
+#   def test_copy_in_the_different_document
+#     yaml2 = <<~YAML
+#       $defs:
+#         target1: A string
+#         target2:
+#           a: hash
+#         target3: Another string
+#     YAML
+#
+#     yaml1 = <<~YAML
+#       obj1:
+#         target10: abc
+#         target11:
+#           $copy: "YAML2_REL_PATH#/$defs/target1"
+#         target12: def
+#         target13:
+#           $copy: "YAML2_REL_PATH#/$defs/target3"
+#     YAML
+#
+#     doc = resolve_multi_yaml(yaml1, yaml2)
+#     assert_equal({
+#         "$child_of" => "test/test2.yaml#/$defs",
+#         "target10"  => "abc",
+#         "target11"  => "A string",
+#         "target12"  => "def",
+#         "target13"  => "Another string"
+#       }, doc["obj1"])
+#   end
 end

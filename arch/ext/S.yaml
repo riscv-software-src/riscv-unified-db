@@ -18,6 +18,12 @@ versions:
   requires:
     name: U
     version: "= 1.0.0"
+- version: "1.13.0"
+  state: ratified
+  ratification_date: null
+  requires:
+    name: U
+    version: "= 1.0.0"
 description: |
   This chapter describes the RISC-V supervisor-level architecture, which
   contains a common core that is used with various supervisor-level

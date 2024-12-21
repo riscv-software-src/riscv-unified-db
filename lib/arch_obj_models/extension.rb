@@ -724,12 +724,12 @@ class ExtensionRequirement
     @presence = presence.freeze
   end
 
-  # @return [Array<ExtensionVersion>] The list of extension versions that satisfy this requirement
+  # @return [Array<ExtensionVersion>] The list of extension versions that satisfy this extension requirement
   def satisfying_versions
     ext = @cfg_arch.extension(@name)
     return [] if ext.nil?
 
-    ext.versions.select { |v| @requirements.all? { |r| r.satisfied_by?(v.version_spec, ext) } }
+    ext.versions.select { |v| satisfied_by?(v) }
   end
 
   # @overload

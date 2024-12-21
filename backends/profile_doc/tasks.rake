@@ -7,7 +7,11 @@ rule %r{#{$root}/gen/profile_doc/adoc/.*\.adoc} => [
   Dir.glob("#{$root}/arch/profile_release/**/*.yaml")
 ].flatten do |t|
   profile_release_name = Pathname.new(t.name).basename(".adoc").to_s
+
+  # Switch to the generated profile certificate cfg arch and set some variables available to ERB template.
+  # XXX - Copy what certificate tasks.rake file does here (i.e. switching to generated profile cfg arch).
   profile_release = cfg_arch_for("_").profile_release(profile_release_name)
+  portfolio = profile_release
   raise ArgumentError, "No profile release named '#{profile_release_name}'" if profile_release.nil?
 
   # Set globals for ERB template.

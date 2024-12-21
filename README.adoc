@@ -11,7 +11,8 @@ The following artifacts have been generated from the top of the `main` branch:
 * https://riscv-software-src.github.io/riscv-unified-db/pdfs/RVI20.pdf[RVI20 Profile Release]
 * https://riscv-software-src.github.io/riscv-unified-db/pdfs/RVA20.pdf[RVA20 Profile Release]
 * https://riscv-software-src.github.io/riscv-unified-db/pdfs/RVA22.pdf[RVA22 Profile Release]
-* https://riscv-software-src.github.io/riscv-unified-db/pdfs/MC100.pdf[MC100 Certification Requirements Document]
+* https://riscv-software-src.github.io/riscv-unified-db/pdfs/MC100-32.pdf[MC100-32 Certification Requirements Document]
+* https://riscv-software-src.github.io/riscv-unified-db/pdfs/MC100-64.pdf[MC100-64 Certification Requirements Document]
 
 == Overview
 
