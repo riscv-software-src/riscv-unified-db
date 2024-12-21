@@ -22,7 +22,7 @@ revision_history:
     changes:
       - First created
 
-description: |
+introduction: |
   MC200 is an intermedicate RISC-V microcontroller that adds the following mandatory extensions to the MC100-series:
 
   * U extension (User-mode privilege level)

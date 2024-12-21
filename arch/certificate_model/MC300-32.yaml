@@ -22,7 +22,7 @@ revision_history:
     changes:
       - First created
 
-description: |
+introduction: |
   MC300 is an advanced RISC-V microcontroller that adds the following mandatory extensions to the MC200-series:
 
   * S extension (Supervisor-mode privilege level)

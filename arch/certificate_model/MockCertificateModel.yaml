@@ -25,8 +25,8 @@ revision_history:
     changes:
       - Also created to test CRDs
 
-description: |
-  Mock CRD description:
+introduction: |
+  Mock CRD introduction:
 
   * Hello
   * Bob!
