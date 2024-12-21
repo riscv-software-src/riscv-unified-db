@@ -359,6 +359,10 @@ task :portfolios do
   Rake::Task["#{$root}/gen/profile_doc/pdf/RVA20.pdf"].invoke
   portfolio_start_msg("RVA22")
   Rake::Task["#{$root}/gen/profile_doc/pdf/RVA22.pdf"].invoke
+  portfolio_start_msg("RVA23")
+  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA23.pdf"].invoke
+  portfolio_start_msg("RVB23")
+  Rake::Task["#{$root}/gen/profile_doc/pdf/RVB23.pdf"].invoke
 end
 
 def portfolio_start_msg(name)
@@ -381,3 +385,5 @@ task "MockProfileRelease": "#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"
 task "RVI20": "#{$root}/gen/profile_doc/pdf/RVI20.pdf"
 task "RVA20": "#{$root}/gen/profile_doc/pdf/RVA20.pdf"
 task "RVA22": "#{$root}/gen/profile_doc/pdf/RVA22.pdf"
+task "RVA23": "#{$root}/gen/profile_doc/pdf/RVA23.pdf"
+task "RVB23": "#{$root}/gen/profile_doc/pdf/RVB23.pdf"

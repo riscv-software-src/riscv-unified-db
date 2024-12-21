@@ -138,38 +138,36 @@ class PortfolioInstance < DatabaseObjectect
       if ext.nil?
         puts "Extension #{ext_name} for #{name} not found in database"
         missing_ext = true
-      end
+      else
+        actual_presence = ext_data["presence"]    # Could be a String or Hash
+        raise "Missing extension presence for extension #{ext_name}" if actual_presence.nil?
 
-      actual_presence = ext_data["presence"]    # Could be a String or Hash
-      raise "Missing extension presence for extension #{ext_name}" if actual_presence.nil?
+        # Convert presence String or Hash to object.
+        actual_presence_obj = ExtensionPresence.new(actual_presence)
 
-      # Convert presence String or Hash to object.
-      actual_presence_obj = ExtensionPresence.new(actual_presence)
-
-      match =
-        if desired_presence.nil?
-          true # Always match
-        else
-          actual_presence_obj == desired_presence_converted
-        end
-
-      if match
-        in_scope_ext_reqs <<
-          if ext_data.key?("version")
-            ExtensionRequirement.new(
-              ext_name, ext_data["version"], cfg_arch: @cfg_arch,
-              presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
+        match =
+          if desired_presence.nil?
+            true # Always match
           else
-            ExtensionRequirement.new(
-              ext_name, cfg_arch: @cfg_arch,
-              presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
+            actual_presence_obj == desired_presence_converted
           end
+
+        if match
+          in_scope_ext_reqs <<
+            if ext_data.key?("version")
+              ExtensionRequirement.new(
+                ext_name, ext_data["version"], cfg_arch: @cfg_arch,
+                presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
+            else
+              ExtensionRequirement.new(
+                ext_name, cfg_arch: @cfg_arch,
+                presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
+            end
+        end
       end
     end
 
-    # TODO: Change to "raise" when missing extensions added to database so we can make progress until then.
-    # See https://github.com/riscv-software-src/riscv-unified-db/issues/320
-    puts "One or more extensions referenced by #{name} missing in database" if missing_ext
+    raise "One or more extensions referenced by #{name} missing in database" if missing_ext
 
     in_scope_ext_reqs
   end

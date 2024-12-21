@@ -4,11 +4,11 @@ name: RVA23
 marketing_name: RVA23
 class: RVA
 release: 23
-state: ratified   # current status ["ratified", "development"]
+state: ratified # current status ["ratified", "development"]
 ratification_date: "2023-04-03"
 # Semantic versions within the release
-versions: 
-- version: "1.0.0"
+versions:
+  - version: "1.0.0"
 
 introduction: |
   This profile release targets 64-bit application processors for markets
@@ -29,95 +29,5 @@ description: |
   It would be possible to also define very similar XLEN=32 variants.
 
 profiles:
-  RVA23U64:
-    marketing_name: RVA23U64
-    mode: Unpriv
-    base: 64
-    release: RVA23
-    introduction: |
-      The RVA23U64 profile specifies the ISA features available to user-mode
-      execution environments in 64-bit applications processors.  This is the
-      most important profile within application processors in
-      terms of the amount of software that targets this profile.
-    extensions:
-      #########################################################################
-      # imported from RVB23U64
-      #########################################################################
-      $inherits: "RVB23.yaml#/profiles/RVB23U64/extensions"
-      $remove: Zvkg
-      $remove: Zvknc 
-      $remove: Zvksc
-      $remove: Zkn
-      $remove: Zks
-
-      #########################################################################
-      # MANDATORY extensions in RVA23U64 (that were optional in RVB23U64)
-      #########################################################################
-
-      Zfhmin:
-        presence: mandatory
-
-      V:
-        presence: mandatory
-
-      Zvfhmin:
-        presence: mandatory
-
-      Zvbb:
-        presence: mandatory
-
-      Zvkt:
-        presence: mandatory
-
-      Supm:
-        presence: mandatory
-
-      #--------------------------------------------
-      # Zvbc is an expansion option in RVB23U64
-      # (but is not intended to be made mandatory in future RVB Profiles)
-      #
-      # It is listed in RVA23U64 as a *development* option,
-      # as it *is* intended to become mandatory in future RVA Profiles.
-      #--------------------------------------------
-      Zvbc:
-        presence: 
-          optional: development 
-
-
-      #########################################################################
-      # TRANSITORY EXPANSION extensions in RVA23U64  
-      #########################################################################
-
-      #--------------------------------------------
-      # (there are no Transitory expansion options in RVA23U64)
-      #--------------------------------------------
-
-
-      
-  RVA23S64:
-    marketing_name: RVA23S64
-    mode: S
-    base: 64
-    release: RVA23
-    introduction: |
-      The RVA23S64 profile specifies the ISA features available to supervisor-mode
-      execution environments in 64-bit applications processors. 
-      An ECALL in user mode causes a contained trap to supervisor mode.
-      An ECALL in supervisor mode causes a requested trap to the execution environment.
-    extensions:
-      #########################################################################
-      # imported from RVB23U64
-      #########################################################################
-      $inherits: "RVB23.yaml#/profiles/RVB23S64/extensions"
-
-      #########################################################################
-      # MANDATORY extensions in RVA23S64 (that were optional in RVB23S64)
-      #########################################################################
-
-      Ssnpm:
-        presence: mandatory
-      #    Pointer masking, with *senvcfg*.PME supporting, at minimum
-
-      Sha:
-        presence: mandatory
-      # collection of Hypervisor extensions
+  - { $ref: profile/RVA23U64.yaml# }
+  - { $ref: profile/RVA23S64.yaml# }
