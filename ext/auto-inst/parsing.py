@@ -265,8 +265,6 @@ def get_yaml_instructions(repo_directory):
             "yaml_vars":  yaml_vars
         }
 
-    # Debug print
-    print("Instructions + Encodings:\n", instructions_with_encodings)
     return instructions_with_encodings
 
 def find_json_key(instr_name, json_data):
@@ -309,7 +307,7 @@ def run_parser(json_file, repo_directory, output_file="output.txt"):
     # Step 2: parse JSON
     try:
         with open(json_file, 'r') as f:
-            data = json.loads(f.read())
+            json_data = json.loads(f.read())
     except Exception as e:
         print(f"Error reading file: {str(e)}")
         return None
@@ -318,12 +316,12 @@ def run_parser(json_file, repo_directory, output_file="output.txt"):
 
     # Step 3: For each YAML instruction, attempt to find it in JSON by AsmString
     for yaml_instr_name_lower, yaml_data in instructions_with_encodings.items():
-        json_key = find_json_key(yaml_instr_name_lower, data)
+        json_key = find_json_key(yaml_instr_name_lower, json_data)
         if json_key is None:
             print(f"DEBUG: Instruction '{yaml_instr_name_lower}' (from YAML) not found in JSON, skipping...", file=sys.stderr)
             continue
 
-        instr_data = data.get(json_key)
+        instr_data = json_data.get(json_key)
         if not isinstance(instr_data, dict):
             print(f"DEBUG: Instruction '{yaml_instr_name_lower}' is in JSON but not a valid dict, skipping...", file=sys.stderr)
             continue
@@ -334,7 +332,6 @@ def run_parser(json_file, repo_directory, output_file="output.txt"):
 
         # We'll keep track of them so we can print details
         all_instructions.append((json_key, instr_data))
-
     # Sort instructions by JSON key
     all_instructions.sort(key=lambda x: x[0].lower())
 
