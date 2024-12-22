@@ -5,7 +5,7 @@ import sys
 from collections import defaultdict
 import yaml
 
-REPO_INSTRUCTIONS = {}
+yaml_instructions = {}
 REPO_DIRECTORY = None
 
 def safe_get(data, key, default=""):
@@ -19,19 +19,20 @@ def safe_get(data, key, default=""):
 
 def load_yaml_encoding(instr_name):
     """
-    Given an instruction name (from JSON), find the corresponding YAML file and load its encoding data.
-    We'll try to match the instr_name to a YAML file by using REPO_INSTRUCTIONS and transformations.
+    Given an instruction name, find the corresponding YAML file and load its encoding data.
+    We'll try to match instr_name to a YAML file by using yaml_instructions + transformations.
     """
     candidates = set()
     lower_name = instr_name.lower()
     candidates.add(lower_name)
+    # Also consider underscores replaced by dots, etc. e.g. 'my_instr' -> 'my.instr'
     candidates.add(lower_name.replace('_', '.'))
 
     yaml_file_path = None
     yaml_category = None
     for cand in candidates:
-        if cand in REPO_INSTRUCTIONS:
-            yaml_category = REPO_INSTRUCTIONS[cand]
+        if cand in yaml_instructions:
+            yaml_category = yaml_instructions[cand]
             yaml_file_path = os.path.join(REPO_DIRECTORY, yaml_category, cand + ".yaml")
             if os.path.isfile(yaml_file_path):
                 break
@@ -85,9 +86,8 @@ def compare_yaml_json_encoding(instr_name, yaml_match, yaml_vars, json_encoding_
             val = int(loc_str)
             return val, val
 
-
     yaml_var_positions = {}
-    for var in yaml_vars:
+    for var in (yaml_vars or []):
         high, low = parse_location(var["location"])
         yaml_var_positions[var["name"]] = (high, low)
 
@@ -203,15 +203,17 @@ def safe_print_instruction_details(name: str, data: dict, output_stream):
             output_stream.write("JSON Encoding:     Unable to parse encoding\n")
             encoding = ""
 
-        # compare YAML vs JSON encodings
-        yaml_match, yaml_vars = load_yaml_encoding(name)
+        # YAML
+        yaml_match = safe_get(data, 'yaml_match', None)
+        yaml_vars  = safe_get(data, 'yaml_vars', None)
+
         if yaml_match is not None:
             output_stream.write(f"YAML Encoding:     {yaml_match}\n")
         else:
             output_stream.write("YAML Encoding:     Not found\n")
 
+        # Compare
         if yaml_match and encoding:
-            # Perform comparison
             differences = compare_yaml_json_encoding(name, yaml_match, yaml_vars, encoding)
             if differences and len(differences) > 0:
                 output_stream.write("\nEncodings do not match. Differences:\n")
@@ -221,7 +223,6 @@ def safe_print_instruction_details(name: str, data: dict, output_stream):
             else:
                 output_stream.write("\nEncodings Match: No differences found.\n")
         else:
-            # If we have no YAML match or no JSON encoding, we note that we can't compare
             output_stream.write("\nComparison: Cannot compare encodings (missing YAML or JSON encoding).\n")
 
         output_stream.write("\n")
@@ -229,72 +230,84 @@ def safe_print_instruction_details(name: str, data: dict, output_stream):
         output_stream.write(f"Error processing instruction {name}: {str(e)}\n")
         output_stream.write("Continuing with next instruction...\n\n")
 
-def get_repo_instructions(repo_directory):
+def get_yaml_instructions(repo_directory):
     """
-    Recursively find all YAML files in the repository and extract instruction names along with their category.
+    Recursively find all YAML files in the repository *and* immediately load their encodings.
+    This function will return a dict of the form:
+       {
+         <instr_name_lower>: {
+             "category":   <relative_path>,
+             "yaml_match": <string or None>,
+             "yaml_vars":  <list or None>
+         },
+         ...
+       }
     """
-    repo_instructions = {}
+    global yaml_instructions, REPO_DIRECTORY
+    REPO_DIRECTORY = repo_directory
+    yaml_instructions = {}
+
+    # Step 1: Collect <instr_name_lower> -> <relative_path>
     for root, _, files in os.walk(repo_directory):
         for file in files:
             if file.endswith(".yaml"):
                 instr_name = os.path.splitext(file)[0]
                 relative_path = os.path.relpath(root, repo_directory)
-                repo_instructions[instr_name.lower()] = relative_path
-    return repo_instructions
+                yaml_instructions[instr_name.lower()] = relative_path
+
+    # Step 2: For each instruction, load YAML encodings right away
+    instructions_with_encodings = {}
+    for instr_name_lower, path in yaml_instructions.items():
+        yaml_match, yaml_vars = load_yaml_encoding(instr_name_lower)
+        instructions_with_encodings[instr_name_lower] = {
+            "category":   path,
+            "yaml_match": yaml_match,
+            "yaml_vars":  yaml_vars
+        }
+
+    # Debug print
+    print("Instructions + Encodings:\n", instructions_with_encodings)
+    return instructions_with_encodings
 
 def find_json_key(instr_name, json_data):
     """
     Find a matching instruction in json_data by comparing against AsmString values.
     Returns the matching key if found, None otherwise.
-    
+
     Args:
         instr_name (str): The instruction name from YAML
         json_data (dict): The JSON data containing instruction information
-        
+
     Returns:
         str or None: The matching key from json_data if found, None otherwise
     """
-    # First, normalize the instruction name for comparison
     instr_name = instr_name.lower().strip()
-    
-    # Search through all entries in json_data
     for key, value in json_data.items():
         if not isinstance(value, dict):
             continue
-            
-        # Get the AsmString value and normalize it
+
         asm_string = safe_get(value, 'AsmString', '').lower().strip()
         if not asm_string:
             continue
-            
-        # Extract the base instruction name from AsmString
-        # AsmString might be in format like "add $rd, $rs1, $rs2" 
-        # We want just "add"
+
         base_asm_name = asm_string.split()[0]
-        
         if base_asm_name == instr_name:
             return key
-            
     return None
 
 def run_parser(json_file, repo_directory, output_file="output.txt"):
     """
     Run the parser logic:
-    1. Get instructions from the repo directory.
+    1. Collect YAML instructions + encodings from the repo.
     2. Parse the JSON file and match instructions.
     3. Generate output.txt with instruction details.
+    4. Save updated JSON with YAML encodings inserted.
     """
-    global REPO_INSTRUCTIONS, REPO_DIRECTORY
-    REPO_DIRECTORY = repo_directory
+    # Step 1: get all instructions + YAML encoding data
+    instructions_with_encodings = get_yaml_instructions(repo_directory)
 
-    # Get instructions and categories from the repository structure
-    REPO_INSTRUCTIONS = get_repo_instructions(REPO_DIRECTORY)
-    if not REPO_INSTRUCTIONS:
-        print("No instructions found in the provided repository directory.")
-        return None
-
+    # Step 2: parse JSON
     try:
-        # Read and parse JSON
         with open(json_file, 'r') as f:
             data = json.loads(f.read())
     except Exception as e:
@@ -303,24 +316,29 @@ def run_parser(json_file, repo_directory, output_file="output.txt"):
 
     all_instructions = []
 
-    # For each YAML instruction, try to find it in the JSON data
-    for yaml_instr_name, category in REPO_INSTRUCTIONS.items():
-        json_key = find_json_key(yaml_instr_name, data)
+    # Step 3: For each YAML instruction, attempt to find it in JSON by AsmString
+    for yaml_instr_name_lower, yaml_data in instructions_with_encodings.items():
+        json_key = find_json_key(yaml_instr_name_lower, data)
         if json_key is None:
-            print(f"DEBUG: Instruction '{yaml_instr_name}' (from YAML) not found in JSON, skipping...", file=sys.stderr)
+            print(f"DEBUG: Instruction '{yaml_instr_name_lower}' (from YAML) not found in JSON, skipping...", file=sys.stderr)
             continue
 
         instr_data = data.get(json_key)
         if not isinstance(instr_data, dict):
-            print(f"DEBUG: Instruction '{yaml_instr_name}' is in JSON but not a valid dict, skipping...", file=sys.stderr)
+            print(f"DEBUG: Instruction '{yaml_instr_name_lower}' is in JSON but not a valid dict, skipping...", file=sys.stderr)
             continue
 
-        # Add this instruction to our list
+        # Insert the YAML fields (match & vars) into the JSON entry
+        instr_data["yaml_match"] = yaml_data["yaml_match"]
+        instr_data["yaml_vars"]  = yaml_data["yaml_vars"]
+
+        # We'll keep track of them so we can print details
         all_instructions.append((json_key, instr_data))
 
-    # Sort all instructions by name
+    # Sort instructions by JSON key
     all_instructions.sort(key=lambda x: x[0].lower())
 
+    # Step 4: Generate a text report
     with open(output_file, "w") as outfile:
         outfile.write("RISC-V Instruction Summary\n")
         outfile.write("=" * 50 + "\n")
@@ -336,7 +354,8 @@ def run_parser(json_file, repo_directory, output_file="output.txt"):
         for name, instr_data in all_instructions:
             safe_print_instruction_details(name, instr_data, outfile)
 
-    print(f"Output has been written to {output_file}")
+    print(f"Output (report) has been written to {output_file}")
+
     return output_file
 
 def main():
