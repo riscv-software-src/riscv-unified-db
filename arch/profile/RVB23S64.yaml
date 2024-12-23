@@ -159,23 +159,23 @@ extensions:
   Sha:
     presence:
       optional: expansion
-    version: "~>1.0"
     note: |
       The set of augmented hypervisor extensions: H, Ssstateen,
       Shcounterenw, Shvstvala, Shtvala, Shvstvecd, Shvsatpa, Shgatpa
 
-  __NEED_AN_EXTENSION_NAME_HERE__:
-    presence:
-      optional: expansion
-    version: "~>1.0"
-    when:
-      allOf:
-        - implemented: H
-        - implemented: Ssnpm
-    note: |
-      If the hypervisor extension is implemented
-      and pointer masking (Ssnpm) is supported
-      then *henvcfg*.PME must support at minimum, settings PMLEN=0 and PMLEN=7
+  # TODO: See https://github.com/riscv-software-src/riscv-unified-db/issues/373
+  #  __NEED_AN_EXTENSION_NAME_HERE__:
+  #    presence:
+  #      optional: expansion
+  #    version: "~>1.0"
+  #    when:
+  #      allOf:
+  #        - implemented: H
+  #        - implemented: Ssnpm
+  #    note: |
+  #      If the hypervisor extension is implemented
+  #      and pointer masking (Ssnpm) is supported
+  #      then *henvcfg*.PME must support at minimum, settings PMLEN=0 and PMLEN=7
 
   #########################################################################
   # OPTIONAL EXPANSION extensions in both RVB23S64 and RVA23S64

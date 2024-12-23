@@ -8,7 +8,8 @@ description: |
   Main memory regions with both the cacheability and coherence PMAs
   must provide `AMOCASQ` level PMA support.
 
-  [NOTE] Ziccamoc is a new RVA23 profile-defined extension that ensures
+  [NOTE]
+  Ziccamoc is a new RVA23 profile-defined extension that ensures
   Compare and Swap instructions are properly supported in main memory
   regions.  The extension will be added to the PMA section of the
   privileged architecture manual.

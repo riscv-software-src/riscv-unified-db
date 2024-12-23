@@ -11,10 +11,12 @@ description: |
   exception that results in a contained trap to the supervisor-mode
   trap handler.
 
-  [NOTE] Ssstrict does not prescribe behavior for the custom encoding
+  [NOTE]
+  Ssstrict does not prescribe behavior for the custom encoding
   spaces or CSRs.
 
-  [NOTE] Ssstrict definition applies to the execution environment
+  [NOTE]
+  Ssstrict definition applies to the execution environment
   claiming to be RVA23/RVB23-compatible.
   If the hypervisor extension is present, that execution environment will take a contained trap to
   supervisor-mode (however that trap is implemented, including, but not
@@ -26,7 +28,8 @@ description: |
   can also choose to implement guest VMs that are not RVA23/RVB23 compatible
   (e.g., lacking H, or only RVA20).
 
-  [NOTE] Ssstrict is a new RVA23/RVB23 profile-defined extension that restricts the
+  [NOTE]
+  Ssstrict is a new RVA23/RVB23 profile-defined extension that restricts the
   behavior of reserved encoding spaces.  The extension will be added to
   the supervisor chapter of the privileged architecture.
 versions:

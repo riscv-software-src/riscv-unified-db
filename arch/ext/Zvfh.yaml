@@ -22,7 +22,8 @@ description: |
 
   The Zvfh extension depends on the Zve32f and Zfhmin extensions.
 
-  [NOTE] Requiring basic scalar half-precision support makes Zvfh's
+  [NOTE]
+  Requiring basic scalar half-precision support makes Zvfh's
   vector-scalar instructions substantially more useful.
   We considered requiring more complete scalar half-precision support, but we
   reasoned that, for many half-precision vector workloads, performing the scalar
