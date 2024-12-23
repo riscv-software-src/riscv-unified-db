@@ -457,7 +457,7 @@ Extensions present in a profile are also present in higher-privileged profiles i
 <%= v.canonical_version %>::
   State:::
     <%= v.state %>
-  <% if v.state == "ratified" -%>
+  <% if v.state == "ratified" && !v.ratification_date.nil? -%>
   Ratification date:::
     <%= v.ratification_date %>
   <% end # if %>
