@@ -8,7 +8,7 @@ from pathlib import Path
 def get_json_path():
     """Get the path to the JSON file relative to the test file."""
     current_dir = Path(__file__).parent
-    return str(current_dir / "../../../llvm-project/build/unorder.json")
+    return str(current_dir / "/home/afonsoo/llvm-project/llvm-build/pretty.json")
 
 def get_yaml_directory():
     """Get the path to the YAML directory relative to the test file."""
@@ -187,81 +187,47 @@ def json_data():
     with open(json_file, 'r') as f:
         return json.load(f)
 
-def pytest_configure(config):
-    """Configure the test session."""
-    print(f"\nUsing JSON file: {get_json_path()}")
-    print(f"Using YAML directory: {get_yaml_directory()}\n")
+# Global variables to store loaded data
+_yaml_instructions = None
+_json_data = None
+_repo_dir = None
 
-class TestEncodingComparison:
-    def test_encoding_matches(self, yaml_instructions, json_data):
-        """Test YAML-defined instructions against their JSON counterparts if they exist."""
-        mismatches = []
-        total_yaml_instructions = 0
-        checked_instructions = 0
-        skipped_instructions = []
-        repo_dir = get_yaml_directory()
-        
-        for yaml_instr_name, yaml_data in yaml_instructions.items():
-            total_yaml_instructions += 1
-            
-            # Skip if no YAML match pattern
-            if not yaml_data.get("yaml_match"):
-                skipped_instructions.append(yaml_instr_name)
-                continue
+def load_test_data():
+    """Load test data once and cache it."""
+    global _yaml_instructions, _json_data, _repo_dir
+    if _yaml_instructions is None:
+        # Load YAML instructions
+        from parsing import get_yaml_instructions
+        _repo_dir = get_yaml_directory()
+        if not os.path.exists(_repo_dir):
+            pytest.skip(f"Repository directory not found at {_repo_dir}")
+        _yaml_instructions = get_yaml_instructions(_repo_dir)
 
-            # Get JSON encoding from instruction data
-            json_key = self._find_matching_instruction(yaml_instr_name, json_data)
-            if not json_key:
-                skipped_instructions.append(yaml_instr_name)
-                continue
+        # Load JSON data
+        json_file = get_json_path()
+        if not os.path.exists(json_file):
+            pytest.skip(f"JSON file not found at {json_file}")
+        with open(json_file, 'r') as f:
+            _json_data = json.load(f)
 
-            checked_instructions += 1
-            json_encoding = self._get_json_encoding(json_data[json_key])
-            
-            # Compare encodings using the existing function
-            differences = compare_yaml_json_encoding(
-                yaml_instr_name,
-                yaml_data["yaml_match"],
-                yaml_data["yaml_vars"],
-                json_encoding,
-                repo_dir
-            )
+    return _yaml_instructions, _json_data, _repo_dir
 
-            if differences and differences != ["No YAML match field available for comparison."]:
-                mismatches.append({
-                    'instruction': yaml_instr_name,
-                    'json_key': json_key,
-                    'differences': differences,
-                    'yaml_match': yaml_data["yaml_match"],
-                    'json_encoding': json_encoding
-                })
+def pytest_generate_tests(metafunc):
+    """Generate test cases dynamically."""
+    if "instr_name" in metafunc.fixturenames:
+        yaml_instructions, _, _ = load_test_data()
+        metafunc.parametrize("instr_name", list(yaml_instructions.keys()))
 
-        # Print statistics
-        print(f"\nYAML instructions found: {total_yaml_instructions}")
-        print(f"Instructions checked: {checked_instructions}")
-        print(f"Instructions skipped: {len(skipped_instructions)}")
-        print(f"Instructions with encoding mismatches: {len(mismatches)}")
-        
-        if skipped_instructions:
-            print("\nSkipped instructions:")
-            for instr in skipped_instructions:
-                print(f"  - {instr}")
+class TestInstructionEncoding:
+    @classmethod
+    def setup_class(cls):
+        """Setup class-level test data."""
+        cls.yaml_instructions, cls.json_data, cls.repo_dir = load_test_data()
 
-        if mismatches:
-            error_msg = "\nEncoding mismatches found:\n"
-            for m in mismatches:
-                error_msg += f"\nInstruction: {m['instruction']} (JSON key: {m['json_key']})\n"
-                error_msg += f"YAML match: {m['yaml_match']}\n"
-                error_msg += f"JSON encoding: {m['json_encoding']}\n"
-                error_msg += "Differences:\n"
-                for d in m['differences']:
-                    error_msg += f"  - {d}\n"
-            pytest.fail(error_msg)
-
-    def _find_matching_instruction(self, yaml_instr_name, json_data):
+    def _find_matching_instruction(self, yaml_instr_name):
         """Find matching instruction in JSON data by comparing instruction names."""
         yaml_instr_name = yaml_instr_name.lower().strip()
-        for key, value in json_data.items():
+        for key, value in self.json_data.items():
             if not isinstance(value, dict):
                 continue
             asm_string = value.get('AsmString', '').lower().strip()
@@ -286,3 +252,44 @@ class TestEncodingComparison:
             return "".join(encoding_bits)
         except:
             return ""
+
+    def test_instruction_encoding(self, instr_name):
+        """Test encoding for a single instruction."""
+        yaml_data = self.yaml_instructions[instr_name]
+        
+        # Skip if no YAML match pattern
+        if not yaml_data.get("yaml_match"):
+            pytest.skip(f"Instruction {instr_name} has no YAML match pattern")
+
+        # Find matching JSON instruction
+        json_key = self._find_matching_instruction(instr_name)
+        if not json_key:
+            pytest.skip(f"No matching JSON instruction found for {instr_name}")
+
+        # Get JSON encoding
+        json_encoding = self._get_json_encoding(self.json_data[json_key])
+        
+        # Compare encodings
+        differences = compare_yaml_json_encoding(
+            instr_name,
+            yaml_data["yaml_match"],
+            yaml_data.get("yaml_vars", []),
+            json_encoding,
+            self.repo_dir
+        )
+
+        # If there are differences, format them nicely and fail the test
+        if differences and differences != ["No YAML match field available for comparison."]:
+            error_msg = f"\nEncoding mismatch for instruction: {instr_name}\n"
+            error_msg += f"JSON key: {json_key}\n"
+            error_msg += f"YAML match: {yaml_data['yaml_match']}\n"
+            error_msg += f"JSON encoding: {json_encoding}\n"
+            error_msg += "Differences:\n"
+            for diff in differences:
+                error_msg += f"  - {diff}\n"
+            pytest.fail(error_msg)
+
+def pytest_configure(config):
+    """Configure the test session."""
+    print(f"\nUsing JSON file: {get_json_path()}")
+    print(f"Using YAML directory: {get_yaml_directory()}\n")
