@@ -53,6 +53,9 @@ class TestInstructionEncoding:
             asm_string = value.get('AsmString', '').lower().strip()
             if not asm_string:
                 continue
+            is_pseudo = value.get('isPseudo', "")
+            if is_pseudo == 1:
+                continue
             base_asm_name = asm_string.split()[0]
             if base_asm_name == yaml_instr_name:
                 return key
