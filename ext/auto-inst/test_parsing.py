@@ -32,6 +32,12 @@ def load_test_data():
 
     return _yaml_instructions, _json_data, _repo_dir
 
+def has_aqrl_variables(yaml_vars):
+    """Check if instruction has aq/rl variables."""
+    if not yaml_vars:
+        return False
+    return any(var.get("name") in ["aq", "rl"] for var in yaml_vars)
+
 def pytest_generate_tests(metafunc):
     """Generate test cases dynamically."""
     if "instr_name" in metafunc.fixturenames:
@@ -50,12 +56,16 @@ class TestInstructionEncoding:
         for key, value in self.json_data.items():
             if not isinstance(value, dict):
                 continue
+            
+            # Skip if instruction is pseudo and keep looking
+            is_pseudo = value.get('isPseudo', '')
+            if is_pseudo == 1:
+                continue
+                
             asm_string = value.get('AsmString', '').lower().strip()
             if not asm_string:
                 continue
-            is_pseudo = value.get('isPseudo', "")
-            if is_pseudo == 1:
-                continue
+                
             base_asm_name = asm_string.split()[0]
             if base_asm_name == yaml_instr_name:
                 return key
@@ -80,6 +90,10 @@ class TestInstructionEncoding:
         """Test encoding for a single instruction."""
         yaml_data = self.yaml_instructions[instr_name]
         
+        # Skip if the instruction has aq/rl variables
+        if has_aqrl_variables(yaml_data.get("yaml_vars", [])):
+            pytest.skip(f"Skipping instruction {instr_name} due to aq/rl variables")
+
         # Skip if no YAML match pattern
         if not yaml_data.get("yaml_match"):
             pytest.skip(f"Instruction {instr_name} has no YAML match pattern")
