@@ -45,7 +45,15 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
     erb.filename = "#{CERT_DOC_DIR}/templates/certificate.adoc.erb"
 
     FileUtils.mkdir_p File.dirname(t.name)
-    File.write t.name, AsciidocUtils.resolve_links(cfg_arch.find_replace_links(erb.result(binding)))
+
+    # Convert ERB to final ASCIIDOC. Note that this code is broken up into separate function calls
+    # each with a variable name to aid in running a command-line debugger on this code.
+    erb_result = erb.result(binding)
+    erb_result_monospace_converted_to_links = cfg_arch.find_replace_links(erb_result)
+    erb_result_with_links_added = cfg_arch.find_replace_links(erb_result_monospace_converted_to_links)
+    erb_result_with_links_resolved = AsciidocUtils.resolve_links(erb_result_with_links_added)
+
+    File.write t.name, erb_result_with_links_resolved
     puts "Generated adoc source at #{t.name}"
   end
 
