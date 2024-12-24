@@ -125,7 +125,7 @@ class ExtensionParameterWithValue
 end
 
 # Extension definition
-class Extension < DatabaseObjectect
+class Extension < DatabaseObject
   # @return [ConfiguredArchitecture] The architecture defintion
   attr_reader :cfg_arch
 

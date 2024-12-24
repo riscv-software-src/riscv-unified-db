@@ -2,6 +2,7 @@
 
 $schema: cert_class_schema.json#
 kind: Processor CRD
+processor_kind: Microcontroller
 name: MC
 long_name: Microcontroller Class CRD
 

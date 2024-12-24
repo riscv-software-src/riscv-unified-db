@@ -11,7 +11,7 @@
 #          ...
 #        }
 #
-#     obj = DatabaseObjectect.new(data)
+#     obj = DatabaseObject.new(data)
 #     obj['name']    # 'mstatus'
 #     obj['address'] # 0x320
 #
@@ -24,7 +24,7 @@
 # Subclasses may override the accessors when a more complex data structure
 # is warranted, e.g., the CSR Field 'alias' returns a CsrFieldAlias object
 # instead of a simple string
-class DatabaseObjectect
+class DatabaseObject
   # Exception raised when there is a problem with a schema file
   class SchemaError < ::StandardError
     # result from JsonSchemer.validate
@@ -206,7 +206,7 @@ class DatabaseObjectect
   extend Forwardable
   def_delegator :@data, :[]
 
-  # @return [Array<String>] List of keys added by this DatabaseObjectect
+  # @return [Array<String>] List of keys added by this DatabaseObject
   def keys = @data.keys
 
   # @param k (see Hash#key?)

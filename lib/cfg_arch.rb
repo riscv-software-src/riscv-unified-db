@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Many classes have an "cfg_arch" member which is an ConfiguredArchitecture (not DatabaseObjectect) class.
+# Many classes have an "cfg_arch" member which is an ConfiguredArchitecture (not DatabaseObject) class.
 # The "cfg_arch" member contains the "database" of RISC-V standards including extensions, instructions,
 # CSRs, Profiles, and Certificates.
 #

@@ -4,7 +4,7 @@
 #   RVA20U64 and MC100 are examples of portfolio instances
 #   RVA and MC are examples of portfolio classes
 #
-# Many classes inherit from the DatabaseObjectect class. This provides facilities for accessing the contents of a
+# Many classes inherit from the DatabaseObject class. This provides facilities for accessing the contents of a
 # Portfolio Class YAML or Portfolio Model YAML file via the "data" member (hash holding releated YAML file contents).
 #
 # A variable name with a "_data" suffix indicates it is the raw hash data from the porfolio YAML file.
@@ -20,9 +20,12 @@ require_relative "schema"
 
 # Holds information from Portfolio class YAML file (certificate class or profile class).
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
-class PortfolioClass < DatabaseObjectect
+class PortfolioClass < DatabaseObject
   # @return [ConfiguredArchitecture] The defining ConfiguredArchitecture
   attr_reader :cfg_arch
+
+  # @return [String] What kind of processor portfolio is this?
+  def processor_kind = @data["processor_kind"]
 
   # @return [String] Small enough (~1 paragraph) to be suitable immediately after a higher-level heading.
   def introduction = @data["introduction"]
@@ -42,7 +45,7 @@ end
 
 # Holds information about a PortfolioInstance YAML file (certificate or profile).
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
-class PortfolioInstance < DatabaseObjectect
+class PortfolioInstance < DatabaseObject
   # @return [ConfiguredArchitecture] The defining ConfiguredArchitecture
   attr_reader :cfg_arch
 

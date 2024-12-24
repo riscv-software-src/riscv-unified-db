@@ -22,6 +22,11 @@
       "type": "string",
       "description": "Descriptive name of the class"
     },
+    "processor_kind": {
+      "type": "string",
+      "enum": ["Generic Unprivileged", "Microcontroller", "Apps Processor"],
+      "description": "What kind of class is this?"
+    },
     "introduction": {
       "type": "string",
       "description": "Asciidoc text containing the introduction prose for the class"

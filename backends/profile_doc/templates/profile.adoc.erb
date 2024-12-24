@@ -403,6 +403,20 @@ associated implementation-defined parameters.
 [appendix]
 == Profile Comparisons
 
+=== Processor Kind Comparison
+
+The <%= profile_class.processor_kind %> processor kind has <%= profile_class.profile_releases.filter_processor_kind.size %> processor
+profile releases that reference a total of <%= profile_class.filter_processor_kind.referenced_extensions.size %> extensions.
+
+.Extension Presence
+|===
+| Extension | <%= profile_class.profile_releases.filter_processor_kind.map(&:marketing_name).join(" | ") %>
+
+<% profile_class.filter_processor_kind.referenced_extensions.sort_by(&:name).each do |ext| -%>
+| <%= ext.name %> | <%= profile_class.profile_releases.filter_processor_kind.map { |profile_release| profile_release.extension_presence(ext.name) }.join(" | ") %>
+<% end -%>
+|===
+
 === Release Comparison
 
 The <%= profile_class.marketing_name %> Profile Class has <%= profile_class.profile_releases.size %> releases that

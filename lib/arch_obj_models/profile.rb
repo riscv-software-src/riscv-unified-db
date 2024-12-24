@@ -30,6 +30,11 @@ class ProfileClass < PortfolioClass
     @profile_releases
   end
 
+  # @return [Array<ProfileRelease>] Defined profile releases of this processor class
+  def profile_releases_matching_processor_kind
+
+  end
+
   # @return [Array<Profile>] All profiles in this profile class (for all releases).
   def profiles
     return @profiles unless @profiles.nil?
@@ -64,7 +69,7 @@ end
 # For example, the RVA20 profile release has profiles RVA20U64 and RVA20S64.
 # Note there is no Portfolio* base class for a ProfileRelease to inherit from since there is no
 # equivalent to a ProfileRelease in a Certificate so no potential for a shared base class.
-class ProfileRelease < DatabaseObjectect
+class ProfileRelease < DatabaseObject
   def marketing_name = @data["marketing_name"]
 
   # @return [String] Small enough (~1 paragraph) to be suitable immediately after a higher-level heading.

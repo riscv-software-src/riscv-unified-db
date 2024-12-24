@@ -3,7 +3,7 @@
 require_relative "obj"
 
 # CSR definition
-class Csr < DatabaseObjectect
+class Csr < DatabaseObject
   def ==(other)
     if other.is_a?(Csr)
       name == other.name

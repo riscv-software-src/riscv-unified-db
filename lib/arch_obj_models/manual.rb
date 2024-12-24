@@ -4,7 +4,7 @@ require "asciidoctor"
 
 require_relative "obj"
 
-class Manual < DatabaseObjectect
+class Manual < DatabaseObject
   def versions
     return @versions unless @versions.nil?
 
@@ -121,7 +121,7 @@ class ManualVolume
   end
 end
 
-class ManualVersion < DatabaseObjectect
+class ManualVersion < DatabaseObject
   # @return [Manual] The manual this version belongs to
   def manual
     return @manual unless @manual.nil?
