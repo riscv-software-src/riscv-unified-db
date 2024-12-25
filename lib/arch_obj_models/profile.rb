@@ -32,24 +32,33 @@ class ProfileClass < PortfolioClass
 
   # @return [Array<ProfileRelease>] Defined profile releases of this processor class
   def profile_releases_matching_processor_kind
+    return @profile_releases_matching_processor_kind unless @profile_releases_matching_processor_kind.nil?
 
+    matching_classes = portfolio_classes_matching_portfolio_kind_and_processor_kind
+
+    # Look for all profile releases that are from any of the matching classes.
+    @profile_releases_matching_processor_kind = @cfg_arch.profile_releases.select { |pr|
+      matching_classes.any? { |matching_class| matching_class.name == pr.profile_class.name }
+    }
+
+    @profile_releases_matching_processor_kind
   end
 
   # @return [Array<Profile>] All profiles in this profile class (for all releases).
   def profiles
     return @profiles unless @profiles.nil?
 
-    @profiles = []
-    @cfg_arch.profiles.each do |profile|
-      if profile.profile_class.name == name
-        @profiles << profile
-      end
-    end
-
-    @profiles
+    @profiles = @cfg_arch.profiles.select {|profile| profile.profile_class.name == name}
   end
 
-  # @return [Array<Extension>] List of all extensions referenced by the class
+  # @return [Array<Profile>] All profiles in database matching my processor kind
+  def profiles_matching_processor_kind
+    return @profiles_matching_processor_kind unless @profiles_matching_processor_kind.nil?
+
+    @profiles_matching_processor_kind = @cfg_arch.profiles.select {|profile| profile.profile_class.processor_kind == processor_kind}
+  end
+
+  # @return [Array<Extension>] List of all extensions referenced by the profile class
   def referenced_extensions
     return @referenced_extensions unless @referenced_extensions.nil?
 
@@ -63,6 +72,19 @@ class ProfileClass < PortfolioClass
     @referenced_extensions
   end
 
+  # @return [Array<Extension>] List of all extensions referenced by any profile class in the database with my processor kind
+  def referenced_extensions_matching_processor_kind
+    return @reference_extensions_matching_processor_kind unless @reference_extensions_matching_processor_kind.nil?
+
+    @reference_extensions_matching_processor_kind = []
+    profiles_matching_processor_kind.each do |profile|
+      @reference_extensions_matching_processor_kind += profile.in_scope_extensions
+    end
+
+    @reference_extensions_matching_processor_kind.uniq!(&:name)
+
+    @reference_extensions_matching_processor_kind
+  end
 end
 
 # A profile release consists of a number of releases each with one or more profiles.
@@ -148,7 +170,7 @@ class ProfileRelease < DatabaseObject
 end
 
 # Representation of a specific profile in a profile release.
-class Profile < PortfolioInstance
+class Profile < Portfolio
   # @return [String] The marketing name of the Profile
   def marketing_name = @data["marketing_name"]
 

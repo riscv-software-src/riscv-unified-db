@@ -19,7 +19,7 @@ end
 
 # Holds information about a certificate model YAML file.
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
-class CertModel < PortfolioInstance
+class CertModel < Portfolio
   def unpriv_isa_manual_revision = @data["unpriv_isa_manual_revision"]
   def priv_isa_manual_revision = @data["priv_isa_manual_revision"]
   def debug_manual_revision = @data["debug_manual_revision"]

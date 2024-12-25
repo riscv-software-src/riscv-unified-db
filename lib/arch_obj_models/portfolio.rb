@@ -1,13 +1,13 @@
-# Classes for Porfolios which form a common base class for profiles and certificates.
+# Classes for Portfolios which form a common base class for profiles and certificates.
 # A "Portfolio" is a named & versioned grouping of extensions (each with a name and version).
-# Each Portfolio Instance is a member of a Portfolio Class:
-#   RVA20U64 and MC100 are examples of portfolio instances
+# Each Portfolio is a member of a Portfolio Class:
+#   RVA20U64 and MC100 are examples of portfolios
 #   RVA and MC are examples of portfolio classes
 #
 # Many classes inherit from the DatabaseObject class. This provides facilities for accessing the contents of a
 # Portfolio Class YAML or Portfolio Model YAML file via the "data" member (hash holding releated YAML file contents).
 #
-# A variable name with a "_data" suffix indicates it is the raw hash data from the porfolio YAML file.
+# A variable name with a "_data" suffix indicates it is the raw hash data from the portfolio YAML file.
 
 require "tmpdir"
 
@@ -37,15 +37,21 @@ class PortfolioClass < DatabaseObject
   def eql?(other)
     other.instance_of?(self.class) && other.name == name
   end
+
+  # @return [Array<PortfolioClass] All portfolio classes that have the same portfolio kind and same processor kind.
+  def portfolio_classes_matching_portfolio_kind_and_processor_kind
+    cfg_arch.portfolio_classes.select {|portfolio_class|
+      (portfolio_class.kind == kind) && (portfolio_class.processor_kind == processor_kind)}
+  end
 end
 
-#####################
-# PortfolioInstance #
-#####################
+#############
+# Portfolio #
+#############
 
-# Holds information about a PortfolioInstance YAML file (certificate or profile).
+# Holds information about a Portfolio (certificate or profile).
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
-class PortfolioInstance < DatabaseObject
+class Portfolio < DatabaseObject
   # @return [ConfiguredArchitecture] The defining ConfiguredArchitecture
   attr_reader :cfg_arch
 
@@ -55,7 +61,7 @@ class PortfolioInstance < DatabaseObject
   # @return [String] Large enough to need its own heading (generally one level deeper than the "introduction").
   def description = @data["description"]
 
-  # @return [Gem::Version] Semantic version of the PortfolioInstance
+  # @return [Gem::Version] Semantic version of the Portfolio
   def version = Gem::Version.new(@data["version"])
 
   # @return [ExtensionPresence] Given an extension +ext_name+, return the presence.
@@ -283,7 +289,7 @@ class PortfolioInstance < DatabaseObject
     # @return [String] - # What parameter values are allowed by the portfolio.
     def allowed_values
       if (@schema_portfolio.empty?)
-        # PortfolioInstance doesn't add any constraints on parameter's value.
+        # Portfolio doesn't add any constraints on parameter's value.
         return "Any"
       end
 

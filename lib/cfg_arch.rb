@@ -1,28 +1,9 @@
 # frozen_string_literal: true
 
-# Many classes have an "cfg_arch" member which is an ConfiguredArchitecture (not DatabaseObject) class.
-# The "cfg_arch" member contains the "database" of RISC-V standards including extensions, instructions,
-# CSRs, Profiles, and Certificates.
-#
-# The cfg_arch member has methods such as:
-#   extensions()                Array<Extension> of all extensions known to the database (even if not implemented).
-#   extension(name)             Extension object for "name" and nil if none.
-#   parameters()                Array<ExtensionParameter> of all parameters defined in the architecture
-#   param(name)                 ExtensionParameter object for "name" and nil if none.
-#   csrs()                      Array<Csr> of all CSRs defined by RISC-V, whether or not they are implemented
-#   csr(name)                   Csr object for "name" and nil if none.
-#   instructions()              Array<Instruction> of all instructions, whether or not they are implemented
-#   inst(name)                  Instruction object for "name" and nil if none.
-#   profile_classes             Array<ProfileClass> of all known profile classes.
-#   profile_class(class_name)   ProfileClass object for "class_name" and nil if none.
-#   profile_releases            Array<ProfileRelease> of all profile releases for all profile classes
-#   profile_release(release_name) ProfileRelease object for "release_name" and nil if none.
-#   profiles                    Array<Profile> of all profiles in all releases in all classes
-#   profile(name)               Profile object for profile "name" and nil if none.
-#   cert_classes                Array<CertClass> of all known certificate classes
-#   cert_class(name)            CertClass object for "name" and nil if none.
-#   cert_models                 Array<CertModel> of all known certificate models across all classes.
-#   cert_model(name)            CertModel object for "name" and nil if none.
+# Many classes have an "cfg_arch" member which is an ConfiguredArchitecture class.
+# It combines knowledge of the RISC-V Architecture with a particular configuration.
+# A configuration is an instance of the Config object either located in the /cfg directory
+# or created at runtime for things like profiles and certificate models.
 
 require "forwardable"
 require "ruby-prof"

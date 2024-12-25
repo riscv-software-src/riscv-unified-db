@@ -403,21 +403,21 @@ associated implementation-defined parameters.
 [appendix]
 == Profile Comparisons
 
-=== Processor Kind Comparison
+=== <%= profile_class.processor_kind %> Profile Releases
 
-The <%= profile_class.processor_kind %> processor kind has <%= profile_class.profile_releases.filter_processor_kind.size %> processor
-profile releases that reference a total of <%= profile_class.filter_processor_kind.referenced_extensions.size %> extensions.
+The <%= profile_class.processor_kind %> processor kind has <%= profile_class.profile_releases_matching_processor_kind.size %> processor
+profile releases that reference a total of <%= profile_class.referenced_extensions_matching_processor_kind.size %> extensions.
 
 .Extension Presence
 |===
-| Extension | <%= profile_class.profile_releases.filter_processor_kind.map(&:marketing_name).join(" | ") %>
+| Extension | <%= profile_class.profile_releases_matching_processor_kind.map(&:marketing_name).join(" | ") %>
 
-<% profile_class.filter_processor_kind.referenced_extensions.sort_by(&:name).each do |ext| -%>
-| <%= ext.name %> | <%= profile_class.profile_releases.filter_processor_kind.map { |profile_release| profile_release.extension_presence(ext.name) }.join(" | ") %>
+<% profile_class.referenced_extensions_matching_processor_kind.sort_by(&:name).each do |ext| -%>
+| <%= ext.name %> | <%= profile_class.profile_releases_matching_processor_kind.map { |profile_release| profile_release.extension_presence(ext.name) }.join(" | ") %>
 <% end -%>
 |===
 
-=== Release Comparison
+=== <%= profile_class.marketing_name %> Profile Releases
 
 The <%= profile_class.marketing_name %> Profile Class has <%= profile_class.profile_releases.size %> releases that
 reference a total of <%= profile_class.referenced_extensions.size %> extensions.
@@ -431,7 +431,7 @@ reference a total of <%= profile_class.referenced_extensions.size %> extensions.
 <% end -%>
 |===
 
-=== Profile Comparison
+=== <%= profile_release.marketing_name %> Profiles
 
 The <%= profile_release.marketing_name %> Profile Release has <%= profile_release.profiles.size %> profiles that
 reference a total of <%= profile_release.referenced_extensions.size %> extensions.
