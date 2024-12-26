@@ -1,0 +1,21 @@
+backends/certificate_doc/tasks.rake
+base_cfg_arch = cfg_arch_for("rv#{base}") 									# rv32 or rv64
+  Rakefile
+	Calls ConfiguredArchitecture.new("gen/resolved_arch/rv32")
+	  Calls Architecture.new 												# Parent class
+	  Calls Config.create("cfgs/rv32/cfg.yaml") 		# Factory class method
+		  Loads config yaml file into @data 					# File specifies if fully, partially, or unconfigured
+			Calls PartialConfig.new(cfg path, @data)		# Uses Ruby send() method
+				@mxlen = @data["params"].xlen
+		@name = "rv32"
+base_cert_model = base_cfg_arch.cert_model(cert_model_name = "MC100-32")
+	Calls self.generate_obj_methods("cert_model", "certificate_model", CertModel) in Architecture # Magic
+		Calls define_method("cert_model")
+			Calls define_method("cert_models")
+				Creates @cert_models array and @cert_model_hash # Per arch_dir
+				For every certificiate model in the database
+					Loads yaml under gen/resolved_arch/rv32 into @cert_models hash
+					Calls cert_model.new() -> DatabaseObject.initialize(yaml, yaml_path, arch=base_cfg_arch)
+						@data = yaml
+						@cfg_arch = arch 				# rv32 (nil if Architecture object provided)
+						@specification = arch 	# rv32

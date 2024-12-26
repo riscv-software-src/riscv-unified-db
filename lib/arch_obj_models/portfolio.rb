@@ -52,6 +52,25 @@ end
 # Holds information about a Portfolio (certificate or profile).
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
 class Portfolio < DatabaseObject
+  # @param obj_yaml [Hash<String, Object>] Contains contents of Portfolio yaml file (put in @data)
+  # @param data_path [String] Path to yaml file
+  # @param cfg_arch [ConfiguredArchitecture] Architecture for a specific configuration
+  def initialize(obj_yaml, yaml_path, arch: nil)
+    super(obj_yaml, yaml_path, arch: arch)
+
+    unless arch.is_a?(ConfiguredArchitecture)
+      raise ArgumentError, "For #{name} arch is a #{arch.class} but must be a ConfiguredArchitecture"
+    end
+
+    raise "For #{name} @data[\"base\"] is nil" if @data["base"].nil?
+    raise "For #{name} arch.mxlen is nil" if arch.mxlen.nil?
+
+    if (obj_yaml["base"] != arch.mxlen)
+      bad_base = obj_yaml["base"]
+      raise "For #{name} called with ConfigureArchitecture #{arch.name} with mxlen=#{arch.mxlen} but my base is #{bad_base}"
+    end
+  end
+
   # @return [ConfiguredArchitecture] The defining ConfiguredArchitecture
   attr_reader :cfg_arch
 
@@ -122,6 +141,10 @@ class Portfolio < DatabaseObject
     return ext_data["note"] unless ext_data.nil?
   end
 
+  def mandatory_ext_reqs = in_scope_ext_reqs(ExtensionPresence.mandatory)
+  def optional_ext_reqs = in_scope_ext_reqs(ExtensionPresence.optional)
+  def optional_type_ext_reqs = in_scope_ext_reqs(ExtensionPresence.optional)
+
   # @param desired_presence [String, Hash, ExtensionPresence]
   # @return [Array<ExtensionRequirements>] - # Extensions with their portfolio information.
   # If desired_presence is provided, only returns extensions with that presence.
@@ -181,9 +204,16 @@ class Portfolio < DatabaseObject
     in_scope_ext_reqs
   end
 
-  def mandatory_ext_reqs = in_scope_ext_reqs(ExtensionPresence.mandatory)
-  def optional_ext_reqs = in_scope_ext_reqs(ExtensionPresence.optional)
-  def optional_type_ext_reqs = in_scope_ext_reqs(ExtensionPresence.optional)
+  # @return [Array<Instruction>] Sorted list of all instructions associated with extensions listed as
+  #                              mandatory or optional in portfolio. Uses minimum version of
+  #                              extension version that meets extension requirement specified in portfolio.
+  def in_scope_instructions
+    return @in_scope_instructions unless @in_scope_instructions.nil?
+
+    # XXX
+    # @in_scope_instructions = in_scope_ext_reqs.map { |ext_req| ext_req.instructions }.flatten.uniq.sort
+    @in_scope_instructions = in_scope_extensions.map { |ext| ext.instructions }.flatten.uniq.sort
+  end
 
   # @return [Array<Extension>] List of all extensions listed in portfolio.
   def in_scope_extensions
@@ -194,13 +224,6 @@ class Portfolio < DatabaseObject
     end.reject(&:nil?)  # Filter out extensions that don't exist yet.
 
     @in_scope_extensions
-  end
-
-  # @return [Array<Instruction>] Sorted list of all instructions associated with extensions listed as
-  #                              mandatory or optional in portfolio. Uses minimum version of
-  #                              extension version that meets extension requirement specified in portfolio.
-  def in_scope_instructions
-    in_scope_extensions.map { |ext| ext.instructions }.flatten.uniq.sort
   end
 
   # @return [Boolean] Does the profile differentiate between different types of optional.
@@ -220,7 +243,7 @@ class Portfolio < DatabaseObject
     @uses_optional_types
   end
 
-  # Called by rakefile when generating a particular portfolio instance.
+  # Called by rakefile when generating a portfolio.
   # Creates an in-memory data structure used by all portfolio routines that access a cfg_arch.
   #
   # @return [ConfiguredArchitecture] A partially-configured architecture definition corresponding to this portfolio.

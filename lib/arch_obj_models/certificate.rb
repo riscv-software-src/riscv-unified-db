@@ -20,6 +20,17 @@ end
 # Holds information about a certificate model YAML file.
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
 class CertModel < Portfolio
+  # @param obj_yaml [Hash<String, Object>] Contains contents of Certificate Model yaml file (put in @data)
+  # @param data_path [String] Path to yaml file
+  # @param cfg_arch [ConfiguredArchitecture] Architecture for a specific configuration
+  def initialize(obj_yaml, yaml_path, arch: nil)
+    super(obj_yaml, yaml_path, arch: arch)
+
+    unless arch.is_a?(ConfiguredArchitecture)
+      raise ArgumentError, "For #{name} arch is a #{arch.class} but must be a ConfiguredArchitecture"
+    end
+  end
+
   def unpriv_isa_manual_revision = @data["unpriv_isa_manual_revision"]
   def priv_isa_manual_revision = @data["priv_isa_manual_revision"]
   def debug_manual_revision = @data["debug_manual_revision"]

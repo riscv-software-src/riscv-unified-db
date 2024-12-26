@@ -182,7 +182,7 @@ class DatabaseObject
   # @param data [Hash<String,Object>] Hash with fields to be added
   # @param data_path [Pathname] Path to the data file
   def initialize(data, data_path, arch: nil)
-    raise "Bad data" unless data.is_a?(Hash)
+    raise ArgumentError, "Bad data" unless data.is_a?(Hash)
 
     @data = data
     @data_path = data_path

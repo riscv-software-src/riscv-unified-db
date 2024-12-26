@@ -24,13 +24,16 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
     "#{CERT_DOC_DIR}/templates/certificate.adoc.erb",
     __FILE__
   ] do |t|
-    # TODO: schema validation
+    # Create bootstrap ConfiguredArchitecture object which also creates and contains
+    # a PartialConfig object for the rv32/rv64 configuration.
     base_cfg_arch = cfg_arch_for("rv#{base}")
+
+    # Creates CertModel object for every certificate model in database
+    # using rv32/rv64 PartialConfig object and then returns named CertModel object.
     base_cert_model = base_cfg_arch.cert_model(cert_model_name)
     raise "No certificate model named '#{cert_model_name}'" if base_cert_model.nil?
 
-    # Ask base certification model to create an in-memory config arch for this model.
-    # XXX - Add this to profile releases
+    # Ask base certification model to create an in-memory ConfiguredArchitecture for this model.
     cfg_arch = base_cert_model.to_cfg_arch
 
     # Set globals for ERB template.
