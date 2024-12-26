@@ -25,7 +25,8 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
     __FILE__
   ] do |t|
     # TODO: schema validation
-    base_cert_model = cfg_arch_for("rv#{base}").cert_model(cert_model_name)
+    base_cfg_arch = cfg_arch_for("rv#{base}")
+    base_cert_model = base_cfg_arch.cert_model(cert_model_name)
     raise "No certificate model named '#{cert_model_name}'" if base_cert_model.nil?
 
     # Ask base certification model to create an in-memory config arch for this model.

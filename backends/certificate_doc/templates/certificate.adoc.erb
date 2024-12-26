@@ -116,10 +116,10 @@ Where:
 | Term | Meaning
 
 | MANDATORY | You have to implement it to get a certificate and the certificate tests will cover it
-| OPTIONAL | It’s up to you if you implement or not. If you claim to implement it, certificate tests will cover it
+| OPTIONAL | It's up to you if you implement or not. If you claim to implement it, certificate tests will cover it
 | IN-SCOPE | Either MANDATORY or OPTIONAL
-| OUT-OF-SCOPE | It’s up to you if you implement or not. If you implement it, it won't be certified but make sure you don’t mess up anything we are certifying.
-| INCOMPATIBLE | If you implement it you won’t get a certificate
+| OUT-OF-SCOPE | It's up to you if you implement or not. If you implement it, it won't be certified but make sure you don't mess up anything we are certifying.
+| INCOMPATIBLE | If you implement it you won't get a certificate
 |===
 
 .Glossary
@@ -187,7 +187,7 @@ Where:
 
 The Priv ISA requires reads of WARL fields to return some implementation-dependent deterministic legal value
 after the field is written with an illegal value.
-Certifying such behaviors is expensive and provides low value for a certificate since software can’t rely
+Certifying such behaviors is expensive and provides low value for a certificate since software can't rely
 on a particular behavior from one implementation to another.
 
 Processor CRDs define writes to WARL fields of illegal values to be OUT-OF-SCOPE unless otherwise stated
@@ -200,7 +200,7 @@ The following special cases for WARL are supported when explicitly listed in the
 1. Probing for Field Width
 
 * Some WARL fields are variable length such as the ASID field in the virtual memory extension.
-* Here’s the algorithm recommended to discover the ASID width:
+* Here's the algorithm recommended to discover the ASID width:
 ** The number of implemented ASID bits, termed ASIDLEN, may be determined by writing one to every bit position in
    the ASID field, then reading back the value in the satp CSR to see which bit positions in the ASID field hold a one.
 * The RVCP-provided certification materials (certification tests, certification reference models) can map writes of
@@ -219,7 +219,7 @@ The following special cases for WARL are supported when explicitly listed in the
 
 The Priv ISA requires reads of WLRL fields to return some implementation-dependent deterministic arbitrary value
 after the field is written with an illegal value.
-Certifying such behaviors is expensive and provides low value for a certificate since software can’t rely
+Certifying such behaviors is expensive and provides low value for a certificate since software can't rely
 on a particular behavior.
 Processor CRDs define writes to WLRL fields of illegal values to be OUT-OF-SCOPE unless otherwise stated
 (i.e., certification tests will only ever write legal values to WLRL fields).
@@ -231,7 +231,7 @@ Such WPRI fields are always unimplemented by definition.
 Certification tests are aware of which fields in the CSRs are WPRI and normally write them with 0 but will
 also write them with ~0 (all ones) and ensure that reads return 0 in both cases.
 It is OUT-OF-SCOPE for certification tests to write all possible values of WPRI fields
-(especially if they are more than just a few bits) and certification tests aren’t designed to be comprehensive
+(especially if they are more than just a few bits) and certification tests aren't designed to be comprehensive
 verification test suites anyways.
 
 === Related Specifications
