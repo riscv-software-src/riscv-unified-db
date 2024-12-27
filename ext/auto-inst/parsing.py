@@ -2,7 +2,7 @@ import os
 import re
 import yaml
 from pathlib import Path
-
+import pytest
 yaml_instructions = {}
 REPO_DIRECTORY = None
 
@@ -16,14 +16,15 @@ def safe_get(data, key, default=""):
         return default
 
 def get_json_path():
-    """Get the path to the JSON file relative to the test file."""
-    current_dir = Path(__file__).parent
-    return str(current_dir / "/home/afonsoo/llvm-project/llvm-build/pretty.json")
+    env_path = os.environ.get('LLVM_JSON')
+    if not env_path:
+        print("\nNo LLVM path found in environment.")
+        print("Tests will be skipped.\n")
+        pytest.skip("LLVM path not configured")
+    return env_path
 
 def get_yaml_directory():
-    """Get the path to the YAML directory relative to the test file."""
-    current_dir = Path(__file__).parent
-    return str(current_dir / "../../arch/inst/")
+    return "arch/inst/"
 
 def load_inherited_variable(var_path, repo_dir):
     """Load variable definition from an inherited YAML file."""
@@ -31,23 +32,23 @@ def load_inherited_variable(var_path, repo_dir):
         path, anchor = var_path.split('#')
         if anchor.startswith('/'):
             anchor = anchor[1:]
-        
+
         full_path = os.path.join(repo_dir, path)
-        
+
         if not os.path.exists(full_path):
             print(f"Warning: Inherited file not found: {full_path}")
             return None
-            
+
         with open(full_path, 'r') as f:
             data = yaml.safe_load(f)
-            
+
         for key in anchor.split('/'):
             if key in data:
                 data = data[key]
             else:
                 print(f"Warning: Anchor path {anchor} not found in {path}")
                 return None
-                
+
         return data
     except Exception as e:
         print(f"Error loading inherited variable {var_path}: {str(e)}")
@@ -65,10 +66,10 @@ def parse_location(loc_str):
     """Parse location string that may contain multiple ranges."""
     if not loc_str:
         return []
-        
+
     loc_str = str(loc_str).strip()
     ranges = []
-    
+
     for range_str in loc_str.split('|'):
         range_str = range_str.strip()
         if '-' in range_str:
@@ -81,7 +82,7 @@ def parse_location(loc_str):
             except ValueError:
                 print(f"Warning: Invalid location format: {range_str}")
                 continue
-    
+
     return ranges
 
 def load_yaml_encoding(instr_name):
@@ -132,7 +133,7 @@ def compare_yaml_json_encoding(instr_name, yaml_match, yaml_vars, json_encoding_
         if not resolved_var or 'location' not in resolved_var:
             print(f"Warning: Could not resolve variable definition for {var.get('name', 'unknown')}")
             continue
-        
+
         ranges = parse_location(resolved_var['location'])
         if ranges:
             yaml_var_positions[var['name']] = ranges
