@@ -2,7 +2,7 @@
 
 # Contains the "database" of RISC-V standards including extensions, instructions,
 # CSRs, Profiles, and Certificates.  Could be either the standard spec (defined by RISC-V International)
-# of a custom spec (defined as an arch_overlay in cfgs/).
+# of a custom spec (defined as an arch_overlay in /cfgs dir).
 #
 # Creates Ruby functions at runtime (see generate_obj_methods() and OBJS array).
 #   1) Function to return Array<klass>              (every klass in database)
@@ -22,7 +22,7 @@
 #   Manual          manuals()           manual_hash()           manual(name)
 #   ManualVersion   manual_versions()   manual_version_hash()   manual_version(name)
 #
-# Statically created Ruby functions:
+# Normal Ruby functions:
 #
 #   klass               Array<klass>        Hash<String name,klass> Klass func(String name)
 #   ==================  ==================  ======================= =========================

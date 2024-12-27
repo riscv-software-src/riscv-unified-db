@@ -20,7 +20,7 @@ bootstrap_cert_model = bootstrap_cfg_arch.cert_model(cert_model_name = "MC100-32
 						@cfg_arch = arch 				# rv32 (nil if Architecture object provided)
 						@specification = arch 	# rv32
 cfg_arch = bootstrap_cert_model.to_cfg_arch		# In Portfolio class
-	Creates hash with mandatory extensions (with version requirement) and params
+	Creates hash with mandatory extensions (with version requirement) and fully-constrained params (single_value?)
 		Uses in_scope_ext_reqs() and all_in_scope_ext_params() in Portfolio
 	Writes hash to yaml file in /tmp/.../MC100-32/cfg.yaml
 	Passes yaml file to ConfiguredArchitecture.new()
@@ -47,7 +47,7 @@ mandatory_extensions:
   - name: "Sm"
     version: ">= 0"
 ===============================================================================================
-Example of /tmp/.../MC100-32/cfg.yaml
+Bootstrap /tmp/.../MC100-32/cfg.yaml
 ---
 "$schema": config_schema.json
 type: partially configured
