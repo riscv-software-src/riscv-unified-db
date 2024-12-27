@@ -56,7 +56,7 @@ class Csr < DatabaseObject
   end
 
   # @param cfg_arch [ConfiguredArchitecture] A configuration
-  # @return [Array<Idl::FunctionDefAst>] List of functions reachable from this CSR's sw_read or a field's sw_wirte function
+  # @return [Array<Idl::FunctionDefAst>] List of functions reachable from this CSR's sw_read or a field's sw_write function
   def reachable_functions(cfg_arch)
     return @reachable_functions unless @reachable_functions.nil?
 

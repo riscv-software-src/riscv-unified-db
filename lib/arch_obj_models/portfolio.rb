@@ -21,9 +21,6 @@ require_relative "schema"
 # Holds information from Portfolio class YAML file (certificate class or profile class).
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
 class PortfolioClass < DatabaseObject
-  # @return [ConfiguredArchitecture] The defining ConfiguredArchitecture
-  attr_reader :cfg_arch
-
   # @return [String] What kind of processor portfolio is this?
   def processor_kind = @data["processor_kind"]
 
@@ -40,7 +37,7 @@ class PortfolioClass < DatabaseObject
 
   # @return [Array<PortfolioClass] All portfolio classes that have the same portfolio kind and same processor kind.
   def portfolio_classes_matching_portfolio_kind_and_processor_kind
-    cfg_arch.portfolio_classes.select {|portfolio_class|
+    arch.portfolio_classes.select {|portfolio_class|
       (portfolio_class.kind == kind) && (portfolio_class.processor_kind == processor_kind)}
   end
 end
@@ -54,25 +51,10 @@ end
 class Portfolio < DatabaseObject
   # @param obj_yaml [Hash<String, Object>] Contains contents of Portfolio yaml file (put in @data)
   # @param data_path [String] Path to yaml file
-  # @param cfg_arch [ConfiguredArchitecture] Architecture for a specific configuration
+  # @param arch [Architecture] Entire database of RISC-V architecture standards
   def initialize(obj_yaml, yaml_path, arch: nil)
-    super(obj_yaml, yaml_path, arch: arch)
-
-    unless arch.is_a?(ConfiguredArchitecture)
-      raise ArgumentError, "For #{name} arch is a #{arch.class} but must be a ConfiguredArchitecture"
-    end
-
-    raise "For #{name} @data[\"base\"] is nil" if @data["base"].nil?
-    raise "For #{name} arch.mxlen is nil" if arch.mxlen.nil?
-
-    if (obj_yaml["base"] != arch.mxlen)
-      bad_base = obj_yaml["base"]
-      #puts "UPDATE: ConfigureArchitecture #{arch.name} has mxlen=#{arch.mxlen} but base for #{name} is #{bad_base}"
-    end
+    super # Calls parent class with same args I got
   end
-
-  # @return [ConfiguredArchitecture] The defining ConfiguredArchitecture
-  attr_reader :cfg_arch
 
   # @return [String] Small enough (~1 paragraph) to be suitable immediately after a higher-level heading.
   def introduction = @data["introduction"]
@@ -166,7 +148,7 @@ class Portfolio < DatabaseObject
 
       # Does extension even exist?
       # If not, don't raise an error right away so we can find all of the missing extensions and report them all.
-      ext = cfg_arch.extension(ext_name)
+      ext = arch.extension(ext_name)
       if ext.nil?
         puts "Extension #{ext_name} for #{name} not found in database"
         missing_ext = true
@@ -188,11 +170,11 @@ class Portfolio < DatabaseObject
           in_scope_ext_reqs <<
             if ext_data.key?("version")
               ExtensionRequirement.new(
-                ext_name, ext_data["version"], cfg_arch: @cfg_arch,
+                ext_name, ext_data["version"], arch: @arch,
                 presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
             else
               ExtensionRequirement.new(
-                ext_name, cfg_arch: @cfg_arch,
+                ext_name, arch: @arch,
                 presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
             end
         end
@@ -220,7 +202,7 @@ class Portfolio < DatabaseObject
     return @in_scope_extensions unless @in_scope_extensions.nil?
 
     @in_scope_extensions = in_scope_ext_reqs.map do |ext_req|
-      cfg_arch.extension(ext_req.name)
+      arch.extension(ext_req.name)
     end.reject(&:nil?)  # Filter out extensions that don't exist yet.
 
     @in_scope_extensions
@@ -272,7 +254,7 @@ class Portfolio < DatabaseObject
       Dir.mktmpdir do |dir|
         FileUtils.mkdir("#{dir}/#{name}")
         File.write("#{dir}/#{name}/cfg.yaml", YAML.safe_dump(config_data, permitted_classes: [Date]))
-        @generated_cfg_arch = ConfiguredArchitecture.new(name, @cfg_arch.path, cfg_path: dir)
+        @generated_cfg_arch = ConfiguredArchitecture.new(name, @arch.path, cfg_path: dir)
       end
   end
 
@@ -349,7 +331,7 @@ class Portfolio < DatabaseObject
       next if ext_name[0] == "$"
 
       # Find Extension object from database
-      ext = @cfg_arch.extension(ext_name)
+      ext = @arch.extension(ext_name)
       raise "Cannot find extension named #{ext_name}" if ext.nil?
 
       ext_data["parameters"]&.each do |param_name, param_data|
@@ -358,7 +340,7 @@ class Portfolio < DatabaseObject
 
         next unless ext.versions.any? do |ext_ver|
                       ver_req = ext_data["version"] || ">= #{ext.min_version.version_spec}"
-                      ExtensionRequirement.new(ext_name, ver_req, cfg_arch: @cfg_arch).satisfied_by?(ext_ver) &&
+                      ExtensionRequirement.new(ext_name, ver_req, arch: @arch).satisfied_by?(ext_ver) &&
                       param.defined_in_extension_version?(ext_ver)
                     end
 
@@ -381,7 +363,7 @@ class Portfolio < DatabaseObject
     raise "Cannot find extension named #{ext_req.name}" if ext_data.nil?
 
     # Find Extension object from database
-    ext = @cfg_arch.extension(ext_req.name)
+    ext = @arch.extension(ext_req.name)
     raise "Cannot find extension named #{ext_req.name}" if ext.nil?
 
     # Loop through an extension's parameter constraints (hash) from the portfolio.
@@ -409,7 +391,7 @@ class Portfolio < DatabaseObject
 
     @all_out_of_scope_params = []
     in_scope_ext_reqs.each do |ext_req|
-      ext = @cfg_arch.extension(ext_req.name)
+      ext = @arch.extension(ext_req.name)
       ext.params.each do |param|
         next if all_in_scope_ext_params.any? { |c| c.param.name == param.name }
 

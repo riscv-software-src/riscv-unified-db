@@ -24,7 +24,7 @@ class CertModel < Portfolio
   # @param data_path [String] Path to yaml file
   # @param cfg_arch [ConfiguredArchitecture] Architecture for a specific configuration
   def initialize(obj_yaml, yaml_path, arch: nil)
-    super(obj_yaml, yaml_path, arch: arch)
+    super # Calls parent class with the same args I got
 
     unless arch.is_a?(ConfiguredArchitecture)
       raise ArgumentError, "For #{name} arch is a #{arch.class} but must be a ConfiguredArchitecture"

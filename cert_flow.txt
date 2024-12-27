@@ -17,8 +17,7 @@ bootstrap_cert_model = bootstrap_cfg_arch.cert_model(cert_model_name = "MC100-32
 					Loads yaml under gen/resolved_arch/rv32 into @cert_models hash
 					Calls cert_model.new() -> DatabaseObject.initialize(yaml, yaml_path, arch=base_cfg_arch)
 						@data = yaml
-						@cfg_arch = arch 				# rv32 (nil if Architecture object provided)
-						@specification = arch 	# rv32
+						@arch = arch 				# rv32
 cfg_arch = bootstrap_cert_model.to_cfg_arch		# In Portfolio class
 	Creates hash with mandatory extensions (with version requirement) and fully-constrained params (single_value?)
 		Uses in_scope_ext_reqs() and all_in_scope_ext_params() in Portfolio

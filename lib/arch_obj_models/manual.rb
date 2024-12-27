@@ -8,12 +8,7 @@ class Manual < DatabaseObject
   def versions
     return @versions unless @versions.nil?
 
-    @versions =
-      if @cfg_arch.nil?
-        @specification.manual_versions.select { |mv| mv.manual == self }
-      else
-        @cfg_arch.manual_versions.select { |mv| mv.manual == self }
-      end
+    @versions = @arch.manual_versions.select { |mv| mv.manual == self }
   end
 
   def version(name)
@@ -126,12 +121,7 @@ class ManualVersion < DatabaseObject
   def manual
     return @manual unless @manual.nil?
 
-    @manual =
-      if @cfg_arch.nil?
-        @specification.ref(@data["manual"]["$ref"])
-      else
-        @cfg_arch.ref(@data["manual"]["$ref"])
-      end
+    @manual = @arch.ref(@data["manual"]["$ref"])
     raise "Error: manual #{@data['manual']['$ref']} is not found" if @manual.nil?
 
     @manual
