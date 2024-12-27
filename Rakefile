@@ -305,11 +305,11 @@ namespace :test do
     These are basic but fast-running tests to check the database and tools
   DESC
   task :smoke do
-    Rake::Task["test:llvm"].invoke
     Rake::Task["test:idl_compiler"].invoke
     Rake::Task["test:lib"].invoke
     Rake::Task["test:schema"].invoke
     Rake::Task["test:idl"].invoke
+    Rake::Task["test:llvm"].invoke
   end
 
   desc <<~DESC

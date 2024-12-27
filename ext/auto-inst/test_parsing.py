@@ -49,26 +49,33 @@ class TestInstructionEncoding:
     def setup_class(cls):
         """Setup class-level test data."""
         cls.yaml_instructions, cls.json_data, cls.repo_dir = load_test_data()
+        cls.rv_instructions = cls.json_data.get("!instanceof", {}).get("RVInstCommon", [])
 
     def _find_matching_instruction(self, yaml_instr_name):
         """Find matching instruction in JSON data by comparing instruction names."""
         yaml_instr_name = yaml_instr_name.lower().strip()
-        for key, value in self.json_data.items():
+
+        for def_name in self.rv_instructions:
+            value = self.json_data.get(def_name)
             if not isinstance(value, dict):
                 continue
-            
-            # Skip if instruction is pseudo and keep looking
+
             is_pseudo = value.get('isPseudo', '')
             if is_pseudo == 1:
                 continue
-                
+
+            is_codegen_only = value.get('isCodeGenOnly', '')
+            if is_codegen_only == 1:
+                continue
+
             asm_string = value.get('AsmString', '').lower().strip()
             if not asm_string:
                 continue
-                
+
             base_asm_name = asm_string.split()[0]
             if base_asm_name == yaml_instr_name:
-                return key
+                return def_name
+
         return None
 
     def _get_json_encoding(self, json_instr):
@@ -89,7 +96,7 @@ class TestInstructionEncoding:
     def test_instruction_encoding(self, instr_name):
         """Test encoding for a single instruction."""
         yaml_data = self.yaml_instructions[instr_name]
-        
+
         # Skip if the instruction has aq/rl variables
         if has_aqrl_variables(yaml_data.get("yaml_vars", [])):
             pytest.skip(f"Skipping instruction {instr_name} due to aq/rl variables")
@@ -105,7 +112,7 @@ class TestInstructionEncoding:
 
         # Get JSON encoding
         json_encoding = self._get_json_encoding(self.json_data[json_key])
-        
+
         # Compare encodings
         differences = compare_yaml_json_encoding(
             instr_name,
