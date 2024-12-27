@@ -93,7 +93,7 @@ fields:
 
       When `vsstatus.SUM` is 0, the loads and stores from the above categories cause an
       `Illegal Instruction` exception if they access a user page during VS-level translation.
-      Otherwise, a load or store from the above categories is permitted to acess a user page
+      Otherwise, a load or store from the above categories is permitted to access a user page
       during VS-level translation.
 
     type: RW
@@ -187,7 +187,7 @@ fields:
       Written by hardware in two cases:
 
       * Written with prior value of `vsstatus.SIE` when entering VS-mode from an exception/interrupt.
-      * Writen with the value 1 when returning from an exception in VS-mode (via the `sret` instruction).
+      * Written with the value 1 when returning from an exception in VS-mode (via the `sret` instruction).
 
       Can also be written by software without immediate side effect.
 
@@ -203,7 +203,7 @@ fields:
       Written by hardware in two cases:
 
       * Written with the value 0 when entering VS-mode from an exception/interrupt.
-      * Written with the prior value of `vsstatus.SPIE` when returning from an exeception in VS-mode (via `sret`).
+      * Written with the prior value of `vsstatus.SPIE` when returning from an exception in VS-mode (via `sret`).
 
       Affects execution by:
 

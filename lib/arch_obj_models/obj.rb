@@ -140,7 +140,7 @@ class DatabaseObjectect
       end
 
       # convert through JSON to handle anything supported in YAML but not JSON
-      # (e.g., integer object keys will be coverted to strings)
+      # (e.g., integer object keys will be converted to strings)
       jsonified_obj = JSON.parse(JSON.generate(@data))
 
       raise "Nothing there?" if jsonified_obj.nil?
@@ -216,7 +216,7 @@ class DatabaseObjectect
   # @overload defined_by?(ext_name, ext_version)
   #   @param ext_name [#to_s] An extension name
   #   @param ext_version [#to_s] A specific extension version
-  #   @return [Boolean] Whether or not the instruction is defined by extesion `ext`, version `version`
+  #   @return [Boolean] Whether or not the instruction is defined by extension `ext`, version `version`
   # @overload defined_by?(ext_version)
   #   @param ext_version [ExtensionVersion] An extension version
   #   @return [Boolean] Whether or not the instruction is defined by ext_version
