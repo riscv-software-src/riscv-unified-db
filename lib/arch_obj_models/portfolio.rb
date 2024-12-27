@@ -67,7 +67,7 @@ class Portfolio < DatabaseObject
 
     if (obj_yaml["base"] != arch.mxlen)
       bad_base = obj_yaml["base"]
-      raise "For #{name} called with ConfigureArchitecture #{arch.name} with mxlen=#{arch.mxlen} but my base is #{bad_base}"
+      #puts "UPDATE: ConfigureArchitecture #{arch.name} has mxlen=#{arch.mxlen} but base for #{name} is #{bad_base}"
     end
   end
 

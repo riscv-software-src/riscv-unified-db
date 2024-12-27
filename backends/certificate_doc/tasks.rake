@@ -24,20 +24,28 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
     "#{CERT_DOC_DIR}/templates/certificate.adoc.erb",
     __FILE__
   ] do |t|
+    puts "UPDATE: Creating bootstrap objects for #{cert_model_name}"
+
     # Create bootstrap ConfiguredArchitecture object which also creates and contains
     # a PartialConfig object for the rv32/rv64 configuration.
-    base_cfg_arch = cfg_arch_for("rv#{base}")
+    bootstrap_cfg_arch = cfg_arch_for("rv#{base}")
 
-    # Creates CertModel object for every certificate model in database
+    # Creates CertModel object for every certificate model in the database
     # using rv32/rv64 PartialConfig object and then returns named CertModel object.
-    base_cert_model = base_cfg_arch.cert_model(cert_model_name)
-    raise "No certificate model named '#{cert_model_name}'" if base_cert_model.nil?
+    bootstrap_cert_model = bootstrap_cfg_arch.cert_model(cert_model_name)
+    raise "No certificate model named '#{cert_model_name}'" if bootstrap_cert_model.nil?
 
-    # Ask base certification model to create an in-memory ConfiguredArchitecture for this model.
-    cfg_arch = base_cert_model.to_cfg_arch
+    puts "UPDATE: Creating real objects for #{cert_model_name}"
+
+    # Use bootstrap CertModel to create a ConfiguredArchitecture for this CertModel
+    # to use instead of the the bootstrap one created based on the rv32/rv64 configuration.
+    cfg_arch = bootstrap_cert_model.to_cfg_arch
+
+    # Use model-specific ConfiguredArchitecture to create CertModel objects again
+    # for every certificate model in the database and then return named CertModel object.
+    cert_model = cfg_arch.cert_model(cert_model_name)
 
     # Set globals for ERB template.
-    cert_model = cfg_arch.cert_model(cert_model_name)
     portfolio = cert_model
     cert_class = cert_model.cert_class
     portfolio = cert_model

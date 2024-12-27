@@ -29,6 +29,8 @@ class CertModel < Portfolio
     unless arch.is_a?(ConfiguredArchitecture)
       raise ArgumentError, "For #{name} arch is a #{arch.class} but must be a ConfiguredArchitecture"
     end
+
+    puts "UPDATE:   Creating CertModel object for #{name} using cfg #{cfg_arch.name}"
   end
 
   def unpriv_isa_manual_revision = @data["unpriv_isa_manual_revision"]
