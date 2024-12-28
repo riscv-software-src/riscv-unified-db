@@ -21,14 +21,14 @@ repos:
       - id: check-yaml
 
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: v3.3.3
+    rev: v3.4.2
     hooks:
       - id: prettier
         files: \.(json|yml|yaml)$
         exclude: schemas/json-schema-draft-07.json
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.29.4
+    rev: 0.30.0
     hooks:
       - id: check-jsonschema
         alias: check-jsonschema-inst
