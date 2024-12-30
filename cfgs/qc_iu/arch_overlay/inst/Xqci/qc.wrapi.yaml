@@ -3,12 +3,13 @@
 $schema: inst_schema.json#
 kind: instruction
 name: qc.wrapi
-long_name: Wraparound (Immediate)
+long_name: Wraparound (Unsigned Immediate)
 description: |
   If `rs1` >= `imm` perform subtraction between `rs1` and `imm`.
   If `rs1` < 0, perform addition between `rs1` and `imm`,
   else, select `rs1`. The result is stored in `rd`.
   Instruction encoded in I instruction format.
+  The `imm` is an unsigned immediate.
 definedBy:
   anyOf:
     - Xqci
@@ -33,8 +34,8 @@ access:
   vu: always
 operation(): |
   XReg rs1_value = X[rs1];
-  X[rd] = ($signed(rs1_value) >= $signed(imm))
+  X[rd] = ($signed(rs1_value) >= imm)
     ? rs1_value - imm
     : (($signed(rs1_value) < 0)
-       ? (rs1_value + imm)
+       ? ($signed(rs1_value) + imm)
        : rs1_value);
