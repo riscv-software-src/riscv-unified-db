@@ -28,6 +28,18 @@ versions:
     email: dhower@qti.qualcomm.com
   changes:
     - Add information about instruction formats of each instruction
+- version: "0.3.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix description and functionality of qc.wrapi instruction
 description: |
   The Xqcia extension includes eleven instructions to perform integer arithmetic.
 
