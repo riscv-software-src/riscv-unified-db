@@ -59,7 +59,7 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
     puts "UPDATE: Creating BaseArchitecture #{base_isa_name} for #{t}"
     base_arch = base_arch_for(base_isa_name, base)
 
-    # Create CertModel for specific certificate model as specified in its arch YAML file.
+    # Create PortfolioRelease for specific portfolio release as specified in its arch YAML file.
     # The Architecture object also creates all other portfolio-related class instances from their arch YAML files.
     # None of these objects are provided with a Design object when created.
     puts "UPDATE: Creating Profile Release for #{profile_release_name} using #{base_isa_name}"
@@ -151,7 +151,7 @@ namespace :gen do
     Generate profile documentation for a specific release as a PDF.
 
     Required options:
-      profile_release_name - The key of the certification model under arch/certificate_model
+      profile_release_name - The key of the profile release under arch/portfolio_release
   DESC
   task :profile_release_pdf, [:profile_release_name] do |_t, args|
     profile_release_name = args[:profile_release_name]
@@ -176,7 +176,7 @@ namespace :gen do
     end
 
     unless File.exist?("#{$root}/arch/profile_release/#{profile_release_name}.yaml")
-      warn "No certification model named '#{profile_release_name}' found in arch/profile_release"
+      warn "No profile release named '#{profile_release_name}' found in arch/profile_release"
       exit 1
     end
 
