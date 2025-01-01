@@ -3,7 +3,7 @@
 require "pathname"
 
 # This class represents a configuration file (e.g., cfgs/*/cfg.yaml), independent of the Architecture.
-# Can either be in the /cfg directory or created at runtime in memory by the certificate tasks.rake file.
+# Located in the /cfg directory.
 class Config
   # @return [Hash<String, Object>] A hash mapping parameter name to value for any parameter that has
   #                                been configured with a value. May be empty.

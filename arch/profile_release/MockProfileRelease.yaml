@@ -2,7 +2,8 @@ $schema: profile_release_schema.json#
 kind: profile release
 name: MockProfileRelease
 marketing_name: MockProfileRelease Marketing Name
-class: MockProfileClass
+class:
+  $ref: profile_class/MockProfileClass.yaml#
 release: 20
 state: ratified # current status ["ratified", "development"]
 versions:

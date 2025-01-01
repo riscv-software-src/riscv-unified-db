@@ -22,15 +22,11 @@ end
 class CertModel < Portfolio
   # @param obj_yaml [Hash<String, Object>] Contains contents of Certificate Model yaml file (put in @data)
   # @param data_path [String] Path to yaml file
-  # @param cfg_arch [ConfiguredArchitecture] Architecture for a specific configuration
-  def initialize(obj_yaml, yaml_path, arch: nil)
+  # @param arch [Architecture] Database of RISC-V standards
+  def initialize(obj_yaml, yaml_path, arch)
     super # Calls parent class with the same args I got
 
-    unless arch.is_a?(ConfiguredArchitecture)
-      raise ArgumentError, "For #{name} arch is a #{arch.class} but must be a ConfiguredArchitecture"
-    end
-
-    puts "UPDATE:   Creating CertModel object for #{name} using cfg #{cfg_arch.name}"
+    puts "UPDATE:   Creating CertModel object for #{name} using cfg #{arch.name}"
   end
 
   def unpriv_isa_manual_revision = @data["unpriv_isa_manual_revision"]
@@ -40,7 +36,7 @@ class CertModel < Portfolio
   def tsc_profile
     return nil if @data["tsc_profile"].nil?
 
-    profile = cfg_arch.profile(@data["tsc_profile"])
+    profile = arch.profile(@data["tsc_profile"])
 
     raise "No profile '#{@data["tsc_profile"]}'" if profile.nil?
 
@@ -49,7 +45,7 @@ class CertModel < Portfolio
 
   # @return [CertClass] The certification class that this model belongs to.
   def cert_class
-    cert_class = @cfg_arch.ref(@data["class"]['$ref'])
+    cert_class = @arch.ref(@data["class"]['$ref'])
     raise "No certificate class named '#{@data["class"]}'" if cert_class.nil?
 
     cert_class
@@ -61,9 +57,9 @@ class CertModel < Portfolio
 
   # Holds extra requirements not associated with extensions or their parameters.
   class Requirement
-    def initialize(data, cfg_arch)
+    def initialize(data, arch)
       @data = data
-      @cfg_arch = cfg_arch
+      @arch = arch
     end
 
     def name = @data["name"]
@@ -95,9 +91,9 @@ class CertModel < Portfolio
   # Holds a group of Requirement objects to provide a one-level group.
   # Can't nest RequirementGroup objects to make multi-level group.
   class RequirementGroup
-    def initialize(data, cfg_arch)
+    def initialize(data, arch)
       @data = data
-      @cfg_arch = cfg_arch
+      @arch = arch
     end
 
     def name = @data["name"]
@@ -126,7 +122,7 @@ class CertModel < Portfolio
 
       @requirements = []
       @data["requirements"].each do |req|
-        @requirements << Requirement.new(req, @cfg_arch)
+        @requirements << Requirement.new(req, @arch)
       end
       @requirements
     end
@@ -137,7 +133,7 @@ class CertModel < Portfolio
 
     @requirement_groups = []
     @data["requirement_groups"]&.each do |req_group|
-      @requirement_groups << RequirementGroup.new(req_group, @cfg_arch)
+      @requirement_groups << RequirementGroup.new(req_group, @arch)
     end
     @requirement_groups
   end

@@ -104,7 +104,7 @@ Where:
    supporting additional optional behaviors for standards already in a certificate.
 ** The <patch> release is updated when certification test changes are made that *can't* cause a previously certified
    implementation to now fail.
-   Examples are test changes not designed to increase coverage or fixing a documentation typo.
+   Examples are test changes not intended to increase coverage or fixing a documentation typo.
 ** If omitted, defaults to v1.0.0
 ** Examples: v1, v1.1, v2.3.1, 0.3.4 (pre-release)
 
@@ -231,7 +231,7 @@ Such WPRI fields are always unimplemented by definition.
 Certification tests are aware of which fields in the CSRs are WPRI and normally write them with 0 but will
 also write them with ~0 (all ones) and ensure that reads return 0 in both cases.
 It is OUT-OF-SCOPE for certification tests to write all possible values of WPRI fields
-(especially if they are more than just a few bits) and certification tests aren't designed to be comprehensive
+(especially if they are more than just a few bits) and certification tests aren't intended to be comprehensive
 verification test suites anyways.
 
 === Related Specifications
@@ -278,8 +278,8 @@ None
 |===
 | Requirement ID | Extension | Version | Long Name | Note
 
-<% ext_reqs.sort.each do |ext_req| -%>
-<% ext = cfg_arch.extension(ext_req.name) -%>
+<% ext_reqs.each do |ext_req| -%>
+<% ext = arch.extension(ext_req.name) -%>
 | <%= ext_req.req_id %>
 | <<ext-<%= ext_req.name %>-def,<%= ext_req.name %>>>
 | <%= ext_req.requirement_specs.map(&:to_s).join(", ") %>
@@ -299,7 +299,7 @@ NOTE: <%= extra_note.text %>
 <% unless cert_model.recommendations.empty? -%>
 === Recommendations
 
-Recommendations are not strictly mandated but are included to guide implementers making design choices.
+Recommendations are not strictly mandated but are included to guide implementers.
 
 <% cert_model.recommendations.each do |recommendation| -%>
 <%= recommendation.text %>
@@ -326,13 +326,13 @@ None
 |===
 | Parameter | Type | Allowed Value(s) | Extension(s) | Note
 
-<% cert_model.all_in_scope_ext_params.sort.each do |in_scope_ext_param| -%>
+<% cert_model.all_in_scope_ext_params.each do |in_scope_ext_param| -%>
 <% param = in_scope_ext_param.param -%>
 <% exts = cert_model.all_in_scope_exts_with_param(param) -%>
 | <%= param.name_potentially_with_link(exts) %>
 | <%= param.schema_type %>
 | <%= in_scope_ext_param.allowed_values %>
-| <% exts.sort.each do |ext| -%><<ext-<%= ext.name %>-param-<%= param.name %>-def,<%= ext.name %>>> <% end # do ext -%>
+| <% exts.each do |ext| -%><<ext-<%= ext.name %>-param-<%= param.name %>-def,<%= ext.name %>>> <% end # do ext -%>
 a| <%= in_scope_ext_param.note %>
 <% end # do -%>
 |===
@@ -351,11 +351,11 @@ None
 |===
 | Parameters | Type | Extension(s)
 
-<% cert_model.all_out_of_scope_params.sort.each do |param| -%>
+<% cert_model.all_out_of_scope_params.each do |param| -%>
 <% exts = cert_model.all_in_scope_exts_without_param(param) -%>
 | <%= param.name_potentially_with_link(exts) %>
 | <%= param.schema_type %>
-| <% exts.sort.each do |ext| -%><<ext-<%= ext.name %>-param-<%= param.name %>-def,<%= ext.name %>>> <% end # do ext -%>
+| <% exts.each do |ext| -%><<ext-<%= ext.name %>-param-<%= param.name %>-def,<%= ext.name %>>> <% end # do ext -%>
 
 <% end # do -%>
 |===
@@ -372,7 +372,7 @@ TODO: Show traps per privilege mode
 
 |===
 | `xcause.CODE` CSR Field Value | Name
-<% cfg_arch.exception_codes.sort_by{ |code| code.num }.each do |code| -%>
+<% design.exception_codes.sort_by{ |code| code.num }.each do |code| -%>
 | <%= code.num %> | <%= code.name %>
 <% end -%>
 |===
@@ -381,7 +381,7 @@ TODO: Show traps per privilege mode
 
 |===
 | `xcause.CODE` CSR Field Value | Name
-<% cfg_arch.interrupt_codes.sort_by{ |code| code.num }.each do |code| -%>
+<% design.interrupt_codes.sort_by{ |code| code.num }.each do |code| -%>
 | <%= code.num %> | <%= code.name %>
 <% end -%>
 |===
@@ -392,16 +392,11 @@ TODO: List only instructions that exist in this certificate model.
 Currently lists all possible in present extensions so the I extension is providing both RV32I and RV64I instructions.
 See https://github.com/riscv-software-src/riscv-unified-db/issues/291 and https://github.com/riscv-software-src/riscv-unified-db/issues/324
 
-<%
-  insts = cert_model.in_scope_extensions.map { |ext_cert_model| ext_cert_model.instructions }.flatten.uniq
-  insts.sort_by!(&:name)
--%>
-
 [%autowidth]
 |===
 | Name | Long Name
 
-<% portfolio.in_scope_instructions.each do |inst| -%>
+<% design.in_scope_instructions.each do |inst| -%>
 | <%= link_to_inst(inst.name) %>
 | <%= inst.long_name %>
 <% end # do -%>
@@ -409,17 +404,13 @@ See https://github.com/riscv-software-src/riscv-unified-db/issues/291 and https:
 
 == CSR Summary
 
-<%
-  csrs = cert_model.in_scope_ext_reqs.map { |ext_req| ext_req.csrs }.flatten.uniq
--%>
-
 === By Name
 
 [%autowidth]
 |===
 | Name | Long Name | Address | Mode | Primary Extension
 
-<% csrs.sort_by!(&:name).each do |csr| -%>
+<% design.in_scope_csrs.sort_by!(&:name).each do |csr| -%>
 | <<csr-<%= csr.name %>-def,<%= csr.name %>>>
 | <%= csr.long_name %>
 | <%= "0x#{csr.address.to_s(16)}" %>
@@ -434,7 +425,7 @@ See https://github.com/riscv-software-src/riscv-unified-db/issues/291 and https:
 |===
 | Address | Mode | Name | Long Name | Primary Extension
 
-<% csrs.sort_by!(&:address).each do |csr| -%>
+<% design.in_scope_csrs.sort_by!(&:address).each do |csr| -%>
 | <%= "0x#{csr.address.to_s(16)}" %>
 | <%= csr.priv_mode %>
 | <<csr-<%= csr.name %>-def,<%= csr.name %>>>
@@ -479,8 +470,8 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 <<<
 [appendix]
 == Extension Details
-<% cert_model.in_scope_ext_reqs.sort.each do |ext_req| -%>
-<% ext = cfg_arch.extension(ext_req.name) -%>
+<% cert_model.in_scope_ext_reqs.each do |ext_req| -%>
+<% ext = arch.extension(ext_req.name) -%>
 
 [[ext-<%= ext_req.name %>-def]]
 === Extension <%= ext_req.name %> +
@@ -532,7 +523,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 <% end -%>
 
 // TODO: GitHub issue 92: Use version specified by each profile.
-<% insts = cfg_arch.instructions.select { |i| i.defined_by?(ext.min_version) } -%>
+<% insts = arch.instructions.select { |i| i.defined_by?(ext.min_version) } -%>
 <% unless insts.empty? -%>
 ==== Instructions
 
@@ -540,7 +531,7 @@ The following instructions are added by this extension:
 
 [cols="1,3"]
 |===
-<% insts.sort.each do |inst| -%>
+<% insts.each do |inst| -%>
 | <%= link_to_inst(inst.name) %>
 | *<%= inst.long_name %>*
 <% end -%>
@@ -550,7 +541,7 @@ The following instructions are added by this extension:
 <% unless cert_model.in_scope_ext_params(ext_req).empty? -%>
 ==== IN-SCOPE Parameters
 
-<% cert_model.in_scope_ext_params(ext_req).sort.each do |ext_param| -%>
+<% cert_model.in_scope_ext_params(ext_req).each do |ext_param| -%>
 [[ext-<%= ext_req.name %>-param-<%= ext_param.name %>-def]]
 <%= ext_param.name %> &#8658; <%= ext_param.param.schema_type %>::
 +
@@ -563,7 +554,7 @@ The following instructions are added by this extension:
 <% unless cert_model.out_of_scope_params(ext_req.name).empty? -%>
 ==== OUT-OF-SCOPE Parameters
 
-<% cert_model.out_of_scope_params(ext_req.name).sort.each do |param| -%>
+<% cert_model.out_of_scope_params(ext_req.name).each do |param| -%>
 [[ext-<%= ext_req.name %>-param-<%= param.name %>-def]]
 <%= param.name %> &#8658; <%= param.schema_type %>::
 +
@@ -578,7 +569,7 @@ The following instructions are added by this extension:
 [appendix]
 == Instruction Details
 
-<% portfolio.in_scope_instructions.each do |inst| -%>
+<% design.in_scope_instructions.each do |inst| -%>
 <<<
 <%= anchor_for_inst(inst.name) %>
 === <%= inst.name %>
@@ -622,18 +613,18 @@ RV64::
 <%= inst.description %>
 
 ==== Access
-<% if cert_model.in_scope_extensions.any? { |e| e.name == "H" } -%>
+<% if design.in_scope_extensions.any? { |e| e.name == "H" } -%>
 [cols="^,^,^,^,^"]
 <% else -%>
 [cols="^,^,^"]
 <% end -%>
 |===
-| M | <% if cert_model.in_scope_extensions.any? { |e| e.name == "H" } -%>HS<% else -%>S<% end -%> | U <% if cert_model.in_scope_extensions.any? { |e| e.name == "H" } -%> | VS | VU <% end -%>
+| M | <% if design.in_scope_extensions.any? { |e| e.name == "H" } -%>HS<% else -%>S<% end -%> | U <% if design.in_scope_extensions.any? { |e| e.name == "H" } -%> | VS | VU <% end -%>
 
 | [.access-always]#Always#
 | [.access-<%=inst.access['s']%>]#<%= inst.access['s'].capitalize %>#
 | [.access-<%=inst.access['u']%>]#<%= inst.access['u'].capitalize %>#
-<% if cert_model.in_scope_extensions.any? { |e| e.name == "H" } %>
+<% if design.in_scope_extensions.any? { |e| e.name == "H" } %>
 | [.access-<%=inst.access['vs']%>]#<%= inst.access['vs'].capitalize %>#
 | [.access-<%=inst.access['vu']%>]#<%= inst.access['vu'].capitalize %>#
 <% end %>
@@ -681,13 +672,13 @@ RV64::
 <% if inst.key?("operation()") -%>
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.operation_ast(cfg_arch.symtab).gen_adoc %>
+<%= inst.operation_ast(design.symtab).gen_adoc %>
 ----
 <% end -%>
 
 ==== Exceptions
 
-<%- exception_list = inst.reachable_exceptions_str(cfg_arch.symtab) -%>
+<%- exception_list = inst.reachable_exceptions_str(design.symtab) -%>
 <%- if exception_list.empty? -%>
 This instruction does not generate synchronous exceptions.
 <%- else -%>
@@ -706,12 +697,7 @@ This instruction may result in the following synchronous exceptions:
 [appendix]
 == CSR Details
 
-<%
-  csrs = cert_model.in_scope_ext_reqs.map { |ext_req| ext_req.csrs }.flatten.uniq
-  csrs.sort_by!(&:name)
--%>
-
-<% csrs.each do |csr| -%>
+<% design.in_scope_csrs.sort_by(&:name).each do |csr| -%>
 <<<
 [[csr-<%= csr.name %>-def]]
 === <%= csr.name %>
@@ -735,22 +721,22 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <% end -%>
 h| Defining extension a| <%= csr.defined_by_condition.to_asciidoc %>
-<% if csr.dynamic_length?(cfg_arch) -%>
-h| Length         | <%= csr.length_pretty(cfg_arch) %>
+<% if csr.dynamic_length?(design) -%>
+h| Length         | <%= csr.length_pretty(design) %>
 <% else -%>
-h| Length         | <%= csr.length_pretty(cfg_arch) %>
+h| Length         | <%= csr.length_pretty(design) %>
 <% end -%>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===
 
 
 ==== Format
-<% unless csr.dynamic_length?(cfg_arch) || csr.implemented_fields(cfg_arch).any? { |f| f.dynamic_location?(cfg_arch) } -%>
+<% unless csr.dynamic_length?(design) || csr.implemented_fields(design).any? { |f| f.dynamic_location?(design) } -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(cfg_arch, csr.base.nil? ? 32 : csr.base, optional_type: 2) %>
+<%= JSON.dump csr.wavedrom_desc(design, csr.base.nil? ? 32 : csr.base, optional_type: 2) %>
 ....
 <% else -%>
 <%# CSR has a dynamic length, or a field has a dynamic location,
@@ -760,13 +746,13 @@ This CSR format changes dynamically with XLEN.
 .<%= csr.name %> Format when <%= csr.length_cond32 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(cfg_arch, 32, optional_type: 2) %>
+<%= JSON.dump csr.wavedrom_desc(design, 32, optional_type: 2) %>
 ....
 
 .<%= csr.name %> Format when <%= csr.length_cond64 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(cfg_arch, 64, optional_type: 2) %>
+<%= JSON.dump csr.wavedrom_desc(design, 64, optional_type: 2) %>
 ....
 
 
@@ -779,34 +765,34 @@ This CSR format changes dynamically with XLEN.
 |===
 @ Name @ Location @ Type @ Reset Value
 
-<%- csr.implemented_fields(cfg_arch).each do |field| -%>
+<%- csr.implemented_fields(design).each do |field| -%>
 @ xref:<%=csr.name%>-<%=field.name%>-def[`<%= field.name %>`]
 a@
-<%- if field.dynamic_location?(cfg_arch) -%>
+<%- if field.dynamic_location?(design) -%>
 
 [when,"<%= field.location_cond32 %>"]
 --
-<%= field.location_pretty(cfg_arch, 32) %>
+<%= field.location_pretty(design, 32) %>
 --
 
 [when,"<%= field.location_cond64 %>"]
 --
-<%= field.location_pretty(cfg_arch, 64) %>
+<%= field.location_pretty(design, 64) %>
 --
 
 <%- else -%>
-<%= field.location_pretty(cfg_arch) %>
+<%= field.location_pretty(design) %>
 <%- end -%>
 a@
 
 --
-<%= field.type_pretty(cfg_arch.symtab) %>
+<%= field.type_pretty(design.symtab) %>
 --
 
 a@
 
 --
-<%= field.reset_value_pretty(cfg_arch) %>
+<%= field.reset_value_pretty(design) %>
 --
 
 <%- end -%>
@@ -814,11 +800,11 @@ a@
 
 ==== Fields
 
-<%- if csr.implemented_fields(cfg_arch).empty? -%>
+<%- if csr.implemented_fields(design).empty? -%>
 This CSR has no fields. However, it must still exist (not cause an `Illegal Instruction` trap) and always return zero on a read.
 <%- else -%>
 
-<%- csr.implemented_fields(cfg_arch).each do |field| -%>
+<%- csr.implemented_fields(design).each do |field| -%>
 [[<%=csr.name%>-<%=field.name%>-def]]
 ===== `<%= field.name %>`
 
@@ -828,23 +814,23 @@ IMPORTANT: <%= field.name %> is only defined in <%= field.base32_only? ? "RV32" 
 
 ****
 Location::
-<%= field.location_pretty(cfg_arch) %>
+<%= field.location_pretty(design) %>
 
 Description::
 <%= field.description.gsub("\n", " +\n") %>
 
 Type::
-<%= field.type_pretty(cfg_arch.symtab) %>
+<%= field.type_pretty(design.symtab) %>
 
 Reset value::
-<%= field.reset_value_pretty(cfg_arch) %>
+<%= field.reset_value_pretty(design) %>
 
 ****
 
 <%- end -%>
 <%- end -%>
 
-<%- if csr.implemented_fields(cfg_arch).map(&:has_custom_sw_write?).any? -%>
+<%- if csr.implemented_fields(design).map(&:has_custom_sw_write?).any? -%>
 ==== Software write
 
 This CSR may store a value that is different from what software attempts to write.
@@ -854,7 +840,7 @@ written value:
 
 [idl]
 ----
-<%- csr.implemented_fields(cfg_arch).each do |field| -%>
+<%- csr.implemented_fields(design).each do |field| -%>
 <%- if field.has_custom_sw_write? -%>
 <%= field.name %> = <%= field["sw_write(csr_value)"] %>
 <%- else -%>
@@ -871,8 +857,8 @@ This CSR may return a value that is different from what is stored in hardware.
 
 [source,idl,subs="specialchars,macros"]
 ----
-<%= csr.sw_read_ast(cfg_arch.symtab).gen_adoc %>
+<%= csr.sw_read_ast(design.symtab).gen_adoc %>
 ----
 <%- end -%>
 
-<% end # do csrs -%>
+<% end # do in_scope_csrs -%>

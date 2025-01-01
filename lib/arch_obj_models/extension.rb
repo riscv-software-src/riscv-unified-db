@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "obj"
+require_relative "database_obj"
 require_relative "schema"
 require_relative "../version"
 
@@ -77,7 +77,7 @@ class ExtensionParameter
     return true if @data.dig("when", "version").nil?
 
     @exts.any? do |ext|
-      ExtensionRequirement.new(ext.name, @data["when"]["version"], arch: ext.arch).satisfied_by?(version)
+      ExtensionRequirement.new(ext.name, @data["when"]["version"], ext.arch).satisfied_by?(version)
     end
   end
 
@@ -195,9 +195,9 @@ class Extension < DatabaseObject
   # @return [Array<ExtensionVersion>] Array of extensions implied by any version of this extension meeting version_requirement
   def implies(version_requirement = nil)
     if version_requirement.nil?
-      return [] unless ExtensionRequirement.new(@new, arch: @arch).satisfied_by?(max_version.version)
+      return [] unless ExtensionRequirement.new(@new, @arch).satisfied_by?(max_version.version)
     else
-      return [] unless ExtensionRequirement.new(@new, version_requirement, arch: @arch).satisfied_by?(max_version.version)
+      return [] unless ExtensionRequirement.new(@new, version_requirement, @arch).satisfied_by?(max_version.version)
     end
 
     max_version.implications
@@ -208,15 +208,15 @@ class Extension < DatabaseObject
     return [] if @data["conflicts"].nil?
 
     if @data["conflicts"].is_a?(String)
-      [ExtensionRequirement.new(@data["conflicts"], arch: @arch)]
+      [ExtensionRequirement.new(@data["conflicts"], @arch)]
     elsif @data["conflicts"].is_a?(Hash)
-      [ExtensionRequirement.new(@data["conflicts"]["name"], @data["conflicts"]["version"], arch: @arch)]
+      [ExtensionRequirement.new(@data["conflicts"]["name"], @data["conflicts"]["version"], @arch)]
     elsif @data["conflicts"].is_a?(Array)
       @data["conflicts"].map do |conflict|
         if conflict.is_a?(String)
-          ExtensionRequirement.new(conflict, arch: @arch)
+          ExtensionRequirement.new(conflict, @arch)
         elsif conflict.is_a?(Array)
-          ExtensionRequirement.new(conflict["name"], conflict["version"], arch: @arch)
+          ExtensionRequirement.new(conflict["name"], conflict["version"], @arch)
         else
           raise "Invalid conflicts data: #{conflict.inspect}"
         end
@@ -244,28 +244,29 @@ class Extension < DatabaseObject
   #
   # @param symtab [Idl::SymbolTable] The evaluation context
   # @return [Array<Idl::FunctionDefAst>] Array of IDL functions reachable from any instruction or CSR in the extension
-  def reachable_functions(symtab)
-    @reachable_functions ||= {}
-
-    return @reachable_functions[symtab] unless @reachable_functions[symtab].nil?
-
-    funcs = []
-
-    puts "Finding all reachable functions from extension #{name}"
-
-    instructions.each do |inst|
-      funcs += inst.reachable_functions(symtab, 32) if inst.defined_in_base?(32)
-      funcs += inst.reachable_functions(symtab, 64) if inst.defined_in_base?(64)
-    end
-
-    # The one place in this file that needs a ConfiguredArchitecture object instead of just Architecture.
-    raise "In #{name}, need to provide ConfiguredArchitecture" if cfg_arch.nil?
-    csrs.each do |csr|
-      funcs += csr.reachable_functions(cfg_arch)
-    end
-
-    @reachable_functions[symtab] = funcs.uniq
-  end
+  #
+  # The one place in this file that actually needs a Design object instead of just Architecture.
+  # Doesn't seem to be called anywhere. If there is somewhere that calls this, pass it a Design object.
+#  def reachable_functions(symtab)
+#    @reachable_functions ||= {}
+#
+#    return @reachable_functions[symtab] unless @reachable_functions[symtab].nil?
+#
+#    funcs = []
+#
+#    puts "Finding all reachable functions from extension #{name}"
+#
+#    instructions.each do |inst|
+#      funcs += inst.reachable_functions(symtab, 32) if inst.defined_in_base?(32)
+#      funcs += inst.reachable_functions(symtab, 64) if inst.defined_in_base?(64)
+#    end
+#
+#    csrs.each do |csr|
+#      funcs += csr.reachable_functions(design)
+#    end
+#
+#    @reachable_functions[symtab] = funcs.uniq
+#  end
 end
 
 # A specific version of an extension
@@ -449,7 +450,7 @@ class ExtensionVersion
     @implications
   end
 
-  # @return [Array<ExtensionVersion>] List of extension versions that are implied by with this ExtensionVersion
+  # @return [Array<ExtensionVersion>] List of extension versions that are implied by with this ExtensionVersion.
   #                                   This list is transitive; if an implication I1 implies another extension I2,
   #                                   both I1 and I2 are in the returned list
   def transitive_implications
@@ -483,7 +484,7 @@ class ExtensionVersion
   # @param ext_version_requirements [String,Array<String>] Extension version requirements
   # @return [Boolean] whether or not this ExtensionVersion is named `ext_name` and satifies the version requirements
   def satisfies?(ext_name, *ext_version_requirements)
-    ExtensionRequirement.new(ext_name, ext_version_requirements).satisfied_by?(self)
+    ExtensionRequirement.new(ext_name, ext_version_requirements, arch).satisfied_by?(self)
   end
 
   # sorts extension by name, then by version
@@ -508,7 +509,7 @@ class ExtensionVersion
     end
   end
 
-  # @return [Array<Csr>] the list of insts implemented by this extension version (may be empty)
+  # @return [Array<Instructions>] the list of insts implemented by this extension version (may be empty)
   def implemented_instructions
     return @implemented_instructions unless @implemented_instructions.nil?
 
@@ -687,27 +688,23 @@ class ExtensionRequirement
     "#{name} " + requirement_specs_to_s
   end
 
-  # @return [Extension] The extension that this requirement is for
-  def extension
-    return @extension unless @extension.nil?
-
-    raise "Cannot get extension; arch was not initialized" if @arch.nil?
-
-    @extension = @arch.extension(@name)
-  end
+  # @return [Extension] The extension corresponding to this requirement
+  def extension = @ext
 
   # @param name [#to_s] Extension name
   # @param requirements [String] Single requirement
   # @param requirements [Array<String>] List of requirements, all of which must hold
-  # @param arch [Architecture]
-  def initialize(name, *requirements, arch: nil, note: nil, req_id: nil, presence: nil)
+  # @param arch [Architecture] The architecture database
+  def initialize(name, *requirements, arch, note: nil, req_id: nil, presence: nil)
     raise ArgumentError, "For #{name}, arch not allowed to be nil" if arch.nil?
     raise ArgumentError, "For #{name}, Architecture is required" unless arch.is_a?(Architecture)
 
     @name = name.to_s.freeze
     @arch = arch
     @ext = @arch.extension(@name)
-    raise ArgumentError, "Could not find extension named '#{@name}'" if @ext.nil?
+    if @ext.nil?
+      raise ArgumentError, "Could not find extension named '#{@name}'"
+    end
 
     requirements =
       if requirements.empty?
@@ -724,10 +721,9 @@ class ExtensionRequirement
 
   # @return [Array<ExtensionVersion>] The list of extension versions that satisfy this extension requirement
   def satisfying_versions
-    ext = @arch.extension(@name)
-    return [] if ext.nil?
+    return @satisfying_versions unless @satisfying_versions.nil?
 
-    ext.versions.select { |v| satisfied_by?(v) }
+    @satisfying_versions = @ext.versions.select { |v| satisfied_by?(v) }
   end
 
   # @overload

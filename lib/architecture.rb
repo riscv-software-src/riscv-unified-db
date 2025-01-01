@@ -39,8 +39,6 @@ require "json_schemer"
 require "pathname"
 require "yaml"
 
-require_relative "idl"
-
 require_relative "arch_obj_models/certificate"
 require_relative "arch_obj_models/csr"
 require_relative "arch_obj_models/csr_field"
@@ -77,6 +75,11 @@ class Architecture
     end
   end
 
+  # These instance methods are create when this Architecture class is first loaded.
+  # This is a Ruby "class" method and so self is the entire Architecture class, not an instance it.
+  # However, this class method creates normal instance methods and when they are called
+  # self is an instance of the Architecture class.
+  #
   # @!macro [attach] generate_obj_methods
   #   @method $1s
   #   @return [Array<$3>] List of all $1s defined in the standard
@@ -98,7 +101,7 @@ class Architecture
       @object_hashes[arch_dir] = {}
       Dir.glob(@arch_dir / arch_dir / "**" / "*.yaml") do |obj_path|
         obj_yaml = YAML.load_file(obj_path, permitted_classes: [Date])
-        @objects[arch_dir] << obj_class.new(obj_yaml, Pathname.new(obj_path).realpath, arch: self)
+        @objects[arch_dir] << obj_class.new(obj_yaml, Pathname.new(obj_path).realpath, self)
         @object_hashes[arch_dir][@objects[arch_dir].last.name] = @objects[arch_dir].last
       end
       @objects[arch_dir]

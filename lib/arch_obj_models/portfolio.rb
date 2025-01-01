@@ -10,8 +10,9 @@
 # A variable name with a "_data" suffix indicates it is the raw hash data from the portfolio YAML file.
 
 require "tmpdir"
+require "forwardable"
 
-require_relative "obj"
+require_relative "database_obj"
 require_relative "schema"
 
 ##################
@@ -42,6 +43,139 @@ class PortfolioClass < DatabaseObject
   end
 end
 
+##################
+# PortfolioGroup #
+##################
+
+# A portfolio group consists of a one or more profiles.
+# Contains common code to aggregrate multiple portfolios for Profile Releases and PortfolioDesign classes.
+# This not the base class for ProfileRelease but it does contain one of these.
+# This is not a DatabaseObject.
+class PortfolioGroup
+  extend Forwardable
+
+  # Calls to these methods on PortfolioGroup are handled by the Array class.
+  # Avoids having to call portfolio_group.portfolios.<array_method> (just call portfolio_group.<array_method>).
+  def_delegators :@portfolios, :each, :map, :select
+
+  # @param portfolios [Array<Portfolio>]
+  def initialize(portfolios)
+      @portfolios = portfolios
+  end
+
+  # @return [Array<Portfolio>] All portfolios in this portfolio group
+  def portfolios = @portfolios
+
+  # @return [Hash<String, String>] Fully-constrained parameter values (those with just one possible value for this design).
+  def param_values
+    return @param_values unless @param_values.nil?
+
+    @param_values = {}
+    portfolios.each do |portfolio|
+      @param_values.merge!(portfolio.all_in_scope_ext_params.select(&:single_value?).map { |p| [p.name, p.value] }.to_h)
+    end
+
+    @param_values
+  end
+
+  # @return [Array<ExtensionRequirement>] Sorted list of all extension requirements listed by the group.
+  def in_scope_ext_reqs
+    return @in_scope_ext_reqs unless @in_scope_ext_reqs.nil?
+
+    @in_scope_ext_reqs = []
+    portfolios.each do |portfolio|
+      @in_scope_ext_reqs += portfolio.in_scope_ext_reqs
+    end
+
+    @in_scope_ext_reqs.uniq(&:name).sort_by(&:name)
+  end
+
+  # @return [Array<ExtensionRequirement>] Sorted list of all mandatory extension requirements listed by the group.
+  def mandatory_ext_reqs
+    return @mandatory_ext_reqs unless @mandatory_ext_reqs.nil?
+
+    @mandatory_ext_reqs = []
+    portfolios.each do |portfolio|
+      @mandatory_ext_reqs += portfolio.mandatory_ext_reqs
+    end
+
+    @mandatory_ext_reqs.uniq(&:name).sort_by(&:name)
+  end
+
+  # @return [Array<ExtensionRequirement>] Sorted list of all optional extension requirements listed by the group.
+  def optional_ext_reqs
+    return @optional_ext_reqs unless @optional_ext_reqs.nil?
+
+    @optional_ext_reqs = []
+    portfolios.each do |portfolio|
+      @optional_ext_reqs += portfolio.optional_ext_reqs
+    end
+
+    @optional_ext_reqs.uniq(&:name).sort_by(&:name)
+  end
+
+  # @return [Array<Extension>] Sorted list of all mandatory or optional extensions referenced by the group.
+  def in_scope_extensions
+    return @in_scope_extensions unless @in_scope_extensions.nil?
+
+    @in_scope_extensions = []
+    portfolios.each do |portfolio|
+      @in_scope_extensions += portfolio.in_scope_extensions
+    end
+
+    @in_scope_extensions.uniq(&:name).sort_by(&:name)
+  end
+
+  # @return [Array<Instruction>] Sorted list of all instructions associated with extensions listed as
+  #                              mandatory or optional in portfolio. Uses instructions provided by the
+  #                              minimum version of the extension that meets the extension requirement.
+  def in_scope_instructions
+    return @in_scope_instructions unless @in_scope_instructions.nil?
+
+    @in_scope_instructions = []
+    portfolios.each do |portfolio|
+      @in_scope_instructions += portfolio.in_scope_instructions
+    end
+
+    @in_scope_instructions.uniq(&:name).sort_by(&:name)
+  end
+
+  # @return [Array<Csr>] Unsorted list of all CSRs associated with extensions listed as
+  #                      mandatory or optional in portfolio. Uses CSRs provided by the
+  #                      minimum version of the extension that meets the extension requirement.
+  def in_scope_csrs
+    return @in_scope_csrs unless @in_scope_csrs.nil?
+
+    @in_scope_csrs = []
+    portfolios.each do |portfolio|
+      @in_scope_csrs += portfolio.in_scope_csrs
+    end
+
+    @in_scope_csrs.uniq(&:name)
+  end
+
+  # @return [String] Given an extension +ext_name+, return the presence as a string.
+  #                  Returns the greatest presence string across all profiles in the group.
+  #                  If the extension name isn't found in the release, return "-".
+  def extension_presence(ext_name)
+    greatest_presence = nil
+
+    portfolios.each do |portfolio|
+      presence = portfolio.extension_presence_obj(ext_name)
+
+      unless presence.nil?
+        if greatest_presence.nil?
+          greatest_presence = presence
+        elsif presence > greatest_presence
+          greatest_presence = presence
+        end
+      end
+    end
+
+    greatest_presence.nil? ? "-" : greatest_presence.to_s_concise
+  end
+end
+
 #############
 # Portfolio #
 #############
@@ -52,7 +186,7 @@ class Portfolio < DatabaseObject
   # @param obj_yaml [Hash<String, Object>] Contains contents of Portfolio yaml file (put in @data)
   # @param data_path [String] Path to yaml file
   # @param arch [Architecture] Entire database of RISC-V architecture standards
-  def initialize(obj_yaml, yaml_path, arch: nil)
+  def initialize(obj_yaml, yaml_path, arch)
     super # Calls parent class with same args I got
   end
 
@@ -61,6 +195,9 @@ class Portfolio < DatabaseObject
 
   # @return [String] Large enough to need its own heading (generally one level deeper than the "introduction").
   def description = @data["description"]
+
+  # @return [Integer] 32 or 64
+  def base = @data["base"]
 
   # @return [Gem::Version] Semantic version of the Portfolio
   def version = Gem::Version.new(@data["version"])
@@ -128,7 +265,7 @@ class Portfolio < DatabaseObject
   def optional_type_ext_reqs = in_scope_ext_reqs(ExtensionPresence.optional)
 
   # @param desired_presence [String, Hash, ExtensionPresence]
-  # @return [Array<ExtensionRequirements>] - # Extensions with their portfolio information.
+  # @return [Array<ExtensionRequirements>] Sorted list of extensions with their portfolio information.
   # If desired_presence is provided, only returns extensions with that presence.
   # If desired_presence is a String, only the presence portion of an ExtensionPresence is compared.
   def in_scope_ext_reqs(desired_presence = nil)
@@ -170,11 +307,11 @@ class Portfolio < DatabaseObject
           in_scope_ext_reqs <<
             if ext_data.key?("version")
               ExtensionRequirement.new(
-                ext_name, ext_data["version"], arch: @arch,
+                ext_name, ext_data["version"], @arch,
                 presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
             else
               ExtensionRequirement.new(
-                ext_name, arch: @arch,
+                ext_name, @arch,
                 presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
             end
         end
@@ -183,29 +320,51 @@ class Portfolio < DatabaseObject
 
     raise "One or more extensions referenced by #{name} missing in database" if missing_ext
 
-    in_scope_ext_reqs
+    in_scope_ext_reqs.sort_by!(&:name)
   end
 
-  # @return [Array<Instruction>] Sorted list of all instructions associated with extensions listed as
-  #                              mandatory or optional in portfolio. Uses minimum version of
-  #                              extension version that meets extension requirement specified in portfolio.
-  def in_scope_instructions
-    return @in_scope_instructions unless @in_scope_instructions.nil?
-
-    # XXX
-    # @in_scope_instructions = in_scope_ext_reqs.map { |ext_req| ext_req.instructions }.flatten.uniq.sort
-    @in_scope_instructions = in_scope_extensions.map { |ext| ext.instructions }.flatten.uniq.sort
-  end
-
-  # @return [Array<Extension>] List of all extensions listed in portfolio.
+  # @return [Array<Extension>] Sorted list of all mandatory or optional extensions in portfolio.
+  #                            Each extension can have multiple versions (contains ExtensionVersion array).
   def in_scope_extensions
     return @in_scope_extensions unless @in_scope_extensions.nil?
 
     @in_scope_extensions = in_scope_ext_reqs.map do |ext_req|
-      arch.extension(ext_req.name)
+      ext_req.extension
     end.reject(&:nil?)  # Filter out extensions that don't exist yet.
 
-    @in_scope_extensions
+    @in_scope_extensions.sort_by!(&:name)
+  end
+
+  # @return [ExtensionVersion] List of all mandatory or optional extensions listed in portfolio.
+  #                            The minimum version of each extension that satisfies the extension requirements is provided.
+  def in_scope_min_satisfying_extension_versions
+    return @in_scope_min_satisfying_extension_versions unless @in_scope_min_satisfying_extension_versions.nil?
+
+    @in_scope_min_satisfying_extension_versions = in_scope_ext_reqs.map do |ext_req|
+      ext_req.satisfying_versions.min
+    end.reject(&:nil?)  # Filter out extensions that don't exist yet.
+
+    @in_scope_min_satisfying_extension_versions
+  end
+
+  # @return [Array<Instruction>] Sorted list of all instructions associated with extensions listed as
+  #                              mandatory or optional in portfolio. Uses instructions provided by the
+  #                              minimum version of the extension that meets the extension requirement.
+  def in_scope_instructions
+    return @in_scope_instructions unless @in_scope_instructions.nil?
+
+    @in_scope_instructions =
+      in_scope_min_satisfying_extension_versions.map {|ext_ver| ext_ver.implemented_instructions }.flatten.uniq.sort
+  end
+
+  # @return [Array<Csr>] Unsorted list of all CSRs associated with extensions listed as
+  #                      mandatory or optional in portfolio. Uses CSRs provided by the
+  #                      minimum version of the extension that meets the extension requirement.
+  def in_scope_csrs
+    return @in_scope_csrs unless @in_scope_csrs.nil?
+
+    @in_scope_csrs =
+      in_scope_min_satisfying_extension_versions.map {|ext_ver| ext_ver.implemented_csrs }.flatten.uniq
   end
 
   # @return [Boolean] Does the profile differentiate between different types of optional.
@@ -223,39 +382,6 @@ class Portfolio < DatabaseObject
     end
 
     @uses_optional_types
-  end
-
-  # Called by rakefile when generating a portfolio.
-  # Creates an in-memory data structure used by all portfolio routines that access a cfg_arch.
-  #
-  # @return [ConfiguredArchitecture] A partially-configured architecture definition corresponding to this portfolio.
-  def to_cfg_arch
-    return @generated_cfg_arch unless @generated_cfg_arch.nil?
-
-    # build up a config for the portfolio
-    config_data = {
-      "$schema" => "config_schema.json",
-      "type" => "partially configured",
-      "kind" => "architecture configuration",
-      "name" => name,
-      "description" => "A partially configured architecture definition corresponding to the #{name} portfolio.",
-      "mandatory_extensions" => mandatory_ext_reqs.map do |ext_req|
-        {
-          "name" => ext_req.name,
-          "version" => ext_req.requirement_specs.map(&:to_s)
-        }
-      end,
-      "params" => all_in_scope_ext_params.select(&:single_value?).map { |p| [p.name, p.value] }.to_h
-    }
-
-    # TODO: Add list of prohibited_extensions
-
-    @generated_cfg_arch =
-      Dir.mktmpdir do |dir|
-        FileUtils.mkdir("#{dir}/#{name}")
-        File.write("#{dir}/#{name}/cfg.yaml", YAML.safe_dump(config_data, permitted_classes: [Date]))
-        @generated_cfg_arch = ConfiguredArchitecture.new(name, @arch.path, cfg_path: dir)
-      end
   end
 
   ###################################
@@ -340,7 +466,7 @@ class Portfolio < DatabaseObject
 
         next unless ext.versions.any? do |ext_ver|
                       ver_req = ext_data["version"] || ">= #{ext.min_version.version_spec}"
-                      ExtensionRequirement.new(ext_name, ver_req, arch: @arch).satisfied_by?(ext_ver) &&
+                      ExtensionRequirement.new(ext_name, ver_req, @arch).satisfied_by?(ext_ver) &&
                       param.defined_in_extension_version?(ext_ver)
                     end
 
@@ -351,7 +477,8 @@ class Portfolio < DatabaseObject
     @all_in_scope_ext_params
   end
 
-  # @return [Array<InScopeExtensionParameter>] List of extension parameters from portfolio for given extension.
+  # @param [ExtensionRequirement]
+  # @return [Array<InScopeExtensionParameter>] Sorted list of extension parameters from portfolio for given extension.
   # These are always IN SCOPE by definition (since they are listed in the portfolio).
   def in_scope_ext_params(ext_req)
     raise ArgumentError, "Expecting ExtensionRequirement" unless ext_req.is_a?(ExtensionRequirement)
@@ -382,10 +509,11 @@ class Portfolio < DatabaseObject
         InScopeExtensionParameter.new(ext_param, param_data["schema"], param_data["note"])
     end
 
-    ext_params
+    ext_params.sort!
   end
 
-  # @return [Array<ExtensionParameter>] Parameters out of scope across all in scope extensions (those listed in the portfolio).
+  # @return [Array<ExtensionParameter>] Sorted list of parameters out of scope across all in scope extensions
+  #                                     (those listed as mandatory or optional in the portfolio).
   def all_out_of_scope_params
     return @all_out_of_scope_params unless @all_out_of_scope_params.nil?
 
@@ -403,16 +531,16 @@ class Portfolio < DatabaseObject
         @all_out_of_scope_params << param
       end
     end
-    @all_out_of_scope_params
+    @all_out_of_scope_params.sort!
   end
 
-  # @return [Array<ExtensionParameter>] Parameters that are out of scope for named extension.
+  # @return [Array<ExtensionParameter>] Sorted list of parameters that are out of scope for named extension.
   def out_of_scope_params(ext_name)
-    all_out_of_scope_params.select{ |param| param.exts.any? { |ext| ext.name == ext_name } }
+    all_out_of_scope_params.select{ |param| param.exts.any? { |ext| ext.name == ext_name } }.sort
   end
 
   # @return [Array<Extension>]
-  # All the in-scope extensions (those in the portfolio) that define this parameter in the database
+  # Sorted list of all in-scope extensions that define this parameter in the database
   # and the parameter is in-scope (listed in that extension's list of parameters in the portfolio).
   def all_in_scope_exts_with_param(param)
     raise ArgumentError, "Expecting ExtensionParameter" unless param.is_a?(ExtensionParameter)
@@ -423,8 +551,8 @@ class Portfolio < DatabaseObject
     param.exts.each do |ext|
       found = false
 
-      in_scope_extensions.each do |in_scope_ext|
-        if ext.name == in_scope_ext.name
+      in_scope_extensions.each do |potential_ext|
+        if ext.name == potential_ext.name
           found = true
           next
         end
@@ -437,11 +565,11 @@ class Portfolio < DatabaseObject
     end
 
     # Return intersection of extension names
-    exts
+    exts.sort_by!(&:name)
   end
 
   # @return [Array<Extension>]
-  # All the in-scope extensions (those in the portfolio) that define this parameter in the database
+  # List of all in-scope extensions that define this parameter in the database
   # but the parameter is out-of-scope (not listed in that extension's list of parameters in the portfolio).
   def all_in_scope_exts_without_param(param)
     raise ArgumentError, "Expecting ExtensionParameter" unless param.is_a?(ExtensionParameter)
@@ -452,8 +580,8 @@ class Portfolio < DatabaseObject
     param.exts.each do |ext|
       found = false
 
-      in_scope_extensions.each do |in_scope_ext|
-        if ext.name == in_scope_ext.name
+      in_scope_extensions.each do |potential_ext|
+        if ext.name == potential_ext.name
           found = true
           next
         end
@@ -466,7 +594,7 @@ class Portfolio < DatabaseObject
     end
 
     # Return intersection of extension names
-    exts
+    exts.sort_by!(&:name)
   end
 
   ############################

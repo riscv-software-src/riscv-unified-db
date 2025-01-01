@@ -13,8 +13,8 @@ end
 XmockensionParameter = Struct.new(:name, :desc, :schema, :extra_validation, :exts, :type)
 XmockensionParameterWithValue = Struct.new(:name, :desc, :schema, :extra_validation, :exts, :value)
 
-# ConfiguredArchitecture mock that knows about XLEN and extensions
-class MockConfiguredArchitecture
+# Design class mock that knows about XLEN and extensions
+class MockDesign
   def param_values = { "XLEN" => 32 }
   def params_with_value = [XmockensionParameterWithValue.new("XLEN", "mxlen", {"type" => "integer", "enum" => [32, 64]}, nil, nil, 32)]
   def params_without_value = []
@@ -35,8 +35,8 @@ end
 
 module TestMixin
   def setup
-    @cfg_arch = MockConfiguredArchitecture.new
-    @symtab = Idl::SymbolTable.new(@cfg_arch)
+    @design = MockDesign.new
+    @symtab = Idl::SymbolTable.new(@design)
     @compiler = Idl::Compiler.new
   end
 end

@@ -10,6 +10,9 @@ require "yard"
 require "minitest/test_task"
 
 require_relative $root / "lib" / "architecture"
+require_relative $root / "lib" / "base_architecture"
+require_relative $root / "lib" / "design"
+require_relative $root / "lib" / "portfolio_design"
 
 directory "#{$root}/.stamps"
 
@@ -18,6 +21,43 @@ Dir.glob("#{$root}/backends/*/tasks.rake") do |rakefile|
 end
 
 directory "#{$root}/.stamps"
+
+# @param base_isa_name [String] rv32 or rv64
+# @param base [Integer] 32 or 64
+# @return [BaseArchitecture]
+def base_arch_for(base_isa_name, base)
+  Rake::Task["#{$root}/.stamps/resolve-#{base_isa_name}.stamp"].invoke
+
+  @base_archs ||= {}
+  return @base_archs[base_isa_name] if @base_archs.key?(base_isa_name)
+
+  @base_archs[base_isa_name] =
+    BaseArchitecture.new(
+      base_isa_name,
+      base,
+      $root / "gen" / "resolved_arch" / base_isa_name,
+    )
+end
+
+# @param design_name [String] Profile release name for profiles and certificate model name for certificates
+# @param arch [Architecture] The architecture database
+# @param base [Integer] 32 or 64
+# @param portfolios [Array<Portfolio>] Portfolios in this design
+# @return [PortfolioDesign]
+def portfolio_design_for(design_name, arch, base, portfolios)
+  Rake::Task["#{$root}/.stamps/resolve-#{design_name}.stamp"].invoke
+
+  @portfolio_designs ||= {}
+  return @portfolio_designs[design_name] if @portfolio_designs.key?(design_name)
+
+  @portfolio_designs[design_name] =
+    PortfolioDesign.new(
+      design_name,
+      arch,
+      base,
+      portfolios
+    )
+end
 
 def cfg_arch_for(config_name)
   Rake::Task["#{$root}/.stamps/resolve-#{config_name}.stamp"].invoke
@@ -117,6 +157,7 @@ namespace :test do
   end
   task schema: "gen:resolved_arch" do
     puts "Checking arch files against schema.."
+    # TODO: Needs to pass in base ISA name (rv32 or rv64).
     Architecture.new("#{$root}/resolved_arch").validate(show_progress: true)
     puts "All files validate against their schema"
   end
