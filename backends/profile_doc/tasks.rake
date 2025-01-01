@@ -53,7 +53,7 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
     "#{$root}/lib/arch_obj_models/portfolio.rb",
     "#{$root}/lib/portfolio_design.rb",
     "#{$root}/lib/design.rb",
-    "#{$root}/backends/profile_doc/templates/profile.adoc.erb"
+    "#{PROFILE_DOC_DIR}/templates/profile.adoc.erb"
   ].concat(profile_pathnames) do |t|
     # Create BaseArchitecture object. Function located in top-level Rakefile.
     puts "UPDATE: Creating BaseArchitecture #{base_isa_name} for #{t}"
@@ -85,6 +85,8 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
     template_path = Pathname.new("#{PROFILE_DOC_DIR}/templates/profile.adoc.erb")
     erb = ERB.new(File.read(template_path), trim_mode: "-")
     erb.filename = template_path.to_s
+
+    FileUtils.mkdir_p File.dirname(t.name)
 
     # Convert ERB to final ASCIIDOC. Note that this code is broken up into separate function calls
     # each with a variable name to aid in running a command-line debugger on this code.
