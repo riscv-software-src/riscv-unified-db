@@ -113,7 +113,7 @@ class ProfileRelease < DatabaseObject
 
   # @return [ProfileClass] Profile Class that this ProfileRelease belongs to
   def profile_class
-    profile_class = @arch.profile_class(@data["class"])
+    profile_class = @arch.ref(@data["class"]['$ref'])
     raise "No profile class named '#{@data["class"]}'" if profile_class.nil?
 
     profile_class
