@@ -25,6 +25,7 @@ class CsrField < DatabaseObject
     super(field_data, parent_csr.data_path, parent_csr.arch)
     @name = field_name
     @parent = parent_csr
+    @type_cache = {}
   end
 
   # @param possible_xlens [Array<Integer>] List of xlens that be used in any implemented mode
@@ -159,13 +160,7 @@ class CsrField < DatabaseObject
   def type(symtab)
     raise ArgumentError, "Argument 1 should be a symtab" unless symtab.is_a?(Idl::SymbolTable)
 
-    unless @type_cache.nil?
-      unless @type_cache.key?(symtab.design)
-        raise "Different design for type #{@type_cache.keys},  #{symtab.design}"
-      end
-
-      return @type_cache[symtab.design]
-    end
+    return @type_cache[symtab.design] if @type_cache.key?(symtab.design)
 
     type =
       if @data.key?("type")
@@ -210,7 +205,6 @@ class CsrField < DatabaseObject
         # end
       end
 
-    @type_cache ||= {}
     @type_cache[symtab.design] = type
   end
 
