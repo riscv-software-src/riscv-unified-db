@@ -21,6 +21,15 @@
     },
     {
       "type": "rdbg",
+      "name": "portfolios",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "portfolios",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
       "name": "RVA20",
       "request": "launch",
       "command": "bundle exec rake",
