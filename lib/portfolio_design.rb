@@ -99,7 +99,7 @@ class PortfolioDesign < Design
     @params_without_value
   end
 
-  def implemented_extensions
+  def implemented_ext_vers
     # Only supported by fully-configured configurations and a portfolio corresponds to a
     # partially-configured configuration. See the Config class for details.
     raise "Not supported for portfolio #{name}"
@@ -109,8 +109,8 @@ class PortfolioDesign < Design
   #                                       This includes extensions explicitly prohibited by the design
   #                                       and extensions that conflict with a mandatory extension.
   #
-  # Assume there are none of these in a portfolio for now.
-  def prohibited_extensions = []
+  # TODO: Assume there are none of these in a portfolio for now.
+  def prohibited_ext_reqs = []
 
   # @overload ext?(ext_name)
   #   @param ext_name [#to_s] Extension name (case sensitive)
@@ -133,12 +133,12 @@ class PortfolioDesign < Design
     return cached_result unless cached_result.nil?
 
     result =
-      mandatory_extensions.any? do |ext|
+      mandatory_ext_reqs.any? do |ext_req|
         if ext_version_requirements.empty?
-          ext.name == ext_name.to_s
+          ext_req.name == ext_name.to_s
         else
           requirement = ExtensionRequirement.new(ext_name, *ext_version_requirements, arch)
-          ext.satisfying_versions.all? do |ext_ver|
+          ext_req.satisfying_versions.all? do |ext_ver|
             requirement.satisfied_by?(ext_ver)
           end
         end
@@ -165,7 +165,7 @@ class PortfolioDesign < Design
   #####################################
 
   # @return [Array<ExtensionRequirement>] List of all mandatory extension requirements
-  def mandatory_extensions = @portfolio_grp.mandatory_ext_reqs
+  def mandatory_ext_reqs = @portfolio_grp.mandatory_ext_reqs
 
   # @return [Hash<String, String>] Fully-constrained parameter values (those with just one possible value for this design).
   def param_values = @portfolio_grp.param_values

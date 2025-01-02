@@ -739,18 +739,23 @@ class Instruction < DatabaseObject
   end
 
   # @param design [Design] The design
-  # @return [Boolean] whether or not the instruction is implemented given the supplies config options
+  # @return [Boolean] whether or not the instruction is implemented given the supplied design
+  #
+  # TODO: Does this function actually work for a partially configured design?
+  #       It is calling DatabaseObject.defined_by? with ExtensionRequirement objects
+  #       returned from Design.prohibited_ext_reqs() and Design.mandatory_ext_reqs()
+  #       but only accepts an ExtensionVersion object.
   def exists_in_design?(design)
     if design.fully_configured?
-      (@data["base"].nil? || (design.possible_xlens.include? @data["base"])) &&
-        design.implemented_extensions.any? { |e| defined_by?(e) } &&
-        design.implemented_extensions.none? { |e| excluded_by?(e) }
+      (@data["base"].nil? || (design.possible_xlens.include?(@data["base"]))) &&
+        design.implemented_ext_vers.any? { |ext_ver| defined_by?(ext_ver) } &&
+        design.implemented_ext_vers.none? { |ext_ver| excluded_by?(ext_ver) }
     else
       raise "unexpected design type" unless design.partially_configured?
 
-      (@data["base"].nil? || (design.possible_xlens.include? @data["base"])) &&
-        design.prohibited_extensions.none? { |e| defined_by?(e) } &&
-        design.mandatory_extensions.none? { |e| excluded_by?(e) }
+      (@data["base"].nil? || (design.possible_xlens.include?(@data["base"]))) &&
+        design.prohibited_ext_reqs.none? { |ext_req| defined_by?(ext_req) } &&
+        design.mandatory_ext_reqs.none? { |ext_req| excluded_by?(ext_req) }
     end
   end
 end

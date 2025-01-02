@@ -500,7 +500,7 @@ class ExtensionVersion
     end
   end
 
-  # @return [Array<Csr>] the list of CSRs implemented by this extension version (may be empty)
+  # @return [Array<Csr>] List of CSRs implemented by this extension version (may be empty)
   def implemented_csrs
     return @implemented_csrs unless @implemented_csrs.nil?
 
@@ -509,7 +509,7 @@ class ExtensionVersion
     end
   end
 
-  # @return [Array<Instructions>] the list of insts implemented by this extension version (may be empty)
+  # @return [Array<Instruction>] List of insts implemented by this extension version (may be empty)
   def implemented_instructions
     return @implemented_instructions unless @implemented_instructions.nil?
 

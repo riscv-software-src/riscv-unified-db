@@ -543,10 +543,10 @@ class Csr < DatabaseObject
   def exists_in_design?(design)
     if design.fully_configured?
       (@data["base"].nil? || (design.possible_xlens.include? @data["base"])) &&
-        design.transitive_implemented_extensions.any? { |e| defined_by?(e) }
+        design.transitive_implemented_ext_vers.any? { |e| defined_by?(e) }
     else
       (@data["base"].nil? || (design.possible_xlens.include? @data["base"])) &&
-        design.prohibited_extensions.none? { |ext_req| ext_req.satisfying_versions.any? { |e| defined_by?(e) } }
+        design.prohibited_ext_reqs.none? { |ext_req| ext_req.satisfying_versions.any? { |e| defined_by?(e) } }
     end
   end
 
@@ -556,7 +556,7 @@ class Csr < DatabaseObject
     raise "optional_in_design? should only be used by a partially-specified arch def" unless design.partially_configured?
 
     exists_in_design?(design) &&
-      design.mandatory_extensions.all? do |ext_req|
+      design.mandatory_ext_reqs.all? do |ext_req|
         ext_req.satisfying_versions.none? do |ext_ver|
           defined_by?(ext_ver)
         end

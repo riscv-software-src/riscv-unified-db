@@ -35,13 +35,13 @@ class CsrField < DatabaseObject
     if design.fully_configured?
       parent.exists_in_design?(design) &&
         (@data["base"].nil? || design.possible_xlens.include?(@data["base"])) &&
-        (@data["definedBy"].nil? || design.transitive_implemented_extensions.any? { |ext_ver| defined_by?(ext_ver) })
+        (@data["definedBy"].nil? || design.transitive_implemented_ext_vers.any? { |ext_ver| defined_by?(ext_ver) })
     else
       raise "unexpected type" unless design.partially_configured?
 
       parent.exists_in_design?(design) &&
         (@data["base"].nil? || design.possible_xlens.include?(@data["base"])) &&
-        (@data["definedBy"].nil? || design.prohibited_extensions.none? { |ext_req| ext_req.satisfying_versions.any? { |ext_ver| defined_by?(ext_ver) } })
+        (@data["definedBy"].nil? || design.prohibited_ext_reqs.none? { |ext_req| ext_req.satisfying_versions.any? { |ext_ver| defined_by?(ext_ver) } })
     end
   end
 
@@ -54,7 +54,7 @@ class CsrField < DatabaseObject
         if data["definedBy"].nil?
           parent.optional_in_design?(design)
         else
-          design.mandatory_extensions.all? do |ext_req|
+          design.mandatory_ext_reqs.all? do |ext_req|
             ext_req.satisfying_versions.none? do |ext_ver|
               defined_by?(ext_ver)
             end

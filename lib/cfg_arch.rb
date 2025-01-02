@@ -137,9 +137,8 @@ class ConfiguredArchitecture < Design
     return @params_with_value if @config.unconfigured?
 
     if @config.fully_configured?
-      transitive_implemented_extensions.each do |ext_version|
-        ext = extension(ext_version.name)
-        ext.params.each do |ext_param|
+      transitive_implemented_ext_vers.each do |ext_version|
+        ext_version.extension.params.each do |ext_param|
           next unless @config.param_values.key?(ext_param.name)
 
           @params_with_value << ExtensionParameterWithValue.new(
@@ -149,7 +148,7 @@ class ConfiguredArchitecture < Design
         end
       end
     elsif @config.partially_configured?
-      mandatory_extensions.each do |ext_req|
+      mandatory_ext_reqs.each do |ext_req|
         ext_req.extension.params.each do |ext_param|
           # Params listed in the config always only have one value.
           next unless @config.param_values.key?(ext_param.name)
@@ -183,19 +182,19 @@ class ConfiguredArchitecture < Design
   end
 
   # @return [Array<ExtensionVersion>] List of all implemented extension versions.
-  def implemented_extensions
-    return @implemented_extensions unless @implemented_extensions.nil?
+  def implemented_ext_vers
+    return @implemented_ext_vers unless @implemented_ext_vers.nil?
 
-    @implemented_extensions = @config.implemented_extensions.map do |e|
+    @implemented_ext_vers = @config.implemented_ext_vers.map do |e|
       ExtensionVersion.new(e["name"], e["version"], arch, fail_if_version_does_not_exist: true)
     end
   end
 
   # @return [Array<ExtensionRequirement>] List of all mandatory extension requirements
-  def mandatory_extensions
-    return @mandatory_extensions unless @mandatory_extensions.nil?
+  def mandatory_ext_reqs
+    return @mandatory_ext_reqs unless @mandatory_ext_reqs.nil?
 
-    @mandatory_extensions = @config.mandatory_extensions.map do |e|
+    @mandatory_ext_reqs = @config.mandatory_ext_reqs.map do |e|
       ext = extension(e["name"])
       raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
 
@@ -206,12 +205,12 @@ class ConfiguredArchitecture < Design
   # @return [Array<ExtensionRequirement>] List of all extensions that are prohibited.
   #                                       This includes extensions explicitly prohibited by the config file
   #                                       and extensions that conflict with a mandatory extension.
-  def prohibited_extensions
-    return @prohibited_extensions unless @prohibited_extensions.nil?
+  def prohibited_ext_reqs
+    return @prohibited_ext_reqs unless @prohibited_ext_reqs.nil?
 
     if @config.partially_configured?
-      @prohibited_extensions =
-        @config.prohibited_extensions.map do |e|
+      @prohibited_ext_reqs =
+        @config.prohibited_ext_reqs.map do |e|
           ext = extension(e["name"])
           raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
 
@@ -219,34 +218,34 @@ class ConfiguredArchitecture < Design
         end
 
       # now add any extensions that are prohibited by a mandatory extension
-      mandatory_extensions.each do |ext_req|
+      mandatory_ext_reqs.each do |ext_req|
         ext_req.extension.conflicts.each do |conflict|
-          if @prohibited_extensions.none? { |prohibited_ext| prohibited_ext.name == conflict.name }
-            @prohibited_extensions << conflict
+          if @prohibited_ext_reqs.none? { |prohibited_ext_req| prohibited_ext_req.name == conflict.name }
+            @prohibited_ext_reqs << conflict
           else
             # pick whichever requirement is more expansive
-            p = @prohibited_extensions.find { |prohibited_ext| prohibited_ext.name == confict.name }
+            p = @prohibited_ext_reqs.find { |prohibited_ext_req| prohibited_ext_req.name == confict.name }
             if p.version_requirement.subsumes?(conflict.version_requirement)
-              @prohibited_extensions.delete(p)
-              @prohibited_extensions << conflict
+              @prohibited_ext_reqs.delete(p)
+              @prohibited_ext_reqs << conflict
             end
           end
         end
       end
 
-      @prohibited_extensions
+      @prohibited_ext_reqs
     elsif @config.fully_configured?
-      prohibited_ext_versions = []
+      prohibited_ext_vers = []
       extensions.each do |ext|
         ext.versions.each do |ext_ver|
-          prohibited_ext_versions << ext_ver unless transitive_implemented_extensions.include?(ext_ver)
+          prohibited_ext_vers << ext_ver unless transitive_implemented_ext_vers.include?(ext_ver)
         end
       end
-      @prohibited_extensions = []
-      prohibited_ext_versions.group_by(&:name).each_value do |ext_ver_list|
+      @prohibited_ext_reqs = []
+      prohibited_ext_vers.group_by(&:name).each_value do |ext_ver_list|
         if ext_ver_list.sort == ext_ver_list[0].ext.versions.sort
           # excludes every version
-          @prohibited_extensions <<
+          @prohibited_ext_reqs <<
             ExtensionRequirement.new(
               ext_ver_list[0].ext.name, ">= #{ext_ver_list.min.version_spec.canonical}",
               arch, presence: "prohibited"
@@ -257,7 +256,7 @@ class ConfiguredArchitecture < Design
           raise "Expected only a single element" unless allowed_version_list.size == 1
 
           allowed_version = allowed_version_list[0]
-          @prohibited_extensions <<
+          @prohibited_ext_reqs <<
             ExtensionRequirement.new(
               ext_ver_list[0].ext.name, "!= #{allowed_version.version_spec.canonical}", arch,
               presence: "prohibited"
@@ -268,9 +267,9 @@ class ConfiguredArchitecture < Design
         end
       end
     else
-      @prohibited_extensions = []
+      @prohibited_ext_reqs = []
     end
-    @prohibited_extensions
+    @prohibited_ext_reqs
   end
 
   # @overload ext?(ext_name)
@@ -288,7 +287,7 @@ class ConfiguredArchitecture < Design
 
     result =
       if @config.fully_configured?
-        transitive_implemented_extensions.any? do |e|
+        transitive_implemented_ext_vers.any? do |e|
           if ext_version_requirements.empty?
             e.name == ext_name.to_s
           else
@@ -297,7 +296,7 @@ class ConfiguredArchitecture < Design
           end
         end
       elsif @config.partially_configured?
-        mandatory_extensions.any? do |e|
+        mandatory_ext_reqs.any? do |e|
           if ext_version_requirements.empty?
             e.name == ext_name.to_s
           else
@@ -320,8 +319,8 @@ class ConfiguredArchitecture < Design
   #####################################
 
   # @return [Array<ExtensionVersion>] List of all extensions known to be implemented in this config, including transitive implications
-  def transitive_implemented_extensions
-    raise "implemented_extensions is only valid for a fully configured definition" unless @config.fully_configured?
+  def transitive_implemented_ext_vers
+    raise "transitive_implemented_ext_vers is only valid for a fully configured definition" unless @config.fully_configured?
     super
   end
 

@@ -42,7 +42,7 @@ require "ruby-prof"
         # RubyProf::FlatPrinter.new(result).print(STDOUT)
       end
     when "ext"
-      cfg_arch.transitive_implemented_extensions.each do |ext_version|
+      cfg_arch.transitive_implemented_ext_vers.each do |ext_version|
         ext = cfg_arch.extension(ext_version.name)
         path = dir_path / "#{ext.name}.adoc"
         puts "  Generating #{path}"
@@ -90,7 +90,7 @@ require "ruby-prof"
       end
     when "ext"
       puts "Generting full extension list"
-      cfg_arch.transitive_implemented_extensions.each do |ext_version|
+      cfg_arch.transitive_implemented_ext_vers.each do |ext_version|
         lines << " * `#{ext_version.name}` #{ext_version.ext.long_name}"
       end
     when "inst"

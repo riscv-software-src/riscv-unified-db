@@ -117,19 +117,19 @@ class Design
   end
 
   # @return [Array<ExtensionVersion>] List of all implemented extension versions.
-  def implemented_extensions
+  def implemented_ext_vers
     raise "Abstract Method: Must be provided in child class"
   end
 
   # @return [Array<ExtensionRequirement>] List of all mandatory extension requirements
-  def mandatory_extensions
+  def mandatory_ext_reqs
     raise "Abstract Method: Must be provided in child class"
   end
 
   # @return [Array<ExtensionRequirement>] List of all extensions that are prohibited.
   #                                       This includes extensions explicitly prohibited by the design
   #                                       and extensions that conflict with a mandatory extension.
-  def prohibited_extensions
+  def prohibited_ext_reqs
     raise "Abstract Method: Must be provided in child class"
   end
 
@@ -261,15 +261,15 @@ class Design
   end
 
   # @return [Array<ExtensionVersion>] List of all extensions known to be implemented in this design, including transitive implications
-  def transitive_implemented_extensions
-    return @transitive_implemented_extensions unless @transitive_implemented_extensions.nil?
+  def transitive_implemented_ext_vers
+    return @transitive_implemented_ext_vers unless @transitive_implemented_ext_vers.nil?
 
-    list = implemented_extensions
+    list = implemented_ext_vers
     list.each do |e|
       implications = e.transitive_implications
       list.concat(implications) unless implications.empty?
     end
-    @transitive_implemented_extensions = list.uniq.sort
+    @transitive_implemented_ext_vers = list.uniq.sort
   end
 
   # @overload prohibited_ext?(ext)
@@ -283,9 +283,9 @@ class Design
   #   @return [Boolean]
   def prohibited_ext?(ext)
     if ext.is_a?(ExtensionVersion)
-      prohibited_extensions.any? { |ext_req| ext_req.satisfied_by?(ext) }
+      prohibited_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(ext) }
     elsif ext.is_a?(String) || ext.is_a?(Symbol)
-      prohibited_extensions.any? { |ext_req| ext_req.name == ext.to_s }
+      prohibited_ext_reqs.any? { |ext_req| ext_req.name == ext.to_s }
     else
       raise ArgumentError, "Argument to prohibited_ext? should be an ExtensionVersion or a String"
     end
@@ -296,7 +296,7 @@ class Design
     return @implemented_exception_codes unless @implemented_exception_codes.nil?
 
     @implemented_exception_codes =
-      implemented_extensions.reduce([]) do |list, ext_version|
+      implemented_ext_vers.reduce([]) do |list, ext_version|
         ecodes = extension(ext_version.name)["exception_codes"]
         next list if ecodes.nil?
 
@@ -319,7 +319,7 @@ class Design
     return @implemented_interrupt_codes unless @implemented_interrupt_codes.nil?
 
     @implemented_interupt_codes =
-      implemented_extensions.reduce([]) do |list, ext_version|
+      implemented_ext_vers.reduce([]) do |list, ext_version|
         icodes = extension(ext_version.name)["interrupt_codes"]
         next list if icodes.nil?
 
@@ -347,13 +347,13 @@ class Design
   # @return [Array<Csr>] List of all implemented CSRs
   def transitive_implemented_csrs
     @transitive_implemented_csrs ||=
-      transitive_implemented_extensions.map(&:implemented_csrs).flatten.uniq.sort
+      transitive_implemented_ext_vers.map(&:implemented_csrs).flatten.uniq.sort
   end
 
   # @return [Array<Instruction>] List of all implemented instructions
   def transitive_implemented_instructions
     @transitive_implemented_instructions ||=
-      transitive_implemented_extensions.map(&:implemented_instructions).flatten.uniq.sort
+      transitive_implemented_ext_vers.map(&:implemented_instructions).flatten.uniq.sort
   end
 
   # @return [Array<FuncDefAst>] List of all reachable IDL functions for the design
