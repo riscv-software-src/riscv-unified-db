@@ -644,7 +644,7 @@ class ArchGen
       impl_ext
     end
     belongs =
-      csr_obj.exists_in_cfg?(cfg_arch_mock)
+      csr_obj.exists_in_design?(cfg_arch_mock)
 
 
     @implemented_csrs ||= []
@@ -898,7 +898,7 @@ class ArchGen
       impl_ext
     end
     belongs =
-      inst_obj.exists_in_cfg?(cfg_arch_mock)
+      inst_obj.exists_in_design?(cfg_arch_mock)
 
     @implemented_instructions ||= []
     @implemented_instructions << inst_name if belongs

@@ -338,7 +338,7 @@ class Csr < DatabaseObject
       end
 
     @implemented_fields = fields.select do |f|
-      f.exists_in_cfg?(design)
+      f.exists_in_design?(design)
     end
   end
 
@@ -521,7 +521,7 @@ class Csr < DatabaseObject
 
         desc["reg"] << { "bits" => n, type: 1 }
       end
-      if design.partially_configured? && field.optional_in_cfg?(design)
+      if design.partially_configured? && field.optional_in_design?(design)
         desc["reg"] << { "bits" => field.location(design, effective_xlen).size, "name" => field.name, type: optional_type }
       else
         desc["reg"] << { "bits" => field.location(design, effective_xlen).size, "name" => field.name, type: 3 }
@@ -540,7 +540,7 @@ class Csr < DatabaseObject
 
   # @param design [Design]
   # @return [Boolean] whether or not the CSR is possibly implemented given the supplies config options
-  def exists_in_cfg?(design)
+  def exists_in_design?(design)
     if design.fully_configured?
       (@data["base"].nil? || (design.possible_xlens.include? @data["base"])) &&
         design.transitive_implemented_extensions.any? { |e| defined_by?(e) }
@@ -552,10 +552,10 @@ class Csr < DatabaseObject
 
   # @param design [Design]
   # @return [Boolean] whether or not the CSR is optional in the config
-  def optional_in_cfg?(design)
-    raise "optional_in_cfg? should only be used by a partially-specified arch def" unless design.partially_configured?
+  def optional_in_design?(design)
+    raise "optional_in_design? should only be used by a partially-specified arch def" unless design.partially_configured?
 
-    exists_in_cfg?(design) &&
+    exists_in_design?(design) &&
       design.mandatory_extensions.all? do |ext_req|
         ext_req.satisfying_versions.none? do |ext_ver|
           defined_by?(ext_ver)

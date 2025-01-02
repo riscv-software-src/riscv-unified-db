@@ -740,7 +740,7 @@ class Instruction < DatabaseObject
 
   # @param design [Design] The design
   # @return [Boolean] whether or not the instruction is implemented given the supplies config options
-  def exists_in_cfg?(design)
+  def exists_in_design?(design)
     if design.fully_configured?
       (@data["base"].nil? || (design.possible_xlens.include? @data["base"])) &&
         design.implemented_extensions.any? { |e| defined_by?(e) } &&

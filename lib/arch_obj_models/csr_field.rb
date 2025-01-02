@@ -17,9 +17,7 @@ class CsrField < DatabaseObject
 
   # @return [Integer] The base XLEN required for this CsrField to exist. One of [32, 64]
   # @return [nil] if the CsrField exists in any XLEN
-  def base
-    @data["base"]
-  end
+  def base = @data["base"]
 
   # @param parent_csr [Csr] The Csr that defined this field
   # @param field_data [Hash<String,Object>] Field data from the arch spec
@@ -32,28 +30,28 @@ class CsrField < DatabaseObject
   # @param possible_xlens [Array<Integer>] List of xlens that be used in any implemented mode
   # @param extensions [Array<ExtensionVersion>] List of extensions implemented
   # @return [Boolean] whether or not the instruction is implemented given the supplies config options
-  def exists_in_cfg?(design)
+  def exists_in_design?(design)
     if design.fully_configured?
-      parent.exists_in_cfg?(design) &&
+      parent.exists_in_design?(design) &&
         (@data["base"].nil? || design.possible_xlens.include?(@data["base"])) &&
         (@data["definedBy"].nil? || design.transitive_implemented_extensions.any? { |ext_ver| defined_by?(ext_ver) })
     else
       raise "unexpected type" unless design.partially_configured?
 
-      parent.exists_in_cfg?(design) &&
+      parent.exists_in_design?(design) &&
         (@data["base"].nil? || design.possible_xlens.include?(@data["base"])) &&
         (@data["definedBy"].nil? || design.prohibited_extensions.none? { |ext_req| ext_req.satisfying_versions.any? { |ext_ver| defined_by?(ext_ver) } })
     end
   end
 
   # @return [Boolean] For a partially configured design, whether or not the field is optional (not mandatory or prohibited)
-  def optional_in_cfg?(design)
-    raise "optional_in_cfg? should only be called on a partially configured design" unless design.partially_configured?
+  def optional_in_design?(design)
+    raise "optional_in_design? should only be called on a partially configured design" unless design.partially_configured?
 
-    exists_in_cfg?(design) &&
+    exists_in_design?(design) &&
       (
         if data["definedBy"].nil?
-          parent.optional_in_cfg?(design)
+          parent.optional_in_design?(design)
         else
           design.mandatory_extensions.all? do |ext_req|
             ext_req.satisfying_versions.none? do |ext_ver|
@@ -147,7 +145,7 @@ class CsrField < DatabaseObject
     @pruned_type_asts[symtab_hash] = ast
   end
 
-  # returns the definitive type for a configuration
+  # returns the definitive type for a design
   #
   # @param symtab [SymbolTable] Symbol table
   # @return [String]
@@ -162,7 +160,9 @@ class CsrField < DatabaseObject
     raise ArgumentError, "Argument 1 should be a symtab" unless symtab.is_a?(Idl::SymbolTable)
 
     unless @type_cache.nil?
-      raise "Different design for type #{@type_cache.keys},  #{symtab.design}" unless @type_cache.key?(symtab.design)
+      unless @type_cache.key?(symtab.design)
+        raise "Different design for type #{@type_cache.keys},  #{symtab.design}"
+      end
 
       return @type_cache[symtab.design]
     end
