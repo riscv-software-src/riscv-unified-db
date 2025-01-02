@@ -42,7 +42,7 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
     puts "UPDATE: Creating CertModel for #{cert_model_name} using base #{base_isa_name}"
     cert_model = base_arch.cert_model(cert_model_name)
 
-    puts "UPDATE: Creating PortfolioDesign using CertModel #{cert_model_name}"
+    puts "UPDATE: Creating PortfolioDesign using certificate model #{cert_model_name}"
     # Create the one PortfolioDesign object required for the ERB evaluation.
     portfolio_design = portfolio_design_for(cert_model_name, base_arch, base, [cert_model])
 

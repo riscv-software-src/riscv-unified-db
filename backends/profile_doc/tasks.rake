@@ -65,7 +65,7 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
     puts "UPDATE: Creating Profile Release for #{profile_release_name} using #{base_isa_name}"
     profile_release = base_arch.profile_release(profile_release_name)
 
-    puts "UPDATE: Creating PortfolioDesign using ProfileRelease #{profile_release_name}"
+    puts "UPDATE: Creating PortfolioDesign using profile release #{profile_release_name}"
     # Create the one PortfolioDesign object required for the ERB evaluation.
     # Provide it with all the profiles in this ProfileRelease.
     portfolio_design = portfolio_design_for(profile_release_name, base_arch, base,
