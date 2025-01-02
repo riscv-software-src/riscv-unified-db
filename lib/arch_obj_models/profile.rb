@@ -68,7 +68,7 @@ class ProfileClass < PortfolioClass
       @in_scope_extensions += profile.in_scope_extensions
     end
 
-    @in_scope_extensions.uniq(&:name).sort_by!(&:name)
+    @in_scope_extensions = @in_scope_extensions.uniq(&:name).sort_by(&:name)
   end
 
   # @return [Array<Extension>] Sorted list of all potential extensions with my processor kind
@@ -80,7 +80,8 @@ class ProfileClass < PortfolioClass
       @in_scope_extensions_matching_processor_kind += profile.in_scope_extensions
     end
 
-    @in_scope_extensions_matching_processor_kind.uniq(&:name).sort_by!(&:name)
+    @in_scope_extensions_matching_processor_kind =
+      @in_scope_extensions_matching_processor_kind.uniq(&:name).sort_by(&:name)
   end
 end
 

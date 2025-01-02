@@ -87,7 +87,7 @@ class PortfolioGroup
       @in_scope_ext_reqs += portfolio.in_scope_ext_reqs
     end
 
-    @in_scope_ext_reqs.uniq(&:name).sort_by(&:name)
+    @in_scope_ext_reqs = @in_scope_ext_reqs.uniq(&:name).sort_by(&:name)
   end
 
   # @return [Array<ExtensionRequirement>] Sorted list of all mandatory extension requirements listed by the group.
@@ -99,7 +99,7 @@ class PortfolioGroup
       @mandatory_ext_reqs += portfolio.mandatory_ext_reqs
     end
 
-    @mandatory_ext_reqs.uniq(&:name).sort_by(&:name)
+    @mandatory_ext_reqs = @mandatory_ext_reqs.uniq(&:name).sort_by(&:name)
   end
 
   # @return [Array<ExtensionRequirement>] Sorted list of all optional extension requirements listed by the group.
@@ -111,7 +111,7 @@ class PortfolioGroup
       @optional_ext_reqs += portfolio.optional_ext_reqs
     end
 
-    @optional_ext_reqs.uniq(&:name).sort_by(&:name)
+    @optional_ext_reqs = @optional_ext_reqs.uniq(&:name).sort_by(&:name)
   end
 
   # @return [Array<Extension>] Sorted list of all mandatory or optional extensions referenced by the group.
@@ -123,7 +123,8 @@ class PortfolioGroup
       @in_scope_extensions += portfolio.in_scope_extensions
     end
 
-    @in_scope_extensions.uniq(&:name).sort_by(&:name)
+    @in_scope_extensions = @in_scope_extensions.uniq(&:name).sort_by(&:name)
+
   end
 
   # @return [Array<Instruction>] Sorted list of all instructions associated with extensions listed as
@@ -137,7 +138,8 @@ class PortfolioGroup
       @in_scope_instructions += portfolio.in_scope_instructions
     end
 
-    @in_scope_instructions.uniq(&:name).sort_by(&:name)
+    @in_scope_instructions =
+      @in_scope_instructions.uniq(&:name).sort_by(&:name)
   end
 
   # @return [Array<Csr>] Unsorted list of all CSRs associated with extensions listed as
