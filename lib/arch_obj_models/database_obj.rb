@@ -206,13 +206,23 @@ class DatabaseObject
   # @return (see Hash#key?)
   def key?(k) = @data.key?(k)
 
+  # @param ext_ver [ExtensionVersion] Version of the extension
+  # @param design [Design] The backend design
+  # @return [Boolean] Whether or not the object is defined-by the given ExtensionVersion in the given Design.
+  def in_scope?(ext_ver, design)
+    raise ArgumentError, "Require an ExtensionVersion object but got a #{ext_ver.class} object" unless ext_ver.is_a?(ExtensionVersion)
+    raise ArgumentError, "Require a Design object but got a #{design.class} object" unless design.is_a?(Design)
+
+    defined_by?(ext_ver)
+  end
+
   # @overload defined_by?(ext_name, ext_version)
   #   @param ext_name [#to_s] An extension name
   #   @param ext_version [#to_s] A specific extension version
-  #   @return [Boolean] Whether or not the instruction is defined by extension `ext`, version `version`
+  #   @return [Boolean] Whether or not the object is defined by extension `ext`, version `version`
   # @overload defined_by?(ext_version)
   #   @param ext_version [ExtensionVersion] An extension version
-  #   @return [Boolean] Whether or not the instruction is defined by ext_version
+  #   @return [Boolean] Whether or not the object is defined by ext_version
   def defined_by?(*args)
     ext_ver =
       if args.size == 1
@@ -228,7 +238,7 @@ class DatabaseObject
         raise ArgumentError, "Unsupported number of arguments (#{args.size})"
       end
 
-    defined_by_condition.satisfied_by? { |req| req.satisfied_by?(ext_ver) }
+    defined_by_condition.satisfied_by? { |ext_req| ext_req.satisfied_by?(ext_ver) }
   end
 
   # because of multiple ("allOf") conditions, we generally can't return a list of extension versions here....
@@ -564,7 +574,6 @@ class SchemaCondition
   # return a string that can be eval'd to determine if the objects in +ary_name+
   # meet the Condition
   #
-  # @param ary_name [String] Name of a ruby string in the eval binding
   # @return [Boolean] If the condition is met
   def to_rb
     to_rb_helper(@hsh)
@@ -592,7 +601,10 @@ class SchemaCondition
 
     raise ArgumentError, "Expecting one argument to block" unless block.arity == 1
 
-    eval to_rb
+    # Written to allow debug breakpoints on individual lines.
+    to_rb_expr = to_rb
+    ret = eval to_rb_expr
+    ret
   end
 
   def satisfying_ext_versions

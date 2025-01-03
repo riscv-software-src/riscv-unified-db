@@ -517,6 +517,34 @@ class ExtensionVersion
       inst.defined_by?(self)
     end
   end
+
+  # @param design [Design] The design
+  # @return [Array<Csr>] List of CSRs in-scope for this design for this extension version (may be empty)
+  #                      Factors in effect of design's xlen in the appropriate mode for the CSR.
+  def in_scope_csrs(design)
+    raise ArgumentError, "Require a Design object but got a #{design.class} object" unless design.is_a?(Design)
+
+    return @in_scope_csrs unless @in_scope_csrs.nil?
+
+    @in_scope_csrs = @arch.csrs.select do |csr|
+      csr.defined_by?(self) &&
+      (csr.base.nil? || (design.possible_xlens.include?(csr.base)))
+    end
+  end
+
+  # @param design [Design] The design
+  # @return [Array<Instruction>] List of instructions in-scope for this design for this extension version (may be empty)
+  #                              Factors in effect of design's xlen in the appropriate mode for the instruction.
+  def in_scope_instructions(design)
+    raise ArgumentError, "Require a Design object but got a #{design.class} object" unless design.is_a?(Design)
+
+    return @in_scope_instructions unless @in_scope_instructions.nil?
+
+    @in_scope_instructions = @arch.instructions.select do |inst|
+      inst.defined_by?(self) &&
+      (inst.base.nil? || (design.possible_xlens.include?(inst.base)))
+    end
+  end
 end
 
 # Is the extension mandatory, optional, various kinds of optional, etc.

@@ -178,7 +178,4 @@ class FullConfig < Config
 
   def mandatory_extensions = raise "mandatory_extensions is only available for a PartialConfig"
   def prohibited_extensions = raise "prohibited_extensions is only available for a PartialConfig"
-
-  # def prohibited_ext?(ext_name, cfg_arch) = !ext?(ext_name, cfg_arch)
-  # def ext?(ext_name, cfg_arch) = implemented_extensions(cfg_arch).any? { |e| e.name == ext_name.to_s }
 end

@@ -28,9 +28,8 @@ class CsrField < DatabaseObject
     @type_cache = {}
   end
 
-  # @param possible_xlens [Array<Integer>] List of xlens that be used in any implemented mode
-  # @param extensions [Array<ExtensionVersion>] List of extensions implemented
-  # @return [Boolean] whether or not the instruction is implemented given the supplies config options
+  # @param design [Design] The design
+  # @return [Boolean] whether or not the instruction is implemented given the supplied design
   def exists_in_design?(design)
     if design.fully_configured?
       parent.exists_in_design?(design) &&
@@ -54,11 +53,7 @@ class CsrField < DatabaseObject
         if data["definedBy"].nil?
           parent.optional_in_design?(design)
         else
-          design.mandatory_ext_reqs.all? do |ext_req|
-            ext_req.satisfying_versions.none? do |ext_ver|
-              defined_by?(ext_ver)
-            end
-          end
+          design.mandatory_ext_reqs.all? { |ext_req| ext_req.satisfying_versions.none? { |ext_ver| defined_by?(ext_ver) } }
         end
       )
   end
@@ -146,7 +141,7 @@ class CsrField < DatabaseObject
     @pruned_type_asts[symtab_hash] = ast
   end
 
-  # returns the definitive type for a design
+  # Returns the definitive type for the design part of the symbol table.
   #
   # @param symtab [SymbolTable] Symbol table
   # @return [String]
@@ -250,9 +245,9 @@ class CsrField < DatabaseObject
     @alias
   end
 
-  # @return [Array<Idl::FunctionDefAst>] List of functions called thorugh this field
   # @param design [Design] The design
   # @Param effective_xlen [Integer] 32 or 64; needed because fields can change in different XLENs
+  # @return [Array<Idl::FunctionDefAst>] List of functions called thorough this field
   def reachable_functions(design, effective_xlen)
     return @reachable_functions unless @reachable_functions.nil?
 

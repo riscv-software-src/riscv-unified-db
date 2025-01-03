@@ -179,12 +179,14 @@ class PortfolioDesign < Design
   # @return [Array<Instruction>] Sorted list of all instructions associated with extensions listed as
   #                              mandatory or optional in portfolio. Uses instructions provided by the
   #                              minimum version of the extension that meets the extension requirement.
-  def in_scope_instructions = @portfolio_grp.in_scope_instructions
+  #                              Factors in things like XLEN in design.
+  def in_scope_instructions = @portfolio_grp.in_scope_instructions(self)
 
   # @return [Array<Csr>] Unsorted list of all CSRs associated with extensions listed as
   #                      mandatory or optional in portfolio. Uses CSRs provided by the
   #                      minimum version of the extension that meets the extension requirement.
-  def in_scope_csrs = @portfolio_grp.in_scope_csrs
+  #                      Factors in things like XLEN in design.
+  def in_scope_csrs = @portfolio_grp.in_scope_csrs(self)
 
   # @return [String] Given an extension +ext_name+, return the presence as a string.
   #                  Returns the greatest presence string across all portfolios in this design.

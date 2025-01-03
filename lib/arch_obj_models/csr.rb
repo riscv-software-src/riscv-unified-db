@@ -46,7 +46,7 @@ class Csr < DatabaseObject
   # @return [Boolean] true if this CSR is defined regardless of the effective XLEN
   def defined_in_all_bases? = @data["base"].nil?
 
-  # @param design [Design] A configuration
+  # @param design [Design] The design
   # @return [Boolean] Whether or not the format of this CSR changes when the effective XLEN changes in some mode
   def format_changes_with_xlen?(design)
     dynamic_length?(design) ||
@@ -55,7 +55,7 @@ class Csr < DatabaseObject
       end
   end
 
-  # @param design [Design] A configuration
+  # @param design [Design] The design
   # @return [Array<Idl::FunctionDefAst>] List of functions reachable from this CSR's sw_read or a field's sw_write function
   def reachable_functions(design)
     return @reachable_functions unless @reachable_functions.nil?
@@ -104,7 +104,7 @@ class Csr < DatabaseObject
     @reachable_functions_unevaluated = fns.uniq
   end
 
-  # @param design [Design] A configuration
+  # @param design [Design] The design
   # @return [Boolean] Whether or not the length of the CSR depends on a runtime value
   #                   (e.g., mstatus.SXL)
   def dynamic_length?(design)
@@ -142,7 +142,7 @@ class Csr < DatabaseObject
     end
   end
 
-  # @param design [Design] A configuration (can be nil if the lenth is not dependent on a config parameter)
+  # @param design [Design] The design (can be nil if the length is not dependent on a config parameter)
   # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
   # @return [Integer] Length, in bits, of the CSR, given effective_xlen
   # @return [nil] if the length cannot be determined from the design (e.g., because SXLEN is unknown and +effective_xlen+ was not provided)
@@ -254,7 +254,7 @@ class Csr < DatabaseObject
     end
   end
 
-  # @param design [Design] A configuration
+  # @param design [Design] The design
   # @return [String] Pretty-printed length string
   def length_pretty(design, effective_xlen=nil)
     if dynamic_length?(design)
@@ -306,7 +306,7 @@ class Csr < DatabaseObject
     Asciidoctor.convert description
   end
 
-  # @param design [Design] A configuration
+  # @param design [Design] The design
   # @return [Array<CsrField>] All implemented fields for this CSR at the given effective XLEN, sorted by location (smallest location first)
   #                           Excluded any fields that are defined by unimplemented extensions or a base that is not effective_xlen
   def implemented_fields_for(design, effective_xlen)
@@ -321,7 +321,7 @@ class Csr < DatabaseObject
       end
   end
 
-  # @param design [Design] A configuration
+  # @param design [Design] The design
   # @return [Array<CsrField>] All implemented fields for this CSR
   #                           Excluded any fields that are defined by unimplemented extensions
   def implemented_fields(design)
@@ -377,7 +377,7 @@ class Csr < DatabaseObject
     field_hash[field_name.to_s]
   end
 
-  # @param design [Design] A configuration
+  # @param design [Design] The design
   # @param effective_xlen [Integer] The effective XLEN to apply, needed when field locations change with XLEN in some mode
   # @return [Idl::BitfieldType] A bitfield type that can represent all fields of the CSR
   def bitfield_type(design, effective_xlen = nil)
@@ -425,7 +425,7 @@ class Csr < DatabaseObject
   end
 
   # @return [FunctionBodyAst] The abstract syntax tree of the sw_read() function
-  # @param design [Design] A configuration
+  # @param design [Design] The design
   def sw_read_ast(symtab)
     raise ArgumentError, "Argument should be a symtab" unless symtab.is_a?(Idl::SymbolTable)
 
@@ -493,7 +493,7 @@ class Csr < DatabaseObject
   #     {bits: 12, name: 'imm12',     attr: [''], type: 6}
   #   ]}
   #
-  # @param design [Design] A configuration
+  # @param design [Design] The design
   # @param effective_xlen [Integer,nil] Effective XLEN to use when CSR length is dynamic
   # @param exclude_unimplemented [Boolean] If true, do not create include unimplemented fields in the figure
   # @param optional_type [Integer] Wavedrom type (Fill color) for fields that are optional (not mandatory) in a partially-specified design
@@ -543,10 +543,10 @@ class Csr < DatabaseObject
   def exists_in_design?(design)
     if design.fully_configured?
       (@data["base"].nil? || (design.possible_xlens.include? @data["base"])) &&
-        design.transitive_implemented_ext_vers.any? { |e| defined_by?(e) }
+        design.transitive_implemented_ext_vers.any? { |ext_ver| defined_by?(ext_ver) }
     else
       (@data["base"].nil? || (design.possible_xlens.include? @data["base"])) &&
-        design.prohibited_ext_reqs.none? { |ext_req| ext_req.satisfying_versions.any? { |e| defined_by?(e) } }
+        design.prohibited_ext_reqs.none? { |ext_req| ext_req.satisfying_versions.any? { |ext_ver| defined_by?(ext_ver) } }
     end
   end
 
@@ -556,10 +556,6 @@ class Csr < DatabaseObject
     raise "optional_in_design? should only be used by a partially-specified arch def" unless design.partially_configured?
 
     exists_in_design?(design) &&
-      design.mandatory_ext_reqs.all? do |ext_req|
-        ext_req.satisfying_versions.none? do |ext_ver|
-          defined_by?(ext_ver)
-        end
-      end
+      design.mandatory_ext_reqs.all? { |ext_req| ext_req.satisfying_versions.none? { |ext_ver| defined_by?(ext_ver) } }
   end
 end

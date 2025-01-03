@@ -743,8 +743,7 @@ class Instruction < DatabaseObject
   #
   # TODO: Does this function actually work for a partially configured design?
   #       It is calling DatabaseObject.defined_by? with ExtensionRequirement objects
-  #       returned from Design.prohibited_ext_reqs() and Design.mandatory_ext_reqs()
-  #       but only accepts an ExtensionVersion object.
+  #       returned from Design.mandatory_ext_reqs() but only accepts an ExtensionVersion object.
   def exists_in_design?(design)
     if design.fully_configured?
       (@data["base"].nil? || (design.possible_xlens.include?(@data["base"]))) &&
@@ -754,7 +753,7 @@ class Instruction < DatabaseObject
       raise "unexpected design type" unless design.partially_configured?
 
       (@data["base"].nil? || (design.possible_xlens.include?(@data["base"]))) &&
-        design.prohibited_ext_reqs.none? { |ext_req| defined_by?(ext_req) } &&
+        design.prohibited_ext_reqs.none? { |ext_req| ext_req.satisfying_versions.any? { |ext_ver| defined_by?(ext_ver) } }
         design.mandatory_ext_reqs.none? { |ext_req| excluded_by?(ext_req) }
     end
   end

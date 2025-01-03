@@ -127,30 +127,36 @@ class PortfolioGroup
 
   end
 
+  # @param design [Design] The design
   # @return [Array<Instruction>] Sorted list of all instructions associated with extensions listed as
   #                              mandatory or optional in portfolio. Uses instructions provided by the
   #                              minimum version of the extension that meets the extension requirement.
-  def in_scope_instructions
+  def in_scope_instructions(design)
+    raise ArgumentError, "Require a Design object but got a #{design.class} object" unless design.is_a?(Design)
+
     return @in_scope_instructions unless @in_scope_instructions.nil?
 
     @in_scope_instructions = []
     portfolios.each do |portfolio|
-      @in_scope_instructions += portfolio.in_scope_instructions
+      @in_scope_instructions += portfolio.in_scope_instructions(design)
     end
 
     @in_scope_instructions =
       @in_scope_instructions.uniq(&:name).sort_by(&:name)
   end
 
+  # @param design [Design] The design
   # @return [Array<Csr>] Unsorted list of all CSRs associated with extensions listed as
   #                      mandatory or optional in portfolio. Uses CSRs provided by the
   #                      minimum version of the extension that meets the extension requirement.
-  def in_scope_csrs
+  def in_scope_csrs(design)
+    raise ArgumentError, "Require a Design object but got a #{design.class} object" unless design.is_a?(Design)
+
     return @in_scope_csrs unless @in_scope_csrs.nil?
 
     @in_scope_csrs = []
     portfolios.each do |portfolio|
-      @in_scope_csrs += portfolio.in_scope_csrs
+      @in_scope_csrs += portfolio.in_scope_csrs(design)
     end
 
     @in_scope_csrs.uniq(&:name)
@@ -349,24 +355,30 @@ class Portfolio < DatabaseObject
     @in_scope_min_satisfying_extension_versions
   end
 
+  # @param design [Design] The design
   # @return [Array<Instruction>] Sorted list of all instructions associated with extensions listed as
   #                              mandatory or optional in portfolio. Uses instructions provided by the
   #                              minimum version of the extension that meets the extension requirement.
-  def in_scope_instructions
+  def in_scope_instructions(design)
+    raise ArgumentError, "Require a Design object but got a #{design.class} object" unless design.is_a?(Design)
+
     return @in_scope_instructions unless @in_scope_instructions.nil?
 
     @in_scope_instructions =
-      in_scope_min_satisfying_extension_versions.map {|ext_ver| ext_ver.implemented_instructions }.flatten.uniq.sort
+      in_scope_min_satisfying_extension_versions.map {|ext_ver| ext_ver.in_scope_instructions(design) }.flatten.uniq.sort
   end
 
+  # @param design [Design] The design
   # @return [Array<Csr>] Unsorted list of all CSRs associated with extensions listed as
   #                      mandatory or optional in portfolio. Uses CSRs provided by the
   #                      minimum version of the extension that meets the extension requirement.
-  def in_scope_csrs
+  def in_scope_csrs(design)
+    raise ArgumentError, "Require a Design object but got a #{design.class} object" unless design.is_a?(Design)
+
     return @in_scope_csrs unless @in_scope_csrs.nil?
 
     @in_scope_csrs =
-      in_scope_min_satisfying_extension_versions.map {|ext_ver| ext_ver.implemented_csrs }.flatten.uniq
+      in_scope_min_satisfying_extension_versions.map {|ext_ver| ext_ver.in_scope_csrs(design) }.flatten.uniq
   end
 
   # @return [Boolean] Does the profile differentiate between different types of optional.
