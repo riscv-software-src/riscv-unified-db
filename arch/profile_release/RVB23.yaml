@@ -3,7 +3,7 @@ kind: profile release
 name: RVB23
 marketing_name: RVB23
 class:
-  $ref: profile_class/RVA.yaml#
+  $ref: profile_class/RVB.yaml#
 release: 23
 state: ratified # current status ["ratified", "development"]
 ratification_date: "2023-04-03"
