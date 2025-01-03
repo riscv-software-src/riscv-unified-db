@@ -142,10 +142,6 @@ class PartialConfig < Config
         end
       end
   end
-
-  # def prohibited_ext?(ext_name, cfg_arch) = prohibited_extensions(cfg_arch).any? { |e| e.name == ext_name.to_s }
-
-  # def ext?(ext_name, cfg_arch) = mandatory_extensions(cfg_arch).any? { |e| e.name == ext_name.to_s }
 end
 
 ################################################################################################################

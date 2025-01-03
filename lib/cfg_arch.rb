@@ -185,7 +185,7 @@ class ConfiguredArchitecture < Design
   def implemented_ext_vers
     return @implemented_ext_vers unless @implemented_ext_vers.nil?
 
-    @implemented_ext_vers = @config.implemented_ext_vers.map do |e|
+    @implemented_ext_vers = @config.implemented_extensions.map do |e|
       ExtensionVersion.new(e["name"], e["version"], arch, fail_if_version_does_not_exist: true)
     end
   end
@@ -194,7 +194,7 @@ class ConfiguredArchitecture < Design
   def mandatory_ext_reqs
     return @mandatory_ext_reqs unless @mandatory_ext_reqs.nil?
 
-    @mandatory_ext_reqs = @config.mandatory_ext_reqs.map do |e|
+    @mandatory_ext_reqs = @config.mandatory_extensions.map do |e|
       ext = extension(e["name"])
       raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
 
@@ -210,7 +210,7 @@ class ConfiguredArchitecture < Design
 
     if @config.partially_configured?
       @prohibited_ext_reqs =
-        @config.prohibited_ext_reqs.map do |e|
+        @config.prohibited_extensions.map do |e|
           ext = extension(e["name"])
           raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
 
