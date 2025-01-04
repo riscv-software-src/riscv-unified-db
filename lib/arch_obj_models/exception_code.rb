@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# a synchroncous exception code
+# A synchroncous exception code
 class ExceptionCode
   # @return [String] Long-form display name (can include special characters)
   attr_reader :name
@@ -23,5 +23,5 @@ class ExceptionCode
   end
 end
 
-# all the same informatin as ExceptinCode, but for interrupts
+# Define InterruptCode class (all the same members as ExceptionCode)
 InterruptCode = Class.new(ExceptionCode)

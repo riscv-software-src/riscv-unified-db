@@ -72,10 +72,11 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
       profile_release.profiles)
 
     # Create empty binding and then specify explicitly which variables the ERB template can access.
-    def create_empty_binding
+    # Seems to use this method name in stack backtraces (hence its name).
+    def evaluate_erb
       binding
     end
-    erb_binding = create_empty_binding
+    erb_binding = evaluate_erb
     erb_binding.local_variable_set(:arch, base_arch)
     erb_binding.local_variable_set(:design, portfolio_design)
     erb_binding.local_variable_set(:profile_class, profile_release.profile_class)

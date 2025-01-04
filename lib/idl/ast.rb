@@ -1121,9 +1121,9 @@ module Idl
       when "ExtensionName"
         symtab.design.arch.extensions.map(&:name)
       when "ExceptionCode"
-        symtab.design.exception_codes.map(&:var)
+        symtab.design.arch.exception_codes.map(&:var)
       when "InterruptCode"
-        symtab.design.interrupt_codes.map(&:var)
+        symtab.design.arch.interrupt_codes.map(&:var)
       else
         type_error "Unknown builtin enum type '#{name}'"
       end
@@ -1134,9 +1134,9 @@ module Idl
       when "ExtensionName"
         (0...symtab.design.arch.extensions.size).to_a
       when "ExceptionCode"
-        symtab.design.exception_codes.map(&:num)
+        symtab.design.arch.exception_codes.map(&:num)
       when "InterruptCode"
-        symtab.design.interrupt_codes.map(&:num)
+        symtab.design.arch.interrupt_codes.map(&:num)
       else
         type_error "Unknown builtin enum type '#{name}'"
       end

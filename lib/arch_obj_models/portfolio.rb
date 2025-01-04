@@ -162,6 +162,36 @@ class PortfolioGroup
     @in_scope_csrs.uniq(&:name)
   end
 
+  # @param design [Design] The design
+  # @return [Array<ExceptionCode>] Unsorted list of all in-scope exception codes.
+  def in_scope_exception_codes(design)
+    raise ArgumentError, "Require a Design object but got a #{design.class} object" unless design.is_a?(Design)
+
+    return @in_scope_exception_codes unless @in_scope_exception_codes.nil?
+
+    @in_scope_exception_codes = []
+    portfolios.each do |portfolio|
+      @in_scope_exception_codes += portfolio.in_scope_exception_codes(design)
+    end
+
+    @in_scope_exception_codes.uniq(&:name)
+  end
+
+  # @param design [Design] The design
+  # @return [Array<InterruptCode>] Unsorted list of all in-scope interrupt codes.
+  def in_scope_interrupt_codes(design)
+    raise ArgumentError, "Require a Design object but got a #{design.class} object" unless design.is_a?(Design)
+
+    return @in_scope_interrupt_codes unless @in_scope_interrupt_codes.nil?
+
+    @in_scope_interrupt_codes = []
+    portfolios.each do |portfolio|
+      @in_scope_interrupt_codes += portfolio.in_scope_interrupt_codes(design)
+    end
+
+    @in_scope_interrupt_codes.uniq(&:name)
+  end
+
   # @return [String] Given an extension +ext_name+, return the presence as a string.
   #                  Returns the greatest presence string across all profiles in the group.
   #                  If the extension name isn't found in the release, return "-".
@@ -380,6 +410,43 @@ class Portfolio < DatabaseObject
     @in_scope_csrs =
       in_scope_min_satisfying_extension_versions.map {|ext_ver| ext_ver.in_scope_csrs(design) }.flatten.uniq
   end
+
+  # @param design [Design] The design
+  # @return [Array<ExceptionCode>] Unsorted list of all in-scope exception codes.
+  # TODO: See https://github.com/riscv-software-src/riscv-unified-db/issues/291
+  # TODO: Still needs work and haven't created in_scope_interrupt_codes yet.
+  # TODO: Extensions should provide conditional information ("when" statements?)
+  #       that we evaluate here to determine if a particular exception code can
+  #       actually be generated in a design.
+  #       Also, probably shouldn't be calling "ext?" since that doesn't the in_scope lists of extensions.
+  def in_scope_exception_codes(design)
+    raise ArgumentError, "Require a Design object but got a #{design.class} object" unless design.is_a?(Design)
+
+    return @in_scope_exception_codes unless @in_scope_exception_codes.nil?
+
+    @in_scope_exception_codes =
+      in_scope_min_satisfying_extension_versions.reduce([]) do |list, ext_version|
+        ecodes = ext_version.ext["exception_codes"]
+        next list if ecodes.nil?
+
+        ecodes.each do |ecode|
+          # Require all exception codes be unique in a given portfolio.
+          raise "Duplicate exception code" if list.any? { |e| e.num == ecode["num"] || e.name == ecode["name"] || e.var == ecode["var"] }
+
+          unless ecode.dig("when", "version").nil?
+            # check version
+            next unless design.ext?(ext_version.name.to_sym, ecode["when"]["version"])
+          end
+          list << ExceptionCode.new(ecode["name"], ecode["var"], ecode["num"], arch)
+        end
+        list
+      end
+  end
+
+  # @param design [Design] The design
+  # @return [Array<InterruptCode>] Unsorted list of all in-scope interrupt codes.
+  # TODO: Actually implement this to use Design. See in_scope_exception_codes() above.
+  def in_scope_interrupt_codes(design) = arch.interrupt_codes
 
   # @return [Boolean] Does the profile differentiate between different types of optional.
   def uses_optional_types?

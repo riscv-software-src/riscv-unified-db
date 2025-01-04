@@ -372,7 +372,7 @@ TODO: Show traps per privilege mode
 
 |===
 | `xcause.CODE` CSR Field Value | Name
-<% design.exception_codes.sort_by{ |code| code.num }.each do |code| -%>
+<% design.in_scope_exception_codes.sort_by{ |code| code.num }.each do |code| -%>
 | <%= code.num %> | <%= code.name %>
 <% end -%>
 |===
@@ -381,7 +381,7 @@ TODO: Show traps per privilege mode
 
 |===
 | `xcause.CODE` CSR Field Value | Name
-<% design.interrupt_codes.sort_by{ |code| code.num }.each do |code| -%>
+<% design.in_scope_interrupt_codes.sort_by{ |code| code.num }.each do |code| -%>
 | <%= code.num %> | <%= code.name %>
 <% end -%>
 |===

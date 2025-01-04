@@ -125,7 +125,7 @@ class PortfolioDesign < Design
   #     PortfolioDesign.ext?(:S, ">= 1.12")
   #   @example Checking extension presence with multiple version requirements
   #     PortfolioDesign.ext?(:S, ">= 1.12", "< 1.15")
-  #   @example Checking extension precsence with a precise version requirement
+  #   @example Checking extension presence with a precise version requirement
   #     PortfolioDesign.ext?(:S, 1.12)
   def ext?(ext_name, *ext_version_requirements)
     @ext_cache ||= {}
@@ -188,21 +188,14 @@ class PortfolioDesign < Design
   #                      Factors in things like XLEN in design.
   def in_scope_csrs = @portfolio_grp.in_scope_csrs(self)
 
+  # @return [Array<ExceptionCode>] Unsorted list of all in-scope exception codes.
+  def in_scope_exception_codes = @portfolio_grp.in_scope_exception_codes(self)
+
+  # @return [Array<ExceptionCode>] Unsorted list of all in-scope interrupt codes.
+  def in_scope_interrupt_codes = @portfolio_grp.in_scope_interrupt_codes(self)
+
   # @return [String] Given an extension +ext_name+, return the presence as a string.
   #                  Returns the greatest presence string across all portfolios in this design.
   #                  If the extension name isn't found in this design, return "-".
   def extension_presence(ext_name) = @portfolio_grp.extension_presence(ext_name)
-
-  ################################################
-  # ADDITIONAL METHODS UNIQUE TO PortfolioDesign #
-  ################################################
-
-  # @return [Array<ExceptionCode>] All exception codes used in this design.
-  # TODO: XXX: Make this actually filter out unused exception codes in the design.
-  def exception_codes = arch.exception_codes
-
-  # @return [Array<InterruptCode>] All interrupt codes used in this design.
-  # TODO: XXX: Make this actually filter out unused interrupt codes in the design.
-  def interrupt_codes = arch.interrupt_codes
-
 end

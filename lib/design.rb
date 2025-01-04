@@ -297,7 +297,7 @@ class Design
 
     @implemented_exception_codes =
       implemented_ext_vers.reduce([]) do |list, ext_version|
-        ecodes = extension(ext_version.name)["exception_codes"]
+        ecodes = ext_version.ext["exception_codes"]
         next list if ecodes.nil?
 
         ecodes.each do |ecode|
