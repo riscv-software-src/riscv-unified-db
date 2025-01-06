@@ -5833,8 +5833,10 @@ module Idl
       # field isn't implemented, so it must be zero
       return 0 if field_def(symtab).nil?
 
-      unless field_def(symtab).type(symtab) == "RO"
-        value_error "'#{csr_name(symtab)}.#{field_name(symtab)}' is not RO"
+      symtab.cfg_arch.possible_xlens.each do |effective_xlen|
+        unless field_def(symtab).type(effective_xlen) == "RO"
+          value_error "'#{csr_name(symtab)}.#{field_name(symtab)}' is not RO"
+        end
       end
 
       field_def(symtab).reset_value(symtab.cfg_arch)

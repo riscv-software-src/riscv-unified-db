@@ -64,8 +64,9 @@ FetchContent_MakeAvailable(nlohmann_json_schema_validator)
 
 set(GENERATED_SRCS "")
 foreach(config ${CONFIG_LIST})
-  list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/params.cxx")
-  list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/hart.cxx")
+  # list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/csrs.cxx")
+  # list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/params.cxx")
+  # list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/hart.cxx")
 endforeach()
 
 add_library(hart
@@ -85,6 +86,9 @@ add_executable(iss
 )
 target_link_libraries(iss PRIVATE hart CLI11::CLI11)
 
+
+## TESTS
+
 add_executable(test_bits
   ${CMAKE_SOURCE_DIR}/test/test_bits.cpp
 )
@@ -96,6 +100,18 @@ add_executable(test_util
 )
 target_include_directories(test_util PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(test_util PRIVATE hart Catch2::Catch2WithMain)
+
+add_executable(test_csr
+  ${CMAKE_SOURCE_DIR}/test/test_csr.cpp
+)
+target_include_directories(test_csr PUBLIC ${CMAKE_SOURCE_DIR}/include)
+# target_link_libraries(test_csr PRIVATE hart Catch2::Catch2WithMain)
+
+add_executable(test_version
+  ${CMAKE_SOURCE_DIR}/test/test_version.cpp
+)
+target_include_directories(test_version PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(test_version PRIVATE hart Catch2::Catch2WithMain)
 
 include(CTest)
 include(Catch)

@@ -7,13 +7,21 @@
   #include <source_location>
 #endif
 
+#if defined(__cpp_lib_unreachable) && __cpp_lib_unreachable >= 202202L
+#include <utility>
+#define udb_unreachable() std::unreachable()
+#else
+#define udb_unreachable() __builtin_unreachable()
+#endif
+
 #include <fmt/core.h>
+#include <fmt/std.h>
 
 #if defined(__cpp_lib_source_location) && __cpp_lib_source_location >= 201907L
   #define __udb_assert(cond, msg) \
     do { \
       if (!(cond)) { \
-        fmt::print(stderr, "At {} :\n   Assertion failed: {}", std::source_location::current(), msg); \
+        fmt::print(stderr, "At {} :\n   Assertion failed: {}", std::source_location::current(), (msg)); \
         std::abort(); \
       } \
     } while (false)

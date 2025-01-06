@@ -68,7 +68,7 @@ fields:
         return 0;
       }
     sw_write(csr_value): |
-      if ((CSR[<%= "pmpcfg#{pmpcfg_num}" %>].pmp<%= pmpcfg_num*4 + i %>cfg & 0x80) == 0) {
+      if (<%- if i > 4 -%>(xlen() == 64) && <%- end -%>(CSR[<%= "pmpcfg#{pmpcfg_num}" %>].pmp<%= pmpcfg_num*4 + i %>cfg & 0x80) == 0) {
         # entry is not locked
         if (!(((csr_value.pmp<%= pmpcfg_num*4 + i %>cfg & 0x1) == 0) && ((csr_value.pmp<%= pmpcfg_num*4 + i %>cfg & 0x2) == 0x2))) {
           # not R = 0, W =1, which is reserved

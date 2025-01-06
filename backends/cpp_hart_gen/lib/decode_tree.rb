@@ -225,7 +225,7 @@ class DecodeGen
     efs.join(" && ")
   end
 
-  def needs_long_form?(node, inst_list)
+  def needs_long_form?(node, inst_list, xlen)
     node.children.any? do |child|
       child.type == DecodeTreeNode::ENDPOINT_TYPE \
         && child.insts[0].encoding(xlen).decode_variables.any? { |dv| !dv.excludes.empty?  }
@@ -233,7 +233,7 @@ class DecodeGen
       || node.children.any? do |child|
         child.type == DecodeTreeNode::ENDPOINT_TYPE \
           && inst_list.any? do |other_inst|
-            (other_inst != chlid.insts[0]) \
+            (other_inst != child.insts[0]) \
               && child.insts[0].encoding(xlen).conflicts?(other_inst.encoding(xlen))
           end
       end
@@ -247,7 +247,7 @@ class DecodeGen
 
     code = ''
     if node.type == DecodeTreeNode::SELECT_TYPE
-      if needs_long_form?(node, inst_list)
+      if needs_long_form?(node, inst_list, xlen)
         # there is at least one child with a not statement or a conflict, can't use a simple switch
         els = ""
         node.children.each do |child|
@@ -256,15 +256,21 @@ class DecodeGen
             && child.insts[0].encoding(xlen).decode_variables.any? { |dv| !dv.excludes.empty? }
           has_conflict = child.type == DecodeTreeNode::ENDPOINT_TYPE \
             && inst_list.any? { |other_inst| child.insts[0].encoding(xlen).conflicts?(other_inst.encoding(xlen)) }
+          conds = []
           if has_not
-            not_conds = []
             child.insts[0].encoding(xlen).decode_variables.each do |dv|
               next if dv.excludes.empty?
 
               dv_val = extract_dv(dv, encoding_var_name)
-              not_conds.concat(dv.excludes.map { |val| "(#{dv_val} != #{val})" })
+              conds.concat(dv.excludes.map { |val| "(#{dv_val} != #{val})" })
             end
-            code += "#{' '*indent}#{els}if ((extract<#{child.range.first}, #{child.range.size}>(#{encoding_var_name}).get() == 0b#{child.value.reverse}) && #{not_conds.join(' && ')}) {\n"
+          end
+          # if has_conflict
+          #   # conflicts are resolved by extension
+          #   conds << child.insts[0].defined_by_condition.to_cxx("(implements_ext(ExtensionName::))")
+          # end
+          if !conds.empty?
+            code += "#{' '*indent}#{els}if ((extract<#{child.range.first}, #{child.range.size}>(#{encoding_var_name}).get() == 0b#{child.value.reverse}) && #{conds.join(' && ')}) {\n"
           else
             code += "#{' '*indent}#{els}if (extract<#{child.range.first}, #{child.range.size}>(#{encoding_var_name}).get() == 0b#{child.value.reverse}) {\n"
           end

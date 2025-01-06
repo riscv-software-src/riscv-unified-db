@@ -16,9 +16,9 @@ namespace udb {
   // This class just lets us pass around X register references without having
   // to do explicit zero index checks all over the place
   template <unsigned XLEN>
-  class XRegister : public BaseIsa<XLEN> {
+  class XRegister {
     public:
-    using typename BaseIsa<XLEN>::XReg;
+    using XReg = Bits<XLEN>;
 
     XRegister() : m_value(0), m_zero_reg(false) {}
     XRegister(const XRegister& other) : m_value(other.m_value), m_zero_reg(other.m_zero_reg) {}

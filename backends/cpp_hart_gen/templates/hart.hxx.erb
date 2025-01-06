@@ -11,14 +11,15 @@
 <%- hart_name = name_of(:hart, cfg_arch) -%>
 
 namespace udb {
-  class <%= hart_name -%> : public HartBase, BaseIsa<<%= cfg_arch.mxlen %>> {
+  class <%= hart_name -%> : public HartBase {
     public:
-      static constexpr unsigned MXLEN = <%= cfg_arch.mxlen %>;
-      using typename BaseIsa<MXLEN>::XReg;
+      static constexpr unsigned MXLEN = <%= cfg_arch.mxlen.nil? ? 64 : cfg_arch.mxlen %>;
+      using XReg = Bits<MXLEN>;
 
       <%= hart_name -%>(uint64_t hart_id, Memory& mem, const nlohmann::json& cfg)
         : HartBase(hart_id, mem, cfg),
-          m_params(<%= name_of(:params, cfg_arch) %>(cfg))
+          m_params(<%= name_of(:params, cfg_arch) %>(cfg)),
+          m_csrs(this)
       {
         m_xregs[0].makeZeroReg();
       }
@@ -41,7 +42,7 @@ namespace udb {
 
       uint64_t xreg(unsigned num) const override { return m_xregs[num].get(); }
 
-      XRegister<<%= cfg_arch.mxlen %>>& xregRef(unsigned num) { return m_xregs[num]; }
+      XRegister<MXLEN>& xregRef(unsigned num) { return m_xregs[num]; }
 
       void set_xreg(unsigned num, uint64_t value) override {
         m_xregs[num] = value; // zero index check happens in XRegister class
@@ -73,6 +74,6 @@ namespace udb {
       std::array<XRegister<MXLEN>, 32> m_xregs;
 
       <%= name_of(:params, cfg_arch) %> m_params;
-      <%= name_of(:csr_container, cfg_arch) m_csrs;
+      <%= name_of(:csr_container, cfg_arch) %> m_csrs;
   };
 }

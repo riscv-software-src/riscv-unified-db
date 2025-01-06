@@ -199,7 +199,17 @@ module Idl
 
   class IdAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' '*indent}#{text_value}"
+      var = symtab.get(text_value)
+
+      if !var.nil? && var.param?
+        if var.value.nil?
+          "#{' ' * indent}__UDB_RUNTIME_PARAM(#{text_value})"
+        else
+          "#{' ' * indent}__UDB_STATIC_PARAM(#{text_value})"
+        end
+      else
+        "#{' ' * indent}#{text_value}"
+      end
     end
   end
 

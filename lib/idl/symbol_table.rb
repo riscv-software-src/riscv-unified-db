@@ -7,7 +7,7 @@ module Idl
   class Var
     attr_reader :name, :type, :value
 
-    def initialize(name, type, value = nil, decode_var: false, template_index: nil, function_name: nil)
+    def initialize(name, type, value = nil, decode_var: false, template_index: nil, function_name: nil, param: false)
       @name = name
       raise ArgumentError, "Expecting a Type, got #{type.class.name}" unless type.is_a?(Type)
 
@@ -19,10 +19,11 @@ module Idl
       @decode_var = decode_var
       @template_index = template_index
       @function_name = function_name
+      @param = param
     end
 
     def hash
-      [@name, @type, @value, @decode_var, @template_index, @function_name].hash
+      [@name, @type, @value, @decode_var, @template_index, @function_name, @param].hash
     end
 
     def to_s
@@ -34,7 +35,10 @@ module Idl
         name,
         type.clone,
         value&.clone,
-        decode_var: @decode_var
+        decode_var: @decode_var,
+        template_index: @template_index,
+        function_name: @function_name,
+        param: @param
       )
     end
 
@@ -44,6 +48,10 @@ module Idl
 
     def decode_var?
       @decode_var
+    end
+
+    def param?
+      @param
     end
 
     # @param function_name [#to_s] A function name
@@ -98,9 +106,9 @@ module Idl
       @scopes = [{
         "X" => Var.new(
           "X",
-          Type.new(:array, sub_type: XregType.new(@mxlen.nil? ? :unknown : @mxlen), width: 32, qualifiers: [:global])
+          Type.new(:array, sub_type: XregType.new(@mxlen.nil? ? 64 : @mxlen), width: 32, qualifiers: [:global])
         ),
-        "XReg" => XregType.new(@mxlen.nil? ? :unknown : @mxlen),
+        "XReg" => XregType.new(@mxlen.nil? ? 64 : @mxlen),
         "Boolean" => Type.new(:boolean),
         "true" => Var.new(
           "true",
@@ -123,7 +131,7 @@ module Idl
         # could already be present...
         existing_sym = get(param_with_value.name)
         if existing_sym.nil?
-          add!(param_with_value.name, Var.new(param_with_value.name, type, param_with_value.value))
+          add!(param_with_value.name, Var.new(param_with_value.name, type, param_with_value.value, param: true))
         else
           unless existing_sym.type.equal_to?(type) && existing_sym.value == param_with_value.value
             raise DuplicateSymError, "Definition error: Param #{param.name} is defined by multiple extensions and is not the same definition in each"
@@ -134,12 +142,12 @@ module Idl
       # now add all parameters, even those not implemented
       cfg_arch.params_without_value.each do |param|
         if param.exts.size == 1
-          add!(param.name, Var.new(param.name, param.idl_type.clone.make_const))
+          add!(param.name, Var.new(param.name, param.idl_type.clone.make_const, param: true))
         else
           # could already be present...
           existing_sym = get(param.name)
           if existing_sym.nil?
-            add!(param.name, Var.new(param.name, param.idl_type.clone.make_const))
+            add!(param.name, Var.new(param.name, param.idl_type.clone.make_const, param: true))
           else
             unless existing_sym.type.equal_to?(param.idl_type)
               raise "Definition error: Param #{param.name} is defined by multiple extensions and is not the same definition in each"

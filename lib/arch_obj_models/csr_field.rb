@@ -64,19 +64,20 @@ class CsrField < DatabaseObjectect
 
   # @return [Idl::FunctionBodyAst] Abstract syntax tree of the type() function
   # @return [nil] if the type property is not a function
-  # @param symtab [SymbolTable] Symbol table with execution context
-  def type_ast(symtab)
+  def type_ast
     return @type_ast unless @type_ast.nil?
     return nil if @data["type()"].nil?
 
-    @type_ast = symtab.cfg_arch.idl_compiler.compile_func_body(
+    @type_ast = @cfg_arch.idl_compiler.compile_func_body(
       @data["type()"],
       name: "CSR[#{csr.name}].#{name}.type()",
       input_file: csr.__source,
       input_line: csr.source_line("fields", name, "type()"),
-      symtab:,
+      symtab: @cfg_arch.symtab,
       type_check: false
     )
+
+    raise "ast is nil?" if @type_ast.nil?
 
     raise "unexpected #{@type_ast.class}" unless @type_ast.is_a?(Idl::FunctionBodyAst)
 
@@ -85,54 +86,51 @@ class CsrField < DatabaseObjectect
 
   # @return [Idl::FunctionBodyAst] Abstract syntax tree of the type() function, after it has been type checked
   # @return [nil] if the type property is not a function
-  # @param symtab [Idl::SymbolTable] Symbol table
-  def type_checked_type_ast(symtab)
-    @type_checked_type_asts ||= {}
-    ast = @type_checked_type_asts[symtab.hash]
-    return ast unless ast.nil?
+  # @param effective_xlen [32, 64] The effective xlen to evaluate for
+  def type_checked_type_ast(effective_xlen)
+    @type_checked_type_ast ||= { 32 => nil, 64 => nil }
+    return @type_checked_type_ast[effective_xlen] unless @type_checked_type_ast[effective_xlen].nil?
 
-    symtab_hash = symtab.hash
+    ast = type_ast
 
-    symtab = symtab.global_clone
+    if ast.nil?
+      # there is no type() (it must be constant)
+      return nil
+    end
 
-    symtab.push(ast)
-    # all CSR instructions are 32-bit
-    symtab.add(
-      "__expected_return_type",
-      Idl::Type.new(:enum_ref, enum_class: symtab.get("CsrFieldType"))
-    )
+    symtab = fill_symtab_for_type(effective_xlen, ast)
 
-    ast = type_ast(symtab)
     symtab.cfg_arch.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{name}].type()"
     )
+
     symtab.pop
     symtab.release
 
-    @type_checked_type_asts[symtab_hash] = ast
+    @type_checked_type_ast[effective_xlen] = ast
   end
 
   # @return [Idl::FunctionBodyAst] Abstract syntax tree of the type() function, after it has been type checked and pruned
   # @return [nil] if the type property is not a function
-  # @param symtab [Idl::SymbolTable] Global symbols
-  def pruned_type_ast(symtab)
-    @pruned_type_asts ||= {}
-    ast = @pruned_type_asts[symtab.hash]
-    return ast unless ast.nil?
+  # @param effective_xlen [32, 64] The effective xlen to evaluate for
+  def pruned_type_ast(effective_xlen)
+    @pruned_type_ast ||= { 32 => nil, 64 => nil }
+    return @pruned_type_ast[effective_xledn] unless @pruned_type_ast[effective_xlen].nil?
 
-    ast = type_checked_type_ast(symtab).prune(symtab.deep_clone)
+    ast = type_checked_type_ast(effective_xlen)
 
-    symtab_hash = symtab.hash
-    symtab = symtab.global_clone
-    symtab.push(ast)
-    # all CSR instructions are 32-bit
-    symtab.add(
-      "__expected_return_type",
-      Idl::Type.new(:enum_ref, enum_class: symtab.get("CsrFieldType"))
-    )
+    if ast.nil?
+      # there is no type() (it must be constant)
+      return nil
+    end
 
+    symtab = fill_symtab_for_type(effective_xlen, ast)
+    ast = ast.prune(symtab)
+    symtab.release
+
+    symtab = fill_symtab_for_type(effective_xlen, ast)
     ast.freeze_tree(symtab)
 
     symtab.cfg_arch.idl_compiler.type_check(
@@ -140,14 +138,16 @@ class CsrField < DatabaseObjectect
       symtab,
       "CSR[#{name}].type()"
     )
+
     symtab.pop
     symtab.release
-    @pruned_type_asts[symtab_hash] = ast
+
+    @pruned_type_ast[effective_xlen] = ast
   end
 
   # returns the definitive type for a configuration
   #
-  # @param symtab [SymbolTable] Symbol table
+  # @param effective_xlen [32, 64] The effective xlen to evaluate for
   # @return [String]
   #    The type of the field. One of:
   #      'RO'    => Read-only
@@ -156,14 +156,9 @@ class CsrField < DatabaseObjectect
   #      'RW-R'  => Read-write, with a restricted set of legal values
   #      'RW-H'  => Read-write, with a hardware update
   #      'RW-RH' => Read-write, with a hardware update and a restricted set of legal values
-  def type(symtab)
-    raise ArgumentError, "Argument 1 should be a symtab" unless symtab.is_a?(Idl::SymbolTable)
-
-    unless @type_cache.nil?
-      raise "Different cfg_arch for type #{@type_cache.keys},  #{symtab.cfg_arch}" unless @type_cache.key?(symtab.cfg_arch)
-
-      return @type_cache[symtab.cfg_arch]
-    end
+  def type(effective_xlen)
+    @type ||= { 32 => nil, 64 => nil }
+    return @type[effective_xlen] unless @type[effective_xlen].nil?
 
     type =
       if @data.key?("type")
@@ -174,11 +169,10 @@ class CsrField < DatabaseObjectect
         raise "type() is nil for #{csr.name}.#{name} #{@data}?" if idl.nil?
 
         # value_result = Idl::AstNode.value_try do
-        ast = type_checked_type_ast(symtab)
+        ast = type_checked_type_ast(effective_xlen)
         begin
-          symtab = symtab.global_clone
+          symtab = fill_symtab_for_type(effective_xlen, ast)
 
-          symtab.push(ast)
           type =  case ast.return_value(symtab)
                   when 0
                     "RO"
@@ -208,20 +202,20 @@ class CsrField < DatabaseObjectect
         # end
       end
 
-    @type_cache ||= {}
-    @type_cache[symtab.cfg_arch] = type
+    @type[effective_xlen] = type
   end
 
   # @return [String] A pretty-printed type string
-  def type_pretty(symtab)
-    raise ArgumentError, "Expecting SymbolTable" unless symtab.is_a?(Idl::SymbolTable)
+  # @param effective_xlen [32, 64] The effective xlen to evaluate for
+  def type_pretty(effective_xlen)
+    raise ArgumentError, "Expecting Integer" unless effective_xlen.is_a?(Integer)
 
     str = nil
     value_result = Idl::AstNode.value_try do
-      str = type(symtab)
+      str = type(effective_xlen)
     end
     Idl::AstNode.value_else(value_result) do
-      ast = type_ast(symtab)
+      ast = type_ast
       str = ast.gen_option_adoc
     end
     str
@@ -275,7 +269,7 @@ class CsrField < DatabaseObjectect
 
     fns = []
     if has_custom_sw_write?
-      ast = pruned_sw_write_ast(cfg_arch, effective_xlen)
+      ast = pruned_sw_write_ast(effective_xlen)
       unless ast.nil?
         sw_write_symtab = symtab.deep_clone
         sw_write_symtab.push(ast)
@@ -284,7 +278,7 @@ class CsrField < DatabaseObjectect
       end
     end
     if @data.key?("type()")
-      ast = pruned_type_ast(symtab.deep_clone)
+      ast = pruned_type_ast
       unless ast.nil?
         fns.concat ast.reachable_functions(symtab.deep_clone.push(ast))
       end
@@ -532,23 +526,10 @@ class CsrField < DatabaseObjectect
     @sw_write_ast
   end
 
-  # @return [Idl::FunctionBodyAst] The abstract syntax tree of the sw_write() function, type checked and pruned
-  # @return [nil] if there is no sw_write() function
-  # @param effective_xlen [Integer] effective xlen, needed because fields can change in different bases
-  # @param cfg_arch [ConfiguredArchitecture] A configuration
-  def pruned_sw_write_ast(cfg_arch, effective_xlen)
-    @pruned_sw_write_asts ||= {}
-    ast = @pruned_sw_write_asts[cfg_arch.name]
-    return ast unless ast.nil?
-
-    return nil unless @data.key?("sw_write(csr_value)")
-
-    ast = type_checked_sw_write_ast(cfg_arch.symtab, effective_xlen)
-
-    return ast if cfg_arch.unconfigured?
-
+  def fill_symtab_for_sw_write(effective_xlen, ast)
     symtab = cfg_arch.symtab.global_clone
     symtab.push(ast)
+
     # all CSR instructions are 32-bit
     symtab.add(
       "__instruction_encoding_size",
@@ -560,14 +541,68 @@ class CsrField < DatabaseObjectect
     )
     symtab.add(
       "csr_value",
-      Idl::Var.new("csr_value", csr.bitfield_type(cfg_arch, effective_xlen))
+      Idl::Var.new("csr_value", csr.bitfield_type(@cfg_arch, effective_xlen))
     )
+    if symtab.get("XLEN").value.nil?
+      symtab.add(
+        "XLEN",
+        Idl::Var.new(
+          "XLEN",
+          Idl::Type.new(:bits, width: 6, qualifiers: [:const]),
+          effective_xlen,
+          param: true
+        )
+      )
+    end
+    symtab
+  end
+
+  def fill_symtab_for_type(effective_xlen, ast)
+    symtab = cfg_arch.symtab.global_clone
+    symtab.push(ast)
+
+    # all CSR instructions are 32-bit
+    symtab.add(
+      "__instruction_encoding_size",
+      Idl::Var.new("__instruction_encoding_size", Idl::Type.new(:bits, width: 6), 32)
+    )
+    symtab.add(
+      "__expected_return_type",
+      Idl::Type.new(:enum_ref, enum_class: symtab.get("CsrFieldType"))
+    )
+    if symtab.get("XLEN").value.nil?
+      symtab.add(
+        "XLEN",
+        Idl::Var.new(
+          "XLEN",
+          Idl::Type.new(:bits, width: 6, qualifiers: [:const]),
+          effective_xlen,
+          param: true
+        )
+      )
+    end
+
+    symtab
+  end
+
+  # @return [Idl::FunctionBodyAst] The abstract syntax tree of the sw_write() function, type checked and pruned
+  # @return [nil] if there is no sw_write() function
+  # @param effective_xlen [Integer] effective xlen, needed because fields can change in different bases
+  def pruned_sw_write_ast(effective_xlen)
+    return @pruned_sw_write_ast unless @pruned_sw_write_ast.nil?
+
+    return nil unless @data.key?("sw_write(csr_value)")
+
+    ast = type_checked_sw_write_ast(cfg_arch.symtab, effective_xlen)
+
+    return ast if cfg_arch.unconfigured?
+
+    symtab = fill_symtab_for_sw_write(effective_xlen, ast)
 
     ast = ast.prune(symtab)
     raise "Symbol table didn't come back at global + 1" unless symtab.levels == 2
 
     ast.freeze_tree(cfg_arch.symtab)
-
 
     cfg_arch.idl_compiler.type_check(
       ast,
@@ -578,7 +613,7 @@ class CsrField < DatabaseObjectect
     symtab.pop
     symtab.release
 
-    @pruned_sw_write_asts[cfg_arch.name] = ast
+    @pruned_sw_write_ast = ast
   end
 
   # @param cfg_arch [ConfiguredArchitecture] A config. May be nil if the location is not configturation-dependent
@@ -635,6 +670,7 @@ class CsrField < DatabaseObjectect
 
   def defined_in_base32? = @data["base"].nil? || @data["base"] == 32
   def defined_in_base64? = @data["base"].nil? || @data["base"] == 64
+  def defined_in_base?(xlen) = @data["base"].nil? || @data["base"] == xlen
 
   # @return [Boolean] Whether or not this field exists for any XLEN
   def defined_in_all_bases? = @data["base"].nil?

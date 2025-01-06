@@ -373,7 +373,7 @@ fields:
         return 0;
       }
     sw_write(csr_value): |
-      if ((CSR[pmpcfg4].pmp21cfg & 0x80) == 0) {
+      if ((xlen() == 64) && (CSR[pmpcfg4].pmp21cfg & 0x80) == 0) {
         # entry is not locked
         if (!(((csr_value.pmp21cfg & 0x1) == 0) && ((csr_value.pmp21cfg & 0x2) == 0x2))) {
           # not R = 0, W =1, which is reserved
@@ -436,7 +436,7 @@ fields:
         return 0;
       }
     sw_write(csr_value): |
-      if ((CSR[pmpcfg4].pmp22cfg & 0x80) == 0) {
+      if ((xlen() == 64) && (CSR[pmpcfg4].pmp22cfg & 0x80) == 0) {
         # entry is not locked
         if (!(((csr_value.pmp22cfg & 0x1) == 0) && ((csr_value.pmp22cfg & 0x2) == 0x2))) {
           # not R = 0, W =1, which is reserved
@@ -499,7 +499,7 @@ fields:
         return 0;
       }
     sw_write(csr_value): |
-      if ((CSR[pmpcfg4].pmp23cfg & 0x80) == 0) {
+      if ((xlen() == 64) && (CSR[pmpcfg4].pmp23cfg & 0x80) == 0) {
         # entry is not locked
         if (!(((csr_value.pmp23cfg & 0x1) == 0) && ((csr_value.pmp23cfg & 0x2) == 0x2))) {
           # not R = 0, W =1, which is reserved

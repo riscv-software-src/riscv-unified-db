@@ -107,20 +107,20 @@ RV32::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= field.pruned_sw_write_ast(cfg_arch, 32).gen_adoc %>
+<%= field.pruned_sw_write_ast(32).gen_adoc %>
 ----
 
 RV64::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= field.pruned_sw_write_ast(cfg_arch, 64).gen_adoc %>
+<%= field.pruned_sw_write_ast(64).gen_adoc %>
 ----
 <%- else -%>
 <%- xlen = !cfg_arch.multi_xlen? ? cfg_arch.mxlen : (!csr.defined_in_all_bases? ? csr.base : field.base) -%>
 [source,idl,subs="specialchars,macros"]
 ----
-<%= field.pruned_sw_write_ast(cfg_arch, xlen).gen_adoc %>
+<%= field.pruned_sw_write_ast(xlen).gen_adoc %>
 ----
 <%- end -%>
 <%- end -%>
@@ -141,7 +141,7 @@ Pruned::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= csr.pruned_sw_read_ast(cfg_arch).gen_adoc %>
+<%= csr.pruned_sw_read_ast.gen_adoc %>
 ----
 
 Original::

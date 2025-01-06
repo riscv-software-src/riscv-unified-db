@@ -46,6 +46,10 @@ class Csr < DatabaseObjectect
   # @return [Boolean] true if this CSR is defined regardless of the effective XLEN
   def defined_in_all_bases? = @data["base"].nil?
 
+  # @return [Boolean] true if this CSR is defined when XLEN is xlen
+  # @param xlen [32,64] base
+  def defined_in_base?(xlen) = @data["base"].nil? || @data["base"] == xlen
+
   # @param cfg_arch [ConfiguredArchitecture] A configuration
   # @return [Boolean] Whether or not the format of this CSR changes when the effective XLEN changes in some mode
   def format_changes_with_xlen?
@@ -60,7 +64,7 @@ class Csr < DatabaseObjectect
     fns = []
 
     if has_custom_sw_read?
-      ast = pruned_sw_read_ast(cfg_arch)
+      ast = pruned_sw_read_ast
       symtab = cfg_arch.symtab.deep_clone
       symtab.push(ast)
       fns.concat(ast.reachable_functions(symtab))
@@ -445,14 +449,10 @@ class Csr < DatabaseObjectect
     @sw_read_ast
   end
 
-  def pruned_sw_read_ast(cfg_arch)
-    @pruned_sw_read_asts ||= {}
-    ast = @pruned_sw_read_asts[cfg_arch.name]
-    return ast unless ast.nil?
-
-    ast = type_checked_sw_read_ast(cfg_arch.symtab)
-
-    symtab = cfg_arch.symtab.global_clone
+  # @param ast [Idl::AstNode] An abstract syntax tree that will be evaluated with the returned symbol table
+  # @return [IdL::SymbolTable] A symbol table populated with globals and syms specific to this CSR
+  def fill_symtab(ast, effective_xlen)
+    symtab = @cfg_arch.symtab.global_clone
     symtab.push(ast)
     # all CSR instructions are 32-bit
     symtab.add(
@@ -463,11 +463,32 @@ class Csr < DatabaseObjectect
       "__expected_return_type",
       Idl::Type.new(:bits, width: 128)
     )
+    if symtab.get("XLEN").value.nil?
+      symtab.add(
+        "XLEN",
+        Idl::Var.new(
+          "XLEN",
+          Idl::Type.new(:bits, width: 6, qualifiers: [:const]),
+          effective_xlen,
+          param: true
+        )
+      )
+    end
+    symtab
+  end
+
+  def pruned_sw_read_ast(effective_xlen)
+    @pruned_sw_read_ast ||= {}
+    return @pruned_sw_read_ast[effective_xlen] unless @pruned_sw_read_ast[effective_xlen].nil?
+
+    ast = type_checked_sw_read_ast(@cfg_arch.symtab)
+
+    symtab = fill_symtab(ast, effective_xlen)
 
     ast = ast.prune(symtab)
-    ast.freeze_tree(cfg_arch.symtab)
+    ast.freeze_tree(@cfg_arch.symtab)
 
-    cfg_arch.idl_compiler.type_check(
+    @cfg_arch.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{name}].sw_read()"
@@ -476,7 +497,7 @@ class Csr < DatabaseObjectect
     symtab.pop
     symtab.release
 
-    @pruned_sw_read_asts[cfg_arch.name] = ast
+    @pruned_sw_read_ast[effective_xlen] = ast
   end
 
   # @example Result for an I-type instruction

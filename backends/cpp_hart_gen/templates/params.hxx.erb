@@ -16,6 +16,11 @@ namespace udb {
       explicit Error(const char* msg) : std::runtime_error(msg) {}
     };
 
+    // all the compile-time-known parameters
+    <%- cfg_arch.params_with_value.each do |param| -%>
+    static constexpr <%= param.idl_type.to_cxx_no_qualifiers %> <%= param.name %>_VALUE = <%= param.value.to_cxx %>;
+    <%- end -%>
+
     // read parameters out of a YAML (or JSON) config file
     <%= name_of(:params, cfg_arch) %>(const nlohmann::json& cfg)
     {

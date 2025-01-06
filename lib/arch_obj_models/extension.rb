@@ -124,6 +124,8 @@ class ExtensionParameterWithValue
   # @return [Extension] The extension that defines this parameter
   def exts = @param.exts
 
+  def idl_type = @param.idl_type
+
   def initialize(param, value)
     @param = param
     @value = value

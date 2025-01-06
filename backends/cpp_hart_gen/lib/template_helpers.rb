@@ -1,4 +1,20 @@
 
+class Integer
+  def to_cxx
+    if negative?
+      "#{to_s}ll"
+    else
+      "#{to_s}ull"
+    end
+  end
+end
+
+class Array
+  def to_cxx
+    "{#{map(&:to_cxx).join(', ')}}"
+  end
+end
+
 module CppHartGen
   module TemplateHelpers
 

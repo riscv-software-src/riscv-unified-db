@@ -3,6 +3,7 @@ require "active_support"
 require "active_support/core_ext/string/inflections"
 
 require_relative "lib/template_helpers"
+require_relative "lib/csr_template_helpers"
 require_relative "lib/gen_cpp"
 require_relative "lib/decode_tree"
 
@@ -36,7 +37,7 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/include/udb/[^/]+\.hxx} => proc { |tname|
   [
     "#{CPP_HART_GEN_SRC}/templates/#{fname}.erb",
     __FILE__
-  ]
+  ] + Dir.glob(CPP_HART_GEN_SRC / 'lib' / '*')
 } do |t|
   config_name = ENV["CONFIG"].split(",").first.strip
   fname = File.basename(t.name)
@@ -216,18 +217,21 @@ namespace :gen do
     Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/enum.hxx"].invoke
 
     configs.each do |config|
-      # Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/decode.cxx"].invoke
+      Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/decode.cxx"].invoke
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/params.hxx"].invoke
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/params.cxx"].invoke
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/hart.hxx"].invoke
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/hart.cxx"].invoke
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/csrs.hxx"].invoke
+      Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/csrs.cxx"].invoke
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/csr_container.hxx"].invoke
       # Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/inst.hxx"].invoke
 
       Dir.glob("#{CPP_HART_GEN_SRC}/cpp/include/udb/*.hpp") do |f|
         Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/#{File.basename(f)}"].invoke
       end
+
+      Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/build/Makefile"].invoke
     end
   end
 end
@@ -236,7 +240,6 @@ namespace :build do
   task cpp_hart: ["gen:cpp_hart"] do
     _, build_name = configs_build_name
 
-    Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/build/Makefile"].invoke
     Dir.chdir("#{CPP_HART_GEN_DST}/#{build_name}/build") do
       sh "make"
     end

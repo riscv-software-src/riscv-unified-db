@@ -1,0 +1,100 @@
+#include "udb/cfgs/<%= cfg_arch.name %>/hart.hxx"
+
+using namespace udb;
+
+<%- csrs = cfg_arch.fully_configured? ? cfg_arch.implemented_csrs : cfg_arch.csrs -%>
+
+<%- csrs.each do |csr| -%>
+<%- fields = cfg_arch.fully_configured? ? csr.implemented_fields(cfg_arch) : csr.fields -%>
+
+<%- fields.each do |field| -%>
+<%- if cfg_arch.possible_xlens.include?(32) && field.defined_in_base32? -%>
+template <>
+CsrFieldType <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %><32>::type() const {
+  <%= field.type_to_cpp(32) %>
+}
+<%- end -%>
+<%- if cfg_arch.possible_xlens.include?(64) && field.defined_in_base64? -%>
+template <>
+CsrFieldType <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %><64>::type() const {
+  <%= field.type_to_cpp(64) %>
+}
+<%- end -%>
+<%- end -%>
+
+// constructor
+<%- cfg_arch.possible_xlens.each do |xlen| -%>
+<%- next unless csr.defined_in_base?(xlen) -%>
+<%- fields_for_xlen = fields.select { |f| f.defined_in_base?(xlen) } -%>
+template <>
+<%= name_of(:csr, cfg_arch, csr.name) %><<%= xlen %>>::<%= name_of(:csr, cfg_arch, csr.name) %><<%= xlen %>>(<%= name_of(:hart, cfg_arch) %>* parent)
+  : CsrBase(),
+    m_parent(parent)
+    <%- unless fields_for_xlen.empty? -%>,<%- end -%>
+    <%= fields_for_xlen.map { |field| "m_#{field.name}(parent)" }.join(", ") %>
+{
+}
+<%- end -%>
+
+<%- if cfg_arch.multi_xlen? && csr.format_changes_with_xlen? -%>
+Bits<<%= csr.max_length(cfg_arch) %>> <%= name_of(:csr, cfg_arch, csr.name) %>::_sw_read(const unsigned& xlen) const
+{
+  <%- if csr.has_custom_sw_read? -%>
+  if (xlen == 32) {
+    <%- pruned_ast = csr.pruned_sw_read_ast(32) -%>
+    <%- symtab = csr.fill_symtab(pruned_ast, 32) -%>
+    <%= pruned_ast.gen_cpp(symtab) %>
+    <%- symtab.release -%>
+  } else {
+    udb_assert(xlen == 64, "Bad xlen");
+    <%- pruned_ast = csr.pruned_sw_read_ast(64) -%>
+    <%- symtab = csr.fill_symtab(pruned_ast, 64) -%>
+    <%= pruned_ast.gen_cpp(symtab) %>
+    <%- symtab.release -%>
+  }
+  <%- else -%>
+  return _hw_read(xlen);
+  <%- end -%>
+}
+<%- else -%>
+Bits<<%= csr.max_length(cfg_arch) %>> <%= name_of(:csr, cfg_arch, csr.name) %>::_sw_read() const
+{
+  <%- if csr.has_custom_sw_read? -%>
+  <%- xlen = cfg_arch.possible_xlens[0] # any xlen will do -%>
+  <%- pruned_ast = csr.pruned_sw_read_ast(xlen) -%>
+  <%- symtab = csr.fill_symtab(pruned_ast, xlen) -%>
+  <%= pruned_ast.gen_cpp(symtab) %>
+  <%- symtab.release -%>
+  <%- else -%>
+  return _hw_read(m_parent->xlen());
+  <%- end -%>
+}
+<%- end -%>
+
+bool <%= name_of(:csr, cfg_arch, csr.name) %>::_sw_write(const Bits<<%= csr.max_length(cfg_arch) %>>& value) {
+  <%- fields = cfg_arch.fully_configured? ? csr.implemented_fields(cfg_arch) : csr.fields -%>
+  <%- fields.each do |field| -%>
+  <%- next unless cfg_arch.possible_xlens.any? { |xlen| field.defined_in_base?(xlen) } -%>
+  <%- if field.has_custom_sw_write? -%>
+  <%- if cfg_arch.possible_xlens.include?(64) -%>
+  if (m_parent->xlen() == 64) {
+    <%- pruned_ast = field.pruned_sw_write_ast(64) -%>
+    <%- symtab = field.fill_symtab_for_sw_write(64, pruned_ast) -%>
+    <%= pruned_ast.gen_cpp(symtab) %>
+    <%- symtab.release -%>
+  }
+  <%- end -%>
+  <%- if cfg_arch.possible_xlens.include?(32) -%>
+  if (m_parent->xlen() == 32) {
+    <%- pruned_ast = field.pruned_sw_write_ast(32) -%>
+    <%- symtab = field.fill_symtab_for_sw_write(32, pruned_ast) -%>
+    <%= pruned_ast.gen_cpp(symtab) %>
+    <%- symtab.release -%>
+  }
+  <%- end -%>
+  <%- end -%>
+  <%- end -%>
+  return true;
+}
+
+<%- end -%>
