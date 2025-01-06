@@ -2,7 +2,7 @@
 
 ruby "3.2.3"
 
-source "https://rubygems.org"
+source "http://rubygems.org"
 
 gem "activesupport"
 gem "asciidoctor-diagram", "~> 2.2"
