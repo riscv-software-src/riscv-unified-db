@@ -55,8 +55,9 @@ else
   done
 fi
 
-if [ "${CONTAINER_TYPE}" != "docker" -a "${CONTAINER_TYPE}" != "singularity" ]; then
+if [ "${CONTAINER_TYPE}" != "docker" -a "${CONTAINER_TYPE}" != "singularity" -a "${CONTAINER_TYPE}" != "devcontainer" ]; then
   echo "BAD CONTAINER TYPE: ${CONTAINER_TYPE}"
+  exit 1
 fi
 
 if [ ! -f ${ROOT}/.container-type ]; then
@@ -66,8 +67,13 @@ fi
 print_env() {
     if [ "${CONTAINER_TYPE}" == "docker" ]; then
         echo "Using Docker environment"
-    else
+    elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
         echo "Using Singularity environment"
+    elif [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
+        echo "Using devcontainer environment"
+    else
+        echo "Unknown container type of ${CONTAINER_TYPE}"
+        exit 1
     fi
 }
 
@@ -90,7 +96,7 @@ elif [ "${CONTAINER_TYPE}" == "docker" ]; then
       DOCKER_BASE="docker run -v $(ROOT):$(ROOT) -w $(ROOT) riscvintl/udb:${CONTAINER_TAG}"
     fi
     RUN="${DOCKER_BASE}"
-else
+elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
     print_env
     CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
     HOME_PATH=${HOME}
@@ -103,6 +109,11 @@ else
       fi
       singularity pull ${SINGULARITY_CACHE} ${CONTAINER_PATH} oras://docker.io/riscvintl/spec-generator:$CONTAINER_TAG
     fi
+elif [ "${CONTAINER_TYPE}" == "devcontainer" ]; then
+    print_env
+else
+    echo "Unknown container type of ${CONTAINER_TYPE}"
+    exit 1
 fi
 
 if [ -f $ROOT/.git ]; then
