@@ -3,9 +3,9 @@
 <%- ilist = cfg_arch.fully_configured? ? cfg_arch.transitive_implemented_instructions : cfg_arch.instructions -%>
 
 <%
-  def extract_decode(bits)
+  def extract_decode(bits,inst)
     bits.map do |r|
-      if r.is_a?(Intger)
+      if r.is_a?(Integer)
         "extract<#{r}, 1, #{inst.encoding_width}>(m_encoding)"
       else
         "extract<#{r.first}, #{r.size}, #{inst.encoding_width}>(m_encoding)"
@@ -46,24 +46,24 @@ namespace udb {
     <%- if needs_rv32 && needs_rv64 -%>
     <%- inst.decode_variables(32).each do |dv| -%>
     Bits<<%= dv.size %> <%= dv.name %>() const requires Is32<XLEN> {
-      <%= extract_decode(dv.bits) %>;
+      <%= extract_decode(dv.bits,inst) %>;
     }
     <%- end -%>
     <%- inst.decode_variables(64).each do |dv| -%>
     Bits<<%= dv.size %> <%= dv.name %>() const requires Is64<XLEN> {
-      <%= extract_decode(dv.bits) %>;
+      <%= extract_decode(dv.bits,inst) %>;
     }
     <%- end -%>
     <%- elsif needs_rv32 -%>
     <%- inst.decode_variables(32).each do |dv| -%>
     Bits<<%= dv.size %> <%= dv.name %>() const {
-      <%= extract_decode(dv.bits) %>;
+      <%= extract_decode(dv.bits,inst) %>;
     }
     <%- end -%>
     <%- else -%>
     <%- inst.decode_variables(64).each do |dv| -%>
     Bits<<%= dv.size %> <%= dv.name %>() const {
-      <%= extract_decode(dv.bits) %>;
+      <%= extract_decode(dv.bits,inst) %>;
     }
     <%- end -%>
     <%- end -%>
