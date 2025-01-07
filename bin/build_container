@@ -12,7 +12,7 @@ if [ -v GITHUB_ACTIONS ]; then
 
   # needed to get singularity working on Ubuntu 24.04
   # see https://github.com/lima-vm/lima/issues/2319
-  sudo echo "kernel.apparmor_restrict_unprivileged_userns = 0" >/etc/sysctl.d/99-userns.conf
+  sudo /bin/bash -c "echo \"kernel.apparmor_restrict_unprivileged_userns = 0\" >/etc/sysctl.d/99-userns.conf"
   sudo sysctl --system
 else
   CONTAINER_PATH=${ROOT}/.singularity/image-$CONTAINER_TAG.sif
