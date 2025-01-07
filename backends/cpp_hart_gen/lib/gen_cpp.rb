@@ -393,9 +393,9 @@ module Idl
       targs_cpp = template_arg_nodes.map { |t| t.gen_cpp(symtab, 0, indent_spaces:) }
       args_cpp = arg_nodes.map { |a| a.gen_cpp(symtab, 0, indent_spaces:) }
       if targs_cpp.empty?
-        "#{name.gsub("?", "_Q_")}(#{args_cpp.join(', ')})"
+        "__UDB__FUNC__OBJ #{name.gsub("?", "_Q_")}(#{args_cpp.join(', ')})"
       else
-        "#{name.gsub("?", "_Q_")}<#{targs_cpp.join(', ')}>(#{args_cpp.join(', ')})"
+        "__UDB__FUNC__OBJ #{name.gsub("?", "_Q_")}<#{targs_cpp.join(', ')}>(#{args_cpp.join(', ')})"
       end
     end
   end

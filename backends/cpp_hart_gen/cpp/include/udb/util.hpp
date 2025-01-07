@@ -41,16 +41,16 @@ namespace udb {
   }
 
   // extract bits, where the extraction is not known at compile time
-  tempalte <typename T>
+  template <typename T>
   T extract(T value, unsigned start, unsigned size)
   {
     assert(start > 0);
     assert((start + size) <= sizeof(T)*8);
 
-    if (size == sizeof(Type)*8) {
+    if (size == sizeof(T)*8) {
       return value;
     } else {
-      Type mask = (static_cast<Type>(1) << size) - 1;
+      T mask = (static_cast<T>(1) << size) - 1;
       return (value >> start) & mask;
     }
   }

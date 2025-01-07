@@ -217,6 +217,7 @@ namespace :gen do
     Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/enum.hxx"].invoke
 
     configs.each do |config|
+      Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/inst.hxx"].invoke
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/decode.cxx"].invoke
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/params.hxx"].invoke
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/params.cxx"].invoke
@@ -225,16 +226,26 @@ namespace :gen do
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/csrs.hxx"].invoke
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/csrs.cxx"].invoke
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/csr_container.hxx"].invoke
-      # Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/inst.hxx"].invoke
 
       Dir.glob("#{CPP_HART_GEN_SRC}/cpp/include/udb/*.hpp") do |f|
         Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/#{File.basename(f)}"].invoke
       end
 
-      Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/build/Makefile"].invoke
+      #Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/build/Makefile"].invoke
     end
   end
 end
+
+namespace :cbuild do
+  task cpp_hart: ["gen:cpp_hart"] do
+    _, build_name = configs_build_name
+
+    Dir.chdir("#{CPP_HART_GEN_DST}/#{build_name}/") do
+      sh "make"
+    end
+  end
+end
+
 
 namespace :build do
   task cpp_hart: ["gen:cpp_hart"] do

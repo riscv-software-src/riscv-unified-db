@@ -4,7 +4,7 @@
 
 #include "udb/defines.hpp"
 
-#include ISS_FORMAT_INCLUDE
+#include <fmt/core.h>
 
 #include "udb/hart_factory.hxx"
 

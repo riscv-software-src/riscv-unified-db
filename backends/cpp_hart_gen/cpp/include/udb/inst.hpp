@@ -1,8 +1,8 @@
 #pragma once
 
-#include "iss/types.hxx"
+#include "udb/types.hpp"
 
-namespace riscv {
+namespace udb {
 
   class Reg {
     public:
@@ -44,11 +44,11 @@ namespace riscv {
 
   class InstBase {
     public:
-    InstBase(XReg pc, uint64_t encoding)
+    InstBase(uint64_t pc, uint64_t encoding)
       : m_pc(pc), m_encoding(encoding)
     {}
 
-    XReg pc() { return m_pc; }
+    uint64_t pc() { return m_pc; }
     uint64_t encoding() { return m_encoding; }
     // return encoding length, in bytes
     virtual size_t enc_len() const = 0;
@@ -64,7 +64,7 @@ namespace riscv {
     virtual std::vector<Reg> dstRegs() const = 0;
 
     protected:
-    XReg m_pc;
+    uint64_t m_pc;
     uint64_t m_encoding;
   };
 

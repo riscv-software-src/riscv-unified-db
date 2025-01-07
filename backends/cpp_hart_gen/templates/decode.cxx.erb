@@ -1,11 +1,13 @@
 
 #include "udb/cfgs/<%= cfg_arch.name %>/hart.hxx"
+#include "udb/inst.hpp"
+#include "udb/cfgs/<%= cfg_arch.name %>/inst.hxx"
 
 using namespace udb;
 
 InstBase* <%= name_of(:hart, cfg_arch) %>::decode(
   const XReg& pc,
-  const Bits<%= cfg_arch.largest_encoding %>& encoding
+  const Bits<<%= cfg_arch.largest_encoding %>>& encoding
 ) {
   <%- if cfg_arch.multi_xlen? -%>
   if (xlen() == 32) {

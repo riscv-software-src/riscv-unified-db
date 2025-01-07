@@ -17,6 +17,20 @@
 // begin the builtin functions
 //
 
+constexpr bool implemented_Q_(const ExtensionName& ext, const VersionRequirement& req) const {
+
+  <%- if arch_def.fully_configured? -%>
+  <%- arch_def.implemented_extensions.each do |ext| -%>
+  if (ext == ExtensionName::<%= ext.name %>) { return true; }
+  <%- end -%>
+  <%- elsif arch_def.partially_configured? -%>
+  <%- arch_def.mandatory_extensions.each do |ext| -%>
+  if (ext == ExtensionName::<%= ext.name %>) { return true; }
+  <%- end -%>
+  <%- end -%>
+  return m_implemented_optional_extensions.find(ext) != m_implemented_optional_extensions.end();
+}
+
 constexpr bool implemented_Q_(const ExtensionName& ext) const {
 
   <%- if arch_def.fully_configured? -%>

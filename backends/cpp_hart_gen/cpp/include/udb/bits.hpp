@@ -1007,6 +1007,7 @@ namespace udb
 }
 
 // format Bits as their underlying type when using format()
+/*
 template <unsigned N, bool Signed>
   requires(N <= udb::_Bits<64, false>::MaxNativePrecision)
 struct fmt::formatter<udb::_Bits<N, Signed>> : formatter<typename udb::_Bits<N, Signed>::StorageType>
@@ -1017,6 +1018,7 @@ struct fmt::formatter<udb::_Bits<N, Signed>> : formatter<typename udb::_Bits<N, 
     return fmt::formatter<typename udb::_Bits<N, Signed>::StorageType>::format(value.get(), ctx);
   }
 };
+*/
 
 template <unsigned N, bool Signed>
   requires(N > udb::_Bits<64, false>::MaxNativePrecision)

@@ -1,5 +1,9 @@
 #pragma once
 
+#include <udb/bits.hpp>
+#include <type_traits>
+#include <udb/util.hpp>
+
 <%- ilist = cfg_arch.fully_configured? ? cfg_arch.transitive_implemented_instructions : cfg_arch.instructions -%>
 
 <%
@@ -15,12 +19,6 @@
 -%>
 
 namespace udb {
-  template <typename T>
-  concept Is32 = requires(T value) { { value == 32} -> std::is_same<booL>; };
-
-  template <typename T>
-  concept Is32 = requires(T value) { { value == 64} -> std::is_same<booL>; };
-
 
   <%- ilist.each do |inst| -%>
   <%- needs_rv32 = inst.rv32? && cfg_arch.possible_xlens.include?(32) -%>
@@ -28,6 +26,7 @@ namespace udb {
   template <unsigned XLEN>
   class <%= name_of(:inst, cfg_arch, inst.name) %> : public InstBase {
   public:
+    using XReg = Bits<<%= name_of(:hart, cfg_arch) %>::MXLEN>;
     <%= name_of(:inst, cfg_arch, inst.name) %>(<%= name_of(:hart, cfg_arch) %>* parent, XReg pc, uint64_t encoding)
       : InstBase(pc, encoding),
         m_parent(parent)
@@ -45,28 +44,30 @@ namespace udb {
     //
     <%- if needs_rv32 && needs_rv64 -%>
     <%- inst.decode_variables(32).each do |dv| -%>
-    Bits<<%= dv.size %> <%= dv.name %>() const requires Is32<XLEN> {
-      <%= extract_decode(dv.bits,inst) %>;
+    Bits<<%= dv.size %>> <%= dv.name %>() const requires (XLEN==32) {
+      return <%= extract_decode(dv.bits,inst) %>;
     }
     <%- end -%>
     <%- inst.decode_variables(64).each do |dv| -%>
-    Bits<<%= dv.size %> <%= dv.name %>() const requires Is64<XLEN> {
-      <%= extract_decode(dv.bits,inst) %>;
+    Bits<<%= dv.size %>> <%= dv.name %>() const requires (XLEN==64) {
+      return <%= extract_decode(dv.bits,inst) %>;
     }
     <%- end -%>
     <%- elsif needs_rv32 -%>
     <%- inst.decode_variables(32).each do |dv| -%>
-    Bits<<%= dv.size %> <%= dv.name %>() const {
-      <%= extract_decode(dv.bits,inst) %>;
+    Bits<<%= dv.size %>> <%= dv.name %>() const {
+      return <%= extract_decode(dv.bits,inst) %>;
     }
     <%- end -%>
     <%- else -%>
     <%- inst.decode_variables(64).each do |dv| -%>
-    Bits<<%= dv.size %> <%= dv.name %>() const {
-      <%= extract_decode(dv.bits,inst) %>;
+    Bits<<%= dv.size %>> <%= dv.name %>() const {
+      return <%= extract_decode(dv.bits,inst) %>;
     }
     <%- end -%>
     <%- end -%>
+
+#define __UDB__FUNC__OBJ m_parent->
 
 
     void execute() override {
@@ -95,6 +96,8 @@ namespace udb {
       <%- end -%>
       <%- end -%>
     }
+
+#undef __UDB__FUNC__OBJ
 
   private:
     <%= name_of(:hart, cfg_arch) %> * const m_parent;

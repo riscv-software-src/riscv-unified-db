@@ -37,7 +37,7 @@ template <>
 <%- end -%>
 
 <%- if cfg_arch.multi_xlen? && csr.format_changes_with_xlen? -%>
-Bits<<%= csr.max_length(cfg_arch) %>> <%= name_of(:csr, cfg_arch, csr.name) %>::_sw_read(const unsigned& xlen) const
+<%= name_of(:csr, cfg_arch, csr.name) %>Bits<<%= csr.max_length(cfg_arch) %>>::_sw_read(const unsigned& xlen) const
 {
   <%- if csr.has_custom_sw_read? -%>
   if (xlen == 32) {
