@@ -2,7 +2,7 @@
 
 $schema: inst_schema.json#
 kind: instruction
-name: qc.c.muladdi
+name: qc.c.muliadd
 long_name: Multiply and accumulate (Immediate)
 description: |
   Increments `rd` by the multiplication of `rs1` and an unsigned immediate
