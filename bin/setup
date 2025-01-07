@@ -126,6 +126,8 @@ if [ ! -d $ROOT/.home ]; then
 fi
 
 ls -la $ROOT/.home
+${RUN} /bin/bash -c "echo \$HOME"
+${RUN} /bin/bash -c "ls -la \$HOME"
 
 if [ ! -f $ROOT/.bundle/config ]; then
     OLDDIR=$PWD
