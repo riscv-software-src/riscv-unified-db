@@ -42,6 +42,7 @@ versions:
     email: dhower@qti.qualcomm.com
   changes:
     - Fix description and functionality of qc.shladd instruction
+    - Renaming instructions qc.muladdi to qc.muliadd and qc.c.muladdi to qc.c.muliadd
   requires: { name: Zca, version: ">= 1.0.0" }
 description: |
   The Xqciac extension includes three instructions to accelerate common
