@@ -26,11 +26,16 @@ class CertModel < Portfolio
   def initialize(obj_yaml, yaml_path, arch: nil)
     super # Calls parent class with the same args I got
 
-    unless arch.is_a?(ConfiguredArchitecture)
+    # TODO: XXX: Don't allow Architecture class.
+    #            See https://github.com/riscv-software-src/riscv-unified-db/pull/371
+    unless arch.is_a?(ConfiguredArchitecture) || arch.is_a?(Architecture)
       raise ArgumentError, "For #{name} arch is a #{arch.class} but must be a ConfiguredArchitecture"
     end
 
-    puts "UPDATE:   Creating CertModel object for #{name} using cfg #{cfg_arch.name}"
+    # TODO: XXX: Add back in arch.name.
+    #            See https://github.com/riscv-software-src/riscv-unified-db/pull/371
+    #puts "UPDATE:   Creating CertModel object for #{name} using cfg #{cfg_arch.name}"
+    puts "UPDATE:   Creating CertModel object for #{name}"
   end
 
   def unpriv_isa_manual_revision = @data["unpriv_isa_manual_revision"]
