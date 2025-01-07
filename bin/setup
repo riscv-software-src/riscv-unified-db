@@ -125,6 +125,8 @@ if [ ! -d $ROOT/.home ]; then
     mkdir $ROOT/.home
 fi
 
+ls -la $ROOT/.home
+
 if [ ! -f $ROOT/.bundle/config ]; then
     OLDDIR=$PWD
     cd $ROOT
