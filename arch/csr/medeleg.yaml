@@ -33,7 +33,7 @@ description: |
   Otherwise, an exception cause is handled by M-mode.
 
   See xref:prose:interrupts.adoc[interrupt documentation] for more details.
-definedBy: S # medeleg does not exist whe S-mode is not implemented
+definedBy: S # medeleg does not exist when S-mode is not implemented
 fields:
   IAM:
     location: 0
@@ -42,7 +42,7 @@ fields:
 
       Delegates Instruction Address Misaligned exceptions to (H)S-mode.
       <%- if ext?(:H) -%>
-      Instruction Address Misaligned exceptions may be futher delegated to VS-mode if `hedeleg.IAM` is also set.
+      Instruction Address Misaligned exceptions may be further delegated to VS-mode if `hedeleg.IAM` is also set.
       <%- end -%>
 
       Exceptions are never taken into a less-privileged mode, regardless of `medeleg`.
@@ -79,7 +79,7 @@ fields:
 
       Delegates Instruction Access Fault exceptions to (H)S-mode.
       <%- if ext?(:H) -%>
-      Instruction Access Fault exceptions may be futher delegated to VS-mode if `hedeleg.IAM` is also set.
+      Instruction Access Fault exceptions may be further delegated to VS-mode if `hedeleg.IAM` is also set.
       <%- end -%>
 
       Exceptions are never taken into a less-privileged mode, regardless of `medeleg`.
@@ -117,7 +117,7 @@ fields:
 
       Delegates Illegal Instruction exceptions to (H)S-mode.
       <%- if ext?(:H) -%>
-      Illegal Instruction exceptions may be futher delegated to VS-mode if `hedeleg.II` is also set.
+      Illegal Instruction exceptions may be further delegated to VS-mode if `hedeleg.II` is also set.
       <%- end -%>
 
       Exceptions are never taken into a less-privileged mode, regardless of `medeleg`.
@@ -154,7 +154,7 @@ fields:
 
       Delegates Breakpoint exceptions to (H)S-mode.
       <%- if ext?(:H) -%>
-      Breakpoint exceptions may be futher delegated to VS-mode if `hedeleg.B` is also set.
+      Breakpoint exceptions may be further delegated to VS-mode if `hedeleg.B` is also set.
       <%- end -%>
 
       Exceptions are never taken into a less-privileged mode, regardless of `medeleg`.
@@ -191,7 +191,7 @@ fields:
 
       Delegates Load Address Misaligned exceptions to (H)S-mode.
       <%- if ext?(:H) -%>
-      Load Address Misaligned exceptions may be futher delegated to VS-mode if `hedeleg.LAM` is also set.
+      Load Address Misaligned exceptions may be further delegated to VS-mode if `hedeleg.LAM` is also set.
       <%- end -%>
 
       Exceptions are never taken into a less-privileged mode, regardless of `medeleg`.
@@ -233,7 +233,7 @@ fields:
 
       Delegates Load Access Fault exceptions to (H)S-mode.
       <%- if ext?(:H) -%>
-      Load Access Fault exceptions may be futher delegated to VS-mode if `hedeleg.LAF` is also set.
+      Load Access Fault exceptions may be further delegated to VS-mode if `hedeleg.LAF` is also set.
       <%- end -%>
 
       Exceptions are never taken into a less-privileged mode, regardless of `medeleg`.
@@ -271,13 +271,13 @@ fields:
 
       Delegates Store/AMO Address Misaligned exceptions to (H)S-mode.
       <%- if ext?(:H) -%>
-      Store/AMO Address Misaligned exceptions may be futher delegated to VS-mode if `hedeleg.SAM` is also set.
+      Store/AMO Address Misaligned exceptions may be further delegated to VS-mode if `hedeleg.SAM` is also set.
       <%- end -%>
 
       Exceptions are never taken into a less-privileged mode, regardless of `medeleg`.
 
       [when,"MISALIGNED_LDST == true && MISALIGNED_AMO == true"]
-      Note that beause the implementation supports misaligned stores and misaligned AMOs (or no AMOs), this exception will never occur.
+      Note that because the implementation supports misaligned stores and misaligned AMOs (or no AMOs), this exception will never occur.
       Even so, the writeable bit should be presented anyway.
 
       The handling mode is determined as follows:
@@ -313,7 +313,7 @@ fields:
 
       Delegates Store/AMO Access Fault exceptions to (H)S-mode.
       <%- if ext?(:H) -%>
-      Store/AMO Access Fault exceptions may be futher delegated to VS-mode if `hedeleg.SAM` is also set.
+      Store/AMO Access Fault exceptions may be further delegated to VS-mode if `hedeleg.SAM` is also set.
       <%- end -%>
 
       Exceptions are never taken into a less-privileged mode, regardless of `medeleg`.
@@ -350,7 +350,7 @@ fields:
 
       Delegates Environment Call from U-mode exceptions to (H)S-mode.
       <%- if ext?(:H) -%>
-      Enviornment Call from U-mode exceptions may be futher delegated to VS-mode if `hedeleg.EU` is also set.
+      Environment Call from U-mode exceptions may be further delegated to VS-mode if `hedeleg.EU` is also set.
       <%- end -%>
 
       Exceptions are never taken into a less-privileged mode, regardless of `medeleg`.
@@ -388,7 +388,7 @@ fields:
 
       Delegates Environment Call from S-mode exceptions to (H)S-mode.
       <%- if ext?(:H) -%>
-      Enviornment Call from S-mode exceptions _cannot be delegated to VS-mode_.
+      Environment Call from S-mode exceptions _cannot be delegated to VS-mode_.
       <%- end -%>
 
       Exceptions are never taken into a less-privileged mode, regardless of `medeleg`.
@@ -412,7 +412,7 @@ fields:
 
       Delegates Environment Call from VS-mode exceptions to (H)S-mode.
       <%- if ext?(:H) -%>
-      Enviornment Call from S-mode exceptions _cannot be delegated to VS-mode_.
+      Environment Call from S-mode exceptions _cannot be delegated to VS-mode_.
       <%- end -%>
 
       Exceptions are never taken into a less-privileged mode, regardless of `medeleg`.
@@ -437,7 +437,7 @@ fields:
 
       An Environment Call from M-mode cannot be delegated, so this is a read-only field.
 
-      All Enviornment Call from M-mode exceptions are taken by M-mode.
+      All Environment Call from M-mode exceptions are taken by M-mode.
     type: RO
     reset_value: 0
   IPF:
@@ -447,7 +447,7 @@ fields:
 
       Delegates Instruction Page Fault exceptions to (H)S-mode.
       <%- if ext?(:H) -%>
-      Instruction Page Fault exceptions may be futher delegated to VS-mode if `hedeleg.IPF` is also set.
+      Instruction Page Fault exceptions may be further delegated to VS-mode if `hedeleg.IPF` is also set.
       <%- end -%>
 
       Exceptions are never taken into a less-privileged mode, regardless of `medeleg`.
@@ -484,7 +484,7 @@ fields:
 
       Delegates Load Page Fault exceptions to (H)S-mode.
       <%- if ext?(:H) -%>
-      Load Page Fault exceptions may be futher delegated to VS-mode if `hedeleg.LPF` is also set.
+      Load Page Fault exceptions may be further delegated to VS-mode if `hedeleg.LPF` is also set.
       <%- end -%>
 
       Exceptions are never taken into a less-privileged mode, regardless of `medeleg`.
@@ -522,7 +522,7 @@ fields:
 
       Delegates Store/AMO Page Fault exceptions to (H)S-mode.
       <%- if ext?(:H) -%>
-      Store/AMO Page Fault exceptions may be futher delegated to VS-mode if `hedeleg.SPF` is also set.
+      Store/AMO Page Fault exceptions may be further delegated to VS-mode if `hedeleg.SPF` is also set.
       <%- end -%>
 
       Exceptions are never taken into a less-privileged mode, regardless of `medeleg`.

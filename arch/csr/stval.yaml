@@ -81,7 +81,7 @@ fields:
         (_e.g._, if an 8-byte load is equally split across a page and the fault occurs on the second page, address + 4 is reported).
 
         The guest physical address is reported in `mtval2`.
-      ! [22] Virutal instruction
+      ! [22] Virtual instruction
       ! The encoding of the faulting virtual instruction.
       ! [23] Store/AMO guest-page fault
       ! The part of the virtual address causing the fault.

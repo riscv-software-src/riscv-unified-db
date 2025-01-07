@@ -24,8 +24,8 @@ naming_scheme: |
   * Left & right square braces denote optional.
   * \<model> is a 3 digit integer. It is changed only when mandatory extensions are added to a CRD.
   ** The one's digit is incremented when a small mandatory extension is added (e.g., Zicond)
-  ** The ten's digit is incremented when a medium mandatory extension is addded (e.g., PMP)
-  ** The hundreds's digit is incremented when a large mandatory extension is addded (e.g., V or H)
+  ** The ten's digit is incremented when a medium mandatory extension is added (e.g., PMP)
+  ** The hundreds's digit is incremented when a large mandatory extension is added (e.g., V or H)
   * \<version> is a semantic version (see semver.org) formatted as <major>[.<minor>.[patch]]. If \<version> is omitted, the reference applies equally to all versions.
   ** A <major> release indicates support for a new optional extension.
   ** A <minor> release indicates one or more of the following changes to the certification tests associated with the CRD.

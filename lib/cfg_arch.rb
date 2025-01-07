@@ -344,7 +344,7 @@ class ConfiguredArchitecture < Architecture
   def transitive_implemented_extensions
     return @transitive_implemented_extensions unless @transitive_implemented_extensions.nil?
 
-    raise "implemented_extensions is only valid for a fully configured defintion" unless @config.fully_configured?
+    raise "implemented_extensions is only valid for a fully configured definition" unless @config.fully_configured?
 
     list = implemented_extensions
     list.each do |e|
@@ -387,7 +387,7 @@ class ConfiguredArchitecture < Architecture
             @prohibited_extensions << conflict
           else
             # pick whichever requirement is more expansive
-            p = @prohibited_extensions.find { |prohibited_ext| prohibited_ext.name == confict.name }
+            p = @prohibited_extensions.find { |prohibited_ext| prohibited_ext.name == conflict.name }
             if p.version_requirement.subsumes?(conflict.version_requirement)
               @prohibited_extensions.delete(p)
               @prohibited_extensions << conflict

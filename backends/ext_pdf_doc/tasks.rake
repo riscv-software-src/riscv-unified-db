@@ -201,7 +201,7 @@ namespace :gen do
   end
 
   desc <<~DESC
-    Generate HTML documentation for :extension that is defined or overlayed in :cfg
+    Generate HTML documentation for :extension that is defined or overlaid in :cfg
 
     The latest version will be used, but can be overloaded by setting the EXT_VERSION environment variable.
   DESC

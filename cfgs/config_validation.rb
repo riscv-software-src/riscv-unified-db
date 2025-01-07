@@ -2,9 +2,9 @@
 
 # This file contains validation checks above and beyond what is checked
 # by the schema. It can use the entire configuration (params, extension list, etc)
-# to check for invalid scenerios.
+# to check for invalid scenarios.
 #
-# It should only be used for scenerios too complex to express in JSONSchema
+# It should only be used for scenarios too complex to express in JSONSchema
 
 # SXLEN must be specified if S is used
 require_param :SXLEN if ext?(:S)
