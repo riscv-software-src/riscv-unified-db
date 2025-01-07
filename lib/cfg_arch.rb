@@ -622,7 +622,6 @@ class ConfiguredArchitecture < Architecture
     @env = Class.new
     @env.instance_variable_set(:@cfg, @cfg)
     @env.instance_variable_set(:@params, @params)
-    @env.instance_variable_set(:@arch_gen, self)
 
     # add each parameter, either as a method (lowercase) or constant (uppercase)
     params_with_value.each do |param|
@@ -640,12 +639,12 @@ class ConfiguredArchitecture < Architecture
       # @param ext_requirement [String, #to_s] Version string, as a Gem Requirement (https://guides.rubygems.org/patterns/#pessimistic-version-constraint)
       # @return [Boolean] whether or not extension +ext_name+ meeting +ext_requirement+ is implemented in the config
       def ext?(ext_name, ext_requirement = ">= 0")
-        @arch_gen.ext?(ext_name.to_s, ext_requirement)
+        @cfg_arch.ext?(ext_name.to_s, ext_requirement)
       end
 
       # @return [Array<Integer>] List of possible XLENs for any implemented mode
       def possible_xlens
-        @arch_gen.possible_xlens
+        @cfg_arch.possible_xlens
       end
 
       # insert a hyperlink to an object
@@ -662,22 +661,22 @@ class ConfiguredArchitecture < Architecture
 
       # @returns [Hash<Integer, String>] architecturally-defined exception codes and their names
       def exception_codes
-        @arch_gen.exception_codes
+        @cfg_arch.exception_codes
       end
 
       # returns [Hash<Integer, String>] architecturally-defined interrupt codes and their names
       def interrupt_codes
-        @arch_gen.interrupt_codes
+        @cfg_arch.interrupt_codes
       end
 
       # @returns [Hash<Integer, String>] architecturally-defined exception codes and their names
       def implemented_exception_codes
-        @arch_gen.implemented_exception_codes
+        @cfg_arch.implemented_exception_codes
       end
 
       # returns [Hash<Integer, String>] architecturally-defined interrupt codes and their names
       def implemented_interrupt_codes
-        @arch_gen.implemented_interrupt_codes
+        @cfg_arch.implemented_interrupt_codes
       end
     end
 
