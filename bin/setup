@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -x
-
 ROOT=$(dirname $(dirname $(realpath $BASH_SOURCE[0])))
 OLDWD=$PWD
 cd $ROOT
@@ -33,8 +31,8 @@ CONTAINER_TAG=`cat ${ROOT}/bin/.container-tag`
 # use, in priority order:
 #  1. devcontainer, if DEVCONTAINER_ENV is set in the environment
 #  2. the type stored in .container-type
-#  3. Docker, if DOCKER is set in the enviornment
-#  4. Singularity, if SINGULARITY is set in the enviornment
+#  3. Docker, if DOCKER is set in the environment
+#  4. Singularity, if SINGULARITY is set in the environment
 #  5. The choice made by the user, which will be cached in .container-type
 if [ -v DEVCONTAINER_ENV ]; then
 CONTAINER_TYPE=devcontainer
@@ -73,6 +71,11 @@ if [ -v GITHUB_ACTIONS ]; then
     HOME_PATH=${GITHUB_WORKSPACE}
     HOME_OPT="--home ${ROOT}/.home"
     SINGULARITY_CACHE=--disable-cache
+
+    # needed to get singularity working on Ubuntu 24.04
+    # see https://github.com/lima-vm/lima/issues/2319
+    sudo /bin/bash -c "echo \"kernel.apparmor_restrict_unprivileged_userns = 0\" >/etc/sysctl.d/99-userns.conf"
+    sudo sysctl --system
 elif [ "${CONTAINER_TYPE}" == "docker" ]; then
     if ! docker images riscvintl/udb:${CONTAINER_TAG} | grep -q udb ; then
         # TODO: pull the image if it can be found
@@ -124,10 +127,6 @@ fi
 if [ ! -d $ROOT/.home ]; then
     mkdir $ROOT/.home
 fi
-
-ls -la $ROOT/.home
-${RUN} /bin/bash -c "echo \$HOME"
-${RUN} /bin/bash -c "ls -la \$HOME"
 
 if [ ! -f $ROOT/.bundle/config ]; then
     OLDDIR=$PWD
