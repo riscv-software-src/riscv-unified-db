@@ -6,7 +6,7 @@ require_relative "obj"
 
 
 # model of a specific instruction in a specific base (RV32/RV64)
-class Instruction < DatabaseObjectect
+class Instruction < DatabaseObject
   def self.ary_from_location(location_str_or_int)
     return [location_str_or_int] if location_str_or_int.is_a?(Integer)
 

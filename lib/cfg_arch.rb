@@ -1,28 +1,9 @@
 # frozen_string_literal: true
 
-# Many classes have an "cfg_arch" member which is an ConfiguredArchitecture (not DatabaseObjectect) class.
-# The "cfg_arch" member contains the "database" of RISC-V standards including extensions, instructions,
-# CSRs, Profiles, and Certificates.
-#
-# The cfg_arch member has methods such as:
-#   extensions()                Array<Extension> of all extensions known to the database (even if not implemented).
-#   extension(name)             Extension object for "name" and nil if none.
-#   parameters()                Array<ExtensionParameter> of all parameters defined in the architecture
-#   param(name)                 ExtensionParameter object for "name" and nil if none.
-#   csrs()                      Array<Csr> of all CSRs defined by RISC-V, whether or not they are implemented
-#   csr(name)                   Csr object for "name" and nil if none.
-#   instructions()              Array<Instruction> of all instructions, whether or not they are implemented
-#   inst(name)                  Instruction object for "name" and nil if none.
-#   profile_classes             Array<ProfileClass> of all known profile classes.
-#   profile_class(class_name)   ProfileClass object for "class_name" and nil if none.
-#   profile_releases            Array<ProfileRelease> of all profile releases for all profile classes
-#   profile_release(release_name) ProfileRelease object for "release_name" and nil if none.
-#   profiles                    Array<Profile> of all profiles in all releases in all classes
-#   profile(name)               Profile object for profile "name" and nil if none.
-#   cert_classes                Array<CertClass> of all known certificate classes
-#   cert_class(name)            CertClass object for "name" and nil if none.
-#   cert_models                 Array<CertModel> of all known certificate models across all classes.
-#   cert_model(name)            CertModel object for "name" and nil if none.
+# Many classes include DatabaseObject have an "cfg_arch" member which is a ConfiguredArchitecture class.
+# It combines knowledge of the RISC-V Architecture with a particular configuration.
+# A configuration is an instance of the Config object either located in the /cfg directory
+# or created at runtime for things like profiles and certificate models.
 
 require "forwardable"
 require "ruby-prof"
@@ -210,6 +191,10 @@ class ConfiguredArchitecture < Architecture
     @global_ast.freeze_tree(@symtab)
   end
 
+  # Returns a string representation of the object, suitable for debugging.
+  # @return [String] A string representation of the object.
+  def inspect = "ConfiguredArchitecture##{name}"
+
   # type check all IDL, including globals, instruction ops, and CSR functions
   #
   # @param config [Config] Configuration
@@ -277,7 +262,7 @@ class ConfiguredArchitecture < Architecture
     puts "done" if show_progress
   end
 
-  # @return [Array<ExtensionParameterWithValue>] List of all available parameters with known values for the config
+  # @return [Array<ExtensionParameterWithValue>] List of all parameters with one known value in the config
   def params_with_value
     return @params_with_value unless @params_with_value.nil?
 
@@ -300,6 +285,7 @@ class ConfiguredArchitecture < Architecture
       mandatory_extensions.each do |ext_requirement|
         ext = extension(ext_requirement.name)
         ext.params.each do |ext_param|
+          # Params listed in the config always only have one value.
           next unless @config.param_values.key?(ext_param.name)
 
           @params_with_value << ExtensionParameterWithValue.new(
@@ -314,13 +300,14 @@ class ConfiguredArchitecture < Architecture
     @params_with_value
   end
 
-  # @return [Array<ExtensionParameter>] List of all available parameters without known values for the config
+  # @return [Array<ExtensionParameter>] List of all available parameters without one known value in the config
   def params_without_value
     return @params_without_value unless @params_without_value.nil?
 
     @params_without_value = []
     extensions.each do |ext|
       ext.params.each do |ext_param|
+        # Params listed in the config always only have one value.
         next if @config.param_values.key?(ext_param.name)
 
         @params_without_value << ext_param
@@ -328,10 +315,6 @@ class ConfiguredArchitecture < Architecture
     end
     @params_without_value
   end
-
-  # Returns a string representation of the object, suitable for debugging.
-  # @return [String] A string representation of the object.
-  def inspect = "ConfiguredArchitecture##{name}"
 
   def implemented_extensions
     @implemented_extensions ||=
@@ -361,7 +344,7 @@ class ConfiguredArchitecture < Architecture
         ext = extension(e["name"])
         raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
 
-        ExtensionRequirement.new(e["name"], *e["version"], presence: "mandatory", cfg_arch: self)
+        ExtensionRequirement.new(e["name"], *e["version"], presence: "mandatory", arch: self)
       end
   end
 
@@ -377,7 +360,7 @@ class ConfiguredArchitecture < Architecture
           ext = extension(e["name"])
           raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
 
-          ExtensionRequirement.new(e["name"], *e["version"], presence: "mandatory", cfg_arch: self)
+          ExtensionRequirement.new(e["name"], *e["version"], presence: "mandatory", arch: self)
         end
 
       # now add any extensions that are prohibited by a mandatory extension
@@ -411,7 +394,7 @@ class ConfiguredArchitecture < Architecture
           @prohibited_extensions <<
             ExtensionRequirement.new(
               ext_ver_list[0].ext.name, ">= #{ext_ver_list.min.version_spec.canonical}",
-              presence: "prohibited", cfg_arch: self
+              presence: "prohibited", arch: self
             )
         elsif ext_ver_list.size == (ext_ver_list[0].ext.versions.size - 1)
           # excludes all but one version
@@ -422,7 +405,7 @@ class ConfiguredArchitecture < Architecture
           @prohibited_extensions <<
             ExtensionRequirement.new(
               ext_ver_list[0].ext.name, "!= #{allowed_version.version_spec.canonical}",
-              presence: "prohibited", cfg_arch: self
+              presence: "prohibited", arch: self
             )
         else
           # need to group
@@ -462,11 +445,11 @@ class ConfiguredArchitecture < Architecture
   #   @param ext_version_requirements [Number,String,Array] Extension version requirements
   #   @return [Boolean] True if the extension `name` meeting `ext_version_requirements` is implemented
   #   @example Checking extension presence with a version requirement
-  #     cfg_arch.ext?(:S, ">= 1.12")
+  #     ConfigurationArchitecture.ext?(:S, ">= 1.12")
   #   @example Checking extension presence with multiple version requirements
-  #     cfg_arch.ext?(:S, ">= 1.12", "< 1.15")
+  #     ConfigurationArchitecture.ext?(:S, ">= 1.12", "< 1.15")
   #   @example Checking extension precsence with a precise version requirement
-  #     cfg_arch.ext?(:S, 1.12)
+  #     ConfigurationArchitecture.ext?(:S, 1.12)
   def ext?(ext_name, *ext_version_requirements)
     @ext_cache ||= {}
     cached_result = @ext_cache[[ext_name, ext_version_requirements]]
@@ -478,7 +461,7 @@ class ConfiguredArchitecture < Architecture
           if ext_version_requirements.empty?
             e.name == ext_name.to_s
           else
-            requirement = ExtensionRequirement.new(ext_name, *ext_version_requirements, cfg_arch: self)
+            requirement = ExtensionRequirement.new(ext_name, *ext_version_requirements, arch: self)
             requirement.satisfied_by?(e)
           end
         end
@@ -487,7 +470,7 @@ class ConfiguredArchitecture < Architecture
           if ext_version_requirements.empty?
             e.name == ext_name.to_s
           else
-            requirement = ExtensionRequirement.new(ext_name, *ext_version_requirements, cfg_arch: self)
+            requirement = ExtensionRequirement.new(ext_name, *ext_version_requirements, arch: self)
             e.satisfying_versions.all? do |ext_ver|
               requirement.satisfied_by?(ext_ver)
             end
