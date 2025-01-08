@@ -103,6 +103,8 @@ versions:
     company: Qualcomm Technologies, Inc.
     email: dhower@qti.qualcomm.com
   changes:
+    - Added Xqciio sub-extension
+    - Added Xqcisim sub-extension
     - Fix description of qc.shladd instruction
     - Fix description and functionality of qc.c.extu instruction
     - Fix description and functionality of qc.wrapi instruction
@@ -119,11 +121,13 @@ versions:
   - [Xqcics, "0.2.0"]
   - [Xqcicsr, "0.2.0"]
   - [Xqciint, "0.3.0"]
+  - [Xqciio, "0.1.0"]
   - [Xqcilb, "0.2.0"]
   - [Xqcili, "0.2.0"]
   - [Xqcilia, "0.2.0"]
   - [Xqcilo, "0.2.0"]
   - [Xqcilsm, "0.3.0"]
+  - [Xqcisim, "0.1.0"]
   - [Xqcisls, "0.2.0"]
   requires:
     name: Zca
