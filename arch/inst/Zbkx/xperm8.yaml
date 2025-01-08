@@ -3,9 +3,11 @@
 $schema: inst_schema.json#
 kind: instruction
 name: xperm8
-long_name: No synopsis available.
+long_name: Byte-wise lookup of indicies into a vector.
 description: |
-  No description available.
+  The xperm8 instruction operates on bytes. The rs1 register contains a vector of XLEN/8 8-bit
+elements. The rs2 register contains a vector of XLEN/8 8-bit indexes. The result is each element in
+rs2 replaced by the indexed element in rs1, or zero if the index into rs2 is out of bounds.
 definedBy:
   anyOf: [B, Zbkx, Zk, Zkn, Zks]
 assembly: xd, xs1, xs2
@@ -25,3 +27,19 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if (implemented?(ExtensionName::B) && (CSR[misa].Zbkx == 1'b0)) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  val xperm8_lookup : (bits(8), xlenbits) -> bits(8)
+  function xperm8_lookup (idx, lut) = {
+    (lut >> (idx @ 0b00))[7..0]
+  }
+  function clause execute ( XPERM_8 (rs2,rs1,rd)) = {
+    result : xlenbits = EXTZ(0b0);
+    foreach(i from 0 to xlen by 8) {
+      result[i+7..i] = xperm4_lookup(X(rs2)[i+7..i], X(rs1));
+    };
+    X(rd) = result;
+    RETIRE_SUCCESS
+  }
