@@ -62,7 +62,7 @@ Each extension/instruction/CSR has its own file.
          |                                                      v
          |                                     +---------------------------------+
          |                                     | {s} Implementation-specific     |
-         |                                     |     Archiecture Spec            |
+         |                                     |     Architecture Spec            |
          |                                     | (gen/resolved_arch/NAME/*.yaml) |
          |                                     +---------------------------------+
          |                                                 |

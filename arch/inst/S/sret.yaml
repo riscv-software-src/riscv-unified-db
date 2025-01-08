@@ -10,11 +10,11 @@ description: |
   When `sret` is allowed to execute, its behavior depends on whether or not the current privilege
   mode is virtualized.
 
-  *When the current privlege mode is (H)S-mode or M-mode*
+  *When the current privilege mode is (H)S-mode or M-mode*
 
   `sret` sets  `hstatus.HPV` = 0, `mstatus.SPP` = 0,
   `mstatus.SIE` = `mstatus.SPIE`, and `mstatus.SPIE` = 1,
-  changes the privlege mode according to the table below,
+  changes the privilege mode according to the table below,
   and then jumps to the address in `sepc`.
 
   .Next privilege mode following an `sret` in (H)S-mode or M-mode
@@ -28,11 +28,11 @@ description: |
   | 1 | 1 | VS-mode
   |===
 
-  *When the current privlege mode is VS-mode*
+  *When the current privilege mode is VS-mode*
 
   `sret` sets
   `vsstatus.SPP` = 0, `vsstatus.SIE` = `vstatus.SPIE`, and `vsstatus.SPIE` = 1,
-  changes the privlege mode according to the table below,
+  changes the privilege mode according to the table below,
   and then jumps to the address in `vsepc`.
 
   .Next privilege mode following an `sret` in (H)S-mode or M-mode

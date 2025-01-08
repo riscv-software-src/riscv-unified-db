@@ -17,7 +17,7 @@ from jsonschema.exceptions import ValidationError
 from referencing import Registry, Resource
 from referencing.exceptions import NoSuchResource
 
-# cahce of Schema valiators
+# cache of Schema validators
 schemas = {}
 
 SCHEMAS_PATH = Path(os.path.join(os.path.dirname(os.path.dirname(__file__)), "schemas"))

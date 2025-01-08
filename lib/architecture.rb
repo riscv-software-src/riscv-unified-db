@@ -55,7 +55,7 @@ class Architecture
   # @return [Pathname] Path to the directory with the standard YAML files
   attr_reader :path
 
-  # @param arch_dir [Sting,Pathname] Path to a directory with a fully merged/resolved architecture defintion
+  # @param arch_dir [String,Pathname] Path to a directory with a fully merged/resolved architecture definition
   def initialize(arch_dir)
     @arch_dir = Pathname.new(arch_dir)
     raise "Arch directory not found: #{arch_dir}" unless @arch_dir.exist?
