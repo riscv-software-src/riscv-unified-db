@@ -12,6 +12,7 @@ definedBy:
   anyOf:
     - C
     - Zca
+base: 64
 assembly: xd, shamt
 encoding:
   match: 100-00--------01

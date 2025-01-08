@@ -13,6 +13,7 @@ definedBy:
   anyOf:
     - C
     - Zca
+base: 64
 assembly: xs2, imm(xs1)
 encoding:
   match: 111-----------00
