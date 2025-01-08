@@ -23,7 +23,7 @@
           "non_mandatory_extensions": {
             "type": "null"
           },
-          "prohbited_extensions": {
+          "prohibited_extensions": {
             "type": "null"
           },
           "implemented_extensions": {
@@ -124,7 +124,7 @@
         "non_mandatory_extensions": {
           "type": "null"
         },
-        "prohbited_extensions": {
+        "prohibited_extensions": {
           "type": "null"
         },
         "params": {
