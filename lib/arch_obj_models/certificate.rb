@@ -26,7 +26,7 @@ class CertModel < Portfolio
   def initialize(obj_yaml, yaml_path, arch)
     super # Calls parent class with the same args I got
 
-    puts "UPDATE:   Creating CertModel object for #{name} using cfg #{arch.name}"
+    puts "UPDATE:   Creating CertModel object for #{name} using arch #{arch.name}"
   end
 
   def unpriv_isa_manual_revision = @data["unpriv_isa_manual_revision"]
