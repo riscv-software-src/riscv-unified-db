@@ -115,7 +115,7 @@ function nan_box {
     of smaller size by adding all 1's to the upper bits.
   }
   body {
-    assert(FROM_SIZE < TO_SIZE, "Bad template arugments; FROM_SIZE must be less than TO_SIZE");
+    assert(FROM_SIZE < TO_SIZE, "Bad template arguments; FROM_SIZE must be less than TO_SIZE");
 
     return {{TO_SIZE - FROM_SIZE{1'b1}}, from_value};
   }

@@ -9,7 +9,7 @@ description: |
 
     * Load the word at address _rs1_
     * Write the sign-extended value into _rd_
-    * Signed compare the least-significant word of register _rs2_ to the loaded value, and select the mimimum value
+    * Signed compare the least-significant word of register _rs2_ to the loaded value, and select the minimum value
     * Write the result to the address in _rs1_
 definedBy:
   anyOf: [A, Zaamo]

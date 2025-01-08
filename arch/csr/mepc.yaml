@@ -22,7 +22,7 @@ fields:
       Otherwise, `mepc.PC` is never written by the implementation, though it may be explicitly written
       by software.
 
-      On an exception retun from M-mode (from the MRET instruction),
+      On an exception return from M-mode (from the MRET instruction),
       control transfers to the virtual address read out of `mepc.PC`.
 
       [when,"ext?(:C)"]

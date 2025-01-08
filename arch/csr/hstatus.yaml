@@ -134,7 +134,7 @@ fields:
       When `hstatus.VGEIN` != 0, it selects which bit of `hgeip` is currently active in VS-mode.
 
     type(): |
-      # if NUM_EXTERNAL_GUEST_INTERRUPTS+1 is 63 (beacuse indexing in `hgeip` starts at 1),
+      # if NUM_EXTERNAL_GUEST_INTERRUPTS+1 is 63 (because indexing in `hgeip` starts at 1),
       # then the field accepts any value.
       # Otherwise, it accepts a restricted set of values
       if (NUM_EXTERNAL_GUEST_INTERRUPTS == 63) {
@@ -169,7 +169,7 @@ fields:
 
       Written by hardware:
 
-      * When taking a trap into HS-mode from VS-mode or VU-mode, `hstatus.SPVP` is written with the nominal privlege mode
+      * When taking a trap into HS-mode from VS-mode or VU-mode, `hstatus.SPVP` is written with the nominal privilege mode
 
       Notably, unlike its analog `mstatus.SPP`, `hstatus.SPVP` is *not* cleared when returning from a trap.
 
@@ -223,7 +223,7 @@ fields:
       Since the CPU does not support big endian in VS-mode, this is hardwired to 0.
 
       [when,"VS_MODE_ENDIANESS == bit"]
-      Since the CPU does not support litte endian in VS-mode, this is hardwired to 1.
+      Since the CPU does not support little endian in VS-mode, this is hardwired to 1.
     type(): |
       if (VS_MODE_ENDIANESS == "dynamic") {
         # mode is mutable

@@ -40,8 +40,8 @@
     },
     "$source": {
       "type": "string",
-      "format": "uri-refencence",
-      "description": "Realtive (from arch/) path to the original YAML file"
+      "format": "uri-reference",
+      "description": "Relative (from arch/) path to the original YAML file"
     }
   },
   "additionalProperties": false
