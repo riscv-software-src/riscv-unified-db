@@ -3,7 +3,25 @@
   "configurations": [
     {
       "type": "rdbg",
-      "name": "RVA20 Profile",
+      "name": "MC100-32",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:cert_model_pdf[MC100-32]",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "MC200-32",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:cert_model_pdf[MC200-32]",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "RVA20",
       "request": "launch",
       "command": "bundle exec rake",
       "script": "gen:profile[RVA20]",

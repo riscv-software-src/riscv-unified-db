@@ -23,7 +23,7 @@ fields:
       software. Since hpmcounter values are unsigned values, overflow is defined as unsigned
       overflow of the implemented counter bits.
 
-      The OF bit is sticky; it stays set until explictly cleared by a CSR write.
+      The OF bit is sticky; it stays set until explicitly cleared by a CSR write.
 
       A Local Counter Overflow Interrupt (LCOFI) is generated when OF is clear and
       mhpmcounter27 overflows.

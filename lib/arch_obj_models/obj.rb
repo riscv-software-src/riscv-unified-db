@@ -11,7 +11,7 @@
 #          ...
 #        }
 #
-#     obj = DatabaseObjectect.new(data)
+#     obj = DatabaseObject.new(data)
 #     obj['name']    # 'mstatus'
 #     obj['address'] # 0x320
 #
@@ -24,7 +24,7 @@
 # Subclasses may override the accessors when a more complex data structure
 # is warranted, e.g., the CSR Field 'alias' returns a CsrFieldAlias object
 # instead of a simple string
-class DatabaseObjectect
+class DatabaseObject
   # Exception raised when there is a problem with a schema file
   class SchemaError < ::StandardError
     # result from JsonSchemer.validate
@@ -90,11 +90,16 @@ class DatabaseObjectect
     end
   end
 
-  attr_reader :data, :data_path, :specification, :cfg_arch, :name, :long_name, :description
+  attr_reader :data, :data_path, :name, :long_name, :description
 
   # @return [Architecture] If only a specification (no config) is known
   # @return [ConfiguredArchitecture] If a specification and config is known
-  attr_reader :arch
+  # @return [nil] If neither is known
+  attr_reader :arch       # Use when Architecture class is sufficient
+
+  # @return [ConfiguredArchitecture] If a specification and config is known
+  # @return [nil] Otherwise
+  attr_reader :cfg_arch   # Use when extra stuff provided by ConfiguredArchitecture is required
 
   def kind = @data["kind"]
 
@@ -140,7 +145,7 @@ class DatabaseObjectect
       end
 
       # convert through JSON to handle anything supported in YAML but not JSON
-      # (e.g., integer object keys will be coverted to strings)
+      # (e.g., integer object keys will be converted to strings)
       jsonified_obj = JSON.parse(JSON.generate(@data))
 
       raise "Nothing there?" if jsonified_obj.nil?
@@ -151,11 +156,11 @@ class DatabaseObjectect
     end
   end
 
-  # clone this, and set the cfg_arch at the same time
+  # clone this, and set the arch at the same time
   # @return [ExtensionRequirement] The new object
-  def clone(cfg_arch: nil)
+  def clone(arch: nil)
     obj = super()
-    obj.instance_variable_set(:@cfg_arch, cfg_arch)
+    obj.instance_variable_set(:@arch, arch)
     obj
   end
 
@@ -182,15 +187,12 @@ class DatabaseObjectect
   # @param data [Hash<String,Object>] Hash with fields to be added
   # @param data_path [Pathname] Path to the data file
   def initialize(data, data_path, arch: nil)
-    raise "Bad data" unless data.is_a?(Hash)
+    raise ArgumentError, "Bad data" unless data.is_a?(Hash)
 
     @data = data
     @data_path = data_path
     if arch.is_a?(ConfiguredArchitecture)
       @cfg_arch = arch
-      @specification = arch
-    elsif arch.is_a?(Architecture)
-      @specification = arch
     end
     @arch = arch
     @name = data["name"]
@@ -206,7 +208,7 @@ class DatabaseObjectect
   extend Forwardable
   def_delegator :@data, :[]
 
-  # @return [Array<String>] List of keys added by this DatabaseObjectect
+  # @return [Array<String>] List of keys added by this DatabaseObject
   def keys = @data.keys
 
   # @param k (see Hash#key?)
@@ -216,7 +218,7 @@ class DatabaseObjectect
   # @overload defined_by?(ext_name, ext_version)
   #   @param ext_name [#to_s] An extension name
   #   @param ext_version [#to_s] A specific extension version
-  #   @return [Boolean] Whether or not the instruction is defined by extesion `ext`, version `version`
+  #   @return [Boolean] Whether or not the instruction is defined by extension `ext`, version `version`
   # @overload defined_by?(ext_version)
   #   @param ext_version [ExtensionVersion] An extension version
   #   @return [Boolean] Whether or not the instruction is defined by ext_version
@@ -230,7 +232,7 @@ class DatabaseObjectect
         raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
         raise ArgumentError, "First parameter must be an extension version" unless args[1].respond_to?(:to_s)
 
-        ExtensionVersion.new(args[0], args[1], cfg_arch)
+        ExtensionVersion.new(args[0], args[1], arch)
       else
         raise ArgumentError, "Unsupported number of arguments (#{args.size})"
       end
@@ -243,7 +245,7 @@ class DatabaseObjectect
   # def defined_by
   #   raise "ERROR: definedBy is nul for #{name}" if @data["definedBy"].nil?
 
-  #   SchemaCondition.new(@data["definedBy"], @cfg_arch).satisfying_ext_versions
+  #   SchemaCondition.new(@data["definedBy"], @arch).satisfying_ext_versions
   # end
 
   # @return [SchemaCondition] Extension(s) that define the instruction. If *any* requirement is met, the instruction is defined.
@@ -252,7 +254,7 @@ class DatabaseObjectect
       begin
         raise "ERROR: definedBy is nul for #{name}" if @data["definedBy"].nil?
 
-        SchemaCondition.new(@data["definedBy"], @cfg_arch)
+        SchemaCondition.new(@data["definedBy"], @arch)
       end
   end
 
@@ -384,7 +386,7 @@ end
 #
 class SchemaCondition
   # @param composition_hash [Hash] A possibly recursive hash of "allOf", "anyOf", "oneOf"
-  def initialize(composition_hash, cfg_arch)
+  def initialize(composition_hash, arch)
     raise ArgumentError, "composition_hash is nil" if composition_hash.nil?
 
     unless is_a_condition?(composition_hash)
@@ -392,7 +394,7 @@ class SchemaCondition
     end
 
     @hsh = composition_hash
-    @cfg_arch = cfg_arch
+    @arch = arch
   end
 
   def to_h = @hsh
@@ -467,13 +469,13 @@ class SchemaCondition
   def first_requirement(req = @hsh)
     case req
     when String
-      ExtensionRequirement.new(req, cfg_arch: @cfg_arch)
+      ExtensionRequirement.new(req, arch: @arch)
     when Hash
       if req.key?("name")
         if req["version"].nil?
-          ExtensionRequirement.new(req["name"], cfg_arch: @cfg_arch)
+          ExtensionRequirement.new(req["name"], arch: @arch)
         else
-          ExtensionRequirement.new(req["name"], req["version"], cfg_arch: @cfg_arch)
+          ExtensionRequirement.new(req["name"], req["version"], arch: @arch)
         end
       else
         first_requirement(req[req.keys[0]])
@@ -486,12 +488,12 @@ class SchemaCondition
   end
 
   # combine all conds into one using AND
-  def self.all_of(*conds, cfg_arch:)
+  def self.all_of(*conds, arch:)
     cond = SchemaCondition.new({
       "allOf" => conds
-    }, cfg_arch)
+    }, arch)
 
-    SchemaCondition.new(cond.minimize, cfg_arch)
+    SchemaCondition.new(cond.minimize, arch)
   end
 
   # @return [Object] Schema for this condition, with basic logic minimization
@@ -529,14 +531,14 @@ class SchemaCondition
       if hsh.key?("name")
         if hsh.key?("version")
           if hsh["version"].is_a?(String)
-            "(yield ExtensionRequirement.new('#{hsh["name"]}', '#{hsh["version"]}', cfg_arch: @cfg_arch))"
+            "(yield ExtensionRequirement.new('#{hsh["name"]}', '#{hsh["version"]}', arch: @arch))"
           elsif hsh["version"].is_a?(Array)
-            "(yield ExtensionRequirement.new('#{hsh["name"]}', #{hsh["version"].map { |v| "'#{v}'" }.join(', ')}, cfg_arch: @cfg_arch))"
+            "(yield ExtensionRequirement.new('#{hsh["name"]}', #{hsh["version"].map { |v| "'#{v}'" }.join(', ')}, arch: @arch))"
           else
             raise "unexpected"
           end
         else
-          "(yield ExtensionRequirement.new('#{hsh["name"]}', cfg_arch: @cfg_arch))"
+          "(yield ExtensionRequirement.new('#{hsh["name"]}', arch: @arch))"
         end
       else
         key = hsh.keys[0]
@@ -557,7 +559,7 @@ class SchemaCondition
         end
       end
     else
-      "(yield ExtensionRequirement.new('#{hsh}', cfg_arch: @cfg_arch))"
+      "(yield ExtensionRequirement.new('#{hsh}', arch: @arch))"
     end
   end
 
@@ -598,7 +600,7 @@ class SchemaCondition
 
   def satisfying_ext_versions
     list = []
-    cfg_arch.extensions.each do |ext|
+    arch.extensions.each do |ext|
       ext.versions.each do |ext_ver|
         list << ext_ver if satisfied_by? { |ext_req| ext_req.satisfied_by?(ext_ver) }
       end

@@ -3,7 +3,7 @@
 require_relative "obj"
 
 # CSR definition
-class Csr < DatabaseObjectect
+class Csr < DatabaseObject
   def ==(other)
     if other.is_a?(Csr)
       name == other.name
@@ -56,7 +56,7 @@ class Csr < DatabaseObjectect
   end
 
   # @param cfg_arch [ConfiguredArchitecture] A configuration
-  # @return [Array<Idl::FunctionDefAst>] List of functions reachable from this CSR's sw_read or a field's sw_wirte function
+  # @return [Array<Idl::FunctionDefAst>] List of functions reachable from this CSR's sw_read or a field's sw_write function
   def reachable_functions(cfg_arch)
     return @reachable_functions unless @reachable_functions.nil?
 
@@ -142,7 +142,7 @@ class Csr < DatabaseObjectect
     end
   end
 
-  # @param cfg_arch [ConfiguredArchitecture] A configuration (can be nil if the lenth is not dependent on a config parameter)
+  # @param cfg_arch [ConfiguredArchitecture] A configuration (can be nil if the length is not dependent on a config parameter)
   # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
   # @return [Integer] Length, in bits, of the CSR, given effective_xlen
   # @return [nil] if the length cannot be determined from the cfg_arch (e.g., because SXLEN is unknown and +effective_xlen+ was not provided)

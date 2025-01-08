@@ -93,13 +93,13 @@ fields:
       <%%- end -%>
 
       <%%- if ext?(:S) -%>
-      When `scounteren.CY` is also set, `cycle` is futher accessible to U-mode.
+      When `scounteren.CY` is also set, `cycle` is further accessible to U-mode.
       <%%- end -%>
 
       <%%- if ext?(:H) -%>
-      When `hcounteren.CY` is also set, `cycle` is futher accessible to VS-mode.
+      When `hcounteren.CY` is also set, `cycle` is further accessible to VS-mode.
 
-      When `hcounteren.CY` && `scounteren.CY` are both set, `cycle` is futher accessible to VU-mode.
+      When `hcounteren.CY` && `scounteren.CY` are both set, `cycle` is further accessible to VU-mode.
       <%%- end -%>
     type(): |
       if (MCOUNTENABLE_EN[0]) {
@@ -131,13 +131,13 @@ fields:
       <%%- end -%>
 
       <%%- if ext?(:S) -%>
-      When `scounteren.IR` is also set, `instret` is futher accessible to U-mode.
+      When `scounteren.IR` is also set, `instret` is further accessible to U-mode.
       <%%- end -%>
 
       <%%- if ext?(:H) -%>
-      When `hcounteren.IR` is also set, `instret` is futher accessible to VS-mode.
+      When `hcounteren.IR` is also set, `instret` is further accessible to VS-mode.
 
-      When `hcounteren.IR` && `scounteren.IR` are both set, `instret` is futher accessible to VU-mode.
+      When `hcounteren.IR` && `scounteren.IR` are both set, `instret` is further accessible to VU-mode.
       <%%- end -%>
     type(): |
       if (MCOUNTENABLE_EN[2]) {
@@ -163,13 +163,13 @@ fields:
       <%%- end -%>
 
       <%%- if ext?(:S) -%>
-      When `scounteren.HPM<%= hpm_num %>` is also set, `hpmcounter<%= hpm_num %>` is futher accessible to U-mode.
+      When `scounteren.HPM<%= hpm_num %>` is also set, `hpmcounter<%= hpm_num %>` is further accessible to U-mode.
       <%%- end -%>
 
       <%%- if ext?(:H) -%>
-      When `hcounteren.HPM<%= hpm_num %>` is also set, `hpmcounter<%= hpm_num %>` is futher accessible to VS-mode.
+      When `hcounteren.HPM<%= hpm_num %>` is also set, `hpmcounter<%= hpm_num %>` is further accessible to VS-mode.
 
-      When `hcounteren.HPM<%= hpm_num %>` && `scounteren.HPM<%= hpm_num %>` are both set, `hpmcounter<%= hpm_num %>` is futher accessible to VU-mode.
+      When `hcounteren.HPM<%= hpm_num %>` && `scounteren.HPM<%= hpm_num %>` are both set, `hpmcounter<%= hpm_num %>` is further accessible to VU-mode.
       <%%- end -%>
     type(): |
       if (MCOUNTENABLE_EN[<%= hpm_num %>]) {

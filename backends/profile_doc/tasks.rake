@@ -10,23 +10,25 @@ rule %r{#{$root}/gen/profile_doc/adoc/.*\.adoc} => [
   profile_release = cfg_arch_for("_").profile_release(profile_release_name)
   raise ArgumentError, "No profile release named '#{profile_release_name}'" if profile_release.nil?
 
-  # Set globals for ERB template.
-  profile_class = profile_release.profile_class
-  portfolio_class = profile_class
-  portfolio = profile_release
-
   template_path = Pathname.new "#{$root}/backends/profile_doc/templates/profile.adoc.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")
   erb.filename = template_path.to_s
 
+  # Switch to the generated profile certificate cfg arch and set some variables available to ERB template.
   cfg_arch = cfg_arch_for("_")
 
-  # XXX - Add call to to_cfg_arch() in portfolio instance class.
-  # But somehow have to merge the multiple portofolios in one profile release to one since
-  # to_cfg_arch used to provide coloring of fields in CSRs in appendices that apply to all profiles in a release.
+  # Create empty binding and then specify explicitly which variables the ERB template can access.
+  def create_empty_binding
+    binding
+  end
+  erb_binding = create_empty_binding
+  erb_binding.local_variable_set(:cfg_arch, cfg_arch)
+  erb_binding.local_variable_set(:profile_class, profile_release.profile_class)
+  erb_binding.local_variable_set(:profile_release, profile_release)
+  erb_binding.local_variable_set(:portfolio_class, profile_release.profile_class)
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AsciidocUtils.resolve_links(cfg_arch.find_replace_links(erb.result(binding)))
+  File.write t.name, AsciidocUtils.resolve_links(cfg_arch.find_replace_links(erb.result(erb_binding)))
   puts "Generated adoc source at #{t.name}"
 end
 

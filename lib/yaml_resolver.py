@@ -17,7 +17,7 @@ from jsonschema.exceptions import ValidationError
 from referencing import Registry, Resource
 from referencing.exceptions import NoSuchResource
 
-# cahce of Schema valiators
+# cache of Schema validators
 schemas = {}
 
 SCHEMAS_PATH = Path(os.path.join(os.path.dirname(os.path.dirname(__file__)), "schemas"))
@@ -214,7 +214,7 @@ def resolve(rel_path : str | Path, arch_root : str | Path, do_checks: bool) -> d
       exit(1)
     fn_name = Path(rel_path).stem
     if do_checks and (fn_name != unresolved_arch_data["name"]):
-      print(f"ERROR: 'name' key ({unresolved_arch_data["name"]}) must match filename ({fn_name} in {arch_root}/{rel_path}", file=sys.stderr)
+      print(f"ERROR: 'name' key ({unresolved_arch_data['name']}) must match filename ({fn_name} in {arch_root}/{rel_path}", file=sys.stderr)
       exit(1)
     resolved_objs[str(rel_path)] = _resolve(unresolved_arch_data, [], rel_path, unresolved_arch_data, arch_root, do_checks)
     return resolved_objs[str(rel_path)]
@@ -266,11 +266,11 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
 
       if "$parent_of" in ref_obj:
         if isinstance(ref_obj["$parent_of"], list):
-          ref_obj["$parent_of"].append(f"{obj_file_path}#/{"/".join(obj_path)}")
+          ref_obj["$parent_of"].append(f"{obj_file_path}#/{'/'.join(obj_path)}")
         else:
-          ref_obj["$parent_of"] = [ref_obj["$parent_of"], f"{obj_file_path}#/{"/".join(obj_path)}"]
+          ref_obj["$parent_of"] = [ref_obj["$parent_of"], f"{obj_file_path}#/{'/'.join(obj_path)}"]
       else:
-        ref_obj["$parent_of"] = f"{obj_file_path}#/{"/".join(obj_path)}"
+        ref_obj["$parent_of"] = f"{obj_file_path}#/{'/'.join(obj_path)}"
 
     del obj["$inherits"]
 
@@ -306,6 +306,8 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
       del final_obj["$remove"]
 
     return final_obj
+  #elif "$copy" in obj:
+  #  raise "$copy support was lost by https://github.com/riscv-software-src/riscv-unified-db/pull/350"
   else:
     for key in obj:
       obj[key] = _resolve(obj[key], obj_path + [key], obj_file_path, doc_obj, arch_root, do_checks)
@@ -417,6 +419,7 @@ def resolve_file(rel_path : str | Path, arch_dir: str | Path, resolved_dir: str 
     resolved_obj = resolve(rel_path, args.arch_dir, do_checks)
     resolved_obj["$source"] = os.path.join(args.arch_dir, rel_path)
 
+    write_yaml(resolved_path, resolved_obj)
     if do_checks and ("$schema" in resolved_obj):
       schema = _get_schema(resolved_obj["$schema"])
       try:
@@ -426,7 +429,6 @@ def resolve_file(rel_path : str | Path, arch_dir: str | Path, resolved_dir: str 
         print(best_match(schema.iter_errors(resolved_obj)).message)
         exit(1)
 
-    write_yaml(resolved_path, resolved_obj)
     os.chmod(resolved_path, 0o444)
 
 if __name__ == '__main__':

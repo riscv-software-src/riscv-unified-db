@@ -18,6 +18,12 @@ versions:
   requires:
     name: U
     version: "= 1.0.0"
+- version: "1.13.0"
+  state: ratified
+  ratification_date: null
+  requires:
+    name: U
+    version: "= 1.0.0"
 description: |
   This chapter describes the RISC-V supervisor-level architecture, which
   contains a common core that is used with various supervisor-level
@@ -56,7 +62,7 @@ params:
       assert ASID_WIDTH <= 9 if XLEN == 32
   S_MODE_ENDIANESS:
     description: |
-      Endianess of data in S-mode. Can be one of:
+      Endianness of data in S-mode. Can be one of:
 
        * little:  M-mode data is always little endian
        * big:     M-mode data is always big endian
