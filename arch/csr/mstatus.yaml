@@ -10,7 +10,7 @@ priv_mode: M
 # length is MXLEN-bit
 #
 # MXLEN cannot change dynamically, so this will be converted to an integer
-# in the genrated, configuration-dependent spec
+# in the generated, configuration-dependent spec
 length: MXLEN
 description: The mstatus register tracks and controls the hart's current operating state.
 definedBy: Sm
@@ -104,11 +104,11 @@ fields:
       Since the CPU does not support big endian, this is hardwired to 0.
 
       [when,"S_MODE_ENDIANESS == big"]
-      Since the CPU does not support litte endian, this is hardwired to 1.
+      Since the CPU does not support little endian, this is hardwired to 1.
     type(): |
       return (S_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
 
-    # if endianess is mutable, MBE comes out of reset in little-endian mode
+    # if endianness is mutable, MBE comes out of reset in little-endian mode
     reset_value(): |
       if (S_MODE_ENDIANESS == "little") {
         return 0;
@@ -322,7 +322,7 @@ fields:
     description: |
       Modify PRiVilege.
 
-      When 1, loads and stores behave as if the current virutalization mode:privilege level was
+      When 1, loads and stores behave as if the current virtualization mode:privilege level was
       `mstatus.MPV`:`mstatus.MPP`.
 
       `mstatus.MPRV` is cleared on any exception return (`mret` or `sret` instruction, regardless of the trap handler privilege mode).
@@ -398,7 +398,7 @@ fields:
 
       * On a return from an exception from M-mode, the machine will
       enter the privilege level stored in MPP before clearing the field.
-      * When `mstatus.MPRV` is set, loads and stores behave as if the current privlege level were MPP.
+      * When `mstatus.MPRV` is set, loads and stores behave as if the current privilege level were MPP.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
@@ -419,7 +419,7 @@ fields:
         return false;
       } else if (csr_value.MPP == 2'b10) {
         # never a valid value
-        return flase;
+        return false;
       } else {
         return true;
       }
@@ -502,7 +502,7 @@ fields:
       Written by hardware in two cases:
 
       * Written with prior value of `mstatus.MIE` when entering M-mode from an exception/interrupt.
-      * Writen with the value 1 when returning from an exception in M-mode (via the `mret` instruction).
+      * Written with the value 1 when returning from an exception in M-mode (via the `mret` instruction).
 
       Can also be written by software without immediate side effect.
 
@@ -523,7 +523,7 @@ fields:
       Since the CPU does not support big endian in U-mode, this is hardwired to 0.
 
       [when,"U_MODE_ENDIANESS == 'big'"]
-      Since the CPU does not support litte endian in U-mode, this is hardwired to 1.
+      Since the CPU does not support little endian in U-mode, this is hardwired to 1.
     type(): |
       return (U_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
 
@@ -544,7 +544,7 @@ fields:
       Written by hardware in two cases:
 
       * Written with prior value of `mstatus.SIE` when entering (H)S-mode from an exception/interrupt.
-      * Writen with the value 1 when returning from an exception via the `sret` instruction in (H)S-mode or (unlikely) M-mode.
+      * Written with the value 1 when returning from an exception via the `sret` instruction in (H)S-mode or (unlikely) M-mode.
 
       Can also be written by software without immediate side effect.
 
@@ -562,7 +562,7 @@ fields:
       Written by hardware in two cases:
 
       * Written with the value 0 when entering M-mode from an exception/interrupt.
-      * Written with the prior value of `mstatus.MPIE` when returning from an exeception in M-mode (via `mret`).
+      * Written with the prior value of `mstatus.MPIE` when returning from an exception in M-mode (via `mret`).
 
       Affects execution by:
 
@@ -579,7 +579,7 @@ fields:
       Written by hardware in two cases:
 
       * Written with the value 0 when entering (H)S-mode from an exception/interrupt.
-      * Written with the prior value of `mstatus.SPIE` when returning from an exeception via `sret` in (H)S-mode or (unlikely) M-mode.
+      * Written with the prior value of `mstatus.SPIE` when returning from an exception via `sret` in (H)S-mode or (unlikely) M-mode.
 
       Affects execution by:
 

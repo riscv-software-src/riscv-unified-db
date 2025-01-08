@@ -207,7 +207,7 @@ Bits<2> op = $bits(MemoryOperation::Fetch); # op gets 2'd3, see <<Casting>>
 
 ==== Bitfields
 
-Bitfields represent named ranges within a contiguous vector of bits. They are useful, for example, to describe the fields in a page table entry. Bitfield names and members must begin with a capital letter. Bitfields are explictly declared with a compile-time-known bit width. Bitfield members specify the range they occupy in the bitfield. Members may overlap, which enables aliasing. Gaps may exist in a bitfield (where no member exists); such gaps are read-only zero bits.
+Bitfields represent named ranges within a contiguous vector of bits. They are useful, for example, to describe the fields in a page table entry. Bitfield names and members must begin with a capital letter. Bitfields are explicitly declared with a compile-time-known bit width. Bitfield members specify the range they occupy in the bitfield. Members may overlap, which enables aliasing. Gaps may exist in a bitfield (where no member exists); such gaps are read-only zero bits.
 
 [source,idl]
 ----
@@ -274,7 +274,7 @@ Boolean  array_of_bools[12];      # array of twelve booleans
 Bits<32> matrix_of_words[32][32]; # array of arrays of 32 words
 ----
 
-Array elements are refenced using the bracket operator:
+Array elements are referenced using the bracket operator:
 
 .Array element references
 [source,idl]
@@ -308,7 +308,7 @@ When one or more values in a tuple is not needed, it can be assigned to the don'
 
 === Integer literals
 
-Integer literal values can be expressed using either C style or Verilog style. When using Verilog style, the literal bit width can be specified. If the width is omitted using the verilog style, the bit width will be XLEN. When using C style, the bitwidth is the minimum number of bits needed to represent the value.
+Integer literal values can be expressed using either C style or Verilog style. When using Verilog style, the literal bit width can be specified. If the width is omitted using the Verilog style, the bit width will be XLEN. When using C style, the bitwidth is the minimum number of bits needed to represent the value.
 
 A signed literal is allocated an extra bit to support negation. The literal itself is always positive, but may be immediately negated to get a negative value. For that reason, be careful
 constructing negative literals (see example below).
@@ -398,7 +398,7 @@ Bits<32> matrix_of_words[32][32] =
 
 == String literals
 
-String literals are enclosed in double quotes. There is no escape charater; as such, it is impossible to represent a double quote, newline, etc. in a string literal.
+String literals are enclosed in double quotes. There is no escape character; as such, it is impossible to represent a double quote, newline, etc. in a string literal.
 
 [source,idl]
 ----
@@ -703,7 +703,7 @@ $array_size(array) # => 13
 
 IDL provides if/else and for loops for control flow.
 
-An if statement condition must be a Boolean type; integers are not implictly converted to Booleans (_e.g._, testing whether an integer is 0).
+An if statement condition must be a Boolean type; integers are not implicitly converted to Booleans (_e.g._, testing whether an integer is 0).
 
 [source,idl]
 ----
@@ -773,7 +773,7 @@ Functions must live in global scope. Functions cannot be nested.
 
 A function may return zero or more values of any valid type. A function may accept zero or more arguments of any valid type.
 
-Functions have no address. They can only be called, and function objects cannot be assigned to a variable (no functin pointers).
+Functions have no address. They can only be called, and function objects cannot be assigned to a variable (no function pointers).
 
 As IDL is intended to represent hardware implementations, recursive functions are not allowed.
 
@@ -785,7 +785,7 @@ IDL only supports template values (_i.e._, you cannot pass a type as a template 
 
 Template functions are called using C++-style syntax, with the template argument enclosed in angle brackets.
 
-IDL cannot infer template arguments; they must be provided explictly.
+IDL cannot infer template arguments; they must be provided explicitly.
 
 .Example of template function
 [example]
@@ -807,7 +807,7 @@ function popcount {
 [source,idl]
 ----
 Bits<5> cnt = popcount<32, 5>(32'haaaaaaaa); # cnt = 16
-# Bits<5> cnt = popcount(32'haaaaaaaa); # compilation error: no template arugments given
+# Bits<5> cnt = popcount(32'haaaaaaaa); # compilation error: no template arguments given
 ----
 ====
 
@@ -898,7 +898,7 @@ The file `globals.idl` is implicitly treated as the top-level source file. Other
 
 === Instruction definitions
 
-Instruction defintions in `arch/inst` use IDL to formally specify the execution behavior via the "operation()" key. The IDL executes at Instruction scope when the instruction executes on a hart.
+Instruction definitions in `arch/inst` use IDL to formally specify the execution behavior via the "operation()" key. The IDL executes at Instruction scope when the instruction executes on a hart.
 
 "operation()" has no arguments (though decode variables are populated prior to execution) and no return value.
 
@@ -922,7 +922,7 @@ add:
 
 === CSR definitions
 
-IDL is used in several places of a CSR defintion in `arch/csr`:
+IDL is used in several places of a CSR definition in `arch/csr`:
 
 sw_read()::
 
@@ -941,7 +941,7 @@ instret:
 
 field.sw_write(csr_value)::
 
-The "sw_write(csr_value)" function of a CSR field executes when a software write (via a `Zicsr` instruction) occurs. It takes a single value, `csr_value`, that is an implicitly-defined bitfield of the CSR populated with the values software is trying to write. It returns a Bits<N> value repsenting what hardware is actually going to write into the field, where N is the width of the field. sw_write may also return the special value `UNDEFINED_LEGAL_DETERMINISTIC` to indicate that the written value is undefined, but it will be a legal value for the field and is deterministically determined based on the sequence of instructions leading to the write.
+The "sw_write(csr_value)" function of a CSR field executes when a software write (via a `Zicsr` instruction) occurs. It takes a single value, `csr_value`, that is an implicitly-defined bitfield of the CSR populated with the values software is trying to write. It returns a Bits<N> value representing what hardware is actually going to write into the field, where N is the width of the field. sw_write may also return the special value `UNDEFINED_LEGAL_DETERMINISTIC` to indicate that the written value is undefined, but it will be a legal value for the field and is deterministically determined based on the sequence of instructions leading to the write.
 
 [NOTE]
 Note that the sw_read is specified for the entire CSR and the sw_write is specified for a CSR field.
@@ -980,7 +980,7 @@ mstatus:
 
 field.reset_value()::
 
-The "reset_value()" function is used to specify the reset value of a CSR field when the value is configuration-dependent. It takes not arguments and returns a Bits<N> type, where N is the width of field. It may also return the special value `UNDEFINED_LEGAL` to indica       te that the reset value is unpredictable, but is gauranteed to be a legal value for the field.
+The "reset_value()" function is used to specify the reset value of a CSR field when the value is configuration-dependent. It takes not arguments and returns a Bits<N> type, where N is the width of field. It may also return the special value `UNDEFINED_LEGAL` to indicate that the reset value is unpredictable, but is guaranteed to be a legal value for the field.
 
 .Example field.reset_value()
 [source,yaml]
@@ -991,7 +991,7 @@ mstatus:
     # ...
     MBE:
       # ...
-      # if endianess is mutable, MBE comes out of reset in little-endian mode
+      # if endianness is mutable, MBE comes out of reset in little-endian mode
       reset_value(): |
         return (M_MODE_ENDIANESS == "big") ? 1 : 0;
 ----
