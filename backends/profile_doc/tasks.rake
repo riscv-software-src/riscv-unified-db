@@ -55,21 +55,20 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
     "#{$root}/lib/design.rb",
     "#{PROFILE_DOC_DIR}/templates/profile.adoc.erb"
   ].concat(profile_pathnames) do |t|
-    # Create BaseArchitecture object. Function located in top-level Rakefile.
-    puts "UPDATE: Creating BaseArchitecture #{base_isa_name} for #{t}"
-    base_arch = base_arch_for(base_isa_name, base)
+    # Create Architecture object. Function located in top-level Rakefile.
+    puts "UPDATE: Creating Architecture #{base_isa_name} for #{t}"
+    arch = arch_for(base_isa_name, base)
 
     # Create PortfolioRelease for specific portfolio release as specified in its arch YAML file.
     # The Architecture object also creates all other portfolio-related class instances from their arch YAML files.
     # None of these objects are provided with a Design object when created.
     puts "UPDATE: Creating Profile Release for #{profile_release_name} using #{base_isa_name}"
-    profile_release = base_arch.profile_release(profile_release_name)
+    profile_release = arch.profile_release(profile_release_name)
 
     puts "UPDATE: Creating PortfolioDesign using profile release #{profile_release_name}"
     # Create the one PortfolioDesign object required for the ERB evaluation.
     # Provide it with all the profiles in this ProfileRelease.
-    portfolio_design = portfolio_design_for(profile_release_name, base_arch, base,
-      profile_release.profiles)
+    portfolio_design = portfolio_design_for(profile_release_name, arch, base, profile_release.profiles)
 
     # Create empty binding and then specify explicitly which variables the ERB template can access.
     # Seems to use this method name in stack backtraces (hence its name).
@@ -77,7 +76,7 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
       binding
     end
     erb_binding = evaluate_erb
-    erb_binding.local_variable_set(:arch, base_arch)
+    erb_binding.local_variable_set(:arch, arch)
     erb_binding.local_variable_set(:design, portfolio_design)
     erb_binding.local_variable_set(:profile_class, profile_release.profile_class)
     erb_binding.local_variable_set(:portfolio_class, profile_release.profile_class)

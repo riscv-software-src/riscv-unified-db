@@ -48,7 +48,7 @@ class PortfolioDesign < Design
   # METHODS REQUIRED BY BASE CLASS #
   ##################################
 
-  # @return [Integer]
+  # @return [Integer] 32 or 64. Might be nil if dynamic (not sure if dynamic required for portfolios).
   def mxlen = @mxlen
 
   # Returns whether or not it may be possible to switch XLEN in +mode+ given this definition.

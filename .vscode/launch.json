@@ -36,6 +36,15 @@
       "script": "gen:profile[RVA20]",
       "args": [],
       "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "Smoke test",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "test:smoke",
+      "args": [],
+      "askParameters": false
     }
   ]
 }

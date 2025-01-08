@@ -19,16 +19,20 @@ class ConfiguredArchitecture < Design
   # Kind of like inheritence but not quite.
   def_delegators \
     :@config, \
-    :fully_configured?, :partially_configured?, :unconfigured?, :configured?, \
-    :mxlen, :param_values
+    :fully_configured?, :partially_configured?, :unconfigured?, :configured?, :param_values
 
   # @param config_name [#to_s] The configuration name which corresponds to a folder name under cfg_path
+  # @param base [Integer] RISC-V base ISA width (32 for RV32I/RV32E, 64 for RV64I, nil if unknown)
   # @param arch_dir [String,Pathname] Path to a directory with a fully merged/resolved architecture definition
   # @param overlay_path [String] Optional path to a directory that overlays the architecture
   # @param cfg_path [String] Optional path to where to find configuration file
-  def initialize(config_name, arch_dir, overlay_path: nil, cfg_path: "#{$root}/cfgs")
+  def initialize(config_name, base, arch_dir, overlay_path: nil, cfg_path: "#{$root}/cfgs")
     @config = Config.create("#{cfg_path}/#{config_name}/cfg.yaml")
-    arch = Architecture.new(arch_dir)
+    @mxlen = @config.mxlen
+    @mxlen.freeze
+
+    arch = Architecture.new(config_name, base, arch_dir)
+
     super(config_name, arch, overlay_path: overlay_path)
   end
 
@@ -41,6 +45,9 @@ class ConfiguredArchitecture < Design
   #                                         #
   # These raise an error in the base class. #
   ###########################################
+
+  # @return [Integer] 32, 64, or nil if dynamic or undefined.
+  def mxlen = @mxlen
 
   # Returns whether or not it may be possible to switch XLEN in +mode+ given this definition.
   #
@@ -55,11 +62,11 @@ class ConfiguredArchitecture < Design
   # @return [Boolean] true if this configuration might execute in multiple xlen environments in +mode+
   #                   (e.g., that in some mode the effective xlen can be either 32 or 64, depending on CSR values)
   def multi_xlen_in_mode?(mode)
-    return false if mxlen == 32
+    return false if @mxlen == 32
 
     case mode
     when "M"
-      mxlen.nil?
+      @mxlen.nil?
     when "S"
       return true if unconfigured?
 
@@ -195,7 +202,7 @@ class ConfiguredArchitecture < Design
     return @mandatory_ext_reqs unless @mandatory_ext_reqs.nil?
 
     @mandatory_ext_reqs = @config.mandatory_extensions.map do |e|
-      ext = extension(e["name"])
+      ext = arch.extension(e["name"])
       raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
 
       ExtensionRequirement.new(e["name"], *e["version"], arch, presence: "mandatory")
@@ -211,7 +218,7 @@ class ConfiguredArchitecture < Design
     if @config.partially_configured?
       @prohibited_ext_reqs =
         @config.prohibited_extensions.map do |e|
-          ext = extension(e["name"])
+          ext = arch.extension(e["name"])
           raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
 
           ExtensionRequirement.new(e["name"], *e["version"], arch, presence: "mandatory")

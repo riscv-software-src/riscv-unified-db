@@ -19,13 +19,13 @@
 # by using the Architecture object instead of the Design object (i.e., to support encapsulation).
 #
 # This Design class is an abstract base class for designs using either a config (under /cfg) or a
-# portfolio (profile release or certificate).
-# Abstract methods all call raise() if not overriden by a child class. These methods are all grouped
-# together in this Ruby file to make it easier to find them.
+# portfolio (profile release or certificate).  The abstract methods exist in the IDesign base class
+# and call raise() if not overriden by a child class.
 
 require "ruby-prof"
 require "tilt"
 
+require_relative "idesign"
 require_relative "architecture"
 
 require_relative "idl"
@@ -39,10 +39,7 @@ require_relative "template_helpers"
 
 include TemplateHelpers
 
-class Design
-  # @return [String] Name of design
-  attr_reader :name
-
+class Design < IDesign
   # @return [Architecture] The RISC-V architecture
   attr_reader :arch
 
@@ -63,16 +60,13 @@ class Design
   # @param arch [Architecture] The entire architecture
   # @param overlay_path [String] Optional path to a directory that overlays the architecture
   def initialize(name, arch, overlay_path: nil)
+    super(name)
+
     raise ArgumentError, "arch must be an Architecture but is a #{arch.class}" unless arch.is_a?(Architecture)
-
-    @name = name.to_s.freeze
-    @name_sym = @name.to_sym.freeze
     @arch = arch
-
     @idl_compiler = Idl::Compiler.new
     @symtab = Idl::SymbolTable.new(self)
     custom_globals_path = overlay_path.nil? ? Pathname.new("/does/not/exist") : overlay_path / "isa" / "globals.isa"
-
     idl_path = File.exist?(custom_globals_path) ? custom_globals_path : $root / "arch" / "isa" / "globals.isa"
     @global_ast = @idl_compiler.compile_file(idl_path)
     @global_ast.add_global_symbols(@symtab)
@@ -83,97 +77,6 @@ class Design
   # Returns a string representation of the object, suitable for debugging.
   # @return [String] A string representation of the object.
   def inspect = "Design##{name}"
-
-  ####################
-  # ABSTRACT METHODS #
-  ####################
-
-  # @return [Integer] 32, 64, or nil (if dynamic or unconfigured)
-  def mxlen
-    raise "Abstract Method: Must be provided in child class"
-  end
-
-  # Returns whether or not it may be possible to switch XLEN in +mode+ given this definition.
-  # @param mode [String] mode to check. One of "M", "S", "U", "VS", "VU"
-  # @return [Boolean] true if might execute in multiple xlen environments in +mode+
-  #                   (e.g., that in some mode the effective xlen can be either 32 or 64, depending on CSR values)
-  def multi_xlen_in_mode?(mode)
-    raise "Abstract Method: Must be provided in child class"
-  end
-
-  # @return [Hash<String, String>] Fully-constrained parameter values (those with just one possible value for this design)
-  def param_values
-    raise "Abstract Method: Must be provided in child class"
-  end
-
-  # @return [Array<ExtensionParameterWithValue>] List of all parameters fully-constrained to one specific value
-  def params_with_value
-    raise "Abstract Method: Must be provided in child class"
-  end
-
-  # @return [Array<ExtensionParameter>] List of all available parameters not yet full-constrained to one specific value
-  def params_without_value
-    raise "Abstract Method: Must be provided in child class"
-  end
-
-  # @return [Array<ExtensionVersion>] List of all implemented extension versions.
-  def implemented_ext_vers
-    raise "Abstract Method: Must be provided in child class"
-  end
-
-  # @return [Array<ExtensionRequirement>] List of all mandatory extension requirements
-  def mandatory_ext_reqs
-    raise "Abstract Method: Must be provided in child class"
-  end
-
-  # @return [Array<ExtensionRequirement>] List of all extensions that are prohibited.
-  #                                       This includes extensions explicitly prohibited by the design
-  #                                       and extensions that conflict with a mandatory extension.
-  def prohibited_ext_reqs
-    raise "Abstract Method: Must be provided in child class"
-  end
-
-  # @return [Boolean] True if all parameters are fully-constrained in the design
-  def fully_configured?
-    raise "Abstract Method: Must be provided in child class"
-  end
-
-  # @return [Boolean] True if some parameters aren't fully-constrained yet in the design
-  def partially_configured?
-    raise "Abstract Method: Must be provided in child class"
-  end
-
-  # @return [Boolean] True if all parameters aren't constrained at all in the design
-  def unconfigured?
-    raise "Abstract Method: Must be provided in child class"
-  end
-
-  # @return [Boolean] True if not unconfigured (so either fully_configured or partially_configured).
-  # This isn't an abstract method but is located here for clarity.
-  def configured? = !unconfigured?
-
-  # @overload ext?(ext_name)
-  #   @param ext_name [#to_s] Extension name (case sensitive)
-  #   @return [Boolean] True if the extension `name` must be implemented
-  #
-  # @overload ext?(ext_name, ext_version_requirements)
-  #   @param ext_name [#to_s] Extension name (case sensitive)
-  #   @param ext_version_requirements [Number,String,Array] Extension version requirements
-  #   @return [Boolean] True if the extension `name` meeting `ext_version_requirements` must be implemented
-  #
-  #   @example Checking extension presence with a version requirement
-  #     Design.ext?(:S, ">= 1.12")
-  #   @example Checking extension presence with multiple version requirements
-  #     Design.ext?(:S, ">= 1.12", "< 1.15")
-  #   @example Checking extension presence with a precise version requirement
-  #     Design.ext?(:S, 1.12)
-  def ext?(ext_name, *ext_version_requirements)
-    raise "Abstract Method: Must be provided in child class"
-  end
-
-  ###################
-  # REGULAR METHODS #
-  ###################
 
   # Returns whether or not it may be possible to switch XLEN given this definition.
   #
@@ -203,10 +106,10 @@ class Design
     io.puts "Type checking IDL code for #{@name}..."
     progressbar =
       if show_progress
-        ProgressBar.create(title: "Instructions", total: instructions.size)
+        ProgressBar.create(title: "Instructions", total: arch.instructions.size)
       end
 
-    instructions.each do |inst|
+    arch.instructions.each do |inst|
       progressbar.increment if show_progress
       if @mxlen == 32
         inst.type_checked_operation_ast(@idl_compiler, @symtab, 32) if inst.rv32?
@@ -218,10 +121,10 @@ class Design
 
     progressbar =
       if show_progress
-        ProgressBar.create(title: "CSRs", total: csrs.size)
+        ProgressBar.create(title: "CSRs", total: arch.csrs.size)
       end
 
-    csrs.each do |csr|
+    arch.csrs.each do |csr|
       progressbar.increment if show_progress
       if csr.has_custom_sw_read?
         if (possible_xlens.include?(32) && csr.defined_in_base32?) || (possible_xlens.include?(64) && csr.defined_in_base64?)

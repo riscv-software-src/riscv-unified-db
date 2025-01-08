@@ -32,19 +32,19 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
     "#{$root}/lib/design.rb",
     "#{CERT_DOC_DIR}/templates/certificate.adoc.erb"
   ] do |t|
-    # Create BaseArchitecture object. Function located in top-level Rakefile.
-    puts "UPDATE: Creating BaseArchitecture #{base_isa_name} for #{t}"
-    base_arch = base_arch_for(base_isa_name, base)
+    # Create Architecture object. Function located in top-level Rakefile.
+    puts "UPDATE: Creating Architecture #{base_isa_name} for #{t}"
+    arch = arch_for(base_isa_name, base)
 
     # Create CertModel for specific certificate model as specified in its arch YAML file.
     # The Architecture object also creates all other portfolio-related class instances from their arch YAML files.
     # None of these objects are provided with a Design object when created.
     puts "UPDATE: Creating CertModel for #{cert_model_name} using base #{base_isa_name}"
-    cert_model = base_arch.cert_model(cert_model_name)
+    cert_model = arch.cert_model(cert_model_name)
 
     puts "UPDATE: Creating PortfolioDesign using certificate model #{cert_model_name}"
     # Create the one PortfolioDesign object required for the ERB evaluation.
-    portfolio_design = portfolio_design_for(cert_model_name, base_arch, base, [cert_model])
+    portfolio_design = portfolio_design_for(cert_model_name, arch, base, [cert_model])
 
     # Create empty binding and then specify explicitly which variables the ERB template can access.
     # Seems to use this method name in stack backtraces (hence its name).
@@ -52,7 +52,7 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
       binding
     end
     erb_binding = evaluate_erb
-    erb_binding.local_variable_set(:arch, base_arch)
+    erb_binding.local_variable_set(:arch, arch)
     erb_binding.local_variable_set(:design, portfolio_design)
     erb_binding.local_variable_set(:cert_class, cert_model.cert_class)
     erb_binding.local_variable_set(:portfolio_class, cert_model.cert_class)

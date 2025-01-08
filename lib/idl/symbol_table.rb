@@ -91,7 +91,7 @@ module Idl
 
     def initialize(design)
       raise "Must provide design" if design.nil?
-      raise "The design must be a Design but is a #{design.class}" unless design.is_a?(Design)
+      raise "The design must be an IDesign but is a #{design.class}" unless design.is_a?(IDesign)
 
       @design = design
       @mxlen = design.unconfigured? ? nil : design.mxlen

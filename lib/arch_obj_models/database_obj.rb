@@ -211,7 +211,7 @@ class DatabaseObject
   # @return [Boolean] Whether or not the object is defined-by the given ExtensionVersion in the given Design.
   def in_scope?(ext_ver, design)
     raise ArgumentError, "Require an ExtensionVersion object but got a #{ext_ver.class} object" unless ext_ver.is_a?(ExtensionVersion)
-    raise ArgumentError, "Require a Design object but got a #{design.class} object" unless design.is_a?(Design)
+    raise ArgumentError, "Require an IDesign object but got a #{design.class} object" unless design.is_a?(IDesign)
 
     defined_by?(ext_ver)
   end
