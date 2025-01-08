@@ -214,7 +214,7 @@ def resolve(rel_path : str | Path, arch_root : str | Path, do_checks: bool) -> d
       exit(1)
     fn_name = Path(rel_path).stem
     if do_checks and (fn_name != unresolved_arch_data["name"]):
-      print(f"ERROR: 'name' key ({unresolved_arch_data["name"]}) must match filename ({fn_name} in {arch_root}/{rel_path}", file=sys.stderr)
+      print(f"ERROR: 'name' key ({unresolved_arch_data['name']}) must match filename ({fn_name} in {arch_root}/{rel_path}", file=sys.stderr)
       exit(1)
     resolved_objs[str(rel_path)] = _resolve(unresolved_arch_data, [], rel_path, unresolved_arch_data, arch_root, do_checks)
     return resolved_objs[str(rel_path)]
@@ -266,11 +266,11 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
 
       if "$parent_of" in ref_obj:
         if isinstance(ref_obj["$parent_of"], list):
-          ref_obj["$parent_of"].append(f"{obj_file_path}#/{"/".join(obj_path)}")
+          ref_obj["$parent_of"].append(f"{obj_file_path}#/{'/'.join(obj_path)}")
         else:
-          ref_obj["$parent_of"] = [ref_obj["$parent_of"], f"{obj_file_path}#/{"/".join(obj_path)}"]
+          ref_obj["$parent_of"] = [ref_obj["$parent_of"], f"{obj_file_path}#/{'/'.join(obj_path)}"]
       else:
-        ref_obj["$parent_of"] = f"{obj_file_path}#/{"/".join(obj_path)}"
+        ref_obj["$parent_of"] = f"{obj_file_path}#/{'/'.join(obj_path)}"
 
     del obj["$inherits"]
 
