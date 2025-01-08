@@ -39,17 +39,17 @@ fields:
           * *OFF* (0) - Null region (disabled)
           * *TOR* (1) - Top of range
           * *NA4* (2) - Naturally aligned four-byte region
-          * *NAPOT* (3) - Natrually aligned power of two
+          * *NAPOT* (3) - Naturally aligned power of two
 
           [when="PMP_GRANULARITY >= 2"]
           * *OFF* (0) - Null region (disabled)
           * *TOR* (1) - Top of range
-          * *NAPOT* (3) - Natrually aligned power of two
+          * *NAPOT* (3) - Naturally aligned power of two
 
       [when="PMP_GRANULARITY >= 2"]
       Naturally aligned four-byte region, *NA4* (2), is not valid (not needed when the PMP granularity is larger than 4 bytes).
 
-      h! X ! <%= ((i)*8)+2 %> ! When clear, instruction fetchs cause an `Access Fault` for the matching region and privilege mode.
+      h! X ! <%= ((i)*8)+2 %> ! When clear, instruction fetches cause an `Access Fault` for the matching region and privilege mode.
       h! W ! <%= ((i)*8)+1 %> ! When clear, stores and AMOs cause an `Access Fault` for the matching region and privilege mode.
       h! R ! <%= ((i)*8)+0 %> ! When clear, loads cause an `Access Fault` for the matching region and privilege mode.
       !===

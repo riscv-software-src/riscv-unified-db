@@ -99,7 +99,7 @@ description: |
   Long immediates::
   --
   This extension provides wide-immediate versions of
-  loads, stores, branches, jumps, and several arithemtic operations.
+  loads, stores, branches, jumps, and several arithmetic operations.
   --
 
   Addressing modes::
@@ -139,7 +139,7 @@ description: |
   enable/disable interrupts and instructions to automatically save an interrupt frame.
   --
 
-  Saturating arithemtic::
+  Saturating arithmetic::
   --
   Xqci adds saturating arithmetic instructions to improve performance of fixed-point calculations.
   --

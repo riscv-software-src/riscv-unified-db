@@ -14,7 +14,7 @@ A configuration consists of a folder under `cfgs`. Inside that folder, there are
 A YAML object (hash) that currently contains only one field `type`. `type` can be one of:
 
 * "partially configured": The configuration has some parameters and/or implemented extensions known, but others are not known. Examples of a _partially configured_ configuration are the generic _32/_64 configs and a profile (which has some known/mandatory extensions, but also many unknown/optional extensions).
-* "fully configured": The configuration exhaustively lists a set of implmented extensions and parameters. An example of a _fully configured_ configuration is the `generic_rv64` example, which represents a theoritical implementation of RV64. In a _fully configured_ configuration, any extension that isn't known to be implemented is treated as unimplmented, and will be pruned out of the database for certain operations.
+* "fully configured": The configuration exhaustively lists a set of implemented extensions and parameters. An example of a _fully configured_ configuration is the `generic_rv64` example, which represents a theoretical implementation of RV64. In a _fully configured_ configuration, any extension that isn't known to be implemented is treated as unimplemented, and will be pruned out of the database for certain operations.
 
 `implemented_exts.yaml`::
 
@@ -55,7 +55,7 @@ The `arch_overlay` directory is treated as an overlay on the standard `arch` dir
 
 == ArchDef interface
 
-An `ArchDef` is most easily obtained by using the convience function `arch_def_for(String)`, which takes the name of a folder under `cfgs`. Once you have an `ArchDef`, you can begin to query the database.
+An `ArchDef` is most easily obtained by using the convenience function `arch_def_for(String)`, which takes the name of a folder under `cfgs`. Once you have an `ArchDef`, you can begin to query the database.
 
 .Architecture queries
 [source,ruby]

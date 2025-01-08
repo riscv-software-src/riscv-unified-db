@@ -5,7 +5,7 @@
 #   RVA and MC are examples of portfolio classes
 #
 # Many classes inherit from the DatabaseObjectect class. This provides facilities for accessing the contents of a
-# Portfolio Class YAML or Portfolio Model YAML file via the "data" member (hash holding releated YAML file contents).
+# Portfolio Class YAML or Portfolio Model YAML file via the "data" member (hash holding related YAML file contents).
 #
 # A variable name with a "_data" suffix indicates it is the raw hash data from the porfolio YAML file.
 
@@ -401,7 +401,7 @@ class PortfolioInstance < DatabaseObjectect
 
     exts = []
 
-    # Interate through all the extensions in the architecture database that define this parameter.
+    # Iterate through all the extensions in the architecture database that define this parameter.
     param.exts.each do |ext|
       found = false
 
@@ -430,7 +430,7 @@ class PortfolioInstance < DatabaseObjectect
 
     exts = []   # Local variable, no caching
 
-    # Interate through all the extensions in the architecture database that define this parameter.
+    # Iterate through all the extensions in the architecture database that define this parameter.
     param.exts.each do |ext|
       found = false
 

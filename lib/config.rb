@@ -75,13 +75,13 @@ class Unconfig < Config
 
   def mxlen = nil
 
-  def implemented_extensions = raise "implemented_extensions is only availabe for a FullConfig"
-  def mandatory_extensions = raise "mandatory_extensions is only availabe for a PartialConfig"
-  def prohibited_extensions = raise "prohibited_extensions is only availabe for a PartialConfig"
+  def implemented_extensions = raise "implemented_extensions is only available for a FullConfig"
+  def mandatory_extensions = raise "mandatory_extensions is only available for a PartialConfig"
+  def prohibited_extensions = raise "prohibited_extensions is only available for a PartialConfig"
 end
 
 # this class represents a configuration file (e.g., cfgs/*/cfg.yaml) that is "partially configured"
-# (i.e., we have a list of mandatory/prohibited extensions and a paritial list of parameter values)
+# (i.e., we have a list of mandatory/prohibited extensions and a partial list of parameter values)
 #
 # This would, for example, represent a Profile or configurable IP
 class PartialConfig < Config
@@ -98,7 +98,7 @@ class PartialConfig < Config
     @mxlen.freeze
   end
 
-  def implemented_extensions = raise "implemented_extensions is only availabe for a FullConfig"
+  def implemented_extensions = raise "implemented_extensions is only available for a FullConfig"
 
   # @return [Array<Hash{String => String,Array<String}>]
   #    List of all extensions that must be implemented, as specified in the config file
@@ -175,8 +175,8 @@ class FullConfig < Config
       end
   end
 
-  def mandatory_extensions = raise "mandatory_extensions is only availabe for a PartialConfig"
-  def prohibited_extensions = raise "prohibited_extensions is only availabe for a PartialConfig"
+  def mandatory_extensions = raise "mandatory_extensions is only available for a PartialConfig"
+  def prohibited_extensions = raise "prohibited_extensions is only available for a PartialConfig"
 
   # def prohibited_ext?(ext_name, cfg_arch) = !ext?(ext_name, cfg_arch)
   # def ext?(ext_name, cfg_arch) = implemented_extensions(cfg_arch).any? { |e| e.name == ext_name.to_s }

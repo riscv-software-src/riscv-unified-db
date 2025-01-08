@@ -23,5 +23,5 @@ class ExceptionCode
   end
 end
 
-# all the same informatin as ExceptinCode, but for interrupts
+# all the same information as ExceptinCode, but for interrupts
 InterruptCode = Class.new(ExceptionCode)

@@ -24,7 +24,7 @@ fields:
       the `cycle` CSR (an alias of `mcycle`) is accessible to VS-mode.
 
       When `hcounteren.CY` is clear and `mcounteren.CY` is set, then any access to `cycle` in
-      VU-mode or VS-mode causes a VirtualInstruction execption.
+      VU-mode or VS-mode causes a VirtualInstruction exception.
 
       Summary:
 
@@ -62,7 +62,7 @@ fields:
       the `time` CSR (an alias of `mtime`) is accessible to VS-mode.
 
       When `hcounteren.TM` is clear and `mcounteren.TM` is set, then any access to `time` in
-      VU-mode or VS-mode causes a VirtualInstruction execption.
+      VU-mode or VS-mode causes a VirtualInstruction exception.
 
       Summary:
 
@@ -100,7 +100,7 @@ fields:
       the `instret` CSR (an alias of `minstret`) is accessible to VS-mode.
 
       When `hcounteren.IR` is clear and `mcounteren.IR` is set, then any access to `instret` in
-      VU-mode or VS-mode causes a VirtualInstruction execption.
+      VU-mode or VS-mode causes a VirtualInstruction exception.
 
       Summary:
 
@@ -138,7 +138,7 @@ fields:
       the `hpmcounter<%= hpm_num %>` CSR (an alias of `mhpmcounter<%= hpm_num %>`) is accessible to VS-mode.
 
       When `hcounteren.HPM<%= hpm_num %>` is clear and `mcounteren.HPM<%= hpm_num %>` is set, then any access to `hpmcounter<%= hpm_num %>` in
-      VU-mode or VS-mode causes a VirtualInstruction execption.
+      VU-mode or VS-mode causes a VirtualInstruction exception.
 
       Summary:
 

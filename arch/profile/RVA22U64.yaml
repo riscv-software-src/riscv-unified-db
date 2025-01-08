@@ -23,7 +23,7 @@ extensions:
       NOP and hence trivially supported by hardware implementers, its
       inclusion in the mandatory extension list signifies that software
       should use the instruction whenever it would make sense and that
-      implementors are expected to exploit this information to optimize
+      implementers are expected to exploit this information to optimize
       hardware execution.
   Zba:
     presence: mandatory

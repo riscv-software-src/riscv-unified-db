@@ -85,7 +85,7 @@ function lowest_set_bit {
 function count_leading_zeros {
   template U32 N
   returns
-    Bits<bit_length(N)>  # Number of leading zeros in +vlaue+
+    Bits<bit_length(N)>  # Number of leading zeros in +value+
   arguments
     Bits<N> value        # value to count zero in
   description {
