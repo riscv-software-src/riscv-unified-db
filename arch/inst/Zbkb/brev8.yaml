@@ -3,9 +3,9 @@
 $schema: inst_schema.json#
 kind: instruction
 name: brev8
-long_name: No synopsis available.
+long_name: Reverse the bits in each byte of a source register.
 description: |
-  No description available.
+  This instruction reverses the order of the bits in every byte of a register. 
 definedBy:
   anyOf: [B, Zbkb, Zk, Zkn, Zks]
 assembly: xd, xs1
@@ -23,3 +23,12 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if (implemented?(ExtensionName::B) && (CSR[misa].Zbkb == 1'b0)) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  result : xlenbits = EXTZ(0b0);
+  foreach (i from 0 to sizeof(xlen) by 8) {
+    result[i+7..i] = reverse_bits_in_byte(X(rs1)[i+7..i]);
+  };
+  X(rd) = result;
