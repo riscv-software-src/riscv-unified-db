@@ -1,13 +1,13 @@
-# Classes for Porfolios which form a common base class for profiles and certificates.
+# Classes for Portfolios which form a common base class for profiles and certificates.
 # A "Portfolio" is a named & versioned grouping of extensions (each with a name and version).
-# Each Portfolio Instance is a member of a Portfolio Class:
-#   RVA20U64 and MC100 are examples of portfolio instances
+# Each Portfolio is a member of a Portfolio Class:
+#   RVA20U64 and MC100 are examples of portfolios
 #   RVA and MC are examples of portfolio classes
 #
-# Many classes inherit from the DatabaseObjectect class. This provides facilities for accessing the contents of a
-# Portfolio Class YAML or Portfolio Model YAML file via the "data" member (hash holding related YAML file contents).
+# Many classes inherit from the DatabaseObject class. This provides facilities for accessing the contents of a
+# Portfolio Class YAML or Portfolio Model YAML file via the "data" member (hash holding releated YAML file contents).
 #
-# A variable name with a "_data" suffix indicates it is the raw hash data from the porfolio YAML file.
+# A variable name with a "_data" suffix indicates it is the raw hash data from the portfolio YAML file.
 
 require "tmpdir"
 
@@ -20,33 +20,49 @@ require_relative "schema"
 
 # Holds information from Portfolio class YAML file (certificate class or profile class).
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
-class PortfolioClass < DatabaseObjectect
-  # @return [ConfiguredArchitecture] The defining ConfiguredArchitecture
-  attr_reader :cfg_arch
+class PortfolioClass < DatabaseObject
+  # @return [String] What kind of processor portfolio is this?
+  def processor_kind = @data["processor_kind"]
 
+  # @return [String] Small enough (~1 paragraph) to be suitable immediately after a higher-level heading.
   def introduction = @data["introduction"]
-  def naming_scheme = @data["naming_scheme"]
+
+  # @return [String] Large enough to need its own heading (generally one level deeper than the "introduction").
   def description = @data["description"]
 
   # Returns true if other is the same class (not a derived class) and has the same name.
   def eql?(other)
     other.instance_of?(self.class) && other.name == name
   end
+
+  # @return [Array<PortfolioClass] All portfolio classes that have the same portfolio kind and same processor kind.
+  def portfolio_classes_matching_portfolio_kind_and_processor_kind
+    arch.portfolio_classes.select {|portfolio_class|
+      (portfolio_class.kind == kind) && (portfolio_class.processor_kind == processor_kind)}
+  end
 end
 
-#####################
-# PortfolioInstance #
-#####################
+#############
+# Portfolio #
+#############
 
-# Holds information about a PortfolioInstance YAML file (certificate or profile).
+# Holds information about a Portfolio (certificate or profile).
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
-class PortfolioInstance < DatabaseObjectect
-  # @return [ConfiguredArchitecture] The defining ConfiguredArchitecture
-  attr_reader :cfg_arch
+class Portfolio < DatabaseObject
+  # @param obj_yaml [Hash<String, Object>] Contains contents of Portfolio yaml file (put in @data)
+  # @param data_path [String] Path to yaml file
+  # @param arch [Architecture] Entire database of RISC-V architecture standards
+  def initialize(obj_yaml, yaml_path, arch: nil)
+    super # Calls parent class with same args I got
+  end
 
+  # @return [String] Small enough (~1 paragraph) to be suitable immediately after a higher-level heading.
+  def introduction = @data["introduction"]
+
+  # @return [String] Large enough to need its own heading (generally one level deeper than the "introduction").
   def description = @data["description"]
 
-  # @return [Gem::Version] Semantic version of the PortfolioInstance
+  # @return [Gem::Version] Semantic version of the Portfolio
   def version = Gem::Version.new(@data["version"])
 
   # @return [ExtensionPresence] Given an extension +ext_name+, return the presence.
@@ -107,6 +123,10 @@ class PortfolioInstance < DatabaseObjectect
     return ext_data["note"] unless ext_data.nil?
   end
 
+  def mandatory_ext_reqs = in_scope_ext_reqs(ExtensionPresence.mandatory)
+  def optional_ext_reqs = in_scope_ext_reqs(ExtensionPresence.optional)
+  def optional_type_ext_reqs = in_scope_ext_reqs(ExtensionPresence.optional)
+
   # @param desired_presence [String, Hash, ExtensionPresence]
   # @return [Array<ExtensionRequirements>] - # Extensions with their portfolio information.
   # If desired_presence is provided, only returns extensions with that presence.
@@ -128,66 +148,64 @@ class PortfolioInstance < DatabaseObjectect
 
       # Does extension even exist?
       # If not, don't raise an error right away so we can find all of the missing extensions and report them all.
-      ext = cfg_arch.extension(ext_name)
+      ext = arch.extension(ext_name)
       if ext.nil?
         puts "Extension #{ext_name} for #{name} not found in database"
         missing_ext = true
-      end
+      else
+        actual_presence = ext_data["presence"]    # Could be a String or Hash
+        raise "Missing extension presence for extension #{ext_name}" if actual_presence.nil?
 
-      actual_presence = ext_data["presence"]    # Could be a String or Hash
-      raise "Missing extension presence for extension #{ext_name}" if actual_presence.nil?
+        # Convert presence String or Hash to object.
+        actual_presence_obj = ExtensionPresence.new(actual_presence)
 
-      # Convert presence String or Hash to object.
-      actual_presence_obj = ExtensionPresence.new(actual_presence)
-
-      match =
-        if desired_presence.nil?
-          true # Always match
-        else
-          actual_presence_obj == desired_presence_converted
-        end
-
-      if match
-        in_scope_ext_reqs <<
-          if ext_data.key?("version")
-            ExtensionRequirement.new(
-              ext_name, ext_data["version"], cfg_arch: @cfg_arch,
-              presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
+        match =
+          if desired_presence.nil?
+            true # Always match
           else
-            ExtensionRequirement.new(
-              ext_name, cfg_arch: @cfg_arch,
-              presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
+            actual_presence_obj == desired_presence_converted
           end
+
+        if match
+          in_scope_ext_reqs <<
+            if ext_data.key?("version")
+              ExtensionRequirement.new(
+                ext_name, ext_data["version"], arch: @arch,
+                presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
+            else
+              ExtensionRequirement.new(
+                ext_name, arch: @arch,
+                presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
+            end
+        end
       end
     end
 
-    # TODO: Change to "raise" when missing extensions added to database so we can make progress until then.
-    # See https://github.com/riscv-software-src/riscv-unified-db/issues/320
-    puts "One or more extensions referenced by #{name} missing in database" if missing_ext
+    raise "One or more extensions referenced by #{name} missing in database" if missing_ext
 
     in_scope_ext_reqs
-  end
-
-  def mandatory_ext_reqs = in_scope_ext_reqs(ExtensionPresence.mandatory)
-  def optional_ext_reqs = in_scope_ext_reqs(ExtensionPresence.optional)
-  def optional_type_ext_reqs = in_scope_ext_reqs(ExtensionPresence.optional)
-
-  # @return [Array<Extension>] List of all extensions listed in portfolio.
-  def in_scope_extensions
-    return @in_scope_extensions unless @in_scope_extensions.nil?
-
-    @in_scope_extensions = in_scope_ext_reqs.map do |ext_req|
-      cfg_arch.extension(ext_req.name)
-    end.reject(&:nil?)  # Filter out extensions that don't exist yet.
-
-    @in_scope_extensions
   end
 
   # @return [Array<Instruction>] Sorted list of all instructions associated with extensions listed as
   #                              mandatory or optional in portfolio. Uses minimum version of
   #                              extension version that meets extension requirement specified in portfolio.
   def in_scope_instructions
-    in_scope_extensions.map { |ext| ext.instructions }.flatten.uniq.sort
+    return @in_scope_instructions unless @in_scope_instructions.nil?
+
+    # XXX
+    # @in_scope_instructions = in_scope_ext_reqs.map { |ext_req| ext_req.instructions }.flatten.uniq.sort
+    @in_scope_instructions = in_scope_extensions.map { |ext| ext.instructions }.flatten.uniq.sort
+  end
+
+  # @return [Array<Extension>] List of all extensions listed in portfolio.
+  def in_scope_extensions
+    return @in_scope_extensions unless @in_scope_extensions.nil?
+
+    @in_scope_extensions = in_scope_ext_reqs.map do |ext_req|
+      arch.extension(ext_req.name)
+    end.reject(&:nil?)  # Filter out extensions that don't exist yet.
+
+    @in_scope_extensions
   end
 
   # @return [Boolean] Does the profile differentiate between different types of optional.
@@ -207,7 +225,7 @@ class PortfolioInstance < DatabaseObjectect
     @uses_optional_types
   end
 
-  # Called by rakefile when generating a particular portfolio instance.
+  # Called by rakefile when generating a portfolio.
   # Creates an in-memory data structure used by all portfolio routines that access a cfg_arch.
   #
   # @return [ConfiguredArchitecture] A partially-configured architecture definition corresponding to this portfolio.
@@ -236,7 +254,7 @@ class PortfolioInstance < DatabaseObjectect
       Dir.mktmpdir do |dir|
         FileUtils.mkdir("#{dir}/#{name}")
         File.write("#{dir}/#{name}/cfg.yaml", YAML.safe_dump(config_data, permitted_classes: [Date]))
-        @generated_cfg_arch = ConfiguredArchitecture.new(name, @cfg_arch.path, cfg_path: dir)
+        @generated_cfg_arch = ConfiguredArchitecture.new(name, @arch.path, cfg_path: dir)
       end
   end
 
@@ -276,7 +294,7 @@ class PortfolioInstance < DatabaseObjectect
     # @return [String] - # What parameter values are allowed by the portfolio.
     def allowed_values
       if (@schema_portfolio.empty?)
-        # PortfolioInstance doesn't add any constraints on parameter's value.
+        # Portfolio doesn't add any constraints on parameter's value.
         return "Any"
       end
 
@@ -313,7 +331,7 @@ class PortfolioInstance < DatabaseObjectect
       next if ext_name[0] == "$"
 
       # Find Extension object from database
-      ext = @cfg_arch.extension(ext_name)
+      ext = @arch.extension(ext_name)
       raise "Cannot find extension named #{ext_name}" if ext.nil?
 
       ext_data["parameters"]&.each do |param_name, param_data|
@@ -322,7 +340,7 @@ class PortfolioInstance < DatabaseObjectect
 
         next unless ext.versions.any? do |ext_ver|
                       ver_req = ext_data["version"] || ">= #{ext.min_version.version_spec}"
-                      ExtensionRequirement.new(ext_name, ver_req, cfg_arch: @cfg_arch).satisfied_by?(ext_ver) &&
+                      ExtensionRequirement.new(ext_name, ver_req, arch: @arch).satisfied_by?(ext_ver) &&
                       param.defined_in_extension_version?(ext_ver)
                     end
 
@@ -345,7 +363,7 @@ class PortfolioInstance < DatabaseObjectect
     raise "Cannot find extension named #{ext_req.name}" if ext_data.nil?
 
     # Find Extension object from database
-    ext = @cfg_arch.extension(ext_req.name)
+    ext = @arch.extension(ext_req.name)
     raise "Cannot find extension named #{ext_req.name}" if ext.nil?
 
     # Loop through an extension's parameter constraints (hash) from the portfolio.
@@ -373,7 +391,7 @@ class PortfolioInstance < DatabaseObjectect
 
     @all_out_of_scope_params = []
     in_scope_ext_reqs.each do |ext_req|
-      ext = @cfg_arch.extension(ext_req.name)
+      ext = @arch.extension(ext_req.name)
       ext.params.each do |param|
         next if all_in_scope_ext_params.any? { |c| c.param.name == param.name }
 
