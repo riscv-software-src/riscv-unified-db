@@ -329,9 +329,9 @@ class Design < IDesign
     return @env unless @env.nil?
 
     @env = Class.new
-    @env.instance_variable_set(:@design, design)
+    @env.instance_variable_set(:@design, self)
     @env.instance_variable_set(:@params, @param_values)
-    @env.instance_variable_set(:@arch, arch)
+    @env.instance_variable_set(:@arch, @arch)
 
     # add each parameter, either as a method (lowercase) or constant (uppercase)
     params_with_value.each do |param|
