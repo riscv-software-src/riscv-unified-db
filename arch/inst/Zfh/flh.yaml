@@ -12,7 +12,7 @@ description: |
   `flh` is only guaranteed to execute atomically if the effective address is naturally aligned.
 
 definedBy:
-  allOf: [Zfh, Zfhmin]
+  anyOf: [Zfh, Zfhmin, Zhinx]
 assembly: fd, imm(xs1)
 encoding:
   match: -----------------001-----0000111
