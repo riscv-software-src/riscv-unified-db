@@ -8,7 +8,10 @@ address: 0x7f2
 length: 32
 priv_mode: M
 base: 32
-definedBy: Xqci
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqciint
 description: |
   Pending bits for IRQs 64-95
 fields:

@@ -29,6 +29,20 @@ versions:
   changes:
     - Add information about instruction formats of each instruction
   requires: { name: Zca, version: ">= 1.0.0" }
+- version: "0.3.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix description of qc.mclici* CSRs to reflect being part of Xqciint custom extension
+    - Fix description of qc.setinti and qc.clrinti instructions
+  requires: { name: Zca, version: ">= 1.0.0" }
 description: |
   The Xqciint extension includes eleven instructions to accelerate interrupt
   servicing by performing common actions during ISR prologue/epilogue.

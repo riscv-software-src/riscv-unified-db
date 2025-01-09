@@ -7,7 +7,7 @@ long_name: Set word multiple (Immediate)
 description: |
   Stores the value of `rs3` multiple times into the address starting at (`rs1` + `imm`).
   The number of writes is in length.
-  Instruction encoded in I instruction format.
+  Instruction encoded in R instruction format.
 definedBy:
   anyOf:
     - Xqci

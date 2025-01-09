@@ -8,3 +8,29 @@ builtin function delay {
     Delay the processor by +cycles+ cycles.
   }
 }
+
+builtin function iss_syscall {
+  arguments XReg id, XReg arg
+  description {
+    Instruction set simulator system call.
+  }
+}
+
+builtin function read_device {
+  template U32 len
+  returns Bits<len>
+  arguments XReg dev_addr
+  description {
+    Read from non-memory-mapped device.
+	Such devices have own addresses not related to memory map.
+  }
+}
+
+builtin function write_device {
+  template U32 len
+  arguments XReg dev_addr, Bits<len> value
+  description {
+    Write to non-memory-mapped device.
+	Such devices have own addresses not related to memory map.
+  }
+}
