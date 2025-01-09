@@ -160,4 +160,4 @@ jobs:
         name: Build container
         run: ./bin/build_container
       - name: Generate extension PDF
-        run: ./do gen:profile[MockProfileRelease]
+        run: ./do gen:profile_release_pdf[MockProfileRelease]

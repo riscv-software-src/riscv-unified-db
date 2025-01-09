@@ -33,7 +33,7 @@
       "name": "RVA20",
       "request": "launch",
       "command": "bundle exec rake",
-      "script": "gen:profile[RVA20]",
+      "script": "gen:profile_release_pdf[RVA20]",
       "args": [],
       "askParameters": false
     },

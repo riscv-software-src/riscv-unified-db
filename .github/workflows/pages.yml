@@ -60,15 +60,19 @@ jobs:
       - name: Copy cfg html
         run: cp -R gen/cfg_html_doc/generic_rv64/html _site/example_cfg
       - name: Create RVA20 Profile Release PDF Spec
-        run: ./do gen:profile[RVA20]
+        run: ./do gen:profile_release_pdf[RVA20]
       - name: Copy RVA20 Profile Release PDF
         run: cp gen/profile_doc/pdf/RVA20.pdf _site/pdfs/RVA20.pdf
       - name: Create RVA22 Profile Release PDF Spec
-        run: ./do gen:profile[RVA22]
+        run: ./do gen:profile_release_pdf[RVA22]
       - name: Copy RVA22 Profile Release PDF
         run: cp gen/profile_doc/pdf/RVA22.pdf _site/pdfs/RVA22.pdf
+      - name: Copy RVA23 Profile Release PDF
+        run: cp gen/profile_doc/pdf/RVA23.pdf _site/pdfs/RVA23.pdf
+      - name: Copy RVB23 Profile Release PDF
+        run: cp gen/profile_doc/pdf/RVB23.pdf _site/pdfs/RVB23.pdf
       - name: Create RVI20 Profile Release PDF Spec
-        run: ./do gen:profile[RVI20]
+        run: ./do gen:profile_release_pdf[RVI20]
       - name: Copy RVI20 Profile Release PDF
         run: cp gen/profile_doc/pdf/RVA20.pdf _site/pdfs/RVI20.pdf
       - name: Create MC100-32 PDF Spec
@@ -86,7 +90,7 @@ jobs:
       - name: Create MC100-64 HTML Spec
         run: ./do gen:cert_model_html[MC100-64]
       - name: Copy MC100-64 HTML
-        run: cp gen/certificate_doc/html/MC100-64.html _site/htmls/MC100-64.html
+        un: cp gen/certificate_doc/html/MC100-64.html _site/htmls/MC100-64.html
       - name: Copy manual html
         run: cp -R gen/manual/isa/top/all/html _site/manual
       - name: Setup Pages
