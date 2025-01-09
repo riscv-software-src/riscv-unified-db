@@ -43,7 +43,7 @@ require "ruby-prof"
       end
     when "ext"
       cfg_arch.transitive_implemented_ext_vers.each do |ext_version|
-        ext = cfg_arch.extension(ext_version.name)
+        ext = cfg_arch.arch.extension(ext_version.name)
         path = dir_path / "#{ext.name}.adoc"
         puts "  Generating #{path}"
         File.write(path, cfg_arch.find_replace_links(erb.result(binding)))

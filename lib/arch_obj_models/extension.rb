@@ -244,29 +244,26 @@ class Extension < DatabaseObject
   #
   # @param symtab [Idl::SymbolTable] The evaluation context
   # @return [Array<Idl::FunctionDefAst>] Array of IDL functions reachable from any instruction or CSR in the extension
-  #
-  # The one place in this file that actually needs a Design object instead of just Architecture.
-  # Doesn't seem to be called anywhere. If there is somewhere that calls this, pass it a Design object.
-#  def reachable_functions(symtab)
-#    @reachable_functions ||= {}
-#
-#    return @reachable_functions[symtab] unless @reachable_functions[symtab].nil?
-#
-#    funcs = []
-#
-#    puts "Finding all reachable functions from extension #{name}"
-#
-#    instructions.each do |inst|
-#      funcs += inst.reachable_functions(symtab, 32) if inst.defined_in_base?(32)
-#      funcs += inst.reachable_functions(symtab, 64) if inst.defined_in_base?(64)
-#    end
-#
-#    csrs.each do |csr|
-#      funcs += csr.reachable_functions(design)
-#    end
-#
-#    @reachable_functions[symtab] = funcs.uniq
-#  end
+  def reachable_functions(symtab)
+    @reachable_functions ||= {}
+
+    return @reachable_functions[symtab] unless @reachable_functions[symtab].nil?
+
+    funcs = []
+
+    puts "Finding all reachable functions from extension #{name}"
+
+    instructions.each do |inst|
+      funcs += inst.reachable_functions(symtab, 32) if inst.defined_in_base?(32)
+      funcs += inst.reachable_functions(symtab, 64) if inst.defined_in_base?(64)
+    end
+
+    csrs.each do |csr|
+      funcs += csr.reachable_functions(design)
+    end
+
+    @reachable_functions[symtab] = funcs.uniq
+  end
 end
 
 # A specific version of an extension
