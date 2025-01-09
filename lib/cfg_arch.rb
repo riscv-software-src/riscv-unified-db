@@ -145,7 +145,7 @@ class ConfiguredArchitecture < Design
 
     if @config.fully_configured?
       transitive_implemented_ext_vers.each do |ext_version|
-        ext_version.extension.params.each do |ext_param|
+        ext_version.ext.params.each do |ext_param|
           next unless @config.param_values.key?(ext_param.name)
 
           @params_with_value << ExtensionParameterWithValue.new(
@@ -243,7 +243,7 @@ class ConfiguredArchitecture < Design
       @prohibited_ext_reqs
     elsif @config.fully_configured?
       prohibited_ext_vers = []
-      extensions.each do |ext|
+      arch.extensions.each do |ext|
         ext.versions.each do |ext_ver|
           prohibited_ext_vers << ext_ver unless transitive_implemented_ext_vers.include?(ext_ver)
         end
