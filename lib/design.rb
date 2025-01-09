@@ -321,9 +321,6 @@ class Design < IDesign
 
   # Returns an environment hash suitable for the render() function in ERB templates.
   #
-  # This method returns a hash containing the architecture definition and other
-  # relevant data that can be used to generate ERb templates.
-  #
   # @return [Hash] An environment hash suitable for use with ERb templates.
   def render_erb_env
     return @env unless @env.nil?
