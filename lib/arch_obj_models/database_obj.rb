@@ -154,7 +154,7 @@ class DatabaseObject
       end
 
       # convert through JSON to handle anything supported in YAML but not JSON
-      # (e.g., integer object keys will be coverted to strings)
+      # (e.g., integer object keys will be converted to strings)
       jsonified_obj = JSON.parse(JSON.generate(@data))
 
       raise "Nothing there?" if jsonified_obj.nil?

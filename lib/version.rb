@@ -15,7 +15,7 @@
 #        - 2.0 is compatible with 1.0
 #        - 1.1 is compatible with 1.0
 #        - 0.9 is *not* compatible with 1.0
-#  * A version can be explictly marked as "breaking" in the architecture defintion
+#  * A version can be explicitly marked as "breaking" in the architecture definition
 #      Breaking versions are not backward compatible with any smaller versions
 #      For example, if version 2.2 is Breaking,
 #        - 3.0 is compatible with 2.2

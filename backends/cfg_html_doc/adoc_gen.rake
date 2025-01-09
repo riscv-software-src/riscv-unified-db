@@ -84,7 +84,7 @@ require "ruby-prof"
 
     case type
     when "csr"
-      puts "Generting full CSR list"
+      puts "Generating full CSR list"
       cfg_arch.transitive_implemented_csrs.each do |csr|
         lines << " * `#{csr.name}` #{csr.long_name}"
       end
@@ -94,12 +94,12 @@ require "ruby-prof"
         lines << " * `#{ext_version.name}` #{ext_version.ext.long_name}"
       end
     when "inst"
-      puts "Generting full instruction list"
+      puts "Generating full instruction list"
       cfg_arch.transitive_implemented_instructions.each do |inst|
         lines << " * `#{inst.name}` #{inst.long_name}"
       end
     when "func"
-      puts "Generting function list"
+      puts "Generating function list"
       cfg_arch.implemented_functions.each do |func|
         lines << " * `#{func.name}`"
       end

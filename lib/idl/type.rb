@@ -12,7 +12,7 @@ module Idl
       :bitfield, # bitfield, convertable to int and/or Bits<width>
       :struct,   # structure class
       :array,    # array of other types
-      :tuple,    # tuple of other disimilar types
+      :tuple,    # tuple of other dissimilar types
       :function, # function
       :template_function, # template function, where the template arguments are known but template values need to be applied to become a full function
       :csr,      # a CSR register type
@@ -391,7 +391,7 @@ module Idl
     end
 
     # @return [Idl::Type] Type of a scalar
-    # @param schema [Hash] JSON Schema desciption of a scalar
+    # @param schema [Hash] JSON Schema description of a scalar
     def self.from_json_schema_scalar_type(schema)
       if schema.key?("type")
         case schema["type"]
@@ -432,7 +432,7 @@ module Idl
     private_class_method :from_json_schema_scalar_type
 
     # @return [Idl::Type] Type of array
-    # @param schema [Hash] JSON Schema desciption of an array
+    # @param schema [Hash] JSON Schema description of an array
     def self.from_json_schema_array_type(schema)
       width = schema["minItems"]
       if !schema.key?("minItems") || !schema.key?("maxItems") || (schema["minItems"] != schema["maxItems"])
@@ -789,7 +789,7 @@ module Idl
         arguments = @func_def_ast.arguments(symtab)
       ensure
         symtab.pop
-        symtab.relase
+        symtab.release
       end
       arguments[index][1]
     end

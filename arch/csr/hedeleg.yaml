@@ -122,7 +122,7 @@ fields:
     description: |
       *Environment Call from VU-mode*
 
-      Controls delegation of Enviornment Call from VU-mode exceptions to VS-mode.
+      Controls delegation of Environment Call from VU-mode exceptions to VS-mode.
 
       See `medeleg.EU` for details.
 
@@ -133,7 +133,7 @@ fields:
     description: |
       *Environment Call from HS-mode*
 
-      Enviornment Call from HS-mode exceptions _cannot be delegated to VS-mode_,
+      Environment Call from HS-mode exceptions _cannot be delegated to VS-mode_,
       so this field is read-only 0.
 
       See `medeleg.ES` for details.
@@ -144,7 +144,7 @@ fields:
     description: |
       *Environment Call from VS-mode*
 
-      Enviornment Call from VS-mode exceptions _cannot be delegated to VS-mode_,
+      Environment Call from VS-mode exceptions _cannot be delegated to VS-mode_,
       so this field is read-only 0.
 
       See `medeleg.EVS` for details.
@@ -155,7 +155,7 @@ fields:
     description: |
       *Environment Call from M-mode*
 
-      Enviornment Call from M-mode exceptions _cannot be delegated to VS-mode_,
+      Environment Call from M-mode exceptions _cannot be delegated to VS-mode_,
       so this field is read-only 0.
 
       See `medeleg.EM` for details.

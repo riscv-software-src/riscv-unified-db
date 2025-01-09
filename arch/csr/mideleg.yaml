@@ -8,7 +8,7 @@ address: 0x303
 priv_mode: M
 length: MXLEN
 definedBy:
-  # after 1.9.1, mideleg does not exist whe S-mode is not implemented
+  # after 1.9.1, mideleg does not exist when S-mode is not implemented
   # we can represent that by making mideleg an S extension CSR post 1.9.1
   oneOf:
     - name: Sm
@@ -128,7 +128,7 @@ fields:
   VSTI:
     location: 6
     description: |
-      *Virutal Supervisor Timer interrupt delegation*
+      *Virtual Supervisor Timer interrupt delegation*
 
       When 1, Virtual Supervisor Timer interrupts are delegated to HS-mode.
 

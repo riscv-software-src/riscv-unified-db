@@ -19,13 +19,13 @@ class ExtensionParameter
   attr_reader :schema
 
   # @return [String] Ruby code to perform validation above and beyond JSON schema
-  # @return [nil] If there is no extra validatino
+  # @return [nil] If there is no extra validation
   attr_reader :extra_validation
 
   # @return [Array<Extension>] The extension(s) that define this parameter
   #
   # Some parameters are defined by multiple extensions (e.g., CACHE_BLOCK_SIZE by Zicbom and Zicboz).
-  # When defined in multiple places, the parameter *must* mean the extact same thing.
+  # When defined in multiple places, the parameter *must* mean the exact same thing.
   attr_reader :exts
 
   # @returns [Idl::Type] Type of the parameter
@@ -479,7 +479,7 @@ class ExtensionVersion
 
   # @param ext_name [String] Extension name
   # @param ext_version_requirements [String,Array<String>] Extension version requirements
-  # @return [Boolean] whether or not this ExtensionVersion is named `ext_name` and satifies the version requirements
+  # @return [Boolean] whether or not this ExtensionVersion is named `ext_name` and satisfies the version requirements
   def satisfies?(ext_name, *ext_version_requirements)
     ExtensionRequirement.new(ext_name, ext_version_requirements, arch).satisfied_by?(self)
   end

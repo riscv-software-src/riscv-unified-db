@@ -628,7 +628,7 @@ class Portfolio < DatabaseObject
 
     exts = []
 
-    # Interate through all the extensions in the architecture database that define this parameter.
+    # Iterate through all the extensions in the architecture database that define this parameter.
     param.exts.each do |ext|
       found = false
 
@@ -657,7 +657,7 @@ class Portfolio < DatabaseObject
 
     exts = []   # Local variable, no caching
 
-    # Interate through all the extensions in the architecture database that define this parameter.
+    # Iterate through all the extensions in the architecture database that define this parameter.
     param.exts.each do |ext|
       found = false
 

@@ -205,7 +205,7 @@ description: |
   Moreover, since this feature is optional in the standard, it cannot be
   used in portable code.
 
-  Implementors are free to provide a NaN payload propagation scheme as a
+  Implementers are free to provide a NaN payload propagation scheme as a
   nonstandard extension enabled by a nonstandard operating mode. However, the canonical NaN scheme described above must always be supported and should be the default mode.
   ====
   '''

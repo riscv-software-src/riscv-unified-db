@@ -290,7 +290,7 @@ class CsrField < DatabaseObject
     @reachable_functions = fns.uniq
   end
 
-  # @return [Array<Idl::FunctionDefAst>] List of functions called thorugh this field, irrespective of context
+  # @return [Array<Idl::FunctionDefAst>] List of functions called through this field, irrespective of context
   # @param symtab [SymbolTable]
   def reachable_functions_unevaluated(symtab)
     raise ArgumentError, "Argument should be a symtab" unless symtab.is_a?(Idl::SymbolTable)
@@ -481,7 +481,7 @@ class CsrField < DatabaseObject
     )
     symtab.add(
       "__expected_return_type",
-      Idl::Type.new(:bits, width: 128) # to accomodate special return values (e.g., UNDEFIEND_LEGAL_DETERMINISITIC)
+      Idl::Type.new(:bits, width: 128) # to accommodate special return values (e.g., UNDEFIEND_LEGAL_DETERMINISITIC)
     )
     symtab.add(
       "csr_value",

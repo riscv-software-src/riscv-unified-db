@@ -169,7 +169,7 @@ params:
       maximum: 63
   VS_MODE_ENDIANESS:
     description: |
-      Endianess of data in VS-mode. Can be one of:
+      Endianness of data in VS-mode. Can be one of:
 
        * little:  M-mode data is always little endian
        * big:     M-mode data is always big endian
@@ -180,7 +180,7 @@ params:
       enum: [little, big, dynamic]
   VU_MODE_ENDIANESS:
     description: |
-      Endianess of data in VU-mode. Can be one of:
+      Endianness of data in VU-mode. Can be one of:
 
        * little:  M-mode data is always little endian
        * big:     M-mode data is always big endian
@@ -504,7 +504,7 @@ params:
 
       Possible values:
         * "always zero": Always write the value zero
-        * "custom": Write a custom value, which resuls in UNPREDICTABLE
+        * "custom": Write a custom value, which results in UNPREDICTABLE
     schema:
       type: string
       enum:
@@ -516,7 +516,7 @@ params:
 
       Possible values:
         * "always zero": Always write the value zero
-        * "custom": Write a custom value, which resuls in UNPREDICTABLE
+        * "custom": Write a custom value, which results in UNPREDICTABLE
     schema:
       type: string
       enum: ["always zero", "custom"]
@@ -526,7 +526,7 @@ params:
 
       Possible values:
         * "always zero": Always write the value zero
-        * "custom": Write a custom value, which resuls in UNPREDICTABLE
+        * "custom": Write a custom value, which results in UNPREDICTABLE
     schema:
       type: string
       enum: ["always zero", "custom"]
@@ -537,7 +537,7 @@ params:
       Possible values:
         * "always zero": Always write the value zero
         * "always transformed standard instruction": Always write a transformed standard instruction as defined by H
-        * "custom": Write a custom value, which resuls in UNPREDICTABLE
+        * "custom": Write a custom value, which results in UNPREDICTABLE
     schema:
       type: string
       enum: ["always zero", "always transformed standard instruction", "custom"]
@@ -548,7 +548,7 @@ params:
       Possible values:
         * "always zero": Always write the value zero
         * "always transformed standard instruction": Always write a transformed standard instruction as defined by H
-        * "custom": Write a custom value, which resuls in UNPREDICTABLE
+        * "custom": Write a custom value, which results in UNPREDICTABLE
     schema:
       type: string
       enum: ["always zero", "always transformed standard instruction", "custom"]
@@ -559,7 +559,7 @@ params:
       Possible values:
         * "always zero": Always write the value zero
         * "always transformed standard instruction": Always write a transformed standard instruction as defined by H
-        * "custom": Write a custom value, which resuls in UNPREDICTABLE
+        * "custom": Write a custom value, which results in UNPREDICTABLE
     schema:
       type: string
       enum: ["always zero", "always transformed standard instruction", "custom"]
@@ -570,7 +570,7 @@ params:
       Possible values:
         * "always zero": Always write the value zero
         * "always transformed standard instruction": Always write a transformed standard instruction as defined by H
-        * "custom": Write a custom value, which resuls in UNPREDICTABLE
+        * "custom": Write a custom value, which results in UNPREDICTABLE
     schema:
       type: string
       enum: ["always zero", "always transformed standard instruction", "custom"]
@@ -580,7 +580,7 @@ params:
 
       Possible values:
         * "always zero": Always write the value zero
-        * "custom": Write a custom value, which resuls in UNPREDICTABLE
+        * "custom": Write a custom value, which results in UNPREDICTABLE
     schema:
       type: string
       enum: ["always zero", "custom"]
@@ -590,7 +590,7 @@ params:
 
       Possible values:
         * "always zero": Always write the value zero
-        * "custom": Write a custom value, which resuls in UNPREDICTABLE
+        * "custom": Write a custom value, which results in UNPREDICTABLE
     schema:
       type: string
       enum: ["always zero", "custom"]
@@ -600,7 +600,7 @@ params:
 
       Possible values:
         * "always zero": Always write the value zero
-        * "custom": Write a custom value, which resuls in UNPREDICTABLE
+        * "custom": Write a custom value, which results in UNPREDICTABLE
     schema:
       type: string
       enum: ["always zero", "custom"]
@@ -610,7 +610,7 @@ params:
 
       Possible values:
         * "always zero": Always write the value zero
-        * "custom": Write a custom value, which resuls in UNPREDICTABLE
+        * "custom": Write a custom value, which results in UNPREDICTABLE
     schema:
       type: string
       enum: ["always zero", "custom"]
@@ -621,7 +621,7 @@ params:
       Possible values:
         * "always zero": Always write the value zero
         * "always transformed standard instruction": Always write a transformed standard instruction as defined by H
-        * "custom": Write a custom value, which resuls in UNPREDICTABLE
+        * "custom": Write a custom value, which results in UNPREDICTABLE
     schema:
       type: string
       enum: ["always zero", "always transformed standard instruction", "custom"]
@@ -632,7 +632,7 @@ params:
       Possible values:
         * "always zero": Always write the value zero
         * "always transformed standard instruction": Always write a transformed standard instruction as defined by H
-        * "custom": Write a custom value, which resuls in UNPREDICTABLE
+        * "custom": Write a custom value, which results in UNPREDICTABLE
     schema:
       type: string
       enum: ["always zero", "always transformed standard instruction", "custom"]

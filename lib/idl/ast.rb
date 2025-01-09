@@ -63,14 +63,14 @@ module Idl
     # @return [String] Source string
     attr_reader :input
 
-    # @retrun [Range] Range within the input for this node
+    # @return [Range] Range within the input for this node
     attr_reader :interval
 
     # @return [String] The IDL source of this node
     attr_reader :text_value
 
-    # @retrun [AstNode] The parent node
-    # @retrun [nil] if this is the root of the tree
+    # @return [AstNode] The parent node
+    # @return [nil] if this is the root of the tree
     attr_reader :parent
 
     # @return [Array<AstNode>] Children of this node
@@ -143,7 +143,7 @@ module Idl
         <<~WHAT
           In file #{file}
           On line #{lineno}
-            A value error occured
+            A value error occurred
             #{reason}
         WHAT
       end
@@ -291,7 +291,7 @@ module Idl
 
           #{lines.gsub("\n", "\n  ")}
 
-        A type error occured
+        A type error occurred
           #{$stdout.isatty ? "\u001b[31m#{reason}\u001b[0m" : reason}
       WHAT
       raise AstNode::TypeError, msg
@@ -305,7 +305,7 @@ module Idl
       msg = <<~WHAT
         In file #{input_file}
         On line #{lineno}
-          An internal error occured
+          An internal error occurred
           #{reason}
       WHAT
       raise AstNode::InternalError, msg
@@ -431,13 +431,13 @@ module Idl
 
   # interface for nodes that *might* return a value in a function body
   module Returns
-    # @!macro [new] retrun_value
+    # @!macro [new] return_value
     #   Evaluate the compile-time return value of this node, or, if the node does not return
     #   (e.g., because it is an IfAst but there is no return on the taken path), execute the node
     #   and update the symtab
     #
     #   @param symtab [SymbolTable] The symbol table for the context
-    #   @raise ValueError if, during evaulation, a node without a compile-time value is found
+    #   @raise ValueError if, during evaluation, a node without a compile-time value is found
     #   @return [Integer] The return value, if it is integral
     #   @return [Boolean] The return value, if it is boolean
     #   @return [nil]     if the return value is not compile-time-known
@@ -445,13 +445,13 @@ module Idl
     # @!macro return_value
     def return_value(symtab) = raise NotImplementedError, "#{self.class.name} must implement return_value"
 
-    # @!macro [new] retrun_values
+    # @!macro [new] return_values
     #   Evaluate all possible compile-time return values of this node, or, if the node does not return
     #   (e.g., because it is an IfAst but there is no return on a possible path), execute the node
     #   and update the symtab
     #
     #   @param symtab [SymbolTable] The symbol table for the context
-    #   @raise ValueError if, during evaulation, a node without a compile-time value is found
+    #   @raise ValueError if, during evaluation, a node without a compile-time value is found
     #   @return [Array<Integer>] The possible return values. Will be an empty array if there are no return values
     #   @return [Array<Boolean>] The possible return values. Will be an empty array if there are no return values
 
@@ -509,7 +509,7 @@ module Idl
     #
     #  For most AstNodes, this will just be a single-entry array
     #
-    #  @param symtab [SymbolTable] The context for the evaulation
+    #  @param symtab [SymbolTable] The context for the evaluation
     #  @return [Array<Integer>] The complete list of compile-time-known values, when they are integral
     #  @return [Array<Boolean>] The complete list of compile-time-known values, when they are booleans
     #  @return [AstNode::ValueError] if the list of values is not knowable at compile time
@@ -524,7 +524,7 @@ module Idl
     #  Add symbol(s) at the outermost scope of the symbol table
     #
     #  @param symtab [SymbolTable] Symbol table at the scope that the symbol(s) will be inserted
-    def add_symbol(symtab) = raise NotImplementedError, "#{self.class.name} must implment add_symbol"
+    def add_symbol(symtab) = raise NotImplementedError, "#{self.class.name} must implement add_symbol"
   end
 
   class IncludeStatementSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -985,7 +985,7 @@ module Idl
     end
   end
 
-  # Node representing an IDL enum defintion
+  # Node representing an IDL enum definition
   #
   #  # this will result in an EnumDefinitionAst
   #  enum PrivilegeMode {
@@ -1229,7 +1229,7 @@ module Idl
     end
   end
 
-  # represents a bitfield defintion
+  # represents a bitfield definition
   #
   #  # this will result in a BitfieldDefinitionAst
   #  bitfield (64) Sv39PageTableEntry {
@@ -1739,7 +1739,7 @@ module Idl
     end
   end
 
-  # represents an array element assignement
+  # represents an array element assignment
   #
   # for example:
   #   X[rs1] = XLEN'd0
@@ -1781,7 +1781,7 @@ module Idl
         end
       when :bits
         unless rhs.type(symtab).convertable_to?(Bits1Type)
-          type_error "Incompatible type in integer slice assignement"
+          type_error "Incompatible type in integer slice assignment"
         end
       else
         internal_error "Unexpected type on array element assignment"
@@ -1861,7 +1861,7 @@ module Idl
     end
   end
 
-  # represents an array range assignement
+  # represents an array range assignment
   #
   # for example:
   #   vec[8:0] = 8'd0
@@ -1880,8 +1880,8 @@ module Idl
     # @!macro type_check
     def type_check(symtab)
       variable.type_check(symtab)
-      type_error "#{varible.text_value} must be integral" unless variable.type(symtab).kind == :bits
-      type_errpr "Assigning to a constant" if variable.type(symtab).const?
+      type_error "#{variable.text_value} must be integral" unless variable.type(symtab).kind == :bits
+      type_error "Assigning to a constant" if variable.type(symtab).const?
 
       msb.type_check(symtab)
       lsb.type_check(symtab)
@@ -1933,7 +1933,7 @@ module Idl
       end
       value_else(value_result) do
         symtab.add(variable.name, Var.new(variable.name, variable.type(symtab)))
-        value_error "Either the range or right-hand side of an array range assignemnt is unknown"
+        value_error "Either the range or right-hand side of an array range assignment is unknown"
       end
     end
 
@@ -1952,7 +1952,7 @@ module Idl
     end
   end
 
-  # represents a bitfield or struct assignement
+  # represents a bitfield or struct assignment
   #
   # for example:
   #   Sv39PageTableEntry entry;
@@ -1992,7 +1992,7 @@ module Idl
         struct_val[field_access.field_name] = write_value.value(symtab)
         symtab.add(field_access.obj.name, Var.new(field_access.obj.name, field_access.obj.type(symtab), struct_val))
       else
-        value_error "TODO: Field assignement execution"
+        value_error "TODO: Field assignment execution"
       end
     end
 
@@ -2071,7 +2071,7 @@ module Idl
     end
   end
 
-  # represents assignement of multiple variable from a function call that returns multiple values
+  # represents assignment of multiple variable from a function call that returns multiple values
   #
   # for example:
   #   (match_result, cfg) = pmp_match<access_size>(paddr);
@@ -2229,7 +2229,7 @@ module Idl
     end
   end
 
-  # represents a single variable declaration (without assignement)
+  # represents a single variable declaration (without assignment)
   #
   # for example:
   #   Bits<64> doubleword
@@ -2346,7 +2346,7 @@ module Idl
     end
   end
 
-  # reprents a single variable declaration with initialization
+  # represents a single variable declaration with initialization
   #
   # for example:
   #   Bits<64> doubleword = 64'hdeadbeef
@@ -2946,7 +2946,7 @@ module Idl
           value_result = value_try do
             return 0 if lhs.value(symtab).zero?
           end
-          # ok, trye rhs
+          # ok, try rhs
 
           return 0 if rhs.value(symtab).zero?
 
@@ -3842,7 +3842,7 @@ module Idl
 
   # represents a don't care return value
   #
-  # for exaple:
+  # for example:
   #   return -;
   class DontCareReturnAst < AstNode
     include Rvalue
@@ -3934,7 +3934,7 @@ module Idl
       return_expression.return_types(symtab)
     end
 
-    # @retrun [Type] The actual return type
+    # @return [Type] The actual return type
     def return_type(symtab)
       return_expression.retrun_type(symtab)
     end
@@ -3994,7 +3994,7 @@ module Idl
       end
     end
 
-    # @retrun [Type] The actual return type
+    # @return [Type] The actual return type
     def return_type(symtab)
       types = return_types(symtab)
       if types.size > 1
@@ -4104,7 +4104,7 @@ module Idl
       return_expression.type_check(symtab)
     end
 
-    # @retrun [Type] The actual return type
+    # @return [Type] The actual return type
     def return_type(symtab)
       return_expression.return_type(symtab)
     end
@@ -4537,8 +4537,8 @@ module Idl
     def args = children[@num_targs..]
 
     def initialize(input, interval, function_name, targs, args)
-      raise ArgumentError, "targs shoudl be an array" unless targs.is_a?(Array)
-      raise ArgumentError, "args shoudl be an array" unless args.is_a?(Array)
+      raise ArgumentError, "targs should be an array" unless targs.is_a?(Array)
+      raise ArgumentError, "args should be an array" unless args.is_a?(Array)
 
       super(input, interval, targs + args)
       @num_targs = targs.size
@@ -4782,7 +4782,7 @@ module Idl
         # begin
         #   if s.is_a?(Returns)
         #     s.return_value(symtab)
-        #     # if we reach here, the return value is known, so we don't have to go futher
+        #     # if we reach here, the return value is known, so we don't have to go further
         #     break
         #   else
         #     s.execute(symtab)
@@ -4819,7 +4819,7 @@ module Idl
 
       values = []
       value_result = value_try do
-        # if there is a definate return value, then just return that
+        # if there is a definite return value, then just return that
         return [return_value(symtab)]
       end
       value_else(value_result) do
@@ -5054,7 +5054,7 @@ module Idl
 
     # we do lazy type checking of the function body so that we never check
     # uncalled functions, which avoids dealing with mentions of CSRs that
-    # may not exist in a given implmentation
+    # may not exist in a given implementation
     def type_check_from_call(symtab)
       internal_error "Function definitions should be at global + 1 scope" unless symtab.levels == 2
 
@@ -5112,7 +5112,7 @@ module Idl
       symtab.add!(name, def_type)
     end
 
-    # @return [Array<String>] Template arugment names, in order
+    # @return [Array<String>] Template argument names, in order
     def template_names
       @targs.map(&:name)
     end

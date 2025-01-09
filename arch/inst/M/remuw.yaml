@@ -10,6 +10,7 @@ description: |
 
   If the value in rs2 is zero, rd gets the sign-extended value in rs1.
 definedBy: M
+base: 64
 assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------111-----0111011
