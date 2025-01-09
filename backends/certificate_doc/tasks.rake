@@ -24,16 +24,29 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
     "#{CERT_DOC_DIR}/templates/certificate.adoc.erb",
     __FILE__
   ] do |t|
-    # TODO: schema validation
-    base_cert_model = cfg_arch_for("rv#{base}").cert_model(cert_model_name)
-    raise "No certificate model named '#{cert_model_name}'" if base_cert_model.nil?
+    puts "UPDATE: Creating bootstrap objects for #{cert_model_name}"
 
-    # Ask base certification model to create an in-memory config arch for this model.
-    # XXX - Add this to profile releases
-    cfg_arch = base_cert_model.to_cfg_arch
+    # Create bootstrap ConfiguredArchitecture object which also creates and contains
+    # a PartialConfig object for the rv32/rv64 configuration.
+    bootstrap_cfg_arch = cfg_arch_for("rv#{base}")
+
+    # Creates CertModel object for every certificate model in the database
+    # using rv32/rv64 PartialConfig object and then returns named CertModel object.
+    bootstrap_cert_model = bootstrap_cfg_arch.cert_model(cert_model_name)
+    raise "No certificate model named '#{cert_model_name}'" if bootstrap_cert_model.nil?
+
+    puts "UPDATE: Creating real objects for #{cert_model_name}"
+
+    # Use bootstrap CertModel to create a ConfiguredArchitecture for this CertModel
+    # to use instead of the the bootstrap one created based on the rv32/rv64 configuration.
+    cfg_arch = bootstrap_cert_model.to_cfg_arch
+
+    # Use model-specific ConfiguredArchitecture to create CertModel objects again
+    # for every certificate model in the database and then return named CertModel object.
+    cert_model = cfg_arch.cert_model(cert_model_name)
 
     # Set globals for ERB template.
-    cert_model = cfg_arch.cert_model(cert_model_name)
+    portfolio = cert_model
     cert_class = cert_model.cert_class
     portfolio = cert_model
     portfolio_class = cert_class
@@ -44,7 +57,15 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
     erb.filename = "#{CERT_DOC_DIR}/templates/certificate.adoc.erb"
 
     FileUtils.mkdir_p File.dirname(t.name)
-    File.write t.name, AsciidocUtils.resolve_links(cfg_arch.find_replace_links(erb.result(binding)))
+
+    # Convert ERB to final ASCIIDOC. Note that this code is broken up into separate function calls
+    # each with a variable name to aid in running a command-line debugger on this code.
+    erb_result = erb.result(binding)
+    erb_result_monospace_converted_to_links = cfg_arch.find_replace_links(erb_result)
+    erb_result_with_links_added = cfg_arch.find_replace_links(erb_result_monospace_converted_to_links)
+    erb_result_with_links_resolved = AsciidocUtils.resolve_links(erb_result_with_links_added)
+
+    File.write t.name, erb_result_with_links_resolved
     puts "Generated adoc source at #{t.name}"
   end
 

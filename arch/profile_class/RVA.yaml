@@ -2,6 +2,7 @@
 
 $schema: profile_class_schema.json#
 kind: profile class
+processor_kind: Apps Processor
 name: RVA
 marketing_name: RVA
 introduction: |

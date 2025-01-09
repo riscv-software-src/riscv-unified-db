@@ -7,6 +7,9 @@ require_relative "portfolio"
 # that each include an unprivileged profile (e.g., RVA20U64) and one more
 # privileged profiles (e.g., RVA20S64).
 class ProfileClass < PortfolioClass
+  # @return [String] Naming scheme for profile class
+  def naming_scheme = @data["naming_scheme"]
+
   # @return [String] Name of the class
   def marketing_name = @data["marketing_name"]
 
@@ -27,21 +30,35 @@ class ProfileClass < PortfolioClass
     @profile_releases
   end
 
+  # @return [Array<ProfileRelease>] Defined profile releases of this processor class
+  def profile_releases_matching_processor_kind
+    return @profile_releases_matching_processor_kind unless @profile_releases_matching_processor_kind.nil?
+
+    matching_classes = portfolio_classes_matching_portfolio_kind_and_processor_kind
+
+    # Look for all profile releases that are from any of the matching classes.
+    @profile_releases_matching_processor_kind = @cfg_arch.profile_releases.select { |pr|
+      matching_classes.any? { |matching_class| matching_class.name == pr.profile_class.name }
+    }
+
+    @profile_releases_matching_processor_kind
+  end
+
   # @return [Array<Profile>] All profiles in this profile class (for all releases).
   def profiles
     return @profiles unless @profiles.nil?
 
-    @profiles = []
-    @cfg_arch.profiles.each do |profile|
-      if profile.profile_class.name == name
-        @profiles << profile
-      end
-    end
-
-    @profiles
+    @profiles = @cfg_arch.profiles.select {|profile| profile.profile_class.name == name}
   end
 
-  # @return [Array<Extension>] List of all extensions referenced by the class
+  # @return [Array<Profile>] All profiles in database matching my processor kind
+  def profiles_matching_processor_kind
+    return @profiles_matching_processor_kind unless @profiles_matching_processor_kind.nil?
+
+    @profiles_matching_processor_kind = @cfg_arch.profiles.select {|profile| profile.profile_class.processor_kind == processor_kind}
+  end
+
+  # @return [Array<Extension>] List of all extensions referenced by the profile class
   def referenced_extensions
     return @referenced_extensions unless @referenced_extensions.nil?
 
@@ -55,15 +72,31 @@ class ProfileClass < PortfolioClass
     @referenced_extensions
   end
 
+  # @return [Array<Extension>] List of all extensions referenced by any profile class in the database with my processor kind
+  def referenced_extensions_matching_processor_kind
+    return @reference_extensions_matching_processor_kind unless @reference_extensions_matching_processor_kind.nil?
+
+    @reference_extensions_matching_processor_kind = []
+    profiles_matching_processor_kind.each do |profile|
+      @reference_extensions_matching_processor_kind += profile.in_scope_extensions
+    end
+
+    @reference_extensions_matching_processor_kind.uniq!(&:name)
+
+    @reference_extensions_matching_processor_kind
+  end
 end
 
 # A profile release consists of a number of releases each with one or more profiles.
 # For example, the RVA20 profile release has profiles RVA20U64 and RVA20S64.
 # Note there is no Portfolio* base class for a ProfileRelease to inherit from since there is no
 # equivalent to a ProfileRelease in a Certificate so no potential for a shared base class.
-class ProfileRelease < DatabaseObjectect
+class ProfileRelease < DatabaseObject
   def marketing_name = @data["marketing_name"]
+
+  # @return [String] Small enough (~1 paragraph) to be suitable immediately after a higher-level heading.
   def introduction = @data["introduction"]
+
   def state = @data["state"]
 
   # @return [Date] Ratification date
@@ -76,6 +109,8 @@ class ProfileRelease < DatabaseObjectect
 
   # @return [Array<Person>] Contributors to the profile spec
   def contributors
+    return nil if @data["contributors"].nil?
+
     @data["contributors"].map { |data| Person.new(data) }
   end
 
@@ -135,10 +170,8 @@ class ProfileRelease < DatabaseObjectect
 end
 
 # Representation of a specific profile in a profile release.
-class Profile < PortfolioInstance
-
+class Profile < Portfolio
   # @return [String] The marketing name of the Profile
-  def introduction = @data["introduction"]
   def marketing_name = @data["marketing_name"]
 
   # @return [ProfileRelease] The profile release this profile belongs to
