@@ -1,16 +1,13 @@
 # yaml-language-server: $schema=../../schemas/cert_class_schema.json
 
 $schema: cert_class_schema.json#
-kind: certificate class
+kind: Processor CRD
+processor_kind: Apps Processor
 name: MockCertificateClass
 long_name: Mock Certificate Class Long Name
 
 introduction: |
   Here's the Mock Certificate Class introduction.
-
-naming_scheme: |
-  Here's the Mock Certificate Class naming scheme.
-  A Mock certificate class or model can have any name as long as it can be a hash key.
 
 mandatory_priv_modes:
   - M

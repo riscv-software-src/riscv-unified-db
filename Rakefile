@@ -338,68 +338,63 @@ namespace :test do
   DESC
   task :nightly do
     Rake::Task["regress"].invoke
-
-    Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100.pdf"].invoke
-    Rake::Task["#{$root}/gen/profile_doc/pdf/RVA20.pdf"].invoke
-    Rake::Task["#{$root}/gen/profile_doc/pdf/RVA22.pdf"].invoke
-    Rake::Task["#{$root}/gen/profile_doc/pdf/RVI20.pdf"].invoke
-
+    Rake::Task["portfolios"].invoke
     puts
     puts "Nightly regression test PASSED"
   end
 end
 
 desc <<~DESC
-  Generate all portfolio-based PDFs (certificates and profiles).
+  Generate all portfolio-based PDF artifacts (certificates and profiles)
 DESC
-task :portfolio_pdfs do
-  puts ""
-  puts "==================================="
-  puts "Generating MC100"
-  puts "==================================="
-  puts ""
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100.pdf"].invoke
-
-  puts ""
-  puts "=================================================="
-  puts "Generating MockCertificateModel"
-  puts "=================================================="
-  puts ""
+task :portfolios do
+  portfolio_start_msg("MockCertificateModel")
   Rake::Task["#{$root}/gen/certificate_doc/pdf/MockCertificateModel.pdf"].invoke
-
-  puts ""
-  puts "==================================="
-  puts "Generating RVA20"
-  puts "==================================="
-  puts ""
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA20.pdf"].invoke
-
-  puts ""
-  puts "==================================="
-  puts "Generating RVA22"
-  puts "==================================="
-  puts ""
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA22.pdf"].invoke
-
-  puts ""
-  puts "==================================="
-  puts "Generating RVI20"
-  puts "==================================="
-  puts ""
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVI20.pdf"].invoke
-
-  puts ""
-  puts "==================================="
-  puts "Generating MockProfileRelease"
-  puts "==================================="
-  puts ""
+  portfolio_start_msg("MockProfileRelease")
   Rake::Task["#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"].invoke
+  portfolio_start_msg("MC100-32")
+  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100-32.pdf"].invoke
+  portfolio_start_msg("MC100-64")
+  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100-64.pdf"].invoke
+  portfolio_start_msg("MC200-32")
+  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC200-32.pdf"].invoke
+  portfolio_start_msg("MC200-64")
+  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC200-64.pdf"].invoke
+  portfolio_start_msg("MC300-32")
+  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC300-32.pdf"].invoke
+  portfolio_start_msg("MC300-64")
+  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC300-64.pdf"].invoke
+  portfolio_start_msg("RVI20")
+  Rake::Task["#{$root}/gen/profile_doc/pdf/RVI20.pdf"].invoke
+  portfolio_start_msg("RVA20")
+  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA20.pdf"].invoke
+  portfolio_start_msg("RVA22")
+  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA22.pdf"].invoke
+  portfolio_start_msg("RVA23")
+  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA23.pdf"].invoke
+  portfolio_start_msg("RVB23")
+  Rake::Task["#{$root}/gen/profile_doc/pdf/RVB23.pdf"].invoke
+end
+
+def portfolio_start_msg(name)
+  puts ""
+  puts "================================================================================================="
+  puts "#{name}"
+  puts "================================================================================================="
+  puts ""
 end
 
 # Shortcut targets for building profiles and certificates.
-task MC100: "#{$root}/gen/certificate_doc/pdf/MC100.pdf"
-task MockCertificateModel: "#{$root}/gen/certificate_doc/pdf/MockCertificateModel.pdf"
-task RVI20: "#{$root}/gen/profile_doc/pdf/RVI20.pdf"
-task RVA20: "#{$root}/gen/profile_doc/pdf/RVA20.pdf"
-task RVA22: "#{$root}/gen/profile_doc/pdf/RVA22.pdf"
-task MockProfileRelease: "#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"
+task "MockCertificateModel": "#{$root}/gen/certificate_doc/pdf/MockCertificateModel.pdf"
+task "MC100-32": "#{$root}/gen/certificate_doc/pdf/MC100-32.pdf"
+task "MC100-64": "#{$root}/gen/certificate_doc/pdf/MC100-64.pdf"
+task "MC200-32": "#{$root}/gen/certificate_doc/pdf/MC200-32.pdf"
+task "MC200-64": "#{$root}/gen/certificate_doc/pdf/MC200-64.pdf"
+task "MC300-32": "#{$root}/gen/certificate_doc/pdf/MC300-32.pdf"
+task "MC300-64": "#{$root}/gen/certificate_doc/pdf/MC300-64.pdf"
+task "MockProfileRelease": "#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"
+task "RVI20": "#{$root}/gen/profile_doc/pdf/RVI20.pdf"
+task "RVA20": "#{$root}/gen/profile_doc/pdf/RVA20.pdf"
+task "RVA22": "#{$root}/gen/profile_doc/pdf/RVA22.pdf"
+task "RVA23": "#{$root}/gen/profile_doc/pdf/RVA23.pdf"
+task "RVB23": "#{$root}/gen/profile_doc/pdf/RVB23.pdf"

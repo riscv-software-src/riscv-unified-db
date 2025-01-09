@@ -1,5 +1,6 @@
 $schema: profile_class_schema.json#
 kind: profile class
+processor_kind: Apps Processor
 name: RVB
 marketing_name: RVB
 introduction: |

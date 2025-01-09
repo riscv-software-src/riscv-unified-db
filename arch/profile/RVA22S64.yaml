@@ -90,15 +90,12 @@ extensions:
       Technically, Zk is also a privileged-mode option capturing that
       Zkr, Zkn, and Zkt are all implemented.  However, the Zk rollup is less
       descriptive than specifying the individual extensions explicitly.
-  H:
+  Sha:
     presence: optional
-    version: "~> 1.0"
+    version: "~>1.0"
     note: |
-      The following extensions become mandatory when H is implemented:
-
-        * Ssstateen
-        * Shcounterenw
-        * Shvstvala
-        * Shtvala
-        * Shvstvecd
-        * Shgatpa
+      The set of augmented hypervisor extensions: H, Ssstateen,
+      Shcounterenw, Shvstvala, Shtvala, Shvstvecd, Shvsatpa, Shgatpa.
+      The Sha extension name was introduced in RVA23/RVB23 and wasn't
+      in the ratified RVA22 profile but has since been added retroactively
+      as a documentation-only change (doesn't affect requirements or functionality).
