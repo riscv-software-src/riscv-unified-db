@@ -3,7 +3,7 @@
 require "pathname"
 
 # This class represents a configuration file (e.g., cfgs/*/cfg.yaml), independent of the Architecture.
-# Can either be in the /cfg directory or created at runtime in memory by the certificate tasks.rake file.
+# Located in the /cfg directory.
 class Config
   # @return [Hash<String, Object>] A hash mapping parameter name to value for any parameter that has
   #                                been configured with a value. May be empty.
@@ -142,10 +142,6 @@ class PartialConfig < Config
         end
       end
   end
-
-  # def prohibited_ext?(ext_name, cfg_arch) = prohibited_extensions(cfg_arch).any? { |e| e.name == ext_name.to_s }
-
-  # def ext?(ext_name, cfg_arch) = mandatory_extensions(cfg_arch).any? { |e| e.name == ext_name.to_s }
 end
 
 ################################################################################################################
@@ -182,7 +178,4 @@ class FullConfig < Config
 
   def mandatory_extensions = raise "mandatory_extensions is only available for a PartialConfig"
   def prohibited_extensions = raise "prohibited_extensions is only available for a PartialConfig"
-
-  # def prohibited_ext?(ext_name, cfg_arch) = !ext?(ext_name, cfg_arch)
-  # def ext?(ext_name, cfg_arch) = implemented_extensions(cfg_arch).any? { |e| e.name == ext_name.to_s }
 end

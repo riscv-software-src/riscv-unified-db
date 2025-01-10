@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "obj"
+require_relative "database_obj"
 
 require_relative "../idl/passes/gen_option_adoc"
 
@@ -17,49 +17,43 @@ class CsrField < DatabaseObject
 
   # @return [Integer] The base XLEN required for this CsrField to exist. One of [32, 64]
   # @return [nil] if the CsrField exists in any XLEN
-  def base
-    @data["base"]
-  end
+  def base = @data["base"]
 
   # @param parent_csr [Csr] The Csr that defined this field
   # @param field_data [Hash<String,Object>] Field data from the arch spec
   def initialize(parent_csr, field_name, field_data)
-    super(field_data, parent_csr.data_path, arch: parent_csr.arch)
+    super(field_data, parent_csr.data_path, parent_csr.arch)
     @name = field_name
     @parent = parent_csr
+    @type_cache = {}
   end
 
-  # @param possible_xlens [Array<Integer>] List of xlens that be used in any implemented mode
-  # @param extensions [Array<ExtensionVersion>] List of extensions implemented
-  # @return [Boolean] whether or not the instruction is implemented given the supplies config options
-  def exists_in_cfg?(cfg_arch)
-    if cfg_arch.fully_configured?
-      parent.exists_in_cfg?(cfg_arch) &&
-        (@data["base"].nil? || cfg_arch.possible_xlens.include?(@data["base"])) &&
-        (@data["definedBy"].nil? || cfg_arch.transitive_implemented_extensions.any? { |ext_ver| defined_by?(ext_ver) })
+  # @param design [Design] The design
+  # @return [Boolean] whether or not the instruction is implemented given the supplied design
+  def exists_in_design?(design)
+    if design.fully_configured?
+      parent.exists_in_design?(design) &&
+        (@data["base"].nil? || design.possible_xlens.include?(@data["base"])) &&
+        (@data["definedBy"].nil? || design.transitive_implemented_ext_vers.any? { |ext_ver| defined_by?(ext_ver) })
     else
-      raise "unexpected type" unless cfg_arch.partially_configured?
+      raise "unexpected type" unless design.partially_configured?
 
-      parent.exists_in_cfg?(cfg_arch) &&
-        (@data["base"].nil? || cfg_arch.possible_xlens.include?(@data["base"])) &&
-        (@data["definedBy"].nil? || cfg_arch.prohibited_extensions.none? { |ext_req| ext_req.satisfying_versions.any? { |ext_ver| defined_by?(ext_ver) } })
+      parent.exists_in_design?(design) &&
+        (@data["base"].nil? || design.possible_xlens.include?(@data["base"])) &&
+        (@data["definedBy"].nil? || design.prohibited_ext_reqs.none? { |ext_req| ext_req.satisfying_versions.any? { |ext_ver| defined_by?(ext_ver) } })
     end
   end
 
-  # @return [Boolean] For a partially configured cfg_arch, whether or not the field is optional (not mandatory or prohibited)
-  def optional_in_cfg?(cfg_arch)
-    raise "optional_in_cfg? should only be called on a partially configured cfg_arch" unless cfg_arch.partially_configured?
+  # @return [Boolean] For a partially configured design, whether or not the field is optional (not mandatory or prohibited)
+  def optional_in_design?(design)
+    raise "optional_in_design? should only be called on a partially configured design" unless design.partially_configured?
 
-    exists_in_cfg?(cfg_arch) &&
+    exists_in_design?(design) &&
       (
         if data["definedBy"].nil?
-          parent.optional_in_cfg?(cfg_arch)
+          parent.optional_in_design?(design)
         else
-          cfg_arch.mandatory_extensions.all? do |ext_req|
-            ext_req.satisfying_versions.none? do |ext_ver|
-              defined_by?(ext_ver)
-            end
-          end
+          design.mandatory_ext_reqs.all? { |ext_req| ext_req.satisfying_versions.none? { |ext_ver| defined_by?(ext_ver) } }
         end
       )
   end
@@ -71,7 +65,7 @@ class CsrField < DatabaseObject
     return @type_ast unless @type_ast.nil?
     return nil if @data["type()"].nil?
 
-    @type_ast = symtab.cfg_arch.idl_compiler.compile_func_body(
+    @type_ast = symtab.design.idl_compiler.compile_func_body(
       @data["type()"],
       name: "CSR[#{csr.name}].#{name}.type()",
       input_file: csr.__source,
@@ -105,7 +99,7 @@ class CsrField < DatabaseObject
     )
 
     ast = type_ast(symtab)
-    symtab.cfg_arch.idl_compiler.type_check(
+    symtab.design.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{name}].type()"
@@ -137,7 +131,7 @@ class CsrField < DatabaseObject
 
     ast.freeze_tree(symtab)
 
-    symtab.cfg_arch.idl_compiler.type_check(
+    symtab.design.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{name}].type()"
@@ -147,7 +141,7 @@ class CsrField < DatabaseObject
     @pruned_type_asts[symtab_hash] = ast
   end
 
-  # returns the definitive type for a configuration
+  # Returns the definitive type for the design part of the symbol table.
   #
   # @param symtab [SymbolTable] Symbol table
   # @return [String]
@@ -161,11 +155,7 @@ class CsrField < DatabaseObject
   def type(symtab)
     raise ArgumentError, "Argument 1 should be a symtab" unless symtab.is_a?(Idl::SymbolTable)
 
-    unless @type_cache.nil?
-      raise "Different cfg_arch for type #{@type_cache.keys},  #{symtab.cfg_arch}" unless @type_cache.key?(symtab.cfg_arch)
-
-      return @type_cache[symtab.cfg_arch]
-    end
+    return @type_cache[symtab.design] if @type_cache.key?(symtab.design)
 
     type =
       if @data.key?("type")
@@ -210,8 +200,7 @@ class CsrField < DatabaseObject
         # end
       end
 
-    @type_cache ||= {}
-    @type_cache[symtab.cfg_arch] = type
+    @type_cache[symtab.design] = type
   end
 
   # @return [String] A pretty-printed type string
@@ -242,7 +231,7 @@ class CsrField < DatabaseObject
       range_start = Regexp.last_match(4)
       range_end = Regexp.last_match(5)
 
-      csr_field = cfg_arch.csr(csr_name).field(csr_field)
+      csr_field = design.csr(csr_name).field(csr_field)
       range =
         if range.nil?
           field.location
@@ -256,32 +245,32 @@ class CsrField < DatabaseObject
     @alias
   end
 
-  # @return [Array<Idl::FunctionDefAst>] List of functions called through this field
-  # @param cfg_arch [ConfiguredArchitecture] a configuration
+  # @param design [Design] The design
   # @Param effective_xlen [Integer] 32 or 64; needed because fields can change in different XLENs
-  def reachable_functions(cfg_arch, effective_xlen)
+  # @return [Array<Idl::FunctionDefAst>] List of functions called thorough this field
+  def reachable_functions(design, effective_xlen)
     return @reachable_functions unless @reachable_functions.nil?
 
     symtab =
-      if (cfg_arch.configured?)
-        cfg_arch.symtab
+      if (design.configured?)
+        design.symtab
       else
-        raise ArgumentError, "Must supply effective_xlen for generic ConfiguredArchitecture" if effective_xlen.nil?
+        raise ArgumentError, "Must supply effective_xlen for generic Design" if effective_xlen.nil?
 
         if effective_xlen == 32
-          cfg_arch.symtab_32
+          design.symtab_32
         else
-          cfg_arch.symtab_64
+          design.symtab_64
         end
       end
 
     fns = []
     if has_custom_sw_write?
-      ast = pruned_sw_write_ast(cfg_arch, effective_xlen)
+      ast = pruned_sw_write_ast(design, effective_xlen)
       unless ast.nil?
         sw_write_symtab = symtab.deep_clone
         sw_write_symtab.push(ast)
-        sw_write_symtab.add("csr_value", Idl::Var.new("csr_value", csr.bitfield_type(symtab.cfg_arch, effective_xlen)))
+        sw_write_symtab.add("csr_value", Idl::Var.new("csr_value", csr.bitfield_type(symtab.design, effective_xlen)))
         fns.concat ast.reachable_functions(sw_write_symtab)
       end
     end
@@ -334,18 +323,18 @@ class CsrField < DatabaseObject
   # @return [Csr] Parent CSR for this field
   alias csr parent
 
-  # @param cfg_arch [ConfiguredArchitecture] A configuration
+  # @param design [Design] The design
   # @return [Boolean] Whether or not the location of the field changes dynamically
   #                   (e.g., based on mstatus.SXL) in the configuration
-  def dynamic_location?(cfg_arch)
+  def dynamic_location?(design)
     # if there is no location_rv32, the the field never changes
     return false unless @data["location"].nil?
 
     # the field changes *if* some mode with access can change XLEN
-    csr.modes_with_access.any? { |mode| cfg_arch.multi_xlen_in_mode?(mode) }
+    csr.modes_with_access.any? { |mode| design.multi_xlen_in_mode?(mode) }
   end
 
-  # @param cfg_arch [IdL::Compiler] A compiler
+  # @param design [IdL::Compiler] A compiler
   # @return [Idl::FunctionBodyAst] Abstract syntax tree of the reset_value function
   # @return [nil] If the reset_value is not a function
   def reset_value_ast(symtab)
@@ -354,7 +343,7 @@ class CsrField < DatabaseObject
     return @reset_value_ast unless @reset_value_ast.nil?
     return nil unless @data.key?("reset_value()")
 
-    @reset_value_ast = symtab.cfg_arch.idl_compiler.compile_func_body(
+    @reset_value_ast = symtab.design.idl_compiler.compile_func_body(
       @data["reset_value()"],
       return_type: Idl::Type.new(:bits, width: 64),
       name: "CSR[#{parent.name}].#{name}.reset_value()",
@@ -383,7 +372,7 @@ class CsrField < DatabaseObject
     symtab = symtab.deep_clone
     symtab.push(ast)
     symtab.add("__expected_return_type", Idl::Type.new(:bits, width: 64))
-    symtab.cfg_arch.idl_compiler.type_check(
+    symtab.design.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{csr.name}].reset_value()"
@@ -416,7 +405,7 @@ class CsrField < DatabaseObject
 
     symtab.push(ast)
     symtab.add("__expected_return_type", Idl::Type.new(:bits, width: 64))
-    symtab.cfg_arch.idl_compiler.type_check(
+    symtab.design.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{csr.name}].#{name}.reset_value()"
@@ -425,20 +414,20 @@ class CsrField < DatabaseObject
     @type_checked_reset_value_asts[symtab_hash] = ast
   end
 
-  # @param cfg_arch [ConfiguredArchitecture] A config
+  # @param design [Design] The design
   # @return [Integer] The reset value of this field
   # @return [String]  The string 'UNDEFINED_LEGAL' if, for this config, there is no defined reset value
-  def reset_value(cfg_arch)
-    cached_value = @reset_value_cache.nil? ? nil : @reset_value_cache[cfg_arch]
+  def reset_value(design)
+    cached_value = @reset_value_cache.nil? ? nil : @reset_value_cache[design]
     return cached_value if cached_value
 
     @reset_value_cache ||= {}
 
-    @reset_value_cache[cfg_arch] =
+    @reset_value_cache[design] =
       if @data.key?("reset_value")
         @data["reset_value"]
       else
-        symtab = cfg_arch.symtab
+        symtab = design.symtab
         ast = pruned_reset_value_ast(symtab.deep_clone)
         val = ast.return_value(symtab.deep_clone.push(ast))
         val = "UNDEFINED_LEGAL" if val == 0x1_0000_0000_0000_0000
@@ -446,22 +435,22 @@ class CsrField < DatabaseObject
       end
   end
 
-  def dynamic_reset_value?(cfg_arch)
+  def dynamic_reset_value?(design)
     return false unless @data["reset_value"].nil?
 
     value_result = Idl::AstNode.value_try do
-      reset_value(cfg_arch)
+      reset_value(design)
       false
     end || true
   end
 
-  def reset_value_pretty(cfg_arch)
+  def reset_value_pretty(design)
     str = nil
     value_result = Idl::AstNode.value_try do
-      str = reset_value(cfg_arch)
+      str = reset_value(design)
     end
     Idl::AstNode.value_else(value_result) do
-      ast = reset_value_ast(cfg_arch.symtab)
+      ast = reset_value_ast(design.symtab)
       str = ast.gen_option_adoc
     end
     str
@@ -496,11 +485,11 @@ class CsrField < DatabaseObject
     )
     symtab.add(
       "csr_value",
-      Idl::Var.new("csr_value", csr.bitfield_type(symtab.cfg_arch, effective_xlen))
+      Idl::Var.new("csr_value", csr.bitfield_type(symtab.design, effective_xlen))
     )
 
     ast = sw_write_ast(symtab)
-    symtab.cfg_arch.idl_compiler.type_check(
+    symtab.design.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{csr.name}].#{name}.sw_write()"
@@ -512,7 +501,7 @@ class CsrField < DatabaseObject
 
   # @return [Idl::FunctionBodyAst] The abstract syntax tree of the sw_write() function
   # @return [nil] If there is no sw_write() function
-  # @param cfg_arch [ConfiguredArchitecture] An architecture definition
+  # @param symtab [Idl::SymbolTable] The symbol table
   def sw_write_ast(symtab)
     raise ArgumentError, "Argument should be a symtab" unless symtab.is_a?(Idl::SymbolTable)
 
@@ -520,7 +509,7 @@ class CsrField < DatabaseObject
     return nil if @data["sw_write(csr_value)"].nil?
 
     # now, parse the function
-    @sw_write_ast = symtab.cfg_arch.idl_compiler.compile_func_body(
+    @sw_write_ast = symtab.design.idl_compiler.compile_func_body(
       @data["sw_write(csr_value)"],
       return_type: Idl::Type.new(:bits, width: 128), # big int to hold special return values
       name: "CSR[#{csr.name}].#{name}.sw_write(csr_value)",
@@ -538,17 +527,17 @@ class CsrField < DatabaseObject
   # @return [Idl::FunctionBodyAst] The abstract syntax tree of the sw_write() function, type checked and pruned
   # @return [nil] if there is no sw_write() function
   # @param effective_xlen [Integer] effective xlen, needed because fields can change in different bases
-  # @param cfg_arch [ConfiguredArchitecture] A configuration
-  def pruned_sw_write_ast(cfg_arch, effective_xlen)
+  # @param design [Design] The design
+  def pruned_sw_write_ast(design, effective_xlen)
     @pruned_sw_write_asts ||= {}
-    ast = @pruned_sw_write_asts[cfg_arch.name]
+    ast = @pruned_sw_write_asts[design.name]
     return ast unless ast.nil?
 
     return nil unless @data.key?("sw_write(csr_value)")
 
-    raise ArgumentError, "cfg_arch must be configured to prune" if cfg_arch.unconfigured?
+    raise ArgumentError, "design must be configured to prune" if design.unconfigured?
 
-    symtab = cfg_arch.symtab.global_clone
+    symtab = design.symtab.global_clone
     symtab.push(ast)
     # all CSR instructions are 32-bit
     symtab.add(
@@ -561,17 +550,17 @@ class CsrField < DatabaseObject
     )
     symtab.add(
       "csr_value",
-      Idl::Var.new("csr_value", csr.bitfield_type(cfg_arch, effective_xlen))
+      Idl::Var.new("csr_value", csr.bitfield_type(design, effective_xlen))
     )
 
-    ast = type_checked_sw_write_ast(cfg_arch.symtab, effective_xlen)
+    ast = type_checked_sw_write_ast(design.symtab, effective_xlen)
     ast = ast.prune(symtab)
     raise "Symbol table didn't come back at global + 1" unless symtab.levels == 2
 
-    ast.freeze_tree(cfg_arch.symtab)
+    ast.freeze_tree(design.symtab)
 
 
-    cfg_arch.idl_compiler.type_check(
+    design.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{name}].sw_write(csr_value)"
@@ -580,13 +569,13 @@ class CsrField < DatabaseObject
     symtab.pop
     symtab.release
 
-    @pruned_sw_write_asts[cfg_arch.name] = ast
+    @pruned_sw_write_asts[design.name] = ast
   end
 
-  # @param cfg_arch [ConfiguredArchitecture] A config. May be nil if the location is not configturation-dependent
+  # @param design [Design] The design. May be nil if the location is not design-dependent
   # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
   # @return [Range] the location within the CSR as a range (single bit fields will be a range of size 1)
-  def location(cfg_arch, effective_xlen = nil)
+  def location(design, effective_xlen = nil)
     key =
       if @data.key?("location")
         "location"
@@ -599,14 +588,14 @@ class CsrField < DatabaseObject
     raise "Missing location for #{csr.name}.#{name} (#{key})?" unless @data.key?(key)
 
     if @data[key].is_a?(Integer)
-      csr_length = csr.length(cfg_arch, effective_xlen || @data["base"])
+      csr_length = csr.length(design, effective_xlen || @data["base"])
       if csr_length.nil?
         # we don't know the csr length for sure, so we can only check again max_length
-        if @data[key] > csr.max_length(cfg_arch)
-          raise "Location (#{key} = #{@data[key]}) is past the max csr length (#{csr.max_length(cfg_arch)}) in #{csr.name}.#{name}"
+        if @data[key] > csr.max_length(design)
+          raise "Location (#{key} = #{@data[key]}) is past the max csr length (#{csr.max_length(design)}) in #{csr.name}.#{name}"
         end
       elsif @data[key] > csr_length
-        raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr.length(cfg_arch, effective_xlen)}) in #{csr.name}.#{name}"
+        raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr.length(design, effective_xlen)}) in #{csr.name}.#{name}"
       end
 
       @data[key]..@data[key]
@@ -614,11 +603,11 @@ class CsrField < DatabaseObject
       e, s = @data[key].split("-").map(&:to_i)
       raise "Invalid location" if s > e
 
-      csr_length = csr.length(cfg_arch, effective_xlen || @data["base"])
+      csr_length = csr.length(design, effective_xlen || @data["base"])
       if csr_length.nil?
         # we don't know the csr length for sure, so we can only check again max_length
-        if e > csr.max_length(cfg_arch)
-          raise "Location (#{key} = #{@data[key]}) is past the max csr length (#{csr.max_length(cfg_arch)}) in #{csr.name}.#{name}"
+        if e > csr.max_length(design)
+          raise "Location (#{key} = #{@data[key]}) is past the max csr length (#{csr.max_length(design)}) in #{csr.name}.#{name}"
         end
       elsif e > csr_length
         raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr_length}) in #{csr.name}.#{name}"
@@ -641,11 +630,11 @@ class CsrField < DatabaseObject
   # @return [Boolean] Whether or not this field exists for any XLEN
   def defined_in_all_bases? = @data["base"].nil?
 
-  # @param cfg_arch [ConfiguredArchitecture] A config. May be nil if the width of the field is not configuration-dependent
+  # @param design [Design] The design. May be nil if the width of the field is not design-dependent
   # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
   # @return [Integer] Number of bits in the field
-  def width(cfg_arch, effective_xlen)
-    location(cfg_arch, effective_xlen).size
+  def width(design, effective_xlen)
+    location(design, effective_xlen).size
   end
 
   def location_cond32
@@ -675,14 +664,14 @@ class CsrField < DatabaseObject
   end
 
   # @return [String] Pretty-printed location string
-  def location_pretty(cfg_arch, effective_xlen = nil)
+  def location_pretty(design, effective_xlen = nil)
     derangeify = proc { |loc|
       next loc.min.to_s if loc.size == 1
 
       "#{loc.max}:#{loc.min}"
     }
 
-    if dynamic_location?(cfg_arch)
+    if dynamic_location?(design)
       condition =
         case csr.priv_mode
         when "M"
@@ -697,14 +686,14 @@ class CsrField < DatabaseObject
 
       if effective_xlen.nil?
         <<~LOC
-          * #{derangeify.call(location(cfg_arch, 32))} when #{condition.sub('%%', '0')}
-          * #{derangeify.call(location(cfg_arch, 64))} when #{condition.sub('%%', '1')}
+          * #{derangeify.call(location(design, 32))} when #{condition.sub('%%', '0')}
+          * #{derangeify.call(location(design, 64))} when #{condition.sub('%%', '1')}
         LOC
       else
-        derangeify.call(location(cfg_arch, effective_xlen))
+        derangeify.call(location(design, effective_xlen))
       end
     else
-      derangeify.call(location(cfg_arch, cfg_arch.mxlen))
+      derangeify.call(location(design, design.mxlen))
     end
   end
 
@@ -758,7 +747,7 @@ class CsrField < DatabaseObject
   }.freeze
 
   # @return [String] Long description of the field type
-  def type_desc(cfg_arch)
-    TYPE_DESC_MAP[type(cfg_arch.symtab)]
+  def type_desc(design)
+    TYPE_DESC_MAP[type(design.symtab)]
   end
 end

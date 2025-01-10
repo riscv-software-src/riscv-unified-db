@@ -225,7 +225,7 @@ A profile may specify that certain conditions will cause a requested
 trap (such as an `ecall` made in the highest-supported privilege mode)
 or fatal trap to the enclosing execution environment.  The profile
 does not specify the behavior of the enclosing execution environment
-in handling requested or fatal traps.
+iusually n handling requested or fatal traps.
 
 NOTE: In particular, a profile does not specify the set of ECALLs
 available in the outer execution environment.  This should be
@@ -351,7 +351,7 @@ Ratification date:: <%= profile_release.ratification_date %>
 
 <%= profile_release.introduction %>
 
-<%= profile_release.marketing_name %> has <%= profile_release.referenced_extensions.reduce(0) { |sum, ext| sum + ext.params.size } %>
+<%= profile_release.marketing_name %> has <%= profile_release.in_scope_extensions.reduce(0) { |sum, ext| sum + ext.params.size } %>
 associated implementation-defined parameters across all its defined profiles.
 
 <% unless profile_release.description.nil? -%>
@@ -384,10 +384,10 @@ Recommendations are not strictly mandated but are included to guide implementers
 
 ==== Implementation-dependencies
 
-<%= profile.marketing_name %> has <%= profile.referenced_extensions.reduce(0) { |sum, ext| sum + ext.params.size } %>
+<%= profile.marketing_name %> has <%= profile.in_scope_extensions.reduce(0) { |sum, ext| sum + ext.params.size } %>
 associated implementation-defined parameters.
 
-<% profile.referenced_extensions.each do |ext| -%>
+<% profile.in_scope_extensions.each do |ext| -%>
 <% ext.params.sort_by { |p| p.name }.each do |param| -%>
 <%= param.name %>::
 +
@@ -406,13 +406,13 @@ associated implementation-defined parameters.
 === <%= profile_class.processor_kind %> Profile Releases
 
 The <%= profile_class.processor_kind %> processor kind has <%= profile_class.profile_releases_matching_processor_kind.size %> processor
-profile releases that reference a total of <%= profile_class.referenced_extensions_matching_processor_kind.size %> extensions.
+profile releases that reference a total of <%= profile_class.in_scope_extensions_matching_processor_kind.size %> extensions.
 
 .Extension Presence
 |===
 | Extension | <%= profile_class.profile_releases_matching_processor_kind.map(&:marketing_name).join(" | ") %>
 
-<% profile_class.referenced_extensions_matching_processor_kind.sort_by(&:name).each do |ext| -%>
+<% profile_class.in_scope_extensions_matching_processor_kind.sort_by(&:name).each do |ext| -%>
 | <%= ext.name %> | <%= profile_class.profile_releases_matching_processor_kind.map { |profile_release| profile_release.extension_presence(ext.name) }.join(" | ") %>
 <% end -%>
 |===
@@ -420,13 +420,13 @@ profile releases that reference a total of <%= profile_class.referenced_extensio
 === <%= profile_class.marketing_name %> Profile Releases
 
 The <%= profile_class.marketing_name %> Profile Class has <%= profile_class.profile_releases.size %> releases that
-reference a total of <%= profile_class.referenced_extensions.size %> extensions.
+reference a total of <%= profile_class.in_scope_extensions.size %> extensions.
 
 .Extension Presence
 |===
 | Extension | <%= profile_class.profile_releases.map(&:marketing_name).join(" | ") %>
 
-<% profile_class.referenced_extensions.sort_by(&:name).each do |ext| -%>
+<% profile_class.in_scope_extensions.each do |ext| -%>
 | <%= ext.name %> | <%= profile_class.profile_releases.map { |profile_release| profile_release.extension_presence(ext.name) }.join(" | ") %>
 <% end -%>
 |===
@@ -434,7 +434,7 @@ reference a total of <%= profile_class.referenced_extensions.size %> extensions.
 === <%= profile_release.marketing_name %> Profiles
 
 The <%= profile_release.marketing_name %> Profile Release has <%= profile_release.profiles.size %> profiles that
-reference a total of <%= profile_release.referenced_extensions.size %> extensions.
+reference a total of <%= profile_release.in_scope_extensions.size %> extensions.
 
 [NOTE]
 Extensions present in a profile are also present in higher-privileged profiles in the same profile release.
@@ -443,7 +443,7 @@ Extensions present in a profile are also present in higher-privileged profiles i
 |===
 | Extension | <%= profile_release.profiles.map(&:marketing_name).join(" | ") %>
 
-<% profile_release.referenced_extensions.sort_by(&:name).each do |ext| -%>
+<% profile_release.in_scope_extensions.each do |ext| -%>
 | <%= ext.name %> | <%= profile_release.profiles.map { |profile| profile.extension_presence(ext.name) }.join(" | ") %>
 <% end -%>
 |===
@@ -452,7 +452,7 @@ Extensions present in a profile are also present in higher-privileged profiles i
 [appendix]
 == Extension Details
 
-<% profile_release.referenced_extensions.sort.each do |ext| -%>
+<% design.in_scope_extensions.each do |ext| -%>
 <<<
 === <%= ext.name %> Extension
 <%= ext.long_name %>
@@ -504,7 +504,7 @@ Extensions present in a profile are also present in higher-privileged profiles i
 :leveloffset: -3
 
 // TODO: GitHub issue 92: Use version specified by each profile and add version info to inst table below.
-<%- insts = cfg_arch.instructions.select { |i| i.defined_by?(ext.min_version) } -%>
+<%- insts = arch.instructions.select { |i| i.defined_by?(ext.min_version) } -%>
 <%- unless insts.empty? -%>
 ==== Instructions
 
@@ -538,14 +538,9 @@ This extension has the following implementation options:
 [appendix]
 == Instruction Details
 
-<%=
-  insts = profile_release.referenced_extensions.map { |ext| ext.instructions }.flatten.uniq
-  insts.sort_by!(&:name)
--%>
-
-<% insts.each do |inst| -%>
+<% design.in_scope_instructions.each do |inst| -%>
 <<<
-[[inst-<%=inst.name.gsub('.', '_')%>-def]]
+<%= anchor_for_inst(inst.name) %>
 === <%= inst.name %>
 
 *<%= inst.long_name %>*
@@ -588,18 +583,18 @@ RV64::
 <%= inst.description %>
 
 ==== Access
-<% if profile_release.referenced_extensions.any? { |e| e.name == "H" } -%>
+<% if design.in_scope_extensions.any? { |e| e.name == "H" } -%>
 [cols="^,^,^,^,^"]
 <% else -%>
 [cols="^,^,^"]
 <% end -%>
 |===
-| M | <% if profile_release.referenced_extensions.any? { |e| e.name == "H" } -%>HS<% else -%>S<% end -%> | U <% if profile_release.referenced_extensions.any? { |e| e.name == "H" } -%> | VS | VU <% end -%>
+| M | <% if design.in_scope_extensions.any? { |e| e.name == "H" } -%>HS<% else -%>S<% end -%> | U <% if design.in_scope_extensions.any? { |e| e.name == "H" } -%> | VS | VU <% end -%>
 
 | [.access-always]#Always#
 | [.access-<%=inst.access['s']%>]#<%= inst.access['s'].capitalize %>#
 | [.access-<%=inst.access['u']%>]#<%= inst.access['u'].capitalize %>#
-<% if profile_release.referenced_extensions.any? { |e| e.name == "H" } %>
+<% if design.in_scope_extensions.any? { |e| e.name == "H" } %>
 | [.access-<%=inst.access['vs']%>]#<%= inst.access['vs'].capitalize %>#
 | [.access-<%=inst.access['vu']%>]#<%= inst.access['vu'].capitalize %>#
 <% end %>
@@ -649,13 +644,13 @@ RV64::
 <% if inst.key?("operation()") -%>
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.operation_ast(cfg_arch.symtab).gen_adoc %>
+<%= inst.operation_ast(design.symtab).gen_adoc %>
 ----
 <% end -%>
 
 ==== Exceptions
 
-<% exception_list = inst.reachable_exceptions_str(cfg_arch.symtab) -%>
+<% exception_list = inst.reachable_exceptions_str(design.symtab) -%>
 <% if exception_list.empty? -%>
 This instruction does not generate synchronous exceptions.
 <% else -%>
@@ -673,12 +668,7 @@ This instruction may result in the following synchronous exceptions:
 [appendix]
 == CSR Details
 
-<%
-  csrs = profile_release.referenced_extensions.map { |ext| ext.csrs }.flatten.uniq
-  csrs.sort_by!(&:name)
--%>
-
-<% csrs.each do |csr| -%>
+<% design.in_scope_csrs.sort_by!(&:name).each do |csr| -%>
 <<<
 [[csr-<%= csr.name %>-def]]
 === <%= csr.name %>
@@ -702,22 +692,22 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <% end -%>
 h| Defining extension a| <%= csr.defined_by_condition.to_asciidoc %>
-<% if csr.dynamic_length?(cfg_arch) -%>
-h| Length         | <%= csr.length_pretty(cfg_arch) %>
+<% if csr.dynamic_length?(design) -%>
+h| Length         | <%= csr.length_pretty(design) %>
 <% else -%>
-h| Length         | <%= csr.length_pretty(cfg_arch) %>
+h| Length         | <%= csr.length_pretty(design) %>
 <% end -%>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===
 
 
 ==== Format
-<% unless csr.dynamic_length?(cfg_arch) || csr.fields.any? { |f| f.dynamic_location?(cfg_arch) } -%>
+<% unless csr.dynamic_length?(design) || csr.fields.any? { |f| f.dynamic_location?(design) } -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(cfg_arch, csr.base.nil? ? 32 : csr.base) %>
+<%= JSON.dump csr.wavedrom_desc(design, csr.base.nil? ? 32 : csr.base) %>
 ....
 <% else -%>
 <%# CSR has a dynamic length, or a field has a dynamic location,
@@ -727,13 +717,13 @@ This CSR format changes dynamically with XLEN.
 .<%= csr.name %> Format when <%= csr.length_cond32 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(cfg_arch, 32) %>
+<%= JSON.dump csr.wavedrom_desc(design, 32) %>
 ....
 
 .<%= csr.name %> Format when <%= csr.length_cond64 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(cfg_arch, 64) %>
+<%= JSON.dump csr.wavedrom_desc(design, 64) %>
 ....
 
 

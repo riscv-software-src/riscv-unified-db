@@ -15,5 +15,6 @@ resolved_arch
 node_modules
 _site
 images
+*.bak
 *.log
 *.bak

@@ -2,7 +2,7 @@
 
 require 'ruby-prof-flamegraph'
 
-require_relative "obj"
+require_relative "database_obj"
 
 
 # model of a specific instruction in a specific base (RV32/RV64)
@@ -137,25 +137,25 @@ class Instruction < DatabaseObject
   def pruned_operation_ast(global_symtab, effective_xlen)
     @pruned_asts ||= {}
 
-    cfg_arch = global_symtab.cfg_arch
+    design = global_symtab.design
 
-    pruned_ast = @pruned_asts[cfg_arch.name]
+    pruned_ast = @pruned_asts[design.name]
     return pruned_ast unless pruned_ast.nil?
 
     return nil unless @data.key?("operation()")
 
-    type_checked_ast = type_checked_operation_ast(cfg_arch.idl_compiler, global_symtab, effective_xlen)
+    type_checked_ast = type_checked_operation_ast(design.idl_compiler, global_symtab, effective_xlen)
     print "Pruning #{name} operation()..."
     pruned_ast = type_checked_ast.prune(fill_symtab(global_symtab, effective_xlen, type_checked_ast))
     puts "done"
     pruned_ast.freeze_tree(global_symtab)
-    cfg_arch.idl_compiler.type_check(
+    design.idl_compiler.type_check(
       pruned_ast,
       fill_symtab(global_symtab, effective_xlen, pruned_ast),
       "#{name}.operation() (pruned)"
     )
 
-    @pruned_asts[cfg_arch.name] = pruned_ast
+    @pruned_asts[design.name] = pruned_ast
   end
 
   # @param symtab [Idl::SymbolTable] Symbol table with global scope populated
@@ -166,7 +166,7 @@ class Instruction < DatabaseObject
       []
     else
       # RubyProf.start
-      ast = type_checked_operation_ast(symtab.cfg_arch.idl_compiler, symtab, effective_xlen)
+      ast = type_checked_operation_ast(symtab.design.idl_compiler, symtab, effective_xlen)
       print "Determining reachable funcs from #{name}..."
       fns = ast.reachable_functions(fill_symtab(symtab, effective_xlen, ast))
       puts "done"
@@ -186,7 +186,7 @@ class Instruction < DatabaseObject
     else
       # pruned_ast =  pruned_operation_ast(symtab)
       # type_checked_operation_ast()
-      type_checked_ast = type_checked_operation_ast(symtab.cfg_arch.idl_compiler, symtab, effective_xlen)
+      type_checked_ast = type_checked_operation_ast(symtab.design.idl_compiler, symtab, effective_xlen)
       symtab = fill_symtab(symtab, effective_xlen, pruned_ast)
       type_checked_ast.reachable_exceptions(symtab)
     end
@@ -214,7 +214,7 @@ class Instruction < DatabaseObject
     else
       etype = symtab.get("ExceptionCode")
       if effective_xlen.nil?
-        if symtab.cfg_arch.multi_xlen?
+        if symtab.design.multi_xlen?
           if base.nil?
             (
               pruned_ast = pruned_operation_ast(symtab, 32)
@@ -241,7 +241,7 @@ class Instruction < DatabaseObject
             e
           end
         else
-          effective_xlen = symtab.cfg_arch.mxlen
+          effective_xlen = symtab.design.mxlen
           pruned_ast = pruned_operation_ast(symtab, effective_xlen)
           print "Determining reachable exceptions from #{name}..."
           e = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, effective_xlen, pruned_ast))).map { |code|
@@ -644,7 +644,7 @@ class Instruction < DatabaseObject
     return nil if @data["operation()"].nil?
 
     # now, parse the operation
-    @operation_ast = symtab.cfg_arch.idl_compiler.compile_inst_operation(
+    @operation_ast = symtab.design.idl_compiler.compile_inst_operation(
       self,
       symtab:,
       input_file: @data["$source"],
@@ -719,7 +719,7 @@ class Instruction < DatabaseObject
   def excluded_by?(*args)
     return false if @data["excludedBy"].nil?
 
-    excluded_by = SchemaCondition.new(@data["excludedBy"], @cfg_arch)
+    excluded_by = SchemaCondition.new(@data["excludedBy"], @arch)
 
     ext_ver =
       if args.size == 1
@@ -730,7 +730,7 @@ class Instruction < DatabaseObject
         raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
         raise ArgumentError, "Second parameter must be an extension version" unless args[1].respond_to?(:to_s)
 
-        ExtensionVersion.new(args[0], args[1], @cfg_arch)
+        ExtensionVersion.new(args[0], args[1], @arch)
       end
 
     excluded_by.satisfied_by? do |r|
@@ -738,19 +738,23 @@ class Instruction < DatabaseObject
     end
   end
 
-  # @param cfg_arch [ConfiguredArchitecture] The architecture definition
-  # @return [Boolean] whether or not the instruction is implemented given the supplies config options
-  def exists_in_cfg?(cfg_arch)
-    if cfg_arch.fully_configured?
-      (@data["base"].nil? || (cfg_arch.possible_xlens.include? @data["base"])) &&
-        cfg_arch.implemented_extensions.any? { |e| defined_by?(e) } &&
-        cfg_arch.implemented_extensions.none? { |e| excluded_by?(e) }
+  # @param design [Design] The design
+  # @return [Boolean] whether or not the instruction is implemented given the supplied design
+  #
+  # TODO: Does this function actually work for a partially configured design?
+  #       It is calling DatabaseObject.defined_by? with ExtensionRequirement objects
+  #       returned from Design.mandatory_ext_reqs() but only accepts an ExtensionVersion object.
+  def exists_in_design?(design)
+    if design.fully_configured?
+      (@data["base"].nil? || (design.possible_xlens.include?(@data["base"]))) &&
+        design.implemented_ext_vers.any? { |ext_ver| defined_by?(ext_ver) } &&
+        design.implemented_ext_vers.none? { |ext_ver| excluded_by?(ext_ver) }
     else
-      raise "unexpected cfg_arch type" unless cfg_arch.partially_configured?
+      raise "unexpected design type" unless design.partially_configured?
 
-      (@data["base"].nil? || (cfg_arch.possible_xlens.include? @data["base"])) &&
-        cfg_arch.prohibited_extensions.none? { |e| defined_by?(e) } &&
-        cfg_arch.mandatory_extensions.none? { |e| excluded_by?(e) }
+      (@data["base"].nil? || (design.possible_xlens.include?(@data["base"]))) &&
+        design.prohibited_ext_reqs.none? { |ext_req| ext_req.satisfying_versions.any? { |ext_ver| defined_by?(ext_ver) } }
+        design.mandatory_ext_reqs.none? { |ext_req| excluded_by?(ext_req) }
     end
   end
 end

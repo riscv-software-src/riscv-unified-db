@@ -1,4 +1,4 @@
-backends/certificate_doc/tasks.rake
+backends/crd/tasks.rake
 bootstrap_cfg_arch = cfg_arch_for("rv#{base}") 									# rv32 or rv64
   Rakefile
 	Calls ConfiguredArchitecture.new("gen/resolved_arch/rv32")
@@ -8,24 +8,24 @@ bootstrap_cfg_arch = cfg_arch_for("rv#{base}") 									# rv32 or rv64
 			Calls PartialConfig.new(cfg path, @data)		# Uses Ruby send() method
 				@mxlen = @data["params"].xlen
 		@name = "rv32"
-bootstrap_cert_model = bootstrap_cfg_arch.cert_model(cert_model_name = "MC100-32")
-	Calls self.generate_obj_methods("cert_model", "certificate_model", CertModel) in Architecture # Magic
-		Calls define_method("cert_model")
-			Calls define_method("cert_models")
-				Creates @cert_models array and @cert_model_hash # Per arch_dir
+bootstrap_proc_cert_model = bootstrap_cfg_arch.proc_cert_model(proc_cert_model_name = "MC100-32")
+	Calls self.generate_obj_methods("proc_cert_model", "proc_cert_model", ProcCertModel) in Architecture # Magic
+		Calls define_method("proc_cert_model")
+			Calls define_method("proc_cert_models")
+				Creates @proc_cert_models array and @proc_cert_model_hash # Per arch_dir
 				For every certificiate model in the database
-					Loads yaml under gen/resolved_arch/rv32 into @cert_models hash
-					Calls cert_model.new() -> DatabaseObject.initialize(yaml, yaml_path, arch=base_cfg_arch)
+					Loads yaml under gen/resolved_arch/rv32 into @proc_cert_models hash
+					Calls proc_cert_model.new() -> DatabaseObject.initialize(yaml, yaml_path, arch=base_cfg_arch)
 						@data = yaml
 						@arch = arch 				# rv32
-cfg_arch = bootstrap_cert_model.to_cfg_arch		# In Portfolio class
+cfg_arch = bootstrap_proc_cert_model.to_cfg_arch		# In Portfolio class
 	Creates hash with mandatory extensions (with version requirement) and fully-constrained params (single_value?)
 		Uses in_scope_ext_reqs() and all_in_scope_ext_params() in Portfolio
 	Writes hash to yaml file in /tmp/.../MC100-32/cfg.yaml
 	Passes yaml file to ConfiguredArchitecture.new()
 		Creates Architecture (base class), Config, and PartialConfig again (see above)
-cert_model = cfg_arch.cert_model(cert_model_name)
-	Creates CertModel for every model in the database and stores it in the real ConfiguredArchitecture object
+proc_cert_model = cfg_arch.proc_cert_model(proc_cert_model_name)
+	Creates ProcCertModel for every model in the database and stores it in the real ConfiguredArchitecture object
 Calls ERB template
 Converts ERB result to ASCIIDOC
 

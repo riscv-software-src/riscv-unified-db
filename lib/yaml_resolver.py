@@ -520,12 +520,15 @@ def resolve_file(
         resolved_obj["$source"] = os.path.join(args.arch_dir, rel_path)
 
         if do_checks and ("$schema" in resolved_obj):
-            schema = _get_schema(resolved_obj["$schema"])
+            schema_uri = resolved_obj["$schema"]
+            schema_relpath = schema_uri.split("#")[0]
+            schema = _get_schema(schema_uri)
             try:
                 schema.validate(instance=resolved_obj)
             except ValidationError as e:
                 print(f"JSON Schema Validation Error for {rel_path}:")
                 print(best_match(schema.iter_errors(resolved_obj)).message)
+                print(f"  Used schema {schema_relpath}")
                 exit(1)
 
         write_yaml(resolved_path, resolved_obj)

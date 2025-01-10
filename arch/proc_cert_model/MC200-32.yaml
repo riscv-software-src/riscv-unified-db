@@ -1,11 +1,11 @@
-# yaml-language-server: $schema=../../schemas/cert_model_schema.json
+# yaml-language-server: $schema=../../schemas/proc_cert_model_schema.json
 
-$schema: cert_model_schema.json#
-kind: certificate model
+$schema: proc_cert_model_schema.json#
+kind: Processor Certificate Model
 name: MC200-32
 long_name: Intermediate 32-bit Microcontroller Certificate
 class:
-  $ref: certificate_class/MC.yaml#
+  $ref: proc_cert_class/MC.yaml#
 
 # Semantic versions within the model
 versions:
@@ -14,7 +14,7 @@ versions:
 # XLEN used by rakefile
 base: 32
 
-$inherits: "certificate_model/MC100-32.yaml#"
+$inherits: "proc_cert_model/MC100-32.yaml#"
 
 revision_history:
   - revision: "0.1.0"
@@ -23,7 +23,9 @@ revision_history:
       - First created
 
 introduction: |
-  MC200 is an intermedicate RISC-V microcontroller that adds the following mandatory extensions to the MC100-series:
+  The MC200 Processor Certificate targets intermediate RISC-V microcontrollers.
+  It supports either a 32-bit (MC200-32) or 64-bit (MC200-64) base ISA.
+  The MC200 adds the following mandatory extensions to the MC100:
 
   * U extension (User-mode privilege level)
   * Smpmp extension (M-mode PMP)
