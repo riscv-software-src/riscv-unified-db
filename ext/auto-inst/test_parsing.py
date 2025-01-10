@@ -5,13 +5,14 @@ from parsing import (
     get_json_path,
     get_yaml_directory,
     get_yaml_instructions,
-    compare_yaml_json_encoding
+    compare_yaml_json_encoding,
 )
 
 # Global variables to store loaded data
 _yaml_instructions = None
 _json_data = None
 _repo_dir = None
+
 
 def load_test_data():
     """Load test data once and cache it."""
@@ -27,10 +28,11 @@ def load_test_data():
         json_file = get_json_path()
         if not os.path.exists(json_file):
             pytest.skip(f"JSON file not found at {json_file}")
-        with open(json_file, 'r') as f:
+        with open(json_file) as f:
             _json_data = json.load(f)
 
     return _yaml_instructions, _json_data, _repo_dir
+
 
 def has_aqrl_variables(yaml_vars):
     """Check if instruction has aq/rl variables."""
@@ -38,18 +40,22 @@ def has_aqrl_variables(yaml_vars):
         return False
     return any(var.get("name") in ["aq", "rl"] for var in yaml_vars)
 
+
 def pytest_generate_tests(metafunc):
     """Generate test cases dynamically."""
     if "instr_name" in metafunc.fixturenames:
         yaml_instructions, _, _ = load_test_data()
         metafunc.parametrize("instr_name", list(yaml_instructions.keys()))
 
+
 class TestInstructionEncoding:
     @classmethod
     def setup_class(cls):
         """Setup class-level test data."""
         cls.yaml_instructions, cls.json_data, cls.repo_dir = load_test_data()
-        cls.rv_instructions = cls.json_data.get("!instanceof", {}).get("RVInstCommon", [])
+        cls.rv_instructions = cls.json_data.get("!instanceof", {}).get(
+            "RVInstCommon", []
+        )
 
     def _find_matching_instruction(self, yaml_instr_name):
         """Find matching instruction in JSON data by comparing instruction names."""
@@ -60,15 +66,15 @@ class TestInstructionEncoding:
             if not isinstance(value, dict):
                 continue
 
-            is_pseudo = value.get('isPseudo', '')
+            is_pseudo = value.get("isPseudo", "")
             if is_pseudo == 1:
                 continue
 
-            is_codegen_only = value.get('isCodeGenOnly', '')
+            is_codegen_only = value.get("isCodeGenOnly", "")
             if is_codegen_only == 1:
                 continue
 
-            asm_string = value.get('AsmString', '').lower().strip()
+            asm_string = value.get("AsmString", "").lower().strip()
             if not asm_string:
                 continue
 
@@ -82,10 +88,12 @@ class TestInstructionEncoding:
         """Extract encoding string from JSON instruction data."""
         encoding_bits = []
         try:
-            inst = json_instr.get('Inst', [])
+            inst = json_instr.get("Inst", [])
             for bit in inst:
                 if isinstance(bit, dict):
-                    encoding_bits.append(f"{bit.get('var', '?')}[{bit.get('index', '?')}]")
+                    encoding_bits.append(
+                        f"{bit.get('var', '?')}[{bit.get('index', '?')}]"
+                    )
                 else:
                     encoding_bits.append(str(bit))
             encoding_bits.reverse()
@@ -119,11 +127,13 @@ class TestInstructionEncoding:
             yaml_data["yaml_match"],
             yaml_data.get("yaml_vars", []),
             json_encoding,
-            self.repo_dir
+            self.repo_dir,
         )
 
         # If there are differences, format them nicely and fail the test
-        if differences and differences != ["No YAML match field available for comparison."]:
+        if differences and differences != [
+            "No YAML match field available for comparison."
+        ]:
             error_msg = f"\nEncoding mismatch for instruction: {instr_name}\n"
             error_msg += f"JSON key: {json_key}\n"
             error_msg += f"YAML match: {yaml_data['yaml_match']}\n"
@@ -132,6 +142,7 @@ class TestInstructionEncoding:
             for diff in differences:
                 error_msg += f"  - {diff}\n"
             pytest.fail(error_msg)
+
 
 def pytest_configure(config):
     """Configure the test session."""
