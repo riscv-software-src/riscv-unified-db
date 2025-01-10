@@ -53,25 +53,15 @@ class Architecture
   # @return [String] Best name to identify architecture
   attr_reader :name
 
-  # @return [Integer] 32 for RV32I or 64 for RV64I
-  attr_reader :base
-
   # @return [Pathname] Path to the directory containing YAML files defining the RISC-V standards
   attr_reader :path
 
   # Initialize a new architecture definition
   #
   # @param name [#to_s] The name associated with this architecture
-  # @param base [Integer] RISC-V base ISA width (32 for RV32I/RV32E, 64 for RV64I, nil if unknown)
   # @param arch_dir [String, Pathname] Path to a directory with a fully merged/resolved architecture definition
-  def initialize(name, base, arch_dir)
+  def initialize(name, arch_dir)
     @name = name.to_s.freeze
-
-    unless base.nil?
-      raise "Unsupported base ISA value of #{base}. Supported values are 32 or 64." unless base == 32 || base == 64
-    end
-    @base = base
-    @base.freeze
 
     @arch_dir = Pathname.new(arch_dir)
     raise "Architecture directory #{arch_dir} not found" unless @arch_dir.exist?

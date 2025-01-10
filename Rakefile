@@ -15,50 +15,17 @@ require_relative $root / "lib" / "portfolio_design"
 
 directory "#{$root}/.stamps"
 
+# Load and execute Rakefile for each backend.
 Dir.glob("#{$root}/backends/*/tasks.rake") do |rakefile|
+  puts "UPDATE: Loading #{rakefile}"
   load rakefile
 end
 
 directory "#{$root}/.stamps"
 
-# @param base_isa_name [String] rv32 or rv64
-# @param base [Integer] 32 or 64
-# @return [Architecture]
-def arch_for(base_isa_name, base)
-  Rake::Task["#{$root}/.stamps/resolve-#{base_isa_name}.stamp"].invoke
-
-  @archs ||= {}
-  return @archs[base_isa_name] if @archs.key?(base_isa_name)
-
-  @archs[base_isa_name] =
-    Architecture.new(
-      base_isa_name,
-      base,
-      $root / "gen" / "resolved_arch" / base_isa_name,
-    )
-end
-
-# @param design_name [String] Profile release name for profiles and processor certificate model name for certificates
-# @param arch [Architecture] The architecture database
-# @param base [Integer] 32 or 64
-# @param portfolios [Array<Portfolio>] Portfolios in this design
-# @return [PortfolioDesign]
-def portfolio_design_for(design_name, arch, base, portfolios)
-  Rake::Task["#{$root}/.stamps/resolve-#{design_name}.stamp"].invoke
-
-  @portfolio_designs ||= {}
-  return @portfolio_designs[design_name] if @portfolio_designs.key?(design_name)
-
-  @portfolio_designs[design_name] =
-    PortfolioDesign.new(
-      design_name,
-      arch,
-      base,
-      portfolios
-    )
-end
-
-def cfg_arch_for(config_name, base = nil)
+# @param config_name [String] Name of configuration
+# @return [ConfiguredArchitecture]
+def cfg_arch_for(config_name)
   Rake::Task["#{$root}/.stamps/resolve-#{config_name}.stamp"].invoke
 
   @cfg_archs ||= {}
@@ -67,7 +34,6 @@ def cfg_arch_for(config_name, base = nil)
   @cfg_archs[config_name] =
     ConfiguredArchitecture.new(
       config_name,
-      base,
       $root / "gen" / "resolved_arch" / config_name,
       overlay_path: $root / "cfgs" / config_name / "arch_overlay"
     )
@@ -157,18 +123,18 @@ namespace :test do
   end
   task schema: "gen:resolved_arch" do
     puts "Checking arch files against schema.."
-    Architecture.new("rv64", nil, "#{$root}/resolved_arch").validate(show_progress: true)
+    Architecture.new("rv64", "#{$root}/resolved_arch").validate(show_progress: true)
     puts "All files validate against their schema"
   end
   task idl: ["gen:resolved_arch", "#{$root}/.stamps/resolve-rv32.stamp", "#{$root}/.stamps/resolve-rv64.stamp"]  do
     print "Parsing IDL code for RV32..."
-    cfg_arch32 = cfg_arch_for("rv32", 32)
+    cfg_arch32 = cfg_arch_for("rv32")
     puts "done"
 
     cfg_arch32.type_check
 
     print "Parsing IDL code for RV64..."
-    cfg_arch64 = cfg_arch_for("rv64", 64)
+    cfg_arch64 = cfg_arch_for("rv64")
     puts "done"
 
     cfg_arch64.type_check

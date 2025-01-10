@@ -21,23 +21,18 @@ class PortfolioDesign < Design
   # @param mxlen [Integer] Comes from portfolio YAML "base" (either 32 or 64)
   # @param portfolios [Array<Portfolio>] Portfolios being converted to adoc
   # @param overlay_path [String] Optional path to a directory that overlays the architecture
-  def initialize(base_isa_name, arch, base, portfolios, overlay_path: nil)
-    raise ArgumentError, "base must be 32 or 64 but is #{base}" unless (base == 32 || base == 64)
+  def initialize(base_isa_name, arch, portfolios, overlay_path: nil)
     raise ArgumentError, "arch must be an Architecture but is a #{arch.class}" unless arch.is_a?(Architecture)
     raise ArgumentError, "portfolios must be an Array<Portfolio> but is a #{portfolios.class}" unless portfolios.is_a?(Array)
-
-    @mxlen = base
-    @mxlen.freeze
 
     # The PortfolioGroup has an Array<Portfolio> inside it and forwards common Array methods to its internal Array.
     # Can call @portfolio_grp.each or @portfolio_grp.map and they are handled by the normal Array methods.
     @portfolio_grp = PortfolioGroup.new(portfolios)
 
-    # Sanity check base passed in to me.
     max_base = portfolios.map(&:base).max
-    raise ArgumentError, "Provided base of #{base} but maximum base across all provided portfolios is #{max_base}" unless base == max_base
+    raise ArgumentError, "Calculated maximum base of #{max_base} across portfolios is not 32 or 64" unless max_base == 32 || max_base == 64
 
-    super(base_isa_name, arch, overlay_path: overlay_path)
+    super(base_isa_name, arch, max_base, overlay_path: overlay_path)
   end
 
   # Returns a string representation of the object, suitable for debugging.
@@ -47,9 +42,6 @@ class PortfolioDesign < Design
   ##################################
   # METHODS REQUIRED BY BASE CLASS #
   ##################################
-
-  # @return [Integer] 32 or 64. Might be nil if dynamic (not sure if dynamic required for portfolios).
-  def mxlen = @mxlen
 
   # Returns whether or not it may be possible to switch XLEN in +mode+ given this definition.
   #

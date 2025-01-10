@@ -7,6 +7,8 @@ require "asciidoctor-diagram"
 
 require_relative "#{$lib}/idl/passes/gen_adoc"
 
+puts "UPDATE: Inside crd tasks.rake"
+
 CERT_DOC_DIR = Pathname.new "#{$root}/backends/crd"
 
 Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
@@ -14,13 +16,6 @@ Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
   proc_cert_model_obj = YAML.load_file(f, permitted_classes: [Date])
   proc_cert_class_name = File.basename(proc_cert_model_obj['class']['$ref'].split("#")[0], ".yaml")
   raise "Ill-formed processor certificate model file #{f}: missing 'class' field" if proc_cert_model_obj['class'].nil?
-
-  base = proc_cert_model_obj["base"]
-  raise "Missing processor certificate model base" if base.nil?
-
-  base_isa_name = "rv#{base}"
-
-  puts "UPDATE: Extracted base=#{base} from #{f}"
 
   file "#{$root}/gen/crd/adoc/#{proc_cert_model_name}.adoc" => [
     __FILE__,
@@ -32,19 +27,22 @@ Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
     "#{$root}/lib/design.rb",
     "#{CERT_DOC_DIR}/templates/crd.adoc.erb"
   ] do |t|
-    # Create Architecture object. Function located in top-level Rakefile.
-    puts "UPDATE: Creating Architecture #{base_isa_name} for #{t}"
-    arch = arch_for(base_isa_name, base)
+    # Ensure that unconfigured resolved architecture called "_" exists.
+    Rake::Task["#{$root}/.stamps/resolve-_.stamp"].invoke
+
+    # Create architecture object so we can have it create the ProcCertModel.
+    # Use the unconfigured resolved architecture called "_".
+    arch = Architecture.new("RISC-V Architecture", $root / "gen" / "resolved_arch" / "_")
 
     # Create ProcCertModel for specific processor certificate model as specified in its arch YAML file.
     # The Architecture object also creates all other portfolio-related class instances from their arch YAML files.
     # None of these objects are provided with a Design object when created.
-    puts "UPDATE: Creating ProcCertModel for #{proc_cert_model_name} using base #{base_isa_name}"
+    puts "UPDATE: Creating ProcCertModel for #{proc_cert_model_name}"
     proc_cert_model = arch.proc_cert_model(proc_cert_model_name)
 
     puts "UPDATE: Creating PortfolioDesign using processor certificate model #{proc_cert_model_name}"
     # Create the one PortfolioDesign object required for the ERB evaluation.
-    portfolio_design = portfolio_design_for(proc_cert_model_name, arch, base, [proc_cert_model])
+    portfolio_design = PortfolioDesign.new(proc_cert_model_name, arch, [proc_cert_model])
 
     # Create empty binding and then specify explicitly which variables the ERB template can access.
     # Seems to use this method name in stack backtraces (hence its name).
