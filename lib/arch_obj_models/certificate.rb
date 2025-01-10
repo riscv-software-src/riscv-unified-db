@@ -1,32 +1,32 @@
 # Classes for certificates.
-# Each certificate model is a member of a certificate class.
+# Each processor certificate model is a member of a processor certificate class.
 
 require_relative "portfolio"
 
 ###################
-# CertClass Class #
+# ProcCertClass Class #
 ###################
 
-# Holds information from certificate class YAML file.
+# Holds information from processor certificate class YAML file.
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
-class CertClass < PortfolioClass
+class ProcCertClass < PortfolioClass
   def mandatory_priv_modes = @data["mandatory_priv_modes"]
 end
 
 ###################
-# CertModel Class #
+# ProcCertModel Class #
 ###################
 
-# Holds information about a certificate model YAML file.
+# Holds information about a processor certificate model YAML file.
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
-class CertModel < Portfolio
+class ProcCertModel < Portfolio
   # @param obj_yaml [Hash<String, Object>] Contains contents of Certificate Model yaml file (put in @data)
   # @param data_path [String] Path to yaml file
   # @param arch [Architecture] Database of RISC-V standards
   def initialize(obj_yaml, yaml_path, arch)
     super # Calls parent class with the same args I got
 
-    puts "UPDATE:   Creating CertModel object for #{name} using arch #{arch.name}"
+    puts "UPDATE:   Creating ProcCertModel object for #{name} using arch #{arch.name}"
   end
 
   def unpriv_isa_manual_revision = @data["unpriv_isa_manual_revision"]
@@ -43,12 +43,12 @@ class CertModel < Portfolio
     profile
   end
 
-  # @return [CertClass] The certification class that this model belongs to.
-  def cert_class
-    cert_class = @arch.ref(@data["class"]['$ref'])
-    raise "No certificate class named '#{@data["class"]}'" if cert_class.nil?
+  # @return [ProcCertClass] The certification class that this model belongs to.
+  def proc_cert_class
+    proc_cert_class = @arch.ref(@data["class"]['$ref'])
+    raise "No processor certificate class named '#{@data["class"]}'" if proc_cert_class.nil?
 
-    cert_class
+    proc_cert_class
   end
 
   #####################

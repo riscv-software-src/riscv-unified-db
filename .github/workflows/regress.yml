@@ -131,7 +131,7 @@ jobs:
         name: Build container
         run: ./bin/build_container
       - name: Generate extension PDF
-        run: ./do gen:cert_model_pdf[MockCertificateModel]
+        run: ./do gen:proc_cert_model_pdf[MockProcCertModel]
   regress-gen-profile:
     runs-on: ubuntu-latest
     needs: regress-smoke

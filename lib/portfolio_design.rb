@@ -5,7 +5,7 @@
 # Used in portfolio-based ERB templates to gather information about the "design".
 # The "design" corresponds to the file being created by the ERB template and facilitates
 # sharing ERB template fragments between different kinds of portfolios (mostly in the appendices).
-# For example, a certificate model has one portfolio but a profile release has multiple portfolios
+# For example, a processor certificate model has one portfolio but a profile release has multiple portfolios
 # but they both have just one PortfolioDesign object.
 
 require "ruby-prof"

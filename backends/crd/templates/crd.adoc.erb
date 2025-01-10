@@ -15,7 +15,7 @@
 // TODO: needs to be changed
 :imagesoutdir: images
 
-= <%= cert_model.name %> Processor Certification Requirements Document
+= <%= proc_cert_model.name %> Processor Certification Requirements Document
 
 [Preface]
 == Revision History
@@ -26,7 +26,7 @@ History of documentation changes that eventually lead to releases.
 |===
 | Date | Revision | Changes
 
-<% cert_model.revision_history.each do |rev| -%>
+<% proc_cert_model.revision_history.each do |rev| -%>
 | <%= rev.date %>
 | <%= rev.revision %>
 a| <% rev.changes.each do |change| %>
@@ -58,9 +58,9 @@ CSR field types::
 
 == Introduction
 
-<%= cert_model.introduction %>
+<%= proc_cert_model.introduction %>
 
-<%= cert_class.introduction %>
+<%= proc_cert_class.introduction %>
 
 === What's a CRD?
 
@@ -140,9 +140,9 @@ These documents augment information in the related TSC Profile when available an
 Only ratified extensions are candidates for certification.
 This implies all custom extensions are also OUT-OF-SCOPE.
 
-==== Processor CRD Naming Scheme
+==== Processor Certificate Class Naming Scheme
 
-Processor CRD names have the following format:
+Processor Certificate Class names have the following format:
 
   <class><model>[<-base>]
 
@@ -240,11 +240,11 @@ verification test suites anyways.
 |===
 | Certificate Model | TSC Profile | Unpriv ISA Manual | Priv ISA Manual | Debug Manual
 
-| <%= cert_model.name %>
-| <%= cert_model.tsc_profile.nil? ? "No profile" : cert_model.tsc_profile.marketing_name %>
-| <%= cert_model.unpriv_isa_manual_revision %>
-| <%= cert_model.priv_isa_manual_revision %>
-| <%= cert_model.debug_manual_revision %>
+| <%= proc_cert_model.name %>
+| <%= proc_cert_model.tsc_profile.nil? ? "No profile" : proc_cert_model.tsc_profile.marketing_name %>
+| <%= proc_cert_model.unpriv_isa_manual_revision %>
+| <%= proc_cert_model.priv_isa_manual_revision %>
+| <%= proc_cert_model.debug_manual_revision %>
 |===
 
 === Privileged Modes
@@ -252,11 +252,11 @@ verification test suites anyways.
 |===
 | M | S | U | VS | VU
 
-| <% if cert_class.mandatory_priv_modes.include?('M') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if cert_class.mandatory_priv_modes.include?('S') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if cert_class.mandatory_priv_modes.include?('U') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if cert_class.mandatory_priv_modes.include?('VS') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if cert_class.mandatory_priv_modes.include?('VU') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if proc_cert_class.mandatory_priv_modes.include?('M') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if proc_cert_class.mandatory_priv_modes.include?('S') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if proc_cert_class.mandatory_priv_modes.include?('U') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if proc_cert_class.mandatory_priv_modes.include?('VS') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if proc_cert_class.mandatory_priv_modes.include?('VU') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
 
 |===
 
@@ -264,13 +264,13 @@ verification test suites anyways.
 == Extensions
 
 Any RISC-V extensions not listed in this section are OUT-OF-SCOPE.
-The <%= cert_model.name %> certificate doesn't cover their behaviors.
+The <%= proc_cert_model.name %> certificate doesn't cover their behaviors.
 
 <% ExtensionPresence.presence_types_obj.each do |presence_obj| -%>
 
 === <%= presence_obj.to_s.capitalize %> Extensions
 
-<% ext_reqs = cert_model.in_scope_ext_reqs(presence_obj) -%>
+<% ext_reqs = proc_cert_model.in_scope_ext_reqs(presence_obj) -%>
 <% if ext_reqs.empty? -%>
 None
 <% else -%>
@@ -289,19 +289,19 @@ None
 |===
 <% end # if empty ext_reqs -%>
 
-<% cert_model.extra_notes_for_presence(presence_obj)&.each do |extra_note| -%>
+<% proc_cert_model.extra_notes_for_presence(presence_obj)&.each do |extra_note| -%>
 NOTE: <%= extra_note.text %>
 
 <% end # each extra_note -%>
 
 <% end # each possible presence -%>
 
-<% unless cert_model.recommendations.empty? -%>
+<% unless proc_cert_model.recommendations.empty? -%>
 === Recommendations
 
 Recommendations are not strictly mandated but are included to guide implementers.
 
-<% cert_model.recommendations.each do |recommendation| -%>
+<% proc_cert_model.recommendations.each do |recommendation| -%>
 <%= recommendation.text %>
 <% end # each recommendation -%>
 <% end # unless recommendations empty -%>
@@ -319,16 +319,16 @@ These implementation-dependent options defined by MANDATORY or OPTIONAL extensio
 An implementation must abide by the "Allowed Value(s)" to obtain a certificate.
 If the "Allowed Value(s)" is "Any" then any value allowed by the type is acceptable.
 
-<% if cert_model.all_in_scope_ext_params.empty? -%>
+<% if proc_cert_model.all_in_scope_ext_params.empty? -%>
 None
 <% else -%>
 [cols="4,2,1,1,2"]
 |===
 | Parameter | Type | Allowed Value(s) | Extension(s) | Note
 
-<% cert_model.all_in_scope_ext_params.each do |in_scope_ext_param| -%>
+<% proc_cert_model.all_in_scope_ext_params.each do |in_scope_ext_param| -%>
 <% param = in_scope_ext_param.param -%>
-<% exts = cert_model.all_in_scope_exts_with_param(param) -%>
+<% exts = proc_cert_model.all_in_scope_exts_with_param(param) -%>
 | <%= param.name_potentially_with_link(exts) %>
 | <%= param.schema_type %>
 | <%= in_scope_ext_param.allowed_values %>
@@ -344,15 +344,15 @@ These implementation-dependent options defined by MANDATORY or OPTIONAL extensio
 There are no restrictions on their values for certification purposes because the certificate
 doesn't cover the behavior of the associated RISC-V standard as a function of these parameters.
 
-<% if cert_model.all_out_of_scope_params.empty? -%>
+<% if proc_cert_model.all_out_of_scope_params.empty? -%>
 None
 <% else -%>
 [%autowidth]
 |===
 | Parameters | Type | Extension(s)
 
-<% cert_model.all_out_of_scope_params.each do |param| -%>
-<% exts = cert_model.all_in_scope_exts_without_param(param) -%>
+<% proc_cert_model.all_out_of_scope_params.each do |param| -%>
+<% exts = proc_cert_model.all_in_scope_exts_without_param(param) -%>
 | <%= param.name_potentially_with_link(exts) %>
 | <%= param.schema_type %>
 | <% exts.each do |ext| -%><<ext-<%= ext.name %>-param-<%= param.name %>-def,<%= ext.name %>>> <% end # do ext -%>
@@ -364,7 +364,7 @@ None
 == Traps
 
 RISC-V supports both synchronous exceptions and asynchronous interrupts.
-TODO: List only traps that exist in this certificate model (currently lists all possible in present extensions).
+TODO: List only traps that exist in this processor certificate model (currently lists all possible in present extensions).
 See https://github.com/riscv-software-src/riscv-unified-db/issues/291 and https://github.com/riscv-software-src/riscv-unified-db/issues/324
 TODO: Show traps per privilege mode
 
@@ -388,7 +388,7 @@ TODO: Show traps per privilege mode
 
 == Instruction Summary
 
-TODO: List only instructions that exist in this certificate model.
+TODO: List only instructions that exist in this processor certificate model.
 Currently lists all possible in present extensions so the I extension is providing both RV32I and RV64I instructions.
 See https://github.com/riscv-software-src/riscv-unified-db/issues/291 and https://github.com/riscv-software-src/riscv-unified-db/issues/324
 
@@ -434,13 +434,13 @@ See https://github.com/riscv-software-src/riscv-unified-db/issues/291 and https:
 <% end # do -%>
 |===
 
-<% unless cert_model.requirement_groups.empty? -%>
+<% unless proc_cert_model.requirement_groups.empty? -%>
 == Additional Requirements
 
 This section contains requirements in addition to those already specified related to extensions and parameters.
 These additional requirements are organized as groups of related requirements.
 
-<% cert_model.requirement_groups.each do |group| -%>
+<% proc_cert_model.requirement_groups.each do |group| -%>
 === <%= group.name %>
 
 <%= group.description %>
@@ -470,7 +470,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 <<<
 [appendix]
 == Extension Details
-<% cert_model.in_scope_ext_reqs.each do |ext_req| -%>
+<% proc_cert_model.in_scope_ext_reqs.each do |ext_req| -%>
 <% ext = arch.extension(ext_req.name) -%>
 
 [[ext-<%= ext_req.name %>-def]]
@@ -538,10 +538,10 @@ The following instructions are added by this extension:
 |===
 <% end -%>
 
-<% unless cert_model.in_scope_ext_params(ext_req).empty? -%>
+<% unless proc_cert_model.in_scope_ext_params(ext_req).empty? -%>
 ==== IN-SCOPE Parameters
 
-<% cert_model.in_scope_ext_params(ext_req).each do |ext_param| -%>
+<% proc_cert_model.in_scope_ext_params(ext_req).each do |ext_param| -%>
 [[ext-<%= ext_req.name %>-param-<%= ext_param.name %>-def]]
 <%= ext_param.name %> &#8658; <%= ext_param.param.schema_type %>::
 +
@@ -551,10 +551,10 @@ The following instructions are added by this extension:
 <% end # do ext_param -%>
 <% end # unless table -%>
 
-<% unless cert_model.out_of_scope_params(ext_req.name).empty? -%>
+<% unless proc_cert_model.out_of_scope_params(ext_req.name).empty? -%>
 ==== OUT-OF-SCOPE Parameters
 
-<% cert_model.out_of_scope_params(ext_req.name).each do |param| -%>
+<% proc_cert_model.out_of_scope_params(ext_req.name).each do |param| -%>
 [[ext-<%= ext_req.name %>-param-<%= param.name %>-def]]
 <%= param.name %> &#8658; <%= param.schema_type %>::
 +

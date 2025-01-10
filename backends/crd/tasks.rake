@@ -7,44 +7,44 @@ require "asciidoctor-diagram"
 
 require_relative "#{$lib}/idl/passes/gen_adoc"
 
-CERT_DOC_DIR = Pathname.new "#{$root}/backends/certificate_doc"
+CERT_DOC_DIR = Pathname.new "#{$root}/backends/crd"
 
-Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
-  cert_model_name = File.basename(f, ".yaml")
-  cert_model_obj = YAML.load_file(f, permitted_classes: [Date])
-  cert_class_name = File.basename(cert_model_obj['class']['$ref'].split("#")[0], ".yaml")
-  raise "Ill-formed certificate model file #{f}: missing 'class' field" if cert_model_obj['class'].nil?
+Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
+  proc_cert_model_name = File.basename(f, ".yaml")
+  proc_cert_model_obj = YAML.load_file(f, permitted_classes: [Date])
+  proc_cert_class_name = File.basename(proc_cert_model_obj['class']['$ref'].split("#")[0], ".yaml")
+  raise "Ill-formed processor certificate model file #{f}: missing 'class' field" if proc_cert_model_obj['class'].nil?
 
-  base = cert_model_obj["base"]
-  raise "Missing certificate model base" if base.nil?
+  base = proc_cert_model_obj["base"]
+  raise "Missing processor certificate model base" if base.nil?
 
   base_isa_name = "rv#{base}"
 
   puts "UPDATE: Extracted base=#{base} from #{f}"
 
-  file "#{$root}/gen/certificate_doc/adoc/#{cert_model_name}.adoc" => [
+  file "#{$root}/gen/crd/adoc/#{proc_cert_model_name}.adoc" => [
     __FILE__,
-    "#{$root}/arch/certificate_class/#{cert_class_name}.yaml",
-    "#{$root}/arch/certificate_model/#{cert_model_name}.yaml",
+    "#{$root}/arch/proc_cert_class/#{proc_cert_class_name}.yaml",
+    "#{$root}/arch/proc_cert_model/#{proc_cert_model_name}.yaml",
     "#{$root}/lib/arch_obj_models/certificate.rb",
     "#{$root}/lib/arch_obj_models/portfolio.rb",
     "#{$root}/lib/portfolio_design.rb",
     "#{$root}/lib/design.rb",
-    "#{CERT_DOC_DIR}/templates/certificate.adoc.erb"
+    "#{CERT_DOC_DIR}/templates/crd.adoc.erb"
   ] do |t|
     # Create Architecture object. Function located in top-level Rakefile.
     puts "UPDATE: Creating Architecture #{base_isa_name} for #{t}"
     arch = arch_for(base_isa_name, base)
 
-    # Create CertModel for specific certificate model as specified in its arch YAML file.
+    # Create ProcCertModel for specific processor certificate model as specified in its arch YAML file.
     # The Architecture object also creates all other portfolio-related class instances from their arch YAML files.
     # None of these objects are provided with a Design object when created.
-    puts "UPDATE: Creating CertModel for #{cert_model_name} using base #{base_isa_name}"
-    cert_model = arch.cert_model(cert_model_name)
+    puts "UPDATE: Creating ProcCertModel for #{proc_cert_model_name} using base #{base_isa_name}"
+    proc_cert_model = arch.proc_cert_model(proc_cert_model_name)
 
-    puts "UPDATE: Creating PortfolioDesign using certificate model #{cert_model_name}"
+    puts "UPDATE: Creating PortfolioDesign using processor certificate model #{proc_cert_model_name}"
     # Create the one PortfolioDesign object required for the ERB evaluation.
-    portfolio_design = portfolio_design_for(cert_model_name, arch, base, [cert_model])
+    portfolio_design = portfolio_design_for(proc_cert_model_name, arch, base, [proc_cert_model])
 
     # Create empty binding and then specify explicitly which variables the ERB template can access.
     # Seems to use this method name in stack backtraces (hence its name).
@@ -54,12 +54,12 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
     erb_binding = evaluate_erb
     erb_binding.local_variable_set(:arch, arch)
     erb_binding.local_variable_set(:design, portfolio_design)
-    erb_binding.local_variable_set(:cert_class, cert_model.cert_class)
-    erb_binding.local_variable_set(:portfolio_class, cert_model.cert_class)
-    erb_binding.local_variable_set(:cert_model, cert_model)
-    erb_binding.local_variable_set(:portfolio, cert_model)
+    erb_binding.local_variable_set(:proc_cert_class, proc_cert_model.proc_cert_class)
+    erb_binding.local_variable_set(:portfolio_class, proc_cert_model.proc_cert_class)
+    erb_binding.local_variable_set(:proc_cert_model, proc_cert_model)
+    erb_binding.local_variable_set(:portfolio, proc_cert_model)
 
-    template_path = Pathname.new("#{CERT_DOC_DIR}/templates/certificate.adoc.erb")
+    template_path = Pathname.new("#{CERT_DOC_DIR}/templates/crd.adoc.erb")
     erb = ERB.new(File.read(template_path), trim_mode: "-")
     erb.filename = template_path.to_s
 
@@ -67,7 +67,7 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
 
     # Convert ERB to final ASCIIDOC. Note that this code is broken up into separate function calls
     # each with a variable name to aid in running a command-line debugger on this code.
-    puts "UPDATE: Converting ERB template to adoc for #{cert_model_name}"
+    puts "UPDATE: Converting ERB template to adoc for #{proc_cert_model_name}"
     erb_result = erb.result(erb_binding)
     erb_result_monospace_converted_to_links = portfolio_design.find_replace_links(erb_result)
     erb_result_with_links_added = portfolio_design.find_replace_links(erb_result_monospace_converted_to_links)
@@ -77,11 +77,11 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
     puts "UPDATE: Generated adoc source at #{t.name}"
   end
 
-  file "#{$root}/gen/certificate_doc/pdf/#{cert_model_name}.pdf" => [
+  file "#{$root}/gen/crd/pdf/#{proc_cert_model_name}.pdf" => [
     __FILE__,
-    "#{$root}/gen/certificate_doc/adoc/#{cert_model_name}.adoc"
+    "#{$root}/gen/crd/adoc/#{proc_cert_model_name}.adoc"
   ] do |t|
-    adoc_file = "#{$root}/gen/certificate_doc/adoc/#{cert_model_name}.adoc"
+    adoc_file = "#{$root}/gen/crd/adoc/#{proc_cert_model_name}.adoc"
     FileUtils.mkdir_p File.dirname(t.name)
     sh [
       "asciidoctor-pdf",
@@ -100,11 +100,11 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
     puts "UPDATE: Generated PDF at #{t.name}"
   end
 
-  file "#{$root}/gen/certificate_doc/html/#{cert_model_name}.html" => [
+  file "#{$root}/gen/crd/html/#{proc_cert_model_name}.html" => [
     __FILE__,
-    "#{$root}/gen/certificate_doc/adoc/#{cert_model_name}.adoc"
+    "#{$root}/gen/crd/adoc/#{proc_cert_model_name}.adoc"
   ] do |t|
-    adoc_file = "#{$root}/gen/certificate_doc/adoc/#{cert_model_name}.adoc"
+    adoc_file = "#{$root}/gen/crd/adoc/#{proc_cert_model_name}.adoc"
     FileUtils.mkdir_p File.dirname(t.name)
 
     puts "UPDATE: Generating PDF at #{t.name}"
@@ -129,34 +129,34 @@ namespace :gen do
     Generate certificate documentation for a specific version as a PDF.
 
     Required options:
-      cert_model_name - The key of the certification model under arch/certificate_model
+      proc_cert_model_name - The key of the certification model under arch/proc_cert_model
   DESC
-  task :cert_model_pdf, [:cert_model_name] do |_t, args|
-    cert_model_name = args[:cert_model_name]
-    if cert_model_name.nil?
-      warn "Missing required option: 'cert_model_name'"
+  task :proc_cert_model_pdf, [:proc_cert_model_name] do |_t, args|
+    proc_cert_model_name = args[:proc_cert_model_name]
+    if proc_cert_model_name.nil?
+      warn "Missing required option: 'proc_cert_model_name'"
       exit 1
     end
 
-    unless File.exist?("#{$root}/arch/certificate_model/#{cert_model_name}.yaml")
-      warn "No certification model named '#{cert_model_name}' found in arch/certificate_model"
+    unless File.exist?("#{$root}/arch/proc_cert_model/#{proc_cert_model_name}.yaml")
+      warn "No certification model named '#{proc_cert_model_name}' found in arch/proc_cert_model"
       exit 1
     end
 
-    Rake::Task["#{$root}/gen/certificate_doc/pdf/#{cert_model_name}.pdf"].invoke
+    Rake::Task["#{$root}/gen/crd/pdf/#{proc_cert_model_name}.pdf"].invoke
   end
 
-  task :cert_model_html, [:cert_model_name] do |_t, args|
-    if args[:cert_model_name].nil?
-      warn "Missing required option: 'cert_model_name'"
+  task :proc_cert_model_html, [:proc_cert_model_name] do |_t, args|
+    if args[:proc_cert_model_name].nil?
+      warn "Missing required option: 'proc_cert_model_name'"
       exit 1
     end
 
-    unless File.exist?("#{$root}/arch/certificate_model/#{args[:cert_model_name]}.yaml")
-      warn "No certification model named '#{args[:cert_model_name]}' found in arch/certificate_model"
+    unless File.exist?("#{$root}/arch/proc_cert_model/#{args[:proc_cert_model_name]}.yaml")
+      warn "No certification model named '#{args[:proc_cert_model_name]}' found in arch/proc_cert_model"
       exit 1
     end
 
-    Rake::Task["#{$root}/gen/certificate_doc/html/#{args[:cert_model_name]}.html"].invoke
+    Rake::Task["#{$root}/gen/crd/html/#{args[:proc_cert_model_name]}.html"].invoke
   end
 end
