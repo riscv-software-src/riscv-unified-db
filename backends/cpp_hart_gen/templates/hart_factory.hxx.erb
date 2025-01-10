@@ -3,7 +3,7 @@
 
 #include "udb/config_validator.hpp"
 
-#include ISS_FORMAT_INCLUDE
+#include <fmt/core.h>
 
 <%- cfg_list = ENV["CONFIG"].split(",").map(&:strip) -%>
 

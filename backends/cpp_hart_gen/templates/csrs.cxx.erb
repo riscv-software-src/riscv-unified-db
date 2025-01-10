@@ -2,39 +2,37 @@
 
 using namespace udb;
 
+#define __UDB__FUNC_OBJ m_parent->
+
 <%- csrs = cfg_arch.fully_configured? ? cfg_arch.implemented_csrs : cfg_arch.csrs -%>
 
 <%- csrs.each do |csr| -%>
 <%- fields = cfg_arch.fully_configured? ? csr.implemented_fields(cfg_arch) : csr.fields -%>
 
 <%- fields.each do |field| -%>
-<%- if cfg_arch.possible_xlens.include?(32) && field.defined_in_base32? -%>
-template <>
-CsrFieldType <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %><32>::type() const {
-  <%= field.type_to_cpp(32) %>
+<%- field_base = field.defined_in_all_bases? ? cfg_arch.possible_xlens[0] : (field.defined_in_base32? ? 32 : 64) -%>
+CsrFieldType <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %>::type(const unsigned& xlen) const {
+  <%- if field.defined_in_all_bases? && cfg_arch.multi_xlen? -%>
+  if (xlen == 32) {
+    <%= field.type_to_cpp(32) %>
+  } else if (xlen == 64) {
+    <%= field.type_to_cpp(64) %>
+  }
+  <%- else -%>
+  <%= field.type_to_cpp(field_base) %>
+  <%- end -%>
 }
-<%- end -%>
-<%- if cfg_arch.possible_xlens.include?(64) && field.defined_in_base64? -%>
-template <>
-CsrFieldType <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %><64>::type() const {
-  <%= field.type_to_cpp(64) %>
-}
-<%- end -%>
 <%- end -%>
 
 // constructor
-<%- cfg_arch.possible_xlens.each do |xlen| -%>
-<%- next unless csr.defined_in_base?(xlen) -%>
-<%- fields_for_xlen = fields.select { |f| f.defined_in_base?(xlen) } -%>
-template <>
-<%= name_of(:csr, cfg_arch, csr.name) %><<%= xlen %>>::<%= name_of(:csr, cfg_arch, csr.name) %><<%= xlen %>>(<%= name_of(:hart, cfg_arch) %>* parent)
+<%- fields_for_xlen = fields.select { |f| cfg_arch.possible_xlens.any? { |xlen| f.defined_in_base?(xlen) } } -%>
+<%= name_of(:csr, cfg_arch, csr.name) %>::<%= name_of(:csr, cfg_arch, csr.name) %>(<%= name_of(:hart, cfg_arch) %>* parent)
   : CsrBase(),
     m_parent(parent)
     <%- unless fields_for_xlen.empty? -%>,<%- end -%>
     <%= fields_for_xlen.map { |field| "m_#{field.name}(parent)" }.join(", ") %>
 {
 }
-<%- end -%>
 
 <%- if cfg_arch.multi_xlen? && csr.format_changes_with_xlen? -%>
 <%= name_of(:csr, cfg_arch, csr.name) %>Bits<<%= csr.max_length(cfg_arch) %>>::_sw_read(const unsigned& xlen) const
@@ -98,3 +96,5 @@ bool <%= name_of(:csr, cfg_arch, csr.name) %>::_sw_write(const Bits<<%= csr.max_
 }
 
 <%- end -%>
+
+#undef __UDB__FUNC_OBJ

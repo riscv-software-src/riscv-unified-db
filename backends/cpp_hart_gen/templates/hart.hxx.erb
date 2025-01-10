@@ -7,12 +7,15 @@
 #include "udb/hart.hpp"
 #include "udb/cfgs/<%= cfg_arch.name %>/params.hxx"
 #include "udb/cfgs/<%= cfg_arch.name %>/csr_container.hxx"
+#include "udb/enum.hxx"
 
 <%- hart_name = name_of(:hart, cfg_arch) -%>
 
 namespace udb {
   class <%= hart_name -%> : public HartBase {
     public:
+      #include "udb/cfgs/<%= cfg_arch.name %>/func_prototypes.hxx"
+
       static constexpr unsigned MXLEN = <%= cfg_arch.mxlen.nil? ? 64 : cfg_arch.mxlen %>;
       using XReg = Bits<MXLEN>;
 
@@ -26,6 +29,16 @@ namespace udb {
 
       unsigned xlen() {
         return MXLEN;
+      }
+
+      bool implemented_Q_(const ExtensionName& ext, const VersionRequirement& req)
+      {
+          return false;
+      }
+
+      bool implemented_Q_(const ExtensionName& ext)
+      {
+          return false;
       }
 
       void set_pc(uint64_t new_pc) override {

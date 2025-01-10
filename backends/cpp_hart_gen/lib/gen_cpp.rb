@@ -316,7 +316,12 @@ module Idl
 
   class AryElementAccessAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}[#{index.gen_cpp(symtab, 0, indent_spaces:)}]"
+      if var.text_value.start_with?("X")
+        #"#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}[#{index.gen_cpp(symtab, 0, indent_spaces:)}]"
+        "#{' '*indent} __UDB__FUNC__OBJ  xregRef(#{index.gen_cpp(symtab, 0, indent_spaces:)})"
+      else
+        "#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}[#{index.gen_cpp(symtab, 0, indent_spaces:)}]"
+      end
     end
   end
 
@@ -340,7 +345,12 @@ module Idl
 
   class AryElementAssignmentAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' '*indent}#{lhs.gen_cpp(symtab, 0, indent_spaces:)}[#{idx.gen_cpp(symtab, 0, indent_spaces:)}] = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
+      if lhs.text_value.start_with?("X")
+        #"#{' '*indent}  #{lhs.gen_cpp(symtab, 0, indent_spaces:)}[#{idx.gen_cpp(symtab, 0, indent_spaces:)}] = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
+        "#{' '*indent} __UDB__FUNC__OBJ xregRef ( #{idx.gen_cpp(symtab, 0, indent_spaces:)} ) = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
+      else
+        "#{' '*indent}#{lhs.gen_cpp(symtab, 0, indent_spaces:)}[#{idx.gen_cpp(symtab, 0, indent_spaces:)}] = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
+      end
     end
   end
 

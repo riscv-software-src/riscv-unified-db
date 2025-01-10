@@ -5,6 +5,8 @@ project(udb LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -no-pie)
 
 include(CheckCXXSourceCompiles)
 
@@ -62,9 +64,14 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(nlohmann_json_schema_validator)
 
+#TODO remove when this works
+set(CONFIG_LIST _)
+
+
 set(GENERATED_SRCS "")
 foreach(config ${CONFIG_LIST})
-  # list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/csrs.cxx")
+  list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/decode.cxx")
+  list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/csrs.cxx")
   # list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/params.cxx")
   # list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/hart.cxx")
 endforeach()

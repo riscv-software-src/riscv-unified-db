@@ -3,9 +3,8 @@
 
 
 <%# need to get symtab at function scope -%>
-<%- symtab = symtab.global_clone.push(nil) -%>
-
-<%- arch_def.functions.each do |func| -%>
+<%- symtab = cfg_arch.symtab.global_clone.push(nil) -%>
+<%- cfg_arch.functions.each do |func| -%>
 <%- next if func.builtin? -%>
 //
 // <%= func.description.gsub("\n", "\n// ") %>
@@ -19,12 +18,12 @@
 
 constexpr bool implemented_Q_(const ExtensionName& ext, const VersionRequirement& req) const {
 
-  <%- if arch_def.fully_configured? -%>
-  <%- arch_def.implemented_extensions.each do |ext| -%>
+  <%- if cfg_arch.fully_configured? -%>
+  <%- cfg_arch.implemented_extensions.each do |ext| -%>
   if (ext == ExtensionName::<%= ext.name %>) { return true; }
   <%- end -%>
-  <%- elsif arch_def.partially_configured? -%>
-  <%- arch_def.mandatory_extensions.each do |ext| -%>
+  <%- elsif cfg_arch.partially_configured? -%>
+  <%- cfg_arch.mandatory_extensions.each do |ext| -%>
   if (ext == ExtensionName::<%= ext.name %>) { return true; }
   <%- end -%>
   <%- end -%>
@@ -33,12 +32,12 @@ constexpr bool implemented_Q_(const ExtensionName& ext, const VersionRequirement
 
 constexpr bool implemented_Q_(const ExtensionName& ext) const {
 
-  <%- if arch_def.fully_configured? -%>
-  <%- arch_def.implemented_extensions.each do |ext| -%>
+  <%- if cfg_arch.fully_configured? -%>
+  <%- cfg_arch.implemented_extensions.each do |ext| -%>
   if (ext == ExtensionName::<%= ext.name %>) { return true; }
   <%- end -%>
-  <%- elsif arch_def.partially_configured? -%>
-  <%- arch_def.mandatory_extensions.each do |ext| -%>
+  <%- elsif cfg_arch.partially_configured? -%>
+  <%- cfg_arch.mandatory_extensions.each do |ext| -%>
   if (ext == ExtensionName::<%= ext.name %>) { return true; }
   <%- end -%>
   <%- end -%>

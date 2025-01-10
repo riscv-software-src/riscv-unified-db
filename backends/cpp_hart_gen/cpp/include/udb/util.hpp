@@ -44,8 +44,8 @@ namespace udb {
   template <typename T>
   T extract(T value, unsigned start, unsigned size)
   {
-    assert(start > 0);
-    assert((start + size) <= sizeof(T)*8);
+    udb_assert(start > 0, "extract start <= 0");
+    udb_assert((start + size) <= sizeof(T)*8, "extract sizing makes no sense");
 
     if (size == sizeof(T)*8) {
       return value;

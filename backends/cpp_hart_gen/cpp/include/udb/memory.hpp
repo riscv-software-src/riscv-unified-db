@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cassert>
+#include "udb/defines.hpp"
 
 namespace udb {
   class Memory {
@@ -19,8 +19,8 @@ namespace udb {
 
     protected:
       // subclasses only need to override these functions:
-      virtual uint64_t read(uint64_t addr, size_t bytes) { assert(!"Memory::read() not implemented"); return 0; }
-      virtual void write(uint64_t addr, uint64_t data, size_t bytes) { assert(!"Memory::write() not implemented"); }
+      virtual uint64_t read(uint64_t addr, size_t bytes) { udb_assert(false, "Memory::read() not implemented"); return 0; }
+      virtual void write(uint64_t addr, uint64_t data, size_t bytes) { udb_assert(false,"Memory::write() not implemented"); }
 
       // but may optionally override these instead:
       virtual uint8_t read1(uint64_t addr) { return read(addr, 1); }
