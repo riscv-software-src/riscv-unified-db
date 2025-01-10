@@ -6,7 +6,7 @@ name: jalr
 long_name: Jump and link register
 description: |
   Jump to an address formed by adding rs1
-  to a signed offset then clearing the least 
+  to a signed offset then clearing the least
   significant bit, and store the return address
   in rd.
 definedBy: I
