@@ -11,7 +11,9 @@
 diag-ditaa-*
 arch/manual/isa/**/riscv-isa-manual
 gen
+resolved_arch
 node_modules
 _site
 images
 *.log
+*.bak
