@@ -15,7 +15,7 @@ CsrFieldType <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %>::type(co
   <%- if field.defined_in_all_bases? && cfg_arch.multi_xlen? -%>
   if (xlen == 32) {
     <%= field.type_to_cpp(32) %>
-  } else if (xlen == 64) {
+  } else  /*if (xlen == 64)*/ {
     <%= field.type_to_cpp(64) %>
   }
   <%- else -%>

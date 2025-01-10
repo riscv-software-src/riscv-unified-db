@@ -226,7 +226,7 @@ module Idl
       end
       value_else(value_result) do
         # we don't know the value of something (probably a param), so we need the slow extract
-        return "#{' '*indent}extract(#{var.gen_cpp(symtab, 0, indent_spaces:)}, #{lsb.gen_cpp(symtab, 0, indent_spaces:)}, #{msb.gen_cpp(symtab, 0, indent_spaces:)} - #{lsb.gen_cpp(symtab, 0, indent_spaces:)} + 1})"
+        return "#{' '*indent}extract(#{var.gen_cpp(symtab, 0, indent_spaces:)}, #{lsb.gen_cpp(symtab, 0, indent_spaces:)}, #{msb.gen_cpp(symtab, 0, indent_spaces:)} - #{lsb.gen_cpp(symtab, 0, indent_spaces:)} + 1)"
       end
     end
   end
@@ -286,7 +286,7 @@ module Idl
         }
       LOOP
       symtab.pop()
-      cpp.lines.map { |l| "#{' ' * indent}}#{l}" }.join('')
+      cpp.lines.map { |l| "#{' ' * indent}#{l}" }.join('')
     end
   end
 
@@ -370,11 +370,11 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       expression =
         if return_value_nodes.size == 1
-          "return #{return_value_nodes[0].gen_cpp(symtab, 0, indent_spaces:)}"
+          "return #{return_value_nodes[0].gen_cpp(symtab, 0, indent_spaces:)};"
         else
           return_types = return_value_nodes.map { |rv| rv.type(symtab).to_cxx }
           return_values = return_value_nodes.map { |rv| rv.gen_cpp(symtab, 0, indent_spaces:) }
-          "return std::tuple<#{return_types.join(', ')}>{#{return_values.join(', ')}}"
+          "return std::tuple<#{return_types.join(', ')}>{#{return_values.join(', ')}};"
         end
       "#{' ' * indent}#{expression}"
     end
