@@ -8,8 +8,8 @@ jobs:
   regress-pre-commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
       - uses: pre-commit/action@v3.0.1
   regress-smoke:
     runs-on: ubuntu-latest
@@ -22,13 +22,13 @@ jobs:
         uses: eWaterCycle/setup-apptainer@v2.0.0
       - name: Get container from cache
         id: cache-sif
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .singularity/image.sif
           key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
       - name: Get gems and node files from cache
         id: cache-bundle-npm
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             .home/.gems
@@ -55,13 +55,13 @@ jobs:
         uses: eWaterCycle/setup-apptainer@v2.0.0
       - name: Get container from cache
         id: cache-sif
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .singularity/image.sif
           key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
       - name: Get gems and node files from cache
         id: cache-bundle-npm
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             .home/.gems
@@ -86,13 +86,13 @@ jobs:
         uses: eWaterCycle/setup-apptainer@v2.0.0
       - name: Get container from cache
         id: cache-sif
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .singularity/image.sif
           key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
       - name: Get gems and node files from cache
         id: cache-bundle-npm
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             .home/.gems
@@ -115,13 +115,13 @@ jobs:
         uses: eWaterCycle/setup-apptainer@v2.0.0
       - name: Get container from cache
         id: cache-sif
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .singularity/image.sif
           key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
       - name: Get gems and node files from cache
         id: cache-bundle-npm
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             .home/.gems
@@ -144,13 +144,13 @@ jobs:
         uses: eWaterCycle/setup-apptainer@v2.0.0
       - name: Get container from cache
         id: cache-sif
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .singularity/image.sif
           key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
       - name: Get gems and node files from cache
         id: cache-bundle-npm
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             .home/.gems
