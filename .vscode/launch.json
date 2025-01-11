@@ -6,7 +6,7 @@
       "name": "MC100-32",
       "request": "launch",
       "command": "bundle exec rake",
-      "script": "gen:proc_cert_model_pdf[MC100-32]",
+      "script": "gen:proc_crd_pdf[MC100-32]",
       "args": [],
       "askParameters": false
     },
@@ -15,7 +15,7 @@
       "name": "MC200-32",
       "request": "launch",
       "command": "bundle exec rake",
-      "script": "gen:proc_cert_model_pdf[MC200-32]",
+      "script": "gen:proc_crd_pdf[MC200-32]",
       "args": [],
       "askParameters": false
     },
