@@ -55,7 +55,7 @@ class PortfolioGroup
   extend Forwardable
 
   # Calls to these methods on PortfolioGroup are handled by the Array class.
-  # Avoids having to call portfolio_group.portfolios.<array_method> (just call portfolio_group.<array_method>).
+  # Avoids having to call portfolio_grp.portfolios.<array_method> (just call portfolio_grp.<array_method>).
   def_delegators :@portfolios, :each, :map, :select
 
   # @param portfolios [Array<Portfolio>]
@@ -219,7 +219,7 @@ end
 #############
 
 # Holds information about a Portfolio (certificate or profile).
-# The inherited "data" member is the database of extensions, instructions, CSRs, etc.
+# The inherited "data" member is YAML data from the architecture for this portfolio object.
 class Portfolio < DatabaseObject
   # @param obj_yaml [Hash<String, Object>] Contains contents of Portfolio yaml file (put in @data)
   # @param data_path [String] Path to yaml file

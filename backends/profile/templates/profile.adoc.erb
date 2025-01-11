@@ -312,10 +312,6 @@ are by definition non-profile extensions.  For example, mandatory or
 optional profile extensions for a new profile might be prototyped as
 non-profile extensions on an earlier profile.
 
-// XXX - Need to create render() Ruby function.
-// See https://github.com/riscv-software-src/riscv-unified-db/issues/59
-// <%# render("#{$root}/backends/portfolio_doc/templates/family_intro.erb", portfolio_class: profile_class) %>
-
 == <%= profile_class.name %> Profile Class
 
 <%= profile_class.introduction %>
@@ -450,9 +446,11 @@ Extensions present in a profile are also present in higher-privileged profiles i
 
 <<<
 [appendix]
+<%# XXX pf_design.include_erb("ext_appendix.adoc.erb") %>
+
 == Extension Details
 
-<% design.in_scope_extensions.each do |ext| -%>
+<% pf_design.in_scope_extensions.each do |ext| -%>
 <<<
 === <%= ext.name %> Extension
 <%= ext.long_name %>
@@ -538,7 +536,7 @@ This extension has the following implementation options:
 [appendix]
 == Instruction Details
 
-<% design.in_scope_instructions.each do |inst| -%>
+<% pf_design.in_scope_instructions.each do |inst| -%>
 <<<
 <%= anchor_for_inst(inst.name) %>
 === <%= inst.name %>
@@ -583,18 +581,18 @@ RV64::
 <%= inst.description %>
 
 ==== Access
-<% if design.in_scope_extensions.any? { |e| e.name == "H" } -%>
+<% if pf_design.in_scope_extensions.any? { |e| e.name == "H" } -%>
 [cols="^,^,^,^,^"]
 <% else -%>
 [cols="^,^,^"]
 <% end -%>
 |===
-| M | <% if design.in_scope_extensions.any? { |e| e.name == "H" } -%>HS<% else -%>S<% end -%> | U <% if design.in_scope_extensions.any? { |e| e.name == "H" } -%> | VS | VU <% end -%>
+| M | <% if pf_design.in_scope_extensions.any? { |e| e.name == "H" } -%>HS<% else -%>S<% end -%> | U <% if pf_design.in_scope_extensions.any? { |e| e.name == "H" } -%> | VS | VU <% end -%>
 
 | [.access-always]#Always#
 | [.access-<%=inst.access['s']%>]#<%= inst.access['s'].capitalize %>#
 | [.access-<%=inst.access['u']%>]#<%= inst.access['u'].capitalize %>#
-<% if design.in_scope_extensions.any? { |e| e.name == "H" } %>
+<% if pf_design.in_scope_extensions.any? { |e| e.name == "H" } %>
 | [.access-<%=inst.access['vs']%>]#<%= inst.access['vs'].capitalize %>#
 | [.access-<%=inst.access['vu']%>]#<%= inst.access['vu'].capitalize %>#
 <% end %>
@@ -668,7 +666,7 @@ This instruction may result in the following synchronous exceptions:
 [appendix]
 == CSR Details
 
-<% design.in_scope_csrs.sort_by!(&:name).each do |csr| -%>
+<% pf_design.in_scope_csrs.sort_by!(&:name).each do |csr| -%>
 <<<
 [[csr-<%= csr.name %>-def]]
 === <%= csr.name %>

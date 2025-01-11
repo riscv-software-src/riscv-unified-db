@@ -327,7 +327,7 @@ class Design < IDesign
     end
   end
 
-  # Returns an environment hash suitable for the render() function in ERB templates.
+  # Returns an environment hash suitable for the render_erb() function in ERB templates.
   #
   # @return [Hash] An environment hash suitable for use with ERb templates.
   def render_erb_env
@@ -399,18 +399,20 @@ class Design < IDesign
   end
   private :render_erb_env
 
-  # Passes _erb_template_ through ERB within the content of this render_erb_env
+  # Passes _erb_template_ through ERB within the content of the render_erb_env
   #
-  # @param erb_template [String] ERB source
+  # @param erb_template [String] ERB template source string
+  # @param what [String] ???
   # @return [String] The rendered text
   def render_erb(erb_template, what = "")
     t = Tempfile.new("template")
     t.write erb_template
     t.flush
     begin
-      Tilt["erb"].new(t.path, trim: "-").render(render_erb_env)
+      template = Tilt["erb"].new(t.path, trim: "-")
+      template.render(render_erb_env)
     rescue
-      warn "While rendering ERB template: #{what}"
+      warn "While rendering ERB template #{erb_template}: #{what}"
       raise
     ensure
       t.close

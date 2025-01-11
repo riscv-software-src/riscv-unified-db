@@ -4,7 +4,7 @@
 
 require "pathname"
 
-PROFILE_DOC_DIR = Pathname.new "#{$root}/backends/profile_doc"
+PROFILE_DOC_DIR = Pathname.new "#{$root}/backends/profile"
 
 Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
   release_name = File.basename(f, ".yaml")
@@ -21,7 +21,7 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
 
   profile_pathnames = profile_names.map {|profile_name| "#{$root}/arch/profile/#{profile_name}.yaml" }
 
-  file "#{$root}/gen/profile_doc/adoc/#{release_name}.adoc" => [
+  file "#{$root}/gen/profile/adoc/#{release_name}.adoc" => [
     __FILE__,
     "#{$root}/arch/profile_class/#{class_name}.yaml",
     "#{$root}/arch/profile_release/#{release_name}.yaml",
@@ -38,11 +38,13 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
     # None of these objects are provided with a Design object when created.
     puts "UPDATE: Creating Profile Release for #{release_name}"
     profile_release = arch.profile_release(release_name)
+    profile_class = profile_release.profile_class
 
     # Create the one PortfolioDesign object required for the ERB evaluation.
     # Provide it with all the profiles in this ProfileRelease.
     puts "UPDATE: Creating PortfolioDesign using profile release #{release_name}"
-    portfolio_design = PortfolioDesign.new(release_name, arch, profile_release.profiles)
+    portfolio_design =
+      PortfolioDesign.new(release_name, arch, profile_release.profiles, profile_class)
 
     # Create empty binding and then specify explicitly which variables the ERB template can access.
     # Seems to use this method name in stack backtraces (hence its name).
@@ -50,27 +52,25 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
       binding
     end
     erb_binding = evaluate_erb
-    erb_binding.local_variable_set(:arch, arch)
-    erb_binding.local_variable_set(:design, portfolio_design)
-    erb_binding.local_variable_set(:profile_class, profile_release.profile_class)
-    erb_binding.local_variable_set(:portfolio_class, profile_release.profile_class)
+    portfolio_design.init_erb_binding(erb_binding)
     erb_binding.local_variable_set(:profile_release, profile_release)
+    erb_binding.local_variable_set(:profile_class, profile_class)
 
     pf_create_adoc("#{PROFILE_DOC_DIR}/templates/profile.adoc.erb", erb_binding, t.name, portfolio_design)
   end
 
-  file "#{$root}/gen/profile_doc/pdf/#{release_name}.pdf" => [
+  file "#{$root}/gen/profile/pdf/#{release_name}.pdf" => [
     __FILE__,
-    "#{$root}/gen/profile_doc/adoc/#{release_name}.adoc"
+    "#{$root}/gen/profile/adoc/#{release_name}.adoc"
   ] do |t|
-    pf_adoc2pdf("#{$root}/gen/profile_doc/adoc/#{release_name}.adoc", t.name)
+    pf_adoc2pdf("#{$root}/gen/profile/adoc/#{release_name}.adoc", t.name)
   end
 
-  file "#{$root}/gen/profile_doc/html/#{release_name}.html" => [
+  file "#{$root}/gen/profile/html/#{release_name}.html" => [
     __FILE__,
-    "#{$root}/gen/profile_doc/adoc/#{release_name}.adoc"
+    "#{$root}/gen/profile/adoc/#{release_name}.adoc"
   ] do |t|
-    pf_adoc2html("#{$root}/gen/profile_doc/adoc/#{release_name}.adoc", t.name)
+    pf_adoc2html("#{$root}/gen/profile/adoc/#{release_name}.adoc", t.name)
   end
 end
 
@@ -93,7 +93,7 @@ namespace :gen do
       exit 1
     end
 
-    Rake::Task["#{$root}/gen/profile_doc/pdf/#{release_name}.pdf"].invoke
+    Rake::Task["#{$root}/gen/profile/pdf/#{release_name}.pdf"].invoke
   end
 
   desc <<~DESC
@@ -114,6 +114,6 @@ namespace :gen do
       exit 1
     end
 
-    Rake::Task["#{$root}/gen/profile_doc/html/#{release_name}.html"].invoke
+    Rake::Task["#{$root}/gen/profile/html/#{release_name}.html"].invoke
   end
 end

@@ -62,19 +62,19 @@ jobs:
       - name: Create RVA20 Profile Release PDF Spec
         run: ./do gen:profile_release_pdf[RVA20]
       - name: Copy RVA20 Profile Release PDF
-        run: cp gen/profile_doc/pdf/RVA20.pdf _site/pdfs/RVA20.pdf
+        run: cp gen/profile/pdf/RVA20.pdf _site/pdfs/RVA20.pdf
       - name: Create RVA22 Profile Release PDF Spec
         run: ./do gen:profile_release_pdf[RVA22]
       - name: Copy RVA22 Profile Release PDF
-        run: cp gen/profile_doc/pdf/RVA22.pdf _site/pdfs/RVA22.pdf
+        run: cp gen/profile/pdf/RVA22.pdf _site/pdfs/RVA22.pdf
       - name: Copy RVA23 Profile Release PDF
-        run: cp gen/profile_doc/pdf/RVA23.pdf _site/pdfs/RVA23.pdf
+        run: cp gen/profile/pdf/RVA23.pdf _site/pdfs/RVA23.pdf
       - name: Copy RVB23 Profile Release PDF
-        run: cp gen/profile_doc/pdf/RVB23.pdf _site/pdfs/RVB23.pdf
+        run: cp gen/profile/pdf/RVB23.pdf _site/pdfs/RVB23.pdf
       - name: Create RVI20 Profile Release PDF Spec
         run: ./do gen:profile_release_pdf[RVI20]
       - name: Copy RVI20 Profile Release PDF
-        run: cp gen/profile_doc/pdf/RVA20.pdf _site/pdfs/RVI20.pdf
+        run: cp gen/profile/pdf/RVA20.pdf _site/pdfs/RVI20.pdf
       - name: Create MC100-32 PDF Spec
         run: ./do gen:proc_crd_pdf[MC100-32]
       - name: Copy MC100-32 PDF

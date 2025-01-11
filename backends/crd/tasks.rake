@@ -29,10 +29,11 @@ Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
     # None of these objects are provided with a Design object when created.
     puts "UPDATE: Creating ProcCertModel for #{model_name}"
     proc_cert_model = arch.proc_cert_model(model_name)
+    proc_cert_class = proc_cert_model.proc_cert_class
 
     # Create the one PortfolioDesign object required for the ERB evaluation.
     puts "UPDATE: Creating PortfolioDesign using processor certificate model #{model_name}"
-    portfolio_design = PortfolioDesign.new(model_name, arch, [proc_cert_model])
+    portfolio_design = PortfolioDesign.new(model_name, arch, [proc_cert_model], proc_cert_class)
 
     # Create empty binding and then specify explicitly which variables the ERB template can access.
     # Seems to use this method name in stack backtraces (hence its name).
@@ -40,12 +41,9 @@ Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
       binding
     end
     erb_binding = evaluate_erb
-    erb_binding.local_variable_set(:arch, arch)
-    erb_binding.local_variable_set(:design, portfolio_design)
-    erb_binding.local_variable_set(:proc_cert_class, proc_cert_model.proc_cert_class)
-    erb_binding.local_variable_set(:portfolio_class, proc_cert_model.proc_cert_class)
+    portfolio_design.init_erb_binding(erb_binding)
     erb_binding.local_variable_set(:proc_cert_model, proc_cert_model)
-    erb_binding.local_variable_set(:portfolio, proc_cert_model)
+    erb_binding.local_variable_set(:proc_cert_class, proc_cert_class)
 
     pf_create_adoc("#{CERT_DOC_DIR}/templates/crd.adoc.erb", erb_binding, t.name, portfolio_design)
   end

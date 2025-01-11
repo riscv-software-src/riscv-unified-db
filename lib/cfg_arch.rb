@@ -6,7 +6,6 @@
 
 require "forwardable"
 require "ruby-prof"
-require "tilt"
 
 require_relative "architecture"
 require_relative "design"

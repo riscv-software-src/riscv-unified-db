@@ -324,7 +324,7 @@ namespace :test do
     Rake::Task["gen:html"].invoke("generic_rv64")
 
     Rake::Task["#{$root}/gen/crd/pdf/MockProcCertModel.pdf"].invoke
-    Rake::Task["#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"].invoke
+    Rake::Task["#{$root}/gen/profile/pdf/MockProfileRelease.pdf"].invoke
 
     puts
     puts "Regression test PASSED"
@@ -350,7 +350,7 @@ task :portfolios do
   portfolio_start_msg("MockProcCertModel CRD")
   Rake::Task["#{$root}/gen/crd/pdf/MockProcCertModel.pdf"].invoke
   portfolio_start_msg("MockProfileRelease CRD")
-  Rake::Task["#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"].invoke
+  Rake::Task["#{$root}/gen/profile/pdf/MockProfileRelease.pdf"].invoke
   portfolio_start_msg("MC100-32 CRD")
   Rake::Task["#{$root}/gen/crd/pdf/MC100-32.pdf"].invoke
   portfolio_start_msg("MC100-64 CRD")
@@ -364,15 +364,15 @@ task :portfolios do
   portfolio_start_msg("MC300-64 CRD")
   Rake::Task["#{$root}/gen/crd/pdf/MC300-64.pdf"].invoke
   portfolio_start_msg("RVI20 Profile Release")
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVI20.pdf"].invoke
+  Rake::Task["#{$root}/gen/profile/pdf/RVI20.pdf"].invoke
   portfolio_start_msg("RVA20 Profile Release")
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA20.pdf"].invoke
+  Rake::Task["#{$root}/gen/profile/pdf/RVA20.pdf"].invoke
   portfolio_start_msg("RVA22 Profile Release")
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA22.pdf"].invoke
+  Rake::Task["#{$root}/gen/profile/pdf/RVA22.pdf"].invoke
   portfolio_start_msg("RVA23 Profile Release")
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA23.pdf"].invoke
+  Rake::Task["#{$root}/gen/profile/pdf/RVA23.pdf"].invoke
   portfolio_start_msg("RVB23 Profile Release")
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVB23.pdf"].invoke
+  Rake::Task["#{$root}/gen/profile/pdf/RVB23.pdf"].invoke
 end
 
 def portfolio_start_msg(name)
@@ -391,9 +391,9 @@ task "MC200-32": "#{$root}/gen/crd/pdf/MC200-32.pdf"
 task "MC200-64": "#{$root}/gen/crd/pdf/MC200-64.pdf"
 task "MC300-32": "#{$root}/gen/crd/pdf/MC300-32.pdf"
 task "MC300-64": "#{$root}/gen/crd/pdf/MC300-64.pdf"
-task "MockProfileRelease": "#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"
-task "RVI20": "#{$root}/gen/profile_doc/pdf/RVI20.pdf"
-task "RVA20": "#{$root}/gen/profile_doc/pdf/RVA20.pdf"
-task "RVA22": "#{$root}/gen/profile_doc/pdf/RVA22.pdf"
-task "RVA23": "#{$root}/gen/profile_doc/pdf/RVA23.pdf"
-task "RVB23": "#{$root}/gen/profile_doc/pdf/RVB23.pdf"
+task "MockProfileRelease": "#{$root}/gen/profile/pdf/MockProfileRelease.pdf"
+task "RVI20": "#{$root}/gen/profile/pdf/RVI20.pdf"
+task "RVA20": "#{$root}/gen/profile/pdf/RVA20.pdf"
+task "RVA22": "#{$root}/gen/profile/pdf/RVA22.pdf"
+task "RVA23": "#{$root}/gen/profile/pdf/RVA23.pdf"
+task "RVB23": "#{$root}/gen/profile/pdf/RVB23.pdf"
