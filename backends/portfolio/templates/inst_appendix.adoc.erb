@@ -1,0 +1,126 @@
+[appendix]
+== Instruction Details
+
+<% design.in_scope_instructions.each do |inst| -%>
+<<<
+<%= anchor_for_inst(inst.name) %>
+=== <%= inst.name %>
+
+*<%= inst.long_name %>*
+
+This instruction is defined by:
+
+<%= inst.defined_by_condition.to_asciidoc %>
+
+==== Encoding
+
+<% if inst.multi_encoding? -%>
+[NOTE]
+This instruction has different encodings in RV32 and RV64.
+
+====
+RV32::
++
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump inst.wavedrom_desc(32) %>
+....
+
+RV64::
++
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump inst.wavedrom_desc(64) %>
+....
+====
+<% else -%>
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump inst.wavedrom_desc(inst.base.nil? ? 32 : inst.base) %>
+....
+<% end -%>
+
+==== Synopsis
+
+<%= inst.description %>
+
+==== Access
+<% if design.in_scope_extensions.any? { |e| e.name == "H" } -%>
+[cols="^,^,^,^,^"]
+<% else -%>
+[cols="^,^,^"]
+<% end -%>
+|===
+| M | <% if design.in_scope_extensions.any? { |e| e.name == "H" } -%>HS<% else -%>S<% end -%> | U <% if design.in_scope_extensions.any? { |e| e.name == "H" } -%> | VS | VU <% end -%>
+
+| [.access-always]#Always#
+| [.access-<%=inst.access['s']%>]#<%= inst.access['s'].capitalize %>#
+| [.access-<%=inst.access['u']%>]#<%= inst.access['u'].capitalize %>#
+<% if design.in_scope_extensions.any? { |e| e.name == "H" } %>
+| [.access-<%=inst.access['vs']%>]#<%= inst.access['vs'].capitalize %>#
+| [.access-<%=inst.access['vu']%>]#<%= inst.access['vu'].capitalize %>#
+<% end %>
+|===
+
+<% if inst.access_detail? -%>
+<%= inst.access_detail %>
+<% end -%>
+
+==== Decode Variables
+
+<% if inst.multi_encoding? -%>
+====
+RV32::
++
+[source.idl]
+----
+<% inst.decode_variables(32).each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<% end -%>
+----
+
+RV64::
++
+[source,idl]
+----
+<% inst.decode_variables(64).each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<% end -%>
+----
+====
+<% else -%>
+[source,idl]
+----
+<% inst.decode_variables(inst.base.nil? ? 32 : inst.base).each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<% end -%>
+----
+<% end -%>
+
+==== Execution
+
+<% xlens = inst.base.nil? ? [32, 64] : [inst.base] -%>
+
+<% if inst.key?("operation()") -%>
+[source,idl,subs="specialchars,macros"]
+----
+<%= inst.operation_ast(design.symtab).gen_adoc %>
+----
+<% end -%>
+
+==== Exceptions
+
+<%- exception_list = inst.reachable_exceptions_str(design.symtab) -%>
+<%- if exception_list.empty? -%>
+This instruction does not generate synchronous exceptions.
+<%- else -%>
+This instruction may result in the following synchronous exceptions:
+
+  <%- exception_list.sort.each do |etype| -%>
+  * <%= etype %>
+  <%- end -%>
+
+<%- end -%>
+
+
+<% end -%>

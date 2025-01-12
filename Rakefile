@@ -17,7 +17,6 @@ directory "#{$root}/.stamps"
 
 # Load and execute Rakefile for each backend.
 Dir.glob("#{$root}/backends/*/tasks.rake") do |rakefile|
-  puts "UPDATE: Loading #{rakefile}"
   load rakefile
 end
 
@@ -295,6 +294,7 @@ namespace :test do
     These are basic but fast-running tests to check the database and tools
   DESC
   task :smoke do
+    puts "UPDATE: Starting test:smoke"
     puts "UPDATE: Running test:idl_compiler"
     Rake::Task["test:idl_compiler"].invoke
     puts "UPDATE: Running test:lib"
@@ -303,6 +303,7 @@ namespace :test do
     Rake::Task["test:schema"].invoke
     puts "UPDATE: Running test:idl"
     Rake::Task["test:idl"].invoke
+    puts "UPDATE: Done test:smoke"
   end
 
   desc <<~DESC
@@ -311,22 +312,29 @@ namespace :test do
     These tests must pass before a commit will be allowed in the main branch on GitHub
   DESC
   task :regress do
+    puts "UPDATE: Starting test:regress"
     Rake::Task["test:smoke"].invoke
 
+    puts "UPDATE: Running gen:html_manual MANUAL_NAME=isa VERSIONS=all"
     ENV["MANUAL_NAME"] = "isa"
     ENV["VERSIONS"] = "all"
     Rake::Task["gen:html_manual"].invoke
 
+    puts "UPDATE: Running gen:ext_pdf"
     ENV["EXT"] = "B"
     ENV["VERSION"] = "latest"
     Rake::Task["gen:ext_pdf"].invoke
 
+    puts "UPDATE: Running gen:html for generic_rv64"
     Rake::Task["gen:html"].invoke("generic_rv64")
 
+    puts "UPDATE: Generating MockProcCertModel.pdf"
     Rake::Task["#{$root}/gen/crd/pdf/MockProcCertModel.pdf"].invoke
+
+    puts "UPDATE: Generating MockProfileRelease.pdf"
     Rake::Task["#{$root}/gen/profile/pdf/MockProfileRelease.pdf"].invoke
 
-    puts
+    puts "UPDATE: Done test:regress"
     puts "Regression test PASSED"
   end
 
