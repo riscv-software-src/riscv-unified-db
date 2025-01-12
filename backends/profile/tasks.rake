@@ -39,13 +39,13 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
     # Create PortfolioRelease for specific portfolio release as specified in its arch YAML file.
     # The Architecture object also creates all other portfolio-related class instances from their arch YAML files.
     # None of these objects are provided with a Design object when created.
-    puts "UPDATE: Creating Profile Release for #{release_name}"
+    puts "UPDATE: Creating ProfileRelease object for #{release_name}"
     profile_release = arch.profile_release(release_name)
     profile_class = profile_release.profile_class
 
     # Create the one PortfolioDesign object required for the ERB evaluation.
     # Provide it with all the profiles in this ProfileRelease.
-    puts "UPDATE: Creating PortfolioDesign using profile release #{release_name}"
+    puts "UPDATE: Creating PortfolioDesign object using profile release #{release_name}"
     portfolio_design =
       PortfolioDesign.new(release_name, arch, profile_release.profiles, profile_class)
 
@@ -62,18 +62,18 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
     pf_create_adoc("#{PROFILE_DOC_DIR}/templates/profile.adoc.erb", erb_binding, t.name, portfolio_design)
   end
 
-  file "#{$root}/gen/profile/pdf/#{release_name}.pdf" => [
+  file "#{$root}/gen/profile/pdf/#{release_name}ProfileRelease.pdf" => [
     __FILE__,
-    "#{$root}/gen/profile/adoc/#{release_name}.adoc"
+    "#{$root}/gen/profile/adoc/#{release_name}ProfileRelease.adoc"
   ] do |t|
-    pf_adoc2pdf("#{$root}/gen/profile/adoc/#{release_name}.adoc", t.name)
+    pf_adoc2pdf("#{$root}/gen/profile/adoc/#{release_name}ProfileRelease.adoc", t.name)
   end
 
-  file "#{$root}/gen/profile/html/#{release_name}.html" => [
+  file "#{$root}/gen/profile/html/#{release_name}ProfileRelease.html" => [
     __FILE__,
-    "#{$root}/gen/profile/adoc/#{release_name}.adoc"
+    "#{$root}/gen/profile/adoc/#{release_name}ProfileRelease.adoc"
   ] do |t|
-    pf_adoc2html("#{$root}/gen/profile/adoc/#{release_name}.adoc", t.name)
+    pf_adoc2html("#{$root}/gen/profile/adoc/#{release_name}ProfileRelease.adoc", t.name)
   end
 end
 
@@ -96,7 +96,7 @@ namespace :gen do
       exit 1
     end
 
-    Rake::Task["#{$root}/gen/profile/pdf/#{release_name}.pdf"].invoke
+    Rake::Task["#{$root}/gen/profile/pdf/#{release_name}ProfileRelease.pdf"].invoke
   end
 
   desc <<~DESC
@@ -117,6 +117,6 @@ namespace :gen do
       exit 1
     end
 
-    Rake::Task["#{$root}/gen/profile/html/#{release_name}.html"].invoke
+    Rake::Task["#{$root}/gen/profile/html/#{release_name}ProfileRelease.html"].invoke
   end
 end

@@ -12,7 +12,7 @@ Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
   class_name = File.basename(model_obj['class']['$ref'].split("#")[0], ".yaml")
   raise "Ill-formed processor certificate model file #{f}: missing 'class' field" if model_obj['class'].nil?
 
-  file "#{$root}/gen/crd/adoc/#{model_name}.adoc" => [
+  file "#{$root}/gen/crd/adoc/#{model_name}-CRD.adoc" => [
     __FILE__,
     "#{$root}/arch/proc_cert_class/#{class_name}.yaml",
     "#{$root}/arch/proc_cert_model/#{model_name}.yaml",
@@ -30,12 +30,12 @@ Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
     # Create ProcCertModel for specific processor certificate model as specified in its arch YAML file.
     # The Architecture object also creates all other portfolio-related class instances from their arch YAML files.
     # None of these objects are provided with a Design object when created.
-    puts "UPDATE: Creating ProcCertModel for #{model_name}"
+    puts "UPDATE: Creating ProcCertModel object for #{model_name}"
     proc_cert_model = arch.proc_cert_model(model_name)
     proc_cert_class = proc_cert_model.proc_cert_class
 
     # Create the one PortfolioDesign object required for the ERB evaluation.
-    puts "UPDATE: Creating PortfolioDesign using processor certificate model #{model_name}"
+    puts "UPDATE: Creating PortfolioDesign object using processor certificate model #{model_name}"
     portfolio_design = PortfolioDesign.new(model_name, arch, [proc_cert_model], proc_cert_class)
 
     # Create empty binding and then specify explicitly which variables the ERB template can access.
@@ -51,24 +51,24 @@ Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
     pf_create_adoc("#{CERT_DOC_DIR}/templates/crd.adoc.erb", erb_binding, t.name, portfolio_design)
   end
 
-  file "#{$root}/gen/crd/pdf/#{model_name}.pdf" => [
+  file "#{$root}/gen/crd/pdf/#{model_name}-CRD.pdf" => [
     __FILE__,
-    "#{$root}/gen/crd/adoc/#{model_name}.adoc"
+    "#{$root}/gen/crd/adoc/#{model_name}-CRD.adoc"
   ] do |t|
-    pf_adoc2pdf("#{$root}/gen/crd/adoc/#{model_name}.adoc", t.name)
+    pf_adoc2pdf("#{$root}/gen/crd/adoc/#{model_name}-CRD.adoc", t.name)
   end
 
-  file "#{$root}/gen/crd/html/#{model_name}.html" => [
+  file "#{$root}/gen/crd/html/#{model_name}-CRD.html" => [
     __FILE__,
-    "#{$root}/gen/crd/adoc/#{model_name}.adoc"
+    "#{$root}/gen/crd/adoc/#{model_name}-CRD.adoc"
   ] do |t|
-    pf_adoc2html("#{$root}/gen/crd/adoc/#{model_name}.adoc", t.name)
+    pf_adoc2html("#{$root}/gen/crd/adoc/#{model_name}-CRD.adoc", t.name)
   end
 end
 
 namespace :gen do
   desc <<~DESC
-    Generate CRD (Certification Requirements Document) as a PDF.
+    Generate Processor CRD (Certification Requirements Document) as a PDF.
 
     Required options:
       model_name - The name of the certification model under arch/proc_cert_model
@@ -85,11 +85,11 @@ namespace :gen do
       exit 1
     end
 
-    Rake::Task["#{$root}/gen/crd/pdf/#{model_name}.pdf"].invoke
+    Rake::Task["#{$root}/gen/crd/pdf/#{model_name}-CRD.pdf"].invoke
   end
 
   desc <<~DESC
-    Generate CRD (Certification Requirements Document) as an HTML file.
+    Generate Processor CRD (Certification Requirements Document) as an HTML file.
 
     Required options:
       model_name - The name of the certification model under arch/proc_cert_model
@@ -105,6 +105,6 @@ namespace :gen do
       exit 1
     end
 
-    Rake::Task["#{$root}/gen/crd/html/#{args[:model_name]}.html"].invoke
+    Rake::Task["#{$root}/gen/crd/html/#{args[:model_name]}-CRD.html"].invoke
   end
 end

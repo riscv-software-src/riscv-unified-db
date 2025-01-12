@@ -13,9 +13,9 @@ class ProcCertClass < PortfolioClass
   def mandatory_priv_modes = @data["mandatory_priv_modes"]
 end
 
-###################
+#######################
 # ProcCertModel Class #
-###################
+#######################
 
 # Holds information about a processor certificate model YAML file.
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
@@ -25,8 +25,6 @@ class ProcCertModel < Portfolio
   # @param arch [Architecture] Database of RISC-V standards
   def initialize(obj_yaml, yaml_path, arch)
     super # Calls parent class with the same args I got
-
-    puts "UPDATE:   Creating ProcCertModel object for #{name} using arch #{arch.name}"
   end
 
   def unpriv_isa_manual_revision = @data["unpriv_isa_manual_revision"]
@@ -152,11 +150,13 @@ class ProcCertModel < Portfolio
     @all_in_scope_ext_params = []
 
     @data["extensions"].each do |ext_name, ext_data|
-      next if ext_name[-1] == "$"
+      next if ext_name[0] == "$"
 
       # Find Extension object from database
       ext = @arch.extension(ext_name)
-      raise "Cannot find extension named #{ext_name}" if ext.nil?
+      if ext.nil?
+        raise "Cannot find extension named #{ext_name}"
+      end
 
       ext_data["parameters"]&.each do |param_name, param_data|
         param = ext.params.find { |p| p.name == param_name }

@@ -2,10 +2,10 @@
 
 $schema: proc_cert_model_schema.json#
 kind: Processor Certificate Model
-name: MockProcCertModel
+name: MockProcessor
 long_name: Mock Processor Certificate Model Long Name
 class:
-  $ref: proc_cert_class/MockProcCertClass.yaml#
+  $ref: proc_cert_class/MockProcessor.yaml#
 
   # XLEN used by rakefile
 base: 64

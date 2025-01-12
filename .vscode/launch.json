@@ -3,7 +3,7 @@
   "configurations": [
     {
       "type": "rdbg",
-      "name": "MC100-32",
+      "name": "MC100-32-CRD",
       "request": "launch",
       "command": "bundle exec rake",
       "script": "gen:proc_crd_pdf[MC100-32]",
@@ -12,10 +12,19 @@
     },
     {
       "type": "rdbg",
-      "name": "MC200-32",
+      "name": "MC200-32-CRD",
       "request": "launch",
       "command": "bundle exec rake",
       "script": "gen:proc_crd_pdf[MC200-32]",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "MockCRD",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:proc_crd_pdf[MockProcessor]",
       "args": [],
       "askParameters": false
     },
@@ -25,6 +34,15 @@
       "request": "launch",
       "command": "bundle exec rake",
       "script": "portfolios",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "MockProfile",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:profile_release_pdf[Mock]",
       "args": [],
       "askParameters": false
     },

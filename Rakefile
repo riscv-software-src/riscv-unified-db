@@ -122,7 +122,7 @@ namespace :test do
   end
   task schema: "gen:resolved_arch" do
     puts "Checking arch files against schema.."
-    Architecture.new("rv64", "#{$root}/resolved_arch").validate(show_progress: true)
+    Architecture.new("RISC-V Architecture", "#{$root}/resolved_arch").validate(show_progress: true)
     puts "All files validate against their schema"
   end
   task idl: ["gen:resolved_arch", "#{$root}/.stamps/resolve-rv32.stamp", "#{$root}/.stamps/resolve-rv64.stamp"]  do
@@ -328,8 +328,11 @@ namespace :test do
     puts "UPDATE: Running gen:html for generic_rv64"
     Rake::Task["gen:html"].invoke("generic_rv64")
 
-    puts "UPDATE: Generating MockProcCertModel.pdf"
-    Rake::Task["#{$root}/gen/crd/pdf/MockProcCertModel.pdf"].invoke
+    puts "UPDATE: Generating MockProcessor-CRD.pdf"
+    Rake::Task["#{$root}/gen/crd/pdf/MockProcessor-CRD.pdf"].invoke
+
+    #puts "UPDATE: Generating MockProcessor-CTP.pdf"
+    #Rake::Task["#{$root}/gen/ctp/pdf/MockProcessor-CTP.pdf"].invoke
 
     puts "UPDATE: Generating MockProfileRelease.pdf"
     Rake::Task["#{$root}/gen/profile/pdf/MockProfileRelease.pdf"].invoke
@@ -355,32 +358,36 @@ desc <<~DESC
   Generate all portfolio-based PDF artifacts (certificates and profiles)
 DESC
 task :portfolios do
-  portfolio_start_msg("MockProcCertModel CRD")
-  Rake::Task["#{$root}/gen/crd/pdf/MockProcCertModel.pdf"].invoke
-  portfolio_start_msg("MockProfileRelease CRD")
+  portfolio_start_msg("MockProcessor-CRD")
+  Rake::Task["#{$root}/gen/crd/pdf/MockProcessor-CRD.pdf"].invoke
+  #portfolio_start_msg("MockProcessor-CTP")
+  #Rake::Task["#{$root}/gen/ctp/pdf/MockProcessor-CTP.pdf"].invoke
+  portfolio_start_msg("MockProfileRelease")
   Rake::Task["#{$root}/gen/profile/pdf/MockProfileRelease.pdf"].invoke
-  portfolio_start_msg("MC100-32 CRD")
-  Rake::Task["#{$root}/gen/crd/pdf/MC100-32.pdf"].invoke
-  portfolio_start_msg("MC100-64 CRD")
-  Rake::Task["#{$root}/gen/crd/pdf/MC100-64.pdf"].invoke
-  portfolio_start_msg("MC200-32 CRD")
-  Rake::Task["#{$root}/gen/crd/pdf/MC200-32.pdf"].invoke
-  portfolio_start_msg("MC200-64 CRD")
-  Rake::Task["#{$root}/gen/crd/pdf/MC200-64.pdf"].invoke
-  portfolio_start_msg("MC300-32 CRD")
-  Rake::Task["#{$root}/gen/crd/pdf/MC300-32.pdf"].invoke
-  portfolio_start_msg("MC300-64 CRD")
-  Rake::Task["#{$root}/gen/crd/pdf/MC300-64.pdf"].invoke
-  portfolio_start_msg("RVI20 Profile Release")
-  Rake::Task["#{$root}/gen/profile/pdf/RVI20.pdf"].invoke
-  portfolio_start_msg("RVA20 Profile Release")
-  Rake::Task["#{$root}/gen/profile/pdf/RVA20.pdf"].invoke
-  portfolio_start_msg("RVA22 Profile Release")
-  Rake::Task["#{$root}/gen/profile/pdf/RVA22.pdf"].invoke
-  portfolio_start_msg("RVA23 Profile Release")
-  Rake::Task["#{$root}/gen/profile/pdf/RVA23.pdf"].invoke
-  portfolio_start_msg("RVB23 Profile Release")
-  Rake::Task["#{$root}/gen/profile/pdf/RVB23.pdf"].invoke
+  #portfolio_start_msg("MC100-32-CTP")
+  #Rake::Task["#{$root}/gen/ctp/pdf/MC100-32-CTP.pdf"].invoke
+  portfolio_start_msg("MC100-32-CRD")
+  Rake::Task["#{$root}/gen/crd/pdf/MC100-32-CRD.pdf"].invoke
+  portfolio_start_msg("MC100-64-CRD")
+  Rake::Task["#{$root}/gen/crd/pdf/MC100-64-CRD.pdf"].invoke
+  portfolio_start_msg("MC200-32-CRD")
+  Rake::Task["#{$root}/gen/crd/pdf/MC200-32-CRD.pdf"].invoke
+  portfolio_start_msg("MC200-64-CRD")
+  Rake::Task["#{$root}/gen/crd/pdf/MC200-64-CRD.pdf"].invoke
+  portfolio_start_msg("MC300-32-CRD")
+  Rake::Task["#{$root}/gen/crd/pdf/MC300-32-CRD.pdf"].invoke
+  portfolio_start_msg("MC300-64-CRD")
+  Rake::Task["#{$root}/gen/crd/pdf/MC300-64-CRD.pdf"].invoke
+  portfolio_start_msg("RVI20ProfileRelease")
+  Rake::Task["#{$root}/gen/profile/pdf/RVI20ProfileRelease.pdf"].invoke
+  portfolio_start_msg("RVA20ProfileRelease")
+  Rake::Task["#{$root}/gen/profile/pdf/RVA20ProfileRelease.pdf"].invoke
+  portfolio_start_msg("RVA22ProfileRelease")
+  Rake::Task["#{$root}/gen/profile/pdf/RVA22ProfileRelease.pdf"].invoke
+  portfolio_start_msg("RVA23ProfileRelease")
+  Rake::Task["#{$root}/gen/profile/pdf/RVA23ProfileRelease.pdf"].invoke
+  portfolio_start_msg("RVB23ProfileRelease")
+  Rake::Task["#{$root}/gen/profile/pdf/RVB23ProfileRelease.pdf"].invoke
 end
 
 def portfolio_start_msg(name)
@@ -391,17 +398,19 @@ def portfolio_start_msg(name)
   puts ""
 end
 
-# Shortcut targets for building profiles and certificates.
-task "MockProcCertModel": "#{$root}/gen/crd/pdf/MockProcCertModel.pdf"
-task "MC100-32": "#{$root}/gen/crd/pdf/MC100-32.pdf"
-task "MC100-64": "#{$root}/gen/crd/pdf/MC100-64.pdf"
-task "MC200-32": "#{$root}/gen/crd/pdf/MC200-32.pdf"
-task "MC200-64": "#{$root}/gen/crd/pdf/MC200-64.pdf"
-task "MC300-32": "#{$root}/gen/crd/pdf/MC300-32.pdf"
-task "MC300-64": "#{$root}/gen/crd/pdf/MC300-64.pdf"
-task "MockProfileRelease": "#{$root}/gen/profile/pdf/MockProfileRelease.pdf"
-task "RVI20": "#{$root}/gen/profile/pdf/RVI20.pdf"
-task "RVA20": "#{$root}/gen/profile/pdf/RVA20.pdf"
-task "RVA22": "#{$root}/gen/profile/pdf/RVA22.pdf"
-task "RVA23": "#{$root}/gen/profile/pdf/RVA23.pdf"
-task "RVB23": "#{$root}/gen/profile/pdf/RVB23.pdf"
+# Shortcut targets for building CRDs, CTPs, and Profile Releases.
+task "MockCRD": "#{$root}/gen/crd/pdf/MockProcessor-CRD.pdf"
+#task "MockCTP": "#{$root}/gen/ctp/pdf/MockProcessor-CTP.pdf"
+#task "MC100-32-CTP": "#{$root}/gen/ctp/pdf/MC100-32-CTP.pdf"
+task "MC100-32-CRD": "#{$root}/gen/crd/pdf/MC100-32-CRD.pdf"
+task "MC100-64-CRD": "#{$root}/gen/crd/pdf/MC100-64-CRD.pdf"
+task "MC200-32-CRD": "#{$root}/gen/crd/pdf/MC200-32-CRD.pdf"
+task "MC200-64-CRD": "#{$root}/gen/crd/pdf/MC200-64-CRD.pdf"
+task "MC300-32-CRD": "#{$root}/gen/crd/pdf/MC300-32-CRD.pdf"
+task "MC300-64-CRD": "#{$root}/gen/crd/pdf/MC300-64-CRD.pdf"
+task "MockProfile": "#{$root}/gen/profile/pdf/MockProfileRelease.pdf"
+task "RVI20": "#{$root}/gen/profile/pdf/RVI20ProfileRelease.pdf"
+task "RVA20": "#{$root}/gen/profile/pdf/RVA20ProfileRelease.pdf"
+task "RVA22": "#{$root}/gen/profile/pdf/RVA22ProfileRelease.pdf"
+task "RVA23": "#{$root}/gen/profile/pdf/RVA23ProfileRelease.pdf"
+task "RVB23": "#{$root}/gen/profile/pdf/RVB23ProfileRelease.pdf"

@@ -62,35 +62,31 @@ jobs:
       - name: Create RVA20 Profile Release PDF Spec
         run: ./do gen:profile_release_pdf[RVA20]
       - name: Copy RVA20 Profile Release PDF
-        run: cp gen/profile/pdf/RVA20.pdf _site/pdfs/RVA20.pdf
+        run: cp gen/profile/pdf/RVA20ProfileRelease.pdf _site/pdfs
       - name: Create RVA22 Profile Release PDF Spec
         run: ./do gen:profile_release_pdf[RVA22]
       - name: Copy RVA22 Profile Release PDF
-        run: cp gen/profile/pdf/RVA22.pdf _site/pdfs/RVA22.pdf
+        run: cp gen/profile/pdf/RVA22ProfileRelease.pdf _site/pdfs
+      - name: Create RVA23 Profile Release PDF Spec
+        run: ./do gen:profile_release_pdf[RVA23]
       - name: Copy RVA23 Profile Release PDF
-        run: cp gen/profile/pdf/RVA23.pdf _site/pdfs/RVA23.pdf
+        run: cp gen/profile/pdf/RVA23ProfileRelease.pdf _site/pdfs
+      - name: Create RVB23 Profile Release PDF Spec
+        run: ./do gen:profile_release_pdf[RVB23]
       - name: Copy RVB23 Profile Release PDF
-        run: cp gen/profile/pdf/RVB23.pdf _site/pdfs/RVB23.pdf
+        run: cp gen/profile/pdf/RVB23ProfileRelease.pdf _site/pdfs
       - name: Create RVI20 Profile Release PDF Spec
         run: ./do gen:profile_release_pdf[RVI20]
       - name: Copy RVI20 Profile Release PDF
-        run: cp gen/profile/pdf/RVA20.pdf _site/pdfs/RVI20.pdf
-      - name: Create MC100-32 PDF Spec
+        run: cp gen/profile/pdf/RVA20ProfileRelease.pdf _site/pdfs
+      - name: Create MC100-32-CRD PDF Spec
         run: ./do gen:proc_crd_pdf[MC100-32]
-      - name: Copy MC100-32 PDF
-        run: cp gen/crd/pdf/MC100-32.pdf _site/pdfs/MC100-32.pdf
-      - name: Create MC100-32 HTML Spec
-        run: ./do gen:proc_crd_html[MC100-32]
-      - name: Copy MC100-32 HTML
-        run: cp gen/crd/html/MC100-32.html _site/htmls/MC100-32.html
-      - name: Create MC100-64 PDF Spec
+      - name: Copy MC100-32-CRD PDF
+        run: cp gen/crd/pdf/MC100-32-CRD.pdf _site/pdfs
+      - name: Create MC100-64-CRD PDF Spec
         run: ./do gen:proc_crd_pdf[MC100-64]
-      - name: Copy MC100-64 PDF
-        run: cp gen/crd/pdf/MC100-64.pdf _site/pdfs/MC100-64.pdf
-      - name: Create MC100-64 HTML Spec
-        run: ./do gen:proc_crd_html[MC100-64]
-      - name: Copy MC100-64 HTML
-        un: cp gen/crd/html/MC100-64.html _site/htmls/MC100-64.html
+      - name: Copy MC100-64-CRD PDF
+        run: cp gen/crd/pdf/MC100-64-CRD.pdf _site/pdfs
       - name: Copy manual html
         run: cp -R gen/manual/isa/top/all/html _site/manual
       - name: Setup Pages

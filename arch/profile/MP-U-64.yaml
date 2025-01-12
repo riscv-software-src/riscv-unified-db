@@ -4,7 +4,7 @@ name: MP-U-64
 marketing_name: MockProfile 64-bit Unpriv
 mode: Unpriv
 base: 64
-release: { $ref: profile_release/MockProfileRelease.yaml# }
+release: { $ref: profile_release/Mock.yaml# }
 extensions:
   A:
     presence: optional
