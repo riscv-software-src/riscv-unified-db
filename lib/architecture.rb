@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
-# Contains the "database" of RISC-V standards including extensions, instructions,
-# CSRs, Profiles, and Certificates.  Could be either the standard spec (defined by RISC-V International)
-# of a custom spec (defined as an arch_overlay in /cfgs dir).
+# The Architecture class is the API to the architecture database.
+# The "database" contains RISC-V standards including extensions, instructions,
+# CSRs, Profiles, and Certificates.
+# The Architecture class is used by backends to export the information in the
+# architecture database to create various outputs.
 #
-# Creates Ruby functions at runtime (see generate_obj_methods() and OBJS array).
+# The Architecture class creates Ruby functions at runtime (see generate_obj_methods() and OBJS array).
 #   1) Function to return Array<klass>              (every klass in database)
 #   2) Function to return Hash<String name, klass>  (hash entry is nil if name doesn't exist)
 #   3) Function to return Klass given name          (nil if name doesn't exist)

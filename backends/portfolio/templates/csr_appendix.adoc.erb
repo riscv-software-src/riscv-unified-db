@@ -2,7 +2,7 @@
 [appendix]
 == CSR Details
 
-<% design.in_scope_csrs.sort_by(&:name).each do |csr| -%>
+<% portfolio_design.in_scope_csrs.sort_by(&:name).each do |csr| -%>
 <<<
 [[csr-<%= csr.name %>-def]]
 === <%= csr.name %>

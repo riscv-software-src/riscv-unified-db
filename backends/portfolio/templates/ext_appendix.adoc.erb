@@ -1,24 +1,36 @@
 <<<
 [appendix]
 == Extension Details
-<% proc_cert_model.in_scope_ext_reqs.each do |ext_req| -%>
+<% portfolio_design.in_scope_ext_reqs.each do |ext_req| -%>
 <% ext = arch.extension(ext_req.name) -%>
 
 [[ext-<%= ext_req.name %>-def]]
 === Extension <%= ext_req.name %> +
-<%= ext.nil? ? "" : "*Long Name*: " + ext.long_name + " +" %>
+*Long Name*: <%= ext.long_name %> +
 
 *Version Requirement*: <%= ext_req.requirement_specs.map(&:to_s).join(", ") %> +
 
+<% if portfolios.size > 1 -%>
+.<%= ext.name %> Extension Presence
+|===
+| <%= portfolio_kind %> | v<%= ext.versions.map { |ext_ver| ext_ver.canonical_version.to_s }.join(" | v") %>
+
+<% portfolios.each do |portfolio| -%>
+| <%= portfolio.name %> | <%= portfolio.version_greatest_presence(ext.name, ext.versions).join(" | ") -%>
+<% end -%>
+
+|===
+<% end # portfolios.size > 1 -%>
+
 <% ext.versions.each do |v| -%>
-<%= v.version_spec %>::
+<%= v.canonical_version %>::
   State:::
     <%= v.state %>
-  <% if v.state == "ratified" -%>
+  <% if v.state == "ratified" && !v.ratification_date.nil? -%>
   Ratification date:::
     <%= v.ratification_date %>
   <% end # if %>
-  <% if v.changes.size > 0 -%>
+  <% if v.changes.empty? -%>
   Changes:::
 
     <% v.changes.each do |c| -%>
@@ -30,7 +42,7 @@
   Ratification document:::
     <%= v.url %>
   <% end -%>
-  <% if v.implications.size > 0 -%>
+  <% unless v.implications.empty? -%>
   Implies:::
     <% v.implications.each do |i| -%>
     * `<%= i.name %>` version <%= i.version_spec %>
@@ -54,7 +66,7 @@
 <% end -%>
 
 // TODO: GitHub issue 92: Use version specified by each profile.
-<% insts = arch.instructions.select { |i| i.defined_by?(ext.min_version) } -%>
+<% insts = portfolio_design.in_scope_instructions.select { |i| i.defined_by?(ext.min_version) } -%>
 <% unless insts.empty? -%>
 ==== Instructions
 
@@ -62,17 +74,34 @@ The following instructions are added by this extension:
 
 [cols="1,3"]
 |===
-<% insts.each do |inst| -%>
+<% insts.sort.each do |inst| -%>
 | <%= link_to_inst(inst.name) %>
 | *<%= inst.long_name %>*
 <% end -%>
 |===
 <% end -%>
 
-<% unless proc_cert_model.in_scope_ext_params(ext_req).empty? -%>
+<% unless ext.params.empty? -%>
+<% if portfolio_design.in_scope_ext_params(ext_req).empty? && portfolio_design.out_of_scope_params(ext_req.name).empty? -%>
+==== Parameters
+
+This extension has the following parameters (AKA implementation options):
+
+<% ext.params.sort_by { |p| p.name }.each do |param| -%>
+<%= param.name %>::
++
+--
+<%= param.desc %>
+--
+<% end # do param -%>
+
+<% end # if in_scope & out_of_scope empty -%>
+<% end # unless table -%>
+
+<% unless portfolio_design.in_scope_ext_params(ext_req).empty? -%>
 ==== IN-SCOPE Parameters
 
-<% proc_cert_model.in_scope_ext_params(ext_req).each do |ext_param| -%>
+<% portfolio_design.in_scope_ext_params(ext_req).each do |ext_param| -%>
 [[ext-<%= ext_req.name %>-param-<%= ext_param.name %>-def]]
 <%= ext_param.name %> &#8658; <%= ext_param.param.schema_type %>::
 +
@@ -82,10 +111,10 @@ The following instructions are added by this extension:
 <% end # do ext_param -%>
 <% end # unless table -%>
 
-<% unless proc_cert_model.out_of_scope_params(ext_req.name).empty? -%>
+<% unless portfolio_design.out_of_scope_params(ext_req.name).empty? -%>
 ==== OUT-OF-SCOPE Parameters
 
-<% proc_cert_model.out_of_scope_params(ext_req.name).each do |param| -%>
+<% portfolio_design.out_of_scope_params(ext_req.name).each do |param| -%>
 [[ext-<%= ext_req.name %>-param-<%= param.name %>-def]]
 <%= param.name %> &#8658; <%= param.schema_type %>::
 +

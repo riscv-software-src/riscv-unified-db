@@ -1,18 +1,14 @@
 # frozen_string_literal: true
 
-# The Design class is used when exporting information from the Architecture class.
-# The Architecture represents the "front-end" with objects providing access to the architecture database
-# in the /arch directory YAML files. It is the Ruby API to access the architecture database.
-# The Design contains common code such as IDL and ERB support used by multiple "back-ends" to
-# export the "front-end" architecture database to various types of documents.
-# The Design adds the concept of an mxlen which isn't present in the Architecture.
+# The Design class assists backends when exporting information from the database.
+# It contains common code such as IDL and ERB support used by multiple backends.
 #
 # A Design provides support when exporting any of the following to ASCIIDOC/HTML/PDF:
 #   - Entire RISC-V ISA manual
-#   - Config (under /cfg directory) with a possible overlay
-#   - Profile release
-#   - Certificate
-#   - Extension
+#   - Individual Extension
+#   - Profile Release
+#   - CRD (Certificate Requirements Document)
+#   - CTP (Certificate Test Plan)
 #
 # The Design class contains an Architecture object but isn't inherited from it.
 # This was done so code that only needs an Architecture object can make this clear

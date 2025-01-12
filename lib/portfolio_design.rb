@@ -15,11 +15,11 @@ require_relative "design"
 require_relative "arch_obj_models/portfolio"
 
 class PortfolioDesign < Design
-  # @return [Array<Portfolio>] All the portfolios in this portfolio design
-  attr_reader :portfolio_grp
-
   # @return [PortfolioClass] Portfolio class for all the portfolios in this design
   attr_reader :portfolio_class
+
+  # @return [String] Kind of portfolio for all portfolios in this design
+  attr_reader :portfolio_kind
 
   # @param base_isa_name [#to_s] The name of the base ISA configuration (rv32 or rv64)
   # @param arch [Architecture] The database of RISC-V standards
@@ -37,6 +37,7 @@ class PortfolioDesign < Design
     @portfolio_grp = PortfolioGroup.new(portfolios)
 
     @portfolio_class = portfolio_class
+    @portfolio_kind = portfolios[0].kind
 
     max_base = portfolios.map(&:base).max
     raise ArgumentError, "Calculated maximum base of #{max_base} across portfolios is not 32 or 64" unless max_base == 32 || max_base == 64
@@ -200,6 +201,30 @@ class PortfolioDesign < Design
   #                  If the extension name isn't found in this design, return "-".
   def extension_presence(ext_name) = @portfolio_grp.extension_presence(ext_name)
 
+  # @return [Array<InScopeExtensionParameter>] Sorted list of parameters specified by any extension in portfolio.
+  def all_in_scope_ext_params = @portfolio_grp.all_in_scope_ext_params
+
+  # @param [ExtensionRequirement]
+  # @return [Array<InScopeExtensionParameter>] Sorted list of extension parameters from portfolio for given extension.
+  def in_scope_ext_params(ext_req) = @portfolio_grp.in_scope_ext_params(ext_req)
+
+  # @return [Array<ExtensionParameter>] Sorted list of parameters out of scope across all in scope extensions.
+  def all_out_of_scope_params = @portfolio_grp.all_out_of_scope_params
+
+  # @param ext_name [String] Extension name
+  # @return [Array<ExtensionParameter>] Sorted list of parameters that are out of scope for named extension.
+  def out_of_scope_params(ext_name) = @portfolio_grp.out_of_scope_params(ext_name)
+
+  # @param param [ExtensionParameter]
+  # @return [Array<Extension>] Sorted list of all in-scope extensions that define this parameter
+  #                            in the database and the parameter is in-scope.
+  def all_in_scope_exts_with_param(param) = @portfolio_grp.all_in_scope_exts_with_param(param)
+
+  # @param param [ExtensionParameter]
+  # @return [Array<Extension>] List of all in-scope extensions that define this parameter in the
+  #                            database but the parameter is out-of-scope.
+  def all_in_scope_exts_without_param(param) = @portfolio_grp.all_in_scope_exts_without_param(param)
+
   #################
   # EXTRA METHODS #
   #################
@@ -210,8 +235,10 @@ class PortfolioDesign < Design
 
     erb_binding.local_variable_set(:arch, arch)
     erb_binding.local_variable_set(:design, self)
-    erb_binding.local_variable_set(:pf_design, self)
-    erb_binding.local_variable_set(:pf_class, self.portfolio_class)
+    erb_binding.local_variable_set(:portfolio_design, self)
+    erb_binding.local_variable_set(:portfolio_class, @portfolio_class)
+    erb_binding.local_variable_set(:portfolio_kind, @portfolio_kind)
+    erb_binding.local_variable_set(:portfolios, @portfolio_grp.portfolios)
   end
 
   # Include a partial ERB template into a full ERB template.
@@ -224,8 +251,10 @@ class PortfolioDesign < Design
       {
         arch: arch,
         design: self,
-        pf_design: self,
-        pf_class: self.portfolio_class
+        portfolio_design: self,
+        portfolio_class: @portfolio_class,
+        portfolio_kind: @portfolio_kind,
+        portfolios: @portfolio_grp.portfolios
       }
     )
   end

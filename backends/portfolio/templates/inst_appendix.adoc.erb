@@ -1,7 +1,8 @@
+<<<
 [appendix]
 == Instruction Details
 
-<% design.in_scope_instructions.each do |inst| -%>
+<% portfolio_design.in_scope_instructions.each do |inst| -%>
 <<<
 <%= anchor_for_inst(inst.name) %>
 === <%= inst.name %>
@@ -18,6 +19,7 @@ This instruction is defined by:
 [NOTE]
 This instruction has different encodings in RV32 and RV64.
 
+[tabs]
 ====
 RV32::
 +
@@ -45,18 +47,18 @@ RV64::
 <%= inst.description %>
 
 ==== Access
-<% if design.in_scope_extensions.any? { |e| e.name == "H" } -%>
+<% if portfolio_design.in_scope_extensions.any? { |e| e.name == "H" } -%>
 [cols="^,^,^,^,^"]
 <% else -%>
 [cols="^,^,^"]
 <% end -%>
 |===
-| M | <% if design.in_scope_extensions.any? { |e| e.name == "H" } -%>HS<% else -%>S<% end -%> | U <% if design.in_scope_extensions.any? { |e| e.name == "H" } -%> | VS | VU <% end -%>
+| M | <% if portfolio_design.in_scope_extensions.any? { |e| e.name == "H" } -%>HS<% else -%>S<% end -%> | U <% if portfolio_design.in_scope_extensions.any? { |e| e.name == "H" } -%> | VS | VU <% end -%>
 
 | [.access-always]#Always#
 | [.access-<%=inst.access['s']%>]#<%= inst.access['s'].capitalize %>#
 | [.access-<%=inst.access['u']%>]#<%= inst.access['u'].capitalize %>#
-<% if design.in_scope_extensions.any? { |e| e.name == "H" } %>
+<% if portfolio_design.in_scope_extensions.any? { |e| e.name == "H" } %>
 | [.access-<%=inst.access['vs']%>]#<%= inst.access['vs'].capitalize %>#
 | [.access-<%=inst.access['vu']%>]#<%= inst.access['vu'].capitalize %>#
 <% end %>
@@ -69,6 +71,7 @@ RV64::
 ==== Decode Variables
 
 <% if inst.multi_encoding? -%>
+[tabs]
 ====
 RV32::
 +
@@ -121,6 +124,5 @@ This instruction may result in the following synchronous exceptions:
   <%- end -%>
 
 <%- end -%>
-
 
 <% end -%>

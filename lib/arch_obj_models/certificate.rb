@@ -137,4 +137,162 @@ class ProcCertModel < Portfolio
     end
     @requirement_groups
   end
+
+  ############################################
+  # Routines using InScopeExtensionParameter #
+  ############################################
+
+  # @return [Array<InScopeExtensionParameter>] Sorted list of parameters specified by any extension in portfolio.
+  # These are always IN-SCOPE by definition (since they are listed in the portfolio).
+  # Can have multiple array entries with the same parameter name since multiple extensions may define
+  # the same parameter.
+  def all_in_scope_ext_params
+    return @all_in_scope_ext_params unless @all_in_scope_ext_params.nil?
+
+    @all_in_scope_ext_params = []
+
+    @data["extensions"].each do |ext_name, ext_data|
+      next if ext_name[-1] == "$"
+
+      # Find Extension object from database
+      ext = @arch.extension(ext_name)
+      raise "Cannot find extension named #{ext_name}" if ext.nil?
+
+      ext_data["parameters"]&.each do |param_name, param_data|
+        param = ext.params.find { |p| p.name == param_name }
+        raise "There is no param '#{param_name}' in extension '#{ext_name}" if param.nil?
+
+        next unless ext.versions.any? do |ext_ver|
+                      ver_req = ext_data["version"] || ">= #{ext.min_version.version_spec}"
+                      ExtensionRequirement.new(ext_name, ver_req, @arch).satisfied_by?(ext_ver) &&
+                      param.defined_in_extension_version?(ext_ver)
+                    end
+
+        @all_in_scope_ext_params <<
+          InScopeExtensionParameter.new(param, param_data["schema"], param_data["note"])
+      end
+    end
+    @all_in_scope_ext_params.sort
+  end
+
+  # @param [ExtensionRequirement]
+  # @return [Array<InScopeExtensionParameter>] Sorted list of extension parameters from portfolio for given extension.
+  # These are always IN SCOPE by definition (since they are listed in the portfolio).
+  def in_scope_ext_params(ext_req)
+    raise ArgumentError, "Expecting ExtensionRequirement" unless ext_req.is_a?(ExtensionRequirement)
+
+    ext_params = []    # Local variable, no caching
+
+    # Get extension information from portfolio YAML for passed in extension requirement.
+    ext_data = @data["extensions"][ext_req.name]
+    raise "Cannot find extension named #{ext_req.name}" if ext_data.nil?
+
+    # Find Extension object from database
+    ext = @arch.extension(ext_req.name)
+    raise "Cannot find extension named #{ext_req.name}" if ext.nil?
+
+    # Loop through an extension's parameter constraints (hash) from the certificate model.
+    # Note that "&" is the Ruby safe navigation operator (i.e., skip do loop if nil).
+    ext_data["parameters"]&.each do |param_name, param_data|
+      # Find ExtensionParameter object from database
+      ext_param = ext.params.find { |p| p.name == param_name }
+      raise "There is no param '#{param_name}' in extension '#{ext_req.name}" if ext_param.nil?
+
+      next unless ext.versions.any? do |ext_ver|
+                    ext_req.satisfied_by?(ext_ver) &&
+                    ext_param.defined_in_extension_version?(ext_ver)
+                  end
+
+      ext_params <<
+        InScopeExtensionParameter.new(ext_param, param_data["schema"], param_data["note"])
+    end
+
+    ext_params.sort!
+  end
+
+  # @return [Array<ExtensionParameter>] Sorted list of parameters out of scope across all in scope extensions
+  #                                     (those listed as mandatory or optional in the certificate model).
+  def all_out_of_scope_params
+    return @all_out_of_scope_params unless @all_out_of_scope_params.nil?
+
+    @all_out_of_scope_params = []
+    in_scope_ext_reqs.each do |ext_req|
+      ext = @arch.extension(ext_req.name)
+      ext.params.each do |param|
+        next if all_in_scope_ext_params.any? { |c| c.param.name == param.name }
+
+        next unless ext.versions.any? do |ext_ver|
+                      ext_req.satisfied_by?(ext_ver) &&
+                      param.defined_in_extension_version?(ext_ver)
+                    end
+
+        @all_out_of_scope_params << param
+      end
+    end
+    @all_out_of_scope_params.sort!
+  end
+
+  # @param ext_name [String] Extension name
+  # @return [Array<ExtensionParameter>] Sorted list of parameters that are out of scope for named extension.
+  def out_of_scope_params(ext_name)
+    all_out_of_scope_params.select{ |param| param.exts.any? { |ext| ext.name == ext_name } }.sort
+  end
+
+  # @param param [ExtensionParameter]
+  # @return [Array<Extension>] Sorted list of all in-scope extensions that define this parameter
+  #                            in the database and the parameter is in-scope.
+  def all_in_scope_exts_with_param(param)
+    raise ArgumentError, "Expecting ExtensionParameter" unless param.is_a?(ExtensionParameter)
+
+    exts = []
+
+    # Iterate through all the extensions in the architecture database that define this parameter.
+    param.exts.each do |ext|
+      found = false
+
+      in_scope_extensions.each do |potential_ext|
+        if ext.name == potential_ext.name
+          found = true
+          next
+        end
+      end
+
+      if found
+        # Only add extensions that exist in this certificate model.
+        exts << ext
+      end
+    end
+
+    # Return intersection of extension names
+    exts.sort_by!(&:name)
+  end
+
+  # @param param [ExtensionParameter]
+  # @return [Array<Extension>] List of all in-scope extensions that define this parameter in the
+  #                            database but the parameter is out-of-scope.
+  def all_in_scope_exts_without_param(param)
+    raise ArgumentError, "Expecting ExtensionParameter" unless param.is_a?(ExtensionParameter)
+
+    exts = []   # Local variable, no caching
+
+    # Iterate through all the extensions in the architecture database that define this parameter.
+    param.exts.each do |ext|
+      found = false
+
+      in_scope_extensions.each do |potential_ext|
+        if ext.name == potential_ext.name
+          found = true
+          next
+        end
+      end
+
+      if found
+          # Only add extensions that are in-scope (i.e., exist in this certificate model).
+          exts << ext
+      end
+    end
+
+    # Return intersection of extension names
+    exts.sort_by!(&:name)
+  end
 end

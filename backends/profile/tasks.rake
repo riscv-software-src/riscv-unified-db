@@ -29,6 +29,9 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
     "#{$root}/lib/arch_obj_models/portfolio.rb",
     "#{$root}/lib/portfolio_design.rb",
     "#{$root}/lib/design.rb",
+    "#{$root}/backends/portfolio/templates/ext_appendix.adoc.erb",
+    "#{$root}/backends/portfolio/templates/inst_appendix.adoc.erb",
+    "#{$root}/backends/portfolio/templates/csr_appendix.adoc.erb",
     "#{PROFILE_DOC_DIR}/templates/profile.adoc.erb"
   ].concat(profile_pathnames) do |t|
     arch = pf_create_arch

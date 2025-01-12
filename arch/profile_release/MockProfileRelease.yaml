@@ -1,5 +1,5 @@
 $schema: profile_release_schema.json#
-kind: profile release
+kind: Profile Release
 name: MockProfileRelease
 marketing_name: MockProfileRelease Marketing Name
 class:
