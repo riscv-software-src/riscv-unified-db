@@ -8,7 +8,10 @@ address: 0x7f6
 length: 32
 base: 32
 priv_mode: M
-definedBy: Xqci
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqciint
 description: |
   Enable bits for IRQs 192-223
 fields:

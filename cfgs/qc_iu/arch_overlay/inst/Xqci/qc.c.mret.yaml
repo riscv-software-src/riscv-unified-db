@@ -8,7 +8,10 @@ description: |
   Returns from an exception in M-mode.
   Instruction encoded in CI instruction format.
 assembly: ""
-definedBy: Xqciint
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqciint
 access:
   s: never
   u: never

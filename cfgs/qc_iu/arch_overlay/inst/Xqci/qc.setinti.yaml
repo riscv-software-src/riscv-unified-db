@@ -6,7 +6,7 @@ name: qc.setinti
 long_name: Set interrupt (Immediate)
 description: |
   Set interrupt, interrupt number is in `imm` (0 - 1023).
-  Instruction encoded in I instruction format.
+  Instruction encoded in R instruction format.
 definedBy:
   anyOf:
     - Xqci
