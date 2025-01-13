@@ -31,6 +31,21 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
+  XReg input1 = X[rs1];
+  XReg input2 = X[rs2];
+  XReg output = 0;
+
+  for(U32 i=0; i<(xlen()-8); i = i+8) {
+    XReg index = input2[i+7:i];
+    if(8*index < xlen()) {
+      output[i+7:i] = input1[8*index+7:8*index];
+    }
+  }
+
+  X[rd] = output;
+
+sail(): |
+
   val xperm8_lookup : (bits(8), xlenbits) -> bits(8)
   function xperm8_lookup (idx, lut) = {
     (lut >> (idx @ 0b00))[7..0]
@@ -38,7 +53,7 @@ operation(): |
   function clause execute ( XPERM_8 (rs2,rs1,rd)) = {
     result : xlenbits = EXTZ(0b0);
     foreach(i from 0 to xlen by 8) {
-      result[i+7..i] = xperm4_lookup(X(rs2)[i+7..i], X(rs1));
+      result[i+7..i] = xperm8_lookup(X(rs2)[i+7..i], X(rs1));
     };
     X(rd) = result;
     RETIRE_SUCCESS

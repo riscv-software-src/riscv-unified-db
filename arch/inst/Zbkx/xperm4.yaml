@@ -31,6 +31,20 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
+  XReg input1 = X[rs1];
+  XReg input2 = X[rs2];
+  XReg output = 0;
+
+  for(U32 i=0; i<(xlen()-4); i = i+4) {
+    XReg index = input2[i+3:i];
+    if(4*index < xlen()) {
+      output[i+3:i] = input1[4*index+3:4*index];
+    }
+  }
+
+  X[rd] = output;
+
+sail(): |
   val xperm4_lookup : (bits(4), xlenbits) -> bits(4)
   function xperm4_lookup (idx, lut) = {
     (lut >> (idx @ 0b00))[3..0]
