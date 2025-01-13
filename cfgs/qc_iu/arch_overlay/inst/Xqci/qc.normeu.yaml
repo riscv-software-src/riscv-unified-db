@@ -32,6 +32,6 @@ access:
   vu: always
 operation(): |
   XReg clz = ((xlen() - 1) - $signed(highest_set_bit(X[rs1]))) & ~1;
-  XReg exp = (X[rs1] << clz);
-  XReg mnt = (-clz);
+  XReg mnt = (X[rs1] << (clz & ~1));
+  XReg exp = ((-clz) & ~1);
   X[rd] = {mnt[23:0],exp[7:0]};
