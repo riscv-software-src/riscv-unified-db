@@ -107,7 +107,9 @@ namespace udb {
       OpKind m_kind;
     };
 
-    VersionRequirement() = default;
+    // default requiremnt is >= 0
+    VersionRequirement() : m_op(OpKind::GTE), m_version(0,0,0,false) {}
+
     VersionRequirement(const std::string& req) { set(req); }
     VersionRequirement(const OpKind& op_kind, unsigned major, unsigned minor, unsigned patch, bool pre)
       : m_op(op_kind), m_version(major, minor, patch, pre)

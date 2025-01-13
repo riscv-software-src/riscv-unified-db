@@ -12,6 +12,15 @@
 
 namespace udb {
   class <%= hart_name -%> : public HartBase {
+    <%- csrs = cfg_arch.fully_configured? ? cfg_arch.implemented_csrs : cfg_arch.csrs -%>
+    <%- csrs.each do |csr| -%>
+    friend class <%= name_of(:csr, cfg_arch, csr.name) %>;
+    <%- fields = cfg_arch.fully_configured? ? csr.implemented_fields(cfg_arch) : csr.fields -%>
+    <%- fields.each do |field| -%>
+    friend class <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %>;
+    <%- end -%>
+    <%- end -%>
+
     public:
       static constexpr unsigned MXLEN = <%= cfg_arch.mxlen.nil? ? 64 : cfg_arch.mxlen %>;
       using XReg = Bits<MXLEN>;

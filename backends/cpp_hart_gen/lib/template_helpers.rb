@@ -15,6 +15,54 @@ class Array
   end
 end
 
+class ExtensionRequirementExpression
+  def to_cxx_helper(hsh, &block)
+    if hsh.is_a?(Hash)
+      if hsh.key?("name")
+        if hsh.key?("version")
+          if hsh["version"].is_a?(String)
+            yield hsh["name"], hsh["version"]
+          elsif hsh["version"].is_a?(Array)
+            "(#{hsh['version'].map { |v| yield hsh['name'], v }.join(' && ')})"
+          else
+            raise "unexpected"
+          end
+        else
+          yield hsh["name"], nil
+        end
+      else
+        key = hsh.keys[0]
+
+        case key
+        when "allOf"
+          cpp_str = hsh[key].map { |element| to_cxx_helper(element, &block) }.join(" && ")
+          "(#{cpp_str})"
+        when "anyOf"
+          cpp_str = hsh[key].map { |element| to_cxx_helper(element, &block) }.join(" || ")
+          "(#{cpp_str})"
+        when "oneOf"
+          raise "TODO"
+          # cpp_str = hsh[key].map { |element| to_cxx_helper(element) }.join(", ")
+          # "([#{cpp_str}].count(true) == 1)"
+        when "not"
+          "!(#{to_cxx_helper(hsh[key], &block)})"
+        else
+          raise "Unexpected"
+        end
+      end
+    else
+      yield hsh, nil
+    end
+  end
+
+  def to_cxx(&block)
+    raise ArgumentError, "Missing block" unless block_given?
+    raise ArgumentError, "Blcok expects two arguments" unless block.arity == 2
+
+    to_cxx_helper(@hsh, &block)
+  end
+end
+
 module CppHartGen
   module TemplateHelpers
 

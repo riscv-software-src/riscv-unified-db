@@ -5721,6 +5721,8 @@ module Idl
   class CsrFieldReadExpressionAst < AstNode
     include Rvalue
 
+    attr_reader :idx
+
     def initialize(input, interval, idx, field_name)
       if idx.is_a?(AstNode)
         super(input, interval, [idx])
@@ -5865,6 +5867,8 @@ module Idl
 
   class CsrReadExpressionAst < AstNode
     include Rvalue
+
+    attr_reader :idx
 
     def initialize(input, interval, idx)
       if idx.is_a?(AstNode)

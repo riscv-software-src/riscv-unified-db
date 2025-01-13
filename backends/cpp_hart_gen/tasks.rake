@@ -77,6 +77,9 @@ rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.hxx} => proc { |tna
   filename = parts[-1]
   [
     "#{CPP_HART_GEN_SRC}/templates/#{filename}.erb",
+    "#{CPP_HART_GEN_SRC}/lib/gen_cpp.rb",
+    "#{CPP_HART_GEN_SRC}/lib/template_helpers.rb",
+    "#{CPP_HART_GEN_SRC}/lib/csr_template_helpers.rb",
     __FILE__
   ]
 } do |t|
@@ -99,6 +102,9 @@ rule %r{#{CPP_HART_GEN_DST}/.*/src/cfgs/[^/]+/[^/]+\.cxx} => proc { |tname|
   filename = parts[-1]
   [
     "#{CPP_HART_GEN_SRC}/templates/#{filename}.erb",
+    "#{CPP_HART_GEN_SRC}/lib/gen_cpp.rb",
+    "#{CPP_HART_GEN_SRC}/lib/template_helpers.rb",
+    "#{CPP_HART_GEN_SRC}/lib/csr_template_helpers.rb",
     __FILE__
   ]
 } do |t|
@@ -226,6 +232,7 @@ namespace :gen do
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/csrs.hxx"].invoke
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/csrs.cxx"].invoke
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/csr_container.hxx"].invoke
+      Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/func_prototypes.hxx"].invoke
 
       Dir.glob("#{CPP_HART_GEN_SRC}/cpp/include/udb/*.hpp") do |f|
         Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/#{File.basename(f)}"].invoke
@@ -251,6 +258,7 @@ namespace :build do
   task cpp_hart: ["gen:cpp_hart"] do
     _, build_name = configs_build_name
 
+    Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/build/Makefile"].invoke
     Dir.chdir("#{CPP_HART_GEN_DST}/#{build_name}/build") do
       sh "make"
     end

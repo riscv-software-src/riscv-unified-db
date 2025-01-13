@@ -97,6 +97,8 @@ namespace udb {
   template <unsigned ParentSize, unsigned Start, unsigned Size>
   class BitfieldMember {
     public:
+    static constexpr unsigned Width = Size;
+
     BitfieldMember(Bitfield<ParentSize>& parent)
       : m_parent(parent)
     {}
@@ -108,6 +110,7 @@ namespace udb {
     static constexpr Bits<ParentSize> Mask = MaximumValue.template sll<Start>();
 
     operator Bits<Size>() const;
+    operator PossiblyUndefinedBits() const;
 
     bool operator!() const {
       return !static_cast<Bits<Size>>(*this).get();
@@ -157,6 +160,12 @@ namespace udb {
 
   template <unsigned ParentSize, unsigned Start, unsigned Size>
   BitfieldMember<ParentSize, Start, Size>::operator Bits<Size>() const
+  {
+    return (static_cast<Bits<ParentSize>>(m_parent) >> Start) & MaximumValue;
+  }
+
+  template <unsigned ParentSize, unsigned Start, unsigned Size>
+  BitfieldMember<ParentSize, Start, Size>::operator PossiblyUndefinedBits() const
   {
     return (static_cast<Bits<ParentSize>>(m_parent) >> Start) & MaximumValue;
   }

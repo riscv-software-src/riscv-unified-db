@@ -3,7 +3,7 @@
 require 'ruby-prof-flamegraph'
 
 require_relative "obj"
-
+require "awesome_print"
 
 # model of a specific instruction in a specific base (RV32/RV64)
 class Instruction < DatabaseObjectect
@@ -378,6 +378,23 @@ class Instruction < DatabaseObjectect
       map
     end
 
+    # @param encoding [String] Encoding, as a string of 1, 0, and - with MSB at index 0
+    # @param value [Integer] Value of the decode variable
+    # @return [String] encoding, with the decode variable replaced with value
+    def encoding_repl(encoding, value)
+      raise ArgumentError, "Expecting string" unless encoding.is_a?(String)
+      raise ArgumentError, "Expecting Integer" unless value.is_a?(Integer)
+
+      new_encoding = encoding.dup
+      inst_pos_to_var_pos.each_with_index do |pos, idx|
+        next if pos.nil?
+        raise "Bad encoding" if idx >= encoding.size
+
+        new_encoding[encoding.size - idx - 1] = ((value >> pos) & 1).to_s
+      end
+      new_encoding
+    end
+
     # given a range of the instruction, return a string representing the bits of the field the range
     # represents
     def inst_range_to_var_range(r)
@@ -478,7 +495,7 @@ class Instruction < DatabaseObjectect
       size_in_encoding + @left_shift
     end
 
-    # the number of bits in the field, _not including any implicit ones_
+    # the number of bits in the field, _not including any implicit zeros_
     def size_in_encoding
       bits.reduce(0) { |sum, f| sum + (f.is_a?(Integer) ? 1 : f.size) }
     end
@@ -559,27 +576,48 @@ class Instruction < DatabaseObjectect
       end
     end
 
-    # @reteurn [Boolean] true if self and other_encoding cannot be distinguished
-    def conflicts?(other_encoding)
+    # @return [Boolean] true if self and other_encoding cannot be distinguished, i.e., they share the same encoding
+    def indistinguishable?(other_encoding, check_other: true)
       other_format = other_encoding.format
-      format.size.times.all? do |i|
-        format[i] == "-" \
-          || (i >= other_format.size) \
-          || (format[i] == other_format[i])
-      end || \
-        other_format.size.times.all? do |i|
-          other_format[i] == "-" \
-            || (i >= format.size) \
-            || (other_format[i] == format[i])
+      same =
+        format.size.times.all? do |i|
+          rev_idx = (format.size - 1) - i
+          other_rev_idx = (other_format.size - 1) - i
+          format[rev_idx] == "-" \
+            || (i >= other_format.size) \
+            || (format[rev_idx] == other_format[other_rev_idx])
         end
-    end
+      if same
+       # the mask can't be distinguished; is there one or more exclusions that distinguishes them?
 
-    # @return [Array<Extension>] Extensions that conflict with this instruction, i.e., cannot be implemented if this instruction is implemented
-    def conflicting_exts
-      @conflicting_exts ||=
-        @cfg_arch.non_prohibited_extensions.select do |ext|
-          excluded_by?(ext.name, ext.min_version)
+        # we have to check all combinations of dvs with exlcusions, and their values
+        exclusion_dvs = @decode_variables.reject { |dv| dv.excludes.empty? }
+        exclusion_dv_values = []
+        def expand(exclusion_dvs, exclusion_dv_values, base, idx)
+          other_dv = exclusion_dvs[idx]
+          other_dv.excludes.each do |other_exclusion_value|
+            exclusion_dv_values << base + [[other_dv, other_exclusion_value]]
+            if (idx + 1) < exclusion_dvs.size
+              expand(exclusion_dvs, exclusion_dv_values, exclusion_dv_values.last, idx + 1)
+            end
+          end
         end
+        exclusion_dvs.each_index do |idx|
+          expand(exclusion_dvs, exclusion_dv_values, [], idx)
+        end
+
+        exclusion_dv_values.each do |dv_values|
+          repl_format = format.dup
+          dv_values.each { |dv_and_value| repl_format = dv_and_value[0].encoding_repl(repl_format, dv_and_value[1]) }
+
+          if repl_format == other_format
+            same = false
+            break
+          end
+        end
+      end
+
+      check_other ? same || other_encoding.indistinguishable?(self, check_other: false) : same
     end
 
     # @param format [String] Format of the encoding, as 0's, 1's and -'s (for decode variables)
@@ -641,6 +679,47 @@ class Instruction < DatabaseObjectect
   # @return [Boolean] whether or not this instruction has different encodings depending on XLEN
   def multi_encoding?
     @data.key?("encoding") && @data["encoding"].key?("RV32")
+  end
+
+  # @return [Boolean] true if self and other_inst have indistinguishable encodings and can be simultaneously implemented in some design
+  def bad_encoding_conflict?(xlen, other_inst)
+    return false if !defined_in_base?(xlen) || !other_inst.defined_in_base?(xlen)
+    return false unless encoding(xlen).indistinguishable?(other_inst.encoding(xlen))
+
+    # ok, so they have the same encoding. can they be present at the same time?
+    return false if !defined_by_condition.compatible?(other_inst.defined_by_condition)
+
+    # is this a hint?
+    !(hints.include?(other_inst) || other_inst.hints.include?(self))
+  end
+
+  # @return [Array<Instruction>] List of instructions that re-use this instruction's encoding,
+  #                              but can't be present in the same system because their defining
+  #                              extensions conflict
+  def conflicting_instructions(xlen)
+    raise "Bad xlen" unless defined_in_base?(xlen)
+
+    @conflicting_instructions ||= {}
+    return @conflicting_instructions[xlen] unless @conflicting_instructions[xlen].nil?
+
+    @conflicting_instructions[xlen] = []
+
+    @arch.instructions.each do |other_inst|
+      next unless other_inst.defined_in_base?(xlen)
+      next if other_inst == self
+
+      next unless encoding(xlen).indistinguishable?(other_inst.encoding(xlen))
+
+      # is this a hint?
+      next if hints.include?(other_inst) || other_inst.hints.include?(self)
+
+      if defined_by_condition.compatible?(other_inst.defined_by_condition)
+        raise "bad encoding conflict found between #{name} and #{other_inst.name}"
+      end
+
+      @conflicting_instructions[xlen] << other_inst
+    end
+    @conflicting_instructions[xlen]
   end
 
   # @return [FunctionBodyAst] A type-checked abstract syntax tree of the operation
@@ -738,48 +817,22 @@ class Instruction < DatabaseObjectect
     !@data.key?("base") || base == 64
   end
 
-  # @overload excluded_by?(ext_name, ext_version)
-  #   @param ext_name [#to_s] An extension name
-  #   @param ext_version [#to_s] A specific extension version
-  #   @return [Boolean] Whether or not the instruction is excluded by extesion `ext`, version `version`
-  # @overload excluded_by?(ext_version)
-  #   @param ext_version [ExtensionVersion] An extension version
-  #   @return [Boolean] Whether or not the instruction is excluded by ext_version
-  def excluded_by?(*args)
-    return false if @data["excludedBy"].nil?
-
-    excluded_by = SchemaCondition.new(@data["excludedBy"], @cfg_arch)
-
-    ext_ver =
-      if args.size == 1
-        raise ArgumentError, "Parameter must be an ExtensionVersion" unless args[0].is_a?(ExtensionVersion)
-
-        args[0]
-      elsif args.size == 2
-        raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
-        raise ArgumentError, "Second parameter must be an extension version" unless args[1].respond_to?(:to_s)
-
-        ExtensionVersion.new(args[0], args[1], @cfg_arch)
-      end
-
-    excluded_by.satisfied_by? do |r|
-      r.satisfied_by?(ext_ver)
-    end
+  # @return [Array<Instruction>] List of HINTs based on this instruction encoding
+  def hints
+    @hints ||= @data.key?("hints") ? @data["hints"].map { |ref| @cfg_arch.ref(ref["$ref"]) } : []
   end
 
   # @param cfg_arch [ConfiguredArchitecture] The architecture definition
-  # @return [Boolean] whether or not the instruction is implemented given the supplies config options
+  # @return [Boolean] whether or not the instruction is implemented given the supplied config options
   def exists_in_cfg?(cfg_arch)
     if cfg_arch.fully_configured?
       (@data["base"].nil? || (cfg_arch.possible_xlens.include? @data["base"])) &&
-        cfg_arch.implemented_extensions.any? { |e| defined_by?(e) } &&
-        cfg_arch.implemented_extensions.none? { |e| excluded_by?(e) }
+        cfg_arch.implemented_extensions.any? { |e| defined_by?(e) }
     else
       raise "unexpected cfg_arch type" unless cfg_arch.partially_configured?
 
       (@data["base"].nil? || (cfg_arch.possible_xlens.include? @data["base"])) &&
-        cfg_arch.prohibited_extensions.none? { |e| defined_by?(e) } &&
-        cfg_arch.mandatory_extensions.none? { |e| excluded_by?(e) }
+        cfg_arch.prohibited_extensions.none? { |e| defined_by?(e) }
     end
   end
 end

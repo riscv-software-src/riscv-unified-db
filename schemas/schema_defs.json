@@ -206,6 +206,10 @@
               "items": {
                 "$ref": "#/$defs/requires_entry"
               }
+            },
+            "not": {
+              "type": "object",
+              "$ref": "#/$defs/requires_entry"
             }
           },
           "additionalProperties": false

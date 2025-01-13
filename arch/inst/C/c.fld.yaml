@@ -13,6 +13,7 @@ definedBy:
   allOf:
     - C
     - D
+base: 32
 assembly: xd, imm(xs1)
 encoding:
   match: 001-----------00

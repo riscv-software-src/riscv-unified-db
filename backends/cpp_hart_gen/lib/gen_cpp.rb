@@ -95,8 +95,80 @@ module Idl
 
   class CsrFunctionCallAst
     def gen_cpp(symtab, indent, indent_spaces: 2)
-      csr_ref = csr.gen_cpp(symtab, 0, indent_spaces:)
-      "#{' ' * indent}#{csr_ref}.#{function_name}()"
+      if csr.idx.is_a?(AstNode)
+        if symtab.cfg_arch.csr(csr.idx.text_value).nil?
+          "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr.idx.gen_cpp(symtab, 0, indent_spaces:)})._#{function_name}()"
+        else
+          "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.idx.text_value})._#{function_name}()"
+        end
+      else
+        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.idx})._#{function_name}()"
+      end
+    end
+  end
+
+  class FunctionDefAst
+    def gen_return_type(symtab)
+      if templated?
+        template_names.each_with_index do |tname, idx|
+          symtab.add!(tname, Var.new(tname, template_types(symtab)[idx]))
+        end
+      end
+
+      cpp =
+        if @return_type_nodes.empty?
+          "void"
+        elsif @return_type_nodes.size == 1
+          @return_type_nodes[0].gen_cpp(symtab, 0)
+        else
+          rts = @return_type_nodes.map { |rt| rt.gen_cpp(symtab, 0) }
+          "std::tuple<#{rts.join(', ')}>"
+        end
+
+      if templated?
+        template_names.each do |tname|
+          symtab.del(tname)
+        end
+      end
+
+      cpp
+    end
+
+    def gen_cpp_argument_list(symtab)
+      if templated?
+        template_names.each_with_index do |tname, idx|
+          symtab.add!(tname, Var.new(tname, template_types(symtab)[idx]))
+        end
+      end
+
+      list = @argument_nodes.map { |arg| arg.gen_cpp(symtab, 0) }.join(", ")
+
+      if templated?
+        template_names.each do |tname|
+          symtab.del(tname)
+        end
+      end
+
+      list
+    end
+
+    def gen_cpp_template
+      if @template_types.nil?
+        ""
+      else
+        list = []
+        @template_types.each_index { |i|
+          list << "#{@template_types[i].to_cxx_no_qualifiers} #{@template_names[i]}"
+        }
+        "template <#{list.join(', ')}>"
+      end
+    end
+
+    def gen_cpp_prototype(symtab, indent, indent_spaces: 2)
+      <<~PROTOTYPE
+        #{' ' * indent}#{gen_cpp_template}
+        #{' ' * indent}#{name == 'raise' ? '[[noreturn]]' : ''} #{gen_return_type(symtab)} #{name.gsub('?', '_Q_')}(#{gen_cpp_argument_list(symtab)});
+      PROTOTYPE
     end
   end
 
@@ -127,10 +199,18 @@ module Idl
 
   class BitsCastAst
     def gen_cpp(symtab, indent, indent_spaces: 2)
-      width = expression.type(symtab).width
-      if (width == :unknown)
+      t = expression.type(symtab)
+      width =
+        if t.kind == :enum_ref
+          t.enum_class.width
+        else
+          t.width
+        end
+
+      if width == :unknown
         "#{' '*indent}Bits<BitsInfinitePrecision>(#{expression.gen_cpp(symtab, 0, indent_spaces: )})"
       else
+        raise "nil" if width.nil?
         "#{' '*indent}Bits<#{width}>(#{expression.gen_cpp(symtab, 0, indent_spaces: )})"
       end
     end
@@ -144,7 +224,11 @@ module Idl
 
   class CsrFieldAssignmentAst
     def gen_cpp(symtab, indent, indent_spaces: 2)
-      "#{' '*indent}#{csr_field.gen_cpp(symtab, 0, indent_spaces:)}.write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)})"
+      if csr_field.idx.is_a?(AstNode)
+        "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr_field.idx.gen_cpp(symtab, 0)})._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)})"
+      else
+        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name(symtab)})._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)})"
+      end
     end
   end
 
@@ -226,7 +310,7 @@ module Idl
       end
       value_else(value_result) do
         # we don't know the value of something (probably a param), so we need the slow extract
-        return "#{' '*indent}extract(#{var.gen_cpp(symtab, 0, indent_spaces:)}, #{lsb.gen_cpp(symtab, 0, indent_spaces:)}, #{msb.gen_cpp(symtab, 0, indent_spaces:)} - #{lsb.gen_cpp(symtab, 0, indent_spaces:)} + 1})"
+        return "#{' '*indent}extract(#{var.gen_cpp(symtab, 0, indent_spaces:)}, #{lsb.gen_cpp(symtab, 0, indent_spaces:)}, #{msb.gen_cpp(symtab, 0, indent_spaces:)} - #{lsb.gen_cpp(symtab, 0, indent_spaces:)} + 1)"
       end
     end
   end
@@ -247,7 +331,7 @@ module Idl
 
   class TernaryOperatorExpressionAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' ' * indent}(#{condition.gen_cpp(symtab, 0, indent_spaces:)}) ? (#{true_expression.gen_cpp(symtab, 0, indent_spaces:)}) : (#{false_expression.gen_cpp(symtab, 0, indent_spaces:)})"
+      "#{' ' * indent}(#{condition.gen_cpp(symtab, 0, indent_spaces:)}) ? static_cast<#{type(symtab).to_cxx}>(#{true_expression.gen_cpp(symtab, 0, indent_spaces:)}) : static_cast<#{type(symtab).to_cxx}>(#{false_expression.gen_cpp(symtab, 0, indent_spaces:)})"
     end
   end
 
@@ -282,7 +366,7 @@ module Idl
       end
       cpp = <<~LOOP
         for (#{init.gen_cpp(symtab, 0, indent_spaces:)}; #{condition.gen_cpp(symtab, 0, indent_spaces:)}; #{update.gen_cpp(symtab, 0, indent_spaces:)}) {
-        #{lines.join("\n")}
+          #{lines.join("\n  ")}
         }
       LOOP
       symtab.pop()
@@ -334,7 +418,7 @@ module Idl
 
   class PcAssignmentAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' '*indent}__USB_SET_PC(#{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
+      "#{' '*indent}__UDB_SET_PC(#{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
     end
   end
 
@@ -360,11 +444,11 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       expression =
         if return_value_nodes.size == 1
-          "return #{return_value_nodes[0].gen_cpp(symtab, 0, indent_spaces:)}"
+          "#{' ' * indent}return #{return_value_nodes[0].gen_cpp(symtab, 0, indent_spaces:)};"
         else
           return_types = return_value_nodes.map { |rv| rv.type(symtab).to_cxx }
           return_values = return_value_nodes.map { |rv| rv.gen_cpp(symtab, 0, indent_spaces:) }
-          "return std::tuple<#{return_types.join(', ')}>{#{return_values.join(', ')}}"
+          "#{' ' * indent}return std::tuple<#{return_types.join(', ')}>{#{return_values.join(', ')}};"
         end
       "#{' ' * indent}#{expression}"
     end
@@ -393,9 +477,9 @@ module Idl
       targs_cpp = template_arg_nodes.map { |t| t.gen_cpp(symtab, 0, indent_spaces:) }
       args_cpp = arg_nodes.map { |a| a.gen_cpp(symtab, 0, indent_spaces:) }
       if targs_cpp.empty?
-        "__UDB__FUNC__OBJ #{name.gsub("?", "_Q_")}(#{args_cpp.join(', ')})"
+        "__UDB_FUNC_CALL #{name.gsub("?", "_Q_")}(#{args_cpp.join(', ')})"
       else
-        "__UDB__FUNC__OBJ #{name.gsub("?", "_Q_")}<#{targs_cpp.join(', ')}>(#{args_cpp.join(', ')})"
+        "__UDB_FUNC_CALL #{name.gsub("?", "_Q_")}<#{targs_cpp.join(', ')}>(#{args_cpp.join(', ')})"
       end
     end
   end
@@ -415,19 +499,25 @@ module Idl
   class CsrFieldReadExpressionAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if @idx.is_a?(AstNode)
-        "#{' '*indent}__UDB_CSR_BY_ADDR(#{@idx.gen_cpp(symtab, 0, indent_spaces:)}).#{@field_name}"
+        "#{' '*indent}__UDB_CSR_BY_ADDR(#{@idx.gen_cpp(symtab, 0, indent_spaces:)}).#{@field_name}()._hw_read()"
       else
-        "#{' '*indent}__UDB_CSR_BY_NAME(#{@idx}).#{@field_name}"
+        "#{' '*indent}__UDB_CSR_BY_NAME(#{@idx}).#{@field_name}()._hw_read()"
       end
     end
   end
 
   class CsrReadExpressionAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      if @idx.is_a?(AstNode)
-        "#{' '*indent}__UDB_CSR_BY_ADDR(#{@idx.gen_cpp(symtab, 0, indent_spaces:)}).hw_read()"
+      csr = csr_def(symtab)
+      if csr.nil?
+        # csr isn't known at runtime...
+        "#{' '*indent}__UDB_CSR_BY_ADDR(#{idx.gen_cpp(symtab, 0, indent_spaces:)})._hw_read()"
       else
-        "#{' '*indent}__UDB_CSR_BY_NAME(#{@idx}).hw_read()"
+        if symtab.cfg_arch.multi_xlen? && csr.format_changes_with_xlen?
+          "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.name})._hw_read(__UDB_XLEN)"
+        else
+          "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.name})._hw_read()"
+        end
       end
     end
   end

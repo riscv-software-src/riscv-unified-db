@@ -373,7 +373,7 @@ class ConfiguredArchitecture < Architecture
 
     if @config.partially_configured?
       @transitive_prohibited_extensions =
-        @config.transitive_prohibited_extensions.map do |e|
+        @config.prohibited_extensions.map do |e|
           ext = extension(e["name"])
           raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
 

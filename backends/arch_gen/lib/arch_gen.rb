@@ -719,11 +719,11 @@ class ArchGen
                 end
       requires = case v["requires"]
                  when nil
-                   AlwaysTrueSchemaCondition.new
+                   AlwaysTrueExtensionRequirementExpression.new
                  when Hash
-                   SchemaCondition.new(v["requires"])
+                   ExtensionRequirementExpression.new(v["requires"])
                  else
-                   SchemaCondition.new({"oneOf" => [v["requires"]]})
+                   ExtensionRequirementExpression.new({"oneOf" => [v["requires"]]})
                  end
       raise "Bad condition" if requires.nil?
 

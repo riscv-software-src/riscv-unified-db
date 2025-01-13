@@ -5,6 +5,7 @@
 
 #include "udb/bits.hpp"
 #include "udb/csr.hpp"
+#include "udb/cpp_exceptions.hpp"
 
 <%- csrs = cfg_arch.fully_configured? ? cfg_arch.implemented_csrs : cfg_arch.csrs -%>
 
@@ -17,6 +18,8 @@ namespace udb {
 
   // Field classes for <%= csr.name %>
 
+  #define __UDB_RUNTIME_PARAM(param_name) m_hart->m_params.param_name
+
   <%- fields.each do |field| -%>
   <%- next unless cfg_arch.possible_xlens.any? { |xlen| field.defined_in_base?(xlen) } -%>
   <%- field_base = field.defined_in_all_bases? ? cfg_arch.possible_xlens[0] : (field.defined_in_base32? ? 32 : 64) -%>
@@ -26,12 +29,14 @@ namespace udb {
     using ValueType = Bits<<%= max_width %>>;
 
     // constructor
-    <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %>()
+    <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %>(<%= name_of(:hart, cfg_arch) %>* hart)
+      : m_undefined(true),
+        m_hart(hart),
       <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
-      : m_location_32(<%= "#{field.location(32).end}, #{field.location(32).begin}" %>),
+        m_location_32(<%= "#{field.location(32).end}, #{field.location(32).begin}" %>),
         m_location_64(<%= "#{field.location(64).end}, #{field.location(64).begin}" %>)
       <%- else -%>
-      : m_location(<%= "#{field.location(field_base).end}, #{field.location(field_base).begin}" %>)
+        m_location(<%= "#{field.location(field_base).end}, #{field.location(field_base).begin}" %>)
       <%- end -%>
     {}
 
@@ -50,8 +55,20 @@ namespace udb {
     const CsrFieldLocation _location() const { return m_location; }
     <%- end -%>
 
-    uint64_t hw_read(const unsigned& xlen) const override { return hw_read(m_value, xlen); }
-    ValueType _hw_read() const { return m_value; }
+    void reset() override;
+
+    uint64_t hw_read(const unsigned& xlen) const override {
+      if (m_undefined) {
+        throw UndefinedValueError("<%= field.csr.name %>.<%= field.name %> has an undefined value");
+      }
+      return hw_read(m_value, xlen);
+    }
+    ValueType _hw_read() const {
+      if (m_undefined) {
+        throw UndefinedValueError("<%= field.csr.name %>.<%= field.name %> has an undefined value");
+      }
+      return m_value;
+    }
     uint64_t hw_read(const uint64_t& csr_value, const unsigned& xlen) const override {
       <%- if cfg_arch.multi_xlen? && field.defined_in_all_bases? -%>
       static constexpr uint64_t mask32 = 0x<%= (((1 << field.location(32).size) - 1) << field.location(32).begin).to_s(16) %>ull;
@@ -75,6 +92,9 @@ namespace udb {
     }
     <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
     uint64_t _sw_read(const unsigned& xlen) const {
+      if (m_undefined) {
+        throw UndefinedValueError("<%= field.csr.name %>.<%= field.name %> has an undefined value");
+      }
       <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
       if (xlen == 32) {
         constexpr static ValueType mask = 0x<%= ((1 << field.location(32).size) - 1).to_s(16) %>ull;
@@ -103,13 +123,18 @@ namespace udb {
       if (xlen == 32) {
         static constexpr ValueType mask = 0x<%= ((1 << field.location(32).size) - 1).to_s(16) %>ull;
         m_value = field_write_value & mask;
+        m_undefined = false;
       } else {
         static constexpr ValueType mask = 0x<%= ((1 << field.location(64).size) - 1).to_s(16) %>ull;
         m_value = field_write_value & mask;
+        m_undefined = false;
       }
     }
     <%- else -%>
-    void _hw_write(const ValueType &field_write_value) { m_value = field_write_value; }
+    void _hw_write(const ValueType &field_write_value) {
+      m_value = field_write_value;
+      m_undefined = false;
+    }
     <%- end -%>
 
     void sw_write(const uint64_t &field_write_value, const unsigned& xlen) override;
@@ -118,6 +143,8 @@ namespace udb {
     <%- else -%>
     void _sw_write(const ValueType &field_write_value);
     <%- end -%>
+
+    void makeUndefined() { m_undefined = true; }
 
     CsrFieldType type(const unsigned& xlen) const override;
 
@@ -129,6 +156,31 @@ namespace udb {
     const CsrFieldLocation m_location;
     <%- end -%>
     ValueType m_value;
+    bool m_undefined;
+    <%= name_of(:hart, cfg_arch) %>* m_hart;
+  };
+  <%- end -%>
+
+  // Csr view
+  template <unsigned XLEN>
+  class <%= name_of(:csr, cfg_arch, csr.name) %>View;
+
+  <%- cfg_arch.possible_xlens.each do |xlen| -%>
+  <%- next unless csr.defined_in_base?(xlen) -%>
+  template<>
+  class <%= name_of(:csr, cfg_arch, csr.name) %>View<<%= xlen %>> : public Bitfield<<%= csr.length(cfg_arch, xlen) %>>
+  {
+    public:
+    <%= name_of(:csr, cfg_arch, csr.name) %>View() = default;
+    <%= name_of(:csr, cfg_arch, csr.name) %>View(const Bits<<%= csr.length(cfg_arch, xlen) %>>& value)
+      : Bitfield<<%= csr.length(cfg_arch, xlen) %>>(value)
+      <%= csr.fields.select { |field| field.defined_in_base?(xlen) }.map { |field| ", #{field.name}(*this)" }.join("\n#{' ' * 8}") %>
+    {}
+
+    <%- csr.fields.each do |field| -%>
+    <%- next unless field.defined_in_base?(xlen) -%>
+    BitfieldMember<<%= csr.length(cfg_arch, xlen) %>, <%= field.location(xlen).begin %>, <%= field.location(xlen).size %>> <%= field.name %>;
+    <%- end -%>
   };
   <%- end -%>
 
@@ -140,6 +192,10 @@ namespace udb {
     <%- fields_for_xlen.each do |field| -%>
     friend class <%= name_of(:csr_field, cfg_arch, csr.name, field.name ) -%>;
     <%- end -%>
+
+    public:
+    template <unsigned XLEN>
+    using View = <%= name_of(:csr, cfg_arch, csr.name) %>View<XLEN>;
 
     public:
     // constructor
@@ -256,10 +312,14 @@ namespace udb {
     bool _sw_write(const Bits<<%= csr.max_length(cfg_arch) %>>& value);
     <%- end -%>
 
+    <%- fields_for_xlen.each do |field| %>
+    <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %>& <%= field.name %>() { return m_<%= field.name %>; }
+    <%- end -%>
+
   private:
     <%= name_of(:hart, cfg_arch) %>* m_parent;
     <%- fields_for_xlen.each do |field| %>
-    <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %>& m_<%= field.name %>;
+    <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %> m_<%= field.name %>;
     <%- end -%>
   };
   <%- end -%>

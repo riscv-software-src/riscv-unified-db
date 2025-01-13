@@ -29,7 +29,6 @@ namespace udb {
   template <unsigned start, unsigned size, unsigned bits_len>
   constexpr Bits<size> extract(Bits<bits_len> value)
   {
-    static_assert(size > 0, "Must extract at least one bit");
     static_assert((start + size) <= bits_len, "Cannot extract more bits than type contains");
 
     if constexpr (size == bits_len) {
@@ -44,8 +43,7 @@ namespace udb {
   template <typename T>
   T extract(T value, unsigned start, unsigned size)
   {
-    assert(start > 0);
-    assert((start + size) <= sizeof(T)*8);
+    udb_assert((start + size) <= sizeof(T)*8, "extraction out of bound");
 
     if (size == sizeof(T)*8) {
       return value;

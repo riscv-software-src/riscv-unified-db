@@ -1220,4 +1220,10 @@ namespace udb {
 
   template <unsigned N>
   using SignedBits = _Bits<N, true>;
+
+  // special values
+  static const Bits<65> UNDEFINED_LEGAL = 0x10000000000000000_b;
+  static const Bits<66> UNDEFINED_LEGAL_DETERMINISTIC = 0x20000000000000000_b;
+
+  using PossiblyUndefinedBits = Bits<66>;
 }

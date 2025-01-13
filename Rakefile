@@ -107,14 +107,41 @@ task :clean do
 end
 
 namespace :test do
-  task :insts do
-    puts "Checking instruction encodings..."
-    inst_paths = Dir.glob("#{$root}/arch/inst/**/*.yaml").map { |f| Pathname.new(f) }
-    inst_paths.each do |inst_path|
-      Validator.instance.validate_instruction(inst_path)
+  desc "Check that instruction encodings in the DB are consistent and do not conflict"
+  task :inst_encodings do
+    print "Checking for conflicts in instruction encodings.."
+
+    cfg_arch = cfg_arch_for("_")
+    insts = cfg_arch.instructions
+    failed = false
+    insts.each_with_index do |inst, idx|
+      [32, 64].each do |xlen|
+        next unless inst.defined_in_base?(xlen)
+
+        (idx...insts.size).each do |other_idx|
+          other_inst = insts[other_idx]
+          next unless other_inst.defined_in_base?(xlen)
+          next if other_inst == inst
+
+          if inst.bad_encoding_conflict?(xlen, other_inst)
+            warn "In RV#{xlen}: #{inst.name} (#{inst.encoding(xlen).format}) conflicts with #{other_inst.name} (#{other_inst.encoding(xlen).format})"
+            failed = true
+          end
+        end
+      end
     end
-    puts "All instruction encodings pass basic sanity tests"
+    raise "Encoding test failed" if failed
+
+    puts "done"
   end
+  # task :insts do
+  #   puts "Checking instruction encodings..."
+  #   inst_paths = Dir.glob("#{$root}/arch/inst/**/*.yaml").map { |f| Pathname.new(f) }
+  #   inst_paths.each do |inst_path|
+  #     Validator.instance.validate_instruction(inst_path)
+  #   end
+  #   puts "All instruction encodings pass basic sanity tests"
+  # end
   task schema: "gen:resolved_arch" do
     puts "Checking arch files against schema.."
     Architecture.new("#{$root}/resolved_arch").validate(show_progress: true)
@@ -293,6 +320,7 @@ namespace :test do
     Rake::Task["test:lib"].invoke
     Rake::Task["test:schema"].invoke
     Rake::Task["test:idl"].invoke
+    Rake::Task["test:inst_encodings"].invoke
   end
 
   desc <<~DESC

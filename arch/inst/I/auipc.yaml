@@ -15,12 +15,14 @@ encoding:
       left_shift: 12
     - name: rd
       location: 11-7
+hints:
+  - { $ref: inst/Zicfilp/lpad.yaml# }
 access:
   s: always
   u: always
   vs: always
   vu: always
-  data_independent_timing: true
+data_independent_timing: true
 operation(): X[rd] = $pc + imm;
 
 sail(): |

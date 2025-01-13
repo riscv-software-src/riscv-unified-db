@@ -331,6 +331,8 @@ module Idl
           "#{@csr.downcase.capitalize}Csr"
         elsif @kind == :string
           "std::string"
+        elsif @kind == :void
+          "void"
         else
           raise @kind.to_s
         end

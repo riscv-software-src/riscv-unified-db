@@ -390,23 +390,23 @@ class ExtensionVersion
     "#{name}@#{@version_spec.canonical}"
   end
 
-  # @return [SchemaCondition] Condition that must be met for this version to be allowed.
+  # @return [ExtensionRequirementExpression] Condition that must be met for this version to be allowed.
   #                           Transitively includes any requirements from an implied extension.
   def requirement_condition
     @requirement_condition ||=
       begin
         r = case @data["requires"]
             when nil
-              AlwaysTrueSchemaCondition.new
+              AlwaysTrueExtensionRequirementExpression.new
             when Hash
-              SchemaCondition.new(@data["requires"], @cfg_arch)
+              ExtensionRequirementExpression.new(@data["requires"], @cfg_arch)
             else
-              SchemaCondition.new({ "oneOf" => [@data["requires"]] }, @cfg_arch)
+              ExtensionRequirementExpression.new({ "oneOf" => [@data["requires"]] }, @cfg_arch)
             end
         if @data.key?("implies")
           rs = [r] + implications.map(&:requirement_condition)
           rs = rs.reject(&:empty?)
-          r = SchemaCondition.all_of(*rs.map(&:to_h), cfg_arch: @cfg_arch) unless rs.empty?
+          r = ExtensionRequirementExpression.all_of(*rs.map(&:to_h), cfg_arch: @cfg_arch) unless rs.empty?
         end
         r
       end
@@ -694,6 +694,10 @@ class ExtensionRequirement
     @note = note.freeze
     @req_id = req_id.freeze
     @presence = presence.freeze
+  end
+
+  def invert!
+    @requirements.each(&:invert!)
   end
 
   # @return [Array<ExtensionVersion>] The list of extension versions that satisfy this requirement

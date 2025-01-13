@@ -16,22 +16,27 @@ From: ubuntu:24.04
 
   apt-get install -y --no-install-recommends less
 
+  # python
   apt-get install -y --no-install-recommends python3
   apt-get install -y --no-install-recommends python3.12-venv python3-pip
 
+  # needed by Ruby and gems
   apt-get install -y --no-install-recommends build-essential
   apt-get install -y --no-install-recommends ruby ruby-dev
+  apt-get install -y --no-install-recommends libyaml-dev
   apt-get install -y --no-install-recommends bundler
+
+  # NodeJS
   apt-get install -y --no-install-recommends nodejs
   apt-get install -y --no-install-recommends npm
 
+  # asciidoc-diagram dependence (asciidoc is installed as a gem outside the container)
   apt-get install -y --no-install-recommends ditaa
-  apt-get install -y --no-install-recommends libyaml-dev
 
-  apt-get install -y --no-install-recommends libyaml-dev
-
+  # needed by cpp_hart build
   apt-get install -y --no-install-recommends cmake
   apt-get install -y --no-install-recommends g++
+  apt-get install -y --no-install-recommends libgmp-dev
 
   # cleanup
   apt-get clean autoclean

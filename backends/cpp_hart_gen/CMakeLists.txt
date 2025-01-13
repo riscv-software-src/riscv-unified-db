@@ -64,7 +64,8 @@ FetchContent_MakeAvailable(nlohmann_json_schema_validator)
 
 set(GENERATED_SRCS "")
 foreach(config ${CONFIG_LIST})
-  # list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/csrs.cxx")
+  list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/csrs.cxx")
+  list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/decode.cxx")
   # list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/params.cxx")
   # list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/hart.cxx")
 endforeach()
@@ -113,6 +114,12 @@ add_executable(test_version
 target_include_directories(test_version PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(test_version PRIVATE hart Catch2::Catch2WithMain)
 
+add_executable(test_decode
+  ${CMAKE_SOURCE_DIR}/test/test_decode.cpp
+)
+target_include_directories(test_decode PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(test_decode PRIVATE hart Catch2::Catch2WithMain)
+
 include(CTest)
 include(Catch)
-catch_discover_tests(test_bits test_util)
+catch_discover_tests(test_bits test_util test_csr test_version test_decode)

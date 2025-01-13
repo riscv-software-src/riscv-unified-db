@@ -24,8 +24,8 @@ class DecodeGen
     end
 
     def print(indent = 0)
-      $stdout.print (' ' * indent)
-      $stdout.print @type == ENDPOINT_TYPE ? 'ENDPOINT' : 'SELECT'
+      $stdout.print(" " * indent)
+      $stdout.print @type == ENDPOINT_TYPE ? "ENDPOINT" : "SELECT"
       @children.each do |child|
         child.print(indent + 2)
       end
@@ -113,7 +113,7 @@ class DecodeGen
     tree.insts.each do |inst|
       inst_format = inst.encoding(xlen).format
       if inst_format.reverse[cur_range].match?(/^[01]+$/)
-        puts "#{inst.name} has opcode bit(s) in #{cur_range} (#{inst_format.reverse[cur_range].reverse})"
+        # puts "#{inst.name} has opcode bit(s) in #{cur_range} (#{inst_format.reverse[cur_range].reverse})"
         # whole range is opcode bits
         if inst_format.gsub('0', '1') == tree.mask(cur_range).to_s(2).gsub('0', '-').rjust(inst.encoding(xlen).size, '-')
           done_insts[inst_format.reverse[cur_range]] = inst
@@ -122,12 +122,12 @@ class DecodeGen
           in_progress_groups[inst_format.reverse[cur_range]] << inst
         end
       else
-        puts "#{inst.name} has variable bit(s) in #{cur_range} (#{inst_format.reverse[cur_range].reverse} #{inst_format.reverse})"
+        # puts "#{inst.name} has variable bit(s) in #{cur_range} (#{inst_format.reverse[cur_range].reverse} #{inst_format.reverse})"
         variable_insts << inst
       end
     end
     if test
-      puts "test result for #{cur_range}: #{variable_insts.empty?} (#{tree.insts.map(&:name)})"
+      # puts "test result for #{cur_range}: #{variable_insts.empty?} (#{tree.insts.map(&:name)})"
       return variable_insts.empty?
     end
     if !variable_insts.empty? && (!done_insts.empty? || !in_progress_groups.empty?)
@@ -141,14 +141,14 @@ class DecodeGen
         next_range = (cur_range.last+1..cur_range.last+1)
         break unless tree.mask_overlap?(next_range)
       end
-      puts "testing range #{next_range} on #{tree.insts.map(&:name)}"
+      # puts "testing range #{next_range} on #{tree.insts.map(&:name)}"
       while construct_decode_tree(tree, xlen, next_range, test: true) == false
         loop do
           next_range = (next_range.last+1..next_range.last+1)
           break unless tree.mask_overlap?(next_range)
         end
       end
-      puts "found range that works (#{next_range}) on #{tree.insts.map(&:name)}...constructing"
+      # puts "found range that works (#{next_range}) on #{tree.insts.map(&:name)}...constructing"
       construct_decode_tree(tree, xlen, next_range)
       return
     end
@@ -156,36 +156,36 @@ class DecodeGen
     if done_insts.empty? && !in_progress_groups.empty?
       # everything is still in an opcode, so grow the range and try again
       next_range = (cur_range.first..cur_range.last+1)
-      puts "All insts have opcode at #{cur_range}, trying #{next_range}..."
+      # puts "All insts have opcode at #{cur_range}, trying #{next_range}..."
       if tree.opcode_bit?(cur_range.last+1) || (construct_decode_tree(tree, xlen, next_range, test: true) == false)
         # next bit goes too far, so this is the endpoint
         in_progress_groups.each do |val, insts|
           child = DecodeTreeNode.new(tree, insts, cur_range, val, DecodeTreeNode::SELECT_TYPE)
           tree << child
-          puts "starting child for selector #{cur_range}, starting search again at bit #{child.lowest_non_opcode_bit} for #{insts.map{ |i| i.name}}"
+          # puts "starting child for selector #{cur_range}, starting search again at bit #{child.lowest_non_opcode_bit} for #{insts.map{ |i| i.name}}"
           construct_decode_tree(child, xlen, (child.lowest_non_opcode_bit..child.lowest_non_opcode_bit))
         end
         done_insts.each do |val, inst|
-          puts "Found endpoint for #{inst.name}: #{tree.mask}"
+          # puts "Found endpoint for #{inst.name}: #{tree.mask}"
           child = DecodeTreeNode.new(tree, [inst], cur_range, val, DecodeTreeNode::ENDPOINT_TYPE)
           tree << child
         end
       else
         # go to the next range
-        puts "going to next range #{next_range}"
+        # puts "going to next range #{next_range}"
         construct_decode_tree(tree, xlen, next_range)
       end
     elsif !done_insts.empty?
       # must end
       done_insts.each do |val, inst|
-        puts "Completed #{inst.name} at #{cur_range} -- #{tree.mask(cur_range).to_s(2).ljust(32, '0')}"
+        # puts "Completed #{inst.name} at #{cur_range} -- #{tree.mask(cur_range).to_s(2).ljust(32, '0')}"
         child = DecodeTreeNode.new(tree, [inst], cur_range, val, DecodeTreeNode::ENDPOINT_TYPE)
         tree << child
       end
       in_progress_groups.each do |val, insts|
         child = DecodeTreeNode.new(tree, insts, cur_range, val, DecodeTreeNode::SELECT_TYPE)
         tree << child
-        puts "Starting child at #{child.lowest_non_opcode_bit} for #{insts.map{|i| i.name}}"
+        # puts "Starting child at #{child.lowest_non_opcode_bit} for #{insts.map{|i| i.name}}"
         construct_decode_tree(child, xlen, (child.lowest_non_opcode_bit..child.lowest_non_opcode_bit))
       end
     else
@@ -193,7 +193,7 @@ class DecodeGen
 
       raise "unexpected: variable when range size > 1 #{cur_range} #{cur_range.size} #{variable_insts.map{ |i| i.name}}" unless cur_range.size == 1
 
-      puts "Moving to next variable at #{tree.lowest_non_opcode_bit(cur_range.last+1)}"
+      # puts "Moving to next variable at #{tree.lowest_non_opcode_bit(cur_range.last+1)}"
       construct_decode_tree(tree, xlen, (tree.lowest_non_opcode_bit(cur_range.last+1)..tree.lowest_non_opcode_bit(cur_range.last+1)))
     end
   end
@@ -225,18 +225,31 @@ class DecodeGen
     efs.join(" && ")
   end
 
+  # @return [Boolean] whether or not the instruction in node is a base of HINTs
+  def has_hints?(node, inst_list, xlen)
+    return false unless node.type == DecodeTreeNode::ENDPOINT_TYPE
+
+    return false unless node.insts.size == 1
+
+    !node.insts[0].hints.select { |hint_inst| hint_inst.defined_in_base?(xlen) && inst_list.include?(hint_inst) }.empty?
+  end
+
+  # @return [Boolean] whether or not the instruction in node has an encoding that is reused in a conflicting extension
+  def has_reuse?(node, inst_list, xlen)
+    return false unless node.type == DecodeTreeNode::ENDPOINT_TYPE
+
+    return false unless node.insts.size == 1
+
+    !node.insts[0].conflicting_instructions(xlen).select { |hint_inst| hint_inst.defined_in_base?(xlen) && inst_list.include?(hint_inst) }.empty?
+  end
+
   def needs_long_form?(node, inst_list, xlen)
     node.children.any? do |child|
-      child.type == DecodeTreeNode::ENDPOINT_TYPE \
-        && child.insts[0].encoding(xlen).decode_variables.any? { |dv| !dv.excludes.empty?  }
-    end \
-      || node.children.any? do |child|
-        child.type == DecodeTreeNode::ENDPOINT_TYPE \
-          && inst_list.any? do |other_inst|
-            (other_inst != child.insts[0]) \
-              && child.insts[0].encoding(xlen).conflicts?(other_inst.encoding(xlen))
-          end
-      end
+      (child.type == DecodeTreeNode::ENDPOINT_TYPE \
+        && child.insts[0].encoding(xlen).decode_variables.any? { |dv| !dv.excludes.empty? }) \
+      || has_hints?(child, inst_list, xlen) \
+      || has_reuse?(child, inst_list, xlen)
+    end
   end
   # @return [String] C++ decoder switch
   def decode_c(encoding_var_name, xlen, inst_list, node = nil, indent = 0)
@@ -245,7 +258,7 @@ class DecodeGen
 
     tenv = CppHartGen::TemplateEnv.new(@cfg_arch)
 
-    code = ''
+    code = ""
     if node.type == DecodeTreeNode::SELECT_TYPE
       if needs_long_form?(node, inst_list, xlen)
         # there is at least one child with a not statement or a conflict, can't use a simple switch
@@ -254,10 +267,11 @@ class DecodeGen
           code += comment_tree(child, indent + 2)
           has_not = child.type == DecodeTreeNode::ENDPOINT_TYPE \
             && child.insts[0].encoding(xlen).decode_variables.any? { |dv| !dv.excludes.empty? }
-          has_conflict = child.type == DecodeTreeNode::ENDPOINT_TYPE \
-            && inst_list.any? { |other_inst| child.insts[0].encoding(xlen).conflicts?(other_inst.encoding(xlen)) }
+          has_hints = has_hints?(child, inst_list, xlen)
+          has_reuse = has_reuse?(child, inst_list, xlen)
           conds = []
           if has_not
+            # some field(s) in the instruction have prohibited values ('not:' in the yaml)
             child.insts[0].encoding(xlen).decode_variables.each do |dv|
               next if dv.excludes.empty?
 
@@ -265,10 +279,26 @@ class DecodeGen
               conds.concat(dv.excludes.map { |val| "(#{dv_val} != #{val})" })
             end
           end
-          # if has_conflict
-          #   # conflicts are resolved by extension
-          #   conds << child.insts[0].defined_by_condition.to_cxx("(implements_ext(ExtensionName::))")
-          # end
+          if has_hints
+            impl_hints = child.insts[0].hints.select { |hint_inst| hint_inst.defined_in_base?(xlen) && inst_list.include?(hint_inst) }
+            impl_hints.each do |hint_inst|
+              mask = hint_inst.encoding(xlen).format.gsub("0", "1").gsub("-", "0")
+              value = hint_inst.encoding(xlen).format.gsub("-", "0")
+              conds << ("((#{encoding_var_name} & 0b#{mask}ull) != 0b#{value}ull)")
+            end
+          end
+          if has_reuse
+            conflicts = child.insts[0].conflicting_instructions(xlen).select { |hint_inst| hint_inst.defined_in_base?(xlen) && inst_list.include?(hint_inst) }
+            conflicts.each do |conf_inst|
+              conds << conf_inst.defined_by_condition.to_cxx do |ext_name, ext_version_req|
+                if ext_version_req.nil?
+                  "implemented_Q_(ExtensionName::#{ext_name})"
+                else
+                  "implemented_Q_(ExtensionName::#{ext_name}, \"#{ext_version_req}\")"
+                end
+              end
+            end
+          end
           if !conds.empty?
             code += "#{' '*indent}#{els}if ((extract<#{child.range.first}, #{child.range.size}>(#{encoding_var_name}).get() == 0b#{child.value.reverse}) && #{conds.join(' && ')}) {\n"
           else
@@ -306,7 +336,7 @@ class DecodeGen
           && child.insts[0].encoding(xlen).format == other_child.insts[0].encoding(xlen).format
         end
         unless matches.empty?
-          puts "#{child.insts[0].name} identical to #{ matches.map { |n| n.insts[0].name }.join(', ')}"
+          # puts "#{child.insts[0].name} identical to #{ matches.map { |n| n.insts[0].name }.join(', ')}"
         end
       end
       annotate_identical(child, xlen) if child.type == DecodeTreeNode::SELECT_TYPE
@@ -320,6 +350,6 @@ class DecodeGen
     root = DecodeTreeNode.new(nil, instructions, nil, nil, DecodeTreeNode::SELECT_TYPE)
     construct_decode_tree(root, xlen, 0..0)
     annotate_identical(root, xlen)
-    decode_c('m_encoding', xlen, instructions, root, indent)
+    decode_c('encoding', xlen, instructions, root, indent)
   end
 end

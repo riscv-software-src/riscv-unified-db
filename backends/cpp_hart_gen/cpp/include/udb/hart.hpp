@@ -170,6 +170,7 @@ namespace udb {
 
     virtual void printState(FILE* out = stdout) const = 0;
 
+    virtual bool implemented_Q_(const ExtensionName& ext) = 0;
     virtual bool implemented_Q_(const ExtensionName& ext, const VersionRequirement& req) = 0;
 
     protected:

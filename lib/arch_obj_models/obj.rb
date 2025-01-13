@@ -243,16 +243,16 @@ class DatabaseObjectect
   # def defined_by
   #   raise "ERROR: definedBy is nul for #{name}" if @data["definedBy"].nil?
 
-  #   SchemaCondition.new(@data["definedBy"], @cfg_arch).satisfying_ext_versions
+  #   ExtensionRequirementExpression.new(@data["definedBy"], @cfg_arch).satisfying_ext_versions
   # end
 
-  # @return [SchemaCondition] Extension(s) that define the instruction. If *any* requirement is met, the instruction is defined.
+  # @return [ExtensionRequirementExpression] Extension(s) that define the instruction. If *any* requirement is met, the instruction is defined.
   def defined_by_condition
     @defined_by_condition ||=
       begin
         raise "ERROR: definedBy is nul for #{name}" if @data["definedBy"].nil?
 
-        SchemaCondition.new(@data["definedBy"], @cfg_arch)
+        ExtensionRequirementExpression.new(@data["definedBy"], @cfg_arch)
       end
   end
 
@@ -374,7 +374,7 @@ class Person
   end
 end
 
-# represents a JSON Schema compoisition, e.g.:
+# represents a JSON Schema composition of extension requirements, e.g.:
 #
 # anyOf:
 #   - oneOf:
@@ -382,8 +382,8 @@ end
 #     - B
 #   - C
 #
-class SchemaCondition
-  # @param composition_hash [Hash] A possibly recursive hash of "allOf", "anyOf", "oneOf"
+class ExtensionRequirementExpression
+  # @param composition_hash [Hash] A possibly recursive hash of "allOf", "anyOf", "oneOf", "not"
   def initialize(composition_hash, cfg_arch)
     raise ArgumentError, "composition_hash is nil" if composition_hash.nil?
 
@@ -399,28 +399,28 @@ class SchemaCondition
 
   def empty? = false
 
-  VERSION_REQ_REGEX = /^((>=)|(>)|(~>)|(<)|(<=)|(=))?\s*[0-9]+(\.[0-9]+(\.[0-9]+(-[a-fA-F0-9]+)?)?)?$/
   def is_a_version_requirement(ver)
     case ver
     when String
-      ver =~ VERSION_REQ_REGEX
+      ver =~ RequirementSpec::REQUIREMENT_REGEX
     when Array
-      ver.all? { |v| v =~ VERSION_REQ_REGEX }
+      ver.all? { |v| v =~ RequirementSpec::REQUIREMENT_REGEX }
     else
       false
     end
   end
+  private :is_a_version_requirement
 
   def to_asciidoc(cond = @hsh, indent = 0)
     case cond
     when String
-      "#{'*' * indent}* #{cond}, version >= 0"
+      "#{'*' * indent}* #{cond}, version >= #{@cfg_arch.extension(cond).min_version}"
     when Hash
       if cond.key?("name")
         if cond.key?("version")
           "#{'*' * indent}* #{cond['name']}, version #{cond['version']}\n"
         else
-          "#{'*' * indent}* #{cond['name']}, version >= 0\n"
+          "#{'*' * indent}* #{cond['name']}, version >= #{@cfg_arch.extension(cond['name']).min_version}\n"
         end
       else
         "#{'*' * indent}* #{cond.keys[0]}:\n" + to_asciidoc(cond[cond.keys[0]], indent + 2)
@@ -445,6 +445,11 @@ class SchemaCondition
 
           return false unless is_a_version_requirement(hsh["version"])
         end
+
+      elsif hsh.key?("not")
+        return false unless hsh.size == 1
+
+        return is_a_condition?(hsh["not"])
 
       else
         return false unless hsh.size == 1
@@ -487,14 +492,14 @@ class SchemaCondition
 
   # combine all conds into one using AND
   def self.all_of(*conds, cfg_arch:)
-    cond = SchemaCondition.new({
+    cond = ExtensionRequirementExpression.new({
       "allOf" => conds
     }, cfg_arch)
 
-    SchemaCondition.new(cond.minimize, cfg_arch)
+    ExtensionRequirementExpression.new(cond.minimize, cfg_arch)
   end
 
-  # @return [Object] Schema for this condition, with basic logic minimization
+  # @return [Object] Schema for this expression, with basic logic minimization
   def minimize(hsh = @hsh)
     case hsh
     when Hash
@@ -511,6 +516,9 @@ class SchemaCondition
         elsif hsh.key?("oneOf")
           min_ary = hsh["oneOf"].map { |element| minimize(element) }
           key = "oneOf"
+        elsif hsh.key?("not")
+          min_ary = hsh.dup
+          key = "not"
         end
         min_ary = min_ary.uniq!
         if min_ary.size == 1
@@ -551,6 +559,9 @@ class SchemaCondition
         when "oneOf"
           rb_str = hsh[key].map { |element| to_rb_helper(element) }.join(', ')
           "([#{rb_str}].count(true) == 1)"
+        when "not"
+          rb_str = to_rb_helper(hsh[key])
+          "(!#{rb_str})"
         else
           raise "Unexpected"
           "(yield #{hsh})"
@@ -569,6 +580,187 @@ class SchemaCondition
   # @return [Boolean] If the condition is met
   def to_rb
     to_rb_helper(@hsh)
+  end
+
+  class LogicNode
+    attr_accessor :type
+
+    TYPES = [ :term, :not, :and, :or ]
+
+    def initialize(type, children, term_idx: nil)
+      raise ArgumentError, "Bad type" unless TYPES.include?(type)
+      raise ArgumentError, "Children must be an array" unless children.is_a?(Array)
+
+      raise ArgumentError, "Children must be singular" if [:term, :not].include?(type) && children.size != 1
+
+      if type == :term
+        raise ArgumentError, "Term must be an ExtensionRequirement" unless children[0].is_a?(ExtensionRequirement)
+      else
+        raise ArgumentError, "All Children must be LogicNodes" unless children.all? { |child| child.is_a?(LogicNode) }
+      end
+
+      @type = type
+      @children = children
+
+      raise ArgumentError, "Need term_idx" if term_idx.nil? && type == :term
+      raise ArgumentError, "term_idx isn't an int" if !term_idx.is_a?(Integer) && type == :term
+
+      @term_idx = term_idx
+    end
+
+    # @return [Array<ExtensionRequirements>] The terms (leafs) of this tree
+    def terms
+      if @type == :term
+        [@children[0]]
+      else
+        @children.map(&:terms).flatten.uniq
+      end
+    end
+
+    def eval(term_values)
+      if @type == :term
+        ext_ret = @children[0]
+        term_value = term_values.find { |term_value| term_value.name == ext_ret.name }
+        @children[0].satisfied_by?(term_value)
+      elsif @type == :not
+        !@children[0].eval(term_values)
+      elsif @type == :and
+        @children.all? { |child| child.eval(term_values) }
+      elsif @type == :or
+        @children.any? { |child| child.eval(term_values) }
+      end
+    end
+  end
+
+  def to_logic_tree(hsh, term_idx: [0])
+    if hsh.is_a?(Hash)
+      if hsh.key?("name")
+        if hsh.key?("version")
+          if hsh["version"].is_a?(String)
+            n = LogicNode.new(:term, [ExtensionRequirement.new(hsh["name"], hsh["version"], cfg_arch: @cfg_arch)], term_idx: term_idx[0])
+            term_idx[0] += 1
+            n
+          elsif hsh["version"].is_a?(Array)
+            n = LogicNode.new(:term, [ExtensionRequirement.new(hsh["name"], hsh["version"].map { |v| "'#{v}'" }.join(', '), cfg_arch: @cfg_arch)], term_idx: term_idx[0])
+            term_idx[0] += 1
+            n
+          else
+            raise "unexpected"
+          end
+        else
+          n = LogicNode.new(:term, [ExtensionRequirement.new(hsh["name"], cfg_arch: @cfg_arch)], term_idx: term_idx[0])
+          term_idx[0] += 1
+          n
+        end
+      else
+        key = hsh.keys[0]
+
+        case key
+        when "allOf"
+          raise "unexpected" unless hsh[key].is_a?(Array) && hsh[key].size > 1
+
+          root = LogicNode.new(:and, [to_logic_tree(hsh[key][0], term_idx:), to_logic_tree(hsh[key][1], term_idx:)])
+          (1...hsh[key].size).each do |i|
+            root = LogicNode.new(:and, [root, to_logic_tree(hsh[key][1], term_idx:)])
+          end
+          root
+        when "anyOf"
+          raise "unexpected" unless hsh[key].is_a?(Array) && hsh[key].size > 1
+
+          root = LogicNode.new(:or, [to_logic_tree(hsh[key][0], term_idx:), to_logic_tree(hsh[key][1], term_idx:)])
+          (1...hsh[key].size).each do |i|
+            root = LogicNode.new(:or, [root, to_logic_tree(hsh[key][1], term_idx:)])
+          end
+          root
+        when "oneOf"
+          raise "TODO"
+        when "not"
+          LogicNode.new(:not, [to_logic_tree(hsh[key], term_idx:)])
+        else
+          raise "Unexpected"
+        end
+      end
+    else
+      n = LogicNode.new(:term, [ExtensionRequirement.new(hsh, cfg_arch: @cfg_arch)], term_idx: term_idx[0])
+      term_idx[0] += 1
+      n
+    end
+  end
+
+  # convert to Negation Normal Form
+  def nnf(logic_tree)
+    if logic_tree.type == :not
+      # distribute
+      if logic_tree.children.size == 1 && logic_tree.children[0].type == :term
+        logic_tree
+      else
+        # distribute NOT
+        child = logic_tree.children[0]
+
+        if child.type == :and
+          LogicNode.new(:or, child.children.map { |child2| LogicNode.new(:not, [child2]) })
+        elsif child.type == :or
+          LogicNode.new(:and, child.children.map { |child2| LogicNode.new(:not, [child2]) })
+        elsif child.type == :not
+          child
+        else
+          raise "?"
+        end
+      end
+    else
+      LogicNode.new(logic_tree.type, logic_tree.children.map { |child| nnf(child) })
+    end
+  end
+
+  # convert to Disjunctive Normal Form
+  def dnf(logic_tree)
+    logic_tree = nnf(logic_tree)
+    if logic_tree.type == :and
+      # distribute
+      if logic_tree.children.all? { |child| child.type == :term }
+        logic_tree
+      else
+        LogicTree.new(:or, logic_tree.children.map { |child| LogicTree.new(:and, dnf(child)) })
+      end
+    else
+      logic_tree
+    end
+  end
+
+  def combos_for(extension_versions)
+    ncombos = extension_versions.reduce(1) { |prod, vers| prod * vers.size }
+    combos = []
+    ncombos.times do |i|
+      combos << []
+      extension_versions.size.times do |j|
+        m = extension_versions[j].size
+        d = j.zero? ? 1 : extension_versions[j..0].reduce(1) { |prod, vers| prod * vers.size }
+
+        combos.last << extension_versions[j][(i / d) % m]
+      end
+    end
+    combos
+  end
+
+  # @param other [ExtensionRequirementExpression] Another condition
+  # @return [Boolean] if it's possible for both to be simultaneously true
+  def compatible?(other)
+    raise ArgumentError, "Expecting a ExtensionRequirementExpression" unless other.is_a?(ExtensionRequirementExpression)
+
+    tree1 = to_logic_tree(@hsh)
+    tree2 = to_logic_tree(other.to_h)
+
+    extensions = (tree1.terms + tree2.terms).map(&:extension).uniq
+
+    extension_versions = extensions.map(&:versions)
+
+    combos = combos_for(extension_versions)
+    combos.each do |combo|
+      return true if tree1.eval(combo) && tree2.eval(combo)
+    end
+
+    # there is no combination in which both self and other can be true
+    false
   end
 
   # @example See if a string satisfies
@@ -607,12 +799,14 @@ class SchemaCondition
   end
 end
 
-class AlwaysTrueSchemaCondition
+class AlwaysTrueExtensionRequirementExpression
   def to_rb = "true"
 
   def satisfied_by? = true
 
   def empty? = true
+
+  def compatible?(other) = true
 
   def to_h = {}
   def minimize = {}

@@ -296,6 +296,16 @@ module Idl
       @scopes.last[name] = var
     end
 
+    # delete a new symbol at the outermost scopea
+    #
+    # @param name [#to_s] Symbol name
+    # @param var [Object] Symbol object (usually a Var or a Type)
+    def del(name)
+      raise "No symbol #{name} at outer scope" unless @scopes.last.key?(name)
+
+      @scopes.last.delete(name)
+    end
+
     # add to the scope above the tail, and make sure name is unique at that scope
     def add_above!(name, var)
       raise "There is only one scope" if @scopes.size <= 1
