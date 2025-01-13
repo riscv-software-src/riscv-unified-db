@@ -21,7 +21,7 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
 
   profile_pathnames = profile_names.map {|profile_name| "#{$root}/arch/profile/#{profile_name}.yaml" }
 
-  file "#{$root}/gen/profile/adoc/#{release_name}.adoc" => [
+  file "#{$root}/gen/profile/adoc/#{release_name}ProfileRelease.adoc" => [
     __FILE__,
     "#{$root}/arch/profile_class/#{class_name}.yaml",
     "#{$root}/arch/profile_release/#{release_name}.yaml",
