@@ -8,7 +8,10 @@ base: 32
 length: 32
 description: |
   Condition Code Register with condition codes, plus a co-processor flags (_e.g._, to support floating point)
-definedBy: Xqci
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqciint
 fields:
   CPFLAGS:
     location: 31-16
