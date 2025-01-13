@@ -176,7 +176,7 @@ class Architecture
     params.each do |param|
       @params_hash[param.name] = param
     end
-    @param_hash
+    @params_hash
   end
 
   # @return [ExtensionParameter] Parameter named +name+

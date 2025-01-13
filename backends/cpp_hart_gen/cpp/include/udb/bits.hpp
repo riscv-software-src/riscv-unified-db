@@ -980,6 +980,20 @@ namespace udb
     }
   }
 
+  // signed bits
+  template <char... Str>
+  constexpr _Bits<BitsStr<Str..., '\0'>::width + 1, false> operator""_sb()
+  {
+    if constexpr ((BitsStr<Str..., '\0'>::width + 1) <= _Bits<(BitsStr<Str..., '\0'>::width + 1), false>::MaxNativePrecision)
+    {
+      return BitsStr<Str..., '\0'>::val;
+    }
+    else
+    {
+      return mpz_class{BitsStr<Str..., '\0'>::str};
+    }
+  }
+
   static_assert((0x0_b).Width == 1);
   static_assert((0x1_b).Width == 1);
   static_assert((0x2_b).Width == 2);

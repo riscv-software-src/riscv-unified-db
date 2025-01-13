@@ -97,6 +97,10 @@ module CppHartGen
         raise "Missing Instruction name" unless extras.size == 1
 
         "#{config_name.camelize}_#{extras[0].gsub(".", "_").capitalize}_Inst"
+      when :struct
+        raise "Missing struct name" unless extras.size == 1
+
+        "#{config_name.camelize}_#{extras[0]}_Struct"
       else
         raise "TODO: #{kind}"
       end

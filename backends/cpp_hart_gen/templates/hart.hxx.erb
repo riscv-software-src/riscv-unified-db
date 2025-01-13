@@ -7,12 +7,14 @@
 #include "udb/hart.hpp"
 #include "udb/cfgs/<%= cfg_arch.name %>/params.hxx"
 #include "udb/cfgs/<%= cfg_arch.name %>/csr_container.hxx"
+#include "udb/cfgs/<%= cfg_arch.name %>/structs.hxx"
 #include "udb/enum.hxx"
 #include "udb/bitfield.hxx"
 
 <%- hart_name = name_of(:hart, cfg_arch) -%>
 
 namespace udb {
+  class InstBase;
   class <%= hart_name -%> : public HartBase {
     <%- csrs = cfg_arch.fully_configured? ? cfg_arch.implemented_csrs : cfg_arch.csrs -%>
     <%- csrs.each do |csr| -%>
@@ -34,16 +36,6 @@ namespace udb {
       <%- else -%>
       static <%= global.type(cfg_arch.symtab).to_cxx %> <%= global.id %>;
       <%- end -%>
-      <%- end -%>
-
-      <%- cfg_arch.global_ast.structs.each do |struct| -%>
-      #define __UDB_RUNTIME_PARAM(param_name) 64
-      struct <%= struct.name %> {
-        <%- struct.member_types.each_index do |idx| -%>
-        <%= struct.member_types[idx].gen_cpp(cfg_arch.symtab, 0) %> <%= struct.member_names[idx] %>;
-        <%- end -%>
-      };
-      #undef __UDB_RUNTIME_PARAM
       <%- end -%>
 
       #include "udb/cfgs/<%= cfg_arch.name %>/func_prototypes.hxx"
@@ -116,6 +108,7 @@ namespace udb {
     private:
       XReg m_pc;
       XReg m_next_pc;
+      InstBase* m_cur_inst;
       std::array<XRegister<MXLEN>, 32> m_xregs;
 
       <%= name_of(:params, cfg_arch) %> m_params;

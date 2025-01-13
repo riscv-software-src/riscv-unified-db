@@ -27,7 +27,7 @@ namespace udb {
 
   // extract bits from a Bits type
   template <unsigned start, unsigned size, unsigned bits_len>
-  constexpr Bits<size> extract(Bits<bits_len> value)
+  constexpr Bits<size> extract(const Bits<bits_len>& value)
   {
     static_assert((start + size) <= bits_len, "Cannot extract more bits than type contains");
 
@@ -39,6 +39,19 @@ namespace udb {
     }
   }
 
+  // extract from a bitfield member
+  template <unsigned start, unsigned size, unsigned BitfieldParentSize, unsigned BitfieldMemberStart, unsigned BitfieldMemberSize>
+  constexpr Bits<size> extract(const BitfieldMember<BitfieldParentSize, BitfieldMemberStart, BitfieldMemberSize>& value)
+  {
+    static_assert((start + size) <= (BitfieldMemberSize), "Cannot extract more bits than type contains");
+
+    if constexpr (size == BitfieldMemberSize) {
+      return value;
+    } else {
+      constexpr Bits<BitfieldMemberSize> mask = (static_cast<Bits<BitfieldMemberSize>>(1).template const_sll<size>()) - 1;
+      return (value >> start) & mask;
+    }
+  }
   // extract bits, where the extraction is not known at compile time
   template <typename T>
   T extract(T value, unsigned start, unsigned size)

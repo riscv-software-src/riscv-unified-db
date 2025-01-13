@@ -83,7 +83,12 @@ module Idl
 
   class UserTypeNameAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' ' * indent}#{text_value}"
+      type = symtab.get(text_value)
+      if type.kind == :struct
+        "#{' ' * indent}__UDB_STRUCT(#{text_value})"
+      else
+        "#{' ' * indent}#{text_value}"
+      end
     end
   end
 
@@ -290,6 +295,12 @@ module Idl
         else
           "#{' ' * indent}__UDB_STATIC_PARAM(#{text_value}) /* #{var.value} */"
         end
+      elsif !var.nil? && var.type.global?
+        if var.type.const?
+          "#{' ' * indent}__UDB_CONST_GLOBAL(#{text_value})"
+        else
+          "#{' ' * indent}__UDB_MUTABLE_GLOBAL(#{text_value})"
+        end
       else
         "#{' ' * indent}#{text_value}"
       end
@@ -343,11 +354,19 @@ module Idl
           result = "#{' '*indent}Bits<#{bits_expression.gen_cpp(symtab, 0, indent_spaces:)}>"
         end
         value_else(value_result) do
-          result = "#{' '*indent}Bits<BitsInfinitePrecision>"
+          # see if this is a param with a bound
+          if bits_expression.is_a?(IdAst)
+            sym = symtab.get(bits_expression.text_value)
+            if !sym.nil? && sym.param?
+              param = symtab.cfg_arch.param(bits_expression.text_value)
+              result = "#{' '*indent}Bits<#{param.schema.max_val}>" if param.schema.max_val_known?
+            end
+          end
+          result = "#{' '*indent}Bits<BitsInfinitePrecision>" if result == ""
         end
         result
       elsif @type_name == "XReg"
-        "#{' '*indent}Bits<#{symtab.cfg_arch.possible_xlens.max()}>"
+        "#{' '*indent}Bits<#{symtab.cfg_arch.possible_xlens.max}>"
       elsif @type_name == "Boolean"
         "#{' '*indent}bool"
       elsif @type_name == "U32"
@@ -507,20 +526,26 @@ module Idl
 
   class FunctionCallExpressionAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      targs_cpp = template_arg_nodes.map { |t| t.gen_cpp(symtab, 0, indent_spaces:) }
-      args_cpp = arg_nodes.map { |a| a.gen_cpp(symtab, 0, indent_spaces:) }
-      ftype = func_type(symtab)
-      if ftype.func_def_ast.constexpr?(symtab)
-        if targs_cpp.empty?
-          "__UDB_CONSTEXPR_FUNC_CALL #{name.gsub("?", "_Q_")}(#{args_cpp.join(', ')})"
-        else
-          "__UDB_CONSTEXPR_FUNC_CALL #{name.gsub("?", "_Q_")}<#{targs_cpp.join(', ')}>(#{args_cpp.join(', ')})"
-        end
+      if name == "ary_includes?"
+        # special case
+        args_cpp = arg_nodes.map { |a| a.gen_cpp(symtab, 0, indent_spaces:) }
+        "(std::find(#{args_cpp[0]}.begin(), #{args_cpp[0]}.end(), #{args_cpp[1]}) != #{args_cpp[0]}.end())"
       else
-        if targs_cpp.empty?
-          "__UDB_FUNC_CALL #{name.gsub("?", "_Q_")}(#{args_cpp.join(', ')})"
+        targs_cpp = template_arg_nodes.map { |t| t.gen_cpp(symtab, 0, indent_spaces:) }
+        args_cpp = arg_nodes.map { |a| a.gen_cpp(symtab, 0, indent_spaces:) }
+        ftype = func_type(symtab)
+        if ftype.func_def_ast.constexpr?(symtab)
+          if targs_cpp.empty?
+            "__UDB_CONSTEXPR_FUNC_CALL #{name.gsub("?", "_Q_")}(#{args_cpp.join(', ')})"
+          else
+            "__UDB_CONSTEXPR_FUNC_CALL #{name.gsub("?", "_Q_")}<#{targs_cpp.join(', ')}>(#{args_cpp.join(', ')})"
+          end
         else
-          "__UDB_FUNC_CALL #{name.gsub("?", "_Q_")}<#{targs_cpp.join(', ')}>(#{args_cpp.join(', ')})"
+          if targs_cpp.empty?
+            "__UDB_FUNC_CALL #{name.gsub("?", "_Q_")}(#{args_cpp.join(', ')})"
+          else
+            "__UDB_FUNC_CALL #{name.gsub("?", "_Q_")}<#{targs_cpp.join(', ')}>(#{args_cpp.join(', ')})"
+          end
         end
       end
     end

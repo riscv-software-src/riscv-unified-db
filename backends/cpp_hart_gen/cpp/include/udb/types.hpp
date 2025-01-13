@@ -109,7 +109,10 @@ namespace udb {
     static constexpr Bits<Size> MaximumValue = (Bits<1>(1).template sll<Size>()) - 1;
     static constexpr Bits<ParentSize> Mask = MaximumValue.template sll<Start>();
 
-    operator Bits<Size>() const;
+    template <unsigned N>
+      requires (N >= Size)
+    operator Bits<N>() const;
+
     operator PossiblyUndefinedBits() const;
 
     bool operator!() const {
@@ -130,6 +133,12 @@ namespace udb {
 
     template <unsigned N, bool Signed>
     bool operator>=(const _Bits<N, Signed>& other) { return static_cast<Bits<Size>>(*this) >= other; }
+
+    template <unsigned N, bool Signed>
+    bool operator<=(const _Bits<N, Signed>& other) { return static_cast<Bits<Size>>(*this) <= other; }
+
+    template <unsigned OtherParentSize, unsigned OtherStart, unsigned OtherSize>
+    bool operator<(const BitfieldMember<OtherParentSize, OtherStart, OtherSize>& other) { return static_cast<Bits<Size>>(*this) > static_cast<Bits<OtherSize>>(*this); }
 
     template <unsigned N, bool Signed>
     Bits<Size> operator&(const _Bits<N, Signed>& other) { return static_cast<Bits<Size>>(*this) & other; }
@@ -168,7 +177,9 @@ namespace udb {
   static_assert(std::is_copy_constructible_v<BitfieldMember<64, 0, 1>>);
 
   template <unsigned ParentSize, unsigned Start, unsigned Size>
-  BitfieldMember<ParentSize, Start, Size>::operator Bits<Size>() const
+  template <unsigned N>
+    requires (N >= Size)
+  BitfieldMember<ParentSize, Start, Size>::template operator Bits<N>() const
   {
     return (static_cast<Bits<ParentSize>>(m_parent) >> Start) & MaximumValue;
   }
@@ -186,12 +197,4 @@ namespace udb {
     m_parent = (static_cast<Bits<ParentSize>>(m_parent) & ~Mask) | ((value.template sll<Size>()) & Mask);
     return *this;
   }
-
-  // struct to define types based on XLEN
-  template <unsigned XLEN>
-  struct BaseIsa {
-    static_assert(XLEN == 32 || XLEN == 64);
-
-    using XReg = Bits<XLEN>; //std::conditional_t<(XLEN == 64), uint64_t, uint32_t>;
-  };
 }

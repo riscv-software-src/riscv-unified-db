@@ -178,6 +178,15 @@ namespace udb {
     virtual bool implemented_Q_(const ExtensionName& ext) = 0;
     virtual bool implemented_Q_(const ExtensionName& ext, const VersionRequirement& req) = 0;
 
+    template <unsigned  M>
+    Bits<64> read_hpm_counter(const Bits<M>& hpm_num) { return 0; }
+
+    Bits<64> read_mcycle() { return 0; }
+
+    Bits<64> sw_write_mcycle(const Bits<64>& cycle) { return 0; }
+
+    unsigned hartid() const { return m_hart_id; }
+
     protected:
     const unsigned m_hart_id;
     Memory& m_mem;

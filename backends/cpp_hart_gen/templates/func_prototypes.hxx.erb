@@ -2,6 +2,9 @@
 // IT IS NOT STANDALONE. IT IS A FUNCTION LIST FOR THE Hart CLASS
 
 #define __UDB_CONSTEXPR_FUNC_CALL
+#define __UDB_CONST_GLOBAL(global_name) <%= name_of(:hart, cfg_arch) %>::global_name
+#define __UDB_MUTABLE_GLOBAL(global_name) global_name
+#define __UDB_STRUCT(struct_name) <%= cfg_arch.name.camelize %>_ ## struct_name ## _Struct
 
 <%# need to get symtab at function scope -%>
 <%- symtab = cfg_arch.symtab.global_clone.push(nil) -%>
@@ -14,5 +17,8 @@
 <%- end -%>
 
 #undef __UDB_CONSTEXPR_FUNC_CALL
+#undef __UDB_CONST_GLOBAL
+#undef __UDB_MUTABLE_GLOBAL
+#undef __UDB_STRUCT
 
 <%- symtab.release -%>
