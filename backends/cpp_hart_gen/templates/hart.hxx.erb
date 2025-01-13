@@ -35,6 +35,17 @@ namespace udb {
       static <%= global.type(cfg_arch.symtab).to_cxx %> <%= global.id %>;
       <%- end -%>
       <%- end -%>
+
+      <%- cfg_arch.global_ast.structs.each do |struct| -%>
+      #define __UDB_RUNTIME_PARAM(param_name) 64
+      struct <%= struct.name %> {
+        <%- struct.member_types.each_index do |idx| -%>
+        <%= struct.member_types[idx].gen_cpp(cfg_arch.symtab, 0) %> <%= struct.member_names[idx] %>;
+        <%- end -%>
+      };
+      #undef __UDB_RUNTIME_PARAM
+      <%- end -%>
+
       #include "udb/cfgs/<%= cfg_arch.name %>/func_prototypes.hxx"
 
       static constexpr unsigned MXLEN = <%= cfg_arch.mxlen.nil? ? 64 : cfg_arch.mxlen %>;
@@ -46,10 +57,6 @@ namespace udb {
           m_csrs(this)
       {
         m_xregs[0].makeZeroReg();
-      }
-
-      unsigned xlen() {
-        return MXLEN;
       }
 
       bool implemented_Q_(const ExtensionName& ext, const VersionRequirement& req)

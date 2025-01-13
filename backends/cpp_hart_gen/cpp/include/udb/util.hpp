@@ -90,8 +90,22 @@ namespace udb {
     for (unsigned i=1; i<N; i++) {
       result |= value << (i*M);
     }
-    return value;
+    return result;
   }
+
+  template <unsigned M, typename T>
+  constexpr Bits<BitsInfinitePrecision> replicate(const Bits<M>& value, const T& N)
+  {
+    udb_assert(N > 0, "Must replicate at least once");
+    static_assert(M < BitsMaxNativePrecision, "Please don't replicate multiprecision numbers ;(");
+
+    Bits<BitsInfinitePrecision> result = value;
+    for (unsigned i=1; i<N; i++) {
+      result |= value << (i*M);
+    }
+    return result;
+  }
+
 
   template <unsigned FirstExtendedBit, unsigned ResultWidth, unsigned InputWidth>
   constexpr Bits<ResultWidth> sign_extend(const Bits<InputWidth>& value) {

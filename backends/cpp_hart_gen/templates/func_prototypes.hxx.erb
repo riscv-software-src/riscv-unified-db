@@ -2,7 +2,6 @@
 // IT IS NOT STANDALONE. IT IS A FUNCTION LIST FOR THE Hart CLASS
 
 #define __UDB_CONSTEXPR_FUNC_CALL
-#define __UDB_RUNTIME_PARAM(param_name) m_params.param_name
 
 <%# need to get symtab at function scope -%>
 <%- symtab = cfg_arch.symtab.global_clone.push(nil) -%>
@@ -15,41 +14,5 @@
 <%- end -%>
 
 #undef __UDB_CONSTEXPR_FUNC_CALL
-#undef __UDB_RUNTIME_PARAM
-
-//
-// begin the builtin functions
-//
-
-constexpr bool implemented_Q_(const ExtensionName& ext, const VersionRequirement& req) const {
-
-  <%- if cfg_arch.fully_configured? -%>
-  <%- cfg_arch.implemented_extensions.each do |ext| -%>
-  if (ext == ExtensionName::<%= ext.name %>) { return true; }
-  <%- end -%>
-  <%- elsif cfg_arch.partially_configured? -%>
-  <%- cfg_arch.mandatory_extensions.each do |ext| -%>
-  if (ext == ExtensionName::<%= ext.name %>) { return true; }
-  <%- end -%>
-  <%- end -%>
-  return m_implemented_optional_extensions.find(ext) != m_implemented_optional_extensions.end();
-}
-
-constexpr bool implemented_Q_(const ExtensionName& ext) const {
-
-  <%- if cfg_arch.fully_configured? -%>
-  <%- cfg_arch.implemented_extensions.each do |ext| -%>
-  if (ext == ExtensionName::<%= ext.name %>) { return true; }
-  <%- end -%>
-  <%- elsif cfg_arch.partially_configured? -%>
-  <%- cfg_arch.mandatory_extensions.each do |ext| -%>
-  if (ext == ExtensionName::<%= ext.name %>) { return true; }
-  <%- end -%>
-  <%- end -%>
-  return m_implemented_optional_extensions.find(ext) != m_implemented_optional_extensions.end();
-}
-
-// generated decode function
-InstBase<Hart>* decode(const XReg& pc, const Bits<INSTR_ENC_SIZE>& encoding);
 
 <%- symtab.release -%>

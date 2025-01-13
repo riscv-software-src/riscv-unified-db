@@ -9,6 +9,7 @@ using namespace udb;
 <%- fields = cfg_arch.fully_configured? ? csr.implemented_fields(cfg_arch) : csr.fields -%>
 
 #define __UDB_RUNTIME_PARAM(param_name) m_hart->m_params.param_name
+#define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name
 #define __UDB_FUNC_CALL m_hart->
 #define __UDB_CONSTEXPR_FUNC_CALL <%= name_of(:hart, cfg_arch) %>::
 
@@ -61,10 +62,12 @@ void <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %>::reset() {
 <%- end -%>
 
 #undef __UDB_RUNTIME_PARAM
+#undef __UDB_STATIC_PARAM
 #undef __UDB_CONSTEXPR_FUNC_CALL
 #undef __UDB_FUNC_CALL
 
 #define __UDB_RUNTIME_PARAM(param_name) m_parent->m_params.param_name
+#define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name
 #define __UDB_CSR_BY_ADDR(addr) m_parent->csr(addr)
 #define __UDB_CSR_BY_NAME(csr_name) m_parent->m_csrs.csr_name
 #define __UDB_CSR_FIELD_READ(field_name) m_##field_name
@@ -159,18 +162,20 @@ bool <%= name_of(:csr, cfg_arch, csr.name) %>::_sw_write(const Bits<<%= csr.max_
   <%- fields.each do |field| -%>
   <%- next unless cfg_arch.possible_xlens.any? { |xlen| field.defined_in_base?(xlen) } -%>
   <%- if field.has_custom_sw_write? -%>
-  auto wr_val_fn = [this, value]() -> PossiblyUndefinedBits {
-    View<<%= cfg_arch.possible_xlens[0] %>> csr_value(value);
-    <%- pruned_ast = field.pruned_sw_write_ast(cfg_arch.possible_xlens[0]) -%>
-    <%- symtab = field.fill_symtab_for_sw_write(cfg_arch.possible_xlens[0], pruned_ast) -%>
-    <%= pruned_ast.gen_cpp(symtab) %>
-    <%- symtab.release -%>
-  };
-  auto wr_val = wr_val_fn();
-  if (wr_val == UNDEFINED_LEGAL_DETERMINISTIC) {
-    m_<%= field.name %>.makeUndefined();
-  } else {
-    m_<%= field.name %>._hw_write(wr_val);
+  {
+    auto wr_val_fn = [this, value]() -> PossiblyUndefinedBits {
+      View<<%= cfg_arch.possible_xlens[0] %>> csr_value(value);
+      <%- pruned_ast = field.pruned_sw_write_ast(cfg_arch.possible_xlens[0]) -%>
+      <%- symtab = field.fill_symtab_for_sw_write(cfg_arch.possible_xlens[0], pruned_ast) -%>
+      <%= pruned_ast.gen_cpp(symtab) %>
+      <%- symtab.release -%>
+    };
+    auto wr_val = wr_val_fn();
+    if (wr_val == UNDEFINED_LEGAL_DETERMINISTIC) {
+      m_<%= field.name %>.makeUndefined();
+    } else {
+      m_<%= field.name %>._hw_write(wr_val);
+    }
   }
   <%- end -%>
   <%- end -%>
@@ -179,6 +184,7 @@ bool <%= name_of(:csr, cfg_arch, csr.name) %>::_sw_write(const Bits<<%= csr.max_
 <%- end -%>
 
 #undef __UDB_RUNTIME_PARAM
+#undef __UDB_STATIC_PARAM
 #undef __UDB_CSR_BY_ADDR
 #undef __UDB_CSR_BY_NAME
 #undef __UDB_CSR_FIELD_READ

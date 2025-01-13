@@ -269,13 +269,9 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       v = value(symtab)
       if v >= 0
-        if v.bit_length <= 64
-          "#{' ' * indent}#{value(symtab)}ULL"
-        else
-          "#{' ' * indent}#{value(symtab)}_b"
-        end
+        "#{' ' * indent}#{value(symtab)}_b"
       else
-        if v.bit_length <= 63
+        if v.bit_length <= 127
           "#{' ' * indent}#{value(symtab)}LL"
         else
           "#{' ' * indent}#{value(symtab)}_b"
@@ -289,10 +285,10 @@ module Idl
       var = symtab.get(text_value)
 
       if !var.nil? && var.param?
-        if var.value.nil?
+        if symtab.cfg_arch.params_without_value.any? { |p| p.name == text_value }
           "#{' ' * indent}__UDB_RUNTIME_PARAM(#{text_value})"
         else
-          "#{' ' * indent}__UDB_STATIC_PARAM(#{text_value})"
+          "#{' ' * indent}__UDB_STATIC_PARAM(#{text_value}) /* #{var.value} */"
         end
       else
         "#{' ' * indent}#{text_value}"
@@ -341,7 +337,15 @@ module Idl
   class BuiltinTypeNameAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if @type_name == "Bits"
-        "#{' '*indent}Bits<#{bits_expression.gen_cpp(symtab, 0, indent_spaces:)}>"
+        result = ""
+        value_result = value_try do
+          bits_expression.value(symtab)
+          result = "#{' '*indent}Bits<#{bits_expression.gen_cpp(symtab, 0, indent_spaces:)}>"
+        end
+        value_else(value_result) do
+          result = "#{' '*indent}Bits<BitsInfinitePrecision>"
+        end
+        result
       elsif @type_name == "XReg"
         "#{' '*indent}Bits<#{symtab.cfg_arch.possible_xlens.max()}>"
       elsif @type_name == "Boolean"
@@ -407,7 +411,11 @@ module Idl
         #"#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}[#{index.gen_cpp(symtab, 0, indent_spaces:)}]"
         "#{' '*indent} __UDB__FUNC__OBJ  xregRef(#{index.gen_cpp(symtab, 0, indent_spaces:)})"
       else
-        "#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}[#{index.gen_cpp(symtab, 0, indent_spaces:)}]"
+        if var.type(symtab).integral?
+          "#{' '*indent}extract<#{index.gen_cpp(symtab, 0)}, 1, #{var.type(symtab).width}>(#{var.gen_cpp(symtab, 0, indent_spaces:)})"
+        else
+          "#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}[#{index.gen_cpp(symtab, 0, indent_spaces:)}]"
+        end
       end
     end
   end
@@ -469,7 +477,14 @@ module Idl
 
   class ReplicationExpressionAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' '*indent}replicate<#{n.gen_cpp(symtab, 0, indent_spaces:)}>(#{v.gen_cpp(symtab, 0, indent_spaces:)})"
+      result = ""
+      value_result = value_try do
+        result = "#{' '*indent}replicate<#{n.value(symtab)}>(#{v.gen_cpp(symtab, 0, indent_spaces:)})"
+      end
+      value_else(value_result) do
+        result = "#{' '*indent}replicate(#{v.gen_cpp(symtab, 0, indent_spaces:)}, #{n.gen_cpp(symtab, 0, indent_spaces:)})"
+      end
+      result
     end
   end
 

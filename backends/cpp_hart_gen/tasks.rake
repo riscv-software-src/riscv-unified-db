@@ -95,6 +95,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.hxx} => proc { |tna
 
   FileUtils.mkdir_p File.dirname(t.name)
   File.write(t.name, erb.result(CppHartGen::TemplateEnv.new(cfg_arch).get_binding))
+  sh "clang-format -i #{t.name}"
 end
 
 rule %r{#{CPP_HART_GEN_DST}/.*/src/cfgs/[^/]+/[^/]+\.cxx} => proc { |tname|
@@ -120,6 +121,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/src/cfgs/[^/]+/[^/]+\.cxx} => proc { |tname|
 
   FileUtils.mkdir_p File.dirname(t.name)
   File.write(t.name, erb.result(CppHartGen::TemplateEnv.new(cfg_arch).get_binding))
+  sh "clang-format -i #{t.name}"
 end
 
 rule %r{#{CPP_HART_GEN_DST}/[^/]+/CMakeLists\.txt} => [

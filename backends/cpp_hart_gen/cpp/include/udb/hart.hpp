@@ -166,9 +166,6 @@ namespace udb {
     // xlen of M-mode, i.e., MXLEN
     virtual unsigned mxlen() = 0;
 
-    // the current effective XLEN, in the current mode
-    virtual unsigned xlen() = 0;
-
     virtual uint64_t xreg(unsigned num) const = 0;
     virtual void set_xreg(unsigned num, uint64_t value) = 0;
 

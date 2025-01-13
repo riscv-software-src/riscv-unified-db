@@ -125,6 +125,15 @@ namespace udb {
     template <unsigned N, bool Signed>
     bool operator==(const _Bits<N, Signed>& other) { return other == static_cast<Bits<Size>>(*this); }
 
+    template <unsigned N, bool Signed>
+    bool operator>(const _Bits<N, Signed>& other) { return static_cast<Bits<Size>>(*this) > other; }
+
+    template <unsigned N, bool Signed>
+    bool operator>=(const _Bits<N, Signed>& other) { return static_cast<Bits<Size>>(*this) >= other; }
+
+    template <unsigned N, bool Signed>
+    Bits<Size> operator&(const _Bits<N, Signed>& other) { return static_cast<Bits<Size>>(*this) & other; }
+
     Bits<Bits<Size>::InfinitePrecision> operator<<(const int& shamt) const { return static_cast<Bits<Size>>(*this) << shamt; }
 
     template <unsigned Shamt>

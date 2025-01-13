@@ -881,7 +881,7 @@ namespace udb
           last_val = val;
           pow *= 10;
         }
-        width = 64 - std::countl_zero(val);
+        width = val == 0 ? 1 : 64 - std::countl_zero(val);
       }
       if (base == 16)
       {
@@ -901,6 +901,9 @@ namespace udb
 
         // the lsbs need full bits
         width += (len - 1) * 4;
+
+        // special case: if zero, need one bit
+        width = width == 0 ? 1 : width;
       }
       return width;
     }
@@ -977,6 +980,7 @@ namespace udb
     }
   }
 
+  static_assert((0x0_b).Width == 1);
   static_assert((0x1_b).Width == 1);
   static_assert((0x2_b).Width == 2);
   static_assert((0x7_b).Width == 3);
