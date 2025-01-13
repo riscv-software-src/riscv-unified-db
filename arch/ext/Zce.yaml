@@ -11,14 +11,13 @@ description: |
   * Specifying `Zce` on RV32 without `F` includes `Zca`, `Zcb`, `Zcmp`, `Zcmt`
   * Specifying `Zce` on RV32 with `F` includes `Zca`, `Zcb`, `Zcmp`, `Zcmt` and `Zcf`
   * Specifying `Zce` on RV64 always includes `Zca`, `Zcb`, `Zcmp`, `Zcmt`
-  * `Zcf` doesn’t exist for RV64
+  * `Zcf` doesn't exist for RV64
 
   Therefore common ISA strings can be updated as follows to include the relevant Zc extensions, for
   example:
 
   * RV32IMC becomes RV32IM_Zce
   * RV32IMCF becomes RV32IMF_Zce
-
 type: unprivileged
 company:
   name: RISC-V International
