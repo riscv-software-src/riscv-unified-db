@@ -10,6 +10,7 @@ using namespace udb;
 
 #define __UDB_RUNTIME_PARAM(param_name) m_hart->m_params.param_name
 #define __UDB_FUNC_CALL m_hart->
+#define __UDB_CONSTEXPR_FUNC_CALL <%= name_of(:hart, cfg_arch) %>::
 
 <%- fields.each do |field| -%>
 <%- max_width = cfg_arch.possible_xlens.map { |xlen| field.defined_in_base?(xlen) ? field.location(xlen).size : 0 }.max -%>
@@ -60,6 +61,7 @@ void <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %>::reset() {
 <%- end -%>
 
 #undef __UDB_RUNTIME_PARAM
+#undef __UDB_CONSTEXPR_FUNC_CALL
 #undef __UDB_FUNC_CALL
 
 #define __UDB_RUNTIME_PARAM(param_name) m_parent->m_params.param_name
@@ -67,6 +69,7 @@ void <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %>::reset() {
 #define __UDB_CSR_BY_NAME(csr_name) m_parent->m_csrs.csr_name
 #define __UDB_CSR_FIELD_READ(field_name) m_##field_name
 #define __UDB_FUNC_CALL m_parent->
+#define __UDB_CONSTEXPR_FUNC_CALL <%= name_of(:hart, cfg_arch) %>::
 #define __UDB_XLEN m_parent->xlen()
 
 // constructor
@@ -180,6 +183,9 @@ bool <%= name_of(:csr, cfg_arch, csr.name) %>::_sw_write(const Bits<<%= csr.max_
 #undef __UDB_CSR_BY_NAME
 #undef __UDB_CSR_FIELD_READ
 #undef __UDB_FUNC_CALL
+#undef __UDB_CONSTEXPR_FUNC_CALL
 #undef __UDB_XLEN
 
 <%- end -%>
+
+#undef __UDB__FUNC_OBJ

@@ -7,6 +7,8 @@
 #include "udb/hart.hpp"
 #include "udb/cfgs/<%= cfg_arch.name %>/params.hxx"
 #include "udb/cfgs/<%= cfg_arch.name %>/csr_container.hxx"
+#include "udb/enum.hxx"
+#include "udb/bitfield.hxx"
 
 <%- hart_name = name_of(:hart, cfg_arch) -%>
 
@@ -22,6 +24,19 @@ namespace udb {
     <%- end -%>
 
     public:
+      <%- cfg_arch.globals.each do |global| -%>
+      <%- if global.is_a?(Idl::GlobalWithInitializationAst) -%>
+      <%- if global.type(cfg_arch.symtab).const? -%>
+      static <%= global.type(cfg_arch.symtab).const? ? 'constexpr ' : '' %><%= global.type(cfg_arch.symtab).to_cxx %> <%= global.id %> = <%= global.rhs.gen_cpp(cfg_arch.symtab, 0) %>;
+      <%- else -%>
+      static <%= global.type(cfg_arch.symtab).to_cxx %> <%= global.id %>;
+      <%- end -%>
+      <%- else -%>
+      static <%= global.type(cfg_arch.symtab).to_cxx %> <%= global.id %>;
+      <%- end -%>
+      <%- end -%>
+      #include "udb/cfgs/<%= cfg_arch.name %>/func_prototypes.hxx"
+
       static constexpr unsigned MXLEN = <%= cfg_arch.mxlen.nil? ? 64 : cfg_arch.mxlen %>;
       using XReg = Bits<MXLEN>;
 
@@ -35,6 +50,16 @@ namespace udb {
 
       unsigned xlen() {
         return MXLEN;
+      }
+
+      bool implemented_Q_(const ExtensionName& ext, const VersionRequirement& req)
+      {
+          return false;
+      }
+
+      bool implemented_Q_(const ExtensionName& ext)
+      {
+          return false;
       }
 
       void set_pc(uint64_t new_pc) override {

@@ -3,80 +3,24 @@
 #pragma once
 
 #include <cstdint>
-#include <types.hpp>
+#include "udb/bits.hpp"
+#include "udb/types.hpp"
 
-namespace riscv {
-  template <unsigned Size>
-  class Bitfield;
+namespace udb {
 
-  template <unsigned ParentSize, unsigned Start, unsigned Size>
-  class BitfieldMember {
-    public:
-    BitfieldMember(Bitfield<ParentSize>& parent)
-      : m_parent(parent)
-    {}
-
-    static constexpr Bits<Size> MaximumValue = (Bits<Size>(1).template const_sll<Size>()) - 1;
-    static constexpr Bits<ParentSize> Mask = MaximumValue.template const_sll<Start>();
-
-    operator Bits<Size>() const;
-
-    BitfieldMember& operator=(const Bits<Size>& value);
-
-    template <std::integral Type>
-    bool operator==(const Type& other) { return other == static_cast<Bits<Size>>(*this); }
-
-    Bits<Bits<Size>::MaxPrecision> operator<<(const int& shamt) {
-      return static_cast<Bits<Size>>(*this) << shamt;
-    }
-
-    private:
-    Bitfield<ParentSize>& m_parent;
-  };
-
-  template <unsigned Size>
-  class Bitfield {
-    public:
-    Bitfield() = default;
-    Bitfield(const Bits<Size>& value) : m_value(value) {}
-
-    Bitfield& operator=(const Bits<Size>& value) {
-      m_value = value;
-      return *this;
-    }
-    operator Bits<Size>&() { return m_value; }
-    operator Bits<Size>() const { return m_value; }
-
-    protected:
-    Bits<Size> m_value;
-  };
-
-  template <unsigned ParentSize, unsigned Start, unsigned Size>
-  BitfieldMember<ParentSize, Start, Size>::operator Bits<Size>() const
-  {
-    return (static_cast<Bits<ParentSize>>(m_parent) >> Start) & MaximumValue;
-  }
-
-  template <unsigned ParentSize, unsigned Start, unsigned Size>
-  BitfieldMember<ParentSize, Start, Size>& BitfieldMember<ParentSize, Start, Size>::operator=(const Bits<Size>& value)
-  {
-    m_parent = (static_cast<Bits<ParentSize>>(m_parent) & ~Mask) | ((value << Size) & Mask);
-    return *this;
-  }
-
-  <%- bitfields.each do |bitfield| -%>
-  class <%= bitfield.name %> : public Bitfield<<%= bitfield.size(symtab) %>> {
+  <%- cfg_arch.global_ast.bitfields.each do |bitfield| -%>
+  class <%= bitfield.name %> : public Bitfield<<%= bitfield.size(cfg_arch.symtab) %>> {
     public:
 
     // constructors
     <%= bitfield.name %>() = default;
-    <%= bitfield.name %>(const Bits<<%= bitfield.size(symtab) %>& value)
-      : Bitfield<<%= bitfield.size(symtab) %>>(value)
+    <%= bitfield.name %>(const Bits<<%= bitfield.size(cfg_arch.symtab) %>>& value)
+      : Bitfield<<%= bitfield.size(cfg_arch.symtab) %>>(value)
         <%= bitfield.element_names.map { |name| ", #{name}(*this)" }.join("\n#{' '*8}") %>
     {}
 
     <%- bitfield.element_names.size.times do |idx| -%>
-    BitfieldMember<<%= bitfield.size(symtab) %>, <%= bitfield.element_ranges(symtab)[idx].begin %>, <%= bitfield.element_ranges(symtab)[idx].size %>> <%= bitfield.element_names[idx] %>;
+    BitfieldMember<<%= bitfield.size(cfg_arch.symtab) %>, <%= bitfield.element_ranges(cfg_arch.symtab)[idx].begin %>, <%= bitfield.element_ranges(cfg_arch.symtab)[idx].size %>> <%= bitfield.element_names[idx] %>;
     <%- end -%>
   };
   <%- end -%>

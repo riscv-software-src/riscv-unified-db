@@ -20,22 +20,24 @@ namespace udb
   struct BitsStorageType
   {
     using type =
-        std::conditional_t<(N > 64), mpz_class,
+        std::conditional_t<(N > 128), mpz_class,
+                 std::conditional_t<(N > 64), unsigned __int128,
                            std::conditional_t<(N > 32), uint64_t,
                                               std::conditional_t<(N > 16), uint32_t,
                                                                  std::conditional_t<(N > 8), uint16_t,
-                                                                                    uint8_t>>>>;
+                                                                                    uint8_t>>>>>;
   };
 
   template <unsigned N>
   struct BitsSignedStorageType
   {
     using type =
-        std::conditional_t<(N > 64), mpz_class,
+        std::conditional_t<(N > 128), mpz_class,
+               std::conditional_t<(N > 64), __int128,
                            std::conditional_t<(N > 32), int64_t,
                                               std::conditional_t<(N > 16), int32_t,
                                                                  std::conditional_t<(N > 8), int16_t,
-                                                                                    int8_t>>>>;
+                                                                                    int8_t>>>>>;
   };
 
   // N that actually means infinite
@@ -43,7 +45,7 @@ namespace udb
 
   // max N value where storage is using a native integer type
   // above this, the storage is GMP, and the Bits type can't be constexpr
-  constexpr static unsigned BitsMaxNativePrecision = 64;
+  constexpr static unsigned BitsMaxNativePrecision = 128;
 
   // used to hold compile-time-known-bit-width integer
   template <unsigned N, bool Signed>
@@ -126,7 +128,7 @@ namespace udb
     static_assert(needs_mask<32>() == false);
     static_assert(needs_mask<64>() == false);
     static_assert(needs_mask<65>() == true);
-    static_assert(needs_mask<128>() == true);
+    static_assert(needs_mask<128>() == false);
     static_assert(needs_mask<129>() == true);
     static_assert(needs_mask<256>() == true);
     static_assert(needs_mask<512>() == true);

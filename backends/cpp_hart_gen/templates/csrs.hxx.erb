@@ -322,5 +322,6 @@ namespace udb {
     <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %> m_<%= field.name %>;
     <%- end -%>
   };
+  #undef __UDB_RUNTIME_PARAM
   <%- end -%>
 }

@@ -1,4 +1,6 @@
 
+require_relative "constexpr_pass"
+
 module Idl
   class AstNode
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
@@ -152,13 +154,14 @@ module Idl
       list
     end
 
-    def gen_cpp_template
-      if @template_types.nil?
+    def gen_cpp_template(symtab)
+      if !templated?
         ""
       else
         list = []
-        @template_types.each_index { |i|
-          list << "#{@template_types[i].to_cxx_no_qualifiers} #{@template_names[i]}"
+        ttypes = template_types(symtab)
+        ttypes.each_index { |i|
+          list << "#{ttypes[i].to_cxx_no_qualifiers} #{template_names[i]}"
         }
         "template <#{list.join(', ')}>"
       end
@@ -166,8 +169,8 @@ module Idl
 
     def gen_cpp_prototype(symtab, indent, indent_spaces: 2)
       <<~PROTOTYPE
-        #{' ' * indent}#{gen_cpp_template}
-        #{' ' * indent}#{name == 'raise' ? '[[noreturn]]' : ''} #{gen_return_type(symtab)} #{name.gsub('?', '_Q_')}(#{gen_cpp_argument_list(symtab)});
+        #{' ' * indent}#{gen_cpp_template(symtab)}
+        #{' ' * indent}#{name == 'raise' ? '[[noreturn]] ' : ''}#{constexpr?(symtab) ? 'constexpr static ' : ''}#{gen_return_type(symtab)} #{name.gsub('?', '_Q_')}(#{gen_cpp_argument_list(symtab)});
       PROTOTYPE
     end
   end
@@ -370,7 +373,7 @@ module Idl
         }
       LOOP
       symtab.pop()
-      cpp.lines.map { |l| "#{' ' * indent}}#{l}" }.join('')
+      cpp.lines.map { |l| "#{' ' * indent}#{l}" }.join('')
     end
   end
 
@@ -400,7 +403,12 @@ module Idl
 
   class AryElementAccessAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}[#{index.gen_cpp(symtab, 0, indent_spaces:)}]"
+      if var.text_value.start_with?("X")
+        #"#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}[#{index.gen_cpp(symtab, 0, indent_spaces:)}]"
+        "#{' '*indent} __UDB__FUNC__OBJ  xregRef(#{index.gen_cpp(symtab, 0, indent_spaces:)})"
+      else
+        "#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}[#{index.gen_cpp(symtab, 0, indent_spaces:)}]"
+      end
     end
   end
 
@@ -424,7 +432,12 @@ module Idl
 
   class AryElementAssignmentAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' '*indent}#{lhs.gen_cpp(symtab, 0, indent_spaces:)}[#{idx.gen_cpp(symtab, 0, indent_spaces:)}] = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
+      if lhs.text_value.start_with?("X")
+        #"#{' '*indent}  #{lhs.gen_cpp(symtab, 0, indent_spaces:)}[#{idx.gen_cpp(symtab, 0, indent_spaces:)}] = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
+        "#{' '*indent} __UDB__FUNC__OBJ xregRef ( #{idx.gen_cpp(symtab, 0, indent_spaces:)} ) = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
+      else
+        "#{' '*indent}#{lhs.gen_cpp(symtab, 0, indent_spaces:)}[#{idx.gen_cpp(symtab, 0, indent_spaces:)}] = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
+      end
     end
   end
 
@@ -471,15 +484,29 @@ module Idl
     end
   end
 
+  class ArrayLiteralAst
+    def gen_cpp(symtab, indent = 0, indent_spaces: 2)
+      "{#{element_nodes.map { |e| e.gen_cpp(symtab, 0) }.join(', ')}}"
+    end
+  end
+
   class FunctionCallExpressionAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      after_name = []
       targs_cpp = template_arg_nodes.map { |t| t.gen_cpp(symtab, 0, indent_spaces:) }
       args_cpp = arg_nodes.map { |a| a.gen_cpp(symtab, 0, indent_spaces:) }
-      if targs_cpp.empty?
-        "__UDB_FUNC_CALL #{name.gsub("?", "_Q_")}(#{args_cpp.join(', ')})"
+      ftype = func_type(symtab)
+      if ftype.func_def_ast.constexpr?(symtab)
+        if targs_cpp.empty?
+          "__UDB_CONSTEXPR_FUNC_CALL #{name.gsub("?", "_Q_")}(#{args_cpp.join(', ')})"
+        else
+          "__UDB_CONSTEXPR_FUNC_CALL #{name.gsub("?", "_Q_")}<#{targs_cpp.join(', ')}>(#{args_cpp.join(', ')})"
+        end
       else
-        "__UDB_FUNC_CALL #{name.gsub("?", "_Q_")}<#{targs_cpp.join(', ')}>(#{args_cpp.join(', ')})"
+        if targs_cpp.empty?
+          "__UDB_FUNC_CALL #{name.gsub("?", "_Q_")}(#{args_cpp.join(', ')})"
+        else
+          "__UDB_FUNC_CALL #{name.gsub("?", "_Q_")}<#{targs_cpp.join(', ')}>(#{args_cpp.join(', ')})"
+        end
       end
     end
   end

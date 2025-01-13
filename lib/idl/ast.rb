@@ -635,7 +635,10 @@ module Idl
     include Executable
     include Declaration
 
-    # @return [VariableDeclationWithInitializationAst] The initializer
+    def id = var_decl_with_init.id
+    def rhs = var_decl_with_init.rhs
+
+    # @return [VariableDeclarationWithInitializationAst] The initializer
     def var_decl_with_init
       @children[0]
     end
@@ -652,7 +655,7 @@ module Idl
 
     # @1macro type
     def type(symtab)
-      var_decl_with_init.type(symtab)
+      var_decl_with_init.lhs_type(symtab)
     end
 
     # @1macro value
@@ -681,6 +684,10 @@ module Idl
 
   class GlobalAst < AstNode
     include Declaration
+
+    def id
+      declaration.id.text_value
+    end
 
     # @return [VariableDeclarationAst] The decl
     def declaration
@@ -2359,6 +2366,8 @@ module Idl
     def lhs = @children[1]
     def ary_size = @children[3]
     def rhs = @children[2]
+
+    def id = lhs.text_value
 
     def initialize(input, interval, type_name_ast, var_write_ast, ary_size, rval_ast)
       if ary_size.nil?

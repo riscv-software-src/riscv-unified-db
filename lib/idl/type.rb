@@ -300,42 +300,51 @@ module Idl
     alias fully_qualified_name to_s
 
     def to_cxx_no_qualifiers
-        if @kind == :bits
-          raise "@width is unknown" if @width == :unknown
-          raise "@width is a #{@width.class}" unless @width.is_a?(Integer)
+      case @kind
+      when :bits
+        raise "@width is a #{@width.class}" unless @width.is_a?(Integer) || @width == :unknown
 
-          if signed?
-            "SignedBits<#{@width.is_a?(Integer) ? @width : @width.to_cxx}>"
+        width_cxx =
+          if @width.is_a?(Integer)
+            @width
+          elsif @width == :unknown
+            "BitsInfinitePrecision"
           else
-            "Bits<#{@width.is_a?(Integer) ? @width : @width.to_cxx}>"
+            @width.to_cxx
           end
-        elsif @kind == :enum
-          "#{@name}"
-        elsif @kind == :boolean
-          "bool"
-        elsif @kind == :function
-          "std::function<#{@return_type.to_cxx_no_qualifiers}(...)>"
-        elsif @kind == :enum_ref
-          "#{@enum_class.name}"
-        elsif @kind == :tuple
-          "std::tuple<#{@tuple_types.map{ |t| t.to_cxx }.join(',')}>"
-        elsif @kind == :bitfield
-          "#{@name}"
-        elsif @kind == :array
-          if (@width == :unknown)
-            "std::vector<#{@sub_type.to_cxx_no_qualifiers}>"
-          else
-            "std::array<#{@sub_type.to_cxx_no_qualifiers}, #{@width}>"
-          end
-        elsif @kind == :csr
-          "#{@csr.downcase.capitalize}Csr"
-        elsif @kind == :string
-          "std::string"
-        elsif @kind == :void
-          "void"
+
+        if signed?
+          "SignedBits<#{width_cxx}>"
         else
-          raise @kind.to_s
+          "Bits<#{width_cxx}>"
         end
+      when :enum
+        @name
+      when :boolean
+        "bool"
+      when :function
+        "std::function<#{@return_type.to_cxx_no_qualifiers}(...)>"
+      when :enum_ref
+        @enum_class.name
+      when :tuple
+      "std::tuple<#{@tuple_types.map(&:to_cxx).join(',')}>"
+      when :bitfield
+        @name
+      when :array
+        if @width == :unknown
+          "std::vector<#{@sub_type.to_cxx_no_qualifiers}>"
+        else
+          "std::array<#{@sub_type.to_cxx_no_qualifiers}, #{@width}>"
+        end
+      when :csr
+        "#{@csr.downcase.capitalize}Csr"
+      when :string
+        "std::string"
+      when :void
+        "void"
+      else
+        raise @kind.to_s
+      end
     end
 
     def to_cxx

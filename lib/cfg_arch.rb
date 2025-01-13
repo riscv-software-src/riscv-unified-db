@@ -554,6 +554,13 @@ class ConfiguredArchitecture < Architecture
     @functions = @global_ast.functions
   end
 
+  # @return [Array<Idl::GlobalAst>] List of globals
+  def globals
+    return @globals unless @globals.nil?
+
+    @globals = @global_ast.globals
+  end
+
   # @return [Array<Csr>] List of all implemented CSRs
   def transitive_implemented_csrs
     @transitive_implemented_csrs ||=

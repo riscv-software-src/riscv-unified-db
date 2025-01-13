@@ -221,6 +221,7 @@ namespace :gen do
     Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/db_data.hxx"].invoke
     Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/src/db_data.cxx"].invoke
     Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/enum.hxx"].invoke
+    Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/bitfield.hxx"].invoke
 
     configs.each do |config|
       Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/inst.hxx"].invoke

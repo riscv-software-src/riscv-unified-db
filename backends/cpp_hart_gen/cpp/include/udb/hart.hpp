@@ -23,6 +23,10 @@
 // #include "iss/inst.hpp"
 
 
+#ifdef assert
+#undef assert
+#endif
+
 namespace udb {
 
   // probably unwise to change these
@@ -71,7 +75,7 @@ namespace udb {
     }
 
     void attach_tracer(AbstractTracer* t) {
-      assert(m_tracer == nullptr);
+      udb_assert(m_tracer == nullptr, "m_tracer NULL ptr");
       m_tracer = t;
     }
 
@@ -100,9 +104,13 @@ namespace udb {
       } else if constexpr (Len == 64) {
         return m_mem.read<uint64_t>(paddr);
       } else {
-        assert(!"TODO");
+        udb_assert(false, "TODO");
         return 0;
       }
+    }
+
+    void assert(bool arg, const char* str) {
+        udb_assert(arg, str);
     }
 
     // write a physical address. All translations and physical checks
@@ -122,7 +130,7 @@ namespace udb {
       } else if constexpr (Len == 64) {
         m_mem.write<uint64_t>(paddr, value);
       } else {
-        assert(!"TODO");
+        udb_assert(false, "TODO");
       }
     }
 
