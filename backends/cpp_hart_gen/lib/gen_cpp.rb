@@ -428,7 +428,7 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if var.text_value.start_with?("X")
         #"#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}[#{index.gen_cpp(symtab, 0, indent_spaces:)}]"
-        "#{' '*indent} __UDB__FUNC__OBJ  xregRef(#{index.gen_cpp(symtab, 0, indent_spaces:)})"
+        "#{' '*indent} __UDB_FUNC_CALL  xregRef(#{index.gen_cpp(symtab, 0, indent_spaces:)})"
       else
         if var.type(symtab).integral?
           "#{' '*indent}extract<#{index.gen_cpp(symtab, 0)}, 1, #{var.type(symtab).width}>(#{var.gen_cpp(symtab, 0, indent_spaces:)})"
@@ -461,7 +461,7 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if lhs.text_value.start_with?("X")
         #"#{' '*indent}  #{lhs.gen_cpp(symtab, 0, indent_spaces:)}[#{idx.gen_cpp(symtab, 0, indent_spaces:)}] = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
-        "#{' '*indent} __UDB__FUNC__OBJ xregRef ( #{idx.gen_cpp(symtab, 0, indent_spaces:)} ) = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
+        "#{' '*indent} __UDB_FUNC_CALL xregRef ( #{idx.gen_cpp(symtab, 0, indent_spaces:)} ) = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
       else
         "#{' '*indent}#{lhs.gen_cpp(symtab, 0, indent_spaces:)}[#{idx.gen_cpp(symtab, 0, indent_spaces:)}] = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
       end
