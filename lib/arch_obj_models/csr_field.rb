@@ -5,7 +5,7 @@ require_relative "obj"
 require_relative "../idl/passes/gen_option_adoc"
 
 # A CSR field object
-class CsrField < DatabaseObjectect
+class CsrField < DatabaseObject
   # @return [Csr] The Csr that defines this field
   attr_reader :parent
 

@@ -1,5 +1,7 @@
 ---
 exclude: ^docs/ruby/ # All generated code
+default_language_version:
+  python: python3.12
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -55,3 +57,13 @@ repos:
       #   alias: check-jsonschema-manual-version
       #   files: ^arch/manual/.*\.(yaml|yml)$
       #   args: ["--schemafile", "schemas/manual_version_schema.json"]
+
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 24.8.0
+    hooks:
+      - id: black
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.19.1
+    hooks:
+      - id: pyupgrade
