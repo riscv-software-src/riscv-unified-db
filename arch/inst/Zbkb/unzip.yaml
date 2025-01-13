@@ -26,7 +26,7 @@ access:
 data_independent_timing: false
 base: 32
 operation(): |
-  if (implemented?(ExtensionName::B) && (CSR[misa].Zbkb == 1'b0)) {
+  if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 

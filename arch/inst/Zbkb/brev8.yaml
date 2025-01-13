@@ -23,7 +23,7 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  if (implemented?(ExtensionName::B) && (CSR[misa].Zbkb == 1'b0)) {
+  if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
