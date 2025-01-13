@@ -2,7 +2,7 @@
 
 require "asciidoctor"
 
-require_relative "obj"
+require_relative "database_obj"
 
 class Manual < DatabaseObject
   def versions
@@ -61,8 +61,10 @@ class ManualVolume
   # @return [ManualVersion] The version this volume belongs to
   attr_reader :version
 
-  def cfg_arch = version.cfg_arch
+  def arch = version.arch
 
+  # @param data [Hash<String, Object>] Data from YAML file
+  # @param version [ManualVersion]
   def initialize(data, version)
     @data = data
     @version = version
@@ -93,13 +95,13 @@ class ManualVolume
     return @extensions if @data["extensions"].nil?
 
     @data["extensions"].each do |ext|
-      ext_obj = cfg_arch.extension(ext[0])
+      ext_obj = arch.extension(ext[0])
       if ext_obj.nil?
         warn "Extension '#{ext[0]}' is not in the database"
         next
       end
 
-      ext_ver = ExtensionVersion.new(ext[0], ext[1], cfg_arch)
+      ext_ver = ExtensionVersion.new(ext[0], ext[1], arch)
       unless ext_obj.versions.any? { |known_ver| known_ver == ext_ver }
         warn "Extension '#{ext[0]}', version '#{ext[1]}' is not defined in the database"
         next
@@ -171,7 +173,7 @@ class ManualVersion < DatabaseObject
 
     @instructions = []
     extensions.each do |ext|
-      ext_obj = @cfg_arch.extension(ext.name)
+      ext_obj = @arch.extension(ext.name)
       ext_obj.instructions.each do |inst|
         @instructions << inst
       end
@@ -185,7 +187,7 @@ class ManualVersion < DatabaseObject
 
     @csrs = []
     extensions.each do |ext|
-      ext_obj = @cfg_arch.extension(ext.name)
+      ext_obj = @arch.extension(ext.name)
       ext_obj.csrs.each do |csr|
         @csrs << csr
       end

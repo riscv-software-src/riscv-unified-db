@@ -10,15 +10,20 @@ require "yard"
 require "minitest/test_task"
 
 require_relative $root / "lib" / "architecture"
+require_relative $root / "lib" / "design"
+require_relative $root / "lib" / "portfolio_design"
 
 directory "#{$root}/.stamps"
 
+# Load and execute Rakefile for each backend.
 Dir.glob("#{$root}/backends/*/tasks.rake") do |rakefile|
   load rakefile
 end
 
 directory "#{$root}/.stamps"
 
+# @param config_name [String] Name of configuration
+# @return [ConfiguredArchitecture]
 def cfg_arch_for(config_name)
   Rake::Task["#{$root}/.stamps/resolve-#{config_name}.stamp"].invoke
 
@@ -117,7 +122,7 @@ namespace :test do
   end
   task schema: "gen:resolved_arch" do
     puts "Checking arch files against schema.."
-    Architecture.new("#{$root}/resolved_arch").validate(show_progress: true)
+    Architecture.new("RISC-V Architecture", "#{$root}/resolved_arch").validate(show_progress: true)
     puts "All files validate against their schema"
   end
   task idl: ["gen:resolved_arch", "#{$root}/.stamps/resolve-rv32.stamp", "#{$root}/.stamps/resolve-rv64.stamp"]  do
@@ -289,10 +294,16 @@ namespace :test do
     These are basic but fast-running tests to check the database and tools
   DESC
   task :smoke do
+    puts "UPDATE: Starting test:smoke"
+    puts "UPDATE: Running test:idl_compiler"
     Rake::Task["test:idl_compiler"].invoke
+    puts "UPDATE: Running test:lib"
     Rake::Task["test:lib"].invoke
+    puts "UPDATE: Running test:schema"
     Rake::Task["test:schema"].invoke
+    puts "UPDATE: Running test:idl"
     Rake::Task["test:idl"].invoke
+    puts "UPDATE: Done test:smoke"
   end
 
   desc <<~DESC
@@ -301,22 +312,32 @@ namespace :test do
     These tests must pass before a commit will be allowed in the main branch on GitHub
   DESC
   task :regress do
+    puts "UPDATE: Starting test:regress"
     Rake::Task["test:smoke"].invoke
 
+    puts "UPDATE: Running gen:html_manual MANUAL_NAME=isa VERSIONS=all"
     ENV["MANUAL_NAME"] = "isa"
     ENV["VERSIONS"] = "all"
     Rake::Task["gen:html_manual"].invoke
 
+    puts "UPDATE: Running gen:ext_pdf"
     ENV["EXT"] = "B"
     ENV["VERSION"] = "latest"
     Rake::Task["gen:ext_pdf"].invoke
 
+    puts "UPDATE: Running gen:html for generic_rv64"
     Rake::Task["gen:html"].invoke("generic_rv64")
 
-    Rake::Task["#{$root}/gen/certificate_doc/pdf/MockCertificateModel.pdf"].invoke
-    Rake::Task["#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"].invoke
+    puts "UPDATE: Generating MockProcessor-CRD.pdf"
+    Rake::Task["#{$root}/gen/crd/pdf/MockProcessor-CRD.pdf"].invoke
 
-    puts
+    #puts "UPDATE: Generating MockProcessor-CTP.pdf"
+    #Rake::Task["#{$root}/gen/ctp/pdf/MockProcessor-CTP.pdf"].invoke
+
+    puts "UPDATE: Generating MockProfileRelease.pdf"
+    Rake::Task["#{$root}/gen/profile/pdf/MockProfileRelease.pdf"].invoke
+
+    puts "UPDATE: Done test:regress"
     puts "Regression test PASSED"
   end
 
@@ -337,32 +358,36 @@ desc <<~DESC
   Generate all portfolio-based PDF artifacts (certificates and profiles)
 DESC
 task :portfolios do
-  portfolio_start_msg("MockCertificateModel")
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MockCertificateModel.pdf"].invoke
+  portfolio_start_msg("MockProcessor-CRD")
+  Rake::Task["#{$root}/gen/crd/pdf/MockProcessor-CRD.pdf"].invoke
+  #portfolio_start_msg("MockProcessor-CTP")
+  #Rake::Task["#{$root}/gen/ctp/pdf/MockProcessor-CTP.pdf"].invoke
   portfolio_start_msg("MockProfileRelease")
-  Rake::Task["#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"].invoke
-  portfolio_start_msg("MC100-32")
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100-32.pdf"].invoke
-  portfolio_start_msg("MC100-64")
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100-64.pdf"].invoke
-  portfolio_start_msg("MC200-32")
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC200-32.pdf"].invoke
-  portfolio_start_msg("MC200-64")
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC200-64.pdf"].invoke
-  portfolio_start_msg("MC300-32")
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC300-32.pdf"].invoke
-  portfolio_start_msg("MC300-64")
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC300-64.pdf"].invoke
-  portfolio_start_msg("RVI20")
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVI20.pdf"].invoke
-  portfolio_start_msg("RVA20")
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA20.pdf"].invoke
-  portfolio_start_msg("RVA22")
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA22.pdf"].invoke
-  portfolio_start_msg("RVA23")
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA23.pdf"].invoke
-  portfolio_start_msg("RVB23")
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVB23.pdf"].invoke
+  Rake::Task["#{$root}/gen/profile/pdf/MockProfileRelease.pdf"].invoke
+  #portfolio_start_msg("MC100-32-CTP")
+  #Rake::Task["#{$root}/gen/ctp/pdf/MC100-32-CTP.pdf"].invoke
+  portfolio_start_msg("MC100-32-CRD")
+  Rake::Task["#{$root}/gen/crd/pdf/MC100-32-CRD.pdf"].invoke
+  portfolio_start_msg("MC100-64-CRD")
+  Rake::Task["#{$root}/gen/crd/pdf/MC100-64-CRD.pdf"].invoke
+  portfolio_start_msg("MC200-32-CRD")
+  Rake::Task["#{$root}/gen/crd/pdf/MC200-32-CRD.pdf"].invoke
+  portfolio_start_msg("MC200-64-CRD")
+  Rake::Task["#{$root}/gen/crd/pdf/MC200-64-CRD.pdf"].invoke
+  portfolio_start_msg("MC300-32-CRD")
+  Rake::Task["#{$root}/gen/crd/pdf/MC300-32-CRD.pdf"].invoke
+  portfolio_start_msg("MC300-64-CRD")
+  Rake::Task["#{$root}/gen/crd/pdf/MC300-64-CRD.pdf"].invoke
+  portfolio_start_msg("RVI20ProfileRelease")
+  Rake::Task["#{$root}/gen/profile/pdf/RVI20ProfileRelease.pdf"].invoke
+  portfolio_start_msg("RVA20ProfileRelease")
+  Rake::Task["#{$root}/gen/profile/pdf/RVA20ProfileRelease.pdf"].invoke
+  portfolio_start_msg("RVA22ProfileRelease")
+  Rake::Task["#{$root}/gen/profile/pdf/RVA22ProfileRelease.pdf"].invoke
+  portfolio_start_msg("RVA23ProfileRelease")
+  Rake::Task["#{$root}/gen/profile/pdf/RVA23ProfileRelease.pdf"].invoke
+  portfolio_start_msg("RVB23ProfileRelease")
+  Rake::Task["#{$root}/gen/profile/pdf/RVB23ProfileRelease.pdf"].invoke
 end
 
 def portfolio_start_msg(name)
@@ -373,17 +398,19 @@ def portfolio_start_msg(name)
   puts ""
 end
 
-# Shortcut targets for building profiles and certificates.
-task "MockCertificateModel": "#{$root}/gen/certificate_doc/pdf/MockCertificateModel.pdf"
-task "MC100-32": "#{$root}/gen/certificate_doc/pdf/MC100-32.pdf"
-task "MC100-64": "#{$root}/gen/certificate_doc/pdf/MC100-64.pdf"
-task "MC200-32": "#{$root}/gen/certificate_doc/pdf/MC200-32.pdf"
-task "MC200-64": "#{$root}/gen/certificate_doc/pdf/MC200-64.pdf"
-task "MC300-32": "#{$root}/gen/certificate_doc/pdf/MC300-32.pdf"
-task "MC300-64": "#{$root}/gen/certificate_doc/pdf/MC300-64.pdf"
-task "MockProfileRelease": "#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"
-task "RVI20": "#{$root}/gen/profile_doc/pdf/RVI20.pdf"
-task "RVA20": "#{$root}/gen/profile_doc/pdf/RVA20.pdf"
-task "RVA22": "#{$root}/gen/profile_doc/pdf/RVA22.pdf"
-task "RVA23": "#{$root}/gen/profile_doc/pdf/RVA23.pdf"
-task "RVB23": "#{$root}/gen/profile_doc/pdf/RVB23.pdf"
+# Shortcut targets for building CRDs, CTPs, and Profile Releases.
+task "MockCRD": "#{$root}/gen/crd/pdf/MockProcessor-CRD.pdf"
+#task "MockCTP": "#{$root}/gen/ctp/pdf/MockProcessor-CTP.pdf"
+#task "MC100-32-CTP": "#{$root}/gen/ctp/pdf/MC100-32-CTP.pdf"
+task "MC100-32-CRD": "#{$root}/gen/crd/pdf/MC100-32-CRD.pdf"
+task "MC100-64-CRD": "#{$root}/gen/crd/pdf/MC100-64-CRD.pdf"
+task "MC200-32-CRD": "#{$root}/gen/crd/pdf/MC200-32-CRD.pdf"
+task "MC200-64-CRD": "#{$root}/gen/crd/pdf/MC200-64-CRD.pdf"
+task "MC300-32-CRD": "#{$root}/gen/crd/pdf/MC300-32-CRD.pdf"
+task "MC300-64-CRD": "#{$root}/gen/crd/pdf/MC300-64-CRD.pdf"
+task "MockProfile": "#{$root}/gen/profile/pdf/MockProfileRelease.pdf"
+task "RVI20": "#{$root}/gen/profile/pdf/RVI20ProfileRelease.pdf"
+task "RVA20": "#{$root}/gen/profile/pdf/RVA20ProfileRelease.pdf"
+task "RVA22": "#{$root}/gen/profile/pdf/RVA22ProfileRelease.pdf"
+task "RVA23": "#{$root}/gen/profile/pdf/RVA23ProfileRelease.pdf"
+task "RVB23": "#{$root}/gen/profile/pdf/RVB23ProfileRelease.pdf"

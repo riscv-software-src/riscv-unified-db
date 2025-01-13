@@ -8,6 +8,7 @@ require "ruby-prof"
     [
       "#{CFG_HTML_DOC_DIR}/templates/#{type}.adoc.erb",
       "#{$root}/lib/cfg_arch.rb",
+      "#{$root}/lib/design.rb",
       "#{$root}/lib/idl/passes/gen_adoc.rb",
       __FILE__,
       "#{$root}/.stamps"
@@ -41,8 +42,8 @@ require "ruby-prof"
         # RubyProf::FlatPrinter.new(result).print(STDOUT)
       end
     when "ext"
-      cfg_arch.transitive_implemented_extensions.each do |ext_version|
-        ext = cfg_arch.extension(ext_version.name)
+      cfg_arch.transitive_implemented_ext_vers.each do |ext_version|
+        ext = cfg_arch.arch.extension(ext_version.name)
         path = dir_path / "#{ext.name}.adoc"
         puts "  Generating #{path}"
         File.write(path, cfg_arch.find_replace_links(erb.result(binding)))
@@ -88,8 +89,8 @@ require "ruby-prof"
         lines << " * `#{csr.name}` #{csr.long_name}"
       end
     when "ext"
-      puts "Generating full extension list"
-      cfg_arch.transitive_implemented_extensions.each do |ext_version|
+      puts "Generting full extension list"
+      cfg_arch.transitive_implemented_ext_vers.each do |ext_version|
         lines << " * `#{ext_version.name}` #{ext_version.ext.long_name}"
       end
     when "inst"

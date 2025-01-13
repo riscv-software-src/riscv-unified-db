@@ -1,0 +1,2 @@
+This portfolio backend isn't a real backend.
+Instead, it contains common Rake code and ERB templates shared by multiple portfolio-based backends.
