@@ -67,7 +67,9 @@ namespace udb {
     <%- end -%>
     <%- end -%>
 
-#define __UDB__FUNC__OBJ m_parent->
+#define __UDB_FUNC_CALL m_parent->
+#define __UDB_CSR_BY_ADDR(addr) m_parent->csr(addr)
+#define __UDB_CSR_BY_NAME(csr_name) m_parent->m_csrs.csr_name
 
 
     void execute() override {
@@ -97,7 +99,9 @@ namespace udb {
       <%- end -%>
     }
 
-#undef __UDB__FUNC__OBJ
+#undef __UDB__FUNC__CALL
+#undef __UDB_CSR_BY_ADDR
+#undef __UDB_CSR_BY_NAME
 
   private:
     <%= name_of(:hart, cfg_arch) %> * const m_parent;

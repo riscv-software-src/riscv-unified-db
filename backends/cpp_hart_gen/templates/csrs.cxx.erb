@@ -12,6 +12,8 @@ using namespace udb;
 #define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name
 #define __UDB_FUNC_CALL m_hart->
 #define __UDB_CONSTEXPR_FUNC_CALL <%= name_of(:hart, cfg_arch) %>::
+#define __UDB_CSR_BY_ADDR(addr) m_hart->csr(addr)
+#define __UDB_CSR_BY_NAME(csr_name) m_hart->m_csrs.csr_name
 
 <%- fields.each do |field| -%>
 <%- max_width = cfg_arch.possible_xlens.map { |xlen| field.defined_in_base?(xlen) ? field.location(xlen).size : 0 }.max -%>
@@ -65,6 +67,8 @@ void <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %>::reset() {
 #undef __UDB_STATIC_PARAM
 #undef __UDB_CONSTEXPR_FUNC_CALL
 #undef __UDB_FUNC_CALL
+#undef __UDB_CSR_BY_NAME
+#undef __UDB_CSR_BY_ADDR
 
 #define __UDB_RUNTIME_PARAM(param_name) m_parent->m_params.param_name
 #define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name
@@ -74,6 +78,7 @@ void <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %>::reset() {
 #define __UDB_FUNC_CALL m_parent->
 #define __UDB_CONSTEXPR_FUNC_CALL <%= name_of(:hart, cfg_arch) %>::
 #define __UDB_XLEN m_parent->xlen()
+#define __UDB_ENCODING m_parent->m_curr_insn.encoding()
 
 // constructor
 <%- fields_for_xlen = fields.select { |f| cfg_arch.possible_xlens.any? { |xlen| f.defined_in_base?(xlen) } } -%>

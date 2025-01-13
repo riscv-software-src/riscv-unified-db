@@ -113,9 +113,28 @@ namespace udb {
       // return it->second;
     }
 
+    CsrBase* csr(const std::string& address) override {
+      return nullptr;
+      // auto it = m_csr_map.find(address);
+      // if (it == m_csr_map.end()) {
+      //   return nullptr;
+      // }
+      // return it->second;
+    }
+
+    const CsrBase* csr(const std::string& address) const override {
+      return nullptr;
+      // auto it = m_csr_map.find(address);
+      // if (it == m_csr_map.end()) {
+      //   return nullptr;
+      // }
+      // return it->second;
+    }
+
     private:
       XReg m_pc;
       XReg m_next_pc;
+      InstBase* m_curr_insn;
       std::array<XRegister<MXLEN>, 32> m_xregs;
 
       <%= name_of(:params, cfg_arch) %> m_params;

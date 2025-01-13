@@ -24,7 +24,7 @@ class CsrField
     symtab = fill_symtab_for_type(xlen, pruned_ast)
     value_result = pruned_ast.value_try do
       type_value = pruned_ast.return_value(symtab)
-      cpp = "return CsfFieldType::#{TYPE_VALUE_TO_CPP_NAME[type_value]};"
+      cpp = "return CsrFieldType::#{TYPE_VALUE_TO_CPP_NAME[type_value]};"
     end
     pruned_ast.value_else(value_result) do
       cpp = pruned_ast.gen_cpp(symtab)
