@@ -123,6 +123,10 @@ namespace udb {
       // return it->second;
     }
 
+    const <%= name_of(:params, cfg_arch) %>& params() const {
+      return m_params;
+    }
+
     private:
       XReg m_pc;
       XReg m_next_pc;

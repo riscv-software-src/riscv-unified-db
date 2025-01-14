@@ -170,8 +170,10 @@ namespace udb {
     virtual void set_xreg(unsigned num, uint64_t value) = 0;
 
     virtual CsrBase* csr(unsigned address) = 0;
-
     virtual const CsrBase* csr(unsigned address) const = 0;
+
+    virtual CsrBase* csr(const std::string &address) = 0;
+    virtual const CsrBase* csr(const std::string &address) const = 0;
 
     virtual void printState(FILE* out = stdout) const = 0;
 
