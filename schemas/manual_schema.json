@@ -1,41 +1,38 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-
   "type": "object",
   "required": ["$schema", "kind", "name"],
   "properties": {
     "$schema": {
-      "type": "string",
       "const": "manual_schema.json#"
     },
+    "$source": {
+      "description": "Relative (from arch/) path to the original source file",
+      "type": "string",
+      "format": "uri-reference"
+    },
     "kind": {
-      "type": "string",
       "const": "manual"
-    },
-    "name": {
-      "type": "string",
-      "description": "Name (database key) of this manual"
-    },
-    "marketing_name": {
-      "type": "string",
-      "description": "The publicly displayed manual name"
-    },
-    "state": {
-      "$ref": "schema_defs.json#/$defs/spec_state",
-      "description": "State of this version"
-    },
-    "url": {
-      "type": "string",
-      "format": "uri",
-      "description": "URL to the repository"
     },
     "license": {
       "$ref": "schema_defs.json#/$defs/license"
     },
-    "$source": {
+    "marketing_name": {
+      "description": "The publicly displayed manual name",
+      "type": "string"
+    },
+    "name": {
+      "description": "Name (database key) of this manual",
+      "type": "string"
+    },
+    "state": {
+      "description": "State of this version",
+      "$ref": "schema_defs.json#/$defs/spec_state"
+    },
+    "url": {
+      "description": "URL to the repository",
       "type": "string",
-      "format": "uri-reference",
-      "description": "Relative (from arch/) path to the original source file"
+      "format": "uri"
     }
   },
   "additionalProperties": false

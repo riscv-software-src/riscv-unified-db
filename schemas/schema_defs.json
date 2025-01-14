@@ -1,88 +1,28 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-
   "title": "Common patterns used by all schemas",
-
   "$defs": {
     "$source": {
+      "description": "Path to the source file containing this object",
       "type": "string",
-      "format": "uri-reference",
-      "description": "Path to the source file containing this object"
+      "format": "uri-reference"
     },
-    "semantic_version": {
-      "type": "string",
-      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
-    },
-    "rvi_version": {
-      "type": "string",
-      "pattern": "^[0-9]+(\\.[0-9]+(\\.[0-9]+(-pre)?)?)?$"
-    },
-    "field_location": {
-      "oneOf": [
-        { "type": "number", "description": "Location of a single bit" },
-        {
-          "type": "string",
-          "pattern": "^[0-9]+-[0-9]+$",
-          "description": "Location range of a multi-bit field"
-        }
-      ],
-      "description": "Location of a field in a register"
-    },
-    "revision_history_entry": {
+    "author": {
       "type": "object",
+      "required": ["name"],
       "properties": {
-        "revision": {
-          "$ref": "#/$defs/semantic_version",
-          "description": "Revision number"
-        },
-        "date": {
+        "email": {
+          "description": "Author's email address",
           "type": "string",
-          "format": "date",
-          "description": "The date of the change"
+          "format": "email"
         },
-        "changes": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "List of changes"
-        }
-      },
-      "required": ["date", "revision", "changes"],
-      "additionalProperties": false
-    },
-    "spec_state": {
-      "type": "string",
-      "enum": [
-        "development",
-        "frozen",
-        "public-review",
-        "ratification-ready",
-        "ratified",
-        "nonstandard-released"
-      ]
-    },
-    "license": {
-      "description": "License that applies to the textual documentation for this extension",
-      "type": "object",
-      "properties": {
         "name": {
-          "type": "string",
-          "description": "License name"
+          "description": "Author's full name",
+          "type": "string"
         },
-        "id": {
-          "type": "string",
-          "description": "License identifier"
-        },
-        "url": {
-          "type": "string",
-          "format": "uri",
-          "description": "Link to license text"
-        },
-        "text_url": {
-          "type": "string",
-          "format": "uri",
-          "description": "Link to license text"
+        "organization": {
+          "description": "Author's organization, which should be an RVI member (or individual)",
+          "$ref": "#/$defs/organization"
         }
       },
       "additionalProperties": false
@@ -92,15 +32,37 @@
       "type": "object",
       "properties": {
         "name": {
-          "type": "string",
-          "description": "Name of the company. Should be \"RISC-V International\" for standard extensions"
+          "description": "Name of the company. Should be \"RISC-V International\" for standard extensions",
+          "type": "string"
         },
         "url": {
+          "description": "Website of the company. Should be \"https://riscv.org\" for standard extensions",
           "type": "string",
-          "format": "uri",
-          "description": "Website of the company. Should be \"https://riscv.org\" for standard extensions"
+          "format": "uri"
         }
       }
+    },
+    "date": {
+      "description": "A specific day in YYYY-MM-DD format",
+      "examples": ["2018-11-13", "2024-12-31"],
+      "type": "string",
+      "format": "date"
+    },
+    "extension_name": {
+      "type": "string",
+      "pattern": "^(([A-WY])|([SXZ][a-z0-9]+))$"
+    },
+    "extension_name_and_version": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/$defs/extension_name"
+        },
+        {
+          "$ref": "#/$defs/extension_version"
+        }
+      ],
+      "additionalItems": false
     },
     "extension_presence": {
       "oneOf": [
@@ -121,55 +83,15 @@
         }
       ]
     },
-    "date": {
-      "type": "string",
-      "format": "date",
-      "description": "A specific day in YYYY-MM-DD format",
-      "examples": ["2018-11-13", "2024-12-31"]
-    },
-    "extension_name": {
-      "type": "string",
-      "pattern": "^(([A-WY])|([SXZ][a-z0-9]+))$"
-    },
-    "extension_version": {
-      "$ref": "#/$defs/rvi_version"
-    },
-    "requirement_string": {
-      "type": "string",
-      "pattern": "^((>=)|(>)|(~>)|(<)|(<=)|(=))?\\s*[0-9]+(\\.[0-9]+(\\.[0-9]+(-[a-fA-F0-9]+)?)?)?$"
-    },
-    "version_requirements": {
-      "description": "A (set of) version requirements",
+    "extension_requirement": {
+      "description": "A requirement on an extension. Can either specify just an extension name, in which case version '>= 0' is implied, or both a name and a requirement",
       "oneOf": [
-        {
-          "$ref": "#/$defs/requirement_string"
-        },
-        {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/requirement_string"
-          }
-        }
-      ]
-    },
-    "extension_name_and_version": {
-      "type": "array",
-      "items": [
         {
           "$ref": "#/$defs/extension_name"
         },
         {
-          "$ref": "#/$defs/extension_version"
-        }
-      ],
-      "additionalItems": false
-    },
-    "extension_requirement": {
-      "description": "A requirement on an extension. Can either specify just an extension name, in which case version '>= 0' is implied, or both a name and a requirement",
-      "oneOf": [
-        { "$ref": "#/$defs/extension_name" },
-        {
           "type": "object",
+          "required": ["name"],
           "properties": {
             "name": {
               "$ref": "#/$defs/extension_name"
@@ -178,24 +100,98 @@
               "$ref": "#/$defs/version_requirements"
             }
           },
-          "required": ["name"],
           "additionalProperties": false
         }
       ]
     },
+    "extension_version": {
+      "$ref": "#/$defs/rvi_version"
+    },
+    "field_location": {
+      "description": "Location of a field in a register",
+      "oneOf": [
+        {
+          "description": "Location of a single bit",
+          "type": "number"
+        },
+        {
+          "description": "Location range of a multi-bit field",
+          "type": "string",
+          "pattern": "^[0-9]+-[0-9]+$"
+        }
+      ]
+    },
+    "license": {
+      "description": "License that applies to the textual documentation for this extension",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "License identifier",
+          "type": "string"
+        },
+        "name": {
+          "description": "License name",
+          "type": "string"
+        },
+        "text_url": {
+          "description": "Link to license text",
+          "type": "string",
+          "format": "uri"
+        },
+        "url": {
+          "description": "Link to license text",
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "additionalProperties": false
+    },
+    "organization": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "description": "Organization name",
+          "type": "string"
+        },
+        "url": {
+          "description": "Organization URL",
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "additionalProperties": false
+    },
+    "parameter_constraint": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "$ref": "json-schema-draft-07.json#"
+        },
+        "when": {
+          "$ref": "#/$defs/when_condition"
+        }
+      }
+    },
+    "requirement_string": {
+      "type": "string",
+      "pattern": "^((>=)|(>)|(~>)|(<)|(<=)|(=))?\\s*[0-9]+(\\.[0-9]+(\\.[0-9]+(-[a-fA-F0-9]+)?)?)?$"
+    },
     "requires_entry": {
       "oneOf": [
-        { "$ref": "#/$defs/extension_requirement" },
+        {
+          "$ref": "#/$defs/extension_requirement"
+        },
         {
           "type": "object",
           "properties": {
-            "anyOf": {
+            "allOf": {
               "type": "array",
               "items": {
                 "$ref": "#/$defs/requires_entry"
               }
             },
-            "allOf": {
+            "anyOf": {
               "type": "array",
               "items": {
                 "$ref": "#/$defs/requires_entry"
@@ -212,41 +208,61 @@
         }
       ]
     },
-    "author": {
+    "revision_history_entry": {
       "type": "object",
-      "required": ["name"],
+      "required": ["date", "revision", "changes"],
       "properties": {
-        "name": {
-          "type": "string",
-          "description": "Author's full name"
+        "changes": {
+          "description": "List of changes",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
-        "email": {
+        "date": {
+          "description": "The date of the change",
           "type": "string",
-          "format": "email",
-          "description": "Author's email address"
+          "format": "date"
         },
-        "organization": {
-          "$ref": "#/$defs/organization",
-          "description": "Author's organization, which should be an RVI member (or individual)"
+        "revision": {
+          "description": "Revision number",
+          "$ref": "#/$defs/semantic_version"
         }
       },
       "additionalProperties": false
     },
-    "organization": {
-      "type": "object",
-      "required": ["name"],
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "Organization name"
+    "rvi_version": {
+      "type": "string",
+      "pattern": "^[0-9]+(\\.[0-9]+(\\.[0-9]+(-pre)?)?)?$"
+    },
+    "semantic_version": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+    },
+    "spec_state": {
+      "type": "string",
+      "enum": [
+        "development",
+        "frozen",
+        "public-review",
+        "ratification-ready",
+        "ratified",
+        "nonstandard-released"
+      ]
+    },
+    "version_requirements": {
+      "description": "A (set of) version requirements",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/requirement_string"
         },
-        "url": {
-          "type": "string",
-          "format": "uri",
-          "description": "Organization URL"
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/requirement_string"
+          }
         }
-      },
-      "additionalProperties": false
+      ]
     },
     "when_condition": {
       "type": "object",
@@ -256,17 +272,6 @@
         }
       },
       "additionalProperties": false
-    },
-    "parameter_constraint": {
-      "type": "object",
-      "properties": {
-        "schema": {
-          "$ref": "json-schema-draft-07.json#"
-        },
-        "when": {
-          "$ref": "#/$defs/when_condition"
-        }
-      }
     }
   }
 }

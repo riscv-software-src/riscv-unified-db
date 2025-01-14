@@ -1,56 +1,37 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-
+  "$ref": "#/$defs/inst_data",
   "$defs": {
-    "field_location": {
-      "description": "Location specifier for a field",
-      "oneOf": [
-        {
-          "type": "string",
-          "pattern": "^(([0-9]+)|([0-9]+-[0-9]+))(\\|(([0-9]+)|([0-9]+-[0-9]+)))*$"
-        },
-        {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 31
-        }
-      ]
-    },
-    "variable_metadata": {
+    "encoding": {
+      "type": "object",
       "properties": {
-        "location": {
-          "$ref": "#/$defs/field_location"
-        },
-        "sign_extend": {
-          "type": "boolean",
-          "default": false,
-          "description": "Whether or not the field should be sign extended when used"
-        },
-        "left_shift": {
-          "type": "integer",
-          "default": 0,
-          "description": "Amount the field should be left shifted before use (e.g., for opcode[5:3], left_shift is 3)"
-        },
-        "alias": {
-          "type": "string",
-          "description": "Alias of the field. Used when a field can represent multiple things, e.g., when a source register is also the destination register"
-        },
-        "not": {
+        "additionalProperties": false,
+        "match": {
           "oneOf": [
             {
-              "type": "integer"
+              "description": "48-bit encoding",
+              "type": "string",
+              "pattern": "^[01-]{43}11111$"
             },
             {
-              "type": "array",
-              "items": {
-                "type": "integer"
-              }
+              "description": "32-bit encoding",
+              "type": "string",
+              "pattern": "^[01-]{30}11$"
+            },
+            {
+              "description": "16-bit encoding",
+              "type": "string",
+              "pattern": "^[01-]{14}((00)|(01)|(10))$"
             }
-          ],
-          "description": "Specific value(s) that are not permitted for this field."
+          ]
+        },
+        "variables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/field"
+          }
         }
       },
-      "required": ["location"],
       "additionalProperties": false
     },
     "field": {
@@ -59,45 +40,22 @@
       "oneOf": [
         {
           "properties": {
+            "$inherits": {
+              "description": "Reference to variable metadata",
+              "type": "string",
+              "pattern": "^common/inst_variable_types\\.yaml#/[a-zA-Z0-9_]+"
+            },
             "name": {
               "type": "string"
-            },
-            "$inherits": {
-              "type": "string",
-              "pattern": "^common/inst_variable_types\\.yaml#/[a-zA-Z0-9_]+",
-              "description": "Reference to variable metadata"
             }
           },
           "additionalProperties": false
         },
         {
+          "required": ["name", "location"],
           "properties": {
-            "name": {
-              "type": "string"
-            },
-            "$child_of": {
-              "type": "string",
-              "pattern": "^common/inst_variable_types\\.yaml#/[a-zA-Z0-9_]+",
-              "description": "Cookie crumb of the reference to variable metadata"
-            },
-            "location": {
-              "$ref": "#/$defs/field_location"
-            },
-            "sign_extend": {
-              "type": "boolean",
-              "default": false,
-              "description": "Whether or not the field should be sign extended when used"
-            },
-            "left_shift": {
-              "type": "integer",
-              "default": 0,
-              "description": "Amount the field should be left shifted before use (e.g., for opcode[5:3], left_shift is 3)"
-            },
-            "alias": {
-              "type": "string",
-              "description": "Alias of the field. Used when a field can represent multiple things, e.g., when a source register is also the destination register"
-            },
             "not": {
+              "description": "Specific value(s) that are not permitted for this field.",
               "oneOf": [
                 {
                   "type": "integer"
@@ -108,46 +66,51 @@
                     "type": "integer"
                   }
                 }
-              ],
-              "description": "Specific value(s) that are not permitted for this field."
+              ]
+            },
+            "$child_of": {
+              "description": "Cookie crumb of the reference to variable metadata",
+              "type": "string",
+              "pattern": "^common/inst_variable_types\\.yaml#/[a-zA-Z0-9_]+"
+            },
+            "alias": {
+              "description": "Alias of the field. Used when a field can represent multiple things, e.g., when a source register is also the destination register",
+              "type": "string"
+            },
+            "left_shift": {
+              "description": "Amount the field should be left shifted before use (e.g., for opcode[5:3], left_shift is 3)",
+              "default": 0,
+              "type": "integer"
+            },
+            "location": {
+              "$ref": "#/$defs/field_location"
+            },
+            "name": {
+              "type": "string"
+            },
+            "sign_extend": {
+              "description": "Whether or not the field should be sign extended when used",
+              "default": false,
+              "type": "boolean"
             }
           },
-          "required": ["name", "location"],
           "additionalProperties": false
         }
       ]
     },
-    "encoding": {
-      "type": "object",
-      "properties": {
-        "match": {
-          "oneOf": [
-            {
-              "type": "string",
-              "pattern": "^[01-]{43}11111$",
-              "description": "48-bit encoding"
-            },
-            {
-              "type": "string",
-              "pattern": "^[01-]{30}11$",
-              "description": "32-bit encoding"
-            },
-            {
-              "type": "string",
-              "pattern": "^[01-]{14}((00)|(01)|(10))$",
-              "description": "16-bit encoding"
-            }
-          ]
+    "field_location": {
+      "description": "Location specifier for a field",
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^(([0-9]+)|([0-9]+-[0-9]+))(\\|(([0-9]+)|([0-9]+-[0-9]+)))*$"
         },
-        "variables": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/field"
-          }
-        },
-        "additionalProperties": false
-      },
-      "additionalProperties": false
+        {
+          "type": "integer",
+          "maximum": 31,
+          "minimum": 0
+        }
+      ]
     },
     "inst_data": {
       "type": "object",
@@ -161,38 +124,67 @@
         "access",
         "assembly"
       ],
-      "additionalProperties": false,
       "properties": {
         "$schema": {
+          "description": "Path to schema, relative to <UDB ROOT>/schemas",
           "type": "string",
-          "format": "uri-reference",
           "const": "inst_schema.json#",
-          "description": "Path to schema, relative to <UDB ROOT>/schemas"
-        },
-        "kind": {
-          "type": "string",
-          "const": "instruction"
-        },
-        "name": {
-          "type": "string",
-          "pattern": "^[a-z0-9.]+$",
-          "description": "Instruction mnemonic (must be lowercase)"
-        },
-        "long_name": {
-          "type": "string",
-          "description": "Short description of the instruction"
+          "format": "uri-reference"
         },
         "description": {
-          "type": "string",
-          "description": "Detailed description of the instruction"
+          "description": "Detailed description of the instruction",
+          "type": "string"
+        },
+        "$source": {
+          "description": "Path to the source file. Used by downstream tooling; not expected to be found in handwritten files",
+          "type": "string"
+        },
+        "access": {
+          "type": "object",
+          "required": ["s", "u", "vs", "vu"],
+          "properties": {
+            "m": {
+              "default": "always",
+              "enum": ["always", "sometimes", "never"]
+            },
+            "s": {
+              "default": "always",
+              "enum": ["always", "sometimes", "never"]
+            },
+            "u": {
+              "default": "always",
+              "enum": ["always", "sometimes", "never"]
+            },
+            "vs": {
+              "default": "always",
+              "enum": ["always", "sometimes", "never"]
+            },
+            "vu": {
+              "default": "always",
+              "enum": ["always", "sometimes", "never"]
+            }
+          }
+        },
+        "access_detail": {
+          "description": "Extra detail about access when at least one mode is 'sometimes'",
+          "type": "string"
+        },
+        "assembly": {
+          "description": "Assembly format of the instruction. Can use decode variables",
+          "type": "string"
+        },
+        "base": {
+          "description": "When present, instruction is only defined for RV32 or RV64 base",
+          "enum": [32, 64]
+        },
+        "data_independent_timing": {
+          "description": "Whether or not the instruction must execute with data-independent timing when the Zkt extension is supported",
+          "default": false,
+          "type": "boolean"
         },
         "definedBy": {
-          "$ref": "schema_defs.json#/$defs/requires_entry",
-          "description": "Extension(s) that defines the instruction"
-        },
-        "excludedBy": {
-          "$ref": "schema_defs.json#/$defs/requires_entry",
-          "description": "Extension(s) that, if implemented, exclude the instruction (even if the definedBy extension is also implemented)"
+          "description": "Extension(s) that defines the instruction",
+          "$ref": "schema_defs.json#/$defs/requires_entry"
         },
         "encoding": {
           "description": "Instruction encoding and decode variables",
@@ -202,6 +194,7 @@
             },
             {
               "type": "object",
+              "required": ["RV32", "RV64"],
               "properties": {
                 "RV32": {
                   "$ref": "#/$defs/encoding"
@@ -210,61 +203,30 @@
                   "$ref": "#/$defs/encoding"
                 }
               },
-              "required": ["RV32", "RV64"],
               "additionalProperties": false
             }
           ]
         },
-        "base": {
-          "enum": [32, 64],
-          "description": "When present, instruction is only defined for RV32 or RV64 base"
+        "excludedBy": {
+          "description": "Extension(s) that, if implemented, exclude the instruction (even if the definedBy extension is also implemented)",
+          "$ref": "schema_defs.json#/$defs/requires_entry"
         },
-        "access": {
-          "type": "object",
-          "required": ["s", "u", "vs", "vu"],
-          "properties": {
-            "m": {
-              "enum": ["always", "sometimes", "never"],
-              "default": "always"
-            },
-            "s": {
-              "enum": ["always", "sometimes", "never"],
-              "default": "always"
-            },
-            "u": {
-              "enum": ["always", "sometimes", "never"],
-              "default": "always"
-            },
-            "vs": {
-              "enum": ["always", "sometimes", "never"],
-              "default": "always"
-            },
-            "vu": {
-              "enum": ["always", "sometimes", "never"],
-              "default": "always"
-            }
-          }
-        },
-        "access_detail": {
+        "kind": {
           "type": "string",
-          "description": "Extra detail about access when at least one mode is 'sometimes'"
+          "const": "instruction"
+        },
+        "long_name": {
+          "description": "Short description of the instruction",
+          "type": "string"
+        },
+        "name": {
+          "description": "Instruction mnemonic (must be lowercase)",
+          "type": "string",
+          "pattern": "^[a-z0-9.]+$"
         },
         "operation()": {
-          "type": "string",
-          "description": "Functional description of the instruction using IDL language"
-        },
-        "sail()": {
-          "type": "string",
-          "description": "Functional description of the instruction using Sail"
-        },
-        "assembly": {
-          "type": "string",
-          "description": "Assembly format of the instruction. Can use decode variables"
-        },
-        "data_independent_timing": {
-          "type": "boolean",
-          "description": "Whether or not the instruction must execute with data-independent timing when the Zkt extension is supported",
-          "default": false
+          "description": "Functional description of the instruction using IDL language",
+          "type": "string"
         },
         "pseudoinstructions": {
           "description": "Variations of this instruction that form a pseudoinstruction",
@@ -272,25 +234,61 @@
           "items": {
             "type": "object",
             "properties": {
-              "when": {
-                "type": "string",
-                "description": "Condition when the instruction has an alias"
-              },
               "to": {
-                "type": "string",
-                "description": "pseudoinstruction format"
+                "description": "pseudoinstruction format",
+                "type": "string"
+              },
+              "when": {
+                "description": "Condition when the instruction has an alias",
+                "type": "string"
               }
             },
             "additionalProperties": false
           }
         },
-        "$source": {
-          "description": "Path to the source file. Used by downstream tooling; not expected to be found in handwritten files",
+        "sail()": {
+          "description": "Functional description of the instruction using Sail",
           "type": "string"
         }
-      }
+      },
+      "additionalProperties": false
+    },
+    "variable_metadata": {
+      "required": ["location"],
+      "properties": {
+        "not": {
+          "description": "Specific value(s) that are not permitted for this field.",
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          ]
+        },
+        "alias": {
+          "description": "Alias of the field. Used when a field can represent multiple things, e.g., when a source register is also the destination register",
+          "type": "string"
+        },
+        "left_shift": {
+          "description": "Amount the field should be left shifted before use (e.g., for opcode[5:3], left_shift is 3)",
+          "default": 0,
+          "type": "integer"
+        },
+        "location": {
+          "$ref": "#/$defs/field_location"
+        },
+        "sign_extend": {
+          "description": "Whether or not the field should be sign extended when used",
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
     }
-  },
-
-  "$ref": "#/$defs/inst_data"
+  }
 }

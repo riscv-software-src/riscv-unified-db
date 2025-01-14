@@ -1,42 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-
+  "$ref": "#/$defs/ext_data",
   "$defs": {
-    "param_data": {
-      "type": "object",
-      "required": ["description", "schema"],
-      "properties": {
-        "description": {
-          "type": "string",
-          "description": "Parameter description, including list of valid values"
-        },
-        "also_defined_in": {
-          "oneOf": [
-            {
-              "$ref": "schema_defs.json#/$defs/extension_name"
-            },
-            {
-              "type": "array",
-              "items": {
-                "$ref": "schema_defs.json#/$defs/extension_name"
-              }
-            }
-          ],
-          "description": "When a parameter is defined by multiple extensions, declare the other extensions here. The parameter *must* mean the same thing in all extensions."
-        },
-        "schema": {
-          "$ref": "json-schema-draft-07.json#"
-        },
-        "when": {
-          "$ref": "schema_defs.json#/$defs/when_condition"
-        },
-        "extra_validation": {
-          "description": "Ruby code to perform extra validation, when it is not easily expressed with JSON Schema (_e.g._, because it depends on the value of another parameter)",
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
-    },
     "ext_data": {
       "type": "object",
       "required": [
@@ -49,41 +14,32 @@
       ],
       "properties": {
         "$schema": {
+          "description": "Path to schema, relative to <UDB ROOT>/schemas",
           "type": "string",
-          "format": "uri-reference",
           "const": "ext_schema.json#",
-          "description": "Path to schema, relative to <UDB ROOT>/schemas"
-        },
-        "kind": {
-          "type": "string",
-          "const": "extension",
-          "description": "Object type"
-        },
-        "name": { "$ref": "schema_defs.json#/$defs/extension_name" },
-        "long_name": {
-          "type": "string",
-          "description": "One line description for the extension"
+          "format": "uri-reference"
         },
         "description": {
-          "type": "string",
-          "description": "Full documentation of the extension"
+          "description": "Full documentation of the extension",
+          "type": "string"
         },
-        "rvi_jira_issue": {
-          "type": "string",
-          "description": "JIRA issue number for the RVI issue that tracks this extension"
+        "type": {
+          "enum": ["unprivileged", "privileged"]
+        },
+        "$source": {
+          "description": "Source file where this extension was defined",
+          "type": "string"
         },
         "company": {
           "description": "The company that developed this extension",
           "$ref": "schema_defs.json#/$defs/company"
         },
-        "doc_license": {
-          "$ref": "schema_defs.json#/$defs/license"
-        },
-        "type": { "enum": ["unprivileged", "privileged"] },
         "conflicts": {
           "description": "Extension(s) that conflict with this extension; both cannot be implemented at the same time",
           "oneOf": [
-            { "$ref": "schema_defs.json#/$defs/extension_requirement" },
+            {
+              "$ref": "schema_defs.json#/$defs/extension_requirement"
+            },
             {
               "type": "array",
               "items": {
@@ -92,157 +48,26 @@
             }
           ]
         },
-        "versions": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["version", "state"],
-            "if": {
-              "properties": {
-                "state": {
-                  "const": "ratified"
-                }
-              }
-            },
-            "then": {
-              "required": ["ratification_date"]
-            },
-            "properties": {
-              "version": {
-                "$ref": "schema_defs.json#/$defs/extension_version"
-              },
-              "state": {
-                "$ref": "schema_defs.json#/$defs/spec_state",
-                "description": "Current state of this version"
-              },
-              "repositories": {
-                "description": "Repositories associated with this extension",
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "url": {
-                      "type": "string",
-                      "format": "uri"
-                    },
-                    "branch": {
-                      "type": "string",
-                      "description": "Branch/tag where the work is done"
-                    }
-                  },
-                  "additionalProperties": false
-                }
-              },
-              "ratification_date": {
-                "oneOf": [
-                  {
-                    "type": "string",
-                    "pattern": "^20[0-9][0-9]-(0[1-9]|1[0-2])$",
-                    "$comment": "When ratification date is known",
-                    "description": "A specific year and month in YYYY-MM format",
-                    "examples": ["2019-01", "2024-12"]
-                  },
-                  {
-                    "type": "string",
-                    "pattern": "^unknown$",
-                    "$comment": "When ratification date is unknown"
-                  },
-                  { "type": "null", "$comment": "When version isn't ratified" }
-                ]
-              },
-              "changes": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Changes since last version"
-              },
-              "url": {
-                "type": "string",
-                "format": "uri",
-                "description": "Link to ratified document"
-              },
-              "implies": {
-                "description": "Extension(s) implied by this extension (i.e., any subextensions)",
-                "oneOf": [
-                  {
-                    "$ref": "schema_defs.json#/$defs/extension_name_and_version"
-                  },
-                  {
-                    "type": "array",
-                    "items": {
-                      "$ref": "schema_defs.json#/$defs/extension_name_and_version"
-                    }
-                  }
-                ]
-              },
-              "requires": {
-                "description": "Extension(s) required by this extension",
-                "$ref": "schema_defs.json#/$defs/requires_entry"
-              },
-              "contributors": {
-                "description": "List of contributors to this version of the extension",
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "name": {
-                      "type": "string",
-                      "description": "Contributor name, in 'GIVEN_NAME SURNAME' format"
-                    },
-                    "company": {
-                      "type": "string",
-                      "description": "Company the contributor worked for, or 'Individual'"
-                    },
-                    "email": {
-                      "type": "string",
-                      "format": "email",
-                      "description": "E-mail address for the contributor"
-                    }
-                  }
-                }
-              },
-              "param_constraints": {
-                "type": "object",
-                "patternProperties": {
-                  "[A-Z][a-zA-Z0-9_]": {
-                    "type": "object",
-                    "properties": {
-                      "schema": {
-                        "$ref": "json-schema-draft-07.json#",
-                        "description": "Extra schema constraints for the parameter"
-                      },
-                      "extra_validation": {
-                        "type": "string",
-                        "description": "Extra validation to be performed in Ruby after JSON schema validation. Useful for complex conditions JSON Schema cannot handle (e.g., cross-parameter, data-dependent validation)"
-                      }
-                    },
-                    "additionalProperties": false
-                  }
-                },
-                "additionalProperties": false
-              }
-            },
-            "additionalProperties": false
-          }
+        "doc_license": {
+          "$ref": "schema_defs.json#/$defs/license"
         },
         "exception_codes": {
           "type": "array",
           "items": {
-            "type": "object",
             "description": "Exceptions defined by this extension",
+            "type": "object",
             "required": ["num", "name", "var"],
             "properties": {
+              "name": {
+                "description": "Long-form name (can have special characters)",
+                "type": "string"
+              },
               "num": {
                 "type": "integer"
               },
-              "name": {
-                "type": "string",
-                "description": "Long-form name (can have special characters)"
-              },
               "var": {
-                "type": "string",
-                "description": "Field name for the InterruptCode enum in IDL"
+                "description": "Field name for the InterruptCode enum in IDL",
+                "type": "string"
               },
               "when": {
                 "type": "object",
@@ -260,23 +85,35 @@
         "interrupt_codes": {
           "type": "array",
           "items": {
-            "type": "object",
             "description": "Interrupts defined by this extension",
+            "type": "object",
             "properties": {
+              "name": {
+                "description": "Long-form name (can have special characters)",
+                "type": "string"
+              },
               "num": {
                 "type": "integer"
               },
-              "name": {
-                "type": "string",
-                "description": "Long-form name (can have special characters)"
-              },
               "var": {
-                "type": "string",
-                "description": "Field name for the InterruptCode enum in IDL"
+                "description": "Field name for the InterruptCode enum in IDL",
+                "type": "string"
               }
             },
             "additionalProperties": false
           }
+        },
+        "kind": {
+          "description": "Object type",
+          "type": "string",
+          "const": "extension"
+        },
+        "long_name": {
+          "description": "One line description for the extension",
+          "type": "string"
+        },
+        "name": {
+          "$ref": "schema_defs.json#/$defs/extension_name"
         },
         "params": {
           "type": "object",
@@ -287,14 +124,184 @@
           },
           "additionalProperties": false
         },
-        "$source": {
-          "type": "string",
-          "description": "Source file where this extension was defined"
+        "rvi_jira_issue": {
+          "description": "JIRA issue number for the RVI issue that tracks this extension",
+          "type": "string"
+        },
+        "versions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "if": {
+              "properties": {
+                "state": {
+                  "const": "ratified"
+                }
+              }
+            },
+            "then": {
+              "required": ["ratification_date"]
+            },
+            "required": ["version", "state"],
+            "properties": {
+              "requires": {
+                "description": "Extension(s) required by this extension",
+                "$ref": "schema_defs.json#/$defs/requires_entry"
+              },
+              "changes": {
+                "description": "Changes since last version",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "contributors": {
+                "description": "List of contributors to this version of the extension",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "company": {
+                      "description": "Company the contributor worked for, or 'Individual'",
+                      "type": "string"
+                    },
+                    "email": {
+                      "description": "E-mail address for the contributor",
+                      "type": "string",
+                      "format": "email"
+                    },
+                    "name": {
+                      "description": "Contributor name, in 'GIVEN_NAME SURNAME' format",
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "implies": {
+                "description": "Extension(s) implied by this extension (i.e., any subextensions)",
+                "oneOf": [
+                  {
+                    "$ref": "schema_defs.json#/$defs/extension_name_and_version"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "schema_defs.json#/$defs/extension_name_and_version"
+                    }
+                  }
+                ]
+              },
+              "param_constraints": {
+                "type": "object",
+                "patternProperties": {
+                  "[A-Z][a-zA-Z0-9_]": {
+                    "type": "object",
+                    "properties": {
+                      "extra_validation": {
+                        "description": "Extra validation to be performed in Ruby after JSON schema validation. Useful for complex conditions JSON Schema cannot handle (e.g., cross-parameter, data-dependent validation)",
+                        "type": "string"
+                      },
+                      "schema": {
+                        "description": "Extra schema constraints for the parameter",
+                        "$ref": "json-schema-draft-07.json#"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              },
+              "ratification_date": {
+                "oneOf": [
+                  {
+                    "description": "A specific year and month in YYYY-MM format",
+                    "$comment": "When ratification date is known",
+                    "examples": ["2019-01", "2024-12"],
+                    "type": "string",
+                    "pattern": "^20[0-9][0-9]-(0[1-9]|1[0-2])$"
+                  },
+                  {
+                    "$comment": "When ratification date is unknown",
+                    "type": "string",
+                    "pattern": "^unknown$"
+                  },
+                  {
+                    "$comment": "When version isn't ratified",
+                    "type": "null"
+                  }
+                ]
+              },
+              "repositories": {
+                "description": "Repositories associated with this extension",
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "branch": {
+                      "description": "Branch/tag where the work is done",
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "state": {
+                "description": "Current state of this version",
+                "$ref": "schema_defs.json#/$defs/spec_state"
+              },
+              "url": {
+                "description": "Link to ratified document",
+                "type": "string",
+                "format": "uri"
+              },
+              "version": {
+                "$ref": "schema_defs.json#/$defs/extension_version"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "param_data": {
+      "type": "object",
+      "required": ["description", "schema"],
+      "properties": {
+        "description": {
+          "description": "Parameter description, including list of valid values",
+          "type": "string"
+        },
+        "also_defined_in": {
+          "description": "When a parameter is defined by multiple extensions, declare the other extensions here. The parameter *must* mean the same thing in all extensions.",
+          "oneOf": [
+            {
+              "$ref": "schema_defs.json#/$defs/extension_name"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "schema_defs.json#/$defs/extension_name"
+              }
+            }
+          ]
+        },
+        "extra_validation": {
+          "description": "Ruby code to perform extra validation, when it is not easily expressed with JSON Schema (_e.g._, because it depends on the value of another parameter)",
+          "type": "string"
+        },
+        "schema": {
+          "$ref": "json-schema-draft-07.json#"
+        },
+        "when": {
+          "$ref": "schema_defs.json#/$defs/when_condition"
         }
       },
       "additionalProperties": false
     }
-  },
-
-  "$ref": "#/$defs/ext_data"
+  }
 }
