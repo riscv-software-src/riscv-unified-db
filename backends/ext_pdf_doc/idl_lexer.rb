@@ -34,16 +34,16 @@ module Rouge
 
       state :root do
         rule ws, Text::Whitespace
-        rule %r{#.*}, Comment::Single
-        rule %r{"[^"]*"}, Str::Double
-        rule %r{[A-Z][a-zA-Z0-9]*}, Name::Constant
-        rule %r{(?:(?:[0-9]+)|(?:XLEN))?'s?[bodh]?[0-9_a-fA-F]+}, Num
-        rule %r/0x[0-9a-f]+[lu]*/i, Num::Hex
-        rule %r/0[0-7]+[lu]*/i, Num::Oct
-        rule %r{\d+}, Num::Integer
-        rule %r{(?:true|false|\$encoding|\$pc|\$signed|\$bits)}, Name::Builtin
-        rule %r{[.,;:\[\]\(\)\}\{]}, Punctuation
-        rule %r([~!%^&*+=\|?:<>/-]), Operator
+        rule(/#.*/, Comment::Single)
+        rule(/"[^"]*"/, Str::Double)
+        rule(/[A-Z][a-zA-Z0-9]*/, Name::Constant)
+        rule(/(?:(?:[0-9]+)|(?:XLEN))?'s?[bodh]?[0-9_a-fA-F]+/, Num)
+        rule(/0x[0-9a-f]+[lu]*/i, Num::Hex)
+        rule(/0[0-7]+[lu]*/i, Num::Oct)
+        rule(/\d+/, Num::Integer)
+        rule(/(?:true|false|\$encoding|\$pc|\$signed|\$bits)/, Name::Builtin)
+        rule(/[.,;:\[\]()}{]/, Punctuation)
+        rule %r{[~!%^&*+=|?:<>/-]}, Operator
         rule id do |m|
           name = m[0]
 

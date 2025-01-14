@@ -47,14 +47,14 @@ module Idl
         end
       end
 
-      unless final_else.empty?
-        current_conditions.push if_cond.invert(symtab)
+      return if final_else.empty?
 
-        final_else.body.elements.each do |e|
-          e.e.pass_find_return_values(values, current_conditions, symtab)
-        end
-        current_conditions.pop
+      current_conditions.push if_cond.invert(symtab)
+
+      final_else.body.elements.each do |e|
+        e.e.pass_find_return_values(values, current_conditions, symtab)
       end
+      current_conditions.pop
     end
   end
 

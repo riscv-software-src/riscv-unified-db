@@ -30,7 +30,7 @@ module AsciidocUtils
         when "csr"
           "xref:#csr-#{name}-def[#{link_text.gsub(']', '\]')}]"
         when "csr_field"
-          csr_name, field_name = name.split('.')
+          name.split(".")
           # "xref:csrs:#{csr_name}.adoc##{csr_name}-#{field_name}-def[#{link_text.gsub(']', '\]')}]"
           link_text
         when "ext"
@@ -47,7 +47,7 @@ module AsciidocUtils
   end
 end
 
-file "#{$root}/ext/docs-resources/themes/riscv-pdf.yml" => "#{$root}/.gitmodules" do |t|
+file "#{$root}/ext/docs-resources/themes/riscv-pdf.yml" => "#{$root}/.gitmodules" do |_t|
   system "git submodule update --init ext/docs-resources"
 end
 
@@ -111,7 +111,7 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/html/.*_extension\.html} => proc { |tname|
 end
 
 rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
-  config_name = Pathname.new(tname).relative_path_from("#{$root}/gen/ext_pdf_doc").to_s.split("/")[0]
+  Pathname.new(tname).relative_path_from("#{$root}/gen/ext_pdf_doc").to_s.split("/")[0]
   ext_name = Pathname.new(tname).basename(".adoc").to_s.split("_")[0..-2].join("_")
   arch_yaml_paths =
     if File.exist?("#{$root}/arch/ext/#{ext_name}.yaml")

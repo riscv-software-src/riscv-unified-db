@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-require 'ruby-prof-flamegraph'
+require "ruby-prof-flamegraph"
 
 require_relative "obj"
-
 
 # model of a specific instruction in a specific base (RV32/RV64)
 class Instruction < DatabaseObject
@@ -37,13 +36,10 @@ class Instruction < DatabaseObject
         elsif vars_match != 1
           raise ValidationError, "In instruction, #{inst_name}, bit #{i} is covered by more than one variable"
         end
-      else
+      elsif !variables.nil? && !variables.none? { |variable| ary_from_location(variable["location"]).include?(i) }
         # make sure no variable covers this bit
-        unless variables.nil?
-          unless variables.none? { |variable| ary_from_location(variable["location"]).include?(i) }
-            raise ValidationError, "In instruction, #{inst_name}, bit #{i} is covered by both a variable and the match string"
-          end
-        end
+        raise ValidationError,
+              "In instruction, #{inst_name}, bit #{i} is covered by both a variable and the match string"
       end
     end
   end
@@ -60,21 +56,17 @@ class Instruction < DatabaseObject
   end
 
   def ==(other)
-    if other.is_a?(Instruction)
-      name == other.name
-    else
-      raise ArgumentError, "Instruction is not comparable to a #{other.class.name}"
-    end
+    raise ArgumentError, "Instruction is not comparable to a #{other.class.name}" unless other.is_a?(Instruction)
+
+    name == other.name
   end
 
   alias eql? ==
 
   def <=>(other)
-    if other.is_a?(Instruction)
-      name <=> other.name
-    else
-      raise ArgumentError, "Instruction is not comparable to a #{other.class.name}"
-    end
+    raise ArgumentError, "Instruction is not comparable to a #{other.class.name}" unless other.is_a?(Instruction)
+
+    name <=> other.name
   end
 
   # @return [Hash<String, String>] Hash of access permissions for each mode. The key is the lowercase name of a privilege mode, and the value is one of ['never', 'sometimes', 'always']
@@ -113,7 +105,8 @@ class Instruction < DatabaseObject
     symtab.push(ast)
     symtab.add(
       "__instruction_encoding_size",
-      Idl::Var.new("__instruction_encoding_size", Idl::Type.new(:bits, width: encoding_width.bit_length), encoding_width)
+      Idl::Var.new("__instruction_encoding_size", Idl::Type.new(:bits, width: encoding_width.bit_length),
+                   encoding_width)
     )
     symtab.add(
       "__effective_xlen",
@@ -196,9 +189,7 @@ class Instruction < DatabaseObject
     elems = []
     idx = 0
     while int != 0
-      if (int & (1 << idx)) != 0
-        elems << idx
-      end
+      elems << idx if (int & (1 << idx)) != 0
       int &= ~(1 << idx)
       idx += 1
     end
@@ -208,7 +199,7 @@ class Instruction < DatabaseObject
   # @param symtab [Idl::SymbolTable] Symbol table with global scope populated
   # @param effective_xlen [Integer] Effective XLEN to evaluate against. If nil, evaluate against all valid XLENs
   # @return [Array<Integer>] List of all exceptions that can be reached from operation()
-  def reachable_exceptions_str(symtab, effective_xlen=nil)
+  def reachable_exceptions_str(symtab, effective_xlen = nil)
     if @data["operation()"].nil?
       []
     else
@@ -219,24 +210,24 @@ class Instruction < DatabaseObject
             (
               pruned_ast = pruned_operation_ast(symtab, 32)
               print "Determining reachable exceptions from #{name}#RV32..."
-              e32 = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, 32, pruned_ast))).map { |code|
+              e32 = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, 32, pruned_ast))).map do |code|
                 etype.element_name(code)
-              }
+              end
               puts "done"
               pruned_ast = pruned_operation_ast(symtab, 64)
               print "Determining reachable exceptions from #{name}#RV64..."
-              e64 = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, 64, pruned_ast))).map { |code|
+              e64 = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, 64, pruned_ast))).map do |code|
                 etype.element_name(code)
-              }
+              end
               puts "done"
               e32 + e64
             ).uniq
           else
             pruned_ast = pruned_operation_ast(symtab, base)
             print "Determining reachable exceptions from #{name}..."
-            e = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, base, pruned_ast))).map { |code|
+            e = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, base, pruned_ast))).map do |code|
               etype.element_name(code)
-            }
+            end
             puts "done"
             e
           end
@@ -244,9 +235,10 @@ class Instruction < DatabaseObject
           effective_xlen = symtab.cfg_arch.mxlen
           pruned_ast = pruned_operation_ast(symtab, effective_xlen)
           print "Determining reachable exceptions from #{name}..."
-          e = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, effective_xlen, pruned_ast))).map { |code|
+          e = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, effective_xlen,
+                                                                        pruned_ast))).map do |code|
             etype.element_name(code)
-          }
+          end
           puts "done"
           e
         end
@@ -254,9 +246,10 @@ class Instruction < DatabaseObject
         pruned_ast = pruned_operation_ast(symtab, effective_xlen)
 
         print "Determining reachable exceptions from #{name}..."
-        e = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, effective_xlen, pruned_ast))).map { |code|
+        e = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, effective_xlen,
+                                                                      pruned_ast))).map do |code|
           etype.element_name(code)
-        }
+        end
         puts "done"
         e
       end
@@ -283,7 +276,6 @@ class Instruction < DatabaseObject
     def opcode?
       name.match?(/^[01]+$/)
     end
-
 
     def eql?(other)
       @name == other.name && @range == other.range
@@ -383,17 +375,19 @@ class Instruction < DatabaseObject
       var_bits = inst_pos_to_var_pos
 
       raise "?" if var_bits[r.last].nil?
+
       parts = [var_bits[r.last]..var_bits[r.last]]
       r.to_a.reverse[1..].each do |i|
         if var_bits[i] == (parts.last.min - 1)
           raise "??" if parts.last.max.nil?
+
           parts[-1] = var_bits[i]..parts.last.max
         else
           parts << Range.new(var_bits[i], var_bits[i])
         end
       end
 
-      parts.map { |p| p.size == 1 ? p.first.to_s : "#{p.last}:#{p.first}"}.join("|")
+      parts.map { |p| p.size == 1 ? p.first.to_s : "#{p.last}:#{p.first}" }.join("|")
     end
     private :inst_range_to_var_range
 

@@ -4,7 +4,7 @@ require "ruby-prof"
 
 # fill out templates for every csr, inst, ext, and func
 ["csr", "inst", "ext", "func"].each do |type|
-  rule %r{#{$root}/\.stamps/adoc-gen-#{type}s-.*\.stamp} => proc { |tname|
+  rule %r{#{$root}/\.stamps/adoc-gen-#{type}s-.*\.stamp} => proc { |_tname|
     [
       "#{CFG_HTML_DOC_DIR}/templates/#{type}.adoc.erb",
       "#{$root}/lib/cfg_arch.rb",

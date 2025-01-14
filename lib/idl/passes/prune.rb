@@ -52,6 +52,7 @@ module Idl
       new_node
     end
   end
+
   class FunctionCallExpressionAst
     def prune(symtab)
       value_result = value_try do
@@ -59,10 +60,13 @@ module Idl
         return create_literal(v)
       end
       value_else(value_result) do
-        FunctionCallExpressionAst.new(input, interval, name, targs.map { |t| t.prune(symtab) }, args.map { |a| a.prune(symtab)} )
+        FunctionCallExpressionAst.new(input, interval, name, targs.map { |t| t.prune(symtab) }, args.map do |a|
+          a.prune(symtab)
+        end)
       end
     end
   end
+
   class VariableDeclarationWithInitializationAst
     def prune(symtab)
       VariableDeclarationWithInitializationAst.new(
@@ -74,6 +78,7 @@ module Idl
       )
     end
   end
+
   class ForLoopAst
     def prune(symtab)
       symtab.push(self)
@@ -93,6 +98,7 @@ module Idl
       new_loop
     end
   end
+
   class FunctionBodyAst
     def prune(symtab, args_already_applied: false)
       symtab.push(self)
@@ -100,9 +106,7 @@ module Idl
       begin
         func_def = find_ancestor(FunctionDefAst)
         unless args_already_applied || func_def.nil?
-          if func_def.templated? # can't prune a template because we don't have all types
-            return dup
-          end
+          return dup if func_def.templated? # can't prune a template because we don't have all types
 
           # push template values
           func_def.template_names.each_with_index do |tname, idx|
@@ -154,6 +158,7 @@ module Idl
       pruned_body
     end
   end
+
   class StatementAst
     def prune(symtab)
       pruned_action = action.prune(symtab)
@@ -170,6 +175,7 @@ module Idl
       new_stmt
     end
   end
+
   class BinaryExpressionAst
     # @!macro prune
     def prune(symtab)
@@ -251,7 +257,9 @@ module Idl
       stmts.each do |s|
         pruned_stmts << s.prune(symtab)
 
-        break if pruned_stmts.last.is_a?(StatementAst) && pruned_stmts.last.action.is_a?(FunctionCallExpressionAst) && pruned_stmts.last.action.name == "raise"
+        if pruned_stmts.last.is_a?(StatementAst) && pruned_stmts.last.action.is_a?(FunctionCallExpressionAst) && pruned_stmts.last.action.name == "raise"
+          break
+        end
       end
       IfBodyAst.new(input, interval, pruned_stmts)
     end
@@ -282,7 +290,8 @@ module Idl
             elseifs[0].cond.dup,
             elseifs[0].body.dup,
             elseifs[1..].map(&:dup),
-            final_else_body.dup).prune(symtab)
+            final_else_body.dup
+          ).prune(symtab)
         elsif !final_else_body.stmts.empty?
           # the if is false, and there are no else ifs, so the result of the prune is just the pruned else body
           return final_else_body.prune(symtab)
@@ -297,19 +306,18 @@ module Idl
         unknown_elsifs = []
         elseifs.each do |eif|
           value_result = value_try do
-            if eif.cond.value(symtab)
-              # this elseif is true, so turn it into an else and then we are done
-              return IfAst.new(
-                input, interval,
-                if_cond.dup,
-                if_body.dup,
-                unknown_elsifs.map(&:dup),
-                eif.body.dup
-              ).prune(symtab)
-            else
-              # this elseif is false, so we can remove it
-              next :ok
-            end
+            next :ok unless eif.cond.value(symtab)
+
+            # this elseif is true, so turn it into an else and then we are done
+            return IfAst.new(
+              input, interval,
+              if_cond.dup,
+              if_body.dup,
+              unknown_elsifs.map(&:dup),
+              eif.body.dup
+            ).prune(symtab)
+
+            # this elseif is false, so we can remove it
           end
           value_else(value_result) do
             unknown_elsifs << eif
@@ -330,11 +338,9 @@ module Idl
   class ConditionalReturnStatementAst
     def prune(symtab)
       value_result = value_try do
-        if condition.value(symtab)
-          return return_expression.prune(symtab)
-        else
-          return NoopAst.new
-        end
+        return return_expression.prune(symtab) if condition.value(symtab)
+
+        return NoopAst.new
       end
       value_else(value_result) do
         ConditionalReturnStatementAst.new(input, interval, return_expression.prune(symtab), condition.prune(symtab))
@@ -345,17 +351,15 @@ module Idl
   class ConditionalStatementAst
     def prune(symtab)
       value_result = value_try do
-        if condition.value(symtab)
-          pruned_action = action.prune(symtab)
-          pruned_action.add_symbol(symtab) if pruned_action.is_a?(Declaration)
-          value_result = value_try do
-            pruned_action.execute(symtab) if pruned_action.is_a?(Executable)
-          end
+        return NoopAst.new unless condition.value(symtab)
 
-          return StatementAst.new(input, interval, pruned_action)
-        else
-          return NoopAst.new
+        pruned_action = action.prune(symtab)
+        pruned_action.add_symbol(symtab) if pruned_action.is_a?(Declaration)
+        value_result = value_try do
+          pruned_action.execute(symtab) if pruned_action.is_a?(Executable)
         end
+
+        return StatementAst.new(input, interval, pruned_action)
       end
       value_else(value_result) do
         # condition not known
@@ -364,7 +368,7 @@ module Idl
         value_result = value_try do
           pruned_action.execute(symtab) if pruned_action.is_a?(Executable)
         end
-          # ok
+        # ok
         ConditionalStatementAst.new(input, interval, pruned_action, condition.prune(symtab))
       end
     end
@@ -373,11 +377,9 @@ module Idl
   class TernaryOperatorExpressionAst
     def prune(symtab)
       value_result = value_try do
-        if condition.value(symtab)
-          return true_expression.prune(symtab)
-        else
-          return false_expression.prune(symtab)
-        end
+        return true_expression.prune(symtab) if condition.value(symtab)
+
+        return false_expression.prune(symtab)
       end
       value_else(value_result) do
         TernaryOperatorExpressionAst.new(

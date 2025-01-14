@@ -42,13 +42,19 @@ class CsrField < DatabaseObject
 
       parent.exists_in_cfg?(cfg_arch) &&
         (@data["base"].nil? || cfg_arch.possible_xlens.include?(@data["base"])) &&
-        (@data["definedBy"].nil? || cfg_arch.prohibited_extensions.none? { |ext_req| ext_req.satisfying_versions.any? { |ext_ver| defined_by?(ext_ver) } })
+        (@data["definedBy"].nil? || cfg_arch.prohibited_extensions.none? do |ext_req|
+          ext_req.satisfying_versions.any? do |ext_ver|
+            defined_by?(ext_ver)
+          end
+        end)
     end
   end
 
   # @return [Boolean] For a partially configured cfg_arch, whether or not the field is optional (not mandatory or prohibited)
   def optional_in_cfg?(cfg_arch)
-    raise "optional_in_cfg? should only be called on a partially configured cfg_arch" unless cfg_arch.partially_configured?
+    unless cfg_arch.partially_configured?
+      raise "optional_in_cfg? should only be called on a partially configured cfg_arch"
+    end
 
     exists_in_cfg?(cfg_arch) &&
       (
@@ -162,7 +168,9 @@ class CsrField < DatabaseObject
     raise ArgumentError, "Argument 1 should be a symtab" unless symtab.is_a?(Idl::SymbolTable)
 
     unless @type_cache.nil?
-      raise "Different cfg_arch for type #{@type_cache.keys},  #{symtab.cfg_arch}" unless @type_cache.key?(symtab.cfg_arch)
+      unless @type_cache.key?(symtab.cfg_arch)
+        raise "Different cfg_arch for type #{@type_cache.keys},  #{symtab.cfg_arch}"
+      end
 
       return @type_cache[symtab.cfg_arch]
     end
@@ -263,7 +271,7 @@ class CsrField < DatabaseObject
     return @reachable_functions unless @reachable_functions.nil?
 
     symtab =
-      if (cfg_arch.configured?)
+      if cfg_arch.configured?
         cfg_arch.symtab
       else
         raise ArgumentError, "Must supply effective_xlen for generic ConfiguredArchitecture" if effective_xlen.nil?
@@ -287,15 +295,11 @@ class CsrField < DatabaseObject
     end
     if @data.key?("type()")
       ast = pruned_type_ast(symtab.deep_clone)
-      unless ast.nil?
-        fns.concat ast.reachable_functions(symtab.deep_clone.push(ast))
-      end
+      fns.concat ast.reachable_functions(symtab.deep_clone.push(ast)) unless ast.nil?
     end
     if @data.key?("reset_value()")
       ast = pruned_reset_value_ast(symtab.deep_clone)
-      unless ast.nil?
-        fns.concat ast.reachable_functions(symtab.deep_clone.push(ast))
-      end
+      fns.concat ast.reachable_functions(symtab.deep_clone.push(ast)) unless ast.nil?
     end
 
     @reachable_functions = fns.uniq
@@ -311,21 +315,15 @@ class CsrField < DatabaseObject
     fns = []
     if has_custom_sw_write?
       ast = sw_write_ast(symtab)
-      unless ast.nil?
-        fns.concat ast.reachable_functions_unevaluated(symtab)
-      end
+      fns.concat ast.reachable_functions_unevaluated(symtab) unless ast.nil?
     end
     if @data.key?("type()")
       ast = type_ast(symtab)
-      unless ast.nil?
-        fns.concat ast.reachable_functions_unevaluated(symtab)
-      end
+      fns.concat ast.reachable_functions_unevaluated(symtab) unless ast.nil?
     end
     if @data.key?("reset_value()")
       ast = reset_value_ast(symtab)
-      unless ast.nil?
-        fns.concat ast.reachable_functions_unevalutated(symtab)
-      end
+      fns.concat ast.reachable_functions_unevalutated(symtab) unless ast.nil?
     end
 
     @reachable_functions_unevaluated = fns.uniq
@@ -449,7 +447,7 @@ class CsrField < DatabaseObject
   def dynamic_reset_value?(cfg_arch)
     return false unless @data["reset_value"].nil?
 
-    value_result = Idl::AstNode.value_try do
+    Idl::AstNode.value_try do
       reset_value(cfg_arch)
       false
     end || true
@@ -570,7 +568,6 @@ class CsrField < DatabaseObject
 
     ast.freeze_tree(cfg_arch.symtab)
 
-
     cfg_arch.idl_compiler.type_check(
       ast,
       symtab,
@@ -591,7 +588,12 @@ class CsrField < DatabaseObject
       if @data.key?("location")
         "location"
       else
-        raise ArgumentError, "The location of #{csr.name}.#{name} changes with XLEN, so effective_xlen must be provided" unless [32, 64].include?(effective_xlen)
+        unless [
+          32, 64
+        ].include?(effective_xlen)
+          raise ArgumentError,
+                "The location of #{csr.name}.#{name} changes with XLEN, so effective_xlen must be provided"
+        end
 
         "location_rv#{effective_xlen}"
       end
@@ -606,7 +608,8 @@ class CsrField < DatabaseObject
           raise "Location (#{key} = #{@data[key]}) is past the max csr length (#{csr.max_length(cfg_arch)}) in #{csr.name}.#{name}"
         end
       elsif @data[key] > csr_length
-        raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr.length(cfg_arch, effective_xlen)}) in #{csr.name}.#{name}"
+        raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr.length(cfg_arch,
+                                                                                      effective_xlen)}) in #{csr.name}.#{name}"
       end
 
       @data[key]..@data[key]

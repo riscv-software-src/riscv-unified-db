@@ -37,8 +37,9 @@ class PortfolioClass < DatabaseObject
 
   # @return [Array<PortfolioClass] All portfolio classes that have the same portfolio kind and same processor kind.
   def portfolio_classes_matching_portfolio_kind_and_processor_kind
-    arch.portfolio_classes.select {|portfolio_class|
-      (portfolio_class.kind == kind) && (portfolio_class.processor_kind == processor_kind)}
+    arch.portfolio_classes.select do |portfolio_class|
+      (portfolio_class.kind == kind) && (portfolio_class.processor_kind == processor_kind)
+    end
   end
 end
 
@@ -94,15 +95,15 @@ class Portfolio < DatabaseObject
       greatest_presence = nil
 
       in_scope_ext_reqs.each do |ext_req|
-        if ext_req.satisfied_by?(v)
-          presence = extension_presence_obj(ext_name)
+        next unless ext_req.satisfied_by?(v)
 
-          unless presence.nil?
-            if greatest_presence.nil?
-              greatest_presence = presence
-            elsif presence > greatest_presence
-              greatest_presence = presence
-            end
+        presence = extension_presence_obj(ext_name)
+
+        unless presence.nil?
+          if greatest_presence.nil?
+            greatest_presence = presence
+          elsif presence > greatest_presence
+            greatest_presence = presence
           end
         end
       end
@@ -120,7 +121,7 @@ class Portfolio < DatabaseObject
     ext_data = @data["extensions"][ext_name]
     raise "Cannot find extension named #{ext_name}" if ext_data.nil?
 
-    return ext_data["note"] unless ext_data.nil?
+    ext_data["note"] unless ext_data.nil?
   end
 
   def mandatory_ext_reqs = in_scope_ext_reqs(ExtensionPresence.mandatory)
@@ -136,10 +137,15 @@ class Portfolio < DatabaseObject
 
     # Convert desired_present argument to ExtensionPresence object if not nil.
     desired_presence_converted =
-      desired_presence.nil?                     ? nil :
-      desired_presence.is_a?(String)            ? desired_presence :
-      desired_presence.is_a?(ExtensionPresence) ? desired_presence :
-      ExtensionPresence.new(desired_presence)
+      if desired_presence.nil?
+        nil
+      elsif desired_presence.is_a?(String)
+        desired_presence
+      elsif desired_presence.is_a?(ExtensionPresence)
+        desired_presence
+      else
+        ExtensionPresence.new(desired_presence)
+      end
 
     missing_ext = false
 
@@ -153,7 +159,7 @@ class Portfolio < DatabaseObject
         puts "Extension #{ext_name} for #{name} not found in database"
         missing_ext = true
       else
-        actual_presence = ext_data["presence"]    # Could be a String or Hash
+        actual_presence = ext_data["presence"] # Could be a String or Hash
         raise "Missing extension presence for extension #{ext_name}" if actual_presence.nil?
 
         # Convert presence String or Hash to object.
@@ -171,11 +177,13 @@ class Portfolio < DatabaseObject
             if ext_data.key?("version")
               ExtensionRequirement.new(
                 ext_name, ext_data["version"], arch: @arch,
-                presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
+                                               presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}"
+              )
             else
               ExtensionRequirement.new(
                 ext_name, arch: @arch,
-                presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
+                          presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}"
+              )
             end
         end
       end
@@ -203,7 +211,7 @@ class Portfolio < DatabaseObject
 
     @in_scope_extensions = in_scope_ext_reqs.map do |ext_req|
       arch.extension(ext_req.name)
-    end.reject(&:nil?)  # Filter out extensions that don't exist yet.
+    end.reject(&:nil?) # Filter out extensions that don't exist yet.
 
     @in_scope_extensions
   end
@@ -217,9 +225,7 @@ class Portfolio < DatabaseObject
     # Iterate through different kinds of optional using the "object" version (not the string version).
     ExtensionPresence.optional_types_obj.each do |optional_type_obj|
       # See if any extension reqs have this type of optional.
-      unless in_scope_ext_reqs(optional_type_obj).empty?
-        @uses_optional_types = true
-      end
+      @uses_optional_types = true unless in_scope_ext_reqs(optional_type_obj).empty?
     end
 
     @uses_optional_types
@@ -264,8 +270,7 @@ class Portfolio < DatabaseObject
 
   # Holds extension parameter information from the portfolio.
   class InScopeExtensionParameter
-    attr_reader :param  # ExtensionParameter object (from the architecture database)
-    attr_reader :note
+    attr_reader :param, :note # ExtensionParameter object (from the architecture database)
 
     def initialize(param, schema_hash, note)
       raise ArgumentError, "Expecting ExtensionParameter" unless param.is_a?(ExtensionParameter)
@@ -293,7 +298,7 @@ class Portfolio < DatabaseObject
 
     # @return [String] - # What parameter values are allowed by the portfolio.
     def allowed_values
-      if (@schema_portfolio.empty?)
+      if @schema_portfolio.empty?
         # Portfolio doesn't add any constraints on parameter's value.
         return "Any"
       end
@@ -308,8 +313,10 @@ class Portfolio < DatabaseObject
 
     # sorts by name
     def <=>(other)
-      raise ArgumentError,
-        "InScopeExtensionParameter are only comparable to other parameter constraints" unless other.is_a?(InScopeExtensionParameter)
+      unless other.is_a?(InScopeExtensionParameter)
+        raise ArgumentError,
+              "InScopeExtensionParameter are only comparable to other parameter constraints"
+      end
       @param.name <=> other.param.name
     end
   end # class InScopeExtensionParameter
@@ -356,7 +363,7 @@ class Portfolio < DatabaseObject
   def in_scope_ext_params(ext_req)
     raise ArgumentError, "Expecting ExtensionRequirement" unless ext_req.is_a?(ExtensionRequirement)
 
-    ext_params = []    # Local variable, no caching
+    ext_params = [] # Local variable, no caching
 
     # Get extension information from portfolio YAML for passed in extension requirement.
     ext_data = @data["extensions"][ext_req.name]
@@ -408,7 +415,7 @@ class Portfolio < DatabaseObject
 
   # @return [Array<ExtensionParameter>] Parameters that are out of scope for named extension.
   def out_of_scope_params(ext_name)
-    all_out_of_scope_params.select{ |param| param.exts.any? { |ext| ext.name == ext_name } }
+    all_out_of_scope_params.select { |param| param.exts.any? { |ext| ext.name == ext_name } }
   end
 
   # @return [Array<Extension>]
@@ -446,7 +453,7 @@ class Portfolio < DatabaseObject
   def all_in_scope_exts_without_param(param)
     raise ArgumentError, "Expecting ExtensionParameter" unless param.is_a?(ExtensionParameter)
 
-    exts = []   # Local variable, no caching
+    exts = [] # Local variable, no caching
 
     # Iterate through all the extensions in the architecture database that define this parameter.
     param.exts.each do |ext|
@@ -460,8 +467,8 @@ class Portfolio < DatabaseObject
       end
 
       if found
-          # Only add extensions that are in-scope (i.e., exist in this portfolio).
-          exts << ext
+        # Only add extensions that are in-scope (i.e., exist in this portfolio).
+        exts << ext
       end
     end
 
@@ -507,7 +514,8 @@ class Portfolio < DatabaseObject
       @presence_obj = ExtensionPresence.new(@data["presence"])
     end
 
-    def presence_obj = @presence_obj
+    attr_reader :presence_obj
+
     def text = @data["text"]
   end
 
@@ -525,9 +533,12 @@ class Portfolio < DatabaseObject
   # @return [String] Note for desired_presence
   # @return [nil] No note for desired_presence
   def extra_notes_for_presence(desired_presence_obj)
-    raise ArgumentError, "Expecting ExtensionPresence but got a #{desired_presence_obj.class}" unless desired_presence_obj.is_a?(ExtensionPresence)
+    unless desired_presence_obj.is_a?(ExtensionPresence)
+      raise ArgumentError,
+            "Expecting ExtensionPresence but got a #{desired_presence_obj.class}"
+    end
 
-    extra_notes.select {|extra_note| extra_note.presence_obj == desired_presence_obj}
+    extra_notes.select { |extra_note| extra_note.presence_obj == desired_presence_obj }
   end
 
   ###########################

@@ -264,17 +264,18 @@ class Architecture
     return @exception_codes unless @exception_codes.nil?
 
     @exception_codes =
-      extensions.reduce([]) do |list, ext_version|
+      extensions.each_with_object([]) do |ext_version, list|
         ecodes = extension(ext_version.name)["exception_codes"]
         next list if ecodes.nil?
 
         ecodes.each do |ecode|
           # double check that all the codes are unique
-          raise "Duplicate exception code" if list.any? { |e| e.num == ecode["num"] || e.name == ecode["name"] || e.var == ecode["var"] }
+          raise "Duplicate exception code" if list.any? do |e|
+            e.num == ecode["num"] || e.name == ecode["name"] || e.var == ecode["var"]
+          end
 
           list << ExceptionCode.new(ecode["name"], ecode["var"], ecode["num"], self)
         end
-        list
       end
   end
 
@@ -283,7 +284,7 @@ class Architecture
     return @interrupt_codes unless @interrupt_codes.nil?
 
     @interupt_codes =
-      extensions.reduce([]) do |list, ext_version|
+      extensions.each_with_object([]) do |ext_version, list|
         icodes = extension(ext_version.name)["interrupt_codes"]
         next list if icodes.nil?
 
@@ -295,7 +296,6 @@ class Architecture
 
           list << InterruptCode.new(icode["name"], icode["var"], icode["num"], self)
         end
-        list
       end
   end
 

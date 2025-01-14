@@ -19,7 +19,7 @@ class TestYamlLoader < Minitest::Test
 
       File.write(test_dir / "test.yaml", yaml)
 
-      stdout, stderr, status =
+      _, _, status =
         Dir.chdir($root) do
           Open3.capture3("/bin/bash -c \"source #{$root}/.home/.venv/bin/activate && #{$root}/.home/.venv/bin/python3 #{$root}/lib/yaml_resolver.py resolve --no-progress --no-checks #{arch_dir} #{resolved_dir}\"")
         end
@@ -27,9 +27,7 @@ class TestYamlLoader < Minitest::Test
       # puts stderr
       # puts status
 
-      if status.to_i.zero?
-        YAML.load_file(resolved_dir / "test" / "test.yaml")
-      end
+      YAML.load_file(resolved_dir / "test" / "test.yaml") if status.to_i.zero?
     end
   end
 
@@ -51,9 +49,7 @@ class TestYamlLoader < Minitest::Test
       system "/bin/bash -c \"source #{$root}/.home/.venv/bin/activate && #{$root}/.home/.venv/bin/python3 #{$root}/lib/yaml_resolver.py resolve --no-checks #{arch_dir} #{resolved_dir}\""
       # `source #{$root}/.home/.venv/bin/activate && python3 #{$root}/lib/yaml_resolver.py resolve #{arch_dir} #{resolved_dir}`
 
-      if $CHILD_STATUS == 0
-        YAML.load_file(resolved_dir / "test" / "test1.yaml")
-      end
+      YAML.load_file(resolved_dir / "test" / "test1.yaml") if $CHILD_STATUS == 0
     end
   end
 
@@ -115,7 +111,10 @@ class TestYamlLoader < Minitest::Test
     YAML
 
     doc = resolve_yaml(yaml)
-    assert_equal({ "$child_of" => ["#/middle"], "key1" => { "sub_key1" => "value1", "sub_key6" => "value6" }, "key2" => "value2_new", "key3" => "value3", "key4" => "value4_new", "key5" => "value5" }, doc["bottom"])
+    assert_equal(
+      { "$child_of" => ["#/middle"], "key1" => { "sub_key1" => "value1", "sub_key6" => "value6" }, "key2" => "value2_new",
+        "key3" => "value3", "key4" => "value4_new", "key5" => "value5" }, doc["bottom"]
+    )
   end
 
   def test_that_recursive_inherits_works
@@ -137,8 +136,14 @@ class TestYamlLoader < Minitest::Test
     YAML
 
     doc = resolve_yaml(yaml)
-    assert_equal({ "$child_of" => "#/base", "$parent_of" => "test/test.yaml#/bottom", "key1" => "value1", "key2" => "value2", "key3" => "value3", "key4" => "value4" }, doc["middle"])
-    assert_equal({ "$child_of" => "#/middle", "key1" => "value1", "key2" => "value2_new", "key3" => "value3", "key4" => "value4_new", "key5" => "value5" }, doc["bottom"])
+    assert_equal(
+      { "$child_of" => "#/base", "$parent_of" => "test/test.yaml#/bottom", "key1" => "value1", "key2" => "value2",
+        "key3" => "value3", "key4" => "value4" }, doc["middle"]
+    )
+    assert_equal(
+      { "$child_of" => "#/middle", "key1" => "value1", "key2" => "value2_new", "key3" => "value3", "key4" => "value4_new",
+        "key5" => "value5" }, doc["bottom"]
+    )
   end
 
   def test_that_nested_inherits_works
@@ -156,7 +161,8 @@ class TestYamlLoader < Minitest::Test
     YAML
 
     doc = resolve_yaml(yaml)
-    assert_equal({ "$child_of" => "#/top/base", "key1" => "value1", "key2" => "value2", "key3" => "value3_new" }, doc["bottom"]["child"])
+    assert_equal({ "$child_of" => "#/top/base", "key1" => "value1", "key2" => "value2", "key3" => "value3_new" },
+                 doc["bottom"]["child"])
   end
 
   def test_that_inherits_doesnt_delete_keys
@@ -172,7 +178,8 @@ class TestYamlLoader < Minitest::Test
     YAML
 
     doc = resolve_yaml(yaml)
-    assert_equal({ "$child_of" => "#/base", "key1" => "value1", "key2" => "value2", "key3" => "value3_new" }, doc["child"])
+    assert_equal({ "$child_of" => "#/base", "key1" => "value1", "key2" => "value2", "key3" => "value3_new" },
+                 doc["child"])
   end
 
   def test_that_double_inherits_doesnt_delete_keys
@@ -196,7 +203,10 @@ class TestYamlLoader < Minitest::Test
     YAML
 
     doc = resolve_yaml(yaml)
-    assert_equal({ "$child_of" => ["#/base1", "#/base2"], "key1" => "value1", "key2" => "value2", "key3" => "value3_new", "key4" => "value4", "key5" => "value5", "key6" => "value6_new" }, doc["child"])
+    assert_equal(
+      { "$child_of" => ["#/base1", "#/base2"], "key1" => "value1", "key2" => "value2", "key3" => "value3_new",
+        "key4" => "value4", "key5" => "value5", "key6" => "value6_new" }, doc["child"]
+    )
   end
 
   def test_inherits_in_the_same_document
@@ -272,7 +282,7 @@ class TestYamlLoader < Minitest::Test
     doc = resolve_multi_yaml(yaml1, yaml2)
     assert_equal("test/test2.yaml#", doc["$child_of"])
     assert_equal("Should take precedence", doc["target1"])
-    assert_equal({ "a" => "hash", "sub1" => { "key_a" => "new_value_a", "key_b" => "old_value_b" }}, doc["target2"])
+    assert_equal({ "a" => "hash", "sub1" => { "key_a" => "new_value_a", "key_b" => "old_value_b" } }, doc["target2"])
   end
 
   def test_multi_inherits_in_the_same_document
@@ -312,60 +322,60 @@ class TestYamlLoader < Minitest::Test
   end
 
   # Commented out until https://github.com/riscv-software-src/riscv-unified-db/issues/369 is fixed.
-#   def test_copy_in_the_same_document
-#     yaml = <<~YAML
-#       $defs:
-#         target1: A string
-#         target2:
-#           a: hash
-#         target3: Another string
-#
-#       obj1:
-#         target10: abc
-#         target11:
-#           $copy: "#/$defs/target1"
-#         target12: def
-#         target13:
-#           $copy: "#/$defs/target3"
-#
-#     YAML
-#
-#     doc = resolve_yaml(yaml)
-#     assert_equal({
-#         "$child_of" => "#/$defs",
-#         "target10"  => "abc",
-#         "target11"  => "A string",
-#         "target12"  => "def",
-#         "target13"  => "Another string"
-#       }, doc["obj1"])
-#   end
-#
-#   def test_copy_in_the_different_document
-#     yaml2 = <<~YAML
-#       $defs:
-#         target1: A string
-#         target2:
-#           a: hash
-#         target3: Another string
-#     YAML
-#
-#     yaml1 = <<~YAML
-#       obj1:
-#         target10: abc
-#         target11:
-#           $copy: "YAML2_REL_PATH#/$defs/target1"
-#         target12: def
-#         target13:
-#           $copy: "YAML2_REL_PATH#/$defs/target3"
-#     YAML
-#
-#     doc = resolve_multi_yaml(yaml1, yaml2)
-#     assert_equal({
-#         "$child_of" => "test/test2.yaml#/$defs",
-#         "target10"  => "abc",
-#         "target11"  => "A string",
-#         "target12"  => "def",
-#         "target13"  => "Another string"
-#       }, doc["obj1"])
-#   end
+  #   def test_copy_in_the_same_document
+  #     yaml = <<~YAML
+  #       $defs:
+  #         target1: A string
+  #         target2:
+  #           a: hash
+  #         target3: Another string
+  #
+  #       obj1:
+  #         target10: abc
+  #         target11:
+  #           $copy: "#/$defs/target1"
+  #         target12: def
+  #         target13:
+  #           $copy: "#/$defs/target3"
+  #
+  #     YAML
+  #
+  #     doc = resolve_yaml(yaml)
+  #     assert_equal({
+  #         "$child_of" => "#/$defs",
+  #         "target10"  => "abc",
+  #         "target11"  => "A string",
+  #         "target12"  => "def",
+  #         "target13"  => "Another string"
+  #       }, doc["obj1"])
+  #   end
+  #
+  #   def test_copy_in_the_different_document
+  #     yaml2 = <<~YAML
+  #       $defs:
+  #         target1: A string
+  #         target2:
+  #           a: hash
+  #         target3: Another string
+  #     YAML
+  #
+  #     yaml1 = <<~YAML
+  #       obj1:
+  #         target10: abc
+  #         target11:
+  #           $copy: "YAML2_REL_PATH#/$defs/target1"
+  #         target12: def
+  #         target13:
+  #           $copy: "YAML2_REL_PATH#/$defs/target3"
+  #     YAML
+  #
+  #     doc = resolve_multi_yaml(yaml1, yaml2)
+  #     assert_equal({
+  #         "$child_of" => "test/test2.yaml#/$defs",
+  #         "target10"  => "abc",
+  #         "target11"  => "A string",
+  #         "target12"  => "def",
+  #         "target13"  => "Another string"
+  #       }, doc["obj1"])
+  #   end
 end

@@ -5,6 +5,7 @@ require "ostruct"
 # Extension mock that returns an extension name
 class Xmockension
   attr_reader :name
+
   def initialize(name)
     @name = name
   end
@@ -16,7 +17,10 @@ XmockensionParameterWithValue = Struct.new(:name, :desc, :schema, :extra_validat
 # ConfiguredArchitecture mock that knows about XLEN and extensions
 class MockConfiguredArchitecture
   def param_values = { "XLEN" => 32 }
-  def params_with_value = [XmockensionParameterWithValue.new("XLEN", "mxlen", {"type" => "integer", "enum" => [32, 64]}, nil, nil, 32)]
+
+  def params_with_value = [XmockensionParameterWithValue.new("XLEN", "mxlen",
+                                                             { "type" => "integer", "enum" => [32, 64] }, nil, nil, 32)]
+
   def params_without_value = []
   def params = []
   def extensions = [Xmockension.new("I")]

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'benchmark'
+require "benchmark"
 
 require_relative "type"
 require_relative "symbol_table"
@@ -15,9 +15,9 @@ module Treetop
       # @param [String] filename The name of the input file.
       # @param [Integer] starting_line The starting line number in the input file.
       def set_input_file_unless_already_set(filename, starting_line = 0)
-        if @input_file.nil?
-          set_input(filename, starting_line)
-        end
+        return unless @input_file.nil?
+
+        set_input(filename, starting_line)
       end
 
       # remember where the code comes from
@@ -154,13 +154,15 @@ module Idl
         yield block
       end
     end
-    def value_try(&block) = return self.class.value_try(&block)
+
+    def value_try(&block) = self.class.value_try(&block)
 
     def self.value_else(value_result, &block)
       return unless value_result == :unknown_value
 
       yield block
     end
+
     def value_else(value_result, &block) = self.class.value_else(value_result, &block)
 
     # @param input [String] The source being compiled
@@ -172,7 +174,12 @@ module Idl
       @starting_line = 0
       @interval = interval
       @text_value = input[interval]
-      children.each { |child| raise ArgumentError, "Children of #{self.class.name} must be AstNodes (found a #{child.class.name})" unless child.is_a?(AstNode)}
+      children.each do |child|
+        unless child.is_a?(AstNode)
+          raise ArgumentError,
+                "Children of #{self.class.name} must be AstNodes (found a #{child.class.name})"
+        end
+      end
       @children = children
       @parent = nil # will be set later unless this is the root
       @children.each { |child| child.instance_variable_set(:@parent, self) }
@@ -327,8 +334,9 @@ module Idl
       # warn reason
       # warn "At #{ast.input_file}:#{ast.lineno}" unless ast.nil?
       throw(:value_error, :unknown_value)
-      #raise AstNode::ValueError.new(lineno, input_file, reason), reason, []
+      # raise AstNode::ValueError.new(lineno, input_file, reason), reason, []
     end
+
     def value_error(reason) = self.class.value_error(reason, self)
 
     # unindent a multiline string, getting rid of all common leading whitespace (like <<~ heredocs)
@@ -359,7 +367,6 @@ module Idl
     #   This is also an opportunity to pre-calculate anything that only needs global symbols
     #
     #   @param global_symtab [SymbolTable] Symbol table with global scope populated
-
 
     # @!macro freeze_tree
     def freeze_tree(global_symtab)
@@ -572,13 +579,13 @@ module Idl
 
       sym = symtab.get(name)
       # @type =
-        if sym.is_a?(Type)
-          sym
-        elsif sym.is_a?(Var)
-          sym.type
-        else
-          internal_error "Unexpected object on the symbol table"
-        end
+      if sym.is_a?(Type)
+        sym
+      elsif sym.is_a?(Var)
+        sym.type
+      else
+        internal_error "Unexpected object on the symbol table"
+      end
     end
 
     # @return [Boolean] whether or not the Id represents a const
@@ -705,7 +712,6 @@ module Idl
 
       declaration.add_symbol(symtab)
     end
-
   end
 
   # @api private
@@ -793,9 +799,9 @@ module Idl
       type_error "#{expression.text_value} is not an array" unless expression_type.kind == :array
       type_error "#{expression.text_value} must be a constant" unless expression_type.const?
 
-      if symtab.cfg_arch.fully_configured? && (expression_type.width == :unknown)
-        type_error "#{expression.text_value} must have a known value at compile time"
-      end
+      return unless symtab.cfg_arch.fully_configured? && (expression_type.width == :unknown)
+
+      type_error "#{expression.text_value} must have a known value at compile time"
     end
 
     def type(symtab)
@@ -812,7 +818,6 @@ module Idl
 
     def to_idl = "$array_size(#{expression.to_idl})"
   end
-
 
   class EnumSizeSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
@@ -903,9 +908,7 @@ module Idl
       enum_name.type_check(symtab)
       expression.type_check(symtab)
 
-      if expression.type(symtab).kind != :bits
-        type_error "Can only cast from Bits<N> to enum"
-      end
+      type_error "Can only cast from Bits<N> to enum" if expression.type(symtab).kind != :bits
 
       enum_def_type = symtab.get(enum_name.text_value)
       type_error "No enum named #{enum_name.text_value}" if enum_def_type.nil?
@@ -968,11 +971,11 @@ module Idl
       values = []
 
       e.elements.each do |e|
-        if e.i.empty?
-          values << nil
-        else
-          values << e.i.int.to_ast
-        end
+        values << if e.i.empty?
+                    nil
+                  else
+                    e.i.int.to_ast
+                  end
       end
 
       EnumDefinitionAst.new(
@@ -1000,7 +1003,7 @@ module Idl
     include Declaration
 
     def initialize(input, interval, user_type, element_names, element_values)
-      super(input, interval, [user_type] + element_names + element_values.reject{ |e| e.nil? })
+      super(input, interval, [user_type] + element_names + element_values.reject { |e| e.nil? })
       @user_type = user_type
       @element_name_asts = element_names
       @element_value_asts = element_values
@@ -1040,9 +1043,7 @@ module Idl
     # @!macro type_check
     def type_check(symtab)
       @element_value_asts.each do |e|
-        unless e.nil?
-          e.type_check(symtab)
-        end
+        e.type_check(symtab) unless e.nil?
       end
 
       add_symbol(symtab)
@@ -1058,7 +1059,7 @@ module Idl
     end
 
     # @!macro type_no_args
-    def type(symtab)
+    def type(_symtab)
       @type
     end
 
@@ -1223,7 +1224,8 @@ module Idl
     def to_ast
       fields = []
       e.elements.each do |f|
-        fields << BitfieldFieldDefinitionAst.new(f.input, f.interval, f.field_name.text_value, f.range.int.to_ast, f.range.lsb.empty? ? nil : f.range.lsb.int.to_ast)
+        fields << BitfieldFieldDefinitionAst.new(f.input, f.interval, f.field_name.text_value, f.range.int.to_ast,
+                                                 f.range.lsb.empty? ? nil : f.range.lsb.int.to_ast)
       end
       BitfieldDefinitionAst.new(input, interval, user_type_name.to_ast, int.to_ast, fields)
     end
@@ -1286,7 +1288,7 @@ module Idl
     def element_ranges(symtab)
       return @element_ranges unless @element_ranges.nil?
 
-      @element_ranges = @fields.map{ |f| f.range(symtab) }
+      @element_ranges = @fields.map { |f| f.range(symtab) }
     end
 
     # @!macro type_check
@@ -1295,7 +1297,9 @@ module Idl
       @fields.each do |f|
         f.type_check(symtab)
         r = f.range(symtab)
-        type_error "Field position (#{r}) is larger than the bitfield width (#{@size.value(symtab)} #{@size.text_value})" if r.first >= @size.value(symtab)
+        if r.first >= @size.value(symtab)
+          type_error "Field position (#{r}) is larger than the bitfield width (#{@size.value(symtab)} #{@size.text_value})"
+        end
       end
 
       add_symbol(symtab)
@@ -1416,6 +1420,7 @@ module Idl
     def member_type(name, symtab)
       idx = member_names.index(name)
       return nil if idx.nil?
+
       member_types[idx].type(symtab)
     end
 
@@ -1427,7 +1432,7 @@ module Idl
       num_members.times do |i|
         member_decls << "#{member_types[i].to_idl} #{member_names[i]}"
       end
-      "struct #{name} { #{member_decls.join("; ")}; }"
+      "struct #{name} { #{member_decls.join('; ')}; }"
     end
   end
 
@@ -1505,16 +1510,14 @@ module Idl
 
       var_type = var.type(symtab)
       if var_type.kind == :array
-        value_result = value_try do
+        value_try do
           index_value = index.value(symtab)
-          if var_type.width != :unknown
-            type_error "Array index out of range" if index_value >= var_type.width
-          end
+          type_error "Array index out of range" if var_type.width != :unknown && index_value >= (var_type.width)
         end # Ok, doesn't need to be known
 
       elsif var_type.integral?
         if var_type.kind == :bits
-          value_result = value_try do
+          value_try do
             index_value = index.value(symtab)
             if (var_type.width != :unknown) && (index_value >= var_type.width)
               type_error "Bits element index (#{index_value}) out of range (max #{var_type.width - 1}) in access '#{text_value}'"
@@ -1577,12 +1580,14 @@ module Idl
       msb.type_check(symtab)
       lsb.type_check(symtab)
 
-      type_error "Range operator only defined for integral types (found #{var.type(symtab)})" unless var.type(symtab).integral?
+      unless var.type(symtab).integral?
+        type_error "Range operator only defined for integral types (found #{var.type(symtab)})"
+      end
 
       type_error "Range MSB must be an integral type" unless msb.type(symtab).integral?
       type_error "Range LSB must be an integral type" unless lsb.type(symtab).integral?
 
-      value_result = value_try do
+      value_try do
         msb_value = msb.value(symtab)
         lsb_value = lsb.value(symtab)
 
@@ -1593,7 +1598,7 @@ module Idl
 
         range_size = msb_value - lsb_value + 1
         type_error "zero/negative range (#{msb_value}:#{lsb_value})" if range_size <= 0
-      end  # OK, don't have to know
+      end # OK, don't have to know
     end
 
     # @!macro type
@@ -1616,7 +1621,6 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "#{var.to_idl}[#{msb.to_idl}:#{lsb.to_idl}]"
-
   end
 
   class PcAssignmentSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -1636,17 +1640,16 @@ module Idl
     end
 
     # @macro execute
-    def execute(symtab) = value_error "$pc is never statically known"
+    def execute(_symtab) = value_error "$pc is never statically known"
 
     # @macro execute_unknown
     def execute_unknown(symtab); end
 
     # @!macro type_check
-    def type_check(symtab)
-    end
+    def type_check(symtab); end
 
     # @!macro value
-    def value(symtab) = value_error "$pc is never statically known"
+    def value(_symtab) = value_error "$pc is never statically known"
 
     # @!macro type
     def type(symtab) = symtab.xreg_type
@@ -1683,9 +1686,9 @@ module Idl
       type_error "Cannot assign to a const" if lhs.type(symtab).const?
 
       rhs.type_check(symtab)
-      unless rhs.type(symtab).convertable_to?(lhs.type(symtab))
-        type_error "Incompatible type in assignment (#{lhs.type(symtab)}, #{rhs.type(symtab)})"
-      end
+      return if rhs.type(symtab).convertable_to?(lhs.type(symtab))
+
+      type_error "Incompatible type in assignment (#{lhs.type(symtab)}, #{rhs.type(symtab)})"
     end
 
     def var(symtab)
@@ -1766,9 +1769,11 @@ module Idl
 
       type_error "Index must be integral" unless idx.type(symtab).integral?
 
-      value_result = value_try do
+      value_try do
         idx_value = idx.value(symtab)
-        type_error "Array index (#{idx.text_value} = #{idx_value}) out of range (< #{var.type(symtab).width})" if idx_value >= lhs.type(symtab).width
+        if idx_value >= lhs.type(symtab).width
+          type_error "Array index (#{idx.text_value} = #{idx_value}) out of range (< #{var.type(symtab).width})"
+        end
       end
       # OK, doesn't need to be known
 
@@ -1780,9 +1785,7 @@ module Idl
           type_error "Incompatible type in array assignment"
         end
       when :bits
-        unless rhs.type(symtab).convertable_to?(Bits1Type)
-          type_error "Incompatible type in integer slice assignment"
-        end
+        type_error "Incompatible type in integer slice assignment" unless rhs.type(symtab).convertable_to?(Bits1Type)
       else
         internal_error "Unexpected type on array element assignment"
       end
@@ -1889,7 +1892,7 @@ module Idl
       type_error "MSB must be integral" unless msb.type(symtab).integral?
       type_error "LSB must be integral" unless lsb.type(symtab).integral?
 
-      value_result = value_try do
+      value_try do
         msb_value = msb.value(symtab)
         lsb_value = lsb.value(symtab)
 
@@ -1900,9 +1903,9 @@ module Idl
 
       write_value.type_check(symtab)
 
-      unless write_value.type(symtab).integral?
-        type_error "Incompatible type in range assignment"
-      end
+      return if write_value.type(symtab).integral?
+
+      type_error "Incompatible type in range assignment"
     end
 
     def rhs
@@ -2024,7 +2027,9 @@ module Idl
     def type(symtab)
       if field(symtab).defined_in_all_bases?
         if symtab.cfg_arch.mxlen == 64 && symtab.cfg_arch.multi_xlen?
-          Type.new(:bits, width: [field(symtab).location(symtab.cfg_arch, 32).size, field(symtab).location(symtab.cfg_arch, 64).size].max)
+          Type.new(:bits,
+                   width: [field(symtab).location(symtab.cfg_arch, 32).size,
+                           field(symtab).location(symtab.cfg_arch, 64).size].max)
         else
           Type.new(:bits, width: field(symtab).location(symtab.cfg_arch, symtab.cfg_arch.mxlen).size)
         end
@@ -2055,7 +2060,7 @@ module Idl
     end
 
     # @!macro execute
-    def execute(symtab)
+    def execute(_symtab)
       value_error "CSR field writes are never compile-time-executable"
     end
 
@@ -2067,7 +2072,9 @@ module Idl
 
   class MultiVariableAssignmentSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
-      MultiVariableAssignmentAst.new(input, interval, [first.to_ast] + rest.elements.map { |r| r.var.to_ast }, function_call.to_ast)
+      MultiVariableAssignmentAst.new(input, interval, [first.to_ast] + rest.elements.map do |r|
+        r.var.to_ast
+      end, function_call.to_ast)
     end
   end
 
@@ -2162,7 +2169,9 @@ module Idl
 
   class MultiVariableDeclarationSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
-      MultiVariableDeclarationAst.new(input, interval, type_name.to_ast, [first.to_ast] + rest.elements.map { |r| r.id.to_ast })
+      MultiVariableDeclarationAst.new(input, interval, type_name.to_ast, [first.to_ast] + rest.elements.map do |r|
+        r.id.to_ast
+      end)
     end
   end
 
@@ -2225,7 +2234,8 @@ module Idl
 
   class VariableDeclarationSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
-      VariableDeclarationAst.new(input, interval, type_name.to_ast, id.to_ast, ary_size.empty? ? nil : ary_size.ary_size_decl.expression.to_ast)
+      VariableDeclarationAst.new(input, interval, type_name.to_ast, id.to_ast,
+                                 ary_size.empty? ? nil : ary_size.ary_size_decl.expression.to_ast)
     end
   end
 
@@ -2415,9 +2425,7 @@ module Idl
           symtab.add(lhs.text_value, Var.new(lhs.text_value, decl_type.clone, rhs.value(symtab)))
         end
         value_else(value_result) do
-          unless rhs.type(symtab).const?
-            type_error "Declaring constant with a non-constant value (#{rhs.text_value})"
-          end
+          type_error "Declaring constant with a non-constant value (#{rhs.text_value})" unless rhs.type(symtab).const?
           symtab.add(lhs.text_value, Var.new(lhs.text_value, decl_type.clone))
         end
       else
@@ -2489,7 +2497,6 @@ module Idl
   end
 
   class BinaryExpressionRightSyntaxNode < Treetop::Runtime::SyntaxNode
-
     # fix up left recursion
     # i.e., xlen() - 1 - i => (xlen() - 1) - i
     def to_ast
@@ -2576,9 +2583,9 @@ module Idl
     def type_check(symtab)
       expression.type_check(symtab)
 
-      unless [:bits, :enum_ref, :csr].include?(expression.type(symtab).kind)
-        type_error "#{expression.type(symtab)} Cannot be cast to bits"
-      end
+      return if [:bits, :enum_ref, :csr].include?(expression.type(symtab).kind)
+
+      type_error "#{expression.type(symtab)} Cannot be cast to bits"
     end
 
     # @!macro type
@@ -2645,9 +2652,7 @@ module Idl
 
     # @return [BinaryExpressionAst] this expression, but with an inverted condition
     def invert(symtab)
-      unless symtab.nil?
-        type_error "Not a boolean operator" unless type(symtab).kind == :boolean
-      end
+      type_error "Not a boolean operator" if !symtab.nil? && !type(symtab).kind == (:boolean)
 
       inverted_op_map = {
         "==" => "!=",
@@ -2661,7 +2666,7 @@ module Idl
       if inverted_op_map.key?(op)
         BinaryExpressionAst.new(input, interval, lhs.dup, inverted_op_map[op], rhs.dup)
       else
-        UnaryOperatorExpressionAst.new(input, interval, "!", self.dup)
+        UnaryOperatorExpressionAst.new(input, interval, "!", dup)
       end
       # else
       #   # harder case of && / ||
@@ -2685,9 +2690,7 @@ module Idl
 
       value_result = value_try do
         lhs_value = lhs.value(symtab)
-        if (lhs_value == true && op == "||") || (lhs_value == false && op == "&&")
-          short_circuit = true
-        end
+        short_circuit = true if (lhs_value == true && op == "||") || (lhs_value == false && op == "&&")
       end
       value_else(value_result) { short_circuit = false }
 
@@ -2712,7 +2715,7 @@ module Idl
         value_else(value_result) do
           Type.new(:bits, width: lhs_type.width, qualifiers:)
         end
-      #elsif ["+", "-", "*", "/", "%"].include?(op)
+      # elsif ["+", "-", "*", "/", "%"].include?(op)
       elsif lhs_type.const? && rhs_type.const?
         # if both types are const and the operator results in a Bits type,
         # then the result type is the largest of:
@@ -2762,9 +2765,7 @@ module Idl
       short_circuit = false
       value_result = value_try do
         lhs_value = lhs.value(symtab)
-        if (lhs_value == true && op == "||") || (lhs_value == false && op == "&&")
-          short_circuit = true
-        end
+        short_circuit = true if (lhs_value == true && op == "||") || (lhs_value == false && op == "&&")
       end
       value_else(value_result) do
         short_circuit = false
@@ -2797,7 +2798,7 @@ module Idl
         lhs_type = lhs.type(symtab)
         type_error "Unsupported type for left shift: #{lhs_type}" unless lhs_type.kind == :bits
         type_error "Unsupported shift for left shift: #{rhs_type}" unless rhs_type.kind == :bits
-      elsif op == ">>" || op == ">>>"
+      elsif [">>", ">>>"].include?(op)
         rhs_type = rhs.type(symtab)
         lhs_type = lhs.type(symtab)
         type_error "Unsupported type for right shift: #{lhs_type(symtab)}" unless lhs_type.kind == :bits
@@ -2830,190 +2831,186 @@ module Idl
       # cached_value = @value_cache[symtab]
       # return cached_value unless cached_value.nil?
 
-      value =
-        if op == ">>>"
-          lhs_value = lhs.value(symtab)
-          if lhs_value & (1 << (lhs.type(symtab).width - 1)).zero?
-            lhs_value >> rhs.value(symtab)
-          else
-            # need to shift in ones
-            shift_amount = rhs.value(symtab)
-            shifted_value = lhs_value >> shift_amount
-            mask_len = lhs.type(symtab).width - shift_amount
-            mask = ((1 << mask_len) - 1) << shift_amount
+      if op == ">>>"
+        lhs_value = lhs.value(symtab)
+        if lhs_value & (1 << (lhs.type(symtab).width - 1)).zero?
+          lhs_value >> rhs.value(symtab)
+        else
+          # need to shift in ones
+          shift_amount = rhs.value(symtab)
+          shifted_value = lhs_value >> shift_amount
+          mask_len = lhs.type(symtab).width - shift_amount
+          mask = ((1 << mask_len) - 1) << shift_amount
 
-            shifted_value | mask
-          end
-        elsif ["&&", "||"].include?(op)
-          # these can short circuit, so we might only need to check the lhs
-          lhs_value = lhs.value(symtab)
-          if (op == "&&") && lhs_value == false
+          shifted_value | mask
+        end
+      elsif ["&&", "||"].include?(op)
+        # these can short circuit, so we might only need to check the lhs
+        lhs_value = lhs.value(symtab)
+        if (op == "&&") && lhs_value == false
+          false
+        elsif (op == "||") && lhs_value == true
+          true
+        elsif op == "&&"
+          lhs_value && rhs.value(symtab)
+        else
+          lhs_value || rhs.value(symtab)
+        end
+      elsif op == "=="
+        value_result = value_try do
+          return lhs.value(symtab) == rhs.value(symtab)
+        end
+        value_else(value_result) do
+          # even if we don't know the exact value of @lhs and @rhs, we can still
+          # know that == is false if the possible values of each do not overlap
+          if lhs.values(symtab).intersection(rhs.values(symtab)).empty?
             false
-          elsif (op == "||") && lhs_value == true
+          else
+
+            value_error "There is overlap in the lhs/rhs return values"
+          end
+        end
+      elsif op == "!="
+        value_result = value_try do
+          return lhs.value(symtab) != rhs.value(symtab)
+        end
+        value_else(value_result) do
+          # even if we don't know the exact value of @lhs and @rhs, we can still
+          # know that != is true if the possible values of each do not overlap
+          if lhs.values(symtab).intersection(rhs.values(symtab)).empty?
             true
           else
-            if op == "&&"
-              lhs_value && rhs.value(symtab)
-            else
-              lhs_value || rhs.value(symtab)
-            end
+            value_error "There is overlap in the lhs/rhs return values"
           end
-        elsif op == "=="
-          value_result = value_try do
-            return lhs.value(symtab) == rhs.value(symtab)
-          end
-          value_else(value_result) do
-            # even if we don't know the exact value of @lhs and @rhs, we can still
-            # know that == is false if the possible values of each do not overlap
-            if lhs.values(symtab).intersection(rhs.values(symtab)).empty?
-              false
-            else
-
-              value_error "There is overlap in the lhs/rhs return values"
-            end
-          end
-        elsif op == "!="
-          value_result = value_try do
-            return lhs.value(symtab) != rhs.value(symtab)
-          end
-          value_else(value_result) do
-            # even if we don't know the exact value of @lhs and @rhs, we can still
-            # know that != is true if the possible values of each do not overlap
-            if lhs.values(symtab).intersection(rhs.values(symtab)).empty?
-              true
-            else
-              value_error "There is overlap in the lhs/rhs return values"
-            end
-          end
-        elsif op == "<="
-          value_result = value_try do
-            return lhs.value(symtab) <= rhs.value(symtab)
-          end
-          value_else(value_result) do
-            # even if we don't know the exact value of @lhs and @rhs, we can still
-            # know that != is true if the possible values of lhs are all <= the possible values of rhs
-            rhs_values = rhs.values(symtab)
-            if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value <= rhs_value} }
-              true
-            else
-              value_error "Some value of lhs is not <= some value of rhs"
-            end
-          end
-        elsif op == ">="
-          value_result = value_try do
-            return lhs.value(symtab) >= rhs.value(symtab)
-          end
-          value_else(value_result) do
-            # even if we don't know the exact value of @lhs and @rhs, we can still
-            # know that != is true if the possible values of lhs are all >= the possible values of rhs
-            rhs_values = rhs.values(symtab)
-            if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value >= rhs_value} }
-              true
-            else
-              value_error "Some value of lhs is not >= some value of rhs"
-            end
-          end
-        elsif op == "<"
-          value_result = value_try do
-            return lhs.value(symtab) < rhs.value(symtab)
-          end
-          value_else(value_result) do
-            # even if we don't know the exact value of @lhs and @rhs, we can still
-            # know that != is true if the possible values of lhs are all < the possible values of rhs
-            rhs_values = rhs.values(symtab)
-            if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value < rhs_value} }
-              true
-            else
-              value_error "Some value of lhs is not < some value of rhs"
-            end
-          end
-        elsif op == ">"
-          value_result = value_try do
-            return lhs.value(symtab) > rhs.value(symtab)
-          end
-          value_else(value_result) do
-            # even if we don't know the exact value of @lhs and @rhs, we can still
-            # know that != is true if the possible values of lhs are all > the possible values of rhs
-            rhs_values = rhs.values(symtab)
-            if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value > rhs_value} }
-              true
-            else
-              value_error "Some value of lhs is not > some value of rhs"
-            end
-          end
-        elsif op == "&"
-          # if one side is zero, we don't need to know the other side
-          value_result = value_try do
-            return 0 if lhs.value(symtab).zero?
-          end
-          # ok, try rhs
-
-          return 0 if rhs.value(symtab).zero?
-
-          lhs.value(symtab) & rhs.value(symtab)
-
-        elsif op == "|"
-          # if one side is all ones, we don't need to know the other side
-          rhs_type = rhs.type(symtab)
-          value_error("Unknown width") if rhs_type.width == :unknown
-          lhs_type = lhs.type(symtab)
-          value_error("unknown width") if lhs_type.width == :unknown
-
-          value_result = value_try do
-            rhs_mask = ((1 << rhs_type.width) - 1)
-            return rhs_mask if (rhs.value(symtab) == rhs_mask) && (lhs_type.width <= rhs_type.width)
-          end
-          # ok, try rhs
-
-          lhs_mask = ((1 << lhs_type.width) - 1)
-          return lhs_mask if (lhs.value(symtab) == lhs_mask) && (rhs_type.width <= lhs_type.width)
-
-          lhs.value(symtab) | rhs.value(symtab)
-
-        else
-          v =
-            case op
-            when "+"
-              lhs.value(symtab) + rhs.value(symtab)
-            when "-"
-              lhs.value(symtab) - rhs.value(symtab)
-            when "*"
-              lhs.value(symtab) * rhs.value(symtab)
-            when "/"
-              lhs.value(symtab) / rhs.value(symtab)
-            when "%"
-              lhs.value(symtab) % rhs.value(symtab)
-            when "^"
-              lhs.value(symtab) ^ rhs.value(symtab)
-            when "|"
-              lhs.value(symtab) | rhs.value(symtab)
-            when "&"
-              lhs.value(symtab) & rhs.value(symtab)
-            when ">>"
-              lhs.value(symtab) >> rhs.value(symtab)
-            when "<<"
-              lhs.value(symtab) << rhs.value(symtab)
-            else
-              internal_error "Unhandled binary op #{op}"
-            end
-
-          v_trunc =
-            if !lhs.type(symtab).const? || !rhs.type(symtab).const?
-              # when both sides are constant, the value is not truncated
-              width = type(symtab).width
-              if width == :unknown
-                value_error("unknown width in op that possibly truncates")
-              end
-              v & ((1 << type(symtab).width) - 1)
-            else
-              v
-            end
-
-          warn "WARNING: The value of '#{text_value}' (#{lhs.type(symtab).const?}, #{rhs.type(symtab).const?}) is truncated from #{v} to #{v_trunc} because the result is only #{type(symtab).width} bits" if v != v_trunc
-          v_trunc
         end
+      elsif op == "<="
+        value_result = value_try do
+          return lhs.value(symtab) <= rhs.value(symtab)
+        end
+        value_else(value_result) do
+          # even if we don't know the exact value of @lhs and @rhs, we can still
+          # know that != is true if the possible values of lhs are all <= the possible values of rhs
+          rhs_values = rhs.values(symtab)
+          if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value <= rhs_value } }
+            true
+          else
+            value_error "Some value of lhs is not <= some value of rhs"
+          end
+        end
+      elsif op == ">="
+        value_result = value_try do
+          return lhs.value(symtab) >= rhs.value(symtab)
+        end
+        value_else(value_result) do
+          # even if we don't know the exact value of @lhs and @rhs, we can still
+          # know that != is true if the possible values of lhs are all >= the possible values of rhs
+          rhs_values = rhs.values(symtab)
+          if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value >= rhs_value } }
+            true
+          else
+            value_error "Some value of lhs is not >= some value of rhs"
+          end
+        end
+      elsif op == "<"
+        value_result = value_try do
+          return lhs.value(symtab) < rhs.value(symtab)
+        end
+        value_else(value_result) do
+          # even if we don't know the exact value of @lhs and @rhs, we can still
+          # know that != is true if the possible values of lhs are all < the possible values of rhs
+          rhs_values = rhs.values(symtab)
+          if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value < rhs_value } }
+            true
+          else
+            value_error "Some value of lhs is not < some value of rhs"
+          end
+        end
+      elsif op == ">"
+        value_result = value_try do
+          return lhs.value(symtab) > rhs.value(symtab)
+        end
+        value_else(value_result) do
+          # even if we don't know the exact value of @lhs and @rhs, we can still
+          # know that != is true if the possible values of lhs are all > the possible values of rhs
+          rhs_values = rhs.values(symtab)
+          if lhs.values(symtab).all? { |lhs_value| rhs_values.all? { |rhs_value| lhs_value > rhs_value } }
+            true
+          else
+            value_error "Some value of lhs is not > some value of rhs"
+          end
+        end
+      elsif op == "&"
+        # if one side is zero, we don't need to know the other side
+        value_try do
+          return 0 if lhs.value(symtab).zero?
+        end
+        # ok, try rhs
+
+        return 0 if rhs.value(symtab).zero?
+
+        lhs.value(symtab) & rhs.value(symtab)
+
+      elsif op == "|"
+        # if one side is all ones, we don't need to know the other side
+        rhs_type = rhs.type(symtab)
+        value_error("Unknown width") if rhs_type.width == :unknown
+        lhs_type = lhs.type(symtab)
+        value_error("unknown width") if lhs_type.width == :unknown
+
+        value_try do
+          rhs_mask = ((1 << rhs_type.width) - 1)
+          return rhs_mask if (rhs.value(symtab) == rhs_mask) && (lhs_type.width <= rhs_type.width)
+        end
+        # ok, try rhs
+
+        lhs_mask = ((1 << lhs_type.width) - 1)
+        return lhs_mask if (lhs.value(symtab) == lhs_mask) && (rhs_type.width <= lhs_type.width)
+
+        lhs.value(symtab) | rhs.value(symtab)
+
+      else
+        v =
+          case op
+          when "+"
+            lhs.value(symtab) + rhs.value(symtab)
+          when "-"
+            lhs.value(symtab) - rhs.value(symtab)
+          when "*"
+            lhs.value(symtab) * rhs.value(symtab)
+          when "/"
+            lhs.value(symtab) / rhs.value(symtab)
+          when "%"
+            lhs.value(symtab) % rhs.value(symtab)
+          when "^"
+            lhs.value(symtab) ^ rhs.value(symtab)
+          when "|"
+            lhs.value(symtab) | rhs.value(symtab)
+          when "&"
+            lhs.value(symtab) & rhs.value(symtab)
+          when ">>"
+            lhs.value(symtab) >> rhs.value(symtab)
+          when "<<"
+            lhs.value(symtab) << rhs.value(symtab)
+          else
+            internal_error "Unhandled binary op #{op}"
+          end
+
+        v_trunc =
+          if !lhs.type(symtab).const? || !rhs.type(symtab).const?
+            # when both sides are constant, the value is not truncated
+            width = type(symtab).width
+            value_error("unknown width in op that possibly truncates") if width == :unknown
+            v & ((1 << type(symtab).width) - 1)
+          else
+            v
+          end
+
+        if v != v_trunc
+          warn "WARNING: The value of '#{text_value}' (#{lhs.type(symtab).const?}, #{rhs.type(symtab).const?}) is truncated from #{v} to #{v_trunc} because the result is only #{type(symtab).width} bits"
+        end
+        v_trunc
+      end
       # @value_cache[symtab] = value
-      value
     end
 
     # returns the operator as a string
@@ -3073,9 +3070,9 @@ module Idl
         node.type_check(symtab)
       end
 
-      unless element_nodes.all? { |e| e.type(symtab).equal_to?(element_nodes[0].type(symtab)) }
-        type_error "Array elements must be identical"
-      end
+      return if element_nodes.all? { |e| e.type(symtab).equal_to?(element_nodes[0].type(symtab)) }
+
+      type_error "Array elements must be identical"
     end
 
     def type(symtab)
@@ -3091,7 +3088,7 @@ module Idl
 
   class ConcatenationExpressionSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
-      ConcatenationExpressionAst.new(input, interval, [first.to_ast] + rest.elements.map{ |e| e.expression.to_ast })
+      ConcatenationExpressionAst.new(input, interval, [first.to_ast] + rest.elements.map { |e| e.expression.to_ast })
     end
   end
 
@@ -3113,7 +3110,9 @@ module Idl
         e_type = exp.type(symtab)
         type_error "Concatenation only supports Bits<> types" unless e_type.kind == :bits
 
-        internal_error "Negative width for element #{exp.text_value}" if (e_type.width != :unknown) && (e_type.width <= 0)
+        if (e_type.width != :unknown) && (e_type.width <= 0)
+          internal_error "Negative width for element #{exp.text_value}"
+        end
       end
     end
 
@@ -3259,14 +3258,13 @@ module Idl
   end
 
   class BuiltinVariableAst < AstNode
-
     def name = text_value
 
     def initialize(input, interval)
       super(input, interval, EMPTY_ARRAY)
     end
 
-    def type_check(symtab)
+    def type_check(_symtab)
       type_error "Not a builtin variable" unless ["$pc", "$encoding"].include?(name)
     end
 
@@ -3285,7 +3283,7 @@ module Idl
       end
     end
 
-    def value(symtab)
+    def value(_symtab)
       value_error "Cannot know the value of pc or encoding"
     end
 
@@ -3393,10 +3391,10 @@ module Idl
       obj_type = obj.type(symtab)
 
       if obj_type.kind == :bitfield
-        internal_error "#{bitfield.text_value} Not a BitfieldType (is a #{obj_type.class.name})" unless obj_type.respond_to?(:field_names)
-        unless obj_type.field_names.include?(@field_name)
-          type_error "#{@field_name} is not a member of #{obj_type}"
+        unless obj_type.respond_to?(:field_names)
+          internal_error "#{bitfield.text_value} Not a BitfieldType (is a #{obj_type.class.name})"
         end
+        type_error "#{@field_name} is not a member of #{obj_type}" unless obj_type.field_names.include?(@field_name)
       elsif obj_type.kind == :struct
         type_error "#{@field_name} is not a member of #{obj_type}" unless obj_type.member?(@field_name)
       else
@@ -3435,7 +3433,7 @@ module Idl
     include Rvalue
 
     def class_name = @enum_class_name
-    def member_name = @member_name
+    attr_reader :member_name
 
     def initialize(input, interval, class_name, member_name)
       super(input, interval, EMPTY_ARRAY)
@@ -3462,7 +3460,7 @@ module Idl
     end
 
     # @!macro type_check
-    def type_check(symtab)
+    def type_check(_symtab)
       enum_def_type = @enum_def_type
 
       type_error "No symbol #{@enum_class_name} has been defined" if enum_def_type.nil?
@@ -3472,7 +3470,7 @@ module Idl
     end
 
     # @!macro type_no_cfg_arch
-    def type(symtab)
+    def type(_symtab)
       internal_error "Not frozen?" unless frozen?
       type_error "No enum named #{@enum_class_name}" if @enum_def_type.nil?
 
@@ -3480,7 +3478,7 @@ module Idl
     end
 
     # @!macro value_no_cfg_arch
-    def value(symtab)
+    def value(_symtab)
       internal_error "Must call type_check first" if @enum_def_type.nil?
 
       @enum_def_type.value(@member_name)
@@ -3514,9 +3512,7 @@ module Idl
     end
 
     def invert(symtab)
-      unless symtab.nil?
-        type_error "Not a boolean operator" unless type(symtab).kind == :boolean
-      end
+      type_error "Not a boolean operator" if !symtab.nil? && !type(symtab).kind == (:boolean)
 
       type_error "Invert only works with !" unless op == "!"
 
@@ -3582,9 +3578,7 @@ module Idl
         end
       t = type(symtab)
       if t.integral?
-        if t.width == :unknown
-          value_error("Unknown width for truncation")
-        end
+        value_error("Unknown width for truncation") if t.width == :unknown
         val_trunc = val & ((1 << t.width) - 1)
         if t.signed? && ((((val_trunc >> (t.width - 1))) & 1) == 1)
           # need to make this negative!
@@ -3593,8 +3587,8 @@ module Idl
         end
       end
 
-      if op != "~"
-        warn "#{text_value} is truncated due to insufficient bit width (from #{val} to #{val_trunc} on line #{lineno})" if val_trunc != val
+      if op != "~" && val_trunc != (val)
+        warn "#{text_value} is truncated due to insufficient bit width (from #{val} to #{val_trunc} on line #{lineno})"
       end
 
       val_trunc
@@ -3606,9 +3600,7 @@ module Idl
     end
 
     # @return [String] The operator
-    def op
-      @op
-    end
+    attr_reader :op
 
     # @!macro to_idl
     def to_idl = "#{op}#{expression.to_idl}"
@@ -3654,11 +3646,9 @@ module Idl
         true_expression.type_check(symtab)
         false_expression.type_check(symtab)
 
-        unless true_expression.type(symtab).equal_to?(false_expression.type(symtab))
-          # we'll allow dissimilar if they are both bits type
-          unless true_expression.type(symtab).kind == :bits && false_expression.type(symtab).kind == :bits
-            type_error "True and false options must be same type (have #{true_expression.type(symtab)} and #{false_expression.type(symtab)})"
-          end
+        # we'll allow dissimilar if they are both bits type
+        if !true_expression.type(symtab).equal_to?(false_expression.type(symtab)) && !(true_expression.type(symtab).kind == :bits && false_expression.type(symtab).kind == :bits)
+          type_error "True and false options must be same type (have #{true_expression.type(symtab)} and #{false_expression.type(symtab)})"
         end
       end
     end
@@ -3669,11 +3659,9 @@ module Idl
       value_result = value_try do
         cond = condition.value(symtab)
         # if the condition is compile-time-known, only check the used field
-        if cond
-          return true_expression.type(symtab)
-        else
-          return false_expression.type(symtab)
-        end
+        return true_expression.type(symtab) if cond
+
+        return false_expression.type(symtab)
       end
       value_else(value_result) do
         t =
@@ -3760,22 +3748,18 @@ module Idl
 
     # @!macro execute
     def execute(symtab)
-      if action.is_a?(Declaration)
-        action.add_symbol(symtab)
-      end
-      if action.is_a?(Executable)
-        action.execute(symtab)
-      end
+      action.add_symbol(symtab) if action.is_a?(Declaration)
+      return unless action.is_a?(Executable)
+
+      action.execute(symtab)
     end
 
     # @!macro execute_unknown
     def execute_unknown(symtab)
-      if action.is_a?(Declaration)
-        action.add_symbol(symtab)
-      end
-      if action.is_a?(Executable)
-        action.execute_unknown(symtab)
-      end
+      action.add_symbol(symtab) if action.is_a?(Declaration)
+      return unless action.is_a?(Executable)
+
+      action.execute_unknown(symtab)
     end
 
     # @!macro to_idl
@@ -3812,9 +3796,7 @@ module Idl
       value_result = value_try do
         cond = condition.value(symtab)
 
-        if (cond)
-          action.execute(symtab)
-        end
+        action.execute(symtab) if cond
       end
       value_else(value_result) do
         # force action to set any values to nil
@@ -3823,10 +3805,10 @@ module Idl
       end
     end
 
-      # @!macro execute
-      def execute_unknown(symtab)
-        action.execute_unknown(symtab)
-      end
+    # @!macro execute
+    def execute_unknown(symtab)
+      action.execute_unknown(symtab)
+    end
 
     # @!macro to_idl
     def to_idl
@@ -3990,7 +3972,7 @@ module Idl
       if return_value_nodes[0].type(symtab).kind == :tuple
         return_value_nodes[0].type(symtab).tuple_types
       else
-        return_value_nodes.map{ |v| v.type(symtab) }
+        return_value_nodes.map { |v| v.type(symtab) }
       end
     end
 
@@ -4032,9 +4014,11 @@ module Idl
           unless template_values.size == func_type.template_names.size
             internal_error "Did not find correct number of template arguments (found #{template_values.size}, need #{func_type.template_names.size}) #{symtab.keys_pretty}"
           end
-          func_type.return_type(template_values.sort { |a, b| a.template_index <=> b.template_index }.map(&:value), self)
+          func_type.return_type(template_values.sort do |a, b|
+            a.template_index <=> b.template_index
+          end.map(&:value), self)
         else
-          @func_type_cache[symtab.cfg_arch]= func_type
+          @func_type_cache[symtab.cfg_arch] = func_type
           func_type.return_type(EMPTY_ARRAY, self)
         end
       end
@@ -4047,13 +4031,13 @@ module Idl
         type_error "Unknown type for #{v.text_value}" if v.type(symtab).nil?
       end
 
-      if return_value_nodes[0].type(symtab).kind == :tuple
-        type_error("Can't combine tuple types in return") unless return_value_nodes.size == 1
+      if return_value_nodes[0].type(symtab).kind == :tuple && !return_value_nodes.size == (1)
+        type_error("Can't combine tuple types in return")
       end
 
-      unless return_type(symtab).convertable_to?(expected_return_type(symtab))
-        type_error "Return type (#{return_type(symtab)}) not convertable to expected return type (#{expected_return_type(symtab)})"
-      end
+      return if return_type(symtab).convertable_to?(expected_return_type(symtab))
+
+      type_error "Return type (#{return_type(symtab)}) not convertable to expected return type (#{expected_return_type(symtab)})"
     end
 
     def enclosing_function
@@ -4114,16 +4098,13 @@ module Idl
       return_expression.return_types(symtab)
     end
 
-
     # @!macro return_value
     def return_value(symtab)
       cond = condition.value(symtab)
 
-      if cond
-        return_expression.return_value(symtab)
-      else
-        nil
-      end
+      return unless cond
+
+      return_expression.return_value(symtab)
     end
 
     # @!macro return_values
@@ -4132,7 +4113,6 @@ module Idl
         cond = condition.value(symtab)
 
         return cond ? return_expression.return_values(symtab) : EMPTY_ARRAY
-
       end
       value_else(value_result) do
         # condition isn't known, so the return value is always possible
@@ -4186,7 +4166,6 @@ module Idl
   #  * U32 (Bits<32>)
   #  * U64 (Bits<64>)
   class BuiltinTypeNameAst < AstNode
-
     def bits_expression = @children[0]
 
     def initialize(input, interval, type_name, bits_expression)
@@ -4211,9 +4190,9 @@ module Idl
           type_error "Bit width must be known at compile time" if symtab.cfg_arch.fully_configured?
         end
       end
-      unless ["Bits", "String", "XReg", "Boolean", "U32", "U64"].include?(@type_name)
-        type_error "Unimplemented builtin type #{text_value}"
-      end
+      return if ["Bits", "String", "XReg", "Boolean", "U32", "U64"].include?(@type_name)
+
+      type_error "Unimplemented builtin type #{text_value}"
     end
 
     def freeze_tree(symtab)
@@ -4296,7 +4275,7 @@ module Idl
     # @!macro type_check
     def type_check(_symtab); end
 
-    def type(symtab)
+    def type(_symtab)
       @type
     end
 
@@ -4333,18 +4312,18 @@ module Idl
 
     # @!macro type_check
     def type_check(symtab)
-      if text_value.delete("_") =~ /^((XLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
-        # verilog-style literal
-        width = ::Regexp.last_match(1)
-        value_text = ::Regexp.last_match(6)
+      return unless text_value.delete("_") =~ /^((XLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
 
-        if width.nil? || width == "XLEN"
-          width = symtab.mxlen.nil? ? 32 : symtab.mxlen # 32 is the min width, which is what we care about here
-        end
+      # verilog-style literal
+      width = ::Regexp.last_match(1)
+      value_text = ::Regexp.last_match(6)
 
-        # ensure we actually have enough bits to represent the value
-        type_error("#{value_text} cannot be represented in #{width} bits") if unsigned_value.bit_length > width.to_i
+      if width.nil? || width == "XLEN"
+        width = symtab.mxlen.nil? ? 32 : symtab.mxlen # 32 is the min width, which is what we care about here
       end
+
+      # ensure we actually have enough bits to represent the value
+      type_error("#{value_text} cannot be represented in #{width} bits") if unsigned_value.bit_length > width.to_i
     end
 
     # @!macro type
@@ -4357,8 +4336,8 @@ module Idl
         signed = ::Regexp.last_match(4)
         width = width(symtab)
 
-        unless width == :unknown
-          type_error("integer width must be positive (is #{width})") unless width.is_a?(Integer) && width.positive?
+        if !(width == :unknown) && !(width.is_a?(Integer) && width.positive?)
+          type_error("integer width must be positive (is #{width})")
         end
 
         qualifiers = signed == "s" ? [:signed, :const] : [:const]
@@ -4389,11 +4368,11 @@ module Idl
       when /^((XLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
         # verilog-style literal
         width = ::Regexp.last_match(1)
-        if width.nil? || width == "XLEN"
-          width = symtab.mxlen.nil? ? :unknown : symtab.mxlen
-        else
-          width = width.to_i
-        end
+        width = if width.nil? || width == "XLEN"
+                  symtab.mxlen.nil? ? :unknown : symtab.mxlen
+                else
+                  width.to_i
+                end
         @width = width
       when /^0([bdx]?)([0-9a-fA-F]*)(s?)$/
         signed = ::Regexp.last_match(3)
@@ -4429,25 +4408,17 @@ module Idl
               if unsigned_value > 0x7fff_ffff
                 value_error("Don't know if value will be negative")
               else
-                if unsigned_value > 0xffff_ffff
-                  value_error("Don't know if value will fit in literal")
-                end
+                value_error("Don't know if value will fit in literal") if unsigned_value > 0xffff_ffff
                 unsigned_value
               end
             else
-              if unsigned_value > 0xffff_ffff
-                value_error("Don't know if value will fit in literal")
-              end
+              value_error("Don't know if value will fit in literal") if unsigned_value > 0xffff_ffff
               unsigned_value
             end
           else
-            if unsigned_value.bit_length > width
-              value_error("Value does not fit in literal")
-            end
+            value_error("Value does not fit in literal") if unsigned_value.bit_length > width
             if !signed.empty? && ((unsigned_value >> (width - 1)) == 1)
-              if unsigned_value.bit_length > (width - 1)
-                value_error("Value does not fit in literal")
-              end
+              value_error("Value does not fit in literal") if unsigned_value.bit_length > (width - 1)
               -(2**width.to_i - unsigned_value)
             else
               unsigned_value
@@ -4459,7 +4430,6 @@ module Idl
         @value = unsigned_value
       end
     end
-
 
     # @return [Integer] the unsigned value of this literal (i.e., treating it as unsigned even if the signed specifier is present)
     def unsigned_value
@@ -4492,16 +4462,16 @@ module Idl
           radix_id = "o" if radix_id.empty?
 
           # @unsigned_value =
-            case radix_id
-            when "b"
-              value.to_i(2)
-            when "o"
-              value.to_i(8)
-            when "d"
-              value.to_i(10)
-            when "x"
-              value.to_i(16)
-            end
+          case radix_id
+          when "b"
+            value.to_i(2)
+          when "o"
+            value.to_i(8)
+          when "d"
+            value.to_i(10)
+          when "x"
+            value.to_i(16)
+          end
 
         when /^([0-9]*)(s?)$/
           # basic decimal
@@ -4605,7 +4575,9 @@ module Idl
 
       func_def_type = func_type(symtab)
 
-      type_error "Template arguments provided in call to non-template function #{@name}" if template? && func_def_type.template_names.empty?
+      if template? && func_def_type.template_names.empty?
+        type_error "Template arguments provided in call to non-template function #{@name}"
+      end
 
       type_error "Missing template arguments in call to #{@name}" if !template? && !func_def_type.template_names.empty?
 
@@ -4637,15 +4609,16 @@ module Idl
       end
       arg_nodes.each_with_index do |a, idx|
         unless a.type(symtab).convertable_to?(func_def_type.argument_type(idx, tvals, arg_nodes, symtab, self))
-          type_error "Wrong type for argument number #{idx + 1}. Expecting #{func_def_type.argument_type(idx, tvals, arg_nodes, symtab, self)}, got #{a.type(symtab)}"
+          type_error "Wrong type for argument number #{idx + 1}. Expecting #{func_def_type.argument_type(idx, tvals,
+                                                                                                         arg_nodes, symtab, self)}, got #{a.type(symtab)}"
         end
       end
 
-      if func_def_type.return_type(tvals, self).nil?
-        internal_error "No type determined for function"
-      end
+      internal_error "No type determined for function" if func_def_type.return_type(tvals, self).nil?
 
-      internal_error "Function call symtab not at same level post type check (#{symtab.levels} #{level})" unless symtab.levels == level
+      return if symtab.levels == level
+
+      internal_error "Function call symtab not at same level post type check (#{symtab.levels} #{level})"
     end
 
     # @!macro type
@@ -4658,16 +4631,16 @@ module Idl
     # @!macro value
     def value(symtab)
       # sometimes we want to evaluate for a specific XLEN
-      if name == "xlen" && !symtab.get("__effective_xlen").nil?
-        return symtab.get("__effective_xlen").value
-      end
+      return symtab.get("__effective_xlen").value if name == "xlen" && !symtab.get("__effective_xlen").nil?
 
       func_def_type = func_type(symtab)
       type_error "#{name} is not a function" unless func_def_type.is_a?(FunctionType)
       if func_def_type.builtin?
         if name == "implemented?"
           extname_ref = arg_nodes[0]
-          type_error "First argument should be a ExtensionName" unless extname_ref.type(symtab).kind == :enum_ref && extname_ref.class_name == "ExtensionName"
+          unless extname_ref.type(symtab).kind == :enum_ref && extname_ref.class_name == "ExtensionName"
+            type_error "First argument should be a ExtensionName"
+          end
 
           return symtab.cfg_arch.ext?(arg_nodes[0].member_name) if symtab.cfg_arch.fully_configured?
 
@@ -4675,6 +4648,7 @@ module Idl
             # we can know if it is implemented, but not if it's not implemented for a partially configured
             return true
           end
+
           value_error "implemented? is only known when evaluating in the context of a fully-configured arch def"
         else
           value_error "value of builtin function cannot be known"
@@ -4694,9 +4668,7 @@ module Idl
     end
     alias execute value
 
-    def name
-      @name
-    end
+    attr_reader :name
 
     # @!macro execute_unknown
     #  nothing to do for a function call
@@ -4711,7 +4683,6 @@ module Idl
       end
     end
   end
-
 
   class UserTypeNameSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
@@ -4772,8 +4743,6 @@ module Idl
     # @!macro type_check
     def type_check(symtab)
       internal_error "Function bodies should be at global + 1 scope (at #{symtab.levels})" unless symtab.levels == 2
-
-      return_value_might_be_known = true
 
       stmts.each do |s|
         s.type_check(symtab)
@@ -4861,7 +4830,7 @@ module Idl
         function_name.text_value,
         targs.empty? ? [] : [targs.first.to_ast] + targs.rest.elements.map { |r| r.single_declaration.to_ast },
         ret.empty? ? [] : [ret.first.to_ast] + ret.rest.elements.map { |r| r.type_name.to_ast },
-        args.empty? ? [] : [args.first.to_ast] + args.rest.elements.map { |r| r.single_declaration.to_ast},
+        args.empty? ? [] : [args.first.to_ast] + args.rest.elements.map { |r| r.single_declaration.to_ast },
         desc.text_value,
         respond_to?(:body_block) ? body_block.function_body.to_ast : nil
       )
@@ -4897,15 +4866,13 @@ module Idl
       @reachable_functions_cache ||= {}
     end
 
-    attr_reader :reachable_functions_cache
+    attr_reader :reachable_functions_cache, :name
 
     # @!macro freeze_tree
     def freeze_tree(global_symtab)
       return if frozen?
 
-      unless templated?
-        arguments(global_symtab)
-      end
+      arguments(global_symtab) unless templated?
 
       @children.each { |child| child.freeze_tree(global_symtab) }
       freeze
@@ -4950,9 +4917,7 @@ module Idl
       end
 
       arglist.freeze
-      unless templated?
-        @arglist = arglist
-      end
+      @arglist = arglist unless templated?
       arglist
     end
 
@@ -5004,8 +4969,6 @@ module Idl
         end
       end
 
-
-
       if @return_type_nodes.size == 1
         rtype = @return_type_nodes[0].type(symtab)
         rtype = rtype.ref_type if rtype.kind == :enum
@@ -5030,10 +4993,6 @@ module Idl
       else
         @return_type_nodes.map(&:text_value)
       end
-    end
-
-    def name
-      @name
     end
 
     # @param [Array<Integer>] template values to apply
@@ -5090,11 +5049,8 @@ module Idl
       end
       type_check_args(symtab)
 
-
       # template functions are checked as they are called
-      unless templated?
-        type_check_body(symtab)
-      end
+      type_check_body(symtab) unless templated?
       symtab.pop
     end
 
@@ -5132,7 +5088,9 @@ module Idl
     end
 
     def type_check_targs(symtab)
-      @targs.each { |t| type_error "Template arguments must be uppercase" unless t.text_value[0] == t.text_value[0].upcase }
+      @targs.each do |t|
+        type_error "Template arguments must be uppercase" unless t.text_value[0] == t.text_value[0].upcase
+      end
       @targs.each { |t| type_error "Template types must be integral" unless t.type(symtab).integral? }
     end
 
@@ -5211,9 +5169,7 @@ module Idl
             stmts.each do |s|
               if s.is_a?(Returns)
                 v = s.return_value(symtab)
-                unless v.nil?
-                  return v
-                end
+                return v unless v.nil?
               else
                 s.execute(symtab)
               end
@@ -5250,9 +5206,7 @@ module Idl
                 if s.is_a?(Returns)
                   value_result = value_try do
                     v = s.return_value(symtab)
-                    unless v.nil?
-                      return values.push(v).uniq
-                    end
+                    return values.push(v).uniq unless v.nil?
                   end
                   value_else(value_result) do
                     values += s.return_values(symtab)
@@ -5321,9 +5275,7 @@ module Idl
         stmts.each do |s|
           if s.is_a?(Returns)
             v = s.return_value(symtab)
-            unless v.nil?
-              return v
-            end
+            return v unless v.nil?
           else
             s.execute(symtab)
           end
@@ -5345,9 +5297,7 @@ module Idl
             if s.is_a?(Returns)
               value_result = value_try do
                 v = s.return_value(symtab)
-                unless v.nil?
-                  return values.push(v).uniq
-                end
+                return values.push(v).uniq unless v.nil?
               end
               value_else(value_result) do
                 values += s.return_values(symtab)
@@ -5373,7 +5323,6 @@ module Idl
             value_result = value_try do
               v = s.return_value(symtab)
               break unless v.nil? # nil means this is a conditional return and the condition is false
-
             end
             value_else(value_result) do
               # not known, keep going
@@ -5402,7 +5351,6 @@ module Idl
     def to_idl
       stmts.map(&:to_idl).join("")
     end
-
   end
 
   class ElseIfAst < AstNode
@@ -5424,9 +5372,7 @@ module Idl
         cond_value = cond.value(symtab)
       end
 
-      unless cond.type(symtab).convertable_to?(:boolean)
-        type_error "'#{cond.text_value}' is not boolean"
-      end
+      type_error "'#{cond.text_value}' is not boolean" unless cond.type(symtab).convertable_to?(:boolean)
 
       body.type_check(symtab) unless cond_value == false
     end
@@ -5477,8 +5423,7 @@ module Idl
         else
           IfBodyAst.new(input, final_else.body.interval, final_else_stmts)
         end
-      ast = IfAst.new(input, interval, if_cond.to_ast, if_body_ast, eifs, final_else_ast)
-      ast
+      IfAst.new(input, interval, if_cond.to_ast, if_body_ast, eifs, final_else_ast)
     end
   end
 
@@ -5503,7 +5448,6 @@ module Idl
     def type_check(symtab)
       level = symtab.levels
       if_cond.type_check(symtab)
-
 
       unless if_cond.type(symtab).convertable_to?(:boolean)
         if if_cond.type(symtab).kind == :bits
@@ -5552,7 +5496,6 @@ module Idl
 
     # @!macro return_value
     def return_value(symtab)
-
       body = taken_body(symtab)
       return nil if body.nil?
 
@@ -5569,12 +5512,11 @@ module Idl
           values += eif.return_values(symtab)
           value_result = value_try do
             elseif_cond_value = eif.value(symtab)
-            if elseif_cond_value
-              # this else if is defintately taken, so we are done
-              return (values + eif.return_values(symtab)).uniq
-            else
-              next :ok # we know the else if isn't taken, so we can just go to the next
-            end
+            return (values + eif.return_values(symtab)).uniq if elseif_cond_value
+
+            # this else if is defintately taken, so we are done
+
+            next :ok # we know the else if isn't taken, so we can just go to the next
           end
           value_else(value_result) do
             # else if path not known; body return paths are possible
@@ -5596,13 +5538,12 @@ module Idl
     def return_values(symtab)
       value_result = value_try do
         if_cond_value = if_cond.value(symtab)
-        if if_cond_value
-          # if is taken, so the only possible return values are those in the if body
-          return if_body.return_values(symtab)
-        else
-          # if cond not taken; check else ifs and possibly final else
-          return return_values_after_if(symtab)
-        end
+        return if_body.return_values(symtab) if if_cond_value
+
+        # if is taken, so the only possible return values are those in the if body
+
+        # if cond not taken; check else ifs and possibly final else
+        return return_values_after_if(symtab)
       end
       value_else(value_result) do
         # if condition not known; both paths are possible
@@ -5617,13 +5558,13 @@ module Idl
         elseifs.each do |eif|
           value_result = value_try do
             elseif_cond_value = eif.cond.value(symtab)
-            if elseif_cond_value
-              # this else if is defintately taken, so we are done
-              eif.body.execute(symtab)
-              return
-            else
-              next :ok # we know the else if isn't taken, so we can just go to the next
-            end
+            next :ok unless elseif_cond_value
+
+            # this else if is defintately taken, so we are done
+            eif.body.execute(symtab)
+            return
+
+            # we know the else if isn't taken, so we can just go to the next
           end
           value_else(value_result) do
             # else if path not known; body return paths are possible
@@ -5756,8 +5697,12 @@ module Idl
         type_error "No CSR named #{csr_name}" if csr_def(symtab).nil?
       end
       type_error "CSR[#{csr_name(symtab)}] has no field named #{@field_name}" if field_def(symtab).nil?
-      type_error "CSR[#{csr_name(symtab)}].#{@field_name} is not defined in RV32" if symtab.cfg_arch.mxlen == 32 && !field_def(symtab).defined_in_base32?
-      type_error "CSR[#{csr_name(symtab)}].#{@field_name} is not defined in RV64" if symtab.cfg_arch.mxlen == 64 && !field_def(symtab).defined_in_base64?
+      if symtab.cfg_arch.mxlen == 32 && !field_def(symtab).defined_in_base32?
+        type_error "CSR[#{csr_name(symtab)}].#{@field_name} is not defined in RV32"
+      end
+      return unless symtab.cfg_arch.mxlen == 64 && !field_def(symtab).defined_in_base64?
+
+      type_error "CSR[#{csr_name(symtab)}].#{@field_name} is not defined in RV64"
     end
 
     def csr_def(symtab)
@@ -5792,7 +5737,7 @@ module Idl
     end
 
     # @!macro type
-    def type(symtab)
+    def type(_symtab)
       @type
     end
 
@@ -5806,15 +5751,11 @@ module Idl
         end
       end
       if fd.defined_in_all_bases?
-        Type.new(:bits, width: symtab.cfg_arch.possible_xlens.map{ |xlen| fd.width(symtab.cfg_arch, xlen) }.max)
+        Type.new(:bits, width: symtab.cfg_arch.possible_xlens.map { |xlen| fd.width(symtab.cfg_arch, xlen) }.max)
       elsif fd.base64_only?
-        if symtab.cfg_arch.possible_xlens.include?(64)
-          Type.new(:bits, width: fd.width(symtab.cfg_arch, 64))
-        end
+        Type.new(:bits, width: fd.width(symtab.cfg_arch, 64)) if symtab.cfg_arch.possible_xlens.include?(64)
       elsif fd.base32_only?
-        if symtab.cfg_arch.possible_xlens.include?(32)
-          Type.new(:bits, width: fd.width(symtab.cfg_arch, 32))
-        end
+        Type.new(:bits, width: fd.width(symtab.cfg_arch, 32)) if symtab.cfg_arch.possible_xlens.include?(32)
       else
         internal_error "unexpected field base"
       end
@@ -5833,9 +5774,7 @@ module Idl
       # field isn't implemented, so it must be zero
       return 0 if field_def(symtab).nil?
 
-      unless field_def(symtab).type(symtab) == "RO"
-        value_error "'#{csr_name(symtab)}.#{field_name(symtab)}' is not RO"
-      end
+      value_error "'#{csr_name(symtab)}.#{field_name(symtab)}' is not RO" unless field_def(symtab).type(symtab) == "RO"
 
       field_def(symtab).reset_value(symtab.cfg_arch)
     end
@@ -5914,7 +5853,7 @@ module Idl
         @idx.type_check(symtab)
         type_error "Csr index must be integral" unless @idx.type(symtab).integral?
 
-        value_result = value_try do
+        value_try do
           idx_value = @idx.value(symtab)
           csr_index = cfg_arch.csrs.index { |csr| csr.address == idx_value }
           type_error "No csr number '#{idx_value}' was found" if csr_index.nil?
@@ -5933,7 +5872,7 @@ module Idl
         csr
       else
         # this is an expression
-        value_result = value_try do
+        value_try do
           idx_value = @idx.value(symtab)
           return cfg_arch.csrs.find { |csr| csr.address == idx_value }
         end
@@ -5957,7 +5896,9 @@ module Idl
       cd = csr_def(symtab)
       value_error "CSR number not knowable" if cd.nil?
       if symtab.cfg_arch.fully_configured?
-        value_error "CSR is not implemented" unless symtab.cfg_arch.transitive_implemented_csrs.any? { |icsr| icsr.name == cd.name }
+        value_error "CSR is not implemented" unless symtab.cfg_arch.transitive_implemented_csrs.any? do |icsr|
+          icsr.name == cd.name
+        end
       else
         value_error "CSR is not defined" unless symtab.cfg_arch.csrs.any? { |icsr| icsr.name == cd.name }
       end
@@ -5987,13 +5928,15 @@ module Idl
     end
 
     def type_check(symtab)
-      cfg_arch = symtab.cfg_arch
+      symtab.cfg_arch
 
       csr.type_check(symtab)
       expression.type_check(symtab)
 
       e_type = expression.type(symtab)
-      return if e_type.kind == :bits && ((e_type.width == :unknown || symtab.mxlen.nil?) || (e_type.width == symtab.mxlen))
+      if e_type.kind == :bits && ((e_type.width == :unknown || symtab.mxlen.nil?) || (e_type.width == symtab.mxlen))
+        return
+      end
 
       type_error "CSR value must be an XReg"
     end
@@ -6149,7 +6092,7 @@ module Idl
     end
 
     # @!macro execute
-    def execute(symtab)
+    def execute(_symtab)
       value_error "CSR write"
     end
 

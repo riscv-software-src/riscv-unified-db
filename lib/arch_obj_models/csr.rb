@@ -5,11 +5,9 @@ require_relative "obj"
 # CSR definition
 class Csr < DatabaseObject
   def ==(other)
-    if other.is_a?(Csr)
-      name == other.name
-    else
-      raise ArgumentError, "Csr is not comparable to #{other.class.name}"
-    end
+    raise ArgumentError, "Csr is not comparable to #{other.class.name}" unless other.is_a?(Csr)
+
+    name == other.name
   end
 
   # @return [Integer] CSR address (the value passed as an immediate to csrrw, etc.)
@@ -131,7 +129,7 @@ class Csr < DatabaseObject
 
   # @param cfg_arch [ConfiguredArchitecture] Architecture definition
   # @return [Integer] Smallest length of the CSR in any mode
-  def min_length(cfg_arch)
+  def min_length(_cfg_arch)
     case @data["length"]
     when "MXLEN", "SXLEN", "VSXLEN"
       32
@@ -256,7 +254,7 @@ class Csr < DatabaseObject
 
   # @param cfg_arch [ConfiguredArchitecture] A configuration
   # @return [String] Pretty-printed length string
-  def length_pretty(cfg_arch, effective_xlen=nil)
+  def length_pretty(cfg_arch, effective_xlen = nil)
     if dynamic_length?(cfg_arch)
       cond =
         case @data["length"]
@@ -327,15 +325,14 @@ class Csr < DatabaseObject
   def implemented_fields(cfg_arch)
     return @implemented_fields unless @implemented_fields.nil?
 
-    implemented_bases =
-      if cfg_arch.param_values["SXLEN"] == 3264 ||
-         cfg_arch.param_values["UXLEN"] == 3264 ||
-         cfg_arch.param_values["VSXLEN"] == 3264 ||
-         cfg_arch.param_values["VUXLEN"] == 3264
-        [32, 64]
-      else
-        [cfg_arch.param_values["XLEN"]]
-      end
+    if cfg_arch.param_values["SXLEN"] == 3264 ||
+       cfg_arch.param_values["UXLEN"] == 3264 ||
+       cfg_arch.param_values["VSXLEN"] == 3264 ||
+       cfg_arch.param_values["VUXLEN"] == 3264
+      [32, 64]
+    else
+      [cfg_arch.param_values["XLEN"]]
+    end
 
     @implemented_fields = fields.select do |f|
       f.exists_in_cfg?(cfg_arch)
@@ -411,7 +408,7 @@ class Csr < DatabaseObject
     symtab.add(
       "__expected_return_type",
       Idl::Type.new(:bits, width: 128)
-     )
+    )
 
     ast = sw_read_ast(symtab)
     symtab.cfg_arch.idl_compiler.type_check(
@@ -513,22 +510,26 @@ class Csr < DatabaseObject
 
     field_list.sort! { |a, b| a.location(cfg_arch, effective_xlen).min <=> b.location(cfg_arch, effective_xlen).min }
     field_list.each do |field|
-
       if field.location(cfg_arch, effective_xlen).min != last_idx + 1
         # have some reserved space
         n = field.location(cfg_arch, effective_xlen).min - last_idx - 1
-        raise "negative reserved space? #{n} #{name} #{field.location(cfg_arch, effective_xlen).min} #{last_idx + 1}" if n <= 0
+        if n <= 0
+          raise "negative reserved space? #{n} #{name} #{field.location(cfg_arch,
+                                                                        effective_xlen).min} #{last_idx + 1}"
+        end
 
         desc["reg"] << { "bits" => n, type: 1 }
       end
-      if cfg_arch.partially_configured? && field.optional_in_cfg?(cfg_arch)
-        desc["reg"] << { "bits" => field.location(cfg_arch, effective_xlen).size, "name" => field.name, type: optional_type }
-      else
-        desc["reg"] << { "bits" => field.location(cfg_arch, effective_xlen).size, "name" => field.name, type: 3 }
-      end
+      desc["reg"] << if cfg_arch.partially_configured? && field.optional_in_cfg?(cfg_arch)
+                       { "bits" => field.location(cfg_arch, effective_xlen).size, "name" => field.name,
+                         type: optional_type }
+                     else
+                       { "bits" => field.location(cfg_arch, effective_xlen).size, "name" => field.name, type: 3 }
+                     end
       last_idx = field.location(cfg_arch, effective_xlen).max
     end
-    if !field_list.empty? && (field_list.last.location(cfg_arch, effective_xlen).max != (length(cfg_arch, effective_xlen) - 1))
+    if !field_list.empty? && (field_list.last.location(cfg_arch,
+                                                       effective_xlen).max != (length(cfg_arch, effective_xlen) - 1))
       # reserved space at the end
       desc["reg"] << { "bits" => (length(cfg_arch, effective_xlen) - 1 - last_idx), type: 1 }
       # desc['reg'] << { 'bits' => 1, type: 1 }

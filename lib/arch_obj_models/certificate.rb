@@ -34,7 +34,7 @@ class CertModel < Portfolio
 
     # TODO: XXX: Add back in arch.name.
     #            See https://github.com/riscv-software-src/riscv-unified-db/pull/371
-    #puts "UPDATE:   Creating CertModel object for #{name} using cfg #{cfg_arch.name}"
+    # puts "UPDATE:   Creating CertModel object for #{name} using cfg #{cfg_arch.name}"
     puts "UPDATE:   Creating CertModel object for #{name}"
   end
 
@@ -47,15 +47,15 @@ class CertModel < Portfolio
 
     profile = cfg_arch.profile(@data["tsc_profile"])
 
-    raise "No profile '#{@data["tsc_profile"]}'" if profile.nil?
+    raise "No profile '#{@data['tsc_profile']}'" if profile.nil?
 
     profile
   end
 
   # @return [CertClass] The certification class that this model belongs to.
   def cert_class
-    cert_class = @cfg_arch.ref(@data["class"]['$ref'])
-    raise "No certificate class named '#{@data["class"]}'" if cert_class.nil?
+    cert_class = @cfg_arch.ref(@data["class"]["$ref"])
+    raise "No certificate class named '#{@data['class']}'" if cert_class.nil?
 
     cert_class
   end
@@ -81,7 +81,7 @@ class CertModel < Portfolio
       @data["when"].keys.map do |key|
         case key
         when "xlen"
-          "XLEN == #{@data["when"]["xlen"]}"
+          "XLEN == #{@data['when']['xlen']}"
         when "param"
           @data["when"]["param"].map do |param_name, param_value|
             "Parameter #{param_name} == #{param_value}"
@@ -115,7 +115,7 @@ class CertModel < Portfolio
       @data["when"].keys.map do |key|
         case key
         when "xlen"
-          "XLEN == #{@data["when"]["xlen"]}"
+          "XLEN == #{@data['when']['xlen']}"
         when "param"
           @data["when"]["param"].map do |param_name, param_value|
             "Parameter #{param_name} == #{param_value}"

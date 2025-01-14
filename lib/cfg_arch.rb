@@ -204,9 +204,7 @@ class ConfiguredArchitecture < Architecture
   def type_check(show_progress: true, io: $stdout)
     io.puts "Type checking IDL code for #{@config.name}..."
     progressbar =
-      if show_progress
-        ProgressBar.create(title: "Instructions", total: instructions.size)
-      end
+      (ProgressBar.create(title: "Instructions", total: instructions.size) if show_progress)
 
     instructions.each do |inst|
       progressbar.increment if show_progress
@@ -219,41 +217,37 @@ class ConfiguredArchitecture < Architecture
     end
 
     progressbar =
-      if show_progress
-        ProgressBar.create(title: "CSRs", total: csrs.size)
-      end
+      (ProgressBar.create(title: "CSRs", total: csrs.size) if show_progress)
 
     csrs.each do |csr|
       progressbar.increment if show_progress
-      if csr.has_custom_sw_read?
-        if (possible_xlens.include?(32) && csr.defined_in_base32?) || (possible_xlens.include?(64) && csr.defined_in_base64?)
-          csr.type_checked_sw_read_ast(@symtab)
-        end
+      if csr.has_custom_sw_read? && ((possible_xlens.include?(32) && csr.defined_in_base32?) || (possible_xlens.include?(64) && csr.defined_in_base64?))
+        csr.type_checked_sw_read_ast(@symtab)
       end
       csr.fields.each do |field|
-        unless field.type_ast(@symtab).nil?
-          if ((possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?) ||
-              (possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?))
-            field.type_checked_type_ast(@symtab)
-          end
+        if !field.type_ast(@symtab).nil? && ((possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?) ||
+             (possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?))
+          field.type_checked_type_ast(@symtab)
         end
-        unless field.reset_value_ast(@symtab).nil?
-          if ((possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?) ||
-              (possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?))
-            field.type_checked_reset_value_ast(@symtab) if csr.defined_in_base32? && field.defined_in_base32?
-          end
+        if !field.reset_value_ast(@symtab).nil? && ((possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?) ||
+             (possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?)) && (csr.defined_in_base32? && field.defined_in_base32?)
+          field.type_checked_reset_value_ast(@symtab)
         end
-        unless field.sw_write_ast(@symtab).nil?
-          field.type_checked_sw_write_ast(@symtab, 32) if possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?
-          field.type_checked_sw_write_ast(@symtab, 64) if possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?
+        next if field.sw_write_ast(@symtab).nil?
+
+        if possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?
+          field.type_checked_sw_write_ast(@symtab,
+                                          32)
+        end
+        if possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?
+          field.type_checked_sw_write_ast(@symtab,
+                                          64)
         end
       end
     end
 
     progressbar =
-      if show_progress
-        ProgressBar.create(title: "Functions", total: functions.size)
-      end
+      (ProgressBar.create(title: "Functions", total: functions.size) if show_progress)
     functions.each do |func|
       progressbar.increment if show_progress
       func.type_check(@symtab)
@@ -489,21 +483,23 @@ class ConfiguredArchitecture < Architecture
     return @implemented_exception_codes unless @implemented_exception_codes.nil?
 
     @implemented_exception_codes =
-      implemented_extensions.reduce([]) do |list, ext_version|
+      implemented_extensions.each_with_object([]) do |ext_version, list|
         ecodes = extension(ext_version.name)["exception_codes"]
         next list if ecodes.nil?
 
         ecodes.each do |ecode|
           # double check that all the codes are unique
-          raise "Duplicate exception code" if list.any? { |e| e.num == ecode["num"] || e.name == ecode["name"] || e.var == ecode["var"] }
-
-          unless ecode.dig("when", "version").nil?
-            # check version
-            next unless ext?(ext_version.name.to_sym, ecode["when"]["version"])
+          raise "Duplicate exception code" if list.any? do |e|
+            e.num == ecode["num"] || e.name == ecode["name"] || e.var == ecode["var"]
           end
+
+          if !ecode.dig("when", "version").nil? && !ext?(ext_version.name.to_sym, ecode["when"]["version"])
+            # check version
+            next
+          end
+
           list << ExceptionCode.new(ecode["name"], ecode["var"], ecode["num"], self)
         end
-        list
       end
   end
 
@@ -512,21 +508,23 @@ class ConfiguredArchitecture < Architecture
     return @implemented_interrupt_codes unless @implemented_interrupt_codes.nil?
 
     @implemented_interupt_codes =
-      implemented_extensions.reduce([]) do |list, ext_version|
+      implemented_extensions.each_with_object([]) do |ext_version, list|
         icodes = extension(ext_version.name)["interrupt_codes"]
         next list if icodes.nil?
 
         icodes.each do |icode|
           # double check that all the codes are unique
-          raise "Duplicate interrupt code" if list.any? { |i| i.num == icode["num"] || i.name == icode["name"] || i.var == icode["var"] }
-
-          unless ecode.dig("when", "version").nil?
-            # check version
-            next unless ext?(ext_version.name.to_sym, ecode["when"]["version"])
+          raise "Duplicate interrupt code" if list.any? do |i|
+            i.num == icode["num"] || i.name == icode["name"] || i.var == icode["var"]
           end
+
+          if !ecode.dig("when", "version").nil? && !ext?(ext_version.name.to_sym, ecode["when"]["version"])
+            # check version
+            next
+          end
+
           list << InterruptCode.new(icode["name"], icode["var"], icode["num"], self)
         end
-        list
       end
   end
 
@@ -571,6 +569,7 @@ class ConfiguredArchitecture < Architecture
         end
     end
     raise "?" unless @implemented_functions.is_a?(Array)
+
     @implemented_functions = @implemented_functions.flatten
     @implemented_functions.uniq!(&:name)
 
@@ -695,7 +694,7 @@ class ConfiguredArchitecture < Architecture
     t.flush
     begin
       Tilt["erb"].new(t.path, trim: "-").render(erb_env)
-    rescue
+    rescue StandardError
       warn "While rendering ERB template: #{what}"
       raise
     ensure

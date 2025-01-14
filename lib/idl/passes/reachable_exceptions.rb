@@ -20,7 +20,7 @@ module Idl
 
   class FunctionCallExpressionAst
     def reachable_exceptions(symtab)
-      if name == "raise" || name == "raise_precise"
+      if ["raise", "raise_precise"].include?(name)
         # first argument is the exception
         code_ast = arg_nodes[0]
         value_result = value_try do
@@ -69,17 +69,17 @@ module Idl
     def reachable_exceptions(symtab)
       mask =
         # if action.is_a?(FunctionCallExpressionAst)
-          action.reachable_exceptions(symtab)
-        # else
-          # 0
-        # end
+        action.reachable_exceptions(symtab)
+      # else
+      # 0
+      # end
       action.add_symbol(symtab) if action.is_a?(Declaration)
       if action.is_a?(Executable)
         value_try do
           action.execute(symtab)
         end
       end
-        # ok
+      # ok
       mask
     end
   end
@@ -90,14 +90,14 @@ module Idl
       value_try do
         mask = if_cond.reachable_exceptions(symtab) if if_cond.is_a?(FunctionCallExpressionAst)
         value_result = value_try do
-          if (if_cond.value(symtab))
+          if if_cond.value(symtab)
             mask |= if_body.reachable_exceptions(symtab)
             return mask # no need to continue
           else
             elseifs.each do |eif|
               mask |= eif.cond.reachable_exceptions(symtab) if eif.cond.is_a?(FunctionCallExpressionAst)
               value_result = value_try do
-                if (eif.cond.value(symtab))
+                if eif.cond.value(symtab)
                   mask |= eif.body.reachable_exceptions(symtab)
                   return mask # no need to keep going
                 end
@@ -116,7 +116,7 @@ module Idl
           elseifs.each do |eif|
             mask |= eif.cond.reachable_exceptions(symtab) if eif.cond.is_a?(FunctionCallExpressionAst)
             value_result = value_try do
-              if (eif.cond.value(symtab))
+              if eif.cond.value(symtab)
                 mask |= eif.body.reachable_exceptions(symtab)
                 return mask # no need to keep going
               end
@@ -129,7 +129,7 @@ module Idl
           mask |= final_else_body.reachable_exceptions(symtab)
         end
       end
-      return mask
+      mask
     end
   end
 
@@ -139,7 +139,7 @@ module Idl
       value_result = value_try do
         if condition.value(symtab)
           mask |= return_expression.is_a?(FunctionCallExpressionAst) ? return_expression.reachable_exceptions(symtab) : 0
-            # ok
+          # ok
         end
       end
       value_else(value_result) do

@@ -37,9 +37,9 @@ class ProfileClass < PortfolioClass
     matching_classes = portfolio_classes_matching_portfolio_kind_and_processor_kind
 
     # Look for all profile releases that are from any of the matching classes.
-    @profile_releases_matching_processor_kind = @cfg_arch.profile_releases.select { |pr|
+    @profile_releases_matching_processor_kind = @cfg_arch.profile_releases.select do |pr|
       matching_classes.any? { |matching_class| matching_class.name == pr.profile_class.name }
-    }
+    end
 
     @profile_releases_matching_processor_kind
   end
@@ -48,14 +48,16 @@ class ProfileClass < PortfolioClass
   def profiles
     return @profiles unless @profiles.nil?
 
-    @profiles = @cfg_arch.profiles.select {|profile| profile.profile_class.name == name}
+    @profiles = @cfg_arch.profiles.select { |profile| profile.profile_class.name == name }
   end
 
   # @return [Array<Profile>] All profiles in database matching my processor kind
   def profiles_matching_processor_kind
     return @profiles_matching_processor_kind unless @profiles_matching_processor_kind.nil?
 
-    @profiles_matching_processor_kind = @cfg_arch.profiles.select {|profile| profile.profile_class.processor_kind == processor_kind}
+    @profiles_matching_processor_kind = @cfg_arch.profiles.select do |profile|
+      profile.profile_class.processor_kind == processor_kind
+    end
   end
 
   # @return [Array<Extension>] List of all extensions referenced by the profile class
@@ -117,7 +119,7 @@ class ProfileRelease < DatabaseObject
   # @return [ProfileClass] Profile Class that this ProfileRelease belongs to
   def profile_class
     profile_class = @cfg_arch.profile_class(@data["class"])
-    raise "No profile class named '#{@data["class"]}'" if profile_class.nil?
+    raise "No profile class named '#{@data['class']}'" if profile_class.nil?
 
     profile_class
   end
@@ -177,7 +179,7 @@ class Profile < Portfolio
   # @return [ProfileRelease] The profile release this profile belongs to
   def profile_release
     profile_release = @cfg_arch.ref(@data["release"]["$ref"])
-    raise "No profile release named '#{@data["release"]["$ref"]}'" if profile_release.nil?
+    raise "No profile release named '#{@data['release']['$ref']}'" if profile_release.nil?
 
     profile_release
   end
@@ -206,7 +208,7 @@ class Profile < Portfolio
     ret = []
 
     presence_ext_reqs = in_scope_ext_reqs(presence_type)
-    plural = (presence_ext_reqs.size == 1) ? "" : "s"
+    plural = presence_ext_reqs.size == 1 ? "" : "s"
     ret << "The #{marketing_name} Profile has #{presence_ext_reqs.size} #{presence_type} extension#{plural}."
     ret << ""
 

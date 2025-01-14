@@ -21,7 +21,7 @@ module AntoraUtils
         when "csr"
           "xref:csrs:#{name}.adoc##{name}-def[#{link_text.gsub(']', '\]')}]"
         when "csr_field"
-          csr_name, field_name = name.split('.')
+          csr_name, field_name = name.split(".")
           "xref:csrs:#{csr_name}.adoc##{csr_name}-#{field_name}-def[#{link_text.gsub(']', '\]')}]"
         when "ext"
           "xref:exts:#{name}.adoc##{name}-def[#{link_text.gsub(']', '\]')}]"
@@ -72,7 +72,7 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/nav.adoc} => proc { |tname|
 end
 
 rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/ROOT/pages/config.adoc} => proc { |tname|
-  config_name = Pathname.new(tname).relative_path_from("#{$root}/gen/cfg_html_doc").to_s.split("/")[0]
+  Pathname.new(tname).relative_path_from("#{$root}/gen/cfg_html_doc").to_s.split("/")[0]
   [
     "#{CFG_HTML_DOC_DIR}/templates/config.adoc.erb",
     __FILE__
@@ -226,7 +226,8 @@ rule %r{#{$root}/\.stamps/html-gen-prose-.*\.stamp} => FileList[$root / "arch" /
   config_name = Pathname.new(t.name).basename(".stamp").sub("html-gen-prose-", "")
   FileUtils.rm_rf $root / "gen" / "cfg_html_doc" / config_name / "antora" / "modules" / "prose"
   FileUtils.mkdir_p $root / "gen" / "cfg_html_doc" / config_name / "antora" / "modules" / "prose"
-  FileUtils.cp_r $root / "arch" / "prose", $root / "gen" / "cfg_html_doc" / config_name / "antora" / "modules" / "prose" / "pages"
+  FileUtils.cp_r $root / "arch" / "prose",
+                 $root / "gen" / "cfg_html_doc" / config_name / "antora" / "modules" / "prose" / "pages"
 
   Rake::Task["#{$root}/.stamps"].invoke
 

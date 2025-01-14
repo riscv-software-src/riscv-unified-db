@@ -50,7 +50,9 @@ class ExtensionParameter
     unless data["also_defined_in"].nil?
       if data["also_defined_in"].is_a?(String)
         other_ext = @arch.extension(data["also_defined_in"])
-        raise "Definition error in #{ext.name}.#{name}: #{data['also_defined_in']} is not a known extension" if other_ext.nil?
+        if other_ext.nil?
+          raise "Definition error in #{ext.name}.#{name}: #{data['also_defined_in']} is not a known extension"
+        end
 
         also_defined_in << other_ext
       else
@@ -60,7 +62,9 @@ class ExtensionParameter
 
         data["also_defined_in"].each do |other_ext_name|
           other_ext = @arch.extension(other_ext_name)
-          raise "Definition error in #{ext.name}.#{name}: #{data['also_defined_in']} is not a known extension" if other_ext.nil?
+          if other_ext.nil?
+            raise "Definition error in #{ext.name}.#{name}: #{data['also_defined_in']} is not a known extension"
+          end
 
           also_defined_in << other_ext
         end
@@ -95,7 +99,10 @@ class ExtensionParameter
 
   # sorts by name
   def <=>(other)
-    raise ArgumentError, "ExtensionParameters are only comparable to other extension parameters" unless other.is_a?(ExtensionParameter)
+    unless other.is_a?(ExtensionParameter)
+      raise ArgumentError,
+            "ExtensionParameters are only comparable to other extension parameters"
+    end
 
     @name <=> other.name
   end
@@ -197,7 +204,8 @@ class Extension < DatabaseObject
     if version_requirement.nil?
       return [] unless ExtensionRequirement.new(@new, arch: @arch).satisfied_by?(max_version.version)
     else
-      return [] unless ExtensionRequirement.new(@new, version_requirement, arch: @arch).satisfied_by?(max_version.version)
+      return [] unless ExtensionRequirement.new(@new, version_requirement,
+                                                arch: @arch).satisfied_by?(max_version.version)
     end
 
     max_version.implications
@@ -222,7 +230,7 @@ class Extension < DatabaseObject
         end
       end
     else
-      raise "Invalid conflicts data: #{@data["conflicts"].inspect}"
+      raise "Invalid conflicts data: #{@data['conflicts'].inspect}"
     end
   end
 
@@ -230,7 +238,7 @@ class Extension < DatabaseObject
   def instructions
     return @instructions unless @instructions.nil?
 
-    @instructions = arch.instructions.select { |i| versions.any? { |v| i.defined_by?(v) }}
+    @instructions = arch.instructions.select { |i| versions.any? { |v| i.defined_by?(v) } }
   end
 
   # @return [Array<Csr>] the list of CSRs implemented by *any version* of this extension (may be empty)
@@ -260,6 +268,7 @@ class Extension < DatabaseObject
 
     # The one place in this file that needs a ConfiguredArchitecture object instead of just Architecture.
     raise "In #{name}, need to provide ConfiguredArchitecture" if cfg_arch.nil?
+
     csrs.each do |csr|
       funcs += csr.reachable_functions(cfg_arch)
     end
@@ -291,6 +300,7 @@ class ExtensionVersion
     @version_spec = VersionSpec.new(version_str)
 
     raise ArgumentError, "Must supply arch" if arch.nil?
+
     @arch = arch
 
     @ext = @arch.extension(@name)
@@ -527,28 +537,24 @@ end
 #     Example => presence:
 #                  optional: development
 class ExtensionPresence
-  attr_reader :presence
-  attr_reader :optional_type
+  attr_reader :presence, :optional_type
 
   # @param data [Hash, String] The presence data from the architecture spec
   def initialize(data)
     if data.is_a?(String)
-      raise "Unknown extension presence of #{data}" unless ["mandatory","optional"].include?(data)
+      raise "Unknown extension presence of #{data}" unless ["mandatory", "optional"].include?(data)
 
       @presence = data
       @optional_type = nil
     elsif data.is_a?(Hash)
       data.each do |key, value|
-        if key == "optional"
-          raise ArgumentError, "Extension presence hash #{data} missing type of optional" if value.nil?
-          raise ArgumentError, "Unknown extension presence optional #{value} for type of optional" unless
-            ["localized", "development", "expansion", "transitory"].include?(value)
+        raise ArgumentError, "Extension presence hash #{data} has unsupported key of #{key}" unless key == "optional"
+        raise ArgumentError, "Extension presence hash #{data} missing type of optional" if value.nil?
+        raise ArgumentError, "Unknown extension presence optional #{value} for type of optional" unless
+          ["localized", "development", "expansion", "transitory"].include?(value)
 
-          @presence = key
-          @optional_type = value
-        else
-          raise ArgumentError, "Extension presence hash #{data} has unsupported key of #{key}"
-        end
+        @presence = key
+        @optional_type = value
       end
     else
       raise ArgumentError, "Extension presence is a #{data.class} but only String or Hash are supported"
@@ -567,11 +573,13 @@ class ExtensionPresence
   def self.optional_type_transitory = "transitory"
 
   def self.presence_types = [mandatory, optional]
+
   def self.optional_types = [
-        optional_type_localized,
-        optional_type_development,
-        optional_type_expansion,
-        optional_type_transitory]
+    optional_type_localized,
+    optional_type_development,
+    optional_type_expansion,
+    optional_type_transitory
+  ]
 
   def self.presence_types_obj
     return @presence_types_obj unless @presence_types_obj.nil?
@@ -591,7 +599,7 @@ class ExtensionPresence
     @optional_types_obj = []
 
     optional_types.each do |optional_type|
-      @optional_types_obj << ExtensionPresence.new({ self.optional => optional_type })
+      @optional_types_obj << ExtensionPresence.new({ optional => optional_type })
     end
 
     @optional_types_obj
@@ -633,15 +641,23 @@ class ExtensionPresence
   #   @param other [ExtensionPresence] An extension presence object
   #   @return [Boolean] Whether or not this ExtensionPresence is greater-than the other
   def >(other)
-    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
-    (self.mandatory? && other.optional?)
+    unless other.is_a?(ExtensionPresence)
+      raise ArgumentError,
+            "ExtensionPresence is only comparable to other ExtensionPresence classes"
+    end
+
+    mandatory? && other.optional?
   end
 
   # @overload >=(other)
   #   @param other [ExtensionPresence] An extension presence object
   #   @return [Boolean] Whether or not this ExtensionPresence is greater-than or equal to the other
   def >=(other)
-    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
+    unless other.is_a?(ExtensionPresence)
+      raise ArgumentError,
+            "ExtensionPresence is only comparable to other ExtensionPresence classes"
+    end
+
     (self > other) || (self == other)
   end
 
@@ -649,15 +665,23 @@ class ExtensionPresence
   #   @param other [ExtensionPresence] An extension presence object
   #   @return [Boolean] Whether or not this ExtensionPresence is less-than the other
   def <(other)
-    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
-    (self.optional? && other.mandatory?)
+    unless other.is_a?(ExtensionPresence)
+      raise ArgumentError,
+            "ExtensionPresence is only comparable to other ExtensionPresence classes"
+    end
+
+    optional? && other.mandatory?
   end
 
   # @overload <=(other)
   #   @param other [ExtensionPresence] An extension presence object
   #   @return [Boolean] Whether or not this ExtensionPresence is less-than or equal to the other
   def <=(other)
-    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
+    unless other.is_a?(ExtensionPresence)
+      raise ArgumentError,
+            "ExtensionPresence is only comparable to other ExtensionPresence classes"
+    end
+
     (self < other) || (self == other)
   end
 end
@@ -780,7 +804,10 @@ class ExtensionRequirement
 
   # sorts by name
   def <=>(other)
-    raise ArgumentError, "ExtensionRequirements are only comparable to other extension requirements" unless other.is_a?(ExtensionRequirement)
+    unless other.is_a?(ExtensionRequirement)
+      raise ArgumentError,
+            "ExtensionRequirements are only comparable to other extension requirements"
+    end
 
     @name <=> other.name
   end

@@ -12,8 +12,8 @@ CERT_DOC_DIR = Pathname.new "#{$root}/backends/certificate_doc"
 Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
   cert_model_name = File.basename(f, ".yaml")
   cert_model_obj = YAML.load_file(f, permitted_classes: [Date])
-  cert_class_name = File.basename(cert_model_obj['class']['$ref'].split("#")[0], ".yaml")
-  raise "Ill-formed certificate model file #{f}: missing 'class' field" if cert_model_obj['class'].nil?
+  cert_class_name = File.basename(cert_model_obj["class"]["$ref"].split("#")[0], ".yaml")
+  raise "Ill-formed certificate model file #{f}: missing 'class' field" if cert_model_obj["class"].nil?
 
   base = cert_model_obj["base"]
   raise "Missing certificate model base" if base.nil?
@@ -46,12 +46,11 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
     cert_model = cfg_arch.cert_model(cert_model_name)
 
     # Set globals for ERB template.
-    portfolio = cert_model
     cert_class = cert_model.cert_class
     portfolio = cert_model
     portfolio_class = cert_class
 
-    version = File.basename(t.name, '.adoc').split('-')[1..].join('-')
+    version = File.basename(t.name, ".adoc").split("-")[1..].join("-")
 
     erb = ERB.new(File.read("#{CERT_DOC_DIR}/templates/certificate.adoc.erb"), trim_mode: "-")
     erb.filename = "#{CERT_DOC_DIR}/templates/certificate.adoc.erb"
@@ -108,7 +107,6 @@ Dir.glob("#{$root}/arch/certificate_model/*.yaml") do |f|
       adoc_file
     ].join(" ")
   end
-
 end
 
 namespace :gen do

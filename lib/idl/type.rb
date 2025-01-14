@@ -38,7 +38,7 @@ module Idl
         false
       when :array
         if @width == :unknown
-          Array.new
+          []
         else
           Array.new(@width, sub_type.default)
         end
@@ -63,18 +63,19 @@ module Idl
 
     def self.from_typename(type_name, cfg_arch)
       case type_name
-      when 'XReg'
-        return Type.new(:bits, width: cfg_arch.param_values['XLEN'])
-      when 'FReg'
-        return Type.new(:freg, width: 32)
-      when 'DReg'
-        return Type.new(:dreg, width: 64)
+      when "XReg"
+        Type.new(:bits, width: cfg_arch.param_values["XLEN"])
+      when "FReg"
+        Type.new(:freg, width: 32)
+      when "DReg"
+        Type.new(:dreg, width: 64)
       when /Bits<((?:0x)?[0-9a-fA-F]+)>/
-        Type.new(:bits, width: $1.to_i)
+        Type.new(:bits, width: ::Regexp.last_match(1).to_i)
       end
     end
 
-    def initialize(kind, qualifiers: [], width: nil, sub_type: nil, name: nil, tuple_types: nil, return_type: nil, arguments: nil, enum_class: nil, csr: nil)
+    def initialize(kind, qualifiers: [], width: nil, sub_type: nil, name: nil, tuple_types: nil, return_type: nil,
+                   arguments: nil, enum_class: nil, csr: nil)
       raise "Invalid kind '#{kind}'" unless KINDS.include?(kind)
 
       @kind = kind
@@ -83,12 +84,16 @@ module Idl
       @qualifiers = qualifiers
       # raise "#{width.class.name}" if (kind == :bits && !width.is_a?(Integer))
 
-      raise "Should be a FunctionType" if kind == :function && !self.is_a?(FunctionType)
+      raise "Should be a FunctionType" if kind == :function && !is_a?(FunctionType)
 
-      raise "Width must be an Integer, is a #{width.class}" unless width.nil? || width.is_a?(Integer) || width == :unknown
+      unless width.nil? || width.is_a?(Integer) || width == :unknown
+        raise "Width must be an Integer, is a #{width.class}"
+      end
+
       @width = width
       @sub_type = sub_type
       raise "Tuples need a type list" if kind == :tuple && tuple_types.nil?
+
       @tuple_types = tuple_types
       @return_type = return_type
       @arguments = arguments
@@ -98,20 +103,15 @@ module Idl
         raise "Bits type must have width" unless @width
         raise "Bits type must have positive width" unless @width == :unknown || @width.positive?
       end
-      if kind == :enum
-        raise "Enum type must have width" unless @width
-      end
-      if kind == :array
-        raise "Array must have a subtype" unless @sub_type
-      end
-      if kind == :csr
-        raise 'CSR type must have a csr argument' if csr.nil?
+      raise "Enum type must have width" if kind == :enum && !@width
+      raise "Array must have a subtype" if kind == :array && !@sub_type
+      return unless kind == :csr
+      raise "CSR type must have a csr argument" if csr.nil?
 
-        @csr = csr
-        raise "CSR types must have a width" if width.nil?
+      @csr = csr
+      raise "CSR types must have a width" if width.nil?
 
-        @width = width
-      end
+      @width = width
     end
     TYPE_FROM_KIND = [:boolean, :void, :dontcare].map { |k| [k, Type.new(k)] }.to_h.freeze
 
@@ -141,23 +141,23 @@ module Idl
 
       case @kind
       when :boolean
-        return type.kind == :boolean
+        type.kind == :boolean
       when :enum_ref
-        return \
-          (type.kind == :enum_ref && type.enum_class.name == @enum_class.name) \
-          || (type.kind == :enum && type.name == @enum_class.name)
+        \
+        (type.kind == :enum_ref && type.enum_class.name == @enum_class.name) \
+        || (type.kind == :enum && type.name == @enum_class.name)
       when :bits
-        return type.convertable_to?(self)
+        type.convertable_to?(self)
       when :enum
-        return type.convertable_to?(:bits)
+        type.convertable_to?(:bits)
       when :function
         # functions are not comparable to anything
-        return false
+        false
       when :csr
-        return ((type.kind == :csr) && (type.csr.name == @csr.name)) ||
-              type.convertable_to?(Type.new(:bits, width: type.csr.width))
+        ((type.kind == :csr) && (type.csr.name == @csr.name)) ||
+          type.convertable_to?(Type.new(:bits, width: type.csr.width))
       when :string
-        return type.kind == :string
+        type.kind == :string
       else
         raise "unimplemented #{@kind}"
       end
@@ -211,64 +211,61 @@ module Idl
 
       case @kind
       when :boolean
-        return type.kind == :boolean
+        type.kind == :boolean
       when :enum_ref
-        return \
-          (type.kind == :enum && type.name == @enum_class.name) || \
+        \
+        (type.kind == :enum && type.name == @enum_class.name) || \
           (type.kind == :enum_ref && type.enum_class.name == @enum_class.name)
       when :dontcare
-        return true
+        true
       when :bits
-        return type.kind != :boolean
+        type.kind != :boolean
       when :function
-        return @return_type.convertable_to?(type)
+        @return_type.convertable_to?(type)
       when :enum
         if type.kind == :bits
-          return false
+          false
           # return (type.width == :unknown) || (width <= type.width)
         elsif type.kind == :enum
-          return type.enum_class == enum_class
+          type.enum_class == enum_class
         else
-          return false
+          false
         end
       when :tuple
         is_tuple_of_same_size = (type.kind == :tuple) && (@tuple_types.size == type.tuple_types.size)
-        if is_tuple_of_same_size
-          @tuple_types.each_index do |i|
-            unless @tuple_types[i].convertable_to?(type.tuple_types[i])
-              return false
-            end
-          end
-          return true
-        else
-          return false
+        return false unless is_tuple_of_same_size
+
+        @tuple_types.each_index do |i|
+          return false unless @tuple_types[i].convertable_to?(type.tuple_types[i])
         end
+        true
+
       when :csr
-        return (type.kind == :csr && type.csr.name == @csr.name) || type.convertable_to?(Type.new(:bits, width:))
+        (type.kind == :csr && type.csr.name == @csr.name) || type.convertable_to?(Type.new(:bits, width:))
       when :bitfield
-        if (type.kind == :bitfield && name == type.name)
-          return true
-        elsif (type.kind == :bits && type.width == @width)
-          return true
+        if type.kind == :bitfield && name == type.name
+          true
+        elsif type.kind == :bits && type.width == @width
+          true
         else
           # be strict with bitfields -- only accept integrals that are exact width Bit types
-          return false
+          false
         end
       when :array
-        return type.kind == :array && type.sub_type.convertable_to?(sub_type) && type.width == @width
+        type.kind == :array && type.sub_type.convertable_to?(sub_type) && type.width == @width
       when :string
-        return type.kind == :string
+        type.kind == :string
       when :void
-        return false
+        false
       when :struct
-        return type.kind == :struct && (type.type_name == type_name)
+        type.kind == :struct && (type.type_name == type_name)
       else
         raise "unimplemented type '#{@kind}'"
       end
     end
 
     def to_s
-      ((@qualifiers.nil? || @qualifiers.empty?) ? '' : "#{@qualifiers.map(&:to_s).join(' ')} ") + \
+      (@qualifiers.nil? || @qualifiers.empty? ? "" : "#{@qualifiers.map(&:to_s).join(' ')} ") + \
         if @kind == :bits
           "Bits<#{@width}>"
         elsif @kind == :enum
@@ -280,7 +277,7 @@ module Idl
         elsif @kind == :enum_ref
           "enum #{@enum_class.name}"
         elsif @kind == :tuple
-          "(#{@tuple_types.map{ |t| t.to_s }.join(',')})"
+          "(#{@tuple_types.map { |t| t.to_s }.join(',')})"
         elsif @kind == :bitfield
           "bitfield #{@name}"
         elsif @kind == :array
@@ -300,41 +297,45 @@ module Idl
     alias fully_qualified_name to_s
 
     def to_cxx_no_qualifiers
-        if @kind == :bits
-          raise "@width is unknown" if @width == :unknown
-          raise "@width is a #{@width.class}" unless @width.is_a?(Integer)
+      if @kind == :bits
+        raise "@width is unknown" if @width == :unknown
+        raise "@width is a #{@width.class}" unless @width.is_a?(Integer)
 
-          if signed?
-            "SignedBits<#{@width.is_a?(Integer) ? @width : @width.to_cxx}>"
-          else
-            "Bits<#{@width.is_a?(Integer) ? @width : @width.to_cxx}>"
-          end
-        elsif @kind == :enum
-          "#{@name}"
-        elsif @kind == :boolean
-          "bool"
-        elsif @kind == :function
-          "std::function<#{@return_type.to_cxx}(...)>"
-        elsif @kind == :enum_ref
-          "#{@enum_class.name}"
-        elsif @kind == :tuple
-          "std::tuple<#{@tuple_types.map{ |t| t.to_cxx }.join(',')}>"
-        elsif @kind == :bitfield
-          "#{@name}"
-        elsif @kind == :array
-          "#{@sub_type}[]"
-        elsif @kind == :csr
-          "#{@csr.downcase.capitalize}Csr"
-        elsif @kind == :string
-          "std::string"
+        if signed?
+          "SignedBits<#{@width.is_a?(Integer) ? @width : @width.to_cxx}>"
         else
-          raise @kind.to_s
+          "Bits<#{@width.is_a?(Integer) ? @width : @width.to_cxx}>"
         end
+      elsif @kind == :enum
+        "#{@name}"
+      elsif @kind == :boolean
+        "bool"
+      elsif @kind == :function
+        "std::function<#{@return_type.to_cxx}(...)>"
+      elsif @kind == :enum_ref
+        "#{@enum_class.name}"
+      elsif @kind == :tuple
+        "std::tuple<#{@tuple_types.map { |t| t.to_cxx }.join(',')}>"
+      elsif @kind == :bitfield
+        "#{@name}"
+      elsif @kind == :array
+        "#{@sub_type}[]"
+      elsif @kind == :csr
+        "#{@csr.downcase.capitalize}Csr"
+      elsif @kind == :string
+        "std::string"
+      else
+        raise @kind.to_s
+      end
     end
 
     def to_cxx
-      ((@qualifiers.nil? || @qualifiers.empty?) ? '' : "#{@qualifiers.include?(:const) ? 'const' : ''} ") + \
-      to_cxx_no_qualifiers
+      (if @qualifiers.nil? || @qualifiers.empty?
+         ""
+       else
+         "#{@qualifiers.include?(:const) ? 'const' : ''} "
+       end) + \
+        to_cxx_no_qualifiers
     end
 
     def name
@@ -454,7 +455,7 @@ module Idl
             sub_type = from_json_schema_scalar_type(item_schema)
           else
             unless sub_type.equal_to?(from_json_schema_scalar_type(item_schema))
-              raise "Schema error: Array elements must be the same type (#{sub_type} #{from_json_schema_scalar_type(item_schema)}) \n#{schema["items"]}"
+              raise "Schema error: Array elements must be the same type (#{sub_type} #{from_json_schema_scalar_type(item_schema)}) \n#{schema['items']}"
             end
           end
         end
@@ -492,9 +493,17 @@ module Idl
 
       raise ArgumentError, "Argument 2 should be an array of types" unless member_types.is_a?(Array)
 
-      raise ArgumentError, "Argument 3 should be an array of names" unless member_names.is_a?(Array) && member_names.all? { |m| m.is_a?(String) }
+      unless member_names.is_a?(Array) && member_names.all? do |m|
+        m.is_a?(String)
+      end
+        raise ArgumentError,
+              "Argument 3 should be an array of names"
+      end
 
-      raise ArgumentError, "member_types and member_names must be the same size" unless member_names.size == member_types.size
+      unless member_names.size == member_types.size
+        raise ArgumentError,
+              "member_types and member_names must be the same size"
+      end
 
       super(:struct)
       @type_name = type_name
@@ -590,9 +599,7 @@ module Idl
       @field_ranges[i]
     end
 
-    def field_names
-      @field_names
-    end
+    attr_reader :field_names
 
     def clone
       BitfieldType.new(
@@ -602,7 +609,6 @@ module Idl
         @field_ranges
       )
     end
-
   end
 
   # represents a CSR register
@@ -670,7 +676,9 @@ module Idl
     def apply_template_values(template_values, func_call_ast)
       func_call_ast.type_error "Missing template values" if templated? && template_values.empty?
 
-      func_call_ast.type_error "wrong number of template values in call to #{name}" unless template_names.size == template_values.size
+      unless template_names.size == template_values.size
+        func_call_ast.type_error "wrong number of template values in call to #{name}"
+      end
 
       symtab = @symtab.global_clone
 
@@ -679,9 +687,13 @@ module Idl
       symtab.push(func_call_ast)
 
       template_values.each_with_index do |value, idx|
-        func_call_ast.type_error "template value should be an Integer (found #{value.class.name})" unless value == :unknown || value.is_a?(Integer)
+        unless value == :unknown || value.is_a?(Integer)
+          func_call_ast.type_error "template value should be an Integer (found #{value.class.name})"
+        end
 
-        symtab.add!(template_names[idx], Var.new(template_names[idx], template_types(symtab)[idx], value, template_index: idx, function_name: @func_def_ast.name))
+        symtab.add!(template_names[idx],
+                    Var.new(template_names[idx], template_types(symtab)[idx], value, template_index: idx,
+                                                                                     function_name: @func_def_ast.name))
       end
       symtab
     end
@@ -707,7 +719,7 @@ module Idl
     def argument_values(symtab, argument_nodes, call_site_symtab, func_call_ast)
       idx = 0
       values = []
-      @func_def_ast.arguments(symtab).each do |atype, aname|
+      @func_def_ast.arguments(symtab).each do |_atype, _aname|
         func_call_ast.type_error "Missing argument #{idx}" if idx >= argument_nodes.size
         value_result = Idl::AstNode.value_try do
           values << argument_nodes[idx].value(call_site_symtab)
@@ -764,7 +776,7 @@ module Idl
       types
     end
 
-    def argument_type(index, template_values, argument_nodes, call_site_symtab, func_call_ast)
+    def argument_type(index, template_values, _argument_nodes, _call_site_symtab, func_call_ast)
       return nil if index >= @func_def_ast.num_args
 
       symtab = apply_template_values(template_values, func_call_ast)
@@ -817,11 +829,11 @@ module Idl
     end
 
     def to_s
-      'XReg'
+      "XReg"
     end
 
     def to_cxx
-      'XReg'
+      "XReg"
     end
   end
 end

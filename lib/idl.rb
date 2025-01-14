@@ -110,7 +110,8 @@ module Idl
     # @param input_line [Integer] Starting line in the input file that this source comes from
     # @param no_rescue [Boolean] Whether or not to automatically catch any errors
     # @return [Ast] The root of the abstract syntax tree
-    def compile_func_body(body, return_type: nil, symtab: nil, name: nil, input_file: nil, input_line: 0, no_rescue: false, extra_syms: {}, type_check: true)
+    def compile_func_body(body, return_type: nil, symtab: nil, name: nil, input_file: nil, input_line: 0,
+                          no_rescue: false, extra_syms: {}, type_check: true)
       @parser.set_input_file(input_file, input_line)
 
       m = @parser.parse(body, root: :function_body)
@@ -134,9 +135,9 @@ module Idl
         cloned_symtab.push(ast)
         cloned_symtab.add("__expected_return_type", return_type) unless return_type.nil?
 
-        extra_syms.each { |k, v|
+        extra_syms.each do |k, v|
           cloned_symtab.add(k, v)
-        }
+        end
 
         begin
           ast.statements.each do |s|
@@ -273,7 +274,6 @@ module Idl
         warn e.backtrace
         exit 1
       end
-
 
       ast
     end

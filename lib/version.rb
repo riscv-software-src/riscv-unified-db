@@ -43,17 +43,16 @@ class VersionSpec
   attr_reader :pre
 
   def initialize(version_str)
-    if version_str =~ /^\s*#{VERSION_REGEX}\s*$/
-      m = ::Regexp.last_match
-      @major = m[1].to_i
-      @minor_given = !m[2].nil?
-      @minor = @minor_given ? m[2].to_i : 0
-      @patch_given = !m[3].nil?
-      @patch = @patch_given ? m[3].to_i : 0
-      @pre = !m[4].nil?
-    else
-      raise ArgumentError, "#{version_str} is not a valid Version spec"
-    end
+    raise ArgumentError, "#{version_str} is not a valid Version spec" unless version_str =~ /^\s*#{VERSION_REGEX}\s*$/
+
+    m = ::Regexp.last_match
+    @major = m[1].to_i
+    @minor_given = !m[2].nil?
+    @minor = @minor_given ? m[2].to_i : 0
+    @patch_given = !m[3].nil?
+    @patch = @patch_given ? m[3].to_i : 0
+    @pre = !m[4].nil?
+
     @version_str = version_str
   end
 
@@ -142,14 +141,12 @@ class RequirementSpec
       raise ArgumentError, "requirement must be a string (is a #{requirement.class.name})"
     end
 
-    if requirement =~ /^\s*#{REQUIREMENT_REGEX}\s*$/
-      m = ::Regexp.last_match
-      @op = m[1]
-      @version_str = m[2]
-      @version_spec = VersionSpec.new(@version_str)
-    else
-      raise ArgumentError, "Bad requirement string '#{requirement}'"
-    end
+    raise ArgumentError, "Bad requirement string '#{requirement}'" unless requirement =~ /^\s*#{REQUIREMENT_REGEX}\s*$/
+
+    m = ::Regexp.last_match
+    @op = m[1]
+    @version_str = m[2]
+    @version_spec = VersionSpec.new(@version_str)
   end
 
   def to_s

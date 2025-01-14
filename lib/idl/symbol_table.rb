@@ -5,7 +5,8 @@ require_relative "type"
 module Idl
   # Objects to represent variables in the ISA def
   class Var
-    attr_reader :name, :type, :value
+    attr_accessor :value
+    attr_reader :name, :type
 
     def initialize(name, type, value = nil, decode_var: false, template_index: nil, function_name: nil)
       @name = name
@@ -67,15 +68,11 @@ module Idl
     def to_cxx
       @name
     end
-
-    def value=(new_value)
-      @value = new_value
-    end
   end
 
   # scoped symbol table holding known symbols at a current point in parsing
   class SymbolTable
-    def cfg_arch = @cfg_arch
+    attr_reader :cfg_arch
 
     # @return [Integer] 32 or 64, the XLEN in M-mode
     attr_reader :mxlen
@@ -91,9 +88,10 @@ module Idl
 
     def initialize(cfg_arch)
       raise "Must provide cfg_arch" if cfg_arch.nil?
+
       # TODO: XXX: Put this check back in when replaced by Design class.
       #            See https://github.com/riscv-software-src/riscv-unified-db/pull/371
-      #raise "The cfg_arch must be a ConfiguredArchitecture but is a #{cfg_arch.class}" unless (cfg_arch.is_a?(ConfiguredArchitecture) || cfg_arch.is_a?(MockConfiguredArchitecture))
+      # raise "The cfg_arch must be a ConfiguredArchitecture but is a #{cfg_arch.class}" unless (cfg_arch.is_a?(ConfiguredArchitecture) || cfg_arch.is_a?(MockConfiguredArchitecture))
 
       @cfg_arch = cfg_arch
       @mxlen = cfg_arch.unconfigured? ? nil : cfg_arch.mxlen
@@ -129,7 +127,8 @@ module Idl
           add!(param_with_value.name, Var.new(param_with_value.name, type, param_with_value.value))
         else
           unless existing_sym.type.equal_to?(type) && existing_sym.value == param_with_value.value
-            raise DuplicateSymError, "Definition error: Param #{param.name} is defined by multiple extensions and is not the same definition in each"
+            raise DuplicateSymError,
+                  "Definition error: Param #{param.name} is defined by multiple extensions and is not the same definition in each"
           end
         end
       end
@@ -193,6 +192,7 @@ module Idl
       # @scope_caller ||= []
       # @scope_caller.push caller[0]
       raise "#{@scopes.size} #{@callstack.size}" unless @scopes.size == @callstack.size
+
       @scopes << {}
       @callstack << ast
       @frozen_hash = nil
@@ -206,6 +206,7 @@ module Idl
       raise "Error: popping the symbol table would remove global scope" if @scopes.size == 1
 
       raise "?" unless @scopes.size == @callstack.size
+
       @scopes.pop
       @callstack.pop
     end
@@ -220,7 +221,7 @@ module Idl
     end
 
     def keys_pretty
-      @scopes.map { |s| s.map { |k, v| v.is_a?(Var) && v.template_val? ? "#{k} (template)" : k }}
+      @scopes.map { |s| s.map { |k, v| v.is_a?(Var) && v.template_val? ? "#{k} (template)" : k } }
     end
 
     # searches the symbol table scope-by-scope to find 'name'
@@ -286,7 +287,9 @@ module Idl
     # @param var [Object] Symbol object (usually a Var or a Type)
     # @raise [DuplicationSymError] if 'name' is already in the symbol table
     def add!(name, var)
-      raise DuplicateSymError, "Symbol #{name} already defined as #{get(name)}" unless @scopes.select { |h| h.key? name }.empty?
+      raise DuplicateSymError, "Symbol #{name} already defined as #{get(name)}" unless @scopes.select do |h|
+        h.key? name
+      end.empty?
 
       @scopes.last[name] = var
     end
@@ -302,7 +305,7 @@ module Idl
 
     # add to the scope at level, and make sure name is unique at that scope
     def add_at!(level, name, var)
-      raise "Level #{level} is too large #{@scopes.size}" if  level >= @scopes.size
+      raise "Level #{level} is too large #{@scopes.size}" if level >= @scopes.size
 
       raise "Symbol #{name} already defined" unless @scopes[0...level].select { |h| h.key? name }.empty?
 
@@ -391,11 +394,11 @@ module Idl
       @scopes[1..].each do |scope|
         c_scopes << {}
         scope.each do |k, v|
-          if clone_values
-            c_scopes.last[k] = v.dup
-          else
-            c_scopes.last[k] = v
-          end
+          c_scopes.last[k] = if clone_values
+                               v.dup
+                             else
+                               v
+                             end
         end
       end
       copy

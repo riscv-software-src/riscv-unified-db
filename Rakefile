@@ -120,7 +120,7 @@ namespace :test do
     Architecture.new("#{$root}/resolved_arch").validate(show_progress: true)
     puts "All files validate against their schema"
   end
-  task idl: ["gen:resolved_arch", "#{$root}/.stamps/resolve-rv32.stamp", "#{$root}/.stamps/resolve-rv64.stamp"]  do
+  task idl: ["gen:resolved_arch", "#{$root}/.stamps/resolve-rv32.stamp", "#{$root}/.stamps/resolve-rv64.stamp"] do
     print "Parsing IDL code for RV32..."
     cfg_arch32 = cfg_arch_for("rv32")
     puts "done"
@@ -141,7 +141,8 @@ def insert_warning(str, from)
   # insert a warning on the second line
   lines = str.lines
   first_line = lines.shift
-  lines.unshift(first_line, "\n# WARNING: This file is auto-generated from #{Pathname.new(from).relative_path_from($root)}").join("")
+  lines.unshift(first_line,
+                "\n# WARNING: This file is auto-generated from #{Pathname.new(from).relative_path_from($root)}").join("")
 end
 private :insert_warning
 
@@ -149,7 +150,7 @@ private :insert_warning
   file "#{$root}/arch/csr/Zihpm/mhpmcounter#{hpm_num}.yaml" => [
     "#{$root}/arch/csr/Zihpm/mhpmcounterN.layout",
     __FILE__
-   ] do |t|
+  ] do |t|
     erb = ERB.new(File.read($root / "arch/csr/Zihpm/mhpmcounterN.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/Zihpm/mhpmcounterN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -157,7 +158,7 @@ private :insert_warning
   file "#{$root}/arch/csr/Zihpm/mhpmcounter#{hpm_num}h.yaml" => [
     "#{$root}/arch/csr/Zihpm/mhpmcounterNh.layout",
     __FILE__
-   ] do |t|
+  ] do |t|
     erb = ERB.new(File.read($root / "arch/csr/Zihpm/mhpmcounterNh.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/Zihpm/mhpmcounterNh.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -165,7 +166,7 @@ private :insert_warning
   file "#{$root}/arch/csr/Zihpm/mhpmevent#{hpm_num}.yaml" => [
     "#{$root}/arch/csr/Zihpm/mhpmeventN.layout",
     __FILE__
-   ] do |t|
+  ] do |t|
     erb = ERB.new(File.read($root / "arch/csr/Zihpm/mhpmeventN.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/Zihpm/mhpmeventN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -173,7 +174,7 @@ private :insert_warning
   file "#{$root}/arch/csr/Zihpm/mhpmevent#{hpm_num}h.yaml" => [
     "#{$root}/arch/csr/Zihpm/mhpmeventNh.layout",
     __FILE__
-   ] do |t|
+  ] do |t|
     erb = ERB.new(File.read($root / "arch/csr/Zihpm/mhpmeventNh.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/Zihpm/mhpmeventNh.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -181,7 +182,7 @@ private :insert_warning
   file "#{$root}/arch/csr/Zihpm/hpmcounter#{hpm_num}.yaml" => [
     "#{$root}/arch/csr/Zihpm/hpmcounterN.layout",
     __FILE__
-   ] do |t|
+  ] do |t|
     erb = ERB.new(File.read($root / "arch/csr/Zihpm/hpmcounterN.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/Zihpm/hpmcounterN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -189,7 +190,7 @@ private :insert_warning
   file "#{$root}/arch/csr/Zihpm/hpmcounter#{hpm_num}h.yaml" => [
     "#{$root}/arch/csr/Zihpm/hpmcounterNh.layout",
     __FILE__
-    ] do |t|
+  ] do |t|
     erb = ERB.new(File.read($root / "arch/csr/Zihpm/hpmcounterNh.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/Zihpm/hpmcounterNh.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -200,7 +201,7 @@ end
   file "#{$root}/arch/csr/I/pmpaddr#{pmpaddr_num}.yaml" => [
     "#{$root}/arch/csr/I/pmpaddrN.layout",
     __FILE__
-   ] do |t|
+  ] do |t|
     erb = ERB.new(File.read($root / "arch/csr/I/pmpaddrN.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/I/pmpaddrN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
@@ -211,7 +212,7 @@ end
   file "#{$root}/arch/csr/I/pmpcfg#{pmpcfg_num}.yaml" => [
     "#{$root}/arch/csr/I/pmpcfgN.layout",
     __FILE__
-   ] do |t|
+  ] do |t|
     erb = ERB.new(File.read($root / "arch/csr/I/pmpcfgN.layout"), trim_mode: "-")
     erb.filename = "#{$root}/arch/csr/I/pmpcfgN.layout"
     File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))

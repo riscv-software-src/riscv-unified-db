@@ -36,9 +36,7 @@ module Idl
 
         func_def_type.apply_arguments(body_symtab, arg_nodes, symtab, self)
 
-        unless func_def_type.builtin?
-          fns.concat(func_def_type.body.reachable_functions(body_symtab))
-        end
+        fns.concat(func_def_type.body.reachable_functions(body_symtab)) unless func_def_type.builtin?
 
         fns = fns.push(func_def_type.func_def_ast).uniq(&:name)
       ensure
@@ -58,12 +56,11 @@ module Idl
       value_try do
         action.execute(symtab) if action.is_a?(Executable)
       end
-        # ok
+      # ok
 
       fns
     end
   end
-
 
   class IfAst
     def reachable_functions(symtab)
@@ -71,14 +68,14 @@ module Idl
       value_try do
         fns.concat if_cond.reachable_functions(symtab) if if_cond.is_a?(FunctionCallExpressionAst)
         value_result = value_try do
-          if (if_cond.value(symtab))
+          if if_cond.value(symtab)
             fns.concat if_body.reachable_functions(symtab)
             return fns # no need to continue
           else
             elseifs.each do |eif|
               fns.concat eif.cond.reachable_functions(symtab) if eif.cond.is_a?(FunctionCallExpressionAst)
               value_result = value_try do
-                if (eif.cond.value(symtab))
+                if eif.cond.value(symtab)
                   fns.concat eif.body.reachable_functions(symtab)
                   return fns # no need to keep going
                 end
@@ -97,7 +94,7 @@ module Idl
           elseifs.each do |eif|
             fns.concat eif.cond.reachable_functions(symtab) if eif.cond.is_a?(FunctionCallExpressionAst)
             value_result = value_try do
-              if (eif.cond.value(symtab))
+              if eif.cond.value(symtab)
                 fns.concat eif.body.reachable_functions(symtab)
                 return fns # no need to keep going
               end
@@ -110,7 +107,7 @@ module Idl
           fns.concat final_else_body.reachable_functions(symtab)
         end
       end
-      return fns
+      fns
     end
   end
 
@@ -119,8 +116,8 @@ module Idl
       fns = condition.is_a?(FunctionCallExpressionAst) ? condition.reachable_functions(symtab) : []
       value_result = value_try do
         cv = condition.value(symtab)
-        if cv
-          fns.concat return_expression.reachable_functions(symtab) if return_expression.is_a?(FunctionCallExpressionAst)
+        if cv && return_expression.is_a?(FunctionCallExpressionAst)
+          fns.concat return_expression.reachable_functions(symtab)
         end
       end
       value_else(value_result) do
@@ -133,12 +130,11 @@ module Idl
 
   class ConditionalStatementAst
     def reachable_functions(symtab)
-
       fns = condition.is_a?(FunctionCallExpressionAst) ? condition.reachable_functions(symtab) : []
 
       value_result = value_try do
-        if condition.value(symtab)
-          fns.concat action.reachable_functions(symtab) if action.is_a?(FunctionCallExpressionAst)
+        if condition.value(symtab) && action.is_a?(FunctionCallExpressionAst)
+          fns.concat action.reachable_functions(symtab)
           # no need to execute action (return)
         end
       end

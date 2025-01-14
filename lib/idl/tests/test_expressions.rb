@@ -23,8 +23,8 @@ class TestExpressions < Minitest::Test
     idl = <<~IDL.strip
       a + b
     IDL
-    @symtab.add("a", Idl::Var.new("a", Idl::Type.new(:bits, width:4), 0xf))
-    @symtab.add("b", Idl::Var.new("b", Idl::Type.new(:bits, width:4), 0x1))
+    @symtab.add("a", Idl::Var.new("a", Idl::Type.new(:bits, width: 4), 0xf))
+    @symtab.add("b", Idl::Var.new("b", Idl::Type.new(:bits, width: 4), 0x1))
 
     ast = @compiler.compile_expression(idl, @symtab)
     assert_equal 0, ast.value(@symtab)

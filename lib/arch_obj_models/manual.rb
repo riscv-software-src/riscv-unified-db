@@ -49,9 +49,7 @@ class ManualChapter
     @repo_path / @path
   end
 
-  def repo_path=(path)
-    @repo_path = path
-  end
+  attr_writer :repo_path
 
   # @return [Pathname] The relative path to the chapter
   attr_reader :path

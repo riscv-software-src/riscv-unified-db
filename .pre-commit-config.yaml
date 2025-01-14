@@ -67,3 +67,10 @@ repos:
     rev: v3.19.1
     hooks:
       - id: pyupgrade
+
+  - repo: https://github.com/rubocop/rubocop
+    rev: v1.70.0
+    hooks:
+      - id: rubocop
+        additional_dependencies:
+          - rubocop-minitest

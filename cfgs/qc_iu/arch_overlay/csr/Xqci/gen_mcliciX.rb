@@ -1,5 +1,4 @@
-
-require 'erb'
+require "erb"
 
 pend_template = <<~YAML
   # yaml-language-server: $schema=../../../../../schemas/csr_schema.json
@@ -47,12 +46,12 @@ YAML
 
 root = File.dirname(__FILE__)
 
-erb = ERB.new(pend_template, trim_mode: '-')
+erb = ERB.new(pend_template, trim_mode: "-")
 8.times do |num|
   File.write("#{root}/qc_mclicip#{num}.yaml", erb.result(binding))
 end
 
-erb = ERB.new(en_template, trim_mode: '-')
+erb = ERB.new(en_template, trim_mode: "-")
 8.times do |num|
   File.write("#{root}/qc_mclicie#{num}.yaml", erb.result(binding))
 end

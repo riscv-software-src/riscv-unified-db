@@ -42,7 +42,6 @@ class DatabaseObject
 
   # exception raised when an object does not validate against its schema
   class SchemaValidationError < ::StandardError
-
     # result from JsonSchemer.validate
     attr_reader :result
 
@@ -95,11 +94,11 @@ class DatabaseObject
   # @return [Architecture] If only a specification (no config) is known
   # @return [ConfiguredArchitecture] If a specification and config is known
   # @return [nil] If neither is known
-  attr_reader :arch       # Use when Architecture class is sufficient
+  attr_reader :arch # Use when Architecture class is sufficient
 
   # @return [ConfiguredArchitecture] If a specification and config is known
   # @return [nil] Otherwise
-  attr_reader :cfg_arch   # Use when extra stuff provided by ConfiguredArchitecture is required
+  attr_reader :cfg_arch # Use when extra stuff provided by ConfiguredArchitecture is required
 
   def kind = @data["kind"]
 
@@ -191,9 +190,7 @@ class DatabaseObject
 
     @data = data
     @data_path = data_path
-    if arch.is_a?(ConfiguredArchitecture)
-      @cfg_arch = arch
-    end
+    @cfg_arch = arch if arch.is_a?(ConfiguredArchitecture)
     @arch = arch
     @name = data["name"]
     @long_name = data["long_name"]
@@ -276,10 +273,10 @@ class DatabaseObject
   #   misa_csr.source_line("sw_read()")  #=> 2
   #   mis_csr.source_line("fields", "A", "type()") #=> 5
   def source_line(*path)
-
     # find the line number of this operation() in the *original* file
     yaml_filename = @data["$source"]
     raise "No $source for #{name}" if yaml_filename.nil?
+
     line = nil
     path_idx = 0
     Psych.parse_stream(File.read(yaml_filename), filename: yaml_filename) do |doc|
@@ -490,8 +487,8 @@ class SchemaCondition
   # combine all conds into one using AND
   def self.all_of(*conds, arch:)
     cond = SchemaCondition.new({
-      "allOf" => conds
-    }, arch)
+                                 "allOf" => conds
+                               }, arch)
 
     SchemaCondition.new(cond.minimize, arch)
   end
@@ -531,27 +528,29 @@ class SchemaCondition
       if hsh.key?("name")
         if hsh.key?("version")
           if hsh["version"].is_a?(String)
-            "(yield ExtensionRequirement.new('#{hsh["name"]}', '#{hsh["version"]}', arch: @arch))"
+            "(yield ExtensionRequirement.new('#{hsh['name']}', '#{hsh['version']}', arch: @arch))"
           elsif hsh["version"].is_a?(Array)
-            "(yield ExtensionRequirement.new('#{hsh["name"]}', #{hsh["version"].map { |v| "'#{v}'" }.join(', ')}, arch: @arch))"
+            "(yield ExtensionRequirement.new('#{hsh['name']}', #{hsh['version'].map do |v|
+              "'#{v}'"
+            end.join(', ')}, arch: @arch))"
           else
             raise "unexpected"
           end
         else
-          "(yield ExtensionRequirement.new('#{hsh["name"]}', arch: @arch))"
+          "(yield ExtensionRequirement.new('#{hsh['name']}', arch: @arch))"
         end
       else
         key = hsh.keys[0]
 
         case key
         when "allOf"
-          rb_str = hsh[key].map { |element| to_rb_helper(element) }.join(' && ')
+          rb_str = hsh[key].map { |element| to_rb_helper(element) }.join(" && ")
           "(#{rb_str})"
         when "anyOf"
-          rb_str = hsh[key].map { |element| to_rb_helper(element) }.join(' || ')
+          rb_str = hsh[key].map { |element| to_rb_helper(element) }.join(" || ")
           "(#{rb_str})"
         when "oneOf"
-          rb_str = hsh[key].map { |element| to_rb_helper(element) }.join(', ')
+          rb_str = hsh[key].map { |element| to_rb_helper(element) }.join(", ")
           "([#{rb_str}].count(true) == 1)"
         else
           raise "Unexpected"

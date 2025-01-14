@@ -29,6 +29,5 @@ class TestVariables < Minitest::Test
       puts token
       puts chunk
     end
-
   end
 end

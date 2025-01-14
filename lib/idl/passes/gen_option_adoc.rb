@@ -38,24 +38,24 @@ module Idl
         ADOC
       end
       unless final_else_body.nil?
-        if elseifs.empty?
-          if if_cond.is_a?(BinaryExpressionAst) || if_cond.is_a?(UnaryOperatorExpressionAst)
-            adoc << <<~ADOC
-              [when,"#{if_cond.invert(nil).to_idl}"]
-              #{final_else_body.gen_option_adoc}
-            ADOC
-          else
-            adoc << <<~ADOC
-              [when,"!(#{if_cond.to_idl})"]
-              #{final_else_body.gen_option_adoc}
-            ADOC
-          end
-        else
-          adoc << <<~ADOC
-            [when,"else"]
-            #{final_else_body.gen_option_adoc}
-          ADOC
-        end
+        adoc << if elseifs.empty?
+                  if if_cond.is_a?(BinaryExpressionAst) || if_cond.is_a?(UnaryOperatorExpressionAst)
+                    <<~ADOC
+                      [when,"#{if_cond.invert(nil).to_idl}"]
+                      #{final_else_body.gen_option_adoc}
+                    ADOC
+                  else
+                    <<~ADOC
+                      [when,"!(#{if_cond.to_idl})"]
+                      #{final_else_body.gen_option_adoc}
+                    ADOC
+                  end
+                else
+                  <<~ADOC
+                    [when,"else"]
+                    #{final_else_body.gen_option_adoc}
+                  ADOC
+                end
       end
       adoc
     end
@@ -110,19 +110,19 @@ module Idl
       cond = condition.is_a?(ParenExpressionAst) ? condition.expression : condition
       if cond.is_a?(BinaryExpressionAst) || cond.is_a?(UnaryOperatorExpressionAst)
         <<~ADOC
-          [when,"#{cond.gen_adoc.gsub('"', "&quot;")}"]
+          [when,"#{cond.gen_adoc.gsub('"', '&quot;')}"]
           #{true_expression.gen_option_adoc}
 
-          [when,"#{cond.invert(nil).gen_adoc.gsub('"', "&quot;")}"]
+          [when,"#{cond.invert(nil).gen_adoc.gsub('"', '&quot;')}"]
           #{false_expression.gen_option_adoc}
 
         ADOC
       else
         <<~ADOC
-          [when,"#{cond.gen_adoc.gsub('"', "&quot;")}"]
+          [when,"#{cond.gen_adoc.gsub('"', '&quot;')}"]
           #{true_expression.gen_option_adoc}
 
-          [when,"!(#{cond.gen_adoc.gsub('"', "&quot;")})"]
+          [when,"!(#{cond.gen_adoc.gsub('"', '&quot;')})"]
           #{false_expression.gen_option_adoc}
 
         ADOC
@@ -132,23 +132,21 @@ module Idl
 
   class EnumRefAst
     def gen_option_adoc
-      if class_name == "CsrFieldType"
-        case member_name
-        when "RW", "RO"
-          member_name
-        when "ROH"
-          "RO-H"
-        when "RWR"
-          "RW-R"
-        when "RWH"
-          "RW-H"
-        when "RWRH"
-          "RW-RH"
-        else
-          raise "unexpected"
-        end
+      raise "Unexpected" unless class_name == "CsrFieldType"
+
+      case member_name
+      when "RW", "RO"
+        member_name
+      when "ROH"
+        "RO-H"
+      when "RWR"
+        "RW-R"
+      when "RWH"
+        "RW-H"
+      when "RWRH"
+        "RW-RH"
       else
-        raise "Unexpected"
+        raise "unexpected"
       end
     end
   end
