@@ -77,13 +77,12 @@ namespace udb {
 #define __UDB_SET_PC(new_pc) m_parent->set_next_pc(new_pc)
 #define __UDB_PC m_parent->pc()
 #define __UDB_MUTABLE_GLOBAL(x) m_parent->x
-#define __UDB_CONSTEXPR_FUNC_CALL
-
+#define __UDB_CONSTEXPR_FUNC_CALL <%= name_of(:hart, cfg_arch)%>::
 
     void execute() override {
 
       <%- if inst.operation_ast(cfg_arch.symtab).nil? -%>
-      assert(!"There is no operation() defined for this instruction");
+        m_parent->udb_assert(false, "There is no operation() defined for this instruction");
       <%- else -%>
       <%- if !inst.base.nil? -%>
         <%- pruned_ast = inst.pruned_operation_ast(cfg_arch.symtab, inst.base) -%>

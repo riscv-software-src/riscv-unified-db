@@ -301,6 +301,8 @@ module Idl
         else
           "#{' ' * indent}__UDB_MUTABLE_GLOBAL(#{text_value})"
         end
+      elsif text_value == "imm"
+          "#{' ' * indent} imm()"
       else
         "#{' ' * indent}#{text_value}"
       end
