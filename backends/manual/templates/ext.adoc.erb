@@ -36,7 +36,7 @@
 
 <%= ext.description %>
 
-<%- insts = cfg_arch.instructions.select { |i| ext.versions.any? { |v| i.defined_by?(v) } } -%>
+<%- insts = design.arch.instructions.select { |i| ext.versions.any? { |v| i.defined_by?(v) } } -%>
 <%- unless insts.empty? -%>
 == Instructions
 

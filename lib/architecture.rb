@@ -39,8 +39,6 @@ require "json_schemer"
 require "pathname"
 require "yaml"
 
-require_relative "idl"
-
 require_relative "arch_obj_models/certificate"
 require_relative "arch_obj_models/csr"
 require_relative "arch_obj_models/csr_field"
@@ -52,13 +50,31 @@ require_relative "arch_obj_models/portfolio"
 require_relative "arch_obj_models/profile"
 
 class Architecture
-  # @return [Pathname] Path to the directory with the standard YAML files
+  # @return [String] Best name to identify architecture
+  attr_reader :name
+
+  # @return [Integer] 32 for RV32I or 64 for RV64I
+  attr_reader :base
+
+  # @return [Pathname] Path to the directory containing YAML files defining the RISC-V standards
   attr_reader :path
 
-  # @param arch_dir [String,Pathname] Path to a directory with a fully merged/resolved architecture definition
-  def initialize(arch_dir)
+  # Initialize a new architecture definition
+  #
+  # @param name [#to_s] The name associated with this architecture
+  # @param base [Integer] RISC-V base ISA width (32 for RV32I/RV32E, 64 for RV64I, nil if unknown)
+  # @param arch_dir [String, Pathname] Path to a directory with a fully merged/resolved architecture definition
+  def initialize(name, base, arch_dir)
+    @name = name.to_s.freeze
+
+    unless base.nil?
+      raise "Unsupported base ISA value of #{base}. Supported values are 32 or 64." unless base == 32 || base == 64
+    end
+    @base = base
+    @base.freeze
+
     @arch_dir = Pathname.new(arch_dir)
-    raise "Arch directory not found: #{arch_dir}" unless @arch_dir.exist?
+    raise "Architecture directory #{arch_dir} not found" unless @arch_dir.exist?
 
     @arch_dir = @arch_dir.realpath
     @path = @arch_dir # alias
@@ -77,6 +93,11 @@ class Architecture
     end
   end
 
+  # These instance methods are create when this Architecture class is first loaded.
+  # This is a Ruby "class" method and so self is the entire Architecture class, not an instance it.
+  # However, this class method creates normal instance methods and when they are called
+  # self is an instance of the Architecture class.
+  #
   # @!macro [attach] generate_obj_methods
   #   @method $1s
   #   @return [Array<$3>] List of all $1s defined in the standard
@@ -98,7 +119,7 @@ class Architecture
       @object_hashes[arch_dir] = {}
       Dir.glob(@arch_dir / arch_dir / "**" / "*.yaml") do |obj_path|
         obj_yaml = YAML.load_file(obj_path, permitted_classes: [Date])
-        @objects[arch_dir] << obj_class.new(obj_yaml, Pathname.new(obj_path).realpath, arch: self)
+        @objects[arch_dir] << obj_class.new(obj_yaml, Pathname.new(obj_path).realpath, self)
         @object_hashes[arch_dir][@objects[arch_dir].last.name] = @objects[arch_dir].last
       end
       @objects[arch_dir]

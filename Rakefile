@@ -10,6 +10,8 @@ require "yard"
 require "minitest/test_task"
 
 require_relative $root / "lib" / "architecture"
+require_relative $root / "lib" / "design"
+require_relative $root / "lib" / "portfolio_design"
 
 directory "#{$root}/.stamps"
 
@@ -19,7 +21,44 @@ end
 
 directory "#{$root}/.stamps"
 
-def cfg_arch_for(config_name)
+# @param base_isa_name [String] rv32 or rv64
+# @param base [Integer] 32 or 64
+# @return [Architecture]
+def arch_for(base_isa_name, base)
+  Rake::Task["#{$root}/.stamps/resolve-#{base_isa_name}.stamp"].invoke
+
+  @archs ||= {}
+  return @archs[base_isa_name] if @archs.key?(base_isa_name)
+
+  @archs[base_isa_name] =
+    Architecture.new(
+      base_isa_name,
+      base,
+      $root / "gen" / "resolved_arch" / base_isa_name,
+    )
+end
+
+# @param design_name [String] Profile release name for profiles and certificate model name for certificates
+# @param arch [Architecture] The architecture database
+# @param base [Integer] 32 or 64
+# @param portfolios [Array<Portfolio>] Portfolios in this design
+# @return [PortfolioDesign]
+def portfolio_design_for(design_name, arch, base, portfolios)
+  Rake::Task["#{$root}/.stamps/resolve-#{design_name}.stamp"].invoke
+
+  @portfolio_designs ||= {}
+  return @portfolio_designs[design_name] if @portfolio_designs.key?(design_name)
+
+  @portfolio_designs[design_name] =
+    PortfolioDesign.new(
+      design_name,
+      arch,
+      base,
+      portfolios
+    )
+end
+
+def cfg_arch_for(config_name, base = nil)
   Rake::Task["#{$root}/.stamps/resolve-#{config_name}.stamp"].invoke
 
   @cfg_archs ||= {}
@@ -28,6 +67,7 @@ def cfg_arch_for(config_name)
   @cfg_archs[config_name] =
     ConfiguredArchitecture.new(
       config_name,
+      base,
       $root / "gen" / "resolved_arch" / config_name,
       overlay_path: $root / "cfgs" / config_name / "arch_overlay"
     )
@@ -117,18 +157,18 @@ namespace :test do
   end
   task schema: "gen:resolved_arch" do
     puts "Checking arch files against schema.."
-    Architecture.new("#{$root}/resolved_arch").validate(show_progress: true)
+    Architecture.new("rv64", nil, "#{$root}/resolved_arch").validate(show_progress: true)
     puts "All files validate against their schema"
   end
   task idl: ["gen:resolved_arch", "#{$root}/.stamps/resolve-rv32.stamp", "#{$root}/.stamps/resolve-rv64.stamp"]  do
     print "Parsing IDL code for RV32..."
-    cfg_arch32 = cfg_arch_for("rv32")
+    cfg_arch32 = cfg_arch_for("rv32", 32)
     puts "done"
 
     cfg_arch32.type_check
 
     print "Parsing IDL code for RV64..."
-    cfg_arch64 = cfg_arch_for("rv64")
+    cfg_arch64 = cfg_arch_for("rv64", 64)
     puts "done"
 
     cfg_arch64.type_check
@@ -289,9 +329,13 @@ namespace :test do
     These are basic but fast-running tests to check the database and tools
   DESC
   task :smoke do
+    puts "UPDATE: Running test:idl_compiler"
     Rake::Task["test:idl_compiler"].invoke
+    puts "UPDATE: Running test:lib"
     Rake::Task["test:lib"].invoke
+    puts "UPDATE: Running test:schema"
     Rake::Task["test:schema"].invoke
+    puts "UPDATE: Running test:idl"
     Rake::Task["test:idl"].invoke
   end
 
