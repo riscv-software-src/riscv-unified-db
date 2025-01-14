@@ -64,6 +64,10 @@ RV64::
 
 == Synopsis
 
+[NOTE]
+The following Synopsis is _community-driven_, and has not been ratified by https://riscv.org[RISC-V International].
+You may suggest a correction or improvement by submitting a Pull Request of the https://github.com/riscv-software-src/riscv-unified-db/blob/main/arch/inst/<%= parts = inst.__source.split("/"); parts[parts.rindex("inst")..].join("/") %>[source file].
+
 <%- if inst.data_independent_timing? -%>
 [IMPORTANT]
 This instruction must have data-independent timing when extension `Zkt` is enabled.

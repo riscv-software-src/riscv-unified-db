@@ -4,11 +4,13 @@ site:
   start_page: landing:ROOT:index.adoc
 content:
   sources:
-  - url: /local/mnt/workspace/dhower/riscv-unified-db/repo/worktrees/doc-grep
+  - url: <%= $root %>
+    worktrees: true
     branches: [<%= `git rev-parse --abbrev-ref HEAD | tr -d '\n'` %>]
     start_path: gen/manual/<%= manual.name %>/top/<%= output_hash %>/antora/landing
   <%- manual.versions.each do |version| -%>
-  - url: /local/mnt/workspace/dhower/riscv-unified-db/repo/worktrees/doc-grep
+  - url: <%= $root %>
+    worktrees: true
     branches: [<%= `git rev-parse --abbrev-ref HEAD | tr -d '\n'` %>]
     start_path: gen/manual/<%= manual.name %>/<%= version.name %>/antora
   <%- end -%>
