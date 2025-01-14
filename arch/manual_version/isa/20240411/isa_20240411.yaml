@@ -19,6 +19,8 @@ volumes:
         organization:
           name: SiFive, Inc.
           url: https://www.sifive.com/
+    srcdir: src
+    main: riscv-unprivileged.adoc
     chapters:
       - src/colophon.adoc
       - src/intro.adoc
@@ -175,6 +177,8 @@ volumes:
         organization:
           name: SiFive, Inc.
           url: https://www.sifive.com/
+    srcdir: src
+    main: riscv-privileged.adoc
     chapters:
       - src/priv-preface.adoc
       - src/priv-intro.adoc

@@ -71,6 +71,34 @@ This instruction must have data-independent timing when extension `Zkt` is enabl
 
 <%= inst.description %>
 
+== Ratified text
+
+<%-
+def get_section(block)
+  if block.context == :section
+    block
+  else
+    raise "?" if block.parent.nil?
+
+    get_section(block.parent)
+  end
+end
+-%>
+
+<%- manual_version.volumes.each do |volume| -%>
+<%- adoc_blocks = volume.find_normative_adoc_for(inst) -%>
+<%- unless adoc_blocks.empty? -%>
+The <%= inst.name %> instruction appears in <%= adoc_blocks.size %> <%= adoc_blocks.size == 1 ? 'paragraph' : 'paragraphs' %> of *<%= volume.title %>*:
+
+<%- adoc_blocks.each do |block| -%>
+<%- section = get_section(block) -%>
+.Section <%= section.sectnum %>, <%= section.title %>
+<%= block.source %>
+
+<%- end -%>
+<%- end -%>
+<%- end -%>
+
 == Access
 [cols="^,^,^,^,^"]
 |===

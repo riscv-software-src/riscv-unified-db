@@ -189,10 +189,14 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/insts/pages/.*.adoc} => [
   ($root / "backends" / "manual" / "templates" / "instruction.adoc.erb").to_s
 ] do |t|
   inst_name = File.basename(t.name, ".adoc")
+  manual_version_name = t.name.sub("/antora/modules/insts/pages/#{inst_name}.adoc", "").split("/").last
 
   cfg_arch = cfg_arch_for("_")
   inst = cfg_arch.instruction(inst_name)
   raise "Can't find instruction '#{inst_name}'" if inst.nil?
+
+  manual_version = cfg_arch.manual_version(manual_version_name)
+  raise "Can't find manual version '#{manual_version_name}'" if manual_version.nil?
 
   inst_template_path = $root / "backends" / "manual" / "templates" / "instruction.adoc.erb"
   erb = ERB.new(inst_template_path.read, trim_mode: "-")
