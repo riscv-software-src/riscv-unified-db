@@ -301,7 +301,7 @@ module Idl
       if idx_text =~ /[0-9]+/
         "#{' '*indent}#{csr_text}"
       else
-        if @cfg_arch.csr(csr_text).nil?
+        if @design.arch.csr(csr_text).nil?
         "#{' '*indent}#{csr_text}"
         else
           "#{' '*indent}%%LINK%csr_field;#{idx_text}.#{@field_name};#{csr_text}%%"
@@ -324,7 +324,7 @@ module Idl
         # we don't have the symtab to map this to a csr name
         "#{' '*indent}#{csr_text}"
       else
-        if @cfg_arch.csr(csr_text).nil?
+        if @design.arch.csr(csr_text).nil?
           "#{' '*indent}#{csr_text}"
         else
           "#{' '*indent}%%LINK%csr;#{idx_text};#{csr_text}%%"

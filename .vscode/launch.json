@@ -6,7 +6,7 @@
       "name": "MC100-32",
       "request": "launch",
       "command": "bundle exec rake",
-      "script": "gen:cert_model_pdf[MC100-32]",
+      "script": "gen:proc_cert_model_pdf[MC100-32]",
       "args": [],
       "askParameters": false
     },
@@ -15,7 +15,16 @@
       "name": "MC200-32",
       "request": "launch",
       "command": "bundle exec rake",
-      "script": "gen:cert_model_pdf[MC200-32]",
+      "script": "gen:proc_cert_model_pdf[MC200-32]",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "portfolios",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "portfolios",
       "args": [],
       "askParameters": false
     },
@@ -24,7 +33,16 @@
       "name": "RVA20",
       "request": "launch",
       "command": "bundle exec rake",
-      "script": "gen:profile[RVA20]",
+      "script": "gen:profile_release_pdf[RVA20]",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "Smoke test",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "test:smoke",
       "args": [],
       "askParameters": false
     }

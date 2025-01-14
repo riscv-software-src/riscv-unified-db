@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
 
   "type": "object",
-  "required": ["$schema", "kind", "name"],
+  "required": ["$schema", "kind", "name", "base"],
   "properties": {
     "$schema": {
       "type": "string",
@@ -15,6 +15,10 @@
     "name": {
       "type": "string",
       "description": "Name (database key) of this Profile"
+    },
+    "base": {
+      "type": "integer",
+      "description": "32 for RV32I or 64 for RV64I"
     }
   }
 }

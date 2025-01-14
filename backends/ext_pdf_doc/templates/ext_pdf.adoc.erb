@@ -208,7 +208,7 @@ version <%= versions.select { |v| v.implications.include?(sub_ext)}.map(&:versio
 of <%= ext.name %>.
 <%- end -%>
 
-<%= cfg_arch.extension(sub_ext.name).description %>
+<%= design.arch.extension(sub_ext.name).description %>
 
 <%- unless sub_ext.requirement_condition.empty? -%>
 <%= sub_ext.name %> requires:
@@ -287,7 +287,7 @@ The following <%= ext.csrs.size %> are added by this extension.
 <%- ext.csrs.each do |csr| -%>
 <<<
 :leveloffset: +2
-<%= partial "adoc/csr.adoc.erb", { csr: csr, cfg_arch: cfg_arch } %>
+<%= partial "adoc/csr.adoc.erb", { csr: csr, design: design } %>
 :leveloffset: -2
 <%- end -%>
 
@@ -300,7 +300,7 @@ The following <%= ext.csrs.size %> are added by this extension.
 
 <%- ext.instructions.each do |i| -%>
 :leveloffset: +2
-<%= partial "adoc/inst.adoc.erb", { inst: i, cfg_arch: cfg_arch } %>
+<%= partial "adoc/inst.adoc.erb", { inst: i, design: design } %>
 :leveloffset: -2
 
 <<<
@@ -310,7 +310,7 @@ The following <%= ext.csrs.size %> are added by this extension.
 <<<
 == IDL Functions
 
-<%- ext.reachable_functions(cfg_arch.symtab).sort { |a,b| a.name <=> b.name }.each do |f| -%>
+<%- ext.reachable_functions(design.symtab).sort { |a,b| a.name <=> b.name }.each do |f| -%>
 [#<%= f.name %>-func-def]
 === <%= f.name %><%- if f.builtin? -%> (builtin)<%- end -%>
 

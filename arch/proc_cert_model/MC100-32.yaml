@@ -1,11 +1,11 @@
-# yaml-language-server: $schema=../../schemas/cert_model_schema.json
+# yaml-language-server: $schema=../../schemas/proc_cert_model_schema.json
 
-$schema: cert_model_schema.json#
-kind: certificate model
+$schema: proc_cert_model_schema.json#
+kind: Processor Certificate Model
 name: MC100-32
 long_name: Basic 32-bit Microcontroller Certificate
 class:
-  $ref: certificate_class/MC.yaml#
+  $ref: proc_cert_class/MC.yaml#
 
 # Semantic versions within the model
 versions:
@@ -68,10 +68,8 @@ revision_history:
       - Initial version
 
 introduction: |
-  The MC100 Processor CRD (Certification Requirements Document) defines the requirements
-  a processor implementation must meet in order to be eligible for the associated MC100 certificate.
-  MC100 is a basic RISC-V processor with minimal M-mode support and has 32-bit and 64-bit variants.
-
+  The MC100 Processor Certificate targets basic RISC-V microcontrollers.
+  It supports either a 32-bit (MC100-32) or 64-bit (MC100-64) base ISA.
   MC100 is not intended for the smallest possible microcontrollers but rather for applications
   benefiting from a minimal but standardized microcontroller. It consists of:
 

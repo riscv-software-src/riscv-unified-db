@@ -4,7 +4,7 @@
 
 = Functions
 
-<%- cfg_arch.functions.each do |f| -%>
+<%- design.functions.each do |f| -%>
 [#<%= f.name %>-func-def]
 == <%= f.name %><%- if f.builtin? -%> (builtin)<%- end -%>
 
