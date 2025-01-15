@@ -232,10 +232,20 @@ module Idl
 
   class CsrFieldAssignmentAst
     def gen_cpp(symtab, indent, indent_spaces: 2)
-      if csr_field.idx.is_a?(AstNode)
-        "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr_field.idx.gen_cpp(symtab, 0)})._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)})"
+
+      field  = csr_field.field_def(symtab)
+      if symtab.cfg_arch.multi_xlen? && field.dynamic_location?
+        if csr_field.idx.is_a?(AstNode)
+          "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr_field.idx.gen_cpp(symtab, 0)}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
+        else
+          "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name(symtab)}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
+        end
       else
-        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name(symtab)})._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)})"
+        if csr_field.idx.is_a?(AstNode)
+          "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr_field.idx.gen_cpp(symtab, 0)}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)})"
+        else
+          "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name(symtab)}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)})"
+        end
       end
     end
   end
@@ -301,8 +311,8 @@ module Idl
         else
           "#{' ' * indent}__UDB_MUTABLE_GLOBAL(#{text_value})"
         end
-      elsif text_value == "imm"
-          "#{' ' * indent} imm()"
+      elsif !var.nil? && var.decode_var?
+        "#{' ' * indent}#{text_value}()"
       else
         "#{' ' * indent}#{text_value}"
       end
@@ -428,12 +438,16 @@ module Idl
 
   class AryElementAccessAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      if var.text_value.start_with?("X")
-        #"#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}[#{index.gen_cpp(symtab, 0, indent_spaces:)}]"
-        "#{' '*indent} __UDB_FUNC_CALL  xregRef(#{index.gen_cpp(symtab, 0, indent_spaces:)})"
-      else
-        if var.type(symtab).integral?
+      if var.type(symtab).integral?
+        if index.constexpr?(symtab)
           "#{' '*indent}extract<#{index.gen_cpp(symtab, 0)}, 1, #{var.type(symtab).width}>(#{var.gen_cpp(symtab, 0, indent_spaces:)})"
+        else
+          "#{' '*indent}extract( #{var.gen_cpp(symtab, 0, indent_spaces:)}, #{index.gen_cpp(symtab, 0)}, 1)"
+        end
+      else
+        if var.text_value.start_with?("X")
+          #"#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}[#{index.gen_cpp(symtab, 0, indent_spaces:)}]"
+          "#{' '*indent} __UDB_FUNC_CALL  xregRef(#{index.gen_cpp(symtab, 0, indent_spaces:)})"
         else
           "#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}[#{index.gen_cpp(symtab, 0, indent_spaces:)}]"
         end
