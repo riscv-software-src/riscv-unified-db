@@ -169,7 +169,7 @@ module AsciidocUtils
         when "func"
           "xref:#func-#{name}-def[#{link_text}]"
         else
-          raise "Unhandled link type '#{type}' for '#{name}' in '#{path_or_str}'"
+          raise "Unhandled link type of '#{type}' for '#{name}' with link_text '#{link_text}'"
         end
       end
     end
@@ -197,11 +197,13 @@ module AntoraUtils
           path_or_str
         end
       str.gsub(/%%LINK%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
-        type = Regexp.last_match[-1]
-        name = Regexp.last_match[0]
-        link_text = Regexp.last_match[1]
+        type = Regexp.last_match[1]
+        name = Regexp.last_match[2]
+        link_text = Regexp.last_match[3]
 
         case type
+        when "ext"
+          "xref:exts:#{name}.adoc##{name}-def[#{link_text.gsub(']', '\]')}]"
         when "inst"
           "xref:insts:#{name}.adoc##{name}-def[#{link_text.gsub(']', '\]')}]"
         when "csr"
@@ -209,10 +211,10 @@ module AntoraUtils
         when "csr_field"
           csr_name, field_name = name.split('.')
           "xref:csrs:#{csr_name}.adoc##{csr_name}-#{field_name}-def[#{link_text.gsub(']', '\]')}]"
-        when "ext"
-          "xref:exts:#{name}.adoc##{name}-def[#{link_text.gsub(']', '\]')}]"
+        when "func"
+          "xref:func:#{name}.adoc##{name}-def[#{link_text.gsub(']', '\]')}]"
         else
-          raise "Unhandled link type of '#{type}' for '#{name}' in '#{path_or_str}'"
+          raise "Unhandled link type of '#{type}' for '#{name}' with link_text '#{link_text}'"
         end
       end
     end
