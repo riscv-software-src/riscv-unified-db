@@ -34,7 +34,7 @@ namespace udb {
     if constexpr (size == bits_len) {
       return value;
     } else {
-      constexpr Bits<bits_len> mask = (static_cast<Bits<bits_len>>(1).template const_sll<size>()) - 1;
+      constexpr Bits<bits_len> mask = (static_cast<Bits<bits_len>>(1).template sll<size>()) - 1;
       return (value >> start) & mask;
     }
   }
@@ -48,12 +48,13 @@ namespace udb {
     if constexpr (size == BitfieldMemberSize) {
       return value;
     } else {
-      constexpr Bits<BitfieldMemberSize> mask = (static_cast<Bits<BitfieldMemberSize>>(1).template const_sll<size>()) - 1;
+      constexpr Bits<BitfieldMemberSize> mask = (static_cast<Bits<BitfieldMemberSize>>(1).template sll<size>()) - 1;
       return (value >> start) & mask;
     }
   }
   // extract bits, where the extraction is not known at compile time
   template <typename T>
+    requires (std::integral<T>)
   T extract(T value, unsigned start, unsigned size)
   {
     udb_assert((start + size) <= sizeof(T)*8, "extraction out of bound");
@@ -63,6 +64,24 @@ namespace udb {
     } else {
       T mask = (static_cast<T>(1) << size) - 1;
       return (value >> start) & mask;
+    }
+  }
+
+  template<unsigned P, unsigned N, unsigned M, typename StartType, typename SizeType>
+  Bits<BitfieldMember<P, N, M>::Width> extract(const BitfieldMember<P, N, M>& value, const StartType& start, const SizeType& size)
+  {
+    udb_assert((start + size) <= (BitfieldMember<P, N, M>::Width), "extraction out of bound");
+
+    if (size == BitfieldMember<P, N, M>::Width) {
+      return static_cast<const Bits<BitfieldMember<P, N, M>::Width>>(value);
+    } else {
+      if constexpr (BitfieldMember<P, N, M>::Width < 64) {
+        uint64_t mask = (1ull << size) - 1;
+        return (value >> start) & mask;
+      } else {
+        Bits<BitfieldMember<P, N, M>::Width> mask = (static_cast<Bits<BitfieldMember<P, N, M>::Width>>(1) << size) - 1;
+        return (value >> start) & mask;
+      }
     }
   }
 

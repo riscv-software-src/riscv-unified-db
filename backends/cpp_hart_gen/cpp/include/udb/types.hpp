@@ -123,25 +123,34 @@ namespace udb {
     BitfieldMember& operator=(const _Bits<N, Signed>& value);
 
     template <std::integral Type>
-    bool operator==(const Type& other) { return other == static_cast<Bits<Size>>(*this); }
+    bool operator==(const Type& other) const { return other == static_cast<Bits<Size>>(*this); }
 
     template <unsigned N, bool Signed>
-    bool operator==(const _Bits<N, Signed>& other) { return other == static_cast<Bits<Size>>(*this); }
+    bool operator==(const _Bits<N, Signed>& other) const { return other == static_cast<Bits<Size>>(*this); }
 
     template <unsigned N, bool Signed>
-    bool operator>(const _Bits<N, Signed>& other) { return static_cast<Bits<Size>>(*this) > other; }
+    bool operator>(const _Bits<N, Signed>& other) const { return static_cast<Bits<Size>>(*this) > other; }
 
     template <unsigned N, bool Signed>
-    bool operator>=(const _Bits<N, Signed>& other) { return static_cast<Bits<Size>>(*this) >= other; }
+    bool operator>=(const _Bits<N, Signed>& other) const { return static_cast<Bits<Size>>(*this) >= other; }
 
     template <unsigned N, bool Signed>
-    bool operator<=(const _Bits<N, Signed>& other) { return static_cast<Bits<Size>>(*this) <= other; }
+    bool operator<=(const _Bits<N, Signed>& other) const { return static_cast<Bits<Size>>(*this) <= other; }
 
     template <unsigned OtherParentSize, unsigned OtherStart, unsigned OtherSize>
-    bool operator<(const BitfieldMember<OtherParentSize, OtherStart, OtherSize>& other) { return static_cast<Bits<Size>>(*this) > static_cast<Bits<OtherSize>>(*this); }
+    bool operator<(const BitfieldMember<OtherParentSize, OtherStart, OtherSize>& other) const { return static_cast<Bits<Size>>(*this) > static_cast<Bits<OtherSize>>(*this); }
+
+
 
     template <unsigned N, bool Signed>
-    Bits<Size> operator&(const _Bits<N, Signed>& other) { return static_cast<Bits<Size>>(*this) & other; }
+    Bits<Size> operator>>(const _Bits<N, Signed>& shamt) const { return static_cast<Bits<Size>>(*this) >> shamt; }
+    template <typename T>
+      requires (std::integral<T>)
+    Bits<Size> operator>>(const T& shamt) const { return static_cast<Bits<Size>>(*this) >> shamt; }
+
+
+    template <unsigned N, bool Signed>
+    Bits<Size> operator&(const _Bits<N, Signed>& other) const { return static_cast<Bits<Size>>(*this) & other; }
 
     Bits<Bits<Size>::InfinitePrecision> operator<<(const int& shamt) const { return static_cast<Bits<Size>>(*this) << shamt; }
 
