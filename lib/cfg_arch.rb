@@ -621,6 +621,7 @@ class ConfiguredArchitecture < Architecture
 
     @env = Class.new
     @env.instance_variable_set(:@cfg, @cfg)
+    @env.instance_variable_set(:@cfg_arch, self)
     @env.instance_variable_set(:@params, @params)
 
     # add each parameter, either as a method (lowercase) or constant (uppercase)
