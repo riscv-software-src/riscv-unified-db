@@ -69,33 +69,33 @@ class PortfolioDesign < Design
   # Assume portfolios (profiles and certificates) don't need this ISA feature.
   def multi_xlen_in_mode?(mode) = false
 
-  # @return [Array<ExtensionParameterWithValue>] List of all parameters fully-constrained to one specific value
+  # @return [Array<ParameterWithValue>] List of all parameters fully-constrained to one specific value
   def params_with_value
     return @params_with_value unless @params_with_value.nil?
 
     @params_with_value = []
 
     in_scope_ext_reqs.each do |ext_req|
-      ext_req.extension.params.each do |ext_param|
-        next unless param_values.key?(ext_param.name)
+      ext_req.extension.params.each do |param|
+        next unless param_values.key?(param.name)
 
-        @params_with_value << ExtensionParameterWithValue.new(ext_param, param_values[ext_param.name])
+        @params_with_value << ParameterWithValue.new(param, param_values[param.name])
       end
     end
 
     @params_with_value
   end
 
-  # @return [Array<ExtensionParameter>] List of all available parameters not yet full-constrained to one specific value
+  # @return [Array<Parameter>] List of all available parameters not yet full-constrained to one specific value
   def params_without_value
     return @params_without_value unless @params_without_value.nil?
 
     @params_without_value = []
     arch.extensions.each do |ext|
-      ext.params.each do |ext_param|
-        next if param_values.key?(ext_param.name)
+      ext.params.each do |param|
+        next if param_values.key?(param.name)
 
-        @params_without_value << ext_param
+        @params_without_value << param
       end
     end
     @params_without_value
@@ -147,6 +147,32 @@ class PortfolioDesign < Design
       end
 
     @ext_cache[[ext_name, ext_version_requirements]] = result
+  end
+
+  # Given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`
+  # and replace them with links to the relevant object page.
+  # See backend_helpers.rb for a definition of the proprietary link format.
+  #
+  # @param adoc [String] Asciidoc source
+  # @return [String] Asciidoc source, with link placeholders
+  # XXX
+  def convert_monospace_to_links(adoc)
+    adoc.gsub(/`([\w.]+)`/) do |match|
+      name = Regexp.last_match(1)
+      csr_name, field_name = name.split(".")
+      csr = in_scope_csrs.find { |c| c.name == csr_name }
+      if !field_name.nil? && !csr.nil? && csr.field?(field_name)
+        link_to_csr_field(csr_name, field_name)
+      elsif !csr.nil?
+        link_to_csr(csr_name)
+      elsif in_scope_instructions.any? { |inst| inst.name == name }
+        link_to_inst(name)
+      elsif in_scope_extensions.any? { |ext| ext.name == name }
+        link_to_ext(name)
+      else
+        match
+      end
+    end
   end
 
   #
@@ -201,26 +227,26 @@ class PortfolioDesign < Design
   #                  If the extension name isn't found in this design, return "-".
   def extension_presence(ext_name) = @portfolio_grp.extension_presence(ext_name)
 
-  # @return [Array<InScopeExtensionParameter>] Sorted list of parameters specified by any extension in portfolio.
-  def all_in_scope_ext_params = @portfolio_grp.all_in_scope_ext_params
+  # @return [Array<InScopeParameter>] Sorted list of parameters specified by any extension in portfolio.
+  def all_in_scope_params = @portfolio_grp.all_in_scope_params
 
   # @param [ExtensionRequirement]
-  # @return [Array<InScopeExtensionParameter>] Sorted list of extension parameters from portfolio for given extension.
-  def in_scope_ext_params(ext_req) = @portfolio_grp.in_scope_ext_params(ext_req)
+  # @return [Array<InScopeParameter>] Sorted list of extension parameters from portfolio for given extension.
+  def in_scope_params(ext_req) = @portfolio_grp.in_scope_params(ext_req)
 
-  # @return [Array<ExtensionParameter>] Sorted list of parameters out of scope across all in scope extensions.
+  # @return [Array<Parameter>] Sorted list of parameters out of scope across all in scope extensions.
   def all_out_of_scope_params = @portfolio_grp.all_out_of_scope_params
 
   # @param ext_name [String] Extension name
-  # @return [Array<ExtensionParameter>] Sorted list of parameters that are out of scope for named extension.
+  # @return [Array<Parameter>] Sorted list of parameters that are out of scope for named extension.
   def out_of_scope_params(ext_name) = @portfolio_grp.out_of_scope_params(ext_name)
 
-  # @param param [ExtensionParameter]
+  # @param param [Parameter]
   # @return [Array<Extension>] Sorted list of all in-scope extensions that define this parameter
   #                            in the database and the parameter is in-scope.
   def all_in_scope_exts_with_param(param) = @portfolio_grp.all_in_scope_exts_with_param(param)
 
-  # @param param [ExtensionParameter]
+  # @param param [Parameter]
   # @return [Array<Extension>] List of all in-scope extensions that define this parameter in the
   #                            database but the parameter is out-of-scope.
   def all_in_scope_exts_without_param(param) = @portfolio_grp.all_in_scope_exts_without_param(param)

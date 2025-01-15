@@ -126,7 +126,7 @@ class ConfiguredArchitecture < Design
     end
   end
 
-  # @return [Array<ExtensionParameterWithValue>] List of all parameters with one known value in the config
+  # @return [Array<ParameterWithValue>] List of all parameters with one known value in the config
   def params_with_value
     return @params_with_value unless @params_with_value.nil?
 
@@ -135,24 +135,24 @@ class ConfiguredArchitecture < Design
 
     if @config.fully_configured?
       transitive_implemented_ext_vers.each do |ext_version|
-        ext_version.ext.params.each do |ext_param|
-          next unless @config.param_values.key?(ext_param.name)
+        ext_version.ext.params.each do |param|
+          next unless @config.param_values.key?(param.name)
 
-          @params_with_value << ExtensionParameterWithValue.new(
-            ext_param,
-            @config.param_values[ext_param.name]
+          @params_with_value << ParameterWithValue.new(
+            param,
+            @config.param_values[param.name]
           )
         end
       end
     elsif @config.partially_configured?
       mandatory_ext_reqs.each do |ext_req|
-        ext_req.extension.params.each do |ext_param|
+        ext_req.extension.params.each do |param|
           # Params listed in the config always only have one value.
-          next unless @config.param_values.key?(ext_param.name)
+          next unless @config.param_values.key?(param.name)
 
-          @params_with_value << ExtensionParameterWithValue.new(
-            ext_param,
-            @config.param_values[ext_param.name]
+          @params_with_value << ParameterWithValue.new(
+            param,
+            @config.param_values[param.name]
           )
         end
       end
@@ -162,17 +162,17 @@ class ConfiguredArchitecture < Design
     @params_with_value
   end
 
-  # @return [Array<ExtensionParameter>] List of all available parameters without one known value in the config
+  # @return [Array<Parameter>] List of all available parameters without one known value in the config
   def params_without_value
     return @params_without_value unless @params_without_value.nil?
 
     @params_without_value = []
     arch.extensions.each do |ext|
-      ext.params.each do |ext_param|
+      ext.params.each do |param|
         # Params listed in the config always only have one value.
-        next if @config.param_values.key?(ext_param.name)
+        next if @config.param_values.key?(param.name)
 
-        @params_without_value << ext_param
+        @params_without_value << param
       end
     end
     @params_without_value
@@ -309,6 +309,31 @@ class ConfiguredArchitecture < Design
         false
       end
     @ext_cache[[ext_name, ext_version_requirements]] = result
+  end
+
+  # Given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`
+  # and replace them with links to the relevant object page.
+  # See backend_helpers.rb for a definition of the proprietary link format.
+  #
+  # @param adoc [String] Asciidoc source
+  # @return [String] Asciidoc source, with link placeholders
+  def convert_monospace_to_links(adoc)
+    adoc.gsub(/`([\w.]+)`/) do |match|
+      name = Regexp.last_match(1)
+      csr_name, field_name = name.split(".")
+      csr = arch.csr(csr_name)
+      if !field_name.nil? && !csr.nil? && csr.field?(field_name)
+        link_to_csr_field(csr_name, field_name)
+      elsif !csr.nil?
+        link_to_csr(csr_name)
+      elsif arch.instruction(name)
+        link_to_inst(name)
+      elsif arch.extension(name)
+        link_to_ext(name)
+      else
+        match
+      end
+    end
   end
 
   #####################################

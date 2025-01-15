@@ -169,18 +169,10 @@ extensions:
       CACHE_BLOCK_SIZE:
         schema:
           const: 64
-  Zba:
+  B:
     presence: mandatory
     version: "~> 1.0"
-    note: "Added these as mandatory to see if bug in profiles not listing instructions in appendix is here in CRD too."
-  Zbb:
-    presence: mandatory
-    version: "~> 1.0"
-    note: "Added these as mandatory to see if bug in profiles not listing instructions in appendix is here in CRD too."
-  Zbs:
-    presence: mandatory
-    version: "~> 1.0"
-    note: "Added these as mandatory to see if bug in profiles not listing instructions in appendix is here in CRD too."
+    note: "Added this as mandatory to see if Zba, Zbb, and Zbs are included."
 
 requirement_groups:
   - name: Req-Grp-Any-XLEN

@@ -32,9 +32,8 @@ def pf_create_adoc(erb_template_pname, erb_binding, target_pname, portfolio_desi
   # each with a variable name to aid in running a command-line debugger on this code.
   puts "UPDATE: Converting ERB template to adoc for #{portfolio_design.name}"
   erb_result = erb.result(erb_binding)
-  erb_result_monospace_converted_to_links = portfolio_design.find_replace_links(erb_result)
-  erb_result_with_links_added = portfolio_design.find_replace_links(erb_result_monospace_converted_to_links)
-  erb_result_with_links_resolved = AsciidocUtils.resolve_links(erb_result_with_links_added)
+  erb_result_monospace_converted_to_links = portfolio_design.convert_monospace_to_links(erb_result)
+  erb_result_with_links_resolved = AsciidocUtils.resolve_links(erb_result_monospace_converted_to_links)
 
   File.write(target_pname, erb_result_with_links_resolved)
   puts "UPDATE: Generated adoc in #{target_pname}"

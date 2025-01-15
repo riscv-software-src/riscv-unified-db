@@ -4,7 +4,7 @@
 <% portfolio_design.in_scope_ext_reqs.each do |ext_req| -%>
 <% ext = arch.extension(ext_req.name) -%>
 
-[[ext-<%= ext_req.name %>-def]]
+<%= anchor_for_ext(ext_req.name) %>
 === Extension <%= ext_req.name %> +
 *Long Name*: <%= ext.long_name %> +
 
@@ -82,7 +82,7 @@ The following instructions are added by this extension:
 <% end -%>
 
 <% unless ext.params.empty? -%>
-<% if portfolio_design.in_scope_ext_params(ext_req).empty? && portfolio_design.out_of_scope_params(ext_req.name).empty? -%>
+<% if portfolio_design.in_scope_params(ext_req).empty? && portfolio_design.out_of_scope_params(ext_req.name).empty? -%>
 ==== Parameters
 
 This extension has the following parameters (AKA implementation options):
@@ -98,24 +98,24 @@ This extension has the following parameters (AKA implementation options):
 <% end # if in_scope & out_of_scope empty -%>
 <% end # unless table -%>
 
-<% unless portfolio_design.in_scope_ext_params(ext_req).empty? -%>
+<% unless portfolio_design.in_scope_params(ext_req).empty? -%>
 ==== IN-SCOPE Parameters
 
-<% portfolio_design.in_scope_ext_params(ext_req).each do |ext_param| -%>
-[[ext-<%= ext_req.name %>-param-<%= ext_param.name %>-def]]
-<%= ext_param.name %> &#8658; <%= ext_param.param.schema_type %>::
+<% portfolio_design.in_scope_params(ext_req).each do |param| -%>
+<%= anchor_for_ext_param(ext_req.name, param.name) %>
+<%= param.name %> &#8658; <%= param.param.schema_type %>::
 +
 --
-<%= ext_param.param.desc %>
+<%= param.param.desc %>
 --
-<% end # do ext_param -%>
+<% end # do param -%>
 <% end # unless table -%>
 
 <% unless portfolio_design.out_of_scope_params(ext_req.name).empty? -%>
 ==== OUT-OF-SCOPE Parameters
 
 <% portfolio_design.out_of_scope_params(ext_req.name).each do |param| -%>
-[[ext-<%= ext_req.name %>-param-<%= param.name %>-def]]
+<%= anchor_for_ext_param(ext_req.name, param.name) %>
 <%= param.name %> &#8658; <%= param.schema_type %>::
 +
 --

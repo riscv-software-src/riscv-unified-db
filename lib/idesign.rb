@@ -40,12 +40,12 @@ class IDesign
     raise "Abstract Method: Must be provided in child class"
   end
 
-  # @return [Array<ExtensionParameterWithValue>] List of all parameters fully-constrained to one specific value
+  # @return [Array<ParameterWithValue>] List of all parameters fully-constrained to one specific value
   def params_with_value
     raise "Abstract Method: Must be provided in child class"
   end
 
-  # @return [Array<ExtensionParameter>] List of all available parameters not yet full-constrained to one specific value
+  # @return [Array<Parameter>] List of all available parameters not yet full-constrained to one specific value
   def params_without_value
     raise "Abstract Method: Must be provided in child class"
   end
@@ -98,6 +98,16 @@ class IDesign
   #   @example Checking extension presence with a precise version requirement
   #     Design.ext?(:S, 1.12)
   def ext?(ext_name, *ext_version_requirements)
+    raise "Abstract Method: Must be provided in child class"
+  end
+
+  # Given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`
+  # and replace them with links to the relevant object page.
+  # See backend_helpers.rb for a definition of the proprietary link format.
+  #
+  # @param adoc [String] Asciidoc source
+  # @return [String] Asciidoc source, with link placeholders
+  def convert_monospace_to_links(adoc)
     raise "Abstract Method: Must be provided in child class"
   end
 end

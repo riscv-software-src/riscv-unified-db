@@ -273,7 +273,7 @@ module Idl
       after_name = []
       after_name << "<#{template_arg_nodes.map { |t| t.gen_adoc(0, indent_spaces:)}.join(', ')}>" unless template_arg_nodes.empty?
       after_name << "pass:[(]#{arg_nodes.map { |a| a.gen_adoc(0, indent_spaces: ) }.join(', ')})"
-      "#{' '*indent}%%LINK%func;#{name};#{name}%%#{after_name.join ''}"
+      "#{' '*indent}" + link_to_func(name) + "#{after_name.join ''}"
     end
   end
 

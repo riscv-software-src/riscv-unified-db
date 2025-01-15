@@ -28,7 +28,7 @@
 #
 #   klass               Array<klass>        Hash<String name,klass> Klass func(String name)
 #   ==================  ==================  ======================= =========================
-#   ExtensionParameter  params()            param_hash()            param(name)
+#   Parameter           params()            param_hash()            param(name)
 #   PortfolioClass      portfolio_classes() portfolio_class_hash()  portfolio_class(name)
 #   Portfolio           portfolios()        portfolio_hash()        portfolio(name)
 #   ExceptionCodes      exception_codes()
@@ -202,14 +202,14 @@ class Architecture
     @objs.freeze
   end
 
-  # @return [Array<ExtensionParameter>] Alphabetical list of all parameters defined in the architecture
+  # @return [Array<Parameter>] Alphabetical list of all parameters defined in the architecture
   def params
     return @params unless @params.nil?
 
     @params = extensions.map(&:params).flatten.uniq(&:name).sort_by!(&:name)
   end
 
-  # @return [Hash<String, ExtensionParameter>] Hash of all extension parameters defined in the architecture
+  # @return [Hash<String, Parameter>] Hash of all extension parameters defined in the architecture
   def param_hash
     return @param_hash unless @param_hash.nil?
 
@@ -220,7 +220,7 @@ class Architecture
     @param_hash
   end
 
-  # @return [ExtensionParameter] Parameter named +name+
+  # @return [Parameter] Parameter named +name+
   # @return [nil] if there is no parameter named +name+
   def param(name)
     param_hash[name]

@@ -136,18 +136,18 @@ class ProcCertModel < Portfolio
     @requirement_groups
   end
 
-  ############################################
-  # Routines using InScopeExtensionParameter #
-  ############################################
+  ###################################
+  # Routines using InScopeParameter #
+  ###################################
 
-  # @return [Array<InScopeExtensionParameter>] Sorted list of parameters specified by any extension in portfolio.
+  # @return [Array<InScopeParameter>] Sorted list of parameters specified by any extension in portfolio.
   # These are always IN-SCOPE by definition (since they are listed in the portfolio).
   # Can have multiple array entries with the same parameter name since multiple extensions may define
   # the same parameter.
-  def all_in_scope_ext_params
-    return @all_in_scope_ext_params unless @all_in_scope_ext_params.nil?
+  def all_in_scope_params
+    return @all_in_scope_params unless @all_in_scope_params.nil?
 
-    @all_in_scope_ext_params = []
+    @all_in_scope_params = []
 
     @data["extensions"].each do |ext_name, ext_data|
       next if ext_name[0] == "$"
@@ -163,25 +163,24 @@ class ProcCertModel < Portfolio
         raise "There is no param '#{param_name}' in extension '#{ext_name}" if param.nil?
 
         next unless ext.versions.any? do |ext_ver|
-                      ver_req = ext_data["version"] || ">= #{ext.min_version.version_spec}"
-                      ExtensionRequirement.new(ext_name, ver_req, @arch).satisfied_by?(ext_ver) &&
-                      param.defined_in_extension_version?(ext_ver)
-                    end
+          ver_req = ext_data["version"] || ">= #{ext.min_version.version_spec}"
+          ExtensionRequirement.new(ext_name, ver_req, @arch).satisfied_by?(ext_ver) &&
+            param.defined_in_extension_version?(ext_ver)
+        end
 
-        @all_in_scope_ext_params <<
-          InScopeExtensionParameter.new(param, param_data["schema"], param_data["note"])
+        @all_in_scope_params << InScopeParameter.new(param, param_data["schema"], param_data["note"])
       end
     end
-    @all_in_scope_ext_params.sort
+    @all_in_scope_params.sort!
   end
 
   # @param [ExtensionRequirement]
-  # @return [Array<InScopeExtensionParameter>] Sorted list of extension parameters from portfolio for given extension.
+  # @return [Array<InScopeParameter>] Sorted list of extension parameters from portfolio for given extension.
   # These are always IN SCOPE by definition (since they are listed in the portfolio).
-  def in_scope_ext_params(ext_req)
+  def in_scope_params(ext_req)
     raise ArgumentError, "Expecting ExtensionRequirement" unless ext_req.is_a?(ExtensionRequirement)
 
-    ext_params = []    # Local variable, no caching
+    params = []    # Local variable, no caching
 
     # Get extension information from portfolio YAML for passed in extension requirement.
     ext_data = @data["extensions"][ext_req.name]
@@ -194,23 +193,21 @@ class ProcCertModel < Portfolio
     # Loop through an extension's parameter constraints (hash) from the certificate model.
     # Note that "&" is the Ruby safe navigation operator (i.e., skip do loop if nil).
     ext_data["parameters"]&.each do |param_name, param_data|
-      # Find ExtensionParameter object from database
-      ext_param = ext.params.find { |p| p.name == param_name }
-      raise "There is no param '#{param_name}' in extension '#{ext_req.name}" if ext_param.nil?
+      # Find Parameter object from database
+      param = ext.params.find { |p| p.name == param_name }
+      raise "There is no param '#{param_name}' in extension '#{ext_req.name}" if param.nil?
 
       next unless ext.versions.any? do |ext_ver|
-                    ext_req.satisfied_by?(ext_ver) &&
-                    ext_param.defined_in_extension_version?(ext_ver)
-                  end
+        ext_req.satisfied_by?(ext_ver) && param.defined_in_extension_version?(ext_ver)
+      end
 
-      ext_params <<
-        InScopeExtensionParameter.new(ext_param, param_data["schema"], param_data["note"])
+      params << InScopeParameter.new(param, param_data["schema"], param_data["note"])
     end
 
-    ext_params.sort!
+    params.sort!
   end
 
-  # @return [Array<ExtensionParameter>] Sorted list of parameters out of scope across all in scope extensions
+  # @return [Array<Parameter>] Sorted list of parameters out of scope across all in scope extensions
   #                                     (those listed as mandatory or optional in the certificate model).
   def all_out_of_scope_params
     return @all_out_of_scope_params unless @all_out_of_scope_params.nil?
@@ -219,7 +216,7 @@ class ProcCertModel < Portfolio
     in_scope_ext_reqs.each do |ext_req|
       ext = @arch.extension(ext_req.name)
       ext.params.each do |param|
-        next if all_in_scope_ext_params.any? { |c| c.param.name == param.name }
+        next if all_in_scope_params.any? { |c| c.param.name == param.name }
 
         next unless ext.versions.any? do |ext_ver|
                       ext_req.satisfied_by?(ext_ver) &&
@@ -233,16 +230,16 @@ class ProcCertModel < Portfolio
   end
 
   # @param ext_name [String] Extension name
-  # @return [Array<ExtensionParameter>] Sorted list of parameters that are out of scope for named extension.
+  # @return [Array<Parameter>] Sorted list of parameters that are out of scope for named extension.
   def out_of_scope_params(ext_name)
     all_out_of_scope_params.select{ |param| param.exts.any? { |ext| ext.name == ext_name } }.sort
   end
 
-  # @param param [ExtensionParameter]
+  # @param param [Parameter]
   # @return [Array<Extension>] Sorted list of all in-scope extensions that define this parameter
   #                            in the database and the parameter is in-scope.
   def all_in_scope_exts_with_param(param)
-    raise ArgumentError, "Expecting ExtensionParameter" unless param.is_a?(ExtensionParameter)
+    raise ArgumentError, "Expecting Parameter" unless param.is_a?(Parameter)
 
     exts = []
 
@@ -267,11 +264,11 @@ class ProcCertModel < Portfolio
     exts.sort_by!(&:name)
   end
 
-  # @param param [ExtensionParameter]
+  # @param param [Parameter]
   # @return [Array<Extension>] List of all in-scope extensions that define this parameter in the
   #                            database but the parameter is out-of-scope.
   def all_in_scope_exts_without_param(param)
-    raise ArgumentError, "Expecting ExtensionParameter" unless param.is_a?(ExtensionParameter)
+    raise ArgumentError, "Expecting Parameter" unless param.is_a?(Parameter)
 
     exts = []   # Local variable, no caching
 

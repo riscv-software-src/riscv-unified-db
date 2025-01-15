@@ -9,44 +9,6 @@ require_relative "#{$lib}/idl/passes/gen_adoc"
 
 EXT_PDF_DOC_DIR = Pathname.new "#{$root}/backends/ext_pdf_doc"
 
-# Utilities for generating an Antora site out of an architecture def
-module AsciidocUtils
-  class << self
-    def resolve_links(path_or_str)
-      str =
-        if path_or_str.is_a?(Pathname)
-          path_or_str.read
-        else
-          path_or_str
-        end
-      str.gsub(/%%LINK%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
-        type = Regexp.last_match[1]
-        name = Regexp.last_match[2]
-        link_text = Regexp.last_match[3]
-
-        case type
-        when "inst"
-          "xref:#inst-#{name.gsub('.', '_')}-def[#{link_text.gsub(']', '\]')}]"
-        when "csr"
-          "xref:#csr-#{name}-def[#{link_text.gsub(']', '\]')}]"
-        when "csr_field"
-          csr_name, field_name = name.split('.')
-          # "xref:csrs:#{csr_name}.adoc##{csr_name}-#{field_name}-def[#{link_text.gsub(']', '\]')}]"
-          link_text
-        when "ext"
-          # "xref:exts:#{name}.adoc##{name}-def[#{link_text.gsub(']', '\]')}]"
-          link_text
-        when "func"
-          # "xref:funcs:funcs.adoc##{name}-func-def[#{link_text.gsub(']', '\]')}]"
-          link_text
-        else
-          raise "Unhandled link type '#{type}' for '#{name}' #{match.captures}"
-        end
-      end
-    end
-  end
-end
-
 file "#{$root}/ext/docs-resources/themes/riscv-pdf.yml" => "#{$root}/.gitmodules" do |t|
   system "git submodule update --init ext/docs-resources"
 end
@@ -153,7 +115,7 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
 
   max_version = versions.max { |a, b| a.version <=> b.version }
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AsciidocUtils.resolve_links(design.find_replace_links(erb.result(binding)))
+  File.write t.name, AsciidocUtils.resolve_links(design.convert_monospace_to_links(erb.result(binding)))
 end
 
 namespace :gen do

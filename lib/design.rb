@@ -31,7 +31,7 @@ require_relative "idl/passes/prune"
 require_relative "idl/passes/reachable_exceptions"
 require_relative "idl/passes/reachable_functions"
 
-require_relative "template_helpers"
+require_relative "backend_helpers"
 
 include TemplateHelpers
 
@@ -297,30 +297,6 @@ class Design < IDesign
     end
 
     @implemented_functions
-  end
-
-  # given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`
-  # and replace them with links to the relevant object page
-  #
-  # @param adoc [String] Asciidoc source
-  # @return [String] Asciidoc source, with link placeholders
-  def find_replace_links(adoc)
-    adoc.gsub(/`([\w.]+)`/) do |match|
-      name = Regexp.last_match(1)
-      csr_name, field_name = name.split(".")
-      csr = arch.csr(csr_name)
-      if !field_name.nil? && !csr.nil? && csr.field?(field_name)
-        "%%LINK%csr_field;#{csr_name}.#{field_name};#{csr_name}.#{field_name}%%"
-      elsif !csr.nil?
-        "%%LINK%csr;#{csr_name};#{csr_name}%%"
-      elsif arch.instruction(name)
-        "%%LINK%inst;#{name};#{name}%%"
-      elsif arch.extension(name)
-        "%%LINK%ext;#{name};#{name}%%"
-      else
-        match
-      end
-    end
   end
 
   # Returns an environment hash suitable for the render_erb() function in ERB templates.

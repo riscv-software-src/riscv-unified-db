@@ -281,7 +281,7 @@ None
 <% ext_reqs.each do |ext_req| -%>
 <% ext = arch.extension(ext_req.name) -%>
 | <%= ext_req.req_id %>
-| <<ext-<%= ext_req.name %>-def,<%= ext_req.name %>>>
+| <%= link_to_ext(ext_req.name) %>
 | <%= ext_req.requirement_specs.map(&:to_s).join(", ") %>
 | <%= ext.nil? ? "" : ext.long_name %>
 | <%= ext_req.note.nil? ? "" : ext_req.note %>
@@ -319,21 +319,21 @@ These implementation-dependent options defined by MANDATORY or OPTIONAL extensio
 An implementation must abide by the "Allowed Value(s)" to obtain a certificate.
 If the "Allowed Value(s)" is "Any" then any value allowed by the type is acceptable.
 
-<% if proc_cert_model.all_in_scope_ext_params.empty? -%>
+<% if portfolio_design.all_in_scope_params.empty? -%>
 None
 <% else -%>
 [cols="4,2,1,1,2"]
 |===
 | Parameter | Type | Allowed Value(s) | Extension(s) | Note
 
-<% proc_cert_model.all_in_scope_ext_params.each do |in_scope_ext_param| -%>
-<% param = in_scope_ext_param.param -%>
-<% exts = proc_cert_model.all_in_scope_exts_with_param(param) -%>
-| <%= param.name_potentially_with_link(exts) %>
+<% design.all_in_scope_params.each do |in_scope_param| -%>
+<% param = in_scope_param.param -%>
+<% in_scope_exts = portfolio_design.all_in_scope_exts_with_param(param) -%>
+| <%= param.name_potentially_with_link(in_scope_exts) %>
 | <%= param.schema_type %>
-| <%= in_scope_ext_param.allowed_values %>
-| <% exts.each do |ext| -%><<ext-<%= ext.name %>-param-<%= param.name %>-def,<%= ext.name %>>> <% end # do ext -%>
-a| <%= in_scope_ext_param.note %>
+| <%= in_scope_param.allowed_values %>
+| <%= in_scope_exts.each { |ext| param.name_with_link(ext) } %>
+a| <%= in_scope_param.note %>
 <% end # do -%>
 |===
 <% end # if table -%>
@@ -344,18 +344,18 @@ These implementation-dependent options defined by MANDATORY or OPTIONAL extensio
 There are no restrictions on their values for certification purposes because the certificate
 doesn't cover the behavior of the associated RISC-V standard as a function of these parameters.
 
-<% if proc_cert_model.all_out_of_scope_params.empty? -%>
+<% if portfolio_design.all_out_of_scope_params.empty? -%>
 None
 <% else -%>
 [%autowidth]
 |===
 | Parameters | Type | Extension(s)
 
-<% proc_cert_model.all_out_of_scope_params.each do |param| -%>
-<% exts = proc_cert_model.all_in_scope_exts_without_param(param) -%>
+<% portfolio_design.all_out_of_scope_params.each do |param| -%>
+<% exts = portfolio_design.all_in_scope_exts_without_param(param) -%>
 | <%= param.name_potentially_with_link(exts) %>
 | <%= param.schema_type %>
-| <% exts.each do |ext| -%><<ext-<%= ext.name %>-param-<%= param.name %>-def,<%= ext.name %>>> <% end # do ext -%>
+| <%= exts.each { |ext| param.name_with_link(ext) } %>
 
 <% end # do -%>
 |===
@@ -411,7 +411,7 @@ See https://github.com/riscv-software-src/riscv-unified-db/issues/291 and https:
 | Name | Long Name | Address | Mode | Primary Extension
 
 <% design.in_scope_csrs.sort_by!(&:name).each do |csr| -%>
-| <<csr-<%= csr.name %>-def,<%= csr.name %>>>
+| <%= link_to_csr(csr.name) %>
 | <%= csr.long_name %>
 | <%= "0x#{csr.address.to_s(16)}" %>
 | <%= csr.priv_mode %>
@@ -428,7 +428,7 @@ See https://github.com/riscv-software-src/riscv-unified-db/issues/291 and https:
 <% design.in_scope_csrs.sort_by!(&:address).each do |csr| -%>
 | <%= "0x#{csr.address.to_s(16)}" %>
 | <%= csr.priv_mode %>
-| <<csr-<%= csr.name %>-def,<%= csr.name %>>>
+| <%= link_to_csr(csr.name) %>
 | <%= csr.long_name %>
 | <%= csr.primary_defined_by %>
 <% end # do -%>

@@ -73,7 +73,7 @@ class PortfolioGroup
 
     @param_values = {}
     portfolios.each do |portfolio|
-      @param_values.merge!(portfolio.all_in_scope_ext_params.select(&:single_value?).map { |p| [p.name, p.value] }.to_h)
+      @param_values.merge!(portfolio.all_in_scope_params.select(&:single_value?).map { |p| [p.name, p.value] }.to_h)
     end
 
     @param_values
@@ -214,28 +214,28 @@ class PortfolioGroup
     greatest_presence.nil? ? "-" : greatest_presence.to_s_concise
   end
 
-  # @return [Array<InScopeExtensionParameter>] Sorted list of parameters specified by any extension in portfolio.
-  def all_in_scope_ext_params
+  # @return [Array<InScopeParameter>] Sorted list of parameters specified by any extension in portfolio.
+  def all_in_scope_params
     @ret = []
     portfolios.each do |portfolio|
-      @ret += portfolio.all_in_scope_ext_params
+      @ret += portfolio.all_in_scope_params
     end
 
     @ret = @ret.uniq.sort
   end
 
   # @param [ExtensionRequirement]
-  # @return [Array<InScopeExtensionParameter>] Sorted list of extension parameters from portfolio for given extension.
-  def in_scope_ext_params(ext_req)
+  # @return [Array<InScopeParameter>] Sorted list of extension parameters from portfolio for given extension.
+  def in_scope_params(ext_req)
     @ret = []
     portfolios.each do |portfolio|
-      @ret += portfolio.in_scope_ext_params(ext_req)
+      @ret += portfolio.in_scope_params(ext_req)
     end
 
     @ret = @ret.uniq.sort
   end
 
-  # @return [Array<ExtensionParameter>] Sorted list of parameters out of scope across all in scope extensions.
+  # @return [Array<Parameter>] Sorted list of parameters out of scope across all in scope extensions.
   def all_out_of_scope_params
     @ret = []
     portfolios.each do |portfolio|
@@ -246,7 +246,7 @@ class PortfolioGroup
   end
 
   # @param ext_name [String] Extension name
-  # @return [Array<ExtensionParameter>] Sorted list of parameters that are out of scope for named extension.
+  # @return [Array<Parameter>] Sorted list of parameters that are out of scope for named extension.
   def out_of_scope_params(ext_name)
     @ret = []
     portfolios.each do |portfolio|
@@ -256,7 +256,7 @@ class PortfolioGroup
     @ret = @ret.uniq.sort
   end
 
-  # @param param [ExtensionParameter]
+  # @param param [Parameter]
   # @return [Array<Extension>] Sorted list of all in-scope extensions that define this parameter
   #                            in the database and the parameter is in-scope.
   def all_in_scope_exts_with_param(param)
@@ -268,7 +268,7 @@ class PortfolioGroup
     @ret = @ret.uniq.sort
   end
 
-  # @param param [ExtensionParameter]
+  # @param param [Parameter]
   # @return [Array<Extension>] List of all in-scope extensions that define this parameter in the
   #                            database but the parameter is out-of-scope.
   def all_in_scope_exts_without_param(param)
@@ -537,40 +537,43 @@ class Portfolio < DatabaseObject
   # parameter have to override the following methods.                       #
   ###########################################################################
 
-  # @return [Array<InScopeExtensionParameter>] List of parameters specified by any extension in portfolio.
-  def all_in_scope_ext_params = []
+  # @return [Array<InScopeParameter>] List of parameters specified by any extension in portfolio.
+  def all_in_scope_params = []
 
   # @param [ExtensionRequirement]
-  # @return [Array<InScopeExtensionParameter>] Sorted list of extension parameters from portfolio for given extension.
-  def in_scope_ext_params(ext_req) = []
+  # @return [Array<InScopeParameter>] Sorted list of extension parameters from portfolio for given extension.
+  def in_scope_params(ext_req) = []
 
-  # @return [Array<ExtensionParameter>] Sorted list of parameters out of scope across all in scope extensions.
+  # @return [Array<Parameter>] Sorted list of parameters out of scope across all in scope extensions.
   def all_out_of_scope_params = []
 
   # @param ext_name [String] Extension name
-  # @return [Array<ExtensionParameter>] Sorted list of parameters that are out of scope for named extension.
+  # @return [Array<Parameter>] Sorted list of parameters that are out of scope for named extension.
   def out_of_scope_params(ext_name) = []
 
-  # @param param [ExtensionParameter]
+  # @param param [Parameter]
   # @return [Array<Extension>] Sorted list of all in-scope extensions that define this parameter
   #                            in the database and the parameter is in-scope.
   def all_in_scope_exts_with_param(param) = []
 
-  # @param param [ExtensionParameter]
+  # @param param [Parameter]
   # @return [Array<Extension>] List of all in-scope extensions that define this parameter in the
   #                            database but the parameter is out-of-scope.
   def all_in_scope_exts_without_param(param) = []
 
-  ###################################
-  # InScopeExtensionParameter Class #
-  ###################################
+  ##########################
+  # InScopeParameter Class #
+  ##########################
 
-  class InScopeExtensionParameter
-    attr_reader :param  # ExtensionParameter object (from the architecture database)
+  class InScopeParameter
+    # @return [Parameter] Parameter object (from the architecture database)
+    attr_reader :param
+
+    # @return [String] Optional note associated with the parameter
     attr_reader :note
 
     def initialize(param, schema_hash, note)
-      raise ArgumentError, "Expecting ExtensionParameter" unless param.is_a?(ExtensionParameter)
+      raise ArgumentError, "Expecting Parameter" unless param.is_a?(Parameter)
 
       if schema_hash.nil?
         schema_hash = {}
@@ -611,10 +614,10 @@ class Portfolio < DatabaseObject
     # sorts by name
     def <=>(other)
       raise ArgumentError,
-        "InScopeExtensionParameter are only comparable to other parameter constraints" unless other.is_a?(InScopeExtensionParameter)
+        "InScopeParameter are only comparable to other parameter constraints" unless other.is_a?(InScopeParameter)
       @param.name <=> other.param.name
     end
-  end # class InScopeExtensionParameter
+  end # class InScopeParameter
 
   ############################
   # RevisionHistory Subclass #

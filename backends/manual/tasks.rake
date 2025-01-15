@@ -199,7 +199,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/insts/pages/.*.adoc} => [
   erb.filename = inst_template_path.to_s
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AntoraUtils.resolve_links(design.find_replace_links(erb.result(binding)))
+  File.write t.name, AntoraUtils.resolve_links(design.convert_monospace_to_links(erb.result(binding)))
 end
 
 # rule to create csr appendix page
@@ -219,7 +219,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/csrs/pages/.*\.adoc} => [
   erb.filename = csr_template_path.to_s
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AntoraUtils.resolve_links(design.find_replace_links(erb.result(binding)))
+  File.write t.name, AntoraUtils.resolve_links(design.convert_monospace_to_links(erb.result(binding)))
 end
 
 # rule to create ext appendix page
@@ -238,7 +238,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/exts/pages/.*.adoc} => [
   erb.filename = ext_template_path.to_s
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AntoraUtils.resolve_links(design.find_replace_links(erb.result(binding)))
+  File.write t.name, AntoraUtils.resolve_links(design.convert_monospace_to_links(erb.result(binding)))
 end
 
 # rule to create IDL function appendix page
@@ -253,7 +253,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/funcs/pages/funcs.adoc} => [
   erb.filename = funcs_template_path.to_s
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AntoraUtils.resolve_links(design.find_replace_links(erb.result(binding)))
+  File.write t.name, AntoraUtils.resolve_links(design.convert_monospace_to_links(erb.result(binding)))
 end
 
 # rule to create IDL function appendix page
@@ -270,7 +270,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/params/pages/param_list.adoc} => 
   erb.filename = param_list_template_path.to_s
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AntoraUtils.resolve_links(design.find_replace_links(erb.result(binding)))
+  File.write t.name, AntoraUtils.resolve_links(design.convert_monospace_to_links(erb.result(binding)))
 end
 
 rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/landing/antora.yml} => [
