@@ -40,7 +40,6 @@ operation(): |
 
   X[rd] = output;
 
-
 sail(): |
 
   foreach (i from 0 to xlen/2-1) {
