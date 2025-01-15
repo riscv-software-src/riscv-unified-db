@@ -155,7 +155,6 @@ class PortfolioDesign < Design
   #
   # @param adoc [String] Asciidoc source
   # @return [String] Asciidoc source, with link placeholders
-  # XXX
   def convert_monospace_to_links(adoc)
     adoc.gsub(/`([\w.]+)`/) do |match|
       name = Regexp.last_match(1)

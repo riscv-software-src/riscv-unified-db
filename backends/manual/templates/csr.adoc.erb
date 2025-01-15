@@ -1,6 +1,6 @@
 :tabs-sync-option:
 
-[#csrs-<%= csr.name.gsub('.', '_') %>,reftext=<%= csr.name %>]
+<%= anchor_for_csr(csr.name) %>
 = <%= csr.name %>
 
 *<%= csr.long_name %>*
@@ -112,8 +112,8 @@ This CSR has no fields. However, it must still exist (not cause an `Illegal Inst
 <%- else -%>
 
 <%- csr.fields.each do |field| -%>
-[[<%=csr.name%>-<%=field.name%>-def]]
-=== `<%= field.name %>`
+<%= anchor_for_csr_field(csr.name, field.name) %>
+=== `<%= field.name %>` Field
 
 <%- if !field.defined_in_all_bases? -%>
 IMPORTANT: <%= field.name %> is only defined in <%= field.base32_only? ? "RV32" : "RV64" %> (`<%= field.base32_only? ? field.location_cond32 : field.location_cond64 %>`)

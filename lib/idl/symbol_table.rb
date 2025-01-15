@@ -46,7 +46,7 @@ module Idl
       @decode_var
     end
 
-    # @param function_name [#to_s] A function name
+    # @param function_name [String] A function name
     # @return [Boolean] whether or not this variable is a function template argument from a call site for the function 'function_name'
     def template_value_for?(function_name)
       !@template_index.nil? && (function_name.to_s == @function_name)

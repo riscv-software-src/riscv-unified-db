@@ -5,7 +5,7 @@
 = Functions
 
 <%- design.functions.each do |f| -%>
-[#<%= f.name %>-func-def]
+<%= anchor_for_func(f.name) %>
 == <%= f.name %><%- if f.builtin? -%> (builtin)<%- end -%>
 
 <%= f.description %>

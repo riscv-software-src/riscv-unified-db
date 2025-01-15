@@ -731,13 +731,13 @@ module Idl
     # @return {Array<AstNode>] List of all enum definitions
     def enums = definitions.select { |e| e.is_a?(EnumDefinitionAst) || e.is_a?(BuiltinEnumDefinitionAst) }
 
-    # @return {Array<AstNode>] List of all bitfield definitions
+    # @return {Array<BitfieldDefinitionAst>] List of all bitfield definitions
     def bitfields = definitions.select { |e| e.is_a?(BitfieldDefinitionAst) }
 
-    # @return [Array<AstNode>] List of all struct definitions
+    # @return [Array<StructDefinitionAst>] List of all struct definitions
     def structs = definitions.select { |e| e.is_a?(StructDefinitionAst) }
 
-    # @return {Array<AstNode>] List of all function definitions
+    # @return {Array<FunctionDefAst>] List of all function definitions
     def functions = definitions.select { |e| e.is_a?(FunctionDefAst) }
 
     # Add all the global symbols to symtab
@@ -4895,6 +4895,10 @@ module Idl
 
       @cached_return_type = {}
       @reachable_functions_cache ||= {}
+    end
+
+    def <=>(other)
+      name <=> other.name
     end
 
     attr_reader :reachable_functions_cache

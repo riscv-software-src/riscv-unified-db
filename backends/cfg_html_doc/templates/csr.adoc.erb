@@ -73,8 +73,8 @@ This CSR has no fields. However, it must still exist (not cause an `Illegal Inst
 <%- else -%>
 
 <%- csr.implemented_fields(cfg_arch).each do |field| -%>
-[[<%=csr.name%>-<%=field.name%>-def]]
-=== `<%= field.name %>`
+<%= anchor_for_csr_field(csr.name, field.name) %>
+=== `<%= field.name %>` Field
 
 [.csr-field-info]
 --

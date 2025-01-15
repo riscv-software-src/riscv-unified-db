@@ -10,7 +10,7 @@ class String
   # Should be called on all RISC-V extension, instruction, CSR, and CSR field names.
   # Parameters never have periods in their names so they don't need to be sanitized.
   #
-  # @param name [#to_s] Some RISC-V name which might have periods in it
+  # @param name [String] Some RISC-V name which might have periods in it
   # @return [String] Periods replaced with underscores
   def sanitize = self.gsub(".", "_")
 end
@@ -44,79 +44,79 @@ module TemplateHelpers
   #     discussion about using [#anchor] instead of [[anchor]] due to Antora's support.
 
   # @return [String] A hyperlink to an extension
-  # @param ext_name [#to_s] Name of the extension
+  # @param ext_name [String] Name of the extension
   def link_to_ext(ext_name)
     "%%LINK%ext;#{ext_name.sanitize};#{ext_name.sanitize}%%"
   end
 
   # @return [String] A hyperlink to a parameter defined by a particular extension.
-  # @param ext_name [#to_s] Name of the extension
-  # @param param_name [#to_s] Name of the parameter
+  # @param ext_name [String] Name of the extension
+  # @param param_name [String] Name of the parameter
   def link_to_ext_param(ext_name, param_name)
     check_no_periods(param_name)
     "%%LINK%ext_param;#{ext_name.sanitize}.#{param_name};#{param_name}%%"
   end
 
   # @return [String] A hyperlink to an instruction
-  # @param inst_name [#to_s] Name of the instruction
+  # @param inst_name [String] Name of the instruction
   def link_to_inst(inst_name)
     "%%LINK%inst;#{inst_name.sanitize};#{inst_name.sanitize}%%"
   end
 
   # @return [String] A hyperlink to a CSR
-  # @param csr_name [#to_s] Name of the CSR
+  # @param csr_name [String] Name of the CSR
   def link_to_csr(csr_name)
     "%%LINK%csr;#{csr_name.sanitize};#{csr_name.sanitize}%%"
   end
 
   # @return [String] A hyperlink to an IDL function
-  # @param func_name [#to_s] Name of the IDL function
+  # @param func_name [String] Name of the IDL function
   def link_to_func(func_name)
     "%%LINK%func;#{func_name.sanitize};#{func_name.sanitize}%%"
   end
 
   # @return [String] A hyperlink to a CSR field
-  # @param csr_name [#to_s] Name of the CSR
-  # @param field_name [#to_s] Name of the CSR field
+  # @param csr_name [String] Name of the CSR
+  # @param field_name [String] Name of the CSR field
   def link_to_csr_field(csr_name, field_name)
     "%%LINK%csr_field;#{csr_name.sanitize}.#{field_name.sanitize};#{csr_name.sanitize}.#{field_name.sanitize}%%"
   end
 
   # @return [String] An anchor for an extension
-  # @param ext_name [#to_s] Name of the extension
+  # @param ext_name [String] Name of the extension
   def anchor_for_ext(ext_name)
     "[#ext-#{ext_name.sanitize}-def]"
   end
 
   # @return [String] An anchor for a parameter defined by a particular extension.
-  # @param ext_name [#to_s] Name of the extension
-  # @param param_name [#to_s] Name of the parameter
+  # @param ext_name [String] Name of the extension
+  # @param param_name [String] Name of the parameter
   def anchor_for_ext_param(ext_name, param_name)
     check_no_periods(param_name)
     "[#ext_param-#{ext_name.sanitize}-#{param_name}-def]"
   end
 
   # Insert anchor to an instruction.
-  # @param name [#to_s] Name of the instruction
+  # @param name [String] Name of the instruction
   def anchor_for_inst(name)
     "[#inst-#{name.sanitize}-def]"
   end
 
   # Insert anchor to a CSR.
-  # @param name [#to_s] Name of the CSR
+  # @param name [String] Name of the CSR
   def anchor_for_csr(name)
     "[#csr-#{name.sanitize}-def]"
   end
 
   # Insert anchor to a CSR field.
-  # @param csr_name [#to_s] Name of the CSR
-  # @param field_name [#to_s] Name of the CSR field
+  # @param csr_name [String] Name of the CSR
+  # @param field_name [String] Name of the CSR field
   def anchor_for_csr_field(csr_name, field_name)
     "[#csr_field-#{csr_name.sanitize}-#{field_name.sanitize}-def]"
   end
 
   # Insert anchor to an IDL function.
-  # @param name [#to_s] Name of the function
+  # @param name [String] Name of the function
   def anchor_for_func(name)
     "[#func-#{name.sanitize}-def]"
   end
@@ -156,20 +156,16 @@ module AsciidocUtils
         case type
         when "ext"
           "xref:#ext-#{name}-def[#{link_text}]"
-          # link_text
         when "ext_param"
           ext_name, param_name = name.split('.')
           "xref:#ext_param-#{ext_name}-#{param_name}-def[#{link_text}]"
         when "inst"
-          #"xref:#inst-#{name}-def[#{link_text.gsub(']', '\]')}]"
-          # XXX: Is the gsub above necessary?
           "xref:#inst-#{name}-def[#{link_text}]"
         when "csr"
           "xref:#csr-#{name}-def[#{link_text}]"
         when "csr_field"
           csr_name, field_name = name.split('.')
           "xref:#csr_field-#{csr_name}-#{field_name}-def[#{link_text}]"
-          # link_text
         when "func"
           "xref:#func-#{name}-def[#{link_text}]"
         else

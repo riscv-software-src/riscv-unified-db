@@ -244,26 +244,26 @@ class Design < IDesign
       end
   end
 
-  # @return [Array<Idl::FunctionBodyAst>] List of all functions defined by the architecture
+  # @return [Array<Idl::FunctionDefAst>] Sorted list of all functions defined by the architecture
   def functions
     return @functions unless @functions.nil?
 
-    @functions = @global_ast.functions
+    @functions = @global_ast.functions.sort
   end
 
-  # @return [Array<Csr>] List of all implemented CSRs
+  # @return [Array<Csr>] Sorted list of all implemented CSRs
   def transitive_implemented_csrs
     @transitive_implemented_csrs ||=
       transitive_implemented_ext_vers.map(&:implemented_csrs).flatten.uniq.sort
   end
 
-  # @return [Array<Instruction>] List of all implemented instructions
+  # @return [Array<Instruction>] Sorted list of all implemented instructions
   def transitive_implemented_instructions
     @transitive_implemented_instructions ||=
       transitive_implemented_ext_vers.map(&:implemented_instructions).flatten.uniq.sort
   end
 
-  # @return [Array<FuncDefAst>] List of all reachable IDL functions for the design
+  # @return [Array<Idl::FunctionDefAst>] Sorted list of all reachable IDL functions for the design
   def implemented_functions
     return @implemented_functions unless @implemented_functions.nil?
 
@@ -296,7 +296,7 @@ class Design < IDesign
       end
     end
 
-    @implemented_functions
+    @implemented_functions.sort!
   end
 
   # Returns an environment hash suitable for the render_erb() function in ERB templates.

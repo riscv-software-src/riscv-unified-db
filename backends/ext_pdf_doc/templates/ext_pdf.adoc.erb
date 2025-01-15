@@ -311,7 +311,7 @@ The following <%= ext.csrs.size %> are added by this extension.
 == IDL Functions
 
 <%- ext.reachable_functions(design.symtab).sort { |a,b| a.name <=> b.name }.each do |f| -%>
-[#<%= f.name %>-func-def]
+<%= anchor_for_func(f.name) %>
 === <%= f.name %><%- if f.builtin? -%> (builtin)<%- end -%>
 
 <%= f.description %>
