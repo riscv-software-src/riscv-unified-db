@@ -66,7 +66,7 @@ RV64::
 
 [NOTE]
 The following synopsis is _community-driven_, and has not been ratified by https://riscv.org[RISC-V International].
-You may suggest a correction or improvement by submitting a Pull Request of the https://github.com/riscv-software-src/riscv-unified-db/blob/main/arch/inst/<%= parts = inst.__source.split("/"); parts[parts.rindex("inst")..].join("/") %>[source file].
+You may suggest a correction or improvement by submitting a Pull Request of the https://github.com/riscv-software-src/riscv-unified-db/blob/main/arch/<%= parts = inst.__source.split("/"); parts[parts.rindex("inst")..].join("/") %>[source file].
 
 <%- if inst.data_independent_timing? -%>
 [IMPORTANT]
@@ -96,8 +96,10 @@ The <%= inst.name %> instruction appears in <%= adoc_blocks.size %> <%= adoc_blo
 
 <%- adoc_blocks.each do |block| -%>
 <%- section = get_section(block) -%>
-.Section <%= section.sectnum %>, <%= section.title %>
-<%= block.source %>
+.Section <%= section.sectnum %> <%= section.title %>
+****
+<%= block.source.gsub(%r{(^|[ /,])(#{inst.name.upcase})([ ,/.]|$)}, "\\1*\\2*\\3") %>
+****
 
 <%- end -%>
 <%- end -%>
