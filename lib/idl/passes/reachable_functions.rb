@@ -36,7 +36,7 @@ module Idl
 
         func_def_type.apply_arguments(body_symtab, arg_nodes, symtab, self)
 
-        unless func_def_type.builtin?
+        unless func_def_type.builtin? || func_def_type.generated?
           fns.concat(func_def_type.body.reachable_functions(body_symtab))
         end
 

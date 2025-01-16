@@ -9,10 +9,18 @@
 <%# need to get symtab at function scope -%>
 <%- symtab = cfg_arch.symtab.global_clone.push(nil) -%>
 <%- cfg_arch.functions.each do |func| -%>
-<%- next if func.builtin? || func.generated? -%>
+<%- next unless func.builtin? -%>
+<%- next if func.name == "cached_translation" # hack for now: return type isn't default constructible -%>
+
 //
 // <%= func.description.gsub("\n", "\n// ") %>
-<%= func.gen_cpp_prototype(symtab, 0) %>
+<%= func.gen_cpp_prototype(symtab, 0, include_semi: false) %> {
+  <%- unless func.gen_return_type(symtab) == "void" -%>
+  static_assert(std::is_default_constructible_v<<%= func.gen_return_type(symtab) %>>, "Return type is not default constructible");
+  <%= func.gen_return_type(symtab) %> ret;
+  return ret;
+  <%- end -%>
+}
 
 <%- end -%>
 
@@ -20,5 +28,3 @@
 #undef __UDB_CONST_GLOBAL
 #undef __UDB_MUTABLE_GLOBAL
 #undef __UDB_STRUCT
-
-<%- symtab.release -%>

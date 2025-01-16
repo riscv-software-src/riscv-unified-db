@@ -650,6 +650,8 @@ module Idl
 
     def builtin? = @func_def_ast.builtin?
 
+    def generated? = @func_def_ast.generated?
+
     def num_args = @func_def_ast.num_args
 
     def type_check_call(template_values, argument_nodes, call_site_symtab, func_call_ast)

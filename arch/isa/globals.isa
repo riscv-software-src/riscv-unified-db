@@ -104,13 +104,13 @@ enum CsrFieldType {
 }
 
 # generated from extension information in arch defintion
-builtin enum ExtensionName;
+generated enum ExtensionName;
 
 # generated from extension information in arch defintion
-builtin enum InterruptCode;
+generated enum InterruptCode;
 
 # generated from extension information in arch defintion
-builtin enum ExceptionCode;
+generated enum ExceptionCode;
 
 # XLEN encoding, as defined in CSR[mstatus].mxl, etc.
 enum XRegWidth {

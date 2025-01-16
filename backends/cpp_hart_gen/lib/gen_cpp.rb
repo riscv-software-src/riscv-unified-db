@@ -172,10 +172,10 @@ module Idl
       end
     end
 
-    def gen_cpp_prototype(symtab, indent, indent_spaces: 2)
+    def gen_cpp_prototype(symtab, indent, indent_spaces: 2, include_semi: true)
       <<~PROTOTYPE
         #{' ' * indent}#{gen_cpp_template(symtab)}
-        #{' ' * indent}#{name == 'raise' ? '[[noreturn]] ' : ''}#{constexpr?(symtab) ? 'constexpr static ' : ''}#{gen_return_type(symtab)} #{name.gsub('?', '_Q_')}(#{gen_cpp_argument_list(symtab)});
+        #{' ' * indent}#{name == 'raise' ? '[[noreturn]] ' : ''}#{constexpr?(symtab) ? 'constexpr static ' : ''}#{gen_return_type(symtab)} #{name.gsub('?', '_Q_')}(#{gen_cpp_argument_list(symtab)})#{include_semi ? ';' : ''}
       PROTOTYPE
     end
   end

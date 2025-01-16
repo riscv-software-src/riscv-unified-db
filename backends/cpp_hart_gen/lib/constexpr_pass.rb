@@ -48,6 +48,7 @@ module Idl
     # @return [Boolean] If the function is possibly C++ constexpr (does not access CSRs or registers)
     def constexpr?(symtab)
       return false if builtin?
+      return false if generated? # might actually know this in some cases...
 
       body.constexpr?(symtab)
     end

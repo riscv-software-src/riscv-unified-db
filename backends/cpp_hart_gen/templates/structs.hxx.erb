@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <type_traits>
 #include <cstdint>
 #include "udb/bits.hpp"
 #include "udb/types.hpp"
@@ -13,6 +14,9 @@ namespace udb {
       <%- struct.member_types.each_index do |idx| -%>
       <%= struct.member_types[idx].gen_cpp(cfg_arch.symtab, 0) %> <%= struct.member_names[idx] %>;
       <%- end -%>
+
+      <%= name_of(:struct, cfg_arch, struct.name) %>() = default;
+      ~<%= name_of(:struct, cfg_arch, struct.name) %>() = default;
     };
   <%- end -%>
 

@@ -312,7 +312,7 @@ The following <%= ext.csrs.size %> are added by this extension.
 
 <%- ext.reachable_functions(cfg_arch.symtab).sort { |a,b| a.name <=> b.name }.each do |f| -%>
 [#<%= f.name %>-func-def]
-=== <%= f.name %><%- if f.builtin? -%> (builtin)<%- end -%>
+=== <%= f.name %><%- if f.builtin? -%> (builtin)<%- end -%><%- if f.generated? -%> (generated)<%- end -%>
 
 <%= f.description %>
 
@@ -321,7 +321,7 @@ h| Return Type l| <%= f.return_type_list_str.join(', ') %>
 h| Arguments   l| <%= f.arguments_list_str.join (', ') %>
 |===
 
-<%- unless f.builtin? -%>
+<%- unless f.builtin? || f.generated? -%>
 <%- body_ast = f.body -%>
 [source,idl,subs="specialchars,macros"]
 ----

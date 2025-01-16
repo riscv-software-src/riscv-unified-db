@@ -32,7 +32,7 @@ grammar Idl
   end
 
   rule enum_definition
-    'builtin' space+ 'enum' space+ user_type_name space* ';' <Idl::BuiltinEnumDefinitionSyntaxNode>
+    'generated' space+ 'enum' space+ user_type_name space* ';' <Idl::BuiltinEnumDefinitionSyntaxNode>
     /
     'enum' space+ user_type_name space+ '{' space*
       e:(user_type_name space+ i:(int space+)?)+ space*
@@ -438,7 +438,7 @@ grammar Idl
   end
 
   rule builtin_function_definition
-    'builtin' space+ 'function' space+ function_name space* '{' space*
+    type:('builtin' / 'generated') space+ 'function' space+ function_name space* '{' space*
       targs:('template' space+ first:single_declaration rest:(space* ',' space* single_declaration)* space+)?
       ret:('returns' space+ first:type_name rest:(space* ',' space* type_name)* space+)?
       args:(
@@ -585,6 +585,7 @@ grammar Idl
     'body' ![A-Za-z0-9_] /
     'function' ![A-Za-z0-9_] /
     'builtin' ![A-Za-z0-9_] /
+    'generated' ![A-Za-z0-9_] /
     'enum' ![A-Za-z0-9_]  /
     'bitfield' ![A-Za-z0-9_]
   end

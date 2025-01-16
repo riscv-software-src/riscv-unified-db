@@ -1095,7 +1095,7 @@ module Idl
   # represents a builtin (auto-generated from config) enum definition
   #
   #   # this will result in a BuiltinEnumDefinitionAst
-  #   builtin enum ExtensionName
+  #   generated enum ExtensionName
   #
   class BuiltinEnumDefinitionAst < AstNode
     include Declaration
@@ -1119,7 +1119,7 @@ module Idl
       when "ExtensionName", "ExceptionCode", "InterruptCode"
         # OK
       else
-        type_error "Unsupported builtin enum type '#{@user_type.text_value}'"
+        type_error "Unsupported generated enum type '#{@user_type.text_value}'"
       end
     end
 
@@ -1132,7 +1132,7 @@ module Idl
       when "InterruptCode"
         symtab.cfg_arch.interrupt_codes.map(&:var)
       else
-        type_error "Unknown builtin enum type '#{name}'"
+        type_error "Unknown generated enum type '#{name}'"
       end
     end
 
@@ -1145,7 +1145,7 @@ module Idl
       when "InterruptCode"
         symtab.cfg_arch.interrupt_codes.map(&:num)
       else
-        type_error "Unknown builtin enum type '#{name}'"
+        type_error "Unknown generated enum type '#{name}'"
       end
     end
 
@@ -1167,7 +1167,7 @@ module Idl
     def name = @user_type.text_value
 
     # @!macro to_idl
-    def to_idl = "builtin enum #{@user_type.text_value}"
+    def to_idl = "generated enum #{@user_type.text_value}"
   end
 
   class BitfieldFieldDefinitionAst < AstNode
@@ -4673,7 +4673,7 @@ module Idl
 
       func_def_type = func_type(symtab)
       type_error "#{name} is not a function" unless func_def_type.is_a?(FunctionType)
-      if func_def_type.builtin?
+      if func_def_type.generated?
         if name == "implemented?"
           extname_ref = arg_nodes[0]
           type_error "First argument should be a ExtensionName" unless extname_ref.type(symtab).kind == :enum_ref && extname_ref.class_name == "ExtensionName"
@@ -4686,8 +4686,11 @@ module Idl
           end
           value_error "implemented? is only known when evaluating in the context of a fully-configured arch def"
         else
-          value_error "value of builtin function cannot be known"
+          internal_error "Unimplemented generated: '#{name}'"
         end
+      end
+      if func_def_type.builtin?
+        value_error "value of builtin functions aren't knowable"
       end
 
       template_values =
@@ -4872,6 +4875,7 @@ module Idl
         ret.empty? ? [] : [ret.first.to_ast] + ret.rest.elements.map { |r| r.type_name.to_ast },
         args.empty? ? [] : [args.first.to_ast] + args.rest.elements.map { |r| r.single_declaration.to_ast},
         desc.text_value,
+        respond_to?(:type) ? type.text_value.to_sym : :normal,
         respond_to?(:body_block) ? body_block.function_body.to_ast : nil
       )
     end
@@ -4887,8 +4891,9 @@ module Idl
     # @params return_types [Array<AstNode>] Return types
     # @param arguments [Array<AstNode>] Arguments
     # @param desc [String] Description
+    # @param type [:normal, :builtin, :generated] Type of function
     # @param body [AstNode,nil] Body, unless the function is builtin
-    def initialize(input, interval, name, targs, return_types, arguments, desc, body)
+    def initialize(input, interval, name, targs, return_types, arguments, desc, type, body)
       if body.nil?
         super(input, interval, targs + return_types + arguments)
       else
@@ -4901,6 +4906,8 @@ module Idl
       @argument_nodes = arguments
       @desc = desc
       @body = body
+      @builtin = type == :builtin
+      @generated = type == :generated
 
       @cached_return_type = {}
       @reachable_functions_cache ||= {}
@@ -5160,13 +5167,17 @@ module Idl
     end
 
     def body
-      internal_error "Function has no body" if builtin?
+      internal_error "Function has no body" if builtin? || generated?
 
       @body
     end
 
     def builtin?
-      @body.nil?
+      @builtin
+    end
+
+    def generated?
+      @generated
     end
   end
 

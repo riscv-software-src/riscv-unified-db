@@ -39,6 +39,7 @@ namespace udb {
       <%- end -%>
 
       #include "udb/cfgs/<%= cfg_arch.name %>/func_prototypes.hxx"
+      #include "udb/cfgs/<%= cfg_arch.name %>/builtin_funcs.hxx"
 
       static constexpr unsigned MXLEN = <%= cfg_arch.mxlen.nil? ? 64 : cfg_arch.mxlen %>;
       using XReg = Bits<MXLEN>;
