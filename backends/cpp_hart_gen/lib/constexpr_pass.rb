@@ -13,8 +13,9 @@ module Idl
   class IdAst
     def constexpr?(symtab)
       sym = symtab.get(name)
-      return true if sym.nil? # assuming undefined syms are local (be sure to type check first!!)
+      return true if sym.nil?
       return true if sym.is_a?(Type)
+      return false if sym.value.nil? # assuming undefined syms are local (be sure to type check first!!)
 
       if sym.param?
         symtab.cfg_arch.params_with_value.any? { |p| p.name == text_value }
