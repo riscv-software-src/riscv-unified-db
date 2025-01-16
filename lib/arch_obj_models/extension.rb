@@ -394,7 +394,7 @@ class ExtensionVersion
   end
 
   # @param design [Design] The design
-  # @return [Array<Csr>] List of CSRs in-scope for this design for this extension version (may be empty)
+  # @return [Array<Csr>] List of CSRs in-scope for this design for this extension version (may be empty).
   #                      Factors in effect of design's xlen in the appropriate mode for the CSR.
   def in_scope_csrs(design)
     raise ArgumentError, "Require an IDesign object but got a #{design.class} object" unless design.is_a?(IDesign)
@@ -408,7 +408,7 @@ class ExtensionVersion
   end
 
   # @param design [Design] The design
-  # @return [Array<Instruction>] List of instructions in-scope for this design for this extension version (may be empty)
+  # @return [Array<Instruction>] List of instructions in-scope for this design for this extension version (may be empty).
   #                              Factors in effect of design's xlen in the appropriate mode for the instruction.
   def in_scope_instructions(design)
     raise ArgumentError, "Require an IDesign object but got a #{design.class} object" unless design.is_a?(IDesign)

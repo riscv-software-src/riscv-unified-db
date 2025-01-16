@@ -34,14 +34,14 @@ module TemplateHelpers
   end
 
   # Links are created with this proprietary format so that they can be converted
-  # later into either Asciidoc or Antora links (see the two implementations of "resolve_links").
+  # later into either AsciiDoc or Antora links (see the two implementations of "resolve_links").
   #   %%LINK%<type>;<name>;<link_text>%%
   #
   # Documentation:
   #   - How to make cross-references: https://docs.asciidoctor.org/asciidoc/latest/macros/xref/
   #   - How to create anchors: https://docs.asciidoctor.org/asciidoc/latest/attributes/id/
-  #   - See https://github.com/riscv/riscv-isa-manual/issues/1397#issuecomment-2515109936 for
-  #     discussion about using [#anchor] instead of [[anchor]] due to Antora's support.
+  #   - See https://github.com/riscv/riscv-isa-manual/issues/1397 for a detailed
+  #     discussion about how to put anchors and links into AsciiDoc.
 
   # @return [String] A hyperlink to an extension
   # @param ext_name [String] Name of the extension
@@ -85,7 +85,7 @@ module TemplateHelpers
   # @return [String] An anchor for an extension
   # @param ext_name [String] Name of the extension
   def anchor_for_ext(ext_name)
-    "[#ext-#{ext_name.sanitize}-def]"
+    "[[ext-#{ext_name.sanitize}-def]]"
   end
 
   # @return [String] An anchor for a parameter defined by a particular extension.
@@ -93,32 +93,32 @@ module TemplateHelpers
   # @param param_name [String] Name of the parameter
   def anchor_for_ext_param(ext_name, param_name)
     check_no_periods(param_name)
-    "[#ext_param-#{ext_name.sanitize}-#{param_name}-def]"
+    "[[ext_param-#{ext_name.sanitize}-#{param_name}-def]]"
   end
 
   # Insert anchor to an instruction.
   # @param name [String] Name of the instruction
   def anchor_for_inst(name)
-    "[#inst-#{name.sanitize}-def]"
+    "[[inst-#{name.sanitize}-def]]"
   end
 
   # Insert anchor to a CSR.
   # @param name [String] Name of the CSR
   def anchor_for_csr(name)
-    "[#csr-#{name.sanitize}-def]"
+    "[[csr-#{name.sanitize}-def]]"
   end
 
   # Insert anchor to a CSR field.
   # @param csr_name [String] Name of the CSR
   # @param field_name [String] Name of the CSR field
   def anchor_for_csr_field(csr_name, field_name)
-    "[#csr_field-#{csr_name.sanitize}-#{field_name.sanitize}-def]"
+    "[[csr_field-#{csr_name.sanitize}-#{field_name.sanitize}-def]]"
   end
 
   # Insert anchor to an IDL function.
   # @param name [String] Name of the function
   def anchor_for_func(name)
-    "[#func-#{name.sanitize}-def]"
+    "[[func-#{name.sanitize}-def]]"
   end
 
   private
@@ -128,16 +128,16 @@ module TemplateHelpers
     end
 end
 
-# Utilities for a backend to generate Asciidoc.
+# Utilities for a backend to generate AsciiDoc.
 module AsciidocUtils
   # The syntax "class << self" causes all methods to be treated as class methods.
   class << self
-    # Convert proprietary link format to legal Asciidoc links.
-    # They are converted to standard xref:#anchor_name[link_text] format here.
+    # Convert proprietary link format to legal AsciiDoc links.
+    # They are converted to AsciiDoc internal cross references (i.e., <<anchor_name,link_text>>).
     # For example,
     #   %%LINK%inst;add;add instruction%%
     # is converted to:
-    #   xref:#inst-add-def[add instruction]
+    #   <<inst-add-def,add instruction>>
     #
     # @param path_or_str [Pathname or String]
     # @return [String]
@@ -155,19 +155,19 @@ module AsciidocUtils
 
         case type
         when "ext"
-          "xref:#ext-#{name}-def[#{link_text}]"
+          "<<ext-#{name}-def,#{link_text}>>"
         when "ext_param"
           ext_name, param_name = name.split('.')
-          "xref:#ext_param-#{ext_name}-#{param_name}-def[#{link_text}]"
+          "<<ext_param-#{ext_name}-#{param_name}-def,#{link_text}>>"
         when "inst"
-          "xref:#inst-#{name}-def[#{link_text}]"
+          "<<inst-#{name}-def,#{link_text}>>"
         when "csr"
-          "xref:#csr-#{name}-def[#{link_text}]"
+          "<<csr-#{name}-def,#{link_text}>>"
         when "csr_field"
           csr_name, field_name = name.split('.')
-          "xref:#csr_field-#{csr_name}-#{field_name}-def[#{link_text}]"
+          "<<csr_field-#{csr_name}-#{field_name}-def,#{link_text}>>"
         when "func"
-          "xref:#func-#{name}-def[#{link_text}]"
+          "<<func-#{name}-def,#{link_text}>>"
         else
           raise "Unhandled link type of '#{type}' for '#{name}' with link_text '#{link_text}'"
         end
@@ -180,12 +180,12 @@ end
 module AntoraUtils
   # The syntax "class << self" causes all methods to be treated as class methods.
   class << self
-    # Convert proprietary link format to legal Asciidoc links.
-    # They are converted to standard xref:#anchor_name[link_text] format here.
+    # Convert proprietary link format to legal AsciiDoc links.
+    # They are converted to AsciiDoc external cross references (i.e., xref:filename:#anchor_name[link_text]).
     # For example,
     #   %%LINK%inst;add;add instruction%%
     # is converted to:
-    #   xref:#inst-add-def[add instruction]
+    #   xref:insts:add.adoc#add-def[add instruction]
     #
     # @param path_or_str [Pathname or String]
     # @return [String]

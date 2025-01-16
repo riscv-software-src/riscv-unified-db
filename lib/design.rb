@@ -167,13 +167,14 @@ class Design < IDesign
     puts "done" if show_progress
   end
 
-  # @return [Array<ExtensionVersion>] List of all extensions known to be implemented in this design, including transitive implications
+  # @return [Array<ExtensionVersion>] List of all extension versions known to be implemented in this design,
+  #                                   including transitive implications.
   def transitive_implemented_ext_vers
     return @transitive_implemented_ext_vers unless @transitive_implemented_ext_vers.nil?
 
     list = implemented_ext_vers
-    list.each do |e|
-      implications = e.transitive_implications
+    list.each do |ext_ver|
+      implications = ext_ver.transitive_implications
       list.concat(implications) unless implications.empty?
     end
     @transitive_implemented_ext_vers = list.uniq.sort
@@ -244,7 +245,7 @@ class Design < IDesign
       end
   end
 
-  # @return [Array<Idl::FunctionDefAst>] Sorted list of all functions defined by the architecture
+  # @return [Array<Idl::FunctionDefAst>] Sorted list of all IDL functions defined by the architecture
   def functions
     return @functions unless @functions.nil?
 
