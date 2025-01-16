@@ -212,7 +212,8 @@ module AntoraUtils
           csr_name, field_name = name.split('.')
           "xref:csrs:#{csr_name}.adoc##{csr_name}-#{field_name}-def[#{link_text.gsub(']', '\]')}]"
         when "func"
-          "xref:func:#{name}.adoc##{name}-def[#{link_text.gsub(']', '\]')}]"
+          # All functions are in the same file called "func.adoc".
+          "xref:func:func.adoc##{name}-def[#{link_text.gsub(']', '\]')}]"
         else
           raise "Unhandled link type of '#{type}' for '#{name}' with link_text '#{link_text}'"
         end
