@@ -187,6 +187,12 @@ module AntoraUtils
     # is converted to:
     #   xref:insts:add.adoc#add-def[add instruction]
     #
+    # Antora supports the module name after the "xref:". In the example above, it the module name is "insts"
+    # and corresponds to the directory name the add.adoc file is located in. For more details, see:
+    #    https://docs.antora.org/antora/latest/page/xref/
+    # and then
+    #    https://docs.antora.org/antora/latest/page/resource-id-coordinates/
+    #
     # @param path_or_str [Pathname or String]
     # @return [String]
     def resolve_links(path_or_str)
