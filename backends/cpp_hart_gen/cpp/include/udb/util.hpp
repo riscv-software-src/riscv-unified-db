@@ -52,17 +52,20 @@ namespace udb {
       return (value >> start) & mask;
     }
   }
-  // extract bits, where the extraction is not known at compile time
-  template <typename T>
-    requires (std::integral<T>)
-  T extract(T value, unsigned start, unsigned size)
-  {
-    udb_assert((start + size) <= sizeof(T)*8, "extraction out of bound");
 
-    if (size == sizeof(T)*8) {
+  // extract bits, where the extraction is not known at compile time
+  template <typename ValueType, typename StartType, typename SizeType>
+    requires ((std::integral<ValueType> || ValueType::IsABits) &&
+              (std::integral<StartType> || StartType::IsABits) &&
+              (std::integral<SizeType> || SizeType::IsABits))
+  ValueType extract(const ValueType& value, const StartType& start, const SizeType& size)
+  {
+    udb_assert((start + size) <= sizeof(ValueType)*8, "extraction out of bound");
+
+    if (size == sizeof(ValueType)*8) {
       return value;
     } else {
-      T mask = (static_cast<T>(1) << size) - 1;
+      ValueType mask = (static_cast<ValueType>(1) << size) - 1;
       return (value >> start) & mask;
     }
   }
@@ -126,7 +129,7 @@ namespace udb {
   }
 
   template <unsigned M, typename T>
-  constexpr Bits<BitsInfinitePrecision> replicate(const Bits<M>& value, const T& N)
+  constexpr RuntimeBits replicate(const Bits<M>& value, const T& N)
   {
     udb_assert(N > 0, "Must replicate at least once");
     static_assert(M < BitsMaxNativePrecision, "Please don't replicate multiprecision numbers ;(");
@@ -135,7 +138,7 @@ namespace udb {
     for (unsigned i=1; i<N; i++) {
       result |= value << (i*M);
     }
-    return result;
+    return {result, M * N};
   }
 
 
@@ -178,8 +181,25 @@ namespace udb {
   }
 
   template <typename... BitsTypes>
+    requires ((BitsTypes::Width != BitsInfinitePrecision) && ...)
   constexpr Bits<ConcatWidth<BitsTypes...>::Width> concat(BitsTypes... bits) {
     return __concat(bits...);
+  }
+
+  template <typename BitsType, typename... BitsTypes>
+  RuntimeBits __runtime_concat(const BitsType& a, const BitsTypes&... bits) {
+    if constexpr (sizeof...(BitsTypes) == 0) {
+      return a;
+    } else {
+      auto shamt = (bits.width() + ...);
+      return (RuntimeBits{a} << shamt) | __runtime_concat(bits...);
+    }
+  }
+
+  template <typename... BitsTypes>
+    requires ((std::same_as<BitsTypes, RuntimeBits> || ...))
+  RuntimeBits concat(BitsTypes... bits) {
+    return __runtime_concat(bits...);
   }
 
   static_assert(std::is_same_v<decltype(concat(Bits<4>{1}, Bits<4>(2), Bits<4>(3))), Bits<12>>);

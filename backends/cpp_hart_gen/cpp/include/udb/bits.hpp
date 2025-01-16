@@ -13,6 +13,9 @@
 // we need this to be true for GMP
 static_assert(sizeof(long unsigned int) == sizeof(long long unsigned int));
 
+// we make this assumption frequently
+static_assert(sizeof(1ull) == 8);
+
 namespace udb
 {
 
@@ -54,6 +57,9 @@ namespace udb
     static_assert(N > 0);
 
   public:
+    // used for template concept resolution
+    constexpr static bool IsABits = true;
+
     // value of N that represents unknown precision (happens when there is a left shift by unknown value)
     constexpr static unsigned InfinitePrecision = BitsInfinitePrecision;
 
@@ -63,6 +69,8 @@ namespace udb
 
     // advertise the width
     constexpr static unsigned Width = N;
+
+    constexpr static unsigned width() { return N; }
 
     using StorageType = typename BitsStorageType<N>::type;
     using SignedStorageType = typename BitsSignedStorageType<N>::type;
@@ -78,9 +86,7 @@ namespace udb
     {
       using _StorageType = typename BitsStorageType<_N>::type;
 
-      if constexpr (_N == InfinitePrecision)
-      {
-        // infinite bits, so there is no masking
+      if constexpr (_N == InfinitePrecision) {
         return false;
       }
       else if constexpr (_N > MaxNativePrecision)
@@ -996,6 +1002,8 @@ namespace udb
 
   static_assert((0x0_b).Width == 1);
   static_assert((0x1_b).Width == 1);
+  static_assert((0_b).Width == 1);
+  static_assert((1_b).Width == 1);
   static_assert((0x2_b).Width == 2);
   static_assert((0x7_b).Width == 3);
   static_assert((0x8_b).Width == 4);
@@ -1246,4 +1254,50 @@ namespace udb {
   static const Bits<66> UNDEFINED_LEGAL_DETERMINISTIC = 0x20000000000000000_b;
 
   using PossiblyUndefinedBits = Bits<66>;
+}
+
+namespace udb {
+  // Bits where the width is only known at runtime (usually because the width is parameter-dependent)
+  template <bool Signed>
+  class _RuntimeBits {
+    public:
+    template <unsigned N, bool _Signed>
+    _RuntimeBits(const _Bits<N, _Signed>& initial_value)
+      : m_value(initial_value), m_width(N)
+    {}
+
+    template <typename T>
+    _RuntimeBits(const T& initial_value, unsigned initial_width)
+      : m_value(initial_value), m_width(initial_width)
+    {}
+
+    unsigned width() const { return m_width; }
+    auto value() const { return m_value; }
+
+    template <typename T>
+    _RuntimeBits operator<<(const T& shamt) {
+      return {m_value << shamt, m_width + shamt};
+    }
+
+    template <unsigned N, bool _Signed>
+    _RuntimeBits operator|(const _Bits<N, _Signed>& other) {
+      return {m_value | other, std::max(N, m_width)};
+    }
+
+    _RuntimeBits operator|(const _RuntimeBits& other) {
+      return {m_value | other.m_value, std::max(other.m_width, m_width)};
+    }
+
+    private:
+    _Bits<BitsInfinitePrecision, Signed> m_value;
+    unsigned m_width;
+  };
+
+  template <unsigned N, bool ASigned, bool BSigned>
+  bool operator==(const _Bits<N, ASigned>& a, const _RuntimeBits<BSigned>& b)
+  {
+    return a == b.value();
+  }
+
+  using RuntimeBits = _RuntimeBits<false>;
 }

@@ -300,10 +300,10 @@ module Idl
       var = symtab.get(text_value)
 
       if !var.nil? && var.param?
-        if symtab.cfg_arch.params_without_value.any? { |p| p.name == text_value }
-          "#{' ' * indent}__UDB_RUNTIME_PARAM(#{text_value})"
-        else
+        if constexpr?(symtab)
           "#{' ' * indent}__UDB_STATIC_PARAM(#{text_value}) /* #{var.value} */"
+        else
+          "#{' ' * indent}__UDB_RUNTIME_PARAM(#{text_value})"
         end
       elsif !var.nil? && var.type.global?
         if var.type.const?
@@ -457,7 +457,11 @@ module Idl
 
   class BinaryExpressionAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)} #{op} #{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
+      if op == ">>>"
+        "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.sra(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
+      else
+        "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)} #{op} #{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
+      end
     end
   end
 

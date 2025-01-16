@@ -16,7 +16,11 @@ module Idl
       return true if sym.nil? # assuming undefined syms are local (be sure to type check first!!)
       return true if sym.is_a?(Type)
 
-      !sym.type.global?
+      if sym.param?
+        symtab.cfg_arch.params_with_value.any? { |p| p.name == text_value }
+      else
+        !sym.type.global?
+      end
     end
   end
   class PcAssignmentAst
