@@ -399,6 +399,8 @@ module Idl
       lines = []
       symtab.push(nil)
       init.add_symbol(symtab)
+      symtab.get(init.lhs.text_value).value = nil
+
       stmts.each do |s|
         lines << s.gen_cpp(symtab, indent_spaces, indent_spaces:)
       end
