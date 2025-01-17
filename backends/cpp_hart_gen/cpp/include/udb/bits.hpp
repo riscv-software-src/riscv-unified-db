@@ -1161,12 +1161,16 @@ template <bool RuntimeSigned>
 _Bits<N, BitsSigned>::_Bits(const _RuntimeBits<RuntimeSigned> &val) {
   if constexpr (N >= BitsMaxNativePrecision) {
     if constexpr (BitsSigned) {
-      m_val = val.value().get().get_si();
+      static_assert(false, "Can't mask signed gmp values");
     } else {
-      m_val = val.value().get().get_ui();
+      m_val = apply_mask(val.value().get());
     }
   } else {
-    m_val = val.value().get();
+    if constexpr (BitsSigned) {
+      m_val = apply_mask(val.value().get().get_si());
+    } else {
+      m_val = apply_mask(val.value().get().get_ui());
+    }
   }
 }
 
