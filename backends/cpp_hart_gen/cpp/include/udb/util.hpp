@@ -255,4 +255,26 @@ RuntimeBits concat(BitsTypes... bits) {
 static_assert(std::is_same_v<
               decltype(concat(Bits<4>{1}, Bits<4>(2), Bits<4>(3))), Bits<12>>);
 static_assert(concat(Bits<4>{1}, Bits<4>(2), Bits<4>(3)) == Bits<12>(0x123));
+
+template <unsigned N> static consteval bool is_power_of_2() {
+  if constexpr (N == 0) {
+    return true;
+  } else {
+    unsigned M = N;
+    while ((M & 1) == 0) {
+      M = M >> 1;
+    }
+    return M == 1;
+  }
+}
+static_assert(is_power_of_2<128>());
+static_assert(is_power_of_2<64>());
+static_assert(is_power_of_2<32>());
+static_assert(is_power_of_2<16>());
+static_assert(is_power_of_2<32>());
+static_assert(is_power_of_2<16>());
+static_assert(is_power_of_2<8>());
+static_assert(is_power_of_2<4>());
+static_assert(is_power_of_2<2>());
+static_assert(is_power_of_2<1>());
 } // namespace udb

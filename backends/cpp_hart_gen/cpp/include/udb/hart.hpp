@@ -23,25 +23,6 @@
 
 namespace udb {
 
-// probably unwise to change these
-static constexpr uint64_t LOG_MEM_REGION_SZ = 12; // 4k regions
-static constexpr uint64_t LOG_EXECMAP_CHUNK_SZ = 12;
-
-// derived values - do not modify
-static constexpr uint64_t MEM_REGION_SZ = 1UL << LOG_MEM_REGION_SZ;
-static constexpr uint64_t MEM_REGION_MASK = ~(MEM_REGION_SZ - 1);
-
-static const constexpr uint64_t NS_BIT_OFFSET = 52; // non-secure bit
-static const constexpr uint64_t NS_MASK = 1UL << NS_BIT_OFFSET;
-
-// hash used to initialize each 64-bit word in memory
-// assumes addr is the aligned physical address plus NS bit
-inline uint64_t mem_init_hash(uint64_t addr) {
-  uint8_t ns = addr >> NS_BIT_OFFSET;                    // NOLINT
-  return ((addr ^ (addr >> 4)) & 0x0f0f0f0f0f0f0f0eUL) | // NOLINT
-         (0x1010101010101010UL << ns);                   // NOLINT
-}
-
 class AbstractTracer {
 public:
   AbstractTracer() = default;

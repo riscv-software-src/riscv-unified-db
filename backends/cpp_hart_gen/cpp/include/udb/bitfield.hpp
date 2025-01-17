@@ -1,7 +1,5 @@
 #pragma once
 
-// #include <boost/multiprecision/cpp_int.hpp>
-
 #include <bit>
 #include <cmath>
 #include <concepts>
@@ -14,47 +12,7 @@
 #include <udb/bits.hpp>
 #include <udb/defines.hpp>
 
-// extern "C" {
-// #include "softfloat.h"
-// }
-
 namespace udb {
-
-// empty struct used as the parent of any user-defined enum
-// we use this to identify enum types at compile time
-struct Enum {};
-
-template <unsigned N> struct FixedString {
-  char buf[N + 1]{};
-  constexpr FixedString(char const *s) {
-    for (unsigned i = 0; i != N; ++i)
-      buf[i] = s[i];
-  }
-  constexpr operator char const *() const { return buf; }
-};
-template <unsigned N> FixedString(char const (&)[N]) -> FixedString<N - 1>;
-
-template <unsigned N> static consteval bool is_power_of_2() {
-  if constexpr (N == 0) {
-    return true;
-  } else {
-    unsigned M = N;
-    while ((M & 1) == 0) {
-      M = M >> 1;
-    }
-    return M == 1;
-  }
-}
-static_assert(is_power_of_2<128>());
-static_assert(is_power_of_2<64>());
-static_assert(is_power_of_2<32>());
-static_assert(is_power_of_2<16>());
-static_assert(is_power_of_2<32>());
-static_assert(is_power_of_2<16>());
-static_assert(is_power_of_2<8>());
-static_assert(is_power_of_2<4>());
-static_assert(is_power_of_2<2>());
-static_assert(is_power_of_2<1>());
 
 using uint128_t = unsigned __int128;
 using int128_t = __int128;
