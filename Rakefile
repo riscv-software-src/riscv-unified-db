@@ -54,7 +54,6 @@ rule %r{#{$root}/.stamps/resolve-.+\.stamp} => proc { |tname|
   arch_files = Dir.glob("#{$root}/arch/**/*.yaml")
   overlay_files = Dir.glob("#{$root}/cfgs/#{cfg_name}/arch_overlay/**/*.yaml")
   [
-    "gen:arch",
     "#{$root}/.stamps",
     "#{$root}/lib/yaml_resolver.py"
   ] + arch_files + overlay_files
@@ -135,6 +134,35 @@ namespace :test do
 
     puts "done"
   end
+
+  desc "Check that CSR definitions in the DB are consistent and do not conflict"
+  task :csrs do
+    print "Checking for conflicts in CSRs.."
+
+    cfg_arch = cfg_arch_for("_")
+    csrs = cfg_arch.csrs
+    failed = false
+    csrs.each_with_index do |csr, idx|
+      [32, 64].each do |xlen|
+        next unless csr.defined_in_base?(xlen)
+
+        (idx...csrs.size).each do |other_idx|
+          other_csr = csrs[other_idx]
+          next unless other_csr.defined_in_base?(xlen)
+          next if other_csr == csr
+
+          if csr.address == other_csr.address && !csr.address.nil?
+            warn "CSRs #{csr.name} and #{other_csr.name} have conflicting addresses (#{csr.address})"
+            failed = true
+          end
+        end
+      end
+    end
+    raise "CSR test failed" if failed
+
+    puts "done"
+  end
+
   # task :insts do
   #   puts "Checking instruction encodings..."
   #   inst_paths = Dir.glob("#{$root}/arch/inst/**/*.yaml").map { |f| Pathname.new(f) }
