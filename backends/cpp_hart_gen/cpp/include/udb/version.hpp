@@ -1,21 +1,19 @@
 #pragma once
 
 #include <compare>
-#include <string>
 #include <stdexcept>
+#include <string>
 
 namespace udb {
   class Version {
-  public:
+   public:
     Version() = default;
     Version(const std::string& ver_str) { set(ver_str); }
     Version(unsigned major, unsigned minor, unsigned patch, bool pre)
-      : m_major(major), m_minor(minor), m_patch(patch), m_pre(pre)
-    {}
+        : m_major(major), m_minor(minor), m_patch(patch), m_pre(pre) {}
 
     void set(const std::string& ver_str);
-    void set(unsigned major, unsigned minor, unsigned patch, bool pre)
-    {
+    void set(unsigned major, unsigned minor, unsigned patch, bool pre) {
       m_major = major;
       m_minor = minor;
       m_patch = patch;
@@ -30,15 +28,14 @@ namespace udb {
       } else if (m_patch != other.m_patch) {
         return m_patch <=> other.m_patch;
       } else {
-        return m_pre == other.m_pre ? std::strong_ordering::equivalent : (m_pre ? std::strong_ordering::less : std::strong_ordering::greater);
+        return m_pre == other.m_pre ? std::strong_ordering::equivalent
+                                    : (m_pre ? std::strong_ordering::less
+                                             : std::strong_ordering::greater);
       }
     }
     bool operator==(const Version& other) const {
-      return \
-        m_major == other.m_major && \
-        m_minor == other.m_minor && \
-        m_patch == other.m_patch && \
-        m_pre == other.m_pre;
+      return m_major == other.m_major && m_minor == other.m_minor &&
+             m_patch == other.m_patch && m_pre == other.m_pre;
     }
 
     unsigned major() const { return m_major; }
@@ -46,7 +43,7 @@ namespace udb {
     unsigned patch() const { return m_patch; }
     bool pre() const { return m_pre; }
 
-  private:
+   private:
     unsigned m_major;
     unsigned m_minor;
     unsigned m_patch;
@@ -54,27 +51,14 @@ namespace udb {
   };
 
   class VersionRequirement {
-  public:
-    enum class OpKind : unsigned {
-      INVALID,
-      GTE,
-      LTE,
-      GT,
-      LT,
-      EQ,
-      NE,
-      COMPAT
-    };
+   public:
+    enum class OpKind : unsigned { INVALID, GTE, LTE, GT, LT, EQ, NE, COMPAT };
 
     class Op {
-    public:
+     public:
       Op() : m_kind(OpKind::INVALID) {}
-      Op(const std::string& op) {
-        set(op);
-      }
-      Op(const OpKind& kind)
-        : m_kind(kind)
-      {}
+      Op(const std::string& op) { set(op); }
+      Op(const OpKind& kind) : m_kind(kind) {}
 
       void set(const std::string& op) {
         if (op == ">=") {
@@ -103,17 +87,17 @@ namespace udb {
 
       const OpKind& kind() const { return m_kind; }
 
-    private:
+     private:
       OpKind m_kind;
     };
 
     // default requiremnt is >= 0
-    VersionRequirement() : m_op(OpKind::GTE), m_version(0,0,0,false) {}
+    VersionRequirement() : m_op(OpKind::GTE), m_version(0, 0, 0, false) {}
 
     VersionRequirement(const std::string& req) { set(req); }
-    VersionRequirement(const OpKind& op_kind, unsigned major, unsigned minor, unsigned patch, bool pre)
-      : m_op(op_kind), m_version(major, minor, patch, pre)
-    {}
+    VersionRequirement(const OpKind& op_kind, unsigned major, unsigned minor,
+                       unsigned patch, bool pre)
+        : m_op(op_kind), m_version(major, minor, patch, pre) {}
 
     void set(const std::string& req);
 
@@ -125,8 +109,8 @@ namespace udb {
 
     bool satisfied_by(const Version& version);
 
-  private:
+   private:
     Op m_op;
     Version m_version;
   };
-}
+}  // namespace udb

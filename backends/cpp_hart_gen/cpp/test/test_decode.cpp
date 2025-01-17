@@ -1,6 +1,5 @@
-#include <udb/version.hpp>
-
 #include <catch2/catch_test_macros.hpp>
+#include <udb/version.hpp>
 
 using namespace udb;
 
@@ -59,5 +58,6 @@ udb::Memory mem;
 auto hart = udb::HartFactory::create("_", 0, cfg_yaml, mem);
 
 TEST_CASE("Hints", "[version]") {
-  hart->decode(0, 0b00000000000000000000000000010111ull); // auipc, or lpad if Zicfilp
+  hart->decode(
+      0, 0b00000000000000000000000000010111ull);  // auipc, or lpad if Zicfilp
 }
