@@ -19,12 +19,16 @@ def safe_get(data, key, default=""):
 
 
 def get_json_path():
-    env_path = os.environ.get("LLVM_JSON")
-    if not env_path:
-        print("\nNo LLVM path found in environment.")
+    script_dir = Path(__file__).parent.resolve()
+    repo_root = script_dir.parent.parent  # adjust as needed
+    riscv_json_path = repo_root / "riscv.json"
+
+    if not riscv_json_path.is_file():
+        print(f"\nNo 'riscv.json' found at {riscv_json_path}.")
         print("Tests will be skipped.\n")
-        pytest.skip("LLVM path not configured")
-    return env_path
+        pytest.skip("riscv.json does not exist in the repository at the expected path.")
+
+    return riscv_json_path
 
 
 def get_yaml_directory():
