@@ -175,6 +175,8 @@ if [ -v DEVCONTAINER_ENV ]; then
     PIP="${ROOT}/.home/.venv/bin/pip"
     BASH="bash"
     GPP="g++"
+    CLANG_FORMAT="clang-format"
+    CLANG_TIDY="clang-tidy"
     MAKE="make"
 elif [ "${CONTAINER_TYPE}" == "docker" ]; then
     BUNDLE="${DOCKER_BASE} bundle"
@@ -187,6 +189,8 @@ elif [ "${CONTAINER_TYPE}" == "docker" ]; then
     PIP="${DOCKER_BASE} ${ROOT}/.home/.venv/bin/pip"
     BASH="${DOCKER_BASE} bash"
     GPP="${DOCKER_BASE} g++"
+    CLANG_FORMAT="${DOCKER_BASE} clang-format"
+    CLANG_TIDY="${DOCKER_BASE} clang-tidy"
     MAKE"${DOCKER_BASE} make"
 else
     BUNDLE="singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle"
@@ -199,6 +203,8 @@ else
     PIP="singularity run ${HOME_OPT} ${CONTAINER_PATH} ${ROOT}/.home/.venv/bin/pip"
     BASH="singularity run ${HOME_OPT} ${CONTAINER_PATH} bash"
     GPP="singularity run ${HOME_OPT} ${CONTAINER_PATH} g++"
+    CLANG_FORMAT="singularity run ${HOME_OPT} ${CONTAINER_PATH} clang-format"
+    CLANG_TIDY="singularity run ${HOME_OPT} ${CONTAINER_PATH} clang-tidy"
     MAKE="singularity run ${HOME_OPT} ${CONTAINER_PATH} make"
 fi
 

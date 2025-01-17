@@ -51,3 +51,9 @@ repos:
       #   alias: check-jsonschema-manual-version
       #   files: ^arch/manual/.*\.(yaml|yml)$
       #   args: ["--schemafile", "schemas/manual_version_schema.json"]
+
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: "v19.1.7"
+    hooks:
+      - id: clang-format
+        files: \.(hpp|cpp)$

@@ -99,8 +99,7 @@ module Idl
             init.prune(symtab),
             condition.prune(symtab),
             update.prune(symtab),
-            #stmts.map { |s| s.prune(symtab) } #TODO need to not prune a = a + 1  since is known for each loop iter but should accumulate
-            stmts.map { |s| s.dup() }
+            stmts.map { |s| s.prune(symtab) }
           )
       ensure
         symtab.pop

@@ -17,6 +17,17 @@ namespace udb {
 
       <%= name_of(:struct, cfg_arch, struct.name) %>() = default;
       ~<%= name_of(:struct, cfg_arch, struct.name) %>() = default;
+
+      <%= name_of(:struct, cfg_arch, struct.name) %>& operator=(const <%= name_of(:struct, cfg_arch, struct.name) %>& other)
+      {
+        if (this == &other) { return *this; }
+
+        <%- struct.member_types.each_index do |idx| -%>
+        <%= struct.member_names[idx] %> = other.<%= struct.member_names[idx] %>;
+        <%- end -%>
+
+        return *this;
+      }
     };
   <%- end -%>
 

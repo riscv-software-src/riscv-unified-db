@@ -19,10 +19,10 @@ module Idl
         # see if msb, lsb is compile-time-known
         _ = msb.value(symtab)
         _ = lsb.value(symtab)
-        expression = "bit_insert(#{variable.gen_cpp(symtab)}, #{msb.gen_cpp(symtab)}, #{lsb.gen_cpp(symtab)}, #{write_value.gen_cpp(symtab)})"
+        expression = "bit_insert<#{msb.gen_cpp(symtab)}, #{lsb.gen_cpp(symtab)}>(#{variable.gen_cpp(symtab)}, #{write_value.gen_cpp(symtab)})"
       end
       value_else(value_result) do
-        expression = "bit_insert<#{msb.gen_cpp(symtab)}, #{lsb.gen_cpp(symtab)}>(#{variable.gen_cpp(symtab)}, #{write_value.gen_cpp(symtab)})"
+        expression = "bit_insert(#{variable.gen_cpp(symtab)}, #{msb.gen_cpp(symtab)}, #{lsb.gen_cpp(symtab)}, #{write_value.gen_cpp(symtab)})"
       end
 
       "#{' ' * indent}#{expression}"
@@ -104,7 +104,7 @@ module Idl
     def gen_cpp(symtab, indent, indent_spaces: 2)
       if csr.idx.is_a?(AstNode)
         if symtab.cfg_arch.csr(csr.idx.text_value).nil?
-          "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr.idx.gen_cpp(symtab, 0, indent_spaces:)})._#{function_name}()"
+          "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr.idx.gen_cpp(symtab, 0, indent_spaces:)}).#{function_name}(__UDB_XLEN)"
         else
           "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.idx.text_value})._#{function_name}()"
         end
@@ -182,8 +182,8 @@ module Idl
 
   class CsrSoftwareWriteAst
     def gen_cpp(symtab, indent, indent_spaces: 2)
-      csr_ref = csr.gen_cpp(symtab, 0, indent_spaces:)
-      "#{' ' * indent}#{csr_ref}.sw_write(#{expression.gen_cpp(symtab, 0, indent_spaces:)})"
+      # csr isn't known at runtime for sw_write...
+      "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr.idx.gen_cpp(symtab, 0, indent_spaces:)}).sw_write(#{expression.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
     end
   end
 
@@ -236,13 +236,13 @@ module Idl
       field  = csr_field.field_def(symtab)
       if symtab.cfg_arch.multi_xlen? && field.dynamic_location?
         if csr_field.idx.is_a?(AstNode)
-          "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr_field.idx.gen_cpp(symtab, 0)}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
+          "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr_field.idx.gen_cpp(symtab, 0)}).#{field.name}().hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
         else
           "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name(symtab)}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
         end
       else
         if csr_field.idx.is_a?(AstNode)
-          "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr_field.idx.gen_cpp(symtab, 0)}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)})"
+          "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr_field.idx.gen_cpp(symtab, 0)}).#{field.name}().hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)})"
         else
           "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name(symtab)}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)})"
         end
@@ -449,7 +449,7 @@ module Idl
       else
         if var.text_value.start_with?("X")
           #"#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}[#{index.gen_cpp(symtab, 0, indent_spaces:)}]"
-          "#{' '*indent} __UDB_FUNC_CALL  xregRef(#{index.gen_cpp(symtab, 0, indent_spaces:)})"
+          "#{' '*indent} __UDB_HART->_xreg(#{index.gen_cpp(symtab, 0, indent_spaces:)})"
         else
           "#{' '*indent}#{var.gen_cpp(symtab, 0, indent_spaces:)}[#{index.gen_cpp(symtab, 0, indent_spaces:)}]"
         end
@@ -483,7 +483,7 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if lhs.text_value.start_with?("X")
         #"#{' '*indent}  #{lhs.gen_cpp(symtab, 0, indent_spaces:)}[#{idx.gen_cpp(symtab, 0, indent_spaces:)}] = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
-        "#{' '*indent} __UDB_FUNC_CALL xregRef ( #{idx.gen_cpp(symtab, 0, indent_spaces:)} ) = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
+        "#{' '*indent}__UDB_HART->_set_xreg( #{idx.gen_cpp(symtab, 0, indent_spaces:)}, #{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
       else
         "#{' '*indent}#{lhs.gen_cpp(symtab, 0, indent_spaces:)}[#{idx.gen_cpp(symtab, 0, indent_spaces:)}] = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
       end
@@ -588,7 +588,7 @@ module Idl
   class CsrFieldReadExpressionAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if @idx.is_a?(AstNode)
-        "#{' '*indent}__UDB_CSR_BY_ADDR(#{@idx.gen_cpp(symtab, 0, indent_spaces:)}).#{@field_name}()._hw_read()"
+        "#{' '*indent}__UDB_CSR_BY_ADDR(#{@idx.gen_cpp(symtab, 0, indent_spaces:)}).#{@field_name}().hw_read()"
       else
         "#{' '*indent}__UDB_CSR_BY_NAME(#{@idx}).#{@field_name}()._hw_read()"
       end
@@ -600,7 +600,7 @@ module Idl
       csr = csr_def(symtab)
       if csr.nil?
         # csr isn't known at runtime...
-        "#{' '*indent}__UDB_CSR_BY_ADDR(#{idx.gen_cpp(symtab, 0, indent_spaces:)})._hw_read()"
+        "#{' '*indent}__UDB_CSR_BY_ADDR(#{idx.gen_cpp(symtab, 0, indent_spaces:)}).hw_read()"
       else
         if symtab.cfg_arch.multi_xlen? && csr.format_changes_with_xlen?
           "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.name})._hw_read(__UDB_XLEN)"

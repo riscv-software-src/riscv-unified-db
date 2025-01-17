@@ -38,6 +38,7 @@ From: ubuntu:24.04
   apt-get install -y --no-install-recommends g++
   apt-get install -y --no-install-recommends libgmp-dev
   apt-get install -y --no-install-recommends clang-format
+  apt-get install -y --no-install-recommends clang-tidy
 
   # cleanup
   apt-get clean autoclean

@@ -24,6 +24,11 @@ namespace udb {
     friend class <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %>;
     <%- end -%>
     <%- end -%>
+    <%- ilist = cfg_arch.fully_configured? ? cfg_arch.transitive_implemented_instructions : cfg_arch.instructions -%>
+    <%- ilist.each do |inst| -%>
+    template <unsigned XLEN>
+    friend class <%= name_of(:inst, cfg_arch, inst.name) %>;
+    <%- end -%>
 
     public:
       <%- cfg_arch.globals.each do |global| -%>
@@ -80,10 +85,19 @@ namespace udb {
 
       uint64_t xreg(unsigned num) const override { return m_xregs[num].get(); }
 
-      XRegister<MXLEN>& xregRef(unsigned num) { return m_xregs[num]; }
+      Bits<MXLEN> _xreg(unsigned num) const { return m_xregs[num].get(); }
+
+      // XRegister<MXLEN>& xregRef(unsigned num) { return m_xregs[num]; }
 
       void set_xreg(unsigned num, uint64_t value) override {
         m_xregs[num] = value; // zero index check happens in XRegister class
+      }
+
+      template <typename IdxType, typename ValType>
+      void _set_xreg(const IdxType& num, const ValType& value) {
+        if (num != 0) {
+          m_xregs[static_cast<unsigned>(num)] = value;
+        }
       }
 
       void printState(FILE* out = stdout) const override;
@@ -127,6 +141,8 @@ namespace udb {
     const <%= name_of(:params, cfg_arch) %>& params() const {
       return m_params;
     }
+
+    InstBase* decode(const XReg& pc, const Bits<<%= cfg_arch.largest_encoding %>>& encoding);
 
     private:
       XReg m_pc;

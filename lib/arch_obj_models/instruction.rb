@@ -120,7 +120,7 @@ class Instruction < DatabaseObjectect
       Idl::Var.new("__effective_xlen", Idl::Type.new(:bits, width: 7), effective_xlen)
     )
     @encodings[effective_xlen].decode_variables.each do |d|
-      qualifiers = []
+      qualifiers = [:const]
       qualifiers << :signed if d.sext?
       width = d.size
 

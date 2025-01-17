@@ -3,7 +3,10 @@
 #include <udb/bits.hpp>
 #include <type_traits>
 #include <udb/util.hpp>
+#include <udb/xregister.hpp>
 #include <udb/inst.hpp>
+
+#include "udb/cfgs/<%= cfg_arch.name %>/structs.hxx"
 
 <%- ilist = cfg_arch.fully_configured? ? cfg_arch.transitive_implemented_instructions : cfg_arch.instructions -%>
 
@@ -45,12 +48,14 @@ namespace udb {
     //
     <%- if needs_rv32 && needs_rv64 -%>
     <%- inst.decode_variables(32).each do |dv| -%>
-    Bits<<%= dv.size %>> <%= dv.name %>() const requires (XLEN==32) {
+    template <unsigned _XLEN = XLEN>
+    Bits<<%= dv.size %>> <%= dv.name %>() const requires (_XLEN==32) {
       return <%= extract_decode(dv.bits,inst) %>;
     }
     <%- end -%>
     <%- inst.decode_variables(64).each do |dv| -%>
-    Bits<<%= dv.size %>> <%= dv.name %>() const requires (XLEN==64) {
+    template <unsigned _XLEN = XLEN>
+    Bits<<%= dv.size %>> <%= dv.name %>() const requires (_XLEN==64) {
       return <%= extract_decode(dv.bits,inst) %>;
     }
     <%- end -%>
@@ -69,17 +74,18 @@ namespace udb {
     <%- end -%>
 
 #define __UDB_FUNC_CALL m_parent->
-#define __UDB_CSR_BY_ADDR(addr) m_parent->csr(addr)
+#define __UDB_CSR_BY_ADDR(addr) (*(m_parent->csr(addr)))
 #define __UDB_CSR_BY_NAME(csr_name) m_parent->m_csrs.csr_name
 #define __UDB_ENCODING this->encoding()
 #define __UDB_RUNTIME_PARAM(field) m_parent->params().field
-#define __UDB_STRUCT(type) struct <%= cfg_arch.name %>type_Struct
+#define __UDB_STRUCT(type) <%= cfg_arch.name %> ## type ##_Struct
 #define __UDB_SET_PC(new_pc) m_parent->set_next_pc(new_pc)
 #define __UDB_PC m_parent->pc()
 #define __UDB_MUTABLE_GLOBAL(x) m_parent->x
 #define __UDB_CONSTEXPR_FUNC_CALL <%= name_of(:hart, cfg_arch)%>::
 #define __UDB_CONST_GLOBAL(F) <%= name_of(:hart, cfg_arch)%>:: F
 #define __UDB_XLEN m_parent->xlen()
+#define __UDB_HART m_parent
 
     void execute() override {
 
@@ -119,7 +125,104 @@ namespace udb {
 #undef __UDB_SET_PC
 #undef __UDB_CONST_GLOBAL
 #undef __UDB_XLEN
+#undef __UDB_HART
 
+  std::string disassemble(bool use_abi_reg_names = 0) const override { return "TODO"; }
+  std::vector<Reg> srcRegs() const override {
+    <%- if inst.operation_ast(cfg_arch.symtab).nil? -%>
+      m_parent->assert(false, "There is no operation() defined for this instruction");
+      __builtin_unreachable();
+    <%- else -%>
+    <%- src_regs = nil -%>
+    <%- if !inst.base.nil? -%>
+      <%- pruned_ast = inst.pruned_operation_ast(cfg_arch.symtab, inst.base) -%>
+      <%- symtab = inst.fill_symtab(cfg_arch.symtab, cfg_arch.possible_xlens[0], pruned_ast) -%>
+          <%- begin -%>
+      <%- src_regs = pruned_ast.find_src_registers(symtab) %>
+      return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+    <%- rescue Idl::ComplexRegDetermination -%>
+      throw ComplexRegDetermination;
+    <%- end -%>
+    <%- elsif !cfg_arch.multi_xlen? -%>
+      <%- pruned_ast = inst.pruned_operation_ast(cfg_arch.symtab, cfg_arch.possible_xlens[0]) -%>
+      <%- symtab = inst.fill_symtab(cfg_arch.symtab, cfg_arch.possible_xlens[0], pruned_ast) -%>
+          <%- begin -%>
+      <%- src_regs = pruned_ast.find_src_registers(symtab) %>
+      return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+    <%- rescue Idl::ComplexRegDetermination -%>
+      throw ComplexRegDetermination;
+    <%- end -%>
+    <%- else -%>
+      if (m_parent->xlen() == 32) {
+      <%- pruned_ast = inst.pruned_operation_ast(cfg_arch.symtab, 32) -%>
+      <%- symtab = inst.fill_symtab(cfg_arch.symtab, 32, pruned_ast) -%>
+          <%- begin -%>
+      <%- src_regs = pruned_ast.find_src_registers(symtab) %>
+      return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+    <%- rescue Idl::ComplexRegDetermination -%>
+      throw ComplexRegDetermination;
+    <%- end -%>
+    } else {
+      <%- pruned_ast = inst.pruned_operation_ast(cfg_arch.symtab, 64) -%>
+      <%- symtab = inst.fill_symtab(cfg_arch.symtab, 64, pruned_ast) -%>
+          <%- begin -%>
+      <%- src_regs = pruned_ast.find_src_registers(symtab) %>
+      return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+    <%- rescue Idl::ComplexRegDetermination -%>
+      throw ComplexRegDetermination;
+    <%- end -%>
+    }
+    <%- end -%>
+    <%- end -%>
+  }
+
+  std::vector<Reg> dstRegs() const override {
+    <%- if inst.operation_ast(cfg_arch.symtab).nil? -%>
+      m_parent->assert(false, "There is no operation() defined for this instruction");
+      __builtin_unreachable();
+    <%- else -%>
+    <%- dst_regs = nil -%>
+    <%- if !inst.base.nil? -%>
+      <%- pruned_ast = inst.pruned_operation_ast(cfg_arch.symtab, inst.base) -%>
+      <%- symtab = inst.fill_symtab(cfg_arch.symtab, cfg_arch.possible_xlens[0], pruned_ast) -%>
+          <%- begin -%>
+      <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
+      return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+    <%- rescue Idl::ComplexRegDetermination -%>
+      throw ComplexRegDetermination;
+    <%- end -%>
+    <%- elsif !cfg_arch.multi_xlen? -%>
+      <%- pruned_ast = inst.pruned_operation_ast(cfg_arch.symtab, cfg_arch.possible_xlens[0]) -%>
+      <%- symtab = inst.fill_symtab(cfg_arch.symtab, cfg_arch.possible_xlens[0], pruned_ast) -%>
+          <%- begin -%>
+      <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
+      return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+    <%- rescue Idl::ComplexRegDetermination -%>
+      throw ComplexRegDetermination;
+    <%- end -%>
+    <%- else -%>
+      if (m_parent->xlen() == 32) {
+      <%- pruned_ast = inst.pruned_operation_ast(cfg_arch.symtab, 32) -%>
+      <%- symtab = inst.fill_symtab(cfg_arch.symtab, 32, pruned_ast) -%>
+          <%- begin -%>
+      <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
+      return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+    <%- rescue Idl::ComplexRegDetermination -%>
+      throw ComplexRegDetermination;
+    <%- end -%>
+    } else {
+      <%- pruned_ast = inst.pruned_operation_ast(cfg_arch.symtab, 64) -%>
+      <%- symtab = inst.fill_symtab(cfg_arch.symtab, 64, pruned_ast) -%>
+          <%- begin -%>
+      <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
+      return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+    <%- rescue Idl::ComplexRegDetermination -%>
+      throw ComplexRegDetermination;
+    <%- end -%>
+    }
+    <%- end -%>
+    <%- end -%>
+  }
 
   private:
     <%= name_of(:hart, cfg_arch) %> * const m_parent;
