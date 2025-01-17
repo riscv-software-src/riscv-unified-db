@@ -87,19 +87,12 @@ namespace :test do
 
   # "Run the cross-validation against LLVM"
   task :llvm do
-    venv_python = "#{$root}/.home/.venv/bin/python3"
-    if File.exist?(venv_python)
       begin
-        sh "#{venv_python} -m pytest ext/auto-inst/test_parsing.py -v"
+        sh "#{$root}/.home/.venv/bin/python3 -m pytest ext/auto-inst/test_parsing.py -v"
       rescue => e
-        raise unless e.message.include?("status (5)") #dont fail on skipped tests
-      end
-    else
-      puts "\nNo Python virtual environment found."
-      puts "Tests will be skipped.\n"
+        raise unless e.message.include?("status (5)") # don't fail on skipped tests
     end
   end
-
   # "Run the IDL compiler test suite"
   task :idl_compiler do
     t = Minitest::TestTask.new(:lib_test)

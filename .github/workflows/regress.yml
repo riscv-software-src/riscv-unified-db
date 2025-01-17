@@ -161,3 +161,33 @@ jobs:
         run: ./bin/build_container
       - name: Generate extension PDF
         run: ./do gen:profile[MockProfileRelease]
+  build-llvm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Cache LLVM build
+        id: cache-llvm
+        uses: actions/cache@v4
+        with:
+          path: build
+          key: ${{ runner.os }}-llvm-${{ hashFiles('llvm/**') }}
+      - name: Configure and build llvm-tblgen
+        run: |
+          # Configure LLVM in 'build' directory (Release mode)
+          cmake -S llvm -B build -DCMAKE_BUILD_TYPE=Release
+          # Build the llvm-tblgen target
+          cmake --build build --target llvm-tblgen
+      - name: Generate RISC-V JSON
+        run: |
+          # llvm-tblgen is now built into ./build/bin/llvm-tblgen
+          # Because we run it from the repository root, the output riscv.json
+          # will be placed at the repository root by default.
+          ./build/bin/llvm-tblgen \
+            -I llvm/include \
+            -I llvm/lib/Target/RISCV \
+            llvm/lib/Target/RISCV/RISCV.td \
+            --dump-json \
+            -o riscv.json
+      - name: Show riscv.json output
+        run: ls -l riscv.json
