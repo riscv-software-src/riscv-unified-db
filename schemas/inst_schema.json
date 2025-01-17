@@ -149,6 +149,19 @@
       },
       "additionalProperties": false
     },
+    "ctp-steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["description"],
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "inst_data": {
       "type": "object",
       "required": [
@@ -256,6 +269,61 @@
         "sail()": {
           "type": "string",
           "description": "Functional description of the instruction using Sail"
+        },
+        "certification-coverage-points": {
+          "description": "Architecturally visible behaviors requiring validation by certification tests",
+          "type": "array",
+          "required": ["name", "xref", "description"],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "xref": {
+              "type": "string",
+              "description": "Cross reference to ISA manual or IDL"
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        },
+        "certification-test-plan": {
+          "description": "How certification coverage points will be validated",
+          "type": "array",
+          "required": ["name", "description", "coverage-points"],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "coverage-points": {
+              "type": "array",
+              "description": "List of certification coverage points to be validated",
+              "items": {
+                "type": "string"
+              }
+            },
+            "setup": {
+              "$ref": "#/$defs/ctp-steps",
+              "description": "List of steps to setup test"
+            },
+            "execution": {
+              "$ref": "#/$defs/ctp-steps",
+              "description": "List of steps to execute test after setup"
+            },
+            "validation": {
+              "$ref": "#/$defs/ctp-steps",
+              "description": "List of steps to determine test pass/fail status"
+            },
+            "teardown": {
+              "$ref": "#/$defs/ctp-steps",
+              "description": "List of steps to get ready for the next test"
+            }
+          }
         },
         "assembly": {
           "type": "string",

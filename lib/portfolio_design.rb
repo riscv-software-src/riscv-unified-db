@@ -21,16 +21,29 @@ class PortfolioDesign < Design
   # @return [String] Kind of portfolio for all portfolios in this design
   attr_reader :portfolio_kind
 
-  # @param base_isa_name [#to_s] The name of the base ISA configuration (rv32 or rv64)
+  # Class methods
+  def self.profile_release_type = "Profile Release"
+  def self.proc_crd_type = "Certification Requirements Document"
+  def self.proc_ctp_type = "Certification Test Plan"
+  def self.portfolio_design_types = [profile_release_type, proc_crd_type, proc_ctp_type]
+
+  # @return [String] Type of design suitable for human readers.
+  attr_reader :portfolio_design_type
+
+  # @param name [#to_s] The name of the portfolio design (i.e., backend filename without a suffix)
   # @param arch [Architecture] The database of RISC-V standards
+  # @param portfolio_design_type [String] Type of portfolio design associated with this design
   # @param mxlen [Integer] Comes from portfolio YAML "base" (either 32 or 64)
   # @param portfolios [Array<Portfolio>] Portfolios being converted to adoc
   # @param portfolio_class [PortfolioClass] PortfolioClass for all the Portfolios
   # @param overlay_path [String] Optional path to a directory that overlays the architecture
-  def initialize(base_isa_name, arch, portfolios, portfolio_class, overlay_path: nil)
+  def initialize(name, arch, portfolio_design_type, portfolios, portfolio_class, overlay_path: nil)
     raise ArgumentError, "arch must be an Architecture but is a #{arch.class}" unless arch.is_a?(Architecture)
+    raise ArgumentError, "portfolio_design_type of #{portfolio_design_type} unknown" unless PortfolioDesign.portfolio_design_types.include?(portfolio_design_type)
     raise ArgumentError, "portfolios must be an Array<Portfolio> but is a #{portfolios.class}" unless portfolios.is_a?(Array)
     raise ArgumentError, "portfolio_class must be a PortfolioClass but is a #{portfolio_class.class}" unless portfolio_class.is_a?(PortfolioClass)
+
+    @portfolio_design_type = portfolio_design_type
 
     # The PortfolioGroup has an Array<Portfolio> inside it and forwards common Array methods to its internal Array.
     # Can call @portfolio_grp.each or @portfolio_grp.map and they are handled by the normal Array methods.
@@ -42,7 +55,7 @@ class PortfolioDesign < Design
     max_base = portfolios.map(&:base).max
     raise ArgumentError, "Calculated maximum base of #{max_base} across portfolios is not 32 or 64" unless max_base == 32 || max_base == 64
 
-    super(base_isa_name, arch, max_base, overlay_path: overlay_path)
+    super(name, arch, max_base, overlay_path: overlay_path)
   end
 
   # Returns a string representation of the object, suitable for debugging.
@@ -261,6 +274,7 @@ class PortfolioDesign < Design
     erb_binding.local_variable_set(:arch, arch)
     erb_binding.local_variable_set(:design, self)
     erb_binding.local_variable_set(:portfolio_design, self)
+    erb_binding.local_variable_set(:portfolio_design_type, @portfolio_design_type)
     erb_binding.local_variable_set(:portfolio_class, @portfolio_class)
     erb_binding.local_variable_set(:portfolio_kind, @portfolio_kind)
     erb_binding.local_variable_set(:portfolios, @portfolio_grp.portfolios)
@@ -272,11 +286,15 @@ class PortfolioDesign < Design
   # @param template_path [String] Name of template file located in backends/portfolio/templates
   # @return [String] Result of ERB evaluation of the template file
   def include_erb(template_name)
+    template_pname = "portfolio/templates/#{template_name}"
+
+    puts "UPDATE: #{portfolio_design_type} processing ERB partial template '#{template_pname}'"
     partial("portfolio/templates/#{template_name}",
       {
         arch: arch,
         design: self,
         portfolio_design: self,
+        portfolio_design_type: @portfolio_design_type,
         portfolio_class: @portfolio_class,
         portfolio_kind: @portfolio_kind,
         portfolios: @portfolio_grp.portfolios

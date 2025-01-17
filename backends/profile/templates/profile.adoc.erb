@@ -1,58 +1,9 @@
-[[header]]
-:description: <%= profile_release.marketing_name %> Profile
+<%= portfolio_design.include_erb("beginning.adoc.erb") %>
+
 :revdate: <%= profile_release.ratification_date.nil? ? Date.today : profile_release.ratification_date %>
-
-// TODO - Figure out what we really want here - Change percent hash to percent equals.
-// :revnumber: <%# profile_release.map(&:version).sort.last %>
-
-:revmark: "TODO: revmark"
-:company: <%= profile_class.company.name %>
-:url-riscv: https://riscv.org
-:doctype: book
-:preface-title: Licensing and Acknowledgements
-:colophon:
-:appendix-caption: Appendix
-:title-logo-image: image:risc-v_logo.png["RISC-V International Logo",pdfwidth=3.25in,align=center]
 <%# unless profile_release.state == "ratified" -%>
 :page-background-image: image:draft.png[opacity=20%]
 <%# end -%>
-:back-cover-image: image:riscv-horizontal-color.svg[opacity=25%]
-// Settings
-:experimental:
-:reproducible:
-:wavedrom: <%= $root %>/node_modules/.bin/wavedrom-cli
-// TODO: needs to be changed
-:imagesoutdir: images
-:icons: font
-:lang: en
-:example-caption: Example
-:listing-caption: Listing
-:table-caption: Table
-:figure-caption: Figure
-:xrefstyle: short
-:chapter-refsig: Chapter
-:section-refsig: Section
-:appendix-refsig: Appendix
-:sectnums:
-:toc: left
-:toclevels: 5
-:source-highlighter: pygments
-ifdef::backend-pdf[]
-:source-highlighter: rouge
-endif::[]
-:data-uri:
-:hide-uri-scheme:
-:stem:
-:footnote:
-:stem: latexmath
-:footnote:
-:le: &#8804;
-:ge: &#8805;
-:ne: &#8800;
-:approx: &#8776;
-:inf: &#8734;
-:csrname: envcfg
-:imagesdir: images
 
 = <%= profile_release.name %> Profile Release
 

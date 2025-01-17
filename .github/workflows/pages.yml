@@ -82,11 +82,11 @@ jobs:
       - name: Create MC100-32-CRD PDF Spec
         run: ./do gen:proc_crd_pdf[MC100-32]
       - name: Copy MC100-32-CRD PDF
-        run: cp gen/crd/pdf/MC100-32-CRD.pdf _site/pdfs
+        run: cp gen/proc_crd/pdf/MC100-32-CRD.pdf _site/pdfs
       - name: Create MC100-64-CRD PDF Spec
         run: ./do gen:proc_crd_pdf[MC100-64]
       - name: Copy MC100-64-CRD PDF
-        run: cp gen/crd/pdf/MC100-64-CRD.pdf _site/pdfs
+        run: cp gen/proc_crd/pdf/MC100-64-CRD.pdf _site/pdfs
       - name: Copy manual html
         run: cp -R gen/manual/isa/top/all/html _site/manual
       - name: Setup Pages

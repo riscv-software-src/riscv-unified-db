@@ -12,6 +12,15 @@
     },
     {
       "type": "rdbg",
+      "name": "MC100-32-CTP",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:proc_ctp_pdf[MC100-32]",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
       "name": "MC200-32-CRD",
       "request": "launch",
       "command": "bundle exec rake",
@@ -25,6 +34,15 @@
       "request": "launch",
       "command": "bundle exec rake",
       "script": "gen:proc_crd_pdf[MockProcessor]",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "MockCTP",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:proc_ctp_pdf[MockProcessor]",
       "args": [],
       "askParameters": false
     },

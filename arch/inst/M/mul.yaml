@@ -34,7 +34,13 @@ access:
   u: always
   vs: always
   vu: always
-data_independent_timing: true
+data_independent_timing:
+  true
+  # Want to add something like this to IDL code.
+  # [#idl:inst:mul:exception-illegal_instruction]#
+  # if (implemented?(ExtensionName::M) && (CSR[misa].M == 1'b0)) {
+  #   raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  # }#
 operation(): |
   if (implemented?(ExtensionName::M) && (CSR[misa].M == 1'b0)) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
@@ -63,3 +69,33 @@ sail(): |
       RETIRE_FAIL
     }
   }
+
+certification-coverage-points:
+  - name: Encoding and basic operation
+    description: |
+      Encoding and basic operation for `mul` instruction
+    xrefs:
+      - norm:inst:mul:encoding
+      - norm:inst:mul:operation
+  - name: Illegal instruction exception
+    description: |
+      An illegal instruction exception is raised when the instruction is executed
+      and `misa.M` is 0.
+    xrefs:
+      - idl:inst:mul:exception-illegal_instruction
+
+certification-test-plan:
+  - name: Encoding
+    description: Verify the encoding of the mul instruction
+    coverage-points:
+      - Encoding and basic operation
+    setup:
+      - description: Load a variety of known values into rs1 & rs2 with a variety of rs1/rs2/rd values.
+    execution:
+      - description: Execute the mul instruction
+    validation:
+      - description: Check each result in rd
+    teardown:
+      - description: Clear the registers used for rd
+      - comment: |
+          Don't really need to clear the registers so this is a contrived example

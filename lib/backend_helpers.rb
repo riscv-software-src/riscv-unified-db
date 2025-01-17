@@ -40,8 +40,8 @@ module TemplateHelpers
   # Documentation:
   #   - How to make cross-references: https://docs.asciidoctor.org/asciidoc/latest/macros/xref/
   #   - How to create anchors: https://docs.asciidoctor.org/asciidoc/latest/attributes/id/
-  #   - See https://github.com/riscv/riscv-isa-manual/issues/1397 for a detailed
-  #     discussion about how to put anchors and links into AsciiDoc.
+  #   - See https://github.com/riscv/riscv-isa-manual/issues/1397#issuecomment-2515109936 for
+  #     discussion about using [#anchor] instead of [[anchor]] due to Antora's support.
 
   # @return [String] A hyperlink to an extension
   # @param ext_name [String] Name of the extension
@@ -85,7 +85,7 @@ module TemplateHelpers
   # @return [String] An anchor for an extension
   # @param ext_name [String] Name of the extension
   def anchor_for_ext(ext_name)
-    "[[ext-#{ext_name.sanitize}-def]]"
+    "[#ext-#{ext_name.sanitize}-def]"
   end
 
   # @return [String] An anchor for a parameter defined by a particular extension.
@@ -93,32 +93,32 @@ module TemplateHelpers
   # @param param_name [String] Name of the parameter
   def anchor_for_ext_param(ext_name, param_name)
     check_no_periods(param_name)
-    "[[ext_param-#{ext_name.sanitize}-#{param_name}-def]]"
+    "[#ext_param-#{ext_name.sanitize}-#{param_name}-def]"
   end
 
   # Insert anchor to an instruction.
   # @param name [String] Name of the instruction
   def anchor_for_inst(name)
-    "[[inst-#{name.sanitize}-def]]"
+    "[#inst-#{name.sanitize}-def]"
   end
 
   # Insert anchor to a CSR.
   # @param name [String] Name of the CSR
   def anchor_for_csr(name)
-    "[[csr-#{name.sanitize}-def]]"
+    "[#csr-#{name.sanitize}-def]"
   end
 
   # Insert anchor to a CSR field.
   # @param csr_name [String] Name of the CSR
   # @param field_name [String] Name of the CSR field
   def anchor_for_csr_field(csr_name, field_name)
-    "[[csr_field-#{csr_name.sanitize}-#{field_name.sanitize}-def]]"
+    "[#csr_field-#{csr_name.sanitize}-#{field_name.sanitize}-def]"
   end
 
   # Insert anchor to an IDL function.
   # @param name [String] Name of the function
   def anchor_for_func(name)
-    "[[func-#{name.sanitize}-def]]"
+    "[#func-#{name.sanitize}-def]"
   end
 
   private

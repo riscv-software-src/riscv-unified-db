@@ -1,19 +1,4 @@
-// Number heading sections (e.g., 1.0, 1.1, etc.)
-:sectnums:
-
-// Add a table of contents for HTML (and VSCode adoc preview)
-:toc: left
-
-// Include headings up to 3 levels deep (don't know why 5 gives you this).
-:toclevels: 5
-
-//
-// Stuff to generate nice wavedrom drawings of instruction and CSR fields
-//
-:wavedrom: <%= $root %>/node_modules/.bin/wavedrom-cli
-
-// TODO: needs to be changed
-:imagesoutdir: images
+<%= portfolio_design.include_erb("beginning.adoc.erb") %>
 
 = <%= proc_cert_model.name %> Processor Certification Requirements Document
 

@@ -320,7 +320,7 @@ namespace :test do
     ENV["VERSIONS"] = "all"
     Rake::Task["gen:html_manual"].invoke
 
-    puts "UPDATE: Running gen:ext_pdf"
+    puts "UPDATE: Running gen:ext_pdf EXT=B VERSION=latest"
     ENV["EXT"] = "B"
     ENV["VERSION"] = "latest"
     Rake::Task["gen:ext_pdf"].invoke
@@ -329,10 +329,10 @@ namespace :test do
     Rake::Task["gen:html"].invoke("generic_rv64")
 
     puts "UPDATE: Generating MockProcessor-CRD.pdf"
-    Rake::Task["#{$root}/gen/crd/pdf/MockProcessor-CRD.pdf"].invoke
+    Rake::Task["#{$root}/gen/proc_crd/pdf/MockProcessor-CRD.pdf"].invoke
 
-    #puts "UPDATE: Generating MockProcessor-CTP.pdf"
-    #Rake::Task["#{$root}/gen/ctp/pdf/MockProcessor-CTP.pdf"].invoke
+    puts "UPDATE: Generating MockProcessor-CTP.pdf"
+    Rake::Task["#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"].invoke
 
     puts "UPDATE: Generating MockProfileRelease.pdf"
     Rake::Task["#{$root}/gen/profile/pdf/MockProfileRelease.pdf"].invoke
@@ -359,25 +359,25 @@ desc <<~DESC
 DESC
 task :portfolios do
   portfolio_start_msg("MockProcessor-CRD")
-  Rake::Task["#{$root}/gen/crd/pdf/MockProcessor-CRD.pdf"].invoke
-  #portfolio_start_msg("MockProcessor-CTP")
-  #Rake::Task["#{$root}/gen/ctp/pdf/MockProcessor-CTP.pdf"].invoke
+  Rake::Task["#{$root}/gen/proc_crd/pdf/MockProcessor-CRD.pdf"].invoke
+  portfolio_start_msg("MockProcessor-CTP")
+  Rake::Task["#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"].invoke
   portfolio_start_msg("MockProfileRelease")
   Rake::Task["#{$root}/gen/profile/pdf/MockProfileRelease.pdf"].invoke
-  #portfolio_start_msg("MC100-32-CTP")
-  #Rake::Task["#{$root}/gen/ctp/pdf/MC100-32-CTP.pdf"].invoke
+  portfolio_start_msg("MC100-32-CTP")
+  Rake::Task["#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.pdf"].invoke
   portfolio_start_msg("MC100-32-CRD")
-  Rake::Task["#{$root}/gen/crd/pdf/MC100-32-CRD.pdf"].invoke
+  Rake::Task["#{$root}/gen/proc_crd/pdf/MC100-32-CRD.pdf"].invoke
   portfolio_start_msg("MC100-64-CRD")
-  Rake::Task["#{$root}/gen/crd/pdf/MC100-64-CRD.pdf"].invoke
+  Rake::Task["#{$root}/gen/proc_crd/pdf/MC100-64-CRD.pdf"].invoke
   portfolio_start_msg("MC200-32-CRD")
-  Rake::Task["#{$root}/gen/crd/pdf/MC200-32-CRD.pdf"].invoke
+  Rake::Task["#{$root}/gen/proc_crd/pdf/MC200-32-CRD.pdf"].invoke
   portfolio_start_msg("MC200-64-CRD")
-  Rake::Task["#{$root}/gen/crd/pdf/MC200-64-CRD.pdf"].invoke
+  Rake::Task["#{$root}/gen/proc_crd/pdf/MC200-64-CRD.pdf"].invoke
   portfolio_start_msg("MC300-32-CRD")
-  Rake::Task["#{$root}/gen/crd/pdf/MC300-32-CRD.pdf"].invoke
+  Rake::Task["#{$root}/gen/proc_crd/pdf/MC300-32-CRD.pdf"].invoke
   portfolio_start_msg("MC300-64-CRD")
-  Rake::Task["#{$root}/gen/crd/pdf/MC300-64-CRD.pdf"].invoke
+  Rake::Task["#{$root}/gen/proc_crd/pdf/MC300-64-CRD.pdf"].invoke
   portfolio_start_msg("RVI20ProfileRelease")
   Rake::Task["#{$root}/gen/profile/pdf/RVI20ProfileRelease.pdf"].invoke
   portfolio_start_msg("RVA20ProfileRelease")
@@ -399,15 +399,15 @@ def portfolio_start_msg(name)
 end
 
 # Shortcut targets for building CRDs, CTPs, and Profile Releases.
-task "MockCRD": "#{$root}/gen/crd/pdf/MockProcessor-CRD.pdf"
-#task "MockCTP": "#{$root}/gen/ctp/pdf/MockProcessor-CTP.pdf"
-#task "MC100-32-CTP": "#{$root}/gen/ctp/pdf/MC100-32-CTP.pdf"
-task "MC100-32-CRD": "#{$root}/gen/crd/pdf/MC100-32-CRD.pdf"
-task "MC100-64-CRD": "#{$root}/gen/crd/pdf/MC100-64-CRD.pdf"
-task "MC200-32-CRD": "#{$root}/gen/crd/pdf/MC200-32-CRD.pdf"
-task "MC200-64-CRD": "#{$root}/gen/crd/pdf/MC200-64-CRD.pdf"
-task "MC300-32-CRD": "#{$root}/gen/crd/pdf/MC300-32-CRD.pdf"
-task "MC300-64-CRD": "#{$root}/gen/crd/pdf/MC300-64-CRD.pdf"
+task "MockCRD": "#{$root}/gen/proc_crd/pdf/MockProcessor-CRD.pdf"
+task "MockCTP": "#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"
+task "MC100-32-CTP": "#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.pdf"
+task "MC100-32-CRD": "#{$root}/gen/proc_crd/pdf/MC100-32-CRD.pdf"
+task "MC100-64-CRD": "#{$root}/gen/proc_crd/pdf/MC100-64-CRD.pdf"
+task "MC200-32-CRD": "#{$root}/gen/proc_crd/pdf/MC200-32-CRD.pdf"
+task "MC200-64-CRD": "#{$root}/gen/proc_crd/pdf/MC200-64-CRD.pdf"
+task "MC300-32-CRD": "#{$root}/gen/proc_crd/pdf/MC300-32-CRD.pdf"
+task "MC300-64-CRD": "#{$root}/gen/proc_crd/pdf/MC300-64-CRD.pdf"
 task "MockProfile": "#{$root}/gen/profile/pdf/MockProfileRelease.pdf"
 task "RVI20": "#{$root}/gen/profile/pdf/RVI20ProfileRelease.pdf"
 task "RVA20": "#{$root}/gen/profile/pdf/RVA20ProfileRelease.pdf"
