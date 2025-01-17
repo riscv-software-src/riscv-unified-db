@@ -56,4 +56,5 @@ repos:
     rev: "v19.1.7"
     hooks:
       - id: clang-format
+        types_or: [c++, c]
         files: \.(hpp|cpp)$
