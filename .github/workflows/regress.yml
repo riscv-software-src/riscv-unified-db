@@ -161,42 +161,40 @@ jobs:
         run: ./bin/build_container
       - name: Generate extension PDF
         run: ./do gen:profile[MockProfileRelease]
-  build-llvm:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Check out repository
-          uses: actions/checkout@v4
+    build-llvm:
+        runs-on: ubuntu-latest
+        steps:
+          - name: Check out repository
+            uses: actions/checkout@v4
 
-        - name: Cache LLVM build
-          id: cache-llvm
-          uses: actions/cache@v4
-          with:
-            path: |
-              build
-              llvm
-            key: ${{ runner.os }}-llvm-${{ hashFiles('llvm/**') }}
+          - name: Cache LLVM build
+            id: cache-llvm
+            uses: actions/cache@v4
+            with:
+              path: |
+                build
+                llvm-project
+              key: ${{ runner.os }}-llvm-${{ hashFiles('llvm/**') }}
 
-        - name: Clone LLVM repository
-          if: steps.cache-llvm.outputs.cache-hit != 'true'
-          run: |
-            git clone --depth 1 https://github.com/llvm/llvm-project.git
-            mv llvm-project/llvm .
-            rm -rf llvm-project
+          - name: Clone LLVM repository
+            if: steps.cache-llvm.outputs.cache-hit != 'true'
+            run: |
+              git clone --depth 1 https://github.com/llvm/llvm-project.git
 
-        - name: Configure and build llvm-tblgen
-          if: steps.cache-llvm.outputs.cache-hit != 'true'
-          run: |
-            cmake -S llvm -B build -DCMAKE_BUILD_TYPE=Release
-            cmake --build build --target llvm-tblgen
+          - name: Configure and build llvm-tblgen
+            if: steps.cache-llvm.outputs.cache-hit != 'true'
+            run: |
+              cmake -S llvm-project/llvm -B build -DCMAKE_BUILD_TYPE=Release
+              cmake --build build --target llvm-tblgen
 
-        - name: Generate RISC-V JSON
-          run: |
-            ./build/bin/llvm-tblgen \
-              -I llvm/include \
-              -I llvm/lib/Target/RISCV \
-              llvm/lib/Target/RISCV/RISCV.td \
-              --dump-json \
-              -o riscv.json
+          - name: Generate RISC-V JSON
+            run: |
+              ./build/bin/llvm-tblgen \
+                -I llvm-project/llvm/include \
+                -I llvm-project/llvm/lib/Target/RISCV \
+                llvm-project/llvm/lib/Target/RISCV/RISCV.td \
+                --dump-json \
+                -o riscv.json
 
-        - name: Show riscv.json output
-          run: ls -l riscv.json
+          - name: Show riscv.json output
+            run: ls -l riscv.json
