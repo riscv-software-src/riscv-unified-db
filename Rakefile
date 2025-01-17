@@ -54,6 +54,7 @@ rule %r{#{$root}/.stamps/resolve-.+\.stamp} => proc { |tname|
   arch_files = Dir.glob("#{$root}/arch/**/*.yaml")
   overlay_files = Dir.glob("#{$root}/cfgs/#{cfg_name}/arch_overlay/**/*.yaml")
   [
+    "gen:arch",
     "#{$root}/.stamps",
     "#{$root}/lib/yaml_resolver.py"
   ] + arch_files + overlay_files

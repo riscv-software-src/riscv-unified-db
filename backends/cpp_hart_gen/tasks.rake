@@ -227,31 +227,34 @@ namespace :gen do
 
     Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/CMakeLists.txt"].invoke
 
-    Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/hart_factory.hxx"].invoke
-    Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/db_data.hxx"].invoke
-    Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/src/db_data.cxx"].invoke
-    Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/enum.hxx"].invoke
-    Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/bitfield.hxx"].invoke
+    generated_files = []
+    generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/hart_factory.hxx"
+    generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/db_data.hxx"
+    generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/src/db_data.cxx"
+    generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/enum.hxx"
+    generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/bitfield.hxx"
 
     configs.each do |config|
-      Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/inst.hxx"].invoke
-      Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/decode.cxx"].invoke
-      Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/params.hxx"].invoke
-      Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/params.cxx"].invoke
-      Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/hart.hxx"].invoke
-      Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/hart.cxx"].invoke
-      Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/csrs.hxx"].invoke
-      Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/csrs.cxx"].invoke
-      Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/csr_container.hxx"].invoke
-      Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/structs.hxx"].invoke
-      Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/func_prototypes.hxx"].invoke
-      Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/builtin_funcs.hxx"].invoke
+      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/inst.hxx"
+      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/decode.cxx"
+      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/params.hxx"
+      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/params.cxx"
+      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/hart.hxx"
+      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/hart.cxx"
+      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/csrs.hxx"
+      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/csrs.cxx"
+      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/csr_container.hxx"
+      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/structs.hxx"
+      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/func_prototypes.hxx"
+      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/builtin_funcs.hxx"
 
       Dir.glob("#{CPP_HART_GEN_SRC}/cpp/include/udb/*.hpp") do |f|
-        Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/#{File.basename(f)}"].invoke
+        generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/#{File.basename(f)}"
       end
-
     end
+
+    mt = Rake::MultiTask.define_task "__generate_cpp_#{build_name}" => generated_files
+    mt.invoke
   end
 end
 

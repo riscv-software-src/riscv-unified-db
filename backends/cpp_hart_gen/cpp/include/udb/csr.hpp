@@ -32,7 +32,7 @@ namespace udb {
     virtual uint64_t hw_read(const uint64_t& csr_value,
                              const unsigned& xlen) const = 0;
 
-    virtual uint64_t sw_read(const unsigned& xlen) const = 0;
+    // virtual uint64_t sw_read(const unsigned& xlen) const = 0;
 
     // write the field, without performing any checks
     // given the effective xlen
@@ -41,8 +41,8 @@ namespace udb {
 
     // write the field, applying any restrictions first
     // given teh effective xlen
-    virtual void sw_write(const uint64_t& field_write_value,
-                          const unsigned& xlen) = 0;
+    // virtual void sw_write(const uint64_t& field_write_value,
+    //                       const unsigned& xlen) = 0;
 
     virtual CsrFieldType type(const unsigned& xlen) const = 0;
 
