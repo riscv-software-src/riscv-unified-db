@@ -309,7 +309,5 @@
         }
       ]
     }
-  },
-
-  "$ref": "#/$defs/csr_register"
+  }
 }

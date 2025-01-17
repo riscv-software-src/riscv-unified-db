@@ -294,7 +294,5 @@
       },
       "additionalProperties": false
     }
-  },
-
-  "$ref": "#/$defs/ext_data"
+  }
 }
