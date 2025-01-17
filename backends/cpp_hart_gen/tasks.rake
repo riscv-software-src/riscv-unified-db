@@ -75,7 +75,7 @@ end
 # a config-specifc generated header
 rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.hxx\.unformatted} => proc { |tname|
   parts = tname.split("/")
-  filename = parts[-1]
+  filename = parts[-1].sub(/\.unformatted$/, "")
   [
     "#{CPP_HART_GEN_SRC}/templates/#{filename}.erb",
     "#{CPP_HART_GEN_SRC}/lib/gen_cpp.rb",
@@ -85,7 +85,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.hxx\.unformatted} =
   ]
 } do |t|
   parts = t.name.split("/")
-  filename = parts[-1]
+  filename = parts[-1].sub(/\.unformatted$/, "")
   config_name = parts[-2]
 
   cfg_arch = cfg_arch_for(config_name)
@@ -99,9 +99,9 @@ rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.hxx\.unformatted} =
 end
 
 rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.hxx} => proc { |tname|
-  [tname.rsub(".unformatted", "")]
+  ["#{tname}.unformatted"]
 } do |t|
-  sh "clang-format #{t.name.rsub('.unformatted', '')} > #{t.name}"
+  sh "clang-format #{t.name}.unformatted > #{t.name}"
 end
 
 rule %r{#{CPP_HART_GEN_DST}/.*/src/cfgs/[^/]+/[^/]+\.cxx} => proc { |tname|
@@ -226,6 +226,7 @@ namespace :gen do
     end
 
     Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/CMakeLists.txt"].invoke
+
     Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/hart_factory.hxx"].invoke
     Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/db_data.hxx"].invoke
     Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/src/db_data.cxx"].invoke
@@ -250,7 +251,6 @@ namespace :gen do
         Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/#{File.basename(f)}"].invoke
       end
 
-      #Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/build/Makefile"].invoke
     end
   end
 end

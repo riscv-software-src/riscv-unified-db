@@ -90,7 +90,7 @@ namespace udb {
       // XRegister<MXLEN>& xregRef(unsigned num) { return m_xregs[num]; }
 
       void set_xreg(unsigned num, uint64_t value) override {
-        m_xregs[num] = value; // zero index check happens in XRegister class
+        _set_xreg(num, value);
       }
 
       template <typename IdxType, typename ValType>
