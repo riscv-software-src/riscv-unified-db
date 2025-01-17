@@ -3,9 +3,9 @@
 #include <fmt/format.h>
 #include <utility>
 
+#include "udb/bitfield.hpp"
 #include "udb/bits.hpp"
 #include "udb/defines.hpp"
-#include "udb/types.hpp"
 
 namespace udb {
 // XRegister class represents a general purpose X register in a hart
