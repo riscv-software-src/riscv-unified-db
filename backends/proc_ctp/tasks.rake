@@ -61,9 +61,13 @@ end
 rule %r{#{PROC_CTP_GEN_DIR}/adoc/ext/riscv-isa-manual/README.md} => [
   "#{$root}/ext/csc-riscv-isa-manual/README.md"
 ] do |t|
+  # Pull in the latest version of the csc-riscv-isa-manual.
+  sh "cd ext/csc-riscv-isa-manual; git fetch; git merge origin/main 2>&1"
+
+  # Use git archive to extract the latest version of the csc-riscv-isa-manual.
   FileUtils.mkdir_p File.dirname(t.name)
   Dir.chdir($root / "ext" / "csc-riscv-isa-manual") do
-    sh "git archive --format=tar main | tar xvf - -C #{File.dirname(t.name)}"
+    sh "git archive --format=tar HEAD | tar xvf - -C #{File.dirname(t.name)}"
   end
 end
 
@@ -74,9 +78,13 @@ rule %r{#{PROC_CTP_GEN_DIR}/adoc/ext/riscv-isa-manual/docs-resources/README.md} 
   "#{$root}/ext/docs-resources/README.md",
   "#{$root}/ext/csc-riscv-isa-manual/README.md",
 ] do |t|
+  # Pull in the latest version of the docs-resources.
+  sh "cd ext/docs-resources; git fetch; git merge origin/main 2>&1"
+
+  # Use git archive to extract the latest version of the docs-resources.
   FileUtils.mkdir_p File.dirname(t.name)
   Dir.chdir($root / "ext" / "docs-resources") do
-    sh "git archive --format=tar main | tar xvf - -C #{File.dirname(t.name)}"
+    sh "git archive --format=tar HEAD | tar xvf - -C #{File.dirname(t.name)}"
   end
 end
 
