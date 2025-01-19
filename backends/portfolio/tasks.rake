@@ -45,7 +45,7 @@ def pf_adoc2pdf(adoc_file, target_pname)
   FileUtils.mkdir_p File.dirname(target_pname)
 
   puts "UPDATE: Generating PDF in #{target_pname}"
-  sh [
+  cmd = [
     "asciidoctor-pdf",
     "-w",
     "-v",
@@ -59,6 +59,10 @@ def pf_adoc2pdf(adoc_file, target_pname)
     "-o #{target_pname}",
     adoc_file
   ].join(" ")
+
+  puts "UPDATE: #{cmd}"
+  sh cmd
+
   puts "UPDATE: Generated PDF in #{target_pname}"
 end
 

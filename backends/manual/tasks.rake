@@ -256,7 +256,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/funcs/pages/funcs.adoc} => [
   File.write t.name, AntoraUtils.resolve_links(design.convert_monospace_to_links(erb.result(binding)))
 end
 
-# rule to create IDL function appendix page
+# rule to create parameter list appendix page
 rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/params/pages/param_list.adoc} => [
   __FILE__,
   ($root / "backends" / "manual" / "templates" / "param_list.adoc.erb").to_s
@@ -432,7 +432,7 @@ namespace :gen do
       version_obj.instructions.each do |inst|
         Rake::Task[antora_path / "modules" / "insts" / "pages" / "#{inst.name}.adoc"].invoke
       end
-      version_obj.extensions.each do |ext|
+      version_obj.ext_vers.each do |ext|
         Rake::Task[antora_path / "modules" / "exts" / "pages" / "#{ext.name}.adoc"].invoke
       end
       Rake::Task[antora_path / "modules" / "params" / "pages" / "param_list.adoc"].invoke

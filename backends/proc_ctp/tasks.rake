@@ -5,6 +5,7 @@
 require "pathname"
 
 PROC_CTP_DOC_DIR = Pathname.new "#{$root}/backends/proc_ctp"
+PROC_CTP_GEN_DIR = $root / "gen" / "proc_ctp"
 
 Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
   model_name = File.basename(f, ".yaml")
@@ -24,32 +25,11 @@ Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
     "#{$root}/backends/portfolio/templates/inst_appendix.adoc.erb",
     "#{$root}/backends/portfolio/templates/csr_appendix.adoc.erb",
     "#{$root}/backends/portfolio/templates/beginning.adoc.erb",
-    "#{PROC_CTP_DOC_DIR}/templates/proc_ctp.adoc.erb"
+    "#{PROC_CTP_DOC_DIR}/templates/proc_ctp.adoc.erb",
+    "#{PROC_CTP_GEN_DIR}/adoc/ext/riscv-isa-manual/README.md",
+    "#{PROC_CTP_GEN_DIR}/adoc/ext/riscv-isa-manual/docs-resources/README.md"
   ] do |t|
-    arch = pf_create_arch
-
-    # Create ProcCertModel for specific processor certificate model as specified in its arch YAML file.
-    # The Architecture object also creates all other portfolio-related class instances from their arch YAML files.
-    # None of these objects are provided with a Design object when created.
-    puts "UPDATE: Creating ProcCertModel object for #{model_name}"
-    proc_cert_model = arch.proc_cert_model(model_name)
-    proc_cert_class = proc_cert_model.proc_cert_class
-
-    # Create the one PortfolioDesign object required for the ERB evaluation.
-    puts "UPDATE: Creating PortfolioDesign object using processor certificate model #{model_name}"
-    portfolio_design = PortfolioDesign.new(model_name, arch, PortfolioDesign.proc_ctp_type, [proc_cert_model], proc_cert_class)
-
-    # Create empty binding and then specify explicitly which variables the ERB template can access.
-    # Seems to use this method name in stack backtraces (hence its name).
-    def evaluate_erb
-      binding
-    end
-    erb_binding = evaluate_erb
-    portfolio_design.init_erb_binding(erb_binding)
-    erb_binding.local_variable_set(:proc_cert_model, proc_cert_model)
-    erb_binding.local_variable_set(:proc_cert_class, proc_cert_class)
-
-    pf_create_adoc("#{PROC_CTP_DOC_DIR}/templates/proc_ctp.adoc.erb", erb_binding, t.name, portfolio_design)
+    proc_cert_create_adoc("#{PROC_CTP_DOC_DIR}/templates/proc_ctp.adoc.erb", t.name, model_name)
   end
 
   file "#{$root}/gen/proc_ctp/pdf/#{model_name}-CTP.pdf" => [
@@ -64,6 +44,39 @@ Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
     "#{$root}/gen/proc_ctp/adoc/#{model_name}-CTP.adoc"
   ] do |t|
     pf_adoc2html("#{$root}/gen/proc_ctp/adoc/#{model_name}-CTP.adoc", t.name)
+  end
+end
+
+# Ensure that the riscv-isa-manual submodule repository is up-to-date.
+file $root / "ext" / "csc-riscv-isa-manual" / "README.md" do
+  sh "git submodule update --init ext/csc-riscv-isa-manual 2>&1"
+end
+
+# Ensure that the docs-resources submodule repository is up-to-date.
+file $root / "ext" / "docs-resources" / "README.md" do
+  sh "git submodule update --init ext/docs-resources 2>&1"
+end
+
+# Rule to copy the riscv-isa-manual submodule repository to the gen directory.
+rule %r{#{PROC_CTP_GEN_DIR}/adoc/ext/riscv-isa-manual/README.md} => [
+  "#{$root}/ext/csc-riscv-isa-manual/README.md"
+] do |t|
+  FileUtils.mkdir_p File.dirname(t.name)
+  Dir.chdir($root / "ext" / "csc-riscv-isa-manual") do
+    sh "git archive --format=tar main | tar xvf - -C #{File.dirname(t.name)}"
+  end
+end
+
+# Rule to copy the docs-resources submodule repository to the gen directory.
+# Make the rule dependent on the riscv-isa-manual to ensure that gets copied
+# to the gen directory first (because it has an empty docs-resources directory).
+rule %r{#{PROC_CTP_GEN_DIR}/adoc/ext/riscv-isa-manual/docs-resources/README.md} => [
+  "#{$root}/ext/docs-resources/README.md",
+  "#{$root}/ext/csc-riscv-isa-manual/README.md",
+] do |t|
+  FileUtils.mkdir_p File.dirname(t.name)
+  Dir.chdir($root / "ext" / "docs-resources") do
+    sh "git archive --format=tar main | tar xvf - -C #{File.dirname(t.name)}"
   end
 end
 

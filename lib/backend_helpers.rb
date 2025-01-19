@@ -11,8 +11,8 @@ class String
   # Parameters never have periods in their names so they don't need to be sanitized.
   #
   # @param name [String] Some RISC-V name which might have periods in it
-  # @return [String] Periods replaced with underscores
-  def sanitize = self.gsub(".", "_")
+  # @return [String] New String with periods replaced with underscores
+  def sanitize = String.new(self).gsub(".", "_")
 end
 
 # This module is included in the Design class so its methods are available to be called directly
@@ -35,7 +35,7 @@ module TemplateHelpers
 
   # Links are created with this proprietary format so that they can be converted
   # later into either AsciiDoc or Antora links (see the two implementations of "resolve_links").
-  #   %%LINK%<type>;<name>;<link_text>%%
+  #   %%UDB_DOC_LINK%<type>;<name>;<link_text>%%
   #
   # Documentation:
   #   - How to make cross-references: https://docs.asciidoctor.org/asciidoc/latest/macros/xref/
@@ -43,83 +43,99 @@ module TemplateHelpers
   #   - See https://github.com/riscv/riscv-isa-manual/issues/1397#issuecomment-2515109936 for
   #     discussion about using [#anchor] instead of [[anchor]] due to Antora's support.
 
-  # @return [String] A hyperlink to an extension
+  # @return [String] A hyperlink to UDB extension documentation
   # @param ext_name [String] Name of the extension
-  def link_to_ext(ext_name)
-    "%%LINK%ext;#{ext_name.sanitize};#{ext_name.sanitize}%%"
+  def link_to_udb_doc_ext(ext_name)
+    "%%UDB_DOC_LINK%ext;#{ext_name.sanitize};#{ext_name}%%"
   end
 
-  # @return [String] A hyperlink to a parameter defined by a particular extension.
+  # @return [String] A hyperlink to UDB parameter documentation
   # @param ext_name [String] Name of the extension
   # @param param_name [String] Name of the parameter
-  def link_to_ext_param(ext_name, param_name)
+  def link_to_udb_doc_ext_param(ext_name, param_name)
     check_no_periods(param_name)
-    "%%LINK%ext_param;#{ext_name.sanitize}.#{param_name};#{param_name}%%"
+    "%%UDB_DOC_LINK%ext_param;#{ext_name.sanitize}.#{param_name};#{param_name}%%"
   end
 
-  # @return [String] A hyperlink to an instruction
+  # @return [String] A hyperlink to UDB instruction documentation
   # @param inst_name [String] Name of the instruction
-  def link_to_inst(inst_name)
-    "%%LINK%inst;#{inst_name.sanitize};#{inst_name.sanitize}%%"
+  def link_to_udb_doc_inst(inst_name)
+    "%%UDB_DOC_LINK%inst;#{inst_name.sanitize};#{inst_name}%%"
   end
 
-  # @return [String] A hyperlink to a CSR
+  # @return [String] A hyperlink to UDB CSR documentation
   # @param csr_name [String] Name of the CSR
-  def link_to_csr(csr_name)
-    "%%LINK%csr;#{csr_name.sanitize};#{csr_name.sanitize}%%"
+  def link_to_udb_doc_csr(csr_name)
+    "%%UDB_DOC_LINK%csr;#{csr_name.sanitize};#{csr_name}%%"
   end
 
-  # @return [String] A hyperlink to an IDL function
-  # @param func_name [String] Name of the IDL function
-  def link_to_func(func_name)
-    "%%LINK%func;#{func_name.sanitize};#{func_name.sanitize}%%"
-  end
-
-  # @return [String] A hyperlink to a CSR field
+  # @return [String] A hyperlink to UDB CSR field documentation
   # @param csr_name [String] Name of the CSR
   # @param field_name [String] Name of the CSR field
-  def link_to_csr_field(csr_name, field_name)
-    "%%LINK%csr_field;#{csr_name.sanitize}.#{field_name.sanitize};#{csr_name.sanitize}.#{field_name.sanitize}%%"
+  def link_to_udb_doc_csr_field(csr_name, field_name)
+    "%%UDB_DOC_LINK%csr_field;#{csr_name.sanitize}.#{field_name.sanitize};#{csr_name}.#{field_name}%%"
   end
 
-  # @return [String] An anchor for an extension
+  # @return [String] A hyperlink to UDB IDL function documentation
+  # @param func_name [String] Name of the IDL function
+  def link_to_udb_doc_idl_func(func_name)
+    "%%UDB_DOC_LINK%func;#{func_name.sanitize};#{func_name}%%"
+  end
+
+  # @return [String] A hyperlink into IDL instruction code
+  # @param func_name [String] Name of the instruction
+  # @param func_name [String] Name of the location within the instruction code
+  def link_into_idl_inst_code(inst_name, loc_name)
+    "%%IDL_CODE_LINK%inst;#{inst_name.sanitize}.#{loc_name.sanitize};#{inst_name}.#{loc_name}%%"
+  end
+  # TODO: Add csr and csr_field support
+
+  # @return [String] An anchor for UDB extension documentation
   # @param ext_name [String] Name of the extension
-  def anchor_for_ext(ext_name)
-    "[#ext-#{ext_name.sanitize}-def]"
+  def anchor_for_udb_doc_ext(ext_name)
+    "[#udb:doc:ext:#{ext_name.sanitize}]"
   end
 
-  # @return [String] An anchor for a parameter defined by a particular extension.
+  # @return [String] An anchor for UDB parameter documentation
   # @param ext_name [String] Name of the extension
   # @param param_name [String] Name of the parameter
-  def anchor_for_ext_param(ext_name, param_name)
+  def anchor_for_udb_doc_ext_param(ext_name, param_name)
     check_no_periods(param_name)
-    "[#ext_param-#{ext_name.sanitize}-#{param_name}-def]"
+    "[#udb:doc:ext_param:#{ext_name.sanitize}:#{param_name}]"
   end
 
-  # Insert anchor to an instruction.
+  # @return [String] An anchor for UDB instruction documentation
   # @param name [String] Name of the instruction
-  def anchor_for_inst(name)
-    "[#inst-#{name.sanitize}-def]"
+  def anchor_for_udb_doc_inst(name)
+    "[#udb:doc:inst:#{name.sanitize}]"
   end
 
-  # Insert anchor to a CSR.
+  # @return [String] An anchor for UDB CSR documentation
   # @param name [String] Name of the CSR
-  def anchor_for_csr(name)
-    "[#csr-#{name.sanitize}-def]"
+  def anchor_for_udb_doc_csr(name)
+    "[#udb:doc:csr:#{name.sanitize}]"
   end
 
-  # Insert anchor to a CSR field.
+  # @return [String] An anchor for UDB CSR field documentation
   # @param csr_name [String] Name of the CSR
   # @param field_name [String] Name of the CSR field
-  def anchor_for_csr_field(csr_name, field_name)
-    "[#csr_field-#{csr_name.sanitize}-#{field_name.sanitize}-def]"
+  def anchor_for_udb_doc_csr_field(csr_name, field_name)
+    "[#udb:doc:csr_field:#{csr_name.sanitize}:#{field_name.sanitize}]"
   end
 
-  # Insert anchor to an IDL function.
+  # @return [String] An anchor for an IDL function documentation
   # @param name [String] Name of the function
-  def anchor_for_func(name)
-    "[#func-#{name.sanitize}-def]"
+  def anchor_for_udb_doc_idl_func(name)
+    "[#udb:doc:func:#{name.sanitize}]"
   end
+
+  # @return [String] A anchor inside IDL instruction code
+  # @param func_name [String] Name of the instruction
+  # @param func_name [String] Name of the location within the instruction code
+  def anchor_inside_idl_inst_code(inst_name, loc_name)
+    "[#idl:code:inst:#{inst_name.sanitize}:#{loc_name.sanitize}]"
+  end
+  # TODO: Add csr and csr_field support
 
   private
     #@ param s [String]
@@ -135,9 +151,9 @@ module AsciidocUtils
     # Convert proprietary link format to legal AsciiDoc links.
     # They are converted to AsciiDoc internal cross references (i.e., <<anchor_name,link_text>>).
     # For example,
-    #   %%LINK%inst;add;add instruction%%
+    #   %%UDB_DOC_LINK%inst;add;add instruction%%
     # is converted to:
-    #   <<inst-add-def,add instruction>>
+    #   <<udb:inst:add,add instruction>>
     #
     # @param path_or_str [Pathname or String]
     # @return [String]
@@ -148,26 +164,39 @@ module AsciidocUtils
         else
           path_or_str
         end
-      str.gsub(/%%LINK%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
+      str.gsub(/%%UDB_DOC_LINK%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
         type = Regexp.last_match[1]
         name = Regexp.last_match[2]
         link_text = Regexp.last_match[3]
 
         case type
         when "ext"
-          "<<ext-#{name}-def,#{link_text}>>"
+          "<<udb:doc:ext:#{name},#{link_text}>>"
         when "ext_param"
           ext_name, param_name = name.split('.')
-          "<<ext_param-#{ext_name}-#{param_name}-def,#{link_text}>>"
+          "<<udb:doc:ext_param:#{ext_name}:#{param_name},#{link_text}>>"
         when "inst"
-          "<<inst-#{name}-def,#{link_text}>>"
+          "<<udb:doc:inst:#{name},#{link_text}>>"
         when "csr"
-          "<<csr-#{name}-def,#{link_text}>>"
+          "<<udb:doc:csr:#{name},#{link_text}>>"
         when "csr_field"
           csr_name, field_name = name.split('.')
-          "<<csr_field-#{csr_name}-#{field_name}-def,#{link_text}>>"
+          "<<udb:doc:csr_field:#{csr_name}:#{field_name},#{link_text}>>"
         when "func"
-          "<<func-#{name}-def,#{link_text}>>"
+          "<<udb:doc:func:#{name},#{link_text}>>"
+        else
+          raise "Unhandled link type of '#{type}' for '#{name}' with link_text '#{link_text}'"
+        end
+      end.gsub(/%%IDL_CODE_LINK%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
+        type = Regexp.last_match[1]
+        name = Regexp.last_match[2]
+        link_text = Regexp.last_match[3]
+
+        case type
+        when "inst"
+          inst_name, loc_name = name.split('.')
+          "<<idl:code:inst:#{inst_name}:#{loc_name},#{link_text}>>"
+        # TODO: Add csr and csr_field support
         else
           raise "Unhandled link type of '#{type}' for '#{name}' with link_text '#{link_text}'"
         end
@@ -181,11 +210,15 @@ module AntoraUtils
   # The syntax "class << self" causes all methods to be treated as class methods.
   class << self
     # Convert proprietary link format to legal AsciiDoc links.
-    # They are converted to AsciiDoc external cross references (i.e., xref:filename:#anchor_name[link_text]).
+    #
+    # They are converted to AsciiDoc external cross references in the form:
+    #   xref:<module>:<file>.adoc:#<anchor_name>[<link_text>])
+    # where <> don't appear in the actual cross reference (just there to indicate variable content).
+    #
     # For example,
-    #   %%LINK%inst;add;add instruction%%
+    #   %%UDB_DOC_LINK%inst;add;add instruction%%
     # is converted to:
-    #   xref:insts:add.adoc#add-def[add instruction]
+    #   xref:insts:add.adoc#udb:doc:add[add instruction]
     #
     # Antora supports the module name after the "xref:". In the example above, it the module name is "insts"
     # and corresponds to the directory name the add.adoc file is located in. For more details, see:
@@ -202,24 +235,40 @@ module AntoraUtils
         else
           path_or_str
         end
-      str.gsub(/%%LINK%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
+      str.gsub(/%%UDB_DOC_LINK%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
         type = Regexp.last_match[1]
         name = Regexp.last_match[2]
         link_text = Regexp.last_match[3]
 
         case type
         when "ext"
-          "xref:exts:#{name}.adoc##{name}-def[#{link_text.gsub(']', '\]')}]"
+          "xref:exts:#{name}.adoc#udb:doc:ext:#{name}[#{link_text.gsub(']', '\]')}]"
+        when "ext_param"
+          ext_name, param_name = name.split('.')
+          "xref:exts:#{ext_name}.adoc#udb:doc:ext_param:#{ext_name}:#{param_name}[#{link_text.gsub(']', '\]')}]"
         when "inst"
-          "xref:insts:#{name}.adoc##{name}-def[#{link_text.gsub(']', '\]')}]"
+          "xref:insts:#{name}.adoc#udb:doc:inst:#{name}[#{link_text.gsub(']', '\]')}]"
         when "csr"
-          "xref:csrs:#{name}.adoc##{name}-def[#{link_text.gsub(']', '\]')}]"
+          "xref:csrs:#{name}.adoc#udb:doc:csr:#{name}[#{link_text.gsub(']', '\]')}]"
         when "csr_field"
           csr_name, field_name = name.split('.')
-          "xref:csrs:#{csr_name}.adoc##{csr_name}-#{field_name}-def[#{link_text.gsub(']', '\]')}]"
+          "xref:csrs:#{csr_name}.adoc#udb:doc:csr_field:#{csr_name}:#{field_name}[#{link_text.gsub(']', '\]')}]"
         when "func"
-          # All functions are in the same file called "func.adoc".
-          "xref:func:func.adoc##{name}-def[#{link_text.gsub(']', '\]')}]"
+          # All functions are in the same file called "funcs.adoc".
+          "xref:funcs:funcs.adoc#udb:doc:func:#{name}[#{link_text.gsub(']', '\]')}]"
+        else
+          raise "Unhandled link type of '#{type}' for '#{name}' with link_text '#{link_text}'"
+        end
+      end.gsub(/%%IDL_CODE_LINK%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
+        type = Regexp.last_match[1]
+        name = Regexp.last_match[2]
+        link_text = Regexp.last_match[3]
+
+        case type
+        when "inst"
+          inst_name, loc_name = name.split('.')
+          "xref:insts:#{inst_name}.adoc#idl:code:inst:#{inst_name}:#{loc_name}[#{link_text.gsub(']', '\]')}]"
+        # TODO: Add csr and csr_field support
         else
           raise "Unhandled link type of '#{type}' for '#{name}' with link_text '#{link_text}'"
         end

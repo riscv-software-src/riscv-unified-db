@@ -323,13 +323,13 @@ class ConfiguredArchitecture < Design
       csr_name, field_name = name.split(".")
       csr = arch.csr(csr_name)
       if !field_name.nil? && !csr.nil? && csr.field?(field_name)
-        link_to_csr_field(csr_name, field_name)
+        link_to_udb_doc_csr_field(csr_name, field_name)
       elsif !csr.nil?
-        link_to_csr(csr_name)
+        link_to_udb_doc_csr(csr_name)
       elsif arch.instruction(name)
-        link_to_inst(name)
+        link_to_udb_doc_inst(name)
       elsif arch.extension(name)
-        link_to_ext(name)
+        link_to_udb_doc_ext(name)
       else
         match
       end

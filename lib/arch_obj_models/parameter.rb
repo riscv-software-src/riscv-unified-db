@@ -85,7 +85,7 @@ class Parameter
   # @return [String] Text that includes the parameter name and a link to the parameter definition.
   #                  Should only be called if there is only one in-scope extension that defines the parameter.
   def name_with_link(ext)
-    link_to_ext_param(ext.name, name)
+    link_to_udb_doc_ext_param(ext.name, name)
   end
 
   # @param exts [Array<Extension>] List of all in-scope extensions that define this parameter.
@@ -96,7 +96,7 @@ class Parameter
     raise ArgumentError, "Expecting Array[Extension]" unless in_scope_exts[0].is_a?(Extension)
 
     if in_scope_exts.size == 1
-      link_to_ext_param(in_scope_exts[0].name, name)
+      link_to_udb_doc_ext_param(in_scope_exts[0].name, name)
     else
       name
     end

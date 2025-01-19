@@ -400,7 +400,9 @@ end
 
 # Shortcut targets for building CRDs, CTPs, and Profile Releases.
 task "MockCRD": "#{$root}/gen/proc_crd/pdf/MockProcessor-CRD.pdf"
+task "MockProcessorCRD": "#{$root}/gen/proc_crd/pdf/MockProcessor-CRD.pdf"
 task "MockCTP": "#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"
+task "MockProcessorCTP": "#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"
 task "MC100-32-CTP": "#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.pdf"
 task "MC100-32-CRD": "#{$root}/gen/proc_crd/pdf/MC100-32-CRD.pdf"
 task "MC100-64-CRD": "#{$root}/gen/proc_crd/pdf/MC100-64-CRD.pdf"
@@ -409,6 +411,7 @@ task "MC200-64-CRD": "#{$root}/gen/proc_crd/pdf/MC200-64-CRD.pdf"
 task "MC300-32-CRD": "#{$root}/gen/proc_crd/pdf/MC300-32-CRD.pdf"
 task "MC300-64-CRD": "#{$root}/gen/proc_crd/pdf/MC300-64-CRD.pdf"
 task "MockProfile": "#{$root}/gen/profile/pdf/MockProfileRelease.pdf"
+task "MockProfileRelease": "#{$root}/gen/profile/pdf/MockProfileRelease.pdf"
 task "RVI20": "#{$root}/gen/profile/pdf/RVI20ProfileRelease.pdf"
 task "RVA20": "#{$root}/gen/profile/pdf/RVA20ProfileRelease.pdf"
 task "RVA22": "#{$root}/gen/profile/pdf/RVA22ProfileRelease.pdf"

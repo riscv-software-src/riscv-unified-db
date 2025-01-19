@@ -174,13 +174,13 @@ class PortfolioDesign < Design
       csr_name, field_name = name.split(".")
       csr = in_scope_csrs.find { |c| c.name == csr_name }
       if !field_name.nil? && !csr.nil? && csr.field?(field_name)
-        link_to_csr_field(csr_name, field_name)
+        link_to_udb_doc_csr_field(csr_name, field_name)
       elsif !csr.nil?
-        link_to_csr(csr_name)
+        link_to_udb_doc_csr(csr_name)
       elsif in_scope_instructions.any? { |inst| inst.name == name }
-        link_to_inst(name)
+        link_to_udb_doc_inst(name)
       elsif in_scope_extensions.any? { |ext| ext.name == name }
-        link_to_ext(name)
+        link_to_udb_doc_ext(name)
       else
         match
       end

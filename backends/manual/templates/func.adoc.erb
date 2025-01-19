@@ -5,7 +5,7 @@
 = Functions
 
 <%- design.functions.each do |f| -%>
-<%= anchor_for_func(f.name) %>
+<%= anchor_for_udb_doc_idl_func(f.name) %>
 == <%= f.name %><%- if f.builtin? -%> (builtin)<%- end -%>
 
 <%= f.description %>

@@ -4,7 +4,7 @@
 <% portfolio_design.in_scope_ext_reqs.each do |ext_req| -%>
 <% ext = arch.extension(ext_req.name) -%>
 
-<%= anchor_for_ext(ext_req.name) %>
+<%= anchor_for_udb_doc_ext(ext_req.name) %>
 === Extension <%= ext_req.name %> +
 *Long Name*: <%= ext.long_name %> +
 
@@ -75,7 +75,7 @@ The following instructions are added by this extension:
 [cols="1,3"]
 |===
 <% insts.sort.each do |inst| -%>
-| <%= link_to_inst(inst.name) %>
+| <%= link_to_udb_doc_inst(inst.name) %>
 | *<%= inst.long_name %>*
 <% end -%>
 |===
@@ -102,7 +102,7 @@ This extension has the following parameters (AKA implementation options):
 ==== IN-SCOPE Parameters
 
 <% portfolio_design.in_scope_params(ext_req).each do |param| -%>
-<%= anchor_for_ext_param(ext_req.name, param.name) %>
+<%= anchor_for_udb_doc_ext_param(ext_req.name, param.name) %>
 <%= param.name %> &#8658; <%= param.param.schema_type %>::
 +
 --
@@ -115,7 +115,7 @@ This extension has the following parameters (AKA implementation options):
 ==== OUT-OF-SCOPE Parameters
 
 <% portfolio_design.out_of_scope_params(ext_req.name).each do |param| -%>
-<%= anchor_for_ext_param(ext_req.name, param.name) %>
+<%= anchor_for_udb_doc_ext_param(ext_req.name, param.name) %>
 <%= param.name %> &#8658; <%= param.schema_type %>::
 +
 --

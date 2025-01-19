@@ -49,7 +49,7 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
     # Provide it with all the profiles in this ProfileRelease.
     puts "UPDATE: Creating PortfolioDesign object using profile release #{release_name}"
     portfolio_design =
-      PortfolioDesign.new(release_name, arch, PortfolioDesign.profile_release_type, profiles, profile_class)
+      PortfolioDesign.new(release_name, arch, PortfolioDesign.profile_release_type, profile_release.profiles, profile_class)
 
     # Create empty binding and then specify explicitly which variables the ERB template can access.
     # Seems to use this method name in stack backtraces (hence its name).

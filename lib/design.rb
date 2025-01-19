@@ -341,11 +341,9 @@ class Design < IDesign
       #
       # @param type [Symbol] Type (:section, :csr, :inst, :ext)
       # @param name [#to_s] Name of the object
-      def link_to(type, name)
-        "%%LINK%#{type};#{name}%%"
+      def link_to_udb(type, name)
+        "%%UDB_DOC_LINK%#{type};#{name}%%"
       end
-
-      # info on interrupt and exception codes
 
       # @returns [Hash<Integer, String>] architecturally-defined exception codes and their names
       def exception_codes

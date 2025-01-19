@@ -37,7 +37,7 @@ access:
 data_independent_timing:
   true
   # Want to add something like this to IDL code.
-  # [#idl:inst:mul:exception-illegal_instruction]#
+  # [#idl:code:inst:mul:exception-illegal_instruction]#
   # if (implemented?(ExtensionName::M) && (CSR[misa].M == 1'b0)) {
   #   raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   # }#
@@ -75,14 +75,14 @@ certification-coverage-points:
     description: |
       Encoding and basic operation for `mul` instruction
     xrefs:
-      - norm:inst:mul:encoding
-      - norm:inst:mul:operation
+      - manual:inst:mul:encoding
+      - manual:inst:mul:operation
   - name: Illegal instruction exception
     description: |
       An illegal instruction exception is raised when the instruction is executed
       and `misa.M` is 0.
     xrefs:
-      - idl:inst:mul:exception-illegal_instruction
+      - idl:code:inst:mul:exception-illegal_instruction
 
 certification-test-plan:
   - name: Encoding

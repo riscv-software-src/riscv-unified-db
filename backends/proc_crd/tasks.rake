@@ -26,30 +26,7 @@ Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
     "#{$root}/backends/portfolio/templates/beginning.adoc.erb",
     "#{PROC_CRD_DOC_DIR}/templates/proc_crd.adoc.erb"
   ] do |t|
-    arch = pf_create_arch
-
-    # Create ProcCertModel for specific processor certificate model as specified in its arch YAML file.
-    # The Architecture object also creates all other portfolio-related class instances from their arch YAML files.
-    # None of these objects are provided with a Design object when created.
-    puts "UPDATE: Creating ProcCertModel object for #{model_name}"
-    proc_cert_model = arch.proc_cert_model(model_name)
-    proc_cert_class = proc_cert_model.proc_cert_class
-
-    # Create the one PortfolioDesign object required for the ERB evaluation.
-    puts "UPDATE: Creating PortfolioDesign object using processor certificate model #{model_name}"
-    portfolio_design = PortfolioDesign.new(model_name, arch, PortfolioDesign.proc_crd_type, [proc_cert_model], proc_cert_class)
-
-    # Create empty binding and then specify explicitly which variables the ERB template can access.
-    # Seems to use this method name in stack backtraces (hence its name).
-    def evaluate_erb
-      binding
-    end
-    erb_binding = evaluate_erb
-    portfolio_design.init_erb_binding(erb_binding)
-    erb_binding.local_variable_set(:proc_cert_model, proc_cert_model)
-    erb_binding.local_variable_set(:proc_cert_class, proc_cert_class)
-
-    pf_create_adoc("#{PROC_CRD_DOC_DIR}/templates/proc_crd.adoc.erb", erb_binding, t.name, portfolio_design)
+    proc_cert_create_adoc("#{PROC_CRD_DOC_DIR}/templates/proc_crd.adoc.erb", t.name, model_name)
   end
 
   file "#{$root}/gen/proc_crd/pdf/#{model_name}-CRD.pdf" => [

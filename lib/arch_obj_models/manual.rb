@@ -40,6 +40,9 @@ class ManualChapter
   def title
     return @title unless @title.nil?
 
+    # See https://www.rubydoc.info/gems/asciidoctor for details on the Ruby API
+    # and https://www.rubydoc.info/gems/asciidoctor/Asciidoctor/Document for details on
+    # the Asciidoctor::Document object returned by Asciidoctor.load.
     @title = (Asciidoctor.load File.read(fullpath).scrub).doctitle.encode("US-ASCII")
   end
 
@@ -88,11 +91,11 @@ class ManualVolume
   def title = @data["title"]
 
   # @return [Array<ExtensionVersion>] Array of extension versions in this volume
-  def extensions
-    return @extensions unless @extensions.nil?
+  def ext_vers
+    return @ext_vers unless @ext_vers.nil?
 
-    @extensions = []
-    return @extensions if @data["extensions"].nil?
+    @ext_vers = []
+    return @ext_vers if @data["extensions"].nil?
 
     @data["extensions"].each do |ext|
       ext_obj = arch.extension(ext[0])
@@ -107,9 +110,9 @@ class ManualVolume
         next
       end
 
-      @extensions << ext_ver
+      @ext_vers << ext_ver
     end
-    @extensions
+    @ext_vers
   end
 
   def repo_path=(path)
@@ -160,11 +163,11 @@ class ManualVersion < DatabaseObject
 
   def state = @data["state"]
 
-  # @return [Array<ExtensionVersion>] Array of extension versions in this manual version
-  def extensions
-    return @extensions unless @extensions.nil?
+  # @return [Array<ExtensionVersion>] Array of extension versions in this manual version across all volumes
+  def ext_vers
+    return @ext_vers unless @ext_vers.nil?
 
-    @extensions = volumes.map(&:extensions).flatten.uniq
+    @ext_vers = volumes.map(&:ext_vers).flatten.uniq
   end
 
   # @return [Array<Instruction>] All instructions defined in this version
@@ -172,7 +175,7 @@ class ManualVersion < DatabaseObject
     return @instructions unless @instructions.nil?
 
     @instructions = []
-    extensions.each do |ext|
+    ext_vers.each do |ext|
       ext_obj = @arch.extension(ext.name)
       ext_obj.instructions.each do |inst|
         @instructions << inst
@@ -186,7 +189,7 @@ class ManualVersion < DatabaseObject
     return @csrs unless @csrs.nil?
 
     @csrs = []
-    extensions.each do |ext|
+    ext_vers.each do |ext|
       ext_obj = @arch.extension(ext.name)
       ext_obj.csrs.each do |csr|
         @csrs << csr

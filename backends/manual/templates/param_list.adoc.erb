@@ -1,7 +1,7 @@
 = Architectural Parameters
 
 <%-
-  params = manual_version.extensions.map{ |e| e.params }.flatten.uniq(&:name).sort_by!(&:name)
+  params = manual_version.ext_vers.map{ |e| e.params }.flatten.uniq(&:name).sort_by!(&:name)
 -%>
 
 The following <%= params.size %> parameters are defined in this manual:
@@ -12,7 +12,7 @@ The following <%= params.size %> parameters are defined in this manual:
 <%- params.each do |param| -%>
 | <%= param.name %>
 | <%= param.schema.to_pretty_s %>
-| <%= param.exts.map { |ext| "`#{ext.name}`"}.join(", ") %>
+| <%= param.exts.map { |ext| link_to_udb_doc_ext_param(ext.name, param.name) }.join(", ") %>
 a| <%= param.desc %>
 <%- end -%>
 |===
