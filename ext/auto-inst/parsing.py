@@ -19,8 +19,22 @@ def safe_get(data, key, default=""):
 
 
 def get_json_path():
-    script_dir = Path(__file__).parent.resolve()  # auto-inst directory
-    llvm_json_path = script_dir.parent / "/ext/llvm-project/riscv.json"
+    """
+    Resolves the path to riscv.json in the repository.
+    Returns the Path object if file exists, otherwise skips the test.
+    """
+    # Print current working directory and script location for debugging
+    cwd = Path.cwd()
+    script_dir = Path(__file__).parent.resolve()
+    print(f"Current working directory: {cwd}")
+    print(f"Script directory: {script_dir}")
+
+    # Try to find the repository root
+    repo_root = os.environ.get("GITHUB_WORKSPACE", cwd)
+    repo_root = Path(repo_root)
+
+    llvm_json_path = repo_root / "ext" / "llvm-project" / "riscv.json"
+    print(f"Looking for riscv.json at: {llvm_json_path}")
 
     if not llvm_json_path.is_file():
         print(f"\nNo 'riscv.json' found at {llvm_json_path}.")

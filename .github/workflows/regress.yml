@@ -19,6 +19,17 @@ jobs:
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
+      - name: Get current LLVM submodule commit SHA
+        id: get-llvm-sha
+        run: echo "LLVM_SHA=$(git ls-tree HEAD ext/llvm-project | awk '{print $3}')" >> $GITHUB_ENV
+      - name: Restore cache RISC-V JSON
+        id: cache-riscv
+        uses: actions/cache@v4
+        with:
+          path: ext/llvm-project/riscv.json
+          key: ${{ runner.os }}-riscv-json-${{ env.LLVM_SHA }}
+          restore-keys: |
+            ${{ runner.os }}-riscv-json-
       - name: Setup apptainer
         uses: eWaterCycle/setup-apptainer@v2.0.0
       - name: Get container from cache
@@ -170,9 +181,8 @@ jobs:
       - name: Check out repository (no submodules, shallow fetch)
         uses: actions/checkout@v4
         with:
-          submodules: false      # Do NOT auto-checkout submodules
-          fetch-depth: 1         # Shallow checkout for the main repo
-
+          submodules: false
+          fetch-depth: 1
       - name: Get current LLVM submodule commit SHA
         id: get-llvm-sha
         run: echo "LLVM_SHA=$(git ls-tree HEAD ext/llvm-project | awk '{print $3}')" >> $GITHUB_ENV
@@ -185,16 +195,26 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-riscv-json-
       - name: Initialize LLVM submodule (shallow + sparse)
+        if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
         run: |
           git submodule sync --recursive
           git submodule update --init --recursive --depth=1 ext/llvm-project
-          cd ext/llvm-project
+
+      - name: Check for required directories and files
+        if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
+        run: |
+          ls -l ext/llvm-project/llvm/include
+          ls -l ext/llvm-project/llvm/lib/Target/RISCV
+          ls -l ext/llvm-project/llvm/lib/Target/RISCV/RISCV.td
       - name: Configure and build llvm-tblgen
+        if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
         run: |
           cmake -S ext/llvm-project/llvm -B ext/llvm-project/build -DCMAKE_BUILD_TYPE=Release
           cmake --build ext/llvm-project/build --target llvm-tblgen
       - name: Generate RISC-V JSON
+        if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
         run: |
+          chmod +x ./ext/llvm-project/build/bin/llvm-tblgen
           ./ext/llvm-project/build/bin/llvm-tblgen \
             -I ext/llvm-project/llvm/include \
             -I ext/llvm-project/llvm/lib/Target/RISCV \
