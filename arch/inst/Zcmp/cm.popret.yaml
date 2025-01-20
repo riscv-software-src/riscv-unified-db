@@ -1,0 +1,82 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: cm.popret
+long_name: Destroy function call stack frame and return to `ra`.
+description: |
+  Destroy stack frame: load ra and 0 to 12 saved registers from the stack frame, deallocate the stack frame, return to `ra`.
+  This instruction pops (loads) the registers in `reg_list` from stack memory, and then adjusts the stack pointer by `stack_adj` and then return to ra.
+  --
+  Stack Adjustment Calculation:
+  --
+  `stack_adj_base` is the minimum number of bytes, in multiples of 16-byte address increments, required to cover the registers in the list.
+  `spimm` is the number of additional 16-byte address increments allocated for the stack frame.
+  The total stack adjustment represents the total size of the stack frame, which is `stack_adj_base` added to `spimm` scaled by 16, as defined above.
+definedBy:
+  anyOf:
+    - Zcmp
+assembly: reg_list, stack_adj
+encoding:
+  match: 10111110------10
+  variables:
+    - name: rlist
+      location: 7-4
+      not: [0, 1, 2, 3]
+    - name: spimm
+      location: 3-2
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  if (implemented?(ExtensionName::Zcmp) && (CSR[misa].C == 1'b0)) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  XReg nreg = (rlist == 15) ? 13 : (rlist - 3);
+  XReg stack_additional_adj = (spimm * 16);
+  XReg stack_aligned_adj = (nreg * 4 + 15) & ~0xF;
+  XReg virtual_address_sp = X[2];
+  XReg virtual_address_new_sp = virtual_address_sp + stack_aligned_adj + stack_additional_adj;
+  XReg virtual_address_base = virtual_address_new_sp - (nreg * XLEN);
+
+  X[ 1] = read_memory<XLEN>(virtual_address_base +  0*XLEN, $encoding);
+  if (nreg > 1) {
+    X[ 8] = read_memory<XLEN>(virtual_address_base +  1*XLEN, $encoding);
+  }
+  if (nreg > 2) {
+    X[ 9] = read_memory<XLEN>(virtual_address_base +  2*XLEN, $encoding);
+  }
+  if (nreg > 3) {
+    X[18] = read_memory<XLEN>(virtual_address_base +  3*XLEN, $encoding);
+  }
+  if (nreg > 4) {
+    X[19] = read_memory<XLEN>(virtual_address_base +  4*XLEN, $encoding);
+  }
+  if (nreg > 5) {
+    X[20] = read_memory<XLEN>(virtual_address_base +  5*XLEN, $encoding);
+  }
+  if (nreg > 6) {
+    X[21] = read_memory<XLEN>(virtual_address_base +  6*XLEN, $encoding);
+  }
+  if (nreg > 7) {
+    X[22] = read_memory<XLEN>(virtual_address_base +  7*XLEN, $encoding);
+  }
+  if (nreg > 8) {
+    X[23] = read_memory<XLEN>(virtual_address_base +  8*XLEN, $encoding);
+  }
+  if (nreg > 9) {
+    X[24] = read_memory<XLEN>(virtual_address_base +  9*XLEN, $encoding);
+  }
+  if (nreg > 10) {
+    X[25] = read_memory<XLEN>(virtual_address_base + 10*XLEN, $encoding);
+  }
+  if (nreg > 11) {
+    X[26] = read_memory<XLEN>(virtual_address_base + 11*XLEN, $encoding);
+    X[27] = read_memory<XLEN>(virtual_address_base + 12*XLEN, $encoding);
+  }
+
+  X[2] = virtual_address_new_sp;
+  jump(X[1]);
