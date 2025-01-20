@@ -6,7 +6,9 @@ name: jalr
 long_name: Jump and link register
 description: |
   Jump to an address formed by adding rs1
-  to a signed offset, and store the return address in rd.
+  to a signed offset then clearing the least
+  significant bit, and store the return address
+  in rd.
 definedBy: I
 assembly: xd, imm(rs1)
 encoding:
@@ -27,7 +29,7 @@ operation(): |
   XReg returnaddr;
   returnaddr = $pc + 4;
 
-  jump(X[rs1] + imm);
+  jump((X[rs1] + imm) & ~XLEN'1);
   X[rd] = returnaddr;
 
 sail(): |

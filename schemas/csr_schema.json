@@ -226,8 +226,8 @@
         },
         "address": {
           "type": "integer",
-          "minValue": 0,
-          "maxValue": 4095,
+          "minimum": 0,
+          "maximum": 4095,
           "description": "Address of the CSR, as given to the CSR access instructions of the `Zicsr` extension"
         },
         "indirect_address": {

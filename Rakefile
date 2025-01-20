@@ -33,6 +33,12 @@ def cfg_arch_for(config_name)
     )
 end
 
+file "#{$root}/.stamps/dev_gems" do |t|
+  sh "bundle exec yard config --gem-install-yri"
+  sh "bundle exec yard gem"
+  FileUtils.touch t.name
+end
+
 namespace :gen do
   desc "Generate documentation for the ruby tooling"
   task tool_doc: "#{$root}/.stamps/dev_gems" do
