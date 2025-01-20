@@ -270,7 +270,7 @@
           "type": "string",
           "description": "Functional description of the instruction using Sail"
         },
-        "certification-coverage-points": {
+        "cert-coverage-points": {
           "description": "Architecturally visible behaviors requiring validation by certification tests",
           "type": "array",
           "required": ["name", "xref", "description"],
@@ -288,7 +288,7 @@
             }
           }
         },
-        "certification-test-plan": {
+        "cert-test-plan": {
           "description": "How certification coverage points will be validated",
           "type": "array",
           "required": ["name", "description", "coverage-points"],

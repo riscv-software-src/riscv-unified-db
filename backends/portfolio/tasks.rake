@@ -60,7 +60,7 @@ def pf_adoc2pdf(adoc_file, target_pname)
     adoc_file
   ].join(" ")
 
-  puts "UPDATE: #{cmd}"
+  puts "UPDATE: bundle exec #{cmd}"
   sh cmd
 
   puts "UPDATE: Generated PDF in #{target_pname}"
@@ -72,7 +72,7 @@ def pf_adoc2html(adoc_file, target_pname)
   FileUtils.mkdir_p File.dirname(target_pname)
 
   puts "UPDATE: Generating HTML in #{target_pname}"
-  sh [
+  cmd = [
     "asciidoctor",
     "-w",
     "-v",
@@ -83,5 +83,8 @@ def pf_adoc2html(adoc_file, target_pname)
     "-o #{target_pname}",
     adoc_file
   ].join(" ")
+
+  puts "UPDATE: bundle exec #{cmd}"
+  sh cmd
   puts "UPDATE: Generated HTML in #{target_pname}"
 end

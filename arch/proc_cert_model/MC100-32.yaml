@@ -14,7 +14,13 @@ versions:
 # XLEN used by rakefile
 base: 32
 
+# History of this certificate.
 revision_history:
+  - revision: "0.8.0"
+    date: "2025-01-19"
+    changes:
+      - Updated so that content can apply equally to all certificate-related documents
+        such as CRDs (Certification Requirement Documents) and CTPs (Certification Test Plans).
   - revision: "0.7.0"
     date: "2024-07-29"
     changes:

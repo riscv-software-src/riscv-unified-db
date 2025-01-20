@@ -1,53 +1,12 @@
 <%= portfolio_design.include_erb("beginning.adoc.erb") %>
 
-= <%= proc_cert_model.name %> Processor Certification Requirements Document
-
-Links to ISA manual anchors:
-
-* <<risc-v-isa,RISC-V ISA manual - Duplicate anchor for each manual>>
-* <<manual:unpriv>>
-* <<manual:priv>>
-* <<mstandard,M extension chapter>>
-* <<zba, zba extension within B extension chapter>>
+= <%= proc_cert_model.name %> Processor Certification Test Plan
 
 [Preface]
-== Revision History
-
-History of documentation changes that eventually lead to releases.
-
-[cols="1,1,5"]
-|===
-| Date | Revision | Changes
-
-<% proc_cert_model.revision_history.each do |rev| -%>
-| <%= rev.date %>
-| <%= rev.revision %>
-a| <% rev.changes.each do |change| %>
-* <%= change %>
-<% end -%>
-<% end -%>
-|===
+<%= proc_cert_design.include_erb("rev_history.adoc.erb") %>
 
 [Preface]
-== Typographic Conventions
-
-CSR field colors::
-
-* Grey fields are reserved (WPRI)
-* Green fields are present
-* Red fields are defined by the RISC-V ISA but not present
-
-CSR field types::
-
-[%autowidth]
-|===
-| Abbreviation | Description
-
-<% CsrField::TYPE_DESC_MAP.each do |abbreviation, description| -%>
-| <%= abbreviation %>
-| <%= description %>
-<% end -%>
-|===
+<%= proc_cert_design.include_erb("typographic.adoc.erb") %>
 
 == Introduction
 
@@ -55,14 +14,21 @@ CSR field types::
 
 <%= proc_cert_class.introduction %>
 
-=== What's a CRD?
+Links to ISA manual anchors:
 
-Certification Requirements Documents (CRDs) list requirements an implementation must meet
+* <<manual:unpriv,The RISC-V Instruction Set Manual Volume I: Unprivileged Architecture>>
+* <<manual:priv,The RISC-V Instruction Set Manual Volume II: Privileged Architecture>>
+* <<mstandard,M extension chapter>>
+* <<zba, zba extension within B extension chapter>>
+
+=== What's a CTP?
+
+Certification Test Plans (CTPs) list requirements an implementation must meet
 to obtain an associated RVI (RISC-V International) certificate.
-CRDs are developed by the RVI CSC (Certification Steering Committee) organization in collaboration
+CTPs are developed by the RVI CSC (Certification Steering Committee) organization in collaboration
 with the RVI TSC (Technical Steering Committee) organization who creates RISC-V standards.
 
-The CRDs refer to and augment information provided in existing ratified RVI standards.
+The CTPs refer to and augment information provided in existing ratified RVI standards.
 
 There are a variety of certificates offered by RVI to accomodate the various RVI standards.
 There are certificates for processors, non-processor system IP (e.g., IOMMU),
@@ -70,29 +36,29 @@ and system platforms (processor + system IP) hardware standards.
 There are multiple classes of processor certificates available to accomodate the wide range of
 RISC-V implementations from basic microcontrollers to advanced Applications-class processors.
 
-Each CRD has a list of mandatory behaviors along with a list of optional behaviors.
-Note that not all behaviors allowed in RISC-V standards are supported by a particular CRD.
+Each CTP has a list of mandatory behaviors along with a list of optional behaviors.
+Note that not all behaviors allowed in RISC-V standards are supported by a particular CTP.
 
-=== CRD Naming Scheme
+=== CTP Naming Scheme
 
-CRDs have the following naming scheme:
+CTPs have the following naming scheme:
 
   Format: <name>[v<version>]
 
 Where:
 
 * Left & right square braces denote optional.
-* Less-than & greater-than signs just separate fields (i.e., they aren't present in the CRD name).
+* Less-than & greater-than signs just separate fields (i.e., they aren't present in the CTP name).
 * <name> identifies the type of RISC-V standard (processor, non-processor system IP, or platform) along with
   any other information required to identify the variant of that standard.
-* <version> identifies a particular CRD release
+* <version> identifies a particular CTP release
 ** Format is <major>[.<minor>[.<patch>]]
 ** Inspired by semantic versioning scheme (https://semver.org/) but doesn't follow it exactly
 ** The <major> release is updated when certification test changes are made that *could* cause a previously certified
    implementation to now fail.
    Examples are fixing a test bug, or increasing test coverage, or requiring a new version of a standard
-   A <major> release of 0 is used for pre-release versions of a CRD and release versions start with 1.
-** The <minor> release is updated when a CRD increases support for optional behaviors.
+   A <major> release of 0 is used for pre-release versions of a CTP and release versions start with 1.
+** The <minor> release is updated when a CTP increases support for optional behaviors.
    Examples are supporting for new optional standards or
    supporting additional optional behaviors for standards already in a certificate.
 ** The <patch> release is updated when certification test changes are made that *can't* cause a previously certified
@@ -101,7 +67,7 @@ Where:
 ** If omitted, defaults to v1.0.0
 ** Examples: v1, v1.1, v2.3.1, 0.3.4 (pre-release)
 
-=== CRD Terminology
+=== CTP Terminology
 
 .Requirement Types
 [%autowidth]
@@ -120,14 +86,14 @@ Where:
 |===
 | Term | Meaning
 
-| CRD | Certification Requirements Document
+| CTP | Certification Test Plan
 | N/A | “Not Applicable”
 | AKA | “Also Known As”
 |===
 
-=== Processor CRDs
+=== Processor CTPs
 
-There are Processor CRDs for different classes of RISC-V processors.
+There are Processor CTPs for different classes of RISC-V processors.
 These documents augment information in the related TSC Profile when available and/or other RVI standards documents
 (e.g., Priv and Unpriv ISA manuals).
 Only ratified extensions are candidates for certification.
@@ -147,12 +113,12 @@ Where:
 ** The ten's digit identifies large differences in mandatory extensions (e.g., V, H) within the series
 ** The one's digit indentifies small/medium differences in mandatory extensions (e.g., Zicond, PMP) within the series
 * <base> is optional and is 32 for RV32I, 64 for RV64I, and 32E for RV32E
-** If a CRD supports multiple bases and <base> is omitted in a reference, it applies to all supported bases
-** If a CRD only supports one base then <base> is generally omitted
+** If a CTP supports multiple bases and <base> is omitted in a reference, it applies to all supported bases
+** If a CTP only supports one base then <base> is generally omitted
 
 [%autowidth]
 |===
-| CRD | TSC Profile | Description
+| CTP | TSC Profile | Description
 
 | MC100-series | TBD | 32/64-bit minimal microcontroller that runs low-level software on an RTOS or bare-metal (no virtual memory)
 | MC200-series | TBD | 32/64-bit intermediate microcontroller
@@ -183,12 +149,12 @@ after the field is written with an illegal value.
 Certifying such behaviors is expensive and provides low value for a certificate since software can't rely
 on a particular behavior from one implementation to another.
 
-Processor CRDs define writes to WARL fields of illegal values to be OUT-OF-SCOPE unless otherwise stated
+Processor CTPs define writes to WARL fields of illegal values to be OUT-OF-SCOPE unless otherwise stated
 (i.e., certification tests will only ever write legal values to WARL fields except for the special cases listed below).
 When not OUT-OF-SCOPE, the required behavior is defined as this might be more constrained in implementations than
 in the standard.
 
-The following special cases for WARL are supported when explicitly listed in the corresponding CRD CSR field requirements:
+The following special cases for WARL are supported when explicitly listed in the corresponding CTP CSR field requirements:
 
 1. Probing for Field Width
 
@@ -214,7 +180,7 @@ The Priv ISA requires reads of WLRL fields to return some implementation-depende
 after the field is written with an illegal value.
 Certifying such behaviors is expensive and provides low value for a certificate since software can't rely
 on a particular behavior.
-Processor CRDs define writes to WLRL fields of illegal values to be OUT-OF-SCOPE unless otherwise stated
+Processor CTPs define writes to WLRL fields of illegal values to be OUT-OF-SCOPE unless otherwise stated
 (i.e., certification tests will only ever write legal values to WLRL fields).
 
 *WPRI (Write Preserve, Read Ignore)*:

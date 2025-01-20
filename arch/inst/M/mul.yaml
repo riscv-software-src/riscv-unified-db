@@ -70,7 +70,7 @@ sail(): |
     }
   }
 
-certification-coverage-points:
+cert-coverage-points:
   - name: Encoding and basic operation
     description: |
       Encoding and basic operation for `mul` instruction
@@ -84,7 +84,7 @@ certification-coverage-points:
     xrefs:
       - idl:code:inst:mul:exception-illegal_instruction
 
-certification-test-plan:
+cert-test-plan:
   - name: Encoding
     description: Verify the encoding of the mul instruction
     coverage-points:

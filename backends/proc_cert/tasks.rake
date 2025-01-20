@@ -19,9 +19,9 @@ def proc_cert_create_adoc(erb_template_pname, target_pname, model_name)
   proc_cert_model = arch.proc_cert_model(model_name)
   proc_cert_class = proc_cert_model.proc_cert_class
 
-  # Create the one PortfolioDesign object required for the ERB evaluation.
-  puts "UPDATE: Creating PortfolioDesign object using processor certificate model #{model_name}"
-  portfolio_design = PortfolioDesign.new(model_name, arch, PortfolioDesign.proc_ctp_type, [proc_cert_model], proc_cert_class)
+  # Create the one ProcCertDesign object required for the ERB evaluation.
+  puts "UPDATE: Creating ProcCertDesign object using processor certificate model #{model_name}"
+  proc_cert_design = ProcCertDesign.new(model_name, arch, ProcCertDesign.proc_ctp_type, proc_cert_model, proc_cert_class)
 
   # Create empty binding and then specify explicitly which variables the ERB template can access.
   # Seems to use this method name in stack backtraces (hence its name).
@@ -29,9 +29,7 @@ def proc_cert_create_adoc(erb_template_pname, target_pname, model_name)
     binding
   end
   erb_binding = evaluate_erb
-  portfolio_design.init_erb_binding(erb_binding)
-  erb_binding.local_variable_set(:proc_cert_model, proc_cert_model)
-  erb_binding.local_variable_set(:proc_cert_class, proc_cert_class)
+  proc_cert_design.init_erb_binding(erb_binding)
 
-  pf_create_adoc(erb_template_pname, erb_binding, target_pname, portfolio_design)
+  pf_create_adoc(erb_template_pname, erb_binding, target_pname, proc_cert_design)
 end

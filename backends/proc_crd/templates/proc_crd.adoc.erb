@@ -3,43 +3,10 @@
 = <%= proc_cert_model.name %> Processor Certification Requirements Document
 
 [Preface]
-== Revision History
-
-History of documentation changes that eventually lead to releases.
-
-[cols="1,1,5"]
-|===
-| Date | Revision | Changes
-
-<% proc_cert_model.revision_history.each do |rev| -%>
-| <%= rev.date %>
-| <%= rev.revision %>
-a| <% rev.changes.each do |change| %>
-* <%= change %>
-<% end -%>
-<% end -%>
-|===
+<%= proc_cert_design.include_erb("rev_history.adoc.erb") %>
 
 [Preface]
-== Typographic Conventions
-
-CSR field colors::
-
-* Grey fields are reserved (WPRI)
-* Green fields are present
-* Red fields are defined by the RISC-V ISA but not present
-
-CSR field types::
-
-[%autowidth]
-|===
-| Abbreviation | Description
-
-<% CsrField::TYPE_DESC_MAP.each do |abbreviation, description| -%>
-| <%= abbreviation %>
-| <%= description %>
-<% end -%>
-|===
+<%= proc_cert_design.include_erb("typographic.adoc.erb") %>
 
 == Introduction
 

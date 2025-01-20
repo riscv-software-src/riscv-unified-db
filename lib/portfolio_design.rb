@@ -21,14 +21,14 @@ class PortfolioDesign < Design
   # @return [String] Kind of portfolio for all portfolios in this design
   attr_reader :portfolio_kind
 
+  # @return [String] Type of design suitable for human readers.
+  attr_reader :portfolio_design_type
+
   # Class methods
   def self.profile_release_type = "Profile Release"
   def self.proc_crd_type = "Certification Requirements Document"
   def self.proc_ctp_type = "Certification Test Plan"
   def self.portfolio_design_types = [profile_release_type, proc_crd_type, proc_ctp_type]
-
-  # @return [String] Type of design suitable for human readers.
-  attr_reader :portfolio_design_type
 
   # @param name [#to_s] The name of the portfolio design (i.e., backend filename without a suffix)
   # @param arch [Architecture] The database of RISC-V standards
@@ -267,21 +267,31 @@ class PortfolioDesign < Design
   # EXTRA METHODS #
   #################
 
+  #@ return [Hash<String, Object>] Hash of objects available to ERB templates and
+  #                                ERB fragments included in the main ERB template.
+  # Put this in a method so it can be easily overridden by subclasses.
+  def erb_env
+    {
+      arch: arch,
+      design: self,
+      portfolio_design: self,
+      portfolio_design_type: @portfolio_design_type,
+      portfolio_class: @portfolio_class,
+      portfolio_kind: @portfolio_kind,
+      portfolios: @portfolio_grp.portfolios
+    }
+  end
+
   # Called from tasks.rake file to add standard set of objects available to ERB templates.
   def init_erb_binding(erb_binding)
     raise ArgumentError, "Expected Binding object but got #{erb_binding.class}" unless erb_binding.is_a?(Binding)
 
-    erb_binding.local_variable_set(:arch, arch)
-    erb_binding.local_variable_set(:design, self)
-    erb_binding.local_variable_set(:portfolio_design, self)
-    erb_binding.local_variable_set(:portfolio_design_type, @portfolio_design_type)
-    erb_binding.local_variable_set(:portfolio_class, @portfolio_class)
-    erb_binding.local_variable_set(:portfolio_kind, @portfolio_kind)
-    erb_binding.local_variable_set(:portfolios, @portfolio_grp.portfolios)
+    erb_env.each do |key, obj|
+      erb_binding.local_variable_set(key, obj)
+    end
   end
 
   # Include a partial ERB template into a full ERB template.
-  # Provide the same objects as in init_erb_binding.
   #
   # @param template_path [String] Name of template file located in backends/portfolio/templates
   # @return [String] Result of ERB evaluation of the template file
@@ -289,16 +299,6 @@ class PortfolioDesign < Design
     template_pname = "portfolio/templates/#{template_name}"
 
     puts "UPDATE: #{portfolio_design_type} processing ERB partial template '#{template_pname}'"
-    partial("portfolio/templates/#{template_name}",
-      {
-        arch: arch,
-        design: self,
-        portfolio_design: self,
-        portfolio_design_type: @portfolio_design_type,
-        portfolio_class: @portfolio_class,
-        portfolio_kind: @portfolio_kind,
-        portfolios: @portfolio_grp.portfolios
-      }
-    )
+    partial(template_pname, erb_env)
   end
 end
