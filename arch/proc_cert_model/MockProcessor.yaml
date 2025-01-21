@@ -26,7 +26,7 @@ revision_history:
       - Also created to test CRDs
 
 introduction: |
-  Mock CRD introduction:
+  Mock Certificate Model introduction:
 
   * Hello
   * Bob!
@@ -83,6 +83,8 @@ extensions:
     note: |
       Here's a multi-line note +
       for the C extension.
+  M:
+    presence: mandatory
   Zicsr:
     version: "~> 2.0"
     presence: mandatory

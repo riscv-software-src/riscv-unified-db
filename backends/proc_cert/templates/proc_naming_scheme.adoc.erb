@@ -1,0 +1,14 @@
+RVCP components for processors have the following format for their <name>:
+
+  <class><model>[<-base>]
+
+Where:
+
+* <class> is MC for Microcontroller Class and AC for Apps-processor Class
+* <model> is 3-digit integer defined as follows:
+** The hundreds's digit indicates the series
+** The ten's digit identifies large differences in mandatory extensions (e.g., V, H) within the series
+** The one's digit indentifies small/medium differences in mandatory extensions (e.g., Zicond, PMP) within the series
+* <base> is optional and is 32 for RV32I, 64 for RV64I, and 32E for RV32E
+** If multiple bases are supported and <base> is omitted in a reference, the reference applies to all bases
+** If only one base is supported then <base> is generally omitted

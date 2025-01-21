@@ -1,24 +1,17 @@
-# yaml-language-server: $schema=../../../schemas/inst_schema.json
+# yaml-language-server: $schema=../../schemas/inst_schema.json
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: mul
-long_name: Signed multiply
+name: mock
+long_name: Mock Instruction (Just for testing UDB)
 description: |
-  MUL performs an XLEN-bitxXLEN-bit multiplication of `rs1` by `rs2` and places the lower
-  XLEN bits in the destination register.
-  Any overflow is thrown away.
+  The mock instruction computes the value of PI to an infinite number of decimal places.
+  Okay, actually it performs the equivalent of the `mul` instruction.
 
   [NOTE]
-  If both the high and low bits of the same product are required, then the recommended code
-  sequence is:
-  MULH[[S]U] rdh, rs1, rs2; MUL rdl, rs1, rs2
-  (source register specifiers must be in same order and rdh cannot be the same as rs1 or rs2).
-  Microarchitectures can then fuse these into a single multiply operation instead of
-  performing two separate multiplies.
+  Computing PI to an infinite number of decicial places is impossible, but hey, why not?
 
-definedBy:
-  anyOf: [M, Zmmul]
+definedBy: Xmock
 assembly: xd, xs1, xs2
 encoding:
   match: 0000001----------000-----0110011
@@ -73,26 +66,19 @@ sail(): |
 cert-coverage-points:
   - name: Encoding and basic operation
     description: |
-      Encoding and basic operation for `mul` instruction
+      Encoding and basic operation for `mock` instruction
     xrefs:
-      - manual:inst:mul:encoding
-      - manual:inst:mul:operation
-  - name: Illegal instruction exception when misa.M is 0
-    description: |
-      An illegal instruction exception is raised when the instruction is executed
-      and `misa.M` is 0.
-    xrefs:
-      - manual:priv:csr:misa:disabling-extension
+      - udb:doc:inst:mock
 
 cert-test-plan:
   - name: Encoding
-    description: Verify the encoding and basic operation of the `mul` instruction
+    description: Verify the encoding and basic operation of the `mock` instruction
     coverage-points:
       - Encoding and basic operation
     setup:
       - description: Load a variety of known values into rs1 & rs2 with a variety of rs1/rs2/rd values.
     execution:
-      - description: Execute the `mul` instruction
+      - description: Execute the `mock` instruction
     validation:
       - description: Check each result in rd
     teardown:

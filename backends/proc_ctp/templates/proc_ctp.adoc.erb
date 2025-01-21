@@ -3,10 +3,19 @@
 = <%= proc_cert_model.name %> Processor Certification Test Plan
 
 [Preface]
+== CTP Revision History
+
 <%= proc_cert_design.include_erb("rev_history.adoc.erb") %>
 
 [Preface]
+== Typographic Conventions
+
 <%= proc_cert_design.include_erb("typographic.adoc.erb") %>
+
+[Preface]
+== Glossary
+
+<%= proc_cert_design.include_erb("glossary.adoc.erb") %>
 
 == Introduction
 
@@ -23,333 +32,33 @@ Links to ISA manual anchors:
 
 === What's a CTP?
 
-Certification Test Plans (CTPs) list requirements an implementation must meet
-to obtain an associated RVI (RISC-V International) certificate.
+Certification Test Plans (CTPs) list certification coverage points and how they will be tested.
 CTPs are developed by the RVI CSC (Certification Steering Committee) organization in collaboration
 with the RVI TSC (Technical Steering Committee) organization who creates RISC-V standards.
 
-The CTPs refer to and augment information provided in existing ratified RVI standards.
+Each certificated offered has a corresponding CRD and CTP. The CRD defines the certification requirements
+that an implementation must meet and what behaviors are covered by the certificate. The CTP uses the CRD
+to determine the required coverage points.
 
-There are a variety of certificates offered by RVI to accomodate the various RVI standards.
-There are certificates for processors, non-processor system IP (e.g., IOMMU),
-and system platforms (processor + system IP) hardware standards.
-There are multiple classes of processor certificates available to accomodate the wide range of
-RISC-V implementations from basic microcontrollers to advanced Applications-class processors.
+=== Naming Scheme
 
-Each CTP has a list of mandatory behaviors along with a list of optional behaviors.
-Note that not all behaviors allowed in RISC-V standards are supported by a particular CTP.
+==== CTP Naming
 
-=== CTP Naming Scheme
+<%= proc_cert_design.include_erb("rvcp_naming_scheme.adoc.erb") %>
 
-CTPs have the following naming scheme:
+The specific rules for updating the version number for a CTP are as follows:
 
-  Format: <name>[v<version>]
+* The <major> release number is updated for changes that *could* cause a previously certified
+   implementation to now fail. An example is increasing coverage.
+* The <minor> release number is updated when the CRD referenced by a CTP adds support for new optional behaviors.
+* The <patch> release number is updated for documentation fixes/improvements.
+  These changes *cannot* cause a previously certified implementation to no longer pass certification.
 
-Where:
+==== Processor Naming Scheme
 
-* Left & right square braces denote optional.
-* Less-than & greater-than signs just separate fields (i.e., they aren't present in the CTP name).
-* <name> identifies the type of RISC-V standard (processor, non-processor system IP, or platform) along with
-  any other information required to identify the variant of that standard.
-* <version> identifies a particular CTP release
-** Format is <major>[.<minor>[.<patch>]]
-** Inspired by semantic versioning scheme (https://semver.org/) but doesn't follow it exactly
-** The <major> release is updated when certification test changes are made that *could* cause a previously certified
-   implementation to now fail.
-   Examples are fixing a test bug, or increasing test coverage, or requiring a new version of a standard
-   A <major> release of 0 is used for pre-release versions of a CTP and release versions start with 1.
-** The <minor> release is updated when a CTP increases support for optional behaviors.
-   Examples are supporting for new optional standards or
-   supporting additional optional behaviors for standards already in a certificate.
-** The <patch> release is updated when certification test changes are made that *can't* cause a previously certified
-   implementation to now fail.
-   Examples are test changes not intended to increase coverage or fixing a documentation typo.
-** If omitted, defaults to v1.0.0
-** Examples: v1, v1.1, v2.3.1, 0.3.4 (pre-release)
+<%= proc_cert_design.include_erb("proc_naming_scheme.adoc.erb") %>
 
-=== CTP Terminology
-
-.Requirement Types
-[%autowidth]
-|===
-| Term | Meaning
-
-| MANDATORY | You have to implement it to get a certificate and the certificate tests will cover it
-| OPTIONAL | It's up to you if you implement or not. If you claim to implement it, certificate tests will cover it
-| IN-SCOPE | Either MANDATORY or OPTIONAL
-| OUT-OF-SCOPE | It's up to you if you implement or not. If you implement it, it won't be certified but make sure you don't mess up anything we are certifying.
-| INCOMPATIBLE | If you implement it you won't get a certificate
-|===
-
-.Glossary
-[%autowidth]
-|===
-| Term | Meaning
-
-| CTP | Certification Test Plan
-| N/A | “Not Applicable”
-| AKA | “Also Known As”
-|===
-
-=== Processor CTPs
-
-There are Processor CTPs for different classes of RISC-V processors.
-These documents augment information in the related TSC Profile when available and/or other RVI standards documents
-(e.g., Priv and Unpriv ISA manuals).
-Only ratified extensions are candidates for certification.
-This implies all custom extensions are also OUT-OF-SCOPE.
-
-==== Processor Certificate Class Naming Scheme
-
-Processor Certificate Class names have the following format:
-
-  <class><model>[<-base>]
-
-Where:
-
-* <class> is MC for Microcontroller Class and AC for Apps-processor Class
-* <model> is 3-digit integer defined as follows:
-** The hundreds's digit indicates the series
-** The ten's digit identifies large differences in mandatory extensions (e.g., V, H) within the series
-** The one's digit indentifies small/medium differences in mandatory extensions (e.g., Zicond, PMP) within the series
-* <base> is optional and is 32 for RV32I, 64 for RV64I, and 32E for RV32E
-** If a CTP supports multiple bases and <base> is omitted in a reference, it applies to all supported bases
-** If a CTP only supports one base then <base> is generally omitted
-
-[%autowidth]
-|===
-| CTP | TSC Profile | Description
-
-| MC100-series | TBD | 32/64-bit minimal microcontroller that runs low-level software on an RTOS or bare-metal (no virtual memory)
-| MC200-series | TBD | 32/64-bit intermediate microcontroller
-| MC300-series | TBD | 32/64-bit advanced microcontroller
-| AC100-series | RVB23 | 64-bit Apps-processor running Bespoke rich operating systems (e.g., Yocto Linux)
-| AC200-series | RVA23 | 64-bit Apps-processor running standard rich operating systems (e.g., commercial Linux distributions, Android)
-|===
-
-==== CSR Field Terminology
-
-.Definition of CSR Fields
-[%autowidth]
-|===
-| Field Type | Read Value After Writing Illegal Value | Read Value Function Of | Illegal Instruction Exception | Priv ISA Manual Quote
-
-| WLRL | Any deterministic legal or illegal value | Value before write and illegal value written | Optional
-| Implementations are permitted but not required to raise an illegal-instruction exception if an instruction attempts to write a non-supported value to a WLRL field. Implementations can return arbitrary bit patterns on the read of a WLRL field when the last write was of an illegal value, but the value returned should deterministically depend on the illegal written value and the value of the field prior to the write.
-| WARL | Any deterministic legal value | Any architectural hart state | Prohibited
-| Implementations will not raise an exception on writes of unsupported values to a WARL field. Implementations can return any legal value on the read of a WARL field when the last write was of an illegal value, but the legal value returned should deterministically depend on the illegal written value and the architectural state of the hart.
-| WPRI | 0 | Nothing | Not specified
-| Some whole read/write fields are reserved for future use. Implementations that do not furnish these fields must make them read-only zero.
-|===
-
-*WARL (Write Anything, Read Legal)*:
-
-The Priv ISA requires reads of WARL fields to return some implementation-dependent deterministic legal value
-after the field is written with an illegal value.
-Certifying such behaviors is expensive and provides low value for a certificate since software can't rely
-on a particular behavior from one implementation to another.
-
-Processor CTPs define writes to WARL fields of illegal values to be OUT-OF-SCOPE unless otherwise stated
-(i.e., certification tests will only ever write legal values to WARL fields except for the special cases listed below).
-When not OUT-OF-SCOPE, the required behavior is defined as this might be more constrained in implementations than
-in the standard.
-
-The following special cases for WARL are supported when explicitly listed in the corresponding CTP CSR field requirements:
-
-1. Probing for Field Width
-
-* Some WARL fields are variable length such as the ASID field in the virtual memory extension.
-* Here's the algorithm recommended to discover the ASID width:
-** The number of implemented ASID bits, termed ASIDLEN, may be determined by writing one to every bit position in
-   the ASID field, then reading back the value in the satp CSR to see which bit positions in the ASID field hold a one.
-* The RVCP-provided certification materials (certification tests, certification reference models) can map writes of
-  illegal values to the ASID field to the corresponding read value as long as they are provided the ASIDLEN value
-  for an implementation.
-
-2. Probing for Options
-
-* E.g., Writable misa bits
-
-3. Allowed values are a function of extension presence and/or their parameters
-
-* E.g., satp.mode legal write values
-
-*WLRL (Write Legal, Read Legal)*:
-
-The Priv ISA requires reads of WLRL fields to return some implementation-dependent deterministic arbitrary value
-after the field is written with an illegal value.
-Certifying such behaviors is expensive and provides low value for a certificate since software can't rely
-on a particular behavior.
-Processor CTPs define writes to WLRL fields of illegal values to be OUT-OF-SCOPE unless otherwise stated
-(i.e., certification tests will only ever write legal values to WLRL fields).
-
-*WPRI (Write Preserve, Read Ignore)*:
-
-The Priv ISA requires reads of WPRI fields to return a value of 0.
-Such WPRI fields are always unimplemented by definition.
-Certification tests are aware of which fields in the CSRs are WPRI and normally write them with 0 but will
-also write them with ~0 (all ones) and ensure that reads return 0 in both cases.
-It is OUT-OF-SCOPE for certification tests to write all possible values of WPRI fields
-(especially if they are more than just a few bits) and certification tests aren't intended to be comprehensive
-verification test suites anyways.
-
-=== Related Specifications
-
-[cols="2,2,3,3,3"]
-|===
-| Certificate Model | TSC Profile | Unpriv ISA Manual | Priv ISA Manual | Debug Manual
-
-| <%= proc_cert_model.name %>
-| <%= proc_cert_model.tsc_profile.nil? ? "No profile" : proc_cert_model.tsc_profile.marketing_name %>
-| <%= proc_cert_model.unpriv_isa_manual_revision %>
-| <%= proc_cert_model.priv_isa_manual_revision %>
-| <%= proc_cert_model.debug_manual_revision %>
-|===
-
-=== Privileged Modes
-
-|===
-| M | S | U | VS | VU
-
-| <% if proc_cert_class.mandatory_priv_modes.include?('M') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if proc_cert_class.mandatory_priv_modes.include?('S') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if proc_cert_class.mandatory_priv_modes.include?('U') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if proc_cert_class.mandatory_priv_modes.include?('VS') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if proc_cert_class.mandatory_priv_modes.include?('VU') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-
-|===
-
-<<<
-== Extensions
-
-Any RISC-V extensions not listed in this section are OUT-OF-SCOPE.
-The <%= proc_cert_model.name %> certificate doesn't cover their behaviors.
-
-<% ExtensionPresence.presence_types_obj.each do |presence_obj| -%>
-
-=== <%= presence_obj.to_s.capitalize %> Extensions
-
-<% ext_reqs = proc_cert_model.in_scope_ext_reqs(presence_obj) -%>
-<% if ext_reqs.empty? -%>
-None
-<% else -%>
-[%autowidth]
-|===
-| Requirement ID | Extension | Version | Long Name | Note
-
-<% ext_reqs.each do |ext_req| -%>
-<% ext = arch.extension(ext_req.name) -%>
-| <%= ext_req.req_id %>
-| <%= link_to_udb_doc_ext(ext_req.name) %>
-| <%= ext_req.requirement_specs.map(&:to_s).join(", ") %>
-| <%= ext.nil? ? "" : ext.long_name %>
-| <%= ext_req.note.nil? ? "" : ext_req.note %>
-<% end # each ext_req -%>
-|===
-<% end # if empty ext_reqs -%>
-
-<% proc_cert_model.extra_notes_for_presence(presence_obj)&.each do |extra_note| -%>
-NOTE: <%= extra_note.text %>
-
-<% end # each extra_note -%>
-
-<% end # each possible presence -%>
-
-<% unless proc_cert_model.recommendations.empty? -%>
-=== Recommendations
-
-Recommendations are not strictly mandated but are included to guide implementers.
-
-<% proc_cert_model.recommendations.each do |recommendation| -%>
-<%= recommendation.text %>
-<% end # each recommendation -%>
-<% end # unless recommendations empty -%>
-
-<<<
-== Implementation-dependencies
-
-RISC-V standards support many implementation-defined parameters. In many cases, there
-are no names associated with these parameters. Names are defined in this section when
-not provided in the associated standard.
-
-=== IN-SCOPE Parameters
-
-These implementation-dependent options defined by MANDATORY or OPTIONAL extensions are IN-SCOPE.
-An implementation must abide by the "Allowed Value(s)" to obtain a certificate.
-If the "Allowed Value(s)" is "Any" then any value allowed by the type is acceptable.
-
-<% if portfolio_design.all_in_scope_params.empty? -%>
-None
-<% else -%>
-[cols="4,2,1,1,2"]
-|===
-| Parameter | Type | Allowed Value(s) | Extension(s) | Note
-
-<% design.all_in_scope_params.each do |in_scope_param| -%>
-<% param = in_scope_param.param -%>
-<% in_scope_exts = portfolio_design.all_in_scope_exts_with_param(param) -%>
-| <%= param.name_potentially_with_link(in_scope_exts) %>
-| <%= param.schema_type %>
-| <%= in_scope_param.allowed_values %>
-| <%= in_scope_exts.each { |ext| param.name_with_link(ext) } %>
-a| <%= in_scope_param.note %>
-<% end # do -%>
-|===
-<% end # if table -%>
-
-=== OUT-OF-SCOPE Parameters
-
-These implementation-dependent options defined by MANDATORY or OPTIONAL extensions are OUT-OF-SCOPE.
-There are no restrictions on their values for certification purposes because the certificate
-doesn't cover the behavior of the associated RISC-V standard as a function of these parameters.
-
-<% if portfolio_design.all_out_of_scope_params.empty? -%>
-None
-<% else -%>
-[%autowidth]
-|===
-| Parameters | Type | Extension(s)
-
-<% portfolio_design.all_out_of_scope_params.each do |param| -%>
-<% exts = portfolio_design.all_in_scope_exts_without_param(param) -%>
-| <%= param.name_potentially_with_link(exts) %>
-| <%= param.schema_type %>
-| <%= exts.each { |ext| param.name_with_link(ext) } %>
-
-<% end # do -%>
-|===
-<% end # if table -%>
-
-== Traps
-
-RISC-V supports both synchronous exceptions and asynchronous interrupts.
-TODO: List only traps that exist in this processor certificate model (currently lists all possible in present extensions).
-See https://github.com/riscv-software-src/riscv-unified-db/issues/291 and https://github.com/riscv-software-src/riscv-unified-db/issues/324
-TODO: Show traps per privilege mode
-
-=== Synchronous Exceptions
-
-|===
-| `xcause.CODE` CSR Field Value | Name
-<% design.in_scope_exception_codes.sort_by{ |code| code.num }.each do |code| -%>
-| <%= code.num %> | <%= code.name %>
-<% end -%>
-|===
-
-=== Asynchronous Interrupts
-
-|===
-| `xcause.CODE` CSR Field Value | Name
-<% design.in_scope_interrupt_codes.sort_by{ |code| code.num }.each do |code| -%>
-| <%= code.num %> | <%= code.name %>
-<% end -%>
-|===
-
-== Instruction Summary
-
-TODO: List only instructions that exist in this processor certificate model.
-Currently lists all possible in present extensions so the I extension is providing both RV32I and RV64I instructions.
-See https://github.com/riscv-software-src/riscv-unified-db/issues/291 and https://github.com/riscv-software-src/riscv-unified-db/issues/324
+== Instruction Coverage Points
 
 [%autowidth]
 |===
@@ -361,9 +70,7 @@ See https://github.com/riscv-software-src/riscv-unified-db/issues/291 and https:
 <% end # do -%>
 |===
 
-== CSR Summary
-
-=== By Name
+== CSR Coverage Points
 
 [%autowidth]
 |===
@@ -378,54 +85,7 @@ See https://github.com/riscv-software-src/riscv-unified-db/issues/291 and https:
 <% end # do -%>
 |===
 
-=== By Address
-
-[%autowidth]
-|===
-| Address | Mode | Name | Long Name | Primary Extension
-
-<% design.in_scope_csrs.sort_by!(&:address).each do |csr| -%>
-| <%= "0x#{csr.address.to_s(16)}" %>
-| <%= csr.priv_mode %>
-| <%= link_to_udb_doc_csr(csr.name) %>
-| <%= csr.long_name %>
-| <%= csr.primary_defined_by %>
-<% end # do -%>
-|===
-
-<% unless proc_cert_model.requirement_groups.empty? -%>
-== Additional Requirements
-
-This section contains requirements in addition to those already specified related to extensions and parameters.
-These additional requirements are organized as groups of related requirements.
-
-<% proc_cert_model.requirement_groups.each do |group| -%>
-=== <%= group.name %>
-
-<%= group.description %>
-
-<% unless group.when.nil? -%>
-[IMPORTANT]
-<%= group.name %> requirements only apply when <%= group.when_pretty %>.
-<% end -%>
-
-[%autowidth]
-|===
-| Req Number | Description
-
-<% group.requirements.each do |req| -%>
-| <%= req.name %>
-a| <%= req.description %>
-<% unless req.when.nil? -%>
-[IMPORTANT]
-Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
-<% end -%>
-<% end -%>
-|===
-
-<% end -%>
-<% end # unless requirement_groups.empty? -%>
-
+// Appendices
 <%= portfolio_design.include_erb("ext_appendix.adoc.erb") %>
 <%= portfolio_design.include_erb("inst_appendix.adoc.erb") %>
 <%= portfolio_design.include_erb("csr_appendix.adoc.erb") %>
