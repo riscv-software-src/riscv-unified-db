@@ -5,14 +5,24 @@ kind: instruction
 name: cm.popret
 long_name: Destroy function call stack frame and return to `ra`.
 description: |
-  Destroy stack frame: load ra and 0 to 12 saved registers from the stack frame, deallocate the stack frame, return to `ra`.
-  This instruction pops (loads) the registers in `reg_list` from stack memory, and then adjusts the stack pointer by `stack_adj` and then return to ra.
+  Destroy stack frame: load `ra` and 0 to 12 saved registers from the stack frame, deallocate the stack frame, return to `ra`.
+  This instruction pops (loads) the registers in `reg_list` from stack memory, and then adjusts the stack pointer by `stack_adj` and then return to `ra`.
   --
+
   Stack Adjustment Calculation:
+
   --
   `stack_adj_base` is the minimum number of bytes, in multiples of 16-byte address increments, required to cover the registers in the list.
   `spimm` is the number of additional 16-byte address increments allocated for the stack frame.
   The total stack adjustment represents the total size of the stack frame, which is `stack_adj_base` added to `spimm` scaled by 16, as defined above.
+  --
+
+  Restrictions on stack_adj:
+
+  * it must be enough to store all of the listed registers
+  * it must be a multiple of 16 (bytes):
+  ** for RV32 the allowed values are: 16, 32, 48, 64, 80, 96, 112
+  ** for RV64 the allowed values are: 16, 32, 48, 64, 80, 96, 112, 128, 144, 160
 definedBy:
   anyOf:
     - Zcmp
