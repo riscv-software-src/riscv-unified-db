@@ -74,15 +74,15 @@ cert-coverage-points:
   - name: Encoding and basic operation
     description: |
       Encoding and basic operation for `mul` instruction
-    xrefs:
+    links:
       - manual:inst:mul:encoding
       - manual:inst:mul:operation
   - name: Illegal instruction exception when misa.M is 0
     description: |
       An illegal instruction exception is raised when the instruction is executed
       and `misa.M` is 0.
-    xrefs:
-      - manual:priv:csr:misa:disabling-extension
+    links:
+      - manual:csr:misa:disabling-extension
 
 cert-test-plan:
   - name: Encoding

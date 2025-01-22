@@ -27,9 +27,7 @@ Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
     "#{$root}/backends/portfolio/templates/beginning.adoc.erb",
     "#{$root}/backends/proc_cert/templates/typographic.adoc.erb",
     "#{$root}/backends/proc_cert/templates/rev_history.adoc.erb",
-    "#{PROC_CTP_DOC_DIR}/templates/proc_ctp.adoc.erb",
-    "#{PROC_CTP_GEN_DIR}/adoc/ext/riscv-isa-manual/README.md",
-    "#{PROC_CTP_GEN_DIR}/adoc/ext/riscv-isa-manual/docs-resources/README.md"
+    "#{PROC_CTP_DOC_DIR}/templates/proc_ctp.adoc.erb"
   ] do |t|
     # Ensure that the required submodule repositories are up-to-date.
     # TODO: Commented this out since it puts the submodule in the HEADless state

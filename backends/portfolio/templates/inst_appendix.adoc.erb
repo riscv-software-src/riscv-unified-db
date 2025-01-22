@@ -113,16 +113,36 @@ RV64::
 
 ==== Exceptions
 
-<%- exception_list = inst.reachable_exceptions_str(design.symtab) -%>
-<%- if exception_list.empty? -%>
+<% exception_list = inst.reachable_exceptions_str(design.symtab) -%>
+<% if exception_list.empty? -%>
 This instruction does not generate synchronous exceptions.
-<%- else -%>
+<% else -%>
 This instruction may result in the following synchronous exceptions:
 
-  <%- exception_list.sort.each do |etype| -%>
+  <% exception_list.sort.each do |etype| -%>
   * <%= etype %>
-  <%- end -%>
-
-<%- end -%>
+  <% end -%>
 
 <% end -%>
+
+==== Coverage Points
+
+<% if inst.cert_coverage_points.empty? -%>
+None defined yet.
+<% else -%>
+[%autowidth]
+|===
+| Name | Description | Links
+
+<% inst.cert_coverage_points.each do |cp| -%>
+| <%= cp.name %>
+| <%= cp.description %>
+a| <% cp.cert_links.each do |link| -%>
+* <%= link.to_adoc %>
+<% end # each link -%>
+<% end # each coverage point -%>
+|===
+
+<% end # if -%>
+
+<% end # each in_scope instruction -%>

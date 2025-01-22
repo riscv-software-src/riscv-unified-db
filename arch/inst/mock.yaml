@@ -27,22 +27,20 @@ access:
   u: always
   vs: always
   vu: always
-data_independent_timing:
-  true
-  # Want to add something like this to IDL code.
-  # [#idl:code:inst:mul:exception-illegal_instruction]#
-  # if (implemented?(ExtensionName::M) && (CSR[misa].M == 1'b0)) {
-  #   raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
-  # }#
+data_independent_timing: true
 operation(): |
-  if (implemented?(ExtensionName::M) && (CSR[misa].M == 1'b0)) {
-    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
+  #anchor("illegal-inst-exc-misa-disabled") {
+    if (implemented?(ExtensionName::M) && (CSR[misa].M == 1'b0)) {
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  #}
 
   XReg src1 = X[rs1];
   XReg src2 = X[rs2];
 
-  X[rd] = (src1 * src2)[XLEN-1:0];
+  #anchor("calculation") {
+    X[rd] = (src1 * src2)[XLEN-1:0];
+  #}
 
 sail(): |
   {
@@ -67,8 +65,16 @@ cert-coverage-points:
   - name: Encoding and basic operation
     description: |
       Encoding and basic operation for `mock` instruction
-    xrefs:
+    links:
+      - manual:inst:mul:encoding
       - udb:doc:inst:mock
+  - name: Illegal instruction exception when misa.M is 0
+    description: |
+      An illegal instruction exception is raised when the instruction is executed
+      and `misa.M` is 0.
+    links:
+      - manual:csr:misa:disabling-extension
+      # - idl:code:inst:mock:illegal-inst-exc-misa-disabled
 
 cert-test-plan:
   - name: Encoding

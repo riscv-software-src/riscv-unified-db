@@ -33,6 +33,10 @@ module TemplateHelpers
     erb.result(OpenStruct.new(inputs).instance_eval { binding })
   end
 
+  #########
+  # LINKS #
+  #########
+
   # Links are created with this proprietary format so that they can be converted
   # later into either AsciiDoc or Antora links (see the two implementations of "resolve_links").
   #   %%UDB_DOC_LINK%<type>;<name>;<link_text>%%
@@ -89,6 +93,10 @@ module TemplateHelpers
     "%%IDL_CODE_LINK%inst;#{inst_name.sanitize}.#{loc_name.sanitize};#{inst_name}.#{loc_name}%%"
   end
   # TODO: Add csr and csr_field support
+
+  ###########
+  # ANCHORS #
+  ###########
 
   # @return [String] An anchor for UDB extension documentation
   # @param ext_name [String] Name of the extension

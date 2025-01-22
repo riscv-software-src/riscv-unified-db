@@ -70,10 +70,10 @@ This CSR format changes dynamically with XLEN.
 |===
 @ Name @ Location @ Type @ Reset Value
 
-<%- csr.implemented_fields(design).each do |field| -%>
+<% csr.implemented_fields(design).each do |field| -%>
 @ <%= link_to_udb_doc_csr_field(csr.name, field.name) %>
 a@
-<%- if field.dynamic_location?(design) -%>
+<% if field.dynamic_location?(design) -%>
 
 [when,"<%= field.location_cond32 %>"]
 --
@@ -85,9 +85,9 @@ a@
 <%= field.location_pretty(design, 64) %>
 --
 
-<%- else -%>
+<% else -%>
 <%= field.location_pretty(design) %>
-<%- end -%>
+<% end -%>
 a@
 
 --
@@ -100,22 +100,22 @@ a@
 <%= field.reset_value_pretty(design) %>
 --
 
-<%- end -%>
+<% end -%>
 |===
 
 ==== Fields
 
-<%- if csr.implemented_fields(design).empty? -%>
+<% if csr.implemented_fields(design).empty? -%>
 This CSR has no fields. However, it must still exist (not cause an `Illegal Instruction` trap) and always return zero on a read.
-<%- else -%>
+<% else -%>
 
-<%- csr.implemented_fields(design).each do |field| -%>
+<% csr.implemented_fields(design).each do |field| -%>
 <%= anchor_for_udb_doc_csr_field(csr.name, field.name) %>
 ===== `<%= field.name %>` Field
 
-<%- if !field.defined_in_all_bases? -%>
+<% if !field.defined_in_all_bases? -%>
 IMPORTANT: <%= field.name %> is only defined in <%= field.base32_only? ? "RV32" : "RV64" %> (`<%= field.base32_only? ? field.location_cond32 : field.location_cond64 %>`)
-<%- end -%>
+<% end -%>
 
 ****
 Location::
@@ -132,10 +132,10 @@ Reset value::
 
 ****
 
-<%- end -%>
-<%- end -%>
+<% end -%>
+<% end -%>
 
-<%- if csr.implemented_fields(design).map(&:has_custom_sw_write?).any? -%>
+<% if csr.implemented_fields(design).map(&:has_custom_sw_write?).any? -%>
 ==== Software write
 
 This CSR may store a value that is different from what software attempts to write.
@@ -145,17 +145,17 @@ written value:
 
 [idl]
 ----
-<%- csr.implemented_fields(design).each do |field| -%>
-<%- if field.has_custom_sw_write? -%>
+<% csr.implemented_fields(design).each do |field| -%>
+<% if field.has_custom_sw_write? -%>
 <%= field.name %> = <%= field["sw_write(csr_value)"] %>
-<%- else -%>
+<% else -%>
 <%= field.name %> = csr_value.<%= field.name %>
-<%- end -%>
-<%- end -%>
+<% end -%>
+<% end -%>
 ----
-<%- end -%>
+<% end -%>
 
-<%- if csr.has_custom_sw_read? -%>
+<% if csr.has_custom_sw_read? -%>
 ==== Software read
 
 This CSR may return a value that is different from what is stored in hardware.
@@ -164,6 +164,6 @@ This CSR may return a value that is different from what is stored in hardware.
 ----
 <%= csr.sw_read_ast(design.symtab).gen_adoc %>
 ----
-<%- end -%>
+<% end -%>
 
 <% end # do in_scope_csrs -%>
