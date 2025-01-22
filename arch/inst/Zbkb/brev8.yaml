@@ -6,8 +6,7 @@ name: brev8
 long_name: Reverse bits in bytes
 description: |
   This instruction reverses the order of the bits in every byte of a register.
-definedBy:
-  anyOf: [Zbkb]
+definedBy: Zbkb
 assembly: xd, xs1
 encoding:
   match: 011010000111-----101-----0010011
