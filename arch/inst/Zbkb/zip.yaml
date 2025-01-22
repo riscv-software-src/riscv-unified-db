@@ -9,7 +9,7 @@ description: |
   of a destination word. It is the inverse of the unzip instruction. This instruction is available only on
   RV32.
 definedBy:
-  anyOf: [B, Zbkb, Zk, Zkn, Zks]
+  anyOf: [Zbkb]
 assembly: xd, xs1
 encoding:
   match: 000010001111-----001-----0010011
@@ -26,10 +26,6 @@ access:
 data_independent_timing: false
 base: 32
 operation(): |
-  if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
-    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
-
   XReg input = X[rs1];
   XReg output = 0;
 
@@ -41,7 +37,6 @@ operation(): |
   X[rd] = output;
 
 sail(): |
-
   foreach (i from 0 to xlen/2-1) {
     X(rd)[2*i] = X(rs1)[i];
     X(rd)[2*i+1] = X(rs1)[i+xlen/2];

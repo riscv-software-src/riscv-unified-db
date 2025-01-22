@@ -7,7 +7,7 @@ long_name: Reverse bits in bytes
 description: |
   This instruction reverses the order of the bits in every byte of a register.
 definedBy:
-  anyOf: [B, Zbkb, Zk, Zkn, Zks]
+  anyOf: [Zbkb]
 assembly: xd, xs1
 encoding:
   match: 011010000111-----101-----0010011
@@ -23,10 +23,6 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
-    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
-
   XReg input = X[rs1];
   XReg output = 0;
 

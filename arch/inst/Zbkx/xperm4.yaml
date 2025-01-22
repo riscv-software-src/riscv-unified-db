@@ -9,7 +9,7 @@ description: |
   elements. The rs2 register contains a vector of XLEN/4 4-bit indexes. The result is each element in
   rs2 replaced by the indexed element in rs1, or zero if the index into rs2 is out of bounds.
 definedBy:
-  anyOf: [B, Zbkx, Zk, Zkn, Zks]
+  anyOf: [Zbkx]
 assembly: xd, xs1, xs2
 encoding:
   match: 0010100----------010-----0110011
@@ -27,10 +27,6 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
-    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
-
   XReg input1 = X[rs1];
   XReg input2 = X[rs2];
   XReg output = 0;
