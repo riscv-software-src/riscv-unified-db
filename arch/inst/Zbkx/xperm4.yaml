@@ -3,7 +3,7 @@
 $schema: inst_schema.json#
 kind: instruction
 name: xperm4
-long_name: Nibble-wise lookup of indicies into a vector.
+long_name: Crossbar permutation (nibbles)
 description: |
   The xperm4 instruction operates on nibbles. The rs1 register contains a vector of XLEN/4 4-bit
   elements. The rs2 register contains a vector of XLEN/4 4-bit indexes. The result is each element in
