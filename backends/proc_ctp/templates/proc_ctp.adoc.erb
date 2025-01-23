@@ -86,9 +86,9 @@ The specific rules for updating the version number for a CTP are as follows:
 |===
 
 // Appendices
-<%= portfolio_design.include_erb("ext_appendix.adoc.erb") %>
-<%= portfolio_design.include_erb("inst_appendix.adoc.erb") %>
-<%= portfolio_design.include_erb("csr_appendix.adoc.erb") %>
+<%= portfolio_design.include_erb("ext_appendix.adoc.erb", { "gen_ctp_content" => true }) %>
+<%= portfolio_design.include_erb("inst_appendix.adoc.erb", { "gen_ctp_content" => true }) %>
+<%= portfolio_design.include_erb("csr_appendix.adoc.erb", { "gen_ctp_content" => true }) %>
 <%= portfolio_design.include_erb("idl_func_appendix.adoc.erb") %>
 
 <<<

@@ -31,15 +31,19 @@ class ProcCertDesign < PortfolioDesign
   # @return [String] A string representation of the object.
   def inspect = "ProcCertDesign##{name}"
 
+  # @param extra_inputs [Array<Hash>] Any extra inputs to be passed to ERB template.
   # @return [Hash<String, Object>] Hash of objects to be used in ERB templates
   # Add certificate-specific objects to the parent hash.
-  def erb_env
-    parent_hash = super
-    parent_hash[:proc_cert_design] = self
-    parent_hash[:proc_cert_model] = proc_cert_model
-    parent_hash[:proc_cert_class] = proc_cert_class
+  def erb_env(*extra_inputs)
+    raise ArgumentError, "extra_inputs must be an Array but is a #{extra_inputs.class}" unless extra_inputs.is_a?(Array)
 
-    parent_hash
+    h = super   # Call parent method with whatever args I got
+
+    h[:proc_cert_design] = self
+    h[:proc_cert_model] = proc_cert_model
+    h[:proc_cert_class] = proc_cert_class
+
+    h
   end
 
   # Include a partial ERB template into a full ERB template. Can be either in
@@ -47,8 +51,9 @@ class ProcCertDesign < PortfolioDesign
   #
   # @param template_path [String] Name of template file located in backends/portfolio/templates
   #                               or in backends/proc_cert/templates
+  # @param extra_inputs [Hash<String, Object>] Any extra inputs to be passed to ERB template.
   # @return [String] Result of ERB evaluation of the template file
-  def include_erb(template_name)
+  def include_erb(template_name, extra_inputs = {})
     proc_cert_template_pname = "proc_cert/templates/#{template_name}"
     proc_cert_template_path = Pathname.new($root / "backends" / proc_cert_template_pname)
 
@@ -59,10 +64,10 @@ class ProcCertDesign < PortfolioDesign
       raise "Both #{proc_cert_template_pname} and #{portfolio_template_pname} exist. Need unique names."
     elsif proc_cert_template_path.exist?
       puts "UPDATE: #{portfolio_design_type} processing ERB partial template '#{proc_cert_template_pname}'"
-      partial(proc_cert_template_pname, erb_env)
+      partial(proc_cert_template_pname, erb_env(extra_inputs))
     elsif portfolio_template_path.exist?
       puts "UPDATE: #{portfolio_design_type} processing ERB partial template '#{portfolio_template_pname}'"
-      partial(portfolio_template_pname, erb_env)
+      partial(portfolio_template_pname, erb_env(extra_inputs))
     else
       raise "Can't find file #{template_name} in either #{proc_cert_template_pname} or #{portfolio_template_pname}."
     end

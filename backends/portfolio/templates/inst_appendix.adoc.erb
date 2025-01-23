@@ -125,6 +125,8 @@ This instruction may result in the following synchronous exceptions:
 
 <% end -%>
 
+<% if defined?(gen_ctp_content) && gen_ctp_content -%>
+
 <% unless inst.cert_coverage_points.empty? -%>
 ==== Certification Coverage Points
 
@@ -165,5 +167,7 @@ a| <% tp.cert_steps.each do |step| -%>
 |===
 
 <% end # unless no test plans -%>
+
+<% end # if gen_ctp_content -%>
 
 <% end # each in_scope instruction -%>

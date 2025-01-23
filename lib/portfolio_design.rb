@@ -267,11 +267,14 @@ class PortfolioDesign < Design
   # EXTRA METHODS #
   #################
 
-  #@ return [Hash<String, Object>] Hash of objects available to ERB templates and
+  # @param extra_inputs [Hash<String, Object>] Any extra inputs to be passed to ERB template.
+  # @return [Hash<String, Object>] Hash of objects available to ERB templates and
   #                                ERB fragments included in the main ERB template.
   # Put this in a method so it can be easily overridden by subclasses.
-  def erb_env
-    {
+  def erb_env(extra_inputs = {})
+    raise ArgumentError, "extra_inputs must be an Hash but is a #{extra_inputs.class}" unless extra_inputs.is_a?(Hash)
+
+    h = {
       arch: arch,
       design: self,
       portfolio_design: self,
@@ -280,6 +283,8 @@ class PortfolioDesign < Design
       portfolio_kind: @portfolio_kind,
       portfolios: @portfolio_grp.portfolios
     }
+
+    h.merge!(extra_inputs)
   end
 
   # Called from tasks.rake file to add standard set of objects available to ERB templates.
@@ -294,11 +299,11 @@ class PortfolioDesign < Design
   # Include a partial ERB template into a full ERB template.
   #
   # @param template_path [String] Name of template file located in backends/portfolio/templates
+  # @param extra_inputs [Hash<String, Object>] Any extra inputs to be passed to ERB template.
   # @return [String] Result of ERB evaluation of the template file
-  def include_erb(template_name)
+  def include_erb(template_name, extra_inputs = {})
     template_pname = "portfolio/templates/#{template_name}"
-
     puts "UPDATE: #{portfolio_design_type} processing ERB partial template '#{template_pname}'"
-    partial(template_pname, erb_env)
+    partial(template_pname, erb_env(extra_inputs))
   end
 end
