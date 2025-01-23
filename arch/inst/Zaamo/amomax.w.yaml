@@ -2,19 +2,19 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: amoswap.w
-long_name: Atomic SWAP word
+name: amomax.w
+long_name: Atomic MAX word
 description: |
   Atomically:
 
     * Load the word at address _rs1_
     * Write the sign-extended value into _rd_
-    * Store the least-significant word of register _rs2_ to the address in _rs1_
-definedBy:
-  anyOf: [A, Zaamo]
+    * Signed compare the least-significant word of register _rs2_ to the loaded value, and select the maximum value
+    * Write the maximum to the address in _rs1_
+definedBy: Zaamo
 assembly: xd, xs2, (xrs1)
 encoding:
-  match: 00001------------010-----0101111
+  match: 10100------------010-----0101111
   variables:
     - name: aq
       location: 26
@@ -40,7 +40,7 @@ operation(): |
 
   XReg virtual_address = X[rs1];
 
-  X[rd] = amo<32>(virtual_address, X[rs2][31:0], AmoOperation::Swap, aq, rl, $encoding);
+  X[rd] = amo<32>(virtual_address, X[rs2][31:0], AmoOperation::Max, aq, rl, $encoding);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
