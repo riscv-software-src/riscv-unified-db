@@ -2,21 +2,20 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: amominu.d
-long_name: Atomic MIN unsigned doubleword
+name: amoor.d
+long_name: Atomic fetch-and-or doubleword
 description: |
   Atomically:
 
     * Load the doubleword at address _rs1_
     * Write the loaded value into _rd_
-    * Unsigned compare the value of register _rs2_ to the loaded value, and select the minimum value
-    * Write the minimum to the address in _rs1_
-definedBy:
-  anyOf: [A, Zaamo]
+    * OR the value of register _rs2_ to the loaded value
+    * Write the result to the address in _rs1_
+definedBy: Zaamo
 base: 64
 assembly: xd, xs2, (xrs1)
 encoding:
-  match: 11000------------011-----0101111
+  match: 01000------------011-----0101111
   variables:
     - name: aq
       location: 26
@@ -42,7 +41,7 @@ operation(): |
 
   XReg virtual_address = X[rs1];
 
-  X[rd] = amo<64>(virtual_address, X[rs2], AmoOperation::Minu, aq, rl, $encoding);
+  X[rd] = amo<64>(virtual_address, X[rs2], AmoOperation::Or, aq, rl, $encoding);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

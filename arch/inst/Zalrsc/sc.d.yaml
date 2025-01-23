@@ -2,30 +2,24 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: sc.w
-long_name: Store conditional word
+name: sc.d
+long_name: Store conditional doubleword
 description: |
-  `sc.w` conditionally writes a word in _rs2_ to the address in _rs1_:
-  the `sc.w` succeeds only if the reservation is still valid and the
-  reservation set contains the bytes being written. If the `sc.w` succeeds,
-  the instruction writes the word in _rs2_ to memory, and it writes zero to _rd_.
-  If the `sc.w` fails, the instruction does not write to memory, and it writes a
-  nonzero value to _rd_. For the purposes of memory protection, a failed `sc.w`
+  `sc.d` conditionally writes a doubleword in _rs2_ to the address in _rs1_:
+  the `sc.d` succeeds only if the reservation is still valid and the
+  reservation set contains the bytes being written. If the `sc.d` succeeds,
+  the instruction writes the doubleword in _rs2_ to memory, and it writes zero to _rd_.
+  If the `sc.d` fails, the instruction does not write to memory, and it writes a
+  nonzero value to _rd_. For the purposes of memory protection, a failed `sc.d`
   may be treated like a store. Regardless of success or failure, executing an
-  `sc.w` instruction invalidates any reservation held by this hart.
-
-  <%- if MXLEN == 64 -%>
-  [NOTE]
-  If a value other than 0 or 1 is defined as a result for `sc.w`, the value will before
-  sign-extended into _rd_.
-  <%- end -%>
+  `sc.d` instruction invalidates any reservation held by this hart.
 
   The failure code with value 1 encodes an unspecified failure.
   Other failure codes are reserved at this time.
   Portable software should only assume the failure code will be non-zero.
 
   The address held in _rs1_ must be naturally aligned to the size of the operand
-  (_i.e._, eight-byte aligned for doublewords and four-byte aligned for words).
+  (_i.e._, eight-byte aligned).
   If the address is not naturally aligned, an address-misaligned exception or an
   access-fault exception will be generated.
   The access-fault exception can be generated for a memory access that would otherwise
@@ -104,11 +98,11 @@ description: |
   Software should not set the _rl_ bit on an LR instruction unless the _aq_ bit is also set.
   LR.rl and SC.aq instructions are not guaranteed to provide any stronger ordering than those
   with both bits clear, but may result in lower performance.
-definedBy:
-  anyOf: [A, Zalrsc]
+definedBy: Zalrsc
+base: 64
 assembly: xd, xs2, xs1
 encoding:
-  match: 00011------------010-----0101111
+  match: 00011------------011-----0101111
   variables:
     - name: aq
       location: 26
@@ -135,7 +129,7 @@ operation(): |
   XReg virtual_address = X[rs1];
   XReg value = X[rs2];
 
-  if (!is_naturally_aligned<32>(virtual_address)) {
+  if (!is_naturally_aligned<64>(virtual_address)) {
     # can raise either LoadAddressMisaligned *or* LoadAccessFault
     #
     # from the spec:
@@ -153,7 +147,7 @@ operation(): |
     }
   }
 
-  Boolean success = store_conditional<32>(virtual_address, value, aq, rl, $encoding);
+  Boolean success = store_conditional<64>(virtual_address, value, aq, rl, $encoding);
   X[rd] = success ? 0 : 1;
 
 # SPDX-SnippetBegin
