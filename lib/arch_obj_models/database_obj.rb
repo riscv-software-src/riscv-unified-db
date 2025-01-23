@@ -47,6 +47,62 @@ class DatabaseObject
     @description = data["description"]
   end
 
+  # @return [Array<CertCoveragePoint>]
+  def cert_coverage_points
+    return @cert_coverage_points unless @cert_coverage_points.nil?
+
+    @cert_coverage_points = []
+    @data["cert-coverage-points"]&.each do |cert_data|
+      @cert_coverage_points << CertCoveragePoint.new(cert_data, self)
+    end
+    @cert_coverage_points
+  end
+
+  # @return [Hash<String, CertCoveragePoint>] Hash of all coverage points defined by database object
+  def cert_coverage_point_hash
+    return @cert_coverage_point_hash unless @cert_coverage_point_hash.nil?
+
+    @cert_coverage_point_hash = {}
+    cert_coverage_points.each do |cp|
+      @cert_coverage_point_hash[cp.name] = cp
+    end
+    @cert_coverage_point_hash
+  end
+
+  # @return [CertCoveragePoint]
+  # @return [nil] if there is no certification coverage pointed named +name+
+  def cert_coverage_point(name)
+    cert_coverage_point_hash[name]
+  end
+
+  # @return [Array<CertTestProcedure>]
+  def cert_test_procedures
+    return @cert_test_procedures unless @cert_test_procedures.nil?
+
+    @cert_test_procedures = []
+    @data["cert-test-procedures"]&.each do |cert_data|
+      @cert_test_procedures << CertTestProcedure.new(cert_data, self)
+    end
+    @cert_test_procedures
+  end
+
+  # @return [Hash<String, CertTestProcedure>] Hash of all coverage points defined by database object
+  def cert_test_procedure_hash
+    return @cert_test_procedure_hash unless @cert_test_procedure_hash.nil?
+
+    @cert_test_procedure_hash = {}
+    cert_test_procedures.each do |tp|
+      @cert_test_procedure_hash[tp.name] = tp
+    end
+    @cert_test_procedure_hash
+  end
+
+  # @return [CertTestProcedure]
+  # @return [nil] if there is no certification test plan named +name+
+  def cert_test_procedure(name)
+    cert_test_procedure_hash[name]
+  end
+
  # Exception raised when there is a problem with a schema file
   class SchemaError < ::StandardError
     # result from JsonSchemer.validate
@@ -627,4 +683,105 @@ class AlwaysTrueSchemaCondition
 
   def to_h = {}
   def minimize = {}
+end
+
+class CertCoveragePoint
+  # @param data [Hash<String, Object>] Data from YAML file
+  # @param db_obj [DatabaseObject]
+  def initialize(data, db_obj)
+    raise ArgumentError, "Need Hash but was passed a #{data.class}" unless data.is_a?(Hash)
+    raise ArgumentError, "Need DatabaseObject but was passed a #{db_obj.class}" unless db_obj.is_a?(DatabaseObject)
+
+    @data = data
+    @db_obj = db_obj
+  end
+
+  # @return [String] Name of the coverage point
+  def name = @data["name"]
+
+  # @return [String] Description of coverage point (could be multiple lines)
+  def description = @data["description"]
+
+  # @return [Array<CertLink>] List of certification point links (cross references)
+  def cert_links
+    return @cert_links unless @cert_links.nil?
+
+    @cert_links = []
+    @data["links"]&.each do |link_data|
+      @cert_links << CertLink.new(link_data)
+    end
+    @cert_links
+  end
+end
+
+class CertLink
+  # @param data [String] The cross reference link provided in the YAML
+  def initialize(data)
+    raise ArgumentError, "Need String but was passed a #{data.class}" unless data.is_a?(String)
+    @data = data
+  end
+
+  # @return [String] Asciidoc to create desired link.
+  def to_adoc
+    "<<#{@data},#{@data}>>"
+  end
+end
+
+class CertTestProcedure
+  # @param data [Hash<String, Object>] Data from YAML file
+  # @param db_obj [DatabaseObject]
+  def initialize(data, db_obj)
+    raise ArgumentError, "Need Hash but was passed a #{data.class}" unless data.is_a?(Hash)
+    raise ArgumentError, "Need DatabaseObject but was passed a #{db_obj.class}" unless db_obj.is_a?(DatabaseObject)
+
+    @data = data
+    @db_obj = db_obj
+  end
+
+  # @return [String] Name of the test plan
+  def name = @data["name"]
+
+  # @return [String] Description of test plan (could be multiple lines)
+  def description = @data["description"]
+
+  # @return [Array<CertCoveragePoint>]
+  def cert_coverage_points
+    return @cert_coverage_points unless @cert_coverage_points.nil?
+
+    @cert_coverage_points = []
+    @data["coverage-points"]&.each do |name|
+      cp = @db_obj.cert_coverage_point(name)
+      raise ArgumentError, "CertTestProcedure named '#{name}' for '#{@db_obj.name}' of kind #{@db_obj.kind} can't be found" if cp.nil?
+      @cert_coverage_points << cp
+    end
+    @cert_coverage_points
+  end
+
+  # @return [Array<CertStep>] List of certification test plan steps
+  def cert_steps
+    return @cert_steps unless @cert_steps.nil?
+
+    @cert_steps = []
+    @data["steps"]&.each do |step_data|
+      @cert_steps << CertStep.new(step_data)
+    end
+    @cert_steps
+  end
+end
+
+class CertStep
+  # @param data [Hash<String, String>] The step information from the YAML
+  def initialize(data)
+    raise ArgumentError, "Need Hash but was passed a #{data.class}" unless data.is_a?(Hash)
+    @data = data
+  end
+
+  # @return [String] Name of the step
+  def name = @data["name"]
+
+  # @return [String] Description of the step
+  def description = @data["description"]
+
+  # @return [String] Optional note (can be nil)
+  def note = @data["note"]
 end

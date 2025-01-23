@@ -125,11 +125,9 @@ This instruction may result in the following synchronous exceptions:
 
 <% end -%>
 
-==== Coverage Points
+<% unless inst.cert_coverage_points.empty? -%>
+==== Certification Coverage Points
 
-<% if inst.cert_coverage_points.empty? -%>
-None defined yet.
-<% else -%>
 [%autowidth]
 |===
 | Name | Description | Links
@@ -143,6 +141,29 @@ a| <% cp.cert_links.each do |link| -%>
 <% end # each coverage point -%>
 |===
 
-<% end # if -%>
+<% end # unless no coverage points -%>
+
+<% unless inst.cert_test_procedures.empty? -%>
+==== Certification Test Procedures
+
+[%autowidth]
+|===
+| Name | Description | Coverage Points | Steps
+
+<% inst.cert_test_procedures.each do |tp| -%>
+| <%= tp.name %>
+| <%= tp.description %>
+a| <% tp.cert_coverage_points.each do |cp| -%>
+* <%= cp.name %>
+<% end # each cp -%>
+a| <% tp.cert_steps.each do |step| -%>
+. <%= step.name %>
+* <%= step.description %>
+<%= step.note.nil? ? "" : "* " + step.note %>
+<% end # each step -%>
+<% end # each test plan -%>
+|===
+
+<% end # unless no test plans -%>
 
 <% end # each in_scope instruction -%>

@@ -6,6 +6,8 @@ require "pathname"
 
 PROC_CTP_DOC_DIR = Pathname.new "#{$root}/backends/proc_ctp"
 PROC_CTP_GEN_DIR = $root / "gen" / "proc_ctp"
+PROC_CTP_ISA_MAN_DIR = "#{PROC_CTP_GEN_DIR}/adoc/ext/riscv-isa-manual"
+PROC_CTP_DOCS_RESOURCES_DIR = "#{PROC_CTP_ISA_MAN_DIR}/docs-resources"
 
 Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
   model_name = File.basename(f, ".yaml")
@@ -13,7 +15,7 @@ Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
   class_name = File.basename(model_obj['class']['$ref'].split("#")[0], ".yaml")
   raise "Ill-formed processor certificate model file #{f}: missing 'class' field" if model_obj['class'].nil?
 
-  file "#{$root}/gen/proc_ctp/adoc/#{model_name}-CTP.adoc" => [
+  file "#{PROC_CTP_GEN_DIR}/adoc/#{model_name}-CTP.adoc" => [
     __FILE__,
     "#{$root}/arch/proc_cert_class/#{class_name}.yaml",
     "#{$root}/arch/proc_cert_model/#{model_name}.yaml",
@@ -38,19 +40,20 @@ Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
     # Pull in the latest version of the csc-riscv-isa-manual.
     sh "cd ext/csc-riscv-isa-manual; git fetch; git merge origin/main 2>&1"
 
+    # Pull in the latest version of the docs-resources.
+    #sh "cd ext/docs-resources; git fetch; git merge origin/main 2>&1"
+
+
     # Use git archive to extract the latest version of the csc-riscv-isa-manual.
-    FileUtils.mkdir_p File.dirname(t.name)
+    FileUtils.mkdir_p "#{PROC_CTP_ISA_MAN_DIR}"
     Dir.chdir($root / "ext" / "csc-riscv-isa-manual") do
-      sh "git archive --format=tar HEAD | tar xvf - -C #{File.dirname(t.name)}"
+      sh "git archive --format=tar HEAD | tar xf - -C #{PROC_CTP_ISA_MAN_DIR}"
     end
 
-    # Pull in the latest version of the docs-resources.
-    sh "cd ext/docs-resources; git fetch; git merge origin/main 2>&1"
-
     # Use git archive to extract the latest version of the docs-resources.
-    FileUtils.mkdir_p File.dirname(t.name)
+    FileUtils.mkdir_p "#{PROC_CTP_DOCS_RESOURCES_DIR}"
     Dir.chdir($root / "ext" / "docs-resources") do
-      sh "git archive --format=tar HEAD | tar xvf - -C #{File.dirname(t.name)}"
+      sh "git archive --format=tar HEAD | tar xf - -C #{PROC_CTP_DOCS_RESOURCES_DIR}"
     end
 
     proc_cert_create_adoc("#{PROC_CTP_DOC_DIR}/templates/proc_ctp.adoc.erb", t.name, model_name)

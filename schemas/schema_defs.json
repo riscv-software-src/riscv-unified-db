@@ -267,6 +267,65 @@
           "$ref": "#/$defs/when_condition"
         }
       }
+    },
+    "cert-coverage-points": {
+      "description": "Architecturally visible behaviors requiring validation by certification tests",
+      "type": "array",
+      "required": ["name", "link", "description"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "link": {
+          "type": "string",
+          "description": "Cross reference to UDB documentation, ISA manual, or IDL code"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cert-test-procedures": {
+      "description": "Procedure test must follow to test certification coverage points",
+      "type": "array",
+      "required": ["name", "description", "coverage-points"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "coverage-points": {
+          "type": "array",
+          "description": "List of certification coverage points to be validated",
+          "items": {
+            "type": "string"
+          }
+        },
+        "steps": {
+          "description": "List of steps to be followed in order by test",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "description"],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "note": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
     }
   }
 }
