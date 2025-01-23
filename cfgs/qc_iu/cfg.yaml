@@ -10,5 +10,6 @@ mandatory_extensions:
   - { name: Smrnmi }
   - { name: I }
   - { name: Xqci, version: "~> 0.4" }
+additional_extensions: false
 params:
   XLEN: 32

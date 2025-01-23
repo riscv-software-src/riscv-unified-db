@@ -14,7 +14,7 @@ definedBy:
     - Xqcilsm
 base: 32
 encoding:
-  match: 00---------------111-----0101011
+  match: 01---------------111-----0101011
   variables:
     - name: imm
       location: 29-25
