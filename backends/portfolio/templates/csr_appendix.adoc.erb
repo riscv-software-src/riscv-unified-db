@@ -130,10 +130,15 @@ Type::
 Reset value::
 <%= field.reset_value_pretty(design) %>
 
+<% if defined?(gen_ctp_content) && gen_ctp_content -%>
+<%= portfolio_design.include_erb("coverage_points.adoc.erb", { "db_obj" => field }) %>
+<%= portfolio_design.include_erb("test_procedures.adoc.erb", { "db_obj" => field }) %>
+<% end # if gen_ctp_content -%>
+
 ****
 
-<% end -%>
-<% end -%>
+<% end # Each field -%>
+<% end # if no fields -%>
 
 <% if csr.implemented_fields(design).map(&:has_custom_sw_write?).any? -%>
 ==== Software write
@@ -165,5 +170,10 @@ This CSR may return a value that is different from what is stored in hardware.
 <%= csr.sw_read_ast(design.symtab).gen_adoc %>
 ----
 <% end -%>
+
+<% if defined?(gen_ctp_content) && gen_ctp_content -%>
+<%= portfolio_design.include_erb("coverage_points.adoc.erb", { "db_obj" => csr }) %>
+<%= portfolio_design.include_erb("test_procedures.adoc.erb", { "db_obj" => csr }) %>
+<% end # if gen_ctp_content -%>
 
 <% end # do in_scope_csrs -%>

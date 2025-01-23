@@ -1,0 +1,17 @@
+<% unless db_obj.cert_coverage_points.empty? -%>
+==== Coverage Points
+
+[%autowidth]
+|===
+| Name | Description | Links
+
+<% db_obj.cert_coverage_points.each do |cp| -%>
+| <%= cp.name %>
+| <%= cp.description %>
+a| <% cp.cert_links.each do |link| -%>
+* <%= link.to_adoc %>
+<% end # each link -%>
+<% end # each coverage point -%>
+|===
+
+<% end # unless no coverage points -%>

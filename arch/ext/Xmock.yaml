@@ -154,3 +154,28 @@ params:
         type: boolean
       maxItems: 8
       minItems: 8
+cert-coverage-points:
+  - name: Mock coverage point 1
+    description: Let's have fun with the `Xmock` extension
+    links:
+      - manual:inst:mul:encoding
+      - udb:doc:inst:mock
+  - name: Mock coverage point 2
+    description: And some more fun!
+    links:
+      - manual:csr:misa:disabling-extension
+cert-test-procedures:
+  - name: My first procedure
+    description: Verify that when it rains in Spain, it rains mainly on the plains!
+    coverage-points:
+      - Mock coverage point 2
+      - Mock coverage point 1
+    steps:
+      - name: wait for rain
+        description: First we need some rain
+        note: This is getting silly. Very unprofessional.
+      - name: measure rainfall
+        description: Get a bunch of buckets around Spain
+        note: Yup, pretty silly
+      - name: compare rainful
+        description: fail unless more rain on plains than other regions

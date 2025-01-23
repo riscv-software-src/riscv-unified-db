@@ -126,47 +126,8 @@ This instruction may result in the following synchronous exceptions:
 <% end -%>
 
 <% if defined?(gen_ctp_content) && gen_ctp_content -%>
-
-<% unless inst.cert_coverage_points.empty? -%>
-==== Coverage Points
-
-[%autowidth]
-|===
-| Name | Description | Links
-
-<% inst.cert_coverage_points.each do |cp| -%>
-| <%= cp.name %>
-| <%= cp.description %>
-a| <% cp.cert_links.each do |link| -%>
-* <%= link.to_adoc %>
-<% end # each link -%>
-<% end # each coverage point -%>
-|===
-
-<% end # unless no coverage points -%>
-
-<% unless inst.cert_test_procedures.empty? -%>
-==== Test Procedures
-
-<% inst.cert_test_procedures.each do |tp| -%>
-*Name*: <%= tp.name %> +
-*Description*: <%= tp.description %> +
-
-.*Coverage Points*:
-<% tp.cert_coverage_points.each do |cp| -%>
-* <%= cp.name %>
-<% end # each cp -%>
-
-.*Steps*:
-<% tp.cert_steps.each do |step| -%>
-. <%= step.name %>
-* <%= step.description %>
-<%= step.note.nil? ? "" : "[NOTE]\n" + step.note %>
-<% end # each step -%>
-<% end # each test plan -%>
-
-<% end # unless no test plans -%>
-
+<%= portfolio_design.include_erb("coverage_points.adoc.erb", { "db_obj" => inst }) %>
+<%= portfolio_design.include_erb("test_procedures.adoc.erb", { "db_obj" => inst }) %>
 <% end # if gen_ctp_content -%>
 
 <% end # each in_scope instruction -%>
