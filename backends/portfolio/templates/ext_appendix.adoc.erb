@@ -7,9 +7,7 @@
 <%= anchor_for_udb_doc_ext(ext_req.name) %>
 === Extension <%= ext_req.name %> +
 *Long Name*: <%= ext.long_name %> +
-
 *Version Requirement*: <%= ext_req.requirement_specs.map(&:to_s).join(", ") %> +
-
 <% if portfolios.size > 1 -%>
 .<%= ext.name %> Extension Presence
 |===

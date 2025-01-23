@@ -128,7 +128,7 @@ This instruction may result in the following synchronous exceptions:
 <% if defined?(gen_ctp_content) && gen_ctp_content -%>
 
 <% unless inst.cert_coverage_points.empty? -%>
-==== Certification Coverage Points
+==== Coverage Points
 
 [%autowidth]
 |===
@@ -146,25 +146,24 @@ a| <% cp.cert_links.each do |link| -%>
 <% end # unless no coverage points -%>
 
 <% unless inst.cert_test_procedures.empty? -%>
-==== Certification Test Procedures
-
-[%autowidth]
-|===
-| Name | Description | Coverage Points | Steps
+==== Test Procedures
 
 <% inst.cert_test_procedures.each do |tp| -%>
-| <%= tp.name %>
-| <%= tp.description %>
-a| <% tp.cert_coverage_points.each do |cp| -%>
+*Name*: <%= tp.name %> +
+*Description*: <%= tp.description %> +
+
+.*Coverage Points*:
+<% tp.cert_coverage_points.each do |cp| -%>
 * <%= cp.name %>
 <% end # each cp -%>
-a| <% tp.cert_steps.each do |step| -%>
+
+.*Steps*:
+<% tp.cert_steps.each do |step| -%>
 . <%= step.name %>
 * <%= step.description %>
-<%= step.note.nil? ? "" : "* " + step.note %>
+<%= step.note.nil? ? "" : "[NOTE]\n" + step.note %>
 <% end # each step -%>
 <% end # each test plan -%>
-|===
 
 <% end # unless no test plans -%>
 
