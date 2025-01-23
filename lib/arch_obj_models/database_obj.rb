@@ -504,23 +504,23 @@ class SchemaCondition
   def flat_versions
     case @hsh
     when String
-      [ExtensionRequirement.new(@hsh, arch: @arch)]
+      [ExtensionRequirement.new(@hsh, @arch)]
     when Hash
       if @hsh.key?("name")
         if @hsh.key?("version").nil?
-          [ExtensionRequirement.new(@hsh["name"], arch: @arch)]
+          [ExtensionRequirement.new(@hsh["name"], @arch)]
         else
-          [ExtensionRequirement.new(@hsh["name"], @hsh["version"], arch: @arch)]
+          [ExtensionRequirement.new(@hsh["name"], @hsh["version"], @arch)]
         end
       else
         @hsh[@hsh.keys.first].map do |r|
           if r.is_a?(String)
-            ExtensionRequirement.new(r, arch: @arch)
+            ExtensionRequirement.new(r, @arch)
           else
             if r.key?("version").nil?
-              ExtensionRequirement.new(r["name"], arch: @arch)
+              ExtensionRequirement.new(r["name"], @arch)
             else
-              ExtensionRequirement.new(r["name"], r["version"], arch: @arch)
+              ExtensionRequirement.new(r["name"], r["version"], @arch)
             end
           end
         end
