@@ -2477,6 +2477,30 @@ function read_memory {
   }
 }
 
+function read_memory_xlen {
+  returns Bits<XLEN>
+  arguments
+    XReg virtual_address,
+    Bits<INSTR_ENC_SIZE> encoding   # the encoding of an instruction causing this access, or 0 if a fetch
+  description {
+    Read from virtual memory XLEN bits using a known aligned address.
+  }
+  body {
+    TranslationResult result;
+
+    if (CSR[misa].S == 1) {
+      result = translate(virtual_address, MemoryOperation::Read, effective_ldst_mode(), encoding);
+    } else {
+      result.paddr = virtual_address;
+    }
+
+    # may raise an exception
+    access_check(result.paddr, XLEN, virtual_address, MemoryOperation::Read, ExceptionCode::LoadAccessFault, effective_ldst_mode());
+
+    return read_physical_memory<XLEN>(result.paddr);
+  }
+}
+
 # hart-global state to track the local reservation set
 Boolean    reservation_set_valid = false;
 XReg       reservation_set_address;
@@ -2795,6 +2819,28 @@ function write_memory {
         unpredictable("An implementation is free to break a misaligned access any way, leading to unpredictable behavior when any part of the misaligned access causes an exception");
       }
     }
+  }
+}
+
+function write_memory_xlen {
+  arguments
+    XReg virtual_address,
+    Bits<XLEN> value,
+    Bits<INSTR_ENC_SIZE> encoding # encoding of the instruction causing this access
+  description {
+    Write to virtual memory XLEN bits using a known aligned address.
+  }
+  body {
+    XReg physical_address;
+
+    physical_address = (CSR[misa].S == 1)
+      ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
+      : virtual_address;
+
+    # may raise an exception
+    access_check(physical_address, XLEN, virtual_address, MemoryOperation::Write, ExceptionCode::StoreAmoAccessFault, effective_ldst_mode());
+
+    write_physical_memory<XLEN>(physical_address, value);
   }
 }
 
