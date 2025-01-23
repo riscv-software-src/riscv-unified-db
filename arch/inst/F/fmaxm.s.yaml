@@ -6,7 +6,7 @@ name: fmaxm.s
 long_name: No synopsis available.
 description: |
   No description available.
-definedBy: { allOf: [F, Zfa] }
+definedBy: Zfa
 assembly: xd, xs1, xs2
 encoding:
   match: 0010100----------011-----1010011
