@@ -22,6 +22,7 @@ encoding:
       not: [0, 1, 2, 3, 4]
     - name: rd
       location: 11-7
+      not: 0
 access:
   s: always
   u: always
