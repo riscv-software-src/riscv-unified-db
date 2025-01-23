@@ -8,6 +8,11 @@ description: Configuration with the Xqci custom extension.
 mandatory_extensions:
   - { name: Sm }
   - { name: I }
+  - { name: M }
+  - { name: B }
+  - { name: Zca }
+  - { name: Zcb }
+  - { name: Xqccmp, version: "~> 0.1" }
   - { name: Xqci, version: "~> 0.5" }
 params:
   XLEN: 32
