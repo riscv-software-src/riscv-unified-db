@@ -106,6 +106,8 @@ versions:
     - Added Xqciio sub-extension
     - Added Xqcisim sub-extension
     - Added Xqcisync sub-extension
+    - Rename instruction of qc.muladdi to qc.muliadd
+    - Rename instruction of qc.c.muladdi to qc.c.muliadd
     - Fix description of qc.shladd instruction
     - Fix description and functionality of qc.c.extu instruction
     - Fix description and functionality of qc.wrapi instruction
