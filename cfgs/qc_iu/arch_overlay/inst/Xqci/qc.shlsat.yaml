@@ -2,10 +2,10 @@
 
 $schema: inst_schema.json#
 kind: instruction
-name: qc.sllsat
-long_name: Saturating logical left shift
+name: qc.shlsat
+long_name: Saturating signed left shift
 description: |
-  Left shift `rs1` by the value of `rs2`, and saturate the unsigned result.
+  Left shift `rs1` by the value of `rs2`, and saturate the signed result.
   The number of words is in `length`.
   Instruction encoded in R instruction format.
 definedBy:
@@ -14,7 +14,7 @@ definedBy:
     - Xqcia
 base: 32
 encoding:
-  match: 0001100----------011-----0001011
+  match: 0001010----------011-----0001011
   variables:
     - name: rs1
       location: 19-15
@@ -32,12 +32,14 @@ access:
   vs: always
   vu: always
 operation(): |
-  Bits<{1'b0, XLEN}*2> sext_double_width_rs1 = {{XLEN{X[rs1][xlen()-1]}}, X[rs1]};
-  Bits<{1'b0, XLEN}*2> shifted_value = sext_double_width_rs1 << X[rs2][4:0];
-  XReg largest_unsigned_value = {XLEN{1'b1}};
+  Bits<{1'b0, XLEN}*2> shifted_value = X[rs1] << X[rs2][4:0];
+  XReg most_negative_number = 1 << (xlen() - 1);
+  XReg most_positive_number = (1 << (xlen() - 1) - 1);
 
-  if (shifted_value > largest_unsigned_value) {
-    X[rd] = largest_unsigned_value;
+  if ($signed(shifted_value) < $signed(most_negative_number)) {
+    X[rd] = most_negative_number;
+  } else if ($signed(shifted_value) > $signed(most_positive_number)) {
+    X[rd] = most_positive_number;
   } else {
     X[rd] = shifted_value;
   }
