@@ -98,6 +98,8 @@ class PartialConfig < Config
     @mxlen.freeze
   end
 
+  def additional_extensions_allowed? = @data.key?("additional_extensions") ? @data["additional_extensions"] : true
+
   def implemented_extensions = raise "implemented_extensions is only availabe for a FullConfig"
 
   # @return [Array<Hash{String => String,Array<String}>]
