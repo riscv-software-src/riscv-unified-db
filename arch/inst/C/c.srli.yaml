@@ -14,12 +14,20 @@ definedBy:
     - Zca
 assembly: xd, shamt
 encoding:
-  match: 100-00--------01
-  variables:
-    - name: shamt
-      location: 12|6-2
-    - name: rd
-      location: 9-7
+  RV32:
+    match: 100000--------01
+    variables:
+      - name: shamt
+        location: 6-2
+      - name: rd
+        location: 9-7
+  RV64:
+    match: 100-00--------01
+    variables:
+      - name: shamt
+        location: 12|6-2
+      - name: rd
+        location: 9-7
 access:
   s: always
   u: always

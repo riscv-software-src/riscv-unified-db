@@ -4,6 +4,7 @@
 
 #include "udb/bits.hpp"
 #include "udb/defines.hpp"
+#include "udb/xregister.hpp"
 
 namespace udb {
   // extract bits from an integral type

@@ -1151,8 +1151,10 @@ function access_check {
     }
 
     # check PMP
-    if (!pmp_check<access_size>(paddr[PHYS_ADDR_WIDTH-1:0], type)) {
-      raise(fault_type, from_mode, vaddr);
+    if (implemented?(ExtensionName::Smpmp)) {
+      if (!pmp_check<access_size>(paddr[PHYS_ADDR_WIDTH-1:0], type)) {
+        raise(fault_type, from_mode, vaddr);
+      }
     }
   }
 }

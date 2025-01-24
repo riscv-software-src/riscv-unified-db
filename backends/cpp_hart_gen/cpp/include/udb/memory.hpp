@@ -8,7 +8,6 @@ namespace udb {
     Memory() = default;
     virtual ~Memory() = default;
 
-    // all accesses from watson use these functions
     template <class T>
     T read(uint64_t paddr);
     template <class T>
@@ -17,7 +16,6 @@ namespace udb {
                           size_t size);
     void memcpy_to_host(void* host_ptr, uint64_t guest_paddr, size_t size);
     virtual uint8_t* get_host_region_ptr(uint64_t paddr) { return nullptr; }
-    virtual bool last_access_was_secure() { return false; }
     virtual void reset() {}
 
    protected:
@@ -57,8 +55,9 @@ namespace udb {
     return read8(addr);
   }
   template <>
-  inline uint128_t Memory::read(uint64_t addr) {
-    return read8(addr) | (uint128_t(read8(addr + 8)) << 64);
+  inline unsigned __int128 Memory::read(uint64_t addr) {
+    return read8(addr) |
+           (static_cast<unsigned __int128>(read8(addr + 8)) << 64);
   }
   template <>
   inline void Memory::write(uint64_t addr, uint8_t data) {
@@ -77,7 +76,7 @@ namespace udb {
     write8(addr, data);
   }
   template <>
-  inline void Memory::write(uint64_t addr, uint128_t data) {
+  inline void Memory::write(uint64_t addr, unsigned __int128 data) {
     write8(addr, uint64_t(data));
     write8(addr + 8, uint64_t(data >> 64));
   }

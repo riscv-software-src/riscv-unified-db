@@ -7,14 +7,14 @@
 #include "udb/csr.hpp"
 #include "udb/cpp_exceptions.hpp"
 
-<%- csrs = cfg_arch.fully_configured? ? cfg_arch.implemented_csrs : cfg_arch.csrs -%>
+<%- csrs = cfg_arch.not_prohibited_csrs -%>
 
 namespace udb {
   class <%= name_of(:hart, cfg_arch) %>;
 
   <%- csrs.each do |csr| -%>
   <%- next unless cfg_arch.possible_xlens.any? { |xlen| csr.defined_in_base?(xlen) } -%>
-  <%- fields = cfg_arch.fully_configured? ? csr.implemented_fields(cfg_arch) : csr.fields -%>
+  <%- fields = cfg_arch.fully_configured? ? csr.implemented_fields(cfg_arch) : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
 
   // Field classes for <%= csr.name %>
 
@@ -208,6 +208,7 @@ namespace udb {
     <%= name_of(:csr, cfg_arch, csr.name) %>(<%= name_of(:hart, cfg_arch) %>* parent);
 
     unsigned address() const override { return <%= csr.address %>; }
+    static constexpr unsigned _address() { return <%= csr.address %>; }
     const std::string name() const override { return "<%= csr.name %>"; }
 
     void reset() override {

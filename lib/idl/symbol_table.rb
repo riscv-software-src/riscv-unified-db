@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "concurrent"
+
 require_relative "type"
 
 module Idl
@@ -100,6 +102,7 @@ module Idl
     def initialize(cfg_arch)
       raise if cfg_arch.nil?
 
+      @mutex = Thread::Mutex.new
       @cfg_arch = cfg_arch
       @mxlen = cfg_arch.unconfigured? ? nil : cfg_arch.mxlen
       @callstack = [nil]
@@ -169,7 +172,7 @@ module Idl
       @frozen_hash = [@scopes.hash, @cfg_arch.hash].hash
 
       # set up the global clone that be used as a mutable table
-      @global_clone_pool = []
+      @global_clone_pool = Concurrent::Array.new
 
       5.times do
         copy = SymbolTable.allocate
@@ -177,8 +180,9 @@ module Idl
         copy.instance_variable_set(:@callstack, [@callstack[0]])
         copy.instance_variable_set(:@cfg_arch, @cfg_arch)
         copy.instance_variable_set(:@mxlen, @mxlen)
+        copy.instance_variable_set(:@mutex, @mutex)
         copy.instance_variable_set(:@global_clone_pool, @global_clone_pool)
-        copy.instance_variable_set(:@in_use, false)
+        copy.instance_variable_set(:@in_use, Concurrent::Semaphore.new(1))
         @global_clone_pool << copy
       end
 
@@ -349,10 +353,7 @@ module Idl
       # raise "global clone isn't at global scope" unless @global_clone.at_global_scope?
 
       @global_clone_pool.each do |symtab|
-        unless symtab.in_use?
-          symtab.instance_variable_set(:@in_use, true)
-          return symtab
-        end
+        return symtab if symtab.instance_variable_get(:@in_use).try_acquire
       end
 
       # need more!
@@ -363,8 +364,9 @@ module Idl
         copy.instance_variable_set(:@callstack, [@callstack[0]])
         copy.instance_variable_set(:@cfg_arch, @cfg_arch)
         copy.instance_variable_set(:@mxlen, @mxlen)
+        copy.instance_variable_set(:@mutex, @mutex)
         copy.instance_variable_set(:@global_clone_pool, @global_clone_pool)
-        copy.instance_variable_set(:@in_use, false)
+        copy.instance_variable_set(:@in_use, Concurrent::Semaphore.new(1))
         @global_clone_pool << copy
       end
 
@@ -372,16 +374,17 @@ module Idl
     end
 
     def release
-      pop while levels > 1
-      raise "Clone isn't back in global scope" unless at_global_scope?
-      raise "You are calling release on the frozen SymbolTable" if frozen?
-      raise "??" if @in_use.nil?
-      raise "Double release detected" unless @in_use
+      @mutex.synchronize do
+        pop while levels > 1
+        raise "Clone isn't back in global scope" unless at_global_scope?
+        raise "You are calling release on the frozen SymbolTable" if frozen?
+        raise "Double release detected" unless in_use?
 
-      @in_use = false
+        @in_use.release
+      end
     end
 
-    def in_use? = @in_use
+    def in_use? = @in_use.available_permits.zero?
 
     # @return [SymbolTable] a deep clone of this SymbolTable
     def deep_clone(clone_values: false, freeze_global: true)

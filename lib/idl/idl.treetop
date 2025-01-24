@@ -637,7 +637,7 @@ grammar Idl
   end
 
   rule csr_name
-    [a-z] ([a-z0-9])*
+    [a-z] ([a-z0-9_])*
   end
 
   rule csr_field_name

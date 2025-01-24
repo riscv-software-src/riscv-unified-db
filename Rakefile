@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+$jobs = ENV["JOBS"].nil? ? 1 : ENV["JOBS"].to_i
+Rake.application.options.thread_pool_size = $jobs
+puts "Running with #{Rake.application.options.thread_pool_size} job(s)"
+
 require "etc"
 
 $root = Pathname.new(__FILE__).dirname.realpath
@@ -20,17 +24,21 @@ end
 directory "#{$root}/.stamps"
 
 def cfg_arch_for(config_name)
-  Rake::Task["#{$root}/.stamps/resolve-#{config_name}.stamp"].invoke
+  $cfg_arch_for_mutex ||= Thread::Mutex.new
 
-  @cfg_archs ||= {}
-  return @cfg_archs[config_name] if @cfg_archs.key?(config_name)
+  $cfg_arch_for_mutex.synchronize do
+    Rake::Task["#{$root}/.stamps/resolve-#{config_name}.stamp"].invoke
 
-  @cfg_archs[config_name] =
-    ConfiguredArchitecture.new(
-      config_name,
-      $root / "gen" / "resolved_arch" / config_name,
-      overlay_path: $root / "cfgs" / config_name / "arch_overlay"
-    )
+    $cfg_archs ||= {}
+    return $cfg_archs[config_name] if $cfg_archs.key?(config_name)
+
+    $cfg_archs[config_name] =
+      ConfiguredArchitecture.new(
+        config_name,
+        $root / "gen" / "resolved_arch" / config_name,
+        overlay_path: $root / "cfgs" / config_name / "arch_overlay"
+      )
+  end
 end
 
 namespace :gen do

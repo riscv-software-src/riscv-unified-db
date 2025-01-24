@@ -10,9 +10,11 @@ description: |
   to the base address in register rs1.
   It expands to `fld` `rd, offset(rs1)`.
 definedBy:
-  allOf:
-    - C
-    - D
+  anyOf:
+    - allOf:
+        - C
+        - D
+    - Zcd
 base: 32
 assembly: xd, imm(xs1)
 encoding:

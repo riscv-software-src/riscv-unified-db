@@ -341,7 +341,15 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 <% end -%>
 
 // TODO: GitHub issue 92: Use version specified by each profile.
-<% insts = cfg_arch.instructions.select { |i| i.defined_by?(ext.min_version) } -%>
+<%
+  insts = cfg_arch.instructions.select do |i|
+    i.defined_by_condition.satisfied_by? do |defining_ext_req|
+      cert_model.in_scope_ext_reqs.any? do |in_scope_ext_req|
+        in_scope_ext_req.satisfying_versions.any? { |ext_ver| defining_ext_req.satisfied_by?(ext_ver) }
+      end
+    end
+  end
+-%>
 <% unless insts.empty? -%>
 ==== Instructions
 

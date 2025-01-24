@@ -1110,6 +1110,7 @@ module Idl
 
       # call type to get it set before we freeze the object
       type(global_symtab)
+      @children.each { |child| child.freeze_tree(global_symtab) }
       freeze
     end
 
@@ -1273,6 +1274,9 @@ module Idl
       return if frozen?
 
       type(global_symtab)
+
+      @children.each { |child| child.freeze_tree(global_symtab) }
+
       freeze
     end
 
@@ -3490,6 +3494,14 @@ module Idl
 
     # @!macro value_no_cfg_arch
     def value(symtab)
+      @enum_def_type ||= begin
+        enum_def_ast = symtab.cfg_arch.global_ast.enums.find { |e| e.name == @enum_class_name }
+        if enum_def_ast.is_a?(BuiltinEnumDefinitionAst)
+          enum_def_ast&.type(symtab)
+        else
+          enum_def_ast&.type(nil)
+        end
+      end
       internal_error "Must call type_check first" if @enum_def_type.nil?
 
       @enum_def_type.value(@member_name)
@@ -4237,7 +4249,7 @@ module Idl
         rescue TypeError
           # ok, probably in a function template
         end
-        bits_expression.freeze_tree(symtab)
+        bits_expression&.freeze_tree(symtab)
       end
       freeze
     end
@@ -4684,6 +4696,9 @@ module Idl
             # we can know if it is implemented, but not if it's not implemented for a partially configured
             return true
           end
+          if symtab.cfg_arch.prohibited_ext?(arg_nodes[0].member_name)
+            return false
+          end
           value_error "implemented? is only known when evaluating in the context of a fully-configured arch def"
         else
           internal_error "Unimplemented generated: '#{name}'"
@@ -4883,6 +4898,8 @@ module Idl
 
   class FunctionDefAst < AstNode
     include Declaration
+
+    attr_reader :return_type_nodes
 
     # @param input [String] The source code
     # @param interval [Range] The range in the source code for this function definition
@@ -5085,6 +5102,16 @@ module Idl
       #   end
       # end
       type_check_body(symtab)
+    end
+
+    def apply_template_and_arg_syms(symtab)
+      template_names.each_with_index do |tname, index|
+        symtab.add(tname, Var.new(tname, template_types(symtab)[index], template_index: index, function_name: name))
+      end
+
+      arguments(symtab).each do |arg_type, arg_name|
+        symtab.add(arg_name, Var.new(arg_name, arg_type))
+      end
     end
 
     # @!macro type_check
@@ -5765,6 +5792,8 @@ module Idl
       end
       @type = calc_type(symtab)
       @cfg_arch = symtab.cfg_arch # remember cfg_arch, used in gen_adoc pass
+      @children.each { |child| child.freeze_tree(symtab) }
+
       freeze
     end
 
@@ -5853,7 +5882,9 @@ module Idl
 
     def calc_value(symtab)
       # field isn't implemented, so it must be zero
-      return 0 if field_def(symtab).nil?
+      return 0 if field_def(symtab).nil? || !field_def(symtab).exists_in_cfg?(symtab.cfg_arch)
+
+      raise "?" if @field_name == "S"
 
       symtab.cfg_arch.possible_xlens.each do |effective_xlen|
         unless field_def(symtab).type(effective_xlen) == "RO"
@@ -5861,7 +5892,7 @@ module Idl
         end
       end
 
-      field_def(symtab).reset_value(symtab.cfg_arch)
+      field_def(symtab).reset_value
     end
   end
 
@@ -5904,7 +5935,8 @@ module Idl
       return if frozen?
 
       @cfg_arch = symtab.cfg_arch # remember cfg_arch, used by gen_adoc pass
-      @idx.freeze_tree(symtab)
+      @children.each { |child| child.freeze_tree(symtab) }
+
       freeze
     end
 

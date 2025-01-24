@@ -707,16 +707,21 @@ module Idl
     # then add the value to the Var
     def apply_arguments(symtab, argument_nodes, call_site_symtab, func_call_ast)
       idx = 0
+      values = []
       @func_def_ast.arguments(symtab).each do |atype, aname|
         func_call_ast.type_error "Missing argument #{idx}" if idx >= argument_nodes.size
         value_result = Idl::AstNode.value_try do
-          symtab.add(aname, Var.new(aname, atype, argument_nodes[idx].value(call_site_symtab)))
+          value = argument_nodes[idx].value(call_site_symtab)
+          symtab.add(aname, Var.new(aname, atype, value))
+          values << value
         end
         Idl::AstNode.value_else(value_result) do
           symtab.add(aname, Var.new(aname, atype))
+          values << :unknown
         end
         idx += 1
       end
+      values
     end
 
     # @return [Array<Integer,Boolean>] Array of argument values, if known

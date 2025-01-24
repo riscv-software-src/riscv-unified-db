@@ -83,12 +83,13 @@
         "conflicts": {
           "description": "Extension(s) that conflict with this extension; both cannot be implemented at the same time",
           "oneOf": [
-            { "$ref": "schema_defs.json#/$defs/extension_requirement" },
+            {
+              "$ref": "schema_defs.json#/$defs/extension_name"
+            },
             {
               "type": "array",
-              "items": {
-                "$ref": "schema_defs.json#/$defs/extension_requirement"
-              }
+              "items": { "$ref": "schema_defs.json#/$defs/extension_name" },
+              "minItems": 1
             }
           ]
         },

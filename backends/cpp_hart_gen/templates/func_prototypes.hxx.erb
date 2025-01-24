@@ -5,20 +5,24 @@
 #define __UDB_CONST_GLOBAL(global_name) <%= name_of(:hart, cfg_arch) %>::global_name
 #define __UDB_MUTABLE_GLOBAL(global_name) global_name
 #define __UDB_STRUCT(struct_name) <%= cfg_arch.name.camelize %>_ ## struct_name ## _Struct
+#define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name ## _VALUE
 
 <%# need to get symtab at function scope -%>
-<%- symtab = cfg_arch.symtab.global_clone.push(nil) -%>
-<%- cfg_arch.functions.each do |func| -%>
+<%- puts cfg_arch.reachable_functions.map(&:name) -%>
+<%- cfg_arch.reachable_functions.each do |func| -%>
 <%- next if func.builtin? || func.generated? -%>
+<%- symtab = cfg_arch.symtab.global_clone.push(nil) -%>
+
+<%- qualifiers = func.constexpr?(cfg_arch.symtab) ? "static constexpr" : "" -%>
 //
 // <%= func.description.gsub("\n", "\n// ") %>
-<%= func.gen_cpp_prototype(symtab, 0) %>
+<%= func.gen_cpp_prototype(symtab, 0, qualifiers:) %>
 
+<%- symtab.release -%>
 <%- end -%>
 
 #undef __UDB_CONSTEXPR_FUNC_CALL
 #undef __UDB_CONST_GLOBAL
 #undef __UDB_MUTABLE_GLOBAL
 #undef __UDB_STRUCT
-
-<%- symtab.release -%>
+#undef __UDB_STATIC_PARAM

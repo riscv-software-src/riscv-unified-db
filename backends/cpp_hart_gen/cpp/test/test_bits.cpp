@@ -1,9 +1,9 @@
 
-#include <udb/defines.hpp>
-#include ISS_FORMATTER_INCLUDE
+#include <fmt/core.h>
 
 #include <catch2/catch_test_macros.hpp>
 #include <udb/bits.hpp>
+#include <udb/defines.hpp>
 
 constexpr __uint128_t operator""_u128(const char* x) {
   __uint128_t y = 0;
@@ -106,7 +106,7 @@ TEST_CASE("Inversion", "[bits]") {
   REQUIRE((~(~Bits<65>(5))).get() == Bits<64>(5).get());
   REQUIRE((~(~Bits<65>(5))).get() == 5);
   REQUIRE((~Bits<65>(5)).get<__int128_t>() == -6);
-  REQUIRE((~Bits<65>(5)).get() == 0x1fffffffffffffffa_mpz);
+  REQUIRE((~Bits<65>(5)).get() == 0x1fffffffffffffff_u128);
   REQUIRE((~Bits<65>(5)).get<int64_t>() < 0);
 
   REQUIRE((~(~Bits<129>(5))).get() == Bits<129>(5).get());
@@ -151,7 +151,7 @@ TEST_CASE("65-bit unsigned negation", "[bits]") {
   a = 5;
   REQUIRE(a.get() == 5);
   a = -5;
-  REQUIRE(a.get() == 0x1fffffffffffffffb_mpz);
+  REQUIRE(a.get() == 0x1fffffffffffffffb_u128);
 }
 
 TEST_CASE("129-bit unsigned negation", "[bits]") {
@@ -253,7 +253,7 @@ TEST_CASE("9-bit SRA", "[bits]") {
 
 TEST_CASE("65-bit SRA", "[bits]") {
   Bits<65> a = 0x10000000000000000_mpz;
-  REQUIRE(a.sra(3) == 0x1e000000000000000_mpz);
+  REQUIRE(a.sra(3) == 0x1e000000000000000_u128);
 }
 
 TEST_CASE("Printing", "[bits]") {

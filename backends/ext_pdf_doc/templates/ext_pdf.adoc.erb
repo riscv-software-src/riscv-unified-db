@@ -224,19 +224,20 @@ of <%= ext.name %>.
 <<<
 == Instruction summary
 
-The following <%= ext.instructions.size %> instructions are added by this extension:
+The following <%= ext.instructions.size %> instructions are affected by this extension:
 
 [%autowidth]
 |===
 | RV32 | RV64 | Mnemonic | Instruction <%- if versions.size > 1 -%>| <%= versions.map { |v| "v#{v.version}" }.join(" | ") %><%- end -%>
 
-<%- ext.instructions.each do |i| -%>
+<%- inst_list = ext.instructions.select { |inst| versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) } } -%>
+<%- inst_list.each do |i| -%>
 | <%= i.rv32? ? "&#x2713;" : "" %>
 | <%= i.rv64? ? "&#x2713;" : "" %>
 | `<%= i.name %> <%= i.assembly.gsub("x", "r").strip %>`
 | xref:insns-<%= i.name.gsub('.', '_') %>[<%= i.long_name %>]
 <%- if versions.size > 1 -%>
-| <%= ext.versions.map { |v| i.defined_by?(ext.name, v.version) ? "&#x2713;" : "" }.join(" | ") %>
+| <%= ext.versions.map { |v| i.defined_by_condition.possibly_satisfied_by?(v) ? "&#x2713;" : "" }.join(" | ") %>
 <%- end -%>
 <%- end -%>
 |===
@@ -248,9 +249,9 @@ The following <%= ext.instructions.size %> instructions are added by this extens
 |===
 | Mnemonic | <%= implications.map { |e| "`#{e.name}`" }.join(" | ") %>
 
-<%- ext.instructions.each do |i| -%>
+<%- inst_list.each do |i| -%>
 | `<%= i.name %>`
-| <%= implications.map { |e| i.defined_by?(e) ? "&#x2713;" : "" }.join(" | ") %>
+| <%= implications.map { |ext_ver| i.defined_by_condition.possibly_satisfied_by?(ext_ver) ? "&#x2713;" : "" }.join(" | ") %>
 <%- end -%>
 |===
 
@@ -262,19 +263,21 @@ The following <%= ext.instructions.size %> instructions are added by this extens
 <<<
 == CSR summary
 
-The following <%= ext.csrs.size %> are added by this extension.
+The following <%= ext.csrs.size %> are affected by this extension.
+
+<%- csr_list = csrs.select { |csr| versions.any? { |ext_ver| csr.affected_by?(ext_ver) } } -%>
 
 [%autowidth]
 |===
 | RV32 | RV64 | CSR | Name <%- if versions.size > 1 -%>| <%= versions.map { |v| "v#{v.version}" }.join(" | ") %><%- end -%>
 
-<%- ext.csrs.each do |csr| -%>
+<%- csr_list.each do |csr| -%>
 | <%= csr.defined_in_base32? ? "&#x2713;" : "" %>
 | <%= csr.defined_in_base64? ? "&#x2713;" : "" %>
 | xref:csrs-<%= csr.name.gsub('.', '_') %>[<%= csr.name %>]
 | <%= csr.long_name %>
 <%- if versions.size > 1 -%>
-| <%= ext.versions.map { |v| csr.defined_by?(ext.name, v.version) ? "&#x2713;" : "" }.join(" | ") %>
+| <%= ext.versions.map { |v| csr.affected_by?(v) ? "&#x2713;" : "" }.join(" | ") %>
 <%- end -%>
 <%- end -%>
 

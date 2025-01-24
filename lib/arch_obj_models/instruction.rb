@@ -108,8 +108,8 @@ class Instruction < DatabaseObjectect
     @data["assembly"]
   end
 
-  def fill_symtab(global_symtab, effective_xlen, ast)
-    symtab = global_symtab.deep_clone
+  def fill_symtab(effective_xlen, ast)
+    symtab = cfg_arch.symtab.global_clone
     symtab.push(ast)
     symtab.add(
       "__instruction_encoding_size",
@@ -133,45 +133,39 @@ class Instruction < DatabaseObjectect
 
   # @param global_symtab [Idl::SymbolTable] Symbol table with global scope populated and a configuration loaded
   # @return [Idl::FunctionBodyAst] A pruned abstract syntax tree
-  def pruned_operation_ast(global_symtab, effective_xlen)
-    @pruned_asts ||= {}
+  def pruned_operation_ast(effective_xlen)
+    defer :pruned_operation_ast do
+      return nil unless @data.key?("operation()")
 
-    cfg_arch = global_symtab.cfg_arch
+      type_checked_ast = type_checked_operation_ast(effective_xlen)
+      print "Pruning #{name} operation()..."
+      symtab = fill_symtab(effective_xlen, type_checked_ast)
+      pruned_ast = type_checked_ast.prune(symtab)
+      puts "done"
+      pruned_ast.freeze_tree(symtab)
 
-    pruned_ast = @pruned_asts[cfg_arch.name]
-    return pruned_ast unless pruned_ast.nil?
-
-    return nil unless @data.key?("operation()")
-
-    type_checked_ast = type_checked_operation_ast(cfg_arch.idl_compiler, global_symtab, effective_xlen)
-    print "Pruning #{name} operation()..."
-    pruned_ast = type_checked_ast.prune(fill_symtab(global_symtab, effective_xlen, type_checked_ast))
-    puts "done"
-    pruned_ast.freeze_tree(global_symtab)
-    cfg_arch.idl_compiler.type_check(
-      pruned_ast,
-      fill_symtab(global_symtab, effective_xlen, pruned_ast),
-      "#{name}.operation() (pruned)"
-    )
-
-    @pruned_asts[cfg_arch.name] = pruned_ast
+      symtab.release
+      pruned_ast
+    end
   end
 
   # @param symtab [Idl::SymbolTable] Symbol table with global scope populated
   # @param effective_xlen [Integer] The effective XLEN to evaluate against
   # @return [Array<Idl::FunctionBodyAst>] List of all functions that can be reached from operation()
-  def reachable_functions(symtab, effective_xlen)
+  def reachable_functions(effective_xlen)
     if @data["operation()"].nil?
       []
     else
       # RubyProf.start
-      ast = type_checked_operation_ast(symtab.cfg_arch.idl_compiler, symtab, effective_xlen)
-      print "Determining reachable funcs from #{name}..."
-      fns = ast.reachable_functions(fill_symtab(symtab, effective_xlen, ast))
+      ast = type_checked_operation_ast(effective_xlen)
+      print "Determining reachable funcs from #{name} (#{effective_xlen})..."
+      symtab = fill_symtab(effective_xlen, ast)
+      fns = ast.reachable_functions(symtab)
       puts "done"
       # result = RubyProf.stop
       # RubyProf::FlatPrinter.new(result).print($stdout)
       # exit
+      symtab.release
       fns
     end
   end
@@ -179,15 +173,16 @@ class Instruction < DatabaseObjectect
   # @param symtab [Idl::SymbolTable] Symbol table with global scope populated
   # @param effective_xlen [Integer] Effective XLEN to evaluate against
   # @return [Integer] Mask of all exceptions that can be reached from operation()
-  def reachable_exceptions(symtab, effective_xlen)
+  def reachable_exceptions(effective_xlen)
     if @data["operation()"].nil?
       []
     else
       # pruned_ast =  pruned_operation_ast(symtab)
       # type_checked_operation_ast()
-      type_checked_ast = type_checked_operation_ast(symtab.cfg_arch.idl_compiler, symtab, effective_xlen)
-      symtab = fill_symtab(symtab, effective_xlen, pruned_ast)
+      type_checked_ast = type_checked_operation_ast( effective_xlen)
+      symtab = fill_symtab(effective_xlen, pruned_ast)
       type_checked_ast.reachable_exceptions(symtab)
+      symtab.release
     end
   end
 
@@ -204,58 +199,67 @@ class Instruction < DatabaseObjectect
     elems
   end
 
-  # @param symtab [Idl::SymbolTable] Symbol table with global scope populated
   # @param effective_xlen [Integer] Effective XLEN to evaluate against. If nil, evaluate against all valid XLENs
   # @return [Array<Integer>] List of all exceptions that can be reached from operation()
-  def reachable_exceptions_str(symtab, effective_xlen=nil)
+  def reachable_exceptions_str(effective_xlen=nil)
     if @data["operation()"].nil?
       []
     else
       etype = symtab.get("ExceptionCode")
       if effective_xlen.nil?
-        if symtab.cfg_arch.multi_xlen?
+        if cfg_arch.multi_xlen?
           if base.nil?
             (
-              pruned_ast = pruned_operation_ast(symtab, 32)
+              pruned_ast = pruned_operation_ast(32)
               print "Determining reachable exceptions from #{name}#RV32..."
-              e32 = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, 32, pruned_ast))).map { |code|
+              symtab = fill_symtab(32, pruned_ast)
+              e32 = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
                 etype.element_name(code)
               }
+              symtab.release
               puts "done"
-              pruned_ast = pruned_operation_ast(symtab, 64)
+              pruned_ast = pruned_operation_ast(64)
               print "Determining reachable exceptions from #{name}#RV64..."
-              e64 = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, 64, pruned_ast))).map { |code|
+              symtab = fill_symtab(64, pruned_ast)
+              e64 = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
                 etype.element_name(code)
               }
+              symtab.release
               puts "done"
               e32 + e64
             ).uniq
           else
-            pruned_ast = pruned_operation_ast(symtab, base)
+            pruned_ast = pruned_operation_ast(base)
             print "Determining reachable exceptions from #{name}..."
-            e = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, base, pruned_ast))).map { |code|
+            symtab = fill_symtab(base, pruned_ast)
+            e = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
               etype.element_name(code)
             }
+            symtab.release
             puts "done"
             e
           end
         else
-          effective_xlen = symtab.cfg_arch.mxlen
-          pruned_ast = pruned_operation_ast(symtab, effective_xlen)
+          effective_xlen = cfg_arch.mxlen
+          pruned_ast = pruned_operation_ast(effective_xlen)
           print "Determining reachable exceptions from #{name}..."
-          e = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, effective_xlen, pruned_ast))).map { |code|
+          symtab = fill_symtab(effective_xlen, pruned_ast)
+          e = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
             etype.element_name(code)
           }
+          symtab.release
           puts "done"
           e
         end
       else
-        pruned_ast = pruned_operation_ast(symtab, effective_xlen)
+        pruned_ast = pruned_operation_ast(effective_xlen)
 
         print "Determining reachable exceptions from #{name}..."
-        e = mask_to_array(pruned_ast.reachable_exceptions(fill_symtab(symtab, effective_xlen, pruned_ast))).map { |code|
+        symtab = fill_symtab(effective_xlen, pruned_ast)
+        e = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
           etype.element_name(code)
         }
+        symtab.release
         puts "done"
         e
       end
@@ -576,19 +580,23 @@ class Instruction < DatabaseObjectect
       end
     end
 
+    def self.overlapping_format?(format1, format2)
+      format1.size.times.all? do |i|
+        rev_idx = (format1.size - 1) - i
+        other_rev_idx = (format2.size - 1) - i
+        format1[rev_idx] == "-" \
+          || (i >= format2.size) \
+          || (format1[rev_idx] == format2[other_rev_idx])
+      end
+    end
+
     # @return [Boolean] true if self and other_encoding cannot be distinguished, i.e., they share the same encoding
     def indistinguishable?(other_encoding, check_other: true)
       other_format = other_encoding.format
-      same =
-        format.size.times.all? do |i|
-          rev_idx = (format.size - 1) - i
-          other_rev_idx = (other_format.size - 1) - i
-          format[rev_idx] == "-" \
-            || (i >= other_format.size) \
-            || (format[rev_idx] == other_format[other_rev_idx])
-        end
+      same = Encoding.overlapping_format?(format, other_format)
+
       if same
-       # the mask can't be distinguished; is there one or more exclusions that distinguishes them?
+        # the mask can't be distinguished; is there one or more exclusions that distinguishes them?
 
         # we have to check all combinations of dvs with exlcusions, and their values
         exclusion_dvs = @decode_variables.reject { |dv| dv.excludes.empty? }
@@ -610,7 +618,7 @@ class Instruction < DatabaseObjectect
           repl_format = format.dup
           dv_values.each { |dv_and_value| repl_format = dv_and_value[0].encoding_repl(repl_format, dv_and_value[1]) }
 
-          if repl_format == other_format
+          if Encoding.overlapping_format?(repl_format, other_format)
             same = false
             break
           end
@@ -697,7 +705,7 @@ class Instruction < DatabaseObjectect
   #                              but can't be present in the same system because their defining
   #                              extensions conflict
   def conflicting_instructions(xlen)
-    raise "Bad xlen" unless defined_in_base?(xlen)
+    raise "Bad xlen (#{xlen}) for instruction #{name}" unless defined_in_base?(xlen)
 
     @conflicting_instructions ||= {}
     return @conflicting_instructions[xlen] unless @conflicting_instructions[xlen].nil?
@@ -723,40 +731,39 @@ class Instruction < DatabaseObjectect
   end
 
   # @return [FunctionBodyAst] A type-checked abstract syntax tree of the operation
-  # @param idl_compiler [Idl::Compiler] Compiler
-  # @param symtab [Idl::SymbolTable] Symbol table with globals
   # @param effective_xlen [Integer] 32 or 64, the effective xlen to type check against
-  def type_checked_operation_ast(idl_compiler, symtab, effective_xlen)
-    @type_checked_operation_ast ||= {}
-    ast = @type_checked_operation_ast[symtab.hash]
-    return ast unless ast.nil?
+  def type_checked_operation_ast(effective_xlen)
+    defer :type_checked_operation_ast do
+      return nil unless @data.key?("operation()")
 
-    return nil unless @data.key?("operation()")
+      ast = operation_ast
 
-    ast = operation_ast(symtab)
+      symtab = fill_symtab(effective_xlen, ast)
+      ast.freeze_tree(symtab)
+      cfg_arch.idl_compiler.type_check(ast, symtab, "#{name}.operation()")
+      symtab.release
 
-    idl_compiler.type_check(ast, fill_symtab(symtab, effective_xlen, ast), "#{name}.operation()")
-
-    @type_checked_operation_ast[symtab.hash] = ast
+      ast
+    end
   end
 
-  # @param symtab [SymbolTable] Symbol table with compilation context
   # @return [FunctionBodyAst] The abstract syntax tree of the instruction operation
-  def operation_ast(symtab)
-    return @operation_ast unless @operation_ast.nil?
-    return nil if @data["operation()"].nil?
+  def operation_ast
+    defer :operation_ast do
+      return nil if @data["operation()"].nil?
 
-    # now, parse the operation
-    @operation_ast = symtab.cfg_arch.idl_compiler.compile_inst_operation(
-      self,
-      symtab:,
-      input_file: @data["$source"],
-      input_line: source_line("operation()")
-    )
+      # now, parse the operation
+      ast = cfg_arch.idl_compiler.compile_inst_operation(
+        self,
+        symtab: cfg_arch.symtab,
+        input_file: @data["$source"],
+        input_line: source_line("operation()")
+      )
 
-    raise "unexpected #{@operation_ast.class}" unless @operation_ast.is_a?(Idl::FunctionBodyAst)
+      raise "unexpected #{ast.class}" unless ast.is_a?(Idl::FunctionBodyAst)
 
-    @operation_ast
+      ast
+    end
   end
 
   # @param base [Integer] 32 or 64
@@ -827,12 +834,12 @@ class Instruction < DatabaseObjectect
   def exists_in_cfg?(cfg_arch)
     if cfg_arch.fully_configured?
       (@data["base"].nil? || (cfg_arch.possible_xlens.include? @data["base"])) &&
-        cfg_arch.implemented_extensions.any? { |e| defined_by?(e) }
+        cfg_arch.implemented_extension_versions.any? { |ext_ver| defined_by_condition.possibly_satisfied_by?(ext_ver) }
     else
       raise "unexpected cfg_arch type" unless cfg_arch.partially_configured?
 
       (@data["base"].nil? || (cfg_arch.possible_xlens.include? @data["base"])) &&
-        cfg_arch.prohibited_extensions.none? { |e| defined_by?(e) }
+        cfg_arch.prohibited_extension_versions.none? { |ext_ver| defined_by_condition.possibly_satisfied_by?(ext_ver) }
     end
   end
 end

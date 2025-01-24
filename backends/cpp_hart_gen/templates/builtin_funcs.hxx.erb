@@ -5,6 +5,7 @@
 #define __UDB_CONST_GLOBAL(global_name) <%= name_of(:hart, cfg_arch) %>::global_name
 #define __UDB_MUTABLE_GLOBAL(global_name) global_name
 #define __UDB_STRUCT(struct_name) <%= cfg_arch.name.camelize %>_ ## struct_name ## _Struct
+#define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name ## _VALUE
 
 <%# need to get symtab at function scope -%>
 <%- symtab = cfg_arch.symtab.global_clone.push(nil) -%>
@@ -28,3 +29,4 @@
 #undef __UDB_CONST_GLOBAL
 #undef __UDB_MUTABLE_GLOBAL
 #undef __UDB_STRUCT
+#undef __UDB_STATIC_PARAM

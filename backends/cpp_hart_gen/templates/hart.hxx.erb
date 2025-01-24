@@ -10,13 +10,14 @@
 #include "udb/cfgs/<%= cfg_arch.name %>/structs.hxx"
 #include "udb/enum.hxx"
 #include "udb/bitfield.hxx"
+#include "udb/util.hpp"
 
 <%- hart_name = name_of(:hart, cfg_arch) -%>
 
 namespace udb {
   class InstBase;
   class <%= hart_name -%> : public HartBase {
-    <%- csrs = cfg_arch.fully_configured? ? cfg_arch.implemented_csrs : cfg_arch.csrs -%>
+    <%- csrs = cfg_arch.not_prohibited_csrs -%>
     <%- csrs.each do |csr| -%>
     friend class <%= name_of(:csr, cfg_arch, csr.name) %>;
     <%- fields = cfg_arch.fully_configured? ? csr.implemented_fields(cfg_arch) : csr.fields -%>
@@ -24,7 +25,7 @@ namespace udb {
     friend class <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %>;
     <%- end -%>
     <%- end -%>
-    <%- ilist = cfg_arch.fully_configured? ? cfg_arch.transitive_implemented_instructions : cfg_arch.instructions -%>
+    <%- ilist = cfg_arch.possible_instructions -%>
     <%- ilist.each do |inst| -%>
     template <unsigned XLEN>
     friend class <%= name_of(:inst, cfg_arch, inst.name) %>;
@@ -66,6 +67,8 @@ namespace udb {
       {
           return false;
       }
+
+
 
       void set_pc(uint64_t new_pc) override {
         m_pc = new_pc;
@@ -142,7 +145,11 @@ namespace udb {
       return m_params;
     }
 
-    InstBase* decode(const XReg& pc, const Bits<<%= cfg_arch.largest_encoding %>>& encoding);
+    InstBase* decode(const uint64_t& pc, const uint64_t& encoding) override {
+      return _decode(pc, encoding);
+    }
+
+    InstBase* _decode(const XReg& pc, const Bits<<%= cfg_arch.largest_encoding %>>& encoding);
 
     private:
       XReg m_pc;
@@ -153,4 +160,7 @@ namespace udb {
       <%= name_of(:params, cfg_arch) %> m_params;
       <%= name_of(:csr_container, cfg_arch) %> m_csrs;
   };
+
+  #include "udb/cfgs/<%= cfg_arch.name %>/idl_funcs_impl.hxx"
+
 }

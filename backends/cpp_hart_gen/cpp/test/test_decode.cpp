@@ -1,4 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
+#include <udb/hart_factory.hxx>
+#include <udb/memory.hpp>
 #include <udb/version.hpp>
 
 using namespace udb;

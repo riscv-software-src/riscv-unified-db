@@ -170,7 +170,7 @@ class DatabaseObjectect
   end
 
   # The raw content of definedBy in the data.
-  # @note Generally, you should prefer to use {#defined_by?}, etc. from Ruby
+  # @note Generally, you should prefer to use {#defined_by_condition}, etc. from Ruby
   #
   # @return [String] An extension name
   # @return [Array(String, Number)] An extension name and versions
@@ -196,6 +196,9 @@ class DatabaseObjectect
     @name = data["name"]
     @long_name = data["long_name"]
     @description = data["description"]
+
+    @sem = Concurrent::Semaphore.new(1)
+    @cache = Concurrent::Hash.new
   end
 
   def inspect
@@ -213,38 +216,14 @@ class DatabaseObjectect
   # @return (see Hash#key?)
   def key?(k) = @data.key?(k)
 
-  # @overload defined_by?(ext_name, ext_version)
-  #   @param ext_name [#to_s] An extension name
-  #   @param ext_version [#to_s] A specific extension version
-  #   @return [Boolean] Whether or not the instruction is defined by extesion `ext`, version `version`
-  # @overload defined_by?(ext_version)
-  #   @param ext_version [ExtensionVersion] An extension version
-  #   @return [Boolean] Whether or not the instruction is defined by ext_version
-  def defined_by?(*args)
-    ext_ver =
-      if args.size == 1
-        raise ArgumentError, "Parameter must be an ExtensionVersion" unless args[0].is_a?(ExtensionVersion)
+  def defer(fn_name, &block)
+    cache_value = @cache[fn_name]
+    return cache_value unless cache_value.nil?
 
-        args[0]
-      elsif args.size == 2
-        raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
-        raise ArgumentError, "First parameter must be an extension version" unless args[1].respond_to?(:to_s)
+    raise "Missing block" unless block_given?
 
-        ExtensionVersion.new(args[0], args[1], cfg_arch)
-      else
-        raise ArgumentError, "Unsupported number of arguments (#{args.size})"
-      end
-
-    defined_by_condition.satisfied_by? { |req| req.satisfied_by?(ext_ver) }
+    @cache[fn_name] ||= yield
   end
-
-  # because of multiple ("allOf") conditions, we generally can't return a list of extension versions here....
-  # # @return [Array<ExtensionVersion>] Extension(s) that define the instruction. If *any* requirement is met, the instruction is defined.
-  # def defined_by
-  #   raise "ERROR: definedBy is nul for #{name}" if @data["definedBy"].nil?
-
-  #   ExtensionRequirementExpression.new(@data["definedBy"], @cfg_arch).satisfying_ext_versions
-  # end
 
   # @return [ExtensionRequirementExpression] Extension(s) that define the instruction. If *any* requirement is met, the instruction is defined.
   def defined_by_condition
@@ -610,11 +589,12 @@ class ExtensionRequirementExpression
 
     # @return [Array<ExtensionRequirements>] The terms (leafs) of this tree
     def terms
-      if @type == :term
-        [@children[0]]
-      else
-        @children.map(&:terms).flatten.uniq
-      end
+      @terms ||=
+        if @type == :term
+          [@children[0]]
+        else
+          @children.map(&:terms).flatten.uniq
+        end
     end
 
     def eval(term_values)
@@ -632,7 +612,7 @@ class ExtensionRequirementExpression
     end
   end
 
-  def to_logic_tree(hsh, term_idx: [0])
+  def to_logic_tree(hsh = @hsh, term_idx: [0])
     if hsh.is_a?(Hash)
       if hsh.key?("name")
         if hsh.key?("version")
@@ -788,14 +768,25 @@ class ExtensionRequirementExpression
     eval to_rb
   end
 
-  def satisfying_ext_versions
-    list = []
-    cfg_arch.extensions.each do |ext|
-      ext.versions.each do |ext_ver|
-        list << ext_ver if satisfied_by? { |ext_req| ext_req.satisfied_by?(ext_ver) }
-      end
+  def possibly_satisfied_by?(ext_ver)
+    # yes if:
+    #   - ext_ver affects this condition
+    #   - it is is possible for this condition to be true is ext_ver is implemented
+    logic_tree = to_logic_tree
+
+    return false unless logic_tree.terms.any? { |ext_req| ext_req.satisfying_versions.include?(ext_ver) }
+
+    # ok, so ext_ver affects this condition
+    # is it possible to be true with ext_ver implemented?
+    extensions = logic_tree.terms.map(&:extension).uniq
+
+    extension_versions = extensions.map(&:versions)
+
+    combos = combos_for(extension_versions)
+    combos.any? do |combo|
+      # replace ext_ver, since it doesn't change
+      logic_tree.eval(combo.map { |ev| ev.name == ext_ver.name ? ext_ver : ev })
     end
-    list
   end
 end
 

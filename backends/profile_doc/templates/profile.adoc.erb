@@ -463,7 +463,7 @@ associated implementation-defined parameters.
 :leveloffset: -3
 
 // TODO: GitHub issue 92: Use version specified by each profile and add version info to inst table below.
-<%- insts = cfg_arch.instructions.select { |i| i.defined_by?(ext.min_version) } -%>
+<%- insts = cfg_arch.instructions.select { |i| in_scope_ext_reqs.any? { |ext_req| ext_req.satisfying_versions.any? { |ext_ver| i.defined_by_condition.possibly_satisfied_by?(ext_ver) } } } -%>
 <%- unless insts.empty? -%>
 ==== Instructions
 

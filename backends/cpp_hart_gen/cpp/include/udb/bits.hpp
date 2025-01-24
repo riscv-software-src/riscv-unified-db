@@ -764,7 +764,12 @@ namespace udb {
     }
 
     friend std::ostream &operator<<(std::ostream &stream, const _Bits &val) {
-      stream << val.m_val;
+      if constexpr (std::same_as<StorageType, unsigned __int128> ||
+                    std::same_as<StorageType, __int128>) {
+        stream << fmt::format("{}", val.m_val);
+      } else {
+        stream << val.m_val;
+      }
       return stream;
     }
 
@@ -773,6 +778,13 @@ namespace udb {
       static_assert(msb >= lsb);
       return _Bits<msb - lsb + 1, false>{
           m_val >> lsb};  // masking will happen in the constructor
+    }
+
+    template <typename IndexType, typename ValueType>
+    constexpr _Bits &setBit(const IndexType &idx, const ValueType &value) {
+      StorageType pos_mask = static_cast<StorageType>(1) << idx;
+      m_val = (m_val & ~pos_mask) | ((value << idx) & pos_mask);
+      return *this;
     }
 
     // private:
@@ -947,23 +959,19 @@ namespace udb {
 }  // namespace udb
 
 // format Bits as their underlying type when using format()
-/*
 template <unsigned N, bool Signed>
-  requires(N <= udb::_Bits<64, false>::MaxNativePrecision)
-struct fmt::formatter<udb::_Bits<N, Signed>> : formatter<typename udb::_Bits<N,
-Signed>::StorageType>
-{
+  requires(N <= udb::BitsMaxNativePrecision)
+struct fmt::formatter<udb::_Bits<N, Signed>>
+    : formatter<typename udb::_Bits<N, Signed>::StorageType> {
   template <typename CONTEXT_TYPE>
-  auto format(udb::_Bits<N, Signed> value, CONTEXT_TYPE &ctx) const
-  {
-    return fmt::formatter<typename udb::_Bits<N,
-Signed>::StorageType>::format(value.get(), ctx);
+  auto format(udb::_Bits<N, Signed> value, CONTEXT_TYPE &ctx) const {
+    return fmt::formatter<typename udb::_Bits<N, Signed>::StorageType>::format(
+        value.get(), ctx);
   }
 };
-*/
 
 template <unsigned N, bool Signed>
-  requires(N > udb::_Bits<64, false>::MaxNativePrecision)
+  requires(N > udb::BitsMaxNativePrecision)
 struct fmt::formatter<udb::_Bits<N, Signed>> {
  private:
   fmt::detail::dynamic_format_specs<char> specs_;

@@ -1,12 +1,15 @@
 
+#include <fmt/core.h>
+
 #include "udb/cfgs/<%= cfg_arch.name %>/hart.hxx"
+
+using namespace udb;
 
 <%- cfg_arch.globals.each do |global| -%>
 <%- next unless global.is_a?(Idl::GlobalWithInitializationAst) -%>
 <%- next if global.type(cfg_arch.symtab).const? -%>
 <%= global.type(cfg_arch.symtab).to_cxx %> <%= name_of(:hart, cfg_arch) %>::<%= global.id %> = <%= global.rhs.gen_cpp(cfg_arch.symtab, 0) %>;
 <%- end -%>
-<
 
 
 void udb::<%= name_of(:hart, cfg_arch) %>::printState(FILE* out) const {
@@ -22,6 +25,6 @@ void udb::<%= name_of(:hart, cfg_arch) %>::printState(FILE* out) const {
       fmt::print(out, "x{:2}: {:#10x}\tx{:2}: {:#10x}\n", i, m_xregs[i], i + 16, m_xregs[16 + 1]);
     }
   } else {
-    assert(!"unsupported xlen");
+    udb_assert(false, "unsupported xlen");
   }
 }

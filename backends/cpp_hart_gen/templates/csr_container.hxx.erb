@@ -2,7 +2,7 @@
 
 #include "udb/cfgs/<%= cfg_arch.name %>/csrs.hxx"
 
-<%- csrs = cfg_arch.fully_configured? ? cfg_arch.implemented_csrs : cfg_arch.csrs -%>
+<%- csrs = cfg_arch.possible_csrs -%>
 
 namespace udb {
   class <%= name_of(:hart, cfg_arch) %>;

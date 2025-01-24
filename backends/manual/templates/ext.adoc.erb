@@ -36,11 +36,11 @@
 
 <%= ext.description %>
 
-<%- insts = cfg_arch.instructions.select { |i| ext.versions.any? { |v| i.defined_by?(v) } } -%>
+<%- insts = ext.instructions.select { |inst| ext.versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) } } -%>
 <%- unless insts.empty? -%>
 == Instructions
 
-The following instructions are defined by this extension:
+The following instructions are affected by this extension:
 
 [cols="1,3"]
 |===

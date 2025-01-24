@@ -64,16 +64,13 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(nlohmann_json_schema_validator)
 
-#TODO remove when this works
-set(CONFIG_LIST _)
-
-
 set(GENERATED_SRCS "")
 foreach(config ${CONFIG_LIST})
   list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/decode.cxx")
   list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/csrs.cxx")
-  # list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/params.cxx")
-  # list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/hart.cxx")
+  list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/params.cxx")
+  list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/hart.cxx")
+  list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/idl_funcs.cxx")
 endforeach()
 
 add_library(hart
@@ -112,7 +109,7 @@ add_executable(test_csr
   ${CMAKE_SOURCE_DIR}/test/test_csr.cpp
 )
 target_include_directories(test_csr PUBLIC ${CMAKE_SOURCE_DIR}/include)
-# target_link_libraries(test_csr PRIVATE hart Catch2::Catch2WithMain)
+ target_link_libraries(test_csr PRIVATE hart Catch2::Catch2WithMain)
 
 add_executable(test_version
   ${CMAKE_SOURCE_DIR}/test/test_version.cpp

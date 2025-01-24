@@ -24,6 +24,7 @@
 #   cert_models                 Array<CertModel> of all known certificate models across all classes.
 #   cert_model(name)            CertModel object for "name" and nil if none.
 
+require "concurrent"
 require "forwardable"
 require "ruby-prof"
 require "tilt"
@@ -297,7 +298,7 @@ class ConfiguredArchitecture < Architecture
         end
       end
     elsif @config.partially_configured?
-      mandatory_extensions.each do |ext_requirement|
+      mandatory_extension_reqs.each do |ext_requirement|
         ext = extension(ext_requirement.name)
         ext.params.each do |ext_param|
           next unless @config.param_values.key?(ext_param.name)
@@ -333,30 +334,42 @@ class ConfiguredArchitecture < Architecture
   # @return [String] A string representation of the object.
   def inspect = "ConfiguredArchitecture##{name}"
 
-  def implemented_extensions
-    @implemented_extensions ||=
+  # @return [Array<ExtensionVersion>] List of extension versions explictly marked as implemented in the config.
+  #                                   Does *not* include extensions implied by explictly implemented extensions.
+  def explicitly_implemented_extension_versions
+    return @explicitly_implemented_extension_versions unless @explicitly_implemented_extension_versions.nil?
+
+    unless fully_configured?
+      raise ArgumentError, "implemented_extension_versions only valid for fully configured systems"
+    end
+
+    @explicitly_implemented_extension_versions ||=
       @config.implemented_extensions.map do |e|
         ExtensionVersion.new(e["name"], e["version"], self, fail_if_version_does_not_exist: true)
       end
   end
 
   # @return [Array<ExtensionVersion>] List of all extensions known to be implemented in this config, including transitive implications
-  def transitive_implemented_extensions
-    return @transitive_implemented_extensions unless @transitive_implemented_extensions.nil?
+  def transitive_implemented_extension_versions
+    return @transitive_implemented_extension_versions unless @transitive_implemented_extension_versions.nil?
 
     raise "implemented_extensions is only valid for a fully configured defintion" unless @config.fully_configured?
 
-    list = implemented_extensions
+    list = implemented_extension_versions
     list.each do |e|
       implications = e.transitive_implications
       list.concat(implications) unless implications.empty?
     end
-    @transitive_implemented_extensions = list.uniq.sort
-  end
+    @transitive_implemented_extension_versions = list.uniq.sort
 
-  # @return [Array<ExtensionRequirement>] List of all mandatory extension requirements
-  def mandatory_extensions
-    @mandatory_extensions ||=
+  end
+  alias implemented_extension_versions transitive_implemented_extension_versions
+
+  # @return [Array<ExtensionRequirement>] List of all mandatory extension requirements (not transitive)
+  def mandatory_extension_reqs
+    return @mandatory_extension_reqs unless @mandatory_extension_reqs.nil?
+
+    @mandatory_extension_reqs ||=
       @config.mandatory_extensions.map do |e|
         ext = extension(e["name"])
         raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
@@ -365,75 +378,93 @@ class ConfiguredArchitecture < Architecture
       end
   end
 
-  # @return [Array<ExtensionRequirement>] List of all extensions that are prohibited.
-  #                                       This includes extensions explicitly prohibited by the config file
-  #                                       and extensions that conflict with a mandatory extension.
-  def transitive_prohibited_extensions
-    return @transitive_prohibited_extensions unless @transitive_prohibited_extensions.nil?
+  # @return [Array<Extension>] List of extensions that are possibly supported
+  def not_prohibited_extensions
+    return @not_prohibited_extensions unless @not_prohibited_extensions.nil?
+
+
+    @not_prohibited_extensions ||=
+      if @config.fully_configured?
+        transitive_implemented_extensions
+      elsif @config.partially_configured?
+        # reject any extension in which all of the extension versions are prohibited
+        extensions.reject { |ext| (ext.versions - transitive_prohibited_extension_versions).empty? }
+      else
+        extensions
+      end
+  end
+  alias possible_extensions not_prohibited_extensions
+
+  # @return [Array<ExtensionVersion>] List of all ExtensionVersions that are possible to support
+  def not_prohibited_extension_versions
+    return @not_prohibited_extension_versions unless @not_prohibited_extension_versions.nil?
+
+    @not_prohibited_extension_versions ||=
+      if @config.fully_configured?
+        transitive_implemented_extensions
+      elsif @config.partially_configured?
+        extensions.map(&:versions).flatten.reject { |ext_ver| transitive_prohibited_extension_versions.include?(ext_ver) }
+      else
+        extensions.map(&:version).flatten
+      end
+  end
+  alias possible_extension_versions not_prohibited_extension_versions
+
+  # @return [Array<ExtensionVersion>] List of all extension versions that are prohibited.
+  #                                   This includes extensions explicitly prohibited by the config file
+  #                                   and extensions that conflict with a mandatory extension.
+  def transitive_prohibited_extension_versions
+    return @transitive_prohibited_extension_versions unless @transitive_prohibited_extension_versions.nil?
+
+    @transitive_prohibited_extension_versions = []
 
     if @config.partially_configured?
-      @transitive_prohibited_extensions =
-        @config.prohibited_extensions.map do |e|
-          ext = extension(e["name"])
-          raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
+      add_ext_ver_and_conflicts = lambda do |ext_ver|
+        @transitive_prohibited_extension_versions << ext_ver
+        ext_ver.conflicts.each do |conflict_ext_ver|
+          add_ext_ver_and_conflicts.call(conflict_ext_ver)
+        end
+      end
 
-          ExtensionRequirement.new(e["name"], *e["version"], presence: "mandatory", cfg_arch: self)
+      @transitive_prohibited_extension_versions =
+        @config.prohibited_extensions.map do |ext_req_data|
+          ext_req = ExtensionRequirement.new(ext_req_data["name"], ext_req_data["version"], cfg_arch: self)
+          ext_req.satisfying_versions.each { |ext_ver| add_ext_ver_and_conflicts.call(ext_ver) }
         end
 
       # now add any extensions that are prohibited by a mandatory extension
-      mandatory_extensions.each do |ext_req|
-        ext_req.extension.conflicts.each do |conflict|
-          if @transitive_prohibited_extensions.none? { |prohibited_ext| prohibited_ext.name == conflict.name }
-            @transitive_prohibited_extensions << conflict
-          else
-            # pick whichever requirement is more expansive
-            p = @transitive_prohibited_extensions.find { |prohibited_ext| prohibited_ext.name == confict.name }
-            if p.version_requirement.subsumes?(conflict.version_requirement)
-              @transitive_prohibited_extensions.delete(p)
-              @transitive_prohibited_extensions << conflict
-            end
+      mandatory_extension_reqs.each do |ext_req|
+        ext_req.satisfying_versions do |ext_ver|
+          add_ext_ver_and_conflicts.call(ext_ver)
+        end
+      end
+
+      # now add everything that is not mandatory or implied by mandatory, if addtional extensions are not allowed
+      unless @config.additional_extensions_allowed?
+        extensions.each do |ext|
+          ext.versions.each do |ext_ver|
+            next if mandatory_extension_reqs.any? { |ext_req| ext_req.satisfied_by?(ext_ver) }
+            next if mandatory_extension_reqs.any? { |ext_req| ext_req.extension.implies.include?(ext_ver) }
+
+            @transitive_prohibited_extension_versions << ext_ver
           end
         end
       end
 
-      @transitive_prohibited_extensions
     elsif @config.fully_configured?
-      prohibited_ext_versions = []
       extensions.each do |ext|
         ext.versions.each do |ext_ver|
-          prohibited_ext_versions << ext_ver unless transitive_implemented_extensions.include?(ext_ver)
+          @transitive_prohibited_extension_versions << ext_ver unless transitive_implemented_extensions.include?(ext_ver)
         end
       end
-      @transitive_prohibited_extensions = []
-      prohibited_ext_versions.group_by(&:name).each_value do |ext_ver_list|
-        if ext_ver_list.sort == ext_ver_list[0].ext.versions.sort
-          # excludes every version
-          @transitive_prohibited_extensions <<
-            ExtensionRequirement.new(
-              ext_ver_list[0].ext.name, ">= #{ext_ver_list.min.version_spec.canonical}",
-              presence: "prohibited", cfg_arch: self
-            )
-        elsif ext_ver_list.size == (ext_ver_list[0].ext.versions.size - 1)
-          # excludes all but one version
-          allowed_version_list = (ext_ver_list[0].ext.versions - ext_ver_list)
-          raise "Expected only a single element" unless allowed_version_list.size == 1
 
-          allowed_version = allowed_version_list[0]
-          @transitive_prohibited_extensions <<
-            ExtensionRequirement.new(
-              ext_ver_list[0].ext.name, "!= #{allowed_version.version_spec.canonical}",
-              presence: "prohibited", cfg_arch: self
-            )
-        else
-          # need to group
-          raise "TODO"
-        end
-      end
-    else
-      @transitive_prohibited_extensions = []
+    # else, unconfigured....nothing to do                # rubocop:disable Layout/CommentIndentation
+
     end
-    @transitive_prohibited_extensions
+
+    @transitive_prohibited_extension_versions
   end
+  alias prohibited_extension_versions transitive_prohibited_extension_versions
 
   # @overload prohibited_ext?(ext)
   #   Returns true if the ExtensionVersion +ext+ is prohibited
@@ -446,9 +477,9 @@ class ConfiguredArchitecture < Architecture
   #   @return [Boolean]
   def prohibited_ext?(ext)
     if ext.is_a?(ExtensionVersion)
-      transitive_prohibited_extensions.any? { |ext_req| ext_req.satisfied_by?(ext) }
+      transitive_prohibited_extension_versions.include?(ext_ver)
     elsif ext.is_a?(String) || ext.is_a?(Symbol)
-      transitive_prohibited_extensions.any? { |ext_req| ext_req.name == ext.to_s }
+      transitive_prohibited_extension_versions.any? { |ext_ver| ext_ver.name == ext.to_s }
     else
       raise ArgumentError, "Argument to prohibited_ext? should be an ExtensionVersion or a String"
     end
@@ -483,7 +514,7 @@ class ConfiguredArchitecture < Architecture
           end
         end
       elsif @config.partially_configured?
-        mandatory_extensions.any? do |e|
+        mandatory_extension_reqs.any? do |e|
           if ext_version_requirements.empty?
             e.name == ext_name.to_s
           else
@@ -563,43 +594,103 @@ class ConfiguredArchitecture < Architecture
 
   # @return [Array<Csr>] List of all implemented CSRs
   def transitive_implemented_csrs
+    unless fully_configured?
+      raise ArgumentError, "transitive_implemented_csrs is only defined for fully configured systems"
+    end
+
     @transitive_implemented_csrs ||=
-      transitive_implemented_extensions.map(&:implemented_csrs).flatten.uniq.sort
+      csrs.select do |csr|
+        csr.defined_by_condition.satisfied_by? do |ext_req|
+          transitive_implemented_extension_versions.any? { |ext_ver| ext_req.satisfied_by?(ext_ver) }
+        end
+      end
   end
+  alias implemented_csrs transitive_implemented_csrs
+
+  # @return [Array<Csr>] List of all CSRs that it is possible to implement
+  def not_prohibited_csrs
+    @not_prohibited_csrs =
+      if @config.fully_configured?
+        transitive_implemented_csrs
+      elsif @config.partially_configured?
+        csrs.select do |csr|
+          csr.defined_by_condition.satisfied_by? do |ext_req|
+            not_prohibited_extension_versions.any? { |ext_ver| ext_req.satisfied_by?(ext_ver) }
+          end
+        end
+      else
+        csrs
+      end
+  end
+  alias possible_csrs not_prohibited_csrs
 
   # @return [Array<Instruction>] List of all implemented instructions, sorted by name
   def transitive_implemented_instructions
+    unless fully_configured?
+      raise ArgumentError, "transitive_implemented_instructions is only defined for fully configured systems"
+    end
+
     @transitive_implemented_instructions ||=
-      transitive_implemented_extensions.map(&:implemented_instructions).flatten.uniq.sort
+      instructions.select do |inst|
+        inst.defined_by_condition.satisfied_by? do |ext_req|
+          transitive_implemented_extension_versions.any? { |ext_ver| ext_req.satisfied_by?(ext_ver) }
+        end
+      end
   end
+  alias implemented_instructions transitive_implemented_instructions
 
   # @return [Array<Instruction>] List of all prohibited instructions, sorted by name
   def transitive_prohibited_instructions
+    # an instruction is prohibited if it is not defined by any .... TODO LEFT OFF HERE....
     @transitive_prohibited_instructions ||=
-      transitive_prohibited_extensions.map(&:instructions).flatten.uniq.sort
+      if fully_configured?
+        instructions - transitive_implemented_instructions
+      elsif partially_configured?
+        instructions.select do |inst|
+          inst.defined_by_condition.satisfied_by? do |ext_req|
+            not_prohibited_extension_versions.none? { |ext_ver| ext_req.satisfied_by?(ext_ver) }
+          end
+        end
+      else
+        []
+      end
   end
+  alias prohibited_instructions transitive_prohibited_instructions
 
   # @return [Array<Instruction>] List of all instructions that are not prohibited by the config, sorted by name
   def not_prohibited_instructions
-    @not_prohibited_instructions ||=
-      if fully_configured?
-        transitive_implemented_instructions
-      elsif partially_configured?
-        (instructions - transitive_prohibited_instructions).sort
-      else
-        instructions
-      end
+    return @not_prohibited_instructions unless @not_prohibited_instructions.nil?
+
+    @not_prohibited_instructions_mutex ||= Thread::Mutex.new
+    @not_prohibited_instructions_mutex.synchronize do
+      @not_prohibited_instructions ||=
+        if @config.fully_configured?
+          transitive_implemented_instructions
+        elsif @config.partially_configured?
+          instructions.select do |inst|
+            possible_xlens.any? { |xlen| inst.defined_in_base?(xlen) } && \
+              inst.defined_by_condition.satisfied_by? do |ext_req|
+                not_prohibited_extension_versions.any? { |ext_ver| ext_req.satisfied_by?(ext_ver) }
+              end
+          end
+        else
+          instructions
+        end
+    end
+
+    @not_prohibited_instructions
   end
+  alias possible_instructions not_prohibited_instructions
 
   # @return [Integer] The largest instruction encoding in the config
   def largest_encoding
     @largest_encoding ||=
       if fully_configured?
-        transitive_implemented_instructions.max { |a, b| a.max_encoding_width <=> b.max_encoding_width }.max_encoding_width
+        transitive_implemented_instructions.map(&:max_encoding_width).max
       elsif partially_configured?
-        not_prohibited_instructions.max { |a, b| a.max_encoding_width <=> b.max_encoding_width }.max_encoding_width
+        not_prohibited_instructions.map(&:max_encoding_width).max
       else
-        instructions.max { |a, b| a.max_encoding_width <=> b.max_encoding_width }.max_encoding_width
+        instructions.map(&:max_encoding_width).max
       end
   end
 
@@ -631,13 +722,47 @@ class ConfiguredArchitecture < Architecture
     puts "  Finding all reachable functions from CSR operations"
 
     transitive_implemented_csrs.each do |csr|
-      csr_funcs = csr.reachable_functions(self)
+      csr_funcs = csr.reachable_functions
       csr_funcs.each do |f|
         @implemented_functions << f unless @implemented_functions.any? { |i| i.name == f.name }
       end
     end
 
     @implemented_functions
+  end
+
+  # @return [Array<FunctionDefAst>] List of functions that can be reached by any non-prohibited inst/csr
+  def reachable_functions
+    return @reachable_functions unless @reachable_functions.nil?
+
+    if @reachable_functions.nil?
+      insts = not_prohibited_instructions
+      @reachable_functions = []
+
+      insts.each do |inst|
+        fns =
+          if inst.base.nil?
+            if multi_xlen?
+              (inst.reachable_functions(32) +
+              inst.reachable_functions(64))
+            else
+              inst.reachable_functions(mxlen)
+            end
+          else
+            inst.reachable_functions(inst.base)
+          end
+
+        @reachable_functions.concat(fns)
+      end
+
+      @reachable_functions +=
+        not_prohibited_csrs.flat_map(&:reachable_functions).uniq
+
+      @reachable_functions.uniq!
+      @reachable_functions
+    end
+
+    @reachable_functions
   end
 
   # given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`

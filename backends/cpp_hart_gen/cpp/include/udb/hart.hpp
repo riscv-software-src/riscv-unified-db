@@ -33,6 +33,7 @@ namespace udb {
                                       uint64_t data) {}
   };
 
+  class InstBase;
   class HartBase {
     // object that is thrown when an instruction encounters an exception
     class AbortInstruction : public std::exception {
@@ -56,6 +57,8 @@ namespace udb {
     virtual void set_next_pc(uint64_t next_pc) = 0;
     virtual uint64_t pc() const = 0;
     virtual void advance_pc() = 0;
+
+    virtual InstBase *decode(const uint64_t &pc, const uint64_t &encoding) = 0;
 
     PrivilegeMode mode() const { return m_current_priv_mode; }
     void set_mode(const PrivilegeMode &next_mode) {

@@ -1,5 +1,6 @@
 
 require_relative "constexpr_pass"
+require_relative "written_pass"
 
 module Idl
   class AstNode
@@ -42,7 +43,14 @@ module Idl
 
   class ReturnExpressionAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' ' * indent}#{return_expression.gen_cpp(symtab, 0, indent_spaces:)}"
+      return_expressions = return_value_nodes.map { |ast| ast.gen_cpp(symtab) }
+      if return_expressions.size == 1
+        "#{' ' * indent}return #{return_expressions[0]}"
+      elsif return_expressions.size > 1
+        "#{' ' * indent}return std::make_tuple<#{return_types(symtab).map(&:to_cxx_no_qualifiers).join(', ')}>(#{return_expressions.join(', ')})"
+      else
+        "#{' ' * indent}return"
+      end
     end
   end
 
@@ -142,19 +150,15 @@ module Idl
     end
 
     def gen_cpp_argument_list(symtab)
-      if templated?
-        template_names.each_with_index do |tname, idx|
-          symtab.add!(tname, Var.new(tname, template_types(symtab)[idx]))
-        end
-      end
+      symtab.push(self)
+      apply_template_and_arg_syms(symtab)
 
-      list = @argument_nodes.map { |arg| arg.gen_cpp(symtab, 0) }.join(", ")
+      list = @argument_nodes.map do |arg|
+        written = (builtin? || generated?) || body.written?(symtab, arg.name)
+        "#{written ? '' : 'const'} #{arg.gen_cpp(symtab, 0, ref: !written)}"
+      end.join(", ")
 
-      if templated?
-        template_names.each do |tname|
-          symtab.del(tname)
-        end
-      end
+      symtab.pop
 
       list
     end
@@ -172,10 +176,11 @@ module Idl
       end
     end
 
-    def gen_cpp_prototype(symtab, indent, indent_spaces: 2, include_semi: true)
+    def gen_cpp_prototype(symtab, indent, indent_spaces: 2, qualifiers: "", include_semi: true, cpp_class: nil)
+      scope = cpp_class.nil? ? "" : "#{cpp_class}::"
       <<~PROTOTYPE
         #{' ' * indent}#{gen_cpp_template(symtab)}
-        #{' ' * indent}#{name == 'raise' ? '[[noreturn]] ' : ''}#{constexpr?(symtab) ? 'constexpr static ' : ''}#{gen_return_type(symtab)} #{name.gsub('?', '_Q_')}(#{gen_cpp_argument_list(symtab)})#{include_semi ? ';' : ''}
+        #{' ' * indent}#{name == 'raise' ? '[[noreturn]] ' : ''} #{qualifiers} #{gen_return_type(symtab)} #{scope}#{name.gsub('?', '_Q_')}(#{gen_cpp_argument_list(symtab)})#{include_semi ? ';' : ''}
       PROTOTYPE
     end
   end
@@ -183,7 +188,12 @@ module Idl
   class CsrSoftwareWriteAst
     def gen_cpp(symtab, indent, indent_spaces: 2)
       # csr isn't known at runtime for sw_write...
-      "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr.idx.gen_cpp(symtab, 0, indent_spaces:)}).sw_write(#{expression.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
+      csr_obj = csr.csr_def(symtab)
+      if csr_obj.nil?
+        "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr.idx.gen_cpp(symtab, 0, indent_spaces:)}).sw_write(#{expression.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
+      else
+        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_obj.name}).sw_write(#{expression.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
+      end
     end
   end
 
@@ -338,9 +348,20 @@ module Idl
   end
 
   class VariableDeclarationAst
-    def gen_cpp(symtab, indent = 0, indent_spaces: 2)
+    def gen_cpp(symtab, indent = 0, indent_spaces: 2, ref: false)
       add_symbol(symtab)
-      "#{' ' * indent}#{type_name.gen_cpp(symtab, 0, indent_spaces:)} #{id.gen_cpp(symtab, 0, indent_spaces:)}"
+      if ary_size.nil?
+        "#{' ' * indent}#{type_name.gen_cpp(symtab, 0, indent_spaces:)}#{ref ? '&' : ''} #{id.gen_cpp(symtab, 0, indent_spaces:)}"
+      else
+        cpp = nil
+        value_result = value_try do
+          cpp = "#{' ' * indent}std::array<#{type_name.gen_cpp(symtab)},#{ary_size.value(symtab)}>#{ref ? '&' : ''} #{id.gen_cpp(symtab)}"
+        end
+        value_else(value_result) do
+          cpp = "#{' ' * indent}std::array<#{type_name.gen_cpp(symtab)}, #{ary_size.gen_cpp(symtab)}>#{ref ? '&' : ''} #{id.gen_cpp(symtab)}"
+        end
+        cpp
+      end
     end
   end
 
@@ -484,7 +505,10 @@ module Idl
       if lhs.text_value.start_with?("X")
         #"#{' '*indent}  #{lhs.gen_cpp(symtab, 0, indent_spaces:)}[#{idx.gen_cpp(symtab, 0, indent_spaces:)}] = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
         "#{' '*indent}__UDB_HART->_set_xreg( #{idx.gen_cpp(symtab, 0, indent_spaces:)}, #{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
+      elsif lhs.type(symtab).kind == :bits
+        "#{' '*indent}#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.setBit(#{idx.gen_cpp(symtab, 0, indent_spaces:)}, #{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
       else
+        # actually an array
         "#{' '*indent}#{lhs.gen_cpp(symtab, 0, indent_spaces:)}[#{idx.gen_cpp(symtab, 0, indent_spaces:)}] = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
       end
     end
@@ -508,9 +532,10 @@ module Idl
         if return_value_nodes.size == 1
           "#{' ' * indent}return #{return_value_nodes[0].gen_cpp(symtab, 0, indent_spaces:)};"
         else
-          return_types = return_value_nodes.map { |rv| rv.type(symtab).to_cxx }
+          func_def = find_ancestor(FunctionDefAst)
+          internal_error "Can't find function of return" if func_def.nil?
           return_values = return_value_nodes.map { |rv| rv.gen_cpp(symtab, 0, indent_spaces:) }
-          "#{' ' * indent}return std::tuple<#{return_types.join(', ')}>{#{return_values.join(', ')}};"
+          "#{' ' * indent}return std::tuple<#{func_def.return_type_nodes.map { |rt| rt.gen_cpp(symtab)}.join(', ')}>{#{return_values.join(', ')}};"
         end
       "#{' ' * indent}#{expression}"
     end
@@ -533,7 +558,7 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       cpp = <<~IF
         if (#{condition.gen_cpp(symtab, 0, indent_spaces:)}) {
-        #{action.gen_cpp(symtab, indent_spaces, indent_spaces:)}
+        #{action.gen_cpp(symtab, indent_spaces, indent_spaces:)};
         }
       IF
       cpp.lines.map { |l| "#{' ' * indent}#{l}" }.join("")

@@ -5,18 +5,18 @@
 
 using namespace udb;
 
-InstBase* <%= name_of(:hart, cfg_arch) %>::decode(
+InstBase* <%= name_of(:hart, cfg_arch) %>::_decode(
   const XReg& pc,
   const Bits<<%= cfg_arch.largest_encoding %>>& encoding
 ) {
   <%- if cfg_arch.multi_xlen? -%>
   if (xlen() == 32) {
-    <%= DecodeGen.new(cfg_arch).generate(cfg_arch.not_prohibited_instructions.select { |i| i.rv32? }, 32, indent: 4) %>
+    <%= DecodeGen.new(cfg_arch).generate(cfg_arch.possible_instructions.select { |i| i.rv32? }, 32, indent: 4) %>
   } else {
-    <%= DecodeGen.new(cfg_arch).generate(cfg_arch.not_prohibited_instructions.select { |i| i.rv64? }, 64, indent: 4) %>
+    <%= DecodeGen.new(cfg_arch).generate(cfg_arch.possible_instructions.select { |i| i.rv64? }, 64, indent: 4) %>
   }
   <%- else # just need a single decode -%>
-  <%= DecodeGen.new(cfg_arch).generate(cfg_arch.not_prohibited_instructions, cfg_arch.possible_xlens[0], indent: 2) %>
+  <%= DecodeGen.new(cfg_arch).generate(cfg_arch.possible_instructions, cfg_arch.possible_xlens[0], indent: 2) %>
   <%- end -%>
 
   // fall through: no instruction found
