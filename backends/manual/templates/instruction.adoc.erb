@@ -64,12 +64,46 @@ RV64::
 
 == Synopsis
 
+[NOTE]
+The following synopsis is _community-driven_, and has not been ratified by https://riscv.org[RISC-V International].
+You may suggest a correction or improvement by submitting a Pull Request of the https://github.com/riscv-software-src/riscv-unified-db/blob/main/arch/<%= parts = inst.__source.split("/"); parts[parts.rindex("inst")..].join("/") %>[source file].
+
 <%- if inst.data_independent_timing? -%>
 [IMPORTANT]
 This instruction must have data-independent timing when extension `Zkt` is enabled.
 <%- end -%>
 
 <%= inst.description %>
+
+== Ratified text
+
+<%-
+def get_section(block)
+  if block.context == :section
+    block
+  else
+    raise "?" if block.parent.nil?
+
+    get_section(block.parent)
+  end
+end
+-%>
+
+<%- manual_version.volumes.each do |volume| -%>
+<%- adoc_blocks = volume.find_normative_adoc_for(inst) -%>
+<%- unless adoc_blocks.empty? -%>
+The <%= inst.name %> instruction appears in <%= adoc_blocks.size %> <%= adoc_blocks.size == 1 ? 'paragraph' : 'paragraphs' %> of *<%= volume.title %>*:
+
+<%- adoc_blocks.each do |block| -%>
+<%- section = get_section(block) -%>
+.Section <%= section.sectnum %> <%= section.title %>
+****
+<%= block.source.gsub(%r{(^|[ /,])(#{inst.name.upcase})([ ,/.]|$)}, "\\1*\\2*\\3") %>
+****
+
+<%- end -%>
+<%- end -%>
+<%- end -%>
 
 == Access
 [cols="^,^,^,^,^"]
