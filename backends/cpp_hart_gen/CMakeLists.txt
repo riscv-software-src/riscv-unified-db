@@ -76,6 +76,7 @@ endforeach()
 add_library(hart
   ${CMAKE_SOURCE_DIR}/src/db_data.cxx
   ${CMAKE_SOURCE_DIR}/src/version.cpp
+  ${CMAKE_SOURCE_DIR}/src/memory.cpp
   ${GENERATED_SRCS}
 #  ../gen/iss/oryon/src/types.cxx
 #  ../gen/iss/oryon/src/csr_types.cxx
@@ -87,8 +88,9 @@ target_link_libraries(hart PUBLIC yaml-cpp::yaml-cpp nlohmann_json_schema_valida
 
 add_executable(iss
   ${CMAKE_SOURCE_DIR}/src/iss.cpp
+  ${CMAKE_SOURCE_DIR}/src/elf_reader.cpp
 )
-target_link_libraries(iss PRIVATE hart CLI11::CLI11)
+target_link_libraries(iss PRIVATE hart elf CLI11::CLI11)
 
 
 ## TESTS
