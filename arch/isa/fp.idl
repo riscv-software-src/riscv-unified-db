@@ -861,3 +861,24 @@ function f32_add {
     }
   }
 }
+
+function f32_sub {
+  returns U32
+  arguments
+    U32 a,
+    U32 b,
+    RoundingMode mode
+  description {
+    Returns difference of 2 floating point numbers
+  }
+  body {
+    U32 a_xor_b = a ^ b;
+    if (signF32UI(a_xor_b) == 1) {
+      # add if signs are different
+      return softfloat_addMagsF32(a,b,mode);
+    } else {
+      # subtract if signs are the same
+      return softfloat_subMagsF32(a,b,mode);
+    }
+  }
+}
