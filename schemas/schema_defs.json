@@ -271,14 +271,20 @@
     "cert-coverage-points": {
       "description": "Architecturally visible behaviors requiring validation by certification tests",
       "type": "array",
-      "required": ["name", "link", "description"],
+      "required": ["id", "name", "links", "description"],
       "properties": {
+        "id": {
+          "type": "string"
+        },
         "name": {
           "type": "string"
         },
-        "link": {
-          "type": "string",
-          "description": "Cross reference to UDB documentation, ISA manual, or IDL code"
+        "links": {
+          "description": "Cross reference to UDB documentation, ISA manual, or IDL code",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "description": {
           "type": "string"
@@ -289,8 +295,11 @@
     "cert-test-procedures": {
       "description": "Procedure test must follow to test certification coverage points",
       "type": "array",
-      "required": ["name", "description", "coverage-points"],
+      "required": ["id", "name", "description", "coverage-points"],
       "properties": {
+        "id": {
+          "type": "string"
+        },
         "name": {
           "type": "string"
         },
@@ -299,7 +308,7 @@
         },
         "coverage-points": {
           "type": "array",
-          "description": "List of certification coverage points to be validated",
+          "description": "List of certification coverage point IDs to be validated",
           "items": {
             "type": "string"
           }
