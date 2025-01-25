@@ -1,6 +1,22 @@
 <%= portfolio_design.include_erb("beginning.adoc.erb") %>
 
-= <%= proc_cert_model.name %> Processor Certification Test Plan
+// Book title. Need "":doctype: book" immediately after book title (no blank lines allowed).
+= <%= proc_cert_model.name %> Processor CTP (Certification Test Plan)
+:doctype: book
+
+[preface]
+= CTP Book Structure
+
+A CTP book is composed of 3 book parts as follows:
+
+* <<udb:doc,Part 1>> is the core CTP documentation including an appendix each for extension, instruction, and CSR
+  that could be present in a certificate.
+* <<manual:unpriv,Part 2>> is the RISC-V Unprivileged ISA manual, volume I (uses release specified by the certificate)
+* <<manual:priv,Part 3>> is the RISC-V Privileged ISA manual, volume II (uses release specified by the certificate)
+
+// Part 1 title
+[#udb:doc]
+= <%= proc_cert_model.name %> Processor Certification Test Plan: Part 1
 
 [Preface]
 == CTP Revision History
@@ -37,23 +53,16 @@ Each certificate has a corresponding CRD and CTP:
 * The CTP defines the certification coverage points and certification test procedures followed by the certification
   tests that an implementation must pass to obtain certification.
 
-A CTP is structured into 3 volumes as follows:
-
-* Volume A is the core CTP documentation including an appendix each for extension, instruction, and CSR
-  that could be present in a certificate.
-* Volume B is the RISC-V Unprivileged ISA manual (uses release specified by the certificate)
-* Volume C is the RISC-V Privileged ISA manual (uses release specified by the certificate)
-
 The certification coverage points reference text in any or all of the following:
 
-* RISC-V ISA manuals in volumes B and C
-* Community-generated documentation located in volume A (https://github.com/riscv-software-src/riscv-unified-db)
-* IDL (ISA Description Language) executable psuedo-code descriptions located in volume A
+* RISC-V ISA manuals in parts 2 and 3
+* Community-generated documentation located in part 1 (https://github.com/riscv-software-src/riscv-unified-db)
+* IDL (ISA Description Language) executable psuedo-code descriptions located in part 1
 
-The RISC-V ISA manuals in Volumes B and C are the preferred reference for certification coverage points since these manuals
-represent the ratified RISC-V standards from the TSC.
+The RISC-V ISA manuals are the preferred reference for certification coverage points since these manuals
+represent the ratified RISC-V standards.
 However, if the information in the ISA manuals isn't sufficiently clear or complete for certification purposes
-the content in Volume A is used to fill that gap.
+the content in Part 1 is used.
 
 === Naming Scheme
 
@@ -117,3 +126,6 @@ include::ext/riscv-isa-manual/src/riscv-unprivileged.adoc[]
 // Reset chapter numbering
 :!chapter-number:
 include::ext/riscv-isa-manual/src/riscv-privileged.adoc[]
+
+// Make sure this didn't get overwritten by the included volumes (AKA book parts).
+// :toclevels: 2
