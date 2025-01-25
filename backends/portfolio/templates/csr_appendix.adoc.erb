@@ -117,22 +117,33 @@ This CSR has no fields. However, it must still exist (not cause an `Illegal Inst
 IMPORTANT: <%= field.name %> is only defined in <%= field.base32_only? ? "RV32" : "RV64" %> (`<%= field.base32_only? ? field.location_cond32 : field.location_cond64 %>`)
 <% end -%>
 
+// These four asterisks are called a "delimited sidebar block"
+// (see https://docs.asciidoctor.org/asciidoc/latest/blocks/sidebars/)
+// and cause the text until the next four asterisks to have a thin border around it.
+// You can also use the [sidebar] attribute on a block.
+//
+// One limitation of sidebars is the normal section heading syntax
+// (e.g., == for a level 1 heading) won't work. Instead, you have to
+// do what's described in https://github.com/asciidoctor/asciidoctor/issues/1709
+// but that would be a level 5 heading in this CSR field case which is pretty ugly.
+
+.<%= csr.name + "." + field.name %>
 ****
-Location::
+Location: ::
 <%= field.location_pretty(design) %>
 
-Description::
+Description: ::
 <%= field.description.gsub("\n", " +\n") %>
 
-Type::
+Type: ::
 <%= field.type_pretty(design.symtab) %>
 
-Reset value::
+Reset value: ::
 <%= field.reset_value_pretty(design) %>
 
 <% if defined?(gen_ctp_content) && gen_ctp_content -%>
-<%= portfolio_design.include_erb("coverage_points.adoc.erb", { "db_obj" => field }) %>
-<%= portfolio_design.include_erb("test_procedures.adoc.erb", { "db_obj" => field }) %>
+<%= portfolio_design.include_erb("coverage_points.adoc.erb", { "db_obj" => field, "use_description_list" => true }) %>
+<%= portfolio_design.include_erb("test_procedures.adoc.erb", { "db_obj" => field, "use_description_list" => true }) %>
 <% end # if gen_ctp_content -%>
 
 ****

@@ -62,13 +62,12 @@ sail(): |
   }
 
 cert-coverage-points:
-  - name: Encoding and basic operation
-    description: |
-      Encoding and basic operation for `mock` instruction
-    links:
-      - manual:inst:mul:encoding
-      - udb:doc:inst:mock
-  - name: Illegal instruction exception when misa.M is 0
+  - id: inst.mock.encoding&basic_op
+    name: Encoding and basic operation
+    description: Encoding and basic operation for `mock` instruction
+    # XXX links: [manual:inst:mul:encoding, udb:doc:inst:mock]
+  - id: inst.mock.ill_exc_misa_M_disabled
+    name: Illegal instruction exception when misa.M is 0
     description: |
       An illegal instruction exception is raised when the instruction is executed
       and `misa.M` is 0.
@@ -77,10 +76,10 @@ cert-coverage-points:
       # - idl:code:inst:mock:illegal-inst-exc-misa-disabled
 
 cert-test-procedures:
-  - name: Encoding
+  - id: inst.mock.enc_and_basic
+    name: Encoding
     description: Verify the encoding and basic operation of the `mock` instruction
-    coverage-points:
-      - Encoding and basic operation
+    coverage-points: [inst.mock.encoding&basic_op]
     steps:
       - name: setup
         description: Load a variety of known values into rs1 & rs2 with a variety of rs1/rs2/rd values.

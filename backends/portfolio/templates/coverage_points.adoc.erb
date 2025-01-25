@@ -1,11 +1,16 @@
 <% unless db_obj.cert_coverage_points.empty? -%>
+<% if defined?(use_description_list) && use_description_list -%>
+Coverage Points: ::
+<% else -%>
 ==== Coverage Points
+<% end -%>
 
 [%autowidth]
 |===
-| Name | Description | Links
+| ID | Name | Description | Links
 
 <% db_obj.cert_coverage_points.each do |cp| -%>
+| <%= cp.id %>
 | <%= cp.name %>
 | <%= cp.description %>
 a| <% cp.cert_links.each do |link| -%>
