@@ -141,7 +141,8 @@ fields:
       - id: csr.misa.M.disabled
         name: Disabling `misa.M` bit
         description: What happens when you turn off `misa.M`
-        # XXX links: [manual:csr:misa:disabling-extension]
+        links:
+          - manual:csr:misa:disabling-extension
     cert-test-procedures:
       - id: csr.misa.M.muldiv_with_M_on&off
         name: Testing M
@@ -211,7 +212,8 @@ cert-coverage-points:
   - id: csr.misa.disabling_bits
     name: Disabling `misa` bits
     description: What happens when you turn off bits
-    # XXX links: [manual:csr:misa:disabling-extension]
+    links:
+      - manual:csr:misa:disabling-extension
 cert-test-procedures:
   - id: csr.misa.off&on
     name: Testing bits

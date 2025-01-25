@@ -65,7 +65,9 @@ cert-coverage-points:
   - id: inst.mock.encoding&basic_op
     name: Encoding and basic operation
     description: Encoding and basic operation for `mock` instruction
-    # XXX links: [manual:inst:mul:encoding, udb:doc:inst:mock]
+    links:
+      - manual:inst:mul:encoding
+      - udb:doc:inst:mock
   - id: inst.mock.ill_exc_misa_M_disabled
     name: Illegal instruction exception when misa.M is 0
     description: |
