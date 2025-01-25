@@ -64,11 +64,11 @@ def pf_adoc2pdf(adoc_file, target_pname)
 
   # Write out command used to convert adoc to PDF to allow running this
   # manually during development.
-  run_pname = File.dirname(adoc_file) + "/run.sh"
+  run_pname = File.dirname(adoc_file) + "/adoc2pdf.sh"
   sh "rm -f #{run_pname}"
   sh "echo '#!/bin/bash' >#{run_pname}"
   sh "echo >>#{run_pname}"
-  sh "echo #{cmd} >>#{run_pname}"
+  sh "echo bundle exec #{cmd} >>#{run_pname}"
   sh "chmod +x #{run_pname}"
 
   # Now run the actual command.
@@ -96,6 +96,17 @@ def pf_adoc2html(adoc_file, target_pname)
   ].join(" ")
 
   puts "UPDATE: bundle exec #{cmd}"
+
+   # Write out command used to convert adoc to HTML to allow running this
+  # manually during development.
+  run_pname = File.dirname(adoc_file) + "/adoc2html.sh"
+  sh "rm -f #{run_pname}"
+  sh "echo '#!/bin/bash' >#{run_pname}"
+  sh "echo >>#{run_pname}"
+  sh "echo bundle exec #{cmd} >>#{run_pname}"
+  sh "chmod +x #{run_pname}"
+
+  # Now run the actual command.
   sh cmd
 
   puts "UPDATE: Generated HTML in #{target_pname}"

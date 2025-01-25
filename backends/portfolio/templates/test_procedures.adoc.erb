@@ -1,21 +1,30 @@
 <% unless db_obj.cert_test_procedures.empty? -%>
+<% if defined?(use_description_list) && use_description_list -%>
+Test Procedures: ::
+<% else -%>
 ==== Test Procedures
+<% end -%>
 
 <% db_obj.cert_test_procedures.each do |tp| -%>
-*Name*: <%= tp.name %> +
-*Description*: <%= tp.description %> +
+[%autowidth]
+.*ID <%= tp.id %>* Test Procedure
+|===
 
-.*Coverage Points*:
+| *Name* | <%= tp.name %>
+| *Description* | <%= tp.description %>
+| *Coverage Points*
+a|
 <% tp.cert_coverage_points.each do |cp| -%>
-* <%= cp.name %>
+* <%= cp.id %>
 <% end # each cp -%>
-
-.*Steps*:
+| *Steps*
+a|
 <% tp.cert_steps.each do |step| -%>
 . <%= step.name %>
-* <%= step.description %>
+.. <%= step.description %>
 <%= step.note.nil? ? "" : "[NOTE]\n" + step.note %>
 <% end # each step -%>
-<% end # each test plan -%>
+<% end # each test procedure -%>
+|===
 
 <% end # unless no test plans -%>

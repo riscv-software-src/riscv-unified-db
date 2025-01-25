@@ -71,33 +71,31 @@ sail(): |
   }
 
 cert-coverage-points:
-  - name: Encoding
-    description: |
-      Encoding of `mul` instruction
-    links:
-      - manual:inst:mul:encoding
-  - name: Basic operation
-    description: |
-      Basic operation of `mul` instruction
-    links:
-      - manual:inst:mul:operation
-  - name: Illegal instruction exception when misa.M is 0
+  - id: inst.mul.encoding
+    name: Encoding
+    description: Encoding of `mul` instruction
+    # XXX links: [manual:inst:mul:encoding]
+  - id: inst.mul.basic_op
+    name: Basic operation
+    description: Basic operation of `mul` instruction
+    # XXX links: [manual:inst:mul:operation]
+  - id: inst.mul.ill_exc_misa_M_disabled
+    name: Illegal instruction exception when misa.M is 0
     description: |
       An illegal instruction exception is raised when the instruction is executed
       and `misa.M` is 0.
-    links:
-      - manual:csr:misa:disabling-extension
+    # XXX links: [manual:csr:misa:disabling-extension]
 
 cert-test-procedures:
-  - name: Encoding
+  - id: inst.mul.encoding
+    name: Encoding
     description: Verify the encoding of the `mul` instruction
-    coverage-points:
-      - Encoding
+    coverage-points: [inst.mul.encoding]
     steps:
       - name: setup
         description: Load a variety of known values into rs1 & rs2 with a variety of rs1/rs2/rd values.
       - name: execution
-        description: Execute the `mock` instruction
+        description: Execute the `mul` instruction
       - name: validation
         description: Check each result in rd
       - name: teardown

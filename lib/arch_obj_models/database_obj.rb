@@ -58,21 +58,22 @@ class DatabaseObject
     @cert_coverage_points
   end
 
-  # @return [Hash<String, CertCoveragePoint>] Hash of all coverage points defined by database object
+  # @return [Hash<String, CertCoveragePoint>] Hash with ID as key of all coverage points defined by database object
   def cert_coverage_point_hash
     return @cert_coverage_point_hash unless @cert_coverage_point_hash.nil?
 
     @cert_coverage_point_hash = {}
     cert_coverage_points.each do |cp|
-      @cert_coverage_point_hash[cp.name] = cp
+      @cert_coverage_point_hash[cp.id] = cp
     end
     @cert_coverage_point_hash
   end
 
+  # @param id [String] Unique ID for the coverage point
   # @return [CertCoveragePoint]
-  # @return [nil] if there is no certification coverage pointed named +name+
-  def cert_coverage_point(name)
-    cert_coverage_point_hash[name]
+  # @return [nil] if there is no certification coverage pointed with ID of +id+
+  def cert_coverage_point(id)
+    cert_coverage_point_hash[id]
   end
 
   # @return [Array<CertTestProcedure>]
@@ -92,15 +93,16 @@ class DatabaseObject
 
     @cert_test_procedure_hash = {}
     cert_test_procedures.each do |tp|
-      @cert_test_procedure_hash[tp.name] = tp
+      @cert_test_procedure_hash[tp.id] = tp
     end
     @cert_test_procedure_hash
   end
 
+  # @param id [String] Unique ID for test procedure
   # @return [CertTestProcedure]
-  # @return [nil] if there is no certification test plan named +name+
-  def cert_test_procedure(name)
-    cert_test_procedure_hash[name]
+  # @return [nil] if there is no certification test procedure with ID +id+
+  def cert_test_procedure(id)
+    cert_test_procedure_hash[id]
   end
 
  # Exception raised when there is a problem with a schema file
@@ -756,6 +758,10 @@ class CertCoveragePoint
 
     @data = data
     @db_obj = db_obj
+
+    raise ArgumentError, "Missing certification coverage point name for #{db_obj.name} of kind #{db_obj.kind}" if name.nil?
+    raise ArgumentError, "Missing certification coverage point description for #{db_obj.name} of kind #{db_obj.kind}" if description.nil?
+    raise ArgumentError, "Missing certification coverage point ID for #{db_obj.name} of kind #{db_obj.kind}" if id.nil?
   end
 
   # @return [String] Name of the coverage point
@@ -764,28 +770,39 @@ class CertCoveragePoint
   # @return [String] Description of coverage point (could be multiple lines)
   def description = @data["description"]
 
+  # @return [String] Unique ID of the coverage point
+  def id = @data["id"]
+
   # @return [Array<CertLink>] List of certification point links (cross references)
   def cert_links
     return @cert_links unless @cert_links.nil?
 
     @cert_links = []
     @data["links"]&.each do |link_data|
-      @cert_links << CertLink.new(link_data)
+      @cert_links << CertLink.new(link_data, @db_obj)
     end
+
+    raise "Missing links for certification coverage point ID '#{id}' of kind #{@db_obj.kind}" if @cert_links.empty?
+
     @cert_links
   end
 end
 
 class CertLink
   # @param data [String] The cross reference link provided in the YAML
-  def initialize(data)
+  def initialize(data, db_obj)
     raise ArgumentError, "Need String but was passed a #{data.class}" unless data.is_a?(String)
-    @data = data
+    @id = data
+
+    raise ArgumentError, "Missing link to certfication coverage point ID for #{db_obj.name} of kind #{db_obj.kind}" if id.nil?
   end
+
+  # @return [String] Unique ID of the linked to coverage point
+  def id = @id
 
   # @return [String] Asciidoc to create desired link.
   def to_adoc
-    "<<#{@data},#{@data}>>"
+    "<<#{@id},#{@id}>>"
   end
 end
 
@@ -798,44 +815,57 @@ class CertTestProcedure
 
     @data = data
     @db_obj = db_obj
+
+    raise ArgumentError, "Missing certification test procedure name for #{db_obj.name} of kind #{db_obj.kind}" if name.nil?
+    raise ArgumentError, "Missing certification test procedure description for #{db_obj.name} of kind #{db_obj.kind}" if description.nil?
+    raise ArgumentError, "Missing certification test procedure ID for #{db_obj.name} of kind #{db_obj.kind}" if id.nil?
   end
 
-  # @return [String] Name of the test plan
+  # @return [String] Name of the test procedure
   def name = @data["name"]
 
-  # @return [String] Description of test plan (could be multiple lines)
+  # @return [String] Description of test procedure (could be multiple lines)
   def description = @data["description"]
+
+  # @return [String] Unique ID of the test procedure
+  def id = @data["id"]
 
   # @return [Array<CertCoveragePoint>]
   def cert_coverage_points
     return @cert_coverage_points unless @cert_coverage_points.nil?
 
     @cert_coverage_points = []
-    @data["coverage-points"]&.each do |name|
-      cp = @db_obj.cert_coverage_point(name)
-      raise ArgumentError, "CertTestProcedure named '#{name}' for '#{@db_obj.name}' of kind #{@db_obj.kind} can't be found" if cp.nil?
+    @data["coverage-points"]&.each do |id|
+      cp = @db_obj.cert_coverage_point(id)
+      raise ArgumentError, "Can't find certification test procedure with ID '#{id}' for '#{@db_obj.name}' of kind #{@db_obj.kind}" if cp.nil?
       @cert_coverage_points << cp
     end
     @cert_coverage_points
   end
 
-  # @return [Array<CertStep>] List of certification test plan steps
+  # @return [Array<CertStep>] List of certification test procedure steps
   def cert_steps
     return @cert_steps unless @cert_steps.nil?
 
     @cert_steps = []
     @data["steps"]&.each do |step_data|
-      @cert_steps << CertStep.new(step_data)
+      @cert_steps << CertStep.new(step_data, @db_obj)
     end
+
+    raise "No steps for certification procedure ID '#{id}' of kind #{@db_obj.kind}" if @cert_steps.empty?
+
     @cert_steps
   end
 end
 
 class CertStep
   # @param data [Hash<String, String>] The step information from the YAML
-  def initialize(data)
+  def initialize(data, db_obj)
     raise ArgumentError, "Need Hash but was passed a #{data.class}" unless data.is_a?(Hash)
     @data = data
+
+    raise ArgumentError, "Missing certification step name for #{db_obj.name} of kind #{db_obj.kind}" if name.nil?
+    raise ArgumentError, "Missing certification step description for #{db_obj.name} of kind #{db_obj.kind}" if description.nil?
   end
 
   # @return [String] Name of the step
@@ -845,5 +875,6 @@ class CertStep
   def description = @data["description"]
 
   # @return [String] Optional note (can be nil)
+  # @return [nil] Optional
   def note = @data["note"]
 end
