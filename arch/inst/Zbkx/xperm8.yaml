@@ -6,8 +6,7 @@ name: xperm8
 long_name: No synopsis available.
 description: |
   No description available.
-definedBy:
-  anyOf: [B, Zbkx, Zk, Zkn, Zks]
+definedBy: Zbkx
 assembly: xd, xs1, xs2
 encoding:
   match: 0010100----------100-----0110011

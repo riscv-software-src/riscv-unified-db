@@ -9,7 +9,7 @@ description: |
   the least-significant log2(XLEN) bits of shamt. The resulting word value is sign-extended by
   copying bit 31 to all of the more-significant bits.
 definedBy:
-  anyOf: [B, Zbb, Zbkb, Zk, Zkn, Zks]
+  anyOf: [Zbb, Zbkb]
 assembly: xd, xs1, shamt
 base: 64
 encoding:

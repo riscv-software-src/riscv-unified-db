@@ -6,8 +6,7 @@ name: unzip
 long_name: No synopsis available.
 description: |
   No description available.
-definedBy:
-  anyOf: [B, Zbkb, Zk, Zkn, Zks]
+definedBy: Zbkb
 assembly: xd, xs1
 encoding:
   match: 000010001111-----101-----0010011
