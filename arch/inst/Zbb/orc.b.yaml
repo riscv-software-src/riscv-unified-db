@@ -2,18 +2,17 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: clmul
-long_name: Carry-less multiply (low-part)
+name: orc.b
+long_name: Bitware OR-combine, byte granule
 description: |
-  `clmul` produces the lower half of the 2*XLEN carry-less product
-definedBy:
-  anyOf: [Zbc, Zbkc]
+  Combines the bits within each byte using bitwise logical OR. This sets the bits
+  of each byte in the result rd to all zeros if no bit within the respective byte
+  of rs is set, or to all ones if any bit within the respective byte of rs is set.
+definedBy: Zbb
 assembly: xd, xs1, xs2
 encoding:
-  match: 0000101----------001-----0110011
+  match: 001010000111-----101-----0010011
   variables:
-    - name: rs2
-      location: 24-20
     - name: rs1
       location: 19-15
     - name: rd
@@ -23,20 +22,16 @@ access:
   u: always
   vs: always
   vu: always
-data_independent_timing: true
 operation(): |
   if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg rs1_val = X[rs1];
-  XReg rs2_val = X[rs2];
+  XReg input = X[rs1];
   XReg output = 0;
 
-  for (U32 i=0; i < xlen(); i++) {
-    output = (((rs2_val >> i) & 1) == 1)
-      ? output ^ (rs1_val << i)
-      : output;
+  for (U32 i=0; i<(xlen() - 8); i = i+8) {
+    output[(i+7):i] = (input[(i+7):i] == 0) ? 8'd0 : ~8'd0;
   }
 
   X[rd] = output;
@@ -47,10 +42,11 @@ operation(): |
 sail(): |
   {
     let rs1_val = X(rs1);
-    let rs2_val = X(rs2);
     result : xlenbits = zeros();
-    foreach (i from 0 to (xlen_val - 1))
-      if rs2_val[i] == bitone then result = result ^ (rs1_val << i);
+    foreach (i from 0 to (sizeof(xlen) - 8) by 8)
+      result[(i + 7) .. i] = if rs1_val[(i + 7) .. i] == zeros()
+                             then 0x00
+                             else 0xFF;
     X(rd) = result;
     RETIRE_SUCCESS
   }
