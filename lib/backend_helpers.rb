@@ -10,9 +10,9 @@ class String
   # Should be called on all RISC-V extension, instruction, CSR, and CSR field names.
   # Parameters never have periods in their names so they don't need to be sanitized.
   #
-  # @param name [String] Some RISC-V name which might have periods in it
-  # @return [String] New String with periods replaced with underscores
-  def sanitize = String.new(self).gsub(".", "_")
+  # @param name [String] Some RISC-V name which might have periods in it or ampersand
+  # @return [String] New String with periods replaced with underscores and ampersands replaced with "_and_"
+  def sanitize = String.new(self).gsub(".", "_").gsub("&", "_and_")
 end
 
 # This module is included in the Design class so its methods are available to be called directly
@@ -94,6 +94,14 @@ module TemplateHelpers
   end
   # TODO: Add csr and csr_field support
 
+  # @return [String] A hyperlink to a UDB certification coverage point (separate chapters for cov pts and test procs)
+  # @param org [String] Organization of coverage points and test procedures (sep=separate chapters, combo=combined chapters, appendix=appendix)
+  # @param id [String] ID of the coverage point
+  def link_to_udb_cert_cov_pt(org, id)
+    raise ArgumentError, "Unknown org value of '#{org}' for ID '#{id}'" unless org == "sep" || org == "combo" || org == "appendix"
+    "%%UDB_CERT_COV_PT_LINK%#{org};#{id.sanitize};#{id}%%"
+  end
+
   ###########
   # ANCHORS #
   ###########
@@ -137,13 +145,22 @@ module TemplateHelpers
     "[#udb:doc:func:#{name.sanitize}]"
   end
 
-  # @return [String] A anchor inside IDL instruction code
+  # @return [String] An anchor inside IDL instruction code
   # @param func_name [String] Name of the instruction
   # @param func_name [String] Name of the location within the instruction code
   def anchor_inside_idl_inst_code(inst_name, loc_name)
     "[#idl:code:inst:#{inst_name.sanitize}:#{loc_name.sanitize}]"
   end
   # TODO: Add csr and csr_field support
+
+  # @return [String] An anchor for a UDB certification coverage point (separate chapters for cov pts and test procs)
+  # @param org [String] Organization of coverage points and test procedures (sep=separate chapters, combo=combined chapters, appendix=appendix)
+  # @param id [String] ID of the coverage point
+  # Have to use [[anchor]] instead of [#anchor] since only the former works when in a table cell.
+  def anchor_for_udb_cert_cov_pt(org, id)
+    raise ArgumentError, "Unknown org value of '#{org}' for ID '#{id}'" unless org == "sep" || org == "combo" || org == "appendix"
+    "[[udb:cert:cov_pt:#{org}:#{id.sanitize}]]"
+  end
 
   private
     #@ param s [String]
@@ -208,6 +225,14 @@ module AsciidocUtils
         else
           raise "Unhandled link type of '#{type}' for '#{name}' with link_text '#{link_text}'"
         end
+      end.gsub(/%%UDB_CERT_COV_PT_LINK%([^;%]+)\s*;\s*([^;%]+)\s*;\s*([^%]+)%%/) do
+        org = Regexp.last_match[1] # sep or combo
+        id = Regexp.last_match[2]
+        link_text = Regexp.last_match[3]
+
+        raise "Unhandled link org of '#{org}' for ID '#{id}' with link_text '#{link_text}'" unless org == "sep" || org == "combo" || org == "appendix"
+
+        "<<udb:cert:cov_pt:#{org}:#{id},#{link_text}>>"
       end
     end
   end

@@ -16,7 +16,7 @@ Test Procedures for `<%= nice_name %>`: ::
 | *Coverage Points*
 a|
 <% tp.cert_coverage_points.each do |cp| -%>
-* <%= cp.id %>
+* <%= defined?(org) ? link_to_udb_cert_cov_pt(org, cp.id) : cp.id %>
 <% end # each cp -%>
 | *Steps*
 a|

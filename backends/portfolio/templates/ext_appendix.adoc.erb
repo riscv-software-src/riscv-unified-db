@@ -123,8 +123,8 @@ This extension has the following parameters (AKA implementation options):
 <% end # unless table -%>
 
 <% if defined?(gen_ctp_content) && gen_ctp_content -%>
-<%= portfolio_design.include_erb("coverage_points.adoc.erb", { "db_obj" => ext }) %>
-<%= portfolio_design.include_erb("test_procedures.adoc.erb", { "db_obj" => ext }) %>
+<%= portfolio_design.include_erb("coverage_points.adoc.erb", { "db_obj" => ext, "org" => "appendix"}) %>
+<%= portfolio_design.include_erb("test_procedures.adoc.erb", { "db_obj" => ext, "org" => "appendix"}) %>
 <% end # if gen_ctp_content -%>
 
 <% end # do ext_req -%>

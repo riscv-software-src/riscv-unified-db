@@ -59,6 +59,14 @@ class TestBackendHelpers < Minitest::Test
     assert_equal("%%IDL_CODE_LINK%inst;fo_o.ba_r;fo.o.ba.r%%", link_into_idl_inst_code("fo.o","ba.r"))
     assert_equal("[#idl:code:inst:fo_o:ba_r]", anchor_inside_idl_inst_code("fo.o","ba.r"))
   end
+
+  def test_cert_cov_pt
+    assert_equal("%%UDB_CERT_COV_PT_LINK%sep;foo_and_bar;foo&bar%%", link_to_udb_cert_cov_pt("sep", "foo&bar"))
+    assert_equal("[[udb:cert:cov_pt:sep:foo]]", anchor_for_udb_cert_cov_pt("sep", "foo"))
+    assert_equal("%%UDB_CERT_COV_PT_LINK%combo;fo_o;fo.o%%", link_to_udb_cert_cov_pt("combo", "fo.o"))
+    assert_equal("[[udb:cert:cov_pt:combo:fo_o]]", anchor_for_udb_cert_cov_pt("combo", "fo.o"))
+    assert_raises(ArgumentError) { link_to_udb_cert_cov_pt("bad-org-value","abc") }
+  end
 end
 
 class TestAsciidocUtils < Minitest::Test
@@ -95,6 +103,13 @@ class TestAsciidocUtils < Minitest::Test
   def test_resolve_links_idl_code
     assert_equal("<<idl:code:inst:foo:bar,zort>>", AsciidocUtils.resolve_links("%%IDL_CODE_LINK%inst;foo.bar;zort%%"))
     assert_equal("<<idl:code:inst:foo:bar,foo.bar>>", AsciidocUtils.resolve_links(link_into_idl_inst_code("foo","bar")))
+  end
+
+  def test_resolve_links_cert_cov_pt
+    assert_equal("<<udb:cert:cov_pt:sep:foo,bar>>", AsciidocUtils.resolve_links("%%UDB_CERT_COV_PT_LINK%sep;foo;bar%%"))
+    assert_equal("<<udb:cert:cov_pt:sep:foo,foo>>", AsciidocUtils.resolve_links(link_to_udb_cert_cov_pt("sep", "foo")))
+    assert_equal("<<udb:cert:cov_pt:combo:foo,bar>>", AsciidocUtils.resolve_links("%%UDB_CERT_COV_PT_LINK%combo;foo;bar%%"))
+    assert_equal("<<udb:cert:cov_pt:combo:foo,foo>>", AsciidocUtils.resolve_links(link_to_udb_cert_cov_pt("combo", "foo")))
   end
 end
 
