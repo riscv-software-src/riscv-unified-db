@@ -100,14 +100,21 @@ RV64::
 ----
 <% end -%>
 
+<% if inst.key?("operation()") -%>
 ==== IDL Operation
 
-<% xlens = inst.base.nil? ? [32, 64] : [inst.base] -%>
-
-<% if inst.key?("operation()") -%>
 [source,idl,subs="specialchars,macros"]
 ----
 <%= inst.operation_ast(design.symtab).gen_adoc %>
+----
+<% end -%>
+
+<% if inst.key?("sail()") -%>
+==== Sail Operation
+
+[source,sail]
+----
+<%= inst["sail()"] %>
 ----
 <% end -%>
 
