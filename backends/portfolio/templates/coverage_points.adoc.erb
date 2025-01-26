@@ -8,7 +8,7 @@ Coverage Points for `<%= nice_name %>`: ::
 
 [%autowidth]
 |===
-| ID | Name | Description | Links
+| ID | Name | Description | Documentation Links
 
 <% db_obj.cert_coverage_points.each do |cp| -%>
 | <%= defined?(org) ? anchor_for_udb_cert_cov_pt(org, cp.id) : "" %><%= cp.id %>

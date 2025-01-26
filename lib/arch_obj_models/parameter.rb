@@ -40,33 +40,39 @@ class Parameter
   # @param name [String]
   # @param data [Hash<String, Object]
   def initialize(ext, name, data)
+    raise ArgumentError, "Expecting Extension but got #{ext.class}" unless ext.is_a?(Extension)
+    raise ArgumentError, "Expecting String but got #{name.class}" unless name.is_a?(String)
+    raise ArgumentError, "Expecting Hash but got #{data.class}" unless data.is_a?(Hash)
+
     @arch = ext.arch
     @data = data
     @name = name
     @desc = data["description"]
     @schema = Schema.new(data["schema"])
     @extra_validation = data["extra_validation"]
-    also_defined_in = []
-    unless data["also_defined_in"].nil?
-      if data["also_defined_in"].is_a?(String)
-        other_ext = @arch.extension(data["also_defined_in"])
-        raise "Definition error in #{ext.name}.#{name}: #{data['also_defined_in']} is not a known extension" if other_ext.nil?
+    also_defined_in_array = []
+    also_defined_in_data = data["also_defined_in"]
+    unless also_defined_in_data.nil?
+      if also_defined_in_data.is_a?(String)
+        other_ext_name = also_defined_in_data
+        other_ext = @arch.extension(other_ext_name)
+        raise "Definition error in #{ext.name}.#{name}: #{other_ext_name} is not a known extension" if other_ext.nil?
 
-        also_defined_in << other_ext
+        also_defined_in_array << other_ext
       else
-        unless data["also_defined_in"].is_a?(Array) && data["also_defined_in"].all? { |e| e.is_a?(String) }
+        unless also_defined_in_data.is_a?(Array) && also_defined_in_data.all? { |e| e.is_a?(String) }
           raise "schema error: also_defined_in should be a string or array of strings"
         end
 
-        data["also_defined_in"].each do |other_ext_name|
+        also_defined_in_data.each do |other_ext_name|
           other_ext = @arch.extension(other_ext_name)
-          raise "Definition error in #{ext.name}.#{name}: #{data['also_defined_in']} is not a known extension" if other_ext.nil?
+          raise "Definition error in #{ext.name}.#{name}: #{also_defined_in_data} is not a known extension" if other_ext.nil?
 
-          also_defined_in << other_ext
+          also_defined_in_array << other_ext
         end
       end
     end
-    @exts = [ext] + also_defined_in
+    @exts = [ext] + also_defined_in_array
     @idl_type = @schema.to_idl_type.make_const.freeze
   end
 
@@ -81,22 +87,15 @@ class Parameter
     end
   end
 
-  # @param ext [Extension] Extension that defines this parameter.
-  # @return [String] Text that includes the parameter name and a link to the parameter definition.
-  #                  Should only be called if there is only one in-scope extension that defines the parameter.
-  def name_with_link(ext)
-    link_to_udb_doc_ext_param(ext.name, name)
-  end
-
   # @param exts [Array<Extension>] List of all in-scope extensions that define this parameter.
-  # @return [String] Text that includes the parameter name and a link to the parameter definition
+  # @return [String] Text to create a link to the parameter definition with the link text the parameter name.
   #                  if only one extension defines the parameter, otherwise just the parameter name.
   def name_potentially_with_link(in_scope_exts)
-    raise ArgumentError, "Expecting Array" unless in_scope_exts.is_a?(Array)
+    raise ArgumentError, "Expecting Array but got #{in_scope_exts.class}" unless in_scope_exts.is_a?(Array)
     raise ArgumentError, "Expecting Array[Extension]" unless in_scope_exts[0].is_a?(Extension)
 
     if in_scope_exts.size == 1
-      link_to_udb_doc_ext_param(in_scope_exts[0].name, name)
+      link_to_udb_doc_ext_param(in_scope_exts[0].name, name, name)
     else
       name
     end

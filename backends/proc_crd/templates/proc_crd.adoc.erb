@@ -235,7 +235,7 @@ None
 | <%= param.name_potentially_with_link(in_scope_exts) %>
 | <%= param.schema_type %>
 | <%= in_scope_param.allowed_values %>
-| <%= in_scope_exts.each { |ext| param.name_with_link(ext) } %>
+| <%= in_scope_exts.map { |ext| link_to_udb_doc_ext_param(ext.name, param.name, ext.name) }.join(", ") %>
 a| <%= in_scope_param.note %>
 <% end # do -%>
 |===
@@ -258,7 +258,7 @@ None
 <% exts = portfolio_design.all_in_scope_exts_without_param(param) -%>
 | <%= param.name_potentially_with_link(exts) %>
 | <%= param.schema_type %>
-| <%= exts.each { |ext| param.name_with_link(ext) } %>
+| <%= exts.map { |ext| link_to_udb_doc_ext_param(ext.name, param.name, ext.name) }.join(", ") %>
 
 <% end # do -%>
 |===

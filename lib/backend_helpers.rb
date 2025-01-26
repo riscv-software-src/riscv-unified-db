@@ -56,9 +56,10 @@ module TemplateHelpers
   # @return [String] A hyperlink to UDB parameter documentation
   # @param ext_name [String] Name of the extension
   # @param param_name [String] Name of the parameter
-  def link_to_udb_doc_ext_param(ext_name, param_name)
+  # @param link_text [String] What to put in the link text (don't assume param_name)
+  def link_to_udb_doc_ext_param(ext_name, param_name, link_text)
     check_no_periods(param_name)
-    "%%UDB_DOC_LINK%ext_param;#{ext_name.sanitize}.#{param_name};#{param_name}%%"
+    "%%UDB_DOC_LINK%ext_param;#{ext_name.sanitize}.#{param_name};#{link_text}%%"
   end
 
   # @return [String] A hyperlink to UDB instruction documentation

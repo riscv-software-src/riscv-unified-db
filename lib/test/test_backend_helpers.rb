@@ -17,11 +17,11 @@ class TestBackendHelpers < Minitest::Test
   end
 
   def test_ext_param
-    assert_equal("%%UDB_DOC_LINK%ext_param;foo.bar;bar%%", link_to_udb_doc_ext_param("foo","bar"))
+    assert_equal("%%UDB_DOC_LINK%ext_param;foo.bar;zort%%", link_to_udb_doc_ext_param("foo","bar","zort"))
     assert_equal("[#udb:doc:ext_param:foo:bar]", anchor_for_udb_doc_ext_param("foo","bar"))
-    assert_equal("%%UDB_DOC_LINK%ext_param;fo_o.bar;bar%%", link_to_udb_doc_ext_param("fo.o","bar"))
+    assert_equal("%%UDB_DOC_LINK%ext_param;fo_o.bar;fluffy%%", link_to_udb_doc_ext_param("fo.o","bar","fluffy"))
     assert_equal("[#udb:doc:ext_param:fo_o:bar]", anchor_for_udb_doc_ext_param("fo.o","bar"))
-    assert_raises(ArgumentError) { link_to_udb_doc_ext_param("foo","ba.r") }
+    assert_raises(ArgumentError) { link_to_udb_doc_ext_param("foo","ba.r","fluffy") }
     assert_raises(ArgumentError) { anchor_for_udb_doc_ext_param("foo","ba.r") }
   end
 
@@ -77,7 +77,7 @@ class TestAsciidocUtils < Minitest::Test
 
   def test_resolve_links_ext_param
     assert_equal("<<udb:doc:ext_param:foo:bar,zort>>", AsciidocUtils.resolve_links("%%UDB_DOC_LINK%ext_param;foo.bar;zort%%"))
-    assert_equal("<<udb:doc:ext_param:foo:bar,bar>>", AsciidocUtils.resolve_links(link_to_udb_doc_ext_param("foo","bar")))
+    assert_equal("<<udb:doc:ext_param:foo:bar,bob>>", AsciidocUtils.resolve_links(link_to_udb_doc_ext_param("foo","bar","bob")))
   end
 
   def test_resolve_links_inst
@@ -121,7 +121,7 @@ class TestAntoraUtils < Minitest::Test
 
   def test_resolve_links_ext_param
     assert_equal("xref:exts:foo.adoc#udb:doc:ext_param:foo:bar[[zort\\]]", AntoraUtils.resolve_links("%%UDB_DOC_LINK%ext_param;foo.bar;[zort]%%"))
-    assert_equal("xref:exts:foo.adoc#udb:doc:ext_param:foo:bar[bar]", AntoraUtils.resolve_links(link_to_udb_doc_ext_param("foo","bar")))
+    assert_equal("xref:exts:foo.adoc#udb:doc:ext_param:foo:bar[bob]", AntoraUtils.resolve_links(link_to_udb_doc_ext_param("foo","bar","bob")))
   end
 
   def test_resolve_links_inst
