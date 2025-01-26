@@ -2,18 +2,16 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: clmul
-long_name: Carry-less multiply (low-part)
+name: sext.b
+long_name: Sign-extend byte
 description: |
-  `clmul` produces the lower half of the 2*XLEN carry-less product
-definedBy:
-  anyOf: [Zbc, Zbkc]
-assembly: xd, xs1, xs2
+  This instruction sign-extends the least-significant byte in the source to XLEN by copying the
+  most-significant bit in the byte (i.e., bit 7) to all of the more-significant bits.
+definedBy: Zbb
+assembly: xd, xs1
 encoding:
-  match: 0000101----------001-----0110011
+  match: 011000000100-----001-----0010011
   variables:
-    - name: rs2
-      location: 24-20
     - name: rs1
       location: 19-15
     - name: rd
@@ -23,23 +21,16 @@ access:
   u: always
   vs: always
   vu: always
-data_independent_timing: true
 operation(): |
   if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg rs1_val = X[rs1];
-  XReg rs2_val = X[rs2];
-  XReg output = 0;
-
-  for (U32 i=0; i < xlen(); i++) {
-    output = (((rs2_val >> i) & 1) == 1)
-      ? output ^ (rs1_val << i)
-      : output;
+  if (xlen() == 32) {
+    X[rd] = {{24{X[rs1][7]}}, X[rs1][7:0]};
+  } else if (xlen() == 64) {
+    X[rd] = {{56{X[rs1][7]}}, X[rs1][7:0]};
   }
-
-  X[rd] = output;
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
@@ -47,10 +38,11 @@ operation(): |
 sail(): |
   {
     let rs1_val = X(rs1);
-    let rs2_val = X(rs2);
-    result : xlenbits = zeros();
-    foreach (i from 0 to (xlen_val - 1))
-      if rs2_val[i] == bitone then result = result ^ (rs1_val << i);
+    let result : xlenbits = match op {
+      RISCV_SEXTB => sign_extend(rs1_val[7..0]),
+      RISCV_SEXTH => sign_extend(rs1_val[15..0]),
+      RISCV_ZEXTH => zero_extend(rs1_val[15..0])
+    };
     X(rd) = result;
     RETIRE_SUCCESS
   }

@@ -2,44 +2,37 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: clmul
-long_name: Carry-less multiply (low-part)
+name: slli.uw
+long_name: Shift left unsigned word (Immediate)
 description: |
-  `clmul` produces the lower half of the 2*XLEN carry-less product
-definedBy:
-  anyOf: [Zbc, Zbkc]
-assembly: xd, xs1, xs2
+  This instruction takes the least-significant word of rs1, zero-extends it, and shifts it
+  left by the immediate.
+
+  [NOTE]
+  This instruction is the same as `slli` with `zext.w` performed on rs1 before shifting.
+definedBy: Zba
+base: 64
 encoding:
-  match: 0000101----------001-----0110011
+  match: 000010-----------001-----0011011
   variables:
-    - name: rs2
-      location: 24-20
+    - name: shamt
+      location: 25-20
     - name: rs1
       location: 19-15
     - name: rd
       location: 11-7
+assembly: xd, xs1, shamt
 access:
   s: always
   u: always
   vs: always
   vu: always
-data_independent_timing: true
 operation(): |
   if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg rs1_val = X[rs1];
-  XReg rs2_val = X[rs2];
-  XReg output = 0;
-
-  for (U32 i=0; i < xlen(); i++) {
-    output = (((rs2_val >> i) & 1) == 1)
-      ? output ^ (rs1_val << i)
-      : output;
-  }
-
-  X[rd] = output;
+  X[rd] = X[rs1][31:0] << shamt;
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
@@ -47,10 +40,7 @@ operation(): |
 sail(): |
   {
     let rs1_val = X(rs1);
-    let rs2_val = X(rs2);
-    result : xlenbits = zeros();
-    foreach (i from 0 to (xlen_val - 1))
-      if rs2_val[i] == bitone then result = result ^ (rs1_val << i);
+    let result : xlenbits = zero_extend(rs1_val[31..0]) << shamt;
     X(rd) = result;
     RETIRE_SUCCESS
   }

@@ -2,15 +2,17 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: clmul
-long_name: Carry-less multiply (low-part)
+name: sh3add.uw
+long_name: Shift unsigned word left by 3 and add
 description: |
-  `clmul` produces the lower half of the 2*XLEN carry-less product
-definedBy:
-  anyOf: [Zbc, Zbkc]
+  This instruction performs an XLEN-wide addition of two addends. The first addend is rs2.
+  The second addend is the unsigned value formed by extracting the least-significant word of rs1
+  and shifting it left by 3 places.
+definedBy: Zba
+base: 64
 assembly: xd, xs1, xs2
 encoding:
-  match: 0000101----------001-----0110011
+  match: 0010000----------110-----0111011
   variables:
     - name: rs2
       location: 24-20
@@ -23,23 +25,12 @@ access:
   u: always
   vs: always
   vu: always
-data_independent_timing: true
 operation(): |
   if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg rs1_val = X[rs1];
-  XReg rs2_val = X[rs2];
-  XReg output = 0;
-
-  for (U32 i=0; i < xlen(); i++) {
-    output = (((rs2_val >> i) & 1) == 1)
-      ? output ^ (rs1_val << i)
-      : output;
-  }
-
-  X[rd] = output;
+  X[rd] = X[rs2] + (X[rs1][31:0] << 3);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
@@ -48,9 +39,13 @@ sail(): |
   {
     let rs1_val = X(rs1);
     let rs2_val = X(rs2);
-    result : xlenbits = zeros();
-    foreach (i from 0 to (xlen_val - 1))
-      if rs2_val[i] == bitone then result = result ^ (rs1_val << i);
+    let shamt : bits(2) = match op {
+      RISCV_ADDUW    => 0b00,
+      RISCV_SH1ADDUW => 0b01,
+      RISCV_SH2ADDUW => 0b10,
+      RISCV_SH3ADDUW => 0b11
+    };
+    let result : xlenbits = (zero_extend(rs1_val[31..0]) << shamt) + rs2_val;
     X(rd) = result;
     RETIRE_SUCCESS
   }

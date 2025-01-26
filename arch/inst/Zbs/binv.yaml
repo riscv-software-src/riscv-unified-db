@@ -2,15 +2,15 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: clmul
-long_name: Carry-less multiply (low-part)
+name: binv
+long_name: Single-Bit invert (Register)
 description: |
-  `clmul` produces the lower half of the 2*XLEN carry-less product
-definedBy:
-  anyOf: [Zbc, Zbkc]
+  This instruction returns rs1 with a single bit inverted at the index specified in rs2.
+  The index is read from the lower log2(XLEN) bits of rs2.
+definedBy: Zbs
 assembly: xd, xs1, xs2
 encoding:
-  match: 0000101----------001-----0110011
+  match: 0110100----------001-----0110011
   variables:
     - name: rs2
       location: 24-20
@@ -23,23 +23,13 @@ access:
   u: always
   vs: always
   vu: always
-data_independent_timing: true
 operation(): |
   if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg rs1_val = X[rs1];
-  XReg rs2_val = X[rs2];
-  XReg output = 0;
-
-  for (U32 i=0; i < xlen(); i++) {
-    output = (((rs2_val >> i) & 1) == 1)
-      ? output ^ (rs1_val << i)
-      : output;
-  }
-
-  X[rd] = output;
+  XReg index = X[rs2] & (xlen() - 1);
+  X[rd] = X[rs1] ^ (1 << index);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
@@ -48,9 +38,15 @@ sail(): |
   {
     let rs1_val = X(rs1);
     let rs2_val = X(rs2);
-    result : xlenbits = zeros();
-    foreach (i from 0 to (xlen_val - 1))
-      if rs2_val[i] == bitone then result = result ^ (rs1_val << i);
+    let mask : xlenbits = if sizeof(xlen) == 32
+                          then zero_extend(0b1) << rs2_val[4..0]
+                          else zero_extend(0b1) << rs2_val[5..0];
+    let result : xlenbits = match op {
+      RISCV_BCLR => rs1_val & ~(mask),
+      RISCV_BEXT => zero_extend(bool_to_bits((rs1_val & mask) != zeros())),
+      RISCV_BINV => rs1_val ^ mask,
+      RISCV_BSET => rs1_val | mask
+    };
     X(rd) = result;
     RETIRE_SUCCESS
   }
