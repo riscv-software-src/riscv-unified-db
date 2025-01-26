@@ -17,6 +17,10 @@ description: |
 definedBy:
   anyOf:
     - Zcmp
+excludedBy:
+  anyOf:
+    - allOf: [C, D]
+    - Zcd
 assembly: reg_list, stack_adj
 encoding:
   match: 10111100------10
