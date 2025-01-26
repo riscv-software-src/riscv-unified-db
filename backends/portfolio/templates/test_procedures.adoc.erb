@@ -1,8 +1,9 @@
 <% unless db_obj.cert_test_procedures.empty? -%>
+<% nice_name = db_obj.is_a?(CsrField) ? "#{db_obj.parent.name}.#{db_obj.name}" : db_obj.name -%>
 <% if defined?(use_description_list) && use_description_list -%>
-Test Procedures: ::
+Test Procedures for `<%= nice_name %>`: ::
 <% else -%>
-==== Test Procedures
+==== Test Procedures for `<%= nice_name %>`
 <% end -%>
 
 <% db_obj.cert_test_procedures.each do |tp| -%>

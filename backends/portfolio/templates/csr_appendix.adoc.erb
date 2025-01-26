@@ -111,7 +111,7 @@ This CSR has no fields. However, it must still exist (not cause an `Illegal Inst
 
 <% csr.implemented_fields(design).each do |field| -%>
 <%= anchor_for_udb_doc_csr_field(csr.name, field.name) %>
-===== `<%= field.name %>` Field
+===== `<%= csr.name %>.<%= field.name %>` Field
 
 <% if !field.defined_in_all_bases? -%>
 IMPORTANT: <%= field.name %> is only defined in <%= field.base32_only? ? "RV32" : "RV64" %> (`<%= field.base32_only? ? field.location_cond32 : field.location_cond64 %>`)
@@ -127,7 +127,6 @@ IMPORTANT: <%= field.name %> is only defined in <%= field.base32_only? ? "RV32" 
 // do what's described in https://github.com/asciidoctor/asciidoctor/issues/1709
 // but that would be a level 5 heading in this CSR field case which is pretty ugly.
 
-.<%= csr.name + "." + field.name %>
 ****
 Location: ::
 <%= field.location_pretty(design) %>

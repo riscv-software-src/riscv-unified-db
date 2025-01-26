@@ -250,7 +250,7 @@ class DatabaseObject
   def definedBy = @data["definedBy"]
 
   def inspect
-    self.class.name
+    self.class.name + "##{name}"
   end
 
   # make the underlying YAML description available with []

@@ -28,7 +28,7 @@
   Ratification date:::
     <%= v.ratification_date %>
   <% end # if %>
-  <% if v.changes.empty? -%>
+  <% unless v.changes.empty? -%>
   Changes:::
 
     <% v.changes.each do |c| -%>
