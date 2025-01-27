@@ -155,6 +155,7 @@ versions:
     - Rename qc.sllsat -> qc.shlusat
     - Add requirement to include Zca extension for Xqcisim since it has 16-bit instructions
     - Add requirement to include Zca extension for Xqcisync since it has 16-bit instructions
+    - Remove qc.flags CSR
   implies:
   - [Xqcia, "0.4.0"]
   - [Xqciac, "0.2.0"]
@@ -163,7 +164,7 @@ versions:
   - [Xqcicli, "0.2.0"]
   - [Xqcicm, "0.2.0"]
   - [Xqcics, "0.2.0"]
-  - [Xqcicsr, "0.2.0"]
+  - [Xqcicsr, "0.3.0"]
   - [Xqciint, "0.2.0"]
   - [Xqcilb, "0.2.0"]
   - [Xqcili, "0.2.0"]
