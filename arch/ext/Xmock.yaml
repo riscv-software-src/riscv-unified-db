@@ -158,13 +158,13 @@ cert-coverage-points:
   - id: ext.Xmock.cov1
     name: Mock coverage point 1
     description: Let's have fun with the `Xmock` extension
-    links:
+    doc_links:
       - manual:inst:mul:encoding
       - udb:doc:inst:mock
   - id: ext.Xmock.cov2
     name: Mock coverage point 2
     description: And some more fun!
-    links:
+    doc_links:
       - manual:csr:misa:disabling-extension
 cert-test-procedures:
   - id: ext.Xmock.my_first

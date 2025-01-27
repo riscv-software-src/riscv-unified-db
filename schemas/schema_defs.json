@@ -279,8 +279,8 @@
         "name": {
           "type": "string"
         },
-        "links": {
-          "description": "Cross reference to UDB documentation, ISA manual, or IDL code",
+        "doc_links": {
+          "description": "Link to UDB documentation, ISA manual, Sail code, or IDL code",
           "type": "array",
           "items": {
             "type": "string"

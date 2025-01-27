@@ -773,28 +773,37 @@ class CertCoveragePoint
   # @return [String] Unique ID of the coverage point
   def id = @data["id"]
 
-  # @return [Array<CertLink>] List of certification point links (cross references)
-  def cert_links
-    return @cert_links unless @cert_links.nil?
+  # @return [Array<DocLink>] List of certification point documentation links
+  def doc_links
+    return @doc_links unless @doc_links.nil?
 
-    @cert_links = []
-    @data["links"]&.each do |link_data|
-      @cert_links << CertLink.new(link_data, @db_obj)
+    @doc_links = []
+    @data["doc_links"]&.each do |link_data|
+      @doc_links << DocLink.new(link_data, @db_obj)
     end
 
-    raise "Missing links for certification coverage point ID '#{id}' of kind #{@db_obj.kind}" if @cert_links.empty?
+    raise "Missing doc_links for certification coverage point ID '#{id}' of kind #{@db_obj.kind}" if @doc_links.empty?
 
-    @cert_links
+    @doc_links
   end
 end
 
-class CertLink
-  # @param data [String] The cross reference link provided in the YAML
+# Used to create links into RISC-V documentation with the following formats:
+#   ISA manuals   manual:ext:<ext-name>:<id>
+#                 manual:inst:<inst-name>:<id>
+#                 manual:csr:<csr-name>:<id>
+#                 manual:csr:<csr-name>:<id>
+# non-ISA system component standards, UDB generated documentation,
+# and regions of Sail/IDL pseudo-code.
+#
+#
+class DocLink
+  # @param data [String] The documentation link provided in the YAML
   def initialize(data, db_obj)
     raise ArgumentError, "Need String but was passed a #{data.class}" unless data.is_a?(String)
     @id = data
 
-    raise ArgumentError, "Missing link to certfication coverage point ID for #{db_obj.name} of kind #{db_obj.kind}" if id.nil?
+    raise ArgumentError, "Missing documentation link for #{db_obj.name} of kind #{db_obj.kind}" if @id.nil?
   end
 
   # @return [String] Unique ID of the linked to coverage point

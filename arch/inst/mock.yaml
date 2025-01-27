@@ -65,7 +65,7 @@ cert-coverage-points:
   - id: inst.mock.encoding&basic_op
     name: Encoding and basic operation
     description: Encoding and basic operation for `mock` instruction
-    links:
+    doc_links:
       - manual:inst:mul:encoding
       - udb:doc:inst:mock
   - id: inst.mock.ill_exc_misa_M_disabled
@@ -73,7 +73,7 @@ cert-coverage-points:
     description: |
       An illegal instruction exception is raised when the instruction is executed
       and `misa.M` is 0.
-    links:
+    doc_links:
       - manual:csr:misa:disabling-extension
       # - idl:code:inst:mock:illegal-inst-exc-misa-disabled
 
