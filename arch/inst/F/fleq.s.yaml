@@ -6,7 +6,7 @@ name: fleq.s
 long_name: No synopsis available.
 description: |
   No description available.
-definedBy: { allOf: [F, Zfa] }
+definedBy: Zfa
 assembly: xd, fs1, fs2
 encoding:
   match: 1010000----------100-----1010011
