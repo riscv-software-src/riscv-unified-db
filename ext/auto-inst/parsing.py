@@ -149,7 +149,9 @@ def compare_yaml_json_encoding(
     if not json_encoding_str:
         return ["No JSON encoding available for comparison."]
 
-    expected_length = 16 if instr_name.lower().startswith(("c_", "c.")) else 32
+    expected_length = (
+        16 if instr_name.lower().startswith(("c_", "c.", "cm_", "cm.")) else 32
+    )
 
     yaml_pattern_str = yaml_match.replace("-", ".")
     if len(yaml_pattern_str) != expected_length:
