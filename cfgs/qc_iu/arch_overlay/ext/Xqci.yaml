@@ -149,8 +149,12 @@ versions:
   changes:
     - Fix encoding of qc.c.extu instruction
     - Fix encoding of qc.swmi instruction
+    - Fix decoding of qc.pputci instruction
+    - Fix decoding of qc.delay instruction (state that immediate cannot be 0)
     - Rename qc.slasat -> qc.shlsat
     - Rename qc.sllsat -> qc.shlusat
+    - Add requirement to include Zca extension for Xqcisim since it has 16-bit instructions
+    - Add requirement to include Zca extension for Xqcisync since it has 16-bit instructions
   implies:
   - [Xqcia, "0.4.0"]
   - [Xqciac, "0.2.0"]
@@ -166,7 +170,9 @@ versions:
   - [Xqcilia, "0.2.0"]
   - [Xqcilo, "0.2.0"]
   - [Xqcilsm, "0.4.0"]
+  - [Xqcisim, "0.2.0"]
   - [Xqcisls, "0.2.0"]
+  - [Xqcisync, "0.2.0"]
   requires:
     name: Zca
     version: ">= 1.0.0"
