@@ -16,6 +16,7 @@ excludedBy:
   anyOf:
     - allOf: [C, D]
     - Zcd
+    - Zcmp
 assembly: r1s, r2s
 encoding:
   match: 101011---01---10

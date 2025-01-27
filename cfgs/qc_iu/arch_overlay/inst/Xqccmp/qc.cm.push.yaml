@@ -22,6 +22,7 @@ excludedBy:
   anyOf:
     - allOf: [C, D]
     - Zcd
+    - Zcmp
 assembly: reg_list, -stack_adj
 encoding:
   match: 10111000------10
