@@ -52,7 +52,7 @@ class DatabaseObject
     return @cert_coverage_points unless @cert_coverage_points.nil?
 
     @cert_coverage_points = []
-    @data["cert-coverage-points"]&.each do |cert_data|
+    @data["cert_coverage_points"]&.each do |cert_data|
       @cert_coverage_points << CertCoveragePoint.new(cert_data, self)
     end
     @cert_coverage_points
@@ -81,7 +81,7 @@ class DatabaseObject
     return @cert_test_procedures unless @cert_test_procedures.nil?
 
     @cert_test_procedures = []
-    @data["cert-test-procedures"]&.each do |cert_data|
+    @data["cert_test_procedures"]&.each do |cert_data|
       @cert_test_procedures << CertTestProcedure.new(cert_data, self)
     end
     @cert_test_procedures
@@ -778,8 +778,8 @@ class CertCoveragePoint
     return @doc_links unless @doc_links.nil?
 
     @doc_links = []
-    @data["doc_links"]&.each do |link_data|
-      @doc_links << DocLink.new(link_data, @db_obj)
+    @data["doc_links"]&.each do |dst|
+      @doc_links << DocLink.new(dst, @db_obj)
     end
 
     raise "Missing doc_links for certification coverage point ID '#{id}' of kind #{@db_obj.kind}" if @doc_links.empty?
@@ -788,30 +788,46 @@ class CertCoveragePoint
   end
 end
 
-# Used to create links into RISC-V documentation with the following formats:
-#   ISA manuals   manual:ext:<ext-name>:<id>
-#                 manual:inst:<inst-name>:<id>
-#                 manual:csr:<csr-name>:<id>
-#                 manual:csr:<csr-name>:<id>
-# non-ISA system component standards, UDB generated documentation,
-# and regions of Sail/IDL pseudo-code.
+# Creates links into RISC-V documentation with the following formats for the destination link:
 #
-#
+#   Documenation  Format
+#   ============  ===============================================================
+#   ISA manuals   manual:ext:<ext_name>:<location>
+#                 manual:inst:<inst_name>:<location>
+#                 manual:csr:<csr_name>:<location>
+#                 manual:csr_field:<csr_name>:<field_name>:<location>
+#                 manual:param:<ext_name>:<param_name>:<location>
+#                   where <location> is the location within the ISA manual documentation
+#   UDB doc       udb:doc:ext:<ext_name>
+#                 udb:doc:ext_param:<ext_name>:<param_name>
+#                 udb:doc:inst:<inst_name>
+#                 udb:doc:csr:<csr_name>
+#                 udb:doc:csr_field:<csr_name>:<field_name>
+#                 udb:doc:func:<func_name>  (Documentation of common/built-in IDL functions)
+#                 udb:doc:cov_pt:<org>:<id>
+#                   where <org> is:
+#                      sep for UDB documentation that "separates" coverage points from test plans
+#                      combo for UDB documentation that "combines" coverage points with test plans
+#                      appendix for UDB documentation that has coverage points and test plans in appendices
+#                   where <id> is the ID of the coverage point
+#   IDL code      idl:code:inst:<inst-name>:<location>
+#                 TODO for CSR and CSR Fields
 class DocLink
-  # @param data [String] The documentation link provided in the YAML
-  def initialize(data, db_obj)
-    raise ArgumentError, "Need String but was passed a #{data.class}" unless data.is_a?(String)
-    @id = data
+  # @param dst_link [String] The documentation link provided in the YAML
+  # @param db_obj [String] Database object
+  def initialize(dst_link, db_obj)
+    raise ArgumentError, "Need String but was passed a #{data.class}" unless dst_link.is_a?(String)
+    @dst_link = dst_link
 
-    raise ArgumentError, "Missing documentation link for #{db_obj.name} of kind #{db_obj.kind}" if @id.nil?
+    raise ArgumentError, "Missing documentation link for #{db_obj.name} of kind #{db_obj.kind}" if @dst_link.nil?
   end
 
   # @return [String] Unique ID of the linked to coverage point
-  def id = @id
+  def dst_link = @dst_link
 
   # @return [String] Asciidoc to create desired link.
   def to_adoc
-    "<<#{@id},#{@id}>>"
+    "<<#{@dst_link},#{@dst_link}>>"
   end
 end
 
@@ -844,7 +860,7 @@ class CertTestProcedure
     return @cert_coverage_points unless @cert_coverage_points.nil?
 
     @cert_coverage_points = []
-    @data["coverage-points"]&.each do |id|
+    @data["coverage_points"]&.each do |id|
       cp = @db_obj.cert_coverage_point(id)
       raise ArgumentError, "Can't find certification test procedure with ID '#{id}' for '#{@db_obj.name}' of kind #{@db_obj.kind}" if cp.nil?
       @cert_coverage_points << cp

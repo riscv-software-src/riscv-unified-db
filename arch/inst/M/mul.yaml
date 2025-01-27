@@ -70,7 +70,7 @@ sail(): |
     }
   }
 
-cert-coverage-points:
+cert_coverage_points:
   - id: inst.mul.encoding
     name: Encoding
     description: Encoding of `mul` instruction
@@ -89,11 +89,11 @@ cert-coverage-points:
     doc_links:
       - manual:csr:misa:disabling-extension
 
-cert-test-procedures:
+cert_test_procedures:
   - id: inst.mul.encoding
     name: Encoding
     description: Verify the encoding of the `mul` instruction
-    coverage-points: [inst.mul.encoding]
+    coverage_points: [inst.mul.encoding]
     steps:
       - name: setup
         description: Load a variety of known values into rs1 & rs2 with a variety of rs1/rs2/rd values.

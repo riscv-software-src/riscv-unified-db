@@ -106,11 +106,11 @@
           ],
           "description": "Extension(s) that affect the definition of the field beyond the extension (or base) the field is originally defined in"
         },
-        "cert-coverage-points": {
-          "$ref": "schema_defs.json#/$defs/cert-coverage-points"
+        "cert_coverage_points": {
+          "$ref": "schema_defs.json#/$defs/cert_coverage_points"
         },
-        "cert-test-procedures": {
-          "$ref": "schema_defs.json#/$defs/cert-test-procedures"
+        "cert_test_procedures": {
+          "$ref": "schema_defs.json#/$defs/cert_test_procedures"
         }
       },
 
@@ -276,11 +276,11 @@
           "description": "Path to the source file this definition came from; used by downstream tooling -- not expected to be in handwritten files",
           "type": "string"
         },
-        "cert-coverage-points": {
-          "$ref": "schema_defs.json#/$defs/cert-coverage-points"
+        "cert_coverage_points": {
+          "$ref": "schema_defs.json#/$defs/cert_coverage_points"
         },
-        "cert-test-procedures": {
-          "$ref": "schema_defs.json#/$defs/cert-test-procedures"
+        "cert_test_procedures": {
+          "$ref": "schema_defs.json#/$defs/cert_test_procedures"
         }
       },
       "additionalProperties": false,

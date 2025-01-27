@@ -268,7 +268,7 @@
         }
       }
     },
-    "cert-coverage-points": {
+    "cert_coverage_points": {
       "description": "Architecturally visible behaviors requiring validation by certification tests",
       "type": "array",
       "required": ["id", "name", "links", "description"],
@@ -292,10 +292,10 @@
       },
       "additionalProperties": false
     },
-    "cert-test-procedures": {
+    "cert_test_procedures": {
       "description": "Procedure test must follow to test certification coverage points",
       "type": "array",
-      "required": ["id", "name", "description", "coverage-points"],
+      "required": ["id", "name", "description", "coverage_points"],
       "properties": {
         "id": {
           "type": "string"
@@ -306,7 +306,7 @@
         "description": {
           "type": "string"
         },
-        "coverage-points": {
+        "coverage_points": {
           "type": "array",
           "description": "List of certification coverage point IDs to be validated",
           "items": {

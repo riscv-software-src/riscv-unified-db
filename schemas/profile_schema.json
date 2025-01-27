@@ -20,11 +20,11 @@
       "type": "integer",
       "description": "32 for RV32I or 64 for RV64I"
     },
-    "cert-coverage-points": {
-      "$ref": "schema_defs.json#/$defs/cert-coverage-points"
+    "cert_coverage_points": {
+      "$ref": "schema_defs.json#/$defs/cert_coverage_points"
     },
-    "cert-test-procedures": {
-      "$ref": "schema_defs.json#/$defs/cert-test-procedures"
+    "cert_test_procedures": {
+      "$ref": "schema_defs.json#/$defs/cert_test_procedures"
     }
   }
 }

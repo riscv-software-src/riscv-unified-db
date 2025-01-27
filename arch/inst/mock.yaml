@@ -61,7 +61,7 @@ sail(): |
     }
   }
 
-cert-coverage-points:
+cert_coverage_points:
   - id: inst.mock.encoding&basic_op
     name: Encoding and basic operation
     description: Encoding and basic operation for `mock` instruction
@@ -77,11 +77,11 @@ cert-coverage-points:
       - manual:csr:misa:disabling-extension
       # - idl:code:inst:mock:illegal-inst-exc-misa-disabled
 
-cert-test-procedures:
+cert_test_procedures:
   - id: inst.mock.enc_and_basic
     name: Encoding
     description: Verify the encoding and basic operation of the `mock` instruction
-    coverage-points: [inst.mock.encoding&basic_op]
+    coverage_points: [inst.mock.encoding&basic_op]
     steps:
       - name: setup
         description: Load a variety of known values into rs1 & rs2 with a variety of rs1/rs2/rd values.
