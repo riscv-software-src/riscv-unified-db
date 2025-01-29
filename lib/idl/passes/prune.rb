@@ -57,6 +57,17 @@ module Idl
       new_node
     end
 
+    def nullify_assignments(symtab)
+      children.each { |child| child.nullify_assignments(symtab) }
+    end
+  end
+  class VariableAssignmentAst
+    def nullify_assignments(symtab)
+      sym = symtab.get(lhs.text_value)
+      unless sym.nil?
+        sym.value = nil
+      end
+    end
   end
   class FunctionCallExpressionAst
     def prune(symtab)
@@ -85,7 +96,8 @@ module Idl
       symtab.push(self)
       symtab.add(init.lhs.name, Var.new(init.lhs.name, init.lhs_type(symtab)))
 
-      # stmts.each { |stmt| stmt.nullify_assignments(symtab) }
+      # make sure that any variable assigned within the loop is considered unknown
+      stmts.each { |stmt| stmt.nullify_assignments(symtab) }
 
       begin
         new_loop =

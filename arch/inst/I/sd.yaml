@@ -26,7 +26,7 @@ access:
   vs: always
   vu: always
 operation(): |
-  XReg virtual_address = X[rs1] + imm;
+  XReg virtual_address = X[rs1] + $signed(imm);
 
   write_memory<64>(virtual_address, X[rs2], $encoding);
 

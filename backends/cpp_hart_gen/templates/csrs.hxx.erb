@@ -30,7 +30,7 @@ namespace udb {
 
     // constructor
     <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %>(<%= name_of(:hart, cfg_arch) %>* hart)
-      : m_undefined(true),
+      : m_undefined(<%= field.reset_value.is_a?(String) ? true : false %>),
         m_hart(hart),
       <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
         m_location_32(<%= "#{field.location(32).end}, #{field.location(32).begin}" %>),

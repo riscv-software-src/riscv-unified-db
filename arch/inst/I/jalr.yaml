@@ -27,7 +27,7 @@ operation(): |
   XReg returnaddr;
   returnaddr = $pc + 4;
 
-  jump(X[rs1] + imm);
+  jump((X[rs1] + $signed(imm)) & ~XLEN'1);
   X[rd] = returnaddr;
 
 sail(): |

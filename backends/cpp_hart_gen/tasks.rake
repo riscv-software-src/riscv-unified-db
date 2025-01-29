@@ -150,7 +150,8 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/build/Makefile} => [
     "-S#{CPP_HART_GEN_DST}/#{build_name}",
     "-B#{CPP_HART_GEN_DST}/#{build_name}/build",
     "-DCONFIG_LIST=\"#{ENV['CONFIG'].gsub(',', ';')}\"",
-    "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+    "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+    "-DCMAKE_BUILD_TYPE=#{cmake_build_type}"
   ].join(" ")
 
   sh cmd
@@ -166,6 +167,7 @@ def configs_build_name
   raise ArgumentError, "Missing required option CONFIG:\n#{help}" if ENV["CONFIG"].nil?
 
   configs = ENV["CONFIG"].split(",")
+  build_type = cmake_build_type
 
   if configs.include?("all")
     raise ArgumentError, "'all' was specified with another config name" unless configs.size == 1
@@ -186,6 +188,8 @@ def configs_build_name
     else
       ENV["BUILD_NAME"]
     end
+
+  build_name += "_#{build_type}"
 
   [configs, build_name]
 end
@@ -275,6 +279,21 @@ namespace :cbuild do
   end
 end
 
+def cmake_build_type
+  case ENV["BUILD_TYPE"].upcase
+  when "DEBUG"
+    "Debug"
+  when "FAST_DEBUG"
+    "RelWithDebInfo"
+  when "RELEASE", "", nil
+    "Release"
+  when "ASAN"
+    "Asan"
+  else
+    raise "Bad BUILD_TYPE; must be DEBUG, FAST_DEBUG, ASAN, or RELEASE"
+  end
+end
+
 namespace :build do
   task cpp_hart: ["gen:cpp_hart"] do
     _, build_name = configs_build_name
@@ -283,6 +302,25 @@ namespace :build do
     Dir.chdir("#{CPP_HART_GEN_DST}/#{build_name}/build") do
       sh "make -j #{$jobs}"
     end
+  end
+end
+
+file "#{$root}/ext/riscv-tests/LICENSE" do
+  sh "git submodule update --init ext/riscv-tests"
+end
+
+file "#{$root}/ext/riscv-tests/env/LICENSE" => ["#{$root}/ext/riscv-tests/LICENSE"] do
+  Dir.chdir "#{$root}/ext/riscv-tests" do
+    sh "git submodule update --init --recursive"
+  end
+end
+
+task "checkout-riscv-tests" => "#{$root}/ext/riscv-tests/env/LICENSE"
+
+file "#{CPP_HART_GEN_DST}/riscv-tests-build-64/Makefile" => "#{$root}/ext/riscv-tests/env/LICENSE" do |t|
+  FileUtils.mkdir_p File.dirname(t.name)
+  Dir.chdir File.dirname(t.name) do
+    sh "#{$root}/ext/riscv-tests/configure --with-xlen=64"
   end
 end
 

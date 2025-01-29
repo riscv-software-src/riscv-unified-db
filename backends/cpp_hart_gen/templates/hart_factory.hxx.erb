@@ -12,6 +12,59 @@
 <%- end -%>
 
 namespace udb {
+  template <class HART_TYPE>
+  class RiscvTestsTracer : public udb::AbstractTracer
+  {
+  public:
+    class Pass : public udb::ExitEvent
+    {
+      public:
+      Pass() : udb::ExitEvent(0) {}
+
+      const char* what() const noexcept override {
+        return "Pass";
+      }
+    };
+
+    class Fail : public udb::ExitEvent
+    {
+      public:
+      Fail(uint64_t testnum) : udb::ExitEvent(-1), m_testnum(testnum) {}
+
+      const char* what() const noexcept override {
+        return strdup(fmt::format("Test #{} failed", m_testnum).c_str());
+      }
+
+      private:
+      uint64_t m_testnum;
+    };
+
+  public:
+    RiscvTestsTracer(HartBase* hart)
+      : udb::AbstractTracer(),
+        m_hart(dynamic_cast<HART_TYPE*>(hart))
+    {}
+
+    void trace_exception() override {
+      auto cause = m_hart->_csrContainer().mcause._hw_read();
+      if (cause == udb::ExceptionCode::Mcall || cause == udb::ExceptionCode::Scall || cause == udb::ExceptionCode::Ucall) {
+        auto a7 = m_hart->_xreg(17);
+        if (a7 == 93) {
+          auto gp = m_hart->_xreg(3);
+          if (gp == 1) {
+            throw Pass();
+          } else {
+            auto testnum = m_hart->_xreg(10) >> 1;
+            throw Fail(testnum);
+          }
+        }
+      }
+    }
+
+  private:
+    HART_TYPE* m_hart;
+  };
+
   class HartFactory {
     HartFactory() = delete;
 
@@ -50,6 +103,16 @@ namespace udb {
       // bad config name
       fmt::print("'{}' is not a valid config name\n", config_name);
       exit(1);
+    }
+
+    static AbstractTracer* create_tracer(const std::string& tracer_name, const std::string& config_name, HartBase* hart)
+    {
+      <%- cfg_list.each do |config| -%>
+      if (config_name == "<%= config %>") {
+        return new RiscvTestsTracer<<%= name_of(:hart, config) %>>(hart);
+      }
+      <%- end %>
+
     }
   };
 }

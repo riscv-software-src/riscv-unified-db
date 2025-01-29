@@ -31,7 +31,7 @@ operation(): |
   XReg rhs = X[rs2];
 
   if (lhs == rhs) {
-    jump_halfword($pc + imm);
+    jump_halfword($pc + $signed(imm));
   }
 
 sail(): |

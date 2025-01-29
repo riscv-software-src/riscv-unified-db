@@ -3,6 +3,35 @@ cmake_policy(SET CMP0067 NEW) # Force check_cxx_source_compiles to respect CMAKE
 
 project(udb LANGUAGES CXX)
 
+# Add Asan build type
+SET(CMAKE_CXX_FLAGS_ASAN
+    "-g -Og -fsanitize=address"
+    CACHE STRING "Flags used by the C++ compiler during address sanitizer builds."
+    FORCE )
+SET(CMAKE_C_FLAGS_ASAN
+    "-g -Og -fsanitize=address"
+    CACHE STRING "Flags used by the C compiler during address address sanitizer builds."
+    FORCE )
+SET(CMAKE_EXE_LINKER_FLAGS_ASAN
+    ""
+    CACHE STRING "Flags used for linking binaries during address address sanitizer builds."
+    FORCE )
+SET(CMAKE_SHARED_LINKER_FLAGS_ASAN
+    ""
+    CACHE STRING "Flags used by the shared libraries linker during address sanitizer builds."
+    FORCE )
+MARK_AS_ADVANCED(
+    CMAKE_CXX_FLAGS_ASAN
+    CMAKE_C_FLAGS_ASAN
+    CMAKE_EXE_LINKER_FLAGS_ASAN
+    CMAKE_SHARED_LINKER_FLAGS_ASAN )
+IF(NOT CMAKE_BUILD_TYPE)
+  SET(CMAKE_BUILD_TYPE RelWithDebInfo
+      CACHE STRING "Choose the type of build : None Debug Release RelWithDebInfo MinSizeRel Asan."
+      FORCE)
+ENDIF(NOT CMAKE_BUILD_TYPE)
+message("* Current build type is : ${CMAKE_BUILD_TYPE}")
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)

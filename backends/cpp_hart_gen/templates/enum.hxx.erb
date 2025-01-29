@@ -43,6 +43,10 @@ namespace udb {
       return m_value == rhs;
     }
 
+    constexpr bool operator!=(const <%= enum.name %>& rhs) const {
+      return m_value == rhs.m_value;
+    }
+
   };
   const std::string to_s(const <%= enum.name %>& value);
   template <std::integral Type>

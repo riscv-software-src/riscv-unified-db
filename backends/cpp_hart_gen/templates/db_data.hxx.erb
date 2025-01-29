@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "udb/version.hpp"
+
 namespace udb {
   class DbData {
     DbData() = delete;
@@ -12,13 +14,13 @@ namespace udb {
     public:
     static std::map<std::string, std::string> SCHEMAS;
 
-    static std::vector<std::string> params_for(const std::string& ext_name, const std::string& ext_ver)
+    static std::vector<std::string> params_for(const std::string& ext_name, const udb::Version& ext_ver)
     {
       <%- i = 0 -%>
       <%- cfg_arch.extensions.each do |ext| -%>
       <%= i.zero? ? "" : "else " %>if (ext_name == "<%= ext.name %>") {
         <%- ext.versions.each do |ext_ver| -%>
-        if (ext_ver == "<%= ext_ver.version_str %>") {
+        if (ext_ver == udb::Version{"<%= ext_ver.version_str %>"}) {
           return {
             <%= ext_ver.params.map { |param| "  \"#{param.name}\"" }.join(",\n") %>
           };

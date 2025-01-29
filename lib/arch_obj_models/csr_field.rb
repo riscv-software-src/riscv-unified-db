@@ -366,12 +366,15 @@ class CsrField < DatabaseObjectect
       else
         ast = pruned_reset_value_ast
         symtab = fill_symtab_for_reset(ast)
-        begin
+        val = nil
+        value_result = Idl::AstNode.value_try do
           val = ast.return_value(symtab)
-        ensure
-          symtab.release
+        end
+        Idl::AstNode.value_else(value_result) do
+          val = "UNDEFINED_LEGAL"
         end
         val = "UNDEFINED_LEGAL" if val == 0x1_0000_0000_0000_0000
+        symtab.release
         val
       end
     end

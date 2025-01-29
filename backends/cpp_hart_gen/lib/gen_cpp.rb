@@ -2,6 +2,31 @@
 require_relative "constexpr_pass"
 require_relative "written_pass"
 
+class TrueClass
+  def to_cxx = "true"
+end
+
+class FalseClass
+  def to_cxx = "false"
+end
+
+class Integer
+  def to_cxx
+    if negative?
+      "-#{-self}_sb"
+    else
+      "#{self}_b"
+    end
+  end
+end
+
+class String
+  def to_cxx
+    "\"#{self}\"";
+  end
+end
+
+
 module Idl
   class AstNode
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
@@ -293,15 +318,10 @@ module Idl
   class IntLiteralAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       v = value(symtab)
-      if v >= 0
-        "#{' ' * indent}#{value(symtab)}_b"
-      else
-        if v.bit_length <= 127
-          "#{' ' * indent}#{value(symtab)}LL"
-        else
-          "#{' ' * indent}#{value(symtab)}_b"
-        end
-      end
+      w = width(symtab)
+      t = type(symtab)
+
+      "#{' ' * indent}_Bits<#{w}, #{t.signed?}>{#{v}_b}"
     end
   end
 

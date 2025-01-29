@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstdint>
+#include <map>
+#include <unordered_map>
 
 #include <nlohmann/json-schema.hpp>
 
@@ -56,7 +58,10 @@ namespace udb {
           m_csrs(this)
       {
         m_xregs[0].makeZeroReg();
+        init_csr_map();
       }
+
+      void init_csr_map();
 
       bool implemented_Q_(const ExtensionName& ext, const VersionRequirement& req)
       {
@@ -106,39 +111,35 @@ namespace udb {
       void printState(FILE* out = stdout) const override;
 
     CsrBase* csr(unsigned address) override {
-      return nullptr;
-      // auto it = m_csr_map.find(address);
-      // if (it == m_csr_map.end()) {
-      //   return nullptr;
-      // }
-      // return it->second;
+      auto it = m_csr_addr_map.find(address);
+      if (it == m_csr_addr_map.end()) {
+         return nullptr;
+      }
+      return it->second;
     }
 
     const CsrBase* csr(unsigned address) const override {
-      return nullptr;
-      // auto it = m_csr_map.find(address);
-      // if (it == m_csr_map.end()) {
-      //   return nullptr;
-      // }
-      // return it->second;
+      auto it = m_csr_addr_map.find(address);
+      if (it == m_csr_addr_map.end()) {
+         return nullptr;
+      }
+      return it->second;
     }
 
-    CsrBase* csr(const std::string& address) override {
-      return nullptr;
-      // auto it = m_csr_map.find(address);
-      // if (it == m_csr_map.end()) {
-      //   return nullptr;
-      // }
-      // return it->second;
+    CsrBase* csr(const std::string& name) override {
+      auto it = m_csr_name_map.find(name);
+      if (it == m_csr_name_map.end()) {
+         return nullptr;
+      }
+      return it->second;
     }
 
-    const CsrBase* csr(const std::string& address) const override {
-      return nullptr;
-      // auto it = m_csr_map.find(address);
-      // if (it == m_csr_map.end()) {
-      //   return nullptr;
-      // }
-      // return it->second;
+    const CsrBase* csr(const std::string& name) const override {
+      auto it = m_csr_name_map.find(name);
+      if (it == m_csr_name_map.end()) {
+         return nullptr;
+      }
+      return it->second;
     }
 
     const <%= name_of(:params, cfg_arch) %>& params() const {
@@ -151,6 +152,12 @@ namespace udb {
 
     InstBase* _decode(const XReg& pc, const Bits<<%= cfg_arch.largest_encoding %>>& encoding);
 
+    std::tuple<bool, <%= name_of(:struct, cfg_arch, "TranslationResult") %>> cached_translation(const XReg& vaddr, const MemoryOperation& op) const {
+      return std::make_tuple<bool, <%= name_of(:struct, cfg_arch, "TranslationResult") %>>(false, {});
+    }
+
+    <%= name_of(:csr_container, cfg_arch) %>& _csrContainer() { return m_csrs; }
+
     private:
       XReg m_pc;
       XReg m_next_pc;
@@ -159,6 +166,8 @@ namespace udb {
 
       <%= name_of(:params, cfg_arch) %> m_params;
       <%= name_of(:csr_container, cfg_arch) %> m_csrs;
+      std::unordered_map<Bits<12>, CsrBase*> m_csr_addr_map;
+      std::map<std::string, CsrBase*> m_csr_name_map;
   };
 
   #include "udb/cfgs/<%= cfg_arch.name %>/idl_funcs_impl.hxx"

@@ -24,6 +24,7 @@ RUN apt-get install -y --no-install-recommends g++
 RUN apt-get install -y --no-install-recommends clang-format
 RUN apt-get install -y --no-install-recommends clang-tidy
 RUN apt-get install -y --no-install-recommends libelf-dev
+RUN apt-get install -y --no-install-recommends gcc-riscv64-unknown-elf
 RUN apt-get clean autoclean
 RUN apt-get autoremove -y
 RUN rm -rf /var/lib/{apt,dpkg,cache,log}/*

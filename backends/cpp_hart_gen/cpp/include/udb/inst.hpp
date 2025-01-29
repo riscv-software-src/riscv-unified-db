@@ -117,6 +117,7 @@ namespace udb {
     // HartBase::SynchronousException will be raised in C++
     virtual void execute() = 0;
 
+    virtual const std::string_view &name() = 0;
     virtual std::string disassemble(bool use_abi_reg_names = false) const = 0;
 
     // return the

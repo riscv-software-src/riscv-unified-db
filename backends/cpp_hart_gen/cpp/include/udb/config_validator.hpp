@@ -61,8 +61,8 @@ namespace udb {
         std::string s;
         if (YAML::convert<int64_t>::decode(node, scalar.i)) {
           return scalar.i;
-        } else if (YAML::convert<double>::decode(node, scalar.d)) {
-          return scalar.d;
+          // } else if (YAML::convert<double>::decode(node, scalar.d)) {
+          //   return scalar.d;
         } else if (YAML::convert<bool>::decode(node, scalar.b)) {
           return scalar.b;
         } else if (YAML::convert<std::string>::decode(node, s)) {

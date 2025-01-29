@@ -25,6 +25,17 @@ udb::ElfReader::ElfReader(const std::string& path) {
   if (elf_kind(m_elf) != ELF_K_ELF) {
     throw ElfException("Not an ELF file");
   }
+
+  auto hdr = elf32_getehdr(m_elf);
+  m_class = ELFCLASS32;
+  if (hdr == nullptr) {
+    m_class = ELFCLASS64;
+  }
+  if (m_class == ELFCLASS32) {
+    m_entry = elf32_getehdr(m_elf)->e_entry;
+  } else {
+    m_entry = elf64_getehdr(m_elf)->e_entry;
+  }
 }
 
 udb::ElfReader::~ElfReader() {
@@ -33,6 +44,16 @@ udb::ElfReader::~ElfReader() {
     close(m_fd);
   }
 }
+
+std::pair<uint64_t, uint64_t> udb::ElfReader::mem_range() {
+  if (m_class == ELFCLASS32) {
+    return _mem_range<ELFCLASS32>();
+  } else {
+    return _mem_range<ELFCLASS64>();
+  }
+}
+
+uint64_t udb::ElfReader::entry() { return m_entry; }
 
 bool udb::ElfReader::getSym(const std::string& name, Elf64_Addr* result) {
   size_t num_sections;
@@ -84,21 +105,9 @@ bool udb::ElfReader::getSym(const std::string& name, Elf64_Addr* result) {
 
 // returns start address
 uint64_t udb::ElfReader::loadLoadableSegments(Memory& m) {
-  Elf64_Phdr* phdr;
-  size_t n;
-
-  if (elf_getphdrnum(m_elf, &n) != 0) {
-    throw ElfException("Could not find number of Program Headers");
+  if (m_class == ELFCLASS32) {
+    return _loadLoadableSegments<ELFCLASS32>(m);
+  } else {
+    return _loadLoadableSegments<ELFCLASS64>(m);
   }
-
-  phdr = elf64_getphdr(m_elf);
-  for (size_t i = 0; i < n; i++) {
-    if (phdr[i].p_type == PT_LOAD) {
-      Elf_Data* d = elf_getdata_rawchunk(m_elf, phdr[i].p_offset,
-                                         phdr[i].p_filesz, ELF_T_BYTE);
-      m.memcpy_from_host(phdr[i].p_vaddr, d->d_buf, d->d_size);
-    }
-  }
-
-  return elf64_getehdr(m_elf)->e_entry;
 }

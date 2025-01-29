@@ -1,13 +1,4 @@
 
-class Integer
-  def to_cxx
-    if negative?
-      "#{to_s}ll"
-    else
-      "#{to_s}ull"
-    end
-  end
-end
 
 class Array
   def to_cxx
@@ -74,7 +65,10 @@ module CppHartGen
     # name_of(:params, "rv64")
     def name_of(kind, cfg_arch_or_config_name, *extras)
       config_name = cfg_arch_or_config_name.is_a?(ConfiguredArchitecture) ? cfg_arch.name : cfg_arch_or_config_name
+      config_name = config_name.gsub("-", "_")
       case kind
+      when :cfg
+        config_name.camelize
       when :hart
         "#{config_name.camelize}_Hart"
       when :params

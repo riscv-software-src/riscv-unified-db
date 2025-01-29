@@ -12,14 +12,28 @@
 <%- ilist = cfg_arch.possible_instructions -%>
 
 <%
-  def extract_decode(bits,inst)
-    bits.map do |r|
-      if r.is_a?(Integer)
-        "extract<#{r}, 1, #{inst.encoding_width}>(m_encoding)"
-      else
-        "extract<#{r.first}, #{r.size}, #{inst.encoding_width}>(m_encoding)"
+  def extract_decode(dv,inst)
+    ops = []
+    so_far = 0
+    dv.bits.each do |b|
+      if b.is_a?(Integer)
+        op = "extract<#{b}, 1, #{inst.encoding_width}>(m_encoding)"
+        ops << op
+        so_far += 1
+      elsif b.is_a?(Range)
+        op = "extract<#{b.first}, #{b.size}, #{inst.encoding_width}>(m_encoding)"
+        ops << op
+        so_far += b.size
       end
-    end.join(" || ")
+    end
+    ops << "Bits<#{dv.left_shift}>{0}" unless dv.left_shift.zero?
+    ops =
+      if ops.size > 1
+        "concat(#{ops.join(', ')})"
+      else
+        ops[0]
+      end
+    ops
   end
 -%>
 
@@ -42,7 +56,7 @@ namespace udb {
 
     <%= name_of(:hart, cfg_arch) %>* parent() { return m_parent; }
 
-    size_t enc_len() const override { return <%= inst.encoding_width %>; }
+    size_t enc_len() const override { return <%= inst.encoding_width / 8 %>; }
 
     //
     // Decode variables
@@ -51,25 +65,25 @@ namespace udb {
     <%- inst.decode_variables(32).each do |dv| -%>
     template <unsigned _XLEN = XLEN>
     Bits<<%= dv.size %>> <%= dv.name %>() const requires (_XLEN==32) {
-      return <%= extract_decode(dv.bits,inst) %>;
+      return <%= extract_decode(dv,inst) %>;
     }
     <%- end -%>
     <%- inst.decode_variables(64).each do |dv| -%>
     template <unsigned _XLEN = XLEN>
     Bits<<%= dv.size %>> <%= dv.name %>() const requires (_XLEN==64) {
-      return <%= extract_decode(dv.bits,inst) %>;
+      return <%= extract_decode(dv,inst) %>;
     }
     <%- end -%>
     <%- elsif needs_rv32 -%>
     <%- inst.decode_variables(32).each do |dv| -%>
     Bits<<%= dv.size %>> <%= dv.name %>() const {
-      return <%= extract_decode(dv.bits,inst) %>;
+      return <%= extract_decode(dv,inst) %>;
     }
     <%- end -%>
     <%- else -%>
     <%- inst.decode_variables(64).each do |dv| -%>
     Bits<<%= dv.size %>> <%= dv.name %>() const {
-      return <%= extract_decode(dv.bits,inst) %>;
+      return <%= extract_decode(dv,inst) %>;
     }
     <%- end -%>
     <%- end -%>
@@ -82,7 +96,7 @@ namespace udb {
 #define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name ## _VALUE
 #define __UDB_STRUCT(type) <%= cfg_arch.name %> ## type ##_Struct
 #define __UDB_SET_PC(new_pc) m_parent->set_next_pc(new_pc)
-#define __UDB_PC m_parent->pc()
+#define __UDB_PC m_parent->m_pc
 #define __UDB_MUTABLE_GLOBAL(x) m_parent->x
 #define __UDB_CONSTEXPR_FUNC_CALL <%= name_of(:hart, cfg_arch)%>::
 #define __UDB_CONST_GLOBAL(F) <%= name_of(:hart, cfg_arch)%>:: F
@@ -134,6 +148,8 @@ namespace udb {
 #undef __UDB_XLEN
 #undef __UDB_HART
 
+  constexpr static std::string_view m_name = "<%= inst.name %>";
+  const std::string_view& name() override { return m_name; }
   std::string disassemble(bool use_abi_reg_names = 0) const override { return "TODO"; }
   std::vector<Reg> srcRegs() const override {
     <%- if inst.operation_ast.nil? -%>

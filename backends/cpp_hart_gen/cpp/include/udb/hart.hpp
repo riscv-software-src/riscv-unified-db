@@ -22,9 +22,21 @@
 
 namespace udb {
 
+  class ExitEvent : public std::exception {
+   public:
+    ExitEvent(int exit_code) : std::exception(), m_exit_code(exit_code) {}
+    virtual ~ExitEvent() = default;
+
+    int code() const { return m_exit_code; }
+
+   private:
+    int m_exit_code;
+  };
+
   class AbstractTracer {
    public:
     AbstractTracer() = default;
+    virtual ~AbstractTracer() = default;
 
     virtual void trace_exception() {}
 
@@ -67,19 +79,19 @@ namespace udb {
 
     // access a physical address. All translations and physical checks
     // should have already occurred
-    template <unsigned Len>
-    Bits<Len> read_physical_memory(uint64_t paddr) {
+    template <unsigned Len, typename AddrBitsType>
+    Bits<Len> read_physical_memory(AddrBitsType paddr) {
       if (m_tracer != nullptr) {
-        m_tracer->trace_mem_read_phys(paddr, Len);
+        m_tracer->trace_mem_read_phys(paddr.get(), Len);
       }
       if constexpr (Len == 8) {
-        return m_mem.read<uint8_t>(paddr);
+        return m_mem.read<uint8_t>(paddr.get());
       } else if constexpr (Len == 16) {
-        return m_mem.read<uint16_t>(paddr);
+        return m_mem.read<uint16_t>(paddr.get());
       } else if constexpr (Len == 32) {
-        return m_mem.read<uint32_t>(paddr);
+        return m_mem.read<uint32_t>(paddr.get());
       } else if constexpr (Len == 64) {
-        return m_mem.read<uint64_t>(paddr);
+        return m_mem.read<uint64_t>(paddr.get());
       } else {
         udb_assert(false, "TODO");
         return 0;
@@ -143,8 +155,8 @@ namespace udb {
     virtual CsrBase *csr(unsigned address) = 0;
     virtual const CsrBase *csr(unsigned address) const = 0;
 
-    virtual CsrBase *csr(const std::string &address) = 0;
-    virtual const CsrBase *csr(const std::string &address) const = 0;
+    virtual CsrBase *csr(const std::string &name) = 0;
+    virtual const CsrBase *csr(const std::string &name) const = 0;
 
     virtual void printState(FILE *out = stdout) const = 0;
 

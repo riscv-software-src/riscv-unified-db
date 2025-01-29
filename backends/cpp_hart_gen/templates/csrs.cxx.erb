@@ -181,12 +181,13 @@ bool <%= name_of(:csr, cfg_arch, csr.name) %>::_sw_write(const Bits<<%= csr.max_
   <%- fields = cfg_arch.fully_configured? ? csr.implemented_fields(cfg_arch) : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
   <%- fields.each do |field| -%>
   <%- next unless cfg_arch.possible_xlens.any? { |xlen| field.defined_in_base?(xlen) } -%>
-  <%- if field.has_custom_sw_write? -%>
   <%- cfg_arch.possible_xlens.each do |xlen| -%>
   <%- next unless field.defined_in_base?(xlen) -%>
   if (xlen == <%= xlen %>) {
-    auto wr_val_fn = [this, value]() -> PossiblyUndefinedBits {
-      View<<%= xlen %>> csr_value(value);
+    View<<%= xlen %>> csr_value(value);
+
+    <%- if field.has_custom_sw_write? -%>
+    auto wr_val_fn = [this, &csr_value = std::as_const(csr_value)]() -> PossiblyUndefinedBits {
       <%- pruned_ast = field.pruned_sw_write_ast(xlen) -%>
       <%- symtab = field.fill_symtab_for_sw_write(xlen, pruned_ast) -%>
       <%= pruned_ast.gen_cpp(symtab) %>
@@ -202,21 +203,24 @@ bool <%= name_of(:csr, cfg_arch, csr.name) %>::_sw_write(const Bits<<%= csr.max_
       m_<%= field.name %>._hw_write(wr_val);
       <%- end -%>
     }
+    <%- else -%>
+    m_<%= field.name %>._hw_write(csr_value.<%= field.name %>);
+    <%- end -%>
   }
-  <%- end -%>
   <%- end -%>
   <%- end -%>
   return true;
 }
 <%- else -%>
 bool <%= name_of(:csr, cfg_arch, csr.name) %>::_sw_write(const Bits<<%= csr.max_length(cfg_arch) %>>& value) {
+  View<<%= cfg_arch.possible_xlens[0] %>> csr_value(value);
+
   <%- fields = cfg_arch.fully_configured? ? csr.implemented_fields(cfg_arch) : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
   <%- fields.each do |field| -%>
   <%- next unless cfg_arch.possible_xlens.any? { |xlen| field.defined_in_base?(xlen) } -%>
   <%- if field.has_custom_sw_write? -%>
   {
-    auto wr_val_fn = [this, value]() -> PossiblyUndefinedBits {
-      View<<%= cfg_arch.possible_xlens[0] %>> csr_value(value);
+    auto wr_val_fn = [this, &csr_value = std::as_const(csr_value)]() -> PossiblyUndefinedBits {
       <%- pruned_ast = field.pruned_sw_write_ast(cfg_arch.possible_xlens[0]) -%>
       <%- symtab = field.fill_symtab_for_sw_write(cfg_arch.possible_xlens[0], pruned_ast) -%>
       <%= pruned_ast.gen_cpp(symtab) %>
@@ -229,6 +233,8 @@ bool <%= name_of(:csr, cfg_arch, csr.name) %>::_sw_write(const Bits<<%= csr.max_
       m_<%= field.name %>._hw_write(wr_val);
     }
   }
+  <%- else -%>
+  m_<%= field.name %>._hw_write(csr_value.<%= field.name %>);
   <%- end -%>
   <%- end -%>
   return true;

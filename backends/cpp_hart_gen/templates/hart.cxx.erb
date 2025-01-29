@@ -28,3 +28,13 @@ void udb::<%= name_of(:hart, cfg_arch) %>::printState(FILE* out) const {
     udb_assert(false, "unsupported xlen");
   }
 }
+
+void udb::<%= name_of(:hart, cfg_arch) %>::init_csr_map()
+{
+  <%- cfg_arch.not_prohibited_csrs.each do |csr| -%>
+  <%- unless csr.address.nil? -%>
+  m_csr_addr_map[<%= csr.address %>] = &m_csrs.<%= csr.name %>;
+  <%- end -%>
+  m_csr_name_map["<%= csr.name %>"] = &m_csrs.<%= csr.name %>;
+  <%- end -%>
+}

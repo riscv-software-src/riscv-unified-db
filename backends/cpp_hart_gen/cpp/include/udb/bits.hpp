@@ -783,7 +783,8 @@ namespace udb {
     template <typename IndexType, typename ValueType>
     constexpr _Bits &setBit(const IndexType &idx, const ValueType &value) {
       StorageType pos_mask = static_cast<StorageType>(1) << idx;
-      m_val = (m_val & ~pos_mask) | ((value << idx) & pos_mask);
+      m_val =
+          (m_val & ~pos_mask) | ((static_cast<_Bits>(value) << idx) & pos_mask);
       return *this;
     }
 
@@ -852,8 +853,8 @@ namespace udb {
       return width;
     }
 
-    static constexpr uint64_t get_val(const char *str) {
-      uint64_t val = 0;
+    static constexpr unsigned __int128 get_val(const char *str) {
+      unsigned __int128 val = 0;
       auto len = strlen(str);
       unsigned base = 10;
       const char *ptr = str;
@@ -867,21 +868,21 @@ namespace udb {
       if (base == 10) {
         // we only support base-10 literals up to 64 bits. (otherwise, it's hard
         // to know bitwidth at compile time)
-        uint64_t pow = 1;
+        unsigned __int128 pow = 1;
         for (int i = len - 1; i >= 0; i--) {
-          val += ((uint64_t)(ptr[i] - '0')) * pow;
+          val += ((unsigned __int128)(ptr[i] - '0')) * pow;
           pow *= 10;
         }
       }
       if (base == 16) {
-        uint64_t pow = 1;
+        unsigned __int128 pow = 1;
         for (int i = len - 1; i >= 0; i--) {
           if (ptr[i] >= '0' && ptr[i] <= '9') {
-            val += ((uint64_t)(ptr[i] - '0')) * pow;
+            val += ((unsigned __int128)(ptr[i] - '0')) * pow;
           } else if (ptr[i] >= 'A' && ptr[i] <= 'F') {
-            val += ((uint64_t)(ptr[i] - 'A' + 10)) * pow;
+            val += ((unsigned __int128)(ptr[i] - 'A' + 10)) * pow;
           } else if (ptr[i] >= 'a' && ptr[i] <= 'f') {
-            val += ((uint64_t)(ptr[i] - 'a' + 10)) * pow;
+            val += ((unsigned __int128)(ptr[i] - 'a' + 10)) * pow;
           }
           pow *= 16;
         }
@@ -890,7 +891,10 @@ namespace udb {
     }
 
     static constexpr unsigned width = get_width(str);
-    static constexpr uint64_t val = get_val(str);
+    static_assert(
+        width <= 128,
+        "Cannot create bits literal of width >= 128 (use \"\"_mpz instead)");
+    static constexpr unsigned __int128 val = get_val(str);
   };
   static_assert(BitsStr<'0', 'x', '1', '\0'>::width == 1);
   static_assert(BitsStr<'0', 'x', '2', '\0'>::width == 2);
@@ -1036,6 +1040,13 @@ namespace std {
 namespace std {
 
   template <unsigned N, bool Signed>
+  struct hash<udb::_Bits<N, Signed>> {
+    std::size_t operator()(const udb::_Bits<N, Signed> &s) const noexcept {
+      return std::hash<typename udb::_Bits<N, Signed>::StorageType>{}(s.get());
+    }
+  };
+
+  template <unsigned N, bool Signed>
   class numeric_limits<udb::_Bits<N, Signed>> {
    public:
     static constexpr bool is_specialized = true;
@@ -1125,8 +1136,9 @@ namespace udb {
   using SignedBits = _Bits<N, true>;
 
   // special values
-  static const Bits<65> UNDEFINED_LEGAL = 0x10000000000000000_b;
-  static const Bits<66> UNDEFINED_LEGAL_DETERMINISTIC = 0x20000000000000000_b;
+  static constexpr Bits<65> UNDEFINED_LEGAL = 0x10000000000000000_b;
+  static constexpr Bits<66> UNDEFINED_LEGAL_DETERMINISTIC =
+      0x20000000000000000_b;
 
   using PossiblyUndefinedBits = Bits<66>;
 }  // namespace udb
