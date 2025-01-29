@@ -8,14 +8,13 @@ description: |
   Increments `rd` by the multiplication of `rs1` and an unsigned immediate
   Instruction encoded in CL instruction format.
 definedBy:
-  allOf:
-    - not:
-        anyOf:
-          - allOf: [C, D]
-          - Zcd
-    - anyOf:
-        - Xqci
-        - Xqciac
+  anyOf:
+    - Xqci
+    - Xqciac
+excludedBy:
+  anyOf:
+    - allOf: [C, D]
+    - Zcd
 base: 32
 encoding:
   match: 001-----------10
