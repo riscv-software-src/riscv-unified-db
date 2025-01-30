@@ -218,7 +218,7 @@ fields:
       Unused field.
 
       <%- if ext?(:Smaia) -%>
-      With AIA/IMSIC, IPIs are delievered as external interrupts. As a result, this bit is
+      With AIA/IMSIC, IPIs are delivered as external interrupts. As a result, this bit is
       unused and hardwired to 0.
       <%- end -%>
     type: RO

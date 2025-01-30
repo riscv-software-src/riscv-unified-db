@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: minu
-long_name: Unsigned minumum
+long_name: Unsigned minimum
 description: |
   This instruction returns the smaller of two unsigned integers.
 definedBy:

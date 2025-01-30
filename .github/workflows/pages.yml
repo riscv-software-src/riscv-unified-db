@@ -14,6 +14,8 @@ concurrency:
 jobs:
   pages:
     runs-on: ubuntu-latest
+    env:
+      SINGULARITY: 1
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -24,13 +26,13 @@ jobs:
         uses: eWaterCycle/setup-apptainer@v2.0.0
       - name: Get container from cache
         id: cache-sif
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .singularity/image.sif
           key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
       - name: Get gems and node files from cache
         id: cache-bundle-npm
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             .home/.gems
@@ -69,14 +71,22 @@ jobs:
         run: ./do gen:profile[RVI20]
       - name: Copy RVI20 Profile Release PDF
         run: cp gen/profile_doc/pdf/RVA20.pdf _site/pdfs/RVI20.pdf
-      - name: Create MC100 PDF Spec
-        run: ./do gen:cert_model_pdf[MC100]
-      - name: Copy MC100 PDF
-        run: cp gen/certificate_doc/pdf/MC100.pdf _site/pdfs/MC100.pdf
-      - name: Create MC100 HTML Spec
-        run: ./do gen:cert_model_html[MC100]
-      - name: Copy MC100 HTML
-        run: cp gen/certificate_doc/html/MC100.html _site/htmls/MC100.html
+      - name: Create MC100-32 PDF Spec
+        run: ./do gen:cert_model_pdf[MC100-32]
+      - name: Copy MC100-32 PDF
+        run: cp gen/certificate_doc/pdf/MC100-32.pdf _site/pdfs/MC100-32.pdf
+      - name: Create MC100-32 HTML Spec
+        run: ./do gen:cert_model_html[MC100-32]
+      - name: Copy MC100-32 HTML
+        run: cp gen/certificate_doc/html/MC100-32.html _site/htmls/MC100-32.html
+      - name: Create MC100-64 PDF Spec
+        run: ./do gen:cert_model_pdf[MC100-64]
+      - name: Copy MC100-64 PDF
+        run: cp gen/certificate_doc/pdf/MC100-64.pdf _site/pdfs/MC100-64.pdf
+      - name: Create MC100-64 HTML Spec
+        run: ./do gen:cert_model_html[MC100-64]
+      - name: Copy MC100-64 HTML
+        run: cp gen/certificate_doc/html/MC100-64.html _site/htmls/MC100-64.html
       - name: Copy manual html
         run: cp -R gen/manual/isa/top/all/html _site/manual
       - name: Setup Pages

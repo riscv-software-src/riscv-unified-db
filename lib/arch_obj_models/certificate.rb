@@ -19,7 +19,25 @@ end
 
 # Holds information about a certificate model YAML file.
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
-class CertModel < PortfolioInstance
+class CertModel < Portfolio
+  # @param obj_yaml [Hash<String, Object>] Contains contents of Certificate Model yaml file (put in @data)
+  # @param data_path [String] Path to yaml file
+  # @param cfg_arch [ConfiguredArchitecture] Architecture for a specific configuration
+  def initialize(obj_yaml, yaml_path, arch: nil)
+    super # Calls parent class with the same args I got
+
+    # TODO: XXX: Don't allow Architecture class.
+    #            See https://github.com/riscv-software-src/riscv-unified-db/pull/371
+    unless arch.is_a?(ConfiguredArchitecture) || arch.is_a?(Architecture)
+      raise ArgumentError, "For #{name} arch is a #{arch.class} but must be a ConfiguredArchitecture"
+    end
+
+    # TODO: XXX: Add back in arch.name.
+    #            See https://github.com/riscv-software-src/riscv-unified-db/pull/371
+    #puts "UPDATE:   Creating CertModel object for #{name} using cfg #{cfg_arch.name}"
+    puts "UPDATE:   Creating CertModel object for #{name}"
+  end
+
   def unpriv_isa_manual_revision = @data["unpriv_isa_manual_revision"]
   def priv_isa_manual_revision = @data["priv_isa_manual_revision"]
   def debug_manual_revision = @data["debug_manual_revision"]
@@ -69,7 +87,7 @@ class CertModel < PortfolioInstance
             "Parameter #{param_name} == #{param_value}"
           end
         else
-          raise "TODO: when type #{key} not implemented"
+          raise "Type #{key} not implemented"
         end
       end.flatten.join(" and ")
     end
@@ -103,7 +121,7 @@ class CertModel < PortfolioInstance
             "Parameter #{param_name} == #{param_value}"
           end
         else
-          raise "TODO: when type #{key} not implemented"
+          raise "Type #{key} not implemented"
         end
       end.flatten.join(" and ")
     end

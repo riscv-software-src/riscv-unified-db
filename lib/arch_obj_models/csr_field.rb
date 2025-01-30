@@ -5,7 +5,7 @@ require_relative "obj"
 require_relative "../idl/passes/gen_option_adoc"
 
 # A CSR field object
-class CsrField < DatabaseObjectect
+class CsrField < DatabaseObject
   # @return [Csr] The Csr that defines this field
   attr_reader :parent
 
@@ -34,7 +34,7 @@ class CsrField < DatabaseObjectect
     if cfg_arch.fully_configured?
       parent.exists_in_cfg?(cfg_arch) &&
         (@data["base"].nil? || cfg_arch.possible_xlens.include?(@data["base"])) &&
-        (@data["definedBy"].nil? || cfg_arch.transitive_implemented_extensions.any? { |ext_ver| defined_by_condition.possibly_satisfied_by?(ext_ver) })
+        (@data["definedBy"].nil? || cfg_arch.transitive_implemented_extension_versions.any? { |ext_ver| defined_by_condition.possibly_satisfied_by?(ext_ver) })
     elsif cfg_arch.partially_configured?
       parent.exists_in_cfg?(cfg_arch) &&
         (@data["base"].nil? || cfg_arch.possible_xlens.include?(@data["base"])) &&
@@ -161,7 +161,7 @@ class CsrField < DatabaseObjectect
   #      'RW-R'  => Read-write, with a restricted set of legal values
   #      'RW-H'  => Read-write, with a hardware update
   #      'RW-RH' => Read-write, with a hardware update and a restricted set of legal values
-  def type(effective_xlen)
+  def type(effective_xlen = nil)
     @type ||= { 32 => nil, 64 => nil }
     return @type[effective_xlen] unless @type[effective_xlen].nil?
 
@@ -178,22 +178,27 @@ class CsrField < DatabaseObjectect
         begin
           symtab = fill_symtab_for_type(effective_xlen, ast)
 
-          type =  case ast.return_value(symtab)
-                  when 0
-                    "RO"
-                  when 1
-                    "RO-H"
-                  when 2
-                    "RW"
-                  when 3
-                    "RW-R"
-                  when 4
-                    "RW-H"
-                  when 5
-                    "RW-RH"
-                  else
-                    raise "Unhandled CsrFieldType value"
-                  end
+          value_result = ast.value_try do
+            type =  case ast.return_value(symtab)
+                    when 0
+                      "RO"
+                    when 1
+                      "RO-H"
+                    when 2
+                      "RW"
+                    when 3
+                      "RW-R"
+                    when 4
+                      "RW-H"
+                    when 5
+                      "RW-RH"
+                    else
+                      raise "Unhandled CsrFieldType value"
+                    end
+          end
+          ast.value_else(value_result) do
+            type = nil
+          end
         ensure
           symtab.pop
           symtab.release
@@ -212,8 +217,8 @@ class CsrField < DatabaseObjectect
 
   # @return [String] A pretty-printed type string
   # @param effective_xlen [32, 64] The effective xlen to evaluate for
-  def type_pretty(effective_xlen)
-    raise ArgumentError, "Expecting Integer" unless effective_xlen.is_a?(Integer)
+  def type_pretty(effective_xlen = nil)
+    raise ArgumentError, "Expecting Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
 
     str = nil
     value_result = Idl::AstNode.value_try do
@@ -253,7 +258,7 @@ class CsrField < DatabaseObjectect
     @alias
   end
 
-  # @return [Array<Idl::FunctionDefAst>] List of functions called thorugh this field
+  # @return [Array<Idl::FunctionDefAst>] List of functions called through this field
   # @param cfg_arch [ConfiguredArchitecture] a configuration
   # @Param effective_xlen [Integer] 32 or 64; needed because fields can change in different XLENs
   def reachable_functions(effective_xlen)
@@ -426,7 +431,7 @@ class CsrField < DatabaseObjectect
     )
     symtab.add(
       "__expected_return_type",
-      Idl::Type.new(:bits, width: 128) # to accomodate special return values (e.g., UNDEFIEND_LEGAL_DETERMINISITIC)
+      Idl::Type.new(:bits, width: 128) # to accommodate special return values (e.g., UNDEFIEND_LEGAL_DETERMINISITIC)
     )
     symtab.add(
       "csr_value",
@@ -590,14 +595,14 @@ class CsrField < DatabaseObjectect
     raise "Missing location for #{csr.name}.#{name} (#{key})?" unless @data.key?(key)
 
     if @data[key].is_a?(Integer)
-      csr_length = csr.length(cfg_arch, effective_xlen || @data["base"])
+      csr_length = csr.length(effective_xlen || @data["base"])
       if csr_length.nil?
         # we don't know the csr length for sure, so we can only check again max_length
-        if @data[key] > csr.max_length(cfg_arch)
-          raise "Location (#{key} = #{@data[key]}) is past the max csr length (#{csr.max_length(cfg_arch)}) in #{csr.name}.#{name}"
+        if @data[key] > csr.max_length
+          raise "Location (#{key} = #{@data[key]}) is past the max csr length (#{csr.max_length}) in #{csr.name}.#{name}"
         end
       elsif @data[key] > csr_length
-        raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr.length(cfg_arch, effective_xlen)}) in #{csr.name}.#{name}"
+        raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr.length(effective_xlen)}) in #{csr.name}.#{name}"
       end
 
       @data[key]..@data[key]
@@ -605,11 +610,11 @@ class CsrField < DatabaseObjectect
       e, s = @data[key].split("-").map(&:to_i)
       raise "Invalid location" if s > e
 
-      csr_length = csr.length(cfg_arch, effective_xlen || @data["base"])
+      csr_length = csr.length(effective_xlen || @data["base"])
       if csr_length.nil?
         # we don't know the csr length for sure, so we can only check again max_length
-        if e > csr.max_length(cfg_arch)
-          raise "Location (#{key} = #{@data[key]}) is past the max csr length (#{csr.max_length(cfg_arch)}) in #{csr.name}.#{name}"
+        if e > csr.max_length
+          raise "Location (#{key} = #{@data[key]}) is past the max csr length (#{csr.max_length}) in #{csr.name}.#{name}"
         end
       elsif e > csr_length
         raise "Location (#{key} = #{@data[key]}) is past the csr length (#{csr_length}) in #{csr.name}.#{name}"
@@ -679,14 +684,14 @@ class CsrField < DatabaseObjectect
   end
 
   # @return [String] Pretty-printed location string
-  def location_pretty(cfg_arch, effective_xlen = nil)
+  def location_pretty(effective_xlen = nil)
     derangeify = proc { |loc|
       next loc.min.to_s if loc.size == 1
 
       "#{loc.max}:#{loc.min}"
     }
 
-    if dynamic_location?(cfg_arch)
+    if dynamic_location?
       condition =
         case csr.priv_mode
         when "M"
@@ -701,14 +706,14 @@ class CsrField < DatabaseObjectect
 
       if effective_xlen.nil?
         <<~LOC
-          * #{derangeify.call(location(cfg_arch, 32))} when #{condition.sub('%%', '0')}
-          * #{derangeify.call(location(cfg_arch, 64))} when #{condition.sub('%%', '1')}
+          * #{derangeify.call(location(32))} when #{condition.sub('%%', '0')}
+          * #{derangeify.call(location(64))} when #{condition.sub('%%', '1')}
         LOC
       else
-        derangeify.call(location(cfg_arch, effective_xlen))
+        derangeify.call(location(effective_xlen))
       end
     else
-      derangeify.call(location(cfg_arch, cfg_arch.mxlen))
+      derangeify.call(location(cfg_arch.mxlen))
     end
   end
 
@@ -762,7 +767,7 @@ class CsrField < DatabaseObjectect
   }.freeze
 
   # @return [String] Long description of the field type
-  def type_desc(cfg_arch)
-    TYPE_DESC_MAP[type(cfg_arch.symtab)]
+  def type_desc(effective_xlen=nil)
+    TYPE_DESC_MAP[type(effective_xlen)]
   end
 end

@@ -16,7 +16,7 @@ implemented_extensions:
   - [Sm, "1.12.0"]
   - [Smhpm, "1.12.0"]
   - [Smpmp, "1.12.0"]
-  - [U, "1.12.0"]
+  - [U, "1.0.0"]
   - [V, "1.0.0"]
   - [Zicntr, "2.0.0"]
   - [Zicsr, "2.0.0"]
@@ -415,35 +415,35 @@ params:
   # corresponds to the `GEILEN` parameter in the RVI specs
   NUM_EXTERNAL_GUEST_INTERRUPTS: 4
 
-  # Endianess of data in M-mode. Can be one of:
+  # Endianness of data in M-mode. Can be one of:
   #
   #  * little:  M-mode data is always little endian
   #  * big:     M-mode data is always big endian
   #  * dynamic: M-mode data can be either little or big endian, depending on the RW CSR field mstatus.MBE
   M_MODE_ENDIANESS: little
 
-  # Endianess of data in M-mode. Can be one of:
+  # Endianness of data in M-mode. Can be one of:
   #
   #  * little:  S-mode data is always little endian
   #  * big:     S-mode data is always big endian
   #  * dynamic: S-mode data can be either little or big endian, depending on the RW CSR field mstatus.SBE
   S_MODE_ENDIANESS: little
 
-  # Endianess of data in M-mode. Can be one of:
+  # Endianness of data in M-mode. Can be one of:
   #
-  #  * litte:   U-mode data is always little endian
+  #  * little:   U-mode data is always little endian
   #  * big:     U-mode data is always big endian
   #  * dynamic: U-mode data can be either little or big endian, depending on the RW CSR field mstatus.UBE
   U_MODE_ENDIANESS: little
 
-  # Endianess of data in VU-mode. Can be one of:
+  # Endianness of data in VU-mode. Can be one of:
   #
   #  * little: VU-mode data is always little endian
   #  * big: VU-mode data is always big endian
   #  * dynamic: VU-mode data can be either little or big endian, depending on the RW CSR field vsstatus.UBE
   VU_MODE_ENDIANESS: little
 
-  # Endianess of data in VS-mode. Can be one of:
+  # Endianness of data in VS-mode. Can be one of:
   #
   #  * little: VS-mode data is always little endian
   #  * big: VS-mode data is always big endian

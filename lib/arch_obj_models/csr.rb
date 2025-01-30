@@ -3,7 +3,7 @@
 require_relative "obj"
 
 # CSR definition
-class Csr < DatabaseObjectect
+class Csr < DatabaseObject
   def ==(other)
     if other.is_a?(Csr)
       name == other.name
@@ -56,7 +56,7 @@ class Csr < DatabaseObjectect
     dynamic_length? || implemented_fields.any?(&:dynamic_location?)
   end
 
-  # @return [Array<Idl::FunctionDefAst>] List of functions reachable from this CSR's sw_read or a field's sw_wirte function
+  # @return [Array<Idl::FunctionDefAst>] List of functions reachable from this CSR's sw_read or a field's sw_write function
   def reachable_functions(effective_xlen = nil)
     return @reachable_functions unless @reachable_functions.nil?
 
@@ -130,11 +130,11 @@ class Csr < DatabaseObjectect
     end
   end
 
-  # @param cfg_arch [ConfiguredArchitecture] A configuration (can be nil if the lenth is not dependent on a config parameter)
+  # @param cfg_arch [ConfiguredArchitecture] A configuration (can be nil if the length is not dependent on a config parameter)
   # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
   # @return [Integer] Length, in bits, of the CSR, given effective_xlen
   # @return [nil] if the length cannot be determined from the cfg_arch (e.g., because SXLEN is unknown and +effective_xlen+ was not provided)
-  def length(cfg_arch, effective_xlen = nil)
+  def length(effective_xlen = nil)
     case @data["length"]
     when "MXLEN"
       return cfg_arch.mxlen unless cfg_arch.mxlen.nil?
@@ -244,8 +244,8 @@ class Csr < DatabaseObjectect
 
   # @param cfg_arch [ConfiguredArchitecture] A configuration
   # @return [String] Pretty-printed length string
-  def length_pretty(cfg_arch, effective_xlen=nil)
-    if dynamic_length?(cfg_arch)
+  def length_pretty(effective_xlen=nil)
+    if dynamic_length?
       cond =
         case @data["length"]
         when "MXLEN"
@@ -260,14 +260,14 @@ class Csr < DatabaseObjectect
 
       if effective_xlen.nil?
         <<~LENGTH
-          #{length(cfg_arch, 32)} when #{cond.sub('%%', '0')}
-          #{length(cfg_arch, 64)} when #{cond.sub('%%', '1')}
+          #{length(32)} when #{cond.sub('%%', '0')}
+          #{length(64)} when #{cond.sub('%%', '1')}
         LENGTH
       else
-        "#{length(cfg_arch, effective_xlen)}-bit"
+        "#{length(effective_xlen)}-bit"
       end
     else
-      "#{length(cfg_arch)}-bit"
+      "#{length()}-bit"
     end
   end
 
@@ -365,7 +365,7 @@ class Csr < DatabaseObjectect
   def bitfield_type(cfg_arch, effective_xlen = nil)
     Idl::BitfieldType.new(
       "Csr#{name.capitalize}Bitfield",
-      length(cfg_arch, effective_xlen),
+      length(effective_xlen),
       fields_for(effective_xlen).map(&:name),
       fields_for(effective_xlen).map { |f| f.location(effective_xlen) }
     )
@@ -515,30 +515,30 @@ class Csr < DatabaseObjectect
         fields_for(effective_xlen)
       end
 
-    field_list.sort! { |a, b| a.location(cfg_arch, effective_xlen).min <=> b.location(cfg_arch, effective_xlen).min }
+    field_list.sort! { |a, b| a.location(effective_xlen).min <=> b.location(effective_xlen).min }
     field_list.each do |field|
 
-      if field.location(cfg_arch, effective_xlen).min != last_idx + 1
+      if field.location(effective_xlen).min != last_idx + 1
         # have some reserved space
-        n = field.location(cfg_arch, effective_xlen).min - last_idx - 1
-        raise "negative reserved space? #{n} #{name} #{field.location(cfg_arch, effective_xlen).min} #{last_idx + 1}" if n <= 0
+        n = field.location(effective_xlen).min - last_idx - 1
+        raise "negative reserved space? #{n} #{name} #{field.location(effective_xlen).min} #{last_idx + 1}" if n <= 0
 
         desc["reg"] << { "bits" => n, type: 1 }
       end
       if cfg_arch.partially_configured? && field.optional_in_cfg?(cfg_arch)
-        desc["reg"] << { "bits" => field.location(cfg_arch, effective_xlen).size, "name" => field.name, type: optional_type }
+        desc["reg"] << { "bits" => field.location(effective_xlen).size, "name" => field.name, type: optional_type }
       else
-        desc["reg"] << { "bits" => field.location(cfg_arch, effective_xlen).size, "name" => field.name, type: 3 }
+        desc["reg"] << { "bits" => field.location(effective_xlen).size, "name" => field.name, type: 3 }
       end
-      last_idx = field.location(cfg_arch, effective_xlen).max
+      last_idx = field.location(effective_xlen).max
     end
-    if !field_list.empty? && (field_list.last.location(cfg_arch, effective_xlen).max != (length(cfg_arch, effective_xlen) - 1))
+    if !field_list.empty? && (field_list.last.location(effective_xlen).max != (length(effective_xlen) - 1))
       # reserved space at the end
-      desc["reg"] << { "bits" => (length(cfg_arch, effective_xlen) - 1 - last_idx), type: 1 }
+      desc["reg"] << { "bits" => (length(effective_xlen) - 1 - last_idx), type: 1 }
       # desc['reg'] << { 'bits' => 1, type: 1 }
     end
-    desc["config"] = { "bits" => length(cfg_arch, effective_xlen) }
-    desc["config"]["lanes"] = length(cfg_arch, effective_xlen) / 16
+    desc["config"] = { "bits" => length(effective_xlen) }
+    desc["config"]["lanes"] = length(effective_xlen) / 16
     desc
   end
 

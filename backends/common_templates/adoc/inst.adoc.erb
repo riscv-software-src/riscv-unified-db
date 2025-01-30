@@ -81,4 +81,14 @@ Operation::
 
 Included in::
 
+<%- if inst.defined_by_condition.flat? -%>
+|===
+| Extension | Version
+
+<%- inst.defined_by_condition.flat_versions.each do |r| -%>
+| *<%= r.name %>* | <%= r.requirement_specs_to_s %>
+<%- end -%>
+|===
+<%- else -%>
 <%= inst.defined_by_condition.to_asciidoc %>
+<%- end -%>

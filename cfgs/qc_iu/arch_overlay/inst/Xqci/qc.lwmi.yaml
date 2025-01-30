@@ -7,7 +7,7 @@ long_name: Load word multiple (Immediate)
 description: |
   Loads multiple words starting from address (`rs1` + `imm`) to registers, starting from `rd`.
   The number of words is in the `length` immediate.
-  Instruction encoded in I instruction format.
+  Instruction encoded in R instruction format.
 definedBy:
   anyOf:
     - Xqci

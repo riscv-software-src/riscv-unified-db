@@ -421,11 +421,11 @@ params:
       Number of bits in the physical address space.
     schema:
       type: integer
-      mimimum: 1
+      minimum: 1
       maximum: 64
   M_MODE_ENDIANESS:
     description: |
-      Endianess of data in M-mode. Can be one of:
+      Endianness of data in M-mode. Can be one of:
 
       [separator="!"]
       !===
@@ -437,6 +437,7 @@ params:
     schema:
       type: string
       enum: [little, big, dynamic]
+      # TODO: Only little available in Sm 1.11
   MISA_CSR_IMPLEMENTED:
     description: |
       Whether or not the `misa` CSR returns zero or a non-zero value.

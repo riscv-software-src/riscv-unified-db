@@ -2,6 +2,7 @@
 
 $schema: profile_class_schema.json#
 kind: profile class
+processor_kind: Apps Processor
 name: RVA
 marketing_name: RVA
 introduction: |
@@ -111,7 +112,7 @@ description: |
   broken and are now deprecated.  RVIA used this mechanism to enable
   scalar crypto until vector crypto was ready.  Software security
   features may also be in this category, with examples of deprecated
-  security features occuring in other architectures.  As another
+  security features occurring in other architectures.  As another
   example, the recent avalanche of new numeric datatypes for AI/ML may
   eventually subside with a few survivors actually being used longer
   term.  Denoting an option as transitory signals to the community that

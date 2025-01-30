@@ -39,6 +39,18 @@ versions:
     company: Qualcomm Technologies, Inc.
     email: dhower@qti.qualcomm.com
   changes:
+    - Fix description and functionality of qc.wrapi instruction
+- version: "0.4.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
     - Rename qc.slasat -> qc.shlsat
     - Rename qc.sllsat -> qc.shlusat
 description: |

@@ -11,7 +11,7 @@
 #          ...
 #        }
 #
-#     obj = DatabaseObjectect.new(data)
+#     obj = DatabaseObject.new(data)
 #     obj['name']    # 'mstatus'
 #     obj['address'] # 0x320
 #
@@ -24,7 +24,7 @@
 # Subclasses may override the accessors when a more complex data structure
 # is warranted, e.g., the CSR Field 'alias' returns a CsrFieldAlias object
 # instead of a simple string
-class DatabaseObjectect
+class DatabaseObject
   # Exception raised when there is a problem with a schema file
   class SchemaError < ::StandardError
     # result from JsonSchemer.validate
@@ -90,11 +90,16 @@ class DatabaseObjectect
     end
   end
 
-  attr_reader :data, :data_path, :specification, :cfg_arch, :name, :long_name, :description
+  attr_reader :data, :data_path, :name, :long_name, :description
 
   # @return [Architecture] If only a specification (no config) is known
   # @return [ConfiguredArchitecture] If a specification and config is known
-  attr_reader :arch
+  # @return [nil] If neither is known
+  attr_reader :arch       # Use when Architecture class is sufficient
+
+  # @return [ConfiguredArchitecture] If a specification and config is known
+  # @return [nil] Otherwise
+  attr_reader :cfg_arch   # Use when extra stuff provided by ConfiguredArchitecture is required
 
   def kind = @data["kind"]
 
@@ -140,7 +145,7 @@ class DatabaseObjectect
       end
 
       # convert through JSON to handle anything supported in YAML but not JSON
-      # (e.g., integer object keys will be coverted to strings)
+      # (e.g., integer object keys will be converted to strings)
       jsonified_obj = JSON.parse(JSON.generate(@data))
 
       raise "Nothing there?" if jsonified_obj.nil?
@@ -151,11 +156,11 @@ class DatabaseObjectect
     end
   end
 
-  # clone this, and set the cfg_arch at the same time
+  # clone this, and set the arch at the same time
   # @return [ExtensionRequirement] The new object
-  def clone(cfg_arch: nil)
+  def clone(arch: nil)
     obj = super()
-    obj.instance_variable_set(:@cfg_arch, cfg_arch)
+    obj.instance_variable_set(:@arch, arch)
     obj
   end
 
@@ -182,15 +187,12 @@ class DatabaseObjectect
   # @param data [Hash<String,Object>] Hash with fields to be added
   # @param data_path [Pathname] Path to the data file
   def initialize(data, data_path, arch: nil)
-    raise "Bad data" unless data.is_a?(Hash)
+    raise ArgumentError, "Bad data" unless data.is_a?(Hash)
 
     @data = data
     @data_path = data_path
     if arch.is_a?(ConfiguredArchitecture)
       @cfg_arch = arch
-      @specification = arch
-    elsif arch.is_a?(Architecture)
-      @specification = arch
     end
     @arch = arch
     @name = data["name"]
@@ -209,7 +211,7 @@ class DatabaseObjectect
   extend Forwardable
   def_delegator :@data, :[]
 
-  # @return [Array<String>] List of keys added by this DatabaseObjectect
+  # @return [Array<String>] List of keys added by this DatabaseObject
   def keys = @data.keys
 
   # @param k (see Hash#key?)
@@ -371,7 +373,7 @@ class ExtensionRequirementExpression
     end
 
     @hsh = composition_hash
-    @cfg_arch = cfg_arch
+    @arch = cfg_arch
   end
 
   def to_h = @hsh
@@ -390,16 +392,76 @@ class ExtensionRequirementExpression
   end
   private :is_a_version_requirement
 
+  # @return [Boolean] True if the condition is a join of N terms over the same operator
+  #
+  #  A or B or C   #=> true
+  #  A and B       #=> true
+  #  A or B and C  #=> false
+  def flat?
+    case @hsh
+    when String
+      true
+    when Hash
+      @hsh.key?("name") || @hsh[@hsh.keys.first].all? { |child| child.is_a?(String) || (child.is_a?(Hash) && child.key?("name")) }
+    else
+      raise "unexpected"
+    end
+  end
+
+  # @return [:or, :and] The operator for a flat condition
+  #                     Only valid if #flat? is true
+  def flat_op
+    case @hsh
+    when String
+      :or
+    when Hash
+      @hsh.key?("name") ? :or : { "allOf" => :and, "anyOf" => :or }[@hsh.keys.first]
+    else
+      raise "unexpected"
+    end
+  end
+
+  # @return [Array<ExtensionRequirement>] The elements of the flat join
+  #                                       Only valid if #flat? is true
+  def flat_versions
+    case @hsh
+    when String
+      [ExtensionRequirement.new(@hsh, arch: @arch)]
+    when Hash
+      if @hsh.key?("name")
+        if @hsh.key?("version").nil?
+          [ExtensionRequirement.new(@hsh["name"], arch: @arch)]
+        else
+          [ExtensionRequirement.new(@hsh["name"], @hsh["version"], arch: @arch)]
+        end
+      else
+        @hsh[@hsh.keys.first].map do |r|
+          if r.is_a?(String)
+            ExtensionRequirement.new(r, arch: @arch)
+          else
+            if r.key?("version").nil?
+              ExtensionRequirement.new(r["name"], arch: @arch)
+            else
+              ExtensionRequirement.new(r["name"], r["version"], arch: @arch)
+            end
+          end
+        end
+      end
+    else
+      raise "unexpected"
+    end
+  end
+
   def to_asciidoc(cond = @hsh, indent = 0)
     case cond
     when String
-      "#{'*' * indent}* #{cond}, version >= #{@cfg_arch.extension(cond).min_version}"
+      "#{'*' * indent}* #{cond}, version >= #{@arch.extension(cond).min_version}"
     when Hash
       if cond.key?("name")
         if cond.key?("version")
           "#{'*' * indent}* #{cond['name']}, version #{cond['version']}\n"
         else
-          "#{'*' * indent}* #{cond['name']}, version >= #{@cfg_arch.extension(cond['name']).min_version}\n"
+          "#{'*' * indent}* #{cond['name']}, version >= #{@arch.extension(cond['name']).min_version}\n"
         end
       else
         "#{'*' * indent}* #{cond.keys[0]}:\n" + to_asciidoc(cond[cond.keys[0]], indent + 2)
@@ -451,13 +513,13 @@ class ExtensionRequirementExpression
   def first_requirement(req = @hsh)
     case req
     when String
-      ExtensionRequirement.new(req, cfg_arch: @cfg_arch)
+      ExtensionRequirement.new(req, arch: @arch)
     when Hash
       if req.key?("name")
         if req["version"].nil?
-          ExtensionRequirement.new(req["name"], cfg_arch: @cfg_arch)
+          ExtensionRequirement.new(req["name"], arch: @arch)
         else
-          ExtensionRequirement.new(req["name"], req["version"], cfg_arch: @cfg_arch)
+          ExtensionRequirement.new(req["name"], req["version"], arch: @arch)
         end
       else
         first_requirement(req[req.keys[0]])
@@ -516,14 +578,14 @@ class ExtensionRequirementExpression
       if hsh.key?("name")
         if hsh.key?("version")
           if hsh["version"].is_a?(String)
-            "(yield ExtensionRequirement.new('#{hsh["name"]}', '#{hsh["version"]}', cfg_arch: @cfg_arch))"
+            "(yield ExtensionRequirement.new('#{hsh["name"]}', '#{hsh["version"]}', arch: @arch))"
           elsif hsh["version"].is_a?(Array)
-            "(yield ExtensionRequirement.new('#{hsh["name"]}', #{hsh["version"].map { |v| "'#{v}'" }.join(', ')}, cfg_arch: @cfg_arch))"
+            "(yield ExtensionRequirement.new('#{hsh["name"]}', #{hsh["version"].map { |v| "'#{v}'" }.join(', ')}, arch: @arch))"
           else
             raise "unexpected"
           end
         else
-          "(yield ExtensionRequirement.new('#{hsh["name"]}', cfg_arch: @cfg_arch))"
+          "(yield ExtensionRequirement.new('#{hsh["name"]}', arch: @arch))"
         end
       else
         key = hsh.keys[0]
@@ -547,7 +609,7 @@ class ExtensionRequirementExpression
         end
       end
     else
-      "(yield ExtensionRequirement.new('#{hsh}', cfg_arch: @cfg_arch))"
+      "(yield ExtensionRequirement.new('#{hsh}', arch: @arch))"
     end
   end
 
@@ -661,7 +723,7 @@ class ExtensionRequirementExpression
         end
       end
     else
-      n = LogicNode.new(:term, [ExtensionRequirement.new(hsh, cfg_arch: @cfg_arch)], term_idx: term_idx[0])
+      n = LogicNode.new(:term, [ExtensionRequirement.new(hsh, arch: @arch)], term_idx: term_idx[0])
       term_idx[0] += 1
       n
     end

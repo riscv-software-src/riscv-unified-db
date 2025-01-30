@@ -92,6 +92,50 @@ versions:
   requires:
     name: Zca
     version: ">= 1.0.0"
+- version: "0.5.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Added Xqciio sub-extension
+    - Added Xqcisim sub-extension
+    - Added Xqcisync sub-extension
+    - Rename instruction of qc.muladdi to qc.muliadd
+    - Rename instruction of qc.c.muladdi to qc.c.muliadd
+    - Fix description of qc.shladd instruction
+    - Fix description and functionality of qc.c.extu instruction
+    - Fix description and functionality of qc.wrapi instruction
+    - Fix description of qc.swmi, qc.lwmi and qc.setwmi instructions
+    - Fix description of qc.mclici* CSRs to reflect being part of Xqciint custom extension
+    - Fix description of qc.setinti and qc.clrinti instructions
+  implies:
+  - [Xqcia, "0.3.0"]
+  - [Xqciac, "0.3.0"]
+  - [Xqcibi, "0.2.0"]
+  - [Xqcibm, "0.3.0"]
+  - [Xqcicli, "0.2.0"]
+  - [Xqcicm, "0.2.0"]
+  - [Xqcics, "0.2.0"]
+  - [Xqcicsr, "0.2.0"]
+  - [Xqciint, "0.3.0"]
+  - [Xqciio, "0.1.0"]
+  - [Xqcilb, "0.2.0"]
+  - [Xqcili, "0.2.0"]
+  - [Xqcilia, "0.2.0"]
+  - [Xqcilo, "0.2.0"]
+  - [Xqcilsm, "0.3.0"]
+  - [Xqcisim, "0.1.0"]
+  - [Xqcisls, "0.2.0"]
+  - [Xqcisync, "0.1.0"]
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
 - version: "0.6.0"
   state: frozen
   ratification_date: null
@@ -108,10 +152,10 @@ versions:
     - Rename qc.slasat -> qc.shlsat
     - Rename qc.sllsat -> qc.shlusat
   implies:
-  - [Xqcia, "0.3.0"]
+  - [Xqcia, "0.4.0"]
   - [Xqciac, "0.2.0"]
   - [Xqcibi, "0.2.0"]
-  - [Xqcibm, "0.3.0"]
+  - [Xqcibm, "0.4.0"]
   - [Xqcicli, "0.2.0"]
   - [Xqcicm, "0.2.0"]
   - [Xqcics, "0.2.0"]
@@ -121,7 +165,7 @@ versions:
   - [Xqcili, "0.2.0"]
   - [Xqcilia, "0.2.0"]
   - [Xqcilo, "0.2.0"]
-  - [Xqcilsm, "0.3.0"]
+  - [Xqcilsm, "0.4.0"]
   - [Xqcisls, "0.2.0"]
   requires:
     name: Zca
@@ -133,7 +177,7 @@ description: |
   Long immediates::
   --
   This extension provides wide-immediate versions of
-  loads, stores, branches, jumps, and several arithemtic operations.
+  loads, stores, branches, jumps, and several arithmetic operations.
   --
 
   Addressing modes::
@@ -173,7 +217,7 @@ description: |
   enable/disable interrupts and instructions to automatically save an interrupt frame.
   --
 
-  Saturating arithemtic::
+  Saturating arithmetic::
   --
   Xqci adds saturating arithmetic instructions to improve performance of fixed-point calculations.
   --

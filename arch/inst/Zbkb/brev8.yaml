@@ -3,11 +3,10 @@
 $schema: inst_schema.json#
 kind: instruction
 name: brev8
-long_name: No synopsis available.
+long_name: Reverse bits in bytes
 description: |
-  No description available.
-definedBy:
-  anyOf: [B, Zbkb, Zk, Zkn, Zks]
+  This instruction reverses the order of the bits in every byte of a register.
+definedBy: Zbkb
 assembly: xd, xs1
 encoding:
   match: 011010000111-----101-----0010011
@@ -23,3 +22,20 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  XReg input = X[rs1];
+  XReg output = 0;
+
+  for(U32 i=0; i<(xlen()-8); i = i+8) {
+    for(U32 j=0; j<8; j = j+1) {
+      output[(i*8)+(7-j)] = input[(i*8)+j];
+    }
+  }
+
+  X[rd] = output;
+
+sail(): |
+  result : xlenbits = EXTZ(0b0);
+  foreach (i from 0 to sizeof(xlen) by 8) {
+    result[i+7..i] = reverse_bits_in_byte(X(rs1)[i+7..i]);
+  };
+  X(rd) = result;

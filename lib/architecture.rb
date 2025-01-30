@@ -1,5 +1,37 @@
 # frozen_string_literal: true
 
+# Contains the "database" of RISC-V standards including extensions, instructions,
+# CSRs, Profiles, and Certificates.  Could be either the standard spec (defined by RISC-V International)
+# of a custom spec (defined as an arch_overlay in /cfgs dir).
+#
+# Creates Ruby functions at runtime (see generate_obj_methods() and OBJS array).
+#   1) Function to return Array<klass>              (every klass in database)
+#   2) Function to return Hash<String name, klass>  (hash entry is nil if name doesn't exist)
+#   3) Function to return Klass given name          (nil if name doesn't exist)
+#
+#   klass           Array<klass>        Hash<String name,klass> Klass func(String name)
+#   =============== ==================  ======================= =========================
+#   Extension       extensions()        extension_hash()        extension(name)
+#   Instruction     instructions()      instruction_hash()      instruction(name)
+#   Csr             csrs()              csr_hash()              csr(name)
+#   CertClass       cert_classes()      cert_class_hash()       cert_class(name)
+#   CertModel       cert_models()       cert_model_hash()       cert_model(name)
+#   ProfileClass    profile_classes()   profile_class_hash()    profile_class(name)
+#   ProfileRelease  profile_releases()  profile_release_hash()  profile_release(name)
+#   Profile         profiles()          profile_hash()          profile(name)
+#   Manual          manuals()           manual_hash()           manual(name)
+#   ManualVersion   manual_versions()   manual_version_hash()   manual_version(name)
+#
+# Normal Ruby functions:
+#
+#   klass               Array<klass>        Hash<String name,klass> Klass func(String name)
+#   ==================  ==================  ======================= =========================
+#   ExtensionParameter  params()            param_hash()            param(name)
+#   PortfolioClass      portfolio_classes() portfolio_class_hash()  portfolio_class(name)
+#   Portfolio           portfolios()        portfolio_hash()        portfolio(name)
+#   ExceptionCodes      exception_codes()
+#   InterruptCodes      interrupt_codes()
+
 require "active_support/inflector/methods"
 
 require "concurrent"
@@ -20,15 +52,11 @@ require_relative "arch_obj_models/manual"
 require_relative "arch_obj_models/portfolio"
 require_relative "arch_obj_models/profile"
 
-# Represents the entire RISC-V Architecture.
-#
-# Could be either the standard spec (defined by RISC-V International)
-# of a custom spec (defined as an arch_overlay in cfgs/)
 class Architecture
   # @return [Pathname] Path to the directory with the standard YAML files
   attr_reader :path
 
-  # @param arch_dir [Sting,Pathname] Path to a directory with a fully merged/resolved architecture defintion
+  # @param arch_dir [String,Pathname] Path to a directory with a fully merged/resolved architecture definition
   def initialize(arch_dir)
     @arch_dir = Pathname.new(arch_dir)
     raise "Arch directory not found: #{arch_dir}" unless @arch_dir.exist?
@@ -154,7 +182,7 @@ class Architecture
     generate_obj_methods(obj_info[:fn_name], obj_info[:arch_dir], obj_info[:klass])
   end
 
-  # @return [Array<DatabaseObjectect>] All known objects
+  # @return [Array<DatabaseObject>] All known objects
   def objs
     return @objs unless @objs.nil?
 
@@ -173,12 +201,12 @@ class Architecture
   end
 
   # @return [Hash<String, ExtensionParameter>] Hash of all extension parameters defined in the architecture
-  def params_hash
-    return @params_hash unless @params_hash.nil?
+  def param_hash
+    return @param_hash unless @param_hash.nil?
 
-    @params_hash = {}
+    @param_hash = {}
     params.each do |param|
-      @params_hash[param.name] = param
+      @param_hash[param.name] = param
     end
     @params_hash
   end
@@ -186,7 +214,53 @@ class Architecture
   # @return [ExtensionParameter] Parameter named +name+
   # @return [nil] if there is no parameter named +name+
   def param(name)
-    params_hash[name]
+    param_hash[name]
+  end
+
+  # @return [Array<PortfolioClass>] Alphabetical list of all portfolio classes defined in the architecture
+  def portfolio_classes
+    return @portfolio_classes unless @portfolio_classes.nil?
+
+    @portfolio_classes = profile_classes.concat(cert_classes).sort_by!(&:name)
+  end
+
+  # @return [Hash<String, PortfolioClass>] Hash of all portfolio classes defined in the architecture
+  def portfolio_class_hash
+    return @portfolio_class_hash unless @portfolio_class_hash.nil?
+
+    @portfolio_class_hash = {}
+    portfolio_classes.each do |portfolio_class|
+      @portfolio_class_hash[portfolio_class.name] = portfolio_class
+    end
+    @portfolio_class_hash
+  end
+
+  # @return [PortfolioClass] Portfolio class named +name+
+  # @return [nil] if there is no Portfolio class named +name+
+  def portfolio_class(name) = portfolio_class_hash[name]
+
+  # @return [Array<Portfolio>] Alphabetical list of all portfolios defined in the architecture
+  def portfolios
+    return @portfolios unless @portfolios.nil?
+
+    @portfolios = @profiles.concat(@certificates).sort_by!(&:name)
+  end
+
+  # @return [Hash<String, Portfolio>] Hash of all portfolios defined in the architecture
+  def portfolio_hash
+    return @portfolio_hash unless @portfolio_hash.nil?
+
+    @portfolio_hash = {}
+    portfolios.each do |portfolio|
+      @portfolio_hash[portfolio.name] = portfolio
+    end
+    @portfolio_hash
+  end
+
+  # @return [PortfolioClass] Portfolio named +name+
+  # @return [nil] if there is no Portfolio named +name+
+  def portfolio(name)
+    portfolio_hash[name]
   end
 
   # @return [Array<ExceptionCode>] All exception codes defined by the spec

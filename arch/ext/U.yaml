@@ -3,13 +3,15 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: U
-long_name: User-level privilege mode
-description: User-level privilege mode
+long_name: User-mode privilege level
+description: |
+  User-mode privilege level is supported by an implementation if the U extension is present.
+  Note that the RISC-V ISA doesn't formally define a U extension and it is only discussed in the Privileged ISA manual.
 type: privileged
 versions:
-  - version: "1.12.0"
-    state: ratified
-    ratification_date: 2019-12
+- version: "1.0.0"
+  state: ratified
+  ratification_date: 2019-12
 params:
   MUTABLE_MISA_U:
     description: |
@@ -18,7 +20,7 @@ params:
       type: boolean
   U_MODE_ENDIANESS:
     description: |
-      Endianess of data in U-mode. Can be one of:
+      Endianness of data in U-mode. Can be one of:
 
        * little:  M-mode data is always little endian
        * big:     M-mode data is always big endian

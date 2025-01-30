@@ -9,7 +9,7 @@ mandatory_extensions:
   - { name: Sm }
   - { name: Smrnmi }
   - { name: I }
-  - { name: Xqci, version: "~> 0.4" }
+  - { name: Xqci, version: "~> 0.5" }
 additional_extensions: false
 params:
   XLEN: 32

@@ -47,7 +47,7 @@ enum MemoryOperation {
   Fetch
 }
 
-# Types of Atmoic Read-modify-write operations
+# Types of Atomic Read-modify-write operations
 enum AmoOperation {
   Swap
   Add
@@ -62,8 +62,8 @@ enum AmoOperation {
 
 enum PmaAttribute {
   RsrvNone         # LR/SC not allowed
-  RsrvNonEventual  # LR/SC allowed, but no gaurantee it will ever succeed
-  RsrvEventual     # LR/SC with forward-progress gaurantees
+  RsrvNonEventual  # LR/SC allowed, but no guarantee it will ever succeed
+  RsrvEventual     # LR/SC with forward-progress guarantees
 
   MAG16            # Misaligned Atomicity Granule = 16-byte
   MAG8             # Misaligned Atomicity Granule = 8-byte
@@ -103,13 +103,13 @@ enum CsrFieldType {
   RWRH 5
 }
 
-# generated from extension information in arch defintion
+# generated from extension information in arch definition
 generated enum ExtensionName;
 
-# generated from extension information in arch defintion
+# generated from extension information in arch definition
 generated enum InterruptCode;
 
-# generated from extension information in arch defintion
+# generated from extension information in arch definition
 generated enum ExceptionCode;
 
 # XLEN encoding, as defined in CSR[mstatus].mxl, etc.
@@ -570,7 +570,7 @@ function raise {
   description {
     Raise synchronous exception number `exception_code`.
 
-    The exception may be imprecise, and will cause exectuion to enter an
+    The exception may be imprecise, and will cause execution to enter an
     unpredictable state, if PRECISE_SYNCHRONOUS_EXCEPTIONS is false.
 
     Otherwise, the exception will be precise.
@@ -1123,7 +1123,7 @@ function pmp_check {
     } else {
       assert(match_result == PmpMatchResult::PartialMatch, "PMP matching logic error");
 
-      # by defintion, any partial match fails the access, regardless of the config settings
+      # by definition, any partial match fails the access, regardless of the config settings
       return false;
     }
 
@@ -1203,7 +1203,7 @@ function current_translation_mode {
     Returns the current first-stage translation mode for an explicit load or store
     from +mode+ given the machine state (e.g., value of `satp` or `vsatp` csr).
 
-    Returns SatpMode::Reserved if the setting fouund in `satp` or `vsatp` is invalid.
+    Returns SatpMode::Reserved if the setting found in `satp` or `vsatp` is invalid.
   }
   body {
     PrivilegeMode effective_mode = effective_ldst_mode();
@@ -1779,7 +1779,7 @@ function gstage_page_walk {
         } else if ((op == MemoryOperation::Read) || (op == MemoryOperation::ReadModifyWrite)) {
           if (((!mxr) && (pte_flags.R == 0))
               || ((mxr) && (pte_flags.X == 0 && pte_flags.R == 0))) {
-            # no read permision
+            # no read permission
             raise_guest_page_fault(op, gpaddr, vaddr, tinst, effective_mode);
           }
         }
@@ -2481,6 +2481,30 @@ function read_memory {
   }
 }
 
+function read_memory_xlen {
+  returns Bits<XLEN>
+  arguments
+    XReg virtual_address,
+    Bits<INSTR_ENC_SIZE> encoding   # the encoding of an instruction causing this access, or 0 if a fetch
+  description {
+    Read from virtual memory XLEN bits using a known aligned address.
+  }
+  body {
+    TranslationResult result;
+
+    if (CSR[misa].S == 1) {
+      result = translate(virtual_address, MemoryOperation::Read, effective_ldst_mode(), encoding);
+    } else {
+      result.paddr = virtual_address;
+    }
+
+    # may raise an exception
+    access_check(result.paddr, XLEN, virtual_address, MemoryOperation::Read, ExceptionCode::LoadAccessFault, effective_ldst_mode());
+
+    return read_physical_memory<XLEN>(result.paddr);
+  }
+}
+
 # hart-global state to track the local reservation set
 Boolean    reservation_set_valid = false;
 XReg       reservation_set_address;
@@ -2498,7 +2522,7 @@ function invalidate_reservation_set {
     This function may be called by the platform, independent of any actions
     occurring in the local hart, for any or no reason.
 
-    The platorm *must* call this function if an external hart or device accesses
+    The platform *must* call this function if an external hart or device accesses
     part of this reservation set while reservation_set_valid could be true.
     --
   }
@@ -2510,7 +2534,7 @@ function invalidate_reservation_set {
 function register_reservation_set {
   arguments
     Bits<XLEN> physical_address,   # The (always aligned) physical address to reserve.
-    Bits<XLEN> length              # mimimum length of the reservation. actual reservation may be larger
+    Bits<XLEN> length              # minimum length of the reservation. actual reservation may be larger
   description {
     Register a reservation for a physical address range that subsumes
     [physical_address, physical_address + N).
@@ -2598,7 +2622,7 @@ function store_conditional {
      * it covers the region addressed by this store
      * the address setting the reservation set matches virtual address
 
-    If the preceeding are met, perform the store and return 0.
+    If the preceding are met, perform the store and return 0.
     Otherwise, return 1.
   }
   body {
@@ -2799,6 +2823,28 @@ function write_memory {
         unpredictable("An implementation is free to break a misaligned access any way, leading to unpredictable behavior when any part of the misaligned access causes an exception");
       }
     }
+  }
+}
+
+function write_memory_xlen {
+  arguments
+    XReg virtual_address,
+    Bits<XLEN> value,
+    Bits<INSTR_ENC_SIZE> encoding # encoding of the instruction causing this access
+  description {
+    Write to virtual memory XLEN bits using a known aligned address.
+  }
+  body {
+    XReg physical_address;
+
+    physical_address = (CSR[misa].S == 1)
+      ? translate(virtual_address, MemoryOperation::Write, effective_ldst_mode(), encoding).paddr
+      : virtual_address;
+
+    # may raise an exception
+    access_check(physical_address, XLEN, virtual_address, MemoryOperation::Write, ExceptionCode::StoreAmoAccessFault, effective_ldst_mode());
+
+    write_physical_memory<XLEN>(physical_address, value);
   }
 }
 

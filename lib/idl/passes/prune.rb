@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # This file contains AST functions that prune out unreachable paths given
-# some known values in a symbol talbe
+# some known values in a symbol table
 # It adds a `prune` function to every AstNode that returns a new,
 # pruned subtree.
 
@@ -159,7 +159,7 @@ module Idl
         pruned_body = nil
 
         value_result = value_try do
-          # go through the statements, and stop if we find one that retuns or raises an exception
+          # go through the statements, and stop if we find one that returns or raises an exception
           statements.each_with_index do |s, idx|
             if s.is_a?(ReturnStatementAst)
               pruned_body = FunctionBodyAst.new(input, interval, statements[0..idx].map { |s| s.prune(symtab) })

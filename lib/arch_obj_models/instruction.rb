@@ -6,7 +6,7 @@ require_relative "obj"
 require "awesome_print"
 
 # model of a specific instruction in a specific base (RV32/RV64)
-class Instruction < DatabaseObjectect
+class Instruction < DatabaseObject
   def self.ary_from_location(location_str_or_int)
     return [location_str_or_int] if location_str_or_int.is_a?(Integer)
 
@@ -205,6 +205,7 @@ class Instruction < DatabaseObjectect
     if @data["operation()"].nil?
       []
     else
+      symtab = cfg_arch.symtab
       etype = symtab.get("ExceptionCode")
       if effective_xlen.nil?
         if cfg_arch.multi_xlen?
@@ -315,7 +316,7 @@ class Instruction < DatabaseObjectect
 
     # alias of this field, or nil if none
     #
-    # used, e.g., when a field reprsents more than one variable (like rs1/rd for destructive instructions)
+    # used, e.g., when a field represents more than one variable (like rs1/rd for destructive instructions)
     attr_reader :alias
 
     # amount the field is left shifted before use, or nil is there is no left shift
@@ -553,7 +554,7 @@ class Instruction < DatabaseObjectect
 
     # represents an encoding field (contiguous set of bits that form an opcode or decode variable slot)
     class Field
-      # @return [String] Either string of 0's ans 1's or a bunch of dashses
+      # @return [String] Either string of 0's and 1's or a bunch of dashes
       # @example Field of a decode variable
       #   encoding.opcode_fields[0] #=> '-----' (for imm5)
       # @example Field of an opcode
@@ -563,7 +564,7 @@ class Instruction < DatabaseObjectect
       # @return [Range] Range of bits in the parent corresponding to this field
       attr_reader :range
 
-      # @param name [#to_s] Either string of 0's ans 1's or a bunch of dashses
+      # @param name [#to_s] Either string of 0's and 1's or a bunch of dashes
       # @param range [Range] Range of the field in the parent CSR
       def initialize(name, range)
         @name = name.to_s
@@ -629,7 +630,7 @@ class Instruction < DatabaseObjectect
     end
 
     # @param format [String] Format of the encoding, as 0's, 1's and -'s (for decode variables)
-    # @param decode_vars [Array<Hash<String,Object>>] List of decode variable defintions from the arch spec
+    # @param decode_vars [Array<Hash<String,Object>>] List of decode variable definitions from the arch spec
     def initialize(format, decode_vars)
       @format = format
 

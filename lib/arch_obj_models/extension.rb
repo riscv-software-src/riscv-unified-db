@@ -6,8 +6,8 @@ require_relative "../version"
 
 # A parameter (AKA option, AKA implementation-defined value) supported by an extension
 class ExtensionParameter
-  # @return [ConfiguredArchitecture] The defining Arch def
-  attr_reader :cfg_arch
+  # @return [Architecture] The defining architecture
+  attr_reader :arch
 
   # @return [String] Parameter name
   attr_reader :name
@@ -19,13 +19,13 @@ class ExtensionParameter
   attr_reader :schema
 
   # @return [String] Ruby code to perform validation above and beyond JSON schema
-  # @return [nil] If there is no extra validatino
+  # @return [nil] If there is no extra validation
   attr_reader :extra_validation
 
   # @return [Array<Extension>] The extension(s) that define this parameter
   #
   # Some parameters are defined by multiple extensions (e.g., CACHE_BLOCK_SIZE by Zicbom and Zicboz).
-  # When defined in multiple places, the parameter *must* mean the extact same thing.
+  # When defined in multiple places, the parameter *must* mean the exact same thing.
   attr_reader :exts
 
   # @returns [Idl::Type] Type of the parameter
@@ -42,8 +42,11 @@ class ExtensionParameter
     end
   end
 
+  # @param ext [Extension]
+  # @param name [String]
+  # @param data [Hash<String, Object]
   def initialize(ext, name, data)
-    @cfg_arch = ext.cfg_arch
+    @arch = ext.arch
     @data = data
     @name = name
     @desc = data["description"]
@@ -52,7 +55,7 @@ class ExtensionParameter
     also_defined_in = []
     unless data["also_defined_in"].nil?
       if data["also_defined_in"].is_a?(String)
-        other_ext = @cfg_arch.extension(data["also_defined_in"])
+        other_ext = @arch.extension(data["also_defined_in"])
         raise "Definition error in #{ext.name}.#{name}: #{data['also_defined_in']} is not a known extension" if other_ext.nil?
 
         also_defined_in << other_ext
@@ -62,7 +65,7 @@ class ExtensionParameter
         end
 
         data["also_defined_in"].each do |other_ext_name|
-          other_ext = @cfg_arch.extension(other_ext_name)
+          other_ext = @arch.extension(other_ext_name)
           raise "Definition error in #{ext.name}.#{name}: #{data['also_defined_in']} is not a known extension" if other_ext.nil?
 
           also_defined_in << other_ext
@@ -80,7 +83,7 @@ class ExtensionParameter
     return true if @data.dig("when", "version").nil?
 
     @exts.any? do |ext|
-      ExtensionRequirement.new(ext.name, @data["when"]["version"], cfg_arch: ext.cfg_arch).satisfied_by?(version)
+      ExtensionRequirement.new(ext.name, @data["when"]["version"], arch: ext.arch).satisfied_by?(version)
     end
   end
 
@@ -133,10 +136,7 @@ class ExtensionParameterWithValue
 end
 
 # Extension definition
-class Extension < DatabaseObjectect
-  # @return [ConfiguredArchitecture] The architecture defintion
-  attr_reader :cfg_arch
-
+class Extension < DatabaseObject
   # @return [String] Long name of the extension
   def long_name = @data["long_name"]
 
@@ -157,7 +157,7 @@ class Extension < DatabaseObjectect
     return @versions unless @versions.nil?
 
     @versions = @data["versions"].map do |v|
-      ExtensionVersion.new(name, v["version"], cfg_arch)
+      ExtensionVersion.new(name, v["version"], arch)
     end
     @versions.sort!
     @versions
@@ -259,6 +259,8 @@ class Extension < DatabaseObjectect
       funcs += inst.reachable_functions(symtab, 64) if inst.defined_in_base?(64)
     end
 
+    # The one place in this file that needs a ConfiguredArchitecture object instead of just Architecture.
+    raise "In #{name}, need to provide ConfiguredArchitecture" if cfg_arch.nil?
     csrs.each do |csr|
       funcs += csr.reachable_functions
     end
@@ -295,25 +297,24 @@ class ExtensionVersion
 
   # @param name [#to_s] The extension name
   # @param version [String] The version specifier
-  # @param cfg_arch [ConfiguredArchitecture] The architecture definition
-  def initialize(name, version_str, cfg_arch, fail_if_version_does_not_exist: false)
+  # @param arch [Architecture] The architecture definition
+  def initialize(name, version_str, arch, fail_if_version_does_not_exist: false)
     @name = name.to_s
     @version_str = version_str
     @version_spec = VersionSpec.new(version_str)
 
-    raise ArgumentError, "Must supply arch" if cfg_arch.nil?
+    raise ArgumentError, "Must supply arch" if arch.nil?
+    @arch = arch
 
-    @cfg_arch = cfg_arch
-
-    @ext = @cfg_arch.extension(@name)
-    raise "Extension #{name} not found in arch def" if @ext.nil?
+    @ext = @arch.extension(@name)
+    raise "Extension #{name} not found in architecture" if @ext.nil?
 
     @data = @ext.data["versions"].find { |v| VersionSpec.new(v["version"]) == @version_spec }
 
     if fail_if_version_does_not_exist && @data.nil?
-      raise ArgumentError, "#{@name}, Version #{version_str} is not defined"
+      raise ArgumentError, "Version #{version_str} of #{@name} extension is not defined"
     elsif @data.nil?
-      warn "#{@name}, Version #{version_str} is not defined"
+      warn "Version #{version_str} of #{@name} extension is not defined"
     end
   end
 
@@ -452,9 +453,9 @@ class ExtensionVersion
       return @implications
     when Array
       if @data["implies"][0].is_a?(Array)
-        @implications.concat(@data["implies"].map { |e| ExtensionVersion.new(e[0], e[1], @cfg_arch) })
+        @implications.concat(@data["implies"].map { |e| ExtensionVersion.new(e[0], e[1], @arch) })
       else
-        @implications << ExtensionVersion.new(@data["implies"][0], @data["implies"][1], @cfg_arch)
+        @implications << ExtensionVersion.new(@data["implies"][0], @data["implies"][1], @arch)
       end
     end
     @implications.sort!
@@ -473,14 +474,14 @@ class ExtensionVersion
       return @transitive_implications
     when Array
       if @data["implies"][0].is_a?(Array)
-        impls = @data["implies"].map { |e| ExtensionVersion.new(e[0], e[1], @cfg_arch) }
+        impls = @data["implies"].map { |e| ExtensionVersion.new(e[0], e[1], @arch) }
         @transitive_implications.concat(impls)
         impls.each do |i|
           transitive_impls = i.implications
           @transitive_implications.concat(transitive_impls) unless transitive_impls.empty?
         end
       else
-        impl = ExtensionVersion.new(@data["implies"][0], @data["implies"][1], @cfg_arch)
+        impl = ExtensionVersion.new(@data["implies"][0], @data["implies"][1], @arch)
         @transitive_implications << impl
         transitive_impls = impl.implications
         @transitive_implications.concat(transitive_impls) unless transitive_impls.empty?
@@ -493,7 +494,7 @@ class ExtensionVersion
 
   # @param ext_name [String] Extension name
   # @param ext_version_requirements [String,Array<String>] Extension version requirements
-  # @return [Boolean] whether or not this ExtensionVersion is named `ext_name` and satifies the version requirements
+  # @return [Boolean] whether or not this ExtensionVersion is named `ext_name` and satisfies the version requirements
   def satisfies?(ext_name, *ext_version_requirements)
     ExtensionRequirement.new(ext_name, ext_version_requirements).satisfied_by?(self)
   end
@@ -579,8 +580,8 @@ class ExtensionPresence
     end
   end
 
-  def mandatory? = (@presence == mandatory)
-  def optional? = (@presence == optional)
+  def mandatory? = (@presence == "mandatory")
+  def optional? = (@presence == "optional")
 
   # Class methods
   def self.mandatory = "mandatory"
@@ -625,6 +626,10 @@ class ExtensionPresence
     @optional_type.nil? ? "#{presence}" : "#{presence} (#{optional_type})"
   end
 
+  def to_s_concise
+    "#{presence}"
+  end
+
   # @overload ==(other)
   #   @param other [String] A presence string
   #   @return [Boolean] whether or not this ExtensionPresence has the same presence (ignores optional_type)
@@ -642,15 +647,43 @@ class ExtensionPresence
     end
   end
 
-  # Sorts by presence, then by optional_type
-  def <=>(other)
-    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
+  ######################################################
+  # Following comparison operators follow these rules:
+  #   - "mandatory" is greater than "optional"
+  #   - optional_types all have same rank
+  #   - equals compares presence and then optional_type
+  ######################################################
 
-    if @presence != other.presence
-      @presence <=> other.presence
-    else
-      @optional_type <=> other.optional_type
-    end
+  # @overload >(other)
+  #   @param other [ExtensionPresence] An extension presence object
+  #   @return [Boolean] Whether or not this ExtensionPresence is greater-than the other
+  def >(other)
+    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
+    (self.mandatory? && other.optional?)
+  end
+
+  # @overload >=(other)
+  #   @param other [ExtensionPresence] An extension presence object
+  #   @return [Boolean] Whether or not this ExtensionPresence is greater-than or equal to the other
+  def >=(other)
+    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
+    (self > other) || (self == other)
+  end
+
+  # @overload <(other)
+  #   @param other [ExtensionPresence] An extension presence object
+  #   @return [Boolean] Whether or not this ExtensionPresence is less-than the other
+  def <(other)
+    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
+    (self.optional? && other.mandatory?)
+  end
+
+  # @overload <=(other)
+  #   @param other [ExtensionPresence] An extension presence object
+  #   @return [Boolean] Whether or not this ExtensionPresence is less-than or equal to the other
+  def <=(other)
+    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
+    (self < other) || (self == other)
   end
 end
 
@@ -671,29 +704,34 @@ class ExtensionRequirement
   # @return [Array<RequirementSpec>] Set of requirement specifications
   def requirement_specs = @requirements
 
+  def requirement_specs_to_s
+    "#{@requirements.map(&:to_s).join(', ')}"
+  end
+
   def to_s
-    "#{name} #{@requirements.map(&:to_s).join(', ')}"
+    "#{name} " + requirement_specs_to_s
   end
 
   # @return [Extension] The extension that this requirement is for
   def extension
     return @extension unless @extension.nil?
 
-    raise "Cannot get extension; cfg_arch was not initialized" if @cfg_arch.nil?
+    raise "Cannot get extension; arch was not initialized" if @arch.nil?
 
-    @extension = @cfg_arch.extension(@name)
+    @extension = @arch.extension(@name)
   end
 
   # @param name [#to_s] Extension name
   # @param requirements [String] Single requirement
   # @param requirements [Array<String>] List of requirements, all of which must hold
-  def initialize(name, *requirements, cfg_arch: nil, note: nil, req_id: nil, presence: nil)
-    raise ArgumentError, "Arch is required" if cfg_arch.nil?
+  # @param arch [Architecture]
+  def initialize(name, *requirements, arch: nil, note: nil, req_id: nil, presence: nil)
+    raise ArgumentError, "For #{name}, arch not allowed to be nil" if arch.nil?
+    raise ArgumentError, "For #{name}, Architecture is required" unless arch.is_a?(Architecture)
 
     @name = name.to_s.freeze
-    @cfg_arch = cfg_arch
-    @ext = @cfg_arch.extension(@name)
-
+    @arch = arch
+    @ext = @arch.extension(@name)
     raise ArgumentError, "Could not find extension named '#{@name}'" if @ext.nil?
 
     requirements =
@@ -713,12 +751,12 @@ class ExtensionRequirement
     @requirements.each(&:invert!)
   end
 
-  # @return [Array<ExtensionVersion>] The list of extension versions that satisfy this requirement
+  # @return [Array<ExtensionVersion>] The list of extension versions that satisfy this extension requirement
   def satisfying_versions
-    ext = @cfg_arch.extension(@name)
+    ext = @arch.extension(@name)
     return [] if ext.nil?
 
-    ext.versions.select { |v| @requirements.all? { |r| r.satisfied_by?(v.version_spec, ext) } }
+    ext.versions.select { |v| satisfied_by?(v) }
   end
 
   # @overload
@@ -746,7 +784,7 @@ class ExtensionRequirement
           end
         end
       else
-        raise ArgumentError, "Single argument must be an ExtensionVersion or ExtensionRquirement"
+        raise ArgumentError, "Single argument must be an ExtensionVersion or ExtensionRequirement"
       end
     elsif args.size == 2
       raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
@@ -762,7 +800,7 @@ class ExtensionRequirement
 
   # @return [Array<Csr>] List of CSRs defined by any extension satisfying this requirement
   def csrs
-    @csrs ||= @cfg_arch.csrs.select do |csr|
+    @csrs ||= @arch.csrs.select do |csr|
       satisfying_versions.any? do |ext_ver|
         csr.defined_by_condition.possibly_satisfied_by?(ext_ver)
       end
