@@ -9,6 +9,11 @@ mandatory_extensions:
   - { name: Sm }
   - { name: Smrnmi }
   - { name: I }
+  - { name: M }
+  - { name: B }
+  - { name: Zca }
+  - { name: Zcb }
+  - { name: Xqccmp, version: "~> 0.1" }
   - { name: Xqci, version: "~> 0.5" }
 additional_extensions: false
 params:
