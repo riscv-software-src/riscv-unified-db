@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+$jobs = ENV["JOBS"].nil? ? 1 : ENV["JOBS"].to_i
+Rake.application.options.thread_pool_size = $jobs
+puts "Running with #{Rake.application.options.thread_pool_size} job(s)"
+
 require "etc"
 
 $root = Pathname.new(__FILE__).dirname.realpath
@@ -20,17 +24,21 @@ end
 directory "#{$root}/.stamps"
 
 def cfg_arch_for(config_name)
-  Rake::Task["#{$root}/.stamps/resolve-#{config_name}.stamp"].invoke
+  $cfg_arch_for_mutex ||= Thread::Mutex.new
 
-  @cfg_archs ||= {}
-  return @cfg_archs[config_name] if @cfg_archs.key?(config_name)
+  $cfg_arch_for_mutex.synchronize do
+    Rake::Task["#{$root}/.stamps/resolve-#{config_name}.stamp"].invoke
 
-  @cfg_archs[config_name] =
-    ConfiguredArchitecture.new(
-      config_name,
-      $root / "gen" / "resolved_arch" / config_name,
-      overlay_path: $root / "cfgs" / config_name / "arch_overlay"
-    )
+    $cfg_archs ||= {}
+    return $cfg_archs[config_name] if $cfg_archs.key?(config_name)
+
+    $cfg_archs[config_name] =
+      ConfiguredArchitecture.new(
+        config_name,
+        $root / "gen" / "resolved_arch" / config_name,
+        overlay_path: $root / "cfgs" / config_name / "arch_overlay"
+      )
+  end
 end
 
 file "#{$root}/.stamps/dev_gems" => ["#{$root}/.stamps"] do |t|
@@ -113,14 +121,70 @@ task :clean do
 end
 
 namespace :test do
-  task :insts do
-    puts "Checking instruction encodings..."
-    inst_paths = Dir.glob("#{$root}/arch/inst/**/*.yaml").map { |f| Pathname.new(f) }
-    inst_paths.each do |inst_path|
-      Validator.instance.validate_instruction(inst_path)
+  desc "Check that instruction encodings in the DB are consistent and do not conflict"
+  task :inst_encodings do
+    print "Checking for conflicts in instruction encodings.."
+
+    cfg_arch = cfg_arch_for("_")
+    insts = cfg_arch.instructions
+    failed = false
+    insts.each_with_index do |inst, idx|
+      [32, 64].each do |xlen|
+        next unless inst.defined_in_base?(xlen)
+
+        (idx...insts.size).each do |other_idx|
+          other_inst = insts[other_idx]
+          next unless other_inst.defined_in_base?(xlen)
+          next if other_inst == inst
+
+          if inst.bad_encoding_conflict?(xlen, other_inst)
+            warn "In RV#{xlen}: #{inst.name} (#{inst.encoding(xlen).format}) conflicts with #{other_inst.name} (#{other_inst.encoding(xlen).format})"
+            failed = true
+          end
+        end
+      end
     end
-    puts "All instruction encodings pass basic sanity tests"
+    raise "Encoding test failed" if failed
+
+    puts "done"
   end
+
+  desc "Check that CSR definitions in the DB are consistent and do not conflict"
+  task :csrs do
+    print "Checking for conflicts in CSRs.."
+
+    cfg_arch = cfg_arch_for("_")
+    csrs = cfg_arch.csrs
+    failed = false
+    csrs.each_with_index do |csr, idx|
+      [32, 64].each do |xlen|
+        next unless csr.defined_in_base?(xlen)
+
+        (idx...csrs.size).each do |other_idx|
+          other_csr = csrs[other_idx]
+          next unless other_csr.defined_in_base?(xlen)
+          next if other_csr == csr
+
+          if csr.address == other_csr.address && !csr.address.nil?
+            warn "CSRs #{csr.name} and #{other_csr.name} have conflicting addresses (#{csr.address})"
+            failed = true
+          end
+        end
+      end
+    end
+    raise "CSR test failed" if failed
+
+    puts "done"
+  end
+
+  # task :insts do
+  #   puts "Checking instruction encodings..."
+  #   inst_paths = Dir.glob("#{$root}/arch/inst/**/*.yaml").map { |f| Pathname.new(f) }
+  #   inst_paths.each do |inst_path|
+  #     Validator.instance.validate_instruction(inst_path)
+  #   end
+  #   puts "All instruction encodings pass basic sanity tests"
+  # end
   task schema: "gen:resolved_arch" do
     puts "Checking arch files against schema.."
     Architecture.new("#{$root}/resolved_arch").validate(show_progress: true)
@@ -299,6 +363,7 @@ namespace :test do
     Rake::Task["test:lib"].invoke
     Rake::Task["test:schema"].invoke
     Rake::Task["test:idl"].invoke
+    Rake::Task["test:inst_encodings"].invoke
   end
 
   desc <<~DESC

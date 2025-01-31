@@ -101,7 +101,9 @@ class PartialConfig < Config
     @mxlen.freeze
   end
 
-  def implemented_extensions = raise "implemented_extensions is only available for a FullConfig"
+  def additional_extensions_allowed? = @data.key?("additional_extensions") ? @data["additional_extensions"] : true
+
+  def implemented_extensions = raise "implemented_extensions is only availabe for a FullConfig"
 
   # @return [Array<Hash{String => String,Array<String}>]
   #    List of all extensions that must be implemented, as specified in the config file

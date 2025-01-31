@@ -40,7 +40,7 @@ operation(): |
       }
     }
   }
-  X[rd] = X[rs1] | imm;
+  X[rd] = X[rs1] | $signed(imm);
 pseudoinstructions:
   - when: (rd == 0) && (imm[4:0] == 0)
     to: prefetch.i offset

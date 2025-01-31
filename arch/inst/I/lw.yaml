@@ -25,9 +25,9 @@ access:
   vs: always
   vu: always
 operation(): |
-  XReg virtual_address = X[rs1] + imm;
+  XReg virtual_address = X[rs1] + $signed(imm);
 
-  X[rd] = read_memory<32>(virtual_address, $encoding);
+  X[rd] = $signed(read_memory<32>(virtual_address, $encoding));
 
 sail(): |
   {

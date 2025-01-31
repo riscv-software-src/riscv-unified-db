@@ -156,6 +156,27 @@ class RequirementSpec
     "#{@op} #{@version_str}"
   end
 
+  # invert the requirement
+  def invert!
+    case @op
+    when ">="
+      @op = "<"
+    when ">"
+      @op = "<="
+    when "<="
+      @op = ">"
+    when "<"
+      @op = ">="
+    when "="
+      @op = "!="
+    when "!="
+      @op = "="
+    when "~>"
+      @op = "!~>"
+    end
+    self
+  end
+
   # @param version [String] A version string
   # @param version [VersionSpec] A version spec
   # @param ext [Extension] An extension, needed to evaluate the compatible (~>) operator
@@ -189,6 +210,11 @@ class RequirementSpec
       raise "Can't find version?" if matching_ver.nil?
 
       matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.cfg_arch))
+    when "!~>" # not a legal spec, but used for inversion
+      matching_ver = ext.versions.find { |v| v.version_spec == v_spec }
+      raise "Can't find version?" if matching_ver.nil?
+
+      !matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.cfg_arch))
     end
   end
 end

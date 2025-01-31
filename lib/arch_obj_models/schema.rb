@@ -144,6 +144,27 @@ class Schema
       @schema_hash["const"]
     end
 
+    # @return [Boolean] if the maximum value of the schema is known, i.e., is a restricted integer
+    def max_val_known?
+      to_idl_type.kind == :bits && \
+        (@schema_hash.key?("const") || \
+         @schema_hash.key?("maximum") || \
+         @schema_hash.key?("enum"))
+    end
+
+    # @return [Integer] The maximum value the schema allows. Only valid if #max_val_known? is true
+    def max_val
+      if @schema_hash.key?("const")
+        @schema_hash["const"]
+      elsif @schema_hash.key?("enum")
+        @schema_hash["enum"].max
+      elsif @schema_hash.key?("maximum")
+        @schema_hash["maximum"]
+      else
+        raise "unexpected"
+      end
+    end
+
     def is_power_of_two?(num)
       return false if num < 1
       return (num & (num-1)) == 0

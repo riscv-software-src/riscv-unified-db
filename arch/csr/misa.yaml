@@ -118,7 +118,8 @@ fields:
     type(): |
       return (implemented?(ExtensionName::H) && MUTABLE_MISA_H) ? CsrFieldType::RW : CsrFieldType::RO;
     definedBy: H
-    reset_value: 1
+    reset_value(): |
+      return implemented?(ExtensionName::H) ? 1 : 0;
   I:
     location: 8
     description: |

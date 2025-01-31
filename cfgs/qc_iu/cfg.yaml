@@ -7,6 +7,7 @@ name: qc_iu
 description: Configuration with the Xqci custom extension.
 mandatory_extensions:
   - { name: Sm }
+  - { name: Smrnmi }
   - { name: I }
   - { name: M }
   - { name: B }
@@ -14,5 +15,6 @@ mandatory_extensions:
   - { name: Zcb }
   - { name: Xqccmp, version: "~> 0.1" }
   - { name: Xqci, version: "~> 0.5" }
+additional_extensions: false
 params:
   XLEN: 32

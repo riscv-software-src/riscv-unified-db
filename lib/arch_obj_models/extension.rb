@@ -36,6 +36,12 @@ class ExtensionParameter
     @schema.to_pretty_s
   end
 
+  def default
+    if @data["schema"].key?("default")
+      @data["schema"]["default"]
+    end
+  end
+
   # @param ext [Extension]
   # @param name [String]
   # @param data [Hash<String, Object]
@@ -121,6 +127,8 @@ class ExtensionParameterWithValue
   # @return [Extension] The extension that defines this parameter
   def exts = @param.exts
 
+  def idl_type = @param.idl_type
+
   def initialize(param, value)
     @param = param
     @value = value
@@ -192,52 +200,45 @@ class Extension < DatabaseObject
   end
 
   # @param version_requirement [String] Version requirement
-  # @return [Array<ExtensionVersion>] Array of extensions implied by any version of this extension meeting version_requirement
+  # @return [Array<ExtensionVersion>] Array of extensions implied by the largest version of this extension meeting version_requirement
   def implies(version_requirement = nil)
     if version_requirement.nil?
-      return [] unless ExtensionRequirement.new(@new, arch: @arch).satisfied_by?(max_version.version)
+      max_version.implications
     else
-      return [] unless ExtensionRequirement.new(@new, version_requirement, arch: @arch).satisfied_by?(max_version.version)
+      mv = ExtensionRequirement.new(@name, version_requirement, cfg_arch: @cfg_arch).max_version
+      mv.implications
     end
-
-    max_version.implications
   end
 
-  # @return [Array<ExtensionRequirement>] List of conflicting extension requirements
+  # @return [Array<Extension>] List of conflicting extensions
   def conflicts
     return [] if @data["conflicts"].nil?
 
     if @data["conflicts"].is_a?(String)
-      [ExtensionRequirement.new(@data["conflicts"], arch: @arch)]
-    elsif @data["conflicts"].is_a?(Hash)
-      [ExtensionRequirement.new(@data["conflicts"]["name"], @data["conflicts"]["version"], arch: @arch)]
+      [@cfg_arch.extension(@data["conflicts"])]
     elsif @data["conflicts"].is_a?(Array)
       @data["conflicts"].map do |conflict|
-        if conflict.is_a?(String)
-          ExtensionRequirement.new(conflict, arch: @arch)
-        elsif conflict.is_a?(Array)
-          ExtensionRequirement.new(conflict["name"], conflict["version"], arch: @arch)
-        else
-          raise "Invalid conflicts data: #{conflict.inspect}"
-        end
+        @cfg_arch.extension(conflict)
       end
     else
       raise "Invalid conflicts data: #{@data["conflicts"].inspect}"
     end
   end
 
+  # @return [Array<Extension>] List of conflicting extensions, transitively determined
+  def transitive_conflicts
+    @transitive_conflicts ||=
+      conflicts.map { |ext| [ext] + ext.transitive_conflicts }.flatten.uniq
+  end
+
   # @return [Array<Instruction>] the list of instructions implemented by *any version* of this extension (may be empty)
   def instructions
-    return @instructions unless @instructions.nil?
-
-    @instructions = arch.instructions.select { |i| versions.any? { |v| i.defined_by?(v) }}
+    @instructions ||= cfg_arch.instructions.select { |i| versions.any? { |v| i.defined_bycondition.possibly_satisfied_by?(v) }}
   end
 
   # @return [Array<Csr>] the list of CSRs implemented by *any version* of this extension (may be empty)
   def csrs
-    return @csrs unless @csrs.nil?
-
-    @csrs = arch.csrs.select { |csr| versions.any? { |v| csr.defined_by?(v) } }
+    @csrs ||= cfg_arch.csrs.select { |csr| versions.any? { |v| csr.defined_by_condition.possibly_satisfied_by?(v) } }
   end
 
   # return the set of reachable functions from any of this extensions's CSRs or instructions in the given evaluation context
@@ -261,10 +262,22 @@ class Extension < DatabaseObject
     # The one place in this file that needs a ConfiguredArchitecture object instead of just Architecture.
     raise "In #{name}, need to provide ConfiguredArchitecture" if cfg_arch.nil?
     csrs.each do |csr|
-      funcs += csr.reachable_functions(cfg_arch)
+      funcs += csr.reachable_functions
     end
 
     @reachable_functions[symtab] = funcs.uniq
+  end
+
+  def <=>(other_ext_req)
+    raise ArgumentError, "Can only compare two ExtensionRequirements" unless other_ext_req.is_a?(ExtensionRequirement)
+    unless other_ext_req.name == name
+      raise ArgumentError, "Cannot compare ExtensionRequirements from different extensions"
+    end
+
+    if versions.all? { |v| other_ext_req.versions.include?(v) } || \
+       other_ext_req.all? { |v| versions.include?(v) }
+      versions.size <=> other_ext_req.versions.size
+    end # else nil is implied
   end
 end
 
@@ -383,45 +396,45 @@ class ExtensionVersion
     "#{name}@#{@version_spec.canonical}"
   end
 
-  # @return [SchemaCondition] Condition that must be met for this version to be allowed.
+  # @return [ExtensionRequirementExpression] Condition that must be met for this version to be allowed.
   #                           Transitively includes any requirements from an implied extension.
   def requirement_condition
     @requirement_condition ||=
       begin
         r = case @data["requires"]
             when nil
-              AlwaysTrueSchemaCondition.new
+              AlwaysTrueExtensionRequirementExpression.new
             when Hash
-              SchemaCondition.new(@data["requires"], @arch)
+              ExtensionRequirementExpression.new(@data["requires"], @cfg_arch)
             else
-              SchemaCondition.new({ "oneOf" => [@data["requires"]] }, @arch)
+              ExtensionRequirementExpression.new({ "oneOf" => [@data["requires"]] }, @cfg_arch)
             end
         if @data.key?("implies")
           rs = [r] + implications.map(&:requirement_condition)
           rs = rs.reject(&:empty?)
-          r = SchemaCondition.all_of(*rs.map(&:to_h), arch: @arch) unless rs.empty?
+          r = ExtensionRequirementExpression.all_of(*rs.map(&:to_h), cfg_arch: @cfg_arch) unless rs.empty?
         end
         r
       end
   end
 
-  # @return [Array<ExtensionVersion>] List of extensions that conflict with this ExtensionVersion
-  #                                   The list is *not* transitive; if conflict C1 implies C2,
-  #                                   only C1 shows up in the list
+  # @return [Array<Extension>] List of extensions that conflict with this ExtensionVersion
+  #                            The list is *not* transitive; if conflict C1 implies C2,
+  #                            only C1 shows up in the list
   def conflicts
-    @conflicts ||= extension.conflicts.map(&:satisfying_versions).flatten.uniq.sort
+    extension.conflicts
   end
 
-  # @return [Array<ExtensionVersion>] List of extensions that conflict with this ExtensionVersion
+  # @return [Array<ExtensionVersion>] List of extension versions that conflict with this ExtensionVersion
   #                                   The list *is* transitive; if conflict C1 implies C2,
   #                                   both C1 and C2 show up in the list
   def transitive_conflicts
     return @transitive_conflicts unless @transive_conflicts.nil?
 
     @transitive_conflicts = []
-    conflicts.each do |c|
-      @transitive_conflicts << c
-      @transitive_conflicts.concat(c.transitive_implications)
+    extension.transitive_conflicts.each do |ext|
+      @transitive_conflicts.concat(ext.versions)
+      ext.versions.each { |ext_ver| @transitive_conflicts.concat(ext_ver.transitive_implications) }
     end
     @transitive_conflicts.uniq!
     @transitive_conflicts.sort!
@@ -499,12 +512,22 @@ class ExtensionVersion
     end
   end
 
+  def eql?(other)
+    unless other.is_a?(ExtensionVersion)
+      raise ArgumentError, "ExtensionVersions are only comparable to other extension versions"
+    end
+
+    @name == other.name && @version_spec == other.version_spec
+  end
+
   # @return [Array<Csr>] the list of CSRs implemented by this extension version (may be empty)
   def implemented_csrs
     return @implemented_csrs unless @implemented_csrs.nil?
 
-    @implemented_csrs = @arch.csrs.select do |csr|
-      csr.defined_by?(self)
+    raise "implemented_csrs needs an cfg_arch" if @cfg_arch.nil?
+
+    @implemented_csrs = @cfg_arch.csrs.select do |csr|
+      csr.defined_by_condition.possibly_satisfied_by?(self)
     end
   end
 
@@ -512,8 +535,10 @@ class ExtensionVersion
   def implemented_instructions
     return @implemented_instructions unless @implemented_instructions.nil?
 
-    @implemented_instructions = @arch.instructions.select do |inst|
-      inst.defined_by?(self)
+    raise "implemented_instructions needs an cfg_arch" if @cfg_arch.nil?
+
+    @implemented_instructions = @cfg_arch.instructions.select do |inst|
+      inst.defined_by_condition.possibly_satisfied_by?(self)
     end
   end
 end
@@ -722,6 +747,10 @@ class ExtensionRequirement
     @presence = presence.freeze
   end
 
+  def invert!
+    @requirements.each(&:invert!)
+  end
+
   # @return [Array<ExtensionVersion>] The list of extension versions that satisfy this extension requirement
   def satisfying_versions
     ext = @arch.extension(@name)
@@ -773,9 +802,15 @@ class ExtensionRequirement
   def csrs
     @csrs ||= @arch.csrs.select do |csr|
       satisfying_versions.any? do |ext_ver|
-        csr.defined_by?(ext_ver)
+        csr.defined_by_condition.possibly_satisfied_by?(ext_ver)
       end
     end
+  end
+
+  # @return [Array<ExtensionVersion>] List of implied extension versions that could be implied by any extension version meeting this requirement
+  def transitive_implications
+    @transitive_implications ||=
+      satisfying_versions.map(&:transitive_implications).flatten.uniq
   end
 
   # sorts by name
