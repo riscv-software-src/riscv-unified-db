@@ -133,6 +133,7 @@ if [ ! -f $ROOT/.bundle/config ]; then
     cd $ROOT
     ${RUN} bundle config set --local path ${ROOT}/.home/.gems
     ${RUN} bundle config set --local cache_path ${ROOT}/.home/.cache
+    ${RUN} bundle config set --local with development
     cd $OLDDIR
 fi
 

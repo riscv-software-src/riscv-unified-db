@@ -33,7 +33,6 @@ operation(): |
   X[ 8] = read_memory<32>(virtual_address -  8, $encoding);
   CSR[mcause].sw_write(read_memory<32>(virtual_address - 12, $encoding));
   X[ 1] = read_memory<32>(virtual_address - 16, $encoding);
-  CSR[qc_flags].sw_write(read_memory<32>(virtual_address - 20, $encoding));
   X[ 5] = read_memory<32>(virtual_address - 24, $encoding);
   X[ 6] = read_memory<32>(virtual_address - 28, $encoding);
   X[ 7] = read_memory<32>(virtual_address - 32, $encoding);
