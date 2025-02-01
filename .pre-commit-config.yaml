@@ -46,12 +46,12 @@ repos:
         args: ["--schemafile", "schemas/ext_schema.json"]
       - id: check-jsonschema
         alias: check-jsonschema-cert-model
-        files: ^arch/certificate_model/.*\.(yaml|yml)$
-        args: ["--schemafile", "schemas/cert_model_schema.json"]
+        files: ^arch/proc_cert_model/.*\.(yaml|yml)$
+        args: ["--schemafile", "schemas/proc_cert_model_schema.json"]
       - id: check-jsonschema
         alias: check-jsonschema-cert-class
-        files: ^arch/certificate_class/.*\.(yaml|yml)$
-        args: ["--schemafile", "schemas/cert_class_schema.json"]
+        files: ^arch/proc_cert_class/.*\.(yaml|yml)$
+        args: ["--schemafile", "schemas/proc_cert_class_schema.json"]
       # Commenting because throwing errors and not sure this is complete yet
       # - id: check-jsonschema
       #   alias: check-jsonschema-manual-version

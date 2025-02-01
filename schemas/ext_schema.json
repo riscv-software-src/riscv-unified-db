@@ -290,6 +290,12 @@
         "$source": {
           "type": "string",
           "description": "Source file where this extension was defined"
+        },
+        "cert_coverage_points": {
+          "$ref": "schema_defs.json#/$defs/cert_coverage_points"
+        },
+        "cert_test_procedures": {
+          "$ref": "schema_defs.json#/$defs/cert_test_procedures"
         }
       },
       "additionalProperties": false

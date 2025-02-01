@@ -44,13 +44,12 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
-    requires:
-      allOf:
-      - H
-      - Ssstateen
-      - Shcounterenw
-      - Shvstvala
-      - Shtvala
-      - Shvstvecd
-      - Shvsatpa
-      - Shgatpa
+    implies:
+      - [H, "1.0.0"]
+      - [Ssstateen, "1.0.0"]
+      - [Shcounterenw, "1.0.0"]
+      - [Shvstvala, "1.0.0"]
+      - [Shtvala, "1.0.0"]
+      - [Shvstvecd, "1.0.0"]
+      - [Shvsatpa, "1.0.0"]
+      - [Shgatpa, "1.0.0"]
