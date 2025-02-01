@@ -794,6 +794,8 @@ end
 #   ============  ===============================================================
 #   ISA manuals   manual:ext:<ext_name>:<location>
 #                 manual:inst:<inst_name>:<location>
+#                 manual:insts:<inst_name>[-<inst_name>]+:<location>
+#                 manual:inst_group:<group_name>:<location>
 #                 manual:csr:<csr_name>:<location>
 #                 manual:csr_field:<csr_name>:<field_name>:<location>
 #                 manual:param:<ext_name>:<param_name>:<location>
