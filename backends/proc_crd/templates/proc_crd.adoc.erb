@@ -137,32 +137,8 @@ It is OUT-OF-SCOPE for certification tests to write all possible values of WPRI 
 (especially if they are more than just a few bits) and certification tests aren't intended to be comprehensive
 verification test suites anyways.
 
-=== Related Specifications
-
-[cols="2,2,3,3,3"]
-|===
-| Certificate Model | TSC Profile | Unpriv ISA Manual | Priv ISA Manual | Debug Manual
-
-| <%= proc_cert_model.name %>
-| <%= proc_cert_model.tsc_profile.nil? ? "No profile" : proc_cert_model.tsc_profile.marketing_name %>
-| <%= proc_cert_model.unpriv_isa_manual_revision %>
-| <%= proc_cert_model.priv_isa_manual_revision %>
-| <%= proc_cert_model.debug_manual_revision %>
-|===
-
-=== Privileged Modes
-
-|===
-| M | S | U | VS | VU
-
-| <% if proc_cert_class.mandatory_priv_modes.include?('M') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if proc_cert_class.mandatory_priv_modes.include?('S') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if proc_cert_class.mandatory_priv_modes.include?('U') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if proc_cert_class.mandatory_priv_modes.include?('VS') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-| <% if proc_cert_class.mandatory_priv_modes.include?('VU') -%> MANDATORY <% else -%> OUT-OF-SCOPE <% end -%>
-
-|===
-
+<%= proc_cert_design.include_erb("related_specs.adoc.erb") %>
+<%= proc_cert_design.include_erb("priv_modes.adoc.erb") %>
 <<<
 == Extensions
 

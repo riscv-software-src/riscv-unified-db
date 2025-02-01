@@ -31,6 +31,8 @@ Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
     "#{$root}/backends/portfolio/templates/test_procedures.adoc.erb",
     "#{$root}/backends/proc_cert/templates/typographic.adoc.erb",
     "#{$root}/backends/proc_cert/templates/rev_history.adoc.erb",
+    "#{$root}/backends/proc_cert/templates/related_specs.adoc.erb",
+    "#{$root}/backends/proc_cert/templates/priv_modes.adoc.erb",
     "#{PROC_CTP_DOC_DIR}/templates/proc_ctp.adoc.erb"
   ] do |t|
     # Ensure that the required submodule repositories are up-to-date.
