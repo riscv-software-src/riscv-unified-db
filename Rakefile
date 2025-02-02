@@ -39,8 +39,8 @@ def cfg_arch_for(config_name)
     )
 end
 
-file "#{$root}/.stamps/dev_gems" do |t|
-  sh "bundle exec yard config --gem-install-yri"
+file "#{$root}/.stamps/dev_gems" => ["#{$root}/.stamps"] do |t|
+  #sh "bundle exec yard config --gem-install-yri"
   sh "bundle exec yard gem"
   FileUtils.touch t.name
 end
