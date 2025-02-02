@@ -77,6 +77,7 @@ cert_coverage_points:
       - manual:csr:misa:disabling-extension
       # - idl:code:inst:mock:illegal-inst-exc-misa-disabled
 
+
 cert_test_procedures:
   - id: inst.mock.enc_and_basic
     name: Encoding
