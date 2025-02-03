@@ -10,6 +10,7 @@ require "yard"
 require "minitest/test_task"
 
 require_relative $root / "lib" / "architecture"
+$opcode_outputs = $root / "gen" / "opcodes_outputs"
 
 directory "#{$root}/.stamps"
 
@@ -38,6 +39,28 @@ file "#{$root}/.stamps/dev_gems" => ["#{$root}/.stamps"] do |t|
   sh "bundle exec yard gem"
   FileUtils.touch t.name
 end
+
+namespace :gen do
+  desc "Generate opcode outputs, optionally specify YAML_DIR=path/to/yaml"
+  task :opcode_outputs do
+    yaml_dir = ENV['YAML_DIR'] || "#{$root}/arch/inst"
+    mkdir_p $opcode_outputs
+    sh "#{$root}/.home/.venv/bin/python3 #{$root}/backends/opcodes_maker/yaml_to_json.py #{yaml_dir} #{$opcode_outputs}"
+    sh "#{$root}/.home/.venv/bin/python3 #{$root}/backends/opcodes_maker/generator.py #{$opcode_outputs}/instr_dict.json -c -chisel -spinalhdl -sverilog -rust -go -latex"
+
+    # Move generated files to output dir
+    Dir.chdir("#{$root}") do
+      mv "encoding.out.h", "#{$opcode_outputs}/", force: true
+      mv "inst.chisel", "#{$opcode_outputs}/", force: true
+      mv "inst.spinalhdl", "#{$opcode_outputs}/", force: true
+      mv "inst.sverilog", "#{$opcode_outputs}/", force: true
+      mv "inst.rs", "#{$opcode_outputs}/", force: true
+      mv "inst.go", "#{$opcode_outputs}/", force: true
+      mv "instr-table.tex", "#{$opcode_outputs}/", force: true
+      mv "priv-instr-table.tex", "#{$opcode_outputs}/", force: true
+    end
+  end
+ end
 
 namespace :gen do
   desc "Generate documentation for the ruby tooling"
