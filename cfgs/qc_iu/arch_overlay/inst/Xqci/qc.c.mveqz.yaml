@@ -10,7 +10,11 @@ description: |
 definedBy:
   anyOf:
     - Xqci
-    - Xqcicm
+    - Xqciac
+excludedBy:
+  anyOf:
+    - allOf: [C, D]
+    - Zcd
 base: 32
 encoding:
   match: 101011---00---10
