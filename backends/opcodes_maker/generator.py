@@ -13,7 +13,7 @@ from typing import Dict, List, Any
 
 # Add riscv-opcodes directory to Python path
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-RISCV_OPCODES_DIR = os.path.join(SCRIPT_DIR, "..", "riscv-opcodes")
+RISCV_OPCODES_DIR = os.path.join(SCRIPT_DIR, "..", "..", "ext", "riscv-opcodes")
 sys.path.insert(0, RISCV_OPCODES_DIR)
 
 
