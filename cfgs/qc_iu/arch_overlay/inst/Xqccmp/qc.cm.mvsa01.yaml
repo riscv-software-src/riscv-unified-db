@@ -1,8 +1,8 @@
-# yaml-language-server: $schema=../../../schemas/inst_schema.json
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: cm.mvsa01
+name: qc.cm.mvsa01
 long_name: Move a0-a1 into two registers of s0-s7
 description: |
   This instruction moves a0 into r1s' and a1 into r2s'. r1s' and r2s' must be different.
@@ -11,11 +11,12 @@ description: |
   The mapping between them is specified in the pseudo-code below.
 definedBy:
   anyOf:
-    - Zcmp
+    - Xqccmp
 excludedBy:
   anyOf:
     - allOf: [C, D]
     - Zcd
+    - Zcmp
 assembly: r1s, r2s
 encoding:
   match: 101011---01---10
