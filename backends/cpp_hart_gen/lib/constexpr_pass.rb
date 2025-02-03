@@ -19,6 +19,8 @@ module Idl
 
       if sym.param?
         symtab.cfg_arch.params_with_value.any? { |p| p.name == text_value }
+      elsif sym.template_value?
+        true
       else
         !sym.type.global?
       end

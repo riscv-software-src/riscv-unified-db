@@ -1,9 +1,10 @@
-# yaml-language-server: $schema=../../schemas/config_schema.json
+# yaml-language-server: $schema=../schemas/config_schema.json
 ---
 $schema: config_schema.json#
 kind: architecture configuration
 type: partially configured
 name: qc_iu
+arch_overlay: qc_iu
 description: Configuration with the Xqci custom extension.
 mandatory_extensions:
   - { name: Sm }

@@ -23,22 +23,65 @@ end
 
 directory "#{$root}/.stamps"
 
-def cfg_arch_for(config_name)
-  $cfg_arch_for_mutex ||= Thread::Mutex.new
+def cfg_arch_for(config)
+  raise ArgumentError, "excpecting String or Pathname" unless config.is_a?(String) || config.is_a?(Pathname)
+  config = config.to_s
 
-  $cfg_arch_for_mutex.synchronize do
-    Rake::Task["#{$root}/.stamps/resolve-#{config_name}.stamp"].invoke
+  $cfg_archs ||= {}
+  return $cfg_archs[config] unless $cfg_archs[config].nil?
 
-    $cfg_archs ||= {}
-    return $cfg_archs[config_name] if $cfg_archs.key?(config_name)
-
-    $cfg_archs[config_name] =
-      ConfiguredArchitecture.new(
-        config_name,
-        $root / "gen" / "resolved_arch" / config_name,
-        overlay_path: $root / "cfgs" / config_name / "arch_overlay"
-      )
+  # does the gen cfg already exist?
+  if File.exist?("#{$root}/gen/cfgs/#{config}.yaml")
+    config_yaml = YAML.load_file("#{$root}/gen/cfgs/#{config}.yaml")
+    if File.mtime("#{$root}/gen/cfgs/#{config}.yaml") < File.mtime(config_yaml["$source"])
+      cfg_arch =
+        ConfiguredArchitecture.new(
+          config,
+          $root / "gen" / "resolved_arch" / config
+        )
+      $cfg_archs[config] = cfg_arch
+      return cfg_arch
+    end
   end
+
+  config_path =
+    if File.exist?("#{$root}/cfgs/#{config}.yaml")
+      "#{$root}/cfgs/#{config}.yaml"
+    elsif File.exist? config
+      File.realpath(config)
+    else
+      raise ArgumentError, "Can't find config #{config}"
+    end
+
+  config_yaml = YAML.load_file(config_path)
+  config_name = config_yaml["name"]
+
+  overlay_dir =
+    if config_yaml["arch_overlay"].nil?
+      "/does/not/exist"
+    elsif File.exist?("#{$root}/arch_overlay/#{config_yaml['arch_overlay']}")
+      "#{$root}/arch_overlay/#{config_yaml['arch_overlay']}"
+    elsif File.directory?(config_yaml["arch_overlay"])
+      File.realpath(config_yaml["arch_overlay"])
+    else
+      raise ArgumentError, "Can't find arch_overlay #{config_yaml['arch_overlay']}"
+    end
+
+  config_yaml["arch_overlay"] = overlay_dir
+  config_yaml["$source"] = config_path
+
+  # write the config with arch_overlay expanded
+  unless File.exist?("#{$root}/gen/cfgs/#{config_name}.yaml") && (File.mtime("#{$root}/gen/cfgs/#{config_name}.yaml") < File.mtime(config_path))
+    FileUtils.mkdir_p "#{$root}/gen/cfgs"
+    File.write "#{$root}/gen/cfgs/#{config_name}.yaml", YAML.dump(config_yaml)
+  end
+  Rake::Task["#{$root}/.stamps/resolve-#{config_name}.stamp"].invoke
+
+  $cfg_archs[config_name] =
+    ConfiguredArchitecture.new(
+      config_name,
+      $root / "gen" / "resolved_arch" / config_name
+    )
 end
 
 file "#{$root}/.stamps/dev_gems" => ["#{$root}/.stamps"] do |t|
@@ -65,15 +108,23 @@ end
 # rule to generate standard for any configurations with an overlay
 rule %r{#{$root}/.stamps/resolve-.+\.stamp} => proc { |tname|
   cfg_name = File.basename(tname, ".stamp").sub("resolve-", "")
+  raise "Missing gen/cfgs/#{tname}" unless File.exist?("#{$root}/gen/cfgs/#{cfg_name}.yaml")
+
+  cfg_path = "#{$root}/gen/cfgs/#{cfg_name}.yaml"
+  cfg = Config.create(cfg_path)
   arch_files = Dir.glob("#{$root}/arch/**/*.yaml")
-  overlay_files = Dir.glob("#{$root}/cfgs/#{cfg_name}/arch_overlay/**/*.yaml")
+  overlay_files = cfg.overlay? ? Dir.glob("#{cfg.arch_overlay_abs}/**/*.yaml") : []
   [
     "#{$root}/.stamps",
     "#{$root}/lib/yaml_resolver.py"
   ] + arch_files + overlay_files
 } do |t|
   cfg_name = File.basename(t.name, ".stamp").sub("resolve-", "")
-  sh "#{$root}/.home/.venv/bin/python3 lib/yaml_resolver.py merge arch cfgs/#{cfg_name}/arch_overlay gen/arch/#{cfg_name}"
+  cfg_path = "#{$root}/gen/cfgs/#{cfg_name}.yaml"
+  cfg = Config.create(cfg_path)
+
+  overlay_dir = cfg.overlay? ? cfg.arch_overlay_abs : "/does/not/exist"
+  sh "#{$root}/.home/.venv/bin/python3 lib/yaml_resolver.py merge arch #{overlay_dir} gen/arch/#{cfg_name}"
   sh "#{$root}/.home/.venv/bin/python3 lib/yaml_resolver.py resolve gen/arch/#{cfg_name} gen/resolved_arch/#{cfg_name}"
 
   FileUtils.touch t.name
@@ -382,7 +433,7 @@ namespace :test do
     ENV["VERSION"] = "latest"
     Rake::Task["gen:ext_pdf"].invoke
 
-    Rake::Task["gen:html"].invoke("generic_rv64")
+    Rake::Task["gen:html"].invoke("example_rv64_with_overlay")
 
     Rake::Task["#{$root}/gen/certificate_doc/pdf/MockCertificateModel.pdf"].invoke
     Rake::Task["#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"].invoke

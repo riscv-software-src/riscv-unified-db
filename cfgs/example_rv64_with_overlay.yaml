@@ -1,8 +1,11 @@
+# yaml-language-server: $schema=../schemas/config_schema.json
+---
 $schema: config_schema.json#
 kind: architecture configuration
 type: fully configured
-name: generic_rv64
+name: example_rv64_with_overlay
 description: An example fully-specified RV64 system
+arch_overlay: example
 implemented_extensions:
   - [A, "2.1.0"]
   - [B, "1.0.0"]
@@ -37,7 +40,7 @@ params:
   XLEN: 64
 
   # name of the configuration
-  NAME: generic_rv64
+  NAME: example_rv64_with_overlay
 
   # vendor-specific architecture ID in marchid
   ARCH_ID: 0x1000000000000000

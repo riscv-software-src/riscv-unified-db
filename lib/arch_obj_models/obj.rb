@@ -561,7 +561,7 @@ class ExtensionRequirementExpression
           min_ary = hsh.dup
           key = "not"
         end
-        min_ary = min_ary.uniq!
+        min_ary = min_ary.uniq
         if min_ary.size == 1
           min_ary.first
         else
@@ -679,18 +679,18 @@ class ExtensionRequirementExpression
       if hsh.key?("name")
         if hsh.key?("version")
           if hsh["version"].is_a?(String)
-            n = LogicNode.new(:term, [ExtensionRequirement.new(hsh["name"], hsh["version"], cfg_arch: @cfg_arch)], term_idx: term_idx[0])
+            n = LogicNode.new(:term, [ExtensionRequirement.new(hsh["name"], hsh["version"], arch: @arch)], term_idx: term_idx[0])
             term_idx[0] += 1
             n
           elsif hsh["version"].is_a?(Array)
-            n = LogicNode.new(:term, [ExtensionRequirement.new(hsh["name"], hsh["version"].map { |v| "'#{v}'" }.join(', '), cfg_arch: @cfg_arch)], term_idx: term_idx[0])
+            n = LogicNode.new(:term, [ExtensionRequirement.new(hsh["name"], hsh["version"].map { |v| "'#{v}'" }.join(', '), arch: @arch)], term_idx: term_idx[0])
             term_idx[0] += 1
             n
           else
             raise "unexpected"
           end
         else
-          n = LogicNode.new(:term, [ExtensionRequirement.new(hsh["name"], cfg_arch: @cfg_arch)], term_idx: term_idx[0])
+          n = LogicNode.new(:term, [ExtensionRequirement.new(hsh["name"], arch: @arch)], term_idx: term_idx[0])
           term_idx[0] += 1
           n
         end
@@ -702,20 +702,45 @@ class ExtensionRequirementExpression
           raise "unexpected" unless hsh[key].is_a?(Array) && hsh[key].size > 1
 
           root = LogicNode.new(:and, [to_logic_tree(hsh[key][0], term_idx:), to_logic_tree(hsh[key][1], term_idx:)])
-          (1...hsh[key].size).each do |i|
-            root = LogicNode.new(:and, [root, to_logic_tree(hsh[key][1], term_idx:)])
+          (2...hsh[key].size).each do |i|
+            root = LogicNode.new(:and, [root, to_logic_tree(hsh[key][i], term_idx:)])
           end
           root
         when "anyOf"
           raise "unexpected" unless hsh[key].is_a?(Array) && hsh[key].size > 1
 
           root = LogicNode.new(:or, [to_logic_tree(hsh[key][0], term_idx:), to_logic_tree(hsh[key][1], term_idx:)])
-          (1...hsh[key].size).each do |i|
-            root = LogicNode.new(:or, [root, to_logic_tree(hsh[key][1], term_idx:)])
+          (2...hsh[key].size).each do |i|
+            root = LogicNode.new(:or, [root, to_logic_tree(hsh[key][i], term_idx:)])
           end
           root
         when "oneOf"
-          raise "TODO"
+          # expand oneOf into AND
+          roots = []
+          hsh[key].size.times do |k|
+            root =
+              if k.zero?
+                LogicNode.new(:and, [to_logic_tree(hsh[key][0], term_idx:), LogicNode.new(:not, [to_logic_tree(hsh[key][1], term_idx:)])])
+              elsif k == 1
+                LogicNode.new(:and, [LogicNode.new(:not, [to_logic_tree(hsh[key][0], term_idx:)]), to_logic_tree(hsh[key][1], term_idx:)])
+              else
+                LogicNode.new(:and, [LogicNode.new(:not, [to_logic_tree(hsh[key][0], term_idx:)]), LogicNode.new(:not, [to_logic_tree(hsh[key][1], term_idx:)])])
+              end
+            (2...hsh[key].size).each do |i|
+              root =
+                if k == i
+                  LogicNode.new(:and, [root, to_logic_tree(hsh[key][i], term_idx:)])
+                else
+                  LogicNode.new(:and, [root, LogicNode.new(:not, [to_logic_tree(hsh[key][i], term_idx:)])])
+                end
+             end
+            roots << root
+          end
+          root = LogicNode.new(:or, [roots[0], roots[1]])
+          (2...roots.size).each do |i|
+            root = LogicNode.new(:or, [root, roots[i]])
+          end
+          root
         when "not"
           LogicNode.new(:not, [to_logic_tree(hsh[key], term_idx:)])
         else
@@ -743,6 +768,8 @@ class ExtensionRequirementExpression
           LogicNode.new(:or, child.children.map { |child2| LogicNode.new(:not, [child2]) })
         elsif child.type == :or
           LogicNode.new(:and, child.children.map { |child2| LogicNode.new(:not, [child2]) })
+        elsif child.type == :xor
+          raise "TODO"
         elsif child.type == :not
           child
         else

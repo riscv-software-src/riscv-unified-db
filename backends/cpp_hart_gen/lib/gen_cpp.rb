@@ -110,11 +110,19 @@ module Idl
 
   class DontCareReturnAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      "#{' ' * indent}std::ignore"
+      "#{' ' * indent}{}"
     end
   end
 
   class UserTypeNameAst
+    def gen_c(symtab)
+      type = symtab.get(text_value)
+      if type.kind == :struct
+        "struct #{text_value}"
+      else
+        text_value
+      end
+    end
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       type = symtab.get(text_value)
       if type.kind == :struct
@@ -174,6 +182,16 @@ module Idl
       cpp
     end
 
+    def gen_c_return_type(symtab)
+      if @return_type_nodes.empty?
+        "void"
+      elsif @return_type_nodes.size == 1
+        @return_type_nodes[0].gen_c(symtab)
+      else
+        raise "Can't have multiple return types for C #{name}"
+      end
+    end
+
     def gen_cpp_argument_list(symtab)
       symtab.push(self)
       apply_template_and_arg_syms(symtab)
@@ -181,6 +199,19 @@ module Idl
       list = @argument_nodes.map do |arg|
         written = (builtin? || generated?) || body.written?(symtab, arg.name)
         "#{written ? '' : 'const'} #{arg.gen_cpp(symtab, 0, ref: !written)}"
+      end.join(", ")
+
+      symtab.pop
+
+      list
+    end
+
+    def gen_c_argument_list(symtab)
+      symtab.push(self)
+      apply_template_and_arg_syms(symtab)
+
+      list = @argument_nodes.map do |arg|
+        arg.gen_c(symtab)
       end.join(", ")
 
       symtab.pop
@@ -261,7 +292,7 @@ module Idl
 
   class EnumCastAst
     def gen_cpp(symtab, indent, indent_spaces: 2)
-      "#{' '*indent}#{enum_name.gen_cpp(symtab, 0, indent_spaces:)}{#{expression.gen_cpp(symtab, 0, indent_spaces: )}})"
+      "#{' '*indent}#{enum_name.gen_cpp(symtab, 0, indent_spaces:)}{#{expression.gen_cpp(symtab, 0, indent_spaces: )}}"
     end
   end
 
@@ -321,11 +352,18 @@ module Idl
       w = width(symtab)
       t = type(symtab)
 
-      "#{' ' * indent}_Bits<#{w}, #{t.signed?}>{#{v}_b}"
+      if w == :unknown
+        "#{' ' * indent}_RuntimeBits<#{symtab.cfg_arch.possible_xlens.max}, #{t.signed?}>{#{v}_b, __UDB_XLEN}"
+      else
+        "#{' ' * indent}_Bits<#{w}, #{t.signed?}>{#{v}_b}"
+      end
     end
   end
 
   class IdAst
+    def gen_c(symtab)
+      text_value
+    end
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       var = symtab.get(text_value)
 
@@ -368,6 +406,22 @@ module Idl
   end
 
   class VariableDeclarationAst
+    def gen_c(symtab)
+      add_symbol(symtab)
+      if ary_size.nil?
+        "#{type_name.gen_c(symtab)} #{id.gen_c(symtab)}"
+      else
+        raise "TODO"
+        cpp = nil
+        value_result = value_try do
+          cpp = "#{' ' * indent}std::array<#{type_name.gen_cpp(symtab)},#{ary_size.value(symtab)}>#{ref ? '&' : ''} #{id.gen_cpp(symtab)}"
+        end
+        value_else(value_result) do
+          cpp = "#{' ' * indent}std::array<#{type_name.gen_cpp(symtab)}, #{ary_size.gen_cpp(symtab)}>#{ref ? '&' : ''} #{id.gen_cpp(symtab)}"
+        end
+        cpp
+      end
+    end
     def gen_cpp(symtab, indent = 0, indent_spaces: 2, ref: false)
       add_symbol(symtab)
       if ary_size.nil?
@@ -399,6 +453,40 @@ module Idl
   end
 
   class BuiltinTypeNameAst
+    def gen_c(symtab)
+      if @type_name == "Bits"
+        result = ""
+        value_result = value_try do
+          val = bits_expression.value(symtab)
+          result = val <= 64 ? "uint64_t" : "unsigned __int128"
+        end
+        value_else(value_result) do
+          # do we know the max?
+          max_val = bits_expression.max_value(symtab)
+          if max_val.nil?
+            result = "unsigned __int128"
+          elsif max_val <= 64
+            result = "uint64_t"
+          else
+            result = "unsigned __int128"
+          end
+        end
+        result
+      elsif @type_name == "XReg"
+        "uint64_t"
+      elsif @type_name == "Boolean"
+        "uint8_t"
+      elsif @type_name == "U32"
+        "uint32_t"
+      elsif @type_name == "U64"
+        "uint64_t"
+      elsif @type_name == "String"
+        "const char*"
+      else
+        raise "TODO: #{@type_name}"
+      end
+    end
+
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if @type_name == "Bits"
         result = ""
@@ -407,15 +495,15 @@ module Idl
           result = "#{' '*indent}Bits<#{bits_expression.gen_cpp(symtab, 0, indent_spaces:)}>"
         end
         value_else(value_result) do
-          # see if this is a param with a bound
-          if bits_expression.is_a?(IdAst)
-            sym = symtab.get(bits_expression.text_value)
-            if !sym.nil? && sym.param?
-              param = symtab.cfg_arch.param(bits_expression.text_value)
-              result = "#{' '*indent}Bits<#{param.schema.max_val}>" if param.schema.max_val_known?
-            end
+          if bits_expression.constexpr?(symtab)
+            result = "#{' '*indent}Bits<#{bits_expression.gen_cpp(symtab)}>"
+          elsif bits_expression.max_value(symtab).nil?
+            result = "#{' '*indent}Bits<BitsInfinitePrecision>"
+          else
+            max = bits_expression.max_value(symtab)
+            max = "BitsInfinitePrecision" if max == :unknown
+            result = "#{' '*indent}_RuntimeBits<#{max}, false>"
           end
-          result = "#{' '*indent}Bits<BitsInfinitePrecision>" if result == ""
         end
         result
       elsif @type_name == "XReg"
@@ -472,7 +560,12 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       add_symbol(symtab)
       if ary_size.nil?
-        "#{' ' * indent}#{type_name.gen_cpp(symtab, 0, indent_spaces:)} #{lhs.gen_cpp(symtab, 0, indent_spaces:)} = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
+        t = lhs_type(symtab)
+        if t.kind == :bits && t.width == :unknown
+          "#{' ' * indent}#{type_name.gen_cpp(symtab, 0, indent_spaces:)} #{lhs.gen_cpp(symtab, 0, indent_spaces:)}(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}, #{type_name.bits_expression.gen_cpp(symtab)})"
+        else
+          "#{' ' * indent}#{type_name.gen_cpp(symtab, 0, indent_spaces:)} #{lhs.gen_cpp(symtab, 0, indent_spaces:)}(#{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
+        end
       else
         "#{' ' * indent}std::array<#{type_name.gen_cpp(symtab, 0, indent_spaces:)}, #{ary_size.gen_cpp(symtab, 0, indent_spaces:)}> #{lhs.gen_cpp(symtab, 0, indent_spaces:)} = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
       end
@@ -482,10 +575,10 @@ module Idl
   class AryElementAccessAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if var.type(symtab).integral?
-        if index.constexpr?(symtab)
+        if index.constexpr?(symtab) && var.type(symtab).width != :unknown
           "#{' '*indent}extract<#{index.gen_cpp(symtab, 0)}, 1, #{var.type(symtab).width}>(#{var.gen_cpp(symtab, 0, indent_spaces:)})"
         else
-          "#{' '*indent}extract( #{var.gen_cpp(symtab, 0, indent_spaces:)}, #{index.gen_cpp(symtab, 0)}, 1)"
+          "#{' '*indent}extract( #{var.gen_cpp(symtab, 0, indent_spaces:)}, #{index.gen_cpp(symtab, 0)}, 1_b)"
         end
       else
         if var.text_value.start_with?("X")
@@ -595,8 +688,13 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if name == "ary_includes?"
         # special case
-        args_cpp = arg_nodes.map { |a| a.gen_cpp(symtab, 0, indent_spaces:) }
-        "(std::find(#{args_cpp[0]}.begin(), #{args_cpp[0]}.end(), #{args_cpp[1]}) != #{args_cpp[0]}.end())"
+        if arg_nodes[0].type(symtab).width == :unknown
+          # vector
+          "__UDB_FUNC_CALL ary_includes_Q_(#{arg_nodes[0].gen_cpp(symtab, 0)}, #{arg_nodes[1].gen_cpp(symtab, 0)})"
+        else
+          # array
+          "__UDB_CONSTEXPR_FUNC_CALL ary_includes_Q_<#{arg_nodes[0].type(symtab).width}>(#{arg_nodes[0].gen_cpp(symtab, 0)}, #{arg_nodes[1].gen_cpp(symtab, 0)})"
+        end
       else
         targs_cpp = template_arg_nodes.map { |t| t.gen_cpp(symtab, 0, indent_spaces:) }
         args_cpp = arg_nodes.map { |a| a.gen_cpp(symtab, 0, indent_spaces:) }
@@ -633,7 +731,7 @@ module Idl
   class CsrFieldReadExpressionAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if @idx.is_a?(AstNode)
-        "#{' '*indent}__UDB_CSR_BY_ADDR(#{@idx.gen_cpp(symtab, 0, indent_spaces:)}).#{@field_name}().hw_read()"
+        "#{' '*indent}__UDB_CSR_BY_ADDR(#{@idx.gen_cpp(symtab, 0, indent_spaces:)}).#{@field_name}().hw_read(__UDB_XLEN)"
       else
         "#{' '*indent}__UDB_CSR_BY_NAME(#{@idx}).#{@field_name}()._hw_read()"
       end
@@ -645,7 +743,7 @@ module Idl
       csr = csr_def(symtab)
       if csr.nil?
         # csr isn't known at runtime...
-        "#{' '*indent}__UDB_CSR_BY_ADDR(#{idx.gen_cpp(symtab, 0, indent_spaces:)}).hw_read()"
+        "#{' '*indent}__UDB_CSR_BY_ADDR(#{idx.gen_cpp(symtab, 0, indent_spaces:)}).hw_read(__UDB_XLEN)"
       else
         if symtab.cfg_arch.multi_xlen? && csr.format_changes_with_xlen?
           "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.name})._hw_read(__UDB_XLEN)"

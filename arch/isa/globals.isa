@@ -181,6 +181,11 @@ struct TranslationResult {
   PteFlags pte_flags;
 }
 
+struct CachedTranslationResult {
+  Boolean valid;
+  TranslationResult result;
+}
+
 # options associated with a translation (TLB) invalidation
 struct VmaOrderType {
   Boolean global;  # include global mappings?
@@ -882,9 +887,8 @@ enum PmpMatchResult {
 }
 
 function pmp_match_64 {
-  template U32 access_size
   returns PmpMatchResult, PmpCfg
-  arguments Bits<PHYS_ADDR_WIDTH> paddr
+  arguments Bits<PHYS_ADDR_WIDTH> paddr, U32 access_size
   description {
     Given a physical address, see if any PMP entry matches.
 
@@ -950,9 +954,8 @@ function pmp_match_64 {
 }
 
 function pmp_match_32 {
-  template U32 access_size
   returns PmpMatchResult, PmpCfg
-  arguments Bits<PHYS_ADDR_WIDTH> paddr
+  arguments Bits<PHYS_ADDR_WIDTH> paddr, U32 access_size
   description {
     Given a physical address, see if any PMP entry matches.
 
@@ -1018,9 +1021,8 @@ function pmp_match_32 {
 }
 
 function pmp_match {
-  template U32 access_size
   returns PmpMatchResult, PmpCfg
-  arguments Bits<PHYS_ADDR_WIDTH> paddr
+  arguments Bits<PHYS_ADDR_WIDTH> paddr, U32 access_size
   description {
     Given a physical address, see if any PMP entry matches.
 
@@ -1029,9 +1031,9 @@ function pmp_match {
   }
   body {
     if (XLEN == 64) {
-      return pmp_match_64<access_size>(paddr);
+      return pmp_match_64(paddr, access_size);
     } else {
-      return pmp_match_32<access_size>(paddr);
+      return pmp_match_32(paddr, access_size);
     }
   }
 }
@@ -1085,9 +1087,8 @@ function effective_ldst_mode {
 
 
 function pmp_check {
-  template U32 access_size
   returns Boolean
-  arguments Bits<PHYS_ADDR_WIDTH> paddr, MemoryOperation type
+  arguments Bits<PHYS_ADDR_WIDTH> paddr, U32 access_size, MemoryOperation type
   description {
     Given a physical address and operation type, return whether or not the access is allowed by PMP.
   }
@@ -1096,7 +1097,7 @@ function pmp_check {
     PmpMatchResult match_result;
     PmpCfg cfg;
 
-    (match_result, cfg) = pmp_match<access_size>(paddr);
+    (match_result, cfg) = pmp_match(paddr, access_size);
 
     if (match_result == PmpMatchResult::FullMatch) {
       if (mode == PrivilegeMode::M && (cfg.L == 0)) {
@@ -1152,7 +1153,7 @@ function access_check {
 
     # check PMP
     if (implemented?(ExtensionName::Smpmp)) {
-      if (!pmp_check<access_size>(paddr[PHYS_ADDR_WIDTH-1:0], type)) {
+      if (!pmp_check(paddr[PHYS_ADDR_WIDTH-1:0], access_size, type)) {
         raise(fault_type, from_mode, vaddr);
       }
     }
@@ -2235,13 +2236,13 @@ function translate {
     #####################################################################
 
     Boolean cached_translation_valid;
-    TranslationResult cached_translation_result;
+    CachedTranslationResult cached_translation_result;
 
-    (cached_translation_valid, cached_translation_result) =
+    cached_translation_result =
       cached_translation(vaddr, op);
 
-    if (cached_translation_valid) {
-      return cached_translation_result;
+    if (cached_translation_result.valid) {
+      return cached_translation_result.result;
     }
 
     #####################################################################
@@ -2309,9 +2310,9 @@ function canonical_vaddr? {
     # canonical depends on the virtual address size in the current translation mode
     SatpMode satp_mode;
     if (virtual_mode?()) {
-      satp_mode = CSR[vsatp].MODE;
+      satp_mode = $enum(SatpMode, CSR[vsatp].MODE);
     } else {
-      satp_mode = CSR[satp].MODE;
+      satp_mode = $enum(SatpMode, CSR[satp].MODE);
     }
 
     # calculate the effective address after pointer masking
@@ -2341,7 +2342,7 @@ function canonical_gpaddr? {
   body {
 
     # canonical depends on the virtual address size in the current translation mode
-    SatpMode satp_mode = CSR[satp].MODE;
+    SatpMode satp_mode = $enum(SatpMode, CSR[satp].MODE);
 
     if (satp_mode == SatpMode::Bare) {
       return true;
@@ -2481,13 +2482,13 @@ function read_memory {
   }
 }
 
-function read_memory_xlen {
+function read_memory_xlen_aligned {
   returns Bits<XLEN>
   arguments
     XReg virtual_address,
     Bits<INSTR_ENC_SIZE> encoding   # the encoding of an instruction causing this access, or 0 if a fetch
   description {
-    Read from virtual memory XLEN bits using a known aligned address.
+    Read from virtual memory XLEN (which may be runtime-determined) bits using a known aligned address.
   }
   body {
     TranslationResult result;
@@ -2499,9 +2500,13 @@ function read_memory_xlen {
     }
 
     # may raise an exception
-    access_check(result.paddr, XLEN, virtual_address, MemoryOperation::Read, ExceptionCode::LoadAccessFault, effective_ldst_mode());
+    access_check(result.paddr, xlen(), virtual_address, MemoryOperation::Read, ExceptionCode::LoadAccessFault, effective_ldst_mode());
 
-    return read_physical_memory<XLEN>(result.paddr);
+    if (xlen() == 32) {
+      return read_physical_memory<32>(result.paddr);
+    } else {
+      return read_physical_memory<64>(result.paddr);
+    }
   }
 }
 
@@ -2826,13 +2831,13 @@ function write_memory {
   }
 }
 
-function write_memory_xlen {
+function write_memory_xlen_aligned {
   arguments
     XReg virtual_address,
     Bits<XLEN> value,
     Bits<INSTR_ENC_SIZE> encoding # encoding of the instruction causing this access
   description {
-    Write to virtual memory XLEN bits using a known aligned address.
+    Write to virtual memory XLEN bits (which may be runtime determined) using a known aligned address.
   }
   body {
     XReg physical_address;
@@ -2842,9 +2847,13 @@ function write_memory_xlen {
       : virtual_address;
 
     # may raise an exception
-    access_check(physical_address, XLEN, virtual_address, MemoryOperation::Write, ExceptionCode::StoreAmoAccessFault, effective_ldst_mode());
+    access_check(physical_address, xlen(), virtual_address, MemoryOperation::Write, ExceptionCode::StoreAmoAccessFault, effective_ldst_mode());
 
-    write_physical_memory<XLEN>(physical_address, value);
+    if (xlen() == 32) {
+      write_physical_memory<32>(physical_address, value);
+    } else {
+      write_physical_memory<64>(physical_address, value);
+    }
   }
 }
 

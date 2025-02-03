@@ -38,7 +38,7 @@ module Idl
         unless func_def_type.builtin? || func_def_type.generated?
           avals = func_def_type.apply_arguments(body_symtab, arg_nodes, symtab, self)
 
-          idx = [tvals, avals].hash
+          idx = [name, tvals, avals].hash
 
           unless cache.key?(idx)
             fns.concat(func_def_type.body.reachable_functions(body_symtab, cache))

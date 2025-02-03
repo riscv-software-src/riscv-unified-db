@@ -219,6 +219,10 @@ module Idl
       when :dontcare
         return true
       when :bits
+        if type.kind == :enum_ref
+          warn "You seem to be missing an $enum cast"
+          return false
+        end
         return type.kind != :boolean
       when :function
         return @return_type.convertable_to?(type)
@@ -625,7 +629,7 @@ module Idl
     attr_reader :csr
 
     def initialize(csr, cfg_arch, qualifiers: [])
-      super(:csr, name: csr.name, csr: csr, width: csr.max_length(cfg_arch), qualifiers: qualifiers)
+      super(:csr, name: csr.name, csr: csr, width: csr.max_length, qualifiers: qualifiers)
     end
 
     def fields

@@ -264,3 +264,29 @@ TEST_CASE("Printing", "[bits]") {
   fmt::print("{:#010x}\n", Bits<129>{16});
   // fmt::print("{+:#10x}\n", Bits<129>{16});
 }
+
+TEST_CASE("Runtime", "[bits]") {
+  _RuntimeBits<64, false> a(0, 8);
+  a = 255;
+  REQUIRE(a == 255);
+  a = a + 1;
+  REQUIRE(a == 0);
+
+  _RuntimeBits<64, true> b(128, 8);
+  REQUIRE(b == 0);
+  b = -128;
+  REQUIRE(b == -128);
+  b = b - 1;
+  REQUIRE(b == 0);
+  b = -128;
+  b = b + 1;
+  REQUIRE(b == -127);
+  b = 127;
+  REQUIRE(b == 127);
+  b = b + 1;
+  REQUIRE(b == 0);
+  b = 128;
+  REQUIRE(b == 0);
+  b = 129;
+  REQUIRE(b == 1);
+}

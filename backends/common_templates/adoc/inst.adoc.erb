@@ -75,7 +75,7 @@ Operation::
 <%- unless inst.data["operation()"].nil? -%>
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.operation_ast(cfg_arch.symtab).gen_adoc %>
+<%= inst.operation_ast.gen_adoc %>
 ----
 <%- end -%>
 

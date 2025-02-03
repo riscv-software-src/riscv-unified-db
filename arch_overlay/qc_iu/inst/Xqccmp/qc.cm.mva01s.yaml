@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
 
 $schema: "inst_schema.json#"
 kind: instruction
@@ -8,13 +8,13 @@ description: |
   This instruction moves r1s' into a0 and r2s' into a1. The execution is atomic, so it is not possible to observe state where only one of a0 or a1 have been updated.
   The encoding uses sreg number specifiers instead of xreg number specifiers to save encoding space. The mapping between them is specified in the pseudo-code below.
 definedBy:
-  anyOf:
+  allOf:
+    - not:
+        anyOf:
+          - allOf: [C, D]
+          - Zcd
+          - Zcmp
     - Xqccmp
-excludedBy:
-  anyOf:
-    - allOf: [C, D]
-    - Zcd
-    - Zcmp
 assembly: r1s, r2s
 encoding:
   match: 101011---11---10

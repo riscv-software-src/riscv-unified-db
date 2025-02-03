@@ -9,6 +9,26 @@ class Config
   #                                been configured with a value. May be empty.
   attr_reader :param_values
 
+  def overlay? = @data["arch_overlay"].nil? || @data["arch_overlay"].empty?
+
+  # @return [String] Either a path to an overlay directory, or the name of a folder under arch_overlay/
+  # @return [nil] No arch_overlay for this config
+  def arch_overlay = @data["arch_overlay"]
+
+  # @return [String] Absolute path to the arch_overlay
+  # @return [nil] No arch_overlay for this config
+  def arch_overlay_abs
+    return nil unless @data.key?("arch_overlay")
+
+    if File.directory?("#{$root}/arch_overlay/#{@data['arch_overlay']}")
+      "#{$root}/arch_overlay/#{@data['arch_overlay']}"
+    elsif File.directory?(@data['arch_overlay'])
+      @data['arch_overlay']
+    else
+      raise "Cannot find arch_overlay '#{@data['arch_overlay']}'"
+    end
+  end
+
   # use Config#create instead
   private_class_method :new
 

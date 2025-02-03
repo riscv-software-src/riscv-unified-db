@@ -79,10 +79,10 @@ class Csr < DatabaseObject
 
     if cfg_arch.multi_xlen?
       implemented_fields_for(32).each do |field|
-        fns.concat(field.reachable_functions(cfg_arch, 32))
+        fns.concat(field.reachable_functions(32))
       end
       implemented_fields_for(64).each do |field|
-        fns.concat(field.reachable_functions(cfg_arch, 64))
+        fns.concat(field.reachable_functions(64))
       end
     else
       implemented_fields_for(cfg_arch.mxlen).each do |field|
@@ -181,7 +181,7 @@ class Csr < DatabaseObject
   end
 
   # @return [Integer] The largest length of this CSR in any valid mode/xlen for the config
-  def max_length(cfg_arch)
+  def max_length
     return @data["base"] unless @data["base"].nil?
 
     case @data["length"]
@@ -568,6 +568,6 @@ class Csr < DatabaseObject
 
   # @return [Boolean] Whether or not the presence of ext_ver affects this CSR definition
   def affected_by?(ext_ver)
-    defined_by_condition.possibly_satisfied_by?(version) || fields.any? { |field| field.affected_by?(ext_ver) }
+    defined_by_condition.possibly_satisfied_by?(ext_ver) || fields.any? { |field| field.affected_by?(ext_ver) }
   end
 end

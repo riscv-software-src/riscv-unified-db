@@ -10,6 +10,9 @@
 #include <limits>
 #include <type_traits>
 
+#include "udb/cpp_exceptions.hpp"
+#include "udb/defines.hpp"
+
 // we need this to be true for GMP
 static_assert(sizeof(long unsigned int) == sizeof(long long unsigned int));
 
@@ -17,6 +20,24 @@ static_assert(sizeof(long unsigned int) == sizeof(long long unsigned int));
 static_assert(sizeof(1ull) == 8);
 
 namespace udb {
+
+  // helper to find the max of N numbers at compile time
+  template <unsigned... _N>
+  struct constmax {
+    template <unsigned A, unsigned B, unsigned... Nums>
+    consteval static unsigned Max() {
+      constexpr unsigned AorB = (A > B) ? A : B;
+      if constexpr (sizeof...(Nums) > 0) {
+        return Max<AorB, Nums...>();
+      } else {
+        return AorB;
+      }
+    }
+    constexpr static unsigned value = Max<_N...>();
+  };
+  static_assert(constmax<std::numeric_limits<unsigned>::max(),
+                         std::numeric_limits<unsigned>::max()>::value ==
+                std::numeric_limits<unsigned>::max());
 
   template <unsigned N>
   struct BitsStorageType {
@@ -44,6 +65,32 @@ namespace udb {
                     std::conditional_t<(N > 8), int16_t, int8_t>>>>>;
   };
 
+  static inline auto to_mpz(const unsigned __int128 &rhs) {
+    mpz_class i = static_cast<uint64_t>(rhs >> 64);
+    i <<= 64;
+    i |= static_cast<uint64_t>(rhs);
+    return i;
+  }
+
+  static inline mpz_class to_mpz(const __int128 &rhs) {
+    if (rhs < 0) {
+      if (rhs == std::numeric_limits<__int128>::min()) {
+        // special case, since we can't represent -rhs
+        return (-to_mpz(static_cast<unsigned __int128>(-(rhs + 1)))) - 1;
+      } else {
+        return -to_mpz(static_cast<unsigned __int128>(-rhs));
+      }
+    } else {
+      return to_mpz(static_cast<unsigned __int128>(rhs));
+    }
+  }
+
+  template <std::integral IntType>
+    requires(sizeof(IntType) < 16)
+  mpz_class to_mpz(const IntType &rhs) {
+    return {rhs};
+  }
+
   // N that actually means infinite
   constexpr static unsigned BitsInfinitePrecision =
       std::numeric_limits<unsigned>::max();
@@ -52,7 +99,7 @@ namespace udb {
   // above this, the storage is GMP, and the Bits type can't be constexpr
   constexpr static unsigned BitsMaxNativePrecision = 128;
 
-  template <bool Signed>
+  template <unsigned MaxN, bool Signed>
   class _RuntimeBits;
 
   // The _Bits class represents an arbitrary-width integer.
@@ -144,24 +191,6 @@ namespace udb {
     static_assert(needs_mask<256>() == true);
     static_assert(needs_mask<512>() == true);
     static_assert(needs_mask<InfinitePrecision>() == false);
-
-    // helper to find the max of two numbers at compile time
-    template <unsigned... _N>
-    struct constmax {
-      template <unsigned A, unsigned B, unsigned... Nums>
-      consteval static unsigned Max() {
-        constexpr unsigned AorB = (A > B) ? A : B;
-        if constexpr (sizeof...(Nums) > 0) {
-          return Max<AorB, Nums...>();
-        } else {
-          return AorB;
-        }
-      }
-      constexpr static unsigned value = Max<_N...>();
-    };
-    static_assert(constmax<std::numeric_limits<unsigned>::max(),
-                           std::numeric_limits<unsigned>::max()>::value ==
-                  std::numeric_limits<unsigned>::max());
 
     // saturating add
     template <unsigned A, unsigned B>
@@ -318,8 +347,8 @@ namespace udb {
       m_val = val.get_ui();
     }
 
-    template <bool _Signed>
-    _Bits(const _RuntimeBits<_Signed> &);
+    template <unsigned MaxN, bool _Signed>
+    _Bits(const _RuntimeBits<MaxN, _Signed> &);
 
     // other is smaller N
     // everything fits, so just copy the storage
@@ -380,10 +409,18 @@ namespace udb {
     }
 
     // built-in integer type, mask needed
-    template <class IntType>
+    template <class IntType, unsigned _N = N>
       requires(!std::is_same_v<StorageType, IntType> &&
-               std::integral<IntType> && needs_mask())
+               std::integral<IntType> && needs_mask() &&
+               _N <= BitsMaxNativePrecision)
     constexpr _Bits(const IntType &val) : m_val(apply_mask(val)) {}
+
+    // built-in integer type, mask needed, integral conversion to mpz
+    template <class IntType, unsigned _N = N>
+      requires(!std::is_same_v<StorageType, IntType> &&
+               std::integral<IntType> && needs_mask() &&
+               _N > BitsMaxNativePrecision)
+    constexpr _Bits(const IntType &val) : m_val(apply_mask(to_mpz(val))) {}
 
     // built-in integer type, no mask needed
     template <class IntType>
@@ -395,7 +432,11 @@ namespace udb {
           abort();  // Can't mask off a negative value with infinite precision!
         }
       }
-      m_val = val;
+      if constexpr (N <= MaxNativePrecision) {
+        m_val = val;
+      } else {
+        m_val = to_mpz(val);
+      }
     }
 
     constexpr ~_Bits() noexcept = default;
@@ -1146,19 +1187,108 @@ namespace udb {
 namespace udb {
   // Bits where the width is only known at runtime (usually because the width is
   // parameter-dependent)
-  template <bool Signed>
+  template <unsigned MaxN, bool Signed>
   class _RuntimeBits {
-   public:
-    template <unsigned N, bool _Signed>
-    _RuntimeBits(const _Bits<N, _Signed> &initial_value)
-        : m_value(initial_value), m_width(N) {}
+    struct UnknownWidthType {};
+    UnknownWidthType UnknownWidth;
 
     template <typename T>
-    _RuntimeBits(const T &initial_value, unsigned initial_width)
-        : m_value(initial_value), m_width(initial_width) {}
+    _RuntimeBits(const T &initial_value, const UnknownWidthType &)
+        : m_value(initial_value), m_width_known(false) {}
 
-    unsigned width() const { return m_width; }
+    template <unsigned OtherMaxN, bool OtherSigned>
+    friend class _RuntimeBits;
+
+    using StorageType = _Bits<MaxN, Signed>::StorageType;
+
+    StorageType mask() const {
+      if (m_width == MaxN) {
+        return ~StorageType{0};
+      } else {
+        return (StorageType{1} << m_width) - 1;
+      }
+    }
+
+    void apply_mask() {
+      if (m_width_known) {
+        m_value = m_value & mask();
+      }
+    }
+
+   public:
+    static constexpr bool IsABits = true;
+
+    _RuntimeBits() : m_width_known(false) {}
+
+    template <std::integral IntType>
+    _RuntimeBits(const IntType &initial_value)
+        : m_value(initial_value), m_width_known(false) {}
+
+    template <unsigned N, bool _Signed>
+    _RuntimeBits(const _Bits<N, _Signed> &initial_value)
+        : m_value(initial_value), m_width(N), m_width_known(true) {}
+
+    template <typename T>
+    _RuntimeBits(const T &initial_value, unsigned width)
+        : m_value(initial_value), m_width(width), m_width_known(true) {
+      apply_mask();
+    }
+
+    _RuntimeBits(const _RuntimeBits &initial_value)
+        : m_value(initial_value.value()),
+          m_width(initial_value.m_width),
+          m_width_known(initial_value.m_width_known) {}
+
+    template <unsigned OtherMaxN>
+    _RuntimeBits(const _RuntimeBits<OtherMaxN, Signed> &initial_value)
+        : m_value(initial_value.value()),
+          m_width(initial_value.m_width),
+          m_width_known(initial_value.m_width_known) {
+      apply_mask();
+    }
+
+    template <bool _Signed = Signed>
+      requires(_Signed == false)
+    _RuntimeBits<MaxN, true> make_signed() const {
+      return _RuntimeBits<MaxN, true>{sign_extend(m_value.get()), m_width};
+    }
+    template <bool _Signed = Signed>
+      requires(_Signed == true)
+    const _RuntimeBits<MaxN, true> &make_signed() const {
+      return *this;
+    }
+
+    StorageType sign_extend(const StorageType &value) const {
+      if (m_width_known) {
+        udb_assert(m_width <= BitsMaxNativePrecision,
+                   "Can't sign extend a GMP number");
+        if (m_width == sizeof(StorageType) * 8) {
+          // exact fit, no extension needed
+          return value;  // no extension needed
+        } else {
+          if ((value & (StorageType{1} << (m_width - 1))) != 0) {
+            // fill with ones
+            return value | ~mask();
+          } else {
+            // no extension needed
+            return value;
+          }
+        }
+      } else {
+        throw UndefinedValueError(
+            "Can't sign extend when the width is unknown");
+      }
+    }
+
+    unsigned width() const {
+      if (!m_width_known) {
+        throw UndefinedValueError("RuntimeBits width is not known");
+      }
+      return m_width;
+    }
+    bool width_known() const { return m_width_known; }
     auto value() const { return m_value; }
+    auto get() const { return m_value.get(); }
 
     template <typename IntType>
       requires(std::integral<IntType>)
@@ -1167,49 +1297,183 @@ namespace udb {
     }
 
     template <typename T>
-    _RuntimeBits operator<<(const T &shamt) {
-      return {m_value << shamt, m_width + shamt};
+    _RuntimeBits operator<<(const T &shamt) const {
+      if (m_width_known) {
+        return {m_value << shamt, m_width + shamt};
+      } else {
+        return {m_value << shamt, UnknownWidth};
+      }
     }
 
-    template <unsigned N, bool _Signed>
-    _RuntimeBits operator|(const _Bits<N, _Signed> &other) {
-      return {m_value | other, std::max(N, m_width)};
+    template <typename T>
+    _RuntimeBits operator>>(const T &shamt) const {
+      if (m_width_known) {
+        return {m_value >> shamt, m_width};
+      } else {
+        return {m_value >> shamt, UnknownWidth};
+      }
     }
 
-    _RuntimeBits operator|(const _RuntimeBits &other) {
-      return {m_value | other.m_value, std::max(other.m_width, m_width)};
-    }
+#define RUNTIME_BITS_BINARY_OP(op)                                         \
+  template <unsigned N, bool _Signed>                                      \
+    requires(MaxN >= N)                                                    \
+  _RuntimeBits operator op(const _Bits<N, _Signed> &other) const {         \
+    if (m_width_known) {                                                   \
+      return {m_value op _Bits<MaxN, _Signed>{other}.get(),                \
+              std::max(N, m_width)};                                       \
+    } else {                                                               \
+      return {m_value op _Bits<MaxN, _Signed>{other}.get(), UnknownWidth}; \
+    }                                                                      \
+  }                                                                        \
+                                                                           \
+  template <unsigned N, bool _Signed>                                      \
+    requires(MaxN < N)                                                     \
+  _RuntimeBits operator op(const _Bits<N, _Signed> &other) const {         \
+    if (m_width_known) {                                                   \
+      return {m_value op other.get(), std::max(N, m_width)};               \
+    } else {                                                               \
+      return {m_value op other.get(), UnknownWidth};                       \
+    }                                                                      \
+  }                                                                        \
+                                                                           \
+  _RuntimeBits operator op(const _RuntimeBits &other) const {              \
+    if (m_width_known && other.m_width_known) {                            \
+      return {m_value op other.m_value, std::max(other.m_width, m_width)}; \
+    } else {                                                               \
+      return {m_value op other.m_value, UnknownWidth};                     \
+    }                                                                      \
+  }
+
+    RUNTIME_BITS_BINARY_OP(|)
+    RUNTIME_BITS_BINARY_OP(&)
+    RUNTIME_BITS_BINARY_OP(^)
+
+#undef RUNTIME_BITS_BINARY_OP
+
+#define RUNTIME_BITS_BINARY_OP(op)                                           \
+  _RuntimeBits operator op(const _RuntimeBits &other) const {                \
+    if (m_width_known && other.m_width_known) {                              \
+      if (other.m_width != m_width) {                                        \
+        if (other.m_width > m_width) {                                       \
+          return {                                                           \
+              _RuntimeBits{m_value, other.m_width}.m_value op other.m_value, \
+              std::max(other.m_width, m_width)};                             \
+        } else {                                                             \
+          return {m_value op _RuntimeBits{other.m_value, m_width}.m_value,   \
+                  std::max(other.m_width, m_width)};                         \
+        }                                                                    \
+      } else {                                                               \
+        return {m_value op other.m_value, std::max(other.m_width, m_width)}; \
+      }                                                                      \
+    } else {                                                                 \
+      return {m_value op other.m_value, UnknownWidth};                       \
+    }                                                                        \
+  }                                                                          \
+                                                                             \
+  template <unsigned N, bool _Signed>                                        \
+  _RuntimeBits<constmax<MaxN, N>::value, Signed && _Signed> operator op(     \
+      const _Bits<N, _Signed> &other) const {                                \
+    using ReturnType =                                                       \
+        _RuntimeBits<constmax<MaxN, N>::value, Signed && _Signed>;           \
+    if (m_width_known) {                                                     \
+      if (N != m_width) {                                                    \
+        if (N > m_width) {                                                   \
+          return {ReturnType{m_value, N}.m_value op other.get(), N};         \
+        } else {                                                             \
+          return {m_value op ReturnType{other.get(), m_width}.m_value,       \
+                  m_width};                                                  \
+        }                                                                    \
+      } else {                                                               \
+        return {m_value op other.m_val, N};                                  \
+      }                                                                      \
+    } else {                                                                 \
+      constexpr unsigned BigN = constmax<MaxN, N>::value;                    \
+      return {_RuntimeBits<BigN, Signed>{m_value, UnknownWidth}              \
+                  .m_value op _Bits<BigN, _Signed>{other.m_val}              \
+                  .get(),                                                    \
+              UnknownWidth};                                                 \
+    }                                                                        \
+  }
+
+    RUNTIME_BITS_BINARY_OP(+)
+    RUNTIME_BITS_BINARY_OP(-)
+    RUNTIME_BITS_BINARY_OP(*)
+    RUNTIME_BITS_BINARY_OP(/)
+    RUNTIME_BITS_BINARY_OP(%)
+
+#undef RUNTIME_BITS_BINARY_OP
+
+#define RUNTIME_BITS_BINARY_OP(op)                    \
+  bool operator op(const _RuntimeBits &other) const { \
+    return m_value op other.m_value;                  \
+  }
+
+    RUNTIME_BITS_BINARY_OP(==)
+    RUNTIME_BITS_BINARY_OP(!=)
+    RUNTIME_BITS_BINARY_OP(>)
+    RUNTIME_BITS_BINARY_OP(>=)
+    RUNTIME_BITS_BINARY_OP(<)
+    RUNTIME_BITS_BINARY_OP(<=)
+
+#undef RUNTIME_BITS_BINARY_OP
+
+    _RuntimeBits operator~() { return {~m_value, m_width}; }
+
+    _RuntimeBits operator-() { return {-m_value, m_width}; }
+
+#define RUNTIME_BITS_ASSIGN_OP(op)                            \
+  template <unsigned N, bool _Signed>                         \
+  _RuntimeBits &operator op(const _Bits<N, _Signed> &other) { \
+    m_value op other;                                         \
+    return *this;                                             \
+  }                                                           \
+                                                              \
+  _RuntimeBits &operator op(const _RuntimeBits & other) {     \
+    m_value op other.m_value;                                 \
+    return *this;                                             \
+  }                                                           \
+                                                              \
+  template <std::integral IntType>                            \
+  _RuntimeBits &operator op(const IntType & other) {          \
+    m_value op other;                                         \
+    return *this;                                             \
+  }
+
+    RUNTIME_BITS_ASSIGN_OP(|=)
+    RUNTIME_BITS_ASSIGN_OP(&=)
+    RUNTIME_BITS_ASSIGN_OP(^=)
+    RUNTIME_BITS_ASSIGN_OP(+=)
+    RUNTIME_BITS_ASSIGN_OP(-=)
+    RUNTIME_BITS_ASSIGN_OP(*=)
+    RUNTIME_BITS_ASSIGN_OP(/=)
+    RUNTIME_BITS_ASSIGN_OP(%=)
+
+#undef RUNTIME_BITS_ASSIGN_OP
 
    private:
-    _Bits<BitsInfinitePrecision, Signed> m_value;
+    _Bits<MaxN, Signed> m_value;
     unsigned m_width;
+    bool m_width_known;
   };
 
-  template <unsigned N, bool ASigned, bool BSigned>
-  bool operator==(const _Bits<N, ASigned> &a, const _RuntimeBits<BSigned> &b) {
+  template <unsigned N, unsigned MaxN, bool ASigned, bool BSigned>
+  bool operator==(const _Bits<N, ASigned> &a,
+                  const _RuntimeBits<MaxN, BSigned> &b) {
     return a == b.value();
   }
 
   // construct Bits from RuntimeBits
   template <unsigned N, bool BitsSigned>
-  template <bool RuntimeSigned>
-  _Bits<N, BitsSigned>::_Bits(const _RuntimeBits<RuntimeSigned> &val) {
-    if constexpr (N >= BitsMaxNativePrecision) {
-      if constexpr (BitsSigned) {
-        static_assert(false, "Can't mask signed gmp values");
-      } else {
-        m_val = apply_mask(val.value().get());
-      }
+  template <unsigned MaxN, bool RuntimeSigned>
+  _Bits<N, BitsSigned>::_Bits(const _RuntimeBits<MaxN, RuntimeSigned> &val) {
+    if constexpr (RuntimeSigned) {
+      m_val = _Bits<N, BitsSigned>{val.value().get()}.m_val;
     } else {
-      if constexpr (BitsSigned) {
-        m_val = apply_mask(val.value().get().get_si());
-      } else {
-        m_val = apply_mask(val.value().get().get_ui());
-      }
+      m_val = _Bits<N, BitsSigned>{val.make_signed().value().get()}.m_val;
     }
   }
 
-  using RuntimeBits = _RuntimeBits<false>;
+  using RuntimeBits = _RuntimeBits<BitsInfinitePrecision, false>;
 
   template <unsigned N, bool Signed>
   class _PossiblyUnknownBits {

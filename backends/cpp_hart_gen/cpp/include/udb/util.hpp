@@ -9,7 +9,7 @@
 namespace udb {
   // extract bits from an integral type
   template <unsigned start, unsigned size, std::integral Type>
-  constexpr Type extract(Type value) {
+  constexpr Bits<size> extract(Type value) {
     static_assert(size > 0, "Must extract at least one bit");
     static_assert((start + size) <= sizeof(Type) * 8,
                   "Cannot extract more bits than type contains");
@@ -60,6 +60,24 @@ namespace udb {
     }
   }
 
+  template <unsigned START, unsigned SIZE, unsigned MAX_BITS_LEN, bool SIGNED>
+  Bits<SIZE> extract(const _RuntimeBits<MAX_BITS_LEN, SIGNED> &value) {
+    static_assert((START + SIZE) <= MAX_BITS_LEN,
+                  "Cannot extract more bits than type contains");
+    if (value.width_known()) {
+      udb_assert((START + SIZE) <= value.width(),
+                 "Cannot extract more bits than type contains");
+    }
+
+    if (value.width_known() && (SIZE == value.width())) {
+      return value;
+    } else {
+      Bits<MAX_BITS_LEN> mask =
+          (static_cast<Bits<MAX_BITS_LEN>>(1).template sll<SIZE>()) - 1;
+      return (value >> START) & mask;
+    }
+  }
+
   // extract bits from an XRegister type
   template <unsigned start, unsigned size, unsigned XLEN>
   constexpr Bits<size> extract(const XRegister<XLEN> &value) {
@@ -98,16 +116,16 @@ namespace udb {
     requires((std::integral<ValueType> || ValueType::IsABits) &&
              (std::integral<StartType> || StartType::IsABits) &&
              (std::integral<SizeType> || SizeType::IsABits))
-  ValueType extract(const ValueType &value, const StartType &start,
-                    const SizeType &size) {
+  RuntimeBits extract(const ValueType &value, const StartType &start,
+                      const SizeType &size) {
     udb_assert((start + size) <= sizeof(ValueType) * 8,
                "extraction out of bound");
 
     if (size == sizeof(ValueType) * 8) {
-      return value;
+      return {value, size};
     } else {
       ValueType mask = (static_cast<ValueType>(1) << size) - 1;
-      return (value >> start) & mask;
+      return {(value >> start) & mask, size};
     }
   }
 
@@ -158,9 +176,9 @@ namespace udb {
   static_assert(bit_insert<7, 4, 32>(0xff, 0xa) == 0xaf,
                 "Did not insert nibble");
 
-  template <unsigned T, unsigned M, unsigned L, unsigned V>
-  void bit_insert(Bits<T> &target, const Bits<M> &msb, const Bits<L> &lsb,
-                  const Bits<V> &value) {
+  template <unsigned T, typename MsbType, typename LsbType, typename ValueType>
+  void bit_insert(Bits<T> &target, const MsbType &msb, const LsbType &lsb,
+                  const ValueType &value) {
     Bits<T> mask = ((Bits<T + 1>{1} << msb) - 1) << lsb;
     target = (target & ~mask) | ((Bits<T>{value} << lsb) & mask);
   }
@@ -189,6 +207,18 @@ namespace udb {
       result |= value << (i * M);
     }
     return {result, M * N};
+  }
+
+  template <unsigned MaxN, bool Signed, typename T>
+  constexpr RuntimeBits replicate(const _RuntimeBits<MaxN, Signed> &value,
+                                  const T &N) {
+    udb_assert(N > 0, "Must replicate at least once");
+
+    RuntimeBits result{value.value(), value.width() * N};
+    for (unsigned i = 1; i < N; i++) {
+      result |= value.value() << (i * value.width());
+    }
+    return result;
   }
 
   template <unsigned FirstExtendedBit, unsigned ResultWidth,

@@ -45,8 +45,8 @@ jobs:
         run: ./bin/setup
       - name: Build manual
         run: ./do gen:html_manual MANUAL_NAME=isa VERSIONS=all
-      - name: Build html documentation for generic_rv64
-        run: ./do gen:html[generic_rv64]
+      - name: Build html documentation for example_rv64_with_overlay
+        run: ./do gen:html[example_rv64_with_overlay]
       - name: Generate YARD docs
         run: ./do gen:tool_doc
       - name: Create _site/example_cfg
@@ -58,7 +58,7 @@ jobs:
       - name: Create _site/htmls
         run: mkdir -p _site/htmls
       - name: Copy cfg html
-        run: cp -R gen/cfg_html_doc/generic_rv64/html _site/example_cfg
+        run: cp -R gen/cfg_html_doc/example_rv64_with_overlay/html _site/example_cfg
       - name: Create RVA20 Profile Release PDF Spec
         run: ./do gen:profile[RVA20]
       - name: Copy RVA20 Profile Release PDF

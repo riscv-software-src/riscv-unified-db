@@ -503,6 +503,24 @@ module Idl
     # @abstract
     def value(symtab) = raise NotImplementedError, "#{self.class.name} must implement value(symtab)"
 
+    def max_value(symtab)
+      value_result = value_try do
+        return value(symtab)
+      end
+      value_else(value_result) do
+        return :unknown
+      end
+    end
+
+    def min_value(symtab)
+      value_result = value_try do
+        return value(symtab)
+      end
+      value_else(value_result) do
+        return :unknown
+      end
+    end
+
     # @!macro [new] values
     #  Return a complete list of possible compile-time-known values of the node, or raise a ValueError if
     #  the full list cannot be determined
@@ -610,6 +628,40 @@ module Idl
       v = var.value
       value_error "Value of #{name} is unknown" if v == :unknown
       v
+    end
+
+    def max_value(symtab)
+      max = :unknown
+      value_result = value_try do
+        max = value(symtab)
+      end
+      value_else(value_result) do
+        var = symtab.get(name)
+        if !var.nil? && var.param?
+          param = symtab.cfg_arch.param(text_value)
+          if param.schema.max_val_known?
+            max = param.schema.max_val
+          end
+        end
+      end
+      max
+    end
+
+    def min_value(symtab)
+      min = :unknown
+      value_result = value_try do
+        min = value(symtab)
+      end
+      value_else(value_result) do
+        var = symtab.get(name)
+        if !var.nil? && var.param?
+          param = symtab.cfg_arch.param(text_value)
+          if param.schema.min_val_known?
+            min = param.schema.min_val
+          end
+        end
+      end
+      min
     end
 
     # @!macro to_idl
@@ -2840,6 +2892,63 @@ module Idl
       end
     end
 
+    def max_value(symtab)
+      lhs_max_value = :unknown
+      value_result = value_try do
+        lhs_max_value = lhs.value(symtab)
+      end
+      value_else(value_result) do
+        lhs_max_value = lhs.max_value(symtab)
+      end
+      rhs_max_value = :unknown
+      value_result = value_try do
+        rhs_max_value = rhs.value(symtab)
+      end
+      value_else(value_result) do
+        rhs_max_value = rhs.max_value(symtab)
+      end
+      rhs_min_value = :unknown
+      value_result = value_try do
+        rhs_min_value = rhs.value(symtab)
+      end
+      value_else(value_result) do
+        rhs_min_value = rhs.min_value(symtab)
+      end
+
+      max_value =
+        case op
+        when "+"
+          return :unknown if [lhs_max_value, rhs_max_value].include?(:unknown)
+
+          lhs_max_value + rhs_max_value
+        when "-"
+          return :unknown if [lhs_max_value, rhs_min_value].include?(:unknown)
+
+          lhs_max_value - rhs_min_value
+        when "*"
+          return :unknown if [lhs_max_value, rhs_max_value].include?(:unknown)
+
+          lhs_max_value * rhs_max_value
+        else
+          raise "TODO: op '#{op}'"
+        end
+
+      v_trunc =
+        if !lhs.type(symtab).const? || !rhs.type(symtab).const?
+          # when both sides are constant, the value is not truncated
+          width = type(symtab).width
+          if width == :unknown
+            value_error("unknown width in op that possibly truncates")
+          end
+          max_value & ((1 << type(symtab).width) - 1)
+        else
+          max_value
+        end
+
+      warn "WARNING: The value of '#{text_value}' (#{lhs.type(symtab).const?}, #{rhs.type(symtab).const?}) is truncated from #{v} to #{v_trunc} because the result is only #{type(symtab).width} bits" if max_value != v_trunc
+      v_trunc
+    end
+
     # @!macro value
     def value(symtab)
       # cached_value = @value_cache[symtab]
@@ -4702,6 +4811,12 @@ module Idl
             return false
           end
           value_error "implemented? is only known when evaluating in the context of a fully-configured arch def"
+        elsif name == "cached_translation"
+          value_error "cached_translation is not compile-time-knowable"
+        elsif name == "maybe_cache_translation"
+          value_error "maybe_cache_translation is not compile-time-knowable"
+        elsif name == "invalidate_translations"
+          value_error "invalidate_translations is not compile-time-knowable"
         else
           internal_error "Unimplemented generated: '#{name}'"
         end
@@ -5885,8 +6000,6 @@ module Idl
     def calc_value(symtab)
       # field isn't implemented, so it must be zero
       return 0 if field_def(symtab).nil? || !field_def(symtab).exists_in_cfg?(symtab.cfg_arch)
-
-      raise "?" if @field_name == "S"
 
       symtab.cfg_arch.possible_xlens.each do |effective_xlen|
         unless field_def(symtab).type(effective_xlen) == "RO"

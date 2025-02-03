@@ -13,9 +13,11 @@ using namespace udb;
 #define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name ## _VALUE
 #define __UDB_RUNTIME_PARAM(param_name) m_params.param_name
 #define __UDB_CSR_BY_NAME(csr_name) m_csrs.csr_name
+#define __UDB_CSR_BY_ADDR(csr_addr) (*csr(csr_addr))
 #define __UDB_FUNC_CALL
 #define __UDB_PC m_pc
 #define __UDB_SET_PC(new_pc) m_next_pc = new_pc
+#define __UDB_XLEN xlen()
 
 <%# need to get symtab at function scope -%>
 <%- cfg_arch.reachable_functions.each do |func| -%>
@@ -42,6 +44,8 @@ using namespace udb;
 #undef __UDB_STATIC_PARAM
 #undef __UDB_RUNTIME_PARAM
 #undef __UDB_CSR_BY_NAME
+#undef __UDB_CSR_BY_ADDR
 #undef __UDB_FUNC_CALL
 #undef __UDB_PC
 #undef __UDB_SET_PC
+#undef __UDB_XLEN

@@ -32,16 +32,17 @@ rule %r{#{CPP_HART_GEN_DST}/.*/test/.*\.cpp} do |t|
   FileUtils.ln_s src_path, t.name
 end
 
+# rule for generating when the thing being generated is not config-specific
 rule %r{#{CPP_HART_GEN_DST}/[^/]+/include/udb/[^/]+\.hxx\.unformatted$} => proc { |tname|
-  # we just need one config for this, doesn't matter which one (enums are config-independent)
   parts = tname.split("/")
   fname = parts[-1].sub(/\.unformatted$/, "")
   [
     "#{CPP_HART_GEN_SRC}/templates/#{fname}.erb",
     __FILE__
-  ] + Dir.glob(CPP_HART_GEN_SRC / 'lib' / '*')
+  ] + Dir.glob(CPP_HART_GEN_SRC / 'lib' / '**' / '*')
 } do |t|
-  config_name = ENV["CONFIG"].split(",").first.strip
+  configs, = configs_build_name
+  config_name = configs[0]
   parts = t.name.split("/")
   fname = parts[-1].sub(/\.unformatted$/, "")
 
@@ -54,6 +55,7 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/include/udb/[^/]+\.hxx\.unformatted$} => proc 
   File.write(t.name, erb.result(CppHartGen::TemplateEnv.new(cfg_arch).get_binding))
 end
 
+# rule for generating when the thing being generated is not config-specific
 rule %r{#{CPP_HART_GEN_DST}/[^/]+/src/[^/]+\.cxx\.unformatted$} => proc { |tname|
   # we just need one config for this, doesn't matter which one (enums are config-independent)
   parts = tname.split("/")
@@ -63,7 +65,8 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/src/[^/]+\.cxx\.unformatted$} => proc { |tname
     __FILE__
   ]
 } do |t|
-  config_name = ENV["CONFIG"].split(",").first.strip
+  configs, = configs_build_name
+  config_name = configs[0]
   parts = t.name.split("/")
   fname = parts[-1].sub(/\.unformatted$/, "")
 
@@ -80,7 +83,9 @@ end
 rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.hxx\.unformatted$} => proc { |tname|
   parts = tname.split("/")
   filename = parts[-1].sub(/\.unformatted$/, "")
+  config_name = parts[-2]
   [
+    "#{$root}/.stamps/resolve-#{config_name}.stamp",
     "#{CPP_HART_GEN_SRC}/templates/#{filename}.erb",
     "#{CPP_HART_GEN_SRC}/lib/gen_cpp.rb",
     "#{CPP_HART_GEN_SRC}/lib/template_helpers.rb",
@@ -111,7 +116,9 @@ end
 rule %r{#{CPP_HART_GEN_DST}/.*/src/cfgs/[^/]+/[^/]+\.cxx\.unformatted$} => proc { |tname|
   parts = tname.split("/")
   filename = parts[-1].sub(/\.unformatted$/, "")
+  config_name = parts[-2]
   [
+    "#{$root}/.stamps/resolve-#{config_name}.stamp",
     "#{CPP_HART_GEN_SRC}/templates/#{filename}.erb",
     "#{CPP_HART_GEN_SRC}/lib/gen_cpp.rb",
     "#{CPP_HART_GEN_SRC}/lib/template_helpers.rb",
@@ -172,11 +179,17 @@ def configs_build_name
   if configs.include?("all")
     raise ArgumentError, "'all' was specified with another config name" unless configs.size == 1
 
-    configs = Dir.glob("#{$root}/cfgs/*").map { |path| File.basename(path) }
+    configs = Dir.glob("#{$root}/cfgs/*").map { |path| File.basename(path, ".yaml") }
   end
 
   configs.each do |config|
-    raise ArgumentError, "No config named '#{config}'" unless File.directory?("#{$root}/cfgs/#{config}")
+    unless File.file?("#{$root}/cfgs/#{config}.yaml") || File.file?(config)
+      raise ArgumentError, "No config named '#{config}'"
+    end
+  end
+
+  config_names = configs.map do |config|
+    cfg_arch_for(config).name
   end
 
   build_name =
@@ -184,35 +197,42 @@ def configs_build_name
       if configs.size != 1
         raise ArgumentError, "BUILD_NAME is required when there are multiple configs"
       end
-      configs[0]
+      config_names[0]
     else
       ENV["BUILD_NAME"]
     end
 
   build_name += "_#{build_type}"
 
-  [configs, build_name]
+  [config_names, build_name]
 end
+
+OPTION_STR = <<~DESC_OPTIONS
+Options:
+
+  * CONFIG: Comma-separated list of configurations to generate.
+            "rv32" is the generic RV32 architecture (i.e., no config).
+            "rv64" is the generic RV64 architecture (i.e., no config).
+            "all" will generate all configurations and the generic architecture.
+
+            CONFIG can either be the name, excluding extension '.yaml', of a file under cfgs/
+            or the (absolute or relative) path to a config file.
+  * BUILD_NAME: Name of the build. Required if CONFIG is a list. Otherwise, BUILD_NAME will equal CONFIG.
+DESC_OPTIONS
 
 namespace :gen do
   help = <<~DESC
     Generate a C++ model of a hart(s) for configurations (./do --desc for more options)
 
-    Options:
-
-     * CONFIG: Comma-separated list of configurations to generate.
-               "rv32" is the generic RV32 architecture (i.e., no config).
-               "rv64" is the generic RV64 architecture (i.e., no config).
-               "all" will generate all configurations and the generic architecture.
-     * BUILD_NAME: Name of the build. Required if CONFIG is a list
+    #{OPTION_STR}
 
     Examples:
 
-      ./do gen:cpp_hart CONFIG=rv64        # generate generic hart model
-      ./do gen:cpp_hart CONFIG=generic_rv  # generate hart model for generic_rv64 config
+      ./do gen:cpp_hart CONFIG=rv64                       # generate generic hart model
+      ./do gen:cpp_hart CONFIG=example_rv64_with_overlay  # generate hart model for example_rv64_with_overlay config
 
-      # generate hart model for generic_rv64 and custom_cfg
-      ./do gen:cpp_hart CONFIG=generic_rv,custom_cfg BUILD_NAME=custom
+      # generate hart model for example_rv64_with_overlay and custom_cfg
+      ./do gen:cpp_hart CONFIG=example_rv64_with_overlay,custom_cfg BUILD_NAME=custom
 
   DESC
   desc help
@@ -280,6 +300,8 @@ namespace :cbuild do
 end
 
 def cmake_build_type
+  return "RelWithDebInfo" unless ENV.key?("BUILD_TYPE")
+
   case ENV["BUILD_TYPE"].upcase
   when "DEBUG"
     "Debug"
@@ -295,6 +317,21 @@ def cmake_build_type
 end
 
 namespace :build do
+  help = <<~DESC
+    Build a C++ model of a hart(s) for configurations (./do --desc for more options)
+
+    #{OPTION_STR}
+
+    Examples:
+
+      ./do build:cpp_hart CONFIG=rv64                       # generate generic hart model
+      ./do build:cpp_hart CONFIG=example_rv64_with_overlay  # generate hart model for example_rv64_with_overlay config
+
+      # generate hart model for example_rv64_with_overlay and custom_cfg
+      ./do gen:cpp_hart CONFIG=example_rv64_with_overlay,custom_cfg BUILD_NAME=custom
+
+  DESC
+  desc help
   task cpp_hart: ["gen:cpp_hart"] do
     _, build_name = configs_build_name
 

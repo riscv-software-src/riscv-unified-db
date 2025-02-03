@@ -35,6 +35,15 @@
           "type": "string",
           "description": "An asciidoc description of the configuration"
         },
+        "arch_overlay": {
+          "type": "string",
+          "description": "Optional arch overlay to apply. Can be either the name of a directory under arch_overlay/ or a (absolute or relative) path to an overlay directory"
+        },
+        "$source": {
+          "type": "string",
+          "format": "uri",
+          "description": "Path to original file, when this is a copy"
+        },
         "params": {
           "type": "object"
         },
@@ -93,6 +102,15 @@
         "params": {
           "type": "object"
         },
+        "arch_overlay": {
+          "type": "string",
+          "description": "Optional arch overlay to apply. Can be either the name of a directory under arch_overlay/ or a (absolute or relative) path to an overlay directory"
+        },
+        "$source": {
+          "type": "string",
+          "format": "uri",
+          "description": "Path to original file, when this is a copy"
+        },
         "mandatory_extensions": {
           "description": "Extensions mandatory in this architecture",
           "type": "array",
@@ -145,6 +163,15 @@
         "name": {
           "type": "string",
           "description": "Name of the configuration"
+        },
+        "arch_overlay": {
+          "type": "string",
+          "description": "Optional arch overlay to apply. Can be either the name of a directory under arch_overlay/ or a (absolute or relative) path to an overlay directory"
+        },
+        "$source": {
+          "type": "string",
+          "format": "uri",
+          "description": "Path to original file, when this is a copy"
         },
         "description": {
           "type": "string",

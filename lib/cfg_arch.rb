@@ -167,7 +167,7 @@ class ConfiguredArchitecture < Architecture
   #
   # @param config_name [#to_s] The name of a configuration, which must correspond
   #                            to a folder name under cfg_path
-  def initialize(config_name, arch_path, overlay_path: nil, cfg_path: "#{$root}/cfgs")
+  def initialize(config_name, arch_path)
     super(arch_path)
 
     @name = config_name.to_s.freeze
@@ -175,14 +175,23 @@ class ConfiguredArchitecture < Architecture
 
     @obj_cache = {}
 
-    @config = Config.create("#{cfg_path}/#{config_name}/cfg.yaml")
+    @config = Config.create("#{$root}/gen/cfgs/#{config_name}.yaml")
     @mxlen = @config.mxlen
     @mxlen.freeze
 
     @idl_compiler = Idl::Compiler.new
 
     @symtab = Idl::SymbolTable.new(self)
-    custom_globals_path = overlay_path.nil? ? Pathname.new("/does/not/exist") : overlay_path / "isa" / "globals.isa"
+    overlay_path =
+      if @config.arch_overlay.nil?
+        "/does/not/exist"
+      elsif File.exist?(@config.arch_overlay)
+        File.realpath(@config.arch_overlay)
+      else
+        "#{$root}/arch_overlay/#{@config.arch_overlay}"
+      end
+
+    custom_globals_path = Pathname.new "#{overlay_path}/isa/globals.isa"
     idl_path = File.exist?(custom_globals_path) ? custom_globals_path : $root / "arch" / "isa" / "globals.isa"
     @global_ast = @idl_compiler.compile_file(
       idl_path
@@ -368,7 +377,6 @@ class ConfiguredArchitecture < Architecture
   # @return [Array<Extension>] List of extensions that are possibly supported
   def not_prohibited_extensions
     return @not_prohibited_extensions unless @not_prohibited_extensions.nil?
-
 
     @not_prohibited_extensions ||=
       if @config.fully_configured?

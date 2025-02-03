@@ -62,6 +62,8 @@ module Idl
       !@template_index.nil? && (function_name.to_s == @function_name)
     end
 
+    def template_value? = !@template_index.nil?
+
     # @return [Integer] the template value position
     # @raise if Var is not a template value
     def template_index

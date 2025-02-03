@@ -54,8 +54,8 @@ namespace udb {
       return *this;
     }
 
-    template <bool Signed>
-    XRegister &operator=(const _RuntimeBits<Signed> &other) {
+    template <unsigned MaxN, bool Signed>
+    XRegister &operator=(const _RuntimeBits<MaxN, Signed> &other) {
       if (!m_zero_reg) {
         m_value = other.value();
       }

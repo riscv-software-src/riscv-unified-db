@@ -279,9 +279,9 @@ The following <%= ext.instructions.size %> instructions are affected by this ext
 <<<
 == CSR summary
 
-The following <%= ext.csrs.size %> are affected by this extension.
+<%- csr_list = ext.csrs.select { |csr| versions.any? { |ext_ver| csr.affected_by?(ext_ver) } } -%>
 
-<%- csr_list = csrs.select { |csr| versions.any? { |ext_ver| csr.affected_by?(ext_ver) } } -%>
+The following <%= csr_list.size %> are affected by this extension.
 
 [%autowidth]
 |===
@@ -329,7 +329,7 @@ The following <%= ext.csrs.size %> are affected by this extension.
 <<<
 == IDL Functions
 
-<%- ext.reachable_functions(cfg_arch.symtab).sort { |a,b| a.name <=> b.name }.each do |f| -%>
+<%- ext.reachable_functions.sort { |a,b| a.name <=> b.name }.each do |f| -%>
 [#<%= f.name %>-func-def]
 === <%= f.name %><%- if f.builtin? -%> (builtin)<%- end -%><%- if f.generated? -%> (generated)<%- end -%>
 

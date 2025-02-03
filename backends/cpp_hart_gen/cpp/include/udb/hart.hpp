@@ -131,10 +131,47 @@ namespace udb {
     // virtual memory caching builtins
     //
 
+    struct SoftTlbEntry {
+      bool valid;
+      bool global;
+      bool smode;   // was translation satp-based?
+      bool vsmode;  // was translation vsatp-based?
+      bool gstage;  // was translation hgatp-based?
+
+      Bits<16> asid;
+      Bits<16> vmid;
+
+      uint64_t vpn;     // virtual page number
+      uint64_t ppn;     // physical page number
+      uintptr_t vaddr;  // offset to the page in *host* memory; ~0 = not valid
+      uintptr_t paddr;  // offset to the page in *host* memory; ~0 = not valid
+    };
+
+    constexpr static unsigned SOFT_TLB_SIZE = 1024;
+
+    SoftTlbEntry m_va_smode_read_tlb[SOFT_TLB_SIZE];
+    SoftTlbEntry m_va_smode_write_tlb[SOFT_TLB_SIZE];
+    SoftTlbEntry m_va_smode_exe_tlb[SOFT_TLB_SIZE];
+
+    SoftTlbEntry m_va_vsmode_read_tlb[SOFT_TLB_SIZE];
+    SoftTlbEntry m_va_vsmode_write_tlb[SOFT_TLB_SIZE];
+    SoftTlbEntry m_va_vsmode_exe_tlb[SOFT_TLB_SIZE];
+
+    SoftTlbEntry m_va_gstage_read_tlb[SOFT_TLB_SIZE];
+    SoftTlbEntry m_va_gstage_write_tlb[SOFT_TLB_SIZE];
+    SoftTlbEntry m_va_gstage_exe_tlb[SOFT_TLB_SIZE];
+
+    template <typename VmaOrderType>
+    void invalidate_translations(const VmaOrderType &) {}
+
     void invalidate_all_translations() {}
     void invalidate_asid_translations(Bits<16> asid) {}
     void invalidate_vaddr_translations(uint64_t vaddr) {}
     void invalidate_asid_vaddr_translations(Bits<16> asid, uint64_t vaddr) {}
+
+    template <typename TranslationResult>
+    void maybe_cache_translation(Bits<64> vaddr, MemoryOperation op,
+                                 TranslationResult result) {}
 
     void sfence_all() {}
     void sfence_asid(Bits<16> asid) {}

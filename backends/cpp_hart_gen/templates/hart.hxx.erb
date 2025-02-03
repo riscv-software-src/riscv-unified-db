@@ -152,8 +152,8 @@ namespace udb {
 
     InstBase* _decode(const XReg& pc, const Bits<<%= cfg_arch.largest_encoding %>>& encoding);
 
-    std::tuple<bool, <%= name_of(:struct, cfg_arch, "TranslationResult") %>> cached_translation(const XReg& vaddr, const MemoryOperation& op) const {
-      return std::make_tuple<bool, <%= name_of(:struct, cfg_arch, "TranslationResult") %>>(false, {});
+    <%= name_of(:struct, cfg_arch, "CachedTranslationResult") %> cached_translation(const XReg& vaddr, const MemoryOperation& op) const {
+      return <%= name_of(:struct, cfg_arch, "CachedTranslationResult") %>{};
     }
 
     <%= name_of(:csr_container, cfg_arch) %>& _csrContainer() { return m_csrs; }

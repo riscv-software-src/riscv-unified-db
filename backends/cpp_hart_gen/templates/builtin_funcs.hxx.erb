@@ -26,6 +26,16 @@
 
 <%- end -%>
 
+struct BuiltinFunctions {
+<%- cfg_arch.functions.each do |func| -%>
+<%- next unless func.builtin? -%>
+  <%- args = func.gen_c_argument_list(symtab) -%>
+  <%= func.gen_c_return_type(symtab) %> (*<%= func.name.gsub("?", "_Q_") %>)(<%= args %>);
+<%- end -%>
+};
+<%- symtab.release -%>
+
+
 #undef __UDB_CONSTEXPR_FUNC_CALL
 #undef __UDB_CONST_GLOBAL
 #undef __UDB_MUTABLE_GLOBAL
