@@ -32,7 +32,7 @@ introduction: |
   * Bob!
 
 # Specification versions
-tsc_profile_release: 
+tsc_profile_release:
   $ref: profile_release/Mock.yaml#
 unpriv_isa_manual_revision: "20191213"
 priv_isa_manual_revision: "20190608-Priv-MSU-Ratified"

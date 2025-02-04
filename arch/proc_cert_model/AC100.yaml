@@ -48,7 +48,7 @@ extensions:
     version: "~> 1.13"
     presence: mandatory
     param_constraints:
-      MTVEC_BASE_ALIGNMENT_DIRECT: 
+      MTVEC_BASE_ALIGNMENT_DIRECT:
         schema:
           const: 4
       MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained

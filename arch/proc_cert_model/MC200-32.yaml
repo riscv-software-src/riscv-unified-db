@@ -34,8 +34,7 @@ introduction: |
   * CLIC extension (if/when ratified)
 
 # Specification versions
-tsc_profile_release:
-  null # None for MC200
+tsc_profile_release: null # None for MC200
 unpriv_isa_manual_revision: "20191213"
 priv_isa_manual_revision: "20190608-Priv-MSU-Ratified"
 debug_manual_revision: "0.13.2"
