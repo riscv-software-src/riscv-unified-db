@@ -27,15 +27,7 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  XReg input1 = X[rs1];
-  XReg input2 = X[rs2];
-  XReg output = 0;
-
-  if(input2 == 0) {
-    output = input1;
-  }
-
-  X[rd] = output;
+  X[rd] = (X[rs2] != 0) ? 0 : X[rs1];
 
 sail(): |
   {
