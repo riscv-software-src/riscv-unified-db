@@ -185,32 +185,42 @@ jobs:
         run: ./bin/build_container
       - name: Generate extension PDF
         run: ./do gen:profile[MockProfileRelease]
-
   regress-gen-opcode:
-    runs-on: ubuntu-latest
-    env:
-      SINGULARITY: 1
-    steps:
-      - name: Clone Github Repo Action
-        uses: actions/checkout@v4
-      - name: Setup apptainer
-        uses: eWaterCycle/setup-apptainer@v2.0.0
-      - name: Get container from cache
-        id: cache-sif
-        uses: actions/cache@v4
-        with:
-          path: .singularity/image.sif
-          key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
-      - name: Get gems and node files from cache
-        id: cache-bundle-npm
-        uses: actions/cache@v4
-        with:
-          path: |
-            .home/.gems
-            node_modules
-          key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
-      - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
-        name: Build container
-        run: ./bin/build_container
-      - name: Generate opcode outputs
-        run: ./do gen:opcode_outputs
+      runs-on: ubuntu-latest
+      env:
+        SINGULARITY: 1
+      steps:
+        - name: Clone Github Repo Action
+          uses: actions/checkout@v4
+        - name: Cache riscv-opcodes submodule
+          id: cache-opcodes
+          uses: actions/cache@v4
+          with:
+            path: ext/riscv-opcodes
+            key: ${{ runner.os }}-submodule-riscv-opcodes-${{ hashFiles('.gitmodules') }}
+        - if: steps.cache-opcodes.outputs.cache-hit != 'true'
+          name: Checkout riscv-opcodes submodule
+          run: |
+            git submodule init ext/riscv-opcodes
+            git submodule update ext/riscv-opcodes
+        - name: Setup apptainer
+          uses: eWaterCycle/setup-apptainer@v2.0.0
+        - name: Get container from cache
+          id: cache-sif
+          uses: actions/cache@v4
+          with:
+            path: .singularity/image.sif
+            key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
+        - name: Get gems and node files from cache
+          id: cache-bundle-npm
+          uses: actions/cache@v4
+          with:
+            path: |
+              .home/.gems
+              node_modules
+            key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
+        - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
+          name: Build container
+          run: ./bin/build_container
+        - name: Generate opcode outputs
+          run: ./do gen:opcode_outputs
