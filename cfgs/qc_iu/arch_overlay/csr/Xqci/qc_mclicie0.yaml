@@ -4,7 +4,7 @@ $schema: csr_schema.json#
 kind: csr
 name: qc_mclicie0
 long_name: IRQ Enable 0
-address: 0x7f0
+address: 0x7f8
 length: 32
 base: 32
 priv_mode: M
