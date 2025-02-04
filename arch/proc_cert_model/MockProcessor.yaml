@@ -32,7 +32,8 @@ introduction: |
   * Bob!
 
 # Specification versions
-tsc_profile: null
+tsc_profile_release:
+  $ref: profile_release/Mock.yaml#
 unpriv_isa_manual_revision: "20191213"
 priv_isa_manual_revision: "20190608-Priv-MSU-Ratified"
 debug_manual_revision: "0.13.2"
@@ -45,7 +46,7 @@ extensions:
     note: Just added this note to I extension
   Xmock:
     presence: mandatory
-    parameters:
+    param_constraints:
       MOCK_ENUM_2_INTS: {}
       MOCK_ENUM_2_STRINGS: {}
       MOCK_BOOL_1: {}
@@ -76,7 +77,7 @@ extensions:
   C:
     version: "~> 2.2"
     presence: mandatory
-    parameters:
+    param_constraints:
       MUTABLE_MISA_C:
         schema:
           const: false
@@ -91,12 +92,12 @@ extensions:
   Zicntr:
     version: "~> 2.0"
     presence: mandatory
-    parameters:
+    param_constraints:
       TIME_CSR_IMPLEMENTED: {} # Unconstrained
   Sm:
     version: "~> 1.11"
     presence: mandatory
-    parameters:
+    param_constraints:
       MTVEC_BASE_ALIGNMENT_DIRECT: {} # Unconstrained
       MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
       ARCH_ID: {} # Unconstrained
@@ -160,14 +161,14 @@ extensions:
   Zicbop:
     presence: optional
     note: "Testing CACHE_BLOCK_SIZE parameter which is also defined by Zicbom."
-    parameters:
+    param_constraints:
       CACHE_BLOCK_SIZE:
         schema:
           const: 64
   Zicbom:
     presence: optional
     note: "Testing CACHE_BLOCK_SIZE parameter which is also defined by Zicbop."
-    parameters:
+    param_constraints:
       CACHE_BLOCK_SIZE:
         schema:
           const: 64

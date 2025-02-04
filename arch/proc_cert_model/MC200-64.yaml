@@ -14,7 +14,7 @@ base: 64
 
 extensions:
   Sm:
-    parameters:
+    param_constraints:
       XLEN:
         schema:
           const: 64

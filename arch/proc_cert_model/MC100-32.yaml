@@ -84,7 +84,7 @@ introduction: |
   * Privileged ISA: Only the M-mode features listed as mandatory in the RISC-V Privileged ISA manual
 
 # Specification versions
-tsc_profile: null # None for MC100
+tsc_profile_release: null # None for MC100
 unpriv_isa_manual_revision: "20191213"
 priv_isa_manual_revision: "20190608-Priv-MSU-Ratified"
 debug_manual_revision: "0.13.2"
@@ -106,12 +106,12 @@ extensions:
   Zicntr:
     version: "~> 2.0"
     presence: mandatory
-    parameters:
+    param_constraints:
       TIME_CSR_IMPLEMENTED: {} # Unconstrained
   Sm:
     version: "~> 1.11.0"
     presence: mandatory
-    parameters:
+    param_constraints:
       MTVEC_BASE_ALIGNMENT_DIRECT: {} # Unconstrained
       MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
       ARCH_ID: {} # Unconstrained

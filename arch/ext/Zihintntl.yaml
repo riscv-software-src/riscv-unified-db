@@ -59,7 +59,8 @@ description: |
     loads and stores.
     ====
 
-    <<ntl-portable>> lists several software use cases and the recommended NTL variant that _portable_ software—i.e., software not tuned for any specific implementation's memory hierarchy—should use in each case.
+    <<ntl-portable>> lists several software use cases and the recommended NTL variant that _portable_ software
+    i.e., software not tuned for any specific implementation's memory hierarchy should use in each case.
 
     [[ntl-portable]]
     .Recommended NTL variant for portable software to employ in various scenarios.

@@ -31,14 +31,14 @@ class ProcCertModel < Portfolio
   def priv_isa_manual_revision = @data["priv_isa_manual_revision"]
   def debug_manual_revision = @data["debug_manual_revision"]
 
-  def tsc_profile
-    return nil if @data["tsc_profile"].nil?
+  def tsc_profile_release
+    return nil if @data["tsc_profile_release"].nil?
 
-    profile = arch.profile(@data["tsc_profile"])
+    profile_release = @arch.ref(@data["tsc_profile_release"]['$ref'])
 
-    raise "No profile '#{@data["tsc_profile"]}'" if profile.nil?
+    raise "No profile release called '#{@data["tsc_profile_release"]}' exists" if profile_release.nil?
 
-    profile
+    profile_release
   end
 
   # @return [ProcCertClass] The certification class that this model belongs to.
@@ -158,7 +158,7 @@ class ProcCertModel < Portfolio
         raise "Cannot find extension named #{ext_name}"
       end
 
-      ext_data["parameters"]&.each do |param_name, param_data|
+      ext_data["param_constraints"]&.each do |param_name, param_data|
         param = ext.params.find { |p| p.name == param_name }
         raise "There is no param '#{param_name}' in extension '#{ext_name}" if param.nil?
 
@@ -192,7 +192,7 @@ class ProcCertModel < Portfolio
 
     # Loop through an extension's parameter constraints (hash) from the certificate model.
     # Note that "&" is the Ruby safe navigation operator (i.e., skip do loop if nil).
-    ext_data["parameters"]&.each do |param_name, param_data|
+    ext_data["param_constraints"]&.each do |param_name, param_data|
       # Find Parameter object from database
       param = ext.params.find { |p| p.name == param_name }
       raise "There is no param '#{param_name}' in extension '#{ext_req.name}" if param.nil?
