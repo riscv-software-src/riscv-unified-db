@@ -1,0 +1,138 @@
+# yaml-language-server: $schema=../../schemas/proc_cert_model_schema.json
+
+$schema: proc_cert_model_schema.json#
+kind: Processor Certificate Model
+name: AC100
+long_name: AC100 Apps Processor Certificate based on the RVB profile class
+class:
+  $ref: proc_cert_class/AC.yaml#
+
+  # XLEN used by rakefile
+base: 64
+
+# Semantic versions within the model
+versions:
+  - version: "1.0.0"
+
+revision_history:
+  - revision: "0.1.0"
+    date: "2025-02-03"
+    changes:
+      - Created
+
+introduction: |
+  The AC100 Processor Certificate targets RISC-V Apps Processors targeting embedded applications
+  running a custom Yocto Linux distribution. Software source code compatibility is a strong requirement
+  and binary compatibility is a lesser requirement.
+
+  AC100 is based on the following:
+
+  * RVB23 Profile without Hypervisor or Vector support
+  * M-mode requirements
+  * AIA or PLIC interrupt controller
+  * Debug and trace (TBD)
+
+# Specification versions
+tsc_profile_release:
+  $ref: profile_release/RVB23.yaml#
+unpriv_isa_manual_revision: "20240411"
+priv_isa_manual_revision: "20240411"
+debug_manual_revision: "1.0.0"
+
+# XXX - Remove version information since specifying priv/unpriv ISA manual should imply this.
+extensions:
+  $inherits:
+    - "profile/RVB23U64.yaml#/extensions"
+    - "profile/RVB23S64.yaml#/extensions"
+  Sm:
+    version: "~> 1.13"
+    presence: mandatory
+    param_constraints:
+      MTVEC_BASE_ALIGNMENT_DIRECT: 
+        schema:
+          const: 4
+      MTVEC_BASE_ALIGNMENT_VECTORED: {} # Unconstrained
+      ARCH_ID: {} # Unconstrained
+      IMP_ID: {} # Unconstrained
+      VENDOR_ID_BANK: {} # Unconstrained
+      VENDOR_ID_OFFSET: {} # Unconstrained
+      MISA_CSR_IMPLEMENTED: {} # Unconstrained
+      MTVAL_WIDTH: {} # Unconstrained
+      MTVEC_MODES:
+        schema:
+          items:
+            enum: [0, 1]
+      PHYS_ADDR_WIDTH: {} # Unconstrained
+      PRECISE_SYNCHRONOUS_EXCEPTIONS:
+        schema:
+          const: true
+      TRAP_ON_ECALL_FROM_M:
+        schema:
+          const: true
+      TRAP_ON_EBREAK:
+        schema:
+          const: true
+      REPORT_VA_IN_MTVAL_ON_BREAKPOINT:
+        note: Not required when `ebreak` or `c.ebreak` instructions are executed.
+        schema:
+          const: true
+      REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT:
+        schema:
+          const: true
+      REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT:
+        schema:
+          const: true
+      REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT:
+        schema:
+          const: true
+      REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION:
+        schema:
+          const: true
+      M_MODE_ENDIANESS:
+        schema:
+          const: little
+        # TODO: Uncomment when GitHub issue # is fixed.
+        #schema:
+        #- when:
+        #    version: "=1.0.0"
+        #    then:
+        #      const: little
+        #- when:
+        #    version: "=1.1.0"
+        #    then:
+        #      enum: [little, big]
+      XLEN:
+        schema:
+          const: 64
+      CONFIG_PTR_ADDRESS:
+        schema:
+          const: 0xdeadbeef
+        note: "This parameter and its associated CSR shouldn't be here. See GitHub issue #53."
+  Smpmp:
+    version: "~> 1.13"
+    presence: mandatory
+    param_constraints:
+      NUM_PMP_ENTRIES:
+        schema:
+          minimum: 4
+      PMP_GRANULARITY:
+        schema:
+          maximum: 12
+requirement_groups:
+  - name: M-mode Requirements
+    description: |
+      Extra requirements for M-mode beyond the minimum M-mode defined by the Sm extension.
+      These extra requirements come from https://github.com/riscv/riscv-profiles/blob/main/src/old-m-profiles.adoc.
+    requirements:
+      - name: REQ-M_Mode-Non_Zero_CSRs
+        description: The `mvendorid`, `marchid`, and `mimpid` CSRs must be nonzero.
+      - name: REQ-M_Mode-mstatus_writeable_fields
+        description: The `mstatus.TVM`, `mstatus.TW`, and `mstatus.TSR` CSR fields must be writable.
+      - name: REQ-M_Mode-medeleg_writable_bits
+        description: The `medeleg` CSR bits 3, 8, 12, 13, and 15 must be writable.
+      - name: REQ-M_Mode-mideleg_writable_bits
+        description: The `mideleg` CSR bits 1, 5, and 9 must be writable.
+      - name: REQ-M_Mode-mideleg_readonlyzero_bits
+        description: The `mideleg` CSR bits 3, 7, and 11 must be read-only zero.
+      - name: REQ-M_Mode-mcounteren_writeable_bits
+        description: For any `mhpmcounter` that is writable, the corresponding bit in `mcounteren` must be writable.

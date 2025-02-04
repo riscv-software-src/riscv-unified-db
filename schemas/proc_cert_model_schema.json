@@ -112,7 +112,7 @@
       "type": "string",
       "description": "Asciidoc text containing the introduction prose for the model"
     },
-    "tsc_profile": {
+    "tsc_profile_release": {
       "oneOf": [
         {
           "type": "null"
@@ -123,13 +123,13 @@
           "properties": {
             "$ref": {
               "type": "string",
-              "pattern": "^profile_release|proc_cert_model/[A-Z][a-zA-Z0-9_]*\\.yaml#"
+              "pattern": "^profile_release/[A-Z][a-zA-Z0-9_]*\\.yaml#"
             }
           },
           "additionalProperties": false
         }
       ],
-      "description": "Profile certified by this model"
+      "description": "Profile release associated with this certificate"
     },
     "unpriv_isa_manual_revision": {
       "type": "string"
@@ -185,7 +185,7 @@
             "presence": {
               "$ref": "schema_defs.json#/$defs/extension_presence"
             },
-            "parameters": {
+            "param_constraints": {
               "type": "object",
               "patternProperties": {
                 "^[A-Z][A-Z0-9_]+$": {

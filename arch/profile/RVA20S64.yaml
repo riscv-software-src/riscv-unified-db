@@ -17,7 +17,7 @@ extensions:
     param_constraints:
       U_MODE_ENDIANESS:
         schema:
-          const: little``
+          const: little
   S:
     presence: mandatory
     version: "= 1.11"
