@@ -342,6 +342,8 @@ namespace :test do
 
     Rake::Task["gen:html"].invoke("generic_rv64")
 
+    Rake::Task["gen:opcode_outputs"].invoke
+
     Rake::Task["#{$root}/gen/certificate_doc/pdf/MockCertificateModel.pdf"].invoke
     Rake::Task["#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"].invoke
 
