@@ -10,7 +10,7 @@
     },
     "kind": {
       "type": "string",
-      "const": "profile release"
+      "const": "Profile Release"
     },
     "name": {
       "type": "string",

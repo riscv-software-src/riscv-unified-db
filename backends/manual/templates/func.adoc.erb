@@ -4,8 +4,8 @@
 
 = Functions
 
-<%- cfg_arch.functions.each do |f| -%>
-[#<%= f.name %>-func-def]
+<%- design.functions.each do |f| -%>
+<%= anchor_for_udb_doc_idl_func(f.name) %>
 == <%= f.name %><%- if f.builtin? -%> (builtin)<%- end -%>
 
 <%= f.description %>

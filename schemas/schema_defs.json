@@ -267,6 +267,74 @@
           "$ref": "#/$defs/when_condition"
         }
       }
+    },
+    "cert_coverage_points": {
+      "description": "Architecturally visible behaviors requiring validation by certification tests",
+      "type": "array",
+      "required": ["id", "name", "links", "description"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "doc_links": {
+          "description": "Link to UDB documentation, ISA manual, Sail code, or IDL code",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cert_test_procedures": {
+      "description": "Procedure test must follow to test certification coverage points",
+      "type": "array",
+      "required": ["id", "name", "description", "coverage_points"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "coverage_points": {
+          "type": "array",
+          "description": "List of certification coverage point IDs to be validated",
+          "items": {
+            "type": "string"
+          }
+        },
+        "steps": {
+          "description": "List of steps to be followed in order by test",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "description"],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "note": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
     }
   }
 }

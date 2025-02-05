@@ -1,13 +1,13 @@
 # yaml-language-server: $schema=../../schemas/profile_schema.json
 
 $schema: profile_schema.json#
-kind: profile
+kind: Profile
 name: MP-S-64
 marketing_name: MockProfile 64-bit S-mode
 description: This is the Mock Profile Supervisor Mode description.
 mode: S
 base: 64
-release: { $ref: profile_release/MockProfileRelease.yaml# }
+release: { $ref: profile_release/Mock.yaml# }
 contributors:
   - name: Micky Mouse
     email: micky@disney.com
