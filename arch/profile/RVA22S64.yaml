@@ -26,6 +26,9 @@ extensions:
   Svinval:
     presence: mandatory
     version: "~> 1.0"
+  Sv48:
+    presence: optional
+    version: "~> 1.12"
   Sv57:
     presence: optional
     version: "~> 1.12"
