@@ -34,7 +34,7 @@ extensions:
   Sv48:
     presence:
       optional: transitory
-    version: "= 1.11"
+    version: "= 1.12"
     note: Made this a transitory option
   Xmock:
     presence: mandatory

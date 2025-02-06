@@ -42,7 +42,7 @@ Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
     #sh "git submodule update --init ext/docs-resources 2>&1"
 
     # Pull in the latest version of the csc-riscv-isa-manual.
-    sh "cd ext/csc-riscv-isa-manual; git fetch; git merge origin/main 2>&1"
+    #sh "cd ext/csc-riscv-isa-manual; git fetch; git merge origin/main 2>&1"
 
     # Pull in the latest version of the docs-resources.
     #sh "cd ext/docs-resources; git fetch; git merge origin/main 2>&1"

@@ -184,14 +184,14 @@ extensions:
   Sv48:
     presence:
       optional: expansion
-    version: "~>1.0"
+    version: "~>1.13"
     note: |
       Page-based 48-bit virtual-memory system
 
   Sv57:
     presence:
       optional: expansion
-    version: "~>1.0"
+    version: "~>1.13"
     note: |
       Page-based 57-bit virtual-memory system
 

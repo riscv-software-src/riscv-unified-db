@@ -3,6 +3,7 @@
 == Extension Details
 <% portfolio_design.in_scope_ext_reqs.each do |ext_req| -%>
 <% ext = arch.extension(ext_req.name) -%>
+<% min_ext_ver = ext_req.min_satisfying_ext_ver -%>
 
 <%= anchor_for_udb_doc_ext(ext_req.name) %>
 === Extension <%= ext_req.name %> +
@@ -63,32 +64,34 @@
 --
 <% end -%>
 
-// TODO: GitHub issue 92: Use version specified by each profile.
-<% unless portfolio_design.in_scope_instructions.empty? -%>
+<% insts = min_ext_ver.in_scope_instructions(portfolio_design) -%>
+<% unless insts.empty? -%>
 ==== Instructions
 
-The following instructions are added by this extension:
+The following <%= insts.size %> instructions are added by extension version <%= min_ext_ver.version_str %>
+(the minimum version of this extension that satifies the extension requirement).
 
 [cols="1,3"]
 |===
-<% portfolio_design.in_scope_instructions.each do |inst| -%>
+<% insts.each do |inst| -%>
 | <%= link_to_udb_doc_inst(inst.name) %>
 | *<%= inst.long_name %>*
 <% end -%>
 |===
 <% end -%>
 
-// TODO: GitHub issue 92: Use version specified by each profile.
-<% unless portfolio_design.in_scope_csrs.empty? -%>
+<% csrs = min_ext_ver.in_scope_csrs(portfolio_design) -%>
+<% unless csrs.empty? -%>
 ==== CSRs
 
-The following CSRs are added by this extension:
+The following <%= csrs.size %> CSRs are added by extension version <%= min_ext_ver.version_str %>
+(the minimum version of this extension that satifies the extension requirement).
 
 [%autowidth]
 |===
 | Name | Long Name | Address | Mode
 
-<% portfolio_design.in_scope_csrs.sort_by(&:name).each do |csr| -%>
+<% csrs.sort_by(&:name).each do |csr| -%>
 | <%= link_to_udb_doc_csr(csr.name) %>
 | <%= csr.long_name %>
 | <%= "0x#{csr.address.to_s(16)}" %>
