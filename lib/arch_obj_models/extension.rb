@@ -622,12 +622,33 @@ class ExtensionRequirement
     @presence = presence.freeze
   end
 
-  # @return [Array<ExtensionVersion>] The list of extension versions that satisfy this extension requirement
+  # @return [Array<ExtensionVersion>] The list of extension versions that satisfy this extension requirement.
+  #                                   If none, returns an empty array.
   def satisfying_versions
     return @satisfying_versions unless @satisfying_versions.nil?
 
     @satisfying_versions = @ext.versions.select { |v| satisfied_by?(v) }
   end
+
+  # @return [ExtensionVersion] The minimum extension version that satifies this extension requirement.
+  #                            If none, raises an error.
+  def min_satisfying_ext_ver
+    if satisfying_versions.empty?
+      warn "Extension requirement '#{self}' cannot be met by any available extension version. Available versions:"
+      if @ext.versions.empty?
+        warn "  none"
+      else
+        @ext.versions.each do |ext_ver|
+          warn "  #{ext_ver}"
+        end
+      end
+
+      raise "Cannot satisfy extension requirement '#{self}'"
+    end
+
+    satisfying_versions.min
+  end
+
 
   # @overload
   #   @param extension_version [ExtensionVersion] A specific extension version
