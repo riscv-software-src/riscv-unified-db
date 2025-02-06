@@ -153,6 +153,8 @@ The <%= proc_cert_model.name %> certificate doesn't cover their behaviors.
 <% if ext_reqs.empty? -%>
 None
 <% else -%>
+The <%= proc_cert_model.name %> certificate has <%= ext_reqs.size %> <%= presence_obj.to_s %> extensions.
+
 [%autowidth]
 |===
 | Requirement ID | Extension | Version | Long Name | Note
@@ -201,6 +203,8 @@ If the "Allowed Value(s)" is "Any" then any value allowed by the type is accepta
 <% if portfolio_design.all_in_scope_params.empty? -%>
 None
 <% else -%>
+The <%= proc_cert_model.name %> certificate has <%= design.all_in_scope_params.size %> IN-SCOPE parameters.
+
 [cols="4,2,1,1,2"]
 |===
 | Parameter | Type | Allowed Value(s) | Extension(s) | Note
@@ -226,6 +230,8 @@ doesn't cover the behavior of the associated RISC-V standard as a function of th
 <% if portfolio_design.all_out_of_scope_params.empty? -%>
 None
 <% else -%>
+The <%= proc_cert_model.name %> certificate has <%= portfolio_design.all_out_of_scope_params.size %> OUT-OF-SCOPE parameters.
+
 [%autowidth]
 |===
 | Parameters | Type | Extension(s)
@@ -267,6 +273,9 @@ TODO: Show traps per privilege mode
 
 == Instruction Summary
 
+The <%= proc_cert_model.name %> certificate has up to <%= design.in_scope_instructions.size %> instructions
+(exact number depends on an implementation's options).
+
 [%autowidth]
 |===
 | Name | Long Name
@@ -278,6 +287,9 @@ TODO: Show traps per privilege mode
 |===
 
 == CSR Summary
+
+The <%= proc_cert_model.name %> certificate has up to <%= design.in_scope_csrs.size %> CSRs
+(exact number depends on an implementation's options).
 
 === By Name
 
