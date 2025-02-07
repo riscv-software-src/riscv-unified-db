@@ -5,6 +5,7 @@
 require "pathname"
 
 PROFILE_DOC_DIR = Pathname.new "#{$root}/backends/profile"
+PROFILE_GEN_DIR = $root / "gen" / "profile"
 
 Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
   release_name = File.basename(f, ".yaml")
@@ -21,7 +22,7 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
 
   profile_pathnames = profile_names.map {|profile_name| "#{$root}/arch/profile/#{profile_name}.yaml" }
 
-  file "#{$root}/gen/profile/adoc/#{release_name}ProfileRelease.adoc" => [
+  file "#{PROFILE_GEN_DIR}/adoc/#{release_name}ProfileRelease.adoc" => [
     __FILE__,
     "#{$root}/arch/profile_class/#{class_name}.yaml",
     "#{$root}/arch/profile_release/#{release_name}.yaml",
@@ -64,18 +65,18 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
     pf_create_adoc("#{PROFILE_DOC_DIR}/templates/profile.adoc.erb", erb_binding, t.name, portfolio_design)
   end
 
-  file "#{$root}/gen/profile/pdf/#{release_name}ProfileRelease.pdf" => [
+  file "#{PROFILE_GEN_DIR}/pdf/#{release_name}ProfileRelease.pdf" => [
     __FILE__,
-    "#{$root}/gen/profile/adoc/#{release_name}ProfileRelease.adoc"
+    "#{PROFILE_GEN_DIR}/adoc/#{release_name}ProfileRelease.adoc"
   ] do |t|
-    pf_adoc2pdf("#{$root}/gen/profile/adoc/#{release_name}ProfileRelease.adoc", t.name)
+    pf_adoc2pdf("#{PROFILE_GEN_DIR}/adoc/#{release_name}ProfileRelease.adoc", t.name)
   end
 
-  file "#{$root}/gen/profile/html/#{release_name}ProfileRelease.html" => [
+  file "#{PROFILE_GEN_DIR}/html/#{release_name}ProfileRelease.html" => [
     __FILE__,
-    "#{$root}/gen/profile/adoc/#{release_name}ProfileRelease.adoc"
+    "#{PROFILE_GEN_DIR}/adoc/#{release_name}ProfileRelease.adoc"
   ] do |t|
-    pf_adoc2html("#{$root}/gen/profile/adoc/#{release_name}ProfileRelease.adoc", t.name)
+    pf_adoc2html("#{PROFILE_GEN_DIR}/adoc/#{release_name}ProfileRelease.adoc", t.name)
   end
 end
 
@@ -98,7 +99,7 @@ namespace :gen do
       exit 1
     end
 
-    Rake::Task["#{$root}/gen/profile/pdf/#{release_name}ProfileRelease.pdf"].invoke
+    Rake::Task["#{PROFILE_GEN_DIR}/pdf/#{release_name}ProfileRelease.pdf"].invoke
   end
 
   desc <<~DESC
@@ -119,6 +120,6 @@ namespace :gen do
       exit 1
     end
 
-    Rake::Task["#{$root}/gen/profile/html/#{release_name}ProfileRelease.html"].invoke
+    Rake::Task["#{PROFILE_GEN_DIR}/html/#{release_name}ProfileRelease.html"].invoke
   end
 end

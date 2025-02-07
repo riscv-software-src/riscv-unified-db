@@ -17,15 +17,43 @@ def pf_create_arch
   Architecture.new("RISC-V Architecture", $root / "gen" / "resolved_arch" / "_")
 end
 
+# Clones the CSC fork of the ISA manual repository or updates it if it already exists.
+# Does the same for the docs-resources repository which is used by the ISA manual.
+#
+# @param target_pname [String] Full pathname of target file being generated
+def pf_get_latest_csc_isa_manual(target_pname)
+  # Directory path for target file.
+  target_dir = File.dirname(target_pname)
+
+  pf_ensure_repository("https://github.com/RISC-V-Certification-Steering-Committee/riscv-isa-manual",
+    target_dir + "/ext/riscv-isa-manual")
+
+  pf_ensure_repository("https://github.com/riscv/docs-resources", target_dir + "/ext/riscv-isa-manual/docs-resources")
+end
+
+# @param url [String] Where to clone repository from
+# @param workspace_dir [String] Path to desired workspace directory
+def pf_ensure_repository(url, workspace_dir)
+  if Dir.exist?(workspace_dir) && !Dir.empty?(workspace_dir)
+    # Workspace already exists so just make sure it is up-to-date.
+    sh "git -C #{workspace_dir} fetch"
+    sh "git -C #{workspace_dir} pull origin main"
+  else
+    # Need to clone repository.
+    sh "git clone #{url} #{workspace_dir}"
+  end
+end
+
 # @param erb_template_pname [String] Path to ERB template file
 # @param erb_binding [Binding] Path to ERB template file
-# @param target_pname [String] Full name of adoc file being generated
+# @param target_pname [String] Full pathname of adoc file being generated
 # @param portfolio_design [PortfolioDesign] Portfolio design being generated
 def pf_create_adoc(erb_template_pname, erb_binding, target_pname, portfolio_design)
   template_path = Pathname.new(erb_template_pname)
   erb = ERB.new(File.read(template_path), trim_mode: "-")
   erb.filename = template_path.to_s
 
+  # Ensure directory holding target adoc file is present.
   FileUtils.mkdir_p File.dirname(target_pname)
 
   # Convert ERB to final ASCIIDOC. Note that this code is broken up into separate function calls
