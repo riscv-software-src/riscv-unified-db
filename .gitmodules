@@ -7,6 +7,3 @@
 [submodule "ext/riscv-isa-manual"]
 	path = ext/riscv-isa-manual
 	url = https://github.com/riscv/riscv-isa-manual
-[submodule "ext/csc-riscv-isa-manual"]
-	path = ext/csc-riscv-isa-manual
-	url = https://github.com/RISC-V-Certification-Steering-Committee/riscv-isa-manual

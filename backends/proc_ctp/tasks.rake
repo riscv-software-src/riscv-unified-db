@@ -6,8 +6,6 @@ require "pathname"
 
 PROC_CTP_DOC_DIR = Pathname.new "#{$root}/backends/proc_ctp"
 PROC_CTP_GEN_DIR = $root / "gen" / "proc_ctp"
-PROC_CTP_ISA_MAN_DIR = "#{PROC_CTP_GEN_DIR}/adoc/ext/riscv-isa-manual"
-PROC_CTP_DOCS_RESOURCES_DIR = "#{PROC_CTP_ISA_MAN_DIR}/docs-resources"
 
 Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
   model_name = File.basename(f, ".yaml")
@@ -35,46 +33,22 @@ Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
     "#{$root}/backends/proc_cert/templates/priv_modes.adoc.erb",
     "#{PROC_CTP_DOC_DIR}/templates/proc_ctp.adoc.erb"
   ] do |t|
-    # Ensure that the required submodule repositories are up-to-date.
-    # TODO: Commented this out since it puts the submodule in the HEADless state
-    # and doesn't contain the latest updates to "main" from the submodules.
-    #sh "git submodule update --init ext/csc-riscv-isa-manual 2>&1"
-    #sh "git submodule update --init ext/docs-resources 2>&1"
-
-    # Pull in the latest version of the csc-riscv-isa-manual.
-    #sh "cd ext/csc-riscv-isa-manual; git fetch; git merge origin/main 2>&1"
-
-    # Pull in the latest version of the docs-resources.
-    #sh "cd ext/docs-resources; git fetch; git merge origin/main 2>&1"
-
-
-    # Use git archive to extract the latest version of the csc-riscv-isa-manual.
-    FileUtils.mkdir_p "#{PROC_CTP_ISA_MAN_DIR}"
-    Dir.chdir($root / "ext" / "csc-riscv-isa-manual") do
-      sh "git archive --format=tar HEAD | tar xf - -C #{PROC_CTP_ISA_MAN_DIR}"
-    end
-
-    # Use git archive to extract the latest version of the docs-resources.
-    FileUtils.mkdir_p "#{PROC_CTP_DOCS_RESOURCES_DIR}"
-    Dir.chdir($root / "ext" / "docs-resources") do
-      sh "git archive --format=tar HEAD | tar xf - -C #{PROC_CTP_DOCS_RESOURCES_DIR}"
-    end
-
+    pf_get_latest_csc_isa_manual(t.name)
     proc_cert_create_adoc("#{PROC_CTP_DOC_DIR}/templates/proc_ctp.adoc.erb", t.name, model_name)
   end
 
-  file "#{$root}/gen/proc_ctp/pdf/#{model_name}-CTP.pdf" => [
+  file "#{PROC_CTP_GEN_DIR}/pdf/#{model_name}-CTP.pdf" => [
     __FILE__,
-    "#{$root}/gen/proc_ctp/adoc/#{model_name}-CTP.adoc"
+    "#{PROC_CTP_GEN_DIR}/adoc/#{model_name}-CTP.adoc"
   ] do |t|
-    pf_adoc2pdf("#{$root}/gen/proc_ctp/adoc/#{model_name}-CTP.adoc", t.name)
+    pf_adoc2pdf("#{PROC_CTP_GEN_DIR}/adoc/#{model_name}-CTP.adoc", t.name)
   end
 
-  file "#{$root}/gen/proc_ctp/html/#{model_name}-CTP.html" => [
+  file "#{PROC_CTP_GEN_DIR}/html/#{model_name}-CTP.html" => [
     __FILE__,
-    "#{$root}/gen/proc_ctp/adoc/#{model_name}-CTP.adoc"
+    "#{PROC_CTP_GEN_DIR}/adoc/#{model_name}-CTP.adoc"
   ] do |t|
-    pf_adoc2html("#{$root}/gen/proc_ctp/adoc/#{model_name}-CTP.adoc", t.name)
+    pf_adoc2html("#{PROC_CTP_GEN_DIR}/adoc/#{model_name}-CTP.adoc", t.name)
   end
 end
 
@@ -97,7 +71,7 @@ namespace :gen do
       exit 1
     end
 
-    Rake::Task["#{$root}/gen/proc_ctp/pdf/#{model_name}-CTP.pdf"].invoke
+    Rake::Task["#{PROC_CTP_GEN_DIR}/pdf/#{model_name}-CTP.pdf"].invoke
   end
 
   desc <<~DESC
@@ -117,6 +91,6 @@ namespace :gen do
       exit 1
     end
 
-    Rake::Task["#{$root}/gen/proc_ctp/html/#{args[:model_name]}-CTP.html"].invoke
+    Rake::Task["#{PROC_CTP_GEN_DIR}/html/#{args[:model_name]}-CTP.html"].invoke
   end
 end

@@ -5,6 +5,7 @@
 require "pathname"
 
 PROC_CRD_DOC_DIR = Pathname.new "#{$root}/backends/proc_crd"
+PROC_CRD_GEN_DIR = $root / "gen" / "proc_crd"
 
 Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
   model_name = File.basename(f, ".yaml")
@@ -12,7 +13,7 @@ Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
   class_name = File.basename(model_obj['class']['$ref'].split("#")[0], ".yaml")
   raise "Ill-formed processor certificate model file #{f}: missing 'class' field" if model_obj['class'].nil?
 
-  file "#{$root}/gen/proc_crd/adoc/#{model_name}-CRD.adoc" => [
+  file "#{PROC_CRD_GEN_DIR}/adoc/#{model_name}-CRD.adoc" => [
     __FILE__,
     "#{$root}/arch/proc_cert_class/#{class_name}.yaml",
     "#{$root}/arch/proc_cert_model/#{model_name}.yaml",
@@ -34,18 +35,18 @@ Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
     proc_cert_create_adoc("#{PROC_CRD_DOC_DIR}/templates/proc_crd.adoc.erb", t.name, model_name)
   end
 
-  file "#{$root}/gen/proc_crd/pdf/#{model_name}-CRD.pdf" => [
+  file "#{PROC_CRD_GEN_DIR}/pdf/#{model_name}-CRD.pdf" => [
     __FILE__,
-    "#{$root}/gen/proc_crd/adoc/#{model_name}-CRD.adoc"
+    "#{PROC_CRD_GEN_DIR}/adoc/#{model_name}-CRD.adoc"
   ] do |t|
-    pf_adoc2pdf("#{$root}/gen/proc_crd/adoc/#{model_name}-CRD.adoc", t.name)
+    pf_adoc2pdf("#{PROC_CRD_GEN_DIR}/adoc/#{model_name}-CRD.adoc", t.name)
   end
 
-  file "#{$root}/gen/proc_crd/html/#{model_name}-CRD.html" => [
+  file "#{PROC_CRD_GEN_DIR}/html/#{model_name}-CRD.html" => [
     __FILE__,
-    "#{$root}/gen/proc_crd/adoc/#{model_name}-CRD.adoc"
+    "#{PROC_CRD_GEN_DIR}/adoc/#{model_name}-CRD.adoc"
   ] do |t|
-    pf_adoc2html("#{$root}/gen/proc_crd/adoc/#{model_name}-CRD.adoc", t.name)
+    pf_adoc2html("#{PROC_CRD_GEN_DIR}/adoc/#{model_name}-CRD.adoc", t.name)
   end
 end
 
@@ -68,7 +69,7 @@ namespace :gen do
       exit 1
     end
 
-    Rake::Task["#{$root}/gen/proc_crd/pdf/#{model_name}-CRD.pdf"].invoke
+    Rake::Task["#{PROC_CRD_GEN_DIR}/pdf/#{model_name}-CRD.pdf"].invoke
   end
 
   desc <<~DESC
@@ -88,6 +89,6 @@ namespace :gen do
       exit 1
     end
 
-    Rake::Task["#{$root}/gen/proc_crd/html/#{args[:model_name]}-CRD.html"].invoke
+    Rake::Task["#{PROC_CRD_GEN_DIR}/html/#{args[:model_name]}-CRD.html"].invoke
   end
 end
