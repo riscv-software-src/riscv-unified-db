@@ -16,6 +16,13 @@ base: 32
 
 # History of this certificate.
 revision_history:
+  - revision: "0.9.0"
+    date: "2025-02-06"
+    changes:
+      - |
+        Provided to CSC Microcontroller WG for review given the following list of known issues:
+          ** abc
+          ** def
   - revision: "0.8.0"
     date: "2025-01-19"
     changes:
