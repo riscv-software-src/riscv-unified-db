@@ -4,13 +4,14 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: jal
 long_name: Jump and link
+format: J-type
 description: |
   Jump to a PC-relative offset and store the return
   address in rd.
 definedBy: I
 assembly: xd, imm
 encoding:
-  match: -------------------------1101111
+  match: "-------------------------1101111"
   variables:
     - name: imm
       location: 31|19-12|20|30-21

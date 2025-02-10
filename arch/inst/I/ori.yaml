@@ -4,11 +4,12 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: ori
 long_name: Or immediate
+format: I-type
 description: Or an immediate to the value in rs1, and store the result in rd
 definedBy: I
 assembly: xd, xs1, imm
 encoding:
-  match: -----------------110-----0010011
+  match: "-----------------110-----0010011"
   variables:
     - name: imm
       location: 31-20

@@ -4,11 +4,12 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: lui
 long_name: Load upper immediate
+format: U-type
 description: Load the zero-extended imm into rd.
 definedBy: I
 assembly: xd, imm
 encoding:
-  match: -------------------------0110111
+  match: "-------------------------0110111"
   variables:
     - name: imm
       location: 31-12

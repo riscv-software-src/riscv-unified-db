@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: ebreak
 long_name: Breakpoint exception
+format: Unknown
 description: |
   The EBREAK instruction is used by debuggers to cause control to be transferred back to
   a debugging environment. Unless overridden by an external debug environment,
