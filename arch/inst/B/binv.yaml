@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: binv
 long_name: Single-Bit invert (Register)
+format: R-type
 description: |
   This instruction returns rs1 with a single bit inverted at the index specified in rs2.
   The index is read from the lower log2(XLEN) bits of rs2.

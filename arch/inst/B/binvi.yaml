@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: binvi
 long_name: Single-Bit invert (Immediate)
+format: I-type
 description: |
   This instruction returns rs1 with a single bit inverted at the index specified in shamt.
   The index is read from the lower log2(XLEN) bits of shamt.

@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: feq.s
 long_name: Single-precision floating-point equal
+format: R-type
 description: |
   Writes 1 to _rd_ if _fs1_ and _fs2_ are equal, and 0 otherwise.
 

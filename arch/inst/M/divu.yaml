@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: divu
 long_name: Unsigned division
+format: R-type
 description: |
   Divide unsigned values in rs1 by rs2, and store the result in rd.
 

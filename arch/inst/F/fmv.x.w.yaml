@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fmv.x.w
 long_name: Move single-precision value from floating-point to integer register
+format: R-type
 description: |
   Moves the single-precision value in floating-point register rs1 represented in IEEE 754-2008
   encoding to the lower 32 bits of integer register rd.

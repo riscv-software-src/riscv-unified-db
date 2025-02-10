@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: srai
 long_name: Shift right arithmetic immediate
+format: I-type
 description: |
   Arithmetic shift (the original sign bit is copied into the vacated upper bits) the
   value in rs1 right by shamt, and store the result in rd.

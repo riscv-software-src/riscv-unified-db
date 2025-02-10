@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: orn
 long_name: OR with inverted operand
+format: R-type
 description: |
   This instruction performs the bitwise logical OR operation between rs1 and the bitwise inversion of rs2.
 definedBy:

@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: bclr
 long_name: Single-Bit clear (Register)
+format: R-type
 description: |
   This instruction returns rs1 with a single bit cleared at the index specified in rs2.
   The index is read from the lower log2(XLEN) bits of rs2.

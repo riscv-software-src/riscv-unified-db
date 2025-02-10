@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: zext.h
 long_name: Zero-extend halfword
+format: R-type
 description: |
   This instruction zero-extends the least-significant halfword of the source to XLEN by inserting
   0's into all of the bits more significant than 15.

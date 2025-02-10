@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: amoxor.w
 long_name: Atomic fetch-and-xor word
+format: R-type
 description: |
   Atomically:
 

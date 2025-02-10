@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: csrrw
 long_name: Atomic Read/Write CSR
+format: R-type
 description: |
   Atomically swap values in the CSRs and integer registers.
 
@@ -15,7 +16,7 @@ description: |
 definedBy: Zicsr
 assembly: xd, xs1, csr
 encoding:
-  match: -----------------001-----1110011
+  match: "-----------------001-----1110011"
   variables:
     - name: csr
       location: 31-20

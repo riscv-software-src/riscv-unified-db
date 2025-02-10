@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: amoor.d
 long_name: Atomic fetch-and-or doubleword
+format: R-type
 description: |
   Atomically:
 

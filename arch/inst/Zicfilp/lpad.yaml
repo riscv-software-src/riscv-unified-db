@@ -4,12 +4,13 @@ $schema: inst_schema.json#
 kind: instruction
 name: lpad
 long_name: No synopsis available.
+format: U-type
 description: |
   No description available.
 definedBy: Zicfilp
 assembly: imm
 encoding:
-  match: --------------------000000010111
+  match: "--------------------000000010111"
   variables:
     - name: imm
       location: 31-12

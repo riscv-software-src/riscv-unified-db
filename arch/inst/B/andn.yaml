@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: andn
 long_name: AND with inverted operand
+format: R-type
 description: |
   This instruction performs the bitwise logical AND operation between `rs1` and the
   bitwise inversion of `rs2`.

@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: addw
 long_name: Add word
+format: R-type
 description: |
   Add the 32-bit values in rs1 to rs2, and store the sign-extended result in rd.
   Any overflow is thrown away.

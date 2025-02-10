@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: rem
 long_name: Signed remainder
+format: R-type
 description: |
   Calculate the remainder of signed division of rs1 by rs2, and store the result in rd.
 

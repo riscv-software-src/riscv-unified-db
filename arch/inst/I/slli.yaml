@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: slli
 long_name: Shift left logical immediate
+format: I-type
 description: Shift the value in rs1 left by shamt, and store the result in rd
 definedBy: I
 assembly: xd, xs1, shamt

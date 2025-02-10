@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: rol
 long_name: Rotate left (Register)
+format: R-type
 description: |
   This instruction performs a rotate left of rs1 by the amount in least-significant `log2(XLEN)` bits of rs2.
 definedBy:

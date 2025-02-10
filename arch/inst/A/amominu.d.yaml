@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: amominu.d
 long_name: Atomic MIN unsigned doubleword
+format: R-type
 description: |
   Atomically:
 

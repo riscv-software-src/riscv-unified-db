@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fence.i
 long_name: Instruction fence
+format: I-type
 description: |
   The FENCE.I instruction is used to synchronize the instruction and data
   streams. RISC-V does not guarantee that stores to instruction memory
@@ -35,7 +36,7 @@ description: |
 definedBy: Zifencei
 assembly: ""
 encoding:
-  match: -----------------001-----0001111
+  match: "-----------------001-----0001111"
   variables:
     - name: imm
       location: 31-20

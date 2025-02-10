@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: flt.s
 long_name: Single-precision floating-point less than
+format: R-type
 description: |
   Writes 1 to _rd_ if _fs1_ is less than _fs2_, and 0 otherwise.
 

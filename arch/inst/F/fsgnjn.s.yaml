@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fsgnjn.s
 long_name: Single-precision sign inject negate
+format: R-type
 description: |
   Writes _fd_ with the opposite of the sign bit of _fs2_ and the exponent and mantissa of _fs1_.
 

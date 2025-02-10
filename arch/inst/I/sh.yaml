@@ -4,13 +4,14 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: sh
 long_name: Store halfword
+format: S-type
 description: |
   Store 16 bits of data from register `rs2` to an
   address formed by adding `rs1` to a signed offset.
 definedBy: I
 assembly: xs2, imm(xs1)
 encoding:
-  match: -----------------001-----0100011
+  match: "-----------------001-----0100011"
   variables:
     - name: imm
       location: 31-25|11-7

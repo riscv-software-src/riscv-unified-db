@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: slli.uw
 long_name: Shift left unsigned word (Immediate)
+format: I-type
 description: |
   This instruction takes the least-significant word of rs1, zero-extends it, and shifts it
   left by the immediate.

@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: amomaxu.d
 long_name: Atomic MAX unsigned doubleword
+format: R-type
 description: |
   Atomically:
 

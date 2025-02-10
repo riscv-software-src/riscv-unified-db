@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: cbo.inval
 long_name: Cache Block Invalidate
+format: I-type
 description: |
   Either invalidates or flushes (clean + invalidate) a cache block, depending on the current mode and value of
   `menvcfg.CBIE`, `senvcfg.CBIE`, and/or `henvcfg.CBIE`.

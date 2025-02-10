@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: remuw
 long_name: Unsigned 32-bit remainder
+format: R-type
 description: |
   Calculate the remainder of unsigned division of the 32-bit values in rs1 by rs2,
   and store the sign-extended result in rd.

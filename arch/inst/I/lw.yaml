@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: lw
 long_name: Load word
+format: I-type
 description: |
   Load 32 bits of data into register `rd` from an
   address formed by adding `rs1` to a signed offset.
@@ -11,7 +12,7 @@ description: |
 definedBy: I
 assembly: xd, imm(rs1)
 encoding:
-  match: -----------------010-----0000011
+  match: "-----------------010-----0000011"
   variables:
     - name: imm
       location: 31-20

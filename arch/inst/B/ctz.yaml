@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: ctz
 long_name: Count trailing zero bits
+format: R-type
 description: |
   This instruction counts the number of 0's before the first 1,
   starting at the least-significant bit (i.e., 0) and progressing

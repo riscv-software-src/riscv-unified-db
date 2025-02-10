@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: clz
 long_name: Count leading zero bits
+format: R-type
 description: |
   This instruction counts the number of 0's before the first 1,
   starting at the most-significant bit (i.e., XLEN-1) and progressing to bit 0.

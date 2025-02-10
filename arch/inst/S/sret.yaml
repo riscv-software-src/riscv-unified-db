@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: sret
 long_name: Supervisor Exception Return
+format: I-type
 description: |
   Returns from an exception.
 

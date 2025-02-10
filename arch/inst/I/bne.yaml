@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: bne
 long_name: Branch if not equal
+format: B-type
 description: |
   Branch to PC + imm if
   the value in register rs1 is not equal to the value in register rs2.
@@ -12,7 +13,7 @@ description: |
 definedBy: I
 assembly: xs1, xs2, imm
 encoding:
-  match: -----------------001-----1100011
+  match: "-----------------001-----1100011"
   variables:
     - name: imm
       location: 31|7|30-25|11-8

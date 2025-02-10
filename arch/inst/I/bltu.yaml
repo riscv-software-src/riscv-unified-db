@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: bltu
 long_name: Branch if less than unsigned
+format: B-type
 description: |
   Branch to PC + imm if
   the unsigned value in register rs1 is less than the unsigned value in register rs2.
@@ -12,7 +13,7 @@ description: |
 definedBy: I
 assembly: xs1, xs2, imm
 encoding:
-  match: -----------------110-----1100011
+  match: "-----------------110-----1100011"
   variables:
     - name: imm
       location: 31|7|30-25|11-8

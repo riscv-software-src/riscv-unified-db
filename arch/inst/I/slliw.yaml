@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: slliw
 long_name: Shift left logical immediate word
+format: I-type
 description: Shift the 32-bit value in rs1 left by shamt, and store the sign-extended result in rd
 definedBy: I
 base: 64

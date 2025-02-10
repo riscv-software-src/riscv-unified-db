@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: clmul
 long_name: Carry-less multiply (low-part)
+format: R-type
 description: |
   `clmul` produces the lower half of the 2*XLEN carry-less product
 definedBy:

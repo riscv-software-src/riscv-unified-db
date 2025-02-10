@@ -4,13 +4,14 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: slti
 long_name: Set on less than immediate
+format: I-type
 description: |
   Places the value 1 in register `rd` if register `rs1` is less than the sign-extended immediate
   when both are treated as signed numbers, else 0 is written to `rd`.
 definedBy: I
 assembly: xd, xs1, imm
 encoding:
-  match: -----------------010-----0010011
+  match: "-----------------010-----0010011"
   variables:
     - name: imm
       location: 31-20

@@ -4,6 +4,7 @@ $schema: inst_schema.json#
 kind: instruction
 name: brev8
 long_name: Reverse bits in bytes
+format: R-type
 description: |
   This instruction reverses the order of the bits in every byte of a register.
 definedBy: Zbkb

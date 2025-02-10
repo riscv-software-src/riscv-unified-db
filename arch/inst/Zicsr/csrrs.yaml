@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: csrrs
 long_name: Atomic Read and Set Bits in CSR
+format: R-type
 description: |
   Atomically read and set bits in a CSR.
 
@@ -16,7 +17,7 @@ description: |
 definedBy: Zicsr
 assembly: xd, xs1, csr
 encoding:
-  match: -----------------010-----1110011
+  match: "-----------------010-----1110011"
   variables:
     - name: csr
       location: 31-20

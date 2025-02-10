@@ -4,12 +4,13 @@ $schema: inst_schema.json#
 kind: instruction
 name: fsd
 long_name: No synopsis available.
+format: S-type
 description: |
   No description available.
 definedBy: D
 assembly: xs1, xs2, imm
 encoding:
-  match: -----------------011-----0100111
+  match: "-----------------011-----0100111"
   variables:
     - name: imm
       location: 31-25|11-7

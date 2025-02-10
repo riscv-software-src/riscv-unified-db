@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: add.uw
 long_name: Add unsigned word
+format: R-type
 base: 64
 description: |
   This instruction performs an XLEN-wide addition between rs2 and the

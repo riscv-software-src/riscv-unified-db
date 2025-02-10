@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: bext
 long_name: Single-Bit extract (Register)
+format: R-type
 description: |
   This instruction returns a single bit extracted from rs1 at the index specified in rs2.
   The index is read from the lower log2(XLEN) bits of rs2.

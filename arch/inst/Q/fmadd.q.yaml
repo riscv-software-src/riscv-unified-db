@@ -4,12 +4,13 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fmadd.q
 long_name: No synopsis available.
+format: R-type
 description: |
   No description available.
 definedBy: Q
 assembly: qd, qs1, qs2, qs3, rm
 encoding:
-  match: -----11------------------1000011
+  match: "-----11------------------1000011"
   variables:
     - name: qs3
       location: 31-27

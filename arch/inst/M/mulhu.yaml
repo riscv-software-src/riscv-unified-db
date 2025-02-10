@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: mulhu
 long_name: Unsigned multiply high
+format: R-type
 description: |
   Multiply the unsigned values in rs1 to rs2, and store the upper half of the result in rd.
   The lower half is thrown away.
