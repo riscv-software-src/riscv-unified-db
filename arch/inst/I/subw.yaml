@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: subw
 long_name: Subtract word
+format: R-type
 description: Subtract the 32-bit values in rs2 from rs1, and store the sign-extended result in rd
 definedBy: I
 base: 64

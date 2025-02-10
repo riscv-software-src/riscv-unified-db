@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: sll
 long_name: Shift left logical
+format: R-type
 description: |
   Shift the value in `rs1` left by the value in the lower 6 bits of `rs2`, and store the result in `rd`.
 definedBy: I

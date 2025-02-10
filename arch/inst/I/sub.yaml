@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: sub
 long_name: Subtract
+format: R-type
 description: Subtract the value in rs2 from rs1, and store the result in rd
 definedBy: I
 assembly: xd, xs1, xs2

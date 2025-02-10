@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: sltiu
 long_name: Set on less than immediate unsigned
+format: I-type
 description: |
   Places the value 1 in register `rd` if register `rs1` is less than the sign-extended immediate
   when both are treated as unsigned numbers (_i.e._, the immediate is first sign-extended to
@@ -14,7 +15,7 @@ description: |
 definedBy: I
 assembly: xd, xs1, imm
 encoding:
-  match: -----------------011-----0010011
+  match: "-----------------011-----0010011"
   variables:
     - name: imm
       location: 31-20

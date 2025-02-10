@@ -2,6 +2,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: mret
 long_name: Machine Exception Return
+format: Unknown
 description: |
   Returns from an exception in M-mode.
 assembly: ""

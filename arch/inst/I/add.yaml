@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: add
 long_name: Integer add
+format: R-type
 description: |
   Add the value in rs1 to rs2, and store the result in rd.
   Any overflow is thrown away.

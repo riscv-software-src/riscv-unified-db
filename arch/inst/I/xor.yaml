@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: xor
 long_name: Exclusive Or
+format: R-type
 description: Exclusive or rs1 with rs2, and store the result in rd
 definedBy: I
 assembly: xd, xs1, xs2

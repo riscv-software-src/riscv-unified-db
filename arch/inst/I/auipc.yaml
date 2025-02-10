@@ -4,11 +4,12 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: auipc
 long_name: Add upper immediate to pc
+format: U-type
 description: Add an immediate to the current PC.
 definedBy: I
 assembly: xd, imm
 encoding:
-  match: -------------------------0010111
+  match: "-------------------------0010111"
   variables:
     - name: imm
       location: 31-12

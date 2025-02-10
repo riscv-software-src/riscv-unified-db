@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: jalr
 long_name: Jump and link register
+format: I-type
 description: |
   Jump to an address formed by adding rs1
   to a signed offset then clearing the least
@@ -12,7 +13,7 @@ description: |
 definedBy: I
 assembly: xd, imm(rs1)
 encoding:
-  match: -----------------000-----1100111
+  match: "-----------------000-----1100111"
   variables:
     - name: imm
       location: 31-20

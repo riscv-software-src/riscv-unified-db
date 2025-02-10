@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: or
 long_name: Or
+format: R-type
 description: Or rs1 with rs2, and store the result in rd
 definedBy: I
 assembly: xd, xs1, xs2

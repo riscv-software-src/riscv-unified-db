@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: sltu
 long_name: Set on less than unsigned
+format: R-type
 description: |
   Places the value 1 in register `rd` if register `rs1` is less than the value in register `rs2`, where
   both sources are treated as unsigned numbers, else 0 is written to `rd`.
