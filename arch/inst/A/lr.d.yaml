@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: lr.d
 long_name: Load reserved doubleword
+format: I-type
 description: |
   Loads a word from the address in rs1, places the value in rd,
   and registers a _reservation set_  -- a set of bytes that subsumes the bytes in the

@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: amoand.d
 long_name: Atomic fetch-and-and doubleword
+format: R-type
 description: |
   Atomically:
 
