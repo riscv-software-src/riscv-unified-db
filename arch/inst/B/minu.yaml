@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: minu
 long_name: Unsigned minimum
+format: R-type
 description: |
   This instruction returns the smaller of two unsigned integers.
 definedBy:

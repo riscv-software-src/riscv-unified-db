@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: cbo.zero
 long_name: Cache Block Zero
+format: I-type
 description: |
   Zeros an entire cache block
 

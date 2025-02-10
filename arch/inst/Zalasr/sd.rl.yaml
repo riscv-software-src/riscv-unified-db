@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: sd.rl
 long_name: No synopsis available.
+format: S-type
 description: |
   No description available.
 definedBy: Zalasr

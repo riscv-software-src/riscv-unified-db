@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: sfence.w.inval
 long_name: Order writes before sfence
+format: I-type
 definedBy: Svinval
 encoding:
   match: "00011000000000000000000001110011"

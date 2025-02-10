@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: bexti
 long_name: Single-Bit extract (Immediate)
+format: I-type
 description: |
   This instruction returns a single bit extracted from rs1 at the index specified in rs2.
   The index is read from the lower log2(XLEN) bits of shamt. For RV32, the encodings

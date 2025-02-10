@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: bset
 long_name: Single-Bit set (Register)
+format: R-type
 description: |
   This instruction returns rs1 with a single bit set at the index specified in rs2.
   The index is read from the lower log2(XLEN) bits of rs2.

@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: bclri
 long_name: Single-Bit clear (Immediate)
+format: I-type
 description: |
   This instruction returns rs1 with a single bit cleared at the index specified in shamt. The
   index is read from the lower log2(XLEN) bits of shamt. For RV32, the encodings corresponding

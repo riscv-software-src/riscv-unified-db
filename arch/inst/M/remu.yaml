@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: remu
 long_name: Unsigned remainder
+format: R-type
 description: |
   Calculate the remainder of unsigned division of rs1 by rs2, and store the result in rd.
 definedBy: M

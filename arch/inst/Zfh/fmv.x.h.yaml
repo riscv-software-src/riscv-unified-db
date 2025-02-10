@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fmv.x.h
 long_name: Move half-precision value from floating-point to integer register
+format: R-type
 definedBy:
   anyOf: [Zfh, Zfhmin, Zhinx]
 assembly: rd, fs1

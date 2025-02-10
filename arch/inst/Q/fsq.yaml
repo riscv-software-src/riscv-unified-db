@@ -4,12 +4,13 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fsq
 long_name: No synopsis available.
+format: S-type
 description: |
   No description available.
 definedBy: Q
 assembly: xs1, qs2, imm
 encoding:
-  match: -----------------100-----0100111
+  match: "-----------------100-----0100111"
   variables:
     - name: imm
       location: 31-25|11-7

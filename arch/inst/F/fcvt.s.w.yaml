@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.s.w
 long_name: Convert signed 32-bit integer to single-precision float
+format: R-type
 description: |
   Converts a 32-bit signed integer in integer register _rs1_ into a floating-point number in
   floating-point register _fd_.

@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: sh3add
 long_name: Shift left by 3 and add
+format: R-type
 description: |
   This instruction shifts `rs1` to the left by 3 places and adds it to `rs2`.
 definedBy:

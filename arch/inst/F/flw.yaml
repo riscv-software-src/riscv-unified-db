@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: flw
 long_name: Single-precision floating-point load
+format: I-type
 description: |
   The `flw` instruction loads a single-precision floating-point value from memory at address _rs1_ + _imm_ into floating-point register _fd_.
 
@@ -12,7 +13,7 @@ description: |
 definedBy: F
 assembly: fd, xs1, imm
 encoding:
-  match: -----------------010-----0000111
+  match: "-----------------010-----0000111"
   variables:
     - name: imm
       location: 31-20

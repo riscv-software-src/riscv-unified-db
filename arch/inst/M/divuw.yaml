@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: divuw
 long_name: Unsigned 32-bit division
+format: R-type
 description: |
   Divide the unsigned 32-bit values in rs1 and rs2, and store the sign-extended result in rd.
 

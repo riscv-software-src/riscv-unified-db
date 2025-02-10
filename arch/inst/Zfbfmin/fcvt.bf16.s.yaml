@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.bf16.s
 long_name: No synopsis available.
+format: R-type
 description: |
   No description available.
 definedBy: Zfbfmin

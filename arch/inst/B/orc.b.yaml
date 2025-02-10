@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: orc.b
 long_name: Bitware OR-combine, byte granule
+format: R-type
 description: |
   Combines the bits within each byte using bitwise logical OR. This sets the bits
   of each byte in the result rd to all zeros if no bit within the respective byte

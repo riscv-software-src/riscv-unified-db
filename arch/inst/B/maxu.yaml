@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: maxu
 long_name: Unsigned maximum
+format: R-type
 description: |
   This instruction returns the larger of two unsigned integers.
 definedBy:

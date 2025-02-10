@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.s.h
 long_name: Convert single-precision float to a half-precision float
+format: R-type
 definedBy:
   allOf: [Zfh, Zfhmin]
 assembly: fd, xs1

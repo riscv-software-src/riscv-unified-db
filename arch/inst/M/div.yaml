@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: div
 long_name: Signed division
+format: R-type
 description: |
   Divide rs1 by rs2, and store the result in rd. The remainder is discarded.
 

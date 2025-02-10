@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fsw
 long_name: Single-precision floating-point store
+format: S-type
 description: |
   The `fsw` instruction stores a single-precision floating-point value in _fs2_ to memory at address _rs1_ + _imm_.
 
@@ -12,7 +13,7 @@ description: |
 definedBy: F
 assembly: fs2, xs1, imm
 encoding:
-  match: -----------------010-----0100111
+  match: "-----------------010-----0100111"
   variables:
     - name: imm
       location: 31-25|11-7

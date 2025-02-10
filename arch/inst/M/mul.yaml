@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: mul
 long_name: Signed multiply
+format: R-type
 description: |
   MUL performs an XLEN-bitxXLEN-bit multiplication of `rs1` by `rs2` and places the lower
   XLEN bits in the destination register.

@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: mulw
 long_name: Signed 32-bit multiply
+format: R-type
 description: |
   Multiplies the lower 32 bits of the source registers, placing the sign-extension of the
   lower 32 bits of the result into the destination register.

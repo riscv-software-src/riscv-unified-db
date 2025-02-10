@@ -4,12 +4,13 @@ $schema: inst_schema.json#
 kind: instruction
 name: csrrsi
 long_name: No synopsis available.
+format: I-type
 description: |
   No description available.
 definedBy: Zicsr
 assembly: xd, csr, imm
 encoding:
-  match: -----------------110-----1110011
+  match: "-----------------110-----1110011"
   variables:
     - name: csr
       location: 31-20

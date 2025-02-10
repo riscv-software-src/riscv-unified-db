@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: divw
 long_name: Signed 32-bit division
+format: R-type
 description: |
   Divide the lower 32-bits of register rs1 by the lower 32-bits of register rs2,
   and store the sign-extended result in rd.

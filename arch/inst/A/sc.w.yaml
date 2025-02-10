@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: sc.w
 long_name: Store conditional word
+format: R-type
 description: |
   `sc.w` conditionally writes a word in _rs2_ to the address in _rs1_:
   the `sc.w` succeeds only if the reservation is still valid and the

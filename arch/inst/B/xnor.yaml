@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: xnor
 long_name: Exclusive NOR
+format: R-type
 description: |
   This instruction performs the bit-wise exclusive-NOR operation on rs1 and rs2.
 definedBy:

@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fmv.h.x
 long_name: Half-precision floating-point move from integer
+format: R-type
 description: |
   Moves the half-precision value encoded in IEEE 754-2008 standard encoding
   from the lower 16 bits of integer register `rs1` to the floating-point

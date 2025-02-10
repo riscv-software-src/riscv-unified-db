@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fsh
 long_name: Half-precision floating-point store
+format: S-type
 description: |
   The `fsh` instruction stores a half-precision floating-point value
   from register _rd_ to memory at address _rs1_ + _imm_.
@@ -18,7 +19,7 @@ definedBy:
   anyOf: [Zfh, Zfhmin, Zhinx]
 assembly: fs2, imm(xs1)
 encoding:
-  match: -----------------001-----0100111
+  match: "-----------------001-----0100111"
   variables:
     - name: imm
       location: 31-25|11-7

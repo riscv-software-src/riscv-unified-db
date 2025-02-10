@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: sinval.vma
 long_name: Invalidate cached address translations
+format: R-type
 definedBy: Svinval
 encoding:
   match: 0001011----------000000001110011
@@ -12,11 +13,7 @@ encoding:
       location: 24-20
     - name: rs1
       location: 19-15
-description:
-  The `sinval.vma` instruction invalidates any address-translation cache entries that an
-  `sfence.vma` instruction with the same values of rs1 and rs2 would invalidate.
-  However, unlike `sfence.vma`, `sinval.vma` instructions are only ordered with respect to
-  `sfence.vma`, `sfence.w.inval`, and `sfence.inval.ir` instructions as defined below.
+description: The `sinval.vma` instruction invalidates any address-translation cache entries that an `sfence.vma` instruction with the same values of rs1 and rs2 would invalidate. However, unlike `sfence.vma`, `sinval.vma` instructions are only ordered with respect to `sfence.vma`, `sfence.w.inval`, and `sfence.inval.ir` instructions as defined below.
 access:
   s: sometimes
   u: never

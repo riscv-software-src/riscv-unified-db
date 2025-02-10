@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: cbo.clean
 long_name: Cache Block Clean
+format: I-type
 description: |
   Cleans an entire cache block globally throughout the system.
 

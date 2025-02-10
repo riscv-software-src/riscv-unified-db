@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: max
 long_name: Maximum
+format: R-type
 description: |
   This instruction returns the larger of two signed integers.
 

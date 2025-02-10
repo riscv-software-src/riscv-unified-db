@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fsgnjx.s
 long_name: Single-precision sign inject exclusive or
+format: R-type
 description: |
   Writes _fd_ with the xor of the sign bits of _fs2_ and _fs1_ and the exponent and mantissa of _fs1_.
 

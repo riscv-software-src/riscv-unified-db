@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: amoswap.w
 long_name: Atomic SWAP word
+format: R-type
 description: |
   Atomically:
 

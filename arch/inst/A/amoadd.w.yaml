@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: amoadd.w
 long_name: Atomic fetch-and-add word
+format: R-type
 description: |
   Atomically:
 

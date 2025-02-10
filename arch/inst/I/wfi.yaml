@@ -4,7 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: wfi
 long_name: Wait for interrupt
-format: Unknown
+format: I-type
 description: |
   Can causes the processor to enter a low-power state until the next interrupt occurs.
 

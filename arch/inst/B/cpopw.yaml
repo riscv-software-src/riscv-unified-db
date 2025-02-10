@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: cpopw
 long_name: Count set bits in word
+format: R-type
 description: |
   This instructions counts the number of 1's (i.e., set bits) in the least-significant word of the source register.
 

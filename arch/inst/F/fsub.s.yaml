@@ -4,6 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fsub.s
 long_name: Single-precision floating-point subtraction
+format: R-type
 description: |
   Do the single-precision floating-point subtraction of fs2 from fs1 and store the result in fd.
   rm is the dynamic Rounding Mode.
