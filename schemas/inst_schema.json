@@ -159,7 +159,8 @@
         "description",
         "definedBy",
         "access",
-        "assembly"
+        "assembly",
+        "format"
       ],
       "additionalProperties": false,
       "properties": {
@@ -181,6 +182,19 @@
         "long_name": {
           "type": "string",
           "description": "Short description of the instruction"
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "I-type",
+            "S-type",
+            "B-type",
+            "U-type",
+            "J-type",
+            "R-type",
+            "Unknown"
+          ],
+          "description": "Instruction type determined from the encoding"
         },
         "description": {
           "type": "string",
