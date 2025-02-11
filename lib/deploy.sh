@@ -9,18 +9,6 @@ PAGES_URL="https://riscv-software-src.github.io/riscv-unified-db"
 
 mkdir -p $DEPLOY_DIR
 
-echo "Resolve / Create Index"
-./do gen:resolved_arch
-
-echo "Build manual"
-./do gen:html_manual MANUAL_NAME=isa VERSIONS=all
-
-echo "Build html documentation for generic_rv64"
-./do gen:html[generic_rv64]
-
-echo "Generate YARD docs"
-./do gen:tool_doc
-
 echo "Create _site/example_cfg"
 mkdir -p $DEPLOY_DIR/example_cfg
 
@@ -29,6 +17,23 @@ mkdir -p $DEPLOY_DIR/manual
 
 echo "Create _site/pdfs"
 mkdir -p $DEPLOY_DIR/pdfs
+
+
+
+echo "Resolve / Create Index"
+./do gen:resolved_arch
+
+echo "Build manual"
+./do gen:html_manual MANUAL_NAME=isa VERSIONS=all
+
+echo "Copy manual html"
+cp -R gen/manual/isa/top/all/html $DEPLOY_DIR/manual
+
+echo "Build html documentation for generic_rv64"
+./do gen:html[generic_rv64]
+
+echo "Generate YARD docs"
+./do gen:tool_doc
 
 echo "Create _site/htmls"
 mkdir mkdir -p $DEPLOY_DIR/htmls
@@ -61,7 +66,7 @@ echo "Copy MC100-32 PDF"
 cp gen/certificate_doc/pdf/MC100-32.pdf $DEPLOY_DIR/pdfs/MC100-32.pdf
 
 echo "Create MC100-32 HTML Spec"
-cp ./do gen:cert_model_html[MC100-32]
+./do gen:cert_model_html[MC100-32]
 
 echo "Copy MC100-32 HTML"
 cp gen/certificate_doc/html/MC100-32.html $DEPLOY_DIR/htmls/MC100-32.html
@@ -77,9 +82,6 @@ echo "Create MC100-64 HTML Spec"
 
 echo "Copy MC100-64 HTML"
 cp gen/certificate_doc/html/MC100-64.html $DEPLOY_DIR/htmls/MC100-64.html
-
-echo "Copy manual html"
-cp -R gen/manual/isa/top/all/html $DEPLOY_DIR/manual
 
 echo "Create index"
 cat <<- EOF > $DEPLOY_DIR/index.html
