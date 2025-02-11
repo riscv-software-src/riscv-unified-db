@@ -597,15 +597,19 @@ if __name__ == "__main__":
             if args.no_progress
             else tqdm(arch_paths, ascii=True, desc="Resolving arch")
         )
+        abs_resolved_dir = (
+            f"{UDB_ROOT}/{args.resolved_dir}"
+            if not os.path.isabs(args.resolved_dir)
+            else f"{args.resolved_dir}"
+        )
         for arch_path in iter:
-            resolved_arch_path = (
-                f"{UDB_ROOT}/{args.resolved_dir}/{arch_path}"
-                if not os.path.isabs(args.resolved_dir)
-                else f"{args.resolved_dir}/{arch_path}"
-            )
+            resolved_arch_path = f"{abs_resolved_dir}/{arch_path}"
             os.makedirs(os.path.dirname(resolved_arch_path), exist_ok=True)
             resolve_file(
                 arch_path, args.arch_dir, args.resolved_dir, not args.no_checks
             )
+
+        # create index
+        write_yaml(f"{abs_resolved_dir}/index.yaml", arch_paths)
 
         print(f"[INFO] Resolved architecture files written to {args.resolved_dir}")
