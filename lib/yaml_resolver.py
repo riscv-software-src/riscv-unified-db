@@ -167,6 +167,20 @@ def write_yaml(file_path: str | Path, data):
         yaml.dump(data, file)
 
 
+def write_json(file_path: str | Path, data):
+    """Write data as JSON to file_path
+
+    Parameters
+    ----------
+    file_path : str, Path
+      Filesystem path to the JSON file
+    data : dict, list
+      The object to write as JSON
+    """
+    with open(file_path, "w") as file:
+        json.dump(data, file)
+
+
 def dig(obj: dict, *keys):
     """Digs data out of dictionary obj
 
@@ -611,5 +625,6 @@ if __name__ == "__main__":
 
         # create index
         write_yaml(f"{abs_resolved_dir}/index.yaml", arch_paths)
+        write_json(f"{abs_resolved_dir}/index.json", arch_paths)
 
         print(f"[INFO] Resolved architecture files written to {args.resolved_dir}")
