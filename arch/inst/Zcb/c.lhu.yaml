@@ -35,7 +35,7 @@ operation(): |
 
   XReg virtual_address = X[rs1+8] + imm;
 
-  X[rd+8] = zext(read_memory<16>(virtual_address, $encoding), 16);
+  X[rd+8] = read_memory<16>(virtual_address, $encoding);
 
 sail(): |
   {

@@ -26,7 +26,7 @@ access:
 operation(): |
   XReg retrun_addr = $pc + 4;
 
-  jump_halfword($pc + imm);
+  jump_halfword($pc + $signed(imm));
   X[rd] = retrun_addr;
 
 sail(): |

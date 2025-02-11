@@ -86,7 +86,7 @@ function rm_to_mode {
     } else if (rm == $bits(RoundingMode::RMM)) {
       return RoundingMode::RMM;
     } else if (rm == $bits(RoundingMode::DYN)) {
-      return CSR[fcsr].FRM;
+      return $enum(RoundingMode, CSR[fcsr].FRM);
     } else {
       raise(ExceptionCode::IllegalInstruction, mode(), encoding);
     }
@@ -412,7 +412,7 @@ function softfloat_normSubnormalF16Sig {
   }
   body {
     Bits<8> shift_dist = count_leading_zeros<16>(hp_value);
-    return {1 - shift_dist, hp_value << shift_dist};
+    return 1 - shift_dist, hp_value << shift_dist;
   }
 }
 
