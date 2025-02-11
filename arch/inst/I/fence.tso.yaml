@@ -2,7 +2,7 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: fence
+name: fence.tso
 long_name: Memory ordering fence
 description: |
   Orders memory operations.
