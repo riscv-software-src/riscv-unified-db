@@ -27,7 +27,8 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
-  RoundingMode mode = rm_to_mode(X[rm], $encoding);
+  check_f_ok($encoding);
+  RoundingMode mode = rm_to_mode(rm, $encoding);
   X[fd] = f32_add(X[fs1], X[fs2], mode);
 
 sail(): |

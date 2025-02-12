@@ -34,20 +34,8 @@ access:
 data_independent_timing: false
 operation(): |
   check_f_ok($encoding);
-
-  Bits<32> int_value = X[rs1];
-
-  Bits<1> sign = int_value[31];
-
   RoundingMode rounding_mode = rm_to_mode(rm, $encoding);
-
-  if ((int_value & 32'h7fff_ffff) == 0) {
-    X[fd] = (sign == 1) ? packToF32UI(1, 0x9E, 0) : 0;
-  } else {
-    Bits<32> absA = (sign == 1) ? -int_value : int_value;
-    X[fd] = softfloat_normRoundPackToF32( sign, 0x9C, absA, rounding_mode );
-  }
-
+  X[fd] = i32_to_f32(X[rs1], rounding_mode);
   mark_f_state_dirty();
 
 sail(): |
