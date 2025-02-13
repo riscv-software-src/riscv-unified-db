@@ -137,7 +137,7 @@ fields:
       return (implemented?(ExtensionName::M) && MUTABLE_MISA_M) ? CsrFieldType::RW : CsrFieldType::RO;
     definedBy: M
     reset_value: 1
-    cert_coverage_points:
+    cert_normative_rules:
       - id: csr_field.misa.M.disabled
         name: Disabling `misa.M` bit
         description: What happens when you turn off `misa.M`
@@ -147,7 +147,7 @@ fields:
       - id: csr.misa.M.muldiv_with_M_on&off
         name: Testing M
         description: Execute with M on/off
-        coverage_points: [csr_field.misa.M.disabled]
+        normative_rules: [csr_field.misa.M.disabled]
         steps:
           - name: on
             description: Turn on `misa.M`
@@ -208,7 +208,7 @@ sw_read(): |
     (CSR[misa].C << 2) |
     (CSR[misa].B << 1) |
     CSR[misa].A);
-cert_coverage_points:
+cert_normative_rules:
   - id: csr.misa.disabling_bits
     name: Disabling `misa` bits
     description: What happens when you turn off bits
@@ -218,7 +218,7 @@ cert_test_procedures:
   - id: csr.misa.off&on
     name: Testing bits
     description: Turn on/off each bit and see what happens
-    coverage_points: [csr.misa.disabling_bits]
+    normative_rules: [csr.misa.disabling_bits]
     steps:
       - name: setup
         description: Turn on all bits

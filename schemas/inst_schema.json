@@ -257,8 +257,8 @@
           "type": "string",
           "description": "Functional description of the instruction using Sail"
         },
-        "cert_coverage_points": {
-          "$ref": "schema_defs.json#/$defs/cert_coverage_points"
+        "cert_normative_rules": {
+          "$ref": "schema_defs.json#/$defs/cert_normative_rules"
         },
         "cert_test_procedures": {
           "$ref": "schema_defs.json#/$defs/cert_test_procedures"

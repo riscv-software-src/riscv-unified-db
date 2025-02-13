@@ -47,31 +47,31 @@ class DatabaseObject
     @description = data["description"]
   end
 
-  # @return [Array<CertCoveragePoint>]
-  def cert_coverage_points
-    return @cert_coverage_points unless @cert_coverage_points.nil?
+  # @return [Array<CertNormativeRule>]
+  def cert_normative_rules
+    return @cert_normative_rules unless @cert_normative_rules.nil?
 
-    @cert_coverage_points = []
-    @data["cert_coverage_points"]&.each do |cert_data|
-      @cert_coverage_points << CertCoveragePoint.new(cert_data, self)
+    @cert_normative_rules = []
+    @data["cert_normative_rules"]&.each do |cert_data|
+      @cert_normative_rules << CertNormativeRule.new(cert_data, self)
     end
-    @cert_coverage_points
+    @cert_normative_rules
   end
 
-  # @return [Hash<String, CertCoveragePoint>] Hash with ID as key of all coverage points defined by database object
+  # @return [Hash<String, CertNormativeRule>] Hash with ID as key of all normative rules defined by database object
   def cert_coverage_point_hash
     return @cert_coverage_point_hash unless @cert_coverage_point_hash.nil?
 
     @cert_coverage_point_hash = {}
-    cert_coverage_points.each do |cp|
+    cert_normative_rules.each do |cp|
       @cert_coverage_point_hash[cp.id] = cp
     end
     @cert_coverage_point_hash
   end
 
-  # @param id [String] Unique ID for the coverage point
-  # @return [CertCoveragePoint]
-  # @return [nil] if there is no certification coverage pointed with ID of +id+
+  # @param id [String] Unique ID for the normative rule
+  # @return [CertNormativeRule]
+  # @return [nil] if there is no certification normative ruleed with ID of +id+
   def cert_coverage_point(id)
     cert_coverage_point_hash[id]
   end
@@ -87,7 +87,7 @@ class DatabaseObject
     @cert_test_procedures
   end
 
-  # @return [Hash<String, CertTestProcedure>] Hash of all coverage points defined by database object
+  # @return [Hash<String, CertTestProcedure>] Hash of all normative rules defined by database object
   def cert_test_procedure_hash
     return @cert_test_procedure_hash unless @cert_test_procedure_hash.nil?
 
@@ -749,7 +749,7 @@ class AlwaysTrueSchemaCondition
   def minimize = {}
 end
 
-class CertCoveragePoint
+class CertNormativeRule
   # @param data [Hash<String, Object>] Data from YAML file
   # @param db_obj [DatabaseObject]
   def initialize(data, db_obj)
@@ -759,18 +759,18 @@ class CertCoveragePoint
     @data = data
     @db_obj = db_obj
 
-    raise ArgumentError, "Missing certification coverage point name for #{db_obj.name} of kind #{db_obj.kind}" if name.nil?
-    raise ArgumentError, "Missing certification coverage point description for #{db_obj.name} of kind #{db_obj.kind}" if description.nil?
-    raise ArgumentError, "Missing certification coverage point ID for #{db_obj.name} of kind #{db_obj.kind}" if id.nil?
+    raise ArgumentError, "Missing certification normative rule name for #{db_obj.name} of kind #{db_obj.kind}" if name.nil?
+    raise ArgumentError, "Missing certification normative rule description for #{db_obj.name} of kind #{db_obj.kind}" if description.nil?
+    raise ArgumentError, "Missing certification normative rule ID for #{db_obj.name} of kind #{db_obj.kind}" if id.nil?
   end
 
-  # @return [String] Name of the coverage point
+  # @return [String] Name of the normative rule
   def name = @data["name"]
 
-  # @return [String] Description of coverage point (could be multiple lines)
+  # @return [String] Description of normative rule (could be multiple lines)
   def description = @data["description"]
 
-  # @return [String] Unique ID of the coverage point
+  # @return [String] Unique ID of the normative rule
   def id = @data["id"]
 
   # @return [Array<DocLink>] List of certification point documentation links
@@ -782,7 +782,7 @@ class CertCoveragePoint
       @doc_links << DocLink.new(dst, @db_obj)
     end
 
-    raise "Missing doc_links for certification coverage point ID '#{id}' of kind #{@db_obj.kind}" if @doc_links.empty?
+    raise "Missing doc_links for certification normative rule ID '#{id}' of kind #{@db_obj.kind}" if @doc_links.empty?
 
     @doc_links
   end
@@ -808,10 +808,10 @@ end
 #                 udb:doc:func:<func_name>  (Documentation of common/built-in IDL functions)
 #                 udb:doc:cov_pt:<org>:<id>
 #                   where <org> is:
-#                      sep for UDB documentation that "separates" coverage points from test plans
-#                      combo for UDB documentation that "combines" coverage points with test plans
-#                      appendix for UDB documentation that has coverage points and test plans in appendices
-#                   where <id> is the ID of the coverage point
+#                      sep for UDB documentation that "separates" normative rules from test plans
+#                      combo for UDB documentation that "combines" normative rules with test plans
+#                      appendix for UDB documentation that has normative rules and test plans in appendices
+#                   where <id> is the ID of the normative rule
 #   IDL code      idl:code:inst:<inst-name>:<location>
 #                 TODO for CSR and CSR Fields
 class DocLink
@@ -824,7 +824,7 @@ class DocLink
     raise ArgumentError, "Missing documentation link for #{db_obj.name} of kind #{db_obj.kind}" if @dst_link.nil?
   end
 
-  # @return [String] Unique ID of the linked to coverage point
+  # @return [String] Unique ID of the linked to normative rule
   def dst_link = @dst_link
 
   # @return [String] Asciidoc to create desired link.
@@ -857,17 +857,17 @@ class CertTestProcedure
   # @return [String] Unique ID of the test procedure
   def id = @data["id"]
 
-  # @return [Array<CertCoveragePoint>]
-  def cert_coverage_points
-    return @cert_coverage_points unless @cert_coverage_points.nil?
+  # @return [Array<CertNormativeRule>]
+  def cert_normative_rules
+    return @cert_normative_rules unless @cert_normative_rules.nil?
 
-    @cert_coverage_points = []
-    @data["coverage_points"]&.each do |id|
+    @cert_normative_rules = []
+    @data["normative_rules"]&.each do |id|
       cp = @db_obj.cert_coverage_point(id)
       raise ArgumentError, "Can't find certification test procedure with ID '#{id}' for '#{@db_obj.name}' of kind #{@db_obj.kind}" if cp.nil?
-      @cert_coverage_points << cp
+      @cert_normative_rules << cp
     end
-    @cert_coverage_points
+    @cert_normative_rules
   end
 
   # @return [Array<CertStep>] List of certification test procedure steps

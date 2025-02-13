@@ -87,9 +87,9 @@ module TemplateHelpers
     "%%UDB_DOC_LINK%func;#{func_name.sanitize};#{func_name}%%"
   end
 
-  # @return [String] A hyperlink to a UDB certification coverage point (separate chapters for cov pts and test procs)
-  # @param org [String] Organization of coverage points and test procedures (sep=separate chapters, combo=combined chapters, appendix=appendix)
-  # @param id [String] ID of the coverage point
+  # @return [String] A hyperlink to a UDB certification normative rule (separate chapters for cov pts and test procs)
+  # @param org [String] Organization of normative rules and test procedures (sep=separate chapters, combo=combined chapters, appendix=appendix)
+  # @param id [String] ID of the normative rule
   def link_to_udb_doc_cov_pt(org, id)
     raise ArgumentError, "Unknown org value of '#{org}' for ID '#{id}'" unless org == "sep" || org == "combo" || org == "appendix"
     "%%UDB_DOC_COV_PT_LINK%#{org};#{id.sanitize};#{id}%%"
@@ -146,9 +146,9 @@ module TemplateHelpers
     "[#udb:doc:func:#{name.sanitize}]"
   end
 
-  # @return [String] An anchor for a UDB coverage point documentation
-  # @param org [String] Document organization of coverage points and test procedures (sep=separate chapters, combo=combined chapters, appendix=appendix)
-  # @param id [String] ID of the coverage point
+  # @return [String] An anchor for a UDB normative rule documentation
+  # @param org [String] Document organization of normative rules and test procedures (sep=separate chapters, combo=combined chapters, appendix=appendix)
+  # @param id [String] ID of the normative rule
   # Have to use [[anchor]] instead of [#anchor] since only the former works when in a table cell.
   def anchor_for_udb_doc_cov_pt(org, id)
     raise ArgumentError, "Unknown org value of '#{org}' for ID '#{id}'" unless org == "sep" || org == "combo" || org == "appendix"

@@ -268,7 +268,7 @@
         }
       }
     },
-    "cert_coverage_points": {
+    "cert_normative_rules": {
       "description": "Architecturally visible behaviors requiring validation by certification tests",
       "type": "array",
       "required": ["id", "name", "links", "description"],
@@ -293,9 +293,9 @@
       "additionalProperties": false
     },
     "cert_test_procedures": {
-      "description": "Procedure test must follow to test certification coverage points",
+      "description": "Procedure test must follow to test certification normative rules",
       "type": "array",
-      "required": ["id", "name", "description", "coverage_points"],
+      "required": ["id", "name", "description", "normative_rules"],
       "properties": {
         "id": {
           "type": "string"
@@ -306,9 +306,9 @@
         "description": {
           "type": "string"
         },
-        "coverage_points": {
+        "normative_rules": {
           "type": "array",
-          "description": "List of certification coverage point IDs to be validated",
+          "description": "List of certification normative rule IDs to be validated",
           "items": {
             "type": "string"
           }
