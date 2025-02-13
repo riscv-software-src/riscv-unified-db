@@ -70,7 +70,7 @@ sail(): |
     }
   }
 
-cert_coverage_points:
+cert_normative_rules:
   - id: inst.mul.encoding
     name: Encoding
     description: Encoding of `mul` instruction
@@ -93,7 +93,7 @@ cert_test_procedures:
   - id: inst.mul.encoding
     name: Encoding
     description: Verify the encoding of the `mul` instruction
-    coverage_points: [inst.mul.encoding]
+    normative_rules: [inst.mul.encoding]
     steps:
       - name: setup
         description: Load a variety of known values into rs1 & rs2 with a variety of rs1/rs2/rd values.
