@@ -106,7 +106,7 @@ extensions:
     presence: mandatory
   M:
     version: "~> 2.0"
-    presence: mandatory
+    presence: optional
   Zicsr:
     version: "~> 2.0"
     presence: mandatory
