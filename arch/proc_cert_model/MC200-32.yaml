@@ -27,6 +27,7 @@ introduction: |
   It supports either a 32-bit (MC200-32) or 64-bit (MC200-64) base ISA.
   The MC200 adds the following mandatory extensions to the MC100:
 
+  * M extension (mandatory)
   * U extension (User-mode privilege level)
   * Smpmp extension (M-mode PMP)
   * B (Bitfield) extension
@@ -42,6 +43,8 @@ debug_manual_revision: "0.13.2"
 # TODO: No ratified CLIC yet. It will be multiple extensions.
 
 extensions:
+  M:
+    presence: mandatory
   B:
     presence: mandatory
   Zce:
