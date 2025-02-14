@@ -1,42 +1,171 @@
-#!/usr/bin/env python3
-
+import re
 from typing import List, Dict, Union, Any
+import argparse
 import os
+import sys
 import yaml
 import json
-import argparse
-import sys
+from typing import List, Dict, Union
+import subprocess
+
+
+def load_fieldo() -> dict:
+    """
+    Load the fieldo mapping from the JavaScript file (fieldo.js) by invoking Node.js.
+
+    """
+    this_dir = os.path.dirname(os.path.abspath(__file__))
+    # The command runs Node.js in the current directory and prints the JSON representation.
+    cmd = ["node", "-e", 'console.log(JSON.stringify(require("./fieldo.js")));']
+    output = subprocess.check_output(cmd, cwd=this_dir)
+    return json.loads(output)
+
+
+# Set of register names that need transformation.
+reg_names = {"qs1", "qs2", "qd", "fs1", "fs2", "fd"}
+fieldo = load_fieldo()
 
 
 def range_size(range_str: str) -> int:
+    """Compute the bit width from a range string like '31-20'."""
     try:
         end, start = map(int, range_str.split("-"))
         return abs(end - start) + 1
-    except ValueError:
+    except Exception:
         return 0
 
 
-reg_names = {"qs1", "qs2", "qd", "fs1", "fs2", "fd"}
+def lookup_immediate_by_range(
+    var_base: str, high: int, low: int, instr_name: str
+) -> Union[str, None]:
+    """
+    Look up a canonical field name from the fieldo mapping based on the bit range.
+
+    - If var_base is "imm", then we consider any field whose name contains "imm"
+      (but not starting with "c_" and not "csr").
+    - If var_base starts with "c_", then only keys starting with "c_" are considered.
+    - Otherwise, we require that the key starts with var_base (for "simm", "jimm", etc.).
+
+    If multiple candidates are found and var_base is "imm", we prefer "zimm" if present.
+    Otherwise, instr_name is used as a hint.
+    """
+    candidates = []
+    for key, field in fieldo.items():
+        if field.get("msb") == high and field.get("lsb") == low:
+            if var_base == "imm":
+                if "imm" in key and not key.startswith("c_") and key != "csr":
+                    candidates.append(key)
+            elif var_base.startswith("c_"):
+                if key.startswith("c_"):
+                    candidates.append(key)
+            else:
+                if key.startswith(var_base):
+                    candidates.append(key)
+    if candidates:
+        if len(candidates) == 1:
+            return candidates[0]
+        else:
+            if var_base == "imm" and "zimm" in candidates:
+                return "zimm"
+            lower_instr = instr_name.lower()
+            for cand in candidates:
+                if lower_instr.startswith("j") and cand.startswith("jimm"):
+                    return cand
+                if lower_instr.startswith("b") and cand.startswith("bimm"):
+                    return cand
+            return candidates[0]
+    return None
 
 
-def GetVariables(vars: List[Dict[str, str]]) -> List[str]:
-    var_names = []
-    for var in vars:
+def canonical_immediate_names(
+    var_name: str, location: str, instr_name: str
+) -> List[str]:
+    """
+    Given a YAML immediate variable (its base name and location), return a list of canonical
+    field names strictly from the fieldo mapping.
+
+    - For non-composite locations (e.g. "31-20"), the range is parsed and a lookup is performed.
+    - For composite locations (detected by "|" in the location), we assume a branch-immediate split:
+      the high part uses the range (31, 25) and the low part (11, 7), with an appropriate prefix.
+    - If no candidate is found in fieldo, an empty list is returned.
+    """
+    if "|" in location:
+        parts = location.split("|")
+        if len(parts) == 4:
+            prefix = "bimm" if instr_name.lower().startswith("b") else "imm"
+            hi_candidate = lookup_immediate_by_range(prefix, 31, 25, instr_name)
+            lo_candidate = lookup_immediate_by_range(prefix, 11, 7, instr_name)
+            if hi_candidate is None or lo_candidate is None:
+                print(
+                    f"Warning: composite immediate candidate not found in fieldo for {var_name} with location {location}"
+                )
+                return []
+            return [hi_candidate, lo_candidate]
+        else:
+            # For other composite formats, attempt a basic lookup using the first two numbers.
+            nums = list(map(int, re.findall(r"\d+", location)))
+            if len(nums) >= 2:
+                high, low = nums[0], nums[1]
+                candidate = lookup_immediate_by_range(var_name, high, low, instr_name)
+                if candidate:
+                    return [candidate]
+            print(
+                f"Warning: composite immediate candidate not found in fieldo for {var_name} with location {location}"
+            )
+            return []
+    else:
+        try:
+            high, low = map(int, location.split("-"))
+        except Exception:
+            print(f"Warning: invalid immediate location {location} for {var_name}")
+            return []
+        candidate = lookup_immediate_by_range(var_name, high, low, instr_name)
+        if candidate:
+            return [candidate]
+        else:
+            print(
+                f"Warning: No fieldo canonical name for {var_name} with range {location}"
+            )
+            return []
+
+
+def GetVariables(vars: List[Dict[str, str]], instr_name: str = "") -> List[str]:
+    """
+    Process the YAML variable definitions and return a list of variable names as expected by the generator.
+
+    - For registers (names in reg_names), the first character is replaced with "r".
+    - For "shamt", the field is renamed to "shamtw" if its width is 5 or "shamtd" if 6.
+    - For immediates (base names "imm", "simm", "zimm", "jimm", or those starting with "c_"),
+      the canonical names are determined strictly by looking them up in fieldo.
+      Only names found in fieldo are used.
+
+    The variables are processed in reverse order.
+    """
+    result = []
+    for var in reversed(vars):
         var_name = var["name"]
+        location = var.get("location", "")
         if var_name in reg_names:
-            # Since strings are immutable.
-            lst_var_name = list(var_name)
-            lst_var_name[0] = "r"
-            var_name = "".join(lst_var_name)
+            result.append("r" + var_name[1:])
         elif var_name == "shamt":
-            size = range_size(var["location"])
+            size = range_size(location)
             if size == 5:
-                var_name = "shamtw"
+                result.append("shamtw")
             elif size == 6:
-                var_name = "shamtd"
-        var_names.append(var_name)
-    var_names.reverse()
-    return var_names
+                result.append("shamtd")
+            else:
+                result.append(var_name)
+        elif var_name in ("imm", "simm", "zimm", "jimm") or var_name.startswith("c_"):
+            canon_names = canonical_immediate_names(var_name, location, instr_name)
+            if canon_names:
+                result.extend(canon_names)
+            else:
+                print(
+                    f"Warning: Skipping immediate field {var_name} with location {location} since no fieldo mapping was found."
+                )
+        else:
+            result.append(var_name)
+    return result
 
 
 def BitStringToHex(bit_str: str) -> str:
