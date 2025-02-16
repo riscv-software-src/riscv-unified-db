@@ -158,7 +158,7 @@ versions:
     - Remove qc.flags CSR
   implies:
   - [Xqcia, "0.4.0"]
-  - [Xqciac, "0.2.0"]
+  - [Xqciac, "0.3.0"]
   - [Xqcibi, "0.2.0"]
   - [Xqcibm, "0.4.0"]
   - [Xqcicli, "0.2.0"]
@@ -191,7 +191,7 @@ versions:
     - Fix addresses of qc.mclicie* CSRs to 0x7f8-0x7ff (was copy & paste from qc.mclicip*)
   implies:
   - [Xqcia, "0.4.0"]
-  - [Xqciac, "0.2.0"]
+  - [Xqciac, "0.3.0"]
   - [Xqcibi, "0.2.0"]
   - [Xqcibm, "0.4.0"]
   - [Xqcicli, "0.2.0"]
