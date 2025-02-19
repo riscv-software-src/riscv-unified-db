@@ -1,6 +1,6 @@
 $schema: csr_schema.json#
 kind: csr
-name: qc_mncause
+name: qc.mncause
 long_name: Machine NMI Cause
 address: 0x7c2
 base: 32
