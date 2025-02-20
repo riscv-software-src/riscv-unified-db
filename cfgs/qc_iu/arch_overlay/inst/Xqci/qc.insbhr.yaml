@@ -8,11 +8,12 @@ description: |
   Insertion of a subset of bits from `rs1` into `rd`.
   Instruction intended for insertion bits into bitfield within 64-bits,
   when bitfield crosses 32-bit bundary.
-  Lower part of 64-bit destination is inserted using QC32.INSB,
-  higher part using QC32.INSBH.
-  The width of the subset is determined by `rs2` bits [31:16] + 1 (1..32),
-  and the offset of the subset is determined by `rs2` bits [15:0].
-  In case when width + offset <= 32, the destination register is left unchanged.
+  Lower part of 64-bit destination is inserted using QC32.INSBR,
+  higher part using QC32.INSBHR.
+  The width of the subset is determined by `rs2` bits [21:16] (0..32),
+  and the offset of the subset is determined by `rs2` bits [4:0].
+  In case when width + offset <= 32 or width == 0, the destination register is left unchanged.
+  In case when `rs2` bit [21] == 1 width is enforced to 32.
   Instruction encoded in R instruction format.
 definedBy:
   anyOf:
@@ -37,9 +38,10 @@ access:
   vs: always
   vu: always
 operation(): |
-  XReg width = X[rs2][31:16] + 1;
-  XReg shamt = X[rs2][15:0];
-  if (width + shamt > 32) {
+  XReg width_bits = X[rs2][21:16];
+  XReg width = (width_bits > 32) ? 32 : width_bits;
+  XReg shamt = X[rs2][4:0];
+  if ((width + shamt > 32) && (width > 0)) {
     XReg mask = ((1 << (width + shamt - 32)) - 1);
     XReg orig_val = X[rd];
     X[rd] = (orig_val & ~mask) | ((X[rs1] >> (32 - shamt)) & mask);
