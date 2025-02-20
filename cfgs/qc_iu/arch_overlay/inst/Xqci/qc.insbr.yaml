@@ -6,8 +6,10 @@ name: qc.insbr
 long_name: Insert bits (Register)
 description: |
   Insertion of a subset of bits from `rs1` into `rd`.
-  The width of the subset is determined by `rs2` bits [31:16] + 1 (1..32),
-  and the offset of the subset is determined by `rs2` bits [15:0].
+  The width of the subset is determined by `rs2` bits [21:16] (0..32),
+  and the offset of the subset is determined by `rs2` bits [4:0].
+  In case when width == 0, the destination register is left unchanged.
+  In case when `rs2` bit [21] == 1 width is enforced to 32.
   Instruction encoded in R instruction format.
 definedBy:
   anyOf:
@@ -32,8 +34,11 @@ access:
   vs: always
   vu: always
 operation(): |
-  XReg width = X[rs2][31:16] + 1;
-  XReg shamt = X[rs2][15:0];
-  XReg mask = ((1 << width) - 1) << shamt;
-  XReg orig_val = X[rd];
-  X[rd] = (orig_val & ~mask) | ((X[rs1] << shamt) & mask);
+  XReg width_bits = X[rs2][5:0];
+  XReg width = (width_bits > 32) ? 32 : width_bits;
+  XReg shamt = X[rs2][4:0];
+  if (width > 0) {
+    XReg mask = ((1 << width) - 1) << shamt;
+    XReg orig_val = X[rd];
+    X[rd] = (orig_val & ~mask) | ((X[rs1] << shamt) & mask);
+  }
