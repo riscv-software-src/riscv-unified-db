@@ -8,11 +8,13 @@ priv_mode: M
 length: MXLEN
 description: |
   Written with the PC of the next instruction when a non-maskable interrupt taken in M-mode.
-definedBy: Xqciint
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqciint
 fields:
   PC:
-    location_rv32: 31-0
-    location_rv64: 63-0
+    location: 31-0
     description: |
       When a non-maskable interrupt is taken into M-mode, `qc.mnepc.PC` is written with the PC
       of the next instruction (_i.e._, the one that would be fetched next if the interrupt did not
@@ -22,9 +24,3 @@ fields:
     sw_write(csr_value): |
       return csr_value.PC & ~64'b1;
     reset_value: 0
-sw_read(): |
-  if (implemented?(ExtensionName::C) && CSR[misa].C == 1'b1) {
-    return CSR[qc.mnepc].PC & ~64'b1;
-  } else {
-    return CSR[qc.mnepc].PC;
-  }
