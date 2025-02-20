@@ -165,7 +165,7 @@ versions:
   - [Xqcicm, "0.2.0"]
   - [Xqcics, "0.2.0"]
   - [Xqcicsr, "0.3.0"]
-  - [Xqciint, "0.2.0"]
+  - [Xqciint, "0.3.0"]
   - [Xqcilb, "0.2.0"]
   - [Xqcili, "0.2.0"]
   - [Xqcilia, "0.2.0"]
@@ -188,7 +188,9 @@ versions:
     company: Qualcomm Technologies, Inc.
     email: dhower@qti.qualcomm.com
   changes:
+    - Rename all custom CSRs of the Xqciint extension to use dot as separator in the name
     - Fix addresses of qc.mclicie* CSRs to 0x7f8-0x7ff (was copy & paste from qc.mclicip*)
+    - Fix description of qc.mnepc CSR to reflect being part of Xqciint custom extension
     - Change width calculations for qc.extdpr, qc.extdprh, qc.extdr, qc.extdupr, qc.extduprh, qc.extdur,
     - Change width calculations for qc.insbhr, qc.insbpr, qc.insbprh, qc.insbr, qc.insbri
   implies:

@@ -54,7 +54,9 @@ versions:
     company: Qualcomm Technologies, Inc.
     email: dhower@qti.qualcomm.com
   changes:
+    - Rename all custom CSRs of the Xqciint extension to use dot as separator in the name
     - Fix addresses of qc.mclicie* CSRs to 0x7f8-0x7ff (was copy & paste from qc.mclicip*)
+    - Fix description of qc.mnepc CSR to reflect being part of Xqciint custom extension
   requires: { name: Zca, version: ">= 1.0.0" }
 description: |
   The Xqciint extension includes eleven instructions to accelerate interrupt

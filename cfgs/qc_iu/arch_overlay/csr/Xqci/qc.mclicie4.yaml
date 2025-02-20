@@ -2,176 +2,176 @@
 
 $schema: csr_schema.json#
 kind: csr
-name: qc_mclicip0
-long_name: IRQ Pending 0
-address: 0x7f0
+name: qc.mclicie4
+long_name: IRQ Enable 4
+address: 0x7fc
 length: 32
-priv_mode: M
 base: 32
+priv_mode: M
 definedBy:
   anyOf:
     - Xqci
     - Xqciint
 description: |
-  Pending bits for IRQs 0-31
+  Enable bits for IRQs 128-159
 fields:
-  IRQ0:
+  IRQ128:
     type: RW
     reset_value: 0
     location: 0
-    description: IRQ0 pending
-  IRQ1:
+    description: IRQ128 enabled
+  IRQ129:
     type: RW
     reset_value: 0
     location: 1
-    description: IRQ1 pending
-  IRQ2:
+    description: IRQ129 enabled
+  IRQ130:
     type: RW
     reset_value: 0
     location: 2
-    description: IRQ2 pending
-  IRQ3:
+    description: IRQ130 enabled
+  IRQ131:
     type: RW
     reset_value: 0
     location: 3
-    description: IRQ3 pending
-  IRQ4:
+    description: IRQ131 enabled
+  IRQ132:
     type: RW
     reset_value: 0
     location: 4
-    description: IRQ4 pending
-  IRQ5:
+    description: IRQ132 enabled
+  IRQ133:
     type: RW
     reset_value: 0
     location: 5
-    description: IRQ5 pending
-  IRQ6:
+    description: IRQ133 enabled
+  IRQ134:
     type: RW
     reset_value: 0
     location: 6
-    description: IRQ6 pending
-  IRQ7:
+    description: IRQ134 enabled
+  IRQ135:
     type: RW
     reset_value: 0
     location: 7
-    description: IRQ7 pending
-  IRQ8:
+    description: IRQ135 enabled
+  IRQ136:
     type: RW
     reset_value: 0
     location: 8
-    description: IRQ8 pending
-  IRQ9:
+    description: IRQ136 enabled
+  IRQ137:
     type: RW
     reset_value: 0
     location: 9
-    description: IRQ9 pending
-  IRQ10:
+    description: IRQ137 enabled
+  IRQ138:
     type: RW
     reset_value: 0
     location: 10
-    description: IRQ10 pending
-  IRQ11:
+    description: IRQ138 enabled
+  IRQ139:
     type: RW
     reset_value: 0
     location: 11
-    description: IRQ11 pending
-  IRQ12:
+    description: IRQ139 enabled
+  IRQ140:
     type: RW
     reset_value: 0
     location: 12
-    description: IRQ12 pending
-  IRQ13:
+    description: IRQ140 enabled
+  IRQ141:
     type: RW
     reset_value: 0
     location: 13
-    description: IRQ13 pending
-  IRQ14:
+    description: IRQ141 enabled
+  IRQ142:
     type: RW
     reset_value: 0
     location: 14
-    description: IRQ14 pending
-  IRQ15:
+    description: IRQ142 enabled
+  IRQ143:
     type: RW
     reset_value: 0
     location: 15
-    description: IRQ15 pending
-  IRQ16:
+    description: IRQ143 enabled
+  IRQ144:
     type: RW
     reset_value: 0
     location: 16
-    description: IRQ16 pending
-  IRQ17:
+    description: IRQ144 enabled
+  IRQ145:
     type: RW
     reset_value: 0
     location: 17
-    description: IRQ17 pending
-  IRQ18:
+    description: IRQ145 enabled
+  IRQ146:
     type: RW
     reset_value: 0
     location: 18
-    description: IRQ18 pending
-  IRQ19:
+    description: IRQ146 enabled
+  IRQ147:
     type: RW
     reset_value: 0
     location: 19
-    description: IRQ19 pending
-  IRQ20:
+    description: IRQ147 enabled
+  IRQ148:
     type: RW
     reset_value: 0
     location: 20
-    description: IRQ20 pending
-  IRQ21:
+    description: IRQ148 enabled
+  IRQ149:
     type: RW
     reset_value: 0
     location: 21
-    description: IRQ21 pending
-  IRQ22:
+    description: IRQ149 enabled
+  IRQ150:
     type: RW
     reset_value: 0
     location: 22
-    description: IRQ22 pending
-  IRQ23:
+    description: IRQ150 enabled
+  IRQ151:
     type: RW
     reset_value: 0
     location: 23
-    description: IRQ23 pending
-  IRQ24:
+    description: IRQ151 enabled
+  IRQ152:
     type: RW
     reset_value: 0
     location: 24
-    description: IRQ24 pending
-  IRQ25:
+    description: IRQ152 enabled
+  IRQ153:
     type: RW
     reset_value: 0
     location: 25
-    description: IRQ25 pending
-  IRQ26:
+    description: IRQ153 enabled
+  IRQ154:
     type: RW
     reset_value: 0
     location: 26
-    description: IRQ26 pending
-  IRQ27:
+    description: IRQ154 enabled
+  IRQ155:
     type: RW
     reset_value: 0
     location: 27
-    description: IRQ27 pending
-  IRQ28:
+    description: IRQ155 enabled
+  IRQ156:
     type: RW
     reset_value: 0
     location: 28
-    description: IRQ28 pending
-  IRQ29:
+    description: IRQ156 enabled
+  IRQ157:
     type: RW
     reset_value: 0
     location: 29
-    description: IRQ29 pending
-  IRQ30:
+    description: IRQ157 enabled
+  IRQ158:
     type: RW
     reset_value: 0
     location: 30
-    description: IRQ30 pending
-  IRQ31:
+    description: IRQ158 enabled
+  IRQ159:
     type: RW
     reset_value: 0
     location: 31
-    description: IRQ31 pending
+    description: IRQ159 enabled
