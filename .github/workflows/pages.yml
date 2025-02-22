@@ -112,7 +112,7 @@ jobs:
       - name: Create MC100-32-CTP PDF Spec
         run: ./do gen:proc_ctp_pdf[MC100-32]
       - name: Copy MC100-32-CTP PDF
-        run: cp gen/proc_ctp/pdf/Mock-CTP.pdf _site/pdfs
+        run: cp gen/proc_ctp/pdf/MC100-32-CTP.pdf _site/pdfs
       - name: Create MockProcessor-CTP PDF Spec
         run: ./do gen:proc_ctp_pdf[MockProcessor]
       - name: Copy MockProcessor-CTP PDF
