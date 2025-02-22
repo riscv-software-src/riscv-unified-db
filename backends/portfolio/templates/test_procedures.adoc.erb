@@ -8,10 +8,10 @@ Test Procedures for `<%= nice_name %>`: ::
 
 <% db_obj.cert_test_procedures.each do |tp| -%>
 [%autowidth]
-.*ID <%= tp.id %>* Test Procedure
+.*Test Procedure ID <%= tp.id %>*
 |===
 
-| *Name* | <%= tp.name %>
+| *Test File Name* | <%= tp.test_file_name.nil? ? "None" : tp.test_file_name %>
 | *Description* | <%= tp.description %>
 | *Normative Rules*
 a|
@@ -20,11 +20,7 @@ a|
 <% end # each cp -%>
 | *Steps*
 a|
-<% tp.cert_steps.each do |step| -%>
-. <%= step.name %>
-.. <%= step.description %>
-<%= step.note.nil? ? "" : "[NOTE]\n" + step.note %>
-<% end # each step -%>
+<%= tp.cert_steps %>
 <% end # each test procedure -%>
 |===
 

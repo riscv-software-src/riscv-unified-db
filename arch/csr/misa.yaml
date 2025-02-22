@@ -145,7 +145,6 @@ fields:
           - manual:csr:misa:disabling-extension
     cert_test_procedures:
       - id: csr.misa.M.muldiv_with_M_on&off
-        name: Testing M
         description: Execute with M on/off
         normative_rules: [csr_field.misa.M.disabled]
         steps:
@@ -216,13 +215,12 @@ cert_normative_rules:
       - manual:csr:misa:disabling-extension
 cert_test_procedures:
   - id: csr.misa.off&on
-    name: Testing bits
     description: Turn on/off each bit and see what happens
     normative_rules: [csr.misa.disabling_bits]
-    steps:
-      - name: setup
-        description: Turn on all bits
-      - name: loop
-        description: Turn off each present bit invidually and try affected behaviors
-      - name: check
-        description: fail unless turning off bit disables extension as expected
+    steps: |
+      . Setup
+      .. Turn on all bits
+      . Loop
+      .. Turn off each present bit invidually and try affected behaviors
+      . Check
+      .. Fail unless turning off bit disables extension as expected

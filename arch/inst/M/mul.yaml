@@ -91,17 +91,14 @@ cert_normative_rules:
 
 cert_test_procedures:
   - id: inst.mul.encoding
-    name: Encoding
     description: Verify the encoding of the `mul` instruction
     normative_rules: [inst.mul.encoding]
-    steps:
-      - name: setup
-        description: Load a variety of known values into rs1 & rs2 with a variety of rs1/rs2/rd values.
-      - name: execution
-        description: Execute the `mul` instruction
-      - name: validation
-        description: Check each result in rd
-      - name: teardown
-        description: Clear the registers used for rd
-        note: |
-          Don't really need to clear the registers so this is a contrived example
+    steps: |
+      . Setup
+      .. Load a variety of known values into rs1 & rs2 with a variety of rs1/rs2/rd values.
+      . Execution
+      .. Execute the `mul` instruction
+      . Validation
+      .. Check each result in rd
+      . Teardown
+      .. Clear the registers used for rd

@@ -751,7 +751,7 @@ end
 
 class CertNormativeRule
   # @param data [Hash<String, Object>] Data from YAML file
-  # @param db_obj [DatabaseObject]
+  # @param db_obj [DatabaseObject] Database object that defines normative rule (Extension, Instruction, CSR, or CSR field)
   def initialize(data, db_obj)
     raise ArgumentError, "Need Hash but was passed a #{data.class}" unless data.is_a?(Hash)
     raise ArgumentError, "Need DatabaseObject but was passed a #{db_obj.class}" unless db_obj.is_a?(DatabaseObject)
@@ -759,13 +759,9 @@ class CertNormativeRule
     @data = data
     @db_obj = db_obj
 
-    raise ArgumentError, "Missing certification normative rule name for #{db_obj.name} of kind #{db_obj.kind}" if name.nil?
     raise ArgumentError, "Missing certification normative rule description for #{db_obj.name} of kind #{db_obj.kind}" if description.nil?
     raise ArgumentError, "Missing certification normative rule ID for #{db_obj.name} of kind #{db_obj.kind}" if id.nil?
   end
-
-  # @return [String] Name of the normative rule
-  def name = @data["name"]
 
   # @return [String] Description of normative rule (could be multiple lines)
   def description = @data["description"]
@@ -792,14 +788,14 @@ end
 #
 #   Documenation  Format
 #   ============  ===============================================================
-#   ISA manuals   manual:ext:<ext_name>:<location>
-#                 manual:inst:<inst_name>:<location>
-#                 manual:insts:<inst_name>[-<inst_name>]+:<location>
-#                 manual:inst_group:<group_name>:<location>
-#                 manual:csr:<csr_name>:<location>
-#                 manual:csr_field:<csr_name>:<field_name>:<location>
-#                 manual:param:<ext_name>:<param_name>:<location>
-#                   where <location> is the location within the ISA manual documentation
+#   ISA manuals   manual:ext:<ext_name>:<identifier>
+#                 manual:inst:<inst_name>:<identifier>
+#                 manual:insts:<inst_name>[-<inst_name>]+:<identifier>
+#                 manual:inst_group:<group_name>:<identifier>
+#                 manual:csr:<csr_name>:<identifier>
+#                 manual:csr_field:<csr_name>:<field_name>:<identifier>
+#                 manual:param:<ext_name>:<param_name>:<identifier>
+#                   where <identifier> is a string that describes the tagged text
 #   UDB doc       udb:doc:ext:<ext_name>
 #                 udb:doc:ext_param:<ext_name>:<param_name>
 #                 udb:doc:inst:<inst_name>
@@ -835,7 +831,7 @@ end
 
 class CertTestProcedure
   # @param data [Hash<String, Object>] Data from YAML file
-  # @param db_obj [DatabaseObject]
+  # @param db_obj [DatabaseObject] Database object that defines test procedure (Extension, Instruction, CSR, or CSR field)
   def initialize(data, db_obj)
     raise ArgumentError, "Need Hash but was passed a #{data.class}" unless data.is_a?(Hash)
     raise ArgumentError, "Need DatabaseObject but was passed a #{db_obj.class}" unless db_obj.is_a?(DatabaseObject)
@@ -843,19 +839,19 @@ class CertTestProcedure
     @data = data
     @db_obj = db_obj
 
-    raise ArgumentError, "Missing certification test procedure name for #{db_obj.name} of kind #{db_obj.kind}" if name.nil?
-    raise ArgumentError, "Missing certification test procedure description for #{db_obj.name} of kind #{db_obj.kind}" if description.nil?
     raise ArgumentError, "Missing certification test procedure ID for #{db_obj.name} of kind #{db_obj.kind}" if id.nil?
+    warn "Warning: Missing test_file_name for certification test procedure description for #{db_obj.name} of kind #{db_obj.kind}" if test_file_name.nil?
+    raise ArgumentError, "Missing certification test procedure description for #{db_obj.name} of kind #{db_obj.kind}" if description.nil?
   end
-
-  # @return [String] Name of the test procedure
-  def name = @data["name"]
-
-  # @return [String] Description of test procedure (could be multiple lines)
-  def description = @data["description"]
 
   # @return [String] Unique ID of the test procedure
   def id = @data["id"]
+
+  # @return [String] Name of test file that implements this test procedure. Could be nil.
+  def test_file_name = @data["test_file_name"]
+
+  # @return [String] Description of test procedure (could be multiple lines)
+  def description = @data["description"]
 
   # @return [Array<CertNormativeRule>]
   def cert_normative_rules
@@ -870,38 +866,6 @@ class CertTestProcedure
     @cert_normative_rules
   end
 
-  # @return [Array<CertStep>] List of certification test procedure steps
-  def cert_steps
-    return @cert_steps unless @cert_steps.nil?
-
-    @cert_steps = []
-    @data["steps"]&.each do |step_data|
-      @cert_steps << CertStep.new(step_data, @db_obj)
-    end
-
-    raise "No steps for certification procedure ID '#{id}' of kind #{@db_obj.kind}" if @cert_steps.empty?
-
-    @cert_steps
-  end
-end
-
-class CertStep
-  # @param data [Hash<String, String>] The step information from the YAML
-  def initialize(data, db_obj)
-    raise ArgumentError, "Need Hash but was passed a #{data.class}" unless data.is_a?(Hash)
-    @data = data
-
-    raise ArgumentError, "Missing certification step name for #{db_obj.name} of kind #{db_obj.kind}" if name.nil?
-    raise ArgumentError, "Missing certification step description for #{db_obj.name} of kind #{db_obj.kind}" if description.nil?
-  end
-
-  # @return [String] Name of the step
-  def name = @data["name"]
-
-  # @return [String] Description of the step
-  def description = @data["description"]
-
-  # @return [String] Optional note (can be nil)
-  # @return [nil] Optional
-  def note = @data["note"]
+  # @return [String] String (likely multiline) of certification test procedure steps using Asciidoc lists
+  def cert_steps = @data["steps"]
 end
