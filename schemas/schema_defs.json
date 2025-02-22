@@ -300,7 +300,7 @@
         "id": {
           "type": "string"
         },
-        "name": {
+        "test_file_name": {
           "type": "string"
         },
         "description": {
@@ -314,24 +314,8 @@
           }
         },
         "steps": {
-          "description": "List of steps to be followed in order by test",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "required": ["name", "description"],
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "description": {
-                "type": "string"
-              },
-              "note": {
-                "type": "string"
-              }
-            },
-            "additionalProperties": false
-          }
+          "description": "List of steps typically using Asciidoc unordered lists",
+          "type": "string"
         },
         "additionalProperties": false
       }
