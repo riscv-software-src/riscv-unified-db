@@ -7,13 +7,13 @@
 <%= anchor_for_udb_doc_inst(inst.name) %>
 === <%= inst.name %>
 
-<%= inst.long_name %>::
+*<%= inst.long_name %>*
 
 This instruction is defined by:
 
 <%= inst.defined_by_condition.to_asciidoc %>
 
-Encoding::
+==== Encoding
 
 <% if inst.multi_encoding? -%>
 [NOTE]
@@ -21,14 +21,14 @@ This instruction has different encodings in RV32 and RV64.
 
 [tabs]
 ====
-RV32:::
+RV32::
 +
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
 <%= JSON.dump inst.wavedrom_desc(32) %>
 ....
 
-RV64:::
+RV64::
 +
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
@@ -42,11 +42,11 @@ RV64:::
 ....
 <% end -%>
 
-Synopsis::
+==== Description
 
 <%= inst.description %>
 
-Access::
+==== Access
 <% if portfolio_design.in_scope_extensions.any? { |e| e.name == "H" } -%>
 [cols="^,^,^,^,^"]
 <% else -%>
@@ -68,11 +68,12 @@ Access::
 <%= inst.access_detail %>
 <% end -%>
 
-Decode Variables::
+==== Decode Variables
+
 <% if inst.multi_encoding? -%>
 [tabs]
 ====
-RV32:::
+RV32::
 +
 [source.idl]
 ----
@@ -81,7 +82,7 @@ RV32:::
 <% end -%>
 ----
 
-RV64:::
+RV64::
 +
 [source,idl]
 ----
@@ -100,7 +101,7 @@ RV64:::
 <% end -%>
 
 <% if inst.key?("operation()") -%>
-IDL Operation::
+==== IDL Operation
 
 [source,idl,subs="specialchars,macros"]
 ----
@@ -109,7 +110,7 @@ IDL Operation::
 <% end -%>
 
 <% if inst.key?("sail()") -%>
-Sail Operation::
+==== Sail Operation
 
 [source,sail]
 ----
@@ -117,7 +118,7 @@ Sail Operation::
 ----
 <% end -%>
 
-Exceptions::
+==== Exceptions
 
 <% exception_list = inst.reachable_exceptions_str(design.symtab) -%>
 <% if exception_list.empty? -%>
@@ -132,8 +133,8 @@ This instruction may result in the following synchronous exceptions:
 <% end -%>
 
 <% if defined?(gen_ctp_content) && gen_ctp_content -%>
-<%= portfolio_design.include_erb("normative_rules.adoc.erb", { "db_obj" => inst, "org" => "appendix", "use_description_list" => true }) %>
-<%= portfolio_design.include_erb("test_procedures.adoc.erb", { "db_obj" => inst, "org" => "appendix", "use_description_list" => true }) %>
+<%= portfolio_design.include_erb("normative_rules.adoc.erb", { "db_obj" => inst, "org" => "appendix" }) %>
+<%= portfolio_design.include_erb("test_procedures.adoc.erb", { "db_obj" => inst, "org" => "appendix" }) %>
 <% end # if gen_ctp_content -%>
 
 <% end # each in_scope instruction -%>
