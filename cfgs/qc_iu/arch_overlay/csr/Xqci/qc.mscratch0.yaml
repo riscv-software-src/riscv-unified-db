@@ -1,0 +1,20 @@
+$schema: csr_schema.json#
+kind: csr
+name: qc.mscratch0
+long_name: Machine Scratch Register 0
+address: 0x7c6
+base: 32
+priv_mode: M
+length: MXLEN
+description: |
+  Scratch register for software use. Bits are not interpreted by hardware.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqciint
+fields:
+  SCRATCH:
+    location: 31-0
+    description: Scratch value
+    type: RW
+    reset_value: 0

@@ -3,15 +3,51 @@ kind: csr
 name: mcause
 fields:
   NMI:
-    location_rv32: 30
-    location_rv64: 62
+    location: 30
     description: |
       *Non Maskable Interrupt processing*
 
       If 1'b1, currently processing NMI.
     type: RW-H
     reset_value: 0
-  CODE:
-    location_rv32: 29-0
-    location_rv64: 61-0
+  MPP:
+    type: RW-H
+    reset_value: 3
+    location: 29-28
+    description: M-mode Previous Privilege.
+  MPIE:
+    type: RW-H
     reset_value: 0
+    location: 27
+    description: M-mode Previous Interrupt Enable.
+  MIE:
+    type: RW-H
+    reset_value: 0
+    location: 26
+    description: M-mode Interrupt Enable.
+  EXCP:
+    type: RW-H
+    reset_value: 0
+    location: 25
+    description: Exception Pending Bit.
+  RESP:
+    type: RW-H
+    reset_value: 0
+    location: 24
+    description: Resume Pending Bit.
+  MPIL:
+    type: RW-H
+    reset_value: 0
+    location: 19-16
+    description: M-mode Previous Interrupt Level.
+  MIL:
+    type: RW-H
+    reset_value: 15
+    location: 15-12
+    description: M-mode Interrupt Level.
+  CODE:
+    type: RW-H
+    reset_value: 0
+    location_rv32: 11-0
+    location_rv64: 11-0
+    description: Interrupt/Exception code ID.
