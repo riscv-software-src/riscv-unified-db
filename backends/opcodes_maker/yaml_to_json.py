@@ -10,15 +10,16 @@ import subprocess
 
 
 def load_fieldo() -> dict:
-    """
-    Load the fieldo mapping from the JavaScript file (fieldo.js) by invoking Node.js.
-
-    """
     this_dir = os.path.dirname(os.path.abspath(__file__))
-    # The command runs Node.js in the current directory and prints the JSON representation.
-    cmd = ["node", "-e", 'console.log(JSON.stringify(require("./fieldo.js")));']
-    output = subprocess.check_output(cmd, cwd=this_dir)
-    return json.loads(output)
+    json_path = os.path.join(this_dir, "fieldo.json")
+
+    try:
+        with open(json_path) as f:
+            return json.load(f)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Could not find fieldo.json in {this_dir}")
+    except json.JSONDecodeError:
+        raise ValueError(f"Invalid JSON format in fieldo.json")
 
 
 # Set of register names that need transformation.
