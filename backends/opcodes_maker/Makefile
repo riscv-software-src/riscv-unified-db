@@ -35,10 +35,13 @@ $(INSTR_DICT): $(YAML_TO_JSON) | $(OUTPUT_DIR)
 
 # Generate all outputs
 generate: $(INSTR_DICT)
-	python3 $(GENERATOR) $(INSTR_DICT) -c -chisel -spinalhdl -sverilog -rust -go -latex
+	python3 $(GENERATOR) $(INSTR_DICT) -c -chisel -spinalhdl -sverilog -rust -go -latex || \
+		{ echo "Error generating riscv-opcodes outputs. Likely, you don't have updated riscv-opcodes submodules. Please do:"; \
+		  echo "git submodule update --init --recursive"; \
+		  echo "git submodule update --remote ext/riscv-opcodes"; \
+		  exit 1; }
 	mv encoding.out.h inst.chisel inst.spinalhdl inst.sverilog inst.rs inst.go \
 	   instr-table.tex priv-instr-table.tex $(OUTPUT_DIR)/ 2>/dev/null || true
-
 # Clean generated files
 clean:
 	rm -rf $(OUTPUT_DIR)
