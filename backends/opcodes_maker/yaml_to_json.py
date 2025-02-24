@@ -324,8 +324,12 @@ def main():
                 print(f"Warning: Failed to process {inst_dir}: {str(e)}")
                 continue
 
-        with open(output_file, "w") as outfile:
-            json.dump(inst_dict, outfile, indent=4)
+            insts_sorted = {}
+            for inst in sorted(inst_dict):
+                insts_sorted[inst] = inst_dict[inst]
+
+            with open(output_file, "w") as outfile:
+                json.dump(insts_sorted, outfile, indent=4)
 
         print(f"Successfully processed {len(insts)} YAML files")
         print(f"Output written to: {output_file}")
