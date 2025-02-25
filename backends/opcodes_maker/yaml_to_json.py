@@ -5,8 +5,6 @@ import os
 import sys
 import yaml
 import json
-from typing import List, Dict, Union
-import subprocess
 
 
 def load_fieldo() -> dict:
