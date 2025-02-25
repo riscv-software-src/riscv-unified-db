@@ -169,7 +169,7 @@ def GetVariables(vars: List[Dict[str, str]], instr_name: str = "") -> List[str]:
     return result
 
 
-def BitStringToHex(bit_str: str) -> str:
+def GetMatchMask(bit_str: str) -> str:
     new_bit_str = ""
     for bit in bit_str:
         if bit == "-":
@@ -212,7 +212,7 @@ def process_extension(ext: Union[str, dict]) -> List[str]:
     return []
 
 
-def GetExtension(ext: Union[str, dict, list], base: str) -> List[str]:
+def GetExtensions(ext: Union[str, dict, list], base: str) -> List[str]:
     """Get a list of extensions with proper prefix."""
     prefix = f"rv{base}_"
     final_extensions = []
@@ -241,6 +241,7 @@ def convert(file_dir: str, json_out: Dict[str, Any]) -> None:
     try:
         with open(file_dir) as file:
             data = yaml.safe_load(file)
+
             instr_name = data["name"].replace(".", "_")
 
             print(instr_name)
@@ -257,28 +258,28 @@ def convert(file_dir: str, json_out: Dict[str, Any]) -> None:
             if "variables" in encodings:
                 var_names = GetVariables(encodings["variables"])
 
-            extension = []
+            extensions = []
             prefix = ""
             if rv64_flag:
                 prefix = "64"
             try:
                 if "base" in data:
-                    extension = GetExtension(data["definedBy"], data["base"])
+                    extensions = GetExtensions(data["definedBy"], data["base"])
                 else:
-                    extension = GetExtension(data["definedBy"], prefix)
+                    extensions = GetExtensions(data["definedBy"], prefix)
             except Exception as e:
                 print(
                     f"Warning: Error processing extensions for {instr_name}: {str(e)}"
                 )
-                extension = []
+                extensions = []
 
-            match_hex = BitStringToHex(enc_match)
+            match_hex = GetMatchMask(enc_match)
             match_mask = GetMask(enc_match)
 
             json_out[instr_name] = {
                 "encoding": enc_match,
                 "variable_fields": var_names,
-                "extension": extension,
+                "extension": extensions,
                 "match": match_hex,
                 "mask": match_mask,
             }
@@ -287,7 +288,7 @@ def convert(file_dir: str, json_out: Dict[str, Any]) -> None:
         raise
 
 
-def read_yaml_insts(path: str) -> List[str]:
+def find_yaml_files(path: str) -> List[str]:
     yaml_files = []
     for root, _, files in os.walk(path):
         for file in files:
@@ -309,19 +310,19 @@ def main():
     if not os.path.isdir(args.input_dir):
         parser.error(f"Input directory does not exist: {args.input_dir}")
 
-    insts = read_yaml_insts(args.input_dir)
-    if not insts:
+    yaml_files = find_yaml_files(args.input_dir)
+    if not yaml_files:
         parser.error(f"No YAML files found in {args.input_dir}")
 
     inst_dict = {}
     output_file = os.path.join(args.output_dir, "instr_dict.json")
 
     try:
-        for inst_dir in insts:
+        for yaml_file in yaml_files:
             try:
-                convert(inst_dir, inst_dict)
+                convert(yaml_file, inst_dict)
             except Exception as e:
-                print(f"Warning: Failed to process {inst_dir}: {str(e)}")
+                print(f"Warning: Failed to process {yaml_file}: {str(e)}")
                 continue
 
             insts_sorted = {}
