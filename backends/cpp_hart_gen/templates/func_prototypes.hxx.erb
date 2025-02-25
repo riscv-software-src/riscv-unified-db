@@ -8,7 +8,6 @@
 #define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name ## _VALUE
 
 <%# need to get symtab at function scope -%>
-<%- puts cfg_arch.reachable_functions.map(&:name) -%>
 <%- cfg_arch.reachable_functions.each do |func| -%>
 <%- next if func.builtin? || func.generated? -%>
 <%- symtab = cfg_arch.symtab.global_clone.push(nil) -%>

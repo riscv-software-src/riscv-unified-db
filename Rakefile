@@ -108,9 +108,9 @@ end
 # rule to generate standard for any configurations with an overlay
 rule %r{#{$root}/.stamps/resolve-.+\.stamp} => proc { |tname|
   cfg_name = File.basename(tname, ".stamp").sub("resolve-", "")
-  raise "Missing gen/cfgs/#{tname}" unless File.exist?("#{$root}/gen/cfgs/#{cfg_name}.yaml")
+  raise "Missing gen/cfgs/#{tname}" unless File.exist?("#{$root}/cfgs/#{cfg_name}.yaml")
 
-  cfg_path = "#{$root}/gen/cfgs/#{cfg_name}.yaml"
+  cfg_path = "#{$root}/cfgs/#{cfg_name}.yaml"
   cfg = Config.create(cfg_path)
   arch_files = Dir.glob("#{$root}/arch/**/*.yaml")
   overlay_files = cfg.overlay? ? Dir.glob("#{cfg.arch_overlay_abs}/**/*.yaml") : []
@@ -120,7 +120,7 @@ rule %r{#{$root}/.stamps/resolve-.+\.stamp} => proc { |tname|
   ] + arch_files + overlay_files
 } do |t|
   cfg_name = File.basename(t.name, ".stamp").sub("resolve-", "")
-  cfg_path = "#{$root}/gen/cfgs/#{cfg_name}.yaml"
+  cfg_path = "#{$root}/cfgs/#{cfg_name}.yaml"
   cfg = Config.create(cfg_path)
 
   overlay_dir = cfg.overlay? ? cfg.arch_overlay_abs : "/does/not/exist"
@@ -241,7 +241,7 @@ namespace :test do
     Architecture.new("#{$root}/resolved_arch").validate(show_progress: true)
     puts "All files validate against their schema"
   end
-  task idl: ["gen:resolved_arch", "#{$root}/.stamps/resolve-rv32.stamp", "#{$root}/.stamps/resolve-rv64.stamp"]  do
+  task idl: ["#{$root}/.stamps/resolve-rv32.stamp", "#{$root}/.stamps/resolve-rv64.stamp"]  do
     print "Parsing IDL code for RV32..."
     cfg_arch32 = cfg_arch_for("rv32")
     puts "done"

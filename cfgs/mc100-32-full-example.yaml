@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=../schemas/config_schema.json
 ---
-$schema: https://riscv.org/udb/schemas/config_schema.json
+$schema: https://riscv.org/udb/schemas/config_schema-0.1.0.json
 kind: architecture configuration
 type: fully configured
 name: MC100-32-Full

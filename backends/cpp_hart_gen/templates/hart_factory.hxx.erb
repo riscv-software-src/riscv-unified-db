@@ -12,7 +12,7 @@
 <%- end -%>
 
 namespace udb {
-  template <class HART_TYPE>
+  template <class HART_TYPE, SocModel SocType>
   class RiscvTestsTracer : public udb::AbstractTracer
   {
   public:
@@ -40,7 +40,7 @@ namespace udb {
     };
 
   public:
-    RiscvTestsTracer(HartBase* hart)
+    RiscvTestsTracer(HartBase<SocType>* hart)
       : udb::AbstractTracer(),
         m_hart(dynamic_cast<HART_TYPE*>(hart))
     {}
@@ -77,14 +77,15 @@ namespace udb {
       return { <%= cfg_list.map { |c| "\"#{c}\"" }.join(", ") %> };
     }
 
-    static HartBase* create(const std::string& config_name, uint64_t hart_id, const std::filesystem::path& cfg_path, Memory& mem)
+    template <SocModel SocType>
+    static HartBase<SocType>* create(const std::string& config_name, uint64_t hart_id, const std::filesystem::path& cfg_path, SocType& soc)
     {
       auto yaml = YAML::LoadFile(cfg_path.string());
       nlohmann::json json = ConfigValidator::validate(yaml);
 
       <%- cfg_list.each do |config| -%>
       if (config_name == "<%= config %>") {
-        return new <%= name_of(:hart, config) %>(hart_id, mem, json);
+        return new <%= name_of(:hart, config) %>(hart_id, soc, json);
       }
       <%- end %>
 
@@ -93,14 +94,15 @@ namespace udb {
       exit(1);
     }
 
-    static HartBase* create(const std::string& config_name, uint64_t hart_id, const std::string& cfg_yaml, Memory& mem)
+    template <SocModel SocType>
+    static HartBase<SocType>* create(const std::string& config_name, uint64_t hart_id, const std::string& cfg_yaml, SocType& soc)
     {
       auto yaml = YAML::Load(cfg_yaml);
       nlohmann::json json = ConfigValidator::validate(yaml);
 
       <%- cfg_list.each do |config| -%>
       if (config_name == "<%= config %>") {
-        return new <%= name_of(:hart, config) %>(hart_id, mem, json);
+        return new <%= name_of(:hart, config) %>(hart_id, soc, json);
       }
       <%- end %>
 
@@ -109,11 +111,12 @@ namespace udb {
       exit(1);
     }
 
-    static AbstractTracer* create_tracer(const std::string& tracer_name, const std::string& config_name, HartBase* hart)
+    template <SocModel SocType>
+    static AbstractTracer* create_tracer(const std::string& tracer_name, const std::string& config_name, HartBase<SocType>* hart)
     {
       <%- cfg_list.each do |config| -%>
       if (config_name == "<%= config %>") {
-        return new RiscvTestsTracer<<%= name_of(:hart, config) %>>(hart);
+        return new RiscvTestsTracer<<%= name_of(:hart, config) %><SocType>, SocType>(hart);
       }
       <%- end %>
 

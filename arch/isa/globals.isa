@@ -1,6 +1,8 @@
 %version: 1.0
 
 include "builtin_functions.idl"
+include "interrupts.idl"
+include "fetch.idl"
 include "util.idl"
 include "fp.idl"
 
@@ -107,9 +109,6 @@ enum CsrFieldType {
 generated enum ExtensionName;
 
 # generated from extension information in arch definition
-generated enum InterruptCode;
-
-# generated from extension information in arch definition
 generated enum ExceptionCode;
 
 # XLEN encoding, as defined in CSR[mstatus].mxl, etc.
@@ -203,7 +202,6 @@ struct VmaOrderType {
   XReg gpaddr;            # when single_gpaddr is true, the guest physical address to order
 }
 
-
 bitfield (64) Sv39PageTableEntry {
   N 63
   PBMT 62-61
@@ -242,6 +240,19 @@ function mode {
 }
 
 
+function set_mode_no_refresh {
+  arguments PrivilegeMode new_mode
+  description {
+    Set the current privilege mode to `new_mode`, but don't refresh interrupts
+  }
+  body {
+    if (new_mode != current_mode) {
+      notify_mode_change(new_mode, current_mode);
+      current_mode = new_mode;
+    }
+  }
+}
+
 function set_mode {
   arguments PrivilegeMode new_mode
   description {
@@ -251,6 +262,7 @@ function set_mode {
     if (new_mode != current_mode) {
       notify_mode_change(new_mode, current_mode);
       current_mode = new_mode;
+      refresh_pending_interrupts();
     }
   }
 }
@@ -466,6 +478,78 @@ function stval_for {
   }
 }
 
+function csr? {
+  returns Boolean
+  arguments Bits<12> csr_addr
+  description {
+    Returns true if csr_addr is an implemented csr, and the defining extension is not disabled
+  }
+  body {
+    if (!implemented_csr?(csr_addr)) {
+      return false;
+    }
+
+    if (implemented?(ExtensionName::S)
+        && !CSR[csr_addr].implemented_without?(ExtensionName::S)) {
+
+      return CSR[misa].S == 1'b1;
+
+    } else if (implemented?(ExtensionName::U)
+               && !CSR[csr_addr].implemented_without?(ExtensionName::U)) {
+
+      return CSR[misa].U == 1'b1;
+
+    } else if (implemented?(ExtensionName::H)
+               && !CSR[csr_addr].implemented_without?(ExtensionName::H)) {
+
+      return CSR[misa].H == 1'b1;
+    }
+
+    return true;
+  }
+}
+
+function check_csr {
+  arguments Bits<12> csr_addr, Boolean for_write, Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Checks if 'csr_addr' is a valid address, can be read in the current mode,
+    and, if for_write is true, can be written in the current mode.
+
+    If the check fails, will either raise IllegalInsruction or cause
+    unpredictable behavior, depending on TRAP_ON_UNIMPLEMENTED_CSR
+  }
+  body {
+    if (!csr?(csr_addr)) {
+      if (TRAP_ON_UNIMPLEMENTED_CSR) {
+        raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+      } else {
+        unpredictable("Attempt to read unimplemented CSR");
+      }
+    }
+    PrivilegeMode priv_mode;
+    if (csr_addr[9:8] == 2'b00) {
+      priv_mode = PrivilegeMode::M;
+    } else if (csr_addr[9:8] == 2'b01 || csr_addr[9:8] == 2'b10) {
+      priv_mode = PrivilegeMode::S;
+    } else {
+      priv_mode = PrivilegeMode::U;
+    }
+    if (priv_mode == PrivilegeMode::M) {
+      if (mode() != PrivilegeMode::M) {
+        raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+      }
+    } else if (priv_mode == PrivilegeMode::S) {
+      if (mode() == PrivilegeMode::U || mode() == PrivilegeMode::VU) {
+        raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+      }
+    }
+
+    if (for_write && csr_addr[11:10] == 2'b11) {
+      # write to read-only CSR
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+  }
+}
 
 function vstval_for {
   returns XReg
@@ -709,7 +793,7 @@ function jump {
     if ((ialign() == 16) && ((target_addr & 0x1) != 0)) {
       # the target PC is not halfword-aligned
       raise(ExceptionCode::InstructionAddressMisaligned, mode(), target_addr);
-    } else if ((target_addr & 0x3) != 0) {
+    } else if ((ialign() == 32) && (target_addr & 0x3) != 0) {
       # the target PC is not word-aligned
       raise(ExceptionCode::InstructionAddressMisaligned, mode(), target_addr);
     }
@@ -1836,7 +1920,7 @@ function gstage_page_walk {
               # successful translation and update
               result.paddr = pte_paddr;
               if (PTESIZE >= 64) {
-                result.pbmt = pte[62:61];
+                result.pbmt = $enum(Pbmt, pte[62:61]);
               }
               result.pte_flags = pte_flags;
               return result;
@@ -2155,7 +2239,7 @@ function stage1_page_walk {
                   encoding
                 );
               result.paddr = pte_phys.paddr;
-              result.pbmt = pte_phys.pbmt == 0 ? pte[62:61] : pte_phys.pbmt;
+              result.pbmt = pte_phys.pbmt == Pbmt::PMA ? $enum(Pbmt, pte[62:61]) : pte_phys.pbmt;
               result.pte_flags = pte_flags;
               return result;
             }
@@ -2398,7 +2482,7 @@ function read_memory_aligned {
   returns Bits<LEN>
   arguments
     XReg virtual_address,
-    Bits<INSTR_ENC_SIZE> encoding   # the encoding of an instruction causing this access, or 0 if a fetch
+    Bits<INSTR_ENC_SIZE> encoding   # the encoding of an instruction causing this access
   description {
     Read from virtual memory using a known aligned address.
   }
@@ -2471,7 +2555,7 @@ function read_memory {
       # misaligned, must break into multiple reads
       if (MISALIGNED_SPLIT_STRATEGY == "by_byte") {
         Bits<LEN> result = 0;
-        for (U32 i = 0; i <= LEN; i++) {
+        for (U32 i = 0; i <= (LEN/8); i++) {
           result = result | (read_memory_aligned<8>(virtual_address + i, encoding) << (8*i));
         }
         return result;
@@ -2786,6 +2870,7 @@ function write_memory {
 
     if (aligned) {
       write_memory_aligned<LEN>(virtual_address, value, encoding);
+      return;
     }
 
     # access isn't naturally aligned, but it still might be atomic if this hart supports
@@ -2803,6 +2888,7 @@ function write_memory {
       if (misaligned_is_atomic?<LEN>(physical_address)) {
         access_check(physical_address, LEN, virtual_address, MemoryOperation::Write, ExceptionCode::StoreAmoAccessFault, effective_ldst_mode());
         write_physical_memory<LEN>(physical_address, value);
+        return;
       }
     }
 
@@ -2821,7 +2907,7 @@ function write_memory {
     } else {
       # misaligned, must break into multiple reads
       if (MISALIGNED_SPLIT_STRATEGY == "by_byte") {
-        for (U32 i = 0; i <= LEN; i++) {
+        for (U32 i = 0; i <= (LEN/8); i++) {
           write_memory_aligned<8>(virtual_address + i, (value >> (8*i))[7:0], encoding);
         }
       } else if (MISALIGNED_SPLIT_STRATEGY == "custom") {

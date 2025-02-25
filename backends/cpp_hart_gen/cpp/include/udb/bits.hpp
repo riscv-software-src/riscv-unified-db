@@ -102,6 +102,16 @@ namespace udb {
   template <unsigned MaxN, bool Signed>
   class _RuntimeBits;
 
+  // saturating add
+  template <unsigned A, unsigned B>
+  struct addsat {
+    static constexpr unsigned value = (((A + B) < A) || ((A + B) < B))
+                                          ? std::numeric_limits<unsigned>::max()
+                                          : A + B;
+  };
+  template <unsigned A, unsigned B>
+  static constexpr unsigned addsat_v = addsat<A, B>::value;
+
   // The _Bits class represents an arbitrary-width integer.
   // N is the width of the integer, known at compile time.
   // If N == BitsInfinitePrecision, then the width is infinite (i.e., not known)
@@ -191,17 +201,6 @@ namespace udb {
     static_assert(needs_mask<256>() == true);
     static_assert(needs_mask<512>() == true);
     static_assert(needs_mask<InfinitePrecision>() == false);
-
-    // saturating add
-    template <unsigned A, unsigned B>
-    struct addsat {
-      static constexpr unsigned value =
-          (((A + B) < A) || ((A + B) < B))
-              ? std::numeric_limits<unsigned>::max()
-              : A + B;
-    };
-    template <unsigned A, unsigned B>
-    static constexpr unsigned addsat_v = addsat<A, B>::value;
 
    public:
     // given storage for a Bits<N> type, return a signed version of it in the
@@ -598,10 +597,10 @@ namespace udb {
       const _Bits<M, _Signed> &o) const {                                     \
     if constexpr (M > N) {                                                    \
       return _Bits < constmax<N, M>::value,                                   \
-             Signed && _Signed > {_Bits<M, _Signed>{get()}.get() op o.get()}; \
+             Signed && _Signed > {_Bits<M, Signed>{get()}.get() op o.get()};  \
     } else {                                                                  \
       return _Bits < constmax<N, M>::value,                                   \
-             Signed && _Signed > {get() op _Bits{o.get()}.get()};             \
+             Signed && _Signed > {get() op _Bits<N, _Signed>{o.get()}.get()}; \
     }                                                                         \
   }                                                                           \
                                                                               \
@@ -682,7 +681,7 @@ namespace udb {
       return val << shamt.m_val;
     }
 
-    // left shift when the shift amount is known at compile time
+    // widening left shift when the shift amount is known at compile time
     template <unsigned SHAMT>
     constexpr _Bits<addsat_v<N, SHAMT>, Signed> sll() const {
       using ReturnType = _Bits<addsat_v<N, SHAMT>, Signed>;
@@ -691,6 +690,13 @@ namespace udb {
       } else {
         return ReturnType{m_val}.m_val << SHAMT;
       }
+    }
+
+    // widening left shift when the shift amount is not known at compile time
+    constexpr _Bits<InfinitePrecision, Signed> widening_sll(
+        unsigned shamt) const {
+      using ReturnType = _Bits<InfinitePrecision, Signed>;
+      return ReturnType{m_val} << shamt;
     }
 
     constexpr _Bits operator>>(const _Bits &shamt) const {
@@ -1450,6 +1456,29 @@ namespace udb {
 
 #undef RUNTIME_BITS_ASSIGN_OP
 
+    // left shift when the shift amount is known at compile time
+    template <unsigned SHAMT>
+    _RuntimeBits<addsat_v<MaxN, SHAMT>, Signed> sll() const {
+      if (m_width_known) {
+        auto result_width = m_width + SHAMT;
+        return {_Bits<addsat_v<MaxN, SHAMT>, Signed>{m_value} << SHAMT,
+                result_width};
+      } else {
+        return {_Bits<addsat_v<MaxN, SHAMT>, Signed>{m_value} << SHAMT};
+      }
+    }
+
+    // widening left shift when the shift amount is not known at compile time
+    _RuntimeBits<BitsInfinitePrecision, Signed> widening_sll(
+        unsigned shamt) const {
+      if (m_width_known) {
+        return {_Bits<BitsInfinitePrecision, Signed>{m_value} << shamt,
+                m_width + shamt};
+      } else {
+        return _Bits<BitsInfinitePrecision, Signed>{m_value} << shamt;
+      }
+    }
+
    private:
     _Bits<MaxN, Signed> m_value;
     unsigned m_width;
@@ -1467,9 +1496,9 @@ namespace udb {
   template <unsigned MaxN, bool RuntimeSigned>
   _Bits<N, BitsSigned>::_Bits(const _RuntimeBits<MaxN, RuntimeSigned> &val) {
     if constexpr (RuntimeSigned) {
-      m_val = _Bits<N, BitsSigned>{val.value().get()}.m_val;
-    } else {
       m_val = _Bits<N, BitsSigned>{val.make_signed().value().get()}.m_val;
+    } else {
+      m_val = _Bits<N, BitsSigned>{val.value().get()}.m_val;
     }
   }
 

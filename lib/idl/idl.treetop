@@ -16,6 +16,8 @@ grammar Idl
         /
         function_definition
         /
+        fetch
+        /
         space+
       )+ <Idl::IsaSyntaxNode>
   end
@@ -403,7 +405,7 @@ grammar Idl
   rule function_call
     csr:csr_register_access_expression space* '.' space* 'sw_write' space* '(' space* expression space* ')' <Idl::CsrSoftwareWriteSyntaxNode>
     /
-    csr:csr_register_access_expression space* '.' space* function_name space* '(' space* ')' <Idl::CsrFunctionCallSyntaxNode>
+    csr:csr_register_access_expression space* '.' space* function_name space* '(' space* function_arg_list space* ')' <Idl::CsrFunctionCallSyntaxNode>
     /
     function_name t:(space* '<' space* targs:function_call_template_arguments space* '>')? space* '(' space* function_arg_list space* ')' <Idl::FunctionCallExpressionSyntaxNode>
   end
@@ -417,7 +419,7 @@ grammar Idl
   end
 
   rule body_function_definition
-    'function' space+ function_name space* '{' space*
+    type:('external' space+)? 'function' space+ function_name space* '{' space*
       targs:('template' space+ first:single_declaration rest:(space* ',' space* single_declaration)* space+)?
       ret:('returns' space+ first:type_name rest:(space* ',' space* type_name)* space+)?
       args:(
@@ -439,8 +441,8 @@ grammar Idl
 
   rule builtin_function_definition
     type:('builtin' / 'generated') space+ 'function' space+ function_name space* '{' space*
-      targs:('template' space+ first:single_declaration rest:(space* ',' space* single_declaration)* space+)?
-      ret:('returns' space+ first:type_name rest:(space* ',' space* type_name)* space+)?
+      # templates are not supported for builtins
+      ret:('returns' space+ first:type_name space+)?
       args:(
         'arguments' space+
         first:single_declaration
@@ -451,6 +453,12 @@ grammar Idl
         desc:([^}] / "\n")+
       '}' space*
     '}' <Idl::FunctionDefSyntaxNode>
+  end
+
+  rule fetch
+    'fetch' space* '{' space*
+      function_body space*
+    '}' <Idl::FetchSyntaxNode>
   end
 
   rule function_definition
@@ -506,7 +514,7 @@ grammar Idl
   end
 
   rule return_expression
-    'return' space+ first:(expression/dontcare_return) rest:(space* ',' space* e:(expression/dontcare_return))* <Idl::ReturnExpressionSyntaxNode>
+    'return' vals:(first:(space+ e:(expression/dontcare_return))? rest:(space* ',' space* e:(expression/dontcare_return))*) <Idl::ReturnExpressionSyntaxNode>
   end
 
   rule return_statement

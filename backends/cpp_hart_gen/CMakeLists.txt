@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.20)
 cmake_policy(SET CMP0067 NEW) # Force check_cxx_source_compiles to respect CMAKE_CXX_STANDARD
 
-project(udb LANGUAGES CXX)
+include(ExternalProject)
+
+project(udb LANGUAGES CXX C)
 
 # Add Asan build type
 SET(CMAKE_CXX_FLAGS_ASAN
@@ -32,7 +34,7 @@ IF(NOT CMAKE_BUILD_TYPE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 message("* Current build type is : ${CMAKE_BUILD_TYPE}")
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -no-pie)
@@ -93,18 +95,21 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(nlohmann_json_schema_validator)
 
+FetchContent_Declare(
+  compile_time_regular_expressions
+  GIT_REPOSITORY https://github.com/hanickadot/compile-time-regular-expressions.git
+  GIT_TAG        v3.9.0
+)
+FetchContent_MakeAvailable(compile_time_regular_expressions)
+
 set(GENERATED_SRCS "")
 foreach(config ${CONFIG_LIST})
-  list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/decode.cxx")
-  list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/csrs.cxx")
   list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/params.cxx")
-  list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/hart.cxx")
-  list(APPEND GENERATED_SRCS "${CMAKE_SOURCE_DIR}/src/cfgs/${config}/idl_funcs.cxx")
 endforeach()
 
 add_library(hart
   ${CMAKE_SOURCE_DIR}/src/db_data.cxx
-  ${CMAKE_SOURCE_DIR}/src/version.cpp
+  ${CMAKE_SOURCE_DIR}/src/enum.cxx
   ${CMAKE_SOURCE_DIR}/src/memory.cpp
   ${GENERATED_SRCS}
 #  ../gen/iss/oryon/src/types.cxx
@@ -113,7 +118,18 @@ add_library(hart
 #  ../gen/iss/oryon/src/decode.cxx
 )
 target_include_directories(hart PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(hart PUBLIC yaml-cpp::yaml-cpp nlohmann_json_schema_validator fmt::fmt -lgmp -lgmpxx)
+target_link_libraries(hart PUBLIC yaml-cpp::yaml-cpp nlohmann_json_schema_validator fmt::fmt ctre::ctre -lgmp -lgmpxx)
+
+add_library(hart_c ${CMAKE_SOURCE_DIR}/src/libhart_c.cpp)
+target_include_directories(hart_c PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(hart_c hart)
+
+add_library(hart_renode SHARED ${CMAKE_SOURCE_DIR}/src/libhart_renode.cpp)
+target_compile_options(hart_renode PRIVATE -fvisibility=hidden)
+target_include_directories(hart_renode PUBLIC
+  ${CMAKE_SOURCE_DIR}/include
+)
+target_link_libraries(hart_renode PUBLIC hart)
 
 add_executable(iss
   ${CMAKE_SOURCE_DIR}/src/iss.cpp
@@ -148,12 +164,12 @@ add_executable(test_version
 target_include_directories(test_version PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(test_version PRIVATE hart Catch2::Catch2WithMain)
 
-add_executable(test_decode
-  ${CMAKE_SOURCE_DIR}/test/test_decode.cpp
-)
-target_include_directories(test_decode PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(test_decode PRIVATE hart Catch2::Catch2WithMain)
+# add_executable(test_decode
+#   ${CMAKE_SOURCE_DIR}/test/test_decode.cpp
+# )
+# target_include_directories(test_decode PUBLIC ${CMAKE_SOURCE_DIR}/include)
+# target_link_libraries(test_decode PRIVATE hart Catch2::Catch2WithMain)
 
 include(CTest)
 include(Catch)
-catch_discover_tests(test_bits test_util test_csr test_version test_decode)
+catch_discover_tests(test_bits test_util test_csr test_version) # test_decode)

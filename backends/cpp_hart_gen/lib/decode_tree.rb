@@ -211,18 +211,18 @@ class DecodeGen
   def extract_dv(dv, encoding_var_name)
     idx = 0
     efs = []
-    dv.encoding_fields.each do |ef|
+    dv.encoding_fields.reverse.each do |ef|
       bits = "extract<#{ef.range.first}, #{ef.range.size}>(#{encoding_var_name}.get())"
       efs <<
-        if idx == 0
+        if idx.zero?
           bits
         else
-          "(#{bits} << #{idx})"
+          "(#{bits}.template sll<#{idx}>())"
         end
       idx += ef.size
     end
 
-    efs.join(" && ")
+    "(#{efs.join(' | ')})"
   end
 
   # @return [Boolean] whether or not the instruction in node is a base of HINTs
@@ -321,7 +321,16 @@ class DecodeGen
     else
       raise 'unexpected' unless node.type == DecodeTreeNode::ENDPOINT_TYPE
 
-      code += "#{' ' * (indent + 2)}return new #{tenv.name_of(:inst, @cfg_arch, node.insts[0].name)}<#{xlen}>(this, pc, #{encoding_var_name});\n"
+      code += <<~NEW_INST
+      {
+          std::construct_at(
+            reinterpret_cast<#{tenv.name_of(:inst, @cfg_arch, node.insts[0].name)}<#{xlen}, SocType>*>(inst),
+            this, pc, #{encoding_var_name}
+          );
+          return true;
+      }
+      NEW_INST
+      # code += "#{' ' * (indent + 2)}return new #{tenv.name_of(:inst, @cfg_arch, node.insts[0].name)}<#{xlen}, SocType>(this, pc, #{encoding_var_name});\n"
     end
     code
   end

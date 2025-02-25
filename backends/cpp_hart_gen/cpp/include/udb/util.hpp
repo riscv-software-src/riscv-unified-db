@@ -184,11 +184,12 @@ namespace udb {
   }
 
   template <unsigned N, unsigned M>
-  constexpr Bits<N * M> replicate(const Bits<M> &value) {
+  constexpr Bits<N * M> replicate(const Bits<M> &_value) {
     static_assert(N > 0, "Must replicate at least once");
     static_assert(M < BitsMaxNativePrecision,
                   "Please don't replicate multiprecision numbers ;(");
 
+    Bits<N * M> value = _value;
     Bits<N * M> result = value;
     for (unsigned i = 1; i < N; i++) {
       result |= value << (i * M);
@@ -197,11 +198,12 @@ namespace udb {
   }
 
   template <unsigned M, typename T>
-  constexpr RuntimeBits replicate(const Bits<M> &value, const T &N) {
+  constexpr RuntimeBits replicate(const Bits<M> &_value, const T &N) {
     udb_assert(N > 0, "Must replicate at least once");
     static_assert(M < BitsMaxNativePrecision,
                   "Please don't replicate multiprecision numbers ;(");
 
+    Bits<BitsInfinitePrecision> value = _value;
     Bits<BitsInfinitePrecision> result = value;
     for (unsigned i = 1; i < N; i++) {
       result |= value << (i * M);
@@ -210,10 +212,11 @@ namespace udb {
   }
 
   template <unsigned MaxN, bool Signed, typename T>
-  constexpr RuntimeBits replicate(const _RuntimeBits<MaxN, Signed> &value,
+  constexpr RuntimeBits replicate(const _RuntimeBits<MaxN, Signed> &_value,
                                   const T &N) {
     udb_assert(N > 0, "Must replicate at least once");
 
+    RuntimeBits value{_value.value(), _value.width() * N};
     RuntimeBits result{value.value(), value.width() * N};
     for (unsigned i = 1; i < N; i++) {
       result |= value.value() << (i * value.width());

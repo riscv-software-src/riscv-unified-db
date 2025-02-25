@@ -6,7 +6,7 @@
 #include <string>
 #include <utility>
 
-#include "udb/memory.hpp"
+#include "udb/soc_model.hpp"
 
 namespace udb {
   // Class to read data out of an ELF file
@@ -45,14 +45,15 @@ namespace udb {
     // Loads all LOADable sections from an ELF into 'm'
     //
     // returns the start address
-    uint64_t loadLoadableSegments(Memory& m);
+    template <SocModel SocType>
+    uint64_t loadLoadableSegments(SocType& soc);
 
    private:
     template <unsigned char CLASS>
     std::pair<uint64_t, uint64_t> _mem_range();
 
-    template <unsigned char CLASS>
-    uint64_t _loadLoadableSegments(Memory& m);
+    template <unsigned char CLASS, SocModel SocType>
+    uint64_t _loadLoadableSegments(SocType& soc);
 
    private:
     int m_fd;
@@ -91,8 +92,8 @@ namespace udb {
     return std::make_pair(smallest_addr, largest_addr);
   }
 
-  template <unsigned char CLASS>
-  uint64_t ElfReader::_loadLoadableSegments(Memory& m) {
+  template <unsigned char CLASS, SocModel SocType>
+  uint64_t ElfReader::_loadLoadableSegments(SocType& soc) {
     std::conditional_t<CLASS == ELFCLASS32, Elf32_Phdr, Elf64_Phdr>* phdr;
     size_t n;
 
@@ -109,7 +110,9 @@ namespace udb {
       if (phdr[i].p_type == PT_LOAD) {
         Elf_Data* d = elf_getdata_rawchunk(m_elf, phdr[i].p_offset,
                                            phdr[i].p_filesz, ELF_T_BYTE);
-        m.memcpy_from_host(phdr[i].p_vaddr, d->d_buf, d->d_size);
+        soc.memcpy_from_host(phdr[i].p_vaddr,
+                             reinterpret_cast<const uint8_t*>(d->d_buf),
+                             d->d_size);
       }
     }
 
@@ -117,6 +120,16 @@ namespace udb {
       return elf32_getehdr(m_elf)->e_entry;
     } else {
       return elf64_getehdr(m_elf)->e_entry;
+    }
+  }
+
+  // returns start address
+  template <SocModel SocType>
+  uint64_t udb::ElfReader::loadLoadableSegments(SocType& soc) {
+    if (m_class == ELFCLASS32) {
+      return _loadLoadableSegments<ELFCLASS32>(soc);
+    } else {
+      return _loadLoadableSegments<ELFCLASS64>(soc);
     }
   }
 }  // namespace udb

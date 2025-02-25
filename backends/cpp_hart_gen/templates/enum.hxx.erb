@@ -14,6 +14,8 @@ namespace udb {
   <%- raise "TODO: handle enum with width > 64" if enum.type(symtab).width > 64 -%>
   <%- underlying_type = enum.type(symtab).width <= 32 ? "uint32_t" : "uint64_t" -%>
   struct <%= enum.name %> {
+    using ValueType = <%= underlying_type %>;
+
     <%- element_names = enum.type(symtab).element_names -%>
     <%- element_values = enum.type(symtab).element_values -%>
     <%- element_names.each_index do |idx| -%>
@@ -23,6 +25,8 @@ namespace udb {
     // constructors
     constexpr <%= enum.name %>() = default;
     constexpr <%= enum.name %>(const <%= underlying_type %>& value) : m_value(value) {}
+
+    static const <%= enum.name %> from_s(const std::string& value);
 
     <%= underlying_type %> m_value;
     <%= underlying_type %> value() const { return m_value; }
@@ -51,8 +55,14 @@ namespace udb {
       return m_value == rhs.m_value;
     }
 
+    constexpr bool operator<(const <%= enum.name %>& rhs) const {
+      return m_value < rhs.m_value;
+    }
+
   };
+
   const std::string to_s(const <%= enum.name %>& value);
+
   template <std::integral Type>
   Type operator<<(const Type& lhs, const <%= enum.name %>& rhs) {
     return lhs << rhs.value();

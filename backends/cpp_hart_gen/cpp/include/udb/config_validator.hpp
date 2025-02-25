@@ -17,6 +17,7 @@ namespace udb {
       if (!json.contains("$schema")) {
         throw std::runtime_error("No $schema in config file");
       }
+      fmt::print("{}\n", json.dump());
       std::smatch m;
       std::regex re("^https://riscv.org/udb/schemas/(.*\\.json)");
       std::string schema_path = json["$schema"].template get<std::string>();

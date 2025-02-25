@@ -8,6 +8,22 @@ generated function implemented? {
   }
 }
 
+generated function implemented_version? {
+  returns Boolean
+  arguments ExtensionName extension, String version_requirement
+  description {
+    Return true if the implementation supports `extension` meeting 'version_requirement'.
+  }
+}
+
+generated function implemented_csr? {
+  returns Boolean
+  arguments Bits<12> csr_addr
+  description {
+    Return true if csr_addr is an implemented CSR
+  }
+}
+
 builtin function unpredictable {
   arguments String why
   description {

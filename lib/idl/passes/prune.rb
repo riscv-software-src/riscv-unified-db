@@ -62,6 +62,11 @@ module Idl
     end
   end
   class VariableAssignmentAst
+    def prune(symtab)
+      new_ast = VariableAssignmentAst.new(input, interval, lhs.dup, rhs.prune(symtab))
+      new_ast.execute_unknown(symtab)
+      new_ast
+    end
     def nullify_assignments(symtab)
       sym = symtab.get(lhs.text_value)
       unless sym.nil?
@@ -82,6 +87,16 @@ module Idl
   end
   class VariableDeclarationWithInitializationAst
     def prune(symtab)
+      add_symbol(symtab)
+
+      if lhs.const?
+        value_try do
+          rhs.value(symtab)
+          # rhs value is known, and variable is const. it can be removed
+          return NoopAst.new
+        end
+      end
+
       VariableDeclarationWithInitializationAst.new(
         input, interval,
         type_name.dup,
@@ -232,14 +247,26 @@ module Idl
       end
 
       if op == "&&"
-        if lhs_value == false
+        if !lhs_value.nil? && !rhs_value.nil?
+          create_bool_literal(lhs_value && rhs_value)
+        elsif lhs_value == true
           rhs.prune(symtab)
+        elsif rhs_value == true
+          lhs.prune(symtab)
+        elsif lhs_value == false || rhs_value == false
+          create_bool_literal(false)
         else
           BinaryExpressionAst.new(input, interval, lhs.prune(symtab), @op, rhs.prune(symtab))
         end
       elsif op == "||"
-        if lhs_value == true
+        if !lhs_value.nil? && !rhs_value.nil?
+          create_bool_literal(lhs_value || rhs_value)
+        elsif lhs_value == true || rhs_value == true
+          create_bool_literal(true)
+        elsif lhs_value == false
           rhs.prune(symtab)
+        elsif rhs_value == false
+          lhs.prune(symtab)
         else
           BinaryExpressionAst.new(input, interval, lhs.prune(symtab), @op, rhs.prune(symtab))
         end

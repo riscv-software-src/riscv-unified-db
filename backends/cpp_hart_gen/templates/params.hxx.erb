@@ -3,6 +3,11 @@
 #include <filesystem>
 #include <string>
 
+#include "udb/defines.hpp"
+
+#if !defined(JSON_ASSERT)
+#define JSON_ASSERT(cond) udb_assert(cond, "JSON assert");
+#endif
 #include <nlohmann/json.hpp>
 
 #include "udb/bits-yaml.hpp"

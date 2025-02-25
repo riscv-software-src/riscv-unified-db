@@ -263,7 +263,7 @@ module Idl
       when :string
         return type.kind == :string
       when :void
-        return false
+        return type.kind == :void
       when :struct
         return type.kind == :struct && (type.type_name == type_name)
       else
@@ -331,7 +331,7 @@ module Idl
       when :enum_ref
         @enum_class.name
       when :tuple
-      "std::tuple<#{@tuple_types.map(&:to_cxx).join(',')}>"
+        "std::tuple<#{@tuple_types.map(&:to_cxx).join(',')}>"
       when :bitfield
         @name
       when :array
@@ -341,7 +341,7 @@ module Idl
           "std::array<#{@sub_type.to_cxx_no_qualifiers}, #{@width}>"
         end
       when :csr
-        "#{@csr.downcase.capitalize}Csr"
+        "#{CppHartGen::TemplateEnv.new(@csr.cfg_arch).name_of(:csr, @csr.cfg_arch, @csr.name)}<SocType>"
       when :string
         "std::string"
       when :void
@@ -655,6 +655,8 @@ module Idl
     def builtin? = @func_def_ast.builtin?
 
     def generated? = @func_def_ast.generated?
+
+    def external? = @func_def_ast.external?
 
     def num_args = @func_def_ast.num_args
 

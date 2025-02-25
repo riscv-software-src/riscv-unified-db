@@ -221,10 +221,10 @@ class ConfiguredArchitecture < Architecture
     instructions.each do |inst|
       progressbar.increment if show_progress
       if @mxlen == 32
-        inst.type_checked_operation_ast(@idl_compiler, @symtab, 32) if inst.rv32?
+        inst.type_checked_operation_ast(32) if inst.rv32?
       elsif @mxlen == 64
-        inst.type_checked_operation_ast(@idl_compiler, @symtab, 64) if inst.rv64?
-        inst.type_checked_operation_ast(@idl_compiler, @symtab, 32) if possible_xlens.include?(32) && inst.rv32?
+        inst.type_checked_operation_ast(64) if inst.rv64?
+        inst.type_checked_operation_ast(32) if possible_xlens.include?(32) && inst.rv32?
       end
     end
 
@@ -241,16 +241,18 @@ class ConfiguredArchitecture < Architecture
         end
       end
       csr.fields.each do |field|
-        unless field.type_ast(@symtab).nil?
-          if ((possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?) ||
-              (possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?))
-            field.type_checked_type_ast(@symtab)
+        unless field.type_ast.nil?
+          if possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?
+            field.type_checked_type_ast(32)
+          end
+          if possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?
+            field.type_checked_type_ast(64)
           end
         end
-        unless field.reset_value_ast(@symtab).nil?
+        unless field.reset_value_ast.nil?
           if ((possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?) ||
               (possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?))
-            field.type_checked_reset_value_ast(@symtab) if csr.defined_in_base32? && field.defined_in_base32?
+            field.type_checked_reset_value_ast if csr.defined_in_base32? && field.defined_in_base32?
           end
         end
         unless field.sw_write_ast(@symtab).nil?
@@ -266,7 +268,7 @@ class ConfiguredArchitecture < Architecture
       end
     functions.each do |func|
       progressbar.increment if show_progress
-      func.type_check(@symtab)
+      func.type_check
     end
 
     puts "done" if show_progress
@@ -575,9 +577,12 @@ class ConfiguredArchitecture < Architecture
 
   # @return [Array<Idl::FunctionBodyAst>] List of all functions defined by the architecture
   def functions
-    return @functions unless @functions.nil?
+    @functions ||= @global_ast.functions
+  end
 
-    @functions = @global_ast.functions
+  # @return [Idl::FetchAst] Fetch block
+  def fetch
+    @fetch ||= @global_ast.fetch
   end
 
   # @return [Array<Idl::GlobalAst>] List of globals
@@ -723,40 +728,62 @@ class ConfiguredArchitecture < Architecture
       end
     end
 
+    # now add everything from fetch
+    symtab = @symtab.global_clone
+    symtab.push(@global_ast.fetch.body)
+    fetch_fns = @global_ast.fetch.body.reachable_functions(symtab)
+    fetch_fns.each do |f|
+      @implemented_functions << f unless @implemented_functions.any? { |i| i.name == f.name }
+    end
+    symtab.release
+
     @implemented_functions
   end
 
-  # @return [Array<FunctionDefAst>] List of functions that can be reached by any non-prohibited inst/csr
+  # @return [Array<FunctionDefAst>] List of functions that can be reached by the configuration
   def reachable_functions
     return @reachable_functions unless @reachable_functions.nil?
 
-    if @reachable_functions.nil?
-      insts = not_prohibited_instructions
-      @reachable_functions = []
+    insts = not_prohibited_instructions
+    @reachable_functions = []
 
-      insts.each do |inst|
-        fns =
-          if inst.base.nil?
-            if multi_xlen?
-              (inst.reachable_functions(32) +
-              inst.reachable_functions(64))
-            else
-              inst.reachable_functions(mxlen)
-            end
+    insts.each do |inst|
+      fns =
+        if inst.base.nil?
+          if multi_xlen?
+            (inst.reachable_functions(32) +
+            inst.reachable_functions(64))
           else
-            inst.reachable_functions(inst.base)
+            inst.reachable_functions(mxlen)
           end
+        else
+          inst.reachable_functions(inst.base)
+        end
 
-        @reachable_functions.concat(fns)
-      end
-
-      @reachable_functions +=
-        not_prohibited_csrs.flat_map(&:reachable_functions).uniq
-
-      @reachable_functions.uniq!
-      @reachable_functions
+      @reachable_functions.concat(fns)
     end
 
+    @reachable_functions +=
+      not_prohibited_csrs.flat_map(&:reachable_functions).uniq
+
+    # now add everything from fetch
+    symtab = @symtab.global_clone
+    symtab.push(@global_ast.fetch.body)
+    @reachable_functions += @global_ast.fetch.body.reachable_functions(symtab)
+    symtab.release
+
+    # now add everything from external functions
+    symtab = @symtab.global_clone
+    @global_ast.functions.select { |fn| fn.external? }.each do |fn|
+      symtab.push(fn)
+      @reachable_functions << fn
+      fn.apply_template_and_arg_syms(symtab)
+      @reachable_functions += fn.reachable_functions(symtab)
+      symtab.pop
+    end
+    symtab.release
+
+    @reachable_functions.uniq!
     @reachable_functions
   end
 

@@ -68,7 +68,8 @@ module Idl
   end
   class CsrFunctionCallAst
     def gen_adoc(indent, indent_spaces: 2)
-      "#{' '*indent}#{csr.gen_adoc(indent, indent_spaces:)}.#{function_name}()"
+      args_adoc = args.map { |arg| arg.gen_adoc(0) }
+      "#{' '*indent}#{csr.gen_adoc(indent, indent_spaces:)}.#{function_name}(#{args_adoc.join(', ')})"
     end
   end
   class CsrSoftwareWriteAst

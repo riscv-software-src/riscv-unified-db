@@ -102,12 +102,3 @@ bool udb::ElfReader::getSym(const std::string& name, Elf64_Addr* result) {
   }
   return false;
 }
-
-// returns start address
-uint64_t udb::ElfReader::loadLoadableSegments(Memory& m) {
-  if (m_class == ELFCLASS32) {
-    return _loadLoadableSegments<ELFCLASS32>(m);
-  } else {
-    return _loadLoadableSegments<ELFCLASS64>(m);
-  }
-}

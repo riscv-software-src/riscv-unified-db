@@ -593,25 +593,11 @@ function softfloat_propagateNaNF32UI {
     Boolean isSigNaN_a = is_sp_signaling_nan?(a);
     Boolean isSigNaN_b = is_sp_signaling_nan?(b);
 
-    # get non Signalling versions of a and b
-    U32 nonsig_a = returnNonSignalingNaN(a);
-    U32 nonsig_b = returnNonSignalingNaN(b);
-
     if (isSigNaN_a || isSigNaN_b) {
       # raise invalid flag if either number is NaN
       set_fp_flag(FpFlag::NV);
-      if ( isSigNaN_a ) {
-        if ( isSigNaN_b ) {
-          # if both numbers are NaN return larger magnitude and remove NaN signaling
-          return returnLargerMag(a, b);
-        }
-          # if b is NaN return non signaling value of b
-          return is_sp_nan?(b) ? nonsig_b : nonsig_a;
-        } else {
-          return is_sp_nan?(a) ? nonsig_a : nonsig_b;
-        }
     }
-
+    return SP_CANONICAL_NAN;
   }
 }
 

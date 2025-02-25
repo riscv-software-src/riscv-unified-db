@@ -148,7 +148,7 @@ class RequirementSpec
       @version_str = m[2]
       @version_spec = VersionSpec.new(@version_str)
     else
-      raise ArgumentError, "Bad requirement string '#{requirement}'"
+      raise ArgumentError, "Bad requirement string '#{requirement}' #{REQUIREMENT_REGEX}"
     end
   end
 

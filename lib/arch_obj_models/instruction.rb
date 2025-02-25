@@ -758,7 +758,7 @@ class Instruction < DatabaseObject
         self,
         symtab: cfg_arch.symtab,
         input_file: @data["$source"],
-        input_line: source_line("operation()")
+        input_line: source_line("operation()") + 1
       )
 
       raise "unexpected #{ast.class}" unless ast.is_a?(Idl::FunctionBodyAst)

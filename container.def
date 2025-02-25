@@ -42,6 +42,7 @@ From: ubuntu:24.04
   apt-get install -y --no-install-recommends clang-tidy
   apt-get install -y --no-install-recommends libelf-dev
   apt-get install -y --no-install-recommends gcc-riscv64-linux-gnu
+  apt-get install -y --no-install-recommends gcc-riscv64-unknown-elf
   apt-get install -y --no-install-recommends libc6-dev-riscv64-cross
 
   # cleanup

@@ -9,7 +9,7 @@ class Config
   #                                been configured with a value. May be empty.
   attr_reader :param_values
 
-  def overlay? = @data["arch_overlay"].nil? || @data["arch_overlay"].empty?
+  def overlay? = !(@data["arch_overlay"].nil? || @data["arch_overlay"].empty?)
 
   # @return [String] Either a path to an overlay directory, or the name of a folder under arch_overlay/
   # @return [nil] No arch_overlay for this config

@@ -4,6 +4,7 @@
 #include <string>
 
 #include "udb/enum.hxx"
+#include "udb/soc_model.hpp"
 
 namespace udb {
   // represents the location of a field within a CSR
@@ -69,19 +70,13 @@ namespace udb {
     }
   };
 
+  template <SocModel SocType>
   class HartBase;
 
   class CsrBase {
     friend class CsrFieldBase;
 
    public:
-    // empty class used by CsrBase subclasses when a field is only present in
-    // one XLEN
-    struct NotPresentField {
-      // a constructor to match an actual CsrField
-      NotPresentField(HartBase*) {}
-    };
-
     CsrBase() {}
 
     virtual unsigned address() const = 0;
@@ -117,5 +112,8 @@ namespace udb {
     //
     // no checks or transformations are applied
     virtual void hw_write(const uint64_t& value, const unsigned& xlen) = 0;
+
+    // cant this CSR be implemented when ext is not?
+    virtual bool implemented_without_Q_(const ExtensionName&) const = 0;
   };
 }  // namespace udb

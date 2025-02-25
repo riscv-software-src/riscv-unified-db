@@ -6,6 +6,36 @@ class Array
   end
 end
 
+class Instruction
+  def assembly_fmt(xlen)
+    fmt = assembly.dup
+    dvs = encoding(xlen).decode_variables
+    dvs.each do |dv|
+      fmt.gsub!(dv.name, "{}")
+    end
+    fmt
+  end
+
+  def assembly_fmt_args(xlen)
+    args = []
+    dvs = encoding(xlen).decode_variables
+    dvs.each do |dv|
+      if dv.name[0] == "x" || dv.name[0] == "r"
+        args << "Reg(#{dv.name}()).to_string()"
+      elsif dv.name[0] == "f"
+        args << "Reg(#{dv.name}(), true).to_string()"
+      else
+        args << "#{dv.name}()"
+      end
+    end
+    if args.empty?
+      ""
+    else
+      ", #{args.reverse.join(', ')}"
+    end
+  end
+end
+
 class ExtensionRequirementExpression
   def to_cxx_helper(hsh, &block)
     if hsh.is_a?(Hash)
@@ -32,9 +62,8 @@ class ExtensionRequirementExpression
           cpp_str = hsh[key].map { |element| to_cxx_helper(element, &block) }.join(" || ")
           "(#{cpp_str})"
         when "oneOf"
-          raise "TODO"
-          # cpp_str = hsh[key].map { |element| to_cxx_helper(element) }.join(", ")
-          # "([#{cpp_str}].count(true) == 1)"
+          cpp_str = hsh[key].map { |element| to_cxx_helper(element, &block) }.join(", ")
+          "([&]() -> bool { std::array<bool, #{hsh[key].length}> a{#{cpp_str}}; return std::count(a.begin(), a.end(), true); })()"
         when "not"
           "!(#{to_cxx_helper(hsh[key], &block)})"
         else

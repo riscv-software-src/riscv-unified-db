@@ -37,6 +37,6 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg virtual_address = X[rs1] + imm;
+  XReg virtual_address = X[rs1 + 8] + imm;
 
-  X[rd] = sext(read_memory<64>(virtual_address, $encoding), 64);
+  X[rd + 8] = sext(read_memory<64>(virtual_address, $encoding), 64);

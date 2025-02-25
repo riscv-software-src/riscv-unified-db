@@ -1,6 +1,7 @@
 #pragma once
 
 #include "udb/bitfield.hpp"
+#include "udb/pool_alloc.hpp"
 
 namespace udb {
 
@@ -119,6 +120,10 @@ namespace udb {
 
     virtual const std::string_view &name() = 0;
     virtual std::string disassemble(bool use_abi_reg_names = false) const = 0;
+
+    // true if the instruction could change the pc without causing an exception
+    // i.e., is a branch
+    virtual bool control_flow() const = 0;
 
     // return the
     virtual std::vector<Reg> srcRegs() const = 0;

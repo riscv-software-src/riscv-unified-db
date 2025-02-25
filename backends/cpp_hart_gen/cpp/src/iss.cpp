@@ -8,6 +8,7 @@
 #include "udb/elf_reader.hpp"
 #include "udb/hart_factory.hxx"
 #include "udb/inst.hpp"
+#include "udb/iss_soc_model.hpp"
 
 struct Options {
   std::string config_name;
@@ -31,56 +32,6 @@ int parse_cmdline(int argc, char **argv, Options &options) {
   CLI11_PARSE(app, argc, argv);
   return PARSE_OK;
 }
-
-class DenseMemory : public udb::Memory {
- public:
-  DenseMemory(uint64_t size, uint64_t base_addr)
-      : Memory(), m_offset(base_addr) {
-    m_data.resize(size);
-    m_addend = &m_data[0] - base_addr;
-  }
-  ~DenseMemory() = default;
-
-  // subclasses only need to override these functions:
-  virtual uint64_t read(uint64_t addr, size_t bytes) {
-    switch (bytes) {
-      case 1:
-        return m_data[addr - m_offset];
-      case 2:
-        return *(uint16_t *)(addr + m_addend);
-      case 4:
-        return *(uint32_t *)(addr + m_addend);
-      case 8:
-        return *(uint64_t *)(addr + m_addend);
-      default:
-        udb_assert(false, "bad bytes");
-    }
-  }
-  void write(uint64_t addr, uint64_t data, size_t bytes) override {
-    udb_assert((addr - m_offset) + bytes <= m_data.size(), "overflow");
-    switch (bytes) {
-      case 1:
-        m_data[addr - m_offset] = data;
-        break;
-      case 2:
-        *(uint16_t *)(addr + m_addend) = data;
-        break;
-      case 4:
-        *(uint32_t *)(addr + m_addend) = data;
-        break;
-      case 8:
-        *(uint64_t *)(addr + m_addend) = data;
-        break;
-      default:
-        udb_assert(false, "bad bytes");
-    }
-  }
-
- private:
-  std::vector<uint8_t> m_data;
-  uint64_t m_offset;
-  uint8_t *m_addend = nullptr;
-};
 
 int main(int argc, char **argv) {
   Options opts;
@@ -110,38 +61,31 @@ int main(int argc, char **argv) {
   // round up to a page for good measure
   memsz = (memsz & ~0xfffull) + 0x1000;
 
-  DenseMemory mem(memsz, range.first);
-  auto hart =
-      udb::HartFactory::create(opts.config_name, 0, opts.config_path, mem);
-  auto tracer =
-      udb::HartFactory::create_tracer("riscv-tests", opts.config_name, hart);
+  udb::IssSocModel soc(memsz, range.first);
+
+  auto hart = udb::HartFactory::create<udb::IssSocModel>(opts.config_name, 0,
+                                                         opts.config_path, soc);
+  auto tracer = udb::HartFactory::create_tracer<udb::IssSocModel>(
+      "riscv-tests", opts.config_name, hart);
   hart->attach_tracer(tracer);
-  hart->set_pc(elf_reader.loadLoadableSegments(mem));
+  auto entry_pc = elf_reader.loadLoadableSegments(soc);
+  hart->reset(entry_pc);
 
   // get the first instruction
   while (true) {
-    fmt::print("PC {:x}\n", hart->pc());
-    uint32_t enc = mem.read(hart->pc(), 4);
-    fmt::print("Encoding @ {:x}: {:x}\n", hart->pc(), enc);
-    auto inst = hart->decode(hart->pc(), enc);
-    if (inst == nullptr) {
-      fmt::print(stderr, "Decode failed\n");
-      return -1;
-    }
-    fmt::print("inst {}\n", inst->name());
-
-    hart->set_next_pc(hart->pc() + inst->enc_len());
-    try {
-      inst->execute();
-    } catch (const udb::ExitEvent &e) {
-      if (e.code() == 0) {
-        fmt::print("{}", e.what());
+    auto stop_reason = hart->run_n(100);
+    if (stop_reason != StopReason::InstLimitReached &&
+        stop_reason != StopReason::Exception) {
+      if (stop_reason == StopReason::ExitSuccess) {
+        fmt::print("SUCCESS");
+        return 0;
+      } else if (stop_reason == StopReason::ExitFailure) {
+        fmt::print(stderr, "{}", hart->exit_reason());
+        return hart->exit_code();
       } else {
-        fmt::print(stderr, "{}", e.what());
+        udb_assert(false, "TODO: stop_reason");
       }
-      return e.code();
     }
-    hart->advance_pc();
   }
 
   return 0;

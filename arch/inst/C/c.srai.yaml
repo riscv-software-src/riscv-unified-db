@@ -12,7 +12,6 @@ definedBy:
   anyOf:
     - C
     - Zca
-base: 64
 assembly: xd, shamt
 encoding:
   RV32:

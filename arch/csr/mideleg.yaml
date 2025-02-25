@@ -8,6 +8,7 @@ address: 0x303
 priv_mode: M
 length: MXLEN
 definedBy:
+  # "In harts without S-mode, the medeleg and mideleg registers should not exist." -- priv
   # after 1.9.1, mideleg does not exist when S-mode is not implemented
   # we can represent that by making mideleg an S extension CSR post 1.9.1
   oneOf:

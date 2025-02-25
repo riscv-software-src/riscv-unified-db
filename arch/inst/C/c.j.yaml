@@ -29,4 +29,4 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  jump($pc + imm);
+  jump($pc + $signed(imm));

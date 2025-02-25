@@ -796,8 +796,11 @@ module Idl
     # @return [Array<AstNode>] List of all struct definitions
     def structs = definitions.select { |e| e.is_a?(StructDefinitionAst) }
 
-    # @return {Array<AstNode>] List of all function definitions
+    # @return [Array<AstNode>] List of all function definitions
     def functions = definitions.select { |e| e.is_a?(FunctionDefAst) }
+
+    # @return [FetchAst] Fetch body
+    def fetch = definitions.select { |e| e.is_a?(FetchAst )}[0]
 
     # Add all the global symbols to symtab
     #
@@ -829,6 +832,10 @@ module Idl
     # @!macro type_check
     def type_check(symtab)
       definitions.each { |d| d.type_check(symtab) }
+
+      fetch_blocks = definitions.select { |d| d.is_a?(FetchAst) }
+      type_error "Multiple fetch blocks defined" if fetch_blocks.size > 1
+      type_error "No fetch block defined" if fetch_blocks.size.zero?
     end
   end
 
@@ -1771,12 +1778,14 @@ module Idl
 
         internal_error "No variable #{lhs.text_value}" if variable.nil?
 
-        value_result = value_try do
-          variable.value = rhs.value(symtab)
-        end
-        value_else(value_result) do
-          variable.value = nil
-          value_error ""
+        unless variable.type.global?
+          value_result = value_try do
+            variable.value = rhs.value(symtab)
+          end
+          value_else(value_result) do
+            variable.value = nil
+            value_error ""
+          end
         end
       end
     end
@@ -4105,7 +4114,14 @@ module Idl
 
   class ReturnExpressionSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
-      ReturnExpressionAst.new(input, interval, [first.to_ast] + rest.elements.map { |r| r.e.to_ast })
+      return_asts =
+        if vals.empty?
+          []
+        else
+          [vals.first.e.to_ast] + \
+            vals.rest.elements.map { |r| r.e.to_ast }
+        end
+      ReturnExpressionAst.new(input, interval, return_asts)
     end
   end
 
@@ -4119,7 +4135,9 @@ module Idl
 
     # @return [Array<Type>] List of actual return types
     def return_types(symtab)
-      if return_value_nodes[0].type(symtab).kind == :tuple
+      if return_value_nodes.empty?
+        [Type.new(:void)]
+      elsif return_value_nodes[0].type(symtab).kind == :tuple
         return_value_nodes[0].type(symtab).tuple_types
       else
         return_value_nodes.map{ |v| v.type(symtab) }
@@ -4129,7 +4147,9 @@ module Idl
     # @return [Type] The actual return type
     def return_type(symtab)
       types = return_types(symtab)
-      if types.size > 1
+      if types.empty?
+        return Type.new(:void)
+      elsif types.size > 1
         Type.new(:tuple, tuple_types: types)
       else
         types[0]
@@ -4179,7 +4199,7 @@ module Idl
         type_error "Unknown type for #{v.text_value}" if v.type(symtab).nil?
       end
 
-      if return_value_nodes[0].type(symtab).kind == :tuple
+      if !return_value_nodes.empty? && return_value_nodes[0].type(symtab).kind == :tuple
         type_error("Can't combine tuple types in return") unless return_value_nodes.size == 1
       end
 
@@ -4194,7 +4214,9 @@ module Idl
 
     # @!macro return_value
     def return_value(symtab)
-      if return_value_nodes.size == 1
+      if return_value_nodes.empty?
+        :void
+      elsif return_value_nodes.size == 1
         return_value_nodes[0].value(symtab)
       else
         return_value_nodes.map { |v| v.value(symtab) }
@@ -4203,7 +4225,9 @@ module Idl
 
     # @!macro return_values
     def return_values(symtab)
-      if return_value_nodes.size == 1
+      if return_value_nodes.empty?
+        [:void]
+      elsif return_value_nodes.size == 1
         return_value_nodes[0].values(symtab)
       else
         return_value_nodes.map { |v| v.values(symtab) }
@@ -4782,7 +4806,7 @@ module Idl
 
     # @!macro type
     def type(symtab)
-      return ConstBoolType if name == "implemented?"
+      return ConstBoolType if name == "implemented?" || name == "implemented_version?" || name == "implemented_csr?"
 
       func_type(symtab).return_type(template_values(symtab, unknown_ok: symtab.cfg_arch.partially_configured?), self)
     end
@@ -4811,6 +4835,34 @@ module Idl
             return false
           end
           value_error "implemented? is only known when evaluating in the context of a fully-configured arch def"
+        elsif name == "implemented_version?"
+          extname_ref = arg_nodes[0]
+          type_error "First argument should be a ExtensionName" unless extname_ref.type(symtab).kind == :enum_ref && extname_ref.class_name == "ExtensionName"
+
+          ver_req = arg_nodes[1].text_value[1..-2]
+
+          return symtab.cfg_arch.ext?(arg_nodes[0].member_name, ver_req) if symtab.cfg_arch.fully_configured?
+
+          if symtab.cfg_arch.ext?(arg_nodes[0].member_name, ver_req)
+            # we can know if it is implemented, but not if it's not implemented for a partially configured
+            return true
+          end
+          if symtab.cfg_arch.prohibited_ext?(arg_nodes[0].member_name)
+            return false
+          end
+          value_error "implemented_version? is only known when evaluating in the context of a fully-configured arch def"
+        elsif name == "implemented_csr?"
+          csr_addr = arg_nodes[0].value(symtab)
+          if symtab.cfg_arch.fully_configured?
+            if symtab.cfg_arch.transitive_implemented_csrs.any? { |csr| csr.address == csr_addr }
+              return true
+            end
+          else
+            if symtab.cfg_arch.not_prohibited_csrs.none? { |csr| csr.address == csr_addr }
+              return false
+            end
+          end
+          value_error "implemented_csr? is only known when evaluating in the context of a fully-configured arch def"
         elsif name == "cached_translation"
           value_error "cached_translation is not compile-time-knowable"
         elsif name == "maybe_cache_translation"
@@ -4997,17 +5049,39 @@ module Idl
     end
   end
 
+  class FetchSyntaxNode < Treetop::Runtime::SyntaxNode
+    def to_ast
+      FetchAst.new(input, interval, function_body.to_ast)
+    end
+  end
+
+  class FetchAst < AstNode
+    def body = @children[0]
+
+    def initialize(input, interval, body)
+      super(input, interval, [body])
+    end
+
+    def type_check(symtab)
+      body.type_check(symtab)
+    end
+
+    def return_type(symtab)
+      @ret_type = Type.new(:bits, width: symtab.get("INSTR_ENC_WIDTH").value)
+    end
+  end
+
   class FunctionDefSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
       FunctionDefAst.new(
         input,
         interval,
         function_name.text_value,
-        targs.empty? ? [] : [targs.first.to_ast] + targs.rest.elements.map { |r| r.single_declaration.to_ast },
-        ret.empty? ? [] : [ret.first.to_ast] + ret.rest.elements.map { |r| r.type_name.to_ast },
+        (!respond_to?(:targs) || targs.empty?) ? [] : [targs.first.to_ast] + targs.rest.elements.map { |r| r.single_declaration.to_ast },
+        ret.empty? ? [] : [ret.first.to_ast] + (ret.respond_to?(:rest) ? ret.rest.elements.map { |r| r.type_name.to_ast } : []),
         args.empty? ? [] : [args.first.to_ast] + args.rest.elements.map { |r| r.single_declaration.to_ast},
         desc.text_value,
-        respond_to?(:type) ? type.text_value.to_sym : :normal,
+        respond_to?(:type) ? type.text_value.strip.to_sym : :normal,
         respond_to?(:body_block) ? body_block.function_body.to_ast : nil
       )
     end
@@ -5025,7 +5099,7 @@ module Idl
     # @params return_types [Array<AstNode>] Return types
     # @param arguments [Array<AstNode>] Arguments
     # @param desc [String] Description
-    # @param type [:normal, :builtin, :generated] Type of function
+    # @param type [:normal, :builtin, :generated, :external] Type of function
     # @param body [AstNode,nil] Body, unless the function is builtin
     def initialize(input, interval, name, targs, return_types, arguments, desc, type, body)
       if body.nil?
@@ -5042,6 +5116,7 @@ module Idl
       @body = body
       @builtin = type == :builtin
       @generated = type == :generated
+      @external = type == :external
 
       @cached_return_type = {}
       @reachable_functions_cache ||= {}
@@ -5322,6 +5397,10 @@ module Idl
 
     def generated?
       @generated
+    end
+
+    def external?
+      @external
     end
   end
 
@@ -5943,7 +6022,10 @@ module Idl
     end
 
     def field_def(symtab)
-      csr_def(symtab).fields.find { |f| f.name == @field_name }
+      csr = csr_def(symtab)
+      type_error "Unknown CSR: #{@idx.is_a?(String) ? @idx : @idx.text_value}" if csr.nil?
+
+      csr.fields.find { |f| f.name == @field_name }
     end
 
     def field_name(symtab)
@@ -6007,7 +6089,8 @@ module Idl
         end
       end
 
-      field_def(symtab).reset_value
+      v = field_def(symtab).reset_value
+      v = nil if v == "UNDEFINED_LEGAL"
     end
   end
 
@@ -6197,7 +6280,11 @@ module Idl
   # @api private
   class CsrFunctionCallSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
-      CsrFunctionCallAst.new(input, interval, function_name.text_value, csr.to_ast)
+      args = []
+      args << function_arg_list.first.to_ast unless function_arg_list.first.empty?
+      args += function_arg_list.rest.elements.map { |e| e.expression.to_ast }
+
+      CsrFunctionCallAst.new(input, interval, function_name.text_value, csr.to_ast, args)
     end
   end
 
@@ -6213,18 +6300,24 @@ module Idl
     attr_reader :function_name
 
     def csr = @children[0]
+    def args = @children[1..]
 
-    def initialize(input, interval, function_name, csr)
-      super(input, interval, [csr])
+    def initialize(input, interval, function_name, csr, args)
+      super(input, interval, [csr] + args)
       @function_name = function_name
     end
 
     def type_check(symtab)
-      unless ["sw_read", "address"].include?(function_name)
+      csr.type_check(symtab)
+
+      if ["sw_read", "address"].include?(function_name)
+        type_error "unexpected argument(s)" unless args.empty?
+      elsif ["implemented_without?"].include(function_name)
+        type_error "Expecting one argument" unless args.size == 1
+        type_error "Expecting an ExtensionName" unless args[0].type(symtab).kind == :enum_ref && args[0].class_name == "ExtensionName"
+      else
         type_error "'#{function_name}' is not a supported CSR function call"
       end
-
-      csr.type_check(symtab)
     end
 
     def type(symtab)
@@ -6233,12 +6326,15 @@ module Idl
       case function_name
       when "sw_read"
         if csr_known?(symtab)
-          Type.new(:bits, width: cfg_arch.csr(csr.csr_name(symtab)).length(cfg_arch))
+          l = cfg_arch.csr(csr.csr_name(symtab)).length
+          Type.new(:bits, width: (l.nil? ? :unknown : l))
         else
           Type.new(:bits, width: symtab.mxlen.nil? ? :unknown : symtab.mxlen)
         end
       when "address"
         Type.new(:bits, width: 12)
+      when "implemented_without?"
+        ConstBoolType
       else
         internal_error "No function '#{function_name}' for CSR. call type check first!"
       end
@@ -6269,6 +6365,15 @@ module Idl
         value_error "CSR not knowable" unless csr_known?(symtab)
         cd = csr_def(symtab)
         cd.address
+      when "implemented_without?"
+        value_error "CSR not knowable" unless csr_known?(symtab)
+        cd = csr_def(symtab)
+        extension_name_enum_type = symtab.get("ExtensionName")
+        enum_value = args[0].value(symtab)
+        idx = extension_name_enum_type.element_values.index(enum_value)
+        ext_name = extension_name_enum_type.element_names[idx]
+        ext = symtab.cfg_arch.extension(ext_name)
+        cd.defined_by_condition.satisfied_by?(symtab.cfg_arch.possible_extensions - ext)
       else
         internal_error "TODO: #{function_name}"
       end

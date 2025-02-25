@@ -81,6 +81,10 @@ module Idl
             fns.concat if_body.reachable_functions(symtab, cache)
             return fns # no need to continue
           else
+            if (if_cond.text_value == "pending_and_enabled_interrupts != 0")
+              warn symtab.get("pending_and_enabled_interrupts")
+              raise "???"
+            end
             elseifs.each do |eif|
               fns.concat eif.cond.reachable_functions(symtab, cache)
               value_result = value_try do

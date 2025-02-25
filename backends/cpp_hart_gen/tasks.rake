@@ -12,28 +12,35 @@ CPP_HART_GEN_SRC = $root / "backends" / "cpp_hart_gen"
 CPP_HART_GEN_DST = $root / "gen" / "cpp_hart_gen"
 
 # copy the includes to dst
-rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/.*\.hpp} do |t|
+rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/.*\.hpp$} do |t|
   src_path = CPP_HART_GEN_SRC / "cpp" / "include" / "udb" / File.basename(t.name)
   FileUtils.mkdir_p File.dirname(t.name)
   FileUtils.ln_s src_path, t.name
 end
 
+# copy the includes to dst
+rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/.*\.h$} do |t|
+  src_path = CPP_HART_GEN_SRC / "c" / "include" / "udb" / File.basename(t.name)
+  FileUtils.mkdir_p File.dirname(t.name)
+  FileUtils.ln_s src_path, t.name
+end
+
 # copy the srcs to dst
-rule %r{#{CPP_HART_GEN_DST}/.*/src/.*\.cpp} do |t|
+rule %r{#{CPP_HART_GEN_DST}/.*/src/.*\.cpp$} do |t|
   src_path = CPP_HART_GEN_SRC / "cpp" / "src" / File.basename(t.name)
   FileUtils.mkdir_p File.dirname(t.name)
   FileUtils.ln_s src_path, t.name
 end
 
 # copy the tests to dst
-rule %r{#{CPP_HART_GEN_DST}/.*/test/.*\.cpp} do |t|
+rule %r{#{CPP_HART_GEN_DST}/.*/test/.*\.cpp$} do |t|
   src_path = CPP_HART_GEN_SRC / "cpp" / "test" / File.basename(t.name)
   FileUtils.mkdir_p File.dirname(t.name)
   FileUtils.ln_s src_path, t.name
 end
 
 # rule for generating when the thing being generated is not config-specific
-rule %r{#{CPP_HART_GEN_DST}/[^/]+/include/udb/[^/]+\.hxx\.unformatted$} => proc { |tname|
+rule %r{#{CPP_HART_GEN_DST}/[^/]+/include/udb/[^/]+\.h(xx)?\.unformatted$} => proc { |tname|
   parts = tname.split("/")
   fname = parts[-1].sub(/\.unformatted$/, "")
   [
@@ -80,7 +87,7 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/src/[^/]+\.cxx\.unformatted$} => proc { |tname
 end
 
 # a config-specifc generated header
-rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.hxx\.unformatted$} => proc { |tname|
+rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.h(xx)?\.unformatted$} => proc { |tname|
   parts = tname.split("/")
   filename = parts[-1].sub(/\.unformatted$/, "")
   config_name = parts[-2]
@@ -88,6 +95,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.hxx\.unformatted$} 
     "#{$root}/.stamps/resolve-#{config_name}.stamp",
     "#{CPP_HART_GEN_SRC}/templates/#{filename}.erb",
     "#{CPP_HART_GEN_SRC}/lib/gen_cpp.rb",
+    "#{$root}/lib/idl/passes/prune.rb",
     "#{CPP_HART_GEN_SRC}/lib/template_helpers.rb",
     "#{CPP_HART_GEN_SRC}/lib/csr_template_helpers.rb",
     __FILE__
@@ -107,7 +115,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.hxx\.unformatted$} 
   File.write(t.name, erb.result(CppHartGen::TemplateEnv.new(cfg_arch).get_binding))
 end
 
-rule %r{#{CPP_HART_GEN_DST}/.*\.[ch]xx$} => proc { |tname|
+rule %r{#{CPP_HART_GEN_DST}/.*\.[ch](xx)?$} => proc { |tname|
   ["#{tname}.unformatted"]
 } do |t|
   sh "clang-format #{t.name}.unformatted > #{t.name}"
@@ -121,6 +129,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/src/cfgs/[^/]+/[^/]+\.cxx\.unformatted$} => proc 
     "#{$root}/.stamps/resolve-#{config_name}.stamp",
     "#{CPP_HART_GEN_SRC}/templates/#{filename}.erb",
     "#{CPP_HART_GEN_SRC}/lib/gen_cpp.rb",
+    "#{$root}/lib/idl/passes/prune.rb",
     "#{CPP_HART_GEN_SRC}/lib/template_helpers.rb",
     "#{CPP_HART_GEN_SRC}/lib/csr_template_helpers.rb",
     __FILE__
@@ -243,6 +252,10 @@ namespace :gen do
       dst_path = CPP_HART_GEN_DST / build_name / "include" / "udb" / File.basename(inc)
       Rake::Task[dst_path].invoke
     end
+    Dir.glob("#{CPP_HART_GEN_SRC}/c/include/udb/*.h").each do |inc|
+      dst_path = CPP_HART_GEN_DST / build_name / "include" / "udb" / File.basename(inc)
+      Rake::Task[dst_path].invoke
+    end
     Dir.glob("#{CPP_HART_GEN_SRC}/cpp/src/*.cpp").each do |src|
       dst_path = CPP_HART_GEN_DST / build_name / "src" / File.basename(src)
       Rake::Task[dst_path].invoke
@@ -259,23 +272,23 @@ namespace :gen do
     generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/db_data.hxx"
     generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/src/db_data.cxx"
     generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/enum.hxx"
+    generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/src/enum.cxx"
     generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/bitfield.hxx"
+    generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/libhart.h"
 
     configs.each do |config|
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/inst.hxx"
-      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/decode.cxx"
+      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/inst_impl.hxx"
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/params.hxx"
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/params.cxx"
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/hart.hxx"
-      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/hart.cxx"
+      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/hart_impl.hxx"
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/csrs.hxx"
-      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/csrs.cxx"
+      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/csrs_impl.hxx"
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/csr_container.hxx"
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/structs.hxx"
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/func_prototypes.hxx"
       generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/idl_funcs_impl.hxx"
-      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/src/cfgs/#{config}/idl_funcs.cxx"
-      generated_files << "#{CPP_HART_GEN_DST}/#{build_name}/include/udb/cfgs/#{config}/builtin_funcs.hxx"
 
       Dir.glob("#{CPP_HART_GEN_SRC}/cpp/include/udb/*.hpp") do |f|
         Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/include/udb/#{File.basename(f)}"].invoke
@@ -286,16 +299,6 @@ namespace :gen do
 
     multitask "__generate_formatted_cpp_#{build_name}" => generated_files
     Rake::MultiTask["__generate_formatted_cpp_#{build_name}"].invoke
-  end
-end
-
-namespace :cbuild do
-  task cpp_hart: ["gen:cpp_hart"] do
-    _, build_name = configs_build_name
-
-    Dir.chdir("#{CPP_HART_GEN_DST}/#{build_name}/") do
-      sh "make"
-    end
   end
 end
 
@@ -338,6 +341,15 @@ namespace :build do
     Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/build/Makefile"].invoke
     Dir.chdir("#{CPP_HART_GEN_DST}/#{build_name}/build") do
       sh "make -j #{$jobs}"
+    end
+  end
+
+  task renode_hart: ["gen:cpp_hart"] do
+    _, build_name = configs_build_name
+
+    Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/build/Makefile"].invoke
+    Dir.chdir("#{CPP_HART_GEN_DST}/#{build_name}/build") do
+      sh "make -j #{$jobs} hart_renode"
     end
   end
 end

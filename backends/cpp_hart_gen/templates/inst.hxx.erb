@@ -9,6 +9,10 @@
 #include "udb/cpp_exceptions.hpp"
 #include "udb/cfgs/<%= cfg_arch.name %>/structs.hxx"
 
+#ifdef assert
+#undef assert
+#endif
+
 <%- ilist = cfg_arch.possible_instructions -%>
 
 <%
@@ -39,14 +43,40 @@
 
 namespace udb {
 
+#define __UDB_FUNC_CALL m_parent->
+#define __UDB_CSR_BY_ADDR(addr) (*(m_parent->csr(addr)))
+#define __UDB_CSR_BY_NAME(csr_name) m_parent->m_csrs.csr_name
+#define __UDB_ENCODING this->encoding()
+#define __UDB_RUNTIME_PARAM(field) m_parent->params().field
+#define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name ## _VALUE
+#define __UDB_STRUCT(type) <%= cfg_arch.name %> ## type ##_Struct
+#define __UDB_SET_PC(new_pc) m_parent->set_next_pc(new_pc)
+#define __UDB_PC m_parent->m_pc
+#define __UDB_MUTABLE_GLOBAL(x) m_parent->x
+#define __UDB_CONSTEXPR_FUNC_CALL <%= name_of(:hart, cfg_arch)%><SocType>::
+#define __UDB_CONST_GLOBAL(F) <%= name_of(:hart, cfg_arch)%><SocType>:: F
+#define __UDB_XLEN m_parent->xlen()
+#define __UDB_HART m_parent
+
   <%- ilist.each do |inst| -%>
   <%- needs_rv32 = inst.rv32? && cfg_arch.possible_xlens.include?(32) -%>
   <%- needs_rv64 = inst.rv64? && cfg_arch.possible_xlens.include?(64) -%>
-  template <unsigned XLEN>
+  template <unsigned XLEN, SocModel SocType>
   class <%= name_of(:inst, cfg_arch, inst.name) %> : public InstBase {
+
+
+    // normal allocation is disallowed (pool allocator)
+    void* operator new(size_t size) = delete;
+
+   public:
+    // we use placement allocation via the pool allocator
+    void * operator new (std::size_t, void * p) throw() { return p ; }
+
+    void operator delete(void* ptr);
+
   public:
-    using XReg = Bits<<%= name_of(:hart, cfg_arch) %>::MXLEN>;
-    <%= name_of(:inst, cfg_arch, inst.name) %>(<%= name_of(:hart, cfg_arch) %>* parent, XReg pc, uint64_t encoding)
+    using XReg = Bits<<%= cfg_arch.possible_xlens.max %>>;
+    <%= name_of(:inst, cfg_arch, inst.name) %>(<%= name_of(:hart, cfg_arch) %><SocType>* parent, XReg pc, uint64_t encoding)
       : InstBase(pc, encoding),
         m_parent(parent)
     {
@@ -54,9 +84,30 @@ namespace udb {
 
     virtual ~<%= name_of(:inst, cfg_arch, inst.name) %>() {}
 
-    <%= name_of(:hart, cfg_arch) %>* parent() { return m_parent; }
+    <%= name_of(:hart, cfg_arch) %><SocType>* parent() { return m_parent; }
 
     size_t enc_len() const override { return <%= inst.encoding_width / 8 %>; }
+    bool control_flow() const override {
+      <%- if inst.operation_ast.nil? -%>
+      return false;
+      <%- else -%>
+      <%- if !inst.base.nil? -%>
+        <%- pruned_ast = inst.pruned_operation_ast(inst.base) -%>
+        return <%= pruned_ast.control_flow?(cfg_arch.symtab) %>;
+      <%- elsif !cfg_arch.multi_xlen? -%>
+        <%- pruned_ast = inst.pruned_operation_ast(cfg_arch.possible_xlens[0]) -%>
+        return <%= pruned_ast.control_flow?(cfg_arch.symtab) %>;
+      <%- else -%>
+        if (m_parent->xlen() == 32) {
+          <%- pruned_ast = inst.pruned_operation_ast(32) -%>
+          return <%= pruned_ast.control_flow?(cfg_arch.symtab) %>;
+        } else {
+          <%- pruned_ast = inst.pruned_operation_ast(64) -%>
+          return <%= pruned_ast.control_flow?(cfg_arch.symtab) %>;
+        }
+      <%- end -%>
+      <%- end -%>
+    }
 
     //
     // Decode variables
@@ -87,21 +138,6 @@ namespace udb {
     }
     <%- end -%>
     <%- end -%>
-
-#define __UDB_FUNC_CALL m_parent->
-#define __UDB_CSR_BY_ADDR(addr) (*(m_parent->csr(addr)))
-#define __UDB_CSR_BY_NAME(csr_name) m_parent->m_csrs.csr_name
-#define __UDB_ENCODING this->encoding()
-#define __UDB_RUNTIME_PARAM(field) m_parent->params().field
-#define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name ## _VALUE
-#define __UDB_STRUCT(type) <%= cfg_arch.name %> ## type ##_Struct
-#define __UDB_SET_PC(new_pc) m_parent->set_next_pc(new_pc)
-#define __UDB_PC m_parent->m_pc
-#define __UDB_MUTABLE_GLOBAL(x) m_parent->x
-#define __UDB_CONSTEXPR_FUNC_CALL <%= name_of(:hart, cfg_arch)%>::
-#define __UDB_CONST_GLOBAL(F) <%= name_of(:hart, cfg_arch)%>:: F
-#define __UDB_XLEN m_parent->xlen()
-#define __UDB_HART m_parent
 
     void execute() override {
 
@@ -134,7 +170,133 @@ namespace udb {
       <%- end -%>
     }
 
-#undef __UDB__FUNC__CALL
+    constexpr static std::string_view m_name = "<%= inst.name %>";
+    const std::string_view& name() override { return m_name; }
+    std::string disassemble(bool use_abi_reg_names = 0) const override {
+      if constexpr (XLEN == 32) {
+        <%- if inst.defined_in_base?(32) -%>
+        return fmt::format("{} <%= inst.assembly_fmt(32) %>", m_name <%= inst.assembly_fmt_args(32) %>);
+        <%- else -%>
+        udb_assert(false, "Not defined");
+        <%- end -%>
+      } else {
+        <%- if inst.defined_in_base?(32) -%>
+        return fmt::format("{} <%= inst.assembly_fmt(64) %>", m_name <%= inst.assembly_fmt_args(64) %>);
+        <%- else -%>
+        udb_assert(false, "Not defined");
+        <%- end -%>
+      }
+    }
+    std::vector<Reg> srcRegs() const override {
+      <%- if inst.operation_ast.nil? -%>
+        m_parent->assert(false, "There is no operation() defined for this instruction");
+        __builtin_unreachable();
+      <%- else -%>
+      <%- src_regs = nil -%>
+      <%- if !inst.base.nil? -%>
+        <%- pruned_ast = inst.pruned_operation_ast(inst.base) -%>
+        <%- symtab = inst.fill_symtab(cfg_arch.possible_xlens[0], pruned_ast) -%>
+            <%- begin -%>
+        <%- src_regs = pruned_ast.find_src_registers(symtab) %>
+        <%- symtab.release -%>
+        return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+      <%- rescue Idl::ComplexRegDetermination -%>
+        throw ComplexRegDetermination();
+      <%- end -%>
+      <%- elsif !cfg_arch.multi_xlen? -%>
+        <%- pruned_ast = inst.pruned_operation_ast(cfg_arch.possible_xlens[0]) -%>
+        <%- symtab = inst.fill_symtab(cfg_arch.possible_xlens[0], pruned_ast) -%>
+            <%- begin -%>
+        <%- src_regs = pruned_ast.find_src_registers(symtab) %>
+        <%- symtab.release -%>
+        return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+      <%- rescue Idl::ComplexRegDetermination -%>
+        throw ComplexRegDetermination();
+      <%- end -%>
+      <%- else -%>
+        if (m_parent->xlen() == 32) {
+        <%- pruned_ast = inst.pruned_operation_ast(32) -%>
+        <%- symtab = inst.fill_symtab(32, pruned_ast) -%>
+            <%- begin -%>
+        <%- src_regs = pruned_ast.find_src_registers(symtab) %>
+        <%- symtab.release -%>
+        return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+      <%- rescue Idl::ComplexRegDetermination -%>
+        throw ComplexRegDetermination();
+      <%- end -%>
+      } else {
+        <%- pruned_ast = inst.pruned_operation_ast(64) -%>
+        <%- symtab = inst.fill_symtab(64, pruned_ast) -%>
+            <%- begin -%>
+        <%- src_regs = pruned_ast.find_src_registers(symtab) %>
+        <%- symtab.release -%>
+        return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+      <%- rescue Idl::ComplexRegDetermination -%>
+        throw ComplexRegDetermination();
+      <%- end -%>
+      }
+      <%- end -%>
+      <%- end -%>
+    }
+
+    std::vector<Reg> dstRegs() const override {
+      <%- if inst.operation_ast.nil? -%>
+        m_parent->assert(false, "There is no operation() defined for this instruction");
+        __builtin_unreachable();
+      <%- else -%>
+      <%- dst_regs = nil -%>
+      <%- if !inst.base.nil? -%>
+        <%- pruned_ast = inst.pruned_operation_ast(inst.base) -%>
+        <%- symtab = inst.fill_symtab(cfg_arch.possible_xlens[0], pruned_ast) -%>
+            <%- begin -%>
+        <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
+        <%- symtab.release -%>
+        return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+      <%- rescue Idl::ComplexRegDetermination -%>
+        throw ComplexRegDetermination();
+      <%- end -%>
+      <%- elsif !cfg_arch.multi_xlen? -%>
+        <%- pruned_ast = inst.pruned_operation_ast(cfg_arch.possible_xlens[0]) -%>
+        <%- symtab = inst.fill_symtab(cfg_arch.possible_xlens[0], pruned_ast) -%>
+            <%- begin -%>
+        <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
+        <%- symtab.release -%>
+        return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+      <%- rescue Idl::ComplexRegDetermination -%>
+        throw ComplexRegDetermination();
+      <%- end -%>
+      <%- else -%>
+        if (m_parent->xlen() == 32) {
+        <%- pruned_ast = inst.pruned_operation_ast(32) -%>
+        <%- symtab = inst.fill_symtab(32, pruned_ast) -%>
+            <%- begin -%>
+        <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
+        <%- symtab.release -%>
+        return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+      <%- rescue Idl::ComplexRegDetermination -%>
+        throw ComplexRegDetermination();
+      <%- end -%>
+      } else {
+        <%- pruned_ast = inst.pruned_operation_ast(64) -%>
+        <%- symtab = inst.fill_symtab(64, pruned_ast) -%>
+            <%- begin -%>
+        <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
+        <%- symtab.release -%>
+        return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
+      <%- rescue Idl::ComplexRegDetermination -%>
+        throw ComplexRegDetermination();
+      <%- end -%>
+      }
+      <%- end -%>
+      <%- end -%>
+    }
+
+  private:
+    <%= name_of(:hart, cfg_arch) %><SocType> * const m_parent;
+  };
+  <%- end -%>
+
+#undef __UDB_FUNC_CALL
 #undef __UDB_CSR_BY_ADDR
 #undef __UDB_CSR_BY_NAME
 #undef __UDB_ENCODING
@@ -142,121 +304,10 @@ namespace udb {
 #undef __UDB_STATIC_PARAM
 #undef __UDB_STRUCT
 #undef __UDB_PC
+#undef __UDB_MUTABLE_GLOBAL
 #undef __UDB_CONSTEXPR_FUNC_CALL
 #undef __UDB_SET_PC
 #undef __UDB_CONST_GLOBAL
 #undef __UDB_XLEN
 #undef __UDB_HART
-
-  constexpr static std::string_view m_name = "<%= inst.name %>";
-  const std::string_view& name() override { return m_name; }
-  std::string disassemble(bool use_abi_reg_names = 0) const override { return "TODO"; }
-  std::vector<Reg> srcRegs() const override {
-    <%- if inst.operation_ast.nil? -%>
-      m_parent->assert(false, "There is no operation() defined for this instruction");
-      __builtin_unreachable();
-    <%- else -%>
-    <%- src_regs = nil -%>
-    <%- if !inst.base.nil? -%>
-      <%- pruned_ast = inst.pruned_operation_ast(inst.base) -%>
-      <%- symtab = inst.fill_symtab(cfg_arch.possible_xlens[0], pruned_ast) -%>
-          <%- begin -%>
-      <%- src_regs = pruned_ast.find_src_registers(symtab) %>
-      <%- symtab.release -%>
-      return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
-    <%- rescue Idl::ComplexRegDetermination -%>
-      throw ComplexRegDetermination();
-    <%- end -%>
-    <%- elsif !cfg_arch.multi_xlen? -%>
-      <%- pruned_ast = inst.pruned_operation_ast(cfg_arch.possible_xlens[0]) -%>
-      <%- symtab = inst.fill_symtab(cfg_arch.possible_xlens[0], pruned_ast) -%>
-          <%- begin -%>
-      <%- src_regs = pruned_ast.find_src_registers(symtab) %>
-      <%- symtab.release -%>
-      return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
-    <%- rescue Idl::ComplexRegDetermination -%>
-      throw ComplexRegDetermination();
-    <%- end -%>
-    <%- else -%>
-      if (m_parent->xlen() == 32) {
-      <%- pruned_ast = inst.pruned_operation_ast(32) -%>
-      <%- symtab = inst.fill_symtab(32, pruned_ast) -%>
-          <%- begin -%>
-      <%- src_regs = pruned_ast.find_src_registers(symtab) %>
-      <%- symtab.release -%>
-      return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
-    <%- rescue Idl::ComplexRegDetermination -%>
-      throw ComplexRegDetermination();
-    <%- end -%>
-    } else {
-      <%- pruned_ast = inst.pruned_operation_ast(64) -%>
-      <%- symtab = inst.fill_symtab(64, pruned_ast) -%>
-          <%- begin -%>
-      <%- src_regs = pruned_ast.find_src_registers(symtab) %>
-      <%- symtab.release -%>
-      return {<%= src_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
-    <%- rescue Idl::ComplexRegDetermination -%>
-      throw ComplexRegDetermination();
-    <%- end -%>
-    }
-    <%- end -%>
-    <%- end -%>
-  }
-
-  std::vector<Reg> dstRegs() const override {
-    <%- if inst.operation_ast.nil? -%>
-      m_parent->assert(false, "There is no operation() defined for this instruction");
-      __builtin_unreachable();
-    <%- else -%>
-    <%- dst_regs = nil -%>
-    <%- if !inst.base.nil? -%>
-      <%- pruned_ast = inst.pruned_operation_ast(inst.base) -%>
-      <%- symtab = inst.fill_symtab(cfg_arch.possible_xlens[0], pruned_ast) -%>
-          <%- begin -%>
-      <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
-      <%- symtab.release -%>
-      return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
-    <%- rescue Idl::ComplexRegDetermination -%>
-      throw ComplexRegDetermination();
-    <%- end -%>
-    <%- elsif !cfg_arch.multi_xlen? -%>
-      <%- pruned_ast = inst.pruned_operation_ast(cfg_arch.possible_xlens[0]) -%>
-      <%- symtab = inst.fill_symtab(cfg_arch.possible_xlens[0], pruned_ast) -%>
-          <%- begin -%>
-      <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
-      <%- symtab.release -%>
-      return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
-    <%- rescue Idl::ComplexRegDetermination -%>
-      throw ComplexRegDetermination();
-    <%- end -%>
-    <%- else -%>
-      if (m_parent->xlen() == 32) {
-      <%- pruned_ast = inst.pruned_operation_ast(32) -%>
-      <%- symtab = inst.fill_symtab(32, pruned_ast) -%>
-          <%- begin -%>
-      <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
-      <%- symtab.release -%>
-      return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
-    <%- rescue Idl::ComplexRegDetermination -%>
-      throw ComplexRegDetermination();
-    <%- end -%>
-    } else {
-      <%- pruned_ast = inst.pruned_operation_ast(64) -%>
-      <%- symtab = inst.fill_symtab(64, pruned_ast) -%>
-          <%- begin -%>
-      <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
-      <%- symtab.release -%>
-      return {<%= dst_regs.map { |r| r.is_a?(Integer) ? "{Reg::X#{r}}" : "{#{r}}" }.join(", ") %>};
-    <%- rescue Idl::ComplexRegDetermination -%>
-      throw ComplexRegDetermination();
-    <%- end -%>
-    }
-    <%- end -%>
-    <%- end -%>
-  }
-
-  private:
-    <%= name_of(:hart, cfg_arch) %> * const m_parent;
-  };
-  <%- end -%>
 }

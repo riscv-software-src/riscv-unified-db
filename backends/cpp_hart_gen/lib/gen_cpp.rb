@@ -1,5 +1,6 @@
 
 require_relative "constexpr_pass"
+require_relative "control_flow_pass"
 require_relative "written_pass"
 
 class TrueClass
@@ -22,7 +23,7 @@ end
 
 class String
   def to_cxx
-    "\"#{self}\"";
+    "\"#{self}\"sv";
   end
 end
 
@@ -104,7 +105,7 @@ module Idl
   class StringLiteralAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       # text_value will include leading and trailing quotes
-      "#{' ' * indent}#{text_value}"
+      "#{' ' * indent}#{text_value}sv"
     end
   end
 
@@ -143,14 +144,36 @@ module Idl
 
   class CsrFunctionCallAst
     def gen_cpp(symtab, indent, indent_spaces: 2)
+      args_cpp = args.map { |a| a.gen_cpp(symtab, 0, indent_spaces:) }
+
       if csr.idx.is_a?(AstNode)
         if symtab.cfg_arch.csr(csr.idx.text_value).nil?
-          "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr.idx.gen_cpp(symtab, 0, indent_spaces:)}).#{function_name}(__UDB_XLEN)"
+          if function_name == "sw_read" && symtab.cfg_arch.multi_xlen?
+            "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr.idx.gen_cpp(symtab, 0, indent_spaces:)}).#{function_name}(__UDB_XLEN)"
+          else
+            "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr.idx.gen_cpp(symtab, 0, indent_spaces:)}).#{function_name.gsub('?', '_Q_')}(#{args_cpp.join(', ')})"
+          end
         else
-          "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.idx.text_value})._#{function_name}()"
+          if function_name == "sw_read"
+            if symtab.cfg_arch.multi_xlen? && csr_def(symtab).format_changes_with_xlen?
+              "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.idx.text_value})._#{function_name}(__UDB_XLEN)"
+            else
+              "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.idx.text_value})._#{function_name}()"
+            end
+          else
+            "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.idx.text_value}).#{function_name.gsub('?', '_Q_')}(#{args_cpp.join(', ')})"
+          end
         end
       else
-        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.idx})._#{function_name}()"
+        if function_name == "sw_read"
+          if symtab.cfg_arch.multi_xlen? && csr_def(symtab).format_changes_with_xlen?
+            "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.idx})._#{function_name}(__UDB_XLEN)"
+          else
+            "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.idx})._#{function_name}()"
+          end
+        else
+          "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.idx}).#{function_name.gsub('?', '_Q_')}(#{args_cpp.join(', ')})"
+        end
       end
     end
   end
@@ -236,7 +259,7 @@ module Idl
       scope = cpp_class.nil? ? "" : "#{cpp_class}::"
       <<~PROTOTYPE
         #{' ' * indent}#{gen_cpp_template(symtab)}
-        #{' ' * indent}#{name == 'raise' ? '[[noreturn]] ' : ''} #{qualifiers} #{gen_return_type(symtab)} #{scope}#{name.gsub('?', '_Q_')}(#{gen_cpp_argument_list(symtab)})#{include_semi ? ';' : ''}
+        #{' ' * indent}#{name =~ /^raise.*/ ? '[[noreturn]] ' : ''} #{qualifiers} #{gen_return_type(symtab)} #{scope}#{name.gsub('?', '_Q_')}(#{gen_cpp_argument_list(symtab)})#{include_semi ? ';' : ''}
       PROTOTYPE
     end
   end
@@ -595,6 +618,16 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if op == ">>>"
         "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.sra(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
+      elsif op == "<<"
+        if rhs.constexpr?(symtab)
+          # use template form of shift
+          "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.template sll<#{rhs.value(symtab)}>())"
+        elsif rhs.type(symtab).const?
+          # use widening shift
+          "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.widening_sll(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
+        else
+        "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)} << #{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
+        end
       else
         "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)} #{op} #{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
       end
@@ -642,7 +675,9 @@ module Idl
   class ReturnStatementAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       expression =
-        if return_value_nodes.size == 1
+        if return_value_nodes.empty?
+          "return;"
+        elsif return_value_nodes.size == 1
           "#{' ' * indent}return #{return_value_nodes[0].gen_cpp(symtab, 0, indent_spaces:)};"
         else
           func_def = find_ancestor(FunctionDefAst)
@@ -693,7 +728,7 @@ module Idl
           "__UDB_FUNC_CALL ary_includes_Q_(#{arg_nodes[0].gen_cpp(symtab, 0)}, #{arg_nodes[1].gen_cpp(symtab, 0)})"
         else
           # array
-          "__UDB_CONSTEXPR_FUNC_CALL ary_includes_Q_<#{arg_nodes[0].type(symtab).width}>(#{arg_nodes[0].gen_cpp(symtab, 0)}, #{arg_nodes[1].gen_cpp(symtab, 0)})"
+          "__UDB_CONSTEXPR_FUNC_CALL template ary_includes_Q_<#{arg_nodes[0].type(symtab).width}>(#{arg_nodes[0].gen_cpp(symtab, 0)}, #{arg_nodes[1].gen_cpp(symtab, 0)})"
         end
       else
         targs_cpp = template_arg_nodes.map { |t| t.gen_cpp(symtab, 0, indent_spaces:) }
@@ -703,13 +738,13 @@ module Idl
           if targs_cpp.empty?
             "__UDB_CONSTEXPR_FUNC_CALL #{name.gsub("?", "_Q_")}(#{args_cpp.join(', ')})"
           else
-            "__UDB_CONSTEXPR_FUNC_CALL #{name.gsub("?", "_Q_")}<#{targs_cpp.join(', ')}>(#{args_cpp.join(', ')})"
+            "__UDB_CONSTEXPR_FUNC_CALL template #{name.gsub("?", "_Q_")}<#{targs_cpp.join(', ')}>(#{args_cpp.join(', ')})"
           end
         else
           if targs_cpp.empty?
             "__UDB_FUNC_CALL #{name.gsub("?", "_Q_")}(#{args_cpp.join(', ')})"
           else
-            "__UDB_FUNC_CALL #{name.gsub("?", "_Q_")}<#{targs_cpp.join(', ')}>(#{args_cpp.join(', ')})"
+            "__UDB_FUNC_CALL template #{name.gsub("?", "_Q_")}<#{targs_cpp.join(', ')}>(#{args_cpp.join(', ')})"
           end
         end
       end

@@ -4,6 +4,11 @@
 #include <map>
 #include <unordered_map>
 
+#include "udb/defines.hpp"
+
+#if !defined(JSON_ASSERT)
+#define JSON_ASSERT(cond) udb_assert(cond, "JSON assert");
+#endif
 #include <nlohmann/json-schema.hpp>
 
 #include "udb/hart.hpp"
@@ -13,25 +18,50 @@
 #include "udb/enum.hxx"
 #include "udb/bitfield.hxx"
 #include "udb/util.hpp"
+#include "udb/inst.hpp"
+#include "udb/bb_cache.hpp"
 
 <%- hart_name = name_of(:hart, cfg_arch) -%>
 
 namespace udb {
-  class InstBase;
-  class <%= hart_name -%> : public HartBase {
+  template <SocModel SocType>
+  class <%= hart_name -%>;
+}
+
+#include "udb/cfgs/<%= cfg_arch.name %>/inst.hxx"
+
+namespace udb {
+  template <SocModel SocType>
+  class <%= hart_name -%> : public HartBase<SocType> {
     <%- csrs = cfg_arch.not_prohibited_csrs -%>
     <%- csrs.each do |csr| -%>
-    friend class <%= name_of(:csr, cfg_arch, csr.name) %>;
-    <%- fields = cfg_arch.fully_configured? ? csr.implemented_fields(cfg_arch) : csr.fields -%>
+    friend class <%= name_of(:csr, cfg_arch, csr.name) %><SocType>;
+    <%- fields = cfg_arch.fully_configured? ? csr.implemented_fields(cfg_arch) : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
     <%- fields.each do |field| -%>
-    friend class <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %>;
+    <%- next unless cfg_arch.possible_xlens.any? { |xlen| field.defined_in_base?(xlen) } -%>
+
+    friend class <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %><SocType>;
     <%- end -%>
     <%- end -%>
+    friend class InstBase;
     <%- ilist = cfg_arch.possible_instructions -%>
     <%- ilist.each do |inst| -%>
-    template <unsigned XLEN>
+    template <unsigned XLEN, SocModel _SocType>
     friend class <%= name_of(:inst, cfg_arch, inst.name) %>;
     <%- end -%>
+
+    // size (in C++ storage) of the largest instruction
+    static constexpr size_t __MAX_INST_CPP_SIZE =
+      std::max({
+        <%= ilist.map do |i|
+            cfg_arch.possible_xlens.select do |xlen|
+              i.defined_in_base?(xlen)
+            end.map do |xlen|
+              "sizeof(#{name_of(:inst, cfg_arch, i.name)}<#{xlen}, SocType>)"
+            end
+          end.flatten.join(', ') %> });
+
+    static inline PoolAllocator<InstBase, <%= name_of(:hart, cfg_arch) %>::__MAX_INST_CPP_SIZE> inst_allocator;
 
     public:
       <%- cfg_arch.globals.each do |global| -%>
@@ -47,13 +77,12 @@ namespace udb {
       <%- end -%>
 
       #include "udb/cfgs/<%= cfg_arch.name %>/func_prototypes.hxx"
-      #include "udb/cfgs/<%= cfg_arch.name %>/builtin_funcs.hxx"
 
       static constexpr unsigned MXLEN = <%= cfg_arch.mxlen.nil? ? 64 : cfg_arch.mxlen %>;
       using XReg = Bits<MXLEN>;
 
-      <%= hart_name -%>(uint64_t hart_id, Memory& mem, const nlohmann::json& cfg)
-        : HartBase(hart_id, mem, cfg),
+      <%= hart_name -%>(uint64_t hart_id, SocType& soc, const nlohmann::json& cfg)
+        : HartBase<SocType>(hart_id, soc, cfg),
           m_params(<%= name_of(:params, cfg_arch) %>(cfg)),
           m_csrs(this)
       {
@@ -61,16 +90,57 @@ namespace udb {
         init_csr_map();
       }
 
-      void init_csr_map();
+      void reset(uint64_t reset_pc) override {
+        this->HartBase<SocType>::reset(reset_pc);
+        m_csrs.reset();
 
-      bool implemented_Q_(const ExtensionName& ext, const VersionRequirement& req)
-      {
-          return false;
+        m_pc = reset_pc;
+        for (auto i = 1; i < m_xregs_unknown.size(); i++) {
+          m_xregs_unknown.set(i);
+        }
+
+        <%- cfg_arch.globals.each do |global| -%>
+        <%- if global.is_a?(Idl::GlobalWithInitializationAst) -%>
+        <%- next if global.type(cfg_arch.symtab).const? -%>
+        <%= global.id %> = <%= global.rhs.gen_cpp(cfg_arch.symtab, 0) %>;
+        <%- else -%>
+        // <%= global.id %> = unknown;
+        <%- end -%>
+        <%- end -%>
       }
 
-      bool implemented_Q_(const ExtensionName& ext)
+      void init_csr_map();
+
+      bool implemented_version_Q_(const ExtensionName& ext, const VersionRequirement& req) const
       {
+        <%- cfg_arch.transitive_prohibited_extension_versions.each do |ext_ver| -%>
+        if constexpr ((ext == ExtensionName::<%= ext_ver.name %>) && (req.satisfied_by({<%= ext_ver.version_str %>}))) {
+            return false;
+        }
+        <%- end -%>
+
+        auto ext_ver = this->m_implemented_exts.find(ext);
+        if (ext_ver == this->m_implemented_exts.end()) {
           return false;
+        }
+        return req.satisfied_by(ext_ver->second);
+      }
+
+      bool implemented_Q_(const ExtensionName& ext) const
+      {
+        <%- cfg_arch.extensions.each do |ext| -%>
+        <%- if ext.versions.all? { |ext_ver| cfg_arch.transitive_prohibited_extension_versions.include?(ext_ver) } -%>
+        if constexpr (ext == ExtensionName::<%= ext_ver.name %>) {
+            return false;
+        }
+        <%- end -%>
+        <%- end -%>
+
+        return this->m_implemented_exts.find(ext) != this->m_implemented_exts.end();
+      }
+
+      bool implemented_csr_Q_(const Bits<12>& csr_addr) {
+        return m_csr_addr_map.count(csr_addr) == 1;
       }
 
 
@@ -91,19 +161,33 @@ namespace udb {
 
       unsigned mxlen() override { return MXLEN; }
 
-      uint64_t xreg(unsigned num) const override { return m_xregs[num].get(); }
+      uint64_t xreg(unsigned num) const override {
+        if (num >= 32) {
+          throw std::out_of_range("X register indicies are 0 - 31, inclusive");
+        }
+        return _xreg(num);
+      }
 
-      Bits<MXLEN> _xreg(unsigned num) const { return m_xregs[num].get(); }
+      Bits<MXLEN> _xreg(unsigned num) const {
+        if (m_xregs_unknown[num] == true) {
+          throw UndefinedValueError("X register value is uninitialized");
+        }
+        return m_xregs[num].get();
+      }
 
       // XRegister<MXLEN>& xregRef(unsigned num) { return m_xregs[num]; }
 
       void set_xreg(unsigned num, uint64_t value) override {
+        if (num >= 32) {
+          throw std::out_of_range("X register indicies are 0 - 31, inclusive");
+        }
         _set_xreg(num, value);
       }
 
-      template <typename IdxType, typename ValType>
-      void _set_xreg(const IdxType& num, const ValType& value) {
+      template <typename IdxType>
+      void _set_xreg(const IdxType& num, const Bits<MXLEN>& value) {
         if (num != 0) {
+          m_xregs_unknown[num] = false;
           m_xregs[static_cast<unsigned>(num)] = value;
         }
       }
@@ -146,30 +230,82 @@ namespace udb {
       return m_params;
     }
 
-    InstBase* decode(const uint64_t& pc, const uint64_t& encoding) override {
-      return _decode(pc, encoding);
+    InstBase* _decode(const XReg& pc, const Bits<<%= cfg_arch.largest_encoding %>>& encoding) {
+      InstBase* inst = inst_allocator.allocate();
+      if (_decode(pc, encoding, inst) == false) {
+        inst_allocator.free(inst);
+        return nullptr;
+      } else {
+        return inst;
+      }
     }
+    bool _decode(const XReg& pc, const Bits<<%= cfg_arch.largest_encoding %>>& encoding, InstBase* obj);
 
-    InstBase* _decode(const XReg& pc, const Bits<<%= cfg_arch.largest_encoding %>>& encoding);
+    uint64_t fetch() override { return _fetch(); }
+    Bits<INSTR_ENC_SIZE> _fetch();
 
     <%= name_of(:struct, cfg_arch, "CachedTranslationResult") %> cached_translation(const XReg& vaddr, const MemoryOperation& op) const {
       return <%= name_of(:struct, cfg_arch, "CachedTranslationResult") %>{};
     }
 
-    <%= name_of(:csr_container, cfg_arch) %>& _csrContainer() { return m_csrs; }
+    <%= name_of(:csr_container, cfg_arch) %><SocType>& _csrContainer() { return m_csrs; }
+
+    int run_one() override { return _run_one(); }
+    int _run_one();
+
+    int run_bb() override { return _run_bb(); }
+    int _run_bb();
+
+    int run_n(uint64_t n) override { return _run_n(n); }
+    int _run_n(uint64_t n);
+
+    // external interrupt interface
+    void set_mmode_ext_int() {
+      m_csrs.mip.MEIP()._hw_write(1);
+      refresh_pending_interrupts();
+    }
+    void clear_mmode_ext_int() {
+      m_csrs.mip.MEIP()._hw_write(0);
+      refresh_pending_interrupts();
+    }
+    void set_smode_ext_int() {
+      pending_smode_external_interrupt = true;
+      refresh_pending_interrupts();
+    }
+    void clear_smode_ext_int() {
+      pending_smode_external_interrupt = false;
+      refresh_pending_interrupts();
+    }
+    // void set_vsmode_ext_int() {
+    //   m_csrs.hvip.MEIP = 0;
+    //   pending_vsmode_external_interrupt = true;
+    //   refresh_pending_interrupts();
+    // }
+    // void clear_vsmode_ext_int() {
+    //   m_csrs.mip.MEIP = 0;
+    //   pending_vsmode_external_interrupt = false;
+    //   refresh_pending_interrupts();
+    // }
 
     private:
       XReg m_pc;
       XReg m_next_pc;
       InstBase* m_cur_inst;
       std::array<XRegister<MXLEN>, 32> m_xregs;
+      std::bitset<32> m_xregs_unknown;
 
       <%= name_of(:params, cfg_arch) %> m_params;
-      <%= name_of(:csr_container, cfg_arch) %> m_csrs;
+      <%= name_of(:csr_container, cfg_arch) %><SocType> m_csrs;
       std::unordered_map<Bits<12>, CsrBase*> m_csr_addr_map;
       std::map<std::string, CsrBase*> m_csr_name_map;
+
+      std::array<uint8_t, __MAX_INST_CPP_SIZE> m_run_one_inst_storage;
+      BasicBlockCache<__MAX_INST_CPP_SIZE> m_bb_cache;
   };
-
-  #include "udb/cfgs/<%= cfg_arch.name %>/idl_funcs_impl.hxx"
-
 }
+
+#include "udb/cfgs/<%= cfg_arch.name %>/hart_impl.hxx"
+
+#include "udb/cfgs/<%= cfg_arch.name %>/idl_funcs_impl.hxx"
+
+#include "udb/cfgs/<%= cfg_arch.name %>/inst_impl.hxx"
