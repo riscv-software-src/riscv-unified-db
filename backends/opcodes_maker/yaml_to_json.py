@@ -242,6 +242,12 @@ def convert(file_dir: str, json_out: Dict[str, Any]) -> None:
         with open(file_dir) as file:
             data = yaml.safe_load(file)
 
+            if data["kind"] != "instruction":
+                print(
+                    f"Error: File {file_dir} has kind '{data['kind']}', expected 'instruction'. Skipping."
+                )
+                return
+
             instr_name = data["name"].replace(".", "_")
 
             print(instr_name)
@@ -332,7 +338,7 @@ def main():
             with open(output_file, "w") as outfile:
                 json.dump(insts_sorted, outfile, indent=4)
 
-        print(f"Successfully processed {len(insts)} YAML files")
+        print(f"Successfully processed {len(yaml_files)} YAML files")
         print(f"Output written to: {output_file}")
     except Exception as e:
         print(f"Error: Failed to process YAML files: {str(e)}")
