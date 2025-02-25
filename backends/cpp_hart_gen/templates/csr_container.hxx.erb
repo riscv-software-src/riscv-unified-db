@@ -1,0 +1,28 @@
+#pragma once
+
+#include "udb/cfgs/<%= cfg_arch.name %>/csrs.hxx"
+
+<%- csrs = cfg_arch.possible_csrs -%>
+
+namespace udb {
+  template <SocModel SocType>
+  class <%= name_of(:hart, cfg_arch) %>;
+
+  // just holds the a Hart's Csrs
+  template <SocModel SocType>
+  struct <%= name_of(:csr_container, cfg_arch) %> {
+    <%- csrs.each do |csr| -%>
+    <%= name_of(:csr, cfg_arch, csr.name) %><SocType> <%= csr.name %>;
+    <%- end -%>
+
+    <%= name_of(:csr_container, cfg_arch) %> (<%= name_of(:hart, cfg_arch) %><SocType>* parent) :
+      <%= csrs.map { |csr| "#{csr.name}(parent)" }.join(",\n      ") -%>
+    {}
+
+    void reset() {
+      <%- csrs.each do |csr| -%>
+      <%= csr.name %>.reset();
+      <%- end -%>
+    }
+  };
+}

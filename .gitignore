@@ -7,6 +7,8 @@
 .stamps
 .venv
 .asciidoctor
+.vscode/*
+!.vscode/launch.json
 .container-type
 diag-ditaa-*
 arch/manual/isa/**/riscv-isa-manual

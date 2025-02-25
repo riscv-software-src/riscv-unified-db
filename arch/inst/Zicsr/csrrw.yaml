@@ -19,9 +19,9 @@ encoding:
   variables:
     - name: csr
       location: 31-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -29,13 +29,17 @@ access:
   vs: always
   vu: always
 operation(): |
-  if (rd != 0) {
-    X[rd] = CSR[csr].sw_read();
+  check_csr(csr, true, $encoding);
+
+  Bits<XLEN> initial_value = X[xs1];
+
+  if (xd != 0) {
+    X[xd] = CSR[csr].sw_read();
   }
 
-  # writes the value in X[rs1] to the CSR,
+  # writes the value in X[xs1] to the CSR,
   # performing any WARL transformations first
-  CSR[csr].sw_write(X[rs1]);
+  CSR[csr].sw_write(initial_value);
 
 sail(): |
   {

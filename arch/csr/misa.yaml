@@ -15,7 +15,8 @@ fields:
     location_rv64: 63-62
     description: XLEN in M-mode.
     type: RO
-    reset_value: 2
+    reset_value(): |
+      return (XLEN == 32) ? 2'b01 : 2'b10;
   A:
     location: 0
     description: |
@@ -25,8 +26,9 @@ fields:
       Writing 0 to this field will cause all atomic instructions to raise an `IllegalInstruction` exception.
     type(): |
       return (implemented?(ExtensionName::A) && MUTABLE_MISA_A) ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return implemented?(ExtensionName::A) ? 1 : 0;
     definedBy: A
-    reset_value: 1
   B:
     location: 1
     description: |
@@ -36,8 +38,9 @@ fields:
       Writing 0 to this field will cause all bitmanip instructions to raise an `IllegalInstruction` exception.
     type(): |
       return (implemented?(ExtensionName::B) && MUTABLE_MISA_B) ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return implemented?(ExtensionName::B) ? 1 : 0;
     definedBy: B
-    reset_value: 1
   C:
     location: 2
     description: |
@@ -48,8 +51,9 @@ fields:
       Additionally, IALIGN becomes 32.
     type(): |
       return (implemented?(ExtensionName::C) && MUTABLE_MISA_C) ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return implemented?(ExtensionName::C) ? 1 : 0;
     definedBy: C
-    reset_value: 1
   D:
     location: 3
     description: |
@@ -63,8 +67,9 @@ fields:
       --
     type(): |
       return (implemented?(ExtensionName::D) && MUTABLE_MISA_D) ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return implemented?(ExtensionName::D) ? 1 : 0;
     definedBy: D
-    reset_value: 1
   F:
     location: 5
     description: |
@@ -78,8 +83,9 @@ fields:
       --
     type(): |
       return (implemented?(ExtensionName::F) && MUTABLE_MISA_F) ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return implemented?(ExtensionName::F) ? 1 : 0;
     definedBy: F
-    reset_value: 1
     sw_write(csr_value): |
       if (csr_value.F == 0 && csr_value.D == 1) {
         return UNDEFINED_LEGAL_DETERMINISTIC;
@@ -118,7 +124,8 @@ fields:
     type(): |
       return (implemented?(ExtensionName::H) && MUTABLE_MISA_H) ? CsrFieldType::RW : CsrFieldType::RO;
     definedBy: H
-    reset_value: 1
+    reset_value(): |
+      return implemented?(ExtensionName::H) ? 1 : 0;
   I:
     location: 8
     description: |
@@ -135,8 +142,9 @@ fields:
       Writing 0 to this field will cause all attempts to execute an integer multiply or divide instruction to raise an `IllegalInstruction` exception.
     type(): |
       return (implemented?(ExtensionName::M) && MUTABLE_MISA_M) ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return implemented?(ExtensionName::M) ? 1 : 0;
     definedBy: M
-    reset_value: 1
   S:
     location: 19
     description: |
@@ -146,8 +154,9 @@ fields:
       Writing 0 to this field will cause all attempts to enter S-mode or access S-mode state to raise an exception.
     type(): |
       return (implemented?(ExtensionName::S) && MUTABLE_MISA_S) ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return implemented?(ExtensionName::S) ? 1 : 0;
     definedBy: S
-    reset_value: 1
   U:
     location: 21
     description: |
@@ -157,8 +166,9 @@ fields:
       Writing 0 to this field will cause all attempts to enter U-mode to raise an exception.
     type(): |
       return (implemented?(ExtensionName::U) && MUTABLE_MISA_U) ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return implemented?(ExtensionName::U) ? 1 : 0;
     definedBy: U
-    reset_value: 1
   V:
     location: 22
     description: |
@@ -166,12 +176,14 @@ fields:
 
       [when,"MUTABLE_MISA_V == true"]
       Writing 0 to this field will cause all attempts to execute a vector instruction to raise an `IllegalInstruction` trap.
-    type: RO
+    type(): |
+      return (implemented?(ExtensionName::V) && MUTABLE_MISA_V) ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return implemented?(ExtensionName::V) ? 1 : 0;
     definedBy: V
-    reset_value: 1
 sw_read(): |
   return (
-    (CSR[misa].MXL << 62) |
+    (CSR[misa].MXL << (xlen() - 2)) |
     (CSR[misa].V << 21) |
     (CSR[misa].U << 20) |
     (CSR[misa].S << 18) |

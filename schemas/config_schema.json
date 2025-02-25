@@ -1,165 +1,190 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
 
-  "type": "object",
-  "title": "Architecture configuration",
-  "required": ["$schema", "kind", "type", "name", "description"],
-  "allOf": [
-    {
-      "if": {
-        "properties": {
-          "type": { "const": "fully configured" }
-        }
-      },
-      "then": {
-        "required": ["implemented_extensions", "params"],
-        "properties": {
-          "params": {
-            "type": "object"
-          },
-          "mandatory_extensions": {
-            "type": "null"
-          },
-          "non_mandatory_extensions": {
-            "type": "null"
-          },
-          "prohibited_extensions": {
-            "type": "null"
-          },
-          "implemented_extensions": {
-            "description": "Extensions implemented by this architecture",
-            "type": "array",
-            "items": {
-              "type": "object",
-              "required": ["name", "version"],
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "pattern": "^([A-WY]|([SXZ][a-z0-9]+))$",
-                  "description": "Extension name"
-                },
-                "version": {
-                  "oneOf": [
-                    {
-                      "type": "string",
-                      "description": "Extension version"
-                    },
-                    {
-                      "type": "number"
-                    }
-                  ]
-                }
-              },
-              "additionalProperties": false
-            }
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "type": { "const": "partially configured" }
-        }
-      },
-      "then": {
-        "anyOf": [
-          {
-            "required": ["mandatory_extensions"]
-          },
-          {
-            "required": ["params"]
-          }
-        ],
-        "properties": {
-          "params": {
-            "type": "object"
-          },
-          "mandatory_extensions": {
-            "description": "Extensions mandatory in this architecture",
-            "type": "array",
-            "items": {
-              "$ref": "schema_defs.json#/$defs/extension_requirement"
-            },
-            "default": {
-              "const": []
-            }
-          },
-          "non_mandatory_extensions": {
-            "description": "Extensions that are not mandatory but are still _special_ in this architecture. This could mean different things depending on the context: for certificates or generated IP, this would correspond to _optional supported_, and extensions not in non_mandatory are not possible. For profiles, this corresponds to some type of _profile optional_, but extensions in non_mandatory are still possible.",
-            "type": "array",
-            "items": {
-              "$ref": "schema_defs.json#/$defs/extension_requirement"
-            },
-            "default": {
-              "const": []
-            }
-          },
-          "prohibited_extensions": {
-            "description": "Extensions explicitly prohibited in this architecture. Does *not* need to include extensions that are excluded because of a conflict-by-definition with a mandatory extension, as those will be calculated automatically",
-            "type": "array",
-            "items": {
-              "$ref": "schema_defs.json#/$defs/extension_requirement"
-            },
-            "default": {
-              "const": []
-            }
-          },
-          "implemented_extensions": {
-            "type": "null"
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "type": { "const": "unconfigured" }
-        }
-      },
-      "then": {
-        "mandatory_extensions": {
-          "type": "null"
+  "$defs": {
+    "full_configuration": {
+      "type": "object",
+      "required": [
+        "$schema",
+        "kind",
+        "type",
+        "description",
+        "name",
+        "implemented_extensions",
+        "params"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "format": "uri-reference",
+          "const": "config_schema.json#"
         },
-        "non_mandatory_extensions": {
-          "type": "null"
+        "kind": {
+          "type": "string",
+          "const": "architecture configuration"
         },
-        "prohibited_extensions": {
-          "type": "null"
+        "type": {
+          "type": "string",
+          "const": "fully configured"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the configuration"
+        },
+        "description": {
+          "type": "string",
+          "description": "An asciidoc description of the configuration"
+        },
+        "arch_overlay": {
+          "type": "string",
+          "description": "Optional arch overlay to apply. Can be either the name of a directory under arch_overlay/ or a (absolute or relative) path to an overlay directory"
+        },
+        "$source": {
+          "type": "string",
+          "format": "uri",
+          "description": "Path to original file, when this is a copy"
         },
         "params": {
-          "type": "null"
+          "type": "object"
+        },
+        "implemented_extensions": {
+          "description": "Extensions implemented by this architecture",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "version"],
+            "properties": {
+              "name": {
+                "$ref": "schema_defs.json#/$defs/extension_name",
+                "description": "Extension name"
+              },
+              "version": {
+                "$ref": "schema_defs.json#/$defs/extension_version"
+              }
+            }
+          }
         }
-      }
+      },
+      "additionalProperties": false
+    },
+    "partial_configuration": {
+      "type": "object",
+      "required": [
+        "$schema",
+        "kind",
+        "type",
+        "name",
+        "description",
+        "mandatory_extensions"
+      ],
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "format": "uri-reference",
+          "const": "config_schema.json#"
+        },
+        "kind": {
+          "type": "string",
+          "const": "architecture configuration"
+        },
+        "type": {
+          "type": "string",
+          "const": "partially configured"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the configuration"
+        },
+        "description": {
+          "type": "string",
+          "description": "An asciidoc description of the configuration"
+        },
+        "params": {
+          "type": "object"
+        },
+        "arch_overlay": {
+          "type": "string",
+          "description": "Optional arch overlay to apply. Can be either the name of a directory under arch_overlay/ or a (absolute or relative) path to an overlay directory"
+        },
+        "$source": {
+          "type": "string",
+          "format": "uri",
+          "description": "Path to original file, when this is a copy"
+        },
+        "mandatory_extensions": {
+          "description": "Extensions mandatory in this architecture",
+          "type": "array",
+          "items": {
+            "$ref": "schema_defs.json#/$defs/extension_requirement"
+          }
+        },
+        "non_mandatory_extensions": {
+          "description": "Extensions that are not mandatory but are still _special_ in this architecture. This could mean different things depending on the context: for certificates or generated IP, this would correspond to _optional supported_, and extensions not in non_mandatory are not possible. For profiles, this corresponds to some type of _profile optional_, but extensions in non_mandatory are still possible.",
+          "type": "array",
+          "items": {
+            "$ref": "schema_defs.json#/$defs/extension_requirement"
+          }
+        },
+        "prohibited_extensions": {
+          "description": "Extensions explicitly prohibited in this architecture. Does *not* need to include extensions that are excluded because of a conflict-by-definition with a mandatory extension, as those will be calculated automatically",
+          "type": "array",
+          "items": {
+            "$ref": "schema_defs.json#/$defs/extension_requirement"
+          }
+        },
+        "implemented_extensions": {
+          "type": "null"
+        },
+        "additional_extensions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether or not a compliant instance of this partial config can have more extensions than those listed in mandatory_extensions/non_mandatory_extensions"
+        }
+      },
+      "additionalProperties": false
+    },
+    "unconfiguration": {
+      "type": "object",
+      "required": ["$schema", "kind", "type", "name", "description"],
+      "properties": {
+        "$schema": {
+          "type": "string",
+          "format": "uri-reference",
+          "const": "config_schema.json#"
+        },
+        "kind": {
+          "type": "string",
+          "const": "architecture configuration"
+        },
+        "type": {
+          "type": "string",
+          "const": "unconfigured"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the configuration"
+        },
+        "arch_overlay": {
+          "type": "string",
+          "description": "Optional arch overlay to apply. Can be either the name of a directory under arch_overlay/ or a (absolute or relative) path to an overlay directory"
+        },
+        "$source": {
+          "type": "string",
+          "format": "uri",
+          "description": "Path to original file, when this is a copy"
+        },
+        "description": {
+          "type": "string",
+          "description": "An asciidoc description of the configuration"
+        }
+      },
+      "additionalProperties": false
     }
-  ],
-  "properties": {
-    "type": {
-      "type": "string",
-      "description": "Type of the arch",
-      "enum": ["unconfigured", "partially configured", "fully configured"]
-    },
-    "$schema": {
-      "type": "string",
-      "format": "uri-reference",
-      "const": "config_schema.json#"
-    },
-    "kind": {
-      "type": "string",
-      "const": "architecture configuration"
-    },
-    "name": {
-      "type": "string"
-    },
-    "description": {
-      "type": "string",
-      "description": "An asciidoc description of the configuration"
-    },
-    "params": true,
-    "mandatory_extensions": true,
-    "non_mandatory_extensions": true,
-    "prohibited_extensions": true,
-    "implemented_extensions": true
   },
-  "additionalProperties": false
+
+  "oneOf": [
+    { "$ref": "#/$defs/full_configuration" },
+    { "$ref": "#/$defs/partial_configuration" },
+    { "$ref": "#/$defs/unconfiguration" }
+  ]
 }
