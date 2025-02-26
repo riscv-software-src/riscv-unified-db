@@ -42,6 +42,15 @@ operation(): |
   if (implemented?(ExtensionName::Xqccmp) && (CSR[misa].C == 1'b0)) {
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
+  if (X[2] < CSR[qc.mstkbottomaddr]) {
+    raise(ExceptionCode::SpOutOfRange, mode(), $encoding);
+  }
+  if (X[2] > CSR[qc.mstktopaddr]) {
+    raise(ExceptionCode::SpOutOfRange, mode(), $encoding);
+  }
+  if (X[2] & 0xf != 0) {
+    raise(ExceptionCode::IllegalStackPointer, mode(), $encoding);
+  }
 
   XReg size = xlen();
   XReg nreg = (rlist == 15) ? 13 : (rlist - 3);
