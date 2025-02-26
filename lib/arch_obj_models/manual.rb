@@ -68,6 +68,36 @@ class ManualVolume
     @version = version
   end
 
+  def adoc
+    return @adoc unless @adoc.nil?
+
+    srcdir = "#{@repo_path}/#{@data["srcdir"]}"
+    @adoc = Asciidoctor.load_file("#{srcdir}/#{@data["main"]}", base_dir: srcdir, sourcemap: true, parse: true, catalog_assets: true, safe: Asciidoctor::SafeMode::UNSAFE)
+  end
+
+  # @return [Array<Asciidoctor::AbstractBlock>] Blocks that mention obj
+  def find_normative_adoc_for(obj)
+    keyword =
+      if (obj.is_a?(Instruction))
+        obj.name.upcase
+      else
+        raise "TODO: #{obj.class.name}"
+      end
+
+    regex = %r{(^|[ /,])#{keyword}([ ,/.]|$)}
+
+    def is_note?(block)
+      if block.context == :admonition
+        true
+      else
+        block.parent.nil? ? false : is_note?(block.parent)
+      end
+    end
+
+    blocks = adoc.find_by context: :paragraph
+    blocks.reject { |block| !block.methods.include?(:source) || block.source.index(regex).nil? || is_note?(block) }
+  end
+
   def chapters
     return @chapters unless @chapters.nil?
 

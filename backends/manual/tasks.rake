@@ -189,10 +189,14 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/insts/pages/.*.adoc} => [
   ($root / "backends" / "manual" / "templates" / "instruction.adoc.erb").to_s
 ] do |t|
   inst_name = File.basename(t.name, ".adoc")
+  manual_version_name = t.name.sub("/antora/modules/insts/pages/#{inst_name}.adoc", "").split("/").last
 
   cfg_arch = cfg_arch_for("_")
   inst = cfg_arch.instruction(inst_name)
   raise "Can't find instruction '#{inst_name}'" if inst.nil?
+
+  manual_version = cfg_arch.manual_version(manual_version_name)
+  raise "Can't find manual version '#{manual_version_name}'" if manual_version.nil?
 
   inst_template_path = $root / "backends" / "manual" / "templates" / "instruction.adoc.erb"
   erb = ERB.new(inst_template_path.read, trim_mode: "-")
@@ -294,6 +298,18 @@ rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/landing/antora.yml} => [
     title: Home
   ANTORA
 end
+
+rule %r{#{MANUAL_GEN_DIR}/.*/\.git} => proc { |tname|
+  [File.join(File.dirname(tname), "antora.yml")]
+} do |t|
+  Dir.chdir(File.dirname(t.name)) do
+    sh "git init"
+    sh "git config --local commit.gpgsign false"
+    sh "git add antora.yml"
+    sh "git commit -m \"Antora needs one commit\""
+  end
+end
+
 
 rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/landing/modules/ROOT/pages/index.adoc} => proc { |tname|
   parts = tname.sub("#{MANUAL_GEN_DIR}/", "").split("/")
@@ -429,6 +445,7 @@ namespace :gen do
       Rake::Task[antora_path / "modules" / "ROOT" / "pages" / "index.adoc"].invoke
       Rake::Task[antora_path / "antora.yml"].invoke
       Rake::Task[antora_path / "nav.adoc"].invoke
+      Rake::Task[antora_path / ".git"].invoke
 
       version_obj.csrs.each do |csr|
         Rake::Task[antora_path / "modules" / "csrs" / "pages" / "#{csr.name}.adoc"].invoke
@@ -447,6 +464,10 @@ namespace :gen do
 
     landing_antora_path = MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / "top" / output_hash / "antora" / "landing" / "antora.yml"
     Rake::Task[landing_antora_path].invoke
+
+    # turn the directory into a git repo, which Antora requires
+    landing_git_path = MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / "top" / output_hash / "antora" / "landing" / ".git"
+    Rake::Task[landing_git_path].invoke
 
     playbook_path = MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / "top" / output_hash / "antora" / "playbook" / "playbook.yml"
     Rake::Task[playbook_path].invoke
