@@ -42,7 +42,9 @@ versions:
     company: Qualcomm Technologies, Inc.
     email: jameball@qti.qualcomm.com
   changes:
+    - Fix all push and pop instructions description for RV64 (IDL code fix)
     - Fix qc.cm.pushfp instruction to avoid rlist == 4, since not saving s0 == fp but updating it, should not occur
+    - Add CSRs qc.mstkbottomaddr and qc.mstktopaddr to support cache range checking
     - Add list of supported custom exceptions - stack alignment check and stack range check
     - Add stack exception checks in all push/pop instructions
   requires:
