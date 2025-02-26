@@ -30,7 +30,7 @@ encoding:
   variables:
     - name: rlist
       location: 7-4
-      not: [0, 1, 2, 3]
+      not: [0, 1, 2, 3, 4]
     - name: spimm
       location: 3-2
 access:
