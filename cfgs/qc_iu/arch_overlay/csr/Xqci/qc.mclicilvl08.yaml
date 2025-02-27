@@ -9,8 +9,10 @@ priv_mode: M
 base: 32
 definedBy:
   anyOf:
-    - Xqci
-    - Xqciint
+    - name: Xqci
+      version: ">=0.7"
+    - name: Xqciint
+      version: ">=0.4"
 description: |
   Level bits for IRQs 64-71
 fields:

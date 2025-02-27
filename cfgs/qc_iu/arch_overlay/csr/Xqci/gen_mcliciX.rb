@@ -65,8 +65,10 @@ level_template = <<~YAML
   base: 32
   definedBy:
     anyOf:
-      - Xqci
-      - Xqciint
+      - name: Xqci
+        version: ">=0.7"
+      - name: Xqciint
+        version: ">=0.4"
   description: |
     Level bits for IRQs <%= num*8 %>-<%= (num + 1)*8 - 1 %>
   fields:
@@ -91,8 +93,10 @@ wp_start_template = <<~YAML
   base: 32
   definedBy:
     anyOf:
-      - Xqci
-      - Xqciint
+      - name: Xqci
+        version: ">=0.7"
+      - name: Xqciint
+        version: ">=0.4"
   description: |
     Watchpoint start address for region <%= num %>
   fields:
@@ -115,8 +119,10 @@ wp_end_template = <<~YAML
   base: 32
   definedBy:
     anyOf:
-      - Xqci
-      - Xqciint
+      - name: Xqci
+        version: ">=0.7"
+      - name: Xqciint
+        version: ">=0.4"
   description: |
     Watchpoint end address for region <%= num %>
   fields:

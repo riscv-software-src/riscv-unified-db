@@ -10,8 +10,10 @@ description: |
   Machine Mode Control Register.
 definedBy:
   anyOf:
-    - Xqci
-    - Xqciint
+    - name: Xqci
+      version: ">=0.7"
+    - name: Xqciint
+      version: ">=0.4"
 fields:
   WP_EXEC:
     type: RW

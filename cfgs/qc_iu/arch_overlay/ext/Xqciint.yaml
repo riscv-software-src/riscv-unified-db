@@ -59,25 +59,10 @@ versions:
     - Fix description of qc.mnepc CSR to reflect being part of Xqciint custom extension
     - Add missing CSR registers qc.mclicilvl00 - qc.mclicilvl31
     - Add missing CSR registers qc.mwpstartaddr0 - qc.mwpstartaddr3 and qc.mwpendaddr0 - qc.mwpendaddr3
-    - Add missing CSR registers qc.mmcr, qc.mstkbottomaddr and qc.mstktopaddr
+    - Add missing CSR registers qc.mstkbottomaddr and qc.mstktopaddr
+    - Add missing CSR registers qc.mmcr, qc.scratch0, qc.scratch1, qc.mthreadptr
     - Add list of supported custom exceptions
   requires: { name: Zca, version: ">= 1.0.0" }
-exception_codes:
-  - num: 27
-    name: Illegal Stack Pointer
-    var: IllegalStackPointer
-  - num: 28
-    name: Stack Pointer Out-Of-Range
-    var: SpOutOfRange
-  - num: 29
-    name: Execution Watchpoint
-    var: ExecWatchpoint
-  - num: 30
-    name: Read Watchpoint
-    var: ReadWatchpoint
-  - num: 31
-    name: Write Watchpoint
-    var: WriteWatchpoint
 description: |
   The Xqciint extension includes eleven instructions to accelerate interrupt
   servicing by performing common actions during ISR prologue/epilogue.

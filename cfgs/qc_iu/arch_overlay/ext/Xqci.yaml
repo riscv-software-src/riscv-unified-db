@@ -194,7 +194,8 @@ versions:
     - Fix description of qc.mnepc CSR to reflect being part of Xqciint custom extension
     - Add missing CSR registers qc.mclicilvl00 - qc.mclicilvl31
     - Add missing CSR registers qc.mwpstartaddr0 - qc.mwpstartaddr3 and qc.mwpendaddr0 - qc.mwpendaddr3
-    - Add missing CSR registers qc.mmcr, qc.mstkbottomaddr and qc.mstktopaddr
+    - Add missing CSR registers qc.mstkbottomaddr and qc.mstktopaddr
+    - Add missing CSR registers qc.mmcr, qc.scratch0, qc.scratch1, qc.mthreadptr
     - Add list of supported custom exceptions
     - Change width calculations for qc.extdpr, qc.extdprh, qc.extdr, qc.extdupr, qc.extduprh, qc.extdur,
     - Change width calculations for qc.insbhr, qc.insbpr, qc.insbprh, qc.insbr, qc.insbri

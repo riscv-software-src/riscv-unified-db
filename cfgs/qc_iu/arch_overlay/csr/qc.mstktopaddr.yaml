@@ -10,9 +10,10 @@ description: |
   Stack top limit register. If the stack pointer (sp == x2) greater then its value - SpOutOfRange exception occurs
 definedBy:
   anyOf:
-    - Xqccmp
-    - Xqci
-    - Xqciint
+    - name: Xqci
+      version: ">=0.7"
+    - name: Xqciint
+      version: ">=0.4"
 fields:
   STKADDR:
     location: 31-4
