@@ -199,7 +199,7 @@ elif [ "${CONTAINER_TYPE}" == "docker" ]; then
     GDB="${DOCKER_BASE} gdb"
     CLANG_FORMAT="${DOCKER_BASE} clang-format"
     CLANG_TIDY="${DOCKER_BASE} clang-tidy"
-    MAKE"${DOCKER_BASE} make"
+    MAKE="${DOCKER_BASE} make"
 elif [ "${CONTAINER_TYPE}" == "singularity" ]; then
     BUNDLE="singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle"
     RUBY="singularity run ${HOME_OPT} ${CONTAINER_PATH} bundle exec ruby"
