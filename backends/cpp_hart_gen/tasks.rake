@@ -12,28 +12,36 @@ CPP_HART_GEN_SRC = $root / "backends" / "cpp_hart_gen"
 CPP_HART_GEN_DST = $root / "gen" / "cpp_hart_gen"
 
 # copy the includes to dst
-rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/.*\.hpp$} do |t|
+rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/.*\.hpp$} => proc { |tname|
+  [(CPP_HART_GEN_SRC / "cpp" / "include" / "udb" / File.basename(tname)).to_s]
+} do |t|
   src_path = CPP_HART_GEN_SRC / "cpp" / "include" / "udb" / File.basename(t.name)
   FileUtils.mkdir_p File.dirname(t.name)
   FileUtils.ln_s src_path, t.name
 end
 
 # copy the includes to dst
-rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/.*\.h$} do |t|
+rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/.*\.h$} => proc { |tname|
+  [(CPP_HART_GEN_SRC / "c" / "include" / "udb" / File.basename(tname)).to_s]
+} do |t|
   src_path = CPP_HART_GEN_SRC / "c" / "include" / "udb" / File.basename(t.name)
   FileUtils.mkdir_p File.dirname(t.name)
   FileUtils.ln_s src_path, t.name
 end
 
 # copy the srcs to dst
-rule %r{#{CPP_HART_GEN_DST}/.*/src/.*\.cpp$} do |t|
+rule %r{#{CPP_HART_GEN_DST}/.*/src/.*\.cpp$} => proc { |tname|
+  [(CPP_HART_GEN_SRC / "cpp" / "src" / File.basename(tname)).to_s]
+} do |t|
   src_path = CPP_HART_GEN_SRC / "cpp" / "src" / File.basename(t.name)
   FileUtils.mkdir_p File.dirname(t.name)
   FileUtils.ln_s src_path, t.name
 end
 
 # copy the tests to dst
-rule %r{#{CPP_HART_GEN_DST}/.*/test/.*\.cpp$} do |t|
+rule %r{#{CPP_HART_GEN_DST}/.*/test/.*\.cpp$} => proc { |tname|
+  [(CPP_HART_GEN_SRC / "cpp" / "test" / File.basename(tname)).to_s]
+} do |t|
   src_path = CPP_HART_GEN_SRC / "cpp" / "test" / File.basename(t.name)
   FileUtils.mkdir_p File.dirname(t.name)
   FileUtils.ln_s src_path, t.name
