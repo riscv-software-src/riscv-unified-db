@@ -2566,6 +2566,40 @@ function read_memory {
   }
 }
 
+function read_memory_xlen {
+  returns Bits<XLEN>
+  arguments
+    XReg virtual_address,
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Read XLEN bits from memory
+  }
+  body {
+    if (xlen() == 32) {
+      return read_memory<32>(virtual_address, encoding);
+    } else {
+      return read_memory<64>(virtual_address, encoding);
+    }
+  }
+}
+
+function write_memory_xlen {
+  arguments
+    XReg virtual_address,
+    Bits<XLEN> value,
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Read XLEN bits from memory
+  }
+  body {
+    if (xlen() == 32) {
+      return write_memory<32>(virtual_address, value, encoding);
+    } else {
+      return write_memory<64>(virtual_address, value, encoding);
+    }
+  }
+}
+
 function read_memory_xlen_aligned {
   returns Bits<XLEN>
   arguments

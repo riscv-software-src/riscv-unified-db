@@ -89,13 +89,16 @@ module Idl
     def prune(symtab)
       add_symbol(symtab)
 
-      if lhs.const?
-        value_try do
-          rhs.value(symtab)
-          # rhs value is known, and variable is const. it can be removed
-          return NoopAst.new
-        end
-      end
+      # do we want to remove a constant? If so, need to add a prune for IdAst that
+      # spits out a literal
+      #
+      # if lhs.const?
+      #   value_try do
+      #     rhs.value(symtab)
+      #     # rhs value is known, and variable is const. it can be removed
+      #     return NoopAst.new
+      #   end
+      # end
 
       VariableDeclarationWithInitializationAst.new(
         input, interval,

@@ -148,7 +148,7 @@ module Idl
 
       if csr.idx.is_a?(AstNode)
         if symtab.cfg_arch.csr(csr.idx.text_value).nil?
-          if function_name == "sw_read" && symtab.cfg_arch.multi_xlen?
+          if function_name == "sw_read"
             "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr.idx.gen_cpp(symtab, 0, indent_spaces:)}).#{function_name}(__UDB_XLEN)"
           else
             "#{' '*indent}__UDB_CSR_BY_ADDR(#{csr.idx.gen_cpp(symtab, 0, indent_spaces:)}).#{function_name.gsub('?', '_Q_')}(#{args_cpp.join(', ')})"
@@ -730,6 +730,10 @@ module Idl
           # array
           "__UDB_CONSTEXPR_FUNC_CALL template ary_includes_Q_<#{arg_nodes[0].type(symtab).width}>(#{arg_nodes[0].gen_cpp(symtab, 0)}, #{arg_nodes[1].gen_cpp(symtab, 0)})"
         end
+      elsif name == "implemented?"
+        "__UDB_FUNC_CALL template _implemented_Q_<#{arg_nodes[0].gen_cpp(symtab, 0)}>()"
+      elsif name == "implemented_version?"
+        "__UDB_FUNC_CALL template _implemented_version_Q_<#{arg_nodes[0].gen_cpp(symtab, 0)}, #{arg_nodes[1].text_value}>()"
       else
         targs_cpp = template_arg_nodes.map { |t| t.gen_cpp(symtab, 0, indent_spaces:) }
         args_cpp = arg_nodes.map { |a| a.gen_cpp(symtab, 0, indent_spaces:) }

@@ -241,6 +241,7 @@ module Idl
       while cnt < 3
         cnt += 1 if input[interval_end] == "\n"
         break if interval_end >= (input.size - 1)
+        break if cnt == 3
 
         interval_end += 1
       end

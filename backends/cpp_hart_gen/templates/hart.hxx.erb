@@ -111,10 +111,22 @@ namespace udb {
 
       void init_csr_map();
 
-      bool implemented_version_Q_(const ExtensionName& ext, const VersionRequirement& req) const
+      bool implemented_version_Q_(const ExtensionName& ext, const VersionRequirement& req) const override
       {
+        auto ext_ver = this->m_implemented_exts.find(ext);
+        if (ext_ver == this->m_implemented_exts.end()) {
+          return false;
+        }
+        return req.satisfied_by(ext_ver->second);
+
+      }
+
+      template <ExtensionName ext, TemplateString ver_req_str>
+      bool _implemented_version_Q_() const
+      {
+        constexpr VersionRequirement req(ver_req_str.sv());
         <%- cfg_arch.transitive_prohibited_extension_versions.each do |ext_ver| -%>
-        if constexpr ((ext == ExtensionName::<%= ext_ver.name %>) && (req.satisfied_by({<%= ext_ver.version_str %>}))) {
+        if constexpr ((ext == ExtensionName::<%= ext_ver.name %>) && (req.satisfied_by({"<%= ext_ver.version_str %>"sv}))) {
             return false;
         }
         <%- end -%>
@@ -126,11 +138,16 @@ namespace udb {
         return req.satisfied_by(ext_ver->second);
       }
 
-      bool implemented_Q_(const ExtensionName& ext) const
+      bool implemented_Q_(const ExtensionName& ext) const override {
+        return this->m_implemented_exts.find(ext) != this->m_implemented_exts.end();
+      }
+
+      template <ExtensionName ext>
+      bool _implemented_Q_() const
       {
         <%- cfg_arch.extensions.each do |ext| -%>
         <%- if ext.versions.all? { |ext_ver| cfg_arch.transitive_prohibited_extension_versions.include?(ext_ver) } -%>
-        if constexpr (ext == ExtensionName::<%= ext_ver.name %>) {
+        if constexpr (ext == ExtensionName::<%= ext.name %>) {
             return false;
         }
         <%- end -%>

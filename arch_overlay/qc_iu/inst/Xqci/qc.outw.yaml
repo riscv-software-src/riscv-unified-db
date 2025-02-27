@@ -32,4 +32,4 @@ access:
   vu: always
 operation(): |
   XReg device_address = X[rs1] + imm;
-  write_device<32>(device_address, X[rs2]);
+  write_device_32(device_address, X[rs2]);

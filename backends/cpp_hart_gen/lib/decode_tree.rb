@@ -156,8 +156,9 @@ class DecodeGen
     if done_insts.empty? && !in_progress_groups.empty?
       # everything is still in an opcode, so grow the range and try again
       next_range = (cur_range.first..cur_range.last+1)
+      next_range_out_of_bounds = in_progress_groups.any? { |val, group| group.size > 1 && group.any? { |inst| inst.max_encoding_width <= next_range.last } }
       # puts "All insts have opcode at #{cur_range}, trying #{next_range}..."
-      if tree.opcode_bit?(cur_range.last+1) || (construct_decode_tree(tree, xlen, next_range, test: true) == false)
+      if next_range_out_of_bounds || tree.opcode_bit?(cur_range.last+1) || (construct_decode_tree(tree, xlen, next_range, test: true) == false)
         # next bit goes too far, so this is the endpoint
         in_progress_groups.each do |val, insts|
           child = DecodeTreeNode.new(tree, insts, cur_range, val, DecodeTreeNode::SELECT_TYPE)
@@ -172,7 +173,6 @@ class DecodeGen
         end
       else
         # go to the next range
-        # puts "going to next range #{next_range}"
         construct_decode_tree(tree, xlen, next_range)
       end
     elsif !done_insts.empty?

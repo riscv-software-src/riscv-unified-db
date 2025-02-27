@@ -120,9 +120,9 @@ add_library(hart
 target_include_directories(hart PUBLIC ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(hart PUBLIC yaml-cpp::yaml-cpp nlohmann_json_schema_validator fmt::fmt ctre::ctre -lgmp -lgmpxx)
 
-add_library(hart_c ${CMAKE_SOURCE_DIR}/src/libhart_c.cpp)
-target_include_directories(hart_c PUBLIC ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(hart_c hart)
+# add_library(hart_c ${CMAKE_SOURCE_DIR}/src/libhart_c.cpp)
+# target_include_directories(hart_c PUBLIC ${CMAKE_SOURCE_DIR}/include)
+# target_link_libraries(hart_c hart)
 
 add_library(hart_renode SHARED ${CMAKE_SOURCE_DIR}/src/libhart_renode.cpp)
 target_compile_options(hart_renode PRIVATE -fvisibility=hidden)
