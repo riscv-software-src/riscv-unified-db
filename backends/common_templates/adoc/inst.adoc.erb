@@ -84,20 +84,24 @@ RV64::
 <%- end # if multi_encoding? -%>
 <%- end # if no decode variables-%>
 
-<% if include_idl && inst.data["operation()"] %>
+<% unless inst.data["operation()"].nil? %>
+  <% if include_idl %>
 Operation::
 [source,idl,subs="specialchars,macros"]
 ----
 <%= inst.operation_ast(cfg_arch.symtab).gen_adoc %>
 ----
+  <% end %>
 <% end %>
 
-<% if include_sail && inst.data["sail()"] %>
+<% unless inst.data["sail()"].nil? %>
+  <% if include_sail %>
 Sail::
 [source,sail]
 ----
 <%= inst.data["sail()"] %>
 ----
+  <% end %>
 <% end %>
 
 Included in::
