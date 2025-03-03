@@ -101,10 +101,14 @@ jobs:
         run: ./do gen:html[generic_rv64]
   regress-gen-ext-pdf:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        pseudo: [both, idl, sail]
     env:
       EXT: B
       VERSION: latest
       SINGULARITY: 1
+      PSEUDO: ${{ matrix.pseudo }}
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
