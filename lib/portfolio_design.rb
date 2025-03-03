@@ -9,25 +9,35 @@
 # but they both have just one PortfolioDesign object.
 
 require "ruby-prof"
-require "tilt"
 
 require_relative "architecture"
 require_relative "design"
 require_relative "arch_obj_models/portfolio"
 
 class PortfolioDesign < Design
+  # @return [PortfolioClass] Portfolio class for all the portfolios in this design
+  attr_reader :portfolio_class
+
+  # @return [String] Kind of portfolio for all portfolios in this design
+  attr_reader :portfolio_kind
+
   # @param base_isa_name [#to_s] The name of the base ISA configuration (rv32 or rv64)
   # @param arch [Architecture] The database of RISC-V standards
   # @param mxlen [Integer] Comes from portfolio YAML "base" (either 32 or 64)
   # @param portfolios [Array<Portfolio>] Portfolios being converted to adoc
+  # @param portfolio_class [PortfolioClass] PortfolioClass for all the Portfolios
   # @param overlay_path [String] Optional path to a directory that overlays the architecture
-  def initialize(base_isa_name, arch, portfolios, overlay_path: nil)
+  def initialize(base_isa_name, arch, portfolios, portfolio_class, overlay_path: nil)
     raise ArgumentError, "arch must be an Architecture but is a #{arch.class}" unless arch.is_a?(Architecture)
     raise ArgumentError, "portfolios must be an Array<Portfolio> but is a #{portfolios.class}" unless portfolios.is_a?(Array)
+    raise ArgumentError, "portfolio_class must be a PortfolioClass but is a #{portfolio_class.class}" unless portfolio_class.is_a?(PortfolioClass)
 
     # The PortfolioGroup has an Array<Portfolio> inside it and forwards common Array methods to its internal Array.
     # Can call @portfolio_grp.each or @portfolio_grp.map and they are handled by the normal Array methods.
     @portfolio_grp = PortfolioGroup.new(portfolios)
+
+    @portfolio_class = portfolio_class
+    @portfolio_kind = portfolios[0].kind
 
     max_base = portfolios.map(&:base).max
     raise ArgumentError, "Calculated maximum base of #{max_base} across portfolios is not 32 or 64" unless max_base == 32 || max_base == 64
@@ -190,4 +200,62 @@ class PortfolioDesign < Design
   #                  Returns the greatest presence string across all portfolios in this design.
   #                  If the extension name isn't found in this design, return "-".
   def extension_presence(ext_name) = @portfolio_grp.extension_presence(ext_name)
+
+  # @return [Array<InScopeExtensionParameter>] Sorted list of parameters specified by any extension in portfolio.
+  def all_in_scope_ext_params = @portfolio_grp.all_in_scope_ext_params
+
+  # @param [ExtensionRequirement]
+  # @return [Array<InScopeExtensionParameter>] Sorted list of extension parameters from portfolio for given extension.
+  def in_scope_ext_params(ext_req) = @portfolio_grp.in_scope_ext_params(ext_req)
+
+  # @return [Array<ExtensionParameter>] Sorted list of parameters out of scope across all in scope extensions.
+  def all_out_of_scope_params = @portfolio_grp.all_out_of_scope_params
+
+  # @param ext_name [String] Extension name
+  # @return [Array<ExtensionParameter>] Sorted list of parameters that are out of scope for named extension.
+  def out_of_scope_params(ext_name) = @portfolio_grp.out_of_scope_params(ext_name)
+
+  # @param param [ExtensionParameter]
+  # @return [Array<Extension>] Sorted list of all in-scope extensions that define this parameter
+  #                            in the database and the parameter is in-scope.
+  def all_in_scope_exts_with_param(param) = @portfolio_grp.all_in_scope_exts_with_param(param)
+
+  # @param param [ExtensionParameter]
+  # @return [Array<Extension>] List of all in-scope extensions that define this parameter in the
+  #                            database but the parameter is out-of-scope.
+  def all_in_scope_exts_without_param(param) = @portfolio_grp.all_in_scope_exts_without_param(param)
+
+  #################
+  # EXTRA METHODS #
+  #################
+
+  # Called from tasks.rake file to add standard set of objects available to ERB templates.
+  def init_erb_binding(erb_binding)
+    raise ArgumentError, "Expected Binding object but got #{erb_binding.class}" unless erb_binding.is_a?(Binding)
+
+    erb_binding.local_variable_set(:arch, arch)
+    erb_binding.local_variable_set(:design, self)
+    erb_binding.local_variable_set(:portfolio_design, self)
+    erb_binding.local_variable_set(:portfolio_class, @portfolio_class)
+    erb_binding.local_variable_set(:portfolio_kind, @portfolio_kind)
+    erb_binding.local_variable_set(:portfolios, @portfolio_grp.portfolios)
+  end
+
+  # Include a partial ERB template into a full ERB template.
+  # Provide the same objects as in init_erb_binding.
+  #
+  # @param template_path [String] Name of template file located in backends/portfolio/templates
+  # @return [String] Result of ERB evaluation of the template file
+  def include_erb(template_name)
+    partial("portfolio/templates/#{template_name}",
+      {
+        arch: arch,
+        design: self,
+        portfolio_design: self,
+        portfolio_class: @portfolio_class,
+        portfolio_kind: @portfolio_kind,
+        portfolios: @portfolio_grp.portfolios
+      }
+    )
+  end
 end

@@ -1,5 +1,5 @@
 $schema: profile_release_schema.json#
-kind: profile release
+kind: Profile Release
 name: RVA23
 marketing_name: RVA23
 class:

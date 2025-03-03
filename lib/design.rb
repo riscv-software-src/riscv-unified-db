@@ -1,18 +1,14 @@
 # frozen_string_literal: true
 
-# The Design class is used when exporting information from the Architecture class.
-# The Architecture represents the "front-end" with objects providing access to the architecture database
-# in the /arch directory YAML files. It is the Ruby API to access the architecture database.
-# The Design contains common code such as IDL and ERB support used by multiple "back-ends" to
-# export the "front-end" architecture database to various types of documents.
-# The Design adds the concept of an mxlen which isn't present in the Architecture.
+# The Design class assists backends when exporting information from the database.
+# It contains common code such as IDL and ERB support used by multiple backends.
 #
 # A Design provides support when exporting any of the following to ASCIIDOC/HTML/PDF:
 #   - Entire RISC-V ISA manual
-#   - Config (under /cfg directory) with a possible overlay
-#   - Profile release
-#   - Certificate
-#   - Extension
+#   - Individual Extension
+#   - Profile Release
+#   - CRD (Certificate Requirements Document)
+#   - CTP (Certificate Test Plan)
 #
 # The Design class contains an Architecture object but isn't inherited from it.
 # This was done so code that only needs an Architecture object can make this clear
@@ -327,7 +323,7 @@ class Design < IDesign
     end
   end
 
-  # Returns an environment hash suitable for the render() function in ERB templates.
+  # Returns an environment hash suitable for the render_erb() function in ERB templates.
   #
   # @return [Hash] An environment hash suitable for use with ERb templates.
   def render_erb_env
@@ -399,18 +395,20 @@ class Design < IDesign
   end
   private :render_erb_env
 
-  # Passes _erb_template_ through ERB within the content of this render_erb_env
+  # Passes _erb_template_ through ERB within the content of the render_erb_env
   #
-  # @param erb_template [String] ERB source
+  # @param erb_template [String] ERB template source string
+  # @param what [String] ???
   # @return [String] The rendered text
   def render_erb(erb_template, what = "")
     t = Tempfile.new("template")
     t.write erb_template
     t.flush
     begin
-      Tilt["erb"].new(t.path, trim: "-").render(render_erb_env)
+      template = Tilt["erb"].new(t.path, trim: "-")
+      template.render(render_erb_env)
     rescue
-      warn "While rendering ERB template: #{what}"
+      warn "While rendering ERB template #{erb_template}: #{what}"
       raise
     ensure
       t.close

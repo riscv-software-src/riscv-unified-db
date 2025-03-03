@@ -1,5 +1,5 @@
 $schema: profile_schema.json#
-kind: profile
+kind: Profile
 name: RVI20U32
 marketing_name: RVI20U32
 mode: Unpriv

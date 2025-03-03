@@ -1,12 +1,10 @@
 # frozen_string_literal: true
-
-# At this point, we insert a placeholder since it will be up
-# to the backend to create a specific link.
+#
+# Collection of "helper" functions that can be called from ERB templates.
 
 require "erb"
 require "pathname"
 
-# collection of functions that can be used inside ERB templates
 module TemplateHelpers
   # Insert a hyperlink to an extension.
   # @param name [#to_s] Name of the extension
@@ -72,13 +70,18 @@ module TemplateHelpers
     "[[csr_field-#{csr_name.gsub(".", "_")}-#{field_name.gsub(".", "_")}-def]]"
   end
 
-  def partial(template_path, locals = {})
-    template_path = Pathname.new($root / "backends" / "common_templates" / template_path)
+  # Include a partial ERB template into a full ERB template.
+  #
+  # @param template_pname [String] Path to template file relative to backends directory
+  # @param inputs [Hash<String, Object>] Input objects to pass into template
+  # @return [String] Result of ERB evaluation of the template file
+  def partial(template_pname, inputs = {})
+    template_path = Pathname.new($root / "backends" / template_pname)
     raise ArgumentError, "Template '#{template_path} not found" unless template_path.exist?
 
     erb = ERB.new(template_path.read, trim_mode: "-")
     erb.filename = template_path.realpath.to_s
 
-    erb.result(OpenStruct.new(locals).instance_eval { binding })
+    erb.result(OpenStruct.new(inputs).instance_eval { binding })
   end
 end

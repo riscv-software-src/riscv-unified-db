@@ -3,7 +3,7 @@
 $schema: proc_cert_class_schema.json#
 kind: Processor Certificate Class
 processor_kind: Apps Processor
-name: MockProcCertClass
+name: MockProcessor
 long_name: Mock Processor Certificate Class Long Name
 
 introduction: |

@@ -206,7 +206,7 @@ end
 rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/csrs/pages/.*\.adoc} => [
   __FILE__,
   "gen:arch",
-  ($root / "backends" / "common_templates" / "adoc" / "csr.adoc.erb").to_s
+  ($root / "backends" / "templates" / "csr.adoc.erb").to_s
 ] do |t|
   csr_name = File.basename(t.name, ".adoc")
 
@@ -214,7 +214,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/csrs/pages/.*\.adoc} => [
   csr = design.arch.csr(csr_name)
   raise "Can't find csr '#{csr_name}'" if csr.nil?
 
-  csr_template_path = $root / "backends" / "common_templates" / "adoc" / "csr.adoc.erb"
+  csr_template_path = $root / "backends" / "templates" / "csr.adoc.erb"
   erb = ERB.new(csr_template_path.read, trim_mode: "-")
   erb.filename = csr_template_path.to_s
 
