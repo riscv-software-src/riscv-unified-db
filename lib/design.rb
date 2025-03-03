@@ -43,6 +43,9 @@ class Design < IDesign
   # @return [Architecture] The RISC-V architecture
   attr_reader :arch
 
+  # @return [Integer] 32, 64, or nil for dynamic
+  attr_reader :mxlen
+
   # @return [Idl::Compiler] The IDL compiler
   attr_reader :idl_compiler
 
@@ -58,12 +61,17 @@ class Design < IDesign
 
   # @param name [#to_s] The design name
   # @param arch [Architecture] The entire architecture
+  # @param mxlen [Integer] 32, 64, or nil for dynamic
   # @param overlay_path [String] Optional path to a directory that overlays the architecture
-  def initialize(name, arch, overlay_path: nil)
+  def initialize(name, arch, mxlen, overlay_path: nil)
     super(name)
 
     raise ArgumentError, "arch must be an Architecture but is a #{arch.class}" unless arch.is_a?(Architecture)
     @arch = arch
+
+    @mxlen = mxlen
+    @mxlen.freeze
+
     @idl_compiler = Idl::Compiler.new
     @symtab = Idl::SymbolTable.new(self)
     custom_globals_path = overlay_path.nil? ? Pathname.new("/does/not/exist") : overlay_path / "isa" / "globals.isa"

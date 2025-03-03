@@ -7,6 +7,8 @@ require "asciidoctor-diagram"
 
 require_relative "#{$lib}/idl/passes/gen_adoc"
 
+puts "UPDATE: Inside profile_doc tasks.rake"
+
 PROFILE_DOC_DIR = Pathname.new "#{$root}/backends/profile_doc"
 
 Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
@@ -22,28 +24,7 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
   profile_names = profile_release_obj['profiles'].map {|p| File.basename(p['$ref'].split("#")[0], ".yaml") }
   raise "Ill-formed profile release file #{f}: can't parse profile names" if profile_names.nil?
 
-  # Find maximum base across all profiles in the profile release.
-  max_base = nil
-  profile_names.each do |profile_name|
-    profile_pathname = "#{$root}/arch/profile/#{profile_name}.yaml"
-    profile_obj = YAML.load_file(profile_pathname, permitted_classes: [Date])
-    raise "Can't parse #{profile_name}" if profile_obj.nil?
-
-    base = profile_obj["base"]
-    raise "Missing profile base in #{profile}" if base.nil?
-
-    puts "UPDATE: Extracted base=#{base} from #{f}"
-
-    max_base = base if (max_base.nil? || base > max_base)
-  end
-  raise "Couldn't find max_base in the profiles #{profile_names}" if max_base.nil?
-  puts "UPDATE:   Calculated max_base=#{max_base} across profiles in #{profile_release_name}"
-
   profile_pathnames = profile_names.map {|profile_name| "#{$root}/arch/profile/#{profile_name}.yaml" }
-
-  # Just go with maximum base since it is the most inclusive.
-  base = max_base
-  base_isa_name = "rv#{base}"
 
   file "#{$root}/gen/profile_doc/adoc/#{profile_release_name}.adoc" => [
     __FILE__,
@@ -55,20 +36,23 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
     "#{$root}/lib/design.rb",
     "#{PROFILE_DOC_DIR}/templates/profile.adoc.erb"
   ].concat(profile_pathnames) do |t|
-    # Create Architecture object. Function located in top-level Rakefile.
-    puts "UPDATE: Creating Architecture #{base_isa_name} for #{t}"
-    arch = arch_for(base_isa_name, base)
+    # Ensure that unconfigured resolved architecture called "_" exists.
+    Rake::Task["#{$root}/.stamps/resolve-_.stamp"].invoke
+
+    # Create architecture object so we can have it create the ProcCertModel.
+    # Use the unconfigured resolved architecture called "_".
+    arch = Architecture.new("RISC-V Architecture", $root / "gen" / "resolved_arch" / "_")
 
     # Create PortfolioRelease for specific portfolio release as specified in its arch YAML file.
     # The Architecture object also creates all other portfolio-related class instances from their arch YAML files.
     # None of these objects are provided with a Design object when created.
-    puts "UPDATE: Creating Profile Release for #{profile_release_name} using #{base_isa_name}"
+    puts "UPDATE: Creating Profile Release for #{profile_release_name}"
     profile_release = arch.profile_release(profile_release_name)
 
-    puts "UPDATE: Creating PortfolioDesign using profile release #{profile_release_name}"
     # Create the one PortfolioDesign object required for the ERB evaluation.
     # Provide it with all the profiles in this ProfileRelease.
-    portfolio_design = portfolio_design_for(profile_release_name, arch, base, profile_release.profiles)
+    puts "UPDATE: Creating PortfolioDesign using profile release #{profile_release_name}"
+    portfolio_design = PortfolioDesign.new(profile_release_name, arch, profile_release.profiles)
 
     # Create empty binding and then specify explicitly which variables the ERB template can access.
     # Seems to use this method name in stack backtraces (hence its name).

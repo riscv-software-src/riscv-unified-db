@@ -9,13 +9,13 @@
       "oneOf": [
         {
           "type": "string",
-          "pattern": "^(profile|certificate_model)/.*\\.yaml#.*"
+          "pattern": "^(profile|proc_cert_model)/.*\\.yaml#.*"
         },
         {
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(profile|certificate_model)/.*\\.yaml#.*"
+            "pattern": "^(profile|proc_cert_model)/.*\\.yaml#.*"
           },
           "uniqueItems": true
         }
@@ -25,13 +25,13 @@
       "oneOf": [
         {
           "type": "string",
-          "pattern": "^(profile|certificate_model)/.*\\.yaml#.*"
+          "pattern": "^(profile|proc_cert_model)/.*\\.yaml#.*"
         },
         {
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(profile|certificate_model)/.*\\.yaml#.*"
+            "pattern": "^(profile|proc_cert_model)/.*\\.yaml#.*"
           },
           "uniqueItems": true
         }
@@ -41,13 +41,13 @@
       "oneOf": [
         {
           "type": "string",
-          "pattern": "^(profile|certificate_model)/.*\\.yaml#.*"
+          "pattern": "^(profile|proc_cert_model)/.*\\.yaml#.*"
         },
         {
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^(profile|certificate_model)/.*\\.yaml#.*"
+            "pattern": "^(profile|proc_cert_model)/.*\\.yaml#.*"
           },
           "uniqueItems": true
         }
@@ -55,11 +55,11 @@
     },
     "$schema": {
       "type": "string",
-      "const": "cert_model_schema.json#"
+      "const": "proc_cert_model_schema.json#"
     },
     "kind": {
       "type": "string",
-      "const": "certificate model"
+      "const": "Processor Certificate Model"
     },
     "name": {
       "type": "string",
@@ -75,7 +75,7 @@
       "properties": {
         "$ref": {
           "type": "string",
-          "pattern": "^certificate_class/[A-Z][a-zA-Z0-9_]*\\.yaml#"
+          "pattern": "^proc_cert_class/[A-Z][a-zA-Z0-9_]*\\.yaml#"
         }
       },
       "description": "Reference to the class this model belongs to"
@@ -123,7 +123,7 @@
           "properties": {
             "$ref": {
               "type": "string",
-              "pattern": "^profile_release|certificate_model/[A-Z][a-zA-Z0-9_]*\\.yaml#"
+              "pattern": "^profile_release|proc_cert_model/[A-Z][a-zA-Z0-9_]*\\.yaml#"
             }
           },
           "additionalProperties": false
@@ -148,13 +148,13 @@
           "oneOf": [
             {
               "type": "string",
-              "pattern": "^(profile|certificate_model)/.*\\.yaml#.*"
+              "pattern": "^(profile|proc_cert_model)/.*\\.yaml#.*"
             },
             {
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^(profile|certificate_model)/.*\\.yaml#.*"
+                "pattern": "^(profile|proc_cert_model)/.*\\.yaml#.*"
               },
               "uniqueItems": true
             }
@@ -164,13 +164,13 @@
           "oneOf": [
             {
               "type": "string",
-              "pattern": "^(profile|certificate_model)/.*\\.yaml#.*"
+              "pattern": "^(profile|proc_cert_model)/.*\\.yaml#.*"
             },
             {
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^(profile|certificate_model)/.*\\.yaml#.*"
+                "pattern": "^(profile|proc_cert_model)/.*\\.yaml#.*"
               },
               "uniqueItems": true
             }

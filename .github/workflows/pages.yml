@@ -76,21 +76,21 @@ jobs:
       - name: Copy RVI20 Profile Release PDF
         run: cp gen/profile_doc/pdf/RVA20.pdf _site/pdfs/RVI20.pdf
       - name: Create MC100-32 PDF Spec
-        run: ./do gen:cert_model_pdf[MC100-32]
+        run: ./do gen:proc_cert_model_pdf[MC100-32]
       - name: Copy MC100-32 PDF
-        run: cp gen/certificate_doc/pdf/MC100-32.pdf _site/pdfs/MC100-32.pdf
+        run: cp gen/crd/pdf/MC100-32.pdf _site/pdfs/MC100-32.pdf
       - name: Create MC100-32 HTML Spec
-        run: ./do gen:cert_model_html[MC100-32]
+        run: ./do gen:proc_cert_model_html[MC100-32]
       - name: Copy MC100-32 HTML
-        run: cp gen/certificate_doc/html/MC100-32.html _site/htmls/MC100-32.html
+        run: cp gen/crd/html/MC100-32.html _site/htmls/MC100-32.html
       - name: Create MC100-64 PDF Spec
-        run: ./do gen:cert_model_pdf[MC100-64]
+        run: ./do gen:proc_cert_model_pdf[MC100-64]
       - name: Copy MC100-64 PDF
-        run: cp gen/certificate_doc/pdf/MC100-64.pdf _site/pdfs/MC100-64.pdf
+        run: cp gen/crd/pdf/MC100-64.pdf _site/pdfs/MC100-64.pdf
       - name: Create MC100-64 HTML Spec
-        run: ./do gen:cert_model_html[MC100-64]
+        run: ./do gen:proc_cert_model_html[MC100-64]
       - name: Copy MC100-64 HTML
-        un: cp gen/certificate_doc/html/MC100-64.html _site/htmls/MC100-64.html
+        un: cp gen/crd/html/MC100-64.html _site/htmls/MC100-64.html
       - name: Copy manual html
         run: cp -R gen/manual/isa/top/all/html _site/manual
       - name: Setup Pages

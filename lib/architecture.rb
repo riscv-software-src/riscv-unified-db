@@ -14,8 +14,8 @@
 #   Extension       extensions()        extension_hash()        extension(name)
 #   Instruction     instructions()      instruction_hash()      instruction(name)
 #   Csr             csrs()              csr_hash()              csr(name)
-#   CertClass       cert_classes()      cert_class_hash()       cert_class(name)
-#   CertModel       cert_models()       cert_model_hash()       cert_model(name)
+#   ProcCertClass   proc_cert_classes() proc_cert_class_hash()  proc_cert_class(name)
+#   ProcCertModel   proc_cert_models()  proc_cert_model_hash()  proc_cert_model(name)
 #   ProfileClass    profile_classes()   profile_class_hash()    profile_class(name)
 #   ProfileRelease  profile_releases()  profile_release_hash()  profile_release(name)
 #   Profile         profiles()          profile_hash()          profile(name)
@@ -53,25 +53,15 @@ class Architecture
   # @return [String] Best name to identify architecture
   attr_reader :name
 
-  # @return [Integer] 32 for RV32I or 64 for RV64I
-  attr_reader :base
-
   # @return [Pathname] Path to the directory containing YAML files defining the RISC-V standards
   attr_reader :path
 
   # Initialize a new architecture definition
   #
   # @param name [#to_s] The name associated with this architecture
-  # @param base [Integer] RISC-V base ISA width (32 for RV32I/RV32E, 64 for RV64I, nil if unknown)
   # @param arch_dir [String, Pathname] Path to a directory with a fully merged/resolved architecture definition
-  def initialize(name, base, arch_dir)
+  def initialize(name, arch_dir)
     @name = name.to_s.freeze
-
-    unless base.nil?
-      raise "Unsupported base ISA value of #{base}. Supported values are 32 or 64." unless base == 32 || base == 64
-    end
-    @base = base
-    @base.freeze
 
     @arch_dir = Pathname.new(arch_dir)
     raise "Architecture directory #{arch_dir} not found" unless @arch_dir.exist?
@@ -159,14 +149,14 @@ class Architecture
       klass: Csr
     },
     {
-      fn_name: "cert_class",
-      arch_dir: "certificate_class",
-      klass: CertClass
+      fn_name: "proc_cert_class",
+      arch_dir: "proc_cert_class",
+      klass: ProcCertClass
     },
     {
-      fn_name: "cert_model",
-      arch_dir: "certificate_model",
-      klass: CertModel
+      fn_name: "proc_cert_model",
+      arch_dir: "proc_cert_model",
+      klass: ProcCertModel
     },
     {
       fn_name: "manual",
@@ -238,7 +228,7 @@ class Architecture
   def portfolio_classes
     return @portfolio_classes unless @portfolio_classes.nil?
 
-    @portfolio_classes = profile_classes.concat(cert_classes).sort_by!(&:name)
+    @portfolio_classes = profile_classes.concat(proc_cert_classes).sort_by!(&:name)
   end
 
   # @return [Hash<String, PortfolioClass>] Hash of all portfolio classes defined in the architecture
@@ -330,12 +320,12 @@ class Architecture
     file_path, obj_path = uri.split("#")
     obj =
       case file_path
-      when /^certificate_class.*/
-        cert_class_name = File.basename(file_path, ".yaml")
-        cert_class(cert_class_name)
-      when /^certificate_model.*/
-        cert_model_name = File.basename(file_path, ".yaml")
-        cert_model(cert_model_name)
+      when /^proc_cert_class.*/
+       proc_cert_class_name = File.basename(file_path, ".yaml")
+        proc_cert_class(proc_cert_class_name)
+      when /^proc_cert_model.*/
+        proc_cert_model_name = File.basename(file_path, ".yaml")
+        proc_cert_model(proc_cert_model_name)
       when /^csr.*/
         csr_name = File.basename(file_path, ".yaml")
         csr(csr_name)
