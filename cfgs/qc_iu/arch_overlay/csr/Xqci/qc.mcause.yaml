@@ -1,7 +1,27 @@
+# yaml-language-server: $schema=../../../../../schemas/csr_schema.json
+
 $schema: csr_schema.json#
 kind: csr
-name: mcause
+name: qc.mcause
+long_name: Machine Mode Custom Cause Register
+address: 0x7c9
+base: 32
+priv_mode: M
+length: MXLEN
+description: |
+  Machine Mode Custom Cause Register / Interrupt context register.
+definedBy:
+  anyOf:
+    - name: Xqci
+      version: ">=0.7"
+    - name: Xqciint
+      version: ">=0.4"
 fields:
+  INT:
+    location: 31
+    description: Alias of mcause.INT bit, if 1'b1 - interrupt processing, if 1'b0 - exception processing.
+    type: RW-H
+    reset_value: 0
   NMIE:
     location: 30
     description: Alias of mnstatus.NMIE, if 1'b0, currently processing NMI or double trap.

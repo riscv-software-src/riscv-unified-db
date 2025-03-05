@@ -21,18 +21,19 @@ base: 32
 encoding:
   match: "0001100110010010"
 operation(): |
-  if (implemented?(ExtensionName::S) && CSR[mstatus].MPP != 2'b11) {
-    CSR[mstatus].MPRV = 0;
-  }
-  CSR[mstatus].MIE = CSR[mstatus].MPIE;
-  CSR[mstatus].MPIE = 1;
-  if (CSR[mstatus].MPP == 2'b00) {
+  CSR[mstatus].MIE = CSR[mcause].MNPIE;
+  CSR[mcause].MIE = CSR[mcause].MNPIE;
+  CSR[mcause].MNPIE = 1'b1;
+  CSR[mnstatus].NMIE = 1'b1;
+  CSR[mcause].NMIE = 1'b1;
+  CSR[mcause].MIL = CSR[mcause].MNPIL;
+  CSR[mcause].MNPIL = 0xF;
+  if (CSR[mnstatus].MNPP == 2'b00) {
     set_mode(PrivilegeMode::U);
-  } else if (CSR[mstatus].MPP == 2'b01) {
+  } else if (CSR[mnstatus].MNPP == 2'b01) {
     set_mode(PrivilegeMode::S);
-  } else if (CSR[mstatus].MPP == 2'b11) {
+  } else if (CSR[mnstatus].MNPP == 2'b11) {
     set_mode(PrivilegeMode::M);
   }
-  CSR[mstatus].MPP = implemented?(ExtensionName::U) ? 2'b00 : 2'b11;
-  CSR[mcause].NMI = 0;
-  $pc = CSR[qc.mnepc].sw_read();
+  CSR[mnstatus].MNPP = implemented?(ExtensionName::U) ? 2'b00 : 2'b11;
+  $pc = CSR[mnepc].sw_read();

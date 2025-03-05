@@ -24,14 +24,10 @@ encoding:
 operation(): |
   XReg virtual_address = X[2] + 96;
   XReg prev_retpc = read_memory<32>(virtual_address -  4, $encoding);
-  XReg curr_retpc = (CSR[mcause].NMI == 1) ? CSR[qc.mnepc].sw_read() : CSR[mepc].sw_read();
-  if (CSR[mcause].NMI != 1'b1) {
-    CSR[mepc].sw_write(prev_retpc);
-  } else {
-    CSR[qc.mnepc].sw_write(prev_retpc);
-  }
+  XReg mcause_val = read_memory<32>(virtual_address - 12, $encoding);
+  Bits<1> nmie_val = CSR[mnstatus].NMIE;
   X[ 8] = read_memory<32>(virtual_address -  8, $encoding);
-  CSR[mcause].sw_write(read_memory<32>(virtual_address - 12, $encoding));
+  CSR[mcause].sw_write(mcause_val);
   X[ 1] = read_memory<32>(virtual_address - 16, $encoding);
   X[ 5] = read_memory<32>(virtual_address - 24, $encoding);
   X[ 6] = read_memory<32>(virtual_address - 28, $encoding);
@@ -49,4 +45,41 @@ operation(): |
   X[30] = read_memory<32>(virtual_address - 76, $encoding);
   X[31] = read_memory<32>(virtual_address - 80, $encoding);
   X[2] = X[2] + 96;
-  $pc = curr_retpc;
+  if (nmie_val == 1'b1) {
+  CSR[mstatus].MIE = CSR[mcause].MPIE;
+    CSR[mstatus].MPIE = 1'b1;
+    CSR[mcause].MIE = CSR[mcause].MPIE;
+    CSR[mcause].MPIE = 1'b1;
+    CSR[mstatush].MDT = CSR[mcause].MPDT;
+    CSR[mcause].MPDT = 0;
+    CSR[mcause].MIL = CSR[mcause].MPIL;
+    CSR[mcause].MPIL = 0xF;
+    if (CSR[mstatush].MDT == 1'b0) {
+      if (CSR[mstatus].MPP == 2'b00) {
+        set_mode(PrivilegeMode::U);
+      } else if (CSR[mstatus].MPP == 2'b01) {
+        set_mode(PrivilegeMode::S);
+      } else if (CSR[mstatus].MPP == 2'b11) {
+        set_mode(PrivilegeMode::M);
+      }
+      CSR[mstatus].MPP = implemented?(ExtensionName::U) ? 2'b00 : 2'b11;
+    }
+    $pc = CSR[mepc].sw_read();
+  } else {
+    CSR[mstatus].MIE = CSR[mcause].MNPIE;
+    CSR[mcause].MIE = CSR[mcause].MNPIE;
+    CSR[mcause].MNPIE = 1'b1;
+    CSR[mnstatus].NMIE = 1'b1;
+    CSR[mcause].NMIE = 1'b1;
+    CSR[mcause].MIL = CSR[mcause].MNPIL;
+    CSR[mcause].MNPIL = 0xF;
+    if (CSR[mnstatus].MNPP == 2'b00) {
+      set_mode(PrivilegeMode::U);
+    } else if (CSR[mnstatus].MNPP == 2'b01) {
+      set_mode(PrivilegeMode::S);
+    } else if (CSR[mnstatus].MNPP == 2'b11) {
+      set_mode(PrivilegeMode::M);
+    }
+    CSR[mnstatus].MNPP = implemented?(ExtensionName::U) ? 2'b00 : 2'b11;
+    $pc = CSR[mnepc].sw_read();
+  }

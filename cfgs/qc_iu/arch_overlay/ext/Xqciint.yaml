@@ -56,12 +56,14 @@ versions:
   changes:
     - Rename all custom CSRs of the Xqciint extension to use dot as separator in the name
     - Fix addresses of qc.mclicie* CSRs to 0x7f8-0x7ff (was copy & paste from qc.mclicip*)
-    - Fix description of qc.mnepc CSR to reflect being part of Xqciint custom extension
     - Add missing CSR registers qc.mclicilvl00 - qc.mclicilvl31
     - Add missing CSR registers qc.mwpstartaddr0 - qc.mwpstartaddr3 and qc.mwpendaddr0 - qc.mwpendaddr3
     - Add missing CSR registers qc.mstkbottomaddr and qc.mstktopaddr
-    - Add missing CSR registers qc.mmcr, qc.scratch0, qc.scratch1, qc.mthreadptr
+    - Add missing CSR registers qc.mmcr, qc.mthreadptr, qc.mcause
+    - Remove CSR registers qc.mncause, qc.mnepc
+    - Fix IDL code for qc.c.mienter, qc.c.mienter.nest, qc.c.mileaveret, qc.c.mret, qc.c.mnret
     - Add list of supported custom exceptions
+    - Add dependency on Smrnmi extension
   requires: { name: Zca, version: ">= 1.0.0" }
 description: |
   The Xqciint extension includes eleven instructions to accelerate interrupt
