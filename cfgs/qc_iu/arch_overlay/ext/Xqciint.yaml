@@ -64,8 +64,7 @@ versions:
     - Fix IDL code for qc.c.mienter, qc.c.mienter.nest, qc.c.mileaveret, qc.c.mret, qc.c.mnret
     - Add list of supported custom exceptions
     - Add dependency on Smrnmi extension
-  requires:
-    allOf: [Zca, Smrnmi, Smdbltrp]
+  requires: { name: Zca, version: ">= 1.0.0" }
 description: |
   The Xqciint extension includes eleven instructions to accelerate interrupt
   servicing by performing common actions during ISR prologue/epilogue.
