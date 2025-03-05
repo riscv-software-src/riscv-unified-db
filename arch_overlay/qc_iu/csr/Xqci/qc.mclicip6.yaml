@@ -2,9 +2,9 @@
 
 $schema: csr_schema.json#
 kind: csr
-name: qc_mclicip7
-long_name: IRQ Pending 7
-address: 0x7f7
+name: qc.mclicip6
+long_name: IRQ Pending 6
+address: 0x7f6
 length: 32
 priv_mode: M
 base: 32
@@ -13,165 +13,165 @@ definedBy:
     - Xqci
     - Xqciint
 description: |
-  Pending bits for IRQs 224-255
+  Pending bits for IRQs 192-223
 fields:
-  IRQ224:
+  IRQ192:
     type: RW
     reset_value: 0
     location: 0
-    description: IRQ224 pending
-  IRQ225:
+    description: IRQ192 pending
+  IRQ193:
     type: RW
     reset_value: 0
     location: 1
-    description: IRQ225 pending
-  IRQ226:
+    description: IRQ193 pending
+  IRQ194:
     type: RW
     reset_value: 0
     location: 2
-    description: IRQ226 pending
-  IRQ227:
+    description: IRQ194 pending
+  IRQ195:
     type: RW
     reset_value: 0
     location: 3
-    description: IRQ227 pending
-  IRQ228:
+    description: IRQ195 pending
+  IRQ196:
     type: RW
     reset_value: 0
     location: 4
-    description: IRQ228 pending
-  IRQ229:
+    description: IRQ196 pending
+  IRQ197:
     type: RW
     reset_value: 0
     location: 5
-    description: IRQ229 pending
-  IRQ230:
+    description: IRQ197 pending
+  IRQ198:
     type: RW
     reset_value: 0
     location: 6
-    description: IRQ230 pending
-  IRQ231:
+    description: IRQ198 pending
+  IRQ199:
     type: RW
     reset_value: 0
     location: 7
-    description: IRQ231 pending
-  IRQ232:
+    description: IRQ199 pending
+  IRQ200:
     type: RW
     reset_value: 0
     location: 8
-    description: IRQ232 pending
-  IRQ233:
+    description: IRQ200 pending
+  IRQ201:
     type: RW
     reset_value: 0
     location: 9
-    description: IRQ233 pending
-  IRQ234:
+    description: IRQ201 pending
+  IRQ202:
     type: RW
     reset_value: 0
     location: 10
-    description: IRQ234 pending
-  IRQ235:
+    description: IRQ202 pending
+  IRQ203:
     type: RW
     reset_value: 0
     location: 11
-    description: IRQ235 pending
-  IRQ236:
+    description: IRQ203 pending
+  IRQ204:
     type: RW
     reset_value: 0
     location: 12
-    description: IRQ236 pending
-  IRQ237:
+    description: IRQ204 pending
+  IRQ205:
     type: RW
     reset_value: 0
     location: 13
-    description: IRQ237 pending
-  IRQ238:
+    description: IRQ205 pending
+  IRQ206:
     type: RW
     reset_value: 0
     location: 14
-    description: IRQ238 pending
-  IRQ239:
+    description: IRQ206 pending
+  IRQ207:
     type: RW
     reset_value: 0
     location: 15
-    description: IRQ239 pending
-  IRQ240:
+    description: IRQ207 pending
+  IRQ208:
     type: RW
     reset_value: 0
     location: 16
-    description: IRQ240 pending
-  IRQ241:
+    description: IRQ208 pending
+  IRQ209:
     type: RW
     reset_value: 0
     location: 17
-    description: IRQ241 pending
-  IRQ242:
+    description: IRQ209 pending
+  IRQ210:
     type: RW
     reset_value: 0
     location: 18
-    description: IRQ242 pending
-  IRQ243:
+    description: IRQ210 pending
+  IRQ211:
     type: RW
     reset_value: 0
     location: 19
-    description: IRQ243 pending
-  IRQ244:
+    description: IRQ211 pending
+  IRQ212:
     type: RW
     reset_value: 0
     location: 20
-    description: IRQ244 pending
-  IRQ245:
+    description: IRQ212 pending
+  IRQ213:
     type: RW
     reset_value: 0
     location: 21
-    description: IRQ245 pending
-  IRQ246:
+    description: IRQ213 pending
+  IRQ214:
     type: RW
     reset_value: 0
     location: 22
-    description: IRQ246 pending
-  IRQ247:
+    description: IRQ214 pending
+  IRQ215:
     type: RW
     reset_value: 0
     location: 23
-    description: IRQ247 pending
-  IRQ248:
+    description: IRQ215 pending
+  IRQ216:
     type: RW
     reset_value: 0
     location: 24
-    description: IRQ248 pending
-  IRQ249:
+    description: IRQ216 pending
+  IRQ217:
     type: RW
     reset_value: 0
     location: 25
-    description: IRQ249 pending
-  IRQ250:
+    description: IRQ217 pending
+  IRQ218:
     type: RW
     reset_value: 0
     location: 26
-    description: IRQ250 pending
-  IRQ251:
+    description: IRQ218 pending
+  IRQ219:
     type: RW
     reset_value: 0
     location: 27
-    description: IRQ251 pending
-  IRQ252:
+    description: IRQ219 pending
+  IRQ220:
     type: RW
     reset_value: 0
     location: 28
-    description: IRQ252 pending
-  IRQ253:
+    description: IRQ220 pending
+  IRQ221:
     type: RW
     reset_value: 0
     location: 29
-    description: IRQ253 pending
-  IRQ254:
+    description: IRQ221 pending
+  IRQ222:
     type: RW
     reset_value: 0
     location: 30
-    description: IRQ254 pending
-  IRQ255:
+    description: IRQ222 pending
+  IRQ223:
     type: RW
     reset_value: 0
     location: 31
-    description: IRQ255 pending
+    description: IRQ223 pending

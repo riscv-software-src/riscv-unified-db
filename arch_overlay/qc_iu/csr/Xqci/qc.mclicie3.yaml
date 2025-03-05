@@ -2,7 +2,7 @@
 
 $schema: csr_schema.json#
 kind: csr
-name: qc_mclicie3
+name: qc.mclicie3
 long_name: IRQ Enable 3
 address: 0x7f3
 length: 32

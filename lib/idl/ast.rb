@@ -6097,11 +6097,7 @@ module Idl
 
   class CsrReadExpressionSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
-      if idx.respond_to?(:to_ast)
-        CsrReadExpressionAst.new(input, interval, idx.to_ast)
-      else
-        CsrReadExpressionAst.new(input, interval, idx.text_value)
-      end
+      CsrReadExpressionAst.new(input, interval, idx.text_value)
     end
   end
 
@@ -6118,24 +6114,33 @@ module Idl
   class CsrReadExpressionAst < AstNode
     include Rvalue
 
-    attr_reader :idx
+    attr_reader :idx_text
+    attr_reader :idx_expr
 
     def initialize(input, interval, idx)
-      if idx.is_a?(AstNode)
-        super(input, interval, [idx])
-      else
-        super(input, interval, EMPTY_ARRAY)
-      end
+      super(input, interval, [])
 
-      @idx = idx
+      @idx_text = idx
     end
 
     def freeze_tree(symtab)
       return if frozen?
 
       @cfg_arch = symtab.cfg_arch # remember cfg_arch, used by gen_adoc pass
-      @children.each { |child| child.freeze_tree(symtab) }
 
+      if symtab.cfg_arch.csr(@idx_text).nil?
+        parser = symtab.cfg_arch.idl_compiler.parser
+        expr = parser.parse(@idx_text, root: :expression)
+
+        type_error "#{@idx_text} is not a CSR; it must be an expression" if expr.nil?
+
+        @idx_expr = expr.to_ast
+        @children << @idx_expr
+      else
+        @csr_obj = symtab.cfg_arch.csr(@idx_text)
+      end
+
+      @children.each { |child| child.freeze_tree(symtab) }
       freeze
     end
 
@@ -6161,18 +6166,17 @@ module Idl
     def type_check(symtab)
       cfg_arch = symtab.cfg_arch
 
-      idx_text = @idx.is_a?(String) ? @idx : @idx.text_value
-      if !cfg_arch.csr(idx_text).nil?
+      if !@csr_obj.nil?
         # this is a known csr name
         # nothing else to check
 
       else
         # this is an expression
-        @idx.type_check(symtab)
-        type_error "Csr index must be integral" unless @idx.type(symtab).integral?
+        @idx_expr.type_check(symtab)
+        type_error "Csr index must be integral" unless @idx_expr.type(symtab).integral?
 
-        value_result = value_try do
-          idx_value = @idx.value(symtab)
+        value_try do
+          idx_value = @idx_expr.value(symtab)
           csr_index = cfg_arch.csrs.index { |csr| csr.address == idx_value }
           type_error "No csr number '#{idx_value}' was found" if csr_index.nil?
           :ok
@@ -6183,15 +6187,13 @@ module Idl
 
     def csr_def(symtab)
       cfg_arch = symtab.cfg_arch
-      idx_text = @idx.is_a?(String) ? @idx : @idx.text_value
-      csr = cfg_arch.csr(idx_text)
-      if !csr.nil?
+      if !@csr_obj.nil?
         # this is a known csr name
-        csr
+        @csr_obj
       else
         # this is an expression
-        value_result = value_try do
-          idx_value = @idx.value(symtab)
+        value_try do
+          idx_value = @idx_expr.value(symtab)
           return cfg_arch.csrs.find { |csr| csr.address == idx_value }
         end
         # || we don't know at compile time which CSR this is...

@@ -23,7 +23,7 @@ encoding:
 operation(): |
   XReg virtual_address = X[2];
   XReg mepc_val = CSR[mepc].sw_read();
-  XReg mnepc_val = CSR[qc_mnepc].sw_read();
+  XReg mnepc_val = CSR[qc.mnepc].sw_read();
   XReg mcause_val = CSR[mcause].sw_read();
   XReg reserved_val = 0;
   if (CSR[mcause].NMI != 1'b1) {

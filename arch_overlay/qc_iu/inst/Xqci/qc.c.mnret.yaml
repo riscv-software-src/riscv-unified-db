@@ -35,4 +35,4 @@ operation(): |
   }
   CSR[mstatus].MPP = implemented?(ExtensionName::U) ? 2'b00 : 2'b11;
   CSR[mcause].NMI = 0;
-  $pc = CSR[qc_mnepc].sw_read();
+  $pc = CSR[qc.mnepc].sw_read();
