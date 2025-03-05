@@ -67,6 +67,7 @@ versions:
     company: Qualcomm Technologies, Inc.
     email: dhower@qti.qualcomm.com
   changes:
+    - Fix qc.cto instruction IDL code
     - Change width calculations for qc.extdpr, qc.extdprh, qc.extdr, qc.extdupr, qc.extduprh, qc.extdur,
     - Change width calculations for qc.insbhr, qc.insbpr, qc.insbprh, qc.insbr, qc.insbri
   requires: { name: Zca, version: ">= 1.0.0" }

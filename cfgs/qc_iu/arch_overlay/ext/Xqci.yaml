@@ -198,6 +198,7 @@ versions:
     - Remove CSR registers qc.mncause, qc.mnepc
     - Fix IDL code for qc.c.mienter, qc.c.mienter.nest, qc.c.mileaveret, qc.c.mret, qc.c.mnret
     - Add list of supported custom exceptions
+    - Fix qc.cto instruction IDL code
     - Change width calculations for qc.extdpr, qc.extdprh, qc.extdr, qc.extdupr, qc.extduprh, qc.extdur,
     - Change width calculations for qc.insbhr, qc.insbpr, qc.insbprh, qc.insbr, qc.insbri
   implies:
