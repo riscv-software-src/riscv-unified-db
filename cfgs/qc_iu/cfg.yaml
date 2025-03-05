@@ -8,6 +8,8 @@ description: Configuration with the Xqci and Xqccmp custom extensions.
 implemented_extensions:
   - { name: Sm, version: "1.13" }
   - { name: Smhpm, version: "1.13" }
+  - { name: Smrnmi, version: "1.0" }
+  - { name: Smdbltrp, version: "1.0" }
   - { name: I, version: "2.1" }
   - { name: M, version: "2.0" }
   - { name: B, version: "1.0" }
@@ -17,7 +19,7 @@ implemented_extensions:
   - { name: Zicsr, version: "2.0" }
   - { name: Zihpm, version: "2.0" }
   - { name: Xqccmp, version: "0.1" }
-  - { name: Xqci, version: "0.6" }
+  - { name: Xqci, version: "0.7" }
 exception_codes:
   - num: 27
     name: Illegal Stack Pointer
