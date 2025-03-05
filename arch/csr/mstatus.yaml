@@ -46,6 +46,19 @@ fields:
         return UNDEFINED_LEGAL;
       }
 
+  MDT:
+    location: 42
+    base: 64
+    description: |
+      *Machine Disable Trap*
+
+      Written to 1 when entering M-mode from an exception/interrupt.
+      When returning via an MRET instruction, the bit is written to 0.
+      On reset in set to 1, and software should write it to 0 when boot sequence is done.
+      When mstatus.MDT=1, direct write by CSR instruction cannot set mstatus.MIE to 1, if not written together.
+    definedBy: Smdbltrp
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
   MPV:
     location: 39
     base: 64
