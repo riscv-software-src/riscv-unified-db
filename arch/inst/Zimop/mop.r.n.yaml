@@ -3,9 +3,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: mop.r.n
-long_name: No synopsis available.
+long_name: May be an OPeration (single register).
 description: |
-  No description available.
+  The Zimop extension defines 32 MOP instructions named MOP.R.n, where n is an integer between 0
+  and 31, inclusive. Unless redefined by another extension, these instructions simply write 0 to X[rd].
+  Their encoding allows future extensions to define them to read X[rs1], as well as write X[rd].
 definedBy: Zimop
 assembly: mop_r_t_30, mop_r_t_27_26, mop_r_t_21_20, xd, xs1
 encoding:
@@ -93,3 +95,4 @@ pseudoinstructions:
   - when: (mop_r_t_30 == 0x1) && (mop_r_t_21_20 == 0x3) && (mop_r_t_27_26 == 0x3)
     to: mop.r.31
 operation(): |
+  X[rd] = 0;
