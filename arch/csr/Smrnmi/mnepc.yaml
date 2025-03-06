@@ -39,10 +39,10 @@ fields:
     type: RW-RH
     sw_write(csr_value): |
       return csr_value.PC & ~64'b1;
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
 sw_read(): |
   if (implemented?(ExtensionName::C) && CSR[misa].C == 1'b1) {
     return CSR[mnepc].PC & ~64'b1;
   } else {
-    return CSR[mnepc].PC;
+    return CSR[mnepc].PC & ~64'b11;
   }

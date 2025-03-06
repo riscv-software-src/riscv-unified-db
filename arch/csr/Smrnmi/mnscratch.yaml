@@ -15,4 +15,4 @@ fields:
     location_rv64: 63-0
     description: Scratch value
     type: RW
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
