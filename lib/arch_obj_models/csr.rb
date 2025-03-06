@@ -53,7 +53,7 @@ class Csr < DatabaseObject
   # @param cfg_arch [ConfiguredArchitecture] A configuration
   # @return [Boolean] Whether or not the format of this CSR changes when the effective XLEN changes in some mode
   def format_changes_with_xlen?
-    dynamic_length? || implemented_fields.any?(&:dynamic_location?)
+    dynamic_length? || possible_fields.any?(&:dynamic_location?)
   end
 
   # @return [Array<Idl::FunctionDefAst>] List of functions reachable from this CSR's sw_read or a field's sw_write function
@@ -78,14 +78,14 @@ class Csr < DatabaseObject
     end
 
     if cfg_arch.multi_xlen?
-      implemented_fields_for(32).each do |field|
+      possible_fields_for(32).each do |field|
         fns.concat(field.reachable_functions(32))
       end
-      implemented_fields_for(64).each do |field|
+      possible_fields_for(64).each do |field|
         fns.concat(field.reachable_functions(64))
       end
     else
-      implemented_fields_for(cfg_arch.mxlen).each do |field|
+      possible_fields_for(cfg_arch.mxlen).each do |field|
         fns.concat(field.reachable_functions(cfg_arch.mxlen))
       end
     end
@@ -297,29 +297,17 @@ class Csr < DatabaseObject
   # @param cfg_arch [ConfiguredArchitecture] A configuration
   # @return [Array<CsrField>] All implemented fields for this CSR at the given effective XLEN, sorted by location (smallest location first)
   #                           Excluded any fields that are defined by unimplemented extensions or a base that is not effective_xlen
-  def implemented_fields_for(effective_xlen)
-    @implemented_fields_for ||=
-      implemented_fields.select do |f|
+  def possible_fields_for(effective_xlen)
+    @possible_fields_for ||=
+      possible_fields.select do |f|
         !f.key?("base") || f.base == effective_xlen
       end
   end
 
   # @return [Array<CsrField>] All implemented fields for this CSR
   #                           Excluded any fields that are defined by unimplemented extensions
-  def implemented_fields
-    return @implemented_fields unless @implemented_fields.nil?
-
-    implemented_bases =
-      if cfg_arch.param_values["SXLEN"] == 3264 ||
-         cfg_arch.param_values["UXLEN"] == 3264 ||
-         cfg_arch.param_values["VSXLEN"] == 3264 ||
-         cfg_arch.param_values["VUXLEN"] == 3264
-        [32, 64]
-      else
-        [cfg_arch.param_values["XLEN"]]
-      end
-
-    @implemented_fields = fields.select do |f|
+  def possible_fields
+    @possible_fields ||= fields.select do |f|
       f.exists_in_cfg?(cfg_arch)
     end
   end
@@ -510,7 +498,7 @@ class Csr < DatabaseObject
 
     field_list =
       if exclude_unimplemented
-        implemented_fields_for(effective_xlen)
+        possible_fields_for(effective_xlen)
       else
         fields_for(effective_xlen)
       end

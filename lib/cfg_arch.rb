@@ -236,11 +236,14 @@ class ConfiguredArchitecture < Architecture
     csrs.each do |csr|
       progressbar.increment if show_progress
       if csr.has_custom_sw_read?
-        if (possible_xlens.include?(32) && csr.defined_in_base32?) || (possible_xlens.include?(64) && csr.defined_in_base64?)
-          csr.type_checked_sw_read_ast(@symtab)
+        if (possible_xlens.include?(32) && csr.defined_in_base32?)
+          csr.type_checked_sw_read_ast(32)
+        end
+        if (possible_xlens.include?(64) && csr.defined_in_base64?)
+          csr.type_checked_sw_read_ast(64)
         end
       end
-      csr.fields.each do |field|
+      csr.possible_fields.each do |field|
         unless field.type_ast.nil?
           if possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?
             field.type_checked_type_ast(32)
@@ -268,7 +271,7 @@ class ConfiguredArchitecture < Architecture
       end
     functions.each do |func|
       progressbar.increment if show_progress
-      func.type_check
+      func.type_check(@symtab)
     end
 
     puts "done" if show_progress

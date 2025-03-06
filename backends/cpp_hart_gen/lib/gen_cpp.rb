@@ -285,7 +285,7 @@ module Idl
 
   class BitsCastAst
     def gen_cpp(symtab, indent, indent_spaces: 2)
-      t = expression.type(symtab)
+      t = expr.type(symtab)
       width =
         if t.kind == :enum_ref
           t.enum_class.width
@@ -294,10 +294,10 @@ module Idl
         end
 
       if width == :unknown
-        "#{' '*indent}Bits<BitsInfinitePrecision>(#{expression.gen_cpp(symtab, 0, indent_spaces: )})"
+        "#{' '*indent}Bits<BitsInfinitePrecision>(#{expr.gen_cpp(symtab, 0, indent_spaces: )})"
       else
         raise "nil" if width.nil?
-        "#{' '*indent}Bits<#{width}>(#{expression.gen_cpp(symtab, 0, indent_spaces: )})"
+        "#{' '*indent}Bits<#{width}>(#{expr.gen_cpp(symtab, 0, indent_spaces: )})"
       end
     end
   end

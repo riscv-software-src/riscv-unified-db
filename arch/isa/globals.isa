@@ -1001,9 +1001,9 @@ function pmp_match_64 {
           range_lo = 0;
         } else {
           # otherwise, it's the address in the next lowest pmpaddr register
-          range_lo = (CSR[pmpaddr_idx - 1] << 2)[PHYS_ADDR_WIDTH-1:0];
+          range_lo = ($bits(CSR[pmpaddr_idx - 1]) << 2)[PHYS_ADDR_WIDTH-1:0];
         }
-        range_hi = (CSR[pmpaddr_idx] << 2)[PHYS_ADDR_WIDTH-1:0];
+        range_hi = ($bits(CSR[pmpaddr_idx]) << 2)[PHYS_ADDR_WIDTH-1:0];
 
       } else if (cfg.A == $bits(PmpCfg_A::NAPOT)) {
         # Example pmpaddr: 0b00010101111
@@ -1019,7 +1019,7 @@ function pmp_match_64 {
         range_hi = ((pmpaddr_value & ~mask) + len) << 2;
 
       } else if (cfg.A == $bits(PmpCfg_A::NA4)) {
-        range_lo = (CSR[pmpaddr_idx] << 2)[PHYS_ADDR_WIDTH-1:0];
+        range_lo = ($bits(CSR[pmpaddr_idx]) << 2)[PHYS_ADDR_WIDTH-1:0];
         range_hi = range_lo + 4;
       }
 
@@ -1068,9 +1068,9 @@ function pmp_match_32 {
           range_lo = 0;
         } else {
           # otherwise, it's the address in the next lowest pmpaddr register
-          range_lo = (CSR[pmpaddr_idx - 1] << 2)[PHYS_ADDR_WIDTH-1:0];
+          range_lo = ($bits(CSR[pmpaddr_idx - 1]) << 2)[PHYS_ADDR_WIDTH-1:0];
         }
-        range_hi = (CSR[pmpaddr_idx] << 2)[PHYS_ADDR_WIDTH-1:0];
+        range_hi = ($bits(CSR[pmpaddr_idx]) << 2)[PHYS_ADDR_WIDTH-1:0];
 
       } else if (cfg.A == $bits(PmpCfg_A::NAPOT)) {
         # Example pmpaddr: 0b00010101111
@@ -1457,7 +1457,7 @@ function current_gstage_translation_mode {
     from VS-mode or VU-mode.
   }
   body {
-    return CSR[hgatp].MODE;
+    return $enum(HgatpMode, CSR[hgatp].MODE);
   }
 }
 

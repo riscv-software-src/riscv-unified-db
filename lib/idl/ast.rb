@@ -2099,7 +2099,7 @@ module Idl
     def type(symtab)
       if field(symtab).defined_in_all_bases?
         if symtab.cfg_arch.mxlen == 64 && symtab.cfg_arch.multi_xlen?
-          Type.new(:bits, width: [field(symtab).location(32).size, field(symtab).location(symtab.cfg_arch, 64).size].max)
+          Type.new(:bits, width: [field(symtab).location(32).size, field(symtab).location(64).size].max)
         else
           Type.new(:bits, width: field(symtab).location(symtab.cfg_arch.mxlen).size)
         end
@@ -2118,11 +2118,11 @@ module Idl
 
     def type_check(symtab)
       csr_field.type_check(symtab)
-      value_try do
-        if ["RO"].any?(csr_field.field_def(symtab).type(symtab))
-          type_error "Cannot write to read-only CSR field"
-        end
-      end
+      # value_try do
+      #   if ["RO"].any?(csr_field.field_def(symtab).type(symtab))
+      #     type_error "Cannot write to read-only CSR field"
+      #   end
+      # end
       # ok, we don't know the type because the cfg_arch isn't configured
 
       write_value.type_check(symtab)
@@ -2632,7 +2632,7 @@ module Idl
 
   class BitsCastSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
-      BitsCastAst.new(input, interval, expression.to_ast)
+      BitsCastAst.new(input, interval, expr.to_ast)
     end
   end
 
@@ -2645,22 +2645,22 @@ module Idl
     include Rvalue
 
     # @return [AstNode] The casted expression
-    def expression = @children[0]
+    def expr = @children[0]
 
     def initialize(input, interval, exp) = super(input, interval, [exp])
 
     # @!macro type_check
     def type_check(symtab)
-      expression.type_check(symtab)
+      expr.type_check(symtab)
 
-      unless [:bits, :enum_ref, :csr].include?(expression.type(symtab).kind)
-        type_error "#{expression.type(symtab)} Cannot be cast to bits"
+      unless [:bits, :enum_ref, :csr].include?(expr.type(symtab).kind)
+        type_error "#{expr.type(symtab)} Cannot be cast to bits"
       end
     end
 
     # @!macro type
     def type(symtab)
-      etype = expression.type(symtab)
+      etype = expr.type(symtab)
 
       case etype.kind
       when :bits
@@ -2668,38 +2668,40 @@ module Idl
       when :enum_ref
         Type.new(:bits, width: etype.enum_class.width)
       when :csr
-        if etype.csr.dynamic_length?
+        if (etype.csr.is_a?(Symbol) && etype.csr == :unknown) || etype.csr.dynamic_length?
           Type.new(:bits, width: :unknown)
         else
           Type.new(:bits, width: etype.csr.length(symtab.cfg_arch))
         end
+      else
+        type_error "$bits cast is only defined for CSRs and Enum references"
       end
     end
 
     # @!macro value
     def value(symtab)
-      etype = expression.type(symtab)
+      etype = expr.type(symtab)
 
       case etype.kind
-      when :bits
-        expression.value(symtab)
+      # when :bits
+      #   expr.value(symtab)
       when :enum_ref
-        if expression.is_a?(EnumRefAst)
-          element_name = expression.text_value.split(":")[2]
+        if expr.is_a?(EnumRefAst)
+          element_name = expr.text_value.split(":")[2]
           etype.enum_class.value(element_name)
         else
           # this is an expression with an EnumRef type
-          expression.value(symtab)
+          expr.value(symtab)
         end
       when :csr
-        expression.value(symtab)
+        expr.value(symtab)
       else
-        internal_error "TODO: Bits cast for #{etype.kind}"
+        type_error "TODO: Bits cast for #{etype.kind}"
       end
     end
 
     # @!macro to_idl
-    def to_idl = "$signed(#{expression.to_idl})"
+    def to_idl = "$signed(#{expr.to_idl})"
   end
 
   class BinaryExpressionAst < AstNode
@@ -6158,11 +6160,7 @@ module Idl
       if cd.nil?
         # we don't know anything about this index, so we can only
         # treat this as a generic
-        if symtab.mxlen == 32
-          Bits32Type
-        else
-          Bits64Type
-        end
+        CsrType.new(:unknown, cfg_arch)
       else
         CsrType.new(cd, cfg_arch)
       end
@@ -6321,7 +6319,7 @@ module Idl
 
       if ["sw_read", "address"].include?(function_name)
         type_error "unexpected argument(s)" unless args.empty?
-      elsif ["implemented_without?"].include(function_name)
+      elsif ["implemented_without?"].include?(function_name)
         type_error "Expecting one argument" unless args.size == 1
         type_error "Expecting an ExtensionName" unless args[0].type(symtab).kind == :enum_ref && args[0].class_name == "ExtensionName"
       else

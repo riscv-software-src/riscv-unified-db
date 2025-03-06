@@ -34,7 +34,6 @@ module Idl
           fns.concat(a.reachable_functions(symtab, cache))
         end
 
-
         unless func_def_type.builtin? || func_def_type.generated?
           avals = func_def_type.apply_arguments(body_symtab, arg_nodes, symtab, self)
 

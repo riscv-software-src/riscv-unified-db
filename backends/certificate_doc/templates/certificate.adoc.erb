@@ -753,7 +753,7 @@ h| Privilege Mode | <%= csr.priv_mode %>
 
 
 ==== Format
-<% unless csr.dynamic_length?(cfg_arch) || csr.implemented_fields(cfg_arch).any? { |f| f.dynamic_location?(cfg_arch) } -%>
+<% unless csr.dynamic_length?(cfg_arch) || csr.possible_fields(cfg_arch).any? { |f| f.dynamic_location?(cfg_arch) } -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -787,7 +787,7 @@ This CSR format changes dynamically with XLEN.
 |===
 @ Name @ Location @ Type @ Reset Value
 
-<%- csr.implemented_fields(cfg_arch).each do |field| -%>
+<%- csr.possible_fields(cfg_arch).each do |field| -%>
 @ xref:<%=csr.name%>-<%=field.name%>-def[`<%= field.name %>`]
 a@
 <%- if field.dynamic_location?(cfg_arch) -%>
@@ -822,11 +822,11 @@ a@
 
 ==== Fields
 
-<%- if csr.implemented_fields(cfg_arch).empty? -%>
+<%- if csr.possible_fields(cfg_arch).empty? -%>
 This CSR has no fields. However, it must still exist (not cause an `Illegal Instruction` trap) and always return zero on a read.
 <%- else -%>
 
-<%- csr.implemented_fields(cfg_arch).each do |field| -%>
+<%- csr.possible_fields(cfg_arch).each do |field| -%>
 [[<%=csr.name%>-<%=field.name%>-def]]
 ===== `<%= field.name %>`
 
@@ -852,7 +852,7 @@ Reset value::
 <%- end -%>
 <%- end -%>
 
-<%- if csr.implemented_fields(cfg_arch).map(&:has_custom_sw_write?).any? -%>
+<%- if csr.possible_fields(cfg_arch).map(&:has_custom_sw_write?).any? -%>
 ==== Software write
 
 This CSR may store a value that is different from what software attempts to write.
@@ -862,7 +862,7 @@ written value:
 
 [idl]
 ----
-<%- csr.implemented_fields(cfg_arch).each do |field| -%>
+<%- csr.possible_fields(cfg_arch).each do |field| -%>
 <%- if field.has_custom_sw_write? -%>
 <%= field.name %> = <%= field["sw_write(csr_value)"] %>
 <%- else -%>

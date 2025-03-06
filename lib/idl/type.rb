@@ -629,10 +629,16 @@ module Idl
     attr_reader :csr
 
     def initialize(csr, cfg_arch, qualifiers: [])
-      super(:csr, name: csr.name, csr: csr, width: csr.max_length, qualifiers: qualifiers)
+      if csr.is_a?(Symbol) && csr == :unknown
+        super(:csr, name: csr.name, csr: csr, width: :unknown, qualifiers: qualifiers)
+      else
+        super(:csr, name: csr.name, csr: csr, width: csr.max_length, qualifiers: qualifiers)
+      end
     end
 
     def fields
+      raise "fields are unknown" if @csr == :unknown
+
       @csr.fields
     end
   end
@@ -774,6 +780,7 @@ module Idl
         symtab.pop
         symtab.release
       end
+      raise "?" if value.is_a?(SymbolTable)
       value
     end
 

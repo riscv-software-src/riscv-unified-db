@@ -1,4 +1,5 @@
-# grammar for the Isa Description Language
+# grammar for the ISA Description Language
+
 grammar Idl
   rule isa
     space*
@@ -88,10 +89,6 @@ grammar Idl
 
     # special case: just a single 0
     '0' 's'? <Idl::IntLiteralSyntaxNode>
-  end
-
-  rule bits
-    "'" [01]+ "'"
   end
 
   rule p0_binary_operator
@@ -278,7 +275,7 @@ grammar Idl
 
   rule csr_register_access_expression
     # CSR register access
-    'CSR' space* '[' space* idx:(csr_name / expression) space* ']' <Idl::CsrReadExpressionSyntaxNode>
+    'CSR' space* '[' space* idx:(expression) space* ']' <Idl::CsrReadExpressionSyntaxNode>
   end
 
   rule field_access_eligible_expression
@@ -293,6 +290,7 @@ grammar Idl
     field_access_eligible_expression space* '.' space* field_name <Idl::FieldAccessExpressionSyntaxNode>
   end
 
+  # expression that can accept an array index operator (expr[])
   rule ary_eligible_expression
     paren_expression
     /
@@ -305,8 +303,6 @@ grammar Idl
     function_call # Ast is assigned in function_call rule
     /
     csr_field_access_expression
-    /
-    csr_register_access_expression
     /
     bits_cast
     /
@@ -326,7 +322,15 @@ grammar Idl
   end
 
   rule bits_cast
-    '$bits' space* '(' space* expression space* ')' <Idl::BitsCastSyntaxNode>
+    '$bits' space* '(' space*
+      expr:(
+        csr_register_access_expression
+        /
+        enum_ref
+        /
+        expression
+      )
+    space* ')' <Idl::BitsCastSyntaxNode>
   end
 
   rule unary_expression
@@ -365,8 +369,6 @@ grammar Idl
     function_call # Ast is assigned in function_call rule
     /
     csr_field_access_expression
-    /
-    csr_register_access_expression
     /
     enum_ref
     /
@@ -486,17 +488,17 @@ grammar Idl
   end
 
   rule single_declaration_with_initialization
-    q:type_qualifier? space* type_name space+ id space* ary_size:ary_size_decl? space* '=' space* rval:expression <Idl::VariableDeclarationWithInitializationSyntaxNode>
+    type_name space+ id space* ary_size:ary_size_decl? space* '=' space* rval:expression <Idl::VariableDeclarationWithInitializationSyntaxNode>
   end
 
   rule declaration
-    q:type_qualifier? space* type_name space+ first:id space* rest:(space* ',' space* id)+ space* <Idl::MultiVariableDeclarationSyntaxNode>
+    type_name space+ first:id space* rest:(space* ',' space* id)+ space* <Idl::MultiVariableDeclarationSyntaxNode>
     /
     single_declaration
   end
 
   rule single_declaration
-    q:type_qualifier? space* type_name space+ id ary_size:(space* ary_size_decl)? <Idl::VariableDeclarationSyntaxNode>
+    type_name space+ id ary_size:(space* ary_size_decl)? <Idl::VariableDeclarationSyntaxNode>
   end
 
   rule statement
@@ -561,10 +563,6 @@ grammar Idl
     '}' <Idl::ForLoopSyntaxNode>
   end
 
-  rule type_qualifier
-    '' # 'signed'
-  end
-
   rule builtin_type_name
     # alias for Bits<XLEN>
     'XReg' ![A-Za-z0-9] <Idl::BuiltinTypeNameSyntaxNode> /
@@ -595,7 +593,8 @@ grammar Idl
     'builtin' ![A-Za-z0-9_] /
     'generated' ![A-Za-z0-9_] /
     'enum' ![A-Za-z0-9_]  /
-    'bitfield' ![A-Za-z0-9_]
+    'bitfield' ![A-Za-z0-9_] /
+    'CSR' ![A-Za-z0-9_]
   end
 
   rule user_type_name

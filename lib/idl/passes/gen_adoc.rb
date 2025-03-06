@@ -94,7 +94,7 @@ module Idl
   end
   class BitsCastAst
     def gen_adoc(indent, indent_spaces: 2)
-      "#{' '*indent}$bits(#{expression.gen_adoc(0, indent_spaces: )})"
+      "#{' '*indent}$bits(#{expr.gen_adoc(0, indent_spaces: )})"
     end
   end
   class EnumCastAst

@@ -53,7 +53,7 @@ This CSR format changes dynamically.
 |===
 |Name | Location | Type | Reset Value
 
-<%- csr.implemented_fields.each do |field| -%>
+<%- csr.possible_fields.each do |field| -%>
 | `xref:<%=csr.name%>-<%=field.name%>-def[<%= field.name %>]`
 | <%= field.location_pretty(cfg_arch.multi_xlen? ? nil : cfg_arch.possible_xlens[0]) %>
 | <%= field.type_pretty(cfg_arch.multi_xlen? ? nil : cfg_arch.possible_xlens[0]) %>
@@ -64,11 +64,11 @@ This CSR format changes dynamically.
 
 == Fields
 
-<%- if csr.implemented_fields.empty? -%>
+<%- if csr.possible_fields.empty? -%>
 This CSR has no fields. However, it must still exist (not cause an `Illegal Instruction` trap) and always return zero on a read.
 <%- else -%>
 
-<%- csr.implemented_fields.each do |field| -%>
+<%- csr.possible_fields.each do |field| -%>
 [[<%=csr.name%>-<%=field.name%>-def]]
 === `<%= field.name %>`
 
