@@ -13,15 +13,49 @@
 #include "udb/cpp_exceptions.hpp"
 #include "udb/defines.hpp"
 
+// Bits classes implement the IDL Bits<N> type.
+//
+// There are four Bits types in C++:
+//
+//  _Bits<N, Signed>:                          Compile-time known vector length
+//  holding a known value _PossiblyUnknownBits<N, Signed>: Compile-time known
+//  vector length holding a possibly unknown value _RuntimeBits<MaxN, Signed>:
+//  Compile-time unknown vector length, at most MaxN, holding a known value
+//  _PossiblyUnknownRuntimeBits<MaxN, Signed>: Compile-time unknown vector
+//  length, at most MaxN, holding a possibly unknown value
+//
+// You can convert:
+//
+//   - _Bits<N, Signed>                          -> *any
+//   - _PossiblyUnknownBits<N, Signed>           ->
+//   _PossiblyUnknownRuntimeBits<MaxN, Signed>
+//   - _RuntimeBits<MaxN, Signed>                ->
+//   _PossiblyUnknownRuntimeBits<MaxN, Signed>
+//   - _PossiblyUnknownRuntimeBits<MaxN, Signed> ->  none
+//
+// The bits classes attempt to hold the smallest native type to hold the value,
+// falling back on GMP when it will not fit in any native type. The bits classes
+// attempt to drop state (and checks) for unknown values when the value must be
+// known; thus the multiple class types. The bits classes handle when the vector
+// length isn't known at compile-time (e.g., because the length is a config
+// parameter).
+//
+
 // we need this to be true for GMP
 static_assert(sizeof(long unsigned int) == sizeof(long long unsigned int));
 
 // we make this assumption frequently
 static_assert(sizeof(1ull) == 8);
 
+#ifndef __SIZEOF_INT128__
+#error "Compiler does not support __int128"
+#endif
+
 namespace udb {
 
-  // helper to find the max of N numbers at compile time
+  // helper to find the max of N unsigned values at compile time
+  // example:
+  //   static_assert(constmax<5, 43, 1>::value == 43);
   template <unsigned... _N>
   struct constmax {
     template <unsigned A, unsigned B, unsigned... Nums>
@@ -35,23 +69,34 @@ namespace udb {
     }
     constexpr static unsigned value = Max<_N...>();
   };
+  template <unsigned... _N>
+  static constexpr unsigned constmax_v = constmax<_N...>::value;
+
   static_assert(constmax<std::numeric_limits<unsigned>::max(),
                          std::numeric_limits<unsigned>::max()>::value ==
                 std::numeric_limits<unsigned>::max());
 
+  // given the Bits vector length, get the type of the underlying storage for
+  // unsigned values
+  // clang-format off
   template <unsigned N>
   struct BitsStorageType {
     using type = std::conditional_t<
-        (N > 128), mpz_class,
+        (N > 128), mpz_class,               // > 128 bits          --> GMP
         std::conditional_t<
-            (N > 64), unsigned __int128,
+            (N > 64), unsigned __int128,    // between 65-128 bits --> uint128_t (g++/clang builtin)
             std::conditional_t<
-                (N > 32), uint64_t,
+                (N > 32), uint64_t,         // between 33-64 bits  --> uint64_t
                 std::conditional_t<
-                    (N > 16), uint32_t,
-                    std::conditional_t<(N > 8), uint16_t, uint8_t>>>>>;
+                    (N > 16), uint32_t,     // between 17-32 bits  --> uint32_t
+                    std::conditional_t<(N > 8),
+                      uint16_t,             // between 9-16 bits   --> uint16_t
+                      uint8_t>>>>>;         // <= 8 bits           --> uint8_t
   };
+  // clang-format on
 
+  // given the Bits vector length, get the type of the underlying storage for
+  // signed values
   template <unsigned N>
   struct BitsSignedStorageType {
     using type = std::conditional_t<
@@ -65,6 +110,7 @@ namespace udb {
                     std::conditional_t<(N > 8), int16_t, int8_t>>>>>;
   };
 
+  // need to define the conversion since GMP doesn (int128 isn't standard)
   static inline auto to_mpz(const unsigned __int128 &rhs) {
     mpz_class i = static_cast<uint64_t>(rhs >> 64);
     i <<= 64;
@@ -72,6 +118,7 @@ namespace udb {
     return i;
   }
 
+  // need to define the conversion since GMP doesn (int128 isn't standard)
   static inline mpz_class to_mpz(const __int128 &rhs) {
     if (rhs < 0) {
       if (rhs == std::numeric_limits<__int128>::min()) {
@@ -101,6 +148,9 @@ namespace udb {
 
   template <unsigned MaxN, bool Signed>
   class _RuntimeBits;
+
+  template <unsigned N, bool Signed>
+  class _PossiblyUnknownBits;
 
   // saturating add
   template <unsigned A, unsigned B>
@@ -142,18 +192,13 @@ namespace udb {
 
     // advertise the width
     constexpr static unsigned Width = N;
-
     constexpr static unsigned width() { return N; }
 
     using StorageType = typename BitsStorageType<N>::type;
     using SignedStorageType = typename BitsSignedStorageType<N>::type;
 
-    // befriend other Bits templates so we can access the state
-    // template <unsigned M, bool _Signed>
-    //   requires((M != N) || (Signed != _Signed))
-    // friend class _Bits;
-
-    // returns true if this Bits width requires storage masking
+    // returns true if this Bits width requires storage masking (i.e., N != #
+    // bits in the underlying type)
     template <unsigned _N = N>
     static consteval bool needs_mask() {
       using _StorageType = typename BitsStorageType<_N>::type;
@@ -214,7 +259,7 @@ namespace udb {
         return static_cast<SignedStorageType>(unsigned_value);
       } else {
         // we have a native type, but some bits are unsed. need to sign extend
-        // the storage
+        // the storage to the native width
         return static_cast<SignedStorageType>(sign_extend(unsigned_value));
       }
     }
@@ -1186,8 +1231,6 @@ namespace udb {
   static constexpr Bits<65> UNDEFINED_LEGAL = 0x10000000000000000_b;
   static constexpr Bits<66> UNDEFINED_LEGAL_DETERMINISTIC =
       0x20000000000000000_b;
-
-  using PossiblyUndefinedBits = Bits<66>;
 }  // namespace udb
 
 namespace udb {
@@ -1507,10 +1550,413 @@ namespace udb {
   template <unsigned N, bool Signed>
   class _PossiblyUnknownBits {
    public:
-    _PossiblyUnknownBits() : m_unknown(true) {}
+    // used for template concept resolution
+    constexpr static bool IsABits = true;
 
-   private:
+    // advertise the width
+    constexpr static unsigned Width = N;
+
+    constexpr static unsigned width() { return N; }
+
+    using StorageType = typename _Bits<N, Signed>::StorageType;
+    using SignedStorageType = typename _Bits<N, Signed>::SignedStorageType;
+
+    constexpr _PossiblyUnknownBits()
+        : m_unknown_mask(~static_cast<decltype(m_unknown_mask)>(0)) {}
+
+    template <unsigned M, bool _Signed>
+    constexpr _PossiblyUnknownBits(
+        const _PossiblyUnknownBits<M, _Signed> &other)
+        : m_value(other.m_value), m_unknown_mask(other.m_unknown_mask) {}
+
+    template <unsigned M, bool _Signed>
+    constexpr _PossiblyUnknownBits(const _Bits<M, _Signed> &other)
+        : m_value(other), m_unknown_mask(0) {}
+
+    template <unsigned M, bool _Signed>
+    constexpr _PossiblyUnknownBits(const _Bits<M, _Signed> &other,
+                                   const _Bits<M, false> &other_mask)
+        : m_value(other), m_unknown_mask(other_mask) {}
+
+    template <unsigned M, bool _Signed>
+    _PossiblyUnknownBits(_PossiblyUnknownBits<M, Signed> &&other) noexcept
+        : m_value(std::move(other.m_value)),
+          m_unknown_mask(std::move(other.m_value)) {}
+
+    template <unsigned M, bool _Signed>
+    _PossiblyUnknownBits(_Bits<M, Signed> &&other) noexcept
+        : m_value(std::move(other)), m_unknown_mask(0) {}
+
+    template <std::integral IntType>
+    constexpr _PossiblyUnknownBits(const IntType &val)
+        : m_value(val), m_unknown_mask(0) {}
+
+    constexpr ~_PossiblyUnknownBits() noexcept = default;
+
+    template <std::integral T>
+    constexpr operator T() const {
+      if (m_unknown_mask == 0) {
+        return static_cast<T>(m_value);
+      } else {
+        throw UndefinedValueError(
+            "Cannot convert value with unknowns to a native C++ type");
+      }
+    }
+
+    template <unsigned M, bool _Signed>
+    constexpr operator _Bits<M, Signed>() const {
+      if (m_unknown_mask == 0) {
+        return m_value;
+      } else {
+        throw UndefinedValueError(
+            "Cannot convert value with unknowns to Bits type");
+      }
+    }
+
+    template <
+        typename T = std::conditional_t<Signed, SignedStorageType, StorageType>>
+    constexpr T get() const {
+      if (m_unknown_mask == 0) {
+        return m_value.get();
+      } else {
+        throw UndefinedValueError(
+            "Cannot convert value with unknowns to a native C++ type");
+      }
+    }
+
+    // assignment
+    template <unsigned M, bool _Signed>
+    constexpr _PossiblyUnknownBits &operator=(
+        const _PossiblyUnknownBits<M, _Signed> &o) {
+      m_value = o.m_value;
+      m_unknown_mask = o.m_unknown_mask;
+      return *this;
+    }
+
+    template <unsigned M, bool _Signed>
+    _PossiblyUnknownBits &operator=(
+        const _PossiblyUnknownBits<M, _Signed> &&o) noexcept {
+      m_value = std::move(o.m_value);
+      m_unknown_mask = std::move(o.m_unknown_mask);
+      return *this;
+    }
+
+    template <unsigned M, bool _Signed>
+    constexpr _PossiblyUnknownBits &operator=(const _Bits<M, _Signed> &o) {
+      m_value = o;
+      m_unknown_mask = 0;
+      return *this;
+    }
+
+    template <unsigned M, bool _Signed>
+    _PossiblyUnknownBits &operator=(const _Bits<M, _Signed> &&o) noexcept {
+      m_value = std::move(o);
+      m_unknown_mask = 0;
+      return *this;
+    }
+
+    template <std::integral IntType>
+    constexpr _PossiblyUnknownBits &operator=(const IntType &o) {
+      m_value = o;
+      m_unknown_mask = 0;
+      return *this;
+    }
+
+    // negate operator
+    constexpr _PossiblyUnknownBits operator-() const {
+      return {-m_value, m_unknown_mask};
+    }
+
+    // invert operator
+    constexpr _PossiblyUnknownBits operator~() const & {
+      return {~m_value, m_unknown_mask};
+    }
+
+#define BITS_COMPARISON_OPERATOR(op)                                    \
+  template <unsigned M, bool _Signed>                                   \
+  constexpr bool operator op(const _PossiblyUnknownBits<M, _Signed> &o) \
+      const {                                                           \
+    if (m_unknown_mask != 0 || o.m_unknown_mask != 0) {                 \
+      throw UndefinedValueError("Cannot compare unknown value");        \
+    }                                                                   \
+    return m_value op o;                                                \
+  }                                                                     \
+                                                                        \
+  template <unsigned M, bool _Signed>                                   \
+  constexpr bool operator op(const _Bits<M, _Signed> &o) const {        \
+    if (m_unknown_mask != 0) {                                          \
+      throw UndefinedValueError("Cannot compare unknown value");        \
+    }                                                                   \
+    return m_value op o;                                                \
+  }                                                                     \
+                                                                        \
+  template <std::integral IntType>                                      \
+  constexpr bool operator op(const IntType &o) const {                  \
+    if (m_unknown_mask != 0) {                                          \
+      throw UndefinedValueError("Cannot compare unknown value");        \
+    }                                                                   \
+    return m_value op o;                                                \
+  }                                                                     \
+                                                                        \
+  constexpr bool operator op(const mpz_class &o) const {                \
+    if (m_unknown_mask != 0) {                                          \
+      throw UndefinedValueError("Cannot compare unknown value");        \
+    }                                                                   \
+    return m_value op o;                                                \
+  }                                                                     \
+                                                                        \
+  constexpr friend bool operator op(const mpz_class &lhs,               \
+                                    const _PossiblyUnknownBits &rhs) {  \
+    if (rhs.m_unknown_mask != 0) {                                      \
+      throw UndefinedValueError("Cannot compare unknown value");        \
+    }                                                                   \
+    return lhs op rhs.m_value;                                          \
+  }                                                                     \
+                                                                        \
+  template <std::integral IntType>                                      \
+  constexpr friend bool operator op(const IntType &lhs,                 \
+                                    const _PossiblyUnknownBits &rhs) {  \
+    if (rhs.m_unknown_mask != 0) {                                      \
+      throw UndefinedValueError("Cannot compare unknown value");        \
+    }                                                                   \
+    return lhs op rhs.m_value;                                          \
+  }
+
+    BITS_COMPARISON_OPERATOR(==)
+    BITS_COMPARISON_OPERATOR(!=)
+    BITS_COMPARISON_OPERATOR(<)
+    BITS_COMPARISON_OPERATOR(>)
+    BITS_COMPARISON_OPERATOR(<=)
+    BITS_COMPARISON_OPERATOR(>=)
+
+#undef BITS_COMPARISON_OPERATOR
+
+#define BITS_ARITHMETIC_OPERATOR(op)                                       \
+  template <unsigned M, bool _Signed>                                      \
+  constexpr _PossiblyUnknownBits operator op(                              \
+      const _PossiblyUnknownBits<M, _Signed> &o) const {                   \
+    if (m_unknown_mask != 0 || o.m_unknown_mask != 0) {                    \
+      throw UndefinedValueError("Operator undefined with unknown values"); \
+    }                                                                      \
+    return {m_value op o.m_value};                                         \
+  }                                                                        \
+                                                                           \
+  template <unsigned M, bool _Signed>                                      \
+  constexpr _PossiblyUnknownBits operator op(const _Bits<M, _Signed> &o)   \
+      const {                                                              \
+    if (m_unknown_mask != 0) {                                             \
+      throw UndefinedValueError("Operator undefined with unknown values"); \
+    }                                                                      \
+    return {m_value op o};                                                 \
+  }                                                                        \
+                                                                           \
+  constexpr _PossiblyUnknownBits operator op(const mpz_class &o) const {   \
+    if (m_unknown_mask != 0) {                                             \
+      throw UndefinedValueError("Operator undefined with unknown values"); \
+    }                                                                      \
+    return {m_value op o};                                                 \
+  }                                                                        \
+                                                                           \
+  template <std::integral IntType>                                         \
+  constexpr _PossiblyUnknownBits operator op(const IntType &_rhs) const {  \
+    if (m_unknown_mask != 0) {                                             \
+      throw UndefinedValueError("Operator undefined with unknown values"); \
+    }                                                                      \
+    return {m_value op _rhs};                                              \
+  }                                                                        \
+                                                                           \
+  template <std::integral IntType>                                         \
+  constexpr friend _PossiblyUnknownBits operator op(                       \
+      const IntType &_lhs, const _PossiblyUnknownBits &rhs) {              \
+    if (rhs.m_unknown_mask != 0) {                                         \
+      throw UndefinedValueError("Operator undefined with unknown values"); \
+    }                                                                      \
+    return {_lhs op rhs.m_value};                                          \
+  }
+
+    BITS_ARITHMETIC_OPERATOR(+)
+    BITS_ARITHMETIC_OPERATOR(-)
+    BITS_ARITHMETIC_OPERATOR(*)
+    BITS_ARITHMETIC_OPERATOR(/)
+    BITS_ARITHMETIC_OPERATOR(%)
+
+#undef BITS_ARITHMETIC_OPERATOR
+
+#define BITS_BITWISE_OPERATOR(op)                                         \
+  template <unsigned M, bool _Signed>                                     \
+  constexpr _PossiblyUnknownBits operator op(                             \
+      const _PossiblyUnknownBits<M, _Signed> &o) const {                  \
+    return {m_value op o.m_value, m_unknown_mask & o.m_unknown_mask};     \
+  }                                                                       \
+  template <unsigned M, bool _Signed>                                     \
+  constexpr _PossiblyUnknownBits operator op(const _Bits<M, _Signed> &o)  \
+      const {                                                             \
+    return {m_value op o, m_unknown_mask};                                \
+  }                                                                       \
+                                                                          \
+  constexpr _PossiblyUnknownBits operator op(const mpz_class &o) const {  \
+    return {m_value op o, m_unknown_mask};                                \
+  }                                                                       \
+  template <std::integral IntType>                                        \
+  constexpr _PossiblyUnknownBits operator op(const IntType &_rhs) const { \
+    return {m_value op _rhs, m_unknown_mask};                             \
+  }                                                                       \
+  template <std::integral IntType>                                        \
+  constexpr friend _PossiblyUnknownBits operator op(                      \
+      const IntType &_lhs, const _PossiblyUnknownBits &rhs) {             \
+    return {_lhs op rhs.m_value, rhs.m_unknown_mask};                     \
+  }
+
+    BITS_BITWISE_OPERATOR(&)
+    BITS_BITWISE_OPERATOR(|)
+    BITS_BITWISE_OPERATOR(^)
+
+#undef BITS_BITWISE_OPERATOR
+
+    template <unsigned M, bool _Signed>
+    constexpr _PossiblyUnknownBits operator<<(
+        const _PossiblyUnknownBits<M, _Signed> &shamt) const {
+      if (shamt.m_unknown_mask != 0) {
+        throw UndefinedValueError("Cannot shift an unknown amount");
+      }
+      return {m_value << shamt.m_value, m_unknown_mask << shamt.m_value};
+    }
+
+    template <unsigned M, bool _Signed>
+    constexpr _PossiblyUnknownBits operator<<(
+        const _Bits<M, _Signed> &shamt) const {
+      return {m_value << shamt, m_unknown_mask << shamt};
+    }
+
+    template <std::integral IntType>
+    constexpr _PossiblyUnknownBits operator<<(const IntType &shamt) const {
+      return {m_value << shamt, m_unknown_mask << shamt};
+    }
+
+    constexpr _PossiblyUnknownBits operator<<(const mpz_t &shamt) const {
+      return {m_value << shamt, m_unknown_mask << shamt};
+    }
+
+    // the result has to be known
+    template <std::integral IntType>
+    constexpr friend IntType operator<<(const IntType &val,
+                                        const _PossiblyUnknownBits &shamt) {
+      if (shamt.m_unknown_mask != 0) {
+        throw UndefinedValueError("Cannot shift an unknown amount");
+      }
+      return {val << shamt.m_value};
+    }
+
+    template <unsigned M, bool _Signed>
+    constexpr friend _Bits<M, _Signed> operator<<(
+        const _Bits<M, _Signed> &lhs, const _PossiblyUnknownBits &shamt) {
+      if (shamt.m_unknown_mask != 0) {
+        throw UndefinedValueError("Cannot shift an unknown amount");
+      }
+      return {lhs << shamt.m_value};
+    }
+
+    template <unsigned M, bool _Signed>
+    constexpr _PossiblyUnknownBits operator>>(
+        const _PossiblyUnknownBits<M, _Signed> &shamt) {
+      if (shamt.m_unknown_mask != 0) {
+        throw UndefinedValueError("Cannot shift an unknown amount");
+      }
+      return {m_value >> shamt.m_value, m_unknown_mask >> shamt.m_value};
+    }
+
+    template <unsigned M, bool _Signed>
+    constexpr _PossiblyUnknownBits operator>>(const _Bits<M, _Signed> &shamt) {
+      return {m_value >> shamt, m_unknown_mask >> shamt};
+    }
+
+    template <std::integral IntType>
+    constexpr _PossiblyUnknownBits operator>>(const IntType &shamt) {
+      return {m_value >> shamt, m_unknown_mask >> shamt};
+    }
+
+    _PossiblyUnknownBits operator>>(const mpz_class &shamt) {
+      return {m_value >> shamt, m_unknown_mask >> shamt};
+    }
+
+    template <unsigned M, bool _Signed>
+    constexpr friend _Bits<M, _Signed> operator>>(
+        const _Bits<M, _Signed> &val, const _PossiblyUnknownBits &shamt) {
+      if (shamt.m_unknown_mask != 0) {
+        throw UndefinedValueError("Cannot shift an unknown amount");
+      }
+      return val >> shamt.m_value;
+    }
+
+    template <std::integral IntType>
+    constexpr friend IntType operator>>(const IntType &val,
+                                        const _PossiblyUnknownBits &shamt) {
+      if (shamt.m_unknown_mask != 0) {
+        throw UndefinedValueError("Cannot shift an unknown amount");
+      }
+      return val >> shamt.m_value;
+    }
+
+    friend mpz_class operator>>(const mpz_class &val,
+                                const _PossiblyUnknownBits &shamt) {
+      if (shamt.m_unknown_mask != 0) {
+        throw UndefinedValueError("Cannot shift an unknown amount");
+      }
+      return val >> shamt.m_value;
+    }
+
+#define BITS_OP_ASSIGN(op)                                      \
+  template <typename T>                                         \
+  constexpr _PossiblyUnknownBits &operator op##=(const T & o) { \
+    *this = (*this op o);                                       \
+    return *this;                                               \
+  }
+
+    BITS_OP_ASSIGN(+)
+    BITS_OP_ASSIGN(-)
+    BITS_OP_ASSIGN(/)
+    BITS_OP_ASSIGN(*)
+    BITS_OP_ASSIGN(%)
+    BITS_OP_ASSIGN(&)
+    BITS_OP_ASSIGN(|)
+    BITS_OP_ASSIGN(^)
+
+#undef BITS_OP_ASSIGN
+
+    friend std::ostream &operator<<(std::ostream &stream,
+                                    const _PossiblyUnknownBits &val) {
+      if (val.m_unknown_mask == 0) {
+        stream << val.m_value;
+      } else {
+        stream << fmt::format("{} (unknown mask: {})", val.m_value,
+                              val.m_unknown_mask);
+      }
+      return stream;
+    }
+
+    template <unsigned msb, unsigned lsb>
+    constexpr _PossiblyUnknownBits<msb - lsb + 1, false> extract() const {
+      static_assert(msb >= lsb);
+      return _PossiblyUnknownBits<msb - lsb + 1, false>{
+          m_value >> lsb,
+          m_unknown_mask >> lsb};  // masking will happen in the constructor
+    }
+
+    template <typename IndexType, typename ValueType>
+    constexpr _PossiblyUnknownBits &setBit(const IndexType &idx,
+                                           const ValueType &value) {
+      StorageType pos_mask = static_cast<StorageType>(1) << idx;
+      m_value = (m_value & ~pos_mask) |
+                ((static_cast<StorageType>(value) << idx) & pos_mask);
+      m_unknown_mask &= ~pos_mask;
+      return *this;
+    }
+
+    //  private:
     _Bits<N, Signed> m_value;
-    bool m_unknown;
+    _Bits<N, false> m_unknown_mask;
   };
+
+  template <unsigned N>
+  using PossiblyUnknownBits = _PossiblyUnknownBits<N, false>;
 }  // namespace udb

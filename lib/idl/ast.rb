@@ -587,7 +587,7 @@ module Idl
     def type(symtab)
       return @type unless @type.nil?
 
-      internal_error "Symbol '#{name}' not found" if symtab.get(name).nil?
+      type_error "Symbol '#{name}' not found" if symtab.get(name).nil?
 
       sym = symtab.get(name)
       # @type =
@@ -4471,6 +4471,13 @@ module Idl
     end
   end
 
+  class UnknownLiteral
+    def initialize(known_value, unknown_mask)
+      @known_value = known_value
+      @unknown_mask = unknown_mask
+    end
+  end
+
   # represents an integer literal
   class IntLiteralAst < AstNode
     include Rvalue
@@ -4631,15 +4638,42 @@ module Idl
 
           radix_id = "d" if radix_id.empty?
 
-          case radix_id
-          when "b"
-            value.to_i(2)
-          when "o"
-            value.to_i(8)
-          when "d"
-            value.to_i(10)
-          when "h"
-            value.to_i(16)
+          if value.index("x").nil? && value.index("X").nil?
+            case radix_id
+            when "b"
+              value.to_i(2)
+            when "o"
+              value.to_i(8)
+            when "d"
+              value.to_i(10)
+            when "h"
+              value.to_i(16)
+            end
+          else
+            # there is unknown bit(s) in the value
+            known_value =
+              case radix_id
+              when "b"
+                value.gsub(/xX/, "0").to_i(2)
+              when "o"
+                value.gsub(/xX/, "0").to_i(8)
+              when "d"
+                raise "impossible"
+              when "h"
+                value.gsub(/xX/, "0").to_i(16)
+              end
+            unknown_mask =
+              case radix_id
+              when "b"
+                value.gsub("1", "0").gsub(/xX/, "1").to_i(2)
+              when "o"
+                value.gsub(/[0-7]/, "0").gsub(/xX/, "7").to_i(8)
+              when "d"
+                raise "impossible"
+              when "h"
+                value.gsub(/[0-9a-fA-F]/, "0").gsub(/xX/, "f").to_i(16)
+              end
+            UnknownLiteral.new(known_value, unknown_mask)
           end
         when /^0([bdx]?)([0-9a-fA-F]*)(s?)$/
           # C++-style literal
@@ -5965,21 +5999,20 @@ module Idl
   class CsrFieldReadExpressionAst < AstNode
     include Rvalue
 
-    attr_reader :idx
+    def initialize(input, interval, csr, field_name)
+      super(input, interval, [csr])
 
-    def initialize(input, interval, idx, field_name)
-      if idx.is_a?(AstNode)
-        super(input, interval, [idx])
-      else
-        super(input, interval, EMPTY_ARRAY)
-      end
-
-      @idx = idx
+      @csr = csr
       @field_name = field_name
     end
 
     def freeze_tree(symtab)
       return if frozen?
+
+      @children.each { |child| child.freeze_tree(symtab) }
+
+      @csr_obj = @csr.csr_def(symtab)
+      type_error "No CSR '#{@csr.text_value}'" if @csr_obj.nil?
 
       value_result = value_try do
         @value = calc_value(symtab)
@@ -5987,35 +6020,24 @@ module Idl
       value_else(value_result) do
         @value = nil
       end
+
       @type = calc_type(symtab)
       @cfg_arch = symtab.cfg_arch # remember cfg_arch, used in gen_adoc pass
-      @children.each { |child| child.freeze_tree(symtab) }
 
       freeze
     end
 
     # @!macro type_check
     def type_check(symtab)
-      if @idx.is_a?(IntLiteralAst)
-        type_error "No CSR at address #{@idx.text_value}" if csr_def(symtab).nil?
-      else
-        # idx is a csr name
-        csr_name = @idx
-        type_error "No CSR named #{csr_name}" if csr_def(symtab).nil?
-      end
+      @csr.type_check(symtab)
+
       type_error "CSR[#{csr_name(symtab)}] has no field named #{@field_name}" if field_def(symtab).nil?
       type_error "CSR[#{csr_name(symtab)}].#{@field_name} is not defined in RV32" if symtab.cfg_arch.mxlen == 32 && !field_def(symtab).defined_in_base32?
       type_error "CSR[#{csr_name(symtab)}].#{@field_name} is not defined in RV64" if symtab.cfg_arch.mxlen == 64 && !field_def(symtab).defined_in_base64?
     end
 
     def csr_def(symtab)
-      cfg_arch = symtab.cfg_arch
-
-      if @idx.is_a?(IntLiteralAst)
-        cfg_arch.csrs.find { |c| c.address == @idx.value(symtab) }
-      else
-        cfg_arch.csr(@idx)
-      end
+      @csr_obj
     end
 
     def csr_name(symtab)
@@ -6023,10 +6045,7 @@ module Idl
     end
 
     def field_def(symtab)
-      csr = csr_def(symtab)
-      type_error "Unknown CSR: #{@idx.is_a?(String) ? @idx : @idx.text_value}" if csr.nil?
-
-      csr.fields.find { |f| f.name == @field_name }
+      @csr_obj.fields.find { |f| f.name == @field_name }
     end
 
     def field_name(symtab)
@@ -6035,11 +6054,7 @@ module Idl
 
     # @!macro to_idl
     def to_idl
-      if @idx.is_a?(IntLiteralAst)
-        "CSR[#{@idx.to_idl}].#{@field_name}"
-      else
-        "CSR[#{@idx}].#{@field_name}"
-      end
+      "CSR[#{@csr_obj.name}].#{@field_name}"
     end
 
     # @!macro type
@@ -6049,13 +6064,8 @@ module Idl
 
     def calc_type(symtab)
       fd = field_def(symtab)
-      if fd.nil?
-        if @idx.is_a?(IntLiteralAst)
-          internal_error "Could not find CSR[#{@idx.to_idl}].#{@field_name}"
-        else
-          internal_error "Could not find CSR[#{@idx}].#{@field_name}"
-        end
-      end
+      internal_error "Could not find #{@csr.text_value}.#{@field_name}" if fd.nil?
+
       if fd.defined_in_all_bases?
         Type.new(:bits, width: symtab.cfg_arch.possible_xlens.map{ |xlen| fd.width(xlen) }.max)
       elsif fd.base64_only?
@@ -6103,11 +6113,7 @@ module Idl
 
   class CsrFieldReadExpressionSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
-      if idx.respond_to?(:to_ast)
-        CsrFieldReadExpressionAst.new(input, interval, idx.to_ast, csr_field_name.text_value)
-      else
-        CsrFieldReadExpressionAst.new(input, interval, idx.text_value, csr_field_name.text_value)
-      end
+      CsrFieldReadExpressionAst.new(input, interval, csr.to_ast, csr_field_name.text_value)
     end
   end
 

@@ -292,22 +292,8 @@ module Idl
 
   class CsrFieldReadExpressionAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      idx_text =
-        if @idx.is_a?(AstNode)
-          @idx.text_value
-        else
-          @idx
-        end
-      csr_text = "CSR[#{idx_text}].#{@field_name}"
-      if idx_text =~ /[0-9]+/
-        "#{' '*indent}#{csr_text}"
-      else
-        if @cfg_arch.csr(csr_text).nil?
-        "#{' '*indent}#{csr_text}"
-        else
-          "#{' '*indent}%%LINK%csr_field;#{idx_text}.#{@field_name};#{csr_text}%%"
-        end
-      end
+      csr_text = "CSR[#{@csr_obj.name}].#{@field_name}"
+      "#{' '*indent}%%LINK%csr_field;#{@csr_obj.name}.#{@field_name};#{csr_text}%%"
     end
   end
 

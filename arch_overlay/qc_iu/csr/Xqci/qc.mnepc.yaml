@@ -11,8 +11,7 @@ description: |
 definedBy: Xqciint
 fields:
   PC:
-    location_rv32: 31-0
-    location_rv64: 63-0
+    location: 31-0
     description: |
       When a non-maskable interrupt is taken into M-mode, `qc.mnepc.PC` is written with the PC
       of the next instruction (_i.e._, the one that would be fetched next if the interrupt did not

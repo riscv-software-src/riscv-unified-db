@@ -63,16 +63,16 @@ grammar Idl
 
   rule int
     # verilog style: explicit bit width
-    (([0-9]+)/'XLEN')? "'" 'b' [0-1] [0-1_]* <Idl::IntLiteralSyntaxNode> /
-    (([0-9]+)/'XLEN')? "'" 'o' [0-7] [0-7_]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'XLEN')? "'" 'b' [0-1xX] [0-1_xX]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'XLEN')? "'" 'o' [0-7xX] [0-7_xX]* <Idl::IntLiteralSyntaxNode> /
     (([0-9]+)/'XLEN')? "'" 'd'? [0-9] [0-9_]* <Idl::IntLiteralSyntaxNode> /
-    (([0-9]+)/'XLEN')? "'" 'h' [0-9a-fA-F] [0-9a-fA-F_]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'XLEN')? "'" 'h' [0-9a-fA-FxX] [0-9a-fA-F_xX]* <Idl::IntLiteralSyntaxNode> /
 
     # verilog style: explicit bit width, signed
-    (([0-9]+)/'XLEN')? "'" 'sb' [0-1] [0-1_]* <Idl::IntLiteralSyntaxNode> /
-    (([0-9]+)/'XLEN')? "'" 'so' [0-7] [0-7_]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'XLEN')? "'" 'sb' [0-1xX] [0-1_xX]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'XLEN')? "'" 'so' [0-7xX] [0-7_xX]* <Idl::IntLiteralSyntaxNode> /
     (([0-9]+)/'XLEN')? "'" 's' 'd'? [0-9] [0-9_]* <Idl::IntLiteralSyntaxNode> /
-    (([0-9]+)/'XLEN')? "'" 'sh' [0-9a-fA-F] [0-9a-fA-F_]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'XLEN')? "'" 'sh' [0-9a-fA-FxX] [0-9a-fA-F_xX]* <Idl::IntLiteralSyntaxNode> /
 
     # c++ style: signed
     '0b' [0-1] [0-1_]* 's' <Idl::IntLiteralSyntaxNode> /
@@ -273,7 +273,7 @@ grammar Idl
 
   rule csr_field_access_expression
     # CSR field access
-    'CSR' space* '[' space* idx:(csr_name / int) space* ']' space* '.' space* csr_field_name <Idl::CsrFieldReadExpressionSyntaxNode>
+    csr:csr_register_access_expression space* '.' space* csr_field_name <Idl::CsrFieldReadExpressionSyntaxNode>
   end
 
   rule csr_register_access_expression
@@ -645,7 +645,7 @@ grammar Idl
   end
 
   rule csr_name
-    [a-z] ([a-z0-9_.])*
+    [a-z] [a-z0-9_.]*
   end
 
   rule csr_field_name

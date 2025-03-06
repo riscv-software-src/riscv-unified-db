@@ -115,6 +115,6 @@ This CSR may return a value that is different from what is stored in hardware.
 
 [source,idl,subs="specialchars,macros"]
 ----
-<%= csr.sw_read_ast.gen_adoc %>
+<%= csr.sw_read_ast(cfg_arch.symtab).gen_adoc %>
 ----
 <%- end -%>
