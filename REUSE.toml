@@ -1,0 +1,46 @@
+version = 1
+
+# For original UDB code
+[[annotations]]
+path = [
+    ".**",
+    "arch_def.yardopts",
+    "backends/**",
+    "bin/**",
+    "cert_flow.txt",
+    "cfgs/**",
+    "container.def",
+    "do",
+    "docs/**",
+    "Gemfile.lock",
+    "Gemfile",
+    "idl.yardopts",
+    "lib/**",
+    "package-lock.json",
+    "package.json",
+    "Rakefile",
+    "README.adoc",
+    "requirements.txt",
+    "schemas/**",
+]
+SPDX-FileCopyrightText  = "Copyright (c) 2024, Qualcomm Innovation Center, Inc. All rights reserved."
+SPDX-License-Identifier = "BSD-3-Clause-Clear"
+
+
+[[annotations]]
+path = ["arch/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = [
+    "Copyright (c) 2024, Qualcomm Innovation Center, Inc. All rights reserved.",
+    # For import isa-manual docs: https://github.com/riscv/riscv-isa-manual
+    "FIXME: isa-manual copyright holders",
+    # For imported Sail code: https://github.com/riscv/sail-riscv
+    "FIXME: Sail copyright holders"
+]
+SPDX-License-Identifier = [
+    "BSD-3-Clause-Clear",
+    # For import isa-manual docs: https://github.com/riscv/riscv-isa-manual
+    "CC-BY-4.0",
+    # For imported Sail code: https://github.com/riscv/sail-riscv
+    "BSD-2-Clause"
+]

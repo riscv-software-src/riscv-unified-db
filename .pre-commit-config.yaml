@@ -26,7 +26,7 @@ repos:
     rev: v3.4.2
     hooks:
       - id: prettier
-        files: \.(json|yml|yaml)$
+        files: \.(json|toml|yml|yaml)$
         exclude: schemas/json-schema-draft-07.json
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
