@@ -24,10 +24,10 @@ encoding:
 operation(): |
   XReg virtual_address = X[2] + 96;
   XReg prev_retpc = read_memory<32>(virtual_address -  4, $encoding);
-  XReg mcause_val = read_memory<32>(virtual_address - 12, $encoding);
+  XReg qc_mcause_val = read_memory<32>(virtual_address - 12, $encoding);
   Bits<1> nmie_val = CSR[mnstatus].NMIE;
   X[ 8] = read_memory<32>(virtual_address -  8, $encoding);
-  CSR[mcause].sw_write(mcause_val);
+  CSR[qc.mcause].sw_write(qc_mcause_val);
   X[ 1] = read_memory<32>(virtual_address - 16, $encoding);
   X[ 5] = read_memory<32>(virtual_address - 24, $encoding);
   X[ 6] = read_memory<32>(virtual_address - 28, $encoding);
@@ -46,15 +46,17 @@ operation(): |
   X[31] = read_memory<32>(virtual_address - 80, $encoding);
   X[2] = X[2] + 96;
   if (nmie_val == 1'b1) {
-  CSR[mstatus].MIE = CSR[mcause].MPIE;
+    XReg qc_mcause_val_masked = qc_mcause_val & ~(1<<26) & ~(1<<27) & ~(1<<29) & ~(0xFF<<12);
+    Bits<1> mpie_val = (qc_mcause_val >> 27) & 1;
+    Bits<1> mpdt_val = (qc_mcause_val >> 29) & 1;
+    Bits<4> mpil_val = (qc_mcause_val >> 16) & 0xF;
+    CSR[mstatus].MIE = mpie_val;
     CSR[mstatus].MPIE = 1'b1;
-    CSR[mcause].MIE = CSR[mcause].MPIE;
-    CSR[mcause].MPIE = 1'b1;
-    CSR[mstatush].MDT = CSR[mcause].MPDT;
-    CSR[mcause].MPDT = 0;
-    CSR[mcause].MIL = CSR[mcause].MPIL;
-    CSR[mcause].MPIL = 0xF;
-    if (CSR[mstatush].MDT == 1'b0) {
+    CSR[mstatush].MDT = mpdt_val;
+    CSR[qc.mcause].sw_write(qc_mcause_val_masked |
+                            (1<<27) | (mpie_val<<26) | (0<<29) |
+                            (mpil_val << 12) | (0xF << 16));
+    if (mpdt_val == 1'b0) {
       if (CSR[mstatus].MPP == 2'b00) {
         set_mode(PrivilegeMode::U);
       } else if (CSR[mstatus].MPP == 2'b01) {
@@ -66,13 +68,14 @@ operation(): |
     }
     $pc = CSR[mepc].sw_read();
   } else {
-    CSR[mstatus].MIE = CSR[mcause].MNPIE;
-    CSR[mcause].MIE = CSR[mcause].MNPIE;
-    CSR[mcause].MNPIE = 1'b1;
+    XReg qc_mcause_val_masked = qc_mcause_val & ~(1<<26) & ~(1<<28) & ~(1<<30) & ~(0xF<<12) & ~(0xF<<20);
+    Bits<1> mnpie_val = (qc_mcause_val >> 28) & 1;
+    Bits<4> mnpil_val = (qc_mcause_val >> 20) & 0xF;
+    CSR[mstatus].MIE = mnpie_val;
     CSR[mnstatus].NMIE = 1'b1;
-    CSR[mcause].NMIE = 1'b1;
-    CSR[mcause].MIL = CSR[mcause].MNPIL;
-    CSR[mcause].MNPIL = 0xF;
+    CSR[qc.mcause].sw_write(qc_mcause_val_masked |
+                            (1<<28) | (mnpie_val<<26) | (1<<30) |
+                            (mnpil_val << 12) | (0xF << 20));
     if (CSR[mnstatus].MNPP == 2'b00) {
       set_mode(PrivilegeMode::U);
     } else if (CSR[mnstatus].MNPP == 2'b01) {

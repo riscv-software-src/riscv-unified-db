@@ -21,15 +21,18 @@ base: 32
 encoding:
   match: "0001100100010010"
 operation(): |
-  CSR[mstatus].MIE = CSR[mcause].MPIE;
+  XReg qc_mcause_val = CSR[qc.mcause].sw_read();
+  XReg qc_mcause_val_masked = qc_mcause_val & ~(1<<26) & ~(1<<27) & ~(1<<29) & ~(0xFF<<12);
+  Bits<1> mpie_val = (qc_mcause_val >> 27) & 1;
+  Bits<1> mpdt_val = (qc_mcause_val >> 29) & 1;
+  Bits<4> mpil_val = (qc_mcause_val >> 16) & 0xF;
+  CSR[mstatus].MIE = mpie_val;
   CSR[mstatus].MPIE = 1'b1;
-  CSR[mcause].MIE = CSR[mcause].MPIE;
-  CSR[mcause].MPIE = 1'b1;
-  CSR[mstatush].MDT = CSR[mcause].MPDT;
-  CSR[mcause].MPDT = 0;
-  CSR[mcause].MIL = CSR[mcause].MPIL;
-  CSR[mcause].MPIL = 0xF;
-  if (CSR[mstatush].MDT == 1'b0) {
+  CSR[mstatush].MDT = mpdt_val;
+  CSR[qc.mcause].sw_write(qc_mcause_val_masked |
+                          (1<<27) | (mpie_val<<26) | (0<<29) |
+                          (mpil_val << 12) | (0xF << 16));
+  if (mpdt_val == 1'b0) {
     if (CSR[mstatus].MPP == 2'b00) {
       set_mode(PrivilegeMode::U);
     } else if (CSR[mstatus].MPP == 2'b01) {
