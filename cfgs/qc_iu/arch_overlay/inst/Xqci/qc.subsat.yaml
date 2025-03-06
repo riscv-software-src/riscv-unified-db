@@ -39,9 +39,9 @@ operation(): |
   if (X[rs1][xlen()-1] != X[rs2][xlen()-1]) {
     if (result[xlen()-1] != X[rs1][xlen()-1]) {
       if ($signed(X[rs1]) < 0) {
-        X[rd] = most_negative_number;
+        result = most_negative_number;
       } else {
-        X[rd] = most_positive_number;
+        result = most_positive_number;
       }
     }
   }

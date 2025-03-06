@@ -53,6 +53,20 @@ versions:
   changes:
     - Rename qc.slasat -> qc.shlsat
     - Rename qc.sllsat -> qc.shlusat
+- version: "0.5.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix typos in description of qc.shlsat and qc.shlusat instructions
+    - Fix bug in qc.shlsat that caused wrong IDL code result
+    - Fix clobbering of saturation results in [add|addu|sub]sat instructions
 description: |
   The Xqcia extension includes eleven instructions to perform integer arithmetic.
 

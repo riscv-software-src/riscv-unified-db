@@ -1,0 +1,176 @@
+# yaml-language-server: $schema=../../../../../schemas/csr_schema.json
+
+kind: csr
+name: qc.mclicie4
+long_name: IRQ Enable 4
+address: 0x7fc
+length: 32
+base: 32
+priv_mode: M
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqciint
+description: |
+  Enable bits for IRQs 128-159
+fields:
+  IRQ128:
+    type: RW
+    reset_value: 0
+    location: 0
+    description: IRQ128 enabled
+  IRQ129:
+    type: RW
+    reset_value: 0
+    location: 1
+    description: IRQ129 enabled
+  IRQ130:
+    type: RW
+    reset_value: 0
+    location: 2
+    description: IRQ130 enabled
+  IRQ131:
+    type: RW
+    reset_value: 0
+    location: 3
+    description: IRQ131 enabled
+  IRQ132:
+    type: RW
+    reset_value: 0
+    location: 4
+    description: IRQ132 enabled
+  IRQ133:
+    type: RW
+    reset_value: 0
+    location: 5
+    description: IRQ133 enabled
+  IRQ134:
+    type: RW
+    reset_value: 0
+    location: 6
+    description: IRQ134 enabled
+  IRQ135:
+    type: RW
+    reset_value: 0
+    location: 7
+    description: IRQ135 enabled
+  IRQ136:
+    type: RW
+    reset_value: 0
+    location: 8
+    description: IRQ136 enabled
+  IRQ137:
+    type: RW
+    reset_value: 0
+    location: 9
+    description: IRQ137 enabled
+  IRQ138:
+    type: RW
+    reset_value: 0
+    location: 10
+    description: IRQ138 enabled
+  IRQ139:
+    type: RW
+    reset_value: 0
+    location: 11
+    description: IRQ139 enabled
+  IRQ140:
+    type: RW
+    reset_value: 0
+    location: 12
+    description: IRQ140 enabled
+  IRQ141:
+    type: RW
+    reset_value: 0
+    location: 13
+    description: IRQ141 enabled
+  IRQ142:
+    type: RW
+    reset_value: 0
+    location: 14
+    description: IRQ142 enabled
+  IRQ143:
+    type: RW
+    reset_value: 0
+    location: 15
+    description: IRQ143 enabled
+  IRQ144:
+    type: RW
+    reset_value: 0
+    location: 16
+    description: IRQ144 enabled
+  IRQ145:
+    type: RW
+    reset_value: 0
+    location: 17
+    description: IRQ145 enabled
+  IRQ146:
+    type: RW
+    reset_value: 0
+    location: 18
+    description: IRQ146 enabled
+  IRQ147:
+    type: RW
+    reset_value: 0
+    location: 19
+    description: IRQ147 enabled
+  IRQ148:
+    type: RW
+    reset_value: 0
+    location: 20
+    description: IRQ148 enabled
+  IRQ149:
+    type: RW
+    reset_value: 0
+    location: 21
+    description: IRQ149 enabled
+  IRQ150:
+    type: RW
+    reset_value: 0
+    location: 22
+    description: IRQ150 enabled
+  IRQ151:
+    type: RW
+    reset_value: 0
+    location: 23
+    description: IRQ151 enabled
+  IRQ152:
+    type: RW
+    reset_value: 0
+    location: 24
+    description: IRQ152 enabled
+  IRQ153:
+    type: RW
+    reset_value: 0
+    location: 25
+    description: IRQ153 enabled
+  IRQ154:
+    type: RW
+    reset_value: 0
+    location: 26
+    description: IRQ154 enabled
+  IRQ155:
+    type: RW
+    reset_value: 0
+    location: 27
+    description: IRQ155 enabled
+  IRQ156:
+    type: RW
+    reset_value: 0
+    location: 28
+    description: IRQ156 enabled
+  IRQ157:
+    type: RW
+    reset_value: 0
+    location: 29
+    description: IRQ157 enabled
+  IRQ158:
+    type: RW
+    reset_value: 0
+    location: 30
+    description: IRQ158 enabled
+  IRQ159:
+    type: RW
+    reset_value: 0
+    location: 31
+    description: IRQ159 enabled

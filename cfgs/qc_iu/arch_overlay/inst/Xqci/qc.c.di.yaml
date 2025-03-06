@@ -22,5 +22,6 @@ access:
   vs: always
   vu: always
 operation(): |
-  XReg pre_mstatus = CSR[mstatus].sw_read();
-  CSR[mstatus].sw_write(pre_mstatus & ~8);
+  CSR[mstatus].MIE = 0;
+  XReg pre_qc_mcause = CSR[qc.mcause].sw_read();
+  CSR[qc.mcause].sw_write(pre_qc_mcause & ~(1<<26));
