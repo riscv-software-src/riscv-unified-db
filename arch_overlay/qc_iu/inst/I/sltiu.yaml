@@ -1,0 +1,5 @@
+hints:
+  - { $ref: inst/Xqci/qc.sync.yaml# }
+  - { $ref: inst/Xqci/qc.syncr.yaml# }
+  - { $ref: inst/Xqci/qc.syncwf.yaml# }
+  - { $ref: inst/Xqci/qc.syncwl.yaml# }

@@ -1,0 +1,2 @@
+hints:
+  - { $ref: inst/Xqci/qc.c.sync.yaml# }

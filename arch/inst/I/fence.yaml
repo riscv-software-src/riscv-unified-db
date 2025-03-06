@@ -3,14 +3,14 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fence
-long_name: Memory ordering fence
+long_name: Memory oxdering fence
 description: |
-  Orders memory operations.
+  Oxders memory operations.
 
-  The `fence` instruction is used to order device I/O and memory accesses as
+  The `fence` instruction is used to oxder device I/O and memory accesses as
   viewed by other RISC-V harts and external devices or coprocessors. Any
   combination of device input (I), device output (O), memory reads \(R),
-  and memory writes (W) may be ordered with respect to any combination of
+  and memory writes (W) may be oxdered with respect to any combination of
   the same. Informally, no other RISC-V hart or external device can
   observe any operation in the _successor_ set following a `fence` before
   any operation in the _predecessor_ set preceding the `fence`.
@@ -30,22 +30,22 @@ description: |
   |===
   |_fm_ field |Mnemonic |Meaning
   |0000 |_none_ |Normal Fence
-  |1000 |TSO |With `FENCE RW,RW`: exclude write-to-read ordering; otherwise: _Reserved for future use._
+  |1000 |TSO |With `FENCE RW,RW`: exclude write-to-read oxdering; otherwise: _Reserved for future use._
   2+|_other_ |_Reserved for future use._
   |===
 
   When the mode field _fm_ is `0001` and both the predecessor and successor sets are 'RW',
-  then the instruction acts as a special-case `fence.tso`. `fence.tso` orders all load operations
+  then the instruction acts as a special-case `fence.tso`. `fence.tso` oxders all load operations
   in its predecessor set before all memory operations in its successor set, and all store operations
   in its predecessor set before all store operations in its successor set. This leaves non-AMO store
-  operations in the 'fence.tso's predecessor set unordered with non-AMO loads in its successor set.
+  operations in the 'fence.tso's predecessor set unoxdered with non-AMO loads in its successor set.
 
   When mode field _fm_ is not `0001`, or when mode field _fm_ is `0001` but the _pred_ and
   _succ_ fields are not both 'RW' (0x3), then the fence acts as a baseline fence (_e.g._, _fm_ is
   effectively `0000`). This is unaffected by the FIOM bits, described below (implicit promotion does
   not change how `fence.tso` is decoded).
 
-  The `rs1` and `rd` fields are unused and ignored.
+  The `xs1` and `xd` fields are unused and ignored.
 
   In modes other than M-mode, `fence` is further affected by `menvcfg.FIOM`,
   `senvcfg.FIOM`<% if ext?(:H) %>, and/or `henvcfg.FIOM`<% end %>
@@ -131,9 +131,9 @@ encoding:
       location: 27-24
     - name: succ
       location: 23-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -151,7 +151,7 @@ operation(): |
     }
   }
   if (implemented?(ExtensionName::Zihintpause)) {
-    if ((pred == 1) && (succ == 0) && (fm == 0) && (rd == 0) && (rs1 == 0)) {
+    if ((pred == 1) && (succ == 0) && (fm == 0) && (xd == 0) && (xs1 == 0)) {
       # this is a PAUSE instruction
       is_pause = true;
     }
@@ -205,7 +205,7 @@ operation(): |
 pseudoinstructions:
   - when: (pred == 0x3) && (succ == 0x3) && (fm == 1)
     to: fence.tso
-  - when: (pred == 1) && (succ == 0) && (fm == 0) && (rd == 0) && (rs1 == 0)
+  - when: (pred == 1) && (succ == 0) && (fm == 0) && (xd == 0) && (xs1 == 0)
     to: pause
 
 sail(): |

@@ -86,7 +86,7 @@ function rm_to_mode {
     } else if (rm == $bits(RoundingMode::RMM)) {
       return RoundingMode::RMM;
     } else if (rm == $bits(RoundingMode::DYN)) {
-      return CSR[fcsr].FRM;
+      return $enum(RoundingMode, CSR[fcsr].FRM);
     } else {
       raise(ExceptionCode::IllegalInstruction, mode(), encoding);
     }
@@ -412,7 +412,7 @@ function softfloat_normSubnormalF16Sig {
   }
   body {
     Bits<8> shift_dist = count_leading_zeros<16>(hp_value);
-    return {1 - shift_dist, hp_value << shift_dist};
+    return 1 - shift_dist, hp_value << shift_dist;
   }
 }
 
@@ -593,25 +593,11 @@ function softfloat_propagateNaNF32UI {
     Boolean isSigNaN_a = is_sp_signaling_nan?(a);
     Boolean isSigNaN_b = is_sp_signaling_nan?(b);
 
-    # get non Signalling versions of a and b
-    U32 nonsig_a = returnNonSignalingNaN(a);
-    U32 nonsig_b = returnNonSignalingNaN(b);
-
     if (isSigNaN_a || isSigNaN_b) {
       # raise invalid flag if either number is NaN
       set_fp_flag(FpFlag::NV);
-      if ( isSigNaN_a ) {
-        if ( isSigNaN_b ) {
-          # if both numbers are NaN return larger magnitude and remove NaN signaling
-          return returnLargerMag(a, b);
-        }
-          # if b is NaN return non signaling value of b
-          return is_sp_nan?(b) ? nonsig_b : nonsig_a;
-        } else {
-          return is_sp_nan?(a) ? nonsig_a : nonsig_b;
-        }
     }
-
+    return SP_CANONICAL_NAN;
   }
 }
 

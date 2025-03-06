@@ -48,7 +48,7 @@ module Idl
         mask |= a.reachable_exceptions(symtab) if a.is_a?(FunctionCallExpressionAst)
       end
 
-      unless func_def_type.builtin?
+      unless func_def_type.builtin? || func_def_type.generated?
         body_symtab = func_def_type.apply_template_values(template_values(symtab), self)
         func_def_type.apply_arguments(body_symtab, arg_nodes, symtab, self)
 

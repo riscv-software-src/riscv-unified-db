@@ -34,6 +34,7 @@
 
 require "active_support/inflector/methods"
 
+require "concurrent"
 require "json"
 require "json_schemer"
 require "pathname"
@@ -62,8 +63,8 @@ class Architecture
 
     @arch_dir = @arch_dir.realpath
     @path = @arch_dir # alias
-    @objects ||= {}
-    @object_hashes ||= {}
+    @objects = Concurrent::Hash.new
+    @object_hashes = Concurrent::Hash.new
   end
 
   # validate the architecture against JSON Schema and any object-specific verification
@@ -94,10 +95,13 @@ class Architecture
     define_method(plural_fn) do
       return @objects[arch_dir] unless @objects[arch_dir].nil?
 
-      @objects[arch_dir] = []
-      @object_hashes[arch_dir] = {}
+      @objects[arch_dir] = Concurrent::Array.new
+      @object_hashes[arch_dir] = Concurrent::Hash.new
       Dir.glob(@arch_dir / arch_dir / "**" / "*.yaml") do |obj_path|
-        obj_yaml = YAML.load_file(obj_path, permitted_classes: [Date])
+        f = File.open(obj_path)
+        f.flock(File::LOCK_EX)
+        obj_yaml = YAML.load(f.read, filename: obj_path, permitted_classes: [Date])
+        f.flock(File::LOCK_UN)
         @objects[arch_dir] << obj_class.new(obj_yaml, Pathname.new(obj_path).realpath, arch: self)
         @object_hashes[arch_dir][@objects[arch_dir].last.name] = @objects[arch_dir].last
       end
