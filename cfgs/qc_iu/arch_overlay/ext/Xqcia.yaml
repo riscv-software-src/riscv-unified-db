@@ -65,6 +65,8 @@ versions:
     email: dhower@qti.qualcomm.com
   changes:
     - Fix typos in description of qc.shlsat and qc.shlusat instructions
+    - Fix bug in qc.shlsat that caused wrong IDL code result
+    - Fix clobbering of saturation results in [add|addu|sub]sat instructions
 description: |
   The Xqcia extension includes eleven instructions to perform integer arithmetic.
 
