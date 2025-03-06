@@ -30,7 +30,7 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  X[rd] = $signed(lowest_set_bit(X[rs1]));
+  X[rd] = lowest_set_bit(X[rs1]);
 
 sail(): |
   {
