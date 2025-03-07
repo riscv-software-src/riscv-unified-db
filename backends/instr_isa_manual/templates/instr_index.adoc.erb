@@ -1,0 +1,94 @@
+<% require_relative '../instruction_index' %>
+<% instruction_index ||= InstructionIndex.new %>
+<% instructions = instruction_index.instructions %>
+
+= Instruction Index
+:toc:
+:toclevels: 1
+
+== Instruction Index
+
+<% instructions.each do |inst| %>
+* <<%= anchor_for_inst(inst.name) %>, <%= inst.name %>>
+<% end %>
+
+== Instructions Details
+
+<% instructions.each do |inst| %>
+
+<%= anchor_for_inst(inst.name) %>
+= <%= inst.name %>
+
+Mnemonic::
+----
+<%= inst.assembly.gsub('x', 'r') %>
+----
+
+Encoding::
+<%- if inst.multi_encoding? -%>
+[NOTE]
+This instruction has different encodings in RV32 and RV64
+
+RV32::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump inst.wavedrom_desc(32) %>
+....
+
+RV64::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump inst.wavedrom_desc(64) %>
+....
+<%- else -%>
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump inst.wavedrom_desc(inst.base.nil? ? 64 : inst.base) %>
+....
+<%- end -%>
+
+Description::
+<%= inst.description %>
+
+<%- if inst.latency -%>
+Latency::
+<%= inst.latency %>
+<%- end -%>
+
+<%- if inst.throughput -%>
+Throughput::
+<%= inst.throughput %>
+<%- end -%>
+
+Decode Variables::
+<%- if inst.multi_encoding? ? (inst.decode_variables(32).empty? && inst.decode_variables(64).empty?) : inst.decode_variables(inst.base.nil? ? 64 : inst.base).empty? -%>
+<%= inst.name %> has no decode variables.
+<%- else -%>
+<%- if inst.multi_encoding? -%>
+RV32::
++
+[source,idl]
+----
+<% inst.decode_variables(32).each do |d| %>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<% end %>
+----
+
+RV64::
++
+[source,idl]
+----
+<% inst.decode_variables(64).each do |d| %>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<% end %>
+----
+<%- else -%>
+[source,idl,subs="specialchars,macros"]
+----
+<% inst.decode_variables(inst.base.nil? ? 64 : inst.base).each do |d| %>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<% end %>
+----
+<%- end -%>
+<%- end -%>
+<% end %>
