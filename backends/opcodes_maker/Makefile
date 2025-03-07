@@ -42,6 +42,7 @@ generate: $(INSTR_DICT)
 		  exit 1; }
 	mv encoding.out.h inst.chisel inst.spinalhdl inst.sverilog inst.rs inst.go \
 	   instr-table.tex priv-instr-table.tex $(OUTPUT_DIR)/ 2>/dev/null || true
+	python3 sorter.py
 # Clean generated files
 clean:
 	rm -rf $(OUTPUT_DIR)
