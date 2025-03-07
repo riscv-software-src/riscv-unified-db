@@ -8,8 +8,3 @@ long_name: Apps Processor Certificate Class
 
 introduction: |
   The AC (Apps processor Class) targets processors that support virtual memory and run rich operating systems such as Linux and Android.
-
-mandatory_priv_modes:
-  - U
-  - S
-  - M

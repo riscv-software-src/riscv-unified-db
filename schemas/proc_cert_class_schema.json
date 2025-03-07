@@ -31,16 +31,6 @@
       "type": "string",
       "description": "Asciidoc text containing the introduction prose for the class"
     },
-    "mandatory_priv_modes": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "enum": ["M", "S", "U", "VS", "VU"]
-      },
-      "uniqueItems": true,
-      "minItems": 1,
-      "description": "List of mandatory privilege modes for the class"
-    },
     "$source": {
       "$ref": "schema_defs.json#/$defs/$source"
     }

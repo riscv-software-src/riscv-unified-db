@@ -10,6 +10,9 @@ class:
   # XLEN used by rakefile
 base: 64
 
+in_scope_priv_modes:
+  - M
+
 # Semantic versions within the model
 versions:
   - version: "1.0.0"
