@@ -689,13 +689,13 @@ RV64::
 <% if inst.key?("operation()") -%>
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.operation_ast(cfg_arch.symtab).gen_adoc %>
+<%= inst.operation_ast.gen_adoc %>
 ----
 <% end -%>
 
 ==== Exceptions
 
-<%- exception_list = inst.reachable_exceptions_str(cfg_arch.symtab) -%>
+<%- exception_list = inst.reachable_exceptions_str -%>
 <%- if exception_list.empty? -%>
 This instruction does not generate synchronous exceptions.
 <%- else -%>
@@ -743,17 +743,17 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <% end -%>
 h| Defining extension a| <%= csr.defined_by_condition.to_asciidoc %>
-<% if csr.dynamic_length?(cfg_arch) -%>
-h| Length         | <%= csr.length_pretty(cfg_arch) %>
+<% if csr.dynamic_length? -%>
+h| Length         | <%= csr.length_pretty %>
 <% else -%>
-h| Length         | <%= csr.length_pretty(cfg_arch) %>
+h| Length         | <%= csr.length_pretty %>
 <% end -%>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===
 
 
 ==== Format
-<% unless csr.dynamic_length?(cfg_arch) || csr.possible_fields(cfg_arch).any? { |f| f.dynamic_location?(cfg_arch) } -%>
+<% unless csr.dynamic_length? || csr.possible_fields.any? { |f| f.dynamic_location? } -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -787,34 +787,34 @@ This CSR format changes dynamically with XLEN.
 |===
 @ Name @ Location @ Type @ Reset Value
 
-<%- csr.possible_fields(cfg_arch).each do |field| -%>
+<%- csr.possible_fields.each do |field| -%>
 @ xref:<%=csr.name%>-<%=field.name%>-def[`<%= field.name %>`]
 a@
-<%- if field.dynamic_location?(cfg_arch) -%>
+<%- if field.dynamic_location? -%>
 
 [when,"<%= field.location_cond32 %>"]
 --
-<%= field.location_pretty(cfg_arch, 32) %>
+<%= field.location_pretty(32) %>
 --
 
 [when,"<%= field.location_cond64 %>"]
 --
-<%= field.location_pretty(cfg_arch, 64) %>
+<%= field.location_pretty(64) %>
 --
 
 <%- else -%>
-<%= field.location_pretty(cfg_arch) %>
+<%= field.location_pretty %>
 <%- end -%>
 a@
 
 --
-<%= field.type_pretty(cfg_arch.symtab) %>
+<%= field.type_pretty %>
 --
 
 a@
 
 --
-<%= field.reset_value_pretty(cfg_arch) %>
+<%= field.reset_value_pretty %>
 --
 
 <%- end -%>
@@ -822,11 +822,11 @@ a@
 
 ==== Fields
 
-<%- if csr.possible_fields(cfg_arch).empty? -%>
+<%- if csr.possible_fields.empty? -%>
 This CSR has no fields. However, it must still exist (not cause an `Illegal Instruction` trap) and always return zero on a read.
 <%- else -%>
 
-<%- csr.possible_fields(cfg_arch).each do |field| -%>
+<%- csr.possible_fields.each do |field| -%>
 [[<%=csr.name%>-<%=field.name%>-def]]
 ===== `<%= field.name %>`
 
@@ -836,23 +836,23 @@ IMPORTANT: <%= field.name %> is only defined in <%= field.base32_only? ? "RV32" 
 
 ****
 Location::
-<%= field.location_pretty(cfg_arch) %>
+<%= field.location_pretty %>
 
 Description::
 <%= field.description.gsub("\n", " +\n") %>
 
 Type::
-<%= field.type_pretty(cfg_arch.symtab) %>
+<%= field.type_pretty %>
 
 Reset value::
-<%= field.reset_value_pretty(cfg_arch) %>
+<%= field.reset_value_pretty %>
 
 ****
 
 <%- end -%>
 <%- end -%>
 
-<%- if csr.possible_fields(cfg_arch).map(&:has_custom_sw_write?).any? -%>
+<%- if csr.possible_fields.map(&:has_custom_sw_write?).any? -%>
 ==== Software write
 
 This CSR may store a value that is different from what software attempts to write.
@@ -862,7 +862,7 @@ written value:
 
 [idl]
 ----
-<%- csr.possible_fields(cfg_arch).each do |field| -%>
+<%- csr.possible_fields.each do |field| -%>
 <%- if field.has_custom_sw_write? -%>
 <%= field.name %> = <%= field["sw_write(csr_value)"] %>
 <%- else -%>

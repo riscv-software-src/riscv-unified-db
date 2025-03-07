@@ -265,16 +265,9 @@ class Extension < DatabaseObject
     @reachable_functions = funcs.uniq
   end
 
-  def <=>(other_ext_req)
-    raise ArgumentError, "Can only compare two ExtensionRequirements" unless other_ext_req.is_a?(ExtensionRequirement)
-    unless other_ext_req.name == name
-      raise ArgumentError, "Cannot compare ExtensionRequirements from different extensions"
-    end
-
-    if versions.all? { |v| other_ext_req.versions.include?(v) } || \
-       other_ext_req.all? { |v| versions.include?(v) }
-      versions.size <=> other_ext_req.versions.size
-    end # else nil is implied
+  def <=>(other_ext)
+    raise ArgumentError, "Can only compare two Extensions" unless other_ext.is_a?(Extension)
+    other_ext.name <=> name
   end
 end
 
