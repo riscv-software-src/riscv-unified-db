@@ -86,9 +86,8 @@ description: |
   corresponding `medeleg` bits should be read-only zero. In particular,
   `medeleg`[11] is read-only zero.
 
-  <%- if ext?(:Smdbltrp) || ext?(:Ssdbltrp) -%>
+  [when,"ext?(:Smdbltrp) || ext?(:Ssdbltrp)"]
   The `medeleg`[16] is read-only zero as double trap is not delegatable.
-  <%- end -%>
 
 fields:
   SSI:

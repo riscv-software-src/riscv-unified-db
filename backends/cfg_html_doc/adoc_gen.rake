@@ -128,7 +128,7 @@ end
 namespace :gen do
   desc "Generate Asciidoc source for config into gen/CONFIG_NAME/adoc"
   task :adoc, [:config_name] do |_t, args|
-    raise "No config named #{args[:config_name]}" unless File.directory?($root / "cfgs" / args[:config_name])
+    raise "No config named #{args[:config_name]}" unless File.file?($root / "cfgs" / "#{args[:config_name]}.yaml")
 
     ["inst", "csr", "ext", "func"].each do |type|
       Rake::Task["#{$root}/.stamps/adoc-gen-#{type}s-#{args[:config_name]}.stamp"].invoke
