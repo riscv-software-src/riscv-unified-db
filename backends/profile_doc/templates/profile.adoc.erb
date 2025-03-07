@@ -504,7 +504,7 @@ Extensions present in a profile are also present in higher-privileged profiles i
 :leveloffset: -3
 
 // TODO: GitHub issue 92: Use version specified by each profile and add version info to inst table below.
-<%- insts = cfg_arch.instructions.select { |i| in_scope_ext_reqs.any? { |ext_req| ext_req.satisfying_versions.any? { |ext_ver| i.defined_by_condition.possibly_satisfied_by?(ext_ver) } } } -%>
+<%- insts = ext.instructions -%>
 <%- unless insts.empty? -%>
 ==== Instructions
 
@@ -649,13 +649,13 @@ RV64::
 <% if inst.key?("operation()") -%>
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.operation_ast(cfg_arch.symtab).gen_adoc %>
+<%= inst.operation_ast.gen_adoc %>
 ----
 <% end -%>
 
 ==== Exceptions
 
-<% exception_list = inst.reachable_exceptions_str(cfg_arch.symtab) -%>
+<% exception_list = inst.reachable_exceptions_str -%>
 <% if exception_list.empty? -%>
 This instruction does not generate synchronous exceptions.
 <% else -%>
@@ -702,17 +702,17 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <% end -%>
 h| Defining extension a| <%= csr.defined_by_condition.to_asciidoc %>
-<% if csr.dynamic_length?(cfg_arch) -%>
-h| Length         | <%= csr.length_pretty(cfg_arch) %>
+<% if csr.dynamic_length? -%>
+h| Length         | <%= csr.length_pretty %>
 <% else -%>
-h| Length         | <%= csr.length_pretty(cfg_arch) %>
+h| Length         | <%= csr.length_pretty %>
 <% end -%>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===
 
 
 ==== Format
-<% unless csr.dynamic_length?(cfg_arch) || csr.fields.any? { |f| f.dynamic_location?(cfg_arch) } -%>
+<% unless csr.dynamic_length? || csr.fields.any? { |f| f.dynamic_location? } -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
