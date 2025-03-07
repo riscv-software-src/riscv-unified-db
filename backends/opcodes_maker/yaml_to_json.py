@@ -35,18 +35,13 @@ def range_size(range_str: str) -> int:
 
 
 def lookup_immediate_by_range(
-    var_base: str, high: int, low: int, instr_name: str
+    var_base: str, high: int, low: int, instr_name: str, left_shift: bool = False
 ) -> Union[str, None]:
     """
     Look up a canonical field name from the fieldo mapping based on the bit range.
 
-    - If var_base is "imm", then we consider any field whose name contains "imm"
-      (but not starting with "c_" and not "csr").
-    - If var_base starts with "c_", then only keys starting with "c_" are considered.
-    - Otherwise, we require that the key starts with var_base (for "simm", "jimm", etc.).
-
-    If multiple candidates are found and var_base is "imm", we prefer "zimm" if present.
-    Otherwise, instr_name is used as a hint.
+    When multiple candidates are found and left_shift is True, prefer the one that
+    starts with 'bimm'.
     """
     candidates = []
     for key, field in fieldo.items():
@@ -64,6 +59,11 @@ def lookup_immediate_by_range(
         if len(candidates) == 1:
             return candidates[0]
         else:
+            if left_shift:
+                # If left_shift flag is set, check for a candidate starting with 'bimm'
+                for cand in candidates:
+                    if cand.startswith("bimm"):
+                        return cand
             if var_base == "imm" and "zimm" in candidates:
                 return "zimm"
             lower_instr = instr_name.lower()
@@ -77,23 +77,34 @@ def lookup_immediate_by_range(
 
 
 def canonical_immediate_names(
-    var_name: str, location: str, instr_name: str
+    var_name: str, location: str, instr_name: str, left_shift: bool = False
 ) -> List[str]:
     """
     Given a YAML immediate variable (its base name and location), return a list of canonical
     field names strictly from the fieldo mapping.
 
-    - For non-composite locations (e.g. "31-20"), the range is parsed and a lookup is performed.
-    - For composite locations (detected by "|" in the location), we assume a branch-immediate split:
-      the high part uses the range (31, 25) and the low part (11, 7), with an appropriate prefix.
-    - If no candidate is found in fieldo, an empty list is returned.
+    For composite locations (detected by "|" in the location), we assume a branch-immediate split:
+      - The high part uses the range (31, 25)
+      - The low part uses the range (11, 7)
+
+    If left_shift is True and multiple candidates exist, the lookup will prefer the one starting with 'bimm'.
     """
     if "|" in location:
         parts = location.split("|")
         if len(parts) == 4:
-            prefix = "bimm" if instr_name.lower().startswith("b") else "imm"
-            hi_candidate = lookup_immediate_by_range(prefix, 31, 25, instr_name)
-            lo_candidate = lookup_immediate_by_range(prefix, 11, 7, instr_name)
+            # Use a default prefix based on instruction name if left_shift is not set.
+            # Otherwise, simply use the variable name so that the left_shift flag in lookup_immediate_by_range can choose 'bimm' if available.
+            prefix = (
+                var_name
+                if left_shift
+                else ("bimm" if instr_name.lower().startswith("b") else var_name)
+            )
+            hi_candidate = lookup_immediate_by_range(
+                prefix, 31, 25, instr_name, left_shift=left_shift
+            )
+            lo_candidate = lookup_immediate_by_range(
+                prefix, 11, 7, instr_name, left_shift=left_shift
+            )
             if hi_candidate is None or lo_candidate is None:
                 print(
                     f"Warning: composite immediate candidate not found in fieldo for {var_name} with location {location}"
@@ -105,7 +116,9 @@ def canonical_immediate_names(
             nums = list(map(int, re.findall(r"\d+", location)))
             if len(nums) >= 2:
                 high, low = nums[0], nums[1]
-                candidate = lookup_immediate_by_range(var_name, high, low, instr_name)
+                candidate = lookup_immediate_by_range(
+                    var_name, high, low, instr_name, left_shift=left_shift
+                )
                 if candidate:
                     return [candidate]
             print(
@@ -118,7 +131,9 @@ def canonical_immediate_names(
         except Exception:
             print(f"Warning: invalid immediate location {location} for {var_name}")
             return []
-        candidate = lookup_immediate_by_range(var_name, high, low, instr_name)
+        candidate = lookup_immediate_by_range(
+            var_name, high, low, instr_name, left_shift=left_shift
+        )
         if candidate:
             return [candidate]
         else:
@@ -137,8 +152,8 @@ def GetVariables(vars: List[Dict[str, str]], instr_name: str = "") -> List[str]:
     - For immediates (base names "imm", "simm", "zimm", "jimm", or those starting with "c_"),
       the canonical names are determined strictly by looking them up in fieldo.
       Only names found in fieldo are used.
-
-    The variables are processed in reverse order.
+    - If the immediate field has a 'left_shift' attribute equal to 1, the left_shift flag is passed so that,
+      if multiple canonical candidates exist, the candidate starting with 'bimm' is preferred.
     """
     result = []
     for var in reversed(vars):
@@ -155,7 +170,11 @@ def GetVariables(vars: List[Dict[str, str]], instr_name: str = "") -> List[str]:
             else:
                 result.append(var_name)
         elif var_name in ("imm", "simm", "zimm", "jimm") or var_name.startswith("c_"):
-            canon_names = canonical_immediate_names(var_name, location, instr_name)
+            # Check for left_shift attribute (equals 1) and pass that flag along.
+            left_shift_flag = var.get("left_shift", 0) == 1
+            canon_names = canonical_immediate_names(
+                var_name, location, instr_name, left_shift=left_shift_flag
+            )
             if canon_names:
                 result.extend(canon_names)
             else:
@@ -260,7 +279,7 @@ def convert(file_dir: str, json_out: Dict[str, Any]) -> None:
 
             var_names = []
             if "variables" in encodings:
-                var_names = GetVariables(encodings["variables"])
+                var_names = GetVariables(encodings["variables"], instr_name)
 
             extensions = []
             prefix = ""
@@ -329,12 +348,12 @@ def main():
                 print(f"Warning: Failed to process {yaml_file}: {str(e)}")
                 continue
 
-            insts_sorted = {}
-            for inst in sorted(inst_dict):
-                insts_sorted[inst] = inst_dict[inst]
+        insts_sorted = {}
+        for inst in sorted(inst_dict):
+            insts_sorted[inst] = inst_dict[inst]
 
-            with open(output_file, "w") as outfile:
-                json.dump(insts_sorted, outfile, indent=4)
+        with open(output_file, "w") as outfile:
+            json.dump(insts_sorted, outfile, indent=4)
 
         print(f"Successfully processed {len(yaml_files)} YAML files")
         print(f"Output written to: {output_file}")
