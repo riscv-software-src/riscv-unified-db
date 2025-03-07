@@ -1,0 +1,31 @@
+<% unless db_obj.cert_test_procedures.empty? -%>
+<% nice_name = db_obj.is_a?(CsrField) ? "#{db_obj.parent.name}.#{db_obj.name}" : db_obj.name -%>
+<% if defined?(use_description_list) && use_description_list -%>
+Test Procedures for `<%= nice_name %>`: ::
+<% else -%>
+==== Test Procedures for `<%= nice_name %>`
+<% end -%>
+
+<% db_obj.cert_test_procedures.each do |tp| -%>
+[%autowidth]
+.*ID <%= tp.id %>* Test Procedure
+|===
+
+| *Name* | <%= tp.name %>
+| *Description* | <%= tp.description %>
+| *Coverage Points*
+a|
+<% tp.cert_coverage_points.each do |cp| -%>
+* <%= defined?(org) ? link_to_udb_doc_cov_pt(org, cp.id) : cp.id %>
+<% end # each cp -%>
+| *Steps*
+a|
+<% tp.cert_steps.each do |step| -%>
+. <%= step.name %>
+.. <%= step.description %>
+<%= step.note.nil? ? "" : "[NOTE]\n" + step.note %>
+<% end # each step -%>
+<% end # each test procedure -%>
+|===
+
+<% end # unless no test plans -%>

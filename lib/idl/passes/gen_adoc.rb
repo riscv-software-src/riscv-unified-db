@@ -273,7 +273,7 @@ module Idl
       after_name = []
       after_name << "<#{template_arg_nodes.map { |t| t.gen_adoc(0, indent_spaces:)}.join(', ')}>" unless template_arg_nodes.empty?
       after_name << "pass:[(]#{arg_nodes.map { |a| a.gen_adoc(0, indent_spaces: ) }.join(', ')})"
-      "#{' '*indent}%%LINK%func;#{name};#{name}%%#{after_name.join ''}"
+      "#{' '*indent}" + link_to_udb_doc_idl_func(name) + "#{after_name.join ''}"
     end
   end
 
@@ -301,10 +301,10 @@ module Idl
       if idx_text =~ /[0-9]+/
         "#{' '*indent}#{csr_text}"
       else
-        if @cfg_arch.csr(csr_text).nil?
+        if @design.arch.csr(csr_text).nil?
         "#{' '*indent}#{csr_text}"
         else
-          "#{' '*indent}%%LINK%csr_field;#{idx_text}.#{@field_name};#{csr_text}%%"
+          "#{' '*indent}%%UDB_DOC_LINK%csr_field;#{idx_text}.#{@field_name};#{csr_text}%%"
         end
       end
     end
@@ -324,10 +324,10 @@ module Idl
         # we don't have the symtab to map this to a csr name
         "#{' '*indent}#{csr_text}"
       else
-        if @cfg_arch.csr(csr_text).nil?
+        if @design.arch.csr(csr_text).nil?
           "#{' '*indent}#{csr_text}"
         else
-          "#{' '*indent}%%LINK%csr;#{idx_text};#{csr_text}%%"
+          "#{' '*indent}%%UDB_DOC_LINK%csr;#{idx_text};#{csr_text}%%"
         end
       end
     end
