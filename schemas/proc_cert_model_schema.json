@@ -202,29 +202,64 @@
       }
     },
     "requirement_groups": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "requirements": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "description": {
-                  "type": "string"
-                },
-                "when": {
-                  "$ref": "schema_defs.json#/$defs/when_condition"
-                }
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "\\$inherits": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^(profile|proc_cert_model)/.*\\.yaml#.*"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(profile|proc_cert_model)/.*\\.yaml#.*"
               },
-              "additionalProperties": false
+              "uniqueItems": true
+            }
+          ]
+        },
+        "\\$child_of": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^(profile|proc_cert_model)/.*\\.yaml#.*"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(profile|proc_cert_model)/.*\\.yaml#.*"
+              },
+              "uniqueItems": true
+            }
+          ]
+        },
+        "^[A-Za-z0-9_-]+$": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "requirements": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "when": {
+                    "$ref": "schema_defs.json#/$defs/when_condition"
+                  }
+                },
+                "additionalProperties": false
+              }
             }
           }
         }

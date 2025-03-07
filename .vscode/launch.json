@@ -39,6 +39,15 @@
     },
     {
       "type": "rdbg",
+      "name": "AC200-CRD",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:proc_crd_pdf[AC200]",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
       "name": "MockCRD",
       "request": "launch",
       "command": "bundle exec rake",
