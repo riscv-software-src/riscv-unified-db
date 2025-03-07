@@ -178,7 +178,8 @@ extensions:
     note: "Added this as mandatory to see if Zba, Zbb, and Zbs are included."
 
 requirement_groups:
-  - name: Req-Grp-Any-XLEN
+  any_xlen:
+    name: Req-Grp-Any-XLEN
     description: |
       A bunch of additional requirements not associated with an extension.
     requirements:
@@ -186,8 +187,8 @@ requirement_groups:
         description: Must pay your taxes on time
       - name: REQ-ANY-XLEN-002
         description: Don't count your chickens before they're hatched!
-
-  - name: Req-Grp-XLEN32
+  xlen32:
+    name: Req-Grp-XLEN32
     when:
       xlen: 32
     description: |
@@ -195,8 +196,8 @@ requirement_groups:
     requirements:
       - name: REQ-XLEN32-001
         description: Need lots of extra CSRs with `h` suffix
-
-  - name: Req-Grp-XLEN64
+  xlen64:
+    name: Req-Grp-XLEN64
     when:
       xlen: 64
     description: |

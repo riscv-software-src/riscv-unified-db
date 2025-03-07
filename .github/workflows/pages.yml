@@ -85,6 +85,10 @@ jobs:
         run: ./do gen:proc_crd_pdf[AC100]
       - name: Copy AC100-CRD PDF
         run: cp gen/proc_crd/pdf/AC100-CRD.pdf _site/pdfs
+      - name: Create AC200-CRD PDF Spec
+        run: ./do gen:proc_crd_pdf[AC200]
+      - name: Copy AC200-CRD PDF
+        run: cp gen/proc_crd/pdf/AC200-CRD.pdf _site/pdfs
       - name: Create MC100-32-CRD PDF Spec
         run: ./do gen:proc_crd_pdf[MC100-32]
       - name: Copy MC100-32-CRD PDF

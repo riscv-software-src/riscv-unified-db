@@ -387,6 +387,8 @@ task :portfolios do
   Rake::Task["#{$root}/gen/proc_crd/pdf/MC300-64-CRD.pdf"].invoke
   portfolio_start_msg("AC100-CRD")
   Rake::Task["#{$root}/gen/proc_crd/pdf/AC100-CRD.pdf"].invoke
+  portfolio_start_msg("AC200-CRD")
+  Rake::Task["#{$root}/gen/proc_crd/pdf/AC200-CRD.pdf"].invoke
   portfolio_start_msg("RVI20ProfileRelease")
   Rake::Task["#{$root}/gen/profile/pdf/RVI20ProfileRelease.pdf"].invoke
   portfolio_start_msg("RVA20ProfileRelease")
@@ -423,6 +425,7 @@ task "MC200-64-CRD": "#{$root}/gen/proc_crd/pdf/MC200-64-CRD.pdf"
 task "MC300-32-CRD": "#{$root}/gen/proc_crd/pdf/MC300-32-CRD.pdf"
 task "MC300-64-CRD": "#{$root}/gen/proc_crd/pdf/MC300-64-CRD.pdf"
 task "AC100-CRD": "#{$root}/gen/proc_crd/pdf/AC100-CRD.pdf"
+task "AC200-CRD": "#{$root}/gen/proc_crd/pdf/AC200-CRD.pdf"
 task "MockProfile": "#{$root}/gen/profile/pdf/MockProfileRelease.pdf"
 task "MockProfileRelease": "#{$root}/gen/profile/pdf/MockProfileRelease.pdf"
 task "RVI20": "#{$root}/gen/profile/pdf/RVI20ProfileRelease.pdf"

@@ -55,15 +55,18 @@ class ProcCertModel < Portfolio
 
   # Holds extra requirements not associated with extensions or their parameters.
   class Requirement
+    # @param data [Hash<String, Object>] Data from yaml
+    # @param arch [Architecture] Architecture standards
     def initialize(data, arch)
+      raise ArgumentError, "Bad data" unless data.is_a?(Hash)
+      raise ArgumentError, "Need Architecture class but it's a #{arch.class}" unless arch.is_a?(Architecture)
+
       @data = data
       @arch = arch
     end
 
     def name = @data["name"]
-
     def description = @data["description"]
-
     def when = @data["when"]
 
     def when_pretty
@@ -89,15 +92,20 @@ class ProcCertModel < Portfolio
   # Holds a group of Requirement objects to provide a one-level group.
   # Can't nest RequirementGroup objects to make multi-level group.
   class RequirementGroup
+    # @param data [Hash<String, Object>] Data from yaml
+    # @param arch [Architecture] Architecture standards
     def initialize(data, arch)
+      unless data.is_a?(Hash)
+        raise ArgumentError, "Bad data" unless data.is_a?(Hash)
+      end
+      raise ArgumentError, "Need Architecture class but it's a #{arch.class}" unless arch.is_a?(Architecture)
+
       @data = data
       @arch = arch
     end
 
     def name = @data["name"]
-
     def description = @data["description"]
-
     def when = @data["when"]
 
     def when_pretty
@@ -115,6 +123,7 @@ class ProcCertModel < Portfolio
       end.flatten.join(" and ")
     end
 
+    # @return [Array<Requirement>] The list of requirements in this group.
     def requirements
       return @requirements unless @requirements.nil?
 
@@ -126,12 +135,13 @@ class ProcCertModel < Portfolio
     end
   end
 
+  # @return [Array<RequirementGroup>] The list of requirement groups
   def requirement_groups
     return @requirement_groups unless @requirement_groups.nil?
 
     @requirement_groups = []
-    @data["requirement_groups"]&.each do |req_group|
-      @requirement_groups << RequirementGroup.new(req_group, @arch)
+    @data["requirement_groups"]&.each do |req_key, req_group|
+      @requirement_groups << RequirementGroup.new(req_group, @arch) unless req_key == "$child_of"
     end
     @requirement_groups
   end
