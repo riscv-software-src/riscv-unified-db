@@ -16,15 +16,17 @@ def sort_instr_json(dir_name, outname):
         # Add the processed entry to the sorted data
         sorted_data[key] = entry
 
+    # Write the sorted data with an indentation of 2 spaces
     with open(outname, "w") as file:
-        json.dump(sorted_data, file, indent=4)
+        json.dump(sorted_data, file, indent=2)
 
-    print(json.dumps(sorted_data, indent=4))
+    print(json.dumps(sorted_data, indent=2))
 
 
 def main():
-    sort_instr_json("instr_dict.json", "udb_sorted_data.json")
-    sort_instr_json("instr_dict.json", "opcodes_sorted_data.json")
+    # Uncomment and adjust file names as needed
+    # sort_instr_json("instr_dict.json", "udb_sorted_data.json")
+    sort_instr_json("processed_instr_dict.json", "sorted_instr_dict.json")
 
 
 main()
