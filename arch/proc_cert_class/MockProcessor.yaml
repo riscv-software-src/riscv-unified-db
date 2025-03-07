@@ -8,6 +8,3 @@ long_name: Mock Processor Certificate Class Long Name
 
 introduction: |
   Here's the Mock Certificate Class introduction.
-
-mandatory_priv_modes:
-  - M

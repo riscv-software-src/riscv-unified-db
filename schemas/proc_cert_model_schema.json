@@ -140,6 +140,16 @@
     "debug_manual_revision": {
       "type": "string"
     },
+    "in_scope_priv_modes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["M", "S", "U", "HS", "VS", "VU"]
+      },
+      "uniqueItems": true,
+      "minItems": 1,
+      "description": "List of in-scope privilege modes for the certificate"
+    },
     "extensions": {
       "type": "object",
       "additionalProperties": false,

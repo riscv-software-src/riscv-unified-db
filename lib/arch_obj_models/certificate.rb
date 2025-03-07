@@ -3,14 +3,13 @@
 
 require_relative "portfolio"
 
-###################
+#######################
 # ProcCertClass Class #
-###################
+#######################
 
 # Holds information from processor certificate class YAML file.
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
 class ProcCertClass < PortfolioClass
-  def mandatory_priv_modes = @data["mandatory_priv_modes"]
 end
 
 #######################
@@ -40,6 +39,8 @@ class ProcCertModel < Portfolio
 
     profile_release
   end
+
+  def in_scope_priv_modes = @data["in_scope_priv_modes"]
 
   # @return [ProcCertClass] The certification class that this model belongs to.
   def proc_cert_class

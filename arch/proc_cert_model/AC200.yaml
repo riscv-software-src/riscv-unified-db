@@ -3,7 +3,7 @@
 $schema: proc_cert_model_schema.json#
 kind: Processor Certificate Model
 name: AC200
-long_name: AC200 Apps Processor Certificate based on the RVB profile class
+long_name: AC200 Apps Processor Certificate based on the RVA23 profile release
 class:
   $ref: proc_cert_class/AC.yaml#
 
@@ -16,18 +16,18 @@ versions:
 
 revision_history:
   - revision: "0.1.0"
-    date: "2025-02-03"
+    date: "2025-03-07"
     changes:
       - Created
 
 introduction: |
-  The AC200 Processor Certificate targets RISC-V Apps Processors targeting embedded applications
-  running a custom Yocto Linux distribution. Software source code compatibility is a strong requirement
-  and binary compatibility is a lesser requirement.
+  The AC200 Processor Certificate targets RISC-V Apps Processors running rich operating systems such as
+  commercial Linux distributions or Android.
+  Software source code compatibility and binary compatibility between implementations are strong requirements.
 
   AC200 is based on the following:
 
-  * RVA23 Profile (includes mandantory Hypervisor and Vector support)
+  * RVA23 Profile (includes mandatory Hypervisor and Vector support)
   * M-mode requirements
   * AIA or PLIC interrupt controller
   * Debug and trace (TBD)
@@ -39,7 +39,14 @@ unpriv_isa_manual_revision: "20240411"
 priv_isa_manual_revision: "20240411"
 debug_manual_revision: "1.0.0"
 
-# XXX - Remove version information since specifying priv/unpriv ISA manual should imply this.
+in_scope_priv_modes:
+  - U
+  - S
+  - M
+  - HS
+  - VS
+  - VU
+
 extensions:
   $inherits:
     - "profile/RVA23U64.yaml#/extensions"

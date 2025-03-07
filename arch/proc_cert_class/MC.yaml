@@ -8,6 +8,3 @@ long_name: Microcontroller Processor Certificate Class
 
 introduction: |
   The MC (Microcontroller Class) targets processors running low-level software on an RTOS or bare-metal.
-
-mandatory_priv_modes:
-  - M
