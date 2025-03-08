@@ -3,9 +3,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vsetvli
-long_name: No synopsis available.
+long_name: Set vector configuration (register immediate).
 description: |
-  No description available.
+  Vset (r,i) allows rapid configuration of the values in vl and vtype CSRs to match application
+  needs. The vsetvl instruction sets the vtype and vl CSRs based on the contents of the argument
+  register rs1 and immediate, and writes the new value of vl into rd.
 definedBy: V
 assembly: xs1, xd, imm
 encoding:
@@ -24,7 +26,19 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  XReg state = vector_state();
+  XReg VLMAX = state.log2_multiplier * VLEN * state.sew;
+  # todo: state.lmul_type
 
+  if (xs1 < VLMAX){
+    CSR[vl] = X[rs1];
+  } else {
+    CSR[vl] = VLMAX;
+  }
+
+  CSR[vtype] = zimm11;
+  X[rd] = CSR[vl];
+  CSR[vstart] = 0;
 sail(): |
   {
     let VLEN_pow      = get_vlen_pow();
