@@ -1,0 +1,68 @@
+<%
+# Helper to substitute problematic entity strings with proper Unicode characters.
+def fix_entities(text)
+  text.to_s.gsub("&ne;", "≠")
+           .gsub("&pm;", "±")
+           .gsub("-&infin;", "−∞")
+           .gsub("+&infin;", "+∞")
+end
+%>
+
+== Instruction Appendix
+
+<% instructions.sort_by(&:name).each do |inst| %>
+<%= anchor_for_inst(inst.name) %>
+=== <%= inst.name %>
+
+Synopsis::
+<%= inst.long_name %>
+
+Mnemonic::
+----
+<%= fix_entities(inst.assembly.gsub('x', 'r')) %>
+----
+
+Encoding::
+<%- if inst.multi_encoding? -%>
+[NOTE]
+This instruction has different encodings in RV32 and RV64
+
+RV32::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= fix_entities(JSON.dump(inst.wavedrom_desc(32))) %>
+....
+
+RV64::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= fix_entities(JSON.dump(inst.wavedrom_desc(64))) %>
+....
+<%- else -%>
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= fix_entities(JSON.dump(inst.wavedrom_desc(inst.base.nil? ? 64 : inst.base))) %>
+....
+<%- end -%>
+
+Description::
+<%= fix_entities(inst.description) %>
+
+Included in::
+<%- if inst.defined_by_condition.flat? -%>
+
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+
+<% inst.defined_by_condition.flat_versions.each do |r| %>
+| *<%= r.name %>* | <%= fix_entities(r.requirement_specs_to_s) %>
+<% end %>
+|===
+
+<%- else -%>
+<%= fix_entities(inst.defined_by_condition.to_asciidoc) %>
+<%- end -%>
+
+<<<
+<% end %>
