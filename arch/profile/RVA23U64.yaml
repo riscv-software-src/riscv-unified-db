@@ -44,16 +44,26 @@ extensions:
   Supm:
     presence: mandatory
 
-  #--------------------------------------------
-  # Zvbc is an expansion option in RVB23U64
-  # (but is not intended to be made mandatory in future RVB Profiles)
-  #
-  # It is listed in RVA23U64 as a *development* option,
-  # as it *is* intended to become mandatory in future RVA Profiles.
-  #--------------------------------------------
-  Zvbc:
-    presence:
-      optional: development
+  Zihintntl:
+    presence: mandatory
+
+  Zicond:
+    presence: mandatory
+
+  Zimop:
+    presence: mandatory
+
+  Zcmop:
+    presence: mandatory
+
+  Zcb:
+    presence: mandatory
+
+  Zfa:
+    presence: mandatory
+
+  Zawrs:
+    presence: mandatory
 
   #########################################################################
   # TRANSITORY EXPANSION extensions in RVA23U64
