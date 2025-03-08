@@ -1,0 +1,176 @@
+# yaml-language-server: $schema=../../../../../schemas/csr_schema.json
+
+kind: csr
+name: qc.mclicie7
+long_name: IRQ Enable 7
+address: 0x7ff
+length: 32
+base: 32
+priv_mode: M
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqciint
+description: |
+  Enable bits for IRQs 224-255
+fields:
+  IRQ224:
+    type: RW
+    reset_value: 0
+    location: 0
+    description: IRQ224 enabled
+  IRQ225:
+    type: RW
+    reset_value: 0
+    location: 1
+    description: IRQ225 enabled
+  IRQ226:
+    type: RW
+    reset_value: 0
+    location: 2
+    description: IRQ226 enabled
+  IRQ227:
+    type: RW
+    reset_value: 0
+    location: 3
+    description: IRQ227 enabled
+  IRQ228:
+    type: RW
+    reset_value: 0
+    location: 4
+    description: IRQ228 enabled
+  IRQ229:
+    type: RW
+    reset_value: 0
+    location: 5
+    description: IRQ229 enabled
+  IRQ230:
+    type: RW
+    reset_value: 0
+    location: 6
+    description: IRQ230 enabled
+  IRQ231:
+    type: RW
+    reset_value: 0
+    location: 7
+    description: IRQ231 enabled
+  IRQ232:
+    type: RW
+    reset_value: 0
+    location: 8
+    description: IRQ232 enabled
+  IRQ233:
+    type: RW
+    reset_value: 0
+    location: 9
+    description: IRQ233 enabled
+  IRQ234:
+    type: RW
+    reset_value: 0
+    location: 10
+    description: IRQ234 enabled
+  IRQ235:
+    type: RW
+    reset_value: 0
+    location: 11
+    description: IRQ235 enabled
+  IRQ236:
+    type: RW
+    reset_value: 0
+    location: 12
+    description: IRQ236 enabled
+  IRQ237:
+    type: RW
+    reset_value: 0
+    location: 13
+    description: IRQ237 enabled
+  IRQ238:
+    type: RW
+    reset_value: 0
+    location: 14
+    description: IRQ238 enabled
+  IRQ239:
+    type: RW
+    reset_value: 0
+    location: 15
+    description: IRQ239 enabled
+  IRQ240:
+    type: RW
+    reset_value: 0
+    location: 16
+    description: IRQ240 enabled
+  IRQ241:
+    type: RW
+    reset_value: 0
+    location: 17
+    description: IRQ241 enabled
+  IRQ242:
+    type: RW
+    reset_value: 0
+    location: 18
+    description: IRQ242 enabled
+  IRQ243:
+    type: RW
+    reset_value: 0
+    location: 19
+    description: IRQ243 enabled
+  IRQ244:
+    type: RW
+    reset_value: 0
+    location: 20
+    description: IRQ244 enabled
+  IRQ245:
+    type: RW
+    reset_value: 0
+    location: 21
+    description: IRQ245 enabled
+  IRQ246:
+    type: RW
+    reset_value: 0
+    location: 22
+    description: IRQ246 enabled
+  IRQ247:
+    type: RW
+    reset_value: 0
+    location: 23
+    description: IRQ247 enabled
+  IRQ248:
+    type: RW
+    reset_value: 0
+    location: 24
+    description: IRQ248 enabled
+  IRQ249:
+    type: RW
+    reset_value: 0
+    location: 25
+    description: IRQ249 enabled
+  IRQ250:
+    type: RW
+    reset_value: 0
+    location: 26
+    description: IRQ250 enabled
+  IRQ251:
+    type: RW
+    reset_value: 0
+    location: 27
+    description: IRQ251 enabled
+  IRQ252:
+    type: RW
+    reset_value: 0
+    location: 28
+    description: IRQ252 enabled
+  IRQ253:
+    type: RW
+    reset_value: 0
+    location: 29
+    description: IRQ253 enabled
+  IRQ254:
+    type: RW
+    reset_value: 0
+    location: 30
+    description: IRQ254 enabled
+  IRQ255:
+    type: RW
+    reset_value: 0
+    location: 31
+    description: IRQ255 enabled
