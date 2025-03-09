@@ -1,0 +1,79 @@
+# yaml-language-server: $schema=../../../../../schemas/csr_schema.json
+
+$schema: csr_schema.json#
+kind: csr
+name: qc.mcause
+long_name: Machine Mode Custom Cause Register
+address: 0x7c9
+base: 32
+priv_mode: M
+length: MXLEN
+description: |
+  Machine Mode Custom Cause Register / Interrupt context register.
+definedBy:
+  anyOf:
+    - name: Xqci
+      version: ">=0.7"
+    - name: Xqciint
+      version: ">=0.4"
+fields:
+  INT:
+    location: 31
+    description: Alias of mcause.INT bit, if 1'b1 - interrupt processing, if 1'b0 - exception processing.
+    type: RW-H
+    reset_value: 0
+  NMIE:
+    location: 30
+    description: Alias of mnstatus.NMIE, if 1'b0, currently processing NMI or double trap.
+    type: RW-H
+    reset_value: 0
+  MPDT:
+    location: 29
+    description: M-mode Previous Disable Trap, value of mstatush.MDT at the moment of interrupt/exception.
+    type: RW-H
+    reset_value: 0
+  MNPIE:
+    type: RW-H
+    reset_value: 0
+    location: 28
+    description: M-mode NMI Previous Interrupt Enable, value of mstatus.MIE at the moment of NMI/double trap.
+  MPIE:
+    type: RW-H
+    reset_value: 0
+    location: 27
+    description: Alias of mstatus.MPIE, M-mode Previous Interrupt Enable.
+  MIE:
+    type: RW-H
+    reset_value: 0
+    location: 26
+    description: Alias of mstatus.MIE, M-mode Interrupt Enable.
+  EXCP:
+    type: RW-H
+    reset_value: 0
+    location: 25
+    description: Exception Pending Bit, cleaned when exception acknowledged.
+  NMIP:
+    type: RW-H
+    reset_value: 0
+    location: 24
+    description: NMI Pending Bit, cleaned when NMI acknowledged.
+  MNPIL:
+    type: RW-H
+    reset_value: 0
+    location: 23-20
+    description: M-mode NMI Previous Interrupt Level, value of qc.mcause.MIL at the moment of NMI/double trap.
+  MPIL:
+    type: RW-H
+    reset_value: 0
+    location: 19-16
+    description: M-mode Previous Interrupt Level, value of qc.mcause.MIL at the moment of interrupt/exception.
+  MIL:
+    type: RW-H
+    reset_value: 15
+    location: 15-12
+    description: M-mode Interrupt Level.
+  EXCCODE:
+    type: RW-H
+    reset_value: 0
+    location: 11-0
+    description: Alias of mcause.EXCCODE[11:0], Interrupt/Exception code ID.
