@@ -26,12 +26,13 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  XReg state = vector_state();
-  XReg VLMAX = state.log2_multiplier * VLEN * state.sew;
-  # todo: state.lmul_type
+  VectorState state = vector_state();
+  XReg VLMAX = (VLEN <<< state.log2_multiplier) >> (3 + state.vsew);
 
-  if (xs1 < VLMAX){
+  if (uimm < VLMAX){
     CSR[vl] = uimm;
+  } else if (uimm < 2*VLMAX) {
+    CSR[vl] = uimm / 2;
   } else {
     CSR[vl] = VLMAX;
   }
