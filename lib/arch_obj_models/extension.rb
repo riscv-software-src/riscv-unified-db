@@ -515,12 +515,13 @@ class ExtensionPresence
   # @overload ==(other)
   #   @param other [ExtensionPresence] An extension presence object
   #   @return [Boolean] whether or not this ExtensionPresence has the exact same presence and optional_type as other
+  #                     Ignores optional_type if either self or other have it as nil.
   def ==(other)
     case other
     when String
       @presence == other
     when ExtensionPresence
-      @presence == other.presence && @optional_type == other.optional_type
+      @presence == other.presence && (@optional_type.nil? || other.optional_type.nil? || @optional_type == other.optional_type)
     else
       raise "Unexpected comparison"
     end
