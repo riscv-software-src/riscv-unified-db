@@ -110,6 +110,7 @@ jobs:
       EXT: B
       VERSION: latest
       SINGULARITY: 1
+      PSEUDO: both
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
