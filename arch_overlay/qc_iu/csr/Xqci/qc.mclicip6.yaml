@@ -1,6 +1,5 @@
 # yaml-language-server: $schema=../../../../../schemas/csr_schema.json
 
-$schema: csr_schema.json#
 kind: csr
 name: qc.mclicip6
 long_name: IRQ Pending 6

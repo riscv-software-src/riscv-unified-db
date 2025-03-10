@@ -6,7 +6,6 @@ name: qc.shlsat
 long_name: Saturating signed left shift
 description: |
   Left shift `rs1` by the value of `rs2`, and saturate the signed result.
-  The number of words is in `length`.
   Instruction encoded in R instruction format.
 definedBy:
   anyOf:

@@ -14,7 +14,7 @@ description: |
   The `Smrnmi` extension adds support for resumable non-maskable interrupts (RNMIs) to RISC-V.
   The extension adds four new CSRs (`mnepc`, `mncause`, `mnstatus`, and `mnscratch`) to hold the
   interrupted state, and one new instruction, `mnret`, to resume from the RNMI handler.
-type: unprivileged
+type: privileged
 versions:
   - version: "1.0.0"
     state: ratified

@@ -1,10 +1,9 @@
 # yaml-language-server: $schema=../../../../../schemas/csr_schema.json
 
-$schema: csr_schema.json#
 kind: csr
 name: qc.mclicie7
 long_name: IRQ Enable 7
-address: 0x7f7
+address: 0x7ff
 length: 32
 base: 32
 priv_mode: M

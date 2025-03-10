@@ -18,3 +18,15 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  if (implemented?(ExtensionName::S) && CSR[mstatus].MPP != 2'b11) {
+    CSR[mstatus].MPRV = 0;
+  }
+  if (CSR[mnstatus].MNPP == 2'b00) {
+    set_mode(PrivilegeMode::U);
+  } else if (CSR[mnstatus].MNPP == 2'b01) {
+    set_mode(PrivilegeMode::S);
+  } else if (CSR[mnstatus].MNPP == 2'b11) {
+    set_mode(PrivilegeMode::M);
+  }
+  CSR[mnstatus].MNPP = implemented?(ExtensionName::U) ? 2'b00 : 2'b11;
+  $pc = $bits(CSR[mnepc]);
