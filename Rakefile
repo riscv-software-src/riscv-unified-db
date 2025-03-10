@@ -90,6 +90,15 @@ namespace :serve do
 end
 
 namespace :test do
+
+  # "Run the cross-validation against LLVM"
+  task :llvm do
+      begin
+        sh "#{$root}/.home/.venv/bin/python3 -m pytest ext/auto-inst/test_parsing.py -v"
+      rescue => e
+        raise unless e.message.include?("status (5)") # don't fail on skipped tests
+    end
+  end
   # "Run the IDL compiler test suite"
   task :idl_compiler do
     t = Minitest::TestTask.new(:lib_test)
@@ -294,12 +303,7 @@ namespace :test do
 
     These are basic but fast-running tests to check the database and tools
   DESC
-  task :smoke do
-    Rake::Task["test:idl_compiler"].invoke
-    Rake::Task["test:lib"].invoke
-    Rake::Task["test:schema"].invoke
-    Rake::Task["test:idl"].invoke
-  end
+  task :smoke => ["test:idl_compiler", "test:lib", "test:schema", "test:idl", "test:llvm"]
 
   desc <<~DESC
     Run the regression tests

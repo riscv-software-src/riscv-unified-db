@@ -14,4 +14,7 @@ gen
 node_modules
 _site
 images
+__pycache__/
+*.pyc
+.pytest_cache/
 *.log
