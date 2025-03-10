@@ -10,7 +10,7 @@ introduction: |
   supervisor-mode execution environment in 64-bit applications
   processors.  RVA20S64 is based on privileged architecture version 1.11.
 extensions:
-  $inherits: "profile/RVI20U64.yaml#/extensions"
+  $inherits: "profile/RVA20U64.yaml#/extensions"
   U:
     presence: mandatory
     version: "~> 1.0"

@@ -11,7 +11,9 @@ introduction: |
   processors.  RVA22S64 is based on privileged architecture version
   1.12.
 extensions:
-  $inherits: "profile/RVA20S64.yaml#/extensions"
+  $inherits:
+    - "profile/RVA20S64.yaml#/extensions"
+    - "profile/RVA22U64.yaml#/extensions"
   S:
     presence: mandatory
     version: "= 1.12"

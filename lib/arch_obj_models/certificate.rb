@@ -96,9 +96,7 @@ class ProcCertModel < Portfolio
     # @param data [Hash<String, Object>] Data from yaml
     # @param arch [Architecture] Architecture standards
     def initialize(data, arch)
-      unless data.is_a?(Hash)
-        raise ArgumentError, "Bad data" unless data.is_a?(Hash)
-      end
+      raise ArgumentError, "Bad data" unless data.is_a?(Hash) unless data.is_a?(Hash)
       raise ArgumentError, "Need Architecture class but it's a #{arch.class}" unless arch.is_a?(Architecture)
 
       @data = data
