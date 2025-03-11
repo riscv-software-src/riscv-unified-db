@@ -186,6 +186,22 @@
             }
           ]
         },
+        "\\$parent_of": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^proc_cert_model/.*\\.yaml#.*"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^proc_cert_model/.*\\.yaml#.*"
+              },
+              "uniqueItems": true
+            }
+          ]
+        },
         "^([A-WY])|([SXZ][a-z0-9]+)$": {
           "type": "object",
           "properties": {
@@ -242,6 +258,22 @@
               "items": {
                 "type": "string",
                 "pattern": "^(profile|proc_cert_model)/.*\\.yaml#.*"
+              },
+              "uniqueItems": true
+            }
+          ]
+        },
+        "\\$parent_of": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^proc_cert_model/.*\\.yaml#.*"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^proc_cert_model/.*\\.yaml#.*"
               },
               "uniqueItems": true
             }
