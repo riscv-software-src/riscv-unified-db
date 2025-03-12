@@ -83,16 +83,11 @@ def canonical_immediate_names(
     field names from fieldo.
 
     Supports several formats:
-
-    1. For branch instructions (name starts with 'b') and a 4-part compound format,
-       e.g. "31|7|30-25|11-8", it extracts the two parts using 'bimm' as the prefix.
-
-    2. For jump instructions (name starts with 'j') with a 4-part compound format,
-       e.g. "31|19-12|20|30-21", it extracts the overall high (from part 0) and low (from part 1)
-       and uses the 'jimm' prefix.
-
-    3. For a standard composite format "X-Y|Z-W", it compares the two ranges.
-    4. For non-composite formats "X-Y", it does a simple lookup.
+      1. For branch instructions (name starts with 'b') with a 4‑part compound format.
+      2. For jump instructions (name starts with 'j') with a 4‑part compound format.
+      3. For composite immediates in the form "X-Y|Z-W".
+      4. For composite immediates in the form "X|Z-W" where the high part is a single number.
+      5. For non‐composite formats "X-Y".
     """
     parts = location.split("|")
     if len(parts) == 4 and var_name == "imm" and instr_name.lower().startswith("b"):
@@ -101,7 +96,6 @@ def canonical_immediate_names(
             high_msb = int(parts[0])
             high_lsb = int(parts[2].split("-")[-1])
             low_msb = int(parts[3].split("-")[0])
-            # parts[1] should be a simple number when converting for branch immediates.
             low_lsb = int(parts[1])
         except Exception as e:
             print(
@@ -123,8 +117,6 @@ def canonical_immediate_names(
     elif len(parts) == 4 and var_name == "imm" and instr_name.lower().startswith("j"):
         # Jump compound format, e.g.: "31|19-12|20|30-21"
         try:
-            # For jump immediates, the canonical field typically covers the whole range.
-            # We extract the overall high (first part) and the lower end of the second part.
             high = int(parts[0])
             low = int(parts[1].split("-")[1])
         except Exception as e:
@@ -141,6 +133,58 @@ def canonical_immediate_names(
             )
             return []
         return [candidate]
+    elif "|" in location and len(parts) == 2:
+        # New branch: composite immediate in the form "X|Z-W" (or "X|Z" if both parts are single numbers)
+        # For a single number, treat it as "X-X".
+        high_part = parts[0].strip()
+        low_part = parts[1].strip()
+        if "-" not in high_part:
+            high_range = f"{high_part}-{high_part}"
+        else:
+            high_range = high_part
+        if "-" not in low_part:
+            low_range = f"{low_part}-{low_part}"
+        else:
+            low_range = low_part
+        try:
+            high_msb, high_lsb = map(int, high_range.split("-"))
+            low_msb, low_lsb = map(int, low_range.split("-"))
+        except Exception as e:
+            print(
+                f"Warning: invalid composite immediate format in location '{location}': {e}"
+            )
+            return []
+        # Use "bimm" if the instruction starts with b, otherwise keep var_name (e.g. "imm")
+        prefix = (
+            "bimm"
+            if var_name == "imm" and instr_name.lower().startswith("b")
+            else var_name
+        )
+        hi_candidate = lookup_immediate_by_range(
+            prefix, high_msb, high_lsb, instr_name, left_shift=left_shift
+        )
+        lo_candidate = lookup_immediate_by_range(
+            prefix, low_msb, low_lsb, instr_name, left_shift=left_shift
+        )
+        # NEW: if we found a hi candidate that ends with "hi", look for its complementary lo.
+        if hi_candidate and hi_candidate.endswith("hi"):
+            desired_lo = hi_candidate.replace("hi", "lo")
+            # Check if the desired lo exists in fieldo with the expected msb and lsb.
+            try:
+                if (
+                    desired_lo in fieldo
+                    and fieldo[desired_lo].get("msb") == low_msb
+                    and fieldo[desired_lo].get("lsb") == low_lsb
+                ):
+                    lo_candidate = desired_lo
+            except Exception:
+                pass
+        if hi_candidate is None or lo_candidate is None:
+            print(
+                f"Warning: composite immediate candidate not found in fieldo for {var_name} with location {location}"
+            )
+            return []
+        return [hi_candidate, lo_candidate]
     elif "|" in location:
         # Standard composite format, e.g.: "31-25|11-7"
         import re
