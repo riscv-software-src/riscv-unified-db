@@ -42,7 +42,7 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg size = xlen();
+  XReg size = xlen() / 8;
   XReg nreg = (rlist == 15) ? 13 : (rlist - 3);
   XReg stack_aligned_adj = (nreg * 4 + 15) & ~0xF;
   XReg virtual_address_sp = X[2];
