@@ -13,7 +13,7 @@ description: |
   If `rd=x0`, then the instruction shall not read the CSR and shall not
   cause any of the side effects that might occur on a CSR read.
 definedBy: Zicsr
-assembly: xd, zimm, csr
+assembly: xd, imm, csr
 encoding:
   match: -----------------101-----1110011
   variables:
