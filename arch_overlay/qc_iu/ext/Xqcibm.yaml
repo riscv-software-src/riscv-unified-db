@@ -71,6 +71,22 @@ versions:
     - Change width calculations for qc.extdpr, qc.extdprh, qc.extdr, qc.extdupr, qc.extduprh, qc.extdur,
     - Change width calculations for qc.insbhr, qc.insbpr, qc.insbprh, qc.insbr, qc.insbri
   requires: { name: Zca, version: ">= 1.0.0" }
+- version: "0.6.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix rs1 cannot be 31 for qc.extdu, qc.extd, qc.extdur, instructions
+    - Fix rs1 cannot be 31 for qc.extduprh, qc.extdprh, qc.extdupr, qc.extdr qc.extdpr instructions
+    - Fix typos in IDL code (missing ')' ) for qc.extdpr, qc.extdr instructions
+    - Fix IDL code to look correct in PDF for qc.insbhr and qc.insbh instructions
+  requires: { name: Zca, version: ">= 1.0.0" }
 description: |
   The Xqcibm extension includes thirty eight instructions that perform bit manipulation,
   include insertion and extraction.
