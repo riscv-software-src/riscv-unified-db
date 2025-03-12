@@ -22,7 +22,8 @@ base: 32
 encoding:
   match: "0001101000010010"
 operation(): |
-  XReg virtual_address = X[2] + 96;
+  XReg virtual_address_sp = get_and_validate_stack_pointer(X[2], $encoding);
+  XReg virtual_address = virtual_address_sp + 96;
   XReg prev_retpc = read_memory<32>(virtual_address -  4, $encoding);
   XReg qc_mcause_val = read_memory<32>(virtual_address - 12, $encoding);
   Bits<1> nmie_val = CSR[mnstatus].NMIE;

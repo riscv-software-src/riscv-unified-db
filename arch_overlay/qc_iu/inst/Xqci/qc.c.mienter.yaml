@@ -23,7 +23,7 @@ base: 32
 encoding:
   match: "0001100000010010"
 operation(): |
-  XReg virtual_address = X[2];
+  XReg virtual_address = get_and_validate_stack_pointer(X[2], $encoding);
   XReg mepc_val = CSR[mepc].sw_read();
   XReg mnepc_val = CSR[mnepc].sw_read();
   XReg qc_mcause_val = CSR[qc.mcause].sw_read();
