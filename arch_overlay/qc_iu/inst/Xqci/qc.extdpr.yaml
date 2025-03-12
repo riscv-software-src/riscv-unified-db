@@ -24,6 +24,7 @@ encoding:
       not: 0
     - name: rs1
       location: 19-15
+      not: 31
     - name: rd
       location: 11-7
       not: 0
@@ -39,7 +40,7 @@ operation(): |
   XReg width = (width_bits > 32) ? 32 : width_bits;
   XReg shamt = X[rs2][4:0];
   if (width > 0) {
-    X[rd] = sext((pair >> shamt) & ((1 << width) - 1), width - 1);
+    X[rd] = sext((pair >> shamt) & ((1 << width) - 1), width - 1));
   } else {
     X[rd] = 0;
   }
