@@ -13,7 +13,7 @@ definedBy:
         anyOf:
           - allOf: [C, D]
           - Zcd
-    - anyOf: [Xqci, Xqciac]
+    - anyOf: [Xqci, Xqcicm]
 base: 32
 encoding:
   match: 101011---00---10
