@@ -82,29 +82,26 @@ def canonical_immediate_names(
     Given a YAML immediate variable (its base name and location), return a list of canonical
     field names from fieldo.
 
-    This function supports several formats:
+    Supports several formats:
 
-    1. Standard composite format of the form "X-Y|Z-W" (e.g. "31-25|11-7").
-       For branch instructions (when var_name is "imm" and instr_name starts with "b"),
-       the prefix is forced to "bimm".
+    1. For branch instructions (name starts with 'b') and a 4-part compound format,
+       e.g. "31|7|30-25|11-8", it extracts the two parts using 'bimm' as the prefix.
 
-    2. A new compound format with four parts separated by "|" (e.g. "31|7|30-25|11-8").
-       In that case, we derive:
-         - High part: MSB from the first part and LSB from the lower end of the third part.
-         - Low part: MSB from the first number in the fourth part and LSB from the second part.
-       For branch instructions, the prefix is forced to "bimm".
+    2. For jump instructions (name starts with 'j') with a 4-part compound format,
+       e.g. "31|19-12|20|30-21", it extracts the overall high (from part 0) and low (from part 1)
+       and uses the 'jimm' prefix.
 
-    3. Non-composite locations in the form "X-Y".
+    3. For a standard composite format "X-Y|Z-W", it compares the two ranges.
+    4. For non-composite formats "X-Y", it does a simple lookup.
     """
     parts = location.split("|")
     if len(parts) == 4 and var_name == "imm" and instr_name.lower().startswith("b"):
-        # New compound format, e.g.: "31|7|30-25|11-8"
+        # Branch compound format, e.g.: "31|7|30-25|11-8"
         try:
-            # For the high part: take the first part as MSB and the lower end of the third part as LSB.
             high_msb = int(parts[0])
             high_lsb = int(parts[2].split("-")[-1])
-            # For the low part: take the first number of the fourth part as MSB and the second part as LSB.
             low_msb = int(parts[3].split("-")[0])
+            # parts[1] should be a simple number when converting for branch immediates.
             low_lsb = int(parts[1])
         except Exception as e:
             print(
@@ -123,6 +120,27 @@ def canonical_immediate_names(
             )
             return []
         return [hi_candidate, lo_candidate]
+    elif len(parts) == 4 and var_name == "imm" and instr_name.lower().startswith("j"):
+        # Jump compound format, e.g.: "31|19-12|20|30-21"
+        try:
+            # For jump immediates, the canonical field typically covers the whole range.
+            # We extract the overall high (first part) and the lower end of the second part.
+            high = int(parts[0])
+            low = int(parts[1].split("-")[1])
+        except Exception as e:
+            print(
+                f"Warning: invalid jump compound immediate format in location '{location}': {e}"
+            )
+            return []
+        candidate = lookup_immediate_by_range(
+            "jimm", high, low, instr_name, left_shift=left_shift
+        )
+        if candidate is None:
+            print(
+                f"Warning: jump compound immediate candidate not found in fieldo for {var_name} with location {location}"
+            )
+            return []
+        return [candidate]
     elif "|" in location:
         # Standard composite format, e.g.: "31-25|11-7"
         import re
