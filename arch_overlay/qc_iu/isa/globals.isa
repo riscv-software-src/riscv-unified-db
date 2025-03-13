@@ -66,14 +66,13 @@ function get_and_validate_stack_pointer {
 	In case when stack pointer is not 16-bytes aligned, raising exception IllegalStackPointer.
   }
   body {
-     XReg sp = X[2];
      if (sp < $bits(CSR[qc.mstkbottomaddr])) {
        raise(ExceptionCode::SpOutOfRange, mode(), encoding);
      }
      else if (sp > $bits(CSR[qc.mstktopaddr])) {
        raise(ExceptionCode::SpOutOfRange, mode(), encoding);
      }
-     else if (sp & 0xf != 0) {
+     else if ((sp & 0xf) != 0) {
        raise(ExceptionCode::IllegalStackPointer, mode(), encoding);
      }
      return sp;
