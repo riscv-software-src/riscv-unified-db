@@ -50,6 +50,28 @@ versions:
   requires:
     name: Zca
     version: ">= 1.0.0"
+- version: "0.3.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  - name: Ana Pazos
+    company: Qualcomm Technologies, Inc.
+    email: apazos@qti.qualcomm.com
+  - name: James Ball
+    company: Qualcomm Technologies, Inc.
+    email: jameball@qti.qualcomm.com
+  changes:
+    - Fix all push and pop instructions IDL code to take in consideration that xlen() returns bits and not bytes
+    - Declare state of extension as "frozen"
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
 description: |
   The Xqccmp extension is a set of instructions which may be executed as a series of existing 32-bit RISC-V instructions.
 

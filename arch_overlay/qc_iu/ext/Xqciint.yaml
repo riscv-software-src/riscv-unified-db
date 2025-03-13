@@ -42,6 +42,7 @@ versions:
   changes:
     - Fix description of qc.mclici* CSRs to reflect being part of Xqciint custom extension
     - Fix description of qc.setinti and qc.clrinti instructions
+    - Fix to make qc.c.mret and qc.c.mnret visible
   requires: { name: Zca, version: ">= 1.0.0" }
 - version: "0.4.0"
   state: frozen
@@ -62,8 +63,22 @@ versions:
     - Add missing CSR registers qc.mmcr, qc.mthreadptr, qc.mcause
     - Remove CSR registers qc.mncause, qc.mnepc
     - Fix IDL code for qc.c.mienter, qc.c.mienter.nest, qc.c.mileaveret, qc.c.mret, qc.c.mnret
+    - Fix IDL code for qc.c.ei, qc.c.eir, qc.c.di, qc.c.dir
     - Add list of supported custom exceptions
     - Add dependency on Smrnmi extension
+  requires: { name: Zca, version: ">= 1.0.0" }
+- version: "0.5.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Add stack checks to qc.c.mienter, qc.c.mienter.nest, qc.c.mileaveret
   requires: { name: Zca, version: ">= 1.0.0" }
 description: |
   The Xqciint extension includes eleven instructions to accelerate interrupt

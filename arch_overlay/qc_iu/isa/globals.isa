@@ -55,27 +55,14 @@ builtin function sync_write_after_read_device {
   }
 }
 
-function get_and_validate_stack_pointer {
+builtin function get_and_validate_stack_pointer {
   returns XReg
-  arguments Bits<INSTR_ENC_SIZE> encoding
+  arguments XReg sp, Bits<INSTR_ENC_SIZE> encoding
   description {
     Validate and return stack pointer.
 	Stack pointer is validated to fit in range, defined by qc.mstktopaddr and qc.mstkbottomaddr CSRs.
 	In case when stack pointer is out-of-range, raising exception SpOutOfRange.
 	Stack pointer is also validated to be 16-byte aligned.
 	In case when stack pointer is not 16-bytes aligned, raising exception IllegalStackPointer.
-  }
-  body {
-    XReg sp = X[2];
-    if (sp < $bits(CSR[qc.mstkbottomaddr])) {
-      raise(ExceptionCode::SpOutOfRange, mode(), encoding);
-    }
-    else if (sp > $bits(CSR[qc.mstktopaddr])) {
-      raise(ExceptionCode::SpOutOfRange, mode(), encoding);
-    }
-    else if (sp & 0xf != 0) {
-      raise(ExceptionCode::IllegalStackPointer, mode(), encoding);
-    }
-    return sp;
   }
 }

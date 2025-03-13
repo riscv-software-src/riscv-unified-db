@@ -114,6 +114,7 @@ versions:
     - Fix description of qc.swmi, qc.lwmi and qc.setwmi instructions
     - Fix description of qc.mclici* CSRs to reflect being part of Xqciint custom extension
     - Fix description of qc.setinti and qc.clrinti instructions
+    - Fix to make qc.c.mret and qc.c.mnret visible
   implies:
   - [Xqcia, "0.3.0"]
   - [Xqciac, "0.3.0"]
@@ -166,6 +167,7 @@ versions:
   - [Xqcics, "0.2.0"]
   - [Xqcicsr, "0.3.0"]
   - [Xqciint, "0.3.0"]
+  - [Xqciio, "0.1.0"]
   - [Xqcilb, "0.2.0"]
   - [Xqcili, "0.2.0"]
   - [Xqcilia, "0.2.0"]
@@ -199,6 +201,7 @@ versions:
     - Add missing CSR registers qc.mmcr, qc.mthreadptr, qc.mcause
     - Remove CSR registers qc.mncause, qc.mnepc
     - Fix IDL code for qc.c.mienter, qc.c.mienter.nest, qc.c.mileaveret, qc.c.mret, qc.c.mnret
+    - Fix IDL code for qc.c.ei, qc.c.eir, qc.c.di, qc.c.dir
     - Add list of supported custom exceptions
     - Fix qc.cto instruction IDL code
     - Change width calculations for qc.extdpr, qc.extdprh, qc.extdr, qc.extdupr, qc.extduprh, qc.extdur,
@@ -213,6 +216,46 @@ versions:
   - [Xqcics, "0.2.0"]
   - [Xqcicsr, "0.3.0"]
   - [Xqciint, "0.4.0"]
+  - [Xqciio, "0.1.0"]
+  - [Xqcilb, "0.2.0"]
+  - [Xqcili, "0.2.0"]
+  - [Xqcilia, "0.2.0"]
+  - [Xqcilo, "0.2.0"]
+  - [Xqcilsm, "0.4.0"]
+  - [Xqcisim, "0.2.0"]
+  - [Xqcisls, "0.2.0"]
+  - [Xqcisync, "0.2.0"]
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
+- version: "0.8.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix rs1 cannot be 31 for qc.extdu, qc.extd, qc.extdur, instructions
+    - Fix rs1 cannot be 31 for qc.extduprh, qc.extdprh, qc.extdupr, qc.extdr qc.extdpr instructions
+    - Fix typos in IDL code (missing ')' ) for qc.extdpr, qc.extdr instructions
+    - Fix IDL code to look correct in PDF for qc.insbhr and qc.insbh instructions
+    - Fix Xqci extension description to reflect correct 48-bit format field names
+    - Add stack checks to qc.c.mienter, qc.c.mienter.nest, qc.c.mileaveret
+  implies:
+  - [Xqcia, "0.5.0"]
+  - [Xqciac, "0.3.0"]
+  - [Xqcibi, "0.2.0"]
+  - [Xqcibm, "0.6.0"]
+  - [Xqcicli, "0.2.0"]
+  - [Xqcicm, "0.2.0"]
+  - [Xqcics, "0.2.0"]
+  - [Xqcicsr, "0.3.0"]
+  - [Xqciint, "0.5.0"]
+  - [Xqciio, "0.1.0"]
   - [Xqcilb, "0.2.0"]
   - [Xqcili, "0.2.0"]
   - [Xqcilia, "0.2.0"]
@@ -303,7 +346,7 @@ description: |
   ^|5
   |Destination register
 
-  |func3
+  |funct3
   ^|12
   ^|3
   |Function field identifying instruction group
@@ -340,7 +383,7 @@ description: |
   ^|5
   |Destination register
 
-  |func3
+  |funct3
   ^|12
   ^|3
   |Function field identifying instruction group
@@ -355,7 +398,7 @@ description: |
   ^|10
   |Immediate operand of 26 bits, the 10 LSBs
 
-  |func2
+  |funct2
   ^|30
   ^|2
   |Secondary function field
@@ -387,7 +430,7 @@ description: |
   ^|5
   |Bits of immediate value of branch target
 
-  |func3
+  |funct3
   ^|12
   ^|3
   |Function field identifying instruction group
@@ -397,7 +440,7 @@ description: |
   ^|5
   |Register argument
 
-  |func5
+  |funct5
   ^|20
   ^|5
   |Secondary function field
@@ -434,12 +477,12 @@ description: |
   ^|5
   |Bits of immediate value of branch target
 
-  |func3
+  |funct3
   ^|12
   ^|3
   |Function field identifying instruction group
 
-  |func2
+  |funct2
   ^|15
   ^|2
   |Secondary function field
@@ -449,7 +492,7 @@ description: |
   ^|3
   |Bits of immediate value of branch target
 
-  |func5
+  |funct5
   ^|20
   ^|5
   |Secondary function field
@@ -483,7 +526,7 @@ description: |
   ^|5
   |Immediate operand of 26 bits offset, the 5 LSBs
 
-  |func3
+  |funct3
   ^|12
   ^|3
   |Function field identifying instruction group
@@ -503,7 +546,7 @@ description: |
   ^|5
   |Immediate operand of 26 bits offset, the 5 bits
 
-  |func2
+  |funct2
   ^|30
   ^|2
   |Secondary function field
