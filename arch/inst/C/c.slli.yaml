@@ -18,7 +18,7 @@ encoding:
   variables:
     - name: shamt
       location: 12|6-2
-    - name: rd
+    - name: rd/rs1
       location: 11-7
       not: 0
 access:

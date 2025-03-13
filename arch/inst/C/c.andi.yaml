@@ -18,7 +18,7 @@ encoding:
   variables:
     - name: imm
       location: 12|6-2
-    - name: rd
+    - name: rd/rs1
       location: 9-7
 access:
   s: always
