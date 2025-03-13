@@ -275,7 +275,7 @@ grammar Idl
 
   rule csr_register_access_expression
     # CSR register access
-    'CSR' space* '[' space* idx:(expression) space* ']' <Idl::CsrReadExpressionSyntaxNode>
+    'CSR' space* '[' space* idx:(expression / csr_name) space* ']' <Idl::CsrReadExpressionSyntaxNode>
   end
 
   rule field_access_eligible_expression

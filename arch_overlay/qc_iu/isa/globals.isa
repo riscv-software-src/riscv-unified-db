@@ -67,10 +67,10 @@ function get_and_validate_stack_pointer {
   }
   body {
     XReg sp = X[2];
-    if (sp < CSR[qc.mstkbottomaddr]) {
+    if (sp < $bits(CSR[qc.mstkbottomaddr])) {
       raise(ExceptionCode::SpOutOfRange, mode(), encoding);
     }
-    else if (sp > CSR[qc.mstktopaddr]) {
+    else if (sp > $bits(CSR[qc.mstktopaddr])) {
       raise(ExceptionCode::SpOutOfRange, mode(), encoding);
     }
     else if (sp & 0xf != 0) {
