@@ -25,7 +25,7 @@ access:
   vs: always
   vu: always
 operation(): |
-  Bits<12> MCLICIP0_ADDR = CSR[qc_mclicip0].address();
+  Bits<12> MCLICIP0_ADDR = CSR[qc.mclicip0].address();
 
   XReg idx = rs1 / 32;
   XReg bit = rs1 % 32;
