@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-require_relative "../../lib/arch_obj_models/instr_isa_manual.rb"
+require_relative "../../lib/arch_obj_models/instructions_appendix.rb"
 
 # Define the instructions manual generation directory constant.
-INST_MANUAL_GEN_DIR = $root / "gen" / "instructions_isa_manual"
+INST_MANUAL_GEN_DIR = $root / "gen" / "instructions_appendix"
 
 # Define the path to the merged instructions output.
 MERGED_INSTRUCTIONS_FILE = INST_MANUAL_GEN_DIR / "all_instructions.adoc"
 
 # Define the path to the ERB template that renders the merged instructions.
-TEMPLATE_FILE = $root / "backends" / "instructions_isa_manual" / "templates" / "instructions.adoc.erb"
+TEMPLATE_FILE = $root / "backends" / "instructions_appendix" / "templates" / "instructions.adoc.erb"
 
 # Declare a file task for the template so Rake knows it exists.
 file TEMPLATE_FILE.to_s do
@@ -35,7 +35,7 @@ file MERGED_INSTRUCTIONS_FILE.to_s => [__FILE__, TEMPLATE_FILE.to_s] do |t|
 end
 
 # Define the path to the output PDF file.
-MERGED_INSTRUCTIONS_PDF = INST_MANUAL_GEN_DIR / "all_instructions.pdf"
+MERGED_INSTRUCTIONS_PDF = INST_MANUAL_GEN_DIR / "instructions_appendix.pdf"
 
 # File task to generate the PDF from the merged adoc.
 file MERGED_INSTRUCTIONS_PDF.to_s => [MERGED_INSTRUCTIONS_FILE.to_s] do |t|
@@ -55,7 +55,7 @@ end
 
 namespace :gen do
   desc "Generate instruction appendix (merged instructions adoc and PDF)"
-  task :gen_instruction_appendix do
+  task :instruction_appendix do
     # Generate the merged instructions adoc.
     Rake::Task[MERGED_INSTRUCTIONS_FILE.to_s].invoke
     # Then generate the PDF.
