@@ -2,4 +2,4 @@
 
 ROOT=$(dirname $(dirname $(realpath $BASH_SOURCE[0])))
 
-rm -rf ${ROOT}/.stamps ${ROOT}/.home ${ROOT}/.bundle ${ROOT}/.singularity ${ROOT}/gen ${ROOT}/node_modules
+rm -rf ${ROOT}/.stamps ${ROOT}/gen

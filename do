@@ -2,7 +2,10 @@
 
 ROOT=$(dirname $(realpath $BASH_SOURCE[0]))
 
-if [ "$1" == "clean" ]; then
+if [ "$1" == "clobber" ]; then
+  ${ROOT}/bin/clobber
+  exit $?
+elif [ "$1" == "clean" ]; then
   ${ROOT}/bin/clean
   exit $?
 fi
