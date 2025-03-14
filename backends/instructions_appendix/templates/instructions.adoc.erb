@@ -10,22 +10,15 @@ end
 = Instruction Appendix
 :doctype: book
 :wavedrom: <%= $root %>/node_modules/.bin/wavedrom-cli
-
 // Now the document header is complete and the wavedrom attribute is active.
 
 == Instruction Appendix
-
 <% instructions.sort_by(&:name).each do |inst| %>
 <%= anchor_for_inst(inst.name) %>
 === <%= inst.name %>
 
 Synopsis::
 <%= inst.long_name %>
-
-Mnemonic::
-----
-<%= fix_entities(inst.assembly.gsub('x', 'r')) %>
-----
 
 Encoding::
 <%- if inst.multi_encoding? -%>
@@ -53,18 +46,54 @@ RV64::
 Description::
 <%= fix_entities(inst.description) %>
 
+Decode Variables::
+<%- if inst.multi_encoding? ? (inst.decode_variables(32).empty? && inst.decode_variables(64).empty?) : inst.decode_variables(inst.base.nil? ? 64 : inst.base).empty? -%>
+<%= inst.name %> has no decode variables.
+<%- else -%>
+<%- if inst.multi_encoding? -%>
+<%- unless inst.decode_variables(32).empty? -%>
+*RV32:*
+
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+<%- inst.decode_variables(32).each do |d| -%>
+|<%= d.name %> |<%= d.extract %>
+<%- end -%>
+|===
+<%- end -%>
+<%- unless inst.decode_variables(64).empty? -%>
+
+*RV64:*
+
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+<%- inst.decode_variables(64).each do |d| -%>
+|<%= d.name %> |<%= d.extract %>
+<%- end -%>
+|===
+<%- end -%>
+<%- else -%>
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+<%- inst.decode_variables(inst.base.nil? ? 64 : inst.base).each do |d| -%>
+|<%= d.name %> |<%= d.extract %>
+<%- end -%>
+|===
+<%- end -%>
+<%- end -%>
+
 Included in::
 <%- if inst.defined_by_condition.flat? -%>
-
 [options="autowrap,autowidth"]
 |===
 | Extension | Version
-
 <% inst.defined_by_condition.flat_versions.each do |r| %>
 | *<%= r.name %>* | <%= fix_entities(r.requirement_specs_to_s) %>
 <% end %>
 |===
-
 <%- else -%>
 <%= fix_entities(inst.defined_by_condition.to_asciidoc) %>
 <%- end -%>
