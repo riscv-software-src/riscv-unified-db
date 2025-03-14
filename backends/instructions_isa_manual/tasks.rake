@@ -17,7 +17,7 @@ file TEMPLATE_FILE.to_s do
 end
 
 # File task that generates the merged instructions adoc.
-file MERGED_INSTRUCTIONS_FILE.to_s => [ __FILE__, TEMPLATE_FILE.to_s ] do |t|
+file MERGED_INSTRUCTIONS_FILE.to_s => [__FILE__, TEMPLATE_FILE.to_s] do |t|
   cfg_arch = cfg_arch_for("_")
   # Use the InstructionIndex helper to aggregate instructions from the entire architecture.
   instruction_index = InstructionIndex.new(cfg_arch)
@@ -34,11 +34,32 @@ file MERGED_INSTRUCTIONS_FILE.to_s => [ __FILE__, TEMPLATE_FILE.to_s ] do |t|
   )
 end
 
+# Define the path to the output PDF file.
+MERGED_INSTRUCTIONS_PDF = INST_MANUAL_GEN_DIR / "all_instructions.pdf"
+
+# File task to generate the PDF from the merged adoc.
+file MERGED_INSTRUCTIONS_PDF.to_s => [MERGED_INSTRUCTIONS_FILE.to_s] do |t|
+  sh [
+    "asciidoctor-pdf",
+    "-a toc",
+    "-a pdf-theme=#{ENV['THEME'] || "#{$root}/ext/docs-resources/themes/riscv-pdf.yml"}",
+    "-a pdf-fontsdir=#{$root}/ext/docs-resources/fonts",
+    "-a imagesdir=#{$root}/ext/docs-resources/images",
+    "-r asciidoctor-diagram",
+    "-o #{t.name}",
+    MERGED_INSTRUCTIONS_FILE.to_s
+  ].join(" ")
+
+  puts "SUCCESS: PDF generated at #{t.name}"
+end
+
 namespace :gen do
-  desc "Generate a merged instructions adoc with all instructions"
-  task :merged_instructions do
-    # Invoke the file task that creates the merged instructions file.
+  desc "Generate instruction appendix (merged instructions adoc and PDF)"
+  task :gen_instruction_appendix do
+    # Generate the merged instructions adoc.
     Rake::Task[MERGED_INSTRUCTIONS_FILE.to_s].invoke
-    puts "SUCCESS: Merged instructions file generated at '#{MERGED_INSTRUCTIONS_FILE}'"
+    # Then generate the PDF.
+    Rake::Task[MERGED_INSTRUCTIONS_PDF.to_s].invoke
+    puts "SUCCESS: Instruction appendix generated at '#{MERGED_INSTRUCTIONS_FILE}' and PDF at '#{MERGED_INSTRUCTIONS_PDF}'"
   end
 end
