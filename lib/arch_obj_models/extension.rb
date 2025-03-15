@@ -10,6 +10,25 @@ class Extension < DatabaseObject
   # @return [String] Long name of the extension
   def long_name = @data["long_name"]
 
+  # @return [String] Either unprivileged or privileged
+  def priv_type = @data["type"]
+
+  # @return [String] Either unpriv or priv
+  def compact_priv_type
+    case priv_type
+    when "unprivileged"
+      "unpriv"
+    when "privileged"
+      "priv"
+    else
+      if priv_type.nil? || priv_type.empty?
+        raise ArgumentError, "Extension #{name} missing its type in database (must be privileged or unprivileged)"
+      else
+        raise ArgumentError, "Extension #{name} has illegal privileged/unprivileged type of #{priv_type}"
+      end
+    end
+  end
+
   # @return [String] Company that developed the extension
   # @return [nil] if the company isn't known
   def company
@@ -37,6 +56,9 @@ class Extension < DatabaseObject
   def ratified_versions
     versions.select { |v| v.state == "ratified" }
   end
+
+  # @return [Boolean] Any version ratified?
+  def ratified = ratified_versions.any?
 
   # @return [ExtensionVersion] Mimumum defined version of this extension
   def min_version
@@ -221,7 +243,7 @@ class ExtensionVersion
     eql?(other)
   end
 
-  # @return [String] The state of the extension version ('ratified', 'developemnt', etc)
+  # @return [String] The state of the extension version ('ratified', 'development', etc)
   def state = @data["state"]
 
   def ratification_date = @data["ratification_date"]
@@ -285,7 +307,7 @@ class ExtensionVersion
   #                                   The list is *not* transitive; if conflict C1 implies C2,
   #                                   only C1 shows up in the list
   def conflicts
-    @conflicts ||= extension.conflicts.map(&:satisfying_versions).flatten.uniq.sort
+    @conflicts ||= @ext.conflicts.map(&:satisfying_versions).flatten.uniq.sort
   end
 
   # @return [Array<ExtensionVersion>] List of extensions that conflict with this ExtensionVersion

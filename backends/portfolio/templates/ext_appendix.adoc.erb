@@ -10,7 +10,7 @@
 *Long Name*: <%= ext.long_name %> +
 *Version Requirement*: <%= ext_req.requirement_specs.map(&:to_s).join(", ") %> +
 <% if portfolios.size > 1 -%>
-.<%= ext.name %> Extension Presence
+<%= ext.name %> Extension Presence
 |===
 | <%= portfolio_kind %> | v<%= ext.versions.map { |ext_ver| ext_ver.canonical_version.to_s }.join(" | v") %>
 
