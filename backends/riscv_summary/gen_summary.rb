@@ -19,6 +19,18 @@ def gen_xlsx(arch, output_pname)
   header_format.set_bold
   header_format.set_align('center')
 
+  # Get array of profile releases and sort by name
+  sorted_profile_releases = arch.profile_releases.sort_by(&:name)
+
+  # Remove Mock profile release if present.
+  sorted_profile_releases.delete_if {|pr| pr.name == "Mock" }
+
+  # Move RVI20 to the beginning of the array if it exists.
+  if sorted_profile_releases.any? {|pr| pr.name == "RVI20" }
+    sorted_profile_releases.delete_if {|pr| pr.name == "RVI20" }
+    sorted_profile_releases.unshift(arch.profile_release("RVI20"))
+  end
+
   # Write a formatted and unformatted string, row and column notation.
   col = 0
   worksheet.write(0, col, "Extension Name", header_format); col += 1
@@ -30,6 +42,9 @@ def gen_xlsx(arch, output_pname)
   worksheet.write(0, col, "Incompatible\n(and\ntransitives)", header_format); col += 1
   worksheet.write(0, col, "Ratified\n(Y/N)", header_format); col += 1
   worksheet.write(0, col, "Ratification\nDate", header_format); col += 1
+  sorted_profile_releases.each do |pr|
+    worksheet.write(0, col, pr.name, header_format); col += 1
+  end
 
   # Add a row for each extension
   row = 1
@@ -43,7 +58,6 @@ def gen_xlsx(arch, output_pname)
     worksheet.write(row, col, ext.max_version.transitive_implications.map(&:name).join("\n")); col += 1
     worksheet.write(row, col, ext.max_version.transitive_conflicts.map(&:name).join("\n")); col += 1
     worksheet.write(row, col, ext.ratified ? "Y" : "N"); col += 1
-    rat_date =
     worksheet.write(row, col,
       if ext.ratified
         if ext.min_ratified_version.ratification_date.nil? || ext.min_ratified_version.ratification_date.empty?
@@ -53,7 +67,22 @@ def gen_xlsx(arch, output_pname)
         end
       else
         ""
-      end); col += 1
+      end
+    ); col += 1
+    sorted_profile_releases.each do |pr|
+      ep = pr.extension_presence(ext.name)
+      worksheet.write(row, col,
+        if ep == ExtensionPresence.mandatory
+          "m"
+        elsif ep == ExtensionPresence.optional
+          "o"
+        elsif ep == "-"
+          "n"
+        else
+          raise "Unknown presence of '#{ep}' for extension #{ext.name}"
+        end
+      ); col += 1
+    end
 
     row += 1
   end
