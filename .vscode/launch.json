@@ -93,6 +93,15 @@
     },
     {
       "type": "rdbg",
+      "name": "riscv_summary_xlsx",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:riscv_summary_xlsx",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
       "name": "Smoke test",
       "request": "launch",
       "command": "bundle exec rake",
