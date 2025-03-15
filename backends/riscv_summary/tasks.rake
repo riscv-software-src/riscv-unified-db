@@ -28,7 +28,12 @@ file "#{XLSX_GEN_PNAME}" => [
   ] do |t|
     arch = create_arch
 
+    # Ensure directory holding target file is present.
+    FileUtils.mkdir_p File.dirname(t.name)
+
     gen_xlsx(arch, t.name)
+
+    puts "Success: Generated #{t.name}"
   end
 
 # @return [Architecture]
