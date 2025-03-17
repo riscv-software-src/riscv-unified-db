@@ -6,7 +6,6 @@ name: qc.shlusat
 long_name: Saturating unsigned left shift
 description: |
   Left shift `rs1` by the value of `rs2`, and saturate the unsigned result.
-  The number of words is in `length`.
   Instruction encoded in R instruction format.
 definedBy:
   anyOf:

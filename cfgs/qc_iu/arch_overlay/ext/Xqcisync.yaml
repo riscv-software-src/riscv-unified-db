@@ -27,7 +27,7 @@ versions:
     company: Qualcomm Technologies, Inc.
     email: dhower@qti.qualcomm.com
   changes:
-    - Fix decoding of qc.delay instruction (state that immediate cannot be 0)
+    - Fix decoding of qc.c.delay instruction (state that immediate cannot be 0)
     - Add requirement to include Zca extension since has 16-bit instructions
   requires: { name: Zca, version: ">= 1.0.0" }
 description: |
