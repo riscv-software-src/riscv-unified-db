@@ -19,8 +19,8 @@ implemented_extensions:
   - { name: Zicntr, version: "2.0" }
   - { name: Zicsr, version: "2.0" }
   - { name: Zihpm, version: "2.0" }
-  - { name: Xqccmp, version: "0.1" }
-  - { name: Xqci, version: "0.7" }
+  - { name: Xqccmp, version: "0.3" }
+  - { name: Xqci, version: "0.8" }
 exception_codes:
   - num: 27
     name: Illegal Stack Pointer
