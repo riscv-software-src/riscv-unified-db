@@ -37,7 +37,7 @@ access:
   vu: always
 operation(): |
   # shamt is between 0-63
-  X[rd+8] = X[rd+8] >> shamt;
+  X[creg2reg(rd)] = X[creg2reg(rd)] >> shamt;
 
 sail(): |
   {
