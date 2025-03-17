@@ -21,7 +21,6 @@ encoding:
         not: 0
       - name: rd
         location: 11-7
-        not: 0
   RV64:
     match: 000-----------10
     variables:
@@ -30,7 +29,6 @@ encoding:
         not: 0
       - name: rd
         location: 11-7
-        not: 0
 access:
   s: always
   u: always
