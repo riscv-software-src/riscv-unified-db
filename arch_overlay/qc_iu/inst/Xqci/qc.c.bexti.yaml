@@ -29,5 +29,5 @@ access:
   vu: always
 operation(): |
   XReg index = shamt & (xlen() - 1);
-  XReg reg = rd + 8;
+  XReg reg = creg2reg(rd);
   X[reg] = (X[reg] >> index) & 1;

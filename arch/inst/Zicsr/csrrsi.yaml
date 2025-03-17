@@ -29,7 +29,7 @@ operation(): |
 
   XReg initial_csr_value = CSR[csr].sw_read();
 
-  if (uimm != 0) {
+  if (will_write) {
     # set bits using the mask
     # performing any WARL transformations first
     XReg mask = uimm;

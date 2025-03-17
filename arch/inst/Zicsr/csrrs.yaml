@@ -35,7 +35,7 @@ operation(): |
 
   XReg initial_csr_value = CSR[csr].sw_read();
 
-  if (rs1 != 0) {
+  if (will_write) {
     # set bits using the mask
     # performing any WARL transformations first
     XReg mask = X[rs1];

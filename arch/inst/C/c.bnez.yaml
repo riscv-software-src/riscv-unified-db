@@ -29,7 +29,7 @@ operation(): |
   if (implemented?(ExtensionName::C) && (CSR[misa].C == 1'b0)) {
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
-  if (X[xs1 + 8] != 0) {
+  if (X[creg2reg(xs1)] != 0) {
     jump($pc + $signed(imm));
   }
 

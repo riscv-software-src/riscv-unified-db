@@ -15,7 +15,6 @@ definedBy:
         - C
         - D
     - Zcd
-base: 32
 assembly: xd, imm(xs1)
 encoding:
   match: 001-----------00
@@ -37,6 +36,6 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg virtual_address = X[rs1 + 8] + imm;
+  XReg virtual_address = X[creg2reg(rs1)] + imm;
 
-  X[rd + 8] = sext(read_memory<64>(virtual_address, $encoding), 64);
+  X[creg2reg(rd)] = sext(read_memory<64>(virtual_address, $encoding), 64);

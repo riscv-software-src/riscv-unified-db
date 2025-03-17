@@ -18,6 +18,7 @@ encoding:
     variables:
       - name: shamt
         location: 6-2
+        not: 0
       - name: rd
         location: 11-7
         not: 0
@@ -26,6 +27,7 @@ encoding:
     variables:
       - name: shamt
         location: 12|6-2
+        not: 0
       - name: rd
         location: 11-7
         not: 0

@@ -34,9 +34,9 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg virtual_address = X[xs1 + 8] + imm;
+  XReg virtual_address = X[creg2reg(xs1)] + imm;
 
-  X[xd + 8] = sext(read_memory<32>(virtual_address, $encoding), 32);
+  X[creg2reg(xd)] = sext(read_memory<32>(virtual_address, $encoding), 32);
 
 sail(): |
   {
