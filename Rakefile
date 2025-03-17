@@ -176,7 +176,7 @@ namespace :test do
   task :inst_encodings do
     print "Checking for conflicts in instruction encodings.."
 
-    cfg_arch = cfg_arch_for("qc_iu")
+    cfg_arch = cfg_arch_for("_")
     insts = cfg_arch.instructions
     failed = false
     insts.each_with_index do |inst, idx|

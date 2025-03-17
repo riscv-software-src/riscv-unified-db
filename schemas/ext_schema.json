@@ -82,16 +82,7 @@
         "type": { "enum": ["unprivileged", "privileged"] },
         "conflicts": {
           "description": "Extension(s) that conflict with this extension; both cannot be implemented at the same time",
-          "oneOf": [
-            {
-              "$ref": "schema_defs.json#/$defs/extension_name"
-            },
-            {
-              "type": "array",
-              "items": { "$ref": "schema_defs.json#/$defs/extension_name" },
-              "minItems": 1
-            }
-          ]
+          "$ref": "schema_defs.json#/$defs/requires_entry"
         },
         "versions": {
           "type": "array",

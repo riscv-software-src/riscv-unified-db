@@ -210,26 +210,21 @@ class Extension < DatabaseObject
     end
   end
 
-  # @return [Array<Extension>] List of conflicting extensions
-  def conflicts
-    return [] if @data["conflicts"].nil?
-
-    if @data["conflicts"].is_a?(String)
-      [@cfg_arch.extension(@data["conflicts"])]
-    elsif @data["conflicts"].is_a?(Array)
-      @data["conflicts"].map do |conflict|
-        @cfg_arch.extension(conflict)
+  # @return [ExtensionRequirementExpression] Logic expression for conflicts
+  def conflicts_condition
+    @conflicts_condition ||=
+      if @data["conflicts"].nil?
+        AlwaysFalseExtensionRequirementExpression.new
+      else
+        ExtensionRequirementExpression.new(@data["conflicts"], @cfg_arch)
       end
-    else
-      raise "Invalid conflicts data: #{@data["conflicts"].inspect}"
-    end
   end
 
-  # @return [Array<Extension>] List of conflicting extensions, transitively determined
-  def transitive_conflicts
-    @transitive_conflicts ||=
-      conflicts.map { |ext| [ext] + ext.transitive_conflicts }.flatten.uniq
-  end
+  # # @return [Array<Extension>] List of conflicting extensions, transitively determined
+  # def transitive_conflicts
+  #   @transitive_conflicts ||=
+  #     conflicts.map { |ext| [ext] + ext.transitive_conflicts }.flatten.uniq
+  # end
 
   # @return [Array<Instruction>] the list of instructions implemented by *any version* of this extension (may be empty)
   def instructions
@@ -415,21 +410,21 @@ class ExtensionVersion
     extension.conflicts
   end
 
-  # @return [Array<ExtensionVersion>] List of extension versions that conflict with this ExtensionVersion
-  #                                   The list *is* transitive; if conflict C1 implies C2,
-  #                                   both C1 and C2 show up in the list
-  def transitive_conflicts
-    return @transitive_conflicts unless @transive_conflicts.nil?
+  # # @return [Array<ExtensionVersion>] List of extension versions that conflict with this ExtensionVersion
+  # #                                   The list *is* transitive; if conflict C1 implies C2,
+  # #                                   both C1 and C2 show up in the list
+  # def transitive_conflicts
+  #   return @transitive_conflicts unless @transive_conflicts.nil?
 
-    @transitive_conflicts = []
-    extension.transitive_conflicts.each do |ext|
-      @transitive_conflicts.concat(ext.versions)
-      ext.versions.each { |ext_ver| @transitive_conflicts.concat(ext_ver.transitive_implications) }
-    end
-    @transitive_conflicts.uniq!
-    @transitive_conflicts.sort!
-    @transitive_conflicts
-  end
+  #   @transitive_conflicts = []
+  #   extension.transitive_conflicts.each do |ext|
+  #     @transitive_conflicts.concat(ext.versions)
+  #     ext.versions.each { |ext_ver| @transitive_conflicts.concat(ext_ver.transitive_implications) }
+  #   end
+  #   @transitive_conflicts.uniq!
+  #   @transitive_conflicts.sort!
+  #   @transitive_conflicts
+  # end
 
   # @return [Array<ExtensionVersion>] List of extension versions that are implied by with this ExtensionVersion
   #                                   This list is *not* transitive; if an implication I1 implies another extension I2,

@@ -234,21 +234,28 @@ class DecodeGen
     !node.insts[0].hints.select { |hint_inst| hint_inst.defined_in_base?(xlen) && inst_list.include?(hint_inst) }.empty?
   end
 
-  # @return [Boolean] whether or not the instruction in node has an encoding that is reused in a conflicting extension
-  def has_reuse?(node, inst_list, xlen)
-    return false unless node.type == DecodeTreeNode::ENDPOINT_TYPE
-
-    return false unless node.insts.size == 1
-
-    !node.insts[0].conflicting_instructions(xlen).select { |hint_inst| hint_inst.defined_in_base?(xlen) && inst_list.include?(hint_inst) }.empty?
+  def needs_to_check_implemented?(inst)
+    if @cfg_arch.unconfigured?
+      !inst.defined_by_condition.satisfied_by? { |ext_req| @cfg_arch.extension("I").versions.all? { |i_ver| ext_req.satisfied_by?(i_ver) } }
+    elsif @cfg_arch.partially_configured?
+      !inst.defined_by_condition.satisfied_by? { |ext_req| ext_req.satisfied_by?(@cfg_arch.mandatory_extension_reqs) }
+    else
+      false # fully configured, inst_list is already prunned for the config
+    end
   end
 
+  # can this be handled with a simple case clause at the endpoint?
+  # Reasons that it can't:
+  #   - Need to check if an extension is implemented
+  #   - There is a hint with a higher decode priority
+  #   - Only certain values of a decode variable are valid
   def needs_long_form?(node, inst_list, xlen)
     node.children.any? do |child|
-      (child.type == DecodeTreeNode::ENDPOINT_TYPE \
-        && child.insts[0].encoding(xlen).decode_variables.any? { |dv| !dv.excludes.empty? }) \
-      || has_hints?(child, inst_list, xlen) \
-      || has_reuse?(child, inst_list, xlen)
+      needs_to_check_dv = child.type == DecodeTreeNode::ENDPOINT_TYPE \
+        && child.insts[0].encoding(xlen).decode_variables.any? { |dv| !dv.excludes.empty? }
+      needs_to_check_hint = has_hints?(child, inst_list, xlen)
+
+      needs_to_check_implemented?(child.insts[0]) || needs_to_check_dv || needs_to_check_hint
     end
   end
   # @return [String] C++ decoder switch
@@ -268,7 +275,6 @@ class DecodeGen
           has_not = child.type == DecodeTreeNode::ENDPOINT_TYPE \
             && child.insts[0].encoding(xlen).decode_variables.any? { |dv| !dv.excludes.empty? }
           has_hints = has_hints?(child, inst_list, xlen)
-          has_reuse = has_reuse?(child, inst_list, xlen)
           conds = []
           if has_not
             # some field(s) in the instruction have prohibited values ('not:' in the yaml)
@@ -287,15 +293,13 @@ class DecodeGen
               conds << ("((#{encoding_var_name} & 0b#{mask}ull) != 0b#{value}ull)")
             end
           end
-          if has_reuse
-            conflicts = child.insts[0].conflicting_instructions(xlen).select { |hint_inst| hint_inst.defined_in_base?(xlen) && inst_list.include?(hint_inst) }
-            conflicts.each do |conf_inst|
-              conds << conf_inst.defined_by_condition.to_cxx do |ext_name, ext_version_req|
-                if ext_version_req.nil?
-                  "implemented_Q_(ExtensionName::#{ext_name})"
-                else
-                  "implemented_Q_(ExtensionName::#{ext_name}, \"#{ext_version_req}\")"
-                end
+
+          if child.type == DecodeTreeNode::ENDPOINT_TYPE && needs_to_check_implemented?(child.insts[0])
+            conds << child.insts[0].defined_by_condition.to_cxx do |ext_name, ext_version_req|
+              if ext_version_req.nil?
+                "implemented_Q_(ExtensionName::#{ext_name})"
+              else
+                "implemented_Q_(ExtensionName::#{ext_name}, \"#{ext_version_req}\")"
               end
             end
           end

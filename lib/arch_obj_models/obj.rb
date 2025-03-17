@@ -674,25 +674,42 @@ class ExtensionRequirementExpression
     end
   end
 
+  def ext_req_to_logic_node(ext_req, term_idx)
+    n = LogicNode.new(:term, [ext_req], term_idx: term_idx[0])
+    term_idx[0] += 1
+    c = ext_req.extension.conflicts_condition
+    unless c.empty?
+      c = LogicNode.new(:not, [to_logic_tree(ext_req.extension.data["conflicts"], term_idx:)])
+      n = LogicNode.new(:and, [c, n])
+    end
+
+    ext_req.satisfying_versions.each do |ext_ver|
+      ext_ver.implications.each do |implied_ext_ver|
+        # convert to an ext_req
+        implied_ext_req = ExtensionRequirement.new(implied_ext_ver.name, "= #{implied_ext_ver.version_str}", arch: @arch)
+        n = LogicNode.new(:or, [n, ext_req_to_logic_node(implied_ext_req, term_idx)])
+      end
+    end
+
+    n
+  end
+
+  # convert the YAML representation of an Extension Requirement Expression into
+  # a tree of LogicNodes.
+  # Also expands any Extension Requirement to include its conflicts / implications
   def to_logic_tree(hsh = @hsh, term_idx: [0])
     if hsh.is_a?(Hash)
       if hsh.key?("name")
         if hsh.key?("version")
           if hsh["version"].is_a?(String)
-            n = LogicNode.new(:term, [ExtensionRequirement.new(hsh["name"], hsh["version"], arch: @arch)], term_idx: term_idx[0])
-            term_idx[0] += 1
-            n
+            ext_req_to_logic_node(ExtensionRequirement.new(hsh["name"], hsh["version"], arch: @arch), term_idx)
           elsif hsh["version"].is_a?(Array)
-            n = LogicNode.new(:term, [ExtensionRequirement.new(hsh["name"], hsh["version"].map { |v| "'#{v}'" }.join(', '), arch: @arch)], term_idx: term_idx[0])
-            term_idx[0] += 1
-            n
+            ext_req_to_logic_node(ExtensionRequirement.new(hsh["name"], hsh["version"].map { |v| "'#{v}'" }.join(', '), arch: @arch), term_idx)
           else
             raise "unexpected"
           end
         else
-          n = LogicNode.new(:term, [ExtensionRequirement.new(hsh["name"], arch: @arch)], term_idx: term_idx[0])
-          term_idx[0] += 1
-          n
+          ext_req_to_logic_node(ExtensionRequirement.new(hsh["name"], arch: @arch), term_idx)
         end
       else
         key = hsh.keys[0]
@@ -748,9 +765,7 @@ class ExtensionRequirementExpression
         end
       end
     else
-      n = LogicNode.new(:term, [ExtensionRequirement.new(hsh, arch: @arch)], term_idx: term_idx[0])
-      term_idx[0] += 1
-      n
+      ext_req_to_logic_node(ExtensionRequirement.new(hsh, arch: @arch), term_idx)
     end
   end
 
@@ -886,7 +901,20 @@ class AlwaysTrueExtensionRequirementExpression
 
   def empty? = true
 
-  def compatible?(other) = true
+  def compatible?(_other) = true
+
+  def to_h = {}
+  def minimize = {}
+end
+
+class AlwaysFalseExtensionRequirementExpression
+  def to_rb = "false"
+
+  def satisfied_by? = false
+
+  def empty? = true
+
+  def compatible?(_other) = false
 
   def to_h = {}
   def minimize = {}
