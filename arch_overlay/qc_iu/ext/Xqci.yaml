@@ -244,6 +244,7 @@ versions:
     - Fix typos in IDL code (missing ')' ) for qc.extdpr, qc.extdr instructions
     - Fix IDL code to look correct in PDF for qc.insbhr and qc.insbh instructions
     - Fix Xqci extension description to reflect correct 48-bit format field names
+    - Fix IDL code to to match description for qc.insbr instruction
     - Add stack checks to qc.c.mienter, qc.c.mienter.nest, qc.c.mileaveret
   implies:
   - [Xqcia, "0.5.0"]
