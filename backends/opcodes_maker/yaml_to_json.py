@@ -111,7 +111,7 @@ def lookup_immediate_by_range(
     for key, field in fieldo.items():
         if field.get("msb") == high and field.get("lsb") == low:
             # Handle standard immediates
-            if var_base == "imm":
+            if var_base == "imm" or var_base == "uimm":
                 if "imm" in key and not key.startswith("c_") and key != "csr":
                     candidates.append(key)
             # Handle compressed immediates
@@ -146,7 +146,7 @@ def lookup_immediate_by_range(
 
             # Prefer "zimm" for imm fields
             if var_base == "imm" and "zimm" in candidates:
-                return "zimm"
+                return "zimm5"
 
             # Instruction-specific preferences
             lower_instr = instr_name.lower()
@@ -509,7 +509,9 @@ def GetVariables(vars: List[Dict[str, str]], instr_name: str = "") -> List[str]:
             continue
 
         # Handle immediate fields
-        if var_name in ("imm", "simm", "zimm", "jimm") or var_name.startswith("c_"):
+        if var_name in ("imm", "simm", "zimm", "jimm", "uimm") or var_name.startswith(
+            "c_"
+        ):
             left_shift_flag = var.get("left_shift", 0) == 1
             not_val = var.get("not", None)
             canon_names = canonical_immediate_names(
