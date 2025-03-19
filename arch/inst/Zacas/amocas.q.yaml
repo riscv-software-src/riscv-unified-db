@@ -1,11 +1,41 @@
+---
 # yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 $schema: "inst_schema.json#"
 kind: instruction
 name: amocas.q
-long_name: No synopsis available.
+long_name: Atomic Compare-and-Swap Quadword
 description: |
-  No description available.
+  Atomically loads a 128-bit value from memory, compares it with a 128-bit
+  register pair, and swaps if equal (RV64 only).
+
+  **RV64 Operation:**
+  - Atomically loads a 128-bit value from the memory address in rs1
+    (split into rd and rd+1).
+  - Compares the loaded value with the 128-bit value stored in the register
+    pair rd and rd+1.
+  - If the comparison is bitwise equal, stores the 128-bit value from the
+    register pair rs2 and rs2+1 back to rs1.
+  - Updates rd and rd+1 with the loaded value.
+
+  **Additional Considerations:**
+  - The first register in a pair must be even-numbered; encodings with
+    odd-numbered registers in rd or rs2 are reserved.
+  - If the first register in a source register pair is x0, both halves of
+    the pair read as zero.
+  - If the first register in a destination register pair is x0, the result
+    is discarded, and neither register in the pair is updated.
+  - A FENCE instruction may be used to enforce ordering between the memory
+    read and, if produced, the memory write performed by AMOCAS.Q.
+  - If AMOCAS.Q fails, it may either not perform a memory write or write
+    back the old value loaded from memory.
+  - The memory write, if performed, does not have release semantics,
+    regardless of the rl bit.
+  - Execution requires write permissions on the memory location.
+
+  **Alignment Requirement:** 16-byte aligned.
+  **Memory Semantics:** Supports acquire (aq) and release (rl) consistency.
+
 definedBy: Zacas
 base: 64
 assembly: xd, xs1, xs2, aq, rl
@@ -29,3 +59,19 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  temp0 = mem[X(rs1) + 0]
+  temp1 = mem[X(rs1) + 8]
+  comp0 = (rd == x0) ? 0 : X(rd)
+  comp1 = (rd == x0) ? 0 : X(rd + 1)
+  swap0 = (rs2 == x0) ? 0 : X(rs2)
+  swap1 = (rs2 == x0) ? 0 : X(rs2 + 1)
+
+  if (temp0 == comp0) && (temp1 == comp1)
+      mem[X(rs1) + 0] = swap0
+      mem[X(rs1) + 8] = swap1
+  endif
+
+  if (rd != x0)
+      X(rd) = temp0
+      X(rd + 1) = temp1
+  endif
