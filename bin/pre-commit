@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ROOT=$(dirname $(dirname $(realpath $BASH_SOURCE[0])))
+ROOT=$(dirname $(dirname $(realpath ${BASH_SOURCE[0]})))
 source $ROOT/bin/setup
 
 $PYTHON -mpre_commit "$@"
