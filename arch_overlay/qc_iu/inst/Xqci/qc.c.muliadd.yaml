@@ -29,5 +29,6 @@ access:
   vu: always
 operation(): |
   XReg reg = creg2reg(rd);
+  XReg src = creg2reg(rs1);
   XReg orig_val = X[reg];
-  X[reg] = orig_val + (X[reg] * uimm);
+  X[reg] = orig_val + (X[src] * uimm);
