@@ -684,7 +684,6 @@ class ExtensionRequirementExpression
     n = LogicNode.new(:term, [ext_req], term_idx: term_idx[0])
     term_idx[0] += 1
     if expand
-      raise "Expanding"
       c = ext_req.extension.conflicts_condition
       unless c.empty?
         c = LogicNode.new(:not, [to_logic_tree(ext_req.extension.data["conflicts"], term_idx:)])
