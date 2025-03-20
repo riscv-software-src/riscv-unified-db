@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=../../../../schemas/ext_schema.json
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
 
 $schema: ext_schema.json#
 kind: extension
@@ -145,3 +145,8 @@ doc_license:
 company:
   name: Qualcomm Technologies, Inc.
   url: https://qualcomm.com
+conflicts:
+  anyOf:
+    - allOf: [C, D]
+    - Zcd
+    - Zcmp

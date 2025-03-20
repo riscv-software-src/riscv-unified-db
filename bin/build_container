@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ROOT=$(realpath $(dirname $(dirname $BASH_SOURCE[0])))
+ROOT=$(realpath $(dirname $(dirname ${BASH_SOURCE[0]})))
 
 CONTAINER_TAG=`cat ${ROOT}/bin/.container-tag`
 
