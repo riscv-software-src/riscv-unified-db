@@ -1,7 +1,9 @@
 #pragma once
 
 #include <cstdint>
+#include <deque>
 #include <map>
+#include <tuple>
 #include <unordered_map>
 
 #include "udb/defines.hpp"
@@ -84,7 +86,8 @@ namespace udb {
       <%= hart_name -%>(uint64_t hart_id, SocType& soc, const nlohmann::json& cfg)
         : HartBase<SocType>(hart_id, soc, cfg),
           m_params(<%= name_of(:params, cfg_arch) %>(cfg)),
-          m_csrs(this)
+          m_csrs(this),
+          m_implemented_exts(expand_implemented_extensions(cfg["implemented_extensions"]))
       {
         m_xregs[0].makeZeroReg();
         init_csr_map();
@@ -153,7 +156,53 @@ namespace udb {
         <%- end -%>
         <%- end -%>
 
+        <%- if cfg_arch.fully_configured? -%>
+        return true;
+        <%- else -%>
         return this->m_implemented_exts.find(ext) != this->m_implemented_exts.end();
+        <%- end -%>
+      }
+
+      // go through the list of implemented extensions,
+      // and add implications
+      std::map<ExtensionName, Version> expand_implemented_extensions(const nlohmann::json& ext_ver_list)
+      {
+        std::deque<std::tuple<ExtensionName, Version>> implied_exts;
+        std::map<ExtensionName, Version> implemented_exts;
+
+        for (auto ext : ext_ver_list) {
+          implemented_exts.emplace(ExtensionName::from_s(ext[0]), ext[1]);
+          <%- cfg_arch.extensions.each do |ext| -%>
+          <%-   ext.versions.each do |ext_ver| -%>
+          <%-     unless ext_ver.implications.empty? -%>
+          if ((ext[0] == "<%= ext_ver.name %>") && (Version{ext[1]} == Version{"<%= ext_ver.version_str %>"sv})) {
+          <%-       ext_ver.implications.each do |implied_ext_ver| -%>
+            implied_exts.push_back({ExtensionName::<%= implied_ext_ver.name %>, Version{"<%= implied_ext_ver.version_str %>"sv}});
+          <%-       end -%>
+          }
+          <%-     end -%>
+          <%-   end -%>
+          <%- end -%>
+        }
+
+        while (!implied_exts.empty()) {
+          auto implied_ext = implied_exts.front();
+          implemented_exts.emplace(std::get<0>(implied_ext), std::get<1>(implied_ext));
+          <%- cfg_arch.extensions.each do |ext| -%>
+          <%-   ext.versions.each do |ext_ver| -%>
+          <%-     unless ext_ver.implications.empty? -%>
+          if ((std::get<0>(implied_ext) == ExtensionName::<%= ext_ver.name %>) && (std::get<1>(implied_ext) == Version{"<%= ext_ver.version_str %>"sv})) {
+          <%-       ext_ver.implications.each do |implied_ext_ver| -%>
+            implied_exts.push_back({ExtensionName::<%= ext_ver.name %>, Version{"<%= ext_ver.version_str %>"sv}});
+          <%-       end -%>
+          }
+          <%-     end -%>
+          <%-   end -%>
+          <%- end -%>
+          implied_exts.pop_front();
+        }
+
+        return implemented_exts;
       }
 
       bool implemented_csr_Q_(const Bits<12>& csr_addr) {
@@ -318,6 +367,8 @@ namespace udb {
 
       std::array<uint8_t, __MAX_INST_CPP_SIZE> m_run_one_inst_storage;
       BasicBlockCache<__MAX_INST_CPP_SIZE> m_bb_cache;
+
+      const std::map<ExtensionName, Version> m_implemented_exts;
   };
 }
 

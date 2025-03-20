@@ -37,41 +37,17 @@ class Instruction
 end
 
 class ExtensionRequirementExpression
-  def to_cxx_helper(hsh, &block)
-    if hsh.is_a?(Hash)
-      if hsh.key?("name")
-        if hsh.key?("version")
-          if hsh["version"].is_a?(String)
-            yield hsh["name"], hsh["version"]
-          elsif hsh["version"].is_a?(Array)
-            "(#{hsh['version'].map { |v| yield hsh['name'], v }.join(' && ')})"
-          else
-            raise "unexpected"
-          end
-        else
-          yield hsh["name"], nil
-        end
-      else
-        key = hsh.keys[0]
-
-        case key
-        when "allOf"
-          cpp_str = hsh[key].map { |element| to_cxx_helper(element, &block) }.join(" && ")
-          "(#{cpp_str})"
-        when "anyOf"
-          cpp_str = hsh[key].map { |element| to_cxx_helper(element, &block) }.join(" || ")
-          "(#{cpp_str})"
-        when "oneOf"
-          cpp_str = hsh[key].map { |element| to_cxx_helper(element, &block) }.join(", ")
-          "([&]() -> bool { std::array<bool, #{hsh[key].length}> a{#{cpp_str}}; return std::count(a.begin(), a.end(), true); })()"
-        when "not"
-          "!(#{to_cxx_helper(hsh[key], &block)})"
-        else
-          raise "Unexpected"
-        end
+  class LogicNode
+    def to_cxx(&block)
+      if type == :term
+        yield @children[0].name, @children[0].requirement_specs_to_s
+      elsif type == :not
+        "!(#{@children[0].to_cxx(&block)})"
+      elsif type == :and
+        "(#{@children[0].to_cxx(&block)} && #{@children[1].to_cxx(&block)})"
+      elsif type == :or
+        "(#{@children[0].to_cxx(&block)} || #{@children[1].to_cxx(&block)})"
       end
-    else
-      yield hsh, nil
     end
   end
 
@@ -79,7 +55,7 @@ class ExtensionRequirementExpression
     raise ArgumentError, "Missing block" unless block_given?
     raise ArgumentError, "Blcok expects two arguments" unless block.arity == 2
 
-    to_cxx_helper(@hsh, &block)
+    to_logic_tree(expand: false).to_cxx(&block)
   end
 end
 

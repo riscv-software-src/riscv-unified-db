@@ -31,7 +31,7 @@ namespace udb {
   class <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %> : public CsrFieldBase {
   public:
     <%- max_width = cfg_arch.possible_xlens.map { |xlen| field.defined_in_base?(xlen) ? field.location(xlen).size : 0 }.max -%>
-    using ValueType = Bits<<%= max_width %>>;
+    using ValueType = PossiblyUnknownBits<<%= max_width %>>;
 
     // constructor
     <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %>(<%= name_of(:hart, cfg_arch) %><SocType>* hart)
@@ -211,6 +211,8 @@ namespace udb {
     template <unsigned XLEN>
     using View = <%= name_of(:csr, cfg_arch, csr.name) %>View<XLEN>;
 
+    using ValueType = PossiblyUnknownBits<<%= csr.max_length %>>;
+
     public:
     // constructor
     <%= name_of(:csr, cfg_arch, csr.name) %>(<%= name_of(:hart, cfg_arch) %><SocType>* parent);
@@ -234,7 +236,7 @@ namespace udb {
     }
 
     <%- if cfg_arch.multi_xlen? && csr.format_changes_with_xlen? -%>
-    Bits<<%= csr.max_length %>> _hw_read(const unsigned& xlen) const {
+    ValueType _hw_read(const unsigned& xlen) const {
       if (xlen == 32) {
         <%-
           field_cpp = fields_for_xlen32.map do |field|
@@ -261,7 +263,7 @@ namespace udb {
       }
     }
     <%- else -%>
-    Bits<<%= csr.max_length %>> _hw_read() const {
+    ValueType _hw_read() const {
       <%-
         xlen = cfg_arch.possible_xlens[0] # any possible xlen will do
         field_cpp = fields_for_xlen.map do |field|
@@ -289,9 +291,9 @@ namespace udb {
     // Specific sw_read that returns the correct Bits<<%= csr.max_length %>> type.
     // This isn't accessible to CsrBase
     <%- if cfg_arch.multi_xlen? && csr.format_changes_with_xlen? -%>
-    Bits<<%= csr.max_length %>> _sw_read(const unsigned& xlen) const;
+    ValueType _sw_read(const unsigned& xlen) const;
     <%- else -%>
-    Bits<<%= csr.max_length %>> _sw_read() const;
+    ValueType _sw_read() const;
     <%- end -%>
 
     void hw_write(const uint64_t& value, const unsigned& xlen) override {

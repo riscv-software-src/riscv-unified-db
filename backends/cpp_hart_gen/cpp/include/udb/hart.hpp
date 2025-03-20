@@ -51,13 +51,7 @@ namespace udb {
           m_tracer(nullptr),
           m_current_priv_mode(PrivilegeMode::M),
           m_exit_requested(false),
-          m_num_inst_exec(0) {
-      for (auto ext : cfg["implemented_extensions"]) {
-        m_implemented_exts.insert(
-            {ExtensionName::from_s(ext[0].get<std::string>()),
-             ext[1].get<std::string>()});
-      }
-    }
+          m_num_inst_exec(0) {}
 
     virtual void reset(uint64_t reset_pc) {
       m_exit_requested = 0;
@@ -365,8 +359,6 @@ namespace udb {
     // the number of instruction *executed*
     // THIS IS NOT minstret (some executed instructions do not retire)
     uint64_t m_num_inst_exec;
-
-    std::map<ExtensionName, Version> m_implemented_exts;
   };
 
 }  // namespace udb

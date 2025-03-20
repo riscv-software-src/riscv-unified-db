@@ -178,12 +178,14 @@ namespace udb {
         return fmt::format("{} <%= inst.assembly_fmt(32) %>", m_name <%= inst.assembly_fmt_args(32) %>);
         <%- else -%>
         udb_assert(false, "Not defined");
+        __builtin_unreachable();
         <%- end -%>
       } else {
         <%- if inst.defined_in_base?(32) -%>
         return fmt::format("{} <%= inst.assembly_fmt(64) %>", m_name <%= inst.assembly_fmt_args(64) %>);
         <%- else -%>
         udb_assert(false, "Not defined");
+        __builtin_unreachable();
         <%- end -%>
       }
     }

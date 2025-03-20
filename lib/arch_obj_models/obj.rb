@@ -674,20 +674,30 @@ class ExtensionRequirementExpression
     end
   end
 
-  def ext_req_to_logic_node(ext_req, term_idx)
+  # given an extension requirement, convert it to a LogicNode term, and optionally7 expand it to
+  # exclude any conflicts and include any implications
+  #
+  # @param ext_req [ExtensionRequirement] An extension requirement
+  # @param expand [Boolean] Whether or not to expand the node to include conflicts / implications
+  # @return [LogicNode] Logic tree for ext_req
+  def ext_req_to_logic_node(ext_req, term_idx, expand: true)
     n = LogicNode.new(:term, [ext_req], term_idx: term_idx[0])
     term_idx[0] += 1
-    c = ext_req.extension.conflicts_condition
-    unless c.empty?
-      c = LogicNode.new(:not, [to_logic_tree(ext_req.extension.data["conflicts"], term_idx:)])
-      n = LogicNode.new(:and, [c, n])
-    end
+    if expand
+      raise "Expanding"
+      c = ext_req.extension.conflicts_condition
+      unless c.empty?
+        c = LogicNode.new(:not, [to_logic_tree(ext_req.extension.data["conflicts"], term_idx:)])
+        n = LogicNode.new(:and, [c, n])
+      end
 
-    ext_req.satisfying_versions.each do |ext_ver|
-      ext_ver.implications.each do |implied_ext_ver|
-        # convert to an ext_req
-        implied_ext_req = ExtensionRequirement.new(implied_ext_ver.name, "= #{implied_ext_ver.version_str}", arch: @arch)
-        n = LogicNode.new(:or, [n, ext_req_to_logic_node(implied_ext_req, term_idx)])
+      ext_req.satisfying_versions.each do |ext_ver|
+        ext_ver.implied_by.each do |implying_ext_ver|
+          # convert to an ext_req
+          puts "#{ext_req} <= #{implying_ext_ver}"
+          implying_ext_req = ExtensionRequirement.new(implying_ext_ver.name, "= #{implying_ext_ver.version_str}", arch: @arch)
+          n = LogicNode.new(:or, [n, ext_req_to_logic_node(implying_ext_req, term_idx)])
+        end
       end
     end
 
@@ -697,19 +707,19 @@ class ExtensionRequirementExpression
   # convert the YAML representation of an Extension Requirement Expression into
   # a tree of LogicNodes.
   # Also expands any Extension Requirement to include its conflicts / implications
-  def to_logic_tree(hsh = @hsh, term_idx: [0])
+  def to_logic_tree(hsh = @hsh, term_idx: [0], expand: true)
     if hsh.is_a?(Hash)
       if hsh.key?("name")
         if hsh.key?("version")
           if hsh["version"].is_a?(String)
-            ext_req_to_logic_node(ExtensionRequirement.new(hsh["name"], hsh["version"], arch: @arch), term_idx)
+            ext_req_to_logic_node(ExtensionRequirement.new(hsh["name"], hsh["version"], arch: @arch), term_idx, expand:)
           elsif hsh["version"].is_a?(Array)
-            ext_req_to_logic_node(ExtensionRequirement.new(hsh["name"], hsh["version"].map { |v| "'#{v}'" }.join(', '), arch: @arch), term_idx)
+            ext_req_to_logic_node(ExtensionRequirement.new(hsh["name"], hsh["version"].map { |v| "'#{v}'" }.join(', '), arch: @arch), term_idx, expand:)
           else
             raise "unexpected"
           end
         else
-          ext_req_to_logic_node(ExtensionRequirement.new(hsh["name"], arch: @arch), term_idx)
+          ext_req_to_logic_node(ExtensionRequirement.new(hsh["name"], arch: @arch), term_idx, expand:)
         end
       else
         key = hsh.keys[0]
@@ -718,17 +728,17 @@ class ExtensionRequirementExpression
         when "allOf"
           raise "unexpected" unless hsh[key].is_a?(Array) && hsh[key].size > 1
 
-          root = LogicNode.new(:and, [to_logic_tree(hsh[key][0], term_idx:), to_logic_tree(hsh[key][1], term_idx:)])
+          root = LogicNode.new(:and, [to_logic_tree(hsh[key][0], term_idx:, expand:), to_logic_tree(hsh[key][1], term_idx:, expand:)])
           (2...hsh[key].size).each do |i|
-            root = LogicNode.new(:and, [root, to_logic_tree(hsh[key][i], term_idx:)])
+            root = LogicNode.new(:and, [root, to_logic_tree(hsh[key][i], term_idx:, expand:)])
           end
           root
         when "anyOf"
           raise "unexpected" unless hsh[key].is_a?(Array) && hsh[key].size > 1
 
-          root = LogicNode.new(:or, [to_logic_tree(hsh[key][0], term_idx:), to_logic_tree(hsh[key][1], term_idx:)])
+          root = LogicNode.new(:or, [to_logic_tree(hsh[key][0], term_idx:, expand:), to_logic_tree(hsh[key][1], term_idx:, expand:)])
           (2...hsh[key].size).each do |i|
-            root = LogicNode.new(:or, [root, to_logic_tree(hsh[key][i], term_idx:)])
+            root = LogicNode.new(:or, [root, to_logic_tree(hsh[key][i], term_idx:, expand:)])
           end
           root
         when "oneOf"
@@ -737,18 +747,18 @@ class ExtensionRequirementExpression
           hsh[key].size.times do |k|
             root =
               if k.zero?
-                LogicNode.new(:and, [to_logic_tree(hsh[key][0], term_idx:), LogicNode.new(:not, [to_logic_tree(hsh[key][1], term_idx:)])])
+                LogicNode.new(:and, [to_logic_tree(hsh[key][0], term_idx:, expand:), LogicNode.new(:not, [to_logic_tree(hsh[key][1], term_idx:, expand:)])])
               elsif k == 1
-                LogicNode.new(:and, [LogicNode.new(:not, [to_logic_tree(hsh[key][0], term_idx:)]), to_logic_tree(hsh[key][1], term_idx:)])
+                LogicNode.new(:and, [LogicNode.new(:not, [to_logic_tree(hsh[key][0], term_idx:, expand:)]), to_logic_tree(hsh[key][1], term_idx:, expand:)])
               else
-                LogicNode.new(:and, [LogicNode.new(:not, [to_logic_tree(hsh[key][0], term_idx:)]), LogicNode.new(:not, [to_logic_tree(hsh[key][1], term_idx:)])])
+                LogicNode.new(:and, [LogicNode.new(:not, [to_logic_tree(hsh[key][0], term_idx:, expand:)]), LogicNode.new(:not, [to_logic_tree(hsh[key][1], term_idx:, expand:)])])
               end
             (2...hsh[key].size).each do |i|
               root =
                 if k == i
-                  LogicNode.new(:and, [root, to_logic_tree(hsh[key][i], term_idx:)])
+                  LogicNode.new(:and, [root, to_logic_tree(hsh[key][i], term_idx:, expand:)])
                 else
-                  LogicNode.new(:and, [root, LogicNode.new(:not, [to_logic_tree(hsh[key][i], term_idx:)])])
+                  LogicNode.new(:and, [root, LogicNode.new(:not, [to_logic_tree(hsh[key][i], term_idx:, expand:)])])
                 end
              end
             roots << root
@@ -759,13 +769,13 @@ class ExtensionRequirementExpression
           end
           root
         when "not"
-          LogicNode.new(:not, [to_logic_tree(hsh[key], term_idx:)])
+          LogicNode.new(:not, [to_logic_tree(hsh[key], term_idx:, expand:)])
         else
           raise "Unexpected"
         end
       end
     else
-      ext_req_to_logic_node(ExtensionRequirement.new(hsh, arch: @arch), term_idx)
+      ext_req_to_logic_node(ExtensionRequirement.new(hsh, arch: @arch), term_idx, expand:)
     end
   end
 

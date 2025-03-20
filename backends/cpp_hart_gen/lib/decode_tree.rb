@@ -299,7 +299,7 @@ class DecodeGen
               if ext_version_req.nil?
                 "implemented_Q_(ExtensionName::#{ext_name})"
               else
-                "implemented_Q_(ExtensionName::#{ext_name}, \"#{ext_version_req}\")"
+                "implemented_version_Q_(ExtensionName::#{ext_name}, \"#{ext_version_req}\"sv)"
               end
             end
           end

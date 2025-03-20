@@ -67,7 +67,9 @@ namespace udb {
       requires(N >= Size)
     operator Bits<N>() const;
 
-    operator PossiblyUndefinedBits() const;
+    template <unsigned N>
+      requires(N >= Size)
+    operator PossiblyUnknownBits<N>() const;
 
     bool operator!() const { return !static_cast<Bits<Size>>(*this).get(); }
 
@@ -87,9 +89,23 @@ namespace udb {
     }
 
     template <unsigned N, bool Signed>
+    bool operator==(const _PossiblyUnknownBits<N, Signed> &other) const {
+      return other == static_cast<Bits<Size>>(*this);
+    }
+
+    template <unsigned N, bool Signed>
     bool operator>(const _Bits<N, Signed> &other) const {
       return static_cast<Bits<Size>>(*this) > other;
     }
+
+    template <unsigned N, bool Signed>
+    bool operator>(const _PossiblyUnknownBits<N, Signed> &other) const {
+      return static_cast<Bits<Size>>(*this) > other;
+    }
+
+    template <unsigned N, bool Signed>
+    friend bool operator<(const _PossiblyUnknownBits<N, Signed> &lhs,
+                          const BitfieldMember &rhs);
 
     template <unsigned N, bool Signed>
     bool operator>=(const _Bits<N, Signed> &other) const {
@@ -97,7 +113,17 @@ namespace udb {
     }
 
     template <unsigned N, bool Signed>
+    bool operator>=(const _PossiblyUnknownBits<N, Signed> &other) const {
+      return static_cast<Bits<Size>>(*this) >= other;
+    }
+
+    template <unsigned N, bool Signed>
     bool operator<=(const _Bits<N, Signed> &other) const {
+      return static_cast<Bits<Size>>(*this) <= other;
+    }
+
+    template <unsigned N, bool Signed>
+    bool operator<=(const _PossiblyUnknownBits<N, Signed> &other) const {
       return static_cast<Bits<Size>>(*this) <= other;
     }
 
@@ -168,8 +194,10 @@ namespace udb {
   }
 
   template <unsigned ParentSize, unsigned Start, unsigned Size>
-  BitfieldMember<ParentSize, Start, Size>::operator PossiblyUndefinedBits()
-      const {
+  template <unsigned N>
+    requires(N >= Size)
+  BitfieldMember<ParentSize, Start, Size>::template
+  operator PossiblyUnknownBits<N>() const {
     return (static_cast<Bits<ParentSize>>(m_parent) >> Start) & MaximumValue;
   }
 
@@ -191,4 +219,12 @@ namespace udb {
                ((static_cast<Bits<Size>>(other).template sll<Size>()) & Mask);
     return *this;
   }
+
+  template <unsigned ParentSize, unsigned Start, unsigned Size, unsigned N,
+            bool Signed>
+  bool operator<(const _PossiblyUnknownBits<N, Signed> &lhs,
+                 const BitfieldMember<ParentSize, Start, Size> &rhs) {
+    return lhs < static_cast<Bits<Size>>(rhs);
+  }
+
 }  // namespace udb

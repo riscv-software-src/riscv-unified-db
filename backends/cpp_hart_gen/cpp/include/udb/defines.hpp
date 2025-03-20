@@ -1,7 +1,22 @@
 #pragma once
 
+#include <algorithm>
 #include <cstdlib>
+#include <string_view>
 #include <version>
+
+// type to be used when you want to pass a string literal as a template
+// arugment
+template <size_t N = 0>
+struct TemplateString {
+  constexpr TemplateString(const char (&str)[N]) : size(N) {
+    std::copy_n(str, N, cstr_value);
+  }
+  constexpr char *value() const { return cstr_value; }
+  constexpr std::string_view sv() const { return cstr_value; }
+  const size_t size;
+  char cstr_value[N == 0 ? 1 : N];
+};
 
 #if defined(__cpp_lib_source_location) && __cpp_lib_source_location >= 201907L
 #include <source_location>

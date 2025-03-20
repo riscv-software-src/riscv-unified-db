@@ -889,12 +889,9 @@ namespace udb {
     StorageType m_val;
   };
 
-  // used to translate literal strings into a Bits<N> type
-  template <char... Str>
-  struct BitsStr {
-    static constexpr char str[sizeof...(Str)] = {Str...};
-
-    static constexpr unsigned get_width(const char *str) {
+  struct BitsStrHelpers {
+    template <bool AllowUnknown>
+    static consteval unsigned get_width(const char *str) {
       uint64_t val = 0;
       unsigned width = 0;
       auto len = strlen(str);
@@ -935,6 +932,12 @@ namespace udb {
           width += 32 - std::countl_zero(((uint32_t)*ptr) - (uint32_t)'a' +
                                          (uint32_t)10);
         }
+        if constexpr (AllowUnknown) {
+          if (*ptr == 'x' || *ptr == 'X') {
+            // unknown is full width
+            width += 4;
+          }
+        }
 
         // the lsbs need full bits
         width += (len - 1) * 4;
@@ -945,7 +948,7 @@ namespace udb {
       return width;
     }
 
-    static constexpr unsigned __int128 get_val(const char *str) {
+    static consteval unsigned __int128 get_val(const char *str) {
       unsigned __int128 val = 0;
       auto len = strlen(str);
       unsigned base = 10;
@@ -982,41 +985,92 @@ namespace udb {
       return val;
     }
 
-    static constexpr unsigned width = get_width(str);
+    static consteval unsigned __int128 get_unknown_mask(const char *str) {
+      unsigned __int128 mask = 0;
+      auto len = strlen(str);
+      unsigned base = 10;
+      const char *ptr = str;
+      if (len >= 3) {
+        if (strncmp(str, "0x", 2) == 0) {
+          base = 16;
+          ptr = &str[2];
+          len -= 2;
+        }
+      }
+      if (base == 10) {
+        return 0;  // there are no unknowns in a base-10 literal
+      }
+      if (base == 16) {
+        unsigned __int128 shamt = 0;
+        for (int i = len - 1; i >= 0; i--) {
+          if (ptr[i] == 'x' || ptr[i] == 'X') {
+            mask |= static_cast<__int128>(0xf) << shamt;
+          }
+          shamt += 4;
+        }
+      }
+      return mask;
+    }
+  };
+
+  // used to translate literal strings into a Bits<N> type
+  template <bool AllowUnknown, char... Str>
+  struct BitsStr {
+    static constexpr char str[sizeof...(Str)] = {Str...};
+
+    static constexpr unsigned width =
+        BitsStrHelpers::get_width<AllowUnknown>(str);
     static_assert(
         width <= 128,
         "Cannot create bits literal of width >= 128 (use \"\"_mpz instead)");
-    static constexpr unsigned __int128 val = get_val(str);
+    static constexpr unsigned __int128 val = BitsStrHelpers::get_val(str);
+    static constexpr unsigned __int128 unknown_mask =
+        BitsStrHelpers::get_unknown_mask(str);
   };
-  static_assert(BitsStr<'0', 'x', '1', '\0'>::width == 1);
-  static_assert(BitsStr<'0', 'x', '2', '\0'>::width == 2);
-  static_assert(BitsStr<'0', 'x', '8', '\0'>::width == 4);
-  static_assert(BitsStr<'0', 'x', '1', 'f', '\0'>::width == 5);
+
+  template <bool AllowUnknown, TemplateString Str>
+  struct BitsTemplateStr {
+    static constexpr unsigned width =
+        BitsStrHelpers::get_width<AllowUnknown>(Str.cstr_value);
+    static_assert(
+        width <= 128,
+        "Cannot create bits literal of width >= 128 (use \"\"_mpz instead)");
+    static constexpr unsigned __int128 val =
+        BitsStrHelpers::get_val(Str.cstr_value);
+    static constexpr unsigned __int128 unknown_mask =
+        BitsStrHelpers::get_unknown_mask(Str.cstr_value);
+  };
+
+  static_assert(BitsStr<false, '0', 'x', '1', '\0'>::width == 1);
+  static_assert(BitsStr<false, '0', 'x', '2', '\0'>::width == 2);
+  static_assert(BitsStr<false, '0', 'x', '8', '\0'>::width == 4);
+  static_assert(BitsStr<false, '0', 'x', '1', 'f', '\0'>::width == 5);
 
   // be careful with negative numbers here, since literals are always unsigned
   //
   // auto b = -15_b; // b will be +1, because 15_b is only four bits, and
   // negation loses the sign bit
   template <char... Str>
-  constexpr _Bits<BitsStr<Str..., '\0'>::width, false> operator""_b() {
-    if constexpr (BitsStr<Str..., '\0'>::width <=
-                  _Bits<BitsStr<Str..., '\0'>::width,
+  constexpr _Bits<BitsStr<false, Str..., '\0'>::width, false> operator""_b() {
+    if constexpr (BitsStr<false, Str..., '\0'>::width <=
+                  _Bits<BitsStr<false, Str..., '\0'>::width,
                         false>::MaxNativePrecision) {
-      return BitsStr<Str..., '\0'>::val;
+      return BitsStr<false, Str..., '\0'>::val;
     } else {
-      return mpz_class{BitsStr<Str..., '\0'>::str};
+      return mpz_class{BitsStr<false, Str..., '\0'>::str};
     }
   }
 
   // signed bits
   template <char... Str>
-  constexpr _Bits<BitsStr<Str..., '\0'>::width + 1, false> operator""_sb() {
-    if constexpr ((BitsStr<Str..., '\0'>::width + 1) <=
-                  _Bits<(BitsStr<Str..., '\0'>::width + 1),
+  constexpr _Bits<BitsStr<false, Str..., '\0'>::width + 1, false>
+  operator""_sb() {
+    if constexpr ((BitsStr<false, Str..., '\0'>::width + 1) <=
+                  _Bits<(BitsStr<false, Str..., '\0'>::width + 1),
                         false>::MaxNativePrecision) {
-      return BitsStr<Str..., '\0'>::val;
+      return BitsStr<false, Str..., '\0'>::val;
     } else {
-      return mpz_class{BitsStr<Str..., '\0'>::str};
+      return mpz_class{BitsStr<false, Str..., '\0'>::str};
     }
   }
 
@@ -1219,19 +1273,6 @@ static_assert(std::numeric_limits<udb::_Bits<9, false>>::min() == 0);
 static_assert(std::numeric_limits<udb::_Bits<9, true>>::min() == -256);
 static_assert(std::numeric_limits<udb::_Bits<9, false>>::max() == 511);
 static_assert(std::numeric_limits<udb::_Bits<9, true>>::max() == 255);
-
-namespace udb {
-  template <unsigned N>
-  using Bits = _Bits<N, false>;
-
-  template <unsigned N>
-  using SignedBits = _Bits<N, true>;
-
-  // special values
-  static constexpr Bits<65> UNDEFINED_LEGAL = 0x10000000000000000_b;
-  static constexpr Bits<66> UNDEFINED_LEGAL_DETERMINISTIC =
-      0x20000000000000000_b;
-}  // namespace udb
 
 namespace udb {
   // Bits where the width is only known at runtime (usually because the width is
@@ -1591,7 +1632,13 @@ namespace udb {
     constexpr _PossiblyUnknownBits(const IntType &val)
         : m_value(val), m_unknown_mask(0) {}
 
+    template <std::integral IntType, std::integral MaskIntType>
+    constexpr _PossiblyUnknownBits(const IntType &val, const MaskIntType &mask)
+        : m_value(val), m_unknown_mask(mask) {}
+
     constexpr ~_PossiblyUnknownBits() noexcept = default;
+
+    constexpr _Bits<N, false> unknown_mask() const { return m_unknown_mask; }
 
     template <std::integral T>
     constexpr operator T() const {
@@ -1793,6 +1840,11 @@ namespace udb {
       const {                                                             \
     return {m_value op o, m_unknown_mask};                                \
   }                                                                       \
+  template <unsigned MaxN, bool _Signed>                                  \
+  constexpr _PossiblyUnknownBits operator op(                             \
+      const _RuntimeBits<MaxN, _Signed> &o) const {                       \
+    return {m_value op o, m_unknown_mask};                                \
+  }                                                                       \
                                                                           \
   constexpr _PossiblyUnknownBits operator op(const mpz_class &o) const {  \
     return {m_value op o, m_unknown_mask};                                \
@@ -1800,6 +1852,11 @@ namespace udb {
   template <std::integral IntType>                                        \
   constexpr _PossiblyUnknownBits operator op(const IntType &_rhs) const { \
     return {m_value op _rhs, m_unknown_mask};                             \
+  }                                                                       \
+  template <unsigned M, bool _Signed>                                     \
+  constexpr friend _PossiblyUnknownBits operator op(                      \
+      const _Bits<M, _Signed> &_lhs, const _PossiblyUnknownBits &rhs) {   \
+    return {_lhs op rhs.m_value, rhs.m_unknown_mask};                     \
   }                                                                       \
   template <std::integral IntType>                                        \
   constexpr friend _PossiblyUnknownBits operator op(                      \
@@ -1858,7 +1915,7 @@ namespace udb {
 
     template <unsigned M, bool _Signed>
     constexpr _PossiblyUnknownBits operator>>(
-        const _PossiblyUnknownBits<M, _Signed> &shamt) {
+        const _PossiblyUnknownBits<M, _Signed> &shamt) const {
       if (shamt.m_unknown_mask != 0) {
         throw UndefinedValueError("Cannot shift an unknown amount");
       }
@@ -1866,16 +1923,17 @@ namespace udb {
     }
 
     template <unsigned M, bool _Signed>
-    constexpr _PossiblyUnknownBits operator>>(const _Bits<M, _Signed> &shamt) {
+    constexpr _PossiblyUnknownBits operator>>(
+        const _Bits<M, _Signed> &shamt) const {
       return {m_value >> shamt, m_unknown_mask >> shamt};
     }
 
     template <std::integral IntType>
-    constexpr _PossiblyUnknownBits operator>>(const IntType &shamt) {
+    constexpr _PossiblyUnknownBits operator>>(const IntType &shamt) const {
       return {m_value >> shamt, m_unknown_mask >> shamt};
     }
 
-    _PossiblyUnknownBits operator>>(const mpz_class &shamt) {
+    _PossiblyUnknownBits operator>>(const mpz_class &shamt) const {
       return {m_value >> shamt, m_unknown_mask >> shamt};
     }
 
@@ -1903,6 +1961,19 @@ namespace udb {
         throw UndefinedValueError("Cannot shift an unknown amount");
       }
       return val >> shamt.m_value;
+    }
+
+    // widening left shift when the shift amount is known at compile time
+    template <unsigned SHAMT>
+    constexpr _PossiblyUnknownBits<addsat_v<N, SHAMT>, Signed> sll() const {
+      using ReturnType = _PossiblyUnknownBits<addsat_v<N, SHAMT>, Signed>;
+      if constexpr (addsat_v<N, SHAMT> >= BitsMaxNativePrecision) {
+        return ReturnType{ReturnType{m_value}.m_value << SHAMT,
+                          ReturnType{m_value}.m_unknown_mask << SHAMT};
+      } else {
+        return ReturnType{ReturnType{m_value}.m_value << SHAMT,
+                          ReturnType{m_value}.m_unknown_mask << SHAMT};
+      }
     }
 
 #define BITS_OP_ASSIGN(op)                                      \
@@ -1956,6 +2027,99 @@ namespace udb {
     _Bits<N, Signed> m_value;
     _Bits<N, false> m_unknown_mask;
   };
+
+  template <char... Str>
+  constexpr _PossiblyUnknownBits<BitsStr<true, Str..., '\0'>::width, false>
+  operator""_xb() {
+    if constexpr (BitsStr<true, Str..., '\0'>::width <=
+                  BitsMaxNativePrecision) {
+      return {BitsStr<true, Str..., '\0'>::val,
+              BitsStr<true, Str..., '\0'>::unknown_mask};
+    } else {
+      return mpz_class{BitsStr<true, Str..., '\0'>::str};
+    }
+  }
+
+  template <TemplateString Str>
+  constexpr _PossiblyUnknownBits<BitsTemplateStr<true, Str>::width, false>
+  operator""_xb() {
+    if constexpr (BitsTemplateStr<true, Str>::width <= BitsMaxNativePrecision) {
+      return {BitsTemplateStr<true, Str>::val,
+              BitsTemplateStr<true, Str>::unknown_mask};
+    } else {
+      return mpz_class{BitsTemplateStr<true, Str>::str};
+    }
+  }
+
+  template <char... Str>
+  constexpr _PossiblyUnknownBits<BitsStr<true, Str..., '\0'>::width, true>
+  operator""_xsb() {
+    if constexpr (BitsStr<true, Str..., '\0'>::width <=
+                  BitsMaxNativePrecision) {
+      return {BitsStr<true, Str..., '\0'>::val,
+              BitsStr<true, Str..., '\0'>::unknown_mask};
+    } else {
+      return mpz_class{BitsStr<true, Str..., '\0'>::str};
+    }
+  }
+
+  template <TemplateString Str>
+  constexpr _PossiblyUnknownBits<BitsTemplateStr<true, Str>::width, true>
+  operator""_xsb() {
+    if constexpr (BitsTemplateStr<true, Str>::width <= BitsMaxNativePrecision) {
+      return {BitsTemplateStr<true, Str>::val,
+              BitsTemplateStr<true, Str>::unknown_mask};
+    } else {
+      return mpz_class{BitsTemplateStr<true, Str>::str};
+    }
+  }
+
+  static_assert((0x0_xb).Width == 1);
+  static_assert((0x1_xb).Width == 1);
+  static_assert((0_xb).Width == 1);
+  static_assert((1_xb).Width == 1);
+  static_assert((0x2_xb).Width == 2);
+  static_assert((0x7_xb).Width == 3);
+  static_assert((0x8_xb).Width == 4);
+  static_assert((0xf_xb).Width == 4);
+  static_assert((0x1f_xb).Width == 5);
+  static_assert((0xffffffffffffffff_xb).Width == 64);
+
+  static_assert((0x1_xb).get() == 1);
+  static_assert((0x2_xb).get() == 2);
+  static_assert((0x7_xb).get() == 7);
+  static_assert((0x8_xb).get() == 8);
+  static_assert((0xf_xb).get() == 15);
+  static_assert((0x1f_xb).get() == 0x1f);
+  static_assert((0xff_xb).get() == 0xff);
+  static_assert((0xffffffff_xb).get() == 0xfffffffful);
+  static_assert((0xfffffffff_xb).get() == 0xffffffffful);
+  static_assert((0xffffffff1_xb).get() == 0xffffffff1ul);
+  static_assert((0xfffffffffffffff_xb).get() == 0xffffffffffffffful);
+  static_assert((0xffffffffffffffff_xb).get() == 0xfffffffffffffffful);
+
+  static_assert((1_xb).get() == 1);
+  static_assert((2_xb).get() == 2);
+  static_assert((7_xb).get() == 7);
+  static_assert((8_xb).get() == 8);
+  static_assert((15_xb).get() == 15);
+  static_assert((31_xb).get() == 31);
+  static_assert((1152921504606846975_xb).get() == 0xfffffffffffffff);
+  static_assert((18446744073709551615_xb).get() == 0xffffffffffffffff);
+
+  static_assert(("0x1x"_xb).Width == 5);
+  static_assert(("0x1x"_xb).unknown_mask() == 0xf);
+
+  template <unsigned N>
+  using Bits = _Bits<N, false>;
+
+  template <unsigned N>
+  using SignedBits = _Bits<N, true>;
+
+  // special values
+  static constexpr Bits<65> UNDEFINED_LEGAL = 0x10000000000000000_b;
+  static constexpr Bits<66> UNDEFINED_LEGAL_DETERMINISTIC =
+      0x20000000000000000_b;
 
   template <unsigned N>
   using PossiblyUnknownBits = _PossiblyUnknownBits<N, false>;

@@ -426,7 +426,7 @@ class ExtensionVersion
   #   @transitive_conflicts
   # end
 
-  # @return [Array<ExtensionVersion>] List of extension versions that are implied by with this ExtensionVersion
+  # @return [Array<ExtensionVersion>] List of extension versions that this ExtensionVersion implies
   #                                   This list is *not* transitive; if an implication I1 implies another extension I2,
   #                                   only I1 shows up in the list
   def implications
@@ -445,6 +445,25 @@ class ExtensionVersion
     end
     @implications.sort!
     @implications
+  end
+
+  # @return [Array<ExtensionVersion>] List of extension versions that are imply this ExtensionVersion
+  #                                   This list is *not* transitive; if an implication I1 implies another extension I2,
+  #                                   only I1 shows up in the list
+  def implied_by
+    return @implied_by unless @implied_by.nil?
+
+    @implied_by = []
+    @arch.extensions.each do |ext|
+      next if ext.name == name
+
+      ext.versions.each do |ext_ver|
+        ext_ver.implications.each do |implication|
+          @implied_by << ext_ver if implication == self
+        end
+      end
+    end
+    @implied_by
   end
 
   # @return [Array<ExtensionVersion>] List of extension versions that are implied by with this ExtensionVersion

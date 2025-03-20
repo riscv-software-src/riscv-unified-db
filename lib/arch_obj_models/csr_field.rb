@@ -408,8 +408,8 @@ class CsrField < DatabaseObject
 
   # @return [Boolean] true if the field could have an undefined value at any point
   def could_be_undefined?
-    (reset_value == "UNDEFINED_LEGAL") #|| \
-    #  (has_custom_sw_write? && sw_write_ast(cfg_arch.symtab).could_return_undefined?(cfg_arch.symtab))
+    (reset_value == "UNDEFINED_LEGAL") || \
+      (has_custom_sw_write? && sw_write_ast(cfg_arch.symtab).could_return_undefined?(cfg_arch.symtab))
   end
 
   # @return [Boolean] true if the CSR field has a custom sw_write function

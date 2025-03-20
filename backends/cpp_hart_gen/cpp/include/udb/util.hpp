@@ -7,18 +7,6 @@
 #include "udb/xregister.hpp"
 
 namespace udb {
-  // type to be used when you want to pass a string literal as a template
-  // arugment
-  template <size_t N = 0>
-  struct TemplateString {
-    constexpr TemplateString(const char (&str)[N]) : size(N) {
-      std::copy_n(str, N, cstr_value);
-    }
-    constexpr char *value() const { return cstr_value; }
-    constexpr std::string_view sv() const { return cstr_value; }
-    const size_t size;
-    char cstr_value[N == 0 ? 1 : N];
-  };
 
   // extract bits from an integral type
   template <unsigned start, unsigned size, std::integral Type>
@@ -46,6 +34,40 @@ namespace udb {
   template <unsigned START, unsigned SIZE, unsigned BITS_LEN>
     requires(BITS_LEN <= BitsMaxNativePrecision)
   constexpr Bits<SIZE> extract(const Bits<BITS_LEN> &value) {
+    static_assert((START + SIZE) <= BITS_LEN,
+                  "Cannot extract more bits than type contains");
+
+    if constexpr (SIZE == BITS_LEN) {
+      return value;
+    } else {
+      constexpr Bits<BITS_LEN> mask =
+          (static_cast<Bits<BITS_LEN>>(1).template sll<SIZE>()) - 1;
+      return (value >> START) & mask;
+    }
+  }
+
+  // extract bits from an integral type
+  template <unsigned START, unsigned SIZE, unsigned BITS_LEN,
+            std::integral IntType>
+    requires(BITS_LEN <= BitsMaxNativePrecision)
+  constexpr Bits<SIZE> extract(const IntType &value) {
+    static_assert((START + SIZE) <= BITS_LEN,
+                  "Cannot extract more bits than type contains");
+
+    if constexpr (SIZE == BITS_LEN) {
+      return value;
+    } else {
+      constexpr Bits<BITS_LEN> mask =
+          (static_cast<Bits<BITS_LEN>>(1).template sll<SIZE>()) - 1;
+      return (value >> START) & mask;
+    }
+  }
+
+  // extract bits from a PossiblyUnknownBits type
+  template <unsigned START, unsigned SIZE, unsigned BITS_LEN>
+    requires(BITS_LEN <= BitsMaxNativePrecision)
+  constexpr PossiblyUnknownBits<SIZE> extract(
+      const PossiblyUnknownBits<BITS_LEN> &value) {
     static_assert((START + SIZE) <= BITS_LEN,
                   "Cannot extract more bits than type contains");
 
