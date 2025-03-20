@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-ROOT=$(dirname $(dirname $(realpath $BASH_SOURCE[0])))
+ROOT=$(dirname $(dirname $(realpath ${BASH_SOURCE[0]})))
 OLDWD=$PWD
 cd $ROOT
 
@@ -159,7 +159,7 @@ fi
 # fi
 
 if [[ ! -z "$DEVELOPMENT" && $DEVELOPMENT -eq 1 ]]; then
-    if [ ! -d "${ROOT}/.home/.yard/gem_index"]; then
+    if [ ! -d "${ROOT}/.home/.yard/gem_index" ]; then
         ${RUN} bundle exec --gemfile ${ROOT}/Gemfile yard config --gem-install-yri
         ${RUN} bundle exec --gemfile ${ROOT}/Gemfile yard gems
         touch ${ROOT}/.stamps/dev_gems

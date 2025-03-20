@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-ROOT=$(dirname $(realpath $BASH_SOURCE[0]))
+ROOT=$(dirname $(realpath ${BASH_SOURCE[0]}))
 if [ ! -v NO_SOURCE ]; then
   source $ROOT/setup
 fi

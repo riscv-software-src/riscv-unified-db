@@ -23,14 +23,14 @@ repos:
       - id: check-yaml
 
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: v3.4.2
+    rev: v3.5.3
     hooks:
       - id: prettier
         files: \.(json|yml|yaml)$
         exclude: schemas/json-schema-draft-07.json
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.30.0
+    rev: 0.31.3
     hooks:
       - id: check-jsonschema
         alias: check-jsonschema-inst
@@ -59,7 +59,7 @@ repos:
       #   args: ["--schemafile", "schemas/manual_version_schema.json"]
 
   - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 24.8.0
+    rev: 25.1.0
     hooks:
       - id: black
 
@@ -67,3 +67,18 @@ repos:
     rev: v3.19.1
     hooks:
       - id: pyupgrade
+
+  - repo: https://github.com/koalaman/shellcheck-precommit
+    rev: v0.10.0
+    hooks:
+      - id: shellcheck
+        args: ["--severity=error"]
+
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.11.0-1
+    hooks:
+      - id: shfmt
+        args:
+          - --indent
+          - "2"
+          - --case-indent
