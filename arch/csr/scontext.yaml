@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: scontext
+long_name: Supervisor-mode context register
+address: 0x5A8
+priv_mode: S
+length: XLEN
+description: |
+  This optional register is only accessible in S/HS-mode, VS-mode, M-mode and Debug Mode.
+  Accessibility of this CSR is controlled by mstateenzero[57] and hstateenzero[57] in the 
+  Smstateen extension. Enabling scontext can be a security risk in a virtualized system 
+  with a hypervisor that does not swap scontext. 
+  
+  This CSR is read/write.
+
+definedBy: Sdtrig

@@ -1,0 +1,79 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: tdata1
+long_name: First Debug/Trace trigger data register
+address: 0x7A1
+priv_mode: M
+length: XLEN
+description: |
+  This register provides access to the trigger selected by tselect. 
+  The reset values listed here apply to every underlying trigger.
+  
+  This register is optional if no triggers are implemented.
+  Writing 0 to this register must result in a trigger that is disabled. 
+  If this trigger supports multiple types, then the hardware should disable it 
+  by changing type to 15. 
+  
+  This CSR is read/write.
+
+definedBy: Sdtrig
+fields:
+  TYPE:
+    location_rv32: 21-18
+    location_rv64: 63-60
+    description: |
+      0 (none): There is no trigger at this tselect.
+      1 (legacy): The trigger is a legacy SiFive address match
+      trigger. These should not be implemented and aren’t
+      further documented here.
+      2 (mcontrol): The trigger is an address/data match trigger.
+      The remaining bits in this register act as described in
+      mcontrol.
+      3 (icount): The trigger is an instruction count trigger. The
+      remaining bits in this register act as described in icount.
+      4 (itrigger): The trigger is an interrupt trigger. The
+      remaining bits in this register act as described in itrigger.
+      5 (etrigger): The trigger is an exception trigger. The
+      remaining bits in this register act as described in etrigger.
+      6 (mcontrol6): The trigger is an address/data match
+      trigger. The remaining bits in this register act as described
+      in mcontrol6. This is similar to a type 2 trigger, but
+      provides additional functionality and should be used
+      instead of type 2 in newer implementations.
+      7 (tmexttrigger): The trigger is a trigger source external to
+      the TM. The remaining bits in this register act as described
+      in tmexttrigger.
+      12—14 (custom): These trigger types are available for non-
+      standard use.
+      15 (disabled): This trigger is disabled. In this state, tdata2
+      and tdata3 can be written with any value that is supported
+      for any of the types this trigger implements. The
+      remaining bits in this register, except for dmode, are
+      ignored.
+      Other values are reserved for future use.
+    reset_value: UNDEFINED_LEGAL
+  DMODE:
+    location_rv32: 17
+    location_rv64: 59
+    description: |
+      If type is 0, then this bit is hard-wired to 0.
+      0 (both): Both Debug and M-mode can write the tdata
+      registers at the selected tselect.
+      1 (dmode): Only Debug Mode can write the tdata registers
+      at the selected tselect. Writes from other modes are
+      ignored.
+      This bit is only writable from Debug Mode. In ordinary
+      use, external debuggers will always set this bit when
+      configuring a trigger. When clearing this bit, debuggers
+      should also set the action field (whose location depends on
+      type) to something other than 1.
+    reset_value: 0
+  DATA:
+    location_rv32: 16-0
+    location_rv64: 58-0
+    description: |
+      If type is 0, then this field is hard-wired to 0.
+      Trigger-specific data.
+    reset_value: UNDEFINED_LEGAL
