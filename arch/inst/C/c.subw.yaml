@@ -19,7 +19,7 @@ encoding:
   variables:
     - name: rs2
       location: 4-2
-    - name: rd
+    - name: rd/rs1
       location: 9-7
 access:
   s: always

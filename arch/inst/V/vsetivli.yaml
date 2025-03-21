@@ -11,9 +11,9 @@ assembly: xd, imm
 encoding:
   match: 11---------------111-----1010111
   variables:
-    - name: zimm10
+    - name: imm
       location: 29-20
-    - name: uimm
+    - name: imm
       location: 19-15
     - name: rd
       location: 11-7
