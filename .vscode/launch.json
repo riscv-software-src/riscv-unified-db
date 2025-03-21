@@ -108,6 +108,13 @@
       "script": "test:smoke",
       "args": [],
       "askParameters": false
+    },
+    {
+      "type": "msedge",
+      "name": "RISC-V Summary - JS",
+      "request": "launch",
+      "url": "file://wsl.localhost/Ubuntu/home/james/github/csc-riscv-unified-db/backends/riscv_summary/gen_summary.html",
+      "webRoot": "${workspaceFolder}"
     }
   ]
 }
