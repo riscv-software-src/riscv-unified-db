@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: c.mop.n
+long_name: Compressed May-Be-Operation Instruction
+description: C.MOP.n is encoded in the reserved encoding space corresponding to C.LUI xn, 0. Unlike the MOPs defined in the Zimop extension, the C.MOP.n instructions are defined to not write any register. Their encoding allows future extensions to define them to read register x[n].
+definedBy: Zcmop
+assembly: "|"
+encoding:
+  match: 01100---10000001
+  variables:
+    - name: mop_n_field
+      location: 10-8
+      left_shift: 1
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: false
+pseudoinstructions:
+  - when: (mop_n_field == 0x1)
+    to: c.mop.1
+  - when: (mop_n_field == 0x3)
+    to: c.mop.3
+  - when: (mop_n_field == 0x5)
+    to: c.mop.5
+  - when: (mop_n_field == 0x7)
+    to: c.mop.7
+  - when: (mop_n_field == 0x9)
+    to: c.mop.9
+  - when: (mop_n_field == 0xB)
+    to: c.mop.11
+  - when: (mop_n_field == 0xD)
+    to: c.mop.13
+  - when: (mop_n_field == 0xF)
+    to: c.mop.15
+operation(): |
