@@ -12,8 +12,22 @@ description: |
   If it is implemented, mcontext must also be implemented. 
   
   This register is only accessible in HS-Mode, M-mode and Debug Mode. If Smstateen is implemented, 
-  then accessibility of in HS-Mode is controlled by mstateenzero[57].
+  then accessibility of in HS-Mode is controlled by mstateen0[57].
 
   This register is an alias of the mcontext register, providing access to the hcontext field from HS-Mode.
 
 definedBy: Sdtrig
+fields:
+  HCONTEXT:
+    alias: mcontext.HCONTEXT
+    location: 13-0
+    type: RW
+    description: |
+      Alias of `mcontext.HCONTEXT`.
+    sw_write(csr_value): |
+      # forward the write to mcontext.HCONTEXT
+      CSR[mcontext].HCONTEXT.sw_write(csr_value.HCONTEXT);
+      return CSR[mcontext].HCONTEXT;
+sw_read(): |
+  # return the value of mcontext
+  return $bits(CSR[mcontext]); # might truncate if xlen() < MXLEN, but that's the expected behavior

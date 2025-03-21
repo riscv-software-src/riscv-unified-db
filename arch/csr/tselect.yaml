@@ -23,4 +23,11 @@ description: |
   This CSR is read/write.
 
 definedBy: Sdtrig
+fields:
+  INDEX:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    type: RW
+    description: Index value
+    reset_value: UNDEFINED_LEGAL
 

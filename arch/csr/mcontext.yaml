@@ -6,7 +6,7 @@ name: mcontext
 long_name: Machine-mode context register
 address: 0x7A8
 priv_mode: M
-length: XLEN
+length: MXLEN
 description: |
   This register must be implemented if hcontext is implemented, and is optional otherwise. 
   It is only accessible in M-mode and Debug mode.
@@ -32,5 +32,4 @@ fields:
       RV64 (as visible through the mcontext register). If the H
       extension is implemented, it’s recommended to
       implement 7 bits on RV32 and 14 bits on RV64.
-      
     reset_value: 0
