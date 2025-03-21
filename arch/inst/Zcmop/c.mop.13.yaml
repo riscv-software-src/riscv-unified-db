@@ -1,0 +1,23 @@
+$schema: "inst_schema.json#"
+kind: instruction
+name: c.mop.13
+long_name: "Compressed May-Be Operation 13"
+description: |
+  C.MOP.13 is a 16-bit compressed instruction introduced in the Zcmop extension.
+  It is not meant to write any register, but it can be redefined to read register x13.
+  The instruction uses a reserved encoding from the C.LUI instruction family.
+definedBy:
+  anyOf:
+    - Zcmop
+    - Zca
+assembly: "C.MOP.13"
+encoding:
+  match: "0110011010000001"
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  # Expand to corresponding Zimop operation.
+  # Implicitly accesses register x13.

@@ -1,0 +1,24 @@
+$schema: "inst_schema.json#"
+kind: instruction
+name: c.mop.7
+long_name: "Compressed May-Be Operation 7"
+description: |
+  C.MOP.7 is a 16-bit compressed instruction provided by the Zcmop extension.
+  It is designed to not write any register by default while being re-definable
+  to read register x7 if the extension requires. Its encoding is derived from a
+  reserved C.LUI space.
+definedBy:
+  anyOf:
+    - Zcmop
+    - Zca
+assembly: "C.MOP.7"
+encoding:
+  match: "0110001110000001"
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  # Expand to corresponding Zimop operation.
+  # Implicitly accesses register x7.

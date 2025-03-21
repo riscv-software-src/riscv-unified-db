@@ -1,0 +1,24 @@
+$schema: "inst_schema.json#"
+kind: instruction
+name: c.mop.1
+long_name: "Compressed May-Be Operation 1"
+description: |
+  C.MOP.1 is a 16-bit compressed instruction defined by the Zcmop extension.
+  It does not write any register by default but may be redefined to read register x1.
+  The encoding is reserved from the C.LUI encoding space and is expected to expand
+  to a corresponding Zimop operation.
+definedBy:
+  anyOf:
+    - Zcmop
+    - Zca
+assembly: "C.MOP.1"
+encoding:
+  match: "0110000010000001"
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  # Expand to corresponding Zimop operation.
+  # Implicitly accesses register x3.
