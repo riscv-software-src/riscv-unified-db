@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.c.bseti
+long_name: Single-Bit set (Immediate)
+description: |
+  This instruction returns `rd` with a single bit set at the index specified in shamt.
+  The index is read from the lower log2(XLEN) bits of `shamt`.
+  Instruction encoded in CB instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqcibm
+assembly: " xd, shamt"
+base: 32
+encoding:
+  match: 100101--------01
+  variables:
+    - name: shamt
+      location: 6-2
+      not: 0
+    - name: rd
+      location: 9-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  XReg index = shamt & (xlen() - 1);
+  XReg reg = creg2reg(rd);
+  X[reg] = X[reg] | (1 << index);

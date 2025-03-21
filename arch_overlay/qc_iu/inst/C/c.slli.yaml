@@ -1,0 +1,3 @@
+hints:
+  - { $ref: inst/Xqci/qc.c.delay.yaml# }
+  - { $ref: inst/Xqci/qc.c.ptrace.yaml# }

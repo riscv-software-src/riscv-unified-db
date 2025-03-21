@@ -17,8 +17,8 @@ encoding:
   variables:
     - name: imm
       location: 12|6-5|2|11-10|4-3
-      left_shift: 0
-    - name: rs1
+      left_shift: 1
+    - name: xs1
       location: 9-7
 access:
   s: always
@@ -29,8 +29,8 @@ operation(): |
   if (implemented?(ExtensionName::C) && (CSR[misa].C == 1'b0)) {
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
-  if (X[rs1] != 0) {
-    jump($pc + imm);
+  if (X[creg2reg(xs1)] == 0) {
+    jump($pc + $signed(imm));
   }
 
 sail(): |

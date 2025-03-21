@@ -1,6 +1,8 @@
 %version: 1.0
 
 include "builtin_functions.idl"
+include "interrupts.idl"
+include "fetch.idl"
 include "util.idl"
 include "fp.idl"
 
@@ -104,13 +106,10 @@ enum CsrFieldType {
 }
 
 # generated from extension information in arch definition
-builtin enum ExtensionName;
+generated enum ExtensionName;
 
 # generated from extension information in arch definition
-builtin enum InterruptCode;
-
-# generated from extension information in arch definition
-builtin enum ExceptionCode;
+generated enum ExceptionCode;
 
 # XLEN encoding, as defined in CSR[mstatus].mxl, etc.
 enum XRegWidth {
@@ -181,6 +180,11 @@ struct TranslationResult {
   PteFlags pte_flags;
 }
 
+struct CachedTranslationResult {
+  Boolean valid;
+  TranslationResult result;
+}
+
 # options associated with a translation (TLB) invalidation
 struct VmaOrderType {
   Boolean global;  # include global mappings?
@@ -197,7 +201,6 @@ struct VmaOrderType {
   Boolean single_gpaddr;  # Only order a single guest physical address?
   XReg gpaddr;            # when single_gpaddr is true, the guest physical address to order
 }
-
 
 bitfield (64) Sv39PageTableEntry {
   N 63
@@ -237,6 +240,19 @@ function mode {
 }
 
 
+function set_mode_no_refresh {
+  arguments PrivilegeMode new_mode
+  description {
+    Set the current privilege mode to `new_mode`, but don't refresh interrupts
+  }
+  body {
+    if (new_mode != current_mode) {
+      notify_mode_change(new_mode, current_mode);
+      current_mode = new_mode;
+    }
+  }
+}
+
 function set_mode {
   arguments PrivilegeMode new_mode
   description {
@@ -246,6 +262,7 @@ function set_mode {
     if (new_mode != current_mode) {
       notify_mode_change(new_mode, current_mode);
       current_mode = new_mode;
+      refresh_pending_interrupts();
     }
   }
 }
@@ -280,6 +297,43 @@ function exception_handling_mode {
         return PrivilegeMode::M;
       }
     }
+  }
+}
+
+function creg2reg {
+  returns Bits<5> # X register index
+  arguments Bits<3> creg_idx
+  description {
+    Maps a C register index (_e.g._, `rs1'` in the specification) to an X register index. From the
+    specification:
+
+    .Registers specified by the three-bit _rs1_&#x2032;, _rs2_&#x2032;, and _rd_&#x2032; fields of the CIW, CL, CS, CA, and CB formats.
+    //[cols="20%,10%,10%,10%,10%,10%,10%,10%,10%"]
+    [float="center",align="center",cols="1a, 1a",frame="none",grid="none"]
+    |===
+    |
+    [%autowidth,cols="<",frame="none",grid="none",options="noheader"]
+    !===
+    !RVC Register Number
+    !Integer Register Number
+    !Integer Register ABI Name
+    !Floating-Point Register Number
+    !Floating-Point Register ABI Name
+    !===
+    |
+
+    [%autowidth,cols="^,^,^,^,^,^,^,^",options="noheader"]
+    !===
+    !`000` !`001` !`010` !`011` !`100` !`101` !`110` !`111`
+    !`x8` !`x9` !`x10` !`x11` !`x12` !`x13` !`x14`!`x15`
+    !`s0` !`s1` !`a0` !`a1` !`a2` !`a3` !`a4`!`a5`
+    !`f8` !`f9` !`f10` !`f11` !`f12` !`f13`!`f14` !`f15`
+    !`fs0` !`fs1` !`fa0` !`fa1` !`fa2`!`fa3` !`fa4` !`fa5`
+    !===
+    |===
+  }
+  body {
+    return {2'b01, creg_idx};
   }
 }
 
@@ -461,6 +515,78 @@ function stval_for {
   }
 }
 
+function csr? {
+  returns Boolean
+  arguments Bits<12> csr_addr
+  description {
+    Returns true if csr_addr is an implemented csr, and the defining extension is not disabled
+  }
+  body {
+    if (!implemented_csr?(csr_addr)) {
+      return false;
+    }
+
+    if (implemented?(ExtensionName::S)
+        && !CSR[csr_addr].implemented_without?(ExtensionName::S)) {
+
+      return CSR[misa].S == 1'b1;
+
+    } else if (implemented?(ExtensionName::U)
+               && !CSR[csr_addr].implemented_without?(ExtensionName::U)) {
+
+      return CSR[misa].U == 1'b1;
+
+    } else if (implemented?(ExtensionName::H)
+               && !CSR[csr_addr].implemented_without?(ExtensionName::H)) {
+
+      return CSR[misa].H == 1'b1;
+    }
+
+    return true;
+  }
+}
+
+function check_csr {
+  arguments Bits<12> csr_addr, Boolean for_write, Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Checks if 'csr_addr' is a valid address, can be read in the current mode,
+    and, if for_write is true, can be written in the current mode.
+
+    If the check fails, will either raise IllegalInsruction or cause
+    unpredictable behavior, depending on TRAP_ON_UNIMPLEMENTED_CSR
+  }
+  body {
+    if (!csr?(csr_addr)) {
+      if (TRAP_ON_UNIMPLEMENTED_CSR) {
+        raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+      } else {
+        unpredictable("Attempt to read unimplemented CSR");
+      }
+    }
+    PrivilegeMode priv_mode;
+    if (csr_addr[9:8] == 2'b00) {
+      priv_mode = PrivilegeMode::M;
+    } else if (csr_addr[9:8] == 2'b01 || csr_addr[9:8] == 2'b10) {
+      priv_mode = PrivilegeMode::S;
+    } else {
+      priv_mode = PrivilegeMode::U;
+    }
+    if (priv_mode == PrivilegeMode::M) {
+      if (mode() != PrivilegeMode::M) {
+        raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+      }
+    } else if (priv_mode == PrivilegeMode::S) {
+      if (mode() == PrivilegeMode::U || mode() == PrivilegeMode::VU) {
+        raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+      }
+    }
+
+    if (for_write && csr_addr[11:10] == 2'b11) {
+      # write to read-only CSR
+      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+    }
+  }
+}
 
 function vstval_for {
   returns XReg
@@ -704,7 +830,7 @@ function jump {
     if ((ialign() == 16) && ((target_addr & 0x1) != 0)) {
       # the target PC is not halfword-aligned
       raise(ExceptionCode::InstructionAddressMisaligned, mode(), target_addr);
-    } else if ((target_addr & 0x3) != 0) {
+    } else if ((ialign() == 32) && (target_addr & 0x3) != 0) {
       # the target PC is not word-aligned
       raise(ExceptionCode::InstructionAddressMisaligned, mode(), target_addr);
     }
@@ -882,9 +1008,8 @@ enum PmpMatchResult {
 }
 
 function pmp_match_64 {
-  template U32 access_size
   returns PmpMatchResult, PmpCfg
-  arguments Bits<PHYS_ADDR_WIDTH> paddr
+  arguments Bits<PHYS_ADDR_WIDTH> paddr, U32 access_size
   description {
     Given a physical address, see if any PMP entry matches.
 
@@ -913,9 +1038,9 @@ function pmp_match_64 {
           range_lo = 0;
         } else {
           # otherwise, it's the address in the next lowest pmpaddr register
-          range_lo = (CSR[pmpaddr_idx - 1] << 2)[PHYS_ADDR_WIDTH-1:0];
+          range_lo = ($bits(CSR[pmpaddr_idx - 1]) << 2)[PHYS_ADDR_WIDTH-1:0];
         }
-        range_hi = (CSR[pmpaddr_idx] << 2)[PHYS_ADDR_WIDTH-1:0];
+        range_hi = ($bits(CSR[pmpaddr_idx]) << 2)[PHYS_ADDR_WIDTH-1:0];
 
       } else if (cfg.A == $bits(PmpCfg_A::NAPOT)) {
         # Example pmpaddr: 0b00010101111
@@ -931,7 +1056,7 @@ function pmp_match_64 {
         range_hi = ((pmpaddr_value & ~mask) + len) << 2;
 
       } else if (cfg.A == $bits(PmpCfg_A::NA4)) {
-        range_lo = (CSR[pmpaddr_idx] << 2)[PHYS_ADDR_WIDTH-1:0];
+        range_lo = ($bits(CSR[pmpaddr_idx]) << 2)[PHYS_ADDR_WIDTH-1:0];
         range_hi = range_lo + 4;
       }
 
@@ -950,9 +1075,8 @@ function pmp_match_64 {
 }
 
 function pmp_match_32 {
-  template U32 access_size
   returns PmpMatchResult, PmpCfg
-  arguments Bits<PHYS_ADDR_WIDTH> paddr
+  arguments Bits<PHYS_ADDR_WIDTH> paddr, U32 access_size
   description {
     Given a physical address, see if any PMP entry matches.
 
@@ -981,9 +1105,9 @@ function pmp_match_32 {
           range_lo = 0;
         } else {
           # otherwise, it's the address in the next lowest pmpaddr register
-          range_lo = (CSR[pmpaddr_idx - 1] << 2)[PHYS_ADDR_WIDTH-1:0];
+          range_lo = ($bits(CSR[pmpaddr_idx - 1]) << 2)[PHYS_ADDR_WIDTH-1:0];
         }
-        range_hi = (CSR[pmpaddr_idx] << 2)[PHYS_ADDR_WIDTH-1:0];
+        range_hi = ($bits(CSR[pmpaddr_idx]) << 2)[PHYS_ADDR_WIDTH-1:0];
 
       } else if (cfg.A == $bits(PmpCfg_A::NAPOT)) {
         # Example pmpaddr: 0b00010101111
@@ -1018,9 +1142,8 @@ function pmp_match_32 {
 }
 
 function pmp_match {
-  template U32 access_size
   returns PmpMatchResult, PmpCfg
-  arguments Bits<PHYS_ADDR_WIDTH> paddr
+  arguments Bits<PHYS_ADDR_WIDTH> paddr, U32 access_size
   description {
     Given a physical address, see if any PMP entry matches.
 
@@ -1029,9 +1152,9 @@ function pmp_match {
   }
   body {
     if (XLEN == 64) {
-      return pmp_match_64<access_size>(paddr);
+      return pmp_match_64(paddr, access_size);
     } else {
-      return pmp_match_32<access_size>(paddr);
+      return pmp_match_32(paddr, access_size);
     }
   }
 }
@@ -1085,9 +1208,8 @@ function effective_ldst_mode {
 
 
 function pmp_check {
-  template U32 access_size
   returns Boolean
-  arguments Bits<PHYS_ADDR_WIDTH> paddr, MemoryOperation type
+  arguments Bits<PHYS_ADDR_WIDTH> paddr, U32 access_size, MemoryOperation type
   description {
     Given a physical address and operation type, return whether or not the access is allowed by PMP.
   }
@@ -1096,7 +1218,7 @@ function pmp_check {
     PmpMatchResult match_result;
     PmpCfg cfg;
 
-    (match_result, cfg) = pmp_match<access_size>(paddr);
+    (match_result, cfg) = pmp_match(paddr, access_size);
 
     if (match_result == PmpMatchResult::FullMatch) {
       if (mode == PrivilegeMode::M && (cfg.L == 0)) {
@@ -1151,8 +1273,10 @@ function access_check {
     }
 
     # check PMP
-    if (!pmp_check<access_size>(paddr[PHYS_ADDR_WIDTH-1:0], type)) {
-      raise(fault_type, from_mode, vaddr);
+    if (implemented?(ExtensionName::Smpmp)) {
+      if (!pmp_check(paddr[PHYS_ADDR_WIDTH-1:0], access_size, type)) {
+        raise(fault_type, from_mode, vaddr);
+      }
     }
   }
 }
@@ -1287,77 +1411,78 @@ function current_translation_mode {
           return SatpMode::Reserved;
         }
       }
-    }
+    } else if (CSR[misa].S == 1'b1) {
 
-    # if we reach here, then the effective mode is S or U
-    assert(effective_mode == PrivilegeMode::S || effective_mode == PrivilegeMode::U, "unexpected priv mode");
-    Bits<4> mode_val = CSR[vsatp].MODE;
-    if (mode_val == $bits(SatpMode::Sv32)) {
-      # Sv32 is only defined when XLEN == 32
-      if (XLEN == 64) {
-        if (effective_mode == PrivilegeMode::S && CSR[mstatus].SXL != $bits(XRegWidth::XLEN32)) {
+      # if we reach here, then the effective mode is S or U
+      assert(effective_mode == PrivilegeMode::S || effective_mode == PrivilegeMode::U, "unexpected priv mode");
+      Bits<4> mode_val = CSR[satp].MODE;
+      if (mode_val == $bits(SatpMode::Sv32)) {
+        # Sv32 is only defined when XLEN == 32
+        if (XLEN == 64) {
+          if (effective_mode == PrivilegeMode::S && CSR[mstatus].SXL != $bits(XRegWidth::XLEN32)) {
+            # not supported in this XLEN
+            return SatpMode::Reserved;
+          }
+          if (effective_mode == PrivilegeMode::U && CSR[sstatus].UXL != $bits(XRegWidth::XLEN32)) {
+            # not supported in this XLEN
+            return SatpMode::Reserved;
+          }
+        }
+        if (!implemented?(ExtensionName::Sv32)) {
+          # not supported in this configuration
+          return SatpMode::Reserved;
+        }
+      } else if ((XLEN == 64) && (mode_val == $bits(SatpMode::Sv39))) {
+        # Sv39 is only defined when XLEN == 64
+        if (effective_mode == PrivilegeMode::S && CSR[mstatus].SXL != $bits(XRegWidth::XLEN64)) {
           # not supported in this XLEN
           return SatpMode::Reserved;
         }
-        if (effective_mode == PrivilegeMode::U && CSR[sstatus].UXL != $bits(XRegWidth::XLEN32)) {
+        if (effective_mode == PrivilegeMode::U && CSR[sstatus].UXL != $bits(XRegWidth::XLEN64)) {
           # not supported in this XLEN
           return SatpMode::Reserved;
         }
-      }
-      if (!implemented?(ExtensionName::Sv32)) {
-        # not supported in this configuration
+        if (!implemented?(ExtensionName::Sv39)) {
+          # not supported in this configuration
+          return SatpMode::Reserved;
+        }
+        # OK
+        return SatpMode::Sv39;
+      } else if ((XLEN == 64) && (mode_val == $bits(SatpMode::Sv48))) {
+        # Sv48 is only defined when XLEN == 64
+        if (effective_mode == PrivilegeMode::S && CSR[mstatus].SXL != $bits(XRegWidth::XLEN64)) {
+          # not supported in this XLEN
+          return SatpMode::Reserved;
+        }
+        if (effective_mode == PrivilegeMode::U && CSR[sstatus].UXL != $bits(XRegWidth::XLEN64)) {
+          # not supported in this XLEN
+          return SatpMode::Reserved;
+        }
+        if (!implemented?(ExtensionName::Sv48)) {
+          # not supported in this configuration
+          return SatpMode::Reserved;
+        }
+        # OK
+        return SatpMode::Sv48;
+      } else if ((XLEN == 64) && (mode_val == $bits(SatpMode::Sv57))) {
+        # Sv57 is only defined when XLEN == 64
+        if (effective_mode == PrivilegeMode::S && CSR[mstatus].SXL != $bits(XRegWidth::XLEN64)) {
+          # not supported in this XLEN
+          return SatpMode::Reserved;
+        }
+        if (effective_mode == PrivilegeMode::U && CSR[sstatus].UXL != $bits(XRegWidth::XLEN64)) {
+          # not supported in this XLEN
+          return SatpMode::Reserved;
+        }
+        if (!implemented?(ExtensionName::Sv57)) {
+          # not supported in this configuration
+          return SatpMode::Reserved;
+        }
+        # OK
+        return SatpMode::Sv57;
+      } else {
         return SatpMode::Reserved;
       }
-    } else if ((XLEN == 64) && (mode_val == $bits(SatpMode::Sv39))) {
-      # Sv39 is only defined when XLEN == 64
-      if (effective_mode == PrivilegeMode::S && CSR[mstatus].SXL != $bits(XRegWidth::XLEN64)) {
-        # not supported in this XLEN
-        return SatpMode::Reserved;
-      }
-      if (effective_mode == PrivilegeMode::U && CSR[sstatus].UXL != $bits(XRegWidth::XLEN64)) {
-        # not supported in this XLEN
-        return SatpMode::Reserved;
-      }
-      if (!implemented?(ExtensionName::Sv39)) {
-        # not supported in this configuration
-        return SatpMode::Reserved;
-      }
-      # OK
-      return SatpMode::Sv39;
-    } else if ((XLEN == 64) && (mode_val == $bits(SatpMode::Sv48))) {
-      # Sv48 is only defined when XLEN == 64
-      if (effective_mode == PrivilegeMode::S && CSR[mstatus].SXL != $bits(XRegWidth::XLEN64)) {
-        # not supported in this XLEN
-        return SatpMode::Reserved;
-      }
-      if (effective_mode == PrivilegeMode::U && CSR[sstatus].UXL != $bits(XRegWidth::XLEN64)) {
-        # not supported in this XLEN
-        return SatpMode::Reserved;
-      }
-      if (!implemented?(ExtensionName::Sv48)) {
-        # not supported in this configuration
-        return SatpMode::Reserved;
-      }
-      # OK
-      return SatpMode::Sv48;
-    } else if ((XLEN == 64) && (mode_val == $bits(SatpMode::Sv57))) {
-      # Sv57 is only defined when XLEN == 64
-      if (effective_mode == PrivilegeMode::S && CSR[mstatus].SXL != $bits(XRegWidth::XLEN64)) {
-        # not supported in this XLEN
-        return SatpMode::Reserved;
-      }
-      if (effective_mode == PrivilegeMode::U && CSR[sstatus].UXL != $bits(XRegWidth::XLEN64)) {
-        # not supported in this XLEN
-        return SatpMode::Reserved;
-      }
-      if (!implemented?(ExtensionName::Sv57)) {
-        # not supported in this configuration
-        return SatpMode::Reserved;
-      }
-      # OK
-      return SatpMode::Sv57;
-    } else {
-      return SatpMode::Reserved;
     }
   }
 }
@@ -1369,7 +1494,7 @@ function current_gstage_translation_mode {
     from VS-mode or VU-mode.
   }
   body {
-    return CSR[hgatp].MODE;
+    return $enum(HgatpMode, CSR[hgatp].MODE);
   }
 }
 
@@ -1832,7 +1957,7 @@ function gstage_page_walk {
               # successful translation and update
               result.paddr = pte_paddr;
               if (PTESIZE >= 64) {
-                result.pbmt = pte[62:61];
+                result.pbmt = $enum(Pbmt, pte[62:61]);
               }
               result.pte_flags = pte_flags;
               return result;
@@ -2151,7 +2276,7 @@ function stage1_page_walk {
                   encoding
                 );
               result.paddr = pte_phys.paddr;
-              result.pbmt = pte_phys.pbmt == 0 ? pte[62:61] : pte_phys.pbmt;
+              result.pbmt = pte_phys.pbmt == Pbmt::PMA ? $enum(Pbmt, pte[62:61]) : pte_phys.pbmt;
               result.pte_flags = pte_flags;
               return result;
             }
@@ -2232,13 +2357,13 @@ function translate {
     #####################################################################
 
     Boolean cached_translation_valid;
-    TranslationResult cached_translation_result;
+    CachedTranslationResult cached_translation_result;
 
-    (cached_translation_valid, cached_translation_result) =
+    cached_translation_result =
       cached_translation(vaddr, op);
 
-    if (cached_translation_valid) {
-      return cached_translation_result;
+    if (cached_translation_result.valid) {
+      return cached_translation_result.result;
     }
 
     #####################################################################
@@ -2249,7 +2374,8 @@ function translate {
 
     if (effective_mode == PrivilegeMode::M) {
       # there is no translation in M-mode
-      return vaddr;
+      result.paddr = vaddr;
+      return result;
     }
 
     SatpMode translation_mode =
@@ -2305,9 +2431,9 @@ function canonical_vaddr? {
     # canonical depends on the virtual address size in the current translation mode
     SatpMode satp_mode;
     if (virtual_mode?()) {
-      satp_mode = CSR[vsatp].MODE;
+      satp_mode = $enum(SatpMode, CSR[vsatp].MODE);
     } else {
-      satp_mode = CSR[satp].MODE;
+      satp_mode = $enum(SatpMode, CSR[satp].MODE);
     }
 
     # calculate the effective address after pointer masking
@@ -2337,7 +2463,7 @@ function canonical_gpaddr? {
   body {
 
     # canonical depends on the virtual address size in the current translation mode
-    SatpMode satp_mode = CSR[satp].MODE;
+    SatpMode satp_mode = $enum(SatpMode, CSR[satp].MODE);
 
     if (satp_mode == SatpMode::Bare) {
       return true;
@@ -2393,7 +2519,7 @@ function read_memory_aligned {
   returns Bits<LEN>
   arguments
     XReg virtual_address,
-    Bits<INSTR_ENC_SIZE> encoding   # the encoding of an instruction causing this access, or 0 if a fetch
+    Bits<INSTR_ENC_SIZE> encoding   # the encoding of an instruction causing this access
   description {
     Read from virtual memory using a known aligned address.
   }
@@ -2466,7 +2592,7 @@ function read_memory {
       # misaligned, must break into multiple reads
       if (MISALIGNED_SPLIT_STRATEGY == "by_byte") {
         Bits<LEN> result = 0;
-        for (U32 i = 0; i <= LEN; i++) {
+        for (U32 i = 0; i <= (LEN/8); i++) {
           result = result | (read_memory_aligned<8>(virtual_address + i, encoding) << (8*i));
         }
         return result;
@@ -2481,9 +2607,43 @@ function read_memory_xlen {
   returns Bits<XLEN>
   arguments
     XReg virtual_address,
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Read XLEN bits from memory
+  }
+  body {
+    if (xlen() == 32) {
+      return read_memory<32>(virtual_address, encoding);
+    } else {
+      return read_memory<64>(virtual_address, encoding);
+    }
+  }
+}
+
+function write_memory_xlen {
+  arguments
+    XReg virtual_address,
+    Bits<XLEN> value,
+    Bits<INSTR_ENC_SIZE> encoding
+  description {
+    Read XLEN bits from memory
+  }
+  body {
+    if (xlen() == 32) {
+      return write_memory<32>(virtual_address, value, encoding);
+    } else {
+      return write_memory<64>(virtual_address, value, encoding);
+    }
+  }
+}
+
+function read_memory_xlen_aligned {
+  returns Bits<XLEN>
+  arguments
+    XReg virtual_address,
     Bits<INSTR_ENC_SIZE> encoding   # the encoding of an instruction causing this access, or 0 if a fetch
   description {
-    Read from virtual memory XLEN bits using a known aligned address.
+    Read from virtual memory XLEN (which may be runtime-determined) bits using a known aligned address.
   }
   body {
     TranslationResult result;
@@ -2495,9 +2655,13 @@ function read_memory_xlen {
     }
 
     # may raise an exception
-    access_check(result.paddr, XLEN, virtual_address, MemoryOperation::Read, ExceptionCode::LoadAccessFault, effective_ldst_mode());
+    access_check(result.paddr, xlen(), virtual_address, MemoryOperation::Read, ExceptionCode::LoadAccessFault, effective_ldst_mode());
 
-    return read_physical_memory<XLEN>(result.paddr);
+    if (xlen() == 32) {
+      return read_physical_memory<32>(result.paddr);
+    } else {
+      return read_physical_memory<64>(result.paddr);
+    }
   }
 }
 
@@ -2777,6 +2941,7 @@ function write_memory {
 
     if (aligned) {
       write_memory_aligned<LEN>(virtual_address, value, encoding);
+      return;
     }
 
     # access isn't naturally aligned, but it still might be atomic if this hart supports
@@ -2794,6 +2959,7 @@ function write_memory {
       if (misaligned_is_atomic?<LEN>(physical_address)) {
         access_check(physical_address, LEN, virtual_address, MemoryOperation::Write, ExceptionCode::StoreAmoAccessFault, effective_ldst_mode());
         write_physical_memory<LEN>(physical_address, value);
+        return;
       }
     }
 
@@ -2812,7 +2978,7 @@ function write_memory {
     } else {
       # misaligned, must break into multiple reads
       if (MISALIGNED_SPLIT_STRATEGY == "by_byte") {
-        for (U32 i = 0; i <= LEN; i++) {
+        for (U32 i = 0; i <= (LEN/8); i++) {
           write_memory_aligned<8>(virtual_address + i, (value >> (8*i))[7:0], encoding);
         }
       } else if (MISALIGNED_SPLIT_STRATEGY == "custom") {
@@ -2822,13 +2988,13 @@ function write_memory {
   }
 }
 
-function write_memory_xlen {
+function write_memory_xlen_aligned {
   arguments
     XReg virtual_address,
     Bits<XLEN> value,
     Bits<INSTR_ENC_SIZE> encoding # encoding of the instruction causing this access
   description {
-    Write to virtual memory XLEN bits using a known aligned address.
+    Write to virtual memory XLEN bits (which may be runtime determined) using a known aligned address.
   }
   body {
     XReg physical_address;
@@ -2838,9 +3004,13 @@ function write_memory_xlen {
       : virtual_address;
 
     # may raise an exception
-    access_check(physical_address, XLEN, virtual_address, MemoryOperation::Write, ExceptionCode::StoreAmoAccessFault, effective_ldst_mode());
+    access_check(physical_address, xlen(), virtual_address, MemoryOperation::Write, ExceptionCode::StoreAmoAccessFault, effective_ldst_mode());
 
-    write_physical_memory<XLEN>(physical_address, value);
+    if (xlen() == 32) {
+      write_physical_memory<32>(physical_address, value);
+    } else {
+      write_physical_memory<64>(physical_address, value);
+    }
   }
 }
 

@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.c.mveqz
+long_name: Conditional Move if equal to zero
+description: |
+  Move `rs1` to `rd` if `rd` == 0, keep `rd` value otherwise
+  Instruction encoded in CL instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqcicm
+base: 32
+encoding:
+  match: 101011---00---10
+  variables:
+    - name: rs1
+      location: 9-7
+    - name: rd
+      location: 4-2
+assembly: " xd, xs1"
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  XReg reg = creg2reg(rd);
+  XReg src = creg2reg(rs1);
+  XReg orig_val = X[reg];
+  X[reg] = (orig_val == 0) ? X[src] : orig_val;

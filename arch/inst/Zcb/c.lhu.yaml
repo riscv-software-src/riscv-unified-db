@@ -33,9 +33,9 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg virtual_address = X[rs1+8] + imm;
+  XReg virtual_address = X[creg2reg(rs1)] + imm;
 
-  X[rd+8] = zext(read_memory<16>(virtual_address, $encoding), 16);
+  X[creg2reg(rd)] = read_memory<16>(virtual_address, $encoding);
 
 sail(): |
   {

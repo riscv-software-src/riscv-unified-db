@@ -10,9 +10,11 @@ description: |
   to the base address in register rs1.
   It expands to `fld` `rd, offset(rs1)`.
 definedBy:
-  allOf:
-    - C
-    - D
+  anyOf:
+    - allOf:
+        - C
+        - D
+    - Zcd
 assembly: xd, imm(xs1)
 encoding:
   match: 001-----------00
@@ -34,6 +36,6 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg virtual_address = X[rs1] + imm;
+  XReg virtual_address = X[creg2reg(rs1)] + imm;
 
-  X[rd] = sext(read_memory<64>(virtual_address, $encoding), 64);
+  X[creg2reg(rd)] = sext(read_memory<64>(virtual_address, $encoding), 64);

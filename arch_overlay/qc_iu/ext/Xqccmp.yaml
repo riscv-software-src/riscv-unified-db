@@ -1,0 +1,152 @@
+# yaml-language-server: $schema=../../../schemas/ext_schema.json
+
+$schema: ext_schema.json#
+kind: extension
+name: Xqccmp
+long_name: 16-bit Push/Pop instructions and double-moves
+type: unprivileged
+versions:
+- version: "0.1.0"
+  state: development
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  - name: Ana Pazos
+    company: Qualcomm Technologies, Inc.
+    email: apazos@qti.qualcomm.com
+  - name: James Ball
+    company: Qualcomm Technologies, Inc.
+    email: jameball@qti.qualcomm.com
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
+- version: "0.2.0"
+  state: development
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  - name: Ana Pazos
+    company: Qualcomm Technologies, Inc.
+    email: apazos@qti.qualcomm.com
+  - name: James Ball
+    company: Qualcomm Technologies, Inc.
+    email: jameball@qti.qualcomm.com
+  changes:
+    - Fix all push and pop instructions description for RV64 (IDL code fix)
+    - Fix qc.cm.pushfp instruction to avoid rlist == 4, since not saving s0 == fp but updating it, should not occur
+    - Add CSRs qc.mstkbottomaddr and qc.mstktopaddr to support cache range checking
+    - Add list of supported custom exceptions - stack alignment check and stack range check
+    - Add stack exception checks in all push/pop instructions
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
+- version: "0.3.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  - name: Ana Pazos
+    company: Qualcomm Technologies, Inc.
+    email: apazos@qti.qualcomm.com
+  - name: James Ball
+    company: Qualcomm Technologies, Inc.
+    email: jameball@qti.qualcomm.com
+  changes:
+    - Fix all push and pop instructions IDL code to take in consideration that xlen() returns bits and not bytes
+    - Declare state of extension as "frozen"
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
+description: |
+  The Xqccmp extension is a set of instructions which may be executed as a series of existing 32-bit RISC-V instructions.
+
+  This extension reuses some encodings from _c.fsdsp_.  Therefore it is _incompatible_ with <<Zcd>>,
+  which is included when C and D extensions are both present.
+
+  NOTE: Xqccmp is primarily targeted at embedded class CPUs due to implementation complexity. Additionally, it is not compatible with architecture class profiles.
+
+  The Xqccmp extension depends on the <<Zca>> extension.
+
+  The Xqccmp extension using same encodings as Zcmp extension for similar instructions, with 2 major differences:
+
+  * Order of load and store of registers is opposite to Zcmp order, but compliant with SW ABI
+  * Xqccmp on top of Zcmp instructions defines qc.cm.pushfp instruction to manage frame pointer
+
+  The PUSH/POP assembly syntax uses several variables, the meaning of which are:
+
+  * _reg_list_ is a list containing 1 to 13 registers (ra and 0 to 12 s registers)
+  ** valid values: {ra}, {ra, s0}, {ra, s0-s1}, {ra, s0-s2}, ..., {ra, s0-s8}, {ra, s0-s9}, {ra, s0-s11}
+  ** note that {ra, s0-s10} is _not_ valid, giving 12 lists not 13 for better encoding
+  * _stack_adj_ is the total size of the stack frame.
+  ** valid values vary with register list length and the specific encoding, see the instruction pages for details.
+
+  [%header,cols="^1,^1,4,8"]
+  |===
+  |RV32
+  |RV64
+  |Mnemonic
+  |Instruction
+
+  |yes
+  |yes
+  |qc.cm.push _{reg_list}, -stack_adj_
+  |<<#insns-qc_cm_push>>
+
+  |yes
+  |yes
+  |qc.cm.pushfp _{reg_list}, -stack_adj_
+  |<<#insns-qc_cm_pushfp>>
+
+  |yes
+  |yes
+  |qc.cm.pop _{reg_list}, stack_adj_
+  |<<#insns-qc_cm_pop>>
+
+  |yes
+  |yes
+  |qc.cm.popret _{reg_list}, stack_adj_
+  |<<#insns-qc_cm_popret>>
+
+  |yes
+  |yes
+  |qc.cm.popretz _{reg_list}, stack_adj_
+  |<<#insns-qc_cm_popretz>>
+
+  |yes
+  |yes
+  |qc.cm.mva01s _rs1', rs2'_
+  |<<#insns-qc_cm_mva01s>>
+
+  |yes
+  |yes
+  |qc.cm.mvsa01 _r1s', r2s'_
+  |<<#insns-qc_cm_mvsa01>>
+
+  |===
+
+doc_license:
+  name: Creative Commons Attribution 4.0 International License
+  url: https://creativecommons.org/licenses/by/4.0/
+company:
+  name: Qualcomm Technologies, Inc.
+  url: https://qualcomm.com
+conflicts:
+  anyOf:
+    - allOf: [C, D]
+    - Zcd
+    - Zcmp

@@ -13,15 +13,17 @@ encoding:
     - name: imm
       location: 31-12
       left_shift: 12
-    - name: rd
+    - name: xd
       location: 11-7
+hints:
+  - { $ref: inst/Zicfilp/lpad.yaml# }
 access:
   s: always
   u: always
   vs: always
   vu: always
-  data_independent_timing: true
-operation(): X[rd] = $pc + imm;
+data_independent_timing: true
+operation(): X[xd] = $pc + $signed(imm);
 
 sail(): |
   {
@@ -30,6 +32,6 @@ sail(): |
       RISCV_LUI   => off,
       RISCV_AUIPC => get_arch_pc() + off
     };
-    X(rd) = ret;
+    X(xd) = ret;
     RETIRE_SUCCESS
   }

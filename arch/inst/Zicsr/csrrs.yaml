@@ -30,14 +30,17 @@ access:
   vs: always
   vu: always
 operation(): |
-  # TODO: permission checks
+  Boolean will_write = rs1 != 0;
+  check_csr(csr, will_write, $encoding);
 
   XReg initial_csr_value = CSR[csr].sw_read();
-  XReg mask = X[rs1];
 
-  # set bits using the mask
-  # performing any WARL transformations first
-  CSR[csr].sw_write(initial_csr_value | mask);
+  if (will_write) {
+    # set bits using the mask
+    # performing any WARL transformations first
+    XReg mask = X[rs1];
+    CSR[csr].sw_write(initial_csr_value | mask);
+  }
 
   X[rd] = initial_csr_value;
 

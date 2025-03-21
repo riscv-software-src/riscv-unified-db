@@ -1,4 +1,5 @@
-# grammar for the Isa Description Language
+# grammar for the ISA Description Language
+
 grammar Idl
   rule isa
     space*
@@ -16,6 +17,8 @@ grammar Idl
         /
         function_definition
         /
+        fetch
+        /
         space+
       )+ <Idl::IsaSyntaxNode>
   end
@@ -26,13 +29,13 @@ grammar Idl
 
   # declaring a global variable or constant
   rule global_definition
-    single_declaration_with_initialization space* ';' <Idl::GlobalWithInitializationSyntaxNode>
+    const:('const'? space+)? single_declaration_with_initialization space* ';' <Idl::GlobalWithInitializationSyntaxNode>
     /
     declaration space* ';' <GlobalSyntaxNode>
   end
 
   rule enum_definition
-    'builtin' space+ 'enum' space+ user_type_name space* ';' <Idl::BuiltinEnumDefinitionSyntaxNode>
+    'generated' space+ 'enum' space+ user_type_name space* ';' <Idl::BuiltinEnumDefinitionSyntaxNode>
     /
     'enum' space+ user_type_name space+ '{' space*
       e:(user_type_name space+ i:(int space+)?)+ space*
@@ -61,16 +64,16 @@ grammar Idl
 
   rule int
     # verilog style: explicit bit width
-    (([0-9]+)/'XLEN')? "'" 'b' [0-1] [0-1_]* <Idl::IntLiteralSyntaxNode> /
-    (([0-9]+)/'XLEN')? "'" 'o' [0-7] [0-7_]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'XLEN')? "'" 'b' [0-1xX] [0-1_xX]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'XLEN')? "'" 'o' [0-7xX] [0-7_xX]* <Idl::IntLiteralSyntaxNode> /
     (([0-9]+)/'XLEN')? "'" 'd'? [0-9] [0-9_]* <Idl::IntLiteralSyntaxNode> /
-    (([0-9]+)/'XLEN')? "'" 'h' [0-9a-fA-F] [0-9a-fA-F_]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'XLEN')? "'" 'h' [0-9a-fA-FxX] [0-9a-fA-F_xX]* <Idl::IntLiteralSyntaxNode> /
 
     # verilog style: explicit bit width, signed
-    (([0-9]+)/'XLEN')? "'" 'sb' [0-1] [0-1_]* <Idl::IntLiteralSyntaxNode> /
-    (([0-9]+)/'XLEN')? "'" 'so' [0-7] [0-7_]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'XLEN')? "'" 'sb' [0-1xX] [0-1_xX]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'XLEN')? "'" 'so' [0-7xX] [0-7_xX]* <Idl::IntLiteralSyntaxNode> /
     (([0-9]+)/'XLEN')? "'" 's' 'd'? [0-9] [0-9_]* <Idl::IntLiteralSyntaxNode> /
-    (([0-9]+)/'XLEN')? "'" 'sh' [0-9a-fA-F] [0-9a-fA-F_]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'XLEN')? "'" 'sh' [0-9a-fA-FxX] [0-9a-fA-F_xX]* <Idl::IntLiteralSyntaxNode> /
 
     # c++ style: signed
     '0b' [0-1] [0-1_]* 's' <Idl::IntLiteralSyntaxNode> /
@@ -86,10 +89,6 @@ grammar Idl
 
     # special case: just a single 0
     '0' 's'? <Idl::IntLiteralSyntaxNode>
-  end
-
-  rule bits
-    "'" [01]+ "'"
   end
 
   rule p0_binary_operator
@@ -271,12 +270,12 @@ grammar Idl
 
   rule csr_field_access_expression
     # CSR field access
-    'CSR' space* '[' space* idx:(csr_name / int) space* ']' space* '.' space* csr_field_name <Idl::CsrFieldReadExpressionSyntaxNode>
+    csr:csr_register_access_expression space* '.' space* csr_field_name <Idl::CsrFieldReadExpressionSyntaxNode>
   end
 
   rule csr_register_access_expression
     # CSR register access
-    'CSR' space* '[' space* idx:expression space* ']' <Idl::CsrReadExpressionSyntaxNode>
+    'CSR' space* '[' space* idx:(expression / csr_name) space* ']' <Idl::CsrReadExpressionSyntaxNode>
   end
 
   rule field_access_eligible_expression
@@ -291,6 +290,7 @@ grammar Idl
     field_access_eligible_expression space* '.' space* field_name <Idl::FieldAccessExpressionSyntaxNode>
   end
 
+  # expression that can accept an array index operator (expr[])
   rule ary_eligible_expression
     paren_expression
     /
@@ -303,8 +303,6 @@ grammar Idl
     function_call # Ast is assigned in function_call rule
     /
     csr_field_access_expression
-    /
-    csr_register_access_expression
     /
     bits_cast
     /
@@ -324,7 +322,15 @@ grammar Idl
   end
 
   rule bits_cast
-    '$bits' space* '(' space* expression space* ')' <Idl::BitsCastSyntaxNode>
+    '$bits' space* '(' space*
+      expr:(
+        csr_register_access_expression
+        /
+        enum_ref
+        /
+        expression
+      )
+    space* ')' <Idl::BitsCastSyntaxNode>
   end
 
   rule unary_expression
@@ -364,8 +370,6 @@ grammar Idl
     /
     csr_field_access_expression
     /
-    csr_register_access_expression
-    /
     enum_ref
     /
     rval # must come last
@@ -403,7 +407,7 @@ grammar Idl
   rule function_call
     csr:csr_register_access_expression space* '.' space* 'sw_write' space* '(' space* expression space* ')' <Idl::CsrSoftwareWriteSyntaxNode>
     /
-    csr:csr_register_access_expression space* '.' space* function_name space* '(' space* ')' <Idl::CsrFunctionCallSyntaxNode>
+    csr:csr_register_access_expression space* '.' space* function_name space* '(' space* function_arg_list space* ')' <Idl::CsrFunctionCallSyntaxNode>
     /
     function_name t:(space* '<' space* targs:function_call_template_arguments space* '>')? space* '(' space* function_arg_list space* ')' <Idl::FunctionCallExpressionSyntaxNode>
   end
@@ -417,7 +421,7 @@ grammar Idl
   end
 
   rule body_function_definition
-    'function' space+ function_name space* '{' space*
+    type:('external' space+)? 'function' space+ function_name space* '{' space*
       targs:('template' space+ first:single_declaration rest:(space* ',' space* single_declaration)* space+)?
       ret:('returns' space+ first:type_name rest:(space* ',' space* type_name)* space+)?
       args:(
@@ -438,9 +442,9 @@ grammar Idl
   end
 
   rule builtin_function_definition
-    'builtin' space+ 'function' space+ function_name space* '{' space*
-      targs:('template' space+ first:single_declaration rest:(space* ',' space* single_declaration)* space+)?
-      ret:('returns' space+ first:type_name rest:(space* ',' space* type_name)* space+)?
+    type:('builtin' / 'generated') space+ 'function' space+ function_name space* '{' space*
+      # templates are not supported for builtins
+      ret:('returns' space+ first:type_name space+)?
       args:(
         'arguments' space+
         first:single_declaration
@@ -451,6 +455,12 @@ grammar Idl
         desc:([^}] / "\n")+
       '}' space*
     '}' <Idl::FunctionDefSyntaxNode>
+  end
+
+  rule fetch
+    'fetch' space* '{' space*
+      function_body space*
+    '}' <Idl::FetchSyntaxNode>
   end
 
   rule function_definition
@@ -478,17 +488,17 @@ grammar Idl
   end
 
   rule single_declaration_with_initialization
-    q:type_qualifier? space* type_name space+ id space* ary_size:ary_size_decl? space* '=' space* rval:expression <Idl::VariableDeclarationWithInitializationSyntaxNode>
+    type_name space+ id space* ary_size:ary_size_decl? space* '=' space* rval:expression <Idl::VariableDeclarationWithInitializationSyntaxNode>
   end
 
   rule declaration
-    q:type_qualifier? space* type_name space+ first:id space* rest:(space* ',' space* id)+ space* <Idl::MultiVariableDeclarationSyntaxNode>
+    type_name space+ first:id space* rest:(space* ',' space* id)+ space* <Idl::MultiVariableDeclarationSyntaxNode>
     /
     single_declaration
   end
 
   rule single_declaration
-    q:type_qualifier? space* type_name space+ id ary_size:(space* ary_size_decl)? <Idl::VariableDeclarationSyntaxNode>
+    type_name space+ id ary_size:(space* ary_size_decl)? <Idl::VariableDeclarationSyntaxNode>
   end
 
   rule statement
@@ -506,7 +516,7 @@ grammar Idl
   end
 
   rule return_expression
-    'return' space+ first:(expression/dontcare_return) rest:(space* ',' space* e:(expression/dontcare_return))* <Idl::ReturnExpressionSyntaxNode>
+    'return' vals:(first:(space+ e:(expression/dontcare_return))? rest:(space* ',' space* e:(expression/dontcare_return))*) <Idl::ReturnExpressionSyntaxNode>
   end
 
   rule return_statement
@@ -553,10 +563,6 @@ grammar Idl
     '}' <Idl::ForLoopSyntaxNode>
   end
 
-  rule type_qualifier
-    '' # 'signed'
-  end
-
   rule builtin_type_name
     # alias for Bits<XLEN>
     'XReg' ![A-Za-z0-9] <Idl::BuiltinTypeNameSyntaxNode> /
@@ -585,8 +591,10 @@ grammar Idl
     'body' ![A-Za-z0-9_] /
     'function' ![A-Za-z0-9_] /
     'builtin' ![A-Za-z0-9_] /
+    'generated' ![A-Za-z0-9_] /
     'enum' ![A-Za-z0-9_]  /
-    'bitfield' ![A-Za-z0-9_]
+    'bitfield' ![A-Za-z0-9_] /
+    'CSR' ![A-Za-z0-9_]
   end
 
   rule user_type_name
@@ -636,7 +644,7 @@ grammar Idl
   end
 
   rule csr_name
-    [a-z] ([a-z0-9])*
+    [a-z] [a-z0-9_.]*
   end
 
   rule csr_field_name
