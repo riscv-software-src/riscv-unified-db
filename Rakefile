@@ -112,6 +112,12 @@ task :clean do
   warn "Don't run clean using Rake. Run `./do clean` (alias for `./bin/clean`) instead."
 end
 
+desc "Clean up all generated files and container"
+task :clobber do
+  warn "Don't run clean using Rake. Run `./do clean` (alias for `./bin/clean`) instead."
+end
+
+
 namespace :test do
   task :insts do
     puts "Checking instruction encodings..."
