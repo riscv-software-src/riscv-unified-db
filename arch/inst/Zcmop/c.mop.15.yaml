@@ -1,0 +1,23 @@
+$schema: "inst_schema.json#"
+kind: instruction
+name: c.mop.15
+long_name: "Compressed May-Be Operation 15"
+description: |
+  C.MOP.15 is a 16-bit compressed instruction specified by the Zcmop extension.
+  It does not write any register by default but may be redefined to read register x15.
+  Its encoding is taken from the reserved encoding space originally assigned to C.LUI.
+definedBy:
+  anyOf:
+    - Zcmop
+    - Zca
+assembly: "C.MOP.15"
+encoding:
+  match: "0110011110000001"
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  # Expand to corresponding Zimop operation.
+  # Implicitly accesses register x15.
