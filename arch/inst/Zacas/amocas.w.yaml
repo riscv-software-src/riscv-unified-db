@@ -17,18 +17,6 @@ description: |
   - Updates rd with the loaded value.
   - In RV64, rd is sign-extended to 64 bits.
 
-  **Additional Considerations:**
-  - A FENCE instruction may be used to enforce ordering between the memory
-    read and, if produced, the memory write performed by AMOCAS.W.
-  - If AMOCAS.W fails, it may either not perform a memory write or write
-    back the old value loaded from memory.
-  - The memory write, if performed, does not have release semantics,
-    regardless of the rl bit.
-  - Execution requires write permissions on the memory location.
-
-  **Alignment Requirement:** 4-byte aligned.
-  **Memory Semantics:** Supports acquire (aq) and release (rl) consistency.
-
 definedBy: Zacas
 assembly: xd, xs1, xs2, aq, rl
 encoding:
@@ -51,7 +39,3 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  temp[31:0] = mem[X(rs1)]
-  if (temp[31:0] == X(rd)[31:0])
-      mem[X(rs1)] = X(rs2)[31:0]
-  X(rd) = SignExtend(temp[31:0])
