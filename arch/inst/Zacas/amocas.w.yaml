@@ -3,36 +3,34 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: amocas.q
-long_name: Atomic Compare-and-Swap Quadword
+name: amocas.w
+long_name: Atomic Compare-and-Swap Word
 description: |
-  For RV64, AMOCAS.Q atomically loads 128-bits of a data value from address
-  in rs1, compares the loaded value to a 128-bit value held in a register
-  pair consisting of rd and rd+1, and if the comparison is bitwise equal,
-  then stores the 128-bit value held in the register pair rs2 and rs2+1 to
-  the original address in rs1. The value loaded from memory is placed into
-  the register pair rd and rd+1. The instruction requires the first register
-  in the pair to be even numbered; encodings with odd-numbered registers
-  specified in rs2 and rd are reserved. When the first register of a source
-  register pair is x0, then both halves of the pair read as zero. When the
-  first register of a destination register pair is x0, then the entire
-  register result is discarded and neither destination register is written.
+  For RV32, AMOCAS.W atomically loads a 32-bit data value from address in rs1,
+  compares the loaded value to the 32-bit value held in rd, and if the
+  comparison is bitwise equal, then stores the 32-bit value held in rs2 to the
+  original address in rs1. The value loaded from memory is placed into
+  register rd.
+
+  For RV64, AMOCAS.W atomically loads a 32-bit data value from address in rs1,
+  compares the loaded value to the lower 32 bits of the value held in rd, and
+  if the comparison is bitwise equal, then stores the lower 32 bits of the
+  value held in rs2 to the original address in rs1. The 32-bit value loaded
+  from memory is sign-extended and is placed into register rd.
 
   A FENCE instruction may be used to order the memory read access and, if
-  produced, the memory write access by an AMOCAS.Q instruction.
+  produced, the memory write access by an AMOCAS.W instruction.
 
-  [Note] An unsuccessful AMOCAS.Q may either not perform a memory write or
-  may write back the old value loaded from memory. The memory write, if
-  produced, does not have release semantics, regardless of rl.
+  [Note] An unsuccessful AMOCAS.W may either not perform a memory write or may
+  write back the old value loaded from memory. The memory write, if produced,
+  does not have release semantics, regardless of rl.
 
-
-  An AMOCAS.Q instruction always requires write permissions.
+  An AMOCAS.W instruction always requires write permissions.
 
 definedBy: Zacas
-base: 64
 assembly: xd, xs1, xs2, aq, rl
 encoding:
-  match: 00101------------100-----0101111
+  match: 00101------------010-----0101111
   variables:
     - name: aq
       location: 26-26
@@ -40,12 +38,10 @@ encoding:
       location: 25-25
     - name: rs2
       location: 24-20
-      not: [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31]
     - name: rs1
       location: 19-15
     - name: rd
       location: 11-7
-      not: [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31]
 access:
   s: always
   u: always
