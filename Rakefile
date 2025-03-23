@@ -302,8 +302,8 @@ namespace :test do
   DESC
   task :smoke do
     puts "UPDATE: Starting test:smoke"
-    puts "UPDATE: Running gen:riscv_summary_xlsx"
-    Rake::Task["gen:riscv_summary_xlsx"].invoke
+    puts "UPDATE: Running gen:isa_explorer_spreadsheet"
+    Rake::Task["gen:isa_explorer_spreadsheet"].invoke
     puts "UPDATE: Running test:idl_compiler"
     Rake::Task["test:idl_compiler"].invoke
     puts "UPDATE: Running test:lib"
@@ -324,8 +324,8 @@ namespace :test do
     puts "UPDATE: Starting test:regress"
     Rake::Task["test:smoke"].invoke
 
-    puts "UPDATE: Running gen:riscv_summary_html"
-    Rake::Task["gen:riscv_summary_html"].invoke
+    puts "UPDATE: Running gen:isa_explorer_browser"
+    Rake::Task["gen:isa_explorer_browser"].invoke
 
     puts "UPDATE: Running gen:html_manual MANUAL_NAME=isa VERSIONS=all"
     ENV["MANUAL_NAME"] = "isa"
