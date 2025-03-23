@@ -49,6 +49,8 @@ jobs:
         run: ./do gen:html[generic_rv64]
       - name: Generate YARD docs
         run: ./do gen:tool_doc
+      - name: Create _site/riscv_summary
+        run: mkdir -p _site/riscv_summary
       - name: Create _site/example_cfg
         run: mkdir -p _site/example_cfg
       - name: Create _site/manual
@@ -57,6 +59,14 @@ jobs:
         run: mkdir -p _site/pdfs
       - name: Create _site/htmls
         run: mkdir -p _site/htmls
+      - name: Create riscv_summary_html
+        run: ./do gen:riscv_summary_html
+      - name: Copy riscv_summary_html
+        run: cp gen/riscv_summary/html _site/riscv_summary
+      - name: Create riscv_summary_xlsx
+        run: ./do gen:riscv_summary_xlsx
+      - name: Copy riscv_summary_xlsx
+        run: cp gen/riscv_summary/xlsx _site/riscv_summary
       - name: Copy cfg html
         run: cp -R gen/cfg_html_doc/generic_rv64/html _site/example_cfg
       - name: Copy top-level index.html with links to portfolio artifacts
