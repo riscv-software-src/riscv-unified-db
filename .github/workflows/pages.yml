@@ -48,7 +48,7 @@ jobs:
       - name: Create isa_explorer_browser
         run: ./do gen:isa_explorer_browser
       - name: Copy isa_explorer_browser
-        run: cp -R gen/isa_explorer/html _site/isa_explorer
+        run: cp -R gen/isa_explorer/browser _site/isa_explorer
       - name: Create isa_explorer_spreadsheet
         run: ./do gen:isa_explorer_spreadsheet
       - name: Copy isa_explorer_spreadsheet

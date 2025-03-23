@@ -6,8 +6,8 @@ require "write_xlsx"
 require_relative $root / "lib" / "architecture"
 
 # @param arch [Architecture] The entire RISC-V architecture
-# @return [Hash<String,Array<String>] Summary data with array of column names and array of row data.
-def arch2summary(arch)
+# @return [Hash<String,Array<String>] Extension table data with array of column names and array of row data.
+def arch2ext_table(arch)
   # Get array of profile releases and sort by name
   sorted_profile_releases = arch.profile_releases.sort_by(&:name)
 
@@ -20,7 +20,7 @@ def arch2summary(arch)
     sorted_profile_releases.unshift(arch.profile_release("RVI20"))
   end
 
-  summary = {
+  ext_table = {
     "column_names" => [
       "Extension Name",
       "Ratification\nPackage\nName",
@@ -71,10 +71,10 @@ def arch2summary(arch)
       end
     ].flatten
 
-    summary["rows"].append(row)
+    ext_table["rows"].append(row)
   end
 
-  return summary
+  return ext_table
 end
 
 # Create ISA Explorer extension table as XLSX file.
@@ -82,8 +82,8 @@ end
 # @param arch [Architecture] The entire RISC-V architecture
 # @param output_pname [String] Full absolute pathname to output file
 def gen_xlsx_ext_table(arch, output_pname)
-  # Convert arch to summary data structure
-  summary = arch2summary(arch)
+  # Convert arch to ext_table data structure
+  ext_table = arch2ext_table(arch)
 
   # Create a new Excel workbook
   workbook = WriteXLSX.new(output_pname)
@@ -98,14 +98,14 @@ def gen_xlsx_ext_table(arch, output_pname)
 
   # Add column names in 1st row (row 0).
   col = 0
-  summary["column_names"].each do |column_name|
+  ext_table["column_names"].each do |column_name|
     worksheet.write(0, col, column_name, header_format)
     col += 1
   end
 
   # Add extension information in rows
   row = 1
-  summary["rows"].each do |row_cells|
+  ext_table["rows"].each do |row_cells|
     col = 0
     row_cells.each do |cell|
       worksheet.write(row, col, cell)
@@ -125,11 +125,11 @@ end
 # @param arch [Architecture] The entire RISC-V architecture
 # @param output_pname [String] Full absolute pathname to output file
 def gen_js_ext_table(arch, output_pname)
-  # Convert arch to summary data structure
-  summary = arch2summary(arch)
+  # Convert arch to ext_table data structure
+  ext_table = arch2ext_table(arch)
 
-  column_names = summary["column_names"]
-  rows = summary["rows"]
+  column_names = ext_table["column_names"]
+  rows = ext_table["rows"]
 
   File.open(output_pname, "w") do |fp|
     fp.write "// Define data array\n"
