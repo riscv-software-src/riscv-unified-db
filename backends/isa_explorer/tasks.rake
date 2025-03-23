@@ -1,52 +1,55 @@
 # frozen_string_literal: true
 #
-# Contains Rake rules to generate xslx and html table summarizing entire RISC-V architecture.
+# Contains Rake rules to generate ISA explorer.
 
 require "pathname"
-require_relative "gen_summary"
+require_relative "isa_explorer"
 
-BACKEND_NAME = "riscv_summary"
-TAB_MASTER_NAME = "tabulator-master"
-
-# Source directories/files
+# Backend generator directory
+BACKEND_NAME = "isa_explorer"
 BACKEND_DIR = "#{$root}/backends/#{BACKEND_NAME}"
-HTML_FNAME = "#{BACKEND_NAME}.html"
-HTML_SRC_PNAME = "#{BACKEND_DIR}/#{HTML_FNAME}"
-TAB_MASTER_SRC_PNAME = "#{BACKEND_DIR}/#{TAB_MASTER_NAME}"
+
+# Library used to generate dynamic JavaScript tables
+# Currently located under backend but would be better to be under ext directory - TBD.
+TAB_MASTER_NAME = "tabulator-master"
+SRC_TAB_MASTER_DIR = "#{BACKEND_DIR}/#{TAB_MASTER_NAME}"
+
+# Static source files
+SRC_HTML_PNAME = "#{BACKEND_DIR}/ext_table.html"
 
 # Generated directories/files
 GEN_ROOT = $root / "gen" / BACKEND_NAME
-XLSX_GEN_DIR = GEN_ROOT / "xlsx"
-HTML_GEN_DIR = GEN_ROOT / "html"
-XLSX_GEN_PNAME = XLSX_GEN_DIR / "#{BACKEND_NAME}.xlsx"
-HTML_GEN_PNAME = HTML_GEN_DIR / HTML_FNAME
-JS_GEN_PNAME = HTML_GEN_DIR / "#{BACKEND_NAME}.js"
+GEN_SPREADSHEET_DIR = GEN_ROOT / "spreadsheet"
+GEN_BROWSER_DIR = GEN_ROOT / "browser"
+GEN_XLSX_EXT_TABLE = GEN_SPREADSHEET_DIR / "ext_table.xlsx"
+GEN_HTML_EXT_TABLE = GEN_BROWSER_DIR / "ext_table.html"
+GEN_JS_EXT_TABLE = GEN_BROWSER_DIR / "ext_table.js"
 
-directory(XLSX_GEN_DIR)
-directory(HTML_GEN_DIR)
+directory(GEN_SPREADSHEET_DIR)
+directory(GEN_BROWSER_DIR)
 
 namespace :gen do
-  desc("Generate RISC-V architecture summary as an Excel spreadsheet")
-  task :riscv_summary_xlsx do
-    Rake::Task["#{XLSX_GEN_PNAME}"].invoke
+  desc("Generate RISC-V ISA Explorer for Excel spreadsheet")
+  task :isa_explorer_spreadsheet do
+    Rake::Task["#{GEN_XLSX_EXT_TABLE}"].invoke
   end
 
-  desc("Generate RISC-V architecture summary as dynamic HTML table using JavaScript")
-  task :riscv_summary_html do
-    Rake::Task["#{HTML_GEN_PNAME}"].invoke
-    Rake::Task["#{JS_GEN_PNAME}"].invoke
+  desc("Generate RISC-V ISA Explorer for browser")
+  task :isa_explorer_browser do
+    Rake::Task["#{GEN_HTML_EXT_TABLE}"].invoke
+    Rake::Task["#{GEN_JS_EXT_TABLE}"].invoke
   end
 end
 
 src_pnames = [
-  "#{BACKEND_DIR}/gen_summary.rb",
+  "#{BACKEND_DIR}/isa_explorer.rb",
   "#{$root}/lib/architecture.rb",
   "#{$root}/lib/arch_obj_models/database_obj.rb",
   "#{$root}/lib/arch_obj_models/extension.rb",
   "#{$root}/lib/backend_helpers.rb"
 ]
 
-file "#{XLSX_GEN_PNAME}" => [
+file "#{GEN_XLSX_EXT_TABLE}" => [
     __FILE__,
     src_pnames
 ].flatten do |t|
@@ -55,14 +58,14 @@ file "#{XLSX_GEN_PNAME}" => [
     # Ensure directory holding target file is present.
     FileUtils.mkdir_p File.dirname(t.name)
 
-    gen_xlsx(arch, t.name)
+    gen_xlsx_ext_table(arch, t.name)
 
     puts "Success: Generated #{t.name}"
 end
 
-file "#{HTML_GEN_PNAME}" => [
+file "#{GEN_HTML_EXT_TABLE}" => [
     __FILE__,
-  HTML_SRC_PNAME
+  SRC_HTML_PNAME
 ].flatten do |t|
     # Ensure directory holding target file is present.
     FileUtils.mkdir_p File.dirname(t.name)
@@ -77,25 +80,25 @@ file "#{HTML_GEN_PNAME}" => [
     end
 
     # Just copy static HTML file.
-    FileUtils.copy_file(HTML_SRC_PNAME, t.name)
+    FileUtils.copy_file(SRC_HTML_PNAME, t.name)
+    puts "Success: Copied #{SRC_HTML_PNAME} to #{t.name}"
 
     # Also copy tabulator-master library in case it isn't already there.
-    FileUtils.cp_r(TAB_MASTER_SRC_PNAME, HTML_GEN_DIR)
-
-    puts "Success: Copied #{HTML_SRC_PNAME} to #{t.name}"
+    FileUtils.cp_r(SRC_TAB_MASTER_DIR, GEN_BROWSER_DIR)
+    puts "Success: Copied #{SRC_TAB_MASTER_DIR} to #{GEN_BROWSER_DIR}"
 end
 
-file "#{JS_GEN_PNAME}" => [
+file "#{GEN_JS_EXT_TABLE}" => [
     __FILE__,
     src_pnames,
-    HTML_SRC_PNAME
+    SRC_HTML_PNAME
 ].flatten do |t|
     arch = create_arch
 
     # Ensure directory holding target file is present.
     FileUtils.mkdir_p File.dirname(t.name)
 
-    gen_js(arch, t.name)
+    gen_js_ext_table(arch, t.name)
 
     puts "Success: Generated #{t.name}"
 end

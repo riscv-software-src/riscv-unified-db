@@ -43,16 +43,16 @@ jobs:
         run: ./bin/build_container
       - name: Setup project
         run: ./bin/setup
-      - name: Create _site/riscv_summary
-        run: mkdir -p _site/riscv_summary
-      - name: Create riscv_summary_html
-        run: ./do gen:riscv_summary_html
-      - name: Copy riscv_summary_html
-        run: cp -R gen/riscv_summary/html _site/riscv_summary
-      - name: Create riscv_summary_xlsx
-        run: ./do gen:riscv_summary_xlsx
-      - name: Copy riscv_summary_xlsx
-        run: cp -R gen/riscv_summary/xlsx _site/riscv_summary
+      - name: Create _site/isa_explorer
+        run: mkdir -p _site/isa_explorer
+      - name: Create isa_explorer_browser
+        run: ./do gen:isa_explorer_browser
+      - name: Copy isa_explorer_browser
+        run: cp -R gen/isa_explorer/html _site/isa_explorer
+      - name: Create isa_explorer_spreadsheet
+        run: ./do gen:isa_explorer_spreadsheet
+      - name: Copy isa_explorer_spreadsheet
+        run: cp -R gen/isa_explorer/xlsx _site/isa_explorer
       - name: Build manual
         run: ./do gen:html_manual MANUAL_NAME=isa VERSIONS=all
       - name: Build html documentation for generic_rv64

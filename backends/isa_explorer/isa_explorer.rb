@@ -77,11 +77,11 @@ def arch2summary(arch)
   return summary
 end
 
-# Create XLSX file.
+# Create ISA Explorer extension table as XLSX file.
 #
 # @param arch [Architecture] The entire RISC-V architecture
 # @param output_pname [String] Full absolute pathname to output file
-def gen_xlsx(arch, output_pname)
+def gen_xlsx_ext_table(arch, output_pname)
   # Convert arch to summary data structure
   summary = arch2summary(arch)
 
@@ -120,11 +120,11 @@ def gen_xlsx(arch, output_pname)
   workbook.close
 end
 
-# Create JavaScript file consumed by static HTML file.
+# Create ISA Explorer extension table as JavaScript file.
 #
 # @param arch [Architecture] The entire RISC-V architecture
 # @param output_pname [String] Full absolute pathname to output file
-def gen_js(arch, output_pname)
+def gen_js_ext_table(arch, output_pname)
   # Convert arch to summary data structure
   summary = arch2summary(arch)
 
@@ -149,7 +149,7 @@ def gen_js(arch, output_pname)
     fp.write "];\n"
     fp.write "\n"
     fp.write "// Initialize table\n"
-    fp.write "var table = new Tabulator(\"#example-table\", {\n"
+    fp.write "var table = new Tabulator(\"#ext_table\", {\n"
     fp.write "  data: tabledata, // Assign data to table\n"
     fp.write "  autoColumns: true // Create columns from data field names\n"
     fp.write "});\n"
