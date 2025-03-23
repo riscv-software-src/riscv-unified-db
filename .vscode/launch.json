@@ -102,6 +102,15 @@
     },
     {
       "type": "rdbg",
+      "name": "riscv_summary_html",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:riscv_summary_html",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
       "name": "Smoke test",
       "request": "launch",
       "command": "bundle exec rake",
@@ -113,7 +122,7 @@
       "type": "msedge",
       "name": "RISC-V Summary - JS",
       "request": "launch",
-      "url": "file://wsl.localhost/Ubuntu/home/james/github/csc-riscv-unified-db/backends/riscv_summary/gen_summary.html",
+      "url": "file://wsl.localhost/Ubuntu/home/james/github/csc-riscv-unified-db/gen/riscv_summary/html/riscv_summary.html",
       "webRoot": "${workspaceFolder}"
     }
   ]
