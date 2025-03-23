@@ -52,7 +52,7 @@ jobs:
       - name: Create isa_explorer_spreadsheet
         run: ./do gen:isa_explorer_spreadsheet
       - name: Copy isa_explorer_spreadsheet
-        run: cp -R gen/isa_explorer/xlsx _site/isa_explorer
+        run: cp -R gen/isa_explorer/spreadsheet _site/isa_explorer
       - name: Build manual
         run: ./do gen:html_manual MANUAL_NAME=isa VERSIONS=all
       - name: Build html documentation for generic_rv64
