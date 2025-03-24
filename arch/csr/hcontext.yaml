@@ -8,15 +8,18 @@ address: 0x6A8
 priv_mode: S
 length: XLEN
 description: |
-  This optional register may be implemented only if the H extension is implemented. 
-  If it is implemented, mcontext must also be implemented. 
-  
-  This register is only accessible in HS-Mode, M-mode and Debug Mode. If Smstateen is implemented, 
+  This optional register may be implemented only if the H extension is implemented.
+  If it is implemented, mcontext must also be implemented.
+
+  This register is only accessible in HS-Mode, M-mode and Debug Mode. If Smstateen is implemented,
   then accessibility of in HS-Mode is controlled by mstateen0[57].
 
   This register is an alias of the mcontext register, providing access to the hcontext field from HS-Mode.
 
-definedBy: Sdtrig
+definedBy:
+  allOf:
+    - Sdtrig
+    - H
 fields:
   HCONTEXT:
     alias: mcontext.HCONTEXT
@@ -24,7 +27,10 @@ fields:
     type: RW
     description: |
       Alias of `mcontext.HCONTEXT`.
+    reset_value: 0
     sw_write(csr_value): |
+      # check width of HCONTEXT
+      csr_value.HCONTEXT = csr_value.HCONTEXT & ((1 << DBG_HCONTEXT_WIDTH) - 1);
       # forward the write to mcontext.HCONTEXT
       CSR[mcontext].HCONTEXT.sw_write(csr_value.HCONTEXT);
       return CSR[mcontext].HCONTEXT;

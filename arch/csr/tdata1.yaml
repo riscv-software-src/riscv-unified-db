@@ -8,14 +8,14 @@ address: 0x7A1
 priv_mode: M
 length: XLEN
 description: |
-  This register provides access to the trigger selected by tselect. 
+  This register provides access to the trigger selected by tselect.
   The reset values listed here apply to every underlying trigger.
-  
+
   This register is optional if no triggers are implemented.
-  Writing 0 to this register must result in a trigger that is disabled. 
-  If this trigger supports multiple types, then the hardware should disable it 
-  by changing type to 15. 
-  
+  Writing 0 to this register must result in a trigger that is disabled.
+  If this trigger supports multiple types, then the hardware should disable it
+  by changing type to 15.
+
   This CSR is read/write.
 
 definedBy: Sdtrig
@@ -23,6 +23,7 @@ fields:
   TYPE:
     location_rv32: 31-28
     location_rv64: 63-60
+    type: RW
     description: |
       0 (none):: There is no trigger at this tselect.
       1 (legacy):: The trigger is a legacy SiFive address match trigger. These should not be implemented and aren’t further documented here.
@@ -34,12 +35,13 @@ fields:
       7 (tmexttrigger):: The trigger is a trigger source external to the TM. The remaining bits in this register act as described in tmexttrigger.
       12—14 (custom):: These trigger types are available for non-standard use.
       15 (disabled):: This trigger is disabled. In this state, tdata2 and tdata3 can be written with any value that is supported for any of the types this trigger implements. The remaining bits in this register, except for dmode, are ignored.
-      
+
       Other values are reserved for future use.
     reset_value: UNDEFINED_LEGAL
   DMODE:
     location_rv32: 27
     location_rv64: 59
+    type: RW
     description: |
       If type is 0, then this bit is hard-wired to 0.
       0 (both): Both Debug and M-mode can write the tdata
@@ -56,6 +58,7 @@ fields:
   DATA:
     location_rv32: 26-0
     location_rv64: 58-0
+    type: RW
     description: |
       If type is 0, then this field is hard-wired to 0.
       Trigger-specific data.
