@@ -43,52 +43,8 @@ jobs:
         run: ./bin/build_container
       - name: Setup project
         run: ./bin/setup
-      - name: Build manual
-        run: ./do gen:html_manual MANUAL_NAME=isa VERSIONS=all
-      - name: Build html documentation for example_rv64_with_overlay
-        run: ./do gen:html[example_rv64_with_overlay]
-      - name: Generate YARD docs
-        run: ./do gen:tool_doc
-      - name: Create _site/example_cfg
-        run: mkdir -p _site/example_cfg
-      - name: Create _site/manual
-        run: mkdir -p _site/manual
-      - name: Create _site/pdfs
-        run: mkdir -p _site/pdfs
-      - name: Create _site/htmls
-        run: mkdir -p _site/htmls
-      - name: Copy cfg html
-        run: cp -R gen/cfg_html_doc/example_rv64_with_overlay/html _site/example_cfg
-      - name: Create RVA20 Profile Release PDF Spec
-        run: ./do gen:profile[RVA20]
-      - name: Copy RVA20 Profile Release PDF
-        run: cp gen/profile_doc/pdf/RVA20.pdf _site/pdfs/RVA20.pdf
-      - name: Create RVA22 Profile Release PDF Spec
-        run: ./do gen:profile[RVA22]
-      - name: Copy RVA22 Profile Release PDF
-        run: cp gen/profile_doc/pdf/RVA22.pdf _site/pdfs/RVA22.pdf
-      - name: Create RVI20 Profile Release PDF Spec
-        run: ./do gen:profile[RVI20]
-      - name: Copy RVI20 Profile Release PDF
-        run: cp gen/profile_doc/pdf/RVA20.pdf _site/pdfs/RVI20.pdf
-      - name: Create MC100-32 PDF Spec
-        run: ./do gen:cert_model_pdf[MC100-32]
-      - name: Copy MC100-32 PDF
-        run: cp gen/certificate_doc/pdf/MC100-32.pdf _site/pdfs/MC100-32.pdf
-      - name: Create MC100-32 HTML Spec
-        run: ./do gen:cert_model_html[MC100-32]
-      - name: Copy MC100-32 HTML
-        run: cp gen/certificate_doc/html/MC100-32.html _site/htmls/MC100-32.html
-      - name: Create MC100-64 PDF Spec
-        run: ./do gen:cert_model_pdf[MC100-64]
-      - name: Copy MC100-64 PDF
-        run: cp gen/certificate_doc/pdf/MC100-64.pdf _site/pdfs/MC100-64.pdf
-      - name: Create MC100-64 HTML Spec
-        run: ./do gen:cert_model_html[MC100-64]
-      - name: Copy MC100-64 HTML
-        run: cp gen/certificate_doc/html/MC100-64.html _site/htmls/MC100-64.html
-      - name: Copy manual html
-        run: cp -R gen/manual/isa/top/all/html _site/manual
+      - name: Create deploy dir
+        run: /bin/bash lib/deploy.sh
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

@@ -99,10 +99,8 @@ namespace :gen do
     end
   end
 
-  desc "Resolve the standard in arch/, and write it to resolved_arch/"
-  task "resolved_arch" do
-    sh "#{$root}/.home/.venv/bin/python3 lib/yaml_resolver.py resolve arch resolved_arch"
-  end
+  desc "Resolve the standard in arch/, and write it to gen/resolved_arch/_"
+  task "resolved_arch" => "#{$root}/.stamps/resolve-_.stamp"
 end
 
 # rule to generate standard for any configurations with an overlay
@@ -234,19 +232,12 @@ namespace :test do
     puts "done"
   end
 
-  # task :insts do
-  #   puts "Checking instruction encodings..."
-  #   inst_paths = Dir.glob("#{$root}/arch/inst/**/*.yaml").map { |f| Pathname.new(f) }
-  #   inst_paths.each do |inst_path|
-  #     Validator.instance.validate_instruction(inst_path)
-  #   end
-  #   puts "All instruction encodings pass basic sanity tests"
-  # end
-  task schema: "gen:resolved_arch" do
+  task schema: "#{$root}/.stamps/resolve-_.stamp" do
     puts "Checking arch files against schema.."
-    Architecture.new("#{$root}/resolved_arch").validate(show_progress: true)
+    Architecture.new("#{$root}/gen/resolved_arch/_").validate(show_progress: true)
     puts "All files validate against their schema"
   end
+
   task idl: ["#{$root}/.stamps/resolve-rv32.stamp", "#{$root}/.stamps/resolve-rv64.stamp"]  do
     print "Parsing IDL code for RV32..."
     cfg_arch32 = cfg_arch_for("rv32")

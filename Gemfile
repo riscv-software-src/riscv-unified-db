@@ -28,6 +28,6 @@ group :development do
   gem "rdbg"
   gem "rubocop-minitest"
   gem "ruby-prof"
-  gem "ruby-prof-flamegraph"
+  gem "ruby-prof-flamegraph", git: "https://github.com/oozou/ruby-prof-flamegraph.git", ref: "fc3c437", require: false
   gem "solargraph"
 end
