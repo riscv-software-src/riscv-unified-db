@@ -2,27 +2,22 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: c.fsd
-long_name: Store double-precision
+name: c.fld
+long_name: Load double-precision
 description: |
-  Stores a double precision floating-point value in register rs2 to memory.
+  Loads a double precision floating-point value from memory into register rd.
   It computes an effective address by adding the zero-extended offset, scaled by 8,
   to the base address in register rs1.
-  It expands to `fsd` `rs2, offset(rs1)`.
-definedBy:
-  anyOf:
-    - allOf:
-        - C
-        - D
-    - Zcd
-assembly: xs2, imm(xs1)
+  It expands to `fld` `rd, offset(rs1)`.
+definedBy: Zcd
+assembly: xd, imm(xs1)
 encoding:
-  match: 101-----------00
+  match: 001-----------00
   variables:
     - name: imm
       location: 6-5|12-10
       left_shift: 3
-    - name: rs2
+    - name: rd
       location: 4-2
     - name: rs1
       location: 9-7
@@ -38,4 +33,4 @@ operation(): |
 
   XReg virtual_address = X[creg2reg(rs1)] + imm;
 
-  write_memory<64>(virtual_address, X[creg2reg(rs2)], $encoding);
+  X[creg2reg(rd)] = sext(read_memory<64>(virtual_address, $encoding), 64);

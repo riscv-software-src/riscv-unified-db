@@ -72,3 +72,7 @@ versions:
       #   - [Zcb, "1.0.0"]
       #   - [Zcmp, "1.0.0"]
       #   - [Zcmt, "1.0.0"]
+conflicts:
+  anyOf:
+    - allOf: [C, D]
+    - Zcd

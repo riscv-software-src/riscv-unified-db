@@ -2,28 +2,23 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: c.fsdsp
-long_name: Store double-precision value to stack
+name: c.fldsp
+long_name: Load doubleword into floating-point register from stack
 description: |
-  Stores a double-precision floating-point value in floating-point register rs2 to memory.
-  It computes an effective address by adding the zero-extended offset, scaled by 8,
+  Loads a double-precision floating-point value from memory into floating-point register rd.
+  It computes its effective address by adding the zero-extended offset, scaled by 8,
   to the stack pointer, x2.
-  It expands to `fsd` `rs2, offset(x2)`.
-definedBy:
-  anyOf:
-    - allOf:
-        - C
-        - D
-    - Zcd
-assembly: fs2, imm(sp)
+  It expands to `fld` `rd, offset(x2)`.
+definedBy: Zcd
+assembly: fd, imm(sp)
 encoding:
-  match: 101-----------10
+  match: 001-----------10
   variables:
     - name: imm
-      location: 9-7|12-10
+      location: 4-2|12|6-5
       left_shift: 3
-    - name: rs2
-      location: 6-2
+    - name: rd
+      location: 11-7
 access:
   s: always
   u: always
@@ -39,4 +34,4 @@ operation(): |
 
   XReg virtual_address = X[2] + imm;
 
-  write_memory<64>(virtual_address, f[rs2][63:0], $encoding);
+  f[rd] = read_memory<64>(virtual_address, $encoding);

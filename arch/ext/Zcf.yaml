@@ -2,11 +2,11 @@
 
 $schema: "ext_schema.json#"
 kind: extension
-name: Zcd
-long_name: Compressed instructions for double precision floating point
+name: Zcf
+long_name: Compressed instructions for single precision floating point
 description: |
-  Zcd is the existing set of compressed double precision floating point loads and stores:
-  `c.fld`, `c.fldsp`, `c.fsd`, `c.fsdsp`.
+  Zcf is the existing set of compressed single precision floating point loads and stores (RV32 only):
+  `c.flw`, `c.flwsp`, `c.fsw`, `c.fswsp`.
 
 type: unprivileged
 company:
@@ -40,4 +40,4 @@ versions:
         - anyOf:
           - { name: Zca, version: "= 1.0.0" }
           - { name: C, version: "~> 2.0.0" }
-        - { name: D, version: "~> 2.2.0" }
+        - { name: F, version: "~> 2.2.0" }
