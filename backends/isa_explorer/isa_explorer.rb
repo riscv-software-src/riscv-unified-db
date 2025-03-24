@@ -23,7 +23,7 @@ def arch2ext_table(arch)
   ext_table = {
     # Array of hashes
     "columns" => [
-      {name: "Extension Name", formatter: "link", sorter: "alphanum", headerFilter: true, formatterParams:
+      {name: "Extension Name", formatter: "link", sorter: "alphanum", headerFilter: true, frozen: true, formatterParams:
         {
         labelField:"Extension Name",
         urlPrefix: "https://risc-v-certification-steering-committee.github.io/riscv-unified-db/manual/html/isa/isa_20240411/exts/"
@@ -187,11 +187,13 @@ def gen_js_ext_table(arch, output_pname)
       column_name = column[:name].gsub("\n", " ")
       sorter = column[:sorter]
       formatter = column[:formatter]
-      headerFilter = column[:headerFilter]
       fp.write "    {title: \"#{column_name}\", field: \"#{column_name}\", sorter: \"#{sorter}\", formatter: \"#{formatter}\""
 
-      if headerFilter == true
+      if column[:headerFilter] == true
         fp.write ", headerFilter: true"
+      end
+      if column[:frozen] == true
+        fp.write ", frozen: true"
       end
 
       if formatter == "link"
