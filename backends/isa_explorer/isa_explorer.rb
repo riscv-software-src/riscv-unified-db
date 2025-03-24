@@ -23,22 +23,22 @@ def arch2ext_table(arch)
   ext_table = {
     # Array of hashes
     "columns" => [
-      {name: "Extension Name", formatter: "link", sorter: "alphanum", formatterParams:
+      {name: "Extension Name", formatter: "link", sorter: "alphanum", headerFilter: true, formatterParams:
         {
         labelField:"Extension Name",
         urlPrefix: "https://risc-v-certification-steering-committee.github.io/riscv-unified-db/manual/html/isa/isa_20240411/exts/"
         }
       },
-      {name: "Ratification\nPackage\nName",  formatter: "textarea", sorter: "alphanum"},
+      {name: "Ratification\nPackage\nName",  formatter: "textarea", sorter: "alphanum", headerFilter: true},
       {name: "Description", formatter: "textarea", sorter: "alphanum"},
-      {name: "IC", formatter: "textarea", sorter: "alphanum"},
+      {name: "IC", formatter: "textarea", sorter: "alphanum", headerFilter: true},
       {name: "Extensions\nIncluded\n(subsets)", formatter: "textarea", sorter: "alphanum"},
       {name: "Implies\n(and\ntransitives)", formatter: "textarea", sorter: "alphanum"},
       {name: "Incompatible\n(and\ntransitives)", formatter: "textarea", sorter: "alphanum"},
-      {name: "Ratified\n(Y/N)", formatter: "textarea", sorter: "alphanum"},
-      {name: "Ratification\nDate", formatter: "textarea", sorter: "alphanum"},
+      {name: "Ratified", formatter: "textarea", sorter: "boolean", headerFilter: true},
+      {name: "Ratification\nDate", formatter: "textarea", sorter: "alphanum", headerFilter: true},
       sorted_profile_releases.map do |pr|
-        {name: "#{pr.name}", formatter: "textarea", sorter: "alphanum"}
+        {name: "#{pr.name}", formatter: "textarea", sorter: "alphanum", headerFilter: true}
       end
     ].flatten,
 
@@ -53,9 +53,9 @@ def arch2ext_table(arch)
       ext.long_name,
       ext.compact_priv_type,
       "UDB Missing",
-      ext.max_version.transitive_implications.map(&:name).join("\n"),
-      ext.max_version.transitive_conflicts.map(&:name).join("\n"),
-      ext.ratified ? "Y" : "N",
+      ext.max_version.transitive_implications.map(&:name),
+      ext.max_version.transitive_conflicts.map(&:name),
+      ext.ratified,
       if ext.ratified
         if ext.min_ratified_version.ratification_date.nil? || ext.min_ratified_version.ratification_date.empty?
           "UDB MISSING"
@@ -64,9 +64,12 @@ def arch2ext_table(arch)
         end
       else
         ""
-      end,
-      sorted_profile_releases.map do |pr|
-        ep = pr.extension_presence(ext.name)
+      end
+    ]
+
+    sorted_profile_releases.each do |pr|
+      ep = pr.extension_presence(ext.name)
+      row.append(
         if ep == ExtensionPresence.mandatory
           "m"
         elsif ep == ExtensionPresence.optional
@@ -76,8 +79,8 @@ def arch2ext_table(arch)
         else
           raise "Unknown presence of '#{ep}' for extension #{ext.name}"
         end
-      end
-    ].flatten
+      )
+    end
 
     ext_table["rows"].append(row)
   end
@@ -116,7 +119,17 @@ def gen_xlsx_ext_table(arch, output_pname)
   ext_table["rows"].each do |row_cells|
     col_num = 0
     row_cells.each do |cell|
-      worksheet.write(row_num, col_num, cell)
+      if cell.is_a?(String)
+        cell_fmt = cell
+      elsif cell.is_a?(TrueClass) || cell.is_a?(FalseClass)
+        cell_fmt = cell ? "Y" : "N"
+      elsif cell.is_a?(Array)
+        cell_fmt = cell.join(", ")
+      else
+        raise ArgumentError, "Unknown cell class of #{cell.class} for '#{cell}'"
+      end
+
+      worksheet.write(row_num, col_num, cell_fmt)
       col_num += 1
     end
     row_num += 1
@@ -149,8 +162,17 @@ def gen_js_ext_table(arch, output_pname)
       columns.each_index do |i|
           column = columns[i]
           column_name = column[:name].gsub("\n", " ")
-          cell = row[i].gsub("\n", " ")
-          items.append('"' + column_name + '":"' + cell + '"')
+          cell = row[i]
+          if cell.is_a?(String)
+            cell_fmt = '"' + row[i].gsub("\n", "\\n") + '"'
+          elsif cell.is_a?(TrueClass) || cell.is_a?(FalseClass)
+            cell_fmt = "#{cell}"
+          elsif cell.is_a?(Array)
+            cell_fmt = '"'+ cell.join("\\n") + '"'
+          else
+            raise ArgumentError, "Unknown cell class of #{cell.class} for '#{cell}'"
+          end
+          items.append('"' + column_name + '":' + cell_fmt)
       end
       fp.write "  {" + items.join(", ") + "},\n"
     end
@@ -165,7 +187,13 @@ def gen_js_ext_table(arch, output_pname)
       column_name = column[:name].gsub("\n", " ")
       sorter = column[:sorter]
       formatter = column[:formatter]
+      headerFilter = column[:headerFilter]
       fp.write "    {title: \"#{column_name}\", field: \"#{column_name}\", sorter: \"#{sorter}\", formatter: \"#{formatter}\""
+
+      if headerFilter == true
+        fp.write ", headerFilter: true"
+      end
+
       if formatter == "link"
         formatterParams = column[:formatterParams]
         urlPrefix = formatterParams[:urlPrefix]
@@ -173,6 +201,7 @@ def gen_js_ext_table(arch, output_pname)
         fp.write "      labelField:\"#{column_name}\",\n"
         fp.write "      urlPrefix:\"#{urlPrefix}\"\n"
         fp.write "      }\n"
+      # elsif formatter == "array"
       end
       fp.write "    },\n"
     end
