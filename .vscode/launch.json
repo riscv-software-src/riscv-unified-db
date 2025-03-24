@@ -93,7 +93,23 @@
     },
     {
       "type": "rdbg",
-      "name": "isa_explorer_spreadsheet",
+      "name": "ISA Explorer Browser Generator",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:isa_explorer_browser",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "msedge",
+      "name": "ISA Explorer Browser Viewer",
+      "request": "launch",
+      "url": "file://wsl.localhost/Ubuntu/home/james/github/csc-riscv-unified-db/gen/isa_explorer/browser/ext_table.html",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "type": "rdbg",
+      "name": "ISA Explorer Spreadsheet Generator",
       "request": "launch",
       "command": "bundle exec rake",
       "script": "gen:isa_explorer_spreadsheet",
@@ -101,13 +117,11 @@
       "askParameters": false
     },
     {
-      "type": "rdbg",
-      "name": "isa_explorer_browser",
+      "type": "msedge",
+      "name": "ISA Explorer Spreadsheet Viewer",
       "request": "launch",
-      "command": "bundle exec rake",
-      "script": "gen:isa_explorer_browser",
-      "args": [],
-      "askParameters": false
+      "url": "file://wsl.localhost/Ubuntu/home/james/github/csc-riscv-unified-db/gen/isa_explorer/spreadsheet/ext_table.xlsx",
+      "webRoot": "${workspaceFolder}"
     },
     {
       "type": "rdbg",
@@ -117,20 +131,6 @@
       "script": "test:smoke",
       "args": [],
       "askParameters": false
-    },
-    {
-      "type": "msedge",
-      "name": "ISA Explorer Browser",
-      "request": "launch",
-      "url": "file://wsl.localhost/Ubuntu/home/james/github/csc-riscv-unified-db/gen/isa_explorer/browser/ext_table.html",
-      "webRoot": "${workspaceFolder}"
-    },
-    {
-      "type": "msedge",
-      "name": "ISA Explorer Spreadsheet",
-      "request": "launch",
-      "url": "file://wsl.localhost/Ubuntu/home/james/github/csc-riscv-unified-db/gen/isa_explorer/spreadsheet/ext_table.xlsx",
-      "webRoot": "${workspaceFolder}"
     }
   ]
 }
