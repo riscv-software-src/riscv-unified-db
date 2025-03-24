@@ -21,22 +21,25 @@ def arch2ext_table(arch)
   end
 
   ext_table = {
-    "column_names" => [
-      "Extension Name",
-      "Ratification\nPackage\nName",
-      "Description",
-      "IC",
-      "Extensions\nIncluded\n(subsets)",
-      "Implies\n(and\ntransitives)",
-      "Incompatible\n(and\ntransitives)",
-      "Ratified\n(Y/N)",
-      "Ratification\nDate",
-      sorted_profile_releases.map(&:name)
+    # Array of hashes
+    "columns" => [
+      {name: "Extension Name", formatter: "textarea", sorter: "alphanum"},
+      {name: "Ratification\nPackage\nName",  formatter: "textarea", sorter: "alphanum"},
+      {name: "Description", formatter: "textarea", sorter: "alphanum"},
+      {name: "IC", formatter: "textarea", sorter: "alphanum"},
+      {name: "Extensions\nIncluded\n(subsets)", formatter: "textarea", sorter: "alphanum"},
+      {name: "Implies\n(and\ntransitives)", formatter: "textarea", sorter: "alphanum"},
+      {name: "Incompatible\n(and\ntransitives)", formatter: "textarea", sorter: "alphanum"},
+      {name: "Ratified\n(Y/N)", formatter: "textarea", sorter: "alphanum"},
+      {name: "Ratification\nDate", formatter: "textarea", sorter: "alphanum"},
+      sorted_profile_releases.map do |pr|
+        {name: "#{pr.name}", formatter: "textarea", sorter: "alphanum"}
+      end
     ].flatten,
 
     # Will eventually be an array containing arrays.
     "rows" => []
-  }
+    }
 
   arch.extensions.sort_by!(&:name).each do |ext|
     row = [
@@ -97,21 +100,21 @@ def gen_xlsx_ext_table(arch, output_pname)
   header_format.set_align('center')
 
   # Add column names in 1st row (row 0).
-  col = 0
-  ext_table["column_names"].each do |column_name|
-    worksheet.write(0, col, column_name, header_format)
-    col += 1
+  col_num = 0
+  ext_table["columns"].each do |column|
+    worksheet.write(0, col_num, column[:name], header_format)
+    col_num += 1
   end
 
   # Add extension information in rows
-  row = 1
+  row_num = 1
   ext_table["rows"].each do |row_cells|
-    col = 0
+    col_num = 0
     row_cells.each do |cell|
-      worksheet.write(row, col, cell)
-      col += 1
+      worksheet.write(row_num, col_num, cell)
+      col_num += 1
     end
-    row += 1
+    row_num += 1
   end
 
   # Set column widths to hold data width.
@@ -128,7 +131,7 @@ def gen_js_ext_table(arch, output_pname)
   # Convert arch to ext_table data structure
   ext_table = arch2ext_table(arch)
 
-  column_names = ext_table["column_names"]
+  columns = ext_table["columns"]
   rows = ext_table["rows"]
 
   File.open(output_pname, "w") do |fp|
@@ -138,8 +141,9 @@ def gen_js_ext_table(arch, output_pname)
 
     rows.each do |row|
       items = []
-      column_names.each_index do |i|
-          column_name = column_names[i].gsub("\n", " ")
+      columns.each_index do |i|
+          column = columns[i]
+          column_name = column[:name].gsub("\n", " ")
           cell = row[i].gsub("\n", " ")
           items.append('"' + column_name + '":"' + cell + '"')
       end
@@ -151,7 +155,12 @@ def gen_js_ext_table(arch, output_pname)
     fp.write "// Initialize table\n"
     fp.write "var table = new Tabulator(\"#ext_table\", {\n"
     fp.write "  data: tabledata, // Assign data to table\n"
-    fp.write "  autoColumns: true // Create columns from data field names\n"
+    fp.write "  columns:[\n"
+    columns.each do |column|
+      column_name = column[:name].gsub("\n", " ")
+      fp.write "    {title: \"#{column_name}\", field: \"#{column_name}\", sorter: \"#{column[:sorter]}\", formatter: \"#{column[:formatter]}\"},\n"
+    end
+    fp.write "  ]\n"
     fp.write "});\n"
     fp.write "\n"
   end
