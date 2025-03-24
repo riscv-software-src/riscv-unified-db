@@ -23,7 +23,12 @@ def arch2ext_table(arch)
   ext_table = {
     # Array of hashes
     "columns" => [
-      {name: "Extension Name", formatter: "textarea", sorter: "alphanum"},
+      {name: "Extension Name", formatter: "link", sorter: "alphanum", formatterParams:
+        {
+        labelField:"Extension Name",
+        urlPrefix: "https://risc-v-certification-steering-committee.github.io/riscv-unified-db/manual/html/isa/isa_20240411/exts/"
+        }
+      },
       {name: "Ratification\nPackage\nName",  formatter: "textarea", sorter: "alphanum"},
       {name: "Description", formatter: "textarea", sorter: "alphanum"},
       {name: "IC", formatter: "textarea", sorter: "alphanum"},
@@ -158,7 +163,18 @@ def gen_js_ext_table(arch, output_pname)
     fp.write "  columns:[\n"
     columns.each do |column|
       column_name = column[:name].gsub("\n", " ")
-      fp.write "    {title: \"#{column_name}\", field: \"#{column_name}\", sorter: \"#{column[:sorter]}\", formatter: \"#{column[:formatter]}\"},\n"
+      sorter = column[:sorter]
+      formatter = column[:formatter]
+      fp.write "    {title: \"#{column_name}\", field: \"#{column_name}\", sorter: \"#{sorter}\", formatter: \"#{formatter}\""
+      if formatter == "link"
+        formatterParams = column[:formatterParams]
+        urlPrefix = formatterParams[:urlPrefix]
+        fp.write ", formatterParams:{\n"
+        fp.write "      labelField:\"#{column_name}\",\n"
+        fp.write "      urlPrefix:\"#{urlPrefix}\"\n"
+        fp.write "      }\n"
+      end
+      fp.write "    },\n"
     end
     fp.write "  ]\n"
     fp.write "});\n"
