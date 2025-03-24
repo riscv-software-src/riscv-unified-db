@@ -29,7 +29,10 @@ class CsrField < DatabaseObject
     @parent = parent_csr
   end
 
-  # @return [Boolean] whether or not the field is implemented given the config
+  # For a full config, whether or not the field is implemented
+  # For a partial config, whether or the it is possible for the field to be implemented
+  #
+  # @return [Boolean] True if this field might exist in a config
   def exists_in_cfg?(cfg_arch)
     if cfg_arch.fully_configured?
       parent.exists_in_cfg?(cfg_arch) &&

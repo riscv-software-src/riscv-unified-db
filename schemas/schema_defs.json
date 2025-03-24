@@ -152,18 +152,6 @@
         }
       ]
     },
-    "extension_name_and_version": {
-      "type": "array",
-      "items": [
-        {
-          "$ref": "#/$defs/extension_name"
-        },
-        {
-          "$ref": "#/$defs/extension_version"
-        }
-      ],
-      "additionalItems": false
-    },
     "extension_requirement": {
       "description": "A requirement on an extension. Can either specify just an extension name, in which case version '>= 0' is implied, or both a name and a requirement",
       "oneOf": [
@@ -215,6 +203,18 @@
           "additionalProperties": false
         }
       ]
+    },
+    "extension_with_version": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/extension_name"
+        },
+        "version": {
+          "$ref": "#/$defs/extension_version"
+        }
+      }
     },
     "author": {
       "type": "object",
