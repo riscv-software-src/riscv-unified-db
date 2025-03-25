@@ -43,7 +43,7 @@ jobs:
 
       - name: Upload singularity container
         run: |
-          singularity registry login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+          singularity remote login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
           singularity push .singularity/image-${{ env.TAG }}.img oras://docker.io/riscvintl/spec-generator:${{ env.TAG }}
 
   publish-docker-container:
