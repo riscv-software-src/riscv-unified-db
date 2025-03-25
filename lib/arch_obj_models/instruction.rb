@@ -3,7 +3,7 @@
 require 'ruby-prof-flamegraph'
 
 require_relative "database_obj"
-
+require_relative "../presence"
 
 # model of a specific instruction in a specific base (RV32/RV64)
 class Instruction < DatabaseObject

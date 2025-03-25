@@ -5,8 +5,24 @@
 require "write_xlsx"
 require_relative $root / "lib" / "architecture"
 
+# @param presence [String] Can be nil
+# @return [String] m=mandatory, o=optional, n=not present
+def presence2char(presence)
+  raise ArgumentError, "Expecting String but got class #{presence}" unless presence.is_a?(String)
+
+  if presence == Presence.mandatory
+    "m"
+  elsif presence == Presence.optional
+    "o"
+  elsif presence == '-'
+    "n"
+  else
+    raise ArgumentError, "Unknown presence of #{presence}"
+  end
+end
+
 # @param arch [Architecture] The entire RISC-V architecture
-# @return [Hash<String,Array<String>] Extension table data with array of column names and array of row data.
+# @return [Hash<String,Array<String>] Extension table data
 def arch2ext_table(arch)
   # Get array of profile releases and sort by name
   sorted_profile_releases = arch.profile_releases.sort_by(&:name)
@@ -29,8 +45,7 @@ def arch2ext_table(arch)
         urlPrefix: "https://risc-v-certification-steering-committee.github.io/riscv-unified-db/manual/html/isa/isa_20240411/exts/"
         }
       },
-      {name: "Ratification\nPackage\nName",  formatter: "textarea", sorter: "alphanum", headerFilter: true},
-      {name: "Description", formatter: "textarea", sorter: "alphanum"},
+      {name: "Description", formatter: "textarea", sorter: "alphanum", headerFilter: true},
       {name: "IC", formatter: "textarea", sorter: "alphanum", headerFilter: true},
       {name: "Extensions\nIncluded\n(subsets)", formatter: "textarea", sorter: "alphanum"},
       {name: "Implies\n(and\ntransitives)", formatter: "textarea", sorter: "alphanum"},
@@ -49,7 +64,6 @@ def arch2ext_table(arch)
   arch.extensions.sort_by!(&:name).each do |ext|
     row = [
       ext.name,
-      "UDB Missing",
       ext.long_name,
       ext.compact_priv_type,
       "UDB Missing",
@@ -68,18 +82,7 @@ def arch2ext_table(arch)
     ]
 
     sorted_profile_releases.each do |pr|
-      ep = pr.extension_presence(ext.name)
-      row.append(
-        if ep == ExtensionPresence.mandatory
-          "m"
-        elsif ep == ExtensionPresence.optional
-          "o"
-        elsif ep == "-"
-          "n"
-        else
-          raise "Unknown presence of '#{ep}' for extension #{ext.name}"
-        end
-      )
+      row.append(presence2char(pr.extension_presence(ext.name)))
     end
 
     ext_table["rows"].append(row)
@@ -88,20 +91,71 @@ def arch2ext_table(arch)
   return ext_table
 end
 
-# Create ISA Explorer extension table as XLSX file.
-#
 # @param arch [Architecture] The entire RISC-V architecture
-# @param output_pname [String] Full absolute pathname to output file
-def gen_xlsx_ext_table(arch, output_pname)
-  # Convert arch to ext_table data structure
-  ext_table = arch2ext_table(arch)
+# @return [Hash<String,Array<String>] Instruction table data
+def arch2inst_table(arch)
+  # Get array of profiles and sort by name
+  sorted_profiles = arch.profiles.sort_by(&:name)
 
-  # Create a new Excel workbook
-  workbook = WriteXLSX.new(output_pname)
+  # Remove Mock profiles if present.
+  sorted_profiles.delete_if {|prof| prof.name == "MP-U-64" }
+  sorted_profiles.delete_if {|prof| prof.name == "MP-S-64" }
 
-  # Add a worksheet
-  worksheet = workbook.add_worksheet
+  # Move RVI20U64 to the beginning of the array if it exists.
+  if sorted_profiles.any? {|prof| prof.name == "RVI20U64" }
+    sorted_profiles.delete_if {|prof| prof.name == "RVI20U64" }
+    sorted_profiles.unshift(arch.profile("RVI20U64"))
+  end
 
+  # Move RVI20U32 to the beginning of the array if it exists.
+  if sorted_profiles.any? {|prof| prof.name == "RVI20U32" }
+    sorted_profiles.delete_if {|prof| prof.name == "RVI20U32" }
+    sorted_profiles.unshift(arch.profile("RVI20U32"))
+  end
+
+  inst_table = {
+    # Array of hashes
+    "columns" => [
+      {name: "Instruction Name", formatter: "link", sorter: "alphanum", headerFilter: true, frozen: true, formatterParams:
+        {
+        labelField:"Instruction Name",
+        urlPrefix: "https://risc-v-certification-steering-committee.github.io/riscv-unified-db/manual/html/isa/isa_20240411/insts/"
+        }
+      },
+      {name: "Description", formatter: "textarea", sorter: "alphanum", headerFilter: true},
+      {name: "Assembly", formatter: "textarea", sorter: "alphanum", headerFilter: true},
+      sorted_profiles.map do |prof|
+        {name: "#{prof.name}", formatter: "textarea", sorter: "alphanum", headerFilter: true}
+      end
+    ].flatten,
+
+    # Will eventually be an array containing arrays.
+    "rows" => []
+    }
+
+  arch.instructions.sort_by!(&:name).each do |inst|
+    row = [
+      inst.name,
+      inst.long_name,
+      inst.name + " " + inst.assembly.gsub('x', 'r')
+    ]
+
+    sorted_profiles.each do |prof|
+      row.append(presence2char(prof.instruction_presence(inst.name)))
+    end
+
+    inst_table["rows"].append(row)
+  end
+
+  return inst_table
+end
+
+# Create ISA Explorer table as XLSX worksheet.
+#
+# @param table [Hash<String,Array<String>] Table data
+# @param workbook
+# @param worksheet
+def gen_xlsx_table(table, workbook, worksheet)
   # Add and define a header format
   header_format = workbook.add_format
   header_format.set_bold
@@ -109,14 +163,14 @@ def gen_xlsx_ext_table(arch, output_pname)
 
   # Add column names in 1st row (row 0).
   col_num = 0
-  ext_table["columns"].each do |column|
+  table["columns"].each do |column|
     worksheet.write(0, col_num, column[:name], header_format)
     col_num += 1
   end
 
-  # Add extension information in rows
+  # Add table information in rows
   row_num = 1
-  ext_table["rows"].each do |row_cells|
+  table["rows"].each do |row_cells|
     col_num = 0
     row_cells.each do |cell|
       if cell.is_a?(String)
@@ -137,20 +191,50 @@ def gen_xlsx_ext_table(arch, output_pname)
 
   # Set column widths to hold data width.
   worksheet.autofit
+end
+
+# Create ISA Explorer tables as XLSX file.
+#
+# @param arch [Architecture] The entire RISC-V architecture
+# @param output_pname [String] Full absolute pathname to output file
+def gen_xlsx(arch, output_pname)
+  # Create a new Excel workbook
+  puts "UPDATE: Creating Excel workboook #{output_pname}"
+  workbook = WriteXLSX.new(output_pname)
+
+  # Convert arch to ext_table data structure
+  puts "UPDATE: Creating extension table data structure"
+  ext_table = arch2ext_table(arch)
+
+  # Add a worksheet
+  ext_worksheet = workbook.add_worksheet("Extensions")
+
+  # Populate worksheet with ext_table
+  puts "UPDATE: Adding extension table to worksheet #{ext_worksheet.name}"
+  gen_xlsx_table(ext_table, workbook, ext_worksheet)
+
+  # Convert arch to inst_table data structure
+  puts "UPDATE: Creating instruction table data structure"
+  inst_table = arch2inst_table(arch)
+
+  # Add a worksheet
+  inst_worksheet = workbook.add_worksheet("Instructions")
+
+  # Populate worksheet with inst_table
+  puts "UPDATE: Adding instruction table to worksheet #{inst_worksheet.name}"
+  gen_xlsx_table(inst_table, workbook, inst_worksheet)
 
   workbook.close
 end
 
-# Create ISA Explorer extension table as JavaScript file.
+# Create ISA Explorer table as JavaScript file.
 #
-# @param arch [Architecture] The entire RISC-V architecture
+# @param table [Hash<String,Array<String>] Table data
+# @param div_name [String] Name of div element in HTML
 # @param output_pname [String] Full absolute pathname to output file
-def gen_js_ext_table(arch, output_pname)
-  # Convert arch to ext_table data structure
-  ext_table = arch2ext_table(arch)
-
-  columns = ext_table["columns"]
-  rows = ext_table["rows"]
+def gen_js_table(table, div_name, output_pname)
+  columns = table["columns"]
+  rows = table["rows"]
 
   File.open(output_pname, "w") do |fp|
     fp.write "// Define data array\n"
@@ -180,7 +264,8 @@ def gen_js_ext_table(arch, output_pname)
     fp.write "];\n"
     fp.write "\n"
     fp.write "// Initialize table\n"
-    fp.write "var table = new Tabulator(\"#ext_table\", {\n"
+    fp.write "var table = new Tabulator(\"##{div_name}\", {\n"
+    fp.write "  height: window.innerHeight-25, // Set height to window less 25 pixels for horz scrollbar\n"
     fp.write "  data: tabledata, // Assign data to table\n"
     fp.write "  columns:[\n"
     columns.each do |column|
@@ -191,6 +276,9 @@ def gen_js_ext_table(arch, output_pname)
 
       if column[:headerFilter] == true
         fp.write ", headerFilter: true"
+      end
+      if column[:headerVertical] == true
+        fp.write ", headerVertical: true"
       end
       if column[:frozen] == true
         fp.write ", frozen: true"
@@ -211,4 +299,30 @@ def gen_js_ext_table(arch, output_pname)
     fp.write "});\n"
     fp.write "\n"
   end
+end
+
+# Create ISA Explorer extension table as JavaScript file.
+#
+# @param arch [Architecture] The entire RISC-V architecture
+# @param output_pname [String] Full absolute pathname to output file
+def gen_js_ext_table(arch, output_pname)
+  # Convert arch to ext_table data structure
+  puts "UPDATE: Creating extension table data structure"
+  ext_table = arch2ext_table(arch)
+
+  puts "UPDATE: Converting extension table to #{output_pname}"
+  gen_js_table(ext_table, "ext_table", output_pname)
+end
+
+# Create ISA Explorer instruction table as JavaScript file.
+#
+# @param arch [Architecture] The entire RISC-V architecture
+# @param output_pname [String] Full absolute pathname to output file
+def gen_js_inst_table(arch, output_pname)
+  # Convert arch to inst_table data structure
+  puts "UPDATE: Creating instruction table data structure"
+  inst_table = arch2inst_table(arch)
+
+  puts "UPDATE: Converting instruction table to #{output_pname}"
+  gen_js_table(inst_table, "inst_table", output_pname)
 end
