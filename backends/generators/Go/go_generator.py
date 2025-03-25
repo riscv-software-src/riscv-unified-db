@@ -23,12 +23,12 @@ def make_go(instr_dict, csrs, output_file="inst.go"):
 import "cmd/internal/obj"
 
 type inst struct {
-	opcode uint32
-	funct3 uint32
-	rs1    uint32
-	rs2    uint32
+    opcode uint32
+    funct3 uint32
+    rs1    uint32
+    rs2    uint32
     csr    int64
-	funct7 uint32
+    funct7 uint32
 }
 
 func encode(a obj.As) *inst {
