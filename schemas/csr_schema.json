@@ -245,8 +245,8 @@
           "enum": ["M", "S", "U", "VS"]
         },
         "length": {
-          "description": "Length, in bits, of the CSR. Can either be a 32, 64 or MXLEN, SXLEN, VSXLEN to indicate that is is dependent on the effective XLEN for a given mode",
-          "enum": [32, 64, "MXLEN", "SXLEN", "VSXLEN"]
+          "description": "Length, in bits, of the CSR. Can either be a 32, 64 or MXLEN, SXLEN, VSXLEN, XLEN to indicate that is is dependent on the effective XLEN for a given mode",
+          "enum": [32, 64, "MXLEN", "SXLEN", "VSXLEN", "XLEN"]
         },
         "requires": {
           "type": "string",

@@ -185,6 +185,8 @@ class Csr < DatabaseObject
         # don't know VSXLEN
         effective_xlen
       end
+    when "XLEN"
+      effective_xlen
     when Integer
       @data["length"]
     else
