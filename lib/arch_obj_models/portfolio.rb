@@ -214,6 +214,28 @@ class PortfolioGroup
     greatest_presence.nil? ? "-" : greatest_presence.to_s_concise
   end
 
+  # @return [String] Given an instruction +inst_name+, return the presence as a string.
+  #                  Returns the greatest presence string across all profiles in the group.
+  #                  If the instruction name isn't found in the release, return "-".
+  def instruction_presence(inst_name)
+    greatest_presence = nil
+
+    portfolios.each do |portfolio|
+      presence = portfolio.instruction_presence_obj(inst_name)
+
+      unless presence.nil?
+        if greatest_presence.nil?
+          greatest_presence = presence
+        elsif presence > greatest_presence
+          greatest_presence = presence
+        end
+      end
+    end
+
+    greatest_presence.nil? ? "-" : greatest_presence.to_s_concise
+  end
+
+
   # @return [Array<InScopeParameter>] Sorted list of parameters specified by any extension in portfolio.
   def all_in_scope_params
     @ret = []
@@ -307,21 +329,55 @@ class Portfolio < DatabaseObject
   # @return [Gem::Version] Semantic version of the Portfolio
   def version = Gem::Version.new(@data["version"])
 
-  # @return [ExtensionPresence] Given an extension +ext_name+, return the presence.
-  #                             If the extension name isn't found in the portfolio, return nil.
+  # @return [Presence] Given an extension +ext_name+, return the presence.
+  #                    If the extension name isn't found in the portfolio, return nil.
   def extension_presence_obj(ext_name)
     # Get extension information from YAML for passed in extension name.
     ext_data = @data["extensions"][ext_name]
 
-    ext_data.nil? ? nil : ExtensionPresence.new(ext_data["presence"])
+    ext_data.nil? ? nil : Presence.new(ext_data["presence"])
   end
 
   # @return [String] Given an extension +ext_name+, return the presence as a string.
   #                  If the extension name isn't found in the portfolio, return "-".
   def extension_presence(ext_name)
-    ext_presence_obj = extension_presence_obj(ext_name)
+    presence_obj = extension_presence_obj(ext_name)
 
-    ext_presence_obj.nil? ? "-" : ext_presence_obj.to_s
+    presence_obj.nil? ? "-" : presence_obj.to_s
+  end
+
+  # @return [Presence] Given an instruction +inst_name+, return the presence.
+  #                    If the instruction name isn't found in the portfolio, return nil.
+  def instruction_presence_obj(inst_name)
+    inst = arch.instruction(inst_name)
+
+    raise "Can't find instruction object '#{inst_name}' in arch class" if inst.nil?
+
+    is_mandatory = mandatory_ext_reqs.any? do |ext_req|
+      ext_versions = ext_req.satisfying_versions
+      ext_versions.any? { |ext_ver| inst.defined_by?(ext_ver) }
+    end
+
+    is_optional = optional_ext_reqs.any? do |ext_req|
+      ext_versions = ext_req.satisfying_versions
+      ext_versions.any? { |ext_ver| inst.defined_by?(ext_ver) }
+    end
+
+    if is_mandatory
+      Presence.new(Presence.mandatory)
+    elsif is_optional
+      Presence.new(Presence.optional)
+    else
+      nil
+    end
+  end
+
+  # @return [String] Given an instruction +inst_name+, return the presence as a string.
+  #                  If the instruction name isn't found in the portfolio, return "-".
+  def instruction_presence(inst_name)
+    presence_obj = instruction_presence_obj(inst_name)
+
+    presence_obj.nil? ? "-" : presence_obj.to_s
   end
 
   # Returns the greatest presence string for each of the specified versions.
@@ -365,23 +421,23 @@ class Portfolio < DatabaseObject
     return ext_data["note"] unless ext_data.nil?
   end
 
-  def mandatory_ext_reqs = in_scope_ext_reqs(ExtensionPresence.mandatory)
-  def optional_ext_reqs = in_scope_ext_reqs(ExtensionPresence.optional)
-  def optional_type_ext_reqs = in_scope_ext_reqs(ExtensionPresence.optional)
+  def mandatory_ext_reqs = in_scope_ext_reqs(Presence.mandatory)
+  def optional_ext_reqs = in_scope_ext_reqs(Presence.optional)
+  def optional_type_ext_reqs = in_scope_ext_reqs(Presence.optional)
 
-  # @param desired_presence [String, Hash, ExtensionPresence]
+  # @param desired_presence [String, Hash, Presence]
   # @return [Array<ExtensionRequirements>] Sorted list of extensions with their portfolio information.
   # If desired_presence is provided, only returns extensions with that presence.
-  # If desired_presence is a String, only the presence portion of an ExtensionPresence is compared.
+  # If desired_presence is a String, only the presence portion of an Presence is compared.
   def in_scope_ext_reqs(desired_presence = nil)
     in_scope_ext_reqs = []
 
-    # Convert desired_present argument to ExtensionPresence object if not nil.
+    # Convert desired_present argument to Presence object if not nil.
     desired_presence_converted =
       desired_presence.nil?                     ? nil :
       desired_presence.is_a?(String)            ? desired_presence :
-      desired_presence.is_a?(ExtensionPresence) ? desired_presence :
-      ExtensionPresence.new(desired_presence)
+      desired_presence.is_a?(Presence) ? desired_presence :
+      Presence.new(desired_presence)
 
     missing_ext = false
 
@@ -399,7 +455,7 @@ class Portfolio < DatabaseObject
         raise "Missing extension presence for extension #{ext_name}" if actual_presence.nil?
 
         # Convert presence String or Hash to object.
-        actual_presence_obj = ExtensionPresence.new(actual_presence)
+        actual_presence_obj = Presence.new(actual_presence)
 
         match =
           if desired_presence.nil?
@@ -522,7 +578,7 @@ class Portfolio < DatabaseObject
     @uses_optional_types = false
 
     # Iterate through different kinds of optional using the "object" version (not the string version).
-    ExtensionPresence.optional_types_obj.each do |optional_type_obj|
+    Presence.optional_types_obj.each do |optional_type_obj|
       # See if any extension reqs have this type of optional.
       unless in_scope_ext_reqs(optional_type_obj).empty?
         @uses_optional_types = true
@@ -654,7 +710,7 @@ class Portfolio < DatabaseObject
     def initialize(data)
       @data = data
 
-      @presence_obj = ExtensionPresence.new(@data["presence"])
+      @presence_obj = Presence.new(@data["presence"])
     end
 
     def presence_obj = @presence_obj
@@ -671,11 +727,11 @@ class Portfolio < DatabaseObject
     @extra_notes
   end
 
-  # @param desired_presence [ExtensionPresence]
+  # @param desired_presence [Presence]
   # @return [String] Note for desired_presence
   # @return [nil] No note for desired_presence
   def extra_notes_for_presence(desired_presence_obj)
-    raise ArgumentError, "Expecting ExtensionPresence but got a #{desired_presence_obj.class}" unless desired_presence_obj.is_a?(ExtensionPresence)
+    raise ArgumentError, "Expecting Presence but got a #{desired_presence_obj.class}" unless desired_presence_obj.is_a?(Presence)
 
     extra_notes.select {|extra_note| extra_note.presence_obj == desired_presence_obj}
   end
