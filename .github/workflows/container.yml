@@ -15,6 +15,8 @@ jobs:
 
       - name: Setup apptainer
         uses: eWaterCycle/setup-apptainer@v2.0.0
+        with:
+          apptainer-version: 1.4.0
 
       - name: Get container tag
         run: |
@@ -43,8 +45,8 @@ jobs:
 
       - name: Upload singularity container
         run: |
-          singularity remote login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-          singularity push .singularity/image-${{ env.TAG }}.img oras://docker.io/riscvintl/spec-generator:${{ env.TAG }}
+          apptainer registry login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }} oras://docker.io
+          apptainer push .singularity/image.sif oras://docker.io/riscvintl/spec-generator:${{ env.TAG }}
 
   publish-docker-container:
     runs-on: ubuntu-latest
