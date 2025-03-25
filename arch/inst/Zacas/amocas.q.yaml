@@ -18,13 +18,25 @@ description: |
   first register of a destination register pair is x0, then the entire
   register result is discarded and neither destination register is written.
 
+  Just as for AMOs in the A extension, AMOCAS.Q requires that the address held
+  in rs1 be naturally aligned to the size of the operand (i.e., sixteen-byte
+  aligned for quadwords). And the same exception options apply if the
+  address is not naturally aligned.
+
+  Just as for AMOs in the A extension, the AMOCAS.Q optionally provides release
+  consistency semantics, using the aq and rl bits, to help implement
+  multiprocessor synchronization. The memory operation performed by an
+  AMOCAS.Q, when successful, has acquire semantics if aq bit is 1 and has
+  release semantics if rl bit is 1. The memory operation performed by an
+  AMOCAS.W/D/Q, when not successful, has acquire semantics if aq bit is 1 but
+  does not have release semantics, regardless of rl.
+
   A FENCE instruction may be used to order the memory read access and, if
   produced, the memory write access by an AMOCAS.Q instruction.
 
   [Note] An unsuccessful AMOCAS.Q may either not perform a memory write or
   may write back the old value loaded from memory. The memory write, if
   produced, does not have release semantics, regardless of rl.
-
 
   An AMOCAS.Q instruction always requires write permissions.
 

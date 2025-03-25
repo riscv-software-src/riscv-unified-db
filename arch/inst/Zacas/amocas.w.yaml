@@ -18,6 +18,19 @@ description: |
   value held in rs2 to the original address in rs1. The 32-bit value loaded
   from memory is sign-extended and is placed into register rd.
 
+  Just as for AMOs in the A extension, AMOCAS.W requires that the address held
+  in rs1 be naturally aligned to the size of the operand (i.e., four-byte
+  aligned for words). And the same exception options apply if the address is
+  not naturally aligned.
+
+  Just as for AMOs in the A extension, the AMOCAS.W optionally provides release
+  consistency semantics, using the aq and rl bits, to help implement
+  multiprocessor synchronization. The memory operation performed by an
+  AMOCAS.W, when successful, has acquire semantics if aq bit is 1 and has
+  release semantics if rl bit is 1. The memory operation performed by an
+  AMOCAS.W/D/Q, when not successful, has acquire semantics if aq bit is 1 but
+  does not have release semantics, regardless of rl.
+
   A FENCE instruction may be used to order the memory read access and, if
   produced, the memory write access by an AMOCAS.W instruction.
 
