@@ -1,0 +1,6 @@
+#!/bin/bash
+
+ROOT=$(dirname $(realpath ${BASH_SOURCE[0]}))
+source $ROOT/setup
+
+$CLANG_FORMAT "$@"

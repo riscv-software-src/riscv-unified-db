@@ -35,6 +35,8 @@ Treetop.load(($root / "lib" / "idl" / "idl").to_s)
 module Idl
   # the Idl compiler
   class Compiler
+    attr_reader :parser
+
     def initialize
       @parser = IdlParser.new
     end

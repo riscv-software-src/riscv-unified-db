@@ -5,10 +5,10 @@ kind: instruction
 name: c.lw
 long_name: Load word
 description: |
-  Loads a 32-bit value from memory into register rd.
+  Loads a 32-bit value from memory into register xd.
   It computes an effective address by adding the zero-extended offset, scaled by 4,
-  to the base address in register rs1.
-  It expands to `lw` `rd, offset(rs1)`.
+  to the base address in register xs1.
+  It expands to `lw` `xd, offset(xs1)`.
 definedBy:
   anyOf:
     - C
@@ -20,9 +20,9 @@ encoding:
     - name: imm
       location: 5|12-10|6
       left_shift: 2
-    - name: rd
+    - name: xd
       location: 4-2
-    - name: rs1
+    - name: xs1
       location: 9-7
 access:
   s: always
@@ -34,9 +34,9 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg virtual_address = X[rs1] + imm;
+  XReg virtual_address = X[creg2reg(xs1)] + imm;
 
-  X[rd] = sext(read_memory<32>(virtual_address, $encoding), 32);
+  X[creg2reg(xd)] = sext(read_memory<32>(virtual_address, $encoding), 32);
 
 sail(): |
   {
