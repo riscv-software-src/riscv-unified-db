@@ -12,12 +12,15 @@ This instruction is defined by:
 This instruction is included in the following profiles:
 
 <%- design.arch.profiles.each do |profile| -%>
-<%- if profile.instruction_presence_obj(inst.name).mandatory? -%>
+<%-   presence = profile.instruction_presence_obj(inst.name) -%>
+<%-   unless presence.nil? -%>
+<%-     if presence.mandatory? -%>
 * <%= profile.marketing_name %> (Mandatory)
-<%- elsif profile.instruction_presence_obj(inst.name).optional? -%>
+<%-     elsif presence.optional? -%>
 * <%= profile.marketing_name %> (Optional)
-<%- end -%>
-<%- end -%>
+<%-     end # if -%>
+<%-   end # unless -%>
+<%- end # do -%>
 
 == Encoding
 
