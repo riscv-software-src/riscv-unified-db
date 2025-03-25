@@ -148,147 +148,145 @@
         "additionalProperties": false
       },
       "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "$schema",
+    "kind",
+    "name",
+    "long_name",
+    "description",
+    "definedBy",
+    "access",
+    "assembly"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri-reference",
+      "const": "inst_schema.json#",
+      "description": "Path to schema, relative to <UDB ROOT>/schemas"
     },
-    "inst_data": {
-      "type": "object",
-      "required": [
-        "$schema",
-        "kind",
-        "name",
-        "long_name",
-        "description",
-        "definedBy",
-        "access",
-        "assembly"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "$schema": {
-          "type": "string",
-          "format": "uri-reference",
-          "const": "inst_schema.json#",
-          "description": "Path to schema, relative to <UDB ROOT>/schemas"
+    "kind": {
+      "type": "string",
+      "const": "instruction"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9.]+$",
+      "description": "Instruction mnemonic (must be lowercase)"
+    },
+    "long_name": {
+      "type": "string",
+      "description": "Short description of the instruction"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the instruction"
+    },
+    "definedBy": {
+      "$ref": "schema_defs.json#/$defs/requires_entry",
+      "description": "Extension(s) that defines the instruction"
+    },
+    "excludedBy": {
+      "$ref": "schema_defs.json#/$defs/requires_entry",
+      "description": "Extension(s) that, if implemented, exclude the instruction (even if the definedBy extension is also implemented)"
+    },
+    "encoding": {
+      "description": "Instruction encoding and decode variables",
+      "oneOf": [
+        {
+          "$ref": "#/$defs/encoding"
         },
-        "kind": {
-          "type": "string",
-          "const": "instruction"
-        },
-        "name": {
-          "type": "string",
-          "pattern": "^[a-z0-9.]+$",
-          "description": "Instruction mnemonic (must be lowercase)"
-        },
-        "long_name": {
-          "type": "string",
-          "description": "Short description of the instruction"
-        },
-        "description": {
-          "type": "string",
-          "description": "Detailed description of the instruction"
-        },
-        "definedBy": {
-          "$ref": "schema_defs.json#/$defs/requires_entry",
-          "description": "Extension(s) that defines the instruction"
-        },
-        "excludedBy": {
-          "$ref": "schema_defs.json#/$defs/requires_entry",
-          "description": "Extension(s) that, if implemented, exclude the instruction (even if the definedBy extension is also implemented)"
-        },
-        "encoding": {
-          "description": "Instruction encoding and decode variables",
-          "oneOf": [
-            {
+        {
+          "type": "object",
+          "properties": {
+            "RV32": {
               "$ref": "#/$defs/encoding"
             },
-            {
-              "type": "object",
-              "properties": {
-                "RV32": {
-                  "$ref": "#/$defs/encoding"
-                },
-                "RV64": {
-                  "$ref": "#/$defs/encoding"
-                }
-              },
-              "required": ["RV32", "RV64"],
-              "additionalProperties": false
+            "RV64": {
+              "$ref": "#/$defs/encoding"
             }
-          ]
+          },
+          "required": ["RV32", "RV64"],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "base": {
+      "enum": [32, 64],
+      "description": "When present, instruction is only defined for RV32 or RV64 base"
+    },
+    "access": {
+      "type": "object",
+      "required": ["s", "u", "vs", "vu"],
+      "properties": {
+        "m": {
+          "enum": ["always", "sometimes", "never"],
+          "default": "always"
         },
-        "base": {
-          "enum": [32, 64],
-          "description": "When present, instruction is only defined for RV32 or RV64 base"
+        "s": {
+          "enum": ["always", "sometimes", "never"],
+          "default": "always"
         },
-        "access": {
-          "type": "object",
-          "required": ["s", "u", "vs", "vu"],
-          "properties": {
-            "m": {
-              "enum": ["always", "sometimes", "never"],
-              "default": "always"
-            },
-            "s": {
-              "enum": ["always", "sometimes", "never"],
-              "default": "always"
-            },
-            "u": {
-              "enum": ["always", "sometimes", "never"],
-              "default": "always"
-            },
-            "vs": {
-              "enum": ["always", "sometimes", "never"],
-              "default": "always"
-            },
-            "vu": {
-              "enum": ["always", "sometimes", "never"],
-              "default": "always"
-            }
-          }
+        "u": {
+          "enum": ["always", "sometimes", "never"],
+          "default": "always"
         },
-        "access_detail": {
-          "type": "string",
-          "description": "Extra detail about access when at least one mode is 'sometimes'"
+        "vs": {
+          "enum": ["always", "sometimes", "never"],
+          "default": "always"
         },
-        "operation()": {
-          "type": "string",
-          "description": "Functional description of the instruction using IDL language"
-        },
-        "sail()": {
-          "type": "string",
-          "description": "Functional description of the instruction using Sail"
-        },
-        "assembly": {
-          "type": "string",
-          "description": "Assembly format of the instruction. Can use decode variables"
-        },
-        "data_independent_timing": {
-          "type": "boolean",
-          "description": "Whether or not the instruction must execute with data-independent timing when the Zkt extension is supported",
-          "default": false
-        },
-        "pseudoinstructions": {
-          "description": "Variations of this instruction that form a pseudoinstruction",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "when": {
-                "type": "string",
-                "description": "Condition when the instruction has an alias"
-              },
-              "to": {
-                "type": "string",
-                "description": "pseudoinstruction format"
-              }
-            },
-            "additionalProperties": false
-          }
-        },
-        "$source": {
-          "description": "Path to the source file. Used by downstream tooling; not expected to be found in handwritten files",
-          "type": "string"
+        "vu": {
+          "enum": ["always", "sometimes", "never"],
+          "default": "always"
         }
       }
+    },
+    "access_detail": {
+      "type": "string",
+      "description": "Extra detail about access when at least one mode is 'sometimes'"
+    },
+    "operation()": {
+      "type": "string",
+      "description": "Functional description of the instruction using IDL language"
+    },
+    "sail()": {
+      "type": "string",
+      "description": "Functional description of the instruction using Sail"
+    },
+    "assembly": {
+      "type": "string",
+      "description": "Assembly format of the instruction. Can use decode variables"
+    },
+    "data_independent_timing": {
+      "type": "boolean",
+      "description": "Whether or not the instruction must execute with data-independent timing when the Zkt extension is supported",
+      "default": false
+    },
+    "pseudoinstructions": {
+      "description": "Variations of this instruction that form a pseudoinstruction",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "when": {
+            "type": "string",
+            "description": "Condition when the instruction has an alias"
+          },
+          "to": {
+            "type": "string",
+            "description": "pseudoinstruction format"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "$source": {
+      "description": "Path to the source file. Used by downstream tooling; not expected to be found in handwritten files",
+      "type": "string"
     }
   }
 }
