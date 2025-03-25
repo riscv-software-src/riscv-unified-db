@@ -727,7 +727,9 @@ class ExtensionRequirementExpression
       if @type == :term
         ext_ret = @children[0]
         term_value = term_values.find { |tv| tv.name == ext_ret.name }
-        @children[0].satisfied_by?(term_value)
+        unless term_value.nil?
+          @children[0].satisfied_by?(term_value)
+        end
       elsif @type == :if
         cond_ext_ret = @children[0]
         if cond_ext_ret.eval(term_values)
@@ -921,15 +923,17 @@ class ExtensionRequirementExpression
   end
 
   def combos_for(extension_versions)
-    ncombos = extension_versions.reduce(1) { |prod, vers| prod * vers.size }
+    ncombos = extension_versions.reduce(1) { |prod, vers| prod * (vers.size + 1) }
     combos = []
     ncombos.times do |i|
       combos << []
       extension_versions.size.times do |j|
-        m = extension_versions[j].size
-        d = j.zero? ? 1 : extension_versions[j..0].reduce(1) { |prod, vers| prod * vers.size }
+        m = (extension_versions[j].size + 1)
+        d = j.zero? ? 1 : extension_versions[j..0].reduce(1) { |prod, vers| prod * (vers.size + 1) }
 
-        combos.last << extension_versions[j][(i / d) % m]
+        if (i / d) % m < extension_versions[j].size
+          combos.last << extension_versions[j][(i / d) % m]
+        end
       end
     end
     # get rid of any combos that can't happen because of extension conflicts
