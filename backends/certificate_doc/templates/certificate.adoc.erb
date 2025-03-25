@@ -510,9 +510,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
   <% end -%>
   <% if v.implications.size > 0 -%>
   Implies:::
-    <% v.implications.each do |i| -%>
-    * `<%= i.name %>` version <%= i.version_spec %>
-    <% end -%>
+    <%= v.implications.each { |i| "* #{i[:ext_ver].name} (#{i[:ext_ver].version_spec}) #{i[:cond].empty? ? '' : i[:cond].to_asciidoc(join: ', ')}" }.join("\n* ") %>
   <% end -%>
 <% end -%>
 
