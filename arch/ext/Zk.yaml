@@ -17,6 +17,9 @@ versions:
     state: ratified
     ratification_date: null
     implies:
-      - ["Zkn", "1.0.0"]
-      - ["Zkr", "1.0.0"]
-      - ["Zkt", "1.0.0"]
+      - name: "Zkn"
+        version: "1.0.0"
+      - name: "Zkr"
+        version: "1.0.0"
+      - name: "Zkt"
+        version: "1.0.0"
