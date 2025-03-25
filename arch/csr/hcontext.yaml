@@ -29,10 +29,10 @@ fields:
       Alias of `mcontext.HCONTEXT`.
     reset_value: 0
     sw_write(csr_value): |
-      # check width of HCONTEXT
+      # enforce width of HCONTEXT
       csr_value.HCONTEXT = csr_value.HCONTEXT & ((1 << DBG_HCONTEXT_WIDTH) - 1);
       # forward the write to mcontext.HCONTEXT
-      CSR[mcontext].HCONTEXT.sw_write(csr_value.HCONTEXT);
+      CSR[mcontext].HCONTEXT = csr_value.HCONTEXT;
       return CSR[mcontext].HCONTEXT;
 sw_read(): |
   # return the value of mcontext
