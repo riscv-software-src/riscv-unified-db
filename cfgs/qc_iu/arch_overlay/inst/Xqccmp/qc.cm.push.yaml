@@ -43,10 +43,10 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
+  XReg virtual_address_sp = get_and_validate_stack_pointer($encoding);
   XReg size = xlen();
   XReg nreg = (rlist == 15) ? 13 : (rlist - 3);
-  XReg stack_aligned_adj = (nreg * 4 + 15) & ~0xF;
-  XReg virtual_address_sp = X[2];
+  XReg stack_aligned_adj = (nreg * size + 15) & ~0xF;
   XReg virtual_address_new_sp = virtual_address_sp - stack_aligned_adj - spimm;
   XReg virtual_address_base = virtual_address_sp - size;
 

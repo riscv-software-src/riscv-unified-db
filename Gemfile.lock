@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/oozou/ruby-prof-flamegraph.git
+  revision: fc3c4370627597557db31e93b6008b123d75ab14
+  ref: fc3c437
+  specs:
+    ruby-prof-flamegraph (0.3.0)
+      ruby-prof (>= 1.4.2)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -142,9 +150,7 @@ GEM
     rubocop-minitest (0.35.1)
       rubocop (>= 1.61, < 2.0)
       rubocop-ast (>= 1.31.1, < 2.0)
-    ruby-prof (0.18.0)
-    ruby-prof-flamegraph (0.3.0)
-      ruby-prof (~> 0.13)
+    ruby-prof (1.7.1)
     ruby-progressbar (1.13.0)
     ruby-rc4 (0.1.5)
     securerandom (0.4.0)
@@ -198,7 +204,7 @@ DEPENDENCIES
   rouge
   rubocop-minitest
   ruby-prof
-  ruby-prof-flamegraph
+  ruby-prof-flamegraph!
   ruby-progressbar (~> 1.13)
   solargraph
   treetop (= 1.6.12)

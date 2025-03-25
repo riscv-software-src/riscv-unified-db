@@ -1,5 +1,10 @@
 name: Regression test
 on:
+  push:
+    branches:
+      - main
+  merge_group:                # this is a new line
+    types: [checks_requested] # this is a new line
   pull_request:
     branches:
       - main
@@ -105,6 +110,7 @@ jobs:
       EXT: B
       VERSION: latest
       SINGULARITY: 1
+      PSEUDO: both
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
