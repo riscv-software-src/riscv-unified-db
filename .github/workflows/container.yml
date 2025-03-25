@@ -41,13 +41,7 @@ jobs:
         name: Build container
         run: ./bin/build_container
 
-      - name: Check if container is already published
-        run: |
-          curl --silent -f --head -lL https://hub.docker.com/v2/repositories/riscvintl/spec-generator/tags/${{ env.TAG }}
-          echo "CURL_EXIT_CODE=$?" >> $GITHUB_ENV
-
       - name: Upload singularity container
-        if: env.CURL_EXIT_CODE != '0'
         run: |
           singularity registry login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
           singularity push .singularity/image-${{ env.TAG }}.img oras://docker.io/riscvintl/spec-generator:${{ env.TAG }}
@@ -57,6 +51,9 @@ jobs:
     env:
       DOCKER: 1
     steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+
       - name: Get container tag
         run: |
           TAG=$(cat bin/.container-tag)
