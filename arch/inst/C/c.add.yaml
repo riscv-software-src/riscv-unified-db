@@ -17,8 +17,10 @@ encoding:
   variables:
     - name: rs2
       location: 6-2
+      not: 0
     - name: rd
       location: 11-7
+      not: 0
 access:
   s: always
   u: always
