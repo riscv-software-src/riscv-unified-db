@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zilsd
+long_name: Load/Store Pair for RV32 (Zilsd & Zclsd)
+description: |
+  This extension introduces load and store pair instructions for RV32,
+  significantly improving static code density and performance.
+
+  It defines two sets of instructions:
+
+  - **Zilsd** (32-bit encoding): Provides `ld` and `sd` instructions for doubleword loads and stores.
+  - **Zclsd** (16-bit encoding): Provides compressed instructions (`c.ldsp`, `c.sdsp`, `c.ld`, and `c.sd`)
+    for both stack-pointer based and register-based load/store pairs.
+
+  These instructions operate on even/odd register pairs (as defined by the Zdinx extension)
+  and assume proper alignment for efficient memory access.
+type: unprivileged
+versions:
+  - version: "1.0"
+    state: ratified
+    ratification_date: "2025-02"
+    implies:
+      - ["Zdinx", "1.0"]
