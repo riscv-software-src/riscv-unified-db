@@ -46,10 +46,14 @@ versions:
       - name: Nicolas Brunie
       - name: Jiawei
     implies:
-      - [Zca, "1.0.0"]
-      - [Zcb, "1.0.0"]
-      - [Zcmp, "1.0.0"]
-      - [Zcmt, "1.0.0"]
+      - name: Zca
+        version: "1.0.0"
+      - name: Zcb
+        version: "1.0.0"
+      - name: Zcmp
+        version: "1.0.0"
+      - name: Zcmt
+        version: "1.0.0"
 
       # TODO: this implication is conditional!!! (see description)
       # So it should look something like this:

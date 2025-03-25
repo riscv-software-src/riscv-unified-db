@@ -354,15 +354,35 @@ class ConfiguredArchitecture < Architecture
   def transitive_implemented_extension_versions
     return @transitive_implemented_extension_versions unless @transitive_implemented_extension_versions.nil?
 
-    raise "implemented_extensions is only valid for a fully configured definition" unless @config.fully_configured?
+    raise "transitive_implemented_extension_versions is only valid for a fully configured definition" unless @config.fully_configured?
 
-    list = explicitly_implemented_extension_versions
-    list.each do |e|
-      implications = e.transitive_implications
-      list.concat(implications) unless implications.empty?
+    @transitive_implemented_extension_versions = explicitly_implemented_extension_versions.dup
+
+    added_ext_vers = []
+    loop do
+      @transitive_implemented_extension_versions.each do |ext_ver|
+        ext_ver.implications.each do |implication|
+          applies = implication[:cond].satisfied_by? do |ext_req|
+            @transitive_implemented_extension_versions.any? do |inner_ext_ver|
+              next false if ext_ver == inner_ext_ver
+
+              ext_req.satisfied_by?(inner_ext_ver)
+            end
+          end
+          if applies && !@transitive_implemented_extension_versions.include?(implication[:ext_ver])
+            added_ext_vers << implication[:ext_ver]
+          end
+        end
+      end
+      break if added_ext_vers.empty?
+
+      added_ext_vers.each { |ext_ver| @transitive_implemented_extension_versions << ext_ver }
+
+      added_ext_vers = []
     end
-    @transitive_implemented_extension_versions = list.uniq.sort
 
+    @transitive_implemented_extension_versions.sort!
+    @transitive_implemented_extension_versions
   end
   alias implemented_extension_versions transitive_implemented_extension_versions
 

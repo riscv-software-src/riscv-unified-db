@@ -173,7 +173,7 @@ Changes::
 <%- end -%>
 <%- unless version.implications.empty? -%>
 Implies::
-* <%= version.implications.map { |i| "#{i.name} (#{i.version_spec})" }.join("\n* ") %>
+<%= version.implications.each { |i| "* #{i[:ext_ver].name} (#{i[:ext_ver].version_spec}) #{i[:cond].empty? ? '' : i[:cond].to_asciidoc(join: ', ')}" }.join("\n* ") %>
 <%- unless version.requirement_condition.empty? -%>
 Requires::
 <%= version.requirement_condition.to_asciidoc %>
@@ -206,34 +206,32 @@ Version requirements are specified as conditions using the following operators:
 <%= ext.description %>
 :leveloffset: -2
 
-<%- implications = versions.map { |v| v.implications }.flatten.uniq -%>
-<%- unless implications.empty? -%>
+<%- has_implications = versions.any? { |v| !v.implications.empty? } -%>
+<%- if has_implications -%>
 === Sub-extensions
-<%- if implications.size > 1 -%>
-<%= ext.name %> defines the following #{implications.size} sub-extensions:
-<%- else -%>
-<%= ext.name %> defines a single sub-extension:
-<%- end -%>
+<%-   versions.each do |version| -%>
+<%-     next if version.implications.empty? -%>
+<%-     if version.implications.size > 1 -%>
+<%= version.name %> defines the following <%= version.implications.size %> sub-extensions:
+<%-     else -%>
+<%= version.name %> defines a single sub-extension:
+<%-     end -%>
 
-<%- implications.each do |sub_ext| -%>
-==== <%= sub_ext.name %> (<%= sub_ext.version_spec %>)
-
-<%- if versions.size > 1 -%>
-<%= sub_ext.name %> (<%= sub_ext.version %>) is implied by
-version <%= versions.select { |v| v.implications.include?(sub_ext)}.map(&:version).join(", ") %>
-of <%= ext.name %>.
-<%- end -%>
+<%-     version.implications.each do |implication_hsh| -%>
+<%-       sub_ext = implication_hsh[:ext_ver] -%>
+<%-       cond = implication_hsh[:cond] -%>
+==== <%= sub_ext.name %> (<%= sub_ext.version_spec %>) <%= "if #{cond.to_asciidoc(join: ', ')}" unless cond.empty? %>
 
 <%= cfg_arch.extension(sub_ext.name).description %>
 
-<%- unless sub_ext.requirement_condition.empty? -%>
+<%-       unless sub_ext.requirement_condition.empty? -%>
 <%= sub_ext.name %> requires:
 
 <%= sub_ext.requirement_condition.to_asciidoc %>
 
-<%- end -%>
-
-<%- end -%>
+<%-       end -%>
+<%-     end -%>
+<%-   end -%>
 <%- end -%>
 
 <%- unless ext.instructions.empty? -%>
@@ -258,16 +256,18 @@ The following <%= ext.instructions.size %> instructions are affected by this ext
 <%- end -%>
 |===
 
-<%- unless implications.empty? -%>
+<%- if has_implications -%>
 === Instructions by sub-extension
+
+<%- implications = versions.map { |v| v.implications.to_a }.flatten -%>
 
 [%autowidth]
 |===
-| Mnemonic | <%= implications.map { |e| "`#{e.name}`" }.join(" | ") %>
+| Mnemonic | <%= implications.map { |e| "`#{e[:ext_ver].name}`" }.join(" | ") %>
 
 <%- inst_list.each do |i| -%>
 | `<%= i.name %>`
-| <%= implications.map { |ext_ver| i.defined_by_condition.possibly_satisfied_by?(ext_ver) ? "&#x2713;" : "" }.join(" | ") %>
+| <%= implications.map { |e| i.defined_by_condition.possibly_satisfied_by?(e[:ext_ver]) ? "&#x2713;" : "" }.join(" | ") %>
 <%- end -%>
 |===
 

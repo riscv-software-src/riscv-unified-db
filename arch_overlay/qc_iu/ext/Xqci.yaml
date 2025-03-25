@@ -44,21 +44,21 @@ versions:
     - Rename mnemonics to match toolchain guidelines
     - Ensure every instruction belongs to at least one sub extension
   implies:
-  - [Xqcia, "0.1.0"]
-  - [Xqciac, "0.1.0"]
-  - [Xqcibi, "0.1.0"]
-  - [Xqcibm, "0.1.0"]
-  - [Xqcicli, "0.1.0"]
-  - [Xqcicm, "0.1.0"]
-  - [Xqcics, "0.1.0"]
-  - [Xqcicsr, "0.1.0"]
-  - [Xqciint, "0.1.0"]
-  - [Xqcilb, "0.1.0"]
-  - [Xqcili, "0.1.0"]
-  - [Xqcilia, "0.1.0"]
-  - [Xqcilo, "0.1.0"]
-  - [Xqcilsm, "0.1.0"]
-  - [Xqcisls, "0.1.0"]
+  - { name: Xqcia, version: "0.1.0" }
+  - { name: Xqciac, version: "0.1.0" }
+  - { name: Xqcibi, version: "0.1.0" }
+  - { name: Xqcibm, version: "0.1.0" }
+  - { name: Xqcicli, version: "0.1.0" }
+  - { name: Xqcicm, version: "0.1.0" }
+  - { name: Xqcics, version: "0.1.0" }
+  - { name: Xqcicsr, version: "0.1.0" }
+  - { name: Xqciint, version: "0.1.0" }
+  - { name: Xqcilb, version: "0.1.0" }
+  - { name: Xqcili, version: "0.1.0" }
+  - { name: Xqcilia, version: "0.1.0" }
+  - { name: Xqcilo, version: "0.1.0" }
+  - { name: Xqcilsm, version: "0.1.0" }
+  - { name: Xqcisls, version: "0.1.0" }
 - version: "0.4.0"
   state: frozen
   ratification_date: null
@@ -74,21 +74,21 @@ versions:
     - Fix description and functionality of qc.c.extu instruction
     - Fix description and functionality of qc.shladd instruction
   implies:
-  - [Xqcia, "0.2.0"]
-  - [Xqciac, "0.2.0"]
-  - [Xqcibi, "0.2.0"]
-  - [Xqcibm, "0.2.0"]
-  - [Xqcicli, "0.2.0"]
-  - [Xqcicm, "0.2.0"]
-  - [Xqcics, "0.2.0"]
-  - [Xqcicsr, "0.2.0"]
-  - [Xqciint, "0.2.0"]
-  - [Xqcilb, "0.2.0"]
-  - [Xqcili, "0.2.0"]
-  - [Xqcilia, "0.2.0"]
-  - [Xqcilo, "0.2.0"]
-  - [Xqcilsm, "0.2.0"]
-  - [Xqcisls, "0.2.0"]
+  - { name: Xqcia, version: "0.2.0" }
+  - { name: Xqciac, version: "0.2.0" }
+  - { name: Xqcibi, version: "0.2.0" }
+  - { name: Xqcibm, version: "0.2.0" }
+  - { name: Xqcicli, version: "0.2.0" }
+  - { name: Xqcicm, version: "0.2.0" }
+  - { name: Xqcics, version: "0.2.0" }
+  - { name: Xqcicsr, version: "0.2.0" }
+  - { name: Xqciint, version: "0.2.0" }
+  - { name: Xqcilb, version: "0.2.0" }
+  - { name: Xqcili, version: "0.2.0" }
+  - { name: Xqcilia, version: "0.2.0" }
+  - { name: Xqcilo, version: "0.2.0" }
+  - { name: Xqcilsm, version: "0.2.0" }
+  - { name: Xqcisls, version: "0.2.0" }
   requires:
     name: Zca
     version: ">= 1.0.0"
@@ -116,24 +116,24 @@ versions:
     - Fix description of qc.setinti and qc.clrinti instructions
     - Fix to make qc.c.mret and qc.c.mnret visible
   implies:
-  - [Xqcia, "0.3.0"]
-  - [Xqciac, "0.3.0"]
-  - [Xqcibi, "0.2.0"]
-  - [Xqcibm, "0.3.0"]
-  - [Xqcicli, "0.2.0"]
-  - [Xqcicm, "0.2.0"]
-  - [Xqcics, "0.2.0"]
-  - [Xqcicsr, "0.2.0"]
-  - [Xqciint, "0.3.0"]
-  - [Xqciio, "0.1.0"]
-  - [Xqcilb, "0.2.0"]
-  - [Xqcili, "0.2.0"]
-  - [Xqcilia, "0.2.0"]
-  - [Xqcilo, "0.2.0"]
-  - [Xqcilsm, "0.3.0"]
-  - [Xqcisim, "0.1.0"]
-  - [Xqcisls, "0.2.0"]
-  - [Xqcisync, "0.1.0"]
+  - { name: Xqcia, version: "0.3.0" }
+  - { name: Xqciac, version: "0.3.0" }
+  - { name: Xqcibi, version: "0.2.0" }
+  - { name: Xqcibm, version: "0.3.0" }
+  - { name: Xqcicli, version: "0.2.0" }
+  - { name: Xqcicm, version: "0.2.0" }
+  - { name: Xqcics, version: "0.2.0" }
+  - { name: Xqcicsr, version: "0.2.0" }
+  - { name: Xqciint, version: "0.3.0" }
+  - { name: Xqciio, version: "0.1.0" }
+  - { name: Xqcilb, version: "0.2.0" }
+  - { name: Xqcili, version: "0.2.0" }
+  - { name: Xqcilia, version: "0.2.0" }
+  - { name: Xqcilo, version: "0.2.0" }
+  - { name: Xqcilsm, version: "0.3.0" }
+  - { name: Xqcisim, version: "0.1.0" }
+  - { name: Xqcisls, version: "0.2.0" }
+  - { name: Xqcisync, version: "0.1.0" }
   requires:
     name: Zca
     version: ">= 1.0.0"
@@ -158,24 +158,24 @@ versions:
     - Add requirement to include Zca extension for Xqcisync since it has 16-bit instructions
     - Remove qc.flags CSR
   implies:
-  - [Xqcia, "0.4.0"]
-  - [Xqciac, "0.3.0"]
-  - [Xqcibi, "0.2.0"]
-  - [Xqcibm, "0.4.0"]
-  - [Xqcicli, "0.2.0"]
-  - [Xqcicm, "0.2.0"]
-  - [Xqcics, "0.2.0"]
-  - [Xqcicsr, "0.3.0"]
-  - [Xqciint, "0.3.0"]
-  - [Xqciio, "0.1.0"]
-  - [Xqcilb, "0.2.0"]
-  - [Xqcili, "0.2.0"]
-  - [Xqcilia, "0.2.0"]
-  - [Xqcilo, "0.2.0"]
-  - [Xqcilsm, "0.4.0"]
-  - [Xqcisim, "0.2.0"]
-  - [Xqcisls, "0.2.0"]
-  - [Xqcisync, "0.2.0"]
+  - { name: Xqcia, version: "0.4.0" }
+  - { name: Xqciac, version: "0.3.0" }
+  - { name: Xqcibi, version: "0.2.0" }
+  - { name: Xqcibm, version: "0.4.0" }
+  - { name: Xqcicli, version: "0.2.0" }
+  - { name: Xqcicm, version: "0.2.0" }
+  - { name: Xqcics, version: "0.2.0" }
+  - { name: Xqcicsr, version: "0.3.0" }
+  - { name: Xqciint, version: "0.3.0" }
+  - { name: Xqciio, version: "0.1.0" }
+  - { name: Xqcilb, version: "0.2.0" }
+  - { name: Xqcili, version: "0.2.0" }
+  - { name: Xqcilia, version: "0.2.0" }
+  - { name: Xqcilo, version: "0.2.0" }
+  - { name: Xqcilsm, version: "0.4.0" }
+  - { name: Xqcisim, version: "0.2.0" }
+  - { name: Xqcisls, version: "0.2.0" }
+  - { name: Xqcisync, version: "0.2.0" }
   requires:
     name: Zca
     version: ">= 1.0.0"
@@ -207,24 +207,24 @@ versions:
     - Change width calculations for qc.extdpr, qc.extdprh, qc.extdr, qc.extdupr, qc.extduprh, qc.extdur,
     - Change width calculations for qc.insbhr, qc.insbpr, qc.insbprh, qc.insbr, qc.insbri
   implies:
-  - [Xqcia, "0.5.0"]
-  - [Xqciac, "0.3.0"]
-  - [Xqcibi, "0.2.0"]
-  - [Xqcibm, "0.5.0"]
-  - [Xqcicli, "0.2.0"]
-  - [Xqcicm, "0.2.0"]
-  - [Xqcics, "0.2.0"]
-  - [Xqcicsr, "0.3.0"]
-  - [Xqciint, "0.4.0"]
-  - [Xqciio, "0.1.0"]
-  - [Xqcilb, "0.2.0"]
-  - [Xqcili, "0.2.0"]
-  - [Xqcilia, "0.2.0"]
-  - [Xqcilo, "0.2.0"]
-  - [Xqcilsm, "0.4.0"]
-  - [Xqcisim, "0.2.0"]
-  - [Xqcisls, "0.2.0"]
-  - [Xqcisync, "0.2.0"]
+  - { name: Xqcia, version: "0.5.0" }
+  - { name: Xqciac, version: "0.3.0" }
+  - { name: Xqcibi, version: "0.2.0" }
+  - { name: Xqcibm, version: "0.5.0" }
+  - { name: Xqcicli, version: "0.2.0" }
+  - { name: Xqcicm, version: "0.2.0" }
+  - { name: Xqcics, version: "0.2.0" }
+  - { name: Xqcicsr, version: "0.3.0" }
+  - { name: Xqciint, version: "0.4.0" }
+  - { name: Xqciio, version: "0.1.0" }
+  - { name: Xqcilb, version: "0.2.0" }
+  - { name: Xqcili, version: "0.2.0" }
+  - { name: Xqcilia, version: "0.2.0" }
+  - { name: Xqcilo, version: "0.2.0" }
+  - { name: Xqcilsm, version: "0.4.0" }
+  - { name: Xqcisim, version: "0.2.0" }
+  - { name: Xqcisls, version: "0.2.0" }
+  - { name: Xqcisync, version: "0.2.0" }
   requires:
     name: Zca
     version: ">= 1.0.0"
@@ -247,24 +247,24 @@ versions:
     - Fix IDL code to to match description for qc.insbr instruction
     - Add stack checks to qc.c.mienter, qc.c.mienter.nest, qc.c.mileaveret
   implies:
-  - [Xqcia, "0.5.0"]
-  - [Xqciac, "0.3.0"]
-  - [Xqcibi, "0.2.0"]
-  - [Xqcibm, "0.6.0"]
-  - [Xqcicli, "0.2.0"]
-  - [Xqcicm, "0.2.0"]
-  - [Xqcics, "0.2.0"]
-  - [Xqcicsr, "0.3.0"]
-  - [Xqciint, "0.5.0"]
-  - [Xqciio, "0.1.0"]
-  - [Xqcilb, "0.2.0"]
-  - [Xqcili, "0.2.0"]
-  - [Xqcilia, "0.2.0"]
-  - [Xqcilo, "0.2.0"]
-  - [Xqcilsm, "0.4.0"]
-  - [Xqcisim, "0.2.0"]
-  - [Xqcisls, "0.2.0"]
-  - [Xqcisync, "0.2.0"]
+  - { name: Xqcia, version: "0.5.0" }
+  - { name: Xqciac, version: "0.3.0" }
+  - { name: Xqcibi, version: "0.2.0" }
+  - { name: Xqcibm, version: "0.6.0" }
+  - { name: Xqcicli, version: "0.2.0" }
+  - { name: Xqcicm, version: "0.2.0" }
+  - { name: Xqcics, version: "0.2.0" }
+  - { name: Xqcicsr, version: "0.3.0" }
+  - { name: Xqciint, version: "0.5.0" }
+  - { name: Xqciio, version: "0.1.0" }
+  - { name: Xqcilb, version: "0.2.0" }
+  - { name: Xqcili, version: "0.2.0" }
+  - { name: Xqcilia, version: "0.2.0" }
+  - { name: Xqcilo, version: "0.2.0" }
+  - { name: Xqcilsm, version: "0.4.0" }
+  - { name: Xqcisim, version: "0.2.0" }
+  - { name: Xqcisls, version: "0.2.0" }
+  - { name: Xqcisync, version: "0.2.0" }
   requires:
     name: Zca
     version: ">= 1.0.0"
@@ -330,7 +330,7 @@ description: |
   QC.EAI format used for 48-bit instructions that operate on 32-bit immediate argument.
   --
 
-  [%autowidth, cols="4*", options="header"]
+  [%autowidth, cols="4*", options="header" }
   |===
   ^|Field
   ^|Start bit
@@ -367,7 +367,7 @@ description: |
   QC.EI format used for 48-bit instructions that operate on 26-bit immediate argument, including loads.
   --
 
-  [%autowidth, cols="4*", options="header"]
+  [%autowidth, cols="4*", options="header" }
   |===
   ^|Field
   ^|Start bit
@@ -414,7 +414,7 @@ description: |
   QC.EB format used for 48-bit branch instructions that compare register with 16-bit immediate.
   --
 
-  [%autowidth, cols="4*", options="header"]
+  [%autowidth, cols="4*", options="header" }
   |===
   ^|Field
   ^|Start bit
@@ -461,7 +461,7 @@ description: |
   QC.EJ format used for 48-bit jump/call instructions with 32-bit immediate target address.
   --
 
-  [%autowidth, cols="4*", options="header"]
+  [%autowidth, cols="4*", options="header" }
   |===
   ^|Field
   ^|Start bit

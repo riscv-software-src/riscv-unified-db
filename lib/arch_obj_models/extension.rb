@@ -220,12 +220,6 @@ class Extension < DatabaseObject
       end
   end
 
-  # # @return [Array<Extension>] List of conflicting extensions, transitively determined
-  # def transitive_conflicts
-  #   @transitive_conflicts ||=
-  #     conflicts.map { |ext| [ext] + ext.transitive_conflicts }.flatten.uniq
-  # end
-
   # @return [Array<Instruction>] the list of instructions implemented by *any version* of this extension (may be empty)
   def instructions
     @instructions ||= cfg_arch.instructions.select { |i| versions.any? { |v| i.defined_by_condition.possibly_satisfied_by?(v) }}
@@ -279,6 +273,8 @@ class ExtensionVersion
 
   # @return [String]
   attr_reader :version_str
+
+  attr_reader :arch
 
   # @param name [#to_s] The extension name
   # @param version [String] The version specifier
@@ -382,7 +378,6 @@ class ExtensionVersion
   end
 
   # @return [ExtensionRequirementExpression] Condition that must be met for this version to be allowed.
-  #                           Transitively includes any requirements from an implied extension.
   def requirement_condition
     @requirement_condition ||=
       begin
@@ -390,15 +385,10 @@ class ExtensionVersion
             when nil
               AlwaysTrueExtensionRequirementExpression.new
             when Hash
-              ExtensionRequirementExpression.new(@data["requires"], @cfg_arch)
+              ExtensionRequirementExpression.new(@data["requires"], @arch)
             else
-              ExtensionRequirementExpression.new({ "oneOf" => [@data["requires"]] }, @cfg_arch)
+              ExtensionRequirementExpression.new({ "oneOf" => [@data["requires"]] }, @arch)
             end
-        if @data.key?("implies")
-          rs = [r] + implications.map(&:requirement_condition)
-          rs = rs.reject(&:empty?)
-          r = ExtensionRequirementExpression.all_of(*rs.map(&:to_h), cfg_arch: @cfg_arch) unless rs.empty?
-        end
         r
       end
   end
@@ -406,50 +396,30 @@ class ExtensionVersion
   # @return [Array<Extension>] List of extensions that conflict with this ExtensionVersion
   #                            The list is *not* transitive; if conflict C1 implies C2,
   #                            only C1 shows up in the list
-  def conflicts
-    extension.conflicts
+  def conflicts_condition
+    ext.conflicts_condition
   end
 
-  # # @return [Array<ExtensionVersion>] List of extension versions that conflict with this ExtensionVersion
-  # #                                   The list *is* transitive; if conflict C1 implies C2,
-  # #                                   both C1 and C2 show up in the list
-  # def transitive_conflicts
-  #   return @transitive_conflicts unless @transive_conflicts.nil?
-
-  #   @transitive_conflicts = []
-  #   extension.transitive_conflicts.each do |ext|
-  #     @transitive_conflicts.concat(ext.versions)
-  #     ext.versions.each { |ext_ver| @transitive_conflicts.concat(ext_ver.transitive_implications) }
-  #   end
-  #   @transitive_conflicts.uniq!
-  #   @transitive_conflicts.sort!
-  #   @transitive_conflicts
-  # end
-
-  # @return [Array<ExtensionVersion>] List of extension versions that this ExtensionVersion implies
-  #                                   This list is *not* transitive; if an implication I1 implies another extension I2,
-  #                                   only I1 shows up in the list
+  # Returns array of ExtensionVersions implied by this ExtensionVersion, along with a condition
+  # under which it is in the list (which may be an AlwaysTrueExtensionRequirementExpression)
+  #
+  # @example
+  #   ext_ver.implicaitons #=> { :ext_ver => ExtensionVersion.new(:A, "2.1.0"), :cond => ExtensionRequirementExpression.new(...) }
+  #
+  # @return [Array<Hash{Symbol => ExtensionVersion, ExtensionRequirementExpression}>]
+  #      List of extension versions that this ExtensionVersion implies
+  #      This list is *not* transitive; if an implication I1 implies another extension I2,
+  #      only I1 shows up in the list
   def implications
-    return @implications unless @implications.nil?
+    return [] if @data["implies"].nil?
 
-    @implications = []
-    case @data["implies"]
-    when nil
-      return @implications
-    when Array
-      if @data["implies"][0].is_a?(Array)
-        @implications.concat(@data["implies"].map { |e| ExtensionVersion.new(e[0], e[1], @arch) })
-      else
-        @implications << ExtensionVersion.new(@data["implies"][0], @data["implies"][1], @arch)
-      end
-    end
-    @implications.sort!
-    @implications
+    ConditionalExtensionVersionList.new(@data["implies"], @arch)
   end
 
-  # @return [Array<ExtensionVersion>] List of extension versions that are imply this ExtensionVersion
-  #                                   This list is *not* transitive; if an implication I1 implies another extension I2,
-  #                                   only I1 shows up in the list
+  # @return [Array<ExtensionVersion>] List of extension versions that might imply this ExtensionVersion
+  #
+  # Note that the list returned could include extension versions that conditionally imply this extension version
+  # For example, Zcd.implied_by will return C, even though C only implies Zcd if D is also implemented
   def implied_by
     return @implied_by unless @implied_by.nil?
 
@@ -459,41 +429,36 @@ class ExtensionVersion
 
       ext.versions.each do |ext_ver|
         ext_ver.implications.each do |implication|
-          @implied_by << ext_ver if implication == self
+          @implied_by << ext_ver if implication[:ext_ver] == self
         end
       end
     end
     @implied_by
   end
 
-  # @return [Array<ExtensionVersion>] List of extension versions that are implied by with this ExtensionVersion
-  #                                   This list is transitive; if an implication I1 implies another extension I2,
-  #                                   both I1 and I2 are in the returned list
-  def transitive_implications
-    return @transitive_implications unless @transitive_implications.nil?
+  # @return [Array<Hash{Symbol => ExtensionVersion, ExtensionRequirementExpression>]
+  #    List of extension versions that might imply this ExtensionVersion, along with the condition under which it applies
+  #
+  # @example
+  #   zcd_ext_ver.implied_by_with_condition #=> [{ ext_ver: "C 1.0", cond: "D ~> 1.0"}]
+  #
+  # @example
+  #   zba_ext_ver.implied_by_with_condition #=> [{ ext_ver: "B 1.0", cond: AlwaysTrueExtensionRequirementExpression}]
+  def implied_by_with_condition
+    return @implied_by_with_condition unless @implied_by_with_condition.nil?
 
-    @transitive_implications = []
-    case @data["implies"]
-    when nil
-      return @transitive_implications
-    when Array
-      if @data["implies"][0].is_a?(Array)
-        impls = @data["implies"].map { |e| ExtensionVersion.new(e[0], e[1], @arch) }
-        @transitive_implications.concat(impls)
-        impls.each do |i|
-          transitive_impls = i.implications
-          @transitive_implications.concat(transitive_impls) unless transitive_impls.empty?
+    @implied_by_with_condition = []
+    @arch.extensions.each do |ext|
+      next if ext.name == name
+
+      ext.versions.each do |ext_ver|
+        raise "????" if ext_ver.arch.nil?
+        ext_ver.implications.each do |implication|
+          @implied_by_with_condition << { ext_ver: ext_ver, cond: implication[:cond] } if implication[:ext_ver] == self
         end
-      else
-        impl = ExtensionVersion.new(@data["implies"][0], @data["implies"][1], @arch)
-        @transitive_implications << impl
-        transitive_impls = impl.implications
-        @transitive_implications.concat(transitive_impls) unless transitive_impls.empty?
       end
     end
-    @transitive_implications.uniq!
-    @transitive_implications.sort!
-    @transitive_implications
+    @implied_by_with_condition
   end
 
   # @param ext_name [String] Extension name
@@ -725,6 +690,19 @@ class ExtensionRequirement
     @extension = @arch.extension(@name)
   end
 
+  def self.create(yaml_req, arch)
+    if yaml_req.is_a?(String)
+      ExtensionRequirement.new(yaml_req, ">= #{arch.extension(yaml_req).versions.min}")
+    elsif yaml_req.is_a?(Hash)
+      raise "schema error" unless yaml_req.key?("name")
+
+      req = yaml_req.key?("version") ? yaml_req["version"] : ">= #{arch.extension(yaml_req['name']).versions.min}"
+      ExtensionRequirement.new(yaml_req["name"], req, arch:)
+    else
+      raise "unexpected"
+    end
+  end
+
   # @param name [#to_s] Extension name
   # @param requirements [String] Single requirement
   # @param requirements [Array<String>] List of requirements, all of which must hold
@@ -809,12 +787,6 @@ class ExtensionRequirement
         csr.defined_by_condition.possibly_satisfied_by?(ext_ver)
       end
     end
-  end
-
-  # @return [Array<ExtensionVersion>] List of implied extension versions that could be implied by any extension version meeting this requirement
-  def transitive_implications
-    @transitive_implications ||=
-      satisfying_versions.map(&:transitive_implications).flatten.uniq
   end
 
   # sorts by name

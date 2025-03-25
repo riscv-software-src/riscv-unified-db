@@ -355,6 +355,60 @@ class Person
   end
 end
 
+# represents an `implies:` entry for an extension
+# which is a list of extension versions, zero or more of which
+# may be conditional (via an ExtensionRequirementExpression)
+class ConditionalExtensionVersionList
+  def initialize(ary, cfg_arch)
+    @ary = ary
+    @cfg_arch = cfg_arch
+  end
+
+  def empty? = @ary.nil? || @ary.empty?
+
+  def size = empty? ? 0 : eval.size
+
+  def each(&block)
+    raise "Missing block" unless block_given?
+
+    eval.each(&block)
+  end
+
+  def map(&block)
+    eval.map(&block)
+  end
+
+  # Returns array of ExtensionVersions, along with a condition under which it is in the list
+  #
+  # @example
+  #   list.eval #=> [{ :ext_ver => ExtensionVersion.new(:A, "2.1.0"), :cond => ExtensionRequirementExpression.new(...) }]
+  #
+  # @return [Array<Hash{Symbol => ExtensionVersion, ExtensionRequirementExpression}>]
+  #           The extension versions in the list after evaluation, and the condition under which it applies
+  def eval
+    result = []
+    if @ary.is_a?(Hash)
+      result << { ext_ver: entry_to_ext_ver(@ary), cond: AlwaysTrueExtensionRequirementExpression.new }
+    else
+      @ary.each do |elem|
+        if elem.is_a?(Hash) && elem.keys[0] == "if"
+          cond_expr = ExtensionRequirementExpression.new(elem["if"], @cfg_arch)
+          result << { ext_ver: entry_to_ext_ver(elem["then"]), cond: cond_expr }
+        else
+          result << { ext_ver: entry_to_ext_ver(elem), cond: AlwaysTrueExtensionRequirementExpression.new }
+        end
+      end
+    end
+    result
+  end
+  alias to_a eval
+
+  def entry_to_ext_ver(entry)
+    ExtensionVersion.new(entry["name"], entry["version"], @cfg_arch, fail_if_version_does_not_exist: true)
+  end
+  private :entry_to_ext_ver
+end
+
 # represents a JSON Schema composition of extension requirements, e.g.:
 #
 # anyOf:
@@ -364,13 +418,15 @@ end
 #   - C
 #
 class ExtensionRequirementExpression
-  # @param composition_hash [Hash] A possibly recursive hash of "allOf", "anyOf", "oneOf", "not"
+  # @param composition_hash [Hash] A possibly recursive hash of "allOf", "anyOf", "oneOf", "not", "if"
   def initialize(composition_hash, cfg_arch)
     raise ArgumentError, "composition_hash is nil" if composition_hash.nil?
 
     unless is_a_condition?(composition_hash)
       raise ArgumentError, "Expecting a JSON schema comdition (got #{composition_hash})"
     end
+
+    raise ArgumentError, "Must provide a cfg_arch" unless cfg_arch.is_a?(ConfiguredArchitecture)
 
     @hsh = composition_hash
     @arch = cfg_arch
@@ -452,22 +508,22 @@ class ExtensionRequirementExpression
     end
   end
 
-  def to_asciidoc(cond = @hsh, indent = 0)
+  def to_asciidoc(cond = @hsh, indent = 0, join: "\n")
     case cond
     when String
       "#{'*' * indent}* #{cond}, version >= #{@arch.extension(cond).min_version}"
     when Hash
       if cond.key?("name")
         if cond.key?("version")
-          "#{'*' * indent}* #{cond['name']}, version #{cond['version']}\n"
+          "#{'*' * indent}* #{cond['name']}, version #{cond['version']}#{join}"
         else
-          "#{'*' * indent}* #{cond['name']}, version >= #{@arch.extension(cond['name']).min_version}\n"
+          "#{'*' * indent}* #{cond['name']}, version >= #{@arch.extension(cond['name']).min_version}#{join}"
         end
       else
-        "#{'*' * indent}* #{cond.keys[0]}:\n" + to_asciidoc(cond[cond.keys[0]], indent + 2)
+        "#{'*' * indent}* #{cond.keys[0]}:#{join}" + to_asciidoc(cond[cond.keys[0]], indent + 2)
       end
     when Array
-      cond.map { |e| to_asciidoc(e, indent) }.join("\n")
+      cond.map { |e| to_asciidoc(e, indent) }.join(join)
     else
       raise "Unknown condition type: #{cond}"
     end
@@ -495,7 +551,7 @@ class ExtensionRequirementExpression
       else
         return false unless hsh.size == 1
 
-        return false unless ["allOf", "anyOf", "oneOf"].include?(hsh.keys[0])
+        return false unless ["allOf", "anyOf", "oneOf", "if"].include?(hsh.keys[0])
 
         hsh[hsh.keys[0]].each do |element|
           return false unless is_a_condition?(element)
@@ -560,6 +616,8 @@ class ExtensionRequirementExpression
         elsif hsh.key?("not")
           min_ary = hsh.dup
           key = "not"
+        elsif hsh.key?("if")
+          return hsh
         end
         min_ary = min_ary.uniq
         if min_ary.size == 1
@@ -603,6 +661,10 @@ class ExtensionRequirementExpression
         when "not"
           rb_str = to_rb_helper(hsh[key])
           "(!#{rb_str})"
+        when "if"
+          cond_rb_str = to_rb_helper(hsh["if"])
+          body_rb_str = to_rb_helper(hsh["body"])
+          "(#{body_rb_str}) if (#{cond_rb_str})"
         else
           raise "Unexpected"
           "(yield #{hsh})"
@@ -623,19 +685,21 @@ class ExtensionRequirementExpression
     to_rb_helper(@hsh)
   end
 
+  # Abstract syntax tree of the logic
   class LogicNode
     attr_accessor :type
 
-    TYPES = [ :term, :not, :and, :or ]
+    TYPES = [ :term, :not, :and, :or, :if ]
 
     def initialize(type, children, term_idx: nil)
       raise ArgumentError, "Bad type" unless TYPES.include?(type)
       raise ArgumentError, "Children must be an array" unless children.is_a?(Array)
 
       raise ArgumentError, "Children must be singular" if [:term, :not].include?(type) && children.size != 1
+      raise ArgumentError, "Children must have two elements" if [:and, :or, :if].include?(type) && children.size != 2
 
       if type == :term
-        raise ArgumentError, "Term must be an ExtensionRequirement" unless children[0].is_a?(ExtensionRequirement)
+        raise ArgumentError, "Term must be an ExtensionRequirement (found #{children[0]})" unless children[0].is_a?(ExtensionRequirement)
       else
         raise ArgumentError, "All Children must be LogicNodes" unless children.all? { |child| child.is_a?(LogicNode) }
       end
@@ -662,8 +726,15 @@ class ExtensionRequirementExpression
     def eval(term_values)
       if @type == :term
         ext_ret = @children[0]
-        term_value = term_values.find { |term_value| term_value.name == ext_ret.name }
+        term_value = term_values.find { |tv| tv.name == ext_ret.name }
         @children[0].satisfied_by?(term_value)
+      elsif @type == :if
+        cond_ext_ret = @children[0]
+        if cond_ext_ret.eval(term_values)
+          @children[1].eval(term_values)
+        else
+          false
+        end
       elsif @type == :not
         !@children[0].eval(term_values)
       elsif @type == :and
@@ -672,9 +743,23 @@ class ExtensionRequirementExpression
         @children.any? { |child| child.eval(term_values) }
       end
     end
+
+    def to_s
+      if @type == :term
+        "(#{@children[0].to_s})"
+      elsif @type == :not
+        "!#{@children[0]}"
+      elsif @type == :and
+        "(#{@children[0]} ^ #{@children[1]})"
+      elsif @type == :or
+        "(#{@children[0]} v #{@children[1]})"
+      elsif @type == :if
+        "(#{@children[0]} -> #{@children[1]})"
+      end
+    end
   end
 
-  # given an extension requirement, convert it to a LogicNode term, and optionally7 expand it to
+  # given an extension requirement, convert it to a LogicNode term, and optionally expand it to
   # exclude any conflicts and include any implications
   #
   # @param ext_req [ExtensionRequirement] An extension requirement
@@ -691,11 +776,20 @@ class ExtensionRequirementExpression
       end
 
       ext_req.satisfying_versions.each do |ext_ver|
-        ext_ver.implied_by.each do |implying_ext_ver|
-          # convert to an ext_req
-          puts "#{ext_req} <= #{implying_ext_ver}"
+        ext_ver.implied_by_with_condition.each do |implied_by|
+          implying_ext_ver = implied_by[:ext_ver]
+          implying_cond = implied_by[:cond]
           implying_ext_req = ExtensionRequirement.new(implying_ext_ver.name, "= #{implying_ext_ver.version_str}", arch: @arch)
-          n = LogicNode.new(:or, [n, ext_req_to_logic_node(implying_ext_req, term_idx)])
+          if implying_cond.empty?
+            # convert to an ext_req
+            n = LogicNode.new(:or, [n, ext_req_to_logic_node(implying_ext_req, term_idx)])
+          else
+            # conditional
+            # convert to an ext_req
+            cond_node = implying_cond.to_logic_tree(term_idx:, expand:)
+            cond = LogicNode.new(:if, [cond_node, ext_req_to_logic_node(implying_ext_req, term_idx)])
+            n = LogicNode.new(:or, [n, cond])
+          end
         end
       end
     end
@@ -733,13 +827,19 @@ class ExtensionRequirementExpression
           end
           root
         when "anyOf"
-          raise "unexpected" unless hsh[key].is_a?(Array) && hsh[key].size > 1
+          raise "unexpected: #{hsh}" unless hsh[key].is_a?(Array) && hsh[key].size > 1
 
           root = LogicNode.new(:or, [to_logic_tree(hsh[key][0], term_idx:, expand:), to_logic_tree(hsh[key][1], term_idx:, expand:)])
           (2...hsh[key].size).each do |i|
             root = LogicNode.new(:or, [root, to_logic_tree(hsh[key][i], term_idx:, expand:)])
           end
           root
+        when "if"
+          raise "unexpected" unless hsh.keys.size == 2 && hsh.keys[1] == "then"
+
+          cond = to_logic_tree(hsh[key], term_idx:, expand:)
+          body = to_logic_tree(hsh["then"], term_idx:, expand:)
+          LogicNode.new(:if, [cond, body])
         when "oneOf"
           # expand oneOf into AND
           roots = []
@@ -832,7 +932,10 @@ class ExtensionRequirementExpression
         combos.last << extension_versions[j][(i / d) % m]
       end
     end
-    combos
+    # get rid of any combos that can't happen because of extension conflicts
+    combos.reject do |combo|
+      combo.any? { |ext_ver1| (combo - [ext_ver1]).any? { |ext_ver2| ext_ver1.conflicts_condition.satisfied_by? { |ext_req| ext_req.satisfied_by?(ext_ver2) } } }
+    end
   end
 
   # @param other [ExtensionRequirementExpression] Another condition
@@ -881,10 +984,10 @@ class ExtensionRequirementExpression
     eval to_rb
   end
 
+  # yes if:
+  #   - ext_ver affects this condition
+  #   - it is is possible for this condition to be true is ext_ver is implemented
   def possibly_satisfied_by?(ext_ver)
-    # yes if:
-    #   - ext_ver affects this condition
-    #   - it is is possible for this condition to be true is ext_ver is implemented
     logic_tree = to_logic_tree
 
     return false unless logic_tree.terms.any? { |ext_req| ext_req.satisfying_versions.include?(ext_ver) }
