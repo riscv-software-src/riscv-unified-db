@@ -33,4 +33,4 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  X[rd+8] = X[2] + imm;
+  X[creg2reg(rd)] = X[2] + imm;
