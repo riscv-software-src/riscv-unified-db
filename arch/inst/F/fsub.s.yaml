@@ -3,9 +3,10 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fsub.s
-long_name: No synopsis available.
+long_name: Single-precision floating-point subtraction
 description: |
-  No description available.
+  Do the single-precision floating-point subtraction of fs2 from fs1 and store the result in fd.
+  rm is the dynamic Rounding Mode.
 definedBy: F
 assembly: fd, fs1, fs2, rm
 encoding:
@@ -26,7 +27,9 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
-
+  check_f_ok($encoding);
+  RoundingMode mode = rm_to_mode(rm, $encoding);
+  X[fd] = f32_sub(X[fs1], X[fs2], mode);
 sail(): |
   {
     let rs1_val_32b = F_or_X_S(rs1);

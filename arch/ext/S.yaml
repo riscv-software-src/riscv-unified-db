@@ -64,9 +64,9 @@ params:
     description: |
       Endianness of data in S-mode. Can be one of:
 
-       * little:  M-mode data is always little endian
-       * big:     M-mode data is always big endian
-       * dynamic: M-mode data can be either little or big endian,
+       * little:  S-mode data is always little endian
+       * big:     S-mode data is always big endian
+       * dynamic: S-mode data can be either little or big endian,
                   depending on the CSR field `mstatus.SBE`
     schema:
       type: string

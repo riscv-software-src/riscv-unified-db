@@ -182,6 +182,22 @@ Requires::
 --
 <%- end -%>
 
+<<<
+== Conventions
+
+Version requirements are specified as conditions using the following operators:
+
+[cols="1,2"]
+|===
+| Operator | Meaning
+
+| `~> VERSION` | Accepts any version that is _compatible_ with `VERSION`. By default, a version A is compatible with a version B if A's version number is greater than or equal to version B. If that default assumption is ever broken, it will be noted in the list of extension versions.
+| `= VERSION` | Accepts only version `VERSION`.
+| `>= VERSION` | Accepts any version greater than or equal to `VERSION`.
+| `\<= VERSION` | Accepts any version less than or equal to `VERSION`.
+| `> VERSION` | Accepts any version greater than `VERSION`.
+| `< VERSION` | Accepts any version less than `VERSION`.
+|===
 
 <<<
 == Extension description

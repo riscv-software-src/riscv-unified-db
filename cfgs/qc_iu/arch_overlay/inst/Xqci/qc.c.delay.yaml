@@ -18,6 +18,7 @@ encoding:
   variables:
     - name: imm
       location: 6-2
+      not: 0
 access:
   s: always
   u: always

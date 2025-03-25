@@ -171,9 +171,9 @@ params:
     description: |
       Endianness of data in VS-mode. Can be one of:
 
-       * little:  M-mode data is always little endian
-       * big:     M-mode data is always big endian
-       * dynamic: M-mode data can be either little or big endian,
+       * little:  VS-mode data is always little endian
+       * big:     VS-mode data is always big endian
+       * dynamic: VS-mode data can be either little or big endian,
                   depending on the CSR field `hstatus.VSBE`
     schema:
       type: string
@@ -182,9 +182,9 @@ params:
     description: |
       Endianness of data in VU-mode. Can be one of:
 
-       * little:  M-mode data is always little endian
-       * big:     M-mode data is always big endian
-       * dynamic: M-mode data can be either little or big endian,
+       * little:  VU-mode data is always little endian
+       * big:     VU-mode data is always big endian
+       * dynamic: VU-mode data can be either little or big endian,
                   depending on the CSR field `vsstatus.UBE`
     schema:
       type: string

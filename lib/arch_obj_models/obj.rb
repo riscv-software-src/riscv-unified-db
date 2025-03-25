@@ -413,6 +413,66 @@ class SchemaCondition
     end
   end
 
+  # @return [Boolean] True if the condition is a join of N terms over the same operator
+  #
+  #  A or B or C   #=> true
+  #  A and B       #=> true
+  #  A or B and C  #=> false
+  def flat?
+    case @hsh
+    when String
+      true
+    when Hash
+      @hsh.key?("name") || @hsh[@hsh.keys.first].all? { |child| child.is_a?(String) || (child.is_a?(Hash) && child.key?("name")) }
+    else
+      raise "unexpected"
+    end
+  end
+
+  # @return [:or, :and] The operator for a flat condition
+  #                     Only valid if #flat? is true
+  def flat_op
+    case @hsh
+    when String
+      :or
+    when Hash
+      @hsh.key?("name") ? :or : { "allOf" => :and, "anyOf" => :or }[@hsh.keys.first]
+    else
+      raise "unexpected"
+    end
+  end
+
+  # @return [Array<ExtensionRequirement>] The elements of the flat join
+  #                                       Only valid if #flat? is true
+  def flat_versions
+    case @hsh
+    when String
+      [ExtensionRequirement.new(@hsh, arch: @arch)]
+    when Hash
+      if @hsh.key?("name")
+        if @hsh.key?("version").nil?
+          [ExtensionRequirement.new(@hsh["name"], arch: @arch)]
+        else
+          [ExtensionRequirement.new(@hsh["name"], @hsh["version"], arch: @arch)]
+        end
+      else
+        @hsh[@hsh.keys.first].map do |r|
+          if r.is_a?(String)
+            ExtensionRequirement.new(r, arch: @arch)
+          else
+            if r.key?("version").nil?
+              ExtensionRequirement.new(r["name"], arch: @arch)
+            else
+              ExtensionRequirement.new(r["name"], r["version"], arch: @arch)
+            end
+          end
+        end
+      end
+    else
+      raise "unexpected"
+    end
+  end
+
   def to_asciidoc(cond = @hsh, indent = 0)
     case cond
     when String
@@ -615,6 +675,8 @@ class AlwaysTrueSchemaCondition
   def satisfied_by? = true
 
   def empty? = true
+
+  def flat? = false
 
   def to_h = {}
   def minimize = {}

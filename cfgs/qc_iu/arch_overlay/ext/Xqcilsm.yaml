@@ -40,6 +40,18 @@ versions:
     email: dhower@qti.qualcomm.com
   changes:
     - Fix description of qc.swmi, qc.lwmi and qc.setwmi instructions
+- version: "0.4.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix encoding of qc.swmi
 description: |
   The Xqcilsm extension includes six instructions that transfer multiple values
   between registers and memory.

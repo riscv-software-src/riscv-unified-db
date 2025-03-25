@@ -6,7 +6,7 @@ name: fround.s
 long_name: No synopsis available.
 description: |
   No description available.
-definedBy: { allOf: [F, Zfa] }
+definedBy: Zfa
 assembly: fd, xs1, rm
 encoding:
   match: 010000000100-------------1010011

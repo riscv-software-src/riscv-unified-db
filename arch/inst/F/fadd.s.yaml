@@ -3,9 +3,10 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fadd.s
-long_name: No synopsis available.
+long_name: Single-precision floating-point addition
 description: |
-  No description available.
+  Do the single-precision floating-point addition of fs1 and fs2 and store the result in fd.
+  rm is the dynamic Rounding Mode.
 definedBy: F
 assembly: fd, fs1, fs2, rm
 encoding:
@@ -26,7 +27,8 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
-  RoundingMode mode = rm_to_mode(X[rm], $encoding);
+  check_f_ok($encoding);
+  RoundingMode mode = rm_to_mode(rm, $encoding);
   X[fd] = f32_add(X[fs1], X[fs2], mode);
 
 sail(): |

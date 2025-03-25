@@ -106,6 +106,8 @@ versions:
     - Added Xqciio sub-extension
     - Added Xqcisim sub-extension
     - Added Xqcisync sub-extension
+    - Rename instruction of qc.muladdi to qc.muliadd
+    - Rename instruction of qc.c.muladdi to qc.c.muliadd
     - Fix description of qc.shladd instruction
     - Fix description and functionality of qc.c.extu instruction
     - Fix description and functionality of qc.wrapi instruction
@@ -131,6 +133,94 @@ versions:
   - [Xqcisim, "0.1.0"]
   - [Xqcisls, "0.2.0"]
   - [Xqcisync, "0.1.0"]
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
+- version: "0.6.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix encoding of qc.c.extu instruction
+    - Fix encoding of qc.swmi instruction
+    - Fix decoding of qc.pputci instruction
+    - Fix decoding of qc.c.delay instruction (state that immediate cannot be 0)
+    - Rename qc.slasat -> qc.shlsat
+    - Rename qc.sllsat -> qc.shlusat
+    - Add requirement to include Zca extension for Xqcisim since it has 16-bit instructions
+    - Add requirement to include Zca extension for Xqcisync since it has 16-bit instructions
+    - Remove qc.flags CSR
+  implies:
+  - [Xqcia, "0.4.0"]
+  - [Xqciac, "0.3.0"]
+  - [Xqcibi, "0.2.0"]
+  - [Xqcibm, "0.4.0"]
+  - [Xqcicli, "0.2.0"]
+  - [Xqcicm, "0.2.0"]
+  - [Xqcics, "0.2.0"]
+  - [Xqcicsr, "0.3.0"]
+  - [Xqciint, "0.3.0"]
+  - [Xqcilb, "0.2.0"]
+  - [Xqcili, "0.2.0"]
+  - [Xqcilia, "0.2.0"]
+  - [Xqcilo, "0.2.0"]
+  - [Xqcilsm, "0.4.0"]
+  - [Xqcisim, "0.2.0"]
+  - [Xqcisls, "0.2.0"]
+  - [Xqcisync, "0.2.0"]
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
+- version: "0.7.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix typos in description of qc.shlsat and qc.shlusat instructions
+    - Fix bug in qc.shlsat that caused wrong IDL code result
+    - Fix clobbering of saturation results in [add|addu|sub]sat instructions
+    - Rename all custom CSRs of the Xqciint extension to use dot as separator in the name
+    - Fix addresses of qc.mclicie* CSRs to 0x7f8-0x7ff (was copy & paste from qc.mclicip*)
+    - Add missing CSR registers qc.mclicilvl00 - qc.mclicilvl31
+    - Add missing CSR registers qc.mwpstartaddr0 - qc.mwpstartaddr3 and qc.mwpendaddr0 - qc.mwpendaddr3
+    - Add missing CSR registers qc.mstkbottomaddr and qc.mstktopaddr
+    - Add missing CSR registers qc.mmcr, qc.mthreadptr, qc.mcause
+    - Remove CSR registers qc.mncause, qc.mnepc
+    - Fix IDL code for qc.c.mienter, qc.c.mienter.nest, qc.c.mileaveret, qc.c.mret, qc.c.mnret
+    - Add list of supported custom exceptions
+    - Fix qc.cto instruction IDL code
+    - Change width calculations for qc.extdpr, qc.extdprh, qc.extdr, qc.extdupr, qc.extduprh, qc.extdur,
+    - Change width calculations for qc.insbhr, qc.insbpr, qc.insbprh, qc.insbr, qc.insbri
+  implies:
+  - [Xqcia, "0.5.0"]
+  - [Xqciac, "0.3.0"]
+  - [Xqcibi, "0.2.0"]
+  - [Xqcibm, "0.5.0"]
+  - [Xqcicli, "0.2.0"]
+  - [Xqcicm, "0.2.0"]
+  - [Xqcics, "0.2.0"]
+  - [Xqcicsr, "0.3.0"]
+  - [Xqciint, "0.4.0"]
+  - [Xqcilb, "0.2.0"]
+  - [Xqcili, "0.2.0"]
+  - [Xqcilia, "0.2.0"]
+  - [Xqcilo, "0.2.0"]
+  - [Xqcilsm, "0.4.0"]
+  - [Xqcisim, "0.2.0"]
+  - [Xqcisls, "0.2.0"]
+  - [Xqcisync, "0.2.0"]
   requires:
     name: Zca
     version: ">= 1.0.0"
@@ -429,3 +519,4 @@ doc_license:
 company:
   name: Qualcomm Technologies, Inc.
   url: https://qualcomm.com
+conflicts: [D]

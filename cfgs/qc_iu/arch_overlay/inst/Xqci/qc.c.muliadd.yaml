@@ -11,6 +11,10 @@ definedBy:
   anyOf:
     - Xqci
     - Xqciac
+excludedBy:
+  anyOf:
+    - allOf: [C, D]
+    - Zcd
 base: 32
 encoding:
   match: 001-----------10

@@ -1,3 +1,16 @@
+<%
+  write_flag = ENV["PSEUDO"]
+  include_idl = include_sail = true
+  if write_flag
+    case write_flag.downcase.strip
+    when "idl"
+      include_sail = false
+    when "sail"
+      include_idl = false
+    end
+  end
+%>
+
 <%= anchor_for_inst(inst.name) %>
 = <%= inst.name %>
 
@@ -71,14 +84,36 @@ RV64::
 <%- end # if multi_encoding? -%>
 <%- end # if no decode variables-%>
 
+<% unless inst.data["operation()"].nil? %>
+  <% if include_idl %>
 Operation::
-<%- unless inst.data["operation()"].nil? -%>
 [source,idl,subs="specialchars,macros"]
 ----
 <%= inst.operation_ast(cfg_arch.symtab).gen_adoc %>
 ----
-<%- end -%>
+  <% end %>
+<% end %>
+
+<% unless inst.data["sail()"].nil? %>
+  <% if include_sail %>
+Sail::
+[source,sail]
+----
+<%= inst.data["sail()"] %>
+----
+  <% end %>
+<% end %>
 
 Included in::
 
+<%- if inst.defined_by_condition.flat? -%>
+|===
+| Extension | Version
+
+<%- inst.defined_by_condition.flat_versions.each do |r| -%>
+| *<%= r.name %>* | <%= r.requirement_specs_to_s %>
+<%- end -%>
+|===
+<%- else -%>
 <%= inst.defined_by_condition.to_asciidoc %>
+<%- end -%>

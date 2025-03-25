@@ -6,7 +6,7 @@ name: fli.s
 long_name: No synopsis available.
 description: |
   No description available.
-definedBy: { allOf: [F, Zfa] }
+definedBy: Zfa
 assembly: fd, fs1
 encoding:
   match: 111100000001-----000-----1010011
