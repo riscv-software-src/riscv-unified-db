@@ -22,6 +22,7 @@ mkdir -p $DEPLOY_DIR/pdfs
 
 echo "Resolve / Create Index"
 ./do gen:resolved_arch
+cp -R gen/resolved_arch/_ $DEPLOY_DIR/resolved_arch
 
 echo "Build manual"
 ./do gen:html_manual MANUAL_NAME=isa VERSIONS=all
