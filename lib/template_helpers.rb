@@ -5,6 +5,7 @@
 
 require "erb"
 require "pathname"
+require "ostruct"
 
 # collection of functions that can be used inside ERB templates
 module TemplateHelpers
