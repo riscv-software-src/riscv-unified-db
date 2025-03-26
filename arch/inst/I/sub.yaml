@@ -4,17 +4,17 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: sub
 long_name: Subtract
-description: Subtract the value in rs2 from rs1, and store the result in rd
+description: Subtract the value in xs2 from xs1, and store the result in xd
 definedBy: I
 assembly: xd, xs1, xs2
 encoding:
   match: 0100000----------000-----0110011
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -23,32 +23,32 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
-  XReg t0 = X[rs1];
-  XReg t1 = X[rs2];
-  X[rd] = t0 - t1;
+  XReg t0 = X[xs1];
+  XReg t1 = X[xs2];
+  X[xd] = t0 - t1;
 
 sail(): |
   {
-    let rs1_val = X(rs1);
-    let rs2_val = X(rs2);
+    let xs1_val = X(xs1);
+    let xs2_val = X(xs2);
     let result : xlenbits = match op {
-      RISCV_ADD  => rs1_val + rs2_val,
-      RISCV_SLT  => zero_extend(bool_to_bits(rs1_val <_s rs2_val)),
-      RISCV_SLTU => zero_extend(bool_to_bits(rs1_val <_u rs2_val)),
-      RISCV_AND  => rs1_val & rs2_val,
-      RISCV_OR   => rs1_val | rs2_val,
-      RISCV_XOR  => rs1_val ^ rs2_val,
+      RISCV_ADD  => xs1_val + xs2_val,
+      RISCV_SLT  => zero_extend(bool_to_bits(xs1_val <_s xs2_val)),
+      RISCV_SLTU => zero_extend(bool_to_bits(xs1_val <_u xs2_val)),
+      RISCV_AND  => xs1_val & xs2_val,
+      RISCV_OR   => xs1_val | xs2_val,
+      RISCV_XOR  => xs1_val ^ xs2_val,
       RISCV_SLL  => if   sizeof(xlen) == 32
-                    then rs1_val << (rs2_val[4..0])
-                    else rs1_val << (rs2_val[5..0]),
+                    then xs1_val << (xs2_val[4..0])
+                    else xs1_val << (xs2_val[5..0]),
       RISCV_SRL  => if   sizeof(xlen) == 32
-                    then rs1_val >> (rs2_val[4..0])
-                    else rs1_val >> (rs2_val[5..0]),
-      RISCV_SUB  => rs1_val - rs2_val,
+                    then xs1_val >> (xs2_val[4..0])
+                    else xs1_val >> (xs2_val[5..0]),
+      RISCV_SUB  => xs1_val - xs2_val,
       RISCV_SRA  => if   sizeof(xlen) == 32
-                    then shift_right_arith32(rs1_val, rs2_val[4..0])
-                    else shift_right_arith64(rs1_val, rs2_val[5..0])
+                    then shift_right_arith32(xs1_val, xs2_val[4..0])
+                    else shift_right_arith64(xs1_val, xs2_val[5..0])
     };
-    X(rd) = result;
+    X(xd) = result;
     RETIRE_SUCCESS
   }
