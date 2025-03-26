@@ -44,6 +44,9 @@ operation(): |
 
   X[rd] = initial_csr_value;
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val : xlenbits = if is_imm then zero_extend(rs1) else X(rs1);
@@ -69,3 +72,5 @@ sail(): |
       RETIRE_SUCCESS
     }
   }
+
+# SPDX-SnippetEnd

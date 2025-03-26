@@ -29,6 +29,9 @@ operation(): |
   jump_halfword($pc + $signed(imm));
   X[xd] = retrun_addr;
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let t : xlenbits = PC + sign_extend(imm);
@@ -52,3 +55,5 @@ sail(): |
       }
     }
   }
+
+# SPDX-SnippetEnd

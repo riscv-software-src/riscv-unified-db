@@ -35,8 +35,13 @@ operation(): |
 
   X[rd] = output;
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   foreach (i from 0 to xlen/2-1) {
     X(rd)[2*i] = X(rs1)[i];
     X(rd)[2*i+1] = X(rs1)[i+xlen/2];
   }
+
+# SPDX-SnippetEnd

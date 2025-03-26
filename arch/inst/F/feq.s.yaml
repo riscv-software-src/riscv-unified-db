@@ -46,6 +46,9 @@ operation(): |
     ) ? 1 : 0;
   }
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val_S = F_or_X_S(rs1);
@@ -58,3 +61,5 @@ sail(): |
     X(rd) = zero_extend(bool_to_bits(rd_val));
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

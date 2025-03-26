@@ -28,6 +28,9 @@ operation(): |
   Bits<32> t1 = X[xs2][31:0];
   X[xd] = sext(t0 - t1, 31);
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let xs1_val = (X(xs1))[31..0];
@@ -42,3 +45,5 @@ sail(): |
     X(xd) = sign_extend(result);
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

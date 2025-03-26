@@ -29,6 +29,9 @@ operation(): |
 
   X[xd] = $signed(read_memory<32>(virtual_address, $encoding));
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let offset : xlenbits = sign_extend(imm);
@@ -56,3 +59,5 @@ sail(): |
         }
     }
   }
+
+# SPDX-SnippetEnd

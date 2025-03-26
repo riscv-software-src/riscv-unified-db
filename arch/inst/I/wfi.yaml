@@ -111,6 +111,9 @@ operation(): |
   # passed, so now do the wait
   wfi();
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   match cur_privilege {
       Machine    => { platform_wfi(); RETIRE_SUCCESS },
@@ -119,3 +122,5 @@ sail(): |
                     else { platform_wfi(); RETIRE_SUCCESS },
       User       => { handle_illegal(); RETIRE_FAIL }
     }
+
+# SPDX-SnippetEnd

@@ -23,6 +23,9 @@ access:
 data_independent_timing: true
 operation(): X[xd] = imm;
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let off : xlenbits = sign_extend(imm @ 0x000);
@@ -33,3 +36,5 @@ sail(): |
     X(xd) = ret;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

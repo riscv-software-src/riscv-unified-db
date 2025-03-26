@@ -33,8 +33,13 @@ operation(): |
     eei_ebreak();
   }
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     handle_mem_exception(PC, E_Breakpoint());
     RETIRE_FAIL
   }
+
+# SPDX-SnippetEnd

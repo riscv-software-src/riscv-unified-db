@@ -36,6 +36,9 @@ operation(): |
 
   X[creg2reg(rd)] = $signed(X[creg2reg(rd)][7:0]);
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val = X(rsdc);
@@ -49,3 +52,5 @@ sail(): |
     X(rsdc) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

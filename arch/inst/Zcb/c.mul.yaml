@@ -36,9 +36,14 @@ operation(): |
 
   X[creg2reg(rd)] = X[creg2reg(rd)] * X[creg2reg(rs2)];
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let result_wide = to_bits(2 * sizeof(xlen), signed(X(rsdc)) * signed(X(rs2c)));
     X(rsdc) = result_wide[(sizeof(xlen) - 1) .. 0];
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

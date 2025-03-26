@@ -23,6 +23,9 @@ access:
 data_independent_timing: false
 operation(): |
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let EEW = 8;
@@ -36,3 +39,5 @@ sail(): |
     assert(evl >= 0);
     process_vm(vd_or_vs3, rs1, num_elem, evl, op)
   }
+
+# SPDX-SnippetEnd

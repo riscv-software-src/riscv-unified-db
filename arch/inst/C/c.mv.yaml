@@ -33,9 +33,14 @@ operation(): |
 
   X[xd] = X[xs2];
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let xs2_val = X(xs2);
     X(rs) = xs2_val
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

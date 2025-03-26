@@ -37,6 +37,9 @@ operation(): |
   XReg unextended_result = (X[rs1] >> shamt) | (X[rs1] << (32 - shamt));
   X[rd] = {{32{unextended_result[31]}}, unextended_result};
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val = (X(rs1))[31..0];
@@ -44,3 +47,5 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

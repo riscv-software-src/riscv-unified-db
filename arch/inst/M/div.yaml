@@ -53,6 +53,9 @@ operation(): |
     X[rd] = $signed(src1) / $signed(src2);
   }
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     if extension("M") then {
@@ -70,3 +73,5 @@ sail(): |
       RETIRE_FAIL
     }
   }
+
+# SPDX-SnippetEnd

@@ -56,6 +56,9 @@ operation(): |
     }
   }
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let t : sync_exception =
@@ -69,3 +72,5 @@ sail(): |
     set_next_pc(exception_handler(cur_privilege, CTL_TRAP(t), PC));
     RETIRE_FAIL
   }
+
+# SPDX-SnippetEnd

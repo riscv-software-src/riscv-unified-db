@@ -37,6 +37,9 @@ operation(): |
 
   X[creg2reg(rd)] = sext(read_memory<16>(virtual_address, $encoding), 16);
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let offset : xlenbits = zero_extend(imm);
@@ -64,3 +67,5 @@ sail(): |
         }
     }
   }
+
+# SPDX-SnippetEnd

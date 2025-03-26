@@ -65,6 +65,9 @@ operation(): |
 
   mark_f_state_dirty();
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     assert(sizeof(xlen) >= 64);
@@ -81,3 +84,5 @@ sail(): |
       }
     }
   }
+
+# SPDX-SnippetEnd

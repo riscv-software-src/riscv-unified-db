@@ -38,6 +38,9 @@ operation(): |
   # shamt is between 0-63
   X[xd] = X[xs1] >>> shamt;
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let xs1_val = X(xs1);
@@ -56,3 +59,5 @@ sail(): |
     X(xd) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

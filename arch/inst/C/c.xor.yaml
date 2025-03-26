@@ -30,6 +30,9 @@ operation(): |
   XReg t1 = X[creg2reg(rs2)];
   X[creg2reg(rd)] = t0 ^ t1;
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val = X(rd+8);
@@ -55,3 +58,5 @@ sail(): |
     X(rd+8) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

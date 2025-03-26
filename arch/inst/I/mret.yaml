@@ -29,6 +29,9 @@ operation(): |
   CSR[mstatus].MPP = implemented?(ExtensionName::U) ? 2'b00 : 2'b11;
   $pc = $bits(CSR[mepc]);
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     if   cur_privilege != Machine
@@ -40,3 +43,5 @@ sail(): |
       RETIRE_SUCCESS
     }
   }
+
+# SPDX-SnippetEnd

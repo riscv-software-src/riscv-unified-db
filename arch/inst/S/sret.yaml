@@ -126,6 +126,9 @@ operation(): |
     $pc = $bits(CSR[vsepc]);
   }
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let sret_illegal : bool = match cur_privilege {
@@ -142,3 +145,5 @@ sail(): |
       RETIRE_SUCCESS
     }
   }
+
+# SPDX-SnippetEnd

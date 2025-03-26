@@ -25,6 +25,9 @@ access:
 data_independent_timing: false
 operation(): |
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let load_width_bytes = vlewidth_bytesnumber(width);
@@ -40,3 +43,5 @@ sail(): |
 
     process_vlsegff(nf_int, vm, vd, load_width_bytes, rs1, EMUL_pow, num_elem)
   }
+
+# SPDX-SnippetEnd

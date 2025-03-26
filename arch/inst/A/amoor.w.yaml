@@ -43,6 +43,9 @@ operation(): |
 
   X[rd] = amo<32>(virtual_address, X[rs2][31:0], AmoOperation::Or, aq, rl, $encoding);
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     if extension("A") then {
@@ -133,3 +136,5 @@ sail(): |
       RETIRE_FAIL
     }
   }
+
+# SPDX-SnippetEnd

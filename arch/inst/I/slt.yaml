@@ -30,6 +30,9 @@ operation(): |
 
   X[xd] = ($signed(src1) < $signed(src2)) ? '1 : '0;
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let xs1_val = X(xs1);
@@ -55,3 +58,5 @@ sail(): |
     X(xd) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

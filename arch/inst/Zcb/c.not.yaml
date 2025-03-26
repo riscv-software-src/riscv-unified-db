@@ -31,8 +31,13 @@ operation(): |
 
   X[creg2reg(rd)] = ~X[creg2reg(rd)];
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     X(rsdc) = X(rsdc) XOR -1;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

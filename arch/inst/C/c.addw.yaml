@@ -31,6 +31,9 @@ operation(): |
   Bits<32> t1 = X[creg2reg(rs2)][31:0];
   X[creg2reg(rd)] = $signed(t0 + t1);
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val = (X(rd+8))[31..0];
@@ -45,3 +48,5 @@ sail(): |
     X(rd+8) = sign_extend(result);
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

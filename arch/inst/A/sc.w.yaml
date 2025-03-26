@@ -156,6 +156,9 @@ operation(): |
   Boolean success = store_conditional<32>(virtual_address, value, aq, rl, $encoding);
   X[rd] = success ? 0 : 1;
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     if speculate_conditional () == false then {
@@ -232,3 +235,5 @@ sail(): |
       }
     }
   }
+
+# SPDX-SnippetEnd

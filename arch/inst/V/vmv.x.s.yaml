@@ -23,6 +23,9 @@ access:
 data_independent_timing: false
 operation(): |
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let SEW      = get_sew();
@@ -42,3 +45,5 @@ sail(): |
 
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

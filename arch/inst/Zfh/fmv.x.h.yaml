@@ -33,6 +33,9 @@ operation(): |
 
   X[rd] = sext(f[fs1][15:0], 16);
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val_X            = X(rs1);
@@ -40,3 +43,5 @@ sail(): |
     F(rd) = nan_box (rd_val_H);
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

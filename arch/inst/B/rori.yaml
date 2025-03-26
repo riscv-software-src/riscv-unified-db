@@ -44,6 +44,9 @@ operation(): |
 
   X[rd] = (X[rs1] >> shamt) | (X[rs1] << (xlen() - shamt));
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val = X(rs1);
@@ -53,3 +56,5 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

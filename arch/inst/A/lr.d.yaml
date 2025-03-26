@@ -91,6 +91,9 @@ operation(): |
 
   X[rd] = load_reserved<32>(virtual_address, aq, rl, $encoding);
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     if extension("A") then {
@@ -133,3 +136,5 @@ sail(): |
       RETIRE_FAIL
     }
   }
+
+# SPDX-SnippetEnd

@@ -305,6 +305,9 @@ operation(): |
     # else, silently do nothing
   }
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let addr : option(xlenbits) = if rs1 == 0b00000 then None() else Some(X(rs1));
@@ -319,3 +322,5 @@ sail(): |
       Machine    => { flush_TLB(asid, addr); RETIRE_SUCCESS }
     }
   }
+
+# SPDX-SnippetEnd

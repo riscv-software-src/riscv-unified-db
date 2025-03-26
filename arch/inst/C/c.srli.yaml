@@ -39,6 +39,9 @@ operation(): |
   # shamt is between 0-63
   X[creg2reg(rd)] = X[creg2reg(rd)] >> shamt;
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rd_val = X(rd+8);
@@ -57,3 +60,5 @@ sail(): |
     X(rd+8) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

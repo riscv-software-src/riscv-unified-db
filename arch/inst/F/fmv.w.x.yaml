@@ -37,6 +37,9 @@ operation(): |
 
   mark_f_state_dirty();
 
+# SPDX-SnippetBegin
+# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val_X            = X(rs1);
@@ -44,3 +47,5 @@ sail(): |
     F(rd) = nan_box (rd_val_S);
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd
