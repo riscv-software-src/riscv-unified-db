@@ -1,0 +1,125 @@
+
+#include "udb/defines.hpp"
+
+#include "udb/config_validator.hpp"
+
+#include <fmt/core.h>
+
+<%- cfg_list = ENV["CONFIG"].split(",").map(&:strip) -%>
+
+<%- cfg_list.each do |cfg| -%>
+#include "udb/cfgs/<%= cfg %>/hart.hxx"
+<%- end -%>
+
+namespace udb {
+  template <class HART_TYPE, SocModel SocType>
+  class RiscvTestsTracer : public udb::AbstractTracer
+  {
+  public:
+    class Pass : public udb::ExitEvent
+    {
+      public:
+      Pass() : udb::ExitEvent(0) {}
+
+      const char* what() const noexcept override {
+        return "Pass";
+      }
+    };
+
+    class Fail : public udb::ExitEvent
+    {
+      public:
+      Fail(uint64_t testnum) : udb::ExitEvent(-1), m_testnum(testnum) {}
+
+      const char* what() const noexcept override {
+        return strdup(fmt::format("Test #{} failed", m_testnum).c_str());
+      }
+
+      private:
+      uint64_t m_testnum;
+    };
+
+  public:
+    RiscvTestsTracer(HartBase<SocType>* hart)
+      : udb::AbstractTracer(),
+        m_hart(dynamic_cast<HART_TYPE*>(hart))
+    {}
+
+    void trace_exception() override {
+      <%- if cfg_arch.multi_xlen? && cfg_arch.csr("mcause").format_changes_with_xlen? -%>
+      auto cause = m_hart->_csrContainer().mcause._hw_read(m_hart->xlen());
+      <%- else -%>
+      auto cause = m_hart->_csrContainer().mcause._hw_read();
+      <%- end -%>
+      if (cause == udb::ExceptionCode::Mcall || cause == udb::ExceptionCode::Scall || cause == udb::ExceptionCode::Ucall) {
+        auto a7 = m_hart->_xreg(17);
+        if (a7 == 93) {
+          auto gp = m_hart->_xreg(3);
+          if (gp == 1) {
+            throw Pass();
+          } else {
+            auto testnum = m_hart->_xreg(10) >> 1;
+            throw Fail(testnum);
+          }
+        }
+      }
+    }
+
+  private:
+    HART_TYPE* m_hart;
+  };
+
+  class HartFactory {
+    HartFactory() = delete;
+
+  public:
+    static constexpr std::array<std::string_view, <%= cfg_list.size %>> configs() {
+      return { <%= cfg_list.map { |c| "\"#{c}\"" }.join(", ") %> };
+    }
+
+    template <SocModel SocType>
+    static HartBase<SocType>* create(const std::string& config_name, uint64_t hart_id, const std::filesystem::path& cfg_path, SocType& soc)
+    {
+      auto yaml = YAML::LoadFile(cfg_path.string());
+      nlohmann::json json = ConfigValidator::validate(yaml);
+
+      <%- cfg_list.each do |config| -%>
+      if (config_name == "<%= config %>") {
+        return new <%= name_of(:hart, config) %>(hart_id, soc, json);
+      }
+      <%- end %>
+
+      // bad config name
+      fmt::print("'{}' is not a valid config name\n", config_name);
+      exit(1);
+    }
+
+    template <SocModel SocType>
+    static HartBase<SocType>* create(const std::string& config_name, uint64_t hart_id, const std::string& cfg_yaml, SocType& soc)
+    {
+      auto yaml = YAML::Load(cfg_yaml);
+      nlohmann::json json = ConfigValidator::validate(yaml);
+
+      <%- cfg_list.each do |config| -%>
+      if (config_name == "<%= config %>") {
+        return new <%= name_of(:hart, config) %>(hart_id, soc, json);
+      }
+      <%- end %>
+
+      // bad config name
+      fmt::print("'{}' is not a valid config name\n", config_name);
+      exit(1);
+    }
+
+    template <SocModel SocType>
+    static AbstractTracer* create_tracer(const std::string& tracer_name, const std::string& config_name, HartBase<SocType>* hart)
+    {
+      <%- cfg_list.each do |config| -%>
+      if (config_name == "<%= config %>") {
+        return new RiscvTestsTracer<<%= name_of(:hart, config) %><SocType>, SocType>(hart);
+      }
+      <%- end %>
+
+    }
+  };
+}
