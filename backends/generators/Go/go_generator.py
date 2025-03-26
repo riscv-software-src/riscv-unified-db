@@ -56,10 +56,12 @@ func encode(a obj.As) *inst {
 }
 """
 
-    # Build the CSR map block.
+    # Build the CSR map block - now matching the second script's format
     csrs_map_str = "var csrs = map[uint16]string {\n"
-    for addr in sorted(csrs.keys()):
-        csrs_map_str += f'  {hex(addr)} : "{csrs[addr]}",\n'
+    # Convert the dictionary to a list of tuples and sort by address
+    csr_items = [(int(addr), name.upper()) for addr, name in csrs.items()]
+    for addr, name in sorted(csr_items, key=lambda x: x[0]):
+        csrs_map_str += f'  {hex(addr)} : "{name}",\n'
     csrs_map_str += "}\n"
 
     go_code = prelude + instr_str + instructions_end + "\n" + csrs_map_str
