@@ -88,3 +88,8 @@ repos:
           - --indent
           - "2"
           - --case-indent
+
+  - repo: https://github.com/rubocop/rubocop
+    rev: v1.70.0
+    hooks:
+      - id: rubocop
