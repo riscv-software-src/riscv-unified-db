@@ -9,7 +9,12 @@ description: |
   It computes an effective address by adding the zero-extended offset, scaled by 8,
   to the stack pointer, x2.
   It expands to `fsd` `rs2, offset(x2)`.
-definedBy: Zcd
+definedBy:
+  anyOf:
+    - allOf:
+        - C
+        - D
+    - Zcd
 assembly: fs2, imm(sp)
 encoding:
   match: 101-----------10

@@ -9,7 +9,12 @@ description: |
   It computes an effective address by adding the zero-extended offset, scaled by 4,
   to the base address in register rs1.
   It expands to `fsw` `rs2, offset(rs1)`.
-definedBy: Zcf
+definedBy:
+  anyOf:
+    - allOf:
+        - C
+        - F
+    - Zcf
 base: 32
 assembly: xs2, imm(xs1)
 encoding:

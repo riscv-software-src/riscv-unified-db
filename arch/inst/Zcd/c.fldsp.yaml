@@ -9,7 +9,12 @@ description: |
   It computes its effective address by adding the zero-extended offset, scaled by 8,
   to the stack pointer, x2.
   It expands to `fld` `rd, offset(x2)`.
-definedBy: Zcd
+definedBy:
+  anyOf:
+    - allOf:
+        - C
+        - D
+    - Zcd
 assembly: fd, imm(sp)
 encoding:
   match: 001-----------10

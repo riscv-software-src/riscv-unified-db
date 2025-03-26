@@ -9,7 +9,12 @@ description: |
   It computes its effective address by adding the zero-extended offset, scaled by 4,
   to the stack pointer, x2.
   It expands to `flw` `rd, offset(x2)`.
-definedBy: Zcf
+definedBy:
+  anyOf:
+    - allOf:
+        - C
+        - F
+    - Zcf
 assembly: fd, imm(sp)
 base: 32
 encoding:

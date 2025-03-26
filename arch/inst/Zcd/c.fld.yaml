@@ -9,7 +9,12 @@ description: |
   It computes an effective address by adding the zero-extended offset, scaled by 8,
   to the base address in register rs1.
   It expands to `fld` `rd, offset(rs1)`.
-definedBy: Zcd
+definedBy:
+  anyOf:
+    - allOf:
+        - C
+        - D
+    - Zcd
 assembly: xd, imm(xs1)
 encoding:
   match: 001-----------00
