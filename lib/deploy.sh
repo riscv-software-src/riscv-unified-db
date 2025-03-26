@@ -22,6 +22,7 @@ mkdir -p $DEPLOY_DIR/pdfs
 
 echo "Resolve / Create Index"
 ./do gen:resolved_arch
+cp -R gen/resolved_arch/_ $DEPLOY_DIR/resolved_arch
 
 echo "Build manual"
 ./do gen:html_manual MANUAL_NAME=isa VERSIONS=all
@@ -29,8 +30,8 @@ echo "Build manual"
 echo "Copy manual html"
 cp -R gen/manual/isa/top/all/html $DEPLOY_DIR/manual
 
-echo "Build html documentation for generic_rv64"
-./do gen:html[generic_rv64]
+echo "Build html documentation for example_rv64_with_overlay"
+./do gen:html[example_rv64_with_overlay]
 
 echo "Generate YARD docs"
 ./do gen:tool_doc
@@ -39,7 +40,7 @@ echo "Create _site/htmls"
 mkdir mkdir -p $DEPLOY_DIR/htmls
 
 echo "Copy cfg html"
-cp -R gen/cfg_html_doc/generic_rv64/html $DEPLOY_DIR/example_cfg
+cp -R gen/cfg_html_doc/example_rv64_with_overlay/html $DEPLOY_DIR/example_cfg
 
 echo "Create RVA20 Profile Release PDF Spec"
 ./do gen:profile[RVA20]

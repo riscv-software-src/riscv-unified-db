@@ -57,7 +57,7 @@ sw_read(): |
     }
   } else if (mode() == PrivilegeMode::VS) {
     # access in VS mode
-    if (CSR[hcounteren].HPM20 == 1'b0 && CSR[mcounteren] == 1'b1) {
+    if (CSR[hcounteren].HPM20 == 1'b0 && CSR[mcounteren].HPM20 == 1'b1) {
       raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
     } else if (CSR[mcounteren].HPM20 == 1'b0) {
       raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
