@@ -8,6 +8,15 @@ pp = pprint.PrettyPrinter(indent=2)
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:: %(message)s")
 
 
+def check_requirement(req, exts):
+    if isinstance(req, str):
+        return req in exts
+    elif isinstance(req, dict) and "name" in req:
+        # If it has a name field, just match the extension name and ignore version
+        return req["name"] in exts
+    return False
+
+
 def parse_extension_requirements(extensions_spec):
     """
     Parse the extension requirements from the definedBy field.
@@ -41,14 +50,6 @@ def parse_extension_requirements(extensions_spec):
             required = [required]
 
         # Process each requirement, which could be a string or a dict with name/version
-        def check_requirement(req, exts):
-            if isinstance(req, str):
-                return req in exts
-            elif isinstance(req, dict) and "name" in req:
-                # If it has a name field, just match the extension name and ignore version
-                return req["name"] in exts
-            return False
-
         return lambda exts: all(check_requirement(req, exts) for req in required)
 
     if "oneOf" in extensions_spec:
