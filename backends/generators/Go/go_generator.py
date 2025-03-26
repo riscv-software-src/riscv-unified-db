@@ -23,12 +23,12 @@ def make_go(instr_dict, csrs, output_file="inst.go"):
 import "cmd/internal/obj"
 
 type inst struct {
-    opcode uint32
-    funct3 uint32
-    rs1    uint32
-    rs2    uint32
-    csr    int64
-    funct7 uint32
+	opcode uint32
+	funct3 uint32
+	rs1    uint32
+	rs2    uint32
+	csr    int64
+	funct7 uint32
 }
 
 func encode(a obj.As) *inst {
@@ -61,7 +61,7 @@ func encode(a obj.As) *inst {
     # Convert the dictionary to a list of tuples and sort by address
     csr_items = [(int(addr), name.upper()) for addr, name in csrs.items()]
     for addr, name in sorted(csr_items, key=lambda x: x[0]):
-        csrs_map_str += f'  {hex(addr)} : "{name}",\n'
+        csrs_map_str += f'{hex(addr)} : "{name}",\n'
     csrs_map_str += "}\n"
 
     go_code = prelude + instr_str + instructions_end + "\n" + csrs_map_str
