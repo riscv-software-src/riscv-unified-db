@@ -90,3 +90,20 @@ doc_license:
 company:
   name: Qualcomm Technologies, Inc.
   url: https://qualcomm.com
+
+exception_codes:
+  - num: 27
+    name: Illegal Stack Pointer
+    var: IllegalStackPointer
+  - num: 28
+    name: Stack Pointer Out-Of-Range
+    var: SpOutOfRange
+  - num: 29
+    name: Execution Watchpoint
+    var: ExecWatchpoint
+  - num: 30
+    name: Read Watchpoint
+    var: ReadWatchpoint
+  - num: 31
+    name: Write Watchpoint
+    var: WriteWatchpoint
