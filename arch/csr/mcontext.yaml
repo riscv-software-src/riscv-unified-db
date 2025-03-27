@@ -8,11 +8,11 @@ address: 0x7A8
 priv_mode: M
 length: MXLEN
 description: |
-  This register must be implemented if hcontext is implemented, and is optional otherwise. 
+  This register must be implemented if hcontext is implemented, and is optional otherwise.
   It is only accessible in M-mode and Debug mode.
 
-  hcontext is primarily useful to set triggers on hypervisor systems that only fire when a 
-  given VM is executing. It is also useful in systems where M-Mode implements something like 
+  hcontext is primarily useful to set triggers on hypervisor systems that only fire when a
+  given VM is executing. It is also useful in systems where M-Mode implements something like
   a hypervisor directly.
 
   This CSR is read/write.
@@ -33,3 +33,7 @@ fields:
       extension is implemented, it’s recommended to
       implement 7 bits on RV32 and 14 bits on RV64.
     reset_value: 0
+    sw_write(csr_value): |
+      # enforce width of HCONTEXT
+      Bits<14> hcontext_value = csr_value.HCONTEXT & ((14'1 << DBG_HCONTEXT_WIDTH) - 1);
+      return hcontext_value;
