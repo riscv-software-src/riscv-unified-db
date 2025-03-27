@@ -52,7 +52,13 @@ def main():
     parser.add_argument(
         "--output",
         default="encoding.out.h",
-        help="Output filename (default: encoding.h)",
+        help="Output filename (default: encoding.out.h)",
+    )
+    parser.add_argument(
+        "--include-all",
+        "-a",
+        action="store_true",
+        help="Include all instructions, ignoring extension filtering",
     )
 
     args = parser.parse_args()
@@ -63,47 +69,18 @@ def main():
     csrs_dir = args.csr_dir
     output_file = os.path.join(this_dir, args.output)
 
-    # Default extensions to enable for RISC-V
-    rv_extensions = [
-        "I",
-        "M",
-        "A",
-        "F",
-        "D",
-        "C",
-        "Zicsr",
-        "Zifencei",
-        "V",
-        "B",
-        "H",
-        "K",
-        "J",
-        "L",
-        "N",
-        "P",
-        "Q",
-        "S",
-        "U",
-        "Zkr",
-        "Zks",
-        "Zkn",
-        "Zba",
-        "Zbb",
-        "Zbc",
-        "Zbs",
-    ]
-
-    # Load instructions with all extensions enabled
-    target_arch = "RV64"  # Use RV64 as default
+    # Load all instructions regardless of base
+    # Use "BOTH" to get both RV32 and RV64 instructions
     logging.info(f"Loading instructions from {instructions_dir}")
     instructions = load_instructions(
-        instructions_dir, rv_extensions, include_all=True, target_arch=target_arch
+        instructions_dir, [], include_all=args.include_all, target_arch="BOTH"
     )
 
     logging.info(f"Loading CSRs from {csrs_dir}")
-    csrs = load_csrs(csrs_dir, rv_extensions, include_all=True, target_arch=target_arch)
+    csrs = load_csrs(csrs_dir, [], include_all=args.include_all, target_arch="BOTH")
 
     # Process each instruction to calculate its mask
+    # For RV32-specific instructions, append "_rv32" to the name
     instr_dict = {}
     for name, instr_data in instructions.items():
         match_str = instr_data.get("match")
@@ -111,6 +88,11 @@ def main():
             try:
                 match_val = parse_match(match_str)
                 mask_val = calculate_mask(match_str)
+
+                # If the name ends with ".rv32", change it to "_rv32"
+                if name.endswith(".rv32"):
+                    name = name[:-5] + "_rv32"
+
                 instr_dict[name] = {
                     "match": f"0x{match_val:x}",
                     "mask": f"0x{mask_val:x}",
