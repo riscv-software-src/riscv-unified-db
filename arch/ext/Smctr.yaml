@@ -45,7 +45,11 @@ versions:
     state: ratified
     ratification_date: 2024-11
     implies:
-      - if: S
-        then:
-          name: Ssctr
-          version: "1.0.0"
+      name: Ssctr
+      version: "1.0.0"
+    requires:
+      allOf:
+        - name: S
+          version: ~> 1.13 # The latest ratified version of S when Sscntr was ratified
+        - name: Smcsrind
+          version: ~> 1.0
