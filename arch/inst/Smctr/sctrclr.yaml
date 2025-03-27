@@ -1,0 +1,43 @@
+---
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: sctrclr
+long_name: Supervisor Control Transfer Records Clear
+definedBy: Smctr
+description: |
+  The `SCTRCLR` instruction is used to clear all Control Transfer Records (CTR)
+  entries, including the cycle counters, for all depth values. This instruction
+  zeroes out the content of the CTR buffer, including the source, target, and
+  metadata fields, and resets the write pointer.
+
+  When executed, the first recorded control transfer will have the cycle count
+  (CCV) set to 0. Any read of the `ctrsource`, `ctrtarget`, or `ctrdata` registers
+  that follows `SCTRCLR` will return 0 until the next qualified control transfer is
+  recorded. This operation is useful for clearing the CTR buffer after profiling
+  sessions or when preparing for fresh recording of control flow transfers.
+
+  The instruction raises an illegal-instruction exception in U-mode and a
+  virtual-instruction exception in VU-mode unless CTR state enable access
+  restrictions apply. The `SCTRCLR` instruction performs the following operations:
+
+  * Zeroes all CTR entry registers for all depth values.
+  * Zeroes the CTR cycle counter and cycle count valid (CCV) field.
+  * Resets the write pointer of the CTR buffer.
+
+  This instruction does not affect the CTR status or depth registers.
+assembly: xs1
+encoding:
+  RV32:
+    match: "100100000000000000000000000000000000111111111111"
+    variables: []
+  RV64:
+    match: "000100100000000000000000000000000000000000111111"
+    variables: []
+access:
+  s: always
+  u: never
+  vs: always
+  vu: never
+operation(): |

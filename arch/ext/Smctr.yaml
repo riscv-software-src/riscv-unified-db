@@ -1,0 +1,78 @@
+---
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Smctr
+long_name: Machine and Supervisor Control Transfer Records (Smctr/Ssctr)
+description: |
+  The Smctr extension defines a method to record control flow transfer history,
+  which includes jumps, function calls, returns, traps, and trap returns,
+  within Machine (Smctr) and Supervisor (Ssctr) modes.
+
+  It provides a mechanism to track control flow transitions efficiently using
+  a circular (FIFO) buffer, which minimizes performance overhead and complexity
+  associated with collecting this data.
+
+  Control flow trace capabilities offer deep transfer history, but the volume
+  of data can cause significant performance overhead due to memory bandwidth
+  consumption, buffer management, and decoder processing.
+
+  The Control Transfer Records (CTR) extension mitigates this by limiting
+  the history recorded and storing it in register-accessible internal chip
+  storage. This reduces overhead significantly while retaining useful data for
+  debugging and optimization.
+
+  The CTR buffer stores individual records of control flow transfers. The number
+  of records the buffer can hold depends on the implementation(maximum supported
+  depth) and the depth configured by the software.
+
+  Once the buffer is full, older entries may be overwritten. Alternatively,
+  users can enable **Return Address Stack (RAS) emulation mode**, where only
+  function calls are recorded. Function returns then remove the last function
+  call from the stack.
+
+  The recorded transfers include the source program counter (PC), the target PC,
+  and optional metadata such as the type of transfer and the number of elapsed
+  CPU cycles.
+
+  These records can be accessed via an indirect CSR interface, allowing software
+  to specify which logical entry in the buffer to read or write. The CTR buffer
+  is organized such that logical entry 0 always corresponds to the most recent
+  recorded transfer.
+
+  The **Smctr** extension includes the Control Status Registers (CSRs) for
+  configuring and managing the CTR buffer. These CSRs are available across
+  multiple privilege levels, and they control what types of control flow
+  transfers are recorded, such as function calls, branches, traps, and more.
+
+  The corresponding **Ssctr** extension is essentially identical to Smctr, but
+  it excludes machine-level CSRs and behaviors not directly accessible at the
+  supervisor level.
+
+  Both extensions depend on **S-mode** and the **Sscsrind** extension, which is
+  required for indirect register access.
+
+  The Smctr extension enables efficient collection of control flow data, which
+  can be useful in profiling tools like **Linux perf** and **AutoFDO** for
+  performance optimization and debugging applications.
+
+  It also enables deep insights into control flow for tasks such as identifying
+  hot paths in software, reducing the performance impact traditionally
+  associated with control flow tracing.
+
+  The **Smctr** and **Ssctr** extensions are designed to minimize performance
+  overhead while providing high-level insights into control flow transfer.
+  This makes them invaluable tools for developers working on high-performance
+  systems, debuggers, and profiling tools.
+
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2024-11
+    url: "https://github.com/riscv/riscv-isa-manual/releases/tag/riscv-isa-release-482805d-2025-03-25"
+    requires: Sscsrind
+    changes:
+      - Introduced CTR registers to record control flow transfer data in M-mode
+        and S-mode.
+      - Added `SCTRCLR` instruction for clearing control transfer records.
