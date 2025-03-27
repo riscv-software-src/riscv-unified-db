@@ -1,73 +1,58 @@
-= RISC-V Unified Database
+= RISC-V Unified Database (UnifiedDB/UDB)
 
-== Generated artifacts
+[WARNING]
+----
+This project is under rapid development. Expect schemas and APIs to change.
 
-The latest documentation artifacts generated from the HEAD of main, include ISA manuals, profiles, etc.,
-can be found https://riscv-software-src.github.io/riscv-unified-db/index.html[on the GitHub pages site].
+The data in the `arch` directory is also a work in progress and may be incorrect. As subsets of the
+data become validated, we will list it here.
+----
+
+== Quick links
+
+* https://riscv-software-src.github.io/riscv-unified-db/index.html[The **UNOFFICIAL** latest UDB-generated RISC-V specifications].
+* UDB Documentation
+** xref:doc/schemas.adoc[Schema documentation]
+** xref:doc/idl.adoc[ISA Description Language (IDL)]
+** xref:doc/ruby.adoc[Ruby database interface]
+* How-to/recipes
+** xref:CONTRIBUTING[Contribution guidelines]
+** xref:doc/templates[Data templates]
+** xref:doc/riscv-opcodes-migration.adoc[`riscv-opcodes` migration]
 
 == Overview
 
-The RISC-V Unified Database is intended to hold *all* the information needed to describe RISC-V,
+The goal of the RISC-V Unified Database (UnifiedDB/UDB) is to hold *all* the information needed to describe RISC-V,
 including a list of extensions, instruction specifications, CSR specifications, and documentation prose. The vision is that anything one would need for RISC-V can be generated from the information in this repository.
 
-This repository contains:
+In addition to storing the data, UnifiedDB also provides many tools that use the data to generate
+artifacts such as specification documents, toolchain inputs, and simulators.
 
- * A (eventually complete) description of the RISC-V specification in a machine-readable format.
- * A tool to generate multiple views of that spec, including:
- ** A configuration-specific, human-readable documentation webpage
- ** [COMING SOON] A configuration-specific Instruction Set Simulator
- ** More backends are planned
+UnifiedDB is an open-source, worldwide project.
+Contributors do not need to be members of https://riscv.org[RISC-V International (RVI)],
+though maintainers discuss strategic direction and coordinate with the RISC-V standard through the
+https://lf-riscv.atlassian.net/wiki/x/iwCsCw?atlOrigin=eyJpIjoiYzU3N2ZiNDViMGRkNGE3ODg0ODVlOWU5YzgzYWM2ODMiLCJwIjoiYyJ9[UnifiedDB Special Interest Group (UDB SIG)] at RVI.
 
-== What can it do?
+== Repository structure
 
-=== Working examples:
+The following directories contain information relevant to most users of UnifiedDB
 
- * Generate https://riscv-software-src.github.io/riscv-unified-db/manual/html/index.html[configuration-specific documentation] tailored to the set of implemented extensions and unnamed implementation options (_e.g._, `./do gen:html[example_rv64_with_overlay]`).
- ** Only implemented extensions/instructions/CSRs are included
- ** Unreachable/unimplemented parts of the formal specification are pruned away
- ** A dedicated documentation page for every implemented instruction, including its encoding, pruned execution behavior, and what types of exceptions it may cause.
- ** A dedicated documentation page for every implemented CSR, including its (possibly runtime-changing) encoding, fields, and pruned behavior on reads and writes
- ** Clickable links to all mentions of instructions, extensions, CSRs, CSR fields, and glossary terms.
- * Generate documentation for specific extensions (_e.g._, `./do gen:ext_pdf[B]`)
- ** Automatically include a complete list of added instructions and CSRs
- ** Per-instruction documentation
- ** Per-CSR documentation
- ** Formal specification
- * Generate a single YAML file containing *everything* knowable about a configuration (_e.g._, `./do gen:cfg_arch[example_rv64_with_overlay]`).
+* `arch`: The RISC-V standard
+* `arch_overlay`: Non-standard RISC-V extensions
+* `cfgs`: Configurations used by backends to customize generated outputs
+* `schemas`: Data schemas for the content in `arch`
 
-=== Possibilities:
+Additionally, developers will be interested in the following:
 
-  * Generate binutils files for an extension
-  * Generate instruction tables for compilers
-  * Generate https://github.com/riscv/riscv-opcodes[riscv-opcodes]
-  * Generate the full RISC-V specification, along with an appendix of instructions and CSRs
-  * ...
+* `backends`: Tools to generate artifacts (documents, simulators, etc.) from UDB data
+* `bin`: Wrapper scripts to run commands within the container enviornment
+* `lib`: Scripts (mostly Ruby) to read/interact with UDB data
 
-== Prerequisites
+== Getting Started
 
-There are two supported ways to run the RISC-V Unified Database,
-both of which are container-based.
+=== Prerequisites
 
-=== Singularity/Apptainer
-
-You can run within `Singularity CE` (>= 3.3) or `Apptainer` (>= 1.0) container system. Either one will work (they are forks).
-
-If it is not installed, either ask your IT admin or:
-
- * For Apptainer, see https://apptainer.org/docs/admin/main/installation.html[Apptainer Installation].
- * For Singularity CE, see https://docs.sylabs.io/guides/latest/admin-guide/installation.html[Singularity CE Installation].
-
-[NOTE]
-You do *not* need root privileges to download or use the container. However, to modify/build the container,
-you will need either root privileges or the ability to run in `fakeroot` mode. See https://docs.sylabs.io/guides/4.1/user-guide/fakeroot.html[Singularity Fakeroot Documentation] for more information.
-
-When you run with Singularity/Apptainer, the files under `bin/`
-will run within the container, _e.g._:
-
-```bash
-./bin/ruby --version
-# => ruby 3.2.3 (2024-01-18 revision 52bb2ac0a6) [x86_64-linux-gnu]
-```
+UnifiedDB tools are set up to run in a container. Both Docker (any version) and Singularity/Apptainer (`Singularity CE >= 3.3` or `Apptainer >= 1.0`) are supported.
 
 === Devcontainer
 
@@ -87,18 +72,17 @@ You can then run `Dev Containers: Open Folder in Container...` from the Command 
 
 You can start a GitHub Codespace for this repository by clicking the "Code" button and selecting "Open with Codespaces".
 
-== Tasks
+=== Tasks
 
-Quick start:
+UnifiedDB uses https://github.com/ruby/rake[Rake], a Ruby-based Makefile alternative, to manage tasks.
+For convienence, running Rake inside the container is encapulated in `do`. For example:
 
 [source,bash]
 ----
 ./do --tasks                 # list all documented tasks
+./do --desc gen:html_manual  # describe the 'gen:html_manual' task in more detail
 
-## examples
-
-# run smoke tests
-./do test:smoke
+./do test:smoke              # run smoke tests
 
 # generate all versions of ISA manual, as an Antora static website
 ./do gen:html_manual MANUAL_NAME=isa VERSIONS=all
@@ -106,7 +90,3 @@ Quick start:
 # generate an implementation-specific spec for the 'example_rv64_with_overlay' config
 ./do gen:arch[example_rv64_with_overlay]
 ----
-
-== More info
-
- * xref:arch/README.adoc[Architecture specification format]
