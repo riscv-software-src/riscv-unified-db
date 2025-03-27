@@ -124,6 +124,17 @@ class Csr < DatabaseObject
     when "VSXLEN"
       # dynamic if either we don't know VSXLEN or VSXLEN is explicitly mutable
       [nil, 3264].include?(cfg_arch.param_values["VSXLEN"])
+    when "XLEN"
+      # must always have M-mode
+      cfg_arch.mxlen.nil?
+      # SXLEN condition applies if S-mode is possible
+      if cfg_arch.possible_extensions.map(&:name).include?("S")
+        [nil, 3264].include?(cfg_arch.param_values["SXLEN"])
+      end
+      # VSXLEN condition applies if VS-mode is possible
+      if cfg_arch.possible_extensions.map(&:name).include?("H")
+        [nil, 3264].include?(cfg_arch.param_values["VSXLEN"])
+      end
     else
       raise "Unexpected length"
     end
@@ -133,7 +144,7 @@ class Csr < DatabaseObject
   # @return [Integer] Smallest length of the CSR in any mode
   def min_length(cfg_arch)
     case @data["length"]
-    when "MXLEN", "SXLEN", "VSXLEN"
+    when "MXLEN", "SXLEN", "VSXLEN", "XLEN"
       32
     when Integer
       @data["length"]
@@ -221,6 +232,8 @@ class Csr < DatabaseObject
       else
         64
       end
+    when "XLEN"
+      64
     when Integer
       @data["length"]
     else
@@ -237,6 +250,16 @@ class Csr < DatabaseObject
       "CSR[mstatus].SXL == 0"
     when "VSXLEN"
       "CSR[hstatus].VSXL == 0"
+    when "XLEN"
+      if priv_mode() == PrivilegeMode::M
+        "CSR[misa].MXL == 0"
+      elsif priv_mode() == PrivilegeMode::S
+        "CSR[mstatus].SXL == 0"
+      elsif priv_mode() == PrivilegeMode::VS
+        "CSR[hstatus].VSXL == 0"
+      else
+        raise "Unexpected privilege mode"
+      end
     else
       raise "Unexpected length #{@data['length']} for #{name}"
     end
@@ -251,6 +274,16 @@ class Csr < DatabaseObject
       "CSR[mstatus].SXL == 1"
     when "VSXLEN"
       "CSR[hstatus].VSXL == 1"
+    when "XLEN"
+      if priv_mode() == PrivilegeMode::M
+        "CSR[misa].MXL == 1"
+      elsif priv_mode() == PrivilegeMode::S
+        "CSR[mstatus].SXL == 1"
+      elsif priv_mode() == PrivilegeMode::VS
+        "CSR[hstatus].VSXL == 1"
+      else
+        raise "Unexpected privilege mode"
+      end
     else
       raise "Unexpected length"
     end
@@ -268,6 +301,16 @@ class Csr < DatabaseObject
           "CSR[mstatus].SXL == %%"
         when "VSXLEN"
           "CSR[hstatus].VSXL == %%"
+        when "XLEN"
+          if priv_mode() == PrivilegeMode::M
+            "CSR[misa].MXL == %%"
+          elsif priv_mode() == PrivilegeMode::S
+            "CSR[mstatus].SXL == %%"
+          elsif priv_mode() == PrivilegeMode::VS
+            "CSR[hstatus].VSXL == %%"
+          else
+            raise "Unexpected privilege mode"
+          end
         else
           raise "Unexpected length '#{@data['length']}'"
         end
