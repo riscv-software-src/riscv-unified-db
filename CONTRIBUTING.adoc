@@ -1,0 +1,31 @@
+= UnifiedDB Contribution Guide
+
+Thank you for your interest in contributing to UnifiedDB!
+We welcome all contributions that fall within our xref:CODE_OF_CONDUCT.adoc[code of conduct].
+
+== Ways to contribute
+
+=== Bug Reports
+
+Bug reports should be filed as a GitHub Issue using the Bug report template.
+
+=== Feature Requests
+
+Bug reports should be filed as a GitHub Issue using the Feature request template.
+
+=== Bug Fixes
+
+Bug fixes should be submitted as a Pull Request.
+
+=== New data, tools, and features
+
+New data (for example, adding an extension), tools, or features should be submitted as a Pull Request.
+
+== Submitting a patch
+
+All patches must meet the UnifiedDB code standards. This includes:
+
+* Pass regression tests (run locally as `./do test:regress`)
+* Go through code review as a Pull Request
+** Code owners must approve
+* Use appropriate commit messages (TODO: commit message policy)
