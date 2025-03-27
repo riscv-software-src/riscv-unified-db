@@ -350,11 +350,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/playbook/playbook.yml} => proc { |tna
   File.write t.name, erb.result(binding)
 end
 
-file $root / "ext" / "riscv-isa-manual" / "README.md" do
-  sh "git submodule update --init ext/riscv-isa-manual 2>&1"
-end
-
-rule %r{#{MANUAL_GEN_DIR}/[^/]+/[^/]+/riscv-isa-manual/README.md} => ["#{$root}/ext/riscv-isa-manual/README.md"] do |t|
+rule %r{#{MANUAL_GEN_DIR}/[^/]+/[^/]+/riscv-isa-manual/\.checked-out} do |t|
   parts = t.name.sub("#{MANUAL_GEN_DIR}/","").split("/")
   manual_version_name = parts[1]
 
@@ -366,14 +362,19 @@ rule %r{#{MANUAL_GEN_DIR}/[^/]+/[^/]+/riscv-isa-manual/README.md} => ["#{$root}/
   version_obj = YAML.load_file(version_path, permitted_classes: [Date])
   raise "Not an isa manual version" unless version_obj["uses_isa_manual"] == true
 
-  FileUtils.mkdir_p File.dirname(t.name)
-  tree = version_obj["isa_manual_tree"]
-  Dir.chdir($root / "ext" / "riscv-isa-manual") do
-    Tempfile.create("isa-manual") do |tmpfile|
-      sh "git archive --format=tar -o #{tmpfile.path} #{tree}"
-      sh "tar xf #{tmpfile.path} -C #{File.dirname(t.name)}"
+  dest_dir = File.dirname(t.name)
+  FileUtils.mkdir_p dest_dir
+  sha = version_obj["git_sha"]
+  src_prefix = version_obj["src_prefix"]
+
+  version_obj["volumes"].each do |vol|
+    vol["chapters"].each do |chapter|
+      chapter_contents = `git show #{sha}:#{src_prefix}/#{chapter}`
+      File.write("#{dest_dir}/#{chapter}", chapter_contents)
     end
   end
+
+  FileUtils.touch t.name
 end
 
 namespace :gen do
@@ -410,11 +411,11 @@ namespace :gen do
     versions.each do |version|
       version_obj = cfg_arch.manual_version(version)
 
-      manual.repo_path = MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / version / "riscv-isa-manual"
+      manual.src_path = MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / version / "riscv-isa-manual"
 
       if version_obj.uses_isa_manual? == true \
          && !(MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / version_obj.name / "riscv-isa-manual").exist?
-        Rake::Task[MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / version_obj.name / "riscv-isa-manual" / "README.md"].invoke
+        Rake::Task[MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / version_obj.name / "riscv-isa-manual" / ".checked-out"].invoke
       end
 
       # create chapter pages in antora

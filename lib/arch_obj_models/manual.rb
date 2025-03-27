@@ -19,9 +19,9 @@ class Manual < DatabaseObject
   def marketing_name = @data["marketing_name"]
 
   # for manuals that reference an external repo, set the url to that repo data (file path)
-  def repo_path=(path)
-    @repo_path = Pathname.new(path)
-    versions.each { |v| v.repo_path = @repo_path }
+  def src_path=(path)
+    @src_path = Pathname.new(path)
+    versions.each { |v| v.src_path = @src_path }
   end
 end
 
@@ -44,13 +44,13 @@ class ManualChapter
   end
 
   def fullpath
-    raise "Must call repo_path= first" if @repo_path.nil?
+    raise "Must call src_path= first" if @src_path.nil?
 
-    @repo_path / @path
+    @src_path / @path
   end
 
-  def repo_path=(path)
-    @repo_path = path
+  def src_path=(path)
+    @src_path = path
   end
 
   # @return [Pathname] The relative path to the chapter
@@ -110,9 +110,9 @@ class ManualVolume
     @extensions
   end
 
-  def repo_path=(path)
-    @repo_path = path
-    chapters.each { |c| c.repo_path = path }
+  def src_path=(path)
+    @src_path = path
+    chapters.each { |c| c.src_path = path }
   end
 end
 
@@ -193,8 +193,8 @@ class ManualVersion < DatabaseObject
     @csrs = @csrs.uniq(&:name)
   end
 
-  def repo_path=(path)
-    @repo_path = path
-    volumes.each { |v| v.repo_path = path }
+  def src_path=(path)
+    @src_path = path
+    volumes.each { |v| v.src_path = path }
   end
 end

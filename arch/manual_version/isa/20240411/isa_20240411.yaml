@@ -9,7 +9,8 @@ marketing_version: "20240411"
 state: "development"
 url: https://github.com/riscv/releases/tag/20240411
 uses_isa_manual: true
-isa_manual_tree: "tags/20240411"
+git_sha: 217b3f8cdbd94583f4933bb7c7b35bae3e70f74d
+src_prefix: src
 volumes:
   - title: "RISC-V Instruction Set Manual, Volume I: Unprivileged ISA"
     description: "The RISC-V Instruction Set Manual, Volume I: Unprivileged ISA"
@@ -20,51 +21,51 @@ volumes:
           name: SiFive, Inc.
           url: https://www.sifive.com/
     chapters:
-      - src/colophon.adoc
-      - src/intro.adoc
-      - src/rv32.adoc
-      - src/rv32e.adoc
-      - src/rv64.adoc
-      - src/rv128.adoc
-      - src/zifencei.adoc
-      - src/zicsr.adoc
-      - src/counters.adoc
-      - src/zihintntl.adoc
-      - src/zihintpause.adoc
-      - src/zimop.adoc
-      - src/zicond.adoc
-      - src/m-st-ext.adoc
-      - src/a-st-ext.adoc
-      - src/zawrs.adoc
-      - src/zacas.adoc
-      - src/rvwmo.adoc
-      - src/ztso-st-ext.adoc
-      - src/cmo.adoc
-      - src/f-st-ext.adoc
-      - src/d-st-ext.adoc
-      - src/q-st-ext.adoc
-      - src/zfh.adoc
-      - src/zfa.adoc
-      - src/zfinx.adoc
-      - src/c-st-ext.adoc
-      - src/zc.adoc
-      - src/b-st-ext.adoc
-      - src/j-st-ext.adoc
-      - src/p-st-ext.adoc
-      - src/v-st-ext.adoc
-      - src/scalar-crypto.adoc
-      - src/vector-crypto.adoc
-      - src/rv-32-64g.adoc
-      - src/extending.adoc
-      - src/naming.adoc
-      - src/history.adoc
-      - src/mm-eplan.adoc
-      - src/mm-formal.adoc
+      - colophon.adoc
+      - intro.adoc
+      - rv32.adoc
+      - rv32e.adoc
+      - rv64.adoc
+      - rv128.adoc
+      - zifencei.adoc
+      - zicsr.adoc
+      - counters.adoc
+      - zihintntl.adoc
+      - zihintpause.adoc
+      - zimop.adoc
+      - zicond.adoc
+      - m-st-ext.adoc
+      - a-st-ext.adoc
+      - zawrs.adoc
+      - zacas.adoc
+      - rvwmo.adoc
+      - ztso-st-ext.adoc
+      - cmo.adoc
+      - f-st-ext.adoc
+      - d-st-ext.adoc
+      - q-st-ext.adoc
+      - zfh.adoc
+      - zfa.adoc
+      - zfinx.adoc
+      - c-st-ext.adoc
+      - zc.adoc
+      - b-st-ext.adoc
+      - j-st-ext.adoc
+      - p-st-ext.adoc
+      - v-st-ext.adoc
+      - scalar-crypto.adoc
+      - vector-crypto.adoc
+      - rv-32-64g.adoc
+      - extending.adoc
+      - naming.adoc
+      - history.adoc
+      - mm-eplan.adoc
+      - mm-formal.adoc
       #Appendices for Vector
-      - src/vector-examples.adoc
-      - src/calling-convention.adoc
+      - vector-examples.adoc
+      - calling-convention.adoc
       #/End of Vector appendices
-      - src/index.adoc
+      - index.adoc
     extensions:
       - { name: I, version: "2.1.0" }
       - { name: U, version: "1.12.0" }
@@ -176,23 +177,23 @@ volumes:
           name: SiFive, Inc.
           url: https://www.sifive.com/
     chapters:
-      - src/priv-preface.adoc
-      - src/priv-intro.adoc
-      - src/priv-csrs.adoc
-      - src/machine.adoc
-      - src/smstateen.adoc
-      - src/indirect-csr.adoc
-      - src/smepmp.adoc
-      - src/smcntrpmf.adoc
-      - src/rnmi.adoc
-      - src/smcdeleg.adoc
-      - src/supervisor.adoc
-      - src/sstc.adoc
-      - src/sscofpmf.adoc
-      - src/hypervisor.adoc
-      - src/priv-insns.adoc
-      - src/priv-history.adoc
-      - src/bibliography.adoc
+      - priv-preface.adoc
+      - priv-intro.adoc
+      - priv-csrs.adoc
+      - machine.adoc
+      - smstateen.adoc
+      - indirect-csr.adoc
+      - smepmp.adoc
+      - smcntrpmf.adoc
+      - rnmi.adoc
+      - smcdeleg.adoc
+      - supervisor.adoc
+      - sstc.adoc
+      - sscofpmf.adoc
+      - hypervisor.adoc
+      - priv-insns.adoc
+      - priv-history.adoc
+      - bibliography.adoc
     extensions:
       - { name: Smstateen, version: "1.0.0" }
       - { name: Smcsrind, version: "1.0.0" }
