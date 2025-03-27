@@ -284,7 +284,7 @@ The following <%= ext.instructions.size %> instructions are affected by this ext
 
 <%- csr_list = ext.csrs.select { |csr| versions.any? { |ext_ver| csr.affected_by?(ext_ver) } } -%>
 
-The following <%= csr_list.size %> are affected by this extension.
+The following <%= csr_list.size %> CSRs are affected by this extension.
 
 [%autowidth]
 |===
