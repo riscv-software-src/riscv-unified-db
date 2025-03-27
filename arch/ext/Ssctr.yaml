@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Ssctr
+long_name: Control Transfer Records
+description: |
+  The supervisor view of `Smctr`.
+type: privileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2024-11
