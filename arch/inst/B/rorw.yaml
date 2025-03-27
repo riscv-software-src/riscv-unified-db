@@ -15,7 +15,7 @@ base: 64
 encoding:
   match: 0110000----------101-----0111011
   variables:
-    - name: shamt
+    - name: rs2
       location: 24-20
     - name: rs1
       location: 19-15
@@ -33,7 +33,7 @@ operation(): |
   }
 
   XReg rs1_word = X[rs1][31:0];
-  XReg shamt = X[rs1][4:0];
+  XReg shamt = X[rs2][4:0];
 
   XReg unextended_result = (X[rs1] >> shamt) | (X[rs1] << (32 - shamt));
   X[rd] = {{32{unextended_result[31]}}, unextended_result};

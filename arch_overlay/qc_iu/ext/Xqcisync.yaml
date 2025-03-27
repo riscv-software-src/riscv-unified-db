@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=../../../../schemas/ext_schema.json
+
+$schema: ext_schema.json#
+kind: extension
+name: Xqcisync
+type: unprivileged
+long_name: Qualcomm non-memory-mapped devices synchronization and delay
+versions:
+- version: "0.1.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+- version: "0.2.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix decoding of qc.c.delay instruction (state that immediate cannot be 0)
+    - Add requirement to include Zca extension since has 16-bit instructions
+  requires: { name: Zca, version: ">= 1.0.0" }
+description: |
+  The Xqcisync extension includes nine instructions, eight for non-memory-mapped devices synchronization and delay instruction.
+  Synchronization instructions are kind of IO fences that work with special devices synchronization signals.
+
+doc_license:
+  name: Creative Commons Attribution 4.0 International License
+  url: https://creativecommons.org/licenses/by/4.0/
+company:
+  name: Qualcomm Technologies, Inc.
+  url: https://qualcomm.com

@@ -29,6 +29,9 @@ access:
   vs: always
   vu: always
 data_independent_timing: false
+hints:
+  - { $ref: inst/Zicfilp/sspush.x1.yaml# }
+  - { $ref: inst/Zicfilp/sspush.x5.yaml# }
 pseudoinstructions:
   - when: (mop_rr_t_30 == 0x0) && (mop_rr_t_27_26 == 0x0)
     to: mop.rr.0

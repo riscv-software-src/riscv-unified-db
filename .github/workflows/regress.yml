@@ -1,5 +1,10 @@
 name: Regression test
 on:
+  push:
+    branches:
+      - main
+  merge_group:                # this is a new line
+    types: [checks_requested] # this is a new line
   pull_request:
     branches:
       - main
@@ -98,13 +103,14 @@ jobs:
         name: Build container
         run: ./bin/build_container
       - name: Generate HTML ISA manual
-        run: ./do gen:html[generic_rv64]
+        run: ./do gen:html[example_rv64_with_overlay]
   regress-gen-ext-pdf:
     runs-on: ubuntu-latest
     env:
       EXT: B
       VERSION: latest
       SINGULARITY: 1
+      PSEUDO: both
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
