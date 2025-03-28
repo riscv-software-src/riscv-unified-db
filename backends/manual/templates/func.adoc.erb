@@ -6,7 +6,7 @@
 
 <%- cfg_arch.functions.each do |f| -%>
 [#<%= f.name %>-func-def]
-== <%= f.name %><%- if f.builtin? -%> (builtin)<%- end -%>
+== <%= f.name %><%- if f.builtin? -%> (builtin)<%- end -%><%- if f.generated? -%> (generated)<%- end -%>
 
 <%= f.description %>
 
@@ -31,7 +31,7 @@ None
 <%- end -%>
 |===
 
-<%- unless f.builtin? -%>
+<%- unless f.builtin? || f.generated? -%>
 <%- body_ast = f.body -%>
 [source,idl,subs="specialchars,macros"]
 ----

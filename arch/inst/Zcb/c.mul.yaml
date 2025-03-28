@@ -34,7 +34,7 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  X[rd+8] = X[rd+8] * X[rs2+8];
+  X[creg2reg(rd)] = X[creg2reg(rd)] * X[creg2reg(rs2)];
 
 sail(): |
   {

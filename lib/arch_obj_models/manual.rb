@@ -92,16 +92,16 @@ class ManualVolume
     @extensions = []
     return @extensions if @data["extensions"].nil?
 
-    @data["extensions"].each do |ext|
-      ext_obj = cfg_arch.extension(ext[0])
+    @data["extensions"].each do |ext_hsh|
+      ext_obj = cfg_arch.extension(ext_hsh["name"])
       if ext_obj.nil?
-        warn "Extension '#{ext[0]}' is not in the database"
+        warn "Extension '#{ext_hsh['name']}' is not in the database"
         next
       end
 
-      ext_ver = ExtensionVersion.new(ext[0], ext[1], cfg_arch)
+      ext_ver = ExtensionVersion.new(ext_hsh["name"], ext_hsh["version"], cfg_arch)
       unless ext_obj.versions.any? { |known_ver| known_ver == ext_ver }
-        warn "Extension '#{ext[0]}', version '#{ext[1]}' is not defined in the database"
+        warn "Extension '#{ext_hsh['name']}', version '#{ext_hsh['version']}' is not defined in the database"
         next
       end
 

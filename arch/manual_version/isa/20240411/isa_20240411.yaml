@@ -66,103 +66,103 @@ volumes:
       #/End of Vector appendices
       - src/index.adoc
     extensions:
-      - [I, "2.1.0"]
-      - [U, "1.12.0"]
-      # - [E, "2.0"]
-      # - [RVI64, "2.1"]
-      # - [RVI128, "1.7"]
-      - [Zifencei, "2.0.0"]
-      - [Zicsr, "2.0.0"]
-      - [Zicntr, "2.0.0"]
-      - [Zihpm, "2.0.0"]
-      - [Zihintntl, "1.0.0"]
-      - [Zihintpause, "2.0.0"]
-      - [Zimop, "2.0.0"]
-      - [Zicond, "1.0.0"]
-      - [M, "2.0.0"]
-      - [A, "2.1.0"]
-      - [Zawrs, "1.0.1"]
-      - [Zacas, "1.0.0"]
-      - [Zabha, "1.0.0"]
-      # - [RVWMO, "2.0"]
-      - [Ztso, "1.0.0"]
-      - [Zicbom, "1.0.0"]
-      - [Zicboz, "1.0.0"]
-      - [Zicbop, "1.0.0"]
-      - [F, "2.2.0"]
-      - [D, "2.2.0"]
-      # - [Q, "2.2"]
-      - [Zfh, "1.0.0"]
-      - [Zfhmin, "1.0.0"]
-      - [Zfbfmin, "1.0.0"]
-      - [Zvfbfmin, "1.0.0"]
-      - [Zvfbfwma, "1.0.0"]
-      - [Zfa, "1.0.0"]
-      - [Zfinx, "1.0.0"]
-      - [Zdinx, "1.0.0"]
-      - [Zhinx, "1.0.0"]
-      - [C, "2.0.0"]
-      - [Zca, "1.0.0"]
-      - [Zcf, "1.0.0"]
-      - [Zcd, "1.0.0"]
-      - [Zcb, "1.0.0"]
-      - [Zcmp, "1.0.0"]
-      - [Zcmt, "1.0.0"]
-      - [B, "1.0.0"]
-      - [Zba, "1.0.0"]
-      - [Zbb, "1.0.0"]
-      - [Zbc, "1.0.0"]
-      - [Zbs, "1.0.0"]
-      - [Zbkb, "1.0.0"]
-      - [Zbkc, "1.0.0"]
-      - [Zbkx, "1.0.0"]
-      # - [J, "0.0"]
-      # - [P, "0.2"]
-      - [V, "1.0.0"]
-      - [Zvl32b, "1.0.0"]
-      - [Zvl64b, "1.0.0"]
-      - [Zvl128b, "1.0.0"]
-      - [Zvl256b, "1.0.0"]
-      - [Zvl512b, "1.0.0"]
-      - [Zvl1024b, "1.0.0"]
-      - [Zve32x, "1.0.0"]
-      - [Zve32f, "1.0.0"]
-      - [Zve64x, "1.0.0"]
-      - [Zve64f, "1.0.0"]
-      - [Zve64d, "1.0.0"]
-      - [Zvfhmin, "1.0.0"]
-      - [Zvfh, "1.0.0"]
-      - [Zvknha, "1.0.0"]
-      - [Zvknhb, "1.0.0"]
-      - [Zknd, "1.0.0"]
-      - [Zkne, "1.0.0"]
-      - [Zknh, "1.0.0"]
-      - [Zksed, "1.0.0"]
-      - [Zksh, "1.0.0"]
-      - [Zkr, "1.0.0"]
-      - [Zkn, "1.0.0"]
-      - [Zks, "1.0.0"]
-      - [Zk, "1.0.0"]
-      - [Zkt, "1.0.0"]
-      - [Zvbb, "1.0.0"]
-      - [Zvbc, "1.0.0"]
-      - [Zvkb, "1.0.0"]
-      - [Zvkg, "1.0.0"]
-      - [Zvkned, "1.0.0"]
-      - [Zvknha, "1.0.0"]
-      - [Zvknhb, "1.0.0"]
-      - [Zvksed, "1.0.0"]
-      - [Zvksh, "1.0.0"]
-      - [Zvkn, "1.0.0"]
-      - [Zvknc, "1.0.0"]
-      - [Zvkng, "1.0.0"]
-      - [Zvks, "1.0.0"]
-      - [Zvksc, "1.0.0"]
-      - [Zvksg, "1.0.0"]
-      - [Zvkt, "1.0.0"]
-      - [Zicfilp, "1.0.0"]
-      - [Zicfiss, "1.0.0"]
-    # - [Zam, "0.1"]
+      - { name: I, version: "2.1.0" }
+      - { name: U, version: "1.12.0" }
+      # - { name: E, version: "2.0" }
+      # - { name: RVI64, version: "2.1" }
+      # - { name: RVI128, version: "1.7" }
+      - { name: Zifencei, version: "2.0.0" }
+      - { name: Zicsr, version: "2.0.0" }
+      - { name: Zicntr, version: "2.0.0" }
+      - { name: Zihpm, version: "2.0.0" }
+      - { name: Zihintntl, version: "1.0.0" }
+      - { name: Zihintpause, version: "2.0.0" }
+      - { name: Zimop, version: "2.0.0" }
+      - { name: Zicond, version: "1.0.0" }
+      - { name: M, version: "2.0.0" }
+      - { name: A, version: "2.1.0" }
+      - { name: Zawrs, version: "1.0.1" }
+      - { name: Zacas, version: "1.0.0" }
+      - { name: Zabha, version: "1.0.0" }
+      # - { name: RVWMO, version: "2.0" }
+      - { name: Ztso, version: "1.0.0" }
+      - { name: Zicbom, version: "1.0.0" }
+      - { name: Zicboz, version: "1.0.0" }
+      - { name: Zicbop, version: "1.0.0" }
+      - { name: F, version: "2.2.0" }
+      - { name: D, version: "2.2.0" }
+      # - { name: Q, version: "2.2" }
+      - { name: Zfh, version: "1.0.0" }
+      - { name: Zfhmin, version: "1.0.0" }
+      - { name: Zfbfmin, version: "1.0.0" }
+      - { name: Zvfbfmin, version: "1.0.0" }
+      - { name: Zvfbfwma, version: "1.0.0" }
+      - { name: Zfa, version: "1.0.0" }
+      - { name: Zfinx, version: "1.0.0" }
+      - { name: Zdinx, version: "1.0.0" }
+      - { name: Zhinx, version: "1.0.0" }
+      - { name: C, version: "2.0.0" }
+      - { name: Zca, version: "1.0.0" }
+      - { name: Zcf, version: "1.0.0" }
+      - { name: Zcd, version: "1.0.0" }
+      - { name: Zcb, version: "1.0.0" }
+      - { name: Zcmp, version: "1.0.0" }
+      - { name: Zcmt, version: "1.0.0" }
+      - { name: B, version: "1.0.0" }
+      - { name: Zba, version: "1.0.0" }
+      - { name: Zbb, version: "1.0.0" }
+      - { name: Zbc, version: "1.0.0" }
+      - { name: Zbs, version: "1.0.0" }
+      - { name: Zbkb, version: "1.0.0" }
+      - { name: Zbkc, version: "1.0.0" }
+      - { name: Zbkx, version: "1.0.0" }
+      # - { name: J, version: "0.0" }
+      # - { name: P, version: "0.2" }
+      - { name: V, version: "1.0.0" }
+      - { name: Zvl32b, version: "1.0.0" }
+      - { name: Zvl64b, version: "1.0.0" }
+      - { name: Zvl128b, version: "1.0.0" }
+      - { name: Zvl256b, version: "1.0.0" }
+      - { name: Zvl512b, version: "1.0.0" }
+      - { name: Zvl1024b, version: "1.0.0" }
+      - { name: Zve32x, version: "1.0.0" }
+      - { name: Zve32f, version: "1.0.0" }
+      - { name: Zve64x, version: "1.0.0" }
+      - { name: Zve64f, version: "1.0.0" }
+      - { name: Zve64d, version: "1.0.0" }
+      - { name: Zvfhmin, version: "1.0.0" }
+      - { name: Zvfh, version: "1.0.0" }
+      - { name: Zvknha, version: "1.0.0" }
+      - { name: Zvknhb, version: "1.0.0" }
+      - { name: Zknd, version: "1.0.0" }
+      - { name: Zkne, version: "1.0.0" }
+      - { name: Zknh, version: "1.0.0" }
+      - { name: Zksed, version: "1.0.0" }
+      - { name: Zksh, version: "1.0.0" }
+      - { name: Zkr, version: "1.0.0" }
+      - { name: Zkn, version: "1.0.0" }
+      - { name: Zks, version: "1.0.0" }
+      - { name: Zk, version: "1.0.0" }
+      - { name: Zkt, version: "1.0.0" }
+      - { name: Zvbb, version: "1.0.0" }
+      - { name: Zvbc, version: "1.0.0" }
+      - { name: Zvkb, version: "1.0.0" }
+      - { name: Zvkg, version: "1.0.0" }
+      - { name: Zvkned, version: "1.0.0" }
+      - { name: Zvknha, version: "1.0.0" }
+      - { name: Zvknhb, version: "1.0.0" }
+      - { name: Zvksed, version: "1.0.0" }
+      - { name: Zvksh, version: "1.0.0" }
+      - { name: Zvkn, version: "1.0.0" }
+      - { name: Zvknc, version: "1.0.0" }
+      - { name: Zvkng, version: "1.0.0" }
+      - { name: Zvks, version: "1.0.0" }
+      - { name: Zvksc, version: "1.0.0" }
+      - { name: Zvksg, version: "1.0.0" }
+      - { name: Zvkt, version: "1.0.0" }
+      - { name: Zicfilp, version: "1.0.0" }
+      - { name: Zicfiss, version: "1.0.0" }
+    # - { name: Zam, version: "0.1" }
     changes:
       - The inclusion of all ratified extensions through March 2024.
       - The draft Zam extension has been removed, in favor of the definition of a misaligned atomicity granule PMA.
@@ -194,25 +194,25 @@ volumes:
       - src/priv-history.adoc
       - src/bibliography.adoc
     extensions:
-      - [Smstateen, "1.0.0"]
-      - [Smcsrind, "1.0.0"]
-      - [Sscsrind, "1.0.0"]
-      - [Smepmp, "1.0.0"]
-      - [Smcntrpmf, "1.0.0"]
-      - [Smrnmi, "0.5.0"]
-      - [Smcdeleg, "1.0.0"]
-      - [S, "1.12.0"]
-      - [Sm, "1.12.0"]
-      - [Smhpm, "1.12.0"]
-      - [Smpmp, "1.12.0"]
-      - [Sv32, "1.12.0"]
-      - [Sv39, "1.12.0"]
-      - [Sv48, "1.12.0"]
-      - [Sv57, "1.12.0"]
-      - [Svnapot, "1.0.0"]
-      - [Svpbmt, "1.0.0"]
-      - [Svinval, "1.0.0"]
-      - [Svadu, "1.0.0"]
-      - [Svvptc, "1.0.0"]
-      - [Sscofpmf, "1.0.0"]
-      - [H, "1.0.0"]
+      - { name: Smstateen, version: "1.0.0" }
+      - { name: Smcsrind, version: "1.0.0" }
+      - { name: Sscsrind, version: "1.0.0" }
+      - { name: Smepmp, version: "1.0.0" }
+      - { name: Smcntrpmf, version: "1.0.0" }
+      - { name: Smrnmi, version: "0.5.0" }
+      - { name: Smcdeleg, version: "1.0.0" }
+      - { name: S, version: "1.12.0" }
+      - { name: Sm, version: "1.12.0" }
+      - { name: Smhpm, version: "1.12.0" }
+      - { name: Smpmp, version: "1.12.0" }
+      - { name: Sv32, version: "1.12.0" }
+      - { name: Sv39, version: "1.12.0" }
+      - { name: Sv48, version: "1.12.0" }
+      - { name: Sv57, version: "1.12.0" }
+      - { name: Svnapot, version: "1.0.0" }
+      - { name: Svpbmt, version: "1.0.0" }
+      - { name: Svinval, version: "1.0.0" }
+      - { name: Svadu, version: "1.0.0" }
+      - { name: Svvptc, version: "1.0.0" }
+      - { name: Sscofpmf, version: "1.0.0" }
+      - { name: H, version: "1.0.0" }

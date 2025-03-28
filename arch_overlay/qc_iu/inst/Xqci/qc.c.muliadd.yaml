@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.c.muliadd
+long_name: Multiply and accumulate (Immediate)
+description: |
+  Increments `rd` by the multiplication of `rs1` and an unsigned immediate
+  Instruction encoded in CL instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqciac
+base: 32
+encoding:
+  match: 001-----------10
+  variables:
+    - name: uimm
+      location: 5|12-10|6
+    - name: rs1
+      location: 9-7
+    - name: rd
+      location: 4-2
+assembly: " xd, xs1, uimm"
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  XReg reg = creg2reg(rd);
+  XReg src = creg2reg(rs1);
+  XReg orig_val = X[reg];
+  X[reg] = orig_val + (X[src] * uimm);

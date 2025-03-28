@@ -1,0 +1,50 @@
+#pragma once
+
+#include <filesystem>
+#include <string>
+
+#include "udb/defines.hpp"
+
+#if !defined(JSON_ASSERT)
+#define JSON_ASSERT(cond) udb_assert(cond, "JSON assert");
+#endif
+#include <nlohmann/json.hpp>
+
+#include "udb/bits-yaml.hpp"
+
+namespace udb {
+  struct <%= name_of(:params, cfg_arch) %>
+  {
+    class Error : public std::runtime_error {
+      public:
+      explicit Error(const std::string& msg) : std::runtime_error(msg) {}
+      explicit Error(const char* msg) : std::runtime_error(msg) {}
+    };
+
+    // all the compile-time-known parameters
+    <%- cfg_arch.params_with_value.each do |param| -%>
+    static constexpr <%= param.idl_type.to_cxx_no_qualifiers %> <%= param.name %>_VALUE = <%= param.value.to_cxx %>;
+    <%- end -%>
+
+    // read parameters out of a YAML (or JSON) config file
+    <%= name_of(:params, cfg_arch) %>(const nlohmann::json& cfg)
+    {
+      init(cfg);
+    }
+
+    void init(const nlohmann::json& params);
+
+    <%- declared_params = Set.new -%>
+    <%- cfg_arch.params_without_value.each do |param| -%>
+    <%- next if declared_params.include?(param.name) -%>
+    <%- declared_params << param.name -%>
+
+    // <%= param.desc.gsub("\n", "\n  // ") %>
+    <%= param.idl_type.to_cxx_no_qualifiers %> <%= param.name %>;
+    <%- end -%>
+
+    private:
+    void set_param(const std::string& param_name, const nlohmann::json& json);
+    void set_param_default(const std::string& param_name);
+  };
+}
