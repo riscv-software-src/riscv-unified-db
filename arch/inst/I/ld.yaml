@@ -5,19 +5,19 @@ kind: instruction
 name: ld
 long_name: Load doubleword
 description: |
-  Load 64 bits of data into register `rd` from an
-  address formed by adding `rs1` to a signed offset.
+  Load 64 bits of data into register `xd` from an
+  address formed by adding `xs1` to a signed offset.
 definedBy: I
 base: 64
-assembly: xd, imm(rs1)
+assembly: xd, imm(xs1)
 encoding:
   match: -----------------011-----0000011
   variables:
     - name: imm
       location: 31-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -25,16 +25,16 @@ access:
   vs: always
   vu: always
 operation(): |
-  XReg virtual_address = X[rs1] + imm;
+  XReg virtual_address = X[xs1] + $signed(imm);
 
-  X[rd] = read_memory<64>(virtual_address, $encoding);
+  X[xd] = read_memory<64>(virtual_address, $encoding);
 
 sail(): |
   {
     let offset : xlenbits = sign_extend(imm);
-    /* Get the address, X(rs1) + offset.
+    /* Get the address, X(xs1) + offset.
        Some extensions perform additional checks on address validity. */
-    match ext_data_get_addr(rs1, offset, Read(Data), width) {
+    match ext_data_get_addr(xs1, offset, Read(Data), width) {
       Ext_DataAddr_Error(e)  => { ext_handle_data_check_error(e); RETIRE_FAIL },
       Ext_DataAddr_OK(vaddr) =>
         if   check_misaligned(vaddr, width)
@@ -44,13 +44,13 @@ sail(): |
           TR_Address(paddr, _) =>
             match (width) {
               BYTE =>
-                process_load(rd, vaddr, mem_read(Read(Data), paddr, 1, aq, rl, false), is_unsigned),
+                process_load(xd, vaddr, mem_read(Read(Data), paddr, 1, aq, rl, false), is_unsigned),
               HALF =>
-                process_load(rd, vaddr, mem_read(Read(Data), paddr, 2, aq, rl, false), is_unsigned),
+                process_load(xd, vaddr, mem_read(Read(Data), paddr, 2, aq, rl, false), is_unsigned),
               WORD =>
-                process_load(rd, vaddr, mem_read(Read(Data), paddr, 4, aq, rl, false), is_unsigned),
+                process_load(xd, vaddr, mem_read(Read(Data), paddr, 4, aq, rl, false), is_unsigned),
               DOUBLE if sizeof(xlen) >= 64 =>
-                process_load(rd, vaddr, mem_read(Read(Data), paddr, 8, aq, rl, false), is_unsigned),
+                process_load(xd, vaddr, mem_read(Read(Data), paddr, 8, aq, rl, false), is_unsigned),
               _ => report_invalid_width(__FILE__, __LINE__, width, "load")
             }
         }

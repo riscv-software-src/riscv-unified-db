@@ -12,15 +12,24 @@ definedBy:
   anyOf:
     - C
     - Zca
-base: 64
 assembly: xd, shamt
 encoding:
-  match: 100-01--------01
-  variables:
-    - name: shamt
-      location: 12|6-2
-    - name: rd
-      location: 9-7
+  RV32:
+    match: 100001--------01
+    variables:
+      - name: shamt
+        location: 6-2
+        not: 0
+      - name: rd
+        location: 9-7
+  RV64:
+    match: 100-01--------01
+    variables:
+      - name: shamt
+        location: 12|6-2
+        not: 0
+      - name: rd
+        location: 9-7
 access:
   s: always
   u: always
@@ -28,7 +37,7 @@ access:
   vu: always
 operation(): |
   # shamt is between 0-63
-  X[rd+8] = X[rd+8] >>> shamt;
+  X[creg2reg(rd)] = X[creg2reg(rd)] >>> shamt;
 
 sail(): |
   {

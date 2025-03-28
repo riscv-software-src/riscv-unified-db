@@ -34,7 +34,7 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  X[rd+8] = sext(X[rd+8][15:0],16);
+  X[creg2reg(rd)] = $signed(X[creg2reg(rd)][15:0]);
 
 sail(): |
   {

@@ -20,13 +20,18 @@ def create_bool_literal(value)
   end
 end
 
-def create_literal(value)
-  if value.is_a?(Integer)
+def create_literal(symtab, value, type)
+  case type.kind
+  when :enum_ref
+    member_name = type.enum_class.element_names[type.enum_class.element_values.index(value)]
+    str = "#{type.enum_class.name}::#{member_name}"
+    Idl::EnumRefAst.new(str, 0...str.size, type.enum_class.name, member_name)
+  when :bits
     create_int_literal(value)
-  elsif value.is_a?(TrueClass) || value.is_a?(FalseClass)
+  when :boolean
     create_bool_literal(value)
   else
-    raise "TODO: #{value.class.name}"
+    raise "TODO: #{type}"
   end
 end
 
@@ -51,12 +56,29 @@ module Idl
 
       new_node
     end
+
+    def nullify_assignments(symtab)
+      children.each { |child| child.nullify_assignments(symtab) }
+    end
+  end
+  class VariableAssignmentAst
+    def prune(symtab)
+      new_ast = VariableAssignmentAst.new(input, interval, lhs.dup, rhs.prune(symtab))
+      new_ast.execute_unknown(symtab)
+      new_ast
+    end
+    def nullify_assignments(symtab)
+      sym = symtab.get(lhs.text_value)
+      unless sym.nil?
+        sym.value = nil
+      end
+    end
   end
   class FunctionCallExpressionAst
     def prune(symtab)
       value_result = value_try do
         v = value(symtab)
-        return create_literal(v)
+        return create_literal(symtab, v, type(symtab))
       end
       value_else(value_result) do
         FunctionCallExpressionAst.new(input, interval, name, targs.map { |t| t.prune(symtab) }, args.map { |a| a.prune(symtab)} )
@@ -65,6 +87,19 @@ module Idl
   end
   class VariableDeclarationWithInitializationAst
     def prune(symtab)
+      add_symbol(symtab)
+
+      # do we want to remove a constant? If so, need to add a prune for IdAst that
+      # spits out a literal
+      #
+      # if lhs.const?
+      #   value_try do
+      #     rhs.value(symtab)
+      #     # rhs value is known, and variable is const. it can be removed
+      #     return NoopAst.new
+      #   end
+      # end
+
       VariableDeclarationWithInitializationAst.new(
         input, interval,
         type_name.dup,
@@ -78,6 +113,10 @@ module Idl
     def prune(symtab)
       symtab.push(self)
       symtab.add(init.lhs.name, Var.new(init.lhs.name, init.lhs_type(symtab)))
+
+      # make sure that any variable assigned within the loop is considered unknown
+      stmts.each { |stmt| stmt.nullify_assignments(symtab) }
+
       begin
         new_loop =
           ForLoopAst.new(
@@ -93,6 +132,26 @@ module Idl
       new_loop
     end
   end
+  class FunctionDefAst
+    def prune(symtab)
+      pruned_body =
+        unless builtin? || generated?
+          apply_template_and_arg_syms(symtab)
+          @body.prune(symtab, args_already_applied: true)
+        end
+
+      FunctionDefAst.new(
+        input, interval,
+        name,
+        @targs.map(&:dup),
+        @return_type_nodes.map(&:dup),
+        @argument_nodes.map(&:dup),
+        @desc,
+        @type,
+        pruned_body
+      )
+    end
+  end
   class FunctionBodyAst
     def prune(symtab, args_already_applied: false)
       symtab.push(self)
@@ -100,9 +159,9 @@ module Idl
       begin
         func_def = find_ancestor(FunctionDefAst)
         unless args_already_applied || func_def.nil?
-          if func_def.templated? # can't prune a template because we don't have all types
-            return dup
-          end
+          # if func_def.templated? # can't prune a template because we don't have all types
+          #   return dup
+          # end
 
           # push template values
           func_def.template_names.each_with_index do |tname, idx|
@@ -175,7 +234,7 @@ module Idl
     def prune(symtab)
       value_try do
         val = value(symtab)
-        return create_literal(val)
+        return create_literal(symtab, val, type(symtab))
       end
       # fall through
 
@@ -191,27 +250,39 @@ module Idl
       end
 
       if op == "&&"
-        if lhs_value == false
+        if !lhs_value.nil? && !rhs_value.nil?
+          create_bool_literal(lhs_value && rhs_value)
+        elsif lhs_value == true
           rhs.prune(symtab)
+        elsif rhs_value == true
+          lhs.prune(symtab)
+        elsif lhs_value == false || rhs_value == false
+          create_bool_literal(false)
         else
           BinaryExpressionAst.new(input, interval, lhs.prune(symtab), @op, rhs.prune(symtab))
         end
       elsif op == "||"
-        if lhs_value == true
+        if !lhs_value.nil? && !rhs_value.nil?
+          create_bool_literal(lhs_value || rhs_value)
+        elsif lhs_value == true || rhs_value == true
+          create_bool_literal(true)
+        elsif lhs_value == false
           rhs.prune(symtab)
+        elsif rhs_value == false
+          lhs.prune(symtab)
         else
           BinaryExpressionAst.new(input, interval, lhs.prune(symtab), @op, rhs.prune(symtab))
         end
       elsif op == "&"
         if lhs_value == 0
           # 0 & anything == 0
-          create_literal(0)
+          create_literal(symtab, 0, type(symtab))
         elsif (rhs.type(symtab).width != :unknown) && lhs_value == ((1 << rhs.type(symtab).width) - 1)
           # rhs idenntity
           rhs.prune(symtab)
         elsif rhs_value == 0
           # anything & 0 == 0
-          create_literal(0)
+          create_literal(symtab, 0, type(symtab))
         elsif (lhs.type(symtab).width != :unknown) && rhs_value == (1 << lhs.type(symtab).width - 1)
           # lhs identity
           lhs.prune(symtab)
@@ -228,15 +299,21 @@ module Idl
           rhs.prune(symtab)
         elsif rhs_type.width != :unknown && lhs_value == ((1 << rhs.type(symtab).width) - 1)
           # ~0 | anything == ~0
-          create_literal(lhs_value)
+          create_literal(symtab, lhs_value, type(symtab))
         elsif rhs_value == 0
           # lhs identity
           lhs.prune(symtab)
         elsif lhs_type.width != :unknown && rhs_value == (1 << lhs.type(symtab).width - 1)
           # anything | ~0 == ~0
-          create_literal(rhs_value)
+          create_literal(symtab, rhs_value, type(symtab))
         else
           # neither lhs nor rhs were prunable
+          BinaryExpressionAst.new(input, interval, lhs.prune(symtab), @op, rhs.prune(symtab))
+        end
+      elsif op == "=="
+        if !lhs_value.nil? && !rhs_value.nil?
+          create_bool_literal(lhs_value == rhs_value)
+        else
           BinaryExpressionAst.new(input, interval, lhs.prune(symtab), @op, rhs.prune(symtab))
         end
       else

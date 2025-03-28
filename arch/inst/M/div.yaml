@@ -35,15 +35,18 @@ operation(): |
   XReg src1 = X[rs1];
   XReg src2 = X[rs2];
 
+  # smallest signed value
+  XReg signed_min = (xlen() == 32) ? $signed({1'b1, {31{1'b0}}}) : {1'b1, {63{1'b0}}};
+
   if (src2 == 0) {
     # division by zero. Since RISC-V does not have arithmetic exceptions, the result is defined
     # to be -1
     X[rd] = {XLEN{1'b1}};
 
-  } else if ((src1 == {1'b1, {XLEN-1{1'b0}}}) && (src2 == {XLEN{1'b1}})) {
+  } else if ((src1 == signed_min) && (src2 == {XLEN{1'b1}})) {
     # signed overflow. Since RISC-V does not have arithmetic exceptions, the result is defined
     # to be the most negative number (-2^(XLEN-1))
-    X[rd] = {1'b1, {XLEN-1{1'b0}}};
+    X[rd] = signed_min;
 
   } else {
     # no special case, just divide

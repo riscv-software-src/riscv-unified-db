@@ -11,16 +11,24 @@ definedBy:
   anyOf:
     - C
     - Zca
-base: 64
 assembly: xd, shamt
 encoding:
-  match: 000-----------10
-  variables:
-    - name: shamt
-      location: 12|6-2
-    - name: rd
-      location: 11-7
-      not: 0
+  RV32:
+    match: 0000----------10
+    variables:
+      - name: shamt
+        location: 6-2
+        not: 0
+      - name: rd
+        location: 11-7
+  RV64:
+    match: 000-----------10
+    variables:
+      - name: shamt
+        location: 12|6-2
+        not: 0
+      - name: rd
+        location: 11-7
 access:
   s: always
   u: always

@@ -68,7 +68,8 @@ module Idl
   end
   class CsrFunctionCallAst
     def gen_adoc(indent, indent_spaces: 2)
-      "#{' '*indent}#{csr.gen_adoc(indent, indent_spaces:)}.#{function_name}()"
+      args_adoc = args.map { |arg| arg.gen_adoc(0) }
+      "#{' '*indent}#{csr.gen_adoc(indent, indent_spaces:)}.#{function_name}(#{args_adoc.join(', ')})"
     end
   end
   class CsrSoftwareWriteAst
@@ -93,7 +94,7 @@ module Idl
   end
   class BitsCastAst
     def gen_adoc(indent, indent_spaces: 2)
-      "#{' '*indent}$bits(#{expression.gen_adoc(0, indent_spaces: )})"
+      "#{' '*indent}$bits(#{expr.gen_adoc(0, indent_spaces: )})"
     end
   end
   class EnumCastAst
@@ -291,35 +292,21 @@ module Idl
 
   class CsrFieldReadExpressionAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      idx_text =
-        if @idx.is_a?(AstNode)
-          @idx.text_value
-        else
-          @idx
-        end
-      csr_text = "CSR[#{idx_text}].#{@field_name}"
-      if idx_text =~ /[0-9]+/
-        "#{' '*indent}#{csr_text}"
-      else
-        if @cfg_arch.csr(csr_text).nil?
-        "#{' '*indent}#{csr_text}"
-        else
-          "#{' '*indent}%%LINK%csr_field;#{idx_text}.#{@field_name};#{csr_text}%%"
-        end
-      end
+      csr_text = "CSR[#{@csr_obj.name}].#{@field_name}"
+      "#{' '*indent}%%LINK%csr_field;#{@csr_obj.name}.#{@field_name};#{csr_text}%%"
     end
   end
 
   class CsrReadExpressionAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      idx_text =
-        if @idx.is_a?(AstNode)
-          @idx.text_value
+      idx =
+        if @idx_expr.nil?
+          @idx_text
         else
-          @idx
+          @idx_expr.gen_adoc(0)
         end
 
-      csr_text = "CSR[#{idx_text}]"
+      csr_text = "CSR[#{idx}]"
       if idx_text =~ /[0-9]+/
         # we don't have the symtab to map this to a csr name
         "#{' '*indent}#{csr_text}"
@@ -327,7 +314,7 @@ module Idl
         if @cfg_arch.csr(csr_text).nil?
           "#{' '*indent}#{csr_text}"
         else
-          "#{' '*indent}%%LINK%csr;#{idx_text};#{csr_text}%%"
+          "#{' '*indent}%%LINK%csr;#{idx};#{csr_text}%%"
         end
       end
     end

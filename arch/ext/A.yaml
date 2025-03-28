@@ -17,8 +17,10 @@ versions:
         email: unknown@void.segfault
         company: Unknown
     implies:
-      - [Zaamo, "1.0.0"]
-      - [Zalrsc, "1.0.0"]
+      - name: Zaamo
+        version: "1.0.0"
+      - name: Zalrsc
+        version: "1.0.0"
 description: |
 
   The atomic-instruction extension, named `A`, contains

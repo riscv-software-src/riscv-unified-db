@@ -1,7 +1,7 @@
 * xref:ROOT:config.adoc[Configuration]
 
 .Extensions
-<%- cfg_arch.transitive_implemented_extensions.sort { |a, b| a.name <=> b.name }.each do |ext| -%>
+<%- cfg_arch.transitive_implemented_extension_versions.sort { |a, b| a.name <=> b.name }.each do |ext| -%>
 * %%LINK%ext;<%= ext.name %>;<%= ext.name %>%%
 <%- end -%>
 

@@ -29,6 +29,8 @@ access:
   vs: always
   vu: always
 operation(): |
+  check_csr(csr, true, $encoding);
+
   if (rd != 0) {
     X[rd] = CSR[csr].sw_read();
   }

@@ -17,3 +17,5 @@ params:
     also_defined_in: [Zicbom, Zicbop]
     schema:
       type: integer
+      minimum: 1
+      maximum: 0xFFFFFFFFFFFFFFFF
