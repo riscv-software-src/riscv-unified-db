@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: mop.rr.n
-long_name: May be an OPeration (2 source registers).
+long_name: May-be-operation (2 source registers).
 description: |
   The Zimop extension defines 8 MOP instructions named MOP.RR.n, where n is an integer between 0
   and 7, inclusive. Unless redefined by another extension, these instructions simply write 0 to X[xd].
