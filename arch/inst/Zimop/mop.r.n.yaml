@@ -5,23 +5,18 @@ kind: instruction
 name: mop.r.n
 long_name: May be an OPeration (single register).
 description: |
-  The Zimop extension defines 32 MOP instructions named MOP.R.n, where n is an integer between 0
-  and 31, inclusive. Unless redefined by another extension, these instructions simply write 0 to X[rd].
-  Their encoding allows future extensions to define them to read X[rs1], as well as write X[rd].
+  Unless redefined by another extension, this instructions simply writes 0 to X[xd].
+  The encoding allows future extensions to define them to read X[xs1], as well as write X[xd].
 definedBy: Zimop
-assembly: mop_r_t_30, mop_r_t_27_26, mop_r_t_21_20, xd, xs1
+assembly: xd
 encoding:
   match: 1-00--0111-------100-----1110011
   variables:
-    - name: mop_r_t_30
-      location: 30-30
-    - name: mop_r_t_27_26
-      location: 27-26
-    - name: mop_r_t_21_20
-      location: 21-20
-    - name: rs1
+    - name: n
+      location: 30|27:26|21:20
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -34,69 +29,69 @@ hints:
   - { $ref: inst/Zicfilp/sspopchk.x5.yaml# }
   - { $ref: inst/Zicfilp/ssrdp.yaml# }
 pseudoinstructions:
-  - when: (mop_r_t_30 == 0x0) && (mop_r_t_21_20 == 0x0) && (mop_r_t_27_26 == 0x0)
+  - when: n == 0
     to: mop.r.0
-  - when: (mop_r_t_30 == 0x0) && (mop_r_t_21_20 == 0x1) && (mop_r_t_27_26 == 0x0)
+  - when: n == 1
     to: mop.r.1
-  - when: (mop_r_t_30 == 0x0) && (mop_r_t_21_20 == 0x2) && (mop_r_t_27_26 == 0x0)
+  - when: n == 2
     to: mop.r.2
-  - when: (mop_r_t_30 == 0x0) && (mop_r_t_21_20 == 0x3) && (mop_r_t_27_26 == 0x0)
+  - when: n == 3
     to: mop.r.3
-  - when: (mop_r_t_30 == 0x0) && (mop_r_t_21_20 == 0x0) && (mop_r_t_27_26 == 0x1)
+  - when: n == 4
     to: mop.r.4
-  - when: (mop_r_t_30 == 0x0) && (mop_r_t_21_20 == 0x1) && (mop_r_t_27_26 == 0x1)
+  - when: n == 5
     to: mop.r.5
-  - when: (mop_r_t_30 == 0x0) && (mop_r_t_21_20 == 0x2) && (mop_r_t_27_26 == 0x1)
+  - when: n == 6
     to: mop.r.6
-  - when: (mop_r_t_30 == 0x0) && (mop_r_t_21_20 == 0x3) && (mop_r_t_27_26 == 0x1)
+  - when: n == 7
     to: mop.r.7
-  - when: (mop_r_t_30 == 0x0) && (mop_r_t_21_20 == 0x0) && (mop_r_t_27_26 == 0x2)
+  - when: n == 8
     to: mop.r.8
-  - when: (mop_r_t_30 == 0x0) && (mop_r_t_21_20 == 0x1) && (mop_r_t_27_26 == 0x2)
+  - when: n == 9
     to: mop.r.9
-  - when: (mop_r_t_30 == 0x0) && (mop_r_t_21_20 == 0x2) && (mop_r_t_27_26 == 0x2)
+  - when: n == 10
     to: mop.r.10
-  - when: (mop_r_t_30 == 0x0) && (mop_r_t_21_20 == 0x3) && (mop_r_t_27_26 == 0x2)
+  - when: n == 11
     to: mop.r.11
-  - when: (mop_r_t_30 == 0x0) && (mop_r_t_21_20 == 0x0) && (mop_r_t_27_26 == 0x3)
+  - when: n == 12
     to: mop.r.12
-  - when: (mop_r_t_30 == 0x0) && (mop_r_t_21_20 == 0x1) && (mop_r_t_27_26 == 0x3)
+  - when: n == 13
     to: mop.r.13
-  - when: (mop_r_t_30 == 0x0) && (mop_r_t_21_20 == 0x2) && (mop_r_t_27_26 == 0x3)
+  - when: n == 14
     to: mop.r.14
-  - when: (mop_r_t_30 == 0x0) && (mop_r_t_21_20 == 0x3) && (mop_r_t_27_26 == 0x3)
+  - when: n == 15
     to: mop.r.15
-  - when: (mop_r_t_30 == 0x1) && (mop_r_t_21_20 == 0x0) && (mop_r_t_27_26 == 0x0)
+  - when: n == 16
     to: mop.r.16
-  - when: (mop_r_t_30 == 0x1) && (mop_r_t_21_20 == 0x1) && (mop_r_t_27_26 == 0x0)
+  - when: n == 17
     to: mop.r.17
-  - when: (mop_r_t_30 == 0x1) && (mop_r_t_21_20 == 0x2) && (mop_r_t_27_26 == 0x0)
+  - when: n == 18
     to: mop.r.18
-  - when: (mop_r_t_30 == 0x1) && (mop_r_t_21_20 == 0x3) && (mop_r_t_27_26 == 0x0)
+  - when: n == 19
     to: mop.r.19
-  - when: (mop_r_t_30 == 0x1) && (mop_r_t_21_20 == 0x0) && (mop_r_t_27_26 == 0x1)
+  - when: n == 20
     to: mop.r.20
-  - when: (mop_r_t_30 == 0x1) && (mop_r_t_21_20 == 0x1) && (mop_r_t_27_26 == 0x1)
+  - when: n == 21
     to: mop.r.21
-  - when: (mop_r_t_30 == 0x1) && (mop_r_t_21_20 == 0x2) && (mop_r_t_27_26 == 0x1)
+  - when: n == 22
     to: mop.r.22
-  - when: (mop_r_t_30 == 0x1) && (mop_r_t_21_20 == 0x3) && (mop_r_t_27_26 == 0x1)
+  - when: n == 23
     to: mop.r.23
-  - when: (mop_r_t_30 == 0x1) && (mop_r_t_21_20 == 0x0) && (mop_r_t_27_26 == 0x2)
+  - when: n == 24
     to: mop.r.24
-  - when: (mop_r_t_30 == 0x1) && (mop_r_t_21_20 == 0x1) && (mop_r_t_27_26 == 0x2)
+  - when: n == 25
     to: mop.r.25
-  - when: (mop_r_t_30 == 0x1) && (mop_r_t_21_20 == 0x2) && (mop_r_t_27_26 == 0x2)
+  - when: n == 26
     to: mop.r.26
-  - when: (mop_r_t_30 == 0x1) && (mop_r_t_21_20 == 0x3) && (mop_r_t_27_26 == 0x2)
+  - when: n == 27
     to: mop.r.27
-  - when: (mop_r_t_30 == 0x1) && (mop_r_t_21_20 == 0x0) && (mop_r_t_27_26 == 0x3)
+  - when: n == 28
     to: mop.r.28
-  - when: (mop_r_t_30 == 0x1) && (mop_r_t_21_20 == 0x1) && (mop_r_t_27_26 == 0x3)
+  - when: n == 29
     to: mop.r.29
-  - when: (mop_r_t_30 == 0x1) && (mop_r_t_21_20 == 0x2) && (mop_r_t_27_26 == 0x3)
+  - when: n == 30
     to: mop.r.30
-  - when: (mop_r_t_30 == 0x1) && (mop_r_t_21_20 == 0x3) && (mop_r_t_27_26 == 0x3)
+  - when: n == 31
     to: mop.r.31
 operation(): |
-  X[rd] = 0;
+  X[xd] = 0;
