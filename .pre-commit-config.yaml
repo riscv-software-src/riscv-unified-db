@@ -74,11 +74,14 @@ repos:
     hooks:
       - id: pyupgrade
 
-  # - repo: https://github.com/koalaman/shellcheck-precommit
-  #   rev: v0.10.0
-  #   hooks:
-  #     - id: shellcheck
-  #       args: ["--severity=error"]
+  - repo: local
+    hooks:
+      - id: shellcheck
+        name: shellcheck
+        types: [shell]
+        language: system
+        entry: shellcheck
+        args: ["--severity=error"]
 
   - repo: https://github.com/scop/pre-commit-shfmt
     rev: v3.11.0-1
