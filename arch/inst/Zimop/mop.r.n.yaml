@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: mop.r.n
-long_name: May be an OPeration (single register).
+long_name: May be an OPeration (1 source register).
 description: |
   Unless redefined by another extension, this instructions simply writes 0 to X[xd].
   The encoding allows future extensions to define them to read X[xs1], as well as write X[xd].
@@ -13,7 +13,7 @@ encoding:
   match: 1-00--0111-------100-----1110011
   variables:
     - name: n
-      location: 30|27:26|21:20
+      location: 30|27-26|21-20
     - name: xs1
       location: 19-15
     - name: xd
