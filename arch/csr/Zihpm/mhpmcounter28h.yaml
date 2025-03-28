@@ -15,7 +15,7 @@ description: |
 definedBy: Smhpm
 fields:
   COUNT:
-    location: 32-0
+    location: 31-0
     alias: mhpmcounter.COUNT28[63:32]
     description: |
       Upper bits of counter.

@@ -13,9 +13,9 @@ encoding:
   variables:
     - name: csr
       location: 31-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -24,3 +24,16 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  Boolean will_write = xs1 != 0;
+  check_csr(csr, will_write, $encoding);
+
+  XReg initial_csr_value = CSR[csr].sw_read();
+
+  if (xs1 != 0) {
+    # clear bits using the mask
+    # performing any WARL transformations first
+    XReg mask = X[xs1];
+    CSR[csr].sw_write(initial_csr_value & ~mask);
+  }
+
+  X[xd] = initial_csr_value;
