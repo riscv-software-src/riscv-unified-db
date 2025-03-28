@@ -136,6 +136,6 @@ extensions:
       M_MODE_ENDIANESS:
         schema:
           const: little
-      XLEN:
+      MXLEN:
         schema:
           const: 32
