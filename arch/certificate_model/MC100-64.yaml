@@ -15,6 +15,6 @@ base: 64
 extensions:
   Sm:
     parameters:
-      XLEN:
+      MXLEN:
         schema:
           const: 64

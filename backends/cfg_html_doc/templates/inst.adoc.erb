@@ -34,7 +34,7 @@ RV64::
 <%- else -%>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump inst.wavedrom_desc(cfg_arch.param_values["XLEN"]) %>
+<%= JSON.dump inst.wavedrom_desc(cfg_arch.param_values["MXLEN"]) %>
 ....
 <%- end -%>
 
@@ -90,7 +90,7 @@ RV64::
 <%- else -%>
 [source,idl]
 ----
-<%- inst.decode_variables(cfg_arch.param_values["XLEN"]).each do |d| -%>
+<%- inst.decode_variables(cfg_arch.param_values["MXLEN"]).each do |d| -%>
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
 <%- end -%>
 ----
