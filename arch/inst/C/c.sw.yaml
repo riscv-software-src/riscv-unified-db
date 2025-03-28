@@ -34,6 +34,6 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg virtual_address = X[rs1] + imm;
+  XReg virtual_address = X[creg2reg(rs1)] + imm;
 
-  write_memory<32>(virtual_address, X[rs2][31:0], $encoding);
+  write_memory<32>(virtual_address, X[creg2reg(rs2)][31:0], $encoding);

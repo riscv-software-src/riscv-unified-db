@@ -14,7 +14,7 @@ A configuration consists of a folder under `cfgs`. Inside that folder, there are
 A YAML object (hash) that currently contains only one field `type`. `type` can be one of:
 
 * "partially configured": The configuration has some parameters and/or implemented extensions known, but others are not known. Examples of a _partially configured_ configuration are the generic _32/_64 configs and a profile (which has some known/mandatory extensions, but also many unknown/optional extensions).
-* "fully configured": The configuration exhaustively lists a set of implemented extensions and parameters. An example of a _fully configured_ configuration is the `generic_rv64` example, which represents a theoretical implementation of RV64. In a _fully configured_ configuration, any extension that isn't known to be implemented is treated as unimplemented, and will be pruned out of the database for certain operations.
+* "fully configured": The configuration exhaustively lists a set of implemented extensions and parameters. An example of a _fully configured_ configuration is the `example_rv64_with_overlay` example, which represents a theoretical implementation of RV64. In a _fully configured_ configuration, any extension that isn't known to be implemented is treated as unimplemented, and will be pruned out of the database for certain operations.
 
 `implemented_exts.yaml`::
 
@@ -51,7 +51,7 @@ params:
 
 A configuration can customize the standard RISC-V specification by providing an `arch_overlay` directory. This can be used to, for example, describe a custom extension or to create custom behavior of a standard instructions.
 
-The `arch_overlay` directory is treated as an overlay on the standard `arch` directory. The contents of any file found in `arch_overlay` is either merged on top of the corresponding file in `arch`, if such a file exists, or added to the overall specification (_e.g._, when defining a new extension). An example of an overlay can be found in `cfgs/generic_rv64/arch_overlay`.
+The `arch_overlay` directory is treated as an overlay on the standard `arch` directory. The contents of any file found in `arch_overlay` is either merged on top of the corresponding file in `arch`, if such a file exists, or added to the overall specification (_e.g._, when defining a new extension). An example of an overlay can be found in `cfgs/example_rv64_with_overlay/arch_overlay`.
 
 == ArchDef interface
 
