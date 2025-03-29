@@ -27,6 +27,9 @@ access:
 data_independent_timing: false
 operation(): |
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let load_width_bytes = vlewidth_bytesnumber(width);
@@ -42,3 +45,5 @@ sail(): |
 
     process_vssseg(nf_int, vm, vs3, load_width_bytes, rs1, rs2, EMUL_pow, num_elem)
   }
+
+# SPDX-SnippetEnd

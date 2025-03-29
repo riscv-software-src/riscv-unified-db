@@ -31,6 +31,9 @@ operation(): |
   XReg t1 = X[rs2];
   X[rd] = t0 + t1;
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val = X(rd);
@@ -38,3 +41,5 @@ sail(): |
     X(rd) = rs1_val + rs2_val;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

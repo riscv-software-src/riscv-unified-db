@@ -27,6 +27,9 @@ access:
 data_independent_timing: false
 operation(): |
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let SEW      = get_sew();
@@ -75,3 +78,5 @@ sail(): |
     vstart = zeros();
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd
