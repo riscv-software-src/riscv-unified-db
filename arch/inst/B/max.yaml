@@ -39,7 +39,7 @@ operation(): |
   X[rd] = ($signed(X[rs1]) > $signed(X[rs2])) ? X[rs1] : X[rs2];
 
 # SPDX-SnippetBegin
-# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
 # SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {

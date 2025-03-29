@@ -32,7 +32,7 @@ operation(): |
   X[rd] = 31 - $signed(highest_set_bit(X[rs1][31:0]));
 
 # SPDX-SnippetBegin
-# SPDX-SnippetCopyrightText: FIXME: Sail copyright holders
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
 # SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
