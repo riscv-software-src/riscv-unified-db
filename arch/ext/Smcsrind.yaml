@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Smcsrind
+long_name: Machine Indirect CSR Access (Smcsrind)
+description: |
+  The `Smcsrind` extension defines indirect access to CSRs, allowing registers to be accessed through
+  an index value (`miselect`) rather than using a fixed CSR number. This reduces the need for allocating
+  large chunks of CSR address space, making it more scalable and flexible.
+
+  `Smcsrind` enables accessing an array of CSRs by index through dedicated `miselect` and `mireg*` registers
+  for machine-level access. The supervisor-level counterpart, `Sscsrind`, provides similar functionality but
+  without machine-level CSRs.
+
+  This extension is beneficial for accessing a set of registers that are not statically defined in the CSR space
+  and enables more flexible register allocation.
+
+  The machine-level registers are accessed through `miselect` and `mireg*` registers, while supervisor-level
+  registers are accessed through `siselect` and `sireg*` registers.
+
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: "2024-11"
+    url: "https://github.com/riscv/riscv-isa-manual/releases/tag/riscv-isa-release-482805d-2025-03-25"
+    implies:
+      name: Smcsrind
+      version: "1.0.0"
+    requires:
+      allOf:
+        - name: S
+          version: ~> 1.13
+    changes:
+      - Introduced indirect CSR access using `miselect`, `mireg*` for machine-level, and `siselect`, `sireg*` for supervisor-level CSRs.
+      - Defines the address spaces for indirect access in both machine and supervisor levels.
+      - Supports custom extension registers for each mode via indirect access
