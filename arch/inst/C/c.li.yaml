@@ -31,4 +31,4 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  X[rd] = imm;
+  X[rd] = $signed(imm);

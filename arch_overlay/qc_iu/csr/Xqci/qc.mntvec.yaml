@@ -1,0 +1,22 @@
+$schema: "csr_schema.json#"
+kind: csr
+name: qc.mntvec
+long_name: Machine Non-Maskable Interrupt Vector Control
+address: 0x7c3
+base: 32
+priv_mode: M
+length: MXLEN
+description: Controls where NMI jump.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqciint
+fields:
+  BASE:
+    location: 31-2
+    description: |
+      Bits [MXLEN-1:2] of the NMI vector physical address for any NMI taken in M-mode.
+    type: RW-R
+    sw_write(csr_value): |
+      return csr_value.BASE;
+    reset_value: 0

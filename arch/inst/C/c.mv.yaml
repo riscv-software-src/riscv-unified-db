@@ -5,8 +5,8 @@ kind: instruction
 name: c.mv
 long_name: Move Register
 description: |
-  C.MV (move register) performs copy of the data in register rs2 to register rd
-  C.MV expands to addi rd, x0, rs2.
+  C.MV (move register) performs copy of the data in register xs2 to register xd
+  C.MV expands to addi xd, x0, xs2.
 definedBy:
   anyOf:
     - C
@@ -15,10 +15,10 @@ assembly: xd, xs2
 encoding:
   match: 1000----------10
   variables:
-    - name: rd
+    - name: xd
       location: 11-7
       not: 0
-    - name: rs2
+    - name: xs2
       location: 6-2
       not: 0
 access:
@@ -31,11 +31,11 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  X[rd] = X[rs2];
+  X[xd] = X[xs2];
 
 sail(): |
   {
-    let rs2_val = X(rs2);
-    X(rs) = rs2_val
+    let xs2_val = X(xs2);
+    X(rs) = xs2_val
     RETIRE_SUCCESS
   }
