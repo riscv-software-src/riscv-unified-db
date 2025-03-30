@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: vtype
+long_name: Vector Type
+address: 0x0 #??
+priv_mode: M #??
+length: MXLEN
+description: Provides the default type used to interpret the contents of the vector registrer file.
+definedBy: V
+fields:
+  VILL:
+    location_rv32: 31
+    location_rv64: 63
+    description: Illegal value if set.
+    type: RO #??
+    reset_value: 0
+  reserved:
+    location_rv32: 30-8
+    location_rv64: 62-8
+    description: Reserved if non-zero
+    type: RO #??
+    reset_value: UNDEFINED_LEGAL
+  VMA:
+    location_rv32: 7
+    location_rv64: 7
+    description: Vector mask agnostic
+    type: RO #??
+    reset_value: 0
+  VTA:
+    location_rv32: 6
+    location_rv64: 6
+    description: Vector tail agnostic
+    type: RO #??
+    reset_value: 0
+  VSEW:
+    location_rv32: 5-3
+    location_rv64: 5-3
+    description: Selected element width
+    type: RO #??
+    reset_value: 0
+  VLMUL:
+    location_rv32: 2-0
+    location_rv64: 2-0
+    description: Vector register group multiplier
+    type: RO #??
+    reset_value: 0
