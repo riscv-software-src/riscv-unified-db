@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: vxsat
+long_name: Fixed-Point Saturate Flag
+address: 0x009
+priv_mode: U #should be URW
+length: MXLEN
+description: TBA.
+definedBy: V
+fields:
+  VALUE:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    description: |
+      TBA
+    type: RO #??
+    reset_value: 0
