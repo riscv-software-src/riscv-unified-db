@@ -14,6 +14,7 @@ definedBy:
     - C
     - F
 assembly: xd, imm(xs1)
+base: 32
 encoding:
   match: 011-----------00
   variables:
@@ -34,6 +35,6 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg virtual_address = X[rs1] + imm;
+  XReg virtual_address = X[creg2reg(rs1)] + imm;
 
-  X[rd] = sext(read_memory<32>(virtual_address, $encoding), 32);
+  X[creg2reg(rd)] = sext(read_memory<32>(virtual_address, $encoding), 32);

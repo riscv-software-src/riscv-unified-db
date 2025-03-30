@@ -88,3 +88,7 @@ versions:
       - name: Graeme Smecher
       - name: Nicolas Brunie
       - name: Jiawei
+conflicts:
+  anyOf:
+    - allOf: [C, D]
+    - Zcd
