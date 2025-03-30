@@ -17,6 +17,8 @@ params:
     also_defined_in: [Zicboz, Zicbop]
     schema:
       type: integer
+      minimum: 1
+      maximum: 0xFFFFFFFFFFFFFFFF
   FORCE_UPGRADE_CBO_INVAL_TO_FLUSH:
     description: |
       When true, an implementation prohibits setting `menvcfg.CBIE` == `11` such that all `cbo.inval`

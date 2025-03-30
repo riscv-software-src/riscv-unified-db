@@ -43,9 +43,7 @@
   <% end -%>
   <% unless v.implications.empty? -%>
   Implies:::
-    <% v.implications.each do |i| -%>
-    * `<%= i.name %>` version <%= i.version_spec %>
-    <% end -%>
+    <%= v.implications.each { |i| "* #{i[:ext_ver].name} (#{i[:ext_ver].version_spec}) #{i[:cond].empty? ? '' : i[:cond].to_asciidoc(join: ', ')}" }.join("\n* ") %>
   <% end -%>
 <% end -%>
 
@@ -65,6 +63,18 @@
 <% end -%>
 
 <% insts = min_ext_ver.in_scope_instructions(portfolio_design) -%>
+<%# ZZZ: Derek used the below instead of the above %>
+<%#
+  insts = cfg_arch.instructions.select do |i|
+    i.defined_by_condition.satisfied_by? do |defining_ext_req|
+      cert_model.in_scope_ext_reqs.any? do |in_scope_ext_req|
+        in_scope_ext_req.satisfying_versions.any? { |ext_ver| defining_ext_req.satisfied_by?(ext_ver) }
+
+    end
+  end
+%>
+
+
 <% unless insts.empty? -%>
 ==== Instructions
 

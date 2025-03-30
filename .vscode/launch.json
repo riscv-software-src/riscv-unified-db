@@ -138,6 +138,46 @@
       "script": "test:smoke",
       "args": [],
       "askParameters": false
+    },
+    {
+      "type": "cppdbg",
+      "name": "Run MC100-32 iss",
+      "request": "launch",
+      "program": "${workspaceFolder}/gen/cpp_hart_gen/MC100-32_Debug/build/iss",
+      "setupCommands": [
+        {
+          "text": "set output-radix 16",
+          "description": "Display hex by default"
+        }
+      ],
+      "cwd": "${workspaceFolder}",
+      "args": [
+        "-m", "MC100-32", "-c",
+        "${workspaceFolder}/cfgs/mc100-32-full-example.yaml",
+        "ext/riscv-tests/isa/rv32mi-p-mcsr"
+      ],
+      "linux": {
+        "MIMode": "gdb",
+        "miDebuggerPath": "${workspaceFolder}/bin/gdb"
+      }
+    },
+    {
+      "type": "cppdbg",
+      "name": "Run MC100-32 coremark",
+      "request": "launch",
+      "program": "${workspaceFolder}/gen/cpp_hart_gen/MC100-32_Debug/build/iss",
+      "setupCommands": [
+        {
+          "text": "set output-radix 16",
+          "description": "Display hex by default"
+        }
+      ],
+      "cwd": "${workspaceFolder}",
+      "args": ["-m", "MC100-32", "-c", "${workspaceFolder}/cfgs/mc100-32-full-example.yaml", "ext/riscv-coremark/coremark/coremark.bare.riscv"],
+      "linux": {
+        "MIMode": "gdb",
+        "miDebuggerPath": "${workspaceFolder}/bin/gdb"
+      }
     }
   ]
 }

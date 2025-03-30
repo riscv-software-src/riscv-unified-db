@@ -42,8 +42,8 @@ require "ruby-prof"
         # RubyProf::FlatPrinter.new(result).print(STDOUT)
       end
     when "ext"
-      cfg_arch.transitive_implemented_ext_vers.each do |ext_version|
-        ext = cfg_arch.arch.extension(ext_version.name)
+      cfg_arch.transitive_implemented_extension_versions.each do |ext_version|
+        ext = cfg_arch.extension(ext_version.name)
         path = dir_path / "#{ext.name}.adoc"
         puts "  Generating #{path}"
         File.write(path, cfg_arch.convert_monospace_to_links(erb.result(binding)))
@@ -89,8 +89,8 @@ require "ruby-prof"
         lines << " * `#{csr.name}` #{csr.long_name}"
       end
     when "ext"
-      puts "Generting full extension list"
-      cfg_arch.transitive_implemented_ext_vers.each do |ext_version|
+      puts "Generating full extension list"
+      cfg_arch.transitive_implemented_extension_versions.each do |ext_version|
         lines << " * `#{ext_version.name}` #{ext_version.ext.long_name}"
       end
     when "inst"
@@ -129,7 +129,7 @@ end
 namespace :gen do
   desc "Generate Asciidoc source for config into gen/CONFIG_NAME/adoc"
   task :adoc, [:config_name] do |_t, args|
-    raise "No config named #{args[:config_name]}" unless File.directory?($root / "cfgs" / args[:config_name])
+    raise "No config named #{args[:config_name]}" unless File.file?($root / "cfgs" / "#{args[:config_name]}.yaml")
 
     ["inst", "csr", "ext", "func"].each do |type|
       Rake::Task["#{$root}/.stamps/adoc-gen-#{type}s-#{args[:config_name]}.stamp"].invoke

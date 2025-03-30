@@ -10,9 +10,9 @@
 #   - CRD (Certificate Requirements Document)
 #   - CTP (Certificate Test Plan)
 #
-# The Design class contains an Architecture object but isn't inherited from it.
-# This was done so code that only needs an Architecture object can make this clear
-# by using the Architecture object instead of the Design object (i.e., to support encapsulation).
+# The Design class contains an ConfiguredArchitecture object but isn't inherited from it.
+# This was done so code that only needs an ConfiguredArchitecture object can make this clear
+# by using the ConfiguredArchitecture object instead of the Design object (i.e., to support encapsulation).
 #
 # This Design class is an abstract base class for designs using either a config (under /cfg) or a
 # portfolio (profile release or certificate).  The abstract methods exist in the IDesign base class
@@ -22,7 +22,7 @@ require "ruby-prof"
 require "tilt"
 
 require_relative "idesign"
-require_relative "architecture"
+require_relative "cfg_arch"
 
 require_relative "idl"
 require_relative "idl/passes/find_return_values"
@@ -36,8 +36,11 @@ require_relative "backend_helpers"
 include TemplateHelpers
 
 class Design < IDesign
-  # @return [Architecture] The RISC-V architecture
-  attr_reader :arch
+  # @return [ConfiguredArchitecture] The RISC-V architecture
+  attr_reader :cfg_arch
+
+  # Provided for backwards-compatibility
+  def arch = @cfg_arch
 
   # @return [Integer] 32, 64, or nil for dynamic
   attr_reader :mxlen
@@ -56,14 +59,14 @@ class Design < IDesign
   def hash = @name_sym.hash
 
   # @param name [#to_s] The design name
-  # @param arch [Architecture] The entire architecture
+  # @param cfg_arch [ConfiguredArchitecture] The entire architecture
   # @param mxlen [Integer] 32, 64, or nil for dynamic
   # @param overlay_path [String] Optional path to a directory that overlays the architecture
-  def initialize(name, arch, mxlen, overlay_path: nil)
+  def initialize(name, cfg_arch, mxlen, overlay_path: nil)
     super(name)
 
-    raise ArgumentError, "arch must be an Architecture but is a #{arch.class}" unless arch.is_a?(Architecture)
-    @arch = arch
+    raise ArgumentError, "cfg_arch must be an ConfiguredArchitecture but is a #{cfg_arch.class}" unless cfg_arch.is_a?(ConfiguredArchitecture)
+    @cfg_arch = cfg_arch
 
     @mxlen = mxlen
     @mxlen.freeze
@@ -309,7 +312,8 @@ class Design < IDesign
     @env = Class.new
     @env.instance_variable_set(:@design, self)
     @env.instance_variable_set(:@params, @param_values)
-    @env.instance_variable_set(:@arch, @arch)
+    @env.instance_variable_set(:@cfg_arch, @cfg_arch)
+    @env.instance_variable_set(:@arch, @arch) # Provided for backwards-compatibility
 
     # add each parameter, either as a method (lowercase) or constant (uppercase)
     params_with_value.each do |param|

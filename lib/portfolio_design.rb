@@ -10,7 +10,7 @@
 
 require "ruby-prof"
 
-require_relative "architecture"
+require_relative "cfg_arch"
 require_relative "design"
 require_relative "arch_obj_models/portfolio"
 
@@ -31,14 +31,14 @@ class PortfolioDesign < Design
   def self.portfolio_design_types = [profile_release_type, proc_crd_type, proc_ctp_type]
 
   # @param name [#to_s] The name of the portfolio design (i.e., backend filename without a suffix)
-  # @param arch [Architecture] The database of RISC-V standards
+  # @param arch [ConfiguredArchitecture] The database of RISC-V standards
   # @param portfolio_design_type [String] Type of portfolio design associated with this design
   # @param mxlen [Integer] Comes from portfolio YAML "base" (either 32 or 64)
   # @param portfolios [Array<Portfolio>] Portfolios being converted to adoc
   # @param portfolio_class [PortfolioClass] PortfolioClass for all the Portfolios
   # @param overlay_path [String] Optional path to a directory that overlays the architecture
   def initialize(name, arch, portfolio_design_type, portfolios, portfolio_class, overlay_path: nil)
-    raise ArgumentError, "arch must be an Architecture but is a #{arch.class}" unless arch.is_a?(Architecture)
+    raise ArgumentError, "arch must be an ConfiguredArchitecture but is a #{arch.class}" unless arch.is_a?(ConfiguredArchitecture)
     raise ArgumentError, "portfolio_design_type of #{portfolio_design_type} unknown" unless PortfolioDesign.portfolio_design_types.include?(portfolio_design_type)
     raise ArgumentError, "portfolios must be an Array<Portfolio> but is a #{portfolios.class}" unless portfolios.is_a?(Array)
     raise ArgumentError, "portfolio_class must be a PortfolioClass but is a #{portfolio_class.class}" unless portfolio_class.is_a?(PortfolioClass)

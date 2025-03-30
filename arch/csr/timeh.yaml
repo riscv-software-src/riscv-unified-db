@@ -5,6 +5,7 @@ kind: csr
 name: timeh
 long_name: High-half timer for RDTIME Instruction
 address: 0xC81
+base: 32
 description: |
   [when,"TIME_CSR_IMPLEMENTED == false"]
   This CSR does not exist, and access will cause an IllegalInstruction exception.
@@ -65,7 +66,7 @@ sw_read(): |
     }
   } else if (mode() == PrivilegeMode::VS) {
     # access in VS mode
-    if (CSR[hcounteren].TM == 1'b0 && CSR[mcounteren] == 1'b1) {
+    if (CSR[hcounteren].TM == 1'b0 && CSR[mcounteren].TM == 1'b1) {
       raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
     } else if (CSR[mcounteren].TM == 1'b0) {
       raise(ExceptionCode::IllegalInstruction, mode(), $encoding);

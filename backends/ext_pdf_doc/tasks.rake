@@ -74,24 +74,21 @@ end
 
 rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
   config_name = Pathname.new(tname).relative_path_from("#{$root}/gen/ext_pdf_doc").to_s.split("/")[0]
-  ext_name = Pathname.new(tname).basename(".adoc").to_s.split("_")[0..-2].join("_")
-  arch_yaml_paths =
-    if File.exist?("#{$root}/arch/ext/#{ext_name}.yaml")
-      ["#{$root}/arch/ext/#{ext_name}.yaml"] + Dir.glob("#{$root}/cfgs/*/arch_overlay/ext/#{ext_name}.yaml")
-    else
-      Dir.glob("#{$root}/cfgs/*/arch_overlay/ext/#{ext_name}.yaml")
-    end
-  raise "Can't find extension '#{ext_name}'" if arch_yaml_paths.empty?
-
+  arch_yaml_paths = Dir.glob("#{$root}/arch/**/*.yaml")
+  cfg_path = $root / "gen" / "ext_pdf_doc" / "#{config_name}.yaml"
+  cfg = Config.create(cfg_path)
+  arch_yaml_paths += Dir.glob("#{cfg.arch_overlay_abs}/**/*.yaml") unless cfg.arch_overlay.nil?
   [
     (EXT_PDF_DOC_DIR / "templates" / "ext_pdf.adoc.erb").to_s,
     arch_yaml_paths,
+    (cfg_path).to_s,
     __FILE__
   ].flatten
 } do |t|
   config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen/ext_pdf_doc").to_s.split("/")[0]
+  config_path = $root / "gen" / "ext_pdf_doc" / "#{config_name}.yaml"
 
-  design = cfg_arch_for(config_name)
+  cfg_arch = cfg_arch_for(config_path)
 
   ext_name = Pathname.new(t.name).basename(".adoc").to_s.split("_")[0..-2].join("_")
 
@@ -126,14 +123,15 @@ namespace :gen do
 
     Options:
 
-     * EXT - The extension name
-     * CFG - The config name, required only when an overlay is required
+     * EXT     - The extension name
+     * CFG     - Path to cfg with arch overlay, if needed. Can be either the name of a .yaml file in cfgs,
+                 a relative path from CWD, or an absolute path.
      * VERSION - A list of versions to include. May also be "all" or "latest".
-     * THEME - path to an AsciidocPDF theme file. If not set, will use default RVI theme.
+     * THEME   - path to an AsciidocPDF theme file. If not set, will use default RVI theme.
 
     Examples:
 
-     ./do gen:ext_pdf EXT=Xqci CFG=qc_iu VERSION=latest THEME=cfgs/qc_iu/qc_theme.yaml
+     ./do gen:ext_pdf EXT=Xqci CFG=qc_iu VERSION=latest THEME=my_theme.yaml
      ./do gen:ext_pdf EXT=B VERSION=all
      ./do gen:ext_pdf EXT=B VERSION=1.0.0
      ./do gen:ext_pdf EXT=B VERSION=1.0.0,1.1.0
@@ -152,14 +150,29 @@ namespace :gen do
         Pathname.new(ENV["THEME"]).realpath.to_s
       end
 
+    cfg =
+      if cfg.nil?
+        "#{$root}/cfgs/_.yaml"
+      elsif File.exist?("#{$root}/cfgs/#{cfg}.yaml")
+        "#{$root}/cfgs/#{cfg}.yaml"
+      elsif File.exist?("#{$root}/cfgs/#{cfg}")
+        "#{$root}/cfgs/#{cfg}"
+      elsif File.exist?(cfg)
+        File.realpath(cfg)
+      else
+        raise "Cannot find config '#{config}'"
+      end
+
+    config_name = File.basename(cfg, ".yaml")
+
     versions = version.split(",")
     raise ArgumentError, "Nothing else should be specified with 'all'" if versions.include?("all") && versions.size > 1
 
-    if cfg.nil?
-      Rake::Task[$root / "gen" / "ext_pdf_doc" / "_" / "pdf" / "#{extension}_extension.pdf"].invoke
-    else
-      Rake::Task[$root / "gen" / "ext_pdf_doc" / cfg / "pdf" / "#{extension}_extension.pdf"].invoke
+    unless File.exist?($root / "gen" / "ext_pdf_doc" / File.basename(cfg))
+      FileUtils.mkdir_p($root / "gen" / "ext_pdf_doc")
+      FileUtils.ln_s(cfg, $root / "gen" / "ext_pdf_doc" / File.basename(cfg))
     end
+    Rake::Task[$root / "gen" / "ext_pdf_doc" / config_name / "pdf" / "#{extension}_extension.pdf"].invoke
   end
 
   desc <<~DESC

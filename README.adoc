@@ -2,19 +2,8 @@
 
 == Generated artifacts
 
-The following artifacts have been generated from the top of the `main` branch:
-
-* https://riscv-software-src.github.io/riscv-unified-db/manual/html/index.html[ISA Manual with instruction and CSR appendix]
-* https://riscv-software-src.github.io/riscv-unified-db/example_cfg/html/index.html[configuration-specific documentation]
-* https://riscv-software-src.github.io/riscv-unified-db/ruby/arch_def/index.html[Ruby API documentation (database interface)]
-* https://riscv-software-src.github.io/riscv-unified-db/ruby/idl/index.html[Ruby IDL API documentation (IDL compiler)]
-* https://riscv-software-src.github.io/riscv-unified-db/pdfs/RVI20ProfileRelease.pdf[RVI20 Profile Release]
-* https://riscv-software-src.github.io/riscv-unified-db/pdfs/RVA20ProfileRelease.pdf[RVA20 Profile Release]
-* https://riscv-software-src.github.io/riscv-unified-db/pdfs/RVA22ProfileRelease.pdf[RVA22 Profile Release]
-* https://riscv-software-src.github.io/riscv-unified-db/pdfs/RVA23ProfileRelease.pdf[RVA23 Profile Release]
-* https://riscv-software-src.github.io/riscv-unified-db/pdfs/RVB23ProfileRelease.pdf[RVB23 Profile Release]
-* https://riscv-software-src.github.io/riscv-unified-db/pdfs/MC100-32-CRD.pdf[MC100-32 Certification Requirements Document]
-* https://riscv-software-src.github.io/riscv-unified-db/pdfs/MC100-64-CRD.pdf[MC100-64 Certification Requirements Document]
+The latest documentation artifacts generated from the HEAD of main, include ISA manuals, profiles, etc.,
+can be found https://riscv-software-src.github.io/riscv-unified-db/index.html[on the GitHub pages site].
 
 == Overview
 
@@ -33,7 +22,7 @@ This repository contains:
 
 === Working examples:
 
- * Generate https://riscv-software-src.github.io/riscv-unified-db/manual/html/index.html[configuration-specific documentation] tailored to the set of implemented extensions and unnamed implementation options (_e.g._, `./do gen:html[generic_rv64]`).
+ * Generate https://riscv-software-src.github.io/riscv-unified-db/manual/html/index.html[configuration-specific documentation] tailored to the set of implemented extensions and unnamed implementation options (_e.g._, `./do gen:html[example_rv64_with_overlay]`).
  ** Only implemented extensions/instructions/CSRs are included
  ** Unreachable/unimplemented parts of the formal specification are pruned away
  ** A dedicated documentation page for every implemented instruction, including its encoding, pruned execution behavior, and what types of exceptions it may cause.
@@ -44,7 +33,7 @@ This repository contains:
  ** Per-instruction documentation
  ** Per-CSR documentation
  ** Formal specification
- * Generate a single YAML file containing *everything* knowable about a configuration (_e.g._, `./do gen:cfg_arch[generic_rv64]`).
+ * Generate a single YAML file containing *everything* knowable about a configuration (_e.g._, `./do gen:cfg_arch[example_rv64_with_overlay]`).
 
 === Possibilities:
 
@@ -114,8 +103,8 @@ Quick start:
 # generate all versions of ISA manual, as an Antora static website
 ./do gen:html_manual MANUAL_NAME=isa VERSIONS=all
 
-# generate an implementation-specific spec for the 'generic_rv64' config
-./do gen:arch[generic_rv64]
+# generate an implementation-specific spec for the 'example_rv64_with_overlay' config
+./do gen:arch[example_rv64_with_overlay]
 ----
 
 == More info

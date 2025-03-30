@@ -43,6 +43,8 @@ jobs:
         run: ./bin/build_container
       - name: Setup project
         run: ./bin/setup
+      - name: Create deploy dir
+        run: /bin/bash lib/deploy.sh
       - name: Create _site/isa_explorer
         run: mkdir -p _site/isa_explorer
       - name: Create isa_explorer_browser

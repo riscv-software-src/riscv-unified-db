@@ -103,7 +103,7 @@ jobs:
         name: Build container
         run: ./bin/build_container
       - name: Generate HTML ISA manual
-        run: ./do gen:html[generic_rv64]
+        run: ./do gen:html[example_rv64_with_overlay]
   regress-gen-ext-pdf:
     runs-on: ubuntu-latest
     env:

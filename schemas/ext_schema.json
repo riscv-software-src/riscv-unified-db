@@ -2,6 +2,36 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
 
   "$defs": {
+    "implies_entry": {
+      "oneOf": [
+        {
+          "$ref": "schema_defs.json#/$defs/extension_with_version"
+        },
+        {
+          "type": "object",
+          "required": ["if", "then"],
+          "additionalProperties": false,
+          "properties": {
+            "if": {
+              "$ref": "schema_defs.json#/$defs/requires_entry"
+            },
+            "then": {
+              "oneOf": [
+                {
+                  "$ref": "schema_defs.json#/$defs/extension_with_version"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "$ref": "schema_defs.json#/$defs/extension_with_version"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
     "param_data": {
       "type": "object",
       "required": ["description", "schema"],
@@ -86,15 +116,7 @@
         },
         "conflicts": {
           "description": "Extension(s) that conflict with this extension; both cannot be implemented at the same time",
-          "oneOf": [
-            { "$ref": "schema_defs.json#/$defs/extension_requirement" },
-            {
-              "type": "array",
-              "items": {
-                "$ref": "schema_defs.json#/$defs/extension_requirement"
-              }
-            }
-          ]
+          "$ref": "schema_defs.json#/$defs/requires_entry"
         },
         "versions": {
           "type": "array",
@@ -170,12 +192,12 @@
                 "description": "Extension(s) implied by this extension (i.e., any subextensions)",
                 "oneOf": [
                   {
-                    "$ref": "schema_defs.json#/$defs/extension_name_and_version"
+                    "$ref": "#/$defs/implies_entry"
                   },
                   {
                     "type": "array",
                     "items": {
-                      "$ref": "schema_defs.json#/$defs/extension_name_and_version"
+                      "$ref": "#/$defs/implies_entry"
                     }
                   }
                 ]

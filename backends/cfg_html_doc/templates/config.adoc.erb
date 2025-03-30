@@ -4,7 +4,7 @@
 
 |===
 | Name | Version
-<%- cfg_arch.transitive_implemented_ext_vers.sort{ |a,b| a.name <=> b.name }.each do |e| -%>
+<%- cfg_arch.transitive_implemented_extension_versions.sort{ |a,b| a.name <=> b.name }.each do |e| -%>
 | `<%= e.name %>` | <%= e.version_spec %>
 <%- end -%>
 |===

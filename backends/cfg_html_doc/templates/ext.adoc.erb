@@ -7,7 +7,7 @@ Implemented Version:: <%= ext_version.version_str %>
 == Versions
 
 <%- ext.versions.each do |v| -%>
-<%- implemented = cfg_arch.transitive_implemented_ext_vers.include?(v) -%>
+<%- implemented = cfg_arch.transitive_implemented_extension_versions.include?(v) -%>
 <%= v.version_str %>::
   Ratification date:::
     <%= v.ratification_date %>
@@ -26,7 +26,8 @@ Implemented Version:: <%= ext_version.version_str %>
   <%- unless v.implications.empty? -%>
   Implies:::
     <%- v.implications.each do |i| -%>
-    * `<%= i.name %>` version <%= i.version_str %>
+    <%-   next unless i[:cond].satisfied_by? { |ext_req| cfg_arch.transitive_implemented_extension_versions.any? { |ext_ver| ext_req.satisfied_by?(ext_ver)}} -%>
+    * `<%= i[:ext_ver].name %>` version <%= i[:ext_ver].version_str %>
     <%- end -%>
   <%- end -%>
 <%- end -%>

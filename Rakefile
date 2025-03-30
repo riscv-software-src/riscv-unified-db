@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+$jobs = ENV["JOBS"].nil? ? 1 : ENV["JOBS"].to_i
+Rake.application.options.thread_pool_size = $jobs
+puts "Running with #{Rake.application.options.thread_pool_size} job(s)"
+
 require "etc"
 
 $root = Pathname.new(__FILE__).dirname.realpath
@@ -23,19 +27,65 @@ end
 
 directory "#{$root}/.stamps"
 
-# @param config_name [String] Name of configuration
 # @return [ConfiguredArchitecture]
-def cfg_arch_for(config_name)
+def cfg_arch_for(config)
+  raise ArgumentError, "expecting String or Pathname" unless config.is_a?(String) || config.is_a?(Pathname)
+  config = config.to_s
+
+  $cfg_archs ||= {}
+  return $cfg_archs[config] unless $cfg_archs[config].nil?
+
+  # does the gen cfg already exist?
+  if File.exist?("#{$root}/gen/cfgs/#{config}.yaml")
+    config_yaml = YAML.load_file("#{$root}/gen/cfgs/#{config}.yaml")
+    if File.mtime("#{$root}/gen/cfgs/#{config}.yaml") < File.mtime(config_yaml["$source"])
+      cfg_arch =
+        ConfiguredArchitecture.new(
+          config,
+          $root / "gen" / "resolved_arch" / config
+        )
+      $cfg_archs[config] = cfg_arch
+      return cfg_arch
+    end
+  end
+
+  config_path =
+    if File.exist?("#{$root}/cfgs/#{config}.yaml")
+      "#{$root}/cfgs/#{config}.yaml"
+    elsif File.exist? config
+      File.realpath(config)
+    else
+      raise ArgumentError, "Can't find config #{config}"
+    end
+
+  config_yaml = YAML.load_file(config_path)
+  config_name = config_yaml["name"]
+
+  overlay_dir =
+    if config_yaml["arch_overlay"].nil?
+      "/does/not/exist"
+    elsif File.exist?("#{$root}/arch_overlay/#{config_yaml['arch_overlay']}")
+      "#{$root}/arch_overlay/#{config_yaml['arch_overlay']}"
+    elsif File.directory?(config_yaml["arch_overlay"])
+      File.realpath(config_yaml["arch_overlay"])
+    else
+      raise ArgumentError, "Can't find arch_overlay #{config_yaml['arch_overlay']}"
+    end
+
+  config_yaml["arch_overlay"] = overlay_dir
+  config_yaml["$source"] = config_path
+
+  # write the config with arch_overlay expanded
+  unless File.exist?("#{$root}/gen/cfgs/#{config_name}.yaml") && (File.mtime("#{$root}/gen/cfgs/#{config_name}.yaml") < File.mtime(config_path))
+    FileUtils.mkdir_p "#{$root}/gen/cfgs"
+    File.write "#{$root}/gen/cfgs/#{config_name}.yaml", YAML.dump(config_yaml)
+  end
   Rake::Task["#{$root}/.stamps/resolve-#{config_name}.stamp"].invoke
 
-  @cfg_archs ||= {}
-  return @cfg_archs[config_name] if @cfg_archs.key?(config_name)
-
-  @cfg_archs[config_name] =
+  $cfg_archs[config_name] =
     ConfiguredArchitecture.new(
       config_name,
-      $root / "gen" / "resolved_arch" / config_name,
-      overlay_path: $root / "cfgs" / config_name / "arch_overlay"
+      $root / "gen" / "resolved_arch" / config_name
     )
 end
 
@@ -54,24 +104,30 @@ namespace :gen do
     end
   end
 
-  desc "Resolve the standard in arch/, and write it to resolved_arch/"
-  task "resolved_arch" do
-    sh "#{$root}/.home/.venv/bin/python3 lib/yaml_resolver.py resolve arch resolved_arch"
-  end
+  desc "Resolve the standard in arch/, and write it to gen/resolved_arch/_"
+  task "resolved_arch" => "#{$root}/.stamps/resolve-_.stamp"
 end
 
 # rule to generate standard for any configurations with an overlay
 rule %r{#{$root}/.stamps/resolve-.+\.stamp} => proc { |tname|
   cfg_name = File.basename(tname, ".stamp").sub("resolve-", "")
+  raise "Missing gen/cfgs/#{tname}" unless File.exist?("#{$root}/cfgs/#{cfg_name}.yaml")
+
+  cfg_path = "#{$root}/cfgs/#{cfg_name}.yaml"
+  cfg = Config.create(cfg_path)
   arch_files = Dir.glob("#{$root}/arch/**/*.yaml")
-  overlay_files = Dir.glob("#{$root}/cfgs/#{cfg_name}/arch_overlay/**/*.yaml")
+  overlay_files = cfg.overlay? ? Dir.glob("#{cfg.arch_overlay_abs}/**/*.yaml") : []
   [
     "#{$root}/.stamps",
     "#{$root}/lib/yaml_resolver.py"
   ] + arch_files + overlay_files
 } do |t|
   cfg_name = File.basename(t.name, ".stamp").sub("resolve-", "")
-  sh "#{$root}/.home/.venv/bin/python3 lib/yaml_resolver.py merge arch cfgs/#{cfg_name}/arch_overlay gen/arch/#{cfg_name}"
+  cfg_path = "#{$root}/cfgs/#{cfg_name}.yaml"
+  cfg = Config.create(cfg_path)
+
+  overlay_dir = cfg.overlay? ? cfg.arch_overlay_abs : "/does/not/exist"
+  sh "#{$root}/.home/.venv/bin/python3 lib/yaml_resolver.py merge arch #{overlay_dir} gen/arch/#{cfg_name}"
   sh "#{$root}/.home/.venv/bin/python3 lib/yaml_resolver.py resolve gen/arch/#{cfg_name} gen/resolved_arch/#{cfg_name}"
 
   FileUtils.touch t.name
@@ -118,21 +174,76 @@ task :clean do
   warn "Don't run clean using Rake. Run `./do clean` (alias for `./bin/clean`) instead."
 end
 
+desc "Clean up all generated files and container"
+task :clobber do
+  warn "Don't run clean using Rake. Run `./do clean` (alias for `./bin/clean`) instead."
+end
+
+
 namespace :test do
-  task :insts do
-    puts "Checking instruction encodings..."
-    inst_paths = Dir.glob("#{$root}/arch/inst/**/*.yaml").map { |f| Pathname.new(f) }
-    inst_paths.each do |inst_path|
-      Validator.instance.validate_instruction(inst_path)
+  desc "Check that instruction encodings in the DB are consistent and do not conflict"
+  task :inst_encodings do
+    print "Checking for conflicts in instruction encodings.."
+
+    cfg_arch = cfg_arch_for("_")
+    insts = cfg_arch.instructions
+    failed = false
+    insts.each_with_index do |inst, idx|
+      [32, 64].each do |xlen|
+        next unless inst.defined_in_base?(xlen)
+
+        (idx...insts.size).each do |other_idx|
+          other_inst = insts[other_idx]
+          next unless other_inst.defined_in_base?(xlen)
+          next if other_inst == inst
+
+          if inst.bad_encoding_conflict?(xlen, other_inst)
+            warn "In RV#{xlen}: #{inst.name} (#{inst.encoding(xlen).format}) conflicts with #{other_inst.name} (#{other_inst.encoding(xlen).format})"
+            failed = true
+          end
+        end
+      end
     end
-    puts "All instruction encodings pass basic sanity tests"
+    raise "Encoding test failed" if failed
+
+    puts "done"
   end
-  task schema: "gen:resolved_arch" do
+
+  desc "Check that CSR definitions in the DB are consistent and do not conflict"
+  task :csrs do
+    print "Checking for conflicts in CSRs.."
+
+    cfg_arch = cfg_arch_for("_")
+    csrs = cfg_arch.csrs
+    failed = false
+    csrs.each_with_index do |csr, idx|
+      [32, 64].each do |xlen|
+        next unless csr.defined_in_base?(xlen)
+
+        (idx...csrs.size).each do |other_idx|
+          other_csr = csrs[other_idx]
+          next unless other_csr.defined_in_base?(xlen)
+          next if other_csr == csr
+
+          if csr.address == other_csr.address && !csr.address.nil?
+            warn "CSRs #{csr.name} and #{other_csr.name} have conflicting addresses (#{csr.address})"
+            failed = true
+          end
+        end
+      end
+    end
+    raise "CSR test failed" if failed
+
+    puts "done"
+  end
+
+  task schema: "#{$root}/.stamps/resolve-_.stamp" do
     puts "Checking arch files against schema.."
-    Architecture.new("RISC-V Architecture", "#{$root}/resolved_arch").validate(show_progress: true)
+    Architecture.new("RISC-V Architecture", "#{$root}/gen/resolved_arch/_").validate(show_progress: true)
     puts "All files validate against their schema"
   end
-  task idl: ["gen:resolved_arch", "#{$root}/.stamps/resolve-rv32.stamp", "#{$root}/.stamps/resolve-rv64.stamp"]  do
+
+  task idl: ["#{$root}/.stamps/resolve-rv32.stamp", "#{$root}/.stamps/resolve-rv64.stamp"]  do
     print "Parsing IDL code for RV32..."
     cfg_arch32 = cfg_arch_for("rv32")
     puts "done"
@@ -312,6 +423,8 @@ namespace :test do
     Rake::Task["test:schema"].invoke
     puts "UPDATE: Running test:idl"
     Rake::Task["test:idl"].invoke
+    puts "UPDATE: Running test:inst_encodings"
+    Rake::Task["test:inst_encodings"].invoke
     puts "UPDATE: Done test:smoke"
   end
 
@@ -337,8 +450,8 @@ namespace :test do
     ENV["VERSION"] = "latest"
     Rake::Task["gen:ext_pdf"].invoke
 
-    puts "UPDATE: Running gen:html for generic_rv64"
-    Rake::Task["gen:html"].invoke("generic_rv64")
+    puts "UPDATE: Running gen:html for example_rv64_with_overlay"
+    Rake::Task["gen:html"].invoke("example_rv64_with_overlay")
 
     puts "UPDATE: Generating MockProcessor-CRD.pdf"
     Rake::Task["#{$root}/gen/proc_crd/pdf/MockProcessor-CRD.pdf"].invoke
