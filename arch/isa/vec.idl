@@ -33,8 +33,8 @@ function vector_state {
   body {
     VectorState state;
 
-    state.sew = 7'b1 << (3 + CSR[VTYPE].VSEW);
-    Bits<3> vlmul = CSR[VTYPE].VLMUL;
+    state.sew = 7'b1 << (3 + CSR[vtype].VSEW);
+    Bits<3> vlmul = CSR[vtype].VLMUL;
     state.lmul_type = CSR[vtype].VLMUL[2] == 1'b1 ? VectorLmulType::Divide : VectorLmulType::Multiply;
     state.log2_multiplier = CSR[vtype].VLMUL[1:0];
     if (vlmul == 3'b101) {

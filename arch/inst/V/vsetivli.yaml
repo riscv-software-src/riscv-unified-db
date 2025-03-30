@@ -30,11 +30,11 @@ operation(): |
   XReg VLMAX = (VLEN <<< state.log2_multiplier) >> (3 + state.vsew);
 
   if (uimm < VLMAX){
-    CSR[vl] = uimm;
+    CSR[vl].VALUE = uimm;
   } else if (uimm < 2*VLMAX) {
-    CSR[vl] = uimm / 2;
+    CSR[vl].VALUE = uimm / 2;
   } else {
-    CSR[vl] = VLMAX;
+    CSR[vl].VALUE = VLMAX;
   }
 
   CSR[vtype] = zimm11;
