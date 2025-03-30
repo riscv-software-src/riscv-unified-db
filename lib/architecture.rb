@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
-# The Architecture class is the API to the architecture database.
-# The "database" contains RISC-V standards including extensions, instructions,
-# CSRs, Profiles, and Certificates.
-# The Architecture class is used by backends to export the information in the
-# architecture database to create various outputs.
+# Contains the "database" of RISC-V standards including extensions, instructions,
+# CSRs, Profiles, and Certificates.  Could be either the standard spec (defined by RISC-V International)
+# of a custom spec (defined as an arch_overlay in /cfgs dir).
 #
-# The Architecture class creates Ruby functions at runtime (see generate_obj_methods() and OBJS array).
+# Creates Ruby functions at runtime (see generate_obj_methods() and OBJS array).
 #   1) Function to return Array<klass>              (every klass in database)
 #   2) Function to return Hash<String name, klass>  (hash entry is nil if name doesn't exist)
 #   3) Function to return Klass given name          (nil if name doesn't exist)
@@ -16,8 +14,8 @@
 #   Extension       extensions()        extension_hash()        extension(name)
 #   Instruction     instructions()      instruction_hash()      instruction(name)
 #   Csr             csrs()              csr_hash()              csr(name)
-#   ProcCertClass   proc_cert_classes() proc_cert_class_hash()  proc_cert_class(name)
-#   ProcCertModel   proc_cert_models()  proc_cert_model_hash()  proc_cert_model(name)
+#   CertClass       cert_classes()      cert_class_hash()       cert_class(name)
+#   CertModel       cert_models()       cert_model_hash()       cert_model(name)
 #   ProfileClass    profile_classes()   profile_class_hash()    profile_class(name)
 #   ProfileRelease  profile_releases()  profile_release_hash()  profile_release(name)
 #   Profile         profiles()          profile_hash()          profile(name)
@@ -28,7 +26,7 @@
 #
 #   klass               Array<klass>        Hash<String name,klass> Klass func(String name)
 #   ==================  ==================  ======================= =========================
-#   Parameter           params()            param_hash()            param(name)
+#   ExtensionParameter  params()            param_hash()            param(name)
 #   PortfolioClass      portfolio_classes() portfolio_class_hash()  portfolio_class(name)
 #   Portfolio           portfolios()        portfolio_hash()        portfolio(name)
 #   ExceptionCodes      exception_codes()
@@ -36,10 +34,13 @@
 
 require "active_support/inflector/methods"
 
+require "concurrent"
 require "json"
 require "json_schemer"
 require "pathname"
 require "yaml"
+
+require_relative "idl"
 
 require_relative "arch_obj_models/certificate"
 require_relative "arch_obj_models/csr"
@@ -52,26 +53,18 @@ require_relative "arch_obj_models/portfolio"
 require_relative "arch_obj_models/profile"
 
 class Architecture
-  # @return [String] Best name to identify architecture
-  attr_reader :name
-
-  # @return [Pathname] Path to the directory containing YAML files defining the RISC-V standards
+  # @return [Pathname] Path to the directory with the standard YAML files
   attr_reader :path
 
-  # Initialize a new architecture definition
-  #
-  # @param name [#to_s] The name associated with this architecture
-  # @param arch_dir [String, Pathname] Path to a directory with a fully merged/resolved architecture definition
-  def initialize(name, arch_dir)
-    @name = name.to_s.freeze
-
+  # @param arch_dir [String,Pathname] Path to a directory with a fully merged/resolved architecture definition
+  def initialize(arch_dir)
     @arch_dir = Pathname.new(arch_dir)
-    raise "Architecture directory #{arch_dir} not found" unless @arch_dir.exist?
+    raise "Arch directory not found: #{arch_dir}" unless @arch_dir.exist?
 
     @arch_dir = @arch_dir.realpath
     @path = @arch_dir # alias
-    @objects ||= {}
-    @object_hashes ||= {}
+    @objects = Concurrent::Hash.new
+    @object_hashes = Concurrent::Hash.new
   end
 
   # validate the architecture against JSON Schema and any object-specific verification
@@ -85,11 +78,6 @@ class Architecture
     end
   end
 
-  # These instance methods are create when this Architecture class is first loaded.
-  # This is a Ruby "class" method and so self is the entire Architecture class, not an instance it.
-  # However, this class method creates normal instance methods and when they are called
-  # self is an instance of the Architecture class.
-  #
   # @!macro [attach] generate_obj_methods
   #   @method $1s
   #   @return [Array<$3>] List of all $1s defined in the standard
@@ -107,11 +95,14 @@ class Architecture
     define_method(plural_fn) do
       return @objects[arch_dir] unless @objects[arch_dir].nil?
 
-      @objects[arch_dir] = []
-      @object_hashes[arch_dir] = {}
+      @objects[arch_dir] = Concurrent::Array.new
+      @object_hashes[arch_dir] = Concurrent::Hash.new
       Dir.glob(@arch_dir / arch_dir / "**" / "*.yaml") do |obj_path|
-        obj_yaml = YAML.load_file(obj_path, permitted_classes: [Date])
-        @objects[arch_dir] << obj_class.new(obj_yaml, Pathname.new(obj_path).realpath, self)
+        f = File.open(obj_path)
+        f.flock(File::LOCK_EX)
+        obj_yaml = YAML.load(f.read, filename: obj_path, permitted_classes: [Date])
+        f.flock(File::LOCK_UN)
+        @objects[arch_dir] << obj_class.new(obj_yaml, Pathname.new(obj_path).realpath, arch: self)
         @object_hashes[arch_dir][@objects[arch_dir].last.name] = @objects[arch_dir].last
       end
       @objects[arch_dir]
@@ -151,14 +142,14 @@ class Architecture
       klass: Csr
     },
     {
-      fn_name: "proc_cert_class",
-      arch_dir: "proc_cert_class",
-      klass: ProcCertClass
+      fn_name: "cert_class",
+      arch_dir: "certificate_class",
+      klass: CertClass
     },
     {
-      fn_name: "proc_cert_model",
-      arch_dir: "proc_cert_model",
-      klass: ProcCertModel
+      fn_name: "cert_model",
+      arch_dir: "certificate_model",
+      klass: CertModel
     },
     {
       fn_name: "manual",
@@ -202,14 +193,14 @@ class Architecture
     @objs.freeze
   end
 
-  # @return [Array<Parameter>] Alphabetical list of all parameters defined in the architecture
+  # @return [Array<ExtensionParameter>] Alphabetical list of all parameters defined in the architecture
   def params
     return @params unless @params.nil?
 
     @params = extensions.map(&:params).flatten.uniq(&:name).sort_by!(&:name)
   end
 
-  # @return [Hash<String, Parameter>] Hash of all extension parameters defined in the architecture
+  # @return [Hash<String, ExtensionParameter>] Hash of all extension parameters defined in the architecture
   def param_hash
     return @param_hash unless @param_hash.nil?
 
@@ -220,7 +211,7 @@ class Architecture
     @param_hash
   end
 
-  # @return [Parameter] Parameter named +name+
+  # @return [ExtensionParameter] Parameter named +name+
   # @return [nil] if there is no parameter named +name+
   def param(name)
     param_hash[name]
@@ -230,7 +221,7 @@ class Architecture
   def portfolio_classes
     return @portfolio_classes unless @portfolio_classes.nil?
 
-    @portfolio_classes = profile_classes.concat(proc_cert_classes).sort_by!(&:name)
+    @portfolio_classes = profile_classes.concat(cert_classes).sort_by!(&:name)
   end
 
   # @return [Hash<String, PortfolioClass>] Hash of all portfolio classes defined in the architecture
@@ -322,12 +313,12 @@ class Architecture
     file_path, obj_path = uri.split("#")
     obj =
       case file_path
-      when /^proc_cert_class.*/
-       proc_cert_class_name = File.basename(file_path, ".yaml")
-        proc_cert_class(proc_cert_class_name)
-      when /^proc_cert_model.*/
-        proc_cert_model_name = File.basename(file_path, ".yaml")
-        proc_cert_model(proc_cert_model_name)
+      when /^certificate_class.*/
+        cert_class_name = File.basename(file_path, ".yaml")
+        cert_class(cert_class_name)
+      when /^certificate_model.*/
+        cert_model_name = File.basename(file_path, ".yaml")
+        cert_model(cert_model_name)
       when /^csr.*/
         csr_name = File.basename(file_path, ".yaml")
         csr(csr_name)

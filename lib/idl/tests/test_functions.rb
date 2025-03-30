@@ -72,7 +72,7 @@ class TestVariables < Minitest::Test
     ast = @compiler.compile_file(path)
     ast.add_global_symbols(@symtab)
     @symtab.deep_freeze
-    @design.global_ast = ast
+    @cfg_arch.global_ast = ast
     ast.freeze_tree(@symtab)
 
     test_ast = ast.functions.select { |f| f.name == "test" }[0]
@@ -137,7 +137,7 @@ class TestVariables < Minitest::Test
     ast = @compiler.compile_file(path)
     ast.add_global_symbols(@symtab)
     @symtab.deep_freeze
-    @design.global_ast = ast
+    @cfg_arch.global_ast = ast
     ast.freeze_tree(@symtab)
 
     test_ast = ast.functions.select { |f| f.name == "test" }[0]

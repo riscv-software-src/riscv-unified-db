@@ -3,11 +3,31 @@
 require "pathname"
 
 # This class represents a configuration file (e.g., cfgs/*/cfg.yaml), independent of the Architecture.
-# Located in the /cfg directory.
+# Can either be in the /cfg directory or created at runtime in memory by the certificate tasks.rake file.
 class Config
   # @return [Hash<String, Object>] A hash mapping parameter name to value for any parameter that has
   #                                been configured with a value. May be empty.
   attr_reader :param_values
+
+  def overlay? = !(@data["arch_overlay"].nil? || @data["arch_overlay"].empty?)
+
+  # @return [String] Either a path to an overlay directory, or the name of a folder under arch_overlay/
+  # @return [nil] No arch_overlay for this config
+  def arch_overlay = @data["arch_overlay"]
+
+  # @return [String] Absolute path to the arch_overlay
+  # @return [nil] No arch_overlay for this config
+  def arch_overlay_abs
+    return nil unless @data.key?("arch_overlay")
+
+    if File.directory?("#{$root}/arch_overlay/#{@data['arch_overlay']}")
+      "#{$root}/arch_overlay/#{@data['arch_overlay']}"
+    elsif File.directory?(@data['arch_overlay'])
+      @data['arch_overlay']
+    else
+      raise "Cannot find arch_overlay '#{@data['arch_overlay']}'"
+    end
+  end
 
   # use Config#create instead
   private_class_method :new
@@ -101,7 +121,9 @@ class PartialConfig < Config
     @mxlen.freeze
   end
 
-  def implemented_extensions = raise "implemented_extensions is only available for a FullConfig"
+  def additional_extensions_allowed? = @data.key?("additional_extensions") ? @data["additional_extensions"] : true
+
+  def implemented_extensions = raise "implemented_extensions is only availabe for a FullConfig"
 
   # @return [Array<Hash{String => String,Array<String}>]
   #    List of all extensions that must be implemented, as specified in the config file
@@ -142,6 +164,10 @@ class PartialConfig < Config
         end
       end
   end
+
+  # def prohibited_ext?(ext_name, cfg_arch) = prohibited_extensions(cfg_arch).any? { |e| e.name == ext_name.to_s }
+
+  # def ext?(ext_name, cfg_arch) = mandatory_extensions(cfg_arch).any? { |e| e.name == ext_name.to_s }
 end
 
 ################################################################################################################
@@ -178,4 +204,7 @@ class FullConfig < Config
 
   def mandatory_extensions = raise "mandatory_extensions is only available for a PartialConfig"
   def prohibited_extensions = raise "prohibited_extensions is only available for a PartialConfig"
+
+  # def prohibited_ext?(ext_name, cfg_arch) = !ext?(ext_name, cfg_arch)
+  # def ext?(ext_name, cfg_arch) = implemented_extensions(cfg_arch).any? { |e| e.name == ext_name.to_s }
 end

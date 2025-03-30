@@ -2,7 +2,7 @@
 
 require "asciidoctor"
 
-require_relative "database_obj"
+require_relative "obj"
 
 class Manual < DatabaseObject
   def versions
@@ -40,9 +40,6 @@ class ManualChapter
   def title
     return @title unless @title.nil?
 
-    # See https://www.rubydoc.info/gems/asciidoctor for details on the Ruby API
-    # and https://www.rubydoc.info/gems/asciidoctor/Asciidoctor/Document for details on
-    # the Asciidoctor::Document object returned by Asciidoctor.load.
     @title = (Asciidoctor.load File.read(fullpath).scrub).doctitle.encode("US-ASCII")
   end
 
@@ -64,10 +61,8 @@ class ManualVolume
   # @return [ManualVersion] The version this volume belongs to
   attr_reader :version
 
-  def arch = version.arch
+  def cfg_arch = version.cfg_arch
 
-  # @param data [Hash<String, Object>] Data from YAML file
-  # @param version [ManualVersion]
   def initialize(data, version)
     @data = data
     @version = version
@@ -91,28 +86,28 @@ class ManualVolume
   def title = @data["title"]
 
   # @return [Array<ExtensionVersion>] Array of extension versions in this volume
-  def ext_vers
-    return @ext_vers unless @ext_vers.nil?
+  def extensions
+    return @extensions unless @extensions.nil?
 
-    @ext_vers = []
-    return @ext_vers if @data["extensions"].nil?
+    @extensions = []
+    return @extensions if @data["extensions"].nil?
 
-    @data["extensions"].each do |ext|
-      ext_obj = arch.extension(ext[0])
+    @data["extensions"].each do |ext_hsh|
+      ext_obj = cfg_arch.extension(ext_hsh["name"])
       if ext_obj.nil?
-        warn "Extension '#{ext[0]}' is not in the database"
+        warn "Extension '#{ext_hsh['name']}' is not in the database"
         next
       end
 
-      ext_ver = ExtensionVersion.new(ext[0], ext[1], arch)
+      ext_ver = ExtensionVersion.new(ext_hsh["name"], ext_hsh["version"], cfg_arch)
       unless ext_obj.versions.any? { |known_ver| known_ver == ext_ver }
-        warn "Extension '#{ext[0]}', version '#{ext[1]}' is not defined in the database"
+        warn "Extension '#{ext_hsh['name']}', version '#{ext_hsh['version']}' is not defined in the database"
         next
       end
 
-      @ext_vers << ext_ver
+      @extensions << ext_ver
     end
-    @ext_vers
+    @extensions
   end
 
   def repo_path=(path)
@@ -163,11 +158,11 @@ class ManualVersion < DatabaseObject
 
   def state = @data["state"]
 
-  # @return [Array<ExtensionVersion>] Array of extension versions in this manual version across all volumes
-  def ext_vers
-    return @ext_vers unless @ext_vers.nil?
+  # @return [Array<ExtensionVersion>] Array of extension versions in this manual version
+  def extensions
+    return @extensions unless @extensions.nil?
 
-    @ext_vers = volumes.map(&:ext_vers).flatten.uniq
+    @extensions = volumes.map(&:extensions).flatten.uniq
   end
 
   # @return [Array<Instruction>] All instructions defined in this version
@@ -175,8 +170,8 @@ class ManualVersion < DatabaseObject
     return @instructions unless @instructions.nil?
 
     @instructions = []
-    ext_vers.each do |ext|
-      ext_obj = @arch.extension(ext.name)
+    extensions.each do |ext|
+      ext_obj = @cfg_arch.extension(ext.name)
       ext_obj.instructions.each do |inst|
         @instructions << inst
       end
@@ -189,8 +184,8 @@ class ManualVersion < DatabaseObject
     return @csrs unless @csrs.nil?
 
     @csrs = []
-    ext_vers.each do |ext|
-      ext_obj = @arch.extension(ext.name)
+    extensions.each do |ext|
+      ext_obj = @cfg_arch.extension(ext.name)
       ext_obj.csrs.each do |csr|
         @csrs << csr
       end

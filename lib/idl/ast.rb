@@ -241,6 +241,7 @@ module Idl
       while cnt < 3
         cnt += 1 if input[interval_end] == "\n"
         break if interval_end >= (input.size - 1)
+        break if cnt == 3
 
         interval_end += 1
       end
@@ -503,6 +504,24 @@ module Idl
     # @abstract
     def value(symtab) = raise NotImplementedError, "#{self.class.name} must implement value(symtab)"
 
+    def max_value(symtab)
+      value_result = value_try do
+        return value(symtab)
+      end
+      value_else(value_result) do
+        return :unknown
+      end
+    end
+
+    def min_value(symtab)
+      value_result = value_try do
+        return value(symtab)
+      end
+      value_else(value_result) do
+        return :unknown
+      end
+    end
+
     # @!macro [new] values
     #  Return a complete list of possible compile-time-known values of the node, or raise a ValueError if
     #  the full list cannot be determined
@@ -564,11 +583,11 @@ module Idl
       type_error "no symbol named '#{name}' on line #{lineno}" if symtab.get(name).nil?
     end
 
-    # @!macro type_no_design
+    # @!macro type_no_cfg_arch
     def type(symtab)
       return @type unless @type.nil?
 
-      internal_error "Symbol '#{name}' not found" if symtab.get(name).nil?
+      type_error "Symbol '#{name}' not found" if symtab.get(name).nil?
 
       sym = symtab.get(name)
       # @type =
@@ -588,11 +607,11 @@ module Idl
     def value(symtab)
       # can't do this.... a const might be in a template function, with different values at call time
       # if @const
-      #   # consts never change, so we can look them up by design
-      #   var = @vars[symtab.design]
+      #   # consts never change, so we can look them up by cfg_arch
+      #   var = @vars[symtab.cfg_arch]
       #   if var.nil?
       #     var = symtab.get(name)
-      #     @vars[symtab.design] = var
+      #     @vars[symtab.cfg_arch] = var
       #   end
       #   type_error "Variable '#{name}' was not found" if var.nil?
       #   value_error "Value of '#{name}' not known" if var.value.nil?
@@ -610,6 +629,40 @@ module Idl
       v = var.value
       value_error "Value of #{name} is unknown" if v == :unknown
       v
+    end
+
+    def max_value(symtab)
+      max = :unknown
+      value_result = value_try do
+        max = value(symtab)
+      end
+      value_else(value_result) do
+        var = symtab.get(name)
+        if !var.nil? && var.param?
+          param = symtab.cfg_arch.param(text_value)
+          if param.schema.max_val_known?
+            max = param.schema.max_val
+          end
+        end
+      end
+      max
+    end
+
+    def min_value(symtab)
+      min = :unknown
+      value_result = value_try do
+        min = value(symtab)
+      end
+      value_else(value_result) do
+        var = symtab.get(name)
+        if !var.nil? && var.param?
+          param = symtab.cfg_arch.param(text_value)
+          if param.schema.min_val_known?
+            min = param.schema.min_val
+          end
+        end
+      end
+      min
     end
 
     # @!macro to_idl
@@ -635,7 +688,10 @@ module Idl
     include Executable
     include Declaration
 
-    # @return [VariableDeclationWithInitializationAst] The initializer
+    def id = var_decl_with_init.id
+    def rhs = var_decl_with_init.rhs
+
+    # @return [VariableDeclarationWithInitializationAst] The initializer
     def var_decl_with_init
       @children[0]
     end
@@ -652,7 +708,7 @@ module Idl
 
     # @1macro type
     def type(symtab)
-      var_decl_with_init.type(symtab)
+      var_decl_with_init.lhs_type(symtab)
     end
 
     # @1macro value
@@ -681,6 +737,10 @@ module Idl
 
   class GlobalAst < AstNode
     include Declaration
+
+    def id
+      declaration.id.text_value
+    end
 
     # @return [VariableDeclarationAst] The decl
     def declaration
@@ -731,14 +791,17 @@ module Idl
     # @return {Array<AstNode>] List of all enum definitions
     def enums = definitions.select { |e| e.is_a?(EnumDefinitionAst) || e.is_a?(BuiltinEnumDefinitionAst) }
 
-    # @return {Array<BitfieldDefinitionAst>] List of all bitfield definitions
+    # @return {Array<AstNode>] List of all bitfield definitions
     def bitfields = definitions.select { |e| e.is_a?(BitfieldDefinitionAst) }
 
-    # @return [Array<StructDefinitionAst>] List of all struct definitions
+    # @return [Array<AstNode>] List of all struct definitions
     def structs = definitions.select { |e| e.is_a?(StructDefinitionAst) }
 
-    # @return {Array<FunctionDefAst>] List of all function definitions
+    # @return [Array<AstNode>] List of all function definitions
     def functions = definitions.select { |e| e.is_a?(FunctionDefAst) }
+
+    # @return [FetchAst] Fetch body
+    def fetch = definitions.select { |e| e.is_a?(FetchAst )}[0]
 
     # Add all the global symbols to symtab
     #
@@ -770,6 +833,10 @@ module Idl
     # @!macro type_check
     def type_check(symtab)
       definitions.each { |d| d.type_check(symtab) }
+
+      fetch_blocks = definitions.select { |d| d.is_a?(FetchAst) }
+      type_error "Multiple fetch blocks defined" if fetch_blocks.size > 1
+      type_error "No fetch block defined" if fetch_blocks.size.zero?
     end
   end
 
@@ -793,7 +860,7 @@ module Idl
       type_error "#{expression.text_value} is not an array" unless expression_type.kind == :array
       type_error "#{expression.text_value} must be a constant" unless expression_type.const?
 
-      if symtab.design.fully_configured? && (expression_type.width == :unknown)
+      if symtab.cfg_arch.fully_configured? && (expression_type.width == :unknown)
         type_error "#{expression.text_value} must have a known value at compile time"
       end
     end
@@ -802,7 +869,9 @@ module Idl
       if expression.type(symtab).width == :unknown
         Type.new(:bits, width: :unknown, qualifiers: [:const])
       else
-        Type.new(:bits, width: expression.type(symtab).width.bit_length, qualifiers: [:const])
+        len = expression.type(symtab).width.bit_length
+        len = len.zero? ? 1 : len
+        Type.new(:bits, width: len, qualifiers: [:const])
       end
     end
 
@@ -1063,7 +1132,7 @@ module Idl
     end
 
     # @!macro value_no_args
-    def value(_symtab, _design) = raise InternalError, "Enum defintions have no value"
+    def value(_symtab, _cfg_arch) = raise InternalError, "Enum definitions have no value"
 
     # @return [String] enum name
     def name = @user_type.text_value
@@ -1088,7 +1157,7 @@ module Idl
   # represents a builtin (auto-generated from config) enum definition
   #
   #   # this will result in a BuiltinEnumDefinitionAst
-  #   builtin enum ExtensionName
+  #   generated enum ExtensionName
   #
   class BuiltinEnumDefinitionAst < AstNode
     include Declaration
@@ -1103,6 +1172,7 @@ module Idl
 
       # call type to get it set before we freeze the object
       type(global_symtab)
+      @children.each { |child| child.freeze_tree(global_symtab) }
       freeze
     end
 
@@ -1112,37 +1182,37 @@ module Idl
       when "ExtensionName", "ExceptionCode", "InterruptCode"
         # OK
       else
-        type_error "Unsupported builtin enum type '#{@user_type.text_value}'"
+        type_error "Unsupported generated enum type '#{@user_type.text_value}'"
       end
     end
 
     def element_names(symtab)
       case name
       when "ExtensionName"
-        symtab.design.arch.extensions.map(&:name)
+        symtab.cfg_arch.extensions.map(&:name)
       when "ExceptionCode"
-        symtab.design.arch.exception_codes.map(&:var)
+        symtab.cfg_arch.exception_codes.map(&:var)
       when "InterruptCode"
-        symtab.design.arch.interrupt_codes.map(&:var)
+        symtab.cfg_arch.interrupt_codes.map(&:var)
       else
-        type_error "Unknown builtin enum type '#{name}'"
+        type_error "Unknown generated enum type '#{name}'"
       end
     end
 
     def element_values(symtab)
       case name
       when "ExtensionName"
-        (0...symtab.design.arch.extensions.size).to_a
+        (0...symtab.cfg_arch.extensions.size).to_a
       when "ExceptionCode"
-        symtab.design.arch.exception_codes.map(&:num)
+        symtab.cfg_arch.exception_codes.map(&:num)
       when "InterruptCode"
-        symtab.design.arch.interrupt_codes.map(&:num)
+        symtab.cfg_arch.interrupt_codes.map(&:num)
       else
-        type_error "Unknown builtin enum type '#{name}'"
+        type_error "Unknown generated enum type '#{name}'"
       end
     end
 
-    # @!macro type_no_design
+    # @!macro type_no_cfg_arch
     def type(symtab)
       return @type unless @type.nil?
 
@@ -1160,7 +1230,7 @@ module Idl
     def name = @user_type.text_value
 
     # @!macro to_idl
-    def to_idl = "builtin enum #{@user_type.text_value}"
+    def to_idl = "generated enum #{@user_type.text_value}"
   end
 
   class BitfieldFieldDefinitionAst < AstNode
@@ -1266,6 +1336,9 @@ module Idl
       return if frozen?
 
       type(global_symtab)
+
+      @children.each { |child| child.freeze_tree(global_symtab) }
+
       freeze
     end
 
@@ -1328,7 +1401,7 @@ module Idl
     def name = @name.text_value
 
     # @!macro value_no_args
-    def value(_symtab, _design) = raise AstNode::InternalError, "Bitfield defintions have no value"
+    def value(_symtab, _cfg_arch) = raise AstNode::InternalError, "Bitfield definitions have no value"
 
     # @!macro to_idl
     def to_idl
@@ -1689,10 +1762,10 @@ module Idl
     end
 
     def var(symtab)
-      variable = @vars[symtab.design]
+      variable = @vars[symtab.cfg_arch]
       if variable.nil?
         variable = symtab.get(lhs.text_value)
-        @vars[symtab.design] = variable
+        @vars[symtab.cfg_arch] = variable
       end
       variable
     end
@@ -1706,12 +1779,14 @@ module Idl
 
         internal_error "No variable #{lhs.text_value}" if variable.nil?
 
-        value_result = value_try do
-          variable.value = rhs.value(symtab)
-        end
-        value_else(value_result) do
-          variable.value = nil
-          value_error ""
+        unless variable.type.global?
+          value_result = value_try do
+            variable.value = rhs.value(symtab)
+          end
+          value_else(value_result) do
+            variable.value = nil
+            value_error ""
+          end
         end
       end
     end
@@ -2023,15 +2098,15 @@ module Idl
 
     def type(symtab)
       if field(symtab).defined_in_all_bases?
-        if symtab.design.mxlen == 64 && symtab.design.multi_xlen?
-          Type.new(:bits, width: [field(symtab).location(symtab.design, 32).size, field(symtab).location(symtab.design, 64).size].max)
+        if symtab.cfg_arch.mxlen == 64 && symtab.cfg_arch.multi_xlen?
+          Type.new(:bits, width: [field(symtab).location(32).size, field(symtab).location(64).size].max)
         else
-          Type.new(:bits, width: field(symtab).location(symtab.design, symtab.design.mxlen).size)
+          Type.new(:bits, width: field(symtab).location(symtab.cfg_arch.mxlen).size)
         end
       elsif field(symtab).base64_only?
-        Type.new(:bits, width: field(symtab).location(symtab.design, 64).size)
+        Type.new(:bits, width: field(symtab).location(64).size)
       elsif field(symtab).base32_only?
-        Type.new(:bits, width: field(symtab).location(symtab.design, 32).size)
+        Type.new(:bits, width: field(symtab).location(32).size)
       else
         internal_error "Unexpected base for field"
       end
@@ -2043,12 +2118,12 @@ module Idl
 
     def type_check(symtab)
       csr_field.type_check(symtab)
-      value_try do
-        if ["RO", "RO-H"].any?(csr_field.field_def(symtab).type(symtab))
-          type_error "Cannot write to read-only CSR field"
-        end
-      end
-      # ok, we don't know the type because the design isn't configured
+      # value_try do
+      #   if ["RO"].any?(csr_field.field_def(symtab).type(symtab))
+      #     type_error "Cannot write to read-only CSR field"
+      #   end
+      # end
+      # ok, we don't know the type because the cfg_arch isn't configured
 
       write_value.type_check(symtab)
       type_error "Incompatible type in assignment" unless write_value.type(symtab).convertable_to?(type(symtab))
@@ -2275,7 +2350,7 @@ module Idl
           dtype = Type.new(:array, width: ary_size.value(symtab), sub_type: dtype, qualifiers:)
         end
         value_else(value_result) do
-          type_error "Array size must be known at compile time" if symtab.design.fully_configured?
+          # type_error "Array size must be known at compile time" if symtab.cfg_arch.fully_configured?
           dtype = Type.new(:array, width: :unknown, sub_type: dtype, qualifiers:)
         end
       end
@@ -2300,8 +2375,8 @@ module Idl
           ary_size.value(symtab)
         end
         value_else(value_result) do
-          # if this is a fully configured Design, this is an error because all constants are supposed to be known
-          if symtab.design.fully_configured?
+          # if this is a fully configured ConfiguredArchitecture, this is an error because all constants are supposed to be known
+          if symtab.cfg_arch.fully_configured?
             type_error "Array size (#{ary_size.text_value}) must be known at compile time"
           else
             # otherwise, it's ok that we don't know the value yet, as long as the value is a const
@@ -2359,6 +2434,8 @@ module Idl
     def lhs = @children[1]
     def ary_size = @children[3]
     def rhs = @children[2]
+
+    def id = lhs.text_value
 
     def initialize(input, interval, type_name_ast, var_write_ast, ary_size, rval_ast)
       if ary_size.nil?
@@ -2555,7 +2632,7 @@ module Idl
 
   class BitsCastSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
-      BitsCastAst.new(input, interval, expression.to_ast)
+      BitsCastAst.new(input, interval, expr.to_ast)
     end
   end
 
@@ -2568,22 +2645,22 @@ module Idl
     include Rvalue
 
     # @return [AstNode] The casted expression
-    def expression = @children[0]
+    def expr = @children[0]
 
     def initialize(input, interval, exp) = super(input, interval, [exp])
 
     # @!macro type_check
     def type_check(symtab)
-      expression.type_check(symtab)
+      expr.type_check(symtab)
 
-      unless [:bits, :enum_ref, :csr].include?(expression.type(symtab).kind)
-        type_error "#{expression.type(symtab)} Cannot be cast to bits"
+      unless [:bits, :enum_ref, :csr].include?(expr.type(symtab).kind)
+        type_error "#{expr.type(symtab)} Cannot be cast to bits"
       end
     end
 
     # @!macro type
     def type(symtab)
-      etype = expression.type(symtab)
+      etype = expr.type(symtab)
 
       case etype.kind
       when :bits
@@ -2591,38 +2668,40 @@ module Idl
       when :enum_ref
         Type.new(:bits, width: etype.enum_class.width)
       when :csr
-        if etype.csr.dynamic_length?(symtab.design)
+        if (etype.csr.is_a?(Symbol) && etype.csr == :unknown) || etype.csr.dynamic_length?
           Type.new(:bits, width: :unknown)
         else
-          Type.new(:bits, width: etype.csr.length(symtab.design))
+          Type.new(:bits, width: etype.csr.length(symtab.cfg_arch))
         end
+      else
+        type_error "$bits cast is only defined for CSRs and Enum references"
       end
     end
 
     # @!macro value
     def value(symtab)
-      etype = expression.type(symtab)
+      etype = expr.type(symtab)
 
       case etype.kind
-      when :bits
-        expression.value(symtab)
+      # when :bits
+      #   expr.value(symtab)
       when :enum_ref
-        if expression.is_a?(EnumRefAst)
-          element_name = expression.text_value.split(":")[2]
+        if expr.is_a?(EnumRefAst)
+          element_name = expr.text_value.split(":")[2]
           etype.enum_class.value(element_name)
         else
           # this is an expression with an EnumRef type
-          expression.value(symtab)
+          expr.value(symtab)
         end
       when :csr
-        expression.value(symtab)
+        expr.value(symtab)
       else
-        internal_error "TODO: Bits cast for #{etype.kind}"
+        type_error "TODO: Bits cast for #{etype.kind}"
       end
     end
 
     # @!macro to_idl
-    def to_idl = "$signed(#{expression.to_idl})"
+    def to_idl = "$signed(#{expr.to_idl})"
   end
 
   class BinaryExpressionAst < AstNode
@@ -2823,6 +2902,63 @@ module Idl
       else
         internal_error "Unhandled op '#{op}'"
       end
+    end
+
+    def max_value(symtab)
+      lhs_max_value = :unknown
+      value_result = value_try do
+        lhs_max_value = lhs.value(symtab)
+      end
+      value_else(value_result) do
+        lhs_max_value = lhs.max_value(symtab)
+      end
+      rhs_max_value = :unknown
+      value_result = value_try do
+        rhs_max_value = rhs.value(symtab)
+      end
+      value_else(value_result) do
+        rhs_max_value = rhs.max_value(symtab)
+      end
+      rhs_min_value = :unknown
+      value_result = value_try do
+        rhs_min_value = rhs.value(symtab)
+      end
+      value_else(value_result) do
+        rhs_min_value = rhs.min_value(symtab)
+      end
+
+      max_value =
+        case op
+        when "+"
+          return :unknown if [lhs_max_value, rhs_max_value].include?(:unknown)
+
+          lhs_max_value + rhs_max_value
+        when "-"
+          return :unknown if [lhs_max_value, rhs_min_value].include?(:unknown)
+
+          lhs_max_value - rhs_min_value
+        when "*"
+          return :unknown if [lhs_max_value, rhs_max_value].include?(:unknown)
+
+          lhs_max_value * rhs_max_value
+        else
+          raise "TODO: op '#{op}'"
+        end
+
+      v_trunc =
+        if !lhs.type(symtab).const? || !rhs.type(symtab).const?
+          # when both sides are constant, the value is not truncated
+          width = type(symtab).width
+          if width == :unknown
+            value_error("unknown width in op that possibly truncates")
+          end
+          max_value & ((1 << type(symtab).width) - 1)
+        else
+          max_value
+        end
+
+      warn "WARNING: The value of '#{text_value}' (#{lhs.type(symtab).const?}, #{rhs.type(symtab).const?}) is truncated from #{v} to #{v_trunc} because the result is only #{type(symtab).width} bits" if max_value != v_trunc
+      v_trunc
     end
 
     # @!macro value
@@ -3449,7 +3585,7 @@ module Idl
     def freeze_tree(global_symtab)
       return if frozen?
 
-      enum_def_ast = global_symtab.design.global_ast.enums.find { |e| e.name == @enum_class_name }
+      enum_def_ast = global_symtab.cfg_arch.global_ast.enums.find { |e| e.name == @enum_class_name }
 
       @enum_def_type =
         if enum_def_ast.is_a?(BuiltinEnumDefinitionAst)
@@ -3471,7 +3607,7 @@ module Idl
       type_error "#{@enum_class_name} has no member '#{@member_name}'" if enum_def_type.value(@member_name).nil?
     end
 
-    # @!macro type_no_design
+    # @!macro type_no_cfg_arch
     def type(symtab)
       internal_error "Not frozen?" unless frozen?
       type_error "No enum named #{@enum_class_name}" if @enum_def_type.nil?
@@ -3479,8 +3615,16 @@ module Idl
       @enum_def_type.ref_type
     end
 
-    # @!macro value_no_design
+    # @!macro value_no_cfg_arch
     def value(symtab)
+      @enum_def_type ||= begin
+        enum_def_ast = symtab.cfg_arch.global_ast.enums.find { |e| e.name == @enum_class_name }
+        if enum_def_ast.is_a?(BuiltinEnumDefinitionAst)
+          enum_def_ast&.type(symtab)
+        else
+          enum_def_ast&.type(nil)
+        end
+      end
       internal_error "Must call type_check first" if @enum_def_type.nil?
 
       @enum_def_type.value(@member_name)
@@ -3902,7 +4046,7 @@ module Idl
     end
 
     # @!macro value_no_args
-    def value(_symtab, _design) = internal_error "Why are you calling value for an lval?"
+    def value(_symtab, _cfg_arch) = internal_error "Why are you calling value for an lval?"
 
     def to_idl = "-"
   end
@@ -3973,7 +4117,14 @@ module Idl
 
   class ReturnExpressionSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
-      ReturnExpressionAst.new(input, interval, [first.to_ast] + rest.elements.map { |r| r.e.to_ast })
+      return_asts =
+        if vals.empty?
+          []
+        else
+          [vals.first.e.to_ast] + \
+            vals.rest.elements.map { |r| r.e.to_ast }
+        end
+      ReturnExpressionAst.new(input, interval, return_asts)
     end
   end
 
@@ -3987,7 +4138,9 @@ module Idl
 
     # @return [Array<Type>] List of actual return types
     def return_types(symtab)
-      if return_value_nodes[0].type(symtab).kind == :tuple
+      if return_value_nodes.empty?
+        [Type.new(:void)]
+      elsif return_value_nodes[0].type(symtab).kind == :tuple
         return_value_nodes[0].type(symtab).tuple_types
       else
         return_value_nodes.map{ |v| v.type(symtab) }
@@ -3997,7 +4150,9 @@ module Idl
     # @return [Type] The actual return type
     def return_type(symtab)
       types = return_types(symtab)
-      if types.size > 1
+      if types.empty?
+        return Type.new(:void)
+      elsif types.size > 1
         Type.new(:tuple, tuple_types: types)
       else
         types[0]
@@ -4015,7 +4170,7 @@ module Idl
         symtab.get("__expected_return_type")
       else
         # need to find the type to get the right symbol table
-        func_type = @func_type_cache[symtab.design]
+        func_type = @func_type_cache[symtab.cfg_arch]
         return func_type.return_type(EMPTY_ARRAY, self) unless func_type.nil?
 
         func_type = symtab.get_global(func_def.name)
@@ -4034,7 +4189,7 @@ module Idl
           end
           func_type.return_type(template_values.sort { |a, b| a.template_index <=> b.template_index }.map(&:value), self)
         else
-          @func_type_cache[symtab.design]= func_type
+          @func_type_cache[symtab.cfg_arch]= func_type
           func_type.return_type(EMPTY_ARRAY, self)
         end
       end
@@ -4047,7 +4202,7 @@ module Idl
         type_error "Unknown type for #{v.text_value}" if v.type(symtab).nil?
       end
 
-      if return_value_nodes[0].type(symtab).kind == :tuple
+      if !return_value_nodes.empty? && return_value_nodes[0].type(symtab).kind == :tuple
         type_error("Can't combine tuple types in return") unless return_value_nodes.size == 1
       end
 
@@ -4062,7 +4217,9 @@ module Idl
 
     # @!macro return_value
     def return_value(symtab)
-      if return_value_nodes.size == 1
+      if return_value_nodes.empty?
+        :void
+      elsif return_value_nodes.size == 1
         return_value_nodes[0].value(symtab)
       else
         return_value_nodes.map { |v| v.value(symtab) }
@@ -4071,7 +4228,9 @@ module Idl
 
     # @!macro return_values
     def return_values(symtab)
-      if return_value_nodes.size == 1
+      if return_value_nodes.empty?
+        [:void]
+      elsif return_value_nodes.size == 1
         return_value_nodes[0].values(symtab)
       else
         return_value_nodes.map { |v| v.values(symtab) }
@@ -4208,7 +4367,7 @@ module Idl
           end
         end
         value_else(value_result) do
-          type_error "Bit width must be known at compile time" if symtab.design.fully_configured?
+          type_error "Bit width must be known at compile time" if symtab.cfg_arch.fully_configured?
         end
       end
       unless ["Bits", "String", "XReg", "Boolean", "U32", "U64"].include?(@type_name)
@@ -4228,7 +4387,7 @@ module Idl
         rescue TypeError
           # ok, probably in a function template
         end
-        bits_expression.freeze_tree(symtab)
+        bits_expression&.freeze_tree(symtab)
       end
       freeze
     end
@@ -4311,6 +4470,13 @@ module Idl
   module IntLiteralSyntaxNode
     def to_ast
       IntLiteralAst.new(input, interval)
+    end
+  end
+
+  class UnknownLiteral
+    def initialize(known_value, unknown_mask)
+      @known_value = known_value
+      @unknown_mask = unknown_mask
     end
   end
 
@@ -4474,15 +4640,42 @@ module Idl
 
           radix_id = "d" if radix_id.empty?
 
-          case radix_id
-          when "b"
-            value.to_i(2)
-          when "o"
-            value.to_i(8)
-          when "d"
-            value.to_i(10)
-          when "h"
-            value.to_i(16)
+          if value.index("x").nil? && value.index("X").nil?
+            case radix_id
+            when "b"
+              value.to_i(2)
+            when "o"
+              value.to_i(8)
+            when "d"
+              value.to_i(10)
+            when "h"
+              value.to_i(16)
+            end
+          else
+            # there is unknown bit(s) in the value
+            known_value =
+              case radix_id
+              when "b"
+                value.gsub(/xX/, "0").to_i(2)
+              when "o"
+                value.gsub(/xX/, "0").to_i(8)
+              when "d"
+                raise "impossible"
+              when "h"
+                value.gsub(/xX/, "0").to_i(16)
+              end
+            unknown_mask =
+              case radix_id
+              when "b"
+                value.gsub("1", "0").gsub(/xX/, "1").to_i(2)
+              when "o"
+                value.gsub(/[0-7]/, "0").gsub(/xX/, "7").to_i(8)
+              when "d"
+                raise "impossible"
+              when "h"
+                value.gsub(/[0-9a-fA-F]/, "0").gsub(/xX/, "f").to_i(16)
+              end
+            UnknownLiteral.new(known_value, unknown_mask)
           end
         when /^0([bdx]?)([0-9a-fA-F]*)(s?)$/
           # C++-style literal
@@ -4583,7 +4776,7 @@ module Idl
     end
 
     def func_type(symtab)
-      func_def_type = @func_def_type_cache[symtab.design]
+      func_def_type = @func_def_type_cache[symtab.cfg_arch]
       return func_def_type unless func_def_type.nil?
 
       func_def_type = symtab.get(@name)
@@ -4593,14 +4786,14 @@ module Idl
         type_error "#{@name} is not a function (it's a #{func_def_type.class.name})"
       end
 
-      @func_def_type_cache[symtab.design] = func_def_type
+      @func_def_type_cache[symtab.cfg_arch] = func_def_type
     end
 
     # @!macro type_check
     def type_check(symtab)
       level = symtab.levels
 
-      unknown_ok = symtab.design.partially_configured?
+      unknown_ok = symtab.cfg_arch.partially_configured?
       tvals = template_values(symtab, unknown_ok:)
 
       func_def_type = func_type(symtab)
@@ -4650,9 +4843,9 @@ module Idl
 
     # @!macro type
     def type(symtab)
-      return ConstBoolType if name == "implemented?"
+      return ConstBoolType if name == "implemented?" || name == "implemented_version?" || name == "implemented_csr?"
 
-      func_type(symtab).return_type(template_values(symtab, unknown_ok: symtab.design.partially_configured?), self)
+      func_type(symtab).return_type(template_values(symtab, unknown_ok: symtab.cfg_arch.partially_configured?), self)
     end
 
     # @!macro value
@@ -4664,21 +4857,61 @@ module Idl
 
       func_def_type = func_type(symtab)
       type_error "#{name} is not a function" unless func_def_type.is_a?(FunctionType)
-      if func_def_type.builtin?
+      if func_def_type.generated?
         if name == "implemented?"
           extname_ref = arg_nodes[0]
           type_error "First argument should be a ExtensionName" unless extname_ref.type(symtab).kind == :enum_ref && extname_ref.class_name == "ExtensionName"
 
-          return symtab.design.ext?(arg_nodes[0].member_name) if symtab.design.fully_configured?
+          return symtab.cfg_arch.ext?(arg_nodes[0].member_name) if symtab.cfg_arch.fully_configured?
 
-          if symtab.design.ext?(arg_nodes[0].member_name)
+          if symtab.cfg_arch.ext?(arg_nodes[0].member_name)
             # we can know if it is implemented, but not if it's not implemented for a partially configured
             return true
           end
+          if symtab.cfg_arch.prohibited_ext?(arg_nodes[0].member_name)
+            return false
+          end
           value_error "implemented? is only known when evaluating in the context of a fully-configured arch def"
+        elsif name == "implemented_version?"
+          extname_ref = arg_nodes[0]
+          type_error "First argument should be a ExtensionName" unless extname_ref.type(symtab).kind == :enum_ref && extname_ref.class_name == "ExtensionName"
+
+          ver_req = arg_nodes[1].text_value[1..-2]
+
+          return symtab.cfg_arch.ext?(arg_nodes[0].member_name, ver_req) if symtab.cfg_arch.fully_configured?
+
+          if symtab.cfg_arch.ext?(arg_nodes[0].member_name, ver_req)
+            # we can know if it is implemented, but not if it's not implemented for a partially configured
+            return true
+          end
+          if symtab.cfg_arch.prohibited_ext?(arg_nodes[0].member_name)
+            return false
+          end
+          value_error "implemented_version? is only known when evaluating in the context of a fully-configured arch def"
+        elsif name == "implemented_csr?"
+          csr_addr = arg_nodes[0].value(symtab)
+          if symtab.cfg_arch.fully_configured?
+            if symtab.cfg_arch.transitive_implemented_csrs.any? { |csr| csr.address == csr_addr }
+              return true
+            end
+          else
+            if symtab.cfg_arch.not_prohibited_csrs.none? { |csr| csr.address == csr_addr }
+              return false
+            end
+          end
+          value_error "implemented_csr? is only known when evaluating in the context of a fully-configured arch def"
+        elsif name == "cached_translation"
+          value_error "cached_translation is not compile-time-knowable"
+        elsif name == "maybe_cache_translation"
+          value_error "maybe_cache_translation is not compile-time-knowable"
+        elsif name == "invalidate_translations"
+          value_error "invalidate_translations is not compile-time-knowable"
         else
-          value_error "value of builtin function cannot be known"
+          internal_error "Unimplemented generated: '#{name}'"
         end
+      end
+      if func_def_type.builtin?
+        value_error "value of builtin functions aren't knowable"
       end
 
       template_values =
@@ -4732,12 +4965,12 @@ module Idl
       type_error "#{text_value} is not a type" unless type.is_a?(Type)
     end
 
-    # @!macro type_no_design
+    # @!macro type_no_cfg_arch
     def type(symtab)
-      typ = @type_cache[symtab.design]
+      typ = @type_cache[symtab.cfg_arch]
       return typ unless typ.nil?
 
-      @type_cache[symtab.design] = symtab.get(text_value)
+      @type_cache[symtab.cfg_arch] = symtab.get(text_value)
     end
 
     # @!macro to_idl
@@ -4853,16 +5086,39 @@ module Idl
     end
   end
 
+  class FetchSyntaxNode < Treetop::Runtime::SyntaxNode
+    def to_ast
+      FetchAst.new(input, interval, function_body.to_ast)
+    end
+  end
+
+  class FetchAst < AstNode
+    def body = @children[0]
+
+    def initialize(input, interval, body)
+      super(input, interval, [body])
+    end
+
+    def type_check(symtab)
+      body.type_check(symtab)
+    end
+
+    def return_type(symtab)
+      @ret_type = Type.new(:bits, width: symtab.get("INSTR_ENC_WIDTH").value)
+    end
+  end
+
   class FunctionDefSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
       FunctionDefAst.new(
         input,
         interval,
         function_name.text_value,
-        targs.empty? ? [] : [targs.first.to_ast] + targs.rest.elements.map { |r| r.single_declaration.to_ast },
-        ret.empty? ? [] : [ret.first.to_ast] + ret.rest.elements.map { |r| r.type_name.to_ast },
+        (!respond_to?(:targs) || targs.empty?) ? [] : [targs.first.to_ast] + targs.rest.elements.map { |r| r.single_declaration.to_ast },
+        ret.empty? ? [] : [ret.first.to_ast] + (ret.respond_to?(:rest) ? ret.rest.elements.map { |r| r.type_name.to_ast } : []),
         args.empty? ? [] : [args.first.to_ast] + args.rest.elements.map { |r| r.single_declaration.to_ast},
         desc.text_value,
+        respond_to?(:type) ? type.text_value.strip.to_sym : :normal,
         respond_to?(:body_block) ? body_block.function_body.to_ast : nil
       )
     end
@@ -4871,6 +5127,8 @@ module Idl
   class FunctionDefAst < AstNode
     include Declaration
 
+    attr_reader :return_type_nodes
+
     # @param input [String] The source code
     # @param interval [Range] The range in the source code for this function definition
     # @param name [String] The name of the function
@@ -4878,8 +5136,9 @@ module Idl
     # @params return_types [Array<AstNode>] Return types
     # @param arguments [Array<AstNode>] Arguments
     # @param desc [String] Description
+    # @param type [:normal, :builtin, :generated, :external] Type of function
     # @param body [AstNode,nil] Body, unless the function is builtin
-    def initialize(input, interval, name, targs, return_types, arguments, desc, body)
+    def initialize(input, interval, name, targs, return_types, arguments, desc, type, body)
       if body.nil?
         super(input, interval, targs + return_types + arguments)
       else
@@ -4892,13 +5151,12 @@ module Idl
       @argument_nodes = arguments
       @desc = desc
       @body = body
+      @builtin = type == :builtin
+      @generated = type == :generated
+      @external = type == :external
 
       @cached_return_type = {}
       @reachable_functions_cache ||= {}
-    end
-
-    def <=>(other)
-      name <=> other.name
     end
 
     attr_reader :reachable_functions_cache
@@ -4968,7 +5226,7 @@ module Idl
 
     # return the return type, which may be a tuple of multiple types
     def return_type(symtab)
-      cached = @cached_return_type[symtab.design]
+      cached = @cached_return_type[symtab.cfg_arch]
       return cached unless cached.nil?
 
       unless symtab.levels == 2
@@ -4976,12 +5234,12 @@ module Idl
       end
 
       if @return_type_nodes.empty?
-        @cached_return_type[symtab.design] = VoidType
+        @cached_return_type[symtab.cfg_arch] = VoidType
         return VoidType
       end
 
       unless templated?
-        # with no templates, the return type does not change for a given design
+        # with no templates, the return type does not change for a given cfg_arch
         rtype =
           if @return_type_nodes.size == 1
             rtype = @return_type_nodes[0].type(symtab)
@@ -4999,7 +5257,7 @@ module Idl
 
         raise "??????" if rtype.nil?
 
-        return @cached_return_type[symtab.design] = rtype
+        return @cached_return_type[symtab.cfg_arch] = rtype
       end
 
       if templated?
@@ -5073,6 +5331,16 @@ module Idl
       #   end
       # end
       type_check_body(symtab)
+    end
+
+    def apply_template_and_arg_syms(symtab)
+      template_names.each_with_index do |tname, index|
+        symtab.add(tname, Var.new(tname, template_types(symtab)[index], template_index: index, function_name: name))
+      end
+
+      arguments(symtab).each do |arg_type, arg_name|
+        symtab.add(arg_name, Var.new(arg_name, arg_type))
+      end
     end
 
     # @!macro type_check
@@ -5155,13 +5423,21 @@ module Idl
     end
 
     def body
-      internal_error "Function has no body" if builtin?
+      internal_error "Function has no body" if builtin? || generated?
 
       @body
     end
 
     def builtin?
-      @body.nil?
+      @builtin
+    end
+
+    def generated?
+      @generated
+    end
+
+    def external?
+      @external
     end
   end
 
@@ -5725,19 +6001,20 @@ module Idl
   class CsrFieldReadExpressionAst < AstNode
     include Rvalue
 
-    def initialize(input, interval, idx, field_name)
-      if idx.is_a?(AstNode)
-        super(input, interval, [idx])
-      else
-        super(input, interval, EMPTY_ARRAY)
-      end
+    def initialize(input, interval, csr, field_name)
+      super(input, interval, [csr])
 
-      @idx = idx
+      @csr = csr
       @field_name = field_name
     end
 
     def freeze_tree(symtab)
       return if frozen?
+
+      @children.each { |child| child.freeze_tree(symtab) }
+
+      @csr_obj = @csr.csr_def(symtab)
+      type_error "No CSR '#{@csr.text_value}'" if @csr_obj.nil?
 
       value_result = value_try do
         @value = calc_value(symtab)
@@ -5745,33 +6022,24 @@ module Idl
       value_else(value_result) do
         @value = nil
       end
+
       @type = calc_type(symtab)
-      @design = symtab.design # remember design, used in gen_adoc pass
+      @cfg_arch = symtab.cfg_arch # remember cfg_arch, used in gen_adoc pass
+
       freeze
     end
 
     # @!macro type_check
     def type_check(symtab)
-      if @idx.is_a?(IntLiteralAst)
-        type_error "No CSR at address #{@idx.text_value}" if csr_def(symtab).nil?
-      else
-        # idx is a csr name
-        csr_name = @idx
-        type_error "No CSR named #{csr_name}" if csr_def(symtab).nil?
-      end
+      @csr.type_check(symtab)
+
       type_error "CSR[#{csr_name(symtab)}] has no field named #{@field_name}" if field_def(symtab).nil?
-      type_error "CSR[#{csr_name(symtab)}].#{@field_name} is not defined in RV32" if symtab.design.mxlen == 32 && !field_def(symtab).defined_in_base32?
-      type_error "CSR[#{csr_name(symtab)}].#{@field_name} is not defined in RV64" if symtab.design.mxlen == 64 && !field_def(symtab).defined_in_base64?
+      type_error "CSR[#{csr_name(symtab)}].#{@field_name} is not defined in RV32" if symtab.cfg_arch.mxlen == 32 && !field_def(symtab).defined_in_base32?
+      type_error "CSR[#{csr_name(symtab)}].#{@field_name} is not defined in RV64" if symtab.cfg_arch.mxlen == 64 && !field_def(symtab).defined_in_base64?
     end
 
     def csr_def(symtab)
-      design = symtab.design
-
-      if @idx.is_a?(IntLiteralAst)
-        design.arch.csrs.find { |c| c.address == @idx.value(symtab) }
-      else
-        design.arch.csr(@idx)
-      end
+      @csr_obj
     end
 
     def csr_name(symtab)
@@ -5779,7 +6047,7 @@ module Idl
     end
 
     def field_def(symtab)
-      csr_def(symtab).fields.find { |f| f.name == @field_name }
+      @csr_obj.fields.find { |f| f.name == @field_name }
     end
 
     def field_name(symtab)
@@ -5788,11 +6056,7 @@ module Idl
 
     # @!macro to_idl
     def to_idl
-      if @idx.is_a?(IntLiteralAst)
-        "CSR[#{@idx.to_idl}].#{@field_name}"
-      else
-        "CSR[#{@idx}].#{@field_name}"
-      end
+      "CSR[#{@csr_obj.name}].#{@field_name}"
     end
 
     # @!macro type
@@ -5802,22 +6066,17 @@ module Idl
 
     def calc_type(symtab)
       fd = field_def(symtab)
-      if fd.nil?
-        if @idx.is_a?(IntLiteralAst)
-          internal_error "Could not find CSR[#{@idx.to_idl}].#{@field_name}"
-        else
-          internal_error "Could not find CSR[#{@idx}].#{@field_name}"
-        end
-      end
+      internal_error "Could not find #{@csr.text_value}.#{@field_name}" if fd.nil?
+
       if fd.defined_in_all_bases?
-        Type.new(:bits, width: symtab.design.possible_xlens.map{ |xlen| fd.width(symtab.design, xlen) }.max)
+        Type.new(:bits, width: symtab.cfg_arch.possible_xlens.map{ |xlen| fd.width(xlen) }.max)
       elsif fd.base64_only?
-        if symtab.design.possible_xlens.include?(64)
-          Type.new(:bits, width: fd.width(symtab.design, 64))
+        if symtab.cfg_arch.possible_xlens.include?(64)
+          Type.new(:bits, width: fd.width(64))
         end
       elsif fd.base32_only?
-        if symtab.design.possible_xlens.include?(32)
-          Type.new(:bits, width: fd.width(symtab.design, 32))
+        if symtab.cfg_arch.possible_xlens.include?(32)
+          Type.new(:bits, width: fd.width(32))
         end
       else
         internal_error "unexpected field base"
@@ -5835,92 +6094,94 @@ module Idl
 
     def calc_value(symtab)
       # field isn't implemented, so it must be zero
-      return 0 if field_def(symtab).nil?
+      return 0 if field_def(symtab).nil? || !field_def(symtab).exists_in_cfg?(symtab.cfg_arch)
 
-      unless field_def(symtab).type(symtab) == "RO"
-        value_error "'#{csr_name(symtab)}.#{field_name(symtab)}' is not RO"
+      symtab.cfg_arch.possible_xlens.each do |effective_xlen|
+        unless field_def(symtab).type(effective_xlen) == "RO"
+          value_error "'#{csr_name(symtab)}.#{field_name(symtab)}' is not RO"
+        end
       end
 
-      field_def(symtab).reset_value(symtab.design)
+      v = field_def(symtab).reset_value
+      v = nil if v == "UNDEFINED_LEGAL"
     end
   end
 
   class CsrReadExpressionSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
-      if idx.respond_to?(:to_ast)
-        CsrReadExpressionAst.new(input, interval, idx.to_ast)
-      else
-        CsrReadExpressionAst.new(input, interval, idx.text_value)
-      end
+      CsrReadExpressionAst.new(input, interval, idx.text_value)
     end
   end
 
   class CsrFieldReadExpressionSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
-      if idx.respond_to?(:to_ast)
-        CsrFieldReadExpressionAst.new(input, interval, idx.to_ast, csr_field_name.text_value)
-      else
-        CsrFieldReadExpressionAst.new(input, interval, idx.text_value, csr_field_name.text_value)
-      end
+      CsrFieldReadExpressionAst.new(input, interval, csr.to_ast, csr_field_name.text_value)
     end
   end
 
   class CsrReadExpressionAst < AstNode
     include Rvalue
 
-    def initialize(input, interval, idx)
-      if idx.is_a?(AstNode)
-        super(input, interval, [idx])
-      else
-        super(input, interval, EMPTY_ARRAY)
-      end
+    attr_reader :idx_text
+    attr_reader :idx_expr
 
-      @idx = idx
+    def initialize(input, interval, idx)
+      super(input, interval, [])
+
+      @idx_text = idx
     end
 
     def freeze_tree(symtab)
       return if frozen?
 
-      @design = symtab.design # remember design, used by gen_adoc pass
-      @idx.freeze_tree(symtab)
+      @cfg_arch = symtab.cfg_arch # remember cfg_arch, used by gen_adoc pass
+
+      if symtab.cfg_arch.csr(@idx_text).nil?
+        parser = symtab.cfg_arch.idl_compiler.parser
+        expr = parser.parse(@idx_text, root: :expression)
+
+        type_error "#{@idx_text} is not a CSR; it must be an expression" if expr.nil?
+
+        @idx_expr = expr.to_ast
+        @children << @idx_expr
+      else
+        @csr_obj = symtab.cfg_arch.csr(@idx_text)
+      end
+
+      @children.each { |child| child.freeze_tree(symtab) }
       freeze
     end
 
     # @!macro type
     def type(symtab)
-      design = symtab.design
+      cfg_arch = symtab.cfg_arch
 
       cd = csr_def(symtab)
       if cd.nil?
         # we don't know anything about this index, so we can only
         # treat this as a generic
-        if symtab.mxlen == 32
-          Bits32Type
-        else
-          Bits64Type
-        end
+        CsrType.new(:unknown, cfg_arch)
       else
-        CsrType.new(cd, design)
+        CsrType.new(cd, cfg_arch)
       end
     end
 
     # @!macro type_check
     def type_check(symtab)
-      design = symtab.design
+      cfg_arch = symtab.cfg_arch
 
-      idx_text = @idx.is_a?(String) ? @idx : @idx.text_value
-      if !design.arch.csr(idx_text).nil?
+      if !@csr_obj.nil?
         # this is a known csr name
         # nothing else to check
 
       else
         # this is an expression
-        @idx.type_check(symtab)
-        type_error "Csr index must be integral" unless @idx.type(symtab).integral?
+        @idx_expr.type_check(symtab)
+        type_error "Csr index must be integral" unless @idx_expr.type(symtab).integral?
 
-        value_result = value_try do
-          idx_value = @idx.value(symtab)
-          csr_index = design.arch.csrs.index { |csr| csr.address == idx_value }
+        value_try do
+          idx_value = @idx_expr.value(symtab)
+          csr_index = cfg_arch.csrs.index { |csr| csr.address == idx_value }
           type_error "No csr number '#{idx_value}' was found" if csr_index.nil?
           :ok
         end
@@ -5929,17 +6190,15 @@ module Idl
     end
 
     def csr_def(symtab)
-      design = symtab.design
-      idx_text = @idx.is_a?(String) ? @idx : @idx.text_value
-      csr = design.arch.csr(idx_text)
-      if !csr.nil?
+      cfg_arch = symtab.cfg_arch
+      if !@csr_obj.nil?
         # this is a known csr name
-        csr
+        @csr_obj
       else
         # this is an expression
-        value_result = value_try do
-          idx_value = @idx.value(symtab)
-          return design.arch.csrs.find { |csr| csr.address == idx_value }
+        value_try do
+          idx_value = @idx_expr.value(symtab)
+          return cfg_arch.csrs.find { |csr| csr.address == idx_value }
         end
         # || we don't know at compile time which CSR this is...
         nil
@@ -5960,10 +6219,10 @@ module Idl
     def value(symtab)
       cd = csr_def(symtab)
       value_error "CSR number not knowable" if cd.nil?
-      if symtab.design.fully_configured?
-        value_error "CSR is not implemented" unless symtab.design.transitive_implemented_csrs.any? { |icsr| icsr.name == cd.name }
+      if symtab.cfg_arch.fully_configured?
+        value_error "CSR is not implemented" unless symtab.cfg_arch.transitive_implemented_csrs.any? { |icsr| icsr.name == cd.name }
       else
-        value_error "CSR is not defined" unless symtab.design.arch.csrs.any? { |icsr| icsr.name == cd.name }
+        value_error "CSR is not defined" unless symtab.cfg_arch.csrs.any? { |icsr| icsr.name == cd.name }
       end
       cd.fields.each { |f| value_error "#{csr_name(symtab)}.#{f.name} not RO" unless f.type(symtab) == "RO" }
 
@@ -5991,7 +6250,7 @@ module Idl
     end
 
     def type_check(symtab)
-      design = symtab.design
+      cfg_arch = symtab.cfg_arch
 
       csr.type_check(symtab)
       expression.type_check(symtab)
@@ -6028,7 +6287,11 @@ module Idl
   # @api private
   class CsrFunctionCallSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
-      CsrFunctionCallAst.new(input, interval, function_name.text_value, csr.to_ast)
+      args = []
+      args << function_arg_list.first.to_ast unless function_arg_list.first.empty?
+      args += function_arg_list.rest.elements.map { |e| e.expression.to_ast }
+
+      CsrFunctionCallAst.new(input, interval, function_name.text_value, csr.to_ast, args)
     end
   end
 
@@ -6044,32 +6307,41 @@ module Idl
     attr_reader :function_name
 
     def csr = @children[0]
+    def args = @children[1..]
 
-    def initialize(input, interval, function_name, csr)
-      super(input, interval, [csr])
+    def initialize(input, interval, function_name, csr, args)
+      super(input, interval, [csr] + args)
       @function_name = function_name
     end
 
     def type_check(symtab)
-      unless ["sw_read", "address"].include?(function_name)
+      csr.type_check(symtab)
+
+      if ["sw_read", "address"].include?(function_name)
+        type_error "unexpected argument(s)" unless args.empty?
+      elsif ["implemented_without?"].include?(function_name)
+        type_error "Expecting one argument" unless args.size == 1
+        type_error "Expecting an ExtensionName" unless args[0].type(symtab).kind == :enum_ref && args[0].class_name == "ExtensionName"
+      else
         type_error "'#{function_name}' is not a supported CSR function call"
       end
-
-      csr.type_check(symtab)
     end
 
     def type(symtab)
-      design = symtab.design
+      cfg_arch = symtab.cfg_arch
 
       case function_name
       when "sw_read"
         if csr_known?(symtab)
-          Type.new(:bits, width: design.arch.csr(csr.csr_name(symtab)).length(design))
+          l = cfg_arch.csr(csr.csr_name(symtab)).length
+          Type.new(:bits, width: (l.nil? ? :unknown : l))
         else
           Type.new(:bits, width: symtab.mxlen.nil? ? :unknown : symtab.mxlen)
         end
       when "address"
         Type.new(:bits, width: 12)
+      when "implemented_without?"
+        ConstBoolType
       else
         internal_error "No function '#{function_name}' for CSR. call type check first!"
       end
@@ -6100,6 +6372,15 @@ module Idl
         value_error "CSR not knowable" unless csr_known?(symtab)
         cd = csr_def(symtab)
         cd.address
+      when "implemented_without?"
+        value_error "CSR not knowable" unless csr_known?(symtab)
+        cd = csr_def(symtab)
+        extension_name_enum_type = symtab.get("ExtensionName")
+        enum_value = args[0].value(symtab)
+        idx = extension_name_enum_type.element_values.index(enum_value)
+        ext_name = extension_name_enum_type.element_names[idx]
+        ext = symtab.cfg_arch.extension(ext_name)
+        cd.defined_by_condition.satisfied_by?(symtab.cfg_arch.possible_extensions - ext)
       else
         internal_error "TODO: #{function_name}"
       end
@@ -6126,10 +6407,10 @@ module Idl
     def type_check(symtab)
       if idx.is_a?(IntLiteralAst)
         # make sure this value is a defined CSR
-        index = symtab.design.arch.csrs.index { |csr| csr.address == idx.value(symtab) }
+        index = symtab.cfg_arch.csrs.index { |csr| csr.address == idx.value(symtab) }
         type_error "No csr number '#{idx.value(symtab)}' was found" if index.nil?
       else
-        csr = symtab.design.arch.csr(idx.text_value)
+        csr = symtab.cfg_arch.csr(idx.text_value)
         type_error "No csr named '#{idx.text_value}' was found" if csr.nil?
       end
     end
@@ -6137,15 +6418,15 @@ module Idl
     def csr_def(symtab)
       if idx.is_a?(IntLiteralAst)
         # make sure this value is a defined CSR
-        symtab.design.arch.csrs.find { |csr| csr.address == idx.text_value.to_i }
+        symtab.cfg_arch.csrs.find { |csr| csr.address == idx.text_value.to_i }
       else
-        symtab.design.arch.csr(idx.text_value)
+        symtab.cfg_arch.csr(idx.text_value)
       end
     end
 
     # @!macro type
     def type(symtab)
-      CsrType.new(csr_def(symtab), symtab.design)
+      CsrType.new(csr_def(symtab), symtab.cfg_arch)
     end
 
     def name(symtab)

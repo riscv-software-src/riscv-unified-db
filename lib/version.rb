@@ -148,12 +148,33 @@ class RequirementSpec
       @version_str = m[2]
       @version_spec = VersionSpec.new(@version_str)
     else
-      raise ArgumentError, "Bad requirement string '#{requirement}'"
+      raise ArgumentError, "Bad requirement string '#{requirement}' #{REQUIREMENT_REGEX}"
     end
   end
 
   def to_s
     "#{@op} #{@version_str}"
+  end
+
+  # invert the requirement
+  def invert!
+    case @op
+    when ">="
+      @op = "<"
+    when ">"
+      @op = "<="
+    when "<="
+      @op = ">"
+    when "<"
+      @op = ">="
+    when "="
+      @op = "!="
+    when "!="
+      @op = "="
+    when "~>"
+      @op = "!~>"
+    end
+    self
   end
 
   # @param version [String] A version string
@@ -188,7 +209,12 @@ class RequirementSpec
       matching_ver = ext.versions.find { |v| v.version_spec == v_spec }
       raise "Can't find version?" if matching_ver.nil?
 
-      matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.arch))
+      matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.cfg_arch))
+    when "!~>" # not a legal spec, but used for inversion
+      matching_ver = ext.versions.find { |v| v.version_spec == v_spec }
+      raise "Can't find version?" if matching_ver.nil?
+
+      !matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.cfg_arch))
     end
   end
 end

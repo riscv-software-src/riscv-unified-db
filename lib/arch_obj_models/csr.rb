@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "database_obj"
+require_relative "obj"
 
 # CSR definition
 class Csr < DatabaseObject
@@ -46,68 +46,56 @@ class Csr < DatabaseObject
   # @return [Boolean] true if this CSR is defined regardless of the effective XLEN
   def defined_in_all_bases? = @data["base"].nil?
 
-  # @param design [Design] The design
+  # @return [Boolean] true if this CSR is defined when XLEN is xlen
+  # @param xlen [32,64] base
+  def defined_in_base?(xlen) = @data["base"].nil? || @data["base"] == xlen
+
+  # @param cfg_arch [ConfiguredArchitecture] A configuration
   # @return [Boolean] Whether or not the format of this CSR changes when the effective XLEN changes in some mode
-  def format_changes_with_xlen?(design)
-    dynamic_length?(design) ||
-      implemented_fields(design).any? do |f|
-        f.dynamic_location?(design)
-      end
+  def format_changes_with_xlen?
+    dynamic_length? || possible_fields.any?(&:dynamic_location?)
   end
 
-  # @param design [Design] The design
   # @return [Array<Idl::FunctionDefAst>] List of functions reachable from this CSR's sw_read or a field's sw_write function
-  def reachable_functions(design)
+  def reachable_functions(effective_xlen = nil)
     return @reachable_functions unless @reachable_functions.nil?
 
     fns = []
 
     if has_custom_sw_read?
-      ast = pruned_sw_read_ast(design)
-      symtab = design.symtab.deep_clone
-      symtab.push(ast)
-      fns.concat(ast.reachable_functions(symtab))
+      xlens =
+        if cfg_arch.multi_xlen?
+          defined_in_all_bases? ? [32, 64] : [base]
+        else
+          [cfg_arch.possible_xlens[0]]
+        end
+      xlens.each do |xlen|
+        ast = pruned_sw_read_ast(xlen)
+        symtab = cfg_arch.symtab.deep_clone
+        symtab.push(ast)
+        fns.concat(ast.reachable_functions(symtab))
+      end
     end
 
-    if design.multi_xlen?
-      implemented_fields_for(design, 32).each do |field|
-        fns.concat(field.reachable_functions(design, 32))
+    if cfg_arch.multi_xlen?
+      possible_fields_for(32).each do |field|
+        fns.concat(field.reachable_functions(32))
       end
-      implemented_fields_for(design, 64).each do |field|
-        fns.concat(field.reachable_functions(design, 64))
+      possible_fields_for(64).each do |field|
+        fns.concat(field.reachable_functions(64))
       end
     else
-      implemented_fields_for(design, design.mxlen).each do |field|
-        fns.concat(field.reachable_functions(design, design.mxlen))
+      possible_fields_for(cfg_arch.mxlen).each do |field|
+        fns.concat(field.reachable_functions(cfg_arch.mxlen))
       end
     end
 
     @reachable_functions = fns.uniq
   end
 
-  # @param design [Design]
-  # @return [Array<Idl::FunctionDefAst>] List of functions reachable from this CSR's sw_read or a field's sw_wirte function, irrespective of context
-  def reachable_functions_unevaluated(design)
-    return @reachable_functions_unevaluated unless @reachable_functions_unevaluated.nil?
-
-    fns = []
-
-    if has_custom_sw_read?
-      ast = sw_read_ast(design)
-      fns.concat(ast.reachable_functions_unevaluated(design))
-    end
-
-    fields.each do |field|
-      fns.concat(field.reachable_functions_unevaluated(design))
-    end
-
-    @reachable_functions_unevaluated = fns.uniq
-  end
-
-  # @param design [Design] The design
   # @return [Boolean] Whether or not the length of the CSR depends on a runtime value
   #                   (e.g., mstatus.SXL)
-  def dynamic_length?(design)
+  def dynamic_length?
     return false if @data["length"].is_a?(Integer)
 
     # when a CSR is only defined in one base, its length can't change
@@ -117,24 +105,24 @@ class Csr < DatabaseObject
     when "MXLEN"
       # mxlen can never change at runtime, so if we have it in the config, the length is not dynamic
       # if we don't have it in the config, we don't know what the length is
-      design.mxlen.nil?
+      cfg_arch.mxlen.nil?
     when "SXLEN"
       # dynamic if either we don't know SXLEN or SXLEN is explicitly mutable
-      [nil, 3264].include?(design.param_values["SXLEN"])
+      [nil, 3264].include?(cfg_arch.param_values["SXLEN"])
     when "VSXLEN"
       # dynamic if either we don't know VSXLEN or VSXLEN is explicitly mutable
-      [nil, 3264].include?(design.param_values["VSXLEN"])
+      [nil, 3264].include?(cfg_arch.param_values["VSXLEN"])
     else
       raise "Unexpected length"
     end
   end
 
-  # @param design [Design]
+  # @param cfg_arch [ConfiguredArchitecture] Architecture definition
   # @return [Integer] Smallest length of the CSR in any mode
-  def min_length(design)
+  def min_length
     case @data["length"]
     when "MXLEN", "SXLEN", "VSXLEN"
-      32
+      @cfg_arch.possible_xlens.min
     when Integer
       @data["length"]
     else
@@ -142,14 +130,14 @@ class Csr < DatabaseObject
     end
   end
 
-  # @param design [Design] The design (can be nil if the length is not dependent on a config parameter)
+  # @param cfg_arch [ConfiguredArchitecture] A configuration (can be nil if the length is not dependent on a config parameter)
   # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
   # @return [Integer] Length, in bits, of the CSR, given effective_xlen
-  # @return [nil] if the length cannot be determined from the design (e.g., because SXLEN is unknown and +effective_xlen+ was not provided)
-  def length(design, effective_xlen = nil)
+  # @return [nil] if the length cannot be determined from the cfg_arch (e.g., because SXLEN is unknown and +effective_xlen+ was not provided)
+  def length(effective_xlen = nil)
     case @data["length"]
     when "MXLEN"
-      return design.mxlen unless design.mxlen.nil?
+      return cfg_arch.mxlen unless cfg_arch.mxlen.nil?
 
       if !@data["base"].nil?
         @data["base"]
@@ -158,11 +146,11 @@ class Csr < DatabaseObject
         effective_xlen
       end
     when "SXLEN"
-      if design.param_values.key?("SXLEN")
-        if design.param_values["SXLEN"] == 3264
+      if cfg_arch.param_values.key?("SXLEN")
+        if cfg_arch.param_values["SXLEN"] == 3264
           effective_xlen
         else
-          design.param_values["SXLEN"]
+          cfg_arch.param_values["SXLEN"]
         end
       elsif !@data["base"].nil?
         # if this CSR is only available in one base, then we know its length
@@ -172,11 +160,11 @@ class Csr < DatabaseObject
         effective_xlen
       end
     when "VSXLEN"
-      if design.param_values.key?("VSXLEN")
-        if design.param_values["VSXLEN"] == 3264
+      if cfg_arch.param_values.key?("VSXLEN")
+        if cfg_arch.param_values["VSXLEN"] == 3264
           effective_xlen
         else
-          design.param_values["VSXLEN"]
+          cfg_arch.param_values["VSXLEN"]
         end
       elsif !@data["base"].nil?
         # if this CSR is only available in one base, then we know its length
@@ -193,28 +181,28 @@ class Csr < DatabaseObject
   end
 
   # @return [Integer] The largest length of this CSR in any valid mode/xlen for the config
-  def max_length(design)
+  def max_length
     return @data["base"] unless @data["base"].nil?
 
     case @data["length"]
     when "MXLEN"
-      design.mxlen || 64
+      cfg_arch.mxlen || 64
     when "SXLEN"
-      if design.param_values.key?("SXLEN")
-        if design.param_values["SXLEN"] == 3264
+      if cfg_arch.param_values.key?("SXLEN")
+        if cfg_arch.param_values["SXLEN"] == 3264
           64
         else
-          design.param_values["SXLEN"]
+          cfg_arch.param_values["SXLEN"]
         end
       else
         64
       end
     when "VSXLEN"
-      if design.param_values.key?("VSXLEN")
-        if design.param_values["VSXLEN"] == 3264
+      if cfg_arch.param_values.key?("VSXLEN")
+        if cfg_arch.param_values["VSXLEN"] == 3264
           64
         else
-          design.param_values["VSXLEN"]
+          cfg_arch.param_values["VSXLEN"]
         end
       else
         64
@@ -254,10 +242,10 @@ class Csr < DatabaseObject
     end
   end
 
-  # @param design [Design] The design
+  # @param cfg_arch [ConfiguredArchitecture] A configuration
   # @return [String] Pretty-printed length string
-  def length_pretty(design, effective_xlen=nil)
-    if dynamic_length?(design)
+  def length_pretty(effective_xlen=nil)
+    if dynamic_length?
       cond =
         case @data["length"]
         when "MXLEN"
@@ -272,14 +260,14 @@ class Csr < DatabaseObject
 
       if effective_xlen.nil?
         <<~LENGTH
-          #{length(design, 32)} when #{cond.sub('%%', '0')}
-          #{length(design, 64)} when #{cond.sub('%%', '1')}
+          #{length(32)} when #{cond.sub('%%', '0')}
+          #{length(64)} when #{cond.sub('%%', '1')}
         LENGTH
       else
-        "#{length(design, effective_xlen)}-bit"
+        "#{length(effective_xlen)}-bit"
       end
     else
-      "#{length(design)}-bit"
+      "#{length()}-bit"
     end
   end
 
@@ -306,39 +294,21 @@ class Csr < DatabaseObject
     Asciidoctor.convert description
   end
 
-  # @param design [Design] The design
+  # @param cfg_arch [ConfiguredArchitecture] A configuration
   # @return [Array<CsrField>] All implemented fields for this CSR at the given effective XLEN, sorted by location (smallest location first)
   #                           Excluded any fields that are defined by unimplemented extensions or a base that is not effective_xlen
-  def implemented_fields_for(design, effective_xlen)
-    @implemented_fields_for ||= {}
-    key = [design.name, effective_xlen].hash
-
-    return @implemented_fields_for[key] if @implemented_fields_for.key?(key)
-
-    @implemented_fields_for[key] =
-      implemented_fields(design).select do |f|
+  def possible_fields_for(effective_xlen)
+    @possible_fields_for ||=
+      possible_fields.select do |f|
         !f.key?("base") || f.base == effective_xlen
       end
   end
 
-  # @param design [Design] The design
   # @return [Array<CsrField>] All implemented fields for this CSR
   #                           Excluded any fields that are defined by unimplemented extensions
-  def implemented_fields(design)
-    return @implemented_fields unless @implemented_fields.nil?
-
-    implemented_bases =
-      if design.param_values["SXLEN"] == 3264 ||
-         design.param_values["UXLEN"] == 3264 ||
-         design.param_values["VSXLEN"] == 3264 ||
-         design.param_values["VUXLEN"] == 3264
-        [32, 64]
-      else
-        [design.param_values["XLEN"]]
-      end
-
-    @implemented_fields = fields.select do |f|
-      f.exists_in_design?(design)
+  def possible_fields
+    @possible_fields ||= fields.select do |f|
+      f.exists_in_cfg?(cfg_arch)
     end
   end
 
@@ -377,15 +347,15 @@ class Csr < DatabaseObject
     field_hash[field_name.to_s]
   end
 
-  # @param design [Design] The design
+  # @param cfg_arch [ConfiguredArchitecture] A configuration
   # @param effective_xlen [Integer] The effective XLEN to apply, needed when field locations change with XLEN in some mode
   # @return [Idl::BitfieldType] A bitfield type that can represent all fields of the CSR
-  def bitfield_type(design, effective_xlen = nil)
+  def bitfield_type(cfg_arch, effective_xlen = nil)
     Idl::BitfieldType.new(
       "Csr#{name.capitalize}Bitfield",
-      length(design, effective_xlen),
+      length(effective_xlen),
       fields_for(effective_xlen).map(&:name),
-      fields_for(effective_xlen).map { |f| f.location(design, effective_xlen) }
+      fields_for(effective_xlen).map { |f| f.location(effective_xlen) }
     )
   end
 
@@ -395,15 +365,20 @@ class Csr < DatabaseObject
   end
 
   # @param symtab [Idl::SymbolTable] Symbol table with globals
-  def type_checked_sw_read_ast(symtab)
+  def type_checked_sw_read_ast(effective_xlen)
     @type_checked_sw_read_asts ||= {}
-    ast = @type_checked_sw_read_asts[symtab.hash]
+    ast = @type_checked_sw_read_asts[effective_xlen.nil? ? :none : effective_xlen]
     return ast unless ast.nil?
 
-    symtab_hash = symtab.hash
-    symtab = symtab.global_clone
+    symtab = cfg_arch.symtab.global_clone
     symtab.push(ast)
     # all CSR instructions are 32-bit
+    unless effective_xlen.nil?
+      symtab.add(
+        "__effective_xlen",
+        Idl::Var.new("__effective_xlen", Idl::Type.new(:bits, width: 6), effective_xlen)
+      )
+    end
     symtab.add(
       "__instruction_encoding_size",
       Idl::Var.new("__instruction_encoding_size", Idl::Type.new(:bits, width: 6), 32)
@@ -414,18 +389,18 @@ class Csr < DatabaseObject
      )
 
     ast = sw_read_ast(symtab)
-    symtab.design.idl_compiler.type_check(
+    symtab.cfg_arch.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{name}].sw_read()"
     )
     symtab.pop
     symtab.release
-    @type_checked_sw_read_asts[symtab_hash] = ast
+    @type_checked_sw_read_asts[effective_xlen.nil? ? :none : effective_xlen] = ast
   end
 
   # @return [FunctionBodyAst] The abstract syntax tree of the sw_read() function
-  # @param design [Design] The design
+  # @param cfg_arch [ConfiguredArchitecture] A configuration
   def sw_read_ast(symtab)
     raise ArgumentError, "Argument should be a symtab" unless symtab.is_a?(Idl::SymbolTable)
 
@@ -433,7 +408,7 @@ class Csr < DatabaseObject
     return nil if @data["sw_read()"].nil?
 
     # now, parse the function
-    @sw_read_ast = symtab.design.idl_compiler.compile_func_body(
+    @sw_read_ast = symtab.cfg_arch.idl_compiler.compile_func_body(
       @data["sw_read()"],
       return_type: Idl::Type.new(:bits, width: 128), # big int to hold special return values
       name: "CSR[#{name}].sw_read()",
@@ -450,14 +425,10 @@ class Csr < DatabaseObject
     @sw_read_ast
   end
 
-  def pruned_sw_read_ast(design)
-    @pruned_sw_read_asts ||= {}
-    ast = @pruned_sw_read_asts[design.name]
-    return ast unless ast.nil?
-
-    ast = type_checked_sw_read_ast(design.symtab)
-
-    symtab = design.symtab.global_clone
+  # @param ast [Idl::AstNode] An abstract syntax tree that will be evaluated with the returned symbol table
+  # @return [IdL::SymbolTable] A symbol table populated with globals and syms specific to this CSR
+  def fill_symtab(ast, effective_xlen)
+    symtab = @cfg_arch.symtab.global_clone
     symtab.push(ast)
     # all CSR instructions are 32-bit
     symtab.add(
@@ -468,11 +439,32 @@ class Csr < DatabaseObject
       "__expected_return_type",
       Idl::Type.new(:bits, width: 128)
     )
+    if symtab.get("XLEN").value.nil?
+      symtab.add(
+        "XLEN",
+        Idl::Var.new(
+          "XLEN",
+          Idl::Type.new(:bits, width: 6, qualifiers: [:const]),
+          effective_xlen,
+          param: true
+        )
+      )
+    end
+    symtab
+  end
+
+  def pruned_sw_read_ast(effective_xlen)
+    @pruned_sw_read_ast ||= {}
+    return @pruned_sw_read_ast[effective_xlen] unless @pruned_sw_read_ast[effective_xlen].nil?
+
+    ast = type_checked_sw_read_ast(effective_xlen)
+
+    symtab = fill_symtab(ast, effective_xlen)
 
     ast = ast.prune(symtab)
-    ast.freeze_tree(design.symtab)
+    ast.freeze_tree(@cfg_arch.symtab)
 
-    design.idl_compiler.type_check(
+    @cfg_arch.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{name}].sw_read()"
@@ -481,7 +473,7 @@ class Csr < DatabaseObject
     symtab.pop
     symtab.release
 
-    @pruned_sw_read_asts[design.name] = ast
+    @pruned_sw_read_ast[effective_xlen] = ast
   end
 
   # @example Result for an I-type instruction
@@ -493,12 +485,12 @@ class Csr < DatabaseObject
   #     {bits: 12, name: 'imm12',     attr: [''], type: 6}
   #   ]}
   #
-  # @param design [Design] The design
+  # @param cfg_arch [ConfiguredArchitecture] A configuration
   # @param effective_xlen [Integer,nil] Effective XLEN to use when CSR length is dynamic
   # @param exclude_unimplemented [Boolean] If true, do not create include unimplemented fields in the figure
-  # @param optional_type [Integer] Wavedrom type (Fill color) for fields that are optional (not mandatory) in a partially-specified design
+  # @param optional_type [Integer] Wavedrom type (Fill color) for fields that are optional (not mandatory) in a partially-specified cfg_arch
   # @return [Hash] A representation of the WaveDrom drawing for the CSR (should be turned into JSON for wavedrom)
-  def wavedrom_desc(design, effective_xlen, exclude_unimplemented: false, optional_type: 2)
+  def wavedrom_desc(cfg_arch, effective_xlen, exclude_unimplemented: false, optional_type: 2)
     desc = {
       "reg" => []
     }
@@ -506,56 +498,64 @@ class Csr < DatabaseObject
 
     field_list =
       if exclude_unimplemented
-        implemented_fields_for(design, effective_xlen)
+        possible_fields_for(effective_xlen)
       else
         fields_for(effective_xlen)
       end
 
-    field_list.sort! { |a, b| a.location(design, effective_xlen).min <=> b.location(design, effective_xlen).min }
+    field_list.sort! { |a, b| a.location(effective_xlen).min <=> b.location(effective_xlen).min }
     field_list.each do |field|
 
-      if field.location(design, effective_xlen).min != last_idx + 1
+      if field.location(effective_xlen).min != last_idx + 1
         # have some reserved space
-        n = field.location(design, effective_xlen).min - last_idx - 1
-        raise "negative reserved space? #{n} #{name} #{field.location(design, effective_xlen).min} #{last_idx + 1}" if n <= 0
+        n = field.location(effective_xlen).min - last_idx - 1
+        raise "negative reserved space? #{n} #{name} #{field.location(effective_xlen).min} #{last_idx + 1}" if n <= 0
 
         desc["reg"] << { "bits" => n, type: 1 }
       end
-      if design.partially_configured? && field.optional_in_design?(design)
-        desc["reg"] << { "bits" => field.location(design, effective_xlen).size, "name" => field.name, type: optional_type }
+      if cfg_arch.partially_configured? && field.optional_in_cfg?(cfg_arch)
+        desc["reg"] << { "bits" => field.location(effective_xlen).size, "name" => field.name, type: optional_type }
       else
-        desc["reg"] << { "bits" => field.location(design, effective_xlen).size, "name" => field.name, type: 3 }
+        desc["reg"] << { "bits" => field.location(effective_xlen).size, "name" => field.name, type: 3 }
       end
-      last_idx = field.location(design, effective_xlen).max
+      last_idx = field.location(effective_xlen).max
     end
-    if !field_list.empty? && (field_list.last.location(design, effective_xlen).max != (length(design, effective_xlen) - 1))
+    if !field_list.empty? && (field_list.last.location(effective_xlen).max != (length(effective_xlen) - 1))
       # reserved space at the end
-      desc["reg"] << { "bits" => (length(design, effective_xlen) - 1 - last_idx), type: 1 }
+      desc["reg"] << { "bits" => (length(effective_xlen) - 1 - last_idx), type: 1 }
       # desc['reg'] << { 'bits' => 1, type: 1 }
     end
-    desc["config"] = { "bits" => length(design, effective_xlen) }
-    desc["config"]["lanes"] = length(design, effective_xlen) / 16
+    desc["config"] = { "bits" => length(effective_xlen) }
+    desc["config"]["lanes"] = length(effective_xlen) / 16
     desc
   end
 
-  # @param design [Design]
-  # @return [Boolean] whether or not the CSR is possibly implemented given the supplies config options
-  def exists_in_design?(design)
-    if design.fully_configured?
-      (@data["base"].nil? || (design.possible_xlens.include? @data["base"])) &&
-        design.transitive_implemented_ext_vers.any? { |ext_ver| defined_by?(ext_ver) }
-    else
-      (@data["base"].nil? || (design.possible_xlens.include? @data["base"])) &&
-        design.prohibited_ext_reqs.none? { |ext_req| ext_req.satisfying_versions.any? { |ext_ver| defined_by?(ext_ver) } }
-    end
+  # @param cfg_arch [ConfiguredArchitecture] Architecture def
+  # @return [Boolean] whether or not the CSR is possibly implemented given the supplied config options
+  def exists_in_cfg?(cfg_arch)
+    @exists_in_cfg ||=
+      cfg_arch.possible_csrs.include?(self)
   end
 
-  # @param design [Design]
+  # @param cfg_arch [ConfiguredArchitecture] Architecture def
   # @return [Boolean] whether or not the CSR is optional in the config
-  def optional_in_design?(design)
-    raise "optional_in_design? should only be used by a partially-specified arch def" unless design.partially_configured?
+  def optional_in_cfg?(cfg_arch)
+    raise "optional_in_cfg? should only be used by a partially-specified arch def" unless cfg_arch.partially_configured?
 
-    exists_in_design?(design) &&
-      design.mandatory_ext_reqs.all? { |ext_req| ext_req.satisfying_versions.none? { |ext_ver| defined_by?(ext_ver) } }
+    # exists in config and isn't satisfied by some combo of mandatory extensions
+    @optional_in_cfg ||=
+      exists_in_cfg?(cfg_arch) &&
+      !defined_by_condition.satisfied_by? do |defining_ext_req|
+        cfg_arch.mandatory_extension_reqs.any? do |mand_ext_req|
+          mand_ext_req.satisfying_versions.any? do |mand_ext_ver|
+            defining_ext_req.satisfied_by?(mand_ext_ver)
+          end
+        end
+      end
+  end
+
+  # @return [Boolean] Whether or not the presence of ext_ver affects this CSR definition
+  def affected_by?(ext_ver)
+    defined_by_condition.possibly_satisfied_by?(ext_ver) || fields.any? { |field| field.affected_by?(ext_ver) }
   end
 end

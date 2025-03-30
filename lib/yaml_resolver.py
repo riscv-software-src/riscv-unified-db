@@ -167,6 +167,20 @@ def write_yaml(file_path: str | Path, data):
         yaml.dump(data, file)
 
 
+def write_json(file_path: str | Path, data):
+    """Write data as JSON to file_path
+
+    Parameters
+    ----------
+    file_path : str, Path
+      Filesystem path to the JSON file
+    data : dict, list
+      The object to write as JSON
+    """
+    with open(file_path, "w") as file:
+        json.dump(data, file)
+
+
 def dig(obj: dict, *keys):
     """Digs data out of dictionary obj
 
@@ -520,15 +534,12 @@ def resolve_file(
         resolved_obj["$source"] = os.path.join(args.arch_dir, rel_path)
 
         if do_checks and ("$schema" in resolved_obj):
-            schema_uri = resolved_obj["$schema"]
-            schema_relpath = schema_uri.split("#")[0]
-            schema = _get_schema(schema_uri)
+            schema = _get_schema(resolved_obj["$schema"])
             try:
                 schema.validate(instance=resolved_obj)
             except ValidationError as e:
                 print(f"JSON Schema Validation Error for {rel_path}:")
                 print(best_match(schema.iter_errors(resolved_obj)).message)
-                print(f"  Used schema {schema_relpath}")
                 exit(1)
 
         write_yaml(resolved_path, resolved_obj)
@@ -600,15 +611,20 @@ if __name__ == "__main__":
             if args.no_progress
             else tqdm(arch_paths, ascii=True, desc="Resolving arch")
         )
+        abs_resolved_dir = (
+            f"{UDB_ROOT}/{args.resolved_dir}"
+            if not os.path.isabs(args.resolved_dir)
+            else f"{args.resolved_dir}"
+        )
         for arch_path in iter:
-            resolved_arch_path = (
-                f"{UDB_ROOT}/{args.resolved_dir}/{arch_path}"
-                if not os.path.isabs(args.resolved_dir)
-                else f"{args.resolved_dir}/{arch_path}"
-            )
+            resolved_arch_path = f"{abs_resolved_dir}/{arch_path}"
             os.makedirs(os.path.dirname(resolved_arch_path), exist_ok=True)
             resolve_file(
                 arch_path, args.arch_dir, args.resolved_dir, not args.no_checks
             )
+
+        # create index
+        write_yaml(f"{abs_resolved_dir}/index.yaml", arch_paths)
+        write_json(f"{abs_resolved_dir}/index.json", arch_paths)
 
         print(f"[INFO] Resolved architecture files written to {args.resolved_dir}")
