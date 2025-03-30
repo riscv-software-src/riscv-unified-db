@@ -4,8 +4,8 @@ $schema: "csr_schema.json#"
 kind: csr
 name: vl
 long_name: Vector Length
-address: 0x0 #??
-priv_mode: M #??
+address: 0xC20
+priv_mode: U #should be URO
 length: MXLEN
 description: Holds an unsigned integer specifying number of elements to be updated with results from a vector instruction.
 definedBy: V

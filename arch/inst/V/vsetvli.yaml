@@ -39,7 +39,7 @@ operation(): |
 
   CSR[vtype] = zimm11;
   X[rd] = CSR[vl];
-  CSR[vstart] = 0;
+  CSR[vstart].VALUE = 0;
 sail(): |
   {
     let VLEN_pow      = get_vlen_pow();

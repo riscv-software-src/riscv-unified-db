@@ -4,8 +4,8 @@ $schema: "csr_schema.json#"
 kind: csr
 name: vlenb
 long_name: Vector Length (Bytes)
-address: 0x0 #??
-priv_mode: M #??
+address: 0xC22
+priv_mode: U #should be URO
 length: MXLEN
 description: Holds the value VLEN/8, the vector register length in bytes.
 definedBy: V

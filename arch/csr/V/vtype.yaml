@@ -4,8 +4,8 @@ $schema: "csr_schema.json#"
 kind: csr
 name: vtype
 long_name: Vector Type
-address: 0x0 #??
-priv_mode: M #??
+address: 0xC21
+priv_mode: U #should be URO
 length: MXLEN
 description: Provides the default type used to interpret the contents of the vector registrer file.
 definedBy: V
