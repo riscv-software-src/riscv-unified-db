@@ -286,8 +286,9 @@ versions:
     - Fix IDL code and description increasing shift to 6 bit for qc.extdpr and qc.extdprh instructions
     - Fix IDL code and description increasing shift to 6 bit for qc.extdupr and qc.extduprh instructions
     - Fix IDL code sign extension logic for qc.lieq instruction
+    - Fix wrong mantissa bit selection in qc.norm, qc.normu and qc.normeu instructions
   implies:
-  - { name: Xqcia, version: "0.5.0" }
+  - { name: Xqcia, version: "0.6.0" }
   - { name: Xqciac, version: "0.3.0" }
   - { name: Xqcibi, version: "0.2.0" }
   - { name: Xqcibm, version: "0.7.0" }
