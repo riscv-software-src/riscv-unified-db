@@ -239,7 +239,7 @@ namespace :test do
 
   task schema: "#{$root}/.stamps/resolve-_.stamp" do
     puts "Checking arch files against schema.."
-    Architecture.new("RISC-V Architecture", "#{$root}/gen/resolved_arch/_").validate(show_progress: true)
+    Architecture.new("#{$root}/gen/resolved_arch/_").validate(show_progress: true)
     puts "All files validate against their schema"
   end
 

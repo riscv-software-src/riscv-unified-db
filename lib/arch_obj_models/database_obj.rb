@@ -27,24 +27,36 @@
 class DatabaseObject
   attr_reader :data, :data_path, :name, :long_name, :description
 
-  # @return [Architecture] Architectural standards
-  attr_reader :arch
+  # @return [Architecture] If only a specification (no config) is known
+  # @return [ConfiguredArchitecture] If a specification and config is known
+  # @return [nil] If neither is known
+  attr_reader :arch       # Use when Architecture class is sufficient
+
+  # @return [ConfiguredArchitecture] If a specification and config is known
+  # @return [nil] Otherwise
+  attr_reader :cfg_arch   # Use when extra stuff provided by ConfiguredArchitecture is required
 
   def kind = @data["kind"]
 
   # @param data [Hash<String,Object>] Hash with fields to be added
   # @param data_path [Pathname] Path to the data file
-  # @param arch [Architecture] Architectural standards
+  # @param arch [Architecture] The RISC-V database
   def initialize(data, data_path, arch)
-    raise ArgumentError, "Bad data" unless data.is_a?(Hash)
     raise ArgumentError, "Need Architecture class but it's a #{arch.class}" unless arch.is_a?(Architecture)
+    raise ArgumentError, "Bad data" unless data.is_a?(Hash)
 
     @data = data
     @data_path = data_path
+    if arch.is_a?(ConfiguredArchitecture)
+      @cfg_arch = arch
+    end
     @arch = arch
     @name = data["name"]
     @long_name = data["long_name"]
     @description = data["description"]
+
+    @sem = Concurrent::Semaphore.new(1)
+    @cache = Concurrent::Hash.new
   end
 
   # @return [Array<CertNormativeRule>]
@@ -242,12 +254,14 @@ class DatabaseObject
   end
 
   # The raw content of definedBy in the data.
-  # @note Generally, you should prefer to use {#defined_by?}, etc. from Ruby
+  # @note Generally, you should prefer to use {#defined_by_condition}, etc. from Ruby
   #
   # @return [String] An extension name
   # @return [Array(String, Number)] An extension name and versions
   # @return [Array<*>] A list of extension names or extension names and versions
-  def definedBy = @data["definedBy"]
+  def definedBy
+    @data["definedBy"]
+  end
 
   def inspect
     self.class.name + "##{name}"
@@ -264,56 +278,22 @@ class DatabaseObject
   # @return (see Hash#key?)
   def key?(k) = @data.key?(k)
 
-  # @param ext_ver [ExtensionVersion] Version of the extension
-  # @param design [Design] The backend design
-  # @return [Boolean] Whether or not the object is defined-by the given ExtensionVersion in the given Design.
-  def in_scope?(ext_ver, design)
-    raise ArgumentError, "Require an ExtensionVersion object but got a #{ext_ver.class} object" unless ext_ver.is_a?(ExtensionVersion)
-    raise ArgumentError, "Require an IDesign object but got a #{design.class} object" unless design.is_a?(IDesign)
+  def defer(fn_name, &block)
+    cache_value = @cache[fn_name]
+    return cache_value unless cache_value.nil?
 
-    defined_by?(ext_ver)
+    raise "Missing block" unless block_given?
+
+    @cache[fn_name] ||= yield
   end
 
-  # @overload defined_by?(ext_name, ext_version)
-  #   @param ext_name [#to_s] An extension name
-  #   @param ext_version [#to_s] A specific extension version
-  #   @return [Boolean] Whether or not the object is defined by extension `ext`, version `version`
-  # @overload defined_by?(ext_version)
-  #   @param ext_version [ExtensionVersion] An extension version
-  #   @return [Boolean] Whether or not the object is defined by ext_version
-  def defined_by?(*args)
-    ext_ver =
-      if args.size == 1
-        raise ArgumentError, "Parameter must be an ExtensionVersion" unless args[0].is_a?(ExtensionVersion)
-
-        args[0]
-      elsif args.size == 2
-        raise ArgumentError, "First parameter must be an extension name" unless args[0].respond_to?(:to_s)
-        raise ArgumentError, "First parameter must be an extension version" unless args[1].respond_to?(:to_s)
-
-        ExtensionVersion.new(args[0], args[1], arch)
-      else
-        raise ArgumentError, "Unsupported number of arguments (#{args.size})"
-      end
-
-    defined_by_condition.satisfied_by? { |ext_req| ext_req.satisfied_by?(ext_ver) }
-  end
-
-  # because of multiple ("allOf") conditions, we generally can't return a list of extension versions here....
-  # # @return [Array<ExtensionVersion>] Extension(s) that define the instruction. If *any* requirement is met, the instruction is defined.
-  # def defined_by
-  #   raise "ERROR: definedBy is nul for #{name}" if @data["definedBy"].nil?
-
-  #   SchemaCondition.new(@data["definedBy"], @arch).satisfying_ext_versions
-  # end
-
-  # @return [SchemaCondition] Extension(s) that define the instruction. If *any* requirement is met, the instruction is defined.
+  # @return [ExtensionRequirementExpression] Extension(s) that define the instruction. If *any* requirement is met, the instruction is defined.
   def defined_by_condition
     @defined_by_condition ||=
       begin
         raise "ERROR: definedBy is nul for #{name}" if @data["definedBy"].nil?
 
-        SchemaCondition.new(@data["definedBy"], @arch)
+        ExtensionRequirementExpression.new(@data["definedBy"], @cfg_arch)
       end
   end
 
@@ -435,7 +415,61 @@ class Person
   end
 end
 
-# represents a JSON Schema composition, e.g.:
+# represents an `implies:` entry for an extension
+# which is a list of extension versions, zero or more of which
+# may be conditional (via an ExtensionRequirementExpression)
+class ConditionalExtensionVersionList
+  def initialize(ary, cfg_arch)
+    @ary = ary
+    @cfg_arch = cfg_arch
+  end
+
+  def empty? = @ary.nil? || @ary.empty?
+
+  def size = empty? ? 0 : eval.size
+
+  def each(&block)
+    raise "Missing block" unless block_given?
+
+    eval.each(&block)
+  end
+
+  def map(&block)
+    eval.map(&block)
+  end
+
+  # Returns array of ExtensionVersions, along with a condition under which it is in the list
+  #
+  # @example
+  #   list.eval #=> [{ :ext_ver => ExtensionVersion.new(:A, "2.1.0"), :cond => ExtensionRequirementExpression.new(...) }]
+  #
+  # @return [Array<Hash{Symbol => ExtensionVersion, ExtensionRequirementExpression}>]
+  #           The extension versions in the list after evaluation, and the condition under which it applies
+  def eval
+    result = []
+    if @ary.is_a?(Hash)
+      result << { ext_ver: entry_to_ext_ver(@ary), cond: AlwaysTrueExtensionRequirementExpression.new }
+    else
+      @ary.each do |elem|
+        if elem.is_a?(Hash) && elem.keys[0] == "if"
+          cond_expr = ExtensionRequirementExpression.new(elem["if"], @cfg_arch)
+          result << { ext_ver: entry_to_ext_ver(elem["then"]), cond: cond_expr }
+        else
+          result << { ext_ver: entry_to_ext_ver(elem), cond: AlwaysTrueExtensionRequirementExpression.new }
+        end
+      end
+    end
+    result
+  end
+  alias to_a eval
+
+  def entry_to_ext_ver(entry)
+    ExtensionVersion.new(entry["name"], entry["version"], @cfg_arch, fail_if_version_does_not_exist: true)
+  end
+  private :entry_to_ext_ver
+end
+
+# represents a JSON Schema composition of extension requirements, e.g.:
 #
 # anyOf:
 #   - oneOf:
@@ -443,17 +477,19 @@ end
 #     - B
 #   - C
 #
-class SchemaCondition
-  # @param composition_hash [Hash] A possibly recursive hash of "allOf", "anyOf", "oneOf"
-  def initialize(composition_hash, arch)
+class ExtensionRequirementExpression
+  # @param composition_hash [Hash] A possibly recursive hash of "allOf", "anyOf", "oneOf", "not", "if"
+  def initialize(composition_hash, cfg_arch)
     raise ArgumentError, "composition_hash is nil" if composition_hash.nil?
 
     unless is_a_condition?(composition_hash)
-      raise ArgumentError, "Expecting a JSON schema condition (got #{composition_hash})"
+      raise ArgumentError, "Expecting a JSON schema comdition (got #{composition_hash})"
     end
 
+    raise ArgumentError, "Must provide a cfg_arch" unless cfg_arch.is_a?(ConfiguredArchitecture)
+
     @hsh = composition_hash
-    @arch = arch
+    @arch = cfg_arch
   end
 
   def to_h = @hsh
@@ -464,13 +500,14 @@ class SchemaCondition
   def is_a_version_requirement(ver)
     case ver
     when String
-      ver =~ VERSION_REQ_REGEX
+      ver =~ RequirementSpec::REQUIREMENT_REGEX
     when Array
-      ver.all? { |v| v =~ VERSION_REQ_REGEX }
+      ver.all? { |v| v =~ RequirementSpec::REQUIREMENT_REGEX }
     else
       false
     end
   end
+  private :is_a_version_requirement
 
   # @return [Boolean] True if the condition is a join of N terms over the same operator
   #
@@ -506,23 +543,23 @@ class SchemaCondition
   def flat_versions
     case @hsh
     when String
-      [ExtensionRequirement.new(@hsh, @arch)]
+      [ExtensionRequirement.new(@hsh, arch: @arch)]
     when Hash
       if @hsh.key?("name")
         if @hsh.key?("version").nil?
-          [ExtensionRequirement.new(@hsh["name"], @arch)]
+          [ExtensionRequirement.new(@hsh["name"], arch: @arch)]
         else
-          [ExtensionRequirement.new(@hsh["name"], @hsh["version"], @arch)]
+          [ExtensionRequirement.new(@hsh["name"], @hsh["version"], arch: @arch)]
         end
       else
         @hsh[@hsh.keys.first].map do |r|
           if r.is_a?(String)
-            ExtensionRequirement.new(r, @arch)
+            ExtensionRequirement.new(r, arch: @arch)
           else
             if r.key?("version").nil?
-              ExtensionRequirement.new(r["name"], @arch)
+              ExtensionRequirement.new(r["name"], arch: @arch)
             else
-              ExtensionRequirement.new(r["name"], r["version"], @arch)
+              ExtensionRequirement.new(r["name"], r["version"], arch: @arch)
             end
           end
         end
@@ -532,22 +569,22 @@ class SchemaCondition
     end
   end
 
-  def to_asciidoc(cond = @hsh, indent = 0)
+  def to_asciidoc(cond = @hsh, indent = 0, join: "\n")
     case cond
     when String
-      "#{'*' * indent}* #{cond}, version >= 0"
+      "#{'*' * indent}* #{cond}, version >= #{@arch.extension(cond).min_version}"
     when Hash
       if cond.key?("name")
         if cond.key?("version")
-          "#{'*' * indent}* #{cond['name']}, version #{cond['version']}\n"
+          "#{'*' * indent}* #{cond['name']}, version #{cond['version']}#{join}"
         else
-          "#{'*' * indent}* #{cond['name']}, version >= 0\n"
+          "#{'*' * indent}* #{cond['name']}, version >= #{@arch.extension(cond['name']).min_version}#{join}"
         end
       else
-        "#{'*' * indent}* #{cond.keys[0]}:\n" + to_asciidoc(cond[cond.keys[0]], indent + 2)
+        "#{'*' * indent}* #{cond.keys[0]}:#{join}" + to_asciidoc(cond[cond.keys[0]], indent + 2)
       end
     when Array
-      cond.map { |e| to_asciidoc(e, indent) }.join("\n")
+      cond.map { |e| to_asciidoc(e, indent) }.join(join)
     else
       raise "Unknown condition type: #{cond}"
     end
@@ -573,10 +610,15 @@ class SchemaCondition
           return false unless is_a_version_requirement(hsh["version"])
         end
 
+      elsif hsh.key?("not")
+        return false unless hsh.size == 1
+
+        return is_a_condition?(hsh["not"])
+
       else
         return false unless hsh.size == 1
 
-        return false unless ["allOf", "anyOf", "oneOf"].include?(hsh.keys[0])
+        return false unless ["allOf", "anyOf", "oneOf", "if"].include?(hsh.keys[0])
 
         hsh[hsh.keys[0]].each do |element|
           return false unless is_a_condition?(element)
@@ -594,13 +636,13 @@ class SchemaCondition
   def first_requirement(req = @hsh)
     case req
     when String
-      ExtensionRequirement.new(req, @arch)
+      ExtensionRequirement.new(req, arch: @arch)
     when Hash
       if req.key?("name")
         if req["version"].nil?
-          ExtensionRequirement.new(req["name"], @arch)
+          ExtensionRequirement.new(req["name"], arch: @arch)
         else
-          ExtensionRequirement.new(req["name"], req["version"], @arch)
+          ExtensionRequirement.new(req["name"], req["version"], arch: @arch)
         end
       else
         first_requirement(req[req.keys[0]])
@@ -613,15 +655,15 @@ class SchemaCondition
   end
 
   # combine all conds into one using AND
-  def self.all_of(*conds, arch:)
-    cond = SchemaCondition.new({
+  def self.all_of(*conds, cfg_arch:)
+    cond = ExtensionRequirementExpression.new({
       "allOf" => conds
-    }, arch)
+    }, cfg_arch)
 
-    SchemaCondition.new(cond.minimize, arch)
+    ExtensionRequirementExpression.new(cond.minimize, cfg_arch)
   end
 
-  # @return [Object] Schema for this condition, with basic logic minimization
+  # @return [Object] Schema for this expression, with basic logic minimization
   def minimize(hsh = @hsh)
     case hsh
     when Hash
@@ -638,6 +680,11 @@ class SchemaCondition
         elsif hsh.key?("oneOf")
           min_ary = hsh["oneOf"].map { |element| minimize(element) }
           key = "oneOf"
+        elsif hsh.key?("not")
+          min_ary = hsh.dup
+          key = "not"
+        elsif hsh.key?("if")
+          return hsh
         end
         min_ary = min_ary.uniq
         if min_ary.size == 1
@@ -656,14 +703,14 @@ class SchemaCondition
       if hsh.key?("name")
         if hsh.key?("version")
           if hsh["version"].is_a?(String)
-            "(yield ExtensionRequirement.new('#{hsh["name"]}', '#{hsh["version"]}', @arch))"
+            "(yield ExtensionRequirement.new('#{hsh["name"]}', '#{hsh["version"]}', arch: @arch))"
           elsif hsh["version"].is_a?(Array)
-            "(yield ExtensionRequirement.new('#{hsh["name"]}', #{hsh["version"].map { |v| "'#{v}'" }.join(', ')}, @arch))"
+            "(yield ExtensionRequirement.new('#{hsh["name"]}', #{hsh["version"].map { |v| "'#{v}'" }.join(', ')}, arch: @arch))"
           else
             raise "unexpected"
           end
         else
-          "(yield ExtensionRequirement.new('#{hsh["name"]}', @arch))"
+          "(yield ExtensionRequirement.new('#{hsh["name"]}', arch: @arch))"
         end
       else
         key = hsh.keys[0]
@@ -678,13 +725,20 @@ class SchemaCondition
         when "oneOf"
           rb_str = hsh[key].map { |element| to_rb_helper(element) }.join(', ')
           "([#{rb_str}].count(true) == 1)"
+        when "not"
+          rb_str = to_rb_helper(hsh[key])
+          "(!#{rb_str})"
+        when "if"
+          cond_rb_str = to_rb_helper(hsh["if"])
+          body_rb_str = to_rb_helper(hsh["body"])
+          "(#{body_rb_str}) if (#{cond_rb_str})"
         else
           raise "Unexpected"
           "(yield #{hsh})"
         end
       end
     else
-      "(yield ExtensionRequirement.new('#{hsh}', @arch))"
+      "(yield ExtensionRequirement.new('#{hsh}', arch: @arch))"
     end
   end
 
@@ -692,9 +746,288 @@ class SchemaCondition
   # return a string that can be eval'd to determine if the objects in +ary_name+
   # meet the Condition
   #
+  # @param ary_name [String] Name of a ruby string in the eval binding
   # @return [Boolean] If the condition is met
   def to_rb
     to_rb_helper(@hsh)
+  end
+
+  # Abstract syntax tree of the logic
+  class LogicNode
+    attr_accessor :type
+
+    TYPES = [ :term, :not, :and, :or, :if ]
+
+    def initialize(type, children, term_idx: nil)
+      raise ArgumentError, "Bad type" unless TYPES.include?(type)
+      raise ArgumentError, "Children must be an array" unless children.is_a?(Array)
+
+      raise ArgumentError, "Children must be singular" if [:term, :not].include?(type) && children.size != 1
+      raise ArgumentError, "Children must have two elements" if [:and, :or, :if].include?(type) && children.size != 2
+
+      if type == :term
+        raise ArgumentError, "Term must be an ExtensionRequirement (found #{children[0]})" unless children[0].is_a?(ExtensionRequirement)
+      else
+        raise ArgumentError, "All Children must be LogicNodes" unless children.all? { |child| child.is_a?(LogicNode) }
+      end
+
+      @type = type
+      @children = children
+
+      raise ArgumentError, "Need term_idx" if term_idx.nil? && type == :term
+      raise ArgumentError, "term_idx isn't an int" if !term_idx.is_a?(Integer) && type == :term
+
+      @term_idx = term_idx
+    end
+
+    # @return [Array<ExtensionRequirements>] The terms (leafs) of this tree
+    def terms
+      @terms ||=
+        if @type == :term
+          [@children[0]]
+        else
+          @children.map(&:terms).flatten.uniq
+        end
+    end
+
+    def eval(term_values)
+      if @type == :term
+        ext_ret = @children[0]
+        term_value = term_values.find { |tv| tv.name == ext_ret.name }
+        unless term_value.nil?
+          @children[0].satisfied_by?(term_value)
+        end
+      elsif @type == :if
+        cond_ext_ret = @children[0]
+        if cond_ext_ret.eval(term_values)
+          @children[1].eval(term_values)
+        else
+          false
+        end
+      elsif @type == :not
+        !@children[0].eval(term_values)
+      elsif @type == :and
+        @children.all? { |child| child.eval(term_values) }
+      elsif @type == :or
+        @children.any? { |child| child.eval(term_values) }
+  end
+end
+
+    def to_s
+      if @type == :term
+        "(#{@children[0].to_s})"
+      elsif @type == :not
+        "!#{@children[0]}"
+      elsif @type == :and
+        "(#{@children[0]} ^ #{@children[1]})"
+      elsif @type == :or
+        "(#{@children[0]} v #{@children[1]})"
+      elsif @type == :if
+        "(#{@children[0]} -> #{@children[1]})"
+      end
+    end
+  end
+
+  # given an extension requirement, convert it to a LogicNode term, and optionally expand it to
+  # exclude any conflicts and include any implications
+  #
+  # @param ext_req [ExtensionRequirement] An extension requirement
+  # @param expand [Boolean] Whether or not to expand the node to include conflicts / implications
+  # @return [LogicNode] Logic tree for ext_req
+  def ext_req_to_logic_node(ext_req, term_idx, expand: true)
+    n = LogicNode.new(:term, [ext_req], term_idx: term_idx[0])
+    term_idx[0] += 1
+    if expand
+      c = ext_req.extension.conflicts_condition
+      unless c.empty?
+        c = LogicNode.new(:not, [to_logic_tree(ext_req.extension.data["conflicts"], term_idx:)])
+        n = LogicNode.new(:and, [c, n])
+      end
+
+      ext_req.satisfying_versions.each do |ext_ver|
+        ext_ver.implied_by_with_condition.each do |implied_by|
+          implying_ext_ver = implied_by[:ext_ver]
+          implying_cond = implied_by[:cond]
+          implying_ext_req = ExtensionRequirement.new(implying_ext_ver.name, "= #{implying_ext_ver.version_str}", arch: @arch)
+          if implying_cond.empty?
+            # convert to an ext_req
+            n = LogicNode.new(:or, [n, ext_req_to_logic_node(implying_ext_req, term_idx)])
+          else
+            # conditional
+            # convert to an ext_req
+            cond_node = implying_cond.to_logic_tree(term_idx:, expand:)
+            cond = LogicNode.new(:if, [cond_node, ext_req_to_logic_node(implying_ext_req, term_idx)])
+            n = LogicNode.new(:or, [n, cond])
+          end
+        end
+      end
+    end
+
+    n
+  end
+
+  # convert the YAML representation of an Extension Requirement Expression into
+  # a tree of LogicNodes.
+  # Also expands any Extension Requirement to include its conflicts / implications
+  def to_logic_tree(hsh = @hsh, term_idx: [0], expand: true)
+    if hsh.is_a?(Hash)
+      if hsh.key?("name")
+        if hsh.key?("version")
+          if hsh["version"].is_a?(String)
+            ext_req_to_logic_node(ExtensionRequirement.new(hsh["name"], hsh["version"], arch: @arch), term_idx, expand:)
+          elsif hsh["version"].is_a?(Array)
+            ext_req_to_logic_node(ExtensionRequirement.new(hsh["name"], hsh["version"].map { |v| "'#{v}'" }.join(', '), arch: @arch), term_idx, expand:)
+          else
+            raise "unexpected"
+          end
+        else
+          ext_req_to_logic_node(ExtensionRequirement.new(hsh["name"], arch: @arch), term_idx, expand:)
+        end
+      else
+        key = hsh.keys[0]
+
+        case key
+        when "allOf"
+          raise "unexpected" unless hsh[key].is_a?(Array) && hsh[key].size > 1
+
+          root = LogicNode.new(:and, [to_logic_tree(hsh[key][0], term_idx:, expand:), to_logic_tree(hsh[key][1], term_idx:, expand:)])
+          (2...hsh[key].size).each do |i|
+            root = LogicNode.new(:and, [root, to_logic_tree(hsh[key][i], term_idx:, expand:)])
+          end
+          root
+        when "anyOf"
+          raise "unexpected: #{hsh}" unless hsh[key].is_a?(Array) && hsh[key].size > 1
+
+          root = LogicNode.new(:or, [to_logic_tree(hsh[key][0], term_idx:, expand:), to_logic_tree(hsh[key][1], term_idx:, expand:)])
+          (2...hsh[key].size).each do |i|
+            root = LogicNode.new(:or, [root, to_logic_tree(hsh[key][i], term_idx:, expand:)])
+          end
+          root
+        when "if"
+          raise "unexpected" unless hsh.keys.size == 2 && hsh.keys[1] == "then"
+
+          cond = to_logic_tree(hsh[key], term_idx:, expand:)
+          body = to_logic_tree(hsh["then"], term_idx:, expand:)
+          LogicNode.new(:if, [cond, body])
+        when "oneOf"
+          # expand oneOf into AND
+          roots = []
+          hsh[key].size.times do |k|
+            root =
+              if k.zero?
+                LogicNode.new(:and, [to_logic_tree(hsh[key][0], term_idx:, expand:), LogicNode.new(:not, [to_logic_tree(hsh[key][1], term_idx:, expand:)])])
+              elsif k == 1
+                LogicNode.new(:and, [LogicNode.new(:not, [to_logic_tree(hsh[key][0], term_idx:, expand:)]), to_logic_tree(hsh[key][1], term_idx:, expand:)])
+              else
+                LogicNode.new(:and, [LogicNode.new(:not, [to_logic_tree(hsh[key][0], term_idx:, expand:)]), LogicNode.new(:not, [to_logic_tree(hsh[key][1], term_idx:, expand:)])])
+              end
+            (2...hsh[key].size).each do |i|
+              root =
+                if k == i
+                  LogicNode.new(:and, [root, to_logic_tree(hsh[key][i], term_idx:, expand:)])
+                else
+                  LogicNode.new(:and, [root, LogicNode.new(:not, [to_logic_tree(hsh[key][i], term_idx:, expand:)])])
+                end
+             end
+            roots << root
+          end
+          root = LogicNode.new(:or, [roots[0], roots[1]])
+          (2...roots.size).each do |i|
+            root = LogicNode.new(:or, [root, roots[i]])
+          end
+          root
+        when "not"
+          LogicNode.new(:not, [to_logic_tree(hsh[key], term_idx:, expand:)])
+        else
+          raise "Unexpected"
+        end
+      end
+    else
+      ext_req_to_logic_node(ExtensionRequirement.new(hsh, arch: @arch), term_idx, expand:)
+    end
+  end
+
+  # convert to Negation Normal Form
+  def nnf(logic_tree)
+    if logic_tree.type == :not
+      # distribute
+      if logic_tree.children.size == 1 && logic_tree.children[0].type == :term
+        logic_tree
+      else
+        # distribute NOT
+        child = logic_tree.children[0]
+
+        if child.type == :and
+          LogicNode.new(:or, child.children.map { |child2| LogicNode.new(:not, [child2]) })
+        elsif child.type == :or
+          LogicNode.new(:and, child.children.map { |child2| LogicNode.new(:not, [child2]) })
+        elsif child.type == :xor
+          raise "TODO"
+        elsif child.type == :not
+          child
+        else
+          raise "?"
+        end
+      end
+    else
+      LogicNode.new(logic_tree.type, logic_tree.children.map { |child| nnf(child) })
+    end
+  end
+
+  # convert to Disjunctive Normal Form
+  def dnf(logic_tree)
+    logic_tree = nnf(logic_tree)
+    if logic_tree.type == :and
+      # distribute
+      if logic_tree.children.all? { |child| child.type == :term }
+        logic_tree
+      else
+        LogicTree.new(:or, logic_tree.children.map { |child| LogicTree.new(:and, dnf(child)) })
+    end
+    else
+      logic_tree
+    end
+  end
+
+  def combos_for(extension_versions)
+    ncombos = extension_versions.reduce(1) { |prod, vers| prod * (vers.size + 1) }
+    combos = []
+    ncombos.times do |i|
+      combos << []
+      extension_versions.size.times do |j|
+        m = (extension_versions[j].size + 1)
+        d = j.zero? ? 1 : extension_versions[j..0].reduce(1) { |prod, vers| prod * (vers.size + 1) }
+
+        if (i / d) % m < extension_versions[j].size
+          combos.last << extension_versions[j][(i / d) % m]
+        end
+      end
+    end
+    # get rid of any combos that can't happen because of extension conflicts
+    combos.reject do |combo|
+      combo.any? { |ext_ver1| (combo - [ext_ver1]).any? { |ext_ver2| ext_ver1.conflicts_condition.satisfied_by? { |ext_req| ext_req.satisfied_by?(ext_ver2) } } }
+  end
+end
+
+  # @param other [ExtensionRequirementExpression] Another condition
+  # @return [Boolean] if it's possible for both to be simultaneously true
+  def compatible?(other)
+    raise ArgumentError, "Expecting a ExtensionRequirementExpression" unless other.is_a?(ExtensionRequirementExpression)
+
+    tree1 = to_logic_tree(@hsh)
+    tree2 = to_logic_tree(other.to_h)
+
+    extensions = (tree1.terms + tree2.terms).map(&:extension).uniq
+
+    extension_versions = extensions.map(&:versions)
+
+    combos = combos_for(extension_versions)
+    combos.each do |combo|
+      return true if tree1.eval(combo) && tree2.eval(combo)
+    end
+
+    # there is no combination in which both self and other can be true
+    false
   end
 
   # @example See if a string satisfies
@@ -719,153 +1052,53 @@ class SchemaCondition
 
     raise ArgumentError, "Expecting one argument to block" unless block.arity == 1
 
-    # Written to allow debug breakpoints on individual lines.
-    to_rb_expr = to_rb
-    ret = eval to_rb_expr
-    ret
+    eval to_rb
   end
 
-  def satisfying_ext_versions
-    list = []
-    arch.extensions.each do |ext|
-      ext.versions.each do |ext_ver|
-        list << ext_ver if satisfied_by? { |ext_req| ext_req.satisfied_by?(ext_ver) }
-      end
+  # yes if:
+  #   - ext_ver affects this condition
+  #   - it is is possible for this condition to be true is ext_ver is implemented
+  def possibly_satisfied_by?(ext_ver)
+    logic_tree = to_logic_tree
+
+    return false unless logic_tree.terms.any? { |ext_req| ext_req.satisfying_versions.include?(ext_ver) }
+
+    # ok, so ext_ver affects this condition
+    # is it possible to be true with ext_ver implemented?
+    extensions = logic_tree.terms.map(&:extension).uniq
+
+    extension_versions = extensions.map(&:versions)
+
+    combos = combos_for(extension_versions)
+    combos.any? do |combo|
+      # replace ext_ver, since it doesn't change
+      logic_tree.eval(combo.map { |ev| ev.name == ext_ver.name ? ext_ver : ev })
     end
-    list
   end
 end
 
-class AlwaysTrueSchemaCondition
+class AlwaysTrueExtensionRequirementExpression
   def to_rb = "true"
 
   def satisfied_by? = true
 
   def empty? = true
 
-  def flat? = false
+  def compatible?(_other) = true
 
   def to_h = {}
   def minimize = {}
 end
 
-class CertNormativeRule
-  # @param data [Hash<String, Object>] Data from YAML file
-  # @param db_obj [DatabaseObject] Database object that defines normative rule (Extension, Instruction, CSR, or CSR field)
-  def initialize(data, db_obj)
-    raise ArgumentError, "Need Hash but was passed a #{data.class}" unless data.is_a?(Hash)
-    raise ArgumentError, "Need DatabaseObject but was passed a #{db_obj.class}" unless db_obj.is_a?(DatabaseObject)
+class AlwaysFalseExtensionRequirementExpression
+  def to_rb = "false"
 
-    @data = data
-    @db_obj = db_obj
+  def satisfied_by? = false
 
-    raise ArgumentError, "Missing certification normative rule description for #{db_obj.name} of kind #{db_obj.kind}" if description.nil?
-    raise ArgumentError, "Missing certification normative rule ID for #{db_obj.name} of kind #{db_obj.kind}" if id.nil?
-  end
+  def empty? = true
 
-  # @return [String] Description of normative rule (could be multiple lines)
-  def description = @data["description"]
+  def compatible?(_other) = false
 
-  # @return [String] Unique ID of the normative rule
-  def id = @data["id"]
-
-  # @return [Array<DocLink>] List of certification point documentation links
-  def doc_links
-    return @doc_links unless @doc_links.nil?
-
-    @doc_links = []
-    @data["doc_links"]&.each do |dst|
-      @doc_links << DocLink.new(dst, @db_obj)
-    end
-
-    raise "Missing doc_links for certification normative rule ID '#{id}' of kind #{@db_obj.kind}" if @doc_links.empty?
-
-    @doc_links
-  end
-end
-
-# Creates links into RISC-V documentation with the following formats for the destination link:
-#
-#   Documenation  Format
-#   ============  ===============================================================
-#   ISA manuals   manual:ext:<ext_name>:<identifier>
-#                 manual:inst:<inst_name>:<identifier>
-#                 manual:insts:<inst_name>[-<inst_name>]+:<identifier>
-#                 manual:inst_group:<group_name>:<identifier>
-#                 manual:csr:<csr_name>:<identifier>
-#                 manual:csr_field:<csr_name>:<field_name>:<identifier>
-#                 manual:param:<ext_name>:<param_name>:<identifier>
-#                   where <identifier> is a string that describes the tagged text
-#   UDB doc       udb:doc:ext:<ext_name>
-#                 udb:doc:ext_param:<ext_name>:<param_name>
-#                 udb:doc:inst:<inst_name>
-#                 udb:doc:csr:<csr_name>
-#                 udb:doc:csr_field:<csr_name>:<field_name>
-#                 udb:doc:func:<func_name>  (Documentation of common/built-in IDL functions)
-#                 udb:doc:cov_pt:<org>:<id>
-#                   where <org> is:
-#                      sep for UDB documentation that "separates" normative rules from test plans
-#                      combo for UDB documentation that "combines" normative rules with test plans
-#                      appendix for UDB documentation that has normative rules and test plans in appendices
-#                   where <id> is the ID of the normative rule
-#   IDL code      idl:code:inst:<inst-name>:<location>
-#                 TODO for CSR and CSR Fields
-class DocLink
-  # @param dst_link [String] The documentation link provided in the YAML
-  # @param db_obj [String] Database object
-  def initialize(dst_link, db_obj)
-    raise ArgumentError, "Need String but was passed a #{data.class}" unless dst_link.is_a?(String)
-    @dst_link = dst_link
-
-    raise ArgumentError, "Missing documentation link for #{db_obj.name} of kind #{db_obj.kind}" if @dst_link.nil?
-  end
-
-  # @return [String] Unique ID of the linked to normative rule
-  def dst_link = @dst_link
-
-  # @return [String] Asciidoc to create desired link.
-  def to_adoc
-    "<<#{@dst_link},#{@dst_link}>>"
-  end
-end
-
-class CertTestProcedure
-  # @param data [Hash<String, Object>] Data from YAML file
-  # @param db_obj [DatabaseObject] Database object that defines test procedure (Extension, Instruction, CSR, or CSR field)
-  def initialize(data, db_obj)
-    raise ArgumentError, "Need Hash but was passed a #{data.class}" unless data.is_a?(Hash)
-    raise ArgumentError, "Need DatabaseObject but was passed a #{db_obj.class}" unless db_obj.is_a?(DatabaseObject)
-
-    @data = data
-    @db_obj = db_obj
-
-    raise ArgumentError, "Missing certification test procedure ID for #{db_obj.name} of kind #{db_obj.kind}" if id.nil?
-    warn "Warning: Missing test_file_name for certification test procedure description for #{db_obj.name} of kind #{db_obj.kind}" if test_file_name.nil?
-    raise ArgumentError, "Missing certification test procedure description for #{db_obj.name} of kind #{db_obj.kind}" if description.nil?
-  end
-
-  # @return [String] Unique ID of the test procedure
-  def id = @data["id"]
-
-  # @return [String] Name of test file that implements this test procedure. Could be nil.
-  def test_file_name = @data["test_file_name"]
-
-  # @return [String] Description of test procedure (could be multiple lines)
-  def description = @data["description"]
-
-  # @return [Array<CertNormativeRule>]
-  def cert_normative_rules
-    return @cert_normative_rules unless @cert_normative_rules.nil?
-
-    @cert_normative_rules = []
-    @data["normative_rules"]&.each do |id|
-      cp = @db_obj.cert_coverage_point(id)
-      raise ArgumentError, "Can't find certification test procedure with ID '#{id}' for '#{@db_obj.name}' of kind #{@db_obj.kind}" if cp.nil?
-      @cert_normative_rules << cp
-    end
-    @cert_normative_rules
-  end
-
-  # @return [String] String (likely multiline) of certification test procedure steps using Asciidoc lists
-  def cert_steps = @data["steps"]
+  def to_h = {}
+  def minimize = {}
 end

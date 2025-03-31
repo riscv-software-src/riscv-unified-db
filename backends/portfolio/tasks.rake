@@ -7,14 +7,14 @@ require "asciidoctor-pdf"
 require "asciidoctor-diagram"
 require_relative "#{$lib}/idl/passes/gen_adoc"
 
-# @return [Architecture]
+# @return [ConfiguredArchitecture]
 def pf_create_arch
   # Ensure that unconfigured resolved architecture called "_" exists.
   Rake::Task["#{$root}/.stamps/resolve-_.stamp"].invoke
 
   # Create architecture object so we can have it create the ProcCertModel.
   # Use the unconfigured resolved architecture called "_".
-  Architecture.new("RISC-V Architecture", $root / "gen" / "resolved_arch" / "_")
+  cfg_arch_for("_")
 end
 
 # Clones the CSC fork of the ISA manual repository or updates it if it already exists.

@@ -72,7 +72,7 @@ class Design < IDesign
     @mxlen.freeze
 
     @idl_compiler = Idl::Compiler.new
-    @symtab = Idl::SymbolTable.new(self)
+    @symtab = Idl::SymbolTable.new(cfg_arch)
     custom_globals_path = overlay_path.nil? ? Pathname.new("/does/not/exist") : overlay_path / "isa" / "globals.isa"
     idl_path = File.exist?(custom_globals_path) ? custom_globals_path : $root / "arch" / "isa" / "globals.isa"
     @global_ast = @idl_compiler.compile_file(idl_path)

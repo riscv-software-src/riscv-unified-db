@@ -2,7 +2,8 @@
 
 require 'ruby-prof-flamegraph'
 
-require_relative "obj"
+require_relative "database_obj"
+require_relative "../presence"
 require "awesome_print"
 
 # model of a specific instruction in a specific base (RV32/RV64)

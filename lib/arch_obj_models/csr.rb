@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "obj"
+require_relative "database_obj"
 
 # CSR definition
 class Csr < DatabaseObject

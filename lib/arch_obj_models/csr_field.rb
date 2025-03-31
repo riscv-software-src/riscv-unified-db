@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "obj"
+require_relative "database_obj"
 
 require_relative "../idl/passes/gen_option_adoc"
 
@@ -24,7 +24,7 @@ class CsrField < DatabaseObject
   # @param parent_csr [Csr] The Csr that defined this field
   # @param field_data [Hash<String,Object>] Field data from the arch spec
   def initialize(parent_csr, field_name, field_data)
-    super(field_data, parent_csr.data_path, arch: parent_csr.arch)
+    super(field_data, parent_csr.data_path, parent_csr.arch)
     @name = field_name
     @parent = parent_csr
   end

@@ -151,11 +151,11 @@ file "#{GEN_JS_INST_TABLE}" => [
     puts "Success: Generated #{t.name}"
 end
 
-# @return [Architecture]
+# @return [ConfiguredArchitecture]
 def create_arch
   # Ensure that unconfigured resolved architecture called "_" exists.
   Rake::Task["#{$root}/.stamps/resolve-_.stamp"].invoke
 
   # Create architecture object using the unconfigured resolved architecture called "_" to get the entire RISC-V arch.
-  Architecture.new("RISC-V Architecture", $root / "gen" / "resolved_arch" / "_")
+  cfg_arch_for("_")
 end

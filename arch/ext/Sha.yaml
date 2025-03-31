@@ -46,11 +46,19 @@ versions:
     state: ratified
     ratification_date: null
     implies:
-      - [H, "1.0.0"]
-      - [Ssstateen, "1.0.0"]
-      - [Shcounterenw, "1.0.0"]
-      - [Shvstvala, "1.0.0"]
-      - [Shtvala, "1.0.0"]
-      - [Shvstvecd, "1.0.0"]
-      - [Shvsatpa, "1.0.0"]
-      - [Shgatpa, "1.0.0"]
+      - name: H
+        version: "1.0.0"
+      - name: Ssstateen
+        version: "1.0.0"
+      - name: Shcounterenw
+        version: "1.0.0"
+      - name: Shvstvala
+        version: "1.0.0"
+      - name: Shtvala
+        version: "1.0.0"
+      - name: Shvstvecd
+        version: "1.0.0"
+      - name: Shvsatpa
+        version: "1.0.0"
+      - name: Shgatpa
+        version: "1.0.0"
