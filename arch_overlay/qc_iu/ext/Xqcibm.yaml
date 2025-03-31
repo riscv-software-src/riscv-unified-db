@@ -101,6 +101,9 @@ versions:
   changes:
     - Fix IDL code sign extension logic for qc.ext and qc.extd instructions
     - Fix IDL code sign extension logic for qc.extdpr, qc.extdprh and qc.extdr instructions
+    - Fix IDL code and description increasing shift to 6 bit for qc.extdr and qc.extdur instructions
+    - Fix IDL code and description increasing shift to 6 bit for qc.extdpr and qc.extdprh instructions
+    - Fix IDL code and description increasing shift to 6 bit for qc.extdupr and qc.extduprh instructions
   requires: { name: Zca, version: ">= 1.0.0" }
 description: |
   The Xqcibm extension includes thirty eight instructions that perform bit manipulation,

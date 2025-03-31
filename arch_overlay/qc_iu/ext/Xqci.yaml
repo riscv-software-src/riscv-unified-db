@@ -282,6 +282,9 @@ versions:
     - Fix IDL code sign extension logic for qc.e.lb and qc.e.lh instructions
     - Fix IDL code sign extension logic for qc.ext and qc.extd instructions
     - Fix IDL code sign extension logic for qc.extdpr, qc.extdprh and qc.extdr instructions
+    - Fix IDL code and description increasing shift to 6 bit for qc.extdr and qc.extdur instructions
+    - Fix IDL code and description increasing shift to 6 bit for qc.extdpr and qc.extdprh instructions
+    - Fix IDL code and description increasing shift to 6 bit for qc.extdupr and qc.extduprh instructions
     - Fix IDL code sign extension logic for qc.lieq instruction
   implies:
   - { name: Xqcia, version: "0.5.0" }
