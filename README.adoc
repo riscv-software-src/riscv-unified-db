@@ -10,7 +10,7 @@ data become validated, we will list it here.
 
 == Quick links
 
-* https://riscv-software-src.github.io/riscv-unified-db/index.html[The **UNOFFICIAL** latest UDB-generated RISC-V specifications].
+* https://riscv-software-src.github.io/riscv-unified-db/index.html[The latest UDB-generated **UNOFFICIAL** RISC-V specifications].
 * UDB Documentation
 ** xref:doc/schemas.adoc[Schema documentation]
 ** xref:doc/idl.adoc[ISA Description Language (IDL)]
