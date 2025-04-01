@@ -102,8 +102,6 @@ module Idl
     end
 
     def initialize(cfg_arch)
-      raise "The cfg_arch must be a ConfiguredArchitecture but is a #{cfg_arch.class}" unless cfg_arch.is_a?(ConfiguredArchitecture)
-
       @mutex = Thread::Mutex.new
       @cfg_arch = cfg_arch
       @mxlen = cfg_arch.unconfigured? ? nil : cfg_arch.mxlen
