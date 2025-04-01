@@ -288,6 +288,7 @@ versions:
     - Fix IDL code sign extension logic for qc.lieq instruction
     - Fix wrong mantissa bit selection in qc.norm, qc.normu and qc.normeu instructions
     - Fix wrong exponent calculation in qc.normeu instruction
+    - Fix IDL code and description of qc.setwm instruction to state that number of words written 0..31.
   implies:
   - { name: Xqcia, version: "0.6.0" }
   - { name: Xqciac, version: "0.3.0" }
@@ -303,7 +304,7 @@ versions:
   - { name: Xqcili, version: "0.2.0" }
   - { name: Xqcilia, version: "0.2.0" }
   - { name: Xqcilo, version: "0.3.0" }
-  - { name: Xqcilsm, version: "0.4.0" }
+  - { name: Xqcilsm, version: "0.5.0" }
   - { name: Xqcisim, version: "0.2.0" }
   - { name: Xqcisls, version: "0.2.0" }
   - { name: Xqcisync, version: "0.2.0" }
