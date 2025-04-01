@@ -5,15 +5,17 @@ kind: csr
 name: vxsat
 long_name: Fixed-Point Saturate Flag
 address: 0x009
-priv_mode: U #should be URW
+priv_mode: U
 length: MXLEN
 description: TBA.
 definedBy: V
+sw_read(): |
+  return CSR[vcsr].VXSAT;
 fields:
   VALUE:
     location_rv32: 31-0
     location_rv64: 63-0
     description: |
       TBA
-    type: RO #??
-    reset_value: 0
+    type: RO-H
+    reset_value: UNDEFINED_LEGAL

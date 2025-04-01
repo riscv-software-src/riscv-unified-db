@@ -5,7 +5,7 @@ kind: csr
 name: vlenb
 long_name: Vector Length (Bytes)
 address: 0xC22
-priv_mode: U #should be URO
+priv_mode: U
 length: MXLEN
 description: Holds the value VLEN/8, the vector register length in bytes.
 definedBy: V
@@ -17,5 +17,5 @@ fields:
       The value in vlenb is a design-time constant in any implementation.
       Without this CSR, several instructions are needed to calculate VLEN in bytes, and the code
       has to disturb current vl and vtype settings which require them to be saved and restored.
-    type: RO #??
-    reset_value: 0 #VLEN/8
+    type: RO
+    reset_value(): return VLEN / 8;

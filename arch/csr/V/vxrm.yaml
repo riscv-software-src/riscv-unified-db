@@ -5,15 +5,18 @@ kind: csr
 name: vxrm
 long_name: Fixed-Point Rounding Mode
 address: 0x00A
-priv_mode: U #should be URW
+priv_mode: U
 length: MXLEN
 description: TBA.
 definedBy: V
+sw_read(): |
+  return CSR[vcsr].VXRM;
 fields:
   VALUE:
+    alias: vcsr.VXRM
     location_rv32: 31-0
     location_rv64: 63-0
     description: |
       TBA
-    type: RO #??
-    reset_value: 0
+    type: RO-H
+    reset_value: UNDEFINED_LEGAL

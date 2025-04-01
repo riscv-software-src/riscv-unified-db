@@ -5,15 +5,26 @@ kind: csr
 name: vcsr
 long_name: Vector control and status register
 address: 0x00F
-priv_mode: U #should be URW?
+priv_mode: U
 length: MXLEN
 description: TBA.
 definedBy: V
 fields:
-  VALUE:
-    location_rv32: 31-0
-    location_rv64: 63-0
+  VXRM:
+    location_rv32: 2-1
+    location_rv64: 2-1
     description: |
       TBA
-    type: RO #??
-    reset_value: 0
+    type: RW-RH #??
+    sw_write(csr_value): | #to be updated
+      return csr_value.VALUE;
+    reset_value: UNDEFINED_LEGAL
+  VXSAT:
+    location_rv32: 0
+    location_rv64: 0
+    description: |
+      TBA
+    type: RW-RH #??
+    sw_write(csr_value): | #to be updated
+      return csr_value.VALUE;
+    reset_value: UNDEFINED_LEGAL
