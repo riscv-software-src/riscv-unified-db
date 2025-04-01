@@ -201,17 +201,6 @@ class Extension < DatabaseObject
     @params
   end
 
-  # @param version_requirement [String] Version requirement
-  # @return [Array<ExtensionVersion>] Array of extensions implied by the largest version of this extension meeting version_requirement
-  def implies(version_requirement = nil)
-    if version_requirement.nil?
-      max_version.implications
-    else
-      mv = ExtensionRequirement.new(@name, version_requirement, cfg_arch: @cfg_arch).max_version
-      mv.implications
-    end
-  end
-
   # @return [ExtensionRequirementExpression] Logic expression for conflicts
   def conflicts_condition
     @conflicts_condition ||=
@@ -463,13 +452,6 @@ class ExtensionVersion
     @implied_by_with_condition
   end
 
-  # @param ext_name [String] Extension name
-  # @param ext_version_requirements [String,Array<String>] Extension version requirements
-  # @return [Boolean] whether or not this ExtensionVersion is named `ext_name` and satisfies the version requirements
-  def satisfies?(ext_name, *ext_version_requirements)
-    ExtensionRequirement.new(ext_name, ext_version_requirements).satisfied_by?(self)
-  end
-
   # sorts extension by name, then by version
   def <=>(other)
     unless other.is_a?(ExtensionVersion)
@@ -522,7 +504,7 @@ class ExtensionVersion
     return @in_scope_csrs unless @in_scope_csrs.nil?
 
     @in_scope_csrs = @arch.csrs.select do |csr|
-      csr.defined_by?(self) &&
+      csr.defined_by_condition.possibly_satisfied_by?(self) &&
       (csr.base.nil? || (design.possible_xlens.include?(csr.base)))
     end
   end
@@ -536,7 +518,7 @@ class ExtensionVersion
     return @in_scope_instructions unless @in_scope_instructions.nil?
 
     @in_scope_instructions = @arch.instructions.select do |inst|
-      inst.defined_by?(self) &&
+      inst.defined_by_condition.possibly_satisfied_by?(self) &&
       (inst.base.nil? || (design.possible_xlens.include?(inst.base)))
     end
   end
@@ -576,24 +558,11 @@ class ExtensionRequirement
     @extension = @arch.extension(@name)
   end
 
-  def self.create(yaml_req, arch)
-    if yaml_req.is_a?(String)
-      ExtensionRequirement.new(yaml_req, ">= #{arch.extension(yaml_req).versions.min}")
-    elsif yaml_req.is_a?(Hash)
-      raise "schema error" unless yaml_req.key?("name")
-
-      req = yaml_req.key?("version") ? yaml_req["version"] : ">= #{arch.extension(yaml_req['name']).versions.min}"
-      ExtensionRequirement.new(yaml_req["name"], req, arch:)
-    else
-      raise "unexpected"
-    end
-  end
-
   # @param name [#to_s] Extension name
   # @param requirements [String] Single requirement
   # @param requirements [Array<String>] List of requirements, all of which must hold
   # @param arch [Architecture]
-  def initialize(name, *requirements, arch, note: nil, req_id: nil, presence: nil)
+  def initialize(name, *requirements, arch: nil, note: nil, req_id: nil, presence: nil)
     raise ArgumentError, "For #{name}, got class #{arch.class} but need Architecture" unless arch.is_a?(Architecture)
 
     @name = name.to_s.freeze

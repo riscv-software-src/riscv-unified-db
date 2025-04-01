@@ -105,7 +105,7 @@ RV64::
 
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.operation_ast(design.symtab).gen_adoc %>
+<%= inst.operation_ast.gen_adoc %>
 ----
 <% end -%>
 
@@ -120,7 +120,7 @@ RV64::
 
 ==== Exceptions
 
-<% exception_list = inst.reachable_exceptions_str(design.symtab) -%>
+<% exception_list = inst.reachable_exceptions_str() -%>
 <% if exception_list.empty? -%>
 This instruction does not generate synchronous exceptions.
 <% else -%>

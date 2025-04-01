@@ -173,7 +173,7 @@ class ProcCertModel < Portfolio
 
         next unless ext.versions.any? do |ext_ver|
           ver_req = ext_data["version"] || ">= #{ext.min_version.version_spec}"
-          ExtensionRequirement.new(ext_name, ver_req, @arch).satisfied_by?(ext_ver) &&
+          ExtensionRequirement.new(ext_name, ver_req, arch: @arch).satisfied_by?(ext_ver) &&
             param.defined_in_extension_version?(ext_ver)
         end
 

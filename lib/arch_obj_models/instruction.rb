@@ -203,6 +203,8 @@ class Instruction < DatabaseObject
   # @param effective_xlen [Integer] Effective XLEN to evaluate against. If nil, evaluate against all valid XLENs
   # @return [Array<Integer>] List of all exceptions that can be reached from operation()
   def reachable_exceptions_str(effective_xlen=nil)
+    raise ArgumentError, "effective_xlen is a #{effective_xlen.class} but must be an Integer or nil" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
+
     if @data["operation()"].nil?
       []
     else

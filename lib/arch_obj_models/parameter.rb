@@ -83,7 +83,7 @@ class Parameter
     return true if @data.dig("when", "version").nil?
 
     @exts.any? do |ext|
-      ExtensionRequirement.new(ext.name, @data["when"]["version"], ext.arch).satisfied_by?(version)
+      ExtensionRequirement.new(ext.name, @data["when"]["version"], arch: ext.arch).satisfied_by?(version)
     end
   end
 

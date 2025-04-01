@@ -152,7 +152,7 @@ class PortfolioDesign < Design
         if ext_version_requirements.empty?
           ext_req.name == ext_name.to_s
         else
-          requirement = ExtensionRequirement.new(ext_name, *ext_version_requirements, arch)
+          requirement = ExtensionRequirement.new(ext_name, *ext_version_requirements, arch: arch)
           ext_req.satisfying_versions.all? do |ext_ver|
             requirement.satisfied_by?(ext_ver)
           end

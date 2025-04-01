@@ -50,7 +50,6 @@ class Csr < DatabaseObject
   # @param xlen [32,64] base
   def defined_in_base?(xlen) = @data["base"].nil? || @data["base"] == xlen
 
-  # @param cfg_arch [ConfiguredArchitecture] A configuration
   # @return [Boolean] Whether or not the format of this CSR changes when the effective XLEN changes in some mode
   def format_changes_with_xlen?
     dynamic_length? || possible_fields.any?(&:dynamic_location?)

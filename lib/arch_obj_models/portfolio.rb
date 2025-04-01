@@ -355,12 +355,12 @@ class Portfolio < DatabaseObject
 
     is_mandatory = mandatory_ext_reqs.any? do |ext_req|
       ext_versions = ext_req.satisfying_versions
-      ext_versions.any? { |ext_ver| inst.defined_by?(ext_ver) }
+      ext_versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) }
     end
 
     is_optional = optional_ext_reqs.any? do |ext_req|
       ext_versions = ext_req.satisfying_versions
-      ext_versions.any? { |ext_ver| inst.defined_by?(ext_ver) }
+      ext_versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) }
     end
 
     if is_mandatory
@@ -468,11 +468,11 @@ class Portfolio < DatabaseObject
           in_scope_ext_reqs <<
             if ext_data.key?("version")
               ExtensionRequirement.new(
-                ext_name, ext_data["version"], @arch,
+                ext_name, ext_data["version"], arch: @arch,
                 presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
             else
               ExtensionRequirement.new(
-                ext_name, @arch,
+                ext_name, arch: @arch,
                 presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
             end
         end

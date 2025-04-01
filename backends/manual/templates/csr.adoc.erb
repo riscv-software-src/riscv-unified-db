@@ -15,7 +15,7 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <%- if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <%- end -%>
-<%- if csr.dynamic_length?(design) ||  csr.data["length"] == "MXLEN" -%>
+<%- if csr.dynamic_length?(design.mxlen) ||  csr.data["length"] == "MXLEN" -%>
 h| Length
 a|
 
@@ -36,7 +36,7 @@ h| Privilege Mode | <%= csr.priv_mode %>
 |===
 
 == Format
-<%- unless csr.dynamic_length?(design) || csr.fields.any? { |f| f.dynamic_location?(design) } || csr.data["length"] == "MXLEN" -%>
+<%- unless csr.dynamic_length? || csr.fields.any? { |f| f.dynamic_location? } || csr.data["length"] == "MXLEN" -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -75,7 +75,7 @@ This CSR format changes dynamically.
 <%- csr.fields.each do |field| -%>
 @ <%= link_to_udb_doc_csr_field(csr.name, field.name) %>
 a@
-<%- if field.dynamic_location?(design) -%>
+<%- if field.dynamic_location? -%>
 
 [when,"<%= field.location_cond32 %>"]
 --
