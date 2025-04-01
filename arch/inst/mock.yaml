@@ -14,7 +14,8 @@ description: |
 definedBy: Xmock
 assembly: xd, xs1, xs2
 encoding:
-  match: 0000001----------000-----0110011
+  # Use custom-0 opcode to avoid conflicts with RISC-V defined instructions.
+  match: 0000001----------000-----0001011
   variables:
     - name: rs2
       location: 24-20

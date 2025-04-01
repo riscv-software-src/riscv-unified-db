@@ -165,30 +165,34 @@ class ConfiguredArchitecture < Architecture
 
   # Initialize a new configured architecture definition
   #
-  # @param config_name [#to_s] The name of a configuration, which must correspond
-  #                            to a folder name under cfg_path
-  def initialize(config_name, arch_path)
+  # @param name [:to_s]      The name associated with this ConfiguredArchitecture
+  # @param config [Config]   The configuration object
+  # @param arch_path [:to_s] Path to the resolved architecture directory corresponding to the configuration
+  def initialize(name, config, arch_path)
+    raise ArgumentError, "name needs to be a String but is a #{name.class}" unless name.to_s.is_a?(String)
+    raise ArgumentError, "config needs to be a Config but is a #{config.class}" unless config.is_a?(Config)
+    raise ArgumentError, "arch_path needs to be a String but is a #{arch_path.class}" unless arch_path.to_s.is_a?(String)
     super(arch_path)
 
-    @name = config_name.to_s.freeze
+    @name = name.to_s.freeze
     @name_sym = @name.to_sym.freeze
 
     @obj_cache = {}
 
-    @config = Config.create("#{$root}/gen/cfgs/#{config_name}.yaml")
-    @mxlen = @config.mxlen
+    @config = config
+    @mxlen = config.mxlen
     @mxlen.freeze
 
     @idl_compiler = Idl::Compiler.new
 
     @symtab = Idl::SymbolTable.new(self)
     overlay_path =
-      if @config.arch_overlay.nil?
+      if config.arch_overlay.nil?
         "/does/not/exist"
-      elsif File.exist?(@config.arch_overlay)
-        File.realpath(@config.arch_overlay)
+      elsif File.exist?(config.arch_overlay)
+        File.realpath(config.arch_overlay)
       else
-        "#{$root}/arch_overlay/#{@config.arch_overlay}"
+        "#{$root}/arch_overlay/#{config.arch_overlay}"
       end
 
     custom_globals_path = Pathname.new "#{overlay_path}/isa/globals.isa"

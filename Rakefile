@@ -28,34 +28,36 @@ end
 directory "#{$root}/.stamps"
 
 # @return [ConfiguredArchitecture]
-def cfg_arch_for(config)
-  raise ArgumentError, "expecting String or Pathname" unless config.is_a?(String) || config.is_a?(Pathname)
-  config = config.to_s
+def cfg_arch_for(config_name)
+  raise ArgumentError, "expecting String or Pathname" unless config_name.is_a?(String) || config_name.is_a?(Pathname)
+  config_name = config_name.to_s
 
   $cfg_archs ||= {}
-  return $cfg_archs[config] unless $cfg_archs[config].nil?
+  return $cfg_archs[config_name] unless $cfg_archs[config_name].nil?
 
   # does the gen cfg already exist?
-  if File.exist?("#{$root}/gen/cfgs/#{config}.yaml")
-    config_yaml = YAML.load_file("#{$root}/gen/cfgs/#{config}.yaml")
-    if File.mtime("#{$root}/gen/cfgs/#{config}.yaml") < File.mtime(config_yaml["$source"])
+  if File.exist?("#{$root}/gen/cfgs/#{config_name}.yaml")
+    config_yaml = YAML.load_file("#{$root}/gen/cfgs/#{config_name}.yaml")
+    if File.mtime("#{$root}/gen/cfgs/#{config_name}.yaml") < File.mtime(config_yaml["$source"])
+
       cfg_arch =
         ConfiguredArchitecture.new(
-          config,
-          $root / "gen" / "resolved_arch" / config
+          config_name,
+          Config.create("#{$root}/gen/cfgs/#{config_name}.yaml"),
+          $root / "gen" / "resolved_arch" / config_name
         )
-      $cfg_archs[config] = cfg_arch
+      $cfg_archs[config_name] = cfg_arch
       return cfg_arch
     end
   end
 
   config_path =
-    if File.exist?("#{$root}/cfgs/#{config}.yaml")
-      "#{$root}/cfgs/#{config}.yaml"
-    elsif File.exist? config
-      File.realpath(config)
+    if File.exist?("#{$root}/cfgs/#{config_name}.yaml")
+      "#{$root}/cfgs/#{config_name}.yaml"
+    elsif File.exist? config_name
+      File.realpath(config_name)
     else
-      raise ArgumentError, "Can't find config #{config}"
+      raise ArgumentError, "Can't find config #{config_name}"
     end
 
   config_yaml = YAML.load_file(config_path)
@@ -85,6 +87,7 @@ def cfg_arch_for(config)
   $cfg_archs[config_name] =
     ConfiguredArchitecture.new(
       config_name,
+      Config.create("#{$root}/gen/cfgs/#{config_name}.yaml"),
       $root / "gen" / "resolved_arch" / config_name
     )
 end
