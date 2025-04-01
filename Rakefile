@@ -162,6 +162,11 @@ namespace :test do
     t.process_env
     ruby t.make_test_cmd
   end
+
+  desc "Type-check the Ruby library"
+  task :sorbet do
+    sh "srb tc --no-config @.sorbet-config"
+  end
 end
 
 desc "Clean up all generated files"
@@ -409,6 +414,7 @@ namespace :test do
   task :smoke do
     Rake::Task["test:idl_compiler"].invoke
     Rake::Task["test:lib"].invoke
+    Rake::Task["test:sorbet"].invoke
     Rake::Task["test:schema"].invoke
     Rake::Task["test:idl"].invoke
     Rake::Task["test:inst_encodings"].invoke

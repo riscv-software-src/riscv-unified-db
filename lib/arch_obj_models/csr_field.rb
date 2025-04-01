@@ -1,4 +1,7 @@
 # frozen_string_literal: true
+# typed: true
+
+require "sorbet-runtime"
 
 require_relative "obj"
 
@@ -6,6 +9,8 @@ require_relative "../idl/passes/gen_option_adoc"
 
 # A CSR field object
 class CsrField < DatabaseObject
+  extend T::Sig;
+
   # @return [Csr] The Csr that defines this field
   attr_reader :parent
 
@@ -67,7 +72,7 @@ class CsrField < DatabaseObject
   #                   This does not take the parent CSR into account, i.e., a field can be unaffected
   #                   by ext_ver even if the parent CSR is affected
   def affected_by?(ext_ver)
-    @data["definedBy"].nil? ? false : defined_by_condition.possibly_satisfied_by?(version)
+    @data["definedBy"].nil? ? false : defined_by_condition.possibly_satisfied_by?(ext_ver)
   end
 
   # @return [Idl::FunctionBodyAst] Abstract syntax tree of the type() function
@@ -168,6 +173,7 @@ class CsrField < DatabaseObject
     @type ||= { 32 => nil, 64 => nil }
     return @type[effective_xlen] unless @type[effective_xlen].nil?
 
+    type = T.let(nil, T.untyped)
     type =
       if @data.key?("type")
         @data["type"]
@@ -223,7 +229,7 @@ class CsrField < DatabaseObject
   def type_pretty(effective_xlen = nil)
     raise ArgumentError, "Expecting Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
 
-    str = nil
+    str = T.let(nil, T.nilable(String))
     value_result = Idl::AstNode.value_try do
       str = type(effective_xlen)
     end
@@ -241,7 +247,7 @@ class CsrField < DatabaseObject
     if @data.key?("alias")
       raise "Can't parse alias" unless data["alias"] =~ /^[a-z][a-z0-9]+\.[A-Z0-9]+(\[([0-9]+)(:[0-9]+)?\])?$/
 
-      csr_name = Regexp.last_match(1)
+      csr_name = T.must(Regexp.last_match(1))
       csr_field = Regexp.last_match(2)
       range = Regexp.last_match(3)
       range_start = Regexp.last_match(4)
@@ -250,7 +256,7 @@ class CsrField < DatabaseObject
       csr_field = cfg_arch.csr(csr_name).field(csr_field)
       range =
         if range.nil?
-          field.location
+          csr_field.location
         elsif range_end.nil?
           (range_start.to_i..range_start.to_i)
         else
@@ -374,7 +380,7 @@ class CsrField < DatabaseObject
       else
         ast = pruned_reset_value_ast
         symtab = fill_symtab_for_reset(ast)
-        val = nil
+        val = T.let(nil, T.untyped)
         value_result = Idl::AstNode.value_try do
           val = ast.return_value(symtab)
         end
@@ -398,7 +404,7 @@ class CsrField < DatabaseObject
   end
 
   def reset_value_pretty
-    str = nil
+    str = T.let(nil, T.nilable(String))
     value_result = Idl::AstNode.value_try do
       str = reset_value
     end
@@ -591,6 +597,7 @@ class CsrField < DatabaseObject
   # @param cfg_arch [ConfiguredArchitecture] A config. May be nil if the location is not configturation-dependent
   # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
   # @return [Range] the location within the CSR as a range (single bit fields will be a range of size 1)
+  sig { params(effective_xlen: T.nilable(Integer)).returns(T::Range[Integer]) }
   def location(effective_xlen = nil)
     key =
       if @data.key?("location")
@@ -615,7 +622,9 @@ class CsrField < DatabaseObject
       end
 
       @data[key]..@data[key]
-    elsif @data[key].is_a?(String)
+    else
+      raise "Unexpected location field" unless @data[key].is_a?(String)
+
       e, s = @data[key].split("-").map(&:to_i)
       raise "Invalid location" if s > e
 

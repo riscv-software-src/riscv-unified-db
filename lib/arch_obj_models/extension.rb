@@ -2,6 +2,7 @@
 
 require_relative "obj"
 require_relative "schema"
+require_relative "req_expression"
 require_relative "../version"
 
 # A parameter (AKA option, AKA implementation-defined value) supported by an extension

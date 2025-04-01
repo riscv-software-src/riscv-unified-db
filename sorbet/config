@@ -1,0 +1,10 @@
+--dir
+lib
+--file
+backends/ext_pdf_doc/idl_lexer.rb
+--file
+backends/cpp_hart_gen/lib/template_helpers.rb
+--ignore=tmp/
+--ignore=vendor/
+--ignore=.home/
+--ignore=node_modules/
