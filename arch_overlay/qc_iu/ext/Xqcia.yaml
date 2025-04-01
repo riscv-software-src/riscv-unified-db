@@ -79,6 +79,7 @@ versions:
     email: dhower@qti.qualcomm.com
   changes:
     - Fix wrong mantissa bit selection in qc.norm, qc.normu and qc.normeu instructions
+    - Fix wrong exponent calculation in qc.normeu instruction
 description: |
   The Xqcia extension includes eleven instructions to perform integer arithmetic.
 

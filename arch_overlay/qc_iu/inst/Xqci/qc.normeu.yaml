@@ -33,5 +33,5 @@ access:
 operation(): |
   XReg clz = ((xlen() - 1) - $signed(highest_set_bit(X[rs1]))) & ~1;
   XReg mnt = (X[rs1] << (clz & ~1));
-  XReg exp = ((-clz) & ~1);
+  XReg exp =  (-(clz & ~1));
   X[rd] = {mnt[31:8],exp[7:0]};
