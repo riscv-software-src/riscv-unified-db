@@ -45,7 +45,7 @@ The following directories contain information relevant to most users of UnifiedD
 Additionally, developers will be interested in the following:
 
 * `backends`: Tools to generate artifacts (documents, simulators, etc.) from UDB data
-* `bin`: Wrapper scripts to run commands within the container enviornment
+* `bin`: Wrapper scripts to run commands within the container environment
 * `lib`: Scripts (mostly Ruby) to read/interact with UDB data
 
 == Getting Started
@@ -75,7 +75,7 @@ You can start a GitHub Codespace for this repository by clicking the "Code" butt
 === Tasks
 
 UnifiedDB uses https://github.com/ruby/rake[Rake], a Ruby-based Makefile alternative, to manage tasks.
-For convienence, running Rake inside the container is encapulated in `do`. For example:
+For convenience, running Rake inside the container is encapsulated in `do`. For example:
 
 [source,bash]
 ----
