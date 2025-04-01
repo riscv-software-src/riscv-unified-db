@@ -8,7 +8,7 @@ description: |
   Unless redefined by another extension, this instructions simply writes 0 to X[xd].
   The encoding allows future extensions to define them to read X[xs1], as well as write X[xd].
 definedBy: Zimop
-assembly: xd
+assembly: xd, xs1
 encoding:
   match: 1-00--0111-------100-----1110011
   variables:
