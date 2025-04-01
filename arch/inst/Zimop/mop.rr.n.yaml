@@ -9,7 +9,7 @@ description: |
   and 7, inclusive. Unless redefined by another extension, these instructions simply write 0 to X[xd].
   Their encoding allows future extensions to define them to read X[xs1] and X[xs2], as well as write X[xd].
 definedBy: Zimop
-assembly: xd
+assembly: xd, xs1, xs2
 encoding:
   match: 1-00--1----------100-----1110011
   variables:
