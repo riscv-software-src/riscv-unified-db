@@ -3,9 +3,13 @@
 $schema: inst_schema.json#
 kind: instruction
 name: mnret
-long_name: Machine NMI Return
+long_name: Machine mode resume from the RNMI or Double Trap handler.
 description: |
-  Returns from an NMI in M-mode.
+  MNRET is an M-mode-only instruction that uses the values in mnepc and mnstatus to return to the
+  program counter, privilege mode, and virtualization mode of the interrupted context. This instruction
+  also sets mnstatus.NMIE. If MNRET changes the privilege mode to a mode less privileged than M, it
+  also sets mstatus.MPRV to 0. If the Zicfilp extension is implemented, then if the new privileged mode is
+  y, MNRET sets ELP to the logical AND of yLPE (see Section 22.1.1) and mnstatus.MNPELP.
 definedBy: Smrnmi
 assembly: mnret
 encoding:
