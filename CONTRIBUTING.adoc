@@ -45,9 +45,92 @@ There should be a corresponding https://github.com/riscv-software-src/riscv-unif
 All patches must meet the UnifiedDB code standards. This includes:
 
 * Pass regression tests (run locally as `./do test:regress`)
+* Use appropriate commit messages
 * Go through code review as a Pull Request
-** Code owners must approve
-* Use appropriate commit messages (TODO: commit message policy)
+
+=== Regression tests
+
+All contributions must pass the full suite of regression tests.
+Regression tests are checked in GitHub for every PR, and they can also be run locally using `./do test:regress`.
+
+If a Pull Request adds a new feature that is not already covered by the regression test suite, it
+must add at least one new test.
+
+=== Commit messages
+
+UnifiedDB adheres to https://www.conventionalcommits.org/en/v1.0.0[Conventional Commits v1.0.0].
+
+The guidelines below are adapted from https://github.com/angular/angular/blob/main/contributing-docs/commit-message-guidelines.md[the Angular commit message guidelines].
+
+Every commit message consists of a mandatory *header*, a mandatory *body*, and an optional *footer*.
+
+```
+<header>
+<BLANK LINE>
+<body>
+<BLANK LINE>
+<footer>
+```
+
+==== Header
+
+.UnifiedDB commit header format
+```
+<type>(<scope>): <short summary>
+  │       │             │
+  │       │             └─⫸ Summary in present tense. Not capitalized. No period at the end.
+  │       │
+  │       └─⫸ Commit Scope: single word describing the affected component
+  │
+  └─⫸ Commit Type: build|ci|correct|data|docs|feat|fix|refactor|schema|test
+```
+
+The `<type>` and `<summary>` fields are mandatory. The `<scope>` field is optional.
+
+Type must be one of the following:
+
+[cols="1l,3,2l"]
+|===
+| Type | Description | Example scopes
+
+| build    | Changes that affect the build system or external dependencies        | rake, antora
+| ci       | Changes to the CI configuration files and script                     | action
+| correct  | A correction to data in the database (_i.e., a database bugfix)      | ext, inst, csr
+| data     | An addition to the database contents                                 | ext, inst, csr
+| docs     | Documentation-only changes                                           | schema, ruby-db, <backend name>
+| feat     | A new feature                                                        | ruby-db, <backend name>
+| fix      | A code bug fix                                                       | ruby-db, <backend name>
+| refactor | A code change that neither fixes a bug nor adds a feature            | ruby-db, <backend name>
+| schema   | A change to the database schema                                      | ext, inst, csr
+| test     | Adding missing tests or correcting existing tests                    | schema, ruby-db
+|===
+
+==== Body
+
+Just as in the summary, use the imperative, present tense: "fix" not "fixed" nor "fixes".
+
+Explain the motivation for the change in the commit message body. This commit message should explain
+_why_ you are making the change.
+You can include a comparison of the previous behavior with the new behavior in order to illustrate
+the impact of the change.
+
+==== Footer
+
+A footer is required when the commit introduces a breaking change or closes a GitHub issue. For example:
+
+```
+BREAKING CHANGE: <breaking change summary>
+<BLANK LINE>
+<breaking change description + migration instructions>
+<BLANK LINE>
+<BLANK LINE>
+Fixes #<issue number>
+```
+
+=== Code review
+
+All Pull Requests must go through the code review process.
+
 
 == Finding tasks
 
