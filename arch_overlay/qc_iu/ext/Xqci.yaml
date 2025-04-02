@@ -289,6 +289,7 @@ versions:
     - Fix wrong mantissa bit selection in qc.norm, qc.normu and qc.normeu instructions
     - Fix wrong exponent calculation in qc.normeu instruction
     - Fix IDL code and description of qc.setwm instruction to state that number of words written 0..31.
+    - Fix IDL code for Smdbltrp and Smrnmi spec compatibility for qc.c.mret and qc.c.mnret instructions
   implies:
   - { name: Xqcia, version: "0.6.0" }
   - { name: Xqciac, version: "0.3.0" }
@@ -298,7 +299,7 @@ versions:
   - { name: Xqcicm, version: "0.2.0" }
   - { name: Xqcics, version: "0.2.0" }
   - { name: Xqcicsr, version: "0.3.0" }
-  - { name: Xqciint, version: "0.5.0" }
+  - { name: Xqciint, version: "0.6.0" }
   - { name: Xqciio, version: "0.1.0" }
   - { name: Xqcilb, version: "0.2.0" }
   - { name: Xqcili, version: "0.2.0" }
