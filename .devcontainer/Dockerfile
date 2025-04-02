@@ -16,11 +16,15 @@ RUN apt-get install -y --no-install-recommends \
     cmake \
     ditaa \
     g++ \
+    gcc-riscv64-linux-gnu \
     gcc-riscv64-unknown-elf \
+    gdb \
     gh \
     git \
     less \
+    libc6-dev-riscv64-cross \
     libelf-dev \
+    libgmp-dev \
     libyaml-dev \
     nodejs \
     npm \
