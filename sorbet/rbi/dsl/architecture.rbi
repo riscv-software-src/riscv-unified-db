@@ -4,6 +4,9 @@ class Architecture
   sig { params(name: String).returns(Csr) }
   def csr(name); end
 
+  sig { returns(T::Array[Csr]) }
+  def csrs; end
+
   sig { returns(T::Array[Instruction]) }
   def instructions; end
 
