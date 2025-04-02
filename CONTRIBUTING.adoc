@@ -127,6 +127,34 @@ BREAKING CHANGE: <breaking change summary>
 Fixes #<issue number>
 ```
 
+==== Examples
+
+The following are examples of good commit messages:
+
+```
+data(ext): add Smclic extension
+
+Add metadata and IDL for Smclic (Core Local Interrupt Controller) v1.0.
+
+Closes #816
+```
+
+```
+correct(ext): sctrclr belongs to Smctr/Sscntr extensions
+
+The sctrclr instruction was improperly `definedBy` Smdbltrp
+
+Closes #490
+```
+
+```
+feat(ruby-db): add Sorbet type checking
+
+Add Sorbet type signatures to ruby-db code, and run Sorbet type check in CI.
+
+Closes #934
+```
+
 === Code review
 
 All Pull Requests must go through the code review process.
