@@ -96,7 +96,6 @@
       "description": "List of semantic versions within the model"
     },
     "base": {
-      "type": "integer",
       "enum": [32, 64],
       "description": "Base of the model"
     },
