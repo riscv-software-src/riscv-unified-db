@@ -265,6 +265,7 @@ DEPENDENCIES
   solargraph
   sorbet
   sorbet-runtime
+  spoom
   tapioca
   treetop (= 1.6.12)
   ttfunk (= 1.7)

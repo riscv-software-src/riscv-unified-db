@@ -9,7 +9,7 @@ require_relative "../idl/passes/gen_option_adoc"
 
 # A CSR field object
 class CsrField < DatabaseObject
-  extend T::Sig;
+  extend T::Sig
 
   # @return [Csr] The Csr that defines this field
   sig { returns(Csr) }
