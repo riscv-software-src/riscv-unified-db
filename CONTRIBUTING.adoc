@@ -1,7 +1,22 @@
 = UnifiedDB Contribution Guide
 
 Thank you for your interest in contributing to UnifiedDB!
-We welcome all contributions that fall within our xref:CODE_OF_CONDUCT.adoc[code of conduct].
+We welcome all contributions that meet our xref:CODE_OF_CONDUCT.adoc[code of conduct].
+
+== Legal
+
+All contributions to UnifiedDB are by default made under the xref:LICENSE[BSD-3-clear license].
+Copyrights are held by the specific contributors, and are not tracked by the UnifiedDB project other
+than what can be gleaned through git history.
+
+Under special circumstances code may be added under a different license.
+For example, code from an existing project may be integrated after careful deliberation.
+Any contributions under a different license will receive extra review.
+When any contribution is made under a different license, it must be tracked using
+https://reuse.software/tutorial/#step-2[a Reuse-compatible identifer].
+
+To keep UnifiedDB open to both private and commercial interests, contributions under a
+https://en.wikipedia.org/wiki/copyleft[copyleft license] will never be accepted.
 
 == Ways to contribute
 
