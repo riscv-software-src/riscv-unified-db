@@ -106,9 +106,13 @@
       "default": false,
       "description": "Whether or not this manual version is derived from riscv-isa-manual"
     },
-    "isa_manual_tree": {
+    "git_sha": {
       "type": "string",
-      "description": "The git tree-ish of the riscv-isa-manual repository used to generate this version"
+      "description": "The UDB git tree-ish for with the right contents of the manual"
+    },
+    "src_prefix": {
+      "type": "string",
+      "description": "The path in UDB, at git_sha, to the manual contents"
     },
     "volumes": {
       "type": "array",
