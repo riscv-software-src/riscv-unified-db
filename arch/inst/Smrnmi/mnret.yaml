@@ -3,9 +3,9 @@
 $schema: inst_schema.json#
 kind: instruction
 name: mnret
-long_name: No synopsis available.
+long_name: Machine NMI Return
 description: |
-  No description available.
+  Returns from an NMI in M-mode.
 definedBy: Smrnmi
 assembly: mnret
 encoding:
@@ -18,9 +18,17 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  if (implemented?(ExtensionName::S) && CSR[mstatus].MPP != 2'b11) {
+  if (CSR[mnstatus].MNPP != 2'b11) {
     CSR[mstatus].MPRV = 0;
+    if (implemented?(ExtensionName::Smdbltrp)) {
+      if (xlen() == 64) {
+        CSR[mstatus].MDT = 1'b0;
+      } else {
+        CSR[mstatush].MDT = 1'b0;
+      }
+    }
   }
+  CSR[mnstatus].NMIE = 1'b1;
   if (CSR[mnstatus].MNPP == 2'b00) {
     set_mode(PrivilegeMode::U);
   } else if (CSR[mnstatus].MNPP == 2'b01) {
