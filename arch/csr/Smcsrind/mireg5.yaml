@@ -9,14 +9,14 @@ priv_mode: M
 length: MXLEN
 definedBy: Smcsrind
 description: |
-  The `mireg5` CSR is an alias register for accessing indirect registers that
-  are selected by the `miselect` CSR. The value of `miselect` determines which
-  register is accessed during read or write operations.
+  The `mireg5` CSR is a machine-level alias register used primarily for accessing the upper half
+  of a 64-bit register in RV32, complementing `mireg2`.
 
-  The `mireg5` CSR is used for indirect access to machine-level registers.
-  The access to these registers depends on the value in the `miselect` CSR.
+  When `miselect` is configured to point to a 64-bit register, `mireg2` may provide access
+  to the lower 32 bits while `mireg5` gives access to the upper 32 bits.
 
-  If `miselect` selects this register, the data can be read or written using this CSR.
+  Behavior is extension-defined and depends on the current `miselect` value. Illegal
+  or unsupported values yield UNSPECIFIED behavior.
 
 fields:
   Count:

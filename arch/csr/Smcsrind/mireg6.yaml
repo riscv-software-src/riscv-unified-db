@@ -9,14 +9,14 @@ priv_mode: M
 length: MXLEN
 definedBy: Smcsrind
 description: |
-  The `mireg6` CSR is an alias register for accessing indirect registers that
-  are selected by the `miselect` CSR. The value of `miselect` determines which
-  register is accessed during read or write operations.
+  The `mireg6` CSR offers the final alias in the machine-level indirect access set, and is typically
+  used for the upper half of a 64-bit register accessed via `mireg3` in RV32 environments.
 
-  The `mireg6` CSR is used for indirect access to machine-level registers.
-  The access to these registers depends on the value in the `miselect` CSR.
+  This CSR expands support for multiple register arrays, enabling extensions to define complex
+  or high-bandwidth access patterns using a compact set of CSRs.
 
-  If `miselect` selects this register, the data can be read or written using this CSR.
+  When `miselect` holds a value not allocated or implemented by an extension, access is
+  UNSPECIFIED and may raise an exception.
 
 fields:
   Count:
