@@ -3,21 +3,6 @@
 Thank you for your interest in contributing to UnifiedDB!
 We welcome all contributions that meet our xref:CODE_OF_CONDUCT.adoc[code of conduct].
 
-== Legal
-
-All contributions to UnifiedDB are by default made under the xref:LICENSE[BSD-3-clear license].
-Copyrights are held by the specific contributors, and are not tracked by the UnifiedDB project other
-than what can be gleaned through git history.
-
-Under special circumstances code may be added under a different license.
-For example, code from an existing project may be integrated after careful deliberation.
-Any contributions under a different license will receive extra review.
-When any contribution is made under a different license, it must be tracked using
-https://reuse.software/tutorial/#step-2[a Reuse-compatible identifer].
-
-To keep UnifiedDB open to both private and commercial interests, contributions under a
-https://en.wikipedia.org/wiki/copyleft[copyleft license] will never be accepted.
-
 == Ways to contribute
 
 === Bug Reports
@@ -116,16 +101,39 @@ the impact of the change.
 
 ==== Footer
 
-A footer is required when the commit introduces a breaking change or closes a GitHub issue. For example:
+A footer is required when the commit introduces a breaking change, closes a GitHub issue,
+or has relevant git trailers.
+
+===== Breaking change
+
+When a commit introduces a breaking change to _any_ component, the commit message *must* include
+a breaking change note in the footer:
 
 ```
 BREAKING CHANGE: <breaking change summary>
 <BLANK LINE>
 <breaking change description + migration instructions>
-<BLANK LINE>
-<BLANK LINE>
-Fixes #<issue number>
 ```
+
+==== Linked Issues and PRs
+
+When a commit will close a GitHub Issue, it should be noted in the footer:
+
+```
+Fixes #<issue number>
+Closes #<issue numer>
+```
+
+==== Git trailers
+
+When any of the extra information is relevant to a commit, it should be marked with a git trailer.
+Standard trailers for UnifiedDB include:
+
+[cols="1,2,3"]
+|===
+| Key | Value format | Description
+| Co-authored-by | Firstname Lastname <email> | A person, other than the committer, that authored part of the patch
+|===
 
 ==== Examples
 
@@ -153,13 +161,39 @@ feat(ruby-db): add Sorbet type checking
 Add Sorbet type signatures to ruby-db code, and run Sorbet type check in CI.
 
 Closes #934
+Co-authored-by: Frank the Tank <frank@oldschool.movie>
 ```
 
 === Code review
 
 All Pull Requests must go through the code review process.
 
+All Pull Requests require approval by at least one Code Owner.
+
+Code Owners are maintained in `.github/CODEOWNERS`.
 
 == Finding tasks
 
 If you are looking to contribute but are unsure what to do, browse through the https://github.com/riscv-software-src/riscv-unified-db/issues[issues]. We try to keep them tagged by area and mark easier tasks with "good first issue".
+
+== Legal
+
+All contributions to UnifiedDB are by default made under the xref:LICENSE[BSD-3-clear license].
+Copyrights are held by the specific contributors, and are not tracked by the UnifiedDB project other
+than what can be gleaned through git history.
+
+Under special circumstances code may be added under a different license.
+For example, code from an existing project may be integrated after careful deliberation.
+Any contributions under a different license will receive extra review.
+When any contribution is made under a different license, it must be tracked using
+https://reuse.software/tutorial/#step-2[a Reuse-compatible identifer].
+
+To keep UnifiedDB open to both private and commercial interests, contributions under a
+https://en.wikipedia.org/wiki/copyleft[copyleft license] will never be accepted.
+
+== Maintainers
+
+The current maintainers for UnifiedDB are:
+
+* Derek Hower (@dhower-qc)
+* Paul Clarke (@ThinkOpenly)
