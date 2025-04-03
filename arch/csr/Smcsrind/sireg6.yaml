@@ -1,0 +1,36 @@
+---
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+$schema: csr_schema.json#
+kind: csr
+name: sireg6
+long_name: Supervisor Indirect Register Alias 6
+address: 0x157
+priv_mode: S
+length: SXLEN
+definedBy: Sscsrind
+description: |
+  The `sireg6` CSR is a supervisor-level alias register used to access register state
+  indirectly based on the value held in the `siselect` CSR. The `sireg6` CSR provides
+  access to a window of indirectly addressed registers.
+
+  The behavior of accesses to `sireg6` is determined by the currently selected
+  `siselect` value, which acts as an index into an alias space defined by the extension
+  utilizing this access method. This indirect mechanism allows software to access
+  an array of CSRs without consuming large contiguous blocks of the CSR address space.
+
+  When `siselect` contains a value that is not supported, access to `sireg6` is UNSPECIFIED,
+  and implementations are encouraged to raise an illegal instruction exception to aid in
+  debugging or software emulation.
+
+  The indirect access mechanism is useful for CSR arrays, such as counters or
+  performance registers, and ensures a scalable way to interact with dynamically
+  indexed register sets.
+
+fields:
+  Data:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    type: RW
+    description: |
+      The data read from or written to the register selected by the current `siselect` value.
+    reset_value(): return 0x0;
