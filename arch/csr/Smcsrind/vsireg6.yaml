@@ -1,0 +1,31 @@
+---
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+$schema: csr_schema.json#
+kind: csr
+name: vsireg6
+long_name: Virtual Supervisor Indirect Register Alias 6
+address: 0x257
+virtual_address: 0x257
+priv_mode: VS
+length: VSXLEN
+definedBy: Smcsrind
+description: |
+  The `vsireg6` CSR is the final alias in the virtual supervisor-level set of
+  indirect access CSRs. Like its counterparts, it is accessed indirectly through
+  the `vsiselect` CSR and provides a data window into a selected register.
+
+  For 64-bit register arrays in RV32 environments, `vsireg6` may be used for
+  accessing the upper 32 bits, while lower aliases such as `vsireg3` provide the
+  corresponding lower half.
+
+  Access to `vsireg6` while `vsiselect` holds an unsupported value is
+  UNSPECIFIED. Virtual instruction exceptions are recommended for unsupported
+  access cases.
+
+fields:
+  Data:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    type: RW
+    description: Data read or written based on the `vsiselect` value.
+    reset_value(): return 0x0;
