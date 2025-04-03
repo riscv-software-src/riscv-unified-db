@@ -7,6 +7,7 @@ kind: csr
 name: hpmcounter27h
 long_name: User-mode Hardware Performance Counter 24, high half
 address: 0xC9B
+base: 32
 description: |
   Alias for M-mode CSR `mhpmcounter27h`.
 
@@ -56,7 +57,7 @@ sw_read(): |
     }
   } else if (mode() == PrivilegeMode::VS) {
     # access in VS mode
-    if (CSR[hcounteren].HPM27 == 1'b0 && CSR[mcounteren] == 1'b1) {
+    if (CSR[hcounteren].HPM27 == 1'b0 && CSR[mcounteren].HPM27 == 1'b1) {
       raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
     } else if (CSR[mcounteren].HPM27 == 1'b0) {
       raise(ExceptionCode::IllegalInstruction, mode(), $encoding);

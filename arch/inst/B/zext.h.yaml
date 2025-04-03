@@ -14,7 +14,11 @@ description: |
   [NOTE]
   The *zext.h* instruction is a pseudo-op for `packw` when `Zbkb` is implemented and XLEN == 64.
 definedBy:
-  anyOf: [B, Zbb]
+  # when The bitmanip cryptography extensions are implemented, then zext.h is an alias
+  allOf:
+    - not:
+        anyOf: [Zbkb, Zk, Zkn, Zks]
+    - anyOf: [B, Zbb]
 encoding:
   RV32:
     match: 000010000000-----100-----0110011
@@ -30,8 +34,6 @@ encoding:
         location: 19-15
       - name: rd
         location: 11-7
-excludedBy:
-  anyOf: [Zk, Zkn, Zks, Zbkb] # zext.h instruction is a pseudo-op for `packw` when `Zbkb` is implemented
 assembly: xd, xs1
 access:
   s: always
@@ -45,6 +47,9 @@ operation(): |
 
   X[rd] = X[rs1][15:0];
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val = X(rs1);
@@ -56,3 +61,5 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

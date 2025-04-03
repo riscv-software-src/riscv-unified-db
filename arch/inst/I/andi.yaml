@@ -4,7 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: andi
 long_name: And immediate
-description: And an immediate to the value in rs1, and store the result in rd
+description: And an immediate to the value in xs1, and store the result in xd
 definedBy: I
 assembly: xd, xs1, imm
 encoding:
@@ -12,9 +12,9 @@ encoding:
   variables:
     - name: imm
       location: 31-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -22,20 +22,25 @@ access:
   vs: always
   vu: always
 data_independent_timing: true
-operation(): X[rd] = X[rs1] & imm;
+operation(): X[xd] = X[xs1] & $signed(imm);
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
-    let rs1_val = X(rs1);
+    let xs1_val = X(xs1);
     let immext : xlenbits = sign_extend(imm);
     let result : xlenbits = match op {
-      RISCV_ADDI  => rs1_val + immext,
-      RISCV_SLTI  => zero_extend(bool_to_bits(rs1_val <_s immext)),
-      RISCV_SLTIU => zero_extend(bool_to_bits(rs1_val <_u immext)),
-      RISCV_ANDI  => rs1_val & immext,
-      RISCV_ORI   => rs1_val | immext,
-      RISCV_XORI  => rs1_val ^ immext
+      RISCV_ADDI  => xs1_val + immext,
+      RISCV_SLTI  => zero_extend(bool_to_bits(xs1_val <_s immext)),
+      RISCV_SLTIU => zero_extend(bool_to_bits(xs1_val <_u immext)),
+      RISCV_ANDI  => xs1_val & immext,
+      RISCV_ORI   => xs1_val | immext,
+      RISCV_XORI  => xs1_val ^ immext
     };
-    X(rd) = result;
+    X(xd) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

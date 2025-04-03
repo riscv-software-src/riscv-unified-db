@@ -27,8 +27,11 @@ access:
   vu: always
 operation(): |
   # shamt is between 0-63
-  X[rd+8] = X[rd+8] & imm;
+  X[creg2reg(rd)] = X[creg2reg(rd)] & $signed(imm);
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rd_val = X(rd+8);
@@ -44,3 +47,5 @@ sail(): |
     X(rd+8) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

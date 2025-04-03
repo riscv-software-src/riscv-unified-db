@@ -35,10 +35,13 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg virtual_address = X[rs1] + imm;
+  XReg virtual_address = X[creg2reg(rs1)] + imm;
 
-  X[rd] = sext(read_memory<64>(virtual_address, $encoding), 64);
+  X[creg2reg(rd)] = sext(read_memory<64>(virtual_address, $encoding), 64);
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let offset : xlenbits = sign_extend(imm);
@@ -66,3 +69,5 @@ sail(): |
         }
     }
   }
+
+# SPDX-SnippetEnd

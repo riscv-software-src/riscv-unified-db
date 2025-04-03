@@ -13,3 +13,7 @@ versions:
     url: https://drive.google.com/file/d/1KcjgbLM5L1ZKY8934aJl8aQwGlMz6Cbo/view?usp=drive_link
     requires:
       name: Smhpm
+interrupt_codes:
+  - num: 13
+    name: Local counter overflow interrupt
+    var: LocalCounterOverflow

@@ -1,0 +1,41 @@
+#pragma once
+
+#include <map>
+#include <stdexcept>
+#include <string>
+#include <string_view>
+#include <vector>
+
+#include "udb/version.hpp"
+
+using namespace std::literals;
+
+namespace udb {
+  class DbData {
+    DbData() = delete;
+
+    public:
+    static std::map<std::string, std::string> SCHEMAS;
+
+    static std::vector<std::string> params_for(const std::string& ext_name, const udb::Version& ext_ver)
+    {
+      <%- i = 0 -%>
+      <%- cfg_arch.extensions.each do |ext| -%>
+      <%= i.zero? ? "" : "else " %>if (ext_name == "<%= ext.name %>") {
+        <%- ext.versions.each do |ext_ver| -%>
+        if (ext_ver == udb::Version{"<%= ext_ver.version_str %>"sv}) {
+          return {
+            <%= ext_ver.params.map { |param| "  \"#{param.name}\"" }.join(",\n") %>
+          };
+        }
+        <%- end -%>
+      }
+      <%- i += 1 -%>
+      <%- end -%>
+      else {
+        throw std::runtime_error("Bad extension version");
+        return {};
+      }
+    }
+  };
+}

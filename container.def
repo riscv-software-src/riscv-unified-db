@@ -11,25 +11,31 @@ From: ubuntu:24.04
 
   apt-get update
 
-  apt-get install -y --no-install-recommends git
-  apt-get install -y --no-install-recommends gh
-
-  apt-get install -y --no-install-recommends less
-
-  apt-get install -y --no-install-recommends python3
-  apt-get install -y --no-install-recommends python3.12-venv python3-pip
-
-  apt-get install -y --no-install-recommends build-essential
-  apt-get install -y --no-install-recommends ruby ruby-dev
-  apt-get install -y --no-install-recommends bundler
-  apt-get install -y --no-install-recommends nodejs
-  apt-get install -y --no-install-recommends npm
-
-  apt-get install -y --no-install-recommends ditaa
-  apt-get install -y --no-install-recommends libyaml-dev
-
-  apt-get install -y --no-install-recommends libyaml-dev
-
+  apt-get install -y --no-install-recommends  git \
+                                              gh \
+                                              less \
+                                              python3 \
+                                              python3.12-venv \
+                                              python3-pip \
+                                              build-essential \
+                                              ruby \
+                                              ruby-dev \
+                                              libyaml-dev \
+                                              bundler \
+                                              nodejs \
+                                              npm \
+                                              ditaa \
+                                              cmake \
+                                              g++ \
+                                              gdb \
+                                              libgmp-dev \
+                                              clang-format \
+                                              clang-tidy \
+                                              libelf-dev \
+                                              gcc-riscv64-linux-gnu \
+                                              gcc-riscv64-unknown-elf \
+                                              libc6-dev-riscv64-cross \
+                                              shellcheck
   # cleanup
   apt-get clean autoclean
   apt-get autoremove -y

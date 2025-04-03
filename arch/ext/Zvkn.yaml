@@ -17,7 +17,11 @@ versions:
     state: ratified
     ratification_date: null
     implies:
-      - [Zvkned, "1.0.0"]
-      - [Zvknhb, "1.0.0"]
-      - [Zvkb, "1.0.0"]
-      - [Zvkt, "1.0.0"]
+      - name: Zvkned
+        version: "1.0.0"
+      - name: Zvknhb
+        version: "1.0.0"
+      - name: Zvkb
+        version: "1.0.0"
+      - name: Zvkt
+        version: "1.0.0"
