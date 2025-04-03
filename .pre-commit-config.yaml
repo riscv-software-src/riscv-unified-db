@@ -91,3 +91,16 @@ repos:
           - --indent
           - "2"
           - --case-indent
+
+  - repo: https://github.com/sourcemeta/jsonschema
+    rev: v7.3.0
+    hooks:
+      - id: sourcemeta-jsonschema-lint
+        name: sourcemeta-jsonschema-lint
+        files: ^schemas/
+        # This is from json schema std so not touching it
+        exclude: ^schemas/json-schema-draft-07.json
+        args:
+          - --disable
+          - const_with_type
+        types: [json]

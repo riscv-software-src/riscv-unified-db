@@ -23,7 +23,6 @@
       "description": "Descriptive name of the class"
     },
     "processor_kind": {
-      "type": "string",
       "enum": ["Generic Unprivileged", "Microcontroller", "Apps Processor"],
       "description": "What kind of class is this?"
     },
@@ -34,7 +33,6 @@
     "mandatory_priv_modes": {
       "type": "array",
       "items": {
-        "type": "string",
         "enum": ["M", "S", "U", "VS", "VU"]
       },
       "uniqueItems": true,
