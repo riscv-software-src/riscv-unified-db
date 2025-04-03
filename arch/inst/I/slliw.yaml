@@ -27,6 +27,9 @@ operation(): |
   # shamt is between 0-32
   X[xd] = sext(X[xs1] << shamt, 31);
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let xs1_val = (X(xs1))[31..0];
@@ -38,3 +41,5 @@ sail(): |
     X(xd) = sign_extend(result);
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd
