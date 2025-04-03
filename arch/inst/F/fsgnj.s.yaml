@@ -43,6 +43,9 @@ operation(): |
 
   mark_f_state_dirty();
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val_S = F_or_X_S(rs1);
@@ -55,3 +58,5 @@ sail(): |
     X(rd) = zero_extend(bool_to_bits(rd_val));
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd
