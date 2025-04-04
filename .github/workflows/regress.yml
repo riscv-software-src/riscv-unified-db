@@ -3,8 +3,8 @@ on:
   push:
     branches:
       - main
-  merge_group:                # this is a new line
-    types: [checks_requested] # this is a new line
+  merge_group:
+    types: [checks_requested]
   pull_request:
     branches:
       - main

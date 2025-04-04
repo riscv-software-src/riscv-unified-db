@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# typed: true
 
 require 'ruby-prof-flamegraph'
 
@@ -180,7 +181,7 @@ class Instruction < DatabaseObject
       # pruned_ast =  pruned_operation_ast(symtab)
       # type_checked_operation_ast()
       type_checked_ast = type_checked_operation_ast( effective_xlen)
-      symtab = fill_symtab(effective_xlen, pruned_ast)
+      symtab = fill_symtab(effective_xlen, type_checked_ast)
       type_checked_ast.reachable_exceptions(symtab)
       symtab.release
     end
@@ -522,7 +523,7 @@ class Instruction < DatabaseObject
         elsif b.is_a?(Range)
           op = "$encoding[#{b.end}:#{b.begin}]"
           ops << op
-          so_far += b.size
+          so_far += T.must(b.size)
         end
       end
       ops << "#{@left_shift}'d0" unless @left_shift.zero?

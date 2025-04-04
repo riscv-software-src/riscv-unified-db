@@ -31,7 +31,8 @@
         "zhwu95.riscv",
         "mathematic.vscode-pdf",
         "CraigMaslowski.erb",
-        "HowerLimited.udb-extension-pack-vscode"
+        "HowerLimited.udb-extension-pack-vscode",
+        "sorbet.sorbet-vscode-extension"
       ]
     }
   },

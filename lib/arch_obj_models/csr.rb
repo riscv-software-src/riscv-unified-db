@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# typed: true
 
 require_relative "obj"
 
@@ -176,7 +177,7 @@ class Csr < DatabaseObject
     when Integer
       @data["length"]
     else
-      raise "Unexpected length field for #{csr.name}"
+      raise "Unexpected length field for #{name}"
     end
   end
 
@@ -210,7 +211,7 @@ class Csr < DatabaseObject
     when Integer
       @data["length"]
     else
-      raise "Unexpected length field for #{csr.name}"
+      raise "Unexpected length field for #{name}"
     end
   end
 
@@ -306,6 +307,7 @@ class Csr < DatabaseObject
 
   # @return [Array<CsrField>] All implemented fields for this CSR
   #                           Excluded any fields that are defined by unimplemented extensions
+  sig {returns(T::Array[CsrField])}
   def possible_fields
     @possible_fields ||= fields.select do |f|
       f.exists_in_cfg?(cfg_arch)
@@ -321,6 +323,7 @@ class Csr < DatabaseObject
 
   # @return [Array<CsrField>] All known fields of this CSR when XLEN == +effective_xlen+
   # equivalent to {#fields} if +effective_xlen+ is nil
+  sig {params(effective_xlen: T.nilable(Integer)).returns(T::Array[CsrField])}
   def fields_for(effective_xlen)
     fields.select { |f| effective_xlen.nil? || !f.key?("base") || f.base == effective_xlen }
   end
@@ -518,7 +521,7 @@ class Csr < DatabaseObject
       else
         desc["reg"] << { "bits" => field.location(effective_xlen).size, "name" => field.name, type: 3 }
       end
-      last_idx = field.location(effective_xlen).max
+      last_idx = T.cast(field.location(effective_xlen).max, Integer)
     end
     if !field_list.empty? && (field_list.last.location(effective_xlen).max != (length(effective_xlen) - 1))
       # reserved space at the end
