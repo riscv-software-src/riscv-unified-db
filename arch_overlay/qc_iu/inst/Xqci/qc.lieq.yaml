@@ -34,5 +34,5 @@ access:
   vu: always
 operation(): |
   if (X[rs1] == X[rs2]) {
-    X[rd] = sext(simm, 20);
+    X[rd] = sext(simm, 5);
   }

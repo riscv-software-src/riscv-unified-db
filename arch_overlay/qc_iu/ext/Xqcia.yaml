@@ -67,6 +67,19 @@ versions:
     - Fix typos in description of qc.shlsat and qc.shlusat instructions
     - Fix bug in qc.shlsat that caused wrong IDL code result
     - Fix clobbering of saturation results in [add|addu|sub]sat instructions
+- version: "0.6.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix wrong mantissa bit selection in qc.norm, qc.normu and qc.normeu instructions
+    - Fix wrong exponent calculation in qc.normeu instruction
 description: |
   The Xqcia extension includes eleven instructions to perform integer arithmetic.
 

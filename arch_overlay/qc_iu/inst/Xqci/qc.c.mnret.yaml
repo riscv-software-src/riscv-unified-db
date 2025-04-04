@@ -30,6 +30,12 @@ operation(): |
   CSR[qc.mcause].sw_write(qc_mcause_val_masked |
                           (1<<28) | (mnpie_val<<26) | (1<<30) |
                           (mnpil_val << 12) | (0xF << 20));
+  if (CSR[mnstatus].MNPP != 2'b11) {
+    CSR[mstatus].MPRV = 0;
+    if (implemented?(ExtensionName::Smdbltrp)) {
+      CSR[mstatush].MDT = 1'b0;
+    }
+  }
   if (CSR[mnstatus].MNPP == 2'b00) {
     set_mode(PrivilegeMode::U);
   } else if (CSR[mnstatus].MNPP == 2'b01) {

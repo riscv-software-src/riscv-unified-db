@@ -6,7 +6,7 @@ name: qc.setwm
 long_name: Set word multiple (Register)
 description: |
   Stores the value of `rs3` multiple times into the address starting at (`rs1` + `imm`).
-  The number of writes is in `rs2`.
+  The number of writes is in `rs2` bits [4:0] (0..31).
   Instruction encoded in R instruction format.
 definedBy:
   anyOf:
@@ -35,7 +35,7 @@ access:
 operation(): |
   XReg vaddr = X[rs1] + imm;
   Bits<32> write_value = X[rs3][31:0];
-  XReg num_words = X[rs2];
+  XReg num_words = X[rs2][4:0];
   for (U32 i = 0; i < num_words; i++) {
     write_memory<32>(vaddr, write_value, $encoding);
     vaddr = vaddr + 4;

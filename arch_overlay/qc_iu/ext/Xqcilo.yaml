@@ -29,6 +29,18 @@ versions:
   changes:
     - Add information about instruction formats of each instruction
   requires: { name: Zca, version: ">= 1.0.0" }
+- version: "0.3.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix IDL code sign extension logic for qc.e.lb and qc.e.lh instructions
 description: |
   The Xqcilo extension includes eight 48-bit load/stores instructions that use an offset
   larger than can be found in the base RISC-V ISA.

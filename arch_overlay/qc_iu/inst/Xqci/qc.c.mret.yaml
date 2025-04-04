@@ -28,11 +28,16 @@ operation(): |
   Bits<4> mpil_val = (qc_mcause_val >> 16) & 0xF;
   CSR[mstatus].MIE = mpie_val;
   CSR[mstatus].MPIE = 1'b1;
-  CSR[mstatush].MDT = mpdt_val;
+  if (implemented?(ExtensionName::Smdbltrp)) {
+    CSR[mstatush].MDT = mpdt_val;
+  }
   CSR[qc.mcause].sw_write(qc_mcause_val_masked |
                           (1<<27) | (mpie_val<<26) | (0<<29) |
                           (mpil_val << 12) | (0xF << 16));
   if (mpdt_val == 1'b0) {
+    if (CSR[mstatus].MPP != 2'b11) {
+      CSR[mstatus].MPRV = 0;
+    }
     if (CSR[mstatus].MPP == 2'b00) {
       set_mode(PrivilegeMode::U);
     } else if (CSR[mstatus].MPP == 2'b01) {

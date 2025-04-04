@@ -80,6 +80,19 @@ versions:
   changes:
     - Add stack checks to qc.c.mienter, qc.c.mienter.nest, qc.c.mileaveret
   requires: { name: Zca, version: ">= 1.0.0" }
+- version: "0.6.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix IDL code for Smdbltrp and Smrnmi spec compatibility for qc.c.mret and qc.c.mnret instructions
+  requires: { name: Zca, version: ">= 1.0.0" }
 description: |
   The Xqciint extension includes eleven instructions to accelerate interrupt
   servicing by performing common actions during ISR prologue/epilogue.
