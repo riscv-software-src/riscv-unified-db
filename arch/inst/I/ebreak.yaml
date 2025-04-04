@@ -10,7 +10,7 @@ description: |
   EBREAK raises a breakpoint exception and performs no other operation.
 
   [NOTE]
-  As described in the `C` Standard Extension for Compressed Instructions, the `c.ebreak`
+  As described in the `C` Standaxd Extension for Compressed Instructions, the `c.ebreak`
   instruction performs the same operation as the EBREAK instruction.
 
   EBREAK causes the receiving privilege mode's epc register to be set to the address of
@@ -33,8 +33,13 @@ operation(): |
     eei_ebreak();
   }
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     handle_mem_exception(PC, E_Breakpoint());
     RETIRE_FAIL
   }
+
+# SPDX-SnippetEnd

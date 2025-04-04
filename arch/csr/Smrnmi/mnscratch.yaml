@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: mnscratch
+long_name: Machine Scratch Register
+address: 0x740
+priv_mode: M
+length: MXLEN
+description: Scratch register for software use in NMI / double trap. Bits are not interpreted by hardware.
+definedBy: Smrnmi
+fields:
+  SCRATCH:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    description: Scratch value
+    type: RW
+    reset_value: UNDEFINED_LEGAL

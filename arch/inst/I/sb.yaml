@@ -5,8 +5,8 @@ kind: instruction
 name: sb
 long_name: Store byte
 description: |
-  Store 8 bits of data from register `rs2` to an
-  address formed by adding `rs1` to a signed offset.
+  Store 8 bits of data from register `xs2` to an
+  address formed by adding `xs1` to a signed offset.
 definedBy: I
 assembly: xs2, imm(xs1)
 encoding:
@@ -14,9 +14,9 @@ encoding:
   variables:
     - name: imm
       location: 31-25|11-7
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
 access:
   s: always
@@ -24,16 +24,19 @@ access:
   vs: always
   vu: always
 operation(): |
-  XReg virtual_address = X[rs1] + imm;
+  XReg virtual_address = X[xs1] + $signed(imm);
 
-  write_memory<8>(virtual_address, X[rs2][7:0], $encoding);
+  write_memory<8>(virtual_address, X[xs2][7:0], $encoding);
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let offset : xlenbits = sign_extend(imm);
-    /* Get the address, X(rs1) + offset.
+    /* Get the address, X(xs1) + offset.
        Some extensions perform additional checks on address validity. */
-    match ext_data_get_addr(rs1, offset, Write(Data), width) {
+    match ext_data_get_addr(xs1, offset, Write(Data), width) {
       Ext_DataAddr_Error(e)  => { ext_handle_data_check_error(e); RETIRE_FAIL },
       Ext_DataAddr_OK(vaddr) =>
         if   check_misaligned(vaddr, width)
@@ -50,13 +53,13 @@ sail(): |
             match (eares) {
               MemException(e) => { handle_mem_exception(vaddr, e); RETIRE_FAIL },
               MemValue(_) => {
-                let rs2_val = X(rs2);
+                let xs2_val = X(xs2);
                 let res : MemoryOpResult(bool) = match (width) {
-                  BYTE => mem_write_value(paddr, 1, rs2_val[7..0],  aq, rl, false),
-                  HALF => mem_write_value(paddr, 2, rs2_val[15..0], aq, rl, false),
-                  WORD => mem_write_value(paddr, 4, rs2_val[31..0], aq, rl, false),
+                  BYTE => mem_write_value(paddr, 1, xs2_val[7..0],  aq, rl, false),
+                  HALF => mem_write_value(paddr, 2, xs2_val[15..0], aq, rl, false),
+                  WORD => mem_write_value(paddr, 4, xs2_val[31..0], aq, rl, false),
                   DOUBLE if sizeof(xlen) >= 64
-                       => mem_write_value(paddr, 8, rs2_val,        aq, rl, false),
+                       => mem_write_value(paddr, 8, xs2_val,        aq, rl, false),
                   _    => report_invalid_width(__FILE__, __LINE__, width, "store"),
                 };
                 match (res) {
@@ -70,3 +73,5 @@ sail(): |
         }
     }
   }
+
+# SPDX-SnippetEnd
