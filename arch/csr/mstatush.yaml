@@ -5,10 +5,13 @@ kind: csr
 name: mstatush
 long_name: Machine Status High
 address: 0x310
+writeable: true
 priv_mode: M
 base: 32
 length: 32
-description: The mstatus register tracks and controls the hart's current operating state.
+description:
+  The mstatus register tracks and controls the hart's current operating
+  state.
 definedBy:
   name: Sm
   version: ">= 1.12"

@@ -234,10 +234,9 @@
           "type": "integer",
           "description": "Indirect address of the CSR, as given to the indirect CSRs of the `Smcsrind`/`Sscdrind` extensions"
         },
-        "indirect": {
+        "writeable": {
           "type": "boolean",
-          "default": false,
-          "description": "Whether or not the CSR is accessible via an indirect address"
+          "description": "Whether or not the CSR can be written by software (i.e., is read-write)"
         },
         "virtual_address": true,
         "$comment": "Conditionally required; see below",
