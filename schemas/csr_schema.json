@@ -202,23 +202,8 @@
           "description": "Descriptive name for the CSR"
         },
         "description": {
-          "oneOf": [
-            {
-              "type": "string",
-              "description": "A full Asciidoc description of the CSR, intended to be used as documentation."
-            },
-            {
-              "type": "object",
-              "description": "A full Asciidoc description of the CSR, intended to be used as documentation.",
-              "properties": {
-                "$copy": {
-                  "type": "string",
-                  "format": "uri-reference"
-                }
-              },
-              "additionalProperties": false
-            }
-          ]
+          "type": "string",
+          "description": "A full Asciidoc description of the CSR, intended to be used as documentation."
         },
         "definedBy": {
           "$ref": "schema_defs.json#/$defs/requires_entry",

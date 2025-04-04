@@ -251,7 +251,7 @@ class DatabaseObject
   def key?(k) = @data.key?(k)
 
   # defer the calculation of 'blk' until later, then memoize the result
-  sig { params(fn_name: Symbol, block: T.proc.void).returns(T::Boolean) }
+  sig { params(fn_name: Symbol, block: T.proc.void).returns(T.untyped) }
   def defer(fn_name, &block)
     cache_value = @cache[fn_name]
     return cache_value unless cache_value.nil?

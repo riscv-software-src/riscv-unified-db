@@ -341,9 +341,9 @@ class ExtensionRequirementExpression
       if @type == TYPES::Term
         ext_req = T.cast(@children[0], ExtensionRequirement)
         term_value = term_values.find { |tv| tv.name == ext_req.name }
-        unless term_value.nil?
-          ext_req.satisfied_by?(term_value)
-        end
+        return false if term_value.nil?
+
+        ext_req.satisfied_by?(term_value)
       elsif @type == TYPES::If
         cond_ext_ret = T.cast(@children[0], LogicNode)
         if cond_ext_ret.eval(term_values)

@@ -180,7 +180,8 @@ class CsrField < DatabaseObject
   #      'RW-R'  => Read-write, with a restricted set of legal values
   #      'RW-H'  => Read-write, with a hardware update
   #      'RW-RH' => Read-write, with a hardware update and a restricted set of legal values
-  sig { params(effective_xlen: T.nilable(Integer)).returns(String) }
+  # @return [nil] when the type isn't knowable
+  sig { params(effective_xlen: T.nilable(Integer)).returns(T.nilable(String)) }
   def type(effective_xlen = nil)
     @type ||= { 32 => nil, 64 => nil }
     return @type[effective_xlen] unless @type[effective_xlen].nil?
@@ -218,8 +219,8 @@ class CsrField < DatabaseObject
             type = nil
           end
         ensure
-          symtab.pop unless symtab.nil?
-          symtab.release unless symtab.nil?
+          symtab&.pop
+          symtab&.release
         end
         type
         # end
@@ -237,11 +238,8 @@ class CsrField < DatabaseObject
   # @param effective_xlen [32, 64] The effective xlen to evaluate for
   sig { params(effective_xlen: T.nilable(Integer)).returns(String) }
   def type_pretty(effective_xlen = nil)
-    str = T.let(nil, T.nilable(String))
-    value_result = Idl::AstNode.value_try do
-      str = type(effective_xlen)
-    end
-    Idl::AstNode.value_else(value_result) do
+    str = type(effective_xlen)
+    if str.nil?
       ast = T.must(type_ast)
       str = ast.gen_option_adoc
     end
@@ -427,7 +425,7 @@ class CsrField < DatabaseObject
       ast = T.must(reset_value_ast)
       str = ast.gen_option_adoc
     end
-    T.must(str)
+    T.must(str).to_s
   end
 
   # @return [Boolean] true if the CSR field has a custom sw_write function
