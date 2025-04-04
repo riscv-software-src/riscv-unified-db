@@ -13,7 +13,7 @@ include "fp.idl"
 # This is to accommodate the zero register (x0) without
 # needed ISL language support or hard-to-read function calls
 # on any x register read/write
-# Bits<XLEN> X[31];
+# Bits<MXLEN> X[31];
 
 ############################################################
 # constants used to indicate special values
@@ -675,7 +675,7 @@ function raise_guest_page_fault {
       CSR[mtval2].VALUE = write_gpa_in_tval ? (gpa >> 2) : 0;
       CSR[mtinst].VALUE = tinst_value;
       CSR[mstatus].MPP = $bits(from_mode)[1:0];
-      if (XLEN == 64) {
+      if (MXLEN == 64) {
         CSR[mstatus].MPV = 1;
       } else {
         CSR[mstatush].MPV = 1;
@@ -735,13 +735,13 @@ function raise_precise {
         CSR[mtval2].VALUE = 0;
         CSR[mtinst].VALUE = 0;
         if (from_mode == PrivilegeMode::VU || from_mode == PrivilegeMode::VS) {
-          if (XLEN == 32) {
+          if (MXLEN == 32) {
             CSR[mstatush].MPV = 1;
           } else {
             CSR[mstatus].MPV = 1;
           }
         } else {
-          if (XLEN == 32) {
+          if (MXLEN == 32) {
             CSR[mstatush].MPV = 0;
           } else {
             CSR[mstatus].MPV = 0;
@@ -905,7 +905,7 @@ function xlen {
     Returns the effective XLEN for the current privilege mode.
   }
   body {
-    if (XLEN == 32) {
+    if (MXLEN == 32) {
       return 32;
     } else {
       if (mode() == PrivilegeMode::M) {
@@ -1151,7 +1151,7 @@ function pmp_match {
     If there is no match or a partial match, report that result.
   }
   body {
-    if (XLEN == 64) {
+    if (MXLEN == 64) {
       return pmp_match_64(paddr, access_size);
     } else {
       return pmp_match_32(paddr, access_size);
@@ -1166,7 +1166,7 @@ function mpv {
   }
   body {
     if (implemented?(ExtensionName::H)) {
-      return (XLEN == 32) ? CSR[mstatush].MPV : CSR[mstatus].MPV;
+      return (MXLEN == 32) ? CSR[mstatush].MPV : CSR[mstatus].MPV;
     } else {
       assert(false, "TODO");
     }
@@ -1287,7 +1287,7 @@ function base32? {
     return True iff current effective XLEN == 32
   }
   body {
-    if (XLEN == 32) {
+    if (MXLEN == 32) {
       return true;
     } else {
       XRegWidth xlen32 = XRegWidth::XLEN32;
@@ -1339,7 +1339,7 @@ function current_translation_mode {
         Bits<4> mode_val = CSR[vsatp].MODE;
         if (mode_val == $bits(SatpMode::Sv32)) {
           # Sv32 is only defined when XLEN == 32
-          if (XLEN == 64) {
+          if (MXLEN == 64) {
             if ((effective_mode == PrivilegeMode::VS) && (CSR[hstatus].VSXL != $bits(XRegWidth::XLEN32))) {
               # not supported in this XLEN
               return SatpMode::Reserved;
@@ -1356,7 +1356,7 @@ function current_translation_mode {
 
           # OK
           return SatpMode::Sv32;
-        } else if ((XLEN == 64) && (mode_val == $bits(SatpMode::Sv39))) {
+        } else if ((MXLEN == 64) && (mode_val == $bits(SatpMode::Sv39))) {
           # Sv39 is only defined when XLEN == 64
           if (effective_mode == PrivilegeMode::VS && CSR[hstatus].VSXL != $bits(XRegWidth::XLEN64)) {
             # not supported in this XLEN
@@ -1373,7 +1373,7 @@ function current_translation_mode {
 
           # OK
           return SatpMode::Sv39;
-        } else if ((XLEN == 64) && (mode_val == $bits(SatpMode::Sv48))) {
+        } else if ((MXLEN == 64) && (mode_val == $bits(SatpMode::Sv48))) {
           # Sv48 is only defined when XLEN == 64
           if (effective_mode == PrivilegeMode::VS && CSR[hstatus].VSXL != $bits(XRegWidth::XLEN64)) {
             # not supported in this XLEN
@@ -1390,7 +1390,7 @@ function current_translation_mode {
 
           # OK
           return SatpMode::Sv48;
-        } else if ((XLEN == 64) && (mode_val == $bits(SatpMode::Sv57))) {
+        } else if ((MXLEN == 64) && (mode_val == $bits(SatpMode::Sv57))) {
           # Sv57 is only defined when XLEN == 64
           if (effective_mode == PrivilegeMode::VS && CSR[hstatus].VSXL != $bits(XRegWidth::XLEN64)) {
             # not supported in this XLEN
@@ -1418,7 +1418,7 @@ function current_translation_mode {
       Bits<4> mode_val = CSR[satp].MODE;
       if (mode_val == $bits(SatpMode::Sv32)) {
         # Sv32 is only defined when XLEN == 32
-        if (XLEN == 64) {
+        if (MXLEN == 64) {
           if (effective_mode == PrivilegeMode::S && CSR[mstatus].SXL != $bits(XRegWidth::XLEN32)) {
             # not supported in this XLEN
             return SatpMode::Reserved;
@@ -1432,7 +1432,7 @@ function current_translation_mode {
           # not supported in this configuration
           return SatpMode::Reserved;
         }
-      } else if ((XLEN == 64) && (mode_val == $bits(SatpMode::Sv39))) {
+      } else if ((MXLEN == 64) && (mode_val == $bits(SatpMode::Sv39))) {
         # Sv39 is only defined when XLEN == 64
         if (effective_mode == PrivilegeMode::S && CSR[mstatus].SXL != $bits(XRegWidth::XLEN64)) {
           # not supported in this XLEN
@@ -1448,7 +1448,7 @@ function current_translation_mode {
         }
         # OK
         return SatpMode::Sv39;
-      } else if ((XLEN == 64) && (mode_val == $bits(SatpMode::Sv48))) {
+      } else if ((MXLEN == 64) && (mode_val == $bits(SatpMode::Sv48))) {
         # Sv48 is only defined when XLEN == 64
         if (effective_mode == PrivilegeMode::S && CSR[mstatus].SXL != $bits(XRegWidth::XLEN64)) {
           # not supported in this XLEN
@@ -1464,7 +1464,7 @@ function current_translation_mode {
         }
         # OK
         return SatpMode::Sv48;
-      } else if ((XLEN == 64) && (mode_val == $bits(SatpMode::Sv57))) {
+      } else if ((MXLEN == 64) && (mode_val == $bits(SatpMode::Sv57))) {
         # Sv57 is only defined when XLEN == 64
         if (effective_mode == PrivilegeMode::S && CSR[mstatus].SXL != $bits(XRegWidth::XLEN64)) {
           # not supported in this XLEN
@@ -1575,7 +1575,7 @@ function tinst_value_for_guest_page_fault {
         if (TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT == "always zero") {
           return 0;
         } else if (TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT == "always pseudoinstruction") {
-          if ((VSXLEN == 32) || ((XLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)))) {
+          if ((VSXLEN == 32) || ((MXLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)))) {
             return 0x00002000;
           } else {
             return 0x00003000;
@@ -1589,7 +1589,7 @@ function tinst_value_for_guest_page_fault {
         if (TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT == "always zero") {
           return 0;
         } else if (TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT == "always pseudoinstruction") {
-          if ((VSXLEN == 32) || ((XLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)))) {
+          if ((VSXLEN == 32) || ((MXLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)))) {
             return 0x00002020;
           } else {
             return 0x00003020;
@@ -1603,9 +1603,9 @@ function tinst_value_for_guest_page_fault {
     } else {
       if (REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT) {
         # spec states hardware must write the pseduo-instruction values to *tinst
-        if ((VSXLEN == 32) || ((XLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)))) {
+        if ((VSXLEN == 32) || ((MXLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN32)))) {
           return 0x00002000;
-        } else if ((VSXLEN == 64) || ((XLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN64)))) {
+        } else if ((VSXLEN == 64) || ((MXLEN == 64) && (CSR[hstatus].VSXL == $bits(XRegWidth::XLEN64)))) {
           return 0x00003000;
         }
       }
@@ -2007,7 +2007,7 @@ function stage1_page_walk {
   returns
     TranslationResult  # the translated address and attributes
   arguments
-    Bits<XLEN> vaddr,             # the virtual address to translate
+    Bits<MXLEN> vaddr,            # the virtual address to translate
     MemoryOperation op,           # the operation type
     PrivilegeMode effective_mode, # the mode for this walk (usually effective_ldst_mode(), though different for HLV/HLX/HSV)
     Bits<INSTR_ENC_SIZE> encoding # encoding of the instruction causing this access
@@ -2470,11 +2470,11 @@ function canonical_gpaddr? {
     } else if (satp_mode == SatpMode::Sv32) {
       # Sv32 uses all 32 bits of the VA
       return true;
-    } else if ((XLEN > 32) && (satp_mode == SatpMode::Sv39)) {
+    } else if ((MXLEN > 32) && (satp_mode == SatpMode::Sv39)) {
       return gpaddr[63:39] == {25{gpaddr[38]}};
-    } else if ((XLEN > 32) && (satp_mode == SatpMode::Sv48)) {
+    } else if ((MXLEN > 32) && (satp_mode == SatpMode::Sv48)) {
       return gpaddr[63:48] == {16{gpaddr[47]}};
-    } else if ((XLEN > 32) && (satp_mode == SatpMode::Sv57)) {
+    } else if ((MXLEN > 32) && (satp_mode == SatpMode::Sv57)) {
       return gpaddr[63:57] == {6{gpaddr[56]}};
     }
   }
@@ -2604,7 +2604,7 @@ function read_memory {
 }
 
 function read_memory_xlen {
-  returns Bits<XLEN>
+  returns Bits<MXLEN>
   arguments
     XReg virtual_address,
     Bits<INSTR_ENC_SIZE> encoding
@@ -2623,7 +2623,7 @@ function read_memory_xlen {
 function write_memory_xlen {
   arguments
     XReg virtual_address,
-    Bits<XLEN> value,
+    Bits<MXLEN> value,
     Bits<INSTR_ENC_SIZE> encoding
   description {
     Read XLEN bits from memory
@@ -2638,7 +2638,7 @@ function write_memory_xlen {
 }
 
 function read_memory_xlen_aligned {
-  returns Bits<XLEN>
+  returns Bits<MXLEN>
   arguments
     XReg virtual_address,
     Bits<INSTR_ENC_SIZE> encoding   # the encoding of an instruction causing this access, or 0 if a fetch
@@ -2693,8 +2693,8 @@ function invalidate_reservation_set {
 
 function register_reservation_set {
   arguments
-    Bits<XLEN> physical_address,   # The (always aligned) physical address to reserve.
-    Bits<XLEN> length              # minimum length of the reservation. actual reservation may be larger
+    Bits<MXLEN> physical_address,   # The (always aligned) physical address to reserve.
+    Bits<MXLEN> length              # minimum length of the reservation. actual reservation may be larger
   description {
     Register a reservation for a physical address range that subsumes
     [physical_address, physical_address + N).
@@ -2704,10 +2704,10 @@ function register_reservation_set {
     reservation_set_address = physical_address;
 
     if (LRSC_RESERVATION_STRATEGY == "reserve naturally-aligned 64-byte region") {
-      reservation_set_address = physical_address & ~XLEN'h3f;
+      reservation_set_address = physical_address & ~MXLEN'h3f;
       reservation_set_size = 64;
     } else if (LRSC_RESERVATION_STRATEGY == "reserve naturally-aligned 128-byte region") {
-      reservation_set_address = physical_address & ~XLEN'h7f;
+      reservation_set_address = physical_address & ~MXLEN'h7f;
       reservation_set_size = 128;
     } else if (LRSC_RESERVATION_STRATEGY == "reserve exactly enough to cover the access") {
       reservation_set_address = physical_address;
@@ -2724,7 +2724,7 @@ function load_reserved {
   template U32 N                # the number of bits being loaded
   returns Bits<N>               # the value of memory at virtual_address
   arguments
-    Bits<XLEN> virtual_address, # the virtual address to load
+    Bits<MXLEN> virtual_address, # the virtual address to load
     Bits<1>    aq,              # acquire semantics? 0=no, 1=yes
     Bits<1>    rl,              # release semantics? 0=no, 1=yes
     Bits<INSTR_ENC_SIZE> encoding # encoding of the instruction causing this access
@@ -2767,13 +2767,13 @@ function load_reserved {
 }
 
 function store_conditional {
-  template U32 N                # number of bits being stored
-  returns Boolean               # whether or not the store conditional succeeded
+  template U32 N                  # number of bits being stored
+  returns Boolean                 # whether or not the store conditional succeeded
   arguments
-    Bits<XLEN> virtual_address, # the virtual address to store to
-    Bits<XLEN> value,           # the value to store
-    Bits<1>    aq,              # acquire semantics? 0=no, 1=yes
-    Bits<1>    rl,              # release semantics? 0=no, 1=yes
+    Bits<MXLEN> virtual_address,  # the virtual address to store to
+    Bits<MXLEN> value,            # the value to store
+    Bits<1>    aq,                # acquire semantics? 0=no, 1=yes
+    Bits<1>    rl,                # release semantics? 0=no, 1=yes
     Bits<INSTR_ENC_SIZE> encoding # encoding of the instruction causing this access
   description {
     Atomically check the reservation set to ensure:
@@ -2991,7 +2991,7 @@ function write_memory {
 function write_memory_xlen_aligned {
   arguments
     XReg virtual_address,
-    Bits<XLEN> value,
+    Bits<MXLEN> value,
     Bits<INSTR_ENC_SIZE> encoding # encoding of the instruction causing this access
   description {
     Write to virtual memory XLEN bits (which may be runtime determined) using a known aligned address.

@@ -9,7 +9,7 @@ description: |
   and registers a _reservation set_  -- a set of bytes that subsumes the bytes in the
   addressed word.
 
-  <%- if XLEN == 64 -%>
+  <%- if MXLEN == 64 -%>
   The 32-bit load result is sign-extended to 64-bits.
   <%- end -%>
 

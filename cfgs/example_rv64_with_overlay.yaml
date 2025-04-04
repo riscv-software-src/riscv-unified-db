@@ -37,7 +37,7 @@ implemented_extensions:
   - [Zicbom, "1.0.0"]
 
 params:
-  XLEN: 64
+  MXLEN: 64
 
   # name of the configuration
   NAME: example_rv64_with_overlay

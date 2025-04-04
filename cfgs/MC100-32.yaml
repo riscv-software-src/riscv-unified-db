@@ -14,7 +14,7 @@ mandatory_extensions:
   - { name: Zicntr, version: "~> 2.0" }
 additional_extensions: false
 params:
-  XLEN: 32
+  MXLEN: 32
   MISALIGNED_SPLIT_STRATEGY: by_byte
   PRECISE_SYNCHRONOUS_EXCEPTIONS: true
   TRAP_ON_ECALL_FROM_M: true
