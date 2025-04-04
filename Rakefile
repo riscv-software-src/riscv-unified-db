@@ -238,18 +238,15 @@ namespace :test do
     puts "All files validate against their schema"
   end
 
-  task idl: ["#{$root}/.stamps/resolve-rv32.stamp", "#{$root}/.stamps/resolve-rv64.stamp"]  do
-    print "Parsing IDL code for RV32..."
-    cfg_arch32 = cfg_arch_for("rv32")
+  task :idl do
+    cfg = ENV["CFG"]
+    raise "Missing CFG enviornment variable" if cfg.nil?
+
+    print "Parsing IDL code for #{cfg}..."
+    cfg_arch = cfg_arch_for(cfg)
     puts "done"
 
-    cfg_arch32.type_check
-
-    print "Parsing IDL code for RV64..."
-    cfg_arch64 = cfg_arch_for("rv64")
-    puts "done"
-
-    cfg_arch64.type_check
+    cfg_arch.type_check
 
     puts "All IDL passed type checking"
   end
@@ -410,6 +407,11 @@ namespace :test do
     Rake::Task["test:idl_compiler"].invoke
     Rake::Task["test:lib"].invoke
     Rake::Task["test:schema"].invoke
+    ENV["CFG"] = "rv32"
+    Rake::Task["test:idl"].invoke
+    ENV["CFG"] = "rv64"
+    Rake::Task["test:idl"].invoke
+    ENV["CFG"] = "qc_iu"
     Rake::Task["test:idl"].invoke
     Rake::Task["test:inst_encodings"].invoke
   end
