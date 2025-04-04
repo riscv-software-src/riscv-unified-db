@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: mstateen1h
+long_name: Upper 32 bits of Machine State Enable 1 Register
+address: 0x31D
+priv_mode: M
+length: 32
+description: |
+  For RV64 harts, the Smstateen extension adds four new 64-bit CSRs at machine level: mstateen0 (Machine State
+  Enable 0), mstateen1, mstateen2, and mstateen3. For RV32, the registers listed above are 32-bit, and for the
+  machine-level CSRs there is a corresponding set of high-half CSRs for the upper 32 bits of each register:
+  mstateen0h, mstateen1h, mstateen2h, mstateen3h.
+definedBy: Smstateen
+fields:
+  SEO:
+    location: 31
+    description: |
+      The SE0 bit in mstateen1h controls access to the hstateen1, hstateen1h, and the sstateen1 CSRs.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
