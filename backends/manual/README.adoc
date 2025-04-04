@@ -1,0 +1,17 @@
+Generate an HTML site for one or more versions of the manual (./do --desc for options)
+
+== Usage
+
+Options:
+
+  * MANUAL_NAME: The database name (key) of the manual to generate.
+  * VERSIONS: A comma-separated list of versions to generate, or "all".
+
+Examples:
+
+  ./do gen:html_manual MANUAL_NAME=isa VERSIONS=20191008,20240411
+  ./do gen:html_manual MANUAL_NAME=isa VERSIONS=all
+
+Result:
+
+  A static HTML website will be written into gen/manual/MANUAL_NAME/<hash of versions>/html
