@@ -3,23 +3,23 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: mop.rr.n
-long_name: No synopsis available.
+long_name: May-be-operation (2 source registers).
 description: |
-  No description available.
+  The Zimop extension defines 8 MOP instructions named MOP.RR.n, where n is an integer between 0
+  and 7, inclusive. Unless redefined by another extension, these instructions simply write 0 to X[xd].
+  Their encoding allows future extensions to define them to read X[xs1] and X[xs2], as well as write X[xd].
 definedBy: Zimop
-assembly: mop_rr_t_30, mop_rr_t_27_26, xd, xs1, xs2
+assembly: xd, xs1, xs2
 encoding:
   match: 1-00--1----------100-----1110011
   variables:
-    - name: mop_rr_t_30
-      location: 30-30
-    - name: mop_rr_t_27_26
-      location: 27-26
-    - name: rs2
+    - name: n
+      location: 30|27-26
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -31,20 +31,21 @@ hints:
   - { $ref: inst/Zicfilp/sspush.x1.yaml# }
   - { $ref: inst/Zicfilp/sspush.x5.yaml# }
 pseudoinstructions:
-  - when: (mop_rr_t_30 == 0x0) && (mop_rr_t_27_26 == 0x0)
+  - when: n == 0
     to: mop.rr.0
-  - when: (mop_rr_t_30 == 0x0) && (mop_rr_t_27_26 == 0x1)
+  - when: n == 1
     to: mop.rr.1
-  - when: (mop_rr_t_30 == 0x0) && (mop_rr_t_27_26 == 0x2)
+  - when: n == 2
     to: mop.rr.2
-  - when: (mop_rr_t_30 == 0x0) && (mop_rr_t_27_26 == 0x3)
+  - when: n == 3
     to: mop.rr.3
-  - when: (mop_rr_t_30 == 0x1) && (mop_rr_t_27_26 == 0x0)
+  - when: n == 4
     to: mop.rr.4
-  - when: (mop_rr_t_30 == 0x1) && (mop_rr_t_27_26 == 0x1)
+  - when: n == 5
     to: mop.rr.5
-  - when: (mop_rr_t_30 == 0x1) && (mop_rr_t_27_26 == 0x2)
+  - when: n == 6
     to: mop.rr.6
-  - when: (mop_rr_t_30 == 0x1) && (mop_rr_t_27_26 == 0x3)
+  - when: n == 7
     to: mop.rr.7
 operation(): |
+  X[xd] = 0;
