@@ -2377,7 +2377,9 @@ module Idl
         value_else(value_result) do
           # if this is a fully configured ConfiguredArchitecture, this is an error because all constants are supposed to be known
           if symtab.cfg_arch.fully_configured?
-            type_error "Array size (#{ary_size.text_value}) must be known at compile time"
+            unless ary_size.type(symtab).template_var?
+              type_error "Array size (#{ary_size.text_value}) must be known at compile time"
+            end
           else
             # otherwise, it's ok that we don't know the value yet, as long as the value is a const
             type_error "Array size (#{ary_size.text_value}) must be a constant" unless ary_size.type(symtab).const?
@@ -4367,7 +4369,11 @@ module Idl
           end
         end
         value_else(value_result) do
-          type_error "Bit width must be known at compile time" if symtab.cfg_arch.fully_configured?
+          unless bits_expression.type(symtab).template_var?
+            if symtab.cfg_arch.fully_configured?
+              type_error "Bit width (#{bits_expression.text_value}) must be known at compile time"
+            end
+          end
         end
       end
       unless ["Bits", "String", "XReg", "Boolean", "U32", "U64"].include?(@type_name)
@@ -4906,6 +4912,16 @@ module Idl
           value_error "maybe_cache_translation is not compile-time-knowable"
         elsif name == "invalidate_translations"
           value_error "invalidate_translations is not compile-time-knowable"
+        elsif name == "direct_csr_lookup"
+          value_error "direct_csr_lookup is not compile-time-knowable"
+        elsif name == "indirect_csr_lookup"
+          value_error "indirect_csr_lookup is not compile-time-knowable"
+        elsif name == "csr_hw_read"
+          value_error "csr_hw_read is not compile-time-knowable"
+        elsif name == "csr_sw_read"
+          value_error "csr_sw_read is not compile-time-knowable"
+        elsif name == "csr_sw_write"
+          value_error "csr_sw_write is not compile-time-knowable"
         else
           internal_error "Unimplemented generated: '#{name}'"
         end
@@ -5352,7 +5368,7 @@ module Idl
       symtab = symtab.deep_clone
       symtab.push(self)
       template_names.each_with_index do |tname, index|
-        symtab.add(tname, Var.new(tname, template_types(symtab)[index]))
+        symtab.add(tname, Var.new(tname, template_types(symtab)[index], template_index: index))
       end
 
       type_check_return(symtab)
@@ -5399,6 +5415,7 @@ module Idl
         ttype = a.type(symtab)
         ttype = ttype.ref_type if ttype.kind == :enum
         ttypes << ttype.clone.make_const
+        ttypes.last.qualify(:template_var)
       end
       ttypes
     end
@@ -6109,7 +6126,7 @@ module Idl
 
   class CsrReadExpressionSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
-      CsrReadExpressionAst.new(input, interval, idx.text_value)
+      CsrReadExpressionAst.new(input, interval, csr_name.text_value)
     end
   end
 
@@ -6122,13 +6139,12 @@ module Idl
   class CsrReadExpressionAst < AstNode
     include Rvalue
 
-    attr_reader :idx_text
-    attr_reader :idx_expr
+    attr_reader :csr_name
 
-    def initialize(input, interval, idx)
+    def initialize(input, interval, csr_name)
       super(input, interval, [])
 
-      @idx_text = idx
+      @csr_name = csr_name
     end
 
     def freeze_tree(symtab)
@@ -6136,73 +6152,25 @@ module Idl
 
       @cfg_arch = symtab.cfg_arch # remember cfg_arch, used by gen_adoc pass
 
-      if symtab.cfg_arch.csr(@idx_text).nil?
-        parser = symtab.cfg_arch.idl_compiler.parser
-        expr = parser.parse(@idx_text, root: :expression)
+      type_error "CSR '#{@csr_name}' is not defined" if symtab.cfg_arch.csr(@csr_name).nil?
+      @csr_obj = symtab.cfg_arch.csr(@csr_name)
 
-        type_error "#{@idx_text} is not a CSR; it must be an expression" if expr.nil?
-
-        @idx_expr = expr.to_ast
-        @children << @idx_expr
-      else
-        @csr_obj = symtab.cfg_arch.csr(@idx_text)
-      end
+      @type = CsrType.new(@csr_obj, symtab.cfg_arch)
 
       @children.each { |child| child.freeze_tree(symtab) }
       freeze
     end
 
     # @!macro type
-    def type(symtab)
-      cfg_arch = symtab.cfg_arch
-
-      cd = csr_def(symtab)
-      if cd.nil?
-        # we don't know anything about this index, so we can only
-        # treat this as a generic
-        CsrType.new(:unknown, cfg_arch)
-      else
-        CsrType.new(cd, cfg_arch)
-      end
-    end
+    def type(symtab) = @type
 
     # @!macro type_check
     def type_check(symtab)
-      cfg_arch = symtab.cfg_arch
-
-      if !@csr_obj.nil?
-        # this is a known csr name
-        # nothing else to check
-
-      else
-        # this is an expression
-        @idx_expr.type_check(symtab)
-        type_error "Csr index must be integral" unless @idx_expr.type(symtab).integral?
-
-        value_try do
-          idx_value = @idx_expr.value(symtab)
-          csr_index = cfg_arch.csrs.index { |csr| csr.address == idx_value }
-          type_error "No csr number '#{idx_value}' was found" if csr_index.nil?
-          :ok
-        end
-        # OK, index doesn't have to be known
-      end
+      type_error "CSR '#{@csr_name}' is not defined" if symtab.cfg_arch.csr(@csr_name).nil?
     end
 
     def csr_def(symtab)
-      cfg_arch = symtab.cfg_arch
-      if !@csr_obj.nil?
-        # this is a known csr name
-        @csr_obj
-      else
-        # this is an expression
-        value_try do
-          idx_value = @idx_expr.value(symtab)
-          return cfg_arch.csrs.find { |csr| csr.address == idx_value }
-        end
-        # || we don't know at compile time which CSR this is...
-        nil
-      end
+      @csr_obj
     end
 
     def csr_known?(symtab)
@@ -6217,20 +6185,18 @@ module Idl
 
     # @!macro value
     def value(symtab)
-      cd = csr_def(symtab)
-      value_error "CSR number not knowable" if cd.nil?
       if symtab.cfg_arch.fully_configured?
-        value_error "CSR is not implemented" unless symtab.cfg_arch.transitive_implemented_csrs.any? { |icsr| icsr.name == cd.name }
+        value_error "CSR is not implemented" unless symtab.cfg_arch.transitive_implemented_csrs.any? { |icsr| icsr.name == @csr_obj.name }
       else
-        value_error "CSR is not defined" unless symtab.cfg_arch.csrs.any? { |icsr| icsr.name == cd.name }
+        value_error "CSR is not defined" unless symtab.cfg_arch.csrs.any? { |icsr| icsr.name == @csr_obj.name }
       end
-      cd.fields.each { |f| value_error "#{csr_name(symtab)}.#{f.name} not RO" unless f.type(symtab) == "RO" }
+      @csr_obj.fields.each { |f| value_error "#{csr_name(symtab)}.#{f.name} not RO" unless f.type(symtab) == "RO" }
 
       csr_def(symtab).fields.reduce(0) { |val, f| val | (f.value << f.location.begin) }
     end
 
     # @!macro to_idl
-    def to_idl = "CSR[#{@idx.to_idl}]"
+    def to_idl = "CSR[#{@csr_name}]"
   end
 
   class CsrSoftwareWriteSyntaxNode < Treetop::Runtime::SyntaxNode

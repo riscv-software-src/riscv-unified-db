@@ -215,10 +215,10 @@ class ConfiguredArchitecture < Architecture
     io.puts "Type checking IDL code for #{@config.name}..."
     progressbar =
       if show_progress
-        ProgressBar.create(title: "Instructions", total: instructions.size)
+        ProgressBar.create(title: "Instructions", total: possible_instructions.size)
       end
 
-    instructions.each do |inst|
+    possible_instructions.each do |inst|
       progressbar.increment if show_progress
       if @mxlen == 32
         inst.type_checked_operation_ast(32) if inst.rv32?
@@ -230,10 +230,10 @@ class ConfiguredArchitecture < Architecture
 
     progressbar =
       if show_progress
-        ProgressBar.create(title: "CSRs", total: csrs.size)
+        ProgressBar.create(title: "CSRs", total: possible_csrs.size)
       end
 
-    csrs.each do |csr|
+    possible_csrs.each do |csr|
       progressbar.increment if show_progress
       if csr.has_custom_sw_read?
         if (possible_xlens.include?(32) && csr.defined_in_base32?)
@@ -265,11 +265,12 @@ class ConfiguredArchitecture < Architecture
       end
     end
 
+    func_list = reachable_functions
     progressbar =
       if show_progress
-        ProgressBar.create(title: "Functions", total: functions.size)
+        ProgressBar.create(title: "Functions", total: func_list.size)
       end
-    functions.each do |func|
+    func_list.each do |func|
       progressbar.increment if show_progress
       func.type_check(@symtab)
     end

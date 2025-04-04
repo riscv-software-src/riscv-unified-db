@@ -757,15 +757,10 @@ module Idl
   class CsrReadExpressionAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       csr = csr_def(symtab)
-      if csr.nil?
-        # csr isn't known at runtime...
-        "#{' '*indent}__UDB_CSR_BY_ADDR(#{idx_expr.gen_cpp(symtab, 0, indent_spaces:)}).hw_read(__UDB_XLEN)"
+      if symtab.cfg_arch.multi_xlen? && csr.format_changes_with_xlen?
+        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.name})._hw_read(__UDB_XLEN)"
       else
-        if symtab.cfg_arch.multi_xlen? && csr.format_changes_with_xlen?
-          "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.name})._hw_read(__UDB_XLEN)"
-        else
-          "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.name})._hw_read()"
-        end
+        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.name})._hw_read()"
       end
     end
   end
