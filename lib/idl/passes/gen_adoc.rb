@@ -299,7 +299,7 @@ module Idl
 
   class CsrReadExpressionAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      csr_text = "CSR[#{idx}]"
+      csr_text = "CSR[#{csr_name}]"
       "#{' '*indent}%%LINK%csr;#{csr_name};#{csr_text}%%"
     end
   end

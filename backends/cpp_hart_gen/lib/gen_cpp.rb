@@ -313,9 +313,9 @@ module Idl
 
       field  = csr_field.field_def(symtab)
       if symtab.cfg_arch.multi_xlen? && field.dynamic_location?
-        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name(symtab)}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
+        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
       else
-        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name(symtab)}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)})"
+        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)})"
       end
     end
   end

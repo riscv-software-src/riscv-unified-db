@@ -6050,18 +6050,16 @@ module Idl
     def type_check(symtab)
       @csr.type_check(symtab)
 
-      type_error "CSR[#{csr_name(symtab)}] has no field named #{@field_name}" if field_def(symtab).nil?
-      type_error "CSR[#{csr_name(symtab)}].#{@field_name} is not defined in RV32" if symtab.cfg_arch.mxlen == 32 && !field_def(symtab).defined_in_base32?
-      type_error "CSR[#{csr_name(symtab)}].#{@field_name} is not defined in RV64" if symtab.cfg_arch.mxlen == 64 && !field_def(symtab).defined_in_base64?
+      type_error "CSR[#{csr_name}] has no field named #{@field_name}" if field_def(symtab).nil?
+      type_error "CSR[#{csr_name}].#{@field_name} is not defined in RV32" if symtab.cfg_arch.mxlen == 32 && !field_def(symtab).defined_in_base32?
+      type_error "CSR[#{csr_name}].#{@field_name} is not defined in RV64" if symtab.cfg_arch.mxlen == 64 && !field_def(symtab).defined_in_base64?
     end
 
     def csr_def(symtab)
       @csr_obj
     end
 
-    def csr_name(symtab)
-      csr_def(symtab).name
-    end
+    def csr_name = @csr.csr_name
 
     def field_def(symtab)
       @csr_obj.fields.find { |f| f.name == @field_name }
@@ -6103,7 +6101,7 @@ module Idl
     # @!macro value
     def value(symtab)
       if @value.nil?
-        value_error "'#{csr_name(symtab)}.#{field_name(symtab)}' is not RO"
+        value_error "'#{csr_name}.#{field_name(symtab)}' is not RO"
       else
         @value
       end
@@ -6115,7 +6113,7 @@ module Idl
 
       symtab.cfg_arch.possible_xlens.each do |effective_xlen|
         unless field_def(symtab).type(effective_xlen) == "RO"
-          value_error "'#{csr_name(symtab)}.#{field_name(symtab)}' is not RO"
+          value_error "'#{csr_name}.#{field_name(symtab)}' is not RO"
         end
       end
 
@@ -6177,12 +6175,6 @@ module Idl
       !csr_def(symtab).nil?
     end
 
-    def csr_name(symtab)
-      internal_error "No CSR" unless csr_known?(symtab)
-
-      csr_def(symtab).name
-    end
-
     # @!macro value
     def value(symtab)
       if symtab.cfg_arch.fully_configured?
@@ -6190,7 +6182,7 @@ module Idl
       else
         value_error "CSR is not defined" unless symtab.cfg_arch.csrs.any? { |icsr| icsr.name == @csr_obj.name }
       end
-      @csr_obj.fields.each { |f| value_error "#{csr_name(symtab)}.#{f.name} not RO" unless f.type(symtab) == "RO" }
+      @csr_obj.fields.each { |f| value_error "#{csr_name}.#{f.name} not RO" unless f.type(symtab) == "RO" }
 
       csr_def(symtab).fields.reduce(0) { |val, f| val | (f.value << f.location.begin) }
     end
@@ -6231,9 +6223,7 @@ module Idl
       csr.csr_known?(symtab)
     end
 
-    def csr_name(symtab)
-      csr.csr_name(symtab)
-    end
+    def csr_name = csr.csr_name
 
     # @!macro value
     def value(_symtab)
@@ -6299,7 +6289,7 @@ module Idl
       case function_name
       when "sw_read"
         if csr_known?(symtab)
-          l = cfg_arch.csr(csr.csr_name(symtab)).length
+          l = cfg_arch.csr(csr.csr_name).length
           Type.new(:bits, width: (l.nil? ? :unknown : l))
         else
           Type.new(:bits, width: symtab.mxlen.nil? ? :unknown : symtab.mxlen)
@@ -6317,9 +6307,7 @@ module Idl
       csr.csr_known?(symtab)
     end
 
-    def csr_name(symtab)
-      csr.csr_name(symtab)
-    end
+    def csr_name = csr.csr_name
 
     def csr_def(symtab)
       csr.csr_def(symtab)
@@ -6331,7 +6319,7 @@ module Idl
       when "sw_read"
         value_error "CSR not knowable" unless csr_known?(symtab)
         cd = csr_def(symtab)
-        cd.fields.each { |f| value_error "#{csr_name(symtab)}.#{f.name} not RO" unless f.type(symtab) == "RO" }
+        cd.fields.each { |f| value_error "#{csr_name}.#{f.name} not RO" unless f.type(symtab) == "RO" }
 
         value_error "TODO: CSRs with sw_read function"
       when "address"
