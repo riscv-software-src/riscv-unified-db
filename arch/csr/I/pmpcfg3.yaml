@@ -8,6 +8,7 @@ name: pmpcfg3
 base: 32 # odd numbered pmpcfg registers do not exist in RV64
 long_name: PMP Configuration Register 3
 address: 0x3A3
+writeable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry configuration
