@@ -29,17 +29,26 @@ access:
   vs: always
   vu: always
 operation(): |
-  check_csr(csr, true, $encoding);
+  Csr csr_handle = direct_csr_lookup(csr);
 
   Bits<XLEN> initial_value = X[xs1];
 
+  # permission checks
+  if (csr_handle.valid == false) {
+    unimplemented_csr($encoding);
+  } else if (!compatible_mode?(csr_handle.mode, mode())) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  } else if (csr_handle.writable == false) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
   if (xd != 0) {
-    X[xd] = CSR[csr].sw_read();
+    X[xd] = csr_sw_read(csr_handle);
   }
 
   # writes the value in X[xs1] to the CSR,
   # performing any WARL transformations first
-  CSR[csr].sw_write(initial_value);
+  csr_sw_write(csr_handle, initial_value);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

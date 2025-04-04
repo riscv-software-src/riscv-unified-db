@@ -35,10 +35,11 @@ access:
   vs: always
   vu: always
 operation(): |
-  XReg csr = X[rs2];
+  XReg csr_addr = X[rs2];
+  Csr csr = direct_csr_lookup(csr_addr);
   if (rd != 0) {
-    X[rd] = CSR[csr].sw_read();
+    X[rd] = csr_sw_read(csr);
   }
   # writes the value in X[rs1] to the CSR,
   # performing any WARL transformations first
-  CSR[csr].sw_write(X[rs1]);
+  csr_sw_write(csr, X[rs1]);
