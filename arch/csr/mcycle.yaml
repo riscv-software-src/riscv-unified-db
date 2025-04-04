@@ -6,6 +6,7 @@ name: mcycle
 long_name: Machine Cycle Counter
 definedBy: Zicntr
 address: 0xB00
+writeable: true
 description: |
   Counts the number of clock cycles executed by the processor core on which
   the hart is running.

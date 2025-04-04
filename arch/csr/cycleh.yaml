@@ -5,6 +5,7 @@ kind: csr
 name: cycleh
 long_name: High-half cycle counter for RDCYCLE Instruction
 address: 0xC80
+writeable: false
 base: 32
 description: |
   Alias for M-mode CSR `mcycleh`.
