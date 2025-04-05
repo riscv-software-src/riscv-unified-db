@@ -13,7 +13,7 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <%- if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <%- end -%>
-h| Length         | <%= csr.length_pretty(design) %>
+h| Length         | <%= csr.length_pretty %>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===
 

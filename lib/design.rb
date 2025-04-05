@@ -19,6 +19,7 @@
 
 require "ruby-prof"
 require "tilt"
+require "forwardable"
 
 require_relative "idesign"
 require_relative "cfg_arch"
@@ -35,6 +36,26 @@ require_relative "backend_helpers"
 include TemplateHelpers
 
 class Design < IDesign
+  extend Forwardable
+
+  # Calls to these methods on Design are handled by the ConfiguredArchitecture object.
+  # Avoids having to call design.cfg_arch.<method> (just call design.<method>).
+  def_delegators :@cfg_arch,
+    :ext?,
+    :multi_xlen?,
+    :multi_xlen_in_mode?,
+    :params_without_value,
+    :possible_xlens,
+    :type_check,
+    :transitive_implemented_extension_versions,
+    :prohibited_ext?,
+    :implemented_exception_codes,
+    :implemented_interrupt_codes,
+    :functions,
+    :transitive_implemented_csrs,
+    :transitive_implemented_instructions,
+    :implemented_functions
+
   # @return [ConfiguredArchitecture] The RISC-V architecture
   attr_reader :cfg_arch
 
@@ -83,224 +104,6 @@ class Design < IDesign
   # Returns a string representation of the object, suitable for debugging.
   # @return [String] A string representation of the object.
   def inspect = "Design##{name}"
-
-  # Returns whether or not it may be possible to switch XLEN given this definition.
-  #
-  # There are three cases when this will return true:
-  #   1. A mode (e.g., U) is known to be implemented, and the CSR bit that controls XLEN in that mode is known to be writeable.
-  #   2. A mode is known to be implemented, but the writability of the CSR bit that controls XLEN in that mode is not known.
-  #   3. It is not known if the mode is implemented.
-  #
-  #
-  # @return [Boolean] true if might execute in multiple xlen environments
-  #                   (e.g., that in some mode the effective xlen can be either 32 or 64, depending on CSR values)
-  def multi_xlen?
-    return true if @mxlen.nil?
-
-    ["S", "U", "VS", "VU"].any? { |mode| multi_xlen_in_mode?(mode) }
-  end
-
-  # @return [Array<Integer>] List of possible XLENs in any mode for this design
-  def possible_xlens = multi_xlen? ? [32, 64] : [mxlen]
-
-  # type check all IDL, including globals, instruction ops, and CSR functions
-  #
-  # @param show_progress [Boolean] whether to show progress bars
-  # @param io [IO] where to write progress bars
-  # @return [void]
-  def type_check(show_progress: true, io: $stdout)
-    io.puts "Type checking IDL code for #{@name}..."
-    progressbar =
-      if show_progress
-        ProgressBar.create(title: "Instructions", total: arch.instructions.size)
-      end
-
-    arch.instructions.each do |inst|
-      progressbar.increment if show_progress
-      if @mxlen == 32
-        inst.type_checked_operation_ast(@idl_compiler, @symtab, 32) if inst.rv32?
-      elsif @mxlen == 64
-        inst.type_checked_operation_ast(@idl_compiler, @symtab, 64) if inst.rv64?
-        inst.type_checked_operation_ast(@idl_compiler, @symtab, 32) if possible_xlens.include?(32) && inst.rv32?
-      end
-    end
-
-    progressbar =
-      if show_progress
-        ProgressBar.create(title: "CSRs", total: arch.csrs.size)
-      end
-
-    arch.csrs.each do |csr|
-      progressbar.increment if show_progress
-      if csr.has_custom_sw_read?
-        if (possible_xlens.include?(32) && csr.defined_in_base32?) || (possible_xlens.include?(64) && csr.defined_in_base64?)
-          csr.type_checked_sw_read_ast(@symtab)
-        end
-      end
-      csr.fields.each do |field|
-        unless field.type_ast(@symtab).nil?
-          if ((possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?) ||
-              (possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?))
-            field.type_checked_type_ast(@symtab)
-          end
-        end
-        unless field.reset_value_ast(@symtab).nil?
-          if ((possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?) ||
-              (possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?))
-            field.type_checked_reset_value_ast(@symtab) if csr.defined_in_base32? && field.defined_in_base32?
-          end
-        end
-        unless field.sw_write_ast(@symtab).nil?
-          field.type_checked_sw_write_ast(@symtab, 32) if possible_xlens.include?(32) && csr.defined_in_base32? && field.defined_in_base32?
-          field.type_checked_sw_write_ast(@symtab, 64) if possible_xlens.include?(64) && csr.defined_in_base64? && field.defined_in_base64?
-        end
-      end
-    end
-
-    progressbar =
-      if show_progress
-        ProgressBar.create(title: "Functions", total: functions.size)
-      end
-    functions.each do |func|
-      progressbar.increment if show_progress
-      func.type_check(@symtab)
-    end
-
-    puts "done" if show_progress
-  end
-
-  # @return [Array<ExtensionVersion>] List of all extension versions known to be implemented in this design,
-  #                                   including transitive implications.
-  def transitive_implemented_ext_vers
-    return @transitive_implemented_ext_vers unless @transitive_implemented_ext_vers.nil?
-
-    list = implemented_ext_vers
-    list.each do |ext_ver|
-      implications = ext_ver.transitive_implications
-      list.concat(implications) unless implications.empty?
-    end
-    @transitive_implemented_ext_vers = list.uniq.sort
-  end
-
-  # @overload prohibited_ext?(ext)
-  #   Returns true if the ExtensionVersion +ext+ is prohibited
-  #   @param ext [ExtensionVersion] An extension version
-  #   @return [Boolean]
-  #
-  # @overload prohibited_ext?(ext)
-  #   Returns true if any version of the extension named +ext+ is prohibited
-  #   @param ext [String] An extension name
-  #   @return [Boolean]
-  def prohibited_ext?(ext)
-    if ext.is_a?(ExtensionVersion)
-      prohibited_ext_reqs.any? { |ext_req| ext_req.satisfied_by?(ext) }
-    elsif ext.is_a?(String) || ext.is_a?(Symbol)
-      prohibited_ext_reqs.any? { |ext_req| ext_req.name == ext.to_s }
-    else
-      raise ArgumentError, "Argument to prohibited_ext? should be an ExtensionVersion or a String"
-    end
-  end
-
-  # @return [Array<ExceptionCode>] All exception codes known to be implemented
-  def implemented_exception_codes
-    return @implemented_exception_codes unless @implemented_exception_codes.nil?
-
-    @implemented_exception_codes =
-      implemented_ext_vers.reduce([]) do |list, ext_version|
-        ecodes = ext_version.ext["exception_codes"]
-        next list if ecodes.nil?
-
-        ecodes.each do |ecode|
-          # double check that all the codes are unique
-          raise "Duplicate exception code" if list.any? { |e| e.num == ecode["num"] || e.name == ecode["name"] || e.var == ecode["var"] }
-
-          unless ecode.dig("when", "version").nil?
-            # check version
-            next unless ext?(ext_version.name.to_sym, ecode["when"]["version"])
-          end
-          list << ExceptionCode.new(ecode["name"], ecode["var"], ecode["num"], arch)
-        end
-        list
-      end
-  end
-
-  # @return [Array<InteruptCode>] All interrupt codes known to be implemented
-  def implemented_interrupt_codes
-    return @implemented_interrupt_codes unless @implemented_interrupt_codes.nil?
-
-    @implemented_interupt_codes =
-      implemented_ext_vers.reduce([]) do |list, ext_version|
-        icodes = extension(ext_version.name)["interrupt_codes"]
-        next list if icodes.nil?
-
-        icodes.each do |icode|
-          # double check that all the codes are unique
-          raise "Duplicate interrupt code" if list.any? { |i| i.num == icode["num"] || i.name == icode["name"] || i.var == icode["var"] }
-
-          unless ecode.dig("when", "version").nil?
-            # check version
-            next unless ext?(ext_version.name.to_sym, ecode["when"]["version"])
-          end
-          list << InterruptCode.new(icode["name"], icode["var"], icode["num"], arch)
-        end
-        list
-      end
-  end
-
-  # @return [Array<Idl::FunctionDefAst>] Sorted list of all IDL functions defined by the architecture
-  def functions
-    return @functions unless @functions.nil?
-
-    @functions = @global_ast.functions.sort
-  end
-
-  # @return [Array<Csr>] Sorted list of all implemented CSRs
-  def transitive_implemented_csrs
-    @transitive_implemented_csrs ||=
-      transitive_implemented_ext_vers.map(&:implemented_csrs).flatten.uniq.sort
-  end
-
-  # @return [Array<Instruction>] Sorted list of all implemented instructions
-  def transitive_implemented_instructions
-    @transitive_implemented_instructions ||=
-      transitive_implemented_ext_vers.map(&:implemented_instructions).flatten.uniq.sort
-  end
-
-  # @return [Array<Idl::FunctionDefAst>] Sorted list of all reachable IDL functions for the design
-  def implemented_functions
-    return @implemented_functions unless @implemented_functions.nil?
-
-    @implemented_functions = []
-
-    puts "  Finding all reachable functions from instruction operations"
-
-    transitive_implemented_instructions.each do |inst|
-      @implemented_functions <<
-        if inst.base.nil?
-          if multi_xlen?
-            (inst.reachable_functions(symtab, 32) +
-             inst.reachable_functions(symtab, 64))
-          else
-            inst.reachable_functions(symtab, mxlen)
-          end
-        else
-          inst.reachable_functions(symtab, inst.base)
-        end
-    end
-    raise "?" unless @implemented_functions.is_a?(Array)
-    @implemented_functions = @implemented_functions.flatten.uniq(&:name)
-
-    puts "  Finding all reachable functions from CSR operations"
-
-    transitive_implemented_csrs.each do |csr|
-      csr_funcs = csr.reachable_functions(self)
-      csr_funcs.each do |f|
-        @implemented_functions << f unless @implemented_functions.any? { |i| i.name == f.name }
-      end
-    end
-
-    @implemented_functions.sort!
-  end
 
   # Returns an environment hash suitable for the render_erb() function in ERB templates.
   #

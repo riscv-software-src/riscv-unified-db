@@ -21,16 +21,16 @@ a|
 
 [when,"<%= csr.length_cond32 %>"]
 --
-<%= csr_32.length_pretty(cfg_arch_32, 32) %>
+<%= csr_32.length_pretty(32) %>
 --
 
 [when,"<%= csr.length_cond64 %>"]
 --
-<%= csr.length_pretty(design, 64) %>
+<%= csr.length_pretty(64) %>
 --
 
 <%- else -%>
-h| Length         | <%= csr.length_pretty(design) %>
+h| Length         | <%= csr.length_pretty %>
 <%- end -%>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===

@@ -60,13 +60,6 @@ class IDesign
     raise "Abstract Method: Must be provided in child class"
   end
 
-  # @return [Array<ExtensionRequirement>] List of all extensions that are prohibited.
-  #                                       This includes extensions explicitly prohibited by the design
-  #                                       and extensions that conflict with a mandatory extension.
-  def prohibited_ext_reqs
-    raise "Abstract Method: Must be provided in child class"
-  end
-
   # @return [Boolean] True if all parameters are fully-constrained in the design
   def fully_configured?
     raise "Abstract Method: Must be provided in child class"

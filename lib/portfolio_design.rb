@@ -66,22 +66,6 @@ class PortfolioDesign < Design
   # METHODS REQUIRED BY BASE CLASS #
   ##################################
 
-  # Returns whether or not it may be possible to switch XLEN in +mode+ given this definition.
-  #
-  # There are three cases when this will return true:
-  #   1. +mode+ (e.g., U) is known to be implemented, and the CSR bit that controls XLEN in +mode+ is known to be writeable.
-  #   2. +mode+ is known to be implemented, but the writability of the CSR bit that controls XLEN in +mode+ is not known.
-  #   3. It is not known if +mode+ is implemented.
-  #
-  # Will return false if +mode+ is not possible (e.g., because U is a prohibited extension)
-  #
-  # @param mode [String] mode to check. One of "M", "S", "U", "VS", "VU"
-  # @return [Boolean] true if might execute in multiple xlen environments in +mode+
-  #                   (e.g., that in some mode the effective xlen can be either 32 or 64, depending on CSR values)
-  #
-  # Assume portfolios (profiles and certificates) don't need this ISA feature.
-  def multi_xlen_in_mode?(mode) = false
-
   # @return [Array<ParameterWithValue>] List of all parameters fully-constrained to one specific value
   def params_with_value
     return @params_with_value unless @params_with_value.nil?
@@ -99,67 +83,10 @@ class PortfolioDesign < Design
     @params_with_value
   end
 
-  # @return [Array<Parameter>] List of all available parameters not yet full-constrained to one specific value
-  def params_without_value
-    return @params_without_value unless @params_without_value.nil?
-
-    @params_without_value = []
-    cfg_arch.extensions.each do |ext|
-      ext.params.each do |param|
-        next if param_values.key?(param.name)
-
-        @params_without_value << param
-      end
-    end
-    @params_without_value
-  end
-
   def implemented_ext_vers
     # Only supported by fully-configured configurations and a portfolio corresponds to a
     # partially-configured configuration. See the Config class for details.
     raise "Not supported for portfolio #{name}"
-  end
-
-  # @return [Array<ExtensionRequirement>] List of all extensions that are prohibited.
-  #                                       This includes extensions explicitly prohibited by the design
-  #                                       and extensions that conflict with a mandatory extension.
-  #
-  # TODO: Assume there are none of these in a portfolio for now.
-  def prohibited_ext_reqs = []
-
-  # @overload ext?(ext_name)
-  #   @param ext_name [#to_s] Extension name (case sensitive)
-  #   @return [Boolean] True if the extension `name` must be implemented
-  #
-  # @overload ext?(ext_name, ext_version_requirements)
-  #   @param ext_name [#to_s] Extension name (case sensitive)
-  #   @param ext_version_requirements [Number,String,Array] Extension version requirements
-  #   @return [Boolean] True if the extension `name` meeting `ext_version_requirements` must be implemented
-  #
-  #   @example Checking extension presence with a version requirement
-  #     PortfolioDesign.ext?(:S, ">= 1.12")
-  #   @example Checking extension presence with multiple version requirements
-  #     PortfolioDesign.ext?(:S, ">= 1.12", "< 1.15")
-  #   @example Checking extension presence with a precise version requirement
-  #     PortfolioDesign.ext?(:S, 1.12)
-  def ext?(ext_name, *ext_version_requirements)
-    @ext_cache ||= {}
-    cached_result = @ext_cache[[ext_name, ext_version_requirements]]
-    return cached_result unless cached_result.nil?
-
-    result =
-      mandatory_ext_reqs.any? do |ext_req|
-        if ext_version_requirements.empty?
-          ext_req.name == ext_name.to_s
-        else
-          requirement = ExtensionRequirement.new(ext_name, *ext_version_requirements, arch: cfg_arch)
-          ext_req.satisfying_versions.all? do |ext_ver|
-            requirement.satisfied_by?(ext_ver)
-          end
-        end
-      end
-
-    @ext_cache[[ext_name, ext_version_requirements]] = result
   end
 
   # Given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`

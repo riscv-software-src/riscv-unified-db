@@ -16,10 +16,10 @@ def pf_create_arch
   Architecture.new($root / "gen" / "resolved_arch" / "_")
 end
 
-# @param name [PortfolioGroup] Contains one or more Portfolio objects.
+# @param portfolio_grp_with_arch [PortfolioGroup] Contains one or more Portfolio objects that have an arch (not a cfg_arch).
 # @return [ConfiguredArchitecture]
-def pf_create_cfg_arch(portfolio_grp)
-  raise ArgumentError, "portfolio_grp is a #{portfolio_grp.class} but must be a PortfolioGroup" unless portfolio_grp.is_a?(PortfolioGroup)
+def pf_create_cfg_arch(portfolio_grp_with_arch)
+  raise ArgumentError, "portfolio_grp_with_arch is a #{portfolio_grp_with_arch.class} but must be a PortfolioGroup" unless portfolio_grp_with_arch.is_a?(PortfolioGroup)
 
   # Ensure that unconfigured resolved architecture called "_" exists.
   Rake::Task["#{$root}/.stamps/resolve-_.stamp"].invoke
@@ -29,9 +29,9 @@ def pf_create_cfg_arch(portfolio_grp)
   # otherwise there would be a circular dependency. To avoid this circular dependency, none of the routines
   # called in the PortfolioGroup object to satisfy the requests from the Config API for the ConfiguredArchitecture
   # object can require that the PortfolioGroup DatabaseObjects contain a ConfiguredArchitecture.
-  ConfiguredArchitecture.new(
-    portfolio_grp.name,
-    ConfigFromPortfolioGroup.new(portfolio_grp),
+  cfg_arch_with_portfolio_grp_with_arch = ConfiguredArchitecture.new(
+    portfolio_grp_with_arch.name,
+    ConfigFromPortfolioGroup.new(portfolio_grp_with_arch),
     $root / "gen" / "resolved_arch" / "_"
   )
 end

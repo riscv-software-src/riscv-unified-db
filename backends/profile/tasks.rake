@@ -44,18 +44,26 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
     # Create ProfileRelease for specific profile release as specified in its arch YAML file.
     # The Architecture object also creates all other portfolio-related class instances from their arch YAML files.
     # None of these objects are provided with a Config or Design object when created.
-    puts "UPDATE: Creating ProfileRelease object for #{release_name}"
-    profile_release = arch.profile_release(release_name)
-    profile_class = profile_release.profile_class
+    puts "UPDATE: Creating ProfileRelease with only an Architecture object for #{release_name}"
+    profile_release_with_arch = arch.profile_release(release_name)
 
     # Now create a ConfiguredArchitecture object for the PortfolioDesign.
-    cfg_arch = pf_create_cfg_arch(profile_release.portfolio_grp)
+    cfg_arch = pf_create_cfg_arch(profile_release_with_arch.portfolio_grp)
+
+    puts "UPDATE: Creating ProfileRelease with a ConfiguredArchitecture object for #{release_name}"
+    profile_release_with_cfg_arch = cfg_arch.profile_release(release_name)
+    profile_class_with_cfg_arch = profile_release_with_cfg_arch.profile_class
 
     # Create the one PortfolioDesign object required for the ERB evaluation.
     # Provide it with all the profiles in this ProfileRelease.
     puts "UPDATE: Creating PortfolioDesign object using profile release #{release_name}"
-    portfolio_design =
-      PortfolioDesign.new(release_name, cfg_arch, PortfolioDesign.profile_release_type, profile_release.profiles, profile_class)
+    portfolio_design = PortfolioDesign.new(
+      release_name,
+      cfg_arch,
+      PortfolioDesign.profile_release_type,
+      profile_release_with_cfg_arch.profiles,
+      profile_release_with_cfg_arch.profile_class
+    )
 
     # Create empty binding and then specify explicitly which variables the ERB template can access.
     # Seems to use this method name in stack backtraces (hence its name).
@@ -64,8 +72,8 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
     end
     erb_binding = evaluate_erb
     portfolio_design.init_erb_binding(erb_binding)
-    erb_binding.local_variable_set(:profile_release, profile_release)
-    erb_binding.local_variable_set(:profile_class, profile_class)
+    erb_binding.local_variable_set(:profile_release, profile_release_with_cfg_arch)
+    erb_binding.local_variable_set(:profile_class, profile_release_with_cfg_arch.profile_class)
 
     pf_create_adoc("#{PROFILE_DOC_DIR}/templates/profile.adoc.erb", erb_binding, t.name, portfolio_design)
   end

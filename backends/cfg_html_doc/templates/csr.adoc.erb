@@ -15,7 +15,7 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <%- end -%>
 h| Defining extension a| <%= csr.defined_by_condition.to_asciidoc %>
-h| Length         | <%= csr.length_pretty() %>
+h| Length         | <%= csr.length_pretty %>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===
 

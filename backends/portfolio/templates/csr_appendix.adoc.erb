@@ -27,9 +27,9 @@ h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <% end -%>
 h| Defining extension a| <%= csr.defined_by_condition.to_asciidoc %>
 <% if csr.dynamic_length? -%>
-h| Length         | <%= csr.length_pretty(design) %>
+h| Length         | <%= csr.length_pretty %>
 <% else -%>
-h| Length         | <%= csr.length_pretty(design) %>
+h| Length         | <%= csr.length_pretty %>
 <% end -%>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===
@@ -41,7 +41,7 @@ h| Privilege Mode | <%= csr.priv_mode %>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(design, csr.base.nil? ? 32 : csr.base, optional_type: 2) %>
+<%= JSON.dump csr.wavedrom_desc(design.cfg_arch, csr.base.nil? ? 32 : csr.base, optional_type: 2) %>
 ....
 <% else -%>
 <%# CSR has a dynamic length, or a field has a dynamic location,
@@ -51,13 +51,13 @@ This CSR format changes dynamically with XLEN.
 .<%= csr.name %> Format when <%= csr.length_cond32 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(design, 32, optional_type: 2) %>
+<%= JSON.dump csr.wavedrom_desc(design.cfg_arch, 32, optional_type: 2) %>
 ....
 
 .<%= csr.name %> Format when <%= csr.length_cond64 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(design, 64, optional_type: 2) %>
+<%= JSON.dump csr.wavedrom_desc(design.cfg_arch, 64, optional_type: 2) %>
 ....
 
 
@@ -77,27 +77,27 @@ a@
 
 [when,"<%= field.location_cond32 %>"]
 --
-<%= field.location_pretty(design, 32) %>
+<%= field.location_pretty(32) %>
 --
 
 [when,"<%= field.location_cond64 %>"]
 --
-<%= field.location_pretty(design, 64) %>
+<%= field.location_pretty(64) %>
 --
 
 <% else -%>
-<%= field.location_pretty(design) %>
+<%= field.location_pretty %>
 <% end -%>
 a@
 
 --
-<%= field.type_pretty(design.symtab) %>
+<%= field.type_pretty %>
 --
 
 a@
 
 --
-<%= field.reset_value_pretty(design) %>
+<%= field.reset_value_pretty %>
 --
 
 <% end -%>
@@ -129,16 +129,16 @@ IMPORTANT: <%= field.name %> is only defined in <%= field.base32_only? ? "RV32" 
 
 ****
 Location: ::
-<%= field.location_pretty(design) %>
+<%= field.location_pretty %>
 
 Description: ::
 <%= field.description.gsub("\n", " +\n") %>
 
 Type: ::
-<%= field.type_pretty(design.symtab) %>
+<%= field.type_pretty %>
 
 Reset value: ::
-<%= field.reset_value_pretty(design) %>
+<%= field.reset_value_pretty %>
 
 <% if defined?(gen_ctp_content) && gen_ctp_content -%>
 <%= portfolio_design.include_erb("normative_rules.adoc.erb", { "db_obj" => field, "org" => "appendix", "use_description_list" => true }) %>

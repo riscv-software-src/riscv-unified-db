@@ -4,7 +4,7 @@
 
 <% design.functions.each do |f| -%>
 <%= anchor_for_udb_doc_idl_func(f.name) %>
-=== <%= f.name %><% if f.builtin? -%> (builtin)<% end -%>
+=== <%= f.name %><% if f.builtin? -%> (builtin)<% end -%><% if f.generated? -%> (generated)<% end -%>
 
 <%= f.description %>
 
@@ -19,22 +19,22 @@ a|
 
 h| Arguments
 a|
-<% if f.arguments_list_str.empty? -%>
+<%- if f.arguments_list_str.empty? -%>
 None
-<% else -%>
+<%- else -%>
 [source,idl]
 ----
 <%= f.arguments_list_str.join (', ') %>
 ----
-<% end -%>
+<%- end -%>
 |===
 
-<% unless f.builtin? -%>
-<% body_ast = f.body -%>
+<%- unless f.builtin? || f.generated? -%>
+<%- body_ast = f.body -%>
 [source,idl,subs="specialchars,macros"]
 ----
 <%= body_ast.gen_adoc %>
 ----
-<% end -%>
+<%- end -%>
 
-<% end -%>
+<%- end -%>
