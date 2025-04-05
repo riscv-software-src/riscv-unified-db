@@ -1,0 +1,74 @@
+---
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+$schema: csr_schema.json#
+kind: csr
+name: minstretcfg
+long_name: Machine Counter Configuration for Instret
+address: 0x322
+priv_mode: M
+length: 64
+definedBy: Smcntrpmf
+description: |
+  The `minstretcfg` CSR is a 64-bit machine-level register that configures privilege
+  mode filtering for the `minstret` (retired instruction) counter. Each inhibit bit (xINH)
+  disables counting of retired instructions in the associated privilege mode.
+
+  Bits 62-58 correspond to the following privilege modes:
+    - MINH: M-mode
+    - SINH: S/HS-mode
+    - UINH: U-mode
+    - VSINH: VS-mode
+    - VUINH: VU-mode
+
+  If all inhibit bits are clear, instruction retirement is counted in all privilege modes.
+  Bits corresponding to unimplemented modes are read-only zero.
+
+  Bit 63 (OF) is defined to always read as zero, indicating that the counter does not
+  generate overflow interrupts.
+
+  The lower 58 bits [57:0] are reserved (WPRI) and must be read as zero; writes are ignored.
+
+  For RV32 systems, the upper 32 bits of this CSR are accessible via `minstretcfgh` (0x722).
+fields:
+  MINH:
+    location_rv32: 62
+    location_rv64: 62
+    type: RW
+    description: Inhibits counting in M-mode when set.
+    reset_value: UNDEFINED_LEGAL
+
+  SINH:
+    location_rv32: 61
+    location_rv64: 61
+    type: RW
+    description: Inhibits counting in S/HS-mode when set.
+    reset_value: UNDEFINED_LEGAL
+
+  UINH:
+    location_rv32: 60
+    location_rv64: 60
+    type: RW
+    description: Inhibits counting in U-mode when set.
+    reset_value: UNDEFINED_LEGAL
+
+  VSINH:
+    location_rv32: 59
+    location_rv64: 59
+    type: RW
+    description: Inhibits counting in VS-mode when set.
+    reset_value: UNDEFINED_LEGAL
+
+  VUINH:
+    location_rv32: 58
+    location_rv64: 58
+    type: RW
+    description: Inhibits counting in VU-mode when set.
+    reset_value: UNDEFINED_LEGAL
+
+  WPRI:
+    location_rv32: 57-0
+    location_rv64: 57-0
+    type: RO
+    description: Reserved. Reads as zero. Writes are ignored.
+    reset_value: UNDEFINED_LEGAL
+sw_read(): |
