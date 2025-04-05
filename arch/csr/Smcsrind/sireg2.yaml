@@ -33,4 +33,5 @@ fields:
     type: RW
     description: |
       The data read from or written to the register selected by the current `siselect` value.
-    reset_value(): return 0x0;
+    reset_value: UNDEFINED_LEGAL
+sw_read(): |

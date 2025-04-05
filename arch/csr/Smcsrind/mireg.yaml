@@ -9,17 +9,16 @@ priv_mode: M
 length: MXLEN
 definedBy: Smcsrind
 description: |
-  description: |
-   The `mireg` CSR is the primary machine-level indirect alias register used to access
-   register state as determined by the index held in `miselect`. This CSR is typically used
-   to read or write the full 32-bit or 64-bit value of the indirectly addressed register.
+  The `mireg` CSR is the primary machine-level indirect alias register used to access
+  register state as determined by the index held in `miselect`. This CSR is typically used
+  to read or write the full 32-bit or 64-bit value of the indirectly addressed register.
 
-   For 64-bit registers in RV32 systems, `mireg` is generally used to access the lower 32 bits.
-   Combined with higher-indexed aliases (e.g., `mireg4`), this provides full access to 64-bit values
-   across multiple CSRs.
+  For 64-bit registers in RV32 systems, `mireg` is generally used to access the lower 32 bits.
+  Combined with higher-indexed aliases (e.g., `mireg4`), this provides full access to 64-bit values
+  across multiple CSRs.
 
-   If the value in `miselect` is not implemented, access is UNSPECIFIED. Implementations
-   are encouraged to raise an illegal instruction exception in such cases.
+  If the value in `miselect` is not implemented, access is UNSPECIFIED. Implementations
+  are encouraged to raise an illegal instruction exception in such cases.
 
 fields:
   Count:
@@ -27,4 +26,5 @@ fields:
     location_rv64: 63-0
     type: RW
     description: Indirect register data selected by `miselect` value.
-    reset_value(): return 0x0;
+    reset_value: UNDEFINED_LEGAL
+sw_read(): |

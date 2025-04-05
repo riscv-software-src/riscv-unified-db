@@ -37,4 +37,5 @@ fields:
     description: |
       The data read from or written to the register selected by the current
       value of the `vsiselect` CSR.
-    reset_value(): return 0x0;
+    reset_value: UNDEFINED_LEGAL
+sw_read(): |

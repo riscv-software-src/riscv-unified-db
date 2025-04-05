@@ -31,4 +31,5 @@ fields:
     type: RW
     description: |
       Data read or written based on the currently selected `vsiselect` value.
-    reset_value(): return 0x0;
+    reset_value: UNDEFINED_LEGAL
+sw_read(): |

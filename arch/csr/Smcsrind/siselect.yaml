@@ -37,4 +37,5 @@ fields:
     description: |
       Index value selecting the target register accessed through `sireg*`.
       Acts as an indirect register selector. Values are extension-defined.
-    reset_value(): return 0x0;
+    reset_value: UNDEFINED_LEGAL
+sw_read(): |

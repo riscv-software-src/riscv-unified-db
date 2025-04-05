@@ -31,4 +31,5 @@ fields:
     location_rv64: 63-0
     type: RW
     description: Selects which indirect register is accessed via `mireg*`.
-    reset_value(): return 0x0;
+    reset_value: UNDEFINED_LEGAL
+sw_read(): |
