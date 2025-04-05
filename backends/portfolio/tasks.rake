@@ -7,14 +7,33 @@ require "asciidoctor-pdf"
 require "asciidoctor-diagram"
 require_relative "#{$lib}/idl/passes/gen_adoc"
 
-# @return [ConfiguredArchitecture]
+# @return [Architecture]
 def pf_create_arch
   # Ensure that unconfigured resolved architecture called "_" exists.
   Rake::Task["#{$root}/.stamps/resolve-_.stamp"].invoke
 
-  # Create architecture object so we can have it create the ProcCertModel.
-  # Use the unconfigured resolved architecture called "_".
-  cfg_arch_for("_")
+  # Create architecture object using the unconfigured resolved architecture called "_".
+  Architecture.new($root / "gen" / "resolved_arch" / "_")
+end
+
+# @param name [PortfolioGroup] Contains one or more Portfolio objects.
+# @return [ConfiguredArchitecture]
+def pf_create_cfg_arch(portfolio_grp)
+  raise ArgumentError, "portfolio_grp is a #{portfolio_grp.class} but must be a PortfolioGroup" unless portfolio_grp.is_a?(PortfolioGroup)
+
+  # Ensure that unconfigured resolved architecture called "_" exists.
+  Rake::Task["#{$root}/.stamps/resolve-_.stamp"].invoke
+
+  # Create a ConfiguredArchitecture object and provide it a ConfigFromPortfolioGroup object to implement the Config API.
+  # The DatabaseObjects in PortfolioGroup only have an Architecture object and not a ConfiguredArchitecture object
+  # otherwise there would be a circular dependency. To avoid this circular dependency, none of the routines
+  # called in the PortfolioGroup object to satisfy the requests from the Config API for the ConfiguredArchitecture
+  # object can require that the PortfolioGroup DatabaseObjects contain a ConfiguredArchitecture.
+  ConfiguredArchitecture.new(
+    portfolio_grp.name,
+    ConfigFromPortfolioGroup.new(portfolio_grp),
+    $root / "gen" / "resolved_arch" / "_"
+  )
 end
 
 # Clones the CSC fork of the ISA manual repository or updates it if it already exists.

@@ -43,7 +43,7 @@ def cfg_arch_for(config_name)
       cfg_arch =
         ConfiguredArchitecture.new(
           config_name,
-          ConfigFromFile.create("#{$root}/gen/cfgs/#{config_name}.yaml"),
+          ConfigFromCfg.create("#{$root}/gen/cfgs/#{config_name}.yaml"),
           $root / "gen" / "resolved_arch" / config_name
         )
       $cfg_archs[config_name] = cfg_arch
@@ -87,7 +87,7 @@ def cfg_arch_for(config_name)
   $cfg_archs[config_name] =
     ConfiguredArchitecture.new(
       config_name,
-      ConfigFromFile.create("#{$root}/gen/cfgs/#{config_name}.yaml"),
+      ConfigFromCfg.create("#{$root}/gen/cfgs/#{config_name}.yaml"),
       $root / "gen" / "resolved_arch" / config_name
     )
 end
@@ -117,7 +117,7 @@ rule %r{#{$root}/.stamps/resolve-.+\.stamp} => proc { |tname|
   raise "Missing gen/cfgs/#{tname}" unless File.exist?("#{$root}/cfgs/#{cfg_name}.yaml")
 
   cfg_path = "#{$root}/cfgs/#{cfg_name}.yaml"
-  cfg = ConfigFromFile.create(cfg_path)
+  cfg = ConfigFromCfg.create(cfg_path)
   arch_files = Dir.glob("#{$root}/arch/**/*.yaml")
   overlay_files = cfg.overlay? ? Dir.glob("#{cfg.arch_overlay_abs}/**/*.yaml") : []
   [
@@ -127,7 +127,7 @@ rule %r{#{$root}/.stamps/resolve-.+\.stamp} => proc { |tname|
 } do |t|
   cfg_name = File.basename(t.name, ".stamp").sub("resolve-", "")
   cfg_path = "#{$root}/cfgs/#{cfg_name}.yaml"
-  cfg = ConfigFromFile.create(cfg_path)
+  cfg = ConfigFromCfg.create(cfg_path)
 
   overlay_dir = cfg.overlay? ? cfg.arch_overlay_abs : "/does/not/exist"
   sh "#{$root}/.home/.venv/bin/python3 lib/yaml_resolver.py merge arch #{overlay_dir} gen/arch/#{cfg_name}"

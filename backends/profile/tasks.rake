@@ -37,20 +37,25 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
     "#{$root}/backends/portfolio/templates/beginning.adoc.erb",
     "#{PROFILE_DOC_DIR}/templates/profile.adoc.erb"
   ].concat(profile_pathnames) do |t|
+    # Create architecture object without any knowledge of the profile release.
+    # Just used to get the PortfolioGroup object.
     arch = pf_create_arch
 
-    # Create PortfolioRelease for specific portfolio release as specified in its arch YAML file.
+    # Create ProfileRelease for specific profile release as specified in its arch YAML file.
     # The Architecture object also creates all other portfolio-related class instances from their arch YAML files.
-    # None of these objects are provided with a Design object when created.
+    # None of these objects are provided with a Config or Design object when created.
     puts "UPDATE: Creating ProfileRelease object for #{release_name}"
     profile_release = arch.profile_release(release_name)
     profile_class = profile_release.profile_class
+
+    # Now create a ConfiguredArchitecture object for the PortfolioDesign.
+    cfg_arch = pf_create_cfg_arch(profile_release.portfolio_grp)
 
     # Create the one PortfolioDesign object required for the ERB evaluation.
     # Provide it with all the profiles in this ProfileRelease.
     puts "UPDATE: Creating PortfolioDesign object using profile release #{release_name}"
     portfolio_design =
-      PortfolioDesign.new(release_name, arch, PortfolioDesign.profile_release_type, profile_release.profiles, profile_class)
+      PortfolioDesign.new(release_name, cfg_arch, PortfolioDesign.profile_release_type, profile_release.profiles, profile_class)
 
     # Create empty binding and then specify explicitly which variables the ERB template can access.
     # Seems to use this method name in stack backtraces (hence its name).

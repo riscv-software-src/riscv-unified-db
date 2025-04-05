@@ -76,7 +76,7 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
   config_name = Pathname.new(tname).relative_path_from("#{$root}/gen/ext_pdf_doc").to_s.split("/")[0]
   arch_yaml_paths = Dir.glob("#{$root}/arch/**/*.yaml")
   cfg_path = $root / "gen" / "ext_pdf_doc" / "#{config_name}.yaml"
-  cfg = ConfigFromFile.create(cfg_path)
+  cfg = ConfigFromCfg.create(cfg_path)
   arch_yaml_paths += Dir.glob("#{cfg.arch_overlay_abs}/**/*.yaml") unless cfg.arch_overlay.nil?
   [
     (EXT_PDF_DOC_DIR / "templates" / "ext_pdf.adoc.erb").to_s,

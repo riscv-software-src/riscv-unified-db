@@ -31,14 +31,14 @@ class PortfolioDesign < Design
   def self.portfolio_design_types = [profile_release_type, proc_crd_type, proc_ctp_type]
 
   # @param name [#to_s] The name of the portfolio design (i.e., backend filename without a suffix)
-  # @param arch [ConfiguredArchitecture] The database of RISC-V standards
+  # @param cfg_arch [ConfiguredArchitecture] The database of RISC-V standards for a particular configuration
   # @param portfolio_design_type [String] Type of portfolio design associated with this design
   # @param mxlen [Integer] Comes from portfolio YAML "base" (either 32 or 64)
   # @param portfolios [Array<Portfolio>] Portfolios being converted to adoc
   # @param portfolio_class [PortfolioClass] PortfolioClass for all the Portfolios
   # @param overlay_path [String] Optional path to a directory that overlays the architecture
-  def initialize(name, arch, portfolio_design_type, portfolios, portfolio_class, overlay_path: nil)
-    raise ArgumentError, "arch must be an ConfiguredArchitecture but is a #{arch.class}" unless arch.is_a?(ConfiguredArchitecture)
+  def initialize(name, cfg_arch, portfolio_design_type, portfolios, portfolio_class, overlay_path: nil)
+    raise ArgumentError, "cfg_arch must be an ConfiguredArchitecture but is a #{cfg_arch.class}" unless cfg_arch.is_a?(ConfiguredArchitecture)
     raise ArgumentError, "portfolio_design_type of #{portfolio_design_type} unknown" unless PortfolioDesign.portfolio_design_types.include?(portfolio_design_type)
     raise ArgumentError, "portfolios must be an Array<Portfolio> but is a #{portfolios.class}" unless portfolios.is_a?(Array)
     raise ArgumentError, "portfolio_class must be a PortfolioClass but is a #{portfolio_class.class}" unless portfolio_class.is_a?(PortfolioClass)
@@ -47,7 +47,7 @@ class PortfolioDesign < Design
 
     # The PortfolioGroup has an Array<Portfolio> inside it and forwards common Array methods to its internal Array.
     # Can call @portfolio_grp.each or @portfolio_grp.map and they are handled by the normal Array methods.
-    @portfolio_grp = PortfolioGroup.new(portfolios)
+    @portfolio_grp = PortfolioGroup.new(name, portfolios)
 
     @portfolio_class = portfolio_class
     @portfolio_kind = portfolios[0].kind
@@ -55,7 +55,7 @@ class PortfolioDesign < Design
     max_base = portfolios.map(&:base).max
     raise ArgumentError, "Calculated maximum base of #{max_base} across portfolios is not 32 or 64" unless max_base == 32 || max_base == 64
 
-    super(name, arch, max_base, overlay_path: overlay_path)
+    super(name, cfg_arch, max_base, overlay_path: overlay_path)
   end
 
   # Returns a string representation of the object, suitable for debugging.
@@ -104,7 +104,7 @@ class PortfolioDesign < Design
     return @params_without_value unless @params_without_value.nil?
 
     @params_without_value = []
-    arch.extensions.each do |ext|
+    cfg_arch.extensions.each do |ext|
       ext.params.each do |param|
         next if param_values.key?(param.name)
 
@@ -152,7 +152,7 @@ class PortfolioDesign < Design
         if ext_version_requirements.empty?
           ext_req.name == ext_name.to_s
         else
-          requirement = ExtensionRequirement.new(ext_name, *ext_version_requirements, arch: arch)
+          requirement = ExtensionRequirement.new(ext_name, *ext_version_requirements, arch: cfg_arch)
           ext_req.satisfying_versions.all? do |ext_ver|
             requirement.satisfied_by?(ext_ver)
           end
@@ -280,7 +280,7 @@ class PortfolioDesign < Design
     raise ArgumentError, "extra_inputs must be an Hash but is a #{extra_inputs.class}" unless extra_inputs.is_a?(Hash)
 
     h = {
-      arch: arch,
+      arch: cfg_arch,
       design: self,
       portfolio_design: self,
       portfolio_design_type: @portfolio_design_type,

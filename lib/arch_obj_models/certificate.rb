@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Classes for certificates.
 # Each processor certificate model is a member of a processor certificate class.
 

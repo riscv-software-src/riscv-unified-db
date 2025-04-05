@@ -40,17 +40,19 @@ class DatabaseObject
 
   # @param data [Hash<String,Object>] Hash with fields to be added
   # @param data_path [Pathname] Path to the data file
-  # @param arch [Architecture] The RISC-V database
+  # @param arch [Architecture or ConfiguredArchitecture] The RISC-V database with or without a specific configuration
   def initialize(data, data_path, arch)
     raise ArgumentError, "Need Architecture class but it's a #{arch.class}" unless arch.is_a?(Architecture)
     raise ArgumentError, "Bad data" unless data.is_a?(Hash)
 
     @data = data
     @data_path = data_path
+    @arch = arch
     if arch.is_a?(ConfiguredArchitecture)
       @cfg_arch = arch
+    else
+      @cfg_arch = nil
     end
-    @arch = arch
     @name = data["name"]
     @long_name = data["long_name"]
     @description = data["description"]
@@ -486,7 +488,9 @@ class ExtensionRequirementExpression
       raise ArgumentError, "Expecting a JSON schema comdition (got #{composition_hash})"
     end
 
-    raise ArgumentError, "Must provide a cfg_arch" unless cfg_arch.is_a?(ConfiguredArchitecture)
+    unless cfg_arch.is_a?(ConfiguredArchitecture)
+      raise ArgumentError, "Must provide a cfg_arch"
+    end
 
     @hsh = composition_hash
     @arch = cfg_arch

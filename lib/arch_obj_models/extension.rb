@@ -201,6 +201,17 @@ class Extension < DatabaseObject
     @params
   end
 
+  # @param version_requirement [String] Version requirement
+  # @return [Array<ExtensionVersion>] Array of extensions implied by the largest version of this extension meeting version_requirement
+  def implies(version_requirement = nil)
+    if version_requirement.nil?
+      max_version.implications
+    else
+      mv = ExtensionRequirement.new(@name, version_requirement, cfg_arch: @cfg_arch).max_version
+      mv.implications
+    end
+  end
+
   # @return [ExtensionRequirementExpression] Logic expression for conflicts
   def conflicts_condition
     @conflicts_condition ||=
@@ -395,7 +406,7 @@ class ExtensionVersion
   # under which it is in the list (which may be an AlwaysTrueExtensionRequirementExpression)
   #
   # @example
-  #   ext_ver.implicaitons #=> { :ext_ver => ExtensionVersion.new(:A, "2.1.0"), :cond => ExtensionRequirementExpression.new(...) }
+  #   ext_ver.implications #=> { :ext_ver => ExtensionVersion.new(:A, "2.1.0"), :cond => ExtensionRequirementExpression.new(...) }
   #
   # @return [Array<Hash{Symbol => ExtensionVersion, ExtensionRequirementExpression}>]
   #      List of extension versions that this ExtensionVersion implies

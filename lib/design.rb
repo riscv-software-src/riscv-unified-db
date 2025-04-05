@@ -10,9 +10,8 @@
 #   - CRD (Certificate Requirements Document)
 #   - CTP (Certificate Test Plan)
 #
-# The Design class contains an ConfiguredArchitecture object but isn't inherited from it.
-# This was done so code that only needs an ConfiguredArchitecture object can make this clear
-# by using the ConfiguredArchitecture object instead of the Design object (i.e., to support encapsulation).
+# The Design class contains ConfiguredArchitecture since many other Ruby routines in
+# UDB like the IDL routines require a ConfiguredArchitecture object.
 #
 # This Design class is an abstract base class for designs using either a config (under /cfg) or a
 # portfolio (profile release or certificate).  The abstract methods exist in the IDesign base class

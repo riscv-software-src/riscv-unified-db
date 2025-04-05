@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
 require "pathname"
+require "forwardable"
+require_relative "arch_obj_models/portfolio"
 
 # This class represents a configuration. Is is coded as an abstract base class (must be inherited by a child).
 #
 # There are child classes derived from Config to handle:
-#   - Configurations specified in YAML files in the /cfg directory
-#   - Configurations specified in portfolio groups (certificates and profile releases)
+#   - Configurations specified by YAML files in the /cfg directory
+#   - Configurations specified by portfolio groups (certificates and profile releases)
 class Config
   ####################
   # ABSTRACT METHODS #
@@ -56,6 +58,10 @@ class Config
   #     [{ "name" => "F", "version" => [">= 2.0"] }, { "name" => "Zfa", "version" => ["> = 1.0"] }, ...]
   def prohibited_extensions = raise "Abstract Method: Must be provided in child class"
 
+  # Whether or not a compliant instance of this partial config can have more extensions than those listed
+  # in mandatory_extensions/non_mandatory_extensions.
+  def additional_extensions_allowed? = raise "Abstract Method: Must be provided in child class"
+
   ########################
   # NON-ABSTRACT METHODS #
   ########################
@@ -70,12 +76,12 @@ end
 
 # This class represents a configuration as specified by YAML files in the /cfg directory.
 # Is is coded as an abstract base class (must be inherited by a child).
-class ConfigFromFile < Config
+class ConfigFromCfg < Config
   ########################
   # NON-ABSTRACT METHODS #
   ########################
 
-  # use ConfigFromFile#create instead
+  # use ConfigFromCfg#create instead
   private_class_method :new
 
   def initialize(cfg_file_path, data)
@@ -99,10 +105,10 @@ class ConfigFromFile < Config
   end
   private_class_method :freeze_data
 
-  # Factory method to create a FullConfigFromFile, PartialConfigFromFile, or UnconfigFromFile based
+  # Factory method to create a FullConfigFromCfg, PartialConfigFromCfg, or UnConfigFromCfg based
   # on the contents of cfg_filename.
   #
-  # @return [ConfigFromFile] A new ConfigFromFile object
+  # @return [ConfigFromCfg] A new ConfigFromCfg object
   def self.create(cfg_filename)
     cfg_file_path = Pathname.new(cfg_filename)
     raise ArgumentError, "Cannot find #{cfg_filename}" unless cfg_file_path.exist?
@@ -114,11 +120,11 @@ class ConfigFromFile < Config
 
     case data["type"]
     when "fully configured"
-      FullConfigFromFile.send(:new, cfg_file_path, data)
+      FullConfigFromCfg.send(:new, cfg_file_path, data)
     when "partially configured"
-      PartialConfigFromFile.send(:new, cfg_file_path, data)
+      PartialConfigFromCfg.send(:new, cfg_file_path, data)
     when "unconfigured"
-      UnconfigFromFile.send(:new, cfg_file_path, data)
+      UnConfigFromCfg.send(:new, cfg_file_path, data)
     else
       raise "Unexpected type in config"
     end
@@ -153,7 +159,7 @@ end
 # This class represents a configuration that is "unconfigured". #
 # It doesn't know anything about extensions or parameters.      #
 #################################################################
-class UnconfigFromFile < ConfigFromFile
+class UnConfigFromCfg < ConfigFromCfg
   ########################
   # NON-ABSTRACT METHODS #
   ########################
@@ -175,16 +181,17 @@ class UnconfigFromFile < ConfigFromFile
   def partially_configured? = false
   def unconfigured? = true
 
-  def implemented_extensions = raise "implemented_extensions is only available for a FullConfigFromFile"
-  def mandatory_extensions = raise "mandatory_extensions is only available for a PartialConfigFromFile"
-  def prohibited_extensions = raise "prohibited_extensions is only available for a PartialConfigFromFile"
+  def implemented_extensions = raise "implemented_extensions is only available for a FullConfigFromCfg"
+  def mandatory_extensions = raise "mandatory_extensions is only available for a PartialConfigFromCfg"
+  def prohibited_extensions = raise "prohibited_extensions is only available for a PartialConfigFromCfg"
+  def additional_extensions_allowed? = raise "additional_extensions_allowed? is only available for a PartialConfigFromCfg"
 end
 
 ##############################################################################################################
 # This class represents a configuration that is "partially-configured" (e.g., portfolio or configurable IP). #
 # It only lists mandatory & prohibited extensions and fully-constrained parameters (single value).
 ##############################################################################################################
-class PartialConfigFromFile < ConfigFromFile
+class PartialConfigFromCfg < ConfigFromCfg
   ########################
   # NON-ABSTRACT METHODS #
   ########################
@@ -200,8 +207,6 @@ class PartialConfigFromFile < ConfigFromFile
     @mxlen.freeze
   end
 
-  def additional_extensions_allowed? = @data.key?("additional_extensions") ? @data["additional_extensions"] : true
-
   ###############################
   # ABSTRACT METHODS OVERRIDDEN #
   ###############################
@@ -213,7 +218,7 @@ class PartialConfigFromFile < ConfigFromFile
   def partially_configured? = true
   def unconfigured? = false
 
-  def implemented_extensions = raise "implemented_extensions is only available for a FullConfigFromFile"
+  def implemented_extensions = raise "implemented_extensions is only available for a FullConfigFromCfg"
 
   def mandatory_extensions
     @mandatory_extensions ||=
@@ -238,13 +243,17 @@ class PartialConfigFromFile < ConfigFromFile
         end
       end
   end
+
+  # Whether or not a compliant instance of this partial config can have more extensions than those listed
+  # in mandatory_extensions/non_mandatory_extensions.
+  def additional_extensions_allowed? = @data.key?("additional_extensions") ? @data["additional_extensions"] : true
 end
 
 ################################################################################################################
 # This class represents a configuration that is "fully-configured" (e.g., SoC tapeout or fully-configured IP). #
 # It has a complete list of extensions and parameters (all are a single value at this point).                  #
 ################################################################################################################
-class FullConfigFromFile < ConfigFromFile
+class FullConfigFromCfg < ConfigFromCfg
   ########################
   # NON-ABSTRACT METHODS #
   ########################
@@ -284,6 +293,94 @@ class FullConfigFromFile < ConfigFromFile
       end
   end
 
-  def mandatory_extensions = raise "mandatory_extensions is only available for a PartialConfigFromFile"
-  def prohibited_extensions = raise "prohibited_extensions is only available for a PartialConfigFromFile"
+  def mandatory_extensions = raise "mandatory_extensions is only available for a PartialConfigFromCfg"
+  def prohibited_extensions = raise "prohibited_extensions is only available for a PartialConfigFromCfg"
+  def additional_extensions_allowed? = raise "additional_extensions_allowed? is only available for a PartialConfigFromCfg"
+end
+
+############################
+# ConfigFromPortfolioGroup #
+############################
+
+# A ConfigFromPortfolioGroup provides an implementation of the Config API using a PortfolioGroup object.
+# This object contains information from one or more portfolios.
+# A certificate has just one portfolio and a profile release has one or more portfolios.
+class ConfigFromPortfolioGroup < Config
+  ########################
+  # NON-ABSTRACT METHODS #
+  ########################
+
+  def initialize(portfolio_grp)
+    raise ArgumentError, "portfolio_grp is a class #{portfolio_grp.class} but must be a PortfolioGroup" unless portfolio_grp.is_a?(PortfolioGroup)
+
+    super(portfolio_grp.name)
+
+    @portfolio_grp = portfolio_grp
+
+    portfolio_grp.portfolios.each do |portfolio|
+      raise "Portfolio #{portfolio.name} shouldn't have a non-nil cfg_arch member" unless portfolio.cfg_arch.nil?
+      raise "Portfolio #{portfolio.name} shouldn't have a an arch member of type ConfiguredArchitecture" if portfolio.arch.is_a?(ConfiguredArchitecture)
+    end
+  end
+
+  ###############################
+  # ABSTRACT METHODS OVERRIDDEN #
+  ###############################
+
+  # @return [Hash<String, Object>] A hash mapping parameter name to value for any parameter that has
+  #                                been configured with a value. May be empty.
+  def param_values = @portfolio_grp.param_values
+
+  # @return [Boolean] Is an overlay present?
+  def overlay? = false
+
+  # @return [String] Either a path to an overlay directory, or the name of a folder under arch_overlay/
+  # @return [nil] No arch_overlay for this config
+  def arch_overlay = nil
+
+  # @return [String] Absolute path to the arch_overlay
+  # @return [nil] No arch_overlay for this config
+  def arch_overlay_abs = nil
+
+  # 32, 64, or nil if dynamic (not yet supported in portfolio)
+  def mxlen = @portfolio_grp.base
+
+  # Portfolios are always considered partially configured.
+  def fully_configured? = false
+  def partially_configured? = true
+  def unconfigured? = false
+
+  # @return [Array<Hash<String, String>>] List of all extensions known to be implemented by the configuration.
+  def implemented_extensions = raise "Attempt to invoke implemented_extensions in PorfolioGroup #{name}"
+
+  # @return [Array<Hash{String => String,Array<String}>]
+  #    List of all extensions that must be implemented by the configuration
+  #    The first entry in the nested array is an Extension name.
+  #    The second entry in the nested array is an Extension version requirement.
+  #
+  # @example
+  #   mandatory_extensions =>
+  #     [{ "name" => "A", "version" => ["~> 2.0"] }, { "name" => "B", "version" => ["~> 1.0"] }, ...]
+  def mandatory_extensions
+    @portfolio_grp.mandatory_ext_reqs.map do |ext_req|
+      {
+        "name" => ext_req.name,
+        "version" => ext_req.requirement_specs.map(&:to_s)
+      }
+    end
+  end
+
+  # @return [Array<Hash{String => String,Array<String}>]
+  #   List of all extensions that are explicitly prohibited by the configuration.
+  #   The first entry in the nested array is an Extension name.
+  #   The second entry in the nested array is an Extension version requirement.
+  #
+  # @example
+  #   partial_config.prohibited_extensions =>
+  #     [{ "name" => "F", "version" => [">= 2.0"] }, { "name" => "Zfa", "version" => ["> = 1.0"] }, ...]
+  def prohibited_extensions = []    # No prohibited_extensions in a portfolio group
+
+  # Whether or not a compliant instance of this partial config can have more extensions than those listed
+  # in mandatory_extensions/non_mandatory_extensions.
+  def additional_extensions_allowed? = true
 end

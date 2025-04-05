@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Classes for Portfolios which form a common base class for profiles and certificates.
 # A "Portfolio" is a named & versioned grouping of extensions (each with a name and version).
 # Each Portfolio is a member of a Portfolio Class:
@@ -9,7 +11,6 @@
 #
 # A variable name with a "_data" suffix indicates it is the raw hash data from the portfolio YAML file.
 
-require "tmpdir"
 require "forwardable"
 
 require_relative "database_obj"
@@ -54,13 +55,18 @@ end
 class PortfolioGroup
   extend Forwardable
 
+  attr_reader :name
+
   # Calls to these methods on PortfolioGroup are handled by the Array class.
   # Avoids having to call portfolio_grp.portfolios.<array_method> (just call portfolio_grp.<array_method>).
   def_delegators :@portfolios, :each, :map, :select
 
   # @param portfolios [Array<Portfolio>]
-  def initialize(portfolios)
+  def initialize(name, portfolios)
+    raise ArgumentError, "name is a class #{name.class} but must be a String" unless name.is_a?(String)
     raise ArgumentError, "Need at least one portfolio" if portfolios.empty?
+
+    @name = name
     @portfolios = portfolios
   end
 
@@ -77,6 +83,23 @@ class PortfolioGroup
     end
 
     @param_values
+  end
+
+  # @return [Integer] 32 or 64
+  def base
+    # Make sure all the portfolios have the same base value.
+    base = nil
+    portfolios.each do |portfolio|
+      if base.nil?
+        base = portfolio.base
+      elsif base != portfolio.base
+        raise "Bases for all portfolios in PortfolioGroup #{portfolio_grp.name} aren't the same: first portfolio's base=#{base} but portfolio #{portfolio.name} has a base of #{portfolio.base}"
+      end
+    end
+
+    raise "All portfolios in config have a nil base" if base.nil?
+
+    return base
   end
 
   # @return [Array<ExtensionRequirement>] Sorted list of all extension requirements listed by the group.

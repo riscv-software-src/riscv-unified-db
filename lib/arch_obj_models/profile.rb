@@ -135,7 +135,7 @@ class ProfileRelease < DatabaseObject
   def portfolio_grp
     return @portfolio_grp unless @portfolio_grp.nil?
 
-    @portfolio_grp = PortfolioGroup.new(profiles)
+    @portfolio_grp = PortfolioGroup.new(marketing_name, profiles)
   end
 
   #####################################
