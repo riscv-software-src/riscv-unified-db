@@ -1,0 +1,28 @@
+---
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+$schema: csr_schema.json#
+kind: csr
+name: mireg5
+long_name: Machine Indirect Register Alias 5
+address: 0x356
+priv_mode: M
+length: MXLEN
+definedBy: Smcsrind
+description: |
+  The `mireg5` CSR is a machine-level alias register used primarily for accessing the upper half
+  of a 64-bit register in RV32, complementing `mireg2`.
+
+  When `miselect` is configured to point to a 64-bit register, `mireg2` may provide access
+  to the lower 32 bits while `mireg5` gives access to the upper 32 bits.
+
+  Behavior is extension-defined and depends on the current `miselect` value. Illegal
+  or unsupported values yield UNSPECIFIED behavior.
+
+fields:
+  Count:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    type: RW
+    description: Indirect register data selected by `miselect` value.
+    reset_value: UNDEFINED_LEGAL
+sw_read(): |

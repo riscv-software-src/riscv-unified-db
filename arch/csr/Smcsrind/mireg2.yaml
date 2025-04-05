@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+$schema: csr_schema.json#
+kind: csr
+name: mireg2
+long_name: Machine Indirect Register Alias 2
+address: 0x352
+priv_mode: M
+length: MXLEN
+definedBy: Smcsrind
+description: |
+  The `mireg2` CSR is an indirect alias register used for machine-level access to register state,
+  indexed via the value in `miselect`.
+
+  Like `mireg`, this CSR enables flexible access to an array of registers without allocating
+  dedicated CSR numbers for each. It may be used independently or as part of a split-access
+  scheme for larger registers in RV32.
+
+  The behavior of `mireg2` is determined by the value of `miselect`. If `miselect` holds
+  an unsupported value, the behavior is UNSPECIFIED.
+
+fields:
+  Count:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    type: RW
+    description: Indirect register data selected by `miselect` value.
+    reset_value: UNDEFINED_LEGAL
+sw_read(): |
