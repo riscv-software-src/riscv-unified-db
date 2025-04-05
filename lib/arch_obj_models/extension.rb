@@ -142,6 +142,25 @@ class Extension < DatabaseObject
   # @return [String] Long name of the extension
   def long_name = @data["long_name"]
 
+  # @return [String] Either unprivileged or privileged
+  def priv_type = @data["type"]
+
+  # @return [String] Either unpriv or priv
+  def compact_priv_type
+    case priv_type
+    when "unprivileged"
+      "unpriv"
+    when "privileged"
+      "priv"
+    else
+      if priv_type.nil? || priv_type.empty?
+        raise ArgumentError, "Extension #{name} missing its type in database (must be privileged or unprivileged)"
+      else
+        raise ArgumentError, "Extension #{name} has illegal privileged/unprivileged type of #{priv_type}"
+      end
+    end
+  end
+
   # @return [String] Company that developed the extension
   # @return [nil] if the company isn't known
   def company
@@ -169,6 +188,9 @@ class Extension < DatabaseObject
   def ratified_versions
     versions.select { |v| v.state == "ratified" }
   end
+
+  # @return [Boolean] Any version ratified?
+  def ratified = ratified_versions.any?
 
   # @return [ExtensionVersion] Mimumum defined version of this extension
   def min_version

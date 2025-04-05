@@ -2671,7 +2671,7 @@ module Idl
         if (etype.csr.is_a?(Symbol) && etype.csr == :unknown) || etype.csr.dynamic_length?
           Type.new(:bits, width: :unknown)
         else
-          Type.new(:bits, width: etype.csr.length(symtab.cfg_arch))
+          Type.new(:bits, width: etype.csr.length)
         end
       else
         type_error "$bits cast is only defined for CSRs and Enum references"

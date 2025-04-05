@@ -24,17 +24,7 @@ end
 # @param arch [Architecture] The entire RISC-V architecture
 # @return [Hash<String,Array<String>] Extension table data
 def arch2ext_table(arch)
-  # Get array of profile releases and sort by name
-  sorted_profile_releases = arch.profile_releases.sort_by(&:name)
-
-  # Remove Mock profile release if present.
-  sorted_profile_releases.delete_if {|pr| pr.name == "Mock" }
-
-  # Move RVI20 to the beginning of the array if it exists.
-  if sorted_profile_releases.any? {|pr| pr.name == "RVI20" }
-    sorted_profile_releases.delete_if {|pr| pr.name == "RVI20" }
-    sorted_profile_releases.unshift(arch.profile_release("RVI20"))
-  end
+  sorted_profile_releases = get_sorted_profile_releases(arch)
 
   ext_table = {
     # Array of hashes
@@ -48,7 +38,7 @@ def arch2ext_table(arch)
       {name: "Description", formatter: "textarea", sorter: "alphanum", headerFilter: true},
       {name: "IC", formatter: "textarea", sorter: "alphanum", headerFilter: true},
       {name: "Extensions\nIncluded\n(subsets)", formatter: "textarea", sorter: "alphanum"},
-      {name: "Implies\n(and\ntransitives)", formatter: "textarea", sorter: "alphanum"},
+      {name: "Implied By\n(and\ntransitives)", formatter: "textarea", sorter: "alphanum"},
       {name: "Incompatible\n(and\ntransitives)", formatter: "textarea", sorter: "alphanum"},
       {name: "Ratified", formatter: "textarea", sorter: "boolean", headerFilter: true},
       {name: "Ratification\nDate", formatter: "textarea", sorter: "alphanum", headerFilter: true},
@@ -67,8 +57,10 @@ def arch2ext_table(arch)
       ext.long_name,
       ext.compact_priv_type,
       "UDB Missing",
-      ext.max_version.transitive_implications.map(&:name),
-      ext.max_version.transitive_conflicts.map(&:name),
+      # See https://github.com/riscv-software-src/riscv-unified-db/issues/597 for the next 2 columns.
+      ext.max_version.implied_by.map(&:name),
+      # ext.max_version.transitive_conflicts.map(&:name),
+      "UDB MISSING",
       ext.ratified,
       if ext.ratified
         if ext.min_ratified_version.ratification_date.nil? || ext.min_ratified_version.ratification_date.empty?
@@ -94,24 +86,7 @@ end
 # @param arch [Architecture] The entire RISC-V architecture
 # @return [Hash<String,Array<String>] Instruction table data
 def arch2inst_table(arch)
-  # Get array of profiles and sort by name
-  sorted_profiles = arch.profiles.sort_by(&:name)
-
-  # Remove Mock profiles if present.
-  sorted_profiles.delete_if {|prof| prof.name == "MP-U-64" }
-  sorted_profiles.delete_if {|prof| prof.name == "MP-S-64" }
-
-  # Move RVI20U64 to the beginning of the array if it exists.
-  if sorted_profiles.any? {|prof| prof.name == "RVI20U64" }
-    sorted_profiles.delete_if {|prof| prof.name == "RVI20U64" }
-    sorted_profiles.unshift(arch.profile("RVI20U64"))
-  end
-
-  # Move RVI20U32 to the beginning of the array if it exists.
-  if sorted_profiles.any? {|prof| prof.name == "RVI20U32" }
-    sorted_profiles.delete_if {|prof| prof.name == "RVI20U32" }
-    sorted_profiles.unshift(arch.profile("RVI20U32"))
-  end
+  sorted_profile_releases = get_sorted_profile_releases(arch)
 
   inst_table = {
     # Array of hashes
@@ -124,8 +99,8 @@ def arch2inst_table(arch)
       },
       {name: "Description", formatter: "textarea", sorter: "alphanum", headerFilter: true},
       {name: "Assembly", formatter: "textarea", sorter: "alphanum", headerFilter: true},
-      sorted_profiles.map do |prof|
-        {name: "#{prof.name}", formatter: "textarea", sorter: "alphanum", headerFilter: true}
+      sorted_profile_releases.map do |pr|
+        {name: "#{pr.name}", formatter: "textarea", sorter: "alphanum", headerFilter: true}
       end
     ].flatten,
 
@@ -133,15 +108,20 @@ def arch2inst_table(arch)
     "rows" => []
     }
 
-  arch.instructions.sort_by!(&:name).each do |inst|
+  insts = arch.instructions.sort_by!(&:name)
+  progressbar = ProgressBar.create(title: "Instruction Table", total: insts.size)
+
+  insts.each do |inst|
+    progressbar.increment
+
     row = [
       inst.name,
       inst.long_name,
       inst.name + " " + inst.assembly.gsub('x', 'r')
     ]
 
-    sorted_profiles.each do |prof|
-      row.append(presence2char(prof.instruction_presence(inst.name)))
+    sorted_profile_releases.each do |pr|
+      row.append(presence2char(pr.instruction_presence(inst.name)))
     end
 
     inst_table["rows"].append(row)
@@ -325,4 +305,47 @@ def gen_js_inst_table(arch, output_pname)
 
   puts "UPDATE: Converting instruction table to #{output_pname}"
   gen_js_table(inst_table, "inst_table", output_pname)
+end
+
+# param [Architecture] arch
+# return [Array<Profile>] Nice list of profiles to use in a nice order
+def get_sorted_profiles(arch)
+  # Get array of profiles and sort by name
+  sorted_profiles = arch.profiles.sort_by(&:name)
+
+  # Remove Mock profiles if present.
+  sorted_profiles.delete_if {|prof| prof.name == "MP-U-64" }
+  sorted_profiles.delete_if {|prof| prof.name == "MP-S-64" }
+
+  # Move RVI20U64 to the beginning of the array if it exists.
+  if sorted_profiles.any? {|prof| prof.name == "RVI20U64" }
+    sorted_profiles.delete_if {|prof| prof.name == "RVI20U64" }
+    sorted_profiles.unshift(arch.profile("RVI20U64"))
+  end
+
+  # Move RVI20U32 to the beginning of the array if it exists.
+  if sorted_profiles.any? {|prof| prof.name == "RVI20U32" }
+    sorted_profiles.delete_if {|prof| prof.name == "RVI20U32" }
+    sorted_profiles.unshift(arch.profile("RVI20U32"))
+  end
+
+  return sorted_profiles
+end
+
+# param [Architecture] arch
+# return [Array<ProfileRelease>] Nice list of profile release to use in a nice order
+def get_sorted_profile_releases(arch)
+  # Get array of profile releases and sort by name
+  sorted_profile_releases = arch.profile_releases.sort_by(&:name)
+
+  # Remove Mock profile release if present.
+  sorted_profile_releases.delete_if {|pr| pr.name == "Mock" }
+
+  # Move RVI20 to the beginning of the array if it exists.
+  if sorted_profile_releases.any? {|pr| pr.name == "RVI20" }
+    sorted_profile_releases.delete_if {|pr| pr.name == "RVI20" }
+    sorted_profile_releases.unshift(arch.profile_release("RVI20"))
+  end
+
+  return sorted_profile_releases
 end
