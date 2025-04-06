@@ -89,11 +89,9 @@ file "#{GEN_HTML_EXT_TABLE}" => [
 
     # Just copy static HTML file.
     FileUtils.copy_file(SRC_EXT_HTML_PNAME, t.name)
-    puts "Success: Copied #{SRC_EXT_HTML_PNAME} to #{t.name}"
 
     # Also copy tabulator-master library in case it isn't already there.
     FileUtils.cp_r(SRC_TAB_MASTER_DIR, GEN_BROWSER_DIR)
-    puts "Success: Copied #{SRC_TAB_MASTER_DIR} to #{GEN_BROWSER_DIR}"
 end
 
 file "#{GEN_HTML_INST_TABLE}" => [
@@ -114,11 +112,9 @@ file "#{GEN_HTML_INST_TABLE}" => [
 
     # Just copy static HTML file.
     FileUtils.copy_file(SRC_INST_HTML_PNAME, t.name)
-    puts "Success: Copied #{SRC_INST_HTML_PNAME} to #{t.name}"
 
     # Also copy tabulator-master library in case it isn't already there.
     FileUtils.cp_r(SRC_TAB_MASTER_DIR, GEN_BROWSER_DIR)
-    puts "Success: Copied #{SRC_TAB_MASTER_DIR} to #{GEN_BROWSER_DIR}"
 end
 
 file "#{GEN_JS_EXT_TABLE}" => [
