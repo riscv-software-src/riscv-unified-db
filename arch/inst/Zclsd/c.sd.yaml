@@ -1,0 +1,36 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: c.sd
+long_name: Store doubleword from even/odd register pair
+description: |
+  Stores a 64-bit value from registers rs2' and rs2'+1. It computes an effective address by adding
+  the zero-extended offset, scaled by 8, to the base address in register rs1'. It expands to sd rs2',
+  offset(rs1').
+definedBy: Zclsd
+assembly: c.sd rs2, offset(rs1)
+encoding:
+  match: 111-----------00
+  variables:
+    - name: rs2
+      location: 4-2
+    - name: rs1
+      location: 9-7
+    - name: imm
+      location: 12-10|6-5
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+
+  Bits<XLEN> base = X[2];
+  Bits<XLEN> offset = imm << 3;
+  Bits<XLEN> eff_addr = base + offset;
+
+  Bits<64> data = {X[rs2+1], X[rs2]};
+
+  write_memory<64>(eff_addr, data, $encoding);
+sail(): "" #not implemented in the sail model yet
