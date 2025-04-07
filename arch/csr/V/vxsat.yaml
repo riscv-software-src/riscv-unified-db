@@ -7,7 +7,7 @@ long_name: Fixed-Point Saturate Flag
 address: 0x009
 priv_mode: U
 length: MXLEN
-description: TBA.
+description: Indicates if a fixed-point instruction has had to saturate an output value to fit into a destination format
 definedBy: V
 sw_read(): |
   return CSR[vcsr].VXSAT;
@@ -16,6 +16,10 @@ fields:
     location_rv32: 31-0
     location_rv64: 63-0
     description: |
-      TBA
+      The vxsat CSR has a single read-write least-significant bit (vxsat[0]) that indicates if a fixed-point
+      instruction has had to saturate an output value to fit into a destination format. Bits vxsat[XLEN-1:1]
+      should be written as zeros.
+
+      The vxsat bit is mirrored in vcsr.
     type: RO-H
     reset_value: UNDEFINED_LEGAL

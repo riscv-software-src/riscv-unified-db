@@ -25,8 +25,10 @@ fields:
       raise an illegal-instruction exception.
 
       When the vill bit is set, the other XLEN-1 bits in vtype shall be zero.
+
+      It is recommended that at reset, vill is set.
     type: RO-H
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 1
   VMA:
     location_rv32: 7
     location_rv64: 7
@@ -42,8 +44,10 @@ fields:
       Within a single vector instruction, each destination element can be either left undisturbed or overwritten
       with 1s, in any combination, and the pattern of undisturbed or overwritten with 1s is not required to be
       deterministic when the instruction is executed with the same inputs.
+
+      It is recommended that at reset, vill is set, and the remaining bits in vtype are zero.
     type: RO-H
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 0
   VTA:
     location_rv32: 6
     location_rv64: 6
@@ -59,8 +63,10 @@ fields:
       Within a single vector instruction, each destination element can be either left undisturbed or overwritten
       with 1s, in any combination, and the pattern of undisturbed or overwritten with 1s is not required to be
       deterministic when the instruction is executed with the same inputs.
+
+      It is recommended that at reset, vill is set, and the remaining bits in vtype are zero.
     type: RO-H
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 0
   VSEW:
     location_rv32: 5-3
     location_rv64: 5-3
@@ -81,9 +87,11 @@ fields:
       SEW 32 = 4
       SEW 16 = 8
       SEW 8  = 16
+
+      It is recommended that at reset, vill is set, and the remaining bits in vtype are zero.
     # I feel like the encoding tables are important here. Is there a better way than the "note" tag?
     type: RO-H
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 0
   VLMUL:
     location_rv32: 2-0
     location_rv64: 2-0
@@ -110,6 +118,8 @@ fields:
       LMUL can also be a fractional value, reducing the number of bits used in a single vector register.
       Fractional LMUL is used to increase the number of effective usable vector register groups when
       operating on mixed-width values.
+
+      It is recommended that at reset, vill is set, and the remaining bits in vtype are zero.
     # the spec provides more details on vlmul. Should I include all of it or leave it here? How much detail needs to go into the CSR field descriptions?
     type: RO-H
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 0

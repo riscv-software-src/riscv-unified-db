@@ -7,24 +7,24 @@ long_name: Vector control and status register
 address: 0x00F
 priv_mode: U
 length: MXLEN
-description: TBA.
+description: Allows access to vxrm and vxsat CSRs
 definedBy: V
 fields:
   VXRM:
     location_rv32: 2-1
     location_rv64: 2-1
     description: |
-      TBA
-    type: RW-RH #??
-    sw_write(csr_value): | #to be updated
+      See vxrm.
+    type: RW-RH
+    sw_write(csr_value): |
       return csr_value.VALUE;
     reset_value: UNDEFINED_LEGAL
   VXSAT:
     location_rv32: 0
     location_rv64: 0
     description: |
-      TBA
-    type: RW-RH #??
-    sw_write(csr_value): | #to be updated
+      See vxsat.
+    type: RW-RH
+    sw_write(csr_value): |
       return csr_value.VALUE;
     reset_value: UNDEFINED_LEGAL

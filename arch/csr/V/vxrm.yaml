@@ -7,7 +7,7 @@ long_name: Fixed-Point Rounding Mode
 address: 0x00A
 priv_mode: U
 length: MXLEN
-description: TBA.
+description: Holds a 2-bit read-write rounding-mode field in the least-significant bits
 definedBy: V
 sw_read(): |
   return CSR[vcsr].VXRM;
@@ -17,6 +17,22 @@ fields:
     location_rv32: 31-0
     location_rv64: 63-0
     description: |
-      TBA
+      The vector fixed-point rounding-mode register holds a two-bit read-write rounding-mode field in the
+      least-significant bits (vxrm[1:0]). The upper bits, vxrm[XLEN-1:2], should be written as zeros.
+      The vector fixed-point rounding-mode is given a separate CSR address to allow independent access,
+      but is also reflected as a field in vcsr.
+
+      [NOTE]
+      A new rounding mode can be set while saving the original rounding mode using a single csrwi instruction.
+
+      The fixed-point rounding algorithm is specified as follows. Suppose the pre-rounding result is v, and d
+      bits of that result are to be rounded off. Then the rounded result is (v >> d) + r, where r depends on
+      the rounding mode as specified in the following table of vxrm[1:0] values.
+
+      - 00: rnu (round to nearest up), r = v[d-1]
+      - 01: rne (round to nearest even), r = v[d-1] & ( v[d-2:0]!=0 | v[d])
+      - 10: rdn (round down, truncate), r = 0
+      - 11: rod (round to odd), r = !v[d] & v[d-1:0]!=0
+    # I feel like the encoding table is important here. Is there a better way than this list?
     type: RO-H
     reset_value: UNDEFINED_LEGAL
