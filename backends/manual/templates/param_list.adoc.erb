@@ -1,7 +1,7 @@
 = Architectural Parameters
 
 <%-
-  params = manual_version.ext_vers.map{ |e| e.params }.flatten.uniq(&:name).sort_by!(&:name)
+  params = manual_version.extensions.map{ |e| e.params }.flatten.uniq(&:name).sort_by!(&:name)
 -%>
 
 The following <%= params.size %> parameters are defined in this manual:

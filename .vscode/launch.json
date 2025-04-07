@@ -3,6 +3,15 @@
   "configurations": [
     {
       "type": "rdbg",
+      "name": "Manual",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:html_manual MANUAL_NAME=isa VERSIONS=all",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
       "name": "MC100-32-CRD",
       "request": "launch",
       "command": "bundle exec rake",
@@ -93,10 +102,19 @@
     },
     {
       "type": "rdbg",
-      "name": "ISA Explorer Browser Generator",
+      "name": "ISA Explorer Browser Extension Generator",
       "request": "launch",
       "command": "bundle exec rake",
-      "script": "gen:isa_explorer_browser",
+      "script": "gen:isa_explorer_browser_ext",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "ISA Explorer Browser Instruction Generator",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:isa_explorer_browser_inst",
       "args": [],
       "askParameters": false
     },

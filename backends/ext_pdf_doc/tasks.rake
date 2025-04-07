@@ -96,7 +96,7 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
   erb = ERB.new(template_path.read, trim_mode: "-")
   erb.filename = template_path.to_s
 
-  ext = design.arch.extension(ext_name)
+  ext = cfg_arch.extension(ext_name)
   version_strs = ENV["VERSION"].split(",")
   versions =
     if version_strs.include?("all")
@@ -112,7 +112,7 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
 
   max_version = versions.max { |a, b| a.version <=> b.version }
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AsciidocUtils.resolve_links(design.convert_monospace_to_links(erb.result(binding)))
+  File.write t.name, AsciidocUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding)))
 end
 
 namespace :gen do

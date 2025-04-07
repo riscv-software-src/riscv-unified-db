@@ -37,10 +37,14 @@ namespace :gen do
     Rake::Task["#{GEN_XLSX}"].invoke
   end
 
-  desc("Generate RISC-V ISA Explorer for browser")
-  task :isa_explorer_browser do
+  desc("Generate RISC-V ISA Explorer Extensions for browser")
+  task :isa_explorer_browser_ext do
     Rake::Task["#{GEN_HTML_EXT_TABLE}"].invoke
     Rake::Task["#{GEN_JS_EXT_TABLE}"].invoke
+  end
+
+  desc("Generate RISC-V ISA Explorer Instructions for browser")
+  task :isa_explorer_browser_inst do
     Rake::Task["#{GEN_HTML_INST_TABLE}"].invoke
     Rake::Task["#{GEN_JS_INST_TABLE}"].invoke
   end

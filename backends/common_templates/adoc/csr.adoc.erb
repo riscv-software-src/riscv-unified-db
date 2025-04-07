@@ -23,7 +23,7 @@ h| Privilege Mode | <%= csr.priv_mode %>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(design, 64) %>
+<%= JSON.dump csr.wavedrom_desc(cfg_arch, 64) %>
 ....
 <%- else -%>
 <%# CSR has a dynamic length, or a field has a dynamic location,
@@ -33,13 +33,13 @@ This CSR format changes dynamically.
 .<%= csr.name %> Format when <%= csr.length_cond32 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(design, 32) %>
+<%= JSON.dump csr.wavedrom_desc(cfg_arch, 32) %>
 ....
 
 .<%= csr.name %> Format when <%= csr.length_cond64 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(design, 64) %>
+<%= JSON.dump csr.wavedrom_desc(cfg_arch, 64) %>
 ....
 <%- end -%>
 
@@ -50,7 +50,7 @@ This CSR format changes dynamically.
 @Name @ Location @ Type @ Reset Value
 
 <%- csr.fields.each do |field| -%>
-@ <%= link_to_csr_field(csr.name, field.name) %>
+@ <%= link_to_udb_doc_csr_field(csr.name, field.name) %>
 @ <%= field.location_pretty %>
 @ <%= field.type_pretty %>
 @ <%= field.reset_value_pretty %>
@@ -66,8 +66,8 @@ This CSR has no fields. However, it must still exist (not cause an `Illegal Inst
 <%- else -%>
 
 <%- csr.fields.each do |field| -%>
-<%= anchor_for_udb_doc_csr_field(csr.name, field.name) %>
-=== `<%= field.name %>` Field
+[[<%=csr.name%>-<%=field.name%>-def]]
+=== `<%= field.name %>`
 
 [example]
 ****
@@ -115,6 +115,6 @@ This CSR may return a value that is different from what is stored in hardware.
 
 [source,idl,subs="specialchars,macros"]
 ----
-<%= csr.sw_read_ast(design.symtab).gen_adoc %>
+<%= csr.sw_read_ast(cfg_arch.symtab).gen_adoc %>
 ----
 <%- end -%>

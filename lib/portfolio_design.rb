@@ -89,32 +89,6 @@ class PortfolioDesign < Design
     raise "Not supported for portfolio #{name}"
   end
 
-  # Given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`
-  # and replace them with links to the relevant object page.
-  # See backend_helpers.rb for a definition of the proprietary link format.
-  #
-  # @param adoc [String] Asciidoc source
-  # @return [String] Asciidoc source, with link placeholders
-  def convert_monospace_to_links(adoc)
-    adoc.gsub(/`([\w.]+)`/) do |match|
-      name = Regexp.last_match(1)
-      csr_name, field_name = name.split(".")
-      csr = in_scope_csrs.find { |c| c.name == csr_name }
-      if !field_name.nil? && !csr.nil? && csr.field?(field_name)
-        link_to_udb_doc_csr_field(csr_name, field_name)
-      elsif !csr.nil?
-        link_to_udb_doc_csr(csr_name)
-      elsif in_scope_instructions.any? { |inst| inst.name == name }
-        link_to_udb_doc_inst(name)
-      elsif in_scope_extensions.any? { |ext| ext.name == name }
-        link_to_udb_doc_ext(name)
-      else
-        match
-      end
-    end
-  end
-
-  #
   # A Portfolio corresponds to a partially-configured design.
   # See the Config class for details.
   #

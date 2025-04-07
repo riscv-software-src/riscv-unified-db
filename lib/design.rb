@@ -54,7 +54,8 @@ class Design < IDesign
     :functions,
     :transitive_implemented_csrs,
     :transitive_implemented_instructions,
-    :implemented_functions
+    :implemented_functions,
+    :convert_monospace_to_links
 
   # @return [ConfiguredArchitecture] The RISC-V architecture
   attr_reader :cfg_arch

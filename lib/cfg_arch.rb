@@ -20,7 +20,7 @@ require_relative "idl/passes/prune"
 require_relative "idl/passes/reachable_exceptions"
 require_relative "idl/passes/reachable_functions"
 
-require_relative "template_helpers"
+require_relative "backend_helpers"
 
 include TemplateHelpers
 
@@ -281,7 +281,7 @@ class ConfiguredArchitecture < Architecture
     puts "done" if show_progress
   end
 
-  # @return [Array<ExtensionParameterWithValue>] List of all parameters with one known value in the config
+  # @return [Array<ParameterWithValue>] List of all parameters with one known value in the config
   def params_with_value
     return @params_with_value unless @params_with_value.nil?
 
@@ -294,7 +294,7 @@ class ConfiguredArchitecture < Architecture
         ext.params.each do |ext_param|
           next unless @config.param_values.key?(ext_param.name)
 
-          @params_with_value << ExtensionParameterWithValue.new(
+          @params_with_value << ParameterWithValue.new(
             ext_param,
             @config.param_values[ext_param.name]
           )
@@ -307,7 +307,7 @@ class ConfiguredArchitecture < Architecture
           # Params listed in the config always only have one value.
           next unless @config.param_values.key?(ext_param.name)
 
-          @params_with_value << ExtensionParameterWithValue.new(
+          @params_with_value << ParameterWithValue.new(
             ext_param,
             @config.param_values[ext_param.name]
           )
@@ -319,7 +319,7 @@ class ConfiguredArchitecture < Architecture
     @params_with_value
   end
 
-  # @return [Array<ExtensionParameter>] List of all available parameters without one known value in the config
+  # @return [Array<Parameter>] List of all available parameters without one known value in the config
   def params_without_value
     return @params_without_value unless @params_without_value.nil?
 
@@ -409,7 +409,7 @@ class ConfiguredArchitecture < Architecture
 
     @not_prohibited_extensions ||=
       if @config.fully_configured?
-        transitive_implemented_extension_versions.map { |ext_ver| ext_ver.extension }.uniq
+        transitive_implemented_extension_versions.map { |ext_ver| ext_ver.ext }.uniq
       elsif @config.partially_configured?
         # reject any extension in which all of the extension versions are prohibited
         extensions.reject { |ext| (ext.versions - transitive_prohibited_extension_versions).empty? }
@@ -814,24 +814,25 @@ class ConfiguredArchitecture < Architecture
     @reachable_functions
   end
 
-  # given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`
-  # and replace them with links to the relevant object page
+  # Given an adoc string, find names of CSR/Instruction/Extension enclosed in `monospace`
+  # and replace them with links to the relevant object page.
+  # See backend_helpers.rb for a definition of the proprietary link format.
   #
   # @param adoc [String] Asciidoc source
   # @return [String] Asciidoc source, with link placeholders
-  def find_replace_links(adoc)
+  def convert_monospace_to_links(adoc)
     adoc.gsub(/`([\w.]+)`/) do |match|
       name = Regexp.last_match(1)
       csr_name, field_name = name.split(".")
-      csr = csr(csr_name)
+      csr = not_prohibited_csrs.find { |c| c.name == csr_name }
       if !field_name.nil? && !csr.nil? && csr.field?(field_name)
-        "%%LINK%csr_field;#{csr_name}.#{field_name};#{csr_name}.#{field_name}%%"
+        link_to_udb_doc_csr_field(csr_name, field_name)
       elsif !csr.nil?
-        "%%LINK%csr;#{csr_name};#{csr_name}%%"
-      elsif instruction(name)
-        "%%LINK%inst;#{name};#{name}%%"
-      elsif extension(name)
-        "%%LINK%ext;#{name};#{name}%%"
+        link_to_udb_doc_csr(csr_name)
+      elsif not_prohibited_instructions.any? { |inst| inst.name == name }
+        link_to_udb_doc_inst(name)
+      elsif not_prohibited_extensions.any? { |ext| ext.name == name }
+        link_to_udb_doc_ext(name)
       else
         match
       end

@@ -24,6 +24,8 @@ end
 # @param arch [Architecture] The entire RISC-V architecture
 # @return [Hash<String,Array<String>] Extension table data
 def arch2ext_table(arch)
+  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
+
   sorted_profile_releases = get_sorted_profile_releases(arch)
 
   ext_table = {
@@ -86,6 +88,8 @@ end
 # @param arch [Architecture] The entire RISC-V architecture
 # @return [Hash<String,Array<String>] Instruction table data
 def arch2inst_table(arch)
+  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
+
   sorted_profile_releases = get_sorted_profile_releases(arch)
 
   inst_table = {
@@ -178,6 +182,9 @@ end
 # @param arch [Architecture] The entire RISC-V architecture
 # @param output_pname [String] Full absolute pathname to output file
 def gen_xlsx(arch, output_pname)
+  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
+  raise ArgumentError, "output_pname is a #{output_pname.class} class but needs to be String" unless output_pname.is_a?(String)
+
   # Create a new Excel workbook
   puts "UPDATE: Creating Excel workboook #{output_pname}"
   workbook = WriteXLSX.new(output_pname)
@@ -286,6 +293,9 @@ end
 # @param arch [Architecture] The entire RISC-V architecture
 # @param output_pname [String] Full absolute pathname to output file
 def gen_js_ext_table(arch, output_pname)
+  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
+  raise ArgumentError, "output_pname is a #{output_pname.class} class but needs to be String" unless output_pname.is_a?(String)
+
   # Convert arch to ext_table data structure
   puts "UPDATE: Creating extension table data structure"
   ext_table = arch2ext_table(arch)
@@ -299,6 +309,9 @@ end
 # @param arch [Architecture] The entire RISC-V architecture
 # @param output_pname [String] Full absolute pathname to output file
 def gen_js_inst_table(arch, output_pname)
+  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
+  raise ArgumentError, "output_pname is a #{output_pname.class} class but needs to be String" unless output_pname.is_a?(String)
+
   # Convert arch to inst_table data structure
   puts "UPDATE: Creating instruction table data structure"
   inst_table = arch2inst_table(arch)
@@ -310,6 +323,8 @@ end
 # param [Architecture] arch
 # return [Array<Profile>] Nice list of profiles to use in a nice order
 def get_sorted_profiles(arch)
+  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
+
   # Get array of profiles and sort by name
   sorted_profiles = arch.profiles.sort_by(&:name)
 
@@ -335,6 +350,8 @@ end
 # param [Architecture] arch
 # return [Array<ProfileRelease>] Nice list of profile release to use in a nice order
 def get_sorted_profile_releases(arch)
+  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
+
   # Get array of profile releases and sort by name
   sorted_profile_releases = arch.profile_releases.sort_by(&:name)
 

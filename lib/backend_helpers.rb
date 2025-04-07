@@ -4,6 +4,7 @@
 
 require "erb"
 require "pathname"
+require "ostruct"
 
 # Add to standard String class.
 class String
@@ -15,12 +16,12 @@ class String
   def sanitize = String.new(self).gsub(".", "_").gsub("&", "_and_")
 end
 
-# This module is included in the Design class so its methods are available to be called directly
-# without having to prefix a method with the module name.
+# This module is included in the CfgArch and Design classes so its methods are available to be called directly
+# from them without having to prefix a method with the module name.
 module TemplateHelpers
   # Include a partial ERB template into a full ERB template.
   #
-  # @param template_pname [String] Path to template file relative to backends directory
+  # @param template_pname [String] Path to template file relative to "backends" directory.
   # @param inputs [Hash<String, Object>] Input objects to pass into template
   # @return [String] Result of ERB evaluation of the template file
   def partial(template_pname, inputs = {})

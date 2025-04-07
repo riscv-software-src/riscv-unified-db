@@ -24,11 +24,10 @@ This instruction is included in the following profiles:
   if in_profile_mandatory
 -%>
 * <%= profile.marketing_name %> (Mandatory)
-<%-     elsif presence.optional? -%>
+<%- elsif in_profile_optional -%>
 * <%= profile.marketing_name %> (Optional)
-<%-     end # if -%>
-<%-   end # unless -%>
-<%- end # do -%>
+<%- end -%>
+<%- end -%>
 
 == Encoding
 

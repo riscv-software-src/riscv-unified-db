@@ -5,7 +5,7 @@
 
 *<%= csr.long_name %>*
 
-<%= design.render_erb(csr.description, "#{csr.name}.description") %>
+<%= cfg_arch.render_erb(csr.description, "#{csr.name}.description") %>
 
 == Attributes
 [%autowidth]
@@ -15,7 +15,7 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <%- if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <%- end -%>
-<%- if csr.dynamic_length?(design.mxlen) ||  csr.data["length"] == "MXLEN" -%>
+<%- if csr.dynamic_length? ||  csr.data["length"] == "MXLEN" -%>
 h| Length
 a|
 
@@ -41,7 +41,7 @@ h| Privilege Mode | <%= csr.priv_mode %>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(design, 64) %>
+<%= JSON.dump csr.wavedrom_desc(cfg_arch, 64) %>
 ....
 <%- else -%>
 <%# CSR has a dynamic length, or a field has a dynamic location,
@@ -52,7 +52,7 @@ This CSR format changes dynamically.
 --
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr_32.wavedrom_desc(design, 32) %>
+<%= JSON.dump csr_32.wavedrom_desc(cfg_arch_32, 32) %>
 ....
 --
 
@@ -60,7 +60,7 @@ This CSR format changes dynamically.
 --
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(design, 64) %>
+<%= JSON.dump csr.wavedrom_desc(cfg_arch, 64) %>
 ....
 --
 <%- end -%>
@@ -79,27 +79,27 @@ a@
 
 [when,"<%= field.location_cond32 %>"]
 --
-<%= field.location_pretty(design, 32) %>
+<%= field.location_pretty(32) %>
 --
 
 [when,"<%= field.location_cond64 %>"]
 --
-<%= field.location_pretty(design, 64) %>
+<%= field.location_pretty(64) %>
 --
 
 <%- else -%>
-<%= field.location_pretty(design) %>
+<%= field.location_pretty %>
 <%- end -%>
 a@
 
 --
-<%= field.type_pretty(design.symtab) %>
+<%= field.type_pretty(cfg_arch.symtab) %>
 --
 
 a@
 
 --
-<%= field.reset_value_pretty(design) %>
+<%= field.reset_value_pretty %>
 --
 
 <%- end -%>
@@ -121,16 +121,16 @@ IMPORTANT: <%= field.name %> is only defined in <%= field.base32_only? ? "RV32" 
 
 ****
 Location::
-<%= field.location_pretty(design) %>
+<%= field.location_pretty %>
 
 Description::
-<%= design.render_erb(field.description, "#{csr.name}.#{field.name}.description").gsub("\n", " +\n") %>
+<%= cfg_arch.render_erb(field.description, "#{csr.name}.#{field.name}.description").gsub("\n", " +\n") %>
 
 Type::
-<%= field.type_pretty(design.symtab) %>
+<%= field.type_pretty %>
 
 Reset value::
-<%= field.reset_value_pretty(design) %>
+<%= field.reset_value_pretty %>
 
 ****
 
@@ -164,6 +164,6 @@ This CSR may return a value that is different from what is stored in hardware.
 
 [source,idl,subs="specialchars,macros"]
 ----
-<%= csr.sw_read_ast(design.symtab).gen_adoc %>
+<%= csr.sw_read_ast(cfg_arch.symtab).gen_adoc %>
 ----
 <%- end -%>

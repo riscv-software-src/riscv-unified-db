@@ -8,7 +8,6 @@ require "ruby-prof"
     [
       "#{CFG_HTML_DOC_DIR}/templates/#{type}.adoc.erb",
       "#{$root}/lib/cfg_arch.rb",
-      "#{$root}/lib/design.rb",
       "#{$root}/lib/idl/passes/gen_adoc.rb",
       __FILE__,
       "#{$root}/.stamps"

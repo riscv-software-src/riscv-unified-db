@@ -6,137 +6,6 @@ require_relative "schema"
 require_relative "../presence"
 require_relative "../version"
 
-# A parameter (AKA option, AKA implementation-defined value) supported by an extension
-class ExtensionParameter
-  # @return [Architecture] The defining architecture
-  attr_reader :arch
-
-  # @return [String] Parameter name
-  attr_reader :name
-
-  # @return [String] Asciidoc description
-  attr_reader :desc
-
-  # @return [Schema] JSON Schema for this param
-  attr_reader :schema
-
-  # @return [String] Ruby code to perform validation above and beyond JSON schema
-  # @return [nil] If there is no extra validation
-  attr_reader :extra_validation
-
-  # @return [Array<Extension>] The extension(s) that define this parameter
-  #
-  # Some parameters are defined by multiple extensions (e.g., CACHE_BLOCK_SIZE by Zicbom and Zicboz).
-  # When defined in multiple places, the parameter *must* mean the exact same thing.
-  attr_reader :exts
-
-  # @returns [Idl::Type] Type of the parameter
-  attr_reader :idl_type
-
-  # Pretty convert extension schema to a string.
-  def schema_type
-    @schema.to_pretty_s
-  end
-
-  def default
-    if @data["schema"].key?("default")
-      @data["schema"]["default"]
-    end
-  end
-
-  # @param ext [Extension]
-  # @param name [String]
-  # @param data [Hash<String, Object]
-  def initialize(ext, name, data)
-    @arch = ext.arch
-    @data = data
-    @name = name
-    @desc = data["description"]
-    @schema = Schema.new(data["schema"])
-    @extra_validation = data["extra_validation"]
-    also_defined_in = []
-    unless data["also_defined_in"].nil?
-      if data["also_defined_in"].is_a?(String)
-        other_ext = @arch.extension(data["also_defined_in"])
-        raise "Definition error in #{ext.name}.#{name}: #{data['also_defined_in']} is not a known extension" if other_ext.nil?
-
-        also_defined_in << other_ext
-      else
-        unless data["also_defined_in"].is_a?(Array) && data["also_defined_in"].all? { |e| e.is_a?(String) }
-          raise "schema error: also_defined_in should be a string or array of strings"
-        end
-
-        data["also_defined_in"].each do |other_ext_name|
-          other_ext = @arch.extension(other_ext_name)
-          raise "Definition error in #{ext.name}.#{name}: #{data['also_defined_in']} is not a known extension" if other_ext.nil?
-
-          also_defined_in << other_ext
-        end
-      end
-    end
-    @exts = [ext] + also_defined_in
-    @idl_type = @schema.to_idl_type.make_const.freeze
-  end
-
-  # @param version [ExtensionVersion]
-  # @return [Boolean] if this parameter is defined in +version+
-  def defined_in_extension_version?(version)
-    return false if @exts.none? { |ext| ext.name == version.ext.name }
-    return true if @data.dig("when", "version").nil?
-
-    @exts.any? do |ext|
-      ExtensionRequirement.new(ext.name, @data["when"]["version"], arch: ext.arch).satisfied_by?(version)
-    end
-  end
-
-  # @return [String]
-  def name_potentially_with_link(exts)
-    raise ArgumentError, "Expecting Array" unless exts.is_a?(Array)
-    raise ArgumentError, "Expecting Array[Extension]" unless exts[0].is_a?(Extension)
-
-    if exts.size == 1
-      "<<ext-#{exts[0].name}-param-#{name}-def,#{name}>>"
-    else
-      name
-    end
-  end
-
-  # sorts by name
-  def <=>(other)
-    raise ArgumentError, "ExtensionParameters are only comparable to other extension parameters" unless other.is_a?(ExtensionParameter)
-
-    @name <=> other.name
-  end
-end
-
-class ExtensionParameterWithValue
-  # @return [Object] The parameter value
-  attr_reader :value
-
-  # @return [String] Parameter name
-  def name = @param.name
-
-  # @return [String] Asciidoc description
-  def desc = @param.desc
-
-  # @return [Hash] JSON Schema for the parameter value
-  def schema = @param.schema
-
-  # @return [String] Ruby code to perform validation above and beyond JSON schema
-  # @return [nil] If there is no extra validatino
-  def extra_validation = @param.extra_validation
-
-  # @return [Extension] The extension that defines this parameter
-  def exts = @param.exts
-
-  def idl_type = @param.idl_type
-
-  def initialize(param, value)
-    @param = param
-    @value = value
-  end
-end
-
 # Extension definition
 class Extension < DatabaseObject
   # @return [String] Long name of the extension
@@ -210,14 +79,14 @@ class Extension < DatabaseObject
     ratified_versions.min { |a, b| a.version_spec <=> b.version_spec }
   end
 
-  # @return [Array<ExtensionParameter>] List of parameters added by this extension
+  # @return [Array<Parameter>] List of parameters added by this extension
   def params
     return @params unless @params.nil?
 
     @params = []
     if @data.key?("params")
       @data["params"].each do |param_name, param_data|
-        @params << ExtensionParameter.new(self, param_name, param_data)
+        @params << Parameter.new(self, param_name, param_data)
       end
     end
     @params
@@ -383,7 +252,7 @@ class ExtensionVersion
     @contributors
   end
 
-  # @return [Array<ExtensionParameter>] The list of parameters for this extension version
+  # @return [Array<Parameter>] The list of parameters for this extension version
   def params
     @ext.params.select { |p| p.defined_in_extension_version?(self) }
   end
