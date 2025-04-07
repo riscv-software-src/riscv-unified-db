@@ -29,6 +29,9 @@ data_independent_timing: false
 operation(): |
   X[rd] = (X[rs2] == 0) ? 0 : X[rs1];
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let value = X(rs1);
@@ -38,3 +41,5 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

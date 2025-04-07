@@ -468,8 +468,10 @@ namespace :test do
     puts "UPDATE: Generating MockProfileRelease.pdf"
     Rake::Task["#{$root}/gen/profile/pdf/MockProfileRelease.pdf"].invoke
 
+    puts "UPDATE: Generating Go Language Support"
+    Rake::Task["gen:go"].invoke
+
     puts "UPDATE: Done test:regress"
-    puts "Regression test PASSED"
   end
 
   desc <<~DESC
