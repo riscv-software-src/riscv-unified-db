@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: c.sdsp
+long_name: Stack-pointer based store doubleword from even/odd register pair
+description: |
+  Stores a stack-pointer relative 64-bit value from registers rs2 and rs2+1. It computes an effective
+  address by adding the zero-extended offset, scaled by 8, to the stack pointer, sp. It expands to sd
+  `sd rs2, offset(sp)`.
+definedBy: Zclsd
+assembly: rs2, offset(sp)
+encoding:
+  match: 111-----------10
+  variables:
+    - name: rs2
+      location: 6-2
+    - name: imm
+      location: 9-7|12-10
+      left_shift: 3
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+
+  Bits<XLEN> base = X[2];
+  Bits<XLEN> offset = imm;
+  Bits<XLEN> eff_addr = base + offset;
+
+  Bits<64> data = {X[rs2+1], X[rs2]};
+
+  write_memory<64>(eff_addr, data, $encoding);
+sail(): "" #not implemented in the sail model yet

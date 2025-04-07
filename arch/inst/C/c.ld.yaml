@@ -9,11 +9,12 @@ description: |
   It computes an effective address by adding the zero-extended offset, scaled by 8,
   to the base address in register rs1.
   It expands to `ld` `rd, offset(rs1)`.
+  For RV32, if the Zclsd extension is enabled, this instruction loads a 64-bit value into registers xd and xd+1. It computes an effective address by adding the zero-extended imm, scaled by 8, to the base address in register xs1.
 definedBy:
   anyOf:
     - C
     - Zca
-base: 64
+    - Zclsd
 assembly: xd, imm(xs1)
 encoding:
   match: 011-----------00
@@ -32,13 +33,20 @@ access:
   vu: always
 operation(): |
   if (implemented?(ExtensionName::C) && (CSR[misa].C == 1'b0)) {
-    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg virtual_address = X[rs1] + imm;
-
-  X[rd] = sext(read_memory<64>(virtual_address, $encoding), 64);
-
+  if (XLEN == 32) {
+      if (implemented?(ExtensionName::Zclsd)) {
+          X[rd] = sext(read_memory<64>(X[rs1] + imm, $encoding), 64);
+          X[rd + 1] = sext(read_memory<64>(X[rs1] + imm + 8, $encoding), 64);
+      } else {
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+  } else {
+      XReg virtual_address = X[rs1] + imm;
+      X[rd] = sext(read_memory<64>(virtual_address, $encoding), 64);
+  }
 sail(): |
   {
     let offset : xlenbits = sign_extend(imm);

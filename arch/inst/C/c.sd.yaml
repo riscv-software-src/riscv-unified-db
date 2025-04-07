@@ -13,6 +13,7 @@ definedBy:
   anyOf:
     - C
     - Zca
+    - Zclsd
 base: 64
 assembly: xs2, imm(xs1)
 encoding:
@@ -32,9 +33,22 @@ access:
   vu: always
 operation(): |
   if (implemented?(ExtensionName::C) && (CSR[misa].C == 1'b0)) {
-    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
   XReg virtual_address = X[rs1] + imm;
 
-  write_memory<64>(virtual_address, X[rs2], $encoding);
+  if (XLEN == 32) {
+      if (implemented?(ExtensionName::Zclsd)) {
+          if (rs2 % 2 != 0) {
+              raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+          }
+
+          Bits<64> data = {X[rs2+1], X[rs2]};
+          write_memory<64>(virtual_address, data, $encoding);
+      } else {
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+  } else {
+      write_memory<64>(virtual_address, X[rs2], $encoding);
+  }
