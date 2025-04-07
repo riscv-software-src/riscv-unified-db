@@ -219,4 +219,3 @@ jobs:
         run: ./bin/build_container
       - name: Generate Go code
         run: ./do gen:go
-        
