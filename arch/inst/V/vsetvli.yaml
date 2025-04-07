@@ -38,7 +38,7 @@ operation(): |
   }
 
   CSR[vtype] = zimm11;
-  X[rd] = CSR[vl];
+  X[rd] = CSR[vl].VALUE;
   CSR[vstart].VALUE = 0;
 sail(): |
   {
