@@ -449,7 +449,7 @@ namespace :test do
     Generally, this tries to build all artifacts
   DESC
   task :nightly do
-    Rake::Task["regress"].invoke
+    Rake::Task["test:regress"].invoke
     Rake::Task["portfolios"].invoke
     puts
     puts "Nightly regression test PASSED"
