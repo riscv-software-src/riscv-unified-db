@@ -33,8 +33,13 @@ operation(): |
     eei_ebreak();
   }
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     handle_mem_exception(PC, E_Breakpoint());
     RETIRE_FAIL
   }
+
+# SPDX-SnippetEnd
