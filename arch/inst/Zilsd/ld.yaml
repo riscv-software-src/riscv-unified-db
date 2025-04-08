@@ -36,3 +36,5 @@ operation(): |
     X[rd] = data[31:0];
     X[rd+1] = data[63:32];
   }
+
+sail(): | #not implemented in the sail model yet

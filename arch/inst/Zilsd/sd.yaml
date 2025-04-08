@@ -35,3 +35,5 @@ operation(): |
   Bits<64> store_data = {upper_word, lower_word};
 
   write_memory<64>(eff_addr, store_data, $encoding);
+
+sail(): | #not implemented in the sail model yet
