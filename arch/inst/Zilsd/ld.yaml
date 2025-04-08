@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: ld
+long_name: Load doubleword to even/odd register pair
+description: |
+  Loads a 64-bit value into registers rd and rd+1. The effective address is obtained by adding
+  register rs1 to the sign-extended 12-bit offset.
+definedBy:
+  anyOf: [Zilsd]
+assembly: ld rd, offset(rs1)
+encoding:
+  match: -----------------011-----0000011
+  variables:
+    - name: rd
+      location: 11-7
+    - name: rs1
+      location: 19-15
+    - name: imm
+      location: 31-20
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+
+operation(): |
+  Bits<XLEN> base = X[rs1];
+  Bits<XLEN> offset = $signed(imm);
+  Bits<XLEN> eff_addr = base + offset;
+
+  Bits<64> data = read_memory<64>(eff_addr, $encoding);
+
+  if (rd % 2 == 0 && rd < 31) {
+    X[rd] = data[31:0];
+    X[rd+1] = data[63:32];
+  }
