@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # deploy artifacts to a directory, in preparation for GitHub deployment
 
-ROOT=$(dirname $(dirname $(realpath $BASH_SOURCE[0])))
+ROOT=$(dirname $(dirname $(realpath ${BASH_SOURCE[0]})))
 
 DEPLOY_DIR="$ROOT/_site"
 PAGES_URL="https://riscv-software-src.github.io/riscv-unified-db"
