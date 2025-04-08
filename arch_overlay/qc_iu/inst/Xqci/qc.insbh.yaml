@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.insbh
+long_name: Insert bits in 64-bit higher part (Register)
+description: |
+  Insertion of a subset of bits from `rs1` into `rd`.
+  Instruction intended for insertion bits into bitfield within 64-bits,
+  when bitfield crosses 32-bit bundary.
+  Lower part of 64-bit destination is inserted using QC32.INSB,
+  higher part using QC32.INSBH.
+  The width of the subset is determined by (`width_minus1` + 1) (1..32),
+  and the offset of the subset is determined by `shamt`.
+  In case when width + offset < 33, the destination register is left unchanged.
+  Instruction encoded in I instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqcibm
+base: 32
+encoding:
+  match: 10---------------001-----0001011
+  variables:
+    - name: width_minus1
+      location: 29-25
+    - name: shamt
+      location: 24-20
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
+      not: 0
+assembly: " xd, xs1, width, shamt"
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  XReg width = width_minus1 + 1;
+  if (width + shamt > 32) {
+    XReg shifted_one = 1 << (width + shamt - 32);
+    XReg mask = (shifted_one - 1);
+    XReg orig_val = X[rd];
+    XReg shifted_rs1 = X[rs1] >> (32 - shamt);
+    X[rd] = (orig_val & ~mask) | (shifted_rs1 & mask);
+  }
