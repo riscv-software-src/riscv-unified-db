@@ -41,6 +41,5 @@ operation(): |
     X[rd] = csr_sw_read(csr_addr);
   }
   # writes the zero-extended immediate to the CSR,
-  # performing any WARL transformations
-  # first
+  # performing any WARL transformations first
   csr_sw_write(csr, {{XLEN-5{1'b0}}, imm});
