@@ -7,7 +7,7 @@ kind: csr
 name: hpmcounter12h
 long_name: User-mode Hardware Performance Counter 9, high half
 address: 0xC8C
-writeable: false
+base: 32
 description: |
   Alias for M-mode CSR `mhpmcounter12h`.
 
@@ -31,7 +31,7 @@ definedBy: Sscofpmf
 fields:
   COUNT:
     location: 31-0
-    alias: mhpmcounter12h
+    alias: mhpmcounter12h.COUNT[63:32]
     description: Alias of `mhpmcounter12h.COUNT`.
     type: RO-H
     reset_value: UNDEFINED_LEGAL

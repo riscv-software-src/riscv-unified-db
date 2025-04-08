@@ -7,7 +7,6 @@ kind: csr
 name: pmpaddr53
 long_name: PMP Address 53
 address: 0x3E5
-writeable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry address

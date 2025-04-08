@@ -31,7 +31,7 @@ definedBy: Sscofpmf
 fields:
   COUNT:
     location: 31-0
-    alias: mhpmcounter<%= hpm_num %>h
+    alias: mhpmcounter<%= hpm_num %>h.COUNT[63:32]
     description: Alias of `mhpmcounter<%= hpm_num %>h.COUNT`.
     type: RO-H
     reset_value: UNDEFINED_LEGAL

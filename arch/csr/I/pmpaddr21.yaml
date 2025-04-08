@@ -7,7 +7,6 @@ kind: csr
 name: pmpaddr21
 long_name: PMP Address 21
 address: 0x3C5
-writeable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry address

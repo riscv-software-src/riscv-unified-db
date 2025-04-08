@@ -7,7 +7,6 @@ kind: csr
 name: pmpaddr43
 long_name: PMP Address 43
 address: 0x3DB
-writeable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry address

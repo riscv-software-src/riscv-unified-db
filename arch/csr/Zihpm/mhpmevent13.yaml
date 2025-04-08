@@ -7,7 +7,6 @@ kind: csr
 name: mhpmevent13
 long_name: Machine Hardware Performance Counter 13 Control
 address: 0x32D
-writeable: true
 priv_mode: M
 length: 64
 description: |
@@ -43,9 +42,7 @@ fields:
     definedBy: Sscofpmf
   MINH:
     location: 62
-    description:
-      When set, mhpmcounter13 does not increment while the hart in operating
-      in M-mode.
+    description: When set, mhpmcounter13 does not increment while the hart in operating in M-mode.
     type(): |
       if (HPM_COUNTER_EN[13]) {
         return CsrFieldType::RW;
@@ -61,9 +58,7 @@ fields:
     definedBy: Sscofpmf
   SINH:
     location: 61
-    description:
-      When set, mhpmcounter13 does not increment while the hart in operating
-      in (H)S-mode.
+    description: When set, mhpmcounter13 does not increment while the hart in operating in (H)S-mode.
     type(): |
       if (HPM_COUNTER_EN[13] && implemented?(ExtensionName::S) && (CSR[misa].S == 1'b1)) {
         return CsrFieldType::RW;
@@ -79,9 +74,7 @@ fields:
     definedBy: Sscofpmf
   UINH:
     location: 60
-    description:
-      When set, mhpmcounter13 does not increment while the hart in operating
-      in U-mode.
+    description: When set, mhpmcounter13 does not increment while the hart in operating in U-mode.
     type(): |
       if (HPM_COUNTER_EN[13] && implemented?(ExtensionName::U) && (CSR[misa].U == 1'b1)) {
         return CsrFieldType::RW;
@@ -97,9 +90,7 @@ fields:
     definedBy: Sscofpmf
   VSINH:
     location: 59
-    description:
-      When set, mhpmcounter13 does not increment while the hart in operating
-      in VS-mode.
+    description: When set, mhpmcounter13 does not increment while the hart in operating in VS-mode.
     type(): |
       if ((HPM_COUNTER_EN[13]) && implemented?(ExtensionName::H) && (CSR[misa].H == 1'b1)) {
         return CsrFieldType::RW;
@@ -115,9 +106,7 @@ fields:
     definedBy: Sscofpmf
   VUINH:
     location: 58
-    description:
-      When set, mhpmcounter13 does not increment while the hart in operating
-      in VU-mode.
+    description: When set, mhpmcounter13 does not increment while the hart in operating in VU-mode.
     type(): |
       if (HPM_COUNTER_EN[13] && implemented?(ExtensionName::H) && (CSR[misa].H == 1'b1)) {
         return CsrFieldType::RW;

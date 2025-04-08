@@ -7,7 +7,6 @@ kind: csr
 name: pmpcfg14
 long_name: PMP Configuration Register 14
 address: 0x3AE
-writeable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry configuration

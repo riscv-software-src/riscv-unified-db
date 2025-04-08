@@ -7,7 +7,6 @@ kind: csr
 name: mhpmcounter28h
 long_name: Machine Hardware Performance Counter 28, Upper half
 address: 0xB9C
-writeable: true
 priv_mode: M
 length: 32
 base: 32

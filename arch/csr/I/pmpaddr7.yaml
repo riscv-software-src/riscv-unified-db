@@ -7,7 +7,6 @@ kind: csr
 name: pmpaddr7
 long_name: PMP Address 7
 address: 0x3B7
-writeable: true
 priv_mode: M
 length: MXLEN
 description: PMP entry address
