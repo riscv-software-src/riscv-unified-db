@@ -151,6 +151,9 @@ operation(): |
   Boolean success = store_conditional<64>(virtual_address, value, aq, rl, $encoding);
   X[rd] = success ? 0 : 1;
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     if speculate_conditional () == false then {
@@ -227,3 +230,5 @@ sail(): |
       }
     }
   }
+
+# SPDX-SnippetEnd
