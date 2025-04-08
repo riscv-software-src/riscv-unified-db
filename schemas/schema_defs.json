@@ -17,6 +17,11 @@
       "type": "string",
       "pattern": "^[0-9]+(\\.[0-9]+(\\.[0-9]+(-pre)?)?)?$"
     },
+    "csr_name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.]+$",
+      "description": "CSR name"
+    },
     "field_location": {
       "oneOf": [
         { "type": "number", "description": "Location of a single bit" },

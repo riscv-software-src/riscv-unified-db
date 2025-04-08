@@ -73,14 +73,12 @@
         "alias": {
           "oneOf": [
             {
-              "type": "string",
-              "pattern": "^[a-z][a-z0-9]+\\.[A-Z0-9]+(\\[[0-9]+(:[0-9]+)?\\])?$"
+              "$ref": "schema_defs.json#/$defs/csr_name"
             },
             {
               "type": "array",
               "items": {
-                "type": "string",
-                "pattern": "^[a-z][a-z0-9]+\\.[A-Z0-9]+(\\[[0-9]+(:[0-9]+)?\\])?$"
+                "$ref": "schema_defs.json#/$defs/csr_name"
               }
             }
           ],
@@ -188,9 +186,7 @@
           "description": "Object type"
         },
         "name": {
-          "type": "string",
-          "pattern": "^[a-z][a-z0-9_.]+$",
-          "description": "CSR name"
+          "$ref": "schema_defs.json#/$defs/csr_name"
         },
         "base": {
           "type": "integer",
