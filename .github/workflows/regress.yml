@@ -25,13 +25,15 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup apptainer
         uses: eWaterCycle/setup-apptainer@v2.0.0
-      - name: Get container from cache
+      - &sif-container-from-cache
+        name: Get container from cache
         id: cache-sif
         uses: actions/cache@v4
         with:
           path: .singularity/image.sif
           key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
-      - name: Get gems and node files from cache
+      - &gems-and-node-from-cache
+        name: Get gems and node files from cache
         id: cache-bundle-npm
         uses: actions/cache@v4
         with:
@@ -39,9 +41,13 @@ jobs:
             .home/.gems
             node_modules
           key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
-      - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
+      - &build-cache-if-miss
+        if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
         name: Build container
         run: ./bin/build_container
+      - *sif-container-from-cache
+      - *gems-and-node-from-cache
+      - *build-cache-if-miss
       - name: Setup project
         run: ./bin/setup
       - name: Run smoke
@@ -85,23 +91,9 @@ jobs:
               uses: actions/checkout@v4
             - name: Setup apptainer
               uses: eWaterCycle/setup-apptainer@v2.0.0
-            - name: Get container from cache
-              id: cache-sif
-              uses: actions/cache@v4
-              with:
-                path: .singularity/image.sif
-                key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
-            - name: Get gems and node files from cache
-              id: cache-bundle-npm
-              uses: actions/cache@v4
-              with:
-                path: |
-                  .home/.gems
-                  node_modules
-                key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
-            - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
-              name: Build container
-              run: ./bin/build_container
+            - *sif-container-from-cache
+            - *gems-and-node-from-cache
+            - *build-cache-if-miss
             - name: Generate instruction appendix
               run: ./do gen:instruction_appendix
   regress-cfg-manual:
