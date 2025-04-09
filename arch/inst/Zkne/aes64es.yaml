@@ -2,15 +2,15 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: packh
+name: aes64es
 long_name: No synopsis available.
 description: |
   No description available.
-definedBy:
-  anyOf: [Zbkb, Zk, Zkn, Zks]
+definedBy: Zkne
+base: 64
 assembly: xd, xs1, xs2
 encoding:
-  match: 0000100----------111-----0110011
+  match: 0011001----------000-----0110011
   variables:
     - name: rs2
       location: 24-20

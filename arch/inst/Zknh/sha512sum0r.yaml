@@ -2,16 +2,15 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: packw
+name: sha512sum0r
 long_name: No synopsis available.
 description: |
   No description available.
-definedBy:
-  anyOf: [Zbkb, Zk, Zkn, Zks]
-base: 64
+definedBy: Zknh
+base: 32
 assembly: xd, xs1, xs2
 encoding:
-  match: 0000100----------100-----0111011
+  match: 0101000----------000-----0110011
   variables:
     - name: rs2
       location: 24-20
@@ -25,7 +24,4 @@ access:
   vs: always
   vu: always
 data_independent_timing: true
-pseudoinstructions:
-  - when: (rs2 == 0x0)
-    to: zext.h
 operation(): |

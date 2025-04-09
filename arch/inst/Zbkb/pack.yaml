@@ -2,16 +2,17 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: sha256sig1
+name: pack
 long_name: No synopsis available.
 description: |
   No description available.
-definedBy:
-  anyOf: [Zk, Zkn, Zknh]
-assembly: xd, xs1
+definedBy: Zbkb
+assembly: xd, xs1, xs2
 encoding:
-  match: 000100000011-----001-----0010011
+  match: 0000100----------100-----0110011
   variables:
+    - name: rs2
+      location: 24-20
     - name: rs1
       location: 19-15
     - name: rd
@@ -22,4 +23,7 @@ access:
   vs: always
   vu: always
 data_independent_timing: true
+pseudoinstructions:
+  - when: (rs2 == 0) && (xlen() == 32)
+    to: zext.h xd, xs1
 operation(): |
