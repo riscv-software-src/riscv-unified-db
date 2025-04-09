@@ -22,7 +22,8 @@ module Idl
     QUALIFIERS = [
       :const,
       :signed,
-      :global
+      :global,
+      :template_var
     ].freeze
 
     # true for any type that can generally be treated as a scalar integer
@@ -392,6 +393,10 @@ module Idl
 
     def global?
       @qualifiers.include?(:global)
+    end
+
+    def template_var?
+      @qualifiers.include?(:template_var)
     end
 
     def make_signed

@@ -33,6 +33,10 @@ class Csr < DatabaseObject
     @data["virtual_address"]
   end
 
+  def writable
+    @data["writeable"]
+  end
+
   # @return [Integer] 32 or 64, the XLEN this CSR is exclusively defined in
   # @return [nil] if this CSR is defined in all bases
   def base = @data["base"]

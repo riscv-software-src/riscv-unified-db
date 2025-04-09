@@ -158,10 +158,10 @@ class Instruction < DatabaseObject
     else
       # RubyProf.start
       ast = type_checked_operation_ast(effective_xlen)
-      print "Determining reachable funcs from #{name} (#{effective_xlen})..."
+      # print "Determining reachable funcs from #{name} (#{effective_xlen})..."
       symtab = fill_symtab(effective_xlen, ast)
       fns = ast.reachable_functions(symtab)
-      puts "done"
+      # puts "done"
       # result = RubyProf.stop
       # RubyProf::FlatPrinter.new(result).print($stdout)
       # exit

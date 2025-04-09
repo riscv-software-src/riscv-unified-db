@@ -5,6 +5,7 @@ kind: csr
 name: vstval
 long_name: Virtual supervisor Trap Value
 address: 0x243
+writeable: true
 virtual_address: 0x143
 description: Holds trap-specific information
 priv_mode: S

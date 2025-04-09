@@ -5,6 +5,7 @@ kind: csr
 name: mie
 long_name: Machine Interrupt Enable
 address: 0x304
+writeable: true
 priv_mode: M
 length: MXLEN
 definedBy: Sm
