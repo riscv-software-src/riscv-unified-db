@@ -2,19 +2,19 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: sha512sig0l
+name: aes64ks1i
 long_name: No synopsis available.
 description: |
   No description available.
 definedBy:
-  anyOf: [Zk, Zkn, Zknh]
-base: 32
-assembly: xd, xs1, xs2
+  anyOf: [Zknd, Zkne]
+base: 64
+assembly: xd, xs1, rnum
 encoding:
-  match: 0101010----------000-----0110011
+  match: 00110001---------001-----0010011
   variables:
-    - name: rs2
-      location: 24-20
+    - name: rnum
+      location: 23-20
     - name: rs1
       location: 19-15
     - name: rd

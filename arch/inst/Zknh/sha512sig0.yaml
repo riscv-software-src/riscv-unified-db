@@ -6,8 +6,7 @@ name: sha512sig0
 long_name: No synopsis available.
 description: |
   No description available.
-definedBy:
-  anyOf: [Zk, Zkn, Zknh]
+definedBy: Zknh
 base: 64
 assembly: xd, xs1
 encoding:

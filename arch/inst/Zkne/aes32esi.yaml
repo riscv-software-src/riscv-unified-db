@@ -2,16 +2,15 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: aes32esmi
+name: aes32esi
 long_name: No synopsis available.
 description: |
   No description available.
-definedBy:
-  anyOf: [Zk, Zkn, Zkne]
+definedBy: Zkne
 base: 32
 assembly: xd, xs1, xs2, bs
 encoding:
-  match: --10011----------000-----0110011
+  match: --10001----------000-----0110011
   variables:
     - name: bs
       location: 31-30

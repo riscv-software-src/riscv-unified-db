@@ -2,16 +2,14 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: sha512sig1l
+name: packh
 long_name: No synopsis available.
 description: |
   No description available.
-definedBy:
-  anyOf: [Zk, Zkn, Zknh]
-base: 32
+definedBy: Zbkb
 assembly: xd, xs1, xs2
 encoding:
-  match: 0101011----------000-----0110011
+  match: 0000100----------111-----0110011
   variables:
     - name: rs2
       location: 24-20
