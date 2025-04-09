@@ -6,8 +6,7 @@ name: vandn.vx
 long_name: No synopsis available.
 description: |
   No description available.
-definedBy:
-  anyOf: [Zvbb, Zvkn, Zvks]
+definedBy: Zvbb
 assembly: vm, vs2, xs1, vd
 encoding:
   match: 000001-----------100-----1010111

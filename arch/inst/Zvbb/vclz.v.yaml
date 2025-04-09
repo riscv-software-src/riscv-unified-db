@@ -6,8 +6,7 @@ name: vclz.v
 long_name: No synopsis available.
 description: |
   No description available.
-definedBy:
-  anyOf: [Zvbb, Zvkn, Zvks]
+definedBy: Zvbb
 assembly: vm, vs2, vd
 encoding:
   match: 010010------01100010-----1010111
