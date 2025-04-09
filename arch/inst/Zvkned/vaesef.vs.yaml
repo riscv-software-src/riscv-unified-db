@@ -2,15 +2,14 @@
 
 $schema: "inst_schema.json#"
 kind: instruction
-name: vaesz.vs
-long_name: Vector AES round zero
+name: vaesef.vs
+long_name: No synopsis available.
 description: |
   No description available.
-definedBy:
-  anyOf: [Zvkn, Zvkned]
+definedBy: Zvkned
 assembly: vs2, vd
 encoding:
-  match: 1010011-----00111010-----1110111
+  match: 1010011-----00011010-----1110111
   variables:
     - name: vs2
       location: 24-20
