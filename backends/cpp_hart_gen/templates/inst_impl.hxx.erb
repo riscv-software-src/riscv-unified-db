@@ -1,0 +1,13 @@
+#pragma once
+
+#include "udb/soc_model.hpp"
+
+<%- ilist = cfg_arch.possible_instructions -%>
+
+<%- ilist.each do |inst| -%>
+template <unsigned XLEN, udb::SocModel SocType>
+void udb::<%= name_of(:inst, cfg_arch, inst.name) %><XLEN, SocType>::operator delete(void* ptr) {
+  <%= name_of(:hart, cfg_arch) %><SocType>::inst_allocator.free(reinterpret_cast<udb::InstBase*>(ptr));
+}
+
+<%- end -%>

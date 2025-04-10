@@ -6,19 +6,35 @@ WORKDIR /workspace
 
 RUN export DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
-RUN apt-get install -y --no-install-recommends git gh
-RUN apt-get install -y --no-install-recommends less
-RUN apt-get install -y --no-install-recommends python3
-RUN apt-get install -y --no-install-recommends python3.12-venv
-RUN apt-get install -y --no-install-recommends python3-pip
-RUN apt-get install -y --no-install-recommends build-essential
-RUN apt-get install -y --no-install-recommends ruby
-RUN apt-get install -y --no-install-recommends ruby-dev
-RUN apt-get install -y --no-install-recommends bundler
-RUN apt-get install -y --no-install-recommends nodejs
-RUN apt-get install -y --no-install-recommends npm
-RUN apt-get install -y --no-install-recommends ditaa
-RUN apt-get install -y --no-install-recommends libyaml-dev
+
+# please keep pkgs sorted
+RUN apt-get install -y --no-install-recommends \
+    build-essential \
+    bundler \
+    clang-format \
+    clang-tidy \
+    cmake \
+    ditaa \
+    g++ \
+    gcc-riscv64-linux-gnu \
+    gcc-riscv64-unknown-elf \
+    gdb \
+    gh \
+    git \
+    less \
+    libc6-dev-riscv64-cross \
+    libelf-dev \
+    libgmp-dev \
+    libyaml-dev \
+    nodejs \
+    npm \
+    python3 \
+    python3-pip \
+    python3.12-venv \
+    ruby \
+    ruby-dev \
+    shellcheck
+
 RUN apt-get clean autoclean
 RUN apt-get autoremove -y
 RUN rm -rf /var/lib/{apt,dpkg,cache,log}/*

@@ -11,16 +11,24 @@ definedBy:
   anyOf:
     - C
     - Zca
-base: 64
 assembly: xd, shamt
 encoding:
-  match: 000-----------10
-  variables:
-    - name: shamt
-      location: 12|6-2
-    - name: rd
-      location: 11-7
-      not: 0
+  RV32:
+    match: 0000----------10
+    variables:
+      - name: shamt
+        location: 6-2
+        not: 0
+      - name: rd
+        location: 11-7
+  RV64:
+    match: 000-----------10
+    variables:
+      - name: shamt
+        location: 12|6-2
+        not: 0
+      - name: rd
+        location: 11-7
 access:
   s: always
   u: always
@@ -30,6 +38,9 @@ operation(): |
   # shamt is between 0-63
   X[rd] = X[rd] << shamt;
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rd_val = X(rd);
@@ -48,3 +59,5 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

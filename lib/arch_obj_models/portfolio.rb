@@ -249,13 +249,11 @@ class Portfolio < DatabaseObject
     }
 
     # TODO: Add list of prohibited_extensions
+    gen_dir = $root / "gen" / "cfgs"
+    FileUtils.mkdir_p gen_dir
+    File.write("#{gen_dir}/#{name}.yaml", YAML.safe_dump(config_data, permitted_classes: [Date]))
 
-    @generated_cfg_arch =
-      Dir.mktmpdir do |dir|
-        FileUtils.mkdir("#{dir}/#{name}")
-        File.write("#{dir}/#{name}/cfg.yaml", YAML.safe_dump(config_data, permitted_classes: [Date]))
-        @generated_cfg_arch = ConfiguredArchitecture.new(name, @arch.path, cfg_path: dir)
-      end
+    @generated_cfg_arch = ConfiguredArchitecture.new(name, @arch.path)
   end
 
   ###################################
@@ -417,27 +415,8 @@ class Portfolio < DatabaseObject
   def all_in_scope_exts_with_param(param)
     raise ArgumentError, "Expecting ExtensionParameter" unless param.is_a?(ExtensionParameter)
 
-    exts = []
-
     # Iterate through all the extensions in the architecture database that define this parameter.
-    param.exts.each do |ext|
-      found = false
-
-      in_scope_extensions.each do |in_scope_ext|
-        if ext.name == in_scope_ext.name
-          found = true
-          next
-        end
-      end
-
-      if found
-        # Only add extensions that exist in this portfolio.
-        exts << ext
-      end
-    end
-
-    # Return intersection of extension names
-    exts
+    param.exts.select { |ext| in_scope_extensions.include?(ext) }
   end
 
   # @return [Array<Extension>]

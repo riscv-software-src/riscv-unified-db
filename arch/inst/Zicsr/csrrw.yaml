@@ -19,9 +19,9 @@ encoding:
   variables:
     - name: csr
       location: 31-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -29,14 +29,21 @@ access:
   vs: always
   vu: always
 operation(): |
-  if (rd != 0) {
-    X[rd] = CSR[csr].sw_read();
+  check_csr(csr, true, $encoding);
+
+  Bits<XLEN> initial_value = X[xs1];
+
+  if (xd != 0) {
+    X[xd] = CSR[csr].sw_read();
   }
 
-  # writes the value in X[rs1] to the CSR,
+  # writes the value in X[xs1] to the CSR,
   # performing any WARL transformations first
-  CSR[csr].sw_write(X[rs1]);
+  CSR[csr].sw_write(initial_value);
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val : xlenbits = if is_imm then zero_extend(rs1) else X(rs1);
@@ -62,3 +69,5 @@ sail(): |
       RETIRE_SUCCESS
     }
   }
+
+# SPDX-SnippetEnd

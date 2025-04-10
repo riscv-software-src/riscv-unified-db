@@ -46,6 +46,9 @@ operation(): |
 
   X[rd] = (src1 * src2)[(XLEN*8'd2)-1:XLEN];
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     if extension("M") | haveZmmul() then {
@@ -64,3 +67,5 @@ sail(): |
       RETIRE_FAIL
     }
   }
+
+# SPDX-SnippetEnd

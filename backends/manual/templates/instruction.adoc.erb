@@ -15,11 +15,11 @@ This instruction is included in the following profiles:
 <%-
   in_profile_mandatory = profile.mandatory_ext_reqs.any? do |ext_req|
     ext_versions = ext_req.satisfying_versions
-    ext_versions.any? { |ext_ver| inst.defined_by?(ext_ver) }
+    ext_versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) }
   end
-  in_profile_optional = profile.optional_ext_reqs.any? do |ext_req|
+  in_profile_optional = !in_profile_mandatory && profile.optional_ext_reqs.any? do |ext_req|
     ext_versions = ext_req.satisfying_versions
-    ext_versions.any? { |ext_ver| inst.defined_by?(ext_ver) }
+    ext_versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) }
   end
   if in_profile_mandatory
 -%>
@@ -128,7 +128,7 @@ IDL::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.operation_ast(inst.cfg_arch.symtab).gen_adoc %>
+<%= inst.operation_ast.gen_adoc %>
 ----
 <%- end -%>
 
@@ -142,7 +142,7 @@ Sail::
 <%- end -%>
 ====
 
-<% exception_list = inst.reachable_exceptions_str(inst.cfg_arch.symtab, 64) -%>
+<% exception_list = inst.reachable_exceptions_str(64) -%>
 <%- unless exception_list.empty? -%>
 == Exceptions
 

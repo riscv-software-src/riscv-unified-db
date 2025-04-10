@@ -15,16 +15,12 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <%- end -%>
 h| Defining extension a| <%= csr.defined_by_condition.to_asciidoc %>
-<%- if csr.dynamic_length?(cfg_arch) -%>
-h| Length         | <%= csr.length_pretty(cfg_arch) %>
-<%- else -%>
-h| Length         | <%= csr.length_pretty(cfg_arch) %>
-<%- end -%>
+h| Length         | <%= csr.length_pretty() %>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===
 
 == Format
-<%- unless csr.dynamic_length?(cfg_arch) || csr.fields.any? { |f| f.dynamic_location?(cfg_arch) } -%>
+<%- unless csr.dynamic_length? || csr.fields.any? { |f| f.dynamic_location? } -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -57,29 +53,29 @@ This CSR format changes dynamically.
 |===
 |Name | Location | Type | Reset Value
 
-<%- csr.implemented_fields(cfg_arch).each do |field| -%>
+<%- csr.possible_fields.each do |field| -%>
 | `xref:<%=csr.name%>-<%=field.name%>-def[<%= field.name %>]`
-| <%= field.location_pretty(cfg_arch) %>
-| <%= field.type(cfg_arch.symtab) %>
-| <%= field.reset_value(cfg_arch) %>
+| <%= field.location_pretty(cfg_arch.multi_xlen? ? nil : cfg_arch.possible_xlens[0]) %>
+| <%= field.type_pretty(cfg_arch.multi_xlen? ? nil : cfg_arch.possible_xlens[0]) %>
+| <%= field.reset_value %>
 
 <%- end -%>
 |===
 
 == Fields
 
-<%- if csr.implemented_fields(cfg_arch).empty? -%>
+<%- if csr.possible_fields.empty? -%>
 This CSR has no fields. However, it must still exist (not cause an `Illegal Instruction` trap) and always return zero on a read.
 <%- else -%>
 
-<%- csr.implemented_fields(cfg_arch).each do |field| -%>
+<%- csr.possible_fields.each do |field| -%>
 [[<%=csr.name%>-<%=field.name%>-def]]
 === `<%= field.name %>`
 
 [.csr-field-info]
 --
 Location::
-`<%=field.csr.name%>[<%= field.location_pretty(cfg_arch) %>]`
+`<%=field.csr.name%>[<%= field.location_pretty %>]`
 
 Description::
 <%= cfg_arch.render_erb(field.description).gsub("\n\n", "\n+\n") %>
@@ -88,11 +84,11 @@ Type::
 [%autowidth]
 |===
 
-| <%= field.type(cfg_arch.symtab) %> | <%= field.type_desc(cfg_arch) %>
+| <%= field.type %> | <%= field.type_desc %>
 |===
 
 Reset value::
-<%= field.reset_value(cfg_arch) %>
+<%= field.reset_value %>
 
 <%- if field.has_custom_sw_write? -%>
 Software write::
@@ -107,20 +103,20 @@ RV32::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= field.pruned_sw_write_ast(cfg_arch, 32).gen_adoc %>
+<%= field.pruned_sw_write_ast(32).gen_adoc %>
 ----
 
 RV64::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= field.pruned_sw_write_ast(cfg_arch, 64).gen_adoc %>
+<%= field.pruned_sw_write_ast(64).gen_adoc %>
 ----
 <%- else -%>
 <%- xlen = !cfg_arch.multi_xlen? ? cfg_arch.mxlen : (!csr.defined_in_all_bases? ? csr.base : field.base) -%>
 [source,idl,subs="specialchars,macros"]
 ----
-<%= field.pruned_sw_write_ast(cfg_arch, xlen).gen_adoc %>
+<%= field.pruned_sw_write_ast(xlen).gen_adoc %>
 ----
 <%- end -%>
 <%- end -%>
@@ -141,14 +137,14 @@ Pruned::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= csr.pruned_sw_read_ast(cfg_arch).gen_adoc %>
+<%= csr.pruned_sw_read_ast(cfg_arch.multi_xlen? ? nil : cfg_arch.possible_xlens[0]).gen_adoc %>
 ----
 
 Original::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= csr.type_checked_sw_read_ast(cfg_arch.symtab).gen_adoc %>
+<%= csr.type_checked_sw_read_ast(cfg_arch.multi_xlen? ? nil : cfg_arch.possible_xlens[0]).gen_adoc %>
 ----
 ====
 <%- end -%>

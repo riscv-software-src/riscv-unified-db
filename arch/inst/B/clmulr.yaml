@@ -6,8 +6,7 @@ name: clmulr
 long_name: Carry-less multiply (reversed)
 description: |
   `clmulr` produces bits 2*XLEN-2:XLEN-1 of the 2*XLEN carry-less product
-definedBy:
-  anyOf: [B, Zbc]
+definedBy: Zbc
 assembly: xd, xs1, xs2
 access:
   s: always
@@ -40,6 +39,9 @@ operation(): |
 
   X[rd] = output;
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val = X(rs1);
@@ -50,3 +52,5 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

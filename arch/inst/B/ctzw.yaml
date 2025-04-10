@@ -33,6 +33,9 @@ operation(): |
 
   X[rd] = lowest_set_bit(X[rs1][31:0]);
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val = X(rs1);
@@ -45,3 +48,5 @@ sail(): |
     X(rd) = to_bits(sizeof(xlen), result);
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd
