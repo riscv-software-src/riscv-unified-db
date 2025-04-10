@@ -10,8 +10,6 @@
 .vscode/*
 !.vscode/launch.json
 .container-type
-diag-ditaa-*
-arch/manual/isa/**/riscv-isa-manual
 gen
 resolved_arch
 node_modules
