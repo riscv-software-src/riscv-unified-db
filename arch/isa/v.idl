@@ -1,0 +1,230 @@
+%version: 1.0
+
+# Enumeration for LMUL (Vector Register Group Multiplier)
+enum LMUL {
+    M1 1     # Single vector register group (Default)
+    M2 2     # Double vector register group
+    M4 4     # Quadruple vector register group
+    M8 8     # Octuple vector register group
+}
+
+enum Elen {
+    ELEN32 32  #Elective Element Width 32
+    ELEN64 64  #Elective Element Width 64
+}
+
+enum Vlen {
+    Vlen128 128  #vector Length 128
+    Vlen256 256  #vector Length 256
+}
+
+# Enumeration for SEW (Standard Element Width - Data type size per vector element)
+enum Sew {
+    Sew8 8    # 8-bit elements (1 byte per element)
+    Sew16 16  # 16-bit elements (2 bytes per element)
+    Sew32 32  # 32-bit elements (4 bytes per element - Common default)
+    Sew64 64  # 64-bit elements (8 bytes per element)
+}
+
+
+
+# Vector Configuration Structure
+struct VectorConfig {
+    U32 vl;                 # Current vector length
+    U32 vlmax;
+    U32 Vlen;
+    U32 Sew;                # Selected element width
+    Bits<8> lmul;                # Vector register group multiplier
+    Bits<8> mask_policy;         # 0: undisturbed, 1: agnostic
+}
+
+
+
+
+# Main Vector Arithmetic Operation
+function vectorArithmetic {
+    returns U32
+    arguments
+        U32 vs1,
+        U32 vs2,
+        U32 vs3,
+        Bits<8> opcode,
+        Bits<1> mask_bit,
+        Bits<1> mask_instr_bit25
+    description {
+        Executes vector arithmetic operations while handling LMUL-aware indexing,
+        mask/tail policies, and element-wise computations.
+    }
+    body {
+        VectorConfig cfg;
+        U32 result = perform_operation(vs1, vs2, opcode);
+        if (mask_instr_bit25 == 1) {  # Masking enabled
+            if (mask_bit==1) {  # Active element
+                return result;
+            } else {  # Masked element: apply mask policy
+                return handle_mask_policy(vs3, cfg);
+            }
+        } else {  # Masking disabled
+            return result;
+        }
+    }
+}
+
+# Performs the specified arithmetic operation between two vector elements
+function perform_operation {
+    returns U32
+    arguments
+        U32 vs1,
+        U32 vs2,
+        Bits<8> opcode
+    description {
+        Executes arithmetic operations based on the given opcode.
+    }
+    body {
+        if (opcode == 0) {  # vadd: Addition
+            return vs1 + vs2;
+        } else if (opcode == 2) {  # vsub: Subtraction
+            return vs2 - vs1;
+        } else {
+            # Handle other opcodes or return error value
+            return 0;
+        }
+    }
+}
+
+# Mask Policy Handling
+function handle_mask_policy {
+    returns U32
+    arguments
+        U32 original_value,
+        VectorConfig cfg
+    description {
+        Determines the value for masked elements based on mask policy.
+        Returns the original value if undisturbed, or all 1s if agnostic.
+    }
+    body {
+        if (cfg.mask_policy == 0) {  # Mask undisturbed
+            return original_value;
+        } else {  # Mask agnostic
+            return 0xFFFFFFFF;
+        }
+    }
+}
+
+# Tail Element Handling
+function handle_tail_elements {
+    returns U32
+    arguments
+        U32 original_value
+
+    description {
+        Determines the value for tail elements based on the selected tail policy.
+        Returns the original value if undisturbed, or all 1s if agnostic.
+    }
+    body {
+        Bits<1> TU = 0;
+        if (TU == 0) {  # Tail undisturbed
+            return original_value;
+        } else {  # Tail agnostic
+            return 0xFFFFFFFF;  # All 1s pattern
+        }
+    }
+}
+
+# perform operation on vector elements
+function process_vector_elements {
+    returns U32
+    arguments
+        U32 vs1_data,
+        U32 vs2_data,
+        U32 vs3_data,
+        Bits<1> vs0_mask_bit,
+        U32 encoding
+    description {
+        Executes element-wise vector arithmetic using input operands and configuration settings.
+        Incorporates masking logic and handles conditional execution based on mask bit 25.
+        Checks the tail policy and applies either tail-agnostic or tail-undisturbed behavior accordingly.
+        Returns the final processed 32-bit result after applying all vector rules.
+
+        Implements tail policy when storing values in vector registers.
+        Retains body Elements if within vector length (VL), otherwise applies tail policy.
+    }
+    body {
+
+        U32 vl=4;
+        U32 vlmax=4;
+        U32 result = vectorArithmetic(
+                vs1_data,
+                vs2_data,
+                vs3_data,
+                encoding[31:26],
+                vs0_mask_bit,
+                encoding[25]
+            );
+        if (vlmax > vl) {  # body elements
+            return result;
+        }else {  # Tail element
+            return handle_tail_elements(result);
+        }
+    }
+}
+
+function sew_selection {
+    returns U32
+    arguments
+        U32 vs1_data,
+        U32 vs2_data,
+        U32 vs3_data,
+        Bits<1> vs0_mask,
+        U32 encoding
+    description {
+        Determines the standard element width (SEW) and performs vector operations accordingly.
+        Based on SEW (32, 16, or 8 bits), splits the computation into appropriate element segments.
+        Calls the vector processing function for each segment and aggregates the results.
+        Returns the final result as a 32-bit value or a combination of smaller-width results.
+    }
+    body {
+
+        if ($bits(Sew::Sew32)==32){
+            U32 resultsew =  process_vector_elements(vs1_data, vs2_data, vs3_data, vs0_mask,encoding);
+            return resultsew;
+        }
+        else if ($bits(Sew::Sew32)==16){
+            Bits<16> resultsewa =  process_vector_elements(vs1_data, vs2_data, vs3_data, vs0_mask,encoding);
+            Bits<16> resultsewb =  process_vector_elements(vs1_data, vs2_data, vs3_data, vs0_mask,encoding);
+            return {resultsewa, resultsewb};
+        }
+        else if ($bits(Sew::Sew32)==8){
+            Bits<8> resultsewa =  process_vector_elements(vs1_data, vs2_data, vs3_data, vs0_mask,encoding);
+            Bits<8> resultsewb =  process_vector_elements(vs1_data, vs2_data, vs3_data, vs0_mask,encoding);
+            Bits<8> resultsewc =  process_vector_elements(vs1_data, vs2_data, vs3_data, vs0_mask,encoding);
+            Bits<8> resultsewd =  process_vector_elements(vs1_data, vs2_data, vs3_data, vs0_mask,encoding);
+            return {resultsewa, resultsewb, resultsewc, resultsewd};
+        }
+        else{
+            return resultsew;
+        }
+    }
+}
+
+
+
+function perform_arith {
+    returns U32
+    arguments
+        U32 vs1_data,
+        U32 vs2_data,
+        U32 vs3_data,
+        Bits<1> vs0_mask_bit,
+        U32 encoding
+    description {
+        Performs vector arithmetic based on input vector registers and mask.
+        Accepts three data vectors elements (vs1, vs2, vs3) and a mask vector (vs0).
+        The operation behavior is influenced by the mask instruction bit (bit 25).
+        Returns the result of element-wise vector processing as a 32-bit unsigned value.
+
+    }
+    body {
+        return sew_selection(vs1_data, vs2_data, vs3_data, vs0_mask_bit,encoding);
+    }
+}
