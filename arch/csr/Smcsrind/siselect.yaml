@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=../../../schemas/csr_schema.json
 $schema: csr_schema.json#
 kind: csr
@@ -10,24 +9,23 @@ length: SXLEN
 definedBy: Sscsrind
 description: |
   The `siselect` CSR is a supervisor-level register used to select which indirectly
-  accessed register is targeted via the `sireg*` alias CSRs. The `siselect` value acts
-  as an index into an extension-defined space of registers, enabling access to a wide
-  range of CSR-like state without consuming contiguous CSR numbers.
+  accessed register is targeted via the `sireg*` alias CSRs. The value in `siselect`
+  acts as an index into an extension-defined space of registers, allowing access to
+  a wide range of CSR-like state without allocating contiguous CSR numbers.
 
-  This mechanism allows software to efficiently access arrays of register state
-  through indexing, removing the need for large blocks of CSR address space and
-  reducing software complexity. The `siselect` CSR is typically used alongside
-  `sireg` through `sireg6` to access registers indirectly.
+  This indirect access mechanism enables software to efficiently access register arrays
+  without consuming large chunks of CSR address space. The `siselect` CSR works alongside
+  the `sireg*` alias CSRs to facilitate this indexing and indirect access method.
 
-  The minimum supported value range for `siselect` is 0–0xFFF. Future extensions may
-  define larger ranges. Values with the most significant bit set (bit SXLEN - 1 = 1)
-  are reserved for custom use, while those with the MSB cleared are designated for
-  standard usage and should only be used by ratified extensions.
+  The minimum supported value range for `siselect` is 0–0xFFF, though future extensions
+  may define larger ranges. Values with the most-significant bit set (bit SXLEN - 1 = 1)
+  are reserved for custom use, while values with the most-significant bit cleared are
+  designated for standard use by ratified extensions.
 
   When `siselect` holds a value that is not implemented, accesses to `sireg*` are
   UNSPECIFIED. It is RECOMMENDED that implementations raise an illegal instruction
-  exception in such cases to support emulation or error detection. Implementations
-  may make additional behaviors subject to platform or profile specifications.
+  exception in such cases to support emulation or error detection. Platforms or profiles
+  may define additional behaviors.
 
 fields:
   Select Value:
@@ -36,6 +34,6 @@ fields:
     type: RW
     description: |
       Index value selecting the target register accessed through `sireg*`.
-      Acts as an indirect register selector. Values are extension-defined.
+      It serves as an indirect register selector. Values are defined by the extension.
     reset_value: UNDEFINED_LEGAL
 sw_read(): |
