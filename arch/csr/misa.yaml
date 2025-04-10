@@ -155,19 +155,19 @@ fields:
       - id: csr.misa.M.muldiv_with_M_on&off
         description: Execute with M on/off
         normative_rules: [csr_field.misa.M.disabled]
-        steps:
-          - name: on
-            description: Turn on `misa.M`
-          - name: execute
-            description: Execute every in-scope multiply extension instruction
-          - name: check
-            description: Check that every multiply extension instruction works as normal
-          - name: off
-            description: Turn off `misa.M`
-          - name: execute
-            description: Execute every in-scope multiply extension instruction
-          - name: check
-            description: Check that every multiply extension instruction throws illegal instruction exception
+        steps: |
+          . on
+          .. Turn on `misa.M`
+          . execute
+          .. Execute every in-scope multiply extension instruction
+          . check
+          .. Check that every multiply extension instruction works as normal
+          . off
+          .. Turn off `misa.M`
+          . execute
+          .. Execute every in-scope multiply extension instruction
+          . check
+          .. Check that every multiply extension instruction throws illegal instruction exception
   S:
     location: 19
     description: |
