@@ -49,8 +49,6 @@ in_scope_priv_modes:
 
 extensions:
   $inherits:
-    - "profile/RVA23U64.yaml#/extensions"
-    - "profile/RVA23S64.yaml#/extensions"
     - "profile/RVA23M64.yaml#/extensions"
 requirement_groups:
   $inherits:

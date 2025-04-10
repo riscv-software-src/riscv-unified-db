@@ -36,7 +36,7 @@ access:
   vu: always
 data_independent_timing:
   true
-  # Want to add something like this to IDL code.
+  # Add the following when https://github.com/riscv-software-src/riscv-unified-db/issues/431 is resolved.
   # [#idl:code:inst:mul:exception-illegal_instruction]#
   # if (implemented?(ExtensionName::M) && (CSR[misa].M == 1'b0)) {
   #   raise (ExceptionCode::IllegalInstruction, mode(), $encoding);

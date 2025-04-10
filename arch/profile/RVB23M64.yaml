@@ -13,6 +13,9 @@ introduction: |
   The RVB23M64 profile is not a ratified profile by RISC-V International.
   It only exists here to support certificates based on RVB23 Profile Release having M-mode extensions.
 extensions:
+  $inherits:
+    - "profile/RVB23S64.yaml#/extensions"
+
   #########################################################################
   # MANDATORY extensions in RVB23 (and RVA23)
   #########################################################################
