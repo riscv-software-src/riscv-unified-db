@@ -1,74 +1,68 @@
----
 # yaml-language-server: $schema=../../../schemas/csr_schema.json
 $schema: csr_schema.json#
 kind: csr
 name: minstretcfg
-long_name: Machine Counter Configuration for Instret
+long_name: Machine Instructions-Retired Counter Configuration
 address: 0x322
 priv_mode: M
 length: 64
+base: 64
 definedBy: Smcntrpmf
 description: |
   The `minstretcfg` CSR is a 64-bit machine-level register that configures privilege
-  mode filtering for the `minstret` (retired instruction) counter. Each inhibit bit (xINH)
+  mode filtering for the `minstret` (Machine Instructions-Retired Counter). Each inhibit bit (xINH)
   disables counting of retired instructions in the associated privilege mode.
 
   Bits 62-58 correspond to the following privilege modes:
-    - MINH: M-mode
-    - SINH: S/HS-mode
-    - UINH: U-mode
-    - VSINH: VS-mode
-    - VUINH: VU-mode
+    - MINH: If set, then counting of events in M-mode is inhibited.
+    - SINH: If set, then counting of events in S/HS-mode is inhibited.
+    - UINH: If set, then counting of events in U-mode is inhibited.
+    - VSINH: If set, then counting of events in VS-mode is inhibited.
+    - VUINH: If set, then counting of events in VU-mode is inhibited.
 
-  If all inhibit bits are clear, instruction retirement is counted in all privilege modes.
-  Bits corresponding to unimplemented modes are read-only zero.
+  When all inhibit bits are clear, instruction retirement is counted in all privilege modes.
+  For each bit in 61:58, if the associated privilege mode is not implemented, the bit is read-only zero.
 
   Bit 63 (OF) is defined to always read as zero, indicating that the counter does not
   generate overflow interrupts.
 
   The lower 58 bits [57:0] are reserved (WPRI) and must be read as zero; writes are ignored.
 
-  For RV32 systems, the upper 32 bits of this CSR are accessible via `minstretcfgh` (0x722).
+  For RV32 systems, the upper 32 bits of `minstretcfg` are accessible via the `minstretcfgh` CSR (0x722).
+
 fields:
   MINH:
-    location_rv32: 62
-    location_rv64: 62
+    location: 62
     type: RW
-    description: Inhibits counting in M-mode when set.
-    reset_value: UNDEFINED_LEGAL
+    description: If set, then counting of events in M-mode is inhibited.
+    reset_value: 0
 
   SINH:
-    location_rv32: 61
-    location_rv64: 61
+    location: 61
     type: RW
-    description: Inhibits counting in S/HS-mode when set.
-    reset_value: UNDEFINED_LEGAL
+    description: If set, then counting of events in S/HS-mode is inhibited.
+    reset_value: 0
 
   UINH:
-    location_rv32: 60
-    location_rv64: 60
+    location: 60
     type: RW
-    description: Inhibits counting in U-mode when set.
-    reset_value: UNDEFINED_LEGAL
+    description: If set, then counting of events in U-mode is inhibited.
+    reset_value: 0
 
   VSINH:
-    location_rv32: 59
-    location_rv64: 59
+    location: 59
     type: RW
-    description: Inhibits counting in VS-mode when set.
-    reset_value: UNDEFINED_LEGAL
+    description: If set, then counting of events in VS-mode is inhibited.
+    reset_value: 0
 
   VUINH:
-    location_rv32: 58
-    location_rv64: 58
+    location: 58
     type: RW
-    description: Inhibits counting in VU-mode when set.
-    reset_value: UNDEFINED_LEGAL
+    description: If set, then counting of events in VU-mode is inhibited.
+    reset_value: 0
 
   WPRI:
-    location_rv32: 57-0
-    location_rv64: 57-0
+    location: 57-0
     type: RO
     description: Reserved. Reads as zero. Writes are ignored.
-    reset_value: UNDEFINED_LEGAL
-sw_read(): |
+    reset_value: 0

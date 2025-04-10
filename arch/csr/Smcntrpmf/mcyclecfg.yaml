@@ -1,77 +1,71 @@
----
 # yaml-language-server: $schema=../../../schemas/csr_schema.json
 $schema: csr_schema.json#
 kind: csr
 name: mcyclecfg
-long_name: Machine Counter Configuration for Cycle
+long_name: Machine Cycle Counter Configuration
 address: 0x321
 priv_mode: M
 length: 64
+base: 64
 definedBy: Smcntrpmf
 description: |
   The `mcyclecfg` CSR is a 64-bit machine-level register that configures privilege
-  mode filtering for the `mcycle` counter. Each inhibit bit (xINH) suppresses
-  counting of cycles in the corresponding privilege mode when set.
+  mode filtering for the cycle counter. Each inhibit bit (xINH) suppresses
+  counting of events in the corresponding privilege mode when set.
 
-  Bits 62-58 correspond to the following privilege modes:
-    - MINH: M-mode
-    - SINH: S/HS-mode
-    - UINH: U-mode
-    - VSINH: VS-mode
-    - VUINH: VU-mode
+  If set, then counting of events in M-mode is inhibited.
+  If set, then counting of events in S/HS-mode is inhibited.
+  If set, then counting of events in U-mode is inhibited.
+  If set, then counting of events in VS-mode is inhibited.
+  If set, then counting of events in VU-mode is inhibited.
 
-  When all inhibit bits are clear, counting occurs in all modes. For modes not implemented
-  by the current system, the corresponding inhibit bits are read-only zero.
+  When all xINH bits are zero, event counting is enabled in all modes.
 
-  Bit 63 (OF) is defined to always read as zero, as the `mcycle` counter does not support
-  overflow interrupts.
+  For each bit in 61:58, if the associated privilege mode is not implemented,
+  the bit is read-only zero.
 
-  The lower 58 bits [57:0] are reserved (WPRI). These bits read as zero and writes are ignored.
+  Bit 63 is read-only 0, since the cycle counter does not generate overflow
+  interrupts on overflow.
 
-  For RV32, the upper 32 bits of `mcyclecfg` are accessible via the `mcyclecfgh` CSR (0x721).
+  The lower 58 bits [57:0] are reserved (WPRI). These bits read as zero and
+  writes are ignored.
 
-  Note: Although CSR address 0x320 would have been a more natural choice, it is already
-  allocated to `mcountinhibit`.
+  For RV32, the upper 32 bits of `mcyclecfg` are accessible via the
+  `mcyclecfgh` CSR (0x721).
+
 fields:
   MINH:
-    location_rv32: 62
-    location_rv64: 62
+    location: 62
     type: RW
-    description: Inhibits counting in M-mode when set.
-    reset_value: UNDEFINED_LEGAL
+    description: If set, then counting of events in M-mode is inhibited.
+    reset_value: 0
 
   SINH:
-    location_rv32: 61
-    location_rv64: 61
+    location: 61
     type: RW
-    description: Inhibits counting in S/HS-mode when set.
-    reset_value: UNDEFINED_LEGAL
+    description: If set, then counting of events in S/HS-mode is inhibited.
+    reset_value: 0
 
   UINH:
-    location_rv32: 60
-    location_rv64: 60
+    location: 60
     type: RW
-    description: Inhibits counting in U-mode when set.
-    reset_value: UNDEFINED_LEGAL
+    description: If set, then counting of events in U-mode is inhibited.
+    reset_value: 0
 
   VSINH:
-    location_rv32: 59
-    location_rv64: 59
+    location: 59
     type: RW
-    description: Inhibits counting in VS-mode when set.
-    reset_value: UNDEFINED_LEGAL
+    description: If set, then counting of events in VS-mode is inhibited.
+    reset_value: 0
 
   VUINH:
-    location_rv32: 58
-    location_rv64: 58
+    location: 58
     type: RW
-    description: Inhibits counting in VU-mode when set.
-    reset_value: UNDEFINED_LEGAL
+    description: If set, then counting of events in VU-mode is inhibited.
+    reset_value: 0
 
   WPRI:
-    location_rv32: 57-0
-    location_rv64: 57-0
+    location: 57-0
     type: RO
     description: Reserved. Reads as zero. Writes are ignored.
-    reset_value: UNDEFINED_LEGAL
-sw_read(): |
+    reset_value: 0
