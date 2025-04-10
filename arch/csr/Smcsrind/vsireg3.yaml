@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=../../../schemas/csr_schema.json
 $schema: csr_schema.json#
 kind: csr
@@ -10,24 +9,25 @@ priv_mode: VS
 length: VSXLEN
 definedBy: Smcsrind
 description: |
-  The `vsireg3` CSR is part of the virtual supervisor-level indirect access
-  mechanism and serves as one of the alias registers indexed by the `vsiselect`
-  CSR.
+  The `vsireg3` CSR is a virtual supervisor-level alias register used to indirectly
+  access register state based on the value held in the `vsiselect` CSR. This CSR
+  forms part of the virtualized alias register space, enabling efficient access to
+  register arrays in VS-mode without consuming large contiguous CSR address ranges.
 
-  The indirect CSR access model enables software in VS-mode to interact with
-  register arrays using a select value, improving scalability and reducing CSR
-  address space consumption.
+  The value of `vsiselect` determines which register is accessed via `vsireg3`.
+  The `vsiselect` CSR acts as an index into the alias space, facilitating scalable
+  access to a range of registers.
 
-  When `vsiselect` holds an unimplemented value, accesses to `vsireg3` are
-  UNSPECIFIED, and it is recommended that implementations raise a virtual
-  instruction exception to facilitate software emulation or trap-based
-  handling.
+  If `vsiselect` holds a value that is not implemented, the behavior of `vsireg3`
+  is UNSPECIFIED. It is recommended that implementations raise a virtual instruction
+  exception in such cases to support debugging and software emulation.
 
 fields:
   Data:
     location_rv32: 31-0
     location_rv64: 63-0
     type: RW
-    description: Data read or written based on the `vsiselect` value.
+    description: |
+      The data read or written based on the currently selected `vsiselect` value.
     reset_value: UNDEFINED_LEGAL
 sw_read(): |

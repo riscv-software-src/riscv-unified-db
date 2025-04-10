@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=../../../schemas/csr_schema.json
 $schema: csr_schema.json#
 kind: csr
@@ -10,23 +9,21 @@ priv_mode: VS
 length: VSXLEN
 definedBy: Smcsrind
 description: |
-  The `vsireg5` CSR is an alias used in the virtual supervisor-level indirect
-  register access model. It provides indexed access to register state based on
-  the currently selected value in `vsiselect`.
+  The `vsireg5` CSR is part of the virtual supervisor-level indirect register access
+  mechanism, providing indexed access to register state based on the value held in the
+  `vsiselect` CSR. It enables software in VS-mode to access register arrays efficiently,
+  avoiding the need to allocate large, contiguous CSR address ranges.
 
-  This CSR, along with other `vsireg*` aliases, helps provide consistent access
-  patterns to extended register arrays while maintaining efficient usage of the
-  limited CSR address space.
-
-  If the selected `vsiselect` value is not implemented, behavior is
-  UNSPECIFIED, and it is recommended that a virtual instruction exception be
-  raised.
+  When the `vsiselect` value points to an unimplemented register, access to `vsireg5`
+  is UNSPECIFIED. Implementations are encouraged to raise a virtual instruction exception
+  to support software emulation or error handling.
 
 fields:
   Data:
     location_rv32: 31-0
     location_rv64: 63-0
     type: RW
-    description: Data read or written based on the `vsiselect` value.
+    description: |
+      The data read or written from the register selected by the value in `vsiselect`.
     reset_value: UNDEFINED_LEGAL
 sw_read(): |

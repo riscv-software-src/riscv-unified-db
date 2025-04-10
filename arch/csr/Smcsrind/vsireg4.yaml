@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=../../../schemas/csr_schema.json
 $schema: csr_schema.json#
 kind: csr
@@ -10,23 +9,25 @@ priv_mode: VS
 length: VSXLEN
 definedBy: Smcsrind
 description: |
-  The `vsireg4` CSR is a virtual supervisor-level alias register accessed
-  indirectly via the `vsiselect` CSR. It is part of a set of CSRs that form a
-  scalable mechanism for register array access without requiring dedicated
-  address space for each individual register.
+  The `vsireg4` CSR is a virtual supervisor-level alias register used for indirect
+  access to register state based on the value held in the `vsiselect` CSR. It is part of
+  a set of alias registers that allow efficient access to register arrays in VS-mode without
+  consuming large contiguous CSR address ranges.
 
-  In RV32 environments where a register may be 64-bit, `vsireg4` can be used
-  to access the upper 32 bits of a split register, in conjunction with other
-  alias CSRs such as `vsireg` or `vsireg2` for the lower bits.
+  In RV32 environments, where registers may be 64-bit, `vsireg4` is typically used to
+  access the upper 32 bits of a 64-bit register, in combination with other alias CSRs like
+  `vsireg` and `vsireg2`, which handle the lower 32 bits.
 
-  Accesses to `vsireg4` while `vsiselect` holds an unsupported value are
-  UNSPECIFIED and should raise a virtual instruction exception.
+  If the value in `vsiselect` is unsupported or unimplemented, access to `vsireg4` is
+  UNSPECIFIED. Implementations are encouraged to raise a virtual instruction exception to
+  facilitate debugging and software emulation.
 
 fields:
   Data:
     location_rv32: 31-0
     location_rv64: 63-0
     type: RW
-    description: Data read or written based on the `vsiselect` value.
+    description: |
+      Data read or written based on the currently selected `vsiselect` value.
     reset_value: UNDEFINED_LEGAL
 sw_read(): |

@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=../../../schemas/csr_schema.json
 $schema: csr_schema.json#
 kind: csr
@@ -10,34 +9,29 @@ priv_mode: VS
 length: VSXLEN
 definedBy: Smcsrind
 description: |
-  The `vsireg` CSR is a virtual supervisor-level alias register used to access
-  register state indirectly, based on the index specified in the `vsiselect` CSR.
-  This mechanism provides a scalable and efficient way to expose a large number
-  of virtual supervisor-level registers without consuming contiguous CSR address
-  space.
+  The `vsiselect` CSR is a virtual supervisor-level register that selects which
+  register is accessed indirectly via the `vsireg*` alias registers. The value
+  held in `vsiselect` acts as an index into an alias space defined by the
+  extension utilizing this access method.
 
-  The value held in `vsiselect` determines which internal register is accessed
-  via `vsireg`. This allows for software to access register arrays by index rather
-  than by fixed CSR numbers, enabling more compact and flexible register access
-  patterns.
+  This CSR allows software in VS-mode to access register arrays by index rather
+  than by fixed CSR numbers, improving scalability and reducing the need for large
+  contiguous CSR address space. The `vsiselect` CSR is typically used alongside
+  `vsireg` through `vsireg6` to access virtual supervisor-level registers indirectly.
 
-  When the value in `vsiselect` corresponds to a defined and implemented select
-  value, the behavior of read and write accesses to `vsireg` is defined by the
-  extension to which the `vsiselect` value is allocated. If the value in `vsiselect`
-  is not supported, the behavior is UNSPECIFIED; however, it is recommended that
-  implementations raise a virtual instruction exception to facilitate debugging
-  and enable software emulation.
+  When `vsiselect` holds a value that corresponds to an unimplemented register,
+  the behavior is UNSPECIFIED. Implementations are encouraged to raise a virtual
+  instruction exception to support software emulation and debugging.
 
-  This indirect access model helps virtual machines access CSR state without
-  direct mapping of each CSR, reducing implementation complexity and preserving
-  CSR encoding space.
+  The indirect access mechanism enables more flexible access patterns for virtual
+  machines and reduces the complexity of implementing CSR access.
+
 fields:
   Data:
     location_rv32: 31-0
     location_rv64: 63-0
     type: RW
     description: |
-      The data read from or written to the register selected by the current
-      `vsiselect` value.
+      The index value selecting the register accessed through the `vsireg*` alias registers.
     reset_value: UNDEFINED_LEGAL
 sw_read(): |
