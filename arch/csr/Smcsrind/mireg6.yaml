@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=../../../schemas/csr_schema.json
 $schema: csr_schema.json#
 kind: csr
@@ -9,20 +8,20 @@ priv_mode: M
 length: MXLEN
 definedBy: Smcsrind
 description: |
-  The `mireg6` CSR offers the final alias in the machine-level indirect access set, and is typically
-  used for the upper half of a 64-bit register accessed via `mireg3` in RV32 environments.
+  The `mireg6` CSR is a machine-level indirect alias register used to access
+  register state as determined by the value in `miselect`. This CSR provides
+  access to a range of registers indirectly without requiring dedicated CSR
+  numbers for each register.
 
-  This CSR expands support for multiple register arrays, enabling extensions to define complex
-  or high-bandwidth access patterns using a compact set of CSRs.
-
-  When `miselect` holds a value not allocated or implemented by an extension, access is
-  UNSPECIFIED and may raise an exception.
+  The behavior of `mireg6` is determined by the value of `miselect`. If the value
+  in `miselect` is not implemented, access is UNSPECIFIED, and implementations
+  are encouraged to raise an illegal instruction exception
 
 fields:
   Count:
     location_rv32: 31-0
     location_rv64: 63-0
     type: RW
-    description: Indirect register data selected by `miselect` value.
+    description: Register state data of CSR selected by `miselect` value.
     reset_value: UNDEFINED_LEGAL
 sw_read(): |
