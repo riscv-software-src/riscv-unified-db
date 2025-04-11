@@ -40,7 +40,7 @@ params:
       type: integer
       enum: [32, 64, 3264]
     extra_validation: |
-      assert UXLEN == 32 if XLEN == 32
+      assert UXLEN == 32 if MXLEN == 32
   TRAP_ON_ECALL_FROM_U:
     description: |
       Whether or not an ECALL-from-U-mode causes a synchronous exception.

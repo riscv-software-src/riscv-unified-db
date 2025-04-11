@@ -16,7 +16,7 @@ fields:
     description: XLEN in M-mode.
     type: RO
     reset_value(): |
-      return (XLEN == 32) ? 2'b01 : 2'b10;
+      return (MXLEN == 32) ? 2'b01 : 2'b10;
   A:
     location: 0
     description: |
