@@ -34,13 +34,14 @@ namespace :gen do
   end
 
   desc <<~DESC
-    Generate Spike encoding header from RISC-V instruction and CSR definitions
+    Generate C encoding header from RISC-V instruction and CSR definitions
+    This is used by Spike, ACTs and the Sail Model
 
     Options:
      * CONFIG - Configuration name (defaults to "_")
      * OUTPUT_DIR - Output directory for generated Spike headers (defaults to "#{$root}/gen/spike")
   DESC
-  task :spike => "#{$root}/gen/spike" do
+  task :c_header => "#{$root}/gen/spike" do
     config_name = ENV["CONFIG"] || "_"
     output_dir = ENV["OUTPUT_DIR"] || "#{$root}/gen/spike/"
 
