@@ -5,12 +5,12 @@ kind: instruction
 name: sltiu
 long_name: Set on less than immediate unsigned
 description: |
-  Places the value 1 in register `rd` if register `rs1` is less than the sign-extended immediate
+  Places the value 1 in register `xd` if register `xs1` is less than the sign-extended immediate
   when both are treated as unsigned numbers (_i.e._, the immediate is first sign-extended to
-  XLEN bits then treated as an unsigned number), else 0 is written to `rd`.
+  XLEN bits then treated as an unsigned number), else 0 is written to `xd`.
 
-  NOTE: `sltiu rd, rs1, 1` sets `rd` to 1 if `rs1` equals zero, otherwise sets `rd` to 0
-  (assembler pseudoinstruction `SEQZ rd, rs`).
+  NOTE: `sltiu xd, xs1, 1` sets `xd` to 1 if `xs1` equals zero, otherwise sets `xd` to 0
+  (assembler pseudoinstruction `SEQZ xd, rs`).
 definedBy: I
 assembly: xd, xs1, imm
 encoding:
@@ -18,9 +18,9 @@ encoding:
   variables:
     - name: imm
       location: 31-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -29,20 +29,26 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
-  X[rd] = (X[rs1] < imm) ? 1 : 0;
+  Bits<XLEN> sign_extend_imm = $signed(imm);
+  X[xd] = (X[xs1] < sign_extend_imm) ? 1 : 0;
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
-    let rs1_val = X(rs1);
+    let xs1_val = X(xs1);
     let immext : xlenbits = sign_extend(imm);
     let result : xlenbits = match op {
-      RISCV_ADDI  => rs1_val + immext,
-      RISCV_SLTI  => zero_extend(bool_to_bits(rs1_val <_s immext)),
-      RISCV_SLTIU => zero_extend(bool_to_bits(rs1_val <_u immext)),
-      RISCV_ANDI  => rs1_val & immext,
-      RISCV_ORI   => rs1_val | immext,
-      RISCV_XORI  => rs1_val ^ immext
+      RISCV_ADDI  => xs1_val + immext,
+      RISCV_SLTI  => zero_extend(bool_to_bits(xs1_val <_s immext)),
+      RISCV_SLTIU => zero_extend(bool_to_bits(xs1_val <_u immext)),
+      RISCV_ANDI  => xs1_val & immext,
+      RISCV_ORI   => xs1_val | immext,
+      RISCV_XORI  => xs1_val ^ immext
     };
-    X(rd) = result;
+    X(xd) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

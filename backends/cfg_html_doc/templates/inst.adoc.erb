@@ -15,7 +15,6 @@ This instruction is defined by:
 [NOTE]
 This instruction has different encodings in RV32 and RV64.
 
-[tabs]
 ====
 RV32::
 +
@@ -108,7 +107,7 @@ Pruned, XLEN == <%= effective_xlen %>::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.pruned_operation_ast(cfg_arch.symtab, effective_xlen).gen_adoc %>
+<%= inst.pruned_operation_ast(effective_xlen).gen_adoc %>
 ----
 <%- end -%>
 
@@ -116,12 +115,12 @@ Original::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.operation_ast(cfg_arch.idl_compiler).gen_adoc %>
+<%= inst.operation_ast().gen_adoc %>
 ----
 ====
 <%- end -%>
 
-<%- exception_list = inst.reachable_exceptions_str(cfg_arch.symtab) -%>
+<%- exception_list = inst.reachable_exceptions_str() -%>
 <%- unless exception_list.empty? -%>
 == Exceptions
 

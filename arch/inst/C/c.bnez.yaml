@@ -6,7 +6,7 @@ name: c.bnez
 long_name: Branch if NOT Equal Zero
 description: |
   C.BEQZ performs conditional control transfers. The offset is sign-extended and added to the pc to form the branch target address. It can therefore target a &pm;256 B range. C.BEQZ takes the branch if the value in register rs1' is NOT zero.
-  It expands to `beq` `rs1, x0, offset`.
+  It expands to `beq` `xs1, x0, offset`.
 definedBy:
   anyOf:
     - C
@@ -17,8 +17,8 @@ encoding:
   variables:
     - name: imm
       location: 12|6-5|2|11-10|4-3
-      left_shift: 0
-    - name: rs1
+      left_shift: 1
+    - name: xs1
       location: 9-7
 access:
   s: always
@@ -29,10 +29,13 @@ operation(): |
   if (implemented?(ExtensionName::C) && (CSR[misa].C == 1'b0)) {
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
-  if (X[rs1] != 0) {
-    jump($pc + imm);
+  if (X[creg2reg(xs1)] != 0) {
+    jump($pc + $signed(imm));
   }
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val = X(rs1);
@@ -65,3 +68,5 @@ sail(): |
       }
     } else RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

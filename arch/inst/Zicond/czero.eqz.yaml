@@ -3,9 +3,12 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: czero.eqz
-long_name: No synopsis available.
+long_name: Conditional zero, if condition is equal to zero.
 description: |
-  No description available.
+  If rs2 contains the value zero, this instruction writes the value zero to rd. Otherwise, this instruction
+  copies the contents of rs1 to rd.
+  This instruction carries a syntactic dependency from both rs1 and rs2 to rd. Furthermore, if the Zkt
+  extension is implemented, this instruction’s timing is independent of the data values in rs1 and rs2.
 definedBy: Zicond
 assembly: xd, xs1, xs2
 encoding:
@@ -24,13 +27,19 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
+  X[rd] = (X[rs2] == 0) ? 0 : X[rs1];
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let value = X(rs1);
     let condition = X(rs2);
-    let result : xlenbits = if (condition != zeros()) then zeros()
+    let result : xlenbits = if (condition == zeros()) then zeros()
   						    else value;
     X(rd) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

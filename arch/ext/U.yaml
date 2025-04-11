@@ -22,9 +22,9 @@ params:
     description: |
       Endianness of data in U-mode. Can be one of:
 
-       * little:  M-mode data is always little endian
-       * big:     M-mode data is always big endian
-       * dynamic: M-mode data can be either little or big endian,
+       * little:  U-mode data is always little endian
+       * big:     U-mode data is always big endian
+       * dynamic: U-mode data can be either little or big endian,
                   depending on the CSR field `mstatus.UBE`
     schema:
       type: string

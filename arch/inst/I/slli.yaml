@@ -4,7 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: slli
 long_name: Shift left logical immediate
-description: Shift the value in rs1 left by shamt, and store the result in rd
+description: Shift the value in xs1 left by shamt, and store the result in xd
 definedBy: I
 assembly: xd, xs1, shamt
 encoding:
@@ -13,18 +13,18 @@ encoding:
     variables:
       - name: shamt
         location: 24-20
-      - name: rs1
+      - name: xs1
         location: 19-15
-      - name: rd
+      - name: xd
         location: 11-7
   RV64:
     match: 000000-----------001-----0010011
     variables:
       - name: shamt
         location: 25-20
-      - name: rs1
+      - name: xs1
         location: 19-15
-      - name: rd
+      - name: xd
         location: 11-7
 access:
   s: always
@@ -34,23 +34,28 @@ access:
 data_independent_timing: true
 operation(): |
   # shamt is between 0-(XLEN-1)
-  X[rd] = X[rs1] << shamt;
+  X[xd] = X[xs1] << shamt;
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
-    let rs1_val = X(rs1);
-    /* the decoder guard should ensure that shamt[5] = 0 for RV32 */
+    let xs1_val = X(xs1);
+    /* the decoder guaxd should ensure that shamt[5] = 0 for RV32 */
     let result : xlenbits = match op {
       RISCV_SLLI => if   sizeof(xlen) == 32
-                    then rs1_val << shamt[4..0]
-                    else rs1_val << shamt,
+                    then xs1_val << shamt[4..0]
+                    else xs1_val << shamt,
       RISCV_SRLI => if   sizeof(xlen) == 32
-                    then rs1_val >> shamt[4..0]
-                    else rs1_val >> shamt,
+                    then xs1_val >> shamt[4..0]
+                    else xs1_val >> shamt,
       RISCV_SRAI => if   sizeof(xlen) == 32
-                    then shift_right_arith32(rs1_val, shamt[4..0])
-                    else shift_right_arith64(rs1_val, shamt)
+                    then shift_right_arith32(xs1_val, shamt[4..0])
+                    else shift_right_arith64(xs1_val, shamt)
     };
-    X(rd) = result;
+    X(xd) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd
