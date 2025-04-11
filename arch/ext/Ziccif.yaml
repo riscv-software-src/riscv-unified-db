@@ -4,6 +4,7 @@ $schema: "ext_schema.json#"
 kind: extension
 name: Ziccif
 long_name: Main memory fetch requirement for RVA profiles
+type: unprivileged
 description: |
   Main memory regions with both the cacheability and coherence PMAs must support instruction
   fetch, and any instruction fetches of naturally aligned power-of-2 sizes up to

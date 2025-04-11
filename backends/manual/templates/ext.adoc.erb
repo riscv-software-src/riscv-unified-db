@@ -1,4 +1,4 @@
-[ext:$<%= ext.name %>-def]
+<%= anchor_for_udb_doc_ext(ext.name) %>
 = <%= ext.name %> Extension
 <%= ext.long_name %>
 
@@ -53,9 +53,10 @@ The following instructions are affected by this extension:
 <%- unless ext.params.empty? -%>
 == Parameters
 
-This extension has the following implementation options:
+This extension has the following implementation options (AKA parameters):
 
 <%- ext.params.sort_by { |p| p.name }.each do |param| -%>
+<%= anchor_for_udb_doc_ext_param(ext.name, param.name) %>
 <%= param.name %>::
 +
 --

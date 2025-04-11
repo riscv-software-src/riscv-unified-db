@@ -10,7 +10,7 @@
     },
     "kind": {
       "type": "string",
-      "const": "profile class"
+      "const": "Profile Class"
     },
     "processor_kind": {
       "type": "string",

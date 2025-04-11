@@ -309,7 +309,7 @@ The following <%= csr_list.size %> CSRs are affected by this extension.
 <%- ext.csrs.each do |csr| -%>
 <<<
 :leveloffset: +2
-<%= partial "adoc/csr.adoc.erb", { csr: csr, cfg_arch: cfg_arch } %>
+<%= partial "common_templates/adoc/csr.adoc.erb", { csr: csr, cfg_arch: cfg_arch } %>
 :leveloffset: -2
 <%- end -%>
 
@@ -322,7 +322,7 @@ The following <%= csr_list.size %> CSRs are affected by this extension.
 
 <%- ext.instructions.each do |i| -%>
 :leveloffset: +2
-<%= partial "adoc/inst.adoc.erb", { inst: i, cfg_arch: cfg_arch } %>
+<%= partial "common_templates/adoc/inst.adoc.erb", { inst: i, cfg_arch: cfg_arch } %>
 :leveloffset: -2
 
 <<<

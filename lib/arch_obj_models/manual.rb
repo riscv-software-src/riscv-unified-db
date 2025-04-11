@@ -2,7 +2,7 @@
 
 require "asciidoctor"
 
-require_relative "obj"
+require_relative "database_obj"
 
 class Manual < DatabaseObject
   def versions

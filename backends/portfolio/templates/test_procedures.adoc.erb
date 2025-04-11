@@ -1,0 +1,27 @@
+<% unless db_obj.cert_test_procedures.empty? -%>
+<% nice_name = db_obj.is_a?(CsrField) ? "#{db_obj.parent.name}.#{db_obj.name}" : db_obj.name -%>
+<% if defined?(use_description_list) && use_description_list -%>
+Test Procedures for `<%= nice_name %>`: ::
+<% else -%>
+==== Test Procedures for `<%= nice_name %>`
+<% end -%>
+
+<% db_obj.cert_test_procedures.each do |tp| -%>
+[%autowidth]
+.*Test Procedure ID <%= tp.id %>*
+|===
+
+| *Test File Name* | <%= tp.test_file_name.nil? ? "None" : tp.test_file_name %>
+| *Description* | <%= tp.description %>
+| *Normative Rules*
+a|
+<% tp.cert_normative_rules.each do |cp| -%>
+* <%= defined?(org) ? link_to_udb_doc_cov_pt(org, cp.id) : cp.id %>
+<% end # each cp -%>
+| *Steps*
+a|
+<%= tp.cert_steps %>
+<% end # each test procedure -%>
+|===
+
+<% end # unless no test plans -%>

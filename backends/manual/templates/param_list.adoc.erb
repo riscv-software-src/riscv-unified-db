@@ -12,7 +12,7 @@ The following <%= params.size %> parameters are defined in this manual:
 <%- params.each do |param| -%>
 | <%= param.name %>
 | <%= param.schema.to_pretty_s %>
-| <%= param.exts.map { |ext| "`#{ext.name}`"}.join(", ") %>
+| <%= param.exts.map { |ext| link_to_udb_doc_ext_param(ext.name, param.name, ext.name) }.join(", ") %>
 a| <%= param.desc %>
 <%- end -%>
 |===
