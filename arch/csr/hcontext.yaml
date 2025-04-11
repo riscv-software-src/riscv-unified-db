@@ -29,11 +29,21 @@ fields:
       Alias of `mcontext.HCONTEXT`.
     reset_value: 0
     sw_write(csr_value): |
+      # check if mstateen0 or hstateen0 is clear
+      if (implemented?(Smstateen) && (!CSR[mstateen0].CONTEXT || !CSR[hstateen0].CONTEXT)) {
+      unimplemented_csr($encoding);
+      }
+
       # enforce width of HCONTEXT
       Bits<14> hcontext_value = csr_value.HCONTEXT & ((14'1 << DBG_HCONTEXT_WIDTH) - 1);
       # forward the write to mcontext.HCONTEXT
       CSR[mcontext].HCONTEXT = hcontext_value;
       return CSR[mcontext].HCONTEXT;
 sw_read(): |
+  # check if mstateen0 or hstateen0 is clear
+  if (implemented?(Smstateen) && (!CSR[mstateen0].CONTEXT || !CSR[hstateen0].CONTEXT)) {
+  unimplemented_csr($encoding);
+  }
+
   # return the value of mcontext
   return $bits(CSR[mcontext]); # might truncate if xlen() < MXLEN, but that's the expected behavior
