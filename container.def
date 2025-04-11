@@ -9,7 +9,7 @@ From: ubuntu:24.04
 %post
   export DEBIAN_FRONTEND=noninteractive
 
-  apt-get update
+  apt-get update --fix-missing
 
   # please keep pkgs sorted
   apt-get install -y --no-install-recommends \
