@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+$schema: csr_schema.json#
+kind: csr
+name: scountovf
+long_name: Supervisor Count Overflow (scountovf) Register
+address: 0x700
+priv_mode: S
+length: 32
+definedBy: Sscofpmf
+description: |
+  The `scountovf` CSR is a 32-bit read-only register that contains shadow copies of the OF bits in the 29 `mhpmevent` CSRs (mhpmevent3 - mhpmevent31).
+  scountovf bit X corresponds to mhpmeventX.
+
+  This register enables supervisor-level overflow interrupt handler software to quickly and easily determine which counter(s) have overflowed
+  (without needing to make an execution environment call or series of calls ultimately up to M-mode).
+
+  Read access to bit X is subject to the same `mcounteren` (or `mcounteren` and `hcounteren`) CSRs that mediate access to the `hpmcounter` CSRs by S-mode (or VS-mode).
+  In M-mode, `scountovf` bit X is always readable. In S/HS-mode, `scountovf` bit X is readable when `mcounteren` bit X is set, and otherwise reads as zero.
+  Similarly, in VS-mode, `scountovf` bit X is readable when both `mcounteren` bit X and `hcounteren` bit X are set, and otherwise reads as zero.
+
+fields:
+  OF:
+    location_rv32: 31
+    location_rv64: 31
+    type: RO
+    description: |
+      Overflow status and interrupt disable bit that is set when the corresponding `hpmcounter` overflows.
+    reset_value: UNDEFINED_LEGAL
