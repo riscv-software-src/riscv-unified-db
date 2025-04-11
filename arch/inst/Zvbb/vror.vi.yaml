@@ -6,8 +6,7 @@ name: vror.vi
 long_name: No synopsis available.
 description: |
   No description available.
-definedBy:
-  anyOf: [Zvbb, Zvkn, Zvks]
+definedBy: Zvbb
 assembly: vm, vs2, vd, imm
 encoding:
   match: 01010------------011-----1010111
