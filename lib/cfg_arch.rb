@@ -216,7 +216,7 @@ class ConfiguredArchitecture < Architecture
   # @param io [IO] where to write progress bars
   # @return [void]
   def type_check(show_progress: true, io: $stdout)
-    io.puts "Type checking IDL code for #{@config.name}..."
+    io.puts "Type checking IDL code for #{@config.name}..." if show_progress
     progressbar =
       if show_progress
         ProgressBar.create(title: "Instructions", total: instructions.size)

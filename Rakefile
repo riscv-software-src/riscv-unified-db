@@ -208,8 +208,6 @@ namespace :test do
       end
     end
     raise "Encoding test failed" if failed
-
-    puts "done"
   end
 
   desc "Check that CSR definitions in the DB are consistent and do not conflict"
@@ -236,8 +234,6 @@ namespace :test do
       end
     end
     raise "CSR test failed" if failed
-
-    puts "done"
   end
 
   task schema: "#{$root}/.stamps/resolve-_.stamp" do
@@ -440,8 +436,8 @@ namespace :test do
     puts "UPDATE: Starting test:regress"
     Rake::Task["test:smoke"].invoke
 
-    puts "UPDATE: Running gen:isa_explorer_browser_inst"
-    Rake::Task["gen:isa_explorer_browser_inst"].invoke
+    puts "UPDATE: Running gen:isa_explorer_browser"
+    Rake::Task["gen:isa_explorer_browser"].invoke
 
     puts "UPDATE: Running gen:isa_explorer_spreadsheet"
     Rake::Task["gen:isa_explorer_spreadsheet"].invoke

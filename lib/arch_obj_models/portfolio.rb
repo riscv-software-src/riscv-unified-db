@@ -85,21 +85,20 @@ class PortfolioGroup
     @param_values
   end
 
-  # @return [Integer] 32 or 64
+  # @return [Integer] Maximum base value (32 or 64) of all portfolios in group.
   def base
-    # Make sure all the portfolios have the same base value.
-    base = nil
+    max_base = nil
     portfolios.each do |portfolio|
-      if base.nil?
-        base = portfolio.base
-      elsif base != portfolio.base
-        raise "Bases for all portfolios in PortfolioGroup #{portfolio_grp.name} aren't the same: first portfolio's base=#{base} but portfolio #{portfolio.name} has a base of #{portfolio.base}"
+      if max_base.nil?
+        max_base = portfolio.base
+      elsif max_base > portfolio.base
+        max_base = portfolio.base
       end
     end
 
-    raise "All portfolios in config have a nil base" if base.nil?
+    raise "All portfolios in config have a nil base" if max_base.nil?
 
-    return base
+    return max_base
   end
 
   # @return [Array<ExtensionRequirement>] Sorted list of all extension requirements listed by the group.
@@ -258,6 +257,26 @@ class PortfolioGroup
     greatest_presence.nil? ? "-" : greatest_presence.to_s_concise
   end
 
+  # @return [String] Given an CSR +csr_name+, return the presence as a string.
+  #                  Returns the greatest presence string across all profiles in the group.
+  #                  If the CSR name isn't found in the release, return "-".
+  def csr_presence(csr_name)
+    greatest_presence = nil
+
+    portfolios.each do |portfolio|
+      presence = portfolio.csr_presence_obj(csr_name)
+
+      unless presence.nil?
+        if greatest_presence.nil?
+          greatest_presence = presence
+        elsif presence > greatest_presence
+          greatest_presence = presence
+        end
+      end
+    end
+
+    greatest_presence.nil? ? "-" : greatest_presence.to_s_concise
+  end
 
   # @return [Array<InScopeParameter>] Sorted list of parameters specified by any extension in portfolio.
   def all_in_scope_params
@@ -399,6 +418,40 @@ class Portfolio < DatabaseObject
   #                  If the instruction name isn't found in the portfolio, return "-".
   def instruction_presence(inst_name)
     presence_obj = instruction_presence_obj(inst_name)
+
+    presence_obj.nil? ? "-" : presence_obj.to_s
+  end
+
+  # @return [Presence] Given an CSR +csr_name+, return the presence.
+  #                    If the CSR name isn't found in the portfolio, return nil.
+  def csr_presence_obj(csr_name)
+    csr = arch.csr(csr_name)
+
+    raise "Can't find CSR object '#{csr_name}' in arch class" if csr.nil?
+
+    is_mandatory = mandatory_ext_reqs.any? do |ext_req|
+      ext_versions = ext_req.satisfying_versions
+      ext_versions.any? { |ext_ver| csr.defined_by_condition.possibly_satisfied_by?(ext_ver) }
+    end
+
+    is_optional = optional_ext_reqs.any? do |ext_req|
+      ext_versions = ext_req.satisfying_versions
+      ext_versions.any? { |ext_ver| csr.defined_by_condition.possibly_satisfied_by?(ext_ver) }
+    end
+
+    if is_mandatory
+      Presence.new(Presence.mandatory)
+    elsif is_optional
+      Presence.new(Presence.optional)
+    else
+      nil
+    end
+  end
+
+  # @return [String] Given an CSR +csr_name+, return the presence as a string.
+  #                  If the CSR name isn't found in the portfolio, return "-".
+  def csr_presence(csr_name)
+    presence_obj = csr_presence_obj(csr_name)
 
     presence_obj.nil? ? "-" : presence_obj.to_s
   end

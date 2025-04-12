@@ -453,6 +453,8 @@ namespace :gen do
     playbook_path = MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / "top" / output_hash / "antora" / "playbook" / "playbook.yml"
     Rake::Task[playbook_path].invoke
 
+    puts "UPDATE: Using npm to execute Antora"
+
     sh [
       "npm exec -- antora",
       "--stacktrace",

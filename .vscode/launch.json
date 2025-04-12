@@ -119,6 +119,15 @@
       "askParameters": false
     },
     {
+      "type": "rdbg",
+      "name": "ISA Explorer Browser CSR Generator",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:isa_explorer_browser_csr",
+      "args": [],
+      "askParameters": false
+    },
+    {
       "type": "msedge",
       "name": "ISA Explorer Browser Viewer - Extensions",
       "request": "launch",
@@ -130,6 +139,13 @@
       "name": "ISA Explorer Browser Viewer - Instructions",
       "request": "launch",
       "url": "file://wsl.localhost/Ubuntu/home/james/github/csc-riscv-unified-db/gen/isa_explorer/browser/inst_table.html",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
+      "type": "msedge",
+      "name": "ISA Explorer Browser Viewer - CSRs",
+      "request": "launch",
+      "url": "file://wsl.localhost/Ubuntu/home/james/github/csc-riscv-unified-db/gen/isa_explorer/browser/csr_table.html",
       "webRoot": "${workspaceFolder}"
     },
     {

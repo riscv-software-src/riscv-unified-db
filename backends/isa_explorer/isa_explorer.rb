@@ -134,6 +134,57 @@ def arch2inst_table(arch)
   return inst_table
 end
 
+# @param arch [Architecture] The entire RISC-V architecture
+# @return [Hash<String,Array<String>] CSR table data
+def arch2csr_table(arch)
+  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
+
+  sorted_profile_releases = get_sorted_profile_releases(arch)
+
+  csr_table = {
+    # Array of hashes
+    "columns" => [
+      {name: "CSR Name", formatter: "link", sorter: "alphanum", headerFilter: true, frozen: true, formatterParams:
+        {
+        labelField:"CSR Name",
+        urlPrefix: "https://risc-v-certification-steering-committee.github.io/riscv-unified-db/manual/html/isa/isa_20240411/csrs/"
+        }
+      },
+      {name: "Address", formatter: "textarea", sorter: "number", headerFilter: true},
+      {name: "Description", formatter: "textarea", sorter: "alphanum", headerFilter: true},
+      sorted_profile_releases.map do |pr|
+        {name: "#{pr.name}", formatter: "textarea", sorter: "alphanum", headerFilter: true}
+      end
+    ].flatten,
+
+    # Will eventually be an array containing arrays.
+    "rows" => []
+    }
+
+  csrs = arch.csrs.sort_by!(&:name)
+  progressbar = ProgressBar.create(title: "CSR Table", total: csrs.size)
+
+  csrs.each do |csr|
+    progressbar.increment
+
+    raise "Indirect CSRs not yet supported for CSR #{csr.name}" if csr.address.nil?
+
+    row = [
+      csr.name,
+      csr.address,
+      csr.long_name,
+    ]
+
+    sorted_profile_releases.each do |pr|
+      row.append(presence2char(pr.csr_presence(csr.name)))
+    end
+
+    csr_table["rows"].append(row)
+  end
+
+  return csr_table
+end
+
 # Create ISA Explorer table as XLSX worksheet.
 #
 # @param table [Hash<String,Array<String>] Table data
@@ -157,8 +208,8 @@ def gen_xlsx_table(table, workbook, worksheet)
   table["rows"].each do |row_cells|
     col_num = 0
     row_cells.each do |cell|
-      if cell.is_a?(String)
-        cell_fmt = cell
+      if cell.is_a?(String) || cell.is_a?(Integer)
+        cell_fmt = cell.to_s
       elsif cell.is_a?(TrueClass) || cell.is_a?(FalseClass)
         cell_fmt = cell ? "Y" : "N"
       elsif cell.is_a?(Array)
@@ -211,6 +262,17 @@ def gen_xlsx(arch, output_pname)
   puts "UPDATE: Adding instruction table to worksheet #{inst_worksheet.name}"
   gen_xlsx_table(inst_table, workbook, inst_worksheet)
 
+  # Convert arch to csr_table data structure
+  puts "UPDATE: Creating CSR table data structure"
+  csr_table = arch2csr_table(arch)
+
+  # Add a worksheet
+  csr_worksheet = workbook.add_worksheet("CSRs")
+
+  # Populate worksheet with csr
+  puts "UPDATE: Adding CSR table to worksheet #{csr_worksheet.name}"
+  gen_xlsx_table(csr_table, workbook, csr_worksheet)
+
   workbook.close
 end
 
@@ -236,7 +298,7 @@ def gen_js_table(table, div_name, output_pname)
           cell = row[i]
           if cell.is_a?(String)
             cell_fmt = '"' + row[i].gsub("\n", "\\n") + '"'
-          elsif cell.is_a?(TrueClass) || cell.is_a?(FalseClass)
+          elsif cell.is_a?(TrueClass) || cell.is_a?(FalseClass) || cell.is_a?(Integer)
             cell_fmt = "#{cell}"
           elsif cell.is_a?(Array)
             cell_fmt = '"'+ cell.join("\\n") + '"'
@@ -320,31 +382,20 @@ def gen_js_inst_table(arch, output_pname)
   gen_js_table(inst_table, "inst_table", output_pname)
 end
 
-# param [Architecture] arch
-# return [Array<Profile>] Nice list of profiles to use in a nice order
-def get_sorted_profiles(arch)
+# Create ISA Explorer CSR table as JavaScript file.
+#
+# @param arch [Architecture] The entire RISC-V architecture
+# @param output_pname [String] Full absolute pathname to output file
+def gen_js_csr_table(arch, output_pname)
   raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
+  raise ArgumentError, "output_pname is a #{output_pname.class} class but needs to be String" unless output_pname.is_a?(String)
 
-  # Get array of profiles and sort by name
-  sorted_profiles = arch.profiles.sort_by(&:name)
+  # Convert arch to csr_table data structure
+  puts "UPDATE: Creating CSR table data structure"
+  csr_table = arch2csr_table(arch)
 
-  # Remove Mock profiles if present.
-  sorted_profiles.delete_if {|prof| prof.name == "MP-U-64" }
-  sorted_profiles.delete_if {|prof| prof.name == "MP-S-64" }
-
-  # Move RVI20U64 to the beginning of the array if it exists.
-  if sorted_profiles.any? {|prof| prof.name == "RVI20U64" }
-    sorted_profiles.delete_if {|prof| prof.name == "RVI20U64" }
-    sorted_profiles.unshift(arch.profile("RVI20U64"))
-  end
-
-  # Move RVI20U32 to the beginning of the array if it exists.
-  if sorted_profiles.any? {|prof| prof.name == "RVI20U32" }
-    sorted_profiles.delete_if {|prof| prof.name == "RVI20U32" }
-    sorted_profiles.unshift(arch.profile("RVI20U32"))
-  end
-
-  return sorted_profiles
+  puts "UPDATE: Converting CSR table to #{output_pname}"
+  gen_js_table(csr_table, "csr_table", output_pname)
 end
 
 # param [Architecture] arch

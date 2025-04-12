@@ -139,10 +139,8 @@ class Instruction < DatabaseObject
       return nil unless @data.key?("operation()")
 
       type_checked_ast = type_checked_operation_ast(effective_xlen)
-      print "Pruning #{name} operation()..."
       symtab = fill_symtab(effective_xlen, type_checked_ast)
       pruned_ast = type_checked_ast.prune(symtab)
-      puts "done"
       pruned_ast.freeze_tree(symtab)
 
       symtab.release
@@ -159,10 +157,8 @@ class Instruction < DatabaseObject
     else
       # RubyProf.start
       ast = type_checked_operation_ast(effective_xlen)
-      print "Determining reachable funcs from #{name} (#{effective_xlen})..."
       symtab = fill_symtab(effective_xlen, ast)
       fns = ast.reachable_functions(symtab)
-      puts "done"
       # result = RubyProf.stop
       # RubyProf::FlatPrinter.new(result).print($stdout)
       # exit
@@ -215,56 +211,47 @@ class Instruction < DatabaseObject
           if base.nil?
             (
               pruned_ast = pruned_operation_ast(32)
-              print "Determining reachable exceptions from #{name}#RV32..."
               symtab = fill_symtab(32, pruned_ast)
               e32 = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
                 etype.element_name(code)
               }
               symtab.release
-              puts "done"
               pruned_ast = pruned_operation_ast(64)
-              print "Determining reachable exceptions from #{name}#RV64..."
               symtab = fill_symtab(64, pruned_ast)
               e64 = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
                 etype.element_name(code)
               }
               symtab.release
-              puts "done"
               e32 + e64
             ).uniq
           else
             pruned_ast = pruned_operation_ast(base)
-            print "Determining reachable exceptions from #{name}..."
             symtab = fill_symtab(base, pruned_ast)
             e = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
               etype.element_name(code)
             }
             symtab.release
-            puts "done"
             e
           end
         else
           effective_xlen = cfg_arch.mxlen
           pruned_ast = pruned_operation_ast(effective_xlen)
-          print "Determining reachable exceptions from #{name}..."
+          puts " #{name}..."
           symtab = fill_symtab(effective_xlen, pruned_ast)
           e = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
             etype.element_name(code)
           }
           symtab.release
-          puts "done"
           e
         end
       else
         pruned_ast = pruned_operation_ast(effective_xlen)
 
-        print "Determining reachable exceptions from #{name}..."
         symtab = fill_symtab(effective_xlen, pruned_ast)
         e = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
           etype.element_name(code)
         }
         symtab.release
-        puts "done"
         e
       end
     end

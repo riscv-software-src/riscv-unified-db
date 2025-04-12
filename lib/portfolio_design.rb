@@ -145,6 +145,11 @@ class PortfolioDesign < Design
   #                  If the instruction name isn't found in this design, return "-".
   def instruction_presence(inst_name) = @portfolio_grp.instruction_presence(inst_name)
 
+  # @return [String] Given an CSR +ext_name+, return the presence as a string.
+  #                  Returns the greatest presence string across all portfolios in this design.
+  #                  If the CSR name isn't found in this design, return "-".
+  def csr_presence(csr_name) = @portfolio_grp.csr_presence(csr_name)
+
   # @return [Array<InScopeParameter>] Sorted list of parameters specified by any extension in portfolio.
   def all_in_scope_params = @portfolio_grp.all_in_scope_params
 

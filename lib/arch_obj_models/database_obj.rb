@@ -289,7 +289,8 @@ class DatabaseObject
     @cache[fn_name] ||= yield
   end
 
-  # @return [ExtensionRequirementExpression] Extension(s) that define the instruction. If *any* requirement is met, the instruction is defined.
+  # @return [ExtensionRequirementExpression] Extension(s) that define the database object (e.g., Instruction, CSR).
+  #                                          If *any* requirement is met, the object is defined.
   def defined_by_condition
     @defined_by_condition ||=
       begin
@@ -500,7 +501,6 @@ class ExtensionRequirementExpression
 
   def empty? = false
 
-  VERSION_REQ_REGEX = /^((>=)|(>)|(~>)|(<)|(<=)|(=))?\s*[0-9]+(\.[0-9]+(\.[0-9]+(-[a-fA-F0-9]+)?)?)?$/
   def is_a_version_requirement(ver)
     case ver
     when String

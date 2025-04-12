@@ -154,6 +154,11 @@ class ProfileRelease < DatabaseObject
   #                  Returns the greatest presence string across all profiles in the release.
   #                  If the instruction name isn't found in the release, return "-".
   def instruction_presence(inst_name) = portfolio_grp.instruction_presence(inst_name)
+
+  # @return [String] Given a CSR +csr_name+, return the presence as a string.
+  #                  Returns the greatest presence string across all profiles in the release.
+  #                  If the CSR name isn't found in the release, return "-".
+  def csr_presence(csr_name) = portfolio_grp.csr_presence(csr_name)
 end
 
 # Representation of a specific profile in a profile release.
