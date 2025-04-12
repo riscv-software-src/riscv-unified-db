@@ -343,7 +343,7 @@ class ConfigFromPortfolioGroup < Config
   def arch_overlay_abs = nil
 
   # 32, 64, or nil if dynamic (not yet supported in portfolio)
-  def mxlen = @portfolio_grp.base
+  def mxlen = @portfolio_grp.max_base
 
   # Portfolios are always considered partially configured.
   def fully_configured? = false

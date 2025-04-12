@@ -86,19 +86,19 @@ class PortfolioGroup
   end
 
   # @return [Integer] Maximum base value (32 or 64) of all portfolios in group.
-  def base
-    max_base = nil
+  def max_base
+    base = nil
     portfolios.each do |portfolio|
-      if max_base.nil?
-        max_base = portfolio.base
-      elsif max_base > portfolio.base
-        max_base = portfolio.base
+      if base.nil?
+        base = portfolio.base
+      elsif portfolio.base > base
+        base = portfolio.base
       end
     end
 
-    raise "All portfolios in config have a nil base" if max_base.nil?
+    raise "All portfolios in config have a nil base" if base.nil?
 
-    return max_base
+    return base
   end
 
   # @return [Array<ExtensionRequirement>] Sorted list of all extension requirements listed by the group.
