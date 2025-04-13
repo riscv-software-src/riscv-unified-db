@@ -63,10 +63,8 @@ class ProcCertDesign < PortfolioDesign
     if proc_cert_template_path.exist? && portfolio_template_path.exist?
       raise "Both #{proc_cert_template_pname} and #{portfolio_template_pname} exist. Need unique names."
     elsif proc_cert_template_path.exist?
-      puts "UPDATE: #{portfolio_design_type} processing ERB partial template '#{proc_cert_template_pname}'"
       partial(proc_cert_template_pname, erb_env(extra_inputs))
     elsif portfolio_template_path.exist?
-      puts "UPDATE: #{portfolio_design_type} processing ERB partial template '#{portfolio_template_pname}'"
       partial(portfolio_template_pname, erb_env(extra_inputs))
     else
       raise "Can't find file #{template_name} in either #{proc_cert_template_pname} or #{portfolio_template_pname}."

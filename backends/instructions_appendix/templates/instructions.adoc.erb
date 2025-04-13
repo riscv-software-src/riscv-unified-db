@@ -72,7 +72,7 @@ end
 // Now the document header is complete and the wavedrom attribute is active.
 
 <% instructions.sort_by(&:name).each do |inst| %>
-<%= anchor_for_inst(inst.name) %>
+<%= anchor_for_udb_doc_inst(inst.name) %>
 == <%= inst.name %>
 
 Synopsis::

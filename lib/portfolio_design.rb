@@ -214,7 +214,6 @@ class PortfolioDesign < Design
   # @return [String] Result of ERB evaluation of the template file
   def include_erb(template_name, extra_inputs = {})
     template_pname = "portfolio/templates/#{template_name}"
-    puts "UPDATE: #{portfolio_design_type} processing ERB partial template '#{template_pname}'"
     partial(template_pname, erb_env(extra_inputs))
   end
 end
