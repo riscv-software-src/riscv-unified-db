@@ -3,6 +3,24 @@
   "configurations": [
     {
       "type": "rdbg",
+      "name": "Smoke test",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "test:smoke",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "Regression test",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "test:regress",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
       "name": "Manual",
       "request": "launch",
       "command": "bundle exec rake",
@@ -163,15 +181,6 @@
       "request": "launch",
       "url": "file://wsl.localhost/Ubuntu/home/james/github/csc-riscv-unified-db/gen/isa_explorer/spreadsheet/ext_table.xlsx",
       "webRoot": "${workspaceFolder}"
-    },
-    {
-      "type": "rdbg",
-      "name": "Smoke test",
-      "request": "launch",
-      "command": "bundle exec rake",
-      "script": "test:smoke",
-      "args": [],
-      "askParameters": false
     },
     {
       "type": "cppdbg",
