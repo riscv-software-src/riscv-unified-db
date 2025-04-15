@@ -40,7 +40,7 @@ operation(): |
   XReg src2 = X[rs2];
 
   #anchor("calculation") {
-    X[rd] = (src1 * src2)[XLEN-1:0];
+    X[rd] = (src1 * src2)[MXLEN-1:0];
   #}
 
 sail(): |
