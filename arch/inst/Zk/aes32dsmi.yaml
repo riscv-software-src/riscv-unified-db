@@ -3,9 +3,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: aes32dsmi
-long_name: No synopsis available.
+long_name: AES middle round decryption instruction for RV32.
 description: |
-  No description available.
+  Sources a single byte from `rs2` according to `bs`. To this, it applies the inverse AES
+  SBox operation, and a partial inverse MixColumn, before XOR’ing the result with rs1. Must always be implemented such that its execution latency does not depend on the
+  data being operated on.
 definedBy:
   anyOf: [Zk, Zkn, Zknd]
 base: 32
