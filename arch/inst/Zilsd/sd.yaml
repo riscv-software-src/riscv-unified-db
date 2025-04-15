@@ -25,9 +25,9 @@ access:
   vs: always
   vu: always
 operation(): |
-  Bits<XLEN> base = X[rs1];
-  Bits<XLEN> offset = $signed(imm);
-  Bits<XLEN> eff_addr = base + offset;
+  Bits<MXLEN> base = X[rs1];
+  Bits<MXLEN> offset = $signed(imm);
+  Bits<MXLEN> eff_addr = base + offset;
 
   Bits<32> lower_word = X[rs2];
   Bits<32> upper_word = X[rs2 + 1];

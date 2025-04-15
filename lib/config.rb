@@ -201,8 +201,10 @@ class PartialConfig < FileConfig
 
     @param_values = @data.key?("params") ? @data["params"] : [].freeze
 
-    @mxlen = @data.dig("params", "XLEN")
-    raise "Must set XLEN for a configured config" if @mxlen.nil?
+    @mxlen = @data.dig("params", "MXLEN")
+    if @mxlen.nil?
+      raise "Must set MXLEN for a configured config"
+    end
 
     @mxlen.freeze
   end
@@ -263,8 +265,8 @@ class FullConfig < FileConfig
 
     @param_values = @data["params"]
 
-    @mxlen = @data.dig("params", "XLEN").freeze
-    raise "Must set XLEN for a fully configured config" if @mxlen.nil?
+    @mxlen = @data.dig("params", "MXLEN").freeze
+    raise "Must set MXLEN for a configured config" if @mxlen.nil?
   end
 
   ###############################

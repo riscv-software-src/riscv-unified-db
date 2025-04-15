@@ -7,7 +7,7 @@ long_name: Mock Processor Certificate Model Long Name
 class:
   $ref: proc_cert_class/MockProcessor.yaml#
 
-  # XLEN used by rakefile
+  # MXLEN used by rakefile
 base: 64
 
 in_scope_priv_modes:
@@ -151,7 +151,7 @@ extensions:
         #    version: "=1.1.0"
         #    then:
         #      enum: [little, big]
-      XLEN:
+      MXLEN:
         schema:
           const: 64
       CONFIG_PTR_ADDRESS:
@@ -182,20 +182,20 @@ extensions:
 
 requirement_groups:
   any_xlen:
-    name: Req-Grp-Any-XLEN
+    name: Req-Grp-Any-MXLEN
     description: |
       A bunch of additional requirements not associated with an extension.
     requirements:
-      - name: REQ-ANY-XLEN-001
+      - name: REQ-ANY-MXLEN-001
         description: Must pay your taxes on time
-      - name: REQ-ANY-XLEN-002
+      - name: REQ-ANY-MXLEN-002
         description: Don't count your chickens before they're hatched!
   xlen32:
     name: Req-Grp-XLEN32
     when:
       xlen: 32
     description: |
-      A bunch of additional requirements only that should show up for XLEN=32
+      A bunch of additional requirements only that should show up for MXLEN=32
     requirements:
       - name: REQ-XLEN32-001
         description: Need lots of extra CSRs with `h` suffix
@@ -204,7 +204,7 @@ requirement_groups:
     when:
       xlen: 64
     description: |
-      A bunch of additional requirements only that should show up for XLEN=64
+      A bunch of additional requirements only that should show up for MXLEN=64
     requirements:
       - name: REQ-XLEN64-001
         description: Can avoid adding extra CSRs with `h` suffix

@@ -25,7 +25,7 @@ h| Privilege Mode | <%= csr.priv_mode %>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(cfg_arch, cfg_arch.param_values["XLEN"], exclude_unimplemented: true) %>
+<%= JSON.dump csr.wavedrom_desc(cfg_arch, cfg_arch.param_values["MXLEN"], exclude_unimplemented: true) %>
 ....
 <%- else -%>
 <%# CSR has a dynamic length, or a field has a dynamic location,

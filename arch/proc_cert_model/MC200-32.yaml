@@ -11,7 +11,7 @@ class:
 versions:
   - version: "1.0.0"
 
-# XLEN used by rakefile
+# MXLEN used by rakefile
 base: 32
 
 $inherits: "proc_cert_model/MC100-32.yaml#"

@@ -11,7 +11,7 @@ class:
 versions:
   - version: "1.0.0"
 
-# XLEN used by rakefile
+# MXLEN used by rakefile
 base: 32
 
 in_scope_priv_modes:
@@ -150,6 +150,6 @@ extensions:
       M_MODE_ENDIANESS:
         schema:
           const: little
-      XLEN:
+      MXLEN:
         schema:
           const: 32

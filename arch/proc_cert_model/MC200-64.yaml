@@ -9,12 +9,12 @@ class:
 
 $inherits: "proc_cert_model/MC200-32.yaml#"
 
-# XLEN used by rakefile
+# MXLEN used by rakefile
 base: 64
 
 extensions:
   Sm:
     param_constraints:
-      XLEN:
+      MXLEN:
         schema:
           const: 64

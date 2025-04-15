@@ -64,16 +64,16 @@ grammar Idl
 
   rule int
     # verilog style: explicit bit width
-    (([0-9]+)/'XLEN')? "'" 'b' [0-1xX] [0-1_xX]* <Idl::IntLiteralSyntaxNode> /
-    (([0-9]+)/'XLEN')? "'" 'o' [0-7xX] [0-7_xX]* <Idl::IntLiteralSyntaxNode> /
-    (([0-9]+)/'XLEN')? "'" 'd'? [0-9] [0-9_]* <Idl::IntLiteralSyntaxNode> /
-    (([0-9]+)/'XLEN')? "'" 'h' [0-9a-fA-FxX] [0-9a-fA-F_xX]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'MXLEN')? "'" 'b' [0-1xX] [0-1_xX]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'MXLEN')? "'" 'o' [0-7xX] [0-7_xX]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'MXLEN')? "'" 'd'? [0-9] [0-9_]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'MXLEN')? "'" 'h' [0-9a-fA-FxX] [0-9a-fA-F_xX]* <Idl::IntLiteralSyntaxNode> /
 
     # verilog style: explicit bit width, signed
-    (([0-9]+)/'XLEN')? "'" 'sb' [0-1xX] [0-1_xX]* <Idl::IntLiteralSyntaxNode> /
-    (([0-9]+)/'XLEN')? "'" 'so' [0-7xX] [0-7_xX]* <Idl::IntLiteralSyntaxNode> /
-    (([0-9]+)/'XLEN')? "'" 's' 'd'? [0-9] [0-9_]* <Idl::IntLiteralSyntaxNode> /
-    (([0-9]+)/'XLEN')? "'" 'sh' [0-9a-fA-FxX] [0-9a-fA-F_xX]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'MXLEN')? "'" 'sb' [0-1xX] [0-1_xX]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'MXLEN')? "'" 'so' [0-7xX] [0-7_xX]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'MXLEN')? "'" 's' 'd'? [0-9] [0-9_]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'MXLEN')? "'" 'sh' [0-9a-fA-FxX] [0-9a-fA-F_xX]* <Idl::IntLiteralSyntaxNode> /
 
     # c++ style: signed
     '0b' [0-1] [0-1_]* 's' <Idl::IntLiteralSyntaxNode> /
@@ -564,7 +564,7 @@ grammar Idl
   end
 
   rule builtin_type_name
-    # alias for Bits<XLEN>
+    # alias for Bits<MXLEN>
     'XReg' ![A-Za-z0-9] <Idl::BuiltinTypeNameSyntaxNode> /
 
     'Bits' space* '<' space* i:template_safe_expression space* '>' ![A-Za-z0-9] <Idl::BuiltinTypeNameSyntaxNode> /

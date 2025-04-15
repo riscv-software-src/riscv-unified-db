@@ -495,11 +495,11 @@ class Csr < DatabaseObject
       "__expected_return_type",
       Idl::Type.new(:bits, width: 128)
     )
-    if symtab.get("XLEN").value.nil?
+    if symtab.get("MXLEN").value.nil?
       symtab.add(
-        "XLEN",
+        "MXLEN",
         Idl::Var.new(
-          "XLEN",
+          "MXLEN",
           Idl::Type.new(:bits, width: 6, qualifiers: [:const]),
           effective_xlen,
           param: true

@@ -64,7 +64,7 @@ module Idl
     def self.from_typename(type_name, cfg_arch)
       case type_name
       when 'XReg'
-        return Type.new(:bits, width: cfg_arch.param_values['XLEN'])
+        return Type.new(:bits, width: cfg_arch.param_values["MXLEN"])
       when 'FReg'
         return Type.new(:freg, width: 32)
       when 'DReg'

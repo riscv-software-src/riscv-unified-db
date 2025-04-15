@@ -7,7 +7,7 @@ long_name: AC100 Apps Processor Certificate based on the RVB23 profile release
 class:
   $ref: proc_cert_class/AC.yaml#
 
-  # XLEN used by rakefile
+  # MXLEN used by rakefile
 base: 64
 
 # Semantic versions within the model
