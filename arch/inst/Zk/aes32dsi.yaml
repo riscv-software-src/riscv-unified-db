@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: aes32dsi
-long_name: AES final round decryption instruction for RV32.
+long_name: AES final round decryption instruction for RV32
 description: |
  This instruction sources a single byte from `rs2` according to `bs`. To this it applies the inverse AES
  SBox operation, and XOR's the result with `rs1`. This instruction must always be implemented such
