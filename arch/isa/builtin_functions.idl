@@ -54,7 +54,7 @@ generated function direct_csr_lookup {
 generated function indirect_csr_lookup {
   returns Csr
   arguments
-    Bits<XLEN> csr_addr
+    Bits<MXLEN> csr_addr
   description {
     Return CSR info for a CSR with indirect address +csr_addr+.
 
@@ -85,7 +85,7 @@ generated function csr_sw_read {
 generated function csr_sw_write {
   arguments
     Csr csr,
-    Bits<XLEN> value
+    Bits<MXLEN> value
   description {
     Writes +value+ to +csr+, applying an WARL transformations first.
 
