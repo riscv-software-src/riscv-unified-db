@@ -4080,7 +4080,7 @@ module Idl
 
     # @return [Type] The actual return type
     def return_type(symtab)
-      return_expression.retrun_type(symtab)
+      return_expression.return_type(symtab)
     end
 
     # @return [Type] The expected return type (as defined by the encolsing function)
@@ -5023,6 +5023,15 @@ module Idl
         # rescue ValueError
         #   return_value_might_be_known = false
         # end
+      end
+    end
+
+    def return_type(symtab)
+      # go through the statements, and return the first one that has a return type
+      stmts.each do |s|
+        if s.is_a?(Returns)
+          return s.return_type(symtab)
+        end
       end
     end
 

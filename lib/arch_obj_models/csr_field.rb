@@ -29,6 +29,14 @@ class CsrField < DatabaseObject
     @parent = parent_csr
   end
 
+  # CSR fields are defined in their parent CSR YAML file
+  def __source = @parent.__source
+
+  # CSR field data starts at fields: NAME: with the YAML
+  def source_line(*path)
+    super("fields", name, *path)
+  end
+
   # For a full config, whether or not the field is implemented
   # For a partial config, whether or the it is possible for the field to be implemented
   #
