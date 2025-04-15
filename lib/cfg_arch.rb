@@ -2,7 +2,7 @@
 
 # Many classes include DatabaseObject have an "cfg_arch" member which is a ConfiguredArchitecture class.
 # It combines knowledge of the RISC-V Architecture with a particular configuration.
-# A configuration is an instance of the Config object either located in the /cfg directory
+# A configuration is an instance of the AbstractConfig object either located in the /cfg directory
 # or created at runtime for things like profiles and certificate models.
 
 require "concurrent"
@@ -166,11 +166,11 @@ class ConfiguredArchitecture < Architecture
   # Initialize a new configured architecture definition
   #
   # @param name [:to_s]      The name associated with this ConfiguredArchitecture
-  # @param config [Config]   The configuration object
+  # @param config [AbstractConfig]   The configuration object
   # @param arch_path [:to_s] Path to the resolved architecture directory corresponding to the configuration
   def initialize(name, config, arch_path)
     raise ArgumentError, "name needs to be a String but is a #{name.class}" unless name.to_s.is_a?(String)
-    raise ArgumentError, "config needs to be a Config but is a #{config.class}" unless config.is_a?(Config)
+    raise ArgumentError, "config needs to be a AbstractConfig but is a #{config.class}" unless config.is_a?(AbstractConfig)
     raise ArgumentError, "arch_path needs to be a String but is a #{arch_path.class}" unless arch_path.to_s.is_a?(String)
     super(arch_path)
 
@@ -211,7 +211,7 @@ class ConfiguredArchitecture < Architecture
 
   # type check all IDL, including globals, instruction ops, and CSR functions
   #
-  # @param config [Config] Configuration
+  # @param config [AbstractConfig] Configuration
   # @param show_progress [Boolean] whether to show progress bars
   # @param io [IO] where to write progress bars
   # @return [void]
@@ -850,8 +850,9 @@ class ConfiguredArchitecture < Architecture
 
     @env = Class.new
     @env.instance_variable_set(:@cfg, @cfg)
-    @env.instance_variable_set(:@cfg_arch, self)
     @env.instance_variable_set(:@params, @params)
+    @env.instance_variable_set(:@cfg_arch, self)
+    @env.instance_variable_set(:@arch, self) # For backwards-compatibility
 
     # add each parameter, either as a method (lowercase) or constant (uppercase)
     params_with_value.each do |param|
@@ -875,16 +876,6 @@ class ConfiguredArchitecture < Architecture
       # @return [Array<Integer>] List of possible XLENs for any implemented mode
       def possible_xlens
         @cfg_arch.possible_xlens
-      end
-
-      # insert a hyperlink to an object
-      # At this point, we insert a placeholder since it will be up
-      # to the backend to create a specific link
-      #
-      # @params type [Symbol] Type (:section, :csr, :inst, :ext)
-      # @params name [#to_s] Name of the object
-      def link_to(type, name)
-        "%%LINK%#{type};#{name}%%"
       end
 
       # info on interrupt and exception codes

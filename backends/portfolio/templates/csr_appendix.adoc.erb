@@ -41,7 +41,7 @@ h| Privilege Mode | <%= csr.priv_mode %>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(design.cfg_arch, csr.base.nil? ? 32 : csr.base, optional_type: 2) %>
+<%= JSON.dump csr.wavedrom_desc(portfolio_design.cfg_arch, csr.base.nil? ? 32 : csr.base, optional_type: 2) %>
 ....
 <% else -%>
 <%# CSR has a dynamic length, or a field has a dynamic location,
@@ -51,13 +51,13 @@ This CSR format changes dynamically with XLEN.
 .<%= csr.name %> Format when <%= csr.length_cond32 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(design.cfg_arch, 32, optional_type: 2) %>
+<%= JSON.dump csr.wavedrom_desc(portfolio_design.cfg_arch, 32, optional_type: 2) %>
 ....
 
 .<%= csr.name %> Format when <%= csr.length_cond64 %>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump csr.wavedrom_desc(design.cfg_arch, 64, optional_type: 2) %>
+<%= JSON.dump csr.wavedrom_desc(portfolio_design.cfg_arch, 64, optional_type: 2) %>
 ....
 
 
@@ -177,7 +177,7 @@ This CSR may return a value that is different from what is stored in hardware.
 
 [source,idl,subs="specialchars,macros"]
 ----
-<%= csr.sw_read_ast(design.symtab).gen_adoc %>
+<%= csr.sw_read_ast(portfolio_design.symtab).gen_adoc %>
 ----
 <% end -%>
 

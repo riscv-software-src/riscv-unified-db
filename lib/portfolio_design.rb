@@ -2,19 +2,45 @@
 
 # Combines knowledge of the architecture database with one or more portfolios (profile or certificate).
 #
-# Used in portfolio-based ERB templates to gather information about the "design".
-# The "design" corresponds to the file being created by the ERB template and facilitates
+# Used in portfolio-based ERB templates to gather information about the "portfolio_design".
+# The "portfolio_design" corresponds to the file being created by the ERB template and facilitates
 # sharing ERB template fragments between different kinds of portfolios (mostly in the appendices).
 # For example, a processor certificate model has one portfolio but a profile release has multiple portfolios
 # but they both have just one PortfolioDesign object.
 
 require "ruby-prof"
+require "forwardable"
 
+require_relative "idesign"
 require_relative "cfg_arch"
-require_relative "design"
 require_relative "arch_obj_models/portfolio"
 
-class PortfolioDesign < Design
+require_relative "backend_helpers"
+include TemplateHelpers
+class PortfolioDesign < IDesign
+  extend Forwardable
+
+  # Calls to these methods on Design are handled by the ConfiguredArchitecture object.
+  # Avoids having to call design.cfg_arch.<method> (just call design.<method>).
+  def_delegators :@cfg_arch,
+    :ext?,
+    :multi_xlen?,
+    :multi_xlen_in_mode?,
+    :mxlen,
+    :params_without_value,
+    :possible_xlens,
+    :type_check,
+    :transitive_implemented_extension_versions,
+    :prohibited_ext?,
+    :implemented_exception_codes,
+    :implemented_interrupt_codes,
+    :functions,
+    :transitive_implemented_csrs,
+    :transitive_implemented_instructions,
+    :symtab,
+    :implemented_functions,
+    :convert_monospace_to_links
+
   # @return [PortfolioClass] Portfolio class for all the portfolios in this design
   attr_reader :portfolio_class
 
@@ -23,6 +49,12 @@ class PortfolioDesign < Design
 
   # @return [String] Type of design suitable for human readers.
   attr_reader :portfolio_design_type
+
+  # @return [ConfiguredArchitecture] The RISC-V architecture
+  attr_reader :cfg_arch
+
+  # Provided for backwards-compatibility
+  def arch = @cfg_arch
 
   # Class methods
   def self.profile_release_type = "Profile Release"
@@ -33,16 +65,17 @@ class PortfolioDesign < Design
   # @param name [#to_s] The name of the portfolio design (i.e., backend filename without a suffix)
   # @param cfg_arch [ConfiguredArchitecture] The database of RISC-V standards for a particular configuration
   # @param portfolio_design_type [String] Type of portfolio design associated with this design
-  # @param mxlen [Integer] Comes from portfolio YAML "base" (either 32 or 64)
   # @param portfolios [Array<Portfolio>] Portfolios being converted to adoc
   # @param portfolio_class [PortfolioClass] PortfolioClass for all the Portfolios
-  # @param overlay_path [String] Optional path to a directory that overlays the architecture
-  def initialize(name, cfg_arch, portfolio_design_type, portfolios, portfolio_class, overlay_path: nil)
+  def initialize(name, cfg_arch, portfolio_design_type, portfolios, portfolio_class)
+    super(name)
+
     raise ArgumentError, "cfg_arch must be an ConfiguredArchitecture but is a #{cfg_arch.class}" unless cfg_arch.is_a?(ConfiguredArchitecture)
     raise ArgumentError, "portfolio_design_type of #{portfolio_design_type} unknown" unless PortfolioDesign.portfolio_design_types.include?(portfolio_design_type)
     raise ArgumentError, "portfolios must be an Array<Portfolio> but is a #{portfolios.class}" unless portfolios.is_a?(Array)
     raise ArgumentError, "portfolio_class must be a PortfolioClass but is a #{portfolio_class.class}" unless portfolio_class.is_a?(PortfolioClass)
 
+    @cfg_arch = cfg_arch
     @portfolio_design_type = portfolio_design_type
 
     # The PortfolioGroup has an Array<Portfolio> inside it and forwards common Array methods to its internal Array.
@@ -51,11 +84,6 @@ class PortfolioDesign < Design
 
     @portfolio_class = portfolio_class
     @portfolio_kind = portfolios[0].kind
-
-    max_base = portfolios.map(&:base).max
-    raise ArgumentError, "Calculated maximum base of #{max_base} across portfolios is not 32 or 64" unless max_base == 32 || max_base == 64
-
-    super(name, cfg_arch, max_base, overlay_path: overlay_path)
   end
 
   # Returns a string representation of the object, suitable for debugging.
@@ -85,12 +113,12 @@ class PortfolioDesign < Design
 
   def implemented_ext_vers
     # Only supported by fully-configured configurations and a portfolio corresponds to a
-    # partially-configured configuration. See the Config class for details.
+    # partially-configured configuration. See the AbstractConfig class for details.
     raise "Not supported for portfolio #{name}"
   end
 
   # A Portfolio corresponds to a partially-configured design.
-  # See the Config class for details.
+  # See the AbstractConfig class for details.
   #
   # @return [Boolean] True if all parameters are fully-constrained in the design
   def fully_configured? = false

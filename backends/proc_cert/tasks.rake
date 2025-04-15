@@ -15,7 +15,7 @@ def proc_cert_create_adoc(erb_template_pname, target_pname, model_name)
 
   # Create ProcCertModel for specific processor certificate model as specified in its arch YAML file.
   # The Architecture object also creates all other portfolio-related class instances from their arch YAML files.
-  # None of these objects are provided with a Config or Design object when created.
+  # None of these objects are provided with a AbstractConfig or Design object when created.
   puts "UPDATE: Creating ProcCertModel with only an Architecture object for #{model_name}"
   proc_cert_model_with_arch = arch.proc_cert_model(model_name)
 

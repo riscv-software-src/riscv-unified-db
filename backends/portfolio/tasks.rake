@@ -24,14 +24,14 @@ def pf_create_cfg_arch(portfolio_grp_with_arch)
   # Ensure that unconfigured resolved architecture called "_" exists.
   Rake::Task["#{$root}/.stamps/resolve-_.stamp"].invoke
 
-  # Create a ConfiguredArchitecture object and provide it a ConfigFromPortfolioGroup object to implement the Config API.
+  # Create a ConfiguredArchitecture object and provide it a PortfolioGroupConfig object to implement the AbstractConfig API.
   # The DatabaseObjects in PortfolioGroup only have an Architecture object and not a ConfiguredArchitecture object
   # otherwise there would be a circular dependency. To avoid this circular dependency, none of the routines
-  # called in the PortfolioGroup object to satisfy the requests from the Config API for the ConfiguredArchitecture
+  # called in the PortfolioGroup object to satisfy the requests from the AbstractConfig API for the ConfiguredArchitecture
   # object can require that the PortfolioGroup DatabaseObjects contain a ConfiguredArchitecture.
   cfg_arch_with_portfolio_grp_with_arch = ConfiguredArchitecture.new(
     portfolio_grp_with_arch.name,
-    ConfigFromPortfolioGroup.new(portfolio_grp_with_arch),
+    PortfolioGroupConfig.new(portfolio_grp_with_arch),
     $root / "gen" / "resolved_arch" / "_"
   )
 end
@@ -66,7 +66,7 @@ end
 # @param erb_template_pname [String] Path to ERB template file
 # @param erb_binding [Binding] Path to ERB template file
 # @param target_pname [String] Full pathname of adoc file being generated
-# @param portfolio_design [PortfolioDesign] Portfolio design being generated
+# @param portfolio_design [PortfolioDesign] PortfolioDesign being generated
 def pf_create_adoc(erb_template_pname, erb_binding, target_pname, portfolio_design)
   template_path = Pathname.new(erb_template_pname)
   erb = ERB.new(File.read(template_path), trim_mode: "-")

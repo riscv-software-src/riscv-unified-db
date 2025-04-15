@@ -29,7 +29,7 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
     "#{$root}/lib/arch_obj_models/profile.rb",
     "#{$root}/lib/arch_obj_models/portfolio.rb",
     "#{$root}/lib/portfolio_design.rb",
-    "#{$root}/lib/design.rb",
+    "#{$root}/lib/idesign.rb",
     "#{$root}/lib/backend_helpers.rb",
     "#{$root}/backends/portfolio/templates/ext_appendix.adoc.erb",
     "#{$root}/backends/portfolio/templates/inst_appendix.adoc.erb",
@@ -43,7 +43,7 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
 
     # Create ProfileRelease for specific profile release as specified in its arch YAML file.
     # The Architecture object also creates all other portfolio-related class instances from their arch YAML files.
-    # None of these objects are provided with a Config or Design object when created.
+    # None of these objects are provided with a AbstractConfig or Design object when created.
     puts "UPDATE: Creating ProfileRelease with only an Architecture object for #{release_name}"
     profile_release_with_arch = arch.profile_release(release_name)
 

@@ -87,16 +87,10 @@ class PortfolioGroup
 
   # @return [Integer] Maximum base value (32 or 64) of all portfolios in group.
   def max_base
-    base = nil
-    portfolios.each do |portfolio|
-      if base.nil?
-        base = portfolio.base
-      elsif portfolio.base > base
-        base = portfolio.base
-      end
-    end
+    base = portfolios.map(&:base).max
 
     raise "All portfolios in config have a nil base" if base.nil?
+    raise ArgumentError, "Calculated maximum base of #{base} across portfolios is not 32 or 64" unless base == 32 || base == 64
 
     return base
   end

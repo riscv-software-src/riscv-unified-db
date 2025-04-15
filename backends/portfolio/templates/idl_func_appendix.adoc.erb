@@ -2,7 +2,7 @@
 [appendix]
 == IDL Function Details
 
-<% design.functions.each do |f| -%>
+<% portfolio_design.functions.each do |f| -%>
 <%= anchor_for_udb_doc_idl_func(f.name) %>
 === <%= f.name %><% if f.builtin? -%> (builtin)<% end -%><% if f.generated? -%> (generated)<% end -%>
 

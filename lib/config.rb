@@ -6,10 +6,10 @@ require_relative "arch_obj_models/portfolio"
 
 # This class represents a configuration. Is is coded as an abstract base class (must be inherited by a child).
 #
-# There are child classes derived from Config to handle:
+# There are child classes derived from AbstractConfig to handle:
 #   - Configurations specified by YAML files in the /cfg directory
 #   - Configurations specified by portfolio groups (certificates and profile releases)
-class Config
+class AbstractConfig
   ####################
   # ABSTRACT METHODS #
   ####################
@@ -76,12 +76,12 @@ end
 
 # This class represents a configuration as specified by YAML files in the /cfg directory.
 # Is is coded as an abstract base class (must be inherited by a child).
-class ConfigFromCfg < Config
+class FileConfig < AbstractConfig
   ########################
   # NON-ABSTRACT METHODS #
   ########################
 
-  # use ConfigFromCfg#create instead
+  # use FileConfig#create instead
   private_class_method :new
 
   def initialize(cfg_file_path, data)
@@ -105,10 +105,10 @@ class ConfigFromCfg < Config
   end
   private_class_method :freeze_data
 
-  # Factory method to create a FullConfigFromCfg, PartialConfigFromCfg, or UnConfigFromCfg based
+  # Factory method to create a FullConfig, PartialConfig, or UnConfig based
   # on the contents of cfg_filename.
   #
-  # @return [ConfigFromCfg] A new ConfigFromCfg object
+  # @return [FileConfig] A new FileConfig object
   def self.create(cfg_filename)
     cfg_file_path = Pathname.new(cfg_filename)
     raise ArgumentError, "Cannot find #{cfg_filename}" unless cfg_file_path.exist?
@@ -120,11 +120,11 @@ class ConfigFromCfg < Config
 
     case data["type"]
     when "fully configured"
-      FullConfigFromCfg.send(:new, cfg_file_path, data)
+      FullConfig.send(:new, cfg_file_path, data)
     when "partially configured"
-      PartialConfigFromCfg.send(:new, cfg_file_path, data)
+      PartialConfig.send(:new, cfg_file_path, data)
     when "unconfigured"
-      UnConfigFromCfg.send(:new, cfg_file_path, data)
+      UnConfig.send(:new, cfg_file_path, data)
     else
       raise "Unexpected type in config"
     end
@@ -159,7 +159,7 @@ end
 # This class represents a configuration that is "unconfigured". #
 # It doesn't know anything about extensions or parameters.      #
 #################################################################
-class UnConfigFromCfg < ConfigFromCfg
+class UnConfig < FileConfig
   ########################
   # NON-ABSTRACT METHODS #
   ########################
@@ -181,17 +181,17 @@ class UnConfigFromCfg < ConfigFromCfg
   def partially_configured? = false
   def unconfigured? = true
 
-  def implemented_extensions = raise "implemented_extensions is only available for a FullConfigFromCfg"
-  def mandatory_extensions = raise "mandatory_extensions is only available for a PartialConfigFromCfg"
-  def prohibited_extensions = raise "prohibited_extensions is only available for a PartialConfigFromCfg"
-  def additional_extensions_allowed? = raise "additional_extensions_allowed? is only available for a PartialConfigFromCfg"
+  def implemented_extensions = raise "implemented_extensions is only available for a FullConfig"
+  def mandatory_extensions = raise "mandatory_extensions is only available for a PartialConfig"
+  def prohibited_extensions = raise "prohibited_extensions is only available for a PartialConfig"
+  def additional_extensions_allowed? = raise "additional_extensions_allowed? is only available for a PartialConfig"
 end
 
 ##############################################################################################################
 # This class represents a configuration that is "partially-configured" (e.g., portfolio or configurable IP). #
 # It only lists mandatory & prohibited extensions and fully-constrained parameters (single value).
 ##############################################################################################################
-class PartialConfigFromCfg < ConfigFromCfg
+class PartialConfig < FileConfig
   ########################
   # NON-ABSTRACT METHODS #
   ########################
@@ -218,7 +218,7 @@ class PartialConfigFromCfg < ConfigFromCfg
   def partially_configured? = true
   def unconfigured? = false
 
-  def implemented_extensions = raise "implemented_extensions is only available for a FullConfigFromCfg"
+  def implemented_extensions = raise "implemented_extensions is only available for a FullConfig"
 
   def mandatory_extensions
     @mandatory_extensions ||=
@@ -253,7 +253,7 @@ end
 # This class represents a configuration that is "fully-configured" (e.g., SoC tapeout or fully-configured IP). #
 # It has a complete list of extensions and parameters (all are a single value at this point).                  #
 ################################################################################################################
-class FullConfigFromCfg < ConfigFromCfg
+class FullConfig < FileConfig
   ########################
   # NON-ABSTRACT METHODS #
   ########################
@@ -293,19 +293,19 @@ class FullConfigFromCfg < ConfigFromCfg
       end
   end
 
-  def mandatory_extensions = raise "mandatory_extensions is only available for a PartialConfigFromCfg"
-  def prohibited_extensions = raise "prohibited_extensions is only available for a PartialConfigFromCfg"
-  def additional_extensions_allowed? = raise "additional_extensions_allowed? is only available for a PartialConfigFromCfg"
+  def mandatory_extensions = raise "mandatory_extensions is only available for a PartialConfig"
+  def prohibited_extensions = raise "prohibited_extensions is only available for a PartialConfig"
+  def additional_extensions_allowed? = raise "additional_extensions_allowed? is only available for a PartialConfig"
 end
 
-############################
-# ConfigFromPortfolioGroup #
-############################
+########################
+# PortfolioGroupConfig #
+########################
 
-# A ConfigFromPortfolioGroup provides an implementation of the Config API using a PortfolioGroup object.
+# A PortfolioGroupConfig provides an implementation of the AbstractConfig API using a PortfolioGroup object.
 # This object contains information from one or more portfolios.
 # A certificate has just one portfolio and a profile release has one or more portfolios.
-class ConfigFromPortfolioGroup < Config
+class PortfolioGroupConfig < AbstractConfig
   ########################
   # NON-ABSTRACT METHODS #
   ########################

@@ -15,16 +15,14 @@ class ProcCertDesign < PortfolioDesign
   # @param name [#to_s] The name of the portfolio design (i.e., backend filename without a suffix)
   # @param cfg_arch [ConfiguredArchitecture] The database of RISC-V standards for a particular configuration
   # @param portfolio_design_type [String] Type of portfolio design associated with this design
-  # @param mxlen [Integer] Comes from portfolio YAML "base" (either 32 or 64)
   # @param portfolios [Array<Portfolio>] Portfolios being converted to adoc
   # @param portfolio_class [PortfolioClass] PortfolioClass for all the Portfolios
-  # @param overlay_path [String] Optional path to a directory that overlays the architecture
-  def initialize(name, cfg_arch, portfolio_design_type, proc_cert_model, proc_cert_class, overlay_path: nil)
+  def initialize(name, cfg_arch, portfolio_design_type, proc_cert_model, proc_cert_class)
     raise ArgumentError, "proc_cert_model must be a ProcCertModel" unless proc_cert_model.is_a?(ProcCertModel)
     raise ArgumentError, "proc_cert_class must be a ProcCertClass" unless proc_cert_class.is_a?(ProcCertClass)
     @proc_cert_model = proc_cert_model
     @proc_cert_class = proc_cert_class
-    super(name, cfg_arch, portfolio_design_type, [proc_cert_model], proc_cert_class, overlay_path: overlay_path)
+    super(name, cfg_arch, portfolio_design_type, [proc_cert_model], proc_cert_class)
   end
 
   # Returns a string representation of the object, suitable for debugging.
