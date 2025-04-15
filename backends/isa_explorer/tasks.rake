@@ -9,11 +9,6 @@ require_relative "isa_explorer"
 BACKEND_NAME = "isa_explorer"
 BACKEND_DIR = "#{$root}/backends/#{BACKEND_NAME}"
 
-# Library used to generate dynamic JavaScript tables
-# Currently located under backend but would be better to be under /ext submodule directory - TBD.
-TAB_MASTER_NAME = "tabulator-master"
-SRC_TAB_MASTER_DIR = "#{BACKEND_DIR}/#{TAB_MASTER_NAME}"
-
 # Static source files
 SRC_EXT_HTML_PNAME = "#{BACKEND_DIR}/ext_table.html"
 SRC_INST_HTML_PNAME = "#{BACKEND_DIR}/inst_table.html"
@@ -112,9 +107,6 @@ file "#{GEN_HTML_EXT_TABLE}" => [
 
     # Just copy static HTML file.
     FileUtils.copy_file(SRC_EXT_HTML_PNAME, t.name)
-
-    # Also copy tabulator-master library in case it isn't already there.
-    FileUtils.cp_r(SRC_TAB_MASTER_DIR, GEN_BROWSER_DIR)
 end
 
 file "#{GEN_HTML_INST_TABLE}" => [
@@ -135,9 +127,6 @@ file "#{GEN_HTML_INST_TABLE}" => [
 
     # Just copy static HTML file.
     FileUtils.copy_file(SRC_INST_HTML_PNAME, t.name)
-
-    # Also copy tabulator-master library in case it isn't already there.
-    FileUtils.cp_r(SRC_TAB_MASTER_DIR, GEN_BROWSER_DIR)
 end
 
 file "#{GEN_HTML_CSR_TABLE}" => [
@@ -158,9 +147,6 @@ file "#{GEN_HTML_CSR_TABLE}" => [
 
     # Just copy static HTML file.
     FileUtils.copy_file(SRC_CSR_HTML_PNAME, t.name)
-
-    # Also copy tabulator-master library in case it isn't already there.
-    FileUtils.cp_r(SRC_TAB_MASTER_DIR, GEN_BROWSER_DIR)
 end
 
 file "#{GEN_JS_EXT_TABLE}" => [
