@@ -10,6 +10,3 @@
 [submodule "ext/riscv-tests"]
 	path = ext/riscv-tests
 	url = https://github.com/riscv-software-src/riscv-tests.git
-[submodule "ext/tabulator-master"]
-	path = ext/tabulator-master
-	url = https://github.com/olifolkerd/tabulator.git
