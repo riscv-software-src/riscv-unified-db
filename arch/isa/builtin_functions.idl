@@ -33,7 +33,7 @@ struct Csr {
   Boolean valid;
   String name;
   CsrAddressType addr_type;
-  Bits<64> address;
+  Bits<MXLEN> address;
   PrivilegeMode mode;
   Boolean writable;
 }
