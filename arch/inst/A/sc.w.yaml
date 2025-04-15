@@ -14,7 +14,7 @@ description: |
   may be treated like a store. Regardless of success or failure, executing an
   `sc.w` instruction invalidates any reservation held by this hart.
 
-  <%- if XLEN == 64 -%>
+  <%- if MXLEN == 64 -%>
   [NOTE]
   If a value other than 0 or 1 is defined as a result for `sc.w`, the value will before
   sign-extended into _rd_.

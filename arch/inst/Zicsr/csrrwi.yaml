@@ -46,7 +46,7 @@ operation(): |
 
   # writes the zero-extended immediate to the CSR,
   # performing any WARL transformations first
-  csr_sw_write(csr_handle, {{XLEN-5{1'b0}}, imm});
+  csr_sw_write(csr_handle, {{MXLEN-5{1'b0}}, imm});
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

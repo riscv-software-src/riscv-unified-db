@@ -77,6 +77,42 @@
         "nonstandard-released"
       ]
     },
+    "spec_text": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Asciidoctor source"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/tagged_text"
+          }
+        }
+      ]
+    },
+    "tagged_text": {
+      "type": "object",
+      "required": ["id", "text", "normative"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the statement"
+        },
+        "text": {
+          "type": "string",
+          "description": "Asciidoctor source"
+        },
+        "normative": {
+          "type": "boolean"
+        },
+        "when()": {
+          "type": "string",
+          "description": "IDL boolean expression. When true, the text applies"
+        }
+      },
+      "additionalProperties": false
+    },
     "license": {
       "description": "License that applies to the textual documentation for this extension",
       "type": "object",

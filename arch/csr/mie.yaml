@@ -9,8 +9,7 @@ writeable: true
 priv_mode: M
 length: MXLEN
 definedBy: Sm
-description:
-  $copy: "mip.yaml#/description"
+description: "mip.yaml#/description"
 fields:
   SSIE:
     location: 1

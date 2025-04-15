@@ -4082,7 +4082,7 @@ module Idl
 
     # @return [Type] The actual return type
     def return_type(symtab)
-      return_expression.retrun_type(symtab)
+      return_expression.return_type(symtab)
     end
 
     # @return [Type] The expected return type (as defined by the encolsing function)
@@ -4505,12 +4505,12 @@ module Idl
 
     # @!macro type_check
     def type_check(symtab)
-      if text_value.delete("_") =~ /^((XLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
+      if text_value.delete("_") =~ /^((MXLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
         # verilog-style literal
         width = ::Regexp.last_match(1)
         value_text = ::Regexp.last_match(6)
 
-        if width.nil? || width == "XLEN"
+        if width.nil? || width == "MXLEN"
           width = symtab.mxlen.nil? ? 32 : symtab.mxlen # 32 is the min width, which is what we care about here
         end
 
@@ -4524,7 +4524,7 @@ module Idl
       return @type unless @type.nil?
 
       case text_value.delete("_")
-      when /^((XLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
+      when /^((MXLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
         # verilog-style literal
         signed = ::Regexp.last_match(4)
         width = width(symtab)
@@ -4558,10 +4558,10 @@ module Idl
       text_value_no_underscores = text_value.delete("_")
 
       case text_value_no_underscores
-      when /^((XLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
+      when /^((MXLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
         # verilog-style literal
         width = ::Regexp.last_match(1)
-        if width.nil? || width == "XLEN"
+        if width.nil? || width == "MXLEN"
           width = symtab.mxlen.nil? ? :unknown : symtab.mxlen
         else
           width = width.to_i
@@ -4590,7 +4590,7 @@ module Idl
     def value(symtab)
       return @value unless @value.nil?
 
-      if text_value.delete("_") =~ /^((XLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
+      if text_value.delete("_") =~ /^((MXLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
         # verilog-style literal
         signed = ::Regexp.last_match(4)
         width = width(symtab)
@@ -4639,7 +4639,7 @@ module Idl
 
       @unsigned_value =
         case text_value.delete("_")
-        when /^((XLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
+        when /^((MXLEN)|([0-9]+))?'(s?)([bodh]?)(.*)$/
           # verilog-style literal
           radix_id = ::Regexp.last_match(5)
           value = ::Regexp.last_match(6)
@@ -5039,6 +5039,15 @@ module Idl
         # rescue ValueError
         #   return_value_might_be_known = false
         # end
+      end
+    end
+
+    def return_type(symtab)
+      # go through the statements, and return the first one that has a return type
+      stmts.each do |s|
+        if s.is_a?(Returns)
+          return s.return_type(symtab)
+        end
       end
     end
 

@@ -565,7 +565,7 @@ builtin function atomically_set_pte_a {
   returns Boolean
   arguments
     Bits<PHYS_ADDR_WIDTH> pte_addr,
-    Bits<XLEN>            pte_value,
+    Bits<MXLEN>            pte_value,
     U32                   pte_len
   description {
     Atomically:
@@ -585,7 +585,7 @@ builtin function atomically_set_pte_a_d {
   returns Boolean
   arguments
     Bits<PHYS_ADDR_WIDTH> pte_addr,
-    Bits<XLEN>            pte_value,
+    Bits<MXLEN>            pte_value,
     U32                   pte_len
   description {
     Atomically:

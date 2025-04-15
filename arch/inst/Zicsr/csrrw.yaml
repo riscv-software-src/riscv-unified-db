@@ -31,7 +31,7 @@ access:
 operation(): |
   Csr csr_handle = direct_csr_lookup(csr);
 
-  Bits<XLEN> initial_value = X[xs1];
+  Bits<MXLEN> initial_value = X[xs1];
 
   # permission checks
   if (csr_handle.valid == false) {
