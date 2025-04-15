@@ -36,4 +36,4 @@ access:
 operation(): |
   XReg width = width_minus1 + 1;
   XReg unsigned_extraction = (X[rs1] >> shamt) & ((1 << width) - 1);
-  X[rd] = sext(unsigned_extraction, width_minus1);
+  X[rd] = sext(unsigned_extraction, width);

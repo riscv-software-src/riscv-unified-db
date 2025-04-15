@@ -7,7 +7,7 @@ long_name: Extract bits from pair unsigned, packed descriptor high part (Registe
 description: |
   Extract a subset of bits from the register pair [`rs1`, `rs1`+1] into `rd`.
   The width of the subset is determined by `rs2` bits [29:24] (0..32),
-  and the offset of the subset is determined by `rs2` bits [20:16].
+  and the offset of the subset is determined by `rs2` bits [21:16] (0..63).
   In case when `rs2` bit [29] == 1 width is enforced to 32.
   In case when width == 0, to the destination register written 0.
   Instruction encoded in R instruction format.
@@ -38,7 +38,7 @@ operation(): |
   Bits<{1'b0, MXLEN}*2> pair = {X[rs1 + 1], X[rs1]};
   XReg width_bits = X[rs2][29:24];
   XReg width = (width_bits > 32) ? 32 : width_bits;
-  XReg shamt = X[rs2][20:16];
+  XReg shamt = X[rs2][21:16];
   if (width > 0) {
     X[rd] = (pair >> shamt) & ((1 << width) - 1);
   } else {
