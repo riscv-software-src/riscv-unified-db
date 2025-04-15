@@ -39,7 +39,7 @@ namespace :gen do
 
     Options:
      * CONFIG - Configuration name (defaults to "_")
-     * OUTPUT_DIR - Output directory for generated Spike headers (defaults to "#{$root}/gen/spike")
+     * OUTPUT_DIR - Output directory for generated Spike headers (defaults to "#{$root}/gen/c_header")
   DESC
   task :c_header => "#{$root}/gen/spike" do
     config_name = ENV["CONFIG"] || "_"
@@ -60,7 +60,7 @@ namespace :gen do
 
     # Run the Spike generator script using the same Python environment
     # The script generates encoding.h for Spike simulator
-    sh "#{$root}/.home/.venv/bin/python3 #{$root}/backends/generators/spike/generate_encoding.py --inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --output=#{output_dir}encoding.out.h --include-all"
+    sh "#{$root}/.home/.venv/bin/python3 #{$root}/backends/generators/c_header/generate_encoding.py --inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --output=#{output_dir}encoding.out.h --include-all"
   end
 
   desc "Generate all supported backend code"
