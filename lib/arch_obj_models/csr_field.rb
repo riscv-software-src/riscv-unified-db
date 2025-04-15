@@ -508,11 +508,11 @@ class CsrField < DatabaseObject
       "csr_value",
       Idl::Var.new("csr_value", csr.bitfield_type(@cfg_arch, effective_xlen))
     )
-    if symtab.get("XLEN").value.nil?
+    if symtab.get("MXLEN").value.nil?
       symtab.add(
-        "XLEN",
+        "MXLEN",
         Idl::Var.new(
-          "XLEN",
+          "MXLEN",
           Idl::Type.new(:bits, width: 6, qualifiers: [:const]),
           effective_xlen,
           param: true
@@ -535,11 +535,11 @@ class CsrField < DatabaseObject
       "__expected_return_type",
       Idl::Type.new(:enum_ref, enum_class: symtab.get("CsrFieldType"))
     )
-    if symtab.get("XLEN").value.nil?
+    if symtab.get("MXLEN").value.nil?
       symtab.add(
-        "XLEN",
+        "MXLEN",
         Idl::Var.new(
-          "XLEN",
+          "MXLEN",
           Idl::Type.new(:bits, width: 6, qualifiers: [:const]),
           effective_xlen,
           param: true
