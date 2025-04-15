@@ -56,11 +56,12 @@ namespace :gen do
     if config_name != "_"
       inst_dir = $root / "gen" / "resolved_arch" / config_name / "inst"
       csr_dir = $root / "gen" / "resolved_arch" / config_name / "csr"
+      ext_dir = $root / "gen" / "resolved_arch" / config_name / "ext"
     end
 
     # Run the Spike generator script using the same Python environment
     # The script generates encoding.h for Spike simulator
-    sh "#{$root}/.home/.venv/bin/python3 #{$root}/backends/generators/c_header/generate_encoding.py --inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --output=#{output_dir}encoding.out.h --include-all"
+    sh "#{$root}/.home/.venv/bin/python3 #{$root}/backends/generators/c_header/generate_encoding.py --inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --ext-dir=#{ext_dir} --output=#{output_dir}encoding.out.h --include-all"
   end
 
   desc "Generate all supported backend code"
