@@ -78,8 +78,12 @@
     },
     "tagged_text": {
       "type": "object",
-      "required": ["text", "normative"],
+      "required": ["id", "text", "normative"],
       "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the statement"
+        },
         "text": {
           "type": "string",
           "description": "Asciidoctor source"

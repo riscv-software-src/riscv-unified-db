@@ -19,7 +19,8 @@ fields:
     location: 33-32
     base: 64
     description:
-      - normative: false
+      - id: csr-hstatus-vsxl-values
+        normative: false
         text: |
           Determines the effective XLEN in VS-mode. Valid values are:
 
@@ -31,11 +32,13 @@ fields:
           ! 1     ! 64
           !===
         when(): return VSXLEN == 3264;
-      - normative: false
+      - id: csr-hstatus-vsxl-rv32
+        normative: false
         text: |
           Because the implementation only supports a single VSXLEN == 32, this field is read-only-0.
         when(): return VSXLEN == 32;
-      - normative: false
+      - id: csr-hstatus-vsxl-rv64
+        normative: false
         text: |
           Because the implementation only supports a single VSXLEN == 64, this field is read-only-1.
         when(): return VSXLEN == 64;
@@ -71,12 +74,12 @@ fields:
     location: 22
     long_name: Virtual Trap SRET
     description:
-      - normative: false
+      - id: csr-hstatus-vtsr-behavior
+        normative: false
         text: |
           When `hstatus.VTSR` is set, executing the `sret` instruction in VS-mode
           raises a `Virtual Instruction` exception.
-      - normative: false
-        text: |
+
           When `hstatus.VTSR` is clear, an `sret` instruction in VS-mode returns control
           to the mode stored in `vsstatus.SPP`.
     type: RW
@@ -85,7 +88,8 @@ fields:
     location: 21
     long_name: Virtual Trap WFI
     description:
-      - normative: false
+      - id: csr-hstatus-vtw-behavior
+        normative: false
         text: |
           When `hstatus.VTW` is set, a `wfi` instruction executed in VS-mode raises
           a `Virtual Instruction` exception after waiting an implementation-defined
@@ -114,7 +118,8 @@ fields:
     location: 20
     long_name: Virtual Trap Virtual Memory
     description:
-      - normative: false
+      - id: csr-hstatus-vtvm-behavior
+        normative: false
         text: |
           When set, a 'Virtual Instruction` trap occurs when executing an `sfence.vma`, `sinval.vma`,
           or an explicit CSR access of the `satp` (really `vsatp`) register when in VS-mode.
@@ -130,7 +135,8 @@ fields:
     location: 17-12
     long_name: Virtual Guest External Interrupt Number
     description:
-      - normative: false
+      - id: csr-hstatus-vgein-behavior
+        normative: false
         text: |
           Selects the guest external interrupt source for VS-level external interrupts.
 
@@ -160,7 +166,8 @@ fields:
     location: 9
     long_name: Hypervisor in U-mode
     description:
-      - normative: false
+      - id: csr-hstatus-hu-behavior
+        normative: false
         text: |
           When set, the hypervisor load/store instructions (`hlv`, `hlvx`, and `hsv`) can be
           executed in U-mode.
@@ -172,7 +179,8 @@ fields:
     location: 8
     long_name: Supervisor Previous Virtual Privilege
     description:
-      - normative: false
+      - id: csr-hstatus-spvp-behavior
+        normative: false
         text: |
           Written by hardware:
 
@@ -191,7 +199,8 @@ fields:
     location: 7
     long_name: Supervisor Previous Virtualization Mode
     description:
-      - normative: false
+      - id: csr-hstatus-spv-behavior
+        normative: false
         text: |
           Written by hardware:
 
@@ -210,7 +219,8 @@ fields:
     location: 6
     long_name: Guest Virtual Address
     description:
-      - normative: false
+      - id: csr-hstatus-gva-behavior
+        normative: false
         text: |
           Written by hardware whenever a trap is taken into HS-mode:
 
@@ -224,17 +234,20 @@ fields:
     location: 5
     long_name: VS-mode Big Endian
     description:
-      - normative: false
+      - id: csr-hstatus-vgein-behavior
+        normative: false
         text: |
           Controls the endianness of data VS-mode (0 = little, 1 = big).
           Instructions are always little endian, regardless of the data setting.
 
-      - normative: false
+      - id: csr-hstatus-vgein-little-endian
+        normative: false
         text: |
           Since the CPU does not support big endian in VS-mode, this is hardwired to 0.
         when(): return VS_MODE_ENDIANESS == "little";
 
-      - normative: false
+      - id: csr-hstatus-vgein-big-endian
+        normative: false
         text: |
           Since the CPU does not support little endian in VS-mode, this is hardwired to 1.
         when(): return VS_MODE_ENDIANESS == "big";
