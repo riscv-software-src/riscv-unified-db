@@ -168,9 +168,9 @@ exception_codes:
     when:
       version: ">= 1.13.0"
 params:
-  XLEN:
+  MXLEN:
     description: |
-      XLEN in M-mode (AKA MXLEN, tracked by issue #52)
+      XLEN in M-mode
     schema:
       type: integer
       enum: [32, 64]

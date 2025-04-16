@@ -18,7 +18,7 @@ implemented_extensions:
   - [Sm, "1.12.0"]
 
 params:
-  XLEN: 64
+  MXLEN: 64
   NAME: test
   ARCH_ID: 0x1000000000000000
   IMP_ID: 0x0

@@ -68,13 +68,11 @@ std::ostream &operator<<(std::ostream &stream, const __int128_t &val) {
 using namespace udb;
 
 constexpr unsigned InfinitePrecision = Bits<64>::InfinitePrecision;
-constexpr Bits<64> InfinitePrecisionBits =
-    Bits<64>{Bits<64>::InfinitePrecision};
+constexpr Bits<64> InfinitePrecisionBits = Bits<64>{Bits<64>::InfinitePrecision};
 constexpr unsigned GmpPrecision = Bits<64>::MaxNativePrecision + 1;
 
 static_assert(Bits<32>{0xffffffffffffffffull}.get() == 0xffffffffu);
-static_assert(static_cast<int32_t>(Bits<32>{0xffffffffffffffffull}.get()) ==
-              -1);
+static_assert(static_cast<int32_t>(Bits<32>{0xffffffffffffffffull}.get()) == -1);
 static_assert(static_cast<int32_t>(Bits<32>{0xffffffffffffffffull}.get()) < 0);
 
 static_assert(Bits<31>{Bits<31>{0x7fff'ffffu}}.get() == 2147483647);
@@ -88,22 +86,15 @@ TEST_CASE("InifitePrecision conversion", "[bits]") {
   REQUIRE(a.get() == 2147483647);
 
   REQUIRE(_Bits<InfinitePrecision, true>{-1} == _Bits<8, true>{-1});
-  REQUIRE(_Bits<InfinitePrecision, true>{_Bits<8, true>{-1}} ==
-          _Bits<8, true>{-1});
-  REQUIRE(_Bits<8, true>{_Bits<InfinitePrecision, true>{-1}} ==
-          _Bits<8, true>{-1});
-  REQUIRE(_Bits<7, true>{_Bits<InfinitePrecision, true>{-1}} ==
-          _Bits<8, true>{-1});
-  REQUIRE(_Bits<9, true>{_Bits<InfinitePrecision, true>{-1}} ==
-          _Bits<8, true>{-1});
+  REQUIRE(_Bits<InfinitePrecision, true>{_Bits<8, true>{-1}} == _Bits<8, true>{-1});
+  REQUIRE(_Bits<8, true>{_Bits<InfinitePrecision, true>{-1}} == _Bits<8, true>{-1});
+  REQUIRE(_Bits<7, true>{_Bits<InfinitePrecision, true>{-1}} == _Bits<8, true>{-1});
+  REQUIRE(_Bits<9, true>{_Bits<InfinitePrecision, true>{-1}} == _Bits<8, true>{-1});
 
   REQUIRE(_Bits<InfinitePrecision, true>{-1} == _Bits<128, true>{-1});
-  REQUIRE(_Bits<InfinitePrecision, true>{_Bits<128, true>{-1}} ==
-          _Bits<128, true>{-1});
-  REQUIRE(_Bits<128, true>{_Bits<InfinitePrecision, true>{-1}} ==
-          _Bits<128, true>{-1});
-  REQUIRE(_Bits<GmpPrecision, true>{_Bits<InfinitePrecision, true>{-1}} ==
-          _Bits<128, true>{-1});
+  REQUIRE(_Bits<InfinitePrecision, true>{_Bits<128, true>{-1}} == _Bits<128, true>{-1});
+  REQUIRE(_Bits<128, true>{_Bits<InfinitePrecision, true>{-1}} == _Bits<128, true>{-1});
+  REQUIRE(_Bits<GmpPrecision, true>{_Bits<InfinitePrecision, true>{-1}} == _Bits<128, true>{-1});
 }
 
 // negation
@@ -126,10 +117,8 @@ TEST_CASE("Negation", "[bits]") {
 
   REQUIRE((-(-Bits<InfinitePrecision>(5))).get() == Bits<64>(5).get());
   REQUIRE((-(-Bits<InfinitePrecision>(5))).get() == 5);
-  REQUIRE(_Bits<InfinitePrecision, true>(-Bits<InfinitePrecision>(5)).get() ==
-          -5_mpz);
-  REQUIRE(_Bits<InfinitePrecision, true>(-Bits<InfinitePrecision>(5)).get() <
-          0);
+  REQUIRE(_Bits<InfinitePrecision, true>(-Bits<InfinitePrecision>(5)).get() == -5_mpz);
+  REQUIRE(_Bits<InfinitePrecision, true>(-Bits<InfinitePrecision>(5)).get() < 0);
 }
 
 // inversion
@@ -149,28 +138,24 @@ TEST_CASE("Inversion", "[bits]") {
   REQUIRE((~(~Bits<GmpPrecision>(5))).get() == Bits<GmpPrecision>(5).get());
   REQUIRE((~(~Bits<GmpPrecision>(5))).get() == 5);
   REQUIRE(_Bits<GmpPrecision, true>(~Bits<GmpPrecision>(5)).get() == -6);
-  REQUIRE((~Bits<GmpPrecision>(5)).get() ==
-          0x1fffffffffffffffffffffffffffffffa_mpz);
+  REQUIRE((~Bits<GmpPrecision>(5)).get() == 0x1fffffffffffffffffffffffffffffffa_mpz);
   REQUIRE(_Bits<64, true>(~Bits<GmpPrecision>(5)).get() < 0);
 
-  REQUIRE((~(~Bits<InfinitePrecision>(5))).get() ==
-          Bits<InfinitePrecision>(5).get());
+  REQUIRE((~(~Bits<InfinitePrecision>(5))).get() == Bits<InfinitePrecision>(5).get());
   REQUIRE((~(~Bits<InfinitePrecision>(5))).get() == 5);
-  REQUIRE(_Bits<InfinitePrecision, true>(~Bits<InfinitePrecision>(5)).get() ==
-          -6);
+  REQUIRE(_Bits<InfinitePrecision, true>(~Bits<InfinitePrecision>(5)).get() == -6);
   REQUIRE(_Bits<64, true>(~Bits<InfinitePrecision>(5)).get() < 0);
   REQUIRE(_Bits<128, true>(~Bits<InfinitePrecision>(5)).get() < 0);
-  REQUIRE(_Bits<128, true>(~Bits<InfinitePrecision>(0x1'ffffffff'ffffffff_u128))
-              .get() < 0);
+  REQUIRE(_Bits<128, true>(~Bits<InfinitePrecision>(0x1'ffffffff'ffffffff_u128)).get() < 0);
 }
-TEST_CASE("64-bit Assignement", "[bits]") {
+TEST_CASE("64-bit Assignment", "[bits]") {
   Bits<64> a{5};
   Bits<64> b;
   b = a;
   REQUIRE(a.get() == b.get());
   REQUIRE(a.get() == 5);
 }
-TEST_CASE("65-bit Assignement", "[bits]") {
+TEST_CASE("65-bit Assignment", "[bits]") {
   Bits<65> a{5};
   Bits<65> b;
   b = a;
@@ -242,10 +227,8 @@ TEST_CASE("mixed-bit assignment, negated, constructor", "[bits]") {
 }
 
 TEST_CASE("Signed 128 assignment to gmp", "[bits]") {
-  _Bits<GmpPrecision, true> a{
-      _Bits<128, true>{std::numeric_limits<__int128>::min()}};
-  REQUIRE(a.get().get_ui() ==
-          static_cast<uint64_t>(std::numeric_limits<__int128>::min()));
+  _Bits<GmpPrecision, true> a{_Bits<128, true>{std::numeric_limits<__int128>::min()}};
+  REQUIRE(a.get().get_ui() == static_cast<uint64_t>(std::numeric_limits<__int128>::min()));
   // REQUIRE((a.get() >> 64).get_ui() ==
   // static_cast<uint64_t>(std::numeric_limits<__int128>::min()
   // >> 64));
@@ -353,10 +336,8 @@ TEST_CASE("Printing", "[bits]") {
   REQUIRE_THAT(fmt::format("{}", Bits<GmpPrecision>{16}), Equals("16"));
   REQUIRE_THAT(fmt::format("{:x}", Bits<GmpPrecision>{16}), Equals("10"));
   REQUIRE_THAT(fmt::format("{:#x}", Bits<GmpPrecision>{16}), Equals("0x10"));
-  REQUIRE_THAT(fmt::format("{:#10x}", Bits<GmpPrecision>{16}),
-               Equals("      0x10"));
-  REQUIRE_THAT(fmt::format("{:#010x}", Bits<GmpPrecision>{16}),
-               Equals("0x00000010"));
+  REQUIRE_THAT(fmt::format("{:#10x}", Bits<GmpPrecision>{16}), Equals("      0x10"));
+  REQUIRE_THAT(fmt::format("{:#010x}", Bits<GmpPrecision>{16}), Equals("0x00000010"));
   // fmt::print("{+:#10x}\n", Bits<GmpPrecision>{16});
 }
 
@@ -395,8 +376,7 @@ TEST_CASE("Runtime", "[bits]") {
   REQUIRE(_RuntimeBits<GmpPrecision, false>(255_b, 8_b) == 255_b);
   REQUIRE(_RuntimeBits<GmpPrecision, false>(256_b, 8_b) == 0_b);
   REQUIRE(_RuntimeBits<GmpPrecision, false>(257_b, 8_b) == 1_b);
-  REQUIRE_THROWS_AS((_RuntimeBits<GmpPrecision, false>{0_b, 130_b}),
-                    std::runtime_error);
+  REQUIRE_THROWS_AS((_RuntimeBits<GmpPrecision, false>{0_b, 130_b}), std::runtime_error);
 
   _RuntimeBits<64, false> a(0_b, 8_b);
   a = 255_b;
@@ -473,72 +453,43 @@ TEST_CASE("Runtime", "[bits]") {
   REQUIRE(_RuntimeBits<16, false>(1_b, 8_b).widening_sll<8>().width() == 16);
 
   // arithmetic
-  REQUIRE(_RuntimeBits<8, false>(1_b, 8_b) +
-              _RuntimeBits<8, false>(20_b, 8_b) ==
-          21_b);
-  REQUIRE(_RuntimeBits<8, false>(1_b, 8_b) -
-              _RuntimeBits<8, false>(20_b, 8_b) ==
-          237_b);
-  REQUIRE(_RuntimeBits<8, false>(10_b, 8_b) *
-              _RuntimeBits<8, false>(20_b, 8_b) ==
-          200_b);
-  REQUIRE(_RuntimeBits<8, false>(20_b, 8_b) *
-              _RuntimeBits<8, false>(20_b, 8_b) ==
-          144_b);
-  REQUIRE(_RuntimeBits<8, false>(20_b, 8_b).widening_mul(
-              _RuntimeBits<8, false>(20_b, 8_b)) == 400_b);
+  REQUIRE(_RuntimeBits<8, false>(1_b, 8_b) + _RuntimeBits<8, false>(20_b, 8_b) == 21_b);
+  REQUIRE(_RuntimeBits<8, false>(1_b, 8_b) - _RuntimeBits<8, false>(20_b, 8_b) == 237_b);
+  REQUIRE(_RuntimeBits<8, false>(10_b, 8_b) * _RuntimeBits<8, false>(20_b, 8_b) == 200_b);
+  REQUIRE(_RuntimeBits<8, false>(20_b, 8_b) * _RuntimeBits<8, false>(20_b, 8_b) == 144_b);
+  REQUIRE(_RuntimeBits<8, false>(20_b, 8_b).widening_mul(_RuntimeBits<8, false>(20_b, 8_b)) ==
+          400_b);
 
-  REQUIRE(_RuntimeBits<8, false>(1_b, 8_b) *
-              _RuntimeBits<8, true>(-3_sb, 8_b) ==
+  REQUIRE(_RuntimeBits<8, false>(1_b, 8_b) * _RuntimeBits<8, true>(-3_sb, 8_b) == 253_b);
+  REQUIRE(_RuntimeBits<8, true>(-3_sb, 8_b) * _RuntimeBits<8, false>(1_b, 8_b) == 253_b);
+  REQUIRE(_RuntimeBits<8, true>(1_b, 8_b) * _RuntimeBits<8, true>(-3_sb, 8_b) == -3_sb);
+
+  REQUIRE(_RuntimeBits<GmpPrecision, false>(1_b, 8_b) * _RuntimeBits<8, true>(-3_sb, 8_b) == 253_b);
+  REQUIRE(_RuntimeBits<GmpPrecision, true>(-3_sb, 8_b) * _RuntimeBits<8, false>(1_b, 8_b) == 253_b);
+  static_assert(std::same_as<decltype(_RuntimeBits<GmpPrecision, true>(1_b, 8_b) *
+                                      _RuntimeBits<8, true>(-3_sb, 8_b)),
+                             _RuntimeBits<GmpPrecision, true>>);
+  REQUIRE(_RuntimeBits<GmpPrecision, true>(1_b, 8_b) * _RuntimeBits<8, true>(-3_sb, 8_b) == -3_sb);
+
+  REQUIRE(_RuntimeBits<GmpPrecision, false>(1_b, 8_b) * _RuntimeBits<128, true>(-3_sb, 8_b) ==
           253_b);
-  REQUIRE(_RuntimeBits<8, true>(-3_sb, 8_b) *
-              _RuntimeBits<8, false>(1_b, 8_b) ==
+  REQUIRE(_RuntimeBits<GmpPrecision, true>(-3_sb, 8_b) * _RuntimeBits<128, false>(1_b, 8_b) ==
           253_b);
-  REQUIRE(_RuntimeBits<8, true>(1_b, 8_b) * _RuntimeBits<8, true>(-3_sb, 8_b) ==
+  REQUIRE(_RuntimeBits<GmpPrecision, true>(1_b, 8_b) * _RuntimeBits<128, true>(-3_sb, 8_b) ==
           -3_sb);
 
-  REQUIRE(_RuntimeBits<GmpPrecision, false>(1_b, 8_b) *
-              _RuntimeBits<8, true>(-3_sb, 8_b) ==
-          253_b);
-  REQUIRE(_RuntimeBits<GmpPrecision, true>(-3_sb, 8_b) *
-              _RuntimeBits<8, false>(1_b, 8_b) ==
-          253_b);
-  static_assert(
-      std::same_as<decltype(_RuntimeBits<GmpPrecision, true>(1_b, 8_b) *
-                            _RuntimeBits<8, true>(-3_sb, 8_b)),
-                   _RuntimeBits<GmpPrecision, true>>);
-  REQUIRE(_RuntimeBits<GmpPrecision, true>(1_b, 8_b) *
-              _RuntimeBits<8, true>(-3_sb, 8_b) ==
+  REQUIRE_THROWS_AS((_RuntimeBits<BitsInfinitePrecision, false>(1_b, InfinitePrecisionBits) *
+                     _RuntimeBits<BitsInfinitePrecision, true>(-3_sb, 8_b)),
+                    std::runtime_error);
+  REQUIRE_THROWS_AS((_RuntimeBits<BitsInfinitePrecision, true>(-3_sb, InfinitePrecisionBits) *
+                     _RuntimeBits<BitsInfinitePrecision, false>(1_b, InfinitePrecisionBits)),
+                    std::runtime_error);
+  REQUIRE(_RuntimeBits<BitsInfinitePrecision, true>(1_b, InfinitePrecisionBits) *
+              _RuntimeBits<BitsInfinitePrecision, true>(-3_sb, InfinitePrecisionBits) ==
           -3_sb);
-
-  REQUIRE(_RuntimeBits<GmpPrecision, false>(1_b, 8_b) *
-              _RuntimeBits<128, true>(-3_sb, 8_b) ==
-          253_b);
-  REQUIRE(_RuntimeBits<GmpPrecision, true>(-3_sb, 8_b) *
-              _RuntimeBits<128, false>(1_b, 8_b) ==
-          253_b);
-  REQUIRE(_RuntimeBits<GmpPrecision, true>(1_b, 8_b) *
-              _RuntimeBits<128, true>(-3_sb, 8_b) ==
-          -3_sb);
-
-  REQUIRE_THROWS_AS(
-      (_RuntimeBits<BitsInfinitePrecision, false>(1_b, InfinitePrecisionBits) *
-       _RuntimeBits<BitsInfinitePrecision, true>(-3_sb, 8_b)),
-      std::runtime_error);
-  REQUIRE_THROWS_AS(
-      (_RuntimeBits<BitsInfinitePrecision, true>(-3_sb, InfinitePrecisionBits) *
-       _RuntimeBits<BitsInfinitePrecision, false>(1_b, InfinitePrecisionBits)),
-      std::runtime_error);
-  REQUIRE(
-      _RuntimeBits<BitsInfinitePrecision, true>(1_b, InfinitePrecisionBits) *
-          _RuntimeBits<BitsInfinitePrecision, true>(-3_sb,
-                                                    InfinitePrecisionBits) ==
-      -3_sb);
-  REQUIRE(
-      _RuntimeBits<BitsInfinitePrecision, false>(1_b, InfinitePrecisionBits) *
-          _RuntimeBits<BitsInfinitePrecision, false>(3_sb,
-                                                     InfinitePrecisionBits) ==
-      3_b);
+  REQUIRE(_RuntimeBits<BitsInfinitePrecision, false>(1_b, InfinitePrecisionBits) *
+              _RuntimeBits<BitsInfinitePrecision, false>(3_sb, InfinitePrecisionBits) ==
+          3_b);
 }
 
 TEST_CASE("PossiblyUnknownBits", "[bits]") {
@@ -567,31 +518,19 @@ TEST_CASE("PossiblyUnknownBits", "[bits]") {
   _PossiblyUnknownBits<8, true> d("0x80"_xb);
   REQUIRE(((d & 0x3200_b) == 0x3200_b));  // sign extension should happen on d
 
-  REQUIRE(((_PossiblyUnknownBits<4, false>(1_b) |
-            _PossiblyUnknownBits<2, false>(3_b)) == 3_b));
-  REQUIRE(((_PossiblyUnknownBits<4, false>(1_b) |
-            _PossiblyUnknownBits<2, true>(3_b)) == 0xf_b));
-  REQUIRE(((_PossiblyUnknownBits<4, false>(1_b) +
-            _PossiblyUnknownBits<2, false>(3_b)) == 4_b));
-  REQUIRE(((_PossiblyUnknownBits<4, false>(1_b) +
-            _PossiblyUnknownBits<2, true>(3_b)) == 0_b));
-  REQUIRE(((_PossiblyUnknownBits<4, true>(1_b) |
-            _PossiblyUnknownBits<2, false>(3_b)) == 3_b));
+  REQUIRE(((_PossiblyUnknownBits<4, false>(1_b) | _PossiblyUnknownBits<2, false>(3_b)) == 3_b));
+  REQUIRE(((_PossiblyUnknownBits<4, false>(1_b) | _PossiblyUnknownBits<2, true>(3_b)) == 0xf_b));
+  REQUIRE(((_PossiblyUnknownBits<4, false>(1_b) + _PossiblyUnknownBits<2, false>(3_b)) == 4_b));
+  REQUIRE(((_PossiblyUnknownBits<4, false>(1_b) + _PossiblyUnknownBits<2, true>(3_b)) == 0_b));
+  REQUIRE(((_PossiblyUnknownBits<4, true>(1_b) | _PossiblyUnknownBits<2, false>(3_b)) == 3_b));
 
-  REQUIRE(((_PossiblyUnknownBits<4, true>(1_b) |
-            _PossiblyUnknownBits<2, false>(3_b)) == 3_b));
+  REQUIRE(((_PossiblyUnknownBits<4, true>(1_b) | _PossiblyUnknownBits<2, false>(3_b)) == 3_b));
 
-  REQUIRE(((_PossiblyUnknownBits<4, false>(0x8_b) &
-            _PossiblyUnknownBits<2, false>(3_b)) == 0_b));
-  REQUIRE(((_PossiblyUnknownBits<4, false>(0x8_b) &
-            _PossiblyUnknownBits<2, true>(3_b)) == 0x8_b));
-  REQUIRE((_PossiblyUnknownBits<4, false>(1_b) -
-           _PossiblyUnknownBits<2, false>(3_b))
-              .get() == 0xe);
-  REQUIRE(((_PossiblyUnknownBits<4, false>(1_b) -
-            _PossiblyUnknownBits<2, false>(3_b)) == 0xe_b));
-  REQUIRE(((_PossiblyUnknownBits<4, false>(1_b) -
-            _PossiblyUnknownBits<2, true>(3_b)) == 2_b));
+  REQUIRE(((_PossiblyUnknownBits<4, false>(0x8_b) & _PossiblyUnknownBits<2, false>(3_b)) == 0_b));
+  REQUIRE(((_PossiblyUnknownBits<4, false>(0x8_b) & _PossiblyUnknownBits<2, true>(3_b)) == 0x8_b));
+  REQUIRE((_PossiblyUnknownBits<4, false>(1_b) - _PossiblyUnknownBits<2, false>(3_b)).get() == 0xe);
+  REQUIRE(((_PossiblyUnknownBits<4, false>(1_b) - _PossiblyUnknownBits<2, false>(3_b)) == 0xe_b));
+  REQUIRE(((_PossiblyUnknownBits<4, false>(1_b) - _PossiblyUnknownBits<2, true>(3_b)) == 2_b));
 
   bool result = ("0b0x110"_xb & "0bx00x0"_xb).unknown_mask() == 2_b;
   REQUIRE(result);
@@ -652,25 +591,24 @@ TEMPLATE(InfinitePrecision, InfinitePrecision)
 
 #undef TEMPLATE
 
-#define TEMPLATE(N)                                                            \
-  TEST_CASE("Random inputs with signed Bits<" #N ">", "[bits]") {              \
-    auto i = GENERATE(take(100, random(std::numeric_limits<int64_t>::min(),    \
-                                       std::numeric_limits<int64_t>::max()))); \
-    auto j = GENERATE(take(100, random(std::numeric_limits<int64_t>::min(),    \
-                                       std::numeric_limits<int64_t>::max()))); \
-                                                                               \
-    _Bits<N, true> bi{i};                                                      \
-    _Bits<N, true> bj{j};                                                      \
-                                                                               \
-    mpz_class native_sum =                                                     \
-        static_cast<mpz_class>(i) + static_cast<mpz_class>(j);                 \
-    _Bits<N, true> bits_sum = bi + bj;                                         \
-                                                                               \
-    REQUIRE(bits_sum == _Bits<N, true>{native_sum});                           \
-    if ((N > 64) || ((native_sum >> 63)) == 0) {                               \
-      bool result = to_gmp(bits_sum.get()) == native_sum;                      \
-      REQUIRE(result);                                                         \
-    }                                                                          \
+#define TEMPLATE(N)                                                                              \
+  TEST_CASE("Random inputs with signed Bits<" #N ">", "[bits]") {                                \
+    auto i = GENERATE(take(                                                                      \
+        100, random(std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max()))); \
+    auto j = GENERATE(take(                                                                      \
+        100, random(std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max()))); \
+                                                                                                 \
+    _Bits<N, true> bi{i};                                                                        \
+    _Bits<N, true> bj{j};                                                                        \
+                                                                                                 \
+    mpz_class native_sum = static_cast<mpz_class>(i) + static_cast<mpz_class>(j);                \
+    _Bits<N, true> bits_sum = bi + bj;                                                           \
+                                                                                                 \
+    REQUIRE(bits_sum == _Bits<N, true>{native_sum});                                             \
+    if ((N > 64) || ((native_sum >> 63)) == 0) {                                                 \
+      bool result = to_gmp(bits_sum.get()) == native_sum;                                        \
+      REQUIRE(result);                                                                           \
+    }                                                                                            \
   }
 
 TEMPLATE(64)

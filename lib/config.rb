@@ -115,15 +115,15 @@ class PartialConfig < Config
 
     @param_values = @data.key?("params") ? @data["params"] : [].freeze
 
-    @mxlen = @data.dig("params", "XLEN")
-    raise "Must set XLEN for a configured config" if @mxlen.nil?
+    @mxlen = @data.dig("params", "MXLEN")
+    raise "Must set MXLEN for a configured config" if @mxlen.nil?
 
     @mxlen.freeze
   end
 
   def additional_extensions_allowed? = @data.key?("additional_extensions") ? @data["additional_extensions"] : true
 
-  def implemented_extensions = raise "implemented_extensions is only availabe for a FullConfig"
+  def implemented_extensions = raise "implemented_extensions is only available for a FullConfig"
 
   # @return [Array<Hash{String => String,Array<String}>]
   #    List of all extensions that must be implemented, as specified in the config file
@@ -182,8 +182,8 @@ class FullConfig < Config
 
     @param_values = @data["params"]
 
-    @mxlen = @data.dig("params", "XLEN").freeze
-    raise "Must set XLEN for a configured config" if @mxlen.nil?
+    @mxlen = @data.dig("params", "MXLEN").freeze
+    raise "Must set MXLEN for a configured config" if @mxlen.nil?
   end
 
   # @return [Array<Hash<String, String>>] List of all extensions known to be implemented in this architecture

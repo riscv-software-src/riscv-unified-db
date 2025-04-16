@@ -6,7 +6,7 @@ type: partially configured
 name: rv64
 description: A generic RV32 system; only MXLEN is known
 params:
-  XLEN: 64
+  MXLEN: 64
 mandatory_extensions:
   - name: "I"
     version: ">= 0"

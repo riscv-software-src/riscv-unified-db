@@ -43,7 +43,7 @@ operation(): |
   XReg src1 = X[rs1];
   XReg src2 = X[rs2];
 
-  X[rd] = (src1 * src2)[XLEN-1:0];
+  X[rd] = (src1 * src2)[MXLEN-1:0];
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

@@ -112,6 +112,15 @@ class Csr < DatabaseObject
     when "VSXLEN"
       # dynamic if either we don't know VSXLEN or VSXLEN is explicitly mutable
       [nil, 3264].include?(cfg_arch.param_values["VSXLEN"])
+    when "XLEN"
+      # must always have M-mode
+      # SXLEN condition applies if S-mode is possible
+      # VSXLEN condition applies if VS-mode is possible
+      (cfg_arch.mxlen.nil?) || \
+      (cfg_arch.possible_extensions.map(&:name).include?("S") && \
+      [nil, 3264].include(cfg_arch.param_values["SXLEN"])) || \
+      (cfg_arch.possible_extensions.map(&:name).include?("H") && \
+      [nil, 3264].include?(cfg_arch.param_values["VSXLEN"]))
     else
       raise "Unexpected length"
     end
@@ -121,7 +130,7 @@ class Csr < DatabaseObject
   # @return [Integer] Smallest length of the CSR in any mode
   def min_length
     case @data["length"]
-    when "MXLEN", "SXLEN", "VSXLEN"
+    when "MXLEN", "SXLEN", "VSXLEN", "XLEN"
       @cfg_arch.possible_xlens.min
     when Integer
       @data["length"]
@@ -173,6 +182,8 @@ class Csr < DatabaseObject
         # don't know VSXLEN
         effective_xlen
       end
+    when "XLEN"
+      effective_xlen
     when Integer
       @data["length"]
     else
@@ -207,6 +218,42 @@ class Csr < DatabaseObject
       else
         64
       end
+    when "XLEN"
+      if cfg_arch.possible_extensions.map(&:name).include?("M")
+        cfg_arch.mxlen || 64
+      elsif cfg_arch.possible_extensions.map(&:name).include?("S")
+        if cfg_arch.param_values.key?("SXLEN")
+          if cfg_arch.param_values["SXLEN"] == 3264
+            64
+          else
+            cfg_arch.param_values["SXLEN"]
+          end
+        else
+          # SXLEN can never be greater than MXLEN
+          cfg_arch.mxlen || 64
+        end
+      elsif cfg_arch.possible_extensions.map(&:name).include?("H")
+        if cfg_arch.param_values.key?("VSXLEN")
+          if cfg_arch.param_values["VSXLEN"] == 3264
+            64
+          else
+            cfg_arch.param_values["VSXLEN"]
+          end
+        else
+          # VSXLEN can never be greater than MXLEN or SXLEN
+          if cfg_arch.param_values.key?("SXLEN")
+            if cfg_arch.param_values["SXLEN"] == 3264
+              64
+            else
+              cfg_arch.param_values["SXLEN"]
+            end
+          else
+            cfg_arch.mxlen || 64
+          end
+        end
+      else
+        raise "Unexpected"
+      end
     when Integer
       @data["length"]
     else
@@ -223,6 +270,8 @@ class Csr < DatabaseObject
       "CSR[mstatus].SXL == 0"
     when "VSXLEN"
       "CSR[hstatus].VSXL == 0"
+    when "XLEN"
+      "(priv_mode() == PrivilegeMode::M && CSR[misa].MXL == 0) || (priv_mode() == PrivilegeMode::S && CSR[mstatus].SXL == 0) || (priv_mode() == PrivilegeMode::VS && CSR[hstatus].VSXL == 0)"
     else
       raise "Unexpected length #{@data['length']} for #{name}"
     end
@@ -237,6 +286,8 @@ class Csr < DatabaseObject
       "CSR[mstatus].SXL == 1"
     when "VSXLEN"
       "CSR[hstatus].VSXL == 1"
+    when "XLEN"
+      "(priv_mode() == PrivilegeMode::M && CSR[misa].MXL == 1) || (priv_mode() == PrivilegeMode::S && CSR[mstatus].SXL == 1) || (priv_mode() == PrivilegeMode::VS && CSR[hstatus].VSXL == 1)"
     else
       raise "Unexpected length"
     end
@@ -254,6 +305,8 @@ class Csr < DatabaseObject
           "CSR[mstatus].SXL == %%"
         when "VSXLEN"
           "CSR[hstatus].VSXL == %%"
+        when "XLEN"
+          "(priv_mode() == PrivilegeMode::M && CSR[misa].MXL == %%) || (priv_mode() == PrivilegeMode::S && CSR[mstatus].SXL == %%) || (priv_mode() == PrivilegeMode::VS && CSR[hstatus].VSXL == %%)"
         else
           raise "Unexpected length '#{@data['length']}'"
         end
@@ -439,11 +492,11 @@ class Csr < DatabaseObject
       "__expected_return_type",
       Idl::Type.new(:bits, width: 128)
     )
-    if symtab.get("XLEN").value.nil?
+    if symtab.get("MXLEN").value.nil?
       symtab.add(
-        "XLEN",
+        "MXLEN",
         Idl::Var.new(
-          "XLEN",
+          "MXLEN",
           Idl::Type.new(:bits, width: 6, qualifiers: [:const]),
           effective_xlen,
           param: true

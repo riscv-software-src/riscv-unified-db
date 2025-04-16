@@ -145,7 +145,7 @@ extensions:
         #    version: "=1.1.0"
         #    then:
         #      enum: [little, big]
-      XLEN:
+      MXLEN:
         schema:
           const: 64
       CONFIG_PTR_ADDRESS:
