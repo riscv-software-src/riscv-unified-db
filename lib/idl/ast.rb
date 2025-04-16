@@ -4207,7 +4207,7 @@ module Idl
       end
 
       unless return_type(symtab).convertable_to?(expected_return_type(symtab))
-        type_error "Return type (#{return_type(symtab)}) not convertable to expected return type (#{expected_return_type(symtab)})"
+        type_error "Return type (#{return_type(symtab)}) not convertible to expected return type (#{expected_return_type(symtab)})"
       end
     end
 

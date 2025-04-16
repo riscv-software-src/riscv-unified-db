@@ -7,7 +7,7 @@
 #   RVA and MC are examples of portfolio classes
 #
 # Many classes inherit from the DatabaseObject class. This provides facilities for accessing the contents of a
-# Portfolio Class YAML or Portfolio Model YAML file via the "data" member (hash holding releated YAML file contents).
+# Portfolio Class YAML or Portfolio Model YAML file via the "data" member (hash holding related YAML file contents).
 #
 # A variable name with a "_data" suffix indicates it is the raw hash data from the portfolio YAML file.
 
