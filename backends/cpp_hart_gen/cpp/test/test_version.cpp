@@ -47,7 +47,7 @@ TEST_CASE("version ordering", "[version]") {
   REQUIRE(v2 >= v1);
 }
 
-TEST_CASE("version ordering iwth pre", "[version]") {
+TEST_CASE("version ordering with pre", "[version]") {
   Version v1("2.1.3-pre"sv);
   Version v2("2.1.3"sv);
 
