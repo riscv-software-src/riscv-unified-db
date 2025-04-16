@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+$schema: csr_schema.json#
+kind: csr
+name: vsireg2
+long_name: Virtual Supervisor Indirect Register Alias 2
+address: 0x252
+virtual_address: 0x252
+priv_mode: VS
+length: VSXLEN
+definedBy: Smcsrind
+description: |
+  The `vsireg2` CSR is one of several virtual supervisor-level alias registers used
+  to indirectly access register state based on the value held in the `vsiselect`
+  CSR. This alias mechanism enables efficient access to register state by indexing
+  into an alias space defined by the extension utilizing this access method.
+
+  The value in `vsiselect` determines the register being accessed through `vsireg2`.
+  The `vsiselect` value serves as an index into a virtualized alias space, providing
+  access to registers without consuming contiguous CSR address ranges.
+
+  If `vsiselect` holds a value that is not implemented, the behavior of `vsireg2`
+  is UNSPECIFIED. It is RECOMMENDED that implementations raise a virtual instruction
+  exception for such accesses to facilitate debugging and emulation.
+
+  The access behavior for each `vsiselect` + `vsireg2` pair is defined by the
+  extension that owns the `vsiselect` value. Ordinarily, the alias register
+  either accesses architectural state, reads zero, or raises an exception.
+
+fields:
+  Data:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    type: RW
+    description: |
+      Data read or written based on the currently selected `vsiselect` value.
+    reset_value: UNDEFINED_LEGAL
+sw_read(): |

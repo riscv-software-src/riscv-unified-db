@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+$schema: csr_schema.json#
+kind: csr
+name: vsiselect
+long_name: Virtual Supervisor Indirect Register Select
+address: 0x250
+virtual_address: 0x250
+priv_mode: VS
+length: VSXLEN
+definedBy: Smcsrind
+description: |
+  The `vsiselect` CSR is a virtual supervisor-level register that selects which
+  register is accessed indirectly via the `vsireg*` alias registers. The value
+  held in `vsiselect` acts as an index into an alias space defined by the
+  extension utilizing this access method.
+
+  This CSR allows software in VS-mode to access register arrays by index rather
+  than by fixed CSR numbers, improving scalability and reducing the need for large
+  contiguous CSR address space. The `vsiselect` CSR is typically used alongside
+  `vsireg` through `vsireg6` to access virtual supervisor-level registers indirectly.
+
+  When `vsiselect` holds a value that corresponds to an unimplemented register,
+  the behavior is UNSPECIFIED. Implementations are encouraged to raise a virtual
+  instruction exception to support software emulation and debugging.
+
+  The indirect access mechanism enables more flexible access patterns for virtual
+  machines and reduces the complexity of implementing CSR access.
+
+fields:
+  Data:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    type: RW
+    description: |
+      The index value selecting the register accessed through the `vsireg*` alias registers.
+    reset_value: UNDEFINED_LEGAL
+sw_read(): |

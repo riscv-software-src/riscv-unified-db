@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Sscsrind
+long_name: Supervisor Indirect CSR Access (Sscsrind)
+description: |
+  The `Sscsrind` extension extends the CSR access mechanism for Supervisor mode by enabling indirect
+  access to Supervisor-level registers through the `siselect` CSR. This extension provides efficient access
+  to an array of registers without allocating large contiguous blocks of CSR address space. Registers are
+  accessed by index, offering a more scalable approach to managing Supervisor-level registers.
+
+  Similar to the `Smcsrind` extension, this mechanism reduces the need for fixed CSR numbers, supporting
+  custom extensions that manage Supervisor-level register access through the use of `siselect` and `sireg*`
+  registers.
+
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: "2024-11"
+    url: "https://github.com/riscv/riscv-isa-manual/releases/tag/riscv-isa-release-482805d-2025-03-25"
+    requires:
+      allOf:
+        - name: S
+          version: ~> 1.13
+        - name: Smcsrind
+          version: ~> 1.0

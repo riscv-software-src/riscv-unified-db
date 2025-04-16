@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+$schema: csr_schema.json#
+kind: csr
+name: mireg4
+long_name: Machine Indirect Register Alias 4
+address: 0x355
+priv_mode: M
+length: MXLEN
+definedBy: Smcsrind
+description: |
+  The `mireg4` CSR is a machine-level indirect alias register used to access
+  register state as determined by the value in `miselect`. This CSR provides
+  access to a range of registers indirectly without requiring dedicated CSR
+  numbers for each register.
+
+  The behavior of `mireg4` is determined by the value of `miselect`. If the value
+  in `miselect` is not implemented, access is UNSPECIFIED, and implementations
+  are encouraged to raise an illegal instruction exception.
+
+fields:
+  Count:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    type: RW
+    description: Register state data of CSR selected by `miselect` value.
+    reset_value: UNDEFINED_LEGAL
+sw_read(): |

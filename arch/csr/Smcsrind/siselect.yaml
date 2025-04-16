@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+$schema: csr_schema.json#
+kind: csr
+name: siselect
+long_name: Supervisor Indirect Register Select
+address: 0x150
+priv_mode: S
+length: SXLEN
+definedBy: Sscsrind
+description: |
+  The `siselect` CSR is a supervisor-level register used to select which indirectly
+  accessed register is targeted via the `sireg*` alias CSRs. The value in `siselect`
+  acts as an index into an extension-defined space of registers, allowing access to
+  a wide range of CSR-like state without allocating contiguous CSR numbers.
+
+  This indirect access mechanism enables software to efficiently access register arrays
+  without consuming large chunks of CSR address space. The `siselect` CSR works alongside
+  the `sireg*` alias CSRs to facilitate this indexing and indirect access method.
+
+  The minimum supported value range for `siselect` is 0–0xFFF, though future extensions
+  may define larger ranges. Values with the most-significant bit set (bit SXLEN - 1 = 1)
+  are reserved for custom use, while values with the most-significant bit cleared are
+  designated for standard use by ratified extensions.
+
+  When `siselect` holds a value that is not implemented, accesses to `sireg*` are
+  UNSPECIFIED. It is RECOMMENDED that implementations raise an illegal instruction
+  exception in such cases to support emulation or error detection. Platforms or profiles
+  may define additional behaviors.
+
+fields:
+  Select Value:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    type: RW
+    description: |
+      Index value selecting the target register accessed through `sireg*`.
+      It serves as an indirect register selector. Values are defined by the extension.
+    reset_value: UNDEFINED_LEGAL
+sw_read(): |

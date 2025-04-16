@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+$schema: csr_schema.json#
+kind: csr
+name: miselect
+long_name: Machine Indirect Register Select
+address: 0x350
+priv_mode: M
+length: MXLEN
+definedBy: Smcsrind
+description: |
+  The `miselect` CSR is a WARL (Write-Any Read-Legal) register that selects which
+  indirect register is accessed via the `mireg*` alias CSRs. The value in `miselect`
+  acts as an index into a space of indirectly addressable machine-level registers.
+
+  Values of `miselect` are allocated by extensions implementing indirect register access.
+  The most-significant bit (bit MXLEN-1) is reserved for custom use and must be used
+  only with implementation-specific extensions. Values with this bit clear are reserved
+  for standard use.
+
+  The indirect access mechanism enabled by `miselect` reduces the need for allocating
+  large contiguous CSR address ranges by supporting register arrays accessed by index.
+
+  If `miselect` holds an unsupported value, accesses to the corresponding `mireg*`
+  alias CSR are UNSPECIFIED. Implementations are encouraged to raise an illegal instruction
+  exception to support robust error handling and software emulation.
+
+fields:
+  Select Value:
+    location_rv32: 31-0
+    location_rv64: 63-0
+    type: RW
+    description: Selects which indirect register is accessed via `mireg*`.
+    reset_value: UNDEFINED_LEGAL
+sw_read(): |
