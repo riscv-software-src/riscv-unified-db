@@ -145,7 +145,7 @@ namespace udb {
       OpKind m_kind;
     };
 
-    // default requiremnt is >= 0
+    // default requirement is >= 0
     VersionRequirement() : m_op(OpKind::GTE), m_version(0, 0, 0, false) {}
 
     constexpr VersionRequirement(const std::string_view& req)

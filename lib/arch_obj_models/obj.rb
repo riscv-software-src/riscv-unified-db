@@ -187,7 +187,7 @@ class DatabaseObject
   # @param normative [Boolean] Include normative text?
   # @param non_normative [Boolean] Include non-normative text?
   # @param when_cb [Proc(AstNode, String)] Callback to generate text for the un-knowable ast
-  # @return [String] Descripton of the object, from YAML
+  # @return [String] Description of the object, from YAML
   def description(
     normative: true,      # display normative text?
     non_normative: true,  # display non-normative text?

@@ -599,7 +599,7 @@ class Instruction < DatabaseObject
       if same
         # the mask can't be distinguished; is there one or more exclusions that distinguishes them?
 
-        # we have to check all combinations of dvs with exlcusions, and their values
+        # we have to check all combinations of dvs with exclusions, and their values
         exclusion_dvs = @decode_variables.reject { |dv| dv.excludes.empty? }
         exclusion_dv_values = []
         def expand(exclusion_dvs, exclusion_dv_values, base, idx)
@@ -702,7 +702,7 @@ class Instruction < DatabaseObject
     !(hints.include?(other_inst) || other_inst.hints.include?(self))
   end
 
-  # @return [Array<Instruction>] List of instructions that re-use this instruction's encoding,
+  # @return [Array<Instruction>] List of instructions that reuse this instruction's encoding,
   #                              but can't be present in the same system because their defining
   #                              extensions conflict
   def conflicting_instructions(xlen)
