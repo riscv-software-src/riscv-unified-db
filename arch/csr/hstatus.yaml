@@ -244,15 +244,15 @@ fields:
         normative: false
         text: |
           Since the CPU does not support big endian in VS-mode, this is hardwired to 0.
-        when(): return VS_MODE_ENDIANESS == "little";
+        when(): return VS_MODE_ENDIANNESS == "little";
 
       - id: csr-hstatus-vgein-big-endian
         normative: false
         text: |
           Since the CPU does not support little endian in VS-mode, this is hardwired to 1.
-        when(): return VS_MODE_ENDIANESS == "big";
+        when(): return VS_MODE_ENDIANNESS == "big";
     type(): |
-      if (VS_MODE_ENDIANESS == "dynamic") {
+      if (VS_MODE_ENDIANNESS == "dynamic") {
         # mode is mutable
         return CsrFieldType::RW;
       } else {
@@ -260,10 +260,10 @@ fields:
         return CsrFieldType::RO;
       }
     reset_value(): |
-      if (VS_MODE_ENDIANESS == "little") {
+      if (VS_MODE_ENDIANNESS == "little") {
         # little endian
         return 0;
-      } else if (VS_MODE_ENDIANESS == "big") {
+      } else if (VS_MODE_ENDIANNESS == "big") {
         # big endian
         return 1;
       } else {

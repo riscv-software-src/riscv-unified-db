@@ -133,7 +133,7 @@ extensions:
       TRAP_ON_EBREAK:
         schema:
           const: true
-      M_MODE_ENDIANESS:
+      M_MODE_ENDIANNESS:
         schema:
           const: little
       MXLEN:
