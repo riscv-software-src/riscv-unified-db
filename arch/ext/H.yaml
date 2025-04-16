@@ -167,7 +167,7 @@ params:
       type: integer
       minimum: 1
       maximum: 63
-      extra_validation: |
+    extra_validation: |
       # GEILEN must be <= 31 for RV32
       assert NUM_EXTERNAL_GUEST_INTERRUPTS <= 31 if SXLEN == 32
   VS_MODE_ENDIANESS:
