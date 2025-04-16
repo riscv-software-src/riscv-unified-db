@@ -1,0 +1,56 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: vsie
+address: 0x204
+virtual_address: 0x144
+long_name: Virtual Supervisor Interrupt Enable
+description: |
+  The vsie register is a VSXLEN-bit read/write register that is VS-mode’s version of
+  supervisor CSR sie. When V=1, vsie substitutes for the usual sie, so instructions that
+  normally read or modify sie actually access vsie instead. However, interrupts directed to
+  HS-level continue to be indicated in the HS-level sip register, not in vsip, when V=1.
+
+  When bit 13 of hideleg is zero, vsie.LCOFIE is read-only zero. Else, vsie.LCOFIE is an alias of sie.LCOFIE.
+  When bit 10 of hideleg is zero, vsie.SEIE is read-only zero. Else, vsie.SEIE is an alias of hie.VSEIE.
+  When bit 6 of hideleg is zero, vsie.STIE is read-only zero. Else, vsie.STIE is an alias of hie.VSTIE.
+  When bit 2 of hideleg is zero, vsie.SSIE is read-only zero. Else, vsie.SSIE is an alias of hie.VSSIE.
+priv_mode: VS
+definedBy: H
+length: VSXLEN
+fields:
+  SSIE:
+    location: 1
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    alias: hie.VSSIE[0]
+    description: |
+      SSIE. Read-only zero when hideleg[2] is 0. Else, alias of hie.VSSIE.
+
+  STIE:
+    location: 5
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    alias: hie.VSTIE[0]
+    description: |
+      STIE. Read-only zero when hideleg[6] is 0. Else, alias of hie.VSTIE.
+
+  SEIE:
+    location: 9
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    alias: hie.VSEIE[0]
+    description: |
+      SEIE. Read-only zero when hideleg[10] is 0. Else, alias of hie.VSEIE.
+
+  LCOFIE:
+    location: 13
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    alias: sie.LCOFIE[0]
+    description: |
+      LCOFIE. Read-only zero when hideleg[13] is 0. Else, alias of sie.LCOFIE.

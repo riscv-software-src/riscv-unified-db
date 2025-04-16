@@ -1,0 +1,49 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: hie
+long_name: Hypervisor Interrupt Enable Register
+description: |
+  The `hie` register is a read/write register in HS-mode that enables interrupts.
+  It corresponds to the enable bits for VS-level and hypervisor-specific interrupts, and supplements
+  the HS-level `sie` register.
+address: 0x604
+priv_mode: S
+definedBy: H
+length: SXLEN
+fields:
+  SGEIE:
+    location: 12
+    type: RW-H
+    reset_value: 0
+    description: |
+      Hypervisor guest external interrupt enable bit. When set, allows external interrupts to be delivered
+      to VS-mode based on the `hgeie` setting.
+
+  VSEIE:
+    location: 10
+    type: RW-H
+    reset_value: 0
+    description: |
+      VS-level external interrupt enable bit. When set, allows external interrupts directed to VS-level
+      to be processed based on the configuration in `hvip` and other platform-specific sources.
+
+  VSTIE:
+    location: 6
+    type: RW-H
+    reset_value: 0
+    description: |
+      VS-level timer interrupt enable bit. When set, allows VS-level timer interrupts to be processed
+      based on the `hvip` configuration and any platform-specific timer interrupts.
+
+  VSSIE:
+    location: 2
+    type: RW-H
+    reset_value: 0
+    description: |
+      VS-level software interrupt enable bit. When set, allows software interrupts directed to VS-level
+      to be processed, based on the configuration in `hvip`.
