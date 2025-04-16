@@ -8,21 +8,24 @@ priv_mode: S
 length: 32
 definedBy: Sscofpmf
 description: |
-  The `scountovf` CSR is a 32-bit read-only register that contains shadow copies of the OF bits in the 29 `mhpmevent` CSRs (mhpmevent3 - mhpmevent31).
-  scountovf bit X corresponds to mhpmeventX.
+  This extension adds the scountovf CSR, a 32-bit read-only
+  register that contains shadow copies of the OF bits in the 29 mhpmevent CSRs
+  (mhpmevent3 - mhpmevent31) - where scountovf bit X corresponds to mhpmeventX.
 
-  This register enables supervisor-level overflow interrupt handler software to quickly and easily determine which counter(s) have overflowed
+  This register enables supervisor-level overflow interrupt handler
+  software to quickly and easily determine which counter(s) have overflowed
   (without needing to make an execution environment call or series of calls ultimately up to M-mode).
 
-  Read access to bit X is subject to the same `mcounteren` (or `mcounteren` and `hcounteren`) CSRs that mediate access to the `hpmcounter` CSRs by S-mode (or VS-mode).
-  In M-mode, `scountovf` bit X is always readable. In S/HS-mode, `scountovf` bit X is readable when `mcounteren` bit X is set, and otherwise reads as zero.
-  Similarly, in VS-mode, `scountovf` bit X is readable when both `mcounteren` bit X and `hcounteren` bit X are set, and otherwise reads as zero.
+  Read access to bit X is subject to the same mcounteren (or mcounteren and hcounteren)
+  CSRs that mediate access to the hpmcounter CSRs by S-mode (or VS-mode).
+  In M-mode, scountovf bit X is always readable. In S/HS-mode, scountovf bit X is readable
+  when mcounteren bit X is set, and otherwise reads as zero. Similarly, in VS mode,
+  scountovf bit X is readable when mcounteren bit X and hcounteren bit X are both set, and otherwise reads as zero
 
 fields:
-  OF:
-    location_rv32: 31
-    location_rv64: 31
+  OF_shadow_bits:
+    location: 31
     type: RO
     description: |
-      Overflow status and interrupt disable bit that is set when the corresponding `hpmcounter` overflows.
+      Read-only shadow copies of the OF bits from mhpmevent3 to mhpmevent31.
     reset_value: UNDEFINED_LEGAL
