@@ -30,7 +30,7 @@ description: |
 
   Bits [62:58] (xINH) are writable inhibit bits corresponding to each privilege mode:
   If a bit is set, counting is inhibited in that mode.
-  
+
   If the corresponding mode is not implemented, the bit is read-only zero.
 
   Bits [57:0] are reserved (WPRI) and read as zero; writes to them are ignored.
@@ -38,7 +38,7 @@ description: |
   For RV32, the upper 32 bits of `mcyclecfg` are accessed via `mcyclecfgh` at CSR address 0x721.
 
   Note: Although CSR address 0x320 would have been a more natural choice,
-  it is already allocated to `mcountinhibit`.
+  it is already allocated to `mcountinhibit`
 
 fields:
   MINH:

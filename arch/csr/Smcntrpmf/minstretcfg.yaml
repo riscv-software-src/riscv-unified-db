@@ -30,8 +30,8 @@ description: |
 
   The lower 58 bits [57:0] are reserved (WPRI) and must be read as zero; writes are ignored.
 
-  For RV32 systems, the upper 32 bits of `minstretcfg` are accessible via the `minstretcfgh` CSR (0x722).
-  
+  For RV32 systems, the upper 32 bits of `minstretcfg` are accessible via the `minstretcfgh` CSR (0x722)
+
 fields:
   MINH:
     location: 62
