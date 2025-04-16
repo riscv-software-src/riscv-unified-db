@@ -13,14 +13,16 @@ description: |
   mode filtering for the `minstret` (Machine Instructions-Retired Counter). Each inhibit bit (xINH)
   disables counting of retired instructions in the associated privilege mode.
 
-  Bits 62-58 correspond to the following privilege modes:
-    - MINH: If set, then counting of events in M-mode is inhibited.
-    - SINH: If set, then counting of events in S/HS-mode is inhibited.
-    - UINH: If set, then counting of events in U-mode is inhibited.
-    - VSINH: If set, then counting of events in VS-mode is inhibited.
-    - VUINH: If set, then counting of events in VU-mode is inhibited.
+  | Field   | Description                                               |
+  |---------|-----------------------------------------------------------|
+  | MINH    | If set, then counting of events in M-mode is inhibited.  |
+  | SINH    | If set, then counting of events in S/HS-mode is inhibited. |
+  | UINH    | If set, then counting of events in U-mode is inhibited.  |
+  | VSINH   | If set, then counting of events in VS-mode is inhibited. |
+  | VUINH   | If set, then counting of events in VU-mode is inhibited. |
 
   When all inhibit bits are clear, instruction retirement is counted in all privilege modes.
+
   For each bit in 61:58, if the associated privilege mode is not implemented, the bit is read-only zero.
 
   Bit 63 (OF) is defined to always read as zero, indicating that the counter does not
@@ -29,7 +31,7 @@ description: |
   The lower 58 bits [57:0] are reserved (WPRI) and must be read as zero; writes are ignored.
 
   For RV32 systems, the upper 32 bits of `minstretcfg` are accessible via the `minstretcfgh` CSR (0x722).
-
+  
 fields:
   MINH:
     location: 62
