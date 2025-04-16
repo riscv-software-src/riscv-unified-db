@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 directory "#{$root}/gen/go"
-directory "#{$root}/gen/spike"
+directory "#{$root}/gen/c_header"
 
 namespace :gen do
   desc <<~DESC
@@ -41,9 +41,9 @@ namespace :gen do
      * CONFIG - Configuration name (defaults to "_")
      * OUTPUT_DIR - Output directory for generated Spike headers (defaults to "#{$root}/gen/c_header")
   DESC
-  task :c_header => "#{$root}/gen/spike" do
+  task :c_header => "#{$root}/gen/c_header" do
     config_name = ENV["CONFIG"] || "_"
-    output_dir = ENV["OUTPUT_DIR"] || "#{$root}/gen/spike/"
+    output_dir = ENV["OUTPUT_DIR"] || "#{$root}/gen/c_header/"
 
     # Ensure the output directory exists
     FileUtils.mkdir_p output_dir
@@ -63,7 +63,4 @@ namespace :gen do
     # The script generates encoding.h for Spike simulator
     sh "#{$root}/.home/.venv/bin/python3 #{$root}/backends/generators/c_header/generate_encoding.py --inst-dir=#{inst_dir} --csr-dir=#{csr_dir} --ext-dir=#{ext_dir} --output=#{output_dir}encoding.out.h --include-all"
   end
-
-  desc "Generate all supported backend code"
-  task :all => [:go, :spike]
 end
