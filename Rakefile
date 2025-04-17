@@ -14,7 +14,6 @@ require "yard"
 require "minitest/test_task"
 
 require_relative $root / "lib" / "architecture"
-require_relative $root / "lib" / "idesign"
 require_relative $root / "lib" / "portfolio_design"
 require_relative $root / "lib" / "proc_cert_design"
 
@@ -27,37 +26,38 @@ end
 
 directory "#{$root}/.stamps"
 
+# @param config_locator [String or Pathname]
 # @return [ConfiguredArchitecture]
-def cfg_arch_for(config_name)
-  raise ArgumentError, "expecting String or Pathname" unless config_name.is_a?(String) || config_name.is_a?(Pathname)
-  config_name = config_name.to_s
+def cfg_arch_for(config_locator)
+  raise ArgumentError, "expecting String or Pathname" unless config_locator.is_a?(String) || config_locator.is_a?(Pathname)
+  config_locator = config_locator.to_s
 
   $cfg_archs ||= {}
-  return $cfg_archs[config_name] unless $cfg_archs[config_name].nil?
+  return $cfg_archs[config_locator] unless $cfg_archs[config_locator].nil?
 
   # does the gen cfg already exist?
-  if File.exist?("#{$root}/gen/cfgs/#{config_name}.yaml")
-    config_yaml = YAML.load_file("#{$root}/gen/cfgs/#{config_name}.yaml")
-    if File.mtime("#{$root}/gen/cfgs/#{config_name}.yaml") < File.mtime(config_yaml["$source"])
+  if File.exist?("#{$root}/gen/cfgs/#{config_locator}.yaml")
+    config_yaml = YAML.load_file("#{$root}/gen/cfgs/#{config_locator}.yaml")
+    if File.mtime("#{$root}/gen/cfgs/#{config_locator}.yaml") < File.mtime(config_yaml["$source"])
 
       cfg_arch =
         ConfiguredArchitecture.new(
-          config_name,
-          FileConfig.create("#{$root}/gen/cfgs/#{config_name}.yaml"),
-          $root / "gen" / "resolved_arch" / config_name
+          config_locator,
+          FileConfig.create("#{$root}/gen/cfgs/#{config_locator}.yaml"),
+          $root / "gen" / "resolved_arch" / config_locator
         )
-      $cfg_archs[config_name] = cfg_arch
+      $cfg_archs[config_locator] = cfg_arch
       return cfg_arch
     end
   end
 
   config_path =
-    if File.exist?("#{$root}/cfgs/#{config_name}.yaml")
-      "#{$root}/cfgs/#{config_name}.yaml"
-    elsif File.exist? config_name
-      File.realpath(config_name)
+    if File.exist?("#{$root}/cfgs/#{config_locator}.yaml")
+      "#{$root}/cfgs/#{config_locator}.yaml"
+    elsif File.exist? config_locator
+      File.realpath(config_locator)
     else
-      raise ArgumentError, "Can't find config #{config_name}"
+      raise ArgumentError, "Can't find config #{config_locator}"
     end
 
   config_yaml = YAML.load_file(config_path)
@@ -208,6 +208,8 @@ namespace :test do
       end
     end
     raise "Encoding test failed" if failed
+
+    puts "done"
   end
 
   desc "Check that CSR definitions in the DB are consistent and do not conflict"
@@ -234,6 +236,8 @@ namespace :test do
       end
     end
     raise "CSR test failed" if failed
+
+    puts "done"
   end
 
   task schema: "#{$root}/.stamps/resolve-_.stamp" do

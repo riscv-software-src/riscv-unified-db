@@ -1,5 +1,5 @@
 $schema: profile_release_schema.json#
-kind: Profile Release
+kind: profile release
 name: RVI20
 marketing_name: RVI20
 class:

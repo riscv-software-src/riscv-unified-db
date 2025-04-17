@@ -149,7 +149,7 @@ class PortfolioGroup
   #                              mandatory or optional in portfolio. Uses instructions provided by the
   #                              minimum version of the extension that meets the extension requirement.
   def in_scope_instructions(design)
-    raise ArgumentError, "Require an IDesign object but got a #{design.class} object" unless design.is_a?(IDesign)
+    raise ArgumentError, "Require an PortfolioDesign object but got a #{design.class} object" unless design.is_a?(PortfolioDesign)
 
     return @in_scope_instructions unless @in_scope_instructions.nil?
 
@@ -167,7 +167,7 @@ class PortfolioGroup
   #                      mandatory or optional in portfolio. Uses CSRs provided by the
   #                      minimum version of the extension that meets the extension requirement.
   def in_scope_csrs(design)
-    raise ArgumentError, "Require an IDesign object but got a #{design.class} object" unless design.is_a?(IDesign)
+    raise ArgumentError, "Require an PortfolioDesign object but got a #{design.class} object" unless design.is_a?(PortfolioDesign)
 
     return @in_scope_csrs unless @in_scope_csrs.nil?
 
@@ -182,7 +182,7 @@ class PortfolioGroup
   # @param design [Design] The design
   # @return [Array<ExceptionCode>] Unsorted list of all in-scope exception codes.
   def in_scope_exception_codes(design)
-    raise ArgumentError, "Require an IDesign object but got a #{design.class} object" unless design.is_a?(IDesign)
+    raise ArgumentError, "Require an PortfolioDesign object but got a #{design.class} object" unless design.is_a?(PortfolioDesign)
 
     return @in_scope_exception_codes unless @in_scope_exception_codes.nil?
 
@@ -197,7 +197,7 @@ class PortfolioGroup
   # @param design [Design] The design
   # @return [Array<InterruptCode>] Unsorted list of all in-scope interrupt codes.
   def in_scope_interrupt_codes(design)
-    raise ArgumentError, "Require an IDesign object but got a #{design.class} object" unless design.is_a?(IDesign)
+    raise ArgumentError, "Require an PortfolioDesign object but got a #{design.class} object" unless design.is_a?(PortfolioDesign)
 
     return @in_scope_interrupt_codes unless @in_scope_interrupt_codes.nil?
 
@@ -583,7 +583,7 @@ class Portfolio < DatabaseObject
   #                              mandatory or optional in portfolio. Uses instructions provided by the
   #                              minimum version of the extension that meets the extension requirement.
   def in_scope_instructions(design)
-    raise ArgumentError, "Require an IDesign object but got a #{design.class} object" unless design.is_a?(IDesign)
+    raise ArgumentError, "Require an PortfolioDesign object but got a #{design.class} object" unless design.is_a?(PortfolioDesign)
 
     return @in_scope_instructions unless @in_scope_instructions.nil?
 
@@ -596,7 +596,7 @@ class Portfolio < DatabaseObject
   #                      mandatory or optional in portfolio. Uses CSRs provided by the
   #                      minimum version of the extension that meets the extension requirement.
   def in_scope_csrs(design)
-    raise ArgumentError, "Require an IDesign object but got a #{design.class} object" unless design.is_a?(IDesign)
+    raise ArgumentError, "Require an PortfolioDesign object but got a #{design.class} object" unless design.is_a?(PortfolioDesign)
 
     return @in_scope_csrs unless @in_scope_csrs.nil?
 
@@ -613,7 +613,7 @@ class Portfolio < DatabaseObject
   #       actually be generated in a design.
   #       Also, probably shouldn't be calling "ext?" since that doesn't the in_scope lists of extensions.
   def in_scope_exception_codes(design)
-    raise ArgumentError, "Require an IDesign object but got a #{design.class} object" unless design.is_a?(IDesign)
+    raise ArgumentError, "Require an PortfolioDesign object but got a #{design.class} object" unless design.is_a?(PortfolioDesign)
 
     return @in_scope_exception_codes unless @in_scope_exception_codes.nil?
 

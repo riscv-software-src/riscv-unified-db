@@ -59,7 +59,7 @@
     },
     "kind": {
       "type": "string",
-      "const": "Processor Certificate Model"
+      "const": "processor certificate model"
     },
     "name": {
       "type": "string",

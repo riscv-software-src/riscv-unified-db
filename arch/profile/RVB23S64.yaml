@@ -1,5 +1,5 @@
 $schema: profile_schema.json#
-kind: Profile
+kind: profile
 name: RVB23S64
 marketing_name: RVB23S64
 mode: S

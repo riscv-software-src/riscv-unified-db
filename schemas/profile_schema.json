@@ -10,7 +10,7 @@
     },
     "kind": {
       "type": "string",
-      "const": "Profile"
+      "const": "profile"
     },
     "name": {
       "type": "string",

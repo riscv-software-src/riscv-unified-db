@@ -1,5 +1,5 @@
 $schema: profile_class_schema.json#
-kind: Profile Class
+kind: profile class
 processor_kind: Microcontroller
 name: Mock
 marketing_name: Mock Profile Class

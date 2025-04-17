@@ -11,13 +11,13 @@
 require "ruby-prof"
 require "forwardable"
 
-require_relative "idesign"
 require_relative "cfg_arch"
 require_relative "arch_obj_models/portfolio"
 
 require_relative "backend_helpers"
 include TemplateHelpers
-class PortfolioDesign < IDesign
+
+class PortfolioDesign
   extend Forwardable
 
   # Calls to these methods on Design are handled by the ConfiguredArchitecture object.
@@ -40,6 +40,9 @@ class PortfolioDesign < IDesign
     :symtab,
     :implemented_functions,
     :convert_monospace_to_links
+
+  # @return [String] Name of design
+  attr_reader :name
 
   # @return [PortfolioClass] Portfolio class for all the portfolios in this design
   attr_reader :portfolio_class
@@ -68,13 +71,13 @@ class PortfolioDesign < IDesign
   # @param portfolios [Array<Portfolio>] Portfolios being converted to adoc
   # @param portfolio_class [PortfolioClass] PortfolioClass for all the Portfolios
   def initialize(name, cfg_arch, portfolio_design_type, portfolios, portfolio_class)
-    super(name)
-
     raise ArgumentError, "cfg_arch must be an ConfiguredArchitecture but is a #{cfg_arch.class}" unless cfg_arch.is_a?(ConfiguredArchitecture)
     raise ArgumentError, "portfolio_design_type of #{portfolio_design_type} unknown" unless PortfolioDesign.portfolio_design_types.include?(portfolio_design_type)
     raise ArgumentError, "portfolios must be an Array<Portfolio> but is a #{portfolios.class}" unless portfolios.is_a?(Array)
     raise ArgumentError, "portfolio_class must be a PortfolioClass but is a #{portfolio_class.class}" unless portfolio_class.is_a?(PortfolioClass)
 
+    @name = name.to_s.freeze
+    @name_sym = @name.to_sym.freeze
     @cfg_arch = cfg_arch
     @portfolio_design_type = portfolio_design_type
 

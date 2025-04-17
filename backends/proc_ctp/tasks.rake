@@ -20,7 +20,6 @@ Dir.glob("#{$root}/arch/proc_cert_model/*.yaml") do |f|
     "#{$root}/lib/arch_obj_models/certificate.rb",
     "#{$root}/lib/arch_obj_models/portfolio.rb",
     "#{$root}/lib/portfolio_design.rb",
-    "#{$root}/lib/idesign.rb",
     "#{$root}/backends/portfolio/templates/ext_appendix.adoc.erb",
     "#{$root}/backends/portfolio/templates/inst_appendix.adoc.erb",
     "#{$root}/backends/portfolio/templates/csr_appendix.adoc.erb",

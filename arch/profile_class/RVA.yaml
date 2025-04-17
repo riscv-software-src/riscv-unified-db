@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=../../schemas/profile_class_schema.json
 
 $schema: profile_class_schema.json#
-kind: Profile Class
+kind: profile class
 processor_kind: Apps Processor
 name: RVA
 marketing_name: RVA

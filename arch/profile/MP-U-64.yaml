@@ -1,5 +1,5 @@
 $schema: profile_schema.json#
-kind: Profile
+kind: profile
 name: MP-U-64
 marketing_name: MockProfile 64-bit Unpriv
 mode: Unpriv

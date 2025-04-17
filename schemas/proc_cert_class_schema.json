@@ -11,7 +11,7 @@
     },
     "kind": {
       "type": "string",
-      "const": "Processor Certificate Class"
+      "const": "processor certificate class"
     },
     "name": {
       "type": "string",

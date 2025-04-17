@@ -24,6 +24,11 @@
 # Subclasses may override the accessors when a more complex data structure
 # is warranted, e.g., the CSR Field 'alias' returns a CsrFieldAlias object
 # instead of a simple string
+
+require_relative "cert_normative_rule"
+require_relative "cert_test_procedure"
+require_relative "doc_link"
+
 class DatabaseObject
   attr_reader :data, :data_path, :name, :long_name
 
@@ -196,7 +201,7 @@ class DatabaseObject
 
   def kind = @data["kind"]
 
-   @@schemas ||= {}
+  @@schemas ||= {}
   @@schema_ref_resolver ||= proc do |pattern|
     if pattern.to_s =~ /^http/
       JSON.parse(Net::HTTP.get(pattern))
@@ -1051,7 +1056,7 @@ end
                 else
                   LogicNode.new(:and, [root, LogicNode.new(:not, [to_logic_tree(hsh[key][i], term_idx:, expand:)])])
                 end
-             end
+            end
             roots << root
           end
           root = LogicNode.new(:or, [roots[0], roots[1]])
@@ -1106,7 +1111,7 @@ end
         logic_tree
       else
         LogicTree.new(:or, logic_tree.children.map { |child| LogicTree.new(:and, dnf(child)) })
-    end
+      end
     else
       logic_tree
     end
@@ -1129,8 +1134,8 @@ end
     # get rid of any combos that can't happen because of extension conflicts
     combos.reject do |combo|
       combo.any? { |ext_ver1| (combo - [ext_ver1]).any? { |ext_ver2| ext_ver1.conflicts_condition.satisfied_by? { |ext_req| ext_req.satisfied_by?(ext_ver2) } } }
+    end
   end
-end
 
   # @param other [ExtensionRequirementExpression] Another condition
   # @return [Boolean] if it's possible for both to be simultaneously true
@@ -1224,125 +1229,4 @@ class AlwaysFalseExtensionRequirementExpression
 
   def to_h = {}
   def minimize = {}
-end
-
-class CertNormativeRule
-  # @param data [Hash<String, Object>] Data from YAML file
-  # @param db_obj [DatabaseObject] Database object that defines normative rule (Extension, Instruction, CSR, or CSR field)
-  def initialize(data, db_obj)
-    raise ArgumentError, "Need Hash but was passed a #{data.class}" unless data.is_a?(Hash)
-    raise ArgumentError, "Need DatabaseObject but was passed a #{db_obj.class}" unless db_obj.is_a?(DatabaseObject)
-
-    @data = data
-    @db_obj = db_obj
-
-    raise ArgumentError, "Missing certification normative rule description for #{db_obj.name} of kind #{db_obj.kind}" if description.nil?
-    raise ArgumentError, "Missing certification normative rule ID for #{db_obj.name} of kind #{db_obj.kind}" if id.nil?
-  end
-
-  # @return [String] Description of normative rule (could be multiple lines)
-  def description = @data["description"]
-
-  # @return [String] Unique ID of the normative rule
-  def id = @data["id"]
-
-  # @return [Array<DocLink>] List of certification point documentation links
-  def doc_links
-    return @doc_links unless @doc_links.nil?
-
-    @doc_links = []
-    @data["doc_links"]&.each do |dst|
-      @doc_links << DocLink.new(dst, @db_obj)
-    end
-
-    raise "Missing doc_links for certification normative rule ID '#{id}' of kind #{@db_obj.kind}" if @doc_links.empty?
-
-    @doc_links
-  end
-end
-
-# Creates links into RISC-V documentation with the following formats for the destination link:
-#
-#   Documenation  Format
-#   ============  ===============================================================
-#   ISA manuals   manual:ext:<ext_name>:<identifier>
-#                 manual:inst:<inst_name>:<identifier>
-#                 manual:insts:<inst_name>[-<inst_name>]+:<identifier>
-#                 manual:inst_group:<group_name>:<identifier>
-#                 manual:csr:<csr_name>:<identifier>
-#                 manual:csr_field:<csr_name>:<field_name>:<identifier>
-#                 manual:param:<ext_name>:<param_name>:<identifier>
-#                   where <identifier> is a string that describes the tagged text
-#   UDB doc       udb:doc:ext:<ext_name>
-#                 udb:doc:ext_param:<ext_name>:<param_name>
-#                 udb:doc:inst:<inst_name>
-#                 udb:doc:csr:<csr_name>
-#                 udb:doc:csr_field:<csr_name>:<field_name>
-#                 udb:doc:func:<func_name>  (Documentation of common/built-in IDL functions)
-#                 udb:doc:cov_pt:<org>:<id>
-#                   where <org> is:
-#                      sep for UDB documentation that "separates" normative rules from test plans
-#                      combo for UDB documentation that "combines" normative rules with test plans
-#                      appendix for UDB documentation that has normative rules and test plans in appendices
-#                   where <id> is the ID of the normative rule
-#   IDL code      idl:code:inst:<inst-name>:<location>
-#                 TODO for CSR and CSR Fields
-class DocLink
-  # @param dst_link [String] The documentation link provided in the YAML
-  # @param db_obj [String] Database object
-  def initialize(dst_link, db_obj)
-    raise ArgumentError, "Need String but was passed a #{data.class}" unless dst_link.is_a?(String)
-    @dst_link = dst_link
-
-    raise ArgumentError, "Missing documentation link for #{db_obj.name} of kind #{db_obj.kind}" if @dst_link.nil?
-  end
-
-  # @return [String] Unique ID of the linked to normative rule
-  def dst_link = @dst_link
-
-  # @return [String] Asciidoc to create desired link.
-  def to_adoc
-    "<<#{@dst_link},#{@dst_link}>>"
-  end
-end
-
-class CertTestProcedure
-  # @param data [Hash<String, Object>] Data from YAML file
-  # @param db_obj [DatabaseObject] Database object that defines test procedure (Extension, Instruction, CSR, or CSR field)
-  def initialize(data, db_obj)
-    raise ArgumentError, "Need Hash but was passed a #{data.class}" unless data.is_a?(Hash)
-    raise ArgumentError, "Need DatabaseObject but was passed a #{db_obj.class}" unless db_obj.is_a?(DatabaseObject)
-
-    @data = data
-    @db_obj = db_obj
-
-    raise ArgumentError, "Missing certification test procedure ID for #{db_obj.name} of kind #{db_obj.kind}" if id.nil?
-    warn "Warning: Missing test_file_name for certification test procedure description for #{db_obj.name} of kind #{db_obj.kind}" if test_file_name.nil?
-    raise ArgumentError, "Missing certification test procedure description for #{db_obj.name} of kind #{db_obj.kind}" if description.nil?
-  end
-
-  # @return [String] Unique ID of the test procedure
-  def id = @data["id"]
-
-  # @return [String] Name of test file that implements this test procedure. Could be nil.
-  def test_file_name = @data["test_file_name"]
-
-  # @return [String] Description of test procedure (could be multiple lines)
-  def description = @data["description"]
-
-  # @return [Array<CertNormativeRule>]
-  def cert_normative_rules
-    return @cert_normative_rules unless @cert_normative_rules.nil?
-
-    @cert_normative_rules = []
-    @data["normative_rules"]&.each do |id|
-      cp = @db_obj.cert_coverage_point(id)
-      raise ArgumentError, "Can't find certification test procedure with ID '#{id}' for '#{@db_obj.name}' of kind #{@db_obj.kind}" if cp.nil?
-      @cert_normative_rules << cp
-    end
-    @cert_normative_rules
-  end
-
-  # @return [String] String (likely multiline) of certification test procedure steps using Asciidoc lists
-  def cert_steps = @data["steps"]
 end

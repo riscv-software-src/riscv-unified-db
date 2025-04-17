@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=../../schemas/proc_cert_model_schema.json
 
 $schema: proc_cert_model_schema.json#
-kind: Processor Certificate Model
+kind: processor certificate model
 name: MC300-64
 long_name: Advanced 64-bit Microcontroller Certificate
 class:
