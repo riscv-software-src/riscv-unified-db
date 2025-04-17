@@ -220,6 +220,8 @@ else
     exit 1
 fi
 
+git config --local commit.template ${ROOT}/.gitmessage
+
 GIT_REPO_ROOT=`git rev-parse --path-format=absolute --git-common-dir | tr -d '\n'`
 if [ ! -f $GIT_REPO_ROOT/hooks/pre-commit ]; then
   cat << HOOK > $GIT_REPO_ROOT/hooks/pre-commit

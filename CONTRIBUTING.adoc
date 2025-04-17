@@ -57,6 +57,8 @@ Every commit message consists of a mandatory *header*, a mandatory *body*, and a
 <footer>
 ```
 
+A template for commit messages is stored in xref:.gitmessage[], and will be installed automatically through the standard UnifiedDB setup script so that it appears when executing `git commit`.
+
 ==== Header
 
 .UnifiedDB commit header format
@@ -65,30 +67,12 @@ Every commit message consists of a mandatory *header*, a mandatory *body*, and a
   │       │             │
   │       │             └─⫸ Summary in present tense. Not capitalized. No period at the end.
   │       │
-  │       └─⫸ Commit Scope: single word describing the affected component
+  │       └─⫸ Optional Commit Scope: single word describing the component
   │
-  └─⫸ Commit Type: build|ci|correct|data|docs|feat|fix|refactor|schema|test
+  └─⫸ Commit Type: e.g., build|ci|docs|feat|fix|perf|refactor|revert|style|test
 ```
 
 The `<type>` and `<summary>` fields are mandatory. The `<scope>` field is optional.
-
-Type must be one of the following:
-
-[cols="1l,3,2l"]
-|===
-| Type | Description | Example scopes
-
-| build    | Changes that affect the build system or external dependencies        | rake, antora
-| ci       | Changes to the CI configuration files and script                     | action
-| correct  | A correction to data in the database (_i.e., a database bugfix)      | ext, inst, csr
-| data     | An addition to the database contents                                 | ext, inst, csr
-| docs     | Documentation-only changes                                           | schema, ruby-db, <backend name>
-| feat     | A new feature                                                        | ruby-db, <backend name>
-| fix      | A code bug fix                                                       | ruby-db, <backend name>
-| refactor | A code change that neither fixes a bug nor adds a feature            | ruby-db, <backend name>
-| schema   | A change to the database schema                                      | ext, inst, csr
-| test     | Adding missing tests or correcting existing tests                    | schema, ruby-db
-|===
 
 ==== Body
 
