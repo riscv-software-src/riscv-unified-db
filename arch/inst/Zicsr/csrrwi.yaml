@@ -37,8 +37,11 @@ operation(): |
 
   # writes the zero-extended immediate to the CSR,
   # performing any WARL transformations first
-  CSR[csr].sw_write({{XLEN-5{1'b0}}, imm});
+  CSR[csr].sw_write({{MXLEN-5{1'b0}}, imm});
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val : xlenbits = if is_imm then zero_extend(rs1) else X(rs1);
@@ -64,3 +67,5 @@ sail(): |
       RETIRE_SUCCESS
     }
   }
+
+# SPDX-SnippetEnd

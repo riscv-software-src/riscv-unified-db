@@ -16,4 +16,5 @@ gen
 node_modules
 _site
 images
+*.bak
 *.log

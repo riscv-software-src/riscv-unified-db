@@ -91,6 +91,7 @@ GEM
     matrix (0.4.2)
     minitest (5.25.5)
     netrc (0.11.0)
+    nkf (0.2.0)
     nokogiri (1.18.6-aarch64-linux-gnu)
       racc (~> 1.4)
     nokogiri (1.18.6-x86_64-linux-gnu)
@@ -173,6 +174,7 @@ GEM
     ruby-prof (1.7.1)
     ruby-progressbar (1.13.0)
     ruby-rc4 (0.1.5)
+    rubyzip (2.4.1)
     securerandom (0.4.1)
     simpleidn (0.2.3)
     solargraph (0.52.0)
@@ -231,6 +233,9 @@ GEM
     unicode-emoji (4.0.4)
     uri (1.0.3)
     webrick (1.9.1)
+    write_xlsx (1.12.1)
+      nkf
+      rubyzip (>= 1.0.0)
     yard (0.9.37)
     yard-solargraph (0.1.0)
       yard (~> 0.9)
@@ -270,6 +275,7 @@ DEPENDENCIES
   treetop (= 1.6.12)
   ttfunk (= 1.7)
   webrick
+  write_xlsx
   yard
 
 RUBY VERSION

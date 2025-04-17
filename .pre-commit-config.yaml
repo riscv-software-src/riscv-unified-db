@@ -30,7 +30,7 @@ repos:
         exclude: schemas/json-schema-draft-07.json
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.31.3
+    rev: 0.33.0
     hooks:
       - id: check-jsonschema
         alias: check-jsonschema-inst
@@ -46,12 +46,12 @@ repos:
         args: ["--schemafile", "schemas/ext_schema.json"]
       - id: check-jsonschema
         alias: check-jsonschema-cert-model
-        files: ^arch/certificate_model/.*\.(yaml|yml)$
-        args: ["--schemafile", "schemas/cert_model_schema.json"]
+        files: ^arch/proc_cert_model/.*\.(yaml|yml)$
+        args: ["--schemafile", "schemas/proc_cert_model_schema.json"]
       - id: check-jsonschema
         alias: check-jsonschema-cert-class
-        files: ^arch/certificate_class/.*\.(yaml|yml)$
-        args: ["--schemafile", "schemas/cert_class_schema.json"]
+        files: ^arch/proc_cert_class/.*\.(yaml|yml)$
+        args: ["--schemafile", "schemas/proc_cert_class_schema.json"]
       # Commenting because throwing errors and not sure this is complete yet
       # - id: check-jsonschema
       #   alias: check-jsonschema-manual-version
@@ -59,7 +59,7 @@ repos:
       #   args: ["--schemafile", "schemas/manual_version_schema.json"]
 
   - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: "v18.1.3"
+    rev: "v20.1.0"
     hooks:
       - id: clang-format
         types_or: [c++, c]

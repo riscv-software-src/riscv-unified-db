@@ -3,13 +3,15 @@
 
 require "sorbet-runtime"
 
-require_relative "obj"
-
+require_relative "database_obj"
 require_relative "../idl/passes/gen_option_adoc"
+require_relative "certifiable_obj"
 
 # A CSR field object
 class CsrField < DatabaseObject
   extend T::Sig
+  # Add all methods in this module to this type of database object.
+  include CertifiableObject
 
   # @return [Csr] The Csr that defines this field
   sig { returns(Csr) }
@@ -32,9 +34,17 @@ class CsrField < DatabaseObject
   # @param field_data [Hash<String,Object>] Field data from the arch spec
   sig { params(parent_csr: Csr, field_name: String, field_data: T::Hash[String, T.untyped]).void }
   def initialize(parent_csr, field_name, field_data)
-    super(field_data, parent_csr.data_path, arch: parent_csr.arch)
+    super(field_data, parent_csr.data_path, parent_csr.arch)
     @name = field_name
     @parent = parent_csr
+  end
+
+  # CSR fields are defined in their parent CSR YAML file
+  def __source = @parent.__source
+
+  # CSR field data starts at fields: NAME: with the YAML
+  def source_line(*path)
+    T.unsafe(self).super("fields", name, *path)
   end
 
   # For a full config, whether or not the field is implemented
@@ -434,9 +444,9 @@ class CsrField < DatabaseObject
     @data.key?("sw_write(csr_value)") && !@data["sw_write(csr_value)"].empty?
   end
 
-  # @return [FunctionBodyAst] The abstract syntax tree of the sw_write() function, after being type checked
   # @param effective_xlen [Integer] 32 or 64; the effective XLEN to evaluate this field in (relevant when fields move in different XLENs)
   # @param symtab [Idl::SymbolTable] Symbol table with globals
+  # @return [FunctionBodyAst] The abstract syntax tree of the sw_write() function, after being type checked
   sig { params(symtab: Idl::SymbolTable, effective_xlen: T.nilable(Integer)).returns(T.nilable(Idl::FunctionBodyAst)) }
   def type_checked_sw_write_ast(symtab, effective_xlen)
     @type_checked_sw_write_asts ||= {}
@@ -515,11 +525,11 @@ class CsrField < DatabaseObject
       "csr_value",
       Idl::Var.new("csr_value", csr.bitfield_type(@cfg_arch, effective_xlen))
     )
-    if symtab.get("XLEN").value.nil?
+    if symtab.get("MXLEN").value.nil?
       symtab.add(
-        "XLEN",
+        "MXLEN",
         Idl::Var.new(
-          "XLEN",
+          "MXLEN",
           Idl::Type.new(:bits, width: 6, qualifiers: [:const]),
           effective_xlen,
           param: true
@@ -543,11 +553,11 @@ class CsrField < DatabaseObject
       "__expected_return_type",
       Idl::Type.new(:enum_ref, enum_class: symtab.get("CsrFieldType"))
     )
-    if symtab.get("XLEN").value.nil?
+    if symtab.get("MXLEN").value.nil?
       symtab.add(
-        "XLEN",
+        "MXLEN",
         Idl::Var.new(
-          "XLEN",
+          "MXLEN",
           Idl::Type.new(:bits, width: 6, qualifiers: [:const]),
           effective_xlen,
           param: true
@@ -576,6 +586,7 @@ class CsrField < DatabaseObject
   # @return [Idl::FunctionBodyAst] The abstract syntax tree of the sw_write() function, type checked and pruned
   # @return [nil] if there is no sw_write() function
   # @param effective_xlen [Integer] effective xlen, needed because fields can change in different bases
+  sig { params(effective_xlen: T.nilable(Integer)).returns(T.nilable(Idl::AstNode)) }
   def pruned_sw_write_ast(effective_xlen)
     return @pruned_sw_write_ast unless @pruned_sw_write_ast.nil?
 
@@ -723,6 +734,7 @@ class CsrField < DatabaseObject
     end
   end
 
+  # @param effective_xlen [Integer or nil] 32 or 64 for fixed xlen, nil for dynamic
   # @return [String] Pretty-printed location string
   sig { params(effective_xlen: T.nilable(Integer)).returns(String) }
   def location_pretty(effective_xlen = nil)

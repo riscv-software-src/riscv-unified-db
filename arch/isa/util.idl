@@ -139,11 +139,11 @@ function sext {
     # in a common case, first_extended_bit is xlen(), which is compile-time-known unless
     # the effective xlen is different than XLEN in some mode
     # In that common case, this function will be eliminated by the compiler
-    if (first_extended_bit == XLEN) {
+    if (first_extended_bit == MXLEN) {
       return value;
     } else {
       Bits<1> sign = value[first_extended_bit-1];
-      for (U32 i = XLEN-1; i >= first_extended_bit; i--) {
+      for (U32 i = MXLEN-1; i >= first_extended_bit; i--) {
         value[i] = sign;
       }
       return value;

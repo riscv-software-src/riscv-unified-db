@@ -20,6 +20,7 @@ gem "sorbet-runtime"
 gem "treetop", "1.6.12"
 gem "ttfunk", "1.7" # needed to avoid having asciidoctor-pdf dependencies pulling in a buggy version of ttunk (1.8)
 gem "webrick"
+gem "write_xlsx"
 gem "yard"
 
 group :development do

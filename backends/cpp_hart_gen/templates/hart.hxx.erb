@@ -245,7 +245,7 @@ namespace udb {
 
       uint64_t xreg(unsigned num) const override {
         if (num >= 32) {
-          throw std::out_of_range("X register indicies are 0 - 31, inclusive");
+          throw std::out_of_range("X register indices are 0 - 31, inclusive");
         }
         return _xreg(num);
       }
@@ -261,7 +261,7 @@ namespace udb {
 
       void set_xreg(unsigned num, uint64_t value) override {
         if (num >= 32) {
-          throw std::out_of_range("X register indicies are 0 - 31, inclusive");
+          throw std::out_of_range("X register indices are 0 - 31, inclusive");
         }
         _set_xreg(num, value);
       }
