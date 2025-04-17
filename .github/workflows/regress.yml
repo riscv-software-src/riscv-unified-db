@@ -109,3 +109,14 @@ jobs:
         uses: ./.github/actions/singularity-setup
       - name: Generate Go code
         run: ./do gen:go
+  regress-cpp-unit:
+    runs-on: ubuntu-latest
+    env:
+      SINGULARITY: 1
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Run cpp unit tests
+        run: ./do test:cpp_hart CONFIG=rv64
