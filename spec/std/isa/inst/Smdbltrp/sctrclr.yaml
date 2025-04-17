@@ -7,26 +7,39 @@ $schema: inst_schema.json#
 kind: instruction
 name: sctrclr
 long_name: Supervisor Control Transfer Record (CTR) clear
-description: |
-  When `mstateen0.CTR`=1, the SCTRCLR instruction performs the following operations:
+description:
+  - id: inst-sctrclr-operation
+    normative: false
+    text: |
+      When `mstateen0.CTR`=1, the SCTRCLR instruction performs the following operations:
 
-  * Zeroes all CTR Entry Registers, for all DEPTH values
-  * Reset to Zero the optional CTR cycle counter where implemented
-  ** `ctrdata.CC` and `ctrdata.CC` bit fields.
+      * Zeroes all CTR Entry Registers, for all DEPTH values
+      * Reset to Zero the optional CTR cycle counter where implemented
+      ** `ctrdata.CC` and `ctrdata.CC` bit fields.
+  - id: inst-sctrclr-csr-effect
+    normative: true
+    text: |
+      Any read of `ctrsource`, `ctrtarget`, or `ctrdata` that follows SCTRCLR, such that it precedes the next
+      qualified control transfer, will return the value 0.
+  - id: inst-sctrclr-after
+    normative: true
+    text: |
+      Further, the first recorded transfer following SCTRCLR will have `ctrdata.CCV`=0.
+  - id: inst-sctrclr-illegal
+    normative: false
+    text: |
+      SCTRCLR execution causes an `IllegalInstruction` exception if:
 
-  Any read of `ctrsource`, `ctrtarget`, or `ctrdata` that follows SCTRCLR, such that it precedes the next
-  qualified control transfer, will return the value 0.
-  Further, the first recorded transfer following SCTRCLR will have `ctrdata.CCV`=0.
-
-  SCTRCLR execution causes an `IllegalInstruction` exception if:
-
-  * `Smctr` is not implemented
-  * The instruction is executed in S/VS/VU-mode and `Ssctr` is not implemented, or `mstateen0.CTR`=0
-  * The instruction is executed in U-mode
-
-  SCTRCLR execution  causes a `VirtualInstruciton` exception if `mstateen0.CTR`=1 and:
-  * The instruction is executed in VS-mode and `hstateen0.CTR`=0
-  * The instruction is executed in VU-mode
+      * `Smctr` is not implemented
+      * The instruction is executed in S/VS/VU-mode and `Ssctr` is not implemented, or `mstateen0.CTR`=0
+      * The instruction is executed in U-mode
+  - id: inst-sctrclr-virtual
+    normative: false
+    text: |
+      SCTRCLR execution  causes a `VirtualInstruciton` exception if `mstateen0.CTR`=1 and:
+      
+      * The instruction is executed in VS-mode and `hstateen0.CTR`=0
+      * The instruction is executed in VU-mode
 definedBy:
   anyOf: [Smctr, Ssctr]
 assembly: ""
