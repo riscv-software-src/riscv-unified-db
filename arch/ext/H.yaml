@@ -170,7 +170,7 @@ params:
     extra_validation: |
       # GEILEN must be <= 31 for RV32
       assert NUM_EXTERNAL_GUEST_INTERRUPTS <= 31 if SXLEN == 32
-  VS_MODE_ENDIANESS:
+  VS_MODE_ENDIANNESS:
     description: |
       Endianness of data in VS-mode. Can be one of:
 
@@ -181,7 +181,7 @@ params:
     schema:
       type: string
       enum: [little, big, dynamic]
-  VU_MODE_ENDIANESS:
+  VU_MODE_ENDIANNESS:
     description: |
       Endianness of data in VU-mode. Can be one of:
 
