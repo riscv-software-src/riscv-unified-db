@@ -77,14 +77,22 @@
         "alias": {
           "oneOf": [
             {
-              "type": "string",
-              "pattern": "^[a-z][a-z0-9]+\\.[A-Z0-9]+(\\[[0-9]+(:[0-9]+)?\\])?$"
+              "$ref": "schema_defs.json#/$defs/csr_field"
+            },
+            {
+              "$ref": "schema_defs.json#/$defs/csr_field_bits"
             },
             {
               "type": "array",
               "items": {
-                "type": "string",
-                "pattern": "^[a-z][a-z0-9]+\\.[A-Z0-9]+(\\[[0-9]+(:[0-9]+)?\\])?$"
+                "oneOf": [
+                  {
+                    "$ref": "schema_defs.json#/$defs/csr_field"
+                  },
+                  {
+                    "$ref": "schema_defs.json#/$defs/csr_field_bits"
+                  }
+                ]
               }
             }
           ],
@@ -192,9 +200,7 @@
           "description": "Object type"
         },
         "name": {
-          "type": "string",
-          "pattern": "^[a-z][a-z0-9_.]+$",
-          "description": "CSR name"
+          "$ref": "schema_defs.json#/$defs/csr_name"
         },
         "base": {
           "type": "integer",
@@ -223,10 +229,9 @@
           "type": "integer",
           "description": "Indirect address of the CSR, as given to the indirect CSRs of the `Smcsrind`/`Sscdrind` extensions"
         },
-        "indirect": {
+        "writeable": {
           "type": "boolean",
-          "default": false,
-          "description": "Whether or not the CSR is accessible via an indirect address"
+          "description": "Whether or not the CSR can be written by software (i.e., is read-write)"
         },
         "virtual_address": true,
         "$comment": "Conditionally required; see below",

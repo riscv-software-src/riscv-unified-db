@@ -5,9 +5,12 @@ kind: csr
 name: mnscratch
 long_name: Machine Scratch Register
 address: 0x740
+writeable: true
 priv_mode: M
 length: MXLEN
-description: Scratch register for software use in NMI / double trap. Bits are not interpreted by hardware.
+description:
+  Scratch register for software use in NMI / double trap. Bits are not
+  interpreted by hardware.
 definedBy: Smrnmi
 fields:
   SCRATCH:

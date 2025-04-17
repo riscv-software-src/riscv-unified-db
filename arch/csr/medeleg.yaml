@@ -5,6 +5,7 @@ kind: csr
 name: medeleg
 long_name: Machine Exception Delegation
 address: 0x302
+writeable: true
 priv_mode: M
 length: 64
 description: |

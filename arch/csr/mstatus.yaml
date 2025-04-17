@@ -5,6 +5,7 @@ kind: csr
 name: mstatus
 long_name: Machine Status
 address: 0x300
+writeable: true
 priv_mode: M
 
 # length is MXLEN-bit
@@ -12,7 +13,9 @@ priv_mode: M
 # MXLEN cannot change dynamically, so this will be converted to an integer
 # in the generated, configuration-dependent spec
 length: MXLEN
-description: The mstatus register tracks and controls the hart's current operating state.
+description:
+  The mstatus register tracks and controls the hart's current operating
+  state.
 definedBy: Sm
 fields:
   SD:
