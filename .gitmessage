@@ -1,0 +1,29 @@
+# <type>(<scope>): <short summary>
+# No line more than 80 chars. #### 80 chars is here:                          #
+
+# Body: Explain *what* and *why* (not *how*).
+# <put body here>
+
+# Conventional Footer: required if this is a breaking change
+# BREAKING CHANGE: <summary of what breaks>
+#
+# <Breaking change description + migration instructions>
+
+# At the end: Include Co-authored-by if relevant.
+# Co-authored-by: name <user@users.noreply.github.com>
+
+# common title types:
+#   build:    build system
+#   ci:       continous integeration
+#   docs:     improves documentation
+#   feat:     adds a new feature
+#   fix:      fixes a code bug
+#   perf:     performance improvement
+#   refactor: changes code, neither a fix nor feature
+#   revert:   reverts a prior commit(s)
+#   style:    style update
+
+# common title scopes:
+#   data:     Database information
+#   schema:   Database schema
+#   ruby:     Ruby code
