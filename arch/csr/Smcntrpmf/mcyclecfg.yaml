@@ -1,0 +1,78 @@
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+$schema: csr_schema.json#
+kind: csr
+name: mcyclecfg
+long_name: Machine Cycle Counter Configuration
+address: 0x321
+priv_mode: M
+length: 64
+base: 64
+definedBy: Smcntrpmf
+description: |
+  The `mcyclecfg` CSR is a 64-bit machine-level register that configures privilege
+  mode filtering for the cycle counter. Each inhibit bit (xINH) suppresses
+  counting of events in the corresponding privilege mode when set.
+
+  | Field   | Description                                         |
+  |---------|-----------------------------------------------------|
+  | MINH    | If set, then counting of events in M-mode is inhibited.     |
+  | SINH    | If set, then counting of events in S/HS-mode is inhibited.  |
+  | UINH    | If set, then counting of events in U-mode is inhibited.     |
+  | VSINH   | If set, then counting of events in VS-mode is inhibited.    |
+  | VUINH   | If set, then counting of events in VU-mode is inhibited.    |
+
+  When all xINH bits are zero, event counting is enabled in all modes.
+
+  For each bit in 61:58, if the associated privilege mode is not implemented,
+  the bit is read-only zero.
+
+   Bit 63 is read-only 0, since the cycle counter does not generate overflow interrupts.
+
+  Bits [62:58] (xINH) are writable inhibit bits corresponding to each privilege mode:
+  If a bit is set, counting is inhibited in that mode.
+
+  If the corresponding mode is not implemented, the bit is read-only zero.
+
+  Bits [57:0] are reserved (WPRI) and read as zero; writes to them are ignored.
+
+  For RV32, the upper 32 bits of `mcyclecfg` are accessed via `mcyclecfgh` at CSR address 0x721.
+
+  Note: Although CSR address 0x320 would have been a more natural choice,
+  it is already allocated to `mcountinhibit`
+
+fields:
+  MINH:
+    location: 62
+    type: RW
+    description: If set, then counting of events in M-mode is inhibited.
+    reset_value: 0
+
+  SINH:
+    location: 61
+    type: RW
+    description: If set, then counting of events in S/HS-mode is inhibited.
+    reset_value: 0
+
+  UINH:
+    location: 60
+    type: RW
+    description: If set, then counting of events in U-mode is inhibited.
+    reset_value: 0
+
+  VSINH:
+    location: 59
+    type: RW
+    description: If set, then counting of events in VS-mode is inhibited.
+    reset_value: 0
+
+  VUINH:
+    location: 58
+    type: RW
+    description: If set, then counting of events in VU-mode is inhibited.
+    reset_value: 0
+
+  WPRI:
+    location: 57-0
+    type: RO
+    description: Reserved. Reads as zero. Writes are ignored.
+    reset_value: 0
