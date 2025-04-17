@@ -157,7 +157,7 @@ extensions:
     version: "~>1.0"
     note: |
       Misaligned loads, stores, and AMOs to main memory regions that do not cross
-      Daaaa naturally aligned 16-byte boundary are atomic
+      a naturally aligned 16-byte boundary are atomic
 
   #########################################################################
   # OPTIONAL EXPANSION extensions in RVB23
@@ -173,7 +173,7 @@ extensions:
     note: |
       Zfhmin is a small extension that adds support to load/store and convert
       IEEE 754 half-precision numbers to and from the IEEE 754 single-precision
-      format.  The hardware cost for this extension is low, and mandating the
+      format. The hardware cost for this extension is low, and mandating the
       extension avoids adding an option to the profile.
   V:
     presence:
@@ -199,7 +199,7 @@ extensions:
       optional: expansion
     version: "~>1.0"
     note: |
-      Vector basic bit-manipulation instructions
+      Vector data-independent execution latency
   Supm:
     presence:
       optional: expansion
@@ -265,7 +265,7 @@ extensions:
     note: Vector carryless multiplication
 
   #--------------------------------------------
-  # Ssstrict is an expansion option in RVB2U64 and RVA23U64
+  # Ssstrict is an expansion option in RVB23U64 and RVA23U64
   # (but is not intended to be made mandatory in future RVB or RVA Profiles)
   #--------------------------------------------
   Ssstrict:
@@ -273,7 +273,7 @@ extensions:
       optional: expansion
     version: "~>1.0"
     note: |
-      all opcodes in the Standard and Reserved opcode spaces (SROS),
+      All opcodes in the Standard and Reserved opcode spaces (SROS),
       other than those identified in a Profile as Mandatory or Optional,
       cause a trap.
     # should the above say "current or subsequent Profile" rather than just "Profile"?

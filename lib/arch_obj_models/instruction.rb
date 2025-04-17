@@ -2,17 +2,21 @@
 
 require 'ruby-prof-flamegraph'
 
-require_relative "obj"
+require_relative "database_obj"
+require_relative "certifiable_obj"
+require_relative "../presence"
 require "awesome_print"
 
 # model of a specific instruction in a specific base (RV32/RV64)
 class Instruction < DatabaseObject
-    def processed_wavedrom_desc(base)
-      data = wavedrom_desc(base)
-      processed_data = process_wavedrom(data)
-      TemplateHelpers.fix_entities(json_dump_with_hex_literals(processed_data))
-    end
+  # Add all methods in this module to this type of database object.
+  include CertifiableObject
 
+  def processed_wavedrom_desc(base)
+    data = wavedrom_desc(base)
+    processed_data = process_wavedrom(data)
+    TemplateHelpers.fix_entities(json_dump_with_hex_literals(processed_data))
+  end
 
   def self.ary_from_location(location_str_or_int)
     return [location_str_or_int] if location_str_or_int.is_a?(Integer)
@@ -145,10 +149,8 @@ class Instruction < DatabaseObject
       return nil unless @data.key?("operation()")
 
       type_checked_ast = type_checked_operation_ast(effective_xlen)
-      print "Pruning #{name} operation()..."
       symtab = fill_symtab(effective_xlen, type_checked_ast)
       pruned_ast = type_checked_ast.prune(symtab)
-      puts "done"
       pruned_ast.freeze_tree(symtab)
 
       symtab.release
@@ -165,10 +167,8 @@ class Instruction < DatabaseObject
     else
       # RubyProf.start
       ast = type_checked_operation_ast(effective_xlen)
-      print "Determining reachable funcs from #{name} (#{effective_xlen})..."
       symtab = fill_symtab(effective_xlen, ast)
       fns = ast.reachable_functions(symtab)
-      puts "done"
       # result = RubyProf.stop
       # RubyProf::FlatPrinter.new(result).print($stdout)
       # exit
@@ -209,6 +209,8 @@ class Instruction < DatabaseObject
   # @param effective_xlen [Integer] Effective XLEN to evaluate against. If nil, evaluate against all valid XLENs
   # @return [Array<Integer>] List of all exceptions that can be reached from operation()
   def reachable_exceptions_str(effective_xlen=nil)
+    raise ArgumentError, "effective_xlen is a #{effective_xlen.class} but must be an Integer or nil" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
+
     if @data["operation()"].nil?
       []
     else
@@ -219,56 +221,47 @@ class Instruction < DatabaseObject
           if base.nil?
             (
               pruned_ast = pruned_operation_ast(32)
-              print "Determining reachable exceptions from #{name}#RV32..."
               symtab = fill_symtab(32, pruned_ast)
               e32 = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
                 etype.element_name(code)
               }
               symtab.release
-              puts "done"
               pruned_ast = pruned_operation_ast(64)
-              print "Determining reachable exceptions from #{name}#RV64..."
               symtab = fill_symtab(64, pruned_ast)
               e64 = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
                 etype.element_name(code)
               }
               symtab.release
-              puts "done"
               e32 + e64
             ).uniq
           else
             pruned_ast = pruned_operation_ast(base)
-            print "Determining reachable exceptions from #{name}..."
             symtab = fill_symtab(base, pruned_ast)
             e = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
               etype.element_name(code)
             }
             symtab.release
-            puts "done"
             e
           end
         else
           effective_xlen = cfg_arch.mxlen
           pruned_ast = pruned_operation_ast(effective_xlen)
-          print "Determining reachable exceptions from #{name}..."
+          puts " #{name}..."
           symtab = fill_symtab(effective_xlen, pruned_ast)
           e = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
             etype.element_name(code)
           }
           symtab.release
-          puts "done"
           e
         end
       else
         pruned_ast = pruned_operation_ast(effective_xlen)
 
-        print "Determining reachable exceptions from #{name}..."
         symtab = fill_symtab(effective_xlen, pruned_ast)
         e = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
           etype.element_name(code)
         }
         symtab.release
-        puts "done"
         e
       end
     end

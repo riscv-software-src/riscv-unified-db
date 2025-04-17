@@ -2671,7 +2671,7 @@ module Idl
         if (etype.csr.is_a?(Symbol) && etype.csr == :unknown) || etype.csr.dynamic_length?
           Type.new(:bits, width: :unknown)
         else
-          Type.new(:bits, width: etype.csr.length(symtab.cfg_arch))
+          Type.new(:bits, width: etype.csr.length)
         end
       else
         type_error "$bits cast is only defined for CSRs and Enum references"
@@ -6233,7 +6233,7 @@ module Idl
       else
         value_error "CSR is not defined" unless symtab.cfg_arch.csrs.any? { |icsr| icsr.name == cd.name }
       end
-      cd.fields.each { |f| value_error "#{csr_name(symtab)}.#{f.name} not RO" unless f.type(symtab) == "RO" }
+      cd.fields.each { |f| value_error "#{csr_name(symtab)}.#{f.name} not RO" unless f.type == "RO" }
 
       csr_def(symtab).fields.reduce(0) { |val, f| val | (f.value << f.location.begin) }
     end
@@ -6374,7 +6374,7 @@ module Idl
       when "sw_read"
         value_error "CSR not knowable" unless csr_known?(symtab)
         cd = csr_def(symtab)
-        cd.fields.each { |f| value_error "#{csr_name(symtab)}.#{f.name} not RO" unless f.type(symtab) == "RO" }
+        cd.fields.each { |f| value_error "#{csr_name(symtab)}.#{f.name} not RO" unless f.type == "RO" }
 
         value_error "TODO: CSRs with sw_read function"
       when "address"

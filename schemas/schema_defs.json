@@ -307,6 +307,58 @@
           "$ref": "#/$defs/when_condition"
         }
       }
+    },
+    "cert_normative_rules": {
+      "description": "Architecturally visible behaviors requiring validation by certification tests",
+      "type": "array",
+      "required": ["id", "name", "links", "description"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "doc_links": {
+          "description": "Link to UDB documentation, ISA manual, Sail code, or IDL code",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cert_test_procedures": {
+      "description": "Procedure test must follow to test certification normative rules",
+      "type": "array",
+      "required": ["id", "name", "description", "normative_rules"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "test_file_name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "normative_rules": {
+          "type": "array",
+          "description": "List of certification normative rule IDs to be validated",
+          "items": {
+            "type": "string"
+          }
+        },
+        "steps": {
+          "description": "List of steps typically using Asciidoc unordered lists",
+          "type": "string"
+        },
+        "additionalProperties": false
+      }
     }
   }
 }

@@ -86,7 +86,7 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate extension PDF
-        run: ./do gen:cert_model_pdf[MockCertificateModel]
+        run: ./do gen:proc_crd_pdf[MockProcessor]
   regress-gen-profile:
     runs-on: ubuntu-latest
     env:
@@ -97,7 +97,7 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate extension PDF
-        run: ./do gen:profile[MockProfileRelease]
+        run: ./do gen:profile_release_pdf[Mock]
   regress-gen-go:
     runs-on: ubuntu-latest
     env:

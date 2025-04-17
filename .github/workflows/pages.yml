@@ -26,6 +26,96 @@ jobs:
         uses: ./.github/actions/singularity-setup
       - name: Create deploy dir
         run: /bin/bash lib/deploy.sh
+      - name: Create _site/isa_explorer
+        run: mkdir -p _site/isa_explorer
+      - name: Create isa_explorer_browser
+        run: ./do gen:isa_explorer_browser
+      - name: Copy isa_explorer_browser
+        run: cp -R gen/isa_explorer/browser _site/isa_explorer
+      - name: Create isa_explorer_spreadsheet
+        run: ./do gen:isa_explorer_spreadsheet
+      - name: Copy isa_explorer_spreadsheet
+        run: cp -R gen/isa_explorer/spreadsheet _site/isa_explorer
+      - name: Build manual
+        run: ./do gen:html_manual MANUAL_NAME=isa VERSIONS=all
+      - name: Build html documentation for generic_rv64
+        run: ./do gen:html[generic_rv64]
+      - name: Generate YARD docs
+        run: ./do gen:tool_doc
+      - name: Create _site/example_cfg
+        run: mkdir -p _site/example_cfg
+      - name: Create _site/manual
+        run: mkdir -p _site/manual
+      - name: Create _site/pdfs
+        run: mkdir -p _site/pdfs
+      - name: Create _site/htmls
+        run: mkdir -p _site/htmls
+      - name: Copy cfg html
+        run: cp -R gen/cfg_html_doc/generic_rv64/html _site/example_cfg
+      - name: Copy top-level index.html with links to portfolio artifacts
+        run: cp index.html _site
+      - name: Create RVI20 Profile Release PDF Spec
+        run: ./do gen:profile_release_pdf[RVI20]
+      - name: Copy RVI20 Profile Release PDF
+        run: cp gen/profile/pdf/RVI20ProfileRelease.pdf _site/pdfs
+      - name: Create RVA20 Profile Release PDF Spec
+        run: ./do gen:profile_release_pdf[RVA20]
+      - name: Copy RVA20 Profile Release PDF
+        run: cp gen/profile/pdf/RVA20ProfileRelease.pdf _site/pdfs
+      - name: Create RVA22 Profile Release PDF Spec
+        run: ./do gen:profile_release_pdf[RVA22]
+      - name: Copy RVA22 Profile Release PDF
+        run: cp gen/profile/pdf/RVA22ProfileRelease.pdf _site/pdfs
+      - name: Create RVA23 Profile Release PDF Spec
+        run: ./do gen:profile_release_pdf[RVA23]
+      - name: Copy RVA23 Profile Release PDF
+        run: cp gen/profile/pdf/RVA23ProfileRelease.pdf _site/pdfs
+      - name: Create RVB23 Profile Release PDF Spec
+        run: ./do gen:profile_release_pdf[RVB23]
+      - name: Copy RVB23 Profile Release PDF
+        run: cp gen/profile/pdf/RVB23ProfileRelease.pdf _site/pdfs
+      - name: Create AC100-CRD PDF Spec
+        run: ./do gen:proc_crd_pdf[AC100]
+      - name: Copy AC100-CRD PDF
+        run: cp gen/proc_crd/pdf/AC100-CRD.pdf _site/pdfs
+      - name: Create AC200-CRD PDF Spec
+        run: ./do gen:proc_crd_pdf[AC200]
+      - name: Copy AC200-CRD PDF
+        run: cp gen/proc_crd/pdf/AC200-CRD.pdf _site/pdfs
+      - name: Create MC100-32-CRD PDF Spec
+        run: ./do gen:proc_crd_pdf[MC100-32]
+      - name: Copy MC100-32-CRD PDF
+        run: cp gen/proc_crd/pdf/MC100-32-CRD.pdf _site/pdfs
+      - name: Create MC100-64-CRD PDF Spec
+        run: ./do gen:proc_crd_pdf[MC100-64]
+      - name: Copy MC100-64-CRD PDF
+        run: cp gen/proc_crd/pdf/MC100-64-CRD.pdf _site/pdfs
+      - name: Create MC200-32-CRD PDF Spec
+        run: ./do gen:proc_crd_pdf[MC200-32]
+      - name: Copy MC200-32-CRD PDF
+        run: cp gen/proc_crd/pdf/MC200-32-CRD.pdf _site/pdfs
+      - name: Create MC200-64-CRD PDF Spec
+        run: ./do gen:proc_crd_pdf[MC200-64]
+      - name: Copy MC200-64-CRD PDF
+        run: cp gen/proc_crd/pdf/MC200-64-CRD.pdf _site/pdfs
+      - name: Create MC300-32-CRD PDF Spec
+        run: ./do gen:proc_crd_pdf[MC300-32]
+      - name: Copy MC300-32-CRD PDF
+        run: cp gen/proc_crd/pdf/MC300-32-CRD.pdf _site/pdfs
+      - name: Create MC300-64-CRD PDF Spec
+        run: ./do gen:proc_crd_pdf[MC300-64]
+      - name: Copy MC300-64-CRD PDF
+        run: cp gen/proc_crd/pdf/MC300-64-CRD.pdf _site/pdfs
+      - name: Create MC100-32-CTP PDF Spec
+        run: ./do gen:proc_ctp_pdf[MC100-32]
+      - name: Copy MC100-32-CTP PDF
+        run: cp gen/proc_ctp/pdf/MC100-32-CTP.pdf _site/pdfs
+      - name: Create MockProcessor-CTP PDF Spec
+        run: ./do gen:proc_ctp_pdf[MockProcessor]
+      - name: Copy MockProcessor-CTP PDF
+        run: cp gen/proc_ctp/pdf/MockProcessor-CTP.pdf _site/pdfs
+      - name: Copy manual html
+        run: cp -R gen/manual/isa/top/all/html _site/manual
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
