@@ -78,10 +78,10 @@ require_param :MUTABLE_MISA_M    if ext?(:M)
 # require_param :MUTABLE_MISA_U    if ext?(:U)  ## Needs definition of what happens
 require_param :MUTABLE_MISA_V    if ext?(:V)
 
-require_param :S_MODE_ENDIANESS  if ext?(:S)
-require_param :U_MODE_ENDIANESS  if ext?(:U)
-require_param :VU_MODE_ENDIANESS if ext?(:H)
-require_param :VS_MODE_ENDIANESS if ext?(:H)
+require_param :S_MODE_ENDIANNESS  if ext?(:S)
+require_param :U_MODE_ENDIANNESS  if ext?(:U)
+require_param :VU_MODE_ENDIANNESS if ext?(:H)
+require_param :VS_MODE_ENDIANNESS if ext?(:H)
 require_param :SXLEN             if ext?(:S) && MXLEN > 32
 require_param :UXLEN             if ext?(:U) && MXLEN > 32
 require_param :VSXLEN            if ext?(:H) && MXLEN > 32
