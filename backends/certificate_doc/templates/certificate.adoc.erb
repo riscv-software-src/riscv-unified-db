@@ -71,10 +71,10 @@ with the RVI TSC (Technical Steering Committee) organization who creates RISC-V 
 
 The CRDs refer to and augment information provided in existing ratified RVI standards.
 
-There are a variety of certificates offered by RVI to accomodate the various RVI standards.
+There are a variety of certificates offered by RVI to accommodate the various RVI standards.
 There are certificates for processors, non-processor system IP (e.g., IOMMU),
 and system platforms (processor + system IP) hardware standards.
-There are multiple classes of processor certificates available to accomodate the wide range of
+There are multiple classes of processor certificates available to accommodate the wide range of
 RISC-V implementations from basic microcontrollers to advanced Applications-class processors.
 
 Each CRD has a list of mandatory behaviors along with a list of optional behaviors.
@@ -152,7 +152,7 @@ Where:
 * <model> is 3-digit integer defined as follows:
 ** The hundreds's digit indicates the series
 ** The ten's digit identifies large differences in mandatory extensions (e.g., V, H) within the series
-** The one's digit indentifies small/medium differences in mandatory extensions (e.g., Zicond, PMP) within the series
+** The one's digit identifies small/medium differences in mandatory extensions (e.g., Zicond, PMP) within the series
 * <base> is optional and is 32 for RV32I, 64 for RV64I, and 32E for RV32E
 ** If a CRD supports multiple bases and <base> is omitted in a reference, it applies to all supported bases
 ** If a CRD only supports one base then <base> is generally omitted
@@ -510,9 +510,7 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
   <% end -%>
   <% if v.implications.size > 0 -%>
   Implies:::
-    <% v.implications.each do |i| -%>
-    * `<%= i.name %>` version <%= i.version_spec %>
-    <% end -%>
+    <%= v.implications.each { |i| "* #{i[:ext_ver].name} (#{i[:ext_ver].version_spec}) #{i[:cond].empty? ? '' : i[:cond].to_asciidoc(join: ', ')}" }.join("\n* ") %>
   <% end -%>
 <% end -%>
 
@@ -532,7 +530,15 @@ Requirement <%= req.name %> only apply when <%= req.when_pretty %>.
 <% end -%>
 
 // TODO: GitHub issue 92: Use version specified by each profile.
-<% insts = cfg_arch.instructions.select { |i| i.defined_by?(ext.min_version) } -%>
+<%
+  insts = cfg_arch.instructions.select do |i|
+    i.defined_by_condition.satisfied_by? do |defining_ext_req|
+      cert_model.in_scope_ext_reqs.any? do |in_scope_ext_req|
+        in_scope_ext_req.satisfying_versions.any? { |ext_ver| defining_ext_req.satisfied_by?(ext_ver) }
+      end
+    end
+  end
+-%>
 <% unless insts.empty? -%>
 ==== Instructions
 
@@ -681,13 +687,13 @@ RV64::
 <% if inst.key?("operation()") -%>
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.operation_ast(cfg_arch.symtab).gen_adoc %>
+<%= inst.operation_ast.gen_adoc %>
 ----
 <% end -%>
 
 ==== Exceptions
 
-<%- exception_list = inst.reachable_exceptions_str(cfg_arch.symtab) -%>
+<%- exception_list = inst.reachable_exceptions_str -%>
 <%- if exception_list.empty? -%>
 This instruction does not generate synchronous exceptions.
 <%- else -%>
@@ -735,17 +741,17 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <% end -%>
 h| Defining extension a| <%= csr.defined_by_condition.to_asciidoc %>
-<% if csr.dynamic_length?(cfg_arch) -%>
-h| Length         | <%= csr.length_pretty(cfg_arch) %>
+<% if csr.dynamic_length? -%>
+h| Length         | <%= csr.length_pretty %>
 <% else -%>
-h| Length         | <%= csr.length_pretty(cfg_arch) %>
+h| Length         | <%= csr.length_pretty %>
 <% end -%>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===
 
 
 ==== Format
-<% unless csr.dynamic_length?(cfg_arch) || csr.implemented_fields(cfg_arch).any? { |f| f.dynamic_location?(cfg_arch) } -%>
+<% unless csr.dynamic_length? || csr.possible_fields.any? { |f| f.dynamic_location? } -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -779,34 +785,34 @@ This CSR format changes dynamically with XLEN.
 |===
 @ Name @ Location @ Type @ Reset Value
 
-<%- csr.implemented_fields(cfg_arch).each do |field| -%>
+<%- csr.possible_fields.each do |field| -%>
 @ xref:<%=csr.name%>-<%=field.name%>-def[`<%= field.name %>`]
 a@
-<%- if field.dynamic_location?(cfg_arch) -%>
+<%- if field.dynamic_location? -%>
 
 [when,"<%= field.location_cond32 %>"]
 --
-<%= field.location_pretty(cfg_arch, 32) %>
+<%= field.location_pretty(32) %>
 --
 
 [when,"<%= field.location_cond64 %>"]
 --
-<%= field.location_pretty(cfg_arch, 64) %>
+<%= field.location_pretty(64) %>
 --
 
 <%- else -%>
-<%= field.location_pretty(cfg_arch) %>
+<%= field.location_pretty %>
 <%- end -%>
 a@
 
 --
-<%= field.type_pretty(cfg_arch.symtab) %>
+<%= field.type_pretty %>
 --
 
 a@
 
 --
-<%= field.reset_value_pretty(cfg_arch) %>
+<%= field.reset_value_pretty %>
 --
 
 <%- end -%>
@@ -814,11 +820,11 @@ a@
 
 ==== Fields
 
-<%- if csr.implemented_fields(cfg_arch).empty? -%>
+<%- if csr.possible_fields.empty? -%>
 This CSR has no fields. However, it must still exist (not cause an `Illegal Instruction` trap) and always return zero on a read.
 <%- else -%>
 
-<%- csr.implemented_fields(cfg_arch).each do |field| -%>
+<%- csr.possible_fields.each do |field| -%>
 [[<%=csr.name%>-<%=field.name%>-def]]
 ===== `<%= field.name %>`
 
@@ -828,23 +834,23 @@ IMPORTANT: <%= field.name %> is only defined in <%= field.base32_only? ? "RV32" 
 
 ****
 Location::
-<%= field.location_pretty(cfg_arch) %>
+<%= field.location_pretty %>
 
 Description::
 <%= field.description.gsub("\n", " +\n") %>
 
 Type::
-<%= field.type_pretty(cfg_arch.symtab) %>
+<%= field.type_pretty %>
 
 Reset value::
-<%= field.reset_value_pretty(cfg_arch) %>
+<%= field.reset_value_pretty %>
 
 ****
 
 <%- end -%>
 <%- end -%>
 
-<%- if csr.implemented_fields(cfg_arch).map(&:has_custom_sw_write?).any? -%>
+<%- if csr.possible_fields.map(&:has_custom_sw_write?).any? -%>
 ==== Software write
 
 This CSR may store a value that is different from what software attempts to write.
@@ -854,7 +860,7 @@ written value:
 
 [idl]
 ----
-<%- csr.implemented_fields(cfg_arch).each do |field| -%>
+<%- csr.possible_fields.each do |field| -%>
 <%- if field.has_custom_sw_write? -%>
 <%= field.name %> = <%= field["sw_write(csr_value)"] %>
 <%- else -%>

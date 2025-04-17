@@ -9,6 +9,26 @@ class Config
   #                                been configured with a value. May be empty.
   attr_reader :param_values
 
+  def overlay? = !(@data["arch_overlay"].nil? || @data["arch_overlay"].empty?)
+
+  # @return [String] Either a path to an overlay directory, or the name of a folder under arch_overlay/
+  # @return [nil] No arch_overlay for this config
+  def arch_overlay = @data["arch_overlay"]
+
+  # @return [String] Absolute path to the arch_overlay
+  # @return [nil] No arch_overlay for this config
+  def arch_overlay_abs
+    return nil unless @data.key?("arch_overlay")
+
+    if File.directory?("#{$root}/arch_overlay/#{@data['arch_overlay']}")
+      "#{$root}/arch_overlay/#{@data['arch_overlay']}"
+    elsif File.directory?(@data['arch_overlay'])
+      @data['arch_overlay']
+    else
+      raise "Cannot find arch_overlay '#{@data['arch_overlay']}'"
+    end
+  end
+
   # use Config#create instead
   private_class_method :new
 
@@ -95,11 +115,13 @@ class PartialConfig < Config
 
     @param_values = @data.key?("params") ? @data["params"] : [].freeze
 
-    @mxlen = @data.dig("params", "XLEN")
-    raise "Must set XLEN for a configured config" if @mxlen.nil?
+    @mxlen = @data.dig("params", "MXLEN")
+    raise "Must set MXLEN for a configured config" if @mxlen.nil?
 
     @mxlen.freeze
   end
+
+  def additional_extensions_allowed? = @data.key?("additional_extensions") ? @data["additional_extensions"] : true
 
   def implemented_extensions = raise "implemented_extensions is only available for a FullConfig"
 
@@ -160,8 +182,8 @@ class FullConfig < Config
 
     @param_values = @data["params"]
 
-    @mxlen = @data.dig("params", "XLEN").freeze
-    raise "Must set XLEN for a configured config" if @mxlen.nil?
+    @mxlen = @data.dig("params", "MXLEN").freeze
+    raise "Must set MXLEN for a configured config" if @mxlen.nil?
   end
 
   # @return [Array<Hash<String, String>>] List of all extensions known to be implemented in this architecture

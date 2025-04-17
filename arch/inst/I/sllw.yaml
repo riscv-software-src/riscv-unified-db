@@ -5,18 +5,18 @@ kind: instruction
 name: sllw
 long_name: Shift left logical word
 description: |
-  Shift the 32-bit value in `rs1` left by the value in the lower 5 bits of `rs2`, and store the sign-extended result in `rd`.
+  Shift the 32-bit value in `xs1` left by the value in the lower 5 bits of `xs2`, and store the sign-extended result in `xd`.
 definedBy: I
 base: 64
 assembly: xd, xs1, xs2
 encoding:
   match: 0000000----------001-----0111011
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -24,19 +24,24 @@ access:
   vs: always
   vu: always
 data_independent_timing: true
-operation(): X[rd] = sext(X[rs1] << X[rs2][4:0], 31);
+operation(): X[xd] = sext(X[xs1] << X[xs2][4:0], 31);
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
-    let rs1_val = (X(rs1))[31..0];
-    let rs2_val = (X(rs2))[31..0];
+    let xs1_val = (X(xs1))[31..0];
+    let xs2_val = (X(xs2))[31..0];
     let result : bits(32) = match op {
-      RISCV_ADDW => rs1_val + rs2_val,
-      RISCV_SUBW => rs1_val - rs2_val,
-      RISCV_SLLW => rs1_val << (rs2_val[4..0]),
-      RISCV_SRLW => rs1_val >> (rs2_val[4..0]),
-      RISCV_SRAW => shift_right_arith32(rs1_val, rs2_val[4..0])
+      RISCV_ADDW => xs1_val + xs2_val,
+      RISCV_SUBW => xs1_val - xs2_val,
+      RISCV_SLLW => xs1_val << (xs2_val[4..0]),
+      RISCV_SRLW => xs1_val >> (xs2_val[4..0]),
+      RISCV_SRAW => shift_right_arith32(xs1_val, xs2_val[4..0])
     };
-    X(rd) = sign_extend(result);
+    X(xd) = sign_extend(result);
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

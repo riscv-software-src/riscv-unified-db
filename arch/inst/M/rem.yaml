@@ -39,7 +39,7 @@ operation(): |
     # to be the dividend
     X[rd] = src1;
 
-  } else if ((src1 == {1'b1, {XLEN-1{1'b0}}}) && (src2 == {XLEN{1'b1}})) {
+  } else if ((src1 == {1'b1, {MXLEN-1{1'b0}}}) && (src2 == {MXLEN{1'b1}})) {
     # signed overflow. Since RISC-V does not have arithmetic exceptions, the result is defined
     # to be zero
     X[rd] = 0;
@@ -48,6 +48,9 @@ operation(): |
     X[rd] = $signed(src1) % $signed(src2);
   }
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     if extension("M") then {
@@ -64,3 +67,5 @@ sail(): |
       RETIRE_FAIL
     }
   }
+
+# SPDX-SnippetEnd

@@ -15,7 +15,6 @@ This instruction is defined by:
 [NOTE]
 This instruction has different encodings in RV32 and RV64.
 
-[tabs]
 ====
 RV32::
 +
@@ -34,7 +33,7 @@ RV64::
 <%- else -%>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump inst.wavedrom_desc(cfg_arch.param_values["XLEN"]) %>
+<%= JSON.dump inst.wavedrom_desc(cfg_arch.param_values["MXLEN"]) %>
 ....
 <%- end -%>
 
@@ -90,7 +89,7 @@ RV64::
 <%- else -%>
 [source,idl]
 ----
-<%- inst.decode_variables(cfg_arch.param_values["XLEN"]).each do |d| -%>
+<%- inst.decode_variables(cfg_arch.param_values["MXLEN"]).each do |d| -%>
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
 <%- end -%>
 ----
@@ -108,7 +107,7 @@ Pruned, XLEN == <%= effective_xlen %>::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.pruned_operation_ast(cfg_arch.symtab, effective_xlen).gen_adoc %>
+<%= inst.pruned_operation_ast(effective_xlen).gen_adoc %>
 ----
 <%- end -%>
 
@@ -116,12 +115,12 @@ Original::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.operation_ast(cfg_arch.idl_compiler).gen_adoc %>
+<%= inst.operation_ast().gen_adoc %>
 ----
 ====
 <%- end -%>
 
-<%- exception_list = inst.reachable_exceptions_str(cfg_arch.symtab) -%>
+<%- exception_list = inst.reachable_exceptions_str() -%>
 <%- unless exception_list.empty? -%>
 == Exceptions
 

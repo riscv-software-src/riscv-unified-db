@@ -33,9 +33,14 @@ operation(): |
 
   X[rd] = output;
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   result : xlenbits = EXTZ(0b0);
   foreach (i from 0 to sizeof(xlen) by 8) {
     result[i+7..i] = reverse_bits_in_byte(X(rs1)[i+7..i]);
   };
   X(rd) = result;
+
+# SPDX-SnippetEnd
