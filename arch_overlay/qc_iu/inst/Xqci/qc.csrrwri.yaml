@@ -41,4 +41,4 @@ operation(): |
   }
   # writes the zero-extended immediate to the CSR,
   # performing any WARL transformations first
-  CSR[csr].sw_write({{XLEN-5{1'b0}}, imm});
+  CSR[csr].sw_write({{MXLEN-5{1'b0}}, imm});

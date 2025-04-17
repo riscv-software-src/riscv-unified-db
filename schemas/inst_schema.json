@@ -220,7 +220,7 @@
                 "type": "string",
                 "format": "uri-reference",
                 "pattern": "^inst/.+\\.yaml#.*$",
-                "description": "Ref to an instruction that is using a HINT codepoint(s) of this instruciton"
+                "description": "Ref to an instruction that is using a HINT codepoint(s) of this instruction"
               }
             },
             "required": ["$ref"],

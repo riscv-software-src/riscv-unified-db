@@ -21,15 +21,15 @@ Instruction execution semantics are defined in IDL. Below is an example showing 
 ====
 [source,idl]
 ----
-Bits<XLEN> src1 = X(rs1); <1>
-Bits<XLEN> src2 = X(rs2); <2>
+Bits<MXLEN> src1 = X(rs1); <1>
+Bits<MXLEN> src2 = X(rs2); <2>
 
 if (src1 <= src2) { <3>
   jump(PC + $signed(imm)); <4>
 }
 # fall through: advance to next instruction
 ----
-<1> Read general-purpose X register number `rs1`, and store it in XLEN-bit variable `src1`. XLEN is a configuration parameter that is available as a global constant in IDL.
+<1> Read general-purpose X register number `rs1`, and store it in MXLEN-bit variable `src1`. MXLEN is a configuration parameter that is available as a global constant in IDL.
 <2> Read general-purpose X register number `rs2`, and store it in variable `src2`.
 <3> Check if unsigned `src1` is less than or equal to unsigned `src2`.
 <4> Call the `jump` function with a target address formed by adding a signed immediate to the PC.
@@ -61,7 +61,7 @@ function jump {
   }
 }
 ----
-<1> Declare that function 'jump' takes a single argument of type `XReg` (alias of `Bits<XLEN>`).
+<1> Declare that function 'jump' takes a single argument of type `XReg` (alias of `Bits<MXLEN>`).
 <2> A mandatory description of the function.
 <3> IDL statements for the instruction execution are placed in body {...}
 <4> Trigger a synchronous exception by calling the `raise` function.
@@ -125,14 +125,9 @@ The `Bits<N>` type is a vector of N bits that is treated like an integer for ari
 .Examples of Bits<N> declarations
 [source,idl]
 ----
-Bits<1>       sign_bit;              # 1-bit unsigned variable
-Bits<XLEN>    virtual_address;       # XLEN-bit unsigned variable
-Bits<{XLEN, 1'b0}> multiplication_result # unsigned variable twice as wide as XLEN
-
-# Careful!
-# Bits<XLEN*2>  multiplication_result; # compilation error; XLEN only has enough bits to
-                                       # represent itself, so XLEN*2 is truncated to zero
-                                       # (see <<Operators>>)
+Bits<1>       sign_bit;                   # 1-bit unsigned variable
+Bits<MXLEN>    virtual_address;           # MXLEN-bit unsigned variable
+Bits<{MXLEN, 1'b0}> multiplication_result # unsigned variable twice as wide as MXLEN
 
 # Bits<sign_bit> invalid;              # compilation error: N must be known at compile time
 ----
@@ -146,7 +141,7 @@ There are several aliases of Bits<N> available, as shown below.
 |===
 | Alias | Type
 
-| `XReg`  | `Bits<XLEN>`, where XLEN is configuration-dependent
+| `XReg`  | `Bits<MXLEN>`, where MXLEN is configuration-dependent
 | `U64`   | `Bits<64>`
 | `U32`   | `Bits<32>`
 |===
@@ -308,7 +303,7 @@ When one or more values in a tuple is not needed, it can be assigned to the don'
 
 === Integer literals
 
-Integer literal values can be expressed using either C style or Verilog style. When using Verilog style, the literal bit width can be specified. If the width is omitted using the Verilog style, the bit width will be XLEN. When using C style, the bitwidth is the minimum number of bits needed to represent the value.
+Integer literal values can be expressed using either C style or Verilog style. When using Verilog style, the literal bit width can be specified. If the width is omitted using the Verilog style, the bit width will be MXLEN. When using C style, the bitwidth is the minimum number of bits needed to represent the value.
 
 A signed literal is allocated an extra bit to support negation. The literal itself is always positive, but may be immediately negated to get a negative value. For that reason, be careful
 constructing negative literals (see example below).
@@ -334,9 +329,9 @@ Literals may contain any number of underscores after the initial digit for clari
 
 8'13          # 13 decimal, 8-bit wide (default radix is 10)
 
-'13           # 13 decimal, unsigned XLEN-bit wide
-'s13          # 13 decimal, signed XLEN-bit wide
-# 'h100000000 # compilation error when XLEN == 32; does not fit in XLEN bits
+'13           # 13 decimal, unsigned MXLEN-bit wide
+'s13          # 13 decimal, signed MXLEN-bit wide
+# 'h100000000 # compilation error when MXLEN == 32; does not fit in MXLEN bits
 
 -4'd13        # 3 decimal: the literal is 13, unsigned, in 4-bits. when negated, the sign bit is lost
 # -8'sd200    # compilation error: -200 does not fit in 8 bits
@@ -554,7 +549,7 @@ Two builtin variables exist:
 |===
 | Name | Type | Scope | Description
 
-| `$pc` | `Bits<XLEN>` | Global | The current program counter of the hart
+| `$pc` | `Bits<MXLEN>` | Global | The current program counter of the hart
 | `$encoding` | `Bits<VARIABLE>`, where VARIABLE is the length of the last fetched insruction | Instruction, Csr | The encoding of the last fetched instruction. Only accessible in Instruction scope and Csr scope (cannot be used in functions).
 |===
 
@@ -564,7 +559,7 @@ Constants are declared like mutable variables, except that their name starts wit
 
 Constant names must start with an uppercase letter and can be followed by any number of letters (any case), numbers, or an underscore. Constants must be initialized when declared, and cannot be assigned after declaration. Constants must be initialized with a value known at compile time (_i.e._, initialization cannot reference variables).
 
-Note that many global constants, such are configuration parameters, are implicitly added before parsing (_e.g._, XLEN).
+Note that many global constants, such are configuration parameters, are implicitly added before parsing (_e.g._, MXLEN).
 
 .Example constant declarations
 [source,idl]
@@ -643,7 +638,7 @@ When the casted value is a bitfield, the resulting type will be the width of the
 $bits(RoundingMode::RNE)  # => 3'd0
 $bits(RoundingMode::RUP)  # => 3'd3
 
-$bits(CSR[mstatus])  # => XLEN'd??
+$bits(CSR[mstatus])  # => MXLEN'd??
 
 # assuming:
 #   bitfield (64) Sv39PageTableEntry { ... }
@@ -860,20 +855,20 @@ When a CSR defines custom behavior for software reads and/or writes via the `sw_
 Bits<64> x[32]; # global constant (when this is an .idl file)
 
 function example {
-  return_type Bits<XLEN>
-  arguments Bits<XLEN> a, Bits<XLEN> b # a and b are in function scope
+  return_type Bits<MXLEN>
+  arguments Bits<MXLEN> a, Bits<MXLEN> b # a and b are in function scope
   description {
     If a > b, return a+b. If a <= b, return a - b.
   }
   body {
-    Bits<XLEN> result;  # result is in function scope
+    Bits<MXLEN> result;  # result is in function scope
 
     if (a > b) {
-      Bits<XLEN> result = a + b; # result shadows variable above
-      Bits<XLEN> sum = a + b;  # ok
+      Bits<MXLEN> result = a + b; # result shadows variable above
+      Bits<MXLEN> sum = a + b;  # ok
       result = sum;
     } else {
-      Bits<XLEN> difference = a - b; # ok
+      Bits<MXLEN> difference = a - b; # ok
       result = difference;
     }
 
@@ -956,9 +951,9 @@ mepc:
       # ...
       sw_write(csr_value): |
         # csr_value is:
-        #    a 'bitfield (64) { PC 63-0 }' when XLEN == 64
-        #    a 'bitfield (32) { PC 31-0 }' when XLEN == 32
-        return csr_value.PC & ~64'b1;
+        #    a 'bitfield (64) { PC 63-0 }' when MXLEN == 64
+        #    a 'bitfield (32) { PC 31-0 }' when MXLEN == 32
+        return csr_value.PC & ~MXLEN'b1;
 ----
 
 field.type()::
@@ -975,7 +970,7 @@ mstatus:
     MBE:
       # ...
       type(): |
-        return (M_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
+        return (M_MODE_ENDIANNESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
 ----
 
 field.reset_value()::
@@ -993,5 +988,5 @@ mstatus:
       # ...
       # if endianness is mutable, MBE comes out of reset in little-endian mode
       reset_value(): |
-        return (M_MODE_ENDIANESS == "big") ? 1 : 0;
+        return (M_MODE_ENDIANNESS == "big") ? 1 : 0;
 ----

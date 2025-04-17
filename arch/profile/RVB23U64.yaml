@@ -39,7 +39,7 @@ extensions:
     presence: mandatory
     version: "~>1.0"
     note: |
-      Commpressed (16-bit) may-be operations
+      Compressed (16-bit) may-be operations
   Zcb:
     presence: mandatory
     version: "~>1.0"

@@ -335,8 +335,8 @@ class ConfiguredArchitecture < Architecture
   # @return [String] A string representation of the object.
   def inspect = "ConfiguredArchitecture##{name}"
 
-  # @return [Array<ExtensionVersion>] List of extension versions explictly marked as implemented in the config.
-  #                                   Does *not* include extensions implied by explictly implemented extensions.
+  # @return [Array<ExtensionVersion>] List of extension versions explicitly marked as implemented in the config.
+  #                                   Does *not* include extensions implied by explicitly implemented extensions.
   def explicitly_implemented_extension_versions
     return @explicitly_implemented_extension_versions unless @explicitly_implemented_extension_versions.nil?
 
@@ -459,7 +459,7 @@ class ConfiguredArchitecture < Architecture
         end
       end
 
-      # now add everything that is not mandatory or implied by mandatory, if addtional extensions are not allowed
+      # now add everything that is not mandatory or implied by mandatory, if additional extensions are not allowed
       unless @config.additional_extensions_allowed?
         extensions.each do |ext|
           ext.versions.each do |ext_ver|

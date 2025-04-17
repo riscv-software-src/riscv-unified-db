@@ -29,6 +29,14 @@ class CsrField < DatabaseObject
     @parent = parent_csr
   end
 
+  # CSR fields are defined in their parent CSR YAML file
+  def __source = @parent.__source
+
+  # CSR field data starts at fields: NAME: with the YAML
+  def source_line(*path)
+    super("fields", name, *path)
+  end
+
   # For a full config, whether or not the field is implemented
   # For a partial config, whether or the it is possible for the field to be implemented
   #
@@ -500,11 +508,11 @@ class CsrField < DatabaseObject
       "csr_value",
       Idl::Var.new("csr_value", csr.bitfield_type(@cfg_arch, effective_xlen))
     )
-    if symtab.get("XLEN").value.nil?
+    if symtab.get("MXLEN").value.nil?
       symtab.add(
-        "XLEN",
+        "MXLEN",
         Idl::Var.new(
-          "XLEN",
+          "MXLEN",
           Idl::Type.new(:bits, width: 6, qualifiers: [:const]),
           effective_xlen,
           param: true
@@ -527,11 +535,11 @@ class CsrField < DatabaseObject
       "__expected_return_type",
       Idl::Type.new(:enum_ref, enum_class: symtab.get("CsrFieldType"))
     )
-    if symtab.get("XLEN").value.nil?
+    if symtab.get("MXLEN").value.nil?
       symtab.add(
-        "XLEN",
+        "MXLEN",
         Idl::Var.new(
-          "XLEN",
+          "MXLEN",
           Idl::Type.new(:bits, width: 6, qualifiers: [:const]),
           effective_xlen,
           param: true
