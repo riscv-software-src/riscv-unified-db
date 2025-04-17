@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "database_obj"
+require_relative "certifiable_obj"
 require_relative "parameter"
 require_relative "schema"
 require_relative "../presence"
@@ -8,6 +9,9 @@ require_relative "../version"
 
 # Extension definition
 class Extension < DatabaseObject
+  # Add all methods in this module to this type of database object.
+  include CertifiableObject
+
   # @return [String] Long name of the extension
   def long_name = @data["long_name"]
 

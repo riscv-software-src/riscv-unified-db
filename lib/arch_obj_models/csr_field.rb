@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
 require_relative "database_obj"
-
 require_relative "../idl/passes/gen_option_adoc"
+require_relative "certifiable_obj"
 
 # A CSR field object
 class CsrField < DatabaseObject
+  # Add all methods in this module to this type of database object.
+  include CertifiableObject
+
   # @return [Csr] The Csr that defines this field
   attr_reader :parent
 

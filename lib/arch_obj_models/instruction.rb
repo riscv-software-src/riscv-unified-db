@@ -3,11 +3,21 @@
 require 'ruby-prof-flamegraph'
 
 require_relative "database_obj"
+require_relative "certifiable_obj"
 require_relative "../presence"
 require "awesome_print"
 
 # model of a specific instruction in a specific base (RV32/RV64)
 class Instruction < DatabaseObject
+  # Add all methods in this module to this type of database object.
+  include CertifiableObject
+
+  def processed_wavedrom_desc(base)
+    data = wavedrom_desc(base)
+    processed_data = process_wavedrom(data)
+    TemplateHelpers.fix_entities(json_dump_with_hex_literals(processed_data))
+  end
+
   def self.ary_from_location(location_str_or_int)
     return [location_str_or_int] if location_str_or_int.is_a?(Integer)
 

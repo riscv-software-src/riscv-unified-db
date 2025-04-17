@@ -25,8 +25,6 @@
 # is warranted, e.g., the CSR Field 'alias' returns a CsrFieldAlias object
 # instead of a simple string
 
-require_relative "cert_normative_rule"
-require_relative "cert_test_procedure"
 require_relative "doc_link"
 
 class DatabaseObject

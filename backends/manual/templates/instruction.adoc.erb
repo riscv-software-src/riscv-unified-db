@@ -7,7 +7,7 @@
 
 This instruction is defined by:
 
-<%= inst.defined_by_condition.to_asciidoc %>
+<%= inst.fix_entities(inst.defined_by_condition.to_asciidoc) %>
 
 This instruction is included in the following profiles:
 
@@ -41,20 +41,20 @@ RV32::
 +
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump inst.wavedrom_desc(32) %>
+<%= inst.processed_wavedrom_desc(32) %>
 ....
 
 RV64::
 +
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump inst.wavedrom_desc(64) %>
+<%= inst.processed_wavedrom_desc(64) %>
 ....
 ====
 <%- else -%>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump inst.wavedrom_desc(inst.base.nil? ? 32 : inst.base) %>
+<%= inst.processed_wavedrom_desc(inst.base.nil? ? 32 : inst.base) %>
 ....
 <%- end -%>
 
@@ -69,7 +69,7 @@ RV64::
 This instruction must have data-independent timing when extension `Zkt` is enabled.
 <%- end -%>
 
-<%= inst.description %>
+<%= inst.fix_entities(inst.description) %>
 
 == Access
 [cols="^,^,^,^,^"]
@@ -84,7 +84,7 @@ This instruction must have data-independent timing when extension `Zkt` is enabl
 |===
 
 <%- if inst.access_detail? -%>
-<%= inst.access_detail %>
+<%= inst.fix_entities(inst.access_detail) %>
 <%- end -%>
 
 == Decode Variables
@@ -128,7 +128,7 @@ IDL::
 +
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.operation_ast.gen_adoc %>
+<%= inst.fix_entities(inst.operation_ast.gen_adoc) %>
 ----
 <%- end -%>
 
@@ -137,7 +137,7 @@ Sail::
 +
 [source,sail]
 ----
-<%= inst["sail()"] %>
+<%= inst.fix_entities(inst["sail()"]) %>
 ----
 <%- end -%>
 ====
@@ -149,7 +149,7 @@ Sail::
 This instruction may result in the following synchronous exceptions:
 
   <%- exception_list.sort.each do |etype| -%>
-  * <%= etype %>
+  * <%= inst.fix_entities(etype) %>
   <%- end -%>
 
 <%- end -%>

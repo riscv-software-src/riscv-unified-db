@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+Encoding.default_external = "UTF-8"
+
 $jobs = ENV["JOBS"].nil? ? 1 : ENV["JOBS"].to_i
 Rake.application.options.thread_pool_size = $jobs
 puts "Running with #{Rake.application.options.thread_pool_size} job(s)"

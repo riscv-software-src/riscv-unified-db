@@ -134,7 +134,7 @@ fields:
     definedBy: I
     reset_value: 1
   M:
-    location: 13
+    location: 12
     description: |
       Indicates support for the `M` (integer multiply/divide) extension.
 
@@ -169,7 +169,7 @@ fields:
           . check
           .. Check that every multiply extension instruction throws illegal instruction exception
   S:
-    location: 19
+    location: 18
     description: |
       Indicates support for the `S` (supervisor mode) extension.
 
@@ -181,7 +181,7 @@ fields:
       return implemented?(ExtensionName::S) ? 1 : 0;
     definedBy: S
   U:
-    location: 21
+    location: 20
     description: |
       Indicates support for the `U` (user mode) extension.
 
@@ -193,7 +193,7 @@ fields:
       return implemented?(ExtensionName::U) ? 1 : 0;
     definedBy: U
   V:
-    location: 22
+    location: 21
     description: |
       Indicates support for the `V` (vector) extension.
 

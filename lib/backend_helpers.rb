@@ -164,11 +164,78 @@ module TemplateHelpers
   end
   # TODO: Add csr and csr_field support
 
-  private
-    #@ param s [String]
-    def check_no_periods(s)
-      raise ArgumentError, "Periods are not allowed in '#{s}'" if s.include?(".")
+  #@ param s [String]
+  def check_no_periods(s)
+    raise ArgumentError, "Periods are not allowed in '#{s}'" if s.include?(".")
+  end
+  private :check_no_periods
+
+  def fix_entities(text)
+    text.to_s.gsub("&ne;", "≠")
+             .gsub("&pm;", "±")
+             .gsub("-&infin;", "−∞")
+             .gsub("+&infin;", "+∞")
+  end
+
+  # Custom JSON converter for wavedrom that handles hexadecimal literals
+  def json_dump_with_hex_literals(data)
+    # First convert to standard JSON
+    json_string = JSON.dump(data)
+
+    # Replace string hex values with actual hex literals
+    json_string.gsub(/"0x([0-9a-fA-F]+)"/) do |match|
+      # Remove the quotes, leaving just the hex literal
+      "0x#{$1}"
+    end.gsub(/"name":/, '"name": ') # Add space after colon for name field
+  end
+
+  # Helper to process wavedrom data
+  def process_wavedrom(json_data)
+    result = json_data.dup
+
+    # Process reg array if it exists
+    if result["reg"].is_a?(Array)
+      result["reg"].each do |item|
+        # For fields that are likely opcodes or immediates (type 2)
+        if item["type"] == 2
+
+          # Convert to number first (if it's a string)
+          if item["name"].is_a?(String)
+            if item["name"].start_with?("0x")
+              # Already hexadecimal
+              numeric_value = item["name"].to_i(16)
+            elsif item["name"] =~ /^[01]+$/
+              # Binary string without prefix
+              numeric_value = item["name"].to_i(2)
+            elsif item["name"] =~ /^\d+$/
+              # Decimal
+              numeric_value = item["name"].to_i
+            else
+              # Not a number, leave it alone
+              next
+            end
+          else
+            # Already a number
+            numeric_value = item["name"]
+          end
+
+          # Convert to hexadecimal string
+          hex_str = numeric_value.to_s(16).downcase
+
+          # Set the name to a specially formatted string that will be converted
+          # to a hex literal in our custom JSON converter
+          item["name"] = "0x" + hex_str
+        end
+
+        # Ensure bits is a number
+        if item["bits"].is_a?(String) && item["bits"] =~ /^\d+$/
+          item["bits"] = item["bits"].to_i
+        end
+      end
     end
+
+    result
+  end
 end
 
 # Utilities for a backend to generate AsciiDoc.

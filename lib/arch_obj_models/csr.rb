@@ -1,9 +1,13 @@
 # frozen_string_literal: true
 
 require_relative "database_obj"
+require_relative "certifiable_obj"
 
 # CSR definition
 class Csr < DatabaseObject
+  # Add all methods in this module to this type of database object.
+  include CertifiableObject
+
   def ==(other)
     if other.is_a?(Csr)
       name == other.name

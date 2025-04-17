@@ -30,23 +30,23 @@ This instruction has different encodings in RV32 and RV64
 RV32::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump inst.wavedrom_desc(32) %>
+<%= inst.processed_wavedrom_desc(32) %>
 ....
 
 RV64::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump inst.wavedrom_desc(64) %>
+<%= inst.processed_wavedrom_desc(64) %>
 ....
 <%- else -%>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump inst.wavedrom_desc(inst.base.nil? ? 64 : inst.base) %>
+<%= inst.processed_wavedrom_desc(inst.base.nil? ? 64 : inst.base) %>
 ....
 <%- end -%>
 
 Description::
-<%= inst.description %>
+<%= inst.fix_entities(inst.description) %>
 
 
 Decode Variables::
@@ -89,7 +89,7 @@ RV64::
 Operation::
 [source,idl,subs="specialchars,macros"]
 ----
-<%= inst.operation_ast.gen_adoc %>
+<%= inst.fix_entities(inst.operation_ast.gen_adoc) %>
 ----
   <% end %>
 <% end %>
@@ -99,7 +99,7 @@ Operation::
 Sail::
 [source,sail]
 ----
-<%= inst.data["sail()"] %>
+<%= inst.fix_entities(inst.data["sail()"]) %>
 ----
   <% end %>
 <% end %>
@@ -111,9 +111,9 @@ Included in::
 | Extension | Version
 
 <%- inst.defined_by_condition.flat_versions.each do |r| -%>
-| *<%= r.name %>* | <%= r.requirement_specs_to_s %>
+| *<%= r.name %>* | <%= inst.fix_entities(r.requirement_specs_to_s) %>
 <%- end -%>
 |===
 <%- else -%>
-<%= inst.defined_by_condition.to_asciidoc %>
+<%= inst.fix_entities(inst.defined_by_condition.to_asciidoc) %>
 <%- end -%>
