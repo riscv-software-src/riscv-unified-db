@@ -2,13 +2,13 @@
 $schema: csr_schema.json#
 kind: csr
 name: scountovf
-long_name: Supervisor Count Overflow (scountovf) Register
-address: 0x700
+long_name: Supervisor Count Overflow
+address: 0xDA0
 priv_mode: S
 length: 32
 definedBy: Sscofpmf
 description: |
-  This extension adds the scountovf CSR, a 32-bit read-only
+  A 32-bit read-only
   register that contains shadow copies of the OF bits in the 29 mhpmevent CSRs
   (mhpmevent3 - mhpmevent31) - where scountovf bit X corresponds to mhpmeventX.
 
@@ -24,8 +24,9 @@ description: |
 
 fields:
   OF_shadow_bits:
-    location: 31
+    location: 31-3
     type: RO
     description: |
       Read-only shadow copies of the OF bits from mhpmevent3 to mhpmevent31.
     reset_value: UNDEFINED_LEGAL
+sw_read(): |
