@@ -35,7 +35,7 @@ access:
   vs: always
   vu: always
 operation(): |
-  Bits<{1'b0, XLEN}*2> pair = {X[rs1 + 1], X[rs1]};
+  Bits<{1'b0, MXLEN}*2> pair = {X[rs1 + 1], X[rs1]};
   XReg width_bits = X[rs2][29:24];
   XReg width = (width_bits > 32) ? 32 : width_bits;
   XReg shamt = X[rs2][21:16];

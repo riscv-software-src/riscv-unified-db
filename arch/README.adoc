@@ -34,9 +34,9 @@ Each extension/instruction/CSR has its own file.
 [ditaa]
 ....
 +--------------------------------------------------------------------------+
-| Config (cfgs/NAME)                                                       |
+| AbstractConfig (cfgs/NAME)                                                       |
 | +------------------------------+ +-----------------------------------+   |
-| | Config (extensions & params) | | Implementation Overlay [optional] |   |
+| | AbstractConfig (extensions & params) | | Implementation Overlay [optional] |   |
 | | (cfgs/NAME/cfg.yaml)         | | (cfgs/NAME/arch_overlay/*.yaml)   |   |
 | +------------------------------+ +-----------------------------------+   |
 +--------|------------------------------------------------------|----------+
@@ -69,7 +69,7 @@ Each extension/instruction/CSR has its own file.
   +------|-------------------------------------------------|---------+
   |      |           Ruby Interface                        |         |
   |   /--------\                                           |         |
-  |   | Config |                                           |         |
+  |   | AbstractConfig |                                           |         |
   |   \--------/   /---------------\                       |         |
   |       |      +-| Architecture  |<----------------------+         |
   |       |      | \---------------/                                 |

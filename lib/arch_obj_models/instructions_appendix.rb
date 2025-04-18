@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "obj"  # Adjust this require if your obj.rb is in the same folder.
+require_relative "database_obj"  # Adjust this require if your obj.rb is in the same folder.
 
 # The InstructionIndex class aggregates instructions from the architecture.
 # It merges instructions available directly from the architecture (if any)

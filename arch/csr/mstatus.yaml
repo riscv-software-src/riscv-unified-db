@@ -91,17 +91,17 @@ fields:
       Controls the endianness of data M-mode (0 = little, 1 = big).
       Instructions are always little endian, regardless of the data setting.
 
-      [when,"M_MODE_ENDIANESS == little"]
+      [when,"M_MODE_ENDIANNESS == little"]
       Since the CPU does not support big endian, this is hardwired to 0.
 
-      [when,"M_MODE_ENDIANESS == big"]
+      [when,"M_MODE_ENDIANNESS == big"]
       Since the CPU does not support little endian, this is hardwired to 1.
     type(): |
-      return (M_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
+      return (M_MODE_ENDIANNESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
 
     # if endianness is mutable, MBE comes out of reset in little-endian mode
     reset_value(): |
-      return (M_MODE_ENDIANESS == "big") ? 1 : 0;
+      return (M_MODE_ENDIANNESS == "big") ? 1 : 0;
 
   SBE:
     location: 36
@@ -113,19 +113,19 @@ fields:
       Controls the endianness of S-mode (0 = little, 1 = big).
       Instructions are always little endian, regardless of the data setting.
 
-      [when,"S_MODE_ENDIANESS == little"]
+      [when,"S_MODE_ENDIANNESS == little"]
       Since the CPU does not support big endian, this is hardwired to 0.
 
-      [when,"S_MODE_ENDIANESS == big"]
+      [when,"S_MODE_ENDIANNESS == big"]
       Since the CPU does not support little endian, this is hardwired to 1.
     type(): |
-      return (S_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
+      return (S_MODE_ENDIANNESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
 
     # if endianness is mutable, MBE comes out of reset in little-endian mode
     reset_value(): |
-      if (S_MODE_ENDIANESS == "little") {
+      if (S_MODE_ENDIANNESS == "little") {
         return 0;
-      } else if (S_MODE_ENDIANESS == "big") {
+      } else if (S_MODE_ENDIANNESS == "big") {
         return 1;
       } else {
         return UNDEFINED_LEGAL;
@@ -532,18 +532,18 @@ fields:
       Controls the endianness of U-mode (0 = little, 1 = big).
       Instructions are always little endian, regardless of the data setting.
 
-      [when,"U_MODE_ENDIANESS == 'little'"]
+      [when,"U_MODE_ENDIANNESS == 'little'"]
       Since the CPU does not support big endian in U-mode, this is hardwired to 0.
 
-      [when,"U_MODE_ENDIANESS == 'big'"]
+      [when,"U_MODE_ENDIANNESS == 'big'"]
       Since the CPU does not support little endian in U-mode, this is hardwired to 1.
     type(): |
-      return (U_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
+      return (U_MODE_ENDIANNESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
 
     reset_value(): |
-      if (U_MODE_ENDIANESS == "little") {
+      if (U_MODE_ENDIANNESS == "little") {
         return 0;
-      } else if (U_MODE_ENDIANESS == "big") {
+      } else if (U_MODE_ENDIANNESS == "big") {
         return 1;
       } else {
         return UNDEFINED_LEGAL;

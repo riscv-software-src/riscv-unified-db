@@ -35,27 +35,6 @@ jobs:
           key: ${{ runner.os }}-riscv-json-${{ env.LLVM_SHA }}
           restore-keys: |
             ${{ runner.os }}-riscv-json-
-      - name: Setup apptainer
-        uses: eWaterCycle/setup-apptainer@v2.0.0
-      - name: Get container from cache
-        id: cache-sif
-        uses: actions/cache@v4
-        with:
-          path: .singularity/image.sif
-          key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
-      - name: Get gems and node files from cache
-        id: cache-bundle-npm
-        uses: actions/cache@v4
-        with:
-          path: |
-            .home/.gems
-            node_modules
-          key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
-      - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
-        name: Build container
-        run: ./bin/build_container
-      - name: Setup project
-        run: ./bin/setup
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Run smoke
@@ -119,7 +98,7 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate extension PDF
-        run: ./do gen:cert_model_pdf[MockCertificateModel]
+        run: ./do gen:proc_crd_pdf[MockProcessor]
   regress-gen-profile:
     runs-on: ubuntu-latest
     env:
@@ -130,7 +109,7 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate extension PDF
-        run: ./do gen:profile[MockProfileRelease]
+        run: ./do gen:profile_release_pdf[Mock]
   build-llvm:
     runs-on: ubuntu-latest
     steps:
