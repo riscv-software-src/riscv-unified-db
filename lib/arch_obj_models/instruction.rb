@@ -1,21 +1,24 @@
 # frozen_string_literal: true
+# typed: true
 
 require 'ruby-prof-flamegraph'
 
 require_relative "database_obj"
 require_relative "certifiable_obj"
 require_relative "../presence"
+require_relative "../backend_helpers"
 require "awesome_print"
 
 # model of a specific instruction in a specific base (RV32/RV64)
 class Instruction < DatabaseObject
   # Add all methods in this module to this type of database object.
   include CertifiableObject
+  include WavedromUtil
 
   def processed_wavedrom_desc(base)
     data = wavedrom_desc(base)
     processed_data = process_wavedrom(data)
-    TemplateHelpers.fix_entities(json_dump_with_hex_literals(processed_data))
+    fix_entities(json_dump_with_hex_literals(processed_data))
   end
 
   def self.ary_from_location(location_str_or_int)
@@ -187,7 +190,7 @@ class Instruction < DatabaseObject
       # pruned_ast =  pruned_operation_ast(symtab)
       # type_checked_operation_ast()
       type_checked_ast = type_checked_operation_ast( effective_xlen)
-      symtab = fill_symtab(effective_xlen, pruned_ast)
+      symtab = fill_symtab(effective_xlen, type_checked_ast)
       type_checked_ast.reachable_exceptions(symtab)
       symtab.release
     end
@@ -522,7 +525,7 @@ class Instruction < DatabaseObject
         elsif b.is_a?(Range)
           op = "$encoding[#{b.end}:#{b.begin}]"
           ops << op
-          so_far += b.size
+          so_far += T.must(b.size)
         end
       end
       ops << "#{@left_shift}'d0" unless @left_shift.zero?
@@ -758,7 +761,7 @@ class Instruction < DatabaseObject
         self,
         symtab: cfg_arch.symtab,
         input_file: @data["$source"],
-        input_line: source_line("operation()")
+        input_line: source_line(["operation()"])
       )
 
       raise "unexpected #{ast.class}" unless ast.is_a?(Idl::FunctionBodyAst)

@@ -1,4 +1,9 @@
 # frozen_string_literal: true
+# typed: true
+
+require "sorbet-runtime"
+T.bind(self, T.all(Rake::DSL, Object))
+extend T::Sig
 
 Encoding.default_external = "UTF-8"
 
@@ -30,8 +35,8 @@ directory "#{$root}/.stamps"
 
 # @param config_locator [String or Pathname]
 # @return [ConfiguredArchitecture]
+sig { params(config_locator: T.any(String, Pathname)).returns(ConfiguredArchitecture) }
 def cfg_arch_for(config_locator)
-  raise ArgumentError, "expecting String or Pathname" unless config_locator.is_a?(String) || config_locator.is_a?(Pathname)
   config_locator = config_locator.to_s
 
   $cfg_archs ||= {}
@@ -156,21 +161,28 @@ namespace :serve do
   end
 end
 
+sig { params(test_files: T::Array[String]).returns(String) }
+def make_test_cmd(test_files)
+  "-Ilib:test -w -e 'require \"minitest/autorun\"; #{test_files.map{ |f| "require \"#{f}\""}.join("; ")}' --"
+end
+
 namespace :test do
   # "Run the IDL compiler test suite"
   task :idl_compiler do
-    t = Minitest::TestTask.new(:lib_test)
-    t.test_globs = ["#{$root}/lib/idl/tests/test_*.rb"]
-    t.process_env
-    ruby t.make_test_cmd
+    test_files = Dir["#{$root}/lib/idl/tests/test_*.rb"]
+    ruby make_test_cmd(test_files)
   end
 
   # "Run the Ruby library test suite"
   task :lib do
-    t = Minitest::TestTask.new(:lib_test)
-    t.test_globs = ["#{$root}/lib/test/test_*.rb"]
-    t.process_env
-    ruby t.make_test_cmd
+    test_files = Dir["#{$root}/lib/test/test_*.rb"]
+
+    ruby make_test_cmd(test_files)
+  end
+
+  desc "Type-check the Ruby library"
+  task :sorbet do
+    sh "srb tc"
   end
 end
 
@@ -192,13 +204,13 @@ namespace :test do
 
     cfg_arch = cfg_arch_for("_")
     insts = cfg_arch.instructions
-    failed = false
+    failed = T.let(false, T::Boolean)
     insts.each_with_index do |inst, idx|
       [32, 64].each do |xlen|
         next unless inst.defined_in_base?(xlen)
 
         (idx...insts.size).each do |other_idx|
-          other_inst = insts[other_idx]
+          other_inst = T.must(insts[other_idx])
           next unless other_inst.defined_in_base?(xlen)
           next if other_inst == inst
 
@@ -220,13 +232,13 @@ namespace :test do
 
     cfg_arch = cfg_arch_for("_")
     csrs = cfg_arch.csrs
-    failed = false
+    failed = T.let(false, T::Boolean)
     csrs.each_with_index do |csr, idx|
       [32, 64].each do |xlen|
         next unless csr.defined_in_base?(xlen)
 
         (idx...csrs.size).each do |other_idx|
-          other_csr = csrs[other_idx]
+          other_csr = T.must(csrs[other_idx])
           next unless other_csr.defined_in_base?(xlen)
           next if other_csr == csr
 
@@ -271,7 +283,6 @@ def insert_warning(str, from)
   first_line = lines.shift
   lines.unshift(first_line, "\n# WARNING: This file is auto-generated from #{Pathname.new(from).relative_path_from($root)}").join("")
 end
-private :insert_warning
 
 (3..31).each do |hpm_num|
   file "#{$root}/arch/csr/Zihpm/mhpmcounter#{hpm_num}.yaml" => [
@@ -424,6 +435,8 @@ namespace :test do
     Rake::Task["test:idl_compiler"].invoke
     puts "UPDATE: Running test:lib"
     Rake::Task["test:lib"].invoke
+    puts "UPDATE: Running test:sorbet"
+    Rake::Task["test:sorbet"].invoke
     puts "UPDATE: Running test:schema"
     Rake::Task["test:schema"].invoke
     puts "UPDATE: Running test:idl"
