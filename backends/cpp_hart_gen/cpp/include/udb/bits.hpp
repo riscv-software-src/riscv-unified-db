@@ -16,14 +16,11 @@
 
 // Bits classes implement the IDL Bits<N> type.
 //
-// clang-format off
-//
 // There are four Bits types in C++:
 //
 //  * _Bits<N, Signed>: Compile-time known vector length holding a known value
 //
 //  * _PossiblyUnknownBits<N, Signed>: Compile-time known vector length holding a
-//
 //     possibly unknown value
 //
 //  * _RuntimeBits<MaxN, Signed>: Compile-time unknown vector length, at most MaxN,
@@ -51,8 +48,6 @@
 //                                       ----------------------------
 //   Width known at compile time?   Yes  | Bits        |  PossiblyUnknownBits
 //                                   No  | RuntimeBits |  PossiblyUnknownRuntimeBits
-//
-// clang-format on
 //
 
 // we need this to be true for GMP
@@ -616,18 +611,6 @@ namespace udb {
     }
 
     constexpr ~_Bits() noexcept = default;
-
-    // cast to any other Bits type
-    // template <template <unsigned, bool> class ToBitsType, unsigned ToN, bool
-    // ToSigned> constexpr explicit operator ToBitsType<ToN, ToSigned>() const
-    // noexcept {
-    //   // all other bits classes must have a constructor from all other types
-    //   if constexpr (ToBitsType<ToN, ToSigned>::RuntimeWidth) {
-    //     return {*this, N};
-    //   } else {
-    //     return {*this};
-    //   }
-    // }
 
     // get the value in the underlying storage type
     constexpr std::conditional_t<Signed, SignedStorageType, const StorageType &> get() const {
@@ -1903,12 +1886,6 @@ namespace udb {
   static_assert(BitsType<_RuntimeBits<64, true>>);
   static_assert(KnownBitsType<_RuntimeBits<64, true>>);
   static_assert(KnownBitsType<_RuntimeBits<64, false>>);
-
-  // template <unsigned N, unsigned MaxN, bool ASigned, bool BSigned>
-  // bool operator==(const _Bits<N, ASigned> &a,
-  //                 const _RuntimeBits<MaxN, BSigned> &b) {
-  //   return a == b.get();
-  // }
 
   using RuntimeBits = _RuntimeBits<BitsInfinitePrecision, false>;
 
