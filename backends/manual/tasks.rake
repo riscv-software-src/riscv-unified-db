@@ -374,24 +374,7 @@ rule %r{#{MANUAL_GEN_DIR}/[^/]+/[^/]+/riscv-isa-manual/README.md} => ["#{$root}/
 end
 
 namespace :gen do
-  html_manual_desc = <<~DESC
-    Generate an HTML site for one or more versions of the manual (./do --desc for options)
-
-    Options:
-
-     * MANUAL_NAME: The database name (key) of the manual to generate.
-     * VERSIONS: A comma-separated list of versions to generate, or "all".
-
-    Examples:
-
-     ./do gen:html_manual MANUAL_NAME=isa VERSIONS=20191008,20240411
-     ./do gen:html_manual MANUAL_NAME=isa VERSIONS=all
-
-    Result:
-
-      A static HTML website will be written into gen/manual/MANUAL_NAME/<hash of versions>/html
-  DESC
-  desc html_manual_desc
+  desc File.read("#{File.dirname(__FILE__)}/README.adoc")
   task :html_manual do
     raise ArgumentError, "Missing required environment variable MANUAL_NAME\n\n#{html_manual_desc}" if ENV["MANUAL_NAME"].nil?
     raise ArgumentError, "Missing required environment variable VERSIONS\n\n#{html_manual_desc}" if ENV["VERSIONS"].nil?
