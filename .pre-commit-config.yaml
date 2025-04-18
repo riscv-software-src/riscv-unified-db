@@ -58,14 +58,15 @@ repos:
       #   files: ^arch/manual/.*\.(yaml|yml)$
       #   args: ["--schemafile", "schemas/manual_version_schema.json"]
 
-  # TEMPORARILY DISABLE CLANG-FORMAT
-  # WIll RE-ENABLE WHEN NEXT PATCH COMES THROUGH
-  # - repo: https://github.com/pre-commit/mirrors-clang-format
-  #   rev: "v20.1.0"
-  #   hooks:
-  #     - id: clang-format
-  #       types_or: [c++, c]
-  #       files: \.(hpp|cpp)$
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: "v20.1.0"
+    hooks:
+      - id: clang-format
+        types_or: [c++, c]
+        files: \.(hpp|cpp)$
+        # TEMPORARILY DISABLE CLANG-FORMAT IN LIBHART
+        # WIll RE-ENABLE WHEN NEXT PATCH COMES THROUGH
+        exclude: backends/cpp_hart_gen
   - repo: https://github.com/psf/black-pre-commit-mirror
     rev: 25.1.0
     hooks:
