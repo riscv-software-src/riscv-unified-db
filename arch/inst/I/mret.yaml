@@ -14,8 +14,15 @@ access:
 encoding:
   match: "00110000001000000000000001110011"
 operation(): |
-  if (implemented?(ExtensionName::S) && CSR[mstatus].MPP != 2'b11) {
+  if (CSR[mstatus].MPP != 2'b11) {
     CSR[mstatus].MPRV = 0;
+  }
+  if (implemented?(ExtensionName::Smdbltrp)) {
+    if (xlen() == 64) {
+      CSR[mstatus].MDT = 1'b0;
+    } else {
+      CSR[mstatush].MDT = 1'b0;
+    }
   }
   CSR[mstatus].MIE = CSR[mstatus].MPIE;
   CSR[mstatus].MPIE = 1;

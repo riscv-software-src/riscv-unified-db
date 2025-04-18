@@ -258,7 +258,7 @@ namespace udb {
         // exactly fits in a native type, so just cast it
         return static_cast<SignedStorageType>(unsigned_value);
       } else {
-        // we have a native type, but some bits are unsed. need to sign extend
+        // we have a native type, but some bits are unused. need to sign extend
         // the storage to the native width
         return static_cast<SignedStorageType>(sign_extend(unsigned_value));
       }

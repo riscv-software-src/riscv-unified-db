@@ -1,0 +1,18 @@
+$schema: profile_class_schema.json#
+kind: profile class
+processor_kind: Microcontroller
+name: Mock
+marketing_name: Mock Profile Class
+introduction: Here's the Mock Profile Class introduction.
+description: |
+  This is the Mock Profile Class description.
+  It can be longer than the introduction since it gets its own sub-heading.
+naming_scheme: |
+  Here's the Mock Profile Class naming scheme.
+company:
+  name: RISC-V International
+  url: https://riscv.org
+doc_license:
+  name: Creative Commons Attribution 4.0 International License
+  url: https://creativecommons.org/licenses/by/4.0/
+  text_url: https://creativecommons.org/licenses/by/4.0/legalcode.txt

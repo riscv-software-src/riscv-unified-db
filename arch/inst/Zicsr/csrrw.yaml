@@ -31,7 +31,7 @@ access:
 operation(): |
   check_csr(csr, true, $encoding);
 
-  Bits<XLEN> initial_value = X[xs1];
+  Bits<MXLEN> initial_value = X[xs1];
 
   if (xd != 0) {
     X[xd] = CSR[csr].sw_read();

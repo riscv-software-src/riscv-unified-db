@@ -60,7 +60,7 @@ params:
       maximum: 16
     extra_validation: |
       assert ASID_WIDTH <= 9 if XLEN == 32
-  S_MODE_ENDIANESS:
+  S_MODE_ENDIANNESS:
     description: |
       Endianness of data in S-mode. Can be one of:
 

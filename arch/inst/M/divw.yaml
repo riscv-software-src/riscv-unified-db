@@ -42,7 +42,7 @@ operation(): |
   if (src2 == 0) {
     # division by zero. Since RISC-V does not have arithmetic exceptions, the result is defined
     # to be -1
-    X[rd] = {XLEN{1'b1}};
+    X[rd] = {MXLEN{1'b1}};
 
   } else if ((src1 == {33'b1, 31'b0}) && (src2 == 32'b1)) {
     # signed overflow. Since RISC-V does not have arithmetic exceptions, the result is defined

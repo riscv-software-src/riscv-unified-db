@@ -53,7 +53,7 @@ class ExtensionRequirementExpression
 
   def to_cxx(&block)
     raise ArgumentError, "Missing block" unless block_given?
-    raise ArgumentError, "Blcok expects two arguments" unless block.arity == 2
+    raise ArgumentError, "Block expects two arguments" unless block.arity == 2
 
     to_logic_tree(expand: false).to_cxx(&block)
   end

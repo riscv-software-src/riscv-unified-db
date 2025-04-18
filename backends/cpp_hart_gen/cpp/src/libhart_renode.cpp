@@ -24,7 +24,7 @@ struct RenodeSocModel {
   uint64_t read_mcycle() { return 0; }
   uint64_t read_mtime() { return 0; }
 
-  // returns new value of mcycle (coudl be different than new_value)
+  // returns new value of mcycle (could be different than new_value)
   uint64_t sw_write_mcycle(uint64_t new_value) { return 0; }
 
   void cache_block_zero(uint64_t paddr) {}

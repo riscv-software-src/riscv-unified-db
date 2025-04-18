@@ -37,7 +37,7 @@ implemented_extensions:
   - [Zicbom, "1.0.0"]
 
 params:
-  XLEN: 64
+  MXLEN: 64
 
   # name of the configuration
   NAME: example_rv64_with_overlay
@@ -423,35 +423,35 @@ params:
   #  * little:  M-mode data is always little endian
   #  * big:     M-mode data is always big endian
   #  * dynamic: M-mode data can be either little or big endian, depending on the RW CSR field mstatus.MBE
-  M_MODE_ENDIANESS: little
+  M_MODE_ENDIANNESS: little
 
   # Endianness of data in M-mode. Can be one of:
   #
   #  * little:  S-mode data is always little endian
   #  * big:     S-mode data is always big endian
   #  * dynamic: S-mode data can be either little or big endian, depending on the RW CSR field mstatus.SBE
-  S_MODE_ENDIANESS: little
+  S_MODE_ENDIANNESS: little
 
   # Endianness of data in M-mode. Can be one of:
   #
   #  * little:   U-mode data is always little endian
   #  * big:     U-mode data is always big endian
   #  * dynamic: U-mode data can be either little or big endian, depending on the RW CSR field mstatus.UBE
-  U_MODE_ENDIANESS: little
+  U_MODE_ENDIANNESS: little
 
   # Endianness of data in VU-mode. Can be one of:
   #
   #  * little: VU-mode data is always little endian
   #  * big: VU-mode data is always big endian
   #  * dynamic: VU-mode data can be either little or big endian, depending on the RW CSR field vsstatus.UBE
-  VU_MODE_ENDIANESS: little
+  VU_MODE_ENDIANNESS: little
 
   # Endianness of data in VS-mode. Can be one of:
   #
   #  * little: VS-mode data is always little endian
   #  * big: VS-mode data is always big endian
   #  * dynamic: VS-mode data can be either little or big endian, depending on the RW CSR field hstatus.VSBE
-  VS_MODE_ENDIANESS: little
+  VS_MODE_ENDIANNESS: little
 
   # XLENs supported in S-mode. Can be one of:
   #

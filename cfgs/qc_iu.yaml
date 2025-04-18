@@ -22,7 +22,7 @@ implemented_extensions:
   - { name: Xqccmp, version: "0.3" }
   - { name: Xqci, version: "0.8" }
 params:
-  XLEN: 32
+  MXLEN: 32
   PHYS_ADDR_WIDTH: 32
   ARCH_ID: 0
   CONFIG_PTR_ADDRESS: 0

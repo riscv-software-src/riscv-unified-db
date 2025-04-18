@@ -14,7 +14,9 @@ extensions:
   #########################################################################
   # imported from RVB23U64
   #########################################################################
-  $inherits: "profile/RVB23S64.yaml#/extensions"
+  $inherits:
+    - "profile/RVB23S64.yaml#/extensions"
+    - "profile/RVA23U64.yaml#/extensions"
 
   #########################################################################
   # MANDATORY extensions in RVA23S64 (that were optional in RVB23S64)

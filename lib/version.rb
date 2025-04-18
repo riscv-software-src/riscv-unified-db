@@ -209,12 +209,12 @@ class RequirementSpec
       matching_ver = ext.versions.find { |v| v.version_spec == v_spec }
       raise "Can't find version?" if matching_ver.nil?
 
-      matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.cfg_arch))
+      matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.arch))
     when "!~>" # not a legal spec, but used for inversion
       matching_ver = ext.versions.find { |v| v.version_spec == v_spec }
       raise "Can't find version?" if matching_ver.nil?
 
-      !matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.cfg_arch))
+      !matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.arch))
     end
   end
 end

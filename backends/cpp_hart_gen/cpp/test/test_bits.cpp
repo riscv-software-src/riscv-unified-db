@@ -115,14 +115,14 @@ TEST_CASE("Inversion", "[bits]") {
   REQUIRE((~Bits<129>(5)).get() == 0x1fffffffffffffffffffffffffffffffa_mpz);
   REQUIRE((~Bits<129>(5)).get<int64_t>() < 0);
 }
-TEST_CASE("64-bit Assignement", "[bits]") {
+TEST_CASE("64-bit Assignment", "[bits]") {
   Bits<64> a{5};
   Bits<64> b;
   b = a;
   REQUIRE(a.get() == b.get());
   REQUIRE(a.get() == 5);
 }
-TEST_CASE("65-bit Assignement", "[bits]") {
+TEST_CASE("65-bit Assignment", "[bits]") {
   Bits<65> a{5};
   Bits<65> b;
   b = a;
@@ -130,7 +130,7 @@ TEST_CASE("65-bit Assignement", "[bits]") {
   REQUIRE(a.get() == 5);
 }
 
-TEST_CASE("129-bit Assignement", "[bits]") {
+TEST_CASE("129-bit Assignment", "[bits]") {
   Bits<129> a{5};
   Bits<129> b;
   b = a;

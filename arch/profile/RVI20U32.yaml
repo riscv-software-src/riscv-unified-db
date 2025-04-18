@@ -36,7 +36,7 @@ extensions:
     version: "= 2.1"
   C:
     presence: optional
-    version: "= 2.2"
+    version: "= 2.0"
   D:
     presence: optional
     version: "= 2.2"

@@ -1,0 +1,13 @@
+=== Privileged Modes
+
+|===
+| M | S | U | HS | VS | VU
+
+| <% if proc_cert_model.in_scope_priv_modes.include?('M') -%> IN-SCOPE <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if proc_cert_model.in_scope_priv_modes.include?('S') -%> IN-SCOPE <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if proc_cert_model.in_scope_priv_modes.include?('U') -%> IN-SCOPE <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if proc_cert_model.in_scope_priv_modes.include?('HS') -%> IN-SCOPE <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if proc_cert_model.in_scope_priv_modes.include?('VS') -%> IN-SCOPE <% else -%> OUT-OF-SCOPE <% end -%>
+| <% if proc_cert_model.in_scope_priv_modes.include?('VU') -%> IN-SCOPE <% else -%> OUT-OF-SCOPE <% end -%>
+
+|===

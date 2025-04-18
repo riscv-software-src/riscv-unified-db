@@ -1,0 +1,66 @@
+[[header]]
+:description: <%= portfolio_design.name %> <%= portfolio_design.portfolio_design_type %>
+// :revnumber: TODO
+:revmark: "TODO: revmark"
+:company: RISC-V
+:url-riscv: https://riscv.org
+:preface-title: Licensing and Acknowledgements
+:colophon:
+:appendix-caption: Appendix
+:title-logo-image: image:risc-v_logo.png["RISC-V International Logo",pdfwidth=3.25in,align=center]
+:back-cover-image: image:riscv-horizontal-color.svg[opacity=25%]
+
+// Settings
+:experimental:
+:reproducible:
+:wavedrom: <%= $root %>/node_modules/.bin/wavedrom-cli
+// TODO: needs to be changed
+:imagesoutdir: images
+:icons: font
+:lang: en
+:example-caption: Example
+:listing-caption: Listing
+:table-caption: Table
+:figure-caption: Figure
+:xrefstyle: short
+:chapter-refsig: Chapter
+:section-refsig: Section
+:appendix-refsig: Appendix
+:sectnums:
+
+// Table of contents
+// Limit levels to level 0 (parts) and level 1 (2 equals signs).
+:toc: left
+:toclevels: 1
+
+// The number of levels in the PDF outline. Max is 5.
+// See https://docs.asciidoctor.org/pdf-converter/latest/pdf-outline/#levels.
+:outlinelevels: 5
+
+// A4 is the default for RISC-V but isn't wide enough for good display of the tables in the portfolios.
+// A3 is the next bigest size.
+// See https://github.com/prawnpdf/pdf-core/blob/0.6.0/lib/pdf/core/page_geometry.rb#L16-L68
+:pdf-page-size: A3
+
+// Determined that uncommenting this causes cross-references to IDL functions
+// from instruction IDL code to not link.  The IDL code uses this
+// block tag to get "source" formatting:
+//    [source,idl,subs="specialchars,macros"]
+//
+// :source-highlighter: pygments
+// ifdef::backend-pdf[]
+// :source-highlighter: rouge
+// endif::[]
+:data-uri:
+:hide-uri-scheme:
+:stem:
+:footnote:
+:stem: latexmath
+:footnote:
+:le: &#8804;
+:ge: &#8805;
+:ne: &#8800;
+:approx: &#8776;
+:inf: &#8734;
+:csrname: envcfg
+:imagesdir: images

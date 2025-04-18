@@ -18,7 +18,7 @@ implemented_extensions:
   - [Sm, "1.12.0"]
 
 params:
-  XLEN: 64
+  MXLEN: 64
   NAME: test
   ARCH_ID: 0x1000000000000000
   IMP_ID: 0x0
@@ -49,7 +49,7 @@ params:
   CONFIG_PTR_ADDRESS: 0
   PMA_GRANULARITY: 12
   PHYS_ADDR_WIDTH: 54
-  M_MODE_ENDIANESS: little
+  M_MODE_ENDIANNESS: little
   MISA_CSR_IMPLEMENTED: true
   MTVEC_MODES: [0, 1]
   MTVEC_BASE_ALIGNMENT_DIRECT: 4

@@ -7,12 +7,12 @@
 
 .Control and Status Registers
 <%- cfg_arch.transitive_implemented_csrs.sort { |a, b| a.name <=> b.name }.each do |csr| -%>
-* %%LINK%csr;<%= csr.name %>;<%= csr.name %>%%
+* %%UDB_DOC_LINK%csr;<%= csr.name %>;<%= csr.name %>%%
 <%- end -%>
 
 .Instructions
 <%- cfg_arch.transitive_implemented_instructions.sort { |a, b| a.name <=> b.name }.each do |inst| -%>
-* %%LINK%inst;<%= inst.name %>;<%= inst.name %>%%
+* %%UDB_DOC_LINK%inst;<%= inst.name %>;<%= inst.name %>%%
 <%- end -%>
 
 .IDL functions

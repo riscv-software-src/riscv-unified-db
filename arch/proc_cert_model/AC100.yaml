@@ -1,0 +1,69 @@
+# yaml-language-server: $schema=../../schemas/proc_cert_model_schema.json
+
+$schema: proc_cert_model_schema.json#
+kind: processor certificate model
+name: AC100
+long_name: AC100 Apps Processor Certificate based on the RVB23 profile release
+class:
+  $ref: proc_cert_class/AC.yaml#
+
+  # MXLEN used by rakefile
+base: 64
+
+# Semantic versions within the model
+versions:
+  - version: "1.0.0"
+
+revision_history:
+  - revision: "0.1.0"
+    date: "2025-02-03"
+    changes:
+      - Created
+
+introduction: |
+  The AC100 Processor Certificate targets RISC-V Apps Processors running rich operating systems such as
+  custom Yocto Linux.
+  Software source code compatibility is a strong requirement and binary compatibility is a lesser requirement.
+
+  AC100 is based on the following:
+
+  * RVB23 Profile without Hypervisor or Vector support
+  * M-mode requirements
+  * AIA or PLIC interrupt controller
+  * Debug and trace (TBD)
+
+# Specification versions
+tsc_profile_release:
+  $ref: profile_release/RVB23.yaml#
+unpriv_isa_manual_revision: "20240411"
+priv_isa_manual_revision: "20240411"
+debug_manual_revision: "1.0.0"
+
+# Certificate doesn't include hypervisor
+in_scope_priv_modes:
+  - U
+  - S
+  - M
+
+extensions:
+  $inherits:
+    - "profile/RVB23M64.yaml#/extensions"
+requirement_groups:
+  m_mode_reqs:
+    name: M-mode Requirements
+    description: |
+      Extra requirements for M-mode beyond the minimum M-mode defined by the Sm extension.
+      These extra requirements come from https://github.com/riscv/riscv-profiles/blob/main/src/old-m-profiles.adoc.
+    requirements:
+      - name: REQ-M_Mode-Non_Zero_CSRs
+        description: The `mvendorid`, `marchid`, and `mimpid` CSRs must be nonzero.
+      - name: REQ-M_Mode-mstatus_writeable_fields
+        description: The `mstatus.TVM`, `mstatus.TW`, and `mstatus.TSR` CSR fields must be writable.
+      - name: REQ-M_Mode-medeleg_writable_bits
+        description: The `medeleg` CSR bits 3, 8, 12, 13, and 15 must be writable.
+      - name: REQ-M_Mode-mideleg_writable_bits
+        description: The `mideleg` CSR bits 1, 5, and 9 must be writable.
+      - name: REQ-M_Mode-mideleg_readonlyzero_bits
+        description: The `mideleg` CSR bits 3, 7, and 11 must be read-only zero.
+      - name: REQ-M_Mode-mcounteren_writeable_bits
+        description: For any `mhpmcounter` that is writable, the corresponding bit in `mcounteren` must be writable.

@@ -37,7 +37,7 @@ module Rouge
         rule %r{#.*}, Comment::Single
         rule %r{"[^"]*"}, Str::Double
         rule %r{[A-Z][a-zA-Z0-9]*}, Name::Constant
-        rule %r{(?:(?:[0-9]+)|(?:XLEN))?'s?[bodh]?[0-9_a-fA-F]+}, Num
+        rule %r{(?:(?:[0-9]+)|(?:MXLEN))?'s?[bodh]?[0-9_a-fA-F]+}, Num
         rule %r/0x[0-9a-f]+[lu]*/i, Num::Hex
         rule %r/0[0-7]+[lu]*/i, Num::Oct
         rule %r{\d+}, Num::Integer

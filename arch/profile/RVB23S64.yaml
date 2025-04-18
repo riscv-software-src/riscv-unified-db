@@ -14,7 +14,9 @@ extensions:
   #########################################################################
   # imported from RVA22S64
   #########################################################################
-  $inherits: "profile/RVA22S64.yaml#/extensions"
+  $inherits:
+    - "profile/RVA22S64.yaml#/extensions"
+    - "profile/RVB23U64.yaml#/extensions"
 
   #########################################################################
   # MANDATORY extensions in RVB23 (and RVA23)
@@ -184,14 +186,14 @@ extensions:
   Sv48:
     presence:
       optional: expansion
-    version: "~>1.0"
+    version: "~>1.13"
     note: |
       Page-based 48-bit virtual-memory system
 
   Sv57:
     presence:
       optional: expansion
-    version: "~>1.0"
+    version: "~>1.13"
     note: |
       Page-based 57-bit virtual-memory system
 

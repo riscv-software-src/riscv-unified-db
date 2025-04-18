@@ -6,7 +6,7 @@
 #include <version>
 
 // type to be used when you want to pass a string literal as a template
-// arugment
+// argument
 template <size_t N = 0>
 struct TemplateString {
   constexpr TemplateString(const char (&str)[N]) : size(N) {

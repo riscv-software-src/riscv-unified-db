@@ -1,0 +1,14 @@
+History of documentation changes that eventually lead to releases.
+
+[cols="1,1,5"]
+|===
+| Date | Revision | Changes
+
+<% proc_cert_model.revision_history.each do |rev| -%>
+| <%= rev.date %>
+| <%= rev.revision %>
+a| <% rev.changes.each do |change| %>
+* <%= change %>
+<% end -%>
+<% end -%>
+|===

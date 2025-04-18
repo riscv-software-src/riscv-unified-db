@@ -7,6 +7,12 @@ long_name: 48-bit virtual address translation (4 level)
 description: 48-bit virtual address translation (4 level)
 type: privileged
 versions:
+  - version: "1.11.0"
+    state: ratified
+    ratification_date: null
+    requires:
+      name: Sv39
+      version: ">= 1.11"
   - version: "1.12.0"
     state: ratified
     ratification_date: null
@@ -14,3 +20,9 @@ versions:
     requires:
       name: Sv39
       version: ">= 1.12"
+  - version: "1.13.0"
+    state: ratified
+    ratification_date: null
+    requires:
+      name: Sv39
+      version: ">= 1.13"

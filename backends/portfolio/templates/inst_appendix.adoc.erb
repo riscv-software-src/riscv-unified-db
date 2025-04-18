@@ -1,0 +1,140 @@
+<<<
+[appendix]
+== Instruction Details
+
+<% portfolio_design.in_scope_instructions.each do |inst| -%>
+<<<
+<%= anchor_for_udb_doc_inst(inst.name) %>
+=== <%= inst.name %>
+
+*<%= inst.long_name %>*
+
+This instruction is defined by:
+
+<%= inst.defined_by_condition.to_asciidoc %>
+
+==== Encoding
+
+<% if inst.multi_encoding? -%>
+[NOTE]
+This instruction has different encodings in RV32 and RV64.
+
+[tabs]
+====
+RV32::
++
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump inst.wavedrom_desc(32) %>
+....
+
+RV64::
++
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump inst.wavedrom_desc(64) %>
+....
+====
+<% else -%>
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= JSON.dump inst.wavedrom_desc(inst.base.nil? ? 32 : inst.base) %>
+....
+<% end -%>
+
+==== Description
+
+<%= inst.description %>
+
+==== Access
+<% if portfolio_design.in_scope_extensions.any? { |e| e.name == "H" } -%>
+[cols="^,^,^,^,^"]
+<% else -%>
+[cols="^,^,^"]
+<% end -%>
+|===
+| M | <% if portfolio_design.in_scope_extensions.any? { |e| e.name == "H" } -%>HS<% else -%>S<% end -%> | U <% if portfolio_design.in_scope_extensions.any? { |e| e.name == "H" } -%> | VS | VU <% end -%>
+
+| [.access-always]#Always#
+| [.access-<%=inst.access['s']%>]#<%= inst.access['s'].capitalize %>#
+| [.access-<%=inst.access['u']%>]#<%= inst.access['u'].capitalize %>#
+<% if portfolio_design.in_scope_extensions.any? { |e| e.name == "H" } %>
+| [.access-<%=inst.access['vs']%>]#<%= inst.access['vs'].capitalize %>#
+| [.access-<%=inst.access['vu']%>]#<%= inst.access['vu'].capitalize %>#
+<% end %>
+|===
+
+<% if inst.access_detail? -%>
+<%= inst.access_detail %>
+<% end -%>
+
+==== Decode Variables
+
+<% if inst.multi_encoding? -%>
+[tabs]
+====
+RV32::
++
+[source.idl]
+----
+<% inst.decode_variables(32).each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<% end -%>
+----
+
+RV64::
++
+[source,idl]
+----
+<% inst.decode_variables(64).each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<% end -%>
+----
+====
+<% else -%>
+[source,idl]
+----
+<% inst.decode_variables(inst.base.nil? ? 32 : inst.base).each do |d| -%>
+<%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
+<% end -%>
+----
+<% end -%>
+
+<% if inst.key?("operation()") -%>
+==== IDL Operation
+
+[source,idl,subs="specialchars,macros"]
+----
+<%= inst.operation_ast.gen_adoc %>
+----
+<% end -%>
+
+<% if inst.key?("sail()") -%>
+==== Sail Operation
+
+[source,sail]
+----
+<%= inst["sail()"] %>
+----
+<% end -%>
+
+==== Exceptions
+
+<% exception_list = inst.reachable_exceptions_str() -%>
+<% if exception_list.empty? -%>
+This instruction does not generate synchronous exceptions.
+<% else -%>
+This instruction may result in the following synchronous exceptions:
+
+  <% exception_list.sort.each do |etype| -%>
+  * <%= etype %>
+  <% end -%>
+
+<% end -%>
+
+<% if defined?(gen_ctp_content) && gen_ctp_content -%>
+<%= portfolio_design.include_erb("normative_rules.adoc.erb", { "db_obj" => inst, "org" => "appendix" }) %>
+<%= portfolio_design.include_erb("test_procedures.adoc.erb", { "db_obj" => inst, "org" => "appendix" }) %>
+<% end # if gen_ctp_content -%>
+
+<% end # each in_scope instruction -%>

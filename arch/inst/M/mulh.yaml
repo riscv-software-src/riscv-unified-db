@@ -41,10 +41,10 @@ operation(): |
 
   # enlarge and sign extend the sources
   Bits<1> rs1_sign_bit = X[rs1][xlen()-1];
-  Bits<XLEN*2> src1 = {{xlen(){rs1_sign_bit}}, X[rs1]};
+  Bits<MXLEN*2> src1 = {{xlen(){rs1_sign_bit}}, X[rs1]};
 
   Bits<1> rs2_sign_bit = X[rs2][xlen()-1];
-  Bits<XLEN*2> src2 = {{xlen(){rs2_sign_bit}}, X[rs2]};
+  Bits<MXLEN*2> src2 = {{xlen(){rs2_sign_bit}}, X[rs2]};
 
   # grab the high half of the result, and put it in rd
   X[rd] = (src1 * src2)[(xlen()*8'd2)-1:xlen()];

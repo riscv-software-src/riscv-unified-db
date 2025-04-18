@@ -1,6 +1,6 @@
 :tabs-sync-option:
 
-[#csrs-<%= csr.name.gsub('.', '_') %>,reftext=<%= csr.name %>]
+<%= anchor_for_udb_doc_csr(csr.name) %>
 = <%= csr.name %>
 
 *<%= csr.long_name %>*
@@ -15,28 +15,28 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <%- if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <%- end -%>
-<%- if csr.dynamic_length?(cfg_arch) ||  csr.data["length"] == "MXLEN" -%>
+<%- if csr.dynamic_length? ||  csr.data["length"] == "MXLEN" -%>
 h| Length
 a|
 
 [when,"<%= csr.length_cond32 %>"]
 --
-<%= csr_32.length_pretty(cfg_arch_32, 32) %>
+<%= csr_32.length_pretty(32) %>
 --
 
 [when,"<%= csr.length_cond64 %>"]
 --
-<%= csr.length_pretty(cfg_arch, 64) %>
+<%= csr.length_pretty(64) %>
 --
 
 <%- else -%>
-h| Length         | <%= csr.length_pretty(cfg_arch) %>
+h| Length         | <%= csr.length_pretty %>
 <%- end -%>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===
 
 == Format
-<%- unless csr.dynamic_length?(cfg_arch) || csr.fields.any? { |f| f.dynamic_location?(cfg_arch) } || csr.data["length"] == "MXLEN" -%>
+<%- unless csr.dynamic_length? || csr.fields.any? { |f| f.dynamic_location? } || csr.data["length"] == "MXLEN" -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -73,22 +73,22 @@ This CSR format changes dynamically.
 @ Name @ Location @ Type @ Reset Value
 
 <%- csr.fields.each do |field| -%>
-@ xref:<%=csr.name%>-<%=field.name%>-def[`<%= field.name %>`]
+@ <%= link_to_udb_doc_csr_field(csr.name, field.name) %>
 a@
-<%- if field.dynamic_location?(cfg_arch) -%>
+<%- if field.dynamic_location? -%>
 
 [when,"<%= field.location_cond32 %>"]
 --
-<%= field.location_pretty(cfg_arch, 32) %>
+<%= field.location_pretty(32) %>
 --
 
 [when,"<%= field.location_cond64 %>"]
 --
-<%= field.location_pretty(cfg_arch, 64) %>
+<%= field.location_pretty(64) %>
 --
 
 <%- else -%>
-<%= field.location_pretty(cfg_arch) %>
+<%= field.location_pretty %>
 <%- end -%>
 a@
 
@@ -99,7 +99,7 @@ a@
 a@
 
 --
-<%= field.reset_value_pretty(cfg_arch) %>
+<%= field.reset_value_pretty %>
 --
 
 <%- end -%>
@@ -112,8 +112,8 @@ This CSR has no fields. However, it must still exist (not cause an `Illegal Inst
 <%- else -%>
 
 <%- csr.fields.each do |field| -%>
-[[<%=csr.name%>-<%=field.name%>-def]]
-=== `<%= field.name %>`
+<%= anchor_for_udb_doc_csr_field(csr.name, field.name) %>
+=== `<%= field.name %>` Field
 
 <%- if !field.defined_in_all_bases? -%>
 IMPORTANT: <%= field.name %> is only defined in <%= field.base32_only? ? "RV32" : "RV64" %> (`<%= field.base32_only? ? field.location_cond32 : field.location_cond64 %>`)
@@ -121,16 +121,16 @@ IMPORTANT: <%= field.name %> is only defined in <%= field.base32_only? ? "RV32" 
 
 ****
 Location::
-<%= field.location_pretty(cfg_arch) %>
+<%= field.location_pretty %>
 
 Description::
 <%= cfg_arch.render_erb(field.description, "#{csr.name}.#{field.name}.description").gsub("\n", " +\n") %>
 
 Type::
-<%= field.type_pretty(cfg_arch.symtab) %>
+<%= field.type_pretty %>
 
 Reset value::
-<%= field.reset_value_pretty(cfg_arch) %>
+<%= field.reset_value_pretty %>
 
 ****
 

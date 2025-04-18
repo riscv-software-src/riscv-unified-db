@@ -27,7 +27,7 @@ extensions:
     presence: mandatory
     version: "~> 2.0"
     param_constraints:
-      U_MODE_ENDIANESS:
+      U_MODE_ENDIANNESS:
         schema:
           const: little
   Zicntr:

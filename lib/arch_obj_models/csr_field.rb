@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
-require_relative "obj"
-
+require_relative "database_obj"
 require_relative "../idl/passes/gen_option_adoc"
+require_relative "certifiable_obj"
 
 # A CSR field object
 class CsrField < DatabaseObject
+  # Add all methods in this module to this type of database object.
+  include CertifiableObject
+
   # @return [Csr] The Csr that defines this field
   attr_reader :parent
 
@@ -24,9 +27,17 @@ class CsrField < DatabaseObject
   # @param parent_csr [Csr] The Csr that defined this field
   # @param field_data [Hash<String,Object>] Field data from the arch spec
   def initialize(parent_csr, field_name, field_data)
-    super(field_data, parent_csr.data_path, arch: parent_csr.arch)
+    super(field_data, parent_csr.data_path, parent_csr.arch)
     @name = field_name
     @parent = parent_csr
+  end
+
+  # CSR fields are defined in their parent CSR YAML file
+  def __source = @parent.__source
+
+  # CSR field data starts at fields: NAME: with the YAML
+  def source_line(*path)
+    super("fields", name, *path)
   end
 
   # For a full config, whether or not the field is implemented
@@ -96,6 +107,8 @@ class CsrField < DatabaseObject
   # @return [nil] if the type property is not a function
   # @param effective_xlen [32, 64] The effective xlen to evaluate for
   def type_checked_type_ast(effective_xlen)
+    raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
+
     @type_checked_type_ast ||= { 32 => nil, 64 => nil }
     return @type_checked_type_ast[effective_xlen] unless @type_checked_type_ast[effective_xlen].nil?
 
@@ -122,8 +135,9 @@ class CsrField < DatabaseObject
 
   # @return [Idl::FunctionBodyAst] Abstract syntax tree of the type() function, after it has been type checked and pruned
   # @return [nil] if the type property is not a function
-  # @param effective_xlen [32, 64] The effective xlen to evaluate for
   def pruned_type_ast(effective_xlen)
+    raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
+
     @pruned_type_ast ||= { 32 => nil, 64 => nil }
     return @pruned_type_ast[effective_xlen] unless @pruned_type_ast[effective_xlen].nil?
 
@@ -165,6 +179,8 @@ class CsrField < DatabaseObject
   #      'RW-H'  => Read-write, with a hardware update
   #      'RW-RH' => Read-write, with a hardware update and a restricted set of legal values
   def type(effective_xlen = nil)
+    raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
+
     @type ||= { 32 => nil, 64 => nil }
     return @type[effective_xlen] unless @type[effective_xlen].nil?
 
@@ -221,7 +237,7 @@ class CsrField < DatabaseObject
   # @return [String] A pretty-printed type string
   # @param effective_xlen [32, 64] The effective xlen to evaluate for
   def type_pretty(effective_xlen = nil)
-    raise ArgumentError, "Expecting Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
+    raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
 
     str = nil
     value_result = Idl::AstNode.value_try do
@@ -265,6 +281,8 @@ class CsrField < DatabaseObject
   # @param cfg_arch [ConfiguredArchitecture] a configuration
   # @Param effective_xlen [Integer] 32 or 64; needed because fields can change in different XLENs
   def reachable_functions(effective_xlen)
+    raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
+
     return @reachable_functions unless @reachable_functions.nil?
 
     fns = []
@@ -420,10 +438,12 @@ class CsrField < DatabaseObject
     @data.key?("sw_write(csr_value)") && !@data["sw_write(csr_value)"].empty?
   end
 
-  # @return [FunctionBodyAst] The abstract syntax tree of the sw_write() function, after being type checked
   # @param effective_xlen [Integer] 32 or 64; the effective XLEN to evaluate this field in (relevant when fields move in different XLENs)
   # @param symtab [Idl::SymbolTable] Symbol table with globals
+  # @return [FunctionBodyAst] The abstract syntax tree of the sw_write() function, after being type checked
   def type_checked_sw_write_ast(symtab, effective_xlen)
+    raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
+
     @type_checked_sw_write_asts ||= {}
     ast = @type_checked_sw_write_asts[symtab.hash]
     return ast unless ast.nil?
@@ -500,11 +520,11 @@ class CsrField < DatabaseObject
       "csr_value",
       Idl::Var.new("csr_value", csr.bitfield_type(@cfg_arch, effective_xlen))
     )
-    if symtab.get("XLEN").value.nil?
+    if symtab.get("MXLEN").value.nil?
       symtab.add(
-        "XLEN",
+        "MXLEN",
         Idl::Var.new(
-          "XLEN",
+          "MXLEN",
           Idl::Type.new(:bits, width: 6, qualifiers: [:const]),
           effective_xlen,
           param: true
@@ -515,6 +535,8 @@ class CsrField < DatabaseObject
   end
 
   def fill_symtab_for_type(effective_xlen, ast)
+    raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
+
     symtab = cfg_arch.symtab.global_clone
     symtab.push(ast)
 
@@ -527,11 +549,11 @@ class CsrField < DatabaseObject
       "__expected_return_type",
       Idl::Type.new(:enum_ref, enum_class: symtab.get("CsrFieldType"))
     )
-    if symtab.get("XLEN").value.nil?
+    if symtab.get("MXLEN").value.nil?
       symtab.add(
-        "XLEN",
+        "MXLEN",
         Idl::Var.new(
-          "XLEN",
+          "MXLEN",
           Idl::Type.new(:bits, width: 6, qualifiers: [:const]),
           effective_xlen,
           param: true
@@ -561,6 +583,8 @@ class CsrField < DatabaseObject
   # @return [nil] if there is no sw_write() function
   # @param effective_xlen [Integer] effective xlen, needed because fields can change in different bases
   def pruned_sw_write_ast(effective_xlen)
+    raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
+
     return @pruned_sw_write_ast unless @pruned_sw_write_ast.nil?
 
     return nil unless @data.key?("sw_write(csr_value)")
@@ -592,6 +616,8 @@ class CsrField < DatabaseObject
   # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
   # @return [Range] the location within the CSR as a range (single bit fields will be a range of size 1)
   def location(effective_xlen = nil)
+    raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
+
     key =
       if @data.key?("location")
         "location"
@@ -650,6 +676,8 @@ class CsrField < DatabaseObject
   # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
   # @return [Integer] Number of bits in the field
   def width(effective_xlen)
+    raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
+
     location(effective_xlen).size
   end
 
@@ -692,8 +720,10 @@ class CsrField < DatabaseObject
     end
   end
 
+  # @param effective_xlen [Integer or nil] 32 or 64 for fixed xlen, nil for dynamic
   # @return [String] Pretty-printed location string
   def location_pretty(effective_xlen = nil)
+    raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
     derangeify = proc { |loc|
       next loc.min.to_s if loc.size == 1
 
@@ -777,6 +807,8 @@ class CsrField < DatabaseObject
 
   # @return [String] Long description of the field type
   def type_desc(effective_xlen=nil)
+    raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
+
     TYPE_DESC_MAP[type(effective_xlen)]
   end
 end

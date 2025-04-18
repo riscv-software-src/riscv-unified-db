@@ -10,13 +10,13 @@
 require_param :SXLEN if ext?(:S)
 
 # SXLEN is fixed in RV32
-assert SXLEN == 32 if ext?(:S) && XLEN == 32
+assert SXLEN == 32 if ext?(:S) && MXLEN == 32
 
 # UXLEN should not be set unless U-mode is implemented
 require_param :UXLEN if ext?(:U)
 
 # UXLEN is fixed in RV32
-assert [nil, 32].include?(UXLEN) if ext?(:U) && XLEN == 32
+assert [nil, 32].include?(UXLEN) if ext?(:U) && MXLEN == 32
 
 # is SXLEN is fixed to 32, then UXLEN cannot be > 32
 assert [nil, 32].include?(UXLEN) if ext?(:S) && ext?(:U) && SXLEN == 32
@@ -49,7 +49,7 @@ mtval_holds_va =
 assert(MTVAL_WIDTH >= max_va_width) if mtval_holds_va
 
 # 32 stands for ILEN below. Update this if/when instructions become longer than 32
-assert(MTVAL_WIDTH >= [XLEN, 32].min) if REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION
+assert(MTVAL_WIDTH >= [MXLEN, 32].min) if REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION
 
 assert(COUNTENABLE_EN[0] == false) unless ext?(:Zicntr)
 assert(COUNTENABLE_EN[2] == false) unless ext?(:Zicntr)
@@ -78,14 +78,14 @@ require_param :MUTABLE_MISA_M    if ext?(:M)
 # require_param :MUTABLE_MISA_U    if ext?(:U)  ## Needs definition of what happens
 require_param :MUTABLE_MISA_V    if ext?(:V)
 
-require_param :S_MODE_ENDIANESS  if ext?(:S)
-require_param :U_MODE_ENDIANESS  if ext?(:U)
-require_param :VU_MODE_ENDIANESS if ext?(:H)
-require_param :VS_MODE_ENDIANESS if ext?(:H)
-require_param :SXLEN             if ext?(:S) && XLEN > 32
-require_param :UXLEN             if ext?(:U) && XLEN > 32
-require_param :VSXLEN            if ext?(:H) && XLEN > 32
-require_param :VUXLEN            if ext?(:H) && XLEN > 32
+require_param :S_MODE_ENDIANNESS  if ext?(:S)
+require_param :U_MODE_ENDIANNESS  if ext?(:U)
+require_param :VU_MODE_ENDIANNESS if ext?(:H)
+require_param :VS_MODE_ENDIANNESS if ext?(:H)
+require_param :SXLEN             if ext?(:S) && MXLEN > 32
+require_param :UXLEN             if ext?(:U) && MXLEN > 32
+require_param :VSXLEN            if ext?(:H) && MXLEN > 32
+require_param :VUXLEN            if ext?(:H) && MXLEN > 32
 require_param :ASID_WIDTH        if ext?(:S)
 require_param :PMP_GRANULARITY   unless NUM_PMP_ENTRIES.zero?
 require_param :NUM_EXTERNAL_GUEST_INTERRUPTS if ext?(:H)
