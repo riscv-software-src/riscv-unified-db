@@ -17,12 +17,24 @@ jobs:
       - uses: actions/setup-python@v5
       - uses: pre-commit/action@v3.0.1
   regress-smoke:
+    needs: build-llvm
     runs-on: ubuntu-latest
     env:
       SINGULARITY: 1
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
+      - name: Get current LLVM submodule commit SHA
+        id: get-llvm-sha
+        run: echo "LLVM_SHA=$(git ls-tree HEAD ext/llvm-project | awk '{print $3}')" >> $GITHUB_ENV
+      - name: Restore cache RISC-V JSON
+        id: cache-riscv
+        uses: actions/cache@v4
+        with:
+          path: ext/llvm-project/riscv.json
+          key: ${{ runner.os }}-riscv-json-${{ env.LLVM_SHA }}
+          restore-keys: |
+            ${{ runner.os }}-riscv-json-
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Run smoke
@@ -98,6 +110,54 @@ jobs:
         uses: ./.github/actions/singularity-setup
       - name: Generate extension PDF
         run: ./do gen:profile_release_pdf[Mock]
+  build-llvm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository (no submodules, shallow fetch)
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+          fetch-depth: 1
+      - name: Get current LLVM submodule commit SHA
+        id: get-llvm-sha
+        run: echo "LLVM_SHA=$(git ls-tree HEAD ext/llvm-project | awk '{print $3}')" >> $GITHUB_ENV
+      - name: Cache RISC-V JSON
+        id: cache-riscv
+        uses: actions/cache@v4
+        with:
+          path: ext/llvm-project/riscv.json
+          key: ${{ runner.os }}-riscv-json-${{ env.LLVM_SHA }}
+          restore-keys: |
+            ${{ runner.os }}-riscv-json-
+      - name: Initialize LLVM submodule (shallow + sparse)
+        if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --recursive --depth=1 ext/llvm-project
+
+      - name: Check for required directories and files
+        if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
+        run: |
+          ls -l ext/llvm-project/llvm/include
+          ls -l ext/llvm-project/llvm/lib/Target/RISCV
+          ls -l ext/llvm-project/llvm/lib/Target/RISCV/RISCV.td
+      - name: Configure and build llvm-tblgen
+        if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
+        run: |
+          cmake -S ext/llvm-project/llvm -B ext/llvm-project/build -DCMAKE_BUILD_TYPE=Release
+          cmake --build ext/llvm-project/build --target llvm-tblgen
+      - name: Generate RISC-V JSON
+        if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
+        run: |
+          chmod +x ./ext/llvm-project/build/bin/llvm-tblgen
+          ./ext/llvm-project/build/bin/llvm-tblgen \
+            -I ext/llvm-project/llvm/include \
+            -I ext/llvm-project/llvm/lib/Target/RISCV \
+            ext/llvm-project/llvm/lib/Target/RISCV/RISCV.td \
+            --dump-json \
+            -o ext/llvm-project/riscv.json
+      - name: Show riscv.json output
+        run: ls -l ext/llvm-project/riscv.json
   regress-gen-go:
     runs-on: ubuntu-latest
     env:
