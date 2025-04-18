@@ -475,14 +475,14 @@ class Csr < DatabaseObject
       return_type: Idl::Type.new(:bits, width: 128), # big int to hold special return values
       name: "CSR[#{name}].sw_read()",
       input_file: __source,
-      input_line: source_line("sw_read()"),
+      input_line: source_line(["sw_read()"]),
       symtab:,
       type_check: false
     )
 
     raise "unexpected #{@sw_read_ast.class}" unless @sw_read_ast.is_a?(Idl::FunctionBodyAst)
 
-    @sw_read_ast.set_input_file_unless_already_set(__source, source_line("sw_read()"))
+    @sw_read_ast.set_input_file_unless_already_set(__source, source_line(["sw_read()"]))
 
     @sw_read_ast
   end

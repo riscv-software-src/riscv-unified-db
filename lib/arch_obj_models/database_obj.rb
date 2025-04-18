@@ -123,7 +123,14 @@ class DatabaseObject
   # @return [ConfiguredArchitecture] If a specification and config is known
   # @return [nil] Otherwise
   sig { returns(ConfiguredArchitecture) }
-  attr_reader :cfg_arch   # Use when extra stuff provided by ConfiguredArchitecture is required
+  def cfg_arch
+    raise "no cfg_arch" if @cfg_arch.nil?
+
+    @cfg_arch
+  end
+
+  sig { returns(T::Boolean) }
+  def cfg_arch? = !@cfg_arch.nil?
 
   sig { returns(String) }
   def kind = @data["kind"]
@@ -249,7 +256,7 @@ class DatabaseObject
             symtab: @cfg_arch.symtab,
             name: "#{name}.description[#{idx}].when",
             input_file: __source,
-            input_line: source_line("description", idx, "when()")
+            input_line: source_line(["description", idx, "when()"])
           )
 
           symtab = @cfg_arch.symtab.global_clone
@@ -362,8 +369,8 @@ class DatabaseObject
   #   06: YAML
   #   misa_csr.source_line("sw_read()")  #=> 2
   #   mis_csr.source_line("fields", "A", "type()") #=> 5
-  sig { params(path: String).returns(Integer) }
-  def source_line(*path)
+  sig { params(path: T::Array[String]).returns(Integer) }
+  def source_line(path)
 
     # find the line number of this operation() in the *original* file
     yaml_filename = __source

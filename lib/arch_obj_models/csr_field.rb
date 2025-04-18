@@ -43,8 +43,9 @@ class CsrField < DatabaseObject
   def __source = @parent.__source
 
   # CSR field data starts at fields: NAME: with the YAML
-  def source_line(*path)
-    T.unsafe(self).super("fields", name, *path)
+  sig { params(path: T::Array[String]).returns(Integer) }
+  def source_line(path)
+    super(["fields", name].concat(path))
   end
 
   # For a full config, whether or not the field is implemented
@@ -104,7 +105,7 @@ class CsrField < DatabaseObject
       idl_code,
       name: "CSR[#{csr.name}].#{name}.type()",
       input_file: csr.__source,
-      input_line: csr.source_line("fields", name, "type()"),
+      input_line: csr.source_line(["fields", name, "type()"]),
       symtab: @cfg_arch.symtab,
       type_check: false
     )
@@ -346,7 +347,7 @@ class CsrField < DatabaseObject
       return_type: Idl::Type.new(:bits, width: max_width),
       name: "CSR[#{parent.name}].#{name}.reset_value()",
       input_file: csr.__source,
-      input_line: csr.source_line("fields", name, "reset_value()"),
+      input_line: csr.source_line(["fields", name, "reset_value()"]),
       symtab: cfg_arch.symtab,
       type_check: false
     )
@@ -497,7 +498,7 @@ class CsrField < DatabaseObject
       return_type: Idl::Type.new(:bits, width: 128), # big int to hold special return values
       name: "CSR[#{csr.name}].#{name}.sw_write(csr_value)",
       input_file: csr.__source,
-      input_line: csr.source_line("fields", name, "sw_write(csr_value)"),
+      input_line: csr.source_line(["fields", name, "sw_write(csr_value)"]),
       symtab:,
       type_check: false
     )
@@ -822,6 +823,6 @@ class CsrField < DatabaseObject
   # @return [String] Long description of the field type
   sig { params(effective_xlen: T.nilable(Integer)).returns(String) }
   def type_desc(effective_xlen=nil)
-    TYPE_DESC_MAP[type(effective_xlen)]
+    TYPE_DESC_MAP.fetch(type(effective_xlen), "")
   end
 end
