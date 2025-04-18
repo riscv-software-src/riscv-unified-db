@@ -19,4 +19,4 @@ type: unprivileged
 versions:
   - version: "1.0.1"
     state: ratified
-    ratification_date: null
+    ratification_date: 2022-11
