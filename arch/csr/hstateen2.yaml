@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: hstateen2
+long_name: Hypervisor State Enable 2 Register
+address: 0x60E
+priv_mode: S
+length: 64
+description: |
+  For each hstateen CSR, bit 63 is defined to control access to the matching sstateen CSR.
+  Bit 63 of hstateen2 controls access to sstateen2.
+
+  With the hypervisor extension, the hstateen CSRs have identical encodings to the mstateen
+  CSRs, except controlling accesses for a virtual machine (from VS and VU modes).
+
+  For every bit in an hstateen CSR that is zero (whether read-only zero or set to zero),
+  the same bit appears as read-only zero in sstateen when accessed in VS-mode.
+
+  A bit in an hstateen CSR cannot be read-only one unless the same bit is read-only one
+  in the matching mstateen CSR.
+
+definedBy:
+  allOf:
+    - H
+    - Smstateen
+    - Ssstateen
+fields:
+  SEO:
+    location: 63
+    description: |
+      The SE0 bit in hstateen2 controls access to the sstateen2 CSR.
+    type: RW
+    reset_value: UNDEFINED_LEGAL

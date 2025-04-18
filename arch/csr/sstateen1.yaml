@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: sstateen1
+long_name: Supervisor State Enable 1 Register
+address: 0x10D
+priv_mode: S
+length: 64
+description: |
+  For the supervisor-level sstateen registers, high-half CSRs are not added at this
+  time because it is expected the upper 32 bits of these registers will always be zeros.
+
+  For every bit with a defined purpose in an sstateen CSR, the same bit is defined in the
+  matching mstateen CSR to control access below machine level to the same state.
+
+  Each bit of a stateen CSR controls less-privileged access to an extension’s state,
+  for an extension that was not deemed "worthy" of a full XS field in sstatus like the
+  FS and VS fields for the F and V extensions. The number of registers provided at each
+  level is four because it is believed that 4 * 64 = 256 bits for machine and hypervisor
+  levels, and 4 * 32 = 128 bits for supervisor level, will be adequate for many years to
+  come, perhaps for as long as the RISC-V ISA is in use. The exact number four is an
+  attempted compromise between providing too few bits on the one hand and going overboard
+  with CSRs that will never be used on the other.
+
+  The stateen registers at each level control access to state at all less-privileged levels,
+  but not at its own level.
+
+  When a stateen CSR prevents access to state for a privilege mode, attempting to execute in
+  that privilege mode an instruction that implicitly updates the state without reading it may
+  or may not raise an illegal instruction or virtual instruction exception. Such cases must
+  be disambiguated by being explicitly specified one way or the other.
+  In some cases, the bits of the stateen CSRs will have a dual purpose as enables for the ISA
+  extensions that introduce the controlled state.
+  Each bit of a supervisor-level sstateen CSR controls user-level access (from U-mode or VU-mode)
+  to an extension’s state. The intention is to allocate the bits of sstateen CSRs starting at the
+  least- significant end, bit 0, through to bit 31, and then on to the next-higher-numbered
+  sstateen CSR.
+
+definedBy:
+  allOf:
+    - Smstateen
+    - Ssstateen
+
+fields:
+  DATA:
+    location: 63-0
+    description: Data value
+    type: RW
+    reset_value: UNDEFINED_LEGAL
