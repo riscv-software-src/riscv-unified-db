@@ -26,11 +26,11 @@ repos:
     rev: v3.5.3
     hooks:
       - id: prettier
-        files: \.(json|yml|yaml)$
+        files: \.(json|toml|yml|yaml)$
         exclude: schemas/json-schema-draft-07.json
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.32.1
+    rev: 0.33.0
     hooks:
       - id: check-jsonschema
         alias: check-jsonschema-inst
@@ -46,12 +46,12 @@ repos:
         args: ["--schemafile", "schemas/ext_schema.json"]
       - id: check-jsonschema
         alias: check-jsonschema-cert-model
-        files: ^arch/certificate_model/.*\.(yaml|yml)$
-        args: ["--schemafile", "schemas/cert_model_schema.json"]
+        files: ^arch/proc_cert_model/.*\.(yaml|yml)$
+        args: ["--schemafile", "schemas/proc_cert_model_schema.json"]
       - id: check-jsonschema
         alias: check-jsonschema-cert-class
-        files: ^arch/certificate_class/.*\.(yaml|yml)$
-        args: ["--schemafile", "schemas/cert_class_schema.json"]
+        files: ^arch/proc_cert_class/.*\.(yaml|yml)$
+        args: ["--schemafile", "schemas/proc_cert_class_schema.json"]
       # Commenting because throwing errors and not sure this is complete yet
       # - id: check-jsonschema
       #   alias: check-jsonschema-manual-version
@@ -91,3 +91,8 @@ repos:
           - --indent
           - "2"
           - --case-indent
+
+  - repo: https://github.com/fsfe/reuse-tool
+    rev: v5.0.2
+    hooks:
+      - id: reuse

@@ -59,8 +59,8 @@ Length::
 
 |===
 | *key*         | length
-| *value type*  | one of [32, 64, "MXLEN", "SXLEN", "VSXLEN"]
-| *description* | Length, in bits, of the CSR. Can either be a 32, 64 or MXLEN, SXLEN, VSXLEN to indicate that is is equal to the effective XLEN for a given mode
+| *value type*  | one of [32, 64, "MXLEN", "SXLEN", "VSXLEN", "XLEN"]
+| *description* | Length, in bits, of the CSR. Can either be a 32, 64 or MXLEN, SXLEN, VSXLEN, XLEN to indicate that is is equal to the effective XLEN for a given mode
 |===
 
 Indirect::
