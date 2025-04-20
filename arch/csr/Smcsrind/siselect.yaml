@@ -8,32 +8,25 @@ priv_mode: S
 length: SXLEN
 definedBy: Sscsrind
 description: |
-  The `siselect` CSR is a supervisor-level register used to select which indirectly
-  accessed register is targeted via the `sireg*` alias CSRs. The value in `siselect`
-  acts as an index into an extension-defined space of registers, allowing access to
-  a wide range of CSR-like state without allocating contiguous CSR numbers.
+  The siselect register will support the value range 0..0xFFF at a minimum.
+  A future extension may define a value range outside of this minimum range. Only if such an extension is implemented will siselect be required to support larger values.
 
-  This indirect access mechanism enables software to efficiently access register arrays
-  without consuming large chunks of CSR address space. The `siselect` CSR works alongside
-  the `sireg*` alias CSRs to facilitate this indexing and indirect access method.
+  Requiring a range of 0-0xFFF for siselect, even though most or all of the space may be reserved or inaccessible, permits M-mode to emulate indirectly accessed registers in this implemented range, including registers that may be standardized in the future.
 
-  The minimum supported value range for `siselect` is 0–0xFFF, though future extensions
-  may define larger ranges. Values with the most-significant bit set (bit SXLEN - 1 = 1)
-  are reserved for custom use, while values with the most-significant bit cleared are
-  designated for standard use by ratified extensions.
+  Values of siselect with the most-significant bit set (bit XLEN - 1 = 1) are designated only for custom use, presumably for accessing custom registers through the alias CSRs.
+  Values of siselect with the most-significant bit clear are designated only for standard use and are reserved until allocated to a standard architecture extension. If XLEN is changed, the most-significant bit of siselect moves to the new position, retaining its value from before.
 
-  When `siselect` holds a value that is not implemented, accesses to `sireg*` are
-  UNSPECIFIED. It is RECOMMENDED that implementations raise an illegal instruction
-  exception in such cases to support emulation or error detection. Platforms or profiles
-  may define additional behaviors.
+  The behavior upon accessing sireg* from M-mode or S-mode, while siselect holds a value that is not implemented at supervisor level, is UNSPECIFIED.
+
+  It is recommended that implementations raise an illegal instruction exception for such accesses, to facilitate possible emulation (by M-mode) of these accesses.
 
 fields:
-  Select Value:
+  Value:
     location_rv32: 31-0
     location_rv64: 63-0
     type: RW
     description: |
-      Index value selecting the target register accessed through `sireg*`.
-      It serves as an indirect register selector. Values are defined by the extension.
+      Value ranges are allocated to dependent extensions, which specify the
+      register state accessible via each siregi register, for each siselect value.
     reset_value: UNDEFINED_LEGAL
 sw_read(): |

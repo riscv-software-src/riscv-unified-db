@@ -29,7 +29,7 @@ description: |
   either accesses architectural state, reads as zero, or triggers an exception.
 
 fields:
-  Data:
+  VALUE:
     location_rv32: 31-0
     location_rv64: 63-0
     type: RW

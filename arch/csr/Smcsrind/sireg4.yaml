@@ -8,21 +8,30 @@ priv_mode: S
 length: SXLEN
 definedBy: Sscsrind
 description: |
-  The `sireg4` CSR is a supervisor-level alias register used to access register state
-  indirectly based on the value held in the `siselect` CSR. The `sireg4` CSR provides
-  access to a window of indirectly addressed registers.
+  Access to `sireg4` from M-mode or S-mode while `siselect` holds a number in a
+  standard-defined and implemented range results in specific behavior that, for each combination of
+  `siselect` and `sireg4`, is defined by the extension to which the `siselect` value is allocated.
 
-  The behavior of accesses to `sireg4` is determined by the value of `siselect`.
-  If `siselect` holds a value that corresponds to an implemented register,
-  the register is accessed as determined by the value of `siselect`.
+  [Note]
+  Ordinarily, `sireg4` will access register state, access read-only 0 state, or, unless
+  executing in a virtual machine (covered in the next section), raise an illegal instruction
+  exception.
 
-  When `siselect` holds an unsupported value, access to `sireg4` is UNSPECIFIED,
-  and implementations are encouraged to raise an illegal instruction exception
-  to facilitate debugging or software emulation.
+  Note that the widths of `siselect` and `sireg4` are always the current XLEN rather than SXLEN. Hence,
+  for example, if MXLEN = 64 and SXLEN = 32, then this register is 64 bits when the current
+  privilege mode is M (running RV64 code) but 32 bits when the privilege mode is S (RV32 code).
 
-  This indirect access mechanism allows efficient access to an array of CSRs
-  without allocating large contiguous blocks of CSR address space. It is useful
-  for arrays such as performance counters and other register sets.
+  The behavior upon accessing `sireg4` from M-mode or S-mode, while `siselect` holds a value that is
+  not implemented at supervisor level, is UNSPECIFIED.
+
+  [Note]
+  It is recommended that implementations raise an illegal instruction exception for such
+  accesses, to facilitate possible emulation (by M-mode) of these accesses.
+
+  [Note]
+  An extension is considered not to be implemented at supervisor level if machine level has
+  disabled the extension for S-mode, such as by the settings of certain fields in CSR
+  `menvcfg`, for example.
 
 fields:
   Data:

@@ -25,7 +25,7 @@ description: |
   exception to support robust error handling and software emulation.
 
 fields:
-  Select Value:
+  Value:
     location_rv32: 31-0
     location_rv64: 63-0
     type: RW

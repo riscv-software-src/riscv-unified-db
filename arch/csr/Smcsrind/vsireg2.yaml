@@ -9,25 +9,20 @@ priv_mode: VS
 length: VSXLEN
 definedBy: Smcsrind
 description: |
-  The `vsireg2` CSR is one of several virtual supervisor-level alias registers used
-  to indirectly access register state based on the value held in the `vsiselect`
-  CSR. This alias mechanism enables efficient access to register state by indexing
-  into an alias space defined by the extension utilizing this access method.
+  One of the virtual supervisor-level alias CSRs used for indirect register access.
+  The value of `vsiselect` determines which register is accessed upon read or write
+  of `vsireg2`.
 
-  The value in `vsiselect` determines the register being accessed through `vsireg2`.
-  The `vsiselect` value serves as an index into a virtualized alias space, providing
-  access to registers without consuming contiguous CSR address ranges.
+  Value ranges of `vsiselect` are allocated to dependent extensions, which specify
+  the register state accessible via each `vsiregi` register, for each `vsiselect` value.
 
-  If `vsiselect` holds a value that is not implemented, the behavior of `vsireg2`
-  is UNSPECIFIED. It is RECOMMENDED that implementations raise a virtual instruction
-  exception for such accesses to facilitate debugging and emulation.
-
-  The access behavior for each `vsiselect` + `vsireg2` pair is defined by the
-  extension that owns the `vsiselect` value. Ordinarily, the alias register
-  either accesses architectural state, reads zero, or raises an exception.
+  The behavior upon accessing `vsireg2` while `vsiselect` holds a value that is not
+  implemented at HS level is UNSPECIFIED. It is RECOMMENDED that implementations raise
+  a virtual instruction exception for such accesses, to facilitate possible emulation
+  by M-mode or for error detection.
 
 fields:
-  Data:
+  VALUE:
     location_rv32: 31-0
     location_rv64: 63-0
     type: RW

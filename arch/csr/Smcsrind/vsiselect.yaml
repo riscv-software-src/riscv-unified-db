@@ -27,7 +27,7 @@ description: |
   machines and reduces the complexity of implementing CSR access.
 
 fields:
-  Data:
+  VALUE:
     location_rv32: 31-0
     location_rv64: 63-0
     type: RW

@@ -23,7 +23,7 @@ description: |
   exception in such cases to support debugging and software emulation.
 
 fields:
-  Data:
+  VALUE:
     location_rv32: 31-0
     location_rv64: 63-0
     type: RW

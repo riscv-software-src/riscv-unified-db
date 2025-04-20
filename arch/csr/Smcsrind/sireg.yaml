@@ -8,22 +8,21 @@ priv_mode: S
 length: SXLEN
 definedBy: Sscsrind
 description: |
-  The `sireg` CSR is a supervisor-level alias register used to access register state
-  indirectly based on the value held in the `siselect` CSR. The `sireg` CSR provides
-  access to a window of indirectly addressed registers.
+  Access to `sireg` from M-mode or S-mode while `siselect` holds a number in a
+  standard-defined and implemented range results in specific behavior that, for each combination of
+  `siselect` and `sireg`, is defined by the extension to which the `siselect` value is allocated.
 
-  The behavior of accesses to `sireg` is determined by the currently selected
-  `siselect` value, which acts as an index into an alias space defined by the extension
-  utilizing this access method. This indirect mechanism allows software to access
-  an array of CSRs without consuming large contiguous blocks of the CSR address space.
+  [Note]
+  Ordinarily, `sireg` will access register state, access read-only 0 state, or, unless
+  executing in a virtual machine (covered in the next section), raise an illegal instruction
+  exception.
 
-  When `siselect` contains a value that is not supported, access to `sireg` is UNSPECIFIED,
-  and implementations are encouraged to raise an illegal instruction exception to aid in
-  debugging or software emulation.
+  Note that the widths of `siselect` and `sireg` are always the current XLEN rather than SXLEN. Hence,
+  for example, if MXLEN = 64 and SXLEN = 32, then this register is 64 bits when the current
+  privilege mode is M (running RV64 code) but 32 bits when the privilege mode is S (RV32 code).
 
-  The indirect access mechanism is useful for CSR arrays, such as counters or
-  performance registers, and ensures a scalable way to interact with dynamically
-  indexed register sets.
+  The behavior upon accessing `sireg` from M-mode or S-mode, while `siselect` holds a value that is
+  not implemented at supervisor level, is UNSPECIFIED.
 
 fields:
   Data:

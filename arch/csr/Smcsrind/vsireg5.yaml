@@ -19,7 +19,7 @@ description: |
   to support software emulation or error handling.
 
 fields:
-  Data:
+  VALUE:
     location_rv32: 31-0
     location_rv64: 63-0
     type: RW
