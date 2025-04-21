@@ -3,20 +3,18 @@
 $schema: "csr_schema.json#"
 kind: csr
 name: tdata2
-long_name: Second Debug/Trace trigger data register
+long_name: Trigger Data 2
 address: 0x7A2
 priv_mode: M
 length: XLEN
 description: |
-  This register provides access to the trigger selected by tselect. 
+  This register provides access to the trigger selected by `tselect`.
   The reset values listed here apply to every underlying trigger.
-  
+
   Trigger-specific data. It is optional if no implemented triggers use it.
-  If the trigger is disabled, then this register can be written with any value 
+  If the trigger is disabled, then this register can be written with any value
   supported by any of the trigger types supported by this trigger.
-  If XLEN is less than DXLEN, writes to this register are sign-extended. 
-  
-  This CSR is read/write.
+  If XLEN is less than DXLEN, writes to this register are sign-extended.
 
 definedBy: Sdtrig
 fields:

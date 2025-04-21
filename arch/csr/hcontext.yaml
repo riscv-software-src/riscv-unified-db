@@ -3,18 +3,18 @@
 $schema: "csr_schema.json#"
 kind: csr
 name: hcontext
-long_name: Hypervisor-mode context register
+long_name: Hypervisor Context
 address: 0x6A8
 priv_mode: S
 length: XLEN
 description: |
   This optional register may be implemented only if the H extension is implemented.
-  If it is implemented, mcontext must also be implemented.
+  If it is implemented, `mcontext` must also be implemented.
 
   This register is only accessible in HS-Mode, M-mode and Debug Mode. If Smstateen is implemented,
-  then accessibility of in HS-Mode is controlled by mstateen0[57].
+  then accessibility of in HS-Mode is controlled by `mstateen0[57]`.
 
-  This register is an alias of the mcontext register, providing access to the hcontext field from HS-Mode.
+  This register is an alias of the `mcontext` register, providing access to the HCONTEXT field from HS-Mode.
 
 definedBy:
   allOf:
@@ -31,7 +31,7 @@ fields:
     sw_write(csr_value): |
       # check if mstateen0 or hstateen0 is clear
       if (implemented?(Smstateen) && (!CSR[mstateen0].CONTEXT || !CSR[hstateen0].CONTEXT)) {
-      unimplemented_csr($encoding);
+        unimplemented_csr($encoding);
       }
 
       # enforce width of HCONTEXT
@@ -42,7 +42,7 @@ fields:
 sw_read(): |
   # check if mstateen0 or hstateen0 is clear
   if (implemented?(Smstateen) && (!CSR[mstateen0].CONTEXT || !CSR[hstateen0].CONTEXT)) {
-  unimplemented_csr($encoding);
+    unimplemented_csr($encoding);
   }
 
   # return the value of mcontext

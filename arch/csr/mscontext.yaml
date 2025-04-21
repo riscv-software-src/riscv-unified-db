@@ -3,7 +3,7 @@
 $schema: "csr_schema.json#"
 kind: csr
 name: mscontext
-long_name: Machine Supervisor Context Register
+long_name: Machine Supervisor Context
 address: 0x7AA
 priv_mode: S
 length: XLEN
@@ -15,7 +15,7 @@ description: |
   The encoding of this CSR does not conform to the CSR Address
   Mapping Convention in the Privileged Spec. It is expected that
   new implementations will not support this encoding and that new
-  debuggers will not use this CSR if scontext is available.
+  debuggers will not use this CSR if `scontext` is available.
 
 definedBy:
   allOf:
