@@ -3,19 +3,109 @@
   "configurations": [
     {
       "type": "rdbg",
-      "name": "MC100-32",
+      "name": "Smoke test",
       "request": "launch",
       "command": "bundle exec rake",
-      "script": "gen:cert_model_pdf[MC100-32]",
+      "script": "test:smoke",
       "args": [],
       "askParameters": false
     },
     {
       "type": "rdbg",
-      "name": "MC200-32",
+      "name": "Regression test",
       "request": "launch",
       "command": "bundle exec rake",
-      "script": "gen:cert_model_pdf[MC200-32]",
+      "script": "test:regress",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "Manual",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:html_manual MANUAL_NAME=isa VERSIONS=all",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "MC100-32-CRD",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:proc_crd_pdf[MC100-32]",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "MC100-32-CTP",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:proc_ctp_pdf[MC100-32]",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "MC200-32-CRD",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:proc_crd_pdf[MC200-32]",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "AC100-CRD",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:proc_crd_pdf[AC100]",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "AC200-CRD",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:proc_crd_pdf[AC200]",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "MockCRD",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:proc_crd_pdf[MockProcessor]",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "MockCTP",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:proc_ctp_pdf[MockProcessor]",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "portfolios",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "portfolios",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "MockProfile",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:profile_release_pdf[Mock]",
       "args": [],
       "askParameters": false
     },
@@ -24,9 +114,85 @@
       "name": "RVA20",
       "request": "launch",
       "command": "bundle exec rake",
-      "script": "gen:profile[RVA20]",
+      "script": "gen:profile_release_pdf[RVA20]",
       "args": [],
       "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "ISA Explorer Browser Extension Generator",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:isa_explorer_browser_ext",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "ISA Explorer Browser Instruction Generator",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:isa_explorer_browser_inst",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "ISA Explorer Browser CSR Generator",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:isa_explorer_browser_csr",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "rdbg",
+      "name": "ISA Explorer Spreadsheet Generator",
+      "request": "launch",
+      "command": "bundle exec rake",
+      "script": "gen:isa_explorer_spreadsheet",
+      "args": [],
+      "askParameters": false
+    },
+    {
+      "type": "cppdbg",
+      "name": "Run MC100-32 iss",
+      "request": "launch",
+      "program": "${workspaceFolder}/gen/cpp_hart_gen/MC100-32_Debug/build/iss",
+      "setupCommands": [
+        {
+          "text": "set output-radix 16",
+          "description": "Display hex by default"
+        }
+      ],
+      "cwd": "${workspaceFolder}",
+      "args": [
+        "-m", "MC100-32", "-c",
+        "${workspaceFolder}/cfgs/mc100-32-full-example.yaml",
+        "ext/riscv-tests/isa/rv32mi-p-mcsr"
+      ],
+      "linux": {
+        "MIMode": "gdb",
+        "miDebuggerPath": "${workspaceFolder}/bin/gdb"
+      }
+    },
+    {
+      "type": "cppdbg",
+      "name": "Run MC100-32 coremark",
+      "request": "launch",
+      "program": "${workspaceFolder}/gen/cpp_hart_gen/MC100-32_Debug/build/iss",
+      "setupCommands": [
+        {
+          "text": "set output-radix 16",
+          "description": "Display hex by default"
+        }
+      ],
+      "cwd": "${workspaceFolder}",
+      "args": ["-m", "MC100-32", "-c", "${workspaceFolder}/cfgs/mc100-32-full-example.yaml", "ext/riscv-coremark/coremark/coremark.bare.riscv"],
+      "linux": {
+        "MIMode": "gdb",
+        "miDebuggerPath": "${workspaceFolder}/bin/gdb"
+      }
     }
   ]
 }

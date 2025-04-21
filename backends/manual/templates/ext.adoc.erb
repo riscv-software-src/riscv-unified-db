@@ -1,4 +1,4 @@
-[ext:$<%= ext.name %>-def]
+<%= anchor_for_udb_doc_ext(ext.name) %>
 = <%= ext.name %> Extension
 <%= ext.long_name %>
 
@@ -36,11 +36,11 @@
 
 <%= ext.description %>
 
-<%- insts = cfg_arch.instructions.select { |i| ext.versions.any? { |v| i.defined_by?(v) } } -%>
+<%- insts = ext.instructions.select { |inst| ext.versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) } } -%>
 <%- unless insts.empty? -%>
 == Instructions
 
-The following instructions are defined by this extension:
+The following instructions are affected by this extension:
 
 [cols="1,3"]
 |===
@@ -53,9 +53,10 @@ The following instructions are defined by this extension:
 <%- unless ext.params.empty? -%>
 == Parameters
 
-This extension has the following implementation options:
+This extension has the following implementation options (AKA parameters):
 
 <%- ext.params.sort_by { |p| p.name }.each do |param| -%>
+<%= anchor_for_udb_doc_ext_param(ext.name, param.name) %>
 <%= param.name %>::
 +
 --

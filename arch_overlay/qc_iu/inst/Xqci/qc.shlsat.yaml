@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.shlsat
+long_name: Saturating signed left shift
+description: |
+  Left shift `rs1` by the value of `rs2`, and saturate the signed result.
+  Instruction encoded in R instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqcia
+base: 32
+encoding:
+  match: 0001010----------011-----0001011
+  variables:
+    - name: rs1
+      location: 19-15
+      not: 0
+    - name: rs2
+      location: 24-20
+      not: 0
+    - name: rd
+      location: 11-7
+      not: 0
+assembly: " xd, xs1, xs2"
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  Bits<{1'b0, MXLEN}*2> sext_double_width_rs1 = {{MXLEN{X[rs1][xlen()-1]}}, X[rs1]};
+  Bits<{1'b0, MXLEN}*2> shifted_value = sext_double_width_rs1 << X[rs2][4:0];
+  XReg most_negative_number = 1 << (xlen() - 1);
+  XReg most_positive_number = (1 << (xlen() - 1)) - 1;
+
+  if ($signed(shifted_value) < $signed(most_negative_number)) {
+    X[rd] = most_negative_number;
+  } else if ($signed(shifted_value) > $signed(most_positive_number)) {
+    X[rd] = most_positive_number;
+  } else {
+    X[rd] = shifted_value;
+  }

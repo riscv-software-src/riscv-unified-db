@@ -65,6 +65,9 @@ operation(): |
 
   mark_f_state_dirty();
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     assert(sizeof(xlen) >= 64);
@@ -81,3 +84,5 @@ sail(): |
       }
     }
   }
+
+# SPDX-SnippetEnd

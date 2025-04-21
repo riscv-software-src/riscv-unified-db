@@ -1,0 +1,558 @@
+# yaml-language-server: $schema=../schemas/config_schema.json
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: example_rv64_with_overlay
+description: An example fully-specified RV64 system
+arch_overlay: example
+implemented_extensions:
+  - [A, "2.1.0"]
+  - [B, "1.0.0"]
+  - [C, "2.0.0"]
+  - [D, "2.2.0"]
+  - [F, "2.2.0"]
+  - [I, "2.1.0"]
+  - [H, "1.0.0"]
+  - [M, "2.0.0"]
+  - [S, "1.12.0"]
+  - [Sm, "1.12.0"]
+  - [Smhpm, "1.12.0"]
+  - [Smpmp, "1.12.0"]
+  - [U, "1.0.0"]
+  - [V, "1.0.0"]
+  - [Zicntr, "2.0.0"]
+  - [Zicsr, "2.0.0"]
+  - [Zihpm, "2.0.0"]
+  - [Smaia, "1.0.0"]
+  - [Smcdeleg, "1.0.0"]
+  - [Smcntrpmf, "1.0.0"]
+  - [Sscofpmf, "1.0.0"]
+  - [Ssaia, "1.0.0"]
+  - [Ssccfg, "1.0.0"]
+  - [Sstc, "0.9.0"]
+  - [Sv39, "1.12.0"]
+  - [Sv48, "1.12.0"]
+  - [Zicboz, "1.0.0"]
+  - [Zicbom, "1.0.0"]
+
+params:
+  MXLEN: 64
+
+  # name of the configuration
+  NAME: example_rv64_with_overlay
+
+  # vendor-specific architecture ID in marchid
+  ARCH_ID: 0x1000000000000000
+
+  # vendor-specific implementation ID in mimpid
+  IMP_ID: 0x0
+
+  # JEDEC Vendor ID bank
+  VENDOR_ID_BANK: 0x0
+
+  # JEDEC Vendor ID offset
+  VENDOR_ID_OFFSET: 0x0
+
+  # whether or not the implementation supports misaligned loads and stores in main memory (not including atomics)
+  # must be true when Zicclsm is supported
+  MISALIGNED_LDST: true
+
+  MISALIGNED_LDST_EXCEPTION_PRIORITY: high
+
+  MISALIGNED_MAX_ATOMICITY_GRANULE_SIZE: 0
+
+  MISALIGNED_SPLIT_STRATEGY: by_byte
+
+  # whether or not the implementation supports misaligned atomics
+  MISALIGNED_AMO: false
+
+  HPM_COUNTER_EN:
+    - false # CY
+    - false # empty
+    - false # IR
+    - true # HPM3
+    - true # HPM4
+    - true # HPM5
+    - true # HPM6
+    - true # HPM7
+    - true # HPM8
+    - true # HPM9
+    - true # HPM10
+    - false # HPM11
+    - false # HPM12
+    - false # HPM13
+    - false # HPM14
+    - false # HPM15
+    - false # HPM16
+    - false # HPM17
+    - false # HPM18
+    - false # HPM19
+    - false # HPM20
+    - false # HPM21
+    - false # HPM22
+    - false # HPM23
+    - false # HPM24
+    - false # HPM25
+    - false # HPM26
+    - false # HPM27
+    - false # HPM28
+    - false # HPM29
+    - false # HPM30
+    - false # HPM31
+
+  # list of defined HPM events
+  HPM_EVENTS:
+    - 0
+    - 3
+
+  # Indicates which counters can be disabled from mcountinhibit
+  #
+  # An unimplemented counter cannot be specified, i.e., if
+  # NUM_HPM_COUNTERS == 8, it would be illegal to add index
+  # 11 in COUNTINHIBIT_EN since the highest implemented counter
+  # would be at bit 10
+  COUNTINHIBIT_EN:
+    - true # CY
+    - false # empty
+    - true # IR
+    - true # HPM3
+    - true # HPM4
+    - true # HPM5
+    - true # HPM6
+    - true # HPM7
+    - true # HPM8
+    - true # HPM9
+    - true # HPM10
+    - false # HPM11
+    - false # HPM12
+    - false # HPM13
+    - false # HPM14
+    - false # HPM15
+    - false # HPM16
+    - false # HPM17
+    - false # HPM18
+    - false # HPM19
+    - false # HPM20
+    - false # HPM21
+    - false # HPM22
+    - false # HPM23
+    - false # HPM24
+    - false # HPM25
+    - false # HPM26
+    - false # HPM27
+    - false # HPM28
+    - false # HPM29
+    - false # HPM30
+    - false # HPM31
+
+  # Indicates which counters can delegated via mcounteren
+  #
+  # An unimplemented counter cannot be specified, i.e., if
+  # NUM_HPM_COUNTERS == 8, it would be illegal to add index
+  # 11 in COUNTEN_EN since the highest implemented counter
+  # would be at bit 10
+  MCOUNTENABLE_EN:
+    - true # CY
+    - false # TM
+    - true # IR
+    - true # HPM3
+    - true # HPM4
+    - true # HPM5
+    - true # HPM6
+    - true # HPM7
+    - true # HPM8
+    - true # HPM9
+    - true # HPM10
+    - false # HPM11
+    - false # HPM12
+    - false # HPM13
+    - false # HPM14
+    - false # HPM15
+    - false # HPM16
+    - false # HPM17
+    - false # HPM18
+    - false # HPM19
+    - false # HPM20
+    - false # HPM21
+    - false # HPM22
+    - false # HPM23
+    - false # HPM24
+    - false # HPM25
+    - false # HPM26
+    - false # HPM27
+    - false # HPM28
+    - false # HPM29
+    - false # HPM30
+    - false # HPM31
+
+  # Indicates which counters can delegated via scounteren
+  #
+  # An unimplemented counter cannot be specified, i.e., if
+  # NUM_HPM_COUNTERS == 8, it would be illegal to add index
+  # 11 in COUNTEN_EN since the highest implemented counter
+  # would be at bit 10
+  SCOUNTENABLE_EN:
+    - true # CY
+    - false # TM
+    - true # IR
+    - true # HPM3
+    - true # HPM4
+    - true # HPM5
+    - true # HPM6
+    - true # HPM7
+    - true # HPM8
+    - true # HPM9
+    - true # HPM10
+    - false # HPM11
+    - false # HPM12
+    - false # HPM13
+    - false # HPM14
+    - false # HPM15
+    - false # HPM16
+    - false # HPM17
+    - false # HPM18
+    - false # HPM19
+    - false # HPM20
+    - false # HPM21
+    - false # HPM22
+    - false # HPM23
+    - false # HPM24
+    - false # HPM25
+    - false # HPM26
+    - false # HPM27
+    - false # HPM28
+    - false # HPM29
+    - false # HPM30
+    - false # HPM31
+
+  # Indicates which counters can delegated via hcounteren
+  #
+  # An unimplemented counter cannot be specified, i.e., if
+  # NUM_HPM_COUNTERS == 8, it would be illegal to add index
+  # 11 in COUNTEN_EN since the highest implemented counter
+  # would be at bit 10
+  HCOUNTENABLE_EN:
+    - true # CY
+    - false # TM
+    - true # IR
+    - true # HPM3
+    - true # HPM4
+    - true # HPM5
+    - true # HPM6
+    - true # HPM7
+    - true # HPM8
+    - true # HPM9
+    - true # HPM10
+    - false # HPM11
+    - false # HPM12
+    - false # HPM13
+    - false # HPM14
+    - false # HPM15
+    - false # HPM16
+    - false # HPM17
+    - false # HPM18
+    - false # HPM19
+    - false # HPM20
+    - false # HPM21
+    - false # HPM22
+    - false # HPM23
+    - false # HPM24
+    - false # HPM25
+    - false # HPM26
+    - false # HPM27
+    - false # HPM28
+    - false # HPM29
+    - false # HPM30
+    - false # HPM31
+
+  # when true, writing an illegal value to a WLRL CSR field raises an Illegal Instruction exception
+  # when false, writing an illegal value to a WLRL CSR field is ignored
+  TRAP_ON_ILLEGAL_WLRL: true
+  TRAP_ON_UNIMPLEMENTED_INSTRUCTION: true
+  TRAP_ON_RESERVED_INSTRUCTION: true
+  TRAP_ON_UNIMPLEMENTED_CSR: true
+
+  # Whether or not a real hardware `time` CSR exists. Implementations can either provide a real
+  # CSR or trap and emulate access at M-mode.
+  TIME_CSR_IMPLEMENTED: true
+
+  # Whether or not the `misa` CSR returns zero or a non-zero value.
+  MISA_CSR_IMPLEMENTED: true
+
+  # when true, *tval is written with the virtual PC of the EBREAK instruction (same information as *epc)
+  # when false, *tval is written with 0 on an EBREAK instruction
+  #
+  # regardless, *tval is always written with a virtual PC when an external breakpoint is generated
+  REPORT_VA_IN_MTVAL_ON_BREAKPOINT: true
+
+  REPORT_VA_IN_MTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_ENCODING_IN_MTVAL_ON_ILLEGAL_INSTRUCTION: true
+  # REPORT_CAUSE_IN_MTVAL_ON_SOFTWARE_CHECK: true
+  MTVAL_WIDTH: 64 # must check that this can hold any valid VA if any REPORT_VA* or Sdext, and, if REPORT_ENCODING*, at least [MXLEN, ILEN].min bits
+
+  REPORT_VA_IN_STVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_STVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_STVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_STVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_ENCODING_IN_STVAL_ON_ILLEGAL_INSTRUCTION: true
+  # REPORT_CAUSE_IN_STVAL_ON_SOFTWARE_CHECK: true
+  STVAL_WIDTH: 64 # must check that this can hold any valid VA, and, if REPORT_ENCODING*, at least [SXLEN, ILEN].min bits
+
+  REPORT_VA_IN_VSTVAL_ON_BREAKPOINT: true
+  REPORT_VA_IN_VSTVAL_ON_LOAD_MISALIGNED: true
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_MISALIGNED: true
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_MISALIGNED: true
+  REPORT_VA_IN_VSTVAL_ON_LOAD_ACCESS_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_ACCESS_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_ACCESS_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_LOAD_PAGE_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_STORE_AMO_PAGE_FAULT: true
+  REPORT_VA_IN_VSTVAL_ON_INSTRUCTION_PAGE_FAULT: true
+  REPORT_ENCODING_IN_VSTVAL_ON_ILLEGAL_INSTRUCTION: true
+  # REPORT_CAUSE_IN_VSTVAL_ON_SOFTWARE_CHECK: true
+  # VSTVAL_WIDTH not needed; "vstval is a WARL register that must be able to hold the same set of values that stval can hold"
+
+  # address of the unified discovery configuration data structure
+  # this address is reported in the mconfigptr CSR
+  CONFIG_PTR_ADDRESS: 0x1000
+
+  # number of implemented PMP entries. Can be any value between 0-64, inclusive.
+  #
+  # the number of implemented PMP registers must be 0, 16, or 64.
+  #
+  # Therefore, whether or not a pmpaddrN or pmpcfgN register exists depends on
+  # NUM_PMP_ENTRIES as follows:
+  # |===
+  # | NUM_PMP_ENTRIES | pmpaddr<0-15> / pmpcfg<0-3> | pmpaddr<16-63> / pmpcfg<4-15>
+  # | 0               | N                           | N
+  # | 1-16            | Y                           | N
+  # | 17-64           | Y                           | Y
+  # |===
+  # ** pmpcfgN for an odd N never exist when XLEN == 64
+  #
+  # when NUM_PMP_ENTRIES is not exactly 0, 16, or 64, some extant pmp registers,
+  # and associated pmpNcfg, will be read-only zero (but will not cause an exception).
+  NUM_PMP_ENTRIES: 14
+
+  # log2 of the smallest supported PMP region
+  # generally, for systems with an MMU, should not be smaller than 12,
+  # as that would preclude caching PMP results in the TLB along with
+  # virtual memory translations
+  #
+  # Note that PMP_GRANULARITY is equal to G+2 (not G) as described in
+  # the privileged architecture
+  PMP_GRANULARITY: 12
+
+  # log2 of the smallest supported PMA region
+  # generally, for systems with an MMU, should not be smaller than 12,
+  # as that would preclude caching PMP results in the TLB along with
+  # virtual memory translations
+  PMA_GRANULARITY: 12
+
+  # number of bits in the physical address space
+  PHYS_ADDR_WIDTH: 56
+
+  # number of implemented ASID bits
+  # maximum value is 16
+  ASID_WIDTH: 12
+
+  # when the A extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.A` bit.
+  MUTABLE_MISA_A: false
+
+  # when the B extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.B` bit.
+  MUTABLE_MISA_B: false
+
+  # when the C extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.C` bit.
+  MUTABLE_MISA_C: false
+
+  # when the D extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.D` bit.
+  MUTABLE_MISA_D: false
+
+  # when the F extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.F` bit.
+  MUTABLE_MISA_F: false
+
+  # when the H extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.H` bit.
+  MUTABLE_MISA_H: false
+
+  # when the M extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.M` bit.
+  MUTABLE_MISA_M: false
+
+  # when the S extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.S` bit.
+  MUTABLE_MISA_S: false
+
+  # when the U extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.U` bit.
+  MUTABLE_MISA_U: false
+
+  # when the V extensions is supported, indicates whether or not
+  # the extension can be disabled in the `misa.V` bit.
+  MUTABLE_MISA_V: false
+
+  # size of a cache block, in bytes
+  CACHE_BLOCK_SIZE: 64
+
+  # number of supported virtualized guest interrupts
+  # corresponds to the `GEILEN` parameter in the RVI specs
+  NUM_EXTERNAL_GUEST_INTERRUPTS: 4
+
+  # Endianness of data in M-mode. Can be one of:
+  #
+  #  * little:  M-mode data is always little endian
+  #  * big:     M-mode data is always big endian
+  #  * dynamic: M-mode data can be either little or big endian, depending on the RW CSR field mstatus.MBE
+  M_MODE_ENDIANNESS: little
+
+  # Endianness of data in M-mode. Can be one of:
+  #
+  #  * little:  S-mode data is always little endian
+  #  * big:     S-mode data is always big endian
+  #  * dynamic: S-mode data can be either little or big endian, depending on the RW CSR field mstatus.SBE
+  S_MODE_ENDIANNESS: little
+
+  # Endianness of data in M-mode. Can be one of:
+  #
+  #  * little:   U-mode data is always little endian
+  #  * big:     U-mode data is always big endian
+  #  * dynamic: U-mode data can be either little or big endian, depending on the RW CSR field mstatus.UBE
+  U_MODE_ENDIANNESS: little
+
+  # Endianness of data in VU-mode. Can be one of:
+  #
+  #  * little: VU-mode data is always little endian
+  #  * big: VU-mode data is always big endian
+  #  * dynamic: VU-mode data can be either little or big endian, depending on the RW CSR field vsstatus.UBE
+  VU_MODE_ENDIANNESS: little
+
+  # Endianness of data in VS-mode. Can be one of:
+  #
+  #  * little: VS-mode data is always little endian
+  #  * big: VS-mode data is always big endian
+  #  * dynamic: VS-mode data can be either little or big endian, depending on the RW CSR field hstatus.VSBE
+  VS_MODE_ENDIANNESS: little
+
+  # XLENs supported in S-mode. Can be one of:
+  #
+  #  * 32:   SXLEN is always 32
+  #  * 64:   SXLEN is always 64
+  #  * 3264: SXLEN can be changed (via mstatus.SXL) between 32 and 64
+  SXLEN: 64
+
+  # XLENs supported in U-mode. Can be one of:
+  #
+  #  * 32:   SXLEN is always 32
+  #  * 64:   SXLEN is always 64
+  #  * 3264: SXLEN can be changed (via mstatus.SXL) between 32 and 64
+  UXLEN: 64
+
+  # XLENs supported in VS-mode. Can be one of:
+  #
+  #  * 32:   VSXLEN is always 32
+  #  * 64:   VSXLEN is always 64
+  #  * 3264: VSXLEN can be changed (via hstatus.VSXL) between 32 and 64
+  VSXLEN: 64
+
+  # XLENs supported in VS-mode. Can be one of:
+  #
+  #  * 32:   VSXLEN is always 32
+  #  * 64:   VSXLEN is always 64
+  #  * 3264: VSXLEN can be changed (via hstatus.VSXL) between 32 and 64
+  VUXLEN: 64
+
+  # Strategy used to handle reservation sets
+  #
+  #  * "reserve naturally-aligned 64-byte region": Always reserve the 64-byte block containing the LR/SC address
+  #  * "reserve naturally-aligned 128-byte region": Always reserve the 128-byte block containing the LR/SC address
+  #  * "reserve exactly enough to cover the access": Always reserve exactly the LR/SC access, and no more
+  #  * "custom": Custom behavior, leading to an 'unpredictable' call on any LR/SC
+  LRSC_RESERVATION_STRATEGY: reserve naturally-aligned 64-byte region
+
+  # whether or not an SC will fail if its VA does not match the VA of the prior LR,
+  # even if the physical address of the SC and LR are the same
+  LRSC_FAIL_ON_VA_SYNONYM: false
+
+  # what to do when an LR/SC address is misaligned:
+  #
+  #  * 'always raise misaligned exception': self-explainitory
+  #  * 'always raise access fault': self-explainitory
+  #  * 'custom': Custom behavior; misaligned LR/SC may sometimes raise a misaligned exception and sometimes raise a access fault. Will lead to an 'unpredictable' call on any misaligned LR/SC access
+  LRSC_MISALIGNED_BEHAVIOR: always raise misaligned exception
+
+  # whether or not a Store Conditional fails if its physical address and size do not
+  # exactly match the physical address and size of the last Load Reserved in program order
+  # (independent of whether or not the SC is in the current reservation set)
+  LRSC_FAIL_ON_NON_EXACT_LRSC: false
+
+  # Whether writes from M-mode, U-mode, or S-mode to vsatp with an illegal mode setting are
+  # ignored (as they are with satp), or if they are treated as WARL, leading to undpredictable
+  # behavior.
+  IGNORE_INVALID_VSATP_MODE_WRITES_WHEN_V_EQ_ZERO: true
+
+  GSTAGE_MODE_BARE: true
+  SV32_VSMODE_TRANSLATION: false
+  SV39_VSMODE_TRANSLATION: true
+  SV48_VSMODE_TRANSLATION: true
+  SV57_VSMODE_TRANSLATION: true
+  SV32X4_TRANSLATION: false
+  SV39X4_TRANSLATION: true
+  SV48X4_TRANSLATION: true
+  SV57X4_TRANSLATION: false
+  VMID_WIDTH: 8
+  SV_MODE_BARE: true
+  STVEC_MODE_DIRECT: true
+  STVEC_MODE_VECTORED: true
+  SATP_MODE_BARE: true
+  REPORT_GPA_IN_TVAL_ON_LOAD_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_STORE_AMO_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_INSTRUCTION_GUEST_PAGE_FAULT: true
+  REPORT_GPA_IN_TVAL_ON_INTERMEDIATE_GUEST_PAGE_FAULT: true
+  TINST_VALUE_ON_FINAL_LOAD_GUEST_PAGE_FAULT: "always transformed standard instruction"
+  TINST_VALUE_ON_FINAL_STORE_AMO_GUEST_PAGE_FAULT: "always transformed standard instruction"
+  TINST_VALUE_ON_FINAL_INSTRUCTION_GUEST_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_INSTRUCTION_ADDRESS_MISALIGNED: "always zero"
+  TINST_VALUE_ON_BREAKPOINT: "always zero"
+  TINST_VALUE_ON_VIRTUAL_INSTRUCTION: "always zero"
+  TINST_VALUE_ON_LOAD_ADDRESS_MISALIGNED: "always zero"
+  TINST_VALUE_ON_LOAD_ACCESS_FAULT: "always zero"
+  TINST_VALUE_ON_STORE_AMO_ADDRESS_MISALIGNED: "always zero"
+  TINST_VALUE_ON_STORE_AMO_ACCESS_FAULT: "always zero"
+  TINST_VALUE_ON_UCALL: "always zero"
+  TINST_VALUE_ON_SCALL: "always zero"
+  TINST_VALUE_ON_MCALL: "always zero"
+  TINST_VALUE_ON_VSCALL: "always zero"
+  TINST_VALUE_ON_LOAD_PAGE_FAULT: "always zero"
+  TINST_VALUE_ON_STORE_AMO_PAGE_FAULT: "always zero"
+  MTVEC_MODES: [0, 1]
+  MSTATUS_FS_LEGAL_VALUES: [0, 1, 2, 3]
+  MSTATUS_FS_WRITEABLE: true
+  MSTATUS_TVM_IMPLEMENTED: true
+  HW_MSTATUS_FS_DIRTY_UPDATE: precise
+  MSTATUS_VS_WRITEABLE: true
+  MSTATUS_VS_LEGAL_VALUES: [0, 1, 2, 3]
+  HW_MSTATUS_VS_DIRTY_UPDATE: precise
+  FORCE_UPGRADE_CBO_INVAL_TO_FLUSH: true
+  REPORT_GPA_IN_HTVAL_ON_GUEST_PAGE_FAULT: true
+  VSTVEC_MODE_DIRECT: true
+  VSTVEC_MODE_VECTORED: true

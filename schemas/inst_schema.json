@@ -190,10 +190,6 @@
           "$ref": "schema_defs.json#/$defs/requires_entry",
           "description": "Extension(s) that defines the instruction"
         },
-        "excludedBy": {
-          "$ref": "schema_defs.json#/$defs/requires_entry",
-          "description": "Extension(s) that, if implemented, exclude the instruction (even if the definedBy extension is also implemented)"
-        },
         "encoding": {
           "description": "Instruction encoding and decode variables",
           "oneOf": [
@@ -214,6 +210,23 @@
               "additionalProperties": false
             }
           ]
+        },
+        "hints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "$ref": {
+                "type": "string",
+                "format": "uri-reference",
+                "pattern": "^inst/.+\\.yaml#.*$",
+                "description": "Ref to an instruction that is using a HINT codepoint(s) of this instruction"
+              }
+            },
+            "required": ["$ref"],
+            "additionalProperties": false
+          },
+          "description": "List of HINTs that use this instruction's codepoints"
         },
         "base": {
           "enum": [32, 64],
@@ -256,6 +269,12 @@
         "sail()": {
           "type": "string",
           "description": "Functional description of the instruction using Sail"
+        },
+        "cert_normative_rules": {
+          "$ref": "schema_defs.json#/$defs/cert_normative_rules"
+        },
+        "cert_test_procedures": {
+          "$ref": "schema_defs.json#/$defs/cert_test_procedures"
         },
         "assembly": {
           "type": "string",

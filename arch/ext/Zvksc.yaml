@@ -16,5 +16,7 @@ versions:
     state: ratified
     ratification_date: null
     implies:
-      - [Zvks, "1.0.0"]
-      - [Zvbc, "1.0.0"]
+      - name: Zvks
+        version: "1.0.0"
+      - name: Zvbc
+        version: "1.0.0"

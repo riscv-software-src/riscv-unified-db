@@ -1,0 +1,395 @@
+#pragma once
+
+#include <cstdint>
+#include <deque>
+#include <map>
+#include <tuple>
+#include <unordered_map>
+
+#include "udb/defines.hpp"
+
+#if !defined(JSON_ASSERT)
+#define JSON_ASSERT(cond) udb_assert(cond, "JSON assert");
+#endif
+#include <nlohmann/json-schema.hpp>
+
+#include "udb/hart.hpp"
+#include "udb/cfgs/<%= cfg_arch.name %>/params.hxx"
+#include "udb/cfgs/<%= cfg_arch.name %>/csr_container.hxx"
+#include "udb/cfgs/<%= cfg_arch.name %>/structs.hxx"
+#include "udb/enum.hxx"
+#include "udb/bitfield.hxx"
+#include "udb/util.hpp"
+#include "udb/inst.hpp"
+#include "udb/bb_cache.hpp"
+
+<%- hart_name = name_of(:hart, cfg_arch) -%>
+
+namespace udb {
+  template <SocModel SocType>
+  class <%= hart_name -%>;
+}
+
+#include "udb/cfgs/<%= cfg_arch.name %>/inst.hxx"
+
+namespace udb {
+  template <SocModel SocType>
+  class <%= hart_name -%> : public HartBase<SocType> {
+    <%- csrs = cfg_arch.not_prohibited_csrs -%>
+    <%- csrs.each do |csr| -%>
+    friend class <%= name_of(:csr, cfg_arch, csr.name) %><SocType>;
+    <%- fields = cfg_arch.fully_configured? ? csr.possible_fields(cfg_arch) : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
+    <%- fields.each do |field| -%>
+    <%- next unless cfg_arch.possible_xlens.any? { |xlen| field.defined_in_base?(xlen) } -%>
+
+    friend class <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %><SocType>;
+    <%- end -%>
+    <%- end -%>
+    friend class InstBase;
+    <%- ilist = cfg_arch.possible_instructions -%>
+    <%- ilist.each do |inst| -%>
+    template <unsigned XLEN, SocModel _SocType>
+    friend class <%= name_of(:inst, cfg_arch, inst.name) %>;
+    <%- end -%>
+
+    // size (in C++ storage) of the largest instruction
+    static constexpr size_t __MAX_INST_CPP_SIZE =
+      std::max({
+        <%= ilist.map do |i|
+            cfg_arch.possible_xlens.select do |xlen|
+              i.defined_in_base?(xlen)
+            end.map do |xlen|
+              "sizeof(#{name_of(:inst, cfg_arch, i.name)}<#{xlen}, SocType>)"
+            end
+          end.flatten.join(', ') %> });
+
+    static inline PoolAllocator<InstBase, <%= name_of(:hart, cfg_arch) %>::__MAX_INST_CPP_SIZE> inst_allocator;
+
+    public:
+      <%- cfg_arch.globals.each do |global| -%>
+      <%- if global.is_a?(Idl::GlobalWithInitializationAst) -%>
+      <%- if global.type(cfg_arch.symtab).const? -%>
+      static <%= global.type(cfg_arch.symtab).const? ? 'constexpr ' : '' %><%= global.type(cfg_arch.symtab).to_cxx %> <%= global.id %> = <%= global.rhs.gen_cpp(cfg_arch.symtab, 0) %>;
+      <%- else -%>
+      static <%= global.type(cfg_arch.symtab).to_cxx %> <%= global.id %>;
+      <%- end -%>
+      <%- else -%>
+      static <%= global.type(cfg_arch.symtab).to_cxx %> <%= global.id %>;
+      <%- end -%>
+      <%- end -%>
+
+      #include "udb/cfgs/<%= cfg_arch.name %>/func_prototypes.hxx"
+
+      static constexpr unsigned MXLEN = <%= cfg_arch.mxlen.nil? ? 64 : cfg_arch.mxlen %>;
+      using XReg = Bits<MXLEN>;
+
+      <%= hart_name -%>(uint64_t hart_id, SocType& soc, const nlohmann::json& cfg)
+        : HartBase<SocType>(hart_id, soc, cfg),
+          m_params(<%= name_of(:params, cfg_arch) %>(cfg)),
+          m_csrs(this),
+          m_implemented_exts(expand_implemented_extensions(cfg["implemented_extensions"]))
+      {
+        m_xregs[0].makeZeroReg();
+        init_csr_map();
+      }
+
+      void reset(uint64_t reset_pc) override {
+        this->HartBase<SocType>::reset(reset_pc);
+        m_csrs.reset();
+
+        m_pc = reset_pc;
+        for (auto i = 1; i < m_xregs_unknown.size(); i++) {
+          m_xregs_unknown.set(i);
+        }
+
+        <%- cfg_arch.globals.each do |global| -%>
+        <%- if global.is_a?(Idl::GlobalWithInitializationAst) -%>
+        <%- next if global.type(cfg_arch.symtab).const? -%>
+        <%= global.id %> = <%= global.rhs.gen_cpp(cfg_arch.symtab, 0) %>;
+        <%- else -%>
+        // <%= global.id %> = unknown;
+        <%- end -%>
+        <%- end -%>
+      }
+
+      void init_csr_map();
+
+      bool implemented_version_Q_(const ExtensionName& ext, const VersionRequirement& req) const override
+      {
+        auto ext_ver = this->m_implemented_exts.find(ext);
+        if (ext_ver == this->m_implemented_exts.end()) {
+          return false;
+        }
+        return req.satisfied_by(ext_ver->second);
+
+      }
+
+      template <ExtensionName ext, TemplateString ver_req_str>
+      bool _implemented_version_Q_() const
+      {
+        constexpr VersionRequirement req(ver_req_str.sv());
+        <%- cfg_arch.transitive_prohibited_extension_versions.each do |ext_ver| -%>
+        if constexpr ((ext == ExtensionName::<%= ext_ver.name %>) && (req.satisfied_by({"<%= ext_ver.version_str %>"sv}))) {
+            return false;
+        }
+        <%- end -%>
+
+        auto ext_ver = this->m_implemented_exts.find(ext);
+        if (ext_ver == this->m_implemented_exts.end()) {
+          return false;
+        }
+        return req.satisfied_by(ext_ver->second);
+      }
+
+      bool implemented_Q_(const ExtensionName& ext) const override {
+        return this->m_implemented_exts.find(ext) != this->m_implemented_exts.end();
+      }
+
+      template <ExtensionName ext>
+      bool _implemented_Q_() const
+      {
+        <%- cfg_arch.extensions.each do |ext| -%>
+        <%- if ext.versions.all? { |ext_ver| cfg_arch.transitive_prohibited_extension_versions.include?(ext_ver) } -%>
+        if constexpr (ext == ExtensionName::<%= ext.name %>) {
+            return false;
+        }
+        <%- end -%>
+        <%- end -%>
+
+        <%- if cfg_arch.fully_configured? -%>
+        return true;
+        <%- else -%>
+        return this->m_implemented_exts.find(ext) != this->m_implemented_exts.end();
+        <%- end -%>
+      }
+
+      // go through the list of implemented extensions,
+      // and add implications
+      std::map<ExtensionName, Version> expand_implemented_extensions(const nlohmann::json& ext_ver_list)
+      {
+        std::deque<std::tuple<ExtensionName, Version>> implied_exts;
+        std::map<ExtensionName, Version> implemented_exts;
+
+        for (auto ext : ext_ver_list) {
+          implemented_exts.emplace(ExtensionName::from_s(ext[0]), ext[1]);
+        }
+        for (auto ext : ext_ver_list) {
+          <%- cfg_arch.extensions.each do |ext| -%>
+          <%-   ext.versions.each do |ext_ver| -%>
+          <%-     unless ext_ver.implications.empty? -%>
+          if ((ext[0] == "<%= ext_ver.name %>") && (Version{ext[1]} == Version{"<%= ext_ver.version_str %>"sv})) {
+          <%-       ext_ver.implications.each do |implied_ext_ver_and_cond| -%>
+            <%-       unless implied_ext_ver_and_cond[:cond].empty? -%>
+            auto implemented = [this](const std::string_view& ext_name, const std::string_view& req) -> bool {
+              for (const auto& pair : implemented_ext) {
+                if ((pair.first == ExtensionName::from_s(ext_name)) && (VersionRequirement(req).satisfied_by(Version(pair.second)))) {
+                  return true;
+                }
+              }
+              return false;
+            };
+            if (<%= implied_ext_ver_and_cond[:cond].to_cxx { |ext_name, req| "implemented(\"#{ext_name}\"sv, \"#{req}\"sv)" } %>) {
+              implied_exts.push_back({ExtensionName::<%= implied_ext_ver_and_cond[:ext_ver].name %>, Version{"<%= implied_ext_ver_and_cond[:ext_ver].version_str %>"sv}});
+            }
+            <%-       else -%>
+            implied_exts.push_back({ExtensionName::<%= implied_ext_ver_and_cond[:ext_ver].name %>, Version{"<%= implied_ext_ver_and_cond[:ext_ver].version_str %>"sv}});
+            <%-       end -%>
+          <%-       end -%>
+          }
+          <%-     end -%>
+          <%-   end -%>
+          <%- end -%>
+        }
+
+        while (!implied_exts.empty()) {
+          auto implied_ext = implied_exts.front();
+          implemented_exts.emplace(std::get<0>(implied_ext), std::get<1>(implied_ext));
+          <%- cfg_arch.extensions.each do |ext| -%>
+          <%-   ext.versions.each do |ext_ver| -%>
+          <%-     unless ext_ver.implications.empty? -%>
+          if ((std::get<0>(implied_ext) == ExtensionName::<%= ext_ver.name %>) && (std::get<1>(implied_ext) == Version{"<%= ext_ver.version_str %>"sv})) {
+          <%-       ext_ver.implications.each do |implied_ext_ver| -%>
+            implied_exts.push_back({ExtensionName::<%= ext_ver.name %>, Version{"<%= ext_ver.version_str %>"sv}});
+          <%-       end -%>
+          }
+          <%-     end -%>
+          <%-   end -%>
+          <%- end -%>
+          implied_exts.pop_front();
+        }
+
+        return implemented_exts;
+      }
+
+      bool implemented_csr_Q_(const Bits<12>& csr_addr) {
+        return m_csr_addr_map.count(csr_addr) == 1;
+      }
+
+
+
+      void set_pc(uint64_t new_pc) override {
+        m_pc = new_pc;
+      }
+
+      void set_next_pc(uint64_t next_pc) override {
+        m_next_pc = next_pc;
+      }
+
+      uint64_t pc() const override { return m_pc; }
+
+      void advance_pc() override {
+        m_pc = m_next_pc;
+      }
+
+      unsigned mxlen() override { return MXLEN; }
+
+      uint64_t xreg(unsigned num) const override {
+        if (num >= 32) {
+          throw std::out_of_range("X register indices are 0 - 31, inclusive");
+        }
+        return _xreg(num);
+      }
+
+      Bits<MXLEN> _xreg(unsigned num) const {
+        if (m_xregs_unknown[num] == true) {
+          throw UndefinedValueError("X register value is uninitialized");
+        }
+        return m_xregs[num].get();
+      }
+
+      // XRegister<MXLEN>& xregRef(unsigned num) { return m_xregs[num]; }
+
+      void set_xreg(unsigned num, uint64_t value) override {
+        if (num >= 32) {
+          throw std::out_of_range("X register indices are 0 - 31, inclusive");
+        }
+        _set_xreg(num, value);
+      }
+
+      template <typename IdxType>
+      void _set_xreg(const IdxType& num, const Bits<MXLEN>& value) {
+        if (num != 0) {
+          m_xregs_unknown[num] = false;
+          m_xregs[static_cast<unsigned>(num)] = value;
+        }
+      }
+
+      void printState(FILE* out = stdout) const override;
+
+    CsrBase* csr(unsigned address) override {
+      auto it = m_csr_addr_map.find(address);
+      if (it == m_csr_addr_map.end()) {
+         return nullptr;
+      }
+      return it->second;
+    }
+
+    const CsrBase* csr(unsigned address) const override {
+      auto it = m_csr_addr_map.find(address);
+      if (it == m_csr_addr_map.end()) {
+         return nullptr;
+      }
+      return it->second;
+    }
+
+    CsrBase* csr(const std::string& name) override {
+      auto it = m_csr_name_map.find(name);
+      if (it == m_csr_name_map.end()) {
+         return nullptr;
+      }
+      return it->second;
+    }
+
+    const CsrBase* csr(const std::string& name) const override {
+      auto it = m_csr_name_map.find(name);
+      if (it == m_csr_name_map.end()) {
+         return nullptr;
+      }
+      return it->second;
+    }
+
+    const <%= name_of(:params, cfg_arch) %>& params() const {
+      return m_params;
+    }
+
+    InstBase* _decode(const XReg& pc, const Bits<<%= cfg_arch.largest_encoding %>>& encoding) {
+      InstBase* inst = inst_allocator.allocate();
+      if (_decode(pc, encoding, inst) == false) {
+        inst_allocator.free(inst);
+        return nullptr;
+      } else {
+        return inst;
+      }
+    }
+    bool _decode(const XReg& pc, const Bits<<%= cfg_arch.largest_encoding %>>& encoding, InstBase* obj);
+
+    uint64_t fetch() override { return _fetch(); }
+    Bits<INSTR_ENC_SIZE> _fetch();
+
+    <%= name_of(:struct, cfg_arch, "CachedTranslationResult") %> cached_translation(const XReg& vaddr, const MemoryOperation& op) const {
+      return <%= name_of(:struct, cfg_arch, "CachedTranslationResult") %>{};
+    }
+
+    <%= name_of(:csr_container, cfg_arch) %><SocType>& _csrContainer() { return m_csrs; }
+
+    int run_one() override { return _run_one(); }
+    int _run_one();
+
+    int run_bb() override { return _run_bb(); }
+    int _run_bb();
+
+    int run_n(uint64_t n) override { return _run_n(n); }
+    int _run_n(uint64_t n);
+
+    // external interrupt interface
+    void set_mmode_ext_int() {
+      m_csrs.mip.MEIP()._hw_write(1);
+      refresh_pending_interrupts();
+    }
+    void clear_mmode_ext_int() {
+      m_csrs.mip.MEIP()._hw_write(0);
+      refresh_pending_interrupts();
+    }
+    void set_smode_ext_int() {
+      pending_smode_external_interrupt = true;
+      refresh_pending_interrupts();
+    }
+    void clear_smode_ext_int() {
+      pending_smode_external_interrupt = false;
+      refresh_pending_interrupts();
+    }
+    // void set_vsmode_ext_int() {
+    //   m_csrs.hvip.MEIP = 0;
+    //   pending_vsmode_external_interrupt = true;
+    //   refresh_pending_interrupts();
+    // }
+    // void clear_vsmode_ext_int() {
+    //   m_csrs.mip.MEIP = 0;
+    //   pending_vsmode_external_interrupt = false;
+    //   refresh_pending_interrupts();
+    // }
+
+    private:
+      XReg m_pc;
+      XReg m_next_pc;
+      InstBase* m_cur_inst;
+      std::array<XRegister<MXLEN>, 32> m_xregs;
+      std::bitset<32> m_xregs_unknown;
+
+      <%= name_of(:params, cfg_arch) %> m_params;
+      <%= name_of(:csr_container, cfg_arch) %><SocType> m_csrs;
+      std::unordered_map<Bits<12>, CsrBase*> m_csr_addr_map;
+      std::map<std::string, CsrBase*> m_csr_name_map;
+
+      std::array<uint8_t, __MAX_INST_CPP_SIZE> m_run_one_inst_storage;
+      BasicBlockCache<__MAX_INST_CPP_SIZE> m_bb_cache;
+
+      const std::map<ExtensionName, Version> m_implemented_exts;
+  };
+}
+
+#include "udb/cfgs/<%= cfg_arch.name %>/hart_impl.hxx"
+
+#include "udb/cfgs/<%= cfg_arch.name %>/idl_funcs_impl.hxx"
+
+#include "udb/cfgs/<%= cfg_arch.name %>/inst_impl.hxx"

@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+
+  "type": "object",
+  "required": ["$schema", "kind", "name", "long_name", "introduction"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "proc_cert_class_schema.json#"
+    },
+    "kind": {
+      "type": "string",
+      "const": "processor certificate class"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[A-Z][a-zA-Z0-9_]*$",
+      "description": "The short name of the class, used as a database key"
+    },
+    "long_name": {
+      "type": "string",
+      "description": "Descriptive name of the class"
+    },
+    "processor_kind": {
+      "type": "string",
+      "enum": ["Generic Unprivileged", "Microcontroller", "Apps Processor"],
+      "description": "What kind of class is this?"
+    },
+    "introduction": {
+      "type": "string",
+      "description": "Asciidoc text containing the introduction prose for the class"
+    },
+    "$source": {
+      "$ref": "schema_defs.json#/$defs/$source"
+    }
+  }
+}
