@@ -70,23 +70,17 @@ fields:
     description: |
       The value in vsew sets the dynamic selected element width (SEW).
 
-      [NOTE]
-      vsew encoding:
-      000 = 8
-      001 = 16
-      010 = 32
-      011 = 64
-      1XX = Reserved
-
-      [NOTE]
-      elements per vector register:
-      SEW 64 = 2
-      SEW 32 = 4
-      SEW 16 = 8
-      SEW 8  = 16
+      [separator="!"]
+      !===
+      ! vsew[2:0] ! SEW ! Elements per vector register
+      ! 000 ! 8 ! 16
+      ! 001 ! 16 ! 8
+      ! 010 ! 32 ! 4
+      ! 011 ! 64 ! 2
+      ! 1XX ! Reserved ! Reserved
+      !===
 
       It is recommended that at reset, vill is set, and the remaining bits in vtype are zero.
-    # I feel like the encoding tables are important here. Is there a better way than the "note" tag?
     type: RO-H
     reset_value: 0
   VLMUL:
@@ -116,6 +110,5 @@ fields:
       operating on mixed-width values.
 
       It is recommended that at reset, vill is set, and the remaining bits in vtype are zero.
-    # the spec provides more details on vlmul. Should I include all of it or leave it here? How much detail needs to go into the CSR field descriptions?
     type: RO-H
     reset_value: 0

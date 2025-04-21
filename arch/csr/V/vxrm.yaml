@@ -29,10 +29,13 @@ fields:
       bits of that result are to be rounded off. Then the rounded result is (v >> d) + r, where r depends on
       the rounding mode as specified in the following table of vxrm[1:0] values.
 
-      - 00: rnu (round to nearest up), r = v[d-1]
-      - 01: rne (round to nearest even), r = v[d-1] & ( v[d-2:0]!=0 | v[d])
-      - 10: rdn (round down, truncate), r = 0
-      - 11: rod (round to odd), r = !v[d] & v[d-1:0]!=0
-    # I feel like the encoding table is important here. Is there a better way than this list?
+      [separator="!"]
+      !===
+      ! vxrm[1:0] ! Abbreviation ! Rounding Mode ! Rounding increment, r
+      ! 00 ! rnu ! round-to-nearest-up (add +0.5 LSB) ! v[d-1]
+      ! 01 ! rne ! round-to-nearest-even ! v[d-1] & (v[d-2:0]\!=0 | v[d])
+      ! 10 ! rdn ! round-down (truncate) ! 0
+      ! 11 ! rod ! round-to-odd (OR bits into LSB, aka "jam") ! \!v[d] & v[d-1:0]\!=0
+
     type: RW-H
     reset_value: UNDEFINED_LEGAL
