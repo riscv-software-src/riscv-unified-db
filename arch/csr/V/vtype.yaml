@@ -30,8 +30,7 @@ fields:
     type: RO-H
     reset_value: 1
   VMA:
-    location_rv32: 7
-    location_rv64: 7
+    location: 7
     description: |
       Vector mask agnostic bit. Modifies the behavior of destination inactive masked-off elements during the
       execution of vector instructions.
@@ -49,8 +48,7 @@ fields:
     type: RO-H
     reset_value: 0
   VTA:
-    location_rv32: 6
-    location_rv64: 6
+    location: 6
     description: |
       Vector tail agnostic bit. Modifies the bahavior of destination tail elements during the execution of vector
       instructions.
@@ -68,8 +66,7 @@ fields:
     type: RO-H
     reset_value: 0
   VSEW:
-    location_rv32: 5-3
-    location_rv64: 5-3
+    location: 5-3
     description: |
       The value in vsew sets the dynamic selected element width (SEW).
 
@@ -93,8 +90,7 @@ fields:
     type: RO-H
     reset_value: 0
   VLMUL:
-    location_rv32: 2-0
-    location_rv64: 2-0
+    location: 2-0
     description: |
       Vector register group multiplier.
 

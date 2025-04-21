@@ -3,7 +3,7 @@
 $schema: "csr_schema.json#"
 kind: csr
 name: vlenb
-long_name: Vector Length (Bytes)
+long_name: Vector Byte Length
 address: 0xC22
 priv_mode: U
 length: MXLEN

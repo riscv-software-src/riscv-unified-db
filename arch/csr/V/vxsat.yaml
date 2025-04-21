@@ -3,7 +3,7 @@
 $schema: "csr_schema.json#"
 kind: csr
 name: vxsat
-long_name: Fixed-Point Saturate Flag
+long_name: Vector Fixed-Point Saturate Flag
 address: 0x009
 priv_mode: U
 length: MXLEN
@@ -21,5 +21,5 @@ fields:
       should be written as zeros.
 
       The vxsat bit is mirrored in vcsr.
-    type: RO-H
+    type: RW-H
     reset_value: UNDEFINED_LEGAL

@@ -3,7 +3,7 @@
 $schema: "csr_schema.json#"
 kind: csr
 name: vxrm
-long_name: Fixed-Point Rounding Mode
+long_name: Vector Fixed-Point Rounding Mode
 address: 0x00A
 priv_mode: U
 length: MXLEN
@@ -34,5 +34,5 @@ fields:
       - 10: rdn (round down, truncate), r = 0
       - 11: rod (round to odd), r = !v[d] & v[d-1:0]!=0
     # I feel like the encoding table is important here. Is there a better way than this list?
-    type: RO-H
+    type: RW-H
     reset_value: UNDEFINED_LEGAL

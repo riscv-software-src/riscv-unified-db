@@ -3,11 +3,8 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vsetivli
-long_name: Set vector configuration (immediate immediate).
-description: |
-  Vset (i,i) allows rapid configuration of the values in vl and vtype CSRs to match application
-  needs. The vsetvl instruction sets the vtype and vl CSRs based on the arguments, and writes
-  the new value of vl into rd.
+long_name: Vector Set Vector Type Immediate and Vector Length Immediate
+description: Set the vtype and vl CSRs, and write the new value of vl into rd.
 definedBy: V
 assembly: xd, imm
 encoding:
@@ -29,7 +26,7 @@ operation(): |
   VectorState state = vector_state();
   XReg VLMAX = (VLEN <<< state.log2_multiplier) >> (3 + state.vsew);
 
-  if (uimm < VLMAX){
+  if (uimm < VLMAX) {
     CSR[vl].VALUE = uimm;
   } else if (uimm < 2*VLMAX) {
     CSR[vl].VALUE = uimm / 2;

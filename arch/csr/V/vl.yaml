@@ -22,7 +22,5 @@ fields:
       length of the smallest supported type. The smallest vector implementation with VLEN=32
       and supporting SEW=8 would need at least six bits in vl to hold the values 0-32
       (VLEN=32, with LMUL=8 and SEW=8, yields VLMAX=32).
-
-      It is recommended that at reset, vl is set to zero.
     type: RO-H
     reset_value: 0
