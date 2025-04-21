@@ -34,15 +34,15 @@ repos:
     hooks:
       - id: check-jsonschema
         alias: check-jsonschema-inst
-        files: ^arch/inst/.*\.(yaml|yml)$
+        files: ^(arch|arch_overlay/(example|qc_ui))/inst/.*\.(yaml|yml)$
         args: ["--schemafile", "schemas/inst_schema.json"]
       - id: check-jsonschema
         alias: check-jsonschema-csr
-        files: ^arch/csr/.*\.(yaml|yml)$
+        files: ^(arch|arch_overlay/(example|qc_ui))/csr/.*\.(yaml|yml)$
         args: ["--schemafile", "schemas/csr_schema.json"]
       - id: check-jsonschema
         alias: check-jsonschema-ext
-        files: ^arch/ext/.*\.(yaml|yml)$
+        files: ^(arch|arch_overlay/(example|qc_ui))/ext/.*\.(yaml|yml)$
         args: ["--schemafile", "schemas/ext_schema.json"]
       - id: check-jsonschema
         alias: check-jsonschema-cert-model
