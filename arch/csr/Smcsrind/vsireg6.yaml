@@ -9,18 +9,23 @@ priv_mode: VS
 length: VSXLEN
 definedBy: Smcsrind
 description: |
-  The `vsireg6` CSR is part of the virtual supervisor-level indirect register access
-  mechanism. It is used for accessing register state based on the value held in the
-  `vsiselect` CSR. `vsireg6` acts as one of the alias registers in the system, providing
-  indirect access to a register selected via `vsiselect`.
+  The `vsireg6` CSR is one of several alias registers used to indirectly access
+  virtual supervisor-level CSRs in VS-mode or VU-mode. The register addressed by
+  `vsireg6` is selected by the current value of the `vsiselect` CSR. The alias
+  mechanism allows indirect CSR access, which helps in virtualization and future
+  extensibility.
 
-  In RV32 environments, `vsireg6` is typically used for accessing the upper 32 bits of
-  a 64-bit register array, while other aliases, such as `vsireg3`, provide access to
-  the lower 32 bits.
+  A virtual instruction exception is raised for attempts from VS-mode or VU-mode
+  to directly access `vsiselect` or `vsireg6`, or from VU-mode to access
+  `siselect` or `siregX`.
 
-  When `vsiselect` holds an unimplemented value, the behavior of accesses to `vsireg6`
-  is UNSPECIFIED. Implementations are encouraged to raise a virtual instruction exception
-  to support emulation or error handling.
+  The behavior of accesses to `vsireg6` when `vsiselect` holds a value that is
+  not implemented at the HS level is UNSPECIFIED, but implementations are
+  recommended to raise an illegal instruction exception for such accesses.
+
+  The width of `vsireg6` is always the current `XLEN`, not `VSXLEN`. For example,
+  if `HSXLEN = 64` and `VSXLEN = 32`, then `vsireg6` is 64 bits wide when
+  accessed from HS-mode (RV64), but 32 bits when accessed from VS-mode (RV32).
 
 fields:
   VALUE:

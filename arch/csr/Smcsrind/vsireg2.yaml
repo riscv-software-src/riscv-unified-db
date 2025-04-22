@@ -9,17 +9,23 @@ priv_mode: VS
 length: VSXLEN
 definedBy: Smcsrind
 description: |
-  One of the virtual supervisor-level alias CSRs used for indirect register access.
-  The value of `vsiselect` determines which register is accessed upon read or write
-  of `vsireg2`.
+  The `vsireg2` CSR is one of several alias registers used to indirectly access
+  virtual supervisor-level CSRs in VS-mode or VU-mode. The register addressed by
+  `vsireg2` is selected by the current value of the `vsiselect` CSR. The alias
+  mechanism allows indirect CSR access, which helps in virtualization and future
+  extensibility.
 
-  Value ranges of `vsiselect` are allocated to dependent extensions, which specify
-  the register state accessible via each `vsiregi` register, for each `vsiselect` value.
+  A virtual instruction exception is raised for attempts from VS-mode or VU-mode
+  to directly access `vsiselect` or `vsireg2`, or from VU-mode to access
+  `siselect` or `siregX`.
 
-  The behavior upon accessing `vsireg2` while `vsiselect` holds a value that is not
-  implemented at HS level is UNSPECIFIED. It is RECOMMENDED that implementations raise
-  a virtual instruction exception for such accesses, to facilitate possible emulation
-  by M-mode or for error detection.
+  The behavior of accesses to `vsireg2` when `vsiselect` holds a value that is
+  not implemented at the HS level is UNSPECIFIED, but implementations are
+  recommended to raise an illegal instruction exception for such accesses.
+
+  The width of `vsireg2` is always the current `XLEN`, not `VSXLEN`. For example,
+  if `HSXLEN = 64` and `VSXLEN = 32`, then `vsireg2` is 64 bits wide when
+  accessed from HS-mode (RV64), but 32 bits when accessed from VS-mode (RV32).
 
 fields:
   VALUE:

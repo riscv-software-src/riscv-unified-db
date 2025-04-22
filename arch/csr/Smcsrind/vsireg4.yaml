@@ -9,18 +9,23 @@ priv_mode: VS
 length: VSXLEN
 definedBy: Smcsrind
 description: |
-  The `vsireg4` CSR is a virtual supervisor-level alias register used for indirect
-  access to register state based on the value held in the `vsiselect` CSR. It is part of
-  a set of alias registers that allow efficient access to register arrays in VS-mode without
-  consuming large contiguous CSR address ranges.
+  The `vsireg4` CSR is one of several alias registers used to indirectly access
+  virtual supervisor-level CSRs in VS-mode or VU-mode. The register addressed by
+  `vsireg4` is selected by the current value of the `vsiselect` CSR. The alias
+  mechanism allows indirect CSR access, which helps in virtualization and future
+  extensibility.
 
-  In RV32 environments, where registers may be 64-bit, `vsireg4` is typically used to
-  access the upper 32 bits of a 64-bit register, in combination with other alias CSRs like
-  `vsireg` and `vsireg2`, which handle the lower 32 bits.
+  A virtual instruction exception is raised for attempts from VS-mode or VU-mode
+  to directly access `vsiselect` or `vsireg4`, or from VU-mode to access
+  `siselect` or `siregX`.
 
-  If the value in `vsiselect` is unsupported or unimplemented, access to `vsireg4` is
-  UNSPECIFIED. Implementations are encouraged to raise a virtual instruction exception to
-  facilitate debugging and software emulation.
+  The behavior of accesses to `vsireg4` when `vsiselect` holds a value that is
+  not implemented at the HS level is UNSPECIFIED, but implementations are
+  recommended to raise an illegal instruction exception for such accesses.
+
+  The width of `vsireg4` is always the current `XLEN`, not `VSXLEN`. For example,
+  if `HSXLEN = 64` and `VSXLEN = 32`, then `vsireg4` is 64 bits wide when
+  accessed from HS-mode (RV64), but 32 bits when accessed from VS-mode (RV32).
 
 fields:
   VALUE:

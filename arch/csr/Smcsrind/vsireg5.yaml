@@ -9,14 +9,23 @@ priv_mode: VS
 length: VSXLEN
 definedBy: Smcsrind
 description: |
-  The `vsireg5` CSR is part of the virtual supervisor-level indirect register access
-  mechanism, providing indexed access to register state based on the value held in the
-  `vsiselect` CSR. It enables software in VS-mode to access register arrays efficiently,
-  avoiding the need to allocate large, contiguous CSR address ranges.
+  The `vsireg5` CSR is one of several alias registers used to indirectly access
+  virtual supervisor-level CSRs in VS-mode or VU-mode. The register addressed by
+  `vsireg5` is selected by the current value of the `vsiselect` CSR. The alias
+  mechanism allows indirect CSR access, which helps in virtualization and future
+  extensibility.
 
-  When the `vsiselect` value points to an unimplemented register, access to `vsireg5`
-  is UNSPECIFIED. Implementations are encouraged to raise a virtual instruction exception
-  to support software emulation or error handling.
+  A virtual instruction exception is raised for attempts from VS-mode or VU-mode
+  to directly access `vsiselect` or `vsireg5`, or from VU-mode to access
+  `siselect` or `siregX`.
+
+  The behavior of accesses to `vsireg5` when `vsiselect` holds a value that is
+  not implemented at the HS level is UNSPECIFIED, but implementations are
+  recommended to raise an illegal instruction exception for such accesses.
+
+  The width of `vsireg5` is always the current `XLEN`, not `VSXLEN`. For example,
+  if `HSXLEN = 64` and `VSXLEN = 32`, then `vsireg5` is 64 bits wide when
+  accessed from HS-mode (RV64), but 32 bits when accessed from VS-mode (RV32).
 
 fields:
   VALUE:

@@ -9,22 +9,23 @@ priv_mode: VS
 length: VSXLEN
 definedBy: Smcsrind
 description: |
-  The `vsiselect` CSR is a virtual supervisor-level register that selects which
-  register is accessed indirectly via the `vsireg*` alias registers. The value
-  held in `vsiselect` acts as an index into an alias space defined by the
-  extension utilizing this access method.
+  The `vsiselect` register will support the value range 0..0xFFF at a minimum. A future extension may
+  define a value range outside of this minimum range. Only if such an extension is implemented will
+  `vsiselect` be required to support larger values.
 
-  This CSR allows software in VS-mode to access register arrays by index rather
-  than by fixed CSR numbers, improving scalability and reducing the need for large
-  contiguous CSR address space. The `vsiselect` CSR is typically used alongside
-  `vsireg` through `vsireg6` to access virtual supervisor-level registers indirectly.
+  Requiring a range of 0-0xFFF for `vsiselect`, even though most or all of the space may be reserved
+  or inaccessible, permits a hypervisor to emulate indirectly accessed registers in this implemented
+  range, including registers that may be standardized in the future.
 
-  When `vsiselect` holds a value that corresponds to an unimplemented register,
-  the behavior is UNSPECIFIED. Implementations are encouraged to raise a virtual
-  instruction exception to support software emulation and debugging.
+  More generally it is recommended that `vsiselect` and `siselect` be implemented with the same number
+  of bits. This also avoids creation of a virtualization hole due to observable differences between
+  `vsiselect` and `siselect` widths.
 
-  The indirect access mechanism enables more flexible access patterns for virtual
-  machines and reduces the complexity of implementing CSR access.
+  Values of `vsiselect` with the most-significant bit set (bit XLEN - 1 = 1) are designated only for
+  custom use, presumably for accessing custom registers through the alias CSRs. Values of `vsiselect`
+  with the most-significant bit clear are designated only for standard use and are reserved until
+  allocated to a standard architecture extension. If XLEN is changed, the most-significant bit of
+  `vsiselect` moves to the new position, retaining its value from before.
 
 fields:
   VALUE:

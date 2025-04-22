@@ -10,24 +10,22 @@ length: VSXLEN
 definedBy: Smcsrind
 description: |
   The `vsireg` CSR is one of several alias registers used to indirectly access
-  virtual supervisor-level register state. Access to a specific target register
-  is controlled via the value held in the `vsiselect` CSR, which acts as an
-  index into a virtualized alias space.
+  virtual supervisor-level CSRs in VS-mode or VU-mode. The register addressed by
+  `vsireg` is selected by the current value of the `vsiselect` CSR. The alias
+  mechanism allows indirect CSR access, which helps in virtualization and future
+  extensibility.
 
-  This mechanism enables efficient access to an array of registers without
-  consuming a large contiguous range in the CSR address space. When `vsiselect`
-  holds a value allocated and implemented by a specific extension, `vsireg`
-  provides access to the corresponding register state.
+  A virtual instruction exception is raised for attempts from VS-mode or VU-mode
+  to directly access `vsiselect` or `vsireg`, or from VU-mode to access
+  `siselect` or `sireg`.
 
-  If the value in `vsiselect` is not implemented, the behavior is UNSPECIFIED.
-  However, it is RECOMMENDED that implementations raise a virtual instruction
-  exception for such accesses. This supports correct virtualization behavior
-  and allows for software emulation or debugging of unsupported accesses.
+  The behavior of accesses to `vsireg` when `vsiselect` holds a value that is
+  not implemented at the HS level is UNSPECIFIED, but implementations are
+  recommended to raise an illegal instruction exception for such accesses.
 
-  The access behavior for each `vsiselect` + `vsireg` pair is defined by the
-  extension that owns the `vsiselect` value. Ordinarily, each alias register
-  either accesses architectural state, reads as zero, or triggers an exception.
-
+  The width of `vsireg` is always the current `XLEN`, not `VSXLEN`. For example,
+  if `HSXLEN = 64` and `VSXLEN = 32`, then `vsireg` is 64 bits wide when
+  accessed from HS-mode (RV64), but 32 bits when accessed from VS-mode (RV32).
 fields:
   VALUE:
     location_rv32: 31-0
