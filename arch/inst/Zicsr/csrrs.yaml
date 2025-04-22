@@ -14,7 +14,7 @@ description: |
   corresponding bit to be set in the CSR, if that CSR bit is writable.
   Other bits in the CSR are not explicitly written.
 definedBy: Zicsr
-assembly: xd, xs1, csr
+assembly: xd, imm, xs1
 encoding:
   match: -----------------010-----1110011
   variables:
