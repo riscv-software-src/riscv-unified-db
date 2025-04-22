@@ -24,8 +24,17 @@ description: |
   The behavior upon accessing `sireg` from M-mode or S-mode, while `siselect` holds a value that is
   not implemented at supervisor level, is UNSPECIFIED.
 
+  [Note]
+  It is recommended that implementations raise an illegal instruction exception for such
+  accesses, to facilitate possible emulation (by M-mode) of these accesses.
+
+  [Note]
+  An extension is considered not to be implemented at supervisor level if machine level has
+  disabled the extension for S-mode, such as by the settings of certain fields in CSR
+  `menvcfg`, for example.
+
 fields:
-  Data:
+  VALUE:
     location_rv32: 31-0
     location_rv64: 63-0
     type: RW
