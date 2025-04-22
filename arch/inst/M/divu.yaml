@@ -37,7 +37,7 @@ operation(): |
   if (src2 == 0) {
     # division by zero. Since RISC-V does not have arithmetic exceptions, the result is defined
     # to be -1
-    X[rd] = {XLEN{1'b1}};
+    X[rd] = {MXLEN{1'b1}};
   } else {
     X[rd] = src1 / src2;
   }
