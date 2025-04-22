@@ -8,20 +8,30 @@ priv_mode: M
 length: MXLEN
 definedBy: Smcsrind
 description: |
-  The `mireg` CSR is the machine-level indirect alias register used to access another
-  CSR's state indirectly upon a read or write, as determined by the value in `miselect`.
+  The mireg machine indirect alias CSR is used to access another CSR's state
+  indirectly upon a read or write, as determined by the value of miselect.
 
-  Accessing `mireg` when `miselect` holds a value that is not implemented results in
-  UNSPECIFIED behavior. Implementations are encouraged to raise an illegal instruction
-  exception in such cases, to help detect software bugs. Platform and profile specifications
-  may impose additional requirements for such cases.
+  The behavior upon accessing mireg from M-mode, while miselect holds a value
+  that is not implemented, is UNSPECIFIED.
 
-  When `miselect` holds a valid and implemented value, the behavior of `mireg` is defined
-  by the extension to which that `miselect` value is allocated. Ordinarily, `mireg` will access
-  register state, return read-only zero, or raise an illegal instruction exception.
+  [Note]
+  It is expected that implementations will typically raise an illegal instruction exception for
+  such accesses, so that, for example, they can be identified as software bugs. Platform
+  specs, profile specs, and/or the Privileged ISA spec may place more restrictions on
+  behavior for such accesses.
 
-  On RV32 systems, if an indirectly addressed register is 64 bits wide, it is recommended that
-  the lower 32 bits are accessed through `mireg` and the upper 32 bits through `mireg4`.
+  Attempts to access mireg while miselect holds a number in an allocated and implemented range
+  results in a specific behavior that, for each combination of miselect and mireg, is defined by the
+  extension to which the miselect value is allocated.
+
+  [Note]
+  Ordinarily, mireg will access register state, access read-only 0 state, or raise an
+  illegal instruction exception.
+
+  [Note]
+  For RV32, if an extension defines an indirectly accessed register as 64 bits wide, it is
+  recommended that the lower 32 bits of the register are accessed through mireg,
+  while the upper 32 bits are accessed through mireg4.
 fields:
   VALUE:
     location_rv32: 31-0

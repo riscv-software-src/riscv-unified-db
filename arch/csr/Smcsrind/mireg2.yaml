@@ -8,14 +8,30 @@ priv_mode: M
 length: MXLEN
 definedBy: Smcsrind
 description: |
-  The `mireg2` CSR is a machine-level indirect alias register used to access
-  register state as determined by the value in `miselect`. This CSR allows
-  flexible access to an array of registers without requiring dedicated CSR
-  numbers for each.
+  The `mireg2` machine indirect alias CSR is used to access register state indirectly
+  upon a read or write, as determined by the value of `miselect`.
 
-  The behavior of `mireg2` is determined by the value in `miselect`. If the
-  value in `miselect` is not implemented, access is UNSPECIFIED, and it is
-  encouraged that implementations raise an illegal instruction exception in such cases.
+  The behavior upon accessing `mireg2` from M-mode, while `miselect` holds a value
+  that is not implemented, is UNSPECIFIED.
+
+  [Note]
+    It is expected that implementations will typically raise an illegal instruction exception for
+    such accesses, so that, for example, they can be identified as software bugs. Platform
+    specs, profile specs, and/or the Privileged ISA spec may place more restrictions on
+    behavior for such accesses.
+
+  Attempts to access `mireg2` while `miselect` holds a number in an allocated and implemented
+  range results in a specific behavior that, for each combination of `miselect` and `mireg2`, is
+  defined by the extension to which the `miselect` value is allocated.
+
+  [Note]
+    Ordinarily, `mireg2` will access register state, access read-only 0 state, or raise an
+    illegal instruction exception.
+
+  [Note]
+    For RV32, if an extension defines an indirectly accessed register as 64 bits wide, it is
+    recommended that the lower 32 bits of the register are accessed through `mireg2`,
+    while the upper 32 bits are accessed through `mireg5`.
 
 fields:
   VALUE:

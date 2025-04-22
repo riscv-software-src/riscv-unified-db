@@ -8,14 +8,30 @@ priv_mode: M
 length: MXLEN
 definedBy: Smcsrind
 description: |
-  The `mireg4` CSR is a machine-level indirect alias register used to access
-  register state as determined by the value in `miselect`. This CSR provides
-  access to a range of registers indirectly without requiring dedicated CSR
-  numbers for each register.
+  The `mireg4` machine indirect alias CSR is used to access register state indirectly
+  upon a read or write, as determined by the value of `miselect`.
 
-  The behavior of `mireg4` is determined by the value of `miselect`. If the value
-  in `miselect` is not implemented, access is UNSPECIFIED, and implementations
-  are encouraged to raise an illegal instruction exception.
+  The behavior upon accessing `mireg4` from M-mode, while `miselect` holds a value
+  that is not implemented, is UNSPECIFIED.
+
+  [Note]
+    It is expected that implementations will typically raise an illegal instruction exception for
+    such accesses, so that, for example, they can be identified as software bugs. Platform
+    specs, profile specs, and/or the Privileged ISA spec may place more restrictions on
+    behavior for such accesses.
+
+  Attempts to access `mireg4` while `miselect` holds a number in an allocated and implemented
+  range results in a specific behavior that, for each combination of `miselect` and `mireg4`, is
+  defined by the extension to which the `miselect` value is allocated.
+
+  [Note]
+    Ordinarily, `mireg4` will access register state, access read-only 0 state, or raise an
+    illegal instruction exception.
+
+  [Note]
+    For RV32, if an extension defines an indirectly accessed register as 64 bits wide, it is
+    recommended that the upper 32 bits of the register are accessed through `mireg4`,
+    while the lower 32 bits are accessed through `mireg`, `mireg2`, or `mireg3`.
 
 fields:
   VALUE:

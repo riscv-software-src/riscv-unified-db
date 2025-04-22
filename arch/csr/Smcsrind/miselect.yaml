@@ -8,22 +8,24 @@ priv_mode: M
 length: MXLEN
 definedBy: Smcsrind
 description: |
-  The `miselect` CSR is a WARL (Write-Any Read-Legal) register that selects which
-  indirect register is accessed via the `mireg*` alias CSRs. The value in `miselect`
-  acts as an index into a space of indirectly addressable machine-level registers.
+  The CSRs listed in the table above provide a window for accessing register state indirectly. The value
+  of `miselect` determines which register is accessed upon read or write of each of the machine
+  indirect alias CSRs (`mireg*`). `miselect` value ranges are allocated to dependent extensions, which
+  specify the register state accessible via each `miregi` register, for each `miselect` value.
+  `miselect` is a WARL register.
 
-  Values of `miselect` are allocated by extensions implementing indirect register access.
-  The most-significant bit (bit MXLEN-1) is reserved for custom use and must be used
-  only with implementation-specific extensions. Values with this bit clear are reserved
-  for standard use.
+  The `miselect` register implements at least enough bits to support all implemented `miselect` values
+  (corresponding to the implemented extensions that utilize `miselect`/`mireg*` to indirectly access
+  register state). The `miselect` register may be read-only zero if there are no extensions implemented
+  that utilize it.
 
-  The indirect access mechanism enabled by `miselect` reduces the need for allocating
-  large contiguous CSR address ranges by supporting register arrays accessed by index.
+  Values of `miselect` with the most-significant bit set (bit XLEN - 1 = 1) are designated only for
+  custom use, presumably for accessing custom registers through the alias CSRs. Values of `miselect`
+  with the most-significant bit clear are designated only for standard use and are reserved until
+  allocated to a standard architecture extension. If XLEN is changed, the most-significant bit of
+  `miselect` moves to the new position, retaining its value from before.
 
-  If `miselect` holds an unsupported value, accesses to the corresponding `mireg*`
-  alias CSR are UNSPECIFIED. Implementations are encouraged to raise an illegal instruction
-  exception to support robust error handling and software emulation.
-
+  An implementation is not required to support any custom values for `miselect`.
 fields:
   Value:
     location_rv32: 31-0
