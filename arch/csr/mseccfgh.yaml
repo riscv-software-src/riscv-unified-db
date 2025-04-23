@@ -10,6 +10,9 @@ priv_mode: M
 length: 32
 description: Machine Security Configuration
 definedBy:
-  name: Sm
-  version: ">= 1.12"
+  allOf:
+    - name: Sm
+      version: ">=1.12"
+    - name: Smepmp
+      version: ">= 1.0.0"
 fields: {}
