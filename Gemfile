@@ -32,3 +32,7 @@ group :development do
   gem "ruby-prof-flamegraph", git: "https://github.com/oozou/ruby-prof-flamegraph.git", ref: "fc3c437", require: false
   gem "solargraph"
 end
+
+group :test do
+  gem 'simplecov', require: false
+end
