@@ -8,7 +8,7 @@ address: 0x7A8
 priv_mode: M
 length: MXLEN
 description: |
-  This register must be implemented if hcontext is implemented, and is optional otherwise.
+  This register must be implemented if `hcontext` is implemented, and is optional otherwise.
   It is only accessible in M-mode and Debug mode.
 
   `hcontext` is primarily useful to set triggers on hypervisor systems that only fire when a

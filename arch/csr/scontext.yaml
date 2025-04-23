@@ -10,8 +10,8 @@ length: XLEN
 description: |
   This optional register is only accessible in S/HS-mode, VS-mode, M-mode and Debug Mode.
   Accessibility of this CSR is controlled by `mstateen0[57]` and `hstateen0[57]` in the
-  Smstateen extension. Enabling scontext can be a security risk in a virtualized system
-  with a hypervisor that does not swap scontext.
+  Smstateen extension. Enabling `scontext` can be a security risk in a virtualized system
+  with a hypervisor that does not swap `scontext`.
 
 definedBy:
   allOf:
