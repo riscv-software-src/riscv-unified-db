@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: orc.b
+long_name: Bitware OR-combine, byte granule
+description: |
+  Combines the bits within each byte using bitwise logical OR. This sets the bits
+  of each byte in the result rd to all zeros if no bit within the respective byte
+  of rs is set, or to all ones if any bit within the respective byte of rs is set.
+definedBy: Zbb
+assembly: xd, xs1, xs2
+encoding:
+  match: 001010000111-----101-----0010011
+  variables:
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  if (implemented?(ExtensionName::B) && (CSR[misa].B == 1'b0)) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  XReg input = X[rs1];
+  XReg output = 0;
+
+  for (U32 i=0; i<(xlen() - 8); i = i+8) {
+    output[(i+7):i] = (input[(i+7):i] == 0) ? 8'd0 : ~8'd0;
+  }
+
+  X[rd] = output;
+
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
+sail(): |
+  {
+    let rs1_val = X(rs1);
+    result : xlenbits = zeros();
+    foreach (i from 0 to (sizeof(xlen) - 8) by 8)
+      result[(i + 7) .. i] = if rs1_val[(i + 7) .. i] == zeros()
+                             then 0x00
+                             else 0xFF;
+    X(rd) = result;
+    RETIRE_SUCCESS
+  }
+
+# SPDX-SnippetEnd
