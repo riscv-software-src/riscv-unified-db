@@ -34,7 +34,10 @@ operation(): |
     CSR[vl].VALUE = VLMAX;
   }
 
-  CSR[vtype] = zimm11;
+  CSR[vtype].VMA = zimm11[7];
+  CSR[vtype].VTA = zimm11[6];
+  CSR[vtype].VSEW = zimm11[5:3];
+  CSR[vtype].VLMUL = zimm11[2:0];
   X[rd] = CSR[vl].VALUE;
   CSR[vstart].VALUE = 0;
 sail(): |
