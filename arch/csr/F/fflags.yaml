@@ -1,0 +1,88 @@
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: fflags
+long_name: Floating-Point Accrued Exceptions
+address: 0x001
+description: |
+  The accrued exception flags indicate the exception conditions that have arisen on any floating-point
+  arithmetic instruction since the field was last reset by software. The base RISC-V ISA does not
+  support generating a trap on the setting of a floating-point exception flag.
+
+  [[rm]]
+  .Accrued Exception Flag Encoding.
+  [%autowidth,float="center",align="center",cols="^,^,<",options="header"]
+  !===
+  !Flag Mnemonic |Flag Meaning
+  !NV !Invalid Operation
+  !DZ !Divide by Zero
+  !OF !Overflow
+  !UF !Underflow
+  !NX !Inexact
+  !===
+
+  As allowed by the standard, we do not support traps on floating-point exceptions in the F
+  extension, but instead require explicit checks of the flags in software. We considered
+  adding branches controlled directly by the contents of the floating-point accrued exception
+  flags, but ultimately chose to omit these instructions to keep the ISA simple.
+
+priv_mode: U
+length: 32
+definedBy: F
+fields:
+  NV:
+    location: 4
+    description: |
+      *Invalid Operation*
+
+      Cumulative error flag for floating point operations.
+
+      Set by hardware when a floating point operation is invalid and stays set until explicitly
+      cleared by software.
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+  DZ:
+    location: 3
+    description: |
+      *Divide by zero*
+
+      Cumulative error flag for floating point operations.
+
+      Set by hardware when a floating point divide attempts to divide by zero and stays set until explicitly
+      cleared by software.
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+  OF:
+    location: 2
+    description: |
+      *Overflow*
+
+      Cumulative error flag for floating point operations.
+
+      Set by hardware when a floating point operation overflows and stays set until explicitly
+      cleared by software.
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+  UF:
+    location: 1
+    description: |
+      *Underflow*
+
+      Cumulative error flag for floating point operations.
+
+      Set by hardware when a floating point operation underflows and stays set until explicitly
+      cleared by software.
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+  NX:
+    location: 0
+    description: |
+      *Inexact*
+
+      Cumulative error flag for floating point operations.
+
+      Set by hardware when a floating point operation is inexact and stays set until explicitly
+      cleared by software.
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
