@@ -6,7 +6,7 @@ name: hstateen0
 long_name: Hypervisor State Enable 0 Register
 address: 0x60C
 priv_mode: S
-length: 64
+length: MXLEN
 description: |
   For each hstateen CSR, bit 63 is defined to control access to the matching sstateen CSR.
   Bit 63 of hstateen0 controls access to sstateen0.
@@ -26,20 +26,23 @@ definedBy:
     - Smstateen
     - Ssstateen
 fields:
-  SEO:
+  SE0:
     location: 63
+    base: 64
     description: |
       The SE0 bit in hstateen0 controls access to the sstateen0 CSR.
     type: RW
     reset_value: UNDEFINED_LEGAL
   ENVCFG:
     location: 62
+    base: 64
     description: |
       The ENVCFG bit in hstateen0 controls access to the senvcfg CSRs.
     type: RW
     reset_value: UNDEFINED_LEGAL
   CSRIND:
     location: 60
+    base: 64
     description: |
       The CSRIND bit in hstateen0 controls access to the siselect and the
       sireg*, (really vsiselect and vsireg*) CSRs provided by the Sscsrind
@@ -48,6 +51,7 @@ fields:
     reset_value: UNDEFINED_LEGAL
   AIA:
     location: 59
+    base: 64
     description: |
       The AIA bit in hstateen0 controls access to all state introduced by
       the Ssaia extension and is not controlled by either the CSRIND or the
@@ -56,6 +60,7 @@ fields:
     reset_value: UNDEFINED_LEGAL
   IMSIC:
     location: 58
+    base: 64
     description: |
       The IMSIC bit in hstateen0 controls access to the guest IMSIC state,
       including CSRs stopei (really vstopei), provided by the Ssaia extension.
@@ -66,6 +71,7 @@ fields:
     reset_value: UNDEFINED_LEGAL
   CONTEXT:
     location: 57
+    base: 64
     description: |
       The CONTEXT bit in hstateen0 controls access to the scontext CSR provided
       by the Sdtrig extension.
@@ -81,7 +87,7 @@ fields:
     location: 1
     description: |
       The FCSR bit controls access to fcsr for the case when floating-point instructions
-      operate on x registers instead of f registers as specified by the Zfinx and related
+      operate on x registers instead of `f` registers as specified by the Zfinx and related
       extensions (Zdinx, etc.). Whenever misa.F = 1, FCSR bit of mstateen0 is read-only
       zero (and hence read-only zero in hstateen0 and sstateen0 too). For convenience,
       when the stateen CSRs are implemented and misa.F = 0, then if the FCSR bit of a

@@ -6,7 +6,7 @@ name: hstateen1
 long_name: Hypervisor State Enable 1 Register
 address: 0x60D
 priv_mode: S
-length: 64
+length: MXLEN
 description: |
   For each hstateen CSR, bit 63 is defined to control access to the matching sstateen CSR.
   Bit 63 of hstateen1 controls access to sstateen1.
@@ -26,8 +26,9 @@ definedBy:
     - Smstateen
     - Ssstateen
 fields:
-  SEO:
+  SE0:
     location: 63
+    base: 64
     description: |
       The SE0 bit in hstateen1 controls access to the sstateen1 CSR.
     type: RW

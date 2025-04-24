@@ -6,7 +6,7 @@ name: mstateen3
 long_name: Machine State Enable 3 Register
 address: 0x30F
 priv_mode: M
-length: 64
+length: MXLEN
 description: |
   For each mstateen CSR, bit 63 is defined to control access to the matching sstateen and hstateen
   CSRs. Bit 63 of mstateen3 controls access to sstateen3 and hstateen3.
@@ -19,8 +19,9 @@ description: |
   manage in some other way.
 definedBy: Smstateen
 fields:
-  SEO:
+  SE0:
     location: 63
+    base: 64
     description: |
       The SE0 bit in mstateen3 controls access to the hstateen3, hstateen3h, and the sstateen3 CSRs.
     type: RW
