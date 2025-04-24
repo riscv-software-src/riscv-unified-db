@@ -1,18 +1,18 @@
 * xref:ROOT:config.adoc[Configuration]
 
 .Extensions
-<%- cfg_arch.transitive_implemented_extensions.sort { |a, b| a.name <=> b.name }.each do |ext| -%>
+<%- cfg_arch.transitive_implemented_extension_versions.sort { |a, b| a.name <=> b.name }.each do |ext| -%>
 * %%LINK%ext;<%= ext.name %>;<%= ext.name %>%%
 <%- end -%>
 
 .Control and Status Registers
 <%- cfg_arch.transitive_implemented_csrs.sort { |a, b| a.name <=> b.name }.each do |csr| -%>
-* %%LINK%csr;<%= csr.name %>;<%= csr.name %>%%
+* %%UDB_DOC_LINK%csr;<%= csr.name %>;<%= csr.name %>%%
 <%- end -%>
 
 .Instructions
 <%- cfg_arch.transitive_implemented_instructions.sort { |a, b| a.name <=> b.name }.each do |inst| -%>
-* %%LINK%inst;<%= inst.name %>;<%= inst.name %>%%
+* %%UDB_DOC_LINK%inst;<%= inst.name %>;<%= inst.name %>%%
 <%- end -%>
 
 .IDL functions

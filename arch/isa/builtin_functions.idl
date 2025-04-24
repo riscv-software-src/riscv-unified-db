@@ -1,10 +1,26 @@
 %version: 1.0
 
-builtin function implemented? {
+generated function implemented? {
   returns Boolean
   arguments ExtensionName extension
   description {
     Return true if the implementation supports `extension`.
+  }
+}
+
+generated function implemented_version? {
+  returns Boolean
+  arguments ExtensionName extension, String version_requirement
+  description {
+    Return true if the implementation supports `extension` meeting 'version_requirement'.
+  }
+}
+
+generated function implemented_csr? {
+  returns Boolean
+  arguments Bits<12> csr_addr
+  description {
+    Return true if csr_addr is an implemented CSR
   }
 }
 
@@ -176,30 +192,9 @@ builtin function abort_current_instruction {
   }
 }
 
-
-builtin function zext {
-  returns XReg
-  arguments XReg value, XReg first_extended_bit
-  description {
-    Zero extend `value` starting at `first_extended_bit`.
-
-    Bits [`XLEN-1`:`first_extended_bit`] of the return value
-    should get the value `0`;
-  }
-}
-
 builtin function ebreak {
   description {
     Raise an `Environment Break` exception, returning control to the debug environment.
-  }
-}
-
-builtin function saturate {
-  returns XReg
-  arguments XReg value, XReg max_value
-  description {
-    If unsigned `value` is less than `max_value`, return `value`.
-    Otherwise, return `max_value`.
   }
 }
 
@@ -256,7 +251,7 @@ builtin function pause {
   }
 }
 
-builtin function pow {
+generated function pow {
   returns XReg
   arguments XReg value, XReg exponent
   description {
@@ -264,8 +259,7 @@ builtin function pow {
   }
 }
 
-
-builtin function maybe_cache_translation {
+generated function maybe_cache_translation {
   arguments
     XReg vaddr,
     MemoryOperation op,
@@ -276,19 +270,17 @@ builtin function maybe_cache_translation {
   }
 }
 
-builtin function cached_translation {
+generated function cached_translation {
   returns
-    Boolean,                     # whether or not the cached translation is valid
-    TranslationResult            # cached result
+    CachedTranslationResult            # cached result
   arguments
     XReg vaddr,         # virtual address
     MemoryOperation op  # operation
   description {
     Possibly returns a cached translation result matching +vaddr+.
 
-    If the result is value, the first return value will be true.
-    +paddr+ is the full translation of +vaddr+, including the page offset
-    +pbmt+ is the result of any paged-based attributes for the translation
+    CachedTranslationResult contains a Boolean 'valid' field. If valid,
+    'result' is a usable translation. Otherwise, the cache lookup failed.
   }
 }
 
@@ -320,7 +312,7 @@ builtin function order_pgtbl_reads_after_vmafence {
   }
 }
 
-builtin function invalidate_translations {
+generated function invalidate_translations {
   arguments
     VmaOrderType inval_type
   description {
@@ -331,20 +323,106 @@ builtin function invalidate_translations {
   }
 }
 
-builtin function read_physical_memory {
+function read_physical_memory {
   template U32 len
   returns Bits<len>
   arguments XReg paddr
   description {
     Read from physical memory.
   }
+  body {
+    if (len == 8) {
+      return read_physical_memory_8(paddr);
+    } else if (len == 16) {
+      return read_physical_memory_16(paddr);
+    } else if (len == 32) {
+      return read_physical_memory_32(paddr);
+    } else if (len == 64) {
+      return read_physical_memory_64(paddr);
+    } else {
+      assert(false, "Invalid len");
+    }
+  }
 }
 
-builtin function write_physical_memory {
+builtin function read_physical_memory_8 {
+  returns Bits<8>
+  arguments XReg paddr
+  description {
+    Read a byte from physical memory.
+  }
+}
+
+builtin function read_physical_memory_16 {
+  returns Bits<16>
+  arguments XReg paddr
+  description {
+    Read two bytes from physical memory.
+  }
+}
+
+builtin function read_physical_memory_32 {
+  returns Bits<32>
+  arguments XReg paddr
+  description {
+    Read four bytes from physical memory.
+  }
+}
+
+builtin function read_physical_memory_64 {
+  returns Bits<64>
+  arguments XReg paddr
+  description {
+    Read eight bytes from physical memory.
+  }
+}
+
+function write_physical_memory {
   template U32 len
   arguments XReg paddr, Bits<len> value
   description {
     Write to physical memory.
+  }
+  body {
+    if (len == 8) {
+      write_physical_memory_8(paddr, value);
+    } else if (len == 16) {
+      write_physical_memory_16(paddr, value);
+    } else if (len == 32) {
+      write_physical_memory_32(paddr, value);
+    } else if (len == 64) {
+      write_physical_memory_64(paddr, value);
+    } else {
+      assert(false, "Invalid len");
+    }
+  }
+}
+
+builtin function write_physical_memory_8 {
+  arguments XReg paddr, Bits<8> value
+  description {
+    Write a byte to physical memory.
+  }
+}
+
+builtin function write_physical_memory_16 {
+  arguments XReg paddr, Bits<16> value
+  description {
+    Write two bytes to physical memory.
+  }
+}
+
+builtin function write_physical_memory_32 {
+  arguments XReg paddr, Bits<32> value
+  description {
+    Write four bytes to physical memory.
+  }
+}
+
+builtin function write_physical_memory_64 {
+  arguments XReg paddr, Bits<64> value
+  description {
+    Write eight bytes to physical memory.
   }
 }
 
@@ -418,7 +496,7 @@ builtin function atomically_set_pte_a {
   returns Boolean
   arguments
     Bits<PHYS_ADDR_WIDTH> pte_addr,
-    Bits<XLEN>            pte_value,
+    Bits<MXLEN>            pte_value,
     U32                   pte_len
   description {
     Atomically:
@@ -438,7 +516,7 @@ builtin function atomically_set_pte_a_d {
   returns Boolean
   arguments
     Bits<PHYS_ADDR_WIDTH> pte_addr,
-    Bits<XLEN>            pte_value,
+    Bits<MXLEN>            pte_value,
     U32                   pte_len
   description {
     Atomically:

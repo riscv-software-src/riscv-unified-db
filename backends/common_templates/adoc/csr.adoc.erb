@@ -1,4 +1,4 @@
-<%= anchor_for_csr(csr.name) %>
+<%= anchor_for_udb_doc_csr(csr.name) %>
 = <%= csr.name %>
 
 *<%= csr.long_name %>*
@@ -13,12 +13,12 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <%- if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <%- end -%>
-h| Length         | <%= csr.length_pretty(cfg_arch) %>
+h| Length         | <%= csr.length_pretty %>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===
 
 == Format
-<%- unless csr.dynamic_length?(cfg_arch) || csr.fields.any? { |f| f.dynamic_location?(cfg_arch) } -%>
+<%- unless csr.dynamic_length? || csr.fields.any? { |f| f.dynamic_location? } -%>
 <%# CSR has a known static length, so there is only one format to display -%>
 .<%= csr.name %> format
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -50,10 +50,10 @@ This CSR format changes dynamically.
 @Name @ Location @ Type @ Reset Value
 
 <%- csr.fields.each do |field| -%>
-@ <%= link_to_csr_field(csr.name, field.name) %>
-@ <%= field.location_pretty(cfg_arch) %>
-@ <%= field.type_pretty(cfg_arch.symtab) %>
-@ <%= field.reset_value_pretty(cfg_arch) %>
+@ <%= link_to_udb_doc_csr_field(csr.name, field.name) %>
+@ <%= field.location_pretty %>
+@ <%= field.type_pretty %>
+@ <%= field.reset_value_pretty %>
 
 <%- end -%>
 |===
@@ -72,16 +72,16 @@ This CSR has no fields. However, it must still exist (not cause an `Illegal Inst
 [example]
 ****
 Location::
-<%= field.location_pretty(cfg_arch) %>
+<%= field.location_pretty %>
 
 Description::
 <%= field.description %>
 
 Type::
-<%= field.type_pretty(cfg_arch.symtab) %>
+<%= field.type_pretty %>
 
 Reset value::
-<%= field.reset_value_pretty(cfg_arch) %>
+<%= field.reset_value_pretty %>
 
 ****
 

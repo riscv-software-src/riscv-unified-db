@@ -1,0 +1,135 @@
+# yaml-language-server: $schema=../../../../schemas/ext_schema.json
+
+$schema: ext_schema.json#
+kind: extension
+name: Xqciint
+type: unprivileged
+long_name: Qualcomm interrupt prologue/epilogue
+versions:
+- version: "0.1.0"
+  state: development
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+- version: "0.2.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Add information about instruction formats of each instruction
+  requires: { name: Zca, version: ">= 1.0.0" }
+- version: "0.3.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix description of qc.mclici* CSRs to reflect being part of Xqciint custom extension
+    - Fix description of qc.setinti and qc.clrinti instructions
+    - Fix to make qc.c.mret and qc.c.mnret visible
+  requires: { name: Zca, version: ">= 1.0.0" }
+- version: "0.4.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Rename all custom CSRs of the Xqciint extension to use dot as separator in the name
+    - Fix addresses of qc.mclicie* CSRs to 0x7f8-0x7ff (was copy & paste from qc.mclicip*)
+    - Add missing CSR registers qc.mclicilvl00 - qc.mclicilvl31
+    - Add missing CSR registers qc.mwpstartaddr0 - qc.mwpstartaddr3 and qc.mwpendaddr0 - qc.mwpendaddr3
+    - Add missing CSR registers qc.mstkbottomaddr and qc.mstktopaddr
+    - Add missing CSR registers qc.mmcr, qc.mthreadptr, qc.mcause
+    - Remove CSR registers qc.mncause, qc.mnepc
+    - Fix IDL code for qc.c.mienter, qc.c.mienter.nest, qc.c.mileaveret, qc.c.mret, qc.c.mnret
+    - Fix IDL code for qc.c.ei, qc.c.eir, qc.c.di, qc.c.dir
+    - Add list of supported custom exceptions
+    - Add dependency on Smrnmi extension
+  requires: { name: Zca, version: ">= 1.0.0" }
+- version: "0.5.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Add stack checks to qc.c.mienter, qc.c.mienter.nest, qc.c.mileaveret
+  requires: { name: Zca, version: ">= 1.0.0" }
+- version: "0.6.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix IDL code for Smdbltrp and Smrnmi spec compatibility for qc.c.mret and qc.c.mnret instructions
+  requires: { name: Zca, version: ">= 1.0.0" }
+- version: "0.7.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix IDL code for Smdbltrp and Smrnmi spec compatibility for qc.c.mileaveret instruction
+  requires: { name: Zca, version: ">= 1.0.0" }
+description: |
+  The Xqciint extension includes eleven instructions to accelerate interrupt
+  servicing by performing common actions during ISR prologue/epilogue.
+
+doc_license:
+  name: Creative Commons Attribution 4.0 International License
+  url: https://creativecommons.org/licenses/by/4.0/
+company:
+  name: Qualcomm Technologies, Inc.
+  url: https://qualcomm.com
+
+exception_codes:
+  - num: 27
+    name: Illegal Stack Pointer
+    var: IllegalStackPointer
+  - num: 28
+    name: Stack Pointer Out-Of-Range
+    var: SpOutOfRange
+  - num: 29
+    name: Execution Watchpoint
+    var: ExecWatchpoint
+  - num: 30
+    name: Read Watchpoint
+    var: ReadWatchpoint
+  - num: 31
+    name: Write Watchpoint
+    var: WriteWatchpoint

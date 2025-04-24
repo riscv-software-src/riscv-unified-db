@@ -82,6 +82,28 @@ function lowest_set_bit {
   }
 }
 
+function bit_length {
+  returns XReg
+  arguments XReg value
+  description {
+    Returns the minimum number of bits needed to represent value.
+
+    Only works on unsigned values.
+
+    The value 0 returns 1.
+  }
+  body {
+    for (XReg i = 63; i > 0; i--) {
+      if (value[i] == 1) {
+        return i;
+      }
+    }
+
+    # if we get here, the value is 0 or 1. either way, say we need one bit
+    return 1;
+  }
+}
+
 function count_leading_zeros {
   template U32 N
   returns
@@ -117,37 +139,15 @@ function sext {
     # in a common case, first_extended_bit is xlen(), which is compile-time-known unless
     # the effective xlen is different than XLEN in some mode
     # In that common case, this function will be eliminated by the compiler
-    if (first_extended_bit == XLEN) {
+    if (first_extended_bit == MXLEN) {
       return value;
     } else {
       Bits<1> sign = value[first_extended_bit-1];
-      for (U32 i = XLEN-1; i >= first_extended_bit; i--) {
+      for (U32 i = MXLEN-1; i >= first_extended_bit; i--) {
         value[i] = sign;
       }
       return value;
     }
-  }
-}
-
-function bit_length {
-  returns XReg
-  arguments XReg value
-  description {
-    Returns the minimum number of bits needed to represent value.
-
-    Only works on unsigned values.
-
-    The value 0 returns 1.
-  }
-  body {
-    for (XReg i = 63; i > 0; i--) {
-      if (value[i] == 1) {
-        return i;
-      }
-    }
-
-    # if we get here, the value is 0 or 1. either way, say we need one bit
-    return 1;
   }
 }
 

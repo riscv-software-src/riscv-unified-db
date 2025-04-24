@@ -1,0 +1,100 @@
+#pragma once
+
+#include <exports.h>
+
+#ifdef __cplusplus
+#define LINKAGE extern "C"
+
+#include <cstddef>
+#include <cstdint>
+#else
+#define LINKAGE
+
+#include <stddef.h>
+#include <stdint.h>
+
+#endif
+
+// expose IDL enum values to C
+LINKAGE {
+<%- cfg_arch.global_ast.enums.each do |enum| -%>
+<%- underlying_type = enum.type(cfg_arch.symtab).width <= 32 ? "uint32_t" : "uint64_t" -%>
+typedef struct _<%= enum.name %>{
+  <%- element_names = enum.type(cfg_arch.symtab).element_names -%>
+  <%- element_values = enum.type(cfg_arch.symtab).element_values -%>
+  <%- element_names.each_index do |idx| -%>
+  static const <%= underlying_type %> <%= element_names[idx] %> = <%= element_values[idx] %>;
+  <%- end -%>
+  <%= underlying_type %> m_value;
+} <%= enum.name %>;
+typedef <%= underlying_type %> <%= enum.name %>ValueType;
+<%- end -%>
+}
+
+LINKAGE {
+  #include "udb/stop_reason.h"
+}
+
+LINKAGE {
+  typedef int StopReasonValueType;
+}
+
+// callback functions for the SoC model
+LINKAGE typedef struct {
+  uint64_t (*read_hpm_counter)(uint64_t counternum);
+
+  uint64_t (*read_mcycle)();
+  uint64_t (*read_mtime)();
+
+  // returns new value of mcycle (could be different than new_value)
+  uint64_t (*sw_write_mcycle)(uint64_t new_value);
+
+  void (*cache_block_zero)(uint64_t paddr);
+
+  // eei_* occur when the configuration indicates that ecall/ebreak don't cause exceptions
+  void (*eei_ecall_from_m)();
+  void (*eei_ecall_from_s)();
+  void (*eei_ecall_from_u)();
+  void (*eei_ecall_from_vs)();
+  void (*eei_ebreak)();
+
+  void (*memory_model_acquire)();
+  void (*memory_model_release)();
+  void (*notify_mode_change)(PrivilegeModeValueType from, PrivilegeModeValueType to);
+  void (*prefetch_instruction)(uint64_t paddr);
+  void (*prefetch_read)(uint64_t paddr);
+  void (*prefetch_write)(uint64_t paddr);
+  void (*fence)(
+    uint8_t pi, uint8_t pr, uint8_t po, uint8_t pw,
+    uint8_t si, uint8_t sr, uint8_t so, uint8_t sw
+  );
+  void (*fence_tso)();
+  void (*ifence)();
+  void (*order_pgtbl_writes_before_vmafence)();
+  void (*order_pgtbl_reads_after_vmafence)();
+
+  uint64_t (*read_physical_memory_8)(uint64_t paddr);
+  uint64_t (*read_physical_memory_16)(uint64_t paddr);
+  uint64_t (*read_physical_memory_32)(uint64_t paddr);
+  uint64_t (*read_physical_memory_64)(uint64_t paddr);
+  void (*write_physical_memory_8)(uint64_t paddr, uint64_t value);
+  void (*write_physical_memory_16)(uint64_t paddr, uint64_t value);
+  void (*write_physical_memory_32)(uint64_t paddr, uint64_t value);
+  void (*write_physical_memory_64)(uint64_t paddr, uint64_t value);
+
+  int (*memcpy_from_host)(uint64_t guest_paddr, const uint8_t* host_ptr, uint64_t size);
+  int (*memcpy_to_host)(uint8_t* host_ptr, uint64_t guest_paddr, uint64_t size);
+
+  uint8_t (*atomic_check_then_write_32)(uint64_t, uint32_t, uint32_t);
+  uint8_t (*atomic_check_then_write_64)(uint64_t, uint64_t, uint64_t);
+  uint8_t (*atomically_set_pte_a)(uint64_t, uint64_t, uint32_t);
+  uint8_t (*atomically_set_pte_a_d)(uint64_t, uint64_t, uint32_t);
+  uint64_t (*atomic_read_modify_write_32)(uint64_t, uint64_t, AmoOperationValueType);
+  uint64_t (*atomic_read_modify_write_64)(uint64_t, uint64_t, AmoOperationValueType);
+
+  // returns 1 if pma applies to the *entire* region [paddr, paddr + len)
+  // returns 0 otherwise
+  uint8_t (*pma_applies_Q_)(PmaAttributeValueType pma, uint64_t paddr, uint32_t len);
+} FnPointerSocModel;
+
+LINKAGE int32_t tlib_init(char *cpu_name);

@@ -27,10 +27,13 @@ access:
   vs: always
   vu: always
 operation(): |
-  Bits<32> t0 = X[rd+8][31:0];
-  Bits<32> t1 = X[rs2+8][31:0];
-  X[rd+8] = sext(t0 - t1, 31);
+  Bits<32> t0 = X[creg2reg(rd)][31:0];
+  Bits<32> t1 = X[creg2reg(rs2)][31:0];
+  X[creg2reg(rd)] = sext(t0 - t1, 31);
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val = (X(rd+8))[31..0];
@@ -45,3 +48,5 @@ sail(): |
     X(rd+8) = sign_extend(result);
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd
