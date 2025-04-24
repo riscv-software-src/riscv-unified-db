@@ -10,22 +10,25 @@ description: |
   arithmetic instruction since the field was last reset by software. The base RISC-V ISA does not
   support generating a trap on the setting of a floating-point exception flag.
 
-  [[rm]]
+  [[bitdef]]
   .Accrued Exception Flag Encoding.
-  [%autowidth,float="center",align="center",cols="^,^,<",options="header"]
-  !===
-  !Flag Mnemonic |Flag Meaning
-  !NV !Invalid Operation
-  !DZ !Divide by Zero
-  !OF !Overflow
-  !UF !Underflow
-  !NX !Inexact
-  !===
+  [%autowidth,float="center",align="center",cols="^,<",options="header",]
+  |===
+  |Flag Mnemonic |Flag Meaning
+  |NV |Invalid Operation
+  |DZ |Divide by Zero
+  |OF |Overflow
+  |UF |Underflow
+  |NX |Inexact
+  |===
 
+  [NOTE]
+  ====
   As allowed by the standard, we do not support traps on floating-point exceptions in the F
   extension, but instead require explicit checks of the flags in software. We considered
   adding branches controlled directly by the contents of the floating-point accrued exception
   flags, but ultimately chose to omit these instructions to keep the ISA simple.
+  ====
 
 priv_mode: U
 length: 32
