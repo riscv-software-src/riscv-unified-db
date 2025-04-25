@@ -23,13 +23,21 @@
       "description": "Descriptive name of the class"
     },
     "processor_kind": {
-      "type": "string",
       "enum": ["Generic Unprivileged", "Microcontroller", "Apps Processor"],
       "description": "What kind of class is this?"
     },
     "introduction": {
       "type": "string",
       "description": "Asciidoc text containing the introduction prose for the class"
+    },
+    "mandatory_priv_modes": {
+      "type": "array",
+      "items": {
+        "enum": ["M", "S", "U", "VS", "VU"]
+      },
+      "uniqueItems": true,
+      "minItems": 1,
+      "description": "List of mandatory privilege modes for the class"
     },
     "$source": {
       "$ref": "schema_defs.json#/$defs/$source"
