@@ -142,7 +142,7 @@ operation(): |
   Boolean is_pause;
 
   if (implemented?(ExtensionName::Zihintpause)) {
-    if ((pred == 1) && (succ == 0) && (fm == 0) && (xd == 0) && (xs1 == 0)) {
+    if ((pred == 1) && (succ == 0) && (xd == 0) && (xs1 == 0)) {
       # this is a PAUSE instruction
       is_pause = true;
     }
@@ -192,7 +192,7 @@ operation(): |
     );
   }
 pseudoinstructions:
-  - when: (pred == 1) && (succ == 0) && (fm == 0) && (xd == 0) && (xs1 == 0)
+  - when: (pred == 1) && (succ == 0) && (xd == 0) && (xs1 == 0)
     to: pause
 
 sail(): |
