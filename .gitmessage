@@ -14,7 +14,7 @@
 
 # common title types:
 #   build:    build system
-#   ci:       continous integeration
+#   ci:       continous integration
 #   docs:     improves documentation
 #   feat:     adds a new feature
 #   fix:      fixes a code bug
