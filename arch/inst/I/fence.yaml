@@ -123,8 +123,10 @@ description: |
 definedBy: I
 assembly: "TODO"
 encoding:
-  match: 0000-------------000-----0001111
+  match: -----------------000-----0001111
   variables:
+    - name: fm
+      location: 31-28
     - name: pred
       location: 27-24
     - name: succ
@@ -191,6 +193,8 @@ operation(): |
       succ_i, succ_o, succ_r, succ_w
     );
   }
+hints:
+  - { $ref: inst/I/fence.tso.yaml# }
 pseudoinstructions:
   - when: (pred == 1) && (succ == 0) && (xd == 0) && (xs1 == 0)
     to: pause
