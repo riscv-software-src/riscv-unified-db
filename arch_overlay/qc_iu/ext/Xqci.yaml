@@ -242,7 +242,7 @@ versions:
     - Fix rs1 cannot be 31 for qc.extdu, qc.extd, qc.extdur, instructions
     - Fix rs1 cannot be 31 for qc.extduprh, qc.extdprh, qc.extdupr, qc.extdr qc.extdpr instructions
     - Fix typos in IDL code (missing ')' ) for qc.extdpr, qc.extdr instructions
-    - Fix IDL code to look correct in PDF for qc.insbhr and qc.insbh instructions
+    - Fix IDL code and description to look correct in PDF for qc.insbhr and qc.insbh instructions
     - Fix Xqci extension description to reflect correct 48-bit format field names
     - Fix IDL code to to match description for qc.insbr instruction
     - Add stack checks to qc.c.mienter, qc.c.mienter.nest, qc.c.mileaveret
@@ -262,6 +262,84 @@ versions:
   - { name: Xqcilia, version: "0.2.0" }
   - { name: Xqcilo, version: "0.2.0" }
   - { name: Xqcilsm, version: "0.4.0" }
+  - { name: Xqcisim, version: "0.2.0" }
+  - { name: Xqcisls, version: "0.2.0" }
+  - { name: Xqcisync, version: "0.2.0" }
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
+- version: "0.9.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix IDL code sign extension logic for qc.e.lb and qc.e.lh instructions
+    - Fix IDL code sign extension logic for qc.ext and qc.extd instructions
+    - Fix IDL code sign extension logic for qc.extdpr, qc.extdprh and qc.extdr instructions
+    - Fix IDL code and description increasing shift to 6 bit for qc.extdr and qc.extdur instructions
+    - Fix IDL code and description increasing shift to 6 bit for qc.extdpr and qc.extdprh instructions
+    - Fix IDL code and description increasing shift to 6 bit for qc.extdupr and qc.extduprh instructions
+    - Fix IDL code sign extension logic for qc.lieq instruction
+    - Fix wrong mantissa bit selection in qc.norm, qc.normu and qc.normeu instructions
+    - Fix wrong exponent calculation in qc.normeu instruction
+    - Fix IDL code and description of qc.setwm instruction to state that number of words written 0..31.
+    - Fix IDL code for Smdbltrp and Smrnmi spec compatibility for qc.c.mret and qc.c.mnret instructions
+  implies:
+  - { name: Xqcia, version: "0.6.0" }
+  - { name: Xqciac, version: "0.3.0" }
+  - { name: Xqcibi, version: "0.2.0" }
+  - { name: Xqcibm, version: "0.7.0" }
+  - { name: Xqcicli, version: "0.3.0" }
+  - { name: Xqcicm, version: "0.2.0" }
+  - { name: Xqcics, version: "0.2.0" }
+  - { name: Xqcicsr, version: "0.3.0" }
+  - { name: Xqciint, version: "0.6.0" }
+  - { name: Xqciio, version: "0.1.0" }
+  - { name: Xqcilb, version: "0.2.0" }
+  - { name: Xqcili, version: "0.2.0" }
+  - { name: Xqcilia, version: "0.2.0" }
+  - { name: Xqcilo, version: "0.3.0" }
+  - { name: Xqcilsm, version: "0.5.0" }
+  - { name: Xqcisim, version: "0.2.0" }
+  - { name: Xqcisls, version: "0.2.0" }
+  - { name: Xqcisync, version: "0.2.0" }
+  requires:
+    name: Zca
+    version: ">= 1.0.0"
+- version: "0.10.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix IDL code for Smdbltrp and Smrnmi spec compatibility for qc.c.mileaveret instruction
+  implies:
+  - { name: Xqcia, version: "0.6.0" }
+  - { name: Xqciac, version: "0.3.0" }
+  - { name: Xqcibi, version: "0.2.0" }
+  - { name: Xqcibm, version: "0.7.0" }
+  - { name: Xqcicli, version: "0.3.0" }
+  - { name: Xqcicm, version: "0.2.0" }
+  - { name: Xqcics, version: "0.2.0" }
+  - { name: Xqcicsr, version: "0.3.0" }
+  - { name: Xqciint, version: "0.7.0" }
+  - { name: Xqciio, version: "0.1.0" }
+  - { name: Xqcilb, version: "0.2.0" }
+  - { name: Xqcili, version: "0.2.0" }
+  - { name: Xqcilia, version: "0.2.0" }
+  - { name: Xqcilo, version: "0.3.0" }
+  - { name: Xqcilsm, version: "0.5.0" }
   - { name: Xqcisim, version: "0.2.0" }
   - { name: Xqcisls, version: "0.2.0" }
   - { name: Xqcisync, version: "0.2.0" }
@@ -330,7 +408,7 @@ description: |
   QC.EAI format used for 48-bit instructions that operate on 32-bit immediate argument.
   --
 
-  [%autowidth, cols="4*", options="header" }
+  [%autowidth, cols="4*", options="header" ]
   |===
   ^|Field
   ^|Start bit
@@ -367,7 +445,7 @@ description: |
   QC.EI format used for 48-bit instructions that operate on 26-bit immediate argument, including loads.
   --
 
-  [%autowidth, cols="4*", options="header" }
+  [%autowidth, cols="4*", options="header" ]
   |===
   ^|Field
   ^|Start bit
@@ -414,7 +492,7 @@ description: |
   QC.EB format used for 48-bit branch instructions that compare register with 16-bit immediate.
   --
 
-  [%autowidth, cols="4*", options="header" }
+  [%autowidth, cols="4*", options="header" ]
   |===
   ^|Field
   ^|Start bit
@@ -461,7 +539,7 @@ description: |
   QC.EJ format used for 48-bit jump/call instructions with 32-bit immediate target address.
   --
 
-  [%autowidth, cols="4*", options="header" }
+  [%autowidth, cols="4*", options="header" ]
   |===
   ^|Field
   ^|Start bit

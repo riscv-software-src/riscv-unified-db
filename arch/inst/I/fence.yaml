@@ -195,6 +195,9 @@ pseudoinstructions:
   - when: (pred == 1) && (succ == 0) && (xd == 0) && (xs1 == 0)
     to: pause
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     // If the FIOM bit in menvcfg/senvcfg is set then the I/O bits can imply R/W.
@@ -221,3 +224,5 @@ sail(): |
     };
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

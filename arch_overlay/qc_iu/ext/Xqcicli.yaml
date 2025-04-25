@@ -28,6 +28,18 @@ versions:
     email: dhower@qti.qualcomm.com
   changes:
     - Add information about instruction formats of each instruction
+- version: "0.3.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix IDL code sign extension logic for qc.lieq instruction
 description: |
   The Xqcicli extension includes twelve instructions that conditionally
   load an immediate value.

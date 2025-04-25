@@ -21,24 +21,8 @@ implemented_extensions:
   - { name: Zihpm, version: "2.0" }
   - { name: Xqccmp, version: "0.3" }
   - { name: Xqci, version: "0.8" }
-exception_codes:
-  - num: 27
-    name: Illegal Stack Pointer
-    var: IllegalStackPointer
-  - num: 28
-    name: Stack Pointer Out-Of-Range
-    var: SpOutOfRange
-  - num: 29
-    name: Execution Watchpoint
-    var: ExecWatchpoint
-  - num: 30
-    name: Read Watchpoint
-    var: ReadWatchpoint
-  - num: 31
-    name: Write Watchpoint
-    var: WriteWatchpoint
 params:
-  XLEN: 32
+  MXLEN: 32
   PHYS_ADDR_WIDTH: 32
   ARCH_ID: 0
   CONFIG_PTR_ADDRESS: 0

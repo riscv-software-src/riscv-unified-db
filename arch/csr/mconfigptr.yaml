@@ -50,5 +50,5 @@ fields:
     reset_value(): |
       return CONFIG_PTR_ADDRESS;
     legal?(csr_value): |
-      # pointer must be naturally aligned to XLEN
-      return ((XLEN-1) | csr_value.ADDRESS) == 0;
+      # pointer must be naturally aligned to MXLEN
+      return ((MXLEN-1) | csr_value.ADDRESS) == 0;

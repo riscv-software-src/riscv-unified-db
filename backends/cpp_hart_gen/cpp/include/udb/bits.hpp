@@ -258,7 +258,7 @@ namespace udb {
         // exactly fits in a native type, so just cast it
         return static_cast<SignedStorageType>(unsigned_value);
       } else {
-        // we have a native type, but some bits are unsed. need to sign extend
+        // we have a native type, but some bits are unused. need to sign extend
         // the storage to the native width
         return static_cast<SignedStorageType>(sign_extend(unsigned_value));
       }
@@ -641,11 +641,11 @@ namespace udb {
   constexpr _Bits<constmax<N, M>::value, Signed && _Signed> operator op(      \
       const _Bits<M, _Signed> &o) const {                                     \
     if constexpr (M > N) {                                                    \
-      return _Bits < constmax<N, M>::value,                                   \
-             Signed && _Signed > {_Bits<M, Signed>{get()}.get() op o.get()};  \
+      return _Bits<constmax<N, M>::value, Signed && _Signed>{                 \
+          _Bits<M, Signed>{get()}.get() op o.get()};                          \
     } else {                                                                  \
-      return _Bits < constmax<N, M>::value,                                   \
-             Signed && _Signed > {get() op _Bits<N, _Signed>{o.get()}.get()}; \
+      return _Bits<constmax<N, M>::value, Signed && _Signed>{                 \
+          get() op _Bits<N, _Signed>{o.get()}.get()};                         \
     }                                                                         \
   }                                                                           \
                                                                               \
@@ -1135,8 +1135,8 @@ struct fmt::formatter<udb::_Bits<N, Signed>> {
   }
 
   template <class FormatContext>
-  auto format(const udb::_Bits<N, Signed> &c,
-              FormatContext &ctx) -> decltype(ctx.out()) {
+  auto format(const udb::_Bits<N, Signed> &c, FormatContext &ctx)
+      -> decltype(ctx.out()) {
     fmt::detail::handle_dynamic_spec<fmt::detail::precision_checker>(
         specs_.width, specs_.width_ref, ctx);
     int base = 10;

@@ -36,6 +36,9 @@ operation(): |
 
   X[creg2reg(rd)] = X[creg2reg(rd)][15:0];
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val = X(rsdc);
@@ -49,3 +52,5 @@ sail(): |
     X(rsdc) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

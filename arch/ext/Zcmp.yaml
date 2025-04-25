@@ -88,6 +88,7 @@ versions:
       - name: Graeme Smecher
       - name: Nicolas Brunie
       - name: Jiawei
+    requires: { name: Zca, version: ">= 1.0.0" }
 conflicts:
   anyOf:
     - allOf: [C, D]

@@ -11,7 +11,7 @@ Boolean pending_vsmode_timer_interrupt = false;
 
 # bitmask of interrupts that are both pending and enabled
 # updated by calls to refresh_pending_interrupts()
-Bits<XLEN> pending_and_enabled_interrupts = 0;
+Bits<MXLEN> pending_and_enabled_interrupts = 0;
 
 external function set_external_interrupt {
   arguments PrivilegeMode target_mode
@@ -159,7 +159,7 @@ function refresh_pending_interrupts {
   }
   body {
     # by using sw_read, we'll get, e.g., the combined value of mip.SEIP
-    Bits<XLEN> pending_ints = CSR[mip].sw_read() & $bits(CSR[mie]);
+    Bits<MXLEN> pending_ints = CSR[mip].sw_read() & $bits(CSR[mie]);
     if (pending_ints == 0) {
       # there are no pending interrupts
       pending_and_enabled_interrupts = 0;
@@ -170,22 +170,22 @@ function refresh_pending_interrupts {
       implemented_version?(ExtensionName::S, "<= 1.9.1") ||
       (implemented_version?(ExtensionName::S, "> 1.9.1") && implemented_version?(ExtensionName::Sm, "> 1.9.1"));
 
-    Bits<XLEN> mmode_enabled_ints =
+    Bits<MXLEN> mmode_enabled_ints =
       ((mode() == PrivilegeMode::M) && (CSR[mstatus].MIE == 1'b0))
         ? 0
-        : ($bits(CSR[mie]) & (HAS_MIDELEG ? ~$bits(CSR[mideleg]) : ~XLEN'0));
-    Bits<XLEN> mmode_pending_and_enabled = pending_ints & mmode_enabled_ints;
+        : ($bits(CSR[mie]) & (HAS_MIDELEG ? ~$bits(CSR[mideleg]) : ~MXLEN'0));
+    Bits<MXLEN> mmode_pending_and_enabled = pending_ints & mmode_enabled_ints;
     if (mmode_pending_and_enabled != 0) {
       pending_and_enabled_interrupts = mmode_pending_and_enabled;
       return;
     }
 
     if (CSR[misa].S == 1'b1) {
-      Bits<XLEN> smode_enabled_ints =
+      Bits<MXLEN> smode_enabled_ints =
         ((mode() == PrivilegeMode::M) || (CSR[mstatus].SIE == 1'b0))
           ? 0
           : $bits(CSR[mie]) & ($bits(CSR[mideleg]));
-      Bits<XLEN> smode_pending_and_enabled = pending_ints & smode_enabled_ints;
+      Bits<MXLEN> smode_pending_and_enabled = pending_ints & smode_enabled_ints;
       if (smode_pending_and_enabled != 0) {
         pending_and_enabled_interrupts = smode_pending_and_enabled;
         return;
@@ -197,11 +197,11 @@ function refresh_pending_interrupts {
     #   if (sgei_pending_and_enabled) {
 
     #   }
-    #   Bits<XLEN> vsmode_enabled_ints =
+    #   Bits<MXLEN> vsmode_enabled_ints =
     #     ((mode() == PrivilegeMode::M) || (mode() == PrivilegeMode::S) || (CSR[vsstatus].SIE == 1'b0)
     #       ? 0
     #       : $bits(CSR[mie]) & ($bits[CSR[mideleg]] & $bits[CSR[hideleg]]));
-    #   Bits<XLEN> vsmode_pending_and_enabled = pending_ints & vsmode_enabled_ints;
+    #   Bits<MXLEN> vsmode_pending_and_enabled = pending_ints & vsmode_enabled_ints;
 
     #   if (vsmode_pending_and_enabled != 0) {
     #     pending_and_enabled_interrupts = vsmode_pending_and_enabled;
@@ -216,7 +216,7 @@ function refresh_pending_interrupts {
 
 function highest_priority_interrupt {
   returns InterruptCode
-  arguments Bits<XLEN> int_mask
+  arguments Bits<MXLEN> int_mask
   description {
     Given a bitmask of interrupts in the format of MIE/MIP, return the highest
     priority interrupt code that is set
@@ -276,8 +276,8 @@ function choose_interrupt {
 
 
     # check M mode interrupts
-    Bits<XLEN> mmode_pending_and_enabled =
-      pending_and_enabled_interrupts & ~(HAS_MIDELEG ? $bits(CSR[mideleg]) : XLEN'0);
+    Bits<MXLEN> mmode_pending_and_enabled =
+      pending_and_enabled_interrupts & ~(HAS_MIDELEG ? $bits(CSR[mideleg]) : MXLEN'0);
     if (mmode_pending_and_enabled != 0) {
       assert((mode() != PrivilegeMode::M) || (CSR[mstatus].MIE == 1'b1),
              "M-mode interrupts are not enabled");
@@ -286,9 +286,9 @@ function choose_interrupt {
 
     # check S-mode interrupts
     } else if (CSR[misa].S == 1'b1) {
-      Bits<XLEN> smode_pending_and_enabled =
+      Bits<MXLEN> smode_pending_and_enabled =
         (pending_and_enabled_interrupts & $bits(CSR[mideleg]))
-        # & ((CSR[misa].H == 1'b1) ? ~$bits(CSR[hideleg]) : ~XLEN'0)
+        # & ((CSR[misa].H == 1'b1) ? ~$bits(CSR[hideleg]) : ~MXLEN'0)
         ;
 
       if (smode_pending_and_enabled != 0) {
@@ -305,8 +305,8 @@ function choose_interrupt {
     # check the delegation register
     PrivilegeMode to_mode;
 
-    Bits<XLEN> chosen_mask = (XLEN'1 << $bits(chosen));
-    if (((HAS_MIDELEG ? $bits(CSR[mideleg]) : XLEN'0) & chosen_mask) == 0) {
+    Bits<MXLEN> chosen_mask = (MXLEN'1 << $bits(chosen));
+    if (((HAS_MIDELEG ? $bits(CSR[mideleg]) : MXLEN'0) & chosen_mask) == 0) {
       to_mode = PrivilegeMode::M;
     } else {
       # delegated from M

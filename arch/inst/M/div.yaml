@@ -41,11 +41,11 @@ operation(): |
   if (src2 == 0) {
     # division by zero. Since RISC-V does not have arithmetic exceptions, the result is defined
     # to be -1
-    X[rd] = {XLEN{1'b1}};
+    X[rd] = {MXLEN{1'b1}};
 
-  } else if ((src1 == signed_min) && (src2 == {XLEN{1'b1}})) {
+  } else if ((src1 == signed_min) && (src2 == {MXLEN{1'b1}})) {
     # signed overflow. Since RISC-V does not have arithmetic exceptions, the result is defined
-    # to be the most negative number (-2^(XLEN-1))
+    # to be the most negative number (-2^(MXLEN-1))
     X[rd] = signed_min;
 
   } else {
@@ -53,6 +53,9 @@ operation(): |
     X[rd] = $signed(src1) / $signed(src2);
   }
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     if extension("M") then {
@@ -70,3 +73,5 @@ sail(): |
       RETIRE_FAIL
     }
   }
+
+# SPDX-SnippetEnd

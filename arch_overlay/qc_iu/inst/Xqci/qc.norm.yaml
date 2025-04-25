@@ -35,4 +35,4 @@ operation(): |
   XReg clo = (xlen() - 1) - $signed(highest_set_bit(~X[rs1]));
   XReg mnt = (X[rs1][31] == 1) ? (X[rs1] << (clo - 1)) : (X[rs1] << (clz - 1));
   XReg exp = (X[rs1][31] == 1) ? (-(clo - 1)) : (-(clz - 1));
-  X[rd] = {mnt[23:0],exp[7:0]};
+  X[rd] = {mnt[31:8],exp[7:0]};
