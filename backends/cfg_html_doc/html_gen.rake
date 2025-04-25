@@ -230,6 +230,8 @@ rule %r{#{$root}/\.stamps/html-gen-.*\.stamp} => proc { |tname|
   playbook_path = $root / "gen" / "cfg_html_doc" / config_name / "antora" / "playbook.yaml"
   Rake::Task[playbook_path].invoke
 
+  $logger.info "Running Antora under npm to create #{config_name}"
+
   sh [
     "npm exec -- antora",
     "--stacktrace",
@@ -240,6 +242,9 @@ rule %r{#{$root}/\.stamps/html-gen-.*\.stamp} => proc { |tname|
     "--fetch",
     playbook_path
   ].join(" ")
+
+  $logger.info "Done running Antora under npm to create #{config_name}"
+
   FileUtils.touch t.name
 end
 
