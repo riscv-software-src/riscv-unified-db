@@ -2,6 +2,11 @@
 
 ROOT=$(dirname $(realpath ${BASH_SOURCE[0]}))
 
+[ $# -eq 0 ] && {
+  ./do --tasks
+  exit 0
+}
+
 if [ "$1" == "clobber" ]; then
   ${ROOT}/bin/clobber
   exit $?

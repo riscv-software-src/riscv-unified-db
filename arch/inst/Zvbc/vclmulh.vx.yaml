@@ -6,8 +6,7 @@ name: vclmulh.vx
 long_name: No synopsis available.
 description: |
   No description available.
-definedBy:
-  anyOf: [Zvbc, Zvkn, Zvks]
+definedBy: Zvbc
 assembly: vm, vs2, xs1, vd
 encoding:
   match: 001101-----------110-----1010111
