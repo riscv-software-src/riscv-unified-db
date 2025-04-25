@@ -20,12 +20,8 @@ description: |
 definedBy: I
 assembly: ""
 encoding:
-  match: 1000-------------000-----0001111
+  match: 100000110011-----000-----0001111
   variables:
-    - name: pred
-      location: 27-24
-    - name: succ
-      location: 23-20
     - name: rs1
       location: 19-15
     - name: rd
