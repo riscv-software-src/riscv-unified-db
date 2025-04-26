@@ -4,8 +4,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /workspace
 
+RUN export DEBIAN_FRONTEND=noninteractive
+
 # please keep pkgs sorted
-RUN export DEBIAN_FRONTEND=noninteractive && \
+RUN export \
   apt-get update && \
   apt-get install -y --no-install-recommends --fix-missing \
     build-essential \
