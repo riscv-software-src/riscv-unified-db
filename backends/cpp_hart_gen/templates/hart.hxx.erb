@@ -38,7 +38,7 @@ namespace udb {
     <%- csrs = cfg_arch.not_prohibited_csrs -%>
     <%- csrs.each do |csr| -%>
     friend class <%= name_of(:csr, cfg_arch, csr.name) %><SocType>;
-    <%- fields = cfg_arch.fully_configured? ? csr.possible_fields(cfg_arch) : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
+    <%- fields = cfg_arch.fully_configured? ? csr.possible_fields : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
     <%- fields.each do |field| -%>
     <%- next unless cfg_arch.possible_xlens.any? { |xlen| field.defined_in_base?(xlen) } -%>
 

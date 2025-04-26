@@ -34,7 +34,7 @@ def arch2ext_table(arch)
       {name: "Extension Name", formatter: "link", sorter: "alphanum", headerFilter: true, frozen: true, formatterParams:
         {
         labelField:"Extension Name",
-        urlPrefix: "https://risc-v-certification-steering-committee.github.io/riscv-unified-db/manual/html/isa/isa_20240411/exts/"
+        urlPrefix: "https://riscv-software-src.github.io/riscv-unified-db/manual/html/isa/isa_20240411/exts/"
         }
       },
       {name: "Description", formatter: "textarea", sorter: "alphanum", headerFilter: true},
@@ -98,7 +98,7 @@ def arch2inst_table(arch)
       {name: "Instruction Name", formatter: "link", sorter: "alphanum", headerFilter: true, frozen: true, formatterParams:
         {
         labelField:"Instruction Name",
-        urlPrefix: "https://risc-v-certification-steering-committee.github.io/riscv-unified-db/manual/html/isa/isa_20240411/insts/"
+        urlPrefix: "https://riscv-software-src.github.io/riscv-unified-db/manual/html/isa/isa_20240411/insts/"
         }
       },
       {name: "Description", formatter: "textarea", sorter: "alphanum", headerFilter: true},
@@ -147,7 +147,7 @@ def arch2csr_table(arch)
       {name: "CSR Name", formatter: "link", sorter: "alphanum", headerFilter: true, frozen: true, formatterParams:
         {
         labelField:"CSR Name",
-        urlPrefix: "https://risc-v-certification-steering-committee.github.io/riscv-unified-db/manual/html/isa/isa_20240411/csrs/"
+        urlPrefix: "https://riscv-software-src.github.io/riscv-unified-db/manual/html/isa/isa_20240411/csrs/"
         }
       },
       {name: "Address", formatter: "textarea", sorter: "number", headerFilter: true},
