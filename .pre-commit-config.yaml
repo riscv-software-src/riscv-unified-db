@@ -98,4 +98,4 @@ repos:
   - repo: https://github.com/fsfe/reuse-tool
     rev: v5.0.2
     hooks:
-      - id: reuse
+      - id: reuse-lint-file

@@ -8,17 +8,17 @@ address: 0x60C
 priv_mode: S
 length: MXLEN
 description: |
-  For each hstateen CSR, bit 63 is defined to control access to the matching sstateen CSR.
-  Bit 63 of hstateen0 controls access to sstateen0.
+  For each `hstateen` CSR, bit 63 is defined to control access to the matching `sstateen` CSR.
+  Bit 63 of `hstateen0` controls access to `sstateen0`.
 
-  With the hypervisor extension, the hstateen CSRs have identical encodings to the mstateen
+  With the hypervisor extension, the `hstateen` CSRs have identical encodings to the `mstateen`
   CSRs, except controlling accesses for a virtual machine (from VS and VU modes).
 
-  For every bit in an hstateen CSR that is zero (whether read-only zero or set to zero),
-  the same bit appears as read-only zero in sstateen when accessed in VS-mode.
+  For every bit in an `hstateen` CSR that is zero (whether read-only zero or set to zero),
+  the same bit appears as read-only zero in `sstateen` when accessed in VS-mode.
 
-  A bit in an hstateen CSR cannot be read-only one unless the same bit is read-only one
-  in the matching mstateen CSR.
+  A bit in an `hstateen` CSR cannot be read-only one unless the same bit is read-only one
+  in the matching `mstateen` CSR.
 
 definedBy:
   allOf:
@@ -30,22 +30,22 @@ fields:
     location: 63
     base: 64
     description: |
-      The SE0 bit in hstateen0 controls access to the sstateen0 CSR.
+      The SE0 bit in `hstateen0` controls access to the `sstateen0` CSR.
     type: RW
     reset_value: UNDEFINED_LEGAL
   ENVCFG:
     location: 62
     base: 64
     description: |
-      The ENVCFG bit in hstateen0 controls access to the senvcfg CSRs.
+      The ENVCFG bit in `hstateen0` controls access to the `senvcfg` CSRs.
     type: RW
     reset_value: UNDEFINED_LEGAL
   CSRIND:
     location: 60
     base: 64
     description: |
-      The CSRIND bit in hstateen0 controls access to the siselect and the
-      sireg*, (really vsiselect and vsireg*) CSRs provided by the Sscsrind
+      The CSRIND bit in `hstateen0` controls access to the `siselect` and the
+      `sireg*`, (really `vsiselect` and `vsireg*`) CSRs provided by the Sscsrind
       extensions.
     type: RW
     reset_value: UNDEFINED_LEGAL
@@ -53,19 +53,19 @@ fields:
     location: 59
     base: 64
     description: |
-      The AIA bit in hstateen0 controls access to all state introduced by
+      The AIA bit in `hstateen0` controls access to all state introduced by
       the Ssaia extension and is not controlled by either the CSRIND or the
-      IMSIC bits of hstateen0.
+      IMSIC bits of `hstateen0`.
     type: RW
     reset_value: UNDEFINED_LEGAL
   IMSIC:
     location: 58
     base: 64
     description: |
-      The IMSIC bit in hstateen0 controls access to the guest IMSIC state,
-      including CSRs stopei (really vstopei), provided by the Ssaia extension.
+      The IMSIC bit in `hstateen0` controls access to the guest IMSIC state,
+      including CSRs `stopei` (really `vstopei`), provided by the Ssaia extension.
 
-      Setting the IMSIC bit in hstateen0 to zero prevents a virtual machine
+      Setting the IMSIC bit in `hstateen0` to zero prevents a virtual machine
       from accessing the hart’s IMSIC the same as setting `hstatus.`VGEIN = 0.
     type: RW
     reset_value: UNDEFINED_LEGAL
@@ -73,27 +73,27 @@ fields:
     location: 57
     base: 64
     description: |
-      The CONTEXT bit in hstateen0 controls access to the scontext CSR provided
+      The CONTEXT bit in `hstateen0` controls access to the `scontext` CSR provided
       by the Sdtrig extension.
     type: RW
     reset_value: UNDEFINED_LEGAL
   JVT:
     location: 2
     description: |
-      The JVT bit controls access to the jvt CSR provided by the Zcmt extension.
+      The JVT bit controls access to the `jvt` CSR provided by the Zcmt extension.
     type: RW
     reset_value: UNDEFINED_LEGAL
   FCSR:
     location: 1
     description: |
-      The FCSR bit controls access to fcsr for the case when floating-point instructions
-      operate on x registers instead of `f` registers as specified by the Zfinx and related
-      extensions (Zdinx, etc.). Whenever misa.F = 1, FCSR bit of mstateen0 is read-only
-      zero (and hence read-only zero in hstateen0 and sstateen0 too). For convenience,
-      when the stateen CSRs are implemented and misa.F = 0, then if the FCSR bit of a
-      controlling stateen0 CSR is zero, all floating-point instructions cause an illegal
+      The FCSR bit controls access to `fcsr` for the case when floating-point instructions
+      operate on `x` registers instead of `f` registers as specified by the Zfinx and related
+      extensions (Zdinx, etc.). Whenever `misa.F` = 1, FCSR bit of `mstateen0` is read-only
+      zero (and hence read-only zero in `hstateen0` and `sstateen0` too). For convenience,
+      when the `stateen` CSRs are implemented and `misa.F` = 0, then if the FCSR bit of a
+      controlling `stateen0` CSR is zero, all floating-point instructions cause an illegal
       instruction trap (or virtual instruction trap, if relevant), as though they all access
-      fcsr, regardless of whether they really do.
+      `fcsr`, regardless of whether they really do.
     type: RW
     reset_value: UNDEFINED_LEGAL
   C:
@@ -101,6 +101,6 @@ fields:
     description: |
       The C bit controls access to any and all custom state. This bit is not custom state itself.
       The C bit of these registers is not custom state itself; it is a standard field of a
-      standard CSR, either mstateen0, hstateen0, or sstateen0.
+      standard CSR, either `mstateen0`, `hstateen0`, or `sstateen0`.
     type: RW
     reset_value: UNDEFINED_LEGAL

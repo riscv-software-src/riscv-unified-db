@@ -8,12 +8,12 @@ address: 0x30D
 priv_mode: M
 length: MXLEN
 description: |
-  For each mstateen CSR, bit 63 is defined to control access to the matching sstateen and hstateen
-  CSRs. Bit 63 of mstateen1 controls access to sstateen1 and hstateen1.
+  For each `mstateen` CSR, bit 63 is defined to control access to the matching `sstateen` and `hstateen`
+  CSRs. Bit 63 of `mstateen1` controls access to `sstateen1` and `hstateen1`.
 
-  On reset, all writable mstateen bits are initialized by the hardware to zeros. If machine-level software
-  changes these values, it is responsible for initializing the corresponding writable bits of the hstateen
-  and sstateen CSRs to zeros too. Software at each privilege level should set its respective stateen CSRs
+  On reset, all writable `mstateen` bits are initialized by the hardware to zeros. If machine-level software
+  changes these values, it is responsible for initializing the corresponding writable bits of the `hstateen`
+  and `sstateen` CSRs to zeros too. Software at each privilege level should set its respective `stateen` CSRs
   to indicate the state it is prepared to allow less-privileged software to access. For OSes and hypervisors,
   this usually means the state that the OS or hypervisor is prepared to swap on a context switch, or to
   manage in some other way.
@@ -23,6 +23,6 @@ fields:
     location: 63
     base: 64
     description: |
-      The SE0 bit in mstateen1 controls access to the hstateen1, hstateen1h, and the sstateen1 CSRs.
+      The SE0 bit in `mstateen1` controls access to the `hstateen1`, `hstateen1h`, and the `sstateen1` CSRs.
     type: RW
     reset_value: UNDEFINED_LEGAL
