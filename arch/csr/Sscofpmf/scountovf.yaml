@@ -14,7 +14,7 @@ description: |
 
   This register enables supervisor-level overflow interrupt handler
   software to quickly and easily determine which counter(s) have overflowed
-  (without needing to make an execution environment call or series of calls ultimately up to M-mode).
+  (without needing to make an execution environment call or series of calls ultimately up to M-mode)
 
   Read access to bit X is subject to the same `mcounteren` (or `mcounteren` and `hcounteren`)
   CSRs that mediate access to the `hpmcounter` CSRs by S-mode (or VS-mode).
