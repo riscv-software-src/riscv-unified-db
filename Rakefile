@@ -157,6 +157,15 @@ namespace :serve do
 end
 
 namespace :test do
+
+  # "Run the cross-validation against LLVM"
+  task :llvm do
+      begin
+        sh "#{$root}/.home/.venv/bin/python3 -m pytest ext/auto-inst/test_parsing.py -v"
+      rescue => e
+        raise unless e.message.include?("status (5)") # don't fail on skipped tests
+    end
+  end
   # "Run the IDL compiler test suite"
   task :idl_compiler do
     t = Minitest::TestTask.new(:lib_test)
@@ -430,6 +439,8 @@ namespace :test do
     Rake::Task["test:idl"].invoke
     puts "UPDATE: Running test:inst_encodings"
     Rake::Task["test:inst_encodings"].invoke
+    puts "UPDATE: Running test:llvm"
+    Rake::Task["test:llvm"].invoke
     puts "UPDATE: Done test:smoke"
   end
 
