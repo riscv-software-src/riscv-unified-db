@@ -21,3 +21,5 @@ __pycache__/
 .pytest_cache/
 *.bak
 *.log
+__pycache__/
+*.pyc
