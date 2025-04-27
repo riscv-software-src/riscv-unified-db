@@ -56,7 +56,9 @@ class Csr < DatabaseObject
 
   # @return [Boolean] Whether or not the format of this CSR changes when the effective XLEN changes in some mode
   def format_changes_with_xlen?
-    dynamic_length? || possible_fields.any?(&:dynamic_location?)
+    dynamic_length? || \
+      (defined_in_all_bases? && (possible_fields_for(32) != possible_fields_for(64))) || \
+      possible_fields.any?(&:dynamic_location?)
   end
 
   # @param effective_xlen [Integer or nil] 32 or 64 for fixed xlen, nil for dynamic
@@ -355,8 +357,11 @@ class Csr < DatabaseObject
   # @return [Array<CsrField>] All implemented fields for this CSR at the given effective XLEN, sorted by location (smallest location first)
   #                           Excluded any fields that are defined by unimplemented extensions or a base that is not effective_xlen
   def possible_fields_for(effective_xlen)
+
     raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
-    @possible_fields_for ||=
+
+    @possible_fields_for ||= {}
+    @possible_fields_for[effective_xlen] ||=
       possible_fields.select do |f|
         !f.key?("base") || f.base == effective_xlen
       end
