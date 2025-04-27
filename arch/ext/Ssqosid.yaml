@@ -21,20 +21,16 @@ description: |
   These identifiers accompany each request issued by the hart to shared resource controllers.
 
   Additional metadata, like the nature of the memory access and the ID of the originating supervisor domain,
-  can accompany RCID and MCID. Resource controllers may use this metadata for differentiated service such as a different capacity allocation for code storage vs.data storage.
+  can accompany RCID and MCID. Resource controllers may use this metadata for differentiated service such as a different capacity allocation for code storage vs. data storage.
   Resource controllers can use this data for security policies such as not exposing statistics of one security domain to another.
 
   These identifiers are crucial for the RISC-V Capacity and Bandwidth Controller QoS Register Interface (CBQRI) specification,
   which provides methods for setting resource usage limits and monitoring resource consumption.
   The RCID controls resource allocations, while the MCID is used for tracking resource usage.
 
-  The Ssqosid extension does not require that S-mode mode be implemented.
 versions:
   - version: "1.0.0"
     state: ratified
-    ratification_date: "2024-11"
+    ratification_date: "2024-06"
     url: "https://github.com/riscv/riscv-isa-manual/releases/tag/riscv-isa-release-5308687-2025-04-22"
-    requires:
-      allOf:
-        - name: S
-          version: ~> 1.13
+    requires: { name: S, version: ~> 1.13 }
