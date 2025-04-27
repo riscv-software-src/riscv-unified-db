@@ -33,6 +33,7 @@ group :development do
   gem "solargraph"
 end
 
-group :test do
-  gem 'simplecov', require: false
+group :development, :test do
+  gem "minitest"
+  gem "simplecov"
 end
