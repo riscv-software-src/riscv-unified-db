@@ -1,0 +1,38 @@
+{
+"$schema": "http://json-schema.org/draft-07/schema#",
+"title": "Instruction Type Schema",
+"description": "Schema for instruction type definitions",
+
+"$defs": {
+    "encoding": {
+    "$ref": "inst_schema.json#/$defs/encoding"
+    }
+},
+
+"type": "object",
+"properties": {
+    "encoding": {
+    "description": "Instruction encoding and decode variables",
+    "oneOf": [
+        {
+        "$ref": "#/$defs/encoding"
+        },
+        {
+        "type": "object",
+        "properties": {
+            "RV32": {
+            "$ref": "#/$defs/encoding"
+            },
+            "RV64": {
+            "$ref": "#/$defs/encoding"
+            }
+        },
+        "required": ["RV32", "RV64"],
+        "additionalProperties": false
+        }
+    ]
+    }
+},
+"required": ["encoding"],
+"additionalProperties": false
+}
