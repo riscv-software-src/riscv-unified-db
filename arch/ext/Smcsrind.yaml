@@ -25,8 +25,8 @@ description: |
 
   Further, Machine-level and Supervisor-level select values are separate address spaces from each other;
   however, Machine-level and Supervisor-level CSRs with the same select value may be defined by an extension
-  as partial or full aliases with respect to each other. This typically would be done for CSRs that can be
-  delegated from Machine-level to Supervisor-level.
+  as partial or full aliases with respect to each other.
+  This typically would be done for CSRs that can be delegated from Machine-level to Supervisor-level.
 
   The machine-level extension Smcsrind encompasses all added CSRs and all behavior modifications for a hart,
   over all privilege levels. For a supervisor-level environment, extension Sscsrind is essentially the same
