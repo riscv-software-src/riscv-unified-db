@@ -24,6 +24,7 @@ fields:
       M-Mode or HS-Mode (using `hcontext`) software can write a
       context number to this register, which can be used to set
       triggers that only fire in that specific context.
+
       An implementation may tie any number of upper bits in
       this field to 0. If the H extension is not implemented, it’s
       recommended to implement 6 bits on RV32 and 13 bits on

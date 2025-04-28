@@ -42,11 +42,10 @@ fields:
     type: RW
     description: |
       If type is 0, then this bit is hard-wired to 0.
-      0 (both): Both Debug and M-mode can write the `tdata`
-      registers at the selected `tselect`.
-      1 (dmode): Only Debug Mode can write the `tdata` registers
-      at the selected `tselect`. Writes from other modes are
-      ignored.
+
+      0 (both): Both Debug and M-mode can write the `tdata` registers at the selected `tselect`.
+      1 (dmode): Only Debug Mode can write the `tdata` registers at the selected `tselect`. Writes from other modes are ignored.
+
       This bit is only writable from Debug Mode. In ordinary
       use, external debuggers will always set this bit when
       configuring a trigger. When clearing this bit, debuggers
