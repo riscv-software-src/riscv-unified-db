@@ -24,50 +24,45 @@ definedBy: F
 fields:
   NV:
     alias: fcsr.NV
+    long_name: Invalid Operation
     location: 4
     description: |
-      *Invalid Operation*
-
       Set by hardware when a floating point operation is invalid and stays set until explicitly
       cleared by software.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
   DZ:
     alias: fcsr.DZ
+    long_name: Divide by Zero
     location: 3
     description: |
-      *Divide by zero*
-
       Set by hardware when a floating point divide attempts to divide by zero and stays set until explicitly
       cleared by software.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
   OF:
     alias: fcsr.OF
+    long_name: Overflow
     location: 2
     description: |
-      *Overflow*
-
       Set by hardware when a floating point operation overflows and stays set until explicitly
       cleared by software.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
   UF:
     alias: fcsr.UF
+    long_name: Underflow
     location: 1
     description: |
-      *Underflow*
-
       Set by hardware when a floating point operation underflows and stays set until explicitly
       cleared by software.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
   NX:
     alias: fcsr.NX
+    long_name: Inexact
     location: 0
     description: |
-      *Inexact*
-
       Set by hardware when a floating point operation is inexact and stays set until explicitly
       cleared by software.
     type: RW-H
