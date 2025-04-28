@@ -16,6 +16,19 @@
         }
       ]
     },
+    "type": {
+      "type": "object",
+      "properties": {
+        "$ref": {
+          "type": "string",
+          "format": "uri-reference",
+          "pattern": "^inst_type/[A-Z]/[a-zA-Z0-9_]+\\.yaml#.*$",
+          "description": "Reference to an instruction type definition"
+        }
+      },
+      "required": ["$ref"],
+      "additionalProperties": false
+    },
     "variable_metadata": {
       "properties": {
         "location": {
@@ -189,6 +202,25 @@
         "definedBy": {
           "$ref": "schema_defs.json#/$defs/requires_entry",
           "description": "Extension(s) that defines the instruction"
+        },
+        "type": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/type"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "RV32": {
+                  "$ref": "#/$defs/type"
+                },
+                "RV64": {
+                  "$ref": "#/$defs/type"
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
         },
         "encoding": {
           "description": "Instruction encoding and decode variables",
