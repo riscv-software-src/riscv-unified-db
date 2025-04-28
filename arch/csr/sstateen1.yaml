@@ -32,9 +32,10 @@ description: |
   be disambiguated by being explicitly specified one way or the other.
   In some cases, the bits of the `stateen` CSRs will have a dual purpose as enables for the ISA
   extensions that introduce the controlled state.
+
   Each bit of a supervisor-level `sstateen` CSR controls user-level access (from U-mode or VU-mode)
   to an extension’s state. The intention is to allocate the bits of `sstateen` CSRs starting at the
-  least- significant end, bit 0, through to bit 31, and then on to the next-higher-numbered
+  least-significant end, bit 0, through to bit 31, and then on to the next-higher-numbered
   sstateen CSR.
 
 definedBy:

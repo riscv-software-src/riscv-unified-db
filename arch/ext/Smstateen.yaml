@@ -6,8 +6,8 @@ name: Smstateen
 long_name: Machine-mode view of the state-enable extension
 description: |
   Machine-mode view of the state-enable extension. The Smstateen
-  extension specification comprises the mstateen*, sstateen*,
-  and hstateen* CSRs and their functionality.
+  extension specification comprises the `mstateen*`, `sstateen*`,
+  and `hstateen*` CSRs and their functionality.
 
   NOTE: The Smstateen extension specification is an M-mode extension as
   it includes M-mode features, but the supervisor-mode visible
