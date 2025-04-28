@@ -39,6 +39,7 @@ length: 32
 definedBy: F
 fields:
   ROUNDINGMODE:
+    alias: fcsr.FRM
     location: 2-0
     description: |
       Rounding mode data.

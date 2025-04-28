@@ -10,18 +10,6 @@ description: |
   arithmetic instruction since the field was last reset by software. The base RISC-V ISA does not
   support generating a trap on the setting of a floating-point exception flag.
 
-  [[bitdef]]
-  .Accrued Exception Flag Encoding.
-  [%autowidth,float="center",align="center",cols="^,<",options="header",]
-  |===
-  |Flag Mnemonic |Flag Meaning
-  |NV |Invalid Operation
-  |DZ |Divide by Zero
-  |OF |Overflow
-  |UF |Underflow
-  |NX |Inexact
-  |===
-
   [NOTE]
   ====
   As allowed by the standard, we do not support traps on floating-point exceptions in the F
@@ -35,55 +23,50 @@ length: 32
 definedBy: F
 fields:
   NV:
+    alias: fcsr.NV
     location: 4
     description: |
       *Invalid Operation*
-
-      Cumulative error flag for floating point operations.
 
       Set by hardware when a floating point operation is invalid and stays set until explicitly
       cleared by software.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
   DZ:
+    alias: fcsr.DZ
     location: 3
     description: |
       *Divide by zero*
-
-      Cumulative error flag for floating point operations.
 
       Set by hardware when a floating point divide attempts to divide by zero and stays set until explicitly
       cleared by software.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
   OF:
+    alias: fcsr.OF
     location: 2
     description: |
       *Overflow*
-
-      Cumulative error flag for floating point operations.
 
       Set by hardware when a floating point operation overflows and stays set until explicitly
       cleared by software.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
   UF:
+    alias: fcsr.UF
     location: 1
     description: |
       *Underflow*
-
-      Cumulative error flag for floating point operations.
 
       Set by hardware when a floating point operation underflows and stays set until explicitly
       cleared by software.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
   NX:
+    alias: fcsr.NX
     location: 0
     description: |
       *Inexact*
-
-      Cumulative error flag for floating point operations.
 
       Set by hardware when a floating point operation is inexact and stays set until explicitly
       cleared by software.
