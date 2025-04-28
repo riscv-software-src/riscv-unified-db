@@ -29,6 +29,17 @@ SPDX-FileCopyrightText = [
 ]
 SPDX-License-Identifier = "BSD-3-Clause-Clear"
 
+# readme files
+[[annotations]]
+path = [
+    "CODE_OF_CONDUCT.adoc",
+    "CONTRIBUTING.adoc",
+    "doc/idl.adoc",
+    "doc/ruby.adoc",
+    "doc/schemas.adoc"
+]
+SPDX-FileCopyrightText = "2017-2025 Contributors to the RISCV ISA Manual <https://github.com/riscv/riscv-isa-manual>"
+SPDX-License-Identifier = "BSD-3-Clause-Clear"
 
 [[annotations]]
 path = [
