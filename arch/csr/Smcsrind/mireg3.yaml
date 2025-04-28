@@ -38,6 +38,6 @@ fields:
     location_rv32: 31-0
     location_rv64: 63-0
     type: RW
-    description: Register state data of CSR selected by `miselect` value.
+    description: Register state of the CSR selected by the current `miselect` value.
     reset_value: UNDEFINED_LEGAL
 sw_read(): |
