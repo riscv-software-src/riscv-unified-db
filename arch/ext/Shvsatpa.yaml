@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Shvsatpa
+long_name: vstap translation mode requirements
+description: |
+  All translation modes supported in the `satp` CSR must be supported in the `vsatp` CSR.
+
+  [NOTE]
+  This extension was ratified with the RVA22 profiles.
+type: privileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

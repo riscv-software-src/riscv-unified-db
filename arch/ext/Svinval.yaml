@@ -3,6 +3,7 @@
 $schema: "ext_schema.json#"
 kind: extension
 name: Svinval
+type: privileged
 long_name: Fine-grained address-translation cache invalidation
 description: |
   The `Svinval` extension splits `sfence.vma`, `hfence.vma`, and `hfence.gvma` instructions into

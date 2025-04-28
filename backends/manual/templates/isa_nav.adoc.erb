@@ -8,17 +8,17 @@
 
 * Alphabetical list of instructions
 <%- manual_version.instructions.sort { |a, b| a.name <=> b.name }.each do |inst| -%>
-** xref:insts:<%= inst.name %>.adoc[<%= inst.name %>]
+** <%= link_to_udb_doc_inst(inst.name) %>
 <%- end -%>
 
 * Alphabetical list of CSRs
 <%- manual_version.csrs.sort { |a, b| a.name <=> b.name }.each do |csr| -%>
-** xref:csrs:<%= csr.name %>.adoc[<%= csr.name %>]
+** <%= link_to_udb_doc_csr(csr.name) %>
 <%- end -%>
 
 * Alphabetical list of extensions
 <%- manual_version.extensions.sort { |a, b| a.name <=> b.name }.each do |ext| -%>
-** xref:exts:<%= ext.name %>.adoc[<%= ext.name %>]
+** <%= link_to_udb_doc_ext(ext.name) %>
 <%- end -%>
 
 * xref:params:param_list.adoc[Alphabetical list of parameters]

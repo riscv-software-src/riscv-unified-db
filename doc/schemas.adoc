@@ -1,0 +1,6 @@
+= UnifiedDB Data Schemas
+
+Data in UnifiedDB is written in https://en.wikipedia.org/wiki/YAML[YAML] files,
+and the structure of those files is checked using https://json-schema.org/[JSON Schema].
+
+TODO

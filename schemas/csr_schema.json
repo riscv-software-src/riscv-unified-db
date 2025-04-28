@@ -15,6 +15,10 @@
           "type": "string",
           "description": "Name of the field. Optional because it is implied by the object key of the CSR object holding the field"
         },
+        "long_name": {
+          "type": "string",
+          "description": "Long name of the field"
+        },
         "location": {
           "$ref": "schema_defs.json#/$defs/field_location",
           "description": "Location of the field within the CSR register"
@@ -59,7 +63,7 @@
           "description": "When a CSR field is only defined in RV32, or RV64, the base that defines it. When defined in both, this field should be absent."
         },
         "description": {
-          "type": "string",
+          "$ref": "schema_defs.json#/$defs/spec_text",
           "description": "Function of the field"
         },
         "type": {
@@ -105,6 +109,12 @@
             }
           ],
           "description": "Extension(s) that affect the definition of the field beyond the extension (or base) the field is originally defined in"
+        },
+        "cert_normative_rules": {
+          "$ref": "schema_defs.json#/$defs/cert_normative_rules"
+        },
+        "cert_test_procedures": {
+          "$ref": "schema_defs.json#/$defs/cert_test_procedures"
         }
       },
 
@@ -202,23 +212,8 @@
           "description": "Descriptive name for the CSR"
         },
         "description": {
-          "oneOf": [
-            {
-              "type": "string",
-              "description": "A full Asciidoc description of the CSR, intended to be used as documentation."
-            },
-            {
-              "type": "object",
-              "description": "A full Asciidoc description of the CSR, intended to be used as documentation.",
-              "properties": {
-                "$copy": {
-                  "type": "string",
-                  "format": "uri-reference"
-                }
-              },
-              "additionalProperties": false
-            }
-          ]
+          "$ref": "schema_defs.json#/$defs/spec_text",
+          "description": "Function of the field"
         },
         "definedBy": {
           "$ref": "schema_defs.json#/$defs/requires_entry",
@@ -269,6 +264,12 @@
         "$source": {
           "description": "Path to the source file this definition came from; used by downstream tooling -- not expected to be in handwritten files",
           "type": "string"
+        },
+        "cert_normative_rules": {
+          "$ref": "schema_defs.json#/$defs/cert_normative_rules"
+        },
+        "cert_test_procedures": {
+          "$ref": "schema_defs.json#/$defs/cert_test_procedures"
         }
       },
       "additionalProperties": false,

@@ -11,6 +11,34 @@ require_relative "../../lib/idl/passes/find_src_registers"
 CPP_HART_GEN_SRC = $root / "backends" / "cpp_hart_gen"
 CPP_HART_GEN_DST = $root / "gen" / "cpp_hart_gen"
 
+OPTION_STR = <<~DESC_OPTIONS.freeze
+  Options:
+
+    * CONFIG: Comma-separated list of configurations to generate.
+              "rv32" is the generic RV32 architecture (i.e., no config).
+              "rv64" is the generic RV64 architecture (i.e., no config).
+              "all" will generate all configurations and the generic architecture.
+
+              CONFIG can either be the name, excluding extension '.yaml', of a file under cfgs/
+              or the (absolute or relative) path to a config file.
+    * BUILD_NAME: Name of the build. Required if CONFIG is a list. Otherwise, BUILD_NAME will equal CONFIG.
+DESC_OPTIONS
+
+HELP = <<~DESC.freeze
+  Generate a C++ model of a hart(s) for configurations (./do --desc for more options)
+
+  #{OPTION_STR}
+
+  Examples:
+
+    ./do gen:cpp_hart CONFIG=rv64                       # generate generic hart model
+    ./do gen:cpp_hart CONFIG=example_rv64_with_overlay  # generate hart model for example_rv64_with_overlay config
+
+    # generate hart model for example_rv64_with_overlay and custom_cfg
+    ./do gen:cpp_hart CONFIG=example_rv64_with_overlay,custom_cfg BUILD_NAME=custom
+
+DESC
+
 # copy the includes to dst
 rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/.*\.hpp$} => proc { |tname|
   [(CPP_HART_GEN_SRC / "cpp" / "include" / "udb" / File.basename(tname)).to_s]
@@ -105,7 +133,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.h(xx)?\.unformatted
     "#{CPP_HART_GEN_SRC}/lib/gen_cpp.rb",
     "#{$root}/lib/idl/passes/prune.rb",
     "#{CPP_HART_GEN_SRC}/lib/template_helpers.rb",
-    "#{CPP_HART_GEN_SRC}/lib/csr_template_helpers.rb",
+    "#{CPP_HART_GEN_SRC}/lib/csr_backend_helpers.rb",
     __FILE__
   ]
 } do |t|
@@ -139,7 +167,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/src/cfgs/[^/]+/[^/]+\.cxx\.unformatted$} => proc 
     "#{CPP_HART_GEN_SRC}/lib/gen_cpp.rb",
     "#{$root}/lib/idl/passes/prune.rb",
     "#{CPP_HART_GEN_SRC}/lib/template_helpers.rb",
-    "#{CPP_HART_GEN_SRC}/lib/csr_template_helpers.rb",
+    "#{CPP_HART_GEN_SRC}/lib/csr_backend_helpers.rb",
     __FILE__
   ]
 } do |t|
@@ -188,7 +216,7 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/include/udb/[^/]+\.hpp} do |t|
 end
 
 def configs_build_name
-  raise ArgumentError, "Missing required option CONFIG:\n#{help}" if ENV["CONFIG"].nil?
+  raise ArgumentError, "Missing required option CONFIG:\n#{HELP}" if ENV["CONFIG"].nil?
 
   configs = ENV["CONFIG"].split(",")
   build_type = cmake_build_type
@@ -224,35 +252,10 @@ def configs_build_name
   [config_names, build_name]
 end
 
-OPTION_STR = <<~DESC_OPTIONS
-Options:
 
-  * CONFIG: Comma-separated list of configurations to generate.
-            "rv32" is the generic RV32 architecture (i.e., no config).
-            "rv64" is the generic RV64 architecture (i.e., no config).
-            "all" will generate all configurations and the generic architecture.
-
-            CONFIG can either be the name, excluding extension '.yaml', of a file under cfgs/
-            or the (absolute or relative) path to a config file.
-  * BUILD_NAME: Name of the build. Required if CONFIG is a list. Otherwise, BUILD_NAME will equal CONFIG.
-DESC_OPTIONS
 
 namespace :gen do
-  help = <<~DESC
-    Generate a C++ model of a hart(s) for configurations (./do --desc for more options)
-
-    #{OPTION_STR}
-
-    Examples:
-
-      ./do gen:cpp_hart CONFIG=rv64                       # generate generic hart model
-      ./do gen:cpp_hart CONFIG=example_rv64_with_overlay  # generate hart model for example_rv64_with_overlay config
-
-      # generate hart model for example_rv64_with_overlay and custom_cfg
-      ./do gen:cpp_hart CONFIG=example_rv64_with_overlay,custom_cfg BUILD_NAME=custom
-
-  DESC
-  desc help
+  desc HELP
   task :cpp_hart do
     configs, build_name = configs_build_name
 
@@ -328,21 +331,7 @@ def cmake_build_type
 end
 
 namespace :build do
-  help = <<~DESC
-    Build a C++ model of a hart(s) for configurations (./do --desc for more options)
-
-    #{OPTION_STR}
-
-    Examples:
-
-      ./do build:cpp_hart CONFIG=rv64                       # generate generic hart model
-      ./do build:cpp_hart CONFIG=example_rv64_with_overlay  # generate hart model for example_rv64_with_overlay config
-
-      # generate hart model for example_rv64_with_overlay and custom_cfg
-      ./do gen:cpp_hart CONFIG=example_rv64_with_overlay,custom_cfg BUILD_NAME=custom
-
-  DESC
-  desc help
+  desc HELP
   task cpp_hart: ["gen:cpp_hart"] do
     _, build_name = configs_build_name
 
@@ -382,10 +371,13 @@ file "#{CPP_HART_GEN_DST}/riscv-tests-build-64/Makefile" => "#{$root}/ext/riscv-
 end
 
 namespace :test do
-  task cpp_hart: ["build:cpp_hart"] do
+  task cpp_hart: "gen:cpp_hart" do
     _, build_name = configs_build_name
 
+    Rake::Task["#{CPP_HART_GEN_DST}/#{build_name}/build/Makefile"].invoke
+
     Dir.chdir "#{CPP_HART_GEN_DST}/#{build_name}/build" do
+      sh "make test_bits"
       sh "ctest"
     end
   end

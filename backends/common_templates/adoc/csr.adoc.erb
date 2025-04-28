@@ -1,4 +1,4 @@
-<%= anchor_for_csr(csr.name) %>
+<%= anchor_for_udb_doc_csr(csr.name) %>
 = <%= csr.name %>
 
 *<%= csr.long_name %>*
@@ -13,7 +13,7 @@ h| CSR Address    | <%= "0x#{csr.address.to_s(16)}" %>
 <%- if csr.priv_mode == 'VS' -%>
 h| Virtual CSR Address    | <%= "0x#{csr.virtual_address.to_s(16)}" %>
 <%- end -%>
-h| Length         | <%= csr.length_pretty(cfg_arch) %>
+h| Length         | <%= csr.length_pretty %>
 h| Privilege Mode | <%= csr.priv_mode %>
 |===
 
@@ -50,7 +50,7 @@ This CSR format changes dynamically.
 @Name @ Location @ Type @ Reset Value
 
 <%- csr.fields.each do |field| -%>
-@ <%= link_to_csr_field(csr.name, field.name) %>
+@ <%= link_to_udb_doc_csr_field(csr.name, field.name) %>
 @ <%= field.location_pretty %>
 @ <%= field.type_pretty %>
 @ <%= field.reset_value_pretty %>
