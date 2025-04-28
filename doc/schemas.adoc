@@ -3,4 +3,8 @@
 Data in UnifiedDB is written in https://en.wikipedia.org/wiki/YAML[YAML] files,
 and the structure of those files is checked using https://json-schema.org/[JSON Schema].
 
+Many UDB data objects share common field types, including:
+
+* xref:doc/prose_schema.adoc[Schema for Prose]
+
 TODO
