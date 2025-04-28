@@ -36,12 +36,8 @@ repos:
     rev: v3.5.3
     hooks:
       - id: prettier
-<<<<<<< HEAD
-        files: \.(json|toml|yml|yaml)$
-=======
         stages: [pre-commit]
-        files: \.(json|yml|yaml)$
->>>>>>> 4b358972 (ci: add commitlint pre-commit hook)
+        files: \.(json|toml|yml|yaml)$
         exclude: schemas/json-schema-draft-07.json
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
