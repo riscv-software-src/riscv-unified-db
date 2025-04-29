@@ -33,7 +33,8 @@ struct Csr {
   Boolean valid;
   String name;
   CsrAddressType addr_type;
-  Bits<MXLEN> address;
+  Bits<MXLEN> address;      # direct or indirect address
+  Bits<4> indirect_slot;    # window slot, when addr_type == Indirect
   PrivilegeMode mode;
   Boolean writable;
 }
@@ -54,9 +55,10 @@ generated function direct_csr_lookup {
 generated function indirect_csr_lookup {
   returns Csr
   arguments
-    Bits<MXLEN> csr_addr
+    Bits<MXLEN> csr_addr,
+    Bits<4> window_slot  # 1-indexed "slot" in the window (corresponding to *ireg<window_slot>)
   description {
-    Return CSR info for a CSR with indirect address +csr_addr+.
+    Return CSR info for a CSR with indirect address +csr_addr+ at window slot +window_slot+.
 
     If no CSR exists, <return_value>.valid == false
   }
