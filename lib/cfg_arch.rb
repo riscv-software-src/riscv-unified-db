@@ -636,7 +636,7 @@ class ConfiguredArchitecture < Architecture
 
   # @return [Array<Csr>] List of all CSRs that it is possible to implement
   def not_prohibited_csrs
-    @not_prohibited_csrs ||=
+    @not_prohibited_csrs =
       if @config.fully_configured?
         transitive_implemented_csrs
       elsif @config.partially_configured?
