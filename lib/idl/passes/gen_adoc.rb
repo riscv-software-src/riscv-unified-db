@@ -310,10 +310,9 @@ module Idl
         # we don't have the symtab to map this to a csr name
         "#{' '*indent}#{csr_text}"
       else
-        if @cfg_arch.csr(csr_text).nil?
+        if @cfg_arch.csr(idx).nil?
           "#{' '*indent}#{csr_text}"
         else
-          # Needs fix. See issue https://github.com/riscv-software-src/riscv-unified-db/issues/641
           "#{' '*indent}%%LINK%csr;#{idx};#{csr_text}%%"
         end
       end
