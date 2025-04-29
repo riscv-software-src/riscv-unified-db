@@ -36,7 +36,8 @@ path = [
     "CONTRIBUTING.adoc",
     "doc/idl.adoc",
     "doc/ruby.adoc",
-    "doc/schemas.adoc"
+    "doc/schemas.adoc",
+    "doc/prose_schema.adoc"
 ]
 SPDX-FileCopyrightText = "2017-2025 Contributors to the RISCV ISA Manual <https://github.com/riscv/riscv-isa-manual>"
 SPDX-License-Identifier = "BSD-3-Clause-Clear"
