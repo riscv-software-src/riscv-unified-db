@@ -23,7 +23,7 @@ require_relative $root / "lib" / "proc_cert_design"
 $logger = Logger.new(STDOUT, datetime_format: "%v %r")
 $logger.level = Logger::INFO
 $logger.formatter = proc do |severity, datetime, progname, msg|
-  "[#{severity}] #{datetime.strftime('%v %r')}: #{msg}\n"
+  "[#{severity}] #{datetime.strftime('%F %T')}: #{msg}\n"
 end
 
 directory "#{$root}/.stamps"
