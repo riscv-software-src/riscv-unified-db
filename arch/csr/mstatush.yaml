@@ -53,19 +53,19 @@ fields:
     location: 5
     description: |
       see `mstatus.MBE`
-    type(): 'return (M_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;'
-    reset_value(): 'return (M_MODE_ENDIANESS == "big") ? 1 : 0;'
+    type(): 'return (M_MODE_ENDIANNESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;'
+    reset_value(): 'return (M_MODE_ENDIANNESS == "big") ? 1 : 0;'
     alias: mstatus.MBE
   SBE:
     location: 4
     definedBy: S
     description: |
       see `mstatus.SBE`
-    type(): 'return (S_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;'
+    type(): 'return (S_MODE_ENDIANNESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;'
     reset_value(): |
-      if (S_MODE_ENDIANESS == "little") {
+      if (S_MODE_ENDIANNESS == "little") {
         return 0;
-      } else if (S_MODE_ENDIANESS == "big") {
+      } else if (S_MODE_ENDIANNESS == "big") {
         return 1;
       } else {
         return UNDEFINED_LEGAL;

@@ -18,7 +18,7 @@ params:
       Indicates whether or not the `U` extension can be disabled with the `misa.U` bit.
     schema:
       type: boolean
-  U_MODE_ENDIANESS:
+  U_MODE_ENDIANNESS:
     description: |
       Endianness of data in U-mode. Can be one of:
 

@@ -103,11 +103,6 @@ module Idl
     end
 
     def initialize(cfg_arch)
-      raise "Must provide cfg_arch" if cfg_arch.nil?
-      # TODO: XXX: Put this check back in when replaced by Design class.
-      #            See https://github.com/riscv-software-src/riscv-unified-db/pull/371
-      #raise "The cfg_arch must be a ConfiguredArchitecture but is a #{cfg_arch.class}" unless (cfg_arch.is_a?(ConfiguredArchitecture) || cfg_arch.is_a?(MockConfiguredArchitecture))
-
       @mutex = Thread::Mutex.new
       @cfg_arch = cfg_arch
       @mxlen = cfg_arch.unconfigured? ? nil : cfg_arch.mxlen

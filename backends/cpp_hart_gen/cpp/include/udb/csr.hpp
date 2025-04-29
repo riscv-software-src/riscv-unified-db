@@ -41,7 +41,7 @@ namespace udb {
                           const unsigned& xlen) = 0;
 
     // write the field, applying any restrictions first
-    // given teh effective xlen
+    // given the effective xlen
     // virtual void sw_write(const uint64_t& field_write_value,
     //                       const unsigned& xlen) = 0;
 
@@ -119,7 +119,7 @@ namespace udb {
     // no checks or transformations are applied
     virtual void hw_write(const uint64_t& value, const unsigned& xlen) = 0;
 
-    // cant this CSR be implemented when ext is not?
+    // can't this CSR be implemented when ext is not?
     virtual bool implemented_without_Q_(const ExtensionName&) const = 0;
   };
 }  // namespace udb

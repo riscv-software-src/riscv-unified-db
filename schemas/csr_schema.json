@@ -117,6 +117,12 @@
             }
           ],
           "description": "Extension(s) that affect the definition of the field beyond the extension (or base) the field is originally defined in"
+        },
+        "cert_normative_rules": {
+          "$ref": "schema_defs.json#/$defs/cert_normative_rules"
+        },
+        "cert_test_procedures": {
+          "$ref": "schema_defs.json#/$defs/cert_test_procedures"
         }
       },
 
@@ -229,6 +235,12 @@
           "type": "integer",
           "description": "Indirect address of the CSR, as given to the indirect CSRs of the `Smcsrind`/`Sscdrind` extensions"
         },
+        "indirect_slot": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6,
+          "description": "Indirect window slot of the CSR, corresponding to its appearance in *ireg<slot>"
+        },
         "writeable": {
           "type": "boolean",
           "description": "Whether or not the CSR can be written by software (i.e., is read-write)"
@@ -263,6 +275,12 @@
         "$source": {
           "description": "Path to the source file this definition came from; used by downstream tooling -- not expected to be in handwritten files",
           "type": "string"
+        },
+        "cert_normative_rules": {
+          "$ref": "schema_defs.json#/$defs/cert_normative_rules"
+        },
+        "cert_test_procedures": {
+          "$ref": "schema_defs.json#/$defs/cert_test_procedures"
         }
       },
       "additionalProperties": false,
@@ -286,20 +304,16 @@
           }
         },
         {
-          "oneOf": [
-            {
+          "if": {
+            "not": {
               "properties": {
-                "indirect": { "const": false }
-              },
-              "required": ["address"]
-            },
-            {
-              "properties": {
-                "indirect": { "const": true }
-              },
-              "required": ["indirect_address"]
+                "indirect_address": { "const": null }
+              }
             }
-          ]
+          },
+          "then": {
+            "required": ["indirect_slot"]
+          }
         }
       ]
     }

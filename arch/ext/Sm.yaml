@@ -423,7 +423,7 @@ params:
       type: integer
       minimum: 1
       maximum: 64
-  M_MODE_ENDIANESS:
+  M_MODE_ENDIANNESS:
     description: |
       Endianness of data in M-mode. Can be one of:
 

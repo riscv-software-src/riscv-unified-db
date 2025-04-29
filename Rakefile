@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+Encoding.default_external = "UTF-8"
+
 $jobs = ENV["JOBS"].nil? ? 1 : ENV["JOBS"].to_i
 Rake.application.options.thread_pool_size = $jobs
 puts "Running with #{Rake.application.options.thread_pool_size} job(s)"
@@ -14,43 +16,50 @@ require "yard"
 require "minitest/test_task"
 
 require_relative $root / "lib" / "architecture"
+require_relative $root / "lib" / "portfolio_design"
+require_relative $root / "lib" / "proc_cert_design"
 
 directory "#{$root}/.stamps"
 
+# Load and execute Rakefile for each backend.
 Dir.glob("#{$root}/backends/*/tasks.rake") do |rakefile|
   load rakefile
 end
 
 directory "#{$root}/.stamps"
 
-def cfg_arch_for(config)
-  raise ArgumentError, "excpecting String or Pathname" unless config.is_a?(String) || config.is_a?(Pathname)
-  config = config.to_s
+# @param config_locator [String or Pathname]
+# @return [ConfiguredArchitecture]
+def cfg_arch_for(config_locator)
+  raise ArgumentError, "expecting String or Pathname" unless config_locator.is_a?(String) || config_locator.is_a?(Pathname)
+  config_locator = config_locator.to_s
 
   $cfg_archs ||= {}
-  return $cfg_archs[config] unless $cfg_archs[config].nil?
+  return $cfg_archs[config_locator] unless $cfg_archs[config_locator].nil?
 
   # does the gen cfg already exist?
-  if File.exist?("#{$root}/gen/cfgs/#{config}.yaml")
-    config_yaml = YAML.load_file("#{$root}/gen/cfgs/#{config}.yaml")
-    if File.mtime("#{$root}/gen/cfgs/#{config}.yaml") < File.mtime(config_yaml["$source"])
+  if File.exist?("#{$root}/gen/cfgs/#{config_locator}.yaml")
+    config_yaml = YAML.load_file("#{$root}/gen/cfgs/#{config_locator}.yaml")
+    if File.mtime("#{$root}/gen/cfgs/#{config_locator}.yaml") < File.mtime(config_yaml["$source"])
+
       cfg_arch =
         ConfiguredArchitecture.new(
-          config,
-          $root / "gen" / "resolved_arch" / config
+          config_locator,
+          FileConfig.create("#{$root}/gen/cfgs/#{config_locator}.yaml"),
+          $root / "gen" / "resolved_arch" / config_locator
         )
-      $cfg_archs[config] = cfg_arch
+      $cfg_archs[config_locator] = cfg_arch
       return cfg_arch
     end
   end
 
   config_path =
-    if File.exist?("#{$root}/cfgs/#{config}.yaml")
-      "#{$root}/cfgs/#{config}.yaml"
-    elsif File.exist? config
-      File.realpath(config)
+    if File.exist?("#{$root}/cfgs/#{config_locator}.yaml")
+      "#{$root}/cfgs/#{config_locator}.yaml"
+    elsif File.exist? config_locator
+      File.realpath(config_locator)
     else
-      raise ArgumentError, "Can't find config #{config}"
+      raise ArgumentError, "Can't find config #{config_locator}"
     end
 
   config_yaml = YAML.load_file(config_path)
@@ -80,6 +89,7 @@ def cfg_arch_for(config)
   $cfg_archs[config_name] =
     ConfiguredArchitecture.new(
       config_name,
+      FileConfig.create("#{$root}/gen/cfgs/#{config_name}.yaml"),
       $root / "gen" / "resolved_arch" / config_name
     )
 end
@@ -109,7 +119,7 @@ rule %r{#{$root}/.stamps/resolve-.+\.stamp} => proc { |tname|
   raise "Missing gen/cfgs/#{tname}" unless File.exist?("#{$root}/cfgs/#{cfg_name}.yaml")
 
   cfg_path = "#{$root}/cfgs/#{cfg_name}.yaml"
-  cfg = Config.create(cfg_path)
+  cfg = FileConfig.create(cfg_path)
   arch_files = Dir.glob("#{$root}/arch/**/*.yaml")
   overlay_files = cfg.overlay? ? Dir.glob("#{cfg.arch_overlay_abs}/**/*.yaml") : []
   [
@@ -119,7 +129,7 @@ rule %r{#{$root}/.stamps/resolve-.+\.stamp} => proc { |tname|
 } do |t|
   cfg_name = File.basename(t.name, ".stamp").sub("resolve-", "")
   cfg_path = "#{$root}/cfgs/#{cfg_name}.yaml"
-  cfg = Config.create(cfg_path)
+  cfg = FileConfig.create(cfg_path)
 
   overlay_dir = cfg.overlay? ? cfg.arch_overlay_abs : "/does/not/exist"
   sh "#{$root}/.home/.venv/bin/python3 lib/yaml_resolver.py merge arch #{overlay_dir} gen/arch/#{cfg_name}"
@@ -147,6 +157,15 @@ namespace :serve do
 end
 
 namespace :test do
+
+  # "Run the cross-validation against LLVM"
+  task :llvm do
+      begin
+        sh "#{$root}/.home/.venv/bin/python3 -m pytest ext/auto-inst/test_parsing.py -v"
+      rescue => e
+        raise unless e.message.include?("status (5)") # don't fail on skipped tests
+    end
+  end
   # "Run the IDL compiler test suite"
   task :idl_compiler do
     t = Minitest::TestTask.new(:lib_test)
@@ -404,16 +423,28 @@ namespace :test do
     These are basic but fast-running tests to check the database and tools
   DESC
   task :smoke do
+    puts "UPDATE: Starting test:smoke"
+    puts "UPDATE: Running gen:isa_explorer_browser_ext"
+    Rake::Task["gen:isa_explorer_browser_ext"].invoke
+    puts "UPDATE: Running test:idl_compiler"
     Rake::Task["test:idl_compiler"].invoke
+    puts "UPDATE: Running test:lib"
     Rake::Task["test:lib"].invoke
+    puts "UPDATE: Running test:schema"
     Rake::Task["test:schema"].invoke
+    puts "UPDATE: Running test:idl for rv32"
     ENV["CFG"] = "rv32"
     Rake::Task["test:idl"].invoke
+    puts "UPDATE: Running test:idl for rv64"
     ENV["CFG"] = "rv64"
     Rake::Task["test:idl"].invoke
+    puts "UPDATE: Running test:idl for qc_iu"
     ENV["CFG"] = "qc_iu"
-    Rake::Task["test:idl"].invoke
+    puts "UPDATE: Running test:inst_encodings"
     Rake::Task["test:inst_encodings"].invoke
+    puts "UPDATE: Running test:llvm"
+    Rake::Task["test:llvm"].invoke
+    puts "UPDATE: Done test:smoke"
   end
 
   desc <<~DESC
@@ -422,25 +453,41 @@ namespace :test do
     These tests must pass before a commit will be allowed in the main branch on GitHub
   DESC
   task :regress do
+    puts "UPDATE: Starting test:regress"
     Rake::Task["test:smoke"].invoke
 
+    puts "UPDATE: Running gen:isa_explorer_browser"
+    Rake::Task["gen:isa_explorer_browser"].invoke
+
+    puts "UPDATE: Running gen:isa_explorer_spreadsheet"
+    Rake::Task["gen:isa_explorer_spreadsheet"].invoke
+
+    puts "UPDATE: Running gen:html_manual MANUAL_NAME=isa VERSIONS=all"
     ENV["MANUAL_NAME"] = "isa"
     ENV["VERSIONS"] = "all"
     Rake::Task["gen:html_manual"].invoke
 
+    puts "UPDATE: Running gen:ext_pdf EXT=B VERSION=latest"
     ENV["EXT"] = "B"
     ENV["VERSION"] = "latest"
     Rake::Task["gen:ext_pdf"].invoke
 
+    puts "UPDATE: Running gen:html for example_rv64_with_overlay"
     Rake::Task["gen:html"].invoke("example_rv64_with_overlay")
 
-    Rake::Task["#{$root}/gen/certificate_doc/pdf/MockCertificateModel.pdf"].invoke
-    Rake::Task["#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"].invoke
+    puts "UPDATE: Generating MockProcessor-CRD.pdf"
+    Rake::Task["#{$root}/gen/proc_crd/pdf/MockProcessor-CRD.pdf"].invoke
 
+    puts "UPDATE: Generating MockProcessor-CTP.pdf"
+    Rake::Task["#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"].invoke
+
+    puts "UPDATE: Generating MockProfileRelease.pdf"
+    Rake::Task["#{$root}/gen/profile/pdf/MockProfileRelease.pdf"].invoke
+
+    puts "UPDATE: Generating Go Language Support"
     Rake::Task["gen:go"].invoke
 
-    puts
-    puts "Regression test PASSED"
+    puts "UPDATE: Done test:regress"
   end
 
   desc <<~DESC
@@ -460,32 +507,40 @@ desc <<~DESC
   Generate all portfolio-based PDF artifacts (certificates and profiles)
 DESC
 task :portfolios do
-  portfolio_start_msg("MockCertificateModel")
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MockCertificateModel.pdf"].invoke
+  portfolio_start_msg("MockProcessor-CRD")
+  Rake::Task["#{$root}/gen/proc_crd/pdf/MockProcessor-CRD.pdf"].invoke
+  portfolio_start_msg("MockProcessor-CTP")
+  Rake::Task["#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"].invoke
   portfolio_start_msg("MockProfileRelease")
-  Rake::Task["#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"].invoke
-  portfolio_start_msg("MC100-32")
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100-32.pdf"].invoke
-  portfolio_start_msg("MC100-64")
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC100-64.pdf"].invoke
-  portfolio_start_msg("MC200-32")
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC200-32.pdf"].invoke
-  portfolio_start_msg("MC200-64")
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC200-64.pdf"].invoke
-  portfolio_start_msg("MC300-32")
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC300-32.pdf"].invoke
-  portfolio_start_msg("MC300-64")
-  Rake::Task["#{$root}/gen/certificate_doc/pdf/MC300-64.pdf"].invoke
-  portfolio_start_msg("RVI20")
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVI20.pdf"].invoke
-  portfolio_start_msg("RVA20")
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA20.pdf"].invoke
-  portfolio_start_msg("RVA22")
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA22.pdf"].invoke
-  portfolio_start_msg("RVA23")
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVA23.pdf"].invoke
-  portfolio_start_msg("RVB23")
-  Rake::Task["#{$root}/gen/profile_doc/pdf/RVB23.pdf"].invoke
+  Rake::Task["#{$root}/gen/profile/pdf/MockProfileRelease.pdf"].invoke
+  portfolio_start_msg("MC100-32-CTP")
+  Rake::Task["#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.pdf"].invoke
+  portfolio_start_msg("MC100-32-CRD")
+  Rake::Task["#{$root}/gen/proc_crd/pdf/MC100-32-CRD.pdf"].invoke
+  portfolio_start_msg("MC100-64-CRD")
+  Rake::Task["#{$root}/gen/proc_crd/pdf/MC100-64-CRD.pdf"].invoke
+  portfolio_start_msg("MC200-32-CRD")
+  Rake::Task["#{$root}/gen/proc_crd/pdf/MC200-32-CRD.pdf"].invoke
+  portfolio_start_msg("MC200-64-CRD")
+  Rake::Task["#{$root}/gen/proc_crd/pdf/MC200-64-CRD.pdf"].invoke
+  portfolio_start_msg("MC300-32-CRD")
+  Rake::Task["#{$root}/gen/proc_crd/pdf/MC300-32-CRD.pdf"].invoke
+  portfolio_start_msg("MC300-64-CRD")
+  Rake::Task["#{$root}/gen/proc_crd/pdf/MC300-64-CRD.pdf"].invoke
+  portfolio_start_msg("AC100-CRD")
+  Rake::Task["#{$root}/gen/proc_crd/pdf/AC100-CRD.pdf"].invoke
+  portfolio_start_msg("AC200-CRD")
+  Rake::Task["#{$root}/gen/proc_crd/pdf/AC200-CRD.pdf"].invoke
+  portfolio_start_msg("RVI20ProfileRelease")
+  Rake::Task["#{$root}/gen/profile/pdf/RVI20ProfileRelease.pdf"].invoke
+  portfolio_start_msg("RVA20ProfileRelease")
+  Rake::Task["#{$root}/gen/profile/pdf/RVA20ProfileRelease.pdf"].invoke
+  portfolio_start_msg("RVA22ProfileRelease")
+  Rake::Task["#{$root}/gen/profile/pdf/RVA22ProfileRelease.pdf"].invoke
+  portfolio_start_msg("RVA23ProfileRelease")
+  Rake::Task["#{$root}/gen/profile/pdf/RVA23ProfileRelease.pdf"].invoke
+  portfolio_start_msg("RVB23ProfileRelease")
+  Rake::Task["#{$root}/gen/profile/pdf/RVB23ProfileRelease.pdf"].invoke
 end
 
 def portfolio_start_msg(name)
@@ -496,17 +551,27 @@ def portfolio_start_msg(name)
   puts ""
 end
 
-# Shortcut targets for building profiles and certificates.
-task "MockCertificateModel": "#{$root}/gen/certificate_doc/pdf/MockCertificateModel.pdf"
-task "MC100-32": "#{$root}/gen/certificate_doc/pdf/MC100-32.pdf"
-task "MC100-64": "#{$root}/gen/certificate_doc/pdf/MC100-64.pdf"
-task "MC200-32": "#{$root}/gen/certificate_doc/pdf/MC200-32.pdf"
-task "MC200-64": "#{$root}/gen/certificate_doc/pdf/MC200-64.pdf"
-task "MC300-32": "#{$root}/gen/certificate_doc/pdf/MC300-32.pdf"
-task "MC300-64": "#{$root}/gen/certificate_doc/pdf/MC300-64.pdf"
-task "MockProfileRelease": "#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"
-task "RVI20": "#{$root}/gen/profile_doc/pdf/RVI20.pdf"
-task "RVA20": "#{$root}/gen/profile_doc/pdf/RVA20.pdf"
-task "RVA22": "#{$root}/gen/profile_doc/pdf/RVA22.pdf"
-task "RVA23": "#{$root}/gen/profile_doc/pdf/RVA23.pdf"
-task "RVB23": "#{$root}/gen/profile_doc/pdf/RVB23.pdf"
+# Shortcut targets for building CRDs, CTPs, and Profile Releases.
+task "MockCRD": "#{$root}/gen/proc_crd/pdf/MockProcessor-CRD.pdf"
+task "MockProcessorCRD": "#{$root}/gen/proc_crd/pdf/MockProcessor-CRD.pdf"
+task "MockCTP": "#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"
+task "MockProcessorCTP": "#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"
+task "MockCTP-HTML": "#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.html"
+task "MockProcessorCTP-HTML": "#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.html"
+task "MC100-32-CTP": "#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.pdf"
+task "MC100-32-CTP-HTML": "#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.html"
+task "MC100-32-CRD": "#{$root}/gen/proc_crd/pdf/MC100-32-CRD.pdf"
+task "MC100-64-CRD": "#{$root}/gen/proc_crd/pdf/MC100-64-CRD.pdf"
+task "MC200-32-CRD": "#{$root}/gen/proc_crd/pdf/MC200-32-CRD.pdf"
+task "MC200-64-CRD": "#{$root}/gen/proc_crd/pdf/MC200-64-CRD.pdf"
+task "MC300-32-CRD": "#{$root}/gen/proc_crd/pdf/MC300-32-CRD.pdf"
+task "MC300-64-CRD": "#{$root}/gen/proc_crd/pdf/MC300-64-CRD.pdf"
+task "AC100-CRD": "#{$root}/gen/proc_crd/pdf/AC100-CRD.pdf"
+task "AC200-CRD": "#{$root}/gen/proc_crd/pdf/AC200-CRD.pdf"
+task "MockProfile": "#{$root}/gen/profile/pdf/MockProfileRelease.pdf"
+task "MockProfileRelease": "#{$root}/gen/profile/pdf/MockProfileRelease.pdf"
+task "RVI20": "#{$root}/gen/profile/pdf/RVI20ProfileRelease.pdf"
+task "RVA20": "#{$root}/gen/profile/pdf/RVA20ProfileRelease.pdf"
+task "RVA22": "#{$root}/gen/profile/pdf/RVA22ProfileRelease.pdf"
+task "RVA23": "#{$root}/gen/profile/pdf/RVA23ProfileRelease.pdf"
+task "RVB23": "#{$root}/gen/profile/pdf/RVB23ProfileRelease.pdf"

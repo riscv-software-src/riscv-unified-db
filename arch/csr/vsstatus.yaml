@@ -161,19 +161,19 @@ fields:
 
       Controls the endianness of VU-mode (0 = little, 1 = big).
 
-      [when,"VU_MODE_ENDIANESS == 'little'"]
+      [when,"VU_MODE_ENDIANNESS == 'little'"]
       Since the CPU does not support big endian, this is hardwired to 0.
 
-      [when,"VU_MODE_ENDIANESS == 'big'"]
+      [when,"VU_MODE_ENDIANNESS == 'big'"]
       Since the CPU does not support big endian, this is hardwired to 1.
     type(): |
-      return (VU_MODE_ENDIANESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
+      return (VU_MODE_ENDIANNESS == "dynamic") ? CsrFieldType::RW : CsrFieldType::RO;
     definedBy: S
     reset_value(): |
-      if (VU_MODE_ENDIANESS == "little") {
+      if (VU_MODE_ENDIANNESS == "little") {
         # little endian
         return 0;
-      } else if (VU_MODE_ENDIANESS == "big") {
+      } else if (VU_MODE_ENDIANNESS == "big") {
         # big endian
         return 1;
       } else {

@@ -8,8 +8,8 @@ module Idl
       :boolean,  # true or false, not compatible with bits/int/xreg
       :bits,     # integer with compile-time-known bit width
       :enum,     # enumeration class
-      :enum_ref, # reference to an enumeration element, convertable to int and/or Bits<bit_width(MAX_ENUM_VALUE)>
-      :bitfield, # bitfield, convertable to int and/or Bits<width>
+      :enum_ref, # reference to an enumeration element, convertible to int and/or Bits<bit_width(MAX_ENUM_VALUE)>
+      :bitfield, # bitfield, convertible to int and/or Bits<width>
       :struct,   # structure class
       :array,    # array of other types
       :tuple,    # tuple of other dissimilar types

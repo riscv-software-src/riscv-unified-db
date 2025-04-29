@@ -31,7 +31,7 @@ end
 module Idl
   class AstNode
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      internal_error "Need to implemente #gen_cpp for #{self.class.name}"
+      internal_error "Need to implement #gen_cpp for #{self.class.name}"
     end
   end
 

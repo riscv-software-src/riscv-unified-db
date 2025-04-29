@@ -2818,7 +2818,7 @@ function amo {
   returns Bits<N>
   arguments
     XReg virtual_address,  # the virtual address to load from/store to
-    Bits<N> value,         # the value for the second hald of the atomic operation
+    Bits<N> value,         # the value for the second half of the atomic operation
     AmoOperation op,       # atomic operation to apply
     Bits<1>    aq,         # acquire semantics? 0=no, 1=yes
     Bits<1>    rl,         # release semantics? 0=no, 1=yes
