@@ -36,8 +36,6 @@ jobs:
         with:
           path: ext/llvm-project/riscv.json
           key: ${{ runner.os }}-riscv-json-${{ env.LLVM_SHA }}
-          restore-keys: |
-            ${{ runner.os }}-riscv-json-
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Run smoke
@@ -130,11 +128,10 @@ jobs:
         with:
           path: ext/llvm-project/riscv.json
           key: ${{ runner.os }}-riscv-json-${{ env.LLVM_SHA }}
-          restore-keys: |
-            ${{ runner.os }}-riscv-json-
       - name: Initialize LLVM submodule (shallow + sparse)
         if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
         run: |
+          rm -rf ext/llvm-project
           git submodule sync --recursive
           git submodule update --init --recursive --depth=1 ext/llvm-project
 
