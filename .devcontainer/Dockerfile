@@ -4,10 +4,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /workspace
 
+RUN export DEBIAN_FRONTEND=noninteractive
+RUN apt-get update
+
 # please keep pkgs sorted
-RUN export DEBIAN_FRONTEND=noninteractive && \
-  apt-get update && \
-  apt-get install -y --no-install-recommends --fix-missing \
+RUN apt-get install -y --no-install-recommends \
     build-essential \
     bundler \
     clang-format \
