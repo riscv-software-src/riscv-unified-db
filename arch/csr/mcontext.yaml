@@ -37,11 +37,22 @@ fields:
       if (implemented?(Smstateen) && !CSR[mstateen0].CONTEXT) {
         unimplemented_csr($encoding);
       }
+
+      # check if MCONTEXT is available
+      if (!MCONTEXT_AVAILABLE) {
+        unimplemented_csr($encoding);
+      }
+
       # enforce width of HCONTEXT
       Bits<14> hcontext_value = csr_value.HCONTEXT & ((14'1 << DBG_HCONTEXT_WIDTH) - 1);
       return hcontext_value;
 sw_read(): |
   # check if mstateen0 is implemented
   if (implemented?(Smstateen) && !CSR[mstateen0].CONTEXT) {
+    unimplemented_csr($encoding);
+  }
+
+  # check if MCONTEXT is available
+  if (!MCONTEXT_AVAILABLE) {
     unimplemented_csr($encoding);
   }

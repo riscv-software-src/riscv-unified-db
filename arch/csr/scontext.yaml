@@ -30,3 +30,7 @@ fields:
       this field to 0. It’s recommended to implement 16 bits on
       RV32 and 32 bits on RV64.
     reset_value: 0
+    sw_write(csr_value): |
+      # enforce width of SCONTEXT
+      Bits<32> scontext_value = csr_value.DATA & ((32'1 << DBG_SCONTEXT_WIDTH) - 1);
+      return scontext_value
