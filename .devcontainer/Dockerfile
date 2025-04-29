@@ -7,7 +7,7 @@ WORKDIR /workspace
 RUN export DEBIAN_FRONTEND=noninteractive
 
 # please keep pkgs sorted
-RUN export \
+RUN \
   apt-get update && \
   apt-get install -y --no-install-recommends --fix-missing \
     build-essential \
