@@ -179,4 +179,4 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Run cpp unit tests
-        run: ./do test:cpp_hart CONFIG=rv64
+        run: ./do test:cpp_hart CONFIG=rv64 JOBS=4
