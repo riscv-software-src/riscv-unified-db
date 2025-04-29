@@ -7,7 +7,7 @@ long_name: No synopsis available.
 description: |
   No description available.
 definedBy: Zfh
-assembly: xd, xs1, rm
+assembly: xd, xs1, frm
 encoding:
   match: 110101000000-------------1010011
   variables:
