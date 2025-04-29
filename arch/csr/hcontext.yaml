@@ -29,8 +29,8 @@ fields:
       Alias of `mcontext.HCONTEXT`.
     reset_value: 0
     sw_write(csr_value): |
-      # check if mstateen0 or hstateen0 is clear
-      if (implemented?(Smstateen) && (!CSR[mstateen0].CONTEXT || !CSR[hstateen0].CONTEXT)) {
+      # check if mstateen0 is implemented
+      if (implemented?(Smstateen) && !CSR[mstateen0].CONTEXT) {
         unimplemented_csr($encoding);
       }
 
@@ -45,8 +45,8 @@ fields:
       CSR[mcontext].HCONTEXT = hcontext_value;
       return CSR[mcontext].HCONTEXT;
 sw_read(): |
-  # check if mstateen0 or hstateen0 is clear
-  if (implemented?(Smstateen) && (!CSR[mstateen0].CONTEXT || !CSR[hstateen0].CONTEXT)) {
+  # check if mstateen0 is implemented
+  if (implemented?(Smstateen) && !CSR[mstateen0].CONTEXT) {
     unimplemented_csr($encoding);
   }
 
