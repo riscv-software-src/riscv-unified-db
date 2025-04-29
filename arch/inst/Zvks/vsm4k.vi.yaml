@@ -8,7 +8,7 @@ description: |
   No description available.
 definedBy:
   anyOf: [Zvks, Zvksed]
-assembly: vs2, vd, imm
+assembly: vd, vs2, imm
 encoding:
   match: 1000011----------010-----1110111
   variables:
