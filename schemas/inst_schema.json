@@ -131,36 +131,7 @@
       ]
     },
     "encoding": {
-      "type": "object",
-      "properties": {
-        "match": {
-          "oneOf": [
-            {
-              "type": "string",
-              "pattern": "^[01-]{43}11111$",
-              "description": "48-bit encoding"
-            },
-            {
-              "type": "string",
-              "pattern": "^[01-]{30}11$",
-              "description": "32-bit encoding"
-            },
-            {
-              "type": "string",
-              "pattern": "^[01-]{14}((00)|(01)|(10))$",
-              "description": "16-bit encoding"
-            }
-          ]
-        },
-        "variables": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/field"
-          }
-        },
-        "additionalProperties": false
-      },
-      "additionalProperties": false
+      "$ref": "schema_defs.json#/$defs/encoding"
     },
     "inst_data": {
       "type": "object",
