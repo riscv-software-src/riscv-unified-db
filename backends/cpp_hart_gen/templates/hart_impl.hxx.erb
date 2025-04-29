@@ -44,7 +44,7 @@ namespace udb {
     m_csr_addr_map[<%= csr.address %>] = &m_csrs.<%= csr.name %>;
     <%- end -%>
     <%- unless csr.indirect_address.nil? -%>
-    m_csr_indirect_addr_map[<%= csr.indirect_address %>] = &m_csrs.<%= csr.name %>;
+    m_csr_indirect_addr_map[std::make_pair(<%= csr.indirect_address %>, <%= csr.indirect_slot %>)] = &m_csrs.<%= csr.name %>;
     <%_ end -%>
     m_csr_name_map["<%= csr.name %>"] = &m_csrs.<%= csr.name %>;
     <%- end -%>

@@ -22,6 +22,21 @@ class Csr < DatabaseObject
     @data["address"]
   end
 
+  # @return [Boolean] Whether or not the CSR can be accessed by indirect address
+  def indirect?
+    @data.key?("indirect_address")
+  end
+
+  # @return [Integer] The indirect address
+  def indirect_address
+    @data["indirect_address"]
+  end
+
+  # @return [Integer] The indirect window slot
+  def indirect_slot
+    @data["indirect_slot"]
+  end
+
   # @return [String] Least-privileged mode that can access this CSR. One of ['m', 's', 'u', 'vs', 'vu']
   def priv_mode
     @data["priv_mode"]
