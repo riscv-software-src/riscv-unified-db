@@ -22,8 +22,21 @@
         "$ref": {
           "type": "string",
           "format": "uri-reference",
-          "pattern": "^inst_type/[A-Z]/[a-zA-Z0-9_]+\\.yaml#.*$",
+          "pattern": "^inst_type/[A-Z]+\\.yaml#.*$",
           "description": "Reference to an instruction type definition"
+        }
+      },
+      "required": ["$ref"],
+      "additionalProperties": false
+    },
+    "subtype": {
+      "type": "object",
+      "properties": {
+        "$ref": {
+          "type": "string",
+          "format": "uri-reference",
+          "pattern": "^inst_type/[A-Z]+/[a-zA-Z0-9_]+\\.yaml#.*$",
+          "description": "Reference to an instruction subtype definition"
         }
       },
       "required": ["$ref"],
@@ -175,24 +188,28 @@
           "description": "Extension(s) that defines the instruction"
         },
         "type": {
+          "$ref": "#/$defs/type"
+        },
+        "subtype": {
           "oneOf": [
             {
-              "$ref": "#/$defs/type"
+              "$ref": "#/$defs/subtype"
             },
             {
               "type": "object",
               "properties": {
                 "RV32": {
-                  "$ref": "#/$defs/type"
+                  "$ref": "#/$defs/subtype"
                 },
                 "RV64": {
-                  "$ref": "#/$defs/type"
+                  "$ref": "#/$defs/subtype"
                 }
               },
               "additionalProperties": false
             }
           ]
         },
+
         "encoding": {
           "description": "Instruction encoding and decode variables",
           "oneOf": [
