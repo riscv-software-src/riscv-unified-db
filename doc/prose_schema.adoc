@@ -44,13 +44,13 @@ description:
     normative: false
     text: |
       Since the CPU does not support big endian in VS-mode, this is hardwired to 0.
-    when(): return VS_MODE_ENDIANNESS == "little";
+    when(): return VS_MODE_ENDIANESS == "little";
 
   - id: csr-hstatus-vgein-big-endian
     normative: false
     text: |
       Since the CPU does not support little endian in VS-mode, this is hardwired to 1.
-    when(): return VS_MODE_ENDIANNESS == "big";
+    when(): return VS_MODE_ENDIANESS == "big";
 ```
 
 == ID conventions
