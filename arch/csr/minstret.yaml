@@ -5,6 +5,7 @@ kind: csr
 name: minstret
 long_name: Machine Instructions Retired Counter
 address: 0xB02
+writeable: true
 description: |
   Counts the number of instructions retired by this hart from some arbitrary start point in the past.
 

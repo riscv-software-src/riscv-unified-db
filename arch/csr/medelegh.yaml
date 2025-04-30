@@ -5,6 +5,7 @@ kind: csr
 name: medelegh
 long_name: Machine Exception Delegation, High bits
 address: 0x312
+writeable: true
 priv_mode: M
 length: 32
 base: 32
