@@ -8,7 +8,7 @@ description: |
   No description available.
 definedBy:
   allOf: [Zfa, Zfh]
-assembly: xd, xs1, xs2
+assembly: fd, fs1, fs2
 encoding:
   match: 0010110----------011-----1010011
   variables:

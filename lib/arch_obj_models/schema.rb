@@ -16,9 +16,34 @@ class Schema
     # @return [Hash] Hash representation of the JSON Schema
     def to_h = @schema_hash
 
+    def rb_obj_to_jsonschema_type(rb_type)
+      case rb_type
+      when String
+        "string"
+      when Integer
+        "integer"
+      when Number
+        "number"
+      when Array
+        "array"
+      when Hash
+        "object"
+      else
+        raise "TODO: unsupported const type for '#{@schema_hash['const']}'"
+      end
+    end
+    private :rb_obj_to_jsonschema_type
+
     # @return [String] Human-readable type of the schema (e.g., array, string, integer)
     def type_pretty
-      @schema_hash["type"]
+      if @schema_hash.key?("const")
+        rb_obj_to_jsonschema_type(@schema_hash["const"])
+      elsif @schema_hash.key?("enum") && !@schema_hash["enum"].empty? && @schema_hash["enum"].all? { |elem| elem.class == @schema_hash["enum"][0].class }
+        rb_obj_to_jsonschema_type(@schema_hash["enum"][0])
+      else
+        raise "Missing type information for '#{@schema_hash}'" unless @schema_hash.key?("type")
+        @schema_hash["type"]
+      end
     end
 
     # @return [String] A human-readable description of the schema

@@ -357,7 +357,7 @@ module Idl
       end
 
       # need more!
-      warn "Allocating more SymbolTables"
+      $logger.info "Allocating more SymbolTables"
       5.times do
         copy = SymbolTable.allocate
         copy.instance_variable_set(:@scopes, [@scopes[0]])
