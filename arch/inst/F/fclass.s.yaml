@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fclass.s
-long_name: Single-precision floating-point classify.
+long_name: Single-precision floating-point classify
 description: |
   The `fclass.s` instruction examines the value in floating-point register
   _fs1_ and writes to integer register _rd_ a 10-bit mask that indicates

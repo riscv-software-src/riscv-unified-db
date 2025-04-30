@@ -5,6 +5,7 @@ kind: csr
 name: scause
 long_name: Supervisor Cause
 address: 0x142
+writeable: true
 priv_mode: S
 length: SXLEN
 description: Reports the cause of the latest exception.

@@ -5,6 +5,7 @@ kind: csr
 name: mcause
 long_name: Machine Cause
 address: 0x342
+writeable: true
 priv_mode: M
 length: MXLEN
 description: Reports the cause of the latest exception.
