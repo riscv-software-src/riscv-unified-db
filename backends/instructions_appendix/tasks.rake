@@ -19,9 +19,7 @@ end
 # File task that generates the merged instructions adoc.
 file MERGED_INSTRUCTIONS_FILE.to_s => [__FILE__, TEMPLATE_FILE.to_s] do |t|
   cfg_arch = cfg_arch_for("_")
-  # Use the InstructionIndex helper to aggregate instructions from the entire architecture.
-  instruction_index = InstructionIndex.new(cfg_arch)
-  instructions = instruction_index.instructions
+  instructions = cfg_arch.possible_instructions
 
   # Load and process the template (which renders both an index and details).
   erb = ERB.new(File.read(TEMPLATE_FILE), trim_mode: "-")
