@@ -2,9 +2,6 @@
 
 require "pathname"
 
-require "asciidoctor-pdf"
-require "asciidoctor-diagram"
-
 require_relative "#{$lib}/idl/passes/gen_adoc"
 
 EXT_PDF_DOC_DIR = Pathname.new "#{$root}/backends/ext_pdf_doc"

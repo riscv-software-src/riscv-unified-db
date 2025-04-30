@@ -4,6 +4,7 @@ require_relative "database_obj"
 require_relative "certifiable_obj"
 require_relative "parameter"
 require_relative "schema"
+require_relative "req_expression"
 require_relative "../presence"
 require_relative "../version"
 
