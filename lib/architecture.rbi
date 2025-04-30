@@ -1,5 +1,8 @@
 # typed: true
 
+# since we generate Architecture methods with metaprogramming, we need an explicit interface for
+# Sorbet
+
 class Architecture
   sig { params(name: String).returns(Csr) }
   def csr(name); end

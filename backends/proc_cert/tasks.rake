@@ -3,8 +3,6 @@
 # Contains common methods called from certification backend tasks.rake files.
 
 require "pathname"
-require "asciidoctor-pdf"
-require "asciidoctor-diagram"
 
 # @param erb_template_pname [String] Path to ERB template file
 # @param target_pname [String] Full name of adoc file being generated

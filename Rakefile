@@ -198,7 +198,7 @@ namespace :test do
 
   desc "Type-check the Ruby library"
   task :sorbet do
-    sh "srb tc"
+    sh "srb tc @.sorbet-config"
   end
 end
 
