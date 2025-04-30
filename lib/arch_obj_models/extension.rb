@@ -496,10 +496,11 @@ class ExtensionRequirement
 
   # @return [Array<ExtensionVersion>] The list of extension versions that satisfy this extension requirement
   def satisfying_versions
-    ext = @arch.extension(@name)
-    return [] if ext.nil?
+    return @satisfying_versions unless @satisfying_versions.nil?
 
-    ext.versions.select { |v| satisfied_by?(v) }
+    ext = @arch.extension(@name)
+
+    @satisfying_versions = ext.nil? ? [] : ext.versions.select { |v| satisfied_by?(v) }
   end
 
   # @return [ExtensionVersion] The minimum extension version that satifies this extension requirement.

@@ -36,6 +36,13 @@ class Parameter
     @schema.to_pretty_s
   end
 
+  # @returns [Object] default value, or nil if none
+  def default
+    if @data["schema"].key?("default")
+      @data["schema"]["default"]
+    end
+  end
+
   # @param ext [Extension]
   # @param name [String]
   # @param data [Hash<String, Object]
@@ -128,6 +135,9 @@ class ParameterWithValue
 
   # @return [Extension] The extension that defines this parameter
   def exts = @param.exts
+
+  # @returns [Idl::Type] Type of the parameter
+  def idl_type = @param.idl_type
 
   def initialize(param, value)
     @param = param

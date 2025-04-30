@@ -238,7 +238,12 @@ class DecodeGen
     if @cfg_arch.unconfigured?
       !inst.defined_by_condition.satisfied_by? { |ext_req| @cfg_arch.extension("I").versions.all? { |i_ver| ext_req.satisfied_by?(i_ver) } }
     elsif @cfg_arch.partially_configured?
-      !inst.defined_by_condition.satisfied_by? { |ext_req| ext_req.satisfied_by?(@cfg_arch.mandatory_extension_reqs) }
+      !inst.defined_by_condition.satisfied_by? do |ext_req|
+        # this is conservative
+        @cfg_arch.mandatory_extension_reqs.any? do |ext_req2|
+          ext_req.satisfied_by?(ext_req2)
+        end
+      end
     else
       false # fully configured, inst_list is already prunned for the config
     end

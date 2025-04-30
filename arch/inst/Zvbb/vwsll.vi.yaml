@@ -6,9 +6,8 @@ name: vwsll.vi
 long_name: No synopsis available.
 description: |
   No description available.
-definedBy:
-  anyOf: [Zvbb, Zvkn, Zvks]
-assembly: vm, vs2, vd, imm
+definedBy: Zvbb
+assembly: vd, vs2, imm, vm
 encoding:
   match: 110101-----------011-----1010111
   variables:

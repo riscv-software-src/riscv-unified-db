@@ -6,9 +6,8 @@ name: vbrev.v
 long_name: No synopsis available.
 description: |
   No description available.
-definedBy:
-  anyOf: [Zvbb, Zvkn, Zvks]
-assembly: vm, vs2, vd
+definedBy: Zvbb
+assembly: vd, vs2, vm
 encoding:
   match: 010010------01010010-----1010111
   variables:
