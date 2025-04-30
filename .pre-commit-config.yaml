@@ -119,6 +119,7 @@ repos:
     rev: v5.0.2
     hooks:
       - id: reuse-lint-file
+        exclude: COMMIT_EDITMSG
 
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
     rev: v9.22.0

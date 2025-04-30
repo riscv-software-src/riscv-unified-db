@@ -22,6 +22,21 @@ class Csr < DatabaseObject
     @data["address"]
   end
 
+  # @return [Boolean] Whether or not the CSR can be accessed by indirect address
+  def indirect?
+    @data.key?("indirect_address")
+  end
+
+  # @return [Integer] The indirect address
+  def indirect_address
+    @data["indirect_address"]
+  end
+
+  # @return [Integer] The indirect window slot
+  def indirect_slot
+    @data["indirect_slot"]
+  end
+
   # @return [String] Least-privileged mode that can access this CSR. One of ['m', 's', 'u', 'vs', 'vu']
   def priv_mode
     @data["priv_mode"]
@@ -35,6 +50,10 @@ class Csr < DatabaseObject
   # @return [nil] If the CSR is not accessible in VS/VU mode, or if it's address does not change in those modes
   def virtual_address
     @data["virtual_address"]
+  end
+
+  def writable
+    @data["writeable"]
   end
 
   # @return [Integer] 32 or 64, the XLEN this CSR is exclusively defined in

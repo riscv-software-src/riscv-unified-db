@@ -26,12 +26,12 @@ description: |
   ! 1 ! 1 ! 1 ! read-only ! read-only ! read-only ! read-only
   !===
 priv_mode: U
-length: 64
+length: 32
 definedBy: Sscofpmf
 fields:
   COUNT:
-    location: 63-0
-    alias: mhpmcounter7h.COUNT
+    location: 31-0
+    alias: mhpmcounter7h.COUNT[63:32]
     description: Alias of `mhpmcounter7h.COUNT`.
     type: RO-H
     reset_value: UNDEFINED_LEGAL
