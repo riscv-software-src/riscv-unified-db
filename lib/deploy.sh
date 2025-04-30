@@ -73,61 +73,65 @@ deploy_mkdir $DEPLOY_DIR/manual
 deploy_mkdir $DEPLOY_DIR/pdfs
 deploy_mkdir $DEPLOY_DIR/htmls
 
-deploy_log "Resolve / Create Index"
+deploy_log "Resolve / Create Index for base architecture"
 deploy_do "gen:resolved_arch"
 deploy_cp_recursive gen/resolved_arch/_ $DEPLOY_DIR/resolved_arch
 
 deploy_log "Create _site/isa_explorer"
 deploy_mkdir $DEPLOY_DIR/isa_explorer
 deploy_log "Create isa_explorer_browser_ext"
-deploy_do "gen:isa_explorer_browser_ext"
 deploy_log "Create isa_explorer_browser_inst"
-deploy_do "gen:isa_explorer_browser_inst"
 deploy_log "Create isa_explorer_browser_csr"
-deploy_do "gen:isa_explorer_browser_csr"
+
+parallel :::                                          \
+  "./do gen:isa_explorer_browser_csr"                 \
+  "./do gen:isa_explorer_browser_ext"                 \
+  "./do gen:isa_explorer_browser_inst"                \
+  "./do gen:isa_explorer_spreadsheet"                 \
+  "./do gen:html_manual MANUAL_NAME=isa VERSIONS=all" \
+  "./do gen:html[example_rv64_with_overlay]"          \
+  "./do gen:instruction_appendix"                     \
+  "./do gen:profile_release_pdf[RVI20]"               \
+  "./do gen:profile_release_pdf[RVA20]"               \
+  "./do gen:profile_release_pdf[RVA22]"               \
+  "./do gen:profile_release_pdf[RVA23]"               \
+  "./do gen:profile_release_pdf[RVB23]"               \
+  "./do gen:proc_crd_pdf[AC100]"                      \
+  "./do gen:proc_crd_pdf[AC200]"                      \
+  "./do gen:proc_crd_pdf[MC100-32]"                   \
+  "./do gen:proc_crd_pdf[MC100-64]"                   \
+  "./do gen:proc_crd_pdf[MC200-32]"                   \
+  "./do gen:proc_crd_pdf[MC200-64]"                   \
+  "./do gen:proc_crd_pdf[MC300-32]"                   \
+  "./do gen:proc_crd_pdf[MC300-64]"                   \
+  "./do gen:proc_ctp_pdf[MC100-32]"                   \
+  "./do gen:proc_ctp_pdf[MockProcessor]"
+
 deploy_log "Copy isa_explorer_browser"
 deploy_cp_recursive gen/isa_explorer/browser $DEPLOY_DIR/isa_explorer
-deploy_log "Create isa_explorer_spreadsheet"
-deploy_do "gen:isa_explorer_spreadsheet"
+
 deploy_log "Copy isa_explorer_spreadsheet"
 deploy_cp_recursive gen/isa_explorer/spreadsheet $DEPLOY_DIR/isa_explorer
 
-deploy_log "Build manual"
-deploy_do "gen:html_manual MANUAL_NAME=isa VERSIONS=all"
 deploy_log "Copy manual html"
 deploy_cp_recursive gen/manual/isa/top/all/html $DEPLOY_DIR/manual
-deploy_log "Build html documentation for example_rv64_with_overlay"
-deploy_do "gen:html[example_rv64_with_overlay]"
-
-# Filling up my root dir with a "doc" directory when I run this script.
-#deploy_log "Generate YARD docs"
-#deploy_do "gen:tool_doc"
 
 deploy_log "Copy cfg html"
 deploy_cp_recursive gen/cfg_html_doc/example_rv64_with_overlay/html $DEPLOY_DIR/example_cfg
 
+deploy_cp gen/instructions_appendix/instructions_appendix.pdf $DEPLOY_DIR/pdfs
+
 for profile in RVI20 RVA20 RVA22 RVA23 RVB23; do
-  deploy_log "Create $profile Profile Release PDF Spec"
-  deploy_do "gen:profile_release_pdf[$profile]"
   deploy_log "Copy $profile Profile Release PDF Spec"
   deploy_cp gen/profile/pdf/${profile}ProfileRelease.pdf $DEPLOY_DIR/pdfs
 done
 
 for crd in AC100 AC200 MC100-32 MC100-64 MC200-32 MC200-64 MC300-32 MC300-64; do
-  deploy_log "Create $profile Profile Release PDF Spec"
-  deploy_do "gen:profile_release_pdf[$profile]"
-  deploy_log "Copy $profile Profile Release PDF Spec"
-  deploy_cp gen/profile/pdf/${profile}ProfileRelease.pdf $DEPLOY_DIR/pdfs
-
-  deploy_log "Create ${crd}-CRD PDF Spec"
-  deploy_do "gen:proc_crd_pdf[$crd]"
   deploy_log "Copy ${crd}-CRD PDF"
   deploy_cp gen/proc_crd/pdf/${crd}-CRD.pdf $DEPLOY_DIR/pdfs
 done
 
 for ctp in MC100-32 MockProcessor; do
-  deploy_log "Create ${ctp}-CTP PDF Spec"
-  deploy_do "gen:proc_ctp_pdf[$ctp]"
   deploy_log "Copy ${ctp}-CTP PDF"
   deploy_cp gen/proc_ctp/pdf/${ctp}-CTP.pdf $DEPLOY_DIR/pdfs
 done
@@ -154,6 +158,12 @@ cat <<- EOF > $DEPLOY_DIR/index.html
     <h3>ISA Manual</h3>
     <ul>
       <li><a href="$PAGES_URL/manual/html/index.html">Generated HTML ISA manuals, all versions</a></li>
+    </ul>
+
+    <br/>
+    <h3>Instruction Appendix</h3>
+    <ul>
+      <li><a href="$PAGES_URL/pdfs/instructions_appendix.pdf">Generated PDF appendix of all instructions</a></li>
     </ul>
 
     <br/>
