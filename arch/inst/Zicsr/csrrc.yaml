@@ -24,16 +24,26 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  Boolean will_write = xs1 != 0;
-  check_csr(csr, will_write, $encoding);
+  Csr csr_handle = direct_csr_lookup(csr);
 
-  XReg initial_csr_value = CSR[csr].sw_read();
+  Boolean will_write = xs1 != 0;
+
+  # permission checks
+  if (csr_handle.valid == false) {
+    unimplemented_csr($encoding);
+  } else if (!compatible_mode?(csr_handle.mode, mode())) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  } else if (will_write && csr_handle.writable == false) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  XReg initial_csr_value = csr_sw_read(csr_handle);
 
   if (xs1 != 0) {
     # clear bits using the mask
     # performing any WARL transformations first
     XReg mask = X[xs1];
-    CSR[csr].sw_write(initial_csr_value & ~mask);
+    csr_sw_write(csr_handle, initial_csr_value & ~mask);
   }
 
   X[xd] = initial_csr_value;

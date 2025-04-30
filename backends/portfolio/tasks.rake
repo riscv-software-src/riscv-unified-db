@@ -3,8 +3,6 @@
 # Contains common methods called from portfolio-based tasks.rake files.
 
 require "pathname"
-require "asciidoctor-pdf"
-require "asciidoctor-diagram"
 require_relative "#{$lib}/idl/passes/gen_adoc"
 
 # @return [Architecture]

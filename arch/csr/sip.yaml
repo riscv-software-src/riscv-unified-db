@@ -5,6 +5,7 @@ kind: csr
 name: sip
 long_name: Supervisor Interrupt Pending
 address: 0x144
+writeable: true
 priv_mode: S
 description: |
   A restricted view of the interrupt pending bits in `mip`.

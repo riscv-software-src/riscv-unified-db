@@ -5,6 +5,7 @@ kind: csr
 name: mip
 long_name: Machine Interrupt Pending
 address: 0x344
+writeable: true
 priv_mode: M
 
 # Description is shared with mie CSR (it copies it from here).

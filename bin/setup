@@ -144,6 +144,23 @@ if [ ! -d $ROOT/.home/.gems ]; then
     cd $OLDDIR
 fi
 
+if [ ! -f $ROOT/ext/rbi-central/README.md ]; then
+    git submodule update --init ext/rbi-central
+fi
+
+if [ ! -d $ROOT/.home/.sorbet ]; then
+    mkdir .home/.sorbet
+    ln -s .home/.sorbet sorbet
+    cd .home/.sorbet
+    ln -s ../../.sorbet-config config
+    cd $ROOT
+    ${RUN} bundle exec tapioca init -c ${ROOT}/.tapioca-config.yml
+    ${RUN} bundle exec tapioca dsl -c ${ROOT}/.tapioca-config.yml
+    cd .home/.sorbet/rbi/dsl
+    ln -s ${ROOT}/lib/architecture.rbi
+    cd $ROOT
+fi
+
 if [ ! -d $ROOT/.home/.venv ]; then
     ${RUN} /usr/bin/python3 -m venv ${ROOT}/.home/.venv
 fi
