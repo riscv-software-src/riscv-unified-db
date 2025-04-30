@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: c.jalr
-long_name: Jump and Link Register.
+long_name: Jump and Link Register
 description: |
   C.JALR (jump and link register) performs the same operation as C.JR, but additionally writes the address of the instruction following the jump (pc+2) to the link register, x1.
   C.JALR expands to jalr x1, 0(rs1).

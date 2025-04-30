@@ -93,7 +93,8 @@
         "name": { "$ref": "schema_defs.json#/$defs/extension_name" },
         "long_name": {
           "type": "string",
-          "description": "One line description for the extension"
+          "description": "One line description for the extension",
+          "pattern": ".*[^.!,]$"
         },
         "description": {
           "type": "string",
