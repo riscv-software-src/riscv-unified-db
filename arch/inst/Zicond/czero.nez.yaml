@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: czero.nez
-long_name: Conditional zero, if condition is nonzero.
+long_name: Conditional zero, if condition is nonzero
 description: |
   If rs2 contains a nonzero value, this instruction writes the value zero to rd. Otherwise, this
   instruction copies the contents of rs1 to rd.
