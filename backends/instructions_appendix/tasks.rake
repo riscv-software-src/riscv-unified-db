@@ -38,7 +38,10 @@ end
 MERGED_INSTRUCTIONS_PDF = INST_MANUAL_GEN_DIR / "instructions_appendix.pdf"
 
 # File task to generate the PDF from the merged adoc.
-file MERGED_INSTRUCTIONS_PDF.to_s => [MERGED_INSTRUCTIONS_FILE.to_s] do |t|
+file MERGED_INSTRUCTIONS_PDF.to_s => [
+  MERGED_INSTRUCTIONS_FILE.to_s,
+  "#{$root}/ext/docs-resources/themes/riscv-pdf.yml"
+] do |t|
   sh [
     "asciidoctor-pdf",
     "-a toc",
