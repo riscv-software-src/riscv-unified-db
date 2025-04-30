@@ -67,3 +67,10 @@ fields:
       cleared by software.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
+sw_read(): |
+  return
+   (CSR[fcsr].NV `<< 4) |
+   (CSR[fcsr].DZ `<< 3) |
+   (CSR[fcsr].OF `<< 2) |
+   (CSR[fcsr].UF `<< 1) |
+   CSR[fcsr].NX;

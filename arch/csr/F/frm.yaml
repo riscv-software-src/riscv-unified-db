@@ -45,3 +45,6 @@ fields:
       Rounding mode data.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
+sw_read(): |
+  return
+   CSR[fcsr].FRM;
