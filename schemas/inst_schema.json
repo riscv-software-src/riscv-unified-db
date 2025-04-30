@@ -180,7 +180,8 @@
         },
         "long_name": {
           "type": "string",
-          "description": "Short description of the instruction"
+          "description": "Short description of the instruction",
+          "pattern": ".*[^.!,]$"
         },
         "description": {
           "type": "string",
