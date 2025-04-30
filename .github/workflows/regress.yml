@@ -62,8 +62,8 @@ jobs:
         uses: actions/checkout@v4
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
-      - name: Generate instruction appendix
-        run: ./do gen:instruction_appendix
+      - name: Generate instruction appendix asciidoc
+        run: ./do gen:instruction_appendix_adoc
   regress-cfg-manual:
     runs-on: ubuntu-latest
     env:

@@ -55,6 +55,8 @@ file MERGED_INSTRUCTIONS_PDF.to_s => [
 end
 
 namespace :gen do
+  task :instruction_appendix_adoc => MERGED_INSTRUCTIONS_FILE.to_s
+
   desc "Generate instruction appendix (merged instructions adoc and PDF)"
   task :instruction_appendix do
     # Generate the merged instructions adoc.
