@@ -142,7 +142,7 @@ class ProcCertModel < Portfolio
 
     @requirement_groups = []
     @data["requirement_groups"]&.each do |req_key, req_group|
-      @requirement_groups << RequirementGroup.new(req_group, @arch) unless req_key == "$child_of"
+      @requirement_groups << RequirementGroup.new(req_group, @arch) unless req_key == "$child_of" || req_key == "$parent_of"
     end
     @requirement_groups
   end
