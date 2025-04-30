@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../lib/arch_obj_models/instructions_appendix.rb"
-
 # Define the instructions manual generation directory constant.
 INST_MANUAL_GEN_DIR = $root / "gen" / "instructions_appendix"
 
