@@ -11,6 +11,7 @@ require "etc"
 $root = Pathname.new(__FILE__).dirname.realpath
 $lib = $root / "lib"
 
+require "logger"
 require "ruby-progressbar"
 require "yard"
 require "minitest/test_task"
@@ -18,6 +19,12 @@ require "minitest/test_task"
 require_relative $root / "lib" / "architecture"
 require_relative $root / "lib" / "portfolio_design"
 require_relative $root / "lib" / "proc_cert_design"
+
+$logger = Logger.new(STDOUT, datetime_format: "%v %r")
+$logger.level = Logger::INFO
+$logger.formatter = proc do |severity, datetime, progname, msg|
+  "[#{severity}] #{datetime.strftime('%F %T')}: #{msg}\n"
+end
 
 directory "#{$root}/.stamps"
 
@@ -423,28 +430,28 @@ namespace :test do
     These are basic but fast-running tests to check the database and tools
   DESC
   task :smoke do
-    puts "UPDATE: Starting test:smoke"
-    puts "UPDATE: Running gen:isa_explorer_browser_ext"
+    $logger.info "Starting test:smoke"
+    $logger.info "Running gen:isa_explorer_browser_ext"
     Rake::Task["gen:isa_explorer_browser_ext"].invoke
-    puts "UPDATE: Running test:idl_compiler"
+    $logger.info "Running test:idl_compiler"
     Rake::Task["test:idl_compiler"].invoke
-    puts "UPDATE: Running test:lib"
+    $logger.info "Running test:lib"
     Rake::Task["test:lib"].invoke
-    puts "UPDATE: Running test:schema"
+    $logger.info "Running test:schema"
     Rake::Task["test:schema"].invoke
-    puts "UPDATE: Running test:idl for rv32"
+    $logger.info "UPDATE: Running test:idl for rv32"
     ENV["CFG"] = "rv32"
     Rake::Task["test:idl"].invoke
-    puts "UPDATE: Running test:idl for rv64"
+    $logger.info "UPDATE: Running test:idl for rv64"
     ENV["CFG"] = "rv64"
     Rake::Task["test:idl"].invoke
-    puts "UPDATE: Running test:idl for qc_iu"
+    $logger.info "UPDATE: Running test:idl for qc_iu"
     ENV["CFG"] = "qc_iu"
-    puts "UPDATE: Running test:inst_encodings"
+    $logger.info "Running test:inst_encodings"
     Rake::Task["test:inst_encodings"].invoke
-    puts "UPDATE: Running test:llvm"
+    $logger.info "Running test:llvm"
     Rake::Task["test:llvm"].invoke
-    puts "UPDATE: Done test:smoke"
+    $logger.info "Done test:smoke"
   end
 
   desc <<~DESC
@@ -453,41 +460,41 @@ namespace :test do
     These tests must pass before a commit will be allowed in the main branch on GitHub
   DESC
   task :regress do
-    puts "UPDATE: Starting test:regress"
+    $logger.info "Starting test:regress"
     Rake::Task["test:smoke"].invoke
 
-    puts "UPDATE: Running gen:isa_explorer_browser"
+    $logger.info "Running gen:isa_explorer_browser"
     Rake::Task["gen:isa_explorer_browser"].invoke
 
-    puts "UPDATE: Running gen:isa_explorer_spreadsheet"
+    $logger.info "Running gen:isa_explorer_spreadsheet"
     Rake::Task["gen:isa_explorer_spreadsheet"].invoke
 
-    puts "UPDATE: Running gen:html_manual MANUAL_NAME=isa VERSIONS=all"
+    $logger.info "Running gen:html_manual MANUAL_NAME=isa VERSIONS=all"
     ENV["MANUAL_NAME"] = "isa"
     ENV["VERSIONS"] = "all"
     Rake::Task["gen:html_manual"].invoke
 
-    puts "UPDATE: Running gen:ext_pdf EXT=B VERSION=latest"
+    $logger.info "Running gen:ext_pdf EXT=B VERSION=latest"
     ENV["EXT"] = "B"
     ENV["VERSION"] = "latest"
     Rake::Task["gen:ext_pdf"].invoke
 
-    puts "UPDATE: Running gen:html for example_rv64_with_overlay"
+    $logger.info "Running gen:html for example_rv64_with_overlay"
     Rake::Task["gen:html"].invoke("example_rv64_with_overlay")
 
-    puts "UPDATE: Generating MockProcessor-CRD.pdf"
+    $logger.info "Generating MockProcessor-CRD.pdf"
     Rake::Task["#{$root}/gen/proc_crd/pdf/MockProcessor-CRD.pdf"].invoke
 
-    puts "UPDATE: Generating MockProcessor-CTP.pdf"
+    $logger.info "Generating MockProcessor-CTP.pdf"
     Rake::Task["#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"].invoke
 
-    puts "UPDATE: Generating MockProfileRelease.pdf"
+    $logger.info "Generating MockProfileRelease.pdf"
     Rake::Task["#{$root}/gen/profile/pdf/MockProfileRelease.pdf"].invoke
 
-    puts "UPDATE: Generating Go Language Support"
+    $logger.info "Generating Go Language Support"
     Rake::Task["gen:go"].invoke
 
-    puts "UPDATE: Done test:regress"
+    $logger.info "Done test:regress"
   end
 
   desc <<~DESC
