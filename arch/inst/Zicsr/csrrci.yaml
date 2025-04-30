@@ -7,7 +7,7 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy: Zicsr
-assembly: xd, csr, imm
+assembly: rd, imm, rs1
 encoding:
   match: -----------------111-----1110011
   variables:

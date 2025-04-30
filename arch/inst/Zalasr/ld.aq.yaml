@@ -7,7 +7,7 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy: Zalasr
-assembly: xd, xs1, rl
+assembly: xd, xs1
 encoding:
   match: 001101-00000-----011-----0101111
   variables:

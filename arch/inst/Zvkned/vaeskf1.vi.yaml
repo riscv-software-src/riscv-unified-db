@@ -7,7 +7,7 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy: Zvkned
-assembly: vs2, vd, imm
+assembly: vd, vs2, imm
 encoding:
   match: 1000101----------010-----1110111
   variables:
