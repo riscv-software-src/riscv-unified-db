@@ -122,6 +122,7 @@ class TestInstructionEncoding:
             or instr_name == "c.nop"
             or instr_name == "fcvtmod.w.d"
             or instr_name == "fence"
+            or instr_name == "fence.tso"
         ):
             pytest.skip(
                 f"Instruction {instr_name} is a corner case and implementation should not follow ISA spec"
