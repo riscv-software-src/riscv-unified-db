@@ -299,24 +299,8 @@ module Idl
 
   class CsrReadExpressionAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      idx =
-        if @idx_expr.nil?
-          @idx_text
-        else
-          @idx_expr.gen_adoc(0)
-        end
-
-      csr_text = "CSR[#{idx}]"
-      if idx_text =~ /[0-9]+/
-        # we don't have the symtab to map this to a csr name
-        "#{' '*indent}#{csr_text}"
-      else
-        if @cfg_arch.csr(csr_text).nil?
-          "#{' '*indent}#{csr_text}"
-        else
-          "#{' '*indent}%%LINK%csr;#{idx};#{csr_text}%%"
-        end
-      end
+      csr_text = "CSR[#{csr_name}]"
+      "#{' '*indent}%%LINK%csr;#{csr_name};#{csr_text}%%"
     end
   end
 
