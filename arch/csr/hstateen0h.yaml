@@ -25,6 +25,7 @@ definedBy:
     - Ssstateen
 fields:
   SE0:
+    long_name: sstateen0 access control
     location: 31
     description: |
       The SE0 bit in `hstateen0h` controls access to the `sstateen0` CSR.
@@ -32,12 +33,16 @@ fields:
     reset_value: UNDEFINED_LEGAL
   ENVCFG:
     location: 30
+    definedBy:
+      name: S
+      version: ">= 1.11"
     description: |
       The ENVCFG bit in `hstateen0h` controls access to the `senvcfg` CSRs.
     type: RW
     reset_value: UNDEFINED_LEGAL
   CSRIND:
     location: 28
+    definedBy: Sscsrind
     description: |
       The CSRIND bit in `hstateen0h` controls access to the `siselect` and the
       `sireg*`, (really `vsiselect` and `vsireg*`) CSRs provided by the Sscsrind
@@ -46,6 +51,7 @@ fields:
     reset_value: UNDEFINED_LEGAL
   AIA:
     location: 27
+    definedBy: Ssaia
     description: |
       The AIA bit in `hstateen0h` controls access to all state introduced by
       the Ssaia extension and is not controlled by either the CSRIND or the
@@ -54,6 +60,7 @@ fields:
     reset_value: UNDEFINED_LEGAL
   IMSIC:
     location: 26
+    definedBy: Ssaia
     description: |
       The IMSIC bit in `hstateen0h` controls access to the guest IMSIC state,
       including CSRs `stopei` (really `vstopei`), provided by the Ssaia extension.
@@ -64,6 +71,7 @@ fields:
     reset_value: UNDEFINED_LEGAL
   CONTEXT:
     location: 25
+    definedBy: Sdtrig
     description: |
       The CONTEXT bit in `hstateen0h` controls access to the `scontext` CSR provided
       by the Sdtrig extension.

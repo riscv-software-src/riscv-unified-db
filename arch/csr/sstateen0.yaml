@@ -78,12 +78,15 @@ definedBy:
 fields:
   JVT:
     location: 2
+    definedBy: Zcmt
     description: |
       The JVT bit controls access to the `jvt` CSR provided by the Zcmt extension.
     type: RW
     reset_value: UNDEFINED_LEGAL
   FCSR:
     location: 1
+    definedBy:
+      anyOf: [Zfinx, Zdinx]
     description: |
       The FCSR bit controls access to `fcsr` for the case when floating-point instructions
       operate on `x` registers instead of `f` registers as specified by the Zfinx and related

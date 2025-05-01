@@ -25,6 +25,7 @@ definedBy:
     - Ssstateen
 fields:
   SE0:
+    long_name: sstateen3 access control
     location: 31
     description: |
       The SE0 bit in `hstateen3h` controls access to the `sstateen3` CSR.

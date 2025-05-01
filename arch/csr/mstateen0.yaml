@@ -76,6 +76,9 @@ fields:
     reset_value: UNDEFINED_LEGAL
   ENVCFG:
     location: 62
+    definedBy:
+      name: S
+      version: ">= 1.11"
     base: 64
     description: |
       The ENVCFG bit in `mstateen0` controls access to the `henvcfg`, `henvcfgh`, and the `senvcfg` CSRs.
@@ -83,6 +86,7 @@ fields:
     reset_value: UNDEFINED_LEGAL
   CSRIND:
     location: 60
+    definedBy: Sscsrind
     base: 64
     description: |
       The CSRIND bit in `mstateen0` controls access to the `siselect`, `sireg*`, `vsiselect`, and the `vsireg*`
@@ -91,6 +95,7 @@ fields:
     reset_value: UNDEFINED_LEGAL
   AIA:
     location: 59
+    definedBy: Ssaia
     base: 64
     description: |
       The AIA bit in `mstateen0` controls access to all state introduced by the Ssaia extension and is not
@@ -99,6 +104,7 @@ fields:
     reset_value: UNDEFINED_LEGAL
   IMSIC:
     location: 58
+    definedBy: Ssaia
     base: 64
     description: |
       The IMSIC bit in `mstateen0` controls access to the IMSIC state, including CSRs `stopei` and `vstopei`,
@@ -107,6 +113,7 @@ fields:
     reset_value: UNDEFINED_LEGAL
   CONTEXT:
     location: 57
+    definedBy: Sdtrig
     base: 64
     description: |
       The CONTEXT bit in `mstateen0` controls access to the `scontext` and `hcontext` CSRs provided by the
@@ -123,12 +130,15 @@ fields:
     reset_value: UNDEFINED_LEGAL
   JVT:
     location: 2
+    definedBy: Zcmt
     description: |
       The JVT bit controls access to the `jvt` CSR provided by the Zcmt extension.
     type: RW
     reset_value: UNDEFINED_LEGAL
   FCSR:
     location: 1
+    definedBy:
+      anyOf: [Zfinx, Zdinx]
     description: |
       The FCSR bit controls access to `fcsr` for the case when floating-point instructions
       operate on `x` registers instead of `f` registers as specified by the Zfinx and related

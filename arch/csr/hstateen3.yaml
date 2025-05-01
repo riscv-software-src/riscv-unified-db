@@ -65,6 +65,7 @@ definedBy:
     - Ssstateen
 fields:
   SE0:
+    long_name: sstateen3 access control
     location: 63
     base: 64
     description: |
