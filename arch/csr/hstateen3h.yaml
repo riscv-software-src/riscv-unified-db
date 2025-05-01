@@ -27,7 +27,12 @@ fields:
   SE0:
     long_name: sstateen3 access control
     location: 31
+    alias: hstateen3.SE0
+    sw_write(csr_value): |
+      CSR[hstateen3].SE0 = csr_value.SE0;
+      return csr_value.SE0;
     description: |
       The SE0 bit in `hstateen3h` controls access to the `sstateen3` CSR.
     type: RW
     reset_value: UNDEFINED_LEGAL
+sw_read(): return $bits(CSR[hstateen3])[63:32];

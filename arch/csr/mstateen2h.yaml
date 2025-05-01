@@ -17,7 +17,12 @@ definedBy: Smstateen
 fields:
   SE0:
     location: 31
+    alias: mstateen2.SE0
+    sw_write(csr_value): |
+      CSR[mstateen2].SE0 = csr_value.SE0;
+      return csr_value.SE0;
     description: |
       The SE0 bit in `mstateen2h` controls access to the `hstateen2`, `hstateen2h`, and the `sstateen2` CSRs.
     type: RW
     reset_value: UNDEFINED_LEGAL
+sw_read(): return $bits(CSR[mstateen2])[63:32];
