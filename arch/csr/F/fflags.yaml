@@ -5,18 +5,22 @@ kind: csr
 name: fflags
 long_name: Floating-Point Accrued Exceptions
 address: 0x001
-description: |
-  The accrued exception flags indicate the exception conditions that have arisen on any floating-point
-  arithmetic instruction since the field was last reset by software. The base RISC-V ISA does not
-  support generating a trap on the setting of a floating-point exception flag.
-
-  [NOTE]
-  ====
-  As allowed by the standard, we do not support traps on floating-point exceptions in the F
-  extension, but instead require explicit checks of the flags in software. We considered
-  adding branches controlled directly by the contents of the floating-point accrued exception
-  flags, but ultimately chose to omit these instructions to keep the ISA simple.
-  ====
+description:
+  - id: csr-fflags-purpose
+    normative: true
+    text: |
+      The accrued exception flags indicate the exception conditions that have arisen on any floating-point arithmetic
+      instruction since the field was last reset by software.
+  - id: csr-fflags-fptrap
+    normative: false
+    text: The base RISC-V ISA does not support generating a trap on the setting of a floating-point exception flag.
+  - id: csr-fflags-reasoning
+    normative: false
+    text: |
+      As allowed by the standard, we do not support traps on floating-point exceptions in the F
+      extension, but instead require explicit checks of the flags in software. We considered
+      adding branches controlled directly by the contents of the floating-point accrued
+      exception flags, but ultimately chose to omit these instructions to keep the ISA simple.
 
 priv_mode: U
 length: 32
