@@ -1,0 +1,27 @@
+gem:
+  outdir: .home/.sorbet/rbi/gems
+  file_header: true
+  exclude:
+    [
+      rdoc,
+      asciidoctor-pdf,
+      solargraph,
+      webrick,
+      ttfunk,
+      tapioca,
+      rubocop,
+      rubocop-minitest,
+      spoom,
+      rdbg,
+      parser,
+    ]
+dsl:
+  outdir: .home/.sorbet/rbi/dsl
+  # Add your `dsl` command parameters here:
+  #
+  # exclude:
+  # - SomeGeneratorName
+  # workers: 5
+annotations:
+  sources:
+    - ext/rbi-central

@@ -5,6 +5,7 @@ kind: csr
 name: stval
 long_name: Supervisor Trap Value
 address: 0x143
+writeable: true
 description: Holds trap-specific information
 priv_mode: S
 length: 64
