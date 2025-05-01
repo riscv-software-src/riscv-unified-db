@@ -23,10 +23,247 @@ description: |
   `scountovf` bit X is readable when `mcounteren` bit X and `hcounteren` bit X are both set, and otherwise reads as zero.
 
 fields:
-  OF_shadow_bits:
-    location: 31-3
+  OF3:
+    alias: mhpmevent3.OF
+    location: 3
     type: RO
-    description: |
-      Read-only shadow copies of the OF bits from `mhpmevent3` to `mhpmevent31`.
+    description: Shadow copy of mhpmevent3 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF4:
+    alias: mhpmevent4.OF
+    location: 4
+    type: RO
+    description: Shadow copy of mhpmevent4 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF5:
+    alias: mhpmevent5.OF
+    location: 5
+    type: RO
+    description: Shadow copy of mhpmevent5 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF6:
+    alias: mhpmevent6.OF
+    location: 6
+    type: RO
+    description: Shadow copy of mhpmevent6 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF7:
+    alias: mhpmevent7.OF
+    location: 7
+    type: RO
+    description: Shadow copy of mhpmevent7 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF8:
+    alias: mhpmevent8.OF
+    location: 8
+    type: RO
+    description: Shadow copy of mhpmevent8 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF9:
+    alias: mhpmevent9.OF
+    location: 9
+    type: RO
+    description: Shadow copy of mhpmevent9 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF10:
+    alias: mhpmevent10.OF
+    location: 10
+    type: RO
+    description: Shadow copy of mhpmevent10 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF11:
+    alias: mhpmevent11.OF
+    location: 11
+    type: RO
+    description: Shadow copy of mhpmevent11 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF12:
+    alias: mhpmevent12.OF
+    location: 12
+    type: RO
+    description: Shadow copy of mhpmevent12 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF13:
+    alias: mhpmevent13.OF
+    location: 13
+    type: RO
+    description: Shadow copy of mhpmevent13 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF14:
+    alias: mhpmevent14.OF
+    location: 14
+    type: RO
+    description: Shadow copy of mhpmevent14 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF15:
+    alias: mhpmevent15.OF
+    location: 15
+    type: RO
+    description: Shadow copy of mhpmevent15 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF16:
+    alias: mhpmevent16.OF
+    location: 16
+    type: RO
+    description: Shadow copy of mhpmevent16 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF17:
+    alias: mhpmevent17.OF
+    location: 17
+    type: RO
+    description: Shadow copy of mhpmevent17 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF18:
+    alias: mhpmevent18.OF
+    location: 18
+    type: RO
+    description: Shadow copy of mhpmevent18 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF19:
+    alias: mhpmevent19.OF
+    location: 19
+    type: RO
+    description: Shadow copy of mhpmevent19 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF20:
+    alias: mhpmevent20.OF
+    location: 20
+    type: RO
+    description: Shadow copy of mhpmevent20 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF21:
+    alias: mhpmevent21.OF
+    location: 21
+    type: RO
+    description: Shadow copy of mhpmevent21 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF22:
+    alias: mhpmevent22.OF
+    location: 22
+    type: RO
+    description: Shadow copy of mhpmevent22 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF23:
+    alias: mhpmevent23.OF
+    location: 23
+    type: RO
+    description: Shadow copy of mhpmevent23 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF24:
+    alias: mhpmevent24.OF
+    location: 24
+    type: RO
+    description: Shadow copy of mhpmevent24 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF25:
+    alias: mhpmevent25.OF
+    location: 25
+    type: RO
+    description: Shadow copy of mhpmevent25 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF26:
+    alias: mhpmevent26.OF
+    location: 26
+    type: RO
+    description: Shadow copy of mhpmevent26 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF27:
+    alias: mhpmevent27.OF
+    location: 27
+    type: RO
+    description: Shadow copy of mhpmevent27 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF28:
+    alias: mhpmevent28.OF
+    location: 28
+    type: RO
+    description: Shadow copy of mhpmevent28 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF29:
+    alias: mhpmevent29.OF
+    location: 29
+    type: RO
+    description: Shadow copy of mhpmevent29 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF30:
+    alias: mhpmevent30.OF
+    location: 30
+    type: RO
+    description: Shadow copy of mhpmevent30 overflow (OF) bit.
+    reset_value: UNDEFINED_LEGAL
+
+  OF31:
+    alias: mhpmevent31.OF
+    location: 31
+    type: RO
+    description: Shadow copy of mhpmevent31 overflow (OF) bit.
     reset_value: UNDEFINED_LEGAL
 sw_read(): |
+  Bits<32> mask;
+  if (mode() == PrivilegeMode::VS) {
+    # in VS-mode, scountovf.OFX access is determined by mcounteren/hcounteren
+    mask = $bits(CSR[mcounteren]) & $bits(CSR[hcounteren]);
+  } else {
+    # in M-mode and S-mode, scountovf.OFX access is determined by mcounteren/scounteren
+    mask = $bits(CSR[mcounteren]) & $bits(CSR[scounteren]);
+  }
+
+  Bits<32> value =
+    (CSR[mhpmevent3].OF << 3) |
+    (CSR[mhpmevent4].OF << 4) |
+    (CSR[mhpmevent5].OF << 5) |
+    (CSR[mhpmevent6].OF << 6) |
+    (CSR[mhpmevent7].OF << 7) |
+    (CSR[mhpmevent8].OF << 8) |
+    (CSR[mhpmevent9].OF << 9) |
+    (CSR[mhpmevent10].OF << 10) |
+    (CSR[mhpmevent11].OF << 11) |
+    (CSR[mhpmevent12].OF << 12) |
+    (CSR[mhpmevent13].OF << 13) |
+    (CSR[mhpmevent14].OF << 14) |
+    (CSR[mhpmevent15].OF << 15) |
+    (CSR[mhpmevent16].OF << 16) |
+    (CSR[mhpmevent17].OF << 17) |
+    (CSR[mhpmevent18].OF << 18) |
+    (CSR[mhpmevent19].OF << 19) |
+    (CSR[mhpmevent20].OF << 20) |
+    (CSR[mhpmevent21].OF << 21) |
+    (CSR[mhpmevent22].OF << 22) |
+    (CSR[mhpmevent23].OF << 23) |
+    (CSR[mhpmevent24].OF << 24) |
+    (CSR[mhpmevent25].OF << 25) |
+    (CSR[mhpmevent26].OF << 26) |
+    (CSR[mhpmevent27].OF << 27) |
+    (CSR[mhpmevent28].OF << 28) |
+    (CSR[mhpmevent29].OF << 29) |
+    (CSR[mhpmevent30].OF << 30) |
+    (CSR[mhpmevent31].OF << 31);
+
+  return value & mask;
