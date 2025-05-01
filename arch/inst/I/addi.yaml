@@ -23,6 +23,9 @@ access:
   vu: always
 data_independent_timing: true
 operation(): X[xd] = X[xs1] + $signed(imm);
+pseudoinstructions:
+  - when: imm == 0
+    to: mv xd,xs1
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

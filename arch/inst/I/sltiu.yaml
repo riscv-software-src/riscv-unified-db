@@ -28,6 +28,10 @@ access:
   vs: always
   vu: always
 data_independent_timing: true
+pseudoinstructions:
+  - when: xs1 == 0
+    to: seqz xd,xs1
+
 operation(): |
   Bits<MXLEN> sign_extend_imm = $signed(imm);
   X[xd] = (X[xs1] < sign_extend_imm) ? 1 : 0;
