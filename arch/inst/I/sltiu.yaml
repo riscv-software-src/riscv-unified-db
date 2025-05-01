@@ -29,7 +29,7 @@ access:
   vu: always
 data_independent_timing: true
 pseudoinstructions:
-  - when: xs1 == 0
+  - when: imm == 1
     to: seqz xd,xs1
 
 operation(): |
