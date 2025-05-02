@@ -1,4 +1,9 @@
 # frozen_string_literal: true
+# typed: true
+
+require "sorbet-runtime"
+T.bind(self, T.all(Rake::DSL, Object))
+extend T::Sig
 
 Encoding.default_external = "UTF-8"
 
@@ -11,6 +16,7 @@ require "etc"
 $root = Pathname.new(__FILE__).dirname.realpath
 $lib = $root / "lib"
 
+require "logger"
 require "ruby-progressbar"
 require "yard"
 require "minitest/test_task"
@@ -18,6 +24,12 @@ require "minitest/test_task"
 require_relative $root / "lib" / "architecture"
 require_relative $root / "lib" / "portfolio_design"
 require_relative $root / "lib" / "proc_cert_design"
+
+$logger = Logger.new(STDOUT, datetime_format: "%v %r")
+$logger.level = Logger::INFO
+$logger.formatter = proc do |severity, datetime, progname, msg|
+  "[#{severity}] #{datetime.strftime('%F %T')}: #{msg}\n"
+end
 
 directory "#{$root}/.stamps"
 
@@ -30,8 +42,8 @@ directory "#{$root}/.stamps"
 
 # @param config_locator [String or Pathname]
 # @return [ConfiguredArchitecture]
+sig { params(config_locator: T.any(String, Pathname)).returns(ConfiguredArchitecture) }
 def cfg_arch_for(config_locator)
-  raise ArgumentError, "expecting String or Pathname" unless config_locator.is_a?(String) || config_locator.is_a?(Pathname)
   config_locator = config_locator.to_s
 
   $cfg_archs ||= {}
@@ -156,21 +168,37 @@ namespace :serve do
   end
 end
 
+sig { params(test_files: T::Array[String]).returns(String) }
+def make_test_cmd(test_files)
+  "-Ilib:test -w -e 'require \"minitest/autorun\"; #{test_files.map{ |f| "require \"#{f}\""}.join("; ")}' --"
+end
+
 namespace :test do
+
+  # "Run the cross-validation against LLVM"
+  task :llvm do
+      begin
+        sh "#{$root}/.home/.venv/bin/python3 -m pytest ext/auto-inst/test_parsing.py -v"
+      rescue => e
+        raise unless e.message.include?("status (5)") # don't fail on skipped tests
+    end
+  end
   # "Run the IDL compiler test suite"
   task :idl_compiler do
-    t = Minitest::TestTask.new(:lib_test)
-    t.test_globs = ["#{$root}/lib/idl/tests/test_*.rb"]
-    t.process_env
-    ruby t.make_test_cmd
+    test_files = Dir["#{$root}/lib/idl/tests/test_*.rb"]
+    ruby make_test_cmd(test_files)
   end
 
   # "Run the Ruby library test suite"
   task :lib do
-    t = Minitest::TestTask.new(:lib_test)
-    t.test_globs = ["#{$root}/lib/test/test_*.rb"]
-    t.process_env
-    ruby t.make_test_cmd
+    test_files = Dir["#{$root}/lib/test/test_*.rb"]
+
+    ruby make_test_cmd(test_files)
+  end
+
+  desc "Type-check the Ruby library"
+  task :sorbet do
+    sh "srb tc @.sorbet-config"
   end
 end
 
@@ -192,13 +220,13 @@ namespace :test do
 
     cfg_arch = cfg_arch_for("_")
     insts = cfg_arch.instructions
-    failed = false
+    failed = T.let(false, T::Boolean)
     insts.each_with_index do |inst, idx|
       [32, 64].each do |xlen|
         next unless inst.defined_in_base?(xlen)
 
         (idx...insts.size).each do |other_idx|
-          other_inst = insts[other_idx]
+          other_inst = T.must(insts[other_idx])
           next unless other_inst.defined_in_base?(xlen)
           next if other_inst == inst
 
@@ -220,13 +248,13 @@ namespace :test do
 
     cfg_arch = cfg_arch_for("_")
     csrs = cfg_arch.csrs
-    failed = false
+    failed = T.let(false, T::Boolean)
     csrs.each_with_index do |csr, idx|
       [32, 64].each do |xlen|
         next unless csr.defined_in_base?(xlen)
 
         (idx...csrs.size).each do |other_idx|
-          other_csr = csrs[other_idx]
+          other_csr = T.must(csrs[other_idx])
           next unless other_csr.defined_in_base?(xlen)
           next if other_csr == csr
 
@@ -248,18 +276,15 @@ namespace :test do
     puts "All files validate against their schema"
   end
 
-  task idl: ["#{$root}/.stamps/resolve-rv32.stamp", "#{$root}/.stamps/resolve-rv64.stamp"]  do
-    print "Parsing IDL code for RV32..."
-    cfg_arch32 = cfg_arch_for("rv32")
+  task :idl do
+    cfg = ENV["CFG"]
+    raise "Missing CFG enviornment variable" if cfg.nil?
+
+    print "Parsing IDL code for #{cfg}..."
+    cfg_arch = cfg_arch_for(cfg)
     puts "done"
 
-    cfg_arch32.type_check
-
-    print "Parsing IDL code for RV64..."
-    cfg_arch64 = cfg_arch_for("rv64")
-    puts "done"
-
-    cfg_arch64.type_check
+    cfg_arch.type_check
 
     puts "All IDL passed type checking"
   end
@@ -271,7 +296,6 @@ def insert_warning(str, from)
   first_line = lines.shift
   lines.unshift(first_line, "\n# WARNING: This file is auto-generated from #{Pathname.new(from).relative_path_from($root)}").join("")
 end
-private :insert_warning
 
 (3..31).each do |hpm_num|
   file "#{$root}/arch/csr/Zihpm/mhpmcounter#{hpm_num}.yaml" => [
@@ -417,20 +441,30 @@ namespace :test do
     These are basic but fast-running tests to check the database and tools
   DESC
   task :smoke do
-    puts "UPDATE: Starting test:smoke"
-    puts "UPDATE: Running gen:isa_explorer_browser_ext"
+    $logger.info "Starting test:smoke"
+    $logger.info "Running gen:isa_explorer_browser_ext"
     Rake::Task["gen:isa_explorer_browser_ext"].invoke
-    puts "UPDATE: Running test:idl_compiler"
+    $logger.info "Running test:idl_compiler"
     Rake::Task["test:idl_compiler"].invoke
-    puts "UPDATE: Running test:lib"
+    $logger.info "Running test:lib"
     Rake::Task["test:lib"].invoke
-    puts "UPDATE: Running test:schema"
+    $logger.info "UPDATE: Running test:sorbet"
+    Rake::Task["test:sorbet"].invoke
+    $logger.info "Running test:schema"
     Rake::Task["test:schema"].invoke
-    puts "UPDATE: Running test:idl"
+    $logger.info "UPDATE: Running test:idl for rv32"
+    ENV["CFG"] = "rv32"
     Rake::Task["test:idl"].invoke
-    puts "UPDATE: Running test:inst_encodings"
+    $logger.info "UPDATE: Running test:idl for rv64"
+    ENV["CFG"] = "rv64"
+    Rake::Task["test:idl"].invoke
+    $logger.info "UPDATE: Running test:idl for qc_iu"
+    ENV["CFG"] = "qc_iu"
+    $logger.info "Running test:inst_encodings"
     Rake::Task["test:inst_encodings"].invoke
-    puts "UPDATE: Done test:smoke"
+    $logger.info "Running test:llvm"
+    Rake::Task["test:llvm"].invoke
+    $logger.info "Done test:smoke"
   end
 
   desc <<~DESC
@@ -439,41 +473,41 @@ namespace :test do
     These tests must pass before a commit will be allowed in the main branch on GitHub
   DESC
   task :regress do
-    puts "UPDATE: Starting test:regress"
+    $logger.info "Starting test:regress"
     Rake::Task["test:smoke"].invoke
 
-    puts "UPDATE: Running gen:isa_explorer_browser"
+    $logger.info "Running gen:isa_explorer_browser"
     Rake::Task["gen:isa_explorer_browser"].invoke
 
-    puts "UPDATE: Running gen:isa_explorer_spreadsheet"
+    $logger.info "Running gen:isa_explorer_spreadsheet"
     Rake::Task["gen:isa_explorer_spreadsheet"].invoke
 
-    puts "UPDATE: Running gen:html_manual MANUAL_NAME=isa VERSIONS=all"
+    $logger.info "Running gen:html_manual MANUAL_NAME=isa VERSIONS=all"
     ENV["MANUAL_NAME"] = "isa"
     ENV["VERSIONS"] = "all"
     Rake::Task["gen:html_manual"].invoke
 
-    puts "UPDATE: Running gen:ext_pdf EXT=B VERSION=latest"
+    $logger.info "Running gen:ext_pdf EXT=B VERSION=latest"
     ENV["EXT"] = "B"
     ENV["VERSION"] = "latest"
     Rake::Task["gen:ext_pdf"].invoke
 
-    puts "UPDATE: Running gen:html for example_rv64_with_overlay"
+    $logger.info "Running gen:html for example_rv64_with_overlay"
     Rake::Task["gen:html"].invoke("example_rv64_with_overlay")
 
-    puts "UPDATE: Generating MockProcessor-CRD.pdf"
+    $logger.info "Generating MockProcessor-CRD.pdf"
     Rake::Task["#{$root}/gen/proc_crd/pdf/MockProcessor-CRD.pdf"].invoke
 
-    puts "UPDATE: Generating MockProcessor-CTP.pdf"
+    $logger.info "Generating MockProcessor-CTP.pdf"
     Rake::Task["#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"].invoke
 
-    puts "UPDATE: Generating MockProfileRelease.pdf"
+    $logger.info "Generating MockProfileRelease.pdf"
     Rake::Task["#{$root}/gen/profile/pdf/MockProfileRelease.pdf"].invoke
 
-    puts "UPDATE: Generating Go Language Support"
+    $logger.info "Generating Go Language Support"
     Rake::Task["gen:go"].invoke
 
-    puts "UPDATE: Done test:regress"
+    $logger.info "Done test:regress"
   end
 
   desc <<~DESC

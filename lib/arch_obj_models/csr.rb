@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# typed: true
 
 require_relative "database_obj"
 require_relative "certifiable_obj"
@@ -22,6 +23,21 @@ class Csr < DatabaseObject
     @data["address"]
   end
 
+  # @return [Boolean] Whether or not the CSR can be accessed by indirect address
+  def indirect?
+    @data.key?("indirect_address")
+  end
+
+  # @return [Integer] The indirect address
+  def indirect_address
+    @data["indirect_address"]
+  end
+
+  # @return [Integer] The indirect window slot
+  def indirect_slot
+    @data["indirect_slot"]
+  end
+
   # @return [String] Least-privileged mode that can access this CSR. One of ['m', 's', 'u', 'vs', 'vu']
   def priv_mode
     @data["priv_mode"]
@@ -35,6 +51,10 @@ class Csr < DatabaseObject
   # @return [nil] If the CSR is not accessible in VS/VU mode, or if it's address does not change in those modes
   def virtual_address
     @data["virtual_address"]
+  end
+
+  def writable
+    @data["writeable"]
   end
 
   # @return [Integer] 32 or 64, the XLEN this CSR is exclusively defined in
@@ -56,7 +76,9 @@ class Csr < DatabaseObject
 
   # @return [Boolean] Whether or not the format of this CSR changes when the effective XLEN changes in some mode
   def format_changes_with_xlen?
-    dynamic_length? || possible_fields.any?(&:dynamic_location?)
+    dynamic_length? || \
+      (defined_in_all_bases? && (possible_fields_for(32) != possible_fields_for(64))) || \
+      possible_fields.any?(&:dynamic_location?)
   end
 
   # @param effective_xlen [Integer or nil] 32 or 64 for fixed xlen, nil for dynamic
@@ -123,7 +145,7 @@ class Csr < DatabaseObject
       # VSXLEN condition applies if VS-mode is possible
       (cfg_arch.mxlen.nil?) || \
       (cfg_arch.possible_extensions.map(&:name).include?("S") && \
-      [nil, 3264].include(cfg_arch.param_values["SXLEN"])) || \
+      [nil, 3264].include?(cfg_arch.param_values["SXLEN"])) || \
       (cfg_arch.possible_extensions.map(&:name).include?("H") && \
       [nil, 3264].include?(cfg_arch.param_values["VSXLEN"]))
     else
@@ -190,7 +212,7 @@ class Csr < DatabaseObject
     when Integer
       @data["length"]
     else
-      raise "Unexpected length field for #{csr.name}"
+      raise "Unexpected length field for #{name}"
     end
   end
 
@@ -260,7 +282,7 @@ class Csr < DatabaseObject
     when Integer
       @data["length"]
     else
-      raise "Unexpected length field for #{csr.name}"
+      raise "Unexpected length field for #{name}"
     end
   end
 
@@ -355,8 +377,11 @@ class Csr < DatabaseObject
   # @return [Array<CsrField>] All implemented fields for this CSR at the given effective XLEN, sorted by location (smallest location first)
   #                           Excluded any fields that are defined by unimplemented extensions or a base that is not effective_xlen
   def possible_fields_for(effective_xlen)
+
     raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
-    @possible_fields_for ||=
+
+    @possible_fields_for ||= {}
+    @possible_fields_for[effective_xlen] ||=
       possible_fields.select do |f|
         !f.key?("base") || f.base == effective_xlen
       end
@@ -364,6 +389,7 @@ class Csr < DatabaseObject
 
   # @return [Array<CsrField>] All implemented fields for this CSR
   #                           Excluded any fields that are defined by unimplemented extensions
+  sig {returns(T::Array[CsrField])}
   def possible_fields
     @possible_fields ||= fields.select do |f|
       f.exists_in_cfg?(cfg_arch)
@@ -380,8 +406,8 @@ class Csr < DatabaseObject
   # @param effective_xlen [Integer or nil] 32 or 64 for fixed xlen, nil for dynamic
   # @return [Array<CsrField>] All known fields of this CSR when XLEN == +effective_xlen+
   # equivalent to {#fields} if +effective_xlen+ is nil
+  sig {params(effective_xlen: T.nilable(Integer)).returns(T::Array[CsrField])}
   def fields_for(effective_xlen)
-    raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
     fields.select { |f| effective_xlen.nil? || !f.key?("base") || f.base == effective_xlen }
   end
 
@@ -473,14 +499,14 @@ class Csr < DatabaseObject
       return_type: Idl::Type.new(:bits, width: 128), # big int to hold special return values
       name: "CSR[#{name}].sw_read()",
       input_file: __source,
-      input_line: source_line("sw_read()"),
+      input_line: source_line(["sw_read()"]),
       symtab:,
       type_check: false
     )
 
     raise "unexpected #{@sw_read_ast.class}" unless @sw_read_ast.is_a?(Idl::FunctionBodyAst)
 
-    @sw_read_ast.set_input_file_unless_already_set(__source, source_line("sw_read()"))
+    @sw_read_ast.set_input_file_unless_already_set(__source, source_line(["sw_read()"]))
 
     @sw_read_ast
   end
@@ -585,7 +611,7 @@ class Csr < DatabaseObject
       else
         desc["reg"] << { "bits" => field.location(effective_xlen).size, "name" => field.name, type: 3 }
       end
-      last_idx = field.location(effective_xlen).max
+      last_idx = T.cast(field.location(effective_xlen).max, Integer)
     end
     if !field_list.empty? && (field_list.last.location(effective_xlen).max != (length(effective_xlen) - 1))
       # reserved space at the end

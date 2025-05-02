@@ -29,14 +29,14 @@ require "ruby-prof"
       cfg_arch.transitive_implemented_csrs.each do |csr|
         path = dir_path / "#{csr.name}.adoc"
         puts "  Generating #{path}"
-        File.write(path, cfg_arch.convert_monospace_to_links(erb.result(binding)))
+        File.write(path, AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding))))
       end
     when "inst"
       cfg_arch.transitive_implemented_instructions.each do |inst|
         path = dir_path / "#{inst.name}.adoc"
         puts "  Generating #{path}"
         # RubyProf.start
-        File.write(path, cfg_arch.convert_monospace_to_links(erb.result(binding)))
+        File.write(path, AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding))))
         # result = RubyProf.stop
         # RubyProf::FlatPrinter.new(result).print(STDOUT)
       end
@@ -45,13 +45,13 @@ require "ruby-prof"
         ext = cfg_arch.extension(ext_version.name)
         path = dir_path / "#{ext.name}.adoc"
         puts "  Generating #{path}"
-        File.write(path, cfg_arch.convert_monospace_to_links(erb.result(binding)))
+        File.write(path, AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding))))
       end
     when "func"
       global_symtab = cfg_arch.symtab
       path = dir_path / "funcs.adoc"
       puts "  Generating #{path}"
-      File.write(path, cfg_arch.convert_monospace_to_links(erb.result(binding)))
+      File.write(path, AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding))))
     else
       raise "todo"
     end
@@ -106,7 +106,7 @@ require "ruby-prof"
       raise "Unsupported type"
     end
 
-    File.write t.name, cfg_arch.convert_monospace_to_links(lines.join("\n"))
+    File.write t.name, AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(lines.join("\n")))
   end
 end
 

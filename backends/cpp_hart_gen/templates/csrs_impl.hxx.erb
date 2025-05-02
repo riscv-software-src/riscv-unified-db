@@ -56,11 +56,7 @@ void <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %><SocType>::reset(
   <%- end -%>
   <%- else -%>
   auto val_fn = [this]() ->
-    <%- if field.could_be_undefined? -%>
     PossiblyUnknownBits<<%= max_width + 1 %>>
-    <%- else -%>
-    Bits<<%= max_width + 1 %>>
-    <%- end -%>
   {
     <%= ast.gen_cpp(cfg_arch.symtab, 8) %>
   };
@@ -202,11 +198,7 @@ bool <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_sw_write(const Bits<<%=
 
     <%- if field.has_custom_sw_write? -%>
     auto wr_val_fn = [this, &csr_value = std::as_const(csr_value)]() ->
-    <%- if field.could_be_undefined? -%>
       PossiblyUnknownBits<<%= field.width(xlen) %>>
-    <%- else -%>
-      Bits<<%= field.width(xlen) %>>
-    <%- end -%>
     {
       <%- pruned_ast = field.pruned_sw_write_ast(xlen) -%>
       <%- symtab = field.fill_symtab_for_sw_write(xlen, pruned_ast) -%>
@@ -246,11 +238,7 @@ bool <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_sw_write(const Bits<<%=
   <%- if field.has_custom_sw_write? -%>
   {
     auto wr_val_fn = [this, &csr_value = std::as_const(csr_value)]() ->
-    <%- if field.could_be_undefined? -%>
       PossiblyUnknownBits<<%= field.width(cfg_arch.possible_xlens[0]) %>>
-    <%- else -%>
-      Bits<<%= field.width(cfg_arch.possible_xlens[0]) %>>
-    <%- end -%>
     {
       <%- pruned_ast = field.pruned_sw_write_ast(cfg_arch.possible_xlens[0]) -%>
       <%- symtab = field.fill_symtab_for_sw_write(cfg_arch.possible_xlens[0], pruned_ast) -%>

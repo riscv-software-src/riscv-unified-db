@@ -38,7 +38,7 @@ namespace udb {
     <%- csrs = cfg_arch.not_prohibited_csrs -%>
     <%- csrs.each do |csr| -%>
     friend class <%= name_of(:csr, cfg_arch, csr.name) %><SocType>;
-    <%- fields = cfg_arch.fully_configured? ? csr.possible_fields(cfg_arch) : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
+    <%- fields = cfg_arch.fully_configured? ? csr.possible_fields : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
     <%- fields.each do |field| -%>
     <%- next unless cfg_arch.possible_xlens.any? { |xlen| field.defined_in_base?(xlen) } -%>
 
@@ -225,7 +225,81 @@ namespace udb {
         return m_csr_addr_map.count(csr_addr) == 1;
       }
 
+      <%= name_of(:struct, "Csr", cfg_arch) %> direct_csr_lookup(const Bits<12>& csr_addr) {
+        <%= name_of(:struct, "Csr", cfg_arch) %> csr_handle;
 
+        auto csr = m_csr_addr_map.find(csr_addr);
+        if (csr == m_csr_addr_map.end()) {
+          csr_handle.valid = false;
+          return csr_handle;
+        } else {
+          csr_handle.valid = true;
+          csr_handle.name = csr->name();
+          csr_handle.addr_type = CsrAddressType::Direct;
+          csr_handle.address = csr_addr;
+          csr_handle.window_slot = 0;
+          csr_handle.mode = csr->mode();
+          csr_handle.writable = csr->writable();
+          return csr_handle;
+        }
+      }
+
+      <%= name_of(:struct, "Csr", cfg_arch) %> indirect_csr_lookup(const Bits<64>& csr_indirect_addr, const Bits<4>& window_slot) {
+        <%= name_of(:struct, "Csr", cfg_arch) %> csr_handle;
+
+        udb_assert((window_slot > 0) && (window_slot <= 6), "Indirect slots must be between 1-6, inclusive");
+
+        auto csr = m_csr_indirect_addr_map.find(std::make_pair(csr_indirect_addr, window_slot));
+        if (csr == m_csr_indirect_addr_map.end()) {
+          csr_handle.valid = false;
+          return csr_handle;
+        } else {
+          csr_handle.valid = true;
+          csr_handle.name = csr->name();
+          csr_handle.addr_type = CsrAddressType::Indirect;
+          csr_handle.address = csr_indirect_addr;
+          csr_handle.window_slot = window_slot;
+          csr_handle.mode = csr->mode();
+          csr_handle.writable = csr->writable();
+          return csr_handle;
+        }
+      }
+
+      PossiblyUnknownBits<64> csr_hw_read(const <%= name_of(:struct, "Csr", cfg_arch) %>& csr_handle) {
+        if (csr_handle.addr_type == CsrAddressType::Direct) {
+          auto csr = m_csr_addr_map.find(csr_handle.address);
+          udb_assert(csr != m_csr_addr_map.end(), "CSR not found");
+          return csr.hw_read(xlen());
+        } else {
+          auto csr = m_csr_indirect_addr_map.find(std::make_pair(csr_handle.address, csr_handle.indirect_slot));
+          udb_assert(csr != m_csr_indirect_addr_map.end(), "CSR not found");
+          return csr.hw_read(xlen());
+        }
+      }
+
+      PossiblyUnknownBits<64> csr_sw_read(const <%= name_of(:struct, "Csr", cfg_arch) %>& csr_handle) {
+        if (csr_handle.addr_type == CsrAddressType::Direct) {
+          auto csr = m_csr_addr_map.find(csr_handle.address);
+          udb_assert(csr != m_csr_addr_map.end(), "CSR not found");
+          return csr.sw_read(xlen());
+        } else {
+          auto csr = m_csr_indirect_addr_map.find(std::make_pair(csr_handle.address, csr_handle.indirect_slot));
+          udb_assert(csr != m_csr_indirect_addr_map.end(), "CSR not found");
+          return csr.sw_read(xlen());
+        }
+      }
+
+      void csr_sw_write(const <%= name_of(:struct, "Csr", cfg_arch) %>& csr_handle, const Bits<<%= cfg_arch.mxlen %>>& value) {
+        if (csr_handle.addr_type == CsrAddressType::Direct) {
+          auto csr = m_csr_addr_map.find(csr_handle.address);
+          udb_assert(csr != m_csr_addr_map.end(), "CSR not found");
+          return csr.sw_write(value, xlen());
+        } else {
+          auto csr = m_csr_indirect_addr_map.find(std::make_pair(csr_handle.address, csr_handle.indirect_slot));
+          udb_assert(csr != m_csr_indirect_addr_map.end(), "CSR not found");
+          return csr.sw_write(value, xlen());
+        }
+      }
 
       void set_pc(uint64_t new_pc) override {
         m_pc = new_pc;
@@ -379,6 +453,7 @@ namespace udb {
       <%= name_of(:params, cfg_arch) %> m_params;
       <%= name_of(:csr_container, cfg_arch) %><SocType> m_csrs;
       std::unordered_map<Bits<12>, CsrBase*> m_csr_addr_map;
+      std::unordered_map<std::pair<Bits<64>, Bits<4>>, CsrBase*> m_csr_indirect_addr_map;
       std::map<std::string, CsrBase*> m_csr_name_map;
 
       std::array<uint8_t, __MAX_INST_CPP_SIZE> m_run_one_inst_storage;

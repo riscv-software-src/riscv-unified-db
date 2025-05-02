@@ -5,6 +5,7 @@ kind: csr
 name: instreth
 long_name: Instructions retired counter, high bits
 address: 0xC82
+writeable: false
 base: 32
 description: |
   Alias for high bits of M-mode CSR `minstret`[63:32].

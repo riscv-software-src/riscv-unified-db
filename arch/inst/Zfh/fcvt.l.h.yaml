@@ -3,11 +3,11 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.l.h
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: Zfh
-assembly: xd, xs1, rm
+assembly: fd, fs1, frm
 encoding:
   match: 110001000010-------------1010011
   variables:

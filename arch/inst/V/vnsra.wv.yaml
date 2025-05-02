@@ -3,11 +3,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vnsra.wv
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: V
-assembly: vm, vs2, vs1, vd
+assembly: vd, vs2, vs1, vm
 encoding:
   match: 101101-----------000-----1010111
   variables:
