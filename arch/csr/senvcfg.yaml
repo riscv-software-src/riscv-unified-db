@@ -4,6 +4,7 @@ $schema: "csr_schema.json#"
 kind: csr
 name: senvcfg
 address: 0x10A
+writeable: true
 long_name: Supervisor Environment Configuration
 description: |
   Contains fields that control certain characteristics of the U-mode execution environment.

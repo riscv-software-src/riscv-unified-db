@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vsha2ms.vv
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: Zvknha

@@ -84,6 +84,12 @@ namespace udb {
 
     virtual void reset() = 0;
 
+    // the most privileged mode that has access to this csr
+    virtual PrivilegeMode mode() const = 0;
+
+    // false if the CSR is read only
+    virtual bool writable() const = 0;
+
     // read the raw bits of a CSR value
     //
     // some CSRs are shorter than XLEN bits, but none are longer

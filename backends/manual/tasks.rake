@@ -138,7 +138,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/nav.adoc} => proc { |tname|
   erb.filename = nav_template_path.to_s
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, erb.result(binding)
+  File.write t.name, AntoraUtils.resolve_links(erb.result(binding))
 end
 
 # Rule to create start page for a manual version

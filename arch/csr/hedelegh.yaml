@@ -5,6 +5,7 @@ kind: csr
 name: hedelegh
 long_name: Hypervisor Exception Delegation High
 address: 0x612
+writeable: true
 base: 32
 priv_mode: S
 length: 32

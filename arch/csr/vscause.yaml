@@ -5,6 +5,7 @@ kind: csr
 name: vscause
 long_name: Virtual Supervisor Cause
 address: 0x242
+writeable: true
 virtual_address: 0x142
 priv_mode: VS
 length: VSXLEN

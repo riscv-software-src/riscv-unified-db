@@ -98,8 +98,8 @@ class ProcCertModel < Portfolio
     # @param data [Hash<String, Object>] Data from yaml
     # @param arch [Architecture] Architecture standards
     def initialize(data, arch)
-      raise ArgumentError, "Bad data" unless data.is_a?(Hash) unless data.is_a?(Hash)
-      raise ArgumentError, "Need Architecture class but it's a #{arch.class}" unless arch.is_a?(Architecture)
+      raise ArgumentError, "data is a #{data.class} class containing '#{data}' but needs to be a Hash" unless data.is_a?(Hash)
+      raise ArgumentError, "arch is a #{arch.class} class but needs to be an Architecture class" unless arch.is_a?(Architecture)
 
       @data = data
       @arch = arch
@@ -142,7 +142,7 @@ class ProcCertModel < Portfolio
 
     @requirement_groups = []
     @data["requirement_groups"]&.each do |req_key, req_group|
-      @requirement_groups << RequirementGroup.new(req_group, @arch) unless req_key == "$child_of"
+      @requirement_groups << RequirementGroup.new(req_group, @arch) unless req_key == "$child_of" || req_key == "$parent_of"
     end
     @requirement_groups
   end

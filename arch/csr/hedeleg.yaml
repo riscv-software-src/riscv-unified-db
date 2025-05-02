@@ -5,6 +5,7 @@ kind: csr
 name: hedeleg
 long_name: Hypervisor Exception Delegation
 address: 0x602
+writeable: true
 priv_mode: S
 length: 64
 description: |

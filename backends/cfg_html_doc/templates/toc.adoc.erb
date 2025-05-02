@@ -2,17 +2,17 @@
 
 .Extensions
 <%- cfg_arch.transitive_implemented_extension_versions.sort { |a, b| a.name <=> b.name }.each do |ext| -%>
-* %%LINK%ext;<%= ext.name %>;<%= ext.name %>%%
+* <%= link_to_udb_doc_ext(ext.name) %>
 <%- end -%>
 
 .Control and Status Registers
 <%- cfg_arch.transitive_implemented_csrs.sort { |a, b| a.name <=> b.name }.each do |csr| -%>
-* %%UDB_DOC_LINK%csr;<%= csr.name %>;<%= csr.name %>%%
+* <%= link_to_udb_doc_csr(csr.name) %>
 <%- end -%>
 
 .Instructions
 <%- cfg_arch.transitive_implemented_instructions.sort { |a, b| a.name <=> b.name }.each do |inst| -%>
-* %%UDB_DOC_LINK%inst;<%= inst.name %>;<%= inst.name %>%%
+* <%= link_to_udb_doc_inst(inst.name) %>
 <%- end -%>
 
 .IDL functions

@@ -62,11 +62,9 @@
   ],
   "properties": {
     "$schema": {
-      "type": "string",
       "const": "manual_version_schema.json#"
     },
     "kind": {
-      "type": "string",
       "const": "manual version"
     },
     "name": {

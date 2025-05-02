@@ -320,7 +320,7 @@ class PortfolioGroupConfig < AbstractConfig
     @portfolio_grp = portfolio_grp
 
     portfolio_grp.portfolios.each do |portfolio|
-      raise "Portfolio #{portfolio.name} shouldn't have a non-nil cfg_arch member" unless portfolio.cfg_arch.nil?
+      raise "Portfolio #{portfolio.name} shouldn't have a non-nil cfg_arch member" if portfolio.cfg_arch?
       raise "Portfolio #{portfolio.name} shouldn't have a an arch member of type ConfiguredArchitecture" if portfolio.arch.is_a?(ConfiguredArchitecture)
     end
   end
