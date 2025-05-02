@@ -16,6 +16,38 @@
         }
       ]
     },
+    "old_encoding": {
+      "type": "object",
+      "properties": {
+        "match": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[01-]{43}11111$",
+              "description": "48-bit encoding"
+            },
+            {
+              "type": "string",
+              "pattern": "^[01-]{30}11$",
+              "description": "32-bit encoding"
+            },
+            {
+              "type": "string",
+              "pattern": "^[01-]{14}((00)|(01)|(10))$",
+              "description": "16-bit encoding"
+            }
+          ]
+        },
+        "variables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/field"
+          }
+        },
+        "additionalProperties": false
+      },
+      "additionalProperties": false
+    },
     "type": {
       "type": "object",
       "properties": {
@@ -143,9 +175,6 @@
         }
       ]
     },
-    "encoding": {
-      "$ref": "schema_defs.json#/$defs/encoding"
-    },
     "inst_data": {
       "type": "object",
       "required": [
@@ -188,50 +217,7 @@
           "$ref": "schema_defs.json#/$defs/requires_entry",
           "description": "Extension(s) that defines the instruction"
         },
-        "type": {
-          "$ref": "#/$defs/type"
-        },
-        "subtype": {
-          "oneOf": [
-            {
-              "$ref": "#/$defs/subtype"
-            },
-            {
-              "type": "object",
-              "properties": {
-                "RV32": {
-                  "$ref": "#/$defs/subtype"
-                },
-                "RV64": {
-                  "$ref": "#/$defs/subtype"
-                }
-              },
-              "additionalProperties": false
-            }
-          ]
-        },
 
-        "encoding": {
-          "description": "Instruction encoding and decode variables",
-          "oneOf": [
-            {
-              "$ref": "#/$defs/encoding"
-            },
-            {
-              "type": "object",
-              "properties": {
-                "RV32": {
-                  "$ref": "#/$defs/encoding"
-                },
-                "RV64": {
-                  "$ref": "#/$defs/encoding"
-                }
-              },
-              "required": ["RV32", "RV64"],
-              "additionalProperties": false
-            }
-          ]
-        },
         "hints": {
           "type": "array",
           "items": {
@@ -327,6 +313,60 @@
         "$source": {
           "description": "Path to the source file. Used by downstream tooling; not expected to be found in handwritten files",
           "type": "string"
+        },
+        "format": {
+          "type": "object",
+          "required": ["encoding", "type", "subtype"],
+          "additionalProperties": false,
+          "properties": {
+            "encoding": {
+              "description": "Instruction encoding and decode variables",
+              "$ref": "schema_defs.json#/$defs/encoding_match"
+            },
+            "type": {
+              "type": "object",
+              "required": ["$ref"],
+              "additionalProperties": false,
+              "properties": {
+                "$ref": {
+                  "type": "string",
+                  "pattern": "inst_type/[A-Z][A-Za-z0-9\\-]*.yaml#"
+                }
+              }
+            },
+            "subtype": {
+              "type": "object",
+              "required": ["$ref"],
+              "additionalProperties": false,
+              "properties": {
+                "$ref": {
+                  "type": "string",
+                  "pattern": "inst_subtype/[A-Z][A-Za-z0-9\\-]*/[A-Z][A-Za-z0-9\\-]*-[A-Za-z0-9\\-]*.yaml#"
+                }
+              }
+            }
+          }
+        },
+        "encoding": {
+          "description": "Instruction encoding and decode variables",
+          "oneOf": [
+            {
+              "$ref": "#/$defs/old_encoding"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "RV32": {
+                  "$ref": "#/$defs/old_encoding"
+                },
+                "RV64": {
+                  "$ref": "#/$defs/old_encoding"
+                }
+              },
+              "required": ["RV32", "RV64"],
+              "additionalProperties": false
+            }
+          ]
         }
       }
     }

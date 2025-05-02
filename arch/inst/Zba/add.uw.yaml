@@ -10,15 +10,10 @@ description: |
   zero-extended least-significant word of rs1.
 definedBy: Zba
 assembly: xd, xs1, xs2
-encoding:
-  match: 0000100----------000-----0111011
-  variables:
-    - name: rs2
-      location: 24-20
-    - name: rs1
-      location: 19-15
-    - name: rd
-      location: 11-7
+format:
+  type: { "$ref": "inst_type/R.yaml#" }
+  subtype: { "$ref": "inst_subtype/R/R-x.yaml#" }
+  encoding: 0000100----------000-----0111011
 access:
   s: always
   u: always

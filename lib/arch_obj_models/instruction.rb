@@ -9,11 +9,72 @@ require_relative "../presence"
 require_relative "../backend_helpers"
 require "awesome_print"
 
+class InstructionType < DatabaseObject
+end
+
+class InstructionSubtype < DatabaseObject
+  sig { returns(T::Array[DecodeVariable])}
+  def variables
+    @variables ||=
+      if @data.key?("variables")
+        @data["variables"].map { |var_data| DecodeVariable.new(var_data) }
+      else
+        []
+      end
+  end
+
+  sig { returns(Instruction::Encoding) }
+  def encoding
+
+  end
+end
+
 # model of a specific instruction in a specific base (RV32/RV64)
 class Instruction < DatabaseObject
   # Add all methods in this module to this type of database object.
   include CertifiableObject
   include WavedromUtil
+
+  sig { returns(T.boolean) }
+  def has_type? = @data.key?("format")
+
+  sig { params(base: Integer).returns(InstructionType) }
+  def type(base)
+    @type ||= {
+      32 =>
+        if @data["format"].key?("RV32")
+          @arch.ref(@data["format"]["RV32"]["type"]["$ref"])
+        else
+          @arch.ref(@data["format"]["type"]["$ref"])
+        end,
+      64 =>
+        if @data["format"].key?("RV64")
+          @arch.ref(@data["format"]["RV64"]["type"]["$ref"])
+        else
+          @arch.ref(@data["format"]["type"]["$ref"])
+        end
+    }
+    @type[base]
+  end
+
+  sig { params(base: Integer).returns(InstructionSubtype) }
+  def subtype(base)
+    @subtype ||= {
+      32 =>
+        if @data["format"].key?("RV32")
+          @arch.ref(@data["format"]["RV32"]["subtype"]["$ref"])
+        else
+          @arch.ref(@data["format"]["subtype"]["$ref"])
+        end,
+      64 =>
+        if @data["format"].key?("RV64")
+          @arch.ref(@data["format"]["RV64"]["subtype"]["$ref"])
+        else
+          @arch.ref(@data["format"]["subtype"]["$ref"])
+        end
+    }
+    @subtype[base]
+  end
 
   def processed_wavedrom_desc(base)
     data = wavedrom_desc(base)
@@ -37,7 +98,42 @@ class Instruction < DatabaseObject
     bits
   end
 
+  def self._validate_encoding(encoding, inst_name)
+    match = @data["encoding"]
+    raise "No match for instruction #{inst_name}?" if match.nil?
+
+    subtype = ref(@data["subtype"])
+
+    variables = encoding.key?("variables") ? encoding["variables"] : []
+    match.size.times do |i|
+      if match[match.size - 1 - i] == "-"
+        # make sure exactly one variable covers this bit
+        vars_match = variables.count { |variable| ary_from_location(variable["location"]).include?(i) }
+        if vars_match.zero?
+          raise ValidationError, "In instruction #{inst_name}, no variable or encoding bit covers bit #{i}"
+        elsif vars_match != 1
+          raise ValidationError, "In instruction, #{inst_name}, bit #{i} is covered by more than one variable"
+        end
+      else
+        # make sure no variable covers this bit
+        unless variables.nil?
+          unless variables.none? { |variable| ary_from_location(variable["location"]).include?(i) }
+            raise ValidationError, "In instruction, #{inst_name}, bit #{i} is covered by both a variable and the match string"
+          end
+        end
+      end
+    end
+  end
+
   def self.validate_encoding(encoding, inst_name)
+    if has_type?
+      _validate_encoding(encoding, inst_name)
+    else
+      deprecated_validate_encoding(encoding, inst_name)
+    end
+  end
+
+  def self.deprecated_validate_encoding(encoding, inst_name)
     match = encoding["match"]
     raise "No match for instruction #{inst_name}?" if match.nil?
 
@@ -448,8 +544,11 @@ class Instruction < DatabaseObject
       end
     end
 
-    def initialize(inst, field_data)
+    def inst=(inst)
       @inst = inst
+    end
+
+    def initialize(inst, field_data)
       @name = field_data["name"]
       @left_shift = field_data["left_shift"].nil? ? 0 : field_data["left_shift"]
       @sext = field_data["sign_extend"].nil? ? false : field_data["sign_extend"]
@@ -663,7 +762,8 @@ class Instruction < DatabaseObject
 
       @decode_variables = []
       decode_vars&.each do |var|
-        @decode_variables << DecodeVariable.new(self, var)
+        @decode_variables << DecodeVariable.new(var)
+        @decode_variables.last.inst = self
       end
     end
 
@@ -675,15 +775,24 @@ class Instruction < DatabaseObject
 
   def load_encoding
     @encodings = {}
-    if @data["encoding"].key?("RV32")
-      # there are different encodings for RV32/RV64
-      @encodings[32] = Encoding.new(@data["encoding"]["RV32"]["match"], @data["encoding"]["RV32"]["variables"])
-      @encodings[64] = Encoding.new(@data["encoding"]["RV64"]["match"], @data["encoding"]["RV64"]["variables"])
-    elsif @data.key("base")
-      @encodings[@data["base"]] = Encoding.new(@data["encoding"]["match"], @data["encoding"]["variables"])
+    if has_type?
+      if @data.key("base")
+        @encodings[@data["base"]] = subtype(@data["base"]).encoding
+      else
+        @encodings[32] = subtype(32).encoding
+        @encodings[64] = subtype(64).encoding
+      end
     else
-      @encodings[32] = Encoding.new(@data["encoding"]["match"], @data["encoding"]["variables"])
-      @encodings[64] = Encoding.new(@data["encoding"]["match"], @data["encoding"]["variables"])
+      if @data["encoding"].key?("RV32")
+        # there are different encodings for RV32/RV64
+        @encodings[32] = Encoding.new(@data["encoding"]["RV32"]["match"], @data["encoding"]["RV32"]["variables"])
+        @encodings[64] = Encoding.new(@data["encoding"]["RV64"]["match"], @data["encoding"]["RV64"]["variables"])
+      elsif @data.key("base")
+        @encodings[@data["base"]] = Encoding.new(@data["encoding"]["match"], @data["encoding"]["variables"])
+      else
+        @encodings[32] = Encoding.new(@data["encoding"]["match"], @data["encoding"]["variables"])
+        @encodings[64] = Encoding.new(@data["encoding"]["match"], @data["encoding"]["variables"])
+      end
     end
   end
   private :load_encoding

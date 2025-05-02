@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=../../../schemas/inst_subtype_schema.json
+
+$schema: inst_subtype_schema.json#
+kind: inst_sub_type
+name: R-x
+parent: { "$ref": "inst_type/R.yaml#" }
+fields:
+  opcodes:
+    - name: funct7
+      location: 31-25
+    - name: funct3
+      location: 14-12
+    - name: opcode
+      location: 6-0
+  variables:
+    - name: xs2
+      location: 24-20
+      type: { "$ref": "inst_var_type/x_src_reg.json#" }
+    - name: xs1
+      location: 19-15
+      type: { "$ref": "inst_var_type/x_src_reg.json#" }
+    - name: xd
+      location: 11-7
+      type: { "$ref": "inst_var_type/x_dst_reg.json#" }

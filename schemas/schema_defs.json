@@ -375,37 +375,32 @@
         "additionalProperties": false
       }
     },
-    "encoding": {
-      "type": "object",
-      "properties": {
-        "match": {
-          "oneOf": [
-            {
-              "type": "string",
-              "pattern": "^[01-]{43}11111$",
-              "description": "48-bit encoding"
-            },
-            {
-              "type": "string",
-              "pattern": "^[01-]{30}11$",
-              "description": "32-bit encoding"
-            },
-            {
-              "type": "string",
-              "pattern": "^[01-]{14}((00)|(01)|(10))$",
-              "description": "16-bit encoding"
-            }
-          ]
+    "encoding_match": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^[01-]{43}11111$",
+          "description": "48-bit encoding"
         },
-        "variables": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/field"
-          }
+        {
+          "type": "string",
+          "pattern": "^[01-]{30}11$",
+          "description": "32-bit encoding"
         },
-        "additionalProperties": false
-      },
-      "additionalProperties": false
+        {
+          "type": "string",
+          "pattern": "^[01-]{14}((00)|(01)|(10))$",
+          "description": "16-bit encoding"
+        }
+      ]
+    },
+    "inst_type_name": {
+      "type": "string",
+      "pattern": "[A-Z][A-Za-z0-9\\-]*"
+    },
+    "inst_subtype_name": {
+      "type": "string",
+      "pattern": "[A-Z][A-Za-z0-9\\-]*-[A-Za-z0-9\\-]*"
     }
   }
 }

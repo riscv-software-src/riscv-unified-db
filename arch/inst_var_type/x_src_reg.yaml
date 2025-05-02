@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=../../schemas/inst_var_type_schema.json#
+
+$schema: inst_var_type_schema.json#
+kind: instruction_variable_type
+name: x_src_reg
+type: register_reference
+register_file: X
+direction: src
