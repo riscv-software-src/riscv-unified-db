@@ -4,6 +4,7 @@ $schema: "csr_schema.json#"
 kind: csr
 name: menvcfg
 address: 0x30A
+writeable: true
 long_name: Machine Environment Configuration
 description: |
   Contains fields that control certain characteristics of the execution environment
