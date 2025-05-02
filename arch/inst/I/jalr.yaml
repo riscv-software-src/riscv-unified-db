@@ -25,6 +25,11 @@ access:
   u: always
   vs: always
   vu: always
+pseudoinstructions:
+  - when: xd == zero
+    to: jr imm(xs1)
+  - when: (rd == zero && xs1 == x1 && imm == 0)
+    to: ret
 operation(): |
   XReg returnaddr;
   returnaddr = $pc + 4;

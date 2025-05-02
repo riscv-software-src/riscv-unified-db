@@ -23,6 +23,9 @@ access:
   vs: always
   vu: always
 data_independent_timing: true
+pseudoinstructions:
+  - when: imm == zero
+    to: sext.w xd,xs1
 operation(): |
   XReg operand = sext(X[xs1], 31);
   X[xd] = sext(operand + imm, 31);

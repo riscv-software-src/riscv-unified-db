@@ -26,6 +26,11 @@ access:
   u: always
   vs: always
   vu: always
+pseudoinstructions:
+  - when: xs1 == zero
+    to: blez xs2,imm
+  - when: xs2 == zero
+    to: blez xs1,imm
 operation(): |
   XReg lhs = X[xs1];
   XReg rhs = X[xs2];

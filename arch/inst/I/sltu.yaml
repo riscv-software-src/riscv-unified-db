@@ -24,6 +24,10 @@ access:
   vs: always
   vu: always
 data_independent_timing: true
+pseudoinstructions:
+  - when: xs1 == zero
+    to: snez xd,xs2
+
 operation(): |
   X[xd] = (X[xs1] < X[xs2]) ? 1 : 0;
 
