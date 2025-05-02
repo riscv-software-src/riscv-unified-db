@@ -3,8 +3,6 @@
 # Contains common methods called from portfolio-based tasks.rake files.
 
 require "pathname"
-require "asciidoctor-pdf"
-require "asciidoctor-diagram"
 require_relative "#{$lib}/idl/passes/gen_adoc"
 
 # @return [Architecture]
@@ -29,7 +27,7 @@ def pf_create_cfg_arch(portfolio_grp_with_arch)
   # otherwise there would be a circular dependency. To avoid this circular dependency, none of the routines
   # called in the PortfolioGroup object to satisfy the requests from the AbstractConfig API for the ConfiguredArchitecture
   # object can require that the PortfolioGroup DatabaseObjects contain a ConfiguredArchitecture.
-  cfg_arch_with_portfolio_grp_with_arch = ConfiguredArchitecture.new(
+  ConfiguredArchitecture.new(
     portfolio_grp_with_arch.name,
     PortfolioGroupConfig.new(portfolio_grp_with_arch),
     $root / "gen" / "resolved_arch" / "_"
@@ -68,6 +66,7 @@ end
 # @param target_pname [String] Full pathname of adoc file being generated
 # @param portfolio_design [PortfolioDesign] PortfolioDesign being generated
 def pf_create_adoc(erb_template_pname, erb_binding, target_pname, portfolio_design)
+  $logger.info "Reading ERB adoc template for #{portfolio_design.name}"
   template_path = Pathname.new(erb_template_pname)
   erb = ERB.new(File.read(template_path), trim_mode: "-")
   erb.filename = template_path.to_s
@@ -77,13 +76,14 @@ def pf_create_adoc(erb_template_pname, erb_binding, target_pname, portfolio_desi
 
   # Convert ERB to final ASCIIDOC. Note that this code is broken up into separate function calls
   # each with a variable name to aid in running a command-line debugger on this code.
-  puts "UPDATE: Converting ERB template to adoc for #{portfolio_design.name}"
+  $logger.info "Starting ERB adoc template evaluation for #{portfolio_design.name}"
   erb_result = erb.result(erb_binding)
+  $logger.info "Converting monospace formatting to internal link format"
   erb_result_monospace_converted_to_links = portfolio_design.convert_monospace_to_links(erb_result)
+  $logger.info "Converting internal link format to adoc links"
   erb_result_with_links_resolved = AsciidocUtils.resolve_links(erb_result_monospace_converted_to_links)
-
+  $logger.info "Writing adoc to #{target_pname}"
   File.write(target_pname, erb_result_with_links_resolved)
-  puts "UPDATE: Generated adoc in #{target_pname}"
 end
 
 # @param adoc_file [String] Full name of source adoc file
@@ -91,7 +91,7 @@ end
 def pf_adoc2pdf(adoc_file, target_pname)
   FileUtils.mkdir_p File.dirname(target_pname)
 
-  puts "UPDATE: Generating PDF in #{target_pname}"
+  $logger.info "Generating PDF in #{target_pname}"
   cmd = [
     "asciidoctor-pdf",
     "-w",
@@ -107,7 +107,7 @@ def pf_adoc2pdf(adoc_file, target_pname)
     adoc_file
   ].join(" ")
 
-  puts "UPDATE: bundle exec #{cmd}"
+  $logger.info "bundle exec #{cmd}"
 
   # Write out command used to convert adoc to PDF to allow running this
   # manually during development.
@@ -121,7 +121,7 @@ def pf_adoc2pdf(adoc_file, target_pname)
   # Now run the actual command.
   sh cmd
 
-  puts "UPDATE: Generated PDF in #{target_pname}"
+  $logger.info "Generated PDF in #{target_pname}"
 end
 
 # @param adoc_file [String] Full name of source adoc file
@@ -129,7 +129,7 @@ end
 def pf_adoc2html(adoc_file, target_pname)
   FileUtils.mkdir_p File.dirname(target_pname)
 
-  puts "UPDATE: Generating HTML in #{target_pname}"
+  $logger.info "Generating HTML in #{target_pname}"
   cmd = [
     "asciidoctor",
     "-w",
@@ -142,7 +142,7 @@ def pf_adoc2html(adoc_file, target_pname)
     adoc_file
   ].join(" ")
 
-  puts "UPDATE: bundle exec #{cmd}"
+  $logger.info "bundle exec #{cmd}"
 
    # Write out command used to convert adoc to HTML to allow running this
   # manually during development.
@@ -156,5 +156,5 @@ def pf_adoc2html(adoc_file, target_pname)
   # Now run the actual command.
   sh cmd
 
-  puts "UPDATE: Generated HTML in #{target_pname}"
+  $logger.info "Generated HTML in #{target_pname}"
 end

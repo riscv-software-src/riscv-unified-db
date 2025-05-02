@@ -177,10 +177,11 @@
         },
         "long_name": {
           "type": "string",
-          "description": "Short description of the instruction"
+          "description": "Short description of the instruction",
+          "pattern": ".*[^.!,]$"
         },
         "description": {
-          "type": "string",
+          "$ref": "schema_defs.json#/$defs/spec_text",
           "description": "Detailed description of the instruction"
         },
         "definedBy": {

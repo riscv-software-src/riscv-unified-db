@@ -3,7 +3,7 @@
 $schema: inst_schema.json#
 kind: instruction
 name: mnret
-long_name: Machine mode resume from the RNMI or Double Trap handler.
+long_name: Machine mode resume from the RNMI or Double Trap handler
 description: |
   MNRET is an M-mode-only instruction that uses the values in mnepc and mnstatus to return to the
   program counter, privilege mode, and virtualization mode of the interrupted context. This instruction
