@@ -59,7 +59,7 @@ def arch2ext_table(arch)
       ext.long_name,
       ext.compact_priv_type,
       "UDB Missing",
-      # See https://github.com/riscv-software-src/riscv-unified-db/issues/597 for the next 2 columns.
+      # See https://github.com/riscv-software-src/riscv-unified-db/issues/597 for the next 2 columns
       ext.max_version.implied_by.map(&:name),
       # ext.max_version.transitive_conflicts.map(&:name),
       "UDB MISSING",
