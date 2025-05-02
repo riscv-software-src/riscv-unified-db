@@ -4,6 +4,7 @@ $schema: "csr_schema.json#"
 kind: csr
 name: henvcfgh
 address: 0x61A
+writeable: true
 base: 32
 long_name: most-significant 32 bits of Hypervisor Environment Configuration
 description: |

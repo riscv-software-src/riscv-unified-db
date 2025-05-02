@@ -3,11 +3,11 @@
 $schema: inst_schema.json#
 kind: instruction
 name: csrrsi
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: Zicsr
-assembly: xd, csr, imm
+assembly: rd, imm, rs1
 encoding:
   match: -----------------110-----1110011
   variables:
@@ -25,15 +25,25 @@ access:
 data_independent_timing: false
 operation(): |
   Boolean will_write = uimm != 0;
-  check_csr(csr, will_write, $encoding);
 
-  XReg initial_csr_value = CSR[csr].sw_read();
+  Csr csr_handle = direct_csr_lookup(csr);
+
+  # permission checks
+  if (csr_handle.valid == false) {
+    unimplemented_csr($encoding);
+  } else if (!compatible_mode?(csr_handle.mode, mode())) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  } else if (will_write && csr_handle.writable == false) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  XReg initial_csr_value = csr_sw_read(csr_handle);
 
   if (will_write) {
     # set bits using the mask
     # performing any WARL transformations first
     XReg mask = uimm;
-    CSR[csr].sw_write(initial_csr_value | mask);
+    csr_sw_write(csr_handle, initial_csr_value | mask);
   }
 
   X[xd] = initial_csr_value;

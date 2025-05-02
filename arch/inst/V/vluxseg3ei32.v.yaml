@@ -3,11 +3,11 @@
 $schema: inst_schema.json#
 kind: instruction
 name: vluxseg3ei32.v
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: V
-assembly: vm, vs2, xs1, vd
+assembly: vd, xs1, vs2, vm
 encoding:
   match: 010001-----------110-----0000111
   variables:

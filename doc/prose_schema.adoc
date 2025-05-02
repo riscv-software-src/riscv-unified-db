@@ -1,0 +1,100 @@
+= Encoding prose in UDB architecture files
+
+[WARNING]
+----
+The UDB project is transitioning to a more structured encoding of prose described in this document.
+
+Legacy prose that is encoded as a simple Asciidoc string will continue to be supported until
+all files can be transitioned, but the legacy style is considered _DEPRECATED_.
+----
+
+Many UDB database objects have associated prose included under the `description` tag.
+Prose is treated as an ordered sequence of tagged statements.
+
+Every statement *MUST* include:
+
+|===
+| Tag         | Type    | Note
+
+| `id`        | String  | A globally unique, immutable identifier for the statement.
+| `normative` | Boolean | Whether or not the statement is considered normative.
+| `text`      | String  | Asciidoc-encoded contents of the statement
+|===
+
+Additionally, statements *MAY* include:
+
+|===
+| Tag         | Type    | Note
+
+| `when()`    | IDL     | An IDL function body that returns a boolean.
+                          If present, represents the condition when the statement is effective.
+|===
+
+== Examples
+
+```yaml
+description:
+  - id: csr-hstatus-vgein-behavior
+    normative: false
+    text: |
+      Controls the endianness of data VS-mode (0 = little, 1 = big).
+      Instructions are always little endian, regardless of the data setting.
+
+  - id: csr-hstatus-vgein-little-endian
+    normative: false
+    text: |
+      Since the CPU does not support big endian in VS-mode, this is hardwired to 0.
+    when(): return VS_MODE_ENDIANNESS == "little";
+
+  - id: csr-hstatus-vgein-big-endian
+    normative: false
+    text: |
+      Since the CPU does not support little endian in VS-mode, this is hardwired to 1.
+    when(): return VS_MODE_ENDIANNESS == "big";
+```
+
+== ID conventions
+
+IDs should be all lowercase, have no spaces, and follow the conventions below.
+In all cases, `WHAT` should be a short descriptor for the statement contents.
+
+
+=== Statements about an extension
+
+```
+ext-<EXTENSION NAME>-<WHAT>
+
+# examples
+ext-zammo-memory-order
+ext-zkt-latency-requirement
+```
+
+=== Statements about an instruction
+
+```
+inst-<INSTRUCTION MNEMONIC>-<WHAT>
+
+# examples
+inst-add-behavior
+inst-fence.tso-behavior
+```
+
+=== Statements about a CSR register
+
+```
+csr-<CSR NAME>-<WHAT>
+
+# examples
+csr-hstatus-purpose
+csr-misa-purpose
+```
+
+=== Statements about a CSR field
+
+```
+csr-<CSR NAME>-<FIELD NAME>-<WHAT>
+
+# examples
+csr-hstatus-vgein-little-endian
+csr-misa-c-mutable
+```

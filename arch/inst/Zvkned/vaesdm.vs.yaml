@@ -3,11 +3,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vaesdm.vs
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: Zvkned
-assembly: vs2, vd
+assembly: vd, vs2
 encoding:
   match: 1010011-----00000010-----1110111
   variables:

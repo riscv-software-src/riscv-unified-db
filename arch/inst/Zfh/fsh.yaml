@@ -16,7 +16,7 @@ description: |
 
 definedBy:
   anyOf: [Zfh, Zfhmin, Zhinx]
-assembly: fs2, imm(xs1)
+assembly: xs2, imm12($rs1)
 encoding:
   match: -----------------001-----0100111
   variables:
