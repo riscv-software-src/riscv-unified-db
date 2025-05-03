@@ -51,34 +51,9 @@ sw_read(): |
   }
 
   Bits<32> value =
-    (CSR[mhpmevent3].OF << 3) |
-    (CSR[mhpmevent4].OF << 4) |
-    (CSR[mhpmevent5].OF << 5) |
-    (CSR[mhpmevent6].OF << 6) |
-    (CSR[mhpmevent7].OF << 7) |
-    (CSR[mhpmevent8].OF << 8) |
-    (CSR[mhpmevent9].OF << 9) |
-    (CSR[mhpmevent10].OF << 10) |
-    (CSR[mhpmevent11].OF << 11) |
-    (CSR[mhpmevent12].OF << 12) |
-    (CSR[mhpmevent13].OF << 13) |
-    (CSR[mhpmevent14].OF << 14) |
-    (CSR[mhpmevent15].OF << 15) |
-    (CSR[mhpmevent16].OF << 16) |
-    (CSR[mhpmevent17].OF << 17) |
-    (CSR[mhpmevent18].OF << 18) |
-    (CSR[mhpmevent19].OF << 19) |
-    (CSR[mhpmevent20].OF << 20) |
-    (CSR[mhpmevent21].OF << 21) |
-    (CSR[mhpmevent22].OF << 22) |
-    (CSR[mhpmevent23].OF << 23) |
-    (CSR[mhpmevent24].OF << 24) |
-    (CSR[mhpmevent25].OF << 25) |
-    (CSR[mhpmevent26].OF << 26) |
-    (CSR[mhpmevent27].OF << 27) |
-    (CSR[mhpmevent28].OF << 28) |
-    (CSR[mhpmevent29].OF << 29) |
-    (CSR[mhpmevent30].OF << 30) |
+  <%- (3..30).each do |num| -%>
+    (CSR[mhpmevent<%= num %>].OF << <%= num %>) |
+  <%- end -%>
     (CSR[mhpmevent31].OF << 31);
 
   return value & mask;
