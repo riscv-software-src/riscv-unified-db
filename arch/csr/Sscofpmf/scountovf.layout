@@ -1,31 +1,84 @@
-# scountovf.layout
-# Layout for scountovf CSR: each bit X reflects mhpmeventX.OF (for X = 3..31)
-bits[3]  = mhpmevent3.OF
-bits[4]  = mhpmevent4.OF
-bits[5]  = mhpmevent5.OF
-bits[6]  = mhpmevent6.OF
-bits[7]  = mhpmevent7.OF
-bits[8]  = mhpmevent8.OF
-bits[9]  = mhpmevent9.OF
-bits[10] = mhpmevent10.OF
-bits[11] = mhpmevent11.OF
-bits[12] = mhpmevent12.OF
-bits[13] = mhpmevent13.OF
-bits[14] = mhpmevent14.OF
-bits[15] = mhpmevent15.OF
-bits[16] = mhpmevent16.OF
-bits[17] = mhpmevent17.OF
-bits[18] = mhpmevent18.OF
-bits[19] = mhpmevent19.OF
-bits[20] = mhpmevent20.OF
-bits[21] = mhpmevent21.OF
-bits[22] = mhpmevent22.OF
-bits[23] = mhpmevent23.OF
-bits[24] = mhpmevent24.OF
-bits[25] = mhpmevent25.OF
-bits[26] = mhpmevent26.OF
-bits[27] = mhpmevent27.OF
-bits[28] = mhpmevent28.OF
-bits[29] = mhpmevent29.OF
-bits[30] = mhpmevent30.OF
-bits[31] = mhpmevent31.OF
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: csr_schema.json#
+kind: csr
+name: scountovf
+long_name: Supervisor Count Overflow
+address: 0xDA0
+priv_mode: S
+length: 32
+definedBy: Sscofpmf
+description: |
+  A 32-bit read-only
+  register that contains shadow copies of the OF bits in the 29 `mhpmevent` CSRs
+  (`mhpmevent3` - `mhpmevent31`) — where `scountovf` bit X corresponds to `mhpmeventX`.
+
+  This register enables supervisor-level overflow interrupt handler
+  software to quickly and easily determine which counter(s) have overflowed
+  (without needing to make an execution environment call or series of calls ultimately up to M-mode)
+
+  Read access to bit X is subject to the same `mcounteren` (or `mcounteren` and `hcounteren`)
+  CSRs that mediate access to the `hpmcounter` CSRs by S-mode (or VS-mode).
+  In M-mode, `scountovf` bit X is always readable. In S/HS-mode, `scountovf` bit X is readable
+  when `mcounteren` bit X is set, and otherwise reads as zero. Similarly, in VS mode,
+  `scountovf` bit X is readable when `mcounteren` bit X and `hcounteren` bit X are both set, and otherwise reads as zero.
+
+fields:
+  <%- (3..31).each do |of_num| -%>
+    OF<%= of_num %>:
+      alias: mhpmevent<%= of_num %>.OF
+      location: <%= of_num %>
+      description: |
+        [when="mhpmevent<%= of_num %>.EN == true"]
+        Shadow copy of mhpmevent<%= of_num %> overflow (OF) bit.
+
+        [when="mhpmevent<%= of_num %>.EN == false"]
+        This field is read-only zero because the event is not enabled.
+      type(): |
+        return mhpmevent<%= of_num %>.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      reset_value(): |
+        return mhpmevent<%= of_num %>.EN ? UNDEFINED_LEGAL : 0;
+  <%- end -%>
+
+sw_read(): |
+  Bits<32> mask;
+  if (mode() == PrivilegeMode::VS) {
+    # in VS-mode, scountovf.OFX access is determined by mcounteren/hcounteren
+    mask = $bits(CSR[mcounteren]) & $bits(CSR[hcounteren]);
+  } else {
+    # in M-mode and S-mode, scountovf.OFX access is determined by mcounteren/scounteren
+    mask = $bits(CSR[mcounteren]) & $bits(CSR[scounteren]);
+  }
+
+  Bits<32> value =
+    (CSR[mhpmevent3].OF << 3) |
+    (CSR[mhpmevent4].OF << 4) |
+    (CSR[mhpmevent5].OF << 5) |
+    (CSR[mhpmevent6].OF << 6) |
+    (CSR[mhpmevent7].OF << 7) |
+    (CSR[mhpmevent8].OF << 8) |
+    (CSR[mhpmevent9].OF << 9) |
+    (CSR[mhpmevent10].OF << 10) |
+    (CSR[mhpmevent11].OF << 11) |
+    (CSR[mhpmevent12].OF << 12) |
+    (CSR[mhpmevent13].OF << 13) |
+    (CSR[mhpmevent14].OF << 14) |
+    (CSR[mhpmevent15].OF << 15) |
+    (CSR[mhpmevent16].OF << 16) |
+    (CSR[mhpmevent17].OF << 17) |
+    (CSR[mhpmevent18].OF << 18) |
+    (CSR[mhpmevent19].OF << 19) |
+    (CSR[mhpmevent20].OF << 20) |
+    (CSR[mhpmevent21].OF << 21) |
+    (CSR[mhpmevent22].OF << 22) |
+    (CSR[mhpmevent23].OF << 23) |
+    (CSR[mhpmevent24].OF << 24) |
+    (CSR[mhpmevent25].OF << 25) |
+    (CSR[mhpmevent26].OF << 26) |
+    (CSR[mhpmevent27].OF << 27) |
+    (CSR[mhpmevent28].OF << 28) |
+    (CSR[mhpmevent29].OF << 29) |
+    (CSR[mhpmevent30].OF << 30) |
+    (CSR[mhpmevent31].OF << 31);
+
+  return value & mask;
