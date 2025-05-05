@@ -5,4 +5,4 @@ kind: instruction_variable_type
 name: x_src_reg
 type: register_reference
 register_file: X
-direction: src
+access: R

@@ -5,4 +5,4 @@ kind: instruction_variable_type
 name: x_dst_reg
 type: register_reference
 register_file: X
-direction: dst
+access: W

@@ -34,8 +34,9 @@
           "register_file": {
             "enum": ["X", "F", "V"]
           },
-          "direction": {
-            "enum": ["src", "dst", "srcdst"]
+          "access": {
+            "enum": ["R", "W", "RW"],
+            "description": "Register access type: R - Read only (src) , W - Write only (dst), RW - Read/write (srcdst)"
           }
         }
       }
