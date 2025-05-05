@@ -65,10 +65,10 @@ fields:
     sw_write(csr_value): |
       Csr handle = indirect_csr_lookup(CSR[vsiselect].VALUE, 6);
       if (!handle.valid) {
-      unimplemented_csr($encoding);
+        unimplemented_csr($encoding);
       }
       if (!handle.writable) {
-      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+        raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
       }
       csr_sw_write(handle, csr_value.VALUE);
       return csr_hw_read(handle);
