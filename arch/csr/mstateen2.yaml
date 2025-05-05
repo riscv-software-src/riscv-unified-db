@@ -68,6 +68,7 @@ description: |
 definedBy: Smstateen
 fields:
   SE0:
+    long_name: hstateen2, hstateen2h, and sstateen2 access control
     location: 63
     base: 64
     description: |

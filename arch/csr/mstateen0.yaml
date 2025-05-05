@@ -68,6 +68,7 @@ description: |
 definedBy: Smstateen
 fields:
   SE0:
+    long_name: hstateen0, hstateen0h, and sstateen0 access control
     location: 63
     base: 64
     description: |
@@ -75,6 +76,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
   ENVCFG:
+    long_name: henvcfg, henvcfgh, and senvcfg access control
     location: 62
     definedBy:
       name: S
@@ -85,6 +87,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
   CSRIND:
+    long_name: siselect, sireg*, vsiselect, and vsireg* access control
     location: 60
     definedBy: Sscsrind
     base: 64
@@ -94,6 +97,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
   AIA:
+    long_name: Ssaia state access control
     location: 59
     definedBy: Ssaia
     base: 64
@@ -103,6 +107,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
   IMSIC:
+    long_name: IMSIC state access control
     location: 58
     definedBy: Ssaia
     base: 64
@@ -112,6 +117,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
   CONTEXT:
+    long_name: scontext and hcontext access control
     location: 57
     definedBy: Sdtrig
     base: 64
@@ -121,6 +127,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
   P1P13:
+    long_name: hedelegh access control
     location: 56
     base: 64
     description: |
@@ -129,6 +136,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
   JVT:
+    long_name: jvt access control
     location: 2
     definedBy: Zcmt
     description: |
@@ -136,6 +144,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
   FCSR:
+    long_name: fcsr access control
     location: 1
     definedBy:
       anyOf: [Zfinx, Zdinx]
@@ -151,6 +160,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
   C:
+    long_name: custom state access control
     location: 0
     description: |
       The C bit controls access to any and all custom state. This bit is not custom state itself. The C bit of

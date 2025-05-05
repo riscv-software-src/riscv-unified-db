@@ -16,6 +16,7 @@ description: |
 definedBy: Smstateen
 fields:
   SE0:
+    long_name: hstateen3, hstateen3h, and sstateen3 access control
     location: 31
     alias: mstateen3.SE0
     sw_write(csr_value): |

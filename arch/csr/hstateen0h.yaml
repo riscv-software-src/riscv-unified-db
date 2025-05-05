@@ -36,6 +36,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
   ENVCFG:
+    long_name: senvcfg access control
     location: 30
     definedBy:
       name: S
@@ -49,6 +50,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
   CSRIND:
+    long_name: siselect and sireg* access control
     location: 28
     definedBy: Sscsrind
     alias: hstateen0.CSRIND
@@ -62,6 +64,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
   AIA:
+    long_name: Ssaia state access control
     location: 27
     definedBy: Ssaia
     alias: hstateen0.AIA
@@ -75,6 +78,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
   IMSIC:
+    long_name: IMSIC state access control
     location: 26
     definedBy: Ssaia
     alias: hstateen0.IMSIC
@@ -90,6 +94,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
   CONTEXT:
+    long_name: scontext access control
     location: 25
     definedBy: Sdtrig
     alias: hstateen0.CONTEXT

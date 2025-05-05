@@ -77,6 +77,7 @@ definedBy:
     - Ssstateen
 fields:
   JVT:
+    long_name: jvt access control
     location: 2
     definedBy: Zcmt
     description: |
@@ -84,6 +85,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
   FCSR:
+    long_name: fcsr access control
     location: 1
     definedBy:
       anyOf: [Zfinx, Zdinx]
@@ -99,6 +101,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
   C:
+    long_name: custom state access control
     location: 0
     description: |
       The C bit controls access to any and all custom state. This bit is not custom state itself. The C bit of
