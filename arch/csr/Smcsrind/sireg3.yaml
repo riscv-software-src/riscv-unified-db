@@ -59,4 +59,19 @@ fields:
         normative: true
         text: The data read from or written to the register selected by the current `siselect` value.
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      Csr handle = indirect_csr_lookup(CSR[siselect].VALUE, 3);
+      if (!handle.valid) {
+      unimplemented_csr($encoding);
+      }
+      if (!handle.writable) {
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      csr_sw_write(handle, csr_value.VALUE);
+      return csr_hw_read(handle);
 sw_read(): |
+  Csr handle = indirect_csr_lookup(CSR[siselect].VALUE, 3);
+  if (!handle.valid) {
+    unimplemented_csr($encoding);
+  }
+  return csr_sw_read(handle);
