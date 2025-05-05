@@ -72,4 +72,4 @@ fields:
     description: |
       The SE0 bit in `mstateen2` controls access to the `hstateen2`, `hstateen2h`, and the `sstateen2` CSRs.
     type: RW
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 0

@@ -29,5 +29,5 @@ fields:
     description: |
       The SE0 bit in `mstateen2h` controls access to the `hstateen2`, `hstateen2h`, and the `sstateen2` CSRs.
     type: RW
-    reset_value: UNDEFINED_LEGAL
+    reset_value: 0
 sw_read(): return $bits(CSR[mstateen2])[63:32];
