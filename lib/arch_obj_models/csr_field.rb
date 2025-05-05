@@ -34,8 +34,10 @@ class CsrField < DatabaseObject
   # @param field_data [Hash<String,Object>] Field data from the arch spec
   sig { params(parent_csr: Csr, field_name: String, field_data: T::Hash[String, T.untyped]).void }
   def initialize(parent_csr, field_name, field_data)
+    field_data["name"] = field_name
+    field_data["long_name"] = parent_csr.long_name + " #{field_name} field"
+    field_data["kind"] = "csr_field"
     super(field_data, parent_csr.data_path, parent_csr.arch)
-    @name = field_name
     @parent = parent_csr
   end
 
