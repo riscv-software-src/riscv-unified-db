@@ -243,7 +243,7 @@
           "maximum": 6,
           "description": "Indirect window slot of the CSR, corresponding to its appearance in *ireg<slot>"
         },
-        "writeable": {
+        "writable": {
           "type": "boolean",
           "description": "Whether or not the CSR can be written by software (i.e., is read-write)"
         },

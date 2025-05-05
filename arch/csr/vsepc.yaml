@@ -5,7 +5,7 @@ kind: csr
 name: vsepc
 long_name: Virtual Supervisor Exception Program Counter
 address: 0x241
-writeable: true
+writable: true
 virtual_address: 0x141
 priv_mode: VS
 length: 64
