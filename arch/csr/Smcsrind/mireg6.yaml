@@ -59,4 +59,19 @@ fields:
         normative: true
         text: Register state of the CSR selected by the current `miselect` value
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      Csr handle = indirect_csr_lookup(CSR[miselect].VALUE, 6);
+      if (!handle.valid) {
+      unimplemented_csr($encoding);
+      }
+      if (!handle.writable) {
+      raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+      }
+      csr_sw_write(handle, csr_value.VALUE);
+      return csr_hw_read(handle);
 sw_read(): |
+  Csr handle = indirect_csr_lookup(CSR[miselect].VALUE, 6);
+  if (!handle.valid) {
+    unimplemented_csr($encoding);
+  }
+  return csr_sw_read(handle);
