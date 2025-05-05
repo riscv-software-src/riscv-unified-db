@@ -27,7 +27,7 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  X[rd] = X[rs2] + X[rs1][31:0];
+  X[xd] = X[xs2] + X[xs1][31:0];
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
