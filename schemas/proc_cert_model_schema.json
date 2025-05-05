@@ -68,7 +68,7 @@
     },
     "long_name": {
       "type": "string",
-      "description": "Descriptive name of the class"
+      "description": "One line description of certificate model"
     },
     "class": {
       "type": "object",

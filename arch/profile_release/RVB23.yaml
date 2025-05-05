@@ -1,6 +1,7 @@
 $schema: profile_release_schema.json#
 kind: profile release
 name: RVB23
+long_name: RVB23
 marketing_name: RVB23
 class:
   $ref: profile_class/RVB.yaml#
