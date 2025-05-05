@@ -3,11 +3,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vsmul.vx
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: V
-assembly: vm, vs2, xs1, vd
+assembly: vd, vs2, xs1, vm
 encoding:
   match: 100111-----------100-----1010111
   variables:

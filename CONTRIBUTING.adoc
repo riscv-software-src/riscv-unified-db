@@ -1,0 +1,183 @@
+= UnifiedDB Contribution Guide
+
+Thank you for your interest in contributing to UnifiedDB!
+We welcome all contributions that meet our xref:CODE_OF_CONDUCT.adoc[code of conduct].
+
+== Ways to contribute
+
+=== Bug Reports
+
+Bug reports should be filed as a https://github.com/riscv-software-src/riscv-unified-db/issues[GitHub Issue] using the `Bug report` template.
+
+=== Feature Requests
+
+Bug reports should be filed as a https://github.com/riscv-software-src/riscv-unified-db/issues[GitHub Issue] using the `Feature request` template.
+
+=== Bug Fixes
+
+Bug fixes should be submitted as a Pull Request.
+
+There should be a corresponding https://github.com/riscv-software-src/riscv-unified-db/issues[GitHub Issue] for the PR. Ensure the two are linked by adding "closes #<issue number>" in the PR description.
+
+=== New data, tools, and features
+
+New data (for example, adding an extension), tools, or features should be submitted as a Pull Request.
+
+There should be a corresponding https://github.com/riscv-software-src/riscv-unified-db/issues[GitHub Issue] for the PR. Ensure the two are linked by adding "closes #<issue number>" in the PR description.
+
+== Submitting a Pull Request
+
+All patches must meet the UnifiedDB code standards. This includes:
+
+* Pass regression tests (run locally as `./do test:regress`)
+* Use appropriate commit messages
+* Go through code review as a Pull Request
+
+=== Regression tests
+
+All contributions must pass the full suite of regression tests.
+Regression tests are checked in GitHub for every PR, and they can also be run locally using `./do test:regress`.
+
+If a Pull Request adds a new feature that is not already covered by the regression test suite, it
+must add at least one new test.
+
+=== Commit messages
+
+UnifiedDB adheres to https://www.conventionalcommits.org/en/v1.0.0[Conventional Commits v1.0.0].
+
+The guidelines below are adapted from https://github.com/angular/angular/blob/main/contributing-docs/commit-message-guidelines.md[the Angular commit message guidelines].
+
+Every commit message consists of a mandatory *header*, a mandatory *body*, and an optional *footer*.
+
+```
+<header>
+<BLANK LINE>
+<body>
+<BLANK LINE>
+<footer>
+```
+
+A template for commit messages is stored in xref:.gitmessage[], and will be installed automatically through the standard UnifiedDB setup script so that it appears when executing `git commit`.
+
+==== Header
+
+.UnifiedDB commit header format
+```
+<type>(<scope>): <short summary>
+  │       │             │
+  │       │             └─⫸ Summary in present tense. Not capitalized. No period at the end.
+  │       │
+  │       └─⫸ Optional Commit Scope: single word describing the component
+  │
+  └─⫸ Commit Type: e.g., build|ci|docs|feat|fix|perf|refactor|revert|style|test
+```
+
+The `<type>` and `<summary>` fields are mandatory. The `<scope>` field is optional.
+
+==== Body
+
+Just as in the summary, use the imperative, present tense: "fix" not "fixed" nor "fixes".
+
+Explain the motivation for the change in the commit message body. This commit message should explain
+_why_ you are making the change.
+You can include a comparison of the previous behavior with the new behavior in order to illustrate
+the impact of the change.
+
+==== Footer
+
+A footer is required when the commit introduces a breaking change, closes a GitHub issue,
+or has relevant git trailers.
+
+===== Breaking change
+
+When a commit introduces a breaking change to _any_ component, the commit message *must* include
+a breaking change note in the footer:
+
+```
+BREAKING CHANGE: <breaking change summary>
+<BLANK LINE>
+<breaking change description + migration instructions>
+```
+
+==== Linked Issues and PRs
+
+When a commit will close a GitHub Issue, it should be noted in the footer:
+
+```
+Fixes #<issue number>
+Closes #<issue numer>
+```
+
+==== Git trailers
+
+When any of the extra information is relevant to a commit, it should be marked with a git trailer.
+Standard trailers for UnifiedDB include:
+
+[cols="1,2,3"]
+|===
+| Key | Value format | Description
+| Co-authored-by | Firstname Lastname <email> | A person, other than the committer, that authored part of the patch
+|===
+
+==== Examples
+
+The following are examples of good commit messages:
+
+```
+data(ext): add Smclic extension
+
+Add metadata and IDL for Smclic (Core Local Interrupt Controller) v1.0.
+
+Closes #816
+```
+
+```
+correct(ext): sctrclr belongs to Smctr/Sscntr extensions
+
+The sctrclr instruction was improperly `definedBy` Smdbltrp
+
+Closes #490
+```
+
+```
+feat(ruby-db): add Sorbet type checking
+
+Add Sorbet type signatures to ruby-db code, and run Sorbet type check in CI.
+
+Closes #934
+Co-authored-by: Frank the Tank <frank@oldschool.movie>
+```
+
+=== Code review
+
+All Pull Requests must go through the code review process.
+
+All Pull Requests require approval by at least one Code Owner.
+
+Code Owners are maintained in `.github/CODEOWNERS`.
+
+== Finding tasks
+
+If you are looking to contribute but are unsure what to do, browse through the https://github.com/riscv-software-src/riscv-unified-db/issues[issues]. We try to keep them tagged by area and mark easier tasks with "good first issue".
+
+== Legal
+
+All contributions to UnifiedDB are by default made under the xref:LICENSE[BSD-3-clear license].
+Copyrights are held by the specific contributors, and are not tracked by the UnifiedDB project other
+than what can be gleaned through git history.
+
+Under special circumstances code may be added under a different license.
+For example, code from an existing project may be integrated after careful deliberation.
+Any contributions under a different license will receive extra review.
+When any contribution is made under a different license, it must be tracked using
+https://reuse.software/tutorial/#step-2[a Reuse-compatible identifer].
+
+To keep UnifiedDB open to both private and commercial interests, contributions under a
+https://en.wikipedia.org/wiki/copyleft[copyleft license] will never be accepted.
+
+== Maintainers
+
+The current maintainers for UnifiedDB are:
+
+* Derek Hower (@dhower-qc)
+* Paul Clarke (@ThinkOpenly)

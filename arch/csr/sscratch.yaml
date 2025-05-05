@@ -5,6 +5,7 @@ kind: csr
 name: sscratch
 long_name: Supervisor Scratch Register
 address: 0x140
+writeable: true
 priv_mode: S
 length: 64
 description: Scratch register for software use. Bits are not interpreted by hardware.
