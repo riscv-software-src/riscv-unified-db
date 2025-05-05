@@ -29,7 +29,7 @@ access:
   vs: always
   vu: always
 pseudoinstructions:
-  - when: xd == zero
+  - when: xd == 0
     to: csrwi csr,imm
 operation(): |
   Csr csr_handle = direct_csr_lookup(csr);

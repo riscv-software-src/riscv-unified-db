@@ -23,7 +23,7 @@ access:
   vu: always
 data_independent_timing: true
 pseudoinstructions:
-  - when: xs1 == zero
+  - when: xs1 == 0
     to: neg xd,xs2
 operation(): |
   XReg t0 = X[xs1];

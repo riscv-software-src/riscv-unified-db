@@ -27,7 +27,7 @@ access:
   vs: always
   vu: always
 pseudoinstructions:
-  - when: xs2 == zero
+  - when: xs2 == 0
     to: bnez xs1,imm
 operation(): |
   XReg lhs = X[xs1];

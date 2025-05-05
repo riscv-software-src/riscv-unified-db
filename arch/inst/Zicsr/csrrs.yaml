@@ -30,9 +30,9 @@ access:
   vs: always
   vu: always
 pseudoinstructions:
-  - when: xs1 == zero
+  - when: xs1 == 0
     to: csrr xd,csr
-  - when: xd == zero
+  - when: xd == 0
     to: csrs csr,xs1
 operation(): |
   Boolean will_write = xs1 != 0;

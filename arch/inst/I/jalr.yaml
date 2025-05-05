@@ -26,9 +26,9 @@ access:
   vs: always
   vu: always
 pseudoinstructions:
-  - when: xd == zero
+  - when: xd == 0
     to: jr imm(xs1)
-  - when: (rd == zero && xs1 == x1 && imm == 0)
+  - when: (rd == 0 && xs1 == x1 && imm == 0)
     to: ret
 operation(): |
   XReg returnaddr;
