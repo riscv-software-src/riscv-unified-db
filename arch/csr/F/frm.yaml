@@ -50,6 +50,9 @@ fields:
       Rounding mode data.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      CSR[fcsr].FRM = csr_value.ROUNDINGMODE;
+      return csr_value.ROUNDINGMODE;
 sw_read(): |
   return
    CSR[fcsr].FRM;

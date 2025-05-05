@@ -35,6 +35,9 @@ fields:
       cleared by software.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      CSR[fcsr].NV = csr_value.NV;
+      return csr_value.NV;
   DZ:
     alias: fcsr.DZ
     long_name: Divide by Zero
@@ -44,6 +47,9 @@ fields:
       cleared by software.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      CSR[fcsr].DZ = csr_value.DZ;
+      return csr_value.DZ;
   OF:
     alias: fcsr.OF
     long_name: Overflow
@@ -53,6 +59,9 @@ fields:
       cleared by software.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      CSR[fcsr].OF = csr_value.OF;
+      return csr_value.OF;
   UF:
     alias: fcsr.UF
     long_name: Underflow
@@ -62,6 +71,9 @@ fields:
       cleared by software.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      CSR[fcsr].UF = csr_value.UF;
+      return csr_value.UF;
   NX:
     alias: fcsr.NX
     long_name: Inexact
@@ -71,6 +83,9 @@ fields:
       cleared by software.
     type: RW-H
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      CSR[fcsr].NX = csr_value.NX;
+      return csr_value.NX;
 sw_read(): |
   return
    (CSR[fcsr].NV `<< 4) |
