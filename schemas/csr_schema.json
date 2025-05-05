@@ -17,8 +17,7 @@
         },
         "long_name": {
           "type": "string",
-          "description": "Long name of the field",
-          "pattern": ".*[^.!,]$"
+          "description": "One line description of the CSR field"
         },
         "location": {
           "$ref": "schema_defs.json#/$defs/field_location",
@@ -216,8 +215,7 @@
         },
         "long_name": {
           "type": "string",
-          "description": "Descriptive name for the CSR",
-          "pattern": ".*[^.!,]$"
+          "description": "One line description for the CSR"
         },
         "description": {
           "$ref": "schema_defs.json#/$defs/spec_text",
@@ -243,7 +241,7 @@
           "maximum": 6,
           "description": "Indirect window slot of the CSR, corresponding to its appearance in *ireg<slot>"
         },
-        "writeable": {
+        "writable": {
           "type": "boolean",
           "description": "Whether or not the CSR can be written by software (i.e., is read-write)"
         },
