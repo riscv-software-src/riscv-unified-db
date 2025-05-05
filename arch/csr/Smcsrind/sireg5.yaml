@@ -7,38 +7,56 @@ address: 0x156
 priv_mode: S
 length: SXLEN
 definedBy: Sscsrind
-description: |
-  Access to `sireg5` from M-mode or S-mode while `siselect` holds a number in a
-  standard-defined and implemented range results in specific behavior that, for each combination of
-  `siselect` and `sireg5`, is defined by the extension to which the `siselect` value is allocated.
+description:
+  - id: csr-sireg5-behavior-implemented
+    normative: true
+    text: |
+      Access to `sireg5` from M-mode or S-mode while `siselect` holds a number in a
+      standard-defined and implemented range results in specific behavior that, for each combination of
+      `siselect` and `sireg5`, is defined by the extension to which the `siselect` value is allocated.
 
-  [Note]
-  Ordinarily, `sireg5` will access register state, access read-only 0 state, or, unless
-  executing in a virtual machine (covered in the next section), raise an illegal instruction
-  exception.
+  - id: csr-sireg5-typical-behavior-note
+    normative: false
+    text: |
+      Ordinarily, `sireg5` will access register state, access read-only 0 state, or, unless
+      executing in a virtual machine (covered in the next section), raise an illegal instruction
+      exception.
 
-  Note that the widths of `siselect` and `sireg5` are always the current XLEN rather than SXLEN. Hence,
-  for example, if MXLEN = 64 and SXLEN = 32, then this register is 64 bits when the current
-  privilege mode is M (running RV64 code) but 32 bits when the privilege mode is S (RV32 code).
+  - id: csr-sireg5-xlens
+    normative: true
+    text: |
+      Note that the widths of `siselect` and `sireg5` are always the current XLEN rather than SXLEN. Hence,
+      for example, if MXLEN = 64 and SXLEN = 32, then this register is 64 bits when the current
+      privilege mode is M (running RV64 code) but 32 bits when the privilege mode is S (RV32 code).
 
-  The behavior upon accessing `sireg5` from M-mode or S-mode, while `siselect` holds a value that is
-  not implemented at supervisor level, is UNSPECIFIED.
+  - id: csr-sireg5-unimplemented
+    normative: true
+    text: |
+      The behavior upon accessing `sireg5` from M-mode or S-mode, while `siselect` holds a value that is
+      not implemented at supervisor level, is UNSPECIFIED.
 
-  [Note]
-  It is recommended that implementations raise an illegal instruction exception for such
-  accesses, to facilitate possible emulation (by M-mode) of these accesses.
+  - id: csr-sireg5-unimplemented-recommendation
+    normative: false
+    text: |
+      It is recommended that implementations raise an illegal instruction exception for such
+      accesses, to facilitate possible emulation (by M-mode) of these accesses.
 
-  [Note]
-  An extension is considered not to be implemented at supervisor level if machine level has
-  disabled the extension for S-mode, such as by the settings of certain fields in CSR
-  `menvcfg`, for example.
+  - id: csr-sireg5-extension-disabled
+    normative: false
+    text: |
+      An extension is considered not to be implemented at supervisor level if machine level has
+      disabled the extension for S-mode, such as by the settings of certain fields in CSR
+      `menvcfg`, for example.
 
 fields:
   VALUE:
+    long_name: Indirectly Selected Register Value
     location_rv32: 31-0
     location_rv64: 63-0
     type: RW
-    description: |
-      The data read from or written to the register selected by the current `siselect` value.
+    description:
+      - id: csr-sireg5-value-desc
+        normative: true
+        text: The data read from or written to the register selected by the current `siselect` value.
     reset_value: UNDEFINED_LEGAL
 sw_read(): |
