@@ -217,7 +217,7 @@ module Idl
 
   class BinaryExpressionAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      "#{' '*indent}#{lhs.gen_adoc(0, indent_spaces:)} #{op.sub("+", "pass:[+]")} #{rhs.gen_adoc(0, indent_spaces:)}"
+      "#{' '*indent}#{lhs.gen_adoc(0, indent_spaces:)} #{op.sub("+", "pass:[+]").sub("`", "pass:[`]")} #{rhs.gen_adoc(0, indent_spaces:)}"
     end
   end
 
