@@ -11,9 +11,17 @@ description: |
 definedBy: Zba
 assembly: xd, xs1, xs2
 format:
-  type: { "$ref": "inst_type/R.yaml#" }
-  subtype: { "$ref": "inst_subtype/R/R-x.yaml#" }
-  encoding: 0000100----------000-----0111011
+  $inherits:
+    - inst_subtype/R/R-x.yaml#
+    - inst_opcode/OP-32.yaml#
+  opcodes:
+    funct7:
+      display_name: ADD.UW
+      value: 0b0000100
+    funct3:
+      display_name: ADD.UW
+      value: 0b000
+    opcode: { $inherits: inst_opcode/OP-32.yaml#/data }
 access:
   s: always
   u: always

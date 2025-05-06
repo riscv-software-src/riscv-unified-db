@@ -2,19 +2,130 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
 
   "$defs": {
-    "field_location": {
-      "description": "Location specifier for a field",
-      "oneOf": [
-        {
-          "type": "string",
-          "pattern": "^(([0-9]+)|([0-9]+-[0-9]+))(\\|(([0-9]+)|([0-9]+-[0-9]+)))*$"
+    "fully_resolved_opcodes": {
+      "type": "object",
+      "required": ["location", "display_name", "value"],
+      "properties": {
+        "location": {
+          "type": "schema_defs.json#/$defs/field_location"
         },
-        {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 31
+        "display_name": {
+          "type": "string",
+          "description": "field name, displayed in encoding drawings"
+        },
+        "value": {
+          "oneOf": [
+            {
+              "$ref": "schema_defs.json#/$defs/integer"
+            },
+            {
+              "type": "object",
+              "required": ["$ref"],
+              "additionalProperties": false,
+              "properties": {
+                "$ref": {
+                  "type": "string",
+                  "pattern": "^inst_opcode/.*\\.yaml#$"
+                }
+              }
+            }
+          ]
+        },
+        "$child_of": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "inst_opcode/[^/]+\\.yaml#/data"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "inst_opcode/[^/]+\\.yaml#/data"
+              }
+            }
+          ]
         }
-      ]
+      },
+      "additionalProperties": false
+    },
+    "fully_resolved_variables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["location", "type"],
+        "properties": {
+          "location": {
+            "$ref": "schema_defs.json#/$defs/possibly_split_field_location"
+          },
+          "type": {
+            "type": "object",
+            "required": ["$ref"],
+            "additionalProperties": false,
+            "properties": {
+              "$ref": {
+                "type": "string",
+                "pattern": "inst_var_type/.+\\.json#"
+              }
+            }
+          }
+        }
+      }
+    },
+    "fully_resolved_format": {
+      "$comment": "Fully resolved format; $child_of must exist, and all properties must be present",
+      "required": ["$child_of", "type", "subtype", "opcodes"],
+      "properties": {
+        "$child_of": {
+          "oneOf": [
+            {
+              "$ref": "schema_defs.json#/$defs/reference"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "schema_defs.json#/$defs/reference"
+              }
+            }
+          ]
+        },
+        "type": {
+          "type": "object",
+          "required": ["$ref"],
+          "additionalProperties": false,
+          "properties": {
+            "$ref": {
+              "type": "string",
+              "pattern": "inst_type/[A-Z][A-Za-z0-9\\-]*.yaml#"
+            }
+          }
+        },
+        "subtype": {
+          "type": "object",
+          "required": ["$ref"],
+          "additionalProperties": false,
+          "properties": {
+            "$ref": {
+              "type": "string",
+              "pattern": "inst_subtype/[A-Z][A-Za-z0-9\\-]*/[A-Z][A-Za-z0-9\\-]*-[A-Za-z0-9\\-]*.yaml#"
+            }
+          }
+        },
+        "opcodes": {
+          "type": "object",
+          "patternProperties": {
+            "$comment": "opcode names are lowercase with numbers",
+            "[a-z][a-z0-9]*": {
+              "$refs": "#/$defs/fully_resolved_opcodes"
+            }
+          }
+        },
+        "variables": {
+          "$ref": "#/$defs/fully_resolved_variables"
+        }
+      },
+      "additionalProperties": false
     },
     "old_encoding": {
       "type": "object",
@@ -77,7 +188,7 @@
     "variable_metadata": {
       "properties": {
         "location": {
-          "$ref": "#/$defs/field_location"
+          "$ref": "schema_defs.json#/$defs/possibly_split_field_location"
         },
         "sign_extend": {
           "type": "boolean",
@@ -139,7 +250,7 @@
               "description": "Cookie crumb of the reference to variable metadata"
             },
             "location": {
-              "$ref": "#/$defs/field_location"
+              "$ref": "schema_defs.json#/$defs/possibly_split_field_location"
             },
             "sign_extend": {
               "type": "boolean",
@@ -316,36 +427,56 @@
         },
         "format": {
           "type": "object",
-          "required": ["encoding", "type", "subtype"],
-          "additionalProperties": false,
-          "properties": {
-            "encoding": {
-              "description": "Instruction encoding and decode variables",
-              "$ref": "schema_defs.json#/$defs/encoding_match"
+          "oneOf": [
+            {
+              "$ref": "#/$defs/fully_resolved_format"
             },
-            "type": {
-              "type": "object",
-              "required": ["$ref"],
-              "additionalProperties": false,
+            {
+              "$comment": "Unresolved version",
+              "required": ["$inherits", "opcodes"],
               "properties": {
-                "$ref": {
-                  "type": "string",
-                  "pattern": "inst_type/[A-Z][A-Za-z0-9\\-]*.yaml#"
+                "$inherits": {
+                  "oneOf": [
+                    {
+                      "$ref": "schema_defs.json#/$defs/reference"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "$ref": "schema_defs.json#/$defs/reference"
+                      }
+                    }
+                  ]
+                },
+                "opcodes": {
+                  "type": "object",
+                  "patternProperties": {
+                    "$comment": "opcode names are lowercase with numbers",
+                    "[a-z][a-z0-9]*": {
+                      "type": "object",
+                      "properties": {
+                        "$comment": "location must come from inheritance",
+                        "display_name": {
+                          "type": "string",
+                          "description": "field name, displayed in encoding drawings"
+                        },
+                        "value": {
+                          "$ref": "schema_defs.json#/$defs/integer"
+                        },
+                        "$inherits": {
+                          "type": "string",
+                          "pattern": "inst_opcode/[^/]+\\.yaml#/data"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
                 }
-              }
-            },
-            "subtype": {
-              "type": "object",
-              "required": ["$ref"],
-              "additionalProperties": false,
-              "properties": {
-                "$ref": {
-                  "type": "string",
-                  "pattern": "inst_subtype/[A-Z][A-Za-z0-9\\-]*/[A-Z][A-Za-z0-9\\-]*-[A-Za-z0-9\\-]*.yaml#"
-                }
-              }
+              },
+              "additionalProperties": false
             }
-          }
+          ]
         },
         "encoding": {
           "description": "Instruction encoding and decode variables",

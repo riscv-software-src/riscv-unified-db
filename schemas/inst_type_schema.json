@@ -9,6 +9,36 @@
     "kind": { "const": "instruction_type" },
     "name": { "$ref": "schema_defs.json#/$defs/inst_type_name" },
     "description": { "type": "string" },
+    "opcodes": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "[a-z][A-Z0-9]*": {
+          "type": "object",
+          "required": ["location"],
+          "additionalProperties": false,
+          "properties": {
+            "location": { "$ref": "schema_defs.json#/$defs/field_location" }
+          }
+        }
+      }
+    },
+    "variables": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "[a-z][A-Z0-9]*": {
+          "type": "object",
+          "required": ["location"],
+          "additionalProperties": false,
+          "properties": {
+            "location": {
+              "$ref": "schema_defs.json#/$defs/possibly_split_field_location"
+            }
+          }
+        }
+      }
+    },
     "$source": {
       "description": "Path to the source file. Used by downstream tooling; not expected to be found in handwritten files",
       "type": "string"
