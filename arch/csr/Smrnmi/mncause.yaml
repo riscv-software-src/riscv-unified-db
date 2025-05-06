@@ -5,7 +5,7 @@ kind: csr
 name: mncause
 long_name: Resumable NMI cause
 address: 0x742
-writeable: true
+writable: true
 priv_mode: M
 length: MXLEN
 definedBy: Smrnmi

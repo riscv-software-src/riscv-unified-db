@@ -815,7 +815,7 @@ class CsrField < DatabaseObject
       <<~DESC
         *Read-Write Restricted with Hardware update*
 
-        Field is writeable by software.
+        Field is writable by software.
         Only certain values are legal.
         Writing an illegal value into the field is ignored, such that the field retains its prior state.
         Hardware also updates the field without an explicit software write.)

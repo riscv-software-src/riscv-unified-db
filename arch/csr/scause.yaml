@@ -5,7 +5,7 @@ kind: csr
 name: scause
 long_name: Supervisor Cause
 address: 0x142
-writeable: true
+writable: true
 priv_mode: S
 length: SXLEN
 description: Reports the cause of the latest exception.
@@ -19,7 +19,7 @@ fields:
 
       When set, the last exception was caused by an asynchronous Interrupt.
 
-      `scause.INT` is writeable.
+      `scause.INT` is writable.
 
       [when,"TRAP_ON_ILLEGAL_WLRL == true"]
       If `scause` is written with an undefined cause (combination of `scause.INT` and `scause.CODE`), an `Illegal Instruction` exception occurs.
@@ -50,7 +50,7 @@ fields:
 
       Holds the interrupt or exception code for the last taken trap.
 
-      `scause.CODE` is writeable.
+      `scause.CODE` is writable.
 
       [when,"TRAP_ON_ILLEGAL_WLRL == true"]
       If `scause` is written with an undefined cause (combination of `scause.INT` and `scause.CODE`), an `Illegal Instruction` exception occurs.

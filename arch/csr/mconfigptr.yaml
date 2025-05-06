@@ -5,7 +5,7 @@ kind: csr
 name: mconfigptr
 long_name: Machine Configuration Pointer
 address: 0xF15
-writeable: false
+writable: false
 description: |
   Holds a physical address pointer to the unified discovery data structure in Memory.
 

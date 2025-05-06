@@ -93,7 +93,7 @@ deploy_log "Copy isa_explorer_spreadsheet"
 deploy_cp_recursive gen/isa_explorer/spreadsheet $DEPLOY_DIR/isa_explorer
 
 deploy_log "Build manual"
-deploy_do "gen:html_manual MANUAL_NAME=isa VERSIONS=all"
+deploy_do gen:html_manual MANUAL_NAME=isa VERSIONS=all
 deploy_log "Copy manual html"
 deploy_cp_recursive gen/manual/isa/top/all/html $DEPLOY_DIR/manual
 deploy_log "Build html documentation for example_rv64_with_overlay"

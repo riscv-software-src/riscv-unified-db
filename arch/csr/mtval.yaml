@@ -5,7 +5,7 @@ kind: csr
 name: mtval
 long_name: Machine Trap Value
 address: 0x343
-writeable: true
+writable: true
 description: Holds trap-specific information
 priv_mode: M
 length: MXLEN
