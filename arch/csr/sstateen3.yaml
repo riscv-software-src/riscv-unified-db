@@ -76,3 +76,17 @@ fields:
     description: Data value
     type: RW
     reset_value: UNDEFINED_LEGAL
+sw_read(): |
+  # For every bit in an mstateen CSR that is zero, the same bit
+  # appears as read-only zero in the matching sstateen CSR.
+  Bit<64> mstateen3_mask = CSR[mstateen3].csr_value;
+  Bit<64> sstateen3_value = csr_value & mstateen3_mask;
+
+  # For every bit in an hstateen CSR that is zero, the same bit
+  # appears as read-only zero in sstateen when accessed in VS-mode.
+  if (mode() == PrivilegeMode::VS) {
+    Bit<64> hstateen3_mask = CSR[hstateen3].csr_value;
+    sstateen3_value = sstateen3_value & hstateen3_mask;
+  }
+
+  return sstateen3_value;

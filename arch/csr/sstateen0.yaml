@@ -80,8 +80,8 @@ fields:
   FCSR:
     long_name: fcsr access control
     location: 1
-    definedBy:
-      anyOf: [Zfinx, Zdinx]
+    #definedBy:
+    #anyOf: [Zfinx, Zdinx]
     description: |
       The FCSR bit controls access to `fcsr` for the case when floating-point instructions
       operate on `x` registers instead of `f` registers as specified by the Zfinx and related
@@ -102,3 +102,17 @@ fields:
       `hstateen0`, or `sstateen0`.
     type: RW
     reset_value: UNDEFINED_LEGAL
+sw_read(): |
+  # For every bit in an mstateen CSR that is zero, the same bit
+  # appears as read-only zero in the matching sstateen CSR.
+  Bit<64> mstateen0_mask = CSR[mstateen0].csr_value;
+  Bit<64> sstateen0_value = csr_value & mstateen0_mask;
+
+  # For every bit in an hstateen CSR that is zero, the same bit
+  # appears as read-only zero in sstateen when accessed in VS-mode.
+  if (mode() == PrivilegeMode::VS) {
+    Bit<64> hstateen0_mask = CSR[hstateen0].csr_value;
+    sstateen0_value = sstateen0_value & hstateen0_mask;
+  }
+
+  return sstateen0_value;
