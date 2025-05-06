@@ -35,9 +35,9 @@ fields:
       [when="mhpmevent3.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent3.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent3].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent3.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent3].EN ? UNDEFINED_LEGAL : 0;
   OF4:
     alias: mhpmevent4.OF
     location: 4
@@ -48,9 +48,9 @@ fields:
       [when="mhpmevent4.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent4.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent4].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent4.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent4].EN ? UNDEFINED_LEGAL : 0;
   OF5:
     alias: mhpmevent5.OF
     location: 5
@@ -61,9 +61,9 @@ fields:
       [when="mhpmevent5.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent5.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent5].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent5.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent5].EN ? UNDEFINED_LEGAL : 0;
   OF6:
     alias: mhpmevent6.OF
     location: 6
@@ -74,9 +74,9 @@ fields:
       [when="mhpmevent6.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent6.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent6].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent6.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent6].EN ? UNDEFINED_LEGAL : 0;
   OF7:
     alias: mhpmevent7.OF
     location: 7
@@ -87,9 +87,9 @@ fields:
       [when="mhpmevent7.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent7.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent7].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent7.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent7].EN ? UNDEFINED_LEGAL : 0;
   OF8:
     alias: mhpmevent8.OF
     location: 8
@@ -100,9 +100,9 @@ fields:
       [when="mhpmevent8.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent8.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent8].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent8.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent8].EN ? UNDEFINED_LEGAL : 0;
   OF9:
     alias: mhpmevent9.OF
     location: 9
@@ -113,9 +113,9 @@ fields:
       [when="mhpmevent9.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent9.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent9].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent9.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent9].EN ? UNDEFINED_LEGAL : 0;
   OF10:
     alias: mhpmevent10.OF
     location: 10
@@ -126,9 +126,9 @@ fields:
       [when="mhpmevent10.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent10.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent10].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent10.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent10].EN ? UNDEFINED_LEGAL : 0;
   OF11:
     alias: mhpmevent11.OF
     location: 11
@@ -139,9 +139,9 @@ fields:
       [when="mhpmevent11.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent11.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent11].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent11.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent11].EN ? UNDEFINED_LEGAL : 0;
   OF12:
     alias: mhpmevent12.OF
     location: 12
@@ -152,9 +152,9 @@ fields:
       [when="mhpmevent12.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent12.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent12].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent12.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent12].EN ? UNDEFINED_LEGAL : 0;
   OF13:
     alias: mhpmevent13.OF
     location: 13
@@ -165,9 +165,9 @@ fields:
       [when="mhpmevent13.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent13.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent13].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent13.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent13].EN ? UNDEFINED_LEGAL : 0;
   OF14:
     alias: mhpmevent14.OF
     location: 14
@@ -178,9 +178,9 @@ fields:
       [when="mhpmevent14.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent14.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent14].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent14.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent14].EN ? UNDEFINED_LEGAL : 0;
   OF15:
     alias: mhpmevent15.OF
     location: 15
@@ -191,9 +191,9 @@ fields:
       [when="mhpmevent15.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent15.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent15].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent15.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent15].EN ? UNDEFINED_LEGAL : 0;
   OF16:
     alias: mhpmevent16.OF
     location: 16
@@ -204,9 +204,9 @@ fields:
       [when="mhpmevent16.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent16.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent16].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent16.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent16].EN ? UNDEFINED_LEGAL : 0;
   OF17:
     alias: mhpmevent17.OF
     location: 17
@@ -217,9 +217,9 @@ fields:
       [when="mhpmevent17.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent17.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent17].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent17.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent17].EN ? UNDEFINED_LEGAL : 0;
   OF18:
     alias: mhpmevent18.OF
     location: 18
@@ -230,9 +230,9 @@ fields:
       [when="mhpmevent18.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent18.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent18].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent18.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent18].EN ? UNDEFINED_LEGAL : 0;
   OF19:
     alias: mhpmevent19.OF
     location: 19
@@ -243,9 +243,9 @@ fields:
       [when="mhpmevent19.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent19.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent19].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent19.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent19].EN ? UNDEFINED_LEGAL : 0;
   OF20:
     alias: mhpmevent20.OF
     location: 20
@@ -256,9 +256,9 @@ fields:
       [when="mhpmevent20.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent20.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent20].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent20.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent20].EN ? UNDEFINED_LEGAL : 0;
   OF21:
     alias: mhpmevent21.OF
     location: 21
@@ -269,9 +269,9 @@ fields:
       [when="mhpmevent21.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent21.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent21].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent21.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent21].EN ? UNDEFINED_LEGAL : 0;
   OF22:
     alias: mhpmevent22.OF
     location: 22
@@ -282,9 +282,9 @@ fields:
       [when="mhpmevent22.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent22.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent22].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent22.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent22].EN ? UNDEFINED_LEGAL : 0;
   OF23:
     alias: mhpmevent23.OF
     location: 23
@@ -295,9 +295,9 @@ fields:
       [when="mhpmevent23.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent23.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent23].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent23.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent23].EN ? UNDEFINED_LEGAL : 0;
   OF24:
     alias: mhpmevent24.OF
     location: 24
@@ -308,9 +308,9 @@ fields:
       [when="mhpmevent24.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent24.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent24].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent24.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent24].EN ? UNDEFINED_LEGAL : 0;
   OF25:
     alias: mhpmevent25.OF
     location: 25
@@ -321,9 +321,9 @@ fields:
       [when="mhpmevent25.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent25.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent25].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent25.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent25].EN ? UNDEFINED_LEGAL : 0;
   OF26:
     alias: mhpmevent26.OF
     location: 26
@@ -334,9 +334,9 @@ fields:
       [when="mhpmevent26.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent26.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent26].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent26.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent26].EN ? UNDEFINED_LEGAL : 0;
   OF27:
     alias: mhpmevent27.OF
     location: 27
@@ -347,9 +347,9 @@ fields:
       [when="mhpmevent27.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent27.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent27].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent27.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent27].EN ? UNDEFINED_LEGAL : 0;
   OF28:
     alias: mhpmevent28.OF
     location: 28
@@ -360,9 +360,9 @@ fields:
       [when="mhpmevent28.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent28.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent28].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent28.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent28].EN ? UNDEFINED_LEGAL : 0;
   OF29:
     alias: mhpmevent29.OF
     location: 29
@@ -373,9 +373,9 @@ fields:
       [when="mhpmevent29.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent29.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent29].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent29.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent29].EN ? UNDEFINED_LEGAL : 0;
   OF30:
     alias: mhpmevent30.OF
     location: 30
@@ -386,9 +386,9 @@ fields:
       [when="mhpmevent30.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent30.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent30].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent30.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent30].EN ? UNDEFINED_LEGAL : 0;
   OF31:
     alias: mhpmevent31.OF
     location: 31
@@ -399,9 +399,9 @@ fields:
       [when="mhpmevent31.EN == false"]
       This field is read-only zero because the event is not enabled.
     type(): |
-      return mhpmevent31.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return CSR[mhpmevent31].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return mhpmevent31.EN ? UNDEFINED_LEGAL : 0;
+      return CSR[mhpmevent31].EN ? UNDEFINED_LEGAL : 0;
 
 sw_read(): |
   Bits<32> mask;
