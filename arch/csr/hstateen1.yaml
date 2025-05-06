@@ -71,6 +71,6 @@ sw_read(): |
   # for every bit in an mstateen CSR that is zero, the same bit
   # appears as read-only zero in the matching hstateen CSR
 
-  Bit<64> mstateen1_mask = CSR[mstateen1].csr_value;
-  Bit<64> hstateen1_value = csr_value & mstateen1_mask;
+  Bits<64> mstateen1_mask = CSR[mstateen1];
+  Bits<64> hstateen1_value = csr_value & mstateen1_mask;
   return hstateen1_value;

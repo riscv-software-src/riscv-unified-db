@@ -79,13 +79,13 @@ fields:
 sw_read(): |
   # For every bit in an mstateen CSR that is zero, the same bit
   # appears as read-only zero in the matching sstateen CSR.
-  Bits<64> mstateen1_mask = CSR[mstateen1].csr_value;
+  Bits<64> mstateen1_mask = CSR[mstateen1];
   Bits<64> sstateen1_value = csr_value & mstateen1_mask;
 
   # For every bit in an hstateen CSR that is zero, the same bit
   # appears as read-only zero in sstateen when accessed in VS-mode.
   if (mode() == PrivilegeMode::VS) {
-    Bit<64> hstateen1_mask = CSR[hstateen1].csr_value;
+    Bit<64> hstateen1_mask = CSR[hstateen1];
     sstateen1_value = sstateen1_value & hstateen1_mask;
   }
 
