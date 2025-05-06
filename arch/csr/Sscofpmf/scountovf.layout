@@ -35,9 +35,9 @@ fields:
         [when="mhpmevent<%= of_num %>.EN == false"]
         This field is read-only zero because the event is not enabled.
       type(): |
-        return mhpmevent<%= of_num %>.EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+        return CSR[mhpmevent<%= of_num %>].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
       reset_value(): |
-        return mhpmevent<%= of_num %>.EN ? UNDEFINED_LEGAL : 0;
+        return CSR[mhpmevent<%= of_num %>].EN ? UNDEFINED_LEGAL : 0;
   <%- end -%>
 
 sw_read(): |
