@@ -358,6 +358,7 @@ versions:
     email: dhower@qti.qualcomm.com
   changes:
     - Fix IDL code of qc.shlusat instruction (should use zero-extension and not sign-extension)
+    - Fix IDL code of qc.shlusat and qc.shlsat instructions (should compare values of xlen()*2 bits)
   implies:
   - { name: Xqcia, version: "0.7.0" }
   - { name: Xqciac, version: "0.3.0" }

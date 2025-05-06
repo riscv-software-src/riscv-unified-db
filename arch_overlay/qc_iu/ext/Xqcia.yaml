@@ -92,6 +92,7 @@ versions:
     email: dhower@qti.qualcomm.com
   changes:
     - Fix IDL code of qc.shlusat instruction (should use zero-extension and not sign-extension)
+    - Fix IDL code of qc.shlusat and qc.shlsat instructions (should compare values of xlen()*2 bits)
 description: |
   The Xqcia extension includes eleven instructions to perform integer arithmetic.
 
