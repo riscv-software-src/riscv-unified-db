@@ -47,7 +47,7 @@ class ConfiguredArchitecture < Architecture
   # Returns whether or not it may be possible to switch XLEN given this definition.
   #
   # There are three cases when this will return true:
-  #   1. A mode (e.g., U) is known to be implemented, and the CSR bit that controls XLEN in that mode is known to be writeable.
+  #   1. A mode (e.g., U) is known to be implemented, and the CSR bit that controls XLEN in that mode is known to be writable.
   #   2. A mode is known to be implemented, but the writability of the CSR bit that controls XLEN in that mode is not known.
   #   3. It is not known if the mode is implemented.
   #
@@ -63,7 +63,7 @@ class ConfiguredArchitecture < Architecture
   # Returns whether or not it may be possible to switch XLEN in +mode+ given this definition.
   #
   # There are three cases when this will return true:
-  #   1. +mode+ (e.g., U) is known to be implemented, and the CSR bit that controls XLEN in +mode+ is known to be writeable.
+  #   1. +mode+ (e.g., U) is known to be implemented, and the CSR bit that controls XLEN in +mode+ is known to be writable.
   #   2. +mode+ is known to be implemented, but the writability of the CSR bit that controls XLEN in +mode+ is not known.
   #   3. It is not known if +mode+ is implemented.
   #

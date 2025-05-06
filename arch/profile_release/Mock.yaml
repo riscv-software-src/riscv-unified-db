@@ -1,6 +1,7 @@
 $schema: profile_release_schema.json#
 kind: profile release
 name: Mock
+long_name: Mock
 marketing_name: Mock Profile Release Marketing Name
 class:
   $ref: profile_class/Mock.yaml#
