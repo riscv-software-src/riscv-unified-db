@@ -22,7 +22,7 @@ external function set_external_interrupt {
     if (target_mode == PrivilegeMode::M) {
       CSR[mip].MEIP = 1'b1;
     } else if ((CSR[misa].S == 1'b1) && (target_mode == PrivilegeMode::S)) {
-      # set the "hidden" bit, not the software-writeable bit
+      # set the "hidden" bit, not the software-writable bit
       pending_smode_external_interrupt = true;
     } else if ((CSR[misa].H == 1'b1) && (target_mode == PrivilegeMode::VS)) {
       CSR[mip].VSEIP = 1'b1;
@@ -43,7 +43,7 @@ external function clear_external_interrupt {
     if (target_mode == PrivilegeMode::M) {
       CSR[mip].MEIP = 1'b0;
     } else if ((CSR[misa].S == 1'b1) && (target_mode == PrivilegeMode::S)) {
-      # clear the "hidden" bit, not the software-writeable bit
+      # clear the "hidden" bit, not the software-writable bit
       pending_smode_external_interrupt = false;
     } else if ((CSR[misa].H == 1'b1) && (target_mode == PrivilegeMode::VS)) {
       CSR[mip].VSEIP = 1'b0;
@@ -64,7 +64,7 @@ external function set_software_interrupt {
     if (target_mode == PrivilegeMode::M) {
       CSR[mip].MSIP = 1'b1;
     } else if ((CSR[misa].S == 1'b1) && (target_mode == PrivilegeMode::S)) {
-      # set the "hidden" bit, not the software-writeable bit
+      # set the "hidden" bit, not the software-writable bit
       CSR[mip].SSIP = 1'b1;
     # } else if ((CSR[misa].H == 1'b1) && (target_mode == PrivilegeMode::VS)) {
     #   CSR[hvip].VSSIP = 1'b1;
@@ -85,7 +85,7 @@ external function clear_software_interrupt {
     if (target_mode == PrivilegeMode::M) {
       CSR[mip].MSIP = 1'b0;
     } else if ((CSR[misa].S == 1'b1) && (target_mode == PrivilegeMode::S)) {
-      # set the "hidden" bit, not the software-writeable bit
+      # set the "hidden" bit, not the software-writable bit
       CSR[mip].SSIP = 1'b0;
     # } else if ((CSR[misa].H == 1'b1) && (target_mode == PrivilegeMode::VS)) {
     #   CSR[hvip].VSSIP = 1'b0;
@@ -106,7 +106,7 @@ external function set_timer_interrupt {
     if (target_mode == PrivilegeMode::M) {
       CSR[mip].MTIP = 1'b1;
     } else if ((CSR[misa].S == 1'b1) && (target_mode == PrivilegeMode::S)) {
-      # set the "hidden" bit, not the software-writeable bit
+      # set the "hidden" bit, not the software-writable bit
       CSR[mip].STIP = 1'b1;
     } else if ((CSR[misa].H == 1'b1) && (target_mode == PrivilegeMode::VS)) {
       pending_vsmode_timer_interrupt = true;
@@ -127,7 +127,7 @@ external function clear_timer_interrupt {
     if (target_mode == PrivilegeMode::M) {
       CSR[mip].MTIP = 1'b0;
     } else if ((CSR[misa].S == 1'b1) && (target_mode == PrivilegeMode::S)) {
-      # set the "hidden" bit, not the software-writeable bit
+      # set the "hidden" bit, not the software-writable bit
       CSR[mip].STIP = 1'b0;
     } else if ((CSR[misa].H == 1'b1) && (target_mode == PrivilegeMode::VS)) {
       pending_vsmode_timer_interrupt = false;

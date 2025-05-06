@@ -1,6 +1,7 @@
 $schema: profile_schema.json#
 kind: profile
 name: RVB23U64
+long_name: U-mode extensions for version 23 of the 64-bit Bespoke Apps Processor profile
 marketing_name: RVB23U64
 mode: Unpriv
 base: 64
