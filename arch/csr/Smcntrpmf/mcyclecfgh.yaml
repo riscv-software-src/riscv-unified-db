@@ -16,6 +16,7 @@ fields:
     location: 30
     base: 64
     type: RW
+    definedBy: M
     description: If set, then counting of events in M-mode is inhibited.
     reset_value: UNDEFINED_LEGAL
 
@@ -23,6 +24,7 @@ fields:
     location: 29
     base: 64
     type: RW
+    definedBy: S
     description: If set, then counting of events in S/HS-mode is inhibited.
     reset_value: UNDEFINED_LEGAL
 
@@ -30,6 +32,7 @@ fields:
     location: 28
     base: 64
     type: RW
+    definedBy: U
     description: If set, then counting of events in U-mode is inhibited.
     reset_value: UNDEFINED_LEGAL
 
@@ -37,6 +40,7 @@ fields:
     location: 27
     base: 64
     type: RW
+    definedBy: H
     description: If set, then counting of events in VS-mode is inhibited.
     reset_value: UNDEFINED_LEGAL
 
@@ -44,5 +48,6 @@ fields:
     location: 26
     base: 64
     type: RW
+    definedBy: H
     description: If set, then counting of events in VU-mode is inhibited.
     reset_value: UNDEFINED_LEGAL

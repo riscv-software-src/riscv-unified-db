@@ -15,59 +15,39 @@ fields:
   MINH:
     location: 30
     base: 64
-    type(): |
-      if (implemented?(ExtensionName::M)) {
-        return CsrFieldType::RW;
-      } else {
-        return CsrFieldType::RO;
-      }
+    type: RW
+    definedBy: M
     description: If set, then counting of events in M-mode is inhibited.
     reset_value: UNDEFINED_LEGAL
 
   SINH:
     location: 29
     base: 64
-    type(): |
-      if (implemented?(ExtensionName::S)) {
-        return CsrFieldType::RW;
-      } else {
-        return CsrFieldType::RO;
-      }
+    type: RW
+    definedBy: S
     description: If set, then counting of events in S/HS-mode is inhibited.
     reset_value: UNDEFINED_LEGAL
 
   UINH:
     location: 28
     base: 64
-    type(): |
-      if (implemented?(ExtensionName::U)) {
-        return CsrFieldType::RW;
-      } else {
-        return CsrFieldType::RO;
-      }
+    type: RW
+    definedBy: U
     description: If set, then counting of events in U-mode is inhibited.
     reset_value: UNDEFINED_LEGAL
 
   VSINH:
     location: 27
     base: 64
-    type(): |
-      if (implemented?(ExtensionName::H)) {
-        return CsrFieldType::RW;
-      } else {
-        return CsrFieldType::RO;
-      }
+    type: RW
+    definedBy: H
     description: If set, then counting of events in VS-mode is inhibited.
     reset_value: UNDEFINED_LEGAL
 
   VUINH:
     location: 26
     base: 64
-    type(): |
-      if (implemented?(ExtensionName::H)) {
-        return CsrFieldType::RW;
-      } else {
-        return CsrFieldType::RO;
-      }
+    type: RW
+    definedBy: H
     description: If set, then counting of events in VU-mode is inhibited.
     reset_value: UNDEFINED_LEGAL
