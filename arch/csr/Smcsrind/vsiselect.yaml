@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+$schema: csr_schema.json#
+kind: csr
+name: vsiselect
+long_name: Virtual Supervisor Indirect Register Select
+address: 0x250
+virtual_address: 0x250
+priv_mode: VS
+length: VSXLEN
+definedBy: Smcsrind
+description:
+  - id: csr-vsiselect-range-minimum
+    normative: true
+    text: |
+      The `vsiselect` register will support the value range 0..0xFFF at a minimum.
+      A future extension may define a value range outside of this minimum range.
+      Only if such an extension is implemented will `vsiselect` be required to support larger values.
+
+  - id: csr-vsiselect-hypervisor-emulation
+    normative: true
+    text: |
+      Requiring a range of 0-0xFFF for `vsiselect`, even though most or all of the space may be reserved
+      or inaccessible, permits a hypervisor to emulate indirectly accessed registers in this implemented
+      range, including registers that may be standardized in the future.
+
+  - id: csr-vsiselect-siselect-width-matching
+    normative: false
+    text: |
+      It is recommended that `vsiselect` and `siselect` be implemented with the same number of bits.
+      This avoids the creation of a virtualization hole due to observable differences between their widths.
+
+  - id: csr-vsiselect-msb-custom-vs-standard
+    normative: true
+    text: |
+      Values of `vsiselect` with the most-significant bit set (bit XLEN - 1 = 1) are designated only for
+      custom use, presumably for accessing custom registers through the alias CSRs.
+      Values with the most-significant bit clear are designated only for standard use and are reserved
+      until allocated to a standard architecture extension.
+
+  - id: csr-vsiselect-msb-behavior-xlen-change
+    normative: true
+    text: |
+      If XLEN is changed, the most-significant bit of `vsiselect` moves to the new position,
+      retaining its value from before.
+
+fields:
+  VALUE:
+    long_name: Indirect Register Select Value
+    location_rv32: 31-0
+    location_rv64: 63-0
+    type: RW
+    description:
+      - id: csr-vsiselect-value-indirect-access
+        normative: true
+        text: |
+          The index value selecting the register accessed through the `vsireg*` alias registers.
+    reset_value: UNDEFINED_LEGAL
+
+sw_read(): |

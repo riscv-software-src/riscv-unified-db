@@ -4,7 +4,7 @@ $schema: "csr_schema.json#"
 kind: csr
 name: satp
 address: 0x180
-writeable: true
+writable: true
 long_name: Supervisor Address Translation and Protection
 description:
   Controls the translation mode in (H)S-mode and U-mode, and holds the

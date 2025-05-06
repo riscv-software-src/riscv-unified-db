@@ -4,7 +4,7 @@ $schema: "csr_schema.json#"
 kind: csr
 name: henvcfg
 address: 0x60A
-writeable: true
+writable: true
 long_name: Hypervisor Environment Configuration
 description: |
   The henvcfg CSR is a 64-bit read/write register that controls certain characteristics of the

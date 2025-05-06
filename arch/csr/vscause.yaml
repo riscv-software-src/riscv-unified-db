@@ -5,7 +5,7 @@ kind: csr
 name: vscause
 long_name: Virtual Supervisor Cause
 address: 0x242
-writeable: true
+writable: true
 virtual_address: 0x142
 priv_mode: VS
 length: VSXLEN
@@ -20,7 +20,7 @@ fields:
 
       When set, the last exception was caused by an asynchronous Interrupt.
 
-      `vscause.INT` is writeable.
+      `vscause.INT` is writable.
 
       [when,"TRAP_ON_ILLEGAL_WLRL == true"]
       If `vscause` is written with an undefined cause (combination of `vscause.INT` and `vscause.CODE`), an `Illegal Instruction` exception occurs.
@@ -51,7 +51,7 @@ fields:
 
       Holds the interrupt or exception code for the last taken trap.
 
-      `vscause.CODE` is writeable.
+      `vscause.CODE` is writable.
 
       [when,"TRAP_ON_ILLEGAL_WLRL == true"]
       If `vscause` is written with an undefined cause (combination of `vscause.INT` and `vscause.CODE`), an `Illegal Instruction` exception occurs.

@@ -102,7 +102,7 @@ description: |
   HFENCE.GVMA instruction (see <<hfence.vma>>) before or
   after writing `hgatp`.
 address: 0x680
-writeable: true
+writable: true
 priv_mode: S
 definedBy: H
 length: SXLEN

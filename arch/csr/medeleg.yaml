@@ -5,7 +5,7 @@ kind: csr
 name: medeleg
 long_name: Machine Exception Delegation
 address: 0x302
-writeable: true
+writable: true
 priv_mode: M
 length: 64
 description: |
@@ -199,7 +199,7 @@ fields:
 
       [when,"MISALIGNED_LDST == true"]
       Note that because this implementation supports misaligned loads, this exception will never occur.
-      However, the writeable bit should be presented anyway.
+      However, the writable bit should be presented anyway.
 
       The handling mode is determined as follows:
 
@@ -279,7 +279,7 @@ fields:
 
       [when,"MISALIGNED_LDST == true && MISALIGNED_AMO == true"]
       Note that because the implementation supports misaligned stores and misaligned AMOs (or no AMOs), this exception will never occur.
-      Even so, the writeable bit should be presented anyway.
+      Even so, the writable bit should be presented anyway.
 
       The handling mode is determined as follows:
 

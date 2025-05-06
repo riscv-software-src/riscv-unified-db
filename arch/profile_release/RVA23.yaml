@@ -1,6 +1,7 @@
 $schema: profile_release_schema.json#
 kind: profile release
 name: RVA23
+long_name: RVA23
 marketing_name: RVA23
 class:
   $ref: profile_class/RVA.yaml#

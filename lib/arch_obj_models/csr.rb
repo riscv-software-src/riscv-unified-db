@@ -54,7 +54,7 @@ class Csr < DatabaseObject
   end
 
   def writable
-    @data["writeable"]
+    @data["writable"]
   end
 
   # @return [Integer] 32 or 64, the XLEN this CSR is exclusively defined in

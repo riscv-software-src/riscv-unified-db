@@ -5,7 +5,7 @@ kind: csr
 name: sip
 long_name: Supervisor Interrupt Pending
 address: 0x144
-writeable: true
+writable: true
 priv_mode: S
 description: |
   A restricted view of the interrupt pending bits in `mip`.
@@ -52,7 +52,7 @@ fields:
       ! `mideleg.SSI` ! `sip.SSIP` behavior
 
       ! 0 ! read-only 0
-      ! 1 ! writeable alias of `mip.SSIP` <% if ext?(:Smaia) %>and `mvip.SSIP`<% end %>
+      ! 1 ! writable alias of `mip.SSIP` <% if ext?(:Smaia) %>and `mvip.SSIP`<% end %>
       !===
     type: RW
     reset_value: UNDEFINED_LEGAL
@@ -140,7 +140,7 @@ fields:
 
       ! 0 ! read-only 0
       ! 1
-      a! writeable alias of `mip.LCOFIP` (and `vsip.LCOFIP` when `hideleg.LCOFI` is set)
+      a! writable alias of `mip.LCOFIP` (and `vsip.LCOFIP` when `hideleg.LCOFI` is set)
       !===
     type: RW-H
     reset_value: UNDEFINED_LEGAL

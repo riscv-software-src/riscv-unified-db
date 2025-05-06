@@ -1,6 +1,7 @@
 $schema: profile_schema.json#
 kind: profile
 name: RVA23M64
+long_name: M-mode extensions for version 23 of the 64-bit Apps Processor profile (not ratified)
 marketing_name: RVA23M64
 mode: M
 base: 64

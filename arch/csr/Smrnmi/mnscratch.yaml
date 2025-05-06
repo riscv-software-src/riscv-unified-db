@@ -5,7 +5,7 @@ kind: csr
 name: mnscratch
 long_name: Machine Scratch Register
 address: 0x740
-writeable: true
+writable: true
 priv_mode: M
 length: MXLEN
 description:

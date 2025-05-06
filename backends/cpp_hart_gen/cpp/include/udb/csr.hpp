@@ -50,7 +50,7 @@ namespace udb {
     bool readOnly(const unsigned& xlen) const {
       return type(xlen) == CsrFieldType::RO || type(xlen) == CsrFieldType::ROH;
     }
-    bool writeable(const unsigned& xlen) const { return !readOnly(xlen); }
+    bool writable(const unsigned& xlen) const { return !readOnly(xlen); }
     bool immutable(const unsigned& xlen) const {
       return type(xlen) == CsrFieldType::RO;
     }

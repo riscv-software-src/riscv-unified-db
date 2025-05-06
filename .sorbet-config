@@ -1,10 +1,8 @@
 --dir
-lib
---dir
-sorbet/rbi
---file
-Rakefile
---file
-backends/ext_pdf_doc/idl_lexer.rb
---file
-backends/cpp_hart_gen/lib/template_helpers.rb
+.
+--ignore
+ext
+--ignore
+.home/.gems
+--ignore
+node_modules

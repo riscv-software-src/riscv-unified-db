@@ -5,7 +5,7 @@ kind: csr
 name: marchid
 long_name: Machine Architecture ID
 address: 0xf12
-writeable: false
+writable: false
 priv_mode: M
 length: MXLEN
 description: |

@@ -4,7 +4,7 @@ $schema: "csr_schema.json#"
 kind: csr
 name: mtval2
 address: 0x34b
-writeable: true
+writable: true
 long_name: Machine Second Trap Value Register
 description: |
   When a trap is taken into M-mode from a virtual mode, mtval2 is written with additional exception-specific information,

@@ -57,7 +57,7 @@ requirement_groups:
     requirements:
       - name: REQ-M_Mode-Non_Zero_CSRs
         description: The `mvendorid`, `marchid`, and `mimpid` CSRs must be nonzero.
-      - name: REQ-M_Mode-mstatus_writeable_fields
+      - name: REQ-M_Mode-mstatus_writable_fields
         description: The `mstatus.TVM`, `mstatus.TW`, and `mstatus.TSR` CSR fields must be writable.
       - name: REQ-M_Mode-medeleg_writable_bits
         description: The `medeleg` CSR bits 3, 8, 12, 13, and 15 must be writable.
@@ -65,5 +65,5 @@ requirement_groups:
         description: The `mideleg` CSR bits 1, 5, and 9 must be writable.
       - name: REQ-M_Mode-mideleg_readonlyzero_bits
         description: The `mideleg` CSR bits 3, 7, and 11 must be read-only zero.
-      - name: REQ-M_Mode-mcounteren_writeable_bits
+      - name: REQ-M_Mode-mcounteren_writable_bits
         description: For any `mhpmcounter` that is writable, the corresponding bit in `mcounteren` must be writable.

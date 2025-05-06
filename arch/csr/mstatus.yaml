@@ -5,7 +5,7 @@ kind: csr
 name: mstatus
 long_name: Machine Status
 address: 0x300
-writeable: true
+writable: true
 priv_mode: M
 
 # length is MXLEN-bit
@@ -374,7 +374,7 @@ fields:
         return CsrFieldType::RO;
       } else {
         # there will be no hardware update in this case because we know the F extension isn't implemented
-        return MSTATUS_FS_WRITEABLE ? CsrFieldType::RW : CsrFieldType::RO;
+        return MSTATUS_FS_WRITABLE ? CsrFieldType::RW : CsrFieldType::RO;
       }
     definedBy:
       anyOf: [F, S]
@@ -386,7 +386,7 @@ fields:
         return 0;
       } else {
         # there will be no hardware update in this case because we know the F extension isn't implemented
-        return MSTATUS_FS_WRITEABLE ? UNDEFINED_LEGAL : 0;
+        return MSTATUS_FS_WRITABLE ? UNDEFINED_LEGAL : 0;
       }
     sw_write(csr_value): |
       if (CSR[misa].F == 1'b1){
@@ -458,7 +458,7 @@ fields:
         return CsrFieldType::RO;
       } else {
         # there will be no hardware update in this case because we know the V extension isn't implemented
-        return MSTATUS_VS_WRITEABLE ? CsrFieldType::RW : CsrFieldType::RO;
+        return MSTATUS_VS_WRITABLE ? CsrFieldType::RW : CsrFieldType::RO;
       }
     reset_value(): |
       if (CSR[misa].V == 1'b1){
@@ -468,7 +468,7 @@ fields:
         return 0;
       } else {
         # there will be no hardware update in this case because we know the V extension isn't implemented
-        return MSTATUS_VS_WRITEABLE ? UNDEFINED_LEGAL : 0;
+        return MSTATUS_VS_WRITABLE ? UNDEFINED_LEGAL : 0;
       }
     sw_write(csr_value): |
       if (CSR[misa].V == 1'b1){
