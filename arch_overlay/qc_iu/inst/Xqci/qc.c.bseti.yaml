@@ -30,4 +30,4 @@ access:
 operation(): |
   XReg index = shamt & (xlen() - 1);
   XReg reg = creg2reg(rd);
-  X[reg] = X[reg] | (1 << index);
+  X[reg] = X[reg] | (MXLEN'b1 << index);
