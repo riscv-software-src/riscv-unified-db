@@ -241,6 +241,11 @@ EOF
 }
 
 deploy_log
-deploy_log "COMPLETE - Overall exit status is $exit_status"
+deploy_log "Overall exit status is $exit_status"
+deploy_log
+
+deploy_log '***************************************************************'
+deploy_log '*                      DEPLOY COMPLETE                        *'
+deploy_log '***************************************************************'
 
 exit $exit_status
