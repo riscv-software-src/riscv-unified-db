@@ -442,6 +442,8 @@ sw_read(): |
     (CSR[mhpmevent28].OF << 28) |
     (CSR[mhpmevent29].OF << 29) |
     (CSR[mhpmevent30].OF << 30) |
-    (CSR[mhpmevent31].OF << 31);
+    (CSR[mhpmevent31].OF << 31) |
+
+    0;
 
   return value & mask;
