@@ -134,7 +134,6 @@ jobs:
           rm -rf ext/llvm-project
           git submodule sync --recursive
           git submodule update --init --recursive --depth=1 ext/llvm-project
-
       - name: Check for required directories and files
         if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
         run: |
@@ -158,6 +157,11 @@ jobs:
             -o ext/llvm-project/riscv.json
       - name: Show riscv.json output
         run: ls -l ext/llvm-project/riscv.json
+      - name: Upload RISC-V JSON as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: riscv-json
+          path: ext/llvm-project/riscv.json
   regress-gen-go:
     runs-on: ubuntu-latest
     env:
