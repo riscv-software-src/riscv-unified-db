@@ -30,4 +30,4 @@ access:
   vu: always
 operation(): |
   XReg width = width_minus1 + 1;
-  X[rd] = (X[rd] >> 0) & ((1 << width) - 1);
+  X[rd] = (X[rd] >> 0) & ((32'b1 << width) - 1);
