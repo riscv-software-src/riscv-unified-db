@@ -7,7 +7,7 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy: Zicsr
-assembly: rd, imm, rs1
+assembly: xd, csr, uimm
 encoding:
   match: -----------------111-----1110011
   variables:
@@ -23,6 +23,9 @@ access:
   vs: always
   vu: always
 data_independent_timing: false
+pseudoinstructions:
+  - when: xd == 0
+    to: csrci csr,uimm
 operation(): |
   Boolean will_write = uimm != 0;
 
