@@ -51,9 +51,9 @@ sw_read(): |
   }
 
   Bits<32> value =
-  <%- (3..30).each do |num| -%>
+  <%- (3..31).each do |num| -%>
     (CSR[mhpmevent<%= num %>].OF << <%= num %>) |
   <%- end -%>
-    (CSR[mhpmevent31].OF << 31);
+    0;
 
   return value & mask;
