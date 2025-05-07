@@ -37,7 +37,7 @@
       "required": ["description", "schema"],
       "properties": {
         "description": {
-          "type": "string",
+          "$ref": "schema_defs.json#/$defs/spec_text",
           "description": "Parameter description, including list of valid values"
         },
         "also_defined_in": {
@@ -96,7 +96,7 @@
           "description": "One line description for the extension"
         },
         "description": {
-          "type": "string",
+          "$ref": "schema_defs.json#/$defs/spec_text",
           "description": "Full documentation of the extension"
         },
         "rvi_jira_issue": {

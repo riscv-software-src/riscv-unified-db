@@ -138,7 +138,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/nav.adoc} => proc { |tname|
   erb.filename = nav_template_path.to_s
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, erb.result(binding)
+  File.write t.name, AntoraUtils.resolve_links(erb.result(binding))
 end
 
 # Rule to create start page for a manual version
@@ -410,17 +410,17 @@ namespace :gen do
       Rake::Task[antora_path / "antora.yml"].invoke
       Rake::Task[antora_path / "nav.adoc"].invoke
 
-      puts "UPDATE: Generating CSRs"
+      $logger.info "Generating CSRs"
       version_obj.csrs.each do |csr|
         Rake::Task[antora_path / "modules" / "csrs" / "pages" / "#{csr.name}.adoc"].invoke
       end
 
-      puts "UPDATE: Generating Instructions"
+      $logger.info "Generating Instructions"
       version_obj.instructions.each do |inst|
         Rake::Task[antora_path / "modules" / "insts" / "pages" / "#{inst.name}.adoc"].invoke
       end
 
-      puts "UPDATE: Generating Extensions"
+      $logger.info "Generating Extensions"
       version_obj.extensions.each do |ext|
         Rake::Task[antora_path / "modules" / "exts" / "pages" / "#{ext.name}.adoc"].invoke
       end
@@ -436,7 +436,7 @@ namespace :gen do
     playbook_path = MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / "top" / output_hash / "antora" / "playbook" / "playbook.yml"
     Rake::Task[playbook_path].invoke
 
-    puts "UPDATE: Using npm to execute Antora"
+    $logger.info "Running Antora under npm for HTML site to create '#{MANUAL_GEN_DIR / ENV['MANUAL_NAME'] / output_hash / 'html'}'"
 
     sh [
       "npm exec -- antora",
@@ -449,7 +449,7 @@ namespace :gen do
       playbook_path.to_s
     ].join(" ")
 
-    puts "SUCCESS: HTML site written to '#{MANUAL_GEN_DIR / ENV['MANUAL_NAME'] / output_hash / 'html'}'"
+    $logger.info "Done running Antora under npm for HTML site to create '#{MANUAL_GEN_DIR / ENV['MANUAL_NAME'] / output_hash / 'html'}'"
   end
 end
 

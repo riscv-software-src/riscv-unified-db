@@ -237,40 +237,40 @@ def gen_xlsx(arch, output_pname)
   raise ArgumentError, "output_pname is a #{output_pname.class} class but needs to be String" unless output_pname.is_a?(String)
 
   # Create a new Excel workbook
-  puts "UPDATE: Creating Excel workboook #{output_pname}"
+  $logger.info "Creating Excel workboook #{output_pname}"
   workbook = WriteXLSX.new(output_pname)
 
   # Convert arch to ext_table data structure
-  puts "UPDATE: Creating extension table data structure"
+  $logger.info "Creating extension table data structure"
   ext_table = arch2ext_table(arch)
 
   # Add a worksheet
   ext_worksheet = workbook.add_worksheet("Extensions")
 
   # Populate worksheet with ext_table
-  puts "UPDATE: Adding extension table to worksheet #{ext_worksheet.name}"
+  $logger.info "Adding extension table to worksheet #{ext_worksheet.name}"
   gen_xlsx_table(ext_table, workbook, ext_worksheet)
 
   # Convert arch to inst_table data structure
-  puts "UPDATE: Creating instruction table data structure"
+  $logger.info "Creating instruction table data structure"
   inst_table = arch2inst_table(arch)
 
   # Add a worksheet
   inst_worksheet = workbook.add_worksheet("Instructions")
 
   # Populate worksheet with inst_table
-  puts "UPDATE: Adding instruction table to worksheet #{inst_worksheet.name}"
+  $logger.info "Adding instruction table to worksheet #{inst_worksheet.name}"
   gen_xlsx_table(inst_table, workbook, inst_worksheet)
 
   # Convert arch to csr_table data structure
-  puts "UPDATE: Creating CSR table data structure"
+  $logger.info "Creating CSR table data structure"
   csr_table = arch2csr_table(arch)
 
   # Add a worksheet
   csr_worksheet = workbook.add_worksheet("CSRs")
 
   # Populate worksheet with csr
-  puts "UPDATE: Adding CSR table to worksheet #{csr_worksheet.name}"
+  $logger.info "Adding CSR table to worksheet #{csr_worksheet.name}"
   gen_xlsx_table(csr_table, workbook, csr_worksheet)
 
   workbook.close
@@ -359,10 +359,10 @@ def gen_js_ext_table(arch, output_pname)
   raise ArgumentError, "output_pname is a #{output_pname.class} class but needs to be String" unless output_pname.is_a?(String)
 
   # Convert arch to ext_table data structure
-  puts "UPDATE: Creating extension table data structure"
+  $logger.info "Creating extension table data structure"
   ext_table = arch2ext_table(arch)
 
-  puts "UPDATE: Converting extension table to #{output_pname}"
+  $logger.info "Converting extension table to #{output_pname}"
   gen_js_table(ext_table, "ext_table", output_pname)
 end
 
@@ -375,10 +375,10 @@ def gen_js_inst_table(arch, output_pname)
   raise ArgumentError, "output_pname is a #{output_pname.class} class but needs to be String" unless output_pname.is_a?(String)
 
   # Convert arch to inst_table data structure
-  puts "UPDATE: Creating instruction table data structure"
+  $logger.info "Creating instruction table data structure"
   inst_table = arch2inst_table(arch)
 
-  puts "UPDATE: Converting instruction table to #{output_pname}"
+  $logger.info "Converting instruction table to #{output_pname}"
   gen_js_table(inst_table, "inst_table", output_pname)
 end
 
@@ -391,10 +391,10 @@ def gen_js_csr_table(arch, output_pname)
   raise ArgumentError, "output_pname is a #{output_pname.class} class but needs to be String" unless output_pname.is_a?(String)
 
   # Convert arch to csr_table data structure
-  puts "UPDATE: Creating CSR table data structure"
+  $logger.info "Creating CSR table data structure"
   csr_table = arch2csr_table(arch)
 
-  puts "UPDATE: Converting CSR table to #{output_pname}"
+  $logger.info "Converting CSR table to #{output_pname}"
   gen_js_table(csr_table, "csr_table", output_pname)
 end
 

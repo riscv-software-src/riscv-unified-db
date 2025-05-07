@@ -56,11 +56,7 @@ void <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %><SocType>::reset(
   <%- end -%>
   <%- else -%>
   auto val_fn = [this]() ->
-    <%- if field.could_be_undefined? -%>
     PossiblyUnknownBits<<%= max_width + 1 %>>
-    <%- else -%>
-    Bits<<%= max_width + 1 %>>
-    <%- end -%>
   {
     <%= ast.gen_cpp(cfg_arch.symtab, 8) %>
   };

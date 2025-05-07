@@ -5,6 +5,7 @@ kind: csr
 name: instret
 long_name: Instructions retired counter for RDINSTRET Instruction
 address: 0xC02
+writable: false
 description: |
   Alias for M-mode CSR `minstret`.
 
