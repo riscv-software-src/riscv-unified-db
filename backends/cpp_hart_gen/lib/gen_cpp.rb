@@ -599,16 +599,20 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if op == ">>>"
         "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.sra(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
-      elsif op == "<<"
+      elsif op == "`<<"
         if rhs.constexpr?(symtab)
           # use template form of shift
           "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.template sll<#{rhs.value(symtab)}>())"
-        elsif rhs.type(symtab).const?
+        else
           # use widening shift
           "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.widening_sll(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
-        else
-        "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)} << #{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
         end
+      elsif op == "`+"
+        "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.widening_add(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
+      elsif op == "`-"
+        "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.widening_sub(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
+      elsif op == "`*"
+        "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.widening_mul(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
       else
         "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)} #{op} #{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
       end

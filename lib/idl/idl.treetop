@@ -95,16 +95,20 @@ grammar Idl
     # highest priority binary operators
       '/'   # division with ignored remainder
     / '%'   # remainder
+    / '`*'  # widening multiplication
     / '*'   # multiplication with ignored upper half
   end
 
   rule p1_binary_operator
-      '+'   # addition with ignored overflow
+      '`+'  # widening addition
+    / '`-'  # widening subtraction
+    / '+'   # addition with ignored overflow
     / '-'   # subtraction with ignored overflow
   end
 
   rule p2_binary_operator
-      '<<'  # left shift
+      '`<<' # widening left shift (only valid when shift amount is constant)
+    / '<<'  # left shift
     / '>>>' # arithmetic right shift
     / '>>'  # logical left shift
   end

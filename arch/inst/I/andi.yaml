@@ -22,6 +22,9 @@ access:
   vs: always
   vu: always
 data_independent_timing: true
+pseudoinstructions:
+  - when: imm == 255
+    to: zext.b
 operation(): X[xd] = X[xs1] & $signed(imm);
 
 # SPDX-SnippetBegin

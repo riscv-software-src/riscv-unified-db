@@ -23,6 +23,11 @@ access:
   u: always
   vs: always
   vu: always
+pseudoinstructions:
+  - when: imm == 0
+    to: j xd
+  - when: xd == x1
+    to: jal imm
 operation(): |
   XReg retrun_addr = $pc + 4;
 

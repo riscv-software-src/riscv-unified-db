@@ -34,10 +34,10 @@ operation(): |
     bitmask = 0;
   } else if (slist < 6) {
     XReg shift = slist - 1;
-    bitmask = (1 << shift);
+    bitmask = (5'b1 << shift);
   } else {
     XReg shift = slist - 2;
-    bitmask = (1 << shift) - 1;
+    bitmask = (5'b1 << shift) - 1;
   }
   fence_tso();
   sync_read_after_write_device(true,bitmask);
