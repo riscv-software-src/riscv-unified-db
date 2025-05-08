@@ -84,7 +84,7 @@ fields:
       # For every bit in an hstateen CSR that is zero, the same bit
       # appears as read-only zero in sstateen when accessed in VS-mode.
       if (mode() == PrivilegeMode::VS) {
-        Bits<64> hstateen3mask = $bits(CSR[hstateen3]);
+        Bits<64> hstateen_3mask = $bits(CSR[hstateen3]);
         data_value = data_value & hstateen3_mask;
       }
 
