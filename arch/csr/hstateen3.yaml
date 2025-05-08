@@ -67,6 +67,10 @@ fields:
       The SE0 bit in `hstateen3` controls access to the `sstateen3` CSR.
     type: RW
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (CSR[mstateen3].SE0 == 1'b0){
+        return 0;
+      }
 sw_read(): |
   # for every bit in an mstateen CSR that is zero, the same bit
   # appears as read-only zero in the matching hstateen CSR

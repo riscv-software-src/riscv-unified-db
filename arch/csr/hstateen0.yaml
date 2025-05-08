@@ -67,6 +67,10 @@ fields:
       The SE0 bit in `hstateen0` controls access to the `sstateen0` CSR.
     type: RW
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (CSR[mstateen0].SE0 == 1'b0){
+        return 0;
+      }
   ENVCFG:
     long_name: senvcfg access control
     location: 62
@@ -78,6 +82,10 @@ fields:
       The ENVCFG bit in `hstateen0` controls access to the `senvcfg` CSRs.
     type: RW
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (CSR[mstateen0].ENVCFG == 1'b0){
+        return 0;
+      }
   CSRIND:
     long_name: siselect and sireg* access control
     location: 60
@@ -89,6 +97,10 @@ fields:
       extensions.
     type: RW
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (CSR[mstateen0].CSRIND == 1'b0){
+        return 0;
+      }
   AIA:
     long_name: Ssaia state access control
     location: 59
@@ -100,6 +112,10 @@ fields:
       IMSIC bits of `hstateen0`.
     type: RW
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (CSR[mstateen0].AIA == 1'b0){
+        return 0;
+      }
   IMSIC:
     long_name: IMSIC state access control
     location: 58
@@ -113,6 +129,10 @@ fields:
       from accessing the hart’s IMSIC the same as setting `hstatus.`VGEIN = 0.
     type: RW
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (CSR[mstateen0].IMSIC == 1'b0){
+        return 0;
+      }
   CONTEXT:
     long_name: scontext access control
     location: 57
@@ -123,6 +143,10 @@ fields:
       by the Sdtrig extension.
     type: RW
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (CSR[mstateen0].CONTEXT == 1'b0){
+        return 0;
+      }
   JVT:
     long_name: jvt access control
     location: 2
@@ -131,6 +155,10 @@ fields:
       The JVT bit controls access to the `jvt` CSR provided by the Zcmt extension.
     type: RW
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (CSR[mstateen0].JVT == 1'b0){
+        return 0;
+      }
   FCSR:
     long_name: fcsr access control
     location: 1
@@ -147,6 +175,10 @@ fields:
       `fcsr`, regardless of whether they really do.
     type: RW
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (CSR[mstateen0].FCSR == 1'b0){
+        return 0;
+      }
   C:
     long_name: custom state access control
     location: 0
@@ -156,6 +188,10 @@ fields:
       `hstateen0`, or `sstateen0`.
     type: RW
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (CSR[mstateen0].C == 1'b0){
+        return 0;
+      }
 sw_read(): |
   # for every bit in an mstateen CSR that is zero, the same bit
   # appears as read-only zero in the matching hstateen CSR
