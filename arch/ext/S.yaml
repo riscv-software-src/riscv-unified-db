@@ -284,19 +284,19 @@ params:
   MSTATUS_FS_WRITABLE:
     description: |
       When `S` is enabled but `F` is not, mstatus.FS is optionally writable.
-
-      This parameter only has an effect when both S and F mode are disabled.
     schema:
       type: boolean
-    extra_validation: assert MSTATUS_FS_WRITABLE == true if ext?(:F)
+    extra_validation: |
+      assert MSTATUS_FS_WRITABLE == true  if ext?(:F)
+      assert MSTATUS_FS_WRITABLE == false if (!ext?(:S) && !ext?(:F))
   MSTATUS_VS_WRITABLE:
     description: |
       When `S` is enabled but `V` is not, mstatus.VS is optionally writable.
-
-      This parameter only has an effect when both S and V mode are disabled.
     schema:
       type: boolean
-    extra_validation: assert MSTATUS_VS_WRITABLE == true if ext?(:V)
+    extra_validation: |
+      assert MSTATUS_VS_WRITABLE == true  if ext?(:V)
+      assert MSTATUS_VS_WRITABLE == false if (!ext?(:S) && !ext?(:V))
   MSTATUS_FS_LEGAL_VALUES:
     description: |
       The set of values that mstatus.FS will accept from a software write.
