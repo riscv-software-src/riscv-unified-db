@@ -29,379 +29,379 @@ fields:
     alias: mhpmevent3.OF
     location: 3
     description: |
-      [when="mhpmevent3.EN == true"]
+      [when="HPM_COUNTER_EN[3] == true"]
       Shadow copy of mhpmevent3 overflow (OF) bit.
 
-      [when="mhpmevent3.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[3] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent3].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[3] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent3].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[3] ? UNDEFINED_LEGAL : 0;
   OF4:
     alias: mhpmevent4.OF
     location: 4
     description: |
-      [when="mhpmevent4.EN == true"]
+      [when="HPM_COUNTER_EN[4] == true"]
       Shadow copy of mhpmevent4 overflow (OF) bit.
 
-      [when="mhpmevent4.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[4] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent4].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[4] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent4].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[4] ? UNDEFINED_LEGAL : 0;
   OF5:
     alias: mhpmevent5.OF
     location: 5
     description: |
-      [when="mhpmevent5.EN == true"]
+      [when="HPM_COUNTER_EN[5] == true"]
       Shadow copy of mhpmevent5 overflow (OF) bit.
 
-      [when="mhpmevent5.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[5] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent5].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[5] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent5].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[5] ? UNDEFINED_LEGAL : 0;
   OF6:
     alias: mhpmevent6.OF
     location: 6
     description: |
-      [when="mhpmevent6.EN == true"]
+      [when="HPM_COUNTER_EN[6] == true"]
       Shadow copy of mhpmevent6 overflow (OF) bit.
 
-      [when="mhpmevent6.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[6] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent6].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[6] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent6].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[6] ? UNDEFINED_LEGAL : 0;
   OF7:
     alias: mhpmevent7.OF
     location: 7
     description: |
-      [when="mhpmevent7.EN == true"]
+      [when="HPM_COUNTER_EN[7] == true"]
       Shadow copy of mhpmevent7 overflow (OF) bit.
 
-      [when="mhpmevent7.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[7] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent7].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[7] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent7].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[7] ? UNDEFINED_LEGAL : 0;
   OF8:
     alias: mhpmevent8.OF
     location: 8
     description: |
-      [when="mhpmevent8.EN == true"]
+      [when="HPM_COUNTER_EN[8] == true"]
       Shadow copy of mhpmevent8 overflow (OF) bit.
 
-      [when="mhpmevent8.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[8] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent8].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[8] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent8].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[8] ? UNDEFINED_LEGAL : 0;
   OF9:
     alias: mhpmevent9.OF
     location: 9
     description: |
-      [when="mhpmevent9.EN == true"]
+      [when="HPM_COUNTER_EN[9] == true"]
       Shadow copy of mhpmevent9 overflow (OF) bit.
 
-      [when="mhpmevent9.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[9] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent9].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[9] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent9].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[9] ? UNDEFINED_LEGAL : 0;
   OF10:
     alias: mhpmevent10.OF
     location: 10
     description: |
-      [when="mhpmevent10.EN == true"]
+      [when="HPM_COUNTER_EN[10] == true"]
       Shadow copy of mhpmevent10 overflow (OF) bit.
 
-      [when="mhpmevent10.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[10] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent10].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[10] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent10].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[10] ? UNDEFINED_LEGAL : 0;
   OF11:
     alias: mhpmevent11.OF
     location: 11
     description: |
-      [when="mhpmevent11.EN == true"]
+      [when="HPM_COUNTER_EN[11] == true"]
       Shadow copy of mhpmevent11 overflow (OF) bit.
 
-      [when="mhpmevent11.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[11] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent11].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[11] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent11].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[11] ? UNDEFINED_LEGAL : 0;
   OF12:
     alias: mhpmevent12.OF
     location: 12
     description: |
-      [when="mhpmevent12.EN == true"]
+      [when="HPM_COUNTER_EN[12] == true"]
       Shadow copy of mhpmevent12 overflow (OF) bit.
 
-      [when="mhpmevent12.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[12] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent12].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[12] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent12].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[12] ? UNDEFINED_LEGAL : 0;
   OF13:
     alias: mhpmevent13.OF
     location: 13
     description: |
-      [when="mhpmevent13.EN == true"]
+      [when="HPM_COUNTER_EN[13] == true"]
       Shadow copy of mhpmevent13 overflow (OF) bit.
 
-      [when="mhpmevent13.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[13] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent13].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[13] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent13].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[13] ? UNDEFINED_LEGAL : 0;
   OF14:
     alias: mhpmevent14.OF
     location: 14
     description: |
-      [when="mhpmevent14.EN == true"]
+      [when="HPM_COUNTER_EN[14] == true"]
       Shadow copy of mhpmevent14 overflow (OF) bit.
 
-      [when="mhpmevent14.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[14] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent14].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[14] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent14].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[14] ? UNDEFINED_LEGAL : 0;
   OF15:
     alias: mhpmevent15.OF
     location: 15
     description: |
-      [when="mhpmevent15.EN == true"]
+      [when="HPM_COUNTER_EN[15] == true"]
       Shadow copy of mhpmevent15 overflow (OF) bit.
 
-      [when="mhpmevent15.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[15] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent15].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[15] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent15].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[15] ? UNDEFINED_LEGAL : 0;
   OF16:
     alias: mhpmevent16.OF
     location: 16
     description: |
-      [when="mhpmevent16.EN == true"]
+      [when="HPM_COUNTER_EN[16] == true"]
       Shadow copy of mhpmevent16 overflow (OF) bit.
 
-      [when="mhpmevent16.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[16] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent16].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[16] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent16].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[16] ? UNDEFINED_LEGAL : 0;
   OF17:
     alias: mhpmevent17.OF
     location: 17
     description: |
-      [when="mhpmevent17.EN == true"]
+      [when="HPM_COUNTER_EN[17] == true"]
       Shadow copy of mhpmevent17 overflow (OF) bit.
 
-      [when="mhpmevent17.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[17] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent17].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[17] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent17].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[17] ? UNDEFINED_LEGAL : 0;
   OF18:
     alias: mhpmevent18.OF
     location: 18
     description: |
-      [when="mhpmevent18.EN == true"]
+      [when="HPM_COUNTER_EN[18] == true"]
       Shadow copy of mhpmevent18 overflow (OF) bit.
 
-      [when="mhpmevent18.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[18] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent18].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[18] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent18].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[18] ? UNDEFINED_LEGAL : 0;
   OF19:
     alias: mhpmevent19.OF
     location: 19
     description: |
-      [when="mhpmevent19.EN == true"]
+      [when="HPM_COUNTER_EN[19] == true"]
       Shadow copy of mhpmevent19 overflow (OF) bit.
 
-      [when="mhpmevent19.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[19] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent19].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[19] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent19].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[19] ? UNDEFINED_LEGAL : 0;
   OF20:
     alias: mhpmevent20.OF
     location: 20
     description: |
-      [when="mhpmevent20.EN == true"]
+      [when="HPM_COUNTER_EN[20] == true"]
       Shadow copy of mhpmevent20 overflow (OF) bit.
 
-      [when="mhpmevent20.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[20] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent20].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[20] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent20].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[20] ? UNDEFINED_LEGAL : 0;
   OF21:
     alias: mhpmevent21.OF
     location: 21
     description: |
-      [when="mhpmevent21.EN == true"]
+      [when="HPM_COUNTER_EN[21] == true"]
       Shadow copy of mhpmevent21 overflow (OF) bit.
 
-      [when="mhpmevent21.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[21] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent21].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[21] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent21].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[21] ? UNDEFINED_LEGAL : 0;
   OF22:
     alias: mhpmevent22.OF
     location: 22
     description: |
-      [when="mhpmevent22.EN == true"]
+      [when="HPM_COUNTER_EN[22] == true"]
       Shadow copy of mhpmevent22 overflow (OF) bit.
 
-      [when="mhpmevent22.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[22] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent22].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[22] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent22].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[22] ? UNDEFINED_LEGAL : 0;
   OF23:
     alias: mhpmevent23.OF
     location: 23
     description: |
-      [when="mhpmevent23.EN == true"]
+      [when="HPM_COUNTER_EN[23] == true"]
       Shadow copy of mhpmevent23 overflow (OF) bit.
 
-      [when="mhpmevent23.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[23] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent23].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[23] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent23].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[23] ? UNDEFINED_LEGAL : 0;
   OF24:
     alias: mhpmevent24.OF
     location: 24
     description: |
-      [when="mhpmevent24.EN == true"]
+      [when="HPM_COUNTER_EN[24] == true"]
       Shadow copy of mhpmevent24 overflow (OF) bit.
 
-      [when="mhpmevent24.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[24] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent24].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[24] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent24].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[24] ? UNDEFINED_LEGAL : 0;
   OF25:
     alias: mhpmevent25.OF
     location: 25
     description: |
-      [when="mhpmevent25.EN == true"]
+      [when="HPM_COUNTER_EN[25] == true"]
       Shadow copy of mhpmevent25 overflow (OF) bit.
 
-      [when="mhpmevent25.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[25] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent25].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[25] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent25].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[25] ? UNDEFINED_LEGAL : 0;
   OF26:
     alias: mhpmevent26.OF
     location: 26
     description: |
-      [when="mhpmevent26.EN == true"]
+      [when="HPM_COUNTER_EN[26] == true"]
       Shadow copy of mhpmevent26 overflow (OF) bit.
 
-      [when="mhpmevent26.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[26] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent26].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[26] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent26].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[26] ? UNDEFINED_LEGAL : 0;
   OF27:
     alias: mhpmevent27.OF
     location: 27
     description: |
-      [when="mhpmevent27.EN == true"]
+      [when="HPM_COUNTER_EN[27] == true"]
       Shadow copy of mhpmevent27 overflow (OF) bit.
 
-      [when="mhpmevent27.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[27] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent27].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[27] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent27].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[27] ? UNDEFINED_LEGAL : 0;
   OF28:
     alias: mhpmevent28.OF
     location: 28
     description: |
-      [when="mhpmevent28.EN == true"]
+      [when="HPM_COUNTER_EN[28] == true"]
       Shadow copy of mhpmevent28 overflow (OF) bit.
 
-      [when="mhpmevent28.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[28] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent28].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[28] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent28].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[28] ? UNDEFINED_LEGAL : 0;
   OF29:
     alias: mhpmevent29.OF
     location: 29
     description: |
-      [when="mhpmevent29.EN == true"]
+      [when="HPM_COUNTER_EN[29] == true"]
       Shadow copy of mhpmevent29 overflow (OF) bit.
 
-      [when="mhpmevent29.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[29] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent29].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[29] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent29].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[29] ? UNDEFINED_LEGAL : 0;
   OF30:
     alias: mhpmevent30.OF
     location: 30
     description: |
-      [when="mhpmevent30.EN == true"]
+      [when="HPM_COUNTER_EN[30] == true"]
       Shadow copy of mhpmevent30 overflow (OF) bit.
 
-      [when="mhpmevent30.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[30] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent30].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[30] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent30].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[30] ? UNDEFINED_LEGAL : 0;
   OF31:
     alias: mhpmevent31.OF
     location: 31
     description: |
-      [when="mhpmevent31.EN == true"]
+      [when="HPM_COUNTER_EN[31] == true"]
       Shadow copy of mhpmevent31 overflow (OF) bit.
 
-      [when="mhpmevent31.EN == false"]
-      This field is read-only zero because the event is not enabled.
+      [when="HPM_COUNTER_EN[31] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
-      return CSR[mhpmevent31].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+      return HPM_COUNTER_EN[31] ? CsrFieldType::RO : CsrFieldType::RO-H;
     reset_value(): |
-      return CSR[mhpmevent31].EN ? UNDEFINED_LEGAL : 0;
+      return HPM_COUNTER_EN[31] ? UNDEFINED_LEGAL : 0;
 
 sw_read(): |
   Bits<32> mask;
@@ -443,7 +443,6 @@ sw_read(): |
     (CSR[mhpmevent29].OF << 29) |
     (CSR[mhpmevent30].OF << 30) |
     (CSR[mhpmevent31].OF << 31) |
-
     0;
 
   return value & mask;
