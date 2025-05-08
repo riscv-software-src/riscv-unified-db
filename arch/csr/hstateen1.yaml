@@ -76,5 +76,5 @@ sw_read(): |
   # appears as read-only zero in the matching hstateen CSR
 
   Bits<64> mstateen1_mask = $bits(CSR[mstateen1]);
-  Bits<64> hstateen1_value = csr_value & mstateen1_mask;
+  Bits<64> hstateen1_value = $bits(CSR[hstateen1]) & mstateen1_mask;
   return hstateen1_value;

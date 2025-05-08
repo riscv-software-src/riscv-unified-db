@@ -94,7 +94,7 @@ sw_read(): |
   # For every bit in an mstateen CSR that is zero, the same bit
   # appears as read-only zero in the matching sstateen CSR.
   Bits<64> mstateen3_mask = $bits(CSR[mstateen3]);
-  Bits<64> sstateen3_value = csr_value & mstateen3_mask;
+  Bits<64> sstateen3_value = $bits(CSR[sstateen3]) & mstateen3_mask;
 
   # For every bit in an hstateen CSR that is zero, the same bit
   # appears as read-only zero in sstateen when accessed in VS-mode.
