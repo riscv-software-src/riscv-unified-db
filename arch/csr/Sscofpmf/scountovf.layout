@@ -29,16 +29,17 @@ fields:
       alias: mhpmevent<%= of_num %>.OF
       location: <%= of_num %>
       description: |
-        [when="mhpmevent<%= of_num %>.EN == true"]
+        [when="HPM_COUNTER_EN[<%= of_num %>] == true"]
         Shadow copy of mhpmevent<%= of_num %> overflow (OF) bit.
 
-        [when="mhpmevent<%= of_num %>.EN == false"]
-        This field is read-only zero because the event is not enabled.
+        [when="HPM_COUNTER_EN[<%= of_num %>] == false"]
+        This field is read-only zero because the counter is not enabled.
       type(): |
-        return CSR[mhpmevent<%= of_num %>].EN ? CsrFieldType::RO : CsrFieldType::RO-H;
+        return HPM_COUNTER_EN[<%= of_num %>] ? CsrFieldType::RO : CsrFieldType::RO-H;
       reset_value(): |
-        return CSR[mhpmevent<%= of_num %>].EN ? UNDEFINED_LEGAL : 0;
+        return HPM_COUNTER_EN[<%= of_num %>] ? UNDEFINED_LEGAL : 0;
   <%- end -%>
+
 
 sw_read(): |
   Bits<32> mask;
