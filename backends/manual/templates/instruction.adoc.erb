@@ -5,59 +5,6 @@
 
 *<%= inst.long_name %>*
 
-This instruction is defined by:
-
-<%= inst.fix_entities(inst.defined_by_condition.to_asciidoc) %>
-
-This instruction is included in the following profiles:
-
-<%- cfg_arch.profiles.each do |profile| -%>
-<%-
-  in_profile_mandatory = profile.mandatory_ext_reqs.any? do |ext_req|
-    ext_versions = ext_req.satisfying_versions
-    ext_versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) }
-  end
-  in_profile_optional = !in_profile_mandatory && profile.optional_ext_reqs.any? do |ext_req|
-    ext_versions = ext_req.satisfying_versions
-    ext_versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) }
-  end
-  if in_profile_mandatory
--%>
-* <%= profile.marketing_name %> (Mandatory)
-<%- elsif in_profile_optional -%>
-* <%= profile.marketing_name %> (Optional)
-<%- end -%>
-<%- end -%>
-
-== Encoding
-
-<%- if inst.multi_encoding? -%>
-[NOTE]
-This instruction has different encodings in RV32 and RV64.
-
-[tabs]
-====
-RV32::
-+
-[wavedrom, ,svg,subs='attributes',width="100%"]
-....
-<%= inst.processed_wavedrom_desc(32) %>
-....
-
-RV64::
-+
-[wavedrom, ,svg,subs='attributes',width="100%"]
-....
-<%= inst.processed_wavedrom_desc(64) %>
-....
-====
-<%- else -%>
-[wavedrom, ,svg,subs='attributes',width="100%"]
-....
-<%= inst.processed_wavedrom_desc(inst.base.nil? ? 32 : inst.base) %>
-....
-<%- end -%>
-
 == Assembly format
 
 `<%= inst.name %> <%= inst.assembly.gsub('x', 'r') %>`
@@ -70,22 +17,6 @@ This instruction must have data-independent timing when extension `Zkt` is enabl
 <%- end -%>
 
 <%= inst.fix_entities(inst.description) %>
-
-== Access
-[cols="^,^,^,^,^"]
-|===
-| M | HS | U | VS | VU
-
-| [.access-always]#Always#
-| [.access-<%=inst.access['s']%>]#<%= inst.access['s'].capitalize %>#
-| [.access-<%=inst.access['u']%>]#<%= inst.access['u'].capitalize %>#
-| [.access-<%=inst.access['vs']%>]#<%= inst.access['vs'].capitalize %>#
-| [.access-<%=inst.access['vu']%>]#<%= inst.access['vu'].capitalize %>#
-|===
-
-<%- if inst.access_detail? -%>
-<%= inst.fix_entities(inst.access_detail) %>
-<%- end -%>
 
 == Decode Variables
 
@@ -153,3 +84,76 @@ This instruction may result in the following synchronous exceptions:
   <%- end -%>
 
 <%- end -%>
+
+== Encoding
+
+<%- if inst.multi_encoding? -%>
+[NOTE]
+This instruction has different encodings in RV32 and RV64.
+
+====
+RV32::
++
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= inst.processed_wavedrom_desc(32) %>
+....
+
+RV64::
++
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= inst.processed_wavedrom_desc(64) %>
+....
+====
+<%- else -%>
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= inst.processed_wavedrom_desc(inst.base.nil? ? 32 : inst.base) %>
+....
+<%- end -%>
+
+== Defining extension
+
+<%= inst.fix_entities(inst.defined_by_condition.to_asciidoc) %>
+
+== Access
+[cols="^,^,^,^,^"]
+|===
+| M | HS | U | VS | VU
+
+| [.access-always]#Always#
+| [.access-<%=inst.access['s']%>]#<%= inst.access['s'].capitalize %>#
+| [.access-<%=inst.access['u']%>]#<%= inst.access['u'].capitalize %>#
+| [.access-<%=inst.access['vs']%>]#<%= inst.access['vs'].capitalize %>#
+| [.access-<%=inst.access['vu']%>]#<%= inst.access['vu'].capitalize %>#
+|===
+
+<%- if inst.access_detail? -%>
+<%= inst.fix_entities(inst.access_detail) %>
+<%- end -%>
+
+== Containing profiles
+
+<%- inst_mandatory_ext = [] -%>
+<%- inst_optional_ext = [] -%>
+<%- cfg_arch.profiles.each do |profile| -%>
+<%-
+  in_profile_mandatory = profile.mandatory_ext_reqs.any? do |ext_req|
+    ext_versions = ext_req.satisfying_versions
+    ext_versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) }
+  end
+  in_profile_optional = !in_profile_mandatory && profile.optional_ext_reqs.any? do |ext_req|
+    ext_versions = ext_req.satisfying_versions
+    ext_versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) }
+  end
+  if in_profile_mandatory
+-%>
+<%- inst_mandatory_ext.push(profile.marketing_name) -%>
+<%- elsif in_profile_optional -%>
+<%- inst_optional_ext.push(profile.marketing_name) -%>
+<%- end -%>
+<%- end -%>
+
+* Mandatory: <%= inst_mandatory_ext.join(", ") %>
+* Optional: <%= inst_optional_ext.join(", ") %>
