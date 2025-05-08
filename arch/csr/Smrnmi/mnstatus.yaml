@@ -5,7 +5,7 @@ kind: csr
 name: mnstatus
 long_name: Machine NMI Status
 address: 0x744
-writeable: true
+writable: true
 priv_mode: M
 
 # length is MXLEN-bit
