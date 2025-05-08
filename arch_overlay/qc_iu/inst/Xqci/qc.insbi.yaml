@@ -34,6 +34,6 @@ access:
   vu: always
 operation(): |
   XReg width = width_minus1 + 1;
-  XReg mask = ((1 << width) - 1) << shamt;
+  XReg mask = ((32'b1 << width) - 1) << shamt;
   XReg orig_val = X[rd];
   X[rd] = (orig_val & ~mask) | ((imm << shamt) & mask);

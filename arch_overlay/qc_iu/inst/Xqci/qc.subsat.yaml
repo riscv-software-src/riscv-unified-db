@@ -31,9 +31,9 @@ access:
   vs: always
   vu: always
 operation(): |
-  XReg result = X[rs1] - X[rs2];
-  XReg most_negative_number = 1 << (xlen() - 1);
-  XReg most_positive_number = (1 << (xlen() - 1)) - 1;
+  Bits<xlen()+1> result = X[rs1] `- X[rs2];
+  Bits<xlen()+1> most_negative_number = {2'b11,{(xlen()-1){1'b0}}};
+  Bits<xlen()+1> most_positive_number = {2'b00,{(xlen()-1){1'b1}}};
 
   # overflow occurs if the operands have different signs and the result is a different sign than the first operand
   if (X[rs1][xlen()-1] != X[rs2][xlen()-1]) {
@@ -47,4 +47,4 @@ operation(): |
   }
 
   # otherwise, overflow did not occur
-  X[rd] = result;
+  X[rd] = result[(xlen() - 1):0];

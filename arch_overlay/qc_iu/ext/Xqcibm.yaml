@@ -105,6 +105,23 @@ versions:
     - Fix IDL code and description increasing shift to 6 bit for qc.extdpr and qc.extdprh instructions
     - Fix IDL code and description increasing shift to 6 bit for qc.extdupr and qc.extduprh instructions
   requires: { name: Zca, version: ">= 1.0.0" }
+- version: "0.8.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix IDL code for qc.c.bseti, qc.c.extu, qc.ext and qc.extu instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.extd, qc.extdu, qc.extdr and qc.extdur instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.extdpr, qc.extdprh, qc.extdupr and qc.extduprh instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.insb, qc.insbi, qc.insbr and qc.insbri instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.insbh, qc.insbhr, qc.insbpr and qc.insbprh instructions because change in IDL '<<' operator
+  requires: { name: Zca, version: ">= 1.0.0" }
 description: |
   The Xqcibm extension includes thirty eight instructions that perform bit manipulation,
   include insertion and extraction.

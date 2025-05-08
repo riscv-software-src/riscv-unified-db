@@ -314,15 +314,15 @@ function exception_handling_mode {
       # mode is M, the value of medeleg is irrelevant
       return PrivilegeMode::M;
     } else if (implemented?(ExtensionName::S) && ((mode() == PrivilegeMode::HS) || (mode() == PrivilegeMode::U))) {
-      if (($bits(CSR[medeleg]) & (1 << $bits(exception_code))) != 0) {
+      if (($bits(CSR[medeleg]) & (MXLEN'1 << $bits(exception_code))) != 0) {
         return PrivilegeMode::HS;
       } else {
         return PrivilegeMode::M;
       }
     } else {
       assert(implemented?(ExtensionName::H) && ((mode() == PrivilegeMode::VS) || (mode() == PrivilegeMode::VU)), "Unexpected mode");
-      if (($bits(CSR[medeleg]) &  (1 << $bits(exception_code))) != 0) {
-        if (($bits(CSR[hedeleg]) & (1 << $bits(exception_code))) != 0) {
+      if (($bits(CSR[medeleg]) &  (MXLEN'1 << $bits(exception_code))) != 0) {
+        if (($bits(CSR[hedeleg]) & (MXLEN'1 << $bits(exception_code))) != 0) {
           return PrivilegeMode::VS;
         } else {
           return PrivilegeMode::HS;
@@ -830,7 +830,7 @@ function valid_interrupt_code? {
     Returns true if _code_ is a legal interrupt number.
   }
   body {
-    if (code > ((1 << $enum_element_size(InterruptCode)) - 1)) {
+    if (code > ((1 `<< $enum_element_size(InterruptCode)) - 1)) {
       # code is too large
       return false;
     }
@@ -849,7 +849,7 @@ function valid_exception_code? {
     Returns true if _code_ is a legal exception number.
   }
   body {
-    if (code > ((1 << $enum_element_size(ExceptionCode)) - 1)) {
+    if (code > ((1 `<< $enum_element_size(ExceptionCode)) - 1)) {
       # code is too large
       return false;
     }
@@ -2083,7 +2083,7 @@ function stage1_page_walk {
     }
 
     for (U32 i = (LEVELS - 1); i >= 0; i--) {
-      U32 vpn = (vaddr >> (12 + VPN_SIZE*i)) & ((1 << VPN_SIZE) - 1);
+      U32 vpn = (vaddr >> (12 + VPN_SIZE*i)) & ((1 `<< VPN_SIZE) - 1);
 
       Bits<PA_SIZE> pte_gpaddr = (ppn << 12) + (vpn * (PTESIZE/8));
 
