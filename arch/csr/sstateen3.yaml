@@ -88,7 +88,7 @@ fields:
         data_value = data_value & hstateen3_mask;
       }
 
-      return data_value
+      return data_value;
     reset_value: UNDEFINED_LEGAL
 sw_read(): |
   # For every bit in an mstateen CSR that is zero, the same bit
