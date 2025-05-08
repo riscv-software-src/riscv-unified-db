@@ -35,7 +35,7 @@ fields:
         [when="HPM_COUNTER_EN[<%= of_num %>] == false"]
         This field is read-only zero because the counter is not enabled.
       type(): |
-        return HPM_COUNTER_EN[<%= of_num %>] ? CsrFieldType::RO : CsrFieldType::RO-H;
+        return HPM_COUNTER_EN[<%= of_num %>] ? CsrFieldType::RO : CsrFieldType::ROH;
       reset_value(): |
         return HPM_COUNTER_EN[<%= of_num %>] ? UNDEFINED_LEGAL : 0;
   <%- end -%>
