@@ -3,19 +3,19 @@
 $schema: inst_schema.json#
 kind: instruction
 name: csrrc
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: Zicsr
-assembly: xd, xs1, csr
+assembly: xd, imm, xs1
 encoding:
   match: -----------------011-----1110011
   variables:
     - name: csr
       location: 31-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -23,4 +23,30 @@ access:
   vs: always
   vu: always
 data_independent_timing: false
+pseudoinstructions:
+  - when: xd == 0
+    to: csrc csr,xs1
 operation(): |
+  Csr csr_handle = direct_csr_lookup(csr);
+
+  Boolean will_write = xs1 != 0;
+
+  # permission checks
+  if (csr_handle.valid == false) {
+    unimplemented_csr($encoding);
+  } else if (!compatible_mode?(csr_handle.mode, mode())) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  } else if (will_write && csr_handle.writable == false) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  XReg initial_csr_value = csr_sw_read(csr_handle);
+
+  if (xs1 != 0) {
+    # clear bits using the mask
+    # performing any WARL transformations first
+    XReg mask = X[xs1];
+    csr_sw_write(csr_handle, initial_csr_value & ~mask);
+  }
+
+  X[xd] = initial_csr_value;

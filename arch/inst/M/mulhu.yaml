@@ -40,11 +40,14 @@ operation(): |
   }
 
   # enlarge and zero-extend the sources
-  Bits<XLEN*8'd2> src1 = {{XLEN{1'b0}}, X[rs1]};
-  Bits<XLEN*8'd2> src2 = {{XLEN{1'b0}}, X[rs2]};
+  Bits<MXLEN*8'd2> src1 = {{MXLEN{1'b0}}, X[rs1]};
+  Bits<MXLEN*8'd2> src2 = {{MXLEN{1'b0}}, X[rs2]};
 
-  X[rd] = (src1 * src2)[(XLEN*8'd2)-1:XLEN];
+  X[rd] = (src1 * src2)[(MXLEN*8'd2)-1:MXLEN];
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     if extension("M") | haveZmmul() then {
@@ -63,3 +66,5 @@ sail(): |
       RETIRE_FAIL
     }
   }
+
+# SPDX-SnippetEnd

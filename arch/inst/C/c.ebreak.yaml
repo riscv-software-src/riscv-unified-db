@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: c.ebreak
-long_name: Breakpoint exception.
+long_name: Breakpoint exception
 description: |
   The C.EBREAK instruction is used by debuggers to cause control to be transferred back to
   a debugging environment. Unless overridden by an external debug environment,
@@ -39,8 +39,13 @@ operation(): |
     eei_ebreak();
   }
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     handle_mem_exception(PC, E_Breakpoint());
     RETIRE_FAIL
   }
+
+# SPDX-SnippetEnd

@@ -8,8 +8,8 @@ module Idl
       :boolean,  # true or false, not compatible with bits/int/xreg
       :bits,     # integer with compile-time-known bit width
       :enum,     # enumeration class
-      :enum_ref, # reference to an enumeration element, convertable to int and/or Bits<bit_width(MAX_ENUM_VALUE)>
-      :bitfield, # bitfield, convertable to int and/or Bits<width>
+      :enum_ref, # reference to an enumeration element, convertible to int and/or Bits<bit_width(MAX_ENUM_VALUE)>
+      :bitfield, # bitfield, convertible to int and/or Bits<width>
       :struct,   # structure class
       :array,    # array of other types
       :tuple,    # tuple of other dissimilar types
@@ -22,7 +22,8 @@ module Idl
     QUALIFIERS = [
       :const,
       :signed,
-      :global
+      :global,
+      :template_var
     ].freeze
 
     # true for any type that can generally be treated as a scalar integer
@@ -64,7 +65,7 @@ module Idl
     def self.from_typename(type_name, cfg_arch)
       case type_name
       when 'XReg'
-        return Type.new(:bits, width: cfg_arch.param_values['XLEN'])
+        return Type.new(:bits, width: cfg_arch.param_values["MXLEN"])
       when 'FReg'
         return Type.new(:freg, width: 32)
       when 'DReg'
@@ -219,6 +220,10 @@ module Idl
       when :dontcare
         return true
       when :bits
+        if type.kind == :enum_ref
+          warn "You seem to be missing an $enum cast"
+          return false
+        end
         return type.kind != :boolean
       when :function
         return @return_type.convertable_to?(type)
@@ -259,7 +264,7 @@ module Idl
       when :string
         return type.kind == :string
       when :void
-        return false
+        return type.kind == :void
       when :struct
         return type.kind == :struct && (type.type_name == type_name)
       else
@@ -300,36 +305,51 @@ module Idl
     alias fully_qualified_name to_s
 
     def to_cxx_no_qualifiers
-        if @kind == :bits
-          raise "@width is unknown" if @width == :unknown
-          raise "@width is a #{@width.class}" unless @width.is_a?(Integer)
+      case @kind
+      when :bits
+        raise "@width is a #{@width.class}" unless @width.is_a?(Integer) || @width == :unknown
 
-          if signed?
-            "SignedBits<#{@width.is_a?(Integer) ? @width : @width.to_cxx}>"
+        width_cxx =
+          if @width.is_a?(Integer)
+            @width
+          elsif @width == :unknown
+            "BitsInfinitePrecision"
           else
-            "Bits<#{@width.is_a?(Integer) ? @width : @width.to_cxx}>"
+            @width.to_cxx
           end
-        elsif @kind == :enum
-          "#{@name}"
-        elsif @kind == :boolean
-          "bool"
-        elsif @kind == :function
-          "std::function<#{@return_type.to_cxx}(...)>"
-        elsif @kind == :enum_ref
-          "#{@enum_class.name}"
-        elsif @kind == :tuple
-          "std::tuple<#{@tuple_types.map{ |t| t.to_cxx }.join(',')}>"
-        elsif @kind == :bitfield
-          "#{@name}"
-        elsif @kind == :array
-          "#{@sub_type}[]"
-        elsif @kind == :csr
-          "#{@csr.downcase.capitalize}Csr"
-        elsif @kind == :string
-          "std::string"
+
+        if signed?
+          "SignedBits<#{width_cxx}>"
         else
-          raise @kind.to_s
+          "Bits<#{width_cxx}>"
         end
+      when :enum
+        @name
+      when :boolean
+        "bool"
+      when :function
+        "std::function<#{@return_type.to_cxx_no_qualifiers}(...)>"
+      when :enum_ref
+        @enum_class.name
+      when :tuple
+        "std::tuple<#{@tuple_types.map(&:to_cxx).join(',')}>"
+      when :bitfield
+        @name
+      when :array
+        if @width == :unknown
+          "std::vector<#{@sub_type.to_cxx_no_qualifiers}>"
+        else
+          "std::array<#{@sub_type.to_cxx_no_qualifiers}, #{@width}>"
+        end
+      when :csr
+        "#{CppHartGen::TemplateEnv.new(@csr.cfg_arch).name_of(:csr, @csr.cfg_arch, @csr.name)}<SocType>"
+      when :string
+        "std::string"
+      when :void
+        "void"
+      else
+        raise @kind.to_s
+      end
     end
 
     def to_cxx
@@ -373,6 +393,10 @@ module Idl
 
     def global?
       @qualifiers.include?(:global)
+    end
+
+    def template_var?
+      @qualifiers.include?(:template_var)
     end
 
     def make_signed
@@ -610,10 +634,16 @@ module Idl
     attr_reader :csr
 
     def initialize(csr, cfg_arch, qualifiers: [])
-      super(:csr, name: csr.name, csr: csr, width: csr.max_length(cfg_arch), qualifiers: qualifiers)
+      if csr.is_a?(Symbol) && csr == :unknown
+        super(:csr, name: csr.name, csr: csr, width: :unknown, qualifiers: qualifiers)
+      else
+        super(:csr, name: csr.name, csr: csr, width: csr.max_length, qualifiers: qualifiers)
+      end
     end
 
     def fields
+      raise "fields are unknown" if @csr == :unknown
+
       @csr.fields
     end
   end
@@ -634,6 +664,10 @@ module Idl
     end
 
     def builtin? = @func_def_ast.builtin?
+
+    def generated? = @func_def_ast.generated?
+
+    def external? = @func_def_ast.external?
 
     def num_args = @func_def_ast.num_args
 
@@ -690,16 +724,21 @@ module Idl
     # then add the value to the Var
     def apply_arguments(symtab, argument_nodes, call_site_symtab, func_call_ast)
       idx = 0
+      values = []
       @func_def_ast.arguments(symtab).each do |atype, aname|
         func_call_ast.type_error "Missing argument #{idx}" if idx >= argument_nodes.size
         value_result = Idl::AstNode.value_try do
-          symtab.add(aname, Var.new(aname, atype, argument_nodes[idx].value(call_site_symtab)))
+          value = argument_nodes[idx].value(call_site_symtab)
+          symtab.add(aname, Var.new(aname, atype, value))
+          values << value
         end
         Idl::AstNode.value_else(value_result) do
           symtab.add(aname, Var.new(aname, atype))
+          values << :unknown
         end
         idx += 1
       end
+      values
     end
 
     # @return [Array<Integer,Boolean>] Array of argument values, if known
@@ -746,6 +785,7 @@ module Idl
         symtab.pop
         symtab.release
       end
+      raise "?" if value.is_a?(SymbolTable)
       value
     end
 

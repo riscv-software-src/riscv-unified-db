@@ -60,7 +60,7 @@ params:
       maximum: 16
     extra_validation: |
       assert ASID_WIDTH <= 9 if XLEN == 32
-  S_MODE_ENDIANESS:
+  S_MODE_ENDIANNESS:
     description: |
       Endianness of data in S-mode. Can be one of:
 
@@ -84,6 +84,31 @@ params:
     extra_validation: |
       assert SXLEN == 32 if XLEN == 32
       assert (SXLEN != 32) if UXLEN != 32
+  REPORT_VA_IN_MTVAL_ON_LOAD_PAGE_FAULT:
+    description: |
+      When true, `mtval` is written with the virtual address of a load when it causes a
+      `LoadPageFault`.
+
+      WHen false, `mtval` is written with 0 when a load causes a `LoadPageFault`.
+    schema:
+      type: boolean
+  REPORT_VA_IN_MTVAL_ON_STORE_AMO_PAGE_FAULT:
+    description: |
+      When true, `mtval` is written with the virtual address of a store when it causes a
+      `StoreAmoPageFault`.
+
+      WHen false, `mtval` is written with 0 when a store causes a `StoreAmoPageFault`.
+    schema:
+      type: boolean
+  REPORT_VA_IN_MTVAL_ON_INSTRUCTION_PAGE_FAULT:
+    description: |
+      When true, `mtval` is written with the virtual PC of an instructino when fetch causes an
+      `InstructionPageFault`.
+
+      WHen false, `mtval` is written with 0 when an instruction fetch causes an
+      `InstructionPageFault`.
+    schema:
+      type: boolean
   REPORT_VA_IN_STVAL_ON_BREAKPOINT:
     description: |
       When true, `stval` is written with the virtual PC of the EBREAK instruction (same information as `mepc`).
@@ -256,22 +281,22 @@ params:
       type: boolean
       default: false
     extra_validation: assert TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY == false if ext?(:Sv32) || ext?(:Sv39) || ext?(:Sv48) || ext?(:Sv57)
-  MSTATUS_FS_WRITEABLE:
+  MSTATUS_FS_WRITABLE:
     description: |
-      When `S` is enabled but `F` is not, mstatus.FS is optionally writeable.
-
-      This parameter only has an effect when both S and F mode are disabled.
+      When `S` is enabled but `F` is not, mstatus.FS is optionally writable.
     schema:
       type: boolean
-    extra_validation: assert MSTATUS_FS_WRITEABLE == true if ext?(:F)
-  MSTATUS_VS_WRITEABLE:
+    extra_validation: |
+      assert MSTATUS_FS_WRITABLE == true  if ext?(:F)
+      assert MSTATUS_FS_WRITABLE == false if (!ext?(:S) && !ext?(:F))
+  MSTATUS_VS_WRITABLE:
     description: |
-      When `S` is enabled but `V` is not, mstatus.VS is optionally writeable.
-
-      This parameter only has an effect when both S and V mode are disabled.
+      When `S` is enabled but `V` is not, mstatus.VS is optionally writable.
     schema:
       type: boolean
-    extra_validation: assert MSTATUS_VS_WRITEABLE == true if ext?(:V)
+    extra_validation: |
+      assert MSTATUS_VS_WRITABLE == true  if ext?(:V)
+      assert MSTATUS_VS_WRITABLE == false if (!ext?(:S) && !ext?(:V))
   MSTATUS_FS_LEGAL_VALUES:
     description: |
       The set of values that mstatus.FS will accept from a software write.

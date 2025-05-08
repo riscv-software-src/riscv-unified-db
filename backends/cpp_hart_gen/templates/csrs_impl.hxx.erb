@@ -1,0 +1,287 @@
+#pragma once
+
+#include "udb/cfgs/<%= cfg_arch.name %>/structs.hxx"
+#include "udb/cfgs/<%= cfg_arch.name %>/params.hxx"
+
+using namespace std::literals;
+
+namespace udb {
+
+<%- csrs = cfg_arch.possible_csrs -%>
+
+<%- csrs.each do |csr| -%>
+<%- fields = cfg_arch.fully_configured? ? csr.possible_fields(cfg_arch) : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
+
+#define __UDB_RUNTIME_PARAM(param_name) m_hart->m_params.param_name
+#define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name ## _VALUE
+#define __UDB_FUNC_CALL m_hart->
+#define __UDB_CONSTEXPR_FUNC_CALL <%= name_of(:hart, cfg_arch) %><SocType>::
+#define __UDB_CSR_BY_NAME(csr_name) m_hart->m_csrs.csr_name
+#define __UDB_CONST_GLOBAL(global_name) <%= name_of(:hart, cfg_arch) %><SocType>::global_name
+#define __UDB_MUTABLE_GLOBAL(global_name) m_hart->global_name
+#define __UDB_STRUCT(struct_name) <%= cfg_arch.name.camelize %>_ ## struct_name ## _Struct
+
+
+<%- fields.each do |field| -%>
+<%- next unless cfg_arch.possible_xlens.any? { |xlen| field.defined_in_base?(xlen) } -%>
+<%- max_width = cfg_arch.possible_xlens.map { |xlen| field.defined_in_base?(xlen) ? field.location(xlen).size : 0 }.max -%>
+<%- field_base = field.defined_in_all_bases? ? cfg_arch.possible_xlens[0] : (field.defined_in_base32? ? 32 : 64) -%>
+template <SocModel SocType>
+CsrFieldType <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %><SocType>::type(const unsigned& xlen) const {
+  <%- if field.defined_in_all_bases? && cfg_arch.multi_xlen? -%>
+  if (xlen == 32) {
+    <%= field.type_to_cpp(32) %>
+  } else { // if (xlen == 64)
+    <%= field.type_to_cpp(64) %>
+  }
+  <%- else -%>
+  <%= field.type_to_cpp(field_base) %>
+  <%- end -%>
+}
+
+template <SocModel SocType>
+void <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %><SocType>::reset() {
+
+  <%- ast = field.pruned_reset_value_ast -%>
+  <%- if ast.nil? -%>
+  <%- v = field.reset_value -%>
+  <%- if v == "UNDEFINED_LEGAL" -%>
+  m_undefined = true;
+  <%- else -%>
+  <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
+  _hw_write(<%= v %>ULL, m_hart->xlen());
+  <%- else -%>
+  _hw_write(<%= v %>ULL);
+  <%- end -%>
+  <%- end -%>
+  <%- else -%>
+  auto val_fn = [this]() ->
+    PossiblyUnknownBits<<%= max_width + 1 %>>
+  {
+    <%= ast.gen_cpp(cfg_arch.symtab, 8) %>
+  };
+  auto val = val_fn();
+  if (val == UNDEFINED_LEGAL) {
+    m_undefined = true;
+  } else {
+    <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
+    _hw_write(val, m_hart->xlen());
+    <%- else -%>
+    _hw_write(val);
+    <%- end -%>
+  }
+  <%- end -%>
+}
+
+<%- end -%>
+
+#undef __UDB_RUNTIME_PARAM
+#undef __UDB_STATIC_PARAM
+#undef __UDB_CONSTEXPR_FUNC_CALL
+#undef __UDB_FUNC_CALL
+#undef __UDB_CSR_BY_NAME
+#undef __UDB_CONST_GLOBAL
+#undef __UDB_MUTABLE_GLOBAL
+#undef __UDB_STRUCT
+
+#define __UDB_RUNTIME_PARAM(param_name) m_parent->m_params.param_name
+#define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name
+#define __UDB_CSR_BY_ADDR(addr) m_parent->csr(addr)
+#define __UDB_CSR_BY_NAME(csr_name) m_parent->m_csrs.csr_name
+#define __UDB_CSR_FIELD_READ(field_name) m_##field_name
+#define __UDB_FUNC_CALL m_parent->
+#define __UDB_CONSTEXPR_FUNC_CALL <%= name_of(:hart, cfg_arch) %><SocType>::
+#define __UDB_XLEN m_parent->xlen()
+#define __UDB_ENCODING m_parent->m_cur_inst->encoding()
+#define __UDB_CONST_GLOBAL(global_name) <%= name_of(:hart, cfg_arch) %><SocType>::global_name
+#define __UDB_MUTABLE_GLOBAL(global_name) m_parent->global_name
+#define __UDB_STRUCT(struct_name) <%= cfg_arch.name.camelize %>_ ## struct_name ## _Struct
+
+// constructor
+<%- fields_for_xlen = fields.select { |f| cfg_arch.possible_xlens.any? { |xlen| f.defined_in_base?(xlen) } } -%>
+template <SocModel SocType>
+<%= name_of(:csr, cfg_arch, csr.name) %><SocType>::<%= name_of(:csr, cfg_arch, csr.name) %>(<%= name_of(:hart, cfg_arch) %><SocType>* parent)
+  : CsrBase(),
+    m_parent(parent)
+    <%- unless fields_for_xlen.empty? -%>,<%- end -%>
+    <%= fields_for_xlen.map { |field| "m_#{field.name}(parent)" }.join(", ") %>
+{
+}
+
+<%- if cfg_arch.multi_xlen? && csr.format_changes_with_xlen? -%>
+template <SocModel SocType>
+<%= name_of(:csr, cfg_arch, csr.name) %><SocType>::ValueType <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_sw_read(const unsigned& xlen) const
+{
+  <%- if csr.has_custom_sw_read? -%>
+  if (xlen == 32) {
+    <%- pruned_ast = csr.pruned_sw_read_ast(32) -%>
+    <%- symtab = csr.fill_symtab(pruned_ast, 32) -%>
+    <%= pruned_ast.gen_cpp(symtab) %>
+    <%- symtab.release -%>
+  } else {
+    udb_assert(xlen == 64, "Bad xlen");
+    <%- pruned_ast = csr.pruned_sw_read_ast(64) -%>
+    <%- symtab = csr.fill_symtab(pruned_ast, 64) -%>
+    <%= pruned_ast.gen_cpp(symtab) %>
+    <%- symtab.release -%>
+  }
+  <%- else -%>
+  <%- if cfg_arch.multi_xlen? && csr.format_changes_with_xlen? -%>
+  return _hw_read(xlen);
+  <%- else -%>
+  return _hw_read();
+  <%- end -%>
+  <%- end -%>
+}
+<%- else -%>
+template <SocModel SocType>
+<%= name_of(:csr, cfg_arch, csr.name) %><SocType>::ValueType <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_sw_read() const
+{
+  <%- if csr.has_custom_sw_read? -%>
+  <%- xlen = cfg_arch.possible_xlens[0] # any xlen will do -%>
+  <%- pruned_ast = csr.pruned_sw_read_ast(xlen) -%>
+  <%- symtab = csr.fill_symtab(pruned_ast, xlen) -%>
+  <%= pruned_ast.gen_cpp(symtab) %>
+  <%- symtab.release -%>
+  <%- else -%>
+  return _hw_read();
+  <%- end -%>
+}
+<%- end -%>
+
+<%- if cfg_arch.multi_xlen? && csr.format_changes_with_xlen? -%>
+template <SocModel SocType>
+void <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_hw_write(const Bits<<%= csr.max_length %>>& value, const unsigned& xlen)
+{
+  if (xlen == 32) {
+    <%- fields_for_xlen.each do |field| -%>
+    <%- next unless field.defined_in_base?(32) -%>
+    <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
+    m_<%= field.name %>._hw_write(extract<<%= field.location(32).begin %>, <%= field.location(32).size %>>(value), xlen);
+    <%- else -%>
+    m_<%= field.name %>._hw_write(extract<<%= field.location(32).begin %>, <%= field.location(32).size %>>(value));
+    <%- end -%>
+    <%- end -%>
+  } else {
+    udb_assert(xlen == 64, "Bad xlen");
+    <%- fields_for_xlen.each do |field| -%>
+    <%- next unless field.defined_in_base?(64) -%>
+    <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
+    m_<%= field.name %>._hw_write(extract<<%= field.location(64).begin %>, <%= field.location(64).size %>>(value), xlen);
+    <%- else -%>
+    m_<%= field.name %>._hw_write(extract<<%= field.location(64).begin %>, <%= field.location(64).size %>>(value));
+    <%- end -%>
+    <%- end -%>
+  }
+}
+<%- else -%>
+template <SocModel SocType>
+void <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_hw_write(const Bits<<%= csr.max_length %>>& value)
+{
+  <%- xlen = cfg_arch.possible_xlens[0] # any valid xlen will work -%>
+  <%- fields_for_xlen.each do |field| -%>
+  m_<%= field.name %>._hw_write(extract<<%= field.location(xlen).begin %>, <%= field.location(xlen).size %>>(value));
+  <%- end -%>
+}
+<%- end -%>
+
+<%- if cfg_arch.multi_xlen? && csr.format_changes_with_xlen? -%>
+template <SocModel SocType>
+bool <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_sw_write(const Bits<<%= csr.max_length %>>& value, const unsigned& xlen) {
+  <%- fields = cfg_arch.fully_configured? ? csr.possible_fields(cfg_arch) : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
+  <%- fields.each do |field| -%>
+  <%- next unless cfg_arch.possible_xlens.any? { |xlen| field.defined_in_base?(xlen) } -%>
+  <%- cfg_arch.possible_xlens.each do |xlen| -%>
+  <%- next unless field.defined_in_base?(xlen) -%>
+  if (xlen == <%= xlen %>) {
+    View<<%= xlen %>> csr_value(value);
+
+    <%- if field.has_custom_sw_write? -%>
+    auto wr_val_fn = [this, &csr_value = std::as_const(csr_value)]() ->
+      PossiblyUnknownBits<<%= field.width(xlen) %>>
+    {
+      <%- pruned_ast = field.pruned_sw_write_ast(xlen) -%>
+      <%- symtab = field.fill_symtab_for_sw_write(xlen, pruned_ast) -%>
+      <%= pruned_ast.gen_cpp(symtab) %>
+      <%- symtab.release -%>
+    };
+    auto wr_val = wr_val_fn();
+    if (wr_val == UNDEFINED_LEGAL_DETERMINISTIC) {
+      m_<%= field.name %>.makeUndefined();
+    } else {
+      <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
+      m_<%= field.name %>._hw_write(wr_val, xlen);
+      <%- else -%>
+      m_<%= field.name %>._hw_write(wr_val);
+      <%- end -%>
+    }
+    <%- else -%>
+    <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
+    m_<%= field.name %>._hw_write(csr_value.<%= field.name %>, xlen);
+    <%- else -%>
+    m_<%= field.name %>._hw_write(csr_value.<%= field.name %>);
+    <%- end -%>
+    <%- end -%>
+  }
+  <%- end -%>
+  <%- end -%>
+  return true;
+}
+<%- else -%>
+template <SocModel SocType>
+bool <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_sw_write(const Bits<<%= csr.max_length %>>& value) {
+  View<<%= cfg_arch.possible_xlens[0] %>> csr_value(value);
+
+  <%- fields = cfg_arch.fully_configured? ? csr.possible_fields(cfg_arch) : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
+  <%- fields.each do |field| -%>
+  <%- next unless cfg_arch.possible_xlens.any? { |xlen| field.defined_in_base?(xlen) } -%>
+  <%- if field.has_custom_sw_write? -%>
+  {
+    auto wr_val_fn = [this, &csr_value = std::as_const(csr_value)]() ->
+      PossiblyUnknownBits<<%= field.width(cfg_arch.possible_xlens[0]) %>>
+    {
+      <%- pruned_ast = field.pruned_sw_write_ast(cfg_arch.possible_xlens[0]) -%>
+      <%- symtab = field.fill_symtab_for_sw_write(cfg_arch.possible_xlens[0], pruned_ast) -%>
+      <%= pruned_ast.gen_cpp(symtab) %>
+      <%- symtab.release -%>
+    };
+    auto wr_val = wr_val_fn();
+    if (wr_val == UNDEFINED_LEGAL_DETERMINISTIC) {
+      m_<%= field.name %>.makeUndefined();
+    } else {
+      m_<%= field.name %>._hw_write(wr_val);
+    }
+  }
+  <%- else -%>
+  m_<%= field.name %>._hw_write(csr_value.<%= field.name %>);
+  <%- end -%>
+  <%- end -%>
+  return true;
+}
+
+<%- end -%>
+
+template <SocModel SocType>
+bool <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::implemented_without_Q_(const ExtensionName& ext) const
+{
+  return <%= csr.defined_by_condition.to_cxx { |ext_name, ext_ver| "(ExtensionName::#{ext_name} != ext) && (m_parent->m_implemented_exts.find(ext) != m_parent->m_implemented_exts.end())" } %>;
+}
+
+#undef __UDB_RUNTIME_PARAM
+#undef __UDB_STATIC_PARAM
+#undef __UDB_CSR_BY_ADDR
+#undef __UDB_CSR_BY_NAME
+#undef __UDB_CSR_FIELD_READ
+#undef __UDB_FUNC_CALL
+#undef __UDB_CONSTEXPR_FUNC_CALL
+#undef __UDB_XLEN
+#undef __UDB_CONST_GLOBAL
+#undef __UDB_MUTABLE_GLOBAL
+#undef __UDB_STRUCT
+#undef __UDB_ENCODING
+
+<%- end -%>
+
+#undef __UDB__FUNC_OBJ
+
+}

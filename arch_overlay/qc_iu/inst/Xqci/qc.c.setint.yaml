@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.c.setint
+long_name: Set interrupt (Register)
+description: |
+  Set interrupt, interrupt number is in `rs1`.
+  Instruction encoded in CI instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqciint
+assembly: " xs1"
+base: 32
+encoding:
+  match: 0001-----0001010
+  variables:
+    - name: rs1
+      location: 11-7
+      not: 0
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  Bits<12> MCLICIP0_ADDR = CSR[qc.mclicip0].address();
+
+  XReg idx = rs1 / 32;
+  XReg bit = rs1 % 32;
+  Csr pre_csr = direct_csr_lookup(MCLICIP0_ADDR + idx);
+  csr_sw_write(pre_csr, csr_sw_read(pre_csr) | (32'b1 << bit));

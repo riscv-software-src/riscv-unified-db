@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.c.mnret
+long_name: Machine NMI Return
+description: |
+  Returns from an NMI in M-mode.
+  Instruction encoded in CI instruction format.
+assembly: ""
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqciint
+access:
+  s: never
+  u: never
+  vs: never
+  vu: never
+base: 32
+encoding:
+  match: "0001100110010010"
+operation(): |
+  XReg qc_mcause_val = CSR[qc.mcause].sw_read();
+  XReg qc_mcause_val_masked = qc_mcause_val & ~(32'b1<<26) & ~(32'b1<<28) & ~(32'b1<<30) & ~(32'b1111<<12) & ~(32'b1111<<20);
+  Bits<1> mnpie_val = (qc_mcause_val >> 28) & 1;
+  Bits<4> mnpil_val = (qc_mcause_val >> 20) & 0xF;
+  CSR[mstatus].MIE = mnpie_val;
+  CSR[mnstatus].NMIE = 1'b1;
+  CSR[qc.mcause].sw_write(qc_mcause_val_masked |
+                          (32'b1<<28) | (mnpie_val`<<26) | (32'b1<<30) |
+                          (mnpil_val `<< 12) | (32'b1111 << 20));
+  if (CSR[mnstatus].MNPP != 2'b11) {
+    CSR[mstatus].MPRV = 0;
+    if (implemented?(ExtensionName::Smdbltrp)) {
+      CSR[mstatush].MDT = 1'b0;
+    }
+  }
+  if (CSR[mnstatus].MNPP == 2'b00) {
+    set_mode(PrivilegeMode::U);
+  } else if (CSR[mnstatus].MNPP == 2'b01) {
+    set_mode(PrivilegeMode::S);
+  } else if (CSR[mnstatus].MNPP == 2'b11) {
+    set_mode(PrivilegeMode::M);
+  }
+  CSR[mnstatus].MNPP = implemented?(ExtensionName::U) ? 2'b00 : 2'b11;
+  $pc = CSR[mnepc].sw_read();

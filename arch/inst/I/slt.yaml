@@ -5,18 +5,18 @@ kind: instruction
 name: slt
 long_name: Set on less than
 description: |
-  Places the value 1 in register `rd` if register `rs1` is less than the value in register `rs2`, where
-  both sources are treated as signed numbers, else 0 is written to `rd`.
+  Places the value 1 in register `xd` if register `xs1` is less than the value in register `xs2`, where
+  both sources are treated as signed numbers, else 0 is written to `xd`.
 definedBy: I
-assembly: xd, xs1, rs2
+assembly: xd, xs1, xs2
 encoding:
   match: 0000000----------010-----0110011
   variables:
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -24,34 +24,44 @@ access:
   vs: always
   vu: always
 data_independent_timing: true
+pseudoinstructions:
+  - when: xs2 == 0
+    to: sltz xd,xs1
+  - when: xs1 == 0
+    to: sgtz xd,xs2
 operation(): |
-  XReg src1 = X[rs1];
-  XReg src2 = X[rs2];
+  XReg src1 = X[xs1];
+  XReg src2 = X[xs2];
 
-  X[rd] = ($signed(src1) < $signed(src2)) ? '1 : '0;
+  X[xd] = ($signed(src1) < $signed(src2)) ? '1 : '0;
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
-    let rs1_val = X(rs1);
-    let rs2_val = X(rs2);
+    let xs1_val = X(xs1);
+    let xs2_val = X(xs2);
     let result : xlenbits = match op {
-      RISCV_ADD  => rs1_val + rs2_val,
-      RISCV_SLT  => zero_extend(bool_to_bits(rs1_val <_s rs2_val)),
-      RISCV_SLTU => zero_extend(bool_to_bits(rs1_val <_u rs2_val)),
-      RISCV_AND  => rs1_val & rs2_val,
-      RISCV_OR   => rs1_val | rs2_val,
-      RISCV_XOR  => rs1_val ^ rs2_val,
+      RISCV_ADD  => xs1_val + xs2_val,
+      RISCV_SLT  => zero_extend(bool_to_bits(xs1_val <_s xs2_val)),
+      RISCV_SLTU => zero_extend(bool_to_bits(xs1_val <_u xs2_val)),
+      RISCV_AND  => xs1_val & xs2_val,
+      RISCV_OR   => xs1_val | xs2_val,
+      RISCV_XOR  => xs1_val ^ xs2_val,
       RISCV_SLL  => if   sizeof(xlen) == 32
-                    then rs1_val << (rs2_val[4..0])
-                    else rs1_val << (rs2_val[5..0]),
+                    then xs1_val << (xs2_val[4..0])
+                    else xs1_val << (xs2_val[5..0]),
       RISCV_SRL  => if   sizeof(xlen) == 32
-                    then rs1_val >> (rs2_val[4..0])
-                    else rs1_val >> (rs2_val[5..0]),
-      RISCV_SUB  => rs1_val - rs2_val,
+                    then xs1_val >> (xs2_val[4..0])
+                    else xs1_val >> (xs2_val[5..0]),
+      RISCV_SUB  => xs1_val - xs2_val,
       RISCV_SRA  => if   sizeof(xlen) == 32
-                    then shift_right_arith32(rs1_val, rs2_val[4..0])
-                    else shift_right_arith64(rs1_val, rs2_val[5..0])
+                    then shift_right_arith32(xs1_val, xs2_val[4..0])
+                    else shift_right_arith64(xs1_val, xs2_val[5..0])
     };
-    X(rd) = result;
+    X(xd) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

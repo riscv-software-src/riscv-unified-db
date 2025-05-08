@@ -6,7 +6,7 @@ name: jal
 long_name: Jump and link
 description: |
   Jump to a PC-relative offset and store the return
-  address in rd.
+  address in xd.
 definedBy: I
 assembly: xd, imm
 encoding:
@@ -16,19 +16,27 @@ encoding:
       location: 31|19-12|20|30-21
       left_shift: 1
       sign_extend: true
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
   u: always
   vs: always
   vu: always
+pseudoinstructions:
+  - when: imm == 0
+    to: j xd
+  - when: xd == x1
+    to: jal imm
 operation(): |
   XReg retrun_addr = $pc + 4;
 
-  jump_halfword($pc + imm);
-  X[rd] = retrun_addr;
+  jump_halfword($pc + $signed(imm));
+  X[xd] = retrun_addr;
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let t : xlenbits = PC + sign_extend(imm);
@@ -39,16 +47,18 @@ sail(): |
         RETIRE_FAIL
       },
       Ext_ControlAddr_OK(target) => {
-        /* Perform standard alignment check */
+        /* Perform standaxd alignment check */
         if bit_to_bool(target[1]) & not(extension("C"))
         then {
           handle_mem_exception(target, E_Fetch_Addr_Align());
           RETIRE_FAIL
         } else {
-          X(rd) = get_next_pc();
+          X(xd) = get_next_pc();
           set_next_pc(target);
           RETIRE_SUCCESS
         }
       }
     }
   }
+
+# SPDX-SnippetEnd

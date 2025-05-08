@@ -5,11 +5,11 @@ kind: csr
 name: mie
 long_name: Machine Interrupt Enable
 address: 0x304
+writable: true
 priv_mode: M
 length: MXLEN
 definedBy: Sm
-description:
-  $copy: "mip.yaml#/description"
+description: "mip.yaml#/description"
 fields:
   SSIE:
     location: 1
@@ -129,7 +129,7 @@ fields:
     description: |
       Enables Local Counter Overflow Interrupts.
 
-      Alias of `sie.LCOFIE` when `mideleg.LCOFI` is set. Otherwise, `sie.LCOFIE` is an independent writeable bit when `mvien.LCOFI` is set or is read-only 0.
+      Alias of `sie.LCOFIE` when `mideleg.LCOFI` is set. Otherwise, `sie.LCOFIE` is an independent writable bit when `mvien.LCOFI` is set or is read-only 0.
 
       Alias of `vsip.LCOFIE` when `hideleg.LCOFI` is set. Otherwise, `vsip.LCOFIE` is read-only 0.
     type: RW

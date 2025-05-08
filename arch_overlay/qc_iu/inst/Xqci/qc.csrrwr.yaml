@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.csrrwr
+long_name: Atomic Read/Write CSR (Register)
+description: |
+  Atomically swap values in the CSRs and integer registers.
+  Read the old value of the CSR, zero-extends the value to `XLEN` bits,
+  and then write it to integer register `rd`.
+  The CSR number is in `rs2` register.
+  The initial value in `rs1` is written to the CSR.
+  If `rd`=`x0`, then the instruction shall not read the CSR and shall not
+  cause any of the side effects that might occur on a CSR read.
+  Instruction encoded in R instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqcicsr
+assembly: xd, xs1, xs2
+base: 32
+encoding:
+  match: 1000110----------000-----1110011
+  variables:
+    - name: rs2
+      location: 24-20
+      not: 0
+    - name: rs1
+      location: 19-15
+    - name: rd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  XReg csr_addr = X[rs2];
+  Csr csr = direct_csr_lookup(csr_addr);
+  if (rd != 0) {
+    X[rd] = csr_sw_read(csr);
+  }
+  # writes the value in X[rs1] to the CSR,
+  # performing any WARL transformations first
+  csr_sw_write(csr, X[rs1]);

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "concurrent"
+
 require_relative "type"
 
 module Idl
@@ -7,11 +9,12 @@ module Idl
   class Var
     attr_reader :name, :type, :value
 
-    def initialize(name, type, value = nil, decode_var: false, template_index: nil, function_name: nil)
+    def initialize(name, type, value = nil, decode_var: false, template_index: nil, function_name: nil, param: false)
       @name = name
       raise ArgumentError, "Expecting a Type, got #{type.class.name}" unless type.is_a?(Type)
 
       @type = type
+      @type.qualify(:template_var)
       @type.freeze
       @value = value
       raise "unexpected" unless decode_var.is_a?(TrueClass) || decode_var.is_a?(FalseClass)
@@ -19,10 +22,11 @@ module Idl
       @decode_var = decode_var
       @template_index = template_index
       @function_name = function_name
+      @param = param
     end
 
     def hash
-      [@name, @type, @value, @decode_var, @template_index, @function_name].hash
+      [@name, @type, @value, @decode_var, @template_index, @function_name, @param].hash
     end
 
     def to_s
@@ -34,7 +38,10 @@ module Idl
         name,
         type.clone,
         value&.clone,
-        decode_var: @decode_var
+        decode_var: @decode_var,
+        template_index: @template_index,
+        function_name: @function_name,
+        param: @param
       )
     end
 
@@ -46,11 +53,17 @@ module Idl
       @decode_var
     end
 
+    def param?
+      @param
+    end
+
     # @param function_name [#to_s] A function name
     # @return [Boolean] whether or not this variable is a function template argument from a call site for the function 'function_name'
     def template_value_for?(function_name)
       !@template_index.nil? && (function_name.to_s == @function_name)
     end
+
+    def template_value? = !@template_index.nil?
 
     # @return [Integer] the template value position
     # @raise if Var is not a template value
@@ -90,20 +103,16 @@ module Idl
     end
 
     def initialize(cfg_arch)
-      raise "Must provide cfg_arch" if cfg_arch.nil?
-      # TODO: XXX: Put this check back in when replaced by Design class.
-      #            See https://github.com/riscv-software-src/riscv-unified-db/pull/371
-      #raise "The cfg_arch must be a ConfiguredArchitecture but is a #{cfg_arch.class}" unless (cfg_arch.is_a?(ConfiguredArchitecture) || cfg_arch.is_a?(MockConfiguredArchitecture))
-
+      @mutex = Thread::Mutex.new
       @cfg_arch = cfg_arch
       @mxlen = cfg_arch.unconfigured? ? nil : cfg_arch.mxlen
       @callstack = [nil]
       @scopes = [{
         "X" => Var.new(
           "X",
-          Type.new(:array, sub_type: XregType.new(@mxlen.nil? ? :unknown : @mxlen), width: 32, qualifiers: [:global])
+          Type.new(:array, sub_type: XregType.new(@mxlen.nil? ? 64 : @mxlen), width: 32, qualifiers: [:global])
         ),
-        "XReg" => XregType.new(@mxlen.nil? ? :unknown : @mxlen),
+        "XReg" => XregType.new(@mxlen.nil? ? 64 : @mxlen),
         "Boolean" => Type.new(:boolean),
         "true" => Var.new(
           "true",
@@ -126,7 +135,7 @@ module Idl
         # could already be present...
         existing_sym = get(param_with_value.name)
         if existing_sym.nil?
-          add!(param_with_value.name, Var.new(param_with_value.name, type, param_with_value.value))
+          add!(param_with_value.name, Var.new(param_with_value.name, type, param_with_value.value, param: true))
         else
           unless existing_sym.type.equal_to?(type) && existing_sym.value == param_with_value.value
             raise DuplicateSymError, "Definition error: Param #{param.name} is defined by multiple extensions and is not the same definition in each"
@@ -137,12 +146,12 @@ module Idl
       # now add all parameters, even those not implemented
       cfg_arch.params_without_value.each do |param|
         if param.exts.size == 1
-          add!(param.name, Var.new(param.name, param.idl_type.clone.make_const))
+          add!(param.name, Var.new(param.name, param.idl_type.clone.make_const, param: true))
         else
           # could already be present...
           existing_sym = get(param.name)
           if existing_sym.nil?
-            add!(param.name, Var.new(param.name, param.idl_type.clone.make_const))
+            add!(param.name, Var.new(param.name, param.idl_type.clone.make_const, param: true))
           else
             unless existing_sym.type.equal_to?(param.idl_type)
               raise "Definition error: Param #{param.name} is defined by multiple extensions and is not the same definition in each"
@@ -164,7 +173,7 @@ module Idl
       @frozen_hash = [@scopes.hash, @cfg_arch.hash].hash
 
       # set up the global clone that be used as a mutable table
-      @global_clone_pool = []
+      @global_clone_pool = Concurrent::Array.new
 
       5.times do
         copy = SymbolTable.allocate
@@ -172,8 +181,9 @@ module Idl
         copy.instance_variable_set(:@callstack, [@callstack[0]])
         copy.instance_variable_set(:@cfg_arch, @cfg_arch)
         copy.instance_variable_set(:@mxlen, @mxlen)
+        copy.instance_variable_set(:@mutex, @mutex)
         copy.instance_variable_set(:@global_clone_pool, @global_clone_pool)
-        copy.instance_variable_set(:@in_use, false)
+        copy.instance_variable_set(:@in_use, Concurrent::Semaphore.new(1))
         @global_clone_pool << copy
       end
 
@@ -291,6 +301,16 @@ module Idl
       @scopes.last[name] = var
     end
 
+    # delete a new symbol at the outermost scopea
+    #
+    # @param name [#to_s] Symbol name
+    # @param var [Object] Symbol object (usually a Var or a Type)
+    def del(name)
+      raise "No symbol #{name} at outer scope" unless @scopes.last.key?(name)
+
+      @scopes.last.delete(name)
+    end
+
     # add to the scope above the tail, and make sure name is unique at that scope
     def add_above!(name, var)
       raise "There is only one scope" if @scopes.size <= 1
@@ -334,22 +354,20 @@ module Idl
       # raise "global clone isn't at global scope" unless @global_clone.at_global_scope?
 
       @global_clone_pool.each do |symtab|
-        unless symtab.in_use?
-          symtab.instance_variable_set(:@in_use, true)
-          return symtab
-        end
+        return symtab if symtab.instance_variable_get(:@in_use).try_acquire
       end
 
       # need more!
-      warn "Allocating more SymbolTables"
+      $logger.info "Allocating more SymbolTables"
       5.times do
         copy = SymbolTable.allocate
         copy.instance_variable_set(:@scopes, [@scopes[0]])
         copy.instance_variable_set(:@callstack, [@callstack[0]])
         copy.instance_variable_set(:@cfg_arch, @cfg_arch)
         copy.instance_variable_set(:@mxlen, @mxlen)
+        copy.instance_variable_set(:@mutex, @mutex)
         copy.instance_variable_set(:@global_clone_pool, @global_clone_pool)
-        copy.instance_variable_set(:@in_use, false)
+        copy.instance_variable_set(:@in_use, Concurrent::Semaphore.new(1))
         @global_clone_pool << copy
       end
 
@@ -357,16 +375,17 @@ module Idl
     end
 
     def release
-      pop while levels > 1
-      raise "Clone isn't back in global scope" unless at_global_scope?
-      raise "You are calling release on the frozen SymbolTable" if frozen?
-      raise "??" if @in_use.nil?
-      raise "Double release detected" unless @in_use
+      @mutex.synchronize do
+        pop while levels > 1
+        raise "Clone isn't back in global scope" unless at_global_scope?
+        raise "You are calling release on the frozen SymbolTable" if frozen?
+        raise "Double release detected" unless in_use?
 
-      @in_use = false
+        @in_use.release
+      end
     end
 
-    def in_use? = @in_use
+    def in_use? = @in_use.available_permits.zero?
 
     # @return [SymbolTable] a deep clone of this SymbolTable
     def deep_clone(clone_values: false, freeze_global: true)

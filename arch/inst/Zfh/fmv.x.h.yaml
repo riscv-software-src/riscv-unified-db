@@ -6,7 +6,7 @@ name: fmv.x.h
 long_name: Move half-precision value from floating-point to integer register
 definedBy:
   anyOf: [Zfh, Zfhmin, Zhinx]
-assembly: rd, fs1
+assembly: fd, fs1
 description: |
   Moves the half-precision value in floating-point register rs1 represented in IEEE 754-2008
   encoding to the lower 16 bits of integer register rd.
@@ -33,6 +33,9 @@ operation(): |
 
   X[rd] = sext(f[fs1][15:0], 16);
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val_X            = X(rs1);
@@ -40,3 +43,5 @@ sail(): |
     F(rd) = nan_box (rd_val_H);
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

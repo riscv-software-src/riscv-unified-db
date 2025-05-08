@@ -7,7 +7,7 @@ long_name: Carry-less multiply (high-part)
 description: |
   `clmulh` produces the upper half of the 2*XLEN carry-less product
 definedBy:
-  anyOf: [B, Zbc, Zbkc, Zk, Zkn, Zks]
+  anyOf: [Zbc, Zbkc]
 assembly: xd, xs1, xs2
 encoding:
   match: 0000101----------011-----0110011
@@ -41,6 +41,9 @@ operation(): |
 
   X[rd] = output;
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val = X(rs1);
@@ -51,3 +54,5 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

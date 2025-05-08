@@ -1,0 +1,104 @@
+
+#include <algorithm>
+
+#include "udb/bits.hpp"
+#include "udb/db_data.hxx"
+#include "udb/cfgs/<%= cfg_arch.name %>/params.hxx"
+
+namespace udb {
+  template <unsigned N, bool Signed>
+  void to_json(const nlohmann::json& j, _Bits<N, Signed>& b) {
+    j = nlohmann::json { b.get() };
+  }
+
+  template <unsigned N, bool Signed>
+  void from_json(const nlohmann::json& j, _Bits<N, Signed>& b) {
+    b = _Bits<N, Signed>{j.get<typename _Bits<N, Signed>::StorageType>()};
+  }
+}
+
+void udb::<%= name_of(:params, cfg_arch) %>::set_param(const std::string& param_name, const nlohmann::json& json)
+{
+  <%- i = 0 -%>
+  <%- cfg_arch.params_without_value.each do |param| -%>
+  <%= i.zero? ? "" : "else "%>if (param_name == "<%= param.name %>") {
+    <%= param.name %> = json;
+  }
+  <%- i += 1 -%>
+  <%- end -%>
+  else {
+    throw Error(fmt::format("{} is not a settable parameter", param_name));
+  }
+}
+
+void udb::<%= name_of(:params, cfg_arch) %>::set_param_default(const std::string& param_name)
+{
+  <%- i = 0 -%>
+  <%- cfg_arch.params_without_value.each do |param| -%>
+  <%- unless param.default.nil? -%>
+  <%= i.zero? ? "" : "else "%>if (param_name == "<%= param.name %>") {
+    <%- if param.default.is_a?(Integer) -%>
+    <%= param.name %> = <%= param.default %>_b;
+    <%- else -%>
+    <%= param.name %> = <%= param.default %>;
+    <%- end -%>
+  }
+  <%- i += 1 -%>
+  <%- end -%>
+  <%- end -%>
+  else {
+    throw Error(fmt::format("Missing required parameter '{}'", param_name));
+  }
+}
+
+static bool builtin_param(const std::string& param_name)
+{
+  <%- cfg_arch.params_with_value.each do |param| -%>
+  if (param_name == "<%= param.name %>") {
+    return true;
+  }
+  <%- end -%>
+  return false;
+}
+
+void udb::<%= name_of(:params, cfg_arch) %>::init(const nlohmann::json& cfg)
+{
+  nlohmann::json params = cfg["params"];
+  nlohmann::json exts = cfg["implemented_extensions"];
+
+  // first, check that any provided built-in parameters match the built-in value
+  <%- cfg_arch.params_with_value.each do |param| -%>
+  if (params.contains("<%= param.name %>")) {
+    if (params["<%= param.name %>"].get<<%= param.idl_type.to_cxx_no_qualifiers %>>() != <%= param.value.to_cxx %>) {
+      throw Error("Parameter '<%= param.name %>' must be '<%= param.value %>'");
+    }
+  };
+  <%- end -%>
+
+  std::vector<std::string> assigned_params;
+  // now check that we have values for all required non-built-in parameters
+  for (auto ext : exts) {
+    for (auto param_name : DbData::params_for(ext[0].get<std::string>(), ext[1].get<std::string>())) {
+      if (builtin_param(param_name)) {
+        continue;
+      }
+      if (!params.contains(param_name)) {
+        set_param_default(param_name);
+      } else {
+        set_param(param_name, params[param_name]);
+      }
+      assigned_params.emplace_back(param_name);
+    }
+  }
+
+  // now make sure there isn't a parameter in the config that doesn't belong
+  for (auto& param : params.items()) {
+    bool was_assigned =
+      std::find(assigned_params.begin(), assigned_params.end(), param.key()) != assigned_params.end();
+    bool is_builtin = builtin_param(param.key());
+
+    if (!(was_assigned || is_builtin)) {
+      throw Error(fmt::format("Parameter '{}' is not a parameter for model '<%= cfg_arch.name %>'", param.key()));
+    }
+  }
+}

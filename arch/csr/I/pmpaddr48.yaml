@@ -41,7 +41,7 @@ fields:
 sw_read(): |
   # when the mode is NAPOT and PMP_GRANULARITY >= 16,
   # bits (PMP_GRANULARITY-4):0 must read as ones
-  if (XLEN == 32) {
+  if (MXLEN == 32) {
     if ((PMP_GRANULARITY >= 16) &&
         (CSR[pmpcfg12].pmp48cfg[4] == 1)) {
       return CSR[pmpaddr48].ADDR | {PMP_GRANULARITY-3{1'b1}};

@@ -16,9 +16,34 @@ class Schema
     # @return [Hash] Hash representation of the JSON Schema
     def to_h = @schema_hash
 
+    def rb_obj_to_jsonschema_type(rb_type)
+      case rb_type
+      when String
+        "string"
+      when Integer
+        "integer"
+      when Number
+        "number"
+      when Array
+        "array"
+      when Hash
+        "object"
+      else
+        raise "TODO: unsupported const type for '#{@schema_hash['const']}'"
+      end
+    end
+    private :rb_obj_to_jsonschema_type
+
     # @return [String] Human-readable type of the schema (e.g., array, string, integer)
     def type_pretty
-      @schema_hash["type"]
+      if @schema_hash.key?("const")
+        rb_obj_to_jsonschema_type(@schema_hash["const"])
+      elsif @schema_hash.key?("enum") && !@schema_hash["enum"].empty? && @schema_hash["enum"].all? { |elem| elem.class == @schema_hash["enum"][0].class }
+        rb_obj_to_jsonschema_type(@schema_hash["enum"][0])
+      else
+        raise "Missing type information for '#{@schema_hash}'" unless @schema_hash.key?("type")
+        @schema_hash["type"]
+      end
     end
 
     # @return [String] A human-readable description of the schema
@@ -142,6 +167,48 @@ class Schema
       raise "Schema is not a single value" unless single_value?
 
       @schema_hash["const"]
+    end
+
+    # @return [Boolean] if the maximum value of the schema is known, i.e., is a restricted integer
+    def max_val_known?
+      to_idl_type.kind == :bits && \
+        (@schema_hash.key?("const") || \
+         @schema_hash.key?("maximum") || \
+         @schema_hash.key?("enum"))
+    end
+
+    # @return [Boolean] if the minimum value of the schema is known, i.e., is a restricted integer
+    def min_val_known?
+      to_idl_type.kind == :bits && \
+        (@schema_hash.key?("const") || \
+         @schema_hash.key?("minimum") || \
+         @schema_hash.key?("enum"))
+    end
+
+    # @return [Integer] The maximum value the schema allows. Only valid if #max_val_known? is true
+    def max_val
+      if @schema_hash.key?("const")
+        @schema_hash["const"]
+      elsif @schema_hash.key?("enum")
+        @schema_hash["enum"].max
+      elsif @schema_hash.key?("maximum")
+        @schema_hash["maximum"]
+      else
+        raise "unexpected"
+      end
+    end
+
+    # @return [Integer] The minimum value the schema allows. Only valid if #min_val_known? is true
+    def min_val
+      if @schema_hash.key?("const")
+        @schema_hash["const"]
+      elsif @schema_hash.key?("enum")
+        @schema_hash["enum"].min
+      elsif @schema_hash.key?("minimum")
+        @schema_hash["minimum"]
+      else
+        raise "unexpected"
+      end
     end
 
     def is_power_of_two?(num)

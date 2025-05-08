@@ -7,3 +7,13 @@
 [submodule "ext/riscv-isa-manual"]
 	path = ext/riscv-isa-manual
 	url = https://github.com/riscv/riscv-isa-manual
+[submodule "ext/llvm-project"]
+	path = ext/llvm-project
+	url = https://github.com/llvm/llvm-project.git
+	branch = main
+[submodule "ext/riscv-tests"]
+	path = ext/riscv-tests
+	url = https://github.com/riscv-software-src/riscv-tests.git
+[submodule "ext/rbi-central"]
+	path = ext/rbi-central
+	url = https://github.com/Shopify/rbi-central

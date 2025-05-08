@@ -1,0 +1,353 @@
+#pragma once
+
+#include <algorithm>
+
+#include <cstdint>
+#include <string>
+
+#include "udb/util.hpp"
+#include "udb/bits.hpp"
+#include "udb/csr.hpp"
+#include "udb/cpp_exceptions.hpp"
+
+<%- csrs = cfg_arch.not_prohibited_csrs -%>
+
+namespace udb {
+  template <SocModel SocType>
+  class <%= name_of(:hart, cfg_arch) %>;
+
+  <%- csrs.each do |csr| -%>
+  <%- next unless cfg_arch.possible_xlens.any? { |xlen| csr.defined_in_base?(xlen) } -%>
+  <%- fields = cfg_arch.fully_configured? ? csr.possible_fields(cfg_arch) : csr.fields.select { |field| field.exists_in_cfg?(cfg_arch) } -%>
+
+  // Field classes for <%= csr.name %>
+
+  #define __UDB_RUNTIME_PARAM(param_name) m_hart->m_params.param_name
+
+  <%- fields.each do |field| -%>
+  <%- next unless cfg_arch.possible_xlens.any? { |xlen| field.defined_in_base?(xlen) } -%>
+  <%- field_base = field.defined_in_all_bases? ? cfg_arch.possible_xlens[0] : (field.defined_in_base32? ? 32 : 64) -%>
+  template <SocModel SocType>
+  class <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %> : public CsrFieldBase {
+  public:
+    <%- max_width = cfg_arch.possible_xlens.map { |xlen| field.defined_in_base?(xlen) ? field.location(xlen).size : 0 }.max -%>
+    using ValueType = PossiblyUnknownBits<<%= max_width %>>;
+
+    // constructor
+    <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %>(<%= name_of(:hart, cfg_arch) %><SocType>* hart)
+      : m_undefined(<%= field.reset_value.is_a?(String) ? true : false %>),
+        m_hart(hart),
+      <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
+        m_location_32(<%= "#{field.location(32).end}, #{field.location(32).begin}" %>),
+        m_location_64(<%= "#{field.location(64).end}, #{field.location(64).begin}" %>)
+      <%- else -%>
+        m_location(<%= "#{field.location(field_base).end}, #{field.location(field_base).begin}" %>)
+      <%- end -%>
+    {}
+
+    const CsrFieldLocation location(const unsigned& xlen) const override {
+      <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
+      return xlen == 32 ? m_location_32 : m_location_64;
+      <%- else -%>
+      return m_location;
+      <%- end -%>
+    }
+    <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
+    const CsrFieldLocation _location(const unsigned& xlen) const {
+      return xlen == 32 ? m_location_32 : m_location_64;
+    }
+    <%- else -%>
+    const CsrFieldLocation _location() const { return m_location; }
+    <%- end -%>
+
+    void reset() override;
+
+    uint64_t hw_read(const unsigned& xlen) const override {
+      if (m_undefined) {
+        return 0; // TODO!!
+        // throw UndefinedValueError("<%= field.csr.name %>.<%= field.name %> has an undefined value");
+      }
+      return hw_read(m_value, xlen);
+    }
+    ValueType _hw_read() const {
+      if (m_undefined) {
+        return 0; // TODO!!
+        // throw UndefinedValueError("<%= field.csr.name %>.<%= field.name %> has an undefined value");
+      }
+      return m_value;
+    }
+    uint64_t hw_read(const uint64_t& csr_value, const unsigned& xlen) const override {
+      <%- if cfg_arch.multi_xlen? && field.defined_in_all_bases? -%>
+      static constexpr uint64_t mask32 = 0x<%= (((1 << field.location(32).size) - 1) << field.location(32).begin).to_s(16) %>ull;
+      static constexpr unsigned shift32 = <%= field.location(32).begin %>;
+      static constexpr uint64_t mask64 = 0x<%= (((1 << field.location(64).size) - 1) << field.location(64).begin).to_s(16) %>ull;
+      static constexpr unsigned shift64 = <%= field.location(64).begin %>;
+      return (xlen == 32) ? (csr_value & mask32) >> shift32 : (csr_value & mask64) >> shift64;
+      <%- else -%>
+      static constexpr uint64_t mask = 0x<%= (((1 << field.location(field_base).size) - 1) << field.location(field_base).begin).to_s(16) %>ull;
+      static constexpr unsigned shift = <%= field.location(field_base).begin %>;
+      return (csr_value & mask) >> shift;
+      <%- end -%>
+    }
+
+    // uint64_t sw_read(const unsigned& xlen) const override {
+    //   <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
+    //   return _sw_read(xlen);
+    //   <%- else -%>
+    //   return _sw_read();
+    //   <%- end -%>
+    // }
+    // <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
+    // uint64_t _sw_read(const unsigned& xlen) const {
+    //   if (m_undefined) {
+    //     throw UndefinedValueError("<%= field.csr.name %>.<%= field.name %> has an undefined value");
+    //   }
+    //   <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
+    //   if (xlen == 32) {
+    //     constexpr static ValueType mask = 0x<%= ((1 << field.location(32).size) - 1).to_s(16) %>ull;
+    //     return m_value & mask;
+    //   } else {
+    //     constexpr static ValueType mask = 0x<%= ((1 << field.location(64).size) - 1).to_s(16) %>ull;
+    //     return m_value & mask;
+    //   }
+    //   <%- else -%>
+    //   return m_value;
+    //   <%- end -%>
+    // }
+    // <%- else -%>
+    // uint64_t _sw_read() const { return m_value; }
+    // <%- end -%>
+
+    void hw_write(const uint64_t &field_write_value, const unsigned& xlen) override {
+      <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
+      return _hw_write(field_write_value, xlen);
+      <%- else -%>
+      return _hw_write(field_write_value);
+      <%- end -%>
+    }
+    <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
+    void _hw_write(const ValueType &field_write_value, const unsigned& xlen) {
+      if (xlen == 32) {
+        static constexpr ValueType mask = 0x<%= ((1 << field.location(32).size) - 1).to_s(16) %>ull;
+        m_value = field_write_value & mask;
+        m_undefined = false;
+      } else {
+        static constexpr ValueType mask = 0x<%= ((1 << field.location(64).size) - 1).to_s(16) %>ull;
+        m_value = field_write_value & mask;
+        m_undefined = false;
+      }
+    }
+    <%- else -%>
+    void _hw_write(const ValueType &field_write_value) {
+      m_value = field_write_value;
+      m_undefined = false;
+    }
+    <%- end -%>
+
+    // void sw_write(const uint64_t &field_write_value, const unsigned& xlen) override {
+    //   <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
+    //   return _sw_write(field_write_value, xlen);
+    //   <%- else -%>
+    //   return _sw_write(field_write_value);
+    //   <%- end -%>
+    // }
+    // <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
+    // void _sw_write(const ValueType &field_write_value, const unsigned& xlen);
+    // <%- else -%>
+    // void _sw_write(const ValueType &field_write_value);
+    // <%- end -%>
+
+    void makeUndefined() { m_undefined = true; }
+
+    CsrFieldType type(const unsigned& xlen) const override;
+
+  private:
+    <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
+    const CsrFieldLocation m_location_32;
+    const CsrFieldLocation m_location_64;
+    <%- else -%>
+    const CsrFieldLocation m_location;
+    <%- end -%>
+    ValueType m_value;
+    bool m_undefined;
+    <%= name_of(:hart, cfg_arch) %><SocType>* m_hart;
+  };
+  <%- end -%>
+
+  // Csr view
+  template <unsigned XLEN>
+  class <%= name_of(:csr, cfg_arch, csr.name) %>View;
+
+  <%- cfg_arch.possible_xlens.each do |xlen| -%>
+  <%- next unless csr.defined_in_base?(xlen) -%>
+  template<>
+  class <%= name_of(:csr, cfg_arch, csr.name) %>View<<%= xlen %>> : public Bitfield<<%= csr.length(xlen) %>>
+  {
+    public:
+    <%= name_of(:csr, cfg_arch, csr.name) %>View() = default;
+    <%= name_of(:csr, cfg_arch, csr.name) %>View(const Bits<<%= csr.length(xlen) %>>& value)
+      : Bitfield<<%= csr.length(xlen) %>>(value)
+      <%= csr.fields.select { |field| field.defined_in_base?(xlen) }.map { |field| ", #{field.name}(*this)" }.join("\n#{' ' * 8}") %>
+    {}
+
+    <%- csr.fields.each do |field| -%>
+    <%- next unless field.defined_in_base?(xlen) -%>
+    BitfieldMember<<%= csr.length(xlen) %>, <%= field.location(xlen).begin %>, <%= field.location(xlen).size %>> <%= field.name %>;
+    <%- end -%>
+  };
+  <%- end -%>
+
+  // Csr class
+  template <SocModel SocType>
+  class <%= name_of(:csr, cfg_arch, csr.name) %> : public CsrBase {
+    <%- fields_for_xlen = fields.select { |f| cfg_arch.possible_xlens.any? { |xlen| f.defined_in_base?(xlen) } } -%>
+    <%- fields_for_xlen32 = fields.select { |f| f.defined_in_base32? } -%>
+    <%- fields_for_xlen64 = fields.select { |f| f.defined_in_base64? } -%>
+    <%- fields_for_xlen.each do |field| -%>
+    friend class <%= name_of(:csr_field, cfg_arch, csr.name, field.name ) -%><SocType>;
+    <%- end -%>
+
+    public:
+    template <unsigned XLEN>
+    using View = <%= name_of(:csr, cfg_arch, csr.name) %>View<XLEN>;
+
+    using ValueType = PossiblyUnknownBits<<%= csr.max_length %>>;
+
+    public:
+    // constructor
+    <%= name_of(:csr, cfg_arch, csr.name) %>(<%= name_of(:hart, cfg_arch) %><SocType>* parent);
+
+    unsigned address() const override { return <%= csr.address %>; }
+    static constexpr unsigned _address() { return <%= csr.address %>; }
+    const std::string name() const override { return "<%= csr.name %>"; }
+    PrivilegeMode mode() const override { return PrivilegeMode::<%= csr.priv_mode %>; }
+    bool writable() const override { return <%= csr.writable %>; }
+
+    void reset() override {
+      <%- fields_for_xlen.each do |field| -%>
+      m_<%= field.name %>.reset();
+      <%- end -%>
+    }
+
+    uint64_t hw_read(const unsigned& xlen) const override {
+      <%- if cfg_arch.multi_xlen? && csr.format_changes_with_xlen? -%>
+      return _hw_read(xlen);
+      <%- else -%>
+      return _hw_read();
+      <%- end -%>
+    }
+
+    <%- if cfg_arch.multi_xlen? && csr.format_changes_with_xlen? -%>
+    ValueType _hw_read(const unsigned& xlen) const {
+      if (xlen == 32) {
+        <%-
+          field_cpp = fields_for_xlen32.map do |field|
+            if field.dynamic_location?
+              "((m_#{field.name}._hw_read() & 0x#{((1 << field.location(32).size) - 1).to_s(16)}).template sll<#{field.location(32).begin}>())"
+            else
+              "(m_#{field.name}._hw_read().template sll<#{field.location(32).begin}>())"
+            end
+          end
+        -%>
+        return <%= field_cpp.empty? ? 0 : field_cpp.join(" | ") %>;
+      } else {
+        udb_assert(xlen == 64, "Bad xlen");
+        <%-
+          field_cpp = fields_for_xlen32.map do |field|
+            if field.dynamic_location?
+              "((m_#{field.name}._hw_read() & 0x#{((1 << field.location(64).size) - 1).to_s(16)}).template sll<#{field.location(64).begin}>())"
+            else
+              "(m_#{field.name}._hw_read().template sll<#{field.location(64).begin}>())"
+            end
+          end
+        -%>
+        return <%= field_cpp.empty? ? 0 : field_cpp.join(" | ") %>;
+      }
+    }
+    <%- else -%>
+    ValueType _hw_read() const {
+      <%-
+        xlen = cfg_arch.possible_xlens[0] # any possible xlen will do
+        field_cpp = fields_for_xlen.map do |field|
+          if field.dynamic_location?
+            "((m_#{field.name}._hw_read() & 0x#{((1 << field.location(xlen).size) - 1).to_s(16)}).template sll<#{field.location(xlen).begin}>())"
+          else
+            "(m_#{field.name}._hw_read().template sll<#{field.location(xlen).begin}>())"
+          end
+        end
+      -%>
+      return <%= field_cpp.empty? ? 0 : field_cpp.join(" | ") %>;
+    }
+    <%- end -%>
+
+    // Generic sw_read that always returns 64 bits
+    // Users that only know this is a CsrBase must use this function
+    uint64_t sw_read(const unsigned& xlen) const override {
+      <%- if cfg_arch.multi_xlen? && csr.format_changes_with_xlen? -%>
+      return _sw_read(xlen);
+      <%- else -%>
+      return _sw_read();
+      <%- end -%>
+    }
+
+    // Specific sw_read that returns the correct Bits<<%= csr.max_length %>> type.
+    // This isn't accessible to CsrBase
+    <%- if cfg_arch.multi_xlen? && csr.format_changes_with_xlen? -%>
+    ValueType _sw_read(const unsigned& xlen) const;
+    <%- else -%>
+    ValueType _sw_read() const;
+    <%- end -%>
+
+    void hw_write(const uint64_t& value, const unsigned& xlen) override {
+      <%- if cfg_arch.multi_xlen? && csr.format_changes_with_xlen? -%>
+      _hw_write(value, xlen);
+      <%- else -%>
+      _hw_write(value);
+      <%- end -%>
+    }
+
+    <%- if cfg_arch.multi_xlen? && csr.format_changes_with_xlen? -%>
+    void _hw_write(const Bits<<%= csr.max_length %>>& value, const unsigned& xlen);
+    <%- else -%>
+    void _hw_write(const Bits<<%= csr.max_length %>>& value);
+    <%- end -%>
+
+
+    // Generic sw_write that takes a 64 bit value
+    // Users that only know this is a CsrBase must use this function
+    bool sw_write(const uint64_t& value, const unsigned& xlen) override {
+      <%- if cfg_arch.multi_xlen? && csr.format_changes_with_xlen? -%>
+      return _sw_write(value, xlen);
+      <%- else -%>
+      return _sw_write(value);
+      <%- end -%>
+    }
+
+    // Specific sw_write that takes the correct Bits<<%= csr.max_length %>> type.
+    // This isn't accessible to CsrBase
+    <%- if cfg_arch.multi_xlen? && csr.format_changes_with_xlen? -%>
+    bool _sw_write(const Bits<<%= csr.max_length %>>& value, const unsigned& xlen);
+    <%- else -%>
+    bool _sw_write(const Bits<<%= csr.max_length %>>& value);
+    <%- end -%>
+
+    bool implemented_without_Q_(const ExtensionName&) const override;
+
+    <%- fields_for_xlen.each do |field| %>
+    <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %><SocType>& <%= field.name %>() { return m_<%= field.name %>; }
+    <%- end -%>
+
+  private:
+    <%= name_of(:hart, cfg_arch) %><SocType>* m_parent;
+    <%- fields_for_xlen.each do |field| %>
+    <%= name_of(:csr_field, cfg_arch, csr.name, field.name) %><SocType> m_<%= field.name %>;
+    <%- end -%>
+  };
+  #undef __UDB_RUNTIME_PARAM
+  <%- end -%>
+}
+
+#include "udb/cfgs/<%= cfg_arch.name %>/hart.hxx"
+#include "udb/inst.hpp"
+
+#include "udb/cfgs/<%= cfg_arch.name %>/csrs_impl.hxx"

@@ -1,0 +1,12 @@
+=== Related Specifications
+
+[cols="2,2,3,3,3"]
+|===
+| Certificate Model | TSC Profile | Unpriv ISA Manual | Priv ISA Manual | Debug Manual
+
+| <%= proc_cert_model.name %>
+| <%= proc_cert_model.tsc_profile_release.nil? ? "No profile" : proc_cert_model.tsc_profile_release.marketing_name %>
+| <%= proc_cert_model.unpriv_isa_manual_revision %>
+| <%= proc_cert_model.priv_isa_manual_revision %>
+| <%= proc_cert_model.debug_manual_revision %>
+|===

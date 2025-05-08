@@ -1,0 +1,48 @@
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.addsat
+long_name: Saturating signed addition
+description: |
+  Add signed values `rs1` and `rs2`, saturate the signed result, and write to `rd`.
+  Instruction encoded in R instruction format
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqcia
+base: 32
+encoding:
+  match: 0001110----------011-----0001011
+  variables:
+    - name: rs1
+      location: 19-15
+      not: 0
+    - name: rs2
+      location: 24-20
+      not: 0
+    - name: rd
+      location: 11-7
+      not: 0
+assembly: " xd, xs1, xs2"
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  Bits<xlen()+1> sum = X[rs1] `+ X[rs2];
+  Bits<xlen()+1> most_negative_number = {2'b11,{(xlen()-1){1'b0}}};
+  Bits<xlen()+1> most_positive_number = {2'b00,{(xlen()-1){1'b1}}};
+  # overflow occurs if the operands are the same sign and the result is a different sign
+  if (X[rs1][xlen()-1] == X[rs2][xlen()-1]) {
+    if (sum[xlen()-1] != X[rs1][xlen()-1]) {
+      if ($signed(X[rs1]) < 0) {
+        sum = most_negative_number;
+      } else {
+        sum = most_positive_number;
+      }
+    }
+  }
+  # otherwise, overflow did not occur
+  X[rd] = sum[(xlen() - 1):0];

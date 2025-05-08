@@ -3,19 +3,19 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: c.ldsp
-long_name: Stack-pointer based load doubleword to even/odd register pair
+long_name: Stack-pointer based load doublewoxd to even/odd register pair
 description: |
-  Loads stack-pointer relative 64-bit value into registers rd and rd+1. It computes its effective
+  Loads stack-pointer relative 64-bit value into registers xd and xd+1. It computes its effective
   address by adding the zero-extended offset, scaled by 8, to the stack pointer, sp. It expands to ld
-  rd, offset(sp). C.LDSP is only valid when rd≠x0; the code points with rd=x0 are reserved.
+  xd, offset(sp). C.LDSP is only valid when xd≠x0; the code points with xd=x0 are reserved.
 definedBy: Zclsd
-assembly: rd, offset(sp)
+assembly: xd, offset(sp)
 encoding:
   match: 011-----------01
   variables:
-    - name: rd
+    - name: xd
       location: 11-7
-      not: [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31]
+      not: [0, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31]
     - name: imm
       location: 4-2|12|6-5
       left_shift: 3
@@ -25,13 +25,13 @@ access:
   vs: always
   vu: always
 operation(): |
+  Bits<MXLEN> base = X[2];
+  Bits<MXLEN> offset = imm;
+  Bits<MXLEN> eff_addr = base + offset;
 
-  Bits<XLEN> base = X[2];
-  Bits<XLEN> offset = imm;
-  Bits<XLEN> eff_addr = base + offset;
-
-  Bits<64> data = read_memory<64>(eff_addr, $encoding);
-
-    X[rd]   = data[31:0];
-    X[rd+1] = data[63:32];
+  if (xd != 0) {
+    Bits<64> data = read_memory<64>(eff_addr, $encoding);
+    X[creg2reg(xd)]   = data[31:0];
+    X[creg2reg(xd)+1] = data[63:32];
+  }
 sail(): "" #not implemented in the sail model yet

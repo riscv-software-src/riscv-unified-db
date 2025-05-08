@@ -3,11 +3,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vlse16.v
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: V
-assembly: vm, xs2, xs1, vd
+assembly: vd, xs1, xs2, vm
 encoding:
   match: 000010-----------101-----0000111
   variables:
@@ -27,6 +27,9 @@ access:
 data_independent_timing: false
 operation(): |
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let load_width_bytes = vlewidth_bytesnumber(width);
@@ -42,3 +45,5 @@ sail(): |
 
     process_vlsseg(nf_int, vm, vd, load_width_bytes, rs1, rs2, EMUL_pow, num_elem)
   }
+
+# SPDX-SnippetEnd

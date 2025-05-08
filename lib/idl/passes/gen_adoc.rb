@@ -68,7 +68,8 @@ module Idl
   end
   class CsrFunctionCallAst
     def gen_adoc(indent, indent_spaces: 2)
-      "#{' '*indent}#{csr.gen_adoc(indent, indent_spaces:)}.#{function_name}()"
+      args_adoc = args.map { |arg| arg.gen_adoc(0) }
+      "#{' '*indent}#{csr.gen_adoc(indent, indent_spaces:)}.#{function_name}(#{args_adoc.join(', ')})"
     end
   end
   class CsrSoftwareWriteAst
@@ -93,7 +94,7 @@ module Idl
   end
   class BitsCastAst
     def gen_adoc(indent, indent_spaces: 2)
-      "#{' '*indent}$bits(#{expression.gen_adoc(0, indent_spaces: )})"
+      "#{' '*indent}$bits(#{expr.gen_adoc(0, indent_spaces: )})"
     end
   end
   class EnumCastAst
@@ -216,7 +217,7 @@ module Idl
 
   class BinaryExpressionAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      "#{' '*indent}#{lhs.gen_adoc(0, indent_spaces:)} #{op.sub("+", "pass:[+]")} #{rhs.gen_adoc(0, indent_spaces:)}"
+      "#{' '*indent}#{lhs.gen_adoc(0, indent_spaces:)} #{op.sub("+", "pass:[+]").sub("`", "pass:[`]")} #{rhs.gen_adoc(0, indent_spaces:)}"
     end
   end
 
@@ -273,7 +274,7 @@ module Idl
       after_name = []
       after_name << "<#{template_arg_nodes.map { |t| t.gen_adoc(0, indent_spaces:)}.join(', ')}>" unless template_arg_nodes.empty?
       after_name << "pass:[(]#{arg_nodes.map { |a| a.gen_adoc(0, indent_spaces: ) }.join(', ')})"
-      "#{' '*indent}%%LINK%func;#{name};#{name}%%#{after_name.join ''}"
+      "#{' '*indent}" + link_to_udb_doc_idl_func("#{name}") + "#{after_name.join ''}"
     end
   end
 
@@ -291,45 +292,13 @@ module Idl
 
   class CsrFieldReadExpressionAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      idx_text =
-        if @idx.is_a?(AstNode)
-          @idx.text_value
-        else
-          @idx
-        end
-      csr_text = "CSR[#{idx_text}].#{@field_name}"
-      if idx_text =~ /[0-9]+/
-        "#{' '*indent}#{csr_text}"
-      else
-        if @cfg_arch.csr(csr_text).nil?
-        "#{' '*indent}#{csr_text}"
-        else
-          "#{' '*indent}%%LINK%csr_field;#{idx_text}.#{@field_name};#{csr_text}%%"
-        end
-      end
+      "#{' '*indent}" + link_to_udb_doc_csr_field("#{@csr_obj.name}", "#{@field_name}")
     end
   end
 
   class CsrReadExpressionAst
     def gen_adoc(indent = 0, indent_spaces: 2)
-      idx_text =
-        if @idx.is_a?(AstNode)
-          @idx.text_value
-        else
-          @idx
-        end
-
-      csr_text = "CSR[#{idx_text}]"
-      if idx_text =~ /[0-9]+/
-        # we don't have the symtab to map this to a csr name
-        "#{' '*indent}#{csr_text}"
-      else
-        if @cfg_arch.csr(csr_text).nil?
-          "#{' '*indent}#{csr_text}"
-        else
-          "#{' '*indent}%%LINK%csr;#{idx_text};#{csr_text}%%"
-        end
-      end
+      "#{' '*indent}" + link_to_udb_doc_csr("#{csr_name}")
     end
   end
 

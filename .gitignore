@@ -7,6 +7,8 @@
 .stamps
 .venv
 .asciidoctor
+.vscode/*
+!.vscode/launch.json
 .container-type
 diag-ditaa-*
 arch/manual/isa/**/riscv-isa-manual
@@ -14,4 +16,9 @@ gen
 node_modules
 _site
 images
+__pycache__/
+*.pyc
+.pytest_cache/
+*.bak
 *.log
+sorbet

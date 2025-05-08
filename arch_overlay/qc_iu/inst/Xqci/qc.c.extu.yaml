@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.c.extu
+long_name: Extract bits unsigned
+description: |
+  Extract a subset of bits from `rd` starting from LSB.
+  The width of the subset is determined by (`width_minus1`[4:0] + 1) (1..32).
+  Instruction encoded in CI instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqcibm
+assembly: " xd, width"
+base: 32
+encoding:
+  match: 0001----------10
+  variables:
+    - name: width_minus1
+      location: 6-2
+      not: [0, 1, 2, 3, 4]
+    - name: rd
+      location: 11-7
+      not: 0
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  XReg width = width_minus1 + 1;
+  X[rd] = (X[rd] >> 0) & ((32'b1 << width) - 1);

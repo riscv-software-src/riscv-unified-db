@@ -17,6 +17,21 @@
       "type": "string",
       "pattern": "^[0-9]+(\\.[0-9]+(\\.[0-9]+(-pre)?)?)?$"
     },
+    "csr_name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.]+$",
+      "description": "CSR name"
+    },
+    "csr_field": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.]+\\.[A-Z0-9]+$",
+      "description": "CSR field"
+    },
+    "csr_field_bits": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.]+\\.[A-Z0-9]+\\[[0-9]+(:[0-9]+)?\\]$",
+      "description": "CSR field"
+    },
     "field_location": {
       "oneOf": [
         { "type": "number", "description": "Location of a single bit" },
@@ -61,6 +76,42 @@
         "ratified",
         "nonstandard-released"
       ]
+    },
+    "spec_text": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Asciidoctor source"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/tagged_text"
+          }
+        }
+      ]
+    },
+    "tagged_text": {
+      "type": "object",
+      "required": ["id", "text", "normative"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the statement"
+        },
+        "text": {
+          "type": "string",
+          "description": "Asciidoctor source"
+        },
+        "normative": {
+          "type": "boolean"
+        },
+        "when()": {
+          "type": "string",
+          "description": "IDL boolean expression. When true, the text applies"
+        }
+      },
+      "additionalProperties": false
     },
     "license": {
       "description": "License that applies to the textual documentation for this extension",
@@ -152,18 +203,6 @@
         }
       ]
     },
-    "extension_name_and_version": {
-      "type": "array",
-      "items": [
-        {
-          "$ref": "#/$defs/extension_name"
-        },
-        {
-          "$ref": "#/$defs/extension_version"
-        }
-      ],
-      "additionalItems": false
-    },
     "extension_requirement": {
       "description": "A requirement on an extension. Can either specify just an extension name, in which case version '>= 0' is implied, or both a name and a requirement",
       "oneOf": [
@@ -206,11 +245,27 @@
               "items": {
                 "$ref": "#/$defs/requires_entry"
               }
+            },
+            "not": {
+              "type": "object",
+              "$ref": "#/$defs/requires_entry"
             }
           },
           "additionalProperties": false
         }
       ]
+    },
+    "extension_with_version": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/extension_name"
+        },
+        "version": {
+          "$ref": "#/$defs/extension_version"
+        }
+      }
     },
     "author": {
       "type": "object",
@@ -266,6 +321,58 @@
         "when": {
           "$ref": "#/$defs/when_condition"
         }
+      }
+    },
+    "cert_normative_rules": {
+      "description": "Architecturally visible behaviors requiring validation by certification tests",
+      "type": "array",
+      "required": ["id", "name", "links", "description"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "doc_links": {
+          "description": "Link to UDB documentation, ISA manual, Sail code, or IDL code",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cert_test_procedures": {
+      "description": "Procedure test must follow to test certification normative rules",
+      "type": "array",
+      "required": ["id", "name", "description", "normative_rules"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "test_file_name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "normative_rules": {
+          "type": "array",
+          "description": "List of certification normative rule IDs to be validated",
+          "items": {
+            "type": "string"
+          }
+        },
+        "steps": {
+          "description": "List of steps typically using Asciidoc unordered lists",
+          "type": "string"
+        },
+        "additionalProperties": false
       }
     }
   }

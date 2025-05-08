@@ -5,6 +5,7 @@ kind: csr
 name: instret
 long_name: Instructions retired counter for RDINSTRET Instruction
 address: 0xC02
+writable: false
 description: |
   Alias for M-mode CSR `minstret`.
 
@@ -54,7 +55,7 @@ sw_read(): |
     }
   } else if (mode() == PrivilegeMode::VS) {
     # access in VS mode
-    if (CSR[hcounteren].IR == 1'b0 && CSR[mcounteren] == 1'b1) {
+    if (CSR[hcounteren].IR == 1'b0 && CSR[mcounteren].IR == 1'b1) {
       raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
     } else if (CSR[mcounteren].IR == 1'b0) {
       raise(ExceptionCode::IllegalInstruction, mode(), $encoding);

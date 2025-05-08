@@ -1,0 +1,44 @@
+# yaml-language-server: $schema=../../../../../schemas/inst_schema.json
+
+$schema: inst_schema.json#
+kind: instruction
+name: qc.insbri
+long_name: Insert bits (Immediate)
+description: |
+  Insertion of a subset of bits of an `imm` into `rd`.
+  The width of the subset is determined by `rs1` bits [21:16] (0..32),
+  and the offset of the subset is determined by `rs1` bits [4:0].
+  In case when width == 0, the destination register is left unchanged.
+  In case when `rs1` bit [21] == 1 width is enforced to 32.
+  Instruction encoded in I instruction format.
+definedBy:
+  anyOf:
+    - Xqci
+    - Xqcibm
+base: 32
+encoding:
+  match: 1----------------000-----0001011
+  variables:
+    - name: imm
+      location: 30-20
+    - name: rs1
+      location: 19-15
+      not: 0
+    - name: rd
+      location: 11-7
+      not: 0
+assembly: " xd, xs1, imm"
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  XReg width_bits = X[rs1][21:16];
+  XReg width = (width_bits > 32) ? 32 : width_bits;
+  XReg shamt = X[rs1][4:0];
+  if (width > 0) {
+    XReg mask = ((32'b1 << width) - 1) << shamt;
+    XReg orig_val = X[rd];
+    X[rd] = (orig_val & ~mask) | ((imm << shamt) & mask);
+  }

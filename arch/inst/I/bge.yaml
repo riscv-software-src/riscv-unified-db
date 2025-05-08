@@ -6,7 +6,7 @@ name: bge
 long_name: Branch if greater than or equal
 description: |
   Branch to PC + imm if
-  the signed value in register rs1 is greater than or equal to the signed value in register rs2.
+  the signed value in register xs1 is greater than or equal to the signed value in register xs2.
 
   Raise a `MisalignedAddress` exception if PC + imm is misaligned.
 definedBy: I
@@ -17,34 +17,42 @@ encoding:
     - name: imm
       location: 31|7|30-25|11-8
       left_shift: 1
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
 access:
   s: always
   u: always
   vs: always
   vu: always
+pseudoinstructions:
+  - when: xs1 == 0
+    to: blez xs2,imm
+  - when: xs2 == 0
+    to: blez xs1,imm
 operation(): |
-  XReg lhs = X[rs1];
-  XReg rhs = X[rs2];
+  XReg lhs = X[xs1];
+  XReg rhs = X[xs2];
 
   if ($signed(lhs) >= $signed(rhs)) {
-    jump_halfword($pc + imm);
+    jump_halfword($pc + $signed(imm));
   }
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
-    let rs1_val = X(rs1);
-    let rs2_val = X(rs2);
+    let xs1_val = X(xs1);
+    let xs2_val = X(xs2);
     let taken : bool = match op {
-      RISCV_BEQ  => rs1_val == rs2_val,
-      RISCV_BNE  => rs1_val != rs2_val,
-      RISCV_BLT  => rs1_val <_s rs2_val,
-      RISCV_BGE  => rs1_val >=_s rs2_val,
-      RISCV_BLTU => rs1_val <_u rs2_val,
-      RISCV_BGEU => rs1_val >=_u rs2_val
+      RISCV_BEQ  => xs1_val == xs2_val,
+      RISCV_BNE  => xs1_val != xs2_val,
+      RISCV_BLT  => xs1_val <_s xs2_val,
+      RISCV_BGE  => xs1_val >=_s xs2_val,
+      RISCV_BLTU => xs1_val <_u xs2_val,
+      RISCV_BGEU => xs1_val >=_u xs2_val
     };
     let t : xlenbits = PC + sign_extend(imm);
     if taken then {
@@ -66,3 +74,5 @@ sail(): |
       }
     } else RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

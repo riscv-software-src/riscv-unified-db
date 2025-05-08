@@ -2,6 +2,7 @@ $schema: profile_class_schema.json#
 kind: profile class
 processor_kind: Generic Unprivileged
 name: RVI
+long_name: Unprivileged nstructions
 marketing_name: RVI
 introduction: The RVI profile class documents the initial set of unprivileged instructions.
 description: |
