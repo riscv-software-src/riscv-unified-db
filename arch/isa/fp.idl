@@ -875,7 +875,7 @@ function i32_to_f32 {
     U32 a,
     RoundingMode mode
   description {
-    Converts 32-bit signed integer to 32-bit floating point
+    Converts 32-bit signed integer to 32-bit floating point number
   }
   body {
     # sign of integer, it is 1 when negative
@@ -894,7 +894,7 @@ function ui32_to_f32 {
     U32 a,
     RoundingMode mode
   description {
-    Converts 32-bit unsigned integer to 32-bit floating point
+    Converts 32-bit unsigned integer to 32-bit floating point number
   }
   body {
     # sign of integer, it is 1 when negative
@@ -907,4 +907,41 @@ function ui32_to_f32 {
       return softfloat_normRoundPackToF32(0, 0x9C, a, mode);
     }
   }
+}
+
+function f32_to_i32 {
+  returns U32
+  arguments
+    U32 a,
+    RoundingMode mode
+  description {
+    Converts 32-bit floating point number to a signed 32-bit integer 
+  }
+  body {
+    Bits<1> sign = signF32UI(a);
+    Bits<8> exp  = expF32UI(a);
+    Bits<23> sig = fracF32UI(a);
+    Bits<8> shiftDist;
+    U64 sig64;
+    # for NaN return the highest positive value and set floating-point flag to invalid.
+    if ((exp == 8'hFF) && (sig != 0)) {
+      sign = 0;
+      set_fp_flag(FpFlag::NV);
+      return 32'h7FFFFFFF;
+    }
+
+    # MSB of significand is set to 1 because minimum 32-bit integer in IEEE 754 is 32'h80000000
+    if (exp != 0) {
+      sig = sig | 32'h00800000; 
+    }
+
+    sig64 = sig << 32;
+    shiftDist = 8'hAA - exp;
+
+    if (shiftDist > 0) {
+      sig64 = softfloat_shiftRightJam64( sig64, shiftDist);
+    }
+    
+    return softfloat_roundToI32(sign, sig64, mode);
+  }  
 }
