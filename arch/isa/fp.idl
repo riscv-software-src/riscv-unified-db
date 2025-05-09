@@ -27,7 +27,7 @@ Bits<32> UI32_NEG_OVERFLOW = 32'h0000_0000; # minimum unsigned 32-bit integer
 Bits<32> UI32_POS_OVERFLOW = 32'hFFFF_FFFF; # maximum unsigned 32-bit integer
 
 Bits<32> UI32_NAN          = 32'hFFFF_FFFF; # NaN to unsigned 32-bit integer
-Bits<32> I32_NAN           = 32'h7FFF_FFFF; # NaN to signed 32-bit integer 
+Bits<32> I32_NAN           = 32'h7FFF_FFFF; # NaN to signed 32-bit integer
 
 
 enum RoundingMode {
@@ -399,13 +399,13 @@ function softfloat_roundToUI32 {
     ) {
       roundIncrement = 0;
       if ( sign == 1) {
-        if (sig == 0) return 0;
-        if (roundingMode == RoundingMode::RDN) set_fp_flag(FpFlag::NV);
+        if (sig == 0) { return 0; }
+        if (roundingMode == RoundingMode::RDN) { set_fp_flag(FpFlag::NV); }
       } else {
-        if (roundingMode == RoundingMode::RUP) roundIncrement = 0xFFF;
+        if (roundingMode == RoundingMode::RUP) { roundIncrement = 0xFFF; }
       }
-    }    
-    
+    }
+
     Bits<16> roundBits = sig & 0xFFF;
     sig = sig + roundIncrement;
     if ((sig & 0xFFFFF00000000000) != 0) {
@@ -421,7 +421,7 @@ function softfloat_roundToUI32 {
     }
 
 
-   
+
     if ((z != 0) && (sign == 1)) {
       set_fp_flag(FpFlag::NV);
       return sign == 1 ? UI32_NEG_OVERFLOW : UI32_POS_OVERFLOW;
@@ -974,7 +974,7 @@ function f32_to_i32 {
     U32 a,
     RoundingMode mode
   description {
-    Converts 32-bit floating point number to a signed 32-bit integer 
+    Converts 32-bit floating point number to a signed 32-bit integer
   }
   body {
     Bits<1> sign = signF32UI(a);
@@ -991,18 +991,18 @@ function f32_to_i32 {
 
     # MSB of significand is set to 1 because minimum 32-bit integer in IEEE 754 is 32'h80000000
     if (exp != 0) {
-      sig = sig | 32'h00800000; 
+      sig = sig | 32'h00800000;
     }
 
-    sig64 = sig << 32;
+    sig64 = sig `<< 32;
     shiftDist = 8'hAA - exp;
 
     if (shiftDist > 0) {
       sig64 = softfloat_shiftRightJam64( sig64, shiftDist);
     }
-    
+
     return softfloat_roundToI32(sign, sig64, mode);
-  }  
+  }
 }
 
 function f32_to_ui32 {
@@ -1011,7 +1011,7 @@ function f32_to_ui32 {
     U32 a,
     RoundingMode mode
   description {
-    Converts 32-bit floating point number to an unsigned 32-bit integer 
+    Converts 32-bit floating point number to an unsigned 32-bit integer
   }
   body {
     Bits<1> sign = signF32UI(a);
@@ -1028,16 +1028,16 @@ function f32_to_ui32 {
 
     # MSB of significand is set to 1 because minimum 32-bit integer in IEEE 754 is 32'h80000000
     if (exp != 0) {
-      sig = sig | 32'h00800000; 
+      sig = sig | 32'h00800000;
     }
 
-    sig64 = sig << 32;
+    sig64 = sig `<< 32;
     shiftDist = 8'hAA - exp;
 
     if (shiftDist > 0) {
       sig64 = softfloat_shiftRightJam64( sig64, shiftDist);
     }
-    
+
     return softfloat_roundToUI32(sign, sig64, mode);
-  }  
+  }
 }
