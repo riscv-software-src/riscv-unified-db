@@ -59,3 +59,10 @@ SPDX-License-Identifier = [
     # For import isa-manual docs: https://github.com/riscv/riscv-isa-manual
     "CC-BY-4.0",
 ]
+
+[[annotations]]
+path = [
+  "doc/udb.svg"
+]
+SPDX-FileCopyrightText = "Copyright (c) Derek Hower"
+SPDX-License-Identifier = "CC0-1.0"
