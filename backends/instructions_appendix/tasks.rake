@@ -53,7 +53,7 @@ file MERGED_INSTRUCTIONS_PDF.to_s => [
 end
 
 namespace :gen do
-  task :instruction_appendix_adoc => MERGED_INSTRUCTIONS_FILE.to_s
+  task instruction_appendix_adoc: MERGED_INSTRUCTIONS_FILE.to_s
 
   desc "Generate instruction appendix (merged instructions adoc and PDF)"
   task :instruction_appendix do
@@ -62,5 +62,46 @@ namespace :gen do
     # Then generate the PDF.
     Rake::Task[MERGED_INSTRUCTIONS_PDF.to_s].invoke
     puts "SUCCESS: Instruction appendix generated at '#{MERGED_INSTRUCTIONS_FILE}' and PDF at '#{MERGED_INSTRUCTIONS_PDF}'"
+  end
+end
+
+namespace :test do
+  desc "Check the instruction appendix output vs. stored golden output"
+  task instruction_appendix: "gen:instruction_appendix_adoc" do
+    files = {
+      golden: {
+        file: Tempfile.new("golden"),
+        path: "#{File.dirname(__FILE__)}/all_instructions.golden.adoc"
+      },
+      output: {
+        file: Tempfile.new("output"),
+        path: "gen/instructions_appendix/all_instructions.adoc"
+      }
+    }
+
+    # filter out lines that have file paths
+    [:golden, :output].each do |which|
+      file = files[which][:file]
+      path = files[which][:path]
+      orig = File.read(path)
+      filtered = orig.lines.reject { |l| l =~ /^:wavedrom:/ }.join("\n")
+      file.write(filtered)
+      file.flush
+    end
+
+    sh "diff -u #{files[:golden][:file].path} #{files[:output][:file].path}"
+    if $? == 0
+      puts "PASSED"
+    else
+      warn <<~MSG
+        The golden output for the instruction appendix has changed. If this is expected, run
+
+        cp gen/instructions_appendix/all_instructions.adoc backends/instructions_appendix/all_instructions.golden.adoc
+        git add backends/instructions_appendix/all_instructions.golden.adoc
+
+        And commit
+      MSG
+      exit 1
+    end
   end
 end

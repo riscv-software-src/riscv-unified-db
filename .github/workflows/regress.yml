@@ -65,17 +65,7 @@ jobs:
       - name: Generate instruction appendix asciidoc
         run: ./do gen:instruction_appendix_adoc
       - name: Check instruction appendix result
-        # diff returns 1 if the files are not the same. This should cause the run to 'fail'
-        run: |
-          diff backends/instructions_appendix/all_instructions.golden.adoc gen/instructions_appendix/all_instructions.adoc && \
-          (
-            echo "The golden output for the instruction appendix has changed. If this is expected, run"
-            echo ""
-            echo "cp gen/instructions_appendix/all_instructions.adoc backends/instructions_appendix/all_instructions.golden.adoc"
-            echo "git add backends/instructions_appendix/all_instructions.golden.adoc"
-            echo ""
-            echo "And commit"
-          )
+        run: ./do test:instruction_appendix
   regress-cfg-manual:
     runs-on: ubuntu-latest
     env:
