@@ -53,7 +53,7 @@ data_independent_timing: true
 operation(): |
   check_f_ok($encoding);
   RoundingMode rounding_mode = rm_to_mode(rm, $encoding);
-  X[rd] = f32_to_ui32(X[fs1], mode);
+  X[rd] = f32_to_ui32(X[fs1], rounding_mode);
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
 # SPDX-License-Identifier: BSD-2-Clause
