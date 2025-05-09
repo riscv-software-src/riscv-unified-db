@@ -58,7 +58,8 @@
           "$ref": "json-schema-draft-07.json#"
         },
         "when": {
-          "$ref": "schema_defs.json#/$defs/when_condition"
+          "description": "Extension requirement condition that must be met for parameter to exist. The condition that the defining extension is implemented is implicit, and does not need to be explicitly listed",
+          "$ref": "schema_defs.json#/$defs/requires_entry"
         },
         "extra_validation": {
           "description": "Ruby code to perform extra validation, when it is not easily expressed with JSON Schema (_e.g._, because it depends on the value of another parameter)",
