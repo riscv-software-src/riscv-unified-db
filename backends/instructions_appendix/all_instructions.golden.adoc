@@ -6075,16 +6075,16 @@ Atomic Read and Set Bits in CSR
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x73,"type":2},{"bits":5,"name": "rd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": "csr","type":4}]}
+{"reg":[{"bits":7,"name": 0x73,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": "csr","type":4}]}
 ....
 
 Description::
 Atomically read and set bits in a CSR.
 
 Reads the value of the CSR, zero-extends the value to `XLEN` bits,
-and writes it to integer register `rd`. The initial value in integer
-register `rs1` is treated as a bit mask that specifies bit positions
-to be set in the CSR. Any bit that is high in `rs1` will cause the
+and writes it to integer register `xd`. The initial value in integer
+register `xs1` is treated as a bit mask that specifies bit positions
+to be set in the CSR. Any bit that is high in `xs1` will cause the
 corresponding bit to be set in the CSR, if that CSR bit is writable.
 Other bits in the CSR are not explicitly written.
 
@@ -6094,8 +6094,8 @@ Decode Variables::
 |===
 |Variable Name |Location
 |csr |$encoding[31:20]
-|rs1 |$encoding[19:15]
-|rd |$encoding[11:7]
+|xs1 |$encoding[19:15]
+|xd |$encoding[11:7]
 |===
 
 Included in::
@@ -6159,9 +6159,9 @@ Description::
 Atomically swap values in the CSRs and integer registers.
 
 Read the old value of the CSR, zero-extends the value to `XLEN` bits,
-and then write it to integer register rd.
-The initial value in rs1 is written to the CSR.
-If `rd=x0`, then the instruction shall not read the CSR and shall not
+and then write it to integer register xd.
+The initial value in xs1 is written to the CSR.
+If `xd=x0`, then the instruction shall not read the CSR and shall not
 cause any of the side effects that might occur on a CSR read.
 
 
@@ -6193,16 +6193,16 @@ Atomic Read/Write CSR Immediate
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x73,"type":2},{"bits":5,"name": "rd","type":4},{"bits":3,"name": 0x5,"type":2},{"bits":5,"name": "imm","type":4},{"bits":12,"name": "csr","type":4}]}
+{"reg":[{"bits":7,"name": 0x73,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x5,"type":2},{"bits":5,"name": "imm","type":4},{"bits":12,"name": "csr","type":4}]}
 ....
 
 Description::
-Atomically write CSR using a 5-bit immediate, and load the previous value into 'rd'.
+Atomically write CSR using a 5-bit immediate, and load the previous value into 'xd'.
 
 Read the old value of the CSR, zero-extends the value to `XLEN` bits,
-and then write it to integer register rd.
+and then write it to integer register xd.
 The 5-bit uimm field is zero-extended and written to the CSR.
-If `rd=x0`, then the instruction shall not read the CSR and shall not
+If `xd=x0`, then the instruction shall not read the CSR and shall not
 cause any of the side effects that might occur on a CSR read.
 
 
@@ -6212,7 +6212,7 @@ Decode Variables::
 |Variable Name |Location
 |csr |$encoding[31:20]
 |imm |$encoding[19:15]
-|rd |$encoding[11:7]
+|xd |$encoding[11:7]
 |===
 
 Included in::
