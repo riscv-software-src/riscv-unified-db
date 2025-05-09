@@ -4,7 +4,7 @@ $schema: "csr_schema.json#"
 kind: csr
 name: satp
 address: 0x180
-writeable: true
+writable: true
 long_name: Supervisor Address Translation and Protection
 description:
   Controls the translation mode in (H)S-mode and U-mode, and holds the
@@ -125,8 +125,8 @@ fields:
         }
       } else {
         XReg shamt = (xlen() == 32 || (CSR[mstatus].SXL == $bits(XRegWidth::XLEN32))) ? 9 : 16;
-        XReg all_ones = ((1 << shamt) - 1);
-        XReg largest_allowed_asid = (1 << shamt) - 1;
+        XReg all_ones = ((MXLEN'1 << shamt) - 1);
+        XReg largest_allowed_asid = (MXLEN'1 << shamt) - 1;
 
         if (csr_value.ASID == all_ones) {
           # the specification states that if all 1's are written to the ASID field, then

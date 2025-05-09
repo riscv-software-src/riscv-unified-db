@@ -5,7 +5,7 @@ kind: csr
 name: mcause
 long_name: Machine Cause
 address: 0x342
-writeable: true
+writable: true
 priv_mode: M
 length: MXLEN
 description: Reports the cause of the latest exception.
@@ -19,7 +19,7 @@ fields:
 
       When set, the last exception was caused by an asynchronous Interrupt.
 
-      `mcause.INT` is writeable.
+      `mcause.INT` is writable.
 
       [when,"TRAP_ON_ILLEGAL_WLRL == true"]
       If `mcause` is written with an undefined cause (combination of `mcause.INT` and `mcause.CODE`), an `Illegal Instruction` exception occurs.
@@ -49,7 +49,7 @@ fields:
 
       Holds the interrupt or exception code for the last taken trap.
 
-      `mcause.CODE` is writeable.
+      `mcause.CODE` is writable.
 
       [when,"TRAP_ON_ILLEGAL_WLRL == true"]
       If `mcause` is written with an undefined cause (combination of `mcause.INT` and `mcause.CODE`), an `Illegal Instruction` exception occurs.

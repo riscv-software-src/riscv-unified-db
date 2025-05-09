@@ -22,6 +22,11 @@ access:
   vs: always
   vu: always
 data_independent_timing: true
+pseudoinstructions:
+  - when: (xd == 0 && xs1 == 0 && imm == 0)
+    to: nop
+  - when: imm == 0
+    to: mv xd,xs1
 operation(): X[xd] = X[xs1] + $signed(imm);
 
 # SPDX-SnippetBegin
