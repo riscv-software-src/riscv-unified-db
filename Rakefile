@@ -121,8 +121,14 @@ namespace :gen do
     end
   end
 
-  desc "Resolve the standard in arch/, and write it to gen/resolved_arch/_"
-  task "resolved_arch" => "#{$root}/.stamps/resolve-_.stamp"
+  desc <<~DESC
+    Resolve the architecture files, and write it to gen/resolved_arch/<CONFIG_NAME>
+
+    By default, resolves the standard architecture ("_") under arch.
+
+    To resolve an overlay, set the CONFIG enviornment variable to a config name that uses the overlay
+  DESC
+  task "resolved_arch" => "#{$root}/.stamps/resolve-#{ENV.key?('CONFIG') ? ENV['CONFIG'] : '_'}.stamp"
 end
 
 # rule to generate standard for any configurations with an overlay
@@ -496,12 +502,18 @@ namespace :test do
     Rake::Task["gen:html"].invoke("example_rv64_with_overlay")
 
     $logger.info "Generating MockProcessor-CRD.pdf"
+    ENV["CONFIG"] = "mocks"
+    ENV["MODEL"] = "MockProcessor"
     Rake::Task["#{$root}/gen/proc_crd/pdf/MockProcessor-CRD.pdf"].invoke
 
     $logger.info "Generating MockProcessor-CTP.pdf"
+    ENV["CONFIG"] = "mocks"
+    ENV["MODEL"] = "MockProcessor"
     Rake::Task["#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"].invoke
 
     $logger.info "Generating MockProfileRelease.pdf"
+    ENV["CONFIG"] = "mocks"
+    ENV["RELEASE"] = "Mock"
     Rake::Task["#{$root}/gen/profile/pdf/MockProfileRelease.pdf"].invoke
 
     $logger.info "Generating Go Language Support"
@@ -528,38 +540,55 @@ desc <<~DESC
 DESC
 task :portfolios do
   portfolio_start_msg("MockProcessor-CRD")
+  ENV["CONFIG"] = "mocks"
   Rake::Task["#{$root}/gen/proc_crd/pdf/MockProcessor-CRD.pdf"].invoke
   portfolio_start_msg("MockProcessor-CTP")
+  ENV["CONFIG"] = "mocks"
   Rake::Task["#{$root}/gen/proc_ctp/pdf/MockProcessor-CTP.pdf"].invoke
   portfolio_start_msg("MockProfileRelease")
+  ENV["CONFIG"] = "mocks"
   Rake::Task["#{$root}/gen/profile/pdf/MockProfileRelease.pdf"].invoke
   portfolio_start_msg("MC100-32-CTP")
+  ENV["CONFIG"] = "_"
   Rake::Task["#{$root}/gen/proc_ctp/pdf/MC100-32-CTP.pdf"].invoke
   portfolio_start_msg("MC100-32-CRD")
+  ENV["CONFIG"] = "_"
   Rake::Task["#{$root}/gen/proc_crd/pdf/MC100-32-CRD.pdf"].invoke
   portfolio_start_msg("MC100-64-CRD")
+  ENV["CONFIG"] = "_"
   Rake::Task["#{$root}/gen/proc_crd/pdf/MC100-64-CRD.pdf"].invoke
   portfolio_start_msg("MC200-32-CRD")
+  ENV["CONFIG"] = "_"
   Rake::Task["#{$root}/gen/proc_crd/pdf/MC200-32-CRD.pdf"].invoke
   portfolio_start_msg("MC200-64-CRD")
+  ENV["CONFIG"] = "_"
   Rake::Task["#{$root}/gen/proc_crd/pdf/MC200-64-CRD.pdf"].invoke
   portfolio_start_msg("MC300-32-CRD")
+  ENV["CONFIG"] = "_"
   Rake::Task["#{$root}/gen/proc_crd/pdf/MC300-32-CRD.pdf"].invoke
   portfolio_start_msg("MC300-64-CRD")
+  ENV["CONFIG"] = "_"
   Rake::Task["#{$root}/gen/proc_crd/pdf/MC300-64-CRD.pdf"].invoke
   portfolio_start_msg("AC100-CRD")
+  ENV["CONFIG"] = "_"
   Rake::Task["#{$root}/gen/proc_crd/pdf/AC100-CRD.pdf"].invoke
   portfolio_start_msg("AC200-CRD")
+  ENV["CONFIG"] = "_"
   Rake::Task["#{$root}/gen/proc_crd/pdf/AC200-CRD.pdf"].invoke
   portfolio_start_msg("RVI20ProfileRelease")
+  ENV["CONFIG"] = "_"
   Rake::Task["#{$root}/gen/profile/pdf/RVI20ProfileRelease.pdf"].invoke
   portfolio_start_msg("RVA20ProfileRelease")
+  ENV["CONFIG"] = "_"
   Rake::Task["#{$root}/gen/profile/pdf/RVA20ProfileRelease.pdf"].invoke
   portfolio_start_msg("RVA22ProfileRelease")
+  ENV["CONFIG"] = "_"
   Rake::Task["#{$root}/gen/profile/pdf/RVA22ProfileRelease.pdf"].invoke
   portfolio_start_msg("RVA23ProfileRelease")
+  ENV["CONFIG"] = "_"
   Rake::Task["#{$root}/gen/profile/pdf/RVA23ProfileRelease.pdf"].invoke
   portfolio_start_msg("RVB23ProfileRelease")
+  ENV["CONFIG"] = "_"
   Rake::Task["#{$root}/gen/profile/pdf/RVB23ProfileRelease.pdf"].invoke
 end
 

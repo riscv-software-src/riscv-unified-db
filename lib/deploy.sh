@@ -75,6 +75,7 @@ deploy_mkdir $DEPLOY_DIR/htmls
 
 deploy_log "Resolve / Create Index"
 deploy_do "gen:resolved_arch"
+deploy_do "gen:resolved_arch CONFIG=mocks"
 deploy_cp_recursive gen/resolved_arch/_ $DEPLOY_DIR/resolved_arch
 
 deploy_log "Create _site/isa_explorer"
@@ -108,26 +109,26 @@ deploy_cp_recursive gen/cfg_html_doc/example_rv64_with_overlay/html $DEPLOY_DIR/
 
 for profile in RVI20 RVA20 RVA22 RVA23 RVB23; do
   deploy_log "Create $profile Profile Release PDF Spec"
-  deploy_do "gen:profile_release_pdf[$profile]"
+  deploy_do "gen:profile_release_pdf RELEASE=$profile CONFIG=_"
   deploy_log "Copy $profile Profile Release PDF Spec"
   deploy_cp gen/profile/pdf/${profile}ProfileRelease.pdf $DEPLOY_DIR/pdfs
 done
 
 for crd in AC100 AC200 MC100-32 MC100-64 MC200-32 MC200-64 MC300-32 MC300-64; do
   deploy_log "Create $profile Profile Release PDF Spec"
-  deploy_do "gen:profile_release_pdf[$profile]"
+  deploy_do "gen:profile_release_pdf RELEASE=$profile CONFIG=_"
   deploy_log "Copy $profile Profile Release PDF Spec"
   deploy_cp gen/profile/pdf/${profile}ProfileRelease.pdf $DEPLOY_DIR/pdfs
 
   deploy_log "Create ${crd}-CRD PDF Spec"
-  deploy_do "gen:proc_crd_pdf[$crd]"
+  deploy_do "gen:proc_crd_pdf MODEL=$crd CONFIG=_"
   deploy_log "Copy ${crd}-CRD PDF"
   deploy_cp gen/proc_crd/pdf/${crd}-CRD.pdf $DEPLOY_DIR/pdfs
 done
 
 for ctp in MC100-32 MockProcessor; do
   deploy_log "Create ${ctp}-CTP PDF Spec"
-  deploy_do "gen:proc_ctp_pdf[$ctp]"
+  deploy_do "gen:proc_ctp_pdf MODEL=$ctp CONFIG=mocks"
   deploy_log "Copy ${ctp}-CTP PDF"
   deploy_cp gen/proc_ctp/pdf/${ctp}-CTP.pdf $DEPLOY_DIR/pdfs
 done

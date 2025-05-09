@@ -93,24 +93,28 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SINGULARITY: 1
+      MODEL: MockProcessor
+      CONFIG: mocks
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate extension PDF
-        run: ./do gen:proc_crd_pdf[MockProcessor]
+        run: ./do gen:proc_crd_pdf
   regress-gen-profile:
     runs-on: ubuntu-latest
     env:
       SINGULARITY: 1
+      RELEASE: Mock
+      CONFIG: mocks
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Generate extension PDF
-        run: ./do gen:profile_release_pdf[Mock]
+        run: ./do gen:profile_release_pdf
   build-llvm:
     runs-on: ubuntu-latest
     steps:
