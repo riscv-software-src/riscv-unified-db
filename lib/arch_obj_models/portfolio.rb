@@ -349,6 +349,7 @@ class Portfolio < DatabaseObject
   # @param obj_yaml [Hash<String, Object>] Contains contents of Portfolio yaml file (put in @data)
   # @param data_path [String] Path to yaml file
   # @param arch [Architecture] Entire database of RISC-V architecture standards
+  sig { params(obj_yaml: T::Hash[String, Object], yaml_path: T.any(String, Pathname), arch: ConfiguredArchitecture).void }
   def initialize(obj_yaml, yaml_path, arch)
     super # Calls parent class with same args I got
   end
