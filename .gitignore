@@ -9,6 +9,7 @@
 .asciidoctor
 .vscode/*
 !.vscode/launch.json
+!.vscode/extensions.json
 .container-type
 diag-ditaa-*
 arch/manual/isa/**/riscv-isa-manual
