@@ -1,6 +1,7 @@
 $schema: profile_schema.json#
 kind: profile
 name: MP-U-64
+long_name: U-mode extensions for a Mock 64-bit Apps Processor profile
 marketing_name: MockProfile 64-bit Unpriv
 mode: Unpriv
 base: 64

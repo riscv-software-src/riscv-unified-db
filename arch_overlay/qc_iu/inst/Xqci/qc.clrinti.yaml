@@ -29,4 +29,4 @@ operation(): |
   XReg idx = imm / 32;
   XReg bit = imm % 32;
   Csr pre_csr = direct_csr_lookup(MCLICIP0_ADDR + idx);
-  csr_sw_write(pre_csr, csr_sw_read(pre_csr) & ~(1 << bit));
+  csr_sw_write(pre_csr, csr_sw_read(pre_csr) & ~(32'b1 << bit));

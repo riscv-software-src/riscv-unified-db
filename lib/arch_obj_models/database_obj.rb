@@ -114,6 +114,9 @@ class DatabaseObject
   sig { returns(String) }
   attr_reader :long_name
 
+  sig { returns(String) }
+  attr_reader :kind
+
   # @return [Architecture] If only a specification (no config) is known
   # @return [ConfiguredArchitecture] If a specification and config is known
   # @return [nil] If neither is known
@@ -131,9 +134,6 @@ class DatabaseObject
 
   sig { returns(T::Boolean) }
   def cfg_arch? = !@cfg_arch.nil?
-
-  sig { returns(String) }
-  def kind = @data["kind"]
 
   @@schemas ||= {}
   @@schema_ref_resolver ||= proc do |pattern|
@@ -299,16 +299,17 @@ class DatabaseObject
 
   # @param data [Hash<String,Object>] Hash with fields to be added
   # @param data_path [Pathname] Path to the data file
-  sig { params(data: T::Hash[String, T.untyped], data_path: T.any(String, Pathname), arch: T.nilable(Architecture)).void }
+  sig { params(data: T::Hash[String, T.untyped], data_path: T.any(String, Pathname), arch: Architecture).void }
   def initialize(data, data_path, arch)
     @data = data
     @data_path = Pathname.new(data_path)
     if arch.is_a?(ConfiguredArchitecture)
       @cfg_arch = arch
     end
-    @arch = T.must(arch)
-    @name = data["name"]
-    @long_name = data["long_name"]
+    @arch = T.must_because(arch) { pp data }
+    @name = T.must_because(data["name"]) { pp data }
+    @long_name = T.must_because(data["long_name"]) { pp data }
+    @kind = T.must_because(data["kind"]) { pp data }
 
     @sem = Concurrent::Semaphore.new(1)
     @cache = Concurrent::Hash.new

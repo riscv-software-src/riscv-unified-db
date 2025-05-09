@@ -1,6 +1,7 @@
 $schema: profile_schema.json#
 kind: profile
 name: RVB23S64
+long_name: S-mode extensions for version 23 of the 64-bit Bespoke Apps Processor profile
 marketing_name: RVB23S64
 mode: S
 base: 64

@@ -1,6 +1,7 @@
 $schema: profile_schema.json#
 kind: profile
 name: RVA22S64
+long_name: S-mode extensions for version 22 of the 64-bit Apps Processor profile
 marketing_name: RVA22S64
 mode: S
 base: 64
