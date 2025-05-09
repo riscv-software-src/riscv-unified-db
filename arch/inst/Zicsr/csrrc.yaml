@@ -37,6 +37,9 @@ access:
   vs: always
   vu: always
 data_independent_timing: false
+pseudoinstructions:
+  - when: xd == 0
+    to: csrc csr,xs1
 operation(): |
   Csr csr_handle = direct_csr_lookup(csr);
 

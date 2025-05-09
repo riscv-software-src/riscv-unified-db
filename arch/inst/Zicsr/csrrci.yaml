@@ -31,6 +31,9 @@ access:
   vs: always
   vu: always
 data_independent_timing: false
+pseudoinstructions:
+  - when: xd == 0
+    to: csrci csr,uimm
 operation(): |
   Boolean will_write = uimm != 0;
 
