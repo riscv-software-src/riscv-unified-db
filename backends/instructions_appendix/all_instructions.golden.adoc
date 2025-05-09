@@ -333,7 +333,7 @@ Included in::
 == aes64ds
 
 Synopsis::
-No synopsis available
+AES decrypt final round
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -342,7 +342,8 @@ Encoding::
 ....
 
 Description::
-No description available.
+Uses the two 64-bit source registers to represent the entire AES state, and produces _half_ of the next
+round output, applying the Inverse ShiftRows and SubBytes steps.
 
 
 Decode Variables::
@@ -368,7 +369,7 @@ Included in::
 == aes64dsm
 
 Synopsis::
-No synopsis available
+AES decrypt middle round
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -377,7 +378,8 @@ Encoding::
 ....
 
 Description::
-No description available.
+Uses the two 64-bit source registers to represent the entire AES state, and produces _half_ of the next
+round output, applying the Inverse ShiftRows, SubBytes and MixColumns steps.
 
 
 Decode Variables::
@@ -403,7 +405,7 @@ Included in::
 == aes64es
 
 Synopsis::
-No synopsis available
+AES encrypt final round
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -412,7 +414,8 @@ Encoding::
 ....
 
 Description::
-No description available.
+Uses the two 64-bit source registers to represent the entire AES state, and produces _half_ of the next
+round output, applying the ShiftRows and SubBytes steps.
 
 
 Decode Variables::
@@ -438,7 +441,7 @@ Included in::
 == aes64esm
 
 Synopsis::
-No synopsis available
+AES encrypt middle round
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -447,7 +450,8 @@ Encoding::
 ....
 
 Description::
-No description available.
+Uses the two 64-bit source registers to represent the entire AES state, and produces _half_ of the next
+round output, applying the Inverse ShiftRows, SubBytes and MixColumns steps.
 
 
 Decode Variables::
@@ -473,7 +477,7 @@ Included in::
 == aes64im
 
 Synopsis::
-No synopsis available
+AES Decrypt KeySchedule MixColumns
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -482,7 +486,9 @@ Encoding::
 ....
 
 Description::
-No description available.
+The instruction applies the inverse MixColumns transformation to two columns of the state array,
+packed into a single 64-bit register. It is used to create the inverse cipher KeySchedule, according to
+the equivalent inverse cipher construction in (NIST, 2001) (Page 23, Section 5.3.5).
 
 
 Decode Variables::
@@ -507,7 +513,7 @@ Included in::
 == aes64ks1i
 
 Synopsis::
-No synopsis available
+AES Key Schedule Instruction 1
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -516,7 +522,11 @@ Encoding::
 ....
 
 Description::
-No description available.
+This instruction implements the rotation, SubBytes and Round Constant addition steps of the AES
+block cipher Key Schedule.
+
+
+`rnum` must be in the range `0x0..0xA`. The values `0xB..0xF` are reserved.
 
 
 Decode Variables::
@@ -544,7 +554,7 @@ Included in::
 == aes64ks2
 
 Synopsis::
-No synopsis available
+AES Key Schedule Instruction 2
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -553,7 +563,8 @@ Encoding::
 ....
 
 Description::
-No description available.
+This instruction implements the additional XOR'ing of key words as part of the AES block cipher
+Key Schedule.
 
 
 Decode Variables::
@@ -6000,7 +6011,7 @@ Included in::
 == csrrc
 
 Synopsis::
-No synopsis available
+Atomic Read and Clear Bits in CSR
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -6009,7 +6020,18 @@ Encoding::
 ....
 
 Description::
-No description available.
+The CSRRC (Atomic Read and Clear Bits in CSR) instruction reads the value of the CSR, zero-extends
+the value to XLEN bits, and writes it to integer register `rd`. The initial value in integer register `rs1` is
+treated as a bit mask that specifies bit positions to be cleared in the CSR. Any bit that is high in `rs1` will
+cause the corresponding bit to be cleared in the CSR, if that CSR bit is writable.
+
+For CSRRC, if `rs1=x0`, then the instruction will not write to the CSR at all, and so shall
+not cause any of the side effects that might otherwise occur on a CSR write, nor raise illegal-
+instruction exceptions on accesses to read-only CSRs. CSRRC always reads the addressed CSR and
+cause any read side effects regardless of `rs1` and `rd` fields.
+Note that if `rs1` specifies a register other than `x0`, and that register holds a zero value,
+the instruction will not action any attendant per-field side effects, but will action any
+side effects caused by writing to the entire CSR.
 
 
 Decode Variables::
@@ -6035,7 +6057,7 @@ Included in::
 == csrrci
 
 Synopsis::
-No synopsis available
+Atomic Read and Clear Bits in CSR with Immediate
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -6044,7 +6066,12 @@ Encoding::
 ....
 
 Description::
-No description available.
+The CSRRCI variant is similar to CSRRC, except this updates the CSR using an XLEN-bit value obtained
+by zero-extending a 5-bit unsigned immediate (uimm[4:0]) field encoded in the `rs1` field instead of a
+value from an integer register. For CSRRCI, if the `uimm[4:0]` field is zero, then this instruction
+will not write to the CSR, and shall not cause any of the side effects that might otherwise occur on
+a CSR write, nor raise illegal-instruction exceptions on accesses to read-only CSRs. The CSRRCI will
+always read the CSR and cause any read side effects regardless of `rd` and `rs1` fields.
 
 
 Decode Variables::
@@ -6112,7 +6139,7 @@ Included in::
 == csrrsi
 
 Synopsis::
-No synopsis available
+Atomic Read and Set Bits in CSR with Immediate
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -6121,7 +6148,12 @@ Encoding::
 ....
 
 Description::
-No description available.
+The CSRRSI variant is similar to CSRRS, except this updates the CSR using an XLEN-bit value obtained
+by zero-extending a 5-bit unsigned immediate (uimm[4:0]) field encoded in the `rs1` field instead of a
+value from an integer register. For CSRRSI, if the `uimm[4:0]` field is zero, then this instruction
+will not write to the CSR, and shall not cause any of the side effects that might otherwise occur on
+a CSR write, nor raise illegal-instruction exceptions on accesses to read-only CSRs. The CSRRSI will
+always read the CSR and cause any read side effects regardless of `rd` and `rs1` fields.
 
 
 Decode Variables::
@@ -42415,7 +42447,7 @@ Included in::
 == wrs.nto
 
 Synopsis::
-No synopsis available
+Wait-on-Reservation-Set-with-No-Timeout
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -42424,7 +42456,37 @@ Encoding::
 ....
 
 Description::
-No description available.
+To mitigate the wasteful looping in such usages, a xref:insts:wrs_nto.adoc#udb:doc:inst:wrs_nto[wrs.nto] (WRS-with-no-timeout) instruction is provided.
+Instead of polling for a store to a specific memory location, software registers a reservation set that
+includes all the bytes of the memory location using the LR instruction. Then a subsequent xref:insts:wrs_nto.adoc#udb:doc:inst:wrs_nto[wrs.nto]
+instruction would cause the hart to temporarily stall execution in a low-power state until a store
+occurs to the reservation set or an interrupt is observed.
+
+This instruction is not supported in a constrained LR/SC loop.
+While stalled, an implementation is permitted to occasionally terminate the stall and complete
+execution for any reason.
+
+xref:insts:wrs_nto.adoc#udb:doc:inst:wrs_nto[wrs.nto] follows the rules of the WFI instruction for resuming execution
+on a pending interrupt.
+
+When the TW (Timeout Wait) bit in xref:csrs:mstatus.adoc#udb:doc:csr:mstatus[mstatus] is set and xref:insts:wrs_nto.adoc#udb:doc:inst:wrs_nto[wrs.nto] is executed
+in any privilege mode otherthan M mode, and it does not complete within an implementation-specific
+bounded time limit, the xref:insts:wrs_nto.adoc#udb:doc:inst:wrs_nto[wrs.nto] instruction will cause an illegal instruction exception.
+
+When executing in VS or VU mode, if the VTW bit is set in xref:csrs:hstatus.adoc#udb:doc:csr:hstatus[hstatus], the TW bit in xref:csrs:mstatus.adoc#udb:doc:csr:mstatus[mstatus] is clear,
+and the xref:insts:wrs_nto.adoc#udb:doc:inst:wrs_nto[wrs.nto] does not complete within an implementation-specific bounded time limit,
+the xref:insts:wrs_nto.adoc#udb:doc:inst:wrs_nto[wrs.nto] instruction will cause a virtual instruction exception.
+
+[Note]
+Since xref:insts:wrs_nto.adoc#udb:doc:inst:wrs_nto[wrs.nto] can complete execution for reasons other than stores to the reservation set,
+software will likely need a means of looping until the required stores have occurred.
+
+[Note]
+xref:insts:wrs_nto.adoc#udb:doc:inst:wrs_nto[wrs.nto], unlike WFI, is not specified to cause an illegal instruction exception if executed in U-mode
+when the governing TW bit is 0. WFI is typically not expected to be used in U-mode and on many systems
+may promptly cause an illegal instruction exception if used at U-mode.
+Unlike WFI, xref:insts:wrs_nto.adoc#udb:doc:inst:wrs_nto[wrs.nto] is expected to be used by software in U-mode when waiting on memory but without
+a deadline for that wait.
 
 
 Decode Variables::
@@ -42444,7 +42506,7 @@ Included in::
 == wrs.sto
 
 Synopsis::
-No synopsis available
+Wait-on-Reservation-Set-with-Short-Timeout
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -42453,7 +42515,33 @@ Encoding::
 ....
 
 Description::
-No description available.
+Instead of polling for a store to a specific memory location, software registers a
+reservation set that includes all the bytes of the memory location using the LR instruction.
+A subsequent xref:insts:wrs_sto.adoc#udb:doc:inst:wrs_sto[wrs.sto] instruction would cause the hart to temporarily stall execution in a
+low-power state until a store occurs to the reservation set or an interrupt is observed.
+Sometimes the program waiting on a memory update may also need to carry out a task at a future time
+or otherwise place an upper bound on the wait. To support such use cases, xref:insts:wrs_sto.adoc#udb:doc:inst:wrs_sto[wrs.sto] bounds the
+stall duration to an implementation-define short timeout such that the stall is terminated on the
+timeout if no other conditions have occurred to terminate the stall. The program using this instruction
+may then determine if its deadline has been reached.
+xref:insts:wrs_sto.adoc#udb:doc:inst:wrs_sto[wrs.sto] causes the hart to temporarily stall execution in a low-power state as long as the reservation
+set is valid and no pending interrupts, even if disabled, are observed. For xref:insts:wrs_sto.adoc#udb:doc:inst:wrs_sto[wrs.sto] the stall duration
+is bounded by an implementation defined short timeout. These instructions are not supported in a
+constrained LR/SC loop.
+Hart execution may be stalled while the following conditions are all satisfied:
+a. The reservation set is valid
+b. If xref:insts:wrs_sto.adoc#udb:doc:inst:wrs_sto[wrs.sto], a "short" duration since start of stall has not elapsed
+c. No pending interrupt is observed (see the rules below)
+
+While stalled, an implementation is permitted to occasionally terminate the stall and complete
+execution for any reason. xref:insts:wrs_sto.adoc#udb:doc:inst:wrs_sto[wrs.sto] follows the rules of the WFI instruction for resuming execution
+on a pending interrupt. Since xref:insts:wrs_sto.adoc#udb:doc:inst:wrs_sto[wrs.sto] can complete execution for reasons other than stores to
+the reservation set, software will likely need a means of looping until the required stores have occurred.
+
+[Note]
+The duration of a xref:insts:wrs_sto.adoc#udb:doc:inst:wrs_sto[wrs.sto] instruction's timeout may vary significantly within and among implementations.
+In typical implementations this duration should be roughly in the range of 10 to 100 times an on-chip
+cache miss latency or a cacheless access to main memory.
 
 
 Decode Variables::
