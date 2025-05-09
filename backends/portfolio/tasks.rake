@@ -5,22 +5,10 @@
 require "pathname"
 require_relative "#{$lib}/idl/passes/gen_adoc"
 
-# @return [Architecture]
-def pf_create_arch
-  # Ensure that unconfigured resolved architecture called "_" exists.
-  Rake::Task["#{$root}/.stamps/resolve-_.stamp"].invoke
-
-  # Create architecture object using the unconfigured resolved architecture called "_".
-  Architecture.new($root / "gen" / "resolved_arch" / "_")
-end
-
 # @param portfolio_grp_with_arch [PortfolioGroup] Contains one or more Portfolio objects that have an arch (not a cfg_arch).
 # @return [ConfiguredArchitecture]
-def pf_create_cfg_arch(portfolio_grp_with_arch)
+def pf_create_cfg_arch(portfolio_grp_with_arch, config_name)
   raise ArgumentError, "portfolio_grp_with_arch is a #{portfolio_grp_with_arch.class} but must be a PortfolioGroup" unless portfolio_grp_with_arch.is_a?(PortfolioGroup)
-
-  # Ensure that unconfigured resolved architecture called "_" exists.
-  Rake::Task["#{$root}/.stamps/resolve-_.stamp"].invoke
 
   # Create a ConfiguredArchitecture object and provide it a PortfolioGroupConfig object to implement the AbstractConfig API.
   # The DatabaseObjects in PortfolioGroup only have an Architecture object and not a ConfiguredArchitecture object
@@ -30,7 +18,7 @@ def pf_create_cfg_arch(portfolio_grp_with_arch)
   ConfiguredArchitecture.new(
     portfolio_grp_with_arch.name,
     PortfolioGroupConfig.new(portfolio_grp_with_arch),
-    $root / "gen" / "resolved_arch" / "_"
+    $root / "gen" / "resolved_arch" / config_name
   )
 end
 

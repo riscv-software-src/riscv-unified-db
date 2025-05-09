@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=../schemas/config_schema.json
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: unconfigured
+name: mocks
+description: A configuration containing mock data for testing
+arch_overlay: mocks

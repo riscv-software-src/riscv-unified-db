@@ -7,20 +7,22 @@ require "pathname"
 # @param erb_template_pname [String] Path to ERB template file
 # @param target_pname [String] Full name of adoc file being generated
 # @param model_name [String] Name of the processor certificate model
-def proc_cert_create_adoc(erb_template_pname, target_pname, model_name)
+def proc_cert_create_adoc(erb_template_pname, target_pname, model_name, config_locator)
   # Create Architecture object without any knowledge of certificate model.
-  $logger.info "Creating Architecture object for #{model_name}"
-  arch = pf_create_arch
+  $logger.info "Creating Architecture object for #{model_name}, config #{config_locator}"
+  bootstrap_cfg_arch = cfg_arch_for(config_locator)
 
   # Create ProcCertModel for specific processor certificate model as specified in its arch YAML file.
   # The Architecture object also creates all other portfolio-related class instances from their arch YAML files.
   # None of these objects are provided with a AbstractConfig or Design object when created.
   $logger.info "Creating ProcCertModel with only an Architecture object for #{model_name}"
-  proc_cert_model_with_arch = arch.proc_cert_model(model_name)
+  proc_cert_model_with_arch = bootstrap_cfg_arch.proc_cert_model(model_name)
+
+  raise "?" if proc_cert_model_with_arch.nil?
 
   # Create the ConfiguredArchitecture object with knowledge of the ProcCertModel.
   # Needs a PortfolioGroup object so just create one with just one ProcCertModel (which is a child of Portfolio).
-  cfg_arch = pf_create_cfg_arch(PortfolioGroup.new(model_name, [proc_cert_model_with_arch]))
+  cfg_arch = pf_create_cfg_arch(PortfolioGroup.new(model_name, [proc_cert_model_with_arch]), bootstrap_cfg_arch.name)
 
   $logger.info "Creating ProcCertModel with a ConfiguredArchitecture object for #{model_name}"
   proc_cert_model_with_cfg_arch = cfg_arch.proc_cert_model(model_name)
