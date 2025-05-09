@@ -40,7 +40,7 @@ operation(): |
   XReg width = (width_bits > 32) ? 32 : width_bits;
   XReg shamt = X[rs2][5:0];
   if (width > 0) {
-    X[rd] = sext((pair >> shamt) & ((1 << width) - 1), width);
+    X[rd] = sext((pair >> shamt) & ((32'b1 << width) - 1), width);
   } else {
     X[rd] = 0;
   }
