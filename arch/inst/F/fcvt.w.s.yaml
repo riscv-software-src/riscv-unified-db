@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.w.s
-long_name: Convert single-precision float to integer word to signed 32-bit integer
+long_name: Convert single-precision float to signed word.
 description: |
   Converts a floating-point number in floating-point register _fs1_ to a signed 32-bit integer in 
   integer register _rd_.
