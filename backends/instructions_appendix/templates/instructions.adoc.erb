@@ -13,9 +13,8 @@ Synopsis::
 <%- if ENV['ASSEMBLY']=="1" && inst.assembly.to_s.strip != "" -%>
 Assembly::
 <%= inst.fix_entities("#{inst.name.downcase} #{inst.assembly}") %>
+
 <%- end -%>
-
-
 Encoding::
 <%- if inst.multi_encoding? -%>
 [NOTE]
