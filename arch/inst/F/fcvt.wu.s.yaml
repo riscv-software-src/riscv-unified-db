@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.wu.s
-long_name: Convert single-precision float to integer word to unsigned 32-bit integer 
+long_name: Convert single-precision float to unsigned word. 
 description: |
   Converts a floating-point number in floating-point register _fs1_ to an unsigned 32-bit integer in integer register _rd_.
 
