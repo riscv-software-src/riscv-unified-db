@@ -3,12 +3,12 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fltq.h
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy:
   allOf: [Zfa, Zfh]
-assembly: xd, xs1, xs2
+assembly: fd, fs1, fs2
 encoding:
   match: 1010010----------101-----1010011
   variables:

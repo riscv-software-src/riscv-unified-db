@@ -385,6 +385,10 @@ class Portfolio < DatabaseObject
   # @return [Presence] Given an instruction +inst_name+, return the presence.
   #                    If the instruction name isn't found in the portfolio, return nil.
   def instruction_presence_obj(inst_name)
+    @instruction_presence_obj ||= {}
+
+    return @instruction_presence_obj[inst_name] unless @instruction_presence_obj[inst_name].nil?
+
     inst = arch.instruction(inst_name)
 
     raise "Can't find instruction object '#{inst_name}' in arch class" if inst.nil?
@@ -399,26 +403,35 @@ class Portfolio < DatabaseObject
       ext_versions.any? { |ext_ver| inst.defined_by_condition.possibly_satisfied_by?(ext_ver) }
     end
 
-    if is_mandatory
-      Presence.new(Presence.mandatory)
-    elsif is_optional
-      Presence.new(Presence.optional)
-    else
-      nil
-    end
+    @instruction_presence_obj[inst_name] =
+      if is_mandatory
+        Presence.new(Presence.mandatory)
+      elsif is_optional
+        Presence.new(Presence.optional)
+      else
+        nil
+      end
   end
 
   # @return [String] Given an instruction +inst_name+, return the presence as a string.
   #                  If the instruction name isn't found in the portfolio, return "-".
   def instruction_presence(inst_name)
+    @instruction_presence ||= {}
+
+    return @instruction_presence[inst_name] unless @instruction_presence[inst_name].nil?
+
     presence_obj = instruction_presence_obj(inst_name)
 
-    presence_obj.nil? ? "-" : presence_obj.to_s
+    @instruction_presence[inst_name] = presence_obj.nil? ? "-" : presence_obj.to_s
   end
 
   # @return [Presence] Given an CSR +csr_name+, return the presence.
   #                    If the CSR name isn't found in the portfolio, return nil.
   def csr_presence_obj(csr_name)
+    @csr_presence_obj ||= {}
+
+    return @csr_presence_obj[csr_name] unless @csr_presence_obj[csr_name].nil?
+
     csr = arch.csr(csr_name)
 
     raise "Can't find CSR object '#{csr_name}' in arch class" if csr.nil?
@@ -433,21 +446,26 @@ class Portfolio < DatabaseObject
       ext_versions.any? { |ext_ver| csr.defined_by_condition.possibly_satisfied_by?(ext_ver) }
     end
 
-    if is_mandatory
-      Presence.new(Presence.mandatory)
-    elsif is_optional
-      Presence.new(Presence.optional)
-    else
-      nil
-    end
+    @csr_presence_obj[csr_name] =
+      if is_mandatory
+        Presence.new(Presence.mandatory)
+      elsif is_optional
+        Presence.new(Presence.optional)
+      else
+        nil
+      end
   end
 
   # @return [String] Given an CSR +csr_name+, return the presence as a string.
   #                  If the CSR name isn't found in the portfolio, return "-".
   def csr_presence(csr_name)
+    @csr_presence ||= {}
+
+    return @csr_presence[csr_name] unless @csr_presence[csr_name].nil?
+
     presence_obj = csr_presence_obj(csr_name)
 
-    presence_obj.nil? ? "-" : presence_obj.to_s
+    @csr_presence[csr_name] = presence_obj.nil? ? "-" : presence_obj.to_s
   end
 
   # Returns the greatest presence string for each of the specified versions.

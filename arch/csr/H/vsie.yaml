@@ -6,16 +6,34 @@ name: vsie
 address: 0x204
 virtual_address: 0x144
 long_name: Virtual Supervisor Interrupt Enable
-description: |
-  The vsie register is a VSXLEN-bit read/write register that is VS-mode’s version of
-  supervisor CSR sie. When V=1, vsie substitutes for the usual sie, so instructions that
-  normally read or modify sie actually access vsie instead. However, interrupts directed to
-  HS-level continue to be indicated in the HS-level sip register, not in vsip, when V=1.
+description:
+  - id: csr-vsie-purpose
+    normative: true
+    text: |
+      The vsie register is a VSXLEN-bit read/write register that is VS-mode’s version of
+      supervisor CSR sie. When V=1, vsie substitutes for the usual sie, so instructions that
+      normally read or modify sie actually access vsie instead. However, interrupts directed to
+      HS-level continue to be indicated in the HS-level sip register, not in vsip, when V=1.
 
-  When bit 13 of hideleg is zero, vsie.LCOFIE is read-only zero. Else, vsie.LCOFIE is an alias of sie.LCOFIE.
-  When bit 10 of hideleg is zero, vsie.SEIE is read-only zero. Else, vsie.SEIE is an alias of hie.VSEIE.
-  When bit 6 of hideleg is zero, vsie.STIE is read-only zero. Else, vsie.STIE is an alias of hie.VSTIE.
-  When bit 2 of hideleg is zero, vsie.SSIE is read-only zero. Else, vsie.SSIE is an alias of hie.VSSIE.
+  - id: csr-vsie-lcofie-aliasing
+    normative: true
+    text: |
+      When bit 13 of hideleg is zero, vsie.LCOFIE is read-only zero. Else, vsie.LCOFIE is an alias of sie.LCOFIE.
+
+  - id: csr-vsie-seie-aliasing
+    normative: true
+    text: |
+      When bit 10 of hideleg is zero, vsie.SEIE is read-only zero. Else, vsie.SEIE is an alias of hie.VSEIE.
+
+  - id: csr-vsie-stie-aliasing
+    normative: true
+    text: |
+      When bit 6 of hideleg is zero, vsie.STIE is read-only zero. Else, vsie.STIE is an alias of hie.VSTIE.
+
+  - id: csr-vsie-ssie-aliasing
+    normative: true
+    text: |
+      When bit 2 of hideleg is zero, vsie.SSIE is read-only zero. Else, vsie.SSIE is an alias of hie.VSSIE.
 priv_mode: VS
 definedBy: H
 length: VSXLEN

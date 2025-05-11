@@ -5,6 +5,7 @@ kind: csr
 name: mnepc
 long_name: Machine Exception Program Counter
 address: 0x741
+writable: true
 priv_mode: M
 length: MXLEN
 description: |

@@ -14,6 +14,7 @@ module Idl
       raise ArgumentError, "Expecting a Type, got #{type.class.name}" unless type.is_a?(Type)
 
       @type = type
+      @type.qualify(:template_var)
       @type.freeze
       @value = value
       raise "unexpected" unless decode_var.is_a?(TrueClass) || decode_var.is_a?(FalseClass)
@@ -357,7 +358,7 @@ module Idl
       end
 
       # need more!
-      warn "Allocating more SymbolTables"
+      $logger.info "Allocating more SymbolTables"
       5.times do
         copy = SymbolTable.allocate
         copy.instance_variable_set(:@scopes, [@scopes[0]])

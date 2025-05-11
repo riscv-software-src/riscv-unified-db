@@ -9,7 +9,7 @@ description: |
   of each byte in the result rd to all zeros if no bit within the respective byte
   of rs is set, or to all ones if any bit within the respective byte of rs is set.
 definedBy: Zbb
-assembly: xd, xs1, xs2
+assembly: xd, xs1
 encoding:
   match: 001010000111-----101-----0010011
   variables:

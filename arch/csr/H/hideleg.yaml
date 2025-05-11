@@ -4,11 +4,26 @@ $schema: "csr_schema.json#"
 kind: csr
 name: hideleg
 long_name: Hypervisor Interrupt Delegation Register
-description: |
-  Register hideleg is an HSXLEN-bit read/write register. By default, all traps at any privilege level are handled in M-mode, though M-mode usually uses the medeleg and mideleg CSRs to delegate some traps to HS-mode.
-  The hedeleg and hideleg CSRs allow these traps to be further delegated to a VS-mode guest; their layout is the same as medeleg and mideleg.
-  An interrupt that has been delegated to HS-mode (using mideleg) is further delegated to VS-mode if the corresponding hideleg bit is set.
-  Among bits 15:0 of hideleg, bits 10, 6, and 2 (corresponding to the standard VS-level interrupts) are writable, and bits 12, 9, 5, and 1 (corresponding to the standard S-level interrupts) are read-only zeros.
+description:
+  - id: csr-hideleg-purpose
+    normative: true
+    text: |
+      Register hideleg is an HSXLEN-bit read/write register. By default, all traps at any privilege level are handled in M-mode, though M-mode usually uses the medeleg and mideleg CSRs to delegate some traps to HS-mode.
+
+  - id: csr-hideleg-delegation-to-vs
+    normative: true
+    text: |
+      The hedeleg and hideleg CSRs allow these traps to be further delegated to a VS-mode guest; their layout is the same as medeleg and mideleg.
+
+  - id: csr-hideleg-interrupt-forwarding
+    normative: true
+    text: |
+      An interrupt that has been delegated to HS-mode (using mideleg) is further delegated to VS-mode if the corresponding hideleg bit is set.
+
+  - id: csr-hideleg-bit-accessibility
+    normative: true
+    text: |
+      Among bits 15:0 of hideleg, bits 10, 6, and 2 (corresponding to the standard VS-level interrupts) are writable, and bits 12, 9, 5, and 1 (corresponding to the standard S-level interrupts) are read-only zeros.
 address: 0x603
 priv_mode: S
 definedBy: H
@@ -24,9 +39,9 @@ fields:
   VSSI:
     location: 2
     type: RW
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
     long_name: Virtual Supervisor Software Interrupt
-    description: Virtual Supervisor Software Interrupt
+    description: Delegates the Virtual Supervisor Software Interrupt to VS-mode
 
   STI:
     location: 5
@@ -38,9 +53,9 @@ fields:
   VSTI:
     location: 6
     type: RW
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
     long_name: Virtual Supervisor Timer Interrupt
-    description: Virtual Supervisor Timer Interrupt
+    description: Delegates the Virtual Supervisor Timer Interrupt to VS-mode
 
   SEI:
     location: 9
@@ -52,9 +67,9 @@ fields:
   VSEI:
     location: 10
     type: RW
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
     long_name: Virtual Supervisor External Interrupt
-    description: Virtual Supervisor External Interrupt
+    description: Delegates the Virtual Supervisor External Interrupt to VS-mode
 
   SGEI:
     location: 12
@@ -62,3 +77,13 @@ fields:
     reset_value: 0
     long_name: Supervisor Guest External Interrupt
     description: Supervisor Guest External Interrupt
+
+  LCOFI:
+    location: 13
+    definedBy: Sscofpmf
+    long_name: Local Counter Overflow Interrupt
+    description: Delegate Local Counter Overflow Interrupts to VS-mode.
+    type(): |
+      return HIDELEG_LCOFI_MUTABLE ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return HIDELEG_LCOFI_MUTABLE ? UNDEFINED_LEGAL : 0;

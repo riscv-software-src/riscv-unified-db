@@ -95,16 +95,20 @@ grammar Idl
     # highest priority binary operators
       '/'   # division with ignored remainder
     / '%'   # remainder
+    / '`*'  # widening multiplication
     / '*'   # multiplication with ignored upper half
   end
 
   rule p1_binary_operator
-      '+'   # addition with ignored overflow
+      '`+'  # widening addition
+    / '`-'  # widening subtraction
+    / '+'   # addition with ignored overflow
     / '-'   # subtraction with ignored overflow
   end
 
   rule p2_binary_operator
-      '<<'  # left shift
+      '`<<' # widening left shift (only valid when shift amount is constant)
+    / '<<'  # left shift
     / '>>>' # arithmetic right shift
     / '>>'  # logical left shift
   end
@@ -275,7 +279,7 @@ grammar Idl
 
   rule csr_register_access_expression
     # CSR register access
-    'CSR' space* '[' space* idx:(expression / csr_name) space* ']' <Idl::CsrReadExpressionSyntaxNode>
+    'CSR' space* '[' space* csr_name space* ']' <Idl::CsrReadExpressionSyntaxNode>
   end
 
   rule field_access_eligible_expression
@@ -652,7 +656,7 @@ grammar Idl
   end
 
   rule var_write
-    'CSR' space* '[' space* idx:(csr_name / int) space* ']' <Idl::CsrWriteSyntaxNode>
+    'CSR' space* '[' space* csr_name space* ']' <Idl::CsrWriteSyntaxNode>
     /
     id
   end

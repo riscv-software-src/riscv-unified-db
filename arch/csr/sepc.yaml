@@ -5,6 +5,7 @@ kind: csr
 name: sepc
 long_name: Supervisor Exception Program Counter
 address: 0x141
+writable: true
 priv_mode: S
 length: 64
 description: |

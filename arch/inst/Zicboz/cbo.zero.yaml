@@ -31,7 +31,7 @@ description: |
 
   CBO operations never raise a misaligned address fault.
 definedBy: Zicboz
-assembly: "TODO"
+assembly: xs1
 encoding:
   match: 000000000100-----010000000001111
   variables:

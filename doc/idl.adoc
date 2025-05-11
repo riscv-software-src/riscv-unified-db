@@ -414,6 +414,7 @@ Binary operators between operands of different bit widths will extend the smalle
 
 The result of a binary operation is signed if both operands are signed; otherwise, the result is unsigned.
 
+[#operators]
 .IDL operators in precedence order, with 0 being highest. For an operand `i` (which may be an expression), `L(i)` is the number of bits in `i` and `typeof(i)` is the exact type of `i`
 [cols="1,2,3,4"]
 |===
@@ -445,9 +446,11 @@ The result of a binary operation is signed if both operands are signed; otherwis
                                                            `i` must be a `Bits<N>` type. +
                                                            N must be a literal or compile-time constant.
 
-.3+| 6          | `i * j`    | `Bits<max(L(i), L(j))>`   | Multiply `i` times `j`. +
+.4+| 6          | `i * j`    | `Bits<max(L(i), L(j))>`   | Multiply `i` times `j`. +
                                                            The result is the same width as the widest operand. +
-                                                           The upper half of the multiplication result is discarded (if the upper half is needed, the operands can be widened ahead of the multiplication).
+                                                           The upper half of the multiplication result is discarded.
+
+                | `i \`* j`  | `Bits<L(i) + L(j)>`   | Widening multiply `i` times `j`.
 
                 | `i / j`    | `Bits<max(L(i), L(j))>`   | Divide `i` by `j`. +
                                                            The result is the same width as the widest operand. +
@@ -461,25 +464,22 @@ The result of a binary operation is signed if both operands are signed; otherwis
                                                            Division by zero is undefined, and must be avoided.
                                                            When `i` and `j` are signed, signed overflow is undefined, and must be avoided.
 
-.2+| 7          | `i + j`    | `Bits<max(L(i), L(j))>`   | Addition +
+.4+| 7          | `i + j`    | `Bits<max(L(i), L(j))>`   | Addition +
                                                            The carry bit is discarded. +
                                                            If the carry bit is needed, the operands can be widened prior to addition.
+
+                | `i \`+ j`    | `Bits<max(L(i), L(j)) + 1>`   | Widening Addition
 
                 | `i - j`    | `Bits<max(L(i), L(j))>`   | Subtraction +
                                                            The carry bit is discarded. +
                                                            If the carry bit is needed, the operands can be widened prior to subtraction.
 
-.3+| 8          | `i << j`   a|
-[%autowidth]
-!===
-! When ! Then
-! `j` is literal  ! `Bits<L(i) + j>`
-! `j` is variable ! `typeof(i)`
-!===
-                                                           | Left logical shift. +
-                                                             When the shift amount is known at compile time, the result is widened to not lose any data. +
-                                                             When the shift amount is not known at compile time, the shifted bits are discarded.
+                | `i \`- j`    | `Bits<max(L(i), L(j)) + 1>`   | Widening Subtraction
 
+.4+| 8          | `i << j`   | `typeof(i)` | Left logical shift
+                | `i \`<< j`   | `Bits<L(i) + value(j)>`   | Widening left logic shift. +
+                                                             `j` *must* be known at compile time -- +
+                                                             otherwise, this is a type error
                 | `i >> j`   | `typeof(i)`                 | Right logical shift.
                 | `i >>> j`  | `typeof(i)`                 | Right arithmetic shift.
 
@@ -607,6 +607,8 @@ Bitfields can be converted to a `Bits<N>` type, where N is the width of the bitf
 
 == Casting
 
+=== Explicit casting
+
 There are four explicit cast operators in IDL: `$signed`, `$bits`, `$enum`, and `$enum_to_a`.
 
 Unsigned Bits<N> values may be cast to signed values using the `$signed` cast operator.
@@ -622,7 +624,7 @@ XReg cmp1 = ($signed(src1) < $signed(src2)) ? 1 : 0;  # cmp = 1
 
 The '$bits' cast can convert Enumeration references, Bitfields, and CSRs into a Bits<N> type.
 When the casted value is an enumeration reference, the resulting type will be large enough to hold the largest value in the enumeration type, regardless of the specific reference value.
-When the casted value is a CSR, the resulting type will the width of the CSR, or the maximum width when a CSR width is dynamic.
+When the casted value is a CSR, the resulting type will the width of the CSR, or the maximum width when a CSR width is dynamic (changable at runtime).
 When the casted value is a bitfield, the resulting type will be the width of the bitfield.
 
 [source,idl]
@@ -657,6 +659,30 @@ The `$enum_to_a` cast will convert an enumeration type into an array of the enum
 [source,idl]
 ----
 $enum_to_a(RoundingMode)  # => [0, 1, 2, 3, 4]
+----
+
+=== Implicit casting
+
+Operations involving Bits<N> type with different N involve an implicit cast to the larger bitwidth according to xref:operators[xrefstyle=short].
+
+When the Bits<N> type is unsigned, it zero-extends to the larger width.
+
+When the Bits<N> type is signed, it sign-extends to the larger width.
+
+[source,idl]
+----
+
+Bits<4> a = 1;
+Bits<2> b = 3;
+
+Bits<4> c = a | b;           # c = 3
+Bits<4> d = a | $signed(b);  # d = 0xf
+
+Bits<4> e = a + b;           # e = 4
+Bits<4> f = a + $signed(b);  # f = 0
+
+Bits<4> g = $signed(a) | b;  # g = 3
+
 ----
 
 == Builtins

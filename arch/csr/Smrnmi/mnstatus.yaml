@@ -5,11 +5,14 @@ kind: csr
 name: mnstatus
 long_name: Machine NMI Status
 address: 0x744
+writable: true
 priv_mode: M
 
 # length is MXLEN-bit
 length: MXLEN
-description: The mnstatus register tracks and controls the hart's current NMI operating state.
+description:
+  The mnstatus register tracks and controls the hart's current NMI operating
+  state.
 definedBy: Smrnmi
 fields:
   MNPP:

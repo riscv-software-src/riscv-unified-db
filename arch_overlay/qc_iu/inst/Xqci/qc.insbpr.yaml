@@ -38,7 +38,7 @@ operation(): |
   XReg width = (width_bits > 32) ? 32 : width_bits;
   XReg shamt = X[rs2][4:0];
   if (width > 0) {
-    XReg mask = ((1 << width) - 1) << shamt;
+    XReg mask = ((32'b1 << width) - 1) << shamt;
     XReg orig_val = X[rd];
     X[rd] = (orig_val & ~mask) | ((X[rs1] << shamt) & mask);
   }

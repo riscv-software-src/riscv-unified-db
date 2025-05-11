@@ -4,9 +4,12 @@ $schema: "csr_schema.json#"
 kind: csr
 name: hip
 long_name: Hypervisor Interrupt Pending Register
-description: |
-  The `hip` register is an HSXLEN-bit read/write register that indicates pending interrupts at the hypervisor level.
-  It contains interrupt-pending bits for both VS-level and hypervisor-specific interrupts.
+description:
+  - id: csr-hip-purpose
+    normative: true
+    text: |
+      The `hip` register is an HSXLEN-bit read/write register that indicates pending interrupts at the hypervisor level.
+      It contains interrupt-pending bits for both VS-level and hypervisor-specific interrupts.
 address: 0x608
 priv_mode: S
 definedBy: H
@@ -31,7 +34,7 @@ fields:
 
   VSTIP:
     location: 6
-    type: RO
+    type: RO-H
     reset_value: 0
     description: |
       Pending interrupt bit for VS-level timer interrupts (VSTI).
@@ -39,8 +42,20 @@ fields:
 
   VSSIP:
     location: 2
-    type: RO
+    alias: hvip.VSSIP
+    sw_write(csr_value): CSR[hvip].VSSIP = csr_value.VSSIP;
+    type: RW
     reset_value: 0
     description: |
       Pending interrupt bit for VS-level software interrupts (VSSI).
       This bit is an alias of the `vssip` bit in `hvip`.
+
+  LCOFI:
+    location: 13
+    definedBy: Sscofpmf
+    long_name: Local Counter Overflow Interrupt
+    description: Delegate Local Counter Overflow Interrupts to VS-mode.
+    type(): |
+      return HIDELEG_LCOFI_MUTABLE ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return HIDELEG_LCOFI_MUTABLE ? UNDEFINED_LEGAL : 0;

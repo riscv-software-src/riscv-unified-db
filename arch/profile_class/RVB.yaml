@@ -2,6 +2,7 @@ $schema: profile_class_schema.json#
 kind: profile class
 processor_kind: Apps Processor
 name: RVB
+long_name: Apps Processor profile class for Bespoke Rich Operating System
 marketing_name: RVB
 introduction: |
   The RVB profile class targets application processors for markets

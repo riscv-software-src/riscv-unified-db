@@ -3,11 +3,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vfirst.m
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: V
-assembly: vm, vs2, xd
+assembly: vd, vs2, vm
 encoding:
   match: 010000------10001010-----1010111
   variables:

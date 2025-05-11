@@ -3,11 +3,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: lw.aq
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: Zalasr
-assembly: xd, xs1, rl
+assembly: xd, xs1
 encoding:
   match: 001101-00000-----010-----0101111
   variables:

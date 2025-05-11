@@ -3,11 +3,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vbrev.v
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: Zvbb
-assembly: vm, vs2, vd
+assembly: vd, vs2, vm
 encoding:
   match: 010010------01010010-----1010111
   variables:

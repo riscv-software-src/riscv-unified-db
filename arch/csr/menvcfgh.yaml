@@ -4,6 +4,7 @@ $schema: "csr_schema.json#"
 kind: csr
 name: menvcfgh
 address: 0x31A
+writable: true
 base: 32
 long_name: Machine Environment Configuration
 description: Contains bits to enable/disable extensions

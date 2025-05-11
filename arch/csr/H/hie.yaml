@@ -4,10 +4,13 @@ $schema: "csr_schema.json#"
 kind: csr
 name: hie
 long_name: Hypervisor Interrupt Enable Register
-description: |
-  The `hie` register is a read/write register in HS-mode that enables interrupts.
-  It corresponds to the enable bits for VS-level and hypervisor-specific interrupts, and supplements
-  the HS-level `sie` register.
+description:
+  - id: csr-hie-purpose
+    normative: true
+    text: |
+      The `hie` register is a read/write register in HS-mode that enables interrupts.
+      It corresponds to the enable bits for VS-level and hypervisor-specific interrupts, and supplements
+      the HS-level `sie` register.
 address: 0x604
 priv_mode: S
 definedBy: H
@@ -16,7 +19,7 @@ fields:
   SGEIE:
     location: 12
     type: RW-H
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
     description: |
       Hypervisor guest external interrupt enable bit. When set, allows external interrupts to be delivered
       to VS-mode based on the `hgeie` setting.
@@ -24,7 +27,7 @@ fields:
   VSEIE:
     location: 10
     type: RW-H
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
     description: |
       VS-level external interrupt enable bit. When set, allows external interrupts directed to VS-level
       to be processed based on the configuration in `hvip` and other platform-specific sources.
@@ -32,7 +35,7 @@ fields:
   VSTIE:
     location: 6
     type: RW-H
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
     description: |
       VS-level timer interrupt enable bit. When set, allows VS-level timer interrupts to be processed
       based on the `hvip` configuration and any platform-specific timer interrupts.
@@ -40,7 +43,18 @@ fields:
   VSSIE:
     location: 2
     type: RW-H
-    reset_value: 0
+    reset_value: UNDEFINED_LEGAL
     description: |
       VS-level software interrupt enable bit. When set, allows software interrupts directed to VS-level
       to be processed, based on the configuration in `hvip`.
+
+  LCOFIE:
+    location: 13
+    definedBy: Sscofpmf
+    long_name: Local Counter Overflow Interrupt Enable
+    description: |
+      Enable Local Counter Overflow Interrupts in VS-mode.
+    type(): |
+      return HIE_LCOFIE_MUTABLE ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value(): |
+      return HIE_LCOFIE_MUTABLE ? UNDEFINED_LEGAL : 0;

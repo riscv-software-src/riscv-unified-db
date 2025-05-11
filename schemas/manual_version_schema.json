@@ -56,22 +56,25 @@
     "manual",
     "version",
     "name",
+    "long_name",
     "marketing_version",
     "state",
     "volumes"
   ],
   "properties": {
     "$schema": {
-      "type": "string",
       "const": "manual_version_schema.json#"
     },
     "kind": {
-      "type": "string",
       "const": "manual version"
     },
     "name": {
       "type": "string",
       "description": "Name (database key) of this version"
+    },
+    "long_name": {
+      "type": "string",
+      "description": "One line description of the instruction"
     },
     "manual": {
       "type": "object",

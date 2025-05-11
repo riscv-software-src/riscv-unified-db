@@ -3,11 +3,11 @@
 $schema: inst_schema.json#
 kind: instruction
 name: ssrdp
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: Zicfiss
-assembly: xd
+assembly: rd
 encoding:
   match: 11001101110000000100-----1110011
   variables:

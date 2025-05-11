@@ -2377,7 +2377,9 @@ module Idl
         value_else(value_result) do
           # if this is a fully configured ConfiguredArchitecture, this is an error because all constants are supposed to be known
           if symtab.cfg_arch.fully_configured?
-            type_error "Array size (#{ary_size.text_value}) must be known at compile time"
+            unless ary_size.type(symtab).template_var?
+              type_error "Array size (#{ary_size.text_value}) must be known at compile time"
+            end
           else
             # otherwise, it's ok that we don't know the value yet, as long as the value is a const
             type_error "Array size (#{ary_size.text_value}) must be a constant" unless ary_size.type(symtab).const?
@@ -2709,7 +2711,7 @@ module Idl
 
     LOGICAL_OPS = ["==", "!=", ">", "<", ">=", "<=", "&&", "||"].freeze
     BIT_OPS = ["&", "|", "^"].freeze
-    ARITH_OPS = ["+", "-", "/", "*", "%", "<<", ">>", ">>>"].freeze
+    ARITH_OPS = ["+", "-", "/", "*", "%", "<<", ">>", ">>>", "`+", "`-", "`*", "`<<"].freeze
     OPS = (LOGICAL_OPS + ARITH_OPS + BIT_OPS).freeze
 
     def lhs = @children[0]
@@ -2781,7 +2783,10 @@ module Idl
         else
           BoolType
         end
-      elsif op == "<<"
+      elsif ["<<", ">>", ">>>"].include?(op)
+        # type of non-widening left/right shift is the type of the left hand side
+        lhs_type
+      elsif op == "`<<"
         value_result = value_try do
           # if shift amount is known, then the result width is increased by the shift
           # otherwise, the result is the width of the left hand side
@@ -2791,38 +2796,27 @@ module Idl
         value_else(value_result) do
           Type.new(:bits, width: lhs_type.width, qualifiers:)
         end
-      #elsif ["+", "-", "*", "/", "%"].include?(op)
-      elsif lhs_type.const? && rhs_type.const?
-        # if both types are const and the operator results in a Bits type,
-        # then the result type is the largest of:
-        #
-        #  * the minimum bit width needed to represent `lhs op rhs`
-        #  * the largest width of either lhs or rhs
-        result_width =
-          case op
-          when "*"
-            if [lhs_type.width, rhs_type.width].include?(:unknown)
-              :unknown
-            else
-              lhs_type.width + rhs_type.width
-            end
-          when "+", "-"
-            if [lhs_type.width, rhs_type.width].include?(:unknown)
-              :unknown
-            else
-              [lhs_type.width, rhs_type.width].max + 1
-            end
-          when "/", "%", ">>", ">>>"
-            lhs_type.width
-          when "&", "|", "^"
-            if [lhs_type.width, rhs_type.width].include?(:unknown)
-              :unknown
-            else
-              [lhs_type.width, rhs_type.width].max
-            end
-          end
-        qualifiers << :signed if lhs_type.signed? && rhs_type.signed?
-        Type.new(:bits, width: result_width, qualifiers:)
+      elsif ["`+", "`-"].include?(op)
+        # widening addition/subtraction: result is 1 more bit than the largest operand to
+        # capture the carry
+        value_result = value_try do
+          value_error "lhs width is unknown" if lhs_type.width == :unknown
+          value_error "rhs width is unknown" if rhs_type.width == :unknown
+          return Type.new(:bits, width: [lhs_type.width, rhs_type.width].max + 1, qualifiers:)
+        end
+        value_else(value_result) do
+          Type.new(:bits, width: :unknown, qualifiers:)
+        end
+      elsif op == "`*"
+        # widening multiply: result is 2x the width of the largest operand
+        value_result = value_try do
+          value_error "lhs width is unknown" if lhs_type.width == :unknown
+          value_error "rhs width is unknown" if rhs_type.width == :unknown
+          return Type.new(:bits, width: [lhs_type.width, rhs_type.width].max * 2, qualifiers:)
+        end
+        value_else(value_result) do
+          Type.new(:bits, width: :unknown, qualifiers:)
+        end
       else
         qualifiers << :signed if lhs_type.signed? && rhs_type.signed?
         if [lhs_type.width, rhs_type.width].include?(:unknown)
@@ -2876,18 +2870,24 @@ module Idl
         lhs_type = lhs.type(symtab)
         type_error "Unsupported type for left shift: #{lhs_type}" unless lhs_type.kind == :bits
         type_error "Unsupported shift for left shift: #{rhs_type}" unless rhs_type.kind == :bits
-      elsif op == ">>" || op == ">>>"
+      elsif op == "`<<"
+        rhs_type = rhs.type(symtab)
+        lhs_type = lhs.type(symtab)
+        type_error "Unsupported type for left shift: #{lhs_type}" unless lhs_type.kind == :bits
+        type_error "Unsupported shift for left shift: #{rhs_type}" unless rhs_type.kind == :bits
+        type_error "Widening shift amount must be constant" unless rhs_type.const?
+      elsif [">>", ">>>"].include?(op)
         rhs_type = rhs.type(symtab)
         lhs_type = lhs.type(symtab)
         type_error "Unsupported type for right shift: #{lhs_type(symtab)}" unless lhs_type.kind == :bits
         type_error "Unsupported shift for right shift: #{rhs_type(symtab)}" unless rhs_type.kind == :bits
-      elsif ["*", "/", "%"].include?(op)
+      elsif ["*", "`*", "/", "%"].include?(op)
         rhs_type = rhs.type(symtab)
         lhs_type = lhs.type(symtab)
         unless lhs_type.integral? && rhs_type.integral?
           type_error "Multiplication/division is only defined for integral types. Maybe you forgot a $bits cast?"
         end
-      elsif ["+", "-"].include?(op)
+      elsif ["+", "-", "`+", "`-"].include?(op)
         rhs_type = rhs.type(symtab)
         lhs_type = lhs.type(symtab)
         unless lhs_type.integral? && rhs_type.integral?
@@ -2904,6 +2904,36 @@ module Idl
       end
     end
 
+    # @param value [Integer] the value
+    # @param signed [Boolean] if true, return the number of bits needed if the value is a signed type
+    # @return [Integer] the number of bits needed to represent value in two's complement
+    def bits_needed(value, signed)
+      if signed
+        case value
+        when 0
+          1
+        when 1
+          2
+        else
+          if value > 0
+            # need bit_legnth plus a sign bit
+            bits = value.bit_length + 1
+          else
+            # need bit_length plus a sign bit, unless value is a power of 2
+            if (value.abs & (value.abs - 1)) == 0
+              value.bit_length
+            else
+              value.bit_length + 1
+            end
+          end
+        end
+      else
+        internal_error "unsigned value is negative" if value < 0
+
+        value == 0 ? 1 : value.bit_length
+      end
+    end
+
     def max_value(symtab)
       lhs_max_value = :unknown
       value_result = value_try do
@@ -2912,6 +2942,15 @@ module Idl
       value_else(value_result) do
         lhs_max_value = lhs.max_value(symtab)
       end
+
+      lhs_min_value = :unknown
+      value_result = value_try do
+        lhs_min_value = lhs.value(symtab)
+      end
+      value_else(value_result) do
+        lhs_min_value = lhs.min_value(symtab)
+      end
+
       rhs_max_value = :unknown
       value_result = value_try do
         rhs_max_value = rhs.value(symtab)
@@ -2932,33 +2971,255 @@ module Idl
         when "+"
           return :unknown if [lhs_max_value, rhs_max_value].include?(:unknown)
 
-          lhs_max_value + rhs_max_value
+          sum = lhs_max_value + rhs_max_value
+          # convert to unsigned if needed
+          sum = sum & ((1 << type(symtab).width) - 1) if sum < 0 && !type(symtab).signed?
+
+          # check for truncation
+          sum_bits_needed = bits_needed(sum, type(symtab).signed?)
+          if type(symtab).width != :unknown
+            return sum if sum_bits_needed <= type(symtab).width
+
+            trunc_sum = truncate(sum, type(symtab).width, type(symtab).signed?)
+            truncation_warn "result is truncated from #{sum} to #{trunc_sum}. Did you mean to use the widening additio
+            n operator (`+)?"
+            return trunc_sum
+          else
+            # sum width isn't known...we might still be able to know that it fits if the sum would fit
+            # in lhs or rhs
+            return sum if (lhs.type(symtab).width != :unknown) && (lhs.type(symtab).width >= sum_bits_needed)
+            return sum if (rhs.type(symtab).width != :unknown) && (rhs.type(symtab).width >= sum_bits_needed)
+
+            return :unknown # Cannot know if sum would be truncated
+          end
+        when "`+"
+          return :unknown if [lhs_max_value, rhs_max_value].include?(:unknown)
+
+          sum = lhs_max_value + rhs_max_value
+          # convert to unsigned if needed
+          sum = sum & ((1 << type(symtab).width) - 1) if sum < 0 && !type(symtab).signed?
+
+          return sum
         when "-"
           return :unknown if [lhs_max_value, rhs_min_value].include?(:unknown)
 
-          lhs_max_value - rhs_min_value
+          diff = lhs_max_value - rhs_min_value
+          diff = diff & ((1 << type(symtab).width) - 1) if diff < 0 && !type(symtab).signed?
+          diff_bits_needed = bits_needed(diff, type(symtab).signed?)
+
+          if type(symtab).width != :unknown
+            return diff if diff_bits_needed <= type(symtab).width
+
+            trunc_diff = truncate(diff, type(symtab).width, type(symtab).signed?)
+            truncation_warn "result is truncated from #{diff} to #{trunc_diff}. Did you mean to use the widening subtraction operator (`-)?"
+            return trunc_diff
+          else
+            # diff width isn't known...we might still be able to know that it fits if the sum would fit
+            # in lhs or rhs
+            return diff if (lhs.type(symtab).width != :unknown) && (lhs.type(symtab).width >= diff_bits_needed)
+            return diff if (rhs.type(symtab).width != :unknown) && (rhs.type(symtab).width >= diff_bits_needed)
+
+            return :unknown # Cannot know if sum would be truncated
+          end
+        when "`-"
+          return :unknown if [lhs_max_value, rhs_min_value].include?(:unknown)
+
+          diff = lhs_max_value - rhs_min_value
+          diff = diff & ((1 << type(symtab).width) - 1) if diff < 0 && !type(symtab).signed?
+
+          return diff
         when "*"
+          # max could be multiplying the mins if both are negative
           return :unknown if [lhs_max_value, rhs_max_value].include?(:unknown)
 
-          lhs_max_value * rhs_max_value
+          if lhs.type(symtab).signed? && rhs.type(symtab).signed?
+            return :unknown if [lhs_min_value, rhs_min_value].include?(:unknown)
+          end
+
+          prod = lhs_max_value * rhs_max_value
+          prod = lhs_min_value * rhs_min_value if ![lhs_min_value, rhs_min_value].include?(:unknown) && ((lhs_min_value * rhs_min_value) > prod)
+          prod = prod & ((1 << type(symtab).width) - 1) if prod < 0 && !type(symtab).signed?
+
+          # check for truncation
+          prod_bits_needed = bits_needed(diff, type(symtab).signed?)
+          if (type(symtab).width != :unknown)
+            return prod if prod_bits_needed <= type(symtab).width
+
+            trunc_prod = truncate(prod, type(symtab).width, type(symtab).signed?)
+            truncation_warn "result is truncated from #{prod} to #{trunc_prod}. Did you mean to use the widening multiplication operator (`*)?"
+            return trun_prod
+          else
+            # prod width isn't known...we might still be able to know that it fits if the sum would fit
+            # in lhs or rhs
+            return prod if (lhs.type(symtab).width != :unknown) && (lhs.type(symtab).width >= prod_bits_needed)
+            return prod if (rhs.type(symtab).width != :unknown) && (rhs.type(symtab).width >= prod_bits_needed)
+
+            return :unknown # Cannot know if sum would be truncated
+          end
+        when "`*"
+          # max could be multiplying the mins if both are negative
+          return :unknown if [lhs_max_value, rhs_max_value].include?(:unknown)
+
+          if lhs.type(symtab).signed? && rhs.type(symtab).signed?
+            return :unknown if [lhs_min_value, rhs_min_value].include?(:unknown)
+          end
+
+          prod = lhs_max_value * rhs_max_value
+          prod = lhs_min_value * rhs_min_value if ![lhs_min_value, rhs_min_value].include?(:unknown) && ((lhs_min_value * rhs_min_value) > prod)
+
+          return prod
         else
           raise "TODO: op '#{op}'"
         end
+    end
 
-      v_trunc =
-        if !lhs.type(symtab).const? || !rhs.type(symtab).const?
-          # when both sides are constant, the value is not truncated
-          width = type(symtab).width
-          if width == :unknown
-            value_error("unknown width in op that possibly truncates")
-          end
-          max_value & ((1 << type(symtab).width) - 1)
+    def min_value(symtab)
+      lhs_max_value = :unknown
+      value_result = value_try do
+        lhs_max_value = lhs.value(symtab)
+      end
+      value_else(value_result) do
+        lhs_max_value = lhs.max_value(symtab)
+      end
+
+      lhs_min_value = :unknown
+      value_result = value_try do
+        lhs_min_value = lhs.value(symtab)
+      end
+      value_else(value_result) do
+        lhs_min_value = lhs.min_value(symtab)
+      end
+
+      rhs_max_value = :unknown
+      value_result = value_try do
+        rhs_max_value = rhs.value(symtab)
+      end
+      value_else(value_result) do
+        rhs_max_value = rhs.max_value(symtab)
+      end
+
+      rhs_min_value = :unknown
+      value_result = value_try do
+        rhs_min_value = rhs.value(symtab)
+      end
+      value_else(value_result) do
+        rhs_min_value = rhs.min_value(symtab)
+      end
+
+      case op
+      when "+"
+        return :unknown if [lhs_min_value, rhs_min_value].include?(:unknown)
+
+        sum = lhs_min_value + rhs_min_value
+        sum = sum & ((1 << type(symtab).width) - 1) if sum < 0 && !type(symtab).signed?
+
+        # check for truncation
+        sum_bits_needed = bits_needed(sum, type(symtab).signed?)
+        if type(symtab).width != :unknown
+          return sum if sum_bits_needed <= type(symtab).width
+
+          trunc_sum = truncate(sum, type(symtab).width, type(symtab).signed?)
+          truncation_warn "result is truncated from #{sum} to #{trunc_sum}. Did you mean to use the widening addition operator (`+)?"
+          return trunc_sum
         else
-          max_value
+          # sum width isn't known...we might still be able to know that it fits if the sum would fit
+          # in lhs or rhs
+          return sum if (lhs.type(symtab).width != :unknown) && (lhs.type(symtab).width >= sum_bits_needed)
+          return sum if (rhs.type(symtab).width != :unknown) && (rhs.type(symtab).width >= sum_bits_needed)
+
+          return :unknown # Cannot know if sum would be truncated
+        end
+      when "`+"
+        return :unknown if [lhs_min_value, rhs_min_value].include?(:unknown)
+
+        sum = lhs_min_value + rhs_min_value
+        sum = sum & ((1 << type(symtab).width) - 1) if sum < 0 && !type(symtab).signed?
+
+        return sum
+      when "-"
+        return :unknown if [lhs_min_value, rhs_max_value].include?(:unknown)
+
+        diff = lhs_min_value - rhs_max_value
+        diff = diff & ((1 << type(symtab).width) - 1) if diff < 0 && !type(symtab).signed?
+
+        diff_bits_needed = bits_needed(diff, type(symtab).signed?)
+        if type(symtab).width != :unknown
+          return diff if diff_bits_needed <= type(symtab).width
+
+          trunc_diff = truncate(diff, type(symtab).width, type(symtab).signed?)
+          truncation_warn "result is truncated from #{diff} to #{trunc_diff}. Did you mean to use the widening subtraction operator (`-)?"
+          return trunc_diff
+        else
+          # diff width isn't known...we might still be able to know that it fits if the sum would fit
+          # in lhs or rhs
+          return diff if (lhs.type(symtab).width != :unknown) && (lhs.type(symtab).width >= diff_bits_needed)
+          return diff if (rhs.type(symtab).width != :unknown) && (rhs.type(symtab).width >= diff_bits_needed)
+
+          return :unknown # Cannot know if sum would be truncated
+        end
+      when "`-"
+        return :unknown if [lhs_min_value, rhs_max_value].include?(:unknown)
+
+        diff = lhs_min_value - rhs_max_value
+        diff = diff & ((1 << type(symtab).width) - 1) if diff < 0 && !type(symtab).signed?
+
+        return diff
+      when "*"
+        # min could be any combination of mutliplying min/max if numbers are signed
+        return :unknown if [lhs_min_value, rhs_min_value].include?(:unknown)
+
+        if lhs.type(symtab).signed?
+          return :unknown if rhs_max_value.include?(:unknown)
         end
 
-      warn "WARNING: The value of '#{text_value}' (#{lhs.type(symtab).const?}, #{rhs.type(symtab).const?}) is truncated from #{v} to #{v_trunc} because the result is only #{type(symtab).width} bits" if max_value != v_trunc
-      v_trunc
+        if rhs.type(symtab).signed?
+          return :unknown if lhs_max_value.include?(:unknown)
+        end
+
+        prod = lhs_min_value * rhs_min_value
+        prod = lhs_min_value * rhs_max_value if (rhs_max_value != :unknown) && ((lhs_min_value * rhs_max_value) < prod)
+        prod = lhs_max_value * rhs_min_value if (lhs_max_value != :unknown) && ((lrhs_max_value * rhs_min_value) < prod)
+        prod = lhs_max_value * rhs_max_value if (![lhs_max_value, rhs_min_value].include?(:unknown)) && ((lhs_max_value * rhs_max_value) < prod)
+        prod = prod & ((1 << type(symtab).width) - 1) if prod < 0 && !type(symtab).signed?
+
+        # check for truncation
+        prod_bits_needed = bits_needed(diff, type(symtab).signed?)
+        if (type(symtab).width != :unknown)
+          return prod if prod_bits_needed <= type(symtab).width
+
+          trunc_prod = truncate(prod, type(symtab).width, type(symtab).signed?)
+          truncation_warn "result is truncated from #{prod} to #{trunc_prod}. Did you mean to use the widening multiplication operator (`*)?"
+          return trun_prod
+        else
+          # sum width isn't known...we might still be able to know that it fits if the sum would fit
+          # in lhs or rhs
+          return prod if (lhs.type(symtab).width != :unknown) && (lhs.type(symtab).width >= prod_bits_needed)
+          return prod if (rhs.type(symtab).width != :unknown) && (rhs.type(symtab).width >= prod_bits_needed)
+
+          return :unknown # Cannot know if sum would be truncated
+        end
+      when "`*"
+        # max could be multiplying the mins if both are negative
+        return :unknown if [lhs_min_value, rhs_min_value].include?(:unknown)
+
+        if lhs.type(symtab).signed?
+          return :unknown if rhs_max_value.include?(:unknown)
+        end
+
+        if rhs.type(symtab).signed?
+          return :unknown if lhs_max_value.include?(:unknown)
+        end
+
+        prod = lhs_min_value * rhs_min_value
+        prod = lhs_min_value * rhs_max_value if (rhs_max_value != :unknown) && ((lhs_min_value * rhs_max_value) < prod)
+        prod = lhs_max_value * rhs_min_value if (lhs_max_value != :unknown) && ((lrhs_max_value * rhs_min_value) < prod)
+        prod = lhs_max_value * rhs_max_value if (![lhs_max_value, rhs_min_value].include?(:unknown)) && ((lhs_max_value * rhs_max_value) < prod)
+        prod = prod & ((1 << type(symtab).width) - 1) if prod < 0 && !type(symtab).signed?
+
+        return prod
+      else
+        raise "TODO: op '#{op}'"
+      end
     end
 
     # @!macro value
@@ -3109,11 +3370,11 @@ module Idl
         else
           v =
             case op
-            when "+"
+            when "+", "`+"
               lhs.value(symtab) + rhs.value(symtab)
-            when "-"
+            when "-", "`-"
               lhs.value(symtab) - rhs.value(symtab)
-            when "*"
+            when "*", "`*"
               lhs.value(symtab) * rhs.value(symtab)
             when "/"
               lhs.value(symtab) / rhs.value(symtab)
@@ -3127,7 +3388,7 @@ module Idl
               lhs.value(symtab) & rhs.value(symtab)
             when ">>"
               lhs.value(symtab) >> rhs.value(symtab)
-            when "<<"
+            when "<<", "`<<"
               lhs.value(symtab) << rhs.value(symtab)
             else
               internal_error "Unhandled binary op #{op}"
@@ -4367,7 +4628,11 @@ module Idl
           end
         end
         value_else(value_result) do
-          type_error "Bit width must be known at compile time" if symtab.cfg_arch.fully_configured?
+          unless bits_expression.type(symtab).template_var?
+            if symtab.cfg_arch.fully_configured?
+              type_error "Bit width (#{bits_expression.text_value}) must be known at compile time"
+            end
+          end
         end
       end
       unless ["Bits", "String", "XReg", "Boolean", "U32", "U64"].include?(@type_name)
@@ -4542,7 +4807,7 @@ module Idl
         qualifiers = signed == "s" ? [:signed, :const] : [:const]
         @type = Type.new(:bits, width: width(symtab), qualifiers:)
       else
-        internal_error "Unhandled int value"
+        internal_error "Unhandled int value '#{text_value}'"
       end
     end
 
@@ -4906,6 +5171,16 @@ module Idl
           value_error "maybe_cache_translation is not compile-time-knowable"
         elsif name == "invalidate_translations"
           value_error "invalidate_translations is not compile-time-knowable"
+        elsif name == "direct_csr_lookup"
+          value_error "direct_csr_lookup is not compile-time-knowable"
+        elsif name == "indirect_csr_lookup"
+          value_error "indirect_csr_lookup is not compile-time-knowable"
+        elsif name == "csr_hw_read"
+          value_error "csr_hw_read is not compile-time-knowable"
+        elsif name == "csr_sw_read"
+          value_error "csr_sw_read is not compile-time-knowable"
+        elsif name == "csr_sw_write"
+          value_error "csr_sw_write is not compile-time-knowable"
         else
           internal_error "Unimplemented generated: '#{name}'"
         end
@@ -5361,7 +5636,7 @@ module Idl
       symtab = symtab.deep_clone
       symtab.push(self)
       template_names.each_with_index do |tname, index|
-        symtab.add(tname, Var.new(tname, template_types(symtab)[index]))
+        symtab.add(tname, Var.new(tname, template_types(symtab)[index], template_index: index))
       end
 
       type_check_return(symtab)
@@ -5408,6 +5683,7 @@ module Idl
         ttype = a.type(symtab)
         ttype = ttype.ref_type if ttype.kind == :enum
         ttypes << ttype.clone.make_const
+        ttypes.last.qualify(:template_var)
       end
       ttypes
     end
@@ -6042,18 +6318,16 @@ module Idl
     def type_check(symtab)
       @csr.type_check(symtab)
 
-      type_error "CSR[#{csr_name(symtab)}] has no field named #{@field_name}" if field_def(symtab).nil?
-      type_error "CSR[#{csr_name(symtab)}].#{@field_name} is not defined in RV32" if symtab.cfg_arch.mxlen == 32 && !field_def(symtab).defined_in_base32?
-      type_error "CSR[#{csr_name(symtab)}].#{@field_name} is not defined in RV64" if symtab.cfg_arch.mxlen == 64 && !field_def(symtab).defined_in_base64?
+      type_error "CSR[#{csr_name}] has no field named #{@field_name}" if field_def(symtab).nil?
+      type_error "CSR[#{csr_name}].#{@field_name} is not defined in RV32" if symtab.cfg_arch.mxlen == 32 && !field_def(symtab).defined_in_base32?
+      type_error "CSR[#{csr_name}].#{@field_name} is not defined in RV64" if symtab.cfg_arch.mxlen == 64 && !field_def(symtab).defined_in_base64?
     end
 
     def csr_def(symtab)
       @csr_obj
     end
 
-    def csr_name(symtab)
-      csr_def(symtab).name
-    end
+    def csr_name = @csr.csr_name
 
     def field_def(symtab)
       @csr_obj.fields.find { |f| f.name == @field_name }
@@ -6095,7 +6369,7 @@ module Idl
     # @!macro value
     def value(symtab)
       if @value.nil?
-        value_error "'#{csr_name(symtab)}.#{field_name(symtab)}' is not RO"
+        value_error "'#{csr_name}.#{field_name(symtab)}' is not RO"
       else
         @value
       end
@@ -6107,7 +6381,7 @@ module Idl
 
       symtab.cfg_arch.possible_xlens.each do |effective_xlen|
         unless field_def(symtab).type(effective_xlen) == "RO"
-          value_error "'#{csr_name(symtab)}.#{field_name(symtab)}' is not RO"
+          value_error "'#{csr_name}.#{field_name(symtab)}' is not RO"
         end
       end
 
@@ -6118,7 +6392,7 @@ module Idl
 
   class CsrReadExpressionSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
-      CsrReadExpressionAst.new(input, interval, idx.text_value)
+      CsrReadExpressionAst.new(input, interval, csr_name.text_value)
     end
   end
 
@@ -6131,13 +6405,12 @@ module Idl
   class CsrReadExpressionAst < AstNode
     include Rvalue
 
-    attr_reader :idx_text
-    attr_reader :idx_expr
+    attr_reader :csr_name
 
-    def initialize(input, interval, idx)
+    def initialize(input, interval, csr_name)
       super(input, interval, [])
 
-      @idx_text = idx
+      @csr_name = csr_name
     end
 
     def freeze_tree(symtab)
@@ -6145,101 +6418,45 @@ module Idl
 
       @cfg_arch = symtab.cfg_arch # remember cfg_arch, used by gen_adoc pass
 
-      if symtab.cfg_arch.csr(@idx_text).nil?
-        parser = symtab.cfg_arch.idl_compiler.parser
-        expr = parser.parse(@idx_text, root: :expression)
+      type_error "CSR '#{@csr_name}' is not defined" if symtab.cfg_arch.csr(@csr_name).nil?
+      @csr_obj = symtab.cfg_arch.csr(@csr_name)
 
-        type_error "#{@idx_text} is not a CSR; it must be an expression" if expr.nil?
-
-        @idx_expr = expr.to_ast
-        @children << @idx_expr
-      else
-        @csr_obj = symtab.cfg_arch.csr(@idx_text)
-      end
+      @type = CsrType.new(@csr_obj, symtab.cfg_arch)
 
       @children.each { |child| child.freeze_tree(symtab) }
       freeze
     end
 
     # @!macro type
-    def type(symtab)
-      cfg_arch = symtab.cfg_arch
-
-      cd = csr_def(symtab)
-      if cd.nil?
-        # we don't know anything about this index, so we can only
-        # treat this as a generic
-        CsrType.new(:unknown, cfg_arch)
-      else
-        CsrType.new(cd, cfg_arch)
-      end
-    end
+    def type(symtab) = @type
 
     # @!macro type_check
     def type_check(symtab)
-      cfg_arch = symtab.cfg_arch
-
-      if !@csr_obj.nil?
-        # this is a known csr name
-        # nothing else to check
-
-      else
-        # this is an expression
-        @idx_expr.type_check(symtab)
-        type_error "Csr index must be integral" unless @idx_expr.type(symtab).integral?
-
-        value_try do
-          idx_value = @idx_expr.value(symtab)
-          csr_index = cfg_arch.csrs.index { |csr| csr.address == idx_value }
-          type_error "No csr number '#{idx_value}' was found" if csr_index.nil?
-          :ok
-        end
-        # OK, index doesn't have to be known
-      end
+      type_error "CSR '#{@csr_name}' is not defined" if symtab.cfg_arch.csr(@csr_name).nil?
     end
 
     def csr_def(symtab)
-      cfg_arch = symtab.cfg_arch
-      if !@csr_obj.nil?
-        # this is a known csr name
-        @csr_obj
-      else
-        # this is an expression
-        value_try do
-          idx_value = @idx_expr.value(symtab)
-          return cfg_arch.csrs.find { |csr| csr.address == idx_value }
-        end
-        # || we don't know at compile time which CSR this is...
-        nil
-      end
+      @csr_obj
     end
 
     def csr_known?(symtab)
       !csr_def(symtab).nil?
     end
 
-    def csr_name(symtab)
-      internal_error "No CSR" unless csr_known?(symtab)
-
-      csr_def(symtab).name
-    end
-
     # @!macro value
     def value(symtab)
-      cd = csr_def(symtab)
-      value_error "CSR number not knowable" if cd.nil?
       if symtab.cfg_arch.fully_configured?
-        value_error "CSR is not implemented" unless symtab.cfg_arch.transitive_implemented_csrs.any? { |icsr| icsr.name == cd.name }
+        value_error "CSR is not implemented" unless symtab.cfg_arch.transitive_implemented_csrs.any? { |icsr| icsr.name == @csr_obj.name }
       else
-        value_error "CSR is not defined" unless symtab.cfg_arch.csrs.any? { |icsr| icsr.name == cd.name }
+        value_error "CSR is not defined" unless symtab.cfg_arch.csrs.any? { |icsr| icsr.name == @csr_obj.name }
       end
-      cd.fields.each { |f| value_error "#{csr_name(symtab)}.#{f.name} not RO" unless f.type == "RO" }
+      @csr_obj.fields.each { |f| value_error "#{csr_name}.#{f.name} not RO" unless f.type == "RO" }
 
       csr_def(symtab).fields.reduce(0) { |val, f| val | (f.value << f.location.begin) }
     end
 
     # @!macro to_idl
-    def to_idl = "CSR[#{@idx.to_idl}]"
+    def to_idl = "CSR[#{@csr_name}]"
   end
 
   class CsrSoftwareWriteSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -6274,9 +6491,7 @@ module Idl
       csr.csr_known?(symtab)
     end
 
-    def csr_name(symtab)
-      csr.csr_name(symtab)
-    end
+    def csr_name = csr.csr_name
 
     # @!macro value
     def value(_symtab)
@@ -6342,7 +6557,7 @@ module Idl
       case function_name
       when "sw_read"
         if csr_known?(symtab)
-          l = cfg_arch.csr(csr.csr_name(symtab)).length
+          l = cfg_arch.csr(csr.csr_name).length
           Type.new(:bits, width: (l.nil? ? :unknown : l))
         else
           Type.new(:bits, width: symtab.mxlen.nil? ? :unknown : symtab.mxlen)
@@ -6360,9 +6575,7 @@ module Idl
       csr.csr_known?(symtab)
     end
 
-    def csr_name(symtab)
-      csr.csr_name(symtab)
-    end
+    def csr_name = csr.csr_name
 
     def csr_def(symtab)
       csr.csr_def(symtab)
@@ -6374,7 +6587,7 @@ module Idl
       when "sw_read"
         value_error "CSR not knowable" unless csr_known?(symtab)
         cd = csr_def(symtab)
-        cd.fields.each { |f| value_error "#{csr_name(symtab)}.#{f.name} not RO" unless f.type == "RO" }
+        cd.fields.each { |f| value_error "#{csr_name}.#{f.name} not RO" unless f.type == "RO" }
 
         value_error "TODO: CSRs with sw_read function"
       when "address"

@@ -4,9 +4,12 @@ $schema: "csr_schema.json#"
 kind: csr
 name: hvip
 long_name: Hypervisor Virtual Interrupt Pending Register
-description: |
-  The `hvip` register is an HSXLEN-bit read/write register that a hypervisor can write to indicate virtual interrupts intended for VS-mode.
-  It contains interrupt-pending bits for virtual interrupts such as VS-level external interrupts, timer interrupts, and software interrupts.
+description:
+  - id: csr-hvip-purpose
+    normative: true
+    text: |
+      The `hvip` register is an HSXLEN-bit read/write register that a hypervisor can write to indicate virtual interrupts intended for VS-mode.
+      It contains interrupt-pending bits for virtual interrupts such as VS-level external interrupts, timer interrupts, and software interrupts.
 address: 0x645
 priv_mode: S
 definedBy: H

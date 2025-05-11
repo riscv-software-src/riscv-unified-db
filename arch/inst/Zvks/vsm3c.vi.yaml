@@ -3,12 +3,12 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vsm3c.vi
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy:
   anyOf: [Zvks, Zvksh]
-assembly: vs2, vd, imm
+assembly: vd, vs2, imm
 encoding:
   match: 1010111----------010-----1110111
   variables:

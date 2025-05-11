@@ -3,11 +3,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: amoand.b
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: Zabha
-assembly: xd, xs1, xs2, aq, rl
+assembly: xd, xs2, xs1
 encoding:
   match: 01100------------000-----0101111
   variables:

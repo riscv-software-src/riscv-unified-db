@@ -47,7 +47,7 @@ class ConfiguredArchitecture < Architecture
   # Returns whether or not it may be possible to switch XLEN given this definition.
   #
   # There are three cases when this will return true:
-  #   1. A mode (e.g., U) is known to be implemented, and the CSR bit that controls XLEN in that mode is known to be writeable.
+  #   1. A mode (e.g., U) is known to be implemented, and the CSR bit that controls XLEN in that mode is known to be writable.
   #   2. A mode is known to be implemented, but the writability of the CSR bit that controls XLEN in that mode is not known.
   #   3. It is not known if the mode is implemented.
   #
@@ -63,7 +63,7 @@ class ConfiguredArchitecture < Architecture
   # Returns whether or not it may be possible to switch XLEN in +mode+ given this definition.
   #
   # There are three cases when this will return true:
-  #   1. +mode+ (e.g., U) is known to be implemented, and the CSR bit that controls XLEN in +mode+ is known to be writeable.
+  #   1. +mode+ (e.g., U) is known to be implemented, and the CSR bit that controls XLEN in +mode+ is known to be writable.
   #   2. +mode+ is known to be implemented, but the writability of the CSR bit that controls XLEN in +mode+ is not known.
   #   3. It is not known if +mode+ is implemented.
   #
@@ -219,10 +219,10 @@ class ConfiguredArchitecture < Architecture
     io.puts "Type checking IDL code for #{@config.name}..." if show_progress
     progressbar =
       if show_progress
-        ProgressBar.create(title: "Instructions", total: instructions.size)
+        ProgressBar.create(title: "Instructions", total: possible_instructions.size)
       end
 
-    instructions.each do |inst|
+    possible_instructions.each do |inst|
       progressbar.increment if show_progress
       if @mxlen == 32
         inst.type_checked_operation_ast(32) if inst.rv32?
@@ -234,10 +234,10 @@ class ConfiguredArchitecture < Architecture
 
     progressbar =
       if show_progress
-        ProgressBar.create(title: "CSRs", total: csrs.size)
+        ProgressBar.create(title: "CSRs", total: possible_csrs.size)
       end
 
-    csrs.each do |csr|
+    possible_csrs.each do |csr|
       progressbar.increment if show_progress
       if csr.has_custom_sw_read?
         if (possible_xlens.include?(32) && csr.defined_in_base32?)
@@ -269,11 +269,12 @@ class ConfiguredArchitecture < Architecture
       end
     end
 
+    func_list = reachable_functions
     progressbar =
       if show_progress
-        ProgressBar.create(title: "Functions", total: functions.size)
+        ProgressBar.create(title: "Functions", total: func_list.size)
       end
-    functions.each do |func|
+    func_list.each do |func|
       progressbar.increment if show_progress
       func.type_check(@symtab)
     end
@@ -636,7 +637,7 @@ class ConfiguredArchitecture < Architecture
 
   # @return [Array<Csr>] List of all CSRs that it is possible to implement
   def not_prohibited_csrs
-    @not_prohibited_csrs =
+    @not_prohibited_csrs ||=
       if @config.fully_configured?
         transitive_implemented_csrs
       elsif @config.partially_configured?

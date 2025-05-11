@@ -80,6 +80,21 @@ versions:
   changes:
     - Fix wrong mantissa bit selection in qc.norm, qc.normu and qc.normeu instructions
     - Fix wrong exponent calculation in qc.normeu instruction
+- version: "0.7.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix IDL code of qc.shlusat instruction (should use zero-extension and not sign-extension)
+    - Fix IDL code of qc.shlusat and qc.shlsat instructions (should compare values of xlen()*2 bits)
+    - Fix IDL code of qc.shlusat and qc.shlsat instructions because change in IDL operators (width adjustment)
+    - Fix IDL code of qc.subsat, qc.addusat and qc.addsat instructions because change in IDL operators (width adjustment)
 description: |
   The Xqcia extension includes eleven instructions to perform integer arithmetic.
 

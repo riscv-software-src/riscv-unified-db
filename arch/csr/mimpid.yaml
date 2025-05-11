@@ -5,6 +5,7 @@ kind: csr
 name: mimpid
 long_name: Machine Implementation ID
 address: 0xf13
+writable: false
 priv_mode: M
 length: MXLEN
 description: |

@@ -47,7 +47,7 @@ operation(): |
   X[31] = read_memory<32>(virtual_address - 80, $encoding);
   X[2] = X[2] + 96;
   if (nmie_val == 1'b1) {
-    XReg qc_mcause_val_masked = qc_mcause_val & ~(1<<26) & ~(1<<27) & ~(1<<29) & ~(0xFF<<12);
+    XReg qc_mcause_val_masked = qc_mcause_val & ~(32'b1<<26) & ~(32'b1<<27) & ~(32'b1<<29) & ~(32'hFF<<12);
     Bits<1> mpie_val = (qc_mcause_val >> 27) & 1;
     Bits<1> mpdt_val = (qc_mcause_val >> 29) & 1;
     Bits<4> mpil_val = (qc_mcause_val >> 16) & 0xF;
@@ -57,8 +57,8 @@ operation(): |
       CSR[mstatush].MDT = mpdt_val;
     }
     CSR[qc.mcause].sw_write(qc_mcause_val_masked |
-                            (1<<27) | (mpie_val<<26) | (0<<29) |
-                            (mpil_val << 12) | (0xF << 16));
+                            (32'b1<<27) | (mpie_val`<<26) | (32'b0<<29) |
+                            (mpil_val `<< 12) | (32'b1111 << 16));
     if (mpdt_val == 1'b0) {
       if (CSR[mstatus].MPP != 2'b11) {
         CSR[mstatus].MPRV = 0;
@@ -74,14 +74,14 @@ operation(): |
     }
     $pc = CSR[mepc].sw_read();
   } else {
-    XReg qc_mcause_val_masked = qc_mcause_val & ~(1<<26) & ~(1<<28) & ~(1<<30) & ~(0xF<<12) & ~(0xF<<20);
+    XReg qc_mcause_val_masked = qc_mcause_val & ~(32'b1<<26) & ~(32'b1<<28) & ~(32'b1<<30) & ~(32'b1111<<12) & ~(32'b1111<<20);
     Bits<1> mnpie_val = (qc_mcause_val >> 28) & 1;
     Bits<4> mnpil_val = (qc_mcause_val >> 20) & 0xF;
     CSR[mstatus].MIE = mnpie_val;
     CSR[mnstatus].NMIE = 1'b1;
     CSR[qc.mcause].sw_write(qc_mcause_val_masked |
-                            (1<<28) | (mnpie_val<<26) | (1<<30) |
-                            (mnpil_val << 12) | (0xF << 20));
+                            (32'b1<<28) | (mnpie_val`<<26) | (32'b1<<30) |
+                            (mnpil_val `<< 12) | (32'b1111 << 20));
     if (CSR[mnstatus].MNPP != 2'b11) {
       CSR[mstatus].MPRV = 0;
       if (implemented?(ExtensionName::Smdbltrp)) {

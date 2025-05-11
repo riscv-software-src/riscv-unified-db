@@ -24,6 +24,77 @@ generated function implemented_csr? {
   }
 }
 
+enum CsrAddressType {
+  Direct     # accessible with csrrw, etc.
+  Indirect   # only accessible with csrind
+}
+
+struct Csr {
+  Boolean valid;
+  String name;
+  CsrAddressType addr_type;
+  Bits<MXLEN> address;      # direct or indirect address
+  Bits<4> indirect_slot;    # window slot, when addr_type == Indirect
+  PrivilegeMode mode;
+  Boolean writable;
+}
+
+# implementation is generated from CSR YAML defintions
+generated function direct_csr_lookup {
+  returns Csr
+  arguments
+    Bits<12> csr_addr
+  description {
+    Return CSR info for a CSR with direct address +csr_addr+.
+
+    If no CSR exists, <return_value>.valid == false
+  }
+}
+
+# implementation is generated from CSR YAML defintions
+generated function indirect_csr_lookup {
+  returns Csr
+  arguments
+    Bits<MXLEN> csr_addr,
+    Bits<4> window_slot  # 1-indexed "slot" in the window (corresponding to *ireg<window_slot>)
+  description {
+    Return CSR info for a CSR with indirect address +csr_addr+ at window slot +window_slot+.
+
+    If no CSR exists, <return_value>.valid == false
+  }
+}
+
+generated function csr_hw_read {
+  returns Bits<64>   # even in rv32, there are 64-bit CSRs
+  arguments
+    Csr csr
+  description {
+    Returns the raw value of csr
+  }
+}
+
+# implementation is generated from CSR YAML defintions
+generated function csr_sw_read {
+  returns Bits<64>   # even in rv32, there are 64-bit CSRs
+  arguments
+    Csr csr
+  description {
+    Returns the result of CSR[csr].sw_read(); i.e., the software view of the register
+  }
+}
+
+# implementation is generated from CSR YAML defintions
+generated function csr_sw_write {
+  arguments
+    Csr csr,
+    Bits<MXLEN> value
+  description {
+    Writes +value+ to +csr+, applying an WARL transformations first.
+
+    Uses the sw_write(...) functions of CSR field definitions.
+  }
+}
+
 builtin function unpredictable {
   arguments String why
   description {

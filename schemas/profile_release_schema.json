@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
 
   "type": "object",
-  "required": ["$schema", "kind", "name"],
+  "required": ["$schema", "kind", "name", "long_name", "description"],
   "properties": {
     "$schema": {
       "type": "string",
@@ -15,6 +15,10 @@
     "name": {
       "type": "string",
       "description": "Name (database key) of this Profile Release"
+    },
+    "long name": {
+      "type": "string",
+      "description": "One line description of this Profile Release"
     }
   }
 }

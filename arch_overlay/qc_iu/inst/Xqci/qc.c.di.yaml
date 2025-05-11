@@ -24,4 +24,4 @@ access:
 operation(): |
   CSR[mstatus].MIE = 0;
   XReg pre_qc_mcause = CSR[qc.mcause].sw_read();
-  CSR[qc.mcause].sw_write(pre_qc_mcause & ~(1<<26));
+  CSR[qc.mcause].sw_write(pre_qc_mcause & ~(32'b1<<26));

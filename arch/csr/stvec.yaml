@@ -5,6 +5,7 @@ kind: csr
 name: stvec
 long_name: Supervisor Trap Vector
 address: 0x105
+writable: true
 priv_mode: S
 length: 64
 description: Controls where traps jump.

@@ -5,6 +5,7 @@ kind: csr
 name: fcsr
 long_name: Floating-point control and status register (`frm` + `fflags`)
 address: 0x003
+writable: true
 description: |
   The floating-point control and status register, `fcsr`, is a RISC-V
   control and status register (CSR). It is a 32-bit read/write register

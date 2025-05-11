@@ -5,6 +5,7 @@ kind: csr
 name: mconfigptr
 long_name: Machine Configuration Pointer
 address: 0xF15
+writable: false
 description: |
   Holds a physical address pointer to the unified discovery data structure in Memory.
 
@@ -45,7 +46,9 @@ fields:
   ADDRESS:
     location_rv32: 31-0
     location_rv64: 63-0
-    description: Pointer to physical address of the Unified Discovery configuration data structure.
+    description:
+      Pointer to physical address of the Unified Discovery configuration
+      data structure.
     type: RO
     reset_value(): |
       return CONFIG_PTR_ADDRESS;

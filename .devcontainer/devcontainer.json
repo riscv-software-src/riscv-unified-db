@@ -25,13 +25,13 @@
         "asciidoc.antora.showEnableAntoraPrompt": true
       },
       "extensions": [
-        "castwide.solargraph",
-        "redhat.vscode-yaml",
         "asciidoctor.asciidoctor-vscode",
-        "zhwu95.riscv",
-        "mathematic.vscode-pdf",
+        "castwide.solargraph",
         "CraigMaslowski.erb",
-        "HowerLimited.udb-extension-pack-vscode"
+        "HowerLimited.udb-extension-pack-vscode",
+        "mathematic.vscode-pdf",
+        "redhat.vscode-yaml",
+        "zhwu95.riscv"
       ]
     }
   },

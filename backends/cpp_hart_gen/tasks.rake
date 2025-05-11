@@ -133,7 +133,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.h(xx)?\.unformatted
     "#{CPP_HART_GEN_SRC}/lib/gen_cpp.rb",
     "#{$root}/lib/idl/passes/prune.rb",
     "#{CPP_HART_GEN_SRC}/lib/template_helpers.rb",
-    "#{CPP_HART_GEN_SRC}/lib/csr_backend_helpers.rb",
+    "#{CPP_HART_GEN_SRC}/lib/csr_template_helpers.rb",
     __FILE__
   ]
 } do |t|
@@ -167,7 +167,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/src/cfgs/[^/]+/[^/]+\.cxx\.unformatted$} => proc 
     "#{CPP_HART_GEN_SRC}/lib/gen_cpp.rb",
     "#{$root}/lib/idl/passes/prune.rb",
     "#{CPP_HART_GEN_SRC}/lib/template_helpers.rb",
-    "#{CPP_HART_GEN_SRC}/lib/csr_backend_helpers.rb",
+    "#{CPP_HART_GEN_SRC}/lib/csr_template_helpers.rb",
     __FILE__
   ]
 } do |t|

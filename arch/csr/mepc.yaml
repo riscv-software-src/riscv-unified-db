@@ -5,6 +5,7 @@ kind: csr
 name: mepc
 long_name: Machine Exception Program Counter
 address: 0x341
+writable: true
 priv_mode: M
 length: MXLEN
 description: |

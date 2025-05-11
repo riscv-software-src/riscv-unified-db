@@ -7,7 +7,7 @@ long_name: Vector AES round zero
 description: |
   No description available.
 definedBy: Zvkned
-assembly: vs2, vd
+assembly: vd, vs2
 encoding:
   match: 1010011-----00111010-----1110111
   variables:

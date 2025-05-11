@@ -5,6 +5,7 @@ kind: csr
 name: cycle
 long_name: Cycle counter for RDCYCLE Instruction
 address: 0xC00
+writable: false
 description: |
   Alias for M-mode CSR `mcycle`.
 

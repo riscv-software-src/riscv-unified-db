@@ -1,6 +1,7 @@
 $schema: profile_schema.json#
 kind: profile
 name: RVI20U32
+long_name: U-mode extensions for version 20 of a 32-bit processor
 marketing_name: RVI20U32
 mode: Unpriv
 base: 32
