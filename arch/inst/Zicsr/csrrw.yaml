@@ -8,12 +8,12 @@ description: |
   Atomically swap values in the CSRs and integer registers.
 
   Read the old value of the CSR, zero-extends the value to `XLEN` bits,
-  and then write it to integer register rd.
-  The initial value in rs1 is written to the CSR.
-  If `rd=x0`, then the instruction shall not read the CSR and shall not
+  and then write it to integer register xd.
+  The initial value in xs1 is written to the CSR.
+  If `xd=x0`, then the instruction shall not read the CSR and shall not
   cause any of the side effects that might occur on a CSR read.
 definedBy: Zicsr
-assembly: xd, xs1, csr
+assembly: xd, imm, xs1
 encoding:
   match: -----------------001-----1110011
   variables:
@@ -28,18 +28,30 @@ access:
   u: always
   vs: always
   vu: always
+pseudoinstructions:
+  - when: xd == 0
+    to: csrw csr,xs1
 operation(): |
-  check_csr(csr, true, $encoding);
+  Csr csr_handle = direct_csr_lookup(csr);
 
   Bits<MXLEN> initial_value = X[xs1];
 
+  # permission checks
+  if (csr_handle.valid == false) {
+    unimplemented_csr($encoding);
+  } else if (!compatible_mode?(csr_handle.mode, mode())) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  } else if (csr_handle.writable == false) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
   if (xd != 0) {
-    X[xd] = CSR[csr].sw_read();
+    X[xd] = csr_sw_read(csr_handle);
   }
 
   # writes the value in X[xs1] to the CSR,
   # performing any WARL transformations first
-  CSR[csr].sw_write(initial_value);
+  csr_sw_write(csr_handle, initial_value);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

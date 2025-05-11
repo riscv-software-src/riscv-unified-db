@@ -2,87 +2,141 @@
 
 # deploy artifacts to a directory, in preparation for GitHub deployment
 
-echo "DEPLOY: Starting"
+# Default to success
+exit_status=0
 
 ROOT=$(dirname $(dirname $(realpath ${BASH_SOURCE[0]})))
 
 DEPLOY_DIR="$ROOT/_site"
 PAGES_URL="https://riscv-software-src.github.io/riscv-unified-db"
 
-mkdir -p $DEPLOY_DIR
+function deploy_log() {
+  echo "[DEPLOY] $(date) $*"
+}
 
-echo "DEPLOY: Create _site/example_cfg"
-mkdir -p $DEPLOY_DIR/example_cfg
+function deploy_mkdir() {
+  [[ $# -ne 1 ]] && {
+    deploy_log "deploy_mkdir(): Passed $# args but it needs 1"
+    exit 1
+  }
 
-echo "DEPLOY: Create _site/manual"
-mkdir -p $DEPLOY_DIR/manual
+  local dst_dir="$1"
+  mkdir -p $dst_dir || {
+    deploy_log "mkdir -p $dst_dir failed"
+    exit_status=1
+  }
+}
 
-echo "DEPLOY: Create _site/pdfs"
-mkdir -p $DEPLOY_DIR/pdfs
+function deploy_do() {
+  deploy_log "$@"
+  ./do "$@" || {
+    deploy_log "./do $* failed"
+    exit_status=1
+  }
+}
 
-echo "DEPLOY: Create _site/htmls"
-mkdir mkdir -p $DEPLOY_DIR/htmls
+function deploy_cp_recursive() {
+  [[ $# -ne 2 ]] && {
+    deploy_log "deploy_cp_recursive(): Passed $# args but it needs 2"
+    exit 1
+  }
 
-echo "DEPLOY: Resolve / Create Index"
-./do gen:resolved_arch
-cp -R gen/resolved_arch/_ $DEPLOY_DIR/resolved_arch
+  local src_dir="$1"
+  local dst_dir="$2"
 
-echo "DEPLOY: Create _site/isa_explorer"
-mkdir -p $DEPLOY_DIR/isa_explorer
-echo "DEPLOY: Create isa_explorer_browser_ext"
-./do gen:isa_explorer_browser_ext
-echo "DEPLOY: Create isa_explorer_browser_inst"
-./do gen:isa_explorer_browser_inst
-echo "DEPLOY: Create isa_explorer_browser_csr"
-./do gen:isa_explorer_browser_csr
-echo "DEPLOY: Copy isa_explorer_browser"
-cp -R gen/isa_explorer/browser $DEPLOY_DIR/isa_explorer
-echo "DEPLOY: Create isa_explorer_spreadsheet"
-./do gen:isa_explorer_spreadsheet
-echo "DEPLOY: Copy isa_explorer_spreadsheet"
-cp -R gen/isa_explorer/spreadsheet $DEPLOY_DIR/isa_explorer
+  cp -R ${src_dir} ${dst_dir} || {
+    deploy_log "cp -R ${src_dir} ${dst_dir} failed"
+    exit_status=1
+  }
+}
 
-echo "DEPLOY: Build manual"
-./do gen:html_manual MANUAL_NAME=isa VERSIONS=all
-echo "DEPLOY: Copy manual html"
-cp -R gen/manual/isa/top/all/html $DEPLOY_DIR/manual
-echo "DEPLOY: Build html documentation for example_rv64_with_overlay"
-./do gen:html[example_rv64_with_overlay]
+function deploy_cp() {
+  [[ $# -ne 2 ]] && {
+    deploy_log "deploy_cp(): Passed $# args but it needs 2"
+    exit 1
+  }
 
-# Filling up my root dir with a "doc" directory when I run this script.
-#echo "DEPLOY: Generate YARD docs"
-#./do gen:tool_doc
+  local src_file="$1"
+  local dst_dir="$2"
 
-echo "DEPLOY: Copy cfg html"
-cp -R gen/cfg_html_doc/example_rv64_with_overlay/html $DEPLOY_DIR/example_cfg
+  cp ${src_file} ${dst_dir} || {
+    deploy_log "cp ${src_file} ${dst_dir} failed"
+    exit_status=1
+  }
+}
+
+deploy_log "Starting"
+
+deploy_mkdir $DEPLOY_DIR
+deploy_mkdir $DEPLOY_DIR/example_cfg
+deploy_mkdir $DEPLOY_DIR/manual
+deploy_mkdir $DEPLOY_DIR/pdfs
+deploy_mkdir $DEPLOY_DIR/htmls
+
+deploy_log "Resolve / Create Index for base architecture"
+deploy_do "gen:resolved_arch"
+deploy_cp_recursive gen/resolved_arch/_ $DEPLOY_DIR/resolved_arch
+
+deploy_log "Create _site/isa_explorer"
+deploy_mkdir $DEPLOY_DIR/isa_explorer
+deploy_log "Create isa_explorer_browser_ext"
+deploy_log "Create isa_explorer_browser_inst"
+deploy_log "Create isa_explorer_browser_csr"
+
+parallel :::                                          \
+  "./do gen:isa_explorer_browser_csr"                 \
+  "./do gen:isa_explorer_browser_ext"                 \
+  "./do gen:isa_explorer_browser_inst"                \
+  "./do gen:isa_explorer_spreadsheet"                 \
+  "./do gen:html_manual MANUAL_NAME=isa VERSIONS=all" \
+  "./do gen:html[example_rv64_with_overlay]"          \
+  "./do gen:instruction_appendix"                     \
+  "./do gen:profile_release_pdf[RVI20]"               \
+  "./do gen:profile_release_pdf[RVA20]"               \
+  "./do gen:profile_release_pdf[RVA22]"               \
+  "./do gen:profile_release_pdf[RVA23]"               \
+  "./do gen:profile_release_pdf[RVB23]"               \
+  "./do gen:proc_crd_pdf[AC100]"                      \
+  "./do gen:proc_crd_pdf[AC200]"                      \
+  "./do gen:proc_crd_pdf[MC100-32]"                   \
+  "./do gen:proc_crd_pdf[MC100-64]"                   \
+  "./do gen:proc_crd_pdf[MC200-32]"                   \
+  "./do gen:proc_crd_pdf[MC200-64]"                   \
+  "./do gen:proc_crd_pdf[MC300-32]"                   \
+  "./do gen:proc_crd_pdf[MC300-64]"                   \
+  "./do gen:proc_ctp_pdf[MC100-32]"                   \
+  "./do gen:proc_ctp_pdf[MockProcessor]"
+
+deploy_log "Copy isa_explorer_browser"
+deploy_cp_recursive gen/isa_explorer/browser $DEPLOY_DIR/isa_explorer
+
+deploy_log "Copy isa_explorer_spreadsheet"
+deploy_cp_recursive gen/isa_explorer/spreadsheet $DEPLOY_DIR/isa_explorer
+
+deploy_log "Copy manual html"
+deploy_cp_recursive gen/manual/isa/top/all/html $DEPLOY_DIR/manual
+
+deploy_log "Copy cfg html"
+deploy_cp_recursive gen/cfg_html_doc/example_rv64_with_overlay/html $DEPLOY_DIR/example_cfg
+
+deploy_cp gen/instructions_appendix/instructions_appendix.pdf $DEPLOY_DIR/pdfs
 
 for profile in RVI20 RVA20 RVA22 RVA23 RVB23; do
-  echo "DEPLOY: Create $profile Profile Release PDF Spec"
-  ./do gen:profile_release_pdf[$profile]
-  echo "DEPLOY: Copy $profile Profile Release PDF Spec"
-  cp gen/profile/pdf/${profile}ProfileRelease.pdf $DEPLOY_DIR/pdfs
+  deploy_log "Copy $profile Profile Release PDF Spec"
+  deploy_cp gen/profile/pdf/${profile}ProfileRelease.pdf $DEPLOY_DIR/pdfs
 done
 
 for crd in AC100 AC200 MC100-32 MC100-64 MC200-32 MC200-64 MC300-32 MC300-64; do
-  echo "DEPLOY: Create $profile Profile Release PDF Spec"
-  ./do gen:profile_release_pdf[$profile]
-  echo "DEPLOY: Copy $profile Profile Release PDF Spec"
-  cp gen/profile/pdf/${profile}ProfileRelease.pdf $DEPLOY_DIR/pdfs
-
-  echo "DEPLOY: Create ${crd}-CRD PDF Spec"
-  ./do gen:proc_crd_pdf[$crd]
-  echo "DEPLOY: Copy ${crd}-CRD PDF"
-  cp gen/proc_crd/pdf/${crd}-CRD.pdf $DEPLOY_DIR/pdfs
+  deploy_log "Copy ${crd}-CRD PDF"
+  deploy_cp gen/proc_crd/pdf/${crd}-CRD.pdf $DEPLOY_DIR/pdfs
 done
 
 for ctp in MC100-32 MockProcessor; do
-  echo "DEPLOY: Create ${ctp}-CTP PDF Spec"
-  ./do gen:proc_ctp_pdf[$ctp]
-  echo "DEPLOY: Copy ${ctp}-CTP PDF"
-  cp gen/proc_ctp/pdf/${ctp}-CTP.pdf $DEPLOY_DIR/pdfs
+  deploy_log "Copy ${ctp}-CTP PDF"
+  deploy_cp gen/proc_ctp/pdf/${ctp}-CTP.pdf $DEPLOY_DIR/pdfs
 done
 
-echo "DEPLOY: Create index"
+deploy_log "Create index"
 cat <<- EOF > $DEPLOY_DIR/index.html
 <!doctype html>
 <html lang="en-us">
@@ -104,6 +158,12 @@ cat <<- EOF > $DEPLOY_DIR/index.html
     <h3>ISA Manual</h3>
     <ul>
       <li><a href="$PAGES_URL/manual/html/index.html">Generated HTML ISA manuals, all versions</a></li>
+    </ul>
+
+    <br/>
+    <h3>Instruction Appendix</h3>
+    <ul>
+      <li><a href="$PAGES_URL/pdfs/instructions_appendix.pdf">Generated PDF appendix of all instructions</a></li>
     </ul>
 
     <br/>
@@ -163,4 +223,6 @@ cat <<- EOF > $DEPLOY_DIR/index.html
 </html>
 EOF
 
-echo "DEPLOY: Complete"
+deploy_log "Complete"
+
+exit $exit_status

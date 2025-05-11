@@ -216,10 +216,10 @@ def load_instructions(
                                 "match": rv64_match
                             }  # RV64 gets the default name
 
-                        # Process RV32 encoding with a .rv32 suffix
+                        # Process RV32 encoding with a _rv32 suffix
                         rv32_match = rv32_encoding.get("match")
                         if rv32_match:
-                            instr_dict[f"{name}.rv32"] = {"match": rv32_match}
+                            instr_dict[f"{name}_rv32"] = {"match": rv32_match}
 
                         continue  # Skip the rest of the loop as we've already added the encodings
                 elif "RV64" in encoding:
@@ -234,7 +234,7 @@ def load_instructions(
                 elif "RV32" in encoding:
                     if target_arch in ["RV32", "BOTH"]:
                         encoding_to_use = encoding["RV32"]
-                        instr_key = f"{name}.rv32" if target_arch == "BOTH" else name
+                        instr_key = f"{name}_rv32" if target_arch == "BOTH" else name
                     else:
                         msg = f"Skipping {name} because it has only RV32 encoding in {path}"
                         logging.debug(msg)

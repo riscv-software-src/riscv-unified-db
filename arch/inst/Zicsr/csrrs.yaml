@@ -8,41 +8,56 @@ description: |
   Atomically read and set bits in a CSR.
 
   Reads the value of the CSR, zero-extends the value to `XLEN` bits,
-  and writes it to integer register `rd`. The initial value in integer
-  register `rs1` is treated as a bit mask that specifies bit positions
-  to be set in the CSR. Any bit that is high in `rs1` will cause the
+  and writes it to integer register `xd`. The initial value in integer
+  register `xs1` is treated as a bit mask that specifies bit positions
+  to be set in the CSR. Any bit that is high in `xs1` will cause the
   corresponding bit to be set in the CSR, if that CSR bit is writable.
   Other bits in the CSR are not explicitly written.
 definedBy: Zicsr
-assembly: xd, xs1, csr
+assembly: xd, imm, xs1
 encoding:
   match: -----------------010-----1110011
   variables:
     - name: csr
       location: 31-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
   u: always
   vs: always
   vu: always
+pseudoinstructions:
+  - when: xs1 == 0
+    to: csrr xd,csr
+  - when: xd == 0
+    to: csrs csr,xs1
 operation(): |
-  Boolean will_write = rs1 != 0;
-  check_csr(csr, will_write, $encoding);
+  Boolean will_write = xs1 != 0;
 
-  XReg initial_csr_value = CSR[csr].sw_read();
+  Csr csr_handle = direct_csr_lookup(csr);
+
+  # permission checks
+  if (csr_handle.valid == false) {
+    unimplemented_csr($encoding);
+  } else if (!compatible_mode?(csr_handle.mode, mode())) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  } else if (will_write && csr_handle.writable == false) {
+    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  XReg initial_csr_value = csr_sw_read(csr_handle);
 
   if (will_write) {
     # set bits using the mask
     # performing any WARL transformations first
-    XReg mask = X[rs1];
-    CSR[csr].sw_write(initial_csr_value | mask);
+    XReg mask = X[xs1];
+    csr_sw_write(csr_handle, initial_csr_value | mask);
   }
 
-  X[rd] = initial_csr_value;
+  X[xd] = initial_csr_value;
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
