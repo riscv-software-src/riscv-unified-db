@@ -17,15 +17,26 @@ definedBy:
     - Zclsd
 assembly: xd, imm(xs1)
 encoding:
-  match: 011-----------00
-  variables:
-    - name: imm
-      location: 6-5|12-10
-      left_shift: 3
-    - name: xd
-      location: 4-2
-    - name: xs1
-      location: 9-7
+  RV32:
+    match: 011-----------00
+    variables:
+      - name: imm
+        location: 6-5|12-10
+        left_shift: 3
+      - name: xd
+        location: 4-2
+      - name: xs1
+        location: 9-7
+  RV64:
+    match: 011-----------00
+    variables:
+      - name: imm
+        location: 6-5|12-10
+        left_shift: 3
+      - name: xd
+        location: 4-2
+      - name: xs1
+        location: 9-7
 access:
   s: always
   u: always

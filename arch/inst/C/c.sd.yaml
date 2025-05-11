@@ -17,17 +17,26 @@ definedBy:
 base: 64
 assembly: xs2, imm(xs1)
 encoding:
-  match: 111-----------00
-  variables:
-    - name: imm
-      location: 6-5|12-10
-      left_shift: 3
-    - name: xd
-      location: 4-2
-      not: [1, 3, 5, 7]
-    - name: xs1
-      location: 9-7
-      not: [1, 3, 5, 7]
+  RV32:
+    match: 111-----------00
+    variables:
+      - name: imm
+        location: 6-5|12-10
+        left_shift: 3
+      - name: xs2
+        location: 4-2
+      - name: xs1
+        location: 9-7
+  RV64:
+    match: 111-----------00
+    variables:
+      - name: imm
+        location: 6-5|12-10
+        left_shift: 3
+      - name: xs2
+        location: 4-2
+      - name: xs1
+        location: 9-7
 access:
   s: always
   u: always
@@ -41,12 +50,15 @@ operation(): |
   XReg virtual_address = X[creg2reg(xs1)] + imm;
 
   if (xlen() == 32) {
-      if (implemented?(ExtensionName::Zclsd)) {
-        Bits<64> data = {X[creg2reg(rs2) + 1], X[creg2reg(rs2)]};
-        write_memory<64>(virtual_address, data, $encoding);
-      } else {
-          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    if (implemented?(ExtensionName::Zclsd)) {
+      if (creg2reg(xs2) % 2 != 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
       }
+      Bits<128> data = {X[creg2reg(xs2) + 1], X[creg2reg(xs2)]};
+      write_memory<128>(virtual_address, data, $encoding);
+    } else {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
   } else {
-      write_memory<64>(virtual_address, X[creg2reg(xs2)], $encoding);
+    write_memory<64>(virtual_address, X[creg2reg(xs2)], $encoding);
   }

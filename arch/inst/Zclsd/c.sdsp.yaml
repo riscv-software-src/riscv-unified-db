@@ -3,33 +3,46 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: c.sdsp
-long_name: Stack-pointer based store doublewoxd from even/odd register pair
+long_name: Stack-pointer based store doubleword from even/odd register pair
 description: |
-  Stores a stack-pointer relative 64-bit value from registers xs2 and xs2+1. It computes an effective
-  address by adding the zero-extended offset, scaled by 8, to the stack pointer, sp. It expands to sd
-  `sd xs2, offset(sp)`.
+  Stores a 64-bit value from registers xs2 and xs2+1 at a stack-pointer-relative address.
+  The effective address is computed by adding the zero-extended offset, scaled by 8,
+  to the stack pointer (sp = x2).
+  Expands to `sd xs2, offset(sp)`.
+  In RV32, xs2 must be even; code points with odd xs2 are reserved.
 definedBy: Zclsd
 assembly: xs2, offset(sp)
 encoding:
-  match: 111-----------10
-  variables:
-    - name: xs2
-      location: 6-2
-    - name: imm
-      location: 9-7|12-10
-      left_shift: 3
+  RV32:
+    match: 111-----------10
+    variables:
+      - name: xs2
+        location: 6-2
+      - name: imm
+        location: 9-7|12-10
+        left_shift: 3
+  RV64:
+    match: 111-----------10
+    variables:
+      - name: xs2
+        location: 6-2
+      - name: imm
+        location: 9-7|12-10
+        left_shift: 3
 access:
   s: always
   u: always
   vs: always
   vu: always
 operation(): |
-
   Bits<MXLEN> base = X[2];
   Bits<MXLEN> offset = imm;
   Bits<MXLEN> eff_addr = base + offset;
 
-  Bits<64> data = {X[creg2reg(xs2)+1], X[creg2reg(xs2)]};
+  if (xlen() == 32 && (creg2reg(xs2) % 2 != 0)) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
 
+  Bits<128> data = {X[creg2reg(xs2)+1], X[creg2reg(xs2)]};
   write_memory<64>(eff_addr, data, $encoding);
-sail(): "" #not implemented in the sail model yet
+sail(): "" # Not implemented in the Sail model yet

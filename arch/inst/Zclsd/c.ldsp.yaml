@@ -3,22 +3,31 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: c.ldsp
-long_name: Stack-pointer based load doublewoxd to even/odd register pair
+long_name: Stack-pointer based load doubleword to even/odd register pair
 description: |
-  Loads stack-pointer relative 64-bit value into registers xd and xd+1. It computes its effective
-  address by adding the zero-extended offset, scaled by 8, to the stack pointer, sp. It expands to ld
-  xd, offset(sp). C.LDSP is only valid when xd≠x0; the code points with xd=x0 are reserved.
+  Loads a stack-pointer-relative 64-bit value into registers xd and xd+1. It computes its effective
+  address by adding the zero-extended offset, scaled by 8, to the stack pointer (sp).
+  It expands to `ld xd, offset(sp)`.
+  C.LDSP is only valid when xd ≠ x0. In RV32, xd must also be even; odd-numbered xd are reserved.
 definedBy: Zclsd
 assembly: xd, offset(sp)
 encoding:
-  match: 011-----------01
-  variables:
-    - name: xd
-      location: 11-7
-      not: [0, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31]
-    - name: imm
-      location: 4-2|12|6-5
-      left_shift: 3
+  RV32:
+    match: 011-----------01
+    variables:
+      - name: xd
+        location: 11-7
+      - name: imm
+        location: 4-2|12|6-5
+        left_shift: 3
+  RV64:
+    match: 011-----------01
+    variables:
+      - name: xd
+        location: 11-7
+      - name: imm
+        location: 4-2|12|6-5
+        left_shift: 3
 access:
   s: always
   u: always
@@ -29,9 +38,15 @@ operation(): |
   Bits<MXLEN> offset = imm;
   Bits<MXLEN> eff_addr = base + offset;
 
-  if (xd != 0) {
-    Bits<64> data = read_memory<64>(eff_addr, $encoding);
-    X[creg2reg(xd)]   = data[31:0];
-    X[creg2reg(xd)+1] = data[63:32];
+  if (xd == 0) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
-sail(): "" #not implemented in the sail model yet
+
+  if (xlen() == 32 && (creg2reg(xd) % 2 != 0)) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
+
+  Bits<128> data = read_memory<128>(eff_addr, $encoding);
+  X[creg2reg(xd)]   = data[63:0];
+  X[creg2reg(xd)+1] = data[127:64];
+sail(): "" # Not implemented in the Sail model yet
