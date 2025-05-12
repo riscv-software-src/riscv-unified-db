@@ -41,7 +41,7 @@ namespace udb {
                           const unsigned& xlen) = 0;
 
     // write the field, applying any restrictions first
-    // given teh effective xlen
+    // given the effective xlen
     // virtual void sw_write(const uint64_t& field_write_value,
     //                       const unsigned& xlen) = 0;
 
@@ -50,7 +50,7 @@ namespace udb {
     bool readOnly(const unsigned& xlen) const {
       return type(xlen) == CsrFieldType::RO || type(xlen) == CsrFieldType::ROH;
     }
-    bool writeable(const unsigned& xlen) const { return !readOnly(xlen); }
+    bool writable(const unsigned& xlen) const { return !readOnly(xlen); }
     bool immutable(const unsigned& xlen) const {
       return type(xlen) == CsrFieldType::RO;
     }
@@ -84,6 +84,12 @@ namespace udb {
 
     virtual void reset() = 0;
 
+    // the most privileged mode that has access to this csr
+    virtual PrivilegeMode mode() const = 0;
+
+    // false if the CSR is read only
+    virtual bool writable() const = 0;
+
     // read the raw bits of a CSR value
     //
     // some CSRs are shorter than XLEN bits, but none are longer
@@ -113,7 +119,7 @@ namespace udb {
     // no checks or transformations are applied
     virtual void hw_write(const uint64_t& value, const unsigned& xlen) = 0;
 
-    // cant this CSR be implemented when ext is not?
+    // can't this CSR be implemented when ext is not?
     virtual bool implemented_without_Q_(const ExtensionName&) const = 0;
   };
 }  // namespace udb

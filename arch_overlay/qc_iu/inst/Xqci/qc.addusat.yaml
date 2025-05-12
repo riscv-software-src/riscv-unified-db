@@ -31,14 +31,11 @@ access:
   vs: always
   vu: always
 operation(): |
-  XReg sum = X[rs1] + X[rs2];
+  Bits<xlen()+1> sum = X[rs1] `+ X[rs2];
+  Bits<xlen()+1> largest_unsigned_value = {1'b0, {xlen(){1'b1}}};
 
-  # overflow occurs if the msb of at least one operand is 1 and the msb of the sum is not
-  if ((X[rs1][xlen()-1] == 1) || (X[rs2][xlen()-1] == 1)) {
-    if (sum[xlen()-1] == 0) {
-      sum = ~{XLEN{1'b0}}; # return largest number
-    }
+  if (sum > largest_unsigned_value) {
+    X[rd] = largest_unsigned_value[(xlen() - 1):0];
+  } else {
+    X[rd] = sum[(xlen() - 1):0];
   }
-
-  # otherwise, overflow did not occur
-  X[rd] = sum;

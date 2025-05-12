@@ -25,11 +25,16 @@ access:
   u: always
   vs: always
   vu: always
+pseudoinstructions:
+  - when: xd == 0
+    to: jr imm(xs1)
+  - when: (rd == 0 && xs1 == x1 && imm == 0)
+    to: ret
 operation(): |
   XReg returnaddr;
   returnaddr = $pc + 4;
 
-  jump((X[xs1] + $signed(imm)) & ~XLEN'1);
+  jump((X[xs1] + $signed(imm)) & ~MXLEN'1);
   X[xd] = returnaddr;
 
 # SPDX-SnippetBegin

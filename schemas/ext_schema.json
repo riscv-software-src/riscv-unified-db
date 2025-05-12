@@ -37,7 +37,7 @@
       "required": ["description", "schema"],
       "properties": {
         "description": {
-          "type": "string",
+          "$ref": "schema_defs.json#/$defs/spec_text",
           "description": "Parameter description, including list of valid values"
         },
         "also_defined_in": {
@@ -73,6 +73,7 @@
         "$schema",
         "kind",
         "name",
+        "type",
         "description",
         "long_name",
         "versions"
@@ -95,7 +96,7 @@
           "description": "One line description for the extension"
         },
         "description": {
-          "type": "string",
+          "$ref": "schema_defs.json#/$defs/spec_text",
           "description": "Full documentation of the extension"
         },
         "rvi_jira_issue": {
@@ -109,7 +110,10 @@
         "doc_license": {
           "$ref": "schema_defs.json#/$defs/license"
         },
-        "type": { "enum": ["unprivileged", "privileged"] },
+        "type": {
+          "enum": ["unprivileged", "privileged"],
+          "description": "Either unprivileged or privileged"
+        },
         "conflicts": {
           "description": "Extension(s) that conflict with this extension; both cannot be implemented at the same time",
           "$ref": "schema_defs.json#/$defs/requires_entry"
@@ -312,6 +316,12 @@
         "$source": {
           "type": "string",
           "description": "Source file where this extension was defined"
+        },
+        "cert_normative_rules": {
+          "$ref": "schema_defs.json#/$defs/cert_normative_rules"
+        },
+        "cert_test_procedures": {
+          "$ref": "schema_defs.json#/$defs/cert_test_procedures"
         }
       },
       "additionalProperties": false

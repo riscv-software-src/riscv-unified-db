@@ -4,8 +4,11 @@ $schema: "csr_schema.json#"
 kind: csr
 name: satp
 address: 0x180
+writable: true
 long_name: Supervisor Address Translation and Protection
-description: Controls the translation mode in (H)S-mode and U-mode, and holds the current ASID and page table base pointer.
+description:
+  Controls the translation mode in (H)S-mode and U-mode, and holds the
+  current ASID and page table base pointer.
 priv_mode: S
 length: SXLEN
 definedBy: S
@@ -121,9 +124,9 @@ fields:
           return UNDEFINED_LEGAL_DETERMINISTIC;
         }
       } else {
-        XReg shamt = (XLEN == 32 || (CSR[mstatus].SXL == $bits(XRegWidth::XLEN32))) ? 9 : 16;
-        XReg all_ones = ((1 << shamt) - 1);
-        XReg largest_allowed_asid = (1 << shamt) - 1;
+        XReg shamt = (xlen() == 32 || (CSR[mstatus].SXL == $bits(XRegWidth::XLEN32))) ? 9 : 16;
+        XReg all_ones = ((MXLEN'1 << shamt) - 1);
+        XReg largest_allowed_asid = (MXLEN'1 << shamt) - 1;
 
         if (csr_value.ASID == all_ones) {
           # the specification states that if all 1's are written to the ASID field, then

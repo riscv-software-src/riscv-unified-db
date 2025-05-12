@@ -1,9 +1,11 @@
 $schema: profile_release_schema.json#
 kind: profile release
 name: RVI20
+long_name: RVI20
 marketing_name: RVI20
-class: RVI
-release: 20
+class:
+  $ref: profile_class/RVI.yaml#
+base: null
 state: ratified # current status ["ratified", "development"]
 ratification_date: "2023-04-03"
 
@@ -20,3 +22,5 @@ contributors:
 profiles:
   - { $ref: profile/RVI20U32.yaml# }
   - { $ref: profile/RVI20U64.yaml# }
+description: |
+  This profile release defines the RISC-V base ISA unprivileged instructions.

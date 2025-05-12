@@ -1,12 +1,26 @@
 # frozen_string_literal: true
+# typed: true
 
 require 'ruby-prof-flamegraph'
 
-require_relative "obj"
+require_relative "database_obj"
+require_relative "certifiable_obj"
+require_relative "../presence"
+require_relative "../backend_helpers"
 require "awesome_print"
 
 # model of a specific instruction in a specific base (RV32/RV64)
 class Instruction < DatabaseObject
+  # Add all methods in this module to this type of database object.
+  include CertifiableObject
+  include WavedromUtil
+
+  def processed_wavedrom_desc(base)
+    data = wavedrom_desc(base)
+    processed_data = process_wavedrom(data)
+    fix_entities(json_dump_with_hex_literals(processed_data))
+  end
+
   def self.ary_from_location(location_str_or_int)
     return [location_str_or_int] if location_str_or_int.is_a?(Integer)
 
@@ -138,10 +152,8 @@ class Instruction < DatabaseObject
       return nil unless @data.key?("operation()")
 
       type_checked_ast = type_checked_operation_ast(effective_xlen)
-      print "Pruning #{name} operation()..."
       symtab = fill_symtab(effective_xlen, type_checked_ast)
       pruned_ast = type_checked_ast.prune(symtab)
-      puts "done"
       pruned_ast.freeze_tree(symtab)
 
       symtab.release
@@ -158,10 +170,8 @@ class Instruction < DatabaseObject
     else
       # RubyProf.start
       ast = type_checked_operation_ast(effective_xlen)
-      print "Determining reachable funcs from #{name} (#{effective_xlen})..."
       symtab = fill_symtab(effective_xlen, ast)
       fns = ast.reachable_functions(symtab)
-      puts "done"
       # result = RubyProf.stop
       # RubyProf::FlatPrinter.new(result).print($stdout)
       # exit
@@ -180,7 +190,7 @@ class Instruction < DatabaseObject
       # pruned_ast =  pruned_operation_ast(symtab)
       # type_checked_operation_ast()
       type_checked_ast = type_checked_operation_ast( effective_xlen)
-      symtab = fill_symtab(effective_xlen, pruned_ast)
+      symtab = fill_symtab(effective_xlen, type_checked_ast)
       type_checked_ast.reachable_exceptions(symtab)
       symtab.release
     end
@@ -202,6 +212,8 @@ class Instruction < DatabaseObject
   # @param effective_xlen [Integer] Effective XLEN to evaluate against. If nil, evaluate against all valid XLENs
   # @return [Array<Integer>] List of all exceptions that can be reached from operation()
   def reachable_exceptions_str(effective_xlen=nil)
+    raise ArgumentError, "effective_xlen is a #{effective_xlen.class} but must be an Integer or nil" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
+
     if @data["operation()"].nil?
       []
     else
@@ -212,56 +224,47 @@ class Instruction < DatabaseObject
           if base.nil?
             (
               pruned_ast = pruned_operation_ast(32)
-              print "Determining reachable exceptions from #{name}#RV32..."
               symtab = fill_symtab(32, pruned_ast)
               e32 = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
                 etype.element_name(code)
               }
               symtab.release
-              puts "done"
               pruned_ast = pruned_operation_ast(64)
-              print "Determining reachable exceptions from #{name}#RV64..."
               symtab = fill_symtab(64, pruned_ast)
               e64 = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
                 etype.element_name(code)
               }
               symtab.release
-              puts "done"
               e32 + e64
             ).uniq
           else
             pruned_ast = pruned_operation_ast(base)
-            print "Determining reachable exceptions from #{name}..."
             symtab = fill_symtab(base, pruned_ast)
             e = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
               etype.element_name(code)
             }
             symtab.release
-            puts "done"
             e
           end
         else
           effective_xlen = cfg_arch.mxlen
           pruned_ast = pruned_operation_ast(effective_xlen)
-          print "Determining reachable exceptions from #{name}..."
+          puts " #{name}..."
           symtab = fill_symtab(effective_xlen, pruned_ast)
           e = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
             etype.element_name(code)
           }
           symtab.release
-          puts "done"
           e
         end
       else
         pruned_ast = pruned_operation_ast(effective_xlen)
 
-        print "Determining reachable exceptions from #{name}..."
         symtab = fill_symtab(effective_xlen, pruned_ast)
         e = mask_to_array(pruned_ast.reachable_exceptions(symtab)).map { |code|
           etype.element_name(code)
         }
         symtab.release
-        puts "done"
         e
       end
     end
@@ -522,7 +525,7 @@ class Instruction < DatabaseObject
         elsif b.is_a?(Range)
           op = "$encoding[#{b.end}:#{b.begin}]"
           ops << op
-          so_far += b.size
+          so_far += T.must(b.size)
         end
       end
       ops << "#{@left_shift}'d0" unless @left_shift.zero?
@@ -599,7 +602,7 @@ class Instruction < DatabaseObject
       if same
         # the mask can't be distinguished; is there one or more exclusions that distinguishes them?
 
-        # we have to check all combinations of dvs with exlcusions, and their values
+        # we have to check all combinations of dvs with exclusions, and their values
         exclusion_dvs = @decode_variables.reject { |dv| dv.excludes.empty? }
         exclusion_dv_values = []
         def expand(exclusion_dvs, exclusion_dv_values, base, idx)
@@ -702,7 +705,7 @@ class Instruction < DatabaseObject
     !(hints.include?(other_inst) || other_inst.hints.include?(self))
   end
 
-  # @return [Array<Instruction>] List of instructions that re-use this instruction's encoding,
+  # @return [Array<Instruction>] List of instructions that reuse this instruction's encoding,
   #                              but can't be present in the same system because their defining
   #                              extensions conflict
   def conflicting_instructions(xlen)
@@ -758,7 +761,7 @@ class Instruction < DatabaseObject
         self,
         symtab: cfg_arch.symtab,
         input_file: @data["$source"],
-        input_line: source_line("operation()")
+        input_line: source_line(["operation()"])
       )
 
       raise "unexpected #{ast.class}" unless ast.is_a?(Idl::FunctionBodyAst)

@@ -3,6 +3,7 @@
 $schema: manual_schema.json#
 kind: manual
 name: isa
+long_name: Entire RISC-V ISA
 marketing_name: RISC-V ISA Manual
 url: https://github.com/riscv/riscv-isa-manual
 license:

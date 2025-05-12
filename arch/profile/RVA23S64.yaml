@@ -1,6 +1,7 @@
 $schema: profile_schema.json#
 kind: profile
 name: RVA23S64
+long_name: S-mode extensions for version 23 of the 64-bit Apps Processor profile
 marketing_name: RVA23S64
 mode: S
 base: 64
@@ -14,7 +15,9 @@ extensions:
   #########################################################################
   # imported from RVB23U64
   #########################################################################
-  $inherits: "profile/RVB23S64.yaml#/extensions"
+  $inherits:
+    - "profile/RVB23S64.yaml#/extensions"
+    - "profile/RVA23U64.yaml#/extensions"
 
   #########################################################################
   # MANDATORY extensions in RVA23S64 (that were optional in RVB23S64)

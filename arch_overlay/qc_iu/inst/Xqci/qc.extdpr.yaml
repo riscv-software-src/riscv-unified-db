@@ -35,12 +35,12 @@ access:
   vs: always
   vu: always
 operation(): |
-  Bits<{1'b0, XLEN}*2> pair = {X[rs1 + 1], X[rs1]};
+  Bits<{1'b0, MXLEN}*2> pair = {X[rs1 + 1], X[rs1]};
   XReg width_bits = X[rs2][13:8];
   XReg width = (width_bits > 32) ? 32 : width_bits;
   XReg shamt = X[rs2][5:0];
   if (width > 0) {
-    X[rd] = sext((pair >> shamt) & ((1 << width) - 1), width);
+    X[rd] = sext((pair >> shamt) & ((32'b1 << width) - 1), width);
   } else {
     X[rd] = 0;
   }

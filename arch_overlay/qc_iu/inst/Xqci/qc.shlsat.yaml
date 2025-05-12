@@ -31,15 +31,15 @@ access:
   vs: always
   vu: always
 operation(): |
-  Bits<{1'b0, XLEN}*2> sext_double_width_rs1 = {{XLEN{X[rs1][xlen()-1]}}, X[rs1]};
-  Bits<{1'b0, XLEN}*2> shifted_value = sext_double_width_rs1 << X[rs2][4:0];
-  XReg most_negative_number = 1 << (xlen() - 1);
-  XReg most_positive_number = (1 << (xlen() - 1)) - 1;
+  Bits<xlen()`*2> sext_double_width_rs1 = {{xlen(){X[rs1][xlen()-1]}}, X[rs1]};
+  Bits<xlen()`*2> shifted_value = sext_double_width_rs1 << X[rs2][4:0];
+  Bits<xlen()`*2> most_negative_number = {{(xlen()+1){1'b1}}, {(xlen()-1){1'b0}}};
+  Bits<xlen()`*2> most_positive_number = {{(xlen()+1){1'b0}}, {(xlen()-1){1'b1}}};
 
   if ($signed(shifted_value) < $signed(most_negative_number)) {
-    X[rd] = most_negative_number;
+    X[rd] = most_negative_number[(xlen() - 1):0];
   } else if ($signed(shifted_value) > $signed(most_positive_number)) {
-    X[rd] = most_positive_number;
+    X[rd] = most_positive_number[(xlen() - 1):0];
   } else {
-    X[rd] = shifted_value;
+    X[rd] = shifted_value[(xlen() - 1):0];
   }

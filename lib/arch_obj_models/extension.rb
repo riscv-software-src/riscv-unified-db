@@ -1,144 +1,39 @@
 # frozen_string_literal: true
 
-require_relative "obj"
+require_relative "database_obj"
+require_relative "certifiable_obj"
+require_relative "parameter"
 require_relative "schema"
+require_relative "req_expression"
+require_relative "../presence"
 require_relative "../version"
-
-# A parameter (AKA option, AKA implementation-defined value) supported by an extension
-class ExtensionParameter
-  # @return [Architecture] The defining architecture
-  attr_reader :arch
-
-  # @return [String] Parameter name
-  attr_reader :name
-
-  # @return [String] Asciidoc description
-  attr_reader :desc
-
-  # @return [Schema] JSON Schema for this param
-  attr_reader :schema
-
-  # @return [String] Ruby code to perform validation above and beyond JSON schema
-  # @return [nil] If there is no extra validation
-  attr_reader :extra_validation
-
-  # @return [Array<Extension>] The extension(s) that define this parameter
-  #
-  # Some parameters are defined by multiple extensions (e.g., CACHE_BLOCK_SIZE by Zicbom and Zicboz).
-  # When defined in multiple places, the parameter *must* mean the exact same thing.
-  attr_reader :exts
-
-  # @returns [Idl::Type] Type of the parameter
-  attr_reader :idl_type
-
-  # Pretty convert extension schema to a string.
-  def schema_type
-    @schema.to_pretty_s
-  end
-
-  def default
-    if @data["schema"].key?("default")
-      @data["schema"]["default"]
-    end
-  end
-
-  # @param ext [Extension]
-  # @param name [String]
-  # @param data [Hash<String, Object]
-  def initialize(ext, name, data)
-    @arch = ext.arch
-    @data = data
-    @name = name
-    @desc = data["description"]
-    @schema = Schema.new(data["schema"])
-    @extra_validation = data["extra_validation"]
-    also_defined_in = []
-    unless data["also_defined_in"].nil?
-      if data["also_defined_in"].is_a?(String)
-        other_ext = @arch.extension(data["also_defined_in"])
-        raise "Definition error in #{ext.name}.#{name}: #{data['also_defined_in']} is not a known extension" if other_ext.nil?
-
-        also_defined_in << other_ext
-      else
-        unless data["also_defined_in"].is_a?(Array) && data["also_defined_in"].all? { |e| e.is_a?(String) }
-          raise "schema error: also_defined_in should be a string or array of strings"
-        end
-
-        data["also_defined_in"].each do |other_ext_name|
-          other_ext = @arch.extension(other_ext_name)
-          raise "Definition error in #{ext.name}.#{name}: #{data['also_defined_in']} is not a known extension" if other_ext.nil?
-
-          also_defined_in << other_ext
-        end
-      end
-    end
-    @exts = [ext] + also_defined_in
-    @idl_type = @schema.to_idl_type.make_const.freeze
-  end
-
-  # @param version [ExtensionVersion]
-  # @return [Boolean] if this parameter is defined in +version+
-  def defined_in_extension_version?(version)
-    return false if @exts.none? { |ext| ext.name == version.ext.name }
-    return true if @data.dig("when", "version").nil?
-
-    @exts.any? do |ext|
-      ExtensionRequirement.new(ext.name, @data["when"]["version"], arch: ext.arch).satisfied_by?(version)
-    end
-  end
-
-  # @return [String]
-  def name_potentially_with_link(exts)
-    raise ArgumentError, "Expecting Array" unless exts.is_a?(Array)
-    raise ArgumentError, "Expecting Array[Extension]" unless exts[0].is_a?(Extension)
-
-    if exts.size == 1
-      "<<ext-#{exts[0].name}-param-#{name}-def,#{name}>>"
-    else
-      name
-    end
-  end
-
-  # sorts by name
-  def <=>(other)
-    raise ArgumentError, "ExtensionParameters are only comparable to other extension parameters" unless other.is_a?(ExtensionParameter)
-
-    @name <=> other.name
-  end
-end
-
-class ExtensionParameterWithValue
-  # @return [Object] The parameter value
-  attr_reader :value
-
-  # @return [String] Parameter name
-  def name = @param.name
-
-  # @return [String] Asciidoc description
-  def desc = @param.desc
-
-  # @return [Hash] JSON Schema for the parameter value
-  def schema = @param.schema
-
-  # @return [String] Ruby code to perform validation above and beyond JSON schema
-  # @return [nil] If there is no extra validatino
-  def extra_validation = @param.extra_validation
-
-  # @return [Extension] The extension that defines this parameter
-  def exts = @param.exts
-
-  def idl_type = @param.idl_type
-
-  def initialize(param, value)
-    @param = param
-    @value = value
-  end
-end
 
 # Extension definition
 class Extension < DatabaseObject
+  # Add all methods in this module to this type of database object.
+  include CertifiableObject
+
   # @return [String] Long name of the extension
   def long_name = @data["long_name"]
+
+  # @return [String] Either unprivileged or privileged
+  def priv_type = @data["type"]
+
+  # @return [String] Either unpriv or priv
+  def compact_priv_type
+    case priv_type
+    when "unprivileged"
+      "unpriv"
+    when "privileged"
+      "priv"
+    else
+      if priv_type.nil? || priv_type.empty?
+        raise ArgumentError, "Extension #{name} missing its type in database (must be privileged or unprivileged)"
+      else
+        raise ArgumentError, "Extension #{name} has illegal privileged/unprivileged type of #{priv_type}"
+      end
+    end
+  end
 
   # @return [String] Company that developed the extension
   # @return [nil] if the company isn't known
@@ -168,6 +63,9 @@ class Extension < DatabaseObject
     versions.select { |v| v.state == "ratified" }
   end
 
+  # @return [Boolean] Any version ratified?
+  def ratified = ratified_versions.any?
+
   # @return [ExtensionVersion] Mimumum defined version of this extension
   def min_version
     versions.min { |a, b| a.version_spec <=> b.version_spec }
@@ -186,14 +84,14 @@ class Extension < DatabaseObject
     ratified_versions.min { |a, b| a.version_spec <=> b.version_spec }
   end
 
-  # @return [Array<ExtensionParameter>] List of parameters added by this extension
+  # @return [Array<Parameter>] List of parameters added by this extension
   def params
     return @params unless @params.nil?
 
     @params = []
     if @data.key?("params")
       @data["params"].each do |param_name, param_data|
-        @params << ExtensionParameter.new(self, param_name, param_data)
+        @params << Parameter.new(self, param_name, param_data)
       end
     end
     @params
@@ -359,7 +257,7 @@ class ExtensionVersion
     @contributors
   end
 
-  # @return [Array<ExtensionParameter>] The list of parameters for this extension version
+  # @return [Array<Parameter>] The list of parameters for this extension version
   def params
     @ext.params.select { |p| p.defined_in_extension_version?(self) }
   end
@@ -404,7 +302,7 @@ class ExtensionVersion
   # under which it is in the list (which may be an AlwaysTrueExtensionRequirementExpression)
   #
   # @example
-  #   ext_ver.implicaitons #=> { :ext_ver => ExtensionVersion.new(:A, "2.1.0"), :cond => ExtensionRequirementExpression.new(...) }
+  #   ext_ver.implications #=> { :ext_ver => ExtensionVersion.new(:A, "2.1.0"), :cond => ExtensionRequirementExpression.new(...) }
   #
   # @return [Array<Hash{Symbol => ExtensionVersion, ExtensionRequirementExpression}>]
   #      List of extension versions that this ExtensionVersion implies
@@ -461,13 +359,6 @@ class ExtensionVersion
     @implied_by_with_condition
   end
 
-  # @param ext_name [String] Extension name
-  # @param ext_version_requirements [String,Array<String>] Extension version requirements
-  # @return [Boolean] whether or not this ExtensionVersion is named `ext_name` and satisfies the version requirements
-  def satisfies?(ext_name, *ext_version_requirements)
-    ExtensionRequirement.new(ext_name, ext_version_requirements).satisfied_by?(self)
-  end
-
   # sorts extension by name, then by version
   def <=>(other)
     unless other.is_a?(ExtensionVersion)
@@ -510,149 +401,33 @@ class ExtensionVersion
       inst.defined_by_condition.possibly_satisfied_by?(self)
     end
   end
-end
 
-# Is the extension mandatory, optional, various kinds of optional, etc.
-# Accepts two kinds of YAML schemas:
-#   String
-#     Example => presence: mandatory
-#   Hash
-#     Must have the key "optional" with a String value
-#     Example => presence:
-#                  optional: development
-class ExtensionPresence
-  attr_reader :presence
-  attr_reader :optional_type
+  # @param design [Design] The design
+  # @return [Array<Csr>] List of CSRs in-scope for this design for this extension version (may be empty).
+  #                      Factors in effect of design's xlen in the appropriate mode for the CSR.
+  def in_scope_csrs(design)
+    raise ArgumentError, "Require an PortfolioDesign object but got a #{design.class} object" unless design.is_a?(PortfolioDesign)
 
-  # @param data [Hash, String] The presence data from the architecture spec
-  def initialize(data)
-    if data.is_a?(String)
-      raise "Unknown extension presence of #{data}" unless ["mandatory","optional"].include?(data)
+    return @in_scope_csrs unless @in_scope_csrs.nil?
 
-      @presence = data
-      @optional_type = nil
-    elsif data.is_a?(Hash)
-      data.each do |key, value|
-        if key == "optional"
-          raise ArgumentError, "Extension presence hash #{data} missing type of optional" if value.nil?
-          raise ArgumentError, "Unknown extension presence optional #{value} for type of optional" unless
-            ["localized", "development", "expansion", "transitory"].include?(value)
-
-          @presence = key
-          @optional_type = value
-        else
-          raise ArgumentError, "Extension presence hash #{data} has unsupported key of #{key}"
-        end
-      end
-    else
-      raise ArgumentError, "Extension presence is a #{data.class} but only String or Hash are supported"
+    @in_scope_csrs = @arch.csrs.select do |csr|
+      csr.defined_by_condition.possibly_satisfied_by?(self) &&
+      (csr.base.nil? || (design.possible_xlens.include?(csr.base)))
     end
   end
 
-  def mandatory? = (@presence == "mandatory")
-  def optional? = (@presence == "optional")
+  # @param design [Design] The design
+  # @return [Array<Instruction>] List of instructions in-scope for this design for this extension version (may be empty).
+  #                              Factors in effect of design's xlen in the appropriate mode for the instruction.
+  def in_scope_instructions(design)
+    raise ArgumentError, "Require an PortfolioDesign object but got a #{design.class} object" unless design.is_a?(PortfolioDesign)
 
-  # Class methods
-  def self.mandatory = "mandatory"
-  def self.optional = "optional"
-  def self.optional_type_localized = "localized"
-  def self.optional_type_development = "development"
-  def self.optional_type_expansion = "expansion"
-  def self.optional_type_transitory = "transitory"
+    return @in_scope_instructions unless @in_scope_instructions.nil?
 
-  def self.presence_types = [mandatory, optional]
-  def self.optional_types = [
-        optional_type_localized,
-        optional_type_development,
-        optional_type_expansion,
-        optional_type_transitory]
-
-  def self.presence_types_obj
-    return @presence_types_obj unless @presence_types_obj.nil?
-
-    @presence_types_obj = []
-
-    presence_types.each do |presence_type|
-      @presence_types_obj << ExtensionPresence.new(presence_type)
+    @in_scope_instructions = @arch.instructions.select do |inst|
+      inst.defined_by_condition.possibly_satisfied_by?(self) &&
+      (inst.base.nil? || (design.possible_xlens.include?(inst.base)))
     end
-
-    @presence_types_obj
-  end
-
-  def self.optional_types_obj
-    return @optional_types_obj unless @optional_types_obj.nil?
-
-    @optional_types_obj = []
-
-    optional_types.each do |optional_type|
-      @optional_types_obj << ExtensionPresence.new({ self.optional => optional_type })
-    end
-
-    @optional_types_obj
-  end
-
-  def to_s
-    @optional_type.nil? ? "#{presence}" : "#{presence} (#{optional_type})"
-  end
-
-  def to_s_concise
-    "#{presence}"
-  end
-
-  # @overload ==(other)
-  #   @param other [String] A presence string
-  #   @return [Boolean] whether or not this ExtensionPresence has the same presence (ignores optional_type)
-  # @overload ==(other)
-  #   @param other [ExtensionPresence] An extension presence object
-  #   @return [Boolean] whether or not this ExtensionPresence has the exact same presence and optional_type as other
-  def ==(other)
-    case other
-    when String
-      @presence == other
-    when ExtensionPresence
-      @presence == other.presence && @optional_type == other.optional_type
-    else
-      raise "Unexpected comparison"
-    end
-  end
-
-  ######################################################
-  # Following comparison operators follow these rules:
-  #   - "mandatory" is greater than "optional"
-  #   - optional_types all have same rank
-  #   - equals compares presence and then optional_type
-  ######################################################
-
-  # @overload >(other)
-  #   @param other [ExtensionPresence] An extension presence object
-  #   @return [Boolean] Whether or not this ExtensionPresence is greater-than the other
-  def >(other)
-    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
-    (self.mandatory? && other.optional?)
-  end
-
-  # @overload >=(other)
-  #   @param other [ExtensionPresence] An extension presence object
-  #   @return [Boolean] Whether or not this ExtensionPresence is greater-than or equal to the other
-  def >=(other)
-    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
-    (self > other) || (self == other)
-  end
-
-  # @overload <(other)
-  #   @param other [ExtensionPresence] An extension presence object
-  #   @return [Boolean] Whether or not this ExtensionPresence is less-than the other
-  def <(other)
-    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
-    (self.optional? && other.mandatory?)
-  end
-
-  # @overload <=(other)
-  #   @param other [ExtensionPresence] An extension presence object
-  #   @return [Boolean] Whether or not this ExtensionPresence is less-than or equal to the other
-  def <=(other)
-    raise ArgumentError, "ExtensionPresence is only comparable to other ExtensionPresence classes" unless other.is_a?(ExtensionPresence)
-    (self < other) || (self == other)
   end
 end
 
@@ -690,26 +465,12 @@ class ExtensionRequirement
     @extension = @arch.extension(@name)
   end
 
-  def self.create(yaml_req, arch)
-    if yaml_req.is_a?(String)
-      ExtensionRequirement.new(yaml_req, ">= #{arch.extension(yaml_req).versions.min}")
-    elsif yaml_req.is_a?(Hash)
-      raise "schema error" unless yaml_req.key?("name")
-
-      req = yaml_req.key?("version") ? yaml_req["version"] : ">= #{arch.extension(yaml_req['name']).versions.min}"
-      ExtensionRequirement.new(yaml_req["name"], req, arch:)
-    else
-      raise "unexpected"
-    end
-  end
-
   # @param name [#to_s] Extension name
   # @param requirements [String] Single requirement
   # @param requirements [Array<String>] List of requirements, all of which must hold
   # @param arch [Architecture]
   def initialize(name, *requirements, arch: nil, note: nil, req_id: nil, presence: nil)
-    raise ArgumentError, "For #{name}, arch not allowed to be nil" if arch.nil?
-    raise ArgumentError, "For #{name}, Architecture is required" unless arch.is_a?(Architecture)
+    raise ArgumentError, "For #{name}, got class #{arch.class} but need Architecture" unless arch.is_a?(Architecture)
 
     @name = name.to_s.freeze
     @arch = arch
@@ -735,10 +496,30 @@ class ExtensionRequirement
 
   # @return [Array<ExtensionVersion>] The list of extension versions that satisfy this extension requirement
   def satisfying_versions
-    ext = @arch.extension(@name)
-    return [] if ext.nil?
+    return @satisfying_versions unless @satisfying_versions.nil?
 
-    ext.versions.select { |v| satisfied_by?(v) }
+    ext = @arch.extension(@name)
+
+    @satisfying_versions = ext.nil? ? [] : ext.versions.select { |v| satisfied_by?(v) }
+  end
+
+  # @return [ExtensionVersion] The minimum extension version that satifies this extension requirement.
+  #                            If none, raises an error.
+  def min_satisfying_ext_ver
+    if satisfying_versions.empty?
+      warn "Extension requirement '#{self}' cannot be met by any available extension version. Available versions:"
+      if @ext.versions.empty?
+        warn "  none"
+      else
+        @ext.versions.each do |ext_ver|
+          warn "  #{ext_ver}"
+        end
+      end
+
+      raise "Cannot satisfy extension requirement '#{self}'"
+    end
+
+    satisfying_versions.min
   end
 
   # @overload

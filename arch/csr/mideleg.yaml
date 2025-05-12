@@ -5,6 +5,7 @@ kind: csr
 name: mideleg
 long_name: Machine Interrupt Delegation
 address: 0x303
+writable: true
 priv_mode: M
 length: MXLEN
 definedBy:
