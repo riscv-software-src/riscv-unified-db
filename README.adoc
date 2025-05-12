@@ -7,8 +7,12 @@ image::https://api.reuse.software/badge/github.com/riscv-software-src/riscv-unif
 ----
 This project is under rapid development. Expect schemas and APIs to change.
 
-The data in the `arch` directory is also a work in progress and may be incorrect. As subsets of the
-data become validated, we will list it here.
+The data in the `arch` directory is also a work in progress and may be incorrect.
+
+That said, the following data has been validated against third-party sources:
+
+* Instruction encodings are validated to match riscv-opcodes
+* Instruction names and assembly formats are validated against LLVM.
 ----
 
 == Quick links
