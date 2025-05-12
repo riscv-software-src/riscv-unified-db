@@ -131,9 +131,6 @@ deploy_cp_recursive gen/isa_explorer/browser $DEPLOY_DIR/isa_explorer
 deploy_log "Copy isa_explorer_spreadsheet"
 deploy_cp_recursive gen/isa_explorer/spreadsheet $DEPLOY_DIR/isa_explorer
 
-deploy_log "Build manual"
-deploy_do "gen:html_manual" "MANUAL_NAME=isa" "VERSIONS=all"
-
 deploy_log "Copy manual html"
 deploy_cp_recursive gen/manual/isa/top/all/html $DEPLOY_DIR/manual
 
@@ -148,9 +145,6 @@ for profile in RVI20 RVA20 RVA22 RVA23 RVB23; do
 done
 
 for crd in AC100 AC200 MC100-32 MC100-64 MC200-32 MC200-64 MC300-32 MC300-64; do
-  deploy_log "Create ${crd}-CRD PDF Spec"
-  deploy_do "gen:proc_crd_pdf[$crd]"
-
   deploy_log "Copy ${crd}-CRD PDF"
   deploy_cp gen/proc_crd/pdf/${crd}-CRD.pdf $DEPLOY_DIR/pdfs
 done
