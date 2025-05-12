@@ -5,7 +5,7 @@ kind: csr
 name: dcsr
 long_name: Debug Control and Status Register
 address: 0x7B0
-priv_mode: M
+priv_mode: D
 length: 32
 description: |
   Upon entry into Debug Mode, v and prv are updated with the privilege level the hart was previously in,
