@@ -100,6 +100,20 @@ fields:
       The `RCID` is used to determine the resource allocations (e.g., cache occupancy limits,
       memory bandwidth limits, etc.) to enforce.
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (implemented?(ExtensionName::Smstateen)) {
+        if (mode() < PrivilegeMode::M && CSR[mstateen0].SRMCFG == 0) {
+          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+        }
+        if (virtual_mode?() && CSR[mstateen0].SRMCFG == 1) {
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+        }
+      } else {
+        if (virtual_mode?()) {
+          raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
+        }
+      }
+      return csr_value.RCID;
 
   MCID:
     location: 27-16
@@ -121,15 +135,7 @@ fields:
           raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
       }
-      value = csr_value;
-
-      rcid_mask = 0xFFF
-      mcid_mask = 0xFFF
-
-      rcid = csr_value & rcid_mask
-      mcid = (csr_value >> 16) & mcid_mask
-
-      value = (mcid << 16) | rcid
+      return csr_value.MCID;
 
 sw_read(): |
   if (implemented?(ExtensionName::Smstateen)) {
@@ -144,4 +150,4 @@ sw_read(): |
       raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
     }
   }
-  return value;
+  return $bits(CSR[srmcfg]);
