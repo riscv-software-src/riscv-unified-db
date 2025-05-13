@@ -51,6 +51,7 @@ fields:
   CETRIG:
     location: 19
     type: RW
+    definedBy: Smdbltrp
     description: |
       This bit is part of Smdbltrp and only exists when that extension is implemented.
       0 (disabled):: A hart in a critical error state does not enter
@@ -75,6 +76,7 @@ fields:
   PELP:
     location: 18
     type: RW
+    definedBy: Zicfilp
     description: |
       This bit is part of Zicfilp and only exists when that extension is implemented.
       0 (NO_LP_EXPECTED):: No landing pad instruction expected.
@@ -83,6 +85,7 @@ fields:
   EBREAKVS:
     location: 17
     type: RW
+    definedBy: H
     description: |
       0 (exception):: ebreak instructions in VS-mode behave as described in the Privileged Spec.
       1 (debug mode):: ebreak instructions in VS-mode enter Debug Mode.
@@ -91,6 +94,7 @@ fields:
   EBREAKVU:
     location: 16
     type: RW
+    definedBy: H
     description: |
       0 (exception):: ebreak instructions in VU-mode behave as described in the Privileged Spec.
       1 (debug mode):: ebreak instructions in VU-mode enter Debug Mode.
@@ -106,6 +110,7 @@ fields:
   EBREAKS:
     location: 13
     type: RW
+    definedBy: S
     description: |
       0 (exception):: ebreak instructions in S-mode behave as described in the Privileged Spec.
       1 (debug mode):: ebreak instructions in S-mode enter Debug Mode.
@@ -114,6 +119,7 @@ fields:
   EBREAKU:
     location: 12
     type: RW
+    definedBy: U
     description: |
       0 (exception):: ebreak instructions in U-mode behave as described in the Privileged Spec.
       1 (debug mode):: ebreak instructions in U-mode enter Debug Mode.
@@ -174,6 +180,7 @@ fields:
   V:
     location: 5
     type: RW
+    definedBy: H
     description: |
       Extends the prv field with the virtualization mode the hart was operating in
       when Debug Mode was entered. A debugger can change this value to change the
