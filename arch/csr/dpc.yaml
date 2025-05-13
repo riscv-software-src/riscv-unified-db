@@ -35,5 +35,5 @@ fields:
     location_rv32: 31-0
     location_rv64: 63-0
     type: RW
-    description: DPC Value
+    description: Debug PC Value
     reset_value: UNDEFINED_LEGAL
