@@ -125,16 +125,42 @@ function check_f_ok {
   arguments
     Bits<INSTR_ENC_SIZE> encoding
   description {
-    Checks if instructions from the `F` extension can be executed, and, if not,
+    Checks if instructions from a floating point extension can be executed, and, if not,
     raise an exception.
   }
   body {
-    if (MUTABLE_MISA_F && CSR[misa].F == 0) {
-      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
-    }
+    # All Z*inx extensions depend on Zfinx, so we only have to check if Zfinx is implemented
+    if (implemented?(ExtensionName::Zfinx)) {
+      # mstateen0.FCSR disables all modes
+      if (implemented?(ExtensionName::Smstateen) && (CSR[mstateen0].FCSR == 0)) {
+        raise(ExceptionCode::IllegalInstruction, mode(), enoding);
+      }
 
-    if (CSR[mstatus].FS == 0) {
-      raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+      # sstateen0.FCSR disables all modes except M
+      if (implemented?(ExtensionName::Sstateen) &&
+          (mode() != PrivilegeMode::M) &&
+          (CSR[sstateen0].FCSR == 0)) {
+        raise(ExceptionCode::IllegalInstruction, mode(), enoding);
+      }
+
+      # hstateen0.FCSR disables VS and VU
+      if (implemented?(ExtensionName::Sstateen) &&
+          implemented?(ExtensionName::H) &&
+          (CSR[misa].H == 1) &&
+          virtual_mode?() &&
+          (CSR[hstateen0].FCSR == 0)) {
+        raise(ExceptionCode::IllegalInstruction, mode(), enoding);
+      }
+    } else if (implemented?(ExtensionName::F)) {
+      if (MUTABLE_MISA_F && CSR[misa].F == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+      }
+
+      if (CSR[mstatus].FS == 0) {
+        raise(ExceptionCode::IllegalInstruction, mode(), encoding);
+      }
+    } else {
+      assert(false, "check_f_ok called when no FP extension is implemented");
     }
   }
 }
