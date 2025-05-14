@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../../../schemas/inst_subtype_schema.json
+
+$schema: inst_subtype_schema.json#
+kind: instruction_subtype
+name: R-x
+
+data:
+  type: { "$ref": "inst_type/R.yaml#" }
+  subtype: { "$ref": "inst_subtype/R/R-x.yaml#" }
+  $inherits:
+    - inst_opcode/funct7.yaml#/data
+    - inst_opcode/funct3.yaml#/data
+    - inst_opcode/opcode.yaml#/data
+    - inst_var/xs2.yaml#/data
+    - inst_var/xs1.yaml#/data
+    - inst_var/xd.yaml#/data
