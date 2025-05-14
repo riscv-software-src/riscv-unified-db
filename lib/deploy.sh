@@ -2,8 +2,9 @@
 
 # deploy artifacts to a directory, in preparation for GitHub deployment
 
-# Default to success
+# Initialize globals used to track failures.
 exit_status=0
+declare -a failures # Array
 
 ROOT=$(dirname $(dirname $(realpath ${BASH_SOURCE[0]})))
 
@@ -14,30 +15,45 @@ function deploy_log() {
   echo "[DEPLOY] $(date) $*"
 }
 
+# Put "FAIL" between [DEPLOY] and date to make it easier to grep for failures (ie.., "\[DEPLOY\] FAIL" RE does the trick)
+# Don't put "FAIL" in [DEPLOY] so that we can first grep for [DEPLOY] and see all messages from this deploy.sh script.
+# Record failures but don't exit so that we can see which artifacts pass & fail.
+function deploy_fail() {
+  echo "[DEPLOY] FAIL $(date) $*"
+  failures+=("$*")    # Append to array
+  exit_status=1
+}
+
 function deploy_mkdir() {
   [[ $# -ne 1 ]] && {
-    deploy_log "deploy_mkdir(): Passed $# args but it needs 1"
+    deploy_fail "deploy_mkdir(): Passed $# args but it needs 1"
+
+    # Exit if args are wrong.
     exit 1
   }
 
   local dst_dir="$1"
   mkdir -p $dst_dir || {
-    deploy_log "mkdir -p $dst_dir failed"
-    exit_status=1
+    deploy_fail "mkdir -p $dst_dir failed"
   }
 }
 
 function deploy_do() {
-  deploy_log "$@"
+  deploy_log
+  deploy_log 'vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv'
+  deploy_log "./do $*"
+  deploy_log '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
+  deploy_log
   ./do "$@" || {
-    deploy_log "./do $* failed"
-    exit_status=1
+    deploy_fail "./do $*"
   }
 }
 
 function deploy_cp_recursive() {
   [[ $# -ne 2 ]] && {
-    deploy_log "deploy_cp_recursive(): Passed $# args but it needs 2"
+    deploy_fail "deploy_cp_recursive(): Passed $# args but it needs 2"
+
+    # Exit if args are wrong.
     exit 1
   }
 
@@ -45,14 +61,15 @@ function deploy_cp_recursive() {
   local dst_dir="$2"
 
   cp -R ${src_dir} ${dst_dir} || {
-    deploy_log "cp -R ${src_dir} ${dst_dir} failed"
-    exit_status=1
+    deploy_fail "cp -R ${src_dir} ${dst_dir} failed"
   }
 }
 
 function deploy_cp() {
   [[ $# -ne 2 ]] && {
-    deploy_log "deploy_cp(): Passed $# args but it needs 2"
+    deploy_fail "deploy_cp(): Passed $# args but it needs 2"
+
+    # Exit if args are wrong.
     exit 1
   }
 
@@ -60,12 +77,13 @@ function deploy_cp() {
   local dst_dir="$2"
 
   cp ${src_file} ${dst_dir} || {
-    deploy_log "cp ${src_file} ${dst_dir} failed"
-    exit_status=1
+    deploy_fail "cp ${src_file} ${dst_dir} failed"
   }
 }
 
-deploy_log "Starting"
+deploy_log '***************************************************************'
+deploy_log '*                      DEPLOY STARTING                        *'
+deploy_log '***************************************************************'
 
 deploy_mkdir $DEPLOY_DIR
 deploy_mkdir $DEPLOY_DIR/example_cfg
@@ -174,17 +192,17 @@ cat <<- EOF > $DEPLOY_DIR/index.html
       <li><a href="$PAGES_URL/isa_explorer/browser/ext_table.html">Extensions</a></li>
       <li><a href="$PAGES_URL/isa_explorer/browser/inst_table.html">Instructions</a></li>
       <li><a href="$PAGES_URL/isa_explorer/browser/csr_table.html">CSRs</a></li>
-      <li><a href="$PAGES_URL/isa_explorer.xlsx">Excel version (includes Extensions, Instructions, CSRs)</a></li>
+      <li><a href="$PAGES_URL/isa_explorer/spreadsheet/isa_explorer.xlsx">Excel version (includes Extensions, Instructions, CSRs)</a></li>
     </ul>
 
     <br/>
     <h3>Profile Releases</h3>
     <ul>
-      <li><a href="$PAGES_URL/pdfs/RVI20.pdf">RVI20 Profile Release</a></li>
-      <li><a href="$PAGES_URL/pdfs/RVA20.pdf">RVA20 Profile Release</a></li>
-      <li><a href="$PAGES_URL/pdfs/RVA22.pdf">RVA22 Profile Release</a></li>
-      <li><a href="$PAGES_URL/pdfs/RVA23.pdf">RVA23 Profile Release</a></li>
-      <li><a href="$PAGES_URL/pdfs/RVB23.pdf">RVB23 Profile Release</a></li>
+      <li><a href="$PAGES_URL/pdfs/RVI20ProfileRelease.pdf">RVI20 Profile Release</a></li>
+      <li><a href="$PAGES_URL/pdfs/RVA20ProfileRelease.pdf">RVA20 Profile Release</a></li>
+      <li><a href="$PAGES_URL/pdfs/RVA22ProfileRelease.pdf">RVA22 Profile Release</a></li>
+      <li><a href="$PAGES_URL/pdfs/RVA23ProfileRelease.pdf">RVA23 Profile Release</a></li>
+      <li><a href="$PAGES_URL/pdfs/RVB23ProfileRelease.pdf">RVB23 Profile Release</a></li>
     </ul>
 
     <br/>
@@ -223,6 +241,26 @@ cat <<- EOF > $DEPLOY_DIR/index.html
 </html>
 EOF
 
-deploy_log "Complete"
+[[ $exit_status -eq 1 ]] && {
+  deploy_log
+  deploy_log '***************************************************************'
+  deploy_log '*                      DEPLOY FAILED                          *'
+  deploy_log '***************************************************************'
+  deploy_log
+  deploy_log "LIST OF FAILURES:"
+
+  # Iterate through each failure array element.
+  for f in "${failures[@]}"; do
+    deploy_log "  $f"
+  done
+}
+
+deploy_log
+deploy_log "Overall exit status is $exit_status"
+deploy_log
+
+deploy_log '***************************************************************'
+deploy_log '*                      DEPLOY COMPLETE                        *'
+deploy_log '***************************************************************'
 
 exit $exit_status
