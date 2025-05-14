@@ -1,3 +1,5 @@
+image::doc/udb.svg[UDB banner]
+
 = RISC-V Unified Database (UnifiedDB/UDB)
 
 image::https://api.reuse.software/badge/github.com/riscv-software-src/riscv-unified-db[REUSE status, link="https://api.reuse.software/info/github.com/riscv-software-src/riscv-unified-db"]
