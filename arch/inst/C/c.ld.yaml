@@ -25,6 +25,7 @@ encoding:
         left_shift: 3
       - name: xd
         location: 4-2
+        not: [1, 3, 5, 7]
       - name: xs1
         location: 9-7
   RV64:
@@ -44,21 +45,25 @@ access:
   vu: always
 operation(): |
   if (implemented?(ExtensionName::C) && (CSR[misa].C == 1'b0)) {
-      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
   if (xlen() == 32) {
-      if (implemented?(ExtensionName::Zclsd)) {
-          Bits<128> val = read_memory<128>(X[creg2reg(xs1)] + imm, $encoding);
-          X[creg2reg(xd)] = val[63:0];
-          X[creg2reg(xd + 1)] = val[127:64];
-      } else {
-          raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
-      }
+    if (implemented?(ExtensionName::Zclsd)) {
+      Bits<64> val = read_memory<64>(X[creg2reg(xs1)] + imm, $encoding);
+      X[creg2reg(xd)] = val[31:0];
+      X[creg2reg(xd + 1)] = val[63:32];
+    } else {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
   } else {
-      XReg virtual_address = X[creg2reg(xs1)] + imm;
-      X[creg2reg(xd)] = sext(read_memory<64>(virtual_address, $encoding), 64);
+    XReg virtual_address = X[creg2reg(xs1)] + imm;
+    X[creg2reg(xd)] = sext(read_memory<64>(virtual_address, $encoding), 64);
   }
+
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let offset : xlenbits = sign_extend(imm);

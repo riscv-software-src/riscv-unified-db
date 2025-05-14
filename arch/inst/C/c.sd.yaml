@@ -14,7 +14,6 @@ definedBy:
     - C
     - Zca
     - Zclsd
-base: 64
 assembly: xs2, imm(xs1)
 encoding:
   RV32:
@@ -25,6 +24,7 @@ encoding:
         left_shift: 3
       - name: xs2
         location: 4-2
+        not: [1, 3, 5, 7]
       - name: xs1
         location: 9-7
   RV64:
@@ -51,11 +51,8 @@ operation(): |
 
   if (xlen() == 32) {
     if (implemented?(ExtensionName::Zclsd)) {
-      if (creg2reg(xs2) % 2 != 0) {
-        raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
-      }
-      Bits<128> data = {X[creg2reg(xs2) + 1], X[creg2reg(xs2)]};
-      write_memory<128>(virtual_address, data, $encoding);
+      Bits<64> data = {X[creg2reg(xs2) + 1], X[creg2reg(xs2)]};
+      write_memory<64>(virtual_address, data, $encoding);
     } else {
       raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
     }
