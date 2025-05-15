@@ -11,3 +11,11 @@ versions:
   - version: "1.0.0"
     state: ratified
     ratification_date: null
+params:
+  MPRVEN_IMPLEMENTED:
+    description: |
+      Whether or not the MPRVEN field is implemented.
+      Implementation of the MPRVEN field in DCSR CSR is optional.
+      It may be tied to either 0 or 1.
+    schema:
+      type: boolean
