@@ -147,6 +147,21 @@ fields:
       if (CSR[mstateen0].CONTEXT == 1'b0){
         return 0;
       }
+  CTR:
+    long_name: ctr access control
+    location: 54
+    base: 64
+    description: |
+      If the H extension is implemented and `mstateen0.CTR=1`, the `hstateen0.CTR` bit controls access to
+      supervisor CTR state when V=1. This state includes `sctrctl` (really `vsctrctl`), `sctrstatus`, and `sireg*`
+      (really `vsireg*`) when `siselect` (really `vsiselect`) is in 0x200..0x2FF. `hstateen0.CTR` is read-only 0 when
+      `mstateen0.CTR=0`.
+    type: RW
+    reset_value: 0
+    sw_write(csr_value): |
+      if (CSR[mstateen0].CTR == 1'b0){
+        return 0;
+      }
   JVT:
     long_name: jvt access control
     location: 2

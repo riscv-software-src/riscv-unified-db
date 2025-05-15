@@ -108,4 +108,28 @@ fields:
       Version 1.13.
     type: RW
     reset_value: 0
+  SRMCFG:
+    long_name: srmcfg access control
+    location: 23
+    alias: mstateen0.SRMCFG
+    sw_write(csr_value): |
+      CSR[mstateen0].SRMCFG = csr_value.SRMCFG;
+      return csr_value.SRMCFG;
+    description: |
+      The SRMCFG bit in `mstateen0h` controls access to the `srmcfg`` CSR introduced by the Ssqosid Chapter 18
+      extension.
+    type: RW
+    reset_value: 0
+  CTR:
+    long_name: ctr access control
+    location: 22
+    alias: mstateen0.CTR
+    sw_write(csr_value): |
+      CSR[mstateen0].CTR = csr_value.CTR;
+      return csr_value.CTR;
+    description: |
+      When Smstateen is implemented, the `mstateen0.CTR` bit controls access to CTR register state from
+      privilege modes less privileged than M-mode.
+    type: RW
+    reset_value: 0
 sw_read(): return $bits(CSR[mstateen0])[63:32];

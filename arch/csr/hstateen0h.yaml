@@ -139,4 +139,23 @@ fields:
       by the Sdtrig extension.
     type: RW
     reset_value: UNDEFINED_LEGAL
+  CTR:
+    long_name: ctr access control
+    location: 22
+    alias: hstateen0.CTR
+    sw_write(csr_value): |
+      if (CSR[mstateen0].CTR == 1'b0){
+        return 0;
+      }
+      else{
+        CSR[hstateen0].CTR = csr_value.CTR;
+        return csr_value.CTR;
+      }
+    description: |
+      If the H extension is implemented and `mstateen0.CTR=1`, the `hstateen0.CTR` bit controls access to
+      supervisor CTR state when V=1. This state includes `sctrctl` (really `vsctrctl`), `sctrstatus`, and `sireg*`
+      (really `vsireg*`) when `siselect` (really `vsiselect`) is in 0x200..0x2FF. `hstateen0.CTR` is read-only 0 when
+      `mstateen0.CTR=0`.
+    type: RW
+    reset_value: 0
 sw_read(): return $bits(CSR[hstateen0])[63:32];

@@ -133,6 +133,24 @@ fields:
       Version 1.13.
     type: RW
     reset_value: 0
+  SRMCFG:
+    long_name: srmcfg access control
+    location: 55
+    base: 64
+    description: |
+      The SRMCFG bit in `mstateen0` controls access to the `srmcfg`` CSR introduced by the Ssqosid Chapter 18
+      extension.
+    type: RW
+    reset_value: 0
+  CTR:
+    long_name: ctr access control
+    location: 54
+    base: 64
+    description: |
+      When Smstateen is implemented, the `mstateen0.CTR` bit controls access to CTR register state from
+      privilege modes less privileged than M-mode.
+    type: RW
+    reset_value: 0
   JVT:
     long_name: jvt access control
     location: 2
