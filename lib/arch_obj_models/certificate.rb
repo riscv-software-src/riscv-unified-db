@@ -173,10 +173,12 @@ class ProcCertModel < Portfolio
         param = ext.params.find { |p| p.name == param_name }
         raise "There is no param '#{param_name}' in extension '#{ext_name}" if param.nil?
 
-        next unless ext.versions.any? do |ext_ver|
-          ver_req = ext_data["version"] || ">= #{ext.min_version.version_spec}"
-          ExtensionRequirement.new(ext_name, ver_req, arch: @arch).satisfied_by?(ext_ver) &&
-            param.defined_in_extension_version?(ext_ver)
+        next unless param.when.satisfied_by? do |when_ext_req|
+          in_scope_ext_reqs.any? do |in_scope_ext_req|
+            in_scope_ext_req.satisfying_versions.any? do |in_scope_ext_ver|
+              when_ext_req.satisfied_by?(in_scope_ext_ver)
+            end
+          end
         end
 
         @all_in_scope_params << InScopeParameter.new(param, param_data["schema"], param_data["note"])
@@ -208,8 +210,12 @@ class ProcCertModel < Portfolio
       param = ext.params.find { |p| p.name == param_name }
       raise "There is no param '#{param_name}' in extension '#{ext_req.name}" if param.nil?
 
-      next unless ext.versions.any? do |ext_ver|
-        ext_req.satisfied_by?(ext_ver) && param.defined_in_extension_version?(ext_ver)
+      next unless param.when.satisfied_by? do |when_ext_req|
+        in_scope_ext_reqs.any? do |in_scope_ext_req|
+          in_scope_ext_req.satisfying_versions.any? do |in_scope_ext_ver|
+            when_ext_req.satisfied_by?(in_scope_ext_ver)
+          end
+        end
       end
 
       params << InScopeParameter.new(param, param_data["schema"], param_data["note"])
@@ -228,11 +234,6 @@ class ProcCertModel < Portfolio
       ext = @arch.extension(ext_req.name)
       ext.params.each do |param|
         next if all_in_scope_params.any? { |c| c.param.name == param.name }
-
-        next unless ext.versions.any? do |ext_ver|
-                      ext_req.satisfied_by?(ext_ver) &&
-                      param.defined_in_extension_version?(ext_ver)
-                    end
 
         @all_out_of_scope_params << param
       end
