@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "asciidoctor.asciidoctor-vscode",
+    "castwide.solargraph",
+    "CraigMaslowski.erb",
+    "HowerLimited.udb-extension-pack-vscode",
+    "mathematic.vscode-pdf",
+    "redhat.vscode-yaml",
+    "zhwu95.riscv"
+  ]
+}

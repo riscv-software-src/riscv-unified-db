@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "../../lib/arch_obj_models/instructions_appendix.rb"
-
 # Define the instructions manual generation directory constant.
 INST_MANUAL_GEN_DIR = $root / "gen" / "instructions_appendix"
 
@@ -19,9 +17,7 @@ end
 # File task that generates the merged instructions adoc.
 file MERGED_INSTRUCTIONS_FILE.to_s => [__FILE__, TEMPLATE_FILE.to_s] do |t|
   cfg_arch = cfg_arch_for("_")
-  # Use the InstructionIndex helper to aggregate instructions from the entire architecture.
-  instruction_index = InstructionIndex.new(cfg_arch)
-  instructions = instruction_index.instructions
+  instructions = cfg_arch.possible_instructions
 
   # Load and process the template (which renders both an index and details).
   erb = ERB.new(File.read(TEMPLATE_FILE), trim_mode: "-")
@@ -38,7 +34,10 @@ end
 MERGED_INSTRUCTIONS_PDF = INST_MANUAL_GEN_DIR / "instructions_appendix.pdf"
 
 # File task to generate the PDF from the merged adoc.
-file MERGED_INSTRUCTIONS_PDF.to_s => [MERGED_INSTRUCTIONS_FILE.to_s] do |t|
+file MERGED_INSTRUCTIONS_PDF.to_s => [
+  MERGED_INSTRUCTIONS_FILE.to_s,
+  "#{$root}/ext/docs-resources/themes/riscv-pdf.yml"
+] do |t|
   sh [
     "asciidoctor-pdf",
     "-a toc",
@@ -54,12 +53,74 @@ file MERGED_INSTRUCTIONS_PDF.to_s => [MERGED_INSTRUCTIONS_FILE.to_s] do |t|
 end
 
 namespace :gen do
-  desc "Generate instruction appendix (merged instructions adoc and PDF)"
+  task instruction_appendix_adoc: MERGED_INSTRUCTIONS_FILE.to_s
+
+  desc <<~DESC
+    Generate the instruction appendix (merged .adoc and PDF)
+
+    By default this will produce the “merged instructions” AsciiDoc file and
+    then render it to PDF.
+
+    Environment flags:
+
+     * ASSEMBLY - set to `1` to include an “Assembly” line (instruction mnemonic + operands)
+                  before the Encoding section for each instruction.
+
+    Examples:
+
+     # Just regenerate AsciiDoc + PDF:
+     $ do gen:instruction_appendix
+
+     # Include assembly templates in the docs:
+     $ do gen:instruction_appendix ASSEMBLY=1
+
+  DESC
   task :instruction_appendix do
     # Generate the merged instructions adoc.
     Rake::Task[MERGED_INSTRUCTIONS_FILE.to_s].invoke
     # Then generate the PDF.
     Rake::Task[MERGED_INSTRUCTIONS_PDF.to_s].invoke
     puts "SUCCESS: Instruction appendix generated at '#{MERGED_INSTRUCTIONS_FILE}' and PDF at '#{MERGED_INSTRUCTIONS_PDF}'"
+  end
+end
+
+namespace :test do
+  desc "Check the instruction appendix output vs. stored golden output"
+  task instruction_appendix: "gen:instruction_appendix_adoc" do
+    files = {
+      golden: {
+        file: Tempfile.new("golden"),
+        path: "#{File.dirname(__FILE__)}/all_instructions.golden.adoc"
+      },
+      output: {
+        file: Tempfile.new("output"),
+        path: "gen/instructions_appendix/all_instructions.adoc"
+      }
+    }
+
+    # filter out lines that have file paths
+    [:golden, :output].each do |which|
+      file = files[which][:file]
+      path = files[which][:path]
+      orig = File.read(path)
+      filtered = orig.lines.reject { |l| l =~ /^:wavedrom:/ }.join("\n")
+      file.write(filtered)
+      file.flush
+    end
+
+    sh "diff -u #{files[:golden][:file].path} #{files[:output][:file].path}"
+    if $? == 0
+      puts "PASSED"
+    else
+      warn <<~MSG
+        The golden output for the instruction appendix has changed. If this is expected, run
+
+        cp gen/instructions_appendix/all_instructions.adoc backends/instructions_appendix/all_instructions.golden.adoc
+        git add backends/instructions_appendix/all_instructions.golden.adoc
+
+        And commit
+      MSG
+      exit 1
+    end
   end
 end

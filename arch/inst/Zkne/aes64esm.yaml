@@ -3,9 +3,13 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: aes64esm
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: AES encrypt middle round
+description:
+  - id: inst-aes64esm-behavior
+    normative: true
+    text: |
+      Uses the two 64-bit source registers to represent the entire AES state, and produces _half_ of the next
+      round output, applying the Inverse ShiftRows, SubBytes and MixColumns steps.
 definedBy: Zkne
 base: 64
 assembly: xd, xs1, xs2

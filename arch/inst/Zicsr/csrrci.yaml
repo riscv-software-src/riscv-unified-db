@@ -3,9 +3,14 @@
 $schema: inst_schema.json#
 kind: instruction
 name: csrrci
-long_name: No synopsis available
+long_name: Atomic Read and Clear Bits in CSR with Immediate
 description: |
-  No description available.
+  The CSRRCI variant is similar to CSRRC, except this updates the CSR using an XLEN-bit value obtained
+  by zero-extending a 5-bit unsigned immediate (uimm[4:0]) field encoded in the `rs1` field instead of a
+  value from an integer register. For CSRRCI, if the `uimm[4:0]` field is zero, then this instruction
+  will not write to the CSR, and shall not cause any of the side effects that might otherwise occur on
+  a CSR write, nor raise illegal-instruction exceptions on accesses to read-only CSRs. The CSRRCI will
+  always read the CSR and cause any read side effects regardless of `rd` and `rs1` fields.
 definedBy: Zicsr
 assembly: xd, csr, uimm
 encoding:
