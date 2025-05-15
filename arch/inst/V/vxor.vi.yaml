@@ -26,19 +26,19 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  U32 idx = 0;
-   #for (U32 i = 0; i < cfg.lmul; i++) {  # for grouping
-     for (U32 j = 0; j < $bits(LMUL::M1) * $bits(Vlen::Vlen128) / $bits(Elen::ELEN32); j++) {
-       X[j] = perform_arith(
-         X[j],
-         X[j],
-         X[j],
-         $bits(X[0][idx]),
-         $encoding
-       );
-       idx = idx + 1;
-    # }
-   }
+  # U32 idx = 0;
+  #  #for (U32 i = 0; i < cfg.lmul; i++) {  # for grouping
+  #    for (U32 j = 0; j < $bits(LMUL::M1) * $bits(Vlen::Vlen128) / $bits(Elen::ELEN32); j++) {
+  #      X[j] = perform_arith(
+  #        X[j],
+  #        X[j],
+  #        X[j],
+  #        $bits(X[0][idx]),
+  #        $encoding
+  #      );
+  #      idx = idx + 1;
+  #   # }
+  #  }
 
 sail(): |
   {

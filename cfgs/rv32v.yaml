@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../schemas/config_schema.json
+---
+$schema: config_schema.json#
+kind: architecture configuration
+type: fully configured
+name: rv32v
+arch_overlay: rv32v
+description: Configuration with vector extension 1.0 extensions.
+implemented_extensions:
+  - { name: I, version: "2.1" }
+  - { name: V, version: "1.0" }
+params:
+  XLEN: 32
+  VLEN: 128 #vector Length 128
+  ELEN: 32 #Elective Element Width 32
+  PHYS_ADDR_WIDTH: 32
