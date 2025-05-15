@@ -62,8 +62,10 @@ jobs:
         uses: actions/checkout@v4
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
-      - name: Generate instruction appendix
-        run: ./do gen:instruction_appendix
+      - name: Generate instruction appendix asciidoc
+        run: ./do gen:instruction_appendix_adoc
+      - name: Check instruction appendix result
+        run: ./do test:instruction_appendix
   regress-cfg-manual:
     runs-on: ubuntu-latest
     env:
@@ -173,6 +175,17 @@ jobs:
         uses: ./.github/actions/singularity-setup
       - name: Generate Go code
         run: ./do gen:go
+  regress-gen-c-header:
+    runs-on: ubuntu-latest
+    env:
+      SINGULARITY: 1
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate c_header code
+        run: ./do gen:c_header
   regress-cpp-unit:
     runs-on: ubuntu-latest
     env:
