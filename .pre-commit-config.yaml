@@ -96,7 +96,6 @@ repos:
     hooks:
       - id: pyupgrade
         stages: [pre-commit]
-
   - repo: local
     hooks:
       - id: shellcheck
@@ -105,6 +104,15 @@ repos:
         language: system
         entry: shellcheck
         args: ["--severity=error"]
+
+  - repo: local
+    hooks:
+      - id: format-idl
+        name: Format IDL files
+        entry: tools/format_idl.rb
+        language: system
+        types: [file]
+        files: \.idl$
 
   - repo: https://github.com/scop/pre-commit-shfmt
     rev: v3.11.0-1
