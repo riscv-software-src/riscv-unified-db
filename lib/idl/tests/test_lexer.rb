@@ -1,3 +1,4 @@
+require_relative '../../test/test_helper'
 require "minitest/autorun"
 
 $root ||= (Pathname.new(__FILE__) / ".." / ".." / ".." / "..").realpath

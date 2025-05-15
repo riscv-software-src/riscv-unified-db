@@ -4,15 +4,13 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: aes64im
 long_name: AES Decrypt KeySchedule MixColumns
-description: |
-  -id: inst-aes64im-behavior
-  -normative: true
-  -text: |
-    The instruction applies the inverse MixColumns transformation to two columns of the state array,
-    packed into a single 64-bit register. It is used to create the inverse cipher KeySchedule, according to
-    the equivalent inverse cipher construction in (NIST, 2001) (Page 23, Section 5.3.5). This
-    instruction must always be implemented such that its execution latency does not depend on the
-    data being operated on.
+description:
+  - id: inst-aes64im-behavior
+    normative: true
+    text: |
+      The instruction applies the inverse MixColumns transformation to two columns of the state array,
+      packed into a single 64-bit register. It is used to create the inverse cipher KeySchedule, according to
+      the equivalent inverse cipher construction in (NIST, 2001) (Page 23, Section 5.3.5).
 definedBy: Zknd
 base: 64
 assembly: xd, xs1

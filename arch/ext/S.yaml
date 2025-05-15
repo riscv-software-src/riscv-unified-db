@@ -234,11 +234,6 @@ params:
 
       # SCOUNTEN_EN can only be writable if the hpm counter exists
       SCOUNTENABLE_EN.each_with_index { |scounten, idx| next if idx < 3; assert (!scounten || HPM_COUNTER_EN[idx]) }
-  SV_MODE_BARE:
-    description: |
-      Whether or not writing mode=Bare is supported in the `satp` register.
-    schema:
-      type: boolean
   STVEC_MODE_DIRECT:
     description: |
       Whether or not `stvec.MODE` supports Direct (0).
