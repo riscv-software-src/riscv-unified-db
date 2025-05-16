@@ -24,6 +24,7 @@ encoding:
       not: [0, 1, 2, 3]
     - name: spimm
       location: 3-2
+      left_shift: 4
 access:
   s: always
   u: always
