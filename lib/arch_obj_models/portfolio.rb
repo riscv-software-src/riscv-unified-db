@@ -522,10 +522,10 @@ class Portfolio < DatabaseObject
 
     # Convert desired_present argument to Presence object if not nil.
     desired_presence_converted =
-      desired_presence.nil?                     ? nil :
-      desired_presence.is_a?(String)            ? desired_presence :
+      desired_presence.nil?            ? nil :
+      desired_presence.is_a?(String)   ? desired_presence :
       desired_presence.is_a?(Presence) ? desired_presence :
-      Presence.new(desired_presence)
+                                         Presence.new(desired_presence)
 
     missing_ext = false
 
@@ -665,11 +665,11 @@ class Portfolio < DatabaseObject
 
     @uses_optional_types = false
 
-    # Iterate through different kinds of optional using the "object" version (not the string version).
-    Presence.optional_types_obj.each do |optional_type_obj|
-      # See if any extension reqs have this type of optional.
-      unless in_scope_ext_reqs(optional_type_obj).empty?
-        @uses_optional_types = true
+    in_scope_ext_reqs(Presence.optional)&.each do |ext_req|
+      unless ext_req.presence.nil?
+        if ext_req.presence.uses_optional_types?
+          @uses_optional_types = true
+        end
       end
     end
 
