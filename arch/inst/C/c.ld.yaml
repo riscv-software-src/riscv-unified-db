@@ -67,9 +67,9 @@ operation(): |
 sail(): |
   {
     let offset : xlenbits = sign_extend(imm);
-    /* Get the address, X(xs1) + offset.
+    /* Get the address, X(rs1) + offset.
        Some extensions perform additional checks on address validity. */
-    match ext_data_get_addr(xs1, offset, Read(Data), width) {
+    match ext_data_get_addr(rs1, offset, Read(Data), width) {
       Ext_DataAddr_Error(e)  => { ext_handle_data_check_error(e); RETIRE_FAIL },
       Ext_DataAddr_OK(vaddr) =>
         if   check_misaligned(vaddr, width)
@@ -82,7 +82,7 @@ sail(): |
                 process_load(xd, vaddr, mem_read(Read(Data), paddr, 1, aq, rl, false), is_unsigned),
               HALF =>
                 process_load(xd, vaddr, mem_read(Read(Data), paddr, 2, aq, rl, false), is_unsigned),
-              WOxd =>
+              WOxD =>
                 process_load(xd, vaddr, mem_read(Read(Data), paddr, 4, aq, rl, false), is_unsigned),
               DOUBLE if sizeof(xlen) >= 64 =>
                 process_load(xd, vaddr, mem_read(Read(Data), paddr, 8, aq, rl, false), is_unsigned),
@@ -91,3 +91,5 @@ sail(): |
         }
     }
   }
+
+# SPDX-SnippetEnd

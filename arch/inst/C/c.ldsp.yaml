@@ -15,8 +15,7 @@ definedBy:
   anyOf:
     - C
     - Zca
-base: 64
-assembly: rd, imm(sp)
+assembly: xd, imm(sp)
 encoding:
   RV32:
     match: 011-----------10
@@ -24,7 +23,7 @@ encoding:
       - name: imm
         location: 4-2|12|6-5
         left_shift: 3
-      - name: rd
+      - name: xd
         location: 11-7
         not: [0, 1, 3, 5, 7]
   RV64:
@@ -33,7 +32,7 @@ encoding:
       - name: imm
         location: 4-2|12|6-5
         left_shift: 3
-      - name: rd
+      - name: xd
         location: 11-7
 access:
   s: always
@@ -45,9 +44,12 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  if (xlen() == 32) {
-    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
-
   XReg virtual_address = X[2] + imm;
-  X[rd] = read_memory<64>(virtual_address, $encoding);
+  Bits<64> value = read_memory<64>(virtual_address, $encoding);
+
+  if (MXLEN == 64) {
+    X[rd] = value;
+  } else if (MXLEN == 32) {
+    X[rd]     = value[31:0];
+    X[rd + 1] = value[63:32];
+  }
