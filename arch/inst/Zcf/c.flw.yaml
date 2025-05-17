@@ -10,9 +10,11 @@ description: |
   to the base address in register rs1.
   It expands to `flw` `rd, offset(rs1)`.
 definedBy:
-  allOf:
-    - C
-    - F
+  anyOf:
+    - allOf:
+        - C
+        - F
+    - Zcf
 assembly: xd, imm(xs1)
 base: 32
 encoding:

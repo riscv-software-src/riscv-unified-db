@@ -12,7 +12,7 @@ description: |
   higher part using QC32.INSBH.
   The width of the subset is determined by (`width_minus1` + 1) (1..32),
   and the offset of the subset is determined by `shamt`.
-  In case when width + offset <= 32, the destination register is left unchanged.
+  In case when width + offset < 33, the destination register is left unchanged.
   Instruction encoded in I instruction format.
 definedBy:
   anyOf:

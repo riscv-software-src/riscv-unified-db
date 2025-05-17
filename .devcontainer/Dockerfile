@@ -25,7 +25,8 @@ RUN apt-get install -y --no-install-recommends git \
                                                clang-format \
                                                clang-tidy \
                                                libelf-dev \
-                                               gcc-riscv64-unknown-elf
+                                               gcc-riscv64-unknown-elf \
+                                               shellcheck
 RUN apt-get clean autoclean
 RUN apt-get autoremove -y
 RUN rm -rf /var/lib/{apt,dpkg,cache,log}/*
