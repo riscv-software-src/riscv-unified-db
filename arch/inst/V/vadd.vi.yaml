@@ -26,34 +26,31 @@ access:
   vu: always
 data_independent_timing: true
 operation(): |
-  if (implemented?(ExtensionName::V) && (CSR[misa].V == 1'b0)) {
-    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
-
   U32 SEW = 32;                                    #from vtype vcsr
-  U32 sew_increament = SEW;                        # from vcsr(sew)
   U32 vstart = 0;                                  # from vcsr
   U32 M1 = 1;                                      #from vtype vcsr
   U32 VLEN = 128 ;                                 #fron config file
   U32 ELEN = 32;                                   #from config file
   U32 vec_result = 0;
-  U32 lmul_increament = 0;
+  U32 lmul_increment = 0;                        # After implementing the 2D parser, remove the lmul_increment variable.
 
-    # for (U32 lmul_increament = 0; lmul_increament < M1; lmul_increament++) {          # define value of LMUL from CSR (for grouping) (Uncomment after adding the 2D parser in IDL)
+
+    # for (U32 lmul_increment = 0; lmul_increment < M1; lmul_increment++) {          # define value of LMUL from CSR (for grouping) (Uncomment after adding the 2D parser in IDL)
       for (U32 j = 0; j < ((M1 * VLEN )/ ELEN); j++) { # To find total elements according to ELEN
+        U32 sew_increment = SEW;                        # from vcsr(sew)
         for (U32 k = 0; k < ELEN/SEW; k++) {       # for sew selection
-          vec_result[sew_increament-1:sew_increament-SEW] = # for grouping [vd+lmul_increament][sew_increament-1:sew_increament-SEW] (Uncomment after adding the 2D parser in IDL)
+          vec_result[sew_increment-1:sew_increment-SEW] = # for grouping [vd+lmul_increment][sew_increment-1:sew_increment-SEW] (Uncomment after adding the 2D parser in IDL)
           perform_vector_operation(
-            X[vs2+lmul_increament][sew_increament-1:sew_increament-SEW] + simm5,
-            X[vd][sew_increament-1:sew_increament-SEW],                                                                            #vs3 for previous data()
+            X[vs2+lmul_increment][sew_increment-1:sew_increment-SEW] + simm5,
+            X[vd][sew_increment-1:sew_increment-SEW],                                                                            #vs3 for previous data()
             $bits(X[0][vstart%ELEN]),                                                                                             #masking bit from vs0
             $encoding
           );
           vstart = vstart + 1;
-          sew_increament = sew_increament + SEW;
+          sew_increment = sew_increment + SEW;
         }
-        X[vd + lmul_increament] = vec_result;
-        lmul_increament=lmul_increament+1;
+        X[vd + lmul_increment] = vec_result;
+
       }
     # }
 

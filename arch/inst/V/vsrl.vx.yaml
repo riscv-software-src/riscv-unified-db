@@ -26,10 +26,6 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-  if (implemented?(ExtensionName::V) && (CSR[misa].V == 1'b0)) {
-    raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
-  }
-
 sail(): |
   {
     let SEW      = get_sew();
