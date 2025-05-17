@@ -9,23 +9,32 @@ description: |
   into register rd.
   It computes its effective address by adding the zero-extended offset, scaled by 8,
   to the stack pointer, x2.
-  It expands to `ld` `rd, offset(x2)`.
-  C.LDSP is only valid when rd &ne; x0 the code points with rd=x0 are reserved.
+  It expands to `ld rd, offset(x2)`.
+  C.LDSP is only valid when rd ≠ x0; code points with rd=x0 are reserved.
 definedBy:
   anyOf:
     - C
     - Zca
 base: 64
-assembly: xd, imm(sp)
+assembly: rd, imm(sp)
 encoding:
-  match: 011-----------10
-  variables:
-    - name: imm
-      location: 4-2|12|6-5
-      left_shift: 3
-    - name: rd
-      location: 11-7
-      not: 0
+  RV32:
+    match: 011-----------10
+    variables:
+      - name: imm
+        location: 4-2|12|6-5
+        left_shift: 3
+      - name: rd
+        location: 11-7
+        not: [0, 1, 3, 5, 7]
+  RV64:
+    match: 011-----------10
+    variables:
+      - name: imm
+        location: 4-2|12|6-5
+        left_shift: 3
+      - name: rd
+        location: 11-7
 access:
   s: always
   u: always
@@ -36,6 +45,9 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg virtual_address = X[2] + imm;
+  if (xlen() == 32) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
 
+  XReg virtual_address = X[2] + imm;
   X[rd] = read_memory<64>(virtual_address, $encoding);
