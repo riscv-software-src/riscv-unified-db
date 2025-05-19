@@ -62,7 +62,7 @@ SPDX-License-Identifier = [
 
 [[annotations]]
 path = [
-  "doc/udb.svg"
+  "doc/udb*.svg"
 ]
-SPDX-FileCopyrightText = "Copyright (c) Derek Hower"
+SPDX-FileCopyrightText = "Copyright (c) Derek Hower, Paul Clarke"
 SPDX-License-Identifier = "CC0-1.0"

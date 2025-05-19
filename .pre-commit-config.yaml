@@ -23,6 +23,7 @@ repos:
       - id: trailing-whitespace
         stages: [pre-commit]
         args: [--markdown-linebreak-ext=md]
+        exclude: \.svg$
       - id: check-merge-conflict
         stages: [pre-commit]
         args: ["--assume-in-merge"]
