@@ -14,7 +14,6 @@ description: |
 fields:
   MINH:
     location: 30
-    base: 64
     type: RW
     definedBy: M
     description: If set, then counting of events in M-mode is inhibited.
@@ -22,7 +21,6 @@ fields:
 
   SINH:
     location: 29
-    base: 64
     type: RW
     definedBy: S
     description: If set, then counting of events in S/HS-mode is inhibited.
@@ -30,7 +28,6 @@ fields:
 
   UINH:
     location: 28
-    base: 64
     type: RW
     definedBy: U
     description: If set, then counting of events in U-mode is inhibited.
@@ -38,7 +35,6 @@ fields:
 
   VSINH:
     location: 27
-    base: 64
     type: RW
     definedBy: H
     description: If set, then counting of events in VS-mode is inhibited.
@@ -46,7 +42,6 @@ fields:
 
   VUINH:
     location: 26
-    base: 64
     type: RW
     definedBy: H
     description: If set, then counting of events in VU-mode is inhibited.
