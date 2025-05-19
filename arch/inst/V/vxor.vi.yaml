@@ -41,7 +41,7 @@ operation(): |
         for (U32 k = 0; k < ELEN/SEW; k++) {       # for sew selection
           vec_result[sew_increment-1:sew_increment-SEW] = # for grouping [vd+lmul_increment][sew_increment-1:sew_increment-SEW] (Uncomment after adding the 2D parser in IDL)
           perform_vector_operation(
-            X[vs1+lmul_increment][sew_increment-1:sew_increment-SEW] ^ simm5,
+            X[vs2+lmul_increment][sew_increment-1:sew_increment-SEW] ^ simm5,
             X[vd][sew_increment-1:sew_increment-SEW],                                                                            #vs3 for previous data()
             $bits(X[0][vstart%ELEN]),                                                                                             #masking bit from vs0
             $encoding

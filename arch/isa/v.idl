@@ -1,7 +1,7 @@
 %version: 1.0
 
 # ***************************  Mask Policy Handling  ****************************************
-function handle_mask_policy {
+function handle_mask_policy_elementwise {
     returns U32
     arguments
         U32 original_value
@@ -20,7 +20,7 @@ function handle_mask_policy {
 }
 
 # *********************************  Tail Element Handling  **************************************
-function handle_tail_elements {
+function handle_tail_policy_elementwise {
     returns U32
     arguments
         U32 original_value
@@ -38,6 +38,81 @@ function handle_tail_elements {
         }
     }
 }
+
+# ***************************  Mask Policy Handling  ****************************************
+function handle_mask_policy_bitwise {
+    returns Bits<1>
+    arguments
+        Bits<1> original_value
+    description {
+        Determines the value for masked elements based on mask policy.
+        Returns the original value if undisturbed, or all 1s if agnostic.
+    }
+    body {
+        Bits<1> Mask_policy = 0 ; # from vtype vcsr
+        if (Mask_policy == 0) {   # Mask undisturbed
+            return original_value;
+        } else {  # Mask agnostic
+            return 1'b1;
+        }
+    }
+}
+
+# *********************************  Handle tail policy for comparison instructions.(bit wise)  **************************************
+function handle_tail_policy_bitwise {
+    returns Bits<1>
+    arguments
+        Bits<1> original_bit
+    description {
+        Determines the value for tail bits based on the selected tail policy.
+        Returns the original value if undisturbed, or all 1s if agnostic.
+        Apply the tail policy when Vstart > vl.
+    }
+    body {
+        Bits<1> TU = 0; # from vtype vcsr
+        if (TU == 0) {  # Tail undisturbed
+            return original_bit;
+        } else {  # Tail agnostic
+            return 1'b1;
+        }
+    }
+}
+
+# perform operation on vector elements
+function vector_comparison_instructions {
+    returns Bits<1>
+    arguments
+        Bits<1> result,
+        Bits<1> vs3_data,
+        Bits<1> vs0_mask_bit,
+        U32 encoding
+    description {
+        Incorporates masking logic and handles conditional execution based on mask bit 25.
+        Checks the tail policy and applies either tail-agnostic or tail-undisturbed behavior accordingly.
+        Returns the final processed 1-bit result after applying all vector rules.
+        Implements tail policy when storing values in vector registers.
+        Retains body Bits if within vector length (VL), otherwise applies tail policy.
+    }
+    body {
+        U32 vstart = 0;  # from vcsr
+        U32 vl = 4;      # from vcsr
+        if (vstart <= vl){
+            if (encoding[25] == 1) {  # Masking enabled
+                if (vs0_mask_bit==1) {  # Active Bits
+                    return result;
+                } else {  # Masked Bits: apply mask policy
+                    return handle_mask_policy_bitwise(vs3_data);
+                }
+            } else {  # Masking disabled
+                return result;
+            }
+        }
+        else {  # Tail Bits
+            return handle_tail_policy_bitwise(result);
+        }
+    }
+}
+
 
 # perform operation on vector elements
 function process_vector_elements {
@@ -62,14 +137,14 @@ function process_vector_elements {
                 if (vs0_mask_bit==1) {  # Active element
                     return result;
                 } else {  # Masked element: apply mask policy
-                    return handle_mask_policy(vs3_data);
+                    return handle_mask_policy_elementwise(vs3_data);
                 }
             } else {  # Masking disabled
                 return result;
             }
         }
         else {  # Tail element
-            return handle_tail_elements(result);
+            return handle_tail_policy_elementwise(result);
         }
     }
 }
