@@ -13,6 +13,7 @@ description: |
 
 fields:
   MINH:
+    alias: minstretcfg.MINH
     location: 30
     type: RW
     definedBy: M
@@ -20,6 +21,7 @@ fields:
     reset_value: UNDEFINED_LEGAL
 
   SINH:
+    alias: minstretcfg.SINH
     location: 29
     type: RW
     definedBy: S
@@ -27,6 +29,7 @@ fields:
     reset_value: UNDEFINED_LEGAL
 
   UINH:
+    alias: minstretcfg.UINH
     location: 28
     type: RW
     definedBy: U
@@ -34,6 +37,7 @@ fields:
     reset_value: UNDEFINED_LEGAL
 
   VSINH:
+    alias: minstretcfg.VSINH
     location: 27
     type: RW
     definedBy: H
@@ -41,6 +45,7 @@ fields:
     reset_value: UNDEFINED_LEGAL
 
   VUINH:
+    alias: minstretcfg.VUINH
     location: 26
     type: RW
     definedBy: H
