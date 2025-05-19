@@ -34,7 +34,8 @@ From: ubuntu:24.04
                                               libelf-dev \
                                               gcc-riscv64-linux-gnu \
                                               gcc-riscv64-unknown-elf \
-                                              libc6-dev-riscv64-cross
+                                              libc6-dev-riscv64-cross \
+                                              shellcheck
   # cleanup
   apt-get clean autoclean
   apt-get autoremove -y

@@ -24,6 +24,7 @@ encoding:
       not: 0
     - name: rs1
       location: 19-15
+      not: 31
     - name: rd
       location: 11-7
       not: 0

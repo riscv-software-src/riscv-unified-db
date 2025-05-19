@@ -26,7 +26,6 @@ access:
   vu: always
 data_independent_timing: false
 operation(): |
-
 sail(): |
   {
     let SEW      = get_sew();

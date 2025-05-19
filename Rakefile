@@ -435,6 +435,8 @@ namespace :test do
     Rake::Task["#{$root}/gen/certificate_doc/pdf/MockCertificateModel.pdf"].invoke
     Rake::Task["#{$root}/gen/profile_doc/pdf/MockProfileRelease.pdf"].invoke
 
+    Rake::Task["gen:go"].invoke
+
     puts
     puts "Regression test PASSED"
   end
