@@ -75,8 +75,7 @@ deploy_mkdir $DEPLOY_DIR/htmls
 
 deploy_log "Resolve / Create Index for base architecture"
 deploy_do "gen:resolved_arch"
-tar czf resolved_arch.tar.gz gen/resolved_arch/_
-mv resolved_arch.tar.gz $DEPLOY_DIR/
+tar czf $DEPLOY_DIR/resolved_arch.tar.gz gen/resolved_arch/_
 deploy_cp_recursive gen/resolved_arch/_ $DEPLOY_DIR/resolved_arch
 
 deploy_log "Create _site/isa_explorer"
@@ -160,7 +159,7 @@ cat <<- EOF > $DEPLOY_DIR/index.html
           <li>
             For example, you can find <a href="$PAGES_URL/resolved_arch/ext/Sm.yaml">Sm.yaml</a> at $PAGES_URL/resolved_arch/ext/Sm.yaml
           </li>
-        <ul>
+        </ul>
       </li>
       <li>
         <a href="$PAGES_URL/resolved_arch.tar.gz">resolved_arch.tar.gz</a>
