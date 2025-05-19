@@ -36,8 +36,7 @@ fields:
     type: RW
     reset_value: UNDEFINED_LEGAL
   MODE:
-    location_rv64: 5-0
-    location_rv32: 5-0
+    location: 5-0
     description: |
       `jvt.mode` is a WARL field, so can only be programmed to modes which are implemented. Therefore the
       discovery mechanism is to attempt to program different modes and read back the values to see which
