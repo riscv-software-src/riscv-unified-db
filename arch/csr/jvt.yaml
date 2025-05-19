@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: jvt
+long_name: Table Jump Base Vector and Control Register
+address: 0x017
+description:
+  - id: csr-jvt-purpose
+    normative: true
+    text: |
+      The `jvt` register is an XLEN-bit WARL read/write register that holds the jump table configuration,
+      consisting of the jump table base address (BASE) and the jump table mode (MODE).
+  - id: csr-jvt-architectural
+    normative: false
+    text: |
+      `jvt` CSR adds architectural state to the system software context (such as an OS process), therefore
+      must be saved/restored on context switches.
+priv_mode: U
+length: XLEN
+definedBy: Zcmt
+fields:
+  BASE:
+    location_rv64: 63-6
+    location_rv32: 31-6
+    description: |
+      The value in the BASE field must always be aligned on a 64-byte boundary. Note that the CSR contains only
+      bits XLEN-1 through 6 of the address base. When computing jump-table accesses, the lower six bits of base
+      are filled with zeroes to obtain an XLEN-bit jump-table base address `jvt.base` that is always aligned on a
+      64-byte boundary.
+
+      `jvt.base` is a virtual address, whenever virtual memory is enabled.
+
+      The memory pointed to by `jvt.base` is treated as instruction memory for the purpose of executing table
+      jump instructions, implying execute access permission.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+  MODE:
+    location_rv64: 5-0
+    location_rv32: 5-0
+    description: |
+      `jvt.mode` is a WARL field, so can only be programmed to modes which are implemented. Therefore the
+      discovery mechanism is to attempt to program different modes and read back the values to see which
+      are available. Jump table mode must be implemented.
+    type: RW
+    reset_value: UNDEFINED_LEGAL
