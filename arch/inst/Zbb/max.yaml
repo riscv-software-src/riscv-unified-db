@@ -5,7 +5,7 @@ kind: instruction
 name: max
 long_name: Maximum
 description: |
-  This instruction returns the larger of two signed integers.
+  Returns the larger of two signed integers.
 
   .Software Hint
   [NOTE]

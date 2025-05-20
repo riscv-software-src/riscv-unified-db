@@ -5,7 +5,7 @@ kind: instruction
 name: slli.uw
 long_name: Shift left unsigned word (Immediate)
 description: |
-  This instruction takes the least-significant word of rs1, zero-extends it, and shifts it
+  Takes the least-significant word of rs1, zero-extends it, and shifts it
   left by the immediate.
 
   [NOTE]

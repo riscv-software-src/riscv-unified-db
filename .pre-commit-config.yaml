@@ -19,10 +19,11 @@ repos:
         stages: [pre-commit]
       - id: end-of-file-fixer
         stages: [pre-commit]
-        exclude: \.golden.adoc$
+        exclude: \.((golden\.adoc)|svg)$
       - id: trailing-whitespace
         stages: [pre-commit]
         args: [--markdown-linebreak-ext=md]
+        exclude: \.svg$
       - id: check-merge-conflict
         stages: [pre-commit]
         args: ["--assume-in-merge"]
