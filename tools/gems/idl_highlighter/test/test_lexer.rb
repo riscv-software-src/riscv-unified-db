@@ -4,6 +4,7 @@
 # frozen_string_literal: true
 
 require 'idl_highlighter'
+require_relative 'test_helper'
 require "minitest/autorun"
 
 # test IDL variables

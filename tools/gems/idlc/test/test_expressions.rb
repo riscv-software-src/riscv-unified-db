@@ -4,6 +4,7 @@
 # frozen_string_literal: true
 
 require "idlc"
+require_relative 'test_helper'
 require "minitest/autorun"
 
 $root ||= (Pathname.new(__FILE__) / ".." / ".." / ".." / "..").realpath

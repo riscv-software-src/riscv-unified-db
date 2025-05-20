@@ -5,7 +5,7 @@ kind: instruction
 name: c.not
 long_name: Bitwise not, 16-bit encoding
 description: |
-  This instruction takes a single source/destination operand.
+  Takes a single source/destination operand.
   This instruction takes the one's complement of rd'/rs1' and writes the result to the same register.
 
 definedBy:

@@ -234,11 +234,6 @@ params:
 
       # SCOUNTEN_EN can only be writable if the hpm counter exists
       SCOUNTENABLE_EN.each_with_index { |scounten, idx| next if idx < 3; assert (!scounten || HPM_COUNTER_EN[idx]) }
-  SV_MODE_BARE:
-    description: |
-      Whether or not writing mode=Bare is supported in the `satp` register.
-    schema:
-      type: boolean
   STVEC_MODE_DIRECT:
     description: |
       Whether or not `stvec.MODE` supports Direct (0).
@@ -281,22 +276,22 @@ params:
       type: boolean
       default: false
     extra_validation: assert TRAP_ON_SFENCE_VMA_WHEN_SATP_MODE_IS_READ_ONLY == false if ext?(:Sv32) || ext?(:Sv39) || ext?(:Sv48) || ext?(:Sv57)
-  MSTATUS_FS_WRITEABLE:
+  MSTATUS_FS_WRITABLE:
     description: |
-      When `S` is enabled but `F` is not, mstatus.FS is optionally writeable.
-
-      This parameter only has an effect when both S and F mode are disabled.
+      When `S` is enabled but `F` is not, mstatus.FS is optionally writable.
     schema:
       type: boolean
-    extra_validation: assert MSTATUS_FS_WRITEABLE == true if ext?(:F)
-  MSTATUS_VS_WRITEABLE:
+    extra_validation: |
+      assert MSTATUS_FS_WRITABLE == true  if ext?(:F)
+      assert MSTATUS_FS_WRITABLE == false if (!ext?(:S) && !ext?(:F))
+  MSTATUS_VS_WRITABLE:
     description: |
-      When `S` is enabled but `V` is not, mstatus.VS is optionally writeable.
-
-      This parameter only has an effect when both S and V mode are disabled.
+      When `S` is enabled but `V` is not, mstatus.VS is optionally writable.
     schema:
       type: boolean
-    extra_validation: assert MSTATUS_VS_WRITEABLE == true if ext?(:V)
+    extra_validation: |
+      assert MSTATUS_VS_WRITABLE == true  if ext?(:V)
+      assert MSTATUS_VS_WRITABLE == false if (!ext?(:S) && !ext?(:V))
   MSTATUS_FS_LEGAL_VALUES:
     description: |
       The set of values that mstatus.FS will accept from a software write.

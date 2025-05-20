@@ -15,7 +15,7 @@ description: |
   `htimedelta` may be used to represent negative time offsets.
 
 address: 0x605
-writeable: true
+writable: true
 priv_mode: S
 definedBy: H
 length: 64

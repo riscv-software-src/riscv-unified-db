@@ -5,7 +5,7 @@ kind: csr
 name: mscratch
 long_name: Machine Scratch Register
 address: 0x340
-writeable: true
+writable: true
 priv_mode: M
 length: MXLEN
 description: Scratch register for software use. Bits are not interpreted by hardware.

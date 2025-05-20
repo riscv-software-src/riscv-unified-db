@@ -2,6 +2,7 @@ $schema: profile_class_schema.json#
 kind: profile class
 processor_kind: Microcontroller
 name: Mock
+long_name: Mock Profile Class
 marketing_name: Mock Profile Class
 introduction: Here's the Mock Profile Class introduction.
 description: |

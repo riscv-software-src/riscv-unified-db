@@ -5,7 +5,7 @@ kind: instruction
 name: sh3add.uw
 long_name: Shift unsigned word left by 3 and add
 description: |
-  This instruction performs an XLEN-wide addition of two addends. The first addend is rs2.
+  Performs an XLEN-wide addition of two addends. The first addend is rs2.
   The second addend is the unsigned value formed by extracting the least-significant word of rs1
   and shifting it left by 3 places.
 definedBy: Zba

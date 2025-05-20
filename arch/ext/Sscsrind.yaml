@@ -1,0 +1,44 @@
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Sscsrind
+type: privileged
+long_name: Supervisor Indirect CSR Access (Sscsrind)
+description: |
+  Smcsrind/Sscsrind is an ISA extension that extends the indirect CSR access mechanism originally defined as
+  part of the Smaia/Ssaia extensions, in order to make it available for use by other extensions without creating
+  an unnecessary dependence on Smaia/Ssaia.
+
+  This extension confers two benefits:
+
+  It provides a means to access an array of registers via CSRs without requiring allocation of large chunks of
+  the limited CSR address space.
+
+  It enables software to access each of an array of registers by index, without requiring a switch statement
+  with a case for each register.
+
+  CSRs are accessed indirectly via this extension using select values, in contrast to being accessed directly
+  using standard CSR numbers. A CSR accessible via one method may or may not be accessible via the other method.
+  Select values are a separate address space from CSR numbers, and from tselect values in the Sdtrig extension.
+  If a CSR is both directly and indirectly accessible, the CSR’s select value is unrelated to its CSR number.
+
+  Further, Machine-level and Supervisor-level select values are separate address spaces from each other;
+  however, Machine-level and Supervisor-level CSRs with the same select value may be defined by an extension
+  as partial or full aliases with respect to each other. This typically would be done for CSRs that can be
+  delegated from Machine-level to Supervisor-level.
+
+  For a supervisor-level environment, extension Sscsrind is essentially the same as Smcsrind except excluding
+  the machine-level CSRs and behavior not directly visible to supervisor level.
+
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: "2024-11"
+    url: "https://github.com/riscv/riscv-isa-manual/releases/tag/riscv-isa-release-482805d-2025-03-25"
+    requires:
+      allOf:
+        - name: S
+          version: ~> 1.13
+        - name: Smcsrind
+          version: ~> 1.0

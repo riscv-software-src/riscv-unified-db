@@ -5,6 +5,7 @@
 
 require 'idlc'
 require 'idlc/passes/reachable_exceptions'
+require_relative 'test_helper'
 require "minitest/autorun"
 
 $root ||= (Pathname.new(__FILE__) / ".." / ".." / ".." / "..").realpath
