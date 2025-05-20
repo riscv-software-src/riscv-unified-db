@@ -5,7 +5,7 @@ kind: instruction
 name: sext.h
 long_name: Sign-extend halfword
 description: |
-  This instruction sign-extends the least-significant halfword in the source to XLEN by copying the
+  Sign-extends the least-significant halfword in the source to XLEN by copying the
   most-significant bit in the halfword (i.e., bit 15) to all of the more-significant bits.
 definedBy: Zbb
 assembly: xd, xs1
