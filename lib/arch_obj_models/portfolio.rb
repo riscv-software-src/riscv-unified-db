@@ -666,10 +666,8 @@ class Portfolio < DatabaseObject
     @uses_optional_types = false
 
     in_scope_ext_reqs(Presence.optional)&.each do |ext_req|
-      unless ext_req.presence.nil?
-        if ext_req.presence.uses_optional_types?
-          @uses_optional_types = true
-        end
+      if ext_req.presence.uses_optional_types?
+        @uses_optional_types = true
       end
     end
 
