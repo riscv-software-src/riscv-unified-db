@@ -71,6 +71,7 @@ fields:
       if (CSR[mstateen1].SE0 == 1'b0){
         return 0;
       }
+      return csr_value.SE0;
 sw_read(): |
   # for every bit in an mstateen CSR that is zero, the same bit
   # appears as read-only zero in the matching hstateen CSR

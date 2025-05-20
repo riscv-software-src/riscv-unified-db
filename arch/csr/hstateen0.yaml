@@ -71,6 +71,7 @@ fields:
       if (CSR[mstateen0].SE0 == 1'b0){
         return 0;
       }
+      return csr_value.SE0;
   ENVCFG:
     long_name: senvcfg access control
     location: 62
@@ -86,6 +87,7 @@ fields:
       if (CSR[mstateen0].ENVCFG == 1'b0){
         return 0;
       }
+      return csr_value.ENVCFG;
   CSRIND:
     long_name: siselect and sireg* access control
     location: 60
@@ -101,6 +103,7 @@ fields:
       if (CSR[mstateen0].CSRIND == 1'b0){
         return 0;
       }
+      return csr_value.CSRIND;
   AIA:
     long_name: Ssaia state access control
     location: 59
@@ -116,6 +119,7 @@ fields:
       if (CSR[mstateen0].AIA == 1'b0){
         return 0;
       }
+      return csr_value.AIA;
   IMSIC:
     long_name: IMSIC state access control
     location: 58
@@ -133,6 +137,7 @@ fields:
       if (CSR[mstateen0].IMSIC == 1'b0){
         return 0;
       }
+      return csr_value.IMSIC;
   CONTEXT:
     long_name: scontext access control
     location: 57
@@ -147,6 +152,7 @@ fields:
       if (CSR[mstateen0].CONTEXT == 1'b0){
         return 0;
       }
+      return csr_value.CONTEXT;
   CTR:
     long_name: ctr access control
     location: 54
@@ -162,6 +168,7 @@ fields:
       if (CSR[mstateen0].CTR == 1'b0){
         return 0;
       }
+      return csr_value.CTR;
   JVT:
     long_name: jvt access control
     location: 2
@@ -174,6 +181,7 @@ fields:
       if (CSR[mstateen0].JVT == 1'b0){
         return 0;
       }
+      return csr_value.JVT;
   FCSR:
     long_name: fcsr access control
     location: 1
@@ -194,6 +202,7 @@ fields:
       if (CSR[mstateen0].FCSR == 1'b0){
         return 0;
       }
+      return csr_value.FCSR;
   C:
     long_name: custom state access control
     location: 0
@@ -207,6 +216,7 @@ fields:
       if (CSR[mstateen0].C == 1'b0){
         return 0;
       }
+      return csr_value.C;
 sw_read(): |
   # for every bit in an mstateen CSR that is zero, the same bit
   # appears as read-only zero in the matching hstateen CSR

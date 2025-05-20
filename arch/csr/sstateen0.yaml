@@ -84,6 +84,7 @@ fields:
       else if (mode() == PrivilegeMode::VS && CSR[hstateen0].JVT == 1'b0) {
         return 0;
       }
+      return csr_value.JVT;
   FCSR:
     long_name: fcsr access control
     location: 1
@@ -107,6 +108,7 @@ fields:
       else if (mode() == PrivilegeMode::VS && CSR[hstateen0].FCSR == 1'b0) {
         return 0;
       }
+      return csr_value.FCSR;
   C:
     long_name: custom state access control
     location: 0
@@ -123,6 +125,7 @@ fields:
       else if (mode() == PrivilegeMode::VS && CSR[hstateen0].C == 1'b0) {
         return 0;
       }
+      return csr_value.C;
 sw_read(): |
   # For every bit in an mstateen CSR that is zero, the same bit
   # appears as read-only zero in the matching sstateen CSR.
