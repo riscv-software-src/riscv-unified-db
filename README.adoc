@@ -25,8 +25,8 @@ That said, the following data has been validated against third-party sources:
 ** xref:doc/idl.adoc[ISA Description Language (IDL)]
 ** xref:doc/ruby.adoc[Ruby database interface]
 * How-to/recipes
-** xref:CONTRIBUTING[Contribution guidelines]
-** xref:doc/templates[Data templates]
+** xref:CONTRIBUTING.adoc[Contribution guidelines]
+** xref:doc/data-templates.adoc[Data templates]
 ** xref:doc/riscv-opcodes-migration.adoc[`riscv-opcodes` migration]
 
 == Overview
