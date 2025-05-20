@@ -21,9 +21,9 @@ require "ruby-progressbar"
 require "yard"
 require "minitest/test_task"
 
-require_relative $root / "lib" / "architecture"
-require_relative $root / "lib" / "portfolio_design"
-require_relative $root / "lib" / "proc_cert_design"
+require "udb/architecture"
+require "udb/obj/portfolio_design"
+require "udb/obj/proc_cert_design"
 
 $logger = Logger.new(STDOUT, datetime_format: "%v %r")
 $logger.level = Logger::INFO

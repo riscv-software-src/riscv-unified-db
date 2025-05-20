@@ -1,0 +1,674 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# grammar for the ISA Description Language
+
+grammar Idl
+  rule isa
+    space*
+      '%version:' space+ version_string space+
+      definitions:(
+        include_statement
+        /
+        global_definition
+        /
+        enum_definition
+        /
+        bitfield_definition
+        /
+        struct_definition
+        /
+        function_definition
+        /
+        fetch
+        /
+        space+
+      )+ <Idl::IsaSyntaxNode>
+  end
+
+  rule include_statement
+    'include' space+ string space+ <Idl::IncludeStatementSyntaxNode>
+  end
+
+  # declaring a global variable or constant
+  rule global_definition
+    const:('const'? space+)? single_declaration_with_initialization space* ';' <Idl::GlobalWithInitializationSyntaxNode>
+    /
+    declaration space* ';' <GlobalSyntaxNode>
+  end
+
+  rule enum_definition
+    'generated' space+ 'enum' space+ user_type_name space* ';' <Idl::BuiltinEnumDefinitionSyntaxNode>
+    /
+    'enum' space+ user_type_name space+ '{' space*
+      e:(user_type_name space+ i:(int space+)?)+ space*
+    '}' <Idl::EnumDefinitionSyntaxNode>
+  end
+
+  rule enum_ref
+    enum_class:user_type_name space* '::' space* member:user_type_name <EnumRefSyntaxNode>
+  end
+
+  rule bitfield_definition
+    'bitfield' space* '(' space* int space* ')' space* user_type_name space* '{' space*
+      e:(field_name space+ range:(int lsb:(space* '-' space* int)?) space+)+ space*
+    '}' <Idl::BitfieldDefinitionSyntaxNode>
+  end
+
+  rule struct_definition
+    'struct' space* user_type_name space* '{' space*
+      member:(type_name space+ id space* ';' space*)+
+    '}' <Idl::StructDefinitionSyntaxNode>
+  end
+
+  rule version_string
+    [0-9]+ '.' [0-9]+
+  end
+
+  rule int
+    # verilog style: explicit bit width
+    (([0-9]+)/'MXLEN')? "'" 'b' [0-1xX] [0-1_xX]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'MXLEN')? "'" 'o' [0-7xX] [0-7_xX]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'MXLEN')? "'" 'd'? [0-9] [0-9_]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'MXLEN')? "'" 'h' [0-9a-fA-FxX] [0-9a-fA-F_xX]* <Idl::IntLiteralSyntaxNode> /
+
+    # verilog style: explicit bit width, signed
+    (([0-9]+)/'MXLEN')? "'" 'sb' [0-1xX] [0-1_xX]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'MXLEN')? "'" 'so' [0-7xX] [0-7_xX]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'MXLEN')? "'" 's' 'd'? [0-9] [0-9_]* <Idl::IntLiteralSyntaxNode> /
+    (([0-9]+)/'MXLEN')? "'" 'sh' [0-9a-fA-FxX] [0-9a-fA-F_xX]* <Idl::IntLiteralSyntaxNode> /
+
+    # c++ style: signed
+    '0b' [0-1] [0-1_]* 's' <Idl::IntLiteralSyntaxNode> /
+    '0' [0-7] [0-7_]* 's' <Idl::IntLiteralSyntaxNode> /
+    [1-9] [0-9]* 's' <Idl::IntLiteralSyntaxNode> /
+    '0x' [0-9a-fA-F] [0-9a-fA-F]* 's' <Idl::IntLiteralSyntaxNode> /
+
+    # c++ style: unsigned
+    '0b' [0-1] [0-1_]* <Idl::IntLiteralSyntaxNode> /
+    '0' [0-7] [0-7_]* <Idl::IntLiteralSyntaxNode> /
+    [1-9] [0-9]* <Idl::IntLiteralSyntaxNode> /
+    '0x' [0-9a-fA-F] [0-9a-fA-F]* <Idl::IntLiteralSyntaxNode> /
+
+    # special case: just a single 0
+    '0' 's'? <Idl::IntLiteralSyntaxNode>
+  end
+
+  rule p0_binary_operator
+    # highest priority binary operators
+      '/'   # division with ignored remainder
+    / '%'   # remainder
+    / '*'   # multiplication with ignored upper half
+  end
+
+  rule p1_binary_operator
+      '+'   # addition with ignored overflow
+    / '-'   # subtraction with ignored overflow
+  end
+
+  rule p2_binary_operator
+      '<<'  # left shift
+    / '>>>' # arithmetic right shift
+    / '>>'  # logical left shift
+  end
+
+  rule p3_binary_operator
+    '<=' /
+    '>=' /
+    '<'  /
+    '>'
+  end
+
+  # when parsing inside a template argument list (<...>), we disallow the '>' character
+  # if you need it for an expression, enclose the expression in ()
+  rule p3_template_binary_operator
+    '<=' /
+    '<'
+  end
+
+  rule p4_binary_operator
+    '!=' /
+    '=='
+  end
+
+  rule p5_binary_operator
+    '&' !'&'   # bitwise AND
+  end
+
+  rule p6_binary_operator
+    '^'   # bitwise XOR
+  end
+
+  rule p7_binary_operator
+    '|' !'|'  # bitwise OR
+  end
+
+  rule p8_binary_operator
+    '&&'  # logical AND
+  end
+
+  rule p9_binary_operator
+    '||' # logical OR
+  end
+
+  rule unary_operator
+    '~' / '-' / '!'
+  end
+
+  rule p0_binary_expression
+    l:unary_expression  r:(space* op:p0_binary_operator space* r:unary_expression)+ <Idl::BinaryExpressionRightSyntaxNode>
+    /
+    unary_expression
+  end
+
+  rule p1_binary_expression
+    l:p0_binary_expression r:(space* op:p1_binary_operator space* r:p0_binary_expression)+ <Idl::BinaryExpressionRightSyntaxNode>
+    /
+    p0_binary_expression
+  end
+
+  rule p2_binary_expression
+    l:p1_binary_expression r:(space* op:p2_binary_operator space* r:p1_binary_expression)+ <Idl::BinaryExpressionRightSyntaxNode>
+    /
+    p1_binary_expression
+  end
+
+  rule p3_binary_expression
+    l:p2_binary_expression r:(space* op:p3_binary_operator space* r:p2_binary_expression)+ <Idl::BinaryExpressionRightSyntaxNode>
+    /
+    p2_binary_expression
+  end
+
+  rule template_safe_p3_binary_expression
+    l:p2_binary_expression r:(space* op:p3_template_binary_operator space* r:p2_binary_expression)+ <Idl::BinaryExpressionRightSyntaxNode>
+    /
+    p2_binary_expression
+  end
+
+  rule p4_binary_expression
+    l:p3_binary_expression r:(space* op:p4_binary_operator space* r:p3_binary_expression)+ <Idl::BinaryExpressionRightSyntaxNode>
+    /
+    p3_binary_expression
+  end
+
+  rule template_safe_p4_binary_expression
+    l:template_safe_p3_binary_expression r:(space* op:p4_binary_operator space* r:p3_binary_expression)+ <Idl::BinaryExpressionRightSyntaxNode>
+    /
+    template_safe_p3_binary_expression
+  end
+
+  rule p5_binary_expression
+    l:p4_binary_expression r:(space* op:p5_binary_operator space* r:p4_binary_expression)+ <Idl::BinaryExpressionRightSyntaxNode>
+    /
+    p4_binary_expression
+  end
+
+  rule template_safe_p5_binary_expression
+    l:template_safe_p4_binary_expression r:(space* op:p5_binary_operator space* r:p4_binary_expression)+ <Idl::BinaryExpressionRightSyntaxNode>
+    /
+    template_safe_p4_binary_expression
+  end
+
+  rule p6_binary_expression
+    l:p5_binary_expression r:(space* op:p6_binary_operator space* r:p5_binary_expression)+ <Idl::BinaryExpressionRightSyntaxNode>
+    /
+    p5_binary_expression
+  end
+
+  rule template_safe_p6_binary_expression
+    l:template_safe_p5_binary_expression r:(space* op:p6_binary_operator space* r:p5_binary_expression)+ <Idl::BinaryExpressionRightSyntaxNode>
+    /
+    template_safe_p5_binary_expression
+  end
+
+  rule p7_binary_expression
+    l:p6_binary_expression r:(space* op:p7_binary_operator space* r:p6_binary_expression)+ <Idl::BinaryExpressionRightSyntaxNode>
+    /
+    p6_binary_expression
+  end
+
+  rule template_safe_p7_binary_expression
+    l:template_safe_p6_binary_expression r:(space* op:p7_binary_operator space* r:p6_binary_expression)+ <Idl::BinaryExpressionRightSyntaxNode>
+    /
+    template_safe_p6_binary_expression
+  end
+
+  rule p8_binary_expression
+    l:p7_binary_expression r:(space* op:p8_binary_operator space* r:p7_binary_expression)+ <Idl::BinaryExpressionRightSyntaxNode>
+    /
+    p7_binary_expression
+  end
+
+  rule template_safe_p8_binary_expression
+    l:template_safe_p7_binary_expression r:(space* op:p8_binary_operator space* r:p7_binary_expression)+ <Idl::BinaryExpressionRightSyntaxNode>
+    /
+    template_safe_p7_binary_expression
+  end
+
+  rule p9_binary_expression
+    l:p8_binary_expression r:(space* op:p9_binary_operator space* r:p8_binary_expression)+ <Idl::BinaryExpressionRightSyntaxNode>
+    /
+    p8_binary_expression
+  end
+
+  rule template_safe_p9_binary_expression
+    l:template_safe_p8_binary_expression r:(space* op:p9_binary_operator space* r:p8_binary_expression)+ <Idl::BinaryExpressionRightSyntaxNode>
+    /
+    template_safe_p8_binary_expression
+  end
+
+  rule paren_expression
+    '(' space* e:expression space* ')' <Idl::ParenExpressionSyntaxNode>
+  end
+
+  rule replication_expression
+    # verilog-style replication
+    '{' space* n:expression space* '{' space* v:expression space* '}' space* '}' <Idl::ReplicationExpressionSyntaxNode>
+  end
+
+  rule concatenation_expression
+    # verilog-style concatenation
+    '{' space* first:expression rest:(space* ',' space* expression)* space* '}' <Idl::ConcatenationExpressionSyntaxNode>
+  end
+
+  rule csr_field_access_expression
+    # CSR field access
+    csr:csr_register_access_expression space* '.' space* csr_field_name <Idl::CsrFieldReadExpressionSyntaxNode>
+  end
+
+  rule csr_register_access_expression
+    # CSR register access
+    'CSR' space* '[' space* csr_name space* ']' <Idl::CsrReadExpressionSyntaxNode>
+  end
+
+  rule field_access_eligible_expression
+    paren_expression
+    /
+    function_call # Ast is assigned in function_call rule
+    /
+    rval # must come last!
+  end
+
+  rule field_access_expression
+    field_access_eligible_expression space* '.' space* field_name <Idl::FieldAccessExpressionSyntaxNode>
+  end
+
+  # expression that can accept an array index operator (expr[])
+  rule ary_eligible_expression
+    paren_expression
+    /
+    replication_expression
+    /
+    concatenation_expression
+    /
+    field_access_expression
+    /
+    function_call # Ast is assigned in function_call rule
+    /
+    csr_field_access_expression
+    /
+    bits_cast
+    /
+    rval # must come last!
+  end
+
+  rule ary_access
+    a:ary_eligible_expression space* brackets:('[' space* msb:(expression space* ':' space*)? lsb:expression space* ']' space*)+ <Idl::AryAccessSyntaxNode>
+  end
+
+  rule post_dec
+    rval space* '--' <Idl::PostDecrementExpressionSyntaxNode>
+  end
+
+  rule post_inc
+    rval space* '++' <Idl::PostIncrementExpressionSyntaxNode>
+  end
+
+  rule bits_cast
+    '$bits' space* '(' space*
+      expr:(
+        csr_register_access_expression
+        /
+        enum_ref
+        /
+        expression
+      )
+    space* ')' <Idl::BitsCastSyntaxNode>
+  end
+
+  rule unary_expression
+    '[' space* first:expression rest:(space* ',' space* expression)* space* ']' <Idl::ArrayLiteralSyntaxNode>
+    /
+    ary_access
+    /
+    '$signed' space* '(' space* expression space* ')' <Idl::SignCastSyntaxNode>
+    /
+    bits_cast
+    /
+    '$enum_size' space* '(' space* user_type_name ')' <Idl::EnumSizeSyntaxNode>
+    /
+    '$enum_element_size' space* '(' space* user_type_name ')' <Idl::EnumElementSizeSyntaxNode>
+    /
+    '$enum_to_a' space* '(' space* user_type_name ')' <Idl::EnumArrayCastSyntaxNode>
+    /
+    '$enum' space* '(' space* user_type_name space* ',' space* expression space* ')' <Idl::EnumCastSyntaxNode>
+    /
+    '$array_size' space* '(' space* expression ')' <Idl::ArraySizeSyntaxNode>
+    /
+    paren_expression
+    /
+    o:unary_operator space* e:expression <Idl::UnaryOperatorExpressionSyntaxNode>
+    /
+    post_dec
+    /
+    post_inc
+    /
+    replication_expression
+    /
+    concatenation_expression
+    /
+    field_access_expression
+    /
+    function_call # Ast is assigned in function_call rule
+    /
+    csr_field_access_expression
+    /
+    enum_ref
+    /
+    rval # must come last
+  end
+
+  rule ternary_expression
+    e:p9_binary_expression space* '?' space* t:expression space* ':' space* f:expression <Idl::TernaryOperatorExpressionSyntaxNode>
+  end
+
+  rule template_safe_ternary_expression
+    e:template_safe_p9_binary_expression space* '?' space* t:expression space* ':' space* f:expression <Idl::TernaryOperatorExpressionSyntaxNode>
+  end
+
+  rule expression
+    (
+     ternary_expression
+     /
+     p9_binary_expression
+    )
+  end
+
+
+  rule template_safe_expression
+    (
+     template_safe_ternary_expression
+     /
+     template_safe_p9_binary_expression
+    )
+  end
+
+  rule function_call_template_arguments
+    first:(template_safe_expression) rest:(space* ',' space* arg:(template_safe_expression))*
+  end
+
+  rule function_call
+    csr:csr_register_access_expression space* '.' space* 'sw_write' space* '(' space* expression space* ')' <Idl::CsrSoftwareWriteSyntaxNode>
+    /
+    csr:csr_register_access_expression space* '.' space* function_name space* '(' space* function_arg_list space* ')' <Idl::CsrFunctionCallSyntaxNode>
+    /
+    function_name t:(space* '<' space* targs:function_call_template_arguments space* '>')? space* '(' space* function_arg_list space* ')' <Idl::FunctionCallExpressionSyntaxNode>
+  end
+
+  rule function_name
+    !reserved [a-zA-Z] [a-zA-Z0-9_]* '?'?
+  end
+
+  rule function_arg_list
+    first:expression? rest:(space* ',' space* expression)*
+  end
+
+  rule body_function_definition
+    type:('external' space+)? 'function' space+ function_name space* '{' space*
+      targs:('template' space+ first:single_declaration rest:(space* ',' space* single_declaration)* space+)?
+      ret:('returns' space+ first:type_name rest:(space* ',' space* type_name)* space+)?
+      args:(
+        'arguments' space+
+        first:single_declaration
+        rest:(space* ',' space* single_declaration)*
+        space+
+      )?
+      'description' space* '{' space*
+        desc:([^}] / "\n")+
+      '}' space*
+      body_block:(
+        'body' space* '{' space*
+          function_body space*
+        '}' space*
+      )
+    '}' <Idl::FunctionDefSyntaxNode>
+  end
+
+  rule builtin_function_definition
+    type:('builtin' / 'generated') space+ 'function' space+ function_name space* '{' space*
+      # templates are not supported for builtins
+      ret:('returns' space+ first:type_name space+)?
+      args:(
+        'arguments' space+
+        first:single_declaration
+        rest:(space* ',' space* single_declaration)*
+        space+
+      )?
+      'description' space* '{' space*
+        desc:([^}] / "\n")+
+      '}' space*
+    '}' <Idl::FunctionDefSyntaxNode>
+  end
+
+  rule fetch
+    'fetch' space* '{' space*
+      function_body space*
+    '}' <Idl::FetchSyntaxNode>
+  end
+
+  rule function_definition
+    builtin_function_definition / body_function_definition
+  end
+
+  rule rval
+    (int / builtin_read_only_var / builtin_read_write_var / string / id)
+  end
+
+  rule assignment
+    '(' first:(id / dontcare_lvalue) space* rest:(',' space* var:(id / dontcare_lvalue) space*)+ ')' space* '=' space* function_call <Idl::MultiVariableAssignmentSyntaxNode> /
+    single_declaration_with_initialization /
+    '$pc' space* '=' space* rval:expression <Idl::PcAssignmentSyntaxNode> /
+    var:id space* '=' space* rval:expression <Idl::VariableAssignmentSyntaxNode> /
+    # note: there is no full CSR assignment (must assign fields)
+    csr_field_access_expression space* '=' space* rval:expression <Idl::CsrFieldAssignmentSyntaxNode> /
+    field_access_expression space* '=' space* rval:expression <Idl::FieldAssignmentSyntaxNode> /
+    var:var_write space* '[' space* msb:expression space* ':' space* lsb:expression space* ']' space* '=' space* rval:expression <Idl::AryRangeAssignmentSyntaxNode> /
+    var:var_write space* '[' space* idx:expression space* ']' space* '=' space* rval:expression <Idl::AryElementAssignmentSyntaxNode>
+  end
+
+  rule ary_size_decl
+    '[' space* expression space* ']'
+  end
+
+  rule single_declaration_with_initialization
+    type_name space+ id space* ary_size:ary_size_decl? space* '=' space* rval:expression <Idl::VariableDeclarationWithInitializationSyntaxNode>
+  end
+
+  rule declaration
+    type_name space+ first:id space* rest:(space* ',' space* id)+ space* <Idl::MultiVariableDeclarationSyntaxNode>
+    /
+    single_declaration
+  end
+
+  rule single_declaration
+    type_name space+ id ary_size:(space* ary_size_decl)? <Idl::VariableDeclarationSyntaxNode>
+  end
+
+  rule statement
+    a:(function_call / assignment) space* 'if' space* expression space* ';' <Idl::ConditionalStatementSyntaxNode>
+    /
+    a:(function_call / assignment / declaration) space* ';' <Idl::StatementSyntaxNode>
+  end
+
+  rule dontcare_lvalue
+    '-' <Idl::DontCareLvalueSyntaxNode>
+  end
+
+  rule dontcare_return
+    '-' <Idl::DontCareReturnSyntaxNode>
+  end
+
+  rule return_expression
+    'return' vals:(first:(space+ e:(expression/dontcare_return))? rest:(space* ',' space* e:(expression/dontcare_return))*) <Idl::ReturnExpressionSyntaxNode>
+  end
+
+  rule return_statement
+    return_expression space* 'if' space* expression space* ';' <Idl::ConditionalReturnStatementSyntaxNode>
+    /
+    return_expression space* ';' <Idl::ReturnStatementSyntaxNode>
+  end
+
+  rule function_if_block
+    'if' space* '(' space* if_cond:expression space* ')' space* '{' space*
+      if_body:(e:(statement / return_statement / function_if_block / for_loop) space*)+
+    '}'
+    elseifs:(
+      space* 'else' space+ 'if' space* '(' space* expression space* ')' space* '{' space*
+        body:(e:(statement / return_statement / function_if_block / for_loop) space*)+
+      '}'
+    )*
+    final_else:(
+      space* 'else' space* '{' space*
+        body:(e:(statement / return_statement / function_if_block / for_loop) space*)+
+      '}'
+    )? <Idl::IfSyntaxNode>
+  end
+
+  rule execute_if_block
+    'if' space* '(' space* if_cond:expression space* ')' space* '{' space*
+      if_body:(e:(statement / execute_if_block / for_loop) space*)+
+    '}'
+    elseifs:(
+      space* 'else' space+ 'if' space* '(' space* expression space* ')' space* '{' space*
+        body:(e:(statement / execute_if_block / for_loop) space*)+
+      '}'
+    )*
+    final_else:(
+      space* 'else' space* '{' space*
+        body:(e:(statement / execute_if_block / for_loop) space*)+
+      '}'
+    )? <Idl::IfSyntaxNode>
+  end
+
+  rule for_loop
+    'for' space* '(' space* single_declaration_with_initialization space* ';' space* condition:expression space* ';' space* action:(assignment / post_inc / post_dec) space*  ')' space* '{' space*
+      stmts:(s:(statement / return_statement / function_if_block / for_loop) space*)+
+    '}' <Idl::ForLoopSyntaxNode>
+  end
+
+  rule builtin_type_name
+    # alias for Bits<MXLEN>
+    'XReg' ![A-Za-z0-9] <Idl::BuiltinTypeNameSyntaxNode> /
+
+    'Bits' space* '<' space* i:template_safe_expression space* '>' ![A-Za-z0-9] <Idl::BuiltinTypeNameSyntaxNode> /
+
+    'Boolean' ![A-Za-z0-9] <Idl::BuiltinTypeNameSyntaxNode> /
+
+    'String' ![A-Za-z0-9] <Idl::BuiltinTypeNameSyntaxNode> /
+
+    # alias for Bits<64>
+    'U64' ![A-Za-z0-9] <Idl::BuiltinTypeNameSyntaxNode> /
+
+    # alias for Bits<32>
+    'U32' ![A-Za-z0-9] <Idl::BuiltinTypeNameSyntaxNode>
+  end
+
+  rule keyword
+    'if' ![A-Za-z0-9_] /
+    'else' ![A-Za-z0-9_] /
+    'for' ![A-Za-z0-9_] /
+    'return' ![A-Za-z0-9_] /
+    'returns' ![A-Za-z0-9_] /
+    'arguments' ![A-Za-z0-9_] /
+    'description' ![A-Za-z0-9_] /
+    'body' ![A-Za-z0-9_] /
+    'function' ![A-Za-z0-9_] /
+    'builtin' ![A-Za-z0-9_] /
+    'generated' ![A-Za-z0-9_] /
+    'enum' ![A-Za-z0-9_]  /
+    'bitfield' ![A-Za-z0-9_] /
+    'CSR' ![A-Za-z0-9_]
+  end
+
+  rule user_type_name
+    !reserved [A-Z] [A-Za-z0-9_]* <Idl::UserTypeNameSyntaxNode>
+  end
+
+  rule field_name
+    [a-zA-Z] [a-zA-Z0-9_]*
+  end
+
+  rule type_name
+    (builtin_type_name / user_type_name)
+  end
+
+  rule reserved
+    builtin_type_name / keyword
+  end
+
+  rule comment
+    '#' content:(!"\n" .)* "\n" # <Idl::CommentSyntaxNode>
+  end
+
+  rule function_statement
+    (return_statement/statement/function_if_block/for_loop)
+  end
+
+  rule function_body
+    space* func_stmt_list:(choice:function_statement space*)* <Idl::FunctionBodySyntaxNode>
+  end
+
+  rule instruction_operation
+    space* op_stmt_list:(choice:(statement/execute_if_block/for_loop) space*)* <Idl::InstructionOperationSyntaxNode>
+  end
+
+  rule id
+    # we purposely omit _ from the starting character so that tools can safely use such names
+    # without worrying about name collisions
+    !reserved [A-Za-z] [A-Za-z_0-9]* <Idl::IdSyntaxNode>
+  end
+
+  rule builtin_read_only_var
+    "$encoding" <Idl::BuiltinVariableSyntaxNode>
+  end
+
+  rule builtin_read_write_var
+    "$pc" <Idl::BuiltinVariableSyntaxNode>
+  end
+
+  rule csr_name
+    [a-z] [a-z0-9_.]*
+  end
+
+  rule csr_field_name
+    [a-zA-Z] ([a-zA-Z0-9])*
+  end
+
+  rule var_write
+    'CSR' space* '[' space* csr_name space* ']' <Idl::CsrWriteSyntaxNode>
+    /
+    id
+  end
+
+  rule string
+    # doesn't handle any escaping of quotes; if we ever need it, that can change later
+    '"' (!'"' .)* '"' <Idl::StringLiteralSyntaxNode>
+  end
+
+  rule space
+    ([ \n] / comment) {
+      def space? = true
+    }
+  end
+
+end

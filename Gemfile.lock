@@ -6,6 +6,29 @@ GIT
     ruby-prof-flamegraph (0.3.0)
       ruby-prof (>= 1.4.2)
 
+PATH
+  remote: tools/gems/idl_highlighter
+  specs:
+    idl_highlighter (0.1.0)
+      rouge
+
+PATH
+  remote: tools/gems/idlc
+  specs:
+    idlc (0.1.0)
+      treetop (= 1.6.12)
+
+PATH
+  remote: tools/gems/udb
+  specs:
+    udb (0.1.0)
+      activesupport
+      asciidoctor
+      awesome_print
+      idlc
+      json_schemer
+      sorbet-runtime
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -133,7 +156,6 @@ GEM
       date
       stringio
     public_suffix (6.0.1)
-    pygments.rb (3.0.0)
     racc (1.8.1)
     rainbow (3.1.1)
     rake (13.2.1)
@@ -248,7 +270,6 @@ PLATFORMS
   x86_64-linux-gnu
 
 DEPENDENCIES
-  activesupport
   asciidoctor-diagram (~> 2.2)
   asciidoctor-pdf
   awesome_print
@@ -257,12 +278,12 @@ DEPENDENCIES
   concurrent-ruby
   concurrent-ruby-ext
   debug
+  idl_highlighter!
+  idlc!
   json_schemer (~> 1.0)
   minitest
-  pygments.rb
   rake (~> 13.0)
   rdbg
-  rouge
   rubocop-minitest
   ruby-prof
   ruby-prof-flamegraph!
@@ -272,8 +293,8 @@ DEPENDENCIES
   sorbet-runtime
   spoom
   tapioca
-  treetop (= 1.6.12)
   ttfunk (= 1.7)
+  udb!
   webrick
   write_xlsx
   yard

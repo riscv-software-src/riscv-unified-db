@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# frozen_string_literals: true
+
+require 'idlc/cli'
+
+Idl::Cli.run(ARGV)
