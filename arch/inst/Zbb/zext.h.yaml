@@ -5,7 +5,7 @@ kind: instruction
 name: zext.h
 long_name: Zero-extend halfword
 description: |
-  This instruction zero-extends the least-significant halfword of the source to XLEN by inserting
+  Zero-extends the least-significant halfword of the source to XLEN by inserting
   0's into all of the bits more significant than 15.
 
   [NOTE]

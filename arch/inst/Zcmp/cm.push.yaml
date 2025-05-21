@@ -5,7 +5,7 @@ kind: instruction
 name: cm.push
 long_name: Create function call stack frame
 description: |
-  Create stack frame: store `ra` and 0 to 12 saved registers to the stack frame, optionally allocate additional stack space.
+  Creates a stack frame: store `ra` and 0 to 12 saved registers to the stack frame, optionally allocate additional stack space.
   This instruction pushes (stores) the registers in `reg_list` to the memory below the stack pointer,
   and then creates the stack frame by decrementing the stack pointer by `stack_adj`.
 

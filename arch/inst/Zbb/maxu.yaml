@@ -5,7 +5,7 @@ kind: instruction
 name: maxu
 long_name: Unsigned maximum
 description: |
-  This instruction returns the larger of two unsigned integers.
+  Returns the larger of two unsigned integers.
 definedBy: Zbb
 assembly: xd, xs1, xs2
 encoding:

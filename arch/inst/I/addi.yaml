@@ -4,7 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: addi
 long_name: Add immediate
-description: Add an immediate to the value in xs1, and store the result in xd
+description: Adds an immediate value to the value in xs1, and store the result in xd
 definedBy: I
 assembly: xd, xs1, imm
 encoding:

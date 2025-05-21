@@ -12,6 +12,7 @@ writable: true
 priv_mode: S
 definedBy: H
 length: 32
+base: 32
 fields:
   DELTA:
     location: 31-0
