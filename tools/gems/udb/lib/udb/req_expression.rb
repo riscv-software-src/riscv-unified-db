@@ -5,9 +5,11 @@
 # typed: true
 
 require "sorbet-runtime"
+require_relative "obj/extension"
 
-class Udb::ExtensionVersion; end
+module Udb
 
+class ExtensionVersion; end
 
 # represents a JSON Schema composition of extension requirements, e.g.:
 #
@@ -17,7 +19,7 @@ class Udb::ExtensionVersion; end
 #     - B
 #   - C
 #
-class Udb::ExtensionRequirementExpression
+class ExtensionRequirementExpression
   extend T::Sig
 
   # @param composition_hash [Hash] A possibly recursive hash of "allOf", "anyOf", "oneOf", "not", "if"
@@ -598,7 +600,7 @@ class Udb::ExtensionRequirementExpression
   end
 end
 
-class Udb::AlwaysTrueExtensionRequirementExpression
+class AlwaysTrueExtensionRequirementExpression
   extend T::Sig
 
   sig { returns(String) }
@@ -620,7 +622,7 @@ class Udb::AlwaysTrueExtensionRequirementExpression
   def minimize = {}
 end
 
-class Udb::AlwaysFalseExtensionRequirementExpression
+class AlwaysFalseExtensionRequirementExpression
   extend T::Sig
 
   sig { returns(String) }
@@ -648,7 +650,7 @@ end
 # represents an `implies:` entry for an extension
 # which is a list of extension versions, zero or more of which
 # may be conditional (via an ExtensionRequirementExpression)
-class Udb::ConditionalExtensionVersionList
+class ConditionalExtensionVersionList
   extend T::Sig
 
   class ConditionalExtensionVersion < T::Struct
@@ -713,4 +715,6 @@ class Udb::ConditionalExtensionVersionList
     ExtensionVersion.new(entry["name"], entry["version"], @cfg_arch, fail_if_version_does_not_exist: true)
   end
   private :entry_to_ext_ver
+end
+
 end

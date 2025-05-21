@@ -3,7 +3,7 @@
 
 # frozen_string_literal: true
 
-require_relative "idlc/type"
+require "idlc/type"
 
 # represents a JSON Schema
 #

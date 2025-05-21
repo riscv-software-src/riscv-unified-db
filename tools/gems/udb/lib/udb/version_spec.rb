@@ -3,6 +3,8 @@
 
 # frozen_string_literal: true
 
+module Udb
+
 # Represents an RVI version specifier
 #
 # Version specs have the form:
@@ -27,7 +29,7 @@
 #        - 2.2 is *not* compatible with 2.0
 #        - 2.1 is compatible with 2.0
 #
-class Udb::VersionSpec
+class VersionSpec
   include Comparable
 
   # MAJOR[.MINOR[.PATCH[-pre]]]
@@ -135,7 +137,7 @@ end
 #   RequirementSpec.new("~> 1.11").satisfied_by?(VersionSpec.new("1.10"), s_ext) #=> true
 #   RequirementSpec.new("~> 1.11").satisfied_by?(VersionSpec.new("1.11"), s_ext) #=> true
 #   RequirementSpec.new("~> 1.11").satisfied_by?(VersionSpec.new("1.12"), s_ext) #=> false
-class Udb::RequirementSpec
+class RequirementSpec
   REQUIREMENT_OP_REGEX = /((?:>=)|(?:>)|(?:~>)|(?:<)|(?:<=)|(?:!=)|(?:=))/
   REQUIREMENT_REGEX = /#{REQUIREMENT_OP_REGEX}\s*(#{VersionSpec::VERSION_REGEX})/
 
@@ -220,4 +222,6 @@ class Udb::RequirementSpec
       !matching_ver.compatible?(ExtensionVersion.new(ext.name, v_spec.to_s, ext.arch))
     end
   end
+end
+
 end

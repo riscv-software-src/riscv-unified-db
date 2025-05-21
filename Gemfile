@@ -5,6 +5,7 @@ ruby "3.2.3"
 # local gems in UDB
 gem "idlc", path: "tools/gems/idlc"
 gem "idl_highlighter", path: "tools/gems/idl_highlighter"
+gem "udb_helpers", path: "tools/gems/udb_helpers"
 gem "udb", path: "tools/gems/udb"
 
 source "https://rubygems.org"
@@ -31,7 +32,6 @@ gem "yard"
 group :development do
   gem "awesome_print"
   gem "debug"
-  gem "minitest"
   gem "rdbg"
   gem "rubocop-minitest"
   gem "ruby-prof"

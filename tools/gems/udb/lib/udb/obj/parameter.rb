@@ -4,8 +4,10 @@
 # frozen_string_literal: true
 
 require_relative "database_obj"
-require_relative "schema"
+require_relative "../schema"
 require_relative "../version"
+
+module Udb
 
 # A parameter (AKA option, AKA implementation-defined value) supported by an extension
 class Parameter
@@ -117,6 +119,10 @@ class Parameter
 
     @name <=> other.name
   end
+
+  def to_idl
+    "#{idl_type.to_idl} #{name}"
+  end
 end
 
 class ParameterWithValue
@@ -146,4 +152,10 @@ class ParameterWithValue
     @param = param
     @value = value
   end
+
+  def idl_type
+    "#{super} = #{value}"
+  end
+end
+
 end

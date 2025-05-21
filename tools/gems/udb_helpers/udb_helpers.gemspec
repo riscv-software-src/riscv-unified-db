@@ -3,20 +3,18 @@
 
 # frozen_string_literal: true
 
-require_relative 'lib/idlc/version'
+require_relative "lib/udb_helpers/version"
 
 Gem::Specification.new do |s|
-  s.name        = "idlc"
-  s.version     = Idl::Compiler.version
-  s.summary     = "ISA Description Language Compiler"
+  s.name        = "udb_helpers"
+  s.version     = Udb::Helpers.version
+  s.summary     = "Misc helpers for UDB generators"
   s.description = <<~DESC
-    Compiler binary and Ruby libraries for compiling IDL code.
-
-    Part of the RISC-V Unified Database project
+    Various utilities to help with generating artifacts from UDB.
   DESC
   s.date        = Time.now.strftime("%Y-%m-%d")
-  s.authors     = ["Derek Hower"]
-  s.email       = ["dhower@qti.qualcomm.com"]
+  s.authors     = ["Derek Hower", "James Ball", "Afonso Olivera"]
+  s.email       = ["dhower@qti.qualcomm.com", "jamesball@qti.qualcomm.com", "Afonso.Oliveira@synopsys.com"]
   s.homepage    = "https://github.com/riscv-software-src/riscv-unified-db"
   s.platform    = Gem::Platform::RUBY
   s.files       = Dir["lib/**/*.rb", "LICENSE"]
@@ -29,12 +27,6 @@ Gem::Specification.new do |s|
   s.required_ruby_version = "~> 3.2" # only supported in UDB container
 
   s.require_paths = ["lib"]
-  s.bindir = "bin"
-  s.executables << "idlc"
 
-  s.add_dependency "treetop", "1.6.12"
-
-  s.add_development_dependency "minitest"
-  s.add_development_dependency "rouge"
   s.add_development_dependency "yard"
 end

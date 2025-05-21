@@ -1,5 +1,8 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 # frozen_string_literal: true
-#
+
 # Collection of "helper" functions that can be called from backends and/or ERB templates.
 
 require "erb"
@@ -16,7 +19,7 @@ class String
   def sanitize = String.new(self).gsub(".", "_").gsub("&", "_and_")
 end
 
-module WavedromUtil
+module Udb::Helpers::WavedromUtil
   def fix_entities(text)
     text.to_s.gsub("&ne;", "≠")
              .gsub("&pm;", "±")
@@ -87,7 +90,7 @@ end
 
 # This module is included in the CfgArch and Design classes so its methods are available to be called directly
 # from them without having to prefix a method with the module name.
-module TemplateHelpers
+module Udb::Helpers::TemplateHelpers
   # Include a partial ERB template into a full ERB template.
   #
   # @param template_pname [String] Path to template file relative to "backends" directory.
@@ -239,11 +242,11 @@ module TemplateHelpers
   end
   private :check_no_periods
 
-  include WavedromUtil
+  include Udb::Helpers::WavedromUtil
 end
 
 # Utilities for a backend to generate AsciiDoc.
-module AsciidocUtils
+module Udb::Helpers::AsciidocUtils
   # The syntax "class << self" causes all methods to be treated as class methods.
   class << self
     # Convert proprietary link format to legal AsciiDoc links.
@@ -312,7 +315,7 @@ module AsciidocUtils
 end
 
 # Utilities for a backend to generate an Antora web-site.
-module AntoraUtils
+module Udb::Helpers::AntoraUtils
   # The syntax "class << self" causes all methods to be treated as class methods.
   class << self
     # Convert proprietary link format to legal AsciiDoc links.

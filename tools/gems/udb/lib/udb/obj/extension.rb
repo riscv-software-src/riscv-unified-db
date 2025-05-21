@@ -6,12 +6,14 @@
 require_relative "database_obj"
 require_relative "certifiable_obj"
 require_relative "parameter"
-require_relative "schema"
-require_relative "req_expression"
+require_relative "../schema"
+require_relative "../req_expression"
 require_relative "../presence"
-require_relative "../version"
+require_relative "../version_spec"
 
-# Extension definition
+module Udb
+
+  # Extension definition
 class Extension < DatabaseObject
   # Add all methods in this module to this type of database object.
   include CertifiableObject
@@ -579,4 +581,6 @@ class ExtensionRequirement
 
     @name <=> other.name
   end
+end
+
 end

@@ -3,12 +3,9 @@
 
 # frozen_string_literal: true
 
-module Rouge
-  class Lexer; end
-  class RegexLexer < Lexer; end
-  module Lexers
-    class Idl < RegexLexer
-      def self.version = "0.1.0"
-    end
+module Udb
+  module Helpers
+    # Version of the gem
+    def self.version = "0.1.0"
   end
 end

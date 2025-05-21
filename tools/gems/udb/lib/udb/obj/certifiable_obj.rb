@@ -3,10 +3,10 @@
 
 # frozen_string_literal: true
 
-require_relative "cert_normative_rule"
-require_relative "cert_test_procedure"
+require_relative "../cert_normative_rule"
+require_relative "../cert_test_procedure"
 
-module CertifiableObject
+module Udb::CertifiableObject
   # @return [Array<CertNormativeRule>]
   def cert_normative_rules
     return @cert_normative_rules unless @cert_normative_rules.nil?

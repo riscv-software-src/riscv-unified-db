@@ -17,8 +17,8 @@ require "forwardable"
 require_relative "cfg_arch"
 require_relative "obj/portfolio"
 
-require_relative "backend_helpers"
-include TemplateHelpers
+require "udb_helpers/backend_helpers"
+include Udb::Helpers::TemplateHelpers
 
 class Udb::PortfolioDesign
   extend Forwardable

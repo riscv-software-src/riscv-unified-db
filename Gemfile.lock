@@ -19,6 +19,11 @@ PATH
       treetop (= 1.6.12)
 
 PATH
+  remote: tools/gems/udb_helpers
+  specs:
+    udb_helpers (0.1.0)
+
+PATH
   remote: tools/gems/udb
   specs:
     udb (0.1.0)
@@ -28,6 +33,7 @@ PATH
       idlc
       json_schemer
       sorbet-runtime
+      udb_helpers
 
 GEM
   remote: https://rubygems.org/
@@ -303,6 +309,7 @@ DEPENDENCIES
   tapioca
   ttfunk (= 1.7)
   udb!
+  udb_helpers!
   webrick
   write_xlsx
   yard

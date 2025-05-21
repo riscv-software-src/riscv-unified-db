@@ -7,6 +7,8 @@ require "asciidoctor"
 
 require_relative "database_obj"
 
+module Udb
+
 class Manual < DatabaseObject
   def versions
     return @versions unless @versions.nil?
@@ -200,4 +202,6 @@ class ManualVersion < DatabaseObject
     @repo_path = path
     volumes.each { |v| v.repo_path = path }
   end
+end
+
 end

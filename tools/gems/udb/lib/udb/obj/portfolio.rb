@@ -14,10 +14,10 @@
 #
 # A variable name with a "_data" suffix indicates it is the raw hash data from the portfolio YAML file.
 
-require "forwardable"
-
 require_relative "database_obj"
-require_relative "schema"
+require_relative "../schema"
+
+module Udb
 
 ##################
 # PortfolioClass #
@@ -848,4 +848,6 @@ class Portfolio < DatabaseObject
     end
     @recommendations
   end
+end
+
 end

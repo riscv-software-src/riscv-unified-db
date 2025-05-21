@@ -23,11 +23,13 @@ require "idlc/passes/prune"
 require "idlc/passes/reachable_exceptions"
 require "idlc/passes/reachable_functions"
 
-require_relative "backend_helpers"
+require "udb_helpers/backend_helpers"
 
-include TemplateHelpers
+include Udb::Helpers::TemplateHelpers
 
-class Udb::ConfiguredArchitecture < Udb::Architecture
+module Udb
+
+class ConfiguredArchitecture < Architecture
   extend Forwardable
 
   # @return [Idl::Compiler] The IDL compiler
@@ -927,4 +929,6 @@ class Udb::ConfiguredArchitecture < Udb::Architecture
       t.unlink
     end
   end
+end
+
 end

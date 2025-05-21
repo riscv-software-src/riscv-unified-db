@@ -22,8 +22,8 @@ require "yard"
 require "minitest/test_task"
 
 require "udb/architecture"
-require "udb/obj/portfolio_design"
-require "udb/obj/proc_cert_design"
+require "udb/portfolio_design"
+require "udb/proc_cert_design"
 
 $logger = Logger.new(STDOUT, datetime_format: "%v %r")
 $logger.level = Logger::INFO
@@ -42,7 +42,7 @@ directory "#{$root}/.stamps"
 
 # @param config_locator [String or Pathname]
 # @return [ConfiguredArchitecture]
-sig { params(config_locator: T.any(String, Pathname)).returns(ConfiguredArchitecture) }
+sig { params(config_locator: T.any(String, Pathname)).returns(Udb::ConfiguredArchitecture) }
 def cfg_arch_for(config_locator)
   config_locator = config_locator.to_s
 
@@ -55,9 +55,9 @@ def cfg_arch_for(config_locator)
     if File.mtime("#{$root}/gen/cfgs/#{config_locator}.yaml") < File.mtime(config_yaml["$source"])
 
       cfg_arch =
-        ConfiguredArchitecture.new(
+        Udb::ConfiguredArchitecture.new(
           config_locator,
-          FileConfig.create("#{$root}/gen/cfgs/#{config_locator}.yaml"),
+          Udb::FileConfig.create("#{$root}/gen/cfgs/#{config_locator}.yaml"),
           $root / "gen" / "resolved_arch" / config_locator
         )
       $cfg_archs[config_locator] = cfg_arch
@@ -99,9 +99,9 @@ def cfg_arch_for(config_locator)
   Rake::Task["#{$root}/.stamps/resolve-#{config_name}.stamp"].invoke
 
   $cfg_archs[config_name] =
-    ConfiguredArchitecture.new(
+    Udb::ConfiguredArchitecture.new(
       config_name,
-      FileConfig.create("#{$root}/gen/cfgs/#{config_name}.yaml"),
+      Udb::FileConfig.create("#{$root}/gen/cfgs/#{config_name}.yaml"),
       $root / "gen" / "resolved_arch" / config_name
     )
 end
@@ -131,7 +131,7 @@ rule %r{#{$root}/.stamps/resolve-.+\.stamp} => proc { |tname|
   raise "Missing gen/cfgs/#{tname}" unless File.exist?("#{$root}/cfgs/#{cfg_name}.yaml")
 
   cfg_path = "#{$root}/cfgs/#{cfg_name}.yaml"
-  cfg = FileConfig.create(cfg_path)
+  cfg = Udb::FileConfig.create(cfg_path)
   arch_files = Dir.glob("#{$root}/arch/**/*.yaml")
   overlay_files = cfg.overlay? ? Dir.glob("#{cfg.arch_overlay_abs}/**/*.yaml") : []
   [
@@ -141,7 +141,7 @@ rule %r{#{$root}/.stamps/resolve-.+\.stamp} => proc { |tname|
 } do |t|
   cfg_name = File.basename(t.name, ".stamp").sub("resolve-", "")
   cfg_path = "#{$root}/cfgs/#{cfg_name}.yaml"
-  cfg = FileConfig.create(cfg_path)
+  cfg = Udb::FileConfig.create(cfg_path)
 
   overlay_dir = cfg.overlay? ? cfg.arch_overlay_abs : "/does/not/exist"
   sh "#{$root}/.home/.venv/bin/python3 lib/yaml_resolver.py merge arch #{overlay_dir} gen/arch/#{cfg_name}"
@@ -272,7 +272,7 @@ namespace :test do
 
   task schema: "#{$root}/.stamps/resolve-_.stamp" do
     puts "Checking arch files against schema.."
-    Architecture.new("#{$root}/gen/resolved_arch/_").validate(show_progress: true)
+    Udb::Architecture.new("#{$root}/gen/resolved_arch/_").validate(show_progress: true)
     puts "All files validate against their schema"
   end
 

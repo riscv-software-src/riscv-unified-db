@@ -123,11 +123,11 @@ class Udb::FileConfig < Udb::AbstractConfig
 
     case data["type"]
     when "fully configured"
-      FullConfig.send(:new, cfg_file_path, data)
+      Udb::FullConfig.send(:new, cfg_file_path, data)
     when "partially configured"
-      PartialConfig.send(:new, cfg_file_path, data)
+      Udb::PartialConfig.send(:new, cfg_file_path, data)
     when "unconfigured"
-      UnConfig.send(:new, cfg_file_path, data)
+      Udb::UnConfig.send(:new, cfg_file_path, data)
     else
       raise "Unexpected type in config"
     end

@@ -7,6 +7,8 @@
 require_relative "database_obj"
 require_relative "certifiable_obj"
 
+module Udb
+
 # CSR definition
 class Csr < DatabaseObject
   # Add all methods in this module to this type of database object.
@@ -659,4 +661,6 @@ class Csr < DatabaseObject
   def affected_by?(ext_ver)
     defined_by_condition.possibly_satisfied_by?(ext_ver) || fields.any? { |field| field.affected_by?(ext_ver) }
   end
+end
+
 end

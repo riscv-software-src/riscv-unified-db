@@ -50,14 +50,16 @@ require "idlc"
 require_relative "obj/certificate"
 require_relative "obj/csr"
 require_relative "obj/csr_field"
-require_relative "obj/exception_code"
+require_relative "exception_code"
 require_relative "obj/extension"
 require_relative "obj/instruction"
 require_relative "obj/manual"
 require_relative "obj/portfolio"
 require_relative "obj/profile"
 
-class Udb::Architecture
+module Udb
+
+class Architecture
   # @return [Pathname] Path to the directory with the standard YAML files
   attr_reader :path
 
@@ -368,4 +370,6 @@ class Udb::Architecture
 
     obj
   end
+end
+
 end

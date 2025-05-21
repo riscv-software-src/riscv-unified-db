@@ -9,14 +9,16 @@ require 'ruby-prof-flamegraph'
 require_relative "database_obj"
 require_relative "certifiable_obj"
 require_relative "../presence"
-require_relative "../backend_helpers"
+require "udb_helpers/backend_helpers"
 require "awesome_print"
+
+module Udb
 
 # model of a specific instruction in a specific base (RV32/RV64)
 class Instruction < DatabaseObject
   # Add all methods in this module to this type of database object.
   include CertifiableObject
-  include WavedromUtil
+  include Helpers::WavedromUtil
 
   def processed_wavedrom_desc(base)
     data = wavedrom_desc(base)
@@ -849,4 +851,6 @@ class Instruction < DatabaseObject
         cfg_arch.prohibited_extension_versions.none? { |ext_ver| defined_by_condition.possibly_satisfied_by?(ext_ver) }
     end
   end
+end
+
 end

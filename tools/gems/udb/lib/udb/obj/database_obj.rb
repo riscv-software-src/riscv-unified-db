@@ -31,7 +31,11 @@ require "sorbet-runtime"
 # is warranted, e.g., the CSR Field 'alias' returns a CsrFieldAlias object
 # instead of a simple string
 
-require_relative "doc_link"
+require "forwardable"
+
+require_relative "../doc_link"
+
+module Udb
 
 class DatabaseObject
   extend T::Sig
@@ -510,4 +514,6 @@ class Person
 
     name <=> other.name
   end
+end
+
 end

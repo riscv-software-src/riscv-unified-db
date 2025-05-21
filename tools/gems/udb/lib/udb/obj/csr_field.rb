@@ -10,8 +10,10 @@ require "idlc/passes/gen_option_adoc"
 require_relative "database_obj"
 require_relative "certifiable_obj"
 
+module Udb
+
 # A CSR field object
-class Udb::CsrField < Udb::DatabaseObject
+class CsrField < DatabaseObject
   extend T::Sig
   # Add all methods in this module to this type of database object.
   include CertifiableObject
@@ -830,4 +832,6 @@ class Udb::CsrField < Udb::DatabaseObject
   def type_desc(effective_xlen=nil)
     TYPE_DESC_MAP.fetch(type(effective_xlen), "")
   end
+end
+
 end

@@ -36,6 +36,7 @@ Gem::Specification.new do |s|
   s.add_dependency "idlc"
   s.add_dependency "json_schemer"
   s.add_dependency "sorbet-runtime"
+  s.add_dependency "udb_helpers"
 
   s.add_development_dependency "yard"
 end
