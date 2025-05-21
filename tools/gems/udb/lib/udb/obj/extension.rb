@@ -474,6 +474,7 @@ class ExtensionRequirement
   # @param requirements [String] Single requirement
   # @param requirements [Array<String>] List of requirements, all of which must hold
   # @param arch [Architecture]
+  # @param presence [String or Presence or nil]
   def initialize(name, *requirements, arch: nil, note: nil, req_id: nil, presence: nil)
     raise ArgumentError, "For #{name}, got class #{arch.class} but need Architecture" unless arch.is_a?(Architecture)
 

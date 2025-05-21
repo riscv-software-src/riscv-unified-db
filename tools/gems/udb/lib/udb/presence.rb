@@ -84,6 +84,9 @@ class Udb::Presence
     @optional_types_obj
   end
 
+  # @return [Boolean] True if Presence object differentiates between optional types.
+  def uses_optional_types? = !@optional_type.nil?
+
   def to_s
     @optional_type.nil? ? "#{presence}" : "#{presence} (#{optional_type})"
   end
