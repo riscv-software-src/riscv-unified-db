@@ -3,7 +3,7 @@
 # Contains common methods called from portfolio-based tasks.rake files.
 
 require "pathname"
-require_relative "#{$lib}/idl/passes/gen_adoc"
+require "idlc/passes/gen_adoc"
 
 # @return [Architecture]
 def pf_create_arch

@@ -1,4 +1,4 @@
-require: rubocop-minitest
+plugins: rubocop-minitest
 
 AllCops:
   TargetRubyVersion: 3.2.3
