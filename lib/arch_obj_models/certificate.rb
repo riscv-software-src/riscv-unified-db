@@ -173,13 +173,7 @@ class ProcCertModel < Portfolio
         param = ext.params.find { |p| p.name == param_name }
         raise "There is no param '#{param_name}' in extension '#{ext_name}" if param.nil?
 
-        next unless param.when.satisfied_by? do |when_ext_req|
-          in_scope_ext_reqs.any? do |in_scope_ext_req|
-            in_scope_ext_req.satisfying_versions.any? do |in_scope_ext_ver|
-              when_ext_req.satisfied_by?(in_scope_ext_ver)
-            end
-          end
-        end
+        next unless param.when.could_be_satisfied_by_ext_reqs?(in_scope_ext_reqs)
 
         @all_in_scope_params << InScopeParameter.new(param, param_data["schema"], param_data["note"])
       end
@@ -210,13 +204,7 @@ class ProcCertModel < Portfolio
       param = ext.params.find { |p| p.name == param_name }
       raise "There is no param '#{param_name}' in extension '#{ext_req.name}" if param.nil?
 
-      next unless param.when.satisfied_by? do |when_ext_req|
-        in_scope_ext_reqs.any? do |in_scope_ext_req|
-          in_scope_ext_req.satisfying_versions.any? do |in_scope_ext_ver|
-            when_ext_req.satisfied_by?(in_scope_ext_ver)
-          end
-        end
-      end
+      next unless param.when.could_be_satisfied_by_ext_reqs?(in_scope_ext_reqs)
 
       params << InScopeParameter.new(param, param_data["schema"], param_data["note"])
     end
