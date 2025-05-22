@@ -113,7 +113,8 @@ fields:
           raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
       }
-      return csr_value.RCID;
+        rcid_mask = (1u << RCID_WIDTH) - 1;
+        return csr_value.RCID & rcid_mask;
 
   MCID:
     location: 27-16
@@ -135,7 +136,8 @@ fields:
           raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
       }
-      return csr_value.MCID;
+      mcid_mask = (1u << MCID_WIDTH) - 1;
+      return csr_value.MCID & mcid_mask;
 
 sw_read(): |
   if (implemented?(ExtensionName::Smstateen)) {
@@ -150,4 +152,4 @@ sw_read(): |
       raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
     }
   }
-  return $bits(CSR[srmcfg]);
+  return $bits(CSR[mstateen0]);
