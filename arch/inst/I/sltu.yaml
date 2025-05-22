@@ -24,9 +24,15 @@ access:
   vs: always
   vu: always
 data_independent_timing: true
+pseudoinstructions:
+  - when: xs1 == 0
+    to: snez xd,xs2
 operation(): |
   X[xd] = (X[xs1] < X[xs2]) ? 1 : 0;
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let xs1_val = X(xs1);
@@ -52,3 +58,5 @@ sail(): |
     X(xd) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

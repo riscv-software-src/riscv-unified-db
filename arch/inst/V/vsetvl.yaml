@@ -3,11 +3,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vsetvl
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: V
-assembly: xs2, xs1, xd
+assembly: xd, xs1, xs2
 encoding:
   match: 1000000----------111-----1010111
   variables:

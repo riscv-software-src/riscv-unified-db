@@ -31,7 +31,7 @@ end
 module Idl
   class AstNode
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
-      internal_error "Need to implemente #gen_cpp for #{self.class.name}"
+      internal_error "Need to implement #gen_cpp for #{self.class.name}"
     end
   end
 
@@ -313,9 +313,9 @@ module Idl
 
       field  = csr_field.field_def(symtab)
       if symtab.cfg_arch.multi_xlen? && field.dynamic_location?
-        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name(symtab)}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
+        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)}, __UDB_XLEN)"
       else
-        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name(symtab)}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)})"
+        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr_field.csr_name}).#{field.name}()._hw_write(#{write_value.gen_cpp(symtab, 0, indent_spaces:)})"
       end
     end
   end
@@ -599,16 +599,20 @@ module Idl
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       if op == ">>>"
         "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.sra(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
-      elsif op == "<<"
+      elsif op == "`<<"
         if rhs.constexpr?(symtab)
           # use template form of shift
           "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.template sll<#{rhs.value(symtab)}>())"
-        elsif rhs.type(symtab).const?
+        else
           # use widening shift
           "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.widening_sll(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
-        else
-        "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)} << #{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
         end
+      elsif op == "`+"
+        "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.widening_add(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
+      elsif op == "`-"
+        "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.widening_sub(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
+      elsif op == "`*"
+        "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)}.widening_mul(#{rhs.gen_cpp(symtab, 0, indent_spaces:)}))"
       else
         "#{' '*indent}(#{lhs.gen_cpp(symtab, 0, indent_spaces:)} #{op} #{rhs.gen_cpp(symtab, 0, indent_spaces:)})"
       end
@@ -757,15 +761,10 @@ module Idl
   class CsrReadExpressionAst
     def gen_cpp(symtab, indent = 0, indent_spaces: 2)
       csr = csr_def(symtab)
-      if csr.nil?
-        # csr isn't known at runtime...
-        "#{' '*indent}__UDB_CSR_BY_ADDR(#{idx_expr.gen_cpp(symtab, 0, indent_spaces:)}).hw_read(__UDB_XLEN)"
+      if symtab.cfg_arch.multi_xlen? && csr.format_changes_with_xlen?
+        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.name})._hw_read(__UDB_XLEN)"
       else
-        if symtab.cfg_arch.multi_xlen? && csr.format_changes_with_xlen?
-          "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.name})._hw_read(__UDB_XLEN)"
-        else
-          "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.name})._hw_read()"
-        end
+        "#{' '*indent}__UDB_CSR_BY_NAME(#{csr.name})._hw_read()"
       end
     end
   end

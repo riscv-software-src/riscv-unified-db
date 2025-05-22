@@ -5,7 +5,7 @@ kind: instruction
 name: c.sext.b
 long_name: Sign-extend byte, 16-bit encoding
 description: |
-  This instruction takes a single source/destination operand.
+  Takes a single source/destination operand.
   This instruction sign-extends the least-significant byte of the source to XLEN by copying
   the most-significant bit in the byte (i.e., bit 7) to all of the more-significant bits.
 
@@ -36,6 +36,9 @@ operation(): |
 
   X[creg2reg(rd)] = $signed(X[creg2reg(rd)][7:0]);
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val = X(rsdc);
@@ -49,3 +52,5 @@ sail(): |
     X(rsdc) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

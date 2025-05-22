@@ -53,4 +53,4 @@ operation(): |
   X[8] = X[2];
   X[2] = X[2] - 96;
   CSR[mstatus].MIE = 1'b1;
-  CSR[qc.mcause].sw_write(qc_mcause_val | (1 << 26));
+  CSR[qc.mcause].sw_write(qc_mcause_val | (32'b1 << 26));

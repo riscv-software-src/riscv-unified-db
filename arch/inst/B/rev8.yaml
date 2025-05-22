@@ -5,7 +5,7 @@ kind: instruction
 name: rev8
 long_name: Byte-reverse register (RV64 encoding)
 description: |
-  This instruction reverses the order of the bytes in rs1.
+  Reverses the order of the bytes in rs1.
 
   [NOTE]
   The rev8 mnemonic corresponds to different instruction encodings in RV32 and RV64.
@@ -15,7 +15,7 @@ description: |
   and halfword-sized byte-reversal, perform a `rev8 rd,rs` followed by a `srai rd,rd,K`, where K
   is XLEN-32 and XLEN-16, respectively.
 definedBy:
-  anyOf: [B, Zbb, Zbkb]
+  anyOf: [Zbb, Zbkb]
 assembly: xd, xs1
 encoding:
   RV32:
@@ -55,6 +55,9 @@ operation(): |
 
   X[rd] = output;
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val = X(rs1);
@@ -64,3 +67,5 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

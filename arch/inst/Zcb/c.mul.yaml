@@ -5,7 +5,7 @@ kind: instruction
 name: c.mul
 long_name: Multiply, 16-bit encoding
 description: |
-  This instruction multiplies XLEN bits of the source operands from rsd' and rs2' and writes the lowest XLEN bits of the result to rsd'.
+  Multiplies XLEN bits of the source operands from rsd' and rs2' and writes the lowest XLEN bits of the result to rsd'.
 
 definedBy:
   allOf:
@@ -36,9 +36,14 @@ operation(): |
 
   X[creg2reg(rd)] = X[creg2reg(rd)] * X[creg2reg(rs2)];
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let result_wide = to_bits(2 * sizeof(xlen), signed(X(rsdc)) * signed(X(rs2c)));
     X(rsdc) = result_wide[(sizeof(xlen) - 1) .. 0];
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

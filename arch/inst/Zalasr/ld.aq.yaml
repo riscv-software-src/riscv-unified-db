@@ -3,11 +3,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: ld.aq
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: Zalasr
-assembly: xd, xs1, rl
+assembly: xd, xs1
 encoding:
   match: 001101-00000-----011-----0101111
   variables:
@@ -25,6 +25,9 @@ access:
 data_independent_timing: false
 operation(): |
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let offset : xlenbits = sign_extend(imm);
@@ -52,3 +55,5 @@ sail(): |
         }
     }
   }
+
+# SPDX-SnippetEnd

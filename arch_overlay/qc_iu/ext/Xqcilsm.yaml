@@ -52,6 +52,31 @@ versions:
     email: dhower@qti.qualcomm.com
   changes:
     - Fix encoding of qc.swmi
+- version: "0.5.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix IDL code and description of qc.setwm instruction to state that number of words written 0..31.
+- version: "0.6.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix encoding of qc.swm and qc.swmi instructions to state that rs3 cannot be x0
+    - Fix description and IDL code of qc.swm and qc.lwm instructions to state that length is in rs2[4:0]
 description: |
   The Xqcilsm extension includes six instructions that transfer multiple values
   between registers and memory.

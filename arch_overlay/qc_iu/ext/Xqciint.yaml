@@ -80,6 +80,60 @@ versions:
   changes:
     - Add stack checks to qc.c.mienter, qc.c.mienter.nest, qc.c.mileaveret
   requires: { name: Zca, version: ">= 1.0.0" }
+- version: "0.6.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix IDL code for Smdbltrp and Smrnmi spec compatibility for qc.c.mret and qc.c.mnret instructions
+  requires: { name: Zca, version: ">= 1.0.0" }
+- version: "0.7.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix IDL code for Smdbltrp and Smrnmi spec compatibility for qc.c.mileaveret instruction
+  requires: { name: Zca, version: ">= 1.0.0" }
+- version: "0.8.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix IDL code for qc.c.mileaveret, qc.c.mnret and qc.c.mret instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.c.clrint, qc.c.setint, qc.clrinti and qc.setinti instructions because change in IDL '<<' operator
+    - Fix IDL code for qc.c.di, qc.c.dir, qc.c.ei, qc.c.eir and qc.c.mienter.nest instructions because change in IDL '<<' operator
+  requires: { name: Zca, version: ">= 1.0.0" }
+- version: "0.9.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix desciption of qc.c.eir instruction to match IDL code and functionality
+  requires: { name: Zca, version: ">= 1.0.0" }
 description: |
   The Xqciint extension includes eleven instructions to accelerate interrupt
   servicing by performing common actions during ISR prologue/epilogue.
@@ -90,3 +144,20 @@ doc_license:
 company:
   name: Qualcomm Technologies, Inc.
   url: https://qualcomm.com
+
+exception_codes:
+  - num: 27
+    name: Illegal Stack Pointer
+    var: IllegalStackPointer
+  - num: 28
+    name: Stack Pointer Out-Of-Range
+    var: SpOutOfRange
+  - num: 29
+    name: Execution Watchpoint
+    var: ExecWatchpoint
+  - num: 30
+    name: Read Watchpoint
+    var: ReadWatchpoint
+  - num: 31
+    name: Write Watchpoint
+    var: WriteWatchpoint

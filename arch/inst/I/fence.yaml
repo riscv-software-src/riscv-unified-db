@@ -141,17 +141,10 @@ access:
   vs: always
   vu: always
 operation(): |
-  Boolean is_fence_tso;
   Boolean is_pause;
 
-  if (fm == 1) {
-    if (pred == 0x3 && succ == 0x3) {
-      # this is a fence.tso instruction
-      is_fence_tso = true;
-    }
-  }
   if (implemented?(ExtensionName::Zihintpause)) {
-    if ((pred == 1) && (succ == 0) && (fm == 0) && (xd == 0) && (xs1 == 0)) {
+    if ((pred == 1) && (succ == 0) && (xd == 0) && (xs1 == 0)) {
       # this is a PAUSE instruction
       is_pause = true;
     }
@@ -167,9 +160,7 @@ operation(): |
   Boolean succ_r = succ[1] == 1;
   Boolean succ_w = succ[0] == 1;
 
-  if (is_fence_tso) {
-    fence_tso();
-  } else if (is_pause) {
+  if (is_pause) {
     pause();
   } else {
 
@@ -202,12 +193,17 @@ operation(): |
       succ_i, succ_o, succ_r, succ_w
     );
   }
+hints:
+  - { $ref: inst/I/fence.tso.yaml# }
 pseudoinstructions:
-  - when: (pred == 0x3) && (succ == 0x3) && (fm == 1)
-    to: fence.tso
-  - when: (pred == 1) && (succ == 0) && (fm == 0) && (xd == 0) && (xs1 == 0)
+  - when: (pred == 1) && (succ == 0) && (xd == 0) && (xs1 == 0)
     to: pause
+  - when: (pred == 4'b1111) && (succ == 4'b1111)
+    to: fence # fence => fence iorw,iorw
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     // If the FIOM bit in menvcfg/senvcfg is set then the I/O bits can imply R/W.
@@ -234,3 +230,5 @@ sail(): |
     };
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

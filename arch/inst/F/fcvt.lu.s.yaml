@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.lu.s
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: F
@@ -26,6 +26,9 @@ access:
 data_independent_timing: true
 operation(): |
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     assert(sizeof(xlen) >= 64);
@@ -42,3 +45,5 @@ sail(): |
       }
     }
   }
+
+# SPDX-SnippetEnd

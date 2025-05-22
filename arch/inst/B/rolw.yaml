@@ -5,10 +5,10 @@ kind: instruction
 name: rolw
 long_name: Rotate left word (Register)
 description: |
-  This instruction performs a rotate left of the least-significant word of rs1 by the amount in least-significant 5 bits of rs2.
+  Performs a rotate left of the least-significant word of rs1 by the amount in least-significant 5 bits of rs2.
   The resulting word value is sign-extended by copying bit 31 to all of the more-significant bits.
 definedBy:
-  anyOf: [B, Zbb, Zbkb, Zk, Zkn, Zks]
+  anyOf: [Zbb, Zbkb]
 assembly: xd, xs1, xs2
 base: 64
 encoding:
@@ -38,6 +38,9 @@ operation(): |
 
   X[rd] = {{32{unextended_result[31]}}, unextended_result};
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val = (X(rs1))[31..0];
@@ -49,3 +52,5 @@ sail(): |
     X(rd) = sign_extend(result);
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

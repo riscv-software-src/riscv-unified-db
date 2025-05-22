@@ -22,8 +22,14 @@ access:
   vs: always
   vu: always
 data_independent_timing: true
+pseudoinstructions:
+  - when: $signed(imm) == -1
+    to: not xd,xs1
 operation(): X[xd] = X[xs1] ^ $signed(imm);
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let xs1_val = X(xs1);
@@ -39,3 +45,5 @@ sail(): |
     X(xd) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

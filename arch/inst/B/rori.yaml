@@ -5,10 +5,10 @@ kind: instruction
 name: rori
 long_name: Rotate right (Immediate)
 description: |
-  This instruction performs a rotate right of rs1 by the amount in the least-significant log2(XLEN) bits of shamt.
+  Performs a rotate right of rs1 by the amount in the least-significant log2(XLEN) bits of shamt.
   For RV32, the encodings corresponding to shamt[5]=1 are reserved.
 definedBy:
-  anyOf: [B, Zbb, Zbkb, Zk, Zkn, Zks]
+  anyOf: [Zbb, Zbkb]
 assembly: xd, xs1, shamt
 encoding:
   RV32:
@@ -44,6 +44,9 @@ operation(): |
 
   X[rd] = (X[rs1] >> shamt) | (X[rs1] << (xlen() - shamt));
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val = X(rs1);
@@ -53,3 +56,5 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

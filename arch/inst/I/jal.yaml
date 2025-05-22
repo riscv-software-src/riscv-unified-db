@@ -23,12 +23,20 @@ access:
   u: always
   vs: always
   vu: always
+pseudoinstructions:
+  - when: imm == 0
+    to: j xd
+  - when: xd == x1
+    to: jal imm
 operation(): |
   XReg retrun_addr = $pc + 4;
 
   jump_halfword($pc + $signed(imm));
   X[xd] = retrun_addr;
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let t : xlenbits = PC + sign_extend(imm);
@@ -52,3 +60,5 @@ sail(): |
       }
     }
   }
+
+# SPDX-SnippetEnd

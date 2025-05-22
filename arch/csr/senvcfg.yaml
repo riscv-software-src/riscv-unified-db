@@ -4,6 +4,7 @@ $schema: "csr_schema.json#"
 kind: csr
 name: senvcfg
 address: 0x10A
+writable: true
 long_name: Supervisor Environment Configuration
 description: |
   Contains fields that control certain characteristics of the U-mode execution environment.
@@ -35,7 +36,7 @@ fields:
 
       ! 0 ! read-only 0
       ! 1
-      a! writeable, independent bit from `menvcfg.CBZE`
+      a! writable, independent bit from `menvcfg.CBZE`
       !===
 
       See `cbo.zero` for a summary of the effect.
@@ -66,7 +67,7 @@ fields:
 
       ! 0 ! read-only 0
       ! 1
-      a! writeable, independent bit from `menvcfg.CBCFE`
+      a! writable, independent bit from `menvcfg.CBCFE`
       !===
 
       See `cbo.clean` and/or `cbo.flush` for a summary of the effect.

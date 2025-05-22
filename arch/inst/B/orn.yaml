@@ -5,9 +5,9 @@ kind: instruction
 name: orn
 long_name: OR with inverted operand
 description: |
-  This instruction performs the bitwise logical OR operation between rs1 and the bitwise inversion of rs2.
+  Performs the bitwise logical OR operation between rs1 and the bitwise inversion of rs2.
 definedBy:
-  anyOf: [B, Zbb, Zbkb, Zk, Zkn, Zks]
+  anyOf: [Zbb, Zbkb]
 assembly: xd, xs1, xs2
 encoding:
   match: 0100000----------110-----0110011
@@ -31,6 +31,9 @@ operation(): |
 
   X[rd] = X[rs1] | ~X[rs2];
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val = X(rs1);
@@ -53,3 +56,5 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

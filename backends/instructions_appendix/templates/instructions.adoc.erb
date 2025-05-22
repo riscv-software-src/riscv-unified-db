@@ -1,0 +1,96 @@
+= Instruction Appendix
+:doctype: book
+:wavedrom: <%= $root %>/node_modules/.bin/wavedrom-cli
+// Now the document header is complete and the wavedrom attribute is active.
+
+<% instructions.sort_by(&:name).each do |inst| %>
+<%= anchor_for_udb_doc_inst(inst.name) %>
+== <%= inst.name %>
+
+Synopsis::
+<%= inst.long_name %>
+
+<%- if ENV['ASSEMBLY']=="1" && inst.assembly.to_s.strip != "" -%>
+Assembly::
+<%= inst.fix_entities("#{inst.name.downcase} #{inst.assembly}") %>
+
+<%- end -%>
+Encoding::
+<%- if inst.multi_encoding? -%>
+[NOTE]
+This instruction has different encodings in RV32 and RV64
+
+RV32::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= inst.processed_wavedrom_desc(32) %>
+....
+
+RV64::
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= inst.processed_wavedrom_desc(64) %>
+....
+<%- else -%>
+[wavedrom, ,svg,subs='attributes',width="100%"]
+....
+<%= inst.processed_wavedrom_desc(inst.base.nil? ? 64 : inst.base) %>
+....
+<%- end -%>
+
+Description::
+<%= inst.fix_entities(inst.description) %>
+
+Decode Variables::
+<%- if inst.multi_encoding? ? (inst.decode_variables(32).empty? && inst.decode_variables(64).empty?) : inst.decode_variables(inst.base.nil? ? 64 : inst.base).empty? -%>
+<%= inst.name %> has no decode variables.
+<%- else -%>
+<%- if inst.multi_encoding? -%>
+<%- unless inst.decode_variables(32).empty? -%>
+*RV32:*
+
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+<%- inst.decode_variables(32).each do |d| -%>
+|<%= d.name %> |<%= d.extract %>
+<%- end -%>
+|===
+<%- end -%>
+<%- unless inst.decode_variables(64).empty? -%>
+
+*RV64:*
+
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+<%- inst.decode_variables(64).each do |d| -%>
+|<%= d.name %> |<%= d.extract %>
+<%- end -%>
+|===
+<%- end -%>
+<%- else -%>
+[width="100%", cols="1,2", options="header"]
+|===
+|Variable Name |Location
+<%- inst.decode_variables(inst.base.nil? ? 64 : inst.base).each do |d| -%>
+|<%= d.name %> |<%= d.extract %>
+<%- end -%>
+|===
+<%- end -%>
+<%- end -%>
+
+Included in::
+<%- if inst.defined_by_condition.flat? -%>
+[options="autowrap,autowidth"]
+|===
+| Extension | Version
+<% inst.defined_by_condition.flat_versions.each do |r| %>
+| *<%= r.name %>* | <%= inst.fix_entities(r.requirement_specs_to_s) %>
+<% end %>
+|===
+<%- else -%>
+<%= inst.fix_entities(inst.defined_by_condition.to_asciidoc) %>
+<%- end -%>
+
+<% end %>

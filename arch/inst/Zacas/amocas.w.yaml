@@ -1,13 +1,47 @@
+---
 # yaml-language-server: $schema=../../../schemas/inst_schema.json
 
 $schema: "inst_schema.json#"
 kind: instruction
 name: amocas.w
-long_name: No synopsis available.
+long_name: Atomic Compare-and-Swap Word
 description: |
-  No description available.
+  For RV32, AMOCAS.W atomically loads a 32-bit data value from address in rs1,
+  compares the loaded value to the 32-bit value held in rd, and if the
+  comparison is bitwise equal, then stores the 32-bit value held in rs2 to the
+  original address in rs1. The value loaded from memory is placed into
+  register rd.
+
+  For RV64, AMOCAS.W atomically loads a 32-bit data value from address in rs1,
+  compares the loaded value to the lower 32 bits of the value held in rd, and
+  if the comparison is bitwise equal, then stores the lower 32 bits of the
+  value held in rs2 to the original address in rs1. The 32-bit value loaded
+  from memory is sign-extended and is placed into register rd.
+
+  Just as for AMOs in the A extension, AMOCAS.W requires that the address held
+  in rs1 be naturally aligned to the size of the operand (i.e., four-byte
+  aligned for words). And the same exception options apply if the address is
+  not naturally aligned.
+
+  Just as for AMOs in the A extension, the AMOCAS.W optionally provides release
+  consistency semantics, using the aq and rl bits, to help implement
+  multiprocessor synchronization. The memory operation performed by an
+  AMOCAS.W, when successful, has acquire semantics if aq bit is 1 and has
+  release semantics if rl bit is 1. The memory operation performed by an
+  AMOCAS.W/D/Q, when not successful, has acquire semantics if aq bit is 1 but
+  does not have release semantics, regardless of rl.
+
+  A FENCE instruction may be used to order the memory read access and, if
+  produced, the memory write access by an AMOCAS.W instruction.
+
+  [Note] An unsuccessful AMOCAS.W may either not perform a memory write or may
+  write back the old value loaded from memory. The memory write, if produced,
+  does not have release semantics, regardless of rl.
+
+  An AMOCAS.W instruction always requires write permissions.
+
 definedBy: Zacas
-assembly: xd, xs1, xs2, aq, rl
+assembly: xd, xs2, xs1
 encoding:
   match: 00101------------010-----0101111
   variables:

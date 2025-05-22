@@ -30,5 +30,5 @@ access:
   vs: always
   vu: always
 operation(): |
-  XReg virtual_address = X[rs1] + imm;
-  X[rd] = sext(read_memory<16>(virtual_address, $encoding), 15);
+  XReg virtual_address = X[rs1] + $signed(imm);
+  X[rd] = sext(read_memory<16>(virtual_address, $encoding), 16);

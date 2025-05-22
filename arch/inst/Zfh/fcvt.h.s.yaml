@@ -6,7 +6,7 @@ name: fcvt.h.s
 long_name: Convert half-precision float to a single-precision float
 definedBy:
   allOf: [Zfh, Zfhmin]
-assembly: fd, xs1
+assembly: fd, fs1, frm
 description: |
   Converts a half-precision number in floating-point register _fs1_ into a single-precision floating-point number in
   floating-point register _fd_.
@@ -65,6 +65,9 @@ operation(): |
 
   mark_f_state_dirty();
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     assert(sizeof(xlen) >= 64);
@@ -81,3 +84,5 @@ sail(): |
       }
     }
   }
+
+# SPDX-SnippetEnd

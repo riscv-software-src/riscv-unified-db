@@ -3,12 +3,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vandn.vv
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
-definedBy:
-  anyOf: [Zvbb, Zvkn, Zvks]
-assembly: vm, vs2, vs1, vd
+definedBy: Zvbb
+assembly: vd, vs2, vs1, vm
 encoding:
   match: 000001-----------000-----1010111
   variables:

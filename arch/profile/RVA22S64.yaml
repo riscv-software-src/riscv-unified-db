@@ -1,6 +1,7 @@
 $schema: profile_schema.json#
 kind: profile
 name: RVA22S64
+long_name: S-mode extensions for version 22 of the 64-bit Apps Processor profile
 marketing_name: RVA22S64
 mode: S
 base: 64
@@ -11,7 +12,9 @@ introduction: |
   processors.  RVA22S64 is based on privileged architecture version
   1.12.
 extensions:
-  $inherits: "profile/RVA20S64.yaml#/extensions"
+  $inherits:
+    - "profile/RVA20S64.yaml#/extensions"
+    - "profile/RVA22U64.yaml#/extensions"
   S:
     presence: mandatory
     version: "= 1.12"
@@ -26,41 +29,9 @@ extensions:
   Svinval:
     presence: mandatory
     version: "~> 1.0"
-  Ssstateen:
-    presence: mandatory
-    version: "~> 1.0"
-    when:
-      implemented: H
-    note: |
-      Ssstateen is a new extension name introduced with RVA22.
-  Shvstvala:
-    presence: mandatory
-    version: "~> 1.0"
-    when:
-      implemented: H
-    note: |
-      Shvstvala is a new extension name introduced with RVA22.
-  Shtvala:
-    presence: mandatory
-    version: "~> 1.0"
-    when:
-      implemented: H
-    note: |
-      Shtvala is a new extension name introduced with RVA22.
-  Shvstvecd:
-    presence: mandatory
-    version: "~> 1.0"
-    when:
-      implemented: H
-    note: |
-      Shvstvecd is a new extension name introduced with RVA22.
-  Shgatpa:
-    presence: mandatory
-    version: "~> 1.0"
-    when:
-      implemented: H
-    note: |
-      Shgatpa is a new extension name introduced with RVA22.
+  Sv48:
+    presence: optional
+    version: "~> 1.12"
   Sv57:
     presence: optional
     version: "~> 1.12"

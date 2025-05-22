@@ -10,7 +10,7 @@ description: |
   register `fd`. The bits are not modified in the transfer, and in particular,
   the payloads of non-canonical NaNs are preserved.
 definedBy: F
-assembly: fd, xs1
+assembly: xd, xs1
 encoding:
   match: 111101000000-----000-----1010011
   variables:
@@ -32,6 +32,9 @@ operation(): |
 
   mark_f_state_dirty();
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val_X            = X(rs1);
@@ -39,3 +42,5 @@ sail(): |
     F(rd) = nan_box (rd_val_H);
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

@@ -12,7 +12,7 @@ description: |
   higher part using QC32.INSBH.
   The width of the subset is determined by (`width_minus1` + 1) (1..32),
   and the offset of the subset is determined by `shamt`.
-  In case when width + offset <= 32, the destination register is left unchanged.
+  In case when width + offset < 33, the destination register is left unchanged.
   Instruction encoded in I instruction format.
 definedBy:
   anyOf:
@@ -40,7 +40,7 @@ access:
 operation(): |
   XReg width = width_minus1 + 1;
   if (width + shamt > 32) {
-    XReg shifted_one = 1 << (width + shamt - 32);
+    XReg shifted_one = 32'b1 << (width + shamt - 32);
     XReg mask = (shifted_one - 1);
     XReg orig_val = X[rd];
     XReg shifted_rs1 = X[rs1] >> (32 - shamt);

@@ -3,11 +3,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vfdiv.vf
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: V
-assembly: vm, vs2, xs1, vd
+assembly: vd, vs2, fs1, vm
 encoding:
   match: 100000-----------101-----1010111
   variables:
@@ -27,6 +27,9 @@ access:
 data_independent_timing: false
 operation(): |
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rm_3b    = fcsr.FRM();
@@ -80,3 +83,5 @@ sail(): |
     vstart = zeros();
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

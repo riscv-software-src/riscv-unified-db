@@ -4,6 +4,7 @@ $schema: "ext_schema.json#"
 kind: extension
 name: Svnapot
 long_name: Naturally-aligned Power of Two Translation Contiguity
+type: privileged
 description: |
   In Sv39, Sv48, and Sv57, when a PTE has N=1, the PTE represents a
   translation that is part of a range of contiguous virtual-to-physical

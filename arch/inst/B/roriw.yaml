@@ -5,11 +5,11 @@ kind: instruction
 name: roriw
 long_name: Rotate right word (Immediate)
 description: |
-  This instruction performs a rotate right on the least-significant word of rs1 by the amount in
+  Performs a rotate right on the least-significant word of rs1 by the amount in
   the least-significant log2(XLEN) bits of shamt. The resulting word value is sign-extended by
   copying bit 31 to all of the more-significant bits.
 definedBy:
-  anyOf: [B, Zbb, Zbkb, Zk, Zkn, Zks]
+  anyOf: [Zbb, Zbkb]
 assembly: xd, xs1, shamt
 base: 64
 encoding:
@@ -37,6 +37,9 @@ operation(): |
   XReg unextended_result = (X[rs1] >> shamt) | (X[rs1] << (32 - shamt));
   X[rd] = {{32{unextended_result[31]}}, unextended_result};
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let rs1_val = (X(rs1))[31..0];
@@ -44,3 +47,5 @@ sail(): |
     X(rd) = result;
     RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

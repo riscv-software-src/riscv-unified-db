@@ -138,7 +138,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/nav.adoc} => proc { |tname|
   erb.filename = nav_template_path.to_s
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, erb.result(binding)
+  File.write t.name, AntoraUtils.resolve_links(erb.result(binding))
 end
 
 # Rule to create start page for a manual version
@@ -199,7 +199,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/insts/pages/.*.adoc} => [
   erb.filename = inst_template_path.to_s
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AntoraUtils.resolve_links(cfg_arch.find_replace_links(erb.result(binding)))
+  File.write t.name, AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding)))
 end
 
 # rule to create csr appendix page
@@ -211,19 +211,16 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/csrs/pages/.*\.adoc} => [
   csr_name = File.basename(t.name, ".adoc")
 
   cfg_arch = cfg_arch_for("_")
-  # cfg_arch_32 = cfg_arch_for("_32")
 
   csr = cfg_arch.csr(csr_name)
   raise "Can't find csr '#{csr_name}'" if csr.nil?
-
-  # csr_32 = cfg_arch_32.csr(csr_name)
 
   csr_template_path = $root / "backends" / "common_templates" / "adoc" / "csr.adoc.erb"
   erb = ERB.new(csr_template_path.read, trim_mode: "-")
   erb.filename = csr_template_path.to_s
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AntoraUtils.resolve_links(cfg_arch.find_replace_links(erb.result(binding)))
+  File.write t.name, AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding)))
 end
 
 # rule to create ext appendix page
@@ -242,7 +239,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/exts/pages/.*.adoc} => [
   erb.filename = ext_template_path.to_s
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AntoraUtils.resolve_links(cfg_arch.find_replace_links(erb.result(binding)))
+  File.write t.name, AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding)))
 end
 
 # rule to create IDL function appendix page
@@ -257,7 +254,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/funcs/pages/funcs.adoc} => [
   erb.filename = funcs_template_path.to_s
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AntoraUtils.resolve_links(cfg_arch.find_replace_links(erb.result(binding)))
+  File.write t.name, AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding)))
 end
 
 # rule to create IDL function appendix page
@@ -274,7 +271,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/params/pages/param_list.adoc} => 
   erb.filename = param_list_template_path.to_s
 
   FileUtils.mkdir_p File.dirname(t.name)
-  File.write t.name, AntoraUtils.resolve_links(cfg_arch.find_replace_links(erb.result(binding)))
+  File.write t.name, AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding)))
 end
 
 rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/landing/antora.yml} => [
@@ -378,24 +375,7 @@ rule %r{#{MANUAL_GEN_DIR}/[^/]+/[^/]+/riscv-isa-manual/\.checked-out} do |t|
 end
 
 namespace :gen do
-  html_manual_desc = <<~DESC
-    Generate an HTML site for one or more versions of the manual (./do --desc for options)
-
-    Options:
-
-     * MANUAL_NAME: The database name (key) of the manual to generate.
-     * VERSIONS: A comma-separated list of versions to generate, or "all".
-
-    Examples:
-
-     ./do gen:html_manual MANUAL_NAME=isa VERSIONS=20191008,20240411
-     ./do gen:html_manual MANUAL_NAME=isa VERSIONS=all
-
-    Result:
-
-      A static HTML website will be written into gen/manual/MANUAL_NAME/<hash of versions>/html
-  DESC
-  desc html_manual_desc
+  desc File.read("#{File.dirname(__FILE__)}/README.adoc")
   task :html_manual do
     raise ArgumentError, "Missing required environment variable MANUAL_NAME\n\n#{html_manual_desc}" if ENV["MANUAL_NAME"].nil?
     raise ArgumentError, "Missing required environment variable VERSIONS\n\n#{html_manual_desc}" if ENV["VERSIONS"].nil?
@@ -431,12 +411,17 @@ namespace :gen do
       Rake::Task[antora_path / "antora.yml"].invoke
       Rake::Task[antora_path / "nav.adoc"].invoke
 
+      $logger.info "Generating CSRs"
       version_obj.csrs.each do |csr|
         Rake::Task[antora_path / "modules" / "csrs" / "pages" / "#{csr.name}.adoc"].invoke
       end
+
+      $logger.info "Generating Instructions"
       version_obj.instructions.each do |inst|
         Rake::Task[antora_path / "modules" / "insts" / "pages" / "#{inst.name}.adoc"].invoke
       end
+
+      $logger.info "Generating Extensions"
       version_obj.extensions.each do |ext|
         Rake::Task[antora_path / "modules" / "exts" / "pages" / "#{ext.name}.adoc"].invoke
       end
@@ -452,6 +437,8 @@ namespace :gen do
     playbook_path = MANUAL_GEN_DIR / ENV["MANUAL_NAME"] / "top" / output_hash / "antora" / "playbook" / "playbook.yml"
     Rake::Task[playbook_path].invoke
 
+    $logger.info "Running Antora under npm for HTML site to create '#{MANUAL_GEN_DIR / ENV['MANUAL_NAME'] / output_hash / 'html'}'"
+
     sh [
       "npm exec -- antora",
       "--stacktrace",
@@ -463,7 +450,7 @@ namespace :gen do
       playbook_path.to_s
     ].join(" ")
 
-    puts "SUCCESS: HTML site written to '#{MANUAL_GEN_DIR / ENV['MANUAL_NAME'] / output_hash / 'html'}'"
+    $logger.info "Done running Antora under npm for HTML site to create '#{MANUAL_GEN_DIR / ENV['MANUAL_NAME'] / output_hash / 'html'}'"
   end
 end
 

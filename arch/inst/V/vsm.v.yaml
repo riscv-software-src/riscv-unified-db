@@ -3,11 +3,11 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: vsm.v
-long_name: No synopsis available.
+long_name: No synopsis available
 description: |
   No description available.
 definedBy: V
-assembly: xs1, vs3
+assembly: vs3, xs1
 encoding:
   match: 000000101011-----000-----0100111
   variables:
@@ -23,6 +23,9 @@ access:
 data_independent_timing: false
 operation(): |
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let EEW = 8;
@@ -36,3 +39,5 @@ sail(): |
     assert(evl >= 0);
     process_vm(vd_or_vs3, rs1, num_elem, evl, op)
   }
+
+# SPDX-SnippetEnd

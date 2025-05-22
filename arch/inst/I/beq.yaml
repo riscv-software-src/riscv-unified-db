@@ -26,6 +26,9 @@ access:
   u: always
   vs: always
   vu: always
+pseudoinstructions:
+  - when: xs2 == 0
+    to: beqz xs1,imm
 operation(): |
   XReg lhs = X[xs1];
   XReg rhs = X[xs2];
@@ -34,6 +37,9 @@ operation(): |
     jump_halfword($pc + $signed(imm));
   }
 
+# SPDX-SnippetBegin
+# SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
+# SPDX-License-Identifier: BSD-2-Clause
 sail(): |
   {
     let xs1_val = X(xs1);
@@ -66,3 +72,5 @@ sail(): |
       }
     } else RETIRE_SUCCESS
   }
+
+# SPDX-SnippetEnd

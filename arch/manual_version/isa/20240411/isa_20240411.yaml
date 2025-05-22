@@ -5,6 +5,7 @@ kind: manual version
 manual: { $ref: manual/isa.yaml# }
 version: "4.0.0-pre"
 name: "isa_20240411"
+long_name: "Release 20240411 of the RISC-V ISA Manuals"
 marketing_version: "20240411"
 state: "development"
 url: https://github.com/riscv/releases/tag/20240411

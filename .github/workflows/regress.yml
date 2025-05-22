@@ -1,10 +1,13 @@
 name: Regression test
+permissions:
+  contents: read
+  pull-requests: write
 on:
   push:
     branches:
       - main
-  merge_group:                # this is a new line
-    types: [checks_requested] # this is a new line
+  merge_group:
+    types: [checks_requested]
   pull_request:
     branches:
       - main
@@ -17,33 +20,24 @@ jobs:
       - uses: actions/setup-python@v5
       - uses: pre-commit/action@v3.0.1
   regress-smoke:
+    needs: build-llvm
     runs-on: ubuntu-latest
     env:
       SINGULARITY: 1
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
-      - name: Setup apptainer
-        uses: eWaterCycle/setup-apptainer@v2.0.0
-      - name: Get container from cache
-        id: cache-sif
+      - name: Get current LLVM submodule commit SHA
+        id: get-llvm-sha
+        run: echo "LLVM_SHA=$(git ls-tree HEAD ext/llvm-project | awk '{print $3}')" >> $GITHUB_ENV
+      - name: Restore cache RISC-V JSON
+        id: cache-riscv
         uses: actions/cache@v4
         with:
-          path: .singularity/image.sif
-          key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
-      - name: Get gems and node files from cache
-        id: cache-bundle-npm
-        uses: actions/cache@v4
-        with:
-          path: |
-            .home/.gems
-            node_modules
-          key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
-      - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
-        name: Build container
-        run: ./bin/build_container
-      - name: Setup project
-        run: ./bin/setup
+          path: ext/llvm-project/riscv.json
+          key: ${{ runner.os }}-riscv-json-${{ env.LLVM_SHA }}
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
       - name: Run smoke
         run: ./do test:smoke
   regress-gen-isa-manual:
@@ -55,27 +49,23 @@ jobs:
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
-      - name: Setup apptainer
-        uses: eWaterCycle/setup-apptainer@v2.0.0
-      - name: Get container from cache
-        id: cache-sif
-        uses: actions/cache@v4
-        with:
-          path: .singularity/image.sif
-          key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
-      - name: Get gems and node files from cache
-        id: cache-bundle-npm
-        uses: actions/cache@v4
-        with:
-          path: |
-            .home/.gems
-            node_modules
-          key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
-      - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
-        name: Build container
-        run: ./bin/build_container
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
       - name: Generate HTML ISA manual
         run: ./do gen:html_manual
+  regress-gen-instruction-appendix:
+    runs-on: ubuntu-latest
+    env:
+      SINGULARITY: 1
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate instruction appendix asciidoc
+        run: ./do gen:instruction_appendix_adoc
+      - name: Check instruction appendix result
+        run: ./do test:instruction_appendix
   regress-cfg-manual:
     runs-on: ubuntu-latest
     env:
@@ -83,25 +73,8 @@ jobs:
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
-      - name: Setup apptainer
-        uses: eWaterCycle/setup-apptainer@v2.0.0
-      - name: Get container from cache
-        id: cache-sif
-        uses: actions/cache@v4
-        with:
-          path: .singularity/image.sif
-          key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
-      - name: Get gems and node files from cache
-        id: cache-bundle-npm
-        uses: actions/cache@v4
-        with:
-          path: |
-            .home/.gems
-            node_modules
-          key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
-      - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
-        name: Build container
-        run: ./bin/build_container
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
       - name: Generate HTML ISA manual
         run: ./do gen:html[example_rv64_with_overlay]
   regress-gen-ext-pdf:
@@ -114,25 +87,8 @@ jobs:
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
-      - name: Setup apptainer
-        uses: eWaterCycle/setup-apptainer@v2.0.0
-      - name: Get container from cache
-        id: cache-sif
-        uses: actions/cache@v4
-        with:
-          path: .singularity/image.sif
-          key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
-      - name: Get gems and node files from cache
-        id: cache-bundle-npm
-        uses: actions/cache@v4
-        with:
-          path: |
-            .home/.gems
-            node_modules
-          key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
-      - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
-        name: Build container
-        run: ./bin/build_container
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
       - name: Generate extension PDF
         run: ./do gen:ext_pdf
   regress-gen-certificate:
@@ -142,27 +98,10 @@ jobs:
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
-      - name: Setup apptainer
-        uses: eWaterCycle/setup-apptainer@v2.0.0
-      - name: Get container from cache
-        id: cache-sif
-        uses: actions/cache@v4
-        with:
-          path: .singularity/image.sif
-          key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
-      - name: Get gems and node files from cache
-        id: cache-bundle-npm
-        uses: actions/cache@v4
-        with:
-          path: |
-            .home/.gems
-            node_modules
-          key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
-      - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
-        name: Build container
-        run: ./bin/build_container
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
       - name: Generate extension PDF
-        run: ./do gen:cert_model_pdf[MockCertificateModel]
+        run: ./do gen:proc_crd_pdf[MockProcessor]
   regress-gen-profile:
     runs-on: ubuntu-latest
     env:
@@ -170,24 +109,91 @@ jobs:
     steps:
       - name: Clone Github Repo Action
         uses: actions/checkout@v4
-      - name: Setup apptainer
-        uses: eWaterCycle/setup-apptainer@v2.0.0
-      - name: Get container from cache
-        id: cache-sif
-        uses: actions/cache@v4
-        with:
-          path: .singularity/image.sif
-          key: ${{ hashFiles('container.def', 'bin/.container-tag') }}
-      - name: Get gems and node files from cache
-        id: cache-bundle-npm
-        uses: actions/cache@v4
-        with:
-          path: |
-            .home/.gems
-            node_modules
-          key: ${{ hashFiles('Gemfile.lock') }}-${{ hashFiles('package-lock.json') }}
-      - if: ${{ steps.cache-sif.outputs.cache-hit != 'true' }}
-        name: Build container
-        run: ./bin/build_container
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
       - name: Generate extension PDF
-        run: ./do gen:profile[MockProfileRelease]
+        run: ./do gen:profile_release_pdf[Mock]
+  build-llvm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository (no submodules, shallow fetch)
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+          fetch-depth: 1
+      - name: Get current LLVM submodule commit SHA
+        id: get-llvm-sha
+        run: echo "LLVM_SHA=$(git ls-tree HEAD ext/llvm-project | awk '{print $3}')" >> $GITHUB_ENV
+      - name: Cache RISC-V JSON
+        id: cache-riscv
+        uses: actions/cache@v4
+        with:
+          path: ext/llvm-project/riscv.json
+          key: ${{ runner.os }}-riscv-json-${{ env.LLVM_SHA }}
+      - name: Initialize LLVM submodule (shallow + sparse)
+        if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
+        run: |
+          rm -rf ext/llvm-project
+          git submodule sync --recursive
+          git submodule update --init --recursive --depth=1 ext/llvm-project
+      - name: Check for required directories and files
+        if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
+        run: |
+          ls -l ext/llvm-project/llvm/include
+          ls -l ext/llvm-project/llvm/lib/Target/RISCV
+          ls -l ext/llvm-project/llvm/lib/Target/RISCV/RISCV.td
+      - name: Configure and build llvm-tblgen
+        if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
+        run: |
+          cmake -S ext/llvm-project/llvm -B ext/llvm-project/build -DCMAKE_BUILD_TYPE=Release
+          cmake --build ext/llvm-project/build --target llvm-tblgen
+      - name: Generate RISC-V JSON
+        if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
+        run: |
+          chmod +x ./ext/llvm-project/build/bin/llvm-tblgen
+          ./ext/llvm-project/build/bin/llvm-tblgen \
+            -I ext/llvm-project/llvm/include \
+            -I ext/llvm-project/llvm/lib/Target/RISCV \
+            ext/llvm-project/llvm/lib/Target/RISCV/RISCV.td \
+            --dump-json \
+            -o ext/llvm-project/riscv.json
+      - name: Show riscv.json output
+        run: ls -l ext/llvm-project/riscv.json
+      - name: Upload RISC-V JSON as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: riscv-json
+          path: ext/llvm-project/riscv.json
+  regress-gen-go:
+    runs-on: ubuntu-latest
+    env:
+      SINGULARITY: 1
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate Go code
+        run: ./do gen:go
+  regress-gen-c-header:
+    runs-on: ubuntu-latest
+    env:
+      SINGULARITY: 1
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Generate c_header code
+        run: ./do gen:c_header
+  regress-cpp-unit:
+    runs-on: ubuntu-latest
+    env:
+      SINGULARITY: 1
+    steps:
+      - name: Clone Github Repo Action
+        uses: actions/checkout@v4
+      - name: singularity setup
+        uses: ./.github/actions/singularity-setup
+      - name: Run cpp unit tests
+        run: ./do test:cpp_hart CONFIG=rv64 JOBS=4

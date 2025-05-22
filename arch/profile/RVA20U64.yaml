@@ -1,6 +1,7 @@
 $schema: profile_schema.json#
 kind: profile
 name: RVA20U64
+long_name: U-mode extensions for version 20 of the 64-bit Apps Processor profile
 marketing_name: RVA20U64
 mode: Unpriv
 base: 64
@@ -27,7 +28,7 @@ extensions:
     presence: mandatory
     version: "~> 2.0"
     param_constraints:
-      U_MODE_ENDIANESS:
+      U_MODE_ENDIANNESS:
         schema:
           const: little
   Zicntr:
