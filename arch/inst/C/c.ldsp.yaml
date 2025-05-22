@@ -6,11 +6,11 @@ name: c.ldsp
 long_name: Load doubleword from stack pointer
 description: |
   C.LDSP is an RV64C/RV128C-only instruction that loads a 64-bit value from memory
-  into register rd.
+  into register xd.
   It computes its effective address by adding the zero-extended offset, scaled by 8,
   to the stack pointer, x2.
-  It expands to `ld rd, offset(x2)`.
-  C.LDSP is only valid when rd ≠ x0; code points with rd=x0 are reserved.
+  It expands to `ld xd, offset(x2)`.
+  C.LDSP is only valid when xd ≠ x0; code points with xd=x0 are reserved.
 definedBy:
   anyOf:
     - C
@@ -48,8 +48,8 @@ operation(): |
   Bits<64> value = read_memory<64>(virtual_address, $encoding);
 
   if (MXLEN == 64) {
-    X[rd] = value;
+    X[xd] = value;
   } else if (MXLEN == 32) {
-    X[rd]     = value[31:0];
-    X[rd + 1] = value[63:32];
+    X[xd]     = value[31:0];
+    X[xd + 1] = value[63:32];
   }
