@@ -35,10 +35,8 @@ fields:
       if (CSR[mstateen2].SE0 == 1'b0){
         return 0;
       }
-      else{
-        CSR[hstateen2].SE0 = csr_value.SE0;
-        return csr_value.SE0;
-      }
+      CSR[hstateen2].SE0 = csr_value.SE0;
+      return csr_value.SE0;
     description: |
       The SE0 bit in `hstateen2h` controls access to the `sstateen2` CSR.
     type: RW

@@ -35,10 +35,8 @@ fields:
       if (CSR[mstateen0].SE0 == 1'b0){
         return 0;
       }
-      else{
-        CSR[hstateen0].SE0 = csr_value.SE0;
-        return csr_value.SE0;
-      }
+      CSR[hstateen0].SE0 = csr_value.SE0;
+      return csr_value.SE0;
     description: |
       The SE0 bit in `hstateen0h` controls access to the `sstateen0` CSR.
     type: RW
@@ -54,10 +52,8 @@ fields:
       if (CSR[mstateen0].ENVCFG == 1'b0){
         return 0;
       }
-      else{
-        CSR[hstateen0].ENVCFG = csr_value.ENVCFG;
-        return csr_value.ENVCFG;
-      }
+      CSR[hstateen0].ENVCFG = csr_value.ENVCFG;
+      return csr_value.ENVCFG;
     description: |
       The ENVCFG bit in `hstateen0h` controls access to the `senvcfg` CSRs.
     type: RW
@@ -71,10 +67,8 @@ fields:
       if (CSR[mstateen0].CSRIND == 1'b0){
         return 0;
       }
-      else{
-        CSR[hstateen0].CSRIND = csr_value.CSRIND;
-        return csr_value.CSRIND;
-      }
+      CSR[hstateen0].CSRIND = csr_value.CSRIND;
+      return csr_value.CSRIND;
     description: |
       The CSRIND bit in `hstateen0h` controls access to the `siselect` and the
       `sireg*`, (really `vsiselect` and `vsireg*`) CSRs provided by the Sscsrind
@@ -90,10 +84,8 @@ fields:
       if (CSR[mstateen0].AIA == 1'b0){
         return 0;
       }
-      else{
-        CSR[hstateen0].AIA = csr_value.AIA;
-        return csr_value.AIA;
-      }
+      CSR[hstateen0].AIA = csr_value.AIA;
+      return csr_value.AIA;
     description: |
       The AIA bit in `hstateen0h` controls access to all state introduced by
       the Ssaia extension and is not controlled by either the CSRIND or the
@@ -109,10 +101,8 @@ fields:
       if (CSR[mstateen0].IMSIC == 1'b0){
         return 0;
       }
-      else{
-        CSR[hstateen0].IMSIC = csr_value.IMSIC;
-        return csr_value.IMSIC;
-      }
+      CSR[hstateen0].IMSIC = csr_value.IMSIC;
+      return csr_value.IMSIC;
     description: |
       The IMSIC bit in `hstateen0h` controls access to the guest IMSIC state,
       including CSRs `stopei` (really `vstopei`), provided by the Ssaia extension.
@@ -130,10 +120,8 @@ fields:
       if (CSR[mstateen0].CONTEXT == 1'b0){
         return 0;
       }
-      else{
-        CSR[hstateen0].CONTEXT = csr_value.CONTEXT;
-        return csr_value.CONTEXT;
-      }
+      CSR[hstateen0].CONTEXT = csr_value.CONTEXT;
+      return csr_value.CONTEXT;
     description: |
       The CONTEXT bit in `hstateen0h` controls access to the `scontext` CSR provided
       by the Sdtrig extension.
@@ -147,10 +135,8 @@ fields:
       if (CSR[mstateen0].CTR == 1'b0){
         return 0;
       }
-      else{
-        CSR[hstateen0].CTR = csr_value.CTR;
-        return csr_value.CTR;
-      }
+      CSR[hstateen0].CTR = csr_value.CTR;
+      return csr_value.CTR;
     description: |
       If the H extension is implemented and `mstateen0.CTR=1`, the `hstateen0.CTR` bit controls access to
       supervisor CTR state when V=1. This state includes `sctrctl` (really `vsctrctl`), `sctrstatus`, and `sireg*`
