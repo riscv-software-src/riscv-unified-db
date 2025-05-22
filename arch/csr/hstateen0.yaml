@@ -186,7 +186,7 @@ fields:
     long_name: fcsr access control
     location: 1
     #definedBy:
-    #anyOf: [Zfinx, Zdinx]
+    #anyOf: [Zhinx, Zfinx, Zdinx]
     description: |
       The FCSR bit controls access to `fcsr` for the case when floating-point instructions
       operate on `x` registers instead of `f` registers as specified by the Zfinx and related

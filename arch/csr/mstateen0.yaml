@@ -136,6 +136,7 @@ fields:
   SRMCFG:
     long_name: srmcfg access control
     location: 55
+    #definedBy: Ssquosid
     base: 64
     description: |
       The SRMCFG bit in `mstateen0` controls access to the `srmcfg`` CSR introduced by the Ssqosid Chapter 18
@@ -163,7 +164,7 @@ fields:
     long_name: fcsr access control
     location: 1
     #definedBy:
-    #anyOf: [Zfinx, Zdinx]
+    #anyOf: [Zhinx, Zfinx, Zdinx]
     description: |
       The FCSR bit controls access to `fcsr` for the case when floating-point instructions
       operate on `x` registers instead of `f` registers as specified by the Zfinx and related
