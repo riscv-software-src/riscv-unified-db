@@ -5,6 +5,6 @@ and the structure of those files is checked using https://json-schema.org/[JSON 
 
 Many UDB data objects share common field types, including:
 
-* xref:doc/prose_schema.adoc[Schema for Prose]
+* xref:prose-schema.adoc[Schema for Prose]
 
 TODO

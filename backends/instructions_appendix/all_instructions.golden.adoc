@@ -1,6 +1,6 @@
 = Instruction Appendix
 :doctype: book
-:wavedrom: /local/mnt/workspace/dhower/riscv-unified-db/worktrees/iappendix/node_modules/.bin/wavedrom-cli
+:wavedrom: /workspaces/riscv-unified-db/node_modules/.bin/wavedrom-cli
 // Now the document header is complete and the wavedrom attribute is active.
 
 
@@ -53,7 +53,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs an XLEN-wide addition between rs2 and the
+Performs an XLEN-wide addition between rs2 and the
 zero-extended least-significant word of rs1.
 
 
@@ -89,7 +89,7 @@ Encoding::
 ....
 
 Description::
-Add an immediate to the value in xs1, and store the result in xd
+Adds an immediate value to the value in xs1, and store the result in xd
 
 Decode Variables::
 [width="100%", cols="1,2", options="header"]
@@ -193,7 +193,7 @@ Encoding::
 ....
 
 Description::
-This instruction sources a single byte from `rs2` according to `bs`. To this it applies the inverse AES
+Sources a single byte from `rs2` according to `bs`. To this it applies the inverse AES
 SBox operation, and XOR's the result with `rs1`. This instruction must always be implemented such
 that its execution latency does not depend on the data being operated on.
 
@@ -231,7 +231,7 @@ Encoding::
 ....
 
 Description::
-This instruction sources a single byte from `rs2` according to `bs`. To this it applies the inverse AES
+Sources a single byte from `rs2` according to `bs`. To this it applies the inverse AES
 SBox operation, and a partial inverse MixColumn, before XOR'ing the result with `rs1`. This
 instruction must always be implemented such that its execution latency does not depend on the
 data being operated on.
@@ -2400,7 +2400,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs the bitwise logical AND operation between `rs1` and the
+Performs the bitwise logical AND operation between `rs1` and the
 bitwise inversion of `rs2`.
 
 
@@ -2471,7 +2471,7 @@ Encoding::
 ....
 
 Description::
-This instruction returns rs1 with a single bit cleared at the index specified in rs2.
+Returns rs1 with a single bit cleared at the index specified in rs2.
 The index is read from the lower log2(XLEN) bits of rs2.
 
 
@@ -2517,7 +2517,7 @@ RV64::
 ....
 
 Description::
-This instruction returns rs1 with a single bit cleared at the index specified in shamt. The
+Returns rs1 with a single bit cleared at the index specified in shamt. The
 index is read from the lower log2(XLEN) bits of shamt. For RV32, the encodings corresponding
 to shamt[5]=1 are reserved.
 
@@ -2604,7 +2604,7 @@ Encoding::
 ....
 
 Description::
-This instruction returns a single bit extracted from rs1 at the index specified in rs2.
+Returns a single bit extracted from rs1 at the index specified in rs2.
 The index is read from the lower log2(XLEN) bits of rs2.
 
 
@@ -2650,7 +2650,7 @@ RV64::
 ....
 
 Description::
-This instruction returns a single bit extracted from rs1 at the index specified in rs2.
+Returns a single bit extracted from rs1 at the index specified in rs2.
 The index is read from the lower log2(XLEN) bits of shamt. For RV32, the encodings
 corresponding to shamt[5]=1 are reserved.
 
@@ -2775,7 +2775,7 @@ Encoding::
 ....
 
 Description::
-This instruction returns rs1 with a single bit inverted at the index specified in rs2.
+Returns rs1 with a single bit inverted at the index specified in rs2.
 The index is read from the lower log2(XLEN) bits of rs2.
 
 
@@ -2821,7 +2821,7 @@ RV64::
 ....
 
 Description::
-This instruction returns rs1 with a single bit inverted at the index specified in shamt.
+Returns rs1 with a single bit inverted at the index specified in shamt.
 The index is read from the lower log2(XLEN) bits of shamt.
 For RV32, the encodings corresponding to shamt[5]=1 are reserved.
 
@@ -2984,7 +2984,7 @@ Encoding::
 ....
 
 Description::
-This instruction reverses the order of the bits in every byte of a register.
+Reverses the order of the bits in every byte of a register.
 
 
 Decode Variables::
@@ -3018,7 +3018,7 @@ Encoding::
 ....
 
 Description::
-This instruction returns rs1 with a single bit set at the index specified in rs2.
+Returns rs1 with a single bit set at the index specified in rs2.
 The index is read from the lower log2(XLEN) bits of rs2.
 
 
@@ -3064,7 +3064,7 @@ RV64::
 ....
 
 Description::
-This instruction returns rs1 with a single bit set at the index specified in shamt.
+Returns rs1 with a single bit set at the index specified in shamt.
 The index is read from the lower log2(XLEN) bits of shamt.
 For RV32, the encodings corresponding to shamt[5]=1 are reserved.
 
@@ -4350,7 +4350,7 @@ Encoding::
 ....
 
 Description::
-This instruction multiplies XLEN bits of the source operands from rsd' and rs2' and writes the lowest XLEN bits of the result to rsd'.
+Multiplies XLEN bits of the source operands from rsd' and rs2' and writes the lowest XLEN bits of the result to rsd'.
 
 
 Decode Variables::
@@ -4454,7 +4454,7 @@ Encoding::
 ....
 
 Description::
-This instruction takes a single source/destination operand.
+Takes a single source/destination operand.
 This instruction takes the one's complement of rd'/rs1' and writes the result to the same register.
 
 
@@ -4646,7 +4646,7 @@ Encoding::
 ....
 
 Description::
-This instruction takes a single source/destination operand.
+Takes a single source/destination operand.
 This instruction sign-extends the least-significant byte of the source to XLEN by copying
 the most-significant bit in the byte (i.e., bit 7) to all of the more-significant bits.
 
@@ -4683,7 +4683,7 @@ Encoding::
 ....
 
 Description::
-This instruction takes a single source/destination operand.
+Takes a single source/destination operand.
 This instruction sign-extends the least-significant halfword of the source to XLEN by copying
 the most-significant bit in the halfword (i.e., bit 15) to all of the more-significant bits.
 
@@ -5128,7 +5128,7 @@ Encoding::
 ....
 
 Description::
-This instruction takes a single source/destination operand.
+Takes a single source/destination operand.
 This instruction zero-extends the least-significant byte of the source to XLEN by inserting
 0's into all of the bits more significant than 7.
 
@@ -5165,7 +5165,7 @@ Encoding::
 ....
 
 Description::
-This instruction takes a single source/destination operand.
+Takes a single source/destination operand.
 This instruction zero-extends the least-significant halfword of the source to XLEN by inserting
 0's into all of the bits more significant than 15.
 
@@ -5202,7 +5202,7 @@ Encoding::
 ....
 
 Description::
-This instruction takes a single source/destination operand.
+Takes a single source/destination operand.
 It zero-extends the least-significant word of the operand to XLEN bits by inserting zeros into all of the bits more significant than 31.
 
 
@@ -5614,7 +5614,7 @@ Encoding::
 ....
 
 Description::
-This instruction counts the number of 0's before the first 1,
+Counts the number of 0's before the first 1,
 starting at the most-significant bit (i.e., XLEN-1) and progressing to bit 0.
 Accordingly, if the input is 0, the output is XLEN, and if the most-significant
 bit of the input is a 1, the output is 0.
@@ -5651,7 +5651,7 @@ Encoding::
 ....
 
 Description::
-This instruction counts the number of 0's before the first 1 starting at bit 31 and progressing to bit 0.
+Counts the number of 0's before the first 1 starting at bit 31 and progressing to bit 0.
 Accordingly, if the least-significant word is 0, the output is 32, and if the most-significant
 bit of the word (_i.e._, bit 31) is a 1, the output is 0.
 
@@ -5687,7 +5687,7 @@ Encoding::
 ....
 
 Description::
-This instruction moves r1s' into a0 and r2s' into a1. The execution is atomic, so it is not possible to observe state where only one of a0 or a1 have been updated.
+Moves r1s' into a0 and r2s' into a1. The execution is atomic, so it is not possible to observe state where only one of a0 or a1 have been updated.
 The encoding uses sreg number specifiers instead of xreg number specifiers to save encoding space. The mapping between them is specified in the pseudo-code below.
 
 
@@ -5722,7 +5722,7 @@ Encoding::
 ....
 
 Description::
-This instruction moves a0 into r1s' and a1 into r2s'. r1s' and r2s' must be different.
+Moves a0 into r1s' and a1 into r2s'. r1s' and r2s' must be different.
 The execution is atomic, so it is not possible to observe state where only one of r1s' or r2s' has been updated.
 The encoding uses sreg number specifiers instead of xreg number specifiers to save encoding space.
 The mapping between them is specified in the pseudo-code below.
@@ -5759,7 +5759,7 @@ Encoding::
 ....
 
 Description::
-Destroy stack frame: load `ra` and 0 to 12 saved registers from the stack frame, deallocate the stack frame.
+Destroys a stack frame: load `ra` and 0 to 12 saved registers from the stack frame, deallocate the stack frame.
 This instruction pops (loads) the registers in `reg_list` from stack memory, and then adjusts the stack pointer by `stack_adj`.
 
 Restrictions on stack_adj:
@@ -5801,7 +5801,7 @@ Encoding::
 ....
 
 Description::
-Destroy stack frame: load `ra` and 0 to 12 saved registers from the stack frame, deallocate the stack frame, return to `ra`.
+Destroys a stack frame: load `ra` and 0 to 12 saved registers from the stack frame, deallocate the stack frame, return to `ra`.
 This instruction pops (loads) the registers in `reg_list` from stack memory, and then adjusts the stack pointer by `stack_adj` and then return to `ra`.
 
 Restrictions on stack_adj:
@@ -5843,7 +5843,7 @@ Encoding::
 ....
 
 Description::
-Destroy stack frame: load `ra` and 0 to 12 saved registers from the stack frame, deallocate the stack frame, move zero to `a0`, return to `ra`.
+Destroys a stack frame: load `ra` and 0 to 12 saved registers from the stack frame, deallocate the stack frame, move zero to `a0`, return to `ra`.
 This instruction pops (loads) the registers in `reg_list` from stack memory, and then adjusts the stack pointer by `stack_adj`, move zero to `a0` and then return to `ra`.
 
 Restrictions on stack_adj:
@@ -5885,7 +5885,7 @@ Encoding::
 ....
 
 Description::
-Create stack frame: store `ra` and 0 to 12 saved registers to the stack frame, optionally allocate additional stack space.
+Creates a stack frame: store `ra` and 0 to 12 saved registers to the stack frame, optionally allocate additional stack space.
 This instruction pushes (stores) the registers in `reg_list` to the memory below the stack pointer,
 and then creates the stack frame by decrementing the stack pointer by `stack_adj`.
 
@@ -5928,7 +5928,7 @@ Encoding::
 ....
 
 Description::
-This instructions counts the number of 1's (i.e., set bits) in the source register.
+Counts the number of 1's (i.e., set bits) in the source register.
 
 .Software Hint
 [NOTE]
@@ -5974,7 +5974,7 @@ Encoding::
 ....
 
 Description::
-This instructions counts the number of 1's (i.e., set bits) in the least-significant word of the source register.
+Counts the number of 1's (i.e., set bits) in the least-significant word of the source register.
 
 .Software Hint
 [NOTE]
@@ -6270,7 +6270,7 @@ Encoding::
 ....
 
 Description::
-This instruction counts the number of 0's before the first 1,
+Counts the number of 0's before the first 1,
 starting at the least-significant bit (i.e., 0) and progressing
 to the most-significant bit (i.e., XLEN-1). Accordingly, if the
 input is 0, the output is XLEN, and if the least-significant bit
@@ -6308,7 +6308,7 @@ Encoding::
 ....
 
 Description::
-This instruction counts the number of 0's before the first 1,
+Counts the number of 0's before the first 1,
 starting at the least-significant bit (i.e., 0) and progressing
 to the most-significant bit of the least-significant word (i.e., 31). Accordingly, if the
 least-significant word is 0, the output is 32, and if the least-significant bit
@@ -6652,7 +6652,7 @@ Encoding::
 ....
 
 Description::
-The ECALL instruction is used to make a request to the supporting execution environment.
+Makes a request to the supporting execution environment.
 When executed in U-mode, S-mode, or M-mode, it generates an environment-call-from-U-mode
 exception, environment-call-from-S-mode exception, or environment-call-from-M-mode
 exception, respectively, and performs no other operation.
@@ -14270,7 +14270,7 @@ Encoding::
 ....
 
 Description::
-This instruction returns the larger of two signed integers.
+Returns the larger of two signed integers.
 
 .Software Hint
 [NOTE]
@@ -14313,7 +14313,7 @@ Encoding::
 ....
 
 Description::
-This instruction returns the larger of two unsigned integers.
+Returns the larger of two unsigned integers.
 
 
 Decode Variables::
@@ -14348,7 +14348,7 @@ Encoding::
 ....
 
 Description::
-This instruction returns the smaller of two signed integers.
+Returns the smaller of two signed integers.
 
 
 Decode Variables::
@@ -14383,7 +14383,7 @@ Encoding::
 ....
 
 Description::
-This instruction returns the smaller of two unsigned integers.
+Returns the smaller of two unsigned integers.
 
 
 Decode Variables::
@@ -14931,7 +14931,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs the bitwise logical OR operation between rs1 and the bitwise inversion of rs2.
+Performs the bitwise logical OR operation between rs1 and the bitwise inversion of rs2.
 
 
 Decode Variables::
@@ -15235,7 +15235,7 @@ RV64::
 ....
 
 Description::
-This instruction reverses the order of the bytes in rs1.
+Reverses the order of the bytes in rs1.
 
 [NOTE]
 The rev8 mnemonic corresponds to different instruction encodings in RV32 and RV64.
@@ -15290,7 +15290,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs a rotate left of rs1 by the amount in least-significant `log2(XLEN)` bits of rs2.
+Performs a rotate left of rs1 by the amount in least-significant `log2(XLEN)` bits of rs2.
 
 
 Decode Variables::
@@ -15327,7 +15327,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs a rotate left of the least-significant word of rs1 by the amount in least-significant 5 bits of rs2.
+Performs a rotate left of the least-significant word of rs1 by the amount in least-significant 5 bits of rs2.
 The resulting word value is sign-extended by copying bit 31 to all of the more-significant bits.
 
 
@@ -15365,7 +15365,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs a rotate right of rs1 by the amount in least-significant `log2(XLEN)` bits of rs2.
+Performs a rotate right of rs1 by the amount in least-significant `log2(XLEN)` bits of rs2.
 
 
 Decode Variables::
@@ -15412,7 +15412,7 @@ RV64::
 ....
 
 Description::
-This instruction performs a rotate right of rs1 by the amount in the least-significant log2(XLEN) bits of shamt.
+Performs a rotate right of rs1 by the amount in the least-significant log2(XLEN) bits of shamt.
 For RV32, the encodings corresponding to shamt[5]=1 are reserved.
 
 
@@ -15462,7 +15462,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs a rotate right on the least-significant word of rs1 by the amount in
+Performs a rotate right on the least-significant word of rs1 by the amount in
 the least-significant log2(XLEN) bits of shamt. The resulting word value is sign-extended by
 copying bit 31 to all of the more-significant bits.
 
@@ -15501,7 +15501,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs a rotate right on the least-significant word of rs1 by the amount in
+Performs a rotate right on the least-significant word of rs1 by the amount in
 least-significant 5 bits of rs2. The resultant word is sign-extended by copying bit 31 to all
 of the more-significant bits.
 
@@ -16011,7 +16011,7 @@ Encoding::
 ....
 
 Description::
-This instruction sign-extends the least-significant byte in the source to XLEN by copying the
+Sign-extends the least-significant byte in the source to XLEN by copying the
 most-significant bit in the byte (i.e., bit 7) to all of the more-significant bits.
 
 
@@ -16046,7 +16046,7 @@ Encoding::
 ....
 
 Description::
-This instruction sign-extends the least-significant halfword in the source to XLEN by copying the
+Sign-extends the least-significant halfword in the source to XLEN by copying the
 most-significant bit in the halfword (i.e., bit 15) to all of the more-significant bits.
 
 
@@ -16448,7 +16448,7 @@ Encoding::
 ....
 
 Description::
-This instruction shifts `rs1` to the left by 1 bit and adds it to `rs2`.
+Shifts `rs1` to the left by 1 bit and adds it to `rs2`.
 
 
 Decode Variables::
@@ -16483,7 +16483,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs an XLEN-wide addition of two addends. The first addend is rs2.
+Performs an XLEN-wide addition of two addends. The first addend is rs2.
 The second addend is the unsigned value formed by extracting the least-significant word of rs1
 and shifting it left by 1 place.
 
@@ -16520,7 +16520,7 @@ Encoding::
 ....
 
 Description::
-This instruction shifts `rs1` to the left by 2 places and adds it to `rs2`.
+Shifts `rs1` to the left by 2 places and adds it to `rs2`.
 
 
 Decode Variables::
@@ -16555,7 +16555,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs an XLEN-wide addition of two addends. The first addend is rs2.
+Performs an XLEN-wide addition of two addends. The first addend is rs2.
 The second addend is the unsigned value formed by extracting the least-significant word of rs1
 and shifting it left by 2 places.
 
@@ -16592,7 +16592,7 @@ Encoding::
 ....
 
 Description::
-This instruction shifts `rs1` to the left by 3 places and adds it to `rs2`.
+Shifts `rs1` to the left by 3 places and adds it to `rs2`.
 
 
 Decode Variables::
@@ -16627,7 +16627,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs an XLEN-wide addition of two addends. The first addend is rs2.
+Performs an XLEN-wide addition of two addends. The first addend is rs2.
 The second addend is the unsigned value formed by extracting the least-significant word of rs1
 and shifting it left by 3 places.
 
@@ -17270,7 +17270,7 @@ Encoding::
 ....
 
 Description::
-This instruction takes the least-significant word of rs1, zero-extends it, and shifts it
+Takes the least-significant word of rs1, zero-extends it, and shifts it
 left by the immediate.
 
 [NOTE]
@@ -18426,7 +18426,7 @@ Encoding::
 ....
 
 Description::
-This instruction gathers bits from the high and low halves of the source word into odd/even bit
+Gathers bits from the high and low halves of the source word into odd/even bit
 positions in the destination word. It is the inverse of the zip instruction. This instruction is
 available only on RV32.
 
@@ -42570,7 +42570,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs the bit-wise exclusive-NOR operation on rs1 and rs2.
+Performs the bit-wise exclusive-NOR operation on rs1 and rs2.
 
 
 Decode Variables::
@@ -42759,7 +42759,7 @@ RV64::
 ....
 
 Description::
-This instruction zero-extends the least-significant halfword of the source to XLEN by inserting
+Zero-extends the least-significant halfword of the source to XLEN by inserting
 0's into all of the bits more significant than 15.
 
 [NOTE]
@@ -42808,7 +42808,7 @@ Encoding::
 ....
 
 Description::
-This instruction scatters all of the odd and even bits of a source word into the high and low halves
+Scatters all of the odd and even bits of a source word into the high and low halves
 of a destination word. It is the inverse of the unzip instruction. This instruction is available only on
 RV32.
 

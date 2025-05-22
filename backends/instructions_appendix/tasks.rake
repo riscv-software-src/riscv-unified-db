@@ -55,7 +55,26 @@ end
 namespace :gen do
   task instruction_appendix_adoc: MERGED_INSTRUCTIONS_FILE.to_s
 
-  desc "Generate instruction appendix (merged instructions adoc and PDF)"
+  desc <<~DESC
+    Generate the instruction appendix (merged .adoc and PDF)
+
+    By default this will produce the “merged instructions” AsciiDoc file and
+    then render it to PDF.
+
+    Environment flags:
+
+     * ASSEMBLY - set to `1` to include an “Assembly” line (instruction mnemonic + operands)
+                  before the Encoding section for each instruction.
+
+    Examples:
+
+     # Just regenerate AsciiDoc + PDF:
+     $ do gen:instruction_appendix
+
+     # Include assembly templates in the docs:
+     $ do gen:instruction_appendix ASSEMBLY=1
+
+  DESC
   task :instruction_appendix do
     # Generate the merged instructions adoc.
     Rake::Task[MERGED_INSTRUCTIONS_FILE.to_s].invoke

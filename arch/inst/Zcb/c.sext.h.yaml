@@ -5,7 +5,7 @@ kind: instruction
 name: c.sext.h
 long_name: Sign-extend halfword, 16-bit encoding
 description: |
-  This instruction takes a single source/destination operand.
+  Takes a single source/destination operand.
   This instruction sign-extends the least-significant halfword of the source to XLEN by copying
   the most-significant bit in the halfword (i.e., bit 15) to all of the more-significant bits.
 

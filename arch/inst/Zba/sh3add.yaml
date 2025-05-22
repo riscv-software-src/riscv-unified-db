@@ -5,7 +5,7 @@ kind: instruction
 name: sh3add
 long_name: Shift left by 3 and add
 description: |
-  This instruction shifts `rs1` to the left by 3 places and adds it to `rs2`.
+  Shifts `rs1` to the left by 3 places and adds it to `rs2`.
 definedBy: Zba
 assembly: xd, xs1, xs2
 encoding:

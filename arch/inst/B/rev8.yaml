@@ -5,7 +5,7 @@ kind: instruction
 name: rev8
 long_name: Byte-reverse register (RV64 encoding)
 description: |
-  This instruction reverses the order of the bytes in rs1.
+  Reverses the order of the bytes in rs1.
 
   [NOTE]
   The rev8 mnemonic corresponds to different instruction encodings in RV32 and RV64.

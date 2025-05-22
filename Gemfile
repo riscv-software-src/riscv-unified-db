@@ -36,3 +36,8 @@ group :development do
   gem "spoom"
   gem "tapioca", require: false
 end
+
+group :development, :test do
+  gem "minitest"
+  gem "simplecov"
+end

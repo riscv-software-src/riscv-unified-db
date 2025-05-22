@@ -5,7 +5,7 @@ kind: instruction
 name: clz
 long_name: Count leading zero bits
 description: |
-  This instruction counts the number of 0's before the first 1,
+  Counts the number of 0's before the first 1,
   starting at the most-significant bit (i.e., XLEN-1) and progressing to bit 0.
   Accordingly, if the input is 0, the output is XLEN, and if the most-significant
   bit of the input is a 1, the output is 0.
