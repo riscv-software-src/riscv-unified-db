@@ -581,7 +581,7 @@ class ExtensionRequirementExpression
   #
   # Will be "satisfied by":
   #
-  #  { "name": "A, "version": ">= 1.1" }
+  #  { "name": "A", "version": ">= 1.1" }
   #
   # because A version 1.2 fits both requirements
   #
