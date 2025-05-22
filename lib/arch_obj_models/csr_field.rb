@@ -10,6 +10,9 @@ require_relative "certifiable_obj"
 # A CSR field object
 class CsrField
   extend T::Sig
+
+  include DatabaseMethods
+
   # Add all methods in this module to this type of database object.
   include CertifiableObject
 
@@ -38,6 +41,18 @@ class CsrField
 
   sig { returns(ConfiguredArchitecture) }
   attr_reader :cfg_arch
+
+  sig { returns(ExtensionRequirementExpression) }
+  def defined_by_condition
+    @defined_by_condition ||=
+      begin
+        raise "ERROR: definedBy is nul for #{name}" if @data["definedBy"].nil?
+
+        ExtensionRequirementExpression.new(@data["definedBy"], @cfg_arch)
+      end
+  end
+
+  def key?(key) = @data.key?(key)
 
   # @param parent_csr [Csr] The Csr that defined this field
   # @param field_data [Hash<String,Object>] Field data from the arch spec

@@ -30,8 +30,161 @@ require "sorbet-runtime"
 
 require_relative "doc_link"
 
+# a bunch of useful methods for both proper DatabaseObject and sub-objects like CsrField
+module DatabaseMethods
+  extend T::Sig
+
+  # @param normative [Boolean] Include normative text?
+  # @param non_normative [Boolean] Include non-normative text?
+  # @param when_cb [Proc(AstNode, String)] Callback to generate text for the un-knowable ast
+  # @return [String] Description of the object, from YAML
+  sig {
+    params(
+      normative: T::Boolean,
+      non_normative: T::Boolean,
+      when_cb: T.proc.params(when_ast: Idl::AstNode, text: String).returns(T::Array[String])
+    )
+    .returns(String)
+  }
+  def description(
+    normative: true,      # display normative text?
+    non_normative: true,  # display non-normative text?
+    when_cb: proc { |when_ast, text|
+      ["When `#{when_ast.gen_adoc(0)}`", text]
+    }
+  )
+    case @data['description']
+    when String
+      @data['description']
+    when Array
+      stmts = @data['description']
+      desc_lines = []
+      stmts.each_with_index do |stmt, idx|
+        if stmt.key?("when()")
+          # conditional
+          ast = @cfg_arch.idl_compiler.compile_func_body(
+            stmt["when()"],
+            return_type: Idl::Type.new(:boolean),
+            symtab: @cfg_arch.symtab,
+            name: "#{name}.description[#{idx}].when",
+            input_file: __source,
+            input_line: source_line(["description", idx, "when()"])
+          )
+
+          symtab = @cfg_arch.symtab.global_clone
+          symtab.push(ast)
+          unless ast.return_type(symtab).kind == :boolean
+            ast.type_error "`when` must be a Boolean in description"
+          end
+
+          value_result = ast.value_try do
+            if ast.return_value(symtab) == true
+              # condition holds, add the test
+              if (stmt["normative"] == true) && normative
+                desc_lines << stmt["text"]
+              elsif (stmt["normative"] == false) && non_normative
+                desc_lines << stmt["text"]
+              end
+            end
+            # else, value is false; don't add it
+          end
+          ast.value_else(value_result) do
+            # value of 'when' isn't known. prune out what we do know
+            # and display it
+            pruned_ast = ast.prune(symtab)
+            pruned_ast.freeze_tree(symtab)
+            desc_lines.concat(when_cb.call(pruned_ast, stmt["text"]))
+          end
+          symtab.pop
+          symtab.release
+        else
+          if (stmt["normative"] == true) && normative
+            desc_lines << stmt["text"]
+          elsif (stmt["normative"] == false) && non_normative
+            desc_lines << stmt["text"]
+          end
+        end
+      end
+      desc_lines.join("\n\n")
+    end
+  end
+
+    # @return [Integer] THe source line number of +path+ in the YAML file
+  # @param path [Array<String>] Path to the scalar you want.
+  # @example
+  #   00: yaml = <<~YAML
+  #   01:   misa:
+  #   02:     sw_read(): ...
+  #   03:     fields:
+  #   04:       A:
+  #   05:         type(): ...
+  #   06: YAML
+  #   misa_csr.source_line("sw_read()")  #=> 2
+  #   mis_csr.source_line("fields", "A", "type()") #=> 5
+  sig { params(path: T::Array[String]).returns(Integer) }
+  def source_line(path)
+
+    # find the line number of this operation() in the *original* file
+    yaml_filename = __source
+    raise "No $source for #{name}" if yaml_filename.nil?
+    line = T.let(nil, T.untyped)
+    path_idx = 0
+    Psych.parse_stream(File.read(yaml_filename), filename: yaml_filename) do |doc|
+      mapping = doc.children[0]
+      data = T.let(
+        if mapping.children.size == 2
+          mapping.children[1]
+        else
+          mapping
+        end,
+        Psych::Nodes::Node)
+      found = T.let(false, T::Boolean)
+      while path_idx < path.size
+        if data.is_a?(Psych::Nodes::Mapping)
+          idx = 0
+          while idx < data.children.size
+            if data.children[idx].value == path[path_idx]
+              if path_idx == path.size - 1
+                line = data.children[idx + 1].start_line
+                if data.children[idx + 1].style == Psych::Nodes::Scalar::LITERAL
+                  line += 1 # the string actually begins on the next line
+                end
+                return line
+              else
+                found = true
+                data = data.children[idx + 1]
+                path_idx += 1
+                break
+              end
+            end
+            idx += 2
+          end
+          raise "path #{path[path_idx]} @ #{path_idx} not found for #{self.class.name}##{name}" unless found
+        elsif data.is_a?(Psych::Nodes::Sequence)
+          raise "Expecting Integer" unless path[path_idx].is_a?(Integer)
+
+          if data.children.size > path[path_idx]
+            if path_idx == path.size - 1
+              line = data.children[path[path_idx]].start_line
+              return line
+            else
+              data = data.children[path[path_idx]]
+              path_idx += 1
+            end
+          else
+            raise "Index out of bounds"
+          end
+        end
+      end
+    end
+    raise "Didn't find path '#{path}' in #{__source}"
+  end
+end
+
 class DatabaseObject
   extend T::Sig
+
+  include DatabaseMethods
 
   # Exception raised when there is a problem with a schema file
   class SchemaError < ::StandardError
@@ -222,80 +375,7 @@ class DatabaseObject
     @data["definedBy"]
   end
 
-  # @param normative [Boolean] Include normative text?
-  # @param non_normative [Boolean] Include non-normative text?
-  # @param when_cb [Proc(AstNode, String)] Callback to generate text for the un-knowable ast
-  # @return [String] Description of the object, from YAML
-  sig {
-    params(
-      normative: T::Boolean,
-      non_normative: T::Boolean,
-      when_cb: T.proc.params(when_ast: Idl::AstNode, text: String).returns(T::Array[String])
-    )
-    .returns(String)
-  }
-  def description(
-    normative: true,      # display normative text?
-    non_normative: true,  # display non-normative text?
-    when_cb: proc { |when_ast, text|
-      ["When `#{when_ast.gen_adoc(0)}`", text]
-    }
-  )
-    case @data['description']
-    when String
-      @data['description']
-    when Array
-      stmts = @data['description']
-      desc_lines = []
-      stmts.each_with_index do |stmt, idx|
-        if stmt.key?("when()")
-          # conditional
-          ast = @cfg_arch.idl_compiler.compile_func_body(
-            stmt["when()"],
-            return_type: Idl::Type.new(:boolean),
-            symtab: @cfg_arch.symtab,
-            name: "#{name}.description[#{idx}].when",
-            input_file: __source,
-            input_line: source_line(["description", idx, "when()"])
-          )
 
-          symtab = @cfg_arch.symtab.global_clone
-          symtab.push(ast)
-          unless ast.return_type(symtab).kind == :boolean
-            ast.type_error "`when` must be a Boolean in description"
-          end
-
-          value_result = ast.value_try do
-            if ast.return_value(symtab) == true
-              # condition holds, add the test
-              if (stmt["normative"] == true) && normative
-                desc_lines << stmt["text"]
-              elsif (stmt["normative"] == false) && non_normative
-                desc_lines << stmt["text"]
-              end
-            end
-            # else, value is false; don't add it
-          end
-          ast.value_else(value_result) do
-            # value of 'when' isn't known. prune out what we do know
-            # and display it
-            pruned_ast = ast.prune(symtab)
-            pruned_ast.freeze_tree(symtab)
-            desc_lines.concat(when_cb.call(pruned_ast, stmt["text"]))
-          end
-          symtab.pop
-          symtab.release
-        else
-          if (stmt["normative"] == true) && normative
-            desc_lines << stmt["text"]
-          elsif (stmt["normative"] == false) && non_normative
-            desc_lines << stmt["text"]
-          end
-        end
-      end
-      desc_lines.join("\n\n")
-    end
-  end
 
   # @param data [Hash<String,Object>] Hash with fields to be added
   # @param data_path [Pathname] Path to the data file
@@ -356,77 +436,6 @@ class DatabaseObject
   sig { returns(ExtensionRequirement) }
   def primary_defined_by
     defined_by_condition.first_requirement
-  end
-
-  # @return [Integer] THe source line number of +path+ in the YAML file
-  # @param path [Array<String>] Path to the scalar you want.
-  # @example
-  #   00: yaml = <<~YAML
-  #   01:   misa:
-  #   02:     sw_read(): ...
-  #   03:     fields:
-  #   04:       A:
-  #   05:         type(): ...
-  #   06: YAML
-  #   misa_csr.source_line("sw_read()")  #=> 2
-  #   mis_csr.source_line("fields", "A", "type()") #=> 5
-  sig { params(path: T::Array[String]).returns(Integer) }
-  def source_line(path)
-
-    # find the line number of this operation() in the *original* file
-    yaml_filename = __source
-    raise "No $source for #{name}" if yaml_filename.nil?
-    line = T.let(nil, T.untyped)
-    path_idx = 0
-    Psych.parse_stream(File.read(yaml_filename), filename: yaml_filename) do |doc|
-      mapping = doc.children[0]
-      data = T.let(
-        if mapping.children.size == 2
-          mapping.children[1]
-        else
-          mapping
-        end,
-        Psych::Nodes::Node)
-      found = T.let(false, T::Boolean)
-      while path_idx < path.size
-        if data.is_a?(Psych::Nodes::Mapping)
-          idx = 0
-          while idx < data.children.size
-            if data.children[idx].value == path[path_idx]
-              if path_idx == path.size - 1
-                line = data.children[idx + 1].start_line
-                if data.children[idx + 1].style == Psych::Nodes::Scalar::LITERAL
-                  line += 1 # the string actually begins on the next line
-                end
-                return line
-              else
-                found = true
-                data = data.children[idx + 1]
-                path_idx += 1
-                break
-              end
-            end
-            idx += 2
-          end
-          raise "path #{path[path_idx]} @ #{path_idx} not found for #{self.class.name}##{name}" unless found
-        elsif data.is_a?(Psych::Nodes::Sequence)
-          raise "Expecting Integer" unless path[path_idx].is_a?(Integer)
-
-          if data.children.size > path[path_idx]
-            if path_idx == path.size - 1
-              line = data.children[path[path_idx]].start_line
-              return line
-            else
-              data = data.children[path[path_idx]]
-              path_idx += 1
-            end
-          else
-            raise "Index out of bounds"
-          end
-        end
-      end
-    end
-    raise "Didn't find path '#{path}' in #{__source}"
   end
 end
 
