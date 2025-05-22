@@ -32,9 +32,9 @@ params:
     when:
       allOf:
         - name: H
-        - version: ~> 1.0
+          version: ~> 1.0
         - name: Ssstateen
-        - version: ~> 1.0
+          version: ~> 1.0
     schema:
       enum: [rw, read-only-0, read-only-1]
     description: |
@@ -62,9 +62,9 @@ params:
     when:
       allOf:
         - name: H
-        - version: ~> 1.0
+          version: ~> 1.0
         - name: Ssstateen
-        - version: ~> 1.0
+          version: ~> 1.0
     schema:
       enum: [rw, read-only-0, read-only-1]
     description: |
