@@ -327,12 +327,23 @@ Supervisor count overflow.
 
 |`0x180` |SRW |`satp` |Supervisor address translation and protection.
 
+4+^|Supervisor Timer Compare
+
+|`0x14D` +
+`0x15D`
+|SRW +
+SRW
+|`stimecmp` +
+`stimecmph`
+|Supervisor timer compare. +
+Upper 32 bits of `stimecmp`, RV32 only.
+
 4+^|Debug/Trace Registers
 
 |`0x5A8` |SRW |`scontext` |Supervisor-mode context register.
 
-//4+^|Supervisor Resource Management Configuration
-//|`0x181` |SRW |`srmcfg` |Supervisor Resource Management Configuration.
+4+^|Supervisor Resource Management Configuration
+|`0x181` |SRW |`srmcfg` |Supervisor Resource Management Configuration.
 
 4+^|Supervisor State Enable Registers
 |`0x10C` +
@@ -351,6 +362,20 @@ Supervisor count overflow.
  Supervisor State Enable 1 Register. +
  Supervisor State Enable 2 Register. +
  Supervisor State Enable 3 Register.
+
+4+^|Supervisor Control Transfer Records Configuration
+|`0x14E` +
+ `0x14F` +
+ `0x15F`
+|SRW +
+ SRW +
+ SRW
+|`sctrctl` +
+ `sctrstatus` +
+ `sctrdepth`
+|Supervisor Control Transfer Records Control Register. +
+ Supervisor Control Transfer Records Status Register. +
+ Supervisor Control Transfer Records Depth Register.
 
 |===
 
@@ -420,7 +445,7 @@ Hypervisor guest external interrupt pending.
 |`0x60A` +
 `0x61A`
 |HRW +
-HRM
+HRW
 |`henvcfg` +
 `henvcfgh`
 |Hypervisor environment configuration register. +
@@ -517,6 +542,23 @@ Virtual supervisor trap cause. +
 Virtual supervisor trap value. +
 Virtual supervisor interrupt pending. +
 Virtual supervisor address translation and protection.
+
+4+^|Virtual Supervisor Timer Compare
+
+|`0x24D` +
+`0x25D`
+|HRW +
+HRW
+|`vstimecmp` +
+`vstimecmph`
+|Virtual supervisor timer compare. +
+Upper 32 bits of `vstimecmp`, RV32 only.
+
+4+^|Virtual Supervisor Control Transfer Records Configuration
+|`0x24E`
+|HRW
+|`vsctrctl`
+|Virtual Supervisor Control Transfer Records Control Register.
 
 |===
 
@@ -838,6 +880,11 @@ Upper 32 bits of `mhpmevent4`, RV32 only. +
 &#160; +
 Upper 32 bits of `mhpmevent31`, RV32 only.
 
+4+^|Machine Control Transfer Records Configuration
+|`0x34E`
+|MRW
+|`mctrctl`
+|Machine Control Transfer Records Control Register.
 
 4+^|Debug/Trace Registers (shared with Debug Mode)
 
