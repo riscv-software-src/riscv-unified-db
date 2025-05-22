@@ -438,6 +438,23 @@
           "pattern": "^0x[a-fA-F0-9]+$"
         }
       ]
+    },
+    "ref_url": {
+      "type": "string",
+      "pattern": "^.*/.*\\.yaml#.*$"
+    },
+    "ref_url_list": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/ref_url"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref_url"
+          }
+        }
+      ]
     }
   }
 }

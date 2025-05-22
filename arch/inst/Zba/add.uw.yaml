@@ -12,8 +12,7 @@ definedBy: Zba
 assembly: xd, xs1, xs2
 format:
   $inherits:
-    - inst_subtype/R/R-x.yaml#
-    - inst_opcode/OP-32.yaml#
+    - inst_subtype/R/R-x.yaml#/data
   opcodes:
     funct7:
       display_name: ADD.UW

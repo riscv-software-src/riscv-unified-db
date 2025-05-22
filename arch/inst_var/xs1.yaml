@@ -5,5 +5,5 @@ kind: instruction_variable
 name: xs1
 
 data:
-  location: 19-15
+  $inherits: inst_type/R.yaml#/variables/rs1
   type: { "$ref": "inst_var_type/x_src_reg.yaml#" }

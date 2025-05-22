@@ -35,13 +35,13 @@
           "oneOf": [
             {
               "type": "string",
-              "pattern": "inst_opcode/[^/]+\\.yaml#/data"
+              "pattern": "^inst_.*/.*\\.yaml#.*$"
             },
             {
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "inst_opcode/[^/]+\\.yaml#/data"
+                "pattern": "^inst_.*/.*\\.yaml#.*$"
               }
             }
           ]
@@ -50,24 +50,30 @@
       "additionalProperties": false
     },
     "fully_resolved_variables": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["location", "type"],
-        "properties": {
-          "location": {
-            "$ref": "schema_defs.json#/$defs/possibly_split_field_location"
-          },
-          "type": {
-            "type": "object",
-            "required": ["$ref"],
-            "additionalProperties": false,
-            "properties": {
-              "$ref": {
-                "type": "string",
-                "pattern": "inst_var_type/.+\\.json#"
+      "type": "object",
+      "patternProperties": {
+        "^[a-zA-Z0-9_]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["location", "type"],
+          "properties": {
+            "location": {
+              "$ref": "schema_defs.json#/$defs/possibly_split_field_location"
+            },
+            "type": {
+              "type": "object",
+              "required": ["$ref"],
+              "additionalProperties": false,
+              "properties": {
+                "$ref": {
+                  "type": "string",
+                  "pattern": "inst_var_type/.+\\.yaml#"
+                }
               }
+            },
+            "$child_of": {
+              "type": "string",
+              "pattern": "^inst_.*/.*\\.yaml#.*$"
             }
           }
         }
@@ -116,7 +122,7 @@
           "type": "object",
           "patternProperties": {
             "$comment": "opcode names are lowercase with numbers",
-            "[a-z][a-z0-9]*": {
+            "^[a-z][a-z0-9]*$": {
               "$refs": "#/$defs/fully_resolved_opcodes"
             }
           }
@@ -452,7 +458,7 @@
                   "type": "object",
                   "patternProperties": {
                     "$comment": "opcode names are lowercase with numbers",
-                    "[a-z][a-z0-9]*": {
+                    "^[a-z][a-z0-9]*$": {
                       "type": "object",
                       "properties": {
                         "$comment": "location must come from inheritance",

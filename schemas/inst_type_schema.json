@@ -9,11 +9,18 @@
     "kind": { "const": "instruction_type" },
     "name": { "$ref": "schema_defs.json#/$defs/inst_type_name" },
     "description": { "type": "string" },
+    "length": {
+      "description": "Length, in bits, of the encoding",
+      "enum": [16, 32]
+    },
     "opcodes": {
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "[a-z][A-Z0-9]*": {
+        "^\\$parent_of$": {
+          "$ref": "schema_defs.json#/$defs/ref_url_list"
+        },
+        "^[a-z][a-zA-Z0-9]*$": {
           "type": "object",
           "required": ["location"],
           "additionalProperties": false,
@@ -27,13 +34,16 @@
       "type": "object",
       "additionalProperties": false,
       "patternProperties": {
-        "[a-z][A-Z0-9]*": {
+        "^[a-z][a-zA-Z0-9]*$": {
           "type": "object",
           "required": ["location"],
           "additionalProperties": false,
           "properties": {
             "location": {
               "$ref": "schema_defs.json#/$defs/possibly_split_field_location"
+            },
+            "$parent_of": {
+              "$ref": "schema_defs.json#/$defs/ref_url_list"
             }
           }
         }
@@ -44,6 +54,6 @@
       "type": "string"
     }
   },
-  "required": ["$schema", "kind", "name", "description"],
+  "required": ["$schema", "kind", "name", "description", "length", "opcodes"],
   "additionalProperties": false
 }

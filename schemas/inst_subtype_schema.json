@@ -4,26 +4,13 @@
   "description": "Schema for instruction subtype definitions",
 
   "type": "object",
-  "required": ["$schema", "kind", "data"],
+  "required": ["$schema", "kind", "name", "data"],
   "additionalProperties": false,
 
-  "properties": {
-    "$schema": {
-      "const": "inst_subtype_schema.json#",
-      "description": "Pointer to schema"
-    },
-    "kind": {
-      "const": "instruction_subtype",
-      "description": "Kind of the database object"
-    },
-    "name": {
-      "type": "string",
-      "$ref": "schema_defs.json#/$defs/inst_subtype_name",
-      "description": "Name of the subtype; also serves as database key"
-    },
-    "data": {
+  "$defs": {
+    "fully_resolved_data": {
       "type": "object",
-      "required": ["type", "$inherits"],
+      "required": ["type", "subtype", "opcodes"],
       "additionalProperties": false,
       "properties": {
         "type": {
@@ -50,22 +37,152 @@
             }
           }
         },
-        "$inherits": {
+        "opcodes": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "^\\$child_of$": {
+              "$ref": "schema_defs.json#/$defs/ref_url_list"
+            },
+            "^[a-z][A-Z0-9]*": {
+              "type": "object",
+              "required": ["location"],
+              "additionalProperties": false,
+              "properties": {
+                "location": {
+                  "$ref": "schema_defs.json#/$defs/field_location"
+                },
+                "$child_of": {
+                  "type": "string",
+                  "pattern": "^inst_.*\\.yaml#.*$"
+                }
+              }
+            }
+          }
+        },
+        "variables": {
+          "type": "object",
+          "additionalProperties": false,
+          "patternProperties": {
+            "[a-z][A-Z0-9]*": {
+              "$ref": "inst_var_schema.json#/$defs/fully_resolved_data"
+            }
+          }
+        },
+        "$parent_of": {
+          "$ref": "schema_defs.json#/$defs/ref_url_list"
+        }
+      }
+    },
+    "polymorphic_data": {
+      "type": "object",
+      "required": ["type", "subtype", "opcodes"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "object",
+          "description": "Instruction format type (I-type, R-type, etc.)",
+          "additionalProperties": false,
+          "required": ["$ref"],
+          "properties": {
+            "$ref": {
+              "type": "string",
+              "pattern": "inst_type/[A-Z][A-Za-z0-9\\-]*\\.yaml#"
+            }
+          }
+        },
+        "subtype": {
+          "type": "object",
+          "description": "Instruction format subtype (R-x-type, etc.)",
+          "additionalProperties": false,
+          "required": ["$ref"],
+          "properties": {
+            "$ref": {
+              "type": "string",
+              "pattern": "inst_subtype/[A-Z][A-Za-z0-9\\-]*/[A-Z][A-Za-z0-9\\-]*\\.yaml#"
+            }
+          }
+        },
+        "opcodes": {
+          "type": "object",
+          "required": ["$inherits"],
+          "additionalProperties": false,
+          "properties": {
+            "$inherits": {
+              "oneOf": [
+                {
+                  "type": "string",
+                  "pattern": "^inst_type/.*\\.yaml#/opcodes$"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^inst_type/.*\\.yaml#/opcodes$"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "variables": {
           "oneOf": [
             {
-              "type": "string",
-              "pattern": "inst_((opcode)|(var))/.*\\.yaml#/data"
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "$inherits": {
+                  "type": "string",
+                  "pattern": "inst_type/.*\\.yaml#/variables"
+                }
+              }
             },
             {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "pattern": "inst_((opcode)|(var))/.*\\.yaml#/data"
+              "type": "object",
+              "additionalProperties": false,
+              "patternProperties": {
+                "^[a-z][a-zA-Z0-9]*$": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["$inherits"],
+                  "properties": {
+                    "$inherits": {
+                      "type": "string",
+                      "pattern": "inst_var/.*\\.yaml#/data"
+                    }
+                  }
+                }
               }
             }
           ]
         }
       }
+    }
+  },
+
+  "properties": {
+    "$schema": {
+      "const": "inst_subtype_schema.json#",
+      "description": "Pointer to schema"
+    },
+    "kind": {
+      "const": "instruction_subtype",
+      "description": "Kind of the database object"
+    },
+    "name": {
+      "type": "string",
+      "$ref": "schema_defs.json#/$defs/inst_subtype_name",
+      "description": "Name of the subtype; also serves as database key"
+    },
+    "data": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/polymorphic_data"
+        },
+        {
+          "$ref": "#/$defs/fully_resolved_data"
+        }
+      ]
     },
     "$source": {
       "description": "Path to the source file. Used by downstream tooling; not expected to be found in handwritten files",

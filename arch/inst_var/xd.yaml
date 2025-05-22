@@ -5,5 +5,5 @@ kind: instruction_variable
 name: xd
 
 data:
-  location: 11-7
+  $inherits: inst_type/R.yaml#/variables/rd
   type: { "$ref": "inst_var_type/x_dst_reg.yaml#" }

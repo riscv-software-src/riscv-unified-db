@@ -7,10 +7,12 @@ name: R-x
 data:
   type: { "$ref": "inst_type/R.yaml#" }
   subtype: { "$ref": "inst_subtype/R/R-x.yaml#" }
-  $inherits:
-    - inst_opcode/funct7.yaml#/data
-    - inst_opcode/funct3.yaml#/data
-    - inst_opcode/opcode.yaml#/data
-    - inst_var/xs2.yaml#/data
-    - inst_var/xs1.yaml#/data
-    - inst_var/xd.yaml#/data
+  opcodes:
+    $inherits: inst_type/R.yaml#/opcodes
+  variables:
+    xs2:
+      $inherits: inst_var/xs2.yaml#/data
+    xs1:
+      $inherits: inst_var/xs1.yaml#/data
+    xd:
+      $inherits: inst_var/xd.yaml#/data

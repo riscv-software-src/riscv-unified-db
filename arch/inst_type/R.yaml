@@ -4,6 +4,7 @@ $schema: inst_type_schema.json#
 kind: instruction_type
 name: R
 description: R-type instructions usually have two source registers and one destination registers
+length: 32
 opcodes:
   funct7:
     location: 31-25

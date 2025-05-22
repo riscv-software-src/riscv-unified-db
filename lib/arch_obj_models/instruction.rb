@@ -10,22 +10,57 @@ require_relative "../backend_helpers"
 require "awesome_print"
 
 class InstructionType < DatabaseObject
+  def length = @data["length"]
+  def size = length
 end
 
 class InstructionSubtype < DatabaseObject
-  sig { returns(T::Array[Instruction::DecodeVariable]) }
-  def make_variables
-    if @data["fields"].key?("variables")
-      @data["fields"]["variables"].map { |var_data| Instruction::DecodeVariable.new(var_data) }
-    else
-      []
+  class Opcode
+    extend T::Sig
+
+    sig { returns(String) }
+    attr_reader :name
+
+    sig { returns(Range) }
+    attr_reader :range
+
+    sig { params(name: String, range: Range).void }
+    def initialize(name, range)
+      @name = name
+      @range = range
     end
+
+    sig { params(other: T.any(Opcode, Instruction::DecodeVariable)).returns(T::Boolean) }
+    def overlaps?(other)
+      if other.is_a?(Opcode)
+        range.eql?(other.range) || range.cover?(other.range.first) || other.range.cover?(range.first)
+      else
+        other.location_bits.any? { |i| range.cover?(i)}
+      end
+    end
+  end
+
+  sig { returns(InstructionType) }
+  def type
+    @type ||= @arch.ref(@data["data"]["type"]["$ref"])
+  end
+
+  sig { returns(T::Array[Instruction::DecodeVariable]) }
+  def variables
+    @variables ||=
+      if @data["data"].key?("variables")
+        @data["data"]["variables"].map { |var_name, var_data| Instruction::DecodeVariable.new(var_name, var_data) }
+      else
+        []
+      end
   end
 
   sig { returns(T::Array[Instruction::Encoding::Field]) }
   def opcodes
     @opcodes ||=
-      @data["fields"]["opcodes"].map do |opcode_data|
+      @data["data"]["opcodes"].map do |opcode_name, opcode_data|
+        next if opcode_name[0] == "$"
+
         raise "unexpected: opcode field is not contiguous" if opcode_data["location"].include?("|")
 
         loc = opcode_data["location"]
@@ -42,13 +77,8 @@ class InstructionSubtype < DatabaseObject
           else
             raise "location format error"
           end
-        Instruction::Encoding::Field.new(opcode_data["name"], range)
-      end
-  end
-
-  sig { params(for_inst: Instruction, base: Integer).returns(Instruction::Encoding) }
-  def make_encoding(for_inst, base)
-    Instruction::Encoding.new(for_inst.encoding_format(base), make_variables, opcodes)
+        Instruction::Encoding::Field.new(opcode_name, range)
+      end.reject(&:nil?)
   end
 end
 
@@ -99,25 +129,73 @@ class Instruction < DatabaseObject
     @subtype[base]
   end
 
+  class Opcode < InstructionSubtype::Opcode
+    extend T::Sig
+
+    sig { returns(Integer) }
+    attr_reader :value
+
+    sig { params(name: String, range: Range, value: Integer).void }
+    def initialize(name, range, value)
+      super(name, range)
+      @value = value
+    end
+
+    sig { returns(T::Boolean) }
+    def opcode? = true
+
+    sig { returns(String) }
+    def to_s = "#{name}[#{range}]"
+  end
+
+  sig { params(base: Integer).returns(T::Array[Opcode]) }
+  def opcodes(base)
+    raise "Instruction #{name} is not defined in base RV#{base}" unless defined_in_base?(base)
+
+    @opcodes ||= {}
+
+    return @opcodes[base] unless @opcodes[base].nil?
+
+    @opcodes[base] = @data["format"]["opcodes"].map do |opcode_name, opcode_data|
+        next if opcode_name[0] == "$"
+
+        raise "unexpected: opcode field is not contiguous" if opcode_data["location"].include?("|")
+
+        loc = opcode_data["location"]
+        range =
+          if loc =~ /^([0-9]+)$/
+            bit = ::Regexp.last_match(1)
+            bit.to_i..bit.to_i
+          elsif loc =~ /^([0-9]+)-([0-9]+)$/
+            msb = ::Regexp.last_match(1)
+            lsb = ::Regexp.last_match(2)
+            raise "range must be specified 'msb-lsb'" unless msb.to_i >= lsb.to_i
+
+            lsb.to_i..msb.to_i
+          else
+            raise "location format error"
+          end
+        Opcode.new(opcode_name, range, opcode_data["value"])
+      end.reject(&:nil?)
+  end
+
   # @return [String] format, as a string of 0,1 and -,
   # @example Format of `sd`
   #      sd.format #=> '-----------------011-----0100011'
   sig { params(base: Integer).returns(String) }
   def encoding_format(base)
-    @encoding_format ||=
-      if has_type?
-        if @data["format"].key?("RV32")
-          {
-            32 => @data["format"]["RV32"]["encoding"],
-            64 => @data["format"]["RV64"]["encoding"]
-          }
-        else
-          {
-            32 => @data["format"]["encoding"],
-            64 => @data["format"]["encoding"]
-          }
-        end
-      else
+    raise ArgumentError, "base must be 32 or 64" unless [32, 64].include?(base)
+
+    if has_type?
+      mask = "-" * type(base).length
+
+      opcodes(base).each do |opcode|
+        mask[type(base).length - opcode.range.end - 1, opcode.range.size] = opcode.value.to_s(2).rjust(opcode.range.size, "0")
+      end
+
+      mask
+    else
+      @encoding_format ||=
         if @data["encoding"].key?("RV32")
           {
             32 => @data["encoding"]["RV32"]["match"],
@@ -129,8 +207,8 @@ class Instruction < DatabaseObject
             64 => @data["encoding"]["match"]
           }
         end
-      end
-    @encoding_format[base]
+      @encoding_format[base]
+    end
   end
 
   def processed_wavedrom_desc(base)
@@ -157,26 +235,22 @@ class Instruction < DatabaseObject
 
   sig { params(inst: Instruction, base: Integer).void }
   def self.validate_encoding(inst, base)
-    match = inst.encoding_format(base)
-    raise "No match for instruction #{inst_name}?" if match.nil?
+    # make sure there is no overlap between variables/opcodes
+    (inst.opcodes(base) + inst.decode_variables(base)).combination(2) do |field1, field2|
+      raise "In instruction #{inst.name}, #{field1.name} and #{field2.name} overlap" if field1.overlaps?(field2)
+    end
 
-    encoding = inst.encoding(base)
-    variables = encoding.decode_variables
-    match.size.times do |i|
-      if match[match.size - 1 - i] == "-"
-        # make sure exactly one variable covers this bit
-        vars_match = variables.count { |variable| variable.location_bits.include?(i) }
-        if vars_match.zero?
-          raise ValidationError, "In instruction #{inst_name}, no variable or encoding bit covers bit #{i}"
-        elsif vars_match != 1
-          raise ValidationError, "In instruction, #{inst_name}, bit #{i} is covered by more than one variable"
-        end
-      else
-        # make sure no variable covers this bit
-        unless variables.none? { |variable| variable.location_bits.include?(i) }
-          raise ValidationError, "In instruction, #{inst_name}, bit #{i} is covered by both a variable and the match string"
-        end
-      end
+    # makes sure every bit is accounted for
+    inst.type(base).length.times do |i|
+      covered =
+        inst.opcodes(base).any? { |opcode| opcode.range.cover?(i) } || \
+        inst.decode_variables(base).any? { |var| var.location_bits.include?(i) }
+      raise "In instruction #{inst.name}, there is no opcode or variable at bit #{i}" unless covered
+    end
+
+    # make sure opcode values fit
+    inst.opcodes(base).each do |opcode|
+      raise "In instruction #{inst.name}, opcode #{opcode.name}, value #{opcode.value} does not fit in #{opcode.range}" unless opcode.range.size >= opcode.value.bit_length
     end
   end
 
@@ -612,8 +686,8 @@ class Instruction < DatabaseObject
       end
     end
 
-    def initialize(field_data)
-      @name = field_data["name"]
+    def initialize(name, field_data)
+      @name = name
       @left_shift = field_data["left_shift"].nil? ? 0 : field_data["left_shift"]
       @sext = field_data["sign_extend"].nil? ? false : field_data["sign_extend"]
       @alias = field_data["alias"].nil? ? nil : field_data["alias"]
@@ -675,6 +749,15 @@ class Instruction < DatabaseObject
     # true if the field should be sign extended
     def sext?
       @sext
+    end
+
+    sig { params(other: T.any(Instruction::Opcode, DecodeVariable)).returns(T::Boolean) }
+    def overlaps?(other)
+      if other.is_a?(Instruction::Opcode)
+        location_bits.any? { |i| other.range.cover?(i) }
+      else
+        location_bits.intersect?(other.location_bits)
+      end
     end
 
     # return code to extract the field
@@ -830,7 +913,7 @@ class Instruction < DatabaseObject
       else
         @decode_variables = []
         decode_vars&.each do |var|
-          @decode_variables << DecodeVariable.new(var)
+          @decode_variables << DecodeVariable.new(var["name"], var)
         end
       end
     end
@@ -844,11 +927,11 @@ class Instruction < DatabaseObject
   def load_encoding
     @encodings = {}
     if has_type?
-      if @data.key("base")
-        @encodings[@data["base"]] = subtype(@data["base"]).make_encoding(self, @data["base"])
+      if @data.key?("base")
+        @encodings[@data["base"]] = Encoding.new(encoding_format(@data["base"]), subtype(@data["base"]).variables)
       else
-        @encodings[32] = subtype(32).make_encoding(self, 32)
-        @encodings[64] = subtype(64).make_encoding(self, 64)
+        @encodings[32] = Encoding.new(encoding_format(32), subtype(32).variables)
+        @encodings[64] = Encoding.new(encoding_format(64), subtype(64).variables)
       end
     else
       if @data["encoding"].key?("RV32")
