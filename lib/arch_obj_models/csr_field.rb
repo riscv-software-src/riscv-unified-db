@@ -8,7 +8,7 @@ require_relative "../idl/passes/gen_option_adoc"
 require_relative "certifiable_obj"
 
 # A CSR field object
-class CsrField < DatabaseObject
+class CsrField
   extend T::Sig
   # Add all methods in this module to this type of database object.
   include CertifiableObject
@@ -30,14 +30,27 @@ class CsrField < DatabaseObject
     @data["base"]
   end
 
+  sig { returns(String) }
+  attr_reader :name
+
+  sig { returns(T::Hash[String, T.untyped]) }
+  attr_reader :data
+
+  sig { returns(ConfiguredArchitecture) }
+  attr_reader :cfg_arch
+
   # @param parent_csr [Csr] The Csr that defined this field
   # @param field_data [Hash<String,Object>] Field data from the arch spec
   sig { params(parent_csr: Csr, field_name: String, field_data: T::Hash[String, T.untyped]).void }
   def initialize(parent_csr, field_name, field_data)
-    field_data["name"] = field_name
-    field_data["long_name"] = parent_csr.long_name + " #{field_name} field"
-    field_data["kind"] = "csr_field"
-    super(field_data, parent_csr.data_path, parent_csr.arch)
+    @name = field_name
+    @data = field_data
+    @data_path = parent_csr.data_path
+    @cfg_arch = parent_csr.cfg_arch
+    # field_data["name"] = field_name
+    # field_data["long_name"] = parent_csr.long_name + " #{field_name} field"
+    # field_data["kind"] = "csr_field"
+    # super(field_data, parent_csr.data_path, parent_csr.arch)
     @parent = parent_csr
   end
 
@@ -398,7 +411,7 @@ class CsrField < DatabaseObject
   # @return [Integer] The reset value of this field
   # @return [String]  The string 'UNDEFINED_LEGAL' if, for this config, there is no defined reset value
   def reset_value
-    defer :reset_value do
+    @reset_value ||=
       if @data.key?("reset_value")
         @data["reset_value"]
       else
@@ -415,7 +428,6 @@ class CsrField < DatabaseObject
         symtab.release
         val
       end
-    end
   end
 
   sig { returns(T::Boolean) }
