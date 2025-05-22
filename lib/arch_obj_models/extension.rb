@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# typed: false
 
 require_relative "database_obj"
 require_relative "certifiable_obj"

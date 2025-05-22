@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# typed: false
 
 # Classes for Portfolios which form a common base class for profiles and certificates.
 # A "Portfolio" is a named & versioned grouping of extensions (each with a name and version).
