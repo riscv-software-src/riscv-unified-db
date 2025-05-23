@@ -401,7 +401,8 @@
         },
         "assembly": {
           "type": "string",
-          "description": "Assembly format of the instruction. Can use decode variables"
+          "description": "Assembly format of the instruction. Can use decode variables",
+          "pattern": "^$|^\\(?[a-zA-Z][a-zA-Z0-9_]*\\)?(?:, (imm\\(|\\()?[a-zA-Z][a-zA-Z0-9_]*\\)?)*$"
         },
         "data_independent_timing": {
           "type": "boolean",
