@@ -401,7 +401,17 @@ module Idl
 
     # @!macro to_idl
     # @abstract
-    def to_idl = raise NotImplementedError, "#{self.class.name} must implement to_idl"
+    def to_idl(indent = 0)
+      # Example implementation — adjust based on actual node structure
+      result = ""
+
+      # Assuming `children` returns subnodes:
+      children.each do |child|
+        result += child.pretty_idl(indent + 1)
+      end
+
+      result
+    end
     def pretty_idl(indent = 0)
       ('  ' * indent) + to_idl + "\n"
     end
@@ -735,10 +745,6 @@ module Idl
     # @1macro to_idl
     def to_idl
       var_decl_with_init.to_idl
-    end
-    def pretty_idl(indent = 0)
-      indent_str = '  ' * indent
-      "#{indent_str}#{type} #{name};\n"
     end
 
   end
@@ -1189,12 +1195,16 @@ module Idl
     def pretty_idl(indent = 0)
       indent_str = '  ' * indent
       result = "#{indent_str}enum #{name} {\n"
-      elements.each do |element|
-        result += element.pretty_idl(indent + 1)
+
+      element_names.each_with_index do |ename, idx|
+        val = element_values[idx]
+        result += "#{indent_str}  #{ename} = #{val},\n"
       end
+
       result += "#{indent_str}}\n"
       result
     end
+
 
 
   end
@@ -1345,8 +1355,11 @@ module Idl
     end
     def pretty_idl(indent = 0)
       indent_str = '  ' * indent
-      "#{indent_str}#{type} #{name};\n"
+      type_str = @type.respond_to?(:to_idl) ? @type.to_idl : @type.to_s
+      name_str = @name.respond_to?(:to_idl) ? @name.to_idl : @name.to_s
+      "#{indent_str}#{type_str} #{name_str};\n"
     end
+
 
   end
 
@@ -1390,6 +1403,9 @@ module Idl
       @name = name
       @size = size
       @fields = fields
+    end
+    def fields
+      @fields
     end
 
     # @!macro freeze_tree
@@ -1476,12 +1492,13 @@ module Idl
     def pretty_idl(indent = 0)
       indent_str = '  ' * indent
       result = "#{indent_str}bitfield #{name} {\n"
-      fields.each do |field|
+      @fields.each do |field|
         result += field.pretty_idl(indent + 1)
       end
       result += "#{indent_str}}\n"
       result
     end
+
 
   end
 
@@ -1576,8 +1593,8 @@ module Idl
     def pretty_idl(indent = 0)
       indent_str = '  ' * indent
       result = "#{indent_str}struct #{name} {\n"
-      fields.each do |field|
-        result += field.pretty_idl(indent + 1)
+      num_members.times do |i|
+        result += "#{indent_str}  #{member_types[i].to_idl} #{member_names[i]};\n"
       end
       result += "#{indent_str}}\n"
       result
@@ -2547,10 +2564,8 @@ module Idl
         "#{type_name.to_idl} #{id.to_idl}[#{ary_size.to_idl}]"
       end
     end
-    def pretty_idl(indent = 0)
-      indent_str = '  ' * indent
-      "#{indent_str}#{type} #{name};\n"
-    end
+
+
 
   end
 
@@ -4406,10 +4421,7 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "#{action.to_idl};"
-    def pretty_idl(indent = 0)
-      indent_str = '  ' * indent
-      "#{indent_str}#{type} #{name};\n"
-    end
+
 
   end
 
@@ -4628,10 +4640,7 @@ module Idl
     end
 
     def to_idl = "#{return_expression.to_idl};"
-    def pretty_idl(indent = 0)
-      indent_str = '  ' * indent
-      "#{indent_str}#{type} #{name};\n"
-    end
+
 
   end
 
@@ -4827,7 +4836,7 @@ module Idl
     def to_idl = "#{return_expression.to_idl} if (#{condition.to_idl});"
     def pretty_idl(indent = 0)
       indent_str = '  ' * indent
-      result = "#{indent_str}if #{condition.to_idl} return #{expression.to_idl};\n"
+      result = "#{indent_str}if (#{condition.to_idl}) return #{return_expression.to_idl};\n"
       result
     end
 
@@ -4966,10 +4975,7 @@ module Idl
         @type_name
       end
     end
-    def pretty_idl(indent = 0)
-      indent_str = '  ' * indent
-      "#{indent_str}#{type} #{name};\n"
-    end
+
 
   end
 
@@ -5540,10 +5546,7 @@ module Idl
 
     # @!macro to_idl
     def to_idl = text_value
-    def pretty_idl(indent = 0)
-      indent_str = '  ' * indent
-      "#{indent_str}#{type} #{name};\n"
-    end
+
 
 
 
@@ -6160,12 +6163,13 @@ module Idl
     def pretty_idl(indent = 0)
       indent_str = '  ' * indent
       result = "#{indent_str}for (#{init.to_idl}; #{condition.to_idl}; #{update.to_idl}) {\n"
-      body.each do |stmt|
+      stmts.each do |stmt|
         result += stmt.pretty_idl(indent + 1)
       end
       result += "#{indent_str}}\n"
       result
     end
+
 
   end
 
@@ -6182,6 +6186,10 @@ module Idl
         super(input, interval, body_stmts)
       end
     end
+    def each(&block)
+      @children.each(&block)
+    end
+
 
     # @!macro type_check
     def type_check(symtab)
@@ -6339,13 +6347,14 @@ module Idl
     end
     def pretty_idl(indent = 0)
       indent_str = '  ' * indent
-      result = "#{indent_str}else if #{condition.to_idl} {\n"
-      body.each do |stmt|
+      result = "#{indent_str}else if #{cond.to_idl} {\n"
+      body.children.each do |stmt|  # or just body.each if you define it
         result += stmt.pretty_idl(indent + 1)
       end
       result += "#{indent_str}}\n"
       result
     end
+
 
   end
 
@@ -6619,15 +6628,19 @@ module Idl
     end
     def pretty_idl(indent = 0)
       indent_str = '  ' * indent
-      result = "#{indent_str}if #{condition.to_idl} {\n"
-      then_body.each do |stmt|
+      result = "#{indent_str}if (#{if_cond.to_idl}) {\n"
+      if_body.stmts.each do |stmt|
         result += stmt.pretty_idl(indent + 1)
       end
       result += "#{indent_str}}"
 
-      if else_body
+      elseifs.each do |eif|
+        result += "\n" + eif.pretty_idl(indent)
+      end
+
+      unless final_else_body.stmts.empty?
         result += " else {\n"
-        else_body.each do |stmt|
+        final_else_body.stmts.each do |stmt|
           result += stmt.pretty_idl(indent + 1)
         end
         result += "#{indent_str}}"
@@ -6636,6 +6649,7 @@ module Idl
       result += "\n"
       result
     end
+
 
   end
 
