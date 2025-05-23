@@ -15,7 +15,7 @@ definedBy:
         - C
         - F
     - Zcf
-assembly: fd, imm(sp)
+assembly: fd, imm
 base: 32
 encoding:
   match: 011-----------10
