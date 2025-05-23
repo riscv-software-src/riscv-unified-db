@@ -12,10 +12,14 @@ versions:
     state: ratified
     ratification_date: null
 params:
-  MPRVEN_IMPLEMENTED:
-    description: |
-      Whether or not the `MPRVEN` field is implemented.
-      Implementation of `CSR[dcsr].MPRVEN` is optional.
-      It may be tied to either 0 or 1.
+  DCSR_MPRVEN_TYPE:
     schema:
-      type: boolean
+      enum: [tied-to-0, tied-to-1, rw]
+    description: |
+      Implementation of dcsr.MPRVEN is optional.
+      It may be tied to either 0 or 1.
+
+      Behavior of the dcsr.MPRVEN bit:
+        * 'tied-to-0': tied to 0
+        * 'tied-to-1': tied to 1
+        * 'rw': read-write

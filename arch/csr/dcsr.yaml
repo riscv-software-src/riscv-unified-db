@@ -195,10 +195,6 @@ fields:
       1 (enabled):: mprv in mstatus takes effect in Debug Mode.
       Implementing this bit is optional. It may be tied to either 0 or 1.
     reset_value: UNDEFINED_LEGAL
-    sw_write(csr_value): |
-      if (!MPRVEN_IMPLEMENTED) {
-        unimplemented_csr($encoding);
-      }
   NMIP:
     location: 3
     type: RO
