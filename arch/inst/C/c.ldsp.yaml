@@ -15,7 +15,7 @@ definedBy:
   anyOf:
     - C
     - Zca
-assembly: xd, imm(sp)
+assembly: xd, imm
 encoding:
   RV32:
     match: 011-----------10
@@ -47,9 +47,9 @@ operation(): |
   XReg virtual_address = X[2] + imm;
   Bits<64> value = read_memory<64>(virtual_address, $encoding);
 
-  if (MXLEN == 64) {
-    X[xd] = value;
-  } else if (MXLEN == 32) {
-    X[xd]     = value[31:0];
-    X[xd + 1] = value[63:32];
+  if (xlen()== 64) {
+    X[creg2reg(xd)] = value;
+  } else if (xlen() == 32) {
+    X[creg2reg(xd)]     = value[31:0];
+    X[creg2reg(xd) + 1] = value[63:32];
   }
