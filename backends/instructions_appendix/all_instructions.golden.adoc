@@ -9247,12 +9247,12 @@ Included in::
 == fld
 
 Synopsis::
-No synopsis available
+Load Double-precision Floating-Point
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "rd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": "imm","type":4}]}
+{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": "imm","type":4}]}
 ....
 
 Description::
@@ -9264,8 +9264,8 @@ Decode Variables::
 |===
 |Variable Name |Location
 |imm |$encoding[31:20]
-|rs1 |$encoding[19:15]
-|rd |$encoding[11:7]
+|xs1 |$encoding[19:15]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -9578,11 +9578,11 @@ Half-precision floating-point load
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": "imm","type":4}]}
+{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": "imm","type":4}]}
 ....
 
 Description::
-The xref:insts:flh.adoc#udb:doc:inst:flh[flh] instruction loads a single-precision floating-point value from memory at address _rs1_ + _imm_ into floating-point register _rd_.
+The xref:insts:flh.adoc#udb:doc:inst:flh[flh] instruction loads a single-precision floating-point value from memory at address _xs1_ + _imm_ into floating-point register _rd_.
 
 xref:insts:flh.adoc#udb:doc:inst:flh[flh] does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
@@ -9594,7 +9594,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |imm |$encoding[31:20]
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |fd |$encoding[11:7]
 |===
 
@@ -9763,7 +9763,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": "imm","type":4}]}
+{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": "imm","type":4}]}
 ....
 
 Description::
@@ -9775,7 +9775,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |imm |$encoding[31:20]
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |qd |$encoding[11:7]
 |===
 
@@ -10087,11 +10087,11 @@ Single-precision floating-point load
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": "imm","type":4}]}
+{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": "imm","type":4}]}
 ....
 
 Description::
-The xref:insts:flw.adoc#udb:doc:inst:flw[flw] instruction loads a single-precision floating-point value from memory at address _rs1_ + _imm_ into floating-point register _fd_.
+The xref:insts:flw.adoc#udb:doc:inst:flw[flw] instruction loads a single-precision floating-point value from memory at address _xs1_ + _imm_ into floating-point register _fd_.
 
 xref:insts:flw.adoc#udb:doc:inst:flw[flw] does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
@@ -10101,7 +10101,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |imm |$encoding[31:20]
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |fd |$encoding[11:7]
 |===
 
@@ -12096,7 +12096,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":5,"name": "rs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
+{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
 ....
 
 Description::
@@ -12108,8 +12108,8 @@ Decode Variables::
 |===
 |Variable Name |Location
 |imm |{$encoding[31:25], $encoding[11:7]}
-|rs2 |$encoding[24:20]
-|rs1 |$encoding[19:15]
+|fs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
 |===
 
 Included in::
@@ -12603,7 +12603,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
+{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
 ....
 
 Description::
@@ -12616,7 +12616,7 @@ Decode Variables::
 |Variable Name |Location
 |imm |{$encoding[31:25], $encoding[11:7]}
 |qs2 |$encoding[24:20]
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |===
 
 Included in::
@@ -12923,11 +12923,11 @@ Single-precision floating-point store
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
+{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
 ....
 
 Description::
-The xref:insts:fsw.adoc#udb:doc:inst:fsw[fsw] instruction stores a single-precision floating-point value in _fs2_ to memory at address _rs1_ + _imm_.
+The xref:insts:fsw.adoc#udb:doc:inst:fsw[fsw] instruction stores a single-precision floating-point value in _fs2_ to memory at address _xs1_ + _imm_.
 
 xref:insts:fsw.adoc#udb:doc:inst:fsw[fsw] does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
@@ -12938,7 +12938,7 @@ Decode Variables::
 |Variable Name |Location
 |imm |{$encoding[31:25], $encoding[11:7]}
 |fs2 |$encoding[24:20]
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |===
 
 Included in::
