@@ -5,20 +5,20 @@ kind: instruction
 name: c.add
 long_name: Add
 description: |
-  Add the value in rs2 to rd, and store the result in rd.
-  C.ADD expands into `add rd, rd, rs2`.
+  Add the value in xs2 to xd, and store the result in xd.
+  C.ADD expands into `add xd, xd, xs2`.
 definedBy:
   anyOf:
     - C
     - Zca
-assembly: xd, rs2
+assembly: xd, xs2
 encoding:
   match: 1001----------10
   variables:
-    - name: rs2
+    - name: xs2
       location: 6-2
       not: 0
-    - name: rd
+    - name: xd
       location: 11-7
       not: 0
 access:
@@ -27,9 +27,9 @@ access:
   vs: always
   vu: always
 operation(): |
-  XReg t0 = X[rd];
-  XReg t1 = X[rs2];
-  X[rd] = t0 + t1;
+  XReg t0 = X[xd];
+  XReg t1 = X[xs2];
+  X[xd] = t0 + t1;
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
