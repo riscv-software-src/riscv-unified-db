@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# typed: false
 
 # Classes for Portfolios which form a common base class for profiles and certificates.
 # A "Portfolio" is a named & versioned grouping of extensions (each with a name and version).
@@ -22,7 +23,7 @@ require_relative "schema"
 
 # Holds information from Portfolio class YAML file (processor certificate class or profile class).
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
-class PortfolioClass < DatabaseObject
+class PortfolioClass < TopLevelDatabaseObject
   # @return [String] What kind of processor portfolio is this?
   def processor_kind = @data["processor_kind"]
 
@@ -345,10 +346,11 @@ end
 
 # Holds information about a Portfolio (certificate or profile).
 # The inherited "data" member is YAML data from the architecture for this portfolio object.
-class Portfolio < DatabaseObject
+class Portfolio < TopLevelDatabaseObject
   # @param obj_yaml [Hash<String, Object>] Contains contents of Portfolio yaml file (put in @data)
   # @param data_path [String] Path to yaml file
   # @param arch [Architecture] Entire database of RISC-V architecture standards
+  sig { params(obj_yaml: T::Hash[String, Object], yaml_path: T.any(String, Pathname), arch: ConfiguredArchitecture).void }
   def initialize(obj_yaml, yaml_path, arch)
     super # Calls parent class with same args I got
   end
@@ -637,7 +639,7 @@ class Portfolio < DatabaseObject
 
     @in_scope_exception_codes =
       in_scope_min_satisfying_extension_versions.reduce([]) do |list, ext_version|
-        ecodes = ext_version.ext["exception_codes"]
+        ecodes = ext_version.ext.data["exception_codes"]
         next list if ecodes.nil?
 
         ecodes.each do |ecode|
