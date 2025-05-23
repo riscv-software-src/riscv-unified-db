@@ -5234,7 +5234,7 @@ Cache Block Clean
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":15,"name": 0x200f,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": 0x1,"type":2}]}
+{"reg":[{"bits":15,"name": 0x200f,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": 0x1,"type":2}]}
 ....
 
 Description::
@@ -5273,7 +5273,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |===
 
 Included in::
@@ -5295,7 +5295,7 @@ Cache Block Flush
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":15,"name": 0x200f,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": 0x2,"type":2}]}
+{"reg":[{"bits":15,"name": 0x200f,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": 0x2,"type":2}]}
 ....
 
 Description::
@@ -5328,7 +5328,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |===
 
 Included in::
@@ -5350,7 +5350,7 @@ Cache Block Invalidate
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":15,"name": 0x200f,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": 0x0,"type":2}]}
+{"reg":[{"bits":15,"name": 0x200f,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": 0x0,"type":2}]}
 ....
 
 Description::
@@ -5422,7 +5422,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |===
 
 Included in::
@@ -5444,7 +5444,7 @@ Cache Block Zero
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":15,"name": 0x200f,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": 0x4,"type":2}]}
+{"reg":[{"bits":15,"name": 0x200f,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": 0x4,"type":2}]}
 ....
 
 Description::
@@ -5479,7 +5479,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |===
 
 Included in::
