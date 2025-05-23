@@ -2,6 +2,8 @@
 
 require "treetop"
 
+$root ||= Pathname.new(File.expand_path("..", __dir__))
+
 module Treetop
   module Runtime
     # open up Treetop::Runtime::CompiledParser and add a few utility functions
