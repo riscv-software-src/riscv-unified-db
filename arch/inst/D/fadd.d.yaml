@@ -3,9 +3,13 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fadd.d
-long_name: No synopsis available
+long_name: Double-Precision Floating-Point Addition
 description: |
-  No description available.
+  -id: inst-fadd.d-behaviour
+  -normative: false
+  -text: |
+    `fadd.d` is analogous to `fadd.s` and performs double-precision floating-point addition between
+    `rs1` and `rs2` and writes the final result to `rd`.
 definedBy: D
 assembly: xd, xs1, xs2, rm
 encoding:
