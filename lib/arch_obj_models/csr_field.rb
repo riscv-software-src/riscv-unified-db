@@ -8,10 +8,8 @@ require_relative "../idl/passes/gen_option_adoc"
 require_relative "certifiable_obj"
 
 # A CSR field object
-class CsrField
+class CsrField < DatabaseObject
   extend T::Sig
-
-  include DatabaseMethods
 
   # Add all methods in this module to this type of database object.
   include CertifiableObject
@@ -29,43 +27,13 @@ class CsrField
   # @return [Integer] The base XLEN required for this CsrField to exist. One of [32, 64]
   # @return [nil] if the CsrField exists in any XLEN
   sig { returns(T.nilable(Integer)) }
-  def base
-    @data["base"]
-  end
-
-  sig { returns(String) }
-  attr_reader :name
-
-  sig { returns(T::Hash[String, T.untyped]) }
-  attr_reader :data
-
-  sig { returns(ConfiguredArchitecture) }
-  attr_reader :cfg_arch
-
-  sig { returns(ExtensionRequirementExpression) }
-  def defined_by_condition
-    @defined_by_condition ||=
-      begin
-        raise "ERROR: definedBy is nul for #{name}" if @data["definedBy"].nil?
-
-        ExtensionRequirementExpression.new(@data["definedBy"], @cfg_arch)
-      end
-  end
-
-  def key?(key) = @data.key?(key)
+  def base = @data["base"]
 
   # @param parent_csr [Csr] The Csr that defined this field
   # @param field_data [Hash<String,Object>] Field data from the arch spec
   sig { params(parent_csr: Csr, field_name: String, field_data: T::Hash[String, T.untyped]).void }
   def initialize(parent_csr, field_name, field_data)
-    @name = field_name
-    @data = field_data
-    @data_path = parent_csr.data_path
-    @cfg_arch = parent_csr.cfg_arch
-    # field_data["name"] = field_name
-    # field_data["long_name"] = parent_csr.long_name + " #{field_name} field"
-    # field_data["kind"] = "csr_field"
-    # super(field_data, parent_csr.data_path, parent_csr.arch)
+    super(field_data, parent_csr.data_path, parent_csr.arch, DatabaseObject::Kind::CsrField, name: field_name)
     @parent = parent_csr
   end
 

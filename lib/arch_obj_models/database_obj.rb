@@ -3,36 +3,138 @@
 
 require "sorbet-runtime"
 
-# Base class for any object representation of the Architecture.
-# does two things:
-#
-#  1. Makes the raw data for the object accessible via []
-#     For example, given:
-#        data = {
-#          'name' => 'mstatus',
-#          'address' => 0x320,
-#          ...
-#        }
-#
-#     obj = DatabaseObject.new(data)
-#     obj['name']    # 'mstatus'
-#     obj['address'] # 0x320
-#
-#  2. Provides accessor methods for the data properties
-#     Given the same example above, the following works:
-#
-#     obj.name       # 'mstatus'
-#     obj.address    # 0x320
-#
-# Subclasses may override the accessors when a more complex data structure
-# is warranted, e.g., the CSR Field 'alias' returns a CsrFieldAlias object
-# instead of a simple string
-
 require_relative "doc_link"
 
-# a bunch of useful methods for both proper DatabaseObject and sub-objects like CsrField
-module DatabaseMethods
+# a bunch of useful methods for both proper top-level DatabaseObject and sub-objects like CsrField
+class DatabaseObject
   extend T::Sig
+
+  # valid kinds. When this is a TopLevelDatabaseObejct, the lowercase name corresponds to the
+  # kind: field in the schema
+  class Kind < T::Enum
+    enums do
+      Instruction = new("instruction")
+      Csr = new("csr")
+      CsrField = new("csr_field")
+      Extension = new("extension")
+      Manual = new("manual")
+      ManualVersion = new("manual_version")
+      ProcessorCertificateClass = new("processor certificate class")
+      ProcessorCertificateModel = new("processor certificate model")
+      Profile = new("profile")
+      ProflieClass = new("profile class")
+      ProfileRelease = new("profile release")
+    end
+  end
+
+  sig { returns(T::Hash[String, T.untyped]) }
+  attr_reader :data
+
+  sig { returns(Pathname) }
+  attr_reader :data_path
+
+  sig { returns(String) }
+  attr_reader :name
+
+  sig { returns(String) }
+  attr_reader :long_name
+
+  sig { returns(String) }
+  def kind = @kind.to_s
+
+  # @return [Architecture] If only a specification (no config) is known
+  # @return [ConfiguredArchitecture] If a specification and config is known
+  # @return [nil] If neither is known
+  sig { returns(Architecture) }
+  attr_reader :arch       # Use when Architecture class is sufficient
+
+  # @return [ConfiguredArchitecture] If a specification and config is known
+  # @return [nil] Otherwise
+  sig { returns(ConfiguredArchitecture) }
+  def cfg_arch
+    raise "no cfg_arch" if @cfg_arch.nil?
+
+    @cfg_arch
+  end
+
+  sig { returns(T::Boolean) }
+  def cfg_arch? = !@cfg_arch.nil?
+
+  # @param data [Hash<String,Object>] Hash with fields to be added
+  # @param data_path [Pathname] Path to the data file
+  sig {
+    params(
+      data: T::Hash[String, T.untyped],
+      data_path: T.any(String, Pathname),
+      arch: Architecture,
+      kind: Kind,
+      name: T.nilable(String)
+    ).void
+  }
+  def initialize(data, data_path, arch, kind, name: nil)
+    @data = data
+    @data_path = Pathname.new(data_path)
+    if arch.is_a?(ConfiguredArchitecture)
+      @cfg_arch = arch
+    end
+    @arch = arch
+    raise "name must be given" if name.nil? && data["name"].nil?
+    raise "do not provide name when it exists in data" if !name.nil? && !data["name"].nil?
+
+    @name = name || data["name"]
+    @long_name = data["long_name"]
+    @kind = kind
+
+    @sem = Concurrent::Semaphore.new(1)
+    @cache = Concurrent::Hash.new
+  end
+
+  # clone this, and set the arch at the same time
+  # @return [DatabaseObject] The new object
+  sig { params(arch: T.nilable(Architecture)).returns(DatabaseObject) }
+  def clone(arch: nil)
+    obj = super()
+    obj.instance_variable_set(:@arch, arch)
+    obj
+  end
+
+  sig { params(other: DatabaseObject).returns(T.nilable(Integer)) }
+  def <=>(other)
+    return nil unless other.is_a?(DatabaseObject)
+
+    name <=> other.name
+  end
+
+  # @return [String] Source file that data for this object can be attributed to
+  # @return [nil] if the source isn't known
+  sig { returns(T.nilable(String)) }
+  def __source
+    @data["$source"]
+  end
+
+  def inspect
+    "#{self.class.name}##{name}"
+  end
+
+  # defer the calculation of 'blk' until later, then memoize the result
+  sig { params(fn_name: Symbol, _block: T.proc.void).returns(T.untyped) }
+  def defer(fn_name, &_block)
+    cache_value = @cache[fn_name]
+    return cache_value unless cache_value.nil?
+
+    @cache[fn_name] ||= yield
+  end
+
+  # @return [ExtensionRequirementExpression] Extension(s) that define the instruction. If *any* requirement is met, the instruction is defined.
+  sig { returns(ExtensionRequirementExpression) }
+  def defined_by_condition
+    @defined_by_condition ||=
+      begin
+        raise "ERROR: definedBy is nul for #{name}" if @data["definedBy"].nil?
+
+        ExtensionRequirementExpression.new(@data["definedBy"], @cfg_arch)
+      end
+  end
 
   # @param normative [Boolean] Include normative text?
   # @param non_normative [Boolean] Include non-normative text?
@@ -109,7 +211,7 @@ module DatabaseMethods
     end
   end
 
-    # @return [Integer] THe source line number of +path+ in the YAML file
+  # @return [Integer] THe source line number of +path+ in the YAML file
   # @param path [Array<String>] Path to the scalar you want.
   # @example
   #   00: yaml = <<~YAML
@@ -181,10 +283,14 @@ module DatabaseMethods
   end
 end
 
-class DatabaseObject
+# base class for any object defined in its own YAML file
+#
+# expected to contain at least:
+#   $schema:
+#   kind:
+#   name:
+class TopLevelDatabaseObject < DatabaseObject
   extend T::Sig
-
-  include DatabaseMethods
 
   # Exception raised when there is a problem with a schema file
   class SchemaError < ::StandardError
@@ -255,39 +361,6 @@ class DatabaseObject
   class ValidationError < ::StandardError
   end
 
-  sig { returns(T::Hash[String, T.untyped]) }
-  attr_reader :data
-
-  sig { returns(Pathname) }
-  attr_reader :data_path
-
-  sig { returns(String) }
-  attr_reader :name
-
-  sig { returns(String) }
-  attr_reader :long_name
-
-  sig { returns(String) }
-  attr_reader :kind
-
-  # @return [Architecture] If only a specification (no config) is known
-  # @return [ConfiguredArchitecture] If a specification and config is known
-  # @return [nil] If neither is known
-  sig { returns(Architecture) }
-  attr_reader :arch       # Use when Architecture class is sufficient
-
-  # @return [ConfiguredArchitecture] If a specification and config is known
-  # @return [nil] Otherwise
-  sig { returns(ConfiguredArchitecture) }
-  def cfg_arch
-    raise "no cfg_arch" if @cfg_arch.nil?
-
-    @cfg_arch
-  end
-
-  sig { returns(T::Boolean) }
-  def cfg_arch? = !@cfg_arch.nil?
-
   @@schemas ||= {}
   @@schema_ref_resolver ||= proc do |pattern|
     if pattern.to_s =~ /^http/
@@ -342,66 +415,12 @@ class DatabaseObject
     end
   end
 
-  # clone this, and set the arch at the same time
-  # @return [DatabaseObject] The new object
-  sig { params(arch: T.nilable(Architecture)).returns(DatabaseObject) }
-  def clone(arch: nil)
-    obj = super()
-    obj.instance_variable_set(:@arch, arch)
-    obj
-  end
-
-  sig { params(other: DatabaseObject).returns(T.nilable(Integer)) }
-  def <=>(other)
-    return nil unless other.is_a?(DatabaseObject)
-
-    name <=> other.name
-  end
-
-  # @return [String] Source file that data for this object can be attributed to
-  # @return [nil] if the source isn't known
-  sig { returns(T.nilable(String)) }
-  def __source
-    @data["$source"]
-  end
-
-  # The raw content of definedBy in the data.
-  # @note Generally, you should prefer to use {#defined_by_condition}, etc. from Ruby
-  #
-  # @return [String] An extension name
-  # @return [Hash<String, Object>] A requirements entry
-  sig { returns(T.any(String, T::Hash[String, Object])) }
-  def definedBy
-    @data["definedBy"]
-  end
-
-
-
   # @param data [Hash<String,Object>] Hash with fields to be added
   # @param data_path [Pathname] Path to the data file
   sig { params(data: T::Hash[String, T.untyped], data_path: T.any(String, Pathname), arch: Architecture).void }
   def initialize(data, data_path, arch)
-    @data = data
-    @data_path = Pathname.new(data_path)
-    if arch.is_a?(ConfiguredArchitecture)
-      @cfg_arch = arch
-    end
-    @arch = T.must_because(arch) { pp data }
-    @name = T.must_because(data["name"]) { pp data }
-    @long_name = T.must_because(data["long_name"]) { pp data }
-    @kind = T.must_because(data["kind"]) { pp data }
-
-    @sem = Concurrent::Semaphore.new(1)
-    @cache = Concurrent::Hash.new
+    super(data, data_path, arch, DatabaseObject::Kind.serialize(T.must_because(data["kind"]) { pp data }))
   end
-
-  def inspect
-    "#{self.class.name}##{name}"
-  end
-
-  # make the underlying YAML description available with []
-  extend Forwardable
-  def_delegator :@data, :[]
 
   # @return [Array<String>] List of keys added by this DatabaseObject
   sig { returns(T::Array[String]) }
@@ -412,25 +431,6 @@ class DatabaseObject
   sig { params(k: String).returns(T::Boolean) }
   def key?(k) = @data.key?(k)
 
-  # defer the calculation of 'blk' until later, then memoize the result
-  sig { params(fn_name: Symbol, block: T.proc.void).returns(T.untyped) }
-  def defer(fn_name, &block)
-    cache_value = @cache[fn_name]
-    return cache_value unless cache_value.nil?
-
-    @cache[fn_name] ||= yield
-  end
-
-  # @return [ExtensionRequirementExpression] Extension(s) that define the instruction. If *any* requirement is met, the instruction is defined.
-  sig { returns(ExtensionRequirementExpression) }
-  def defined_by_condition
-    @defined_by_condition ||=
-      begin
-        raise "ERROR: definedBy is nul for #{name}" if @data["definedBy"].nil?
-
-        ExtensionRequirementExpression.new(@data["definedBy"], @cfg_arch)
-      end
-  end
 
   # @return [ExtensionRequirement] Name of an extension that "primarily" defines the object (i.e., is the first in a list)
   sig { returns(ExtensionRequirement) }

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# typed: false
 
 # The Architecture class is the API to the architecture database.
 # The "database" contains RISC-V standards including extensions, instructions,
@@ -40,6 +41,7 @@ require "concurrent"
 require "json"
 require "json_schemer"
 require "pathname"
+require "sorbet-runtime"
 require "yaml"
 
 require_relative "idl"
@@ -55,6 +57,8 @@ require_relative "arch_obj_models/portfolio"
 require_relative "arch_obj_models/profile"
 
 class Architecture
+  extend T::Sig
+
   # @return [Pathname] Path to the directory with the standard YAML files
   attr_reader :path
 
@@ -190,6 +194,7 @@ class Architecture
   end
 
   # @return [Array<DatabaseObject>] All known objects
+  sig { returns(T::Array[TopLevelDatabaseObject]) }
   def objs
     return @objs unless @objs.nil?
 
@@ -314,6 +319,7 @@ class Architecture
   #
   # @params uri [String] JSON Reference pointer
   # @return [Object] The pointed-to object
+  sig { params(uri: String).returns(TopLevelDatabaseObject) }
   def ref(uri)
     raise ArgumentError, "JSON Reference (#{uri}) must contain one '#'" unless uri.count("#") == 1
 

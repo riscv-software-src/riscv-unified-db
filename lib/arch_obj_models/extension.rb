@@ -10,7 +10,7 @@ require_relative "../presence"
 require_relative "../version"
 
 # Extension definition
-class Extension < DatabaseObject
+class Extension < TopLevelDatabaseObject
   # Add all methods in this module to this type of database object.
   include CertifiableObject
 

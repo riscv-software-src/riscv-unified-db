@@ -23,7 +23,7 @@ require_relative "schema"
 
 # Holds information from Portfolio class YAML file (processor certificate class or profile class).
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
-class PortfolioClass < DatabaseObject
+class PortfolioClass < TopLevelDatabaseObject
   # @return [String] What kind of processor portfolio is this?
   def processor_kind = @data["processor_kind"]
 
@@ -346,7 +346,7 @@ end
 
 # Holds information about a Portfolio (certificate or profile).
 # The inherited "data" member is YAML data from the architecture for this portfolio object.
-class Portfolio < DatabaseObject
+class Portfolio < TopLevelDatabaseObject
   # @param obj_yaml [Hash<String, Object>] Contains contents of Portfolio yaml file (put in @data)
   # @param data_path [String] Path to yaml file
   # @param arch [Architecture] Entire database of RISC-V architecture standards
