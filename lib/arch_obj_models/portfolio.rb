@@ -639,7 +639,7 @@ class Portfolio < TopLevelDatabaseObject
 
     @in_scope_exception_codes =
       in_scope_min_satisfying_extension_versions.reduce([]) do |list, ext_version|
-        ecodes = ext_version.ext["exception_codes"]
+        ecodes = ext_version.ext.data["exception_codes"]
         next list if ecodes.nil?
 
         ecodes.each do |ecode|
