@@ -15,7 +15,7 @@ definedBy:
     - Zca
     - Zclsd
 base: 64
-assembly: xs2, imm(sp)
+assembly: xs2, imm
 encoding:
   RV32:
     match: 111-----------10
