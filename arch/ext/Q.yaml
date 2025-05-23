@@ -18,3 +18,9 @@ versions:
     state: ratified
     ratification_date: null
     requires: D
+params:
+  MUTABLE_MISA_Q:
+    description: |
+      Indicates whether or not the `Q` extension can be disabled with the `misa.Q` bit.
+    schema:
+      type: boolean

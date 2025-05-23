@@ -5,7 +5,7 @@ kind: instruction
 name: andn
 long_name: AND with inverted operand
 description: |
-  This instruction performs the bitwise logical AND operation between `rs1` and the
+  Performs the bitwise logical AND operation between `rs1` and the
   bitwise inversion of `rs2`.
 definedBy:
   anyOf: [Zbb, Zbkb]

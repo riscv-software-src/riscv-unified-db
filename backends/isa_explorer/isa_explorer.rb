@@ -39,9 +39,9 @@ def arch2ext_table(arch)
       },
       {name: "Description", formatter: "textarea", sorter: "alphanum", headerFilter: true},
       {name: "IC", formatter: "textarea", sorter: "alphanum", headerFilter: true},
-      {name: "Extensions\nIncluded\n(subsets)", formatter: "textarea", sorter: "alphanum"},
-      {name: "Implied By\n(and\ntransitives)", formatter: "textarea", sorter: "alphanum"},
-      {name: "Incompatible\n(and\ntransitives)", formatter: "textarea", sorter: "alphanum"},
+      {name: "Implied By", formatter: "textarea", sorter: "alphanum"},
+      {name: "Requires", formatter: "textarea", sorter: "alphanum"},
+      {name: "Incompatible", formatter: "textarea", sorter: "alphanum"},
       {name: "Ratified", formatter: "textarea", sorter: "boolean", headerFilter: true},
       {name: "Ratification\nDate", formatter: "textarea", sorter: "alphanum", headerFilter: true},
       sorted_profile_releases.map do |pr|
@@ -55,14 +55,12 @@ def arch2ext_table(arch)
 
   arch.extensions.sort_by!(&:name).each do |ext|
     row = [
-      ext.name,
-      ext.long_name,
-      ext.compact_priv_type,
-      "UDB Missing",
-      # See https://github.com/riscv-software-src/riscv-unified-db/issues/597 for the next 2 columns.
-      ext.max_version.implied_by.map(&:name),
-      # ext.max_version.transitive_conflicts.map(&:name),
-      "UDB MISSING",
+      ext.name,           # Name
+      ext.long_name,      # Description
+      ext.compact_priv_type,  # IC
+      ext.max_version.implied_by.map(&:name),  # Implied By
+      ext.max_version.requirement_condition.empty? ? "" : ext.max_version.requirement_condition.to_logic_tree.to_s, # Requires
+      ext.conflicts_condition.empty? ? "" : ext.conflicts_condition.to_logic_tree.to_s, # Incompatible
       ext.ratified,
       if ext.ratified
         if ext.min_ratified_version.ratification_date.nil? || ext.min_ratified_version.ratification_date.empty?
