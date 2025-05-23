@@ -6,7 +6,7 @@ name: add.uw
 long_name: Add unsigned word
 base: 64
 description: |
-  This instruction performs an XLEN-wide addition between rs2 and the
+  Performs an XLEN-wide addition between rs2 and the
   zero-extended least-significant word of rs1.
 definedBy: Zba
 assembly: xd, xs1, xs2

@@ -8,10 +8,11 @@ description: |
   Upper half of the `htimedelta` CSR.
 
 address: 0x615
-writeable: true
+writable: true
 priv_mode: S
 definedBy: H
 length: 32
+base: 32
 fields:
   DELTA:
     location: 31-0

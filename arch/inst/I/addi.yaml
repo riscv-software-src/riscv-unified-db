@@ -4,7 +4,7 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: addi
 long_name: Add immediate
-description: Add an immediate to the value in xs1, and store the result in xd
+description: Adds an immediate value to the value in xs1, and store the result in xd
 definedBy: I
 assembly: xd, xs1, imm
 encoding:
@@ -22,6 +22,11 @@ access:
   vs: always
   vu: always
 data_independent_timing: true
+pseudoinstructions:
+  - when: (xd == 0 && xs1 == 0 && imm == 0)
+    to: nop
+  - when: imm == 0
+    to: mv xd,xs1
 operation(): X[xd] = X[xs1] + $signed(imm);
 
 # SPDX-SnippetBegin

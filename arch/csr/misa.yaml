@@ -5,7 +5,7 @@ kind: csr
 name: misa
 long_name: Machine ISA Control
 address: 0x301
-writeable: true
+writable: true
 priv_mode: M
 length: MXLEN
 description: Reports the XLEN and "major" extensions supported by the ISA.
@@ -169,6 +169,28 @@ fields:
           .. Execute every in-scope multiply extension instruction
           . check
           .. Check that every multiply extension instruction throws illegal instruction exception
+  Q:
+    location: 16
+    description: |
+      Indicates support for the `Q` (quad precision float) extension.
+
+      [when,"MUTABLE_MISA_Q == true"]
+      --
+      Writing 0 to this field will cause all quad-precision floating point instructions to raise an `IllegalInstruction` exception.
+      --
+    type(): |
+      return MUTABLE_MISA_Q ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value: 1
+    definedBy: Q
+    sw_write(csr_value): |
+      if ((csr_value.F == 0 || csr_value.D == 0) && csr_value.Q == 1) {
+        return UNDEFINED_LEGAL_DETERMINISTIC;
+      }
+
+      # fall-through; write the intended value
+      return csr_value.Q;
+    legal?(csr_value): |
+      return !(csr_value.Q == 1 && csr_value.D == 0);
   S:
     location: 18
     description: |

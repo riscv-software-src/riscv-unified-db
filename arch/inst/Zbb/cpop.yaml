@@ -5,7 +5,7 @@ kind: instruction
 name: cpop
 long_name: Count set bits
 description: |
-  This instructions counts the number of 1's (i.e., set bits) in the source register.
+  Counts the number of 1's (i.e., set bits) in the source register.
 
   .Software Hint
   [NOTE]
