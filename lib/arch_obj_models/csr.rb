@@ -408,7 +408,7 @@ class Csr < TopLevelDatabaseObject
   # equivalent to {#fields} if +effective_xlen+ is nil
   sig {params(effective_xlen: T.nilable(Integer)).returns(T::Array[CsrField])}
   def fields_for(effective_xlen)
-    fields.select { |f| effective_xlen.nil? || !f.key?("base") || f.base == effective_xlen }
+    fields.select { |f| effective_xlen.nil? || f.base.nil? || f.base == effective_xlen }
   end
 
   # @return [Hash<String,CsrField>] Hash of fields, indexed by field name

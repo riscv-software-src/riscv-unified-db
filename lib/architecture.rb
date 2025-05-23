@@ -281,7 +281,7 @@ class Architecture
 
     @exception_codes =
       extensions.reduce([]) do |list, ext_version|
-        ecodes = extension(ext_version.name)["exception_codes"]
+        ecodes = extension(ext_version.name).data["exception_codes"]
         next list if ecodes.nil?
 
         ecodes.each do |ecode|
@@ -300,7 +300,7 @@ class Architecture
 
     @interupt_codes =
       extensions.reduce([]) do |list, ext_version|
-        icodes = extension(ext_version.name)["interrupt_codes"]
+        icodes = extension(ext_version.name).data["interrupt_codes"]
         next list if icodes.nil?
 
         icodes.each do |icode|

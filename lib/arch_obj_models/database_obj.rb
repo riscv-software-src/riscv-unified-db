@@ -18,7 +18,7 @@ class DatabaseObject
       CsrField = new("csr_field")
       Extension = new("extension")
       Manual = new("manual")
-      ManualVersion = new("manual_version")
+      ManualVersion = new("manual version")
       ProcessorCertificateClass = new("processor certificate class")
       ProcessorCertificateModel = new("processor certificate model")
       Profile = new("profile")
@@ -419,7 +419,7 @@ class TopLevelDatabaseObject < DatabaseObject
   # @param data_path [Pathname] Path to the data file
   sig { params(data: T::Hash[String, T.untyped], data_path: T.any(String, Pathname), arch: Architecture).void }
   def initialize(data, data_path, arch)
-    super(data, data_path, arch, DatabaseObject::Kind.serialize(T.must_because(data["kind"]) { pp data }))
+    super(data, data_path, arch, DatabaseObject::Kind.deserialize(T.must_because(data["kind"]) { pp data }))
   end
 
   # @return [Array<String>] List of keys added by this DatabaseObject
