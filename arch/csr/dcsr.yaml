@@ -189,12 +189,24 @@ fields:
     reset_value: 0
   MPRVEN:
     location: 4
-    type: RW
     description: |
       0 (disabled):: mprv in mstatus is ignored in Debug Mode.
       1 (enabled):: mprv in mstatus takes effect in Debug Mode.
       Implementing this bit is optional. It may be tied to either 0 or 1.
-    reset_value: UNDEFINED_LEGAL
+    type(): |
+      if (DCSR_MPRVEN_TYPE == "tied-to-0" || DCSR_MPRVEN_TYPE == "tied-to-1") {
+        return CsrFieldType::R0;
+      } else if (DCSR_MPRVEN_TYPE == "rw") {
+        return CsrFieldType::RW;
+      }
+    reset_value(): |
+      if (DCSR_MPRVEN_TYPE == "tied-to-0") {
+        return 0;
+      } else if (DCSR_MPRVEN_TYPE == "tied-to-1") {
+        return 1
+      } else if (DCSR_MPRVEN_TYPE == "rw") {
+        return UNDEFINED_LEGAL;
+      }
   NMIP:
     location: 3
     type: RO
