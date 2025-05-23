@@ -3,9 +3,12 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.h.l
-long_name: No synopsis available
+long_name: Half-Precision Floating-Point 64-bit Signed Integer Conversion Instruction
 description: |
-  No description available.
+  -id: inst-fcvt.h.l-behaviour
+  -normative: false
+  -text: |
+    `fcvt.h.l` converts a 64-bit signed integer to a half-precision floating-point number.
 definedBy: Zfh
 assembly: xd, xs1, frm
 encoding:
