@@ -1,0 +1,65 @@
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zdinx
+long_name: Double-precision floating-point instructions using integer registers
+description:
+  - id: ext-zdinx-instructions
+    normative: true
+    text: |
+      The Zdinx extension adds all of the instructions that the D extension adds, except for the
+      transfer instructions FLD, FSD, FMV.D.X, FMV.X.D, C.FLD[SP], and C.FSD[SP].
+
+  - id: ext-zdinx-semantics
+    normative: true
+    text: |
+      The Zdinx variants of these D-extension instructions have the same semantics, except that whenever
+      such an instruction would have accessed an f register, it instead accesses the x register with the
+      same number.
+
+  - id: ext-zdinx-rv32regpair
+    normative: true
+    text: |
+      Double-precision operands in RV32Zdinx are held in aligned x-register pairs, i.e., register
+      numbers must be even. Use of misaligned (odd-numbered) registers for double-width
+      floating-point operands is reserved.
+    when(): return MXLEN == 32;
+
+  - id: ext-zdinx-rv32endianness
+    normative: true
+    text: |
+      Regardless of endianness, the lower-numbered register holds the low-order bits, and the
+      higher-numbered register holds the high-order bits: e.g., bits 31:0 of a double-precision
+      operand in RV32Zdinx might be held in register x14, with bits 63:32 of that operand held
+      in x15.
+    when(): return MXLEN == 32;
+
+  - id: ext-zdinx-rv32x0
+    normative: true
+    text: |
+      When a double-width floating-point result is written to x0, the entire write takes no effect:
+      e.g., for RV32Zdinx, writing a double-precision result to x0 does not cause x1 to be written.
+    when(): return MXLEN == 32;
+
+  - id: ext-zdinx-rv32x1
+    normative: true
+    text: |
+      When x0 is used as a double-width floating-point operand, the entire operand is zero—i.e.,
+      x1 is not accessed.
+    when(): return MXLEN == 32;
+
+  - id: ext-zdinx-rv32mempair
+    normative: false
+    text: |
+      Load-pair and store-pair instructions are not provided, so transferring double-precision
+      operands in RV32Zdinx from or to memory requires two loads or stores.
+      Register moves need only a single FSGNJ.D instruction, however.
+    when(): return MXLEN == 32;
+
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2021-11
+    requires: Zfinx
