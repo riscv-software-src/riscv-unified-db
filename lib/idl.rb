@@ -182,7 +182,7 @@ module Idl
     # @param input_line [Integer] Starting line in the input file that this source comes from
     # @return [Ast] The root of the abstract syntax tree
     def compile_inst_operation(inst, symtab:, input_file: nil, input_line: 0)
-      operation = inst["operation()"]
+      operation = inst.data["operation()"]
       @parser.set_input_file(input_file, input_line)
 
       m = @parser.parse(operation, root: :instruction_operation)

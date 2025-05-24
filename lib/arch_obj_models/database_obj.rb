@@ -3,103 +3,28 @@
 
 require "sorbet-runtime"
 
-# Base class for any object representation of the Architecture.
-# does two things:
-#
-#  1. Makes the raw data for the object accessible via []
-#     For example, given:
-#        data = {
-#          'name' => 'mstatus',
-#          'address' => 0x320,
-#          ...
-#        }
-#
-#     obj = DatabaseObject.new(data)
-#     obj['name']    # 'mstatus'
-#     obj['address'] # 0x320
-#
-#  2. Provides accessor methods for the data properties
-#     Given the same example above, the following works:
-#
-#     obj.name       # 'mstatus'
-#     obj.address    # 0x320
-#
-# Subclasses may override the accessors when a more complex data structure
-# is warranted, e.g., the CSR Field 'alias' returns a CsrFieldAlias object
-# instead of a simple string
-
 require_relative "doc_link"
 
+# a bunch of useful methods for both proper top-level DatabaseObject and sub-objects like CsrField
 class DatabaseObject
   extend T::Sig
 
-  # Exception raised when there is a problem with a schema file
-  class SchemaError < ::StandardError
-    # result from JsonSchemer.validate
-    attr_reader :result
-
-    def initialize(result)
-      if result.is_a?(Enumerator)
-        super(result.to_a.map { |e| "At #{e['schema_pointer']}: #{e['type']}" })
-      else
-        super(result["error"])
-      end
-      @result = result
+  # valid kinds. When this is a TopLevelDatabaseObejct, the lowercase name corresponds to the
+  # kind: field in the schema
+  class Kind < T::Enum
+    enums do
+      Instruction = new("instruction")
+      Csr = new("csr")
+      CsrField = new("csr_field")
+      Extension = new("extension")
+      Manual = new("manual")
+      ManualVersion = new("manual version")
+      ProcessorCertificateClass = new("processor certificate class")
+      ProcessorCertificateModel = new("processor certificate model")
+      Profile = new("profile")
+      ProflieClass = new("profile class")
+      ProfileRelease = new("profile release")
     end
-  end
-
-  # exception raised when an object does not validate against its schema
-  class SchemaValidationError < ::StandardError
-
-    # result from JsonSchemer.validate
-    attr_reader :result
-
-    # create a new SchemaValidationError
-    #
-    # @param result [JsonSchemer::Result] JsonSchemer result
-    def initialize(path, result)
-      msg = "While validating #{path}:\n\n"
-      nerrors = result.count
-      msg << "#{nerrors} error(s) during validations\n\n"
-      result.to_a.each do |r|
-        msg <<
-          if r["type"] == "required" && !r.dig("details", "missing_keys").nil?
-            "    At '#{r['data_pointer']}': Missing required parameter(s) '#{r['details']['missing_keys']}'\n"
-          elsif r["type"] == "schema"
-            if r["schema_pointer"] == "/additionalProperties"
-              "    At #{r['data_pointer']}, there is an unallowed additional key\n"
-            else
-              "    At #{r['data_pointer']}, endpoint is an invalid key\n"
-            end
-          elsif r["type"] == "enum"
-            "    At #{r['data_pointer']}, '#{r['data']}' is not a valid enum value (#{r['schema']['enum']})\n"
-          elsif r["type"] == "maxProperties"
-            "    Maximum number of properties exceeded\n"
-          elsif r["type"] == "object"
-            "    At #{r['data_pointer']}, Expecting object, got #{r['data']}\n"
-          elsif r["type"] == "pattern"
-            "    At #{r['data_pointer']}, RegEx validation failed; '#{r['data']}' does not match '#{r['schema']['pattern']}'\n"
-          elsif r["type"] == "integer"
-            "    At #{r['data_pointer']}, '#{r['data']}' is not a integer\n"
-          elsif r["type"] == "array"
-            "    At #{r['data_pointer']}, '#{r['data']}' is not a array\n"
-          elsif r["type"] == "oneOf"
-            "    At #{r['data_pointer']}, '#{r['data']}' matches more than one of #{r['schema']['oneOf']}\n"
-          elsif r["type"] == "const"
-            "    At #{r['data_pointer']}, '#{r['data']}' does not match required value '#{r['schema']['const']}'\n"
-          else
-            "    #{r}\n\n"
-          end
-      end
-      msg << "\n"
-      # msg << result.to_a.to_s
-      super(msg)
-      @result = result
-    end
-  end
-
-  # exception raised when an object does not validate, from a check other than JSON Schema
-  class ValidationError < ::StandardError
   end
 
   sig { returns(T::Hash[String, T.untyped]) }
@@ -115,7 +40,7 @@ class DatabaseObject
   attr_reader :long_name
 
   sig { returns(String) }
-  attr_reader :kind
+  def kind = @kind.to_s
 
   # @return [Architecture] If only a specification (no config) is known
   # @return [ConfiguredArchitecture] If a specification and config is known
@@ -135,58 +60,33 @@ class DatabaseObject
   sig { returns(T::Boolean) }
   def cfg_arch? = !@cfg_arch.nil?
 
-  @@schemas ||= {}
-  @@schema_ref_resolver ||= proc do |pattern|
-    if pattern.to_s =~ /^http/
-      JSON.parse(Net::HTTP.get(pattern))
-    else
-      JSON.load_file($root / "schemas" / pattern.to_s)
+  # @param data [Hash<String,Object>] Hash with fields to be added
+  # @param data_path [Pathname] Path to the data file
+  sig {
+    params(
+      data: T::Hash[String, T.untyped],
+      data_path: T.any(String, Pathname),
+      arch: Architecture,
+      kind: Kind,
+      name: T.nilable(String)
+    ).void
+  }
+  def initialize(data, data_path, arch, kind, name: nil)
+    @data = data
+    @data_path = Pathname.new(data_path)
+    if arch.is_a?(ConfiguredArchitecture)
+      @cfg_arch = arch
     end
-  end
+    @arch = arch
+    raise "name must be given" if name.nil? && data["name"].nil?
+    raise "do not provide name when it exists in data" if !name.nil? && !data["name"].nil?
 
-  # validate the data against it's schema
-  # @raise [SchemaError] if the data is invalid
-  sig { void }
-  def validate
-    schemas = @@schemas
-    ref_resolver = @@schema_ref_resolver
+    @name = name || data["name"]
+    @long_name = data["long_name"]
+    @kind = kind
 
-    if @data.key?("$schema")
-      schema_path = data["$schema"]
-      schema_file, obj_path = schema_path.split("#")
-      schema =
-        if schemas.key?(schema_file)
-          schemas[schema_file]
-        else
-          schemas[schema_file] = JSONSchemer.schema(
-            File.read("#{$root}/schemas/#{schema_file}"),
-            regexp_resolver: "ecma",
-            ref_resolver:,
-            insert_property_defaults: true
-          )
-          raise SchemaError, T.must(schemas[schema_file]).validate_schema unless T.must(schemas[schema_file]).valid_schema?
-
-          schemas[schema_file]
-        end
-
-      unless obj_path.nil?
-        obj_path_parts = obj_path.split("/")[1..]
-
-        obj_path_parts.each do |k|
-          schema = schema.fetch(k)
-        end
-      end
-
-      # convert through JSON to handle anything supported in YAML but not JSON
-      # (e.g., integer object keys will be converted to strings)
-      jsonified_obj = JSON.parse(JSON.generate(@data))
-
-      raise "Nothing there?" if jsonified_obj.nil?
-
-      raise SchemaValidationError.new(@data_path, schema.validate(jsonified_obj)) unless schema.valid?(jsonified_obj)
-    else
-      warn "No $schema for #{@data_path}"
-    end
+    @sem = Concurrent::Semaphore.new(1)
+    @cache = Concurrent::Hash.new
   end
 
   # clone this, and set the arch at the same time
@@ -212,14 +112,28 @@ class DatabaseObject
     @data["$source"]
   end
 
-  # The raw content of definedBy in the data.
-  # @note Generally, you should prefer to use {#defined_by_condition}, etc. from Ruby
-  #
-  # @return [String] An extension name
-  # @return [Hash<String, Object>] A requirements entry
-  sig { returns(T.any(String, T::Hash[String, Object])) }
-  def definedBy
-    @data["definedBy"]
+  def inspect
+    "#{self.class.name}##{name}"
+  end
+
+  # defer the calculation of 'blk' until later, then memoize the result
+  sig { params(fn_name: Symbol, _block: T.proc.void).returns(T.untyped) }
+  def defer(fn_name, &_block)
+    cache_value = @cache[fn_name]
+    return cache_value unless cache_value.nil?
+
+    @cache[fn_name] ||= yield
+  end
+
+  # @return [ExtensionRequirementExpression] Extension(s) that define the instruction. If *any* requirement is met, the instruction is defined.
+  sig { returns(ExtensionRequirementExpression) }
+  def defined_by_condition
+    @defined_by_condition ||=
+      begin
+        raise "ERROR: definedBy is nul for #{name}" if @data["definedBy"].nil?
+
+        ExtensionRequirementExpression.new(@data["definedBy"], @cfg_arch)
+      end
   end
 
   # @param normative [Boolean] Include normative text?
@@ -297,67 +211,6 @@ class DatabaseObject
     end
   end
 
-  # @param data [Hash<String,Object>] Hash with fields to be added
-  # @param data_path [Pathname] Path to the data file
-  sig { params(data: T::Hash[String, T.untyped], data_path: T.any(String, Pathname), arch: Architecture).void }
-  def initialize(data, data_path, arch)
-    @data = data
-    @data_path = Pathname.new(data_path)
-    if arch.is_a?(ConfiguredArchitecture)
-      @cfg_arch = arch
-    end
-    @arch = T.must_because(arch) { pp data }
-    @name = T.must_because(data["name"]) { pp data }
-    @long_name = T.must_because(data["long_name"]) { pp data }
-    @kind = T.must_because(data["kind"]) { pp data }
-
-    @sem = Concurrent::Semaphore.new(1)
-    @cache = Concurrent::Hash.new
-  end
-
-  def inspect
-    "#{self.class.name}##{name}"
-  end
-
-  # make the underlying YAML description available with []
-  extend Forwardable
-  def_delegator :@data, :[]
-
-  # @return [Array<String>] List of keys added by this DatabaseObject
-  sig { returns(T::Array[String]) }
-  def keys = @data.keys
-
-  # @param k (see Hash#key?)
-  # @return (see Hash#key?)
-  sig { params(k: String).returns(T::Boolean) }
-  def key?(k) = @data.key?(k)
-
-  # defer the calculation of 'blk' until later, then memoize the result
-  sig { params(fn_name: Symbol, block: T.proc.void).returns(T.untyped) }
-  def defer(fn_name, &block)
-    cache_value = @cache[fn_name]
-    return cache_value unless cache_value.nil?
-
-    @cache[fn_name] ||= yield
-  end
-
-  # @return [ExtensionRequirementExpression] Extension(s) that define the instruction. If *any* requirement is met, the instruction is defined.
-  sig { returns(ExtensionRequirementExpression) }
-  def defined_by_condition
-    @defined_by_condition ||=
-      begin
-        raise "ERROR: definedBy is nul for #{name}" if @data["definedBy"].nil?
-
-        ExtensionRequirementExpression.new(@data["definedBy"], @cfg_arch)
-      end
-  end
-
-  # @return [ExtensionRequirement] Name of an extension that "primarily" defines the object (i.e., is the first in a list)
-  sig { returns(ExtensionRequirement) }
-  def primary_defined_by
-    defined_by_condition.first_requirement
-  end
-
   # @return [Integer] THe source line number of +path+ in the YAML file
   # @param path [Array<String>] Path to the scalar you want.
   # @example
@@ -427,6 +280,162 @@ class DatabaseObject
       end
     end
     raise "Didn't find path '#{path}' in #{__source}"
+  end
+end
+
+# base class for any object defined in its own YAML file
+#
+# expected to contain at least:
+#   $schema:
+#   kind:
+#   name:
+class TopLevelDatabaseObject < DatabaseObject
+  extend T::Sig
+
+  # Exception raised when there is a problem with a schema file
+  class SchemaError < ::StandardError
+    # result from JsonSchemer.validate
+    attr_reader :result
+
+    def initialize(result)
+      if result.is_a?(Enumerator)
+        super(result.to_a.map { |e| "At #{e['schema_pointer']}: #{e['type']}" })
+      else
+        super(result["error"])
+      end
+      @result = result
+    end
+  end
+
+  # exception raised when an object does not validate against its schema
+  class SchemaValidationError < ::StandardError
+
+    # result from JsonSchemer.validate
+    attr_reader :result
+
+    # create a new SchemaValidationError
+    #
+    # @param result [JsonSchemer::Result] JsonSchemer result
+    def initialize(path, result)
+      msg = "While validating #{path}:\n\n"
+      nerrors = result.count
+      msg << "#{nerrors} error(s) during validations\n\n"
+      result.to_a.each do |r|
+        msg <<
+          if r["type"] == "required" && !r.dig("details", "missing_keys").nil?
+            "    At '#{r['data_pointer']}': Missing required parameter(s) '#{r['details']['missing_keys']}'\n"
+          elsif r["type"] == "schema"
+            if r["schema_pointer"] == "/additionalProperties"
+              "    At #{r['data_pointer']}, there is an unallowed additional key\n"
+            else
+              "    At #{r['data_pointer']}, endpoint is an invalid key\n"
+            end
+          elsif r["type"] == "enum"
+            "    At #{r['data_pointer']}, '#{r['data']}' is not a valid enum value (#{r['schema']['enum']})\n"
+          elsif r["type"] == "maxProperties"
+            "    Maximum number of properties exceeded\n"
+          elsif r["type"] == "object"
+            "    At #{r['data_pointer']}, Expecting object, got #{r['data']}\n"
+          elsif r["type"] == "pattern"
+            "    At #{r['data_pointer']}, RegEx validation failed; '#{r['data']}' does not match '#{r['schema']['pattern']}'\n"
+          elsif r["type"] == "integer"
+            "    At #{r['data_pointer']}, '#{r['data']}' is not a integer\n"
+          elsif r["type"] == "array"
+            "    At #{r['data_pointer']}, '#{r['data']}' is not a array\n"
+          elsif r["type"] == "oneOf"
+            "    At #{r['data_pointer']}, '#{r['data']}' matches more than one of #{r['schema']['oneOf']}\n"
+          elsif r["type"] == "const"
+            "    At #{r['data_pointer']}, '#{r['data']}' does not match required value '#{r['schema']['const']}'\n"
+          else
+            "    #{r}\n\n"
+          end
+      end
+      msg << "\n"
+      # msg << result.to_a.to_s
+      super(msg)
+      @result = result
+    end
+  end
+
+  # exception raised when an object does not validate, from a check other than JSON Schema
+  class ValidationError < ::StandardError
+  end
+
+  @@schemas ||= {}
+  @@schema_ref_resolver ||= proc do |pattern|
+    if pattern.to_s =~ /^http/
+      JSON.parse(Net::HTTP.get(pattern))
+    else
+      JSON.load_file($root / "schemas" / pattern.to_s)
+    end
+  end
+
+  # validate the data against it's schema
+  # @raise [SchemaError] if the data is invalid
+  sig { void }
+  def validate
+    schemas = @@schemas
+    ref_resolver = @@schema_ref_resolver
+
+    if @data.key?("$schema")
+      schema_path = data["$schema"]
+      schema_file, obj_path = schema_path.split("#")
+      schema =
+        if schemas.key?(schema_file)
+          schemas[schema_file]
+        else
+          schemas[schema_file] = JSONSchemer.schema(
+            File.read("#{$root}/schemas/#{schema_file}"),
+            regexp_resolver: "ecma",
+            ref_resolver:,
+            insert_property_defaults: true
+          )
+          raise SchemaError, T.must(schemas[schema_file]).validate_schema unless T.must(schemas[schema_file]).valid_schema?
+
+          schemas[schema_file]
+        end
+
+      unless obj_path.nil?
+        obj_path_parts = obj_path.split("/")[1..]
+
+        obj_path_parts.each do |k|
+          schema = schema.fetch(k)
+        end
+      end
+
+      # convert through JSON to handle anything supported in YAML but not JSON
+      # (e.g., integer object keys will be converted to strings)
+      jsonified_obj = JSON.parse(JSON.generate(@data))
+
+      raise "Nothing there?" if jsonified_obj.nil?
+
+      raise SchemaValidationError.new(@data_path, schema.validate(jsonified_obj)) unless schema.valid?(jsonified_obj)
+    else
+      warn "No $schema for #{@data_path}"
+    end
+  end
+
+  # @param data [Hash<String,Object>] Hash with fields to be added
+  # @param data_path [Pathname] Path to the data file
+  sig { params(data: T::Hash[String, T.untyped], data_path: T.any(String, Pathname), arch: Architecture).void }
+  def initialize(data, data_path, arch)
+    super(data, data_path, arch, DatabaseObject::Kind.deserialize(T.must_because(data["kind"]) { pp data }))
+  end
+
+  # @return [Array<String>] List of keys added by this DatabaseObject
+  sig { returns(T::Array[String]) }
+  def keys = @data.keys
+
+  # @param k (see Hash#key?)
+  # @return (see Hash#key?)
+  sig { params(k: String).returns(T::Boolean) }
+  def key?(k) = @data.key?(k)
+
+
+  # @return [ExtensionRequirement] Name of an extension that "primarily" defines the object (i.e., is the first in a list)
+  sig { returns(ExtensionRequirement) }
+  def primary_defined_by
+    defined_by_condition.first_requirement
   end
 end
 

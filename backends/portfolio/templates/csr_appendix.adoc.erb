@@ -162,7 +162,7 @@ written value:
 ----
 <% csr.possible_fields.each do |field| -%>
 <% if field.has_custom_sw_write? -%>
-<%= field.name %> = <%= field["sw_write(csr_value)"] %>
+<%= field.name %> = <%= field.data["sw_write(csr_value)"] %>
 <% else -%>
 <%= field.name %> = csr_value.<%= field.name %>
 <% end -%>
