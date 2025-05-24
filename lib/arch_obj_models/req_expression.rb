@@ -572,6 +572,30 @@ class ExtensionRequirementExpression
     eval to_rb
   end
 
+  # returns true if the list of extension requirements *can* satisfy the condition.
+  #
+  # note that it is possible that the condition might not be satisfied for all possible
+  # extension versions implied by ext_req_list. For example, this condition:
+  #
+  #  { "name": "A", "version": ">= 1.2" }
+  #
+  # Will be "satisfied by":
+  #
+  #  { "name": "A", "version": ">= 1.1" }
+  #
+  # because A version 1.2 fits both requirements
+  #
+  sig { params(ext_req_list: T::Array[ExtensionRequirement]).returns(T::Boolean) }
+  def could_be_satisfied_by_ext_reqs?(ext_req_list)
+    satisfied_by? do |cond_ext_req|
+      ext_req_list.any? do |ext_req|
+        ext_req.satisfying_versions.any? do |ext_ver|
+          cond_ext_req.satisfied_by?(ext_ver)
+        end
+      end
+    end
+  end
+
   # yes if:
   #   - ext_ver affects this condition
   #   - it is is possible for this condition to be true is ext_ver is implemented
