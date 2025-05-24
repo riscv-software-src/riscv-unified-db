@@ -3,8 +3,8 @@ kind: profile release
 name: RVI20
 long_name: RVI20
 marketing_name: RVI20
-class:
-  $ref: profile_class/RVI.yaml#
+family:
+  $ref: profile_family/RVI.yaml#
 base: null
 state: ratified # current status ["ratified", "development"]
 ratification_date: "2023-04-03"
