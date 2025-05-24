@@ -45,7 +45,16 @@ fields:
     alias: hie.VSSIE[0]
     description: |
       SSIE. Read-only zero when hideleg[2] is 0. Else, alias of hie.VSSIE.
-
+      sw_read(): |
+          if (CSR[hideleg].S == 1) {
+            return CSR[hie].VSSIE[0];
+          } else {
+            return 0;
+          }
+      sw_write(csr_value): |
+      if (CSR[hideleg].S == 1) {
+        CSR[hie].VSSIE[0] = csr_value.VSSIE & ((1 << NUM_VSSI) - 1);
+      }
   STIE:
     location: 5
     type: RW-H

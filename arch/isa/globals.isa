@@ -1242,7 +1242,7 @@ function access_check {
   }
   body {
     # check if this is a valid physical address
-    if (paddr > ((1 << PHYS_ADDR_WIDTH) - access_size)) {
+    if (paddr > ((1 `<< PHYS_ADDR_WIDTH) - access_size)) {
       raise(fault_type, from_mode, vaddr);
     }
 

@@ -21,4 +21,10 @@ description:
 priv_mode: VS
 length: VSXLEN
 definedBy: H
-fields: {}
+fields:
+  SCRATCH:
+    type: RW
+    reset_value: 0
+    location: 0
+    description: |
+      Virtual supervisor scratch register.

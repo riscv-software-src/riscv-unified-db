@@ -56,4 +56,4 @@ fields:
     type: RO
     reset_value: UNDEFINED_LEGAL
     description: |
-      Enable bits; see description of hgeip
+      Pending bits; see description of hgeip

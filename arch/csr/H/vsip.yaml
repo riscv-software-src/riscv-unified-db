@@ -38,7 +38,16 @@ fields:
 
       Indicates a pending software interrupt at the supervisor level.
       Read-only zero when `hideleg[2] == 0`, else aliased to `hip.VSSIP[0]`.
-
+      sw_read(): |
+        if (CSR[hideleg].S == 1) {
+          return CSR[hip].VSSIP[0];
+        } else {
+          return 0;
+        }
+       sw_write(csr_value): |
+          if (CSR[hideleg].S == 1) {
+            CSR[hip].VSSIP[0] = csr_value.VSSIP & ((MXLEN'1 << NUM_VSSI) - 1);
+        }
   STIP:
     location: 5
     type: RW-H
