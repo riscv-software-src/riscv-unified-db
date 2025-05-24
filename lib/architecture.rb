@@ -148,6 +148,16 @@ class Architecture
       klass: Instruction
     },
     {
+      fn_name: "instruction_type",
+      arch_dir: "inst_type",
+      klass: InstructionType
+    },
+    {
+      fn_name: "instruction_subtype",
+      arch_dir: "inst_subtype",
+      klass: InstructionSubtype
+    },
+    {
       fn_name: "csr",
       arch_dir: "csr",
       klass: Csr
@@ -327,7 +337,7 @@ class Architecture
     obj =
       case file_path
       when /^proc_cert_class.*/
-       proc_cert_class_name = File.basename(file_path, ".yaml")
+        proc_cert_class_name = File.basename(file_path, ".yaml")
         proc_cert_class(proc_cert_class_name)
       when /^proc_cert_model.*/
         proc_cert_model_name = File.basename(file_path, ".yaml")
@@ -338,7 +348,7 @@ class Architecture
       when /^ext.*/
         ext_name = File.basename(file_path, ".yaml")
         extension(ext_name)
-      when /^inst.*/
+      when %r{^inst/.*}
         inst_name = File.basename(file_path, ".yaml")
         instruction(inst_name)
       when /^manual.*/
@@ -356,6 +366,13 @@ class Architecture
       when /^profile.*/
         profile_name = File.basename(file_path, ".yaml")
         profile(profile_name)
+      when %r{^inst_subtype/.*/.*}
+        inst_subtype_name = File.basename(file_path, ".yaml")
+        instruction_subtype(inst_subtype_name)
+      when %r{^inst_type/[^/]+}
+        # type
+        inst_type_name = File.basename(file_path, ".yaml")
+        instruction_type(inst_type_name)
       else
         raise "Unhandled ref object: #{file_path}"
       end
