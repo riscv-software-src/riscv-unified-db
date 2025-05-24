@@ -2,12 +2,12 @@
 
 require_relative "portfolio"
 
-# A profile class consists of a number of releases each with set of profiles.
-# For example, the RVA profile class has releases such as RVA20, RVA22, RVA23
+# A profile family consists of a number of releases each with set of profiles.
+# For example, the RVA profile family has releases such as RVA20, RVA22, RVA23
 # that each include an unprivileged profile (e.g., RVA20U64) and one more
 # privileged profiles (e.g., RVA20S64).
-class ProfileClass < PortfolioClass
-  # @return [String] Naming scheme for profile class
+class ProfileFamily < PortfolioClass
+  # @return [String] Naming scheme for profile family
   def naming_scheme = @data["naming_scheme"]
 
   # @return [String] Name of the class
@@ -21,11 +21,11 @@ class ProfileClass < PortfolioClass
     License.new(@data["doc_license"])
   end
 
-  # @return [Array<ProfileRelease>] Defined profile releases in this profile class
+  # @return [Array<ProfileRelease>] Defined profile releases in this profile family
   def profile_releases
     return @profile_releases unless @profile_releases.nil?
 
-    @profile_releases = @arch.profile_releases.select { |pr| pr.profile_class.name == name }
+    @profile_releases = @arch.profile_releases.select { |pr| pr.profile_family.name == name }
 
     @profile_releases
   end
@@ -38,28 +38,28 @@ class ProfileClass < PortfolioClass
 
     # Look for all profile releases that are from any of the matching classes.
     @profile_releases_matching_processor_kind = @arch.profile_releases.select { |pr|
-      matching_classes.any? { |matching_class| matching_class.name == pr.profile_class.name }
+      matching_classes.any? { |matching_class| matching_class.name == pr.profile_family.name }
     }
 
     @profile_releases_matching_processor_kind
   end
 
-  # @return [Array<Profile>] All profiles in this profile class (for all releases).
+  # @return [Array<Profile>] All profiles in this profile family (for all releases).
   def profiles
     return @profiles unless @profiles.nil?
 
-    @profiles = @arch.profiles.select {|profile| profile.profile_class.name == name}
+    @profiles = @arch.profiles.select {|profile| profile.profile_family.name == name}
   end
 
   # @return [Array<Profile>] All profiles in database matching my processor kind
   def profiles_matching_processor_kind
     return @profiles_matching_processor_kind unless @profiles_matching_processor_kind.nil?
 
-    @profiles_matching_processor_kind = @arch.profiles.select {|profile| profile.profile_class.processor_kind == processor_kind}
+    @profiles_matching_processor_kind = @arch.profiles.select {|profile| profile.profile_family.processor_kind == processor_kind}
   end
 
   # @return [Array<Extension>] Sorted list of all mandatory or optional extensions across the profile releases belonging
-  #                            to the profile class
+  #                            to the profile family
   def in_scope_extensions
     return @in_scope_extensions unless @in_scope_extensions.nil?
 
@@ -112,12 +112,12 @@ class ProfileRelease < DatabaseObject
     @data["contributors"].map { |data| Person.new(data) }
   end
 
-  # @return [ProfileClass] Profile Class that this ProfileRelease belongs to
-  def profile_class
-    profile_class = @arch.ref(@data["class"]['$ref'])
-    raise "No profile class named '#{@data["class"]}'" if profile_class.nil?
+  # @return [ProfileFamily] Profile Family that this ProfileRelease belongs to
+  def profile_family
+    profile_family = @arch.ref(@data["family"]['$ref'])
+    raise "No profile family named '#{@data["family"]}'" if profile_family.nil?
 
-    profile_class
+    profile_family
   end
 
   # @return [Array<Profile>] All profiles in this profile release
@@ -174,8 +174,8 @@ class Profile < Portfolio
     profile_release
   end
 
-  # @return [ProfileClass] The profile class this profile belongs to
-  def profile_class = profile_release.profile_class
+  # @return [ProfileFamily] The profile family this profile belongs to
+  def profile_family = profile_release.profile_family
 
   # @return ["M", "S", "U", "VS", "VU"] Privilege mode for the profile
   def mode
