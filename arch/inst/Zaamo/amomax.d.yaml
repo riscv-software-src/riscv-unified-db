@@ -13,7 +13,7 @@ description: |
     * Write the maximum to the address in _rs1_
 definedBy: Zaamo
 base: 64
-assembly: xd, xs2, (xrs1)
+assembly: xd, xs2, (xs1)
 encoding:
   match: 10100------------011-----0101111
   variables:
