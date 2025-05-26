@@ -3,7 +3,7 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.d.s
-long_name: Double-precision to Single-precision Conversion Instruction
+long_name: Double-Precision to Single-Precision Conversion
 description: |
   -id: inst-fcvt.d.s-behaviour
   -normative: false

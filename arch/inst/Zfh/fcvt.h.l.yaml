@@ -3,7 +3,7 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.h.l
-long_name: Half-Precision Floating-Point 64-bit Signed Integer Conversion Instruction
+long_name: Half-Precision Floating-Point 64-bit Signed Integer Conversion
 description: |
   -id: inst-fcvt.h.l-behaviour
   -normative: false

@@ -3,7 +3,7 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.d.q
-long_name: Quad to Double Precision Conversion
+long_name: Quad-Precision to Double-Precision Conversion
 description: |
   -id: inst-fcvt.d.q-behaviour
   -normative: false

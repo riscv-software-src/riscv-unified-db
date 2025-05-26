@@ -3,7 +3,7 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.d.w
-long_name: Double-Precision to 32-bit Signed Integer Conversion Instruction
+long_name: Double-Precision to 32-bit Signed Integer Conversion
 description: |
   -id: inst-fcvt.d.w-behaviour
   -normative: false
