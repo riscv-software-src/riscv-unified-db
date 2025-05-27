@@ -30,5 +30,6 @@
     "cert_test_procedures": {
       "$ref": "schema_defs.json#/$defs/cert_test_procedures"
     }
-  }
+  },
+  "additionalProperties": false
 }

@@ -20,5 +20,6 @@
       "type": "string",
       "description": "One line description of this Profile Release"
     }
-  }
+  },
+  "additionalProperties": false
 }
