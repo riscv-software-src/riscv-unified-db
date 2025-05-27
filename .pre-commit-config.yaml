@@ -75,6 +75,18 @@ repos:
         alias: check-jsonschema-cert-class
         files: ^arch/proc_cert_class/.*\.(yaml|yml)$
         args: ["--schemafile", "schemas/proc_cert_class_schema.json"]
+      - id: check-jsonschema
+        name: Validate profile family files with jsonschema
+        stages: [pre-commit]
+        alias: check-jsonschema-profile-family
+        files: ^arch/profile_family/.*\.(yaml|yml)$
+        args: ["--schemafile", "schemas/profile_family_schema.json"]
+      - id: check-jsonschema
+        name: Validate profile release files with jsonschema
+        stages: [pre-commit]
+        alias: check-jsonschema-profile-release
+        files: ^arch/profile_release/.*\.(yaml|yml)$
+        args: ["--schemafile", "schemas/profile_release_schema.json"]
       # Commenting because throwing errors and not sure this is complete yet
       # - id: check-jsonschema
       #   alias: check-jsonschema-manual-version
