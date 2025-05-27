@@ -3,14 +3,14 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.d.wu
-long_name: Double-Precision to 32-bit Unsigned Integer Conversion
+long_name: Floating-point Convert Unsigned Word to Double-precision
 description: |
   -id: inst-fcvt.d.wu-behaviour
   -normative: false
   -text: |
     This variant of the `fcvt` instruction converts to or from unsignedn integer values.
-    `fcvt.d.wu` converts a 32-bit unsigned integer in integer register `rs1` into a double-precision
-    floating-point number in floating-point register `rd`.
+    `fcvt.d.wu` converts a 32-bit unsigned integer in integer register `xs1` into a double-precision
+    floating-point number in floating-point register `xd`.
     Note `fcvt.d.wu` always produces an exact result and is unaffected by rounding mode.
 definedBy: D
 assembly: xd, xs1, rm

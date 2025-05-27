@@ -3,13 +3,13 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.d.l
-long_name: Double-Precision Floating-Point Conversion
+long_name: Floating-point Convert Long to Double-precision
 description: |
   -id: inst-fcvt.d.l-behaviour
   -normative: false
   -text: |
-     `fcvt.d.l` converts a 64-bit signed integer, in integer register `rs1` into a double-precision
-     floating-point number in floating-point register `rd`.
+     `fcvt.d.l` converts a 64-bit signed integer, in integer register `xs1` into a double-precision
+     floating-point number in floating-point register `xd`.
 definedBy: D
 assembly: xd, xs1, rm
 encoding:
