@@ -5,7 +5,7 @@ require_relative "database_obj"
 require_relative "certifiable_obj"
 
 # CSR definition
-class Csr < DatabaseObject
+class Csr < TopLevelDatabaseObject
   # Add all methods in this module to this type of database object.
   include CertifiableObject
 
@@ -383,7 +383,7 @@ class Csr < DatabaseObject
     @possible_fields_for ||= {}
     @possible_fields_for[effective_xlen] ||=
       possible_fields.select do |f|
-        !f.key?("base") || f.base == effective_xlen
+        f.base.nil? || f.base == effective_xlen
       end
   end
 
@@ -408,7 +408,7 @@ class Csr < DatabaseObject
   # equivalent to {#fields} if +effective_xlen+ is nil
   sig {params(effective_xlen: T.nilable(Integer)).returns(T::Array[CsrField])}
   def fields_for(effective_xlen)
-    fields.select { |f| effective_xlen.nil? || !f.key?("base") || f.base == effective_xlen }
+    fields.select { |f| effective_xlen.nil? || f.base.nil? || f.base == effective_xlen }
   end
 
   # @return [Hash<String,CsrField>] Hash of fields, indexed by field name

@@ -1,6 +1,6 @@
 = Instruction Appendix
 :doctype: book
-:wavedrom: /local/mnt/workspace/dhower/riscv-unified-db/worktrees/iappendix/node_modules/.bin/wavedrom-cli
+:wavedrom: /workspaces/riscv-unified-db/node_modules/.bin/wavedrom-cli
 // Now the document header is complete and the wavedrom attribute is active.
 
 
@@ -53,7 +53,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs an XLEN-wide addition between rs2 and the
+Performs an XLEN-wide addition between rs2 and the
 zero-extended least-significant word of rs1.
 
 
@@ -89,7 +89,7 @@ Encoding::
 ....
 
 Description::
-Add an immediate to the value in xs1, and store the result in xd
+Adds an immediate value to the value in xs1, and store the result in xd
 
 Decode Variables::
 [width="100%", cols="1,2", options="header"]
@@ -193,7 +193,7 @@ Encoding::
 ....
 
 Description::
-This instruction sources a single byte from `rs2` according to `bs`. To this it applies the inverse AES
+Sources a single byte from `rs2` according to `bs`. To this it applies the inverse AES
 SBox operation, and XOR's the result with `rs1`. This instruction must always be implemented such
 that its execution latency does not depend on the data being operated on.
 
@@ -231,7 +231,7 @@ Encoding::
 ....
 
 Description::
-This instruction sources a single byte from `rs2` according to `bs`. To this it applies the inverse AES
+Sources a single byte from `rs2` according to `bs`. To this it applies the inverse AES
 SBox operation, and a partial inverse MixColumn, before XOR'ing the result with `rs1`. This
 instruction must always be implemented such that its execution latency does not depend on the
 data being operated on.
@@ -2400,7 +2400,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs the bitwise logical AND operation between `rs1` and the
+Performs the bitwise logical AND operation between `rs1` and the
 bitwise inversion of `rs2`.
 
 
@@ -2471,7 +2471,7 @@ Encoding::
 ....
 
 Description::
-This instruction returns rs1 with a single bit cleared at the index specified in rs2.
+Returns rs1 with a single bit cleared at the index specified in rs2.
 The index is read from the lower log2(XLEN) bits of rs2.
 
 
@@ -2517,7 +2517,7 @@ RV64::
 ....
 
 Description::
-This instruction returns rs1 with a single bit cleared at the index specified in shamt. The
+Returns rs1 with a single bit cleared at the index specified in shamt. The
 index is read from the lower log2(XLEN) bits of shamt. For RV32, the encodings corresponding
 to shamt[5]=1 are reserved.
 
@@ -2604,7 +2604,7 @@ Encoding::
 ....
 
 Description::
-This instruction returns a single bit extracted from rs1 at the index specified in rs2.
+Returns a single bit extracted from rs1 at the index specified in rs2.
 The index is read from the lower log2(XLEN) bits of rs2.
 
 
@@ -2650,7 +2650,7 @@ RV64::
 ....
 
 Description::
-This instruction returns a single bit extracted from rs1 at the index specified in rs2.
+Returns a single bit extracted from rs1 at the index specified in rs2.
 The index is read from the lower log2(XLEN) bits of shamt. For RV32, the encodings
 corresponding to shamt[5]=1 are reserved.
 
@@ -2775,7 +2775,7 @@ Encoding::
 ....
 
 Description::
-This instruction returns rs1 with a single bit inverted at the index specified in rs2.
+Returns rs1 with a single bit inverted at the index specified in rs2.
 The index is read from the lower log2(XLEN) bits of rs2.
 
 
@@ -2821,7 +2821,7 @@ RV64::
 ....
 
 Description::
-This instruction returns rs1 with a single bit inverted at the index specified in shamt.
+Returns rs1 with a single bit inverted at the index specified in shamt.
 The index is read from the lower log2(XLEN) bits of shamt.
 For RV32, the encodings corresponding to shamt[5]=1 are reserved.
 
@@ -2984,7 +2984,7 @@ Encoding::
 ....
 
 Description::
-This instruction reverses the order of the bits in every byte of a register.
+Reverses the order of the bits in every byte of a register.
 
 
 Decode Variables::
@@ -3018,7 +3018,7 @@ Encoding::
 ....
 
 Description::
-This instruction returns rs1 with a single bit set at the index specified in rs2.
+Returns rs1 with a single bit set at the index specified in rs2.
 The index is read from the lower log2(XLEN) bits of rs2.
 
 
@@ -3064,7 +3064,7 @@ RV64::
 ....
 
 Description::
-This instruction returns rs1 with a single bit set at the index specified in shamt.
+Returns rs1 with a single bit set at the index specified in shamt.
 The index is read from the lower log2(XLEN) bits of shamt.
 For RV32, the encodings corresponding to shamt[5]=1 are reserved.
 
@@ -3109,20 +3109,20 @@ Add
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":2,"name": 0x2,"type":2},{"bits":5,"name": "rs2 != 0","type":4},{"bits":5,"name": "rd != 0","type":4},{"bits":4,"name": 0x9,"type":2}]}
+{"reg":[{"bits":2,"name": 0x2,"type":2},{"bits":5,"name": "xs2 != 0","type":4},{"bits":5,"name": "xd != 0","type":4},{"bits":4,"name": 0x9,"type":2}]}
 ....
 
 Description::
-Add the value in rs2 to rd, and store the result in rd.
-C.ADD expands into `add rd, rd, rs2`.
+Add the value in xs2 to xd, and store the result in xd.
+C.ADD expands into `add xd, xd, xs2`.
 
 
 Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rs2 |$encoding[6:2]
-|rd |$encoding[11:7]
+|xs2 |$encoding[6:2]
+|xd |$encoding[11:7]
 |===
 
 Included in::
@@ -3301,21 +3301,21 @@ Add word
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":3,"name": "rs2","type":4},{"bits":2,"name": 0x1,"type":2},{"bits":3,"name": "rd","type":4},{"bits":6,"name": 0x27,"type":2}]}
+{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":3,"name": "xs2","type":4},{"bits":2,"name": 0x1,"type":2},{"bits":3,"name": "xd","type":4},{"bits":6,"name": 0x27,"type":2}]}
 ....
 
 Description::
-Add the 32-bit values in rs2 from rd, and store the result in rd.
-The rd and rs2 register indexes should be used as rd+8 and rs2+8 (registers x8-x15).
-C.ADDW expands into `addw rd, rd, rs2`.
+Add the 32-bit values in xs2 from xd, and store the result in xd.
+The xd and xs2 register indexes should be used as xd+8 and xs2+8 (registers x8-x15).
+C.ADDW expands into `addw xd, xd, xs2`.
 
 
 Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rs2 |$encoding[4:2]
-|rd |$encoding[9:7]
+|xs2 |$encoding[4:2]
+|xd |$encoding[9:7]
 |===
 
 Included in::
@@ -3339,21 +3339,21 @@ And
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":3,"name": "rs2","type":4},{"bits":2,"name": 0x3,"type":2},{"bits":3,"name": "rd","type":4},{"bits":6,"name": 0x23,"type":2}]}
+{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":3,"name": "xs2","type":4},{"bits":2,"name": 0x3,"type":2},{"bits":3,"name": "xd","type":4},{"bits":6,"name": 0x23,"type":2}]}
 ....
 
 Description::
-And rd with rs2, and store the result in rd
-The rd and rs2 register indexes should be used as rd+8 and rs2+8 (registers x8-x15).
-C.AND expands into `and rd, rd, rs2`.
+And xd with xs2, and store the result in xd
+The xd and xs2 register indexes should be used as xd+8 and xs2+8 (registers x8-x15).
+C.AND expands into `and xd, xd, xs2`.
 
 
 Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rs2 |$encoding[4:2]
-|rd |$encoding[9:7]
+|xs2 |$encoding[4:2]
+|xd |$encoding[9:7]
 |===
 
 Included in::
@@ -4350,7 +4350,7 @@ Encoding::
 ....
 
 Description::
-This instruction multiplies XLEN bits of the source operands from rsd' and rs2' and writes the lowest XLEN bits of the result to rsd'.
+Multiplies XLEN bits of the source operands from rsd' and rs2' and writes the lowest XLEN bits of the result to rsd'.
 
 
 Decode Variables::
@@ -4454,7 +4454,7 @@ Encoding::
 ....
 
 Description::
-This instruction takes a single source/destination operand.
+Takes a single source/destination operand.
 This instruction takes the one's complement of rd'/rs1' and writes the result to the same register.
 
 
@@ -4486,21 +4486,21 @@ Or
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":3,"name": "rs2","type":4},{"bits":2,"name": 0x2,"type":2},{"bits":3,"name": "rd","type":4},{"bits":6,"name": 0x23,"type":2}]}
+{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":3,"name": "xs2","type":4},{"bits":2,"name": 0x2,"type":2},{"bits":3,"name": "xd","type":4},{"bits":6,"name": 0x23,"type":2}]}
 ....
 
 Description::
-Or rd with rs2, and store the result in rd
-The rd and rs2 register indexes should be used as rd+8 and rs2+8 (registers x8-x15).
-C.OR expands into `or rd, rd, rs2`.
+Or xd with xs2, and store the result in xd
+The xd and xs2 register indexes should be used as xd+8 and xs2+8 (registers x8-x15).
+C.OR expands into `or xd, xd, xs2`.
 
 
 Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rs2 |$encoding[4:2]
-|rd |$encoding[9:7]
+|xs2 |$encoding[4:2]
+|xd |$encoding[9:7]
 |===
 
 Included in::
@@ -4646,7 +4646,7 @@ Encoding::
 ....
 
 Description::
-This instruction takes a single source/destination operand.
+Takes a single source/destination operand.
 This instruction sign-extends the least-significant byte of the source to XLEN by copying
 the most-significant bit in the byte (i.e., bit 7) to all of the more-significant bits.
 
@@ -4683,7 +4683,7 @@ Encoding::
 ....
 
 Description::
-This instruction takes a single source/destination operand.
+Takes a single source/destination operand.
 This instruction sign-extends the least-significant halfword of the source to XLEN by copying
 the most-significant bit in the halfword (i.e., bit 15) to all of the more-significant bits.
 
@@ -4931,21 +4931,21 @@ Subtract
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":3,"name": "rs2","type":4},{"bits":2,"name": 0x0,"type":2},{"bits":3,"name": "rd","type":4},{"bits":6,"name": 0x23,"type":2}]}
+{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":3,"name": "xs2","type":4},{"bits":2,"name": 0x0,"type":2},{"bits":3,"name": "xd","type":4},{"bits":6,"name": 0x23,"type":2}]}
 ....
 
 Description::
-Subtract the value in rs2 from rd, and store the result in rd.
-The rd and rs2 register indexes should be used as rd+8 and rs2+8 (registers x8-x15).
-C.SUB expands into `sub rd, rd, rs2`.
+Subtract the value in xs2 from xd, and store the result in xd.
+The xd and xs2 register indexes should be used as xd+8 and xs2+8 (registers x8-x15).
+C.SUB expands into `sub xd, xd, xs2`.
 
 
 Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rs2 |$encoding[4:2]
-|rd |$encoding[9:7]
+|xs2 |$encoding[4:2]
+|xd |$encoding[9:7]
 |===
 
 Included in::
@@ -4969,21 +4969,21 @@ Subtract word
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":3,"name": "rs2","type":4},{"bits":2,"name": 0x0,"type":2},{"bits":3,"name": "rd","type":4},{"bits":6,"name": 0x27,"type":2}]}
+{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":3,"name": "xs2","type":4},{"bits":2,"name": 0x0,"type":2},{"bits":3,"name": "xd","type":4},{"bits":6,"name": 0x27,"type":2}]}
 ....
 
 Description::
-Subtract the 32-bit values in rs2 from rd, and store the result in rd.
-The rd and rs2 register indexes should be used as rd+8 and rs2+8 (registers x8-x15).
-C.SUBW expands into `subw rd, rd, rs2`.
+Subtract the 32-bit values in xs2 from xd, and store the result in xd.
+The xd and xs2 register indexes should be used as xd+8 and xs2+8 (registers x8-x15).
+C.SUBW expands into `subw xd, xd, xs2`.
 
 
 Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rs2 |$encoding[4:2]
-|rd |$encoding[9:7]
+|xs2 |$encoding[4:2]
+|xd |$encoding[9:7]
 |===
 
 Included in::
@@ -5086,21 +5086,21 @@ Exclusive Or
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":3,"name": "rs2","type":4},{"bits":2,"name": 0x1,"type":2},{"bits":3,"name": "rd","type":4},{"bits":6,"name": 0x23,"type":2}]}
+{"reg":[{"bits":2,"name": 0x1,"type":2},{"bits":3,"name": "xs2","type":4},{"bits":2,"name": 0x1,"type":2},{"bits":3,"name": "xd","type":4},{"bits":6,"name": 0x23,"type":2}]}
 ....
 
 Description::
-Exclusive or rd with rs2, and store the result in rd
-The rd and rs2 register indexes should be used as rd+8 and rs2+8 (registers x8-x15).
-C.XOR expands into `xor rd, rd, rs2`.
+Exclusive or xd with xs2, and store the result in xd
+The xd and xs2 register indexes should be used as xd+8 and xs2+8 (registers x8-x15).
+C.XOR expands into `xor xd, xd, xs2`.
 
 
 Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rs2 |$encoding[4:2]
-|rd |$encoding[9:7]
+|xs2 |$encoding[4:2]
+|xd |$encoding[9:7]
 |===
 
 Included in::
@@ -5128,7 +5128,7 @@ Encoding::
 ....
 
 Description::
-This instruction takes a single source/destination operand.
+Takes a single source/destination operand.
 This instruction zero-extends the least-significant byte of the source to XLEN by inserting
 0's into all of the bits more significant than 7.
 
@@ -5165,7 +5165,7 @@ Encoding::
 ....
 
 Description::
-This instruction takes a single source/destination operand.
+Takes a single source/destination operand.
 This instruction zero-extends the least-significant halfword of the source to XLEN by inserting
 0's into all of the bits more significant than 15.
 
@@ -5202,7 +5202,7 @@ Encoding::
 ....
 
 Description::
-This instruction takes a single source/destination operand.
+Takes a single source/destination operand.
 It zero-extends the least-significant word of the operand to XLEN bits by inserting zeros into all of the bits more significant than 31.
 
 
@@ -5234,7 +5234,7 @@ Cache Block Clean
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":15,"name": 0x200f,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": 0x1,"type":2}]}
+{"reg":[{"bits":15,"name": 0x200f,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": 0x1,"type":2}]}
 ....
 
 Description::
@@ -5273,7 +5273,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |===
 
 Included in::
@@ -5295,7 +5295,7 @@ Cache Block Flush
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":15,"name": 0x200f,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": 0x2,"type":2}]}
+{"reg":[{"bits":15,"name": 0x200f,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": 0x2,"type":2}]}
 ....
 
 Description::
@@ -5328,7 +5328,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |===
 
 Included in::
@@ -5350,7 +5350,7 @@ Cache Block Invalidate
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":15,"name": 0x200f,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": 0x0,"type":2}]}
+{"reg":[{"bits":15,"name": 0x200f,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": 0x0,"type":2}]}
 ....
 
 Description::
@@ -5422,7 +5422,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |===
 
 Included in::
@@ -5444,7 +5444,7 @@ Cache Block Zero
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":15,"name": 0x200f,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": 0x4,"type":2}]}
+{"reg":[{"bits":15,"name": 0x200f,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": 0x4,"type":2}]}
 ....
 
 Description::
@@ -5479,7 +5479,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |===
 
 Included in::
@@ -5614,7 +5614,7 @@ Encoding::
 ....
 
 Description::
-This instruction counts the number of 0's before the first 1,
+Counts the number of 0's before the first 1,
 starting at the most-significant bit (i.e., XLEN-1) and progressing to bit 0.
 Accordingly, if the input is 0, the output is XLEN, and if the most-significant
 bit of the input is a 1, the output is 0.
@@ -5651,7 +5651,7 @@ Encoding::
 ....
 
 Description::
-This instruction counts the number of 0's before the first 1 starting at bit 31 and progressing to bit 0.
+Counts the number of 0's before the first 1 starting at bit 31 and progressing to bit 0.
 Accordingly, if the least-significant word is 0, the output is 32, and if the most-significant
 bit of the word (_i.e._, bit 31) is a 1, the output is 0.
 
@@ -5687,7 +5687,7 @@ Encoding::
 ....
 
 Description::
-This instruction moves r1s' into a0 and r2s' into a1. The execution is atomic, so it is not possible to observe state where only one of a0 or a1 have been updated.
+Moves r1s' into a0 and r2s' into a1. The execution is atomic, so it is not possible to observe state where only one of a0 or a1 have been updated.
 The encoding uses sreg number specifiers instead of xreg number specifiers to save encoding space. The mapping between them is specified in the pseudo-code below.
 
 
@@ -5722,7 +5722,7 @@ Encoding::
 ....
 
 Description::
-This instruction moves a0 into r1s' and a1 into r2s'. r1s' and r2s' must be different.
+Moves a0 into r1s' and a1 into r2s'. r1s' and r2s' must be different.
 The execution is atomic, so it is not possible to observe state where only one of r1s' or r2s' has been updated.
 The encoding uses sreg number specifiers instead of xreg number specifiers to save encoding space.
 The mapping between them is specified in the pseudo-code below.
@@ -5759,7 +5759,7 @@ Encoding::
 ....
 
 Description::
-Destroy stack frame: load `ra` and 0 to 12 saved registers from the stack frame, deallocate the stack frame.
+Destroys a stack frame: load `ra` and 0 to 12 saved registers from the stack frame, deallocate the stack frame.
 This instruction pops (loads) the registers in `reg_list` from stack memory, and then adjusts the stack pointer by `stack_adj`.
 
 Restrictions on stack_adj:
@@ -5801,7 +5801,7 @@ Encoding::
 ....
 
 Description::
-Destroy stack frame: load `ra` and 0 to 12 saved registers from the stack frame, deallocate the stack frame, return to `ra`.
+Destroys a stack frame: load `ra` and 0 to 12 saved registers from the stack frame, deallocate the stack frame, return to `ra`.
 This instruction pops (loads) the registers in `reg_list` from stack memory, and then adjusts the stack pointer by `stack_adj` and then return to `ra`.
 
 Restrictions on stack_adj:
@@ -5843,7 +5843,7 @@ Encoding::
 ....
 
 Description::
-Destroy stack frame: load `ra` and 0 to 12 saved registers from the stack frame, deallocate the stack frame, move zero to `a0`, return to `ra`.
+Destroys a stack frame: load `ra` and 0 to 12 saved registers from the stack frame, deallocate the stack frame, move zero to `a0`, return to `ra`.
 This instruction pops (loads) the registers in `reg_list` from stack memory, and then adjusts the stack pointer by `stack_adj`, move zero to `a0` and then return to `ra`.
 
 Restrictions on stack_adj:
@@ -5885,7 +5885,7 @@ Encoding::
 ....
 
 Description::
-Create stack frame: store `ra` and 0 to 12 saved registers to the stack frame, optionally allocate additional stack space.
+Creates a stack frame: store `ra` and 0 to 12 saved registers to the stack frame, optionally allocate additional stack space.
 This instruction pushes (stores) the registers in `reg_list` to the memory below the stack pointer,
 and then creates the stack frame by decrementing the stack pointer by `stack_adj`.
 
@@ -5928,7 +5928,7 @@ Encoding::
 ....
 
 Description::
-This instructions counts the number of 1's (i.e., set bits) in the source register.
+Counts the number of 1's (i.e., set bits) in the source register.
 
 .Software Hint
 [NOTE]
@@ -5974,7 +5974,7 @@ Encoding::
 ....
 
 Description::
-This instructions counts the number of 1's (i.e., set bits) in the least-significant word of the source register.
+Counts the number of 1's (i.e., set bits) in the least-significant word of the source register.
 
 .Software Hint
 [NOTE]
@@ -6270,7 +6270,7 @@ Encoding::
 ....
 
 Description::
-This instruction counts the number of 0's before the first 1,
+Counts the number of 0's before the first 1,
 starting at the least-significant bit (i.e., 0) and progressing
 to the most-significant bit (i.e., XLEN-1). Accordingly, if the
 input is 0, the output is XLEN, and if the least-significant bit
@@ -6308,7 +6308,7 @@ Encoding::
 ....
 
 Description::
-This instruction counts the number of 0's before the first 1,
+Counts the number of 0's before the first 1,
 starting at the least-significant bit (i.e., 0) and progressing
 to the most-significant bit of the least-significant word (i.e., 31). Accordingly, if the
 least-significant word is 0, the output is 32, and if the least-significant bit
@@ -6652,7 +6652,7 @@ Encoding::
 ....
 
 Description::
-The ECALL instruction is used to make a request to the supporting execution environment.
+Makes a request to the supporting execution environment.
 When executed in U-mode, S-mode, or M-mode, it generates an environment-call-from-U-mode
 exception, environment-call-from-S-mode exception, or environment-call-from-M-mode
 exception, respectively, and performs no other operation.
@@ -8465,17 +8465,17 @@ Included in::
 == fcvt.w.s
 
 Synopsis::
-Convert single-precision float to integer word to signed 32-bit integer
+Convert single-precision float to signed word.
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "rd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0xc00,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0xc00,"type":2}]}
 ....
 
 Description::
-Converts a floating-point number in floating-point register _fs1_ to a signed 32-bit integer indicates
-integer register _rd_.
+Converts a floating-point number in floating-point register _fs1_ to a signed 32-bit integer in
+integer register _xd_.
 
 For XLEN &gt;32, xref:insts:fcvt_w_s.adoc#udb:doc:inst:fcvt_w_s[fcvt.w.s] sign-extends the 32-bit result to the destination register width.
 
@@ -8499,7 +8499,7 @@ h! Output for `+∞` for `NaN` ! `2^31 - 1`
 All floating-point to integer and integer to floating-point conversion instructions round
 according to the _rm_ field.
 A floating-point register can be initialized to floating-point positive zero using
-`fcvt.s.w rd, x0`, which will never set any exception flags.
+`fcvt.s.w xd, x0`, which will never set any exception flags.
 
 All floating-point conversion instructions set the Inexact exception flag if the rounded
 result differs from the operand value and the Invalid exception flag is not set.
@@ -8511,7 +8511,7 @@ Decode Variables::
 |Variable Name |Location
 |fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|rd |$encoding[11:7]
+|xd |$encoding[11:7]
 |===
 
 Included in::
@@ -8633,25 +8633,52 @@ Included in::
 == fcvt.wu.s
 
 Synopsis::
-No synopsis available
+Convert single-precision float to unsigned word.
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "rd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": 0xc01,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0xc01,"type":2}]}
 ....
 
 Description::
-No description available.
+Converts a floating-point number in floating-point register _fs1_ to an unsigned 32-bit integer in integer register _xd_.
+
+For XLEN &gt;32, xref:insts:fcvt_wu_s.adoc#udb:doc:inst:fcvt_wu_s[fcvt.wu.s] sign-extends the 32-bit result to the destination register width.
+
+If the rounded result is not representable as a 32-bit unsigned integer, it is clipped to the
+nearest value and the invalid flag is set.
+
+The range of valid inputs and behavior for invalid inputs are:
+
+[separator="!"]
+!===
+! ! Value
+
+h! Minimum valid input (after rounding) ! `0`
+h! Maximum valid input (after rounding) ! `2^32 - 1`
+h! Output for out-of-range negative input ! `0`
+h! Output for `−∞` ! `0`
+h! Output for out-of-range positive input ! `2^32 - 1`
+h! Output for `+∞` for `NaN` ! `2^32 - 1`
+!===
+
+All floating-point to integer and integer to floating-point conversion instructions round
+according to the _rm_ field.
+A floating-point register can be initialized to floating-point positive zero using
+`fcvt.s.w xd, x0`, which will never set any exception flags.
+
+All floating-point conversion instructions set the Inexact exception flag if the rounded
+result differs from the operand value and the Invalid exception flag is not set.
 
 
 Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rs1 |$encoding[19:15]
+|fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|rd |$encoding[11:7]
+|xd |$encoding[11:7]
 |===
 
 Included in::
@@ -9247,12 +9274,12 @@ Included in::
 == fld
 
 Synopsis::
-No synopsis available
+Load Double-precision Floating-Point
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "rd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": "imm","type":4}]}
+{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": "imm","type":4}]}
 ....
 
 Description::
@@ -9264,8 +9291,8 @@ Decode Variables::
 |===
 |Variable Name |Location
 |imm |$encoding[31:20]
-|rs1 |$encoding[19:15]
-|rd |$encoding[11:7]
+|xs1 |$encoding[19:15]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -9578,11 +9605,11 @@ Half-precision floating-point load
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": "imm","type":4}]}
+{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": "imm","type":4}]}
 ....
 
 Description::
-The xref:insts:flh.adoc#udb:doc:inst:flh[flh] instruction loads a single-precision floating-point value from memory at address _rs1_ + _imm_ into floating-point register _rd_.
+The xref:insts:flh.adoc#udb:doc:inst:flh[flh] instruction loads a single-precision floating-point value from memory at address _xs1_ + _imm_ into floating-point register _rd_.
 
 xref:insts:flh.adoc#udb:doc:inst:flh[flh] does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
@@ -9594,7 +9621,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |imm |$encoding[31:20]
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |fd |$encoding[11:7]
 |===
 
@@ -9652,12 +9679,12 @@ Included in::
 == fli.h
 
 Synopsis::
-No synopsis available
+Floating-point Load Immediate Half-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "rd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": 0xf41,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "imm","type":4},{"bits":12,"name": 0xf41,"type":2}]}
 ....
 
 Description::
@@ -9668,8 +9695,8 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rs1 |$encoding[19:15]
-|rd |$encoding[11:7]
+|imm |$encoding[19:15]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -9763,7 +9790,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": "imm","type":4}]}
+{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": "imm","type":4}]}
 ....
 
 Description::
@@ -9775,7 +9802,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |imm |$encoding[31:20]
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |qd |$encoding[11:7]
 |===
 
@@ -10087,11 +10114,11 @@ Single-precision floating-point load
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": "imm","type":4}]}
+{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": "imm","type":4}]}
 ....
 
 Description::
-The xref:insts:flw.adoc#udb:doc:inst:flw[flw] instruction loads a single-precision floating-point value from memory at address _rs1_ + _imm_ into floating-point register _fd_.
+The xref:insts:flw.adoc#udb:doc:inst:flw[flw] instruction loads a single-precision floating-point value from memory at address _xs1_ + _imm_ into floating-point register _fd_.
 
 xref:insts:flw.adoc#udb:doc:inst:flw[flw] does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
@@ -10101,7 +10128,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |imm |$encoding[31:20]
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |fd |$encoding[11:7]
 |===
 
@@ -12056,12 +12083,12 @@ Included in::
 == froundnx.s
 
 Synopsis::
-No synopsis available
+Floating-point Round Single-precision to Integer with Inexact
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": 0x405,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": 0x405,"type":2}]}
 ....
 
 Description::
@@ -12072,7 +12099,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |rm |$encoding[14:12]
 |fd |$encoding[11:7]
 |===
@@ -12096,7 +12123,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":5,"name": "rs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
+{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
 ....
 
 Description::
@@ -12108,8 +12135,8 @@ Decode Variables::
 |===
 |Variable Name |Location
 |imm |{$encoding[31:25], $encoding[11:7]}
-|rs2 |$encoding[24:20]
-|rs1 |$encoding[19:15]
+|fs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
 |===
 
 Included in::
@@ -12557,16 +12584,16 @@ Half-precision floating-point store
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
+{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
 ....
 
 Description::
 The xref:insts:fsh.adoc#udb:doc:inst:fsh[fsh] instruction stores a half-precision floating-point value
-from register _rd_ to memory at address _rs1_ + _imm_.
+from register _xd_ to memory at address _xs1_ + _imm_.
 
 xref:insts:fsh.adoc#udb:doc:inst:fsh[fsh] does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
-xref:insts:fsh.adoc#udb:doc:inst:fsh[fsh] ignores all but the lower 16 bits in _rs2_.
+xref:insts:fsh.adoc#udb:doc:inst:fsh[fsh] ignores all but the lower 16 bits in _fs2_.
 
 xref:insts:fsh.adoc#udb:doc:inst:fsh[fsh] is only guaranteed to execute atomically if the effective address is naturally aligned.
 
@@ -12576,7 +12603,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |imm |{$encoding[31:25], $encoding[11:7]}
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |fs2 |$encoding[24:20]
 |===
 
@@ -12603,7 +12630,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
+{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
 ....
 
 Description::
@@ -12616,7 +12643,7 @@ Decode Variables::
 |Variable Name |Location
 |imm |{$encoding[31:25], $encoding[11:7]}
 |qs2 |$encoding[24:20]
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |===
 
 Included in::
@@ -12923,11 +12950,11 @@ Single-precision floating-point store
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
+{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
 ....
 
 Description::
-The xref:insts:fsw.adoc#udb:doc:inst:fsw[fsw] instruction stores a single-precision floating-point value in _fs2_ to memory at address _rs1_ + _imm_.
+The xref:insts:fsw.adoc#udb:doc:inst:fsw[fsw] instruction stores a single-precision floating-point value in _fs2_ to memory at address _xs1_ + _imm_.
 
 xref:insts:fsw.adoc#udb:doc:inst:fsw[fsw] does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
@@ -12938,7 +12965,7 @@ Decode Variables::
 |Variable Name |Location
 |imm |{$encoding[31:25], $encoding[11:7]}
 |fs2 |$encoding[24:20]
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |===
 
 Included in::
@@ -14270,7 +14297,7 @@ Encoding::
 ....
 
 Description::
-This instruction returns the larger of two signed integers.
+Returns the larger of two signed integers.
 
 .Software Hint
 [NOTE]
@@ -14313,7 +14340,7 @@ Encoding::
 ....
 
 Description::
-This instruction returns the larger of two unsigned integers.
+Returns the larger of two unsigned integers.
 
 
 Decode Variables::
@@ -14348,7 +14375,7 @@ Encoding::
 ....
 
 Description::
-This instruction returns the smaller of two signed integers.
+Returns the smaller of two signed integers.
 
 
 Decode Variables::
@@ -14383,7 +14410,7 @@ Encoding::
 ....
 
 Description::
-This instruction returns the smaller of two unsigned integers.
+Returns the smaller of two unsigned integers.
 
 
 Decode Variables::
@@ -14931,7 +14958,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs the bitwise logical OR operation between rs1 and the bitwise inversion of rs2.
+Performs the bitwise logical OR operation between rs1 and the bitwise inversion of rs2.
 
 
 Decode Variables::
@@ -15235,7 +15262,7 @@ RV64::
 ....
 
 Description::
-This instruction reverses the order of the bytes in rs1.
+Reverses the order of the bytes in rs1.
 
 [NOTE]
 The rev8 mnemonic corresponds to different instruction encodings in RV32 and RV64.
@@ -15290,7 +15317,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs a rotate left of rs1 by the amount in least-significant `log2(XLEN)` bits of rs2.
+Performs a rotate left of rs1 by the amount in least-significant `log2(XLEN)` bits of rs2.
 
 
 Decode Variables::
@@ -15327,7 +15354,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs a rotate left of the least-significant word of rs1 by the amount in least-significant 5 bits of rs2.
+Performs a rotate left of the least-significant word of rs1 by the amount in least-significant 5 bits of rs2.
 The resulting word value is sign-extended by copying bit 31 to all of the more-significant bits.
 
 
@@ -15365,7 +15392,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs a rotate right of rs1 by the amount in least-significant `log2(XLEN)` bits of rs2.
+Performs a rotate right of rs1 by the amount in least-significant `log2(XLEN)` bits of rs2.
 
 
 Decode Variables::
@@ -15412,7 +15439,7 @@ RV64::
 ....
 
 Description::
-This instruction performs a rotate right of rs1 by the amount in the least-significant log2(XLEN) bits of shamt.
+Performs a rotate right of rs1 by the amount in the least-significant log2(XLEN) bits of shamt.
 For RV32, the encodings corresponding to shamt[5]=1 are reserved.
 
 
@@ -15462,7 +15489,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs a rotate right on the least-significant word of rs1 by the amount in
+Performs a rotate right on the least-significant word of rs1 by the amount in
 the least-significant log2(XLEN) bits of shamt. The resulting word value is sign-extended by
 copying bit 31 to all of the more-significant bits.
 
@@ -15501,7 +15528,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs a rotate right on the least-significant word of rs1 by the amount in
+Performs a rotate right on the least-significant word of rs1 by the amount in
 least-significant 5 bits of rs2. The resultant word is sign-extended by copying bit 31 to all
 of the more-significant bits.
 
@@ -15936,20 +15963,20 @@ Store doubleword from even/odd register pair
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x23,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":5,"name": "rs2 != {1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31}","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
+{"reg":[{"bits":7,"name": 0x23,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2 != {1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31}","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
 ....
 
 Description::
-Stores a 64-bit value from registers rs2 and rs2+1. The effective address is obtained by adding
-register rs1 to the sign-extended 12-bit offset.
+Stores a 64-bit value from registers xs2 and xs2+1. The effective address is obtained by adding
+register xs1 to the sign-extended 12-bit offset.
 
 
 Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rs1 |$encoding[19:15]
-|rs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
+|xs2 |$encoding[24:20]
 |imm |{$encoding[31:25], $encoding[11:7]}
 |===
 
@@ -16011,7 +16038,7 @@ Encoding::
 ....
 
 Description::
-This instruction sign-extends the least-significant byte in the source to XLEN by copying the
+Sign-extends the least-significant byte in the source to XLEN by copying the
 most-significant bit in the byte (i.e., bit 7) to all of the more-significant bits.
 
 
@@ -16046,7 +16073,7 @@ Encoding::
 ....
 
 Description::
-This instruction sign-extends the least-significant halfword in the source to XLEN by copying the
+Sign-extends the least-significant halfword in the source to XLEN by copying the
 most-significant bit in the halfword (i.e., bit 15) to all of the more-significant bits.
 
 
@@ -16448,7 +16475,7 @@ Encoding::
 ....
 
 Description::
-This instruction shifts `rs1` to the left by 1 bit and adds it to `rs2`.
+Shifts `rs1` to the left by 1 bit and adds it to `rs2`.
 
 
 Decode Variables::
@@ -16483,7 +16510,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs an XLEN-wide addition of two addends. The first addend is rs2.
+Performs an XLEN-wide addition of two addends. The first addend is rs2.
 The second addend is the unsigned value formed by extracting the least-significant word of rs1
 and shifting it left by 1 place.
 
@@ -16520,7 +16547,7 @@ Encoding::
 ....
 
 Description::
-This instruction shifts `rs1` to the left by 2 places and adds it to `rs2`.
+Shifts `rs1` to the left by 2 places and adds it to `rs2`.
 
 
 Decode Variables::
@@ -16555,7 +16582,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs an XLEN-wide addition of two addends. The first addend is rs2.
+Performs an XLEN-wide addition of two addends. The first addend is rs2.
 The second addend is the unsigned value formed by extracting the least-significant word of rs1
 and shifting it left by 2 places.
 
@@ -16592,7 +16619,7 @@ Encoding::
 ....
 
 Description::
-This instruction shifts `rs1` to the left by 3 places and adds it to `rs2`.
+Shifts `rs1` to the left by 3 places and adds it to `rs2`.
 
 
 Decode Variables::
@@ -16627,7 +16654,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs an XLEN-wide addition of two addends. The first addend is rs2.
+Performs an XLEN-wide addition of two addends. The first addend is rs2.
 The second addend is the unsigned value formed by extracting the least-significant word of rs1
 and shifting it left by 3 places.
 
@@ -17270,7 +17297,7 @@ Encoding::
 ....
 
 Description::
-This instruction takes the least-significant word of rs1, zero-extends it, and shifts it
+Takes the least-significant word of rs1, zero-extends it, and shifts it
 left by the immediate.
 
 [NOTE]
@@ -18245,12 +18272,12 @@ Included in::
 == ssrdp
 
 Synopsis::
-No synopsis available
+Read ssp into a Register
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x73,"type":2},{"bits":5,"name": "rd != 0","type":4},{"bits":20,"name": 0xcdc04,"type":2}]}
+{"reg":[{"bits":7,"name": 0x73,"type":2},{"bits":5,"name": "xd != 0","type":4},{"bits":20,"name": 0xcdc04,"type":2}]}
 ....
 
 Description::
@@ -18261,7 +18288,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rd |$encoding[11:7]
+|xd |$encoding[11:7]
 |===
 
 Included in::
@@ -18426,7 +18453,7 @@ Encoding::
 ....
 
 Description::
-This instruction gathers bits from the high and low halves of the source word into odd/even bit
+Gathers bits from the high and low halves of the source word into odd/even bit
 positions in the destination word. It is the inverse of the zip instruction. This instruction is
 available only on RV32.
 
@@ -42570,7 +42597,7 @@ Encoding::
 ....
 
 Description::
-This instruction performs the bit-wise exclusive-NOR operation on rs1 and rs2.
+Performs the bit-wise exclusive-NOR operation on rs1 and rs2.
 
 
 Decode Variables::
@@ -42759,7 +42786,7 @@ RV64::
 ....
 
 Description::
-This instruction zero-extends the least-significant halfword of the source to XLEN by inserting
+Zero-extends the least-significant halfword of the source to XLEN by inserting
 0's into all of the bits more significant than 15.
 
 [NOTE]
@@ -42808,7 +42835,7 @@ Encoding::
 ....
 
 Description::
-This instruction scatters all of the odd and even bits of a source word into the high and low halves
+Scatters all of the odd and even bits of a source word into the high and low halves
 of a destination word. It is the inverse of the unzip instruction. This instruction is available only on
 RV32.
 
