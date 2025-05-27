@@ -3,9 +3,12 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.lu.h
-long_name: No synopsis available
+long_name: Floating-point Convert Half-precision to Unsigned Long integer
 description: |
-  No description available.
+  -id: inst-fcvt.lu.h-behaviour
+  -normative: false
+  -text: |
+    `fcvt.lu.h` converts a half-precision floating-point number to an unsigned 64-bit integer.
 definedBy: Zfh
 assembly: fd, fs1, frm
 encoding:

@@ -3,9 +3,12 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.h.w
-long_name: No synopsis available
+long_name: Floating-point Convert short to Half-precision
 description: |
-  No description available.
+  -id: inst-fcvt.h.w-behaviour
+  -normative: false
+  -text: |
+    `fcvt.h.w` converts a 32-bit signed integer to a half-precision floating-point number.
 definedBy: Zfh
 assembly: xd, xs1, frm
 encoding:

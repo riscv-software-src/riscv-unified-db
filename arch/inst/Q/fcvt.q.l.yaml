@@ -3,9 +3,12 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.q.l
-long_name: No synopsis available
+long_name: Floating-point Convert Long integer to Quad-precision
 description: |
-  No description available.
+  -id: inst-fcvt.q.l-behaviour
+  -normative: false
+  -text: |
+    `fcvt.q.l` converts a 64-bit signed integer, into a quad-precision floating-point number.
 definedBy: Q
 base: 64
 assembly: qd, xs1, rm
