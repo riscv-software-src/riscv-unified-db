@@ -15,7 +15,7 @@ definedBy:
         - C
         - D
     - Zcd
-assembly: fd, imm(sp)
+assembly: fd, imm
 encoding:
   match: 001-----------10
   variables:

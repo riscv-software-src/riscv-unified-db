@@ -121,6 +121,19 @@ versions:
     - Fix IDL code for qc.c.clrint, qc.c.setint, qc.clrinti and qc.setinti instructions because change in IDL '<<' operator
     - Fix IDL code for qc.c.di, qc.c.dir, qc.c.ei, qc.c.eir and qc.c.mienter.nest instructions because change in IDL '<<' operator
   requires: { name: Zca, version: ">= 1.0.0" }
+- version: "0.9.0"
+  state: frozen
+  ratification_date: null
+  contributors:
+  - name: Albert Yosher
+    company: Qualcomm Technologies, Inc.
+    email: ayosher@qti.qualcomm.com
+  - name: Derek Hower
+    company: Qualcomm Technologies, Inc.
+    email: dhower@qti.qualcomm.com
+  changes:
+    - Fix desciption of qc.c.eir instruction to match IDL code and functionality
+  requires: { name: Zca, version: ">= 1.0.0" }
 description: |
   The Xqciint extension includes eleven instructions to accelerate interrupt
   servicing by performing common actions during ISR prologue/epilogue.

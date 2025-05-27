@@ -36,7 +36,7 @@ Implemented Version:: <%= ext_version.version_str %>
 
 <%= ext.description %>
 
-<%- insts = cfg_arch.transitive_implemented_instructions.select { |i| i.definedBy == ext.name || i.definedBy.include?(ext.name) } -%>
+<%- insts = ext.instructions -%>
 <%- unless insts.empty? -%>
 == Instructions
 

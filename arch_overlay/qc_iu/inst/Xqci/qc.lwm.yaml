@@ -6,7 +6,7 @@ name: qc.lwm
 long_name: Load word multiple
 description: |
   Loads multiple words starting from address (`rs1` + `imm`) to registers, starting from `rd`.
-  The number of words is in `rs2`.
+  The number of words is in `rs2` bits [4:0].
   Instruction encoded in R instruction format.
 definedBy:
   anyOf:
@@ -35,7 +35,7 @@ access:
   vu: always
 operation(): |
   XReg vaddr = X[rs1] + imm;
-  XReg num_words = X[rs2];
+  XReg num_words = X[rs2][4:0];
   raise (ExceptionCode::IllegalInstruction, effective_ldst_mode(), $encoding) if ((rd + num_words) > 32);
   for (U32 i = 0; i < num_words; i++) {
     X[rd + i] = read_memory<32>(vaddr, $encoding);

@@ -3,18 +3,18 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fli.h
-long_name: No synopsis available
+long_name: Floating-point Load Immediate Half-precision
 description: |
   No description available.
 definedBy:
   allOf: [Zfa, Zfh]
-assembly: rd, imm
+assembly: fd, imm
 encoding:
   match: 111101000001-----000-----1010011
   variables:
-    - name: rs1
+    - name: imm
       location: 19-15
-    - name: rd
+    - name: fd
       location: 11-7
 access:
   s: always

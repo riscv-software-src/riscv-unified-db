@@ -12,7 +12,7 @@ description: |
     * Store the value of register _rs2_ to the address in _rs1_
 definedBy: Zaamo
 base: 64
-assembly: xd, xs2, (xrs1)
+assembly: xd, xs2, (xs1)
 encoding:
   match: 00001------------011-----0101111
   variables:
