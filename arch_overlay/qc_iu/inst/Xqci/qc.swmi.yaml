@@ -26,6 +26,7 @@ encoding:
       not: 0
     - name: rs3
       location: 11-7
+      not: 0
 assembly: " xs3, length, imm(xs1)"
 access:
   s: always

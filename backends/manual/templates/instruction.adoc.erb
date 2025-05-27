@@ -5,18 +5,16 @@
 
 *<%= inst.long_name %>*
 
-== Assembly format
-
-`<%= inst.name %> <%= inst.assembly.gsub('x', 'r') %>`
-
-== Synopsis
+<%= inst.fix_entities(inst.description) %>
 
 <%- if inst.data_independent_timing? -%>
 [IMPORTANT]
 This instruction must have data-independent timing when extension `Zkt` is enabled.
 <%- end -%>
 
-<%= inst.fix_entities(inst.description) %>
+== Assembly format
+
+`<%= inst.name %> <%= inst.assembly.gsub('x', 'r') %>`
 
 == Decode Variables
 
@@ -68,7 +66,7 @@ Sail::
 +
 [source,sail]
 ----
-<%= inst.fix_entities(inst["sail()"]) %>
+<%= inst.fix_entities(inst.data["sail()"]) %>
 ----
 <%- end -%>
 ====

@@ -12,6 +12,7 @@ description: |
   See `minstret` for details.
 priv_mode: M
 length: 32
+base: 32
 fields:
   COUNT:
     alias:

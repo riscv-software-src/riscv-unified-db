@@ -466,32 +466,36 @@ class ExtensionRequirementExpression
         when "oneOf"
           # expand oneOf into AND
           roots = T.let([], T::Array[LogicNode])
-          raise "unexpected" if hsh["oneOf"].size < 2
 
-          hsh["oneOf"].size.times do |k|
-            root =
-              if k.zero?
-                LogicNode.new(TYPES::And, [to_logic_tree(hsh["oneOf"][0], term_idx:, expand:), LogicNode.new(TYPES::Not, [to_logic_tree(hsh["oneOf"][1], term_idx:, expand:)])])
-              elsif k == 1
-                LogicNode.new(TYPES::And, [LogicNode.new(TYPES::Not, [to_logic_tree(hsh["oneOf"][0], term_idx:, expand:)]), to_logic_tree(hsh["oneOf"][1], term_idx:, expand:)])
-              else
-                LogicNode.new(TYPES::And, [LogicNode.new(TYPES::Not, [to_logic_tree(hsh["oneOf"][0], term_idx:, expand:)]), LogicNode.new(TYPES::Not, [to_logic_tree(hsh["oneOf"][1], term_idx:, expand:)])])
-              end
-            (2...hsh["oneOf"].size).each do |i|
+          if hsh["oneOf"].size < 2
+            to_logic_tree(hsh["oneOf"][0], term_idx:, expand:)
+          else
+            hsh["oneOf"].size.times do |k|
               root =
-                if k == i
-                  LogicNode.new(TYPES::And, [root, to_logic_tree(hsh["oneOf"][i], term_idx:, expand:)])
+                if k.zero?
+                  LogicNode.new(TYPES::And, [to_logic_tree(hsh["oneOf"][0], term_idx:, expand:), LogicNode.new(TYPES::Not, [to_logic_tree(hsh["oneOf"][1], term_idx:, expand:)])])
+                elsif k == 1
+                  LogicNode.new(TYPES::And, [LogicNode.new(TYPES::Not, [to_logic_tree(hsh["oneOf"][0], term_idx:, expand:)]), to_logic_tree(hsh["oneOf"][1], term_idx:, expand:)])
                 else
-                  LogicNode.new(TYPES::And, [root, LogicNode.new(TYPES::Not, [to_logic_tree(hsh["oneOf"][i], term_idx:, expand:)])])
+                  LogicNode.new(TYPES::And, [LogicNode.new(TYPES::Not, [to_logic_tree(hsh["oneOf"][0], term_idx:, expand:)]), LogicNode.new(TYPES::Not, [to_logic_tree(hsh["oneOf"][1], term_idx:, expand:)])])
                 end
-             end
-            roots << root
+              (2...hsh["oneOf"].size).each do |i|
+                root =
+                  if k == i
+                    LogicNode.new(TYPES::And, [root, to_logic_tree(hsh["oneOf"][i], term_idx:, expand:)])
+                  else
+                    LogicNode.new(TYPES::And, [root, LogicNode.new(TYPES::Not, [to_logic_tree(hsh["oneOf"][i], term_idx:, expand:)])])
+                  end
+               end
+              roots << root
+            end
+
+            root = LogicNode.new(TYPES::Or, [T.must(roots[0]), T.must(roots[1])])
+            (2...roots.size).each do |i|
+              root = LogicNode.new(TYPES::Or, [root, T.must(roots[i])])
+            end
+            root
           end
-          root = LogicNode.new(TYPES::Or, [T.must(roots[0]), T.must(roots[1])])
-          (2...roots.size).each do |i|
-            root = LogicNode.new(TYPES::Or, [root, T.must(roots[i])])
-          end
-          root
         when "not"
           LogicNode.new(TYPES::Not, [to_logic_tree(hsh["not"], term_idx:, expand:)])
         else
@@ -566,6 +570,30 @@ class ExtensionRequirementExpression
     raise ArgumentError, "Expecting one argument to block" unless block.arity == 1
 
     eval to_rb
+  end
+
+  # returns true if the list of extension requirements *can* satisfy the condition.
+  #
+  # note that it is possible that the condition might not be satisfied for all possible
+  # extension versions implied by ext_req_list. For example, this condition:
+  #
+  #  { "name": "A", "version": ">= 1.2" }
+  #
+  # Will be "satisfied by":
+  #
+  #  { "name": "A", "version": ">= 1.1" }
+  #
+  # because A version 1.2 fits both requirements
+  #
+  sig { params(ext_req_list: T::Array[ExtensionRequirement]).returns(T::Boolean) }
+  def could_be_satisfied_by_ext_reqs?(ext_req_list)
+    satisfied_by? do |cond_ext_req|
+      ext_req_list.any? do |ext_req|
+        ext_req.satisfying_versions.any? do |ext_ver|
+          cond_ext_req.satisfied_by?(ext_ver)
+        end
+      end
+    end
   end
 
   # yes if:
