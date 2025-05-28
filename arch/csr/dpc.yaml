@@ -6,7 +6,7 @@ name: dpc
 long_name: Debug PC Register
 address: 0x7B1
 priv_mode: D
-length: DXLEN
+length: MXLEN
 description: |
   Upon entry to debug mode, dpc is updated with the virtual address of the next instruction to be executed.
 
