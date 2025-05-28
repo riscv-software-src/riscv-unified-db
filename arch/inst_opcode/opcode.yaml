@@ -1,8 +1,0 @@
-# yaml-language-server: $schema=../../schemas/inst_opcode_schema.json#
-
-$schema: inst_opcode_schema.json#
-kind: instruction_opcode
-name: opcode
-
-data:
-  location: 6-0
