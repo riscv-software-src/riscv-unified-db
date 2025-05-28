@@ -248,7 +248,7 @@
         "virtual_address": true,
         "$comment": "Conditionally required; see below",
         "priv_mode": {
-          "enum": ["M", "S", "U", "VS"]
+          "enum": ["M", "S", "U", "VS", "D"]
         },
         "length": {
           "description": "Length, in bits, of the CSR. Can either be a 32, 64 or MXLEN, SXLEN, VSXLEN to indicate that it is dependent on the effective XLEN for a given mode. XLEN here refers to the effective XLEN in the current execution mode.",
