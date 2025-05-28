@@ -10,7 +10,7 @@ definedBy:
   anyOf:
     - C
     - Zca
-assembly: imm
+assembly: ""
 encoding:
   match: "0000000000000001"
 access:
