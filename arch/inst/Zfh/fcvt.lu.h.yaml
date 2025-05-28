@@ -3,7 +3,7 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.lu.h
-long_name: Floating-point Convert Half-precision to Unsigned Long integer
+long_name: Floating-point Convert Half-precision to Unsigned Long
 description: |
   -id: inst-fcvt.lu.h-behaviour
   -normative: false

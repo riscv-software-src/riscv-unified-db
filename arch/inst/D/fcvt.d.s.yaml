@@ -10,7 +10,7 @@ description: |
   -text: |
     The double-precision to single-precision conversion instruction, `fcvt.d.s` is encoded in the OP-FP
     major opcode space and both the source and destination are floating-point registers. The `xs2` field
-    encodes the datatype of the source, and the _fmt field encodes the datatype of the destination.
+    encodes the datatype of the source, and the `fmt` field encodes the datatype of the destination.
     `fcvt.d.s` will never round.
 definedBy: D
 assembly: xd, xs1, rm

@@ -3,7 +3,7 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.l.d
-long_name: Floating-point Convert Double-precision to Long integer
+long_name: Floating-point Convert Double-precision to Long
 description: |
   -id: inst-fcvt.l.d-behaviour
   -normative: false
