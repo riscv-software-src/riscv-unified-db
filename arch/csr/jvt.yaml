@@ -35,6 +35,11 @@ fields:
       jump instructions, implying execute access permission.
     type: RW
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (implemented?(ExtensionName::Smstateen) && (CSR[mstateen0].JVT == 1'b0 || CSR[sstateen0].JVT == 1'b0 || CSR[hstateen0].JVT == 1'b0)) {
+        return ILLEGAL_WLRL;
+      }
+      return csr_value.BASE;
   MODE:
     location: 5-0
     description: |
@@ -43,3 +48,17 @@ fields:
       are available. Jump table mode must be implemented.
     type: RW
     reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      if (implemented?(ExtensionName::Smstateen) && (CSR[mstateen0].JVT == 1'b0 || CSR[sstateen0].JVT == 1'b0 || CSR[hstateen0].JVT == 1'b0)) {
+        return ILLEGAL_WLRL;
+      }
+      return csr_value.MODE;
+sw_read(): |
+  # If the Smstateen extension is implemented, then bit 2 in `mstateen0`, `sstateen0`, and `hstateen0` is
+  # implemented. If bit 2 of a controlling `stateen0` CSR is zero, then access to the `jvt` CSR and execution
+  # of a `cm.jalt` or `cm.jt` instruction by a lower privilege level results in an illegal-instruction trap (or, if
+  # appropriate, a virtual-instruction trap).
+
+  if (implemented?(ExtensionName::Smstateen) && (CSR[mstateen0].JVT == 1'b0 || CSR[sstateen0].JVT == 1'b0 || CSR[hstateen0].JVT == 1'b0)) {
+    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  }
