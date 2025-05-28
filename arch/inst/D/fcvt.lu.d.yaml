@@ -3,7 +3,7 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.lu.d
-long_name: Floating-point Convert Double-precision to Unsigned Long integer
+long_name: Floating-point Convert Double-precision to Unsigned Long
 description: |
   -id: inst-fcvt.lu.d-behaviour
   -normative: false
