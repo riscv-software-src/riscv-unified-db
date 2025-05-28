@@ -5,7 +5,7 @@ kind: instruction
 name: flh
 long_name: Half-precision floating-point load
 description: |
-  The `flh` instruction loads a single-precision floating-point value from memory at address _rs1_ + _imm_ into floating-point register _rd_.
+  The `flh` instruction loads a single-precision floating-point value from memory at address _xs1_ + _imm_ into floating-point register _rd_.
 
   `flh` does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 

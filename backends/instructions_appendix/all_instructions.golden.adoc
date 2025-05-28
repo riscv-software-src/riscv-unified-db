@@ -8465,17 +8465,17 @@ Included in::
 == fcvt.w.s
 
 Synopsis::
-Convert single-precision float to integer word to signed 32-bit integer
+Convert single-precision float to signed word.
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "rd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0xc00,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0xc00,"type":2}]}
 ....
 
 Description::
-Converts a floating-point number in floating-point register _fs1_ to a signed 32-bit integer indicates
-integer register _rd_.
+Converts a floating-point number in floating-point register _fs1_ to a signed 32-bit integer in
+integer register _xd_.
 
 For XLEN &gt;32, xref:insts:fcvt_w_s.adoc#udb:doc:inst:fcvt_w_s[fcvt.w.s] sign-extends the 32-bit result to the destination register width.
 
@@ -8499,7 +8499,7 @@ h! Output for `+∞` for `NaN` ! `2^31 - 1`
 All floating-point to integer and integer to floating-point conversion instructions round
 according to the _rm_ field.
 A floating-point register can be initialized to floating-point positive zero using
-`fcvt.s.w rd, x0`, which will never set any exception flags.
+`fcvt.s.w xd, x0`, which will never set any exception flags.
 
 All floating-point conversion instructions set the Inexact exception flag if the rounded
 result differs from the operand value and the Invalid exception flag is not set.
@@ -8511,7 +8511,7 @@ Decode Variables::
 |Variable Name |Location
 |fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|rd |$encoding[11:7]
+|xd |$encoding[11:7]
 |===
 
 Included in::
@@ -8633,25 +8633,52 @@ Included in::
 == fcvt.wu.s
 
 Synopsis::
-No synopsis available
+Convert single-precision float to unsigned word.
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "rd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": 0xc01,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0xc01,"type":2}]}
 ....
 
 Description::
-No description available.
+Converts a floating-point number in floating-point register _fs1_ to an unsigned 32-bit integer in integer register _xd_.
+
+For XLEN &gt;32, xref:insts:fcvt_wu_s.adoc#udb:doc:inst:fcvt_wu_s[fcvt.wu.s] sign-extends the 32-bit result to the destination register width.
+
+If the rounded result is not representable as a 32-bit unsigned integer, it is clipped to the
+nearest value and the invalid flag is set.
+
+The range of valid inputs and behavior for invalid inputs are:
+
+[separator="!"]
+!===
+! ! Value
+
+h! Minimum valid input (after rounding) ! `0`
+h! Maximum valid input (after rounding) ! `2^32 - 1`
+h! Output for out-of-range negative input ! `0`
+h! Output for `−∞` ! `0`
+h! Output for out-of-range positive input ! `2^32 - 1`
+h! Output for `+∞` for `NaN` ! `2^32 - 1`
+!===
+
+All floating-point to integer and integer to floating-point conversion instructions round
+according to the _rm_ field.
+A floating-point register can be initialized to floating-point positive zero using
+`fcvt.s.w xd, x0`, which will never set any exception flags.
+
+All floating-point conversion instructions set the Inexact exception flag if the rounded
+result differs from the operand value and the Invalid exception flag is not set.
 
 
 Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|rs1 |$encoding[19:15]
+|fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|rd |$encoding[11:7]
+|xd |$encoding[11:7]
 |===
 
 Included in::
@@ -9247,12 +9274,12 @@ Included in::
 == fld
 
 Synopsis::
-No synopsis available
+Load Double-precision Floating-Point
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "rd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": "imm","type":4}]}
+{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": "imm","type":4}]}
 ....
 
 Description::
@@ -9264,8 +9291,8 @@ Decode Variables::
 |===
 |Variable Name |Location
 |imm |$encoding[31:20]
-|rs1 |$encoding[19:15]
-|rd |$encoding[11:7]
+|xs1 |$encoding[19:15]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -9582,7 +9609,7 @@ Encoding::
 ....
 
 Description::
-The xref:insts:flh.adoc#udb:doc:inst:flh[flh] instruction loads a single-precision floating-point value from memory at address _rs1_ + _imm_ into floating-point register _rd_.
+The xref:insts:flh.adoc#udb:doc:inst:flh[flh] instruction loads a single-precision floating-point value from memory at address _xs1_ + _imm_ into floating-point register _rd_.
 
 xref:insts:flh.adoc#udb:doc:inst:flh[flh] does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
@@ -9763,7 +9790,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": "imm","type":4}]}
+{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": "imm","type":4}]}
 ....
 
 Description::
@@ -9775,7 +9802,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |imm |$encoding[31:20]
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |qd |$encoding[11:7]
 |===
 
@@ -10087,11 +10114,11 @@ Single-precision floating-point load
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":12,"name": "imm","type":4}]}
+{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": "imm","type":4}]}
 ....
 
 Description::
-The xref:insts:flw.adoc#udb:doc:inst:flw[flw] instruction loads a single-precision floating-point value from memory at address _rs1_ + _imm_ into floating-point register _fd_.
+The xref:insts:flw.adoc#udb:doc:inst:flw[flw] instruction loads a single-precision floating-point value from memory at address _xs1_ + _imm_ into floating-point register _fd_.
 
 xref:insts:flw.adoc#udb:doc:inst:flw[flw] does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
@@ -10101,7 +10128,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |imm |$encoding[31:20]
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |fd |$encoding[11:7]
 |===
 
@@ -12096,7 +12123,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":5,"name": "rs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
+{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
 ....
 
 Description::
@@ -12108,8 +12135,8 @@ Decode Variables::
 |===
 |Variable Name |Location
 |imm |{$encoding[31:25], $encoding[11:7]}
-|rs2 |$encoding[24:20]
-|rs1 |$encoding[19:15]
+|fs2 |$encoding[24:20]
+|xs1 |$encoding[19:15]
 |===
 
 Included in::
@@ -12603,7 +12630,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
+{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
 ....
 
 Description::
@@ -12616,7 +12643,7 @@ Decode Variables::
 |Variable Name |Location
 |imm |{$encoding[31:25], $encoding[11:7]}
 |qs2 |$encoding[24:20]
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |===
 
 Included in::
@@ -12923,11 +12950,11 @@ Single-precision floating-point store
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "rs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
+{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
 ....
 
 Description::
-The xref:insts:fsw.adoc#udb:doc:inst:fsw[fsw] instruction stores a single-precision floating-point value in _fs2_ to memory at address _rs1_ + _imm_.
+The xref:insts:fsw.adoc#udb:doc:inst:fsw[fsw] instruction stores a single-precision floating-point value in _fs2_ to memory at address _xs1_ + _imm_.
 
 xref:insts:fsw.adoc#udb:doc:inst:fsw[fsw] does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
@@ -12938,7 +12965,7 @@ Decode Variables::
 |Variable Name |Location
 |imm |{$encoding[31:25], $encoding[11:7]}
 |fs2 |$encoding[24:20]
-|rs1 |$encoding[19:15]
+|xs1 |$encoding[19:15]
 |===
 
 Included in::

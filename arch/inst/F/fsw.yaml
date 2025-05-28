@@ -5,7 +5,7 @@ kind: instruction
 name: fsw
 long_name: Single-precision floating-point store
 description: |
-  The `fsw` instruction stores a single-precision floating-point value in _fs2_ to memory at address _rs1_ + _imm_.
+  The `fsw` instruction stores a single-precision floating-point value in _fs2_ to memory at address _xs1_ + _imm_.
 
   `fsw` does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
@@ -18,7 +18,7 @@ encoding:
       location: 31-25|11-7
     - name: fs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
 access:
   s: always
@@ -29,7 +29,7 @@ data_independent_timing: true
 operation(): |
   check_f_ok($encoding);
 
-  XReg virtual_address = X[rs1] + $signed(imm);
+  XReg virtual_address = X[xs1] + $signed(imm);
 
   write_memory<32>(virtual_address, f[fs2][31:0], $encoding);
 
