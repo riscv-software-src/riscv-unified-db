@@ -7056,4 +7056,35 @@ module Idl
       "#{indent_str}#{type} #{name};\n"
     end
   end
+  class CommentAst < AstNode
+    attr_reader :text
+
+    def initialize(input, interval, text)
+      super(input, interval, [])
+      @text = text
+    end
+
+    def format_idl(indent = 0)
+      "#{' ' * indent}# #{@text}".rstrip + "\n"
+    end
+
+    def to_idl(indent = 0)
+      format_idl(indent)
+    end
+  end
+
+  class WhitespaceAst < AstNode
+    def initialize(input, interval)
+      super(input, interval, [])
+    end
+
+    def format_idl(indent = 0)
+      "\n"
+    end
+
+    def to_idl(indent = 0)
+      "\n"
+    end
+  end
+
 end

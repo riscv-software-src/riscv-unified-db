@@ -523,6 +523,15 @@ grammar Idl
     'return' vals:(first:(space+ e:(expression/dontcare_return))? rest:(space* ',' space* e:(expression/dontcare_return))*) <Idl::ReturnExpressionSyntaxNode>
   end
 
+  rule statement_list
+  (statement / comment / blank_line)*
+  end
+
+  rule block_item
+  (statement / return_statement / function_if_block / for_loop / comment / blank_line)
+  end
+
+
   rule return_statement
     return_expression space* 'if' space* expression space* ';' <Idl::ConditionalReturnStatementSyntaxNode>
     /
@@ -530,42 +539,57 @@ grammar Idl
   end
 
   rule function_if_block
-    'if' space* '(' space* if_cond:expression space* ')' space* '{' space*
-      if_body:(e:(statement / return_statement / function_if_block / for_loop) space*)+
+  'if' space* '(' space* if_cond:expression space* ')' space* '{' space*
+    if_body:(e:(statement / comment / blank_line / return_statement / function_if_block / for_loop) space*)+
+  '}'
+  elseifs:(
+    space* 'else' space+ 'if' space* '(' space* expression space* ')' space* '{' space*
+      body:(e:(statement / comment / blank_line / return_statement / function_if_block / for_loop) space*)+
+    '}'
+  )*
+  final_else:(
+    space* 'else' space* '{' space*
+      body:(e:(statement / comment / blank_line / return_statement / function_if_block / for_loop) space*)+
+    '}'
+  )?
+  <Idl::IfSyntaxNode>
+  end
+
+rule function_if_block
+  'if' space* '(' space* if_cond:expression space* ')' space* '{' space*
+    if_body:(e:(statement / comment / blank_line / return_statement / function_if_block / for_loop) space*)+
+  '}'
+  elseifs:(
+    space* 'else' space+ 'if' space* '(' space* expression space* ')' space* '{' space*
+      body:(e:(statement / comment / blank_line / return_statement / function_if_block / for_loop) space*)+
+    '}'
+  )*
+  final_else:(
+    space* 'else' space* '{' space*
+      body:(e:(statement / comment / blank_line / return_statement / function_if_block / for_loop) space*)+
+    '}'
+  )?
+  <Idl::IfSyntaxNode>
+end
+e:(statement / execute_if_block / for_loop / comment / blank_line) space*)+
     '}'
     elseifs:(
       space* 'else' space+ 'if' space* '(' space* expression space* ')' space* '{' space*
-        body:(e:(statement / return_statement / function_if_block / for_loop) space*)+
+        body:(e:(statement / execute_if_block / for_loop / comment / blank_line) space*)+
       '}'
     )*
     final_else:(
       space* 'else' space* '{' space*
-        body:(e:(statement / return_statement / function_if_block / for_loop) space*)+
+        body:(e:(statement / execute_if_block / for_loop / comment / blank_line) space*)+
       '}'
     )? <Idl::IfSyntaxNode>
-  end
+    end
 
-  rule execute_if_block
-    'if' space* '(' space* if_cond:expression space* ')' space* '{' space*
-      if_body:(e:(statement / execute_if_block / for_loop) space*)+
-    '}'
-    elseifs:(
-      space* 'else' space+ 'if' space* '(' space* expression space* ')' space* '{' space*
-        body:(e:(statement / execute_if_block / for_loop) space*)+
-      '}'
-    )*
-    final_else:(
-      space* 'else' space* '{' space*
-        body:(e:(statement / execute_if_block / for_loop) space*)+
-      '}'
-    )? <Idl::IfSyntaxNode>
-  end
-
-  rule for_loop
-    'for' space* '(' space* single_declaration_with_initialization space* ';' space* condition:expression space* ';' space* action:(assignment / post_inc / post_dec) space*  ')' space* '{' space*
-      stmts:(s:(statement / return_statement / function_if_block / for_loop) space*)+
-    '}' <Idl::ForLoopSyntaxNode>
-  end
+    rule for_loop
+      'for' space* '(' space* single_declaration_with_initialization space* ';' space* condition:expression space* ';' space* action:(assignment / post_inc / post_dec) space*  ')' space* '{' space*
+        stmts:(s:(statement / return_statement / function_if_block / for_loop) space*)+
+      '}' <Idl::ForLoopSyntaxNode>
+    end
 
   rule builtin_type_name
     # alias for Bits<MXLEN>
@@ -618,8 +642,21 @@ grammar Idl
   end
 
   rule comment
-    '#' content:(!"\n" .)* "\n" # <Idl::CommentSyntaxNode>
+  space* "#" (!"\n" .)* "\n" {
+    def to_ast
+      CommentAst.new(input, interval, text_value.strip)
+    end
+  }
   end
+
+  rule blank_line
+    space* "\n" {
+      def to_ast
+      WhitespaceAst.new(input, interval)
+    end
+    }
+  end
+
 
   rule function_statement
     (return_statement/statement/function_if_block/for_loop)
