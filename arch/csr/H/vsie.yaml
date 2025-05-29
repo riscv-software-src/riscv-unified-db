@@ -1,0 +1,104 @@
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: vsie
+address: 0x204
+virtual_address: 0x144
+long_name: Virtual Supervisor Interrupt Enable
+description:
+  - id: csr-vsie-purpose
+    normative: true
+    text: |
+      The vsie register is a VSXLEN-bit read/write register that is VS-mode’s version of
+      supervisor CSR sie. When V=1, vsie substitutes for the usual sie, so instructions that
+      normally read or modify sie actually access vsie instead. However, interrupts directed to
+      HS-level continue to be indicated in the HS-level sip register, not in vsip, when V=1.
+
+  - id: csr-vsie-lcofie-aliasing
+    normative: true
+    text: |
+      When bit 13 of hideleg is zero, vsie.LCOFIE is read-only zero. Else, vsie.LCOFIE is an alias of sie.LCOFIE.
+
+  - id: csr-vsie-seie-aliasing
+    normative: true
+    text: |
+      When bit 10 of hideleg is zero, vsie.SEIE is read-only zero. Else, vsie.SEIE is an alias of hie.VSEIE.
+
+  - id: csr-vsie-stie-aliasing
+    normative: true
+    text: |
+      When bit 6 of hideleg is zero, vsie.STIE is read-only zero. Else, vsie.STIE is an alias of hie.VSTIE.
+
+  - id: csr-vsie-ssie-aliasing
+    normative: true
+    text: |
+      When bit 2 of hideleg is zero, vsie.SSIE is read-only zero. Else, vsie.SSIE is an alias of hie.VSSIE.
+priv_mode: VS
+definedBy: H
+length: VSXLEN
+
+sw_read(): |
+  let value = 0;
+  if (CSR[hideleg][2]) {
+      value |= (CSR[hie].VSSIE[0] << 1);
+  }
+  if (CSR[hideleg][6]) {
+      value |= (CSR[hie].VSTIE[0] << 5);
+  }
+  if (CSR[hideleg][10]) {
+      value |= (CSR[hie].VSEIE[0] << 9);
+  }
+  if (CSR[hideleg][13]) {
+      value |= (CSR[sie].LCOFIE[0] << 13);
+  }
+  return value;
+
+fields:
+  SSIE:
+    location: 1
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    alias: hie.VSSIE[0]
+    description: |
+      SSIE. Read-only zero when hideleg[2] is 0. Else, alias of hie.VSSIE.
+    "sw_write(csr_value)": |
+      if (CSR[hideleg][2]) {
+          CSR[hie].VSSIE[0] = (csr_value >> 1) & 1;
+      }
+
+  STIE:
+    location: 5
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    alias: hie.VSTIE[0]
+    description: |
+      STIE. Read-only zero when hideleg[6] is 0. Else, alias of hie.VSTIE.
+    "sw_write(csr_value)": |
+      if (CSR[hideleg][6]) {
+          CSR[hie].VSTIE[0] = (csr_value >> 5) & 1;
+      }
+
+  SEIE:
+    location: 9
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    alias: hie.VSEIE[0]
+    description: |
+      SEIE. Read-only zero when hideleg[10] is 0. Else, alias of hie.VSEIE.
+    "sw_write(csr_value)": |
+      if (CSR[hideleg][10]) {
+          CSR[hie].VSEIE[0] = (csr_value >> 9) & 1;
+      }
+
+  LCOFIE:
+    location: 13
+    type: RW-H
+    reset_value: UNDEFINED_LEGAL
+    alias: sie.LCOFIE[0]
+    description: |
+      LCOFIE. Read-only zero when hideleg[13] is 0. Else, alias of sie.LCOFIE.
+    "sw_write(csr_value)": |
+      if (CSR[hideleg][13]) {
+          CSR[sie].LCOFIE[0] = (csr_value >> 13) & 1;
+      }
