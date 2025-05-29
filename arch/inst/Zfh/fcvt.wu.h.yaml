@@ -3,9 +3,12 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.wu.h
-long_name: No synopsis available
+long_name: Floating-point Convert Half-precision to Word
 description: |
-  No description available.
+  -id: inst-fcvt.wu.h-behaviour
+  -normative: false
+  -text: |
+    `fcvt.wu.h` converts a half-precision floating-point number to an unsigned 32-bit integer.
 definedBy: Zfh
 assembly: fd, fs1, frm
 encoding:
