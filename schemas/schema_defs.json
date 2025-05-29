@@ -374,6 +374,21 @@
         },
         "additionalProperties": false
       }
+    },
+    "versions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["version"],
+        "properties": {
+          "version": {
+            "$ref": "schema_defs.json#/$defs/semantic_version"
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "description": "List of semantic versions"
     }
   }
 }
