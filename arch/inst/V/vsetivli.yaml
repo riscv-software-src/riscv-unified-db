@@ -11,11 +11,11 @@ assembly: xd, uimm, vtypei
 encoding:
   match: 11---------------111-----1010111
   variables:
-    - name: zimm10
+    - name: vtypei
       location: 29-20
     - name: uimm
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always

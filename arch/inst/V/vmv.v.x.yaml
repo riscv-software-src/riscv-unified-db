@@ -11,7 +11,7 @@ assembly: vd, xs1
 encoding:
   match: 010111100000-----100-----1010111
   variables:
-    - name: rs1
+    - name: xs1
       location: 19-15
     - name: vd
       location: 11-7

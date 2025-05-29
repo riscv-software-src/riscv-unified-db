@@ -37,6 +37,23 @@ description:
 priv_mode: VS
 definedBy: H
 length: VSXLEN
+
+sw_read(): |
+  let value = 0;
+  if (CSR[hideleg][2]) {
+      value |= (CSR[hie].VSSIE[0] << 1);
+  }
+  if (CSR[hideleg][6]) {
+      value |= (CSR[hie].VSTIE[0] << 5);
+  }
+  if (CSR[hideleg][10]) {
+      value |= (CSR[hie].VSEIE[0] << 9);
+  }
+  if (CSR[hideleg][13]) {
+      value |= (CSR[sie].LCOFIE[0] << 13);
+  }
+  return value;
+
 fields:
   SSIE:
     location: 1
@@ -45,16 +62,11 @@ fields:
     alias: hie.VSSIE[0]
     description: |
       SSIE. Read-only zero when hideleg[2] is 0. Else, alias of hie.VSSIE.
-      sw_read(): |
-          if (CSR[hideleg].S == 1) {
-            return CSR[hie].VSSIE[0];
-          } else {
-            return 0;
-          }
-      sw_write(csr_value): |
-      if (CSR[hideleg].S == 1) {
-        CSR[hie].VSSIE[0] = csr_value.VSSIE & ((1 << NUM_VSSI) - 1);
+    "sw_write(csr_value)": |
+      if (CSR[hideleg][2]) {
+          CSR[hie].VSSIE[0] = (csr_value >> 1) & 1;
       }
+
   STIE:
     location: 5
     type: RW-H
@@ -62,6 +74,10 @@ fields:
     alias: hie.VSTIE[0]
     description: |
       STIE. Read-only zero when hideleg[6] is 0. Else, alias of hie.VSTIE.
+    "sw_write(csr_value)": |
+      if (CSR[hideleg][6]) {
+          CSR[hie].VSTIE[0] = (csr_value >> 5) & 1;
+      }
 
   SEIE:
     location: 9
@@ -70,6 +86,10 @@ fields:
     alias: hie.VSEIE[0]
     description: |
       SEIE. Read-only zero when hideleg[10] is 0. Else, alias of hie.VSEIE.
+    "sw_write(csr_value)": |
+      if (CSR[hideleg][10]) {
+          CSR[hie].VSEIE[0] = (csr_value >> 9) & 1;
+      }
 
   LCOFIE:
     location: 13
@@ -78,3 +98,7 @@ fields:
     alias: sie.LCOFIE[0]
     description: |
       LCOFIE. Read-only zero when hideleg[13] is 0. Else, alias of sie.LCOFIE.
+    "sw_write(csr_value)": |
+      if (CSR[hideleg][13]) {
+          CSR[sie].LCOFIE[0] = (csr_value >> 13) & 1;
+      }
