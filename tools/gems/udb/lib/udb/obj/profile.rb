@@ -92,7 +92,7 @@ end
 # For example, the RVA20 profile release has profiles RVA20U64 and RVA20S64.
 # Note there is no Portfolio base class for a ProfileRelease to inherit from since there is no
 # equivalent to a ProfileRelease in a Certificate so no potential for a shared base class.
-class Udb::ProfileRelease < Udb::DatabaseObject
+class Udb::ProfileRelease < Udb::TopLevelDatabaseObject
   def marketing_name = @data["marketing_name"]
 
   # @return [String] Small enough (~1 paragraph) to be suitable immediately after a higher-level heading.

@@ -7,11 +7,7 @@ require "idlc/passes/gen_adoc"
 
 # @return [Architecture]
 def pf_create_arch
-  # Ensure that unconfigured resolved architecture called "_" exists.
-  Rake::Task["#{$root}/.stamps/resolve-_.stamp"].invoke
-
-  # Create architecture object using the unconfigured resolved architecture called "_".
-  Architecture.new($root / "gen" / "resolved_arch" / "_")
+  cfg_arch_for("_")
 end
 
 # @param portfolio_grp_with_arch [PortfolioGroup] Contains one or more Portfolio objects that have an arch (not a cfg_arch).

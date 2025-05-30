@@ -272,7 +272,7 @@ namespace :test do
 
   task schema: "#{$root}/.stamps/resolve-_.stamp" do
     puts "Checking arch files against schema.."
-    Udb::Architecture.new("#{$root}/gen/resolved_arch/_").validate(show_progress: true)
+    cfg_arch_for("_").validate(show_progress: true)
     puts "All files validate against their schema"
   end
 

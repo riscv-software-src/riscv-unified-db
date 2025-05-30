@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # frozen_string_literal: true
+# typed: false
 
 require_relative "database_obj"
 require_relative "../schema"
@@ -11,8 +12,7 @@ module Udb
 
 # A parameter (AKA option, AKA implementation-defined value) supported by an extension
 class Parameter
-  # @return [Architecture] The defining architecture
-  attr_reader :arch
+  extend T::Sig
 
   # @return [String] Parameter name
   attr_reader :name
@@ -51,12 +51,13 @@ class Parameter
   # @param ext [Extension]
   # @param name [String]
   # @param data [Hash<String, Object]
+  sig { params(ext: Extension, name: String, data: T::Hash[String, Object]).void }
   def initialize(ext, name, data)
     raise ArgumentError, "Expecting Extension but got #{ext.class}" unless ext.is_a?(Extension)
     raise ArgumentError, "Expecting String but got #{name.class}" unless name.is_a?(String)
     raise ArgumentError, "Expecting Hash but got #{data.class}" unless data.is_a?(Hash)
 
-    @arch = ext.arch
+    @cfg_arch = ext.cfg_arch
     @data = data
     @name = name
     @desc = data["description"]
@@ -67,7 +68,7 @@ class Parameter
     unless also_defined_in_data.nil?
       if also_defined_in_data.is_a?(String)
         other_ext_name = also_defined_in_data
-        other_ext = @arch.extension(other_ext_name)
+        other_ext = @cfg_arch.extension(other_ext_name)
         raise "Definition error in #{ext.name}.#{name}: #{other_ext_name} is not a known extension" if other_ext.nil?
 
         also_defined_in_array << other_ext
@@ -77,7 +78,7 @@ class Parameter
         end
 
         also_defined_in_data.each do |other_ext_name|
-          other_ext = @arch.extension(other_ext_name)
+          other_ext = @cfg_arch.extension(other_ext_name)
           raise "Definition error in #{ext.name}.#{name}: #{also_defined_in_data} is not a known extension" if other_ext.nil?
 
           also_defined_in_array << other_ext
@@ -88,10 +89,36 @@ class Parameter
     @idl_type = @schema.to_idl_type.make_const.freeze
   end
 
-  # @param version [ExtensionVersion]
-  # @return [Boolean] if this parameter is defined in +version+
-  def defined_in_extension_version?(version)
-    return false if @exts.none? { |ext| ext.name == version.ext.name }
+  # @return [ExtensionRequirementExpression] Condition when the parameter exists
+  sig { returns(ExtensionRequirementExpression) }
+  def when
+    @when ||=
+      if @data["when"].nil?
+        # the parent extension is implictly required
+        cond =
+          if @exts.size > 1
+            { "anyOf" => @exts.map { |ext| { "name" => ext.name, "version" => ">= #{ext.min_version.version_str}" } }}
+          else
+            { "name" => @exts[0].name, "version" => ">= #{@exts[0].min_version.version_str}"}
+          end
+        ExtensionRequirementExpression.new(cond, @cfg_arch)
+      else
+        # the parent extension is implictly required
+        cond =
+        if @exts.size > 1
+          { "allOf" => [{"anyOf" => @exts.map { |ext| { "name" => ext.name, "version" => ">= #{ext.min_version.version_str}" } } }, @data["when"]] }
+        else
+          { "allOf" => [ { "name" => @exts[0].name, "version" => ">= #{@exts[0].min_version.version_str}"}, @data["when"]] }
+        end
+        cond =
+        ExtensionRequirementExpression.new(cond, @cfg_arch)
+      end
+  end
+
+  # @param cfg_arch [ConfiguredArchitecture]
+  # @return [Boolean] if this parameter is defined in +cfg_arch+
+  def defined_in_cfg?(cfg_arch)
+    return false if @exts.none? { |ext| cfg_arch.ext.name == version.ext.name }
     return true if @data.dig("when", "version").nil?
 
     @exts.any? do |ext|

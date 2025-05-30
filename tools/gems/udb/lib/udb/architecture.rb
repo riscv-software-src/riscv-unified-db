@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # frozen_string_literal: true
+# typed: false
 
 # The Architecture class is the API to the architecture database.
 # The "database" contains RISC-V standards including extensions, instructions,
@@ -43,6 +44,7 @@ require "concurrent"
 require "json"
 require "json_schemer"
 require "pathname"
+require "sorbet-runtime"
 require "yaml"
 
 require "idlc"
@@ -60,6 +62,8 @@ require_relative "obj/profile"
 module Udb
 
 class Architecture
+  extend T::Sig
+
   # @return [Pathname] Path to the directory with the standard YAML files
   attr_reader :path
 
@@ -195,6 +199,7 @@ class Architecture
   end
 
   # @return [Array<DatabaseObject>] All known objects
+  sig { returns(T::Array[TopLevelDatabaseObject]) }
   def objs
     return @objs unless @objs.nil?
 
@@ -281,7 +286,7 @@ class Architecture
 
     @exception_codes =
       extensions.reduce([]) do |list, ext_version|
-        ecodes = extension(ext_version.name)["exception_codes"]
+        ecodes = extension(ext_version.name).data["exception_codes"]
         next list if ecodes.nil?
 
         ecodes.each do |ecode|
@@ -300,7 +305,7 @@ class Architecture
 
     @interupt_codes =
       extensions.reduce([]) do |list, ext_version|
-        icodes = extension(ext_version.name)["interrupt_codes"]
+        icodes = extension(ext_version.name).data["interrupt_codes"]
         next list if icodes.nil?
 
         icodes.each do |icode|
@@ -319,6 +324,7 @@ class Architecture
   #
   # @params uri [String] JSON Reference pointer
   # @return [Object] The pointed-to object
+  sig { params(uri: String).returns(TopLevelDatabaseObject) }
   def ref(uri)
     raise ArgumentError, "JSON Reference (#{uri}) must contain one '#'" unless uri.count("#") == 1
 

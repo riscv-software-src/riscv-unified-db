@@ -176,11 +176,7 @@ class Udb::ProcCertModel < Udb::Portfolio
         param = ext.params.find { |p| p.name == param_name }
         raise "There is no param '#{param_name}' in extension '#{ext_name}" if param.nil?
 
-        next unless ext.versions.any? do |ext_ver|
-          ver_req = ext_data["version"] || ">= #{ext.min_version.version_spec}"
-          ExtensionRequirement.new(ext_name, ver_req, arch: @arch).satisfied_by?(ext_ver) &&
-            param.defined_in_extension_version?(ext_ver)
-        end
+        next unless param.when.could_be_satisfied_by_ext_reqs?(in_scope_ext_reqs)
 
         @all_in_scope_params << InScopeParameter.new(param, param_data["schema"], param_data["note"])
       end
@@ -211,9 +207,7 @@ class Udb::ProcCertModel < Udb::Portfolio
       param = ext.params.find { |p| p.name == param_name }
       raise "There is no param '#{param_name}' in extension '#{ext_req.name}" if param.nil?
 
-      next unless ext.versions.any? do |ext_ver|
-        ext_req.satisfied_by?(ext_ver) && param.defined_in_extension_version?(ext_ver)
-      end
+      next unless param.when.could_be_satisfied_by_ext_reqs?(in_scope_ext_reqs)
 
       params << InScopeParameter.new(param, param_data["schema"], param_data["note"])
     end
@@ -231,11 +225,6 @@ class Udb::ProcCertModel < Udb::Portfolio
       ext = @arch.extension(ext_req.name)
       ext.params.each do |param|
         next if all_in_scope_params.any? { |c| c.param.name == param.name }
-
-        next unless ext.versions.any? do |ext_ver|
-                      ext_req.satisfied_by?(ext_ver) &&
-                      param.defined_in_extension_version?(ext_ver)
-                    end
 
         @all_out_of_scope_params << param
       end

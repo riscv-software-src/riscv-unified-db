@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # frozen_string_literal: true
+# typed: false
 
 require_relative "database_obj"
 require_relative "certifiable_obj"
@@ -13,8 +14,8 @@ require_relative "../version_spec"
 
 module Udb
 
-  # Extension definition
-class Extension < DatabaseObject
+# Extension definition
+class Extension < TopLevelDatabaseObject
   # Add all methods in this module to this type of database object.
   include CertifiableObject
 
@@ -72,6 +73,7 @@ class Extension < DatabaseObject
   def ratified = ratified_versions.any?
 
   # @return [ExtensionVersion] Mimumum defined version of this extension
+  sig { returns(ExtensionVersion) }
   def min_version
     versions.min { |a, b| a.version_spec <=> b.version_spec }
   end
@@ -165,6 +167,8 @@ end
 
 # A specific version of an extension
 class ExtensionVersion
+  extend T::Sig
+
   # @return [String] Name of the extension
   attr_reader :name
 
@@ -263,8 +267,17 @@ class ExtensionVersion
   end
 
   # @return [Array<Parameter>] The list of parameters for this extension version
+  sig { returns(T::Array[Parameter]) }
   def params
-    @ext.params.select { |p| p.defined_in_extension_version?(self) }
+    @ext.params.select do |p|
+      p.when.satisfied_by? do |ext_req|
+        if ext_req.name == name
+          ext_req.satisfied_by?(self)
+        else
+          @arch.possible_extension_versions.any? { |poss_ext_ver| ext_req.satisfied_by?(poss_ext_ver) }
+        end
+      end
+    end
   end
 
   # @return [String] formatted like the RVI manual

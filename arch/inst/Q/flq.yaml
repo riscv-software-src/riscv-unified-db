@@ -13,7 +13,7 @@ encoding:
   variables:
     - name: imm
       location: 31-20
-    - name: rs1
+    - name: xs1
       location: 19-15
     - name: qd
       location: 11-7
