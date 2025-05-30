@@ -8,7 +8,7 @@ description: |
   No description available.
 definedBy:
   allOf: [Q, Zfh]
-assembly: xd, qs1, rm
+assembly: fd, qs1, rm
 encoding:
   match: 010001000011-------------1010011
   variables:
@@ -16,7 +16,7 @@ encoding:
       location: 19-15
     - name: rm
       location: 14-12
-    - name: rd
+    - name: fd
       location: 11-7
 access:
   s: always

@@ -8,15 +8,15 @@ description: |
   No description available.
 definedBy:
   allOf: [Q, Zfh]
-assembly: hd, qs1, rm
+assembly: qd, fs1, rm
 encoding:
   match: 010001100010-------------1010011
   variables:
-    - name: qs1
+    - name: fs1
       location: 19-15
     - name: rm
       location: 14-12
-    - name: hd
+    - name: qd
       location: 11-7
 access:
   s: always

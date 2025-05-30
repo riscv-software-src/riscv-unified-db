@@ -16,7 +16,7 @@ encoding:
       location: 24-20
     - name: qs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always

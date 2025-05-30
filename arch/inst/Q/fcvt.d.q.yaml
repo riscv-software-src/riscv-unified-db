@@ -7,7 +7,7 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy: Q
-assembly: xd, qs1, rm
+assembly: fd, qs1, rm
 encoding:
   match: 010000100011-------------1010011
   variables:
@@ -15,7 +15,7 @@ encoding:
       location: 19-15
     - name: rm
       location: 14-12
-    - name: rd
+    - name: fd
       location: 11-7
 access:
   s: always
