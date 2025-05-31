@@ -8,7 +8,7 @@ description: |
   No description available.
 definedBy: Q
 base: 64
-assembly: qd, xs1, rm
+assembly: fd, xs1, rm
 encoding:
   match: 110101100011-------------1010011
   variables:
@@ -16,7 +16,7 @@ encoding:
       location: 19-15
     - name: rm
       location: 14-12
-    - name: qd
+    - name: fd
       location: 11-7
 access:
   s: always

@@ -9,7 +9,7 @@ description: |
 definedBy:
   allOf: [Q, Zfa]
 base: 64
-assembly: qd, xs1, xs2
+assembly: fd, xs1, xs2
 encoding:
   match: 1011011----------000-----1010011
   variables:
@@ -17,7 +17,7 @@ encoding:
       location: 24-20
     - name: xs1
       location: 19-15
-    - name: qd
+    - name: fd
       location: 11-7
 access:
   s: always
