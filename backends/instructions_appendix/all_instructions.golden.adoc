@@ -6763,7 +6763,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "qs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": 0x3,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": 0x3,"type":2}]}
 ....
 
 Description::
@@ -6774,10 +6774,10 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs2 |$encoding[24:20]
-|qs1 |$encoding[19:15]
+|fs2 |$encoding[24:20]
+|fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -6904,7 +6904,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "qs1","type":4},{"bits":12,"name": 0xe60,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0xe60,"type":2}]}
 ....
 
 Description::
@@ -6915,7 +6915,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs1 |$encoding[19:15]
+|fs1 |$encoding[19:15]
 |xd |$encoding[11:7]
 |===
 
@@ -7138,7 +7138,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "qs1","type":4},{"bits":12,"name": 0x423,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0x423,"type":2}]}
 ....
 
 Description::
@@ -7149,7 +7149,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs1 |$encoding[19:15]
+|fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
 |fd |$encoding[11:7]
 |===
@@ -7385,7 +7385,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "qs1","type":4},{"bits":12,"name": 0x443,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0x443,"type":2}]}
 ....
 
 Description::
@@ -7396,7 +7396,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs1 |$encoding[19:15]
+|fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
 |fd |$encoding[11:7]
 |===
@@ -7605,7 +7605,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "qs1","type":4},{"bits":12,"name": 0xc62,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0xc62,"type":2}]}
 ....
 
 Description::
@@ -7616,7 +7616,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs1 |$encoding[19:15]
+|fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
 |xd |$encoding[11:7]
 |===
@@ -7745,7 +7745,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "qs1","type":4},{"bits":12,"name": 0xc63,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0xc63,"type":2}]}
 ....
 
 Description::
@@ -7756,7 +7756,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs1 |$encoding[19:15]
+|fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
 |xd |$encoding[11:7]
 |===
@@ -7815,7 +7815,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0x461,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0x461,"type":2}]}
 ....
 
 Description::
@@ -7828,7 +7828,7 @@ Decode Variables::
 |Variable Name |Location
 |fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -7850,7 +7850,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0x462,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0x462,"type":2}]}
 ....
 
 Description::
@@ -7863,7 +7863,7 @@ Decode Variables::
 |Variable Name |Location
 |fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -7887,7 +7887,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": 0xd62,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": 0xd62,"type":2}]}
 ....
 
 Description::
@@ -7900,7 +7900,7 @@ Decode Variables::
 |Variable Name |Location
 |xs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -7922,7 +7922,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": 0xd63,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": 0xd63,"type":2}]}
 ....
 
 Description::
@@ -7935,7 +7935,7 @@ Decode Variables::
 |Variable Name |Location
 |xs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -7957,7 +7957,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0x460,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0x460,"type":2}]}
 ....
 
 Description::
@@ -7970,7 +7970,7 @@ Decode Variables::
 |Variable Name |Location
 |fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -7992,7 +7992,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": 0xd60,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": 0xd60,"type":2}]}
 ....
 
 Description::
@@ -8005,7 +8005,7 @@ Decode Variables::
 |Variable Name |Location
 |xs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -8027,7 +8027,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": 0xd61,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": 0xd61,"type":2}]}
 ....
 
 Description::
@@ -8040,7 +8040,7 @@ Decode Variables::
 |Variable Name |Location
 |xs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -8242,7 +8242,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "qs1","type":4},{"bits":12,"name": 0x403,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0x403,"type":2}]}
 ....
 
 Description::
@@ -8253,7 +8253,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs1 |$encoding[19:15]
+|fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
 |fd |$encoding[11:7]
 |===
@@ -8435,7 +8435,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "qs1","type":4},{"bits":12,"name": 0xc60,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0xc60,"type":2}]}
 ....
 
 Description::
@@ -8446,7 +8446,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs1 |$encoding[19:15]
+|fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
 |xd |$encoding[11:7]
 |===
@@ -8603,7 +8603,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "qs1","type":4},{"bits":12,"name": 0xc61,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0xc61,"type":2}]}
 ....
 
 Description::
@@ -8614,7 +8614,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs1 |$encoding[19:15]
+|fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
 |xd |$encoding[11:7]
 |===
@@ -8809,7 +8809,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "qs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": 0xf,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": 0xf,"type":2}]}
 ....
 
 Description::
@@ -8820,10 +8820,10 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs2 |$encoding[24:20]
-|qs1 |$encoding[19:15]
+|fs2 |$encoding[24:20]
+|fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -9206,7 +9206,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "qs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": 0x53,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": 0x53,"type":2}]}
 ....
 
 Description::
@@ -9217,8 +9217,8 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs2 |$encoding[24:20]
-|qs1 |$encoding[19:15]
+|fs2 |$encoding[24:20]
+|fs1 |$encoding[19:15]
 |xd |$encoding[11:7]
 |===
 
@@ -9385,7 +9385,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "qs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": 0x53,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": 0x53,"type":2}]}
 ....
 
 Description::
@@ -9396,8 +9396,8 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs2 |$encoding[24:20]
-|qs1 |$encoding[19:15]
+|fs2 |$encoding[24:20]
+|fs1 |$encoding[19:15]
 |xd |$encoding[11:7]
 |===
 
@@ -9534,7 +9534,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "qs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": 0x53,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": 0x53,"type":2}]}
 ....
 
 Description::
@@ -9545,8 +9545,8 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs2 |$encoding[24:20]
-|qs1 |$encoding[19:15]
+|fs2 |$encoding[24:20]
+|fs1 |$encoding[19:15]
 |xd |$encoding[11:7]
 |===
 
@@ -9721,7 +9721,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": 0xf61,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": 0xf61,"type":2}]}
 ....
 
 Description::
@@ -9733,7 +9733,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |xs1 |$encoding[19:15]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -9791,7 +9791,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": "imm","type":4}]}
+{"reg":[{"bits":7,"name": 0x7,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":12,"name": "imm","type":4}]}
 ....
 
 Description::
@@ -9804,7 +9804,7 @@ Decode Variables::
 |Variable Name |Location
 |imm |$encoding[31:20]
 |xs1 |$encoding[19:15]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -9896,7 +9896,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "qs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": 0x53,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": 0x53,"type":2}]}
 ....
 
 Description::
@@ -9907,8 +9907,8 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs2 |$encoding[24:20]
-|qs1 |$encoding[19:15]
+|fs2 |$encoding[24:20]
+|fs1 |$encoding[19:15]
 |xd |$encoding[11:7]
 |===
 
@@ -10043,7 +10043,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": 0x5,"type":2},{"bits":5,"name": "qs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": 0x53,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x5,"type":2},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": 0x53,"type":2}]}
 ....
 
 Description::
@@ -10054,9 +10054,9 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs2 |$encoding[24:20]
-|qs1 |$encoding[19:15]
-|qd |$encoding[11:7]
+|fs2 |$encoding[24:20]
+|fs1 |$encoding[19:15]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -10226,7 +10226,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x43,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "qs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":2,"name": 0x3,"type":2},{"bits":5,"name": "qs3","type":4}]}
+{"reg":[{"bits":7,"name": 0x43,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":2,"name": 0x3,"type":2},{"bits":5,"name": "fs3","type":4}]}
 ....
 
 Description::
@@ -10237,11 +10237,11 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs3 |$encoding[31:27]
-|qs2 |$encoding[24:20]
-|qs1 |$encoding[19:15]
+|fs3 |$encoding[31:27]
+|fs2 |$encoding[24:20]
+|fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -10370,7 +10370,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "qs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": 0x17,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": 0x17,"type":2}]}
 ....
 
 Description::
@@ -10381,9 +10381,9 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs2 |$encoding[24:20]
-|qs1 |$encoding[19:15]
-|qd |$encoding[11:7]
+|fs2 |$encoding[24:20]
+|fs1 |$encoding[19:15]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -10514,7 +10514,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "qs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": 0x17,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x3,"type":2},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": 0x17,"type":2}]}
 ....
 
 Description::
@@ -10525,9 +10525,9 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs2 |$encoding[24:20]
-|qs1 |$encoding[19:15]
-|qd |$encoding[11:7]
+|fs2 |$encoding[24:20]
+|fs1 |$encoding[19:15]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -10656,7 +10656,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "qs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": 0x17,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": 0x17,"type":2}]}
 ....
 
 Description::
@@ -10667,9 +10667,9 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs2 |$encoding[24:20]
-|qs1 |$encoding[19:15]
-|qd |$encoding[11:7]
+|fs2 |$encoding[24:20]
+|fs1 |$encoding[19:15]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -10800,7 +10800,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "qs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": 0x17,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": 0x17,"type":2}]}
 ....
 
 Description::
@@ -10811,9 +10811,9 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs2 |$encoding[24:20]
-|qs1 |$encoding[19:15]
-|qd |$encoding[11:7]
+|fs2 |$encoding[24:20]
+|fs1 |$encoding[19:15]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -10946,7 +10946,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x47,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "qs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":2,"name": 0x3,"type":2},{"bits":5,"name": "qs3","type":4}]}
+{"reg":[{"bits":7,"name": 0x47,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":2,"name": 0x3,"type":2},{"bits":5,"name": "fs3","type":4}]}
 ....
 
 Description::
@@ -10957,11 +10957,11 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs3 |$encoding[31:27]
-|qs2 |$encoding[24:20]
-|qs1 |$encoding[19:15]
+|fs3 |$encoding[31:27]
+|fs2 |$encoding[24:20]
+|fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -11092,7 +11092,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "qs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": 0xb,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": 0xb,"type":2}]}
 ....
 
 Description::
@@ -11103,10 +11103,10 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs2 |$encoding[24:20]
-|qs1 |$encoding[19:15]
+|fs2 |$encoding[24:20]
+|fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -11426,7 +11426,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "qs1","type":4},{"bits":12,"name": 0xe61,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "xd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0xe61,"type":2}]}
 ....
 
 Description::
@@ -11437,7 +11437,7 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs1 |$encoding[19:15]
+|fs1 |$encoding[19:15]
 |xd |$encoding[11:7]
 |===
 
@@ -11499,7 +11499,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x5b,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "xs2","type":4},{"bits":7,"name": 0x5b,"type":2}]}
 ....
 
 Description::
@@ -11512,7 +11512,7 @@ Decode Variables::
 |Variable Name |Location
 |xs2 |$encoding[24:20]
 |xs1 |$encoding[19:15]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -11610,7 +11610,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x4f,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "qs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":2,"name": 0x3,"type":2},{"bits":5,"name": "qs3","type":4}]}
+{"reg":[{"bits":7,"name": 0x4f,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":2,"name": 0x3,"type":2},{"bits":5,"name": "fs3","type":4}]}
 ....
 
 Description::
@@ -11621,11 +11621,11 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs3 |$encoding[31:27]
-|qs2 |$encoding[24:20]
-|qs1 |$encoding[19:15]
+|fs3 |$encoding[31:27]
+|fs2 |$encoding[24:20]
+|fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -11758,7 +11758,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x4b,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "qs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":2,"name": 0x3,"type":2},{"bits":5,"name": "qs3","type":4}]}
+{"reg":[{"bits":7,"name": 0x4b,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":2,"name": 0x3,"type":2},{"bits":5,"name": "fs3","type":4}]}
 ....
 
 Description::
@@ -11769,11 +11769,11 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs3 |$encoding[31:27]
-|qs2 |$encoding[24:20]
-|qs1 |$encoding[19:15]
+|fs3 |$encoding[31:27]
+|fs2 |$encoding[24:20]
+|fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -11906,7 +11906,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "qs1","type":4},{"bits":12,"name": 0x464,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0x464,"type":2}]}
 ....
 
 Description::
@@ -11917,9 +11917,9 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs1 |$encoding[19:15]
+|fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -12052,7 +12052,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "qs1","type":4},{"bits":12,"name": 0x465,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0x465,"type":2}]}
 ....
 
 Description::
@@ -12063,9 +12063,9 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs1 |$encoding[19:15]
+|fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -12229,7 +12229,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "qs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": 0x13,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x0,"type":2},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": 0x13,"type":2}]}
 ....
 
 Description::
@@ -12240,9 +12240,9 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs2 |$encoding[24:20]
-|qs1 |$encoding[19:15]
-|qd |$encoding[11:7]
+|fs2 |$encoding[24:20]
+|fs1 |$encoding[19:15]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -12371,7 +12371,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "qs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": 0x13,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x1,"type":2},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": 0x13,"type":2}]}
 ....
 
 Description::
@@ -12382,9 +12382,9 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs2 |$encoding[24:20]
-|qs1 |$encoding[19:15]
-|qd |$encoding[11:7]
+|fs2 |$encoding[24:20]
+|fs1 |$encoding[19:15]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -12513,7 +12513,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "qs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": 0x13,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": 0x2,"type":2},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": 0x13,"type":2}]}
 ....
 
 Description::
@@ -12524,9 +12524,9 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs2 |$encoding[24:20]
-|qs1 |$encoding[19:15]
-|qd |$encoding[11:7]
+|fs2 |$encoding[24:20]
+|fs1 |$encoding[19:15]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -12631,7 +12631,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
+{"reg":[{"bits":7,"name": 0x27,"type":2},{"bits":5,"name": "imm[4:0]","type":4},{"bits":3,"name": 0x4,"type":2},{"bits":5,"name": "xs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": "imm[11:5]","type":4}]}
 ....
 
 Description::
@@ -12643,7 +12643,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |imm |{$encoding[31:25], $encoding[11:7]}
-|qs2 |$encoding[24:20]
+|fs2 |$encoding[24:20]
 |xs1 |$encoding[19:15]
 |===
 
@@ -12736,7 +12736,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "qs1","type":4},{"bits":12,"name": 0x5e0,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":12,"name": 0x5e0,"type":2}]}
 ....
 
 Description::
@@ -12747,9 +12747,9 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs1 |$encoding[19:15]
+|fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
@@ -12878,7 +12878,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "qd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "qs1","type":4},{"bits":5,"name": "qs2","type":4},{"bits":7,"name": 0x7,"type":2}]}
+{"reg":[{"bits":7,"name": 0x53,"type":2},{"bits":5,"name": "fd","type":4},{"bits":3,"name": "rm","type":4},{"bits":5,"name": "fs1","type":4},{"bits":5,"name": "fs2","type":4},{"bits":7,"name": 0x7,"type":2}]}
 ....
 
 Description::
@@ -12889,10 +12889,10 @@ Decode Variables::
 [width="100%", cols="1,2", options="header"]
 |===
 |Variable Name |Location
-|qs2 |$encoding[24:20]
-|qs1 |$encoding[19:15]
+|fs2 |$encoding[24:20]
+|fs1 |$encoding[19:15]
 |rm |$encoding[14:12]
-|qd |$encoding[11:7]
+|fd |$encoding[11:7]
 |===
 
 Included in::
