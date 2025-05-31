@@ -8,15 +8,15 @@ description: |
   No description available.
 definedBy: Q
 base: 64
-assembly: xd, qs1, rm
+assembly: xd, fs1, rm
 encoding:
   match: 110001100010-------------1010011
   variables:
-    - name: qs1
+    - name: fs1
       location: 19-15
     - name: rm
       location: 14-12
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
