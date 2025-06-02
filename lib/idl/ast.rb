@@ -796,7 +796,8 @@ module Idl
         interval,
         definitions.elements.reject do |e|
           e.elements.all?(&:space?)
-        end.map(&:to_ast)
+        end.map { |e| e.respond_to?(:to_ast) ? e.to_ast : nil }.compact
+
       )
     end
   end
@@ -1094,7 +1095,9 @@ module Idl
         input,
         interval,
         user_type_name.to_ast,
-        e.elements.map { |entry| entry.user_type_name.to_ast },
+        e.elements.filter_map { |entry|
+        entry.respond_to?(:user_type_name) && entry.user_type_name.respond_to?(:to_ast) ? entry.user_type_name.to_ast : nil
+        }
         values
       )
     end
@@ -1507,6 +1510,7 @@ module Idl
       member_types = []
       member_names = []
       member.elements.each do |m|
+        next unless m.respond_to?(:type_name) && m.respond_to?(:id)
         member_types << m.type_name.to_ast
         member_names << m.id.text_value
       end
@@ -5710,7 +5714,7 @@ module Idl
         function_name.text_value,
         (!respond_to?(:targs) || targs.empty?) ? [] : [targs.first.to_ast] + targs.rest.elements.map { |r| r.single_declaration.to_ast },
         ret.empty? ? [] : [ret.first.to_ast] + (ret.respond_to?(:rest) ? ret.rest.elements.map { |r| r.type_name.to_ast } : []),
-        args.empty? ? [] : [args.first.to_ast] + args.rest.elements.map { |r| r.single_declaration.to_ast},
+        args.rest.elements.map { |r| r.respond_to?(:to_ast) ? r.single_declaration.to_ast : nil }.compact
         desc.text_value,
         respond_to?(:type) ? type.text_value.strip.to_sym : :normal,
         respond_to?(:body_block) ? body_block.function_body.to_ast : nil
@@ -6043,7 +6047,7 @@ module Idl
         single_declaration_with_initialization.to_ast,
         condition.to_ast,
         action.to_ast,
-        stmts.elements.map(&:s).map(&:to_ast)
+        stmts.elements.map(&:s).filter_map { |e| e.respond_to?(:to_ast) ? e.to_ast : nil }
       )
     end
   end
@@ -6362,14 +6366,18 @@ module Idl
     def to_ast
       if_body_stmts = []
       if_body.elements.each do |e|
+        next unless e.respond_to?(:e) && e.e.respond_to?(:to_ast)
         if_body_stmts << e.e.to_ast
+
       end
       eifs = []
       unless elseifs.empty?
         elseifs.elements.each do |eif|
           stmts = []
           eif.body.elements.each do |e|
-            stmts << e.e.to_ast
+            next unless e.respond_to?(:e) && e.e.respond_to?(:to_ast)
+            if_body_stmts << e.e.to_ast
+
           end
           eifs << ElseIfAst.new(input, eif.interval, eif.body.interval, eif.expression.to_ast, stmts)
         end
@@ -6377,6 +6385,7 @@ module Idl
       final_else_stmts = []
       unless final_else.empty?
         final_else.body.elements.each do |e|
+          next unless e.respond_to?(:e) && e.e.respond_to?(:to_ast)
           final_else_stmts << e.e.to_ast
         end
       end
