@@ -53,7 +53,7 @@ fields:
       *Supervisor Software Interrupt Pending*
       Indicates a pending software interrupt at the supervisor level.
       Read-only zero when `hideleg[2] == 0`, else aliased to `hip.VSSIP[0]`.
-    "sw_write(csr_value)": |
+    sw_write(csr_value): |
       if (CSR[hideleg].S == 1) {
         CSR[hip].VSSIP[0] = (csr_value >> 1) & ((1 << NUM_VSSI) - 1);
       }
@@ -67,7 +67,7 @@ fields:
       *Supervisor Timer Interrupt Pending*
       Indicates a pending timer interrupt at the supervisor level.
       Read-only zero when `hideleg[6] == 0`, else aliased to `hip.VSTIP[0]`.
-    "sw_write(csr_value)": |
+    sw_write(csr_value): |
       if (CSR[hideleg].ST == 1) {
         CSR[hip].VSTIP[0] = (csr_value >> 5) & ((1 << NUM_VSTI) - 1);
       }
@@ -81,7 +81,7 @@ fields:
       *Supervisor External Interrupt Pending*
       Indicates a pending external interrupt at the supervisor level.
       Read-only zero when `hideleg[10] == 0`, else aliased to `hip.VSEIP[0]`.
-    "sw_write(csr_value)": |
+    sw_write(csr_value): |
       if (CSR[hideleg].SE == 1) {
         CSR[hip].VSEIP[0] = (csr_value >> 9) & ((1 << NUM_VSEI) - 1);
       }
@@ -95,7 +95,7 @@ fields:
       *Local Counter Overflow Interrupt Pending*
       Indicates an overflow of a local counter.
       Read-only zero when `hideleg[13] == 0`, else aliased to `sip.LCOFIP[0]`.
-    "sw_write(csr_value)": |
+    sw_write(csr_value): |
       if (CSR[hideleg].LCOF == 1) {
         CSR[sip].LCOFIP[0] = (csr_value >> 13) & 0x1;
       }

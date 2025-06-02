@@ -7,7 +7,7 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy: V
-assembly: vd, xs1, vs2, vm
+assembly: vd, (xs1), vs2, vm
 encoding:
   match: 111001-----------111-----0000111
   variables:
