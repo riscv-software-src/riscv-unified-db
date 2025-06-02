@@ -1,6 +1,6 @@
 = Instruction Appendix
 :doctype: book
-:wavedrom: /home/afonso/wrkdir/riscv-unified-db/node_modules/.bin/wavedrom-cli
+:wavedrom: /workspace/riscv-unified-db/node_modules/.bin/wavedrom-cli
 // Now the document header is complete and the wavedrom attribute is active.
 
 
@@ -20464,7 +20464,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":8,"name": 0x8a,"type":2},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x10,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "xd","type":4},{"bits":8,"name": 0x8a,"type":2},{"bits":5,"name": "vs2","type":4},{"bits":1,"name": "vm","type":4},{"bits":6,"name": 0x10,"type":2}]}
 ....
 
 Description::
@@ -20477,7 +20477,7 @@ Decode Variables::
 |Variable Name |Location
 |vm |$encoding[25]
 |vs2 |$encoding[24:20]
-|vd |$encoding[11:7]
+|xd |$encoding[11:7]
 |===
 
 Included in::
@@ -32614,7 +32614,7 @@ No synopsis available
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "vd","type":4},{"bits":8,"name": 0x2,"type":2},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x21,"type":2}]}
+{"reg":[{"bits":7,"name": 0x57,"type":2},{"bits":5,"name": "xd","type":4},{"bits":8,"name": 0x2,"type":2},{"bits":5,"name": "vs2","type":4},{"bits":7,"name": 0x21,"type":2}]}
 ....
 
 Description::
@@ -32626,7 +32626,7 @@ Decode Variables::
 |===
 |Variable Name |Location
 |vs2 |$encoding[24:20]
-|vd |$encoding[11:7]
+|xd |$encoding[11:7]
 |===
 
 Included in::
