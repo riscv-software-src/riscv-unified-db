@@ -1,0 +1,37 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# frozen_string_literal: true
+
+IDLC_ROOT = Kernel.__dir__
+
+namespace :test do
+  namespace :idlc do
+    task :ruby do
+      Dir.chdir(IDLC_ROOT) do
+        sh "ruby -Ilib:test test/test_*.rb"
+      end
+    end
+  end
+end
+
+# initialize sorbet
+namespace :chore do
+  task "update-sorbet" do
+    Dir.chdir(IDLC_ROOT) do
+      sh "bundle exec tapioca init"
+      sh "bundle exec tapioca dsl"
+    end
+  end
+end
+
+namespace :test do
+  namespace :idlc do
+    desc "Type check the Ruby IDL source code"
+    task :sorbet  do
+      Dir.chdir(IDLC_ROOT) do
+        sh "bundle exec srb tc"
+      end
+    end
+  end
+end

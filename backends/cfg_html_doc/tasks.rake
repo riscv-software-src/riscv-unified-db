@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "#{$lib}/cfg_arch"
+require "udb/cfg_arch"
 
 CFG_HTML_DOC_DIR = Pathname.new(__FILE__).dirname
 

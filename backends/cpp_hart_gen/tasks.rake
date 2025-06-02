@@ -6,7 +6,7 @@ require_relative "lib/template_helpers"
 require_relative "lib/csr_template_helpers"
 require_relative "lib/gen_cpp"
 require_relative "lib/decode_tree"
-require_relative "../../lib/idl/passes/find_src_registers"
+require "idlc/passes/find_src_registers"
 
 CPP_HART_GEN_SRC = $root / "backends" / "cpp_hart_gen"
 CPP_HART_GEN_DST = $root / "gen" / "cpp_hart_gen"

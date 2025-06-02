@@ -3,7 +3,7 @@
 # Generate
 
 require "write_xlsx"
-require_relative $root / "lib" / "architecture"
+require "udb/architecture"
 
 # @param presence [String] Can be nil
 # @return [String] m=mandatory, o=optional, n=not present

@@ -1,0 +1,210 @@
+# yaml-language-server: $schema=expression_schema.json
+
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+schema: expression_schema.json#
+tests:
+  ###################################################
+  # Integer literals (Verilog style)
+  ###################################################
+  - e: "'0"
+    =: 1'd0
+    d: Verilog-style 0, implicit decimal, implicit width
+
+  - e: "'1"
+    =: 1'd1
+    d: Verilog-style 1, implicit decimal, implicit width
+
+  - e: "'63"
+    =: 6'd63
+    d: Verilog-style 63, implicit decimal, implicit width
+
+  - e: "'d0"
+    =: 1'd0
+    d: Verilog-style 0, explcit decimal, implicit width
+
+  - e: "'d1"
+    =: 1'd1
+    d: Verilog-style 1, explicit decimal, implicit width
+
+  - e: "'d63"
+    =: 6'd63
+    d: Verilog-style 63, explicit decimal, implicit width
+
+  - e: "'d6_3"
+    =: 6'd63
+    d: Verilog-style 63, explicit decimal, implicit width, underscores
+
+  - e: "'h0"
+    =: 1'd0
+    d: Verilog-style 0, explicit hexadecimal, implicit width
+
+  - e: "'h1"
+    =: 1'd1
+    d: Verilog-style 1, explicit hexadecimal, implicit width
+
+  - e: "'h3f"
+    =: 6'd63
+    d: Verilog-style 63, explicit hexadecimal, implicit width
+
+  - e: "'h3_f"
+    =: 6'd63
+    d: Verilog-style 63, explicit hexadecimal, implicit width, underscores
+
+  - e: "'o0"
+    =: 1'd0
+    d: Verilog-style 0, explicit octal, implicit width
+
+  - e: "'o1"
+    =: 1'd1
+    d: Verilog-style 1, explicit octal, implicit width
+
+  - e: "'o77"
+    =: 6'd63
+    d: Verilog-style 63, explicit octal, implicit width
+
+  - e: "'o7_7"
+    =: 6'd63
+    d: Verilog-style 63, explicit octal, implicit width, underscores
+
+  - e: "'b0"
+    =: 1'd0
+    d: Verilog-style 0, explicit binary, implicit width
+
+  - e: "'b1"
+    =: 1'd1
+    d: Verilog-style 1, explicit binary, implicit width
+
+  - e: "'b111111"
+    =: 6'd63
+    d: Verilog-style 63, explicit binary, implicit width
+
+  - e: "'b1_11_11_1"
+    =: 6'd63
+    d: Verilog-style 63, explicit binary, implicit width, underscores
+
+  - e: "64'0"
+    =: 64'd0
+    d: Verilog-style 0, implicit decimal, explicit width
+
+  - e: "65'1"
+    =: 64'd1
+    d: Verilog-style 1, implicit decimal, explicit width
+
+  - e: "63'63"
+    =: 63'd63
+    d: Verilog-style 63, implicit decimal, explicit width
+
+  - e: "64'd0"
+    =: 64'd0
+    d: Verilog-style 0, explicit decimal, explicit width
+
+  - e: "65'd1"
+    =: 64'd1
+    d: Verilog-style 1, explicit decimal, explicit width
+
+  - e: "63'd63"
+    =: 63'd63
+    d: Verilog-style 63, explicit decimal, explicit width
+
+  - e: "64'h0"
+    =: 64'd0
+    d: Verilog-style 0, explicit hexadecimal, explicit width
+
+  - e: "65'h1"
+    =: 64'd1
+    d: Verilog-style 1, explicit hexadecimal, explicit width
+
+  - e: "63'h3f"
+    =: 63'd63
+    d: Verilog-style 63, explicit hexadecimal, explicit width
+
+  - e: "64'o0"
+    =: 64'd0
+    d: Verilog-style 0, explicit octal, explicit width
+
+  - e: "65'o1"
+    =: 64'd1
+    d: Verilog-style 1, explicit octal, explicit width
+
+  - e: "63'o77"
+    =: 63'd63
+    d: Verilog-style 63, explicit octal, explicit width
+
+  - e: "64'b0"
+    =: 64'd0
+    d: Verilog-style 0, explicit binary, explicit width
+
+  - e: "65'b1"
+    =: 64'd1
+    d: Verilog-style 1, explicit binary, explicit width
+
+  - e: "63'b111111"
+    =: 63'd63
+    d: Verilog-style 63, explicit binary, explicit width
+
+  - e: "63'b111_11_1"
+    =: 63'd63
+    d: Verilog-style 63, explicit binary, explicit width, underscores
+
+  - e: MXLEN'0
+    =: MXLEN'd0
+    d: Verilog-style 0, XLEN len, XLEN is unknown
+
+  - e: MXLEN'0
+    =: 64'd0
+    p:
+      MXLEN: 64
+    d: Verilog-style 0, XLEN len, XLEN is 64
+
+  - e: MXLEN'0
+    =: 32'd0
+    p:
+      MXLEN: 32
+    d: Verilog-style 0, XLEN len, XLEN is 32
+
+  - e: "0"
+    =: 1'd0
+    d: C-style 0
+
+  - e: "0xf"
+    =: 4'd15
+    d: C-style hex
+
+  - e: "0xF"
+    =: 4'd15
+    d: C-style hex, caps
+
+  - e: "077"
+    =: 7'd63
+    d: C-style octal
+
+  - e: "0b1010"
+    =: 4'd10
+    d: C-style binary
+
+  - e: "0xfs"
+    =: 5'sd15
+    d: C-style hex, signed
+
+  - e: "0xF"
+    =: 4'd15
+    d: C-style hex, caps
+
+  - e: $width(0)
+    =: 1'd1
+    d: Literal width of 0 is defined to be 1
+
+  - e: $width(1)
+    =: 1'd1
+    d: Literal width is minimum to express the value
+
+  - e: $width(2'd1)
+    =: 2'd2
+    d: Literal width is explicit
+
+  - e: '"A literal string"'
+    =: '"A literal string"'
+    d: String literal

@@ -23,4 +23,5 @@ __pycache__/
 *.bak
 *.log
 sorbet
+!tools/gems/idlc/sorbet
 coverage
