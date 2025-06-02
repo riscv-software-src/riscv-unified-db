@@ -3,14 +3,49 @@
 
 # frozen_string_literal: true
 
+require "open3"
+
 require "idlc/cli"
 require "minitest/autorun"
 
+class CliTest < Minitest::Test
+  CommandResult = Struct.new(:status, :out, :err)
+
+  def result
+    @result ||= CommandResult.new
+  end
+
+  def run_cmd(cmd)
+    puts "> #{cmd}"
+    result.out, result.err, result.status = Open3.capture3(cmd)
+  end
+end
+
 # Test Command Line Interface
-class TestCli < Minitest::Test
+class TestCli < CliTest
   def test_eval_addition
-    out, err = capture_io { Idl::Cli.new(["-DA=5", "-DB=10", "-eA+B"]).run }
-    assert_empty err, "nothing should be written to STDERR"
-    assert_equal eval(out), 15
+    run_cmd("idlc -DA=5 -DB=10 -eA+B")
+    assert_equal 0, result.status
+    assert_empty result.err, "nothing should be written to STDERR"
+    assert_equal 15, eval(result.out)
+  end
+
+  def test_operation_tc
+    Tempfile.open('idl') do |f|
+      f.write <<~YAML
+        operation(): |
+          XReg src1 = X[xs1];
+          XReg src2 = X[xs2];
+
+          X[xd] = src1 + src2;
+      YAML
+      f.flush
+
+      run_cmd("idlc -k operation\\(\\) -f idl #{f.path}")
+      puts result.err
+      assert_equal 0, result.status
+      assert_empty result.err, "nothing should be written to STDERR"
+      assert_equal 15, result.out
+    end
   end
 end

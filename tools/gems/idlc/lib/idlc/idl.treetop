@@ -345,6 +345,9 @@ grammar Idl
     /
     ary_access
     /
+    # get the width (N) of a Bits type. Mostly just useful for writing tests and checking types
+    '$width' space* '(' space* expression space* ')' <Idl::WidthRevealSyntaxNode>
+    /
     '$signed' space* '(' space* expression space* ')' <Idl::SignCastSyntaxNode>
     /
     bits_cast

@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # frozen_string_literal: true
+# typed: false
 
 module Idl
   # Data types
@@ -151,7 +152,7 @@ module Idl
           (type.kind == :enum_ref && type.enum_class.name == @enum_class.name) \
           || (type.kind == :enum && type.name == @enum_class.name)
       when :bits
-        return type.convertable_to?(self)
+        return type.convertable_to?(self) && (signed? == type.signed?)
       when :enum
         return type.convertable_to?(:bits)
       when :function
@@ -552,38 +553,58 @@ module Idl
   end
 
   class EnumerationType < Type
+    extend T::Sig
+
     # @return [Integer] The bit width of the enumeration elements
+    sig { returns(Integer) }
     attr_reader :width
 
     # @return [Array<String>] The names of the enumeration elements, in the same order as element_values
+    sig { returns(T::Array[String]) }
     attr_reader :element_names
 
     # @return [Array<Integer>] The values of the enumeration elements, in the same order as element_names
+    sig { returns(T::Array[Integer]) }
     attr_reader :element_values
 
     # @return [Type] The type of an reference to this Enumeration class
+    sig { returns(Type) }
     attr_reader :ref_type
 
     # @param type_name [String] The name of the enum class
     # @param element_names [Array<String>] The names of the elements, in the same order as +element_values+
     # @param element_values [Array<Integer>] The values of the elements, in the same order as +element_names+
-    def initialize(type_name, element_names, element_values)
+    sig {
+      params(
+        type_name: String,
+        element_names: T::Array[String],
+        element_values: T::Array[Integer],
+        builtin: T::Boolean).void
+    }
+    def initialize(type_name, element_names, element_values, builtin: false)
       width = element_values.max.bit_length
       width = 1 if width.zero? # can happen if only enum member has value 0
       super(:enum, width:)
 
-      @name = type_name
-      @element_names = element_names
-      @element_values = element_values
+      @name = type_name.freeze
+      @element_names = element_names.freeze
+      @element_values = element_values.freeze
       raise "unexpected" unless element_names.is_a?(Array)
+      raise "names and values aren't the same size" unless element_names.size == element_values.size
 
-      @ref_type = Type.new(:enum_ref, enum_class: self)
+      @ref_type = Type.new(:enum_ref, enum_class: self).freeze
+      @builtin = builtin.freeze
     end
 
+    sig { returns(T::Boolean) }
+    def builtin? = @builtin
+
+    sig { returns(EnumerationType) }
     def clone
       EnumerationType.new(@name, @element_names, @element_values)
     end
 
+    sig { params(element_name: String).returns(T.nilable(Integer)) }
     def value(element_name)
       i = @element_names.index(element_name)
       return nil if i.nil?
@@ -591,6 +612,7 @@ module Idl
       @element_values[i]
     end
 
+    sig { params(element_value: Integer).returns(T.nilable(String)) }
     def element_name(element_value)
       i = @element_values.index(element_value)
       raise "? #{element_value}" if i.nil?
@@ -634,16 +656,17 @@ module Idl
 
   # represents a CSR register
   class CsrType < Type
+    extend T::Sig
+
+    sig { returns(Csr) }
     attr_reader :csr
 
-    def initialize(csr, cfg_arch, qualifiers: [])
-      if csr.is_a?(Symbol) && csr == :unknown
-        super(:csr, name: csr.name, csr: csr, width: :unknown, qualifiers: qualifiers)
-      else
-        super(:csr, name: csr.name, csr: csr, width: csr.max_length, qualifiers: qualifiers)
-      end
+    sig { params(csr: Csr, qualifiers: T::Array[Symbol]).void }
+    def initialize(csr, qualifiers: [])
+      super(:csr, name: csr.name, csr: csr, width: csr.max_length, qualifiers: qualifiers)
     end
 
+    sig { returns(T::Array[CsrField]) }
     def fields
       raise "fields are unknown" if @csr == :unknown
 

@@ -38,6 +38,11 @@ Dir.glob("#{$root}/backends/*/tasks.rake") do |rakefile|
   load rakefile
 end
 
+# load and execute Rakefile for each gem
+Dir.glob("#{$root}/tools/gems/*/Rakefile") do |rakefile|
+  load rakefile
+end
+
 directory "#{$root}/.stamps"
 
 # @param config_locator [String or Pathname]

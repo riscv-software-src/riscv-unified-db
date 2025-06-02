@@ -37,9 +37,13 @@ class MockConfiguredArchitecture
 end
 
 module TestMixin
+  def param_syms
+    {
+      "XLEN" => Idl::Var.new("XLEN", Idl::Type.new(:bits, width: 8), 32)
+    }
+  end
   def setup
-    @cfg_arch = MockConfiguredArchitecture.new
-    @symtab = Idl::SymbolTable.new(@cfg_arch)
+    @symtab = Idl::SymbolTable.new
     @compiler = Idl::Compiler.new
   end
 end

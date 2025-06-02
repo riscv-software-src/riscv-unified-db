@@ -2,7 +2,9 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # frozen_string_literal: true
-# typed: false
+# typed: strict
+
+require "idlc/interfaces"
 
 require_relative "database_obj"
 require_relative "../schema"
@@ -13,44 +15,54 @@ module Udb
 # A parameter (AKA option, AKA implementation-defined value) supported by an extension
 class Parameter
   extend T::Sig
+  include Idl::RuntimeParam
+
+  # @return [Architecture] The defining architecture
+  sig { returns(Architecture) }
+  attr_reader :arch
 
   # @return [String] Parameter name
+  sig { override.returns(String) }
   attr_reader :name
 
   # @return [String] Asciidoc description
+  sig { override.returns(String) }
   attr_reader :desc
 
   # @return [Schema] JSON Schema for this param
+  sig { override.returns(Schema) }
   attr_reader :schema
 
   # @return [String] Ruby code to perform validation above and beyond JSON schema
   # @return [nil] If there is no extra validation
+  sig { returns(T.nilable(String)) }
   attr_reader :extra_validation
 
   # Some parameters are defined by multiple extensions (e.g., CACHE_BLOCK_SIZE by Zicbom and Zicboz).
   # When defined in multiple places, the parameter *must* mean the exact same thing.
   #
   # @return [Array<Extension>] The extension(s) that define this parameter
+  sig { returns(T::Array[Extension]) }
   attr_reader :exts
 
   # @returns [Idl::Type] Type of the parameter
+  sig { override.returns(Idl::Type) }
   attr_reader :idl_type
 
   # Pretty convert extension schema to a string.
+  sig { returns(String) }
   def schema_type
     @schema.to_pretty_s
   end
 
   # @returns [Object] default value, or nil if none
+  sig { returns(T.nilable(Object)) }
   def default
     if @data["schema"].key?("default")
       @data["schema"]["default"]
     end
   end
 
-  # @param ext [Extension]
-  # @param name [String]
-  # @param data [Hash<String, Object]
   sig { params(ext: Extension, name: String, data: T::Hash[String, Object]).void }
   def initialize(ext, name, data)
     raise ArgumentError, "Expecting Extension but got #{ext.class}" unless ext.is_a?(Extension)
@@ -129,6 +141,7 @@ class Parameter
   # @param exts [Array<Extension>] List of all in-scope extensions that define this parameter.
   # @return [String] Text to create a link to the parameter definition with the link text the parameter name.
   #                  if only one extension defines the parameter, otherwise just the parameter name.
+  sig { params(in_scope_exts: T::Array[Extension]).returns(String) }
   def name_potentially_with_link(in_scope_exts)
     raise ArgumentError, "Expecting Array but got #{in_scope_exts.class}" unless in_scope_exts.is_a?(Array)
     raise ArgumentError, "Expecting Array[Extension]" unless in_scope_exts[0].is_a?(Extension)
@@ -141,48 +154,59 @@ class Parameter
   end
 
   # sorts by name
-  def <=>(other)
-    raise ArgumentError, "Parameters are only comparable to other extension parameters" unless other.is_a?(Parameter)
+  sig { params(other: Parameter).returns(Integer) }
+  def <=>(other) = @name <=> other.name
 
-    @name <=> other.name
-  end
+  sig { returns(String) }
+  def to_idl = "#{idl_type.to_idl} #{name}"
 
-  def to_idl
-    "#{idl_type.to_idl} #{name}"
-  end
+  sig { override.returns(T::Boolean) }
+  def value_known? = false
+
+  sig { override.returns(Idl::RuntimeParam::ValueType) }
+  def value = raise "Parameter value not known"
 end
 
 class ParameterWithValue
+  extend T::Sig
+  include Idl::RuntimeParam
+
   # @return [Object] The parameter value
+  sig { override.returns(Idl::RuntimeParam::ValueType) }
   attr_reader :value
 
   # @return [String] Parameter name
+  sig { override.returns(String) }
   def name = @param.name
 
   # @return [String] Asciidoc description
+  sig { override.returns(String) }
   def desc = @param.desc
 
   # @return [Hash] JSON Schema for the parameter value
+  sig { override.returns(Schema) }
   def schema = @param.schema
 
   # @return [String] Ruby code to perform validation above and beyond JSON schema
   # @return [nil] If there is no extra validatino
+  sig { returns(T.nilable(String)) }
   def extra_validation = @param.extra_validation
 
-  # @return [Extension] The extension that defines this parameter
+  sig { returns(T::Array[Extension]) }
   def exts = @param.exts
 
   # @returns [Idl::Type] Type of the parameter
+  sig { override.returns(Idl::Type) }
   def idl_type = @param.idl_type
 
+  sig { params(param: Parameter, value: Idl::RuntimeParam::ValueType).void }
   def initialize(param, value)
     @param = param
     @value = value
   end
 
-  def idl_type
-    "#{super} = #{value}"
-  end
+  sig { override.returns(T::Boolean) }
+  def value_known? = true
 end
 
 end

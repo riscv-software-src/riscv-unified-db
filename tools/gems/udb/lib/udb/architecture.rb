@@ -47,8 +47,6 @@ require "pathname"
 require "sorbet-runtime"
 require "yaml"
 
-require "idlc"
-
 require_relative "obj/certificate"
 require_relative "obj/csr"
 require_relative "obj/csr_field"
@@ -230,6 +228,7 @@ class Architecture
 
   # @return [Parameter] Parameter named +name+
   # @return [nil] if there is no parameter named +name+
+  sig { returns(T.nilable(Parameter)) }
   def param(name)
     param_hash[name]
   end

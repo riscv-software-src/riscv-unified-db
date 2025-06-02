@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # frozen_string_literal: true
+# typed: true
 
 module Udb; end
 

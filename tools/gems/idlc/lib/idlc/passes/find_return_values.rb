@@ -5,16 +5,17 @@
 
 # pass to find all the possible return values from a function body
 
-class AstNode
-  def pass_find_return_values(values, current_conditions)
-    children.each do |c|
-      c.pass_find_return_values(values, current_conditions)
+module Idl
+
+  class AstNode
+    def pass_find_return_values(values, current_conditions)
+      children.each do |c|
+        c.pass_find_return_values(values, current_conditions)
+      end
     end
   end
-end
 
-module Idl
-  class ReturnStatementAst
+  class ReturnStatementAst < AstNode
     def pass_find_return_values(values, current_conditions, symtab)
       # if the action is a ternary operator, there is another condition to consider
       if first.is_a?(TernaryOperatorExpressionAst)
@@ -30,7 +31,7 @@ module Idl
     end
   end
 
-  class IfAst
+  class IfAst < AstNode
     def pass_find_return_values(values, current_conditions, symtab)
       current_conditions.push if_cond
       if_body.elements.each do |e|
@@ -61,7 +62,7 @@ module Idl
     end
   end
 
-  class FunctionBodyAst
+  class FunctionBodyAst < AstNode
     # @return [Array<Ast, Array<Ast>>] List of possible return values, along with the condition it occurs under
     def pass_find_return_values(symtab)
       values = []

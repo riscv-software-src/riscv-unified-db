@@ -2,14 +2,20 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # frozen_string_literal: true
+# typed: false
 
 require "idlc/type"
+require "idlc/interfaces"
 
 # represents a JSON Schema
 #
 # Used when an object in the database specifies a constraint using JSON schema
 # For example, extension parameters
-class Udb::Schema
+module Udb
+  class Schema
+    extend T::Sig
+    include Idl::Schema
+
     def initialize(schema_hash)
         raise ArgumentError, "Expecting hash" unless schema_hash.is_a?(Hash)
 
@@ -173,6 +179,7 @@ class Udb::Schema
     end
 
     # @return [Boolean] if the maximum value of the schema is known, i.e., is a restricted integer
+    sig { returns(T::Boolean) }
     def max_val_known?
       to_idl_type.kind == :bits && \
         (@schema_hash.key?("const") || \
@@ -181,6 +188,7 @@ class Udb::Schema
     end
 
     # @return [Boolean] if the minimum value of the schema is known, i.e., is a restricted integer
+    sig { returns(T::Boolean) }
     def min_val_known?
       to_idl_type.kind == :bits && \
         (@schema_hash.key?("const") || \
@@ -189,6 +197,7 @@ class Udb::Schema
     end
 
     # @return [Integer] The maximum value the schema allows. Only valid if #max_val_known? is true
+    sig { returns(Integer) }
     def max_val
       if @schema_hash.key?("const")
         @schema_hash["const"]
@@ -202,6 +211,7 @@ class Udb::Schema
     end
 
     # @return [Integer] The minimum value the schema allows. Only valid if #min_val_known? is true
+    sig { returns(Integer) }
     def min_val
       if @schema_hash.key?("const")
         @schema_hash["const"]
@@ -230,4 +240,5 @@ class Udb::Schema
     def to_idl_type
       Idl::Type.from_json_schema(@schema_hash)
     end
+  end
 end

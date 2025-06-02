@@ -1,0 +1,41 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# frozen_string_literal: true
+# typed: true
+
+RUBY_UDB_ROOT = Kernel.__dir__
+
+namespace :gen do
+  namespace :udb do
+    desc "Generate the UDB Ruby API documentation"
+    task "ruby-doc" do
+      sh "yard doc"
+    end
+  end
+end
+
+# initialize sorbet
+file "#{RUBY_UDB_ROOT}/Gemfile.lock" do
+  Dir.chdir(RUBY_UDB_ROOT) do
+    sh "bundle install"
+  end
+end
+
+# initialize sorbet
+file "#{RUBY_UDB_ROOT}/sorbet/config" do
+  Dir.chdir(RUBY_UDB_ROOT) do
+    sh "bundle exec tapioca init"
+  end
+end
+
+namespace :test do
+  namespace :udb do
+    desc "Type check the Ruby UDB source code"
+    task sorbet: "#{RUBY_UDB_ROOT}/sorbet/config" do
+      Dir.chdir(RUBY_UDB_ROOT) do
+        sh "bundle exec srb tc"
+      end
+    end
+  end
+end

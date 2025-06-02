@@ -14,6 +14,8 @@ class Csr < TopLevelDatabaseObject
   # Add all methods in this module to this type of database object.
   include CertifiableObject
 
+  include Idl::Csr
+
   def ==(other)
     if other.is_a?(Csr)
       name == other.name
@@ -56,6 +58,20 @@ class Csr < TopLevelDatabaseObject
   # @return [nil] If the CSR is not accessible in VS/VU mode, or if it's address does not change in those modes
   def virtual_address
     @data["virtual_address"]
+  end
+
+  sig { override.returns(T.nilable(T::Boolean)) }
+  def value
+    return nil unless fields.all? { |f| f.type == "RO" }
+
+    fields.reduce(0) { |val, f| val | (f.value << f.location.begin) }
+  end
+
+  sig { override.params(ext_name: String).returns(T::Boolean) }
+  def implemented_without?(ext_name)
+    raise "#{ext_name} is not an extension" if @cfg_arch.extension(ext_name).nil?
+
+    defined_by_condition.satisfied_by?(@cfg_arch.possible_extensions - @cfg_arch.extension(ext_name))
   end
 
   def writable

@@ -12,25 +12,25 @@ module Idl
       end
     end
   end
-  class IdAst
+  class IdAst < AstNode
     def written?(symtab, varname, in_assignment: false)
       in_assignment && (text_value == varname)
     end
   end
-  class VariableAssignmentAst
+  class VariableAssignmentAst < AstNode
     def written?(symtab, varname, in_assignment: false)
       lhs.written?(symtab, varname, in_assignment: true) || \
         rhs.written?(symtab, varname, in_assignment:)
     end
   end
-  class AryElementAssignmentAst
+  class AryElementAssignmentAst < AstNode
     def written?(symtab, varname, in_assignment: false)
       lhs.written?(symtab, varname, in_assignment: true) || \
         idx.written?(symtab, varname, in_assignment:) || \
         rhs.written?(symtab, varname, in_assignment:)
     end
   end
-  class AryRangeAssignmentAst
+  class AryRangeAssignmentAst < AstNode
     def written?(symtab, varname, in_assignment: false)
       variable.written?(symtab, varname, in_assignment: true) || \
         msb.written?(symtab, varname, in_assignment:) || \
@@ -38,13 +38,13 @@ module Idl
         write_value.written?(symtab, varname, in_assignment:)
     end
   end
-  class FieldAssignmentAst
+  class FieldAssignmentAst < AstNode
     def written?(symtab, varname, in_assignment: false)
       field_access.written?(symtab, varname, in_assignment: true) || \
         write_value.written?(symtab, varname, in_assignment:)
     end
   end
-  class MultiVariableAssignmentAst
+  class MultiVariableAssignmentAst < AstNode
     def written?(symtab, varname, in_assignment: false)
       variables.any? { |variable| variable.written?(symtab, varname, in_assignment: true) } || \
         function_call.written?(symtab, varname, in_assignment:)

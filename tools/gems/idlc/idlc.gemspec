@@ -3,7 +3,7 @@
 
 # frozen_string_literal: true
 
-require_relative 'lib/idlc/version'
+require_relative "lib/idlc/version"
 
 Gem::Specification.new do |s|
   s.name        = "idlc"
@@ -22,9 +22,9 @@ Gem::Specification.new do |s|
   s.files       = Dir["lib/**/*.rb", "LICENSE"]
   s.license     = "BSD-3-Clause-Clear"
   s.metadata    = {
-    "homepage_uri"      => "https://github.com/riscv-software-src/riscv-unified-db",
-    "mailing_list_uri"  => "https://lists.riscv.org/g/tech-unifieddb",
-    "bug_tracker_uri"   => "https://github.com/riscv-software-src/riscv-unified-db/issues"
+    "homepage_uri" => "https://github.com/riscv-software-src/riscv-unified-db",
+    "mailing_list_uri" => "https://lists.riscv.org/g/tech-unifieddb",
+    "bug_tracker_uri" => "https://github.com/riscv-software-src/riscv-unified-db/issues"
   }
   s.required_ruby_version = "~> 3.2" # only supported in UDB container
 
@@ -32,9 +32,13 @@ Gem::Specification.new do |s|
   s.bindir = "bin"
   s.executables << "idlc"
 
+  s.add_dependency "sorbet-runtime"
   s.add_dependency "treetop", "1.6.12"
 
   s.add_development_dependency "minitest"
   s.add_development_dependency "rouge"
+  s.add_development_dependency "sorbet"
+  s.add_development_dependency "tapioca"
   s.add_development_dependency "yard"
+  s.add_development_dependency "yard-sorbet"
 end

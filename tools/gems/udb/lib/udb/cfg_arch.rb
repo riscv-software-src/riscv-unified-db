@@ -9,12 +9,10 @@
 # or created at runtime for things like profiles and certificate models.
 
 require "concurrent"
-require "forwardable"
 require "ruby-prof"
 require "tilt"
 
 require_relative "config"
-require_relative "architecture"
 
 require "idlc"
 require "idlc/passes/find_return_values"
@@ -30,24 +28,37 @@ include Udb::Helpers::TemplateHelpers
 module Udb
 
 class ConfiguredArchitecture < Architecture
-  extend Forwardable
+  extend T::Sig
 
   # @return [Idl::Compiler] The IDL compiler
+  sig { returns(Idl::Compiler) }
   attr_reader :idl_compiler
 
   # @return [Idl::IsaAst] Abstract syntax tree of global scope
+  sig { returns(Idl::IsaAst) }
   attr_reader :global_ast
 
   # @return [String] Name of this definition. Special names are:
   #                  * '_'   - The generic architecture, with no configuration settings.
   #                  * 'rv32' - A generic RV32 architecture, with only one parameter set (XLEN == 32)
   #                  * 'rv64' - A generic RV64 architecture, with only one parameter set (XLEN == 64)
+  sig { returns(String) }
   attr_reader :name
 
-  def_delegators \
-    :@config, \
-    :fully_configured?, :partially_configured?, :unconfigured?, :configured?, \
-    :mxlen, :param_values
+  sig { returns(T::Boolean) }
+  def fully_configured? = @config.fully_configured?
+
+  sig { returns(T::Boolean) }
+  def partially_configured? = @config.partially_configured?
+
+  sig { returns(T::Boolean) }
+  def unconfigured? = @config.unconfigured?
+
+  sig { returns(Integer) }
+  def mxlen = @config.mxlen
+
+  sig { returns(T::Hash[String, T.untyped]) }
+  def param_values = @config.param_values
 
   # Returns whether or not it may be possible to switch XLEN given this definition.
   #
@@ -153,6 +164,7 @@ class ConfiguredArchitecture < Architecture
   end
 
   # @return [Array<Integer>] List of possible XLENs in any mode for this config
+  sig { returns(T::Array[Integer]) }
   def possible_xlens = multi_xlen? ? [32, 64] : [mxlen]
 
   # hash for Hash lookup
@@ -168,6 +180,48 @@ class ConfiguredArchitecture < Architecture
 
   def config_type = @config.type
 
+  # return the params as a hash of symbols for the SymbolTable
+  sig { returns(T::Hash[String, T.any(Idl::Var, Idl::Type)]) }
+  def param_syms
+    syms = {}
+
+    params_with_value.each do |param_with_value|
+      type = Idl::Type.from_json_schema(param_with_value.schema).make_const
+      if type.kind == :array && type.width == :unknown
+        type = Idl::Type.new(:array, width: param_with_value.value.length, sub_type: type.sub_type, qualifiers: [:const])
+      end
+
+      # could already be present...
+      existing_sym = syms[param_with_value.name]
+      if existing_sym.nil?
+        syms[param_with_value.name] = Idl::Var.new(param_with_value.name, type, param_with_value.value, param: true)
+      else
+        unless existing_sym.type.equal_to?(type) && existing_sym.value == param_with_value.value
+          raise DuplicateSymError, "Definition error: Param #{param.name} is defined by multiple extensions and is not the same definition in each"
+        end
+      end
+    end
+
+    # now add all parameters, even those not implemented
+    params_without_value.each do |param|
+      if param.exts.size == 1
+        syms[param.name] = Var.new(param.name, param.idl_type.clone.make_const, param: true)
+      else
+        # could already be present...
+        existing_sym = syms[param.name]
+        if existing_sym.nil?
+          syms[param.name] = Var.new(param.name, param.idl_type.clone.make_const, param: true)
+        else
+          unless existing_sym.type.equal_to?(param.idl_type)
+            raise "Definition error: Param #{param.name} is defined by multiple extensions and is not the same definition in each"
+          end
+        end
+      end
+    end
+
+    syms
+  end
+
   # Initialize a new configured architecture definition
   #
   # @param name [:to_s]      The name associated with this ConfiguredArchitecture
@@ -177,6 +231,7 @@ class ConfiguredArchitecture < Architecture
     raise ArgumentError, "name needs to be a String but is a #{name.class}" unless name.to_s.is_a?(String)
     raise ArgumentError, "config needs to be a AbstractConfig but is a #{config.class}" unless config.is_a?(AbstractConfig)
     raise ArgumentError, "arch_path needs to be a String but is a #{arch_path.class}" unless arch_path.to_s.is_a?(String)
+
     super(arch_path)
 
     @name = name.to_s.freeze
@@ -190,7 +245,76 @@ class ConfiguredArchitecture < Architecture
 
     @idl_compiler = Idl::Compiler.new
 
-    @symtab = Idl::SymbolTable.new(self)
+    symtab_callbacks = Idl::SymbolTable::BuiltinFunctionCallbacks.new(
+      implemented?: (
+        Idl::SymbolTable.make_implemented_callback do |ext_name|
+          if fully_configured?
+            ext?(ext_name)
+          else
+            # we can know if it is implemented, but not if it's not implemented for a partially configured
+            if ext?(ext_name)
+              true
+            elsif prohibited_ext?(ext_name)
+              false
+            end
+          end
+        end
+      ),
+      implemented_version?: (
+        Idl::SymbolTable.make_implemented_version_callback do |ext_name, version|
+          if fully_configured?
+            ext?(ext_name, version)
+          else
+            # we can know if it is implemented, but not if it's not implemented for a partially configured
+            if ext?(ext_name, version)
+              true
+            elsif prohibited_ext?(ext_name)
+              false
+            end
+          end
+        end
+      ),
+      implemented_csr?: (
+        Idl::SymbolTable.make_implemented_csr_callback do |csr_addr|
+          if fully_configured?
+            if transitive_implemented_csrs.any? { |c| c.address == csr_addr }
+              true
+            end
+          else
+            if not_prohibited_csrs.none? { |c| c.address == csr_addr }
+              false
+            end
+          end
+        end
+      )
+    )
+
+    @symtab =
+      Idl::SymbolTable.new(
+        self,
+        mxlen:,
+        possible_xlens:,
+        params: params_with_value.concat(params_without_value),
+        builtin_funcs: symtab_callbacks,
+        builtin_enums: [
+          Idl::SymbolTable::EnumDef.new(
+            name: "ExtensionName",
+            element_values: (1..extensions.size).to_a,
+            element_names: extensions.map(&:name)
+          ),
+          Idl::SymbolTable::EnumDef.new(
+            name: "ExceptionCode",
+            element_values: exception_codes.map(&:num),
+            element_names: exception_codes.map(&:var)
+          ),
+          Idl::SymbolTable::EnumDef.new(
+            name: "InterruptCode",
+            element_values: interrupt_codes.map(&:num),
+            element_names: interrupt_codes.map(&:var)
+          )
+        ],
+        name: @name
+      )
     overlay_path =
       if config.arch_overlay.nil?
         "/does/not/exist"
@@ -879,7 +1003,8 @@ class ConfiguredArchitecture < Architecture
         @cfg_arch.ext?(ext_name.to_s, ext_requirement)
       end
 
-      # @return [Array<Integer>] List of possible XLENs for any implemented mode
+      # List of possible XLENs for any implemented mode
+      sig { returns(T::Array[Integer]) }
       def possible_xlens
         @cfg_arch.possible_xlens
       end

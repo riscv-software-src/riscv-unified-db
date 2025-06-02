@@ -19,6 +19,8 @@ class CsrField < DatabaseObject
   # Add all methods in this module to this type of database object.
   include CertifiableObject
 
+  include Idl::CsrField
+
   # @return [Csr] The Csr that defines this field
   sig { returns(Csr) }
   attr_reader :parent
@@ -69,6 +71,9 @@ class CsrField < DatabaseObject
       true
     end
   end
+
+  sig { returns(T::Boolean) }
+  def exists? = exists_in_cfg?(cfg_arch)
 
   # @return [Boolean] For a partially configured cfg_arch, whether or not the field is optional (not mandatory or prohibited)
   sig { params(cfg_arch: ConfiguredArchitecture).returns(T::Boolean) }

@@ -64,7 +64,7 @@ module Idl
       children.each { |child| child.nullify_assignments(symtab) }
     end
   end
-  class VariableAssignmentAst
+  class VariableAssignmentAst < AstNode
     def prune(symtab)
       new_ast = VariableAssignmentAst.new(input, interval, lhs.dup, rhs.prune(symtab))
       new_ast.execute_unknown(symtab)
@@ -77,7 +77,7 @@ module Idl
       end
     end
   end
-  class FunctionCallExpressionAst
+  class FunctionCallExpressionAst < AstNode
     def prune(symtab)
       value_result = value_try do
         v = value(symtab)
@@ -88,7 +88,7 @@ module Idl
       end
     end
   end
-  class VariableDeclarationWithInitializationAst
+  class VariableDeclarationWithInitializationAst < AstNode
     def prune(symtab)
       add_symbol(symtab)
 
@@ -112,7 +112,7 @@ module Idl
       )
     end
   end
-  class ForLoopAst
+  class ForLoopAst < AstNode
     def prune(symtab)
       symtab.push(self)
       symtab.add(init.lhs.name, Var.new(init.lhs.name, init.lhs_type(symtab)))
@@ -135,7 +135,7 @@ module Idl
       new_loop
     end
   end
-  class FunctionDefAst
+  class FunctionDefAst < AstNode
     def prune(symtab)
       pruned_body =
         unless builtin? || generated?
@@ -155,7 +155,7 @@ module Idl
       )
     end
   end
-  class FunctionBodyAst
+  class FunctionBodyAst < AstNode
     def prune(symtab, args_already_applied: false)
       symtab.push(self)
 
@@ -216,7 +216,7 @@ module Idl
       pruned_body
     end
   end
-  class StatementAst
+  class StatementAst < AstNode
     def prune(symtab)
       pruned_action = action.prune(symtab)
 
@@ -232,7 +232,7 @@ module Idl
       new_stmt
     end
   end
-  class BinaryExpressionAst
+  class BinaryExpressionAst < AstNode
     # @!macro prune
     def prune(symtab)
       value_try do
@@ -325,7 +325,7 @@ module Idl
     end
   end
 
-  class IfBodyAst
+  class IfBodyAst < AstNode
     def prune(symtab)
       pruned_stmts = []
       stmts.each do |s|
@@ -337,7 +337,7 @@ module Idl
     end
   end
 
-  class ElseIfAst
+  class ElseIfAst < AstNode
     def prune(symtab)
       ElseIfAst.new(
         input, interval,
@@ -348,7 +348,7 @@ module Idl
     end
   end
 
-  class IfAst
+  class IfAst < AstNode
     # @!macro prune
     def prune(symtab)
       value_result = value_try do
@@ -407,7 +407,7 @@ module Idl
     end
   end
 
-  class ConditionalReturnStatementAst
+  class ConditionalReturnStatementAst < AstNode
     def prune(symtab)
       value_result = value_try do
         if condition.value(symtab)
@@ -422,7 +422,7 @@ module Idl
     end
   end
 
-  class ConditionalStatementAst
+  class ConditionalStatementAst < AstNode
     def prune(symtab)
       value_result = value_try do
         if condition.value(symtab)
@@ -450,7 +450,7 @@ module Idl
     end
   end
 
-  class TernaryOperatorExpressionAst
+  class TernaryOperatorExpressionAst < AstNode
     def prune(symtab)
       value_result = value_try do
         if condition.value(symtab)

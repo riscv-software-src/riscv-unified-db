@@ -2,17 +2,15 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # frozen_string_literal: true
+# typed: true
 
 require "concurrent"
 
 require_relative "type"
-
-module Udb
-  class Architecture; end
-  class ConfiguredArchitecture < Architecture; end
-end
+require_relative "interfaces"
 
 module Idl
+
   # Objects to represent variables in the ISA def
   class Var
     attr_reader :name, :type, :value
@@ -98,10 +96,13 @@ module Idl
   class SymbolTable
     extend T::Sig
 
-    def cfg_arch = @cfg_arch
-
     # @return [Integer] 32 or 64, the XLEN in M-mode
+    # @return [nil] if the XLEN in M-mode is unknown
+    sig { returns(T.nilable(Integer)) }
     attr_reader :mxlen
+
+    sig { returns(String) }
+    attr_reader :name
 
     class DuplicateSymError < StandardError
     end
@@ -109,15 +110,89 @@ module Idl
     def hash
       return @frozen_hash unless @frozen_hash.nil?
 
-      [@scopes.hash, @cfg_arch.hash].hash
+      [@scopes.hash, @name.hash].hash
     end
 
-    sig { params(cfg_arch: T.nilable(Udb::ConfiguredArchitecture)).void }
-    def initialize(cfg_arch)
+    class EnumDef < T::Struct
+      extend T::Sig
+
+      prop :name, String
+      prop :element_values, T::Array[Integer]
+      prop :element_names, T::Array[String]
+
+      sig { params(name: String, element_values: T::Array[Integer], element_names: T::Array[String]).void }
+      def initialize(name:, element_values:, element_names:)
+        super(name:, element_values:, element_names:)
+        raise "element_values and element_names are not the same size" unless element_values.size == element_names.size
+      end
+    end
+
+    sig { returns(T::Boolean) }
+    def multi_xlen? = @possible_xlens.size > 1
+
+    ImplementedCallbackType = T.type_alias { T.proc.params(arg0: String).returns(T.nilable(T::Boolean)) }
+
+    # some ugliness to capture proc types
+    # @see https://sorbet.org/docs/procs#what-can-i-do-for-better-proc-and-lambda-types
+    sig { params(blk: ImplementedCallbackType).returns(ImplementedCallbackType) }
+    def self.make_implemented_callback(&blk) = blk
+
+    ImplementedVersionCallbackType = T.type_alias { T.proc.params(arg0: String, arg1: String).returns(T.nilable(T::Boolean)) }
+
+    # some ugliness to capture proc types
+    # @see https://sorbet.org/docs/procs#what-can-i-do-for-better-proc-and-lambda-types
+    sig { params(blk: ImplementedVersionCallbackType).returns(ImplementedVersionCallbackType) }
+    def self.make_implemented_version_callback(&blk) = blk
+
+    ImplementedCsrCallbackType = T.type_alias { T.proc.params(arg0: Integer).returns(T.nilable(T::Boolean)) }
+
+    # some ugliness to capture proc types
+    # @see https://sorbet.org/docs/procs#what-can-i-do-for-better-proc-and-lambda-types
+    sig { params(blk: ImplementedCsrCallbackType).returns(ImplementedCsrCallbackType) }
+    def self.make_implemented_csr_callback(&blk) = blk
+
+    class BuiltinFunctionCallbacks < T::Struct
+      prop :implemented, ImplementedCallbackType
+      prop :implemented_version, ImplementedVersionCallbackType
+      prop :implemented_csr, ImplementedCsrCallbackType
+    end
+
+    sig { params(csr_name: String).returns(T::Boolean) }
+    def csr?(csr_name) = csr_hash.key?(csr_name)
+
+    sig { returns(T::Hash[String, Csr]) }
+    def csr_hash
+      @csr_hash ||= @csrs.map { |csr| [csr.name.freeze, csr].freeze }.to_h.freeze
+    end
+
+    sig { params(csr_name: String).returns(T.nilable(Csr)) }
+    def csr(csr_name) = csr_hash[csr_name]
+
+    sig { params(param_name: String).returns(T.nilable(RuntimeParam)) }
+    def param(param_name) = params_hash[param_name]
+
+    sig { returns(T::Hash[String, RuntimeParam]) }
+    def params_hash = @params.map { |p| [p.name.freeze, p.freeze] }.to_h.freeze
+
+    sig {
+      params(
+        mxlen: T.nilable(Integer),
+        possible_xlens: T::Array[Integer],
+        params: T::Array[RuntimeParam],
+        builtin_enums: T::Array[EnumDef],
+        builtin_funcs: T.nilable(BuiltinFunctionCallbacks),
+        csrs: T::Array[Csr],
+        name: String
+      ).void
+    }
+    def initialize(mxlen: nil, possible_xlens: [32, 64], params: [], builtin_enums: [], builtin_funcs: nil, csrs: [], name: "")
       @mutex = Thread::Mutex.new
-      @cfg_arch = cfg_arch
-      @mxlen = (cfg_arch.nil? || cfg_arch.unconfigured?) ? nil : cfg_arch.mxlen
+      @mxlen = mxlen
+      @possible_xlens = possible_xlens
       @callstack = [nil]
+      @name = name
+
+      # builtin types
       @scopes = [{
         "X" => Var.new(
           "X",
@@ -137,39 +212,21 @@ module Idl
         )
 
       }]
-      cfg_arch && cfg_arch.params_with_value.each do |param_with_value|
-        type = Type.from_json_schema(param_with_value.schema).make_const
-        if type.kind == :array && type.width == :unknown
-          type = Type.new(:array, width: param_with_value.value.length, sub_type: type.sub_type, qualifiers: [:const])
-        end
-
-        # could already be present...
-        existing_sym = get(param_with_value.name)
-        if existing_sym.nil?
-          add!(param_with_value.name, Var.new(param_with_value.name, type, param_with_value.value, param: true))
-        else
-          unless existing_sym.type.equal_to?(type) && existing_sym.value == param_with_value.value
-            raise DuplicateSymError, "Definition error: Param #{param.name} is defined by multiple extensions and is not the same definition in each"
-          end
-        end
+      params.each do |param|
+        add!(param.name, Var.new(param.name, param.idl_type, param.value, param: true))
       end
-
-      # now add all parameters, even those not implemented
-      cfg_arch && cfg_arch.params_without_value.each do |param|
-        if param.exts.size == 1
-          add!(param.name, Var.new(param.name, param.idl_type.clone.make_const, param: true))
-        else
-          # could already be present...
-          existing_sym = get(param.name)
-          if existing_sym.nil?
-            add!(param.name, Var.new(param.name, param.idl_type.clone.make_const, param: true))
-          else
-            unless existing_sym.type.equal_to?(param.idl_type)
-              raise "Definition error: Param #{param.name} is defined by multiple extensions and is not the same definition in each"
-            end
-          end
-        end
+      @params = params.freeze
+      builtin_enums.each do |enum_def|
+        add!(enum_def.name, EnumerationType.new(enum_def.name, enum_def.element_names, enum_def.element_values))
       end
+      @builtin_funcs = builtin_funcs
+      @csrs = csrs
+    end
+
+    # @return [String] inspection string
+    sig { returns(String) }
+    def inspect
+      "SymbolTable[#{@name}]#{frozen? ? ' (frozen)' : ''}"
     end
 
     # do a deep freeze to protect the sym table and all its entries from modification
@@ -181,7 +238,7 @@ module Idl
       @scopes.freeze
 
       # set frozen_hash so that we can quickly compare symtabs
-      @frozen_hash = [@scopes.hash, @cfg_arch.hash].hash
+      @frozen_hash = [@scopes.hash, @name.hash].hash
 
       # set up the global clone that be used as a mutable table
       @global_clone_pool = Concurrent::Array.new
@@ -190,7 +247,6 @@ module Idl
         copy = SymbolTable.allocate
         copy.instance_variable_set(:@scopes, [@scopes[0]])
         copy.instance_variable_set(:@callstack, [@callstack[0]])
-        copy.instance_variable_set(:@cfg_arch, @cfg_arch)
         copy.instance_variable_set(:@mxlen, @mxlen)
         copy.instance_variable_set(:@mutex, @mutex)
         copy.instance_variable_set(:@global_clone_pool, @global_clone_pool)
@@ -200,11 +256,6 @@ module Idl
 
       freeze
       self
-    end
-
-    # @return [String] inspection string
-    def inspect
-      "SymbolTable[#{@cfg_arch&.name}]#{frozen? ? ' (frozen)' : ''}"
     end
 
     # pushes a new scope
@@ -374,7 +425,6 @@ module Idl
         copy = SymbolTable.allocate
         copy.instance_variable_set(:@scopes, [@scopes[0]])
         copy.instance_variable_set(:@callstack, [@callstack[0]])
-        copy.instance_variable_set(:@cfg_arch, @cfg_arch)
         copy.instance_variable_set(:@mxlen, @mxlen)
         copy.instance_variable_set(:@mutex, @mutex)
         copy.instance_variable_set(:@global_clone_pool, @global_clone_pool)

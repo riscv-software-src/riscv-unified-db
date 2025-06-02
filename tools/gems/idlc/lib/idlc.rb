@@ -6,6 +6,8 @@
 require "pathname"
 require "treetop"
 
+require_relative "idlc/syntax_node"
+
 module Treetop
   module Runtime
     # open up Treetop::Runtime::CompiledParser and add a few utility functions
@@ -279,7 +281,6 @@ module Idl
         warn e.backtrace
         exit 1
       end
-
 
       ast
     end

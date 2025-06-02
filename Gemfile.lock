@@ -16,6 +16,7 @@ PATH
   remote: tools/gems/idlc
   specs:
     idlc (0.1.0)
+      sorbet-runtime
       treetop (= 1.6.12)
 
 PATH

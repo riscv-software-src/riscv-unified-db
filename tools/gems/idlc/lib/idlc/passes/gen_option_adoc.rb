@@ -17,19 +17,19 @@ module Idl
     end
   end
 
-  class FunctionBodyAst
+  class FunctionBodyAst < AstNode
     def gen_option_adoc
       statements.map(&:gen_option_adoc).join("\n")
     end
   end
 
-  class FunctionCallExpressionAst
+  class FunctionCallExpressionAst < AstNode
     def gen_option_adoc
       gen_adoc(0)
     end
   end
 
-  class IfAst
+  class IfAst < AstNode
     def gen_option_adoc
       adoc =
         <<~ADOC
@@ -66,31 +66,31 @@ module Idl
     end
   end
 
-  class IfBodyAst
+  class IfBodyAst < AstNode
     def gen_option_adoc
       stmts.map(&:gen_option_adoc).join("\n")
     end
   end
 
-  class ReturnStatementAst
+  class ReturnStatementAst < AstNode
     def gen_option_adoc
       return_expression.gen_option_adoc
     end
   end
 
-  class StatementAst
+  class StatementAst < AstNode
     def gen_option_adoc
       action.gen_option_adoc
     end
   end
 
-  class IdAst
+  class IdAst < AstNode
     def gen_option_adoc
       text_value
     end
   end
 
-  class IntLiteralAst
+  class IntLiteralAst < AstNode
     def gen_option_adoc
       if value(nil) == 1 << 65
         "UNDEFINED_LEGAL"
@@ -102,7 +102,7 @@ module Idl
     end
   end
 
-  class ReturnExpressionAst
+  class ReturnExpressionAst < AstNode
     def gen_option_adoc
       raise "unexpected" if return_value_nodes.size != 1
 
@@ -110,7 +110,7 @@ module Idl
     end
   end
 
-  class TernaryOperatorExpressionAst
+  class TernaryOperatorExpressionAst < AstNode
     def gen_option_adoc
       cond = condition.is_a?(ParenExpressionAst) ? condition.expression : condition
       if cond.is_a?(BinaryExpressionAst) || cond.is_a?(UnaryOperatorExpressionAst)
@@ -135,7 +135,7 @@ module Idl
     end
   end
 
-  class EnumRefAst
+  class EnumRefAst < AstNode
     def gen_option_adoc
       if class_name == "CsrFieldType"
         case member_name

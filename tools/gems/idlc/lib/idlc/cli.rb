@@ -5,6 +5,7 @@
 
 require "idlc"
 require "optparse"
+require "yaml"
 
 module Idl
   # Command line interface
@@ -22,7 +23,7 @@ module Idl
     def run
       parse_options
 
-      symtab = SymbolTable.new(nil)
+      symtab = SymbolTable.new
 
       # load defines
       @options[:defines].each do |name, value_str|
@@ -30,7 +31,7 @@ module Idl
         symtab.add!(name, Var.new(name, expr_ast.type(symtab), expr_ast.value(symtab)))
       end
 
-      if !@options[:input_file].nil?
+      if !@options[:input].nil?
 
         ast =
           if !@options[:key].nil?
@@ -38,7 +39,7 @@ module Idl
             raise "#{file} has no key named '#{@options[:key]}'" unless yaml_contents.key?(@options[:key])
 
             if @options[:key] == "operation()"
-              @compiler.compile_inst_operation(yaml_contents, symtab:)
+              @compiler.compile_inst_operation(yaml_contents, symtab:, input_file: @options[:input].path)
             else
               @compiler.compile_func_body(yaml_contents[@options[:key]], symtab:)
             end
@@ -75,12 +76,6 @@ module Idl
           @options[:eval] = idl
         end
 
-        opts.on("-i", "--input FILE", "Read input from FILE. If not specified, read from stdin") do |file|
-          raise "File #{file} does not exist" unless File.exist?(file)
-
-          @options[:input_file] = file
-        end
-
         opts.on("-f", "--output-format FORMAT", [:idl, :yaml], "Output format. One of: idl, yaml. Default: idl") do |format|
           @options[:output_format] = format
         end
@@ -108,22 +103,24 @@ module Idl
         EXAMPLES
       end.parse!(@argv)
 
-      raise "Unexpected argument(s): #{@argv.join(' ')}" if !@argv.empty?
+      raise "Unexpected argument(s): #{@argv.join(' ')}" if !@argv.empty? && !@options[:eval].nil?
 
-      if @argv.empty?
-        @options[:input] = "-"
-      elsif @argv.size == 1
-        if File.extname(@argv[0]) == ".yaml" && !@options.key?(:key)
-          raise "Must specify a key (-k KEY_NAME) when using a YAML file"
+      if @options[:eval].nil?
+        if @argv.empty?
+          @options[:input] = $stdin
+        elsif @argv.size == 1
+          if File.extname(@argv[0]) == ".yaml" && !@options.key?(:key)
+            raise "Must specify a key (-k KEY_NAME) when using a YAML file"
+          end
+
+          raise "File #{@argv[0]} does not exist" unless File.exist?(@argv[0])
+
+          @options[:input] = File.open(@argv[0], "r")
+        else
+          puts "Only one input file can be specified"
+          puts optparser
+          exit
         end
-
-        raise "File #{@argv[0]} does not exist" unless File.exist?(@argv[0])
-
-        @options[:input] = @argv[0]
-      else
-        puts "Only one input file can be specified"
-        puts optparser
-        exit
       end
     end
 
