@@ -308,7 +308,7 @@ class DatabaseObject
     end
     @arch = T.must_because(arch) { pp data }
     @name = T.must_because(data["name"]) { pp data }
-    @long_name = T.must_because(data["long_name"]) { pp data }
+    @long_name = data["long_name"]
     @kind = T.must_because(data["kind"]) { pp data }
 
     @sem = Concurrent::Semaphore.new(1)

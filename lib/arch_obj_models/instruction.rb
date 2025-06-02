@@ -190,7 +190,7 @@ class Instruction < DatabaseObject
       mask = "-" * type(base).length
 
       opcodes(base).each do |opcode|
-        mask[type(base).length - opcode.range.end - 1, opcode.range.size] = opcode.value.to_s(2).rjust(opcode.range.size, "0")
+        mask[type(base).length - opcode.range.end - 1, opcode.range.size] = opcode.value.to_s(2).rjust(T.must(opcode.range.size), "0")
       end
 
       mask
@@ -250,7 +250,7 @@ class Instruction < DatabaseObject
 
     # make sure opcode values fit
     inst.opcodes(base).each do |opcode|
-      raise "In instruction #{inst.name}, opcode #{opcode.name}, value #{opcode.value} does not fit in #{opcode.range}" unless opcode.range.size >= opcode.value.bit_length
+      raise "In instruction #{inst.name}, opcode #{opcode.name}, value #{opcode.value} does not fit in #{opcode.range}" unless T.must(opcode.range.size) >= opcode.value.bit_length
     end
   end
 
