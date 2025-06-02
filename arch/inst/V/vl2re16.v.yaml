@@ -7,11 +7,11 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy: V
-assembly: vd, xs1
+assembly: vd, (xs1)
 encoding:
   match: 001000101000-----101-----0000111
   variables:
-    - name: rs1
+    - name: xs1
       location: 19-15
     - name: vd
       location: 11-7

@@ -83,7 +83,7 @@ class InstructionSubtype < DatabaseObject
 end
 
 # model of a specific instruction in a specific base (RV32/RV64)
-class Instruction < DatabaseObject
+class Instruction < TopLevelDatabaseObject
   # Add all methods in this module to this type of database object.
   include CertifiableObject
   include WavedromUtil
