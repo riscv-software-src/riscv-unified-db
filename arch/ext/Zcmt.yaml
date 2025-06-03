@@ -94,6 +94,7 @@ versions:
 params:
   JVT_BASE_TYPE:
     schema:
+      type: string
       enum: [mask, custom]
     description: |
       Type of the jvt.BASE CSR field. One of:
