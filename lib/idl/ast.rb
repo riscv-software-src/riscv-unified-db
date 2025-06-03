@@ -1092,14 +1092,13 @@ module Idl
       end
 
       EnumDefinitionAst.new(
-        input,
+       input,
         interval,
         user_type_name.to_ast,
-        e.elements.filter_map { |entry|
-        entry.respond_to?(:user_type_name) && entry.user_type_name.respond_to?(:to_ast) ? entry.user_type_name.to_ast : nil
-        }
+        e.elements.map { |entry| entry.user_type_name.to_ast },
         values
       )
+
     end
   end
 
@@ -5714,11 +5713,12 @@ module Idl
         function_name.text_value,
         (!respond_to?(:targs) || targs.empty?) ? [] : [targs.first.to_ast] + targs.rest.elements.map { |r| r.single_declaration.to_ast },
         ret.empty? ? [] : [ret.first.to_ast] + (ret.respond_to?(:rest) ? ret.rest.elements.map { |r| r.type_name.to_ast } : []),
-        args.rest.elements.map { |r| r.respond_to?(:to_ast) ? r.single_declaration.to_ast : nil }.compact
+        args.empty? ? [] : [args.first.to_ast] + args.rest.elements.map { |r| r.single_declaration.to_ast},
         desc.text_value,
         respond_to?(:type) ? type.text_value.strip.to_sym : :normal,
         respond_to?(:body_block) ? body_block.function_body.to_ast : nil
-      )
+    )
+
     end
   end
 
@@ -7080,6 +7080,10 @@ module Idl
     def to_idl(indent = 0)
       format_idl(indent)
     end
+
+    def pretty_idl(indent = 0)
+      "#{'  ' * indent}# #{@text}\n"
+    end
   end
 
   class WhitespaceAst < AstNode
@@ -7094,6 +7098,11 @@ module Idl
     def to_idl(indent = 0)
       "\n"
     end
+
+    def pretty_idl(indent = 0)
+      "\n"
+    end
   end
+
 
 end

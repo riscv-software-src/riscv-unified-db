@@ -540,37 +540,22 @@ grammar Idl
 
   rule function_if_block
   'if' space* '(' space* if_cond:expression space* ')' space* '{' space*
-    if_body:(e:(statement / comment / blank_line / return_statement / function_if_block / for_loop) space*)+
+    if_body:(e:(statement / execute_if_block / for_loop / comment / blank_line) space*)+
   '}'
   elseifs:(
     space* 'else' space+ 'if' space* '(' space* expression space* ')' space* '{' space*
-      body:(e:(statement / comment / blank_line / return_statement / function_if_block / for_loop) space*)+
+      body:(e:(statement / execute_if_block / for_loop / comment / blank_line) space*)+
     '}'
   )*
   final_else:(
     space* 'else' space* '{' space*
-      body:(e:(statement / comment / blank_line / return_statement / function_if_block / for_loop) space*)+
-    '}'
-  )?
-  <Idl::IfSyntaxNode>
-  end
-
-rule function_if_block
-  'if' space* '(' space* if_cond:expression space* ')' space* '{' space*
-    if_body:(e:(statement / comment / blank_line / return_statement / function_if_block / for_loop) space*)+
-  '}'
-  elseifs:(
-    space* 'else' space+ 'if' space* '(' space* expression space* ')' space* '{' space*
-      body:(e:(statement / comment / blank_line / return_statement / function_if_block / for_loop) space*)+
-    '}'
-  )*
-  final_else:(
-    space* 'else' space* '{' space*
-      body:(e:(statement / comment / blank_line / return_statement / function_if_block / for_loop) space*)+
+      body:(e:(statement / execute_if_block / for_loop / comment / blank_line) space*)+
     '}'
   )?
   <Idl::IfSyntaxNode>
 end
+
+
 e:(statement / execute_if_block / for_loop / comment / blank_line) space*)+
     '}'
     elseifs:(
