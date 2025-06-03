@@ -11,7 +11,7 @@ definedBy: Sscofpmf
 description: |
   A 32-bit read-only
   register that contains shadow copies of the OF bits in the 29 `mhpmevent` CSRs
-  (`mhpmevent3` - `mhpmevent31`) — where `scountovf` bit X corresponds to `mhpmeventX`.
+  (`mhpmevent3` - `mhpmevent31`) - where `scountovf` bit X corresponds to `mhpmeventX`.
 
   This register enables supervisor-level overflow interrupt handler
   software to quickly and easily determine which counter(s) have overflowed
@@ -29,25 +29,21 @@ fields:
       alias: mhpmevent<%= of_num %>.OF
       location: <%= of_num %>
       description: |
-        [when="HPM_COUNTER_EN[<%= of_num %>] == true"]
-        Shadow copy of mhpmevent<%= of_num %> overflow (OF) bit.
-
-        [when="HPM_COUNTER_EN[<%= of_num %>] == false"]
-        This field is read-only zero because the counter is not enabled.
+        Shadow copy of mhpmevent<%= of_num %> overflow (OF) bit if enabled.
+        Otherwise, this field is read-only zero because the counter is not enabled.
       type(): |
         return HPM_COUNTER_EN[<%= of_num %>] ? CsrFieldType::RO : CsrFieldType::ROH;
       reset_value(): |
         return HPM_COUNTER_EN[<%= of_num %>] ? UNDEFINED_LEGAL : 0;
   <%- end -%>
 
-
 sw_read(): |
   Bits<32> mask;
   if (mode() == PrivilegeMode::VS) {
-    # in VS-mode, scountovf.OFX access is determined by mcounteren/hcounteren
+    # In VS-mode, scountovf.OFX access is determined by mcounteren/hcounteren
     mask = $bits(CSR[mcounteren]) & $bits(CSR[hcounteren]);
   } else {
-    # in M-mode and S-mode, scountovf.OFX access is determined by mcounteren/scounteren
+    # In M-mode and S-mode, scountovf.OFX access is determined by mcounteren/scounteren
     mask = $bits(CSR[mcounteren]) & $bits(CSR[scounteren]);
   }
 
