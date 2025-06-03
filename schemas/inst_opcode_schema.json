@@ -27,6 +27,9 @@
         },
         "display_name": {
           "type": "string"
+        },
+        "$parent_of": {
+          "$ref": "schema_defs.json#/$defs/ref_url_list"
         }
       }
     }

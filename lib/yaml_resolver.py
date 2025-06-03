@@ -539,18 +539,29 @@ def resolve_file(
         resolved_obj = resolve(rel_path, args.arch_dir, do_checks)
         resolved_obj["$source"] = os.path.join(args.arch_dir, rel_path)
 
-        write_yaml(resolved_path, resolved_obj)
+        # since already-resolved objects may be updated later with inheritance breadcrumbs ($parent_of),
+        # we can't write the file yet.
 
-        if do_checks and ("$schema" in resolved_obj):
-            schema = _get_schema(resolved_obj["$schema"])
-            try:
-                schema.validate(instance=resolved_obj)
-            except ValidationError as e:
-                print(f"JSON Schema Validation Error for {rel_path}:")
-                print(best_match(schema.iter_errors(resolved_obj)).message)
-                exit(1)
 
-        os.chmod(resolved_path, 0o444)
+def write_resolved_file_and_validate(
+    rel_path: str | Path,
+    resolved_dir: str | Path,
+    do_checks: bool,
+):
+    resolved_path = os.path.join(resolved_dir, rel_path)
+    resolved_obj = resolve(rel_path, args.arch_dir, do_checks)
+    write_yaml(resolved_path, resolved_obj)
+
+    if do_checks and ("$schema" in resolved_obj):
+        schema = _get_schema(resolved_obj["$schema"])
+        try:
+            schema.validate(instance=resolved_obj)
+        except ValidationError as e:
+            print(f"JSON Schema Validation Error for {rel_path}:")
+            print(best_match(schema.iter_errors(resolved_obj)).message)
+            exit(1)
+
+    os.chmod(resolved_path, 0o444)
 
 
 if __name__ == "__main__":
@@ -628,6 +639,15 @@ if __name__ == "__main__":
             os.makedirs(os.path.dirname(resolved_arch_path), exist_ok=True)
             resolve_file(
                 arch_path, args.arch_dir, args.resolved_dir, not args.no_checks
+            )
+        iter = (
+            arch_paths
+            if args.no_progress
+            else tqdm(arch_paths, ascii=True, desc="Validating arch")
+        )
+        for arch_path in iter:
+            write_resolved_file_and_validate(
+                arch_path, args.resolved_dir, not args.no_checks
             )
 
         # create index
