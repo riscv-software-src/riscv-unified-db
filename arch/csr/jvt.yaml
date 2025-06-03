@@ -34,7 +34,7 @@ fields:
       The memory pointed to by `jvt.base` is treated as instruction memory for the purpose of executing table
       jump instructions, implying execute access permission.
     type(): |
-      if (implemented?(ExtensionName::Zcmt)) {
+      if (JVT_READ_ONLY) {
         return CsrFieldType::RO;
       }
       else {
