@@ -195,7 +195,7 @@ fields:
       Implementing this bit is optional. It may be tied to either 0 or 1.
     type(): |
       if (DCSR_MPRVEN_TYPE == "tied-to-0" || DCSR_MPRVEN_TYPE == "tied-to-1") {
-        return CsrFieldType::R0;
+        return CsrFieldType::RO;
       } else if (DCSR_MPRVEN_TYPE == "rw") {
         return CsrFieldType::RW;
       }
