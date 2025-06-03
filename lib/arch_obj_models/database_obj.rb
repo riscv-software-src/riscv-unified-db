@@ -14,6 +14,8 @@ class DatabaseObject
   class Kind < T::Enum
     enums do
       Instruction = new("instruction")
+      InstructionType = new("instruction type")
+      InstructionSubtype = new("instruction subtype")
       Csr = new("csr")
       CsrField = new("csr_field")
       Extension = new("extension")
@@ -22,7 +24,7 @@ class DatabaseObject
       ProcessorCertificateClass = new("processor certificate class")
       ProcessorCertificateModel = new("processor certificate model")
       Profile = new("profile")
-      ProflieClass = new("profile class")
+      ProfileClass = new("profile class")
       ProfileRelease = new("profile release")
     end
   end

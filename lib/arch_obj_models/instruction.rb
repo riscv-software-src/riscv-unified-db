@@ -10,6 +10,18 @@ require_relative "../backend_helpers"
 require "awesome_print"
 
 class InstructionType < DatabaseObject
+  sig {
+    params(
+      data: T::Hash[String, T.untyped],
+      data_path: T.any(String, Pathname),
+      arch: ConfiguredArchitecture,
+      name: T.nilable(String)
+    ).void
+  }
+  def initialize(data, data_path, arch, name: nil)
+    super(data, data_path, arch, DatabaseObject::Kind::InstructionType, name:)
+  end
+
   def length = @data["length"]
   def size = length
 end
@@ -38,6 +50,18 @@ class InstructionSubtype < DatabaseObject
         other.location_bits.any? { |i| range.cover?(i)}
       end
     end
+  end
+
+  sig {
+    params(
+      data: T::Hash[String, T.untyped],
+      data_path: T.any(String, Pathname),
+      arch: ConfiguredArchitecture,
+      name: T.nilable(String)
+    ).void
+  }
+  def initialize(data, data_path, arch, name: nil)
+    super(data, data_path, arch, DatabaseObject::Kind::InstructionSubtype, name:)
   end
 
   sig { returns(InstructionType) }

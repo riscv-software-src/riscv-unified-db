@@ -79,6 +79,8 @@ class Architecture
     progressbar = ProgressBar.create(total: objs.size) if show_progress
 
     objs.each do |obj|
+      next unless obj.is_a?(TopLevelDatabaseObject)
+
       progressbar.increment if show_progress
       obj.validate
     end
@@ -100,6 +102,7 @@ class Architecture
   #   @param name [String] The $1 name
   #   @return [$3] The $1
   #   @return [nil] if there is no $1 named +name+
+  sig { params(fn_name: String, arch_dir: String, obj_class: T.class_of(DatabaseObject)).void }
   def self.generate_obj_methods(fn_name, arch_dir, obj_class)
     plural_fn = ActiveSupport::Inflector.pluralize(fn_name)
 
@@ -140,62 +143,74 @@ class Architecture
     {
       fn_name: "extension",
       arch_dir: "ext",
-      klass: Extension
+      klass: Extension,
+      kind: DatabaseObject::Kind::Extension
     },
     {
       fn_name: "instruction",
       arch_dir: "inst",
-      klass: Instruction
+      klass: Instruction,
+      kind: DatabaseObject::Kind::Instruction
     },
     {
       fn_name: "instruction_type",
       arch_dir: "inst_type",
-      klass: InstructionType
+      klass: InstructionType,
+      kind: DatabaseObject::Kind::InstructionType
     },
     {
       fn_name: "instruction_subtype",
       arch_dir: "inst_subtype",
-      klass: InstructionSubtype
+      klass: InstructionSubtype,
+      kind: DatabaseObject::Kind::InstructionSubtype
     },
     {
       fn_name: "csr",
       arch_dir: "csr",
-      klass: Csr
+      klass: Csr,
+      kind: DatabaseObject::Kind::Csr
     },
     {
       fn_name: "proc_cert_class",
       arch_dir: "proc_cert_class",
-      klass: ProcCertClass
+      klass: ProcCertClass,
+      kind: DatabaseObject::Kind::ProcessorCertificateClass
     },
     {
       fn_name: "proc_cert_model",
       arch_dir: "proc_cert_model",
-      klass: ProcCertModel
+      klass: ProcCertModel,
+      kind: DatabaseObject::Kind::ProcessorCertificateModel
     },
     {
       fn_name: "manual",
       arch_dir: "manual",
-      klass: Manual
+      klass: Manual,
+      kind: DatabaseObject::Kind::Manual
     },
     {
       fn_name: "manual_version",
       arch_dir: "manual_version",
-      klass: ManualVersion
+      klass: ManualVersion,
+      kind: DatabaseObject::Kind::ManualVersion
     },
     {
       fn_name: "profile_release",
       arch_dir: "profile_release",
-      klass: ProfileRelease
+      klass: ProfileRelease,
+      kind: DatabaseObject::Kind::ProfileRelease
     },
     {
       fn_name: "profile_class",
       arch_dir: "profile_class",
-      klass: ProfileClass
+      klass: ProfileClass,
+      kind: DatabaseObject::Kind::ProfileClass
     },
     {
       fn_name: "profile",
       arch_dir: "profile",
-      klass: Profile
+      klass: Profile,
+      kind: DatabaseObject::Kind::Profile
     }
   ].freeze
 
@@ -329,7 +344,7 @@ class Architecture
   #
   # @params uri [String] JSON Reference pointer
   # @return [Object] The pointed-to object
-  sig { params(uri: String).returns(TopLevelDatabaseObject) }
+  sig { params(uri: String).returns(DatabaseObject) }
   def ref(uri)
     raise ArgumentError, "JSON Reference (#{uri}) must contain one '#'" unless uri.count("#") == 1
 
