@@ -14,6 +14,7 @@ versions:
 params:
   DCSR_MPRVEN_TYPE:
     schema:
+      type: string
       enum: [tied-to-0, tied-to-1, rw]
     description: |
       Implementation of dcsr.MPRVEN is optional.
