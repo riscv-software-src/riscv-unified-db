@@ -25,6 +25,7 @@ fields:
   SCRATCH:
     type: RW
     reset_value: 0
-    location: 0
+    location_rv32: 31-0
+    location_rv64: 63-0
     description: |
       Virtual supervisor scratch register.
