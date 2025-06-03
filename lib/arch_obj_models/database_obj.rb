@@ -24,7 +24,7 @@ class DatabaseObject
       ProcessorCertificateClass = new("processor certificate class")
       ProcessorCertificateModel = new("processor certificate model")
       Profile = new("profile")
-      ProfileClass = new("profile class")
+      ProfileFamily = new("profile family")
       ProfileRelease = new("profile release")
     end
   end
