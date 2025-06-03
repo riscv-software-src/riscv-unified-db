@@ -33,32 +33,74 @@ fields:
 
       The memory pointed to by `jvt.base` is treated as instruction memory for the purpose of executing table
       jump instructions, implying execute access permission.
-    type: RW
+    type(): |
+      if (implemented?(ExtensionName::Zcmt)) {
+        return CsrFieldType::RO;
+      }
+      else {
+        return CsrFieldType::RW;
+      }
     reset_value: UNDEFINED_LEGAL
     sw_write(csr_value): |
-      if (implemented?(ExtensionName::Smstateen) && (CSR[mstateen0].JVT == 1'b0 || CSR[sstateen0].JVT == 1'b0 || CSR[hstateen0].JVT == 1'b0)) {
-        return ILLEGAL_WLRL;
+      if ((mode() != PrivMode::M) && implemented?(ExtensionName::Smstateen)) {
+        if (CSR[mstateen0].JVT == 1'b0) {
+          unimplemented_csr();
+        }
       }
-      return csr_value.BASE;
+      else if ((mode() == PrivMode::U) && implemented?(ExtensionName::Ssstaten)) {
+        if (CSR[sstateen0].JVT == 1'b0) {
+          unimplemented_csr();
+        }
+      }
+      else if ((mode() == PrivMode::VS) && implemented?(ExtensionName::Ssstaten)) {
+        if (CSR[hstateen0].JVT == 1'b0) {
+          unimplemented_csr();
+        }
+      }
+      else if ((mode() == PrivMode::VU) && implemented?(ExtensionName::Ssstateen)) {
+        if ((CSR[sstateen0].JVT == 1'b0) || (CSR[hstateen0].JVT == 1'b0)) {
+          unimplemented_csr();
+        }
+      }
+      else {
+        if (JVT_BASE_TYPE == "custom") {
+          unpredictable("jvt.BASE has custom behavior");
+        } else {
+          return csr_value.BASE & (JVT_BASE_MASK >> 6);
+        }
+        return csr_value.BASE == 0 ? 0 : UNDEFINED_LEGAL_DETERMINISTIC;
+      }
   MODE:
     location: 5-0
     description: |
       `jvt.mode` is a WARL field, so can only be programmed to modes which are implemented. Therefore the
       discovery mechanism is to attempt to program different modes and read back the values to see which
       are available. Jump table mode must be implemented.
-    type: RW
-    reset_value: UNDEFINED_LEGAL
-    sw_write(csr_value): |
-      if (implemented?(ExtensionName::Smstateen) && (CSR[mstateen0].JVT == 1'b0 || CSR[sstateen0].JVT == 1'b0 || CSR[hstateen0].JVT == 1'b0)) {
-        return ILLEGAL_WLRL;
-      }
-      return csr_value.MODE;
+    type: RO
+    reset_value: 0
 sw_read(): |
   # If the Smstateen extension is implemented, then bit 2 in `mstateen0`, `sstateen0`, and `hstateen0` is
   # implemented. If bit 2 of a controlling `stateen0` CSR is zero, then access to the `jvt` CSR and execution
   # of a `cm.jalt` or `cm.jt` instruction by a lower privilege level results in an illegal-instruction trap (or, if
   # appropriate, a virtual-instruction trap).
 
-  if (implemented?(ExtensionName::Smstateen) && (CSR[mstateen0].JVT == 1'b0 || CSR[sstateen0].JVT == 1'b0 || CSR[hstateen0].JVT == 1'b0)) {
-    raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+  if ((mode() != PrivMode::M) && implemented?(ExtensionName::Smstateen)) {
+    if (CSR[mstateen0].JVT == 1'b0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  }
+  else if ((mode() == PrivMode::U) && implemented?(ExtensionName::Ssstaten)) {
+    if (CSR[sstateen0].JVT == 1'b0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  }
+  else if ((mode() == PrivMode::VS) && implemented?(ExtensionName::Ssstaten)) {
+    if (CSR[hstateen0].JVT == 1'b0) {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
+  }
+  else if ((mode() == PrivMode::VU) && implemented?(ExtensionName::Ssstateen)) {
+    if ((CSR[sstateen0].JVT == 1'b0) || (CSR[hstateen0].JVT == 1'b0)) {
+      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+    }
   }
