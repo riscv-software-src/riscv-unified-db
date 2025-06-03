@@ -49,6 +49,7 @@ params:
       name: Smstateen
       version: ~> 1.0
     schema:
+      type: string
       enum: [rw, read-only-0, read-only-1]
     description: |
       Behavior of the mstateen0.CSRIND bit:
@@ -64,6 +65,7 @@ params:
         - name: Ssstateen
           version: ~> 1.0
     schema:
+      type: string
       enum: [rw, read-only-0, read-only-1]
     description: |
       Behavior of the hstateen0.CSRIND bit:

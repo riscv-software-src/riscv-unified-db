@@ -21,6 +21,7 @@ params:
       name: Smstateen
       version: ~> 1.0
     schema:
+      type: string
       enum: [rw, read-only-0, read-only-1]
     description: |
       Behavior of the mstateen0.AIA bit:
@@ -36,6 +37,7 @@ params:
         - name: Ssstateen
           version: ~> 1.0
     schema:
+      type: string
       enum: [rw, read-only-0, read-only-1]
     description: |
       Behavior of the hstateen0.AIA bit:
@@ -51,6 +53,7 @@ params:
       name: Smstateen
       version: ~> 1.0
     schema:
+      type: string
       enum: [rw, read-only-0, read-only-1]
     description: |
       Behavior of the mstateen0.IMSIC bit:
@@ -66,6 +69,7 @@ params:
         - name: Ssstateen
           version: ~> 1.0
     schema:
+      type: string
       enum: [rw, read-only-0, read-only-1]
     description: |
       Behavior of the hstateen0.IMSIC bit:
