@@ -620,7 +620,7 @@ if __name__ == "__main__":
         arch_paths = glob.glob(f"*/**/*.yaml", recursive=True, root_dir=args.arch_dir)
         if os.path.exists(args.resolved_dir):
             resolved_paths = glob.glob(
-                f"**/*.yaml", recursive=True, root_dir=args.resolved_dir
+                f"*/**/*.yaml", recursive=True, root_dir=args.resolved_dir
             )
             arch_paths.extend(resolved_paths)
             arch_paths = list(set(arch_paths))

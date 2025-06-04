@@ -89,7 +89,7 @@ RV64::
 <%- else -%>
 [source,idl]
 ----
-<%- inst.decode_variables(cfg_arch.param_values["MXLEN"]).each do |d| -%>
+<%- inst.decode_variables(inst.base.nil? ? cfg_arch.param_values["MXLEN"] : inst.base).each do |d| -%>
 <%= d.sext? ? 'signed ' : '' %>Bits<<%= d.size %>> <%= d.name %> = <%= d.extract %>;
 <%- end -%>
 ----
@@ -120,7 +120,7 @@ Original::
 ====
 <%- end -%>
 
-<%- exception_list = inst.reachable_exceptions_str() -%>
+<%- exception_list = inst.reachable_exceptions_str(inst.base.nil? ? cfg_arch.param_values["MXLEN"] : inst.base) -%>
 <%- unless exception_list.empty? -%>
 == Exceptions
 
