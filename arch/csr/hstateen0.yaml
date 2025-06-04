@@ -62,7 +62,6 @@ fields:
   SE0:
     long_name: sstateen0 access control
     location: 63
-    base: 64
     description: |
       The SE0 bit in `hstateen0` controls access to the `sstateen0` CSR.
     type: RW
@@ -78,7 +77,6 @@ fields:
     definedBy:
       name: S
       version: ">= 1.11"
-    base: 64
     description: |
       The ENVCFG bit in `hstateen0` controls access to the `senvcfg` CSRs.
     type: RW
@@ -92,7 +90,6 @@ fields:
     long_name: siselect and sireg* access control
     location: 60
     definedBy: Sscsrind
-    base: 64
     description: |
       The CSRIND bit in `hstateen0` controls access to the `siselect` and the
       `sireg*`, (really `vsiselect` and `vsireg*`) CSRs provided by the Sscsrind
@@ -108,7 +105,6 @@ fields:
     long_name: Ssaia state access control
     location: 59
     definedBy: Ssaia
-    base: 64
     description: |
       The AIA bit in `hstateen0` controls access to all state introduced by
       the Ssaia extension and is not controlled by either the CSRIND or the
@@ -124,7 +120,6 @@ fields:
     long_name: IMSIC state access control
     location: 58
     definedBy: Ssaia
-    base: 64
     description: |
       The IMSIC bit in `hstateen0` controls access to the guest IMSIC state,
       including CSRs `stopei` (really `vstopei`), provided by the Ssaia extension.
@@ -142,7 +137,6 @@ fields:
     long_name: scontext access control
     location: 57
     definedBy: Sdtrig
-    base: 64
     description: |
       The CONTEXT bit in `hstateen0` controls access to the `scontext` CSR provided
       by the Sdtrig extension.
@@ -156,7 +150,6 @@ fields:
   CTR:
     long_name: ctr access control
     location: 54
-    base: 64
     description: |
       If the H extension is implemented and `mstateen0.CTR=1`, the `hstateen0.CTR` bit controls access to
       supervisor CTR state when V=1. This state includes `sctrctl` (really `vsctrctl`), `sctrstatus`, and `sireg*`

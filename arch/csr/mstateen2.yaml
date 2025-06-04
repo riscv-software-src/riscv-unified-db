@@ -68,7 +68,6 @@ fields:
   SE0:
     long_name: hstateen2, hstateen2h, and sstateen2 access control
     location: 63
-    base: 64
     description: |
       The SE0 bit in `mstateen2` controls access to the `hstateen2`, `hstateen2h`, and the `sstateen2` CSRs.
     type: RW

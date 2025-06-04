@@ -68,7 +68,6 @@ fields:
   SE0:
     long_name: hstateen0, hstateen0h, and sstateen0 access control
     location: 63
-    base: 64
     description: |
       The SE0 bit in `mstateen0` controls access to the `hstateen0`, `hstateen0h`, and the `sstateen0` CSRs.
     type: RW
@@ -79,7 +78,6 @@ fields:
     definedBy:
       name: S
       version: ">= 1.11"
-    base: 64
     description: |
       The ENVCFG bit in `mstateen0` controls access to the `henvcfg`, `henvcfgh`, and the `senvcfg` CSRs.
     type: RW
@@ -88,7 +86,6 @@ fields:
     long_name: siselect, sireg*, vsiselect, and vsireg* access control
     location: 60
     definedBy: Sscsrind
-    base: 64
     description: |
       The CSRIND bit in `mstateen0` controls access to the `siselect`, `sireg*`, `vsiselect`, and the `vsireg*`
       CSRs provided by the Sscsrind extensions.
@@ -98,7 +95,6 @@ fields:
     long_name: Ssaia state access control
     location: 59
     definedBy: Ssaia
-    base: 64
     description: |
       The AIA bit in `mstateen0` controls access to all state introduced by the Ssaia extension and is not
       controlled by either the CSRIND or the IMSIC bits.
@@ -108,7 +104,6 @@ fields:
     long_name: IMSIC state access control
     location: 58
     definedBy: Ssaia
-    base: 64
     description: |
       The IMSIC bit in `mstateen0` controls access to the IMSIC state, including CSRs `stopei` and `vstopei`,
       provided by the Ssaia extension.
@@ -118,7 +113,6 @@ fields:
     long_name: scontext and hcontext access control
     location: 57
     definedBy: Sdtrig
-    base: 64
     description: |
       The CONTEXT bit in `mstateen0` controls access to the `scontext` and `hcontext` CSRs provided by the
       Sdtrig extension.
@@ -127,7 +121,6 @@ fields:
   P1P13:
     long_name: hedelegh access control
     location: 56
-    base: 64
     description: |
       The P1P13 bit in `mstateen0` controls access to the `hedelegh` introduced by Privileged Specification
       Version 1.13.
@@ -137,7 +130,6 @@ fields:
     long_name: srmcfg access control
     location: 55
     #definedBy: Ssqosid
-    base: 64
     description: |
       The SRMCFG bit in `mstateen0` controls access to the `srmcfg`` CSR introduced by the Ssqosid Chapter 18
       extension.
@@ -146,7 +138,6 @@ fields:
   CTR:
     long_name: ctr access control
     location: 54
-    base: 64
     description: |
       When Smstateen is implemented, the `mstateen0.CTR` bit controls access to CTR register state from
       privilege modes less privileged than M-mode.
