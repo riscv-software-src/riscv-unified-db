@@ -6,7 +6,7 @@ name: mstateen3
 long_name: Machine State Enable 3 Register
 address: 0x30F
 priv_mode: M
-length: MXLEN
+length: 64
 description:
   - id: csr-mstateen3-purpose
     normative: true

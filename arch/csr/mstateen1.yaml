@@ -6,7 +6,7 @@ name: mstateen1
 long_name: Machine State Enable 1 Register
 address: 0x30D
 priv_mode: M
-length: MXLEN
+length: 64
 description:
   - id: csr-mstateen1-purpose
     normative: true

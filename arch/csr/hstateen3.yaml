@@ -6,7 +6,7 @@ name: hstateen3
 long_name: Hypervisor State Enable 3 Register
 address: 0x60F
 priv_mode: S
-length: MXLEN
+length: 64
 description:
   - id: csr-hstateen3-purpose
     normative: true
