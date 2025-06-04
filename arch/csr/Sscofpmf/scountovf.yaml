@@ -10,27 +10,30 @@ priv_mode: S
 length: 32
 definedBy: Sscofpmf
 description: |
-  A 32-bit read-only
-  register that contains shadow copies of the OF bits in the 29 `mhpmevent` CSRs
-  (`mhpmevent3` - `mhpmevent31`) - where `scountovf` bit X corresponds to `mhpmeventX`.
+  A 32-bit read-only register that contains shadow copies of the OF bits in the 29 `mhpmevent` CSRs
+  (`mhpmevent3` - `mhpmevent31`) — where `scountovf` bit X corresponds to `mhpmeventX`.
 
   This register enables supervisor-level overflow interrupt handler
   software to quickly and easily determine which counter(s) have overflowed
-  (without needing to make an execution environment call or series of calls ultimately up to M-mode)
+  without needing to make an execution environment call up to M-mode.
 
   Read access to bit X is subject to the same `mcounteren` (or `mcounteren` and `hcounteren`)
   CSRs that mediate access to the `hpmcounter` CSRs by S-mode (or VS-mode).
-  In M-mode, `scountovf` bit X is always readable. In S/HS-mode, `scountovf` bit X is readable
-  when `mcounteren` bit X is set, and otherwise reads as zero. Similarly, in VS mode,
-  `scountovf` bit X is readable when `mcounteren` bit X and `hcounteren` bit X are both set, and otherwise reads as zero.
+
+  In M-mode, `scountovf` bit X is always readable.
+  In S/HS-mode, `scountovf` bit X is readable when `mcounteren` bit X is set, and otherwise reads as zero.
+  Similarly, in VS-mode, it is readable when both `mcounteren` and `hcounteren` bit X are set.
 
 fields:
   OF3:
     alias: mhpmevent3.OF
     location: 3
     description: |
-      Shadow copy of mhpmevent3 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[3] == true"]
+      Shadow copy of mhpmevent3 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[3] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[3] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -39,8 +42,11 @@ fields:
     alias: mhpmevent4.OF
     location: 4
     description: |
-      Shadow copy of mhpmevent4 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[4] == true"]
+      Shadow copy of mhpmevent4 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[4] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[4] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -49,8 +55,11 @@ fields:
     alias: mhpmevent5.OF
     location: 5
     description: |
-      Shadow copy of mhpmevent5 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[5] == true"]
+      Shadow copy of mhpmevent5 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[5] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[5] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -59,8 +68,11 @@ fields:
     alias: mhpmevent6.OF
     location: 6
     description: |
-      Shadow copy of mhpmevent6 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[6] == true"]
+      Shadow copy of mhpmevent6 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[6] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[6] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -69,8 +81,11 @@ fields:
     alias: mhpmevent7.OF
     location: 7
     description: |
-      Shadow copy of mhpmevent7 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[7] == true"]
+      Shadow copy of mhpmevent7 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[7] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[7] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -79,8 +94,11 @@ fields:
     alias: mhpmevent8.OF
     location: 8
     description: |
-      Shadow copy of mhpmevent8 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[8] == true"]
+      Shadow copy of mhpmevent8 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[8] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[8] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -89,8 +107,11 @@ fields:
     alias: mhpmevent9.OF
     location: 9
     description: |
-      Shadow copy of mhpmevent9 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[9] == true"]
+      Shadow copy of mhpmevent9 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[9] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[9] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -99,8 +120,11 @@ fields:
     alias: mhpmevent10.OF
     location: 10
     description: |
-      Shadow copy of mhpmevent10 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[10] == true"]
+      Shadow copy of mhpmevent10 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[10] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[10] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -109,8 +133,11 @@ fields:
     alias: mhpmevent11.OF
     location: 11
     description: |
-      Shadow copy of mhpmevent11 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[11] == true"]
+      Shadow copy of mhpmevent11 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[11] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[11] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -119,8 +146,11 @@ fields:
     alias: mhpmevent12.OF
     location: 12
     description: |
-      Shadow copy of mhpmevent12 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[12] == true"]
+      Shadow copy of mhpmevent12 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[12] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[12] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -129,8 +159,11 @@ fields:
     alias: mhpmevent13.OF
     location: 13
     description: |
-      Shadow copy of mhpmevent13 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[13] == true"]
+      Shadow copy of mhpmevent13 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[13] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[13] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -139,8 +172,11 @@ fields:
     alias: mhpmevent14.OF
     location: 14
     description: |
-      Shadow copy of mhpmevent14 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[14] == true"]
+      Shadow copy of mhpmevent14 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[14] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[14] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -149,8 +185,11 @@ fields:
     alias: mhpmevent15.OF
     location: 15
     description: |
-      Shadow copy of mhpmevent15 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[15] == true"]
+      Shadow copy of mhpmevent15 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[15] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[15] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -159,8 +198,11 @@ fields:
     alias: mhpmevent16.OF
     location: 16
     description: |
-      Shadow copy of mhpmevent16 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[16] == true"]
+      Shadow copy of mhpmevent16 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[16] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[16] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -169,8 +211,11 @@ fields:
     alias: mhpmevent17.OF
     location: 17
     description: |
-      Shadow copy of mhpmevent17 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[17] == true"]
+      Shadow copy of mhpmevent17 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[17] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[17] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -179,8 +224,11 @@ fields:
     alias: mhpmevent18.OF
     location: 18
     description: |
-      Shadow copy of mhpmevent18 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[18] == true"]
+      Shadow copy of mhpmevent18 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[18] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[18] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -189,8 +237,11 @@ fields:
     alias: mhpmevent19.OF
     location: 19
     description: |
-      Shadow copy of mhpmevent19 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[19] == true"]
+      Shadow copy of mhpmevent19 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[19] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[19] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -199,8 +250,11 @@ fields:
     alias: mhpmevent20.OF
     location: 20
     description: |
-      Shadow copy of mhpmevent20 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[20] == true"]
+      Shadow copy of mhpmevent20 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[20] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[20] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -209,8 +263,11 @@ fields:
     alias: mhpmevent21.OF
     location: 21
     description: |
-      Shadow copy of mhpmevent21 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[21] == true"]
+      Shadow copy of mhpmevent21 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[21] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[21] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -219,8 +276,11 @@ fields:
     alias: mhpmevent22.OF
     location: 22
     description: |
-      Shadow copy of mhpmevent22 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[22] == true"]
+      Shadow copy of mhpmevent22 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[22] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[22] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -229,8 +289,11 @@ fields:
     alias: mhpmevent23.OF
     location: 23
     description: |
-      Shadow copy of mhpmevent23 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[23] == true"]
+      Shadow copy of mhpmevent23 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[23] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[23] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -239,8 +302,11 @@ fields:
     alias: mhpmevent24.OF
     location: 24
     description: |
-      Shadow copy of mhpmevent24 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[24] == true"]
+      Shadow copy of mhpmevent24 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[24] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[24] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -249,8 +315,11 @@ fields:
     alias: mhpmevent25.OF
     location: 25
     description: |
-      Shadow copy of mhpmevent25 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[25] == true"]
+      Shadow copy of mhpmevent25 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[25] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[25] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -259,8 +328,11 @@ fields:
     alias: mhpmevent26.OF
     location: 26
     description: |
-      Shadow copy of mhpmevent26 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[26] == true"]
+      Shadow copy of mhpmevent26 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[26] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[26] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -269,8 +341,11 @@ fields:
     alias: mhpmevent27.OF
     location: 27
     description: |
-      Shadow copy of mhpmevent27 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[27] == true"]
+      Shadow copy of mhpmevent27 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[27] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[27] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -279,8 +354,11 @@ fields:
     alias: mhpmevent28.OF
     location: 28
     description: |
-      Shadow copy of mhpmevent28 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[28] == true"]
+      Shadow copy of mhpmevent28 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[28] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[28] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -289,8 +367,11 @@ fields:
     alias: mhpmevent29.OF
     location: 29
     description: |
-      Shadow copy of mhpmevent29 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[29] == true"]
+      Shadow copy of mhpmevent29 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[29] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[29] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -299,8 +380,11 @@ fields:
     alias: mhpmevent30.OF
     location: 30
     description: |
-      Shadow copy of mhpmevent30 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[30] == true"]
+      Shadow copy of mhpmevent30 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[30] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[30] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
@@ -309,8 +393,11 @@ fields:
     alias: mhpmevent31.OF
     location: 31
     description: |
-      Shadow copy of mhpmevent31 overflow (OF) bit if enabled.
-      Otherwise, this field is read-only zero because the counter is not enabled.
+      [when="HPM_COUNTER_EN[31] == true"]
+      Shadow copy of mhpmevent31 overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[31] == false"]
+      This field is read-only zero because the counter is not enabled.
     type(): |
       return HPM_COUNTER_EN[31] ? CsrFieldType::RO : CsrFieldType::ROH;
     reset_value(): |
