@@ -5,7 +5,7 @@ kind: instruction
 name: c.sd
 long_name: Store double
 description: |
-  Stores a 64-bit value in register xs2 to memory.
+  For RV64, store a 64-bit value in register xs2 to memory. For RV32 with Zclsd extension, store a 64-bit value from the combined values in register pair [xs2, xs2+1] to memory.
   It computes an effective address by adding the zero-extended offset, scaled by 8,
   to the base address in register xs1.
   It expands to `sd` `xs2, offset(xs1)`.
