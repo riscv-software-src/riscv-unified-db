@@ -1,0 +1,53 @@
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+$schema: csr_schema.json#
+kind: csr
+name: mcyclecfgh
+long_name: Machine Cycle Counter Configuration High
+address: 0x721
+priv_mode: M
+length: 32
+definedBy: Smcntrpmf
+description: |
+  Upper 32 bits of the 64-bit `mcyclecfg` CSR, used for RV32 systems to access
+  the privilege mode filtering inhibit bits.
+
+fields:
+  MINH:
+    alias: mcyclecfg.MINH
+    location: 30
+    type: RW
+    definedBy: M
+    description: If set, then counting of events in M-mode is inhibited.
+    reset_value: UNDEFINED_LEGAL
+
+  SINH:
+    alias: mcyclecfg.SINH
+    location: 29
+    type: RW
+    definedBy: S
+    description: If set, then counting of events in S/HS-mode is inhibited.
+    reset_value: UNDEFINED_LEGAL
+
+  UINH:
+    alias: mcyclecfg.UINH
+    location: 28
+    type: RW
+    definedBy: U
+    description: If set, then counting of events in U-mode is inhibited.
+    reset_value: UNDEFINED_LEGAL
+
+  VSINH:
+    alias: mcyclecfg.VSINH
+    location: 27
+    type: RW
+    definedBy: H
+    description: If set, then counting of events in VS-mode is inhibited.
+    reset_value: UNDEFINED_LEGAL
+
+  VUINH:
+    alias: mcyclecfg.VUINH
+    location: 26
+    type: RW
+    definedBy: H
+    description: If set, then counting of events in VU-mode is inhibited.
+    reset_value: UNDEFINED_LEGAL

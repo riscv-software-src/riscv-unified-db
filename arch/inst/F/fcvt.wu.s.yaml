@@ -3,9 +3,9 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.wu.s
-long_name: Convert single-precision float to integer word to unsigned 32-bit integer 
+long_name: Convert single-precision float to unsigned word.
 description: |
-  Converts a floating-point number in floating-point register _fs1_ to an unsigned 32-bit integer in integer register _rd_.
+  Converts a floating-point number in floating-point register _fs1_ to an unsigned 32-bit integer in integer register _xd_.
 
   For XLEN &gt;32, `fcvt.wu.s` sign-extends the 32-bit result to the destination register width.
 
@@ -29,7 +29,7 @@ description: |
   All floating-point to integer and integer to floating-point conversion instructions round
   according to the _rm_ field.
   A floating-point register can be initialized to floating-point positive zero using
-  `fcvt.s.w rd, x0`, which will never set any exception flags.
+  `fcvt.s.w xd, x0`, which will never set any exception flags.
 
   All floating-point conversion instructions set the Inexact exception flag if the rounded
   result differs from the operand value and the Invalid exception flag is not set.
@@ -38,11 +38,11 @@ assembly: xd, fs1, rm
 encoding:
   match: 110000000001-------------1010011
   variables:
-    - name: rs1
+    - name: fs1
       location: 19-15
     - name: rm
       location: 14-12
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -53,7 +53,7 @@ data_independent_timing: true
 operation(): |
   check_f_ok($encoding);
   RoundingMode rounding_mode = rm_to_mode(rm, $encoding);
-  X[rd] = f32_to_ui32(X[fs1], mode);
+  X[xd] = f32_to_ui32(X[fs1], rounding_mode);
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
 # SPDX-License-Identifier: BSD-2-Clause

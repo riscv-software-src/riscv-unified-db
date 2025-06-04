@@ -13,7 +13,7 @@ encoding:
   variables:
     - name: vs2
       location: 24-20
-    - name: rd
+    - name: fd
       location: 11-7
 access:
   s: always
