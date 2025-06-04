@@ -113,8 +113,8 @@ fields:
           raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
       }
-        rcid_mask = (1u << RCID_WIDTH) - 1;
-        return csr_value.RCID & rcid_mask;
+      rcid_mask = (1u << RCID_WIDTH) - 1;
+      return csr_value.RCID & rcid_mask;
 
   MCID:
     location: 27-16
