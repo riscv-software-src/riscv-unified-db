@@ -19,7 +19,7 @@
 #   Csr             csrs()              csr_hash()              csr(name)
 #   ProcCertClass   proc_cert_classes() proc_cert_class_hash()  proc_cert_class(name)
 #   ProcCertModel   proc_cert_models()  proc_cert_model_hash()  proc_cert_model(name)
-#   ProfileClass    profile_classes()   profile_class_hash()    profile_class(name)
+#   ProfileFamily   profile_families()  profile_family_hash()   profile_family(name)
 #   ProfileRelease  profile_releases()  profile_release_hash()  profile_release(name)
 #   Profile         profiles()          profile_hash()          profile(name)
 #   Manual          manuals()           manual_hash()           manual(name)
@@ -178,9 +178,9 @@ class Architecture
       klass: ProfileRelease
     },
     {
-      fn_name: "profile_class",
-      arch_dir: "profile_class",
-      klass: ProfileClass
+      fn_name: "profile_family",
+      arch_dir: "profile_family",
+      klass: ProfileFamily
     },
     {
       fn_name: "profile",
@@ -233,7 +233,7 @@ class Architecture
   def portfolio_classes
     return @portfolio_classes unless @portfolio_classes.nil?
 
-    @portfolio_classes = profile_classes.concat(proc_cert_classes).sort_by!(&:name)
+    @portfolio_classes = profile_families.concat(proc_cert_classes).sort_by!(&:name)
   end
 
   # @return [Hash<String, PortfolioClass>] Hash of all portfolio classes defined in the architecture
@@ -347,9 +347,9 @@ class Architecture
       when /^manual_version.*/
         manual_name = File.basename(file_path, ".yaml")
         manual_version(manual_name)
-      when /^profile_class.*/
-        profile_class_name = File.basename(file_path, ".yaml")
-        profile_class(profile_class_name)
+      when /^profile_family.*/
+        profile_family_name = File.basename(file_path, ".yaml")
+        profile_family(profile_family_name)
       when /^profile_release.*/
         profile_release_name = File.basename(file_path, ".yaml")
         profile_release(profile_release_name)
