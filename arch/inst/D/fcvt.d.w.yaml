@@ -9,7 +9,7 @@ description: |
   -normative: false
   -text: |
     `fcvt.d.w` converts a 32-bit signed integer, in integer register `xs1` into a double-precision
-    floating-point number in floating-point register `xd`.
+    floating-point number in floating-point register `fd`.
     Note `fcvt.d.w` always produces an exact result and is unaffected by rounding mode.
 definedBy: D
 assembly: xd, xs1, rm

@@ -9,7 +9,7 @@ description: |
   -normative: false
   -text: |
      `fcvt.d.l` converts a 64-bit signed integer, in integer register `xs1` into a double-precision
-     floating-point number in floating-point register `xd`.
+     floating-point number in floating-point register `fd`.
 definedBy: D
 assembly: xd, xs1, rm
 encoding:
