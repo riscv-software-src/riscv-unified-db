@@ -142,6 +142,8 @@ class ConfiguredArchitecture < Architecture
       else
         raise "Unexpected configuration state"
       end
+    when "D"
+      mxlen.nil?
     else
       raise ArgumentError, "Bad mode"
     end
