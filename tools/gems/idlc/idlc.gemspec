@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
   s.bindir = "bin"
   s.executables << "idlc"
 
+  s.add_dependency "commander", "~> 5"
   s.add_dependency "sorbet-runtime"
   s.add_dependency "treetop", "1.6.12"
 

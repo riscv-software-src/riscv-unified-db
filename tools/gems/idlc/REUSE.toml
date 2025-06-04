@@ -14,7 +14,8 @@ SPDX-License-Identifier = "BSD-3-Clause-Clear"
 # Computer-generated files that are checked in
 [[annotations]]
 path = [
-    "sorbet/**"
+    "sorbet/**",
+    "Gemfile.lock"
 ]
 SPDX-FileCopyrightText = "NONE"
 SPDX-License-Identifier = "CC0-1.0"

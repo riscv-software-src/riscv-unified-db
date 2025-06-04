@@ -3,6 +3,8 @@
 
 # frozen_string_literal: true
 
+require "minitest/autorun"
+
 require "yaml"
 
 require_relative "helpers"
@@ -38,7 +40,7 @@ class ExpressionTestFactory
                   @symtab.add!(name, Idl::Var.new(name, Idl::Type.new(:bits, width:), value))
                 when String
                   @symtab.add!(name, Idl::Var.new(name, Idl::Type.new(:string), value))
-                when Boolean
+                when TrueClass, FalseClass
                   @symtab.add!(name, Idl::Var.new(name, Idl::Type.new(:boolean), value))
                 else
                   raise "Unexepected type"
@@ -210,3 +212,7 @@ class ExpressionTestFactory
     )
   end
 end
+
+# now list all the YAML files that specify expressions to test
+ExpressionTestFactory.create("Literals", "idl/literals.yaml")
+ExpressionTestFactory.create("Expressions", "idl/expressions.yaml")

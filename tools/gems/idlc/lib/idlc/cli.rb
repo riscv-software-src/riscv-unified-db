@@ -4,128 +4,169 @@
 # frozen_string_literal: true
 
 require "idlc"
+# require "gli"
+require "commander"
+require "forwardable"
 require "optparse"
 require "yaml"
 
 module Idl
-  # Command line interface
   class Cli
-    def initialize(argv)
-      @argv = argv
-      @options = {
-        dump_ast: false,
-        output: $stdout,
-        defines: []
-      }
-      @compiler = Compiler.new
+    extend Forwardable
+    def_delegators :@runner,
+      :alias_command,
+      :always_trace!,
+      :command,
+      :default_command,
+      :global_option,
+      :never_trace!,
+      :program,
+      :run!
+
+    def initialize(args)
+      @defines = {}
+      @runner = Commander::Runner.new(args)
+    end
+
+    def add_defines(compiler, symtab)
+      @defines.each do |name, value_str|
+        expr_ast = compiler.compile_expression(value_str, symtab)
+        symtab.add!(name, Var.new(name, expr_ast.type(symtab), expr_ast.value(symtab)))
+      end
+    end
+
+    def do_eval(args, options)
+      if args.size != 1
+        if args.empty?
+          warn "Missing expression to evaluate"
+        else
+          warn "Unexpected arguments: #{args[1..]}"
+        end
+        @runner.commands["help"].run
+        exit 1
+      end
+
+      compiler = Compiler.new
+      symtab = SymbolTable.new
+
+      add_defines(compiler, symtab)
+      expr_ast = compiler.compile_expression(args[0], symtab)
+
+      case options.output
+      when "-"
+        $stdout.puts expr_ast.value(symtab)
+      else
+        f = File.open(options.output, "w")
+        f.puts expr_ast.value(symtab)
+      end
+    end
+
+    def do_tc_inst(args, options, vars)
+      compiler = Compiler.new
+      symtab = SymbolTable.new
+
+      add_defines(compiler, symtab)
+      symtab.push(nil)
+
+      vars.each do |name, width|
+        symtab.add!(name, Var.new(name, Type.new(:bits, width: width.to_i), decode_var: true))
+      end
+
+      io =
+        if args[0] == "-"
+          $stdin
+        else
+          File.open(args[0], "r")
+        end
+
+      idl =
+        if !options.key.nil?
+          yaml_contents = YAML.load(io.read)
+          raise "#{args[0]} has no key named '#{options.key}'" unless yaml_contents.key?(options.key)
+
+          yaml_contents[options.key]
+        else
+          io.read
+        end
+
+      ast = compiler.compile_inst_scope(idl, symtab:, input_file: args[0])
+      ast.type_check(symtab)
     end
 
     def run
-      parse_options
+      default_command :help
 
-      symtab = SymbolTable.new
+      program :name, "IDL Compiler"
+      program :version, Idl::Compiler.version
+      program :description, "Command line for the IDL reference compiler"
 
-      # load defines
-      @options[:defines].each do |name, value_str|
-        expr_ast = @compiler.compile_expression(value_str, symtab)
-        symtab.add!(name, Var.new(name, expr_ast.type(symtab), expr_ast.value(symtab)))
+      add_define_option = lambda do |c|
+        c.option "-D,--define PARM_NAME=PARAM_VALUE", (<<~DESC
+          Define a parameter (e.g., -DMXLEN=64).
+          PARAM_VALUE can be any IDL expression with a knowable value
+        DESC
+        ) do |varandval|
+          raise ArgumentError, "Define (#{varandval}) must be in the format VAR=VAL" unless varandval =~ /.+=.+/
+
+          var, val = varandval.split("=")
+          @defines[var] = val
+        end
       end
 
-      if !@options[:input].nil?
+      command :eval do |c|
+        c.syntax = "idlc eval [options] EXPRESSION"
+        c.summary = "Evaluate an IDL expression"
+        c.example "Print '15'", "idlc eval -DA=5 -DB=10 A+B"
 
-        ast =
-          if !@options[:key].nil?
-            yaml_contents = YAML.load(@options[:input].read)
-            raise "#{file} has no key named '#{@options[:key]}'" unless yaml_contents.key?(@options[:key])
+        c.option "-o,--output FILE", String, "Output file (- for STDOUT)"
+        add_define_option.call(c)
 
-            if @options[:key] == "operation()"
-              @compiler.compile_inst_operation(yaml_contents, symtab:, input_file: @options[:input].path)
+        c.action do |args, options|
+          options.default output: "-"
+          do_eval(args, options)
+        end
+      end
+
+      command "tc inst" do |c|
+        vars = {}
+        c.syntax = "idlc tc inst [options] FILE"
+        c.summary = "Type check an instruction 'operation()' block. Exits 0 if type checking succeeds, 1 otherwise."
+        c.example "Exit 0", "idlc tc inst -k 'operation()' -v xs1=5 -v xs2=5 -v xd=5 add.yaml"
+        c.example "Exit 1 (variables not defined)", "idlc tc inst -k 'operation()' add.yaml"
+        c.example "Exit 0", "echo 'X[2] = 15;' | idlc tc inst -"
+
+        add_define_option.call(c)
+        c.option "-k", "--key KEY", String, "When FILE is a YAML file, type check just the contents of KEY"
+        c.option "-d", "--var NAME=WIDTH", (<<~DESC
+          Define decode variable, e.g., xs2=5
+          NAME is the name of the variable, and must be a valid IDL identifier
+          WIDTH is the bit width of the variable, and must be an integer
+        DESC
+        ) do |nameandwidth|
+          unless nameandwidth =~ /.+=.+/
+            raise ArgumentError, "Define (#{nameandwidth}) must be in the format NAME=WIDTH"
+          end
+
+          name, width = nameandwidth.split("=")
+          vars[name] = width.to_i
+        end
+
+        c.action do |args, options|
+          if args.size != 1
+            if args.empty?
+              warn "Missing file to type check"
             else
-              @compiler.compile_func_body(yaml_contents[@options[:key]], symtab:)
+              warn "Unexpected arguments: #{args[1..]}"
             end
-          else
-            @compiler.compile_file(Pathname.new(@options[:input]))
-          end
-      elsif !@options[:eval].nil?
-        expr_ast = @compiler.compile_expression(@options[:eval], symtab)
-        @options[:output].puts expr_ast.value(symtab)
-      end
-
-      @options[:output].puts ast.to_idl if @options[:dump_ast]
-
-      exit if @options[:dump_ast]
-    end
-
-    def parse_options
-      optparser = OptionParser.new do |opts|
-        opts.banner = <<~BANNER
-          Usage: idlc [options]
-        BANNER
-
-        opts.on("-a", "--ast", "Dump the ast as YAML, then exit") do
-          @options[:dump_ast] = true
-        end
-
-        opts.on("-D", "--define NAME=VALUE", "Define a global variable") do |var_and_value|
-          name, value_str = var_and_value.split("=", 2)
-          @options[:defines] << [name, value_str]
-        end
-
-        opts.on("-e", "--eval IDL",
-                "Compile IDL as an expression, and print it's evaluated value. Cannot be used with -i") do |idl|
-          @options[:eval] = idl
-        end
-
-        opts.on("-f", "--output-format FORMAT", [:idl, :yaml], "Output format. One of: idl, yaml. Default: idl") do |format|
-          @options[:output_format] = format
-        end
-
-        opts.on("-o", "--output FILE", "Write output to FILE. If not specified, output is written to stdout") do |file|
-          @options[:output] = File.open(file, "w")
-        end
-
-        opts.on("-k", "--key KEY_NAME", "When input FILE is YAML, select the key to use as IDL source") do |key|
-          @options[:key] = key
-        end
-
-        opts.on("-h", "--help", "Prints this help") do
-          puts opts
-          exit
-        end
-
-        opts.separator ""
-        opts.separator "Examples:"
-        opts.separator ""
-        opts.separator <<~EXAMPLES
-          # Evaluate an expression
-          #{opts.program_name} -D A=5 -D B=10 -e "A + B" # => 15
-          #{opts.program_name} -D A=5 -D B=10 -e "A > B" # => false
-        EXAMPLES
-      end.parse!(@argv)
-
-      raise "Unexpected argument(s): #{@argv.join(' ')}" if !@argv.empty? && !@options[:eval].nil?
-
-      if @options[:eval].nil?
-        if @argv.empty?
-          @options[:input] = $stdin
-        elsif @argv.size == 1
-          if File.extname(@argv[0]) == ".yaml" && !@options.key?(:key)
-            raise "Must specify a key (-k KEY_NAME) when using a YAML file"
+            @runner.commands["help"].run
+            exit 1
           end
 
-          raise "File #{@argv[0]} does not exist" unless File.exist?(@argv[0])
-
-          @options[:input] = File.open(@argv[0], "r")
-        else
-          puts "Only one input file can be specified"
-          puts optparser
-          exit
+          do_tc_inst(args, options, vars)
         end
       end
-    end
 
-    def self.run(argv)
-      Cli.new(argv).run
+      run!
     end
   end
 end

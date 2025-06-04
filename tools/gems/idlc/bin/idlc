@@ -7,4 +7,4 @@
 
 require 'idlc/cli'
 
-Idl::Cli.run(ARGV)
+Idl::Cli.new(ARGV).run

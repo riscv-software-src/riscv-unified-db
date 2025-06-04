@@ -447,10 +447,12 @@ namespace :test do
   DESC
   task :smoke do
     $logger.info "Starting test:smoke"
+    $logger.info "Running test:idlc:sorbet"
+    Rake::Task["test:idlc:sorbet"].invoke
+    $logger.info "Running test:idlc:unit"
+    Rake::Task["test:idlc:unit"].invoke
     $logger.info "Running gen:isa_explorer_browser_ext"
     Rake::Task["gen:isa_explorer_browser_ext"].invoke
-    $logger.info "Running test:idl_compiler"
-    Rake::Task["test:idl_compiler"].invoke
     $logger.info "Running test:lib"
     Rake::Task["test:lib"].invoke
     $logger.info "UPDATE: Running test:sorbet"

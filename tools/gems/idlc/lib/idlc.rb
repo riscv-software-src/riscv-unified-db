@@ -180,18 +180,10 @@ module Idl
       ast
     end
 
-    # compile an instruction operation, and return the abstract syntax tree
-    #
-    # @param inst [Instruction] Instruction object
-    # @param symtab [SymbolTable] Symbol table
-    # @param input_file [Pathname] Path to the input file this source comes from
-    # @param input_line [Integer] Starting line in the input file that this source comes from
-    # @return [Ast] The root of the abstract syntax tree
-    def compile_inst_operation(inst, symtab:, input_file: nil, input_line: 0)
-      operation = inst.data["operation()"]
+    def compile_inst_scope(idl, symtab:, input_file:, input_line: 0)
       @parser.set_input_file(input_file, input_line)
 
-      m = @parser.parse(operation, root: :instruction_operation)
+      m = @parser.parse(idl, root: :instruction_operation)
       if m.nil?
         raise SyntaxError, <<~MSG
           While parsing #{input_file}:#{input_line + @parser.failure_line}
@@ -206,6 +198,18 @@ module Idl
       ast.freeze_tree(symtab)
 
       ast
+    end
+
+    # compile an instruction operation, and return the abstract syntax tree
+    #
+    # @param inst [Instruction] Instruction object
+    # @param symtab [SymbolTable] Symbol table
+    # @param input_file [Pathname] Path to the input file this source comes from
+    # @param input_line [Integer] Starting line in the input file that this source comes from
+    # @return [Ast] The root of the abstract syntax tree
+    def compile_inst_operation(inst, symtab:, input_file: nil, input_line: 0)
+      operation = inst.data["operation()"]
+      compile_inst_scope(operation, symtab:, input_file:, input_line:)
     end
 
     # Type check an abstract syntax tree

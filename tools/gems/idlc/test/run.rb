@@ -14,6 +14,4 @@ puts "[SimpleCov] Coverage started."
 require "minitest/autorun"
 
 require_relative "test_expressions"
-
-ExpressionTestFactory.create("Literals", "idl/literals.yaml")
-ExpressionTestFactory.create("Expressions", "idl/expressions.yaml")
+require_relative "test_cli"

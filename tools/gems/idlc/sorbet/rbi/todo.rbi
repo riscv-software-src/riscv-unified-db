@@ -12,6 +12,7 @@ module ActiveSupport::SafeBuffer; end
 module ActiveSupport::StringInquirer; end
 module ActiveSupport::TimeZone; end
 module Idl::AstNode::ValueRbType; end
+module Idl::Cli::Commander::Runner; end
 module Idl::Compiler::IdlParser; end
 module Idl::Type::CppHartGen::TemplateEnv; end
 module T::Integer; end

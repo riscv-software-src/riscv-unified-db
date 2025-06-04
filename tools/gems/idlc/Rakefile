@@ -17,10 +17,15 @@ end
 
 # initialize sorbet
 namespace :chore do
-  task "update-sorbet" do
-    Dir.chdir(IDLC_ROOT) do
-      sh "bundle exec tapioca init"
-      sh "bundle exec tapioca dsl"
+  namespace :idlc do
+    task "update-sorbet" do
+      Dir.chdir(IDLC_ROOT) do
+        # update the Gemfile
+        sh "bundle update --gemfile Gemfile"
+
+        # update the rbi defintions
+        sh "bundle exec tapioca gems --all"
+      end
     end
   end
 end
@@ -31,6 +36,13 @@ namespace :test do
     task :sorbet  do
       Dir.chdir(IDLC_ROOT) do
         sh "bundle exec srb tc"
+      end
+    end
+
+    desc "Run all unit tests"
+    task :unit  do
+      Dir.chdir(IDLC_ROOT) do
+        sh "bundle exec ruby #{IDLC_ROOT}/test/run.rb"
       end
     end
   end
