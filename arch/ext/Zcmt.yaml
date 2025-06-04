@@ -129,7 +129,7 @@ params:
       allOf:
         - name: S
           version: ~> 1.0
-        - name: Sstateen
+        - name: Ssstateen
           version: ~> 1.0
     schema:
       type: string
