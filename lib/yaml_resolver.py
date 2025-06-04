@@ -617,7 +617,7 @@ if __name__ == "__main__":
         print(f"[INFO] Merged architecture files written to {args.merged_dir}")
 
     elif args.command == "resolve":
-        arch_paths = glob.glob(f"**/*.yaml", recursive=True, root_dir=args.arch_dir)
+        arch_paths = glob.glob(f"*/**/*.yaml", recursive=True, root_dir=args.arch_dir)
         if os.path.exists(args.resolved_dir):
             resolved_paths = glob.glob(
                 f"**/*.yaml", recursive=True, root_dir=args.resolved_dir
