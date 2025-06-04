@@ -47,10 +47,9 @@ sw_read(): |
     mask = $bits(CSR[mcounteren]) & $bits(CSR[scounteren]);
   }
 
-  Bits<32> value =
+  Bits<32> value = 0;
   <%- (3..31).each do |num| -%>
-    (CSR[mhpmevent<%= num %>].OF << <%= num %>) |
+    value = value | (CSR[mhpmevent<%= num %>].OF << <%= num %>);
   <%- end -%>
-    0;
 
   return value & mask;

@@ -326,36 +326,35 @@ sw_read(): |
     mask = $bits(CSR[mcounteren]) & $bits(CSR[scounteren]);
   }
 
-  Bits<32> value =
-    (CSR[mhpmevent3].OF << 3) |
-    (CSR[mhpmevent4].OF << 4) |
-    (CSR[mhpmevent5].OF << 5) |
-    (CSR[mhpmevent6].OF << 6) |
-    (CSR[mhpmevent7].OF << 7) |
-    (CSR[mhpmevent8].OF << 8) |
-    (CSR[mhpmevent9].OF << 9) |
-    (CSR[mhpmevent10].OF << 10) |
-    (CSR[mhpmevent11].OF << 11) |
-    (CSR[mhpmevent12].OF << 12) |
-    (CSR[mhpmevent13].OF << 13) |
-    (CSR[mhpmevent14].OF << 14) |
-    (CSR[mhpmevent15].OF << 15) |
-    (CSR[mhpmevent16].OF << 16) |
-    (CSR[mhpmevent17].OF << 17) |
-    (CSR[mhpmevent18].OF << 18) |
-    (CSR[mhpmevent19].OF << 19) |
-    (CSR[mhpmevent20].OF << 20) |
-    (CSR[mhpmevent21].OF << 21) |
-    (CSR[mhpmevent22].OF << 22) |
-    (CSR[mhpmevent23].OF << 23) |
-    (CSR[mhpmevent24].OF << 24) |
-    (CSR[mhpmevent25].OF << 25) |
-    (CSR[mhpmevent26].OF << 26) |
-    (CSR[mhpmevent27].OF << 27) |
-    (CSR[mhpmevent28].OF << 28) |
-    (CSR[mhpmevent29].OF << 29) |
-    (CSR[mhpmevent30].OF << 30) |
-    (CSR[mhpmevent31].OF << 31) |
-    0;
+  Bits<32> value = 0;
+    value = value | (CSR[mhpmevent3].OF << 3);
+    value = value | (CSR[mhpmevent4].OF << 4);
+    value = value | (CSR[mhpmevent5].OF << 5);
+    value = value | (CSR[mhpmevent6].OF << 6);
+    value = value | (CSR[mhpmevent7].OF << 7);
+    value = value | (CSR[mhpmevent8].OF << 8);
+    value = value | (CSR[mhpmevent9].OF << 9);
+    value = value | (CSR[mhpmevent10].OF << 10);
+    value = value | (CSR[mhpmevent11].OF << 11);
+    value = value | (CSR[mhpmevent12].OF << 12);
+    value = value | (CSR[mhpmevent13].OF << 13);
+    value = value | (CSR[mhpmevent14].OF << 14);
+    value = value | (CSR[mhpmevent15].OF << 15);
+    value = value | (CSR[mhpmevent16].OF << 16);
+    value = value | (CSR[mhpmevent17].OF << 17);
+    value = value | (CSR[mhpmevent18].OF << 18);
+    value = value | (CSR[mhpmevent19].OF << 19);
+    value = value | (CSR[mhpmevent20].OF << 20);
+    value = value | (CSR[mhpmevent21].OF << 21);
+    value = value | (CSR[mhpmevent22].OF << 22);
+    value = value | (CSR[mhpmevent23].OF << 23);
+    value = value | (CSR[mhpmevent24].OF << 24);
+    value = value | (CSR[mhpmevent25].OF << 25);
+    value = value | (CSR[mhpmevent26].OF << 26);
+    value = value | (CSR[mhpmevent27].OF << 27);
+    value = value | (CSR[mhpmevent28].OF << 28);
+    value = value | (CSR[mhpmevent29].OF << 29);
+    value = value | (CSR[mhpmevent30].OF << 30);
+    value = value | (CSR[mhpmevent31].OF << 31);
 
   return value & mask;
