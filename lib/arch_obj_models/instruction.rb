@@ -1067,13 +1067,24 @@ class Instruction < TopLevelDatabaseObject
   end
 
   # @return [Integer] the width of the encoding
+  sig { returns(Integer) }
   def encoding_width
-    raise "unexpected: encodings are different sizes" unless encoding(32).size == encoding(64).size
+    if defined_in_base?(32) && defined_in_base?(64)
+      raise "unexpected: encodings are different sizes" unless encoding(32).size == encoding(64).size
 
-    encoding(64).size
+      encoding(64).size
+    elsif defined_in_base?(32)
+      encoding(32).size
+    else
+      raise "unexpected" unless defined_in_base?(64)
+
+      encoding(64).size
+    end
+
   end
 
   # @return [Integer] the largest encoding width of the instruction, in any XLEN for which this instruction is valid
+  sig { returns(Integer) }
   def max_encoding_width
     [(rv32? ? encoding(32).size : 0), (rv64? ? encoding(64).size : 0)].max
   end
