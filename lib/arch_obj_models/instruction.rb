@@ -384,7 +384,7 @@ class Instruction < TopLevelDatabaseObject
       "__effective_xlen",
       Idl::Var.new("__effective_xlen", Idl::Type.new(:bits, width: 7), effective_xlen)
     )
-    @encodings[effective_xlen].decode_variables.each do |d|
+    encoding(effective_xlen).decode_variables.each do |d|
       qualifiers = [:const]
       qualifiers << :signed if d.sext?
       width = d.size
@@ -1060,7 +1060,10 @@ class Instruction < TopLevelDatabaseObject
 
   # @param base [Integer] 32 or 64
   # @return [Encoding] the encoding
+  sig { params(base: Integer).returns(Encoding) }
   def encoding(base)
+    raise "#{name} is not defined in #{base}" unless defined_in_base?(base)
+
     load_encoding if @encodings.nil?
 
     @encodings[base]
