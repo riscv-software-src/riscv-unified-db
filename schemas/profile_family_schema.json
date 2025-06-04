@@ -6,40 +6,40 @@
   "properties": {
     "$schema": {
       "type": "string",
-      "const": "profile_class_schema.json#"
+      "const": "profile_family_schema.json#"
     },
     "kind": {
       "type": "string",
-      "const": "profile class"
+      "const": "profile family"
     },
     "processor_kind": {
       "type": "string",
       "enum": ["Generic Unprivileged", "Microcontroller", "Apps Processor"],
-      "description": "What kind of class is this?"
+      "description": "What kind of processor is this?"
     },
     "name": {
       "type": "string",
-      "description": "Name (database key) of this Profile Class"
+      "description": "Name (database key) of this Profile Family"
     },
     "long_name": {
       "type": "string",
-      "description": "One line description of class"
+      "description": "One line description of family"
     },
     "marketing_name": {
       "type": "string",
-      "description": "The publicly displayed profile class name"
+      "description": "The publicly displayed profile family name"
     },
     "introduction": {
       "type": "string",
-      "description": "Asciidoc text containing the introduction prose for the class"
+      "description": "Asciidoc text containing the introduction prose for the family"
     },
     "description": {
       "$ref": "schema_defs.json#/$defs/spec_text",
-      "description": "Asciidoc text containing longer description prose for the class"
+      "description": "Asciidoc text containing longer description prose for the family"
     },
     "naming_scheme": {
       "type": "string",
-      "description": "Commentary on how profile releases in the class are named"
+      "description": "Commentary on how profile releases in the family are named"
     },
     "company": {
       "$ref": "schema_defs.json#/$defs/company"
