@@ -14,6 +14,8 @@ class DatabaseObject
   class Kind < T::Enum
     enums do
       Instruction = new("instruction")
+      InstructionType = new("instruction type")
+      InstructionSubtype = new("instruction subtype")
       Csr = new("csr")
       CsrField = new("csr_field")
       Extension = new("extension")
