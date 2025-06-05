@@ -39,7 +39,7 @@ definedBy: H
 length: VSXLEN
 
 sw_read(): |
-  let value = 0;
+  Bits<64> value = 0;
   if (CSR[hideleg][2]) {
       value |= (CSR[hie].VSSIE[0] << 1);
   }

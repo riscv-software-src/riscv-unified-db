@@ -9,11 +9,231 @@ require_relative "../presence"
 require_relative "../backend_helpers"
 require "awesome_print"
 
+class InstructionType < DatabaseObject
+  sig {
+    params(
+      data: T::Hash[String, T.untyped],
+      data_path: T.any(String, Pathname),
+      arch: ConfiguredArchitecture,
+      name: T.nilable(String)
+    ).void
+  }
+  def initialize(data, data_path, arch, name: nil)
+    super(data, data_path, arch, DatabaseObject::Kind::InstructionType, name:)
+  end
+
+  def length = @data["length"]
+  def size = length
+end
+
+class InstructionSubtype < DatabaseObject
+  class Opcode
+    extend T::Sig
+
+    sig { returns(String) }
+    attr_reader :name
+
+    sig { returns(Range) }
+    attr_reader :range
+
+    sig { params(name: String, range: Range).void }
+    def initialize(name, range)
+      @name = name
+      @range = range
+    end
+
+    sig { params(other: T.any(Opcode, Instruction::DecodeVariable)).returns(T::Boolean) }
+    def overlaps?(other)
+      if other.is_a?(Opcode)
+        range.eql?(other.range) || range.cover?(other.range.first) || other.range.cover?(range.first)
+      else
+        other.location_bits.any? { |i| range.cover?(i)}
+      end
+    end
+  end
+
+  sig {
+    params(
+      data: T::Hash[String, T.untyped],
+      data_path: T.any(String, Pathname),
+      arch: ConfiguredArchitecture,
+      name: T.nilable(String)
+    ).void
+  }
+  def initialize(data, data_path, arch, name: nil)
+    super(data, data_path, arch, DatabaseObject::Kind::InstructionSubtype, name:)
+  end
+
+  sig { returns(InstructionType) }
+  def type
+    @type ||= @arch.ref(@data["data"]["type"]["$ref"])
+  end
+
+  sig { returns(T::Array[Instruction::DecodeVariable]) }
+  def variables
+    @variables ||=
+      if @data["data"].key?("variables")
+        @data["data"]["variables"].map { |var_name, var_data| Instruction::DecodeVariable.new(var_name, var_data) }
+      else
+        []
+      end
+  end
+
+  sig { returns(T::Array[Instruction::Encoding::Field]) }
+  def opcodes
+    @opcodes ||=
+      @data["data"]["opcodes"].map do |opcode_name, opcode_data|
+        next if opcode_name[0] == "$"
+
+        raise "unexpected: opcode field is not contiguous" if opcode_data["location"].include?("|")
+
+        loc = opcode_data["location"]
+        range =
+          if loc =~ /^([0-9]+)$/
+            bit = ::Regexp.last_match(1)
+            bit.to_i..bit.to_i
+          elsif loc =~ /^([0-9]+)-([0-9]+)$/
+            msb = ::Regexp.last_match(1)
+            lsb = ::Regexp.last_match(2)
+            raise "range must be specified 'msb-lsb'" unless msb.to_i >= lsb.to_i
+
+            lsb.to_i..msb.to_i
+          else
+            raise "location format error"
+          end
+        Instruction::Encoding::Field.new(opcode_name, range)
+      end.reject(&:nil?)
+  end
+end
+
 # model of a specific instruction in a specific base (RV32/RV64)
 class Instruction < TopLevelDatabaseObject
   # Add all methods in this module to this type of database object.
   include CertifiableObject
   include WavedromUtil
+
+  sig { returns(T::Boolean) }
+  def has_type? = @data.key?("format")
+
+  sig { params(base: Integer).returns(InstructionType) }
+  def type(base)
+    @type ||= {
+      32 =>
+        if @data["format"].key?("RV32")
+          @arch.ref(@data["format"]["RV32"]["type"]["$ref"])
+        else
+          @arch.ref(@data["format"]["type"]["$ref"])
+        end,
+      64 =>
+        if @data["format"].key?("RV64")
+          @arch.ref(@data["format"]["RV64"]["type"]["$ref"])
+        else
+          @arch.ref(@data["format"]["type"]["$ref"])
+        end
+    }
+    @type[base]
+  end
+
+  sig { params(base: Integer).returns(InstructionSubtype) }
+  def subtype(base)
+    @subtype ||= {
+      32 =>
+        if @data["format"].key?("RV32")
+          @arch.ref(@data["format"]["RV32"]["subtype"]["$ref"])
+        else
+          @arch.ref(@data["format"]["subtype"]["$ref"])
+        end,
+      64 =>
+        if @data["format"].key?("RV64")
+          @arch.ref(@data["format"]["RV64"]["subtype"]["$ref"])
+        else
+          @arch.ref(@data["format"]["subtype"]["$ref"])
+        end
+    }
+    @subtype[base]
+  end
+
+  class Opcode < InstructionSubtype::Opcode
+    extend T::Sig
+
+    sig { returns(Integer) }
+    attr_reader :value
+
+    sig { params(name: String, range: Range, value: Integer).void }
+    def initialize(name, range, value)
+      super(name, range)
+      @value = value
+    end
+
+    sig { returns(T::Boolean) }
+    def opcode? = true
+
+    sig { returns(String) }
+    def to_s = "#{name}[#{range}]"
+  end
+
+  sig { params(base: Integer).returns(T::Array[Opcode]) }
+  def opcodes(base)
+    raise "Instruction #{name} is not defined in base RV#{base}" unless defined_in_base?(base)
+
+    @opcodes ||= {}
+
+    return @opcodes[base] unless @opcodes[base].nil?
+
+    @opcodes[base] = @data["format"]["opcodes"].map do |opcode_name, opcode_data|
+        next if opcode_name[0] == "$"
+
+        raise "unexpected: opcode field is not contiguous" if opcode_data["location"].include?("|")
+
+        loc = opcode_data["location"]
+        range =
+          if loc =~ /^([0-9]+)$/
+            bit = ::Regexp.last_match(1)
+            bit.to_i..bit.to_i
+          elsif loc =~ /^([0-9]+)-([0-9]+)$/
+            msb = ::Regexp.last_match(1)
+            lsb = ::Regexp.last_match(2)
+            raise "range must be specified 'msb-lsb'" unless msb.to_i >= lsb.to_i
+
+            lsb.to_i..msb.to_i
+          else
+            raise "location format error"
+          end
+        Opcode.new(opcode_name, range, opcode_data["value"])
+      end.reject(&:nil?)
+  end
+
+  # @return [String] format, as a string of 0,1 and -,
+  # @example Format of `sd`
+  #      sd.format #=> '-----------------011-----0100011'
+  sig { params(base: Integer).returns(String) }
+  def encoding_format(base)
+    raise ArgumentError, "base must be 32 or 64" unless [32, 64].include?(base)
+
+    if has_type?
+      mask = "-" * type(base).length
+
+      opcodes(base).each do |opcode|
+        mask[type(base).length - opcode.range.end - 1, opcode.range.size] = opcode.value.to_s(2).rjust(T.must(opcode.range.size), "0")
+      end
+
+      mask
+    else
+      @encoding_format ||=
+        if @data["encoding"].key?("RV32")
+          {
+            32 => @data["encoding"]["RV32"]["match"],
+            64 => @data["encoding"]["RV64"]["match"]
+          }
+        else
+          {
+            32 => @data["encoding"]["match"],
+            64 => @data["encoding"]["match"]
+          }
+        end
+      @encoding_format[base]
+    end
+  end
 
   def processed_wavedrom_desc(base)
     data = wavedrom_desc(base)
@@ -37,7 +257,28 @@ class Instruction < TopLevelDatabaseObject
     bits
   end
 
-  def self.validate_encoding(encoding, inst_name)
+  sig { params(inst: Instruction, base: Integer).void }
+  def self.validate_encoding(inst, base)
+    # make sure there is no overlap between variables/opcodes
+    (inst.opcodes(base) + inst.decode_variables(base)).combination(2) do |field1, field2|
+      raise "In instruction #{inst.name}, #{field1.name} and #{field2.name} overlap" if field1.overlaps?(field2)
+    end
+
+    # makes sure every bit is accounted for
+    inst.type(base).length.times do |i|
+      covered =
+        inst.opcodes(base).any? { |opcode| opcode.range.cover?(i) } || \
+        inst.decode_variables(base).any? { |var| var.location_bits.include?(i) }
+      raise "In instruction #{inst.name}, there is no opcode or variable at bit #{i}" unless covered
+    end
+
+    # make sure opcode values fit
+    inst.opcodes(base).each do |opcode|
+      raise "In instruction #{inst.name}, opcode #{opcode.name}, value #{opcode.value} does not fit in #{opcode.range}" unless T.must(opcode.range.size) >= opcode.value.bit_length
+    end
+  end
+
+  def self.deprecated_validate_encoding(encoding, inst_name)
     match = encoding["match"]
     raise "No match for instruction #{inst_name}?" if match.nil?
 
@@ -65,11 +306,21 @@ class Instruction < TopLevelDatabaseObject
   def validate
     super
 
-    if @data["encoding"]["RV32"].nil?
-      Instruction.validate_encoding(@data["encoding"], name)
+    if has_type?
+      if @data["format"]["RV32"].nil?
+        b = @data["base"].nil? ? 64 : T.cast(@data["base"], Integer)
+        Instruction.validate_encoding(self, b)
+      else
+        Instruction.validate_encoding(self, 32)
+        Instruction.validate_encoding(self, 64)
+      end
     else
-      Instruction.validate_encoding(@data["encoding"]["RV32"], name)
-      Instruction.validate_encoding(@data["encoding"]["RV64"], name)
+      if @data["encoding"]["RV32"].nil?
+        Instruction.deprecated_validate_encoding(@data["encoding"], name)
+      else
+        Instruction.deprecated_validate_encoding(@data["encoding"]["RV32"], name)
+        Instruction.deprecated_validate_encoding(@data["encoding"]["RV64"], name)
+      end
     end
   end
 
@@ -133,7 +384,7 @@ class Instruction < TopLevelDatabaseObject
       "__effective_xlen",
       Idl::Var.new("__effective_xlen", Idl::Type.new(:bits, width: 7), effective_xlen)
     )
-    @encodings[effective_xlen].decode_variables.each do |d|
+    encoding(effective_xlen).decode_variables.each do |d|
       qualifiers = [:const]
       qualifiers << :signed if d.sext?
       width = d.size
@@ -314,6 +565,8 @@ class Instruction < TopLevelDatabaseObject
   # decode field constructions from YAML file, rather than riscv-opcodes
   # eventually, we will move so that all instructions use the YAML file,
   class DecodeVariable
+    extend T::Sig
+
     # the name of the field
     attr_reader :name
 
@@ -331,6 +584,15 @@ class Instruction < TopLevelDatabaseObject
     attr_reader :excludes
 
     attr_reader :encoding_fields
+
+    sig { returns(String) }
+    attr_reader :location
+
+    # @return [Array<Integer>] Any array containing every encoding index covered by this variable
+    sig { returns(T::Array[Integer]) }
+    def location_bits
+      Instruction.ary_from_location(@location)
+    end
 
     # @return [String] Name, along with any != constraints,
     # @example
@@ -448,12 +710,12 @@ class Instruction < TopLevelDatabaseObject
       end
     end
 
-    def initialize(inst, field_data)
-      @inst = inst
-      @name = field_data["name"]
+    def initialize(name, field_data)
+      @name = name
       @left_shift = field_data["left_shift"].nil? ? 0 : field_data["left_shift"]
       @sext = field_data["sign_extend"].nil? ? false : field_data["sign_extend"]
       @alias = field_data["alias"].nil? ? nil : field_data["alias"]
+      @location = field_data["location"]
       extract_location(field_data["location"])
       @excludes =
         if field_data.key?("not")
@@ -513,6 +775,15 @@ class Instruction < TopLevelDatabaseObject
       @sext
     end
 
+    sig { params(other: T.any(Instruction::Opcode, DecodeVariable)).returns(T::Boolean) }
+    def overlaps?(other)
+      if other.is_a?(Instruction::Opcode)
+        location_bits.any? { |i| other.range.cover?(i) }
+      else
+        location_bits.intersect?(other.location_bits)
+      end
+    end
+
     # return code to extract the field
     def extract
       ops = []
@@ -568,7 +839,7 @@ class Instruction < TopLevelDatabaseObject
       attr_reader :range
 
       # @param name [#to_s] Either string of 0's and 1's or a bunch of dashes
-      # @param range [Range] Range of the field in the parent CSR
+      # @param range [Range] Range of the field in the encoding
       def initialize(name, range)
         @name = name.to_s
         @range = range
@@ -634,10 +905,10 @@ class Instruction < TopLevelDatabaseObject
 
     # @param format [String] Format of the encoding, as 0's, 1's and -'s (for decode variables)
     # @param decode_vars [Array<Hash<String,Object>>] List of decode variable definitions from the arch spec
-    def initialize(format, decode_vars)
+    def initialize(format, decode_vars, opcode_fields = nil)
       @format = format
 
-      @opcode_fields = []
+      @opcode_fields = opcode_fields.nil? ? [] : opcode_fields
       field_chars = []
       @format.chars.each_with_index do |c, idx|
         if c == "-"
@@ -646,7 +917,7 @@ class Instruction < TopLevelDatabaseObject
           field_text = field_chars.join("")
           field_lsb = @format.size - idx
           field_msb = @format.size - idx - 1 + field_text.size
-          @opcode_fields << Field.new(field_text, field_lsb..field_msb)
+          @opcode_fields << Field.new(field_text, field_lsb..field_msb) if opcode_fields.nil?
 
           field_chars.clear
           next
@@ -658,12 +929,16 @@ class Instruction < TopLevelDatabaseObject
       # add the least significant field
       unless field_chars.empty?
         field_text = field_chars.join("")
-        @opcode_fields << Field.new(field_text, 0...field_text.size)
+        @opcode_fields << Field.new(field_text, 0...field_text.size) if opcode_fields.nil?
       end
 
-      @decode_variables = []
-      decode_vars&.each do |var|
-        @decode_variables << DecodeVariable.new(self, var)
+      if decode_vars&.last.is_a?(DecodeVariable)
+        @decode_variables = decode_vars
+      else
+        @decode_variables = []
+        decode_vars&.each do |var|
+          @decode_variables << DecodeVariable.new(var["name"], var)
+        end
       end
     end
 
@@ -675,22 +950,35 @@ class Instruction < TopLevelDatabaseObject
 
   def load_encoding
     @encodings = {}
-    if @data["encoding"].key?("RV32")
-      # there are different encodings for RV32/RV64
-      @encodings[32] = Encoding.new(@data["encoding"]["RV32"]["match"], @data["encoding"]["RV32"]["variables"])
-      @encodings[64] = Encoding.new(@data["encoding"]["RV64"]["match"], @data["encoding"]["RV64"]["variables"])
-    elsif @data.key("base")
-      @encodings[@data["base"]] = Encoding.new(@data["encoding"]["match"], @data["encoding"]["variables"])
+    if has_type?
+      if @data.key?("base")
+        @encodings[@data["base"]] = Encoding.new(encoding_format(@data["base"]), subtype(@data["base"]).variables)
+      else
+        @encodings[32] = Encoding.new(encoding_format(32), subtype(32).variables)
+        @encodings[64] = Encoding.new(encoding_format(64), subtype(64).variables)
+      end
     else
-      @encodings[32] = Encoding.new(@data["encoding"]["match"], @data["encoding"]["variables"])
-      @encodings[64] = Encoding.new(@data["encoding"]["match"], @data["encoding"]["variables"])
+      if @data["encoding"].key?("RV32")
+        # there are different encodings for RV32/RV64
+        @encodings[32] = Encoding.new(@data["encoding"]["RV32"]["match"], @data["encoding"]["RV32"]["variables"])
+        @encodings[64] = Encoding.new(@data["encoding"]["RV64"]["match"], @data["encoding"]["RV64"]["variables"])
+      elsif @data.key("base")
+        @encodings[@data["base"]] = Encoding.new(@data["encoding"]["match"], @data["encoding"]["variables"])
+      else
+        @encodings[32] = Encoding.new(@data["encoding"]["match"], @data["encoding"]["variables"])
+        @encodings[64] = Encoding.new(@data["encoding"]["match"], @data["encoding"]["variables"])
+      end
     end
   end
   private :load_encoding
 
   # @return [Boolean] whether or not this instruction has different encodings depending on XLEN
   def multi_encoding?
-    @data.key?("encoding") && @data["encoding"].key?("RV32")
+    if has_type?
+      @data["format"].key?("RV32")
+    else
+      @data.key?("encoding") && @data["encoding"].key?("RV32")
+    end
   end
 
   # @return [Boolean] true if self and other_inst have indistinguishable encodings and can be simultaneously implemented in some design
@@ -772,20 +1060,34 @@ class Instruction < TopLevelDatabaseObject
 
   # @param base [Integer] 32 or 64
   # @return [Encoding] the encoding
+  sig { params(base: Integer).returns(Encoding) }
   def encoding(base)
+    raise "#{name} is not defined in #{base}" unless defined_in_base?(base)
+
     load_encoding if @encodings.nil?
 
     @encodings[base]
   end
 
   # @return [Integer] the width of the encoding
+  sig { returns(Integer) }
   def encoding_width
-    raise "unexpected: encodings are different sizes" unless encoding(32).size == encoding(64).size
+    if defined_in_base?(32) && defined_in_base?(64)
+      raise "unexpected: encodings are different sizes" unless encoding(32).size == encoding(64).size
 
-    encoding(64).size
+      encoding(64).size
+    elsif defined_in_base?(32)
+      encoding(32).size
+    else
+      raise "unexpected" unless defined_in_base?(64)
+
+      encoding(64).size
+    end
+
   end
 
   # @return [Integer] the largest encoding width of the instruction, in any XLEN for which this instruction is valid
+  sig { returns(Integer) }
   def max_encoding_width
     [(rv32? ? encoding(32).size : 0), (rv64? ? encoding(64).size : 0)].max
   end

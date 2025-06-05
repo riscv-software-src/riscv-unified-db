@@ -10,15 +10,17 @@ description: |
   zero-extended least-significant word of rs1.
 definedBy: Zba
 assembly: xd, xs1, xs2
-encoding:
-  match: 0000100----------000-----0111011
-  variables:
-    - name: rs2
-      location: 24-20
-    - name: rs1
-      location: 19-15
-    - name: rd
-      location: 11-7
+format:
+  $inherits:
+    - inst_subtype/R/R-x.yaml#/data
+  opcodes:
+    funct7:
+      display_name: ADD.UW
+      value: 0b0000100
+    funct3:
+      display_name: ADD.UW
+      value: 0b000
+    opcode: { $inherits: inst_opcode/OP-32.yaml#/data }
 access:
   s: always
   u: always
@@ -32,7 +34,7 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  X[rd] = X[rs2] + X[rs1][31:0];
+  X[xd] = X[xs2] + X[xs1][31:0];
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

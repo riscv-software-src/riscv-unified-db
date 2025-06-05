@@ -27,6 +27,6 @@ access:
   vs: always
   vu: always
 operation(): |
-  XReg retrun_addr = $pc + 6;
+  XReg return_addr = $pc + 6;
   jump_halfword($pc + imm);
-  X[1] = retrun_addr;
+  X[1] = return_addr;

@@ -19,7 +19,7 @@
 #   Csr             csrs()              csr_hash()              csr(name)
 #   ProcCertClass   proc_cert_classes() proc_cert_class_hash()  proc_cert_class(name)
 #   ProcCertModel   proc_cert_models()  proc_cert_model_hash()  proc_cert_model(name)
-#   ProfileClass    profile_classes()   profile_class_hash()    profile_class(name)
+#   ProfileFamily   profile_families()  profile_family_hash()   profile_family(name)
 #   ProfileRelease  profile_releases()  profile_release_hash()  profile_release(name)
 #   Profile         profiles()          profile_hash()          profile(name)
 #   Manual          manuals()           manual_hash()           manual(name)
@@ -79,6 +79,8 @@ class Architecture
     progressbar = ProgressBar.create(total: objs.size) if show_progress
 
     objs.each do |obj|
+      next unless obj.is_a?(TopLevelDatabaseObject)
+
       progressbar.increment if show_progress
       obj.validate
     end
@@ -100,6 +102,7 @@ class Architecture
   #   @param name [String] The $1 name
   #   @return [$3] The $1
   #   @return [nil] if there is no $1 named +name+
+  sig { params(fn_name: String, arch_dir: String, obj_class: T.class_of(DatabaseObject)).void }
   def self.generate_obj_methods(fn_name, arch_dir, obj_class)
     plural_fn = ActiveSupport::Inflector.pluralize(fn_name)
 
@@ -140,52 +143,74 @@ class Architecture
     {
       fn_name: "extension",
       arch_dir: "ext",
-      klass: Extension
+      klass: Extension,
+      kind: DatabaseObject::Kind::Extension
     },
     {
       fn_name: "instruction",
       arch_dir: "inst",
-      klass: Instruction
+      klass: Instruction,
+      kind: DatabaseObject::Kind::Instruction
+    },
+    {
+      fn_name: "instruction_type",
+      arch_dir: "inst_type",
+      klass: InstructionType,
+      kind: DatabaseObject::Kind::InstructionType
+    },
+    {
+      fn_name: "instruction_subtype",
+      arch_dir: "inst_subtype",
+      klass: InstructionSubtype,
+      kind: DatabaseObject::Kind::InstructionSubtype
     },
     {
       fn_name: "csr",
       arch_dir: "csr",
-      klass: Csr
+      klass: Csr,
+      kind: DatabaseObject::Kind::Csr
     },
     {
       fn_name: "proc_cert_class",
       arch_dir: "proc_cert_class",
-      klass: ProcCertClass
+      klass: ProcCertClass,
+      kind: DatabaseObject::Kind::ProcessorCertificateClass
     },
     {
       fn_name: "proc_cert_model",
       arch_dir: "proc_cert_model",
-      klass: ProcCertModel
+      klass: ProcCertModel,
+      kind: DatabaseObject::Kind::ProcessorCertificateModel
     },
     {
       fn_name: "manual",
       arch_dir: "manual",
-      klass: Manual
+      klass: Manual,
+      kind: DatabaseObject::Kind::Manual
     },
     {
       fn_name: "manual_version",
       arch_dir: "manual_version",
-      klass: ManualVersion
+      klass: ManualVersion,
+      kind: DatabaseObject::Kind::ManualVersion
     },
     {
       fn_name: "profile_release",
       arch_dir: "profile_release",
-      klass: ProfileRelease
+      klass: ProfileRelease,
+      kind: DatabaseObject::Kind::ProfileRelease
     },
     {
-      fn_name: "profile_class",
-      arch_dir: "profile_class",
-      klass: ProfileClass
+      fn_name: "profile_family",
+      arch_dir: "profile_family",
+      klass: ProfileFamily,
+      kind: DatabaseObject::Kind::ProfileFamily
     },
     {
       fn_name: "profile",
       arch_dir: "profile",
-      klass: Profile
+      klass: Profile,
+      kind: DatabaseObject::Kind::Profile
     }
   ].freeze
 
@@ -233,7 +258,7 @@ class Architecture
   def portfolio_classes
     return @portfolio_classes unless @portfolio_classes.nil?
 
-    @portfolio_classes = profile_classes.concat(proc_cert_classes).sort_by!(&:name)
+    @portfolio_classes = profile_families.concat(proc_cert_classes).sort_by!(&:name)
   end
 
   # @return [Hash<String, PortfolioClass>] Hash of all portfolio classes defined in the architecture
@@ -319,7 +344,7 @@ class Architecture
   #
   # @params uri [String] JSON Reference pointer
   # @return [Object] The pointed-to object
-  sig { params(uri: String).returns(TopLevelDatabaseObject) }
+  sig { params(uri: String).returns(DatabaseObject) }
   def ref(uri)
     raise ArgumentError, "JSON Reference (#{uri}) must contain one '#'" unless uri.count("#") == 1
 
@@ -327,7 +352,7 @@ class Architecture
     obj =
       case file_path
       when /^proc_cert_class.*/
-       proc_cert_class_name = File.basename(file_path, ".yaml")
+        proc_cert_class_name = File.basename(file_path, ".yaml")
         proc_cert_class(proc_cert_class_name)
       when /^proc_cert_model.*/
         proc_cert_model_name = File.basename(file_path, ".yaml")
@@ -338,7 +363,7 @@ class Architecture
       when /^ext.*/
         ext_name = File.basename(file_path, ".yaml")
         extension(ext_name)
-      when /^inst.*/
+      when %r{^inst/.*}
         inst_name = File.basename(file_path, ".yaml")
         instruction(inst_name)
       when /^manual.*/
@@ -347,15 +372,22 @@ class Architecture
       when /^manual_version.*/
         manual_name = File.basename(file_path, ".yaml")
         manual_version(manual_name)
-      when /^profile_class.*/
-        profile_class_name = File.basename(file_path, ".yaml")
-        profile_class(profile_class_name)
+      when /^profile_family.*/
+        profile_family_name = File.basename(file_path, ".yaml")
+        profile_family(profile_family_name)
       when /^profile_release.*/
         profile_release_name = File.basename(file_path, ".yaml")
         profile_release(profile_release_name)
       when /^profile.*/
         profile_name = File.basename(file_path, ".yaml")
         profile(profile_name)
+      when %r{^inst_subtype/.*/.*}
+        inst_subtype_name = File.basename(file_path, ".yaml")
+        instruction_subtype(inst_subtype_name)
+      when %r{^inst_type/[^/]+}
+        # type
+        inst_type_name = File.basename(file_path, ".yaml")
+        instruction_type(inst_type_name)
       else
         raise "Unhandled ref object: #{file_path}"
       end
