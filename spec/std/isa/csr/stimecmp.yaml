@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: stimecmp
+long_name: Supervisor Timer Compare Register
+virtual_address: 0x14D
+address: 0x14D
+priv_mode: S
+definedBy: Sstc
+length: 64
+
+description:
+  - id: csr-stimecmp-purpose
+    normative: true
+    text: |
+      The stimecmp CSR is a 64-bit register and provides 64-bit precision on all RV32 and RV64 systems.
+      On RV32, accesses to the stimecmp CSR access the low 32 bits, while accesses to the stimecmph CSR
+      access the high 32 bits of stimecmp.
+      The CSR numbers for stimecmp and stimecmph are 0x14D and 0x15D, respectively, within the Supervisor Trap Setup block.
+
+  - id: csr-stimecmp-interrupt
+    normative: true
+    text: |
+      A supervisor timer interrupt becomes pending, as reflected in the STIP bit in the mip and sip registers,
+      whenever the time register contains a value greater than or equal to stimecmp, treating the values as unsigned integers.
+      If the result of this comparison changes, it is guaranteed to be reflected in STIP eventually,
+      but not necessarily immediately.
+      The interrupt remains posted until stimecmp becomes greater than time, typically due to writing a new value to stimecmp.
+      The interrupt is taken based on standard interrupt enable and delegation rules.
+
+  - id: csr-stimecmp-spurious
+    normative: false
+    text: |
+      A spurious timer interrupt might occur if an interrupt handler advances stimecmp and immediately returns,
+      because STIP might not yet have fallen. All software should be written to account for this possibility,
+      although it is generally rare. It is usually more efficient to tolerate occasional spurious timer interrupts
+      than to poll STIP until it clears.
+
+  - id: csr-stimecmp-sbi
+    normative: false
+    text: |
+      In systems where a Supervisor Execution Environment (SEE) provides timer services via an SBI call,
+      the SBI will continue to support scheduling timer interrupts. The SEE updates stimecmp as needed.
+      This ensures compatibility with existing S-mode software, while newer software can interact with stimecmp directly.
+
+fields:
+  STIMECMP:
+    long_name: Supervisor timer compare value
+    location_rv32: 31-0
+    location_rv64: 63-0
+    type: RW
+    reset_value: 0
+    sw_write(csr_value): |
+      return csr_value.STIMECMP;
+    description: |
+      The value in stimecmp is compared against the current value of the time CSR.
+      If time is greater than or equal to stimecmp, a supervisor timer interrupt (STIP) is posted.
