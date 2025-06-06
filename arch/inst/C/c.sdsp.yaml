@@ -14,7 +14,7 @@ definedBy:
     - C
     - Zca
 base: 64
-assembly: xs2, imm
+assembly: xs2, imm(sp)
 encoding:
   match: 111-----------10
   variables:
