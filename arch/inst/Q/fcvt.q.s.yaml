@@ -3,9 +3,12 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.q.s
-long_name: No synopsis available
+long_name: Floating-point Convert Single-precision to Quad-precision
 description: |
-  No description available.
+  -id: inst-fcvt.q.s-behaviour
+  -normative: false
+  -text: |
+    `fcvt.q.s` converts a single-precision floating-point number to a quad-precision floating-point number.
 definedBy: Q
 assembly: qd, fs1, rm
 encoding:
