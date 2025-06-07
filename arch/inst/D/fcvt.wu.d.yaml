@@ -7,15 +7,15 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy: D
-assembly: xd, xs1, rm
+assembly: xd, fs1, rm
 encoding:
   match: 110000100001-------------1010011
   variables:
-    - name: rs1
+    - name: fs1
       location: 19-15
     - name: rm
       location: 14-12
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always

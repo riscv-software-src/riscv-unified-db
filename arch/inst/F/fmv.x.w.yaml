@@ -6,7 +6,7 @@ name: fmv.x.w
 long_name: Move single-precision value from floating-point to integer register
 description: |
   Moves the single-precision value in floating-point register rs1 represented in IEEE 754-2008
-  encoding to the lower 32 bits of integer register rd.
+  encoding to the lower 32 bits of integer register xd.
   The bits are not modified in the transfer, and in particular, the payloads of non-canonical
   NaNs are preserved.
   For RV64, the higher 32 bits of the destination register are filled with copies of the
@@ -18,7 +18,7 @@ encoding:
   variables:
     - name: fs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -29,7 +29,7 @@ data_independent_timing: true
 operation(): |
   check_f_ok($encoding);
 
-  X[rd] = sext(f[fs1][31:0], 32);
+  X[xd] = sext(f[fs1][31:0], 32);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>
