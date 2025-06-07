@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zhinxmin
+long_name: Minimal support for half-precision floating-point instructions using integer registers
+description:
+  - id: ext-zhinxmin-instructions
+    normative: true
+    text: |
+      The Zhinxmin extension includes the following instructions from the Zhinx extension:
+      FCVT.S.H and FCVT.H.S.
+    when(): return !implemented?(Zdinx);
+
+  - id: ext-zhinxmin-instructions-with-zdinx
+    normative: true
+    text: |
+      The Zhinxmin extension includes the following instructions from the Zhinx extension:
+      FCVT.S.H, FCVT.H.S, FCVT.D.H, and FCVT.H.D.
+    when(): return implemented?(Zdinx);
+
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2021-11
+    requires: Zfinx
