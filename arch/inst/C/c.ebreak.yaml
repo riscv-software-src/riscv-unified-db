@@ -21,7 +21,7 @@ definedBy:
   anyOf:
     - C
     - Zca
-assembly: " "
+assembly: ""
 encoding:
   match: "1001000000000010"
 access:
