@@ -3,7 +3,7 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.h.wu
-long_name: Floating-point Convert unsigned Word to Half-precision
+long_name: Floating-point Convert Unsigned Word to Half-precision
 description: |
   -id: inst-fcvt.h.wu-behaviour
   -normative: false

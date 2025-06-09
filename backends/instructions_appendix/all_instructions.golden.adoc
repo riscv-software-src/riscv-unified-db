@@ -1,6 +1,6 @@
 = Instruction Appendix
 :doctype: book
-:wavedrom: /local/mnt/workspace/dhower/riscv-unified-db/worktrees/inst_schema/node_modules/.bin/wavedrom-cli
+:wavedrom: /workspaces/riscv-unified-db/node_modules/.bin/wavedrom-cli
 // Now the document header is complete and the wavedrom attribute is active.
 
 
@@ -6686,7 +6686,7 @@ Included in::
 == fadd.d
 
 Synopsis::
-No synopsis available
+Floating-point Add Double-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -6695,7 +6695,11 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fadd.d-behaviour
+-normative: false
+-text: |
+  xref:insts:fadd_d.adoc#udb:doc:inst:fadd_d[fadd.d] is analogous to xref:insts:fadd_s.adoc#udb:doc:inst:fadd_s[fadd.s] and performs double-precision floating-point addition between
+  `xs1` and `xs2` and writes the final result to `xd`.
 
 
 Decode Variables::
@@ -6758,7 +6762,7 @@ Included in::
 == fadd.q
 
 Synopsis::
-No synopsis available
+Floating-point Add Quad-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -6767,7 +6771,11 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fadd.q-behaviour
+-normative: false
+-text: |
+  xref:insts:fadd_q.adoc#udb:doc:inst:fadd_q[fadd.q] is analogous to xref:insts:fadd_d.adoc#udb:doc:inst:fadd_d[fadd.d] and performs double-precision floating-point addition between
+  `qs1` and `qs2` and writes the final result to `qd`.
 
 
 Decode Variables::
@@ -7063,7 +7071,7 @@ Included in::
 == fcvt.d.l
 
 Synopsis::
-No synopsis available
+Floating-point Convert Long to Double-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7072,7 +7080,11 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.d.l-behaviour
+-normative: false
+-text: |
+   xref:insts:fcvt_d_l.adoc#udb:doc:inst:fcvt_d_l[fcvt.d.l] converts a 64-bit signed integer, in integer register `xs1` into a double-precision
+   floating-point number in floating-point register `fd`.
 
 
 Decode Variables::
@@ -7098,7 +7110,7 @@ Included in::
 == fcvt.d.lu
 
 Synopsis::
-No synopsis available
+Floating-point Convert Unsigned Long to Double-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7107,7 +7119,11 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.d.lu-behaviour
+-normative: false
+-text: |
+   xref:insts:fcvt_d_lu.adoc#udb:doc:inst:fcvt_d_lu[fcvt.d.lu] converts to or from a 64-bit unsigned integer, `xs1` into a double-precision
+   floating-point number in floating-point register `fd`.
 
 
 Decode Variables::
@@ -7133,7 +7149,7 @@ Included in::
 == fcvt.d.q
 
 Synopsis::
-No synopsis available
+Floating-point Convert Quad-precision to Double-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7142,7 +7158,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.d.q-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_d_q.adoc#udb:doc:inst:fcvt_d_q[fcvt.d.q] converts a quad-precision floating-point number to a double-precision floating-point number.
 
 
 Decode Variables::
@@ -7168,7 +7187,7 @@ Included in::
 == fcvt.d.s
 
 Synopsis::
-No synopsis available
+Floating-point Convert Single-precision to Double-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7177,7 +7196,13 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.d.s-behaviour
+-normative: false
+-text: |
+  The single-precision to double-precision conversion instruction, xref:insts:fcvt_d_s.adoc#udb:doc:inst:fcvt_d_s[fcvt.d.s] is encoded in the OP-FP
+  major opcode space and both the source and destination are floating-point registers. The `xs2` field
+  encodes the datatype of the source, and the `fmt` field encodes the datatype of the destination.
+  xref:insts:fcvt_d_s.adoc#udb:doc:inst:fcvt_d_s[fcvt.d.s] will never round.
 
 
 Decode Variables::
@@ -7203,7 +7228,7 @@ Included in::
 == fcvt.d.w
 
 Synopsis::
-No synopsis available
+Floating-point Convert Word to Double-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7212,7 +7237,12 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.d.w-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_d_w.adoc#udb:doc:inst:fcvt_d_w[fcvt.d.w] converts a 32-bit signed integer, in integer register `xs1` into a double-precision
+  floating-point number in floating-point register `fd`.
+  Note xref:insts:fcvt_d_w.adoc#udb:doc:inst:fcvt_d_w[fcvt.d.w] always produces an exact result and is unaffected by rounding mode.
 
 
 Decode Variables::
@@ -7238,7 +7268,7 @@ Included in::
 == fcvt.d.wu
 
 Synopsis::
-No synopsis available
+Floating-point Convert Unsigned Word to Double-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7247,7 +7277,12 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.d.wu-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_d_wu.adoc#udb:doc:inst:fcvt_d_wu[fcvt.d.wu] converts a 32-bit unsigned integer in integer register `fs1` into a double-precision
+  floating-point number in floating-point register `fd`.
+  Note xref:insts:fcvt_d_wu.adoc#udb:doc:inst:fcvt_d_wu[fcvt.d.wu] always produces an exact result and is unaffected by rounding mode.
 
 
 Decode Variables::
@@ -7273,7 +7308,7 @@ Included in::
 == fcvt.h.d
 
 Synopsis::
-No synopsis available
+Floating-point Convert Double-precision to Half-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7282,7 +7317,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.h.d-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_h_d.adoc#udb:doc:inst:fcvt_h_d[fcvt.h.d] converts a Double-precision Floating-point number to a Half-precision floating-point number.
 
 
 Decode Variables::
@@ -7310,7 +7348,7 @@ Included in::
 == fcvt.h.l
 
 Synopsis::
-No synopsis available
+Floating-point Convert Long to Half-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7319,7 +7357,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.h.l-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_h_l.adoc#udb:doc:inst:fcvt_h_l[fcvt.h.l] converts a 64-bit signed integer to a half-precision floating-point number.
 
 
 Decode Variables::
@@ -7345,7 +7386,7 @@ Included in::
 == fcvt.h.lu
 
 Synopsis::
-No synopsis available
+Floating-point Convert Unsigned Long to Half-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7354,7 +7395,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.h.lu-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_h_lu.adoc#udb:doc:inst:fcvt_h_lu[fcvt.h.lu] converts a 64-bit unsigned integer to a half-precision floating-point number.
 
 
 Decode Variables::
@@ -7380,7 +7424,7 @@ Included in::
 == fcvt.h.q
 
 Synopsis::
-No synopsis available
+Floating-point Convert Quad-precision to Half-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7389,7 +7433,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.h.q-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_h_q.adoc#udb:doc:inst:fcvt_h_q[fcvt.h.q] converts a Quad-precision Floating-point number to a Half-precision Floating-point number.
 
 
 Decode Variables::
@@ -7460,7 +7507,7 @@ Included in::
 == fcvt.h.w
 
 Synopsis::
-No synopsis available
+Floating-point Convert Word to Half-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7469,7 +7516,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.h.w-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_h_w.adoc#udb:doc:inst:fcvt_h_w[fcvt.h.w] converts a 32-bit signed integer to a half-precision floating-point number.
 
 
 Decode Variables::
@@ -7495,7 +7545,7 @@ Included in::
 == fcvt.h.wu
 
 Synopsis::
-No synopsis available
+Floating-point Convert unsigned Word to Half-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7504,7 +7554,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.h.wu-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_h_wu.adoc#udb:doc:inst:fcvt_h_wu[fcvt.h.wu] converts a 32-bit unsigned integer to a half-precision floating-point number.
 
 
 Decode Variables::
@@ -7530,7 +7583,7 @@ Included in::
 == fcvt.l.d
 
 Synopsis::
-No synopsis available
+Floating-point Convert Double-precision to Long
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7539,7 +7592,11 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.l.d-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_l_d.adoc#udb:doc:inst:fcvt_l_d[fcvt.l.d] converts a double-precision floating-point number in floating-point register `fs1`
+  to a signed 64-bit integer, in integer register `xd`.
 
 
 Decode Variables::
@@ -7565,7 +7622,7 @@ Included in::
 == fcvt.l.h
 
 Synopsis::
-No synopsis available
+Floating-point Convert Half-precision to Long
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7574,7 +7631,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.l.h-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_l_h.adoc#udb:doc:inst:fcvt_l_h[fcvt.l.h] converts a half-precision floating-point number to a signed 64-bit integer.
 
 
 Decode Variables::
@@ -7600,7 +7660,7 @@ Included in::
 == fcvt.l.q
 
 Synopsis::
-No synopsis available
+Floating-point Convert Quad-precision to Long
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7609,7 +7669,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.l.q-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_l_q.adoc#udb:doc:inst:fcvt_l_q[fcvt.l.q] converts a quad-precision floating-point number to a signed 64-bit integer.
 
 
 Decode Variables::
@@ -7635,7 +7698,7 @@ Included in::
 == fcvt.l.s
 
 Synopsis::
-No synopsis available
+Floating-point Convert Single-precision to Long
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7644,7 +7707,11 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.l.s-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_l_s.adoc#udb:doc:inst:fcvt_l_s[fcvt.l.s] converts a floating-point number in floating-point register `fs1` to a signed
+  64-bit integer, in integer register `xd`.
 
 
 Decode Variables::
@@ -7670,7 +7737,7 @@ Included in::
 == fcvt.lu.d
 
 Synopsis::
-No synopsis available
+Floating-point Convert Double-precision to Unsigned Long
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7679,7 +7746,11 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.lu.d-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_lu_d.adoc#udb:doc:inst:fcvt_lu_d[fcvt.lu.d] converts a double-precision floating-point number in floating-point register `xs1`
+  to an unsigned 64-bit integer, in integer register `xd`.
 
 
 Decode Variables::
@@ -7705,7 +7776,7 @@ Included in::
 == fcvt.lu.h
 
 Synopsis::
-No synopsis available
+Floating-point Convert Half-precision to Unsigned Long
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7714,7 +7785,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.lu.h-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_lu_h.adoc#udb:doc:inst:fcvt_lu_h[fcvt.lu.h] converts a half-precision floating-point number to an unsigned 64-bit integer.
 
 
 Decode Variables::
@@ -7740,7 +7814,7 @@ Included in::
 == fcvt.lu.q
 
 Synopsis::
-No synopsis available
+Floating-point Convert Quad-precision to Unsigned Long
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7749,7 +7823,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.lu.q-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_lu_q.adoc#udb:doc:inst:fcvt_lu_q[fcvt.lu.q] converts a quad-precision floating-point number to an unsigned 64-bit integer.
 
 
 Decode Variables::
@@ -7775,7 +7852,7 @@ Included in::
 == fcvt.lu.s
 
 Synopsis::
-No synopsis available
+Floating-point Convert Single-precision to Unsigned Long
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7784,7 +7861,11 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.lu.s-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_l_s.adoc#udb:doc:inst:fcvt_l_s[fcvt.l.s] converts a floating-point number in floating-point register `fs1` to a unsigned
+  64-bit integer, in integer register `xd`.
 
 
 Decode Variables::
@@ -7810,7 +7891,7 @@ Included in::
 == fcvt.q.d
 
 Synopsis::
-No synopsis available
+Floating-point Convert Double-precision to Quad-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7819,7 +7900,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.q.d-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_d_q.adoc#udb:doc:inst:fcvt_d_q[fcvt.d.q] converts a double-precision floating-point number to a quad-precision floating-point number.
 
 
 Decode Variables::
@@ -7845,7 +7929,7 @@ Included in::
 == fcvt.q.h
 
 Synopsis::
-No synopsis available
+Floating-point Convert Half-precision to Quad-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7854,7 +7938,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.q.h-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_q_h.adoc#udb:doc:inst:fcvt_q_h[fcvt.q.h] converts a half-precision floating-point number to a quad-precision floating-point number.
 
 
 Decode Variables::
@@ -7882,7 +7969,7 @@ Included in::
 == fcvt.q.l
 
 Synopsis::
-No synopsis available
+Floating-point Convert Long integer to Quad-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7891,7 +7978,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.q.l-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_q_l.adoc#udb:doc:inst:fcvt_q_l[fcvt.q.l] converts a 64-bit signed integer, into a quad-precision floating-point number.
 
 
 Decode Variables::
@@ -7917,7 +8007,7 @@ Included in::
 == fcvt.q.lu
 
 Synopsis::
-No synopsis available
+Floating-point Convert Unsigned Long to Quad-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7926,7 +8016,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.q.lu-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_q_lu.adoc#udb:doc:inst:fcvt_q_lu[fcvt.q.lu] converts a 64-bit unsigned integer, into a quad-precision floating-point number.
 
 
 Decode Variables::
@@ -7952,7 +8045,7 @@ Included in::
 == fcvt.q.s
 
 Synopsis::
-No synopsis available
+Floating-point Convert Single-precision to Quad-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7961,7 +8054,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.q.s-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_q_s.adoc#udb:doc:inst:fcvt_q_s[fcvt.q.s] converts a single-precision floating-point number to a quad-precision floating-point number.
 
 
 Decode Variables::
@@ -7987,7 +8083,7 @@ Included in::
 == fcvt.q.w
 
 Synopsis::
-No synopsis available
+Floating-point Convert Word to Quad-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7996,7 +8092,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.q.w-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_q_w.adoc#udb:doc:inst:fcvt_q_w[fcvt.q.w] converts a 32-bit signed integer into a quad-precision floating-point number.
 
 
 Decode Variables::
@@ -8022,7 +8121,7 @@ Included in::
 == fcvt.q.wu
 
 Synopsis::
-No synopsis available
+Floating-point Convert Unsigned Word to Quad-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -8031,7 +8130,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.q.wu-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_q_wu.adoc#udb:doc:inst:fcvt_q_wu[fcvt.q.wu] converts a 32-bit unsigned integer into a quad-precision floating-point number.
 
 
 Decode Variables::
@@ -8092,7 +8194,7 @@ Included in::
 == fcvt.s.d
 
 Synopsis::
-No synopsis available
+Floating-point Convert Double-precision to Single-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -8101,7 +8203,13 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.s.d-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_s_d.adoc#udb:doc:inst:fcvt_s_d[fcvt.s.d] converts a double-precision floating-point number to a single-precision floating-point number.
+   This is encoded in the OP-FP major opcode space and both the source and destination are floating-point
+   registers. The `rs2` field encodes the datatype of the source, and the `fmt` field encodes the datatype
+   of the destination. xref:insts:fcvt_s_d.adoc#udb:doc:inst:fcvt_s_d[fcvt.s.d] rounds according to the RM field
 
 
 Decode Variables::
@@ -8167,7 +8275,7 @@ Included in::
 == fcvt.s.l
 
 Synopsis::
-No synopsis available
+Floating-point Convert Long to Single-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -8176,7 +8284,11 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.s.l-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_s_l.adoc#udb:doc:inst:fcvt_s_l[fcvt.s.l] converts a 64-bit signed integer in integer register `rs1` into a floating-point
+  number in floating-point register `rd`.
 
 
 Decode Variables::
@@ -8202,7 +8314,7 @@ Included in::
 == fcvt.s.lu
 
 Synopsis::
-No synopsis available
+Floating-point Convert Unsigned Long to Single-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -8211,7 +8323,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.s.lu-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_s_lu.adoc#udb:doc:inst:fcvt_s_lu[fcvt.s.lu] converts a 64-bit unsigned integer into a single-precision floating-point number.
 
 
 Decode Variables::
@@ -8237,7 +8352,7 @@ Included in::
 == fcvt.s.q
 
 Synopsis::
-No synopsis available
+Floating-point Convert Quad-precision to Single-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -8246,7 +8361,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.s.q-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_s_q.adoc#udb:doc:inst:fcvt_s_q[fcvt.s.q] converts a quad-precision floating-point number to a single-precision floating-point number.
 
 
 Decode Variables::
@@ -8360,7 +8478,7 @@ Included in::
 == fcvt.w.d
 
 Synopsis::
-No synopsis available
+Floating-point Convert Double-precision to Word
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -8369,7 +8487,11 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.w.d-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_w_d.adoc#udb:doc:inst:fcvt_w_d[fcvt.w.d] converts a double-precision floating-point number in floating-point register `xs1` to a
+  signed 32-bit integer, in integer register `xd`.
 
 
 Decode Variables::
@@ -8395,7 +8517,7 @@ Included in::
 == fcvt.w.h
 
 Synopsis::
-No synopsis available
+Floating-point Convert Half-precision to Word
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -8404,7 +8526,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.w.h-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_w_h.adoc#udb:doc:inst:fcvt_w_h[fcvt.w.h] converts a half-precision floating-point number to a signed 32-bit integer.
 
 
 Decode Variables::
@@ -8430,7 +8555,7 @@ Included in::
 == fcvt.w.q
 
 Synopsis::
-No synopsis available
+Floating-point Convert Quad-precision to Word
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -8439,7 +8564,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.w.q-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_w_q.adoc#udb:doc:inst:fcvt_w_q[fcvt.w.q] converts a quad-precision floating-point number to a 32-bit signed integer.
 
 
 Decode Variables::
@@ -8528,7 +8656,7 @@ Included in::
 == fcvt.wu.d
 
 Synopsis::
-No synopsis available
+Floating-point Convert Double-precision to Unsigned Word
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -8537,7 +8665,11 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.wu.d-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_wu_d.adoc#udb:doc:inst:fcvt_wu_d[fcvt.wu.d] converts a double-precision floating-point number in floating-point register `xs1` to an
+  unsigned 32-bit integer, in integer register `fd`.
 
 
 Decode Variables::
@@ -8563,7 +8695,7 @@ Included in::
 == fcvt.wu.h
 
 Synopsis::
-No synopsis available
+Floating-point Convert Half-precision to Word
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -8572,7 +8704,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.wu.h-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_wu_h.adoc#udb:doc:inst:fcvt_wu_h[fcvt.wu.h] converts a half-precision floating-point number to an unsigned 32-bit integer.
 
 
 Decode Variables::
@@ -8598,7 +8733,7 @@ Included in::
 == fcvt.wu.q
 
 Synopsis::
-No synopsis available
+Floating-point Convert Unsigned Quad-precision to Word
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -8607,7 +8742,10 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvt.wu.q-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvt_wu_q.adoc#udb:doc:inst:fcvt_wu_q[fcvt.wu.q] converts a quad-precision floating-point number to a 32-bit unsigned integer.
 
 
 Decode Variables::
@@ -8695,7 +8833,7 @@ Included in::
 == fcvtmod.w.d
 
 Synopsis::
-No synopsis available
+Floating-point Convert Double-precision to Word with Modulo
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -8704,7 +8842,18 @@ Encoding::
 ....
 
 Description::
-No description available.
+-id: inst-fcvtmod.w.d-behaviour
+-normative: false
+-text: |
+  xref:insts:fcvtmod_w_d.adoc#udb:doc:inst:fcvtmod_w_d[fcvtmod.w.d] always rounds towards zero. Bits 31:0 are taken from the rounded, unbounded two's
+  complement result, then sign-extended to XLEN bits and written to integer register `xd`.±∞ and
+  NaN are converted to zero.
+
+  Floating-point exception flags are raised the same as they would be for FCVT.W.D with the same input
+  operand.
+
+  This instruction is only provided if the D extension is implemented. It is encoded like FCVT.W.D, but
+  with the `xs2` field set to 8 and the `rm` field set to 1 (RTZ). Other `rm` values are reserved.
 
 
 Decode Variables::
