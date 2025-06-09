@@ -7545,7 +7545,7 @@ Included in::
 == fcvt.h.wu
 
 Synopsis::
-Floating-point Convert unsigned Word to Half-precision
+Floating-point Convert Unsigned Word to Half-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
@@ -7969,7 +7969,7 @@ Included in::
 == fcvt.q.l
 
 Synopsis::
-Floating-point Convert Long integer to Quad-precision
+Floating-point Convert Long to Quad-precision
 
 Encoding::
 [wavedrom, ,svg,subs='attributes',width="100%"]
