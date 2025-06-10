@@ -7,12 +7,18 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy: V
-assembly: xd, uimm, vtypei
+assembly: xd, uimm, sew, lmul, ta, ma
 encoding:
-  match: 11---------------111-----1010111
+  match: 1100-------------111-----1010111
   variables:
-    - name: vtypei
-      location: 29-20
+    - name: ma
+      location: 27
+    - name: ta
+      location: 26
+    - name: sew
+      location: 25-23
+    - name: lmul
+      location: 22-20
     - name: uimm
       location: 19-15
     - name: xd
