@@ -4,11 +4,11 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.q.d
 long_name: Floating-point Convert Double-precision to Quad-precision
-description: |
-  -id: inst-fcvt.q.d-behaviour
-  -normative: false
-  -text: |
-    `fcvt.d.q` converts a double-precision floating-point number to a quad-precision floating-point number.
+description:
+  - id: inst-fcvt.q.d-behaviour
+    normative: false
+    text: |
+      `fcvt.d.q` converts a double-precision floating-point number to a quad-precision floating-point number.
 definedBy: Q
 assembly: dd, fs1, rm
 encoding:

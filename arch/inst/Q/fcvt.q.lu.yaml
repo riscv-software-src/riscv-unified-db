@@ -4,11 +4,11 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.q.lu
 long_name: Floating-point Convert Unsigned Long to Quad-precision
-description: |
-  -id: inst-fcvt.q.lu-behaviour
-  -normative: false
-  -text: |
-    `fcvt.q.lu` converts a 64-bit unsigned integer, into a quad-precision floating-point number.
+description:
+  - id: inst-fcvt.q.lu-behaviour
+    normative: false
+    text: |
+      `fcvt.q.lu` converts a 64-bit unsigned integer, into a quad-precision floating-point number.
 definedBy: Q
 base: 64
 assembly: qd, xs1, rm

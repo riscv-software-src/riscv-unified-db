@@ -4,11 +4,11 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.h.q
 long_name: Floating-point Convert Quad-precision to Half-precision
-description: |
-  -id: inst-fcvt.h.q-behaviour
-  -normative: false
-  -text: |
-    `fcvt.h.q` converts a Quad-precision Floating-point number to a Half-precision Floating-point number.
+description:
+  - id: inst-fcvt.h.q-behaviour
+    normative: false
+    text: |
+      `fcvt.h.q` converts a Quad-precision Floating-point number to a Half-precision Floating-point number.
 definedBy:
   allOf: [Q, Zfh]
 assembly: xd, qs1, rm

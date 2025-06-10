@@ -4,11 +4,11 @@ $schema: inst_schema.json#
 kind: instruction
 name: fcvt.h.l
 long_name: Floating-point Convert Long to Half-precision
-description: |
-  -id: inst-fcvt.h.l-behaviour
-  -normative: false
-  -text: |
-    `fcvt.h.l` converts a 64-bit signed integer to a half-precision floating-point number.
+description:
+  - id: inst-fcvt.h.l-behaviour
+    normative: false
+    text: |
+      `fcvt.h.l` converts a 64-bit signed integer to a half-precision floating-point number.
 definedBy: Zfh
 assembly: xd, xs1, frm
 encoding:

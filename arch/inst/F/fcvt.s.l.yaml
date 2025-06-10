@@ -4,12 +4,12 @@ $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.s.l
 long_name: Floating-point Convert Long to Single-precision
-description: |
-  -id: inst-fcvt.s.l-behaviour
-  -normative: false
-  -text: |
-    `fcvt.s.l` converts a 64-bit signed integer in integer register `rs1` into a floating-point
-    number in floating-point register `rd`.
+description:
+  - id: inst-fcvt.s.l-behaviour
+    normative: false
+    text: |
+      `fcvt.s.l` converts a 64-bit signed integer in integer register `rs1` into a floating-point
+      number in floating-point register `rd`.
 definedBy: F
 base: 64
 assembly: fd, xs1, rm
