@@ -3,9 +3,13 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.w.d
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-point Convert Double-precision to Word
+description:
+  - id: inst-fcvt.w.d-behaviour
+    normative: false
+    text: |
+      `fcvt.w.d` converts a double-precision floating-point number in floating-point register `xs1` to a
+      signed 32-bit integer, in integer register `xd`.
 definedBy: D
 assembly: xd, xs1, rm
 encoding:
