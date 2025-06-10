@@ -10,7 +10,7 @@ description:
     text: |
       `fcvt.q.s` converts a single-precision floating-point number to a quad-precision floating-point number.
 definedBy: Q
-assembly: qd, fs1, rm
+assembly: fd, fs1, rm
 encoding:
   match: 010001100000-------------1010011
   variables:
@@ -18,7 +18,7 @@ encoding:
       location: 19-15
     - name: rm
       location: 14-12
-    - name: qd
+    - name: fd
       location: 11-7
 access:
   s: always

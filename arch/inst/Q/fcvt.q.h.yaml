@@ -11,15 +11,15 @@ description:
       `fcvt.q.h` converts a half-precision floating-point number to a quad-precision floating-point number.
 definedBy:
   allOf: [Q, Zfh]
-assembly: hd, qs1, rm
+assembly: fd, fs1, rm
 encoding:
   match: 010001100010-------------1010011
   variables:
-    - name: qs1
+    - name: fs1
       location: 19-15
     - name: rm
       location: 14-12
-    - name: hd
+    - name: fd
       location: 11-7
 access:
   s: always

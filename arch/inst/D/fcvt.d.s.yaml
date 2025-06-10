@@ -13,15 +13,15 @@ description:
       encodes the datatype of the source, and the `fmt` field encodes the datatype of the destination.
       `fcvt.d.s` will never round.
 definedBy: D
-assembly: xd, xs1, rm
+assembly: fd, fs1, rm
 encoding:
   match: 010000100000-------------1010011
   variables:
-    - name: rs1
+    - name: fs1
       location: 19-15
     - name: rm
       location: 14-12
-    - name: rd
+    - name: fd
       location: 11-7
 access:
   s: always

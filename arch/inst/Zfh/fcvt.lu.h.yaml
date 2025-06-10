@@ -10,15 +10,15 @@ description:
     text: |
       `fcvt.lu.h` converts a half-precision floating-point number to an unsigned 64-bit integer.
 definedBy: Zfh
-assembly: fd, fs1, frm
+assembly: xd, fs1, rm
 encoding:
   match: 110001000011-------------1010011
   variables:
-    - name: rs1
+    - name: fs1
       location: 19-15
     - name: rm
       location: 14-12
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always

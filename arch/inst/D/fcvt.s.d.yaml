@@ -13,15 +13,15 @@ description:
        registers. The `rs2` field encodes the datatype of the source, and the `fmt` field encodes the datatype
        of the destination. `fcvt.s.d` rounds according to the RM field
 definedBy: D
-assembly: xd, xs1, rm
+assembly: fd, fs1, rm
 encoding:
   match: 010000000001-------------1010011
   variables:
-    - name: rs1
+    - name: fs1
       location: 19-15
     - name: rm
       location: 14-12
-    - name: rd
+    - name: fd
       location: 11-7
 access:
   s: always

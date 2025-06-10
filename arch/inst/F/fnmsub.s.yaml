@@ -7,7 +7,7 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy: F
-assembly: xd, xs1, xs2, xs3, rm
+assembly: fd, fs1, fs2, fs3, rm
 encoding:
   match: -----00------------------1001011
   variables:
