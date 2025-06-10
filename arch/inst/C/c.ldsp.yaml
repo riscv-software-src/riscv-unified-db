@@ -15,7 +15,7 @@ definedBy:
   anyOf:
     - C
     - Zca
-assembly: xd, imm
+assembly: xd, imm(sp)
 encoding:
   RV32:
     match: 011-----------10
