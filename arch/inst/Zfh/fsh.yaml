@@ -6,23 +6,23 @@ name: fsh
 long_name: Half-precision floating-point store
 description: |
   The `fsh` instruction stores a half-precision floating-point value
-  from register _rd_ to memory at address _rs1_ + _imm_.
+  from register _xd_ to memory at address _xs1_ + _imm_.
 
   `fsh` does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
-  `fsh` ignores all but the lower 16 bits in _rs2_.
+  `fsh` ignores all but the lower 16 bits in _fs2_.
 
   `fsh` is only guaranteed to execute atomically if the effective address is naturally aligned.
 
 definedBy:
   anyOf: [Zfh, Zfhmin, Zhinx]
-assembly: xs2, imm12($rs1)
+assembly: fs2, imm(xs1)
 encoding:
   match: -----------------001-----0100111
   variables:
     - name: imm
       location: 31-25|11-7
-    - name: rs1
+    - name: xs1
       location: 19-15
     - name: fs2
       location: 24-20
@@ -34,7 +34,7 @@ access:
 operation(): |
   check_f_ok($encoding);
 
-  XReg virtual_address = X[rs1] + $signed(imm);
+  XReg virtual_address = X[xs1] + $signed(imm);
 
   Bits<16> hp_value = f[fs2][15:0];
 

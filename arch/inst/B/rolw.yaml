@@ -5,7 +5,7 @@ kind: instruction
 name: rolw
 long_name: Rotate left word (Register)
 description: |
-  This instruction performs a rotate left of the least-significant word of rs1 by the amount in least-significant 5 bits of rs2.
+  Performs a rotate left of the least-significant word of rs1 by the amount in least-significant 5 bits of rs2.
   The resulting word value is sign-extended by copying bit 31 to all of the more-significant bits.
 definedBy:
   anyOf: [Zbb, Zbkb]

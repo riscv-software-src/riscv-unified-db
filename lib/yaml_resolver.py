@@ -282,6 +282,7 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
             else obj["$inherits"]
         )
         obj["$child_of"] = obj["$inherits"]
+        del obj["$inherits"]
 
         parent_obj = yaml.load("{}")
 
@@ -337,8 +338,6 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
             else:
                 ref_obj["$parent_of"] = f"{obj_file_path}#/{'/'.join(obj_path)}"
 
-        del obj["$inherits"]
-
         # now parent_obj is the child and obj is the parent
         # merge them
         keys = []
@@ -366,7 +365,14 @@ def _resolve(obj, obj_path, obj_file_path, doc_obj, arch_root, do_checks):
                     final_obj[key] = merge(
                         yaml.load("{}"),
                         parent_obj[key],
-                        obj[key],
+                        _resolve(
+                            obj[key],
+                            obj_path + [key],
+                            obj_file_path,
+                            doc_obj,
+                            arch_root,
+                            do_checks,
+                        ),
                         strategy=Strategy.REPLACE,
                     )
                 else:
@@ -533,17 +539,29 @@ def resolve_file(
         resolved_obj = resolve(rel_path, args.arch_dir, do_checks)
         resolved_obj["$source"] = os.path.join(args.arch_dir, rel_path)
 
-        if do_checks and ("$schema" in resolved_obj):
-            schema = _get_schema(resolved_obj["$schema"])
-            try:
-                schema.validate(instance=resolved_obj)
-            except ValidationError as e:
-                print(f"JSON Schema Validation Error for {rel_path}:")
-                print(best_match(schema.iter_errors(resolved_obj)).message)
-                exit(1)
+        # since already-resolved objects may be updated later with inheritance breadcrumbs ($parent_of),
+        # we can't write the file yet.
 
-        write_yaml(resolved_path, resolved_obj)
-        os.chmod(resolved_path, 0o444)
+
+def write_resolved_file_and_validate(
+    rel_path: str | Path,
+    resolved_dir: str | Path,
+    do_checks: bool,
+):
+    resolved_path = os.path.join(resolved_dir, rel_path)
+    resolved_obj = resolve(rel_path, args.arch_dir, do_checks)
+    write_yaml(resolved_path, resolved_obj)
+
+    if do_checks and ("$schema" in resolved_obj):
+        schema = _get_schema(resolved_obj["$schema"])
+        try:
+            schema.validate(instance=resolved_obj)
+        except ValidationError as e:
+            print(f"JSON Schema Validation Error for {rel_path}:")
+            print(best_match(schema.iter_errors(resolved_obj)).message)
+            exit(1)
+
+    os.chmod(resolved_path, 0o444)
 
 
 if __name__ == "__main__":
@@ -599,10 +617,10 @@ if __name__ == "__main__":
         print(f"[INFO] Merged architecture files written to {args.merged_dir}")
 
     elif args.command == "resolve":
-        arch_paths = glob.glob(f"**/*.yaml", recursive=True, root_dir=args.arch_dir)
+        arch_paths = glob.glob(f"*/**/*.yaml", recursive=True, root_dir=args.arch_dir)
         if os.path.exists(args.resolved_dir):
             resolved_paths = glob.glob(
-                f"**/*.yaml", recursive=True, root_dir=args.resolved_dir
+                f"*/**/*.yaml", recursive=True, root_dir=args.resolved_dir
             )
             arch_paths.extend(resolved_paths)
             arch_paths = list(set(arch_paths))
@@ -621,6 +639,15 @@ if __name__ == "__main__":
             os.makedirs(os.path.dirname(resolved_arch_path), exist_ok=True)
             resolve_file(
                 arch_path, args.arch_dir, args.resolved_dir, not args.no_checks
+            )
+        iter = (
+            arch_paths
+            if args.no_progress
+            else tqdm(arch_paths, ascii=True, desc="Validating arch")
+        )
+        for arch_path in iter:
+            write_resolved_file_and_validate(
+                arch_path, args.resolved_dir, not args.no_checks
             )
 
         # create index

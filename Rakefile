@@ -272,7 +272,7 @@ namespace :test do
 
   task schema: "#{$root}/.stamps/resolve-_.stamp" do
     puts "Checking arch files against schema.."
-    Architecture.new("#{$root}/gen/resolved_arch/_").validate(show_progress: true)
+    cfg_arch_for("_").validate(show_progress: true)
     puts "All files validate against their schema"
   end
 
@@ -388,6 +388,15 @@ file "#{$root}/arch/csr/S/scounteren.yaml" => [
   File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
 end
 
+file "#{$root}/arch/csr/Sscofpmf/scountovf.yaml" => [
+  "#{$root}/arch/csr/Sscofpmf/scountovf.layout",
+  __FILE__
+] do |t|
+  erb = ERB.new(File.read($root / "arch/csr/Sscofpmf/scountovf.layout"), trim_mode: "-")
+  erb.filename = "#{$root}/arch/csr/Sscofpmf/scountovf.layout"
+  File.write(t.name, insert_warning(erb.result(binding), t.prerequisites.first))
+end
+
 file "#{$root}/arch/csr/H/hcounteren.yaml" => [
   "#{$root}/arch/csr/H/hcounteren.layout",
   __FILE__
@@ -421,6 +430,7 @@ namespace :gen do
 
     Rake::Task["#{$root}/arch/csr/I/mcounteren.yaml"].invoke
     Rake::Task["#{$root}/arch/csr/S/scounteren.yaml"].invoke
+    Rake::Task["#{$root}/arch/csr/Sscofpmf/scountovf.yaml"].invoke
     Rake::Task["#{$root}/arch/csr/H/hcounteren.yaml"].invoke
     Rake::Task["#{$root}/arch/csr/Zicntr/mcountinhibit.yaml"].invoke
 

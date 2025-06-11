@@ -7,15 +7,13 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy: Zalasr
-assembly: xs2, xs1
+assembly: xs2, (xs1)
 encoding:
-  match: 00111-1----------000000000101111
+  match: 0011101----------000000000101111
   variables:
-    - name: aq
-      location: 26-26
-    - name: rs2
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
 access:
   s: always

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# typed: false
 
 # Classes for Portfolios which form a common base class for profiles and certificates.
 # A "Portfolio" is a named & versioned grouping of extensions (each with a name and version).
@@ -20,9 +21,9 @@ require_relative "schema"
 # PortfolioClass #
 ##################
 
-# Holds information from Portfolio class YAML file (processor certificate class or profile class).
+# Holds information from Portfolio class YAML file (processor certificate class or profile family).
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
-class PortfolioClass < DatabaseObject
+class PortfolioClass < TopLevelDatabaseObject
   # @return [String] What kind of processor portfolio is this?
   def processor_kind = @data["processor_kind"]
 
@@ -345,10 +346,11 @@ end
 
 # Holds information about a Portfolio (certificate or profile).
 # The inherited "data" member is YAML data from the architecture for this portfolio object.
-class Portfolio < DatabaseObject
+class Portfolio < TopLevelDatabaseObject
   # @param obj_yaml [Hash<String, Object>] Contains contents of Portfolio yaml file (put in @data)
   # @param data_path [String] Path to yaml file
   # @param arch [Architecture] Entire database of RISC-V architecture standards
+  sig { params(obj_yaml: T::Hash[String, Object], yaml_path: T.any(String, Pathname), arch: ConfiguredArchitecture).void }
   def initialize(obj_yaml, yaml_path, arch)
     super # Calls parent class with same args I got
   end
@@ -522,10 +524,10 @@ class Portfolio < DatabaseObject
 
     # Convert desired_present argument to Presence object if not nil.
     desired_presence_converted =
-      desired_presence.nil?                     ? nil :
-      desired_presence.is_a?(String)            ? desired_presence :
+      desired_presence.nil?            ? nil :
+      desired_presence.is_a?(String)   ? desired_presence :
       desired_presence.is_a?(Presence) ? desired_presence :
-      Presence.new(desired_presence)
+                                         Presence.new(desired_presence)
 
     missing_ext = false
 
@@ -637,7 +639,7 @@ class Portfolio < DatabaseObject
 
     @in_scope_exception_codes =
       in_scope_min_satisfying_extension_versions.reduce([]) do |list, ext_version|
-        ecodes = ext_version.ext["exception_codes"]
+        ecodes = ext_version.ext.data["exception_codes"]
         next list if ecodes.nil?
 
         ecodes.each do |ecode|
@@ -665,10 +667,8 @@ class Portfolio < DatabaseObject
 
     @uses_optional_types = false
 
-    # Iterate through different kinds of optional using the "object" version (not the string version).
-    Presence.optional_types_obj.each do |optional_type_obj|
-      # See if any extension reqs have this type of optional.
-      unless in_scope_ext_reqs(optional_type_obj).empty?
+    in_scope_ext_reqs(Presence.optional)&.each do |ext_req|
+      if ext_req.presence.uses_optional_types?
         @uses_optional_types = true
       end
     end

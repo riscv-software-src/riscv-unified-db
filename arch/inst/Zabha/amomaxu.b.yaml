@@ -7,7 +7,7 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy: Zabha
-assembly: xd, xs2, xs1
+assembly: xd, xs2, (xs1)
 encoding:
   match: 11100------------000-----0101111
   variables:

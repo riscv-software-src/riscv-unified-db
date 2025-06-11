@@ -5,8 +5,7 @@ kind: instruction
 name: qc.c.eir
 long_name: Restore interrupts (Register)
 description: |
-  Globally restore interrupts, write `rs1` to `mstatus`.
-  Equivalent to "csrrs `zero`, `mstatus`, `rs1`".
+  Globally restore interrupts, write bit 3 of rs1 to `mstatus.MIE` and `qc.mcause.MIE`.
   Instruction encoded in CI instruction format.
 definedBy:
   anyOf:
