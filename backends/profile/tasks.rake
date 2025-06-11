@@ -12,9 +12,9 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
   release_obj = YAML.load_file(f, permitted_classes: [Date])
   raise "Can't parse #{f}" if release_obj.nil?
 
-  raise "Ill-formed profile release file #{f}: missing 'class' field" if release_obj['class'].nil?
-  class_name = File.basename(release_obj['class']['$ref'].split("#")[0], ".yaml")
-  raise "Ill-formed profile release file #{f}: can't parse class name" if class_name.nil?
+  raise "Ill-formed profile release file #{f}: missing 'family' field" if release_obj['family'].nil?
+  family_name = File.basename(release_obj['family']['$ref'].split("#")[0], ".yaml")
+  raise "Ill-formed profile release file #{f}: can't parse family name" if family_name.nil?
 
   raise "Ill-formed profile release file #{f}: missing 'profiles' field" if release_obj['profiles'].nil?
   profile_names = release_obj['profiles'].map {|p| File.basename(p['$ref'].split("#")[0], ".yaml") }
@@ -24,7 +24,7 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
 
   file "#{PROFILE_GEN_DIR}/adoc/#{release_name}ProfileRelease.adoc" => [
     __FILE__,
-    "#{$root}/arch/profile_class/#{class_name}.yaml",
+    "#{$root}/arch/profile_family/#{family_name}.yaml",
     "#{$root}/arch/profile_release/#{release_name}.yaml",
     "#{$root}/lib/arch_obj_models/profile.rb",
     "#{$root}/lib/arch_obj_models/portfolio.rb",
@@ -41,7 +41,7 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
     arch = pf_create_arch
 
     # Create ProfileRelease for specific profile release as specified in its arch YAML file.
-    # The Architecture object also creates all other portfolio-related class instances from their arch YAML files.
+    # The Architecture object also creates all other portfolio-related object instances from their arch YAML files.
     # None of these objects are provided with a AbstractConfig or Design object when created.
     $logger.info "Creating ProfileRelease with only an Architecture object for #{release_name}"
     profile_release_with_arch = arch.profile_release(release_name)
@@ -51,7 +51,6 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
 
     $logger.info "Creating ProfileRelease with a ConfiguredArchitecture object for #{release_name}"
     profile_release_with_cfg_arch = cfg_arch.profile_release(release_name)
-    profile_class_with_cfg_arch = profile_release_with_cfg_arch.profile_class
 
     # Create the one PortfolioDesign object required for the ERB evaluation.
     # Provide it with all the profiles in this ProfileRelease.
@@ -61,7 +60,7 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
       cfg_arch,
       PortfolioDesign.profile_release_type,
       profile_release_with_cfg_arch.profiles,
-      profile_release_with_cfg_arch.profile_class
+      profile_release_with_cfg_arch.profile_family
     )
 
     # Create empty binding and then specify explicitly which variables the ERB template can access.
@@ -72,7 +71,7 @@ Dir.glob("#{$root}/arch/profile_release/*.yaml") do |f|
     erb_binding = evaluate_erb
     portfolio_design.init_erb_binding(erb_binding)
     erb_binding.local_variable_set(:profile_release, profile_release_with_cfg_arch)
-    erb_binding.local_variable_set(:profile_class, profile_release_with_cfg_arch.profile_class)
+    erb_binding.local_variable_set(:profile_family, profile_release_with_cfg_arch.profile_family)
 
     pf_create_adoc("#{PROFILE_DOC_DIR}/templates/profile.adoc.erb", erb_binding, t.name, portfolio_design)
   end

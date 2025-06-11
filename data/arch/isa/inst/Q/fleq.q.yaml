@@ -11,15 +11,15 @@ description: |
   No description available.
 definedBy:
   allOf: [Q, Zfa]
-assembly: xd, qs1, qs2
+assembly: xd, fs1, fs2
 encoding:
   match: 1010011----------100-----1010011
   variables:
-    - name: qs2
+    - name: fs2
       location: 24-20
-    - name: qs1
+    - name: fs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always

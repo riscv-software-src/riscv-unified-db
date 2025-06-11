@@ -8,11 +8,11 @@ kind: instruction
 name: lr.d
 long_name: Load reserved doubleword
 description: |
-  Loads a word from the address in rs1, places the value in rd,
+  Loads a word from the address in xs1, places the value in xd,
   and registers a _reservation set_  -- a set of bytes that subsumes the bytes in the
   addressed word.
 
-  The address in rs1 must be 8-byte aligned.
+  The address in xs1 must be 8-byte aligned.
 
   If the address is not naturally aligned, a `LoadAddressMisaligned` exception or an
   `LoadAccessFault` exception will be generated. The access-fault exception can be generated
@@ -47,17 +47,19 @@ description: |
   with both bits clear, but may result in lower performance.
 definedBy: Zalrsc
 base: 64
-assembly: xd, xs1
+assembly: xd, (xs1)
 encoding:
   match: 00010--00000-----011-----0101111
   variables:
     - name: aq
       location: 26
+      not: 1
     - name: rl
       location: 25
-    - name: rs1
+      not: 1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -71,7 +73,7 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg virtual_address = X[rs1];
+  XReg virtual_address = X[xs1];
 
   if (!is_naturally_aligned<64>(virtual_address)) {
     # can raise either LoadAddressMisaligned *or* LoadAccessFault
@@ -91,7 +93,7 @@ operation(): |
     }
   }
 
-  X[rd] = load_reserved<32>(virtual_address, aq, rl, $encoding);
+  X[xd] = load_reserved<32>(virtual_address, aq, rl, $encoding);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

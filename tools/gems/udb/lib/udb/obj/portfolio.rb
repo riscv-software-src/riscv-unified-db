@@ -24,7 +24,7 @@ module Udb
 # PortfolioClass #
 ##################
 
-# Holds information from Portfolio class YAML file (processor certificate class or profile class).
+# Holds information from Portfolio class YAML file (processor certificate class or profile family).
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
 class PortfolioClass < TopLevelDatabaseObject
   # @return [String] What kind of processor portfolio is this?

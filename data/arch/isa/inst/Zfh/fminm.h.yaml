@@ -15,11 +15,11 @@ assembly: fd, fs1, fs2
 encoding:
   match: 0010110----------010-----1010011
   variables:
-    - name: rs2
+    - name: fs2
       location: 24-20
-    - name: rs1
+    - name: fs1
       location: 19-15
-    - name: rd
+    - name: fd
       location: 11-7
 access:
   s: always

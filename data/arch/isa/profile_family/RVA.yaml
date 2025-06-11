@@ -1,16 +1,16 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# yaml-language-server: $schema=../../schemas/profile_class_schema.json
+# yaml-language-server: $schema=../../../schemas/profile_family_schema.json
 
-$schema: profile_class_schema.json#
-kind: profile class
+$schema: profile_family_schema.json#
+kind: profile family
 processor_kind: Apps Processor
 name: RVA
-long_name: Apps Processor profile class for Rich Operating Systems requiring binary-compatibility
+long_name: Apps Processor profile family for Rich Operating Systems requiring binary-compatibility
 marketing_name: RVA
 introduction: |
-  The RVA profile class targets application processors for markets
+  The RVA profile family targets application processors for markets
   requiring a high-degree of binary compatibility between compliant implementations.
 description: |
   RISC-V was designed to provide a highly modular and extensible
@@ -134,7 +134,7 @@ description: |
   worth implementing and worth discovering, by designating only a few
   important features as profile options and limiting their granularity.
 naming_scheme: |
-  The profile class name is RVA (RISC-V Apps processor).
+  The profile family name is RVA (RISC-V Apps processor).
   A profile release name is an integer (currently 2 digits, could grow in the future).
   A full profile name is comprised of, in order:
 

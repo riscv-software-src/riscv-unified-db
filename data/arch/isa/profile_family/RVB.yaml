@@ -1,20 +1,20 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-$schema: profile_class_schema.json#
-kind: profile class
+$schema: profile_family_schema.json#
+kind: profile family
 processor_kind: Apps Processor
 name: RVB
-long_name: Apps Processor profile class for Bespoke Rich Operating System
+long_name: Apps Processor profile family for Bespoke Rich Operating System
 marketing_name: RVB
 introduction: |
-  The RVB profile class targets application processors for markets
+  The RVB profile family targets application processors for markets
   running Bespoke (AKA custom, AKA Yocto) Linux Operating Systems
   in embedded applications.
 description: |
-  The RVB profile class is intended to be used for 64-bit application
+  The RVB profile family is intended to be used for 64-bit application
   processors running rich OS stacks.  Only user-mode and
-  supervisor-mode profiles are specified in this class.
+  supervisor-mode profiles are specified in this family.
 
   NOTE: There is no machine-mode profile currently defined for RVB.
   A machine-mode profile for application processors would only be used in specifying platforms for
@@ -28,7 +28,7 @@ description: |
   defined.  It would be possible to also define very similar XLEN=32
   variants.
 naming_scheme: |
-  The profile class name is RVB (RISC-V Bespoke processor).
+  The profile family name is RVB (RISC-V Bespoke processor).
   A profile release name is a integer (currently 2 digits, could grow in the future).
   A full profile name is comprised of, in order:
 

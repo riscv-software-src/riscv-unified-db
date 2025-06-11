@@ -32,10 +32,10 @@ pseudoinstructions:
   - when: xd == x1
     to: jal imm
 operation(): |
-  XReg retrun_addr = $pc + 4;
+  XReg return_addr = $pc + 4;
 
   jump_halfword($pc + $signed(imm));
-  X[xd] = retrun_addr;
+  X[xd] = return_addr;
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

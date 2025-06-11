@@ -39,7 +39,7 @@ description: |
   result differs from the operand value and the Invalid exception flag is not set.
 
 definedBy: F
-assembly: xd, fs1
+assembly: xd, fs1, rm
 encoding:
   match: 110000000000-------------1010011
   variables:

@@ -33,7 +33,7 @@ operation(): |
     raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg retrun_addr = $pc + 2;
+  XReg return_addr = $pc + 2;
 
   jump_halfword($pc + $signed(imm));
-  X[1] = retrun_addr;
+  X[1] = return_addr;

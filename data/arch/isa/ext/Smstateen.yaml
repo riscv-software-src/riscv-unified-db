@@ -1,0 +1,28 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Smstateen
+long_name: Machine-mode view of the state-enable extension
+description: |
+  Machine-mode view of the state-enable extension. The Smstateen
+  extension specification comprises the `mstateen*`, `sstateen*`,
+  and `hstateen*` CSRs and their functionality.
+
+  NOTE: The Smstateen extension specification is an M-mode extension as
+  it includes M-mode features, but the supervisor-mode visible
+  components of the extension are named as the Ssstateen extension.  Only
+  Ssstateen is mandated in the RVA22S64 profile when the hypervisor
+  extension is implemented.  These registers are not mandated or
+  supported options without the hypervisor extension, as there are no
+  RVA22S64 supported options with relevant state to control in the
+  absence of the hypervisor extension.
+
+type: privileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null

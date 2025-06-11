@@ -8,7 +8,7 @@ kind: instruction
 name: feq.s
 long_name: Single-precision floating-point equal
 description: |
-  Writes 1 to _rd_ if _fs1_ and _fs2_ are equal, and 0 otherwise.
+  Writes 1 to _xd_ if _fs1_ and _fs2_ are equal, and 0 otherwise.
 
   If either operand is NaN, the result is 0 (not equal). If either operand is a signaling NaN, the invalid flag is set.
 
@@ -23,7 +23,7 @@ encoding:
       location: 24-20
     - name: fs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -41,9 +41,9 @@ operation(): |
     if (is_sp_signaling_nan?(sp_value_a) || is_sp_signaling_nan?(sp_value_b)) {
       set_fp_flag(FpFlag::NV);
     }
-    X[rd] = 0;
+    X[xd] = 0;
   } else {
-    X[rd] = (
+    X[xd] = (
       (sp_value_a == sp_value_b)
       || ((sp_value_a | sp_value_b)[30:0] == 0) # pos 0 is equal to neg zero
     ) ? 1 : 0;

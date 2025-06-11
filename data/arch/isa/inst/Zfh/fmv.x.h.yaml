@@ -9,10 +9,10 @@ name: fmv.x.h
 long_name: Move half-precision value from floating-point to integer register
 definedBy:
   anyOf: [Zfh, Zfhmin, Zhinx]
-assembly: fd, fs1
+assembly: xd, fs1
 description: |
-  Moves the half-precision value in floating-point register rs1 represented in IEEE 754-2008
-  encoding to the lower 16 bits of integer register rd.
+  Moves the half-precision value in floating-point register fs1 represented in IEEE 754-2008
+  encoding to the lower 16 bits of integer register xd.
 
   The bits are not modified in the transfer, and in particular, the payloads of non-canonical
   NaNs are preserved.
@@ -24,7 +24,7 @@ encoding:
   variables:
     - name: fs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -34,7 +34,7 @@ access:
 operation(): |
   check_f_ok($encoding);
 
-  X[rd] = sext(f[fs1][15:0], 16);
+  X[xd] = sext(f[fs1][15:0], 16);
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

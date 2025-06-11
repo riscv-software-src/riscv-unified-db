@@ -19,7 +19,7 @@ definedBy:
     - C
     - Zca
 base: 64
-assembly: xd, imm
+assembly: xd, imm(sp)
 encoding:
   match: 011-----------10
   variables:

@@ -6,8 +6,8 @@ kind: profile release
 name: Mock
 long_name: Mock
 marketing_name: Mock Profile Release Marketing Name
-class:
-  $ref: profile_class/Mock.yaml#
+family:
+  $ref: profile_family/Mock.yaml#
 release: 20
 state: ratified # current status ["ratified", "development"]
 versions:

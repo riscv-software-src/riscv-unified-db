@@ -6,19 +6,22 @@
 $schema: inst_schema.json#
 kind: instruction
 name: fcvt.w.h
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-point Convert Half-precision to Word
+description:
+  - id: inst-fcvt.w.h-behaviour
+    normative: false
+    text: |
+      `fcvt.w.h` converts a half-precision floating-point number to a signed 32-bit integer.
 definedBy: Zfh
-assembly: fd, fs1, frm
+assembly: xd, fs1, rm
 encoding:
   match: 110001000000-------------1010011
   variables:
-    - name: rs1
+    - name: fs1
       location: 19-15
     - name: rm
       location: 14-12
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always

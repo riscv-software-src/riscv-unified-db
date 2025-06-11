@@ -8,26 +8,26 @@ kind: instruction
 name: sc.w
 long_name: Store conditional word
 description: |
-  `sc.w` conditionally writes a word in _rs2_ to the address in _rs1_:
+  `sc.w` conditionally writes a word in _xs2_ to the address in _xs1_:
   the `sc.w` succeeds only if the reservation is still valid and the
   reservation set contains the bytes being written. If the `sc.w` succeeds,
-  the instruction writes the word in _rs2_ to memory, and it writes zero to _rd_.
+  the instruction writes the word in _xs2_ to memory, and it writes zero to _xd_.
   If the `sc.w` fails, the instruction does not write to memory, and it writes a
-  nonzero value to _rd_. For the purposes of memory protection, a failed `sc.w`
+  nonzero value to _xd_. For the purposes of memory protection, a failed `sc.w`
   may be treated like a store. Regardless of success or failure, executing an
   `sc.w` instruction invalidates any reservation held by this hart.
 
   <%- if MXLEN == 64 -%>
   [NOTE]
   If a value other than 0 or 1 is defined as a result for `sc.w`, the value will before
-  sign-extended into _rd_.
+  sign-extended into _xd_.
   <%- end -%>
 
   The failure code with value 1 encodes an unspecified failure.
   Other failure codes are reserved at this time.
   Portable software should only assume the failure code will be non-zero.
 
-  The address held in _rs1_ must be naturally aligned to the size of the operand
+  The address held in _xs1_ must be naturally aligned to the size of the operand
   (_i.e._, eight-byte aligned for doublewords and four-byte aligned for words).
   If the address is not naturally aligned, an address-misaligned exception or an
   access-fault exception will be generated.
@@ -108,19 +108,21 @@ description: |
   LR.rl and SC.aq instructions are not guaranteed to provide any stronger ordering than those
   with both bits clear, but may result in lower performance.
 definedBy: Zalrsc
-assembly: xd, xs2, xs1
+assembly: xd, xs2, (xs1)
 encoding:
   match: 00011------------010-----0101111
   variables:
     - name: aq
       location: 26
+      not: 1
     - name: rl
       location: 25
-    - name: rs2
+      not: 1
+    - name: xs2
       location: 24-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always
@@ -134,8 +136,8 @@ operation(): |
     raise (ExceptionCode::IllegalInstruction, mode(), $encoding);
   }
 
-  XReg virtual_address = X[rs1];
-  XReg value = X[rs2];
+  XReg virtual_address = X[xs1];
+  XReg value = X[xs2];
 
   if (!is_naturally_aligned<32>(virtual_address)) {
     # can raise either LoadAddressMisaligned *or* LoadAccessFault
@@ -156,7 +158,7 @@ operation(): |
   }
 
   Boolean success = store_conditional<32>(virtual_address, value, aq, rl, $encoding);
-  X[rd] = success ? 0 : 1;
+  X[xd] = success ? 0 : 1;
 
 # SPDX-SnippetBegin
 # SPDX-FileCopyrightText: 2017-2025 Contributors to the RISCV Sail Model <https://github.com/riscv/sail-riscv/blob/master/LICENCE>

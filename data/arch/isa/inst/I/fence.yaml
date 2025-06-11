@@ -124,7 +124,7 @@ description: |
   <%- end -%>
 
 definedBy: I
-assembly: "TODO"
+assembly: pred, succ
 encoding:
   match: -----------------000-----0001111
   variables:

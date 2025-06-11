@@ -16,7 +16,7 @@ definedBy:
   anyOf:
     - C
     - Zca
-assembly: xs2, imm
+assembly: xs2, imm(sp)
 encoding:
   match: 110-----------10
   variables:

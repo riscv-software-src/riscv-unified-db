@@ -10,13 +10,13 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy: V
-assembly: vd, vs2
+assembly: xd, vs2
 encoding:
   match: 0100001-----00000010-----1010111
   variables:
     - name: vs2
       location: 24-20
-    - name: vd
+    - name: xd
       location: 11-7
 access:
   s: always

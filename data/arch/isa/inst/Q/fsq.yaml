@@ -10,13 +10,13 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy: Q
-assembly: qs2, imm(xs1)
+assembly: fs2, imm(xs1)
 encoding:
   match: -----------------100-----0100111
   variables:
     - name: imm
       location: 31-25|11-7
-    - name: qs2
+    - name: fs2
       location: 24-20
     - name: xs1
       location: 19-15

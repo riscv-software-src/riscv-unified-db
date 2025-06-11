@@ -51,14 +51,16 @@ description: |
   LR.rl and SC.aq instructions are not guaranteed to provide any stronger ordering than those
   with both bits clear, but may result in lower performance.
 definedBy: Zalrsc
-assembly: xd, xs1
+assembly: xd, (xs1)
 encoding:
   match: 00010--00000-----010-----0101111
   variables:
     - name: aq
       location: 26
+      not: 1
     - name: rl
       location: 25
+      not: 1
     - name: rs1
       location: 19-15
     - name: rd

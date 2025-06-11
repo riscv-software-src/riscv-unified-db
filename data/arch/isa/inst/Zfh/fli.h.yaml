@@ -11,11 +11,11 @@ description: |
   No description available.
 definedBy:
   allOf: [Zfa, Zfh]
-assembly: fd, imm
+assembly: fd, xs1
 encoding:
   match: 111101000001-----000-----1010011
   variables:
-    - name: imm
+    - name: xs1
       location: 19-15
     - name: fd
       location: 11-7

@@ -10,19 +10,19 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy: Q
-assembly: qd, qs1, qs2, qs3, rm
+assembly: fd, fs1, fs2, fs3, rm
 encoding:
   match: -----11------------------1000111
   variables:
-    - name: qs3
+    - name: fs3
       location: 31-27
-    - name: qs2
+    - name: fs2
       location: 24-20
-    - name: qs1
+    - name: fs1
       location: 19-15
     - name: rm
       location: 14-12
-    - name: qd
+    - name: fd
       location: 11-7
 access:
   s: always

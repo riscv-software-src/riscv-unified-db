@@ -10,11 +10,11 @@ long_name: No synopsis available
 description: |
   No description available.
 definedBy: Zfa
-assembly: fd, xs1, rm
+assembly: fd, fs1, rm
 encoding:
   match: 010000000100-------------1010011
   variables:
-    - name: rs1
+    - name: fs1
       location: 19-15
     - name: rm
       location: 14-12
