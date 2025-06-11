@@ -77,10 +77,10 @@ module Udb
     end
 
     # run command in the shell. raise if exit is not zero
-    sig { params(cmd: String).void }
+    sig { params(cmd: T::Array[String]).void }
     def run(cmd)
-      puts cmd
-      system cmd
+      puts cmd.join(" ")
+      system(*cmd)
       raise unless $?.success?
     end
 
@@ -149,7 +149,14 @@ module Udb
 
       if any_newer?(gen_path / "arch" / config_name / ".stamp", deps)
         udb_gem_path = Bundler.definition.specs.find { |s| s.name == "udb" }.full_gem_path
-        run "#{python_path} #{udb_gem_path}/python/yaml_resolver.py merge #{arch_path} #{config_yaml["arch_overlay"]} #{gen_path}/arch/#{config_name}"
+        run [
+          python_path.to_s,
+          "#{udb_gem_path}/python/yaml_resolver.py",
+          "merge",
+          arch_path.to_s,
+          config_yaml["arch_overlay"].to_s,
+          "#{gen_path}/arch/#{config_name}"
+        ]
         FileUtils.touch(gen_path / "arch" / config_name / ".stamp")
       end
     end
