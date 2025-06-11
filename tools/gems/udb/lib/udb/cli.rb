@@ -63,7 +63,9 @@ module Udb
 
             Versions:
             #{ext.versions.map { |ext_ver| "  * #{ext_ver.version_str}" }.join("\n") }
+
           INFO
+          say "Includes #{ext.instructions.count} instructions" if ext.instructions.count.positive?
         end
       end
     end
