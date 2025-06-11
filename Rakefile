@@ -370,6 +370,11 @@ namespace :gen do
 end
 
 namespace :test do
+  task :unit do
+    Rake::Task["test:idlc:unit"].invoke
+    Rake::Task["test:udb:unit"].invoke
+    Rake::Task["test:udb_helpers:unit"].invoke
+  end
   desc <<~DESC
     Run smoke tests
 
@@ -379,8 +384,8 @@ namespace :test do
     $logger.info "Starting test:smoke"
     $logger.info "Running test:sorbet"
     Rake::Task["test:sorbet"].invoke
-    $logger.info "Running test:idlc:unit"
-    Rake::Task["test:idlc:unit"].invoke
+    $logger.info "Running test:unit"
+    Rake::Task["test:unit"].invoke
     $logger.info "Running gen:isa_explorer_browser_ext"
     Rake::Task["gen:isa_explorer_browser_ext"].invoke
     # $logger.info "Running test:lib"

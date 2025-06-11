@@ -1,13 +1,13 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 # frozen_string_literal: true
 
-require_relative 'test_helper'
 require "English"
 require "minitest/autorun"
-require "backend_helpers"
+require_relative "../lib/udb_helpers/backend_helpers"
 
-include TemplateHelpers
-
-$root ||= (Pathname.new(__FILE__) / ".." / ".." / "..").realpath
+include Udb::Helpers::TemplateHelpers
 
 class TestBackendHelpers < Minitest::Test
   def test_ext
@@ -72,6 +72,8 @@ class TestBackendHelpers < Minitest::Test
 end
 
 class TestAsciidocUtils < Minitest::Test
+  AsciidocUtils = Udb::Helpers::AsciidocUtils
+
   def test_resolve_links_ext
     assert_equal("<<udb:doc:ext:foo,bar>>", AsciidocUtils.resolve_links("%%UDB_DOC_LINK%ext;foo;bar%%"))
     assert_equal("<<udb:doc:ext:foo,foo>>", AsciidocUtils.resolve_links(link_to_udb_doc_ext("foo")))
@@ -116,6 +118,8 @@ class TestAsciidocUtils < Minitest::Test
 end
 
 class TestAntoraUtils < Minitest::Test
+  AntoraUtils = Udb::Helpers::AntoraUtils
+
   def test_resolve_links_ext
     assert_equal("xref:exts:foo.adoc#udb:doc:ext:foo[bar]", AntoraUtils.resolve_links("%%UDB_DOC_LINK%ext;foo;bar%%"))
     assert_equal("xref:exts:foo.adoc#udb:doc:ext:foo[foo]", AntoraUtils.resolve_links(link_to_udb_doc_ext("foo")))
