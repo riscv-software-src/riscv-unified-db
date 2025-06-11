@@ -8,7 +8,9 @@
 
 require_relative "portfolio_design"
 
-class Udb::ProcCertDesign < Udb::PortfolioDesign
+module Udb
+
+class ProcCertDesign < PortfolioDesign
   # @return [ProcCertModel] The processor certificate model object from the architecture database
   attr_reader :proc_cert_model
 
@@ -71,4 +73,5 @@ class Udb::ProcCertDesign < Udb::PortfolioDesign
       raise "Can't find file #{template_name} in either #{proc_cert_template_pname} or #{portfolio_template_pname}."
     end
   end
+end
 end

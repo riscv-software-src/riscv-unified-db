@@ -89,7 +89,7 @@ module Idl
   end
   class FieldAssignmentAst < AstNode
     def gen_adoc(indent, indent_spaces: 2)
-      "#{field_access.gen_adoc(0, indent_spaces:)} = #{write_value.gen_adoc(0, indent_spaces:)}"
+      "#{id.gen_adoc(0, indent_spaces:)}.#{@field_name} = #{rhs.gen_adoc(0, indent_spaces:)}"
     end
   end
   class ConcatenationExpressionAst < AstNode

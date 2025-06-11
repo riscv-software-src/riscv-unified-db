@@ -11,6 +11,42 @@ module Udb
 
 class ExtensionVersion; end
 
+  # return type for satisfied_by functions
+  class SatisfiedResult < T::Enum
+    enums do
+      Yes = new
+      No = new
+      Maybe = new
+    end
+  end
+
+module AbstractRequirement
+  extend T::Sig
+  extend T::Helpers
+  interface!
+
+  sig { abstract.returns(String) }
+  def to_rb; end
+
+  sig { abstract.returns(T::Boolean) }
+  def satisfied_by?; end
+
+  sig { abstract.returns(T::Boolean) }
+  def empty?; end
+
+  sig { abstract.params(_other: T.untyped).returns(T::Boolean) }
+  def compatible?(_other); end
+
+  sig { abstract.returns(T.any(String, T::Hash[String, T.untyped])) }
+  def to_h; end
+
+  sig { abstract.params(_hsh: T.any(String, T::Hash[String, T.untyped])).returns(T.any(String, T::Hash[String, T.untyped])) }
+  def minimize(_hsh); end
+
+  sig { abstract.params(cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
+  def satisfied_by_cfg_arch?(cfg_arch); end
+end
+
 # represents a JSON Schema composition of extension requirements, e.g.:
 #
 # anyOf:
@@ -21,6 +57,7 @@ class ExtensionVersion; end
 #
 class ExtensionRequirementExpression
   extend T::Sig
+  include AbstractRequirement
 
   # @param composition_hash [Hash] A possibly recursive hash of "allOf", "anyOf", "oneOf", "not", "if"
   sig { params(composition_hash: T.any(String, T::Hash[String, T.untyped]), cfg_arch: ConfiguredArchitecture).void }
@@ -33,10 +70,10 @@ class ExtensionRequirementExpression
     @arch = cfg_arch
   end
 
-  sig { returns(T.any(String, T::Hash[String, T.untyped])) }
+  sig { override.returns(T.any(String, T::Hash[String, T.untyped])) }
   def to_h = @hsh
 
-  sig { returns(T::Boolean) }
+  sig { override.returns(T::Boolean) }
   def empty? = false
 
   sig { params(ver: T.untyped).returns(T::Boolean) }
@@ -85,21 +122,21 @@ class ExtensionRequirementExpression
   def flat_versions
     case @hsh
     when String
-      [ExtensionRequirement.new(@hsh, arch: @arch)]
+      [ExtensionRequirement.new(@hsh, [], arch: @arch)]
     when Hash
       if @hsh.key?("name")
         if @hsh.key?("version").nil?
-          [ExtensionRequirement.new(@hsh["name"], arch: @arch)]
+          [ExtensionRequirement.new(@hsh["name"], [], arch: @arch)]
         else
           [ExtensionRequirement.new(@hsh["name"], @hsh["version"], arch: @arch)]
         end
       else
         @hsh[T.must(@hsh.keys.first)].map do |r|
           if r.is_a?(String)
-            ExtensionRequirement.new(r, arch: @arch)
+            ExtensionRequirement.new(r, [], arch: @arch)
           else
             if r.key?("version").nil?
-              ExtensionRequirement.new(r["name"], arch: @arch)
+              ExtensionRequirement.new(r["name"], [], arch: @arch)
             else
               ExtensionRequirement.new(r["name"], r["version"], arch: @arch)
             end
@@ -113,13 +150,13 @@ class ExtensionRequirementExpression
   def to_asciidoc(cond = @hsh, indent = 0, join: "\n")
     case cond
     when String
-      "#{'*' * indent}* #{cond}, version >= #{@arch.extension(cond).min_version}"
+      "#{'*' * indent}* #{cond}, version >= #{T.must(@arch.extension(cond)).min_version}"
     when Hash
       if cond.key?("name")
         if cond.key?("version")
           "#{'*' * indent}* #{cond['name']}, version #{cond['version']}#{join}"
         else
-          "#{'*' * indent}* #{cond['name']}, version >= #{@arch.extension(cond['name']).min_version}#{join}"
+          "#{'*' * indent}* #{cond['name']}, version >= #{T.must(@arch.extension(cond['name'])).min_version}#{join}"
         end
       else
         "#{'*' * indent}* #{cond.keys[0]}:#{join}" + to_asciidoc(cond[T.must(cond.keys[0])], indent + 2)
@@ -173,11 +210,11 @@ class ExtensionRequirementExpression
   def first_requirement(req = @hsh)
     case req
     when String
-      ExtensionRequirement.new(req, arch: @arch)
+      ExtensionRequirement.new(req, [], arch: @arch)
     when Hash
       if req.key?("name")
         if req["version"].nil?
-          ExtensionRequirement.new(req["name"], arch: @arch)
+          ExtensionRequirement.new(req["name"], [], arch: @arch)
         else
           ExtensionRequirement.new(req["name"], req["version"], arch: @arch)
         end
@@ -202,7 +239,7 @@ class ExtensionRequirementExpression
   end
 
   # @return [Object] Schema for this expression, with basic logic minimization
-  sig { params(hsh: T.any(String, T::Hash[String, T.untyped])).returns(T.any(String, T::Hash[String, T.untyped])) }
+  sig { override.params(hsh: T.any(String, T::Hash[String, T.untyped])).returns(T.any(String, T::Hash[String, T.untyped])) }
   def minimize(hsh = @hsh)
     case hsh
     when Hash
@@ -250,7 +287,7 @@ class ExtensionRequirementExpression
             raise "unexpected"
           end
         else
-          "(yield ExtensionRequirement.new('#{hsh["name"]}', arch: @arch))"
+          "(yield ExtensionRequirement.new('#{hsh["name"]}', [], arch: @arch))"
         end
       else
         key = hsh.keys[0]
@@ -278,7 +315,7 @@ class ExtensionRequirementExpression
         end
       end
     else
-      "(yield ExtensionRequirement.new('#{hsh}', arch: @arch))"
+      "(yield ExtensionRequirement.new('#{hsh}', [], arch: @arch))"
     end
   end
 
@@ -288,7 +325,7 @@ class ExtensionRequirementExpression
   #
   # @param ary_name [String] Name of a ruby string in the eval binding
   # @return [Boolean] If the condition is met
-  sig { returns(String) }
+  sig { override.returns(String) }
   def to_rb
     to_rb_helper(@hsh)
   end
@@ -440,7 +477,7 @@ class ExtensionRequirementExpression
             raise "unexpected"
           end
         else
-          ext_req_to_logic_node(ExtensionRequirement.new(hsh["name"], arch: @arch), term_idx, expand:)
+          ext_req_to_logic_node(ExtensionRequirement.new(hsh["name"], [], arch: @arch), term_idx, expand:)
         end
       else
         key = hsh.keys[0]
@@ -508,7 +545,7 @@ class ExtensionRequirementExpression
         end
       end
     else
-      ext_req_to_logic_node(ExtensionRequirement.new(hsh, arch: @arch), term_idx, expand:)
+      ext_req_to_logic_node(ExtensionRequirement.new(hsh, [], arch: @arch), term_idx, expand:)
     end
   end
 
@@ -535,7 +572,7 @@ class ExtensionRequirementExpression
 
   # @param other [ExtensionRequirementExpression] Another condition
   # @return [Boolean] if it's possible for both to be simultaneously true
-  sig { params(other: ExtensionRequirementExpression).returns(T::Boolean) }
+  sig { override.params(other: ExtensionRequirementExpression).returns(T::Boolean) }
   def compatible?(other)
     tree1 = to_logic_tree(@hsh)
     tree2 = to_logic_tree(other.to_h)
@@ -570,11 +607,35 @@ class ExtensionRequirementExpression
   # @yieldparam obj [Object] An endpoint in the condition
   # @yieldreturn [Boolean] Whether or not +obj+ is what you are looking for
   # @return [Boolean] Whether or not the entire condition is satisfied
-  sig { params(block: T.proc.params(arg0: ExtensionRequirement).returns(T::Boolean)).returns(T::Boolean) }
+  sig { override.params(block: T.proc.params(arg0: ExtensionRequirement).returns(T::Boolean)).returns(T::Boolean) }
   def satisfied_by?(&block)
     raise ArgumentError, "Expecting one argument to block" unless block.arity == 1
 
     eval to_rb
+  end
+
+
+
+  sig { override.params(cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
+  def satisfied_by_cfg_arch?(cfg_arch)
+    if cfg_arch.fully_configured?
+      if satisfied_by? { |ext_req| ext_req.satisfied_by?(cfg_arch.transitive_implemented_extension_versions) }
+        SatisfiedResult::Yes
+      else
+        SatisfiedResult::No
+      end
+    elsif cfg_arch.partially_configured?
+      if satisfied_by? { |cond_ext_req| cfg_arch.mandatory_extension_reqs.any? { |cfg_ext_req| cond_ext_req.satisfied_by?(cfg_ext_req) }  }
+        SatisfiedResult::Yes
+      elsif satisfied_by? { |cond_ext_req| cfg_arch.possible_extension_versions.any? { |cfg_ext_ver| cond_ext_req.satisfied_by?(cfg_ext_ver) }  }
+        SatisfiedResult::Maybe
+      else
+        SatisfiedResult::No
+      end
+    else
+      # unconfig. everything flies
+      SatisfiedResult::Yes
+    end
   end
 
   # returns true if the list of extension requirements *can* satisfy the condition.
@@ -626,46 +687,54 @@ end
 
 class AlwaysTrueExtensionRequirementExpression
   extend T::Sig
+  include AbstractRequirement
 
-  sig { returns(String) }
+  sig { override.returns(String) }
   def to_rb = "true"
 
-  sig { returns(T::Boolean) }
+  sig { override.returns(T::Boolean) }
   def satisfied_by? = true
 
-  sig { returns(T::Boolean) }
+  sig { override.returns(T::Boolean) }
   def empty? = true
 
-  sig { params(_other: T.untyped).returns(T::Boolean) }
+  sig { override.params(_other: T.untyped).returns(T::Boolean) }
   def compatible?(_other) = true
 
-  sig { returns(T::Hash[T.untyped, T.untyped]) }
+  sig { override.returns(T.any(String, T::Hash[String, T.untyped])) }
   def to_h = {}
 
-  sig { returns(T::Hash[T.untyped, T.untyped]) }
-  def minimize = {}
+  sig { override.params(_hsh: T.any(String, T::Hash[String, T.untyped])).returns(T.any(String, T::Hash[String, T.untyped])) }
+  def minimize(_hsh) = {}
+
+  sig { override.params(_cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
+  def satisfied_by_cfg_arch?(_cfg_arch) = SatisfiedResult::Yes
 end
 
 class AlwaysFalseExtensionRequirementExpression
   extend T::Sig
+  include AbstractRequirement
 
-  sig { returns(String) }
+  sig { override.returns(String) }
   def to_rb = "false"
 
-  sig { returns(T::Boolean) }
+  sig { override.returns(T::Boolean) }
   def satisfied_by? = false
 
-  sig { returns(T::Boolean) }
+  sig { override.returns(T::Boolean) }
   def empty? = true
 
-  sig { params(_other: T.untyped).returns(T::Boolean) }
+  sig { override.params(_other: T.untyped).returns(T::Boolean) }
   def compatible?(_other) = false
 
-  sig { returns(T::Hash[T.untyped, T.untyped]) }
+  sig { override.returns(T.any(String, T::Hash[String, T.untyped])) }
   def to_h = {}
 
-  sig { returns(T::Hash[T.untyped, T.untyped]) }
-  def minimize = {}
+  sig { override.params(_hsh: T.any(String, T::Hash[String, T.untyped])).returns(T.any(String, T::Hash[String, T.untyped])) }
+  def minimize(_hsh) = {}
+
+  sig { override.params(_cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
+  def satisfied_by_cfg_arch?(_cfg_arch) = SatisfiedResult::No
 end
 
 
@@ -736,7 +805,7 @@ class ConditionalExtensionVersionList
 
   sig { params(entry: T::Hash[String, String]).returns(ExtensionVersion) }
   def entry_to_ext_ver(entry)
-    ExtensionVersion.new(entry["name"], entry["version"], @cfg_arch, fail_if_version_does_not_exist: true)
+    ExtensionVersion.new(T.must(entry["name"]), T.must(entry["version"]), @cfg_arch, fail_if_version_does_not_exist: true)
   end
   private :entry_to_ext_ver
 end

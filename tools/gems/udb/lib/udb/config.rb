@@ -2,84 +2,82 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # frozen_string_literal: true
+# typed: true
 
 require "pathname"
 require "forwardable"
+require "yaml"
 require_relative "obj/portfolio"
+
+module Udb
 
 # This class represents a configuration. Is is coded as an abstract base class (must be inherited by a child).
 #
 # There are child classes derived from AbstractConfig to handle:
 #   - Configurations specified by YAML files in the /cfg directory
 #   - Configurations specified by portfolio groups (certificates and profile releases)
-class Udb::AbstractConfig
+class AbstractConfig
+  extend T::Sig
+  extend T::Helpers
+  abstract!
+
+  ParamValueType = T.type_alias { T.any(Integer, String, T::Boolean) }
+
   ####################
   # ABSTRACT METHODS #
   ####################
 
   # @return [Hash<String, Object>] A hash mapping parameter name to value for any parameter that has
   #                                been configured with a value. May be empty.
-  def param_values = raise "Abstract Method: Must be provided in child class"
+  sig { abstract.returns(T::Hash[String, ParamValueType]) }
+  def param_values; end
 
   # @return [Boolean] Is an overlay present?
-  def overlay? = raise "Abstract Method: Must be provided in child class"
+  sig { abstract.returns(T::Boolean) }
+  def overlay?; end
 
   # @return [String] Either a path to an overlay directory, or the name of a folder under arch_overlay/
   # @return [nil] No arch_overlay for this config
-  def arch_overlay = raise "Abstract Method: Must be provided in child class"
+  sig { abstract.returns(T.nilable(String)) }
+  def arch_overlay; end
 
   # @return [String] Absolute path to the arch_overlay
   # @return [nil] No arch_overlay for this config
-  def arch_overlay_abs = raise "Abstract Method: Must be provided in child class"
+  sig { abstract.returns(T.nilable(String)) }
+  def arch_overlay_abs; end
 
-  def mxlen = raise "Abstract Method: Must be provided in child class"
+  sig { abstract.returns(T.nilable(Integer)) }
+  def mxlen; end
 
-  def fully_configured? = raise "Abstract Method: Must be provided in child class"
-  def partially_configured? = raise "Abstract Method: Must be provided in child class"
-  def unconfigured? = raise "Abstract Method: Must be provided in child class"
+  sig { abstract.returns(T::Boolean) }
+  def fully_configured?; end
 
-  # @return [Array<Hash<String, String>>] List of all extensions known to be implemented by the configuration.
-  def implemented_extensions = raise "Abstract Method: Must be provided in child class"
+  sig { abstract.returns(T::Boolean) }
+  def partially_configured?; end
 
-  # @return [Array<Hash{String => String,Array<String}>]
-  #    List of all extensions that must be implemented by the configuration
-  #    The first entry in the nested array is an Extension name.
-  #    The second entry in the nested array is an Extension version requirement.
-  #
-  # @example
-  #   mandatory_extensions =>
-  #     [{ "name" => "A", "version" => ["~> 2.0"] }, { "name" => "B", "version" => ["~> 1.0"] }, ...]
-  def mandatory_extensions = raise "Abstract Method: Must be provided in child class"
-
-  # @return [Array<Hash{String => String,Array<String}>]
-  #   List of all extensions that are explicitly prohibited by the configuration.
-  #   The first entry in the nested array is an Extension name.
-  #   The second entry in the nested array is an Extension version requirement.
-  #
-  # @example
-  #   partial_config.prohibited_extensions =>
-  #     [{ "name" => "F", "version" => [">= 2.0"] }, { "name" => "Zfa", "version" => ["> = 1.0"] }, ...]
-  def prohibited_extensions = raise "Abstract Method: Must be provided in child class"
-
-  # Whether or not a compliant instance of this partial config can have more extensions than those listed
-  # in mandatory_extensions/non_mandatory_extensions.
-  def additional_extensions_allowed? = raise "Abstract Method: Must be provided in child class"
+  sig { abstract.returns(T::Boolean) }
+  def unconfigured?; end
 
   ########################
   # NON-ABSTRACT METHODS #
   ########################
 
+  sig { params(name: String).void }
   def initialize(name)
     @name = name
   end
 
+  sig { returns(String) }
   def name = @name
-  def configured? = !unconfigured
+
+  sig { returns(T::Boolean) }
+  def configured? = !unconfigured?
 end
 
 # This class represents a configuration as specified by YAML files in the /cfg directory.
 # Is is coded as an abstract base class (must be inherited by a child).
-class Udb::FileConfig < Udb::AbstractConfig
+class FileConfig < AbstractConfig
+  abstract!
   ########################
   # NON-ABSTRACT METHODS #
   ########################
@@ -87,14 +85,17 @@ class Udb::FileConfig < Udb::AbstractConfig
   # use FileConfig#create instead
   private_class_method :new
 
+  sig { params(cfg_file_path: Pathname, data: T::Hash[String, T.untyped]).void }
   def initialize(cfg_file_path, data)
     super(data["name"])
     @cfg_file_path = cfg_file_path
     @data = data
   end
 
+  sig { returns(String) }
   def type = @data["type"]
 
+  sig { params(obj: T.untyped).returns(T.untyped) }
   def self.freeze_data(obj)
     if obj.is_a?(Hash)
       obj.each do |k, v|
@@ -112,24 +113,24 @@ class Udb::FileConfig < Udb::AbstractConfig
   # on the contents of cfg_filename.
   #
   # @return [FileConfig] A new FileConfig object
-  def self.create(cfg_filename)
-    cfg_file_path = Pathname.new(cfg_filename)
-    raise ArgumentError, "Cannot find #{cfg_filename}" unless cfg_file_path.exist?
+  sig { params(cfg_file_path: Pathname).returns(FileConfig) }
+  def self.create(cfg_file_path)
+    raise ArgumentError, "Cannot find #{cfg_file_path}" unless cfg_file_path.exist?
 
-    data = YAML.load(cfg_file_path.read, permitted_classes: [Date])
+    data = ::YAML.load_file(cfg_file_path)
 
     # now deep freeze the data
     freeze_data(data)
 
     case data["type"]
     when "fully configured"
-      Udb::FullConfig.send(:new, cfg_file_path, data)
+      FullConfig.send(:new, cfg_file_path, data)
     when "partially configured"
-      Udb::PartialConfig.send(:new, cfg_file_path, data)
+      PartialConfig.send(:new, cfg_file_path, data)
     when "unconfigured"
-      Udb::UnConfig.send(:new, cfg_file_path, data)
+      UnConfig.send(:new, cfg_file_path, data)
     else
-      raise "Unexpected type in config"
+      raise "Unexpected type (#{data['type']}) in config"
     end
   end
 
@@ -137,14 +138,17 @@ class Udb::FileConfig < Udb::AbstractConfig
   # ABSTRACT METHODS OVERRIDDEN #
   ###############################
 
+  sig { override.returns(T::Boolean) }
   def overlay? = !(@data["arch_overlay"].nil? || @data["arch_overlay"].empty?)
 
   # @return [String] Either a path to an overlay directory, or the name of a folder under arch_overlay/
   # @return [nil] No arch_overlay for this config
+  sig { override.returns(T.nilable(String)) }
   def arch_overlay = @data["arch_overlay"]
 
   # @return [String] Absolute path to the arch_overlay
   # @return [nil] No arch_overlay for this config
+  sig { override.returns(T.nilable(String)) }
   def arch_overlay_abs
     return nil unless @data.key?("arch_overlay")
 
@@ -162,11 +166,12 @@ end
 # This class represents a configuration that is "unconfigured". #
 # It doesn't know anything about extensions or parameters.      #
 #################################################################
-class Udb::UnConfig < Udb::FileConfig
+class UnConfig < FileConfig
   ########################
   # NON-ABSTRACT METHODS #
   ########################
 
+  sig { params(cfg_file_path: Pathname, data: T::Hash[String, T.untyped]).void }
   def initialize(cfg_file_path, data)
     super(cfg_file_path, data)
 
@@ -177,28 +182,32 @@ class Udb::UnConfig < Udb::FileConfig
   # ABSTRACT METHODS OVERRIDDEN #
   ###############################
 
+  sig { override.returns(T::Hash[String, ParamValueType]) }
   def param_values = @param_values
+
+  sig { override.returns(NilClass) }
   def mxlen = nil
 
+  sig { override.returns(T::Boolean) }
   def fully_configured? = false
-  def partially_configured? = false
-  def unconfigured? = true
 
-  def implemented_extensions = raise "implemented_extensions is only available for a FullConfig"
-  def mandatory_extensions = raise "mandatory_extensions is only available for a PartialConfig"
-  def prohibited_extensions = raise "prohibited_extensions is only available for a PartialConfig"
-  def additional_extensions_allowed? = raise "additional_extensions_allowed? is only available for a PartialConfig"
+  sig { override.returns(T::Boolean) }
+  def partially_configured? = false
+
+  sig { override.returns(T::Boolean) }
+  def unconfigured? = true
 end
 
 ##############################################################################################################
 # This class represents a configuration that is "partially-configured" (e.g., portfolio or configurable IP). #
 # It only lists mandatory & prohibited extensions and fully-constrained parameters (single value).
 ##############################################################################################################
-class Udb::PartialConfig < Udb::FileConfig
+class PartialConfig < FileConfig
   ########################
   # NON-ABSTRACT METHODS #
   ########################
 
+  sig { params(cfg_file_path: Pathname, data: T::Hash[String, T.untyped]).void }
   def initialize(cfg_file_path, data)
     super(cfg_file_path, data)
 
@@ -216,15 +225,22 @@ class Udb::PartialConfig < Udb::FileConfig
   # ABSTRACT METHODS OVERRIDDEN #
   ###############################
 
+  sig { override.returns(T::Hash[String, ParamValueType]) }
   def param_values = @param_values
+
+  sig { override.returns(Integer) }
   def mxlen = @mxlen
 
+  sig { override.returns(T::Boolean) }
   def fully_configured? = false
+
+  sig { override.returns(T::Boolean) }
   def partially_configured? = true
+
+  sig { override.returns(T::Boolean) }
   def unconfigured? = false
 
-  def implemented_extensions = raise "implemented_extensions is only available for a FullConfig"
-
+  sig { returns(T::Array[T::Hash[String, T.any(String, T::Array[String])]]) }
   def mandatory_extensions
     @mandatory_extensions ||=
       if @data["mandatory_extensions"].nil?
@@ -237,6 +253,7 @@ class Udb::PartialConfig < Udb::FileConfig
       end
   end
 
+  sig { returns(T::Array[T::Hash[String, T.any(String, T::Array[String])]]) }
   def prohibited_extensions
     @prohibited_extensions ||=
       if @data["prohibited_extensions"].nil?
@@ -251,6 +268,7 @@ class Udb::PartialConfig < Udb::FileConfig
 
   # Whether or not a compliant instance of this partial config can have more extensions than those listed
   # in mandatory_extensions/non_mandatory_extensions.
+  sig { returns(T::Boolean) }
   def additional_extensions_allowed? = @data.key?("additional_extensions") ? @data["additional_extensions"] : true
 end
 
@@ -258,11 +276,12 @@ end
 # This class represents a configuration that is "fully-configured" (e.g., SoC tapeout or fully-configured IP). #
 # It has a complete list of extensions and parameters (all are a single value at this point).                  #
 ################################################################################################################
-class Udb::FullConfig < Udb::FileConfig
+class FullConfig < FileConfig
   ########################
   # NON-ABSTRACT METHODS #
   ########################
 
+  sig { params(cfg_file_path: Pathname, data: T::Hash[String, T.untyped]).void }
   def initialize(cfg_file_path, data)
     super(cfg_file_path, data)
 
@@ -276,13 +295,22 @@ class Udb::FullConfig < Udb::FileConfig
   # ABSTRACT METHODS OVERRIDDEN #
   ###############################
 
+  sig { override.returns(T::Hash[String, ParamValueType]) }
   def param_values = @param_values
+
+  sig { override.returns(Integer) }
   def mxlen = @mxlen
 
+  sig { override.returns(T::Boolean) }
   def fully_configured? = true
+
+  sig { override.returns(T::Boolean) }
   def partially_configured? = false
+
+  sig { override.returns(T::Boolean) }
   def unconfigured? = false
 
+  sig { returns(T::Array[T::Hash[String, String]]) }
   def implemented_extensions
     @implemented_extensions ||=
       if @data["implemented_extensions"].nil?
@@ -297,10 +325,6 @@ class Udb::FullConfig < Udb::FileConfig
         end
       end
   end
-
-  def mandatory_extensions = raise "mandatory_extensions is only available for a PartialConfig"
-  def prohibited_extensions = raise "prohibited_extensions is only available for a PartialConfig"
-  def additional_extensions_allowed? = raise "additional_extensions_allowed? is only available for a PartialConfig"
 end
 
 ########################
@@ -310,14 +334,13 @@ end
 # A PortfolioGroupConfig provides an implementation of the AbstractConfig API using a PortfolioGroup object.
 # This object contains information from one or more portfolios.
 # A certificate has just one portfolio and a profile release has one or more portfolios.
-class Udb::PortfolioGroupConfig < Udb::AbstractConfig
+class PortfolioGroupConfig < AbstractConfig
   ########################
   # NON-ABSTRACT METHODS #
   ########################
 
+  sig { params(portfolio_grp: ::Udb::PortfolioGroup).void }
   def initialize(portfolio_grp)
-    raise ArgumentError, "portfolio_grp is a class #{portfolio_grp.class} but must be a PortfolioGroup" unless portfolio_grp.is_a?(PortfolioGroup)
-
     super(portfolio_grp.name)
 
     @portfolio_grp = portfolio_grp
@@ -330,29 +353,36 @@ class Udb::PortfolioGroupConfig < Udb::AbstractConfig
 
   # @return [Hash<String, Object>] A hash mapping parameter name to value for any parameter that has
   #                                been configured with a value. May be empty.
+  sig { override.returns(T::Hash[String, ParamValueType]) }
   def param_values = @portfolio_grp.param_values
 
   # @return [Boolean] Is an overlay present?
+  sig { override.returns(FalseClass) }
   def overlay? = false
 
   # @return [String] Either a path to an overlay directory, or the name of a folder under arch_overlay/
   # @return [nil] No arch_overlay for this config
+  sig { override.returns(T.nilable(String)) }
   def arch_overlay = nil
 
   # @return [String] Absolute path to the arch_overlay
   # @return [nil] No arch_overlay for this config
+  sig { override.returns(T.nilable(String)) }
   def arch_overlay_abs = nil
 
   # 32, 64, or nil if dynamic (not yet supported in portfolio)
+  sig { override.returns(T.nilable(Integer)) }
   def mxlen = @portfolio_grp.max_base
 
   # Portfolios are always considered partially configured.
+  sig { override.returns(T::Boolean) }
   def fully_configured? = false
-  def partially_configured? = true
-  def unconfigured? = false
 
-  # @return [Array<Hash<String, String>>] List of all extensions known to be implemented by the configuration.
-  def implemented_extensions = raise "Attempt to invoke implemented_extensions in PorfolioGroup #{name}"
+  sig { override.returns(T::Boolean) }
+  def partially_configured? = true
+
+  sig { override.returns(T::Boolean) }
+  def unconfigured? = false
 
   # @return [Array<Hash{String => String,Array<String}>]
   #    List of all extensions that must be implemented by the configuration
@@ -362,6 +392,7 @@ class Udb::PortfolioGroupConfig < Udb::AbstractConfig
   # @example
   #   mandatory_extensions =>
   #     [{ "name" => "A", "version" => ["~> 2.0"] }, { "name" => "B", "version" => ["~> 1.0"] }, ...]
+  sig { returns(T::Array[T::Hash[String, T.any(String, T::Array[String])]]) }
   def mandatory_extensions
     @portfolio_grp.mandatory_ext_reqs.map do |ext_req|
       {
@@ -379,9 +410,12 @@ class Udb::PortfolioGroupConfig < Udb::AbstractConfig
   # @example
   #   partial_config.prohibited_extensions =>
   #     [{ "name" => "F", "version" => [">= 2.0"] }, { "name" => "Zfa", "version" => ["> = 1.0"] }, ...]
+  sig { returns(T::Array[T::Hash[String, T.any(String, T::Array[String])]]) }
   def prohibited_extensions = []    # No prohibited_extensions in a portfolio group
 
   # Whether or not a compliant instance of this partial config can have more extensions than those listed
   # in mandatory_extensions/non_mandatory_extensions.
+  sig { returns(TrueClass) }
   def additional_extensions_allowed? = true
+end
 end

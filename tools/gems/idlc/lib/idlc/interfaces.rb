@@ -6,6 +6,8 @@
 
 require "sorbet-runtime"
 
+require_relative "type"
+
 module Idl
   # interface for a parameter that may only be known at runtime
   module RuntimeParam
@@ -99,8 +101,11 @@ module Idl
     sig { abstract.returns(String) }
     def name; end
 
-    sig { abstract.params(base: T.nilable(Integer)).returns(Integer) }
+    sig { abstract.params(base: T.nilable(Integer)).returns(T.nilable(Integer)) }
     def length(base); end
+
+    sig { abstract.returns(Integer) }
+    def max_length; end
 
     sig { abstract.returns(T::Boolean) }
     def dynamic_length?; end
@@ -110,7 +115,7 @@ module Idl
 
     # If the entire CSR is read-only with a known reset value, returns the value
     # otherwise, returns nil
-    sig { abstract.returns(T.nilable(T::Integer)) }
+    sig { abstract.returns(T.nilable(Integer)) }
     def value; end
 
     # whether or not the CSR can exist if ext_name is not implemented

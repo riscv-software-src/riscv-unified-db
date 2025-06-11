@@ -2473,7 +2473,7 @@ function misaligned_is_atomic? {
         in_naturally_aligned_region?<128>(physical_address, N)) {
       return true;
     } else if (pma_applies?(PmaAttribute::MAG8, physical_address, N) &&
-                in_naturally_aligned_region?<4>(physical_address, N)) {
+                in_naturally_aligned_region?<64>(physical_address, N)) {
       return true;
     } else if (pma_applies?(PmaAttribute::MAG4, physical_address, N) &&
                 in_naturally_aligned_region?<32>(physical_address, N)) {

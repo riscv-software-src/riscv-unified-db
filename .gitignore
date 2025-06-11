@@ -24,4 +24,5 @@ __pycache__/
 *.log
 sorbet
 !tools/gems/idlc/sorbet
+!tools/gems/udb/sorbet
 coverage

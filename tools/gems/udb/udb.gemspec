@@ -29,6 +29,8 @@ Gem::Specification.new do |s|
   s.required_ruby_version = "~> 3.2" # only supported in UDB container
 
   s.require_paths = ["lib"]
+  s.bindir = "bin"
+  s.executables << "udb"
 
   s.add_dependency "activesupport"
   s.add_dependency "asciidoctor"
@@ -36,8 +38,12 @@ Gem::Specification.new do |s|
   s.add_dependency "idlc"
   s.add_dependency "json_schemer"
   s.add_dependency "sorbet-runtime"
+  s.add_dependency "terminal-table"
+  s.add_dependency "tilt"
+  s.add_dependency "thor"
   s.add_dependency "udb_helpers"
 
+  s.add_development_dependency "rubocop-sorbet"
   s.add_development_dependency "sorbet"
   s.add_development_dependency "tapioca"
   s.add_development_dependency "yard"

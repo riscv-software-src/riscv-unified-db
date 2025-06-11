@@ -17,13 +17,15 @@ class Parameter
   extend T::Sig
   include Idl::RuntimeParam
 
+  raise "Huh" unless ::Idl::Type.new(:bits, width: 5).integral?
+
   # @return [Architecture] The defining architecture
-  sig { returns(Architecture) }
-  attr_reader :arch
+  sig { returns(ConfiguredArchitecture) }
+  attr_reader :cfg_arch
 
   # @return [String] Parameter name
   sig { override.returns(String) }
-  attr_reader :name
+  def name = @name
 
   # @return [String] Asciidoc description
   sig { override.returns(String) }
@@ -58,26 +60,24 @@ class Parameter
   # @returns [Object] default value, or nil if none
   sig { returns(T.nilable(Object)) }
   def default
-    if @data["schema"].key?("default")
-      @data["schema"]["default"]
+    if T.cast(@data["schema"], T::Hash[String, Object]).key?("default")
+      T.cast(@data["schema"], T::Hash[String, Object])["default"]
     end
   end
 
-  sig { params(ext: Extension, name: String, data: T::Hash[String, Object]).void }
+  sig { params(ext: Extension, name: String, data: T::Hash[String, T.untyped]).void }
   def initialize(ext, name, data)
-    raise ArgumentError, "Expecting Extension but got #{ext.class}" unless ext.is_a?(Extension)
-    raise ArgumentError, "Expecting String but got #{name.class}" unless name.is_a?(String)
-    raise ArgumentError, "Expecting Hash but got #{data.class}" unless data.is_a?(Hash)
 
-    @cfg_arch = ext.cfg_arch
-    @data = data
-    @name = name
-    @desc = data["description"]
-    @schema = Schema.new(data["schema"])
-    @extra_validation = data["extra_validation"]
+    @cfg_arch = T.let(ext.cfg_arch, ConfiguredArchitecture)
+    @data = T.let(data, T::Hash[String, T.untyped])
+    @name = T.let(name, String)
+    @desc = T.let(T.cast(data["description"], String), String)
+    @schema = T.let(Schema.new(data["schema"]), Schema)
+    @extra_validation = T.let(data.key?("extra_validation") ? T.let(T.cast(data["extra_validation"], String), String) : nil, T.nilable(String))
     also_defined_in_array = []
     also_defined_in_data = data["also_defined_in"]
     unless also_defined_in_data.nil?
+      other_ext = T.let(nil, T.nilable(Extension))
       if also_defined_in_data.is_a?(String)
         other_ext_name = also_defined_in_data
         other_ext = @cfg_arch.extension(other_ext_name)
@@ -97,8 +97,9 @@ class Parameter
         end
       end
     end
-    @exts = [ext] + also_defined_in_array
-    @idl_type = @schema.to_idl_type.make_const.freeze
+    @exts = T.let([ext] + also_defined_in_array, T::Array[Extension])
+    @idl_type = T.let(@schema.to_idl_type.make_const.freeze, ::Idl::Type)
+    @when = T.let(nil, T.nilable(ExtensionRequirementExpression))
   end
 
   # @return [ExtensionRequirementExpression] Condition when the parameter exists
@@ -111,31 +112,34 @@ class Parameter
           if @exts.size > 1
             { "anyOf" => @exts.map { |ext| { "name" => ext.name, "version" => ">= #{ext.min_version.version_str}" } }}
           else
-            { "name" => @exts[0].name, "version" => ">= #{@exts[0].min_version.version_str}"}
+            { "name" => @exts.fetch(0).name, "version" => ">= #{@exts.fetch(0).min_version.version_str}"}
           end
         ExtensionRequirementExpression.new(cond, @cfg_arch)
       else
         # the parent extension is implictly required
         cond =
-        if @exts.size > 1
-          { "allOf" => [{"anyOf" => @exts.map { |ext| { "name" => ext.name, "version" => ">= #{ext.min_version.version_str}" } } }, @data["when"]] }
-        else
-          { "allOf" => [ { "name" => @exts[0].name, "version" => ">= #{@exts[0].min_version.version_str}"}, @data["when"]] }
-        end
-        cond =
+          if @exts.size > 1
+            { "allOf" => [{"anyOf" => @exts.map { |ext| { "name" => ext.name, "version" => ">= #{ext.min_version.version_str}" } } }, @data["when"]] }
+          else
+            { "allOf" => [ { "name" => @exts.fetch(0).name, "version" => ">= #{@exts.fetch(0).min_version.version_str}"}, @data["when"]] }
+          end
         ExtensionRequirementExpression.new(cond, @cfg_arch)
       end
   end
 
   # @param cfg_arch [ConfiguredArchitecture]
   # @return [Boolean] if this parameter is defined in +cfg_arch+
+  sig { params(cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
   def defined_in_cfg?(cfg_arch)
-    return false if @exts.none? { |ext| cfg_arch.ext.name == version.ext.name }
-    return true if @data.dig("when", "version").nil?
-
-    @exts.any? do |ext|
-      ExtensionRequirement.new(ext.name, @data["when"]["version"], arch: ext.arch).satisfied_by?(version)
+    if @exts.none? { |ext| cfg_arch.possible_extensions.any? { |e| e.name == ext.name } }
+      return SatisfiedResult::No
     end
+
+    if @when.nil?
+      return SatisfiedResult::Yes
+    end
+
+    @when.satisfied_by_cfg_arch?(cfg_arch)
   end
 
   # @param exts [Array<Extension>] List of all in-scope extensions that define this parameter.
@@ -143,18 +147,17 @@ class Parameter
   #                  if only one extension defines the parameter, otherwise just the parameter name.
   sig { params(in_scope_exts: T::Array[Extension]).returns(String) }
   def name_potentially_with_link(in_scope_exts)
-    raise ArgumentError, "Expecting Array but got #{in_scope_exts.class}" unless in_scope_exts.is_a?(Array)
-    raise ArgumentError, "Expecting Array[Extension]" unless in_scope_exts[0].is_a?(Extension)
 
+    helper = Class.new do include Udb::Helpers::TemplateHelpers end
     if in_scope_exts.size == 1
-      link_to_udb_doc_ext_param(in_scope_exts[0].name, name, name)
+      helper.new.link_to_udb_doc_ext_param(in_scope_exts.fetch(0).name, name, name)
     else
       name
     end
   end
 
   # sorts by name
-  sig { params(other: Parameter).returns(Integer) }
+  sig { params(other: Parameter).returns(T.nilable(Integer)) }
   def <=>(other) = @name <=> other.name
 
   sig { returns(String) }

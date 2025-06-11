@@ -10,9 +10,9 @@ require "udb/architecture"
 def presence2char(presence)
   raise ArgumentError, "Expecting String but got class #{presence}" unless presence.is_a?(String)
 
-  if presence == Presence.mandatory
+  if presence == Udb::Presence.mandatory
     "m"
-  elsif presence == Presence.optional
+  elsif presence == Udb::Presence.optional
     "o"
   elsif presence == '-'
     "n"
@@ -24,7 +24,7 @@ end
 # @param arch [Architecture] The entire RISC-V architecture
 # @return [Hash<String,Array<String>] Extension table data
 def arch2ext_table(arch)
-  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
+  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Udb::Architecture)
 
   sorted_profile_releases = get_sorted_profile_releases(arch)
 
@@ -353,7 +353,7 @@ end
 # @param arch [Architecture] The entire RISC-V architecture
 # @param output_pname [String] Full absolute pathname to output file
 def gen_js_ext_table(arch, output_pname)
-  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
+  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Udb::Architecture)
   raise ArgumentError, "output_pname is a #{output_pname.class} class but needs to be String" unless output_pname.is_a?(String)
 
   # Convert arch to ext_table data structure
@@ -399,7 +399,7 @@ end
 # param [Architecture] arch
 # return [Array<ProfileRelease>] Nice list of profile release to use in a nice order
 def get_sorted_profile_releases(arch)
-  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Architecture)
+  raise ArgumentError, "arch is a #{arch.class} class but needs to be Architecture" unless arch.is_a?(Udb::Architecture)
 
   # Get array of profile releases and sort by name
   sorted_profile_releases = arch.profile_releases.sort_by(&:name)

@@ -370,7 +370,7 @@ function softfloat_roundToI32 {
     }
 
     Bits<32> z = (sign == 1) ? -sig32 : sig32;
-    if ((z != 0) && (($signed(z) < 0) != (sign == 1))) {
+    if ((z != 0) && (($signed(z) < 's0) != (sign == 1))) {
       set_fp_flag(FpFlag::NV);
       return sign == 1 ? WORD_NEG_OVERFLOW : WORD_POS_OVERFLOW;
     }
@@ -496,7 +496,7 @@ function softfloat_roundPackToF32 {
     Bits<8> roundBits = sig & 0x7f;
 
     if ( 0xFD <= exp ) {
-      if ($signed(exp) < 0) {
+      if ($signed(exp) < 's0) {
         Boolean isTiny =
           ($signed(exp) < -8's1) || (sig + roundIncrement < 0x80000000);
         sig = softfloat_shiftRightJam32( sig, -exp );
@@ -505,7 +505,7 @@ function softfloat_roundPackToF32 {
         if (isTiny && (roundBits != 0)) {
           set_fp_flag(FpFlag::UF);
         }
-      } else if (0xFD < $signed(exp) || (0x80000000 <= sig + roundIncrement)) {
+      } else if ('shFD < $signed(exp) || (0x80000000 <= sig + roundIncrement)) {
         set_fp_flag(FpFlag::OF);
         set_fp_flag(FpFlag::NX);
         return packToF32UI(sign, 0xFF, 0) - ((roundIncrement == 0) ? 1 : 0);

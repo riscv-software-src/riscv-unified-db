@@ -565,7 +565,7 @@ class Portfolio < TopLevelDatabaseObject
                 presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
             else
               ExtensionRequirement.new(
-                ext_name, arch: @arch,
+                ext_name, [], arch: @arch,
                 presence: actual_presence_obj, note: ext_data["note"], req_id: "REQ-EXT-#{ext_name}")
             end
         end

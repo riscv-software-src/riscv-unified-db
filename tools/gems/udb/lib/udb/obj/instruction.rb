@@ -4,7 +4,7 @@
 # frozen_string_literal: true
 # typed: true
 
-require 'ruby-prof-flamegraph'
+# require 'ruby-prof-flamegraph'
 
 require_relative "database_obj"
 require_relative "certifiable_obj"

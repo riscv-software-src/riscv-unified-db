@@ -2,8 +2,6 @@
 
 require "digest"
 
-require "udb/cfg_arch"
-
 $root = Pathname.new(__FILE__).dirname.dirname.realpath if $root.nil?
 
 MANUAL_GEN_DIR = $root / "gen" / "manual"
@@ -52,7 +50,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/chapters/pages/.*\.adoc} do |t|
   parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
   manual_name = parts[0]
   version_name = parts[1]
-  manual = cfg_arch_for("_").manual(parts[0])
+  manual = $resolver.cfg_arch_for("_").manual(parts[0])
   manual_version = manual.version(parts[1])
   chapter_name = File.basename(t.name, ".adoc")
 
@@ -86,7 +84,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/antora.yml} => proc { |tname|
   ]
 } do |t|
   parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
-  manual_version = cfg_arch_for("_").manual(parts[0])&.version(parts[1])
+  manual_version = $resolver.cfg_arch_for("_").manual(parts[0])&.version(parts[1])
 
   raise "Can't find any manual version for '#{parts[0]}' '#{parts[1]}'" if manual_version.nil?
 
@@ -123,7 +121,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/nav.adoc} => proc { |tname|
   ]
 } do |t|
   parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
-  manual_version = cfg_arch_for("_").manual(parts[0])&.version(parts[1])
+  manual_version = $resolver.cfg_arch_for("_").manual(parts[0])&.version(parts[1])
 
   raise "Can't find any manual version for '#{parts[0]}' '#{parts[1]}'" if manual_version.nil?
 
@@ -166,7 +164,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/ROOT/pages/index.adoc} => proc { 
   ]
 } do |t|
   parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
-  manual_version = cfg_arch_for("_").manual(parts[0])&.version(parts[1])
+  manual_version = $resolver.cfg_arch_for("_").manual(parts[0])&.version(parts[1])
 
   raise "Can't find any manual version for '#{parts[0]}' '#{parts[1]}'" if manual_version.nil?
 
@@ -190,7 +188,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/insts/pages/.*.adoc} => [
 ] do |t|
   inst_name = File.basename(t.name, ".adoc")
 
-  cfg_arch = cfg_arch_for("_")
+  cfg_arch = $resolver.cfg_arch_for("_")
   inst = cfg_arch.instruction(inst_name)
   raise "Can't find instruction '#{inst_name}'" if inst.nil?
 
@@ -210,7 +208,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/csrs/pages/.*\.adoc} => [
 ] do |t|
   csr_name = File.basename(t.name, ".adoc")
 
-  cfg_arch = cfg_arch_for("_")
+  cfg_arch = $resolver.cfg_arch_for("_")
 
   csr = cfg_arch.csr(csr_name)
   raise "Can't find csr '#{csr_name}'" if csr.nil?
@@ -230,7 +228,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/exts/pages/.*.adoc} => [
 ] do |t|
   ext_name = File.basename(t.name, ".adoc")
 
-  cfg_arch = cfg_arch_for("_")
+  cfg_arch = $resolver.cfg_arch_for("_")
   ext = cfg_arch.extension(ext_name)
   raise "Can't find extension '#{ext_name}'" if ext.nil?
 
@@ -247,7 +245,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/funcs/pages/funcs.adoc} => [
   __FILE__,
   ($root / "backends" / "manual" / "templates" / "func.adoc.erb").to_s
 ] do |t|
-  cfg_arch = cfg_arch_for("_")
+  cfg_arch = $resolver.cfg_arch_for("_")
 
   funcs_template_path = $root / "backends" / "manual" / "templates" / "func.adoc.erb"
   erb = ERB.new(funcs_template_path.read, trim_mode: "-")
@@ -262,7 +260,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/.*/antora/modules/params/pages/param_list.adoc} => 
   __FILE__,
   ($root / "backends" / "manual" / "templates" / "param_list.adoc.erb").to_s
 ] do |t|
-  cfg_arch = cfg_arch_for("_")
+  cfg_arch = $resolver.cfg_arch_for("_")
   parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
   manual_version = cfg_arch.manual(parts[0])&.version(parts[1])
 
@@ -280,7 +278,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/landing/antora.yml} => [
   parts = t.name.sub("#{MANUAL_GEN_DIR}/", "").split("/")
   manual_name = parts[0]
 
-  cfg_arch = cfg_arch_for("_")
+  cfg_arch = $resolver.cfg_arch_for("_")
   manual = cfg_arch.manual(manual_name)
   raise "Can't find any manual version for '#{manual_name}'" if manual.nil?
 
@@ -313,7 +311,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/landing/modules/ROOT/pages/index.adoc
   erb = ERB.new(landing_template_path.read, trim_mode: "-")
   erb.filename = landing_template_path.to_s
 
-  manual = cfg_arch_for("_").manual(manual_name)
+  manual = $resolver.cfg_arch_for("_").manual(manual_name)
 
   FileUtils.mkdir_p File.dirname(t.name)
   File.write t.name, erb.result(binding)
@@ -341,7 +339,7 @@ rule %r{#{MANUAL_GEN_DIR}/.*/top/.*/antora/playbook/playbook.yml} => proc { |tna
   erb = ERB.new(playbook_template_path.read, trim_mode: "-")
   erb.filename = playbook_template_path.to_s
 
-  manual = cfg_arch_for("_").manual(manual_name)
+  manual = $resolver.cfg_arch_for("_").manual(manual_name)
 
   FileUtils.mkdir_p File.dirname(t.name)
   File.write t.name, erb.result(binding)
@@ -380,7 +378,7 @@ namespace :gen do
     raise ArgumentError, "Missing required environment variable VERSIONS\n\n#{html_manual_desc}" if ENV["VERSIONS"].nil?
 
     versions, output_hash = versions_from_env(ENV["MANUAL_NAME"])
-    cfg_arch = cfg_arch_for("_")
+    cfg_arch = $resolver.cfg_arch_for("_")
 
     manual = cfg_arch.manual(ENV["MANUAL_NAME"])
     raise "No manual named '#{ENV['MANUAL_NAME']}" if manual.nil?
@@ -460,7 +458,7 @@ namespace :serve do
 
     port = ENV.key?("PORT") ? ENV["PORT"] : 8000
 
-    cfg_arch = cfg_arch_for("_")
+    cfg_arch = $resolver.cfg_arch_for("_")
     manual = cfg_arch.manuals.find { |m| m.name == ENV["MANUAL_NAME"] }
     raise "No manual '#{ENV['MANUAL_NAME']}'" if manual.nil?
 

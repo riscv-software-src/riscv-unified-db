@@ -1,3 +1,6 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 import glob, os
 import argparse
 import shutil
@@ -20,7 +23,16 @@ from referencing.exceptions import NoSuchResource
 # cache of Schema validators
 schemas = {}
 
-SCHEMAS_PATH = Path(os.path.join(os.path.dirname(os.path.dirname(__file__)), "schemas"))
+udb_root = lambda d: (
+    d if os.path.exists(os.path.join(d, "do")) else udb_root(os.path.dirname(d))
+)
+UDB_ROOT = (
+    udb_root(os.path.dirname(os.path.realpath(__file__)))
+    if os.getenv("UDB_ROOT") == None
+    else os.getenv("UDB_ROOT")
+)
+
+SCHEMAS_PATH = Path(os.path.join(UDB_ROOT, "schemas"))
 
 
 def retrieve_from_filesystem(uri: str):
@@ -71,8 +83,6 @@ def extend_with_default(validator_class):
 
 
 DefaultValidatingValidator = extend_with_default(Draft7Validator)
-
-UDB_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 yaml = YAML(typ="rt")
 yaml.default_flow_style = False
@@ -562,6 +572,9 @@ if __name__ == "__main__":
     merge_parser.add_argument(
         "merged_dir", type=str, help="Merged architecture (output) directory"
     )
+    merge_parser.add_argument(
+        "--udb_root", type=str, help="Root of the UDB repo", default=UDB_ROOT
+    )
 
     all_parser = subparsers.add_parser("resolve", help="Resolve all architecture files")
     all_parser.add_argument(
@@ -575,6 +588,9 @@ if __name__ == "__main__":
     )
     all_parser.add_argument(
         "--no-checks", action="store_true", help="Don't verify schema"
+    )
+    all_parser.add_argument(
+        "--udb_root", type=str, help="Root of the UDB repo", default=UDB_ROOT
     )
 
     args = cmdparser.parse_args()
@@ -592,7 +608,11 @@ if __name__ == "__main__":
         arch_paths = list(set(arch_paths))
 
         for arch_path in tqdm(arch_paths, ascii=True, desc="Merging arch"):
-            merged_arch_path = f"{UDB_ROOT}/{args.merged_dir}/{arch_path}"
+            merged_arch_path = (
+                os.path.join(args.merged_dir, arch_path)
+                if os.path.isabs(args.merged_dir)
+                else os.path.join(args.udb_root, args.merged_dir, arch_path)
+            )
             os.makedirs(os.path.dirname(merged_arch_path), exist_ok=True)
             merge_file(arch_path, args.arch_dir, args.overlay_dir, args.merged_dir)
 
@@ -612,7 +632,7 @@ if __name__ == "__main__":
             else tqdm(arch_paths, ascii=True, desc="Resolving arch")
         )
         abs_resolved_dir = (
-            f"{UDB_ROOT}/{args.resolved_dir}"
+            f"{args.udb_root}/{args.resolved_dir}"
             if not os.path.isabs(args.resolved_dir)
             else f"{args.resolved_dir}"
         )

@@ -12,9 +12,11 @@ require_relative "portfolio"
 # ProcCertClass Class #
 #######################
 
+module Udb
+
 # Holds information from processor certificate class YAML file.
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
-class Udb::ProcCertClass < Udb::PortfolioClass
+class ProcCertClass < PortfolioClass
 end
 
 #######################
@@ -23,7 +25,7 @@ end
 
 # Holds information about a processor certificate model YAML file.
 # The inherited "data" member is the database of extensions, instructions, CSRs, etc.
-class Udb::ProcCertModel < Udb::Portfolio
+class ProcCertModel < Portfolio
   # @param obj_yaml [Hash<String, Object>] Contains contents of Certificate Model yaml file (put in @data)
   # @param data_path [String] Path to yaml file
   # @param arch [Architecture] Database of RISC-V standards
@@ -60,7 +62,7 @@ class Udb::ProcCertModel < Udb::Portfolio
   #####################
 
   # Holds extra requirements not associated with extensions or their parameters.
-  class Udb::Requirement
+  class Requirement
     # @param data [Hash<String, Object>] Data from yaml
     # @param arch [Architecture] Architecture standards
     def initialize(data, arch)
@@ -97,7 +99,7 @@ class Udb::ProcCertModel < Udb::Portfolio
 
   # Holds a group of Requirement objects to provide a one-level group.
   # Can't nest RequirementGroup objects to make multi-level group.
-  class Udb::RequirementGroup
+  class RequirementGroup
     # @param data [Hash<String, Object>] Data from yaml
     # @param arch [Architecture] Architecture standards
     def initialize(data, arch)
@@ -295,4 +297,6 @@ class Udb::ProcCertModel < Udb::Portfolio
     # Return intersection of extension names
     exts.sort_by!(&:name)
   end
+end
+
 end

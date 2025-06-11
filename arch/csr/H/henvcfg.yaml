@@ -278,14 +278,14 @@ sw_read(): |
   Bits<64> value = $bits(CSR[henvcfg]);
   if (implemented?(ExtensionName::Sstc) && CSR[menvcfg].STCE == 0) {
     # henvcfg.STCE must read-as-zero
-    value = value & ~(1 << 63);
+    value = value & ~(1 `<< 63);
   }
   if (implemented?(ExtensionName::Svpbmt) && CSR[menvcfg].PBMTE == 0) {
     # henvcfg.PBMTE must read-as-zero
-    value = value & ~(1 << 62);
+    value = value & ~(1 `<< 62);
   }
   if (implemented?(ExtensionName::Svadu) && CSR[menvcfg].ADUE == 0) {
     # henvcfg.ADUE must read-as-zero
-    value = value & ~(1 << 61);
+    value = value & ~(1 `<< 61);
   }
   return value;

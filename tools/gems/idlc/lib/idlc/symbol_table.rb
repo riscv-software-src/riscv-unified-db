@@ -5,6 +5,7 @@
 # typed: true
 
 require "concurrent"
+require "sorbet-runtime"
 
 require_relative "type"
 require_relative "interfaces"
@@ -13,6 +14,8 @@ module Idl
 
   # Objects to represent variables in the ISA def
   class Var
+    extend T::Sig
+
     attr_reader :name, :type, :value
 
     def initialize(name, type, value = nil, decode_var: false, template_index: nil, function_name: nil, param: false)
@@ -29,6 +32,22 @@ module Idl
       @template_index = template_index
       @function_name = function_name
       @param = param
+
+      @const_compatible = true # until otherwise known
+    end
+
+    sig { void }
+    def const_incompatible!
+      @const_compatible = false
+    end
+
+    sig { returns(T::Boolean) }
+    def const_eval?
+      if @global
+        @name[0].upcase == @name[0]
+      else
+        @const_compatible
+      end
     end
 
     def hash
@@ -130,6 +149,9 @@ module Idl
     sig { returns(T::Boolean) }
     def multi_xlen? = @possible_xlens.size > 1
 
+    sig { returns(T::Array[Integer]) }
+    attr_reader :possible_xlens
+
     ImplementedCallbackType = T.type_alias { T.proc.params(arg0: String).returns(T.nilable(T::Boolean)) }
 
     # some ugliness to capture proc types
@@ -161,9 +183,7 @@ module Idl
     def csr?(csr_name) = csr_hash.key?(csr_name)
 
     sig { returns(T::Hash[String, Csr]) }
-    def csr_hash
-      @csr_hash ||= @csrs.map { |csr| [csr.name.freeze, csr].freeze }.to_h.freeze
-    end
+    attr_reader :csr_hash
 
     sig { params(csr_name: String).returns(T.nilable(Csr)) }
     def csr(csr_name) = csr_hash[csr_name]
@@ -213,7 +233,11 @@ module Idl
 
       }]
       params.each do |param|
-        add!(param.name, Var.new(param.name, param.idl_type, param.value, param: true))
+        if param.value_known?
+          add!(param.name, Var.new(param.name, param.idl_type, param.value, param: true))
+        else
+          add!(param.name, Var.new(param.name, param.idl_type, param: true))
+        end
       end
       @params = params.freeze
       builtin_enums.each do |enum_def|
@@ -221,6 +245,7 @@ module Idl
       end
       @builtin_funcs = builtin_funcs
       @csrs = csrs
+      @csr_hash = @csrs.map { |csr| [csr.name.freeze, csr].freeze }.to_h.freeze
     end
 
     # @return [String] inspection string
@@ -249,6 +274,12 @@ module Idl
         copy.instance_variable_set(:@callstack, [@callstack[0]])
         copy.instance_variable_set(:@mxlen, @mxlen)
         copy.instance_variable_set(:@mutex, @mutex)
+        copy.instance_variable_set(:@name, @name)
+        copy.instance_variable_set(:@possible_xlens, @possible_xlens)
+        copy.instance_variable_set(:@params, @params)
+        copy.instance_variable_set(:@builtin_funcs, @builtin_funcs)
+        copy.instance_variable_set(:@csrs, @csrs)
+        copy.instance_variable_set(:@csr_hash, @csr_hash)
         copy.instance_variable_set(:@global_clone_pool, @global_clone_pool)
         copy.instance_variable_set(:@in_use, Concurrent::Semaphore.new(1))
         @global_clone_pool << copy
@@ -427,6 +458,12 @@ module Idl
         copy.instance_variable_set(:@callstack, [@callstack[0]])
         copy.instance_variable_set(:@mxlen, @mxlen)
         copy.instance_variable_set(:@mutex, @mutex)
+        copy.instance_variable_set(:@name, @name)
+        copy.instance_variable_set(:@possible_xlens, @possible_xlens)
+        copy.instance_variable_set(:@params, @params)
+        copy.instance_variable_set(:@builtin_funcs, @builtin_funcs)
+        copy.instance_variable_set(:@csrs, @csrs)
+        copy.instance_variable_set(:@csr_hash, @csr_hash)
         copy.instance_variable_set(:@global_clone_pool, @global_clone_pool)
         copy.instance_variable_set(:@in_use, Concurrent::Semaphore.new(1))
         @global_clone_pool << copy

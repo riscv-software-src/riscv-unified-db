@@ -273,7 +273,7 @@ module Idl
 
   class FieldAssignmentAst < AstNode
     def gen_cpp(symtab, indent, indent_spaces: 2)
-      "#{field_access.gen_cpp(symtab, 0, indent_spaces:)} = #{write_value.gen_cpp(symtab, 0, indent_spaces:)}"
+      "#{id.gen_cpp(symtab, 0, indent_spaces:)}.#{@field_name} = #{rhs.gen_cpp(symtab, 0, indent_spaces:)}"
     end
   end
 

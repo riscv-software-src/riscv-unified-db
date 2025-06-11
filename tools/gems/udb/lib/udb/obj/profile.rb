@@ -5,11 +5,12 @@
 
 require_relative "portfolio"
 
+module Udb
 # A profile class consists of a number of releases each with set of profiles.
 # For example, the RVA profile class has releases such as RVA20, RVA22, RVA23
 # that each include an unprivileged profile (e.g., RVA20U64) and one more
 # privileged profiles (e.g., RVA20S64).
-class Udb::ProfileClass < Udb::PortfolioClass
+class ProfileClass < PortfolioClass
   # @return [String] Naming scheme for profile class
   def naming_scheme = @data["naming_scheme"]
 
@@ -92,7 +93,7 @@ end
 # For example, the RVA20 profile release has profiles RVA20U64 and RVA20S64.
 # Note there is no Portfolio base class for a ProfileRelease to inherit from since there is no
 # equivalent to a ProfileRelease in a Certificate so no potential for a shared base class.
-class Udb::ProfileRelease < Udb::TopLevelDatabaseObject
+class ProfileRelease < TopLevelDatabaseObject
   def marketing_name = @data["marketing_name"]
 
   # @return [String] Small enough (~1 paragraph) to be suitable immediately after a higher-level heading.
@@ -165,7 +166,7 @@ class Udb::ProfileRelease < Udb::TopLevelDatabaseObject
 end
 
 # Representation of a specific profile in a profile release.
-class Udb::Profile < Udb::Portfolio
+class Profile < Portfolio
   # @return [String] The marketing name of the Profile
   def marketing_name = @data["marketing_name"]
 
@@ -270,4 +271,5 @@ class Udb::Profile < Udb::Portfolio
 
     ret
   end
+end
 end

@@ -488,7 +488,7 @@ grammar Idl
     var:id space* '=' space* rval:expression <Idl::VariableAssignmentSyntaxNode> /
     # note: there is no full CSR assignment (must assign fields)
     csr_field_access_expression space* '=' space* rval:expression <Idl::CsrFieldAssignmentSyntaxNode> /
-    field_access_expression space* '=' space* rval:expression <Idl::FieldAssignmentSyntaxNode> /
+    id space* '.' space* field_name space* '=' space* rval:expression <Idl::FieldAssignmentSyntaxNode> /
     var:var_write space* '[' space* msb:expression space* ':' space* lsb:expression space* ']' space* '=' space* rval:expression <Idl::AryRangeAssignmentSyntaxNode> /
     var:var_write space* '[' space* idx:expression space* ']' space* '=' space* rval:expression <Idl::AryElementAssignmentSyntaxNode>
   end

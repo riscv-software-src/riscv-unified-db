@@ -18,14 +18,35 @@ end
 # initialize sorbet
 file "#{RUBY_UDB_ROOT}/Gemfile.lock" do
   Dir.chdir(RUBY_UDB_ROOT) do
-    sh "bundle install"
+    sh "bundle install --gemfile Gemfile"
   end
 end
 
 # initialize sorbet
-file "#{RUBY_UDB_ROOT}/sorbet/config" do
-  Dir.chdir(RUBY_UDB_ROOT) do
-    sh "bundle exec tapioca init"
+namespace :chore do
+  namespace :udb do
+    task :update_deps do
+      ENV["BUNDLE_APP_CONFIG"] = ($root / ".bundle").to_s
+      Dir.chdir(RUBY_UDB_ROOT) do
+        sh "bundle config list"
+        sh "bundle install --gemfile #{RUBY_UDB_ROOT}/Gemfile"
+        sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca gems --all"
+        sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca dsl"
+        sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca annotations"
+        sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca todo"
+      end
+    end
+  end
+end
+
+namespace :gen do
+  namespace :udb do
+    task :api_doc do
+      Dir.chdir(RUBY_UDB_ROOT) do
+        FileUtils.rm_rf $root / "gen" / "udb_api_doc"
+        sh "bundle exec yard --plugin sorbet lib/**/*.rb --no-save --embed-mixins --hide-void-return -o #{$root}/gen/udb_api_doc"
+      end
+    end
   end
 end
 

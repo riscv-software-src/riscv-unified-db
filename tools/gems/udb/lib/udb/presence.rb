@@ -5,6 +5,8 @@
 
 require_relative "version"
 
+module Udb
+
 # Is the extension mandatory, optional, various kinds of optional, etc.
 # Accepts two kinds of YAML schemas:
 #   String
@@ -13,7 +15,7 @@ require_relative "version"
 #     Must have the key "optional" with a String value
 #     Example => presence:
 #                  optional: development
-class Udb::Presence
+class Presence
   attr_reader :presence
   attr_reader :optional_type
 
@@ -151,4 +153,5 @@ class Udb::Presence
     raise ArgumentError, "Presence is only comparable to other Presence classes" unless other.is_a?(Presence)
     (self < other) || (self == other)
   end
+end
 end

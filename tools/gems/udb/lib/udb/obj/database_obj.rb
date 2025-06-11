@@ -52,7 +52,7 @@ class DatabaseObject
   # @return [Architecture] If only a specification (no config) is known
   # @return [ConfiguredArchitecture] If a specification and config is known
   # @return [nil] If neither is known
-  sig { returns(Architecture) }
+  sig { returns(ConfiguredArchitecture) }
   attr_reader :arch       # Use when Architecture class is sufficient
 
   # @return [ConfiguredArchitecture] If a specification and config is known
@@ -73,7 +73,7 @@ class DatabaseObject
     params(
       data: T::Hash[String, T.untyped],
       data_path: T.any(String, Pathname),
-      arch: Architecture,
+      arch: ConfiguredArchitecture,
       kind: Kind,
       name: T.nilable(String)
     ).void
@@ -424,7 +424,7 @@ class TopLevelDatabaseObject < DatabaseObject
 
   # @param data [Hash<String,Object>] Hash with fields to be added
   # @param data_path [Pathname] Path to the data file
-  sig { params(data: T::Hash[String, T.untyped], data_path: T.any(String, Pathname), arch: Architecture).void }
+  sig { params(data: T::Hash[String, T.untyped], data_path: T.any(String, Pathname), arch: ConfiguredArchitecture).void }
   def initialize(data, data_path, arch)
     super(data, data_path, arch, DatabaseObject::Kind.deserialize(T.must_because(data["kind"]) { pp data }))
   end

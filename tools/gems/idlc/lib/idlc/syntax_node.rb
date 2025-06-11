@@ -48,8 +48,9 @@ end
 module Idl
   class SyntaxNode < Treetop::Runtime::SyntaxNode
     extend T::Sig
+    extend T::Helpers
 
-    sig { returns(Idl::AstNode) }
-    def to_ast; end
+    sig { overridable.returns(Idl::AstNode) }
+    def to_ast = raise "Must override"
   end
 end

@@ -6,7 +6,9 @@
 
 require "sorbet-runtime"
 
-class Udb::CertTestProcedure
+module Udb
+
+class CertTestProcedure
   extend T::Sig
 
   # @return [String] Unique ID of the test procedure
@@ -27,7 +29,7 @@ class Udb::CertTestProcedure
 
   # @param data [Hash<String, Object>] Data from YAML file
   # @param db_obj [DatabaseObject] Database object that defines test procedure (Extension, Instruction, CSR, or CSR field)
-  sig {params(data: T::Hash[String, T.untyped], db_obj: T.any(Extension, Instruction, Csr, CsrField)).void }
+  sig {params(data: T::Hash[String, T.untyped], db_obj: T.any(::Udb::Extension, ::Udb::Instruction, ::Udb::Csr, ::Udb::CsrField)).void }
   def initialize(data, db_obj)
     @data = data
     @db_obj = db_obj
@@ -57,4 +59,5 @@ class Udb::CertTestProcedure
 
   # @return [String] String (likely multiline) of certification test procedure steps using Asciidoc lists
   def cert_steps = @data["steps"]
+end
 end

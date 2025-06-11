@@ -1,4 +1,6 @@
-plugins: rubocop-minitest
+plugins:
+  - rubocop-minitest
+  - rubocop-sorbet
 
 AllCops:
   TargetRubyVersion: 3.2.3

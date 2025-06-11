@@ -31,7 +31,7 @@ module Udb
         "string"
       when Integer
         "integer"
-      when Number
+      when Numeric
         "number"
       when Array
         "array"

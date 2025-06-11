@@ -1,6 +1,7 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
+# typed: true
 # frozen_string_literal: true
 
 require "pathname"
@@ -21,11 +22,11 @@ module Treetop
       end
 
       # alias instantiate_node so we can call it from the override
-      alias orig_instantiate_node instantiate_node
+      alias treetop_instantiate_node instantiate_node
 
       # override instatiate_node so we can set the input file
       def instantiate_node(node_type, *args)
-        node = orig_instantiate_node(node_type, *args)
+        node = T.unsafe(self).treetop_instantiate_node(node_type, *args)
         node.set_input_file(input_file, @starting_line.nil? ? 0 : @starting_line)
         node
       end
@@ -36,6 +37,8 @@ end
 require_relative "idlc/ast"
 require_relative "idlc/symbol_table"
 
+# pre-declare so sorbet is happy with this dynamically-generated class
+class IdlParser < Treetop::Runtime::CompiledParser; end
 Treetop.load((Pathname.new(__FILE__).dirname / "idlc" / "idl").to_s)
 
 module Idl
@@ -44,7 +47,7 @@ module Idl
     attr_reader :parser
 
     def initialize
-      @parser = IdlParser.new
+      @parser = ::IdlParser.new
     end
 
     def compile_file(path)
@@ -153,23 +156,15 @@ module Idl
         rescue AstNode::TypeError => e
           raise e if no_rescue
 
-          if name && parent
-            warn "In function #{name} of #{parent}:"
-          elsif name && parent.nil?
-            warn "In function #{name}:"
-          end
+          warn "In function #{name}:"
           warn e.what
           exit 1
         rescue AstNode::InternalError => e
           raise if no_rescue
 
-          if name && parent
-            warn "In function #{name} of #{parent}:"
-          elsif name && parent.nil?
-            warn "In function #{name}:"
-          end
+          warn "In function #{name}:"
           warn e.what
-          warn e.backtrace
+          warn T.must(e.backtrace).to_s
           exit 1
         ensure
           cloned_symtab.pop
@@ -239,7 +234,7 @@ module Idl
       rescue AstNode::InternalError => e
         warn "While type checking #{what}:"
         warn e.what
-        warn e.backtrace
+        warn T.must(e.backtrace).to_s
         exit 1
       end
 
@@ -275,14 +270,14 @@ module Idl
 
         warn "Compiling #{expression}"
         warn e.what
-        warn e.backtrace
+        warn T.must(e.backtrace).to_s
         exit 1
       rescue AstNode::InternalError => e
         raise e if pass_error
 
         warn "Compiling #{expression}"
         warn e.what
-        warn e.backtrace
+        warn T.must(e.backtrace).to_s
         exit 1
       end
 

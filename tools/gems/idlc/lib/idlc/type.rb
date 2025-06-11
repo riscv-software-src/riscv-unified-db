@@ -2,11 +2,19 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # frozen_string_literal: true
-# typed: false
+# typed: true
+
+require "sorbet-runtime"
 
 module Idl
+
+  class AstNode; end
+  class EnumDefinitionAst < AstNode; end
+
   # Data types
   class Type
+    extend T::Sig
+
     KINDS = [
       :void,     # empty
       :boolean,  # true or false, not compatible with bits/int/xreg
@@ -31,6 +39,7 @@ module Idl
     ].freeze
 
     # true for any type that can generally be treated as a scalar integer
+    sig { returns(T::Boolean) }
     def integral?
       @kind == :bits
     end
@@ -58,7 +67,23 @@ module Idl
       end
     end
 
-    attr_reader :kind, :qualifiers, :width, :sub_type, :tuple_types, :return_type, :arguments, :enum_class
+    sig { returns(Symbol) }
+    attr_reader :kind
+
+    sig { returns(T::Array[Symbol])}
+    attr_reader :qualifiers
+
+    sig { returns(T.any(Integer, Symbol)) }
+    attr_reader :width
+
+    sig { returns(Type) }
+    attr_reader :sub_type
+
+    sig { returns(T::Array[Type]) }
+    attr_reader :tuple_types
+
+    sig { returns(EnumerationType) }
+    attr_reader :enum_class
 
     def qualify(qualifier)
       @qualifiers << qualifier
@@ -79,7 +104,7 @@ module Idl
       end
     end
 
-    def initialize(kind, qualifiers: [], width: nil, sub_type: nil, name: nil, tuple_types: nil, return_type: nil, arguments: nil, enum_class: nil, csr: nil)
+    def initialize(kind, qualifiers: [], width: nil, sub_type: nil, name: nil, tuple_types: nil, enum_class: nil, csr: nil)
       raise "Invalid kind '#{kind}'" unless KINDS.include?(kind)
 
       @kind = kind
@@ -95,13 +120,11 @@ module Idl
       @sub_type = sub_type
       raise "Tuples need a type list" if kind == :tuple && tuple_types.nil?
       @tuple_types = tuple_types
-      @return_type = return_type
-      @arguments = arguments
       @enum_class = enum_class
       @name = name
       if kind == :bits
         raise "Bits type must have width" unless @width
-        raise "Bits type must have positive width" unless @width == :unknown || @width.positive?
+        raise "Bits type must have positive width" unless @width == :unknown || T.cast(@width, Integer).positive?
       end
       if kind == :enum
         raise "Enum type must have width" unless @width
@@ -128,8 +151,6 @@ module Idl
         sub_type: @sub_type&.clone,
         name: @name.dup,
         tuple_types: @tuple_types&.map(&:clone),
-        return_type: @return_type&.clone,
-        arguments: @arguments&.map(&:clone),
         enum_class: @enum_class&.clone,
         csr: @csr
       )
@@ -190,7 +211,7 @@ module Idl
       when :array
         type.kind == :array && type.sub_type.equal_to?(@sub_type)
       when :struct
-        type.kind == :struct && (type.type_name == type_name)
+        type.kind == :struct && (T.cast(type, StructType).type_name == T.cast(self, StructType).type_name)
       else
         raise "unimplemented type '#{@kind}'"
       end
@@ -229,8 +250,6 @@ module Idl
           return false
         end
         return type.kind != :boolean
-      when :function
-        return @return_type.convertable_to?(type)
       when :enum
         if type.kind == :bits
           return false
@@ -270,9 +289,31 @@ module Idl
       when :void
         return type.kind == :void
       when :struct
-        return type.kind == :struct && (type.type_name == type_name)
+        return type.kind == :struct && (T.cast(type, StructType).name == T.cast(self, StructType).type_name)
       else
         raise "unimplemented type '#{@kind}'"
+      end
+    end
+
+    # return IDL representation of the type
+    sig { returns(String) }
+    def to_idl
+      case @kind
+      when :bits
+        if @width == :unknown
+          raise "Cannot generate an IDL type with an unknown width"
+        end
+        if signed?
+          raise "Cannot directly represent a signed bits"
+        else
+          "Bits<#{@width}"
+        end
+      when :String
+        "String"
+      when :boolean
+        "Boolean"
+      else
+        raise "TODO"
       end
     end
 
@@ -284,8 +325,6 @@ module Idl
           "enum definition #{@name}"
         elsif @kind == :boolean
           "Boolean"
-        elsif @kind == :function
-          @return_type.to_s
         elsif @kind == :enum_ref
           "enum #{@enum_class.name}"
         elsif @kind == :tuple
@@ -301,7 +340,7 @@ module Idl
         elsif @kind == :string
           "string"
         elsif @kind == :struct
-          "struct #{type_name}"
+          "struct #{T.cast(self, StructType).type_name}"
         else
           raise @kind.to_s
         end
@@ -314,16 +353,19 @@ module Idl
         raise "@width is a #{@width.class}" unless @width.is_a?(Integer) || @width == :unknown
 
         width_cxx =
-          if @width.is_a?(Integer)
+          case @width
+          when Integer
             @width
-          elsif @width == :unknown
+          when Symbol
+            raise "bad width" unless @width == :unknown
+
             "BitsInfinitePrecision"
           else
-            @width.to_cxx
+            T.absurd(@width)
           end
 
         if signed?
-          "SignedBits<#{width_cxx}>"
+          "Bits<#{width_cxx}, true>"
         else
           "Bits<#{width_cxx}>"
         end
@@ -331,8 +373,6 @@ module Idl
         @name
       when :boolean
         "bool"
-      when :function
-        "std::function<#{@return_type.to_cxx_no_qualifiers}(...)>"
       when :enum_ref
         @enum_class.name
       when :tuple
@@ -346,7 +386,7 @@ module Idl
           "std::array<#{@sub_type.to_cxx_no_qualifiers}, #{@width}>"
         end
       when :csr
-        "#{CppHartGen::TemplateEnv.new(@csr.cfg_arch).name_of(:csr, @csr.cfg_arch, @csr.name)}<SocType>"
+        "#{T.unsafe(CppHartGen::TemplateEnv).new(@csr.cfg_arch).name_of(:csr, @csr.cfg_arch, @csr.name)}<SocType>"
       when :string
         "std::string"
       when :void
@@ -408,9 +448,18 @@ module Idl
       self
     end
 
-    def make_const
+    # make this Type constant, and return self
+    sig { returns(Type) }
+    def make_const!
       @qualifiers.append(:const).uniq!
       self
+    end
+
+    # make a clone of this Type, add a constant qualifier, and return the new type
+    sig { returns(Type) }
+    def make_const
+      new_t = clone
+      new_t.make_const!
     end
 
     def make_global
@@ -476,7 +525,7 @@ module Idl
         end
       elsif schema["items"].is_a?(Array)
         # this ia an array with each element specified
-        sub_type = nil
+        sub_type = T.let(nil, T.nilable(Type))
         schema["items"].each do |item_schema|
           if sub_type.nil?
             sub_type = from_json_schema_scalar_type(item_schema)
@@ -513,22 +562,19 @@ module Idl
   end
 
   class StructType < Type
+    sig { returns(String) }
     attr_reader :type_name
 
+    sig { params(type_name: String, member_types: T::Array[Type], member_names: T::Array[String]).void }
     def initialize(type_name, member_types, member_names)
-      raise ArgumentError, "Argument 1 should be a type name" unless type_name.is_a?(String)
-
-      raise ArgumentError, "Argument 2 should be an array of types" unless member_types.is_a?(Array)
-
-      raise ArgumentError, "Argument 3 should be an array of names" unless member_names.is_a?(Array) && member_names.all? { |m| m.is_a?(String) }
-
-      raise ArgumentError, "member_types and member_names must be the same size" unless member_names.size == member_types.size
-
       super(:struct)
       @type_name = type_name
       @member_types = member_types
       @member_names = member_names
     end
+
+    sig { returns(String) }
+    def name = @type_name
 
     def clone
       StructType.new(@type_name, @member_types, @member_names)
@@ -537,7 +583,7 @@ module Idl
     def default
       hsh = {}
       @member_types.size.times do |i|
-        hsh[@member_names[i]] = @member_types[i].default
+        hsh[@member_names.fetch(i)] = @member_types.fetch(i).default
       end
       hsh
     end
@@ -579,17 +625,17 @@ module Idl
         type_name: String,
         element_names: T::Array[String],
         element_values: T::Array[Integer],
-        builtin: T::Boolean).void
+        builtin: T::Boolean
+      ).void
     }
     def initialize(type_name, element_names, element_values, builtin: false)
-      width = element_values.max.bit_length
+      width = T.must(element_values.max).bit_length
       width = 1 if width.zero? # can happen if only enum member has value 0
       super(:enum, width:)
 
       @name = type_name.freeze
       @element_names = element_names.freeze
       @element_values = element_values.freeze
-      raise "unexpected" unless element_names.is_a?(Array)
       raise "names and values aren't the same size" unless element_names.size == element_values.size
 
       @ref_type = Type.new(:enum_ref, enum_class: self).freeze
@@ -748,13 +794,21 @@ module Idl
 
     # apply the arguments as Vars.
     # then add the value to the Var
+    sig {
+      params(
+        symtab: SymbolTable,  # global symbol table
+        argument_nodes: T::Array[Rvalue], # arguments
+        call_site_symtab: SymbolTable,  # symbol table at the function call site
+        func_call_ast: FunctionCallExpressionAst
+      ).returns(T::Array[T.any(Integer, Symbol)])
+    }
     def apply_arguments(symtab, argument_nodes, call_site_symtab, func_call_ast)
       idx = 0
       values = []
       @func_def_ast.arguments(symtab).each do |atype, aname|
         func_call_ast.type_error "Missing argument #{idx}" if idx >= argument_nodes.size
         value_result = Idl::AstNode.value_try do
-          value = argument_nodes[idx].value(call_site_symtab)
+          value = argument_nodes.fetch(idx).value(call_site_symtab)
           symtab.add(aname, Var.new(aname, atype, value))
           values << value
         end
@@ -788,17 +842,24 @@ module Idl
     # @param template_values [Array<Integer>] Template values for the call, in declaration order
     # @param func_call_ast [FunctionCallExpressionAst] The function call interested in the return type
     # return [Type] type of the call return
-    def return_type(template_values, func_call_ast)
-      symtab = apply_template_values(template_values, func_call_ast)
-      # apply_arguments(symtab, argument_nodes, call_site_symtab)
+    sig {
+      params(
+        template_values: T::Array[Integer],
+        argument_nodes: T::Array[Rvalue],
+        func_call_ast: FunctionCallExpressionAst
+      ).returns(Type)
+    }
+    def return_type(template_values, argument_nodes, func_call_ast)
+      rtype =
+        begin
+          symtab = apply_template_values(template_values, func_call_ast)
+          @func_def_ast.return_type(symtab)
+        ensure
+          symtab.pop
+          symtab.release
+        end
 
-      begin
-        type = @func_def_ast.return_type(symtab)
-      ensure
-        symtab.pop
-        symtab.release
-      end
-      type
+      T.must(rtype)
     end
 
     def return_value(template_values, argument_nodes, call_site_symtab, func_call_ast)
@@ -890,4 +951,15 @@ module Idl
       'XReg'
     end
   end
+
+  # pre-define some common types
+  Bits1Type = Type.new(:bits, width: 1).freeze
+  Bits32Type = Type.new(:bits, width: 32).freeze
+  Bits64Type = Type.new(:bits, width: 64).freeze
+  BitsUnknownType = Type.new(:bits, width: :unknown).freeze
+  ConstBitsUnknownType = Type.new(:bits, width: :unknown, qualifiers: [:const]).freeze
+  ConstBoolType = Type.new(:boolean, qualifiers: [:const]).freeze
+  BoolType = Type.new(:boolean).freeze
+  VoidType = Type.new(:void).freeze
+  StringType = Type.new(:string).freeze
 end

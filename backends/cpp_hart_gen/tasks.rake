@@ -89,7 +89,7 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/include/udb/[^/]+\.h(xx)?\.unformatted$} => pr
   parts = t.name.split("/")
   fname = parts[-1].sub(/\.unformatted$/, "")
 
-  cfg_arch = cfg_arch_for(config_name)
+  cfg_arch = $resolver.cfg_arch_for(config_name)
 
   template_path = CPP_HART_GEN_SRC / "templates" / "#{fname}.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")
@@ -113,7 +113,7 @@ rule %r{#{CPP_HART_GEN_DST}/[^/]+/src/[^/]+\.cxx\.unformatted$} => proc { |tname
   parts = t.name.split("/")
   fname = parts[-1].sub(/\.unformatted$/, "")
 
-  cfg_arch = cfg_arch_for(config_name)
+  cfg_arch = $resolver.cfg_arch_for(config_name)
 
   template_path = CPP_HART_GEN_SRC / "templates" / "#{fname}.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")
@@ -141,7 +141,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/include/udb/cfgs/[^/]+/[^/]+\.h(xx)?\.unformatted
   filename = parts[-1].sub(/\.unformatted$/, "")
   config_name = parts[-2]
 
-  cfg_arch = cfg_arch_for(config_name)
+  cfg_arch = $resolver.cfg_arch_for(config_name)
 
   template_path = CPP_HART_GEN_SRC / "templates" / "#{filename}.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")
@@ -175,7 +175,7 @@ rule %r{#{CPP_HART_GEN_DST}/.*/src/cfgs/[^/]+/[^/]+\.cxx\.unformatted$} => proc 
   filename = parts[-1].sub(/\.unformatted$/, "")
   config_name = parts[-2]
 
-  cfg_arch = cfg_arch_for(config_name)
+  cfg_arch = $resolver.cfg_arch_for(config_name)
 
   template_path = CPP_HART_GEN_SRC / "templates" / "#{filename}.erb"
   erb = ERB.new(template_path.read, trim_mode: "-")
@@ -234,7 +234,7 @@ def configs_build_name
   end
 
   config_names = configs.map do |config|
-    cfg_arch_for(config).name
+    $resolver.cfg_arch_for(config).name
   end
 
   build_name =

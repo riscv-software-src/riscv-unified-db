@@ -33,7 +33,7 @@ RV64::
 <%- else -%>
 [wavedrom, ,svg,subs='attributes',width="100%"]
 ....
-<%= JSON.dump inst.wavedrom_desc(cfg_arch.param_values["MXLEN"]) %>
+<%= JSON.dump inst.wavedrom_desc(inst.defined_in_base?(32) ? 32 : 64) %>
 ....
 <%- end -%>
 

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # frozen_string_literal: true
-# typed: strict
+# typed: true
 
 require "active_support/inflector/methods"
 

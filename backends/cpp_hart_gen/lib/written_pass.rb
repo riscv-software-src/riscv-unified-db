@@ -40,8 +40,8 @@ module Idl
   end
   class FieldAssignmentAst < AstNode
     def written?(symtab, varname, in_assignment: false)
-      field_access.written?(symtab, varname, in_assignment: true) || \
-        write_value.written?(symtab, varname, in_assignment:)
+      id.written?(symtab, varname, in_assignment: true) || \
+        rhs.written?(symtab, varname, in_assignment:)
     end
   end
   class MultiVariableAssignmentAst < AstNode

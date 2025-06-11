@@ -38,6 +38,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "minitest"
   s.add_development_dependency "rouge"
+  s.add_development_dependency "rubocop-sorbet"
   s.add_development_dependency "sorbet"
   s.add_development_dependency "tapioca"
   s.add_development_dependency "yard"

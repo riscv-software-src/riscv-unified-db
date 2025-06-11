@@ -103,6 +103,7 @@ deploy_log "Create isa_explorer_browser_inst"
 deploy_log "Create isa_explorer_browser_csr"
 
 parallel :::                                          \
+  "./do gen:udb:api_doc"                              \
   "./do gen:isa_explorer_browser_csr"                 \
   "./do gen:isa_explorer_browser_ext"                 \
   "./do gen:isa_explorer_browser_inst"                \
@@ -125,6 +126,9 @@ parallel :::                                          \
   "./do gen:proc_crd_pdf[MC300-64]"                   \
   "./do gen:proc_ctp_pdf[MC100-32]"                   \
   "./do gen:proc_ctp_pdf[MockProcessor]"
+
+deploy_log "Copy UDB API"
+deploy_cp_recursive gen/udb_api_doc $DEPLOY_DIR/htmls/udb_api_doc
 
 deploy_log "Copy isa_explorer_browser"
 deploy_cp_recursive gen/isa_explorer/browser $DEPLOY_DIR/isa_explorer
@@ -245,10 +249,15 @@ cat <<- EOF > $DEPLOY_DIR/index.html
     </ul>
 
     <br/>
-    <h3>UDB Tool Documentation</h3>
+    <h3>UDB Gem Documentation</h3>
+    <ul>
+      <li><a href="$PAGES_URL/htmls/udb_api_doc/index.html"><code>udb</code> Ruby API</a></li>
+    </ul>
+
+    <br/>
+    <h3>IDL Documentation</h3>
     <ul>
       <li><a href="$PAGES_URL/ruby/idl/index.html">IDL language documentation</a></li>
-      <li><a href="$PAGES_URL/ruby/arch_def/index.html">Ruby UDB interface documentation</a></li>
     </ul>
   </body>
 </html>

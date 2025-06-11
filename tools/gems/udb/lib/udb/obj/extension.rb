@@ -1,8 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
+# typed: true
 # frozen_string_literal: true
-# typed: false
 
 require_relative "database_obj"
 require_relative "certifiable_obj"
@@ -110,12 +110,13 @@ class Extension < TopLevelDatabaseObject
     if version_requirement.nil?
       max_version.implications
     else
-      mv = ExtensionRequirement.new(@name, version_requirement, cfg_arch: @cfg_arch).max_version
+      mv = ExtensionRequirement.new(@name, version_requirement, arch: @cfg_arch).max_satisfying_ext_ver
       mv.implications
     end
   end
 
   # @return [ExtensionRequirementExpression] Logic expression for conflicts
+  sig { returns(AbstractRequirement) }
   def conflicts_condition
     @conflicts_condition ||=
       if @data["conflicts"].nil?
@@ -138,10 +139,11 @@ class Extension < TopLevelDatabaseObject
   # return the set of reachable functions from any of this extensions's CSRs or instructions in the given evaluation context
   #
   # @return [Array<Idl::FunctionDefAst>] Array of IDL functions reachable from any instruction or CSR in the extension
+  sig { returns(T::Array[Idl::FunctionBodyAst]) }
   def reachable_functions
     return @reachable_functions unless @reachable_functions.nil?
 
-    funcs = []
+    funcs = T.let([], T::Array[Idl::FunctionBodyAst])
 
     puts "Finding all reachable functions from extension #{name}"
 
@@ -163,6 +165,54 @@ class Extension < TopLevelDatabaseObject
     raise ArgumentError, "Can only compare two Extensions" unless other_ext.is_a?(Extension)
     other_ext.name <=> name
   end
+
+  sig { returns(T::Array[ExceptionCode]) }
+  def exception_codes
+    @exception_codes ||=
+      if @data.key?("exception_codes")
+        ecodes = []
+
+        d = T.cast(@data["exception_codes"], T::Array[T::Hash[String, T.any(Integer, String)]])
+        d.each do |edata|
+          raise "Duplicate exception code" if ecodes.any? { |e| e.num == edata["num"] || e.name == edata["name"] || e.var == edata["var"] }
+
+          ecodes << ExceptionCode.new(
+            T.cast(edata.fetch("name"), String),
+            T.cast(edata.fetch("var"), String),
+            T.cast(edata.fetch("num"), Integer),
+            self
+          )
+        end
+
+        ecodes
+      else
+        []
+      end
+  end
+
+  sig { returns(T::Array[InterruptCode]) }
+  def interrupt_codes
+    @exception_codes ||=
+      if @data.key?("interrupt_codes")
+        ecodes = []
+
+        d = T.cast(@data["interrupt_codes"], T::Array[T::Hash[String, T.any(Integer, String)]])
+        d.each do |edata|
+          raise "Duplicate interrup code" if ecodes.any? { |e| e.num == edata["num"] || e.name == edata["name"] || e.var == edata["var"] }
+
+          ecodes << InterruptCode.new(
+            T.cast(edata.fetch("name"), String),
+            T.cast(edata.fetch("var"), String),
+            T.cast(edata.fetch("num"), Integer),
+            self
+          )
+        end
+
+        ecodes
+      else
+        []
+      end
+  end
 end
 
 # A specific version of an extension
@@ -170,28 +220,33 @@ class ExtensionVersion
   extend T::Sig
 
   # @return [String] Name of the extension
+  sig { returns(String) }
   attr_reader :name
 
   # @return [Extension] Extension
+  sig { returns(Extension) }
   attr_reader :ext
 
   # @return [VersionSpec]
+  sig { returns(VersionSpec) }
   attr_reader :version_spec
 
   # @return [String]
+  sig { returns(String) }
   attr_reader :version_str
 
+  sig { returns(ConfiguredArchitecture) }
   attr_reader :arch
 
   # @param name [#to_s] The extension name
   # @param version [String] The version specifier
   # @param arch [Architecture] The architecture definition
+  sig { params(name: String, version_str: String, arch: ConfiguredArchitecture, fail_if_version_does_not_exist: T::Boolean).void }
   def initialize(name, version_str, arch, fail_if_version_does_not_exist: false)
-    @name = name.to_s
+    @name = name
     @version_str = version_str
     @version_spec = VersionSpec.new(version_str)
 
-    raise ArgumentError, "Must supply arch" if arch.nil?
     @arch = arch
 
     @ext = @arch.extension(@name)
@@ -204,6 +259,21 @@ class ExtensionVersion
     elsif @data.nil?
       warn "Version #{version_str} of #{@name} extension is not defined"
     end
+  end
+
+  # given a set of extension versions from the *same* extension, return the minimal set of
+  # extension requirements that would cover then all
+  sig { params(ext_vers: T::Array[ExtensionVersion]).returns(ExtensionRequirement) }
+  def self.to_ext_req(ext_vers)
+    raise "ext_vers cannot be empty" if ext_vers.empty?
+    raise "All ext_vers must be of the same extension" unless ext_vers.all? { |ev| ev.name == ext_vers.fetch(0).name }
+
+    sorted = ext_vers.sort
+    unless T.must(sorted.min).compatible?(sorted.max)
+      raise "Impossible to combine because the set contains incompatible versions"
+    end
+
+    ExtensionRequirement.new(ext_vers.fetch(0).name, "~> #{T.must(sorted.min).version_str}", arch: ext_vers.fetch(0).arch)
   end
 
   # @return [Array<ExtensionVersions>] List of known ExtensionVersions that are compatible with this ExtensionVersion (i.e., have larger version number and are not breaking)
@@ -312,6 +382,7 @@ class ExtensionVersion
   # @return [Array<Extension>] List of extensions that conflict with this ExtensionVersion
   #                            The list is *not* transitive; if conflict C1 implies C2,
   #                            only C1 shows up in the list
+  sig { returns(AbstractRequirement) }
   def conflicts_condition
     ext.conflicts_condition
   end
@@ -326,8 +397,9 @@ class ExtensionVersion
   #      List of extension versions that this ExtensionVersion implies
   #      This list is *not* transitive; if an implication I1 implies another extension I2,
   #      only I1 shows up in the list
+  sig { returns(ConditionalExtensionVersionList) }
   def implications
-    return [] if @data["implies"].nil?
+    return ConditionalExtensionVersionList.new([], @arch) if @data["implies"].nil?
 
     ConditionalExtensionVersionList.new(@data["implies"], @arch)
   end
@@ -420,6 +492,70 @@ class ExtensionVersion
     end
   end
 
+  sig { returns(T::Array[ExceptionCode]) }
+  def exception_codes
+    @exception_codes ||=
+      if @data.key?("exception_codes")
+        ecodes = []
+
+        d = T.cast(@data["exception_codes"], T::Array[T::Hash[String, T.any(Integer, String)]])
+        d.each do |edata|
+          if ecodes.any? { |e| e.num == edata["num"] || e.name == edata["name"] || e.var == edata["var"] }
+            raise "Duplicate exception code"
+          end
+
+          cond = T.let(T.cast(edata["when"], T::Hash[String, String]), T.nilable(T::Hash[String, String]))
+          unless cond.nil? || cond["version"].nil?
+            # check version
+            next unless ExtensionRequirement.new(name, T.must(cond["version"]), arch: @cfg_arch).satisfied_by?(self)
+          end
+          ecodes <<
+            ExceptionCode.new(
+              T.cast(edata["name"], String),
+              T.cast(edata["var"], String),
+              T.cast(edata["num"], Integer),
+              ext
+            )
+        end
+
+        ecodes
+      else
+        []
+      end
+  end
+
+  sig { returns(T::Array[InterruptCode]) }
+  def interrupt_codes
+    @interrupt_codes ||=
+      if @data.key?("interrupt_codes")
+        ecodes = []
+
+        d = T.cast(@data["interrupt_codes"], T::Array[T::Hash[String, T.any(Integer, String)]])
+        d.each do |edata|
+          if ecodes.any? { |e| e.num == edata["num"] || e.name == edata["name"] || e.var == edata["var"] }
+            raise "Duplicate interrupt code"
+          end
+
+          cond = T.let(T.cast(edata["when"], T::Hash[String, String]), T.nilable(T::Hash[String, String]))
+          unless cond.nil? || cond["version"].nil?
+            # check version
+            next unless ExtensionRequirement.new(name, T.must(cond["version"]), arch: @cfg_arch).satisfied_by?(self)
+          end
+          ecodes <<
+            InterruptCode.new(
+              T.cast(edata["name"], String),
+              T.cast(edata["var"], String),
+              T.cast(edata["num"], Integer),
+              ext
+            )
+        end
+
+        ecodes
+      else
+        []
+      end
+  end
+
   # @param design [Design] The design
   # @return [Array<Csr>] List of CSRs in-scope for this design for this extension version (may be empty).
   #                      Factors in effect of design's xlen in the appropriate mode for the CSR.
@@ -447,10 +583,17 @@ class ExtensionVersion
       (inst.base.nil? || (design.possible_xlens.include?(inst.base)))
     end
   end
+
+  sig { returns(ExtensionRequirement) }
+  def to_ext_req
+    ExtensionRequirement.new(name, "= #{version_str}", arch: @arch)
+  end
 end
 
 # Represents an extension requirement, that is an extension name paired with version requirement(s)
 class ExtensionRequirement
+  extend T::Sig
+
   # @return [String] Extension name
   attr_reader :name
 
@@ -476,11 +619,7 @@ class ExtensionRequirement
 
   # @return [Extension] The extension that this requirement is for
   def extension
-    return @extension unless @extension.nil?
-
-    raise "Cannot get extension; arch was not initialized" if @arch.nil?
-
-    @extension = @arch.extension(@name)
+    @extension ||= @arch.extension(@name)
   end
 
   # @param name [#to_s] Extension name
@@ -488,21 +627,36 @@ class ExtensionRequirement
   # @param requirements [Array<String>] List of requirements, all of which must hold
   # @param arch [Architecture]
   # @param presence [String or Presence or nil]
-  def initialize(name, *requirements, arch: nil, note: nil, req_id: nil, presence: nil)
-    raise ArgumentError, "For #{name}, got class #{arch.class} but need Architecture" unless arch.is_a?(Architecture)
-
+  sig {
+    params(
+      name: String,
+      requirements: T.any(String, T::Array[String]),
+      arch: ConfiguredArchitecture,
+      note: T.nilable(String),
+      req_id: T.nilable(String),
+      presence: T.nilable(Presence)
+    ).void
+  }
+  def initialize(name, requirements, arch:, note: nil, req_id: nil, presence: nil)
     @name = name.to_s.freeze
     @arch = arch
     @ext = @arch.extension(@name)
     raise ArgumentError, "Could not find extension named '#{@name}'" if @ext.nil?
 
-    requirements =
-      if requirements.empty?
-        ["~> #{@ext.min_version.version_str}"]
+    requirements_ary =
+      case requirements
+      when Array
+        if requirements.empty?
+          ["~> #{@ext.min_version.version_str}"]
+        else
+          requirements
+        end
+      when String
+        [requirements]
       else
-        requirements
+        T.absurd(requirements)
       end
-    @requirements = requirements.map { |r| RequirementSpec.new(r) }
+    @requirements = requirements_ary.map { |r| RequirementSpec.new(r) }
 
     @note = note.freeze
     @req_id = req_id.freeze
@@ -539,6 +693,62 @@ class ExtensionRequirement
     end
 
     satisfying_versions.min
+  end
+
+  # @return [ExtensionVersion] The minimum extension version that satifies this extension requirement.
+  #                            If none, raises an error.
+  sig { returns(ExtensionVersion) }
+  def max_satisfying_ext_ver
+    if satisfying_versions.empty?
+      warn "Extension requirement '#{self}' cannot be met by any available extension version. Available versions:"
+      if @ext.versions.empty?
+        warn "  none"
+      else
+        @ext.versions.each do |ext_ver|
+          warn "  #{ext_ver}"
+        end
+      end
+
+      raise "Cannot satisfy extension requirement '#{self}'"
+    end
+
+    satisfying_versions.max
+  end
+
+  # returns true if this extension requirement is a superset of other_ext_req
+  sig { params(other_ext_req: ExtensionRequirement).returns(T::Boolean) }
+  def superset?(other_ext_req)
+    return false if other_ext_req.name != name
+
+    other_ext_req.satisfying_versions.all? { |ext_ver| satisfied_by?(ext_ver) }
+  end
+
+  # returns true if this extension requirement is a subset of other_ext_req
+  sig { params(other_ext_req: ExtensionRequirement).returns(T::Boolean) }
+  def subset?(other_ext_req)
+    return false if other_ext_req.name != name
+
+    satisfying_versions.all? { |ext_ver| other_ext_req.satisfied_by?(ext_ver) }
+  end
+
+  # returns true if either this extension requirement is a superset of other_ext_req
+  # or other_ext_req is a superset of this extension requirement
+  sig { params(other_ext_req: ExtensionRequirement).returns(T::Boolean) }
+  def compatible?(other_ext_req)
+    superset?(other_ext_req) || subset?(other_ext_req)
+  end
+
+  # given a compatible other_ext_req, return a single extension requirement that
+  # covers both this and other_ext_req
+  sig { params(other_ext_req: ExtensionRequirement).returns(ExtensionRequirement) }
+  def merge(other_ext_req)
+    raise "Cannot merge incompatible ExtensionRequirements" unless compatible?(other_ext_req)
+
+    if superset?(other_ext_req)
+      self
+    else
+      other_ext_req
+    end
   end
 
   # @overload

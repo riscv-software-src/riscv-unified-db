@@ -7,7 +7,7 @@ require "idlc/passes/gen_adoc"
 
 # @return [Architecture]
 def pf_create_arch
-  cfg_arch_for("_")
+  $resolver.cfg_arch_for("_")
 end
 
 # @param portfolio_grp_with_arch [PortfolioGroup] Contains one or more Portfolio objects that have an arch (not a cfg_arch).

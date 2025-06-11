@@ -1,8 +1,10 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# frozen_string_literal: true
 # typed: true
+# frozen_string_literal: true
+
+require "idlc/interfaces"
 
 require_relative "database_obj"
 require_relative "certifiable_obj"
@@ -15,6 +17,9 @@ class Csr < TopLevelDatabaseObject
   include CertifiableObject
 
   include Idl::Csr
+
+  sig { override.returns(String) }
+  attr_reader :name
 
   def ==(other)
     if other.is_a?(Csr)
@@ -60,18 +65,25 @@ class Csr < TopLevelDatabaseObject
     @data["virtual_address"]
   end
 
-  sig { override.returns(T.nilable(T::Boolean)) }
+  sig { override.returns(T.nilable(Integer)) }
   def value
     return nil unless fields.all? { |f| f.type == "RO" }
 
-    fields.reduce(0) { |val, f| val | (f.value << f.location.begin) }
+    fields.reduce(0) { |val, f| val | (f.reset_value << f.location.begin) }
   end
 
+  # can this CSR be implemented if +ext_name+ is not?
   sig { override.params(ext_name: String).returns(T::Boolean) }
   def implemented_without?(ext_name)
     raise "#{ext_name} is not an extension" if @cfg_arch.extension(ext_name).nil?
 
-    defined_by_condition.satisfied_by?(@cfg_arch.possible_extensions - @cfg_arch.extension(ext_name))
+    defined_by_condition.satisfied_by? do |ext_req|
+      if ext_req.name == ext_name
+        false
+      else
+        @cfg_arch.possible_extension_versions.any? { |ext_ver| ext_req.satisfied_by?(ext_ver) }
+      end
+    end
   end
 
   def writable
@@ -188,11 +200,11 @@ class Csr < TopLevelDatabaseObject
   end
 
   # @param effective_xlen [Integer or nil] 32 or 64 for fixed xlen, nil for dynamic
+  sig { override.params(effective_xlen: T.nilable(Integer)).returns(T.nilable(Integer)) }
   def length(effective_xlen = nil)
-    raise ArgumentError, "effective_xlen is non-nil and is a #{effective_xlen.class} but must be an Integer" unless effective_xlen.nil? || effective_xlen.is_a?(Integer)
     case @data["length"]
     when "MXLEN"
-      return cfg_arch.mxlen unless cfg_arch.mxlen.nil?
+      return T.must(cfg_arch.mxlen) unless cfg_arch.mxlen.nil?
 
       if !@data["base"].nil?
         @data["base"]
@@ -238,6 +250,8 @@ class Csr < TopLevelDatabaseObject
   end
 
   # @return [Integer] The largest length of this CSR in any valid mode/xlen for the config
+  # sig { override.returns(Integer) }    dhower: sorbet doesn't think this is an override??
+  sig { override.returns(Integer) }
   def max_length
     return @data["base"] unless @data["base"].nil?
 
@@ -418,6 +432,7 @@ class Csr < TopLevelDatabaseObject
   end
 
   # @return [Array<CsrField>] All known fields of this CSR
+  sig { override.returns(T::Array[CsrField]) }
   def fields
     return @fields unless @fields.nil?
 
@@ -496,7 +511,7 @@ class Csr < TopLevelDatabaseObject
      )
 
     ast = sw_read_ast(symtab)
-    symtab.cfg_arch.idl_compiler.type_check(
+    @cfg_arch.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{name}].sw_read()"
@@ -515,7 +530,7 @@ class Csr < TopLevelDatabaseObject
     return nil if @data["sw_read()"].nil?
 
     # now, parse the function
-    @sw_read_ast = symtab.cfg_arch.idl_compiler.compile_func_body(
+    @sw_read_ast = @cfg_arch.idl_compiler.compile_func_body(
       @data["sw_read()"],
       return_type: Idl::Type.new(:bits, width: 128), # big int to hold special return values
       name: "CSR[#{name}].sw_read()",
@@ -527,7 +542,7 @@ class Csr < TopLevelDatabaseObject
 
     raise "unexpected #{@sw_read_ast.class}" unless @sw_read_ast.is_a?(Idl::FunctionBodyAst)
 
-    @sw_read_ast.set_input_file_unless_already_set(__source, source_line(["sw_read()"]))
+    @sw_read_ast.set_input_file_unless_already_set(T.must(__source), source_line(["sw_read()"]))
 
     @sw_read_ast
   end

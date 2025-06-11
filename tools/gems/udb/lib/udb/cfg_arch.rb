@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 # frozen_string_literal: true
+# typed: true
 
 # Many classes include DatabaseObject have an "cfg_arch" member which is a ConfiguredArchitecture class.
 # It combines knowledge of the RISC-V Architecture with a particular configuration.
@@ -13,8 +14,10 @@ require "ruby-prof"
 require "tilt"
 
 require_relative "config"
+require_relative "architecture"
 
 require "idlc"
+require "idlc/symbol_table"
 require "idlc/passes/find_return_values"
 require "idlc/passes/gen_adoc"
 require "idlc/passes/prune"
@@ -54,7 +57,7 @@ class ConfiguredArchitecture < Architecture
   sig { returns(T::Boolean) }
   def unconfigured? = @config.unconfigured?
 
-  sig { returns(Integer) }
+  sig { returns(T.nilable(Integer)) }
   def mxlen = @config.mxlen
 
   sig { returns(T::Hash[String, T.untyped]) }
@@ -197,7 +200,7 @@ class ConfiguredArchitecture < Architecture
         syms[param_with_value.name] = Idl::Var.new(param_with_value.name, type, param_with_value.value, param: true)
       else
         unless existing_sym.type.equal_to?(type) && existing_sym.value == param_with_value.value
-          raise DuplicateSymError, "Definition error: Param #{param.name} is defined by multiple extensions and is not the same definition in each"
+          raise Idl::SymbolTable::DuplicateSymError, "Definition error: Param #{param_with_value.name} is defined by multiple extensions and is not the same definition in each"
         end
       end
     end
@@ -205,12 +208,12 @@ class ConfiguredArchitecture < Architecture
     # now add all parameters, even those not implemented
     params_without_value.each do |param|
       if param.exts.size == 1
-        syms[param.name] = Var.new(param.name, param.idl_type.clone.make_const, param: true)
+        syms[param.name] = Idl::Var.new(param.name, param.idl_type.make_const, param: true)
       else
         # could already be present...
         existing_sym = syms[param.name]
         if existing_sym.nil?
-          syms[param.name] = Var.new(param.name, param.idl_type.clone.make_const, param: true)
+          syms[param.name] = Idl::Var.new(param.name, param.idl_type.make_const, param: true)
         else
           unless existing_sym.type.equal_to?(param.idl_type)
             raise "Definition error: Param #{param.name} is defined by multiple extensions and is not the same definition in each"
@@ -246,7 +249,7 @@ class ConfiguredArchitecture < Architecture
     @idl_compiler = Idl::Compiler.new
 
     symtab_callbacks = Idl::SymbolTable::BuiltinFunctionCallbacks.new(
-      implemented?: (
+      implemented: (
         Idl::SymbolTable.make_implemented_callback do |ext_name|
           if fully_configured?
             ext?(ext_name)
@@ -260,7 +263,7 @@ class ConfiguredArchitecture < Architecture
           end
         end
       ),
-      implemented_version?: (
+      implemented_version: (
         Idl::SymbolTable.make_implemented_version_callback do |ext_name, version|
           if fully_configured?
             ext?(ext_name, version)
@@ -274,7 +277,7 @@ class ConfiguredArchitecture < Architecture
           end
         end
       ),
-      implemented_csr?: (
+      implemented_csr: (
         Idl::SymbolTable.make_implemented_csr_callback do |csr_addr|
           if fully_configured?
             if transitive_implemented_csrs.any? { |c| c.address == csr_addr }
@@ -289,12 +292,13 @@ class ConfiguredArchitecture < Architecture
       )
     )
 
+    params = params_with_value.concat(params_without_value)
+    params.uniq! { |p| p.name }
     @symtab =
       Idl::SymbolTable.new(
-        self,
         mxlen:,
         possible_xlens:,
-        params: params_with_value.concat(params_without_value),
+        params:,
         builtin_funcs: symtab_callbacks,
         builtin_enums: [
           Idl::SymbolTable::EnumDef.new(
@@ -313,24 +317,26 @@ class ConfiguredArchitecture < Architecture
             element_names: interrupt_codes.map(&:var)
           )
         ],
-        name: @name
+        name: @name,
+        csrs:
       )
     overlay_path =
       if config.arch_overlay.nil?
         "/does/not/exist"
       elsif File.exist?(config.arch_overlay)
-        File.realpath(config.arch_overlay)
+        File.realpath(T.must(config.arch_overlay))
       else
         "#{$root}/arch_overlay/#{config.arch_overlay}"
       end
 
     custom_globals_path = Pathname.new "#{overlay_path}/isa/globals.isa"
-    idl_path = File.exist?(custom_globals_path) ? custom_globals_path : $root / "arch" / "isa" / "globals.isa"
+    idl_path = File.exist?(custom_globals_path) ? custom_globals_path : Udb.repo_root / "arch" / "isa" / "globals.isa"
     @global_ast = @idl_compiler.compile_file(
       idl_path
     )
     @global_ast.add_global_symbols(@symtab)
     @symtab.deep_freeze
+    raise if @symtab.name.nil?
     @global_ast.freeze_tree(@symtab)
   end
 
@@ -420,7 +426,7 @@ class ConfiguredArchitecture < Architecture
 
     if @config.fully_configured?
       transitive_implemented_extension_versions.each do |ext_version|
-        ext = extension(ext_version.name)
+        ext = T.must(extension(ext_version.name))
         ext.params.each do |ext_param|
           next unless @config.param_values.key?(ext_param.name)
 
@@ -432,10 +438,11 @@ class ConfiguredArchitecture < Architecture
       end
     elsif @config.partially_configured?
       mandatory_extension_reqs.each do |ext_requirement|
-        ext = extension(ext_requirement.name)
+        ext = T.must(extension(ext_requirement.name))
         ext.params.each do |ext_param|
           # Params listed in the config always only have one value.
           next unless @config.param_values.key?(ext_param.name)
+          next if @params_with_value.any? { |p| p.name == ext_param.name }
 
           @params_with_value << ParameterWithValue.new(
             ext_param,
@@ -458,6 +465,7 @@ class ConfiguredArchitecture < Architecture
       ext.params.each do |ext_param|
         # Params listed in the config always only have one value.
         next if @config.param_values.key?(ext_param.name)
+        next if @params_without_value.any? { |p| p.name == ext_param.name }
 
         @params_without_value << ext_param
       end
@@ -471,8 +479,9 @@ class ConfiguredArchitecture < Architecture
 
   # @return [Array<ExtensionVersion>] List of extension versions explicitly marked as implemented in the config.
   #                                   Does *not* include extensions implied by explicitly implemented extensions.
+  sig { returns(T::Array[ExtensionVersion]) }
   def explicitly_implemented_extension_versions
-    return @explicitly_implemented_extension_versions unless @explicitly_implemented_extension_versions.nil?
+    return @explicitly_implemented_extension_versions if defined?(@explicitly_implemented_extension_versions)
 
     unless fully_configured?
       raise ArgumentError, "implemented_extension_versions only valid for fully configured systems"
@@ -495,16 +504,16 @@ class ConfiguredArchitecture < Architecture
     added_ext_vers = []
     loop do
       @transitive_implemented_extension_versions.each do |ext_ver|
-        ext_ver.implications.each do |implication|
-          applies = implication[:cond].satisfied_by? do |ext_req|
+        ext_ver.implications.each do |cond_ext_ver|
+          applies = cond_ext_ver.cond.satisfied_by? do |ext_req|
             @transitive_implemented_extension_versions.any? do |inner_ext_ver|
               next false if ext_ver == inner_ext_ver
 
               ext_req.satisfied_by?(inner_ext_ver)
             end
           end
-          if applies && !@transitive_implemented_extension_versions.include?(implication[:ext_ver])
-            added_ext_vers << implication[:ext_ver]
+          if applies && !@transitive_implemented_extension_versions.include?(cond_ext_ver.ext_ver)
+            added_ext_vers << cond_ext_ver.ext_ver
           end
         end
       end
@@ -522,20 +531,24 @@ class ConfiguredArchitecture < Architecture
 
   # @return [Array<ExtensionRequirement>] List of all mandatory extension requirements (not transitive)
   def mandatory_extension_reqs
-    return @mandatory_extension_reqs unless @mandatory_extension_reqs.nil?
+    return @mandatory_extension_reqs if defined?(@mandatory_extension_reqs)
 
     @mandatory_extension_reqs ||=
       @config.mandatory_extensions.map do |e|
         ext = extension(e["name"])
         raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
 
-        ExtensionRequirement.new(e["name"], *e["version"], presence: "mandatory", arch: self)
+        if e["version"].is_a?(Array)
+          ExtensionRequirement.new(e["name"], T.cast(e["version"], T::Array[String]), presence: "mandatory", arch: self)
+        else
+          ExtensionRequirement.new(e["name"], T.cast(e["version"], String), presence: "mandatory", arch: self)
+        end
       end
   end
 
   # @return [Array<Extension>] List of extensions that are possibly supported
   def not_prohibited_extensions
-    return @not_prohibited_extensions unless @not_prohibited_extensions.nil?
+    return @not_prohibited_extensions if defined?(@not_prohibited_extensions)
 
     @not_prohibited_extensions ||=
       if @config.fully_configured?
@@ -551,7 +564,7 @@ class ConfiguredArchitecture < Architecture
 
   # @return [Array<ExtensionVersion>] List of all ExtensionVersions that are possible to support
   def not_prohibited_extension_versions
-    return @not_prohibited_extension_versions unless @not_prohibited_extension_versions.nil?
+    return @not_prohibited_extension_versions if defined?(@not_prohibited_extension_versions)
 
     @not_prohibited_extension_versions ||=
       if @config.fully_configured?
@@ -559,10 +572,24 @@ class ConfiguredArchitecture < Architecture
       elsif @config.partially_configured?
         extensions.map(&:versions).flatten.reject { |ext_ver| transitive_prohibited_extension_versions.include?(ext_ver) }
       else
-        extensions.map(&:version).flatten
+        extensions.map(&:versions).flatten
       end
   end
   alias possible_extension_versions not_prohibited_extension_versions
+
+  sig { params(ext_ver: ExtensionVersion).void }
+  def add_ext_ver_and_conflicts(ext_ver)
+    @transitive_prohibited_extension_versions << ext_ver
+    ext_ver.implications.each do |cond_ext_ver|
+      next if @transitive_prohibited_extension_versions.include?(cond_ext_ver.ext_ver)
+
+      sat = cond_ext_ver.cond.satisfied_by_cfg_arch?(self)
+      if sat == SatisfiedResult::Yes
+        @transitive_prohibited_extension_versions << cond_ext_ver.ext_ver
+      end
+    end
+  end
+  private :add_ext_ver_and_conflicts
 
   # @return [Array<ExtensionVersion>] List of all extension versions that are prohibited.
   #                                   This includes extensions explicitly prohibited by the config file
@@ -573,23 +600,16 @@ class ConfiguredArchitecture < Architecture
     @transitive_prohibited_extension_versions = []
 
     if @config.partially_configured?
-      add_ext_ver_and_conflicts = lambda do |ext_ver|
-        @transitive_prohibited_extension_versions << ext_ver
-        ext_ver.conflicts.each do |conflict_ext_ver|
-          add_ext_ver_and_conflicts.call(conflict_ext_ver)
-        end
-      end
-
       @transitive_prohibited_extension_versions =
         @config.prohibited_extensions.map do |ext_req_data|
-          ext_req = ExtensionRequirement.new(ext_req_data["name"], ext_req_data["version"], cfg_arch: self)
-          ext_req.satisfying_versions.each { |ext_ver| add_ext_ver_and_conflicts.call(ext_ver) }
+          ext_req = ExtensionRequirement.new(ext_req_data["name"], ext_req_data["version"], arch: self)
+          ext_req.satisfying_versions.each { |ext_ver| add_ext_ver_and_conflicts(ext_ver) }
         end
 
       # now add any extensions that are prohibited by a mandatory extension
       mandatory_extension_reqs.each do |ext_req|
         ext_req.satisfying_versions do |ext_ver|
-          add_ext_ver_and_conflicts.call(ext_ver)
+          add_ext_ver_and_conflicts(ext_ver)
         end
       end
 
@@ -631,7 +651,7 @@ class ConfiguredArchitecture < Architecture
   #   @return [Boolean]
   def prohibited_ext?(ext)
     if ext.is_a?(ExtensionVersion)
-      transitive_prohibited_extension_versions.include?(ext_ver)
+      transitive_prohibited_extension_versions.include?(ext)
     elsif ext.is_a?(String) || ext.is_a?(Symbol)
       transitive_prohibited_extension_versions.any? { |ext_ver| ext_ver.name == ext.to_s }
     else
@@ -663,7 +683,7 @@ class ConfiguredArchitecture < Architecture
           if ext_version_requirements.empty?
             e.name == ext_name.to_s
           else
-            requirement = ExtensionRequirement.new(ext_name, *ext_version_requirements, arch: self)
+            requirement = ExtensionRequirement.new(ext_name, ext_version_requirements, arch: self)
             requirement.satisfied_by?(e)
           end
         end
@@ -672,7 +692,7 @@ class ConfiguredArchitecture < Architecture
           if ext_version_requirements.empty?
             e.name == ext_name.to_s
           else
-            requirement = ExtensionRequirement.new(ext_name, *ext_version_requirements, arch: self)
+            requirement = ExtensionRequirement.new(ext_name, ext_version_requirements, arch: self)
             e.satisfying_versions.all? do |ext_ver|
               requirement.satisfied_by?(ext_ver)
             end
@@ -688,48 +708,14 @@ class ConfiguredArchitecture < Architecture
 
   # @return [Array<ExceptionCode>] All exception codes known to be implemented
   def implemented_exception_codes
-    return @implemented_exception_codes unless @implemented_exception_codes.nil?
-
-    @implemented_exception_codes =
-      implemented_extensions.reduce([]) do |list, ext_version|
-        ecodes = extension(ext_version.name)["exception_codes"]
-        next list if ecodes.nil?
-
-        ecodes.each do |ecode|
-          # double check that all the codes are unique
-          raise "Duplicate exception code" if list.any? { |e| e.num == ecode["num"] || e.name == ecode["name"] || e.var == ecode["var"] }
-
-          unless ecode.dig("when", "version").nil?
-            # check version
-            next unless ext?(ext_version.name.to_sym, ecode["when"]["version"])
-          end
-          list << ExceptionCode.new(ecode["name"], ecode["var"], ecode["num"], self)
-        end
-        list
-      end
+    @implemented_exception_codes ||=
+      implemented_extension_versions.map { |ext_ver| ext_ver.exception_codes }.comapct.flatten
   end
 
   # @return [Array<InteruptCode>] All interrupt codes known to be implemented
   def implemented_interrupt_codes
-    return @implemented_interrupt_codes unless @implemented_interrupt_codes.nil?
-
-    @implemented_interupt_codes =
-      implemented_extensions.reduce([]) do |list, ext_version|
-        icodes = extension(ext_version.name)["interrupt_codes"]
-        next list if icodes.nil?
-
-        icodes.each do |icode|
-          # double check that all the codes are unique
-          raise "Duplicate interrupt code" if list.any? { |i| i.num == icode["num"] || i.name == icode["name"] || i.var == icode["var"] }
-
-          unless ecode.dig("when", "version").nil?
-            # check version
-            next unless ext?(ext_version.name.to_sym, ecode["when"]["version"])
-          end
-          list << InterruptCode.new(icode["name"], icode["var"], icode["num"], self)
-        end
-        list
-      end
+    @implemented_interupt_codes ||=
+      implemented_extension_versions.map { |ext_ver| ext_ver.interrupt_codes }.comapct.flatten
   end
 
   # @return [Array<Idl::FunctionBodyAst>] List of all functions defined by the architecture
@@ -816,7 +802,7 @@ class ConfiguredArchitecture < Architecture
 
   # @return [Array<Instruction>] List of all instructions that are not prohibited by the config, sorted by name
   def not_prohibited_instructions
-    return @not_prohibited_instructions unless @not_prohibited_instructions.nil?
+    return @not_prohibited_instructions if defined?(@not_prohibited_instructions)
 
     @not_prohibited_instructions_mutex ||= Thread::Mutex.new
     @not_prohibited_instructions_mutex.synchronize do
@@ -872,7 +858,6 @@ class ConfiguredArchitecture < Architecture
           inst.reachable_functions(inst.base)
         end
     end
-    raise "?" unless @implemented_functions.is_a?(Array)
     @implemented_functions = @implemented_functions.flatten
     @implemented_functions.uniq!(&:name)
 
@@ -951,18 +936,19 @@ class ConfiguredArchitecture < Architecture
   # @param adoc [String] Asciidoc source
   # @return [String] Asciidoc source, with link placeholders
   def convert_monospace_to_links(adoc)
+    h = Class.new do include Udb::Helpers::TemplateHelpers end.new
     adoc.gsub(/`([\w.]+)`/) do |match|
       name = Regexp.last_match(1)
-      csr_name, field_name = name.split(".")
+      csr_name, field_name = T.must(name).split(".")
       csr = not_prohibited_csrs.find { |c| c.name == csr_name }
       if !field_name.nil? && !csr.nil? && csr.field?(field_name)
-        link_to_udb_doc_csr_field(csr_name, field_name)
+        h.link_to_udb_doc_csr_field(csr_name, field_name)
       elsif !csr.nil?
-        link_to_udb_doc_csr(csr_name)
+        h.link_to_udb_doc_csr(csr_name)
       elsif not_prohibited_instructions.any? { |inst| inst.name == name }
-        link_to_udb_doc_inst(name)
+        h.link_to_udb_doc_inst(name)
       elsif not_prohibited_extensions.any? { |ext| ext.name == name }
-        link_to_udb_doc_ext(name)
+        h.link_to_udb_doc_ext(name)
       else
         match
       end
@@ -999,8 +985,8 @@ class ConfiguredArchitecture < Architecture
       # @param ext_name [String,#to_s] Name of the extension
       # @param ext_requirement [String, #to_s] Version string, as a Gem Requirement (https://guides.rubygems.org/patterns/#pessimistic-version-constraint)
       # @return [Boolean] whether or not extension +ext_name+ meeting +ext_requirement+ is implemented in the config
-      def ext?(ext_name, ext_requirement = ">= 0")
-        @cfg_arch.ext?(ext_name.to_s, ext_requirement)
+      def ext?(ext_name, *ext_requirements)
+        @cfg_arch.ext?(ext_name.to_s, *ext_requirements)
       end
 
       # List of possible XLENs for any implemented mode

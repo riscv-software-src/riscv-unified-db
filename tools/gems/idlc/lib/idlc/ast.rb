@@ -1,8 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# frozen_string_literal: true
 # typed: true
+# frozen_string_literal: true
 
 require "sorbet-runtime"
 
@@ -13,7 +13,23 @@ require_relative "syntax_node"
 module Idl
 
   # type, from ruby's perspective, of any IDL value
-  ValueRbType = T.type_alias { T.any(Integer, T::Boolean, String, T::Array[Integer], T::Array[T::Boolean], T::Array[String]) }
+  BasicValueRbType = T.type_alias {
+    T.any(
+      Integer,    # Bits
+      T::Boolean, # Boolean
+      String,     # String
+      T::Array[Integer],  # array of Bits
+      T::Array[T::Boolean],  # array of Bools
+      T::Array[String]    # array of strings
+    )
+  }
+
+  ValueRbType = T.type_alias {
+    T.any(
+      BasicValueRbType,
+      T::Hash[String, BasicValueRbType] # structs
+    )
+  }
 
   EMPTY_ARRAY = [].freeze
 
@@ -24,18 +40,8 @@ module Idl
     extend T::Helpers
     abstract!
 
-    Bits1Type = Type.new(:bits, width: 1).freeze
-    Bits32Type = Type.new(:bits, width: 32).freeze
-    Bits64Type = Type.new(:bits, width: 64).freeze
-    BitsUnknownType = Type.new(:bits, width: :unknown).freeze
-    ConstBitsUnknownType = Type.new(:bits, width: :unknown, qualifiers: [:const]).freeze
-    ConstBoolType = Type.new(:boolean, qualifiers: [:const]).freeze
-    BoolType = Type.new(:boolean).freeze
-    VoidType = Type.new(:void).freeze
-    StringType = Type.new(:string).freeze
-
     # @return [String] Source input file
-    sig { returns(String) }
+    sig { returns(Pathname) }
     attr_reader :input_file
 
     # @return [Integer] Starting line in the source input file (i.e., position 0 of {#input} in the file)
@@ -174,6 +180,12 @@ module Idl
     sig { params(value_result: T.untyped, block: T.proc.returns(T.untyped)).returns(T.untyped) }
     def value_else(value_result, &block) = self.class.value_else(value_result, &block)
 
+    # is this node const evaluatable?
+    # all nodes with a compile-time-known value are const_eval
+    # not all const_eval nodes have a compile-time-known value; they may rely on an unknown parameter
+    sig { abstract.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab); end
+
     # @param input [String] The source being compiled
     # @param interval [Range] The range in the source corresponding to this AstNode
     # @param children [Array<AstNode>] Children of this node
@@ -195,11 +207,11 @@ module Idl
     #
     # @param [String] filename The name of the input file.
     # @param [Integer] starting_line The starting line number in the input file.
-    sig { params(filename: String, starting_line: Integer).void }
+    sig { params(filename: T.any(Pathname, String), starting_line: Integer).void }
     def set_input_file_unless_already_set(filename, starting_line = 0)
       return unless @input_file.nil?
 
-      @input_file = filename
+      @input_file = Pathname.new(filename)
       @starting_line = starting_line
       children.each do |child|
         child.set_input_file_unless_already_set(filename, starting_line)
@@ -211,9 +223,9 @@ module Idl
     #
     # @param filename [String] Filename
     # @param starting_line [Integer] Starting line in the file
-    sig { params(filename: String, starting_line: Integer).void }
+    sig { params(filename: T.any(Pathname, String), starting_line: Integer).void }
     def set_input_file(filename, starting_line = 0)
-      @input_file = filename
+      @input_file = Pathname.new(filename)
       @starting_line = starting_line
       children.each do |child|
         child.set_input_file(filename, starting_line)
@@ -281,7 +293,8 @@ module Idl
         In file #{input_file}
         On line #{lineno}
           A value was truncated
-          #{reason}
+          #{reason}.
+          Perhaps you want to use a widening operator (`+, `-, `*, `<<)?
       WHAT
       warn msg
     end
@@ -503,7 +516,8 @@ module Idl
     #   @return [Boolean] The return value, if it is boolean
     #   @return [nil]     if the return value is not compile-time-known
 
-    sig { abstract.params(symtab: SymbolTable).returns(T.nilable(Type)) }
+    # returns the return type, or nil if the type is void
+    sig { abstract.params(symtab: SymbolTable).returns(Type) }
     def return_type(symtab); end
 
     # @!macro return_value
@@ -538,29 +552,41 @@ module Idl
 
         symtab.get("__expected_return_type")
       else
-        # need to find the type to get the right symbol table
-        func_type = @func_type_cache[symtab.name]
-        return func_type.return_type(EMPTY_ARRAY, self) unless func_type.nil?
-
-        func_type = symtab.get_global(func_def.name)
-        internal_error "Couldn't find function type for '#{func_def.name}'" if func_type.nil?
-
-        # to get the return type, we need to find the template values in case this is
-        # a templated function definition
-        #
-        # that information should be up the stack in the symbol table
-        if func_type.templated?
-          template_values = symtab.find_all(single_scope: true) do |o|
-            o.is_a?(Var) && o.template_value_for?(func_def.name)
+        global_symtab = symtab.global_clone
+        global_symtab.push(nil)
+        if func_def.templated?
+          # add template vars
+          ttypes = func_def.template_types(global_symtab)
+          func_def.template_names.each_with_index do |tname, i|
+            global_symtab.add!(tname, Var.new(tname, ttypes[i], template_index: i))
           end
-          unless template_values.size == func_type.template_names.size
-            internal_error "Did not find correct number of template arguments (found #{template_values.size}, need #{func_type.template_names.size}) #{symtab.keys_pretty}"
-          end
-          func_type.return_type(template_values.sort { |a, b| a.template_index <=> b.template_index }.map(&:value), self)
-        else
-          @func_type_cache[symtab.name]= func_type
-          func_type.return_type(EMPTY_ARRAY, self)
         end
+        rtype = func_def.return_type(global_symtab)
+        global_symtab.release
+        rtype
+        # # need to find the type to get the right symbol table
+        # func_type = @func_type_cache[symtab.name]
+        # return func_type.return_type(EMPTY_ARRAY, self) unless func_type.nil?
+
+        # func_type = symtab.get_global(func_def.name)
+        # internal_error "Couldn't find function type for '#{func_def.name}'" if func_type.nil?
+
+        # # to get the return type, we need to find the template values in case this is
+        # # a templated function definition
+        # #
+        # # that information should be up the stack in the symbol table
+        # if func_type.templated?
+        #   template_values = symtab.find_all(single_scope: true) do |o|
+        #     o.is_a?(Var) && o.template_value_for?(func_def.name)
+        #   end
+        #   unless template_values.size == func_type.template_names.size
+        #     internal_error "Did not find correct number of template arguments (found #{template_values.size}, need #{func_type.template_names.size}) #{symtab.keys_pretty}"
+        #   end
+        #   func_type.return_type(template_values.sort { |a, b| a.template_index <=> b.template_index }.map(&:value), self)
+        # else
+        #   @func_type_cache[symtab.name]= func_type
+        #   func_type.return_type(EMPTY_ARRAY, self)
+        # end
       end
     end
   end
@@ -652,20 +678,23 @@ module Idl
 
     sig { params(value: Integer, width: Integer, signed: T::Boolean).returns(Integer) }
     def truncate(value, width, signed)
+      masked = value & ((1 << width) - 1)
       if signed
         # signed: need to mask and convert
-        masked = value & ((1 << width) - 1)
         if masked[width - 1] == 1
-          -(masked & ((1 << (width - 1)) - 1))
+          # twos compliment value is 2^width - value
+          -((1 << width) - masked)
         else
           masked
         end
       else
         # unsigned: simple truncation
-        value & ((1 << width) - 1)
+        masked
       end
     end
   end
+
+  RvalueAst = T.type_alias { T.all(Rvalue, AstNode) }
 
   # interface for any AstNode that introduces a new symbol into scope
   module Declaration
@@ -683,10 +712,16 @@ module Idl
 
   class IncludeStatementSyntaxNode < SyntaxNode
     sig { override.returns(IncludeStatementAst) }
-    def to_ast = IncludeStatementAst.new(input, interval, T.let(send(:string), SyntaxNode).to_ast)
+    def to_ast
+      s = T.let(send(:string), StringLiteralSyntaxNode)
+      IncludeStatementAst.new(input, interval, s.to_ast)
+    end
   end
 
   class IncludeStatementAst < AstNode
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = false
+
     # @return [String] filename to include
     sig { returns(String) }
     def filename = T.must(@children[0]).text_value[1..-2] || ""
@@ -713,13 +748,17 @@ module Idl
   class IdAst < AstNode
     include Rvalue
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = const? || symtab.get(name).const_eval?
+
     # @return [String] The ID name
+    sig { returns(String) }
     def name = text_value
 
+    sig { params(input: String, interval: T::Range[Integer]).void }
     def initialize(input, interval)
       super(input, interval, EMPTY_ARRAY)
-      @const = (text_value[0] == T.must(text_value[0]).upcase)
-      @vars = {}
+      @const = T.let((text_value[0] == T.must(text_value[0]).upcase), T::Boolean)
     end
 
     # @!macro type_check
@@ -728,6 +767,7 @@ module Idl
     end
 
     # @!macro type
+    sig { override.params(symtab: SymbolTable).returns(Type) }
     def type(symtab)
       return @type unless @type.nil?
 
@@ -745,6 +785,7 @@ module Idl
     end
 
     # @return [Boolean] whether or not the Id represents a const
+    sig { returns(T::Boolean) }
     def const? = @const
 
     # @!macro value
@@ -823,6 +864,9 @@ module Idl
     def id = var_decl_with_init.id
     def rhs = var_decl_with_init.rhs
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = var_decl_with_init.lhs.const? && var_decl_with_init.rhs.const_eval?(symtab)
+
     # @return [VariableDeclarationWithInitializationAst] The initializer
     def var_decl_with_init
       @children[0]
@@ -878,6 +922,9 @@ module Idl
   class GlobalAst < AstNode
     include Declaration
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = declaration.id.const? # default initialization gives a value
+
     def id
       declaration.id.text_value
     end
@@ -927,6 +974,9 @@ module Idl
   class IsaAst < AstNode
     def definitions = children
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = false
+
     # @return [Array<AstNode>] List of all global variable definitions
     def globals = definitions.select { |d| d.is_a?(GlobalWithInitializationAst) || d.is_a?(GlobalAst) }
 
@@ -951,7 +1001,7 @@ module Idl
     def add_global_symbols(symtab)
       raise "Symtab is not at global scope" unless symtab.levels == 1
 
-      enums.each { |g| g.add_symbol(symtab) }
+      enums.each { |g| g.add_symbol(symtab); }
       bitfields.each { |g| g.add_symbol(symtab) }
       globals.each { |g| g.add_symbol(symtab) }
       structs.each { |g| g.add_symbol(symtab) }
@@ -1006,6 +1056,9 @@ module Idl
     # @return [AstNode] Array expression
     def expression = children[0]
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
+
     def initialize(input, interval, expression)
       super(input, interval, [expression])
     end
@@ -1048,6 +1101,9 @@ module Idl
   class EnumSizeAst < AstNode
     def enum_class = children[0]
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
+
     def initialize(input, interval, enum_class_name)
       super(input, interval, [enum_class_name])
     end
@@ -1084,6 +1140,9 @@ module Idl
   class EnumElementSizeAst < AstNode
     def enum_class = children[0]
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
+
     def initialize(input, interval, enum_class_name)
       super(input, interval, [enum_class_name])
     end
@@ -1112,6 +1171,9 @@ module Idl
 
   class EnumCastAst < AstNode
     include Rvalue
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
 
     # @return [UserTypeAst] Enum name
     def enum_name = @children[0]
@@ -1163,6 +1225,9 @@ module Idl
   #  $enum_to_a(PrivilegeMode) #=> [3, 1, 1, 0, 5, 4]
   class EnumArrayCastAst < AstNode
     def enum_class = children[0]
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
 
     def initialize(input, interval, enum_class_name)
       super(input, interval, [enum_class_name])
@@ -1224,6 +1289,9 @@ module Idl
   #  }
   class EnumDefinitionAst < AstNode
     include Declaration
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
 
     def initialize(input, interval, user_type, element_names, element_values)
       super(input, interval, [user_type] + element_names + element_values.reject{ |e| e.nil? })
@@ -1318,6 +1386,9 @@ module Idl
   class BuiltinEnumDefinitionAst < AstNode
     include Declaration
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
+
     def initialize(input, interval, user_type)
       super(input, interval, [user_type])
       @user_type = user_type
@@ -1360,6 +1431,9 @@ module Idl
   class BitfieldFieldDefinitionAst < AstNode
     # @return [String] The field name
     attr_reader :name
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
 
     def initialize(input, interval, name, msb, lsb)
       if lsb.nil?
@@ -1447,6 +1521,9 @@ module Idl
   #  }
   class BitfieldDefinitionAst < AstNode
     include Declaration
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
 
     def initialize(input, interval, name, size, fields)
       super(input, interval, [name, size] + fields)
@@ -1573,6 +1650,9 @@ module Idl
     # @return [Array<String>] Member names
     attr_reader :member_names
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
+
     def initialize(input, interval, name, member_types, member_names)
       super(input, interval, member_types)
 
@@ -1680,6 +1760,15 @@ module Idl
   class AryElementAccessAst < AstNode
     include Rvalue
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      if var.name == "X"
+        false
+      else
+        var.const_eval?(symtab) && index.const_eval?(symtab)
+      end
+    end
+
     def var = @children[0]
     def index = @children[1]
 
@@ -1755,6 +1844,15 @@ module Idl
   class AryRangeAccessAst < AstNode
     include Rvalue
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      if var.name == "X"
+        false
+      else
+        var.const_eval?(symtab) && msb.const_eval?(symtab).const_eval? && lsb.const_eval?(symtab)
+      end
+    end
+
     def var = @children[0]
     def msb = @children[1]
     def lsb = @children[2]
@@ -1821,28 +1919,31 @@ module Idl
   class PcAssignmentAst < AstNode
     include Executable
 
-    # @return [AstNode] Right-hand side expression
-    def rhs = children[0]
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = false
 
+    # @return [AstNode] Right-hand side expression
+    sig { returns(RvalueAst) }
+    def rhs = T.cast(children.fetch(0), RvalueAst)
+
+    sig { params(input: String, interval: T::Range[Integer], rval: RvalueAst).void }
     def initialize(input, interval, rval)
       super(input, interval, [rval])
     end
 
     # @macro execute
+    sig { override.params(symtab: SymbolTable).void }
     def execute(symtab) = value_error "$pc is never statically known"
 
     # @macro execute_unknown
+    sig { override.params(symtab: SymbolTable).void }
     def execute_unknown(symtab); end
 
     # @!macro type_check
+    sig { override.params(symtab: SymbolTable).void }
     def type_check(symtab)
+      rhs.type_check(symtab)
     end
-
-    # @!macro value
-    def value(symtab) = value_error "$pc is never statically known"
-
-    # @!macro type
-    def type(symtab) = symtab.xreg_type
 
     # @!macro to_idl
     sig { override.returns(String) }
@@ -1862,6 +1963,21 @@ module Idl
   #   zero = XLEN'b0
   class VariableAssignmentAst < AstNode
     include Executable
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      return false if !lhs.const_eval?(symtab)
+
+      if rhs.const_eval?(symtab)
+        true
+      else
+        lhs_var = symtab.get(lhs.name)
+        type_error "variable #{lhs.name} was not declared" if lhs_var.nil? || !lhs_var.is_a?(Var)
+
+        lhs_var.const_incompatible!
+        false
+      end
+    end
 
     def lhs = @children[0]
     def rhs = @children[1]
@@ -1943,6 +2059,21 @@ module Idl
   class AryElementAssignmentAst < AstNode
     include Executable
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      return false if !lhs.const_eval?
+
+      if idx.const_eval? && rhs.const_eval?
+        true
+      else
+        lhs_var = symtab.get(lhs.name)
+        type_error "array #{lhs.name} has not been declared" if lhs_var.nil?
+
+        lhs_var.const_incompatible!
+        false
+      end
+    end
+
     def lhs = @children[0]
     def idx = @children[1]
     def rhs = @children[2]
@@ -2020,7 +2151,7 @@ module Idl
       value_result = T.let(nil, T.nilable(Symbol))
       case lhs.type(symtab).kind
       when :array
-        lhs_value = T.let(lhs.value(symtab), T::Array[T.nilable(AstNode::ValueRbType)])
+        lhs_value = T.let(lhs.value(symtab), T::Array[T.nilable(ValueRbType)])
         value_result = value_try do
           idx_value = idx.value(symtab)
           value_result = value_try do
@@ -2066,6 +2197,21 @@ module Idl
   #   vec[8:0] = 8'd0
   class AryRangeAssignmentAst < AstNode
     include Executable
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      return false if !variable.const_eval?(symtab)
+
+      if lsb.const_eval?(symtab) && msb.const_eval?(symtab) && write_value.const_eval?(symtab)
+        true
+      else
+        lhs_var = symtab.get(variable.name)
+        type_error "array #{variable.name} has not be declared" if lhs_var.nil?
+
+        lhs_var.const_incompatible!
+        false
+      end
+    end
 
     def variable = @children[0]
     def msb = @children[1]
@@ -2148,7 +2294,7 @@ module Idl
 
   class FieldAssignmentSyntaxNode < SyntaxNode
     def to_ast
-      FieldAssignmentAst.new(input, interval, send(:field_access_expression).to_ast, send(:rval).to_ast)
+      FieldAssignmentAst.new(input, interval, send(:id).to_ast, send(:field_name).text_value, send(:rval).to_ast)
     end
   end
 
@@ -2161,36 +2307,93 @@ module Idl
   class FieldAssignmentAst < AstNode
     include Executable
 
-    def field_access = @children[0]
-    def write_value = @children[1]
+    sig { returns(IdAst) }
+    def id = T.cast(@children.fetch(0), IdAst)
 
-    def initialize(input, interval, field_access, write_value)
-      super(input, interval, [field_access, write_value])
+    sig { returns(RvalueAst) }
+    def rhs = T.cast(@children.fetch(1), RvalueAst)
+
+    sig { returns(String) }
+    def field_name = @field_name
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      var = symtab.get(id.name)
+      type_error "#{id.name} is not declared!" if var.nil?
+
+      return false if !var.const_eval?
+
+      if rhs.const_eval?(symtab)
+        true
+      else
+        var.const_incompatible!
+        false
+      end
+    end
+
+    sig { params(input: String, interval: T::Range[Integer], id: IdAst, field_name: String, rhs: RvalueAst).void }
+    def initialize(input, interval, id, field_name, rhs)
+      super(input, interval, [id, rhs])
+      @field_name = field_name
     end
 
     # @!macro type
     def type(symtab)
-      field_access.type(symtab)
+      var = symtab.get(id.name)
+      type_error "#{id.name} has not been declared" if var.nil?
+
+      if var.type.kind == :bitfield
+        Type.new(:bits, width: var.type.range(@field_name).size)
+      elsif var.type.kind == :struct
+        var.type.member_type(@field_name)
+      else
+        internal_error "huh? #{id.text_value} #{var.type.kind}"
+      end
     end
 
     # @!macro type_check
     def type_check(symtab)
-      field_access.type_check(symtab)
+      id.type_check(symtab)
+      var = symtab.get(id.name)
+      type_error "#{id.name} has not been declared" if var.nil?
 
-      type_error "Cannot write const variable" if field_access.type(symtab).const?
+      if var.type.kind == :bitfield
+        internal_error "#{id.name} Not a BitfieldType (is a #{var.type})" unless var.type.respond_to?(:field_names)
+        unless var.type.field_names.include?(@field_name)
+          type_error "#{@field_name} is not a member of #{var.type}"
+        end
+      elsif var.type.kind == :struct
+        type_error "#{@field_name} is not a member of #{var.type}" unless var.type.member?(@field_name)
+      else
+        type_error "#{id.name} is not a bitfield  or struct (is #{var.type})"
+      end
 
-      write_value.type_check(symtab)
-      return if write_value.type(symtab).convertable_to?(type(symtab))
+      type_error "Cannot write const variable" if var.type.const?
 
-      type_error "Incompatible type in assignment (#{type(symtab)}, #{write_value.type(symtab)})"
+      rhs.type_check(symtab)
+      return if rhs.type(symtab).convertable_to?(type(symtab))
+
+      type_error "Incompatible type in assignment (#{type(symtab)}, #{rhs.type(symtab)})"
     end
 
     # @!macro execute
     def execute(symtab)
-      if field_access.type(symtab).kind == :struct
-        struct_val = field_access.obj.value(symtab)
-        struct_val[field_access.field_name] = write_value.value(symtab)
-        symtab.add(field_access.obj.name, Var.new(field_access.obj.name, field_access.obj.type(symtab), struct_val))
+      var = symtab.get(id.name)
+      type_error "#{id.name} has not been declared" if var.nil?
+
+      if var.type.kind == :bitfield
+        bitfield_val = id.value(symtab)
+        range = var.type.range(@field_name)
+        rhs_value = T.cast(rhs.value(symtab), Integer)
+        rhs_value_trunc = rhs_value & ((1 << range.size) - 1)
+
+        # zero out the field
+        bitfield_val &= ~(((1 << range.size) - 1) << range.first)
+        bitfield_val |= rhs_value_trunc << range.first
+        var.value = bitfield_val
+      elsif var.type.kind == :struct
+        struct_val = id.value(symtab)
+        struct_val[@field_name] = rhs.value(symtab)
       else
         value_error "TODO: Field assignment execution"
       end
@@ -2198,12 +2401,13 @@ module Idl
 
     # @!macro execute_unknown
     def execute_unknown(symtab)
-      symtab.add(field_access.obj.name, Var.new(field_access.obj.name, field_access.obj.type(symtab), nil))
+      var = symtab.get(id.name)
+      var.value = nil
     end
 
     # @!macro to_idl
     sig { override.returns(String) }
-    def to_idl = "#{field_access.to_idl} = #{write_value.to_idl}"
+    def to_idl = "#{id.to_idl}.#{@field_name} = #{rhs.to_idl}"
   end
 
   class CsrFieldAssignmentSyntaxNode < SyntaxNode
@@ -2214,6 +2418,9 @@ module Idl
 
   class CsrFieldAssignmentAst < AstNode
     include Executable
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = false
 
     def csr_field = @children[0]
     def write_value = @children[1]
@@ -2273,6 +2480,22 @@ module Idl
   #   (match_result, cfg) = pmp_match<access_size>(paddr);
   class MultiVariableAssignmentAst < AstNode
     include Executable
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      func_is_const_eval = function_call.const_eval?(symtab)
+      everything_is_const_eval = func_is_const_eval
+
+      variables.each do |variable|
+        var = symtab.get(variable.name)
+        type_error "#{var} was not declared" if var.nil?
+        everything_is_const_eval = false unless var.const_eval?
+
+        var.const_incompatible! unless func_is_const_eval
+      end
+
+      func_is_const_eval
+    end
 
     def variables = @children[0..-2]
     def function_call = @children.last
@@ -2371,6 +2594,12 @@ module Idl
   class MultiVariableDeclarationAst < AstNode
     include Declaration
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      add_symbol(symtab)
+      true
+    end
+
     # @return [AstNode] Declared type
     def type_name = @children[0]
 
@@ -2435,12 +2664,33 @@ module Idl
   class VariableDeclarationAst < AstNode
     include Declaration
 
-    def type_name = children[0]
-    def id = children[1]
-    def ary_size = children[2]
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      add_symbol(symtab)
+      true
+    end
 
+    sig { returns(TypeNameAst) }
+    def type_name = T.cast(children.fetch(0), TypeNameAst)
+
+    sig { returns(IdAst) }
+    def id = T.cast(children.fetch(1), IdAst)
+
+    sig { returns(T.nilable(RvalueAst)) }
+    def ary_size = children[2].nil? ? nil : T.cast(children.fetch(2), RvalueAst)
+
+    sig { returns(String) }
     def name = id.text_value
 
+    sig {
+      params(
+        input: String,
+        interval: T::Range[Integer],
+        type_name: TypeNameAst,
+        id: IdAst,
+        ary_size: T.nilable(RvalueAst)
+      ).void
+    }
     def initialize(input, interval, type_name, id, ary_size)
       if ary_size.nil?
         super(input, interval, [type_name, id])
@@ -2451,17 +2701,19 @@ module Idl
       @global = false
     end
 
+    sig { void }
     def make_global
       @global = true
     end
 
+    sig { params(symtab: SymbolTable).returns(T.nilable(Type)) }
     def decl_type(symtab)
       dtype = type_name.type(symtab)
 
       return nil if dtype.nil?
 
       qualifiers = []
-      qualifiers << :const if id.text_value[0].upcase == id.text_value[0]
+      qualifiers << :const if T.must(id.text_value[0]).upcase == id.text_value[0]
       qualifiers << :global if @global
 
       dtype = Type.new(:enum_ref, enum_class: dtype, qualifiers:) if dtype.kind == :enum
@@ -2470,7 +2722,7 @@ module Idl
 
       unless ary_size.nil?
         value_result = value_try do
-          dtype = Type.new(:array, width: ary_size.value(symtab), sub_type: dtype, qualifiers:)
+          dtype = Type.new(:array, width: T.must(ary_size).value(symtab), sub_type: dtype, qualifiers:)
         end
         value_else(value_result) do
           dtype = Type.new(:array, width: :unknown, sub_type: dtype, qualifiers:)
@@ -2489,16 +2741,16 @@ module Idl
 
       type_error "No type '#{type_name.text_value}'" if dtype.nil?
 
-      type_error "Constants must be initialized at declaration" if id.text_value[0] == id.text_value[0].upcase
+      type_error "Constants must be initialized at declaration" if id.text_value[0] == T.must(id.text_value[0]).upcase
 
       unless ary_size.nil?
-        ary_size.type_check(symtab)
+        T.must(ary_size).type_check(symtab)
         value_result = value_try do
-          ary_size.value(symtab)
+          T.must(ary_size).value(symtab)
         end
         value_else(value_result) do
           # it's ok that we don't know the value yet, as long as the value is a const
-          type_error "Array size (#{ary_size.text_value}) must be a constant" unless ary_size.type(symtab).const?
+          type_error "Array size (#{T.must(ary_size).text_value}) must be a constant" unless T.must(ary_size).type(symtab).const?
         end
       end
 
@@ -2508,13 +2760,14 @@ module Idl
     end
 
     # @!macro add_symbol
+    sig { override.params(symtab: SymbolTable).void }
     def add_symbol(symtab)
       if @global
         # fill global with nil to prevent its use in compile-time evaluation
         symtab.add!(id.text_value, Var.new(id.text_value, decl_type(symtab), nil))
       else
         type_error "No Type '#{type_name.text_value}'" if decl_type(symtab).nil?
-        symtab.add(id.text_value, Var.new(id.text_value, decl_type(symtab), decl_type(symtab).default))
+        symtab.add(id.text_value, Var.new(id.text_value, decl_type(symtab), T.must(decl_type(symtab)).default))
       end
     end
 
@@ -2524,7 +2777,7 @@ module Idl
       if ary_size.nil?
         "#{type_name.to_idl} #{id.to_idl}"
       else
-        "#{type_name.to_idl} #{id.to_idl}[#{ary_size.to_idl}]"
+        "#{type_name.to_idl} #{id.to_idl}[#{T.must(ary_size).to_idl}]"
       end
     end
   end
@@ -2548,13 +2801,43 @@ module Idl
     include Executable
     include Declaration
 
-    def type_name = @children[0]
-    def lhs = @children[1]
-    def ary_size = @children[3]
-    def rhs = @children[2]
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      var = Var.new(lhs.text_value, lhs_type(symtab))
+      symtab.add(lhs.text_value, var)
+      if rhs.const_eval?(symtab)
+        true
+      else
+        var.const_incompatible!
+        false
+      end
+    end
 
+    sig { returns(TypeNameAst) }
+    def type_name = T.cast(@children[0], TypeNameAst)
+
+    sig { returns(IdAst) }
+    def lhs = T.cast(@children[1], IdAst)
+
+    sig { returns(T.nilable(RvalueAst)) }
+    def ary_size = @children[3].nil? ? nil : T.cast(@children[3], RvalueAst)
+
+    sig { returns(RvalueAst) }
+    def rhs = T.cast(@children[2], RvalueAst)
+
+    sig { returns(String) }
     def id = lhs.text_value
 
+    sig {
+      params(
+        input: String,
+        interval: T::Range[Integer],
+        type_name_ast: TypeNameAst,
+        var_write_ast: IdAst,
+        ary_size: T.nilable(RvalueAst),
+        rval_ast: RvalueAst
+      ).void
+    }
     def initialize(input, interval, type_name_ast, var_write_ast, ary_size, rval_ast)
       if ary_size.nil?
         super(input, interval, [type_name_ast, var_write_ast, rval_ast])
@@ -2573,7 +2856,7 @@ module Idl
       type_error "No type '#{type_name.text_value}' on line #{lineno}" if decl_type.nil?
 
       qualifiers = []
-      qualifiers << :const if lhs.text_value[0].upcase == lhs.text_value[0]
+      qualifiers << :const if T.must(lhs.text_value[0]).upcase == lhs.text_value[0]
       qualifiers << :global if @global
 
       decl_type = Type.new(:enum_ref, enum_class: decl_type) if decl_type.kind == :enum
@@ -2584,7 +2867,7 @@ module Idl
 
       unless ary_size.nil?
         value_result = value_try do
-          decl_type = Type.new(:array, sub_type: decl_type, width: ary_size.value(symtab), qualifiers:)
+          decl_type = Type.new(:array, sub_type: decl_type, width: T.must(ary_size).value(symtab), qualifiers:)
         end
         value_else(value_result) do
           type_error "Array size must be known at compile time"
@@ -2611,7 +2894,7 @@ module Idl
         end
         value_else(value_result) do
           unless rhs.type(symtab).const?
-            type_error "Declaring constant with a non-constant value (#{rhs.text_value})"
+            type_error "Declaring constant (#{lhs.name}) with a non-constant value (#{rhs.text_value})"
           end
           symtab.add(lhs.text_value, Var.new(lhs.text_value, decl_type.clone))
         end
@@ -2630,7 +2913,7 @@ module Idl
     # @!macro add_symbol
     def add_symbol(symtab)
       if @global
-        if lhs.text_value[0] == lhs.text_value[0].upcase
+        if lhs.text_value[0] == T.must(lhs.text_value[0]).upcase
           # const, add the value if it's known
           value_result = value_try do
             symtab.add(lhs.text_value, Var.new(lhs.text_value, lhs_type(symtab), rhs.value(symtab)))
@@ -2655,7 +2938,7 @@ module Idl
     # @!macro execute
     def execute(symtab)
       value_error "TODO: Array declaration" unless ary_size.nil?
-      rhs_value = T.let(nil, T.nilable(AstNode::ValueRbType))
+      rhs_value = T.let(nil, T.nilable(ValueRbType))
       return if @global # never executed at compile time
 
       value_result = value_try do
@@ -2679,7 +2962,7 @@ module Idl
       if ary_size.nil?
         "#{type_name.to_idl} #{lhs.to_idl} = #{rhs.to_idl}"
       else
-        "#{type_name.to_idl} #{lhs.to_idl}[#{ary_size.to_idl}] = #{rhs.to_idl}"
+        "#{type_name.to_idl} #{lhs.to_idl}[#{T.must(ary_size).to_idl}] = #{rhs.to_idl}"
       end
     end
   end
@@ -2719,8 +3002,11 @@ module Idl
   class WidthRevealAst < AstNode
     include Rvalue
 
-    sig { returns(T.all(Rvalue, AstNode)) }
-    def expression = T.cast(@children.fetch(0), T.all(Rvalue, AstNode))
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
+
+    sig { returns(RvalueAst) }
+    def expression = T.cast(@children.fetch(0), RvalueAst)
 
     sig { params(input: String, interval: T::Range[Integer], e: AstNode).void }
     def initialize(input, interval, e)
@@ -2740,7 +3026,7 @@ module Idl
       if (expression.type(symtab).width == :unknown)
         BitsUnknownType
       else
-        Type.new(:bits, width: expression.type(symtab).width.bit_length)
+        Type.new(:bits, width: T.cast(expression.type(symtab).width, Integer).bit_length)
       end
     end
 
@@ -2748,10 +3034,10 @@ module Idl
     def value(symtab)
       v = expression.type(symtab).width
       value_error "Width is not known" if v == :unknown
-      v
+      T.cast(v, Integer)
     end
 
-    sig { override.void }
+    sig { override.returns(String) }
     def to_idl = "$width(#{expression.to_idl})"
   end
 
@@ -2763,6 +3049,9 @@ module Idl
 
   class SignCastAst < AstNode
     include Rvalue
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
 
     def expression = @children[0]
 
@@ -2808,6 +3097,11 @@ module Idl
   #   $bits(ExceptionCode::LoadAccessFault)
   class BitsCastAst < AstNode
     include Rvalue
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      expr.const_eval?(symtab)
+    end
 
     # @return [AstNode] The casted expression
     def expr = @children[0]
@@ -2877,6 +3171,13 @@ module Idl
     BIT_OPS = ["&", "|", "^"].freeze
     ARITH_OPS = ["+", "-", "/", "*", "%", "<<", ">>", ">>>", "`+", "`-", "`*", "`<<"].freeze
     OPS = (LOGICAL_OPS + ARITH_OPS + BIT_OPS).freeze
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      # can't check for short-circuit here unless we also evaluate values during the const_eval pass
+      # thus, conservative assume there is no short-circuiting
+      lhs.const_eval?(symtab) && rhs.const_eval?(symtab)
+    end
 
     def lhs = @children[0]
     def rhs = @children[1]
@@ -3568,6 +3869,9 @@ module Idl
               internal_error "Unhandled binary op #{op}"
             end
 
+          expr_type = type(symtab).width
+          value_error "Cannot know value of Bits with unknown width" if expr_type == :unknown
+
           v_trunc =
             if op.include?("`")
               v
@@ -3575,7 +3879,7 @@ module Idl
               truncate(v, type(symtab).width, type(symtab).signed?)
             end
 
-          truncation_warn "The value of '#{text_value}' (#{lhs.type(symtab).const?}, #{rhs.type(symtab).const?}) is truncated from #{v} to #{v_trunc} because the result is only #{type(symtab).width} bits" if v != v_trunc
+          truncation_warn "The value of '#{text_value}' is truncated from #{v} to #{v_trunc} because the result is only #{type(symtab).width} bits" if v != v_trunc
           v_trunc
         end
       # @value_cache[symtab] = value
@@ -3598,6 +3902,9 @@ module Idl
   #  (a + b)
   class ParenExpressionAst < AstNode
     include Rvalue
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = expression.const_eval?(symtab)
 
     def initialize(input, interval, exp) = super(input, interval, [exp])
 
@@ -3627,6 +3934,9 @@ module Idl
 
   class ArrayLiteralAst < AstNode
     include Rvalue
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = element_nodes.all? { |enode| enode.const_eval?(symtab) }
 
     def entries = @children
 
@@ -3669,6 +3979,9 @@ module Idl
   #   {1'b0, 5'd3}
   class ConcatenationExpressionAst < AstNode
     include Rvalue
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = expressions.all? { |e| e.const_eval?(symtab) }
 
     def expressions = @children
 
@@ -3725,6 +4038,10 @@ module Idl
   #   {5{5'd3}}
   class ReplicationExpressionAst < AstNode
     include Rvalue
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = n.const_eval?(symtab) && v.const_eval?(symtab)
+
 
     def n = @children[0]
     def v = @children[1]
@@ -3783,6 +4100,9 @@ module Idl
   class PostDecrementExpressionAst < AstNode
     include Executable
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = rval.const_eval?(symtab)
+
     def rval = @children[0]
 
     def initialize(input, interval, rval)
@@ -3831,6 +4151,18 @@ module Idl
 
   class BuiltinVariableAst < AstNode
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      case name
+      when "$encoding"
+        true
+      when "$pc"
+        false
+      else
+        raise "TODO"
+      end
+    end
+
     def name = text_value
 
     def initialize(input, interval)
@@ -3876,6 +4208,9 @@ module Idl
   #   i++
   class PostIncrementExpressionAst < AstNode
     include Executable
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = rval.const_eval?(symtab)
 
     def rval = @children[0]
 
@@ -3935,7 +4270,11 @@ module Idl
   class FieldAccessExpressionAst < AstNode
     include Rvalue
 
-    def obj = @children[0]
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = obj.const_eval?(symtab)
+
+    sig { returns(RvalueAst) }
+    def obj = T.cast(@children.fetch(0), RvalueAst)
 
     def initialize(input, interval, bitfield, field_name)
       super(input, interval, [bitfield])
@@ -3952,9 +4291,9 @@ module Idl
       obj_type = obj.type(symtab)
 
       if obj_type.kind == :bitfield
-        Type.new(:bits, width: obj_type.range(@field_name).size)
+        Type.new(:bits, width: T.cast(obj_type, BitfieldType).range(@field_name).size)
       elsif obj_type.kind == :struct
-        obj_type.member_type(@field_name)
+        T.cast(obj_type, StructType).member_type(@field_name)
       else
         internal_error "huh? #{obj.text_value} #{obj_type.kind}"
       end
@@ -3967,11 +4306,11 @@ module Idl
 
       if obj_type.kind == :bitfield
         internal_error "#{obj.text_value} Not a BitfieldType (is a #{obj_type.class.name})" unless obj_type.respond_to?(:field_names)
-        unless obj_type.field_names.include?(@field_name)
+        unless T.cast(obj_type, BitfieldType).field_names.include?(@field_name)
           type_error "#{@field_name} is not a member of #{obj_type}"
         end
       elsif obj_type.kind == :struct
-        type_error "#{@field_name} is not a member of #{obj_type}" unless obj_type.member?(@field_name)
+        type_error "#{@field_name} is not a member of #{obj_type}" unless T.cast(obj_type, StructType).member?(@field_name)
       else
         type_error "#{obj.text_value} is not a bitfield (is #{obj.type(symtab)})"
       end
@@ -3980,10 +4319,10 @@ module Idl
     # @!macro value
     def value(symtab)
       if kind(symtab) == :bitfield
-        range = obj.type(symtab).range(@field_name)
-        (obj.value(symtab) >> range.first) & ((1 << range.size) - 1)
+        range = T.cast(obj.type(symtab), BitfieldType).range(@field_name)
+        (T.cast(obj.value(symtab), Integer) >> range.first) & ((1 << range.size) - 1)
       elsif kind(symtab) == :struct
-        obj.value(symtab)[@field_name]
+        T.cast(obj.value(symtab), T::Hash[String, BasicValueRbType])[@field_name]
       else
         type_error "#{obj.text_value} is Not a bitfield."
       end
@@ -4008,6 +4347,9 @@ module Idl
   class EnumRefAst < AstNode
     include Rvalue
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
+
     def class_name = @enum_class_name
     def member_name = @member_name
 
@@ -4023,16 +4365,11 @@ module Idl
     def freeze_tree(global_symtab)
       return if frozen?
 
-      enum_def_ast = global_symtab.get(@enum_class_name)
+      @enum_def_type = global_symtab.get(@enum_class_name)
 
-      @enum_def_type =
-        if enum_def_ast.is_a?(BuiltinEnumDefinitionAst)
-          enum_def_ast.type(global_symtab)
-        elsif enum_def_ast.is_a?(EnumDefinitionAst)
-          enum_def_ast.type(nil)
-        else
-          type_error "#{@enum_class_name} is not a defined Enum"
-        end
+      unless @enum_def_type.kind == :enum
+        type_error "#{@enum_class_name} is not a defined Enum"
+      end
 
       freeze
     end
@@ -4089,6 +4426,9 @@ module Idl
   #   !bool_variable
   class UnaryOperatorExpressionAst < AstNode
     include Rvalue
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = expression.const_eval?(symtab)
 
     def expression = @children[0]
 
@@ -4174,7 +4514,7 @@ module Idl
       end
 
       if op != "~"
-        warn "#{text_value} is truncated due to insufficient bit width (from #{val} to #{val_trunc} on line #{lineno})" if val_trunc != val
+        truncation_warn "#{text_value} is truncated due to insufficient bit width (from #{val} to #{val_trunc})" if val_trunc != val
       end
 
       val_trunc
@@ -4208,6 +4548,9 @@ module Idl
   #   (a < b) ? c : d
   class TernaryOperatorExpressionAst < AstNode
     include Rvalue
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = condition.const_eval?(symtab) && true_expression.const_eval?(symtab) && false_expression.const_eval?(symtab)
 
     def condition = @children[0]
     def true_expression = @children[1]
@@ -4270,7 +4613,7 @@ module Idl
             true_expression.type(symtab).clone
           end
         if condition.type(symtab).const? && true_expression.type(symtab).const? && false_expression.type(symtab).const?
-          t.make_const
+          t.make_const!
         end
         return t
       end
@@ -4303,6 +4646,9 @@ module Idl
   end
 
   class NoopAst < AstNode
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
+
     def initialize
       super("", 0...0, EMPTY_ARRAY)
     end
@@ -4329,6 +4675,9 @@ module Idl
   #   func();
   class StatementAst < AstNode
     include Executable
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = action.const_eval?(symtab)
 
     def action = @children[0]
 
@@ -4380,6 +4729,9 @@ module Idl
     def action = @children[0]
     def condition = @children[1]
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = action.const_eval?(symtab) && condition.const_eval?(symtab)
+
     def initialize(input, interval, action, condition)
       super(input, interval, [action, condition])
     end
@@ -4387,6 +4739,8 @@ module Idl
     # @!macro type_check
     def type_check(symtab)
       action.type_check(symtab)
+      type_error "Cannot declare from a conditional statement" if action.is_a?(Declaration)
+
       condition.type_check(symtab)
       type_error "condition is not boolean" unless condition.type(symtab).convertable_to?(:boolean)
     end
@@ -4432,6 +4786,9 @@ module Idl
   class DontCareReturnAst < AstNode
     include Rvalue
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
+
     def initialize(input, interval)
       super(input, interval, EMPTY_ARRAY)
     end
@@ -4475,6 +4832,9 @@ module Idl
   class DontCareLvalueAst < AstNode
     include Rvalue
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
+
     def initialize(input, interval) = super(input, interval, EMPTY_ARRAY)
 
     # @!macro type_check_no_args
@@ -4507,6 +4867,9 @@ module Idl
   #   return X[rs1] + 1;
   class ReturnStatementAst < AstNode
     include Returns
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = return_expression.const_eval?(symtab)
 
     def return_expression
       @children[0]
@@ -4574,6 +4937,9 @@ module Idl
 
   class ReturnExpressionAst < AstNode
     include Returns
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = return_value_nodes.all? { |node| node.const_eval?(symtab) }
 
     def return_value_nodes = @children
 
@@ -4660,6 +5026,9 @@ module Idl
   class ConditionalReturnStatementAst < AstNode
     include Returns
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = condition.const_eval?(symtab) && return_expression.const_eval?(symtab)
+
     def return_expression = @children[0]
     def condition = @children[1]
 
@@ -4719,6 +5088,9 @@ module Idl
 
   # represents a comment
   class CommentAst < AstNode
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
+
     def initialize(input, interval)
       super(input, interval, EMPTY_ARRAY)
     end
@@ -4758,6 +5130,9 @@ module Idl
   #  * U32 (Bits<32>)
   #  * U64 (Bits<64>)
   class BuiltinTypeNameAst < AstNode
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = (@type_name == "bits") ? bits_expression.const_eval?(symtab) : true
 
     def bits_expression = @children[0]
 
@@ -4804,6 +5179,7 @@ module Idl
     end
 
     # @!macro type
+    sig { params(symtab: SymbolTable).returns(Type) }
     def type(symtab)
       case @type_name
       when "XReg"
@@ -4860,6 +5236,9 @@ module Idl
   class StringLiteralAst < AstNode
     include Rvalue
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
+
     def initialize(input, interval)
       super(input, interval, EMPTY_ARRAY)
       @type = Type.new(:string, width: value(nil).length, qualifiers: [:const])
@@ -4898,6 +5277,9 @@ module Idl
   # represents an integer literal
   class IntLiteralAst < AstNode
     include Rvalue
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
 
     def initialize(input, interval)
       super(input, interval, EMPTY_ARRAY)
@@ -5151,6 +5533,13 @@ module Idl
     include Rvalue
     include Executable
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      targs.all? { |targ| targ.const_eval?(symtab) } && \
+        args.all? { |arg| arg.const_eval?(symtab) } && \
+        func_type(symtab).func_def_ast.const_eval?(symtab)
+    end
+
     def targs = children[0...@num_targs]
     def args = children[@num_targs..]
 
@@ -5258,7 +5647,7 @@ module Idl
         end
       end
 
-      if func_def_type.return_type(tvals, self).nil?
+      if func_def_type.return_type(tvals, arg_nodes, self).nil?
         internal_error "No type determined for function"
       end
 
@@ -5269,7 +5658,9 @@ module Idl
     def type(symtab)
       return ConstBoolType if name == "implemented?" || name == "implemented_version?" || name == "implemented_csr?"
 
-      func_type(symtab).return_type(template_values(symtab, unknown_ok: true), self)
+      rtype = func_type(symtab).return_type(template_values(symtab, unknown_ok: true), arg_nodes, self)
+      rtype = rtype.make_const if arg_nodes.all? { |a| a.type(symtab).const? } && func_type(symtab).func_def_ast.const_eval?(symtab)
+      rtype
     end
 
     # @!macro value
@@ -5378,6 +5769,9 @@ module Idl
   end
 
   class UserTypeNameAst < AstNode
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = true
+
     def initialize(input, interval)
       super(input, interval, EMPTY_ARRAY)
       @type_cache = {}
@@ -5391,17 +5785,20 @@ module Idl
     end
 
     # @!macro type_no
+    sig { params(symtab: SymbolTable).returns(Type) }
     def type(symtab)
-      typ = @type_cache[symtab.name]
-      return typ unless typ.nil?
+      t = symtab.get(text_value)
+      type_error "Undefined user type: '#{text_value}'" if t.nil?
 
-      @type_cache[symtab.name] = symtab.get(text_value)
+      T.must(t)
     end
 
     # @!macro to_idl
     sig { override.returns(String) }
     def to_idl = text_value
   end
+
+  TypeNameAst = T.type_alias { T.any(UserTypeNameAst, BuiltinTypeNameAst) }
 
   class InstructionOperationSyntaxNode < SyntaxNode
     def to_ast
@@ -5419,6 +5816,13 @@ module Idl
   class FunctionBodyAst < AstNode
     include Executable
     include Returns
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      stmts.all? do |stmt|
+        stmt.const_eval?(symtab)
+      end
+    end
 
     def initialize(input, interval, stmts)
       super(input, interval, stmts)
@@ -5457,8 +5861,11 @@ module Idl
       stmts.each do |s|
         if s.is_a?(Returns)
           return s.return_type(symtab)
+        elsif s.action.is_a?(Declaration)
+          s.action.add_symbol(symtab)
         end
       end
+      VoidType
     end
 
     # @!macro return_value
@@ -5531,6 +5938,9 @@ module Idl
   end
 
   class FetchAst < AstNode
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = body.const_eval?(symtab)
+
     def body = @children[0]
 
     def initialize(input, interval, body)
@@ -5580,7 +5990,7 @@ module Idl
     # @param interval [Range] The range in the source code for this function definition
     # @param name [String] The name of the function
     # @param targs [Array<AstNode>] Template arguments
-    # @params return_types [Array<AstNode>] Return types
+    # @param return_types [Array<AstNode>] Return types
     # @param arguments [Array<AstNode>] Arguments
     # @param desc [String] Description
     # @param type [:normal, :builtin, :generated, :external] Type of function
@@ -5673,7 +6083,7 @@ module Idl
 
     # return the return type, which may be a tuple of multiple types
     def return_type(symtab)
-      cached = @cached_return_type[symtab.name]
+      cached = @cached_return_type[symtab.name] # only chaced for non-template functions
       return cached unless cached.nil?
 
       unless symtab.levels == 2
@@ -5741,6 +6151,37 @@ module Idl
       else
         @return_type_nodes.map(&:text_value)
       end
+    end
+
+    # if the arguments are all consts, will the return value be const/knowable?
+    # if const_if_args_const? is true, then the return value of the function is gauranteed
+    # to be known at compile time when all argument values are known at compile time
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      return false if builtin? || generated?
+
+      # set up the template args (if present) and dummy const args, and see if the type comes out
+      # const
+      symtab = symtab.global_clone
+      symtab.push(self)
+
+      template_names.each_with_index do |tname, index|
+        symtab.add(tname, Var.new(tname, template_types(symtab)[index], template_index: index, function_name: name))
+      end
+
+      arguments(symtab).each do |arg_type, arg_name|
+        symtab.add(arg_name, Var.new(arg_name, arg_type))
+      end
+
+      symtab.add(
+        "__expected_return_type",
+        return_type(symtab)
+      )
+
+      is_const_eval = @body.const_eval?(symtab)
+      symtab.release
+
+      is_const_eval
     end
 
     def name
@@ -5847,7 +6288,7 @@ module Idl
       @targs.each do |a|
         ttype = a.type(symtab)
         ttype = ttype.ref_type if ttype.kind == :enum
-        ttypes << ttype.clone.make_const
+        ttypes << ttype.make_const
         T.must(ttypes.last).qualify(:template_var)
       end
       ttypes
@@ -5959,6 +6400,14 @@ module Idl
     include Executable
     include Returns # a return statement in a for loop can make it return a value
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      init.const_eval?(symtab) && \
+        condition.const_eval?(symtab) && \
+        update.const_eval?(symtab) && \
+        stmts.all? { |stmt| stmt.const_eval?(symtab) }
+    end
+
     def init = @children[0]
     def condition = @children[1]
     def update = @children[2]
@@ -6011,13 +6460,10 @@ module Idl
       nil
     end
 
-    sig { override.params(symtab: SymbolTable).returns(T.nilable(Type)) }
+    sig { override.params(symtab: SymbolTable).returns(Type) }
     def return_type(symtab)
       # the return type is determined by the function
-      t = expected_return_type(symtab)
-      unless t.kind == :void
-        t
-      end # else, nil
+      expected_return_type(symtab)
     end
 
     # @!macro return_values
@@ -6101,6 +6547,11 @@ module Idl
     include Executable
     include Returns
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      stmts.all? { |stmt| stmt.const_eval?(symtab) }
+    end
+
     def stmts = @children
 
     def initialize(input, interval, body_stmts)
@@ -6124,13 +6575,10 @@ module Idl
       end
     end
 
-    sig { override.params(symtab: SymbolTable).returns(T.nilable(Type)) }
+    sig { override.params(symtab: SymbolTable).returns(Type) }
     def return_type(symtab)
       # the return type is determined by the function
       t = expected_return_type(symtab)
-      unless t.kind == :void
-        t
-      end # else, nil
     end
 
     # @!macro return_value
@@ -6226,8 +6674,13 @@ module Idl
   class ElseIfAst < AstNode
     include Returns
 
-    sig { returns(T.all(Rvalue, AstNode)) }
-    def cond = T.cast(@children.fetch(0), T.all(Rvalue, AstNode))
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      cond.const_eval?(symtab) && body.const_eval?(symtab)
+    end
+
+    sig { returns(RvalueAst) }
+    def cond = T.cast(@children.fetch(0), RvalueAst)
 
     sig { returns(IfBodyAst) }
     def body = T.cast(@children.fetch(1), IfBodyAst)
@@ -6252,13 +6705,10 @@ module Idl
       body.type_check(symtab) unless cond_value == false
     end
 
-    sig { override.params(symtab: SymbolTable).returns(T.nilable(Type)) }
+    sig { override.params(symtab: SymbolTable).returns(Type) }
     def return_type(symtab)
       # the return type is determined by the function
       t = expected_return_type(symtab)
-      unless t.kind == :void
-        t
-      end # else, nil
     end
 
     def return_value(symtab)
@@ -6327,8 +6777,16 @@ module Idl
     include Executable
     include Returns
 
-    sig { returns(T.all(AstNode, Rvalue)) }
-    def if_cond = T.cast(@children.fetch(0), T.all(AstNode, Rvalue))
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      if_cond.const_eval?(symtab) && \
+        if_body.const_eval?(symtab) && \
+        elseifs.all? { |eif| eif.const_eval?(symtab) } && \
+        final_else_body.const_eval?(symtab)
+    end
+
+    sig { returns(RvalueAst) }
+    def if_cond = T.cast(@children.fetch(0), RvalueAst)
 
     sig { returns(IfBodyAst) }
     def if_body = T.cast(@children.fetch(1), IfBodyAst)
@@ -6343,6 +6801,8 @@ module Idl
       children_nodes = [if_cond, if_body]
       children_nodes += elseifs
       children_nodes << final_else_body
+
+      @func_type_cache = {}
 
       super(input, interval, children_nodes)
     end
@@ -6398,9 +6858,9 @@ module Idl
       final_else_body.stmts.empty? ? nil : final_else_body
     end
 
-    sig { override.params(symtab: SymbolTable).returns(T.nilable(Type)) }
+    sig { override.params(symtab: SymbolTable).returns(Type) }
     def return_type(symtab)
-      @return_type ||= begin
+      begin
         rt = if_body.return_type(symtab)
         rt = elseifs.map { |eif| eif.return_type(symtab) }.compact[0] if rt.nil?
         rt ||= final_else_body.return_type(symtab)
@@ -6578,6 +7038,9 @@ module Idl
   class CsrFieldReadExpressionAst < AstNode
     include Rvalue
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = !@value.nil?
+
     def initialize(input, interval, csr, field_name)
       super(input, interval, [csr])
 
@@ -6697,6 +7160,9 @@ module Idl
   class CsrReadExpressionAst < AstNode
     include Rvalue
 
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = !@csr_obj.value.nil?
+
     attr_reader :csr_name
 
     def initialize(input, interval, csr_name)
@@ -6708,7 +7174,7 @@ module Idl
     def freeze_tree(symtab)
       return if frozen?
 
-      type_error "CSR '#{@csr_name}' is not defined" if symtab.csr?(@csr_name)
+      type_error "CSR '#{@csr_name}' is not defined" unless symtab.csr?(@csr_name)
       @csr_obj = symtab.csr(@csr_name)
 
       @type = CsrType.new(@csr_obj).freeze
@@ -6722,7 +7188,7 @@ module Idl
 
     # @!macro type_check
     def type_check(symtab)
-      type_error "CSR '#{@csr_name}' is not defined" if symtab.csr?(@csr_name)
+      type_error "CSR '#{@csr_name}' is not defined" unless symtab.csr?(@csr_name)
     end
 
     def csr_def(symtab)
@@ -6755,6 +7221,9 @@ module Idl
 
   class CsrSoftwareWriteAst < AstNode
     include Executable
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = false
 
     def csr = @children[0]
     def expression = @children[1]
@@ -6813,6 +7282,15 @@ module Idl
   #   CSR[mtval].sw_read()
   class CsrFunctionCallAst < AstNode
     include Rvalue
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab)
+      if csr.csr_known?(symtab) && function_name == "address"
+        true
+      else
+        false
+      end
+    end
 
     # @return [String] The function being called
     attr_reader :function_name
@@ -6907,6 +7385,9 @@ module Idl
 
   class CsrWriteAst < AstNode
     include Executable
+
+    sig { override.params(symtab: SymbolTable).returns(T::Boolean) }
+    def const_eval?(symtab) = false
 
     def idx = @children[0]
 

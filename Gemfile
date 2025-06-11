@@ -34,6 +34,7 @@ group :development do
   gem "debug"
   gem "rdbg"
   gem "rubocop-minitest"
+  gem "rubocop-sorbet"
   gem "ruby-prof"
   gem "ruby-prof-flamegraph", git: "https://github.com/oozou/ruby-prof-flamegraph.git", ref: "fc3c437", require: false
   gem "solargraph"

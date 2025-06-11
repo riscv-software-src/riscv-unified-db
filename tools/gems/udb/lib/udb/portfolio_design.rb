@@ -20,7 +20,9 @@ require_relative "obj/portfolio"
 require "udb_helpers/backend_helpers"
 include Udb::Helpers::TemplateHelpers
 
-class Udb::PortfolioDesign
+module Udb
+
+class PortfolioDesign
   extend Forwardable
 
   # Calls to these methods on Design are handled by the ConfiguredArchitecture object.
@@ -250,4 +252,5 @@ class Udb::PortfolioDesign
     template_pname = "portfolio/templates/#{template_name}"
     partial(template_pname, erb_env(extra_inputs))
   end
+end
 end

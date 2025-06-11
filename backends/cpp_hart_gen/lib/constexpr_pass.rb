@@ -18,7 +18,7 @@ module Idl
       return false if sym.value.nil? # assuming undefined syms are local (be sure to type check first!!)
 
       if sym.param?
-        symtab.cfg_arch.params_with_value.any? { |p| p.name == text_value }
+        @cfg_arch.params_with_value.any? { |p| p.name == text_value }
       elsif sym.template_value?
         true
       else

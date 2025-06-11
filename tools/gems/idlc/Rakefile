@@ -15,15 +15,11 @@ namespace :test do
   end
 end
 
-# initialize sorbet
 namespace :chore do
   namespace :idlc do
-    task "update-sorbet" do
-      Dir.chdir(IDLC_ROOT) do
-        # update the Gemfile
+    task :update_deps do
+      Dir.chdir(RUBY_UDB_ROOT) do
         sh "bundle update --gemfile Gemfile"
-
-        # update the rbi defintions
         sh "bundle exec tapioca gems --all"
       end
     end

@@ -228,7 +228,7 @@ class Architecture
 
   # @return [Parameter] Parameter named +name+
   # @return [nil] if there is no parameter named +name+
-  sig { returns(T.nilable(Parameter)) }
+  sig { params(name: String).returns(T.nilable(Parameter)) }
   def param(name)
     param_hash[name]
   end
@@ -284,15 +284,15 @@ class Architecture
     return @exception_codes unless @exception_codes.nil?
 
     @exception_codes =
-      extensions.reduce([]) do |list, ext_version|
-        ecodes = extension(ext_version.name).data["exception_codes"]
+      extensions.reduce([]) do |list, ext|
+        ecodes = extension(ext.name).data["exception_codes"]
         next list if ecodes.nil?
 
         ecodes.each do |ecode|
           # double check that all the codes are unique
           raise "Duplicate exception code" if list.any? { |e| e.num == ecode["num"] || e.name == ecode["name"] || e.var == ecode["var"] }
 
-          list << ExceptionCode.new(ecode["name"], ecode["var"], ecode["num"], self)
+          list << ExceptionCode.new(ecode["name"], ecode["var"], ecode["num"], ext)
         end
         list
       end
@@ -303,8 +303,8 @@ class Architecture
     return @interrupt_codes unless @interrupt_codes.nil?
 
     @interupt_codes =
-      extensions.reduce([]) do |list, ext_version|
-        icodes = extension(ext_version.name).data["interrupt_codes"]
+      extensions.reduce([]) do |list, ext|
+        icodes = extension(ext.name).data["interrupt_codes"]
         next list if icodes.nil?
 
         icodes.each do |icode|
@@ -313,7 +313,7 @@ class Architecture
             raise "Duplicate interrupt code"
           end
 
-          list << InterruptCode.new(icode["name"], icode["var"], icode["num"], self)
+          list << InterruptCode.new(icode["name"], icode["var"], icode["num"], ext)
         end
         list
       end

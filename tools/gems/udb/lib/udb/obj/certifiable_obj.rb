@@ -6,7 +6,8 @@
 require_relative "../cert_normative_rule"
 require_relative "../cert_test_procedure"
 
-module Udb::CertifiableObject
+module Udb
+module CertifiableObject
   # @return [Array<CertNormativeRule>]
   def cert_normative_rules
     return @cert_normative_rules unless @cert_normative_rules.nil?
@@ -65,3 +66,4 @@ module Udb::CertifiableObject
     cert_test_procedure_hash[id]
   end
 end # module
+end

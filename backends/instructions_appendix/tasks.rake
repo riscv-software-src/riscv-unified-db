@@ -16,7 +16,7 @@ end
 
 # File task that generates the merged instructions adoc.
 file MERGED_INSTRUCTIONS_FILE.to_s => [__FILE__, TEMPLATE_FILE.to_s] do |t|
-  cfg_arch = cfg_arch_for("_")
+  cfg_arch = $resolver.cfg_arch_for("_")
   instructions = cfg_arch.possible_instructions
 
   # Load and process the template (which renders both an index and details).

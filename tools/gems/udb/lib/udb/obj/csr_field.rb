@@ -72,7 +72,7 @@ class CsrField < DatabaseObject
     end
   end
 
-  sig { returns(T::Boolean) }
+  sig { override.returns(T::Boolean) }
   def exists? = exists_in_cfg?(cfg_arch)
 
   # @return [Boolean] For a partially configured cfg_arch, whether or not the field is optional (not mandatory or prohibited)
@@ -142,7 +142,7 @@ class CsrField < DatabaseObject
 
     symtab = fill_symtab_for_type(effective_xlen, ast)
 
-    symtab.cfg_arch.idl_compiler.type_check(
+    cfg_arch.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{name}].type()"
@@ -176,7 +176,7 @@ class CsrField < DatabaseObject
     symtab = fill_symtab_for_type(effective_xlen, ast)
     ast.freeze_tree(symtab)
 
-    symtab.cfg_arch.idl_compiler.type_check(
+    @cfg_arch.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{name}].type()"
@@ -279,7 +279,7 @@ class CsrField < DatabaseObject
       range_start = Regexp.last_match(4)
       range_end = Regexp.last_match(5)
 
-      csr_field = cfg_arch.csr(csr_name).field(csr_field)
+      csr_field = T.must(cfg_arch.csr(csr_name)).field(csr_field)
       range =
         if range.nil?
           csr_field.location
@@ -477,11 +477,11 @@ class CsrField < DatabaseObject
     )
     symtab.add(
       "csr_value",
-      Idl::Var.new("csr_value", csr.bitfield_type(symtab.cfg_arch, effective_xlen))
+      Idl::Var.new("csr_value", csr.bitfield_type(@cfg_arch, effective_xlen))
     )
 
     ast = T.must(sw_write_ast(symtab))
-    symtab.cfg_arch.idl_compiler.type_check(
+    @cfg_arch.idl_compiler.type_check(
       ast,
       symtab,
       "CSR[#{csr.name}].#{name}.sw_write()"
@@ -500,7 +500,7 @@ class CsrField < DatabaseObject
     return nil if @data["sw_write(csr_value)"].nil?
 
     # now, parse the function
-    @sw_write_ast = symtab.cfg_arch.idl_compiler.compile_func_body(
+    @sw_write_ast = @cfg_arch.idl_compiler.compile_func_body(
       @data["sw_write(csr_value)"],
       return_type: Idl::Type.new(:bits, width: 128), # big int to hold special return values
       name: "CSR[#{csr.name}].#{name}.sw_write(csr_value)",
@@ -626,7 +626,7 @@ class CsrField < DatabaseObject
   # @param cfg_arch [ConfiguredArchitecture] A config. May be nil if the location is not configturation-dependent
   # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
   # @return [Range] the location within the CSR as a range (single bit fields will be a range of size 1)
-  sig { params(effective_xlen: T.nilable(Integer)).returns(T::Range[Integer]) }
+  sig { override.params(effective_xlen: T.nilable(Integer)).returns(T::Range[Integer]) }
   def location(effective_xlen = nil)
     key =
       if @data.key?("location")
@@ -673,24 +673,24 @@ class CsrField < DatabaseObject
   end
 
   # @return [Boolean] Whether or not this field only exists when XLEN == 64
-  sig { returns(T::Boolean) }
+  sig { override.returns(T::Boolean) }
   def base64_only? = @data.key?("base") && @data["base"] == 64
 
   # @return [Boolean] Whether or not this field only exists when XLEN == 32
-  sig { returns(T::Boolean) }
+  sig { override.returns(T::Boolean) }
   def base32_only? = @data.key?("base") && @data["base"] == 32
 
-  sig { returns(T::Boolean) }
+  sig { override.returns(T::Boolean) }
   def defined_in_base32? = @data["base"].nil? || @data["base"] == 32
 
-  sig { returns(T::Boolean) }
+  sig { override.returns(T::Boolean) }
   def defined_in_base64? = @data["base"].nil? || @data["base"] == 64
 
   sig { params(xlen: Integer).returns(T::Boolean) }
   def defined_in_base?(xlen) = @data["base"].nil? || @data["base"] == xlen
 
   # @return [Boolean] Whether or not this field exists for any XLEN
-  sig { returns(T::Boolean) }
+  sig { override.returns(T::Boolean) }
   def defined_in_all_bases? = @data["base"].nil?
 
   # @param effective_xlen [Integer] The effective xlen, needed since some fields change location with XLEN. If the field location is not determined by XLEN, then this parameter can be nil
