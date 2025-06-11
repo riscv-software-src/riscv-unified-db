@@ -1,3 +1,6 @@
+// Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+// SPDX-License-Identifier: CC-BY-4.0
+
 [[sec:interrupts]]
 = Interrupts
 

@@ -1,3 +1,8 @@
+<!---
+Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+SPDX-License-Identifier: CC-BY-4.0
+-->
+
 # Instructions Repository
 
 This repository contains definitions for instructions following the standardized JSON schema provided by UDB (Universal Design Base). Each instruction is specified within its own YAML file.

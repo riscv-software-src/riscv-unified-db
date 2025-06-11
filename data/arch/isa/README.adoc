@@ -1,3 +1,6 @@
+// Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+// SPDX-License-Identifier: CC-BY-4.0
+
 = Architecture Specification
 
 RISC-V is a highly configurable standard. Numerous unnamed implementation options exist, and
