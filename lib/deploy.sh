@@ -103,6 +103,7 @@ deploy_log "Create isa_explorer_browser_inst"
 deploy_log "Create isa_explorer_browser_csr"
 
 parallel :::                                          \
+  "./bin/reuse spdx -o $DEPLOY_DIR/BOM"               \
   "./do gen:udb:api_doc"                              \
   "./do gen:isa_explorer_browser_csr"                 \
   "./do gen:isa_explorer_browser_ext"                 \
@@ -258,6 +259,12 @@ cat <<- EOF > $DEPLOY_DIR/index.html
     <h3>IDL Documentation</h3>
     <ul>
       <li><a href="$PAGES_URL/ruby/idl/index.html">IDL language documentation</a></li>
+    </ul>
+
+    <br/>
+    <h3>Repository development</h3>
+    <ul>
+      <li><a href="$PAGES_URL/BOM">Reuse Bill of Materials (LICENSE information)</a></li>
     </ul>
   </body>
 </html>
