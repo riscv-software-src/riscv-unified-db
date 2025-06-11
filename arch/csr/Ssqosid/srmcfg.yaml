@@ -90,7 +90,6 @@ description:
       During context switches, the supervisor may choose to execute with the `srmcfg` of the outgoing context to attribute the execution to it.
       Prior to restoring the new context, it switches to the new VM’s `srmcfg`.
       The supervisor can also use a separate configuration for execution not to be attributed to either context.
-
 fields:
   RCID:
     location: 11-0
@@ -113,8 +112,7 @@ fields:
           raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
       }
-      rcid_mask = (1u << RCID_WIDTH) - 1;
-      return csr_value.RCID & rcid_mask;
+      return csr_value.RCID & ((1 `<< RCID_WIDTH) - 1);
 
   MCID:
     location: 27-16
@@ -136,8 +134,7 @@ fields:
           raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
         }
       }
-      mcid_mask = (1u << MCID_WIDTH) - 1;
-      return csr_value.MCID & mcid_mask;
+      return csr_value.MCID & ((1 `<< MCID_WIDTH) - 1);
 
 sw_read(): |
   if (implemented?(ExtensionName::Smstateen)) {

@@ -28,6 +28,25 @@ description: |
   which provides methods for setting resource usage limits and monitoring resource consumption.
   The RCID controls resource allocations, while the MCID is used for tracking resource usage.
 
+params:
+  RCID_WIDTH:
+    description: |
+      Number of bits used for the Resource Control ID field (RCID).
+      Default is 12.
+    schema:
+      type: integer
+      minimum: 1
+      maximum: 16
+
+  MCID_WIDTH:
+    description: |
+      Number of bits used for the Monitoring Counter ID field (MCID).
+      Default is 12.
+    schema:
+      type: integer
+      minimum: 1
+      maximum: 16
+
 versions:
   - version: "1.0.0"
     state: ratified
