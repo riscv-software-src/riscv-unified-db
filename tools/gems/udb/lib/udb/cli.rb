@@ -28,11 +28,11 @@ module Udb
 
     class List < SubCommandBase
       desc "extensions", "list all extensions, including those implied, for a config"
-      method_option :arch, aliases: "-a", type: :string, desc: "Path to architecture database", default: "#{Udb.repo_root}/arch"
-      method_option :arch_overlay, type: :string, desc: "Path to architecture overlay directory", default: "#{Udb.repo_root}/arch_overlay"
-      method_option :gen, type: :string, desc: "Path to folder used for generation", default: "#{Udb.repo_root}/gen"
+      method_option :arch, aliases: "-a", type: :string, desc: "Path to architecture database", default: Udb.default_arch_isa_path.to_s
+      method_option :arch_overlay, type: :string, desc: "Path to architecture overlay directory", default: Udb.default_arch_overlay_isa_path.to_s
+      method_option :gen, type: :string, desc: "Path to folder used for generation", default: Udb.default_gen_path.to_s
       method_option :config, type: :string, required: true, desc: "Configuration name, or path to a config file", default: "_"
-      method_option :config_dir, type: :string, desc: "Path to directory with config files", default: "#{Udb.repo_root}/cfgs"
+      method_option :config_dir, type: :string, desc: "Path to directory with config files", default: Udb.default_cfgs_path.to_s
       def extensions
         raise ArgumentError, "Arch directory does not exist: #{options[:arch]}" unless File.directory?(options[:arch])
 
@@ -59,10 +59,10 @@ module Udb
 
 
       desc "parameters", "list all parameters applicable to  a config"
-      method_option :arch, aliases: "-a", type: :string, desc: "Path to architecture database", default: "#{Udb.repo_root}/arch"
-      method_option :arch_overlay, type: :string, desc: "Path to architecture overlay directory", default: "#{Udb.repo_root}/arch_overlay"
-      method_option :gen, type: :string, desc: "Path to folder used for generation", default: "#{Udb.repo_root}/gen"
-      method_option :config_dir, type: :string, desc: "Path to directory with config files", default: "#{Udb.repo_root}/cfgs"
+      method_option :arch, aliases: "-a", type: :string, desc: "Path to architecture database", default: Udb.default_arch_isa_path.to_s
+      method_option :arch_overlay, type: :string, desc: "Path to architecture overlay directory", default: Udb.default_arch_overlay_isa_path.to_s
+      method_option :gen, type: :string, desc: "Path to folder used for generation", default: Udb.default_gen_path.to_s
+      method_option :config_dir, type: :string, desc: "Path to directory with config files", default: Udb.default_cfgs_path.to_s
       method_option :config, type: :string, required: true, desc: "Configuration name, or path to a config file", default: "_"
       method_option :extensions, aliases: "-e", type: :array, desc: "Only list parameters from extensions"
       method_option :output_format, aliases: "-f", enum: ["ascii", "yaml", "json"], type: :string, desc: "Output format. 'ascii' prints a table to stdout. 'yaml' prints YAML to stdout. 'json' prints JSON to stdout", default: 'ascii'
@@ -100,7 +100,10 @@ module Udb
             cfg_arch.possible_extensions.map(&:params).flatten.uniq(&:name).sort
           end
         if options[:output_format] == "ascii"
-          table = Terminal::Table.new rows: params.map { |p| [p.name, p.exts.map(&:name).join(", "), p.desc] }
+          table = ::Terminal::Table.new(
+            headings: ["Name", "Extension(s)", "description"],
+            rows: params.map { |p| [p.name, p.exts.map(&:name).join(", "), p.desc] },
+          )
           table.style = { all_separators: true }
           out.puts table
         elsif options[:output_format] == "yaml"

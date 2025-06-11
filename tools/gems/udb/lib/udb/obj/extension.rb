@@ -442,7 +442,7 @@ class ExtensionVersion
       ext.versions.each do |ext_ver|
         raise "????" if ext_ver.arch.nil?
         ext_ver.implications.each do |implication|
-          @implied_by_with_condition << { ext_ver: ext_ver, cond: implication[:cond] } if implication[:ext_ver] == self
+          @implied_by_with_condition << { ext_ver: ext_ver, cond: implication.cond } if implication.ext_ver == self
         end
       end
     end

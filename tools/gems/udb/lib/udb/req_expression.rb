@@ -748,7 +748,7 @@ class ConditionalExtensionVersionList
 
   class ConditionalExtensionVersion < T::Struct
     prop :ext_ver, ExtensionVersion
-    prop :cond, T.any(ExtensionRequirementExpression, AlwaysFalseExtensionRequirementExpression, AlwaysTrueExtensionRequirementExpression)
+    prop :cond, AbstractRequirement
   end
 
   YamlExtensionWithVersion = T.type_alias { T::Hash[String, String] }
@@ -787,15 +787,15 @@ class ConditionalExtensionVersionList
     data = T.let({}, T::Hash[String, String])
     if @data.is_a?(Hash)
       data = T.cast(@data, T::Hash[String, String])
-      result << { ext_ver: entry_to_ext_ver(data), cond: AlwaysTrueExtensionRequirementExpression.new }
+      result << ConditionalExtensionVersion.new(ext_ver: entry_to_ext_ver(data), cond: AlwaysTrueExtensionRequirementExpression.new)
     else
       T.must(@data).each do |elem|
         if elem.keys[0] == "if"
           cond_expr = ExtensionRequirementExpression.new(T.must(elem["if"]), @cfg_arch)
           data = T.cast(elem["then"], T::Hash[String, String])
-          result << { ext_ver: entry_to_ext_ver(data), cond: cond_expr }
+          result << ConditionalExtensionVersion.new(ext_ver: entry_to_ext_ver(data), cond: cond_expr)
         else
-          result << { ext_ver: entry_to_ext_ver(elem), cond: AlwaysTrueExtensionRequirementExpression.new }
+          result << ConditionalExtensionVersion.new(ext_ver: entry_to_ext_ver(elem), cond: AlwaysTrueExtensionRequirementExpression.new)
         end
       end
     end

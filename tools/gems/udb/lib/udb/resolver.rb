@@ -35,6 +35,27 @@ module Udb
       end
   end
 
+  sig { returns(Pathname) }
+  def self.default_arch_isa_path
+    repo_root / "data" / "arch" / "isa"
+  end
+
+  sig { returns(Pathname) }
+  def self.default_arch_overlay_isa_path
+    repo_root / "data" / "arch_overlay" / "isa"
+  end
+
+  sig { returns(Pathname) }
+  def self.default_gen_path
+    repo_root / "gen"
+  end
+
+  sig { returns(Pathname) }
+  def self.default_cfgs_path
+    repo_root / "cfgs"
+  end
+
+
   class Resolver
     extend T::Sig
 
@@ -76,8 +97,8 @@ module Udb
     def resolve_config(
       config_path,
       gen_path: @repo_root / "gen",
-      arch_path: @repo_root / "arch",
-      arch_overlay_path: @repo_root / "arch_overlay"
+      arch_path: @repo_root / "data" / "arch" / "isa",
+      arch_overlay_path: @repo_root / "data" / "arch_overlay" / "isa"
     )
       config_yaml = T.nilable(T::Hash[String, T.untyped])
       config_name = config_path.basename(".yaml")
@@ -117,8 +138,8 @@ module Udb
     def merge_arch(
       config_yaml,
       gen_path: @repo_root / "gen",
-      arch_path: @repo_root / "arch",
-      arch_overlay_path: @repo_root / "arch_overlay",
+      arch_path: @repo_root / "data" / "arch" / "isa",
+      arch_overlay_path: @repo_root / "data" / "arch_overlay" / "isa",
       python_path: @repo_root / ".home" / ".venv" / "bin" / "python3"
     )
       config_name = config_yaml["name"]
@@ -145,8 +166,8 @@ module Udb
     def resolve_arch(
       config_yaml,
       gen_path: @repo_root / "gen",
-      arch_path: @repo_root / "arch",
-      arch_overlay_path: @repo_root / "arch_overlay",
+      arch_path: @repo_root / "data" / "arch" / "isa",
+      arch_overlay_path: @repo_root / "data" / "arch_overlay" / "isa",
       python_path: @repo_root / ".home" / ".venv" / "bin" / "python3"
     )
       merge_arch(config_yaml, gen_path:, arch_path:, arch_overlay_path:, python_path:)
@@ -171,8 +192,8 @@ module Udb
     def cfg_arch_for(
       config_path_or_name,
       gen_path: @repo_root / "gen",
-      arch_path: @repo_root / "arch",
-      arch_overlay_path: @repo_root / "arch_overlay"
+      arch_path: @repo_root / "data" / "arch" / "isa",
+      arch_overlay_path: @repo_root / "data" / "arch_overlay" / "isa"
     )
       config_path =
         case config_path_or_name
