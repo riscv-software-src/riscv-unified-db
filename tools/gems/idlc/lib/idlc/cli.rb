@@ -81,7 +81,7 @@ module Idl
 
       idl =
         if !options.key.nil?
-          yaml_contents = YAML.load(io.read)
+          yaml_contents = YAML.safe_load(io.read, permitted_classes: [String, Array, Hash], permitted_symbols: [])
           raise "#{args[0]} has no key named '#{options.key}'" unless yaml_contents.key?(options.key)
 
           yaml_contents[options.key]
