@@ -3,8 +3,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# frozen_string_literal: true
 # typed: true
+# frozen_string_literal: true
 
 require "thor"
 require "terminal-table"
@@ -25,6 +25,48 @@ end
 
 module Udb
   module CliCommands
+    class Show < SubCommandBase
+      include Thor::Actions
+
+      desc "extension NAME", "Show information about an extension"
+      method_option :arch, aliases: "-a", type: :string, desc: "Path to architecture database", default: Udb.default_arch_isa_path.to_s
+      method_option :arch_overlay, type: :string, desc: "Path to architecture overlay directory", default: Udb.default_arch_overlay_isa_path.to_s
+      method_option :config, type: :string, required: true, desc: "Configuration name, or path to a config file", default: "_"
+      method_option :config_dir, type: :string, desc: "Path to directory with config files", default: Udb.default_cfgs_path.to_s
+      method_option :gen, type: :string, desc: "Path to folder used for generation", default: Udb.default_gen_path.to_s
+      def extension(ext_name)
+        raise ArgumentError, "Arch directory does not exist: #{options[:arch]}" unless File.directory?(options[:arch])
+
+        cfg_file =
+          if File.file?(options[:config])
+            Pathname.new(options[:config])
+          elsif File.file?("#{options[:config_dir]}/#{options[:config]}.yaml")
+            Pathname.new("#{options[:config_dir]}/#{options[:config]}.yaml")
+          else
+            raise ArgumentError, "Cannot find config: #{options[:config]}"
+          end
+
+        cfg_arch =
+          Udb::Resolver.new.cfg_arch_for(
+            cfg_file.realpath,
+            arch_path: Pathname.new(options[:arch]),
+            gen_path: Pathname.new(options[:gen]),
+            arch_overlay_path: Pathname.new(options[:arch_overlay])
+          )
+        ext = cfg_arch.extension(ext_name)
+        if ext.nil?
+          say "Could not find an extension named '#{ext_name}'", :red
+        else
+          say <<~INFO
+            #{ext.name} Extension
+              #{ext.long_name}
+
+            Versions:
+            #{ext.versions.map { |ext_ver| "  * #{ext_ver.version_str}" }.join("\n") }
+          INFO
+        end
+      end
+    end
 
     class List < SubCommandBase
       desc "extensions", "list all extensions, including those implied, for a config"
@@ -124,6 +166,9 @@ module Udb
   end
 
   class Cli < Thor
+    include Thor::Actions
+    check_unknown_options!
+
     def self.exit_on_failure?
       true
     end
@@ -135,5 +180,58 @@ module Udb
 
     desc "list", "List "
     subcommand "list", CliCommands::List
+
+    desc "show", "Show "
+    subcommand "show", CliCommands::Show
+
+    desc "disasm ENCODING", "Disassemble an instruction encoding"
+    method_option :arch, aliases: "-a", type: :string, desc: "Path to architecture database", default: Udb.default_arch_isa_path.to_s
+    method_option :arch_overlay, type: :string, desc: "Path to architecture overlay directory", default: Udb.default_arch_overlay_isa_path.to_s
+    method_option :config, type: :string, required: true, desc: "Configuration name, or path to a config file", default: "_"
+    method_option :config_dir, type: :string, desc: "Path to directory with config files", default: Udb.default_cfgs_path.to_s
+    method_option :gen, type: :string, desc: "Path to folder used for generation", default: Udb.default_gen_path.to_s
+    def disasm(encoding_str)
+      raise ArgumentError, "Arch directory does not exist: #{options[:arch]}" unless File.directory?(options[:arch])
+      raise MalformattedArgumentError, "encoding must be a hex string" unless encoding_str =~ /^(0[xX])?[a-fA-F0-9]+$/
+
+      cfg_file =
+        if File.file?(options[:config])
+          Pathname.new(options[:config])
+        elsif File.file?("#{options[:config_dir]}/#{options[:config]}.yaml")
+          Pathname.new("#{options[:config_dir]}/#{options[:config]}.yaml")
+        else
+          raise ArgumentError, "Cannot find config: #{options[:config]}"
+        end
+
+      cfg_arch =
+        Udb::Resolver.new.cfg_arch_for(
+          cfg_file.realpath,
+          arch_path: Pathname.new(options[:arch]),
+          gen_path: Pathname.new(options[:gen]),
+          arch_overlay_path: Pathname.new(options[:arch_overlay])
+        )
+
+      encoding = encoding_str.to_i(16)
+
+      matches = { 32 => [], 64 => [] }
+
+      cfg_arch.possible_xlens.each do |xlen|
+        say "RV#{xlen}:"
+
+        matches[xlen] = cfg_arch.instructions.select do |i|
+          opcode_mask = i.encoding(xlen).format.gsub(/[01]/, "1").gsub("-", "0").to_i(2)
+          match = i.encoding(xlen).format.gsub("-", "0").to_i(2)
+          (opcode_mask & encoding) == match
+        end
+
+        if matches[xlen].empty?
+          say "  Illegal Instruction"
+        else
+          matches[xlen].each do |inst|
+            say "  #{inst.name}"
+          end
+        end
+      end
+    end
   end
 end

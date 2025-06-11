@@ -45,12 +45,21 @@ class TestCli < Minitest::Test
   end
 
   def test_list_params_yaml
-    out, err = capture_io do
-      run_cmd("list parameters -f yaml")
+    t = Tempfile.new
+    _out, err = capture_io do
+      run_cmd("list parameters -f yaml -o #{t.path}")
     end
-    puts out
-    data = YAML.load(out)
+    data = YAML.load_file(t.path)
     assert_equal data.any? { |p| p["name"] == "MXLEN" }, true
+    assert_empty err
+  end
+
+  def test_disasm
+    out, err = capture_io do
+      run_cmd("disasm 0x00000037")
+    end
+
+    assert_match "  lui", out
     assert_empty err
   end
 end

@@ -1,6 +1,8 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 # frozen_string_literal: true
 
-require_relative 'test_helper'
 require "English"
 require "fileutils"
 require "minitest/autorun"
@@ -8,9 +10,11 @@ require "open3"
 require "tmpdir"
 require "yaml"
 
-$root ||= (Pathname.new(__FILE__) / ".." / ".." / "..").realpath
+require_relative "../lib/udb/resolver"
 
 class TestYamlLoader < Minitest::Test
+  UDB_GEM_PATH = Bundler.definition.specs.find { |s| s.name == "udb" }.full_gem_path
+
   def resolve_yaml(yaml)
     Dir.mktmpdir do |dir|
       arch_dir = Pathname.new(dir) / "arch"
@@ -21,8 +25,8 @@ class TestYamlLoader < Minitest::Test
       File.write(test_dir / "test.yaml", yaml)
 
       stdout, stderr, status =
-        Dir.chdir($root) do
-          Open3.capture3("/bin/bash -c \"source #{$root}/.home/.venv/bin/activate && #{$root}/.home/.venv/bin/python3 #{$root}/lib/yaml_resolver.py resolve --no-progress --no-checks #{arch_dir} #{resolved_dir}\"")
+        Dir.chdir(Udb.repo_root) do
+          Open3.capture3("/bin/bash -c \"source #{Udb.repo_root}/.home/.venv/bin/activate && #{Udb.repo_root}/.home/.venv/bin/python3 #{UDB_GEM_PATH}/python/yaml_resolver.py resolve --no-progress --no-checks #{arch_dir} #{resolved_dir}\"")
         end
       # puts stdout
       # puts stderr
@@ -49,8 +53,7 @@ class TestYamlLoader < Minitest::Test
         File.write(test_dir / "test#{i + 1}.yaml", yaml)
       end
 
-      system "/bin/bash -c \"source #{$root}/.home/.venv/bin/activate && #{$root}/.home/.venv/bin/python3 #{$root}/lib/yaml_resolver.py resolve --no-checks #{arch_dir} #{resolved_dir}\""
-      # `source #{$root}/.home/.venv/bin/activate && python3 #{$root}/lib/yaml_resolver.py resolve #{arch_dir} #{resolved_dir}`
+      system "/bin/bash -c \"source #{Udb.repo_root}/.home/.venv/bin/activate && #{Udb.repo_root}/.home/.venv/bin/python3 #{UDB_GEM_PATH}/python/yaml_resolver.py resolve --no-checks #{arch_dir} #{resolved_dir}\""
 
       if $CHILD_STATUS == 0
         YAML.load_file(resolved_dir / "test" / "test1.yaml")
@@ -71,6 +74,7 @@ class TestYamlLoader < Minitest::Test
     YAML
 
     doc = resolve_yaml(yaml)
+    refute_nil(doc)
     assert_equal({ "$child_of" => "#/base", "key1" => "value1", "key3" => "value3" }, doc["child"])
   end
 
@@ -90,6 +94,7 @@ class TestYamlLoader < Minitest::Test
     YAML
 
     doc = resolve_yaml(yaml)
+    refute_nil(doc)
     assert_equal({ "$child_of" => "#/base", "key1" => "value1", "key4" => "value4" }, doc["child"])
   end
 
@@ -116,6 +121,7 @@ class TestYamlLoader < Minitest::Test
     YAML
 
     doc = resolve_yaml(yaml)
+    refute_nil(doc)
     assert_equal({ "$child_of" => ["#/middle"], "key1" => { "sub_key1" => "value1", "sub_key6" => "value6" }, "key2" => "value2_new", "key3" => "value3", "key4" => "value4_new", "key5" => "value5" }, doc["bottom"])
   end
 
@@ -138,6 +144,7 @@ class TestYamlLoader < Minitest::Test
     YAML
 
     doc = resolve_yaml(yaml)
+    refute_nil(doc)
     assert_equal({ "$child_of" => "#/base", "$parent_of" => "test/test.yaml#/bottom", "key1" => "value1", "key2" => "value2", "key3" => "value3", "key4" => "value4" }, doc["middle"])
     assert_equal({ "$child_of" => "#/middle", "key1" => "value1", "key2" => "value2_new", "key3" => "value3", "key4" => "value4_new", "key5" => "value5" }, doc["bottom"])
   end
@@ -157,6 +164,7 @@ class TestYamlLoader < Minitest::Test
     YAML
 
     doc = resolve_yaml(yaml)
+    refute_nil(doc)
     assert_equal({ "$child_of" => "#/top/base", "key1" => "value1", "key2" => "value2", "key3" => "value3_new" }, doc["bottom"]["child"])
   end
 
@@ -173,6 +181,7 @@ class TestYamlLoader < Minitest::Test
     YAML
 
     doc = resolve_yaml(yaml)
+    refute_nil(doc)
     assert_equal({ "$child_of" => "#/base", "key1" => "value1", "key2" => "value2", "key3" => "value3_new" }, doc["child"])
   end
 
@@ -197,6 +206,7 @@ class TestYamlLoader < Minitest::Test
     YAML
 
     doc = resolve_yaml(yaml)
+    refute_nil(doc)
     assert_equal({ "$child_of" => ["#/base1", "#/base2"], "key1" => "value1", "key2" => "value2", "key3" => "value3_new", "key4" => "value4", "key5" => "value5", "key6" => "value6_new" }, doc["child"])
   end
 
@@ -220,6 +230,7 @@ class TestYamlLoader < Minitest::Test
     YAML
 
     doc = resolve_yaml(yaml)
+    refute_nil(doc)
     assert_equal({ "$child_of" => "#/$defs/target2", "a" => "hash" }, doc["obj1"])
     assert_equal({ "$child_of" => "#/$defs/target2", "a" => "Should take precedence" }, doc["obj2"])
     assert_equal({ "$child_of" => "#/$defs/target2", "a" => "Should take precedence" }, doc["obj3"])
@@ -247,6 +258,7 @@ class TestYamlLoader < Minitest::Test
     YAML
 
     doc = resolve_multi_yaml(yaml1, yaml2)
+    refute_nil(doc)
     assert_equal({ "$child_of" => "test/test2.yaml#/$defs/target2", "a" => "hash" }, doc["obj1"])
     assert_equal({ "$child_of" => "test/test2.yaml#/$defs/target2", "a" => "Should take precedence" }, doc["obj2"])
     assert_equal({ "$child_of" => "test/test2.yaml#/$defs/target2", "a" => "Should take precedence" }, doc["obj3"])
@@ -271,6 +283,7 @@ class TestYamlLoader < Minitest::Test
     YAML
 
     doc = resolve_multi_yaml(yaml1, yaml2)
+    refute_nil(doc)
     assert_equal("test/test2.yaml#", doc["$child_of"])
     assert_equal("Should take precedence", doc["target1"])
     assert_equal({ "a" => "hash", "sub1" => { "key_a" => "new_value_a", "key_b" => "old_value_b" }}, doc["target2"])
@@ -292,6 +305,7 @@ class TestYamlLoader < Minitest::Test
     YAML
 
     doc = resolve_yaml(yaml)
+    refute_nil(doc)
     assert_equal({ "$child_of" => ["#/$defs/target1", "#/$defs/target2"], "a" => "hash", "b" => "nice" }, doc["obj1"])
   end
 

@@ -14,3 +14,4 @@ puts "[SimpleCov] Coverage started."
 require "minitest/autorun"
 
 require_relative "test_cli"
+require_relative "test_yaml_loader"

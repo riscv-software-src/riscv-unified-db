@@ -62,7 +62,7 @@ namespace :test do
     desc "Run unit tests for the udb gem"
     task :unit do
       Dir.chdir(RUBY_UDB_ROOT) do
-        sh "ruby -Ilib:test test/test_*.rb"
+        sh "ruby -Ilib:test test/run.rb"
       end
     end
   end
