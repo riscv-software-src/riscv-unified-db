@@ -8,16 +8,76 @@ address: 0x301
 writable: true
 priv_mode: M
 length: MXLEN
-description: Reports the XLEN and "major" extensions supported by the ISA.
 definedBy: Sm
+prose:
+  Overview:
+    - type: informative
+      text: |
+        `misa` reports the base register size in M-mode and the set of single-letter
+        extensions supported by the hart.
+    - type: informative
+      text: |
+        The entire register may be read-only-0 in an implementation.
+        If `misa` is read-only-0, discovery of `misa` information should be provided through
+        non-standard mechanisms.
 fields:
   MXL:
     location_rv32: 31-30
     location_rv64: 63-62
-    description: XLEN in M-mode.
+    synopsys: |
+      When `misa` is implemented, `misa.MXL` encodes the native base integer ISA width in M-mode,
+      called `MXLEN`, as follows:
+
+      |===
+      | MXL | MXLEN
+
+      | 1   | 32
+      | 2   | 64
+      |===
+
+      Other values are reserved.
+    rules:
+      - type: must
+        id: csr-misa.mxl-value-rv32
+        text: |
+          `misa.MXL` must be read-only-1
+        when(): return MISA_CSR_IMPLEMENTED && MXLEN == 32;
+      - type: must
+        id: csr-misa.mxl-value-rv64
+        text: |
+          `misa.MXL` must be read-only-2
+        when(): return MISA_CSR_IMPLEMENTED && MXLEN == 64;
+      - type: must
+        id: csr-misa.mxl-value-not-implemented
+        text: |
+          `misa.MXL` must be read-only-0
+        when(): return !MISA_CSR_IMPLEMENTED;
+    prose:
+      - type: informative
+        text: |
+          XLEN is never greater than MXLEN, but XLEN might be smaller than MXLEN in less-privileged
+          modes.
+
+      - type: informative
+        text: |
+          The base width can be quickly ascertained using branches on the sign of the returned `misa`
+          value, and possibly a shift left by one and a second branch on the sign.
+          These checks can be written in assembly code without knowing the register width (MXLEN)
+          of the hart.
+          The base width is given by MXLEN=2MXL+4.
+
+          The base width can also be found if `misa` is zero, by placing the immediate 4 in a
+          register, then shifting the register left by 31 bits at a time.
+          If zero after one shift, then the hart is RV32.
+          If zero after two shifts, then the hart is RV64, else RV128.
     type: RO
     reset_value(): |
-      return (MXLEN == 32) ? 2'b01 : 2'b10;
+      if (MISA_CSR_IMPLEMENTED) {
+        return (MXLEN == 32) ? 2'b01 : 2'b10;
+      } else {
+        return 0;
+      }
+
   A:
     location: 0
     description: |
@@ -30,18 +90,60 @@ fields:
     reset_value(): |
       return implemented?(ExtensionName::A) ? 1 : 0;
     definedBy: A
+
   B:
     location: 1
-    description: |
+    synopsis: |
       Indicates support for the `B` (bitmanip) extension.
+    rules:
+      - type: must
+        id: csr-misa.b-reset-set
+        text: |
+          When all of `Zba`, `Zbb`, and `Zbs` are implemented, bit 1 of the `misa` CSR (`misa.B`) MUST reset to 1.
+        when(): return MISA_CSR_IMPLEMENTED;
 
-      [when,"MUTABLE_MISA_B == true"]
-      Writing 0 to this field will cause all bitmanip instructions to raise an `IllegalInstruction` exception.
+      - type: must
+        id: csr-misa.b-reset-clear
+        text: |
+          When at least one of `Zba`, `Zbb`, and `Zbs` are not implemented, `misa.B` MUST be read-only-0.
+        when(): return MISA_CSR_IMPLEMENTED;
+
+      - type: may
+        id: csr-misa.b-mutable
+        text: |
+          If parameter `MUTABLE_MISA_B` is true, the `misa.B` bit is writable.
+        when(): return MISA_CSR_IMPLEMENTED;
+
+      - type: must
+        id: csr-misa.b-clear-effect
+        text: |
+          Decoding an instruction from `Zba`, `Zbb`, or `Zbs` when `misa.B` is clear causes an
+          `IllegalInstruction`.
+        when(): return MISA_CSR_IMPLEMENTED && !nonconforming_extensions_implemented?();
+
+      - type: must
+        id: csr-misa.b-clear-effect-non-conforming
+        text: |
+          Decoding an instruction from `Zba`, `Zbb`, or `Zbs` will either
+          cause an `IllegalInstruction` trap or execute a non-conforming instruction if
+          a non-conforming extension is supported that has an overlapping instruction with one from
+          `Zba`, `Zbb`, or `Zbs`.
+        when(): return MISA_CSR_IMPLEMENTED && nonconforming_extensions_implemented?();
+
     type(): |
-      return (implemented?(ExtensionName::B) && MUTABLE_MISA_B) ? CsrFieldType::RW : CsrFieldType::RO;
+      if (MISA_CSR_IMPLEMENTED) {
+        return (implemented?(ExtensionName::B) && MUTABLE_MISA_B) ? CsrFieldType::RW : CsrFieldType::RO;
+      } else {
+        return CsrFieldType::RO;
+      }
     reset_value(): |
-      return implemented?(ExtensionName::B) ? 1 : 0;
+      if (MISA_CSR_IMPLEMENTED) {
+        return implemented?(ExtensionName::B) ? 1 : 0;
+      } else {
+        return 0;
+      }
     definedBy: B
+
   C:
     location: 2
     description: |
