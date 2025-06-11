@@ -36,7 +36,7 @@ params:
     schema:
       type: integer
       minimum: 1
-      maximum: 16
+      maximum: 12
 
   MCID_WIDTH:
     description: |
@@ -45,7 +45,7 @@ params:
     schema:
       type: integer
       minimum: 1
-      maximum: 16
+      maximum: 12
 
 versions:
   - version: "1.0.0"
