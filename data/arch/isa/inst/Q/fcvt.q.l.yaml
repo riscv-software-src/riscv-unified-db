@@ -1,0 +1,33 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: fcvt.q.l
+long_name: Floating-point Convert Long to Quad-precision
+description:
+  - id: inst-fcvt.q.l-behaviour
+    normative: false
+    text: |
+      `fcvt.q.l` converts a 64-bit signed integer, into a quad-precision floating-point number.
+definedBy: Q
+base: 64
+assembly: fd, xs1, rm
+encoding:
+  match: 110101100010-------------1010011
+  variables:
+    - name: xs1
+      location: 19-15
+    - name: rm
+      location: 14-12
+    - name: fd
+      location: 11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+data_independent_timing: false
+operation(): |

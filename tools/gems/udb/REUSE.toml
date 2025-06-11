@@ -1,0 +1,21 @@
+version = 1
+
+# Uncommentable files
+[[annotations]]
+path = [
+    ".yardopts"
+]
+SPDX-FileCopyrightText = [
+    "Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.",
+    "2024-2025 Contributors to the RISCV UnifiedDB <https://github.com/riscv-software-src/riscv-unified-db>",
+]
+SPDX-License-Identifier = "BSD-3-Clause-Clear"
+
+# Computer-generated files that are checked in
+[[annotations]]
+path = [
+    "sorbet/**",
+    "Gemfile.lock"
+]
+SPDX-FileCopyrightText = "NONE"
+SPDX-License-Identifier = "CC0-1.0"

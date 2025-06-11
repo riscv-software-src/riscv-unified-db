@@ -1,0 +1,68 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+$schema: profile_schema.json#
+kind: profile
+name: RVA23U64
+long_name: U-mode extensions for version 23 of the 64-bit Apps Processor profile
+marketing_name: RVA23U64
+mode: Unpriv
+base: 64
+release: { $ref: profile_release/RVA23.yaml# }
+introduction: |
+  The RVA23U64 profile specifies the ISA features available to user-mode
+  execution environments in 64-bit applications processors.  This is the
+  most important profile within application processors in
+  terms of the amount of software that targets this profile.
+extensions:
+  #########################################################################
+  # imported from RVB23U64
+  #########################################################################
+  $inherits: "profile/RVB23U64.yaml#/extensions"
+  $remove:
+    - Zvkg
+    - Zvknc
+    - Zvksc
+    - Zkn
+    - Zks
+
+  #########################################################################
+  # MANDATORY extensions in RVA23U64 (that were optional in RVB23U64)
+  #########################################################################
+
+  Zfhmin:
+    presence: mandatory
+
+  V:
+    presence: mandatory
+
+  Zvfhmin:
+    presence: mandatory
+
+  Zvbb:
+    presence: mandatory
+
+  Zvkt:
+    presence: mandatory
+
+  Supm:
+    presence: mandatory
+
+  #--------------------------------------------
+  # Zvbc is an expansion option in RVB23U64
+  # (but is not intended to be made mandatory in future RVB Profiles)
+  #
+  # It is listed in RVA23U64 as a *development* option,
+  # as it *is* intended to become mandatory in future RVA Profiles.
+  #--------------------------------------------
+  Zvbc:
+    presence:
+      optional: development
+
+  #########################################################################
+  # TRANSITORY EXPANSION extensions in RVA23U64
+  #########################################################################
+
+  #--------------------------------------------
+  # (there are no Transitory expansion options in RVA23U64)
+  #--------------------------------------------

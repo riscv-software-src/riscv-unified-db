@@ -1,0 +1,25 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zvknc
+long_name: NIST Algorithm Suite with carryless multiply
+description: |
+  This extension is shorthand for the following set of other extensions:
+
+  * `Zvkn`
+  * `Zvbc`
+
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
+    implies:
+      - name: Zvkn
+        version: "1.0.0"
+      - name: Zvbc
+        version: "1.0.0"

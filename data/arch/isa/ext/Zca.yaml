@@ -1,0 +1,46 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zca
+long_name: C instructions excluding floating-point
+description: |
+  The Zca extension is added as way to refer to instructions in the `C` extension that do not
+  include the floating-point loads and stores.
+
+  Therefore it excludes all 16-bit floating point loads and stores:
+  `c.flw`, `c.flwsp`, `c.fsw`, `c.fswsp`, `c.fld`, `c.fldsp`, `c.fsd`, `c.fsdsp`.
+
+  [NOTE]
+  The 'C' extension only includes `F`/`D` instructions when `D` and `F` are also specified.
+
+type: unprivileged
+company:
+  name: RISC-V International
+  url: https://riscv.org
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2023-04
+    repositories:
+      - url: https://github.com/riscv/riscv-code-size-reduction
+        branch: main
+    contributors:
+      - name: Tariq Kurd
+      - name: Ibrahim Abu Kharmeh
+      - name: Torbjørn Viem Ness
+      - name: Matteo Perotti
+      - name: Nidal Faour
+      - name: Bill Traynor
+      - name: Rafael Sene
+      - name: Xinlong Wu
+      - name: sinan
+      - name: Jeremy Bennett
+      - name: Heda Chen
+      - name: Alasdair Armstrong
+      - name: Graeme Smecher
+      - name: Nicolas Brunie
+      - name: Jiawei

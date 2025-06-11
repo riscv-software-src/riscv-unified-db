@@ -15,7 +15,7 @@ require "ruby-prof"
   } do |t|
     config_name = Pathname.new(t.name).basename(".stamp").sub("adoc-gen-#{type}s-", "")
 
-    cfg_arch = cfg_arch_for(config_name)
+    cfg_arch = $resolver.cfg_arch_for(config_name)
     adoc_template_path = CFG_HTML_DOC_DIR / "templates" / "#{type}.adoc.erb"
     adoc_template = adoc_template_path.read
     erb = ERB.new(adoc_template, trim_mode: "-")
@@ -72,7 +72,7 @@ require "ruby-prof"
 
     config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen/cfg_html_doc").to_s.split("/")[0]
 
-    cfg_arch = cfg_arch_for(config_name)
+    cfg_arch = $resolver.cfg_arch_for(config_name)
 
     lines = [
       "= Implemented #{to_long[type]}",
@@ -116,7 +116,7 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/adoc/ROOT/landing.adoc} => [
 ] do |t|
   config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen/cfg_html_doc").to_s.split("/")[0]
 
-  cfg_arch = cfg_arch_for(config_name)
+  cfg_arch = $resolver.cfg_arch_for(config_name)
 
   puts "Generating landing page for #{config_name}"
   erb = ERB.new(File.read("#{CFG_HTML_DOC_DIR}/templates/landing.adoc.erb"), trim_mode: "-")

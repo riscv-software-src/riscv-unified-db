@@ -1,0 +1,75 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/profile_schema.json
+
+$schema: profile_schema.json#
+kind: profile
+name: MP-S-64
+long_name: S-mode extensions for a Mock 64-bit Apps Processor profile
+marketing_name: MockProfile 64-bit S-mode
+description: This is the Mock Profile Supervisor Mode description.
+mode: S
+base: 64
+release: { $ref: profile_release/Mock.yaml# }
+contributors:
+  - name: Micky Mouse
+    email: micky@disney.com
+    company: Disney
+extensions:
+  $inherits: "profile/MP-U-64.yaml#/extensions"
+  A:
+    presence: mandatory
+    note: This should be listed as mandatory in MP-S-64 and optional in MP-U-64.
+  S:
+    presence:
+      optional: localized
+    version: "= 1.12"
+  Zifencei:
+    presence:
+      optional: development
+    version: "= 2.0"
+    note:
+  Zihpm:
+    presence:
+      optional: expansion
+    version: "= 2.0"
+    note: Made this a expansion option
+  Sv48:
+    presence:
+      optional: transitory
+    version: "= 1.12"
+    note: Made this a transitory option
+  Xmock:
+    presence: mandatory
+    version: "~> 0.9.9"
+extra_notes:
+  - presence: mandatory
+    text: |
+      Here's the first extra note for the mandatory extensions section.
+      This note is multiple lines.
+  - presence: optional
+    text: |
+      Here's the first extra note for the optional extensions section.
+      In this case, we don't differentiate between optional types.
+      This note is multiple lines.
+  - presence:
+      optional: localized
+    text: Here's the first extra note for the localized optional extensions section.
+  - presence:
+      optional: localized
+    text: Here's the second extra note for the localized optional extensions section.
+  - presence:
+      optional: development
+    text: Here's the first extra note for the development optional extensions section.
+  - presence:
+      optional: expansion
+    text: Here's the first extra note for the expansion optional extensions section.
+  - presence:
+      optional: transitory
+    text: Here's the first extra note for the transitory optional extensions section.
+recommendations:
+  - text: |
+      Implementations are strongly recommended to raise illegal-instruction
+      exceptions on attempts to execute unimplemented opcodes.
+  - text: Micky should give Pluto an extra treat

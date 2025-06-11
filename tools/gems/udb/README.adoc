@@ -1,0 +1,63 @@
+// Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+// SPDX-License-Identifier: CC0-1.0
+
+= Unified Database Gem
+
+The `udb` gem is a tool to interface with the `riscv-unified-db`.
+
+You *must* supply `udb` with a configuration that will drive what is available in the 'view' of
+the database. That configuration may be "_", which is the special 'unconfig' that reflects all of
+RISC-V, including both RV32 and RV64. Example configs can be found in the `riscv-config-db` repository,
+under the `cfgs` directory.
+
+== Library interface
+
+The main entry point to the udb database is through the `ConfiguredArchitecture` object.
+You can construct one with:
+
+[source,ruby]
+--
+cfg_arch = Udb.cfg_arch_for("_")  # get the 'unconfig' view of the dataase
+cfg_arch32 = Udb.cfg_arch_for("rv32")  # get the 'RV32' view of the dataase
+cfg_arch_qc_iu = Udb.cfg_arch_for("qc_iu")  # get the 'qc_iu' view of the dataase
+--
+
+From there, you can access all database information, pruned to the config. For example:
+
+[source,ruby]
+--
+cfg_arch.extensions      # [Udb::Extension(Sm), Udb::Extension(H), ...]
+cfg_arch.instructions    # [Udb::Instruction(add), Udb::Instruction(div), ...]
+--
+
+See the API documentation for a complete list of methods.
+
+== Command line interface
+
+Common database queries are accessible through a command line interface. For help, run:
+
+[source,bash]
+--
+udb help
+udb help list   # show help for list subcommands
+--
+
+All commands need a UDB configuration, which defaults to "_", the everything 'unconfig'.
+The CLI looks for a `riscv-unified-db` repository root somewhere in the directory path of
+the `udb` binary. You can use a different repository by either setting the `UDB_ROOT` environment
+variable or using fine-grain command options `--arch`, `--arch-overlay`, etc.
+
+Examples:
+
+[source,bash]
+--
+udb list extensions                             # list all extensions in RISC-V
+udb list extensions --config qc_iu              # list all extensions in the $UDB_ROOT/qc_iu.yaml config
+udb list extensions --config /path/to/cfg.yaml  # list all extensions from config /path/to/cfg.yaml
+UDB_ROOT=/path/to/root udb list extensions      # list all extensions in RISC-V, using UDB repo at /path/to/root
+
+udb list parameters                             # list all parameters in RISC-V, as a human-readable table
+udb list parameters -f yaml                     # list all paramaters in RISC-V, as a YAML file
+udb list parameters --config design1 -f yaml    # list all parameters in the design1 config
+udb list parameters -e Sm H                     # list all paremeters from the Sm and H extensions
+--

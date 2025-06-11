@@ -1,0 +1,16 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zalasr
+long_name: Atomic, Load-Acquire Store-Release
+description: |
+  load-acquire and store-release instructions.
+type: unprivileged
+versions:
+  - version: "0.3.5"
+    state: development
+    ratification_date: null

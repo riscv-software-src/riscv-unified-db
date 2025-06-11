@@ -1,0 +1,18 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: I
+type: unprivileged
+long_name: Base integer ISA (RV32I or RV64I)
+versions:
+  - version: "2.1.0"
+    state: ratified
+    ratification_date: 2019-06
+    changes:
+      - ratified RVWMO memory model and exclusion of FENCE.I, counters, and CSR instructions that were in previous base ISA
+description: |
+  Base integer instructions -- TODO

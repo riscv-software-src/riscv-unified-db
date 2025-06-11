@@ -1,0 +1,22 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+$schema: profile_family_schema.json#
+kind: profile family
+processor_kind: Microcontroller
+name: Mock
+long_name: Mock Profile Family
+marketing_name: Mock Profile Family
+introduction: Here's the Mock Profile Family introduction.
+description: |
+  This is the Mock Profile Family description.
+  It can be longer than the introduction since it gets its own sub-heading.
+naming_scheme: |
+  Here's the Mock Profile Family naming scheme.
+company:
+  name: RISC-V International
+  url: https://riscv.org
+doc_license:
+  name: Creative Commons Attribution 4.0 International License
+  url: https://creativecommons.org/licenses/by/4.0/
+  text_url: https://creativecommons.org/licenses/by/4.0/legalcode.txt

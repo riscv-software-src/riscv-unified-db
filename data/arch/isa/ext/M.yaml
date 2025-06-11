@@ -1,0 +1,32 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: M
+type: unprivileged
+long_name: Integer multiply and divide instructions
+versions:
+  - version: "2.0.0"
+    state: ratified
+    ratification_date: 2019-12
+description: |
+  This chapter describes the standard integer multiplication and division
+  instruction extension, which is named `M` and contains instructions
+  that multiply or divide values held in two integer registers.
+
+  [TIP]
+  ====
+  We separate integer multiply and divide out from the base to simplify
+  low-end implementations, or for applications where integer multiply and
+  divide operations are either infrequent or better handled in attached
+  accelerators.
+  ====
+params:
+  MUTABLE_MISA_M:
+    description: |
+      Indicates whether or not the `M` extension can be disabled with the `misa.M` bit.
+    schema:
+      type: boolean

@@ -1,0 +1,50 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/csr_schema.json
+$schema: csr_schema.json#
+kind: csr
+name: siselect
+long_name: Supervisor Indirect Register Select
+address: 0x150
+priv_mode: S
+length: SXLEN
+definedBy: Sscsrind
+description:
+  - id: csr-siselect-value-range
+    normative: true
+    text: |
+      The `siselect` register will support the value range 0..0xFFF at a minimum. A future extension may
+      define a value range outside of this minimum range. Only if such an extension is implemented will
+      `siselect` be required to support larger values.
+
+  - id: csr-siselect-emulation
+    normative: false
+    text: |
+      Requiring a range of 0-0xFFF for `siselect`, even though most or all of the space may be reserved or
+      inaccessible, permits M-mode to emulate indirectly accessed registers in this implemented range,
+      including registers that may be standardized in the future.
+
+  - id: csr-siselect-msb
+    normative: true
+    text: |
+      Values of `siselect` with the most-significant bit set (bit XLEN - 1 = 1) are designated only for
+      custom use, presumably for accessing custom registers through the alias CSRs. Values of `siselect`
+      with the most-significant bit clear are designated only for standard use and are reserved until
+      allocated to a standard architecture extension. If XLEN is changed, the most-significant bit of
+      `siselect` moves to the new position, retaining its value from before.
+
+fields:
+  VALUE:
+    long_name: Indirect Register Select Value
+    location_rv32: 31-0
+    location_rv64: 63-0
+    type: RW
+    description:
+      - id: csr-siselect-value-desc
+        normative: true
+        text: |
+          Value ranges are allocated to dependent extensions, which specify the
+          register state accessible via each `sireg*` register, for each `siselect` value.
+    reset_value: UNDEFINED_LEGAL
+sw_read(): |

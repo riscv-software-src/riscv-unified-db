@@ -1,0 +1,52 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: stvec
+long_name: Supervisor Trap Vector
+address: 0x105
+writable: true
+priv_mode: S
+length: 64
+description: Controls where traps jump.
+definedBy: S
+fields:
+  BASE:
+    location: 63-2
+    description: |
+      <%- va_size = ext?(:Sv57) ? 57 : (ext?(:Sv48) ? 49 :39) -%>
+      Bit 63:0 of the virtual address of the exception vector for any trap taken into S-mode.
+
+      If the base address is written with a non-cannonical address (_i.e._, bits 63:<%= va_size %> do not match bit <%= va_size-1 %>),
+      the write should be ignored.
+
+    type: RW-R
+    sw_write(csr_value): |
+      # Base spec says that BASE must be 4-byte aligned, which will always be the case
+      # implementations may put further constraints on BASE when MODE != Direct
+      # If that is the case, stvec should have an override for the implementation
+      return csr_value.BASE;
+    reset_value: UNDEFINED_LEGAL
+  MODE:
+    location: 1-0
+    description: |
+      Vectoring mode for asynchronous interrupts.
+
+      0 - Direct, 1 - Vectored
+
+      When Direct, all synchronous exceptions and asynchronous interrupts jump to (`stvec.BASE` << 2).
+
+      When Vectored, asynchronous interrupts jump to (`stvec.BASE` << 2 + `scause.CAUSE`*4) while synchronous exceptions continue to jump to (`stvec.BASE` << 2).
+    type: RW-R
+    sw_write(csr_value): |
+      if (STVEC_MODE_DIRECT && csr_value.MODE == 0) {
+        return 0;
+      } else if (STVEC_MODE_VECTORED && csr_value.MODE == 1) {
+        return 1;
+      } else {
+        return UNDEFINED_LEGAL_DETERMINISTIC;
+      }
+    reset_value: 0

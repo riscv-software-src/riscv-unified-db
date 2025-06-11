@@ -1,0 +1,51 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: menvcfgh
+address: 0x31A
+writable: true
+base: 32
+long_name: Machine Environment Configuration
+description: Contains bits to enable/disable extensions
+priv_mode: M
+length: 32
+definedBy:
+  allOf:
+    - name: Sm
+      version: ">=1.12"
+    - name: U
+fields:
+  STCE:
+    location: 31
+    alias: menvcfg.STCE
+    description: |
+      *STimecmp Enable*
+
+      Alias of `menvcfg.STCE`
+    definedBy: Sstc
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+  PBMTE:
+    location: 30
+    alias: menvcfg.PBMTE
+    description: |
+      *Page Based Memory Type Enable*
+
+      Alias of `menvcfg.PBMTE`
+    definedBy: Svpbmt
+    type: RW
+    reset_value: UNDEFINED_LEGAL
+  ADUE:
+    location: 29
+    alias: menvcfg.ADUE
+    description: |
+      Alias of `menvcfg.ADUE`
+    definedBy: Svadu
+    type(): |
+      return (implemented?(ExtensionName::Svadu)) ? CsrFieldType::RO : CsrFieldType::RW;
+    reset_value(): |
+      return (implemented?(ExtensionName::Svadu)) ? UNDEFINED_LEGAL : 0;

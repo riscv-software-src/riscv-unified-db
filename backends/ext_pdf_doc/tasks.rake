@@ -2,7 +2,7 @@
 
 require "pathname"
 
-require_relative "#{$lib}/idl/passes/gen_adoc"
+require "idlc/passes/gen_adoc"
 
 EXT_PDF_DOC_DIR = Pathname.new "#{$root}/backends/ext_pdf_doc"
 
@@ -85,7 +85,7 @@ rule %r{#{$root}/gen/ext_pdf_doc/.*/adoc/.*_extension\.adoc} => proc { |tname|
   config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen/ext_pdf_doc").to_s.split("/")[0]
   config_path = $root / "gen" / "ext_pdf_doc" / "#{config_name}.yaml"
 
-  cfg_arch = cfg_arch_for(config_path)
+  cfg_arch = $resolver.cfg_arch_for(config_path)
 
   ext_name = Pathname.new(t.name).basename(".adoc").to_s.split("_")[0..-2].join("_")
 

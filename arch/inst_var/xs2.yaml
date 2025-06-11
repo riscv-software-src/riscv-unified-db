@@ -1,9 +1,0 @@
-# yaml-language-server: $schema=../../schemas/inst_var_schema.json#
-
-$schema: inst_var_schema.json#
-kind: instruction_variable
-name: xs2
-
-data:
-  $inherits: inst_type/R.yaml#/variables/rs2
-  type: { "$ref": "inst_var_type/x_src_reg.yaml#" }

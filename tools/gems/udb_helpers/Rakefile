@@ -1,0 +1,18 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# typed: true
+# frozen_string_literal: true
+
+UDB_HELPERS_ROOT = Kernel.__dir__
+
+namespace :test do
+  namespace :udb_helpers do
+    desc "Run unit tests for the udb_helpers gem"
+    task :unit do
+      Dir.chdir(UDB_HELPERS_ROOT) do
+        sh "ruby -Ilib:test test/run.rb"
+      end
+    end
+  end
+end

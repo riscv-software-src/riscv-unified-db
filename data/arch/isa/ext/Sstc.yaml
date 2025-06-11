@@ -1,0 +1,16 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Sstc
+long_name: Supervisor-mode timer interrupts
+description: Supervisor-mode timer interrupts
+type: privileged
+versions:
+  - version: "0.9.0"
+    state: ratified
+    ratification_date: null
+    url: https://drive.google.com/file/d/1m84Re2yK8m_vbW7TspvevCDR82MOBaSX/view?usp=drive_link

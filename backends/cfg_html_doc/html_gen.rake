@@ -33,7 +33,7 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/nav.adoc} => proc { |tname|
   erb = ERB.new(toc_path.read, trim_mode: "-")
   erb.filename = toc_path.to_s
 
-  cfg_arch = cfg_arch_for(config_name)
+  cfg_arch = $resolver.cfg_arch_for(config_name)
   File.write t.name, AntoraUtils.resolve_links(erb.result(binding))
 end
 
@@ -50,7 +50,7 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/ROOT/pages/config.adoc} => p
   erb = ERB.new(config_path.read, trim_mode: "-")
   erb.filename = config_path.to_s
 
-  cfg_arch = cfg_arch_for(config_name)
+  cfg_arch = $resolver.cfg_arch_for(config_name)
   FileUtils.mkdir_p File.dirname(t.name)
   File.write t.name, AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(erb.result(binding)))
 end
@@ -63,7 +63,7 @@ rule %r{#{$root}/gen/cfg_html_doc/.*/antora/modules/ROOT/pages/landing.adoc} => 
   ]
 } do |t|
   config_name = Pathname.new(t.name).relative_path_from("#{$root}/gen/cfg_html_doc").to_s.split("/")[0]
-  cfg_arch = cfg_arch_for(config_name)
+  cfg_arch = $resolver.cfg_arch_for(config_name)
 
   FileUtils.mkdir_p File.dirname(t.name)
   File.write t.name, AntoraUtils.resolve_links(cfg_arch.convert_monospace_to_links(File.read(t.prerequisites[0])))

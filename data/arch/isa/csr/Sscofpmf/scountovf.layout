@@ -1,0 +1,61 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: csr_schema.json#
+kind: csr
+name: scountovf
+long_name: Supervisor Count Overflow
+address: 0xDA0
+priv_mode: S
+length: 32
+definedBy: Sscofpmf
+description: |
+  A 32-bit read-only register that contains shadow copies of the OF bits in the 29 `mhpmevent` CSRs
+  (`mhpmevent3` - `mhpmevent31`) — where `scountovf` bit X corresponds to `mhpmeventX`.
+
+  This register enables supervisor-level overflow interrupt handler
+  software to quickly and easily determine which counter(s) have overflowed
+  without needing to make an execution environment call up to M-mode.
+
+  Read access to bit X is subject to the same `mcounteren` (or `mcounteren` and `hcounteren`)
+  CSRs that mediate access to the `hpmcounter` CSRs by S-mode (or VS-mode).
+
+  In M-mode, `scountovf` bit X is always readable.
+  In S/HS-mode, `scountovf` bit X is readable when `mcounteren` bit X is set, and otherwise reads as zero.
+  Similarly, in VS-mode, it is readable when both `mcounteren` and `hcounteren` bit X are set.
+
+fields:
+<%- (3..31).each do |of_num| -%>
+  OF<%= of_num %>:
+    alias: mhpmevent<%= of_num %>.OF
+    location: <%= of_num %>
+    description: |
+      [when="HPM_COUNTER_EN[<%= of_num %>] == true"]
+      Shadow copy of mhpmevent<%= of_num %> overflow (OF) bit.
+
+      [when="HPM_COUNTER_EN[<%= of_num %>] == false"]
+      This field is read-only zero because the counter is not enabled.
+    type(): |
+      return HPM_COUNTER_EN[<%= of_num %>] ? CsrFieldType::RO : CsrFieldType::ROH;
+    reset_value(): |
+      return HPM_COUNTER_EN[<%= of_num %>] ? UNDEFINED_LEGAL : 0;
+<%- end -%>
+
+sw_read(): |
+  Bits<32> mask;
+  if (mode() == PrivilegeMode::VS) {
+    # In VS-mode, scountovf.OFX access is determined by mcounteren/hcounteren
+    mask = $bits(CSR[mcounteren]) & $bits(CSR[hcounteren]);
+  } else {
+    # In M-mode and S-mode, scountovf.OFX access is determined by mcounteren/scounteren
+    mask = $bits(CSR[mcounteren]) & $bits(CSR[scounteren]);
+  }
+
+  Bits<32> value = 0;
+  <%- (3..31).each do |num| -%>
+    value = value | (CSR[mhpmevent<%= num %>].OF << <%= num %>);
+  <%- end -%>
+
+  return value & mask;

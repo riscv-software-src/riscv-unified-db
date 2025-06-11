@@ -1,0 +1,23 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zhinx
+long_name: Half-precision floating-point instructions using integer registers
+description: |
+  The Zhinx extension provides analogous half-precision floating-point instructions. The Zhinx extension
+  depends upon the Zfinx extension.
+  The Zhinx extension adds all of the instructions that the Zfh extension adds, except for the transfer
+  instructions FLH, FSH, FMV.H.X, and FMV.X.H.
+  The Zhinx variants of these Zfh-extension instructions have the same semantics, except that whenever
+  such an instruction would have accessed an f register, it instead accesses the x register with the same
+  number.
+
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: 2021-11

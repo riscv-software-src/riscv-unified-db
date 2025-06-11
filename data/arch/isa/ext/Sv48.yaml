@@ -1,0 +1,31 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Sv48
+long_name: 48-bit virtual address translation (4 level)
+description: 48-bit virtual address translation (4 level)
+type: privileged
+versions:
+  - version: "1.11.0"
+    state: ratified
+    ratification_date: null
+    requires:
+      name: Sv39
+      version: ">= 1.11"
+  - version: "1.12.0"
+    state: ratified
+    ratification_date: null
+    url: https://github.com/riscv/riscv-isa-manual/releases/download/Priv-v1.12/riscv-privileged-20211203.pdf
+    requires:
+      name: Sv39
+      version: ">= 1.12"
+  - version: "1.13.0"
+    state: ratified
+    ratification_date: null
+    requires:
+      name: Sv39
+      version: ">= 1.13"

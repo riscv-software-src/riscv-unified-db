@@ -1,0 +1,40 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../../../schemas/inst_schema.json
+
+$schema: "inst_schema.json#"
+kind: instruction
+name: sd
+long_name: Store doubleword from even/odd register pair
+description: |
+  Stores a 64-bit value from registers xs2 and xs2+1. The effective address is obtained by adding
+  register xs1 to the sign-extended 12-bit offset.
+definedBy: Zilsd
+assembly: xs2, offset(xs1)
+encoding:
+  match: -----------------011-----0100011
+  variables:
+    - name: xs1
+      location: 19-15
+    - name: xs2
+      not: [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31]
+      location: 24-20
+    - name: imm
+      location: 31-25|11-7
+access:
+  s: always
+  u: always
+  vs: always
+  vu: always
+operation(): |
+  Bits<MXLEN> base = X[xs1];
+  Bits<MXLEN> offset = $signed(imm);
+  Bits<MXLEN> eff_addr = base + offset;
+
+  Bits<32> lower_word = X[xs2];
+  Bits<32> upper_word = X[xs2 + 1];
+  Bits<64> store_data = {upper_word, lower_word};
+
+  write_memory<64>(eff_addr, store_data, $encoding);
+sail(): "" #not implemented in the sail model yet

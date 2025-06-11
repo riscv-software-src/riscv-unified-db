@@ -1,0 +1,17 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zihpm
+long_name: Programmable hardware performance counters
+description: Programmable hardware performance counters
+type: unprivileged
+versions:
+  - version: "2.0.0"
+    state: ratified
+    ratification_date: null
+    requires:
+      name: Smhpm

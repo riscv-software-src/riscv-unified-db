@@ -1,0 +1,20 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: medelegh
+long_name: Machine Exception Delegation, High bits
+address: 0x312
+writable: true
+priv_mode: M
+length: 32
+base: 32
+description: |
+  Alias of the upper 32 bits of `medeleg`.
+definedBy:
+  name: S
+  version: ">= 1.13"
+fields: {}

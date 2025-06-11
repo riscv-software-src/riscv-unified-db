@@ -1,0 +1,94 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: scause
+long_name: Supervisor Cause
+address: 0x142
+writable: true
+priv_mode: S
+length: SXLEN
+description: Reports the cause of the latest exception.
+definedBy: S
+fields:
+  INT:
+    location_rv32: 31
+    location_rv64: 63
+    description: |
+      Written by hardware when a trap is taken into S-mode.
+
+      When set, the last exception was caused by an asynchronous Interrupt.
+
+      `scause.INT` is writable.
+
+      [when,"TRAP_ON_ILLEGAL_WLRL == true"]
+      If `scause` is written with an undefined cause (combination of `scause.INT` and `scause.CODE`), an `Illegal Instruction` exception occurs.
+
+      [when,"TRAP_ON_ILLEGAL_WLRL == false"]
+      If `scause` is written with an undefined cause (combination of `scause.INT` and `scause.CODE`), neither `scause.INT` nor `scause.CODE` are modified.
+    type: RW-RH
+    sw_write(csr_value): |
+      # the write only holds if the INT/CODE combination is valid
+      # otherwise, the old value is retained
+      if (csr_value.INT == 1) {
+        if (valid_interrupt_code?(csr_value.CODE)) {
+          return 1;
+        }
+        return ILLEGAL_WLRL;
+      } else {
+        if (valid_exception_code?(csr_value.CODE)) {
+          return 1;
+        }
+        return ILLEGAL_WLRL;
+      }
+    reset_value: UNDEFINED_LEGAL
+  CODE:
+    location_rv32: 30-0
+    location_rv64: 62-0
+    description: |
+      Written by hardware when a trap is taken into S-mode.
+
+      Holds the interrupt or exception code for the last taken trap.
+
+      `scause.CODE` is writable.
+
+      [when,"TRAP_ON_ILLEGAL_WLRL == true"]
+      If `scause` is written with an undefined cause (combination of `scause.INT` and `scause.CODE`), an `Illegal Instruction` exception occurs.
+
+      [when,"TRAP_ON_ILLEGAL_WLRL == false"]
+      If `scause` is written with an undefined cause (combination of `scause.INT` and `scause.CODE`), neither `scause.INT` nor `scause.CODE` are modified.
+
+      Valid interrupt codes are:
+      [separator="!"]
+      !===
+      <%- interrupt_codes.sort_by { |code| code.num }.each do |code| -%>
+      ! <%= code.num %> ! <%= code.name %>
+      <%- end -%>
+      !===
+
+      Valid exception codes are:
+      [separator="!"]
+      !===
+      <%- exception_codes.sort_by { |code| code.num }.each do |code| -%>
+      ! <%= code.num %> ! <%= code.name %>
+      <%- end -%>
+      !===
+    type: RW-RH
+    sw_write(csr_value): |
+      # the write only holds if the INT/CODE combination is valid
+      # otherwise, the old value is retained
+      if (csr_value.INT == 1) {
+        if (valid_interrupt_code?(csr_value.CODE)) {
+          return csr_value.CODE;
+        }
+        return ILLEGAL_WLRL;
+      } else {
+        if (valid_exception_code?(csr_value.CODE)) {
+          return csr_value.CODE;
+        }
+        return ILLEGAL_WLRL;
+      }
+    reset_value: UNDEFINED_LEGAL

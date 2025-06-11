@@ -25,7 +25,7 @@ jobs:
       - name: singularity setup
         uses: ./.github/actions/singularity-setup
       - name: Create many artifacts in the _site directory
-        run: /bin/bash lib/deploy.sh
+        run: /bin/bash tools/scripts/deploy.sh
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

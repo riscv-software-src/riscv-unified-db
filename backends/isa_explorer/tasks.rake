@@ -2,6 +2,8 @@
 #
 # Contains Rake rules to generate ISA explorer.
 
+require "udb/cfg_arch"
+
 require "pathname"
 require_relative "isa_explorer"
 
@@ -66,13 +68,13 @@ end
 
 src_pnames = [
   "#{BACKEND_DIR}/isa_explorer.rb",
-  "#{$root}/lib/architecture.rb",
-  "#{$root}/lib/version.rb",
-  "#{$root}/lib/presence.rb",
-  "#{$root}/lib/backend_helpers.rb",
-  "#{$root}/lib/arch_obj_models/database_obj.rb",
-  "#{$root}/lib/arch_obj_models/extension.rb",
-  "#{$root}/lib/arch_obj_models/instruction.rb"
+  "#{$root}/tools/gems/udb/lib/udb/architecture.rb",
+  "#{$root}/tools/gems/udb/lib/udb/version_spec.rb",
+  "#{$root}/tools/gems/udb/lib/udb/presence.rb",
+  "#{$root}/tools/gems/udb_helpers/lib/udb_helpers/backend_helpers.rb",
+  "#{$root}/tools/gems/udb/lib/udb/obj/database_obj.rb",
+  "#{$root}/tools/gems/udb/lib/udb/obj/extension.rb",
+  "#{$root}/tools/gems/udb/lib/udb/obj/instruction.rb"
 ]
 
 file "#{GEN_XLSX}" => [
@@ -154,7 +156,7 @@ file "#{GEN_JS_EXT_TABLE}" => [
     src_pnames,
     SRC_EXT_HTML_PNAME
 ].flatten do |t|
-    arch = create_arch
+    arch = $resolver.cfg_arch_for("_")
 
     # Ensure directory holding target file is present.
     FileUtils.mkdir_p File.dirname(t.name)
@@ -169,7 +171,7 @@ file "#{GEN_JS_INST_TABLE}" => [
     src_pnames,
     SRC_INST_HTML_PNAME
 ].flatten do |t|
-    arch = create_arch
+    arch = $resolver.cfg_arch_for("_")
 
     # Ensure directory holding target file is present.
     FileUtils.mkdir_p File.dirname(t.name)
@@ -184,7 +186,7 @@ file "#{GEN_JS_CSR_TABLE}" => [
     src_pnames,
     SRC_CSR_HTML_PNAME
 ].flatten do |t|
-    arch = create_arch
+    arch = $resolver.cfg_arch_for("_")
 
     # Ensure directory holding target file is present.
     FileUtils.mkdir_p File.dirname(t.name)
@@ -192,14 +194,4 @@ file "#{GEN_JS_CSR_TABLE}" => [
     gen_js_csr_table(arch, t.name)
 
     puts "Success: Generated #{t.name}"
-end
-
-
-# @return [ConfiguredArchitecture]
-def create_arch
-  # Ensure that unconfigured resolved architecture called "_" exists.
-  Rake::Task["#{$root}/.stamps/resolve-_.stamp"].invoke
-
-  # Create architecture object using the unconfigured resolved architecture called "_" to get the entire RISC-V arch.
-  cfg_arch_for("_")
 end

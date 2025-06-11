@@ -1,0 +1,21 @@
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# yaml-language-server: $schema=../../schemas/ext_schema.json
+
+$schema: "ext_schema.json#"
+kind: extension
+name: Zfh
+long_name: Half-precision floating point
+description: |
+  16-bit half-precision binary floating-point instructions compliant with the IEEE 754-2008
+  arithmetic standard.
+  The `Zfh` extension depends on the single-precision floating-point extension, `F`.
+  The NaN-boxing scheme is extended to allow a half-precision value to be NaN-boxed inside a
+  single-precision value (which may be recursively NaN-boxed inside a double- or quad-precision
+  value when the D or Q extension is present).
+type: unprivileged
+versions:
+  - version: "1.0.0"
+    state: ratified
+    ratification_date: null
