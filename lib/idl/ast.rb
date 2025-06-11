@@ -401,7 +401,21 @@ module Idl
 
     # @!macro to_idl
     # @abstract
-    def to_idl = raise NotImplementedError, "#{self.class.name} must implement to_idl"
+    def to_idl(indent = 0)
+      # Example implementation — adjust based on actual node structure
+      result = ""
+
+      # Assuming `children` returns subnodes:
+      children.each do |child|
+        result += child.pretty_idl(indent + 1)
+      end
+
+      result
+    end
+    def pretty_idl(indent = 0)
+      ('  ' * indent) + to_idl + "\n"
+    end
+
 
     def inspect = self.class.name.to_s
   end
@@ -667,6 +681,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = name
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class GlobalWithInitializationSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -727,6 +746,7 @@ module Idl
     def to_idl
       var_decl_with_init.to_idl
     end
+
   end
 
   class GlobalSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -776,7 +796,8 @@ module Idl
         interval,
         definitions.elements.reject do |e|
           e.elements.all?(&:space?)
-        end.map(&:to_ast)
+        end.map { |e| e.respond_to?(:to_ast) ? e.to_ast : nil }.compact
+
       )
     end
   end
@@ -880,7 +901,13 @@ module Idl
     end
 
     def to_idl = "$array_size(#{expression.to_idl})"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
+
 
 
   class EnumSizeSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -916,6 +943,11 @@ module Idl
     end
 
     def to_idl = "$enum_size(#{enum_class.to_idl})"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class EnumElementSizeSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -947,6 +979,11 @@ module Idl
     end
 
     def to_idl = "$enum_element_size(#{enum_class.to_idl})"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class EnumCastSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -994,6 +1031,11 @@ module Idl
     def value(symtab) = expression.value(symtab)
 
     def to_idl = "$enum(#{enum_name.to_idl}, #{expression.to_idl})"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class EnumArrayCastSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -1030,6 +1072,11 @@ module Idl
     end
 
     def to_idl = "$enum_to_a(#{enum_class.to_idl})"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class EnumDefinitionSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -1045,12 +1092,13 @@ module Idl
       end
 
       EnumDefinitionAst.new(
-        input,
+       input,
         interval,
         user_type_name.to_ast,
         e.elements.map { |entry| entry.user_type_name.to_ast },
         values
       )
+
     end
   end
 
@@ -1146,6 +1194,21 @@ module Idl
       idl << "}"
       idl
     end
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      result = "#{indent_str}enum #{name} {\n"
+
+      element_names.each_with_index do |ename, idx|
+        val = element_values[idx]
+        result += "#{indent_str}  #{ename} = #{val},\n"
+      end
+
+      result += "#{indent_str}}\n"
+      result
+    end
+
+
+
   end
 
   class BuiltinEnumDefinitionSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -1231,6 +1294,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "generated enum #{@user_type.text_value}"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class BitfieldFieldDefinitionAst < AstNode
@@ -1287,6 +1355,14 @@ module Idl
         "#{@name} #{@msb.to_idl}-#{@lsb.to_idl}"
       end
     end
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      type_str = @type.respond_to?(:to_idl) ? @type.to_idl : @type.to_s
+      name_str = @name.respond_to?(:to_idl) ? @name.to_idl : @name.to_s
+      "#{indent_str}#{type_str} #{name_str};\n"
+    end
+
+
   end
 
   class BitfieldDefinitionSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -1329,6 +1405,9 @@ module Idl
       @name = name
       @size = size
       @fields = fields
+    end
+    def fields
+      @fields
     end
 
     # @!macro freeze_tree
@@ -1412,6 +1491,17 @@ module Idl
       idl << "}"
       idl.join("\n")
     end
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      result = "#{indent_str}bitfield #{name} {\n"
+      @fields.each do |field|
+        result += field.pretty_idl(indent + 1)
+      end
+      result += "#{indent_str}}\n"
+      result
+    end
+
+
   end
 
   class StructDefinitionSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -1419,6 +1509,7 @@ module Idl
       member_types = []
       member_names = []
       member.elements.each do |m|
+        next unless m.respond_to?(:type_name) && m.respond_to?(:id)
         member_types << m.type_name.to_ast
         member_names << m.id.text_value
       end
@@ -1502,6 +1593,16 @@ module Idl
       end
       "struct #{name} { #{member_decls.join("; ")}; }"
     end
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      result = "#{indent_str}struct #{name} {\n"
+      num_members.times do |i|
+        result += "#{indent_str}  #{member_types[i].to_idl} #{member_names[i]};\n"
+      end
+      result += "#{indent_str}}\n"
+      result
+    end
+
   end
 
   # class VariableAccessAst < Ast
@@ -1557,6 +1658,11 @@ module Idl
         "#{a.to_idl}[#{brackets.msb.to_idl}:#{brackets.lsb.to_idl}]"
       end
     end
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class AryElementAccessAst < AstNode
@@ -1631,6 +1737,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "#{var.to_idl}[#{index.to_idl}]"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class AryRangeAccessAst < AstNode
@@ -1689,6 +1800,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "#{var.to_idl}[#{msb.to_idl}:#{lsb.to_idl}]"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
 
   end
 
@@ -1726,6 +1842,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "$pc = #{rhs.to_idl}"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class VariableAssignmentSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -1806,6 +1927,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "#{lhs.to_idl} = #{rhs.to_idl}"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class AryElementAssignmentSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -1928,6 +2054,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "#{lhs.to_idl}[#{idx.to_idl}] = #{rhs.to_idl}"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class AryRangeAssignmentSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -2019,6 +2150,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "#{variable.to_idl}[#{msb.to_idl}:#{lsb.to_idl}] = #{write_value.to_idl}"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class FieldAssignmentSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -2078,6 +2214,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "#{field_access.to_idl} = #{write_value.to_idl}"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class CsrFieldAssignmentSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -2138,6 +2279,11 @@ module Idl
     def execute_unknown(symtab); end
 
     def to_idl = "#{csr_field.to_idl} = #{write_value.to_idl}"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class MultiVariableAssignmentSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -2233,6 +2379,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "(#{variables.map(&:to_idl).join(', ')}) = #{function_call.to_idl}"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class MultiVariableDeclarationSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -2296,6 +2447,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "#{type_name.to_idl} #{var_name_nodes.map(&:to_idl).join(', ')}"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class VariableDeclarationSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -2411,6 +2567,9 @@ module Idl
         "#{type_name.to_idl} #{id.to_idl}[#{ary_size.to_idl}]"
       end
     end
+
+
+
   end
 
   class VariableDeclarationWithInitializationSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -2565,6 +2724,11 @@ module Idl
         "#{type_name.to_idl} #{lhs.to_idl}[#{ary_size.to_idl}] = #{rhs.to_idl}"
       end
     end
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class BinaryExpressionRightSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -2630,6 +2794,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "$signed(#{expression.to_idl})"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class BitsCastSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -2704,6 +2873,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "$signed(#{expr.to_idl})"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class BinaryExpressionAst < AstNode
@@ -2758,6 +2932,11 @@ module Idl
     def to_idl
       "(#{lhs.to_idl} #{op} #{rhs.to_idl})"
     end
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
 
     # @!macro type
     def type(symtab)
@@ -3447,6 +3626,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "(#{expression.to_idl})"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class ArrayLiteralSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -3484,6 +3668,11 @@ module Idl
     end
 
     def to_idl = "[#{element_nodes.map(&:to_idl).join(',')}]"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class ConcatenationExpressionSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -3539,6 +3728,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "{#{expressions.map { |exp| exp.to_idl }.join(',')}}"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class ReplicationExpressionSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -3595,6 +3789,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "{#{n.to_idl}{#{v.to_idl}}}"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class PostDecrementExpressionSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -3647,6 +3846,11 @@ module Idl
     end
 
     def to_idl = "#{rval.to_idl}--"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class BuiltinVariableSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -3687,6 +3891,11 @@ module Idl
     end
 
     def to_idl = name
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class PostIncrementExpressionSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -3744,6 +3953,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "#{rval.to_idl}++"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class FieldAccessExpressionSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -3815,6 +4029,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "#{obj.to_idl}.#{@field_name}"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class EnumRefSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -3893,6 +4112,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "#{@enum_class_name}::#{@member_name}"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class UnaryOperatorExpressionSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -4017,6 +4241,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "#{op}#{expression.to_idl}"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class TernaryOperatorExpressionSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -4117,6 +4346,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "#{condition.to_idl} ? #{true_expression.to_idl} : #{false_expression.to_idl}"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class StatementSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -4141,6 +4375,11 @@ module Idl
 
     # @1macro to_idl
     def to_idl = ""
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   # represents a simple, one-line statement
@@ -4185,6 +4424,8 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "#{action.to_idl};"
+
+
   end
 
   class ConditionalStatementSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -4237,6 +4478,24 @@ module Idl
     def to_idl
       "#{action.to_idl} if (#{condition.to_idl});"
     end
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      result = "#{indent_str}if #{condition.to_idl} {\n"
+      then_branch.each do |stmt|
+        result += stmt.pretty_idl(indent + 1)
+      end
+      if else_branch
+        result += "#{indent_str}else {\n"
+        else_branch.each do |stmt|
+          result += stmt.pretty_idl(indent + 1)
+        end
+        result += "#{indent_str}}\n"
+      else
+        result += "#{indent_str}}\n"
+      end
+      result
+    end
+
   end
 
   class DontCareReturnSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -4285,6 +4544,11 @@ module Idl
     end
 
     def to_idl = "-"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class DontCareLvalueSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -4310,6 +4574,11 @@ module Idl
     def value(_symtab, _cfg_arch) = internal_error "Why are you calling value for an lval?"
 
     def to_idl = "-"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class ReturnStatementSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -4374,6 +4643,8 @@ module Idl
     end
 
     def to_idl = "#{return_expression.to_idl};"
+
+
   end
 
   class ReturnExpressionSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -4499,6 +4770,11 @@ module Idl
     end
 
     def to_idl = "return #{return_value_nodes.map(&:to_idl).join(',')}"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class ConditionalReturnStatementSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -4561,6 +4837,12 @@ module Idl
     end
 
     def to_idl = "#{return_expression.to_idl} if (#{condition.to_idl});"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      result = "#{indent_str}if (#{condition.to_idl}) return #{return_expression.to_idl};\n"
+      result
+    end
+
   end
 
   # @api private
@@ -4696,6 +4978,8 @@ module Idl
         @type_name
       end
     end
+
+
   end
 
   module StringLiteralSyntaxNode
@@ -4730,6 +5014,11 @@ module Idl
     end
 
     def to_idl = text_value
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   module IntLiteralSyntaxNode
@@ -4974,6 +5263,11 @@ module Idl
 
     # @!macro to_idl
     def to_idl = text_value
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
   class FunctionCallExpressionSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -5218,6 +5512,11 @@ module Idl
         "#{name}(#{arg_nodes.map(&:to_idl).join(',')})"
       end
     end
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
+
   end
 
 
@@ -5250,6 +5549,10 @@ module Idl
 
     # @!macro to_idl
     def to_idl = text_value
+
+
+
+
   end
 
   class InstructionOperationSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -5368,6 +5671,16 @@ module Idl
       end
       result
     end
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      result = "#{indent_str}{\n"
+      statements.each do |stmt|
+        result += stmt.pretty_idl(indent + 1)
+      end
+      result += "#{indent_str}}\n"
+      result
+    end
+
   end
 
   class FetchSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -5404,7 +5717,8 @@ module Idl
         desc.text_value,
         respond_to?(:type) ? type.text_value.strip.to_sym : :normal,
         respond_to?(:body_block) ? body_block.function_body.to_ast : nil
-      )
+    )
+
     end
   end
 
@@ -5733,7 +6047,7 @@ module Idl
         single_declaration_with_initialization.to_ast,
         condition.to_ast,
         action.to_ast,
-        stmts.elements.map(&:s).map(&:to_ast)
+        stmts.elements.map(&:s).filter_map { |e| e.respond_to?(:to_ast) ? e.to_ast : nil }
       )
     end
   end
@@ -5850,6 +6164,17 @@ module Idl
       idl << "}"
       idl
     end
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      result = "#{indent_str}for (#{init.to_idl}; #{condition.to_idl}; #{update.to_idl}) {\n"
+      stmts.each do |stmt|
+        result += stmt.pretty_idl(indent + 1)
+      end
+      result += "#{indent_str}}\n"
+      result
+    end
+
+
   end
 
   class IfBodyAst < AstNode
@@ -5865,6 +6190,10 @@ module Idl
         super(input, interval, body_stmts)
       end
     end
+    def each(&block)
+      @children.each(&block)
+    end
+
 
     # @!macro type_check
     def type_check(symtab)
@@ -5967,6 +6296,15 @@ module Idl
     def to_idl
       stmts.map(&:to_idl).join("")
     end
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      result = ""
+      statements.each do |stmt|
+        result += stmt.pretty_idl(indent)
+      end
+      result
+    end
+
 
   end
 
@@ -6011,20 +6349,35 @@ module Idl
     def to_idl
       " else if (#{cond.to_idl}) { #{body.to_idl} }"
     end
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      result = "#{indent_str}else if #{cond.to_idl} {\n"
+      body.children.each do |stmt|  # or just body.each if you define it
+        result += stmt.pretty_idl(indent + 1)
+      end
+      result += "#{indent_str}}\n"
+      result
+    end
+
+
   end
 
   class IfSyntaxNode < Treetop::Runtime::SyntaxNode
     def to_ast
       if_body_stmts = []
       if_body.elements.each do |e|
+        next unless e.respond_to?(:e) && e.e.respond_to?(:to_ast)
         if_body_stmts << e.e.to_ast
+
       end
       eifs = []
       unless elseifs.empty?
         elseifs.elements.each do |eif|
           stmts = []
           eif.body.elements.each do |e|
-            stmts << e.e.to_ast
+            next unless e.respond_to?(:e) && e.e.respond_to?(:to_ast)
+            if_body_stmts << e.e.to_ast
+
           end
           eifs << ElseIfAst.new(input, eif.interval, eif.body.interval, eif.expression.to_ast, stmts)
         end
@@ -6032,6 +6385,7 @@ module Idl
       final_else_stmts = []
       unless final_else.empty?
         final_else.body.elements.each do |e|
+          next unless e.respond_to?(:e) && e.e.respond_to?(:to_ast)
           final_else_stmts << e.e.to_ast
         end
       end
@@ -6281,6 +6635,31 @@ module Idl
       end
       result
     end
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      result = "#{indent_str}if (#{if_cond.to_idl}) {\n"
+      if_body.stmts.each do |stmt|
+        result += stmt.pretty_idl(indent + 1)
+      end
+      result += "#{indent_str}}"
+
+      elseifs.each do |eif|
+        result += "\n" + eif.pretty_idl(indent)
+      end
+
+      unless final_else_body.stmts.empty?
+        result += " else {\n"
+        final_else_body.stmts.each do |stmt|
+          result += stmt.pretty_idl(indent + 1)
+        end
+        result += "#{indent_str}}"
+      end
+
+      result += "\n"
+      result
+    end
+
+
   end
 
   class CsrFieldReadExpressionAst < AstNode
@@ -6340,6 +6719,10 @@ module Idl
     # @!macro to_idl
     def to_idl
       "CSR[#{@csr_obj.name}].#{@field_name}"
+    end
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
     end
 
     # @!macro type
@@ -6457,6 +6840,10 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "CSR[#{@csr_name}]"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
   end
 
   class CsrSoftwareWriteSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -6506,6 +6893,10 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "#{csr.to_idl}.sw_write(#{expression.to_idl})"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
   end
 
   # @api private
@@ -6610,6 +7001,10 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "#{csr.to_idl}.#{function_call}()"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
   end
 
   class CsrWriteSyntaxNode < Treetop::Runtime::SyntaxNode
@@ -6665,5 +7060,49 @@ module Idl
 
     # @!macro to_idl
     def to_idl = "CSR[#{idx.text_value}]"
+    def pretty_idl(indent = 0)
+      indent_str = '  ' * indent
+      "#{indent_str}#{type} #{name};\n"
+    end
   end
+  class CommentAst < AstNode
+    attr_reader :text
+
+    def initialize(input, interval, text)
+      super(input, interval, [])
+      @text = text
+    end
+
+    def format_idl(indent = 0)
+      "#{' ' * indent}# #{@text}".rstrip + "\n"
+    end
+
+    def to_idl(indent = 0)
+      format_idl(indent)
+    end
+
+    def pretty_idl(indent = 0)
+      "#{'  ' * indent}# #{@text}\n"
+    end
+  end
+
+  class WhitespaceAst < AstNode
+    def initialize(input, interval)
+      super(input, interval, [])
+    end
+
+    def format_idl(indent = 0)
+      "\n"
+    end
+
+    def to_idl(indent = 0)
+      "\n"
+    end
+
+    def pretty_idl(indent = 0)
+      "\n"
+    end
+  end
+
+
 end
