@@ -183,7 +183,13 @@ module Udb
       deps = Dir[gen_path / "arch" / config_yaml["name"] / "**" / "*.yaml"].map { |p| Pathname.new(p) }
       if any_newer?(gen_path / "resolved_arch" / config_yaml["name"] / ".stamp", deps)
         udb_gem_path = Bundler.definition.specs.find { |s| s.name == "udb" }.full_gem_path
-        run "#{python_path} #{udb_gem_path}/python/yaml_resolver.py resolve #{gen_path}/arch/#{config_name} #{gen_path}/resolved_arch/#{config_name}"
+        run [
+          python_path.to_s,
+          "#{udb_gem_path}/python/yaml_resolver.py",
+          "resolve",
+          "#{gen_path}/arch/#{config_name}",
+          "#{gen_path}/resolved_arch/#{config_name}"
+        ]
         FileUtils.touch(gen_path / "resolved_arch" / config_yaml["name"] / ".stamp")
       end
     end
