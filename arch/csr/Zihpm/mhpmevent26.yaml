@@ -71,7 +71,8 @@ fields:
       } else {
         return 0;
       }
-    definedBy: Sscofpmf
+    definedBy:
+      allOf: [S, Sscofpmf]
   UINH:
     location: 60
     description: When set, mhpmcounter26 does not increment while the hart in operating in U-mode.
@@ -87,7 +88,8 @@ fields:
       } else {
         return 0;
       }
-    definedBy: Sscofpmf
+    definedBy:
+      allOf: [U, Sscofpmf]
   VSINH:
     location: 59
     description: When set, mhpmcounter26 does not increment while the hart in operating in VS-mode.
@@ -103,7 +105,8 @@ fields:
       } else {
         return 0;
       }
-    definedBy: Sscofpmf
+    definedBy:
+      allOf: [H, Sscofpmf]
   VUINH:
     location: 58
     description: When set, mhpmcounter26 does not increment while the hart in operating in VU-mode.
@@ -119,7 +122,8 @@ fields:
       } else {
         return 0;
       }
-    definedBy: Sscofpmf
+    definedBy:
+      allOf: [H, Sscofpmf]
   EVENT:
     location: 57-0
     description: Event selector for performance counter `mhpmcounter26`.

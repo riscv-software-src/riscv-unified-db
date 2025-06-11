@@ -181,7 +181,7 @@ namespace udb {
         __builtin_unreachable();
         <%- end -%>
       } else {
-        <%- if inst.defined_in_base?(32) -%>
+        <%- if inst.defined_in_base?(64) -%>
         return fmt::format("{} <%= inst.assembly_fmt(64) %>", m_name <%= inst.assembly_fmt_args(64) %>);
         <%- else -%>
         udb_assert(false, "Not defined");
@@ -197,7 +197,7 @@ namespace udb {
       <%- src_regs = nil -%>
       <%- if !inst.base.nil? -%>
         <%- pruned_ast = inst.pruned_operation_ast(inst.base) -%>
-        <%- symtab = inst.fill_symtab(cfg_arch.possible_xlens[0], pruned_ast) -%>
+        <%- symtab = inst.fill_symtab(inst.base, pruned_ast) -%>
             <%- begin -%>
         <%- src_regs = pruned_ast.find_src_registers(symtab) %>
         <%- symtab.release -%>
@@ -249,7 +249,7 @@ namespace udb {
       <%- dst_regs = nil -%>
       <%- if !inst.base.nil? -%>
         <%- pruned_ast = inst.pruned_operation_ast(inst.base) -%>
-        <%- symtab = inst.fill_symtab(cfg_arch.possible_xlens[0], pruned_ast) -%>
+        <%- symtab = inst.fill_symtab(inst.base, pruned_ast) -%>
             <%- begin -%>
         <%- dst_regs = pruned_ast.find_dst_registers(symtab) %>
         <%- symtab.release -%>
