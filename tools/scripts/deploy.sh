@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
 
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 # deploy artifacts to a directory, in preparation for GitHub deployment
 
 # Initialize globals used to track failures.
 exit_status=0
 declare -a failures # Array
 
-ROOT=$(dirname $(dirname $(realpath ${BASH_SOURCE[0]})))
+ROOT=$(dirname $(dirname $(dirname $(realpath ${BASH_SOURCE[0]}))))
+
+cd $ROOT
 
 DEPLOY_DIR="$ROOT/_site"
 PAGES_URL="https://riscv-software-src.github.io/riscv-unified-db"
