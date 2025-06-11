@@ -379,7 +379,7 @@ versions:
   - { name: Xqcicm, version: "0.2.0" }
   - { name: Xqcics, version: "0.2.0" }
   - { name: Xqcicsr, version: "0.3.0" }
-  - { name: Xqciint, version: "0.9.0" }
+  - { name: Xqciint, version: "0.8.0" }
   - { name: Xqciio, version: "0.1.0" }
   - { name: Xqcilb, version: "0.2.0" }
   - { name: Xqcili, version: "0.2.0" }
