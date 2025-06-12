@@ -78,14 +78,15 @@ class Architecture
 
   # validate the architecture against JSON Schema and any object-specific verification
   # @param show_progress [Boolean] Whether to show a progress bar
-  def validate(show_progress: true)
+  sig { params(resolver: Resolver, show_progress: T::Boolean).void }
+  def validate(resolver, show_progress: true)
     progressbar = ProgressBar.create(total: objs.size) if show_progress
 
     objs.each do |obj|
       next unless obj.is_a?(TopLevelDatabaseObject)
 
       progressbar.increment if show_progress
-      obj.validate
+      obj.validate(resolver)
     end
   end
 

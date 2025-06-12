@@ -649,13 +649,13 @@ class Csr < TopLevelDatabaseObject
       end
       last_idx = T.cast(field.location(effective_xlen).max, Integer)
     end
-    if !field_list.empty? && (field_list.last.location(effective_xlen).max != (length(effective_xlen) - 1))
+    if !field_list.empty? && (field_list.last.location(effective_xlen).max != (T.must(length(effective_xlen)) - 1))
       # reserved space at the end
-      desc["reg"] << { "bits" => (length(effective_xlen) - 1 - last_idx), type: 1 }
+      desc["reg"] << { "bits" => (T.must(length(effective_xlen)) - 1 - last_idx), type: 1 }
       # desc['reg'] << { 'bits' => 1, type: 1 }
     end
     desc["config"] = { "bits" => length(effective_xlen) }
-    desc["config"]["lanes"] = length(effective_xlen) / 16
+    desc["config"]["lanes"] = T.must(length(effective_xlen)) / 16
     desc
   end
 

@@ -46,13 +46,13 @@ module Udb
             raise ArgumentError, "Cannot find config: #{options[:config]}"
           end
 
-        cfg_arch =
-          Udb::Resolver.new.cfg_arch_for(
-            cfg_file.realpath,
-            arch_path: Pathname.new(options[:arch]),
-            gen_path: Pathname.new(options[:gen]),
-            arch_overlay_path: Pathname.new(options[:arch_overlay])
+        resolver =
+          Udb::Resolver.new(
+            arch_path_override: Pathname.new(options[:arch]),
+            gen_path_override: Pathname.new(options[:gen]),
+            arch_overlay_path_override: Pathname.new(options[:arch_overlay])
           )
+        cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
         ext = cfg_arch.extension(ext_name)
         if ext.nil?
           say "Could not find an extension named '#{ext_name}'", :red
@@ -89,13 +89,13 @@ module Udb
             raise ArgumentError, "Cannot find config: #{options[:config]}"
           end
 
-        cfg_arch =
-          Udb::Resolver.new.cfg_arch_for(
-            cfg_file.realpath,
-            arch_path: Pathname.new(options[:arch]),
-            gen_path: Pathname.new(options[:gen]),
-            arch_overlay_path: Pathname.new(options[:arch_overlay])
+        resolver =
+          Udb::Resolver.new(
+            arch_path_override: Pathname.new(options[:arch]),
+            gen_path_override: Pathname.new(options[:gen]),
+            arch_overlay_path_override: Pathname.new(options[:arch_overlay])
           )
+        cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
         cfg_arch.possible_extensions.each do |ext|
           puts ext.name
         end
@@ -130,13 +130,13 @@ module Udb
             raise ArgumentError, "Cannot find config: #{options[:config]}"
           end
 
-        cfg_arch =
-          Udb::Resolver.new.cfg_arch_for(
-            cfg_file.realpath,
-            arch_path: Pathname.new(options[:arch]),
-            gen_path: Pathname.new(options[:gen]),
-            arch_overlay_path: Pathname.new(options[:arch_overlay])
+        resolver =
+          Udb::Resolver.new(
+            arch_path_override: Pathname.new(options[:arch]),
+            gen_path_override: Pathname.new(options[:gen]),
+            arch_overlay_path_override: Pathname.new(options[:arch_overlay])
           )
+        cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
         params =
           if options[:extensions]
             cfg_arch.possible_extensions.select{ |e| options[:extensions].include?(e.name) }.map(&:params).flatten.uniq(&:name).sort
@@ -205,13 +205,13 @@ module Udb
           raise ArgumentError, "Cannot find config: #{options[:config]}"
         end
 
-      cfg_arch =
-        Udb::Resolver.new.cfg_arch_for(
-          cfg_file.realpath,
-          arch_path: Pathname.new(options[:arch]),
-          gen_path: Pathname.new(options[:gen]),
-          arch_overlay_path: Pathname.new(options[:arch_overlay])
+      resolver =
+        Udb::Resolver.new(
+          arch_path_override: Pathname.new(options[:arch]),
+          gen_path_override: Pathname.new(options[:gen]),
+          arch_overlay_path_override: Pathname.new(options[:arch_overlay])
         )
+      cfg_arch = resolver.cfg_arch_for(cfg_file.realpath)
 
       encoding = encoding_str.to_i(16)
 
@@ -221,6 +221,8 @@ module Udb
         say "RV#{xlen}:"
 
         matches[xlen] = cfg_arch.instructions.select do |i|
+          next unless i.defined_in_base?(xlen)
+
           opcode_mask = i.encoding(xlen).format.gsub(/[01]/, "1").gsub("-", "0").to_i(2)
           match = i.encoding(xlen).format.gsub("-", "0").to_i(2)
           (opcode_mask & encoding) == match

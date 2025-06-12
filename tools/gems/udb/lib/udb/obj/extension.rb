@@ -408,6 +408,7 @@ class ExtensionVersion
   #
   # Note that the list returned could include extension versions that conditionally imply this extension version
   # For example, Zcd.implied_by will return C, even though C only implies Zcd if D is also implemented
+  sig { returns(T::Array[ExtensionVersion]) }
   def implied_by
     return @implied_by unless @implied_by.nil?
 
@@ -417,7 +418,7 @@ class ExtensionVersion
 
       ext.versions.each do |ext_ver|
         ext_ver.implications.each do |implication|
-          @implied_by << ext_ver if implication[:ext_ver] == self
+          @implied_by << ext_ver if implication.ext_ver == self && implication.cond.could_be_true?(@arch)
         end
       end
     end

@@ -1,8 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# frozen_string_literal: true
 # typed: true
+# frozen_string_literal: true
 
 require "sorbet-runtime"
 
@@ -371,20 +371,24 @@ class TopLevelDatabaseObject < DatabaseObject
   end
 
   @@schemas ||= {}
-  @@schema_ref_resolver ||= proc do |pattern|
-    if pattern.to_s =~ /^http/
-      JSON.parse(Net::HTTP.get(pattern))
-    else
-      JSON.load_file($root / "schemas" / pattern.to_s)
+  sig { params(udb_resolver: Resolver).returns(T.proc.params(pattern: Regexp).returns(T.untyped)) }
+  def create_json_schemer_resolver(udb_resolver)
+    proc do |pattern|
+      if pattern.to_s =~ /^http/
+        JSON.parse(Net::HTTP.get(pattern))
+      else
+        JSON.load_file(udb_resolver.schemas_path / pattern.to_s)
+      end
     end
   end
 
   # validate the data against it's schema
   # @raise [SchemaError] if the data is invalid
-  sig { void }
-  def validate
-    schemas = @@schemas
-    ref_resolver = @@schema_ref_resolver
+  sig { overridable.params(resolver: Resolver).void }
+  def validate(resolver)
+    @@schemas[resolver] ||= {}
+    schemas = @@schemas[resolver]
+    ref_resolver = create_json_schemer_resolver(resolver)
 
     if @data.key?("$schema")
       schema_path = data["$schema"]
@@ -394,7 +398,7 @@ class TopLevelDatabaseObject < DatabaseObject
           schemas[schema_file]
         else
           schemas[schema_file] = JSONSchemer.schema(
-            File.read("#{$root}/schemas/#{schema_file}"),
+            File.read("#{resolver.schemas_path}/#{schema_file}"),
             regexp_resolver: "ecma",
             ref_resolver:,
             insert_property_defaults: true

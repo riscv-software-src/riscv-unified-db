@@ -1,8 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# frozen_string_literal: true
 # typed: true
+# frozen_string_literal: true
 
 require "bundler"
 require "sorbet-runtime"
@@ -55,15 +55,71 @@ module Udb
     repo_root / "cfgs"
   end
 
-
+  # resolves the specification in the context of a config, and writes to a generation folder
+  #
+  # The primary interface for users will be #cfg_arch_for
   class Resolver
     extend T::Sig
 
+    # path to find database schema files
+    sig { returns(Pathname) }
+    attr_reader :schemas_path
+
+    # path to find configuration files
+    sig { returns(Pathname) }
+    attr_reader :cfgs_path
+
+    # path to put generated files into
+    sig { returns(Pathname) }
+    attr_reader :gen_path
+
+    # path to the standard specification
+    sig { returns(Pathname) }
+    attr_reader :arch_path
+
+    # path to custom overlay specifications
+    sig { returns(Pathname) }
+    attr_reader :arch_overlay_path
+
+    # path to a python binary
+    sig { returns(Pathname) }
+    attr_reader :python_path
+
+    # create a new resolver.
+    #
+    # With no arguments, resolver will assume it exists in the riscv-unified-db repository
+    # and use standard paths
+    #
+    # If repo_root is given, use it as the path to a riscv-unified-db repository
+    #
+    # Any specific path can be overridden. If all paths are overridden, it doesn't matter what repo_root is.
     sig {
-      params(repo_root: T.nilable(Pathname)).void
+      params(
+        repo_root: Pathname,
+        schemas_path_override: T.nilable(Pathname),
+        cfgs_path_override: T.nilable(Pathname),
+        gen_path_override: T.nilable(Pathname),
+        arch_path_override: T.nilable(Pathname),
+        arch_overlay_path_override: T.nilable(Pathname),
+        python_path_override: T.nilable(Pathname)
+      ).void
     }
-    def initialize(repo_root = nil)
-      @repo_root = repo_root || Udb.repo_root
+    def initialize(
+      repo_root = Udb.repo_root,
+      schemas_path_override: nil,
+      cfgs_path_override: nil,
+      gen_path_override: nil,
+      arch_path_override: nil,
+      arch_overlay_path_override: nil,
+      python_path_override: nil
+    )
+      @repo_root = repo_root
+      @schemas_path = schemas_path_override || (@repo_root / "data" / "schemas")
+      @cfgs_path = cfgs_path_override || (@repo_root / "cfgs")
+      @gen_path = gen_path_override || (@repo_root / "gen")
+      @arch_path = arch_path_override || (@repo_root / "data" / "arch" / "isa")
+      @arch_overlay_path = arch_overlay_path_override || (@repo_root / "data" / "arch_overlay" / "isa")
+      @python_path = python_path_override || (@repo_root / ".home" / ".venv" / "bin" / "python3")
     end
 
     # returns true if either +target+ does not exist, or if any of +deps+ are newer than +target+
@@ -80,26 +136,14 @@ module Udb
     sig { params(cmd: T::Array[String]).void }
     def run(cmd)
       puts cmd.join(" ")
-      system(*cmd)
+      system(cmd.join(" "))
       raise unless $?.success?
     end
 
     # resolve config file and write it to gen_path
     # returns the config data
-    sig {
-      params(
-        config_path: Pathname,
-        gen_path: Pathname,
-        arch_path: Pathname,
-        arch_overlay_path: Pathname,
-      ).returns(T::Hash[String, T.untyped])
-    }
-    def resolve_config(
-      config_path,
-      gen_path: @repo_root / "gen",
-      arch_path: @repo_root / "data" / "arch" / "isa",
-      arch_overlay_path: @repo_root / "data" / "arch_overlay" / "isa"
-    )
+    sig { params(config_path: Pathname).returns(T::Hash[String, T.untyped]) }
+    def resolve_config(config_path)
       config_yaml = T.nilable(T::Hash[String, T.untyped])
       config_name = config_path.basename(".yaml")
 
@@ -126,22 +170,8 @@ module Udb
       config_yaml
     end
 
-    sig do
-      params(
-        config_yaml: T::Hash[String, T.untyped],
-        gen_path: Pathname,
-        arch_path: Pathname,
-        arch_overlay_path: Pathname,
-        python_path: Pathname
-      ).void
-    end
-    def merge_arch(
-      config_yaml,
-      gen_path: @repo_root / "gen",
-      arch_path: @repo_root / "data" / "arch" / "isa",
-      arch_overlay_path: @repo_root / "data" / "arch_overlay" / "isa",
-      python_path: @repo_root / ".home" / ".venv" / "bin" / "python3"
-    )
+    sig { params(config_yaml: T::Hash[String, T.untyped]).void }
+    def merge_arch(config_yaml)
       config_name = config_yaml["name"]
 
       deps = Dir[arch_path / "**" / "*.yaml"].map { |p| Pathname.new(p) }
@@ -161,23 +191,9 @@ module Udb
       end
     end
 
-    sig {
-      params(
-        config_yaml: T::Hash[String, T.untyped],
-        gen_path: Pathname,
-        arch_path: Pathname,
-        arch_overlay_path: Pathname,
-        python_path: Pathname
-      ).void
-    }
-    def resolve_arch(
-      config_yaml,
-      gen_path: @repo_root / "gen",
-      arch_path: @repo_root / "data" / "arch" / "isa",
-      arch_overlay_path: @repo_root / "data" / "arch_overlay" / "isa",
-      python_path: @repo_root / ".home" / ".venv" / "bin" / "python3"
-    )
-      merge_arch(config_yaml, gen_path:, arch_path:, arch_overlay_path:, python_path:)
+    sig { params(config_yaml: T::Hash[String, T.untyped]).void }
+    def resolve_arch(config_yaml)
+      merge_arch(config_yaml)
       config_name = config_yaml["name"]
 
       deps = Dir[gen_path / "arch" / config_yaml["name"] / "**" / "*.yaml"].map { |p| Pathname.new(p) }
@@ -194,20 +210,9 @@ module Udb
       end
     end
 
-    sig {
-      params(
-        config_path_or_name: T.any(Pathname, String),
-        gen_path: Pathname,
-        arch_path: Pathname,
-        arch_overlay_path: Pathname
-      ).returns(Udb::ConfiguredArchitecture)
-    }
-    def cfg_arch_for(
-      config_path_or_name,
-      gen_path: @repo_root / "gen",
-      arch_path: @repo_root / "data" / "arch" / "isa",
-      arch_overlay_path: @repo_root / "data" / "arch_overlay" / "isa"
-    )
+    # resolve the specification for a config, and return a ConfiguredArchitecture
+    sig { params(config_path_or_name: T.any(Pathname, String)).returns(Udb::ConfiguredArchitecture) }
+    def cfg_arch_for(config_path_or_name)
       config_path =
         case config_path_or_name
         when Pathname
@@ -221,7 +226,7 @@ module Udb
       @cfg_archs ||= {}
       return @cfg_archs[config_path] if @cfg_archs.key?(config_path)
 
-      config_yaml = resolve_config(config_path, gen_path:, arch_path:, arch_overlay_path:)
+      config_yaml = resolve_config(config_path)
       config_name = config_yaml["name"]
 
       resolve_arch(config_yaml)

@@ -539,9 +539,9 @@ class ConfiguredArchitecture < Architecture
         raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
 
         if e["version"].is_a?(Array)
-          ExtensionRequirement.new(e["name"], T.cast(e["version"], T::Array[String]), presence: "mandatory", arch: self)
+          ExtensionRequirement.new(e["name"], T.cast(e["version"], T::Array[String]), presence: Presence.new("mandatory"), arch: self)
         else
-          ExtensionRequirement.new(e["name"], T.cast(e["version"], String), presence: "mandatory", arch: self)
+          ExtensionRequirement.new(e["name"], T.cast(e["version"], String), presence: Presence.new("mandatory"), arch: self)
         end
       end
   end

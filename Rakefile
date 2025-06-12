@@ -207,7 +207,7 @@ namespace :test do
 
   task :schema do
     puts "Checking arch files against schema.."
-    $resolver.cfg_arch_for("_").validate(show_progress: true)
+    $resolver.cfg_arch_for("_").validate($resolver, show_progress: true)
     puts "All files validate against their schema"
   end
 

@@ -1,8 +1,8 @@
 # Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
-# frozen_string_literal: true
 # typed: true
+# frozen_string_literal: true
 
 require "sorbet-runtime"
 require_relative "obj/extension"
@@ -43,8 +43,11 @@ module AbstractRequirement
   sig { abstract.params(_hsh: T.any(String, T::Hash[String, T.untyped])).returns(T.any(String, T::Hash[String, T.untyped])) }
   def minimize(_hsh); end
 
-  sig { abstract.params(cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
-  def satisfied_by_cfg_arch?(cfg_arch); end
+  sig { abstract.params(_cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
+  def satisfied_by_cfg_arch?(_cfg_arch); end
+
+  sig { abstract.params(_cfg_arch: ConfiguredArchitecture).returns(T::Boolean) }
+  def could_be_true?(_cfg_arch); end
 end
 
 # represents a JSON Schema composition of extension requirements, e.g.:
@@ -614,7 +617,11 @@ class ExtensionRequirementExpression
     eval to_rb
   end
 
-
+  sig { override.params(cfg_arch: ConfiguredArchitecture).returns(T::Boolean) }
+  def could_be_true?(cfg_arch)
+    r = satisfied_by_cfg_arch?(cfg_arch)
+    r == SatisfiedResult::Yes || r == SatisfiedResult::Maybe
+  end
 
   sig { override.params(cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
   def satisfied_by_cfg_arch?(cfg_arch)
@@ -709,6 +716,9 @@ class AlwaysTrueExtensionRequirementExpression
 
   sig { override.params(_cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
   def satisfied_by_cfg_arch?(_cfg_arch) = SatisfiedResult::Yes
+
+  sig { override.params(_cfg_arch: ConfiguredArchitecture).returns(T::Boolean) }
+  def could_be_true?(_cfg_arch) = true
 end
 
 class AlwaysFalseExtensionRequirementExpression
@@ -735,10 +745,10 @@ class AlwaysFalseExtensionRequirementExpression
 
   sig { override.params(_cfg_arch: ConfiguredArchitecture).returns(SatisfiedResult) }
   def satisfied_by_cfg_arch?(_cfg_arch) = SatisfiedResult::No
+
+  sig { override.params(_cfg_arch: ConfiguredArchitecture).returns(T::Boolean) }
+  def could_be_true?(_cfg_arch) = false
 end
-
-
-
 
 # represents an `implies:` entry for an extension
 # which is a list of extension versions, zero or more of which

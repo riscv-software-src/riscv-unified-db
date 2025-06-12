@@ -307,8 +307,9 @@ class Instruction < TopLevelDatabaseObject
     end
   end
 
-  def validate
-    super
+  sig { override.params(resolver: Resolver).void }
+  def validate(resolver)
+    super(resolver)
 
     if has_type?
       if @data["format"]["RV32"].nil?
