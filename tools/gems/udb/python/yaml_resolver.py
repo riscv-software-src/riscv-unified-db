@@ -571,7 +571,7 @@ def write_resolved_file_and_validate(
             print(best_match(schema.iter_errors(resolved_obj)).message)
             exit(1)
 
-    os.chmod(resolved_path, 0o444)
+    os.chmod(resolved_path, 0o666)
 
 
 if __name__ == "__main__":
