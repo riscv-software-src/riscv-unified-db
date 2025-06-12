@@ -30,6 +30,24 @@ class Udb::Architecture
   sig { returns(T::Hash[String, Udb::Instruction]) }
   def instruction_hash; end
 
+  sig { params(name: String).returns(T.nilable(Udb::InstructionSubtype)) }
+  def instruction_subtype(name); end
+
+  sig { returns(T::Hash[String, Udb::InstructionSubtype]) }
+  def instruction_subtype_hash; end
+
+  sig { returns(T::Array[Udb::InstructionSubtype]) }
+  def instruction_subtypes; end
+
+  sig { params(name: String).returns(T.nilable(Udb::InstructionType)) }
+  def instruction_type(name); end
+
+  sig { returns(T::Hash[String, Udb::InstructionType]) }
+  def instruction_type_hash; end
+
+  sig { returns(T::Array[Udb::InstructionType]) }
+  def instruction_types; end
+
   sig { returns(T::Array[Udb::Instruction]) }
   def instructions; end
 
@@ -72,14 +90,14 @@ class Udb::Architecture
   sig { params(name: String).returns(T.nilable(Udb::Profile)) }
   def profile(name); end
 
-  sig { params(name: String).returns(T.nilable(Udb::ProfileClass)) }
-  def profile_class(name); end
+  sig { returns(T::Array[Udb::ProfileFamily]) }
+  def profile_families; end
 
-  sig { returns(T::Hash[String, Udb::ProfileClass]) }
-  def profile_class_hash; end
+  sig { params(name: String).returns(T.nilable(Udb::ProfileFamily)) }
+  def profile_family(name); end
 
-  sig { returns(T::Array[Udb::ProfileClass]) }
-  def profile_classes; end
+  sig { returns(T::Hash[String, Udb::ProfileFamily]) }
+  def profile_family_hash; end
 
   sig { returns(T::Hash[String, Udb::Profile]) }
   def profile_hash; end
