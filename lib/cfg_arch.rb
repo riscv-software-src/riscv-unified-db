@@ -430,7 +430,7 @@ class ConfiguredArchitecture < Architecture
       elsif @config.partially_configured?
         extensions.map(&:versions).flatten.reject { |ext_ver| transitive_prohibited_extension_versions.include?(ext_ver) }
       else
-        extensions.map(&:version).flatten
+        extensions.map(&:versions).flatten
       end
   end
   alias possible_extension_versions not_prohibited_extension_versions

@@ -17,8 +17,8 @@ description: |
   has to execute a data FENCE before requesting that all remote RISC-V
   harts execute a FENCE.I.
 
-  The unused fields in the FENCE.I instruction, _imm[11:0]_, _rs1_, and
-  _rd_, are reserved for finer-grain fences in future extensions. For
+  The unused fields in the FENCE.I instruction, _imm[11:0]_, _xs1_, and
+  _xd_, are reserved for finer-grain fences in future extensions. For
   forward compatibility, base implementations shall ignore these fields,
   and standard software shall zero these fields.
   (((FENCE.I, finer-grained)))
@@ -39,9 +39,9 @@ encoding:
   variables:
     - name: imm
       location: 31-20
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always

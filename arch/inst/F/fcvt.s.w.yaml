@@ -5,22 +5,22 @@ kind: instruction
 name: fcvt.s.w
 long_name: Convert signed 32-bit integer to single-precision float
 description: |
-  Converts a 32-bit signed integer in integer register _rs1_ into a floating-point number in
+  Converts a 32-bit signed integer in integer register _xs1_ into a floating-point number in
   floating-point register _fd_.
 
   All floating-point to integer and integer to floating-point conversion instructions round
   according to the _rm_ field.
   A floating-point register can be initialized to floating-point positive zero using
-  `fcvt.s.w rd, x0`, which will never set any exception flags.
+  `fcvt.s.w fd, x0`, which will never set any exception flags.
 
   All floating-point conversion instructions set the Inexact exception flag if the rounded
   result differs from the operand value and the Invalid exception flag is not set.
 definedBy: F
-assembly: fd, xs1
+assembly: fd, xs1, rm
 encoding:
   match: 110100000000-------------1010011
   variables:
-    - name: rs1
+    - name: xs1
       location: 19-15
     - name: rm
       location: 14-12
@@ -35,7 +35,7 @@ data_independent_timing: false
 operation(): |
   check_f_ok($encoding);
   RoundingMode rounding_mode = rm_to_mode(rm, $encoding);
-  X[fd] = i32_to_f32(X[rs1], rounding_mode);
+  X[fd] = i32_to_f32(X[xs1], rounding_mode);
   mark_f_state_dirty();
 
 # SPDX-SnippetBegin

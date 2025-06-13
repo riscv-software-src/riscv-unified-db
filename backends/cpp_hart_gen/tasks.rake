@@ -361,7 +361,13 @@ file "#{$root}/ext/riscv-tests/env/LICENSE" => ["#{$root}/ext/riscv-tests/LICENS
   end
 end
 
-task "checkout-riscv-tests" => "#{$root}/ext/riscv-tests/env/LICENSE"
+task checkout_riscv_tests: "#{$root}/ext/riscv-tests/env/LICENSE"
+
+task build_riscv_tests: "checkout_riscv_tests" do
+  Dir.chdir "#{$root}/ext/riscv-tests/isa" do
+    sh "make RISCV_GCC_OPTS='-static -mcmodel=medany -fvisibility=hidden -nostdlib -nostartfiles -I/usr/include/newlib'"
+  end
+end
 
 file "#{CPP_HART_GEN_DST}/riscv-tests-build-64/Makefile" => "#{$root}/ext/riscv-tests/env/LICENSE" do |t|
   FileUtils.mkdir_p File.dirname(t.name)

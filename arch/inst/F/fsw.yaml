@@ -10,7 +10,7 @@ description: |
   `fsw` does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
 definedBy: F
-assembly: fs2, xs1, imm
+assembly: fs2, imm(xs1)
 encoding:
   match: -----------------010-----0100111
   variables:

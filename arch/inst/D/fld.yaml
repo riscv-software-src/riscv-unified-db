@@ -7,7 +7,7 @@ long_name: Load Double-precision Floating-Point
 description: |
   No description available.
 definedBy: D
-assembly: fd, xs1, imm
+assembly: fd, imm(xs1)
 encoding:
   match: -----------------011-----0000111
   variables:

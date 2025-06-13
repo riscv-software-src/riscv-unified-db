@@ -3,19 +3,22 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fcvt.w.q
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-point Convert Quad-precision to Word
+description:
+  - id: inst-fcvt.w.q-behaviour
+    normative: false
+    text: |
+      `fcvt.w.q` converts a quad-precision floating-point number to a 32-bit signed integer.
 definedBy: Q
-assembly: xd, qs1, rm
+assembly: xd, fs1, rm
 encoding:
   match: 110001100000-------------1010011
   variables:
-    - name: qs1
+    - name: fs1
       location: 19-15
     - name: rm
       location: 14-12
-    - name: rd
+    - name: xd
       location: 11-7
 access:
   s: always

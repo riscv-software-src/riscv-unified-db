@@ -8,13 +8,13 @@ description: |
   No description available.
 definedBy:
   allOf: [D, Zfa]
-assembly: xd, xs1
+assembly: fd, xs1
 encoding:
   match: 111100100001-----000-----1010011
   variables:
-    - name: rs1
+    - name: xs1
       location: 19-15
-    - name: rd
+    - name: fd
       location: 11-7
 access:
   s: always

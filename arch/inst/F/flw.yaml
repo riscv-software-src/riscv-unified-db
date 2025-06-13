@@ -10,7 +10,7 @@ description: |
   `flw` does not modify the bits being transferred; in particular, the payloads of non-canonical NaNs are preserved.
 
 definedBy: F
-assembly: fd, xs1, imm
+assembly: fd, imm(xs1)
 encoding:
   match: -----------------010-----0000111
   variables:

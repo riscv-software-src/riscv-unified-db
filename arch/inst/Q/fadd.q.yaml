@@ -3,21 +3,25 @@
 $schema: "inst_schema.json#"
 kind: instruction
 name: fadd.q
-long_name: No synopsis available
-description: |
-  No description available.
+long_name: Floating-point Add Quad-precision
+description:
+  - id: inst-fadd.q-behaviour
+    normative: false
+    text: |
+      `fadd.q` is analogous to `fadd.d` and performs double-precision floating-point addition between
+      `qs1` and `qs2` and writes the final result to `qd`.
 definedBy: Q
-assembly: qd, qs1, qs2, rm
+assembly: fd, fs1, fs2, rm
 encoding:
   match: 0000011------------------1010011
   variables:
-    - name: qs2
+    - name: fs2
       location: 24-20
-    - name: qs1
+    - name: fs1
       location: 19-15
     - name: rm
       location: 14-12
-    - name: qd
+    - name: fd
       location: 11-7
 access:
   s: always
