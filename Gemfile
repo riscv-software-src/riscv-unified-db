@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-ruby "3.2.3"
+ruby "~> 3.2"
 
 # local gems in UDB
 gem "idlc", path: "tools/gems/idlc"
@@ -36,7 +36,6 @@ group :development do
   gem "rubocop-minitest"
   gem "rubocop-sorbet"
   gem "ruby-prof"
-  gem "ruby-prof-flamegraph", git: "https://github.com/oozou/ruby-prof-flamegraph.git", ref: "fc3c437", require: false
   gem "solargraph"
   gem "sorbet"
   gem "spoom"

@@ -20,6 +20,7 @@ class Extension < TopLevelDatabaseObject
   include CertifiableObject
 
   # @return [String] Long name of the extension
+  sig { returns(String) }
   def long_name = @data["long_name"]
 
   # @return [String] Either unprivileged or privileged

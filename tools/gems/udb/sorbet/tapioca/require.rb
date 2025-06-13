@@ -1,7 +1,11 @@
 # typed: true
 # frozen_string_literal: true
 
+require "active_support/array_inquirer"
+require "active_support/core_ext/date/calculations"
+require "active_support/core_ext/string/output_safety"
 require "active_support/inflector/methods"
+require "active_support/string_inquirer"
 require "asciidoctor"
 require "awesome_print"
 require "bundler"
@@ -18,7 +22,9 @@ require "idlc/passes/reachable_functions"
 require "idlc/type"
 require "json"
 require "json_schemer"
+require "minitest"
 require "pathname"
+require "simplecov"
 require "sorbet-runtime"
 require "terminal-table"
 require "thor"

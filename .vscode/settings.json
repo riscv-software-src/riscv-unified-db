@@ -1,4 +1,70 @@
 {
-  "solargraph.bundlerPath": "${workspaceFolder}/bin/bundle",
-  "solargraph.useBundler": true
+  "solargraph.bundlerPath": "bin/bundle",
+  "solargraph.useBundler": true,
+  "sorbet.lspConfigs": [
+
+    {
+      "id": "container",
+      "name": "Sorbet (UDB)",
+      "description": "Sorbet in the UDB container",
+      "command": [
+        "/local/mnt/workspace/dhower/riscv-unified-db/worktrees/udbgem/bin/bundle",
+        "exec",
+        "srb",
+        "tc",
+        "--lsp",
+        "--dir",
+        "tools/gems",
+        "--ignore",
+        "api_doc",
+        "--ignore",
+        "doc",
+        "--ignore",
+        "ext",
+        "--ignore",
+        "python",
+        "-v",
+        "3",
+        "--debug-log-file=srb-lsp.out",
+        "--disable-watchman"
+      ]
+    },
+    {
+      "id": "host",
+      "name": "Sorbet (Host)",
+      "description": "Sorbet on the host",
+      "command": [
+        "/usr2/dhower/.rbenv/shims/bundle",
+        "exec",
+        "srb",
+        "typecheck",
+        "--lsp",
+        "--dir",
+        "tools/gems",
+        "--ignore",
+        "api_doc",
+        "--ignore",
+        "doc",
+        "--ignore",
+        "ext",
+        "--ignore",
+        "python",
+        "--disable-watchman"
+      ]
+    },
+    {
+      "id": "experimental",
+      "name": "Sorbet (Experimental)",
+      "description": "Experimental Sorbet Ruby IDE features (warning: crashy, for developers only)",
+      "command": [
+        "bundle",
+        "exec",
+        "srb",
+        "typecheck",
+        "--lsp",
+        "--enable-all-experimental-lsp-features"
+      ]
+    }
+  ],
+  "sorbet.selectedLspConfigId": "host"
 }

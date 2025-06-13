@@ -28,12 +28,16 @@ namespace :chore do
     task :update_deps do
       ENV["BUNDLE_APP_CONFIG"] = ($root / ".bundle").to_s
       Dir.chdir(RUBY_UDB_ROOT) do
-        sh "bundle config list"
-        sh "bundle install --gemfile #{RUBY_UDB_ROOT}/Gemfile"
+        sh "bundle update --install --gemfile #{RUBY_UDB_ROOT}/Gemfile"
         sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca gems --all"
         sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca dsl"
         sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca annotations"
-        sh "bundle exec --gemfile #{RUBY_UDB_ROOT}/Gemfile tapioca todo"
+      end
+    end
+
+    task :lsp do
+      Dir.chdir(RUBY_UDB_ROOT) do
+        sh "bundle exec srb tc --lsp --disable-watchman"
       end
     end
   end

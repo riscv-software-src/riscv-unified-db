@@ -73,6 +73,7 @@ class ConfiguredArchitecture < Architecture
   #
   # @return [Boolean] true if this configuration might execute in multiple xlen environments
   #                   (e.g., that in some mode the effective xlen can be either 32 or 64, depending on CSR values)
+  sig { returns(T::Boolean) }
   def multi_xlen?
     return true if @mxlen.nil?
 
@@ -91,6 +92,7 @@ class ConfiguredArchitecture < Architecture
   # @param mode [String] mode to check. One of "M", "S", "U", "VS", "VU"
   # @return [Boolean] true if this configuration might execute in multiple xlen environments in +mode+
   #                   (e.g., that in some mode the effective xlen can be either 32 or 64, depending on CSR values)
+  sig { params(mode: String).returns(T::Boolean) }
   def multi_xlen_in_mode?(mode)
     return false if mxlen == 32
 
@@ -171,16 +173,19 @@ class ConfiguredArchitecture < Architecture
   def possible_xlens = multi_xlen? ? [32, 64] : [mxlen]
 
   # hash for Hash lookup
+  sig { override.returns(Integer) }
   def hash = @name_sym.hash
 
   # @return [Idl::SymbolTable] Symbol table with global scope
   # @return [nil] if the architecture is not configured (use symtab_32 or symtab_64)
+  sig { returns(Idl::SymbolTable) }
   def symtab
     raise NotImplementedError, "Un-configured ConfiguredArchitectures have no symbol table" if @symtab.nil?
 
     @symtab
   end
 
+  sig { returns(String) }
   def config_type = @config.type
 
   # return the params as a hash of symbols for the SymbolTable
@@ -191,7 +196,7 @@ class ConfiguredArchitecture < Architecture
     params_with_value.each do |param_with_value|
       type = Idl::Type.from_json_schema(param_with_value.schema).make_const
       if type.kind == :array && type.width == :unknown
-        type = Idl::Type.new(:array, width: param_with_value.value.length, sub_type: type.sub_type, qualifiers: [:const])
+        type = Idl::Type.new(:array, width: T.cast(param_with_value.value, T.untyped).length, sub_type: type.sub_type, qualifiers: [:const])
       end
 
       # could already be present...
@@ -229,18 +234,14 @@ class ConfiguredArchitecture < Architecture
   #
   # @param name [:to_s]      The name associated with this ConfiguredArchitecture
   # @param config [AbstractConfig]   The configuration object
-  # @param arch_path [:to_s] Path to the resolved architecture directory corresponding to the configuration
+  # @param arch_path [Pathnam] Path to the resolved architecture directory corresponding to the configuration
+  sig { params(name: String, config: AbstractConfig, arch_path: Pathname).void }
   def initialize(name, config, arch_path)
-    raise ArgumentError, "name needs to be a String but is a #{name.class}" unless name.to_s.is_a?(String)
-    raise ArgumentError, "config needs to be a AbstractConfig but is a #{config.class}" unless config.is_a?(AbstractConfig)
-    raise ArgumentError, "arch_path needs to be a String but is a #{arch_path.class}" unless arch_path.to_s.is_a?(String)
 
     super(arch_path)
 
     @name = name.to_s.freeze
     @name_sym = @name.to_sym.freeze
-
-    @obj_cache = {}
 
     @config = config
     @mxlen = config.mxlen
@@ -266,10 +267,10 @@ class ConfiguredArchitecture < Architecture
       implemented_version: (
         Idl::SymbolTable.make_implemented_version_callback do |ext_name, version|
           if fully_configured?
-            ext?(ext_name, version)
+            ext?(ext_name, [version])
           else
             # we can know if it is implemented, but not if it's not implemented for a partially configured
-            if ext?(ext_name, version)
+            if ext?(ext_name, [version])
               true
             elsif prohibited_ext?(ext_name)
               false
@@ -342,6 +343,7 @@ class ConfiguredArchitecture < Architecture
 
   # Returns a string representation of the object, suitable for debugging.
   # @return [String] A string representation of the object.
+  sig { override.returns(String) }
   def inspect = "ConfiguredArchitecture##{name}"
 
   # type check all IDL, including globals, instruction ops, and CSR functions
@@ -350,6 +352,7 @@ class ConfiguredArchitecture < Architecture
   # @param show_progress [Boolean] whether to show progress bars
   # @param io [IO] where to write progress bars
   # @return [void]
+  sig { params(show_progress: T::Boolean, io: IO).void }
   def type_check(show_progress: true, io: $stdout)
     io.puts "Type checking IDL code for #{@config.name}..." if show_progress
     progressbar =
@@ -418,6 +421,7 @@ class ConfiguredArchitecture < Architecture
   end
 
   # @return [Array<ParameterWithValue>] List of all parameters with one known value in the config
+  sig { returns(T::Array[ParameterWithValue]) }
   def params_with_value
     return @params_with_value unless @params_with_value.nil?
 
@@ -432,7 +436,7 @@ class ConfiguredArchitecture < Architecture
 
           @params_with_value << ParameterWithValue.new(
             ext_param,
-            @config.param_values[ext_param.name]
+            T.must(@config.param_values[ext_param.name])
           )
         end
       end
@@ -446,7 +450,7 @@ class ConfiguredArchitecture < Architecture
 
           @params_with_value << ParameterWithValue.new(
             ext_param,
-            @config.param_values[ext_param.name]
+            T.must(@config.param_values[ext_param.name])
           )
         end
       end
@@ -457,6 +461,7 @@ class ConfiguredArchitecture < Architecture
   end
 
   # @return [Array<Parameter>] List of all available parameters without one known value in the config
+  sig { returns(T::Array[Parameter]) }
   def params_without_value
     return @params_without_value unless @params_without_value.nil?
 
@@ -473,10 +478,6 @@ class ConfiguredArchitecture < Architecture
     @params_without_value
   end
 
-  # Returns a string representation of the object, suitable for debugging.
-  # @return [String] A string representation of the object.
-  def inspect = "ConfiguredArchitecture##{name}"
-
   # @return [Array<ExtensionVersion>] List of extension versions explicitly marked as implemented in the config.
   #                                   Does *not* include extensions implied by explicitly implemented extensions.
   sig { returns(T::Array[ExtensionVersion]) }
@@ -488,12 +489,13 @@ class ConfiguredArchitecture < Architecture
     end
 
     @explicitly_implemented_extension_versions ||=
-      @config.implemented_extensions.map do |e|
-        ExtensionVersion.new(e["name"], e["version"], self, fail_if_version_does_not_exist: true)
+      T.cast(@config, FullConfig).implemented_extensions.map do |e|
+        ExtensionVersion.new(e.fetch("name"), e.fetch("version"), self, fail_if_version_does_not_exist: true)
       end
   end
 
   # @return [Array<ExtensionVersion>] List of all extensions known to be implemented in this config, including transitive implications
+  sig { returns(T::Array[ExtensionVersion]) }
   def transitive_implemented_extension_versions
     return @transitive_implemented_extension_versions unless @transitive_implemented_extension_versions.nil?
 
@@ -530,23 +532,26 @@ class ConfiguredArchitecture < Architecture
   alias implemented_extension_versions transitive_implemented_extension_versions
 
   # @return [Array<ExtensionRequirement>] List of all mandatory extension requirements (not transitive)
+  sig { returns(T::Array[ExtensionRequirement]) }
   def mandatory_extension_reqs
     return @mandatory_extension_reqs if defined?(@mandatory_extension_reqs)
 
     @mandatory_extension_reqs ||=
-      @config.mandatory_extensions.map do |e|
-        ext = extension(e["name"])
+      T.cast(@config, PartialConfig).mandatory_extensions.map do |e|
+        ename = T.cast(e["name"], String)
+        ext = extension(ename)
         raise "Cannot find extension #{e['name']} in the architecture definition" if ext.nil?
 
         if e["version"].is_a?(Array)
-          ExtensionRequirement.new(e["name"], T.cast(e["version"], T::Array[String]), presence: Presence.new("mandatory"), arch: self)
+          ExtensionRequirement.new(ename, T.cast(e.fetch("version"), T::Array[String]), presence: Presence.new("mandatory"), arch: self)
         else
-          ExtensionRequirement.new(e["name"], T.cast(e["version"], String), presence: Presence.new("mandatory"), arch: self)
+          ExtensionRequirement.new(ename, T.cast(e.fetch("version"), String), presence: Presence.new("mandatory"), arch: self)
         end
       end
   end
 
   # @return [Array<Extension>] List of extensions that are possibly supported
+  sig { returns(T::Array[Extension]) }
   def not_prohibited_extensions
     return @not_prohibited_extensions if defined?(@not_prohibited_extensions)
 
@@ -563,6 +568,7 @@ class ConfiguredArchitecture < Architecture
   alias possible_extensions not_prohibited_extensions
 
   # @return [Array<ExtensionVersion>] List of all ExtensionVersions that are possible to support
+  sig { returns(T::Array[ExtensionVersion]) }
   def not_prohibited_extension_versions
     return @not_prohibited_extension_versions if defined?(@not_prohibited_extension_versions)
 
@@ -594,6 +600,7 @@ class ConfiguredArchitecture < Architecture
   # @return [Array<ExtensionVersion>] List of all extension versions that are prohibited.
   #                                   This includes extensions explicitly prohibited by the config file
   #                                   and extensions that conflict with a mandatory extension.
+  sig { returns(T::Array[ExtensionVersion]) }
   def transitive_prohibited_extension_versions
     return @transitive_prohibited_extension_versions unless @transitive_prohibited_extension_versions.nil?
 
@@ -601,8 +608,8 @@ class ConfiguredArchitecture < Architecture
 
     if @config.partially_configured?
       @transitive_prohibited_extension_versions =
-        @config.prohibited_extensions.map do |ext_req_data|
-          ext_req = ExtensionRequirement.new(ext_req_data["name"], ext_req_data["version"], arch: self)
+        T.cast(@config, PartialConfig).prohibited_extensions.map do |ext_req_data|
+          ext_req = ExtensionRequirement.new(T.cast(ext_req_data.fetch("name"), String), ext_req_data.fetch("version"), arch: self)
           ext_req.satisfying_versions.each { |ext_ver| add_ext_ver_and_conflicts(ext_ver) }
         end
 
@@ -614,7 +621,7 @@ class ConfiguredArchitecture < Architecture
       end
 
       # now add everything that is not mandatory or implied by mandatory, if additional extensions are not allowed
-      unless @config.additional_extensions_allowed?
+      unless T.cast(@config, PartialConfig).additional_extensions_allowed?
         extensions.each do |ext|
           ext.versions.each do |ext_ver|
             next if mandatory_extension_reqs.any? { |ext_req| ext_req.satisfied_by?(ext_ver) }
@@ -649,6 +656,7 @@ class ConfiguredArchitecture < Architecture
   #   Returns true if any version of the extension named +ext+ is prohibited
   #   @param ext [String] An extension name
   #   @return [Boolean]
+  sig { params(ext: T.any(ExtensionVersion, String, Symbol)).returns(T::Boolean) }
   def prohibited_ext?(ext)
     if ext.is_a?(ExtensionVersion)
       transitive_prohibited_extension_versions.include?(ext)
@@ -672,7 +680,8 @@ class ConfiguredArchitecture < Architecture
   #     ConfigurationArchitecture.ext?(:S, ">= 1.12", "< 1.15")
   #   @example Checking extension precsence with a precise version requirement
   #     ConfigurationArchitecture.ext?(:S, 1.12)
-  def ext?(ext_name, *ext_version_requirements)
+  sig { params(ext_name: T.any(String, Symbol), ext_version_requirements: T::Array[String]).returns(T::Boolean) }
+  def ext?(ext_name, ext_version_requirements = [])
     @ext_cache ||= {}
     cached_result = @ext_cache[[ext_name, ext_version_requirements]]
     return cached_result unless cached_result.nil?
@@ -683,7 +692,7 @@ class ConfiguredArchitecture < Architecture
           if ext_version_requirements.empty?
             e.name == ext_name.to_s
           else
-            requirement = ExtensionRequirement.new(ext_name, ext_version_requirements, arch: self)
+            requirement = ExtensionRequirement.new(ext_name.to_s, ext_version_requirements, arch: self)
             requirement.satisfied_by?(e)
           end
         end
@@ -692,7 +701,7 @@ class ConfiguredArchitecture < Architecture
           if ext_version_requirements.empty?
             e.name == ext_name.to_s
           else
-            requirement = ExtensionRequirement.new(ext_name, ext_version_requirements, arch: self)
+            requirement = ExtensionRequirement.new(ext_name.to_s, ext_version_requirements, arch: self)
             e.satisfying_versions.all? do |ext_ver|
               requirement.satisfied_by?(ext_ver)
             end
@@ -707,28 +716,33 @@ class ConfiguredArchitecture < Architecture
   end
 
   # @return [Array<ExceptionCode>] All exception codes known to be implemented
+  sig { returns(T::Array[ExceptionCode]) }
   def implemented_exception_codes
     @implemented_exception_codes ||=
-      implemented_extension_versions.map { |ext_ver| ext_ver.exception_codes }.comapct.flatten
+      implemented_extension_versions.map { |ext_ver| ext_ver.exception_codes }.compact.flatten
   end
 
   # @return [Array<InteruptCode>] All interrupt codes known to be implemented
+  sig { returns(T::Array[InterruptCode]) }
   def implemented_interrupt_codes
     @implemented_interupt_codes ||=
-      implemented_extension_versions.map { |ext_ver| ext_ver.interrupt_codes }.comapct.flatten
+      implemented_extension_versions.map { |ext_ver| ext_ver.interrupt_codes }.compact.flatten
   end
 
   # @return [Array<Idl::FunctionBodyAst>] List of all functions defined by the architecture
+  sig { returns(T::Array[Idl::FunctionBodyAst]) }
   def functions
     @functions ||= @global_ast.functions
   end
 
   # @return [Idl::FetchAst] Fetch block
+  sig { returns(Idl::FetchAst) }
   def fetch
     @fetch ||= @global_ast.fetch
   end
 
   # @return [Array<Idl::GlobalAst>] List of globals
+  sig { returns(Idl::GlobalAst) }
   def globals
     return @globals unless @globals.nil?
 
@@ -736,6 +750,7 @@ class ConfiguredArchitecture < Architecture
   end
 
   # @return [Array<Csr>] List of all implemented CSRs
+  sig { returns(T::Array[Csr]) }
   def transitive_implemented_csrs
     unless fully_configured?
       raise ArgumentError, "transitive_implemented_csrs is only defined for fully configured systems"
@@ -751,6 +766,7 @@ class ConfiguredArchitecture < Architecture
   alias implemented_csrs transitive_implemented_csrs
 
   # @return [Array<Csr>] List of all CSRs that it is possible to implement
+  sig { returns(T::Array[Csr]) }
   def not_prohibited_csrs
     @not_prohibited_csrs ||=
       if @config.fully_configured?
@@ -768,6 +784,7 @@ class ConfiguredArchitecture < Architecture
   alias possible_csrs not_prohibited_csrs
 
   # @return [Array<Instruction>] List of all implemented instructions, sorted by name
+  sig { returns(T::Array[Instruction]) }
   def transitive_implemented_instructions
     unless fully_configured?
       raise ArgumentError, "transitive_implemented_instructions is only defined for fully configured systems"
@@ -783,6 +800,7 @@ class ConfiguredArchitecture < Architecture
   alias implemented_instructions transitive_implemented_instructions
 
   # @return [Array<Instruction>] List of all prohibited instructions, sorted by name
+  sig { returns(T::Array[Instruction]) }
   def transitive_prohibited_instructions
     # an instruction is prohibited if it is not defined by any .... TODO LEFT OFF HERE....
     @transitive_prohibited_instructions ||=
@@ -801,6 +819,7 @@ class ConfiguredArchitecture < Architecture
   alias prohibited_instructions transitive_prohibited_instructions
 
   # @return [Array<Instruction>] List of all instructions that are not prohibited by the config, sorted by name
+  sig { returns(T::Array[Instruction]) }
   def not_prohibited_instructions
     return @not_prohibited_instructions if defined?(@not_prohibited_instructions)
 
@@ -826,6 +845,7 @@ class ConfiguredArchitecture < Architecture
   alias possible_instructions not_prohibited_instructions
 
   # @return [Integer] The largest instruction encoding in the config
+  sig { returns(Integer) }
   def largest_encoding
     @largest_encoding ||=
       if fully_configured?
@@ -838,6 +858,7 @@ class ConfiguredArchitecture < Architecture
   end
 
   # @return [Array<FuncDefAst>] List of all reachable IDL functions for the config
+  sig { returns(T::Array[Idl::FunctionDefAst]) }
   def implemented_functions
     return @implemented_functions unless @implemented_functions.nil?
 
@@ -883,6 +904,7 @@ class ConfiguredArchitecture < Architecture
   end
 
   # @return [Array<FunctionDefAst>] List of functions that can be reached by the configuration
+  sig { returns(T::Array[Idl::FunctionDefAst]) }
   def reachable_functions
     return @reachable_functions unless @reachable_functions.nil?
 
@@ -935,6 +957,7 @@ class ConfiguredArchitecture < Architecture
   #
   # @param adoc [String] Asciidoc source
   # @return [String] Asciidoc source, with link placeholders
+  sig { params(adoc: String).returns(String) }
   def convert_monospace_to_links(adoc)
     h = Class.new do include Udb::Helpers::TemplateHelpers end.new
     adoc.gsub(/`([\w.]+)`/) do |match|
@@ -961,6 +984,7 @@ class ConfiguredArchitecture < Architecture
   # relevant data that can be used to generate ERb templates.
   #
   # @return [Hash] An environment hash suitable for use with ERb templates.
+  sig { returns(Object) }
   def erb_env
     return @env unless @env.nil?
 
@@ -985,8 +1009,9 @@ class ConfiguredArchitecture < Architecture
       # @param ext_name [String,#to_s] Name of the extension
       # @param ext_requirement [String, #to_s] Version string, as a Gem Requirement (https://guides.rubygems.org/patterns/#pessimistic-version-constraint)
       # @return [Boolean] whether or not extension +ext_name+ meeting +ext_requirement+ is implemented in the config
-      def ext?(ext_name, *ext_requirements)
-        @cfg_arch.ext?(ext_name.to_s, *ext_requirements)
+      sig { params(ext_name: T.any(String, Symbol), ext_requirements: T::Array[String]).returns(T::Boolean) }
+      def ext?(ext_name, ext_requirements = [])
+        @cfg_arch.ext?(ext_name.to_s, ext_requirements)
       end
 
       # List of possible XLENs for any implemented mode
@@ -1026,6 +1051,7 @@ class ConfiguredArchitecture < Architecture
   #
   # @param erb_template [String] ERB source
   # @return [String] The rendered text
+  sig { params(erb_template: String, what: String).returns(String) }
   def render_erb(erb_template, what = "")
     t = Tempfile.new("template")
     t.write erb_template

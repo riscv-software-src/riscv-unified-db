@@ -3364,39 +3364,6 @@ Thor::Options::SHORT_RE = T.let(T.unsafe(nil), Regexp)
 # source://thor//lib/thor/parser/options.rb#6
 Thor::Options::SHORT_SQ_RE = T.let(T.unsafe(nil), Regexp)
 
-# Adds a compatibility layer to your Thor classes which allows you to use
-# rake package tasks. For example, to use rspec rake tasks, one can do:
-#
-#   require 'thor/rake_compat'
-#   require 'rspec/core/rake_task'
-#
-#   class Default < Thor
-#     include Thor::RakeCompat
-#
-#     RSpec::Core::RakeTask.new(:spec) do |t|
-#       t.spec_opts = ['--options', './.rspec']
-#       t.spec_files = FileList['spec/**/*_spec.rb']
-#     end
-#   end
-#
-# source://thor//lib/thor/rake_compat.rb#20
-module Thor::RakeCompat
-  include ::FileUtils::StreamUtils_
-  include ::FileUtils
-  include ::Rake::FileUtilsExt
-  include ::Rake::DSL
-
-  class << self
-    # @private
-    #
-    # source://thor//lib/thor/rake_compat.rb#27
-    def included(base); end
-
-    # source://thor//lib/thor/rake_compat.rb#23
-    def rake_classes; end
-  end
-end
-
 # source://thor//lib/thor/error.rb#95
 class Thor::RequiredArgumentMissingError < ::Thor::InvocationError; end
 

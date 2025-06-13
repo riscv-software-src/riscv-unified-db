@@ -35,6 +35,7 @@ Gem::Specification.new do |s|
   s.add_dependency "activesupport"
   s.add_dependency "asciidoctor"
   s.add_dependency "awesome_print"
+  s.add_dependency "concurrent-ruby"
   s.add_dependency "idlc"
   s.add_dependency "json_schemer"
   s.add_dependency "sorbet-runtime"
@@ -44,6 +45,7 @@ Gem::Specification.new do |s|
   s.add_dependency "udb_helpers"
 
   s.add_development_dependency "rubocop-sorbet"
+  s.add_development_dependency "simplecov"
   s.add_development_dependency "sorbet"
   s.add_development_dependency "tapioca"
   s.add_development_dependency "yard"

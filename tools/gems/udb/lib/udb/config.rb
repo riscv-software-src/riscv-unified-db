@@ -58,6 +58,9 @@ class AbstractConfig
   sig { abstract.returns(T::Boolean) }
   def unconfigured?; end
 
+  sig { abstract.returns(String) }
+  def type; end
+
   ########################
   # NON-ABSTRACT METHODS #
   ########################
@@ -92,7 +95,7 @@ class FileConfig < AbstractConfig
     @data = data
   end
 
-  sig { returns(String) }
+  sig { override.returns(String) }
   def type = @data["type"]
 
   sig { params(obj: T.untyped).returns(T.untyped) }
@@ -346,6 +349,9 @@ class PortfolioGroupConfig < AbstractConfig
     @portfolio_grp = portfolio_grp
 
   end
+
+  sig { override.returns(String) }
+  def type = "portfolio"
 
   ###############################
   # ABSTRACT METHODS OVERRIDDEN #

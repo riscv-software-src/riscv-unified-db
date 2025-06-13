@@ -4,7 +4,6 @@
 # frozen_string_literal: true
 # typed: true
 
-require "concurrent"
 require "sorbet-runtime"
 
 require_relative "type"

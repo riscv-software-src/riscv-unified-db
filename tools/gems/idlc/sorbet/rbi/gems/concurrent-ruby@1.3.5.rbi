@@ -7,7 +7,7 @@
 
 # {include:file:README.md}
 #
-# source://concurrent-ruby//lib/concurrent-ruby/concurrent/version.rb#1
+# source://concurrent-ruby//lib/concurrent-ruby/concurrent/constants.rb#1
 module Concurrent
   extend ::Concurrent::Utility::EngineDetector
   extend ::Concurrent::Utility::NativeExtensionLoader
@@ -2062,7 +2062,7 @@ end
 # @see http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/atomic/AtomicBoolean.html java.util.concurrent.atomic.AtomicBoolean
 #
 # source://concurrent-ruby//lib/concurrent-ruby/concurrent/atomic/atomic_boolean.rb#119
-class Concurrent::AtomicBoolean < ::Concurrent::CAtomicBoolean
+class Concurrent::AtomicBoolean < ::Concurrent::MutexAtomicBoolean
   # @return [String] Short string representation.
   #
   # source://concurrent-ruby//lib/concurrent-ruby/concurrent/atomic/atomic_boolean.rb#121
@@ -2075,7 +2075,7 @@ class Concurrent::AtomicBoolean < ::Concurrent::CAtomicBoolean
 end
 
 # source://concurrent-ruby//lib/concurrent-ruby/concurrent/atomic/atomic_boolean.rb#82
-Concurrent::AtomicBooleanImplementation = Concurrent::CAtomicBoolean
+Concurrent::AtomicBooleanImplementation = Concurrent::MutexAtomicBoolean
 
 # Define update methods that use direct paths
 #
@@ -2146,7 +2146,7 @@ end
 # @see http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/atomic/AtomicLong.html java.util.concurrent.atomic.AtomicLong
 #
 # source://concurrent-ruby//lib/concurrent-ruby/concurrent/atomic/atomic_fixnum.rb#136
-class Concurrent::AtomicFixnum < ::Concurrent::CAtomicFixnum
+class Concurrent::AtomicFixnum < ::Concurrent::MutexAtomicFixnum
   # @return [String] Short string representation.
   #
   # source://concurrent-ruby//lib/concurrent-ruby/concurrent/atomic/atomic_fixnum.rb#138
@@ -2159,7 +2159,7 @@ class Concurrent::AtomicFixnum < ::Concurrent::CAtomicFixnum
 end
 
 # source://concurrent-ruby//lib/concurrent-ruby/concurrent/atomic/atomic_fixnum.rb#99
-Concurrent::AtomicFixnumImplementation = Concurrent::CAtomicFixnum
+Concurrent::AtomicFixnumImplementation = Concurrent::MutexAtomicFixnum
 
 # An atomic reference which maintains an object reference along with a mark bit
 # that can be updated atomically.
@@ -2369,7 +2369,7 @@ end
 # @see http://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/package-summary.html
 #
 # source://concurrent-ruby//lib/concurrent-ruby/concurrent/atomic/atomic_reference.rb#126
-class Concurrent::AtomicReference < ::Concurrent::CAtomicReference
+class Concurrent::AtomicReference < ::Concurrent::MutexAtomicReference
   # @return [String] Short string representation.
   #
   # source://concurrent-ruby//lib/concurrent-ruby/concurrent/atomic/atomic_reference.rb#129
@@ -2382,51 +2382,7 @@ class Concurrent::AtomicReference < ::Concurrent::CAtomicReference
 end
 
 # source://concurrent-ruby//lib/concurrent-ruby/concurrent/atomic/atomic_reference.rb#18
-Concurrent::AtomicReferenceImplementation = Concurrent::CAtomicReference
-
-class Concurrent::CAtomicBoolean
-  def initialize(*_arg0); end
-
-  def false?; end
-  def make_false; end
-  def make_true; end
-  def true?; end
-  def value; end
-  def value=(_arg0); end
-end
-
-class Concurrent::CAtomicFixnum
-  def initialize(*_arg0); end
-
-  def compare_and_set(_arg0, _arg1); end
-  def decrement(*_arg0); end
-  def down(*_arg0); end
-  def increment(*_arg0); end
-  def up(*_arg0); end
-  def update; end
-  def value; end
-  def value=(_arg0); end
-end
-
-# source://concurrent-ruby//lib/concurrent-ruby/concurrent/atomic/atomic_reference.rb#22
-class Concurrent::CAtomicReference
-  include ::Concurrent::AtomicDirectUpdate
-  include ::Concurrent::AtomicNumericCompareAndSetWrapper
-
-  def initialize(*_arg0); end
-
-  def _compare_and_set(_arg0, _arg1); end
-
-  # source://concurrent-ruby//lib/concurrent-ruby/concurrent/atomic_reference/numeric_cas_wrapper.rb#10
-  def compare_and_swap(old_value, new_value); end
-
-  def get; end
-  def get_and_set(_arg0); end
-  def set(_arg0); end
-  def swap(_arg0); end
-  def value; end
-  def value=(_arg0); end
-end
+Concurrent::AtomicReferenceImplementation = Concurrent::MutexAtomicReference
 
 # source://concurrent-ruby//lib/concurrent-ruby/concurrent/set.rb#30
 class Concurrent::CRubySet < ::Set
@@ -2673,7 +2629,7 @@ end
 # source://concurrent-ruby//lib/concurrent-ruby/concurrent/errors.rb#9
 class Concurrent::CancelledOperationError < ::Concurrent::Error; end
 
-# source://concurrent-ruby//lib/concurrent-ruby/concurrent/collection/copy_on_write_observer_set.rb#4
+# source://concurrent-ruby//lib/concurrent-ruby/concurrent/map.rb#7
 module Concurrent::Collection; end
 
 # A thread safe observer set implemented using copy-on-read approach:

@@ -1,30 +1,11 @@
 PATH
-  remote: ../idlc
+  remote: .
   specs:
     idlc (0.1.0)
+      activesupport
       commander (~> 5)
       sorbet-runtime
       treetop (= 1.6.12)
-
-PATH
-  remote: ../udb_helpers
-  specs:
-    udb_helpers (0.1.0)
-
-PATH
-  remote: .
-  specs:
-    udb (0.1.0)
-      activesupport
-      asciidoctor
-      awesome_print
-      idlc
-      json_schemer
-      sorbet-runtime
-      terminal-table
-      thor
-      tilt
-      udb_helpers
 
 GEM
   remote: https://rubygems.org/
@@ -42,9 +23,7 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
-    asciidoctor (2.0.23)
     ast (2.4.3)
-    awesome_print (1.9.2)
     base64 (0.3.0)
     benchmark (0.4.1)
     bigdecimal (3.2.2)
@@ -55,15 +34,10 @@ GEM
     docile (1.4.1)
     drb (2.2.3)
     erubi (1.13.1)
-    hana (1.3.7)
     highline (3.0.1)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     json (2.12.2)
-    json_schemer (1.0.3)
-      hana (~> 1.3)
-      regexp_parser (~> 2.0)
-      simpleidn (~> 0.2)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
@@ -85,6 +59,7 @@ GEM
       logger
     regexp_parser (2.10.0)
     rexml (3.4.1)
+    rouge (4.5.2)
     rubocop (1.76.0)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
@@ -110,7 +85,6 @@ GEM
       simplecov_json_formatter (~> 0.1)
     simplecov-html (0.13.1)
     simplecov_json_formatter (0.1.4)
-    simpleidn (0.2.3)
     sorbet (0.5.12157)
       sorbet-static (= 0.5.12157)
     sorbet-runtime (0.5.12157)
@@ -136,10 +110,7 @@ GEM
       spoom (>= 1.2.0)
       thor (>= 1.2.0)
       yard-sorbet
-    terminal-table (4.0.0)
-      unicode-display_width (>= 1.1.1, < 4)
     thor (1.3.2)
-    tilt (2.6.0)
     treetop (1.6.12)
       polyglot (~> 0.3)
     tzinfo (2.0.6)
@@ -159,12 +130,12 @@ PLATFORMS
 
 DEPENDENCIES
   idlc!
+  minitest
+  rouge
   rubocop-sorbet
   simplecov
   sorbet
   tapioca
-  udb!
-  udb_helpers!
   yard
   yard-sorbet
 

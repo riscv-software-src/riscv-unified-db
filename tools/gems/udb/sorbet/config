@@ -1,4 +1,14 @@
 --dir
-lib
---dir
-sorbet/rbi
+.
+--ignore
+api_doc
+--ignore
+bin
+--ignore
+coverage
+--ignore
+doc
+--ignore
+ext
+--ignore
+python

@@ -18,9 +18,12 @@ end
 namespace :chore do
   namespace :idlc do
     task :update_deps do
-      Dir.chdir(RUBY_UDB_ROOT) do
-        sh "bundle update --gemfile Gemfile"
-        sh "bundle exec tapioca gems --all"
+      ENV["BUNDLE_APP_CONFIG"] = ($root / ".bundle").to_s
+      Dir.chdir(IDLC_ROOT) do
+        sh "bundle install --gemfile #{IDLC_ROOT}/Gemfile"
+        sh "bundle exec --gemfile #{IDLC_ROOT}/Gemfile tapioca gems --all"
+        sh "bundle exec --gemfile #{IDLC_ROOT}/Gemfile tapioca dsl"
+        sh "bundle exec --gemfile #{IDLC_ROOT}/Gemfile tapioca annotations"
       end
     end
   end

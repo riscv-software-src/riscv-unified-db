@@ -22,11 +22,11 @@ module Treetop
       end
 
       # alias instantiate_node so we can call it from the override
-      alias treetop_instantiate_node instantiate_node
+      alias idlc_instantiate_node instantiate_node
 
       # override instatiate_node so we can set the input file
       def instantiate_node(node_type, *args)
-        node = T.unsafe(self).treetop_instantiate_node(node_type, *args)
+        node = T.unsafe(self).idlc_instantiate_node(node_type, *args)
         node.set_input_file(input_file, @starting_line.nil? ? 0 : @starting_line)
         node
       end

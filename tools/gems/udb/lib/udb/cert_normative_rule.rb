@@ -3,7 +3,8 @@
 
 # frozen_string_literal: true
 
-class Udb::CertNormativeRule
+module Udb
+class CertNormativeRule
   # @param data [Hash<String, Object>] Data from YAML file
   # @param db_obj [DatabaseObject] Database object that defines normative rule (Extension, Instruction, CSR, or CSR field)
   def initialize(data, db_obj)
@@ -36,4 +37,5 @@ class Udb::CertNormativeRule
 
     @doc_links
   end
+end
 end

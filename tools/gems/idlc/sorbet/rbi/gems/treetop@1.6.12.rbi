@@ -1729,10 +1729,10 @@ class Treetop::Runtime::CompiledParser
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#6
   def input; end
 
-  # source://idlc/0.1.0/lib/idlc.rb#14
+  # source://idlc/0.1.0/lib/idlc.rb#17
   def input_file; end
 
-  # source://idlc/0.1.0/lib/idlc.rb#25
+  # source://idlc/0.1.0/lib/idlc.rb#28
   def instantiate_node(node_type, *args); end
 
   # Returns the value of attribute max_terminal_failure_index.
@@ -1750,7 +1750,7 @@ class Treetop::Runtime::CompiledParser
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#7
   def root=(_arg0); end
 
-  # source://idlc/0.1.0/lib/idlc.rb#16
+  # source://idlc/0.1.0/lib/idlc.rb#19
   def set_input_file(filename, starting_line = T.unsafe(nil)); end
 
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#54
@@ -1783,9 +1783,6 @@ class Treetop::Runtime::CompiledParser
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#65
   def node_cache; end
 
-  # source://treetop//lib/treetop/runtime/compiled_parser.rb#98
-  def orig_instantiate_node(node_type, *args); end
-
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#87
   def parse_anything(node_class = T.unsafe(nil), inline_module = T.unsafe(nil)); end
 
@@ -1797,6 +1794,9 @@ class Treetop::Runtime::CompiledParser
 
   # source://treetop//lib/treetop/runtime/compiled_parser.rb#120
   def terminal_parse_failure(expected_string, unexpected = T.unsafe(nil)); end
+
+  # source://treetop//lib/treetop/runtime/compiled_parser.rb#98
+  def treetop_instantiate_node(node_type, *args); end
 end
 
 # source://treetop//lib/treetop/runtime/compiled_parser.rb#42
@@ -1862,13 +1862,16 @@ class Treetop::Runtime::SyntaxNode
   # source://treetop//lib/treetop/runtime/syntax_node.rb#5
   def parent=(_arg0); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#32
+  # source://idlc/0.1.0/lib/idlc/syntax_node.rb#20
+  sig { params(filename: T.nilable(::String), starting_line: ::Integer).void }
   def set_input_file(filename, starting_line = T.unsafe(nil)); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#22
+  # source://idlc/0.1.0/lib/idlc/syntax_node.rb#39
+  sig { params(filename: T.nilable(::String), starting_line: ::Integer).void }
   def set_input_file_unless_already_set(filename, starting_line = T.unsafe(nil)); end
 
-  # source://idlc/0.1.0/lib/idlc/ast.rb#41
+  # source://idlc/0.1.0/lib/idlc/syntax_node.rb#30
+  sig { returns(T::Boolean) }
   def space?; end
 
   # @return [Boolean]

@@ -1541,18 +1541,21 @@ end
 # source://rouge//lib/rouge/lexers/css.rb#6
 class Rouge::Lexers::CSS < ::Rouge::RegexLexer
   class << self
-    # source://rouge//lib/rouge/lexers/css.rb#19
-    def attributes; end
-
-    # source://rouge//lib/rouge/lexers/css.rb#120
+    # source://rouge//lib/rouge/lexers/css.rb#124
     def builtins; end
 
-    # source://rouge//lib/rouge/lexers/css.rb#151
-    def constants; end
+    # source://rouge//lib/rouge/lexers/css.rb#170
+    def colors; end
+
+    # source://rouge//lib/rouge/lexers/css.rb#198
+    def functions; end
+
+    # source://rouge//lib/rouge/lexers/css.rb#19
+    def properties; end
 
     # source: http://www.w3.org/TR/CSS21/syndata.html#vendor-keyword-history
     #
-    # source://rouge//lib/rouge/lexers/css.rb#181
+    # source://rouge//lib/rouge/lexers/css.rb#217
     def vendor_prefixes; end
   end
 end
