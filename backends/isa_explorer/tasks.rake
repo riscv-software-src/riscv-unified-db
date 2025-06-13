@@ -68,13 +68,13 @@ end
 
 src_pnames = [
   "#{BACKEND_DIR}/isa_explorer.rb",
-  "#{$root}/tools/gems/udb/lib/udb/architecture.rb",
-  "#{$root}/tools/gems/udb/lib/udb/version_spec.rb",
-  "#{$root}/tools/gems/udb/lib/udb/presence.rb",
-  "#{$root}/tools/gems/udb_helpers/lib/udb_helpers/backend_helpers.rb",
-  "#{$root}/tools/gems/udb/lib/udb/obj/database_obj.rb",
-  "#{$root}/tools/gems/udb/lib/udb/obj/extension.rb",
-  "#{$root}/tools/gems/udb/lib/udb/obj/instruction.rb"
+  "#{$root}/tools/ruby-gems/udb/lib/udb/architecture.rb",
+  "#{$root}/tools/ruby-gems/udb/lib/udb/version_spec.rb",
+  "#{$root}/tools/ruby-gems/udb/lib/udb/presence.rb",
+  "#{$root}/tools/ruby-gems/udb_helpers/lib/udb_helpers/backend_helpers.rb",
+  "#{$root}/tools/ruby-gems/udb/lib/udb/obj/database_obj.rb",
+  "#{$root}/tools/ruby-gems/udb/lib/udb/obj/extension.rb",
+  "#{$root}/tools/ruby-gems/udb/lib/udb/obj/instruction.rb"
 ]
 
 file "#{GEN_XLSX}" => [

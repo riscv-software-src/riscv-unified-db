@@ -42,7 +42,7 @@ Dir.glob("#{$root}/backends/*/tasks.rake") do |rakefile|
 end
 
 # load and execute Rakefile for each gem
-Dir.glob("#{$root}/tools/gems/*/Rakefile") do |rakefile|
+Dir.glob("#{$root}/tools/ruby-gems/*/Rakefile") do |rakefile|
   load rakefile
 end
 

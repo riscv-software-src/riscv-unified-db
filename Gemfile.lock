@@ -1,11 +1,11 @@
 PATH
-  remote: tools/gems/idl_highlighter
+  remote: tools/ruby-gems/idl_highlighter
   specs:
     idl_highlighter (0.1.0)
       rouge
 
 PATH
-  remote: tools/gems/idlc
+  remote: tools/ruby-gems/idlc
   specs:
     idlc (0.1.0)
       activesupport
@@ -14,12 +14,12 @@ PATH
       treetop (= 1.6.12)
 
 PATH
-  remote: tools/gems/udb_helpers
+  remote: tools/ruby-gems/udb_helpers
   specs:
     udb_helpers (0.1.0)
 
 PATH
-  remote: tools/gems/udb
+  remote: tools/ruby-gems/udb
   specs:
     udb (0.1.0)
       activesupport
