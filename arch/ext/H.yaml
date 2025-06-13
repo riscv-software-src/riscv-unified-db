@@ -660,3 +660,18 @@ params:
     schema:
       type: boolean
     extra_validation: assert STVEC_MODE_DIRECT || STVEC_MODE_VECTORED
+
+  HIDELEG_LCOFI_MUTABLE:
+    schema:
+      type: boolean
+    description: When true, `hideleg`[13] is writable, and Local Counter Overflow Interrupts can be delegated to VS-mode.
+
+  HIE_LCOFIE_MUTABLE:
+    schema:
+      type: boolean
+    description: When true, `hie`[13] is writable and enables Local Counter Overflow Interrupts for VS-mode.
+
+  HIP_LCOFI_MUTABLE:
+    schema:
+      type: boolean
+    description: When true, `hip`[13] is writable, and Local Counter Overflow Interrupts can be delegated to VS-mode.

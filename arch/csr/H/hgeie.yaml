@@ -1,0 +1,68 @@
+# yaml-language-server: $schema=../../../schemas/csr_schema.json
+
+$schema: "csr_schema.json#"
+kind: csr
+name: hgeie
+long_name: Hypervisor Guest External Interrupt Enable Register
+description:
+  - id: csr-hgeie-purpose
+    normative: true
+    text: |
+      The hgeie register is an HSXLEN-bit read/write register that contains enable bits for the guest external interrupts at this hart.
+  - id: csr-hgeie-bits
+    normative: true
+    text: Guest external interrupt number i corresponds with bit i in hgeie.
+  - id: csr-hgeie-interrupts
+    normative: true
+    text: |
+      Guest external interrupts represent interrupts directed to individual virtual machines
+      at VS-level.
+      If a RISC-V platform supports placing a physical device under the direct control of a
+      guest OS with minimal hypervisor intervention (known as pass-through or direct assignment
+      between a virtual machine and the physical device), then, in such circumstance,
+      interrupts from the device are intended for a specific virtual machine.
+  - id: csr-hgeie-controller-req
+    normative: false
+    text: |
+      Support for guest external interrupts requires an interrupt controller that can collect
+      virtual-machine-directed interrupts separately from other interrupts.
+  - id: csr-hgeie-geilen
+    normative: true
+    text: |
+      The number of bits implemented in hgeie for guest external interrupts is UNSPECIFIED and
+      may be zero.
+      This number is known as `GEILEN`.
+  - id: csr-hgeie-bitorder
+    normative: true
+    text: |
+      The least-significant bits are implemented first, apart from bit 0.
+  - id: csr-hgeie-nonzero-geilen
+    normative: true
+    text: |
+      Hence, if GEILEN is nonzero, bits `GEILEN`:1 shall be writable in hgeie, and all other
+      bit positions shall be read-only zeros.
+  - id: csr-hgeie-select
+    normative: true
+    text: |
+      Register hgeie selects the subset of guest external interrupts that cause a
+      supervisor-level (HS-level) guest external interrupt.
+  - id: csr-hgeie-hgeip
+    normative: true
+    text: |
+      The enable bits in hgeie do not affect the VS-level external interrupt signal selected
+      from hgeip by hstatus.VGEIN.address: 0x607
+priv_mode: S
+definedBy: H
+length: SXLEN
+fields:
+  GEI_ENABLE:
+    long_name: Guest external interrupt enable bits
+    location_rv32: 31-1
+    location_rv64: 63-1
+    type(): |
+      return NUM_EXTERNAL_GUEST_INTERRUPTS > 0 ? CsrFieldType::RW : CsrFieldType::RO;
+    reset_value: UNDEFINED_LEGAL
+    sw_write(csr_value): |
+      return ((MXLEN'1 << NUM_EXTERNAL_GUEST_INTERRUPTS) - 1) & csr_value.GEI_ENABLE;
+    description: |
+      Enable bits; see description of hgeie
