@@ -92,7 +92,7 @@ sw_read(): |
 
   if ((mode() != PrivMode::M) && implemented?(ExtensionName::Smstateen)) {
     if (CSR[mstateen0].JVT == 1'b0) {
-      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
     }
   }
   else if ((mode() == PrivMode::U) && implemented?(ExtensionName::Ssstaten)) {
@@ -102,11 +102,11 @@ sw_read(): |
   }
   else if ((mode() == PrivMode::VS) && implemented?(ExtensionName::Ssstaten)) {
     if (CSR[hstateen0].JVT == 1'b0) {
-      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
     }
   }
   else if ((mode() == PrivMode::VU) && implemented?(ExtensionName::Ssstateen)) {
     if ((CSR[sstateen0].JVT == 1'b0) || (CSR[hstateen0].JVT == 1'b0)) {
-      raise(ExceptionCode::IllegalInstruction, mode(), $encoding);
+      raise(ExceptionCode::VirtualInstruction, mode(), $encoding);
     }
   }
