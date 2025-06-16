@@ -264,7 +264,8 @@ bool <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::_sw_write(const Bits<<%=
 template <SocModel SocType>
 bool <%= name_of(:csr, cfg_arch, csr.name) %><SocType>::implemented_without_Q_(const ExtensionName& ext) const
 {
-  return <%= csr.defined_by_condition.to_cxx { |ext_name, ext_ver| "(ExtensionName::#{ext_name} != ext) && (m_parent->m_implemented_exts.find(ext) != m_parent->m_implemented_exts.end())" } %>;
+  return true; //TODO:
+  //return <%= csr.defined_by_condition.to_cxx { |ext_name, ext_ver| "(ExtensionName::#{ext_name} != ext) && (m_parent->m_implemented_exts.find(ext) != m_parent->m_implemented_exts.end())" } %>;
 }
 
 #undef __UDB_RUNTIME_PARAM

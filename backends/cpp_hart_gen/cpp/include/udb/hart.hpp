@@ -10,12 +10,12 @@
 #include <utility>
 #include <vector>
 
+#include "udb/bits.hpp"
 #include "udb/csr.hpp"
 #include "udb/enum.hxx"
 #include "udb/soc_model.hpp"
 #include "udb/stop_reason.h"
 #include "udb/version.hpp"
-#include "udb/xregister.hpp"
 
 #if !defined(JSON_ASSERT)
 #define JSON_ASSERT(cond) udb_assert(cond, "JSON assert");

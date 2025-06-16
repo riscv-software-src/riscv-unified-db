@@ -568,12 +568,12 @@ module Idl
       if @type_name == "Bits"
         result = ""
         value_result = value_try do
-          bits_expression.value(symtab)
-          result = "#{' '*indent}Bits<#{bits_expression.gen_cpp(symtab, 0, indent_spaces:)}>"
+          v = bits_expression.value(symtab)
+          result = "#{' '*indent}Bits<#{v}>"
         end
         value_else(value_result) do
           if bits_expression.constexpr?(symtab)
-            result = "#{' '*indent}Bits<#{bits_expression.gen_cpp(symtab)}>"
+            result = "#{' '*indent}Bits<#{bits_expression.gen_cpp(symtab)}.get()>"
           elsif bits_expression.max_value(symtab).nil?
             result = "#{' '*indent}Bits<BitsInfinitePrecision>"
           else

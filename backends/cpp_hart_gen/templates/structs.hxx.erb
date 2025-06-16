@@ -10,6 +10,7 @@
 namespace udb {
 
 #define __UDB_STRUCT(name) <%= name_of(:cfg, cfg_arch) %>_ ## name ## _Struct
+#define __UDB_STATIC_PARAM(param_name) <%= name_of(:params, cfg_arch) %>::param_name ## _VALUE
 
   <%- cfg_arch.global_ast.structs.each do |struct| -%>
     struct <%= name_of(:struct, cfg_arch, struct.name) %> {
@@ -34,5 +35,6 @@ namespace udb {
   <%- end -%>
 
 #undef __UDB_STRUCT
+#undef __UDB_STATIC_PARAM
 
 }

@@ -128,11 +128,11 @@ namespace udb {
     <%- if cfg_arch.multi_xlen? && field.dynamic_location? -%>
     void _hw_write(const ValueType &field_write_value, const unsigned& xlen) {
       if (xlen == 32) {
-        static constexpr ValueType mask = 0x<%= ((1 << field.location(32).size) - 1).to_s(16) %>ull;
+        static constexpr ValueType mask = 0x<%= ((1 << field.location(32).size) - 1).to_s(16) %>_b;
         m_value = field_write_value & mask;
         m_undefined = false;
       } else {
-        static constexpr ValueType mask = 0x<%= ((1 << field.location(64).size) - 1).to_s(16) %>ull;
+        static constexpr ValueType mask = 0x<%= ((1 << field.location(64).size) - 1).to_s(16) %>_b;
         m_value = field_write_value & mask;
         m_undefined = false;
       }
@@ -249,7 +249,7 @@ namespace udb {
             end
           end
         -%>
-        return <%= field_cpp.empty? ? 0 : field_cpp.join(" | ") %>;
+        return <%= field_cpp.empty? ? "0_b" : field_cpp.join(" | ") %>;
       } else {
         udb_assert(xlen == 64, "Bad xlen");
         <%-
@@ -261,7 +261,7 @@ namespace udb {
             end
           end
         -%>
-        return <%= field_cpp.empty? ? 0 : field_cpp.join(" | ") %>;
+        return <%= field_cpp.empty? ? "0_b" : field_cpp.join(" | ") %>;
       }
     }
     <%- else -%>
@@ -276,7 +276,7 @@ namespace udb {
           end
         end
       -%>
-      return <%= field_cpp.empty? ? 0 : field_cpp.join(" | ") %>;
+      return <%= field_cpp.empty? ? "0_b" : field_cpp.join(" | ") %>;
     }
     <%- end -%>
 
