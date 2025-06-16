@@ -50,7 +50,7 @@ namespace udb {
     bool readOnly(const unsigned& xlen) const {
       return type(xlen) == CsrFieldType::RO || type(xlen) == CsrFieldType::ROH;
     }
-    bool writable(const unsigned& xlen) const { return !readOnly(xlen); }
+    bool writeable(const unsigned& xlen) const { return !readOnly(xlen); }
     bool immutable(const unsigned& xlen) const {
       return type(xlen) == CsrFieldType::RO;
     }
@@ -83,12 +83,6 @@ namespace udb {
     virtual const std::string name() const = 0;
 
     virtual void reset() = 0;
-
-    // the most privileged mode that has access to this csr
-    virtual PrivilegeMode mode() const = 0;
-
-    // false if the CSR is read only
-    virtual bool writable() const = 0;
 
     // read the raw bits of a CSR value
     //

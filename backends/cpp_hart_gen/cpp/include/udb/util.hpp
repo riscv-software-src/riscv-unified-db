@@ -4,7 +4,6 @@
 
 #include "udb/bits.hpp"
 #include "udb/defines.hpp"
-#include "udb/xregister.hpp"
 
 namespace udb {
 
@@ -16,19 +15,19 @@ namespace udb {
                   "Cannot extract more bits than type contains");
 
     if constexpr (size == sizeof(Type) * 8) {
-      return value;
+      return Bits<size>{value};
     } else {
       constexpr Type mask = (static_cast<Type>(1) << size) - 1;
-      return (value >> start) & mask;
+      return Bits<size>{(value >> start) & mask};
     }
   }
-  static_assert(extract<0, 8>(0xeeff) == 0xff, "Did not extract a byte");
-  static_assert(extract<8, 8>(0xeeff) == 0xee, "Did not extract a byte");
-  static_assert(extract<24, 8>(0xccddeeffu) == 0xcc, "Did not extract a byte");
-  static_assert(extract<0, 32>(0xccddeeffu) == 0xccddeeff,
+  static_assert(extract<0, 8>(0xeeff) == 0xff_b, "Did not extract a byte");
+  static_assert(extract<8, 8>(0xeeff) == 0xee_b, "Did not extract a byte");
+  static_assert(extract<24, 8>(0xccddeeffu) == 0xcc_b, "Did not extract a byte");
+  static_assert(extract<0, 32>(0xccddeeffu) == 0xccddeeff_b,
                 "Did not extract a byte");
-  static_assert(extract<0, 1>(0xeeff) == 0x1, "Did not extract a bit");
-  static_assert(extract<8, 1>(0xeeff) == 0x0, "Did not extract a bit");
+  static_assert(extract<0, 1>(0xeeff) == 0x1_b, "Did not extract a bit");
+  static_assert(extract<8, 1>(0xeeff) == 0x0_b, "Did not extract a bit");
 
   // extract bits from a Bits type
   template <unsigned START, unsigned SIZE, unsigned BITS_LEN>
@@ -41,7 +40,7 @@ namespace udb {
       return value;
     } else {
       constexpr Bits<BITS_LEN> mask =
-          (static_cast<Bits<BITS_LEN>>(1).template sll<SIZE>()) - 1;
+          (static_cast<Bits<BITS_LEN>>(1).template widening_sll<SIZE>()) - 1;
       return (value >> START) & mask;
     }
   }
@@ -113,25 +112,10 @@ namespace udb {
     }
   }
 
-  // extract bits from an XRegister type
-  template <unsigned start, unsigned size, unsigned XLEN>
-  constexpr Bits<size> extract(const XRegister<XLEN> &value) {
-    static_assert((start + size) <= XLEN,
-                  "Cannot extract more bits than type contains");
-
-    if constexpr (size == XLEN) {
-      return value;
-    } else {
-      constexpr Bits<XLEN> mask =
-          (static_cast<Bits<XLEN>>(1).template sll<size>()) - 1;
-      return (value >> start) & mask;
-    }
-  }
-
   // extract from a bitfield member
   template <unsigned start, unsigned size, unsigned BitfieldParentSize,
             unsigned BitfieldMemberStart, unsigned BitfieldMemberSize>
-  constexpr Bits<size> extract(
+  constexpr PossiblyUnknownBits<size> extract(
       const BitfieldMember<BitfieldParentSize, BitfieldMemberStart,
                            BitfieldMemberSize> &value) {
     static_assert((start + size) <= (BitfieldMemberSize),
@@ -166,14 +150,14 @@ namespace udb {
 
   template <unsigned P, unsigned N, unsigned M, typename StartType,
             typename SizeType>
-  Bits<BitfieldMember<P, N, M>::Width> extract(
+  typename BitfieldMember<P, N, M>::BitsType<M> extract(
       const BitfieldMember<P, N, M> &value, const StartType &start,
       const SizeType &size) {
     udb_assert((start + size) <= (BitfieldMember<P, N, M>::Width),
                "extraction out of bound");
 
     if (size == BitfieldMember<P, N, M>::Width) {
-      return static_cast<const Bits<BitfieldMember<P, N, M>::Width>>(value);
+      return static_cast<const typename BitfieldMember<P, N, M>::BitsType<M>>(value);
     } else {
       if constexpr (BitfieldMember<P, N, M>::Width < 64) {
         uint64_t mask = (1ull << size) - 1;
@@ -194,27 +178,24 @@ namespace udb {
     static_assert(T <= Bits<T>::MaxNativePrecision,
                   "Multi-precision Bits is not constexpr");
     Bits<T> mask =
-        ((Bits<1>{1}.template sll<MSB - LSB + 1>()) - 1).template sll<LSB>();
-    return (target & ~mask) | ((value.template sll<LSB>()) & mask);
+        ((Bits<1>{1}.template widening_sll<MSB - LSB + 1>()) - 1_b).template widening_sll<LSB>();
+    return (target & ~mask) | ((value.template widening_sll<LSB>()) & mask);
   }
 
-  static_assert(bit_insert<0, 0, 32>(0, 1).get() == 0x1, "Did not insert bit");
-  static_assert(bit_insert<1, 1, 32>(0, 1) == 0x2, "Did not insert bit");
-  static_assert(bit_insert<8, 8, 32>(0, 1) == 0x100, "Did not insert bit");
-  static_assert(bit_insert<15, 15, 32>(0, 1) == 0x8000, "Did not insert bit");
-  static_assert(bit_insert<31, 31, 32>(0, 1).get() == 0x80000000,
-                "Did not insert bit");
-  static_assert(bit_insert<3, 0, 32>(0, 0xa) == 0xa, "Did not insert nibble");
-  static_assert(bit_insert<7, 4, 32>(0, 0xa) == 0xa0, "Did not insert nibble");
-  static_assert(bit_insert<7, 4, 32>(0xf, 0xa) == 0xaf,
-                "Did not insert nibble");
-  static_assert(bit_insert<7, 4, 32>(0xff, 0xa) == 0xaf,
-                "Did not insert nibble");
+  static_assert(bit_insert<0, 0, 32>(0_b, 1_b) == 0x1_b, "Did not insert bit");
+  static_assert(bit_insert<1, 1, 32>(0_b, 1_b) == 0x2_b, "Did not insert bit");
+  static_assert(bit_insert<8, 8, 32>(0_b, 1_b) == 0x100_b, "Did not insert bit");
+  static_assert(bit_insert<15, 15, 32>(0_b, 1_b) == 0x8000_b, "Did not insert bit");
+  static_assert(bit_insert<31, 31, 32>(0_b, 1_b) == 0x80000000_b, "Did not insert bit");
+  static_assert(bit_insert<3, 0, 32>(0_b, 0xa_b) == 0xa_b, "Did not insert nibble");
+  static_assert(bit_insert<7, 4, 32>(0_b, 0xa_b) == 0xa0_b, "Did not insert nibble");
+  static_assert(bit_insert<7, 4, 32>(0xf_b, 0xa_b) == 0xaf_b, "Did not insert nibble");
+  static_assert(bit_insert<7, 4, 32>(0xff_b, 0xa_b) == 0xaf_b, "Did not insert nibble");
 
   template <unsigned T, typename MsbType, typename LsbType, typename ValueType>
   void bit_insert(Bits<T> &target, const MsbType &msb, const LsbType &lsb,
                   const ValueType &value) {
-    Bits<T> mask = ((Bits<T + 1>{1} << msb) - 1) << lsb;
+    Bits<T> mask = ((Bits<T + 1>{1} << msb) - 1_b) << lsb;
     target = (target & ~mask) | ((Bits<T>{value} << lsb) & mask);
   }
 
@@ -240,8 +221,8 @@ namespace udb {
 
     Bits<BitsInfinitePrecision> value = _value;
     Bits<BitsInfinitePrecision> result = value;
-    for (unsigned i = 1; i < N; i++) {
-      result |= value << (i * M);
+    for (Bits<BitsInfinitePrecision> i = 1_b; i < Bits<sizeof(N)*8>{N}; i++) {
+      result = result | (value << (i * Bits<32>{M}));
     }
     return {result, M * N};
   }
@@ -253,8 +234,8 @@ namespace udb {
 
     RuntimeBits value{_value.value(), _value.width() * N};
     RuntimeBits result{value.value(), value.width() * N};
-    for (unsigned i = 1; i < N; i++) {
-      result |= value.value() << (i * value.width());
+    for (Bits<BitsInfinitePrecision> i = 1_b; i < Bits<sizeof(N)*8>{N}; i++) {
+      result = result | (value.value() << (i * Bits<32>{value.width()}));
     }
     return result;
   }
@@ -263,9 +244,9 @@ namespace udb {
             unsigned InputWidth>
   constexpr Bits<ResultWidth> sign_extend(const Bits<InputWidth> &value) {
     bool zero = (value & (static_cast<Bits<InputWidth>>(1)
-                              .template sll<FirstExtendedBit - 1>())) == 0;
+                              .template widening_sll<FirstExtendedBit - 1>())) == 0_b;
     constexpr Bits<ResultWidth> zero_mask =
-        static_cast<Bits<InputWidth>>(1).template sll<FirstExtendedBit>() - 1;
+        static_cast<Bits<InputWidth>>(1).template widening_sll<FirstExtendedBit>() - 1_b;
     if (zero) {
       return Bits<ResultWidth>(value) & zero_mask;
     } else {
@@ -273,10 +254,10 @@ namespace udb {
     }
   }
 
-  static_assert(sign_extend<5, 8, 8>(0x10).get() == 0xf0);
-  static_assert(sign_extend<5, 16, 8>(0x10).get() == 0xfff0);
-  static_assert(sign_extend<6, 8, 8>(0x10).get() == 0x10);
-  static_assert(sign_extend<6, 16, 8>(0x10).get() == 0x10);
+  static_assert(sign_extend<5, 8, 8>(0x10_b) == 0xf0_b);
+  static_assert(sign_extend<5, 16, 8>(0x10_b) == 0xfff0_b);
+  static_assert(sign_extend<6, 8, 8>(0x10_b) == 0x10_b);
+  static_assert(sign_extend<6, 16, 8>(0x10_b) == 0x10_b);
 
   template <typename... BitsTypes>
   struct ConcatWidth;
@@ -284,7 +265,7 @@ namespace udb {
   template <typename BitsType, typename... BitsTypes>
   struct ConcatWidth<BitsType, BitsTypes...> {
     static constexpr unsigned Width =
-        BitsType::Width + ConcatWidth<BitsTypes...>::Width;
+        BitsType::width() + ConcatWidth<BitsTypes...>::Width;
   };
 
   template <>
@@ -293,21 +274,48 @@ namespace udb {
   };
 
   template <typename BitsType, typename... BitsTypes>
+    requires(((BitsTypes::width() != BitsInfinitePrecision) && (BitsTypes::PossiblyUnknown == false)) && ...)
   constexpr Bits<ConcatWidth<BitsType, BitsTypes...>::Width> __concat(
       const BitsType &a, const BitsTypes &...bits) {
     if constexpr (sizeof...(BitsTypes) == 0) {
       return a;
     } else {
       return (Bits<ConcatWidth<BitsType, BitsTypes...>::Width>{a}
-              << ConcatWidth<BitsTypes...>::Width) |
+              << Bits<32>{ConcatWidth<BitsTypes...>::Width}) |
              __concat(bits...);
     }
   }
 
   template <typename... BitsTypes>
-    requires((BitsTypes::Width != BitsInfinitePrecision) && ...)
+    requires(((BitsTypes::width() != BitsInfinitePrecision) && (BitsTypes::PossiblyUnknown == false)) && ...)
   constexpr Bits<ConcatWidth<BitsTypes...>::Width> concat(BitsTypes... bits) {
     return __concat(bits...);
+  }
+
+  template <typename BitsType, typename... BitsTypes>
+    requires (
+      (BitsType::width() != BitsInfinitePrecision) &&
+      ((BitsTypes::width() != BitsInfinitePrecision) && ...) &&
+      ((BitsType::PossiblyUnknown == true) ||((BitsTypes::PossiblyUnknown == true) || ...))
+    )
+  constexpr PossiblyUnknownBits<ConcatWidth<BitsType, BitsTypes...>::width()> __unknown_concat(
+      const BitsType &a, const BitsTypes &...bits) {
+    if constexpr (sizeof...(BitsTypes) == 0) {
+      return a;
+    } else {
+      return (PossiblyUnknownBits<ConcatWidth<BitsType, BitsTypes...>::width()>{a}
+              << ConcatWidth<BitsTypes...>::Width) |
+            __unknown_concat(bits...);
+    }
+  }
+
+  template <typename... BitsTypes>
+    requires(
+      ((BitsTypes::width() != BitsInfinitePrecision) && ...) &&
+      ((BitsTypes::PossiblyUnknown == true) || ...)
+    )
+  constexpr PossiblyUnknownBits<ConcatWidth<BitsTypes...>::Width> concat(BitsTypes... bits) {
+    return __unknown_concat(bits...);
   }
 
   template <typename BitsType, typename... BitsTypes>
@@ -330,6 +338,9 @@ namespace udb {
       std::is_same_v<decltype(concat(Bits<4>{1}, Bits<4>(2), Bits<4>(3))),
                      Bits<12>>);
   static_assert(concat(Bits<4>{1}, Bits<4>(2), Bits<4>(3)) == Bits<12>(0x123));
+  static_assert(
+    std::is_same_v<decltype(concat(Bits<4>{1}, PossiblyUnknownBits<4>(2_b), Bits<4>(3))),
+                   PossiblyUnknownBits<12>>);
 
   template <unsigned N>
   static consteval bool is_power_of_2() {

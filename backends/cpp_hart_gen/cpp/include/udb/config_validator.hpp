@@ -44,7 +44,7 @@ namespace udb {
           auto default_patch = validator.validate(json);
           return json.patch(default_patch);
         } catch (const std::exception& e) {
-          throw std::runtime_error("AbstractConfig validation failed: " +
+          throw std::runtime_error("Config validation failed: " +
                                    std::string(e.what()));
         }
       }
